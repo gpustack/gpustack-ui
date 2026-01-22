@@ -17,6 +17,9 @@ interface WrapperProps {
     wrapper?: React.CSSProperties;
   };
   button?: React.ReactNode;
+  styles?: {
+    wrapper?: React.CSSProperties;
+  };
 }
 
 const Container = styled.div`

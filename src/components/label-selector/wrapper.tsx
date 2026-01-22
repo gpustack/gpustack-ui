@@ -13,6 +13,9 @@ interface WrapperProps {
   btnText?: string;
   disabled?: boolean;
   onAdd?: () => void;
+  styles?: {
+    wrapper?: React.CSSProperties;
+  };
   button?: React.ReactNode;
 }
 
@@ -46,11 +49,12 @@ const Wrapper: React.FC<WrapperProps> = ({
   onAdd,
   btnText,
   disabled,
-  button
+  button,
+  styles
 }) => {
   const intl = useIntl();
   return (
-    <Container>
+    <Container style={styles?.wrapper}>
       {label && (
         <span className="label">
           <LabelInfo

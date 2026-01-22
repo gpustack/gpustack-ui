@@ -2,6 +2,14 @@ export default {
   'providers.title': 'Providers',
   'providers.button.add': 'Add Provider',
   'providers.table.providerName': 'Provider',
-  'providers.table.modelsCounts': 'Models Count',
-  'providers.table.proxy': 'Proxy'
+  'providers.table.models': 'Models',
+  'providers.table.proxy': 'Proxy',
+  'providers.form.tokens.title': ' API Tokens',
+  'providers.form.tokens.add': 'Add API Token',
+  'providers.form.models.add': 'Add Model',
+  'providers.form.proxy.enable': 'Enable Proxy',
+  'providers.form.proxy.url': 'Proxy URL',
+  'providers.form.proxy.timeout': 'Proxy Timeout (seconds)',
+  'providers.form.customConfig': 'Custom Configuration',
+  'providers.form.model.test': 'Test Connection'
 };

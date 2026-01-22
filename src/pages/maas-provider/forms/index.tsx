@@ -47,14 +47,14 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
   const segmentOptions = [
     {
       value: TABKeysMap.BASIC,
-      label: 'Basic',
+      label: intl.formatMessage({ id: 'common.title.basicInfo' }),
       icon: <IconFont type="icon-basic" />,
       field: 'name'
     },
     {
       value: TABKeysMap.SUPPORTEDMODELS,
-      label: 'Supported Models',
-      icon: <IconFont type="icon-speed" />,
+      label: intl.formatMessage({ id: 'providers.table.models' }),
+      icon: <IconFont type="icon-models" />,
       field: 'supportedModels'
     },
     {
@@ -125,13 +125,13 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
             items={[
               {
                 key: TABKeysMap.SUPPORTEDMODELS,
-                label: 'Supported Models',
+                label: intl.formatMessage({ id: 'providers.table.models' }),
                 forceRender: true,
                 children: <SupportedModels></SupportedModels>
               },
               {
                 key: TABKeysMap.ADVANCED,
-                label: 'Advanced',
+                label: intl.formatMessage({ id: 'resources.form.advanced' }),
                 forceRender: true,
                 children: (
                   <AdvanceConfig

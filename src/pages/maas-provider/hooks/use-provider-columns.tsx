@@ -2,15 +2,13 @@
 import AutoTooltip from '@/components/auto-tooltip';
 import DropdownButtons from '@/components/drop-down-buttons';
 import { SealColumnProps } from '@/components/seal-table/types';
-import StatusTag from '@/components/status-tag';
-import { StatusMaps } from '@/config';
 import { tableSorter } from '@/config/settings';
-import { CheckCircleOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Tag } from 'antd';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
 import ProviderLogo from '../components/provider-logo';
+import ProviderModels from '../components/provider-models';
 import { maasProviderLabelMap, rowActionList } from '../config';
 import { MaasProviderItem } from '../config/types';
 
@@ -26,6 +24,7 @@ const useProviderColumns = (
         title: intl.formatMessage({ id: 'common.table.name' }),
         dataIndex: 'name',
         sorter: tableSorter(1),
+        minWidth: 160,
         span: 5,
         render: (text: string, record: MaasProviderItem) => (
           <>
@@ -45,54 +44,25 @@ const useProviderColumns = (
         dataIndex: 'provider',
         sorter: tableSorter(2),
         span: 4,
+        minWidth: 160,
         render: (value: string) => (
-          <>
-            <ProviderLogo provider={value} style={{ marginRight: 8 }} />
+          <div className="flex-center gap-8">
+            <ProviderLogo provider={value} />
             <AutoTooltip ghost minWidth={20}>
               {maasProviderLabelMap[value]
                 ? intl.formatMessage({ id: maasProviderLabelMap[value] })
                 : value}
             </AutoTooltip>
-          </>
+          </div>
         )
       },
       {
-        title: intl.formatMessage({ id: 'providers.table.modelsCounts' }),
+        title: intl.formatMessage({ id: 'providers.table.models' }),
         dataIndex: 'models',
         span: 3,
+        minWidth: 200,
         sorter: tableSorter(3),
-        render: (value: number) => <span>{value}</span>
-      },
-      {
-        title: intl.formatMessage({ id: 'providers.table.proxy' }),
-        dataIndex: 'proxy_url',
-        span: 3,
-        render: (value: number) => (
-          <span>
-            {value ? (
-              <CheckCircleOutlined
-                style={{ color: 'var(--ant-color-success)' }}
-              />
-            ) : (
-              '-'
-            )}
-          </span>
-        )
-      },
-      {
-        title: 'Token Settings',
-        dataIndex: 'api_tokens',
-        span: 3,
-        render: (value: string, record: MaasProviderItem) => (
-          <StatusTag
-            statusValue={{
-              status:
-                value?.length > 0 ? StatusMaps.success : StatusMaps.inactive,
-              text: value?.length > 0 ? 'Configured' : 'Unconfigured',
-              message: ''
-            }}
-          />
-        )
+        render: (value: number) => <ProviderModels></ProviderModels>
       },
       {
         title: intl.formatMessage({ id: 'common.table.createTime' }),
@@ -109,6 +79,7 @@ const useProviderColumns = (
         title: intl.formatMessage({ id: 'common.table.operation' }),
         dataIndex: 'operations',
         span: 3,
+        minWidth: 120,
         render: (value: string, record: MaasProviderItem) => (
           <DropdownButtons
             items={rowActionList}

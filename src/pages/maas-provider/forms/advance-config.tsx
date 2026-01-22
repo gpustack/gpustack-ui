@@ -45,7 +45,7 @@ const AdvanceConfig: React.FC<{
       </Form.Item>
       <YamlEditor
         ref={editorRef}
-        title={'Custom Config (YAML)'}
+        title={`${intl.formatMessage({ id: 'providers.form.customConfig' })} (YAML)`}
         value={fileContent}
         height={300}
         onUpload={(content) => {

@@ -6,6 +6,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 interface WrapperProps {
+  required?: boolean;
   label?: React.ReactNode;
   description?: React.ReactNode;
   labelExtra?: React.ReactNode;
@@ -45,6 +46,7 @@ const ButtonWrapper = styled.div`
 `;
 
 const Wrapper: React.FC<WrapperProps> = ({
+  required,
   children,
   label,
   description,
@@ -61,6 +63,7 @@ const Wrapper: React.FC<WrapperProps> = ({
       {label && (
         <span className="label">
           <LabelInfo
+            required={required}
             label={label}
             description={description}
             labelExtra={labelExtra}

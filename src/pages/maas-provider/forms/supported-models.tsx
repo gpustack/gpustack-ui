@@ -60,7 +60,7 @@ const SupportedModels = () => {
           loading={data.loading}
           onClick={() => handleTestModel(data)}
         >
-          Test
+          {intl.formatMessage({ id: 'providers.form.model.test' })}
         </Button>
       </SelectWrapper>
     );
@@ -73,8 +73,12 @@ const SupportedModels = () => {
       <Form.Item name="models">
         <div data-field="supportedModels"></div>
         <ListInput
-          btnText="Add Model"
-          label="Supported Models"
+          styles={{
+            wrapper: {
+              paddingTop: 14
+            }
+          }}
+          btnText={intl.formatMessage({ id: 'providers.form.models.add' })}
           dataList={[]}
           renderItem={renderModelItem}
           onChange={handleOnChange}

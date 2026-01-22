@@ -2,8 +2,6 @@ import { expandKeysAtom } from '@/atoms/clusters';
 import DeleteModal from '@/components/delete-modal';
 import IconFont from '@/components/icon-font';
 import { FilterBar } from '@/components/page-tools';
-import SealTable from '@/components/seal-table';
-import TableContext from '@/components/seal-table/table-context';
 import { TableOrder } from '@/components/seal-table/types';
 import { PageAction } from '@/config';
 import { TABLE_SORT_DIRECTIONS } from '@/config/settings';
@@ -12,15 +10,15 @@ import useTableFetch from '@/hooks/use-table-fetch';
 import useWatchList from '@/hooks/use-watch-list';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { message } from 'antd';
+import { ConfigProvider, message, Table } from 'antd';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
 import NoResult from '../_components/no-result';
 import PageBox from '../_components/page-box';
 import {
+  deleteProvider,
   MAAS_PROVIDERS_API,
   PROVIDER_MODELS_API,
-  deleteProvider,
   queryMaasProviders,
   updateProvider
 } from './apis';
@@ -160,6 +158,28 @@ const MaasProvider: React.FC = () => {
     );
   };
 
+  const renderEmpty = (type?: string) => {
+    if (type !== 'Table') return;
+    return (
+      <NoResult
+        loading={dataSource.loading}
+        loadend={dataSource.loadend}
+        dataSource={dataSource.dataList}
+        image={<IconFont type="icon-extension-outline" />}
+        filters={_.omit(queryParams, ['sort_by'])}
+        noFoundText={intl.formatMessage({
+          id: 'noresult.providers.nofound'
+        })}
+        title={intl.formatMessage({ id: 'noresult.providers.title' })}
+        subTitle={intl.formatMessage({
+          id: 'noresult.providers.subTitle'
+        })}
+        onClick={handleClickDropdown}
+        buttonText={intl.formatMessage({ id: 'noresult.button.add' })}
+      ></NoResult>
+    );
+  };
+
   const columns = useProviderColumns(handleSelect);
 
   return (
@@ -183,13 +203,10 @@ const MaasProvider: React.FC = () => {
             )
           }))}
         ></FilterBar>
-        <TableContext.Provider
-          value={{
-            allChildren: allProviderModels
-          }}
-        >
-          <SealTable
+        <ConfigProvider renderEmpty={renderEmpty}>
+          <Table
             rowKey="id"
+            tableLayout="auto"
             loadChildren={loadChildrenData}
             sortDirections={TABLE_SORT_DIRECTIONS}
             expandedRowKeys={expandedRowKeys}
@@ -204,25 +221,8 @@ const MaasProvider: React.FC = () => {
             rowSelection={rowSelection}
             columns={columns}
             childParentKey="provider_id"
+            scroll={{ x: true }}
             expandable={true}
-            empty={
-              <NoResult
-                loading={dataSource.loading}
-                loadend={dataSource.loadend}
-                dataSource={dataSource.dataList}
-                image={<IconFont type="icon-extension-outline" />}
-                filters={_.omit(queryParams, ['sort_by'])}
-                noFoundText={intl.formatMessage({
-                  id: 'noresult.providers.nofound'
-                })}
-                title={intl.formatMessage({ id: 'noresult.providers.title' })}
-                subTitle={intl.formatMessage({
-                  id: 'noresult.providers.subTitle'
-                })}
-                onClick={handleClickDropdown}
-                buttonText={intl.formatMessage({ id: 'noresult.button.add' })}
-              ></NoResult>
-            }
             pagination={{
               showSizeChanger: true,
               pageSize: queryParams.perPage,
@@ -231,8 +231,8 @@ const MaasProvider: React.FC = () => {
               hideOnSinglePage: queryParams.perPage === 10,
               onChange: handlePageChange
             }}
-          ></SealTable>
-        </TableContext.Provider>
+          ></Table>
+        </ConfigProvider>
       </PageBox>
       <AddMaasProvider
         provider={openProviderModalStatus.provider}

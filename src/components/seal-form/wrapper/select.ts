@@ -85,7 +85,7 @@ const SelectWrapper = styled.div`
         }
 
         .ant-select .ant-select-input {
-          top: 5px;
+          top: -5px !important;
         }
         .ant-select-placeholder {
           position: absolute;

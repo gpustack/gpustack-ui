@@ -21,6 +21,7 @@ interface LabelItemProps {
   options?: Global.HintOptions[];
   trim?: boolean;
   data?: any;
+  required?: boolean;
 }
 
 const ListItem: React.FC<LabelItemProps> = (props) => {
@@ -33,6 +34,7 @@ const ListItem: React.FC<LabelItemProps> = (props) => {
     options,
     trim = true,
     data,
+    required,
     renderItem
   } = props;
 
@@ -58,14 +60,16 @@ const ListItem: React.FC<LabelItemProps> = (props) => {
           placeholder={props.placeholder}
         />
       )}
-      <Button
-        size="small"
-        className="btn"
-        type="default"
-        shape="circle"
-        icon={<MinusOutlined />}
-        onClick={onRemove}
-      />
+      {!required && (
+        <Button
+          size="small"
+          className="btn"
+          type="default"
+          shape="circle"
+          icon={<MinusOutlined />}
+          onClick={onRemove}
+        />
+      )}
     </div>
   );
 };

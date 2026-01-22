@@ -31,14 +31,9 @@ const useAccessColumns = (
         )
       },
       {
-        title: intl.formatMessage({ id: 'models.form.source' }),
-        dataIndex: 'source',
-        span: 5
-      },
-      {
         title: intl.formatMessage({ id: 'accesses.table.accessPoints' }),
         dataIndex: 'accessPoints',
-        span: 5,
+        span: 10,
         render: (value: number) => <span>{value}</span>
       },
       {

@@ -55,7 +55,7 @@ const AccessItem: React.FC<AccessItemProps> = ({ onSelect, data }) => {
     <div style={{ borderRadius: 'var(--ant-table-header-border-radius)' }}>
       <RowChildren>
         <Row gutter={16} style={{ width: '100%' }}>
-          <Col span={5}>
+          <Col span={6}>
             <CellContent
               style={{
                 paddingInline: 'var(--ant-table-cell-padding-inline)'
@@ -64,8 +64,11 @@ const AccessItem: React.FC<AccessItemProps> = ({ onSelect, data }) => {
               <AutoTooltip ghost>qwen3-0.6b-zduxy</AutoTooltip>
             </CellContent>
           </Col>
-          <Col span={5}>
-            <CellContent style={{ paddingLeft: 58 }}>
+          <Col span={3}>
+            <CellContent>OpenAI</CellContent>
+          </Col>
+          <Col span={4}>
+            <CellContent>
               {data.weight && (
                 <AutoTooltip ghost>
                   {intl.formatMessage({ id: 'accesses.form.endpoint.weight' })}:
@@ -81,8 +84,8 @@ const AccessItem: React.FC<AccessItemProps> = ({ onSelect, data }) => {
               )}
             </CellContent>
           </Col>
-          <Col span={5}>
-            <CellContent style={{ paddingLeft: 44 }}>
+          <Col span={3}>
+            <CellContent>
               <AutoTooltip ghost>
                 <StatusTag
                   statusValue={{
@@ -95,14 +98,18 @@ const AccessItem: React.FC<AccessItemProps> = ({ onSelect, data }) => {
             </CellContent>
           </Col>
           <Col span={5}>
-            <CellContent style={{ paddingLeft: 44 }}>
+            <CellContent style={{ marginLeft: -6 }}>
               <AutoTooltip ghost minWidth={20}>
                 {dayjs().format('YYYY-MM-DD HH:mm:ss')}
               </AutoTooltip>
             </CellContent>
           </Col>
           <Col span={3}>
-            <CellContent style={{ paddingLeft: 36 }}>
+            <CellContent
+              style={{
+                marginLeft: -12
+              }}
+            >
               <DropdownButtons
                 items={childActionList}
                 onSelect={onSelect}

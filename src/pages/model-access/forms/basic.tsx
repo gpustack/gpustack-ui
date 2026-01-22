@@ -20,7 +20,7 @@ const Basic = () => {
         name="categories"
         normalize={(value) => (value ? [value] : [])}
         getValueProps={(value) => ({
-          value: Array.isArray(value) ? value[0] : value
+          value: Array.isArray(value) ? value[0] || null : value
         })}
       >
         <SealSelect

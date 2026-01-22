@@ -39,12 +39,11 @@ const MetaData = () => {
   const form = Form.useFormInstance<FormData>();
   const icon = Form.useWatch(['meta', 'icon'], form);
 
-  const handleMetadataChange = (labels: Record<string, any>) => {
-    form.setFieldValue('meta', labels);
+  const handleMetadataChange = (list: string[], field: string) => {
+    form.setFieldValue(['meta', field], list);
   };
 
   const handleUpdateImageList = (fileList: any[]) => {
-    console.log('fileList', fileList);
     if (fileList.length === 0) {
       return;
     }
@@ -122,7 +121,7 @@ const MetaData = () => {
           label={intl.formatMessage({ id: 'resources.form.label' })}
           btnText={intl.formatMessage({ id: 'common.button.addLabel' })}
           dataList={[]}
-          onChange={handleMetadataChange}
+          onChange={(list: string[]) => handleMetadataChange(list, 'tags')}
         ></ListInput>
       </Form.Item>
       <Form.Item<FormData> name={['meta', 'licenses']} data-field="metadata">
@@ -130,7 +129,7 @@ const MetaData = () => {
           label={intl.formatMessage({ id: 'accesses.form.metadata.license' })}
           btnText={intl.formatMessage({ id: 'common.button.addLabel' })}
           dataList={[]}
-          onChange={handleMetadataChange}
+          onChange={(list: string[]) => handleMetadataChange(list, 'licenses')}
         ></ListInput>
       </Form.Item>
       <Form.Item<FormData> name={['meta', 'languages']} data-field="metadata">
@@ -138,7 +137,7 @@ const MetaData = () => {
           label={intl.formatMessage({ id: 'accesses.form.metadata.languages' })}
           btnText={intl.formatMessage({ id: 'common.button.addLabel' })}
           dataList={[]}
-          onChange={handleMetadataChange}
+          onChange={(list: string[]) => handleMetadataChange(list, 'languages')}
         ></ListInput>
       </Form.Item>
       <Form.Item<FormData> name={['meta', 'icon']} data-field="metadata">

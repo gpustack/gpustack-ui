@@ -32,6 +32,9 @@ interface MetadataListProps {
   description?: React.ReactNode;
   disabled?: boolean;
   btnText?: string;
+  styles?: {
+    wrapper?: React.CSSProperties;
+  };
   onAdd?: () => void;
   onDelete?: (index: number, item: any) => void;
   children?: (item: any, index: number) => React.ReactNode;
@@ -45,10 +48,12 @@ const MetadataList: React.FC<MetadataListProps> = ({
   btnText,
   children,
   onDelete,
-  onAdd
+  onAdd,
+  styles
 }) => {
   return (
     <Wrapper
+      styles={styles}
       label={label}
       description={description}
       onAdd={onAdd}

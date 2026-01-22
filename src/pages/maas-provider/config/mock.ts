@@ -52,7 +52,7 @@ export const mockDataList: MaasProviderItem[] = [
     name: 'Anthropic',
     state: 'inactive',
     state_message: 'Provider is inactive',
-    provider: 'anthropic',
+    provider: 'claude',
     proxy_url: {},
     builtIn: true
   }

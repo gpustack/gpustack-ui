@@ -1,11 +1,13 @@
 import CheckboxField from '@/components/seal-form/checkbox-field';
 import SealInput from '@/components/seal-form/seal-input';
+import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import React from 'react';
 import { useFormContext } from '../config/form-context';
 
 const AdvanceConfig = () => {
+  const { getRuleMessage } = useAppUtils();
   const form = Form.useFormInstance();
   const intl = useIntl();
   const { action } = useFormContext();
@@ -32,21 +34,33 @@ const AdvanceConfig = () => {
         style={{ marginBottom: 8 }}
       >
         <CheckboxField
-          label={'Enable Proxy'}
+          label={intl.formatMessage({ id: 'providers.form.proxy.enable' })}
           onChange={handleSpeculativeEnabledChange}
         ></CheckboxField>
       </Form.Item>
       {proxyConfigEnabled && (
         <>
-          <Form.Item name={['proxy_config', 'url']}>
+          <Form.Item
+            name={['proxy_config', 'url']}
+            rules={[
+              {
+                required: true,
+                message: getRuleMessage(
+                  'input',
+                  intl.formatMessage({ id: 'providers.form.proxy.url' })
+                )
+              }
+            ]}
+          >
             <SealInput.Input
-              label={'Proxy URL'}
+              required
+              label={intl.formatMessage({ id: 'providers.form.proxy.url' })}
               placeholder="http://proxy.example.com:8080"
             ></SealInput.Input>
           </Form.Item>
           <Form.Item name={['proxy_config', 'timeout']}>
             <SealInput.Number
-              label={'Proxy Timeout'}
+              label={intl.formatMessage({ id: 'providers.form.proxy.timeout' })}
               placeholder="30"
             ></SealInput.Number>
           </Form.Item>

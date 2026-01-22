@@ -2,6 +2,14 @@ export default {
   'providers.title': '提供商',
   'providers.button.add': '添加提供商',
   'providers.table.providerName': '提供商',
-  'providers.table.modelsCounts': '模型数量',
-  'providers.table.proxy': '代理'
+  'providers.table.models': '模型',
+  'providers.table.proxy': '代理',
+  'providers.form.tokens.title': 'API 令牌',
+  'providers.form.tokens.add': '添加 API 令牌',
+  'providers.form.models.add': '添加模型',
+  'providers.form.proxy.enable': '启用代理',
+  'providers.form.proxy.url': '代理 URL',
+  'providers.form.proxy.timeout': '代理超时（秒）',
+  'providers.form.customConfig': '自定义配置',
+  'providers.form.model.test': '测试连接'
 };

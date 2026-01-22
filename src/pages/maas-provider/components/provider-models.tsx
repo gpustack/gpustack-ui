@@ -3,7 +3,7 @@ import { modelCategoriesMap } from '@/pages/llmodels/config';
 import {
   CheckCircleOutlined,
   CloseCircleOutlined,
-  ExclamationCircleOutlined
+  WarningOutlined
 } from '@ant-design/icons';
 import { Flex, Tag } from 'antd';
 import React from 'react';
@@ -39,6 +39,21 @@ const models: {
     name: 'model-4',
     status: 'accessible',
     type: modelCategoriesMap.llm
+  },
+  {
+    name: 'model-5',
+    status: 'inaccessible',
+    type: modelCategoriesMap.embedding
+  },
+  {
+    name: 'model-6model-6model-6model-6model-6model-6model-6',
+    status: 'none',
+    type: modelCategoriesMap.image
+  },
+  {
+    name: 'model-7',
+    status: 'accessible',
+    type: modelCategoriesMap.llm
   }
 ];
 
@@ -46,7 +61,7 @@ const ProviderModels: React.FC<ProviderModelProps> = () => {
   const iconsMap = {
     accessible: <CheckCircleOutlined />,
     inaccessible: <CloseCircleOutlined />,
-    none: <ExclamationCircleOutlined />
+    none: <WarningOutlined />
   };
   return (
     <div style={{ paddingInline: 16 }}>
@@ -58,16 +73,18 @@ const ProviderModels: React.FC<ProviderModelProps> = () => {
             variant="outlined"
             styles={{
               root: {
+                backgroundColor: 'transparent',
                 display: 'flex',
-                alignItems: 'center'
+                alignItems: 'center',
+                borderRadius: 4
               }
             }}
             color={
               model.status === 'accessible'
                 ? 'success'
                 : model.status === 'inaccessible'
-                  ? 'red'
-                  : 'default'
+                  ? 'error'
+                  : 'warning'
             }
           >
             <span className="flex-center">

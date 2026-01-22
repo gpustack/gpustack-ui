@@ -6,5 +6,5 @@ export default {
   'vendor.iluvatar': 'Iluvatar',
   'vendor.metax': 'Metax',
   'vendor.cambricon': 'Cambricon',
-  'vendor.thead': 'T-Head'
+  'vendor.thead': 'T-Head (PPU)'
 };

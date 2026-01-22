@@ -3,8 +3,7 @@ import MetadataList from '@/components/metadata-list';
 import SealCascader from '@/components/seal-form/seal-cascader';
 import SealInput from '@/components/seal-form/seal-input';
 import { useIntl } from '@umijs/max';
-import { Checkbox, Form } from 'antd';
-import { Tooltip } from 'antd/lib';
+import { Form } from 'antd';
 import _ from 'lodash';
 import { useState } from 'react';
 import { FormData } from '../config/types';
@@ -151,9 +150,14 @@ const Endpoints = () => {
           ]}
         >
           <MetadataList
-            label={'Endpoints'}
+            label={''}
+            styles={{
+              wrapper: {
+                paddingTop: 14
+              }
+            }}
             dataList={dataList}
-            btnText="Add Endpoint"
+            btnText={intl.formatMessage({ id: 'accesses.form.endpoint.add' })}
             onAdd={handleOnAdd}
             onDelete={handleOnDelete}
           >
@@ -170,26 +174,42 @@ const Endpoints = () => {
                     }
                   }}
                   maxTagCount={1}
-                  placeholder="provider/model"
+                  placeholder={intl.formatMessage({
+                    id: 'accesses.form.endpoint.model'
+                  })}
                   options={providerModelList}
                   showCheckedStrategy="SHOW_CHILD"
                   getPopupContainer={(triggerNode) => triggerNode.parentNode}
                 ></SealCascader>
                 <span className="seprator">:</span>
                 <SealInput.Number
-                  style={{ flex: 60 }}
-                  placeholder="weight"
+                  style={{ flex: 100 }}
+                  placeholder={intl.formatMessage({
+                    id: 'accesses.form.endpoint.weight'
+                  })}
                 ></SealInput.Number>
-                <Tooltip title="fallback">
-                  <Checkbox
-                    checked={item.is_fallback}
-                    onChange={(e) => handleFallbackChange(e, index)}
-                    style={{ marginLeft: 12, marginRight: 4 }}
-                  ></Checkbox>
-                </Tooltip>
               </>
             )}
           </MetadataList>
+        </Form.Item>
+        <Form.Item name="fallback_endpoint">
+          <SealCascader
+            showSearch
+            expandTrigger="hover"
+            multiple={false}
+            classNames={{
+              popup: {
+                root: 'cascader-popup-wrapper gpu-selector'
+              }
+            }}
+            label={intl.formatMessage({
+              id: 'accesses.form.endpoint.fallback'
+            })}
+            maxTagCount={1}
+            options={providerModelList}
+            showCheckedStrategy="SHOW_CHILD"
+            getPopupContainer={(triggerNode) => triggerNode.parentNode}
+          ></SealCascader>
         </Form.Item>
       </LabelSelectorContext.Provider>
     </>

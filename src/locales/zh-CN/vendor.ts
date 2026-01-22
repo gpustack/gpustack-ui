@@ -6,5 +6,5 @@ export default {
   'vendor.iluvatar': '天数智芯',
   'vendor.metax': '沐曦',
   'vendor.cambricon': '寒武纪',
-  'vendor.thead': '平头哥'
+  'vendor.thead': '平头哥 (PPU)'
 };

@@ -75,7 +75,7 @@ const CustomBackend: React.FC = () => {
                 { id: 'common.help.eg' },
                 {
                   content:
-                    'vllm serve {{model_path}} --port {{port}} --host {{worker_ip}} --served-model-name {{model_name}}'
+                    '{{model_path}} --port {{port}} --host {{worker_ip}} --served-model-name {{model_name}}'
                 }
               )}
             ></SealTextArea>

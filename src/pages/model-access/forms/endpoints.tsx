@@ -1,81 +1,72 @@
-import { LabelSelectorContext } from '@/components/label-selector/context';
 import MetadataList from '@/components/metadata-list';
 import SealCascader from '@/components/seal-form/seal-cascader';
 import SealInput from '@/components/seal-form/seal-input';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
-import { useState } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { FormData } from '../config/types';
+import useEndpointSourceModels from '../hooks/use-endpoint-source-models';
 
-const providerModelList = [
-  {
-    label: 'Deployments',
-    value: 'deployments',
-    children: [
-      {
-        label: 'qwen3-0.6b',
-        value: 'qwen3-0.6b',
-        key: '1',
-        provider_id: 1,
-        model_id: 101
-      },
-      {
-        label: 'deepseek',
-        value: 'deepseek',
-        key: '2',
-        provider_id: 1,
-        model_id: 102
-      }
-    ]
-  },
-  {
-    label: 'Doubao',
-    value: 'doubao',
-    children: [
-      {
-        label: 'qwen3-0.6b',
-        value: 'qwen3-0.6b',
-        key: '3',
-        provider_id: 2,
-        model_id: 201
-      },
-      {
-        label: 'deepseek',
-        value: 'deepseek',
-        key: '4',
-        provider_id: 2,
-        model_id: 202
-      }
-    ]
-  }
-];
-
-const Endpoints = () => {
+const EndpointsForm = forwardRef((props, ref) => {
   const intl = useIntl();
+  const { sourceModels, loading, fetchSourceModels } =
+    useEndpointSourceModels();
   const form = Form.useFormInstance<FormData>();
-  const endpoints = Form.useWatch('endpoints', form);
+  const endpoints = Form.useWatch('endpoints', form) || [];
+  const [fallbackValues, setFallbackValues] = useState<{ value: any[] }>({
+    value: []
+  });
   const [dataList, setDataList] = useState<
     {
-      provider_model_name: string;
-      weight: number;
-      model_id: number;
-      provider_id: number;
+      weight: number | null;
+      value: any[];
     }[]
-  >(endpoints || []);
+  >([]);
 
-  const handleEndpointsChange = (labels: Record<string, any>) => {
-    form.setFieldValue('endpoints', labels);
+  useImperativeHandle(ref, () => ({
+    initFallbackValues: (values: { value: any[] }) => {
+      setFallbackValues(values);
+    },
+    initDataList: (
+      list: {
+        weight: number | null;
+        value: any[];
+      }[]
+    ) => {
+      setDataList(list);
+    }
+  }));
+
+  const handleEndpointsChange = (
+    value: any[],
+    index: number,
+    options: any[]
+  ) => {
+    const selectedOption =
+      options?.find?.((opt) => opt.value === value[1]) || {};
+    const endpointList = [...endpoints];
+    endpointList[index] = {
+      weight: endpointList[index]?.weight || null,
+      ...selectedOption?.data
+    };
+
+    form.setFieldValue('endpoints', [...endpointList]);
+
+    const newDataList = [...dataList];
+    newDataList[index] = {
+      weight: newDataList[index]?.weight || null,
+      value: value
+    };
+    setDataList(newDataList);
   };
 
   const handleOnAdd = () => {
     const newDataList = [
       ...dataList,
       {
-        provider_model_name: '',
-        weight: 1,
-        model_id: 0,
-        provider_id: 0
+        weight: null,
+        value: []
       }
     ];
     setDataList(newDataList);
@@ -84,115 +75,128 @@ const Endpoints = () => {
   const handleOnDelete = (index: number, item: any) => {
     const newDataList = dataList.filter((_, i) => i !== index);
     setDataList(newDataList);
+
+    const endpointList = [...endpoints];
+    endpointList.splice(index, 1);
+    form.setFieldValue('endpoints', [...endpointList]);
   };
 
-  const handleFallbackChange = (e: any, index: number) => {
-    const checked = e.target.checked;
-    const newDataList = dataList.map((item, i) => {
-      if (i === index) {
-        return {
-          ...item,
-          is_fallback: checked
-        };
-      } else if (checked) {
-        return {
-          ...item,
-          is_fallback: false
-        };
-      }
-      return item;
+  const handleFallbackChange = (value: any[], options?: any[]) => {
+    const selectedOption =
+      options?.find?.((opt) => opt.value === value[1]) || {};
+
+    console.log('fallback selected option data:', value);
+    form.setFieldValue('fallback_endpoint', {
+      ...selectedOption?.data
     });
+    setFallbackValues({
+      value: value
+    });
+  };
+
+  const handleOnWeightChange = (value: any, index: number) => {
+    const endpointList = [...endpoints];
+    if (endpointList[index]) {
+      endpointList[index] = {
+        ...endpointList[index],
+        weight: value
+      };
+      form.setFieldValue('endpoints', [...endpointList]);
+    }
+
+    const newDataList = [...dataList];
+    newDataList[index] = {
+      ...newDataList[index],
+      weight: value
+    };
     setDataList(newDataList);
   };
 
+  useEffect(() => {
+    fetchSourceModels();
+  }, []);
+
   return (
     <>
-      <LabelSelectorContext.Provider
-        value={{
-          placeholder: ['Model', 'Weight'],
-          options: [
-            {
-              label: 'max_token_len',
-              value: 'max_token_len'
-            },
-            {
-              label: 'max_context_len',
-              value: 'max_context_len'
-            }
-          ]
-        }}
-      >
-        <Form.Item
-          name="endpoints"
-          data-field="endpoints"
-          rules={[
-            ({ getFieldValue }) => ({
-              validator(rule, value) {
-                if (_.keys(value).length > 0) {
-                  if (_.some(_.keys(value), (k: string) => !value[k])) {
-                    return Promise.reject(
-                      intl.formatMessage(
-                        {
-                          id: 'common.validate.value'
-                        },
-                        {
-                          name: intl.formatMessage({
-                            id: 'models.form.selector'
-                          })
-                        }
-                      )
-                    );
-                  }
+      <Form.Item
+        name="endpoints"
+        data-field="endpoints"
+        rules={[
+          ({ getFieldValue }) => ({
+            validator(rule, value) {
+              if (_.keys(value).length > 0) {
+                if (_.some(_.keys(value), (k: string) => !value[k])) {
+                  return Promise.reject(
+                    intl.formatMessage(
+                      {
+                        id: 'common.validate.value'
+                      },
+                      {
+                        name: intl.formatMessage({
+                          id: 'models.form.selector'
+                        })
+                      }
+                    )
+                  );
                 }
-                return Promise.resolve();
               }
-            })
-          ]}
+              return Promise.resolve();
+            }
+          })
+        ]}
+      >
+        <MetadataList
+          label={''}
+          styles={{
+            wrapper: {
+              paddingTop: 14
+            }
+          }}
+          dataList={dataList}
+          btnText={intl.formatMessage({ id: 'accesses.form.endpoint.add' })}
+          onAdd={handleOnAdd}
+          onDelete={handleOnDelete}
         >
-          <MetadataList
-            label={''}
-            styles={{
-              wrapper: {
-                paddingTop: 14
-              }
-            }}
-            dataList={dataList}
-            btnText={intl.formatMessage({ id: 'accesses.form.endpoint.add' })}
-            onAdd={handleOnAdd}
-            onDelete={handleOnDelete}
-          >
-            {(item, index) => (
-              <>
-                <SealCascader
-                  required
-                  showSearch
-                  expandTrigger="hover"
-                  multiple={false}
-                  classNames={{
-                    popup: {
-                      root: 'cascader-popup-wrapper gpu-selector'
-                    }
-                  }}
-                  maxTagCount={1}
-                  placeholder={intl.formatMessage({
-                    id: 'accesses.form.endpoint.model'
-                  })}
-                  options={providerModelList}
-                  showCheckedStrategy="SHOW_CHILD"
-                  getPopupContainer={(triggerNode) => triggerNode.parentNode}
-                ></SealCascader>
-                <span className="seprator">:</span>
-                <SealInput.Number
-                  style={{ flex: 100 }}
-                  placeholder={intl.formatMessage({
-                    id: 'accesses.form.endpoint.weight'
-                  })}
-                ></SealInput.Number>
-              </>
-            )}
-          </MetadataList>
-        </Form.Item>
-        <Form.Item name="fallback_endpoint">
+          {(item, index) => (
+            <>
+              <SealCascader
+                required
+                showSearch
+                expandTrigger="hover"
+                multiple={false}
+                onChange={(value, options) =>
+                  handleEndpointsChange(value, index, options)
+                }
+                classNames={{
+                  popup: {
+                    root: 'cascader-popup-wrapper gpu-selector'
+                  }
+                }}
+                maxTagCount={1}
+                placeholder={intl.formatMessage({
+                  id: 'accesses.form.endpoint.model'
+                })}
+                value={item.value}
+                options={sourceModels}
+                showCheckedStrategy="SHOW_CHILD"
+                getPopupContainer={(triggerNode) => triggerNode.parentNode}
+              ></SealCascader>
+              <span className="seprator">:</span>
+              <SealInput.Number
+                style={{ flex: 100 }}
+                min={0}
+                value={item.weight}
+                onChange={(value) => handleOnWeightChange(value, index)}
+                placeholder={intl.formatMessage({
+                  id: 'accesses.form.endpoint.weight'
+                })}
+              ></SealInput.Number>
+            </>
+          )}
+        </MetadataList>
+      </Form.Item>
+      <Form.Item name="fallback_endpoint">
+        <div>
           <SealCascader
             showSearch
             expandTrigger="hover"
@@ -206,14 +210,16 @@ const Endpoints = () => {
               id: 'accesses.form.endpoint.fallback'
             })}
             maxTagCount={1}
-            options={providerModelList}
+            value={fallbackValues.value}
+            options={sourceModels}
+            onChange={(value, options) => handleFallbackChange(value, options)}
             showCheckedStrategy="SHOW_CHILD"
             getPopupContainer={(triggerNode) => triggerNode.parentNode}
           ></SealCascader>
-        </Form.Item>
-      </LabelSelectorContext.Provider>
+        </div>
+      </Form.Item>
     </>
   );
-};
+});
 
-export default Endpoints;
+export default EndpointsForm;

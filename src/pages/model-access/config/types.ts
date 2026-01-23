@@ -1,3 +1,23 @@
+export interface FormData {
+  name: string;
+  description: string;
+  categories: any[];
+  meta: Record<string, any>;
+  fallback_endpoint: {
+    provider_model_name?: string;
+    model_id?: number;
+    provider_id?: number;
+    fallback_status_codes?: string[];
+  };
+  endpoints: {
+    provider_model_name?: string;
+    weight?: number | null;
+    model_id?: number;
+    provider_id?: number;
+    fallback_status_codes?: string[];
+  }[];
+}
+
 export interface AccessItem {
   id: number;
   created_at: string;
@@ -8,20 +28,9 @@ export interface AccessItem {
   categories: string[];
   meta: Record<string, any>;
   created_by_model: boolean;
-  endpoint_count: number;
-}
-
-export interface FormData {
-  name: string;
-  description: string;
-  categories: any[];
-  meta: Record<string, any>;
-  endpoints: {
-    provider_model_name: string;
-    weight: number;
-    model_id: number;
-    provider_id: number;
-  }[];
+  endpoints: number;
+  ready_endpoints: number;
+  access_policy: string;
 }
 
 export interface AccessPointItem {
@@ -30,7 +39,7 @@ export interface AccessPointItem {
   updated_at: string;
   deleted_at: string;
   provider_model_name: string;
-  weight: number;
+  weight: number | null;
   model_id: number;
   provider_id: number;
   name: string;

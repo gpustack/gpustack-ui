@@ -1,5 +1,5 @@
 import { request } from '@umijs/max';
-import { AccessItem, FormData } from '../config/types';
+import { AccessItem, AccessPointItem, FormData } from '../config/types';
 
 export const ACCESS_API = '/model-accesses';
 
@@ -36,12 +36,41 @@ export async function deleteAccess(id: number) {
   });
 }
 
-export async function queryAccessPoints(params: { id: string }, options?: any) {
-  return request<Global.BaseOption<string>[]>(
-    `${ACCESS_API}/${params.id}/access`,
+export async function queryAccessPoints(params: { id: number }, options?: any) {
+  return request<Global.PageResponse<AccessPointItem>>(
+    `${ACCESS_POINTS_API}?access_id=${params.id}`,
     {
       method: 'GET',
+      params: {
+        page: -1
+      },
       cancelToken: options?.token
     }
   );
+}
+
+export async function deleteAccessPoint(id: number) {
+  return request(`${ACCESS_POINTS_API}/${id}`, {
+    method: 'DELETE'
+  });
+}
+
+export async function updateAccessPoint(params: {
+  id: number;
+  data: Partial<AccessPointItem>;
+}) {
+  return request(`${ACCESS_POINTS_API}/${params.id}`, {
+    method: 'PUT',
+    data: params.data
+  });
+}
+
+export async function setAccessPointAsFallback(params: {
+  id: number;
+  data: Partial<AccessPointItem>;
+}) {
+  return request(`${ACCESS_POINTS_API}/${params.id}/set-fallback`, {
+    method: 'POST',
+    data: params.data
+  });
 }

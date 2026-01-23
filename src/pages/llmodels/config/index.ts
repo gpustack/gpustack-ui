@@ -1,5 +1,12 @@
+import IconFont from '@/components/icon-font';
 import { StatusMaps } from '@/config';
-import { EditOutlined } from '@ant-design/icons';
+import {
+  AudioOutlined,
+  EditOutlined,
+  PictureOutlined,
+  WechatWorkOutlined
+} from '@ant-design/icons';
+import React from 'react';
 import { backendOptionsMap } from './backend-parameters';
 
 export const backendTipsList = [
@@ -290,12 +297,45 @@ export const modelCategoriesMap = {
 };
 
 export const categoryOptions = [
-  { label: 'LLM', value: modelCategoriesMap.llm },
-  { label: 'Embedding', value: modelCategoriesMap.embedding },
-  { label: 'Reranker', value: modelCategoriesMap.reranker },
-  { label: 'Image', value: modelCategoriesMap.image },
-  { label: 'Text-to-Speech', value: modelCategoriesMap.text_to_speech },
-  { label: 'Speech-to-Text', value: modelCategoriesMap.speech_to_text }
+  {
+    label: 'LLM',
+    value: modelCategoriesMap.llm,
+    icon: React.createElement(WechatWorkOutlined, { style: { color: 'green' } })
+  },
+  {
+    label: 'Embedding',
+    value: modelCategoriesMap.embedding,
+    icon: React.createElement(IconFont, {
+      type: 'icon-cube',
+      style: { color: 'magenta' }
+    })
+  },
+  {
+    label: 'Reranker',
+    value: modelCategoriesMap.reranker,
+    icon: React.createElement(IconFont, {
+      type: 'icon-rank1',
+      style: { color: 'cyan' }
+    })
+  },
+  {
+    label: 'Image',
+    value: modelCategoriesMap.image,
+    icon: React.createElement(PictureOutlined, { style: { color: 'orange' } })
+  },
+  {
+    label: 'Text-to-Speech',
+    value: modelCategoriesMap.text_to_speech,
+    icon: React.createElement(IconFont, {
+      type: 'icon-sound-wave',
+      style: { color: 'geekblue' }
+    })
+  },
+  {
+    label: 'Speech-to-Text',
+    value: modelCategoriesMap.speech_to_text,
+    icon: React.createElement(AudioOutlined, { style: { color: 'processing' } })
+  }
 ];
 
 export const modelCategories = [

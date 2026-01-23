@@ -3,6 +3,7 @@ import AutoTooltip from '@/components/auto-tooltip';
 import DropdownButtons from '@/components/drop-down-buttons';
 import { SealColumnProps } from '@/components/seal-table/types';
 import { tableSorter } from '@/config/settings';
+import ModelTag from '@/pages/_components/model-tag';
 import { useIntl } from '@umijs/max';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
@@ -23,18 +24,23 @@ const useAccessColumns = (
         sorter: tableSorter(1),
         span: 5,
         render: (text: string, record: AccessItem) => (
-          <>
+          <span className="flex-center" style={{ maxWidth: '100%' }}>
             <AutoTooltip ghost title={text}>
-              {text}
+              <span className="m-r-5">{text}</span>
             </AutoTooltip>
-          </>
+            <ModelTag categoryKey={record.categories?.[0]}></ModelTag>
+          </span>
         )
       },
       {
         title: intl.formatMessage({ id: 'accesses.table.accessPoints' }),
-        dataIndex: 'accessPoints',
+        dataIndex: 'endpoints',
         span: 10,
-        render: (value: number) => <span>{value}</span>
+        render: (value: number, record: AccessItem) => (
+          <span>
+            {record.ready_endpoints} / {value}
+          </span>
+        )
       },
       {
         title: intl.formatMessage({ id: 'common.table.createTime' }),

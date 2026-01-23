@@ -9,7 +9,8 @@ import { Col, Row } from 'antd';
 import dayjs from 'dayjs';
 import React from 'react';
 import styled from 'styled-components';
-import { mockAccessPointList } from '../config/mock';
+import { EndpointStatus, EndpointStatusLabelMap } from '../config';
+import { AccessPointItem } from '../config/types';
 const CellContent = styled.div`
   display: flex;
   align-items: center;
@@ -17,9 +18,7 @@ const CellContent = styled.div`
 `;
 
 interface ProviderModelProps {
-  dataList: any[];
-  provider: string;
-  providerId: number;
+  dataList: AccessPointItem[];
   onSelect: (val: any, record: any) => void;
 }
 
@@ -61,27 +60,32 @@ const AccessItem: React.FC<AccessItemProps> = ({ onSelect, data }) => {
                 paddingInline: 'var(--ant-table-cell-padding-inline)'
               }}
             >
-              <AutoTooltip ghost>qwen3-0.6b-zduxy</AutoTooltip>
+              <AutoTooltip ghost>{data.provider_model_name}</AutoTooltip>
             </CellContent>
           </Col>
           <Col span={3}>
-            <CellContent>OpenAI</CellContent>
+            <CellContent>-</CellContent>
           </Col>
           <Col span={4}>
             <CellContent>
               {data.weight && (
                 <AutoTooltip ghost>
-                  {intl.formatMessage({ id: 'accesses.form.endpoint.weight' })}:
-                  20 /
+                  {intl.formatMessage({ id: 'accesses.form.endpoint.weight' })}:{' '}
+                  {data.weight}
                 </AutoTooltip>
               )}
-              {data.is_fallback && (
-                <span>
-                  {intl.formatMessage({
-                    id: 'accesses.table.label.fallback'
-                  })}
-                </span>
-              )}
+
+              {data.fallback_status_codes &&
+                data.fallback_status_codes?.length > 0 && (
+                  <>
+                    <span style={{ marginInline: 8 }}>/</span>
+                    <span>
+                      {intl.formatMessage({
+                        id: 'accesses.table.label.fallback'
+                      })}
+                    </span>
+                  </>
+                )}
             </CellContent>
           </Col>
           <Col span={3}>
@@ -89,8 +93,8 @@ const AccessItem: React.FC<AccessItemProps> = ({ onSelect, data }) => {
               <AutoTooltip ghost>
                 <StatusTag
                   statusValue={{
-                    status: 'success',
-                    text: 'Ready',
+                    status: EndpointStatus[data.state],
+                    text: EndpointStatusLabelMap[data.state],
                     message: ''
                   }}
                 />
@@ -100,7 +104,7 @@ const AccessItem: React.FC<AccessItemProps> = ({ onSelect, data }) => {
           <Col span={5}>
             <CellContent style={{ marginLeft: -6 }}>
               <AutoTooltip ghost minWidth={20}>
-                {dayjs().format('YYYY-MM-DD HH:mm:ss')}
+                {dayjs(data.created_at).format('YYYY-MM-DD HH:mm:ss')}
               </AutoTooltip>
             </CellContent>
           </Col>
@@ -112,7 +116,7 @@ const AccessItem: React.FC<AccessItemProps> = ({ onSelect, data }) => {
             >
               <DropdownButtons
                 items={childActionList}
-                onSelect={onSelect}
+                onSelect={(val) => onSelect(val, data)}
               ></DropdownButtons>
             </CellContent>
           </Col>
@@ -126,7 +130,7 @@ const AccessPoints: React.FC<ProviderModelProps> = ({ dataList, onSelect }) => {
   console.log('AccessPoints dataList:', dataList);
   return (
     <div>
-      {mockAccessPointList.map((item, index) => (
+      {dataList.map((item, index) => (
         <AccessItem data={item} key={index} onSelect={onSelect}></AccessItem>
       ))}
     </div>

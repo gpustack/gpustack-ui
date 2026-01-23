@@ -32,7 +32,7 @@ export const rowActionList = [
   },
   {
     key: 'copy',
-    label: 'common.button.copy',
+    label: 'common.button.duplicate',
     icon: icons.CopyOutlined
   },
   {

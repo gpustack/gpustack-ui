@@ -51,6 +51,13 @@ export default function useWatchList<T = Record<string, any>>(API: string) {
     });
   };
 
+  const handleDeleteItemFromCache = (id: number) => {
+    cacheWatchDataListRef.current = cacheWatchDataListRef.current.filter(
+      (item) => item.id !== id
+    );
+    setWatchDataList(cacheWatchDataListRef.current);
+  };
+
   const getAllDataList = useMemoizedFn(async () => {
     try {
       listRequestTokenRef.current?.cancel?.();
@@ -78,6 +85,7 @@ export default function useWatchList<T = Record<string, any>>(API: string) {
   }, []);
 
   return {
-    watchDataList
+    watchDataList,
+    deleteItemFromCache: handleDeleteItemFromCache
   };
 }

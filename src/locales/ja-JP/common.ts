@@ -259,6 +259,7 @@ export default {
   'common.sso.noConfig':
     'Single sign-on is not enabled on this system. Please contact your administrator.',
   'common.button.edit.item': 'Edit {name}',
+  'common.button.copy.item': 'Duplicate {name}',
   'common.button.terminal': 'Terminal',
   'common.button.addItem': 'Add Item',
   'common.help.default': 'Default: {content}',
@@ -273,7 +274,8 @@ export default {
   'common.button.enable': 'Enable',
   'common.button.disable': 'Disable',
   'common.status.enabled': 'Enabled',
-  'common.status.disabled': 'Disabled'
+  'common.status.disabled': 'Disabled',
+  'common.button.duplicate': 'Duplicate'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -313,4 +315,5 @@ export default {
 // 34.    'common.button.disable': 'Disable',
 // 35.    'common.status.enabled': 'Enabled',
 // 36.    'common.status.disabled': 'Disabled'
+// 33. 'common.button.duplicate': 'Duplicate'
 // ========== End of To-Do List ==========

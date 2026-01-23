@@ -21,13 +21,16 @@ import AccessControlModal from '../llmodels/components/access-control-modal';
 import {
   ACCESS_API,
   ACCESS_POINTS_API,
+  createAccess,
   deleteAccess,
+  deleteAccessPoint,
+  queryAccessPoints,
   queryModelAccesses,
+  setAccessPointAsFallback,
   updateAccess
 } from './apis';
 import AccessPoints from './components/access-points';
 import AddAccessModal from './components/add-access-modal';
-import { mockDataList } from './config/mock';
 import { FormData, AccessItem as ListItem } from './config/types';
 import useAccessColumns from './hooks/use-access-columns';
 import useAccessControl from './hooks/use-access-control';
@@ -49,11 +52,12 @@ const Accesses: React.FC = () => {
   } = useTableFetch<ListItem>({
     fetchAPI: queryModelAccesses,
     deleteAPI: deleteAccess,
-    watch: false,
+    watch: true,
     API: ACCESS_API,
     contentForDelete: 'menu.models.access'
   });
-  const { watchDataList: allAccessPoints } = useWatchList(ACCESS_POINTS_API);
+  const { watchDataList: allAccessPoints, deleteItemFromCache } =
+    useWatchList(ACCESS_POINTS_API);
   const [expandAtom] = useAtom(expandKeysAtom);
   const { handleExpandChange, handleExpandAll, expandedRowKeys } =
     useExpandedRowKeys(expandAtom);
@@ -84,6 +88,11 @@ const Accesses: React.FC = () => {
           id: openAccessModalStatus.currentData!.id
         });
       }
+      if (openAccessModalStatus.action === PageAction.CREATE) {
+        await createAccess({
+          data: params
+        });
+      }
       fetchData();
       closeAccessModal();
       message.success(intl.formatMessage({ id: 'common.message.success' }));
@@ -98,10 +107,7 @@ const Accesses: React.FC = () => {
   const handleEditProvider = (row: ListItem) => {
     openAccessModal(
       PageAction.EDIT,
-      intl.formatMessage(
-        { id: 'clusters.edit.cluster' },
-        { cluster: row.name }
-      ),
+      intl.formatMessage({ id: 'common.button.edit.item' }, { name: row.name }),
       row
     );
   };
@@ -135,13 +141,13 @@ const Accesses: React.FC = () => {
   const loadChildrenData = useMemoizedFn(
     async (row: ListItem, options?: any) => {
       const params = {
-        cluster_id: row.id,
-        page: -1
+        id: row.id
       };
-      // const data = await queryAccessPoints(params, {
-      //   token: options?.token
-      // });
-      return [1];
+      const res = await queryAccessPoints(params, {
+        token: options?.token
+      });
+
+      return res.items || [];
     }
   );
 
@@ -149,24 +155,40 @@ const Accesses: React.FC = () => {
     handleTableChange({}, {}, order, { action: 'sort' });
   };
 
-  const onChildSelect = useMemoizedFn((val: any, record: any) => {
-    if (val === 'fallback') {
-      console.log('open fallback settings modal', record);
-    }
+  const handleDeleteEndpoint = (row: any) => {
+    modalRef.current?.show({
+      content: 'accesses.table.accessPoints',
+      okText: 'common.button.delete',
+      operation: 'common.delete.single.confirm',
+      name: row.name,
+      async onOk() {
+        await deleteAccessPoint(row.id);
+        deleteItemFromCache?.(row.id);
+      }
+    });
+  };
+
+  const onChildSelect = useMemoizedFn(async (val: any, record: any) => {
+    try {
+      if (val === 'fallback') {
+        await setAccessPointAsFallback({
+          id: record.id,
+          data: {
+            fallback_status_codes: ['4xx', '5xx']
+          }
+        });
+        message.success(intl.formatMessage({ id: 'common.message.success' }));
+      } else if (val === 'delete') {
+        handleDeleteEndpoint(record);
+      }
+    } catch (error) {}
   });
 
   const renderChildren = (
     list: any,
     options: { parent?: any; [key: string]: any }
   ) => {
-    return (
-      <AccessPoints
-        dataList={list}
-        provider={options.parent?.provider}
-        providerId={options.parent?.id}
-        onSelect={onChildSelect}
-      />
-    );
+    return <AccessPoints dataList={list} onSelect={onChildSelect} />;
   };
 
   const columns = useAccessColumns(handleSelect);
@@ -201,7 +223,7 @@ const Accesses: React.FC = () => {
             renderChildren={renderChildren}
             onTableSort={handleOnSortChange}
             showSorterTooltip={false}
-            dataSource={mockDataList}
+            dataSource={dataSource.dataList}
             loading={dataSource.loading}
             loadend={dataSource.loadend}
             rowSelection={rowSelection}

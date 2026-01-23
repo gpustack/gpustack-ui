@@ -251,6 +251,7 @@ export default {
   'common.external.login': '使用 {type} 登录',
   'common.sso.noConfig': '该系统未启用单点登录，请联系管理员。',
   'common.button.edit.item': '编辑 {name}',
+  'common.button.copy.item': '复制 {name}',
   'common.button.terminal': '终端',
   'common.button.addItem': '添加项',
   'common.help.default': '默认: {content}',
@@ -265,5 +266,6 @@ export default {
   'common.button.enable': '启用',
   'common.button.disable': '禁用',
   'common.status.enabled': '已启用',
-  'common.status.disabled': '未启用'
+  'common.status.disabled': '未启用',
+  'common.button.duplicate': '复制'
 };

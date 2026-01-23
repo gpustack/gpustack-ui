@@ -258,6 +258,7 @@ export default {
   'common.sso.noConfig':
     'Единый вход не настроен в этой системе. Пожалуйста, обратитесь к администратору.',
   'common.button.edit.item': 'Редактировать {name}',
+  'common.button.copy.item': 'Duplicate {name}',
   'common.button.terminal': 'Терминал',
   'common.button.addItem': 'Добавить элемент',
   'common.help.default': 'По умолчанию: {content}',
@@ -272,12 +273,11 @@ export default {
   'common.button.enable': 'Enable',
   'common.button.disable': 'Disable',
   'common.status.enabled': 'Enabled',
-  'common.status.disabled': 'Disabled'
+  'common.status.disabled': 'Disabled',
+  'common.button.duplicate': 'Duplicate'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1.  'common.button.enable': 'Enable',
-// 2.  'common.button.disable': 'Disable',
-// 3.  'common.status.enabled': 'Enabled',
-// 4.  'common.status.disabled': 'Disabled'
+// 1.  'common.button.copy.item': 'Duplicate {name}',
+// 2. 'common.button.duplicate': 'Duplicate'
 // ========== End of To-Do List ==========

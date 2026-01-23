@@ -2,19 +2,19 @@ import icons from '@/components/icon-font/icons';
 import { StatusMaps } from '@/config';
 import { StatusType } from '@/config/types';
 
-export const ProviderStatusValueMap: Record<string, string> = {
-  Ready: 'Ready',
-  InActive: 'Inactive'
+export const EndpointsStatusValueMap: Record<string, string> = {
+  Active: 'active',
+  Inactive: 'inactive'
 };
 
-export const ProviderStatusLabelMap = {
-  [ProviderStatusValueMap.Ready]: 'Ready',
-  [ProviderStatusValueMap.InActive]: 'Inactive'
+export const EndpointStatusLabelMap = {
+  [EndpointsStatusValueMap.Active]: 'Active',
+  [EndpointsStatusValueMap.Inactive]: 'Inactive'
 };
 
-export const ProviderStatus: Record<string, StatusType> = {
-  [ProviderStatusValueMap.Ready]: StatusMaps.success,
-  [ProviderStatusValueMap.InActive]: StatusMaps.error
+export const EndpointStatus: Record<string, StatusType> = {
+  [EndpointsStatusValueMap.Active]: StatusMaps.success,
+  [EndpointsStatusValueMap.Inactive]: StatusMaps.error
 };
 
 // actions for each row

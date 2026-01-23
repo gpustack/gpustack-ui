@@ -7,7 +7,6 @@ import { PageAction } from '@/config';
 import { TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import useTableFetch from '@/hooks/use-table-fetch';
-import useWatchList from '@/hooks/use-watch-list';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { ConfigProvider, message, Table } from 'antd';
@@ -16,16 +15,15 @@ import _ from 'lodash';
 import NoResult from '../_components/no-result';
 import PageBox from '../_components/page-box';
 import {
+  createProvider,
   deleteProvider,
   MAAS_PROVIDERS_API,
-  PROVIDER_MODELS_API,
   queryMaasProviders,
   updateProvider
 } from './apis';
 import AddMaasProvider from './components/add-provider-modal';
 import ProviderModels from './components/provider-models';
 import { maasProviderOptions } from './config';
-import { mockDataList } from './config/mock';
 import {
   FormData,
   MaasProviderItem as ListItem,
@@ -50,12 +48,10 @@ const MaasProvider: React.FC = () => {
   } = useTableFetch<ListItem>({
     fetchAPI: queryMaasProviders,
     deleteAPI: deleteProvider,
-    watch: true,
+    watch: false,
     API: MAAS_PROVIDERS_API,
     contentForDelete: 'menu.models.providers'
   });
-  const { watchDataList: allProviderModels } =
-    useWatchList(PROVIDER_MODELS_API);
   const [expandAtom] = useAtom(expandKeysAtom);
   const { handleExpandChange, handleExpandAll, expandedRowKeys } =
     useExpandedRowKeys(expandAtom);
@@ -81,6 +77,14 @@ const MaasProvider: React.FC = () => {
         await updateProvider({
           data: params,
           id: openProviderModalStatus.currentData!.id
+        });
+      }
+      if (
+        openProviderModalStatus.action === PageAction.CREATE ||
+        openProviderModalStatus.action === PageAction.COPY
+      ) {
+        await createProvider({
+          data: params
         });
       }
       fetchData();
@@ -112,7 +116,7 @@ const MaasProvider: React.FC = () => {
       handleDelete({ ...row, name: row.name });
     }
     if (val === 'copy') {
-      openProviderModal(PageAction.EDIT, 'Copy Provider', row);
+      openProviderModal(PageAction.COPY, 'Copy Provider', row);
     }
   });
 
@@ -149,13 +153,7 @@ const MaasProvider: React.FC = () => {
     list: any,
     options: { parent?: any; [key: string]: any }
   ) => {
-    return (
-      <ProviderModels
-        dataList={list}
-        provider={options.parent?.provider}
-        providerId={options.parent?.id}
-      />
-    );
+    return <ProviderModels dataList={list} />;
   };
 
   const renderEmpty = (type?: string) => {
@@ -215,7 +213,7 @@ const MaasProvider: React.FC = () => {
             renderChildren={renderChildren}
             onTableSort={handleOnSortChange}
             showSorterTooltip={false}
-            dataSource={mockDataList}
+            dataSource={dataSource.dataList}
             loading={dataSource.loading}
             loadend={dataSource.loadend}
             rowSelection={rowSelection}
@@ -235,7 +233,6 @@ const MaasProvider: React.FC = () => {
         </ConfigProvider>
       </PageBox>
       <AddMaasProvider
-        provider={openProviderModalStatus.provider}
         open={openProviderModalStatus.open}
         action={openProviderModalStatus.action}
         title={openProviderModalStatus.title}

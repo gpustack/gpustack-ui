@@ -1,5 +1,6 @@
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
+import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import ProviderLogo from '../components/provider-logo';
@@ -9,6 +10,7 @@ import { FormData } from '../config/types';
 const Basic = () => {
   const intl = useIntl();
   const form = Form.useFormInstance<FormData>();
+  const { getRuleMessage } = useAppUtils();
 
   const optionRender = (option: any) => {
     return (
@@ -29,9 +31,21 @@ const Basic = () => {
           })}
         />
       </Form.Item>
-      <Form.Item<FormData> name={['config', 'type']}>
+      <Form.Item<FormData>
+        name={['config', 'type']}
+        rules={[
+          {
+            required: true,
+            message: getRuleMessage(
+              'select',
+              intl.formatMessage({ id: 'providers.table.providerName' })
+            )
+          }
+        ]}
+      >
         <SealSelect
           showSearch
+          required
           options={maasProviderOptions}
           optionRender={optionRender}
           labelRender={optionRender}

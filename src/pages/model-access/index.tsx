@@ -27,7 +27,6 @@ import {
 } from './apis';
 import AccessPoints from './components/access-points';
 import AddAccessModal from './components/add-access-modal';
-import { maasProviderOptions } from './config';
 import { mockDataList } from './config/mock';
 import { FormData, AccessItem as ListItem } from './config/types';
 import useAccessColumns from './hooks/use-access-columns';
@@ -186,12 +185,6 @@ const Accesses: React.FC = () => {
           handleSearch={handleSearch}
           handleDeleteByBatch={handleDeleteBatch}
           handleClickPrimary={handleClickDropdown}
-          actionItems={maasProviderOptions.map((option) => ({
-            ...option,
-            icon: (
-              <IconFont type={option.icon as string} style={{ fontSize: 14 }} />
-            )
-          }))}
         ></FilterBar>
         <TableContext.Provider
           value={{

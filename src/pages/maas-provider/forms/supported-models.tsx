@@ -1,88 +1,79 @@
-import ListInput from '@/components/list-input';
-import SealSelect from '@/components/seal-form/seal-select';
-import { CheckCircleFilled } from '@ant-design/icons';
+import MetadataList from '@/components/metadata-list';
 import { useIntl } from '@umijs/max';
-import { Button, Form } from 'antd';
-import styled from 'styled-components';
-import { FormData } from '../config/types';
-
-const SelectWrapper = styled.div`
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  .icon-wrapper {
-    display: flex;
-    align-items: center;
-    height: 100%;
-  }
-`;
+import { Form } from 'antd';
+import { FormData, ProviderModel } from '../config/types';
+import { useQueryProviderModels } from '../hooks/use-query-provider-models';
+import ModelItem from './model-item';
 
 const SupportedModels = () => {
   const intl = useIntl();
+  const { providerModelList, loading, fetchProviderModels } =
+    useQueryProviderModels();
   const form = Form.useFormInstance<FormData>();
+  const modelList = Form.useWatch('models', form) || [];
 
-  const handleTestModel = (data: any) => {
-    data.loading = true;
-    setTimeout(() => {
-      data.loading = false;
-    }, 1000);
-  };
+  const handleOpenChange = async (open: boolean) => {
+    try {
+      await form.validateFields(['api_tokens', ['config', 'type']]);
 
-  const renderModelItem = (
-    data: any,
-    {
-      onChange,
-      onBlur
-    }: { onChange: (value: string) => void; onBlur?: (e: any) => void }
-  ) => {
-    return (
-      <SelectWrapper>
-        <SealSelect
-          suffixIcon={
-            <CheckCircleFilled
-              style={{ color: 'var(--ant-color-success)', fontSize: 16 }}
-            />
+      if (open && providerModelList.length === 0) {
+        fetchProviderModels({
+          data: {
+            api_token: form.getFieldValue('api_tokens')?.[0] || '',
+            config: {
+              type: form.getFieldValue(['config', 'type']) || ''
+            }
           }
-          alwaysFocus={true}
-          value={data.value}
-          onChange={onChange}
-          onBlur={onBlur}
-          options={[
-            { label: 'Model A', value: 'model_a' },
-            { label: 'Model B', value: 'model_b' },
-            { label: 'Model C', value: 'model_c' }
-          ]}
-        />
-        <Button
-          type="link"
-          size="small"
-          loading={data.loading}
-          onClick={() => handleTestModel(data)}
-        >
-          {intl.formatMessage({ id: 'providers.form.model.test' })}
-        </Button>
-      </SelectWrapper>
-    );
+        });
+      }
+    } catch (error) {}
   };
 
-  const handleOnChange = (values: string[]) => {};
+  const updateModelList = (models: ProviderModel[]) => {
+    form.setFieldsValue({
+      models: models
+    });
+  };
+
+  const onAdd = () => {
+    const newList = [...modelList];
+    newList.push({ name: '', category: '', accessible: null });
+    updateModelList(newList);
+  };
+
+  const onDelete = (index: number) => {
+    const newList = [...modelList];
+    newList.splice(index, 1);
+    updateModelList(newList);
+  };
+
+  const onChange = (data: ProviderModel, index: number) => {
+    const newList = [...modelList];
+    newList[index] = { ...data };
+    updateModelList(newList);
+  };
 
   return (
     <>
-      <Form.Item name="models">
-        <div data-field="supportedModels"></div>
-        <ListInput
-          styles={{
-            wrapper: {
-              paddingTop: 14
-            }
-          }}
+      <Form.Item name="models" data-field="supportedModels">
+        <MetadataList
+          dataList={modelList}
+          label={intl.formatMessage({ id: 'providers.table.models' })}
           btnText={intl.formatMessage({ id: 'providers.form.models.add' })}
-          dataList={[]}
-          renderItem={renderModelItem}
-          onChange={handleOnChange}
-        ></ListInput>
+          onAdd={onAdd}
+          onDelete={onDelete}
+        >
+          {(item, index) => (
+            <ModelItem
+              key={index}
+              onOpenChange={handleOpenChange}
+              onChange={(data) => onChange(data, index)}
+              loading={loading}
+              providerModelList={providerModelList}
+              item={item}
+            ></ModelItem>
+          )}
+        </MetadataList>
       </Form.Item>
     </>
   );

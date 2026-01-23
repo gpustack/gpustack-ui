@@ -4,7 +4,8 @@ export enum PageAction {
   CREATE = 'create',
   UPDATE = 'update',
   VIEW = 'view',
-  EDIT = 'edit'
+  EDIT = 'edit',
+  COPY = 'copy'
 }
 
 export const StatusColorMap: Record<

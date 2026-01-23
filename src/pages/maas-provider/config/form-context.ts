@@ -1,8 +1,9 @@
 import { PageActionType } from '@/config/types';
 import { createContext, useContext } from 'react';
+import { maasProviderType } from '.';
 
 interface FormContextProps {
-  providerType?: string;
+  providerType?: maasProviderType;
   action?: PageActionType;
 }
 

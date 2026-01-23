@@ -1,9 +1,11 @@
 import { request } from '@umijs/max';
 import { FormData, MaasProviderItem } from '../config/types';
 
-export const MAAS_PROVIDERS_API = '/models';
+export const MAAS_PROVIDERS_API = '/model-providers';
 
-export const PROVIDER_MODELS_API = '/models';
+export const GET_PROVIDER_MODELS_API = '/get-models';
+
+export const TEST_PROVIDER_MODEL_API = '/test-model';
 
 export async function queryMaasProviders(
   params: Global.SearchParams,
@@ -37,14 +39,41 @@ export async function deleteProvider(id: number) {
 }
 
 export async function queryProviderModels(
-  params: { id: string },
+  params: {
+    data: {
+      api_token: string;
+      config: {
+        type: string;
+      };
+    };
+  },
   options?: any
 ) {
-  return request<Global.BaseOption<string>[]>(
-    `${MAAS_PROVIDERS_API}/${params.id}/models`,
+  return request<{ data: any[] }>(
+    `${MAAS_PROVIDERS_API}${GET_PROVIDER_MODELS_API}`,
     {
-      method: 'GET',
+      method: 'post',
+      data: params.data,
       cancelToken: options?.token
     }
   );
+}
+
+export async function testProviderModel(
+  params: {
+    data: {
+      model_name: string;
+      api_token: string;
+      config: {
+        type: string;
+      };
+    };
+  },
+  options?: any
+) {
+  return request<any>(`${MAAS_PROVIDERS_API}${TEST_PROVIDER_MODEL_API}`, {
+    method: 'post',
+    data: params.data,
+    cancelToken: options?.token
+  });
 }

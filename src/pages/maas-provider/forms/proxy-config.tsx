@@ -12,36 +12,44 @@ const AdvanceConfig = () => {
   const intl = useIntl();
   const { action } = useFormContext();
   const proxyConfigRef = React.useRef<any>({});
-  const proxyConfigEnabled = Form.useWatch(['proxy_config', 'enabled'], form);
+  const proxyConfigEnabled = Form.useWatch('proxy_enabled', form);
 
-  const handleSpeculativeEnabledChange = (e: any) => {
+  const handleProxyEnabledChange = (e: any) => {
     if (e.target.checked) {
-      form.setFieldValue('speculative_config', {
-        enabled: true,
-        url: proxyConfigRef.current?.url || '',
-        timeout: proxyConfigRef.current?.timeout || 30
+      form.setFieldsValue({
+        proxy_enabled: true,
+        proxy_url: proxyConfigRef.current.proxy_url || '',
+        proxy_timeout: proxyConfigRef.current.proxy_timeout || 30
       });
     } else {
-      proxyConfigRef.current = form.getFieldValue('proxy_config');
+      proxyConfigRef.current = form.getFieldsValue([
+        'proxy_url',
+        'proxy_timeout'
+      ]);
+      form.setFieldsValue({
+        proxy_enabled: false,
+        proxy_url: '',
+        proxy_timeout: 30
+      });
     }
   };
 
   return (
     <>
       <Form.Item
-        name={['proxy_config', 'enabled']}
+        name="proxy_enabled"
         valuePropName="checked"
         style={{ marginBottom: 8 }}
       >
         <CheckboxField
           label={intl.formatMessage({ id: 'providers.form.proxy.enable' })}
-          onChange={handleSpeculativeEnabledChange}
+          onChange={handleProxyEnabledChange}
         ></CheckboxField>
       </Form.Item>
       {proxyConfigEnabled && (
         <>
           <Form.Item
-            name={['proxy_config', 'url']}
+            name="proxy_url"
             rules={[
               {
                 required: true,
@@ -58,7 +66,7 @@ const AdvanceConfig = () => {
               placeholder="http://proxy.example.com:8080"
             ></SealInput.Input>
           </Form.Item>
-          <Form.Item name={['proxy_config', 'timeout']}>
+          <Form.Item name="proxy_timeout">
             <SealInput.Number
               label={intl.formatMessage({ id: 'providers.form.proxy.timeout' })}
               placeholder="30"

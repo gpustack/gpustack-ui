@@ -11,5 +11,6 @@ export default {
   'providers.form.proxy.url': 'Proxy URL',
   'providers.form.proxy.timeout': 'Proxy Timeout (seconds)',
   'providers.form.customConfig': 'Custom Configuration',
-  'providers.form.model.test': 'Test Connection'
+  'providers.form.model.test': 'Test',
+  'providers.form.model.test.tips': 'Test Connection'
 };

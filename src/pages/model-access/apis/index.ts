@@ -1,9 +1,9 @@
 import { request } from '@umijs/max';
 import { AccessItem, FormData } from '../config/types';
 
-export const ACCESS_API = '/accesses';
+export const ACCESS_API = '/model-accesses';
 
-export const ACCESS_POINTS_API = '/models';
+export const ACCESS_POINTS_API = '/model-access-endpoints';
 
 export async function queryModelAccesses(
   params: Global.SearchParams,
@@ -38,7 +38,7 @@ export async function deleteAccess(id: number) {
 
 export async function queryAccessPoints(params: { id: string }, options?: any) {
   return request<Global.BaseOption<string>[]>(
-    `${ACCESS_API}/${params.id}/points`,
+    `${ACCESS_API}/${params.id}/access`,
     {
       method: 'GET',
       cancelToken: options?.token

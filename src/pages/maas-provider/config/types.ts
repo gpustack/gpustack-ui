@@ -1,9 +1,14 @@
 import { maasProviderType } from '.';
-
+export interface ProviderModel {
+  name: string;
+  category: string;
+  accessible: boolean | null;
+}
 export interface FormData {
   name: string;
   description: string;
   api_tokens: string[];
+  models: ProviderModel[];
   config: {
     type: maasProviderType;
     [key: string]: any;
@@ -15,7 +20,7 @@ export interface MaasProviderItem extends FormData {
   updated_at: string;
   deleted_at: string;
   timeout: number;
-  support_models: unknown[];
+  models: ProviderModel[];
   proxy_url: string;
   proxy_timeout: number;
   builtin: boolean;

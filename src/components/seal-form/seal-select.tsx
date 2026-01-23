@@ -27,6 +27,7 @@ const SealSelect: React.FC<
     loading,
     footer,
     alwaysFocus = false,
+    styles,
     ...rest
   } = props;
   const intl = useIntl();
@@ -109,6 +110,8 @@ const SealSelect: React.FC<
       >
         <BaseSelect
           {...rest}
+          styles={styles}
+          placeholder={placeholder}
           footer={footer}
           ref={inputRef}
           options={children ? null : _options}

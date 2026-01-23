@@ -8,13 +8,16 @@ const AccessToken = () => {
   const intl = useIntl();
   const { getRuleMessage } = useAppUtils();
   const form = Form.useFormInstance<FormData>();
+  const tokenList = Form.useWatch('api_tokens', form) || [];
 
-  const handleOnChange = (values: string[]) => {};
+  const handleOnChange = (values: string[]) => {
+    form.setFieldValue('api_tokens', values);
+  };
 
   return (
     <>
       <Form.Item
-        name="tokens"
+        name="api_tokens"
         rules={[
           {
             required: true,
@@ -29,7 +32,7 @@ const AccessToken = () => {
           required={true}
           btnText={intl.formatMessage({ id: 'providers.form.tokens.add' })}
           label={intl.formatMessage({ id: 'providers.form.tokens.title' })}
-          dataList={[]}
+          dataList={tokenList}
           onChange={handleOnChange}
         ></ListInput>
       </Form.Item>

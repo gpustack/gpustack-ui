@@ -1,7 +1,6 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { useState } from 'react';
-import { maasProviderType } from '../config';
 import { MaasProviderItem as ListItem } from '../config/types';
 
 const useCreateProvider = (options: { refresh: () => void }) => {
@@ -10,13 +9,11 @@ const useCreateProvider = (options: { refresh: () => void }) => {
     action: PageActionType;
     currentData?: ListItem;
     title: string;
-    provider: maasProviderType | null;
   }>({
     open: false,
     action: PageAction.CREATE,
     currentData: undefined,
-    title: '',
-    provider: null
+    title: ''
   });
 
   const openModal = (action: PageActionType, title: string, row?: ListItem) => {
@@ -25,8 +22,7 @@ const useCreateProvider = (options: { refresh: () => void }) => {
       open: true,
       title: title,
       action,
-      currentData: row,
-      provider: row ? row.provider : null
+      currentData: row
     });
   };
 
@@ -35,8 +31,7 @@ const useCreateProvider = (options: { refresh: () => void }) => {
       open: false,
       action: PageAction.CREATE,
       currentData: undefined,
-      title: '',
-      provider: null
+      title: ''
     });
   };
 

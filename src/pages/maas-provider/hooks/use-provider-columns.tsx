@@ -10,7 +10,7 @@ import { useMemo } from 'react';
 import ProviderLogo from '../components/provider-logo';
 import ProviderModels from '../components/provider-models';
 import { maasProviderLabelMap, rowActionList } from '../config';
-import { MaasProviderItem } from '../config/types';
+import { MaasProviderItem, ProviderModel } from '../config/types';
 
 const useProviderColumns = (
   handleSelect: (val: string, record: MaasProviderItem) => void,
@@ -41,7 +41,7 @@ const useProviderColumns = (
       },
       {
         title: intl.formatMessage({ id: 'providers.table.providerName' }),
-        dataIndex: 'provider',
+        dataIndex: ['config', 'type'],
         sorter: tableSorter(2),
         span: 4,
         minWidth: 160,
@@ -61,8 +61,9 @@ const useProviderColumns = (
         dataIndex: 'models',
         span: 3,
         minWidth: 200,
-        sorter: tableSorter(3),
-        render: (value: number) => <ProviderModels></ProviderModels>
+        render: (value: ProviderModel[]) => (
+          <ProviderModels dataList={value || []}></ProviderModels>
+        )
       },
       {
         title: intl.formatMessage({ id: 'common.table.createTime' }),

@@ -3,7 +3,6 @@ import FormDrawer from '@/pages/_components/form-drawer';
 import React, { useRef } from 'react';
 import { FormData, MaasProviderItem as ListItem } from '../config/types';
 
-import { maasProviderType } from '../config';
 import ProviderForm from '../forms';
 
 type AddModalProps = {
@@ -11,7 +10,6 @@ type AddModalProps = {
   action: PageActionType;
   open: boolean;
   currentData?: ListItem; // Used when action is EDIT
-  provider: maasProviderType | null;
   onOk: (values: FormData) => void;
   onCancel: () => void;
 };
@@ -19,7 +17,6 @@ const AddProvider: React.FC<AddModalProps> = ({
   title,
   action,
   open,
-  provider,
   currentData,
   onOk,
   onCancel
@@ -30,7 +27,8 @@ const AddProvider: React.FC<AddModalProps> = ({
     form.current?.submit();
   };
 
-  const handleOk = async (data: FormData) => {
+  const handleOnFinish = async (data: FormData) => {
+    console.log('handleOnFinish', data);
     onOk({
       ...data
     });
@@ -53,7 +51,7 @@ const AddProvider: React.FC<AddModalProps> = ({
         ref={form}
         action={action}
         currentData={currentData}
-        onFinish={handleOk}
+        onFinish={handleOnFinish}
       />
     </FormDrawer>
   );

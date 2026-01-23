@@ -1,5 +1,4 @@
 import AutoTooltip from '@/components/auto-tooltip';
-import { modelCategoriesMap } from '@/pages/llmodels/config';
 import {
   CheckCircleOutlined,
   CloseCircleOutlined,
@@ -8,56 +7,13 @@ import {
 import { Flex, Tag } from 'antd';
 import React from 'react';
 import { categoryConfig } from '../../_components/model-tag';
+import { ProviderModel } from '../config/types';
 
 interface ProviderModelProps {
-  dataList: any[];
-  provider: string;
-  providerId: number;
+  dataList: ProviderModel[];
 }
 
-const models: {
-  name: string;
-  status: 'accessible' | 'inaccessible' | 'none';
-  type: string;
-}[] = [
-  {
-    name: 'model-1',
-    status: 'accessible',
-    type: modelCategoriesMap.llm
-  },
-  {
-    name: 'model-2',
-    status: 'inaccessible',
-    type: modelCategoriesMap.embedding
-  },
-  {
-    name: 'model-3',
-    status: 'none',
-    type: modelCategoriesMap.image
-  },
-  {
-    name: 'model-4',
-    status: 'accessible',
-    type: modelCategoriesMap.llm
-  },
-  {
-    name: 'model-5',
-    status: 'inaccessible',
-    type: modelCategoriesMap.embedding
-  },
-  {
-    name: 'model-6model-6model-6model-6model-6model-6model-6',
-    status: 'none',
-    type: modelCategoriesMap.image
-  },
-  {
-    name: 'model-7',
-    status: 'accessible',
-    type: modelCategoriesMap.llm
-  }
-];
-
-const ProviderModels: React.FC<ProviderModelProps> = () => {
+const ProviderModels: React.FC<ProviderModelProps> = ({ dataList }) => {
   const iconsMap = {
     accessible: <CheckCircleOutlined />,
     inaccessible: <CloseCircleOutlined />,
@@ -66,10 +22,14 @@ const ProviderModels: React.FC<ProviderModelProps> = () => {
   return (
     <div style={{ paddingInline: 16 }}>
       <Flex gap="8px" wrap="wrap">
-        {models.map((model) => (
+        {dataList.map((model) => (
           <Tag
             key={model.name}
-            icon={iconsMap[model.status]}
+            icon={
+              model.accessible !== null
+                ? iconsMap[model.accessible ? 'accessible' : 'inaccessible']
+                : iconsMap['none']
+            }
             variant="outlined"
             styles={{
               root: {
@@ -80,9 +40,9 @@ const ProviderModels: React.FC<ProviderModelProps> = () => {
               }
             }}
             color={
-              model.status === 'accessible'
+              model.accessible === true
                 ? 'success'
-                : model.status === 'inaccessible'
+                : model.accessible === false
                   ? 'error'
                   : 'warning'
             }
@@ -92,7 +52,7 @@ const ProviderModels: React.FC<ProviderModelProps> = () => {
                 {model.name}
               </AutoTooltip>
               <span style={{ marginLeft: 8 }}>
-                {categoryConfig[model.type]?.icon}
+                {categoryConfig[model.category]?.icon}
               </span>
             </span>
           </Tag>

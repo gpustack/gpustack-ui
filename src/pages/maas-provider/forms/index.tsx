@@ -13,7 +13,6 @@ import {
   useRef,
   useState
 } from 'react';
-import { maasProviderType } from '../config';
 import FormContext from '../config/form-context';
 import { FormData, MaasProviderItem as ListItem } from '../config/types';
 import AccessToken from './access-token';
@@ -24,7 +23,6 @@ import SupportedModels from './supported-models';
 interface ProviderFormProps {
   ref?: any;
   action: PageActionType;
-  provider?: maasProviderType;
   currentData?: ListItem; // Used when action is EDIT
   onFinish: (values: FormData) => Promise<void>;
 }
@@ -37,7 +35,7 @@ const TABKeysMap = {
 };
 
 const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
-  const { action, provider, currentData, onFinish } = props;
+  const { action, currentData, onFinish } = props;
   const intl = useIntl();
   const [form] = Form.useForm();
   const { getScrollElementScrollableHeight } = useWrapperContext();
@@ -83,10 +81,13 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
   }));
 
   useEffect(() => {
-    if (action === PageAction.EDIT && currentData) {
+    if (
+      (action === PageAction.EDIT || action === PageAction.COPY) &&
+      currentData
+    ) {
       form.setFieldsValue({
         ...currentData,
-        models: currentData.models || []
+        proxy_enabled: !!currentData.proxy_url
       });
     }
   }, [form, currentData, action]);
@@ -104,16 +105,14 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       }}
       getScrollElementScrollableHeight={getScrollElementScrollableHeight}
     >
-      <FormContext.Provider value={{ providerType: provider, action }}>
+      <FormContext.Provider value={{ action }}>
         <Form
           form={form}
           onFinish={onFinish}
           initialValues={{
-            proxy_config: {
-              enabled: false,
-              url: '',
-              timeout: 30
-            }
+            proxy_enabled: false,
+            proxy_url: '',
+            proxy_timeout: 30
           }}
         >
           <Basic />
@@ -133,12 +132,7 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
                 key: TABKeysMap.ADVANCED,
                 label: intl.formatMessage({ id: 'resources.form.advanced' }),
                 forceRender: true,
-                children: (
-                  <AdvanceConfig
-                    action={action}
-                    provider={provider}
-                  ></AdvanceConfig>
-                )
+                children: <AdvanceConfig action={action}></AdvanceConfig>
               }
             ]}
           ></CollapsePanel>

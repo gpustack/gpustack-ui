@@ -4,14 +4,12 @@ import YamlEditor from '@/pages/_components/yaml-editor';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import React, { forwardRef, useImperativeHandle } from 'react';
-import { maasProviderType } from '../config';
 import ProxyConfig from './proxy-config';
 
 const AdvanceConfig: React.FC<{
   action: PageActionType;
-  provider?: maasProviderType;
   ref?: any;
-}> = forwardRef(({ action, provider }, ref) => {
+}> = forwardRef(({ action }, ref) => {
   const form = Form.useFormInstance();
   const intl = useIntl();
   const editorRef = React.useRef<any>(null);

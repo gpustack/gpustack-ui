@@ -4,7 +4,7 @@ import { FilterBar } from '@/components/page-tools';
 import { PageAction } from '@/config';
 import { TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import useTableFetch from '@/hooks/use-table-fetch';
-import { useIntl } from '@umijs/max';
+import { useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { ConfigProvider, Table, message } from 'antd';
 import _ from 'lodash';
@@ -17,11 +17,14 @@ import {
   updateBenchmark
 } from './apis';
 import AddBenchmarkModal from './components/add-benchmark-modal';
+import DetailModal from './components/detail-modal';
 import LeftActions from './components/left-actions';
 import RightActions from './components/right-actions';
 import { FormData, BenchmarkListItem as ListItem } from './config/types';
 import useBenchmarkColumns from './hooks/use-benchmark-columns';
+import useColumnSettings from './hooks/use-column-settings';
 import useCreateBenchmark from './hooks/use-create-benchmark';
+import useViewDetail from './hooks/use-view-detail';
 
 const Benchmark: React.FC = () => {
   const {
@@ -43,8 +46,15 @@ const Benchmark: React.FC = () => {
     contentForDelete: 'menu.models.benchmark'
   });
   const intl = useIntl();
+  const navigate = useNavigate();
   const { openBenchmarkModal, closeBenchmarkModal, openBenchmarkModalStatus } =
     useCreateBenchmark();
+  const {
+    openViewDetailModal,
+    closeViewDetailModal,
+    openViewDetailModalStatus
+  } = useViewDetail();
+  const { SettingsButton, selectedColumns } = useColumnSettings();
 
   const handleAddBenchmark = () => {
     openBenchmarkModal(PageAction.CREATE, 'Add Benchmark');
@@ -89,6 +99,16 @@ const Benchmark: React.FC = () => {
     }
   });
 
+  const handleOnCellClick = useMemoizedFn(
+    (record: ListItem, dataIndex: string) => {
+      if (dataIndex === 'name') {
+        navigate(
+          `/models/benchmark/detail?id=${record.id}&name=${record.name}`
+        );
+      }
+    }
+  );
+
   const renderEmpty = (type?: string) => {
     if (type !== 'Table') return;
     return (
@@ -111,7 +131,11 @@ const Benchmark: React.FC = () => {
     );
   };
 
-  const columns = useBenchmarkColumns(sortOrder, handleSelect);
+  const columns = useBenchmarkColumns(
+    sortOrder,
+    handleSelect,
+    handleOnCellClick
+  );
 
   return (
     <>
@@ -132,6 +156,7 @@ const Benchmark: React.FC = () => {
           }
           right={
             <RightActions
+              settingButton={SettingsButton}
               handleDeleteByBatch={handleDeleteBatch}
               handleClickPrimary={handleAddBenchmark}
               buttonText={intl.formatMessage({
@@ -171,6 +196,11 @@ const Benchmark: React.FC = () => {
         onCancel={handleModalCancel}
         onOk={handleModalOk}
       ></AddBenchmarkModal>
+      <DetailModal
+        open={openViewDetailModalStatus.open}
+        currentData={openViewDetailModalStatus.currentData}
+        onClose={closeViewDetailModal}
+      ></DetailModal>
       <DeleteModal ref={modalRef}></DeleteModal>
     </>
   );

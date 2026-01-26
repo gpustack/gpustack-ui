@@ -1,7 +1,9 @@
 import { createContext, useContext } from 'react';
+import { BenchmarkDetail } from './detail-types';
 
 interface DetailContextProps {
-  detailData: any;
+  detailData: BenchmarkDetail;
+  clusterList?: Global.BaseOption<number>[];
   id: number;
   loading?: boolean;
 }

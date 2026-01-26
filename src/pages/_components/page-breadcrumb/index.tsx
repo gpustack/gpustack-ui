@@ -10,6 +10,9 @@ const StyledBreadcrumb = styled(Breadcrumb)`
     a {
       background: unset;
     }
+    a:hover {
+      background: unset;
+    }
   }
   .ant-breadcrumb-separator {
     display: flex;

@@ -106,7 +106,7 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
       maskClosable={false}
       keyboard={true}
       styles={{
-        content: {
+        wrapper: {
           borderRadius: 0
         }
       }}

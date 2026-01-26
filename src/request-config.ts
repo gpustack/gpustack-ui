@@ -8,6 +8,10 @@ import { DEFAULT_ENTER_PAGE } from './config/settings';
 const NoBaseURLAPIs = ['/auth', '/v1', '/version', '/proxy', '/update'];
 
 export const requestConfig: RequestConfig = {
+  headers: {
+    'Content-Security-Policy': "frame-ancestors 'self'",
+    'X-Frame-Options': 'SAMEORIGIN'
+  },
   errorConfig: {
     errorThrower: (res: any) => {
       // to do something

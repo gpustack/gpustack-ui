@@ -1,55 +1,32 @@
-import { useIntl } from '@umijs/max';
-import { Tabs, TabsProps } from 'antd';
-import React, { useState } from 'react';
-import PageBox from '../_components/page-box';
-import Configure from './components/configure';
-import Environment from './components/environment';
-import Logs from './components/logs';
-import Summary from './components/summary';
-import DetailContext from './config/detail-context';
+import { useIntl, useNavigate, useSearchParams } from '@umijs/max';
+import React from 'react';
+import { PageContainerInner } from '../_components/page-box';
+import PageBreadcrumb from '../_components/page-breadcrumb';
+import DetailContent from './components/detail-content';
 
 const Details: React.FC = () => {
+  const navigate = useNavigate();
   const intl = useIntl();
-  const [activeKey, setActiveKey] = useState('summary');
+  const [searchParams] = useSearchParams();
+  const name = searchParams.get('name');
 
-  const items: TabsProps['items'] = [
+  const breadcrumbItems = [
     {
-      key: 'summary',
-      label: intl.formatMessage({ id: 'benchmark.detail.summary.title' }),
-      children: <Summary />
+      title: <a>{intl.formatMessage({ id: 'benchmark.title' })}</a>,
+      onClick: () => navigate(-1)
     },
     {
-      key: 'configure',
-      label: intl.formatMessage({ id: 'benchmark.detail.configure.title' }),
-      children: <Configure />
-    },
-    {
-      key: 'environment',
-      label: intl.formatMessage({ id: 'benchmark.detail.environment.title' }),
-      children: <Environment />
-    },
-    {
-      key: 'logs',
-      label: intl.formatMessage({ id: 'benchmark.detail.logs.title' }),
-      children: <Logs />
+      title: name
     }
   ];
-
-  const handleChangeTab = (key: string) => {
-    setActiveKey(key);
-  };
-
   return (
-    <PageBox>
-      <DetailContext.Provider value={{}}>
-        <Tabs
-          activeKey={activeKey}
-          onChange={handleChangeTab}
-          items={items}
-          type="card"
-        />
-      </DetailContext.Provider>
-    </PageBox>
+    <PageContainerInner
+      header={{
+        title: <PageBreadcrumb items={breadcrumbItems} />
+      }}
+    >
+      <DetailContent></DetailContent>
+    </PageContainerInner>
   );
 };
 

@@ -22,6 +22,7 @@ interface ProviderFormProps {
   ref?: any;
   action: PageActionType;
   currentData?: ListItem; // Used when action is EDIT
+  open?: boolean;
   onFinish: (values: FormData) => Promise<void>;
 }
 
@@ -31,9 +32,10 @@ const TABKeysMap = {
 };
 
 const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
-  const { action, currentData, onFinish } = props;
+  const { action, currentData, onFinish, open } = props;
   const intl = useIntl();
   const [form] = Form.useForm();
+
   const { getScrollElementScrollableHeight } = useWrapperContext();
   const [activeKey, setActiveKey] = useState<string[]>([TABKeysMap.PROFILE]);
   const scrollTabsRef = useRef<any>(null);
@@ -91,7 +93,12 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       }}
       getScrollElementScrollableHeight={getScrollElementScrollableHeight}
     >
-      <FormContext.Provider value={{ action }}>
+      <FormContext.Provider
+        value={{
+          action,
+          open
+        }}
+      >
         <Form form={form} onFinish={onFinish} initialValues={{}}>
           <Basic />
           <CollapsePanel

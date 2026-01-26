@@ -1,0 +1,142 @@
+import { createAxiosToken } from '@/hooks/use-chunk-request';
+import { useRequest } from 'ahooks';
+import { message } from 'antd';
+import { CancelTokenSource } from 'axios';
+import { useEffect, useRef, useState } from 'react';
+
+/**
+
+ *  generic hook to query data list
+ * @template ListItem
+ * @param option.fetchList: (params, extra) => Promise<{ items: ListItem[] }>
+ * @returns loading, dataList, fetchData, cancelRequest
+ */
+export function useQueryDataList<ListItem, Params = any>(option: {
+  key: string;
+  fetchList: (
+    params: Params,
+    options?: any
+  ) => Promise<Global.PageResponse<ListItem>>;
+  getLabel?: (item: ListItem) => string;
+  getValue?: (item: ListItem) => any;
+  errorMsg?: string;
+}) {
+  const { key, fetchList, getLabel, getValue, errorMsg } = option;
+  const axiosTokenRef = useRef<CancelTokenSource | null>(null);
+  const [dataList, setDataList] = useState<
+    Array<ListItem & { label: string; value: any }>
+  >([]);
+
+  const {
+    runAsync: fetchData,
+    loading,
+    cancel
+  } = useRequest(
+    async (params: Params, extra?: any) => {
+      axiosTokenRef.current?.cancel();
+      axiosTokenRef.current = createAxiosToken();
+      const res = await fetchList(params, {
+        token: axiosTokenRef.current?.token,
+        ...(extra || {})
+      });
+
+      setDataList(
+        res.items?.map((item: ListItem) => ({
+          ...item,
+          label: getLabel ? getLabel(item) : (item as any).name,
+          value: getValue ? getValue(item) : (item as any).id
+        })) || []
+      );
+
+      return res.items || [];
+    },
+    {
+      manual: true,
+      onSuccess: () => {},
+      onError: (error) => {
+        message.error(
+          error?.message || errorMsg || `Failed to fetch ${key} list`
+        );
+        setDataList([]);
+      }
+    }
+  );
+
+  const cancelRequest = () => {
+    cancel();
+    axiosTokenRef.current?.cancel();
+  };
+
+  useEffect(() => {
+    return () => {
+      cancel();
+      axiosTokenRef.current?.cancel();
+    };
+  }, []);
+
+  return {
+    loading,
+    dataList,
+    cancelRequest,
+    fetchData
+  };
+}
+
+export function useQueryData<Detail, Params = any>(option: {
+  key: string;
+  fetchDetail: (params: Params, options?: any) => Promise<Detail>;
+  getData?: (response: Detail) => any;
+  errorMsg?: string;
+}) {
+  const { key, fetchDetail, getData, errorMsg } = option;
+  const axiosTokenRef = useRef<CancelTokenSource | null>(null);
+  const [detailData, setDetailData] = useState<Detail>({} as Detail);
+
+  const {
+    runAsync: fetchData,
+    loading,
+    cancel
+  } = useRequest(
+    async (params: Params, extra?: any) => {
+      axiosTokenRef.current?.cancel();
+      axiosTokenRef.current = createAxiosToken();
+      const res = await fetchDetail(params, {
+        token: axiosTokenRef.current?.token,
+        ...(extra || {})
+      });
+
+      setDetailData(getData ? getData(res) : res);
+
+      return res;
+    },
+    {
+      manual: true,
+      onSuccess: () => {},
+      onError: (error) => {
+        message.error(
+          error?.message || errorMsg || `Failed to fetch ${key} list`
+        );
+        setDetailData({} as Detail);
+      }
+    }
+  );
+
+  const cancelRequest = () => {
+    cancel();
+    axiosTokenRef.current?.cancel();
+  };
+
+  useEffect(() => {
+    return () => {
+      cancel();
+      axiosTokenRef.current?.cancel();
+    };
+  }, []);
+
+  return {
+    loading,
+    detailData,
+    cancelRequest,
+    fetchData
+  };
+}

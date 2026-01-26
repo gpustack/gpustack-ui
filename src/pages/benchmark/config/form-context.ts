@@ -3,9 +3,9 @@ import { createContext, useContext } from 'react';
 
 interface FormContextProps {
   action: PageActionType;
-  clusterList: Global.BaseOption<number>[];
-  modelList: Global.BaseOption<number>[];
-  modelInstanceList: Global.BaseOption<number>[];
+  open?: boolean;
+  clusterList?: Global.BaseOption<number>[];
+  modelList?: Global.BaseOption<number>[];
 }
 
 const FormContext = createContext<FormContextProps>({} as FormContextProps);

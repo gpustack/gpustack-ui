@@ -184,7 +184,7 @@ const CompareConditions: React.FC = () => {
       }}
     >
       <Container>
-        <span className="holder">Compare Filter</span>
+        <span className="holder">Export filter</span>
       </Container>
     </Popover>
   );

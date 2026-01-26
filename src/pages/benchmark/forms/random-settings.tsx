@@ -14,7 +14,7 @@ const DatasetForm: React.FC = () => {
   return (
     <>
       <Form.Item<FormData>
-        name="input_length"
+        name="dataset_prompt_tokens"
         rules={[
           {
             required: true,
@@ -26,13 +26,22 @@ const DatasetForm: React.FC = () => {
         ]}
       >
         <SealSelect
-          options={[]}
+          options={[
+            {
+              label: '100',
+              value: 100
+            },
+            {
+              label: '128',
+              value: 128
+            }
+          ]}
           label={intl.formatMessage({ id: 'benchmark.table.inputTokenLength' })}
           required
         ></SealSelect>
       </Form.Item>
       <Form.Item<FormData>
-        name="output_length"
+        name="dataset_output_tokens"
         rules={[
           {
             required: true,
@@ -44,7 +53,16 @@ const DatasetForm: React.FC = () => {
         ]}
       >
         <SealSelect
-          options={[]}
+          options={[
+            {
+              label: '4',
+              value: 4
+            },
+            {
+              label: '8',
+              value: 8
+            }
+          ]}
           label={intl.formatMessage({
             id: 'benchmark.table.outputTokenLength'
           })}

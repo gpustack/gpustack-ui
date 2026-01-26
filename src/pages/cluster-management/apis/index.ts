@@ -106,10 +106,14 @@ export async function deleteCredential(id: number) {
 
 // ===================== Cluster =====================
 
-export async function queryClusterList(params: Global.SearchParams) {
+export async function queryClusterList(
+  params: Global.SearchParams,
+  options?: any
+) {
   return request<Global.PageResponse<ClusterListItem>>(`${CLUSTERS_API}`, {
     method: 'GET',
-    params
+    params,
+    cancelToken: options?.token
   });
 }
 

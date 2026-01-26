@@ -46,6 +46,7 @@ const NO_CONTAINER_PAGES = [
   'text2images',
   'clusterDetail',
   'clusterCreate',
+  'benchmarkDetail',
   'video'
 ];
 

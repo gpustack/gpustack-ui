@@ -48,7 +48,7 @@ const ModelItem: React.FC<ModelItemProps> = ({
     const res = await runTestModel({
       data: {
         model_name: item.name,
-        api_token: form.getFieldValue('api_tokens')?.[0] || '',
+        api_token: form.getFieldValue('api_key') || '',
         config: {
           type: form.getFieldValue(['config', 'type']) || ''
         }

@@ -9,6 +9,7 @@ export interface FormData {
   description: string;
   api_tokens: string[];
   models: ProviderModel[];
+  api_key: string;
   config: {
     type: maasProviderType;
     [key: string]: any;

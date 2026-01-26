@@ -15,6 +15,7 @@ import { useMemoizedFn } from 'ahooks';
 import { message } from 'antd';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
+import { useEffect } from 'react';
 import NoResult from '../_components/no-result';
 import PageBox from '../_components/page-box';
 import AccessControlModal from '../llmodels/components/access-control-modal';
@@ -35,6 +36,7 @@ import { FormData, AccessItem as ListItem } from './config/types';
 import useAccessColumns from './hooks/use-access-columns';
 import useAccessControl from './hooks/use-access-control';
 import useCreateAccess from './hooks/use-create-access';
+import useEndpointSourceModels from './hooks/use-endpoint-source-models';
 
 const Accesses: React.FC = () => {
   const {
@@ -69,6 +71,7 @@ const Accesses: React.FC = () => {
     closeAccessControlModal,
     openAccessControlModalStatus
   } = useAccessControl();
+  const { sourceModels, fetchSourceModels } = useEndpointSourceModels();
 
   const handleClickDropdown = () => {
     openAccessModal(
@@ -188,8 +191,18 @@ const Accesses: React.FC = () => {
     list: any,
     options: { parent?: any; [key: string]: any }
   ) => {
-    return <AccessPoints dataList={list} onSelect={onChildSelect} />;
+    return (
+      <AccessPoints
+        dataList={list}
+        onSelect={onChildSelect}
+        sourceModels={sourceModels}
+      />
+    );
   };
+
+  useEffect(() => {
+    fetchSourceModels();
+  }, []);
 
   const columns = useAccessColumns(handleSelect);
 

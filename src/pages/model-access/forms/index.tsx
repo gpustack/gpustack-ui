@@ -18,7 +18,6 @@ import { FormData, AccessItem as ListItem } from '../config/types';
 import useEditEndpoints from '../hooks/use-edit-endpoints';
 import Basic from './basic';
 import Endpoints from './endpoints';
-import MetaData from './meta-data';
 
 interface ProviderFormProps {
   ref?: any;
@@ -49,12 +48,6 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       label: intl.formatMessage({ id: 'common.title.basicInfo' }),
       icon: <IconFont type="icon-basic" />,
       field: 'name'
-    },
-    {
-      value: TABKeysMap.METADATA,
-      label: intl.formatMessage({ id: 'accesses.form.metadata.title' }),
-      icon: <IconFont type="icon-database" />,
-      field: 'metaSize'
     },
     {
       value: TABKeysMap.ENDPOINTS,
@@ -202,12 +195,6 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
           accordion={false}
           onChange={handleOnCollapseChange}
           items={[
-            {
-              key: TABKeysMap.METADATA,
-              label: intl.formatMessage({ id: 'accesses.form.metadata.title' }),
-              forceRender: true,
-              children: <MetaData></MetaData>
-            },
             {
               key: TABKeysMap.ENDPOINTS,
               label: intl.formatMessage({ id: 'accesses.form.endpoint.title' }),

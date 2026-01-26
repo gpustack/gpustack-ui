@@ -1,7 +1,7 @@
 import AlertBlockInfo from '@/components/alert-info/block';
 import ModalFooter from '@/components/modal-footer';
-import ScrollerModal from '@/components/scroller-modal';
 import { PageActionType } from '@/config/types';
+import FormDrawer from '@/pages/_components/form-drawer';
 import { useIntl } from '@umijs/max';
 import { message } from 'antd';
 import _ from 'lodash';
@@ -75,19 +75,13 @@ const AccessControlModal: React.FC<
   }, [open, currentData]);
 
   return (
-    <ScrollerModal
+    <FormDrawer
       title={title}
       open={open}
-      centered={true}
       onCancel={onCancel}
-      destroyOnHidden={true}
-      closeIcon={true}
-      maskClosable={false}
-      keyboard={false}
       width={700}
-      height={660}
       footer={
-        <>
+        <div style={{ paddingInline: 24, paddingBottom: 8 }}>
           {isChanged && (
             <AlertBlockInfo
               type="warning"
@@ -99,7 +93,7 @@ const AccessControlModal: React.FC<
             ></AlertBlockInfo>
           )}
           <ModalFooter onOk={handleSumit} onCancel={onCancel}></ModalFooter>
-        </>
+        </div>
       }
     >
       <AccessControlForm
@@ -109,7 +103,7 @@ const AccessControlModal: React.FC<
         onFinish={handleOnFinish}
         onValuesChange={handleOnValuesChange}
       />
-    </ScrollerModal>
+    </FormDrawer>
   );
 };
 

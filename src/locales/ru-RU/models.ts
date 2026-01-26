@@ -260,6 +260,8 @@ export default {
   'models.catalog.precision': 'Точность',
   'models.form.gpuPerReplica.tips': 'Введите произвольное число',
   'models.form.generic_proxy': 'Включить универсальный прокси',
+  'models.form.enable_model_access': 'Enable Model Access',
+  'models.form.enable_model_access.tips': 'Enable Model Access',
   'models.form.generic_proxy.tips':
     'После включения универсального прокси вы можете получать доступ к URI-путям, которые не следуют стандарту OpenAI API.',
   'models.form.generic_proxy.button': 'Универсальный прокси',
@@ -287,4 +289,6 @@ export default {
 // 1. 'models.form.maxContextLength': 'Maximum Context Length',
 // 2. 'models.form.backend.helperText': 'Not enabled yet. Will be enabled after deployment. ',
 // 3. 'models.table.instance.benchmark': 'Run Benchmark'
+// 2. 'models.form.enable_model_access': 'Enable Model Access',
+// 3.  'models.form.enable_model_access.tips': 'Enable Model Access',
 // ========== End of To-Do List ==========

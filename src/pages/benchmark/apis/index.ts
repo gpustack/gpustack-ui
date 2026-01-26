@@ -1,10 +1,15 @@
 import { request } from '@umijs/max';
 import { CancelToken } from 'axios';
-import { BenchmarkMetricsFormData } from '../config/detail-types';
-import { BenchmarkListItem, DatasetListItem, FormData } from '../config/types';
+import {
+  BenchmarkListItem,
+  DatasetListItem,
+  FormData,
+  ProfileOption
+} from '../config/types';
 
 export const BENCHMARKS_API = '/benchmarks';
 export const DATASETS_API = '/datasets';
+export const PROFILES_CONFIG_API = '/benchmark-profiles/default-config';
 
 export async function queryBenchmarkList(
   params: Global.SearchParams,
@@ -83,18 +88,18 @@ export async function queryDatasetList(
   });
 }
 
-export async function queryBenchmarkMetrics(
+export async function queryProfiles(
   params: {
-    id: number;
-    data: BenchmarkMetricsFormData;
+    id?: number | string;
   },
   options?: {
     token?: CancelToken;
   }
 ) {
-  return request<any>(`${BENCHMARKS_API}/${params.id}/metrics`, {
-    method: 'POST',
-    data: params.data,
+  return request<{
+    profiles: ProfileOption[];
+  }>(`${PROFILES_CONFIG_API}`, {
+    method: 'get',
     cancelToken: options?.token
   });
 }

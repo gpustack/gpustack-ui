@@ -99,7 +99,17 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
           open
         }}
       >
-        <Form form={form} onFinish={onFinish} initialValues={{}}>
+        <Form
+          form={form}
+          onFinish={onFinish}
+          initialValues={{
+            dataset_prompt_tokens: null,
+            dataset_output_tokens: null,
+            total_requests: null,
+            request_rate: null,
+            seed: null
+          }}
+        >
           <Basic />
           <CollapsePanel
             activeKey={activeKey}

@@ -5,6 +5,10 @@ import { PageAction } from '@/config';
 import useAppUtils from '@/hooks/use-app-utils';
 import { ClusterStatusValueMap } from '@/pages/cluster-management/config';
 import { useQueryClusterList } from '@/pages/cluster-management/services/use-query-cluster-list';
+import {
+  InstanceStatusMap,
+  InstanceStatusMapValue
+} from '@/pages/llmodels/config';
 import { useQueryModelInstancesList } from '@/pages/llmodels/services/use-query-model-instances';
 import { useQueryModelList } from '@/pages/llmodels/services/use-query-model-list';
 import { useIntl } from '@umijs/max';
@@ -28,9 +32,9 @@ const BasicForm: React.FC = () => {
   } = useQueryClusterList();
   const {
     loading: modelLoading,
-    fetchModelList,
+    fetchData: fetchModelList,
     cancelRequest: cancelModelRequest,
-    modelList
+    dataList: modelList
   } = useQueryModelList();
   const {
     loading: instanceLoading,
@@ -63,6 +67,15 @@ const BasicForm: React.FC = () => {
 
   const handleOnModelChange = (value: string, option: any) => {
     form.setFieldValue('model_id', option?.id);
+  };
+
+  const optionRender = (option: any) => {
+    return (
+      <span className="flex-center">
+        {option.label}
+        <span className="text-tertiary m-l-4">{`[${InstanceStatusMapValue[option.data?.state]}]`}</span>
+      </span>
+    );
   };
 
   useEffect(() => {
@@ -163,7 +176,11 @@ const BasicForm: React.FC = () => {
       >
         <SealSelect
           loading={instanceLoading}
-          options={instanceList}
+          options={instanceList.map((item) => ({
+            ...item,
+            disabled: item.state !== InstanceStatusMap.Running
+          }))}
+          optionRender={optionRender}
           onOpenChange={onInstanceOpenChange}
           label={intl.formatMessage({ id: 'benchmark.table.instance' })}
           required

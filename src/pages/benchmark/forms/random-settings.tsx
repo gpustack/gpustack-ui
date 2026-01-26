@@ -1,12 +1,13 @@
 import SealInputNumber from '@/components/seal-form/input-number';
-import SealSelect from '@/components/seal-form/seal-select';
 import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import React from 'react';
 import { FormData } from '../config/types';
 
-const DatasetForm: React.FC = () => {
+const DatasetForm: React.FC<{
+  onValueChange?: (value: any) => void;
+}> = ({ onValueChange }) => {
   const intl = useIntl();
   const form = Form.useFormInstance();
   const { getRuleMessage } = useAppUtils();
@@ -18,27 +19,16 @@ const DatasetForm: React.FC = () => {
         rules={[
           {
             required: true,
-            message: getRuleMessage(
-              'select',
-              'benchmark.table.inputTokenLength'
-            )
+            message: getRuleMessage('input', 'benchmark.table.inputTokenLength')
           }
         ]}
       >
-        <SealSelect
-          options={[
-            {
-              label: '100',
-              value: 100
-            },
-            {
-              label: '128',
-              value: 128
-            }
-          ]}
+        <SealInputNumber
+          min={0}
           label={intl.formatMessage({ id: 'benchmark.table.inputTokenLength' })}
           required
-        ></SealSelect>
+          onChange={onValueChange}
+        ></SealInputNumber>
       </Form.Item>
       <Form.Item<FormData>
         name="dataset_output_tokens"
@@ -46,33 +36,28 @@ const DatasetForm: React.FC = () => {
           {
             required: true,
             message: getRuleMessage(
-              'select',
+              'input',
               'benchmark.table.outputTokenLength'
             )
           }
         ]}
       >
-        <SealSelect
-          options={[
-            {
-              label: '4',
-              value: 4
-            },
-            {
-              label: '8',
-              value: 8
-            }
-          ]}
+        <SealInputNumber
+          min={0}
           label={intl.formatMessage({
             id: 'benchmark.table.outputTokenLength'
           })}
           required
-        ></SealSelect>
+          onChange={onValueChange}
+        ></SealInputNumber>
       </Form.Item>
-      <Form.Item<FormData> name="seed">
+      <Form.Item<FormData>
+        name="seed"
+        getValueProps={(value) => ({ value: value || null })}
+      >
         <SealInputNumber
+          min={0}
           label={intl.formatMessage({ id: 'playground.image.params.seed' })}
-          required
         ></SealInputNumber>
       </Form.Item>
     </>

@@ -28,26 +28,46 @@ export const BenchmarkStatus: Record<string, StatusType> = {
   [BenchmarkStatusValueMap.Unreachable]: StatusMaps.error
 };
 
+export const ProfileValueMap = {
+  LatencyShort: 'latency_short',
+  ThroughputMedium: 'throughput_medium',
+  LongContextStress: 'long_context_stress',
+  GenerationHeavy: 'generation_heavy',
+  Custom: 'Custom'
+};
+
+export const ProfileLabelMap = {
+  [ProfileValueMap.LatencyShort]: 'benchmark.form.profile.latency',
+  [ProfileValueMap.ThroughputMedium]: 'benchmark.form.profile.throughput',
+  [ProfileValueMap.LongContextStress]: 'benchmark.form.profile.longContext',
+  [ProfileValueMap.GenerationHeavy]: 'benchmark.form.profile.heavy',
+  [ProfileValueMap.Custom]: 'benchmark.form.profile.custom'
+};
+
 export const profileOptions = [
   {
     label: 'benchmark.form.profile.latency',
-    value: 'latency_short',
+    value: ProfileValueMap.LatencyShort,
     locale: true
   },
   {
     label: 'benchmark.form.profile.throughput',
-    value: 'throughput_medium',
+    value: ProfileValueMap.ThroughputMedium,
     locale: true
   },
   {
     label: 'benchmark.form.profile.longContext',
-    value: 'long_context_stress',
+    value: ProfileValueMap.LongContextStress,
     locale: true
   },
   {
     label: 'benchmark.form.profile.heavy',
-    value: 'generation_heavy',
+    value: ProfileValueMap.GenerationHeavy,
     locale: true
   },
-  { label: 'benchmark.form.profile.custom', value: 'custom', locale: true }
+  {
+    label: 'benchmark.form.profile.custom',
+    value: ProfileValueMap.Custom,
+    locale: true
+  }
 ];

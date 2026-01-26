@@ -56,7 +56,7 @@ declare namespace Global {
     currentUser?: UserInfo;
   }
 
-  type SearchParams = Pagination & { search?: string };
+  type SearchParams = Pagination & { search?: string; [key: string]: any };
 
   type MessageType = 'transition' | 'warning' | 'danger' | 'success' | 'info';
 

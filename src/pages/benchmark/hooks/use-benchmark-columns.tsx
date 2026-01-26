@@ -5,8 +5,10 @@ import icons from '@/components/icon-font/icons';
 import StatusTag from '@/components/status-tag';
 import { tableSorter } from '@/config/settings';
 import { useIntl } from '@umijs/max';
+import { Typography } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
+import _ from 'lodash';
 import { useMemo } from 'react';
 import { BenchmarkStatus, BenchmarkStatusLabelMap } from '../config';
 import { BenchmarkListItem as ListItem } from '../config/types';
@@ -29,7 +31,8 @@ const actionList = [
 
 const useBenchmarkColumns = (
   sortOrder: string[],
-  handleSelect: (val: string, record: ListItem) => void
+  handleSelect: (val: string, record: ListItem) => void,
+  onCellClick?: (record: ListItem, dataIndex: string) => void
 ): ColumnsType<ListItem> => {
   const intl = useIntl();
 
@@ -39,9 +42,11 @@ const useBenchmarkColumns = (
         title: intl.formatMessage({ id: 'common.table.name' }),
         dataIndex: 'name',
         sorter: tableSorter(1),
-        render: (text: string) => (
+        render: (text: string, record) => (
           <AutoTooltip ghost minWidth={20}>
-            {text}
+            <Typography.Link onClick={() => onCellClick?.(record, 'name')}>
+              {text}
+            </Typography.Link>
           </AutoTooltip>
         )
       },
@@ -68,6 +73,10 @@ const useBenchmarkColumns = (
       {
         title: intl.formatMessage({ id: 'common.table.status' }),
         dataIndex: 'state',
+        ellipsis: {
+          showTitle: false
+        },
+        width: 100,
         render: (value: number, record: ListItem) => (
           <StatusTag
             statusValue={{
@@ -100,51 +109,51 @@ const useBenchmarkColumns = (
       },
       {
         title: intl.formatMessage({ id: 'benchmark.table.itl' }),
-        dataIndex: 'itl',
+        dataIndex: 'inter_token_latency_mean',
         sorter: tableSorter(1),
         render: (text: string) => (
           <AutoTooltip ghost minWidth={20}>
-            {text}
+            {_.round(text, 1)}
           </AutoTooltip>
         )
       },
       {
         title: intl.formatMessage({ id: 'benchmark.table.tpot' }),
-        dataIndex: 'tpot',
+        dataIndex: 'time_per_output_token_mean',
         sorter: tableSorter(1),
         render: (text: string) => (
           <AutoTooltip ghost minWidth={20}>
-            {text}
+            {_.round(text, 2)}
           </AutoTooltip>
         )
       },
       {
         title: intl.formatMessage({ id: 'benchmark.table.ttft' }),
-        dataIndex: 'ttft',
+        dataIndex: 'time_to_first_token_mean',
         sorter: tableSorter(1),
         render: (text: string) => (
           <AutoTooltip ghost minWidth={20}>
-            {text}
+            {_.round(text, 2)}
           </AutoTooltip>
         )
       },
       {
         title: intl.formatMessage({ id: 'benchmark.table.rps' }),
-        dataIndex: 'requests_per_second',
+        dataIndex: 'requests_per_second_mean',
         sorter: tableSorter(1),
         render: (text: string) => (
           <AutoTooltip ghost minWidth={20}>
-            {text}
+            {_.round(text, 0)}
           </AutoTooltip>
         )
       },
       {
         title: intl.formatMessage({ id: 'benchmark.table.tps' }),
-        dataIndex: 'tokens_per_second',
+        dataIndex: 'tokens_per_second_mean',
         sorter: tableSorter(1),
         render: (text: string) => (
           <AutoTooltip ghost minWidth={20}>
-            {text}
+            {_.round(text, 2)}
           </AutoTooltip>
         )
       },
@@ -153,7 +162,9 @@ const useBenchmarkColumns = (
         dataIndex: 'created_at',
         sorter: tableSorter(3),
         render: (value: string) => (
-          <span>{dayjs(value).format('YYYY-MM-DD HH:mm:ss')}</span>
+          <AutoTooltip ghost>
+            {dayjs(value).format('YYYY-MM-DD HH:mm:ss')}
+          </AutoTooltip>
         )
       },
       {
@@ -170,7 +181,7 @@ const useBenchmarkColumns = (
         )
       }
     ];
-  }, [intl, handleSelect]);
+  }, [intl, onCellClick, handleSelect]);
 };
 
 export default useBenchmarkColumns;

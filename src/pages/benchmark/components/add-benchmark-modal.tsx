@@ -49,6 +49,7 @@ const AddBenchmark: React.FC<AddModalProps> = ({
       <BenchmarkForm
         ref={form}
         action={action}
+        open={open}
         currentData={currentData}
         onFinish={handleOk}
       />

@@ -2,7 +2,6 @@ import { SearchOutlined, SyncOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Input, Space } from 'antd';
 import React from 'react';
-import CompareConditions from './compare-conditions';
 
 export interface RightActionsProps {
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -30,7 +29,7 @@ const RightActions: React.FC<RightActionsProps> = ({
         allowClear
         onChange={handleInputChange}
       ></Input>
-      <CompareConditions></CompareConditions>
+      {/* <CompareConditions></CompareConditions> */}
       <Button
         type="text"
         style={{ color: 'var(--ant-color-text-tertiary)' }}

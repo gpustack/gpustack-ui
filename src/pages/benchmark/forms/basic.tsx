@@ -1,11 +1,16 @@
 import LabelSelector from '@/components/label-selector';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
+import { PageAction } from '@/config';
 import useAppUtils from '@/hooks/use-app-utils';
+import { ClusterStatusValueMap } from '@/pages/cluster-management/config';
+import { useQueryClusterList } from '@/pages/cluster-management/services/use-query-cluster-list';
+import { useQueryModelInstancesList } from '@/pages/llmodels/services/use-query-model-instances';
+import { useQueryModelList } from '@/pages/llmodels/services/use-query-model-list';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
 
@@ -14,11 +19,80 @@ const BasicForm: React.FC = () => {
   const form = Form.useFormInstance();
   const labels = Form.useWatch('labels', form);
   const { getRuleMessage } = useAppUtils();
-  const { modelList, modelInstanceList, clusterList } = useFormContext();
+  const { action, open } = useFormContext();
+  const {
+    loading: clusterLoading,
+    fetchClusterList,
+    cancelRequest: cancelClusterRequest,
+    clusterList
+  } = useQueryClusterList();
+  const {
+    loading: modelLoading,
+    fetchModelList,
+    cancelRequest: cancelModelRequest,
+    modelList
+  } = useQueryModelList();
+  const {
+    loading: instanceLoading,
+    fetchInstanceList,
+    cancelRequest: cancelInstanceRequest,
+    instanceList
+  } = useQueryModelInstancesList();
 
   const handleLabelsChange = (labels: object) => {
     form.setFieldValue('labels', labels);
   };
+
+  const onModelListOpenChange = async (open: boolean) => {
+    if (open && modelList.length === 0) {
+      await form.validateFields(['cluster_id']);
+      const cluster_id = form.getFieldValue('cluster_id');
+      if (cluster_id) {
+        fetchModelList({ page: -1, cluster_id });
+      }
+    }
+  };
+
+  const onInstanceOpenChange = async (open: boolean) => {
+    if (open && instanceList.length === 0) {
+      const model_id = form.getFieldValue('model_id');
+      await form.validateFields(['model_name']);
+      if (model_id) fetchInstanceList({ id: model_id });
+    }
+  };
+
+  const handleOnModelChange = (value: string, option: any) => {
+    form.setFieldValue('model_id', option?.id);
+  };
+
+  useEffect(() => {
+    const initClusterId = (list: any[]) => {
+      // Find default cluster
+      const defaultCluster = list?.find((item) => item.is_default);
+      if (defaultCluster) {
+        return defaultCluster.id;
+      }
+
+      const cluster_id =
+        list?.find((item) => item.state === ClusterStatusValueMap.Ready)?.id ||
+        list?.[0]?.id;
+
+      return cluster_id;
+    };
+    fetchClusterList({ page: -1 }).then((list) => {
+      if (list.length > 0 && action === PageAction.CREATE) {
+        form.setFieldValue('cluster_id', initClusterId(list));
+      }
+    });
+  }, [form, action]);
+
+  useEffect(() => {
+    if (!open) {
+      cancelClusterRequest();
+      cancelModelRequest();
+      cancelInstanceRequest();
+    }
+  }, [open]);
 
   return (
     <>
@@ -47,13 +121,14 @@ const BasicForm: React.FC = () => {
         ]}
       >
         <SealSelect
+          loading={clusterLoading}
           options={clusterList}
           label={intl.formatMessage({ id: 'clusters.title' })}
           required
         ></SealSelect>
       </Form.Item>
       <Form.Item<FormData>
-        name="model_id"
+        name="model_name"
         rules={[
           {
             required: true,
@@ -62,10 +137,20 @@ const BasicForm: React.FC = () => {
         ]}
       >
         <SealSelect
-          options={modelList}
+          loading={modelLoading}
+          options={modelList.map((item) => ({
+            ...item,
+            label: item.name,
+            value: item.name
+          }))}
+          onOpenChange={onModelListOpenChange}
+          onChange={handleOnModelChange}
           label={intl.formatMessage({ id: 'benchmark.table.model' })}
           required
         ></SealSelect>
+      </Form.Item>
+      <Form.Item<FormData> name="model_id" hidden={true}>
+        <SealInput.Input></SealInput.Input>
       </Form.Item>
       <Form.Item<FormData>
         name="model_instance_name"
@@ -77,7 +162,9 @@ const BasicForm: React.FC = () => {
         ]}
       >
         <SealSelect
-          options={modelInstanceList}
+          loading={instanceLoading}
+          options={instanceList}
+          onOpenChange={onInstanceOpenChange}
           label={intl.formatMessage({ id: 'benchmark.table.instance' })}
           required
         ></SealSelect>

@@ -67,6 +67,7 @@ export interface GPUSnapshot {
 
 export interface FormData {
   name: string;
+  profile: string;
   description: string;
   labels: Record<string, string>;
   cluster_id: number;

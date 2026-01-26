@@ -124,6 +124,17 @@ export default [
         defaultIcon: 'icon-speed',
         access: 'canSeeAdmin',
         component: './benchmark/index'
+      },
+      {
+        name: 'benchmarkDetail',
+        path: '/models/benchmark/detail',
+        key: 'benchmarkDetail',
+        icon: 'icon-speed',
+        selectedIcon: 'icon-speed-filled',
+        defaultIcon: 'icon-speed',
+        access: 'canSeeAdmin',
+        hideInMenu: true,
+        component: './benchmark/details'
       }
     ]
   },

@@ -1,7 +1,5 @@
-import _ from 'lodash';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useDetailContext } from '../../config/detail-context';
-import useQueryMtrics from '../../services/use-query-metrics';
 
 const fields = [
   'requests_per_second_mean',
@@ -15,25 +13,7 @@ const fields = [
 ];
 
 const Summary: React.FC = () => {
-  const { detailData, id } = useDetailContext();
-  const {
-    detailData: metricsData,
-    fetchData,
-    cancelRequest
-  } = useQueryMtrics();
-
-  useEffect(() => {
-    if (id) {
-      fetchData({
-        id: id,
-        data: {
-          ..._.pick(detailData, fields)
-        }
-      });
-    } else {
-      cancelRequest();
-    }
-  }, [id]);
+  const { detailData } = useDetailContext();
   return <div></div>;
 };
 

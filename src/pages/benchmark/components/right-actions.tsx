@@ -12,6 +12,7 @@ export interface RightActionsProps {
   handleDeleteByBatch: () => void;
   handleClickPrimary?: () => void;
   handleSettingFields?: () => void;
+  handleExport?: () => void;
   settingButton?: React.ReactNode;
   buttonText?: string;
   rowSelection: {
@@ -23,6 +24,7 @@ const RightActions: React.FC<RightActionsProps> = ({
   handleDeleteByBatch,
   handleClickPrimary,
   handleSettingFields,
+  handleExport,
   settingButton,
   buttonText,
   rowSelection
@@ -36,7 +38,7 @@ const RightActions: React.FC<RightActionsProps> = ({
     },
     {
       label: 'common.button.delete',
-      key: 'start',
+      key: 'delete',
       props: {
         danger: true
       },
@@ -44,7 +46,13 @@ const RightActions: React.FC<RightActionsProps> = ({
     }
   ];
 
-  const handleActionSelect = (val: string) => {};
+  const handleActionSelect = (val: string) => {
+    if (val === 'delete') {
+      handleDeleteByBatch();
+    } else if (val === 'export') {
+      handleExport?.();
+    }
+  };
 
   return (
     <Space size={16}>

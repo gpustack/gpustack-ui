@@ -31,6 +31,10 @@ const Environment: React.FC<{
       <Section
         title={title}
         styles={{
+          wraper: {
+            border: 'none',
+            overflow: 'unset'
+          },
           container: {
             border: 'none',
             paddingInline: 16,

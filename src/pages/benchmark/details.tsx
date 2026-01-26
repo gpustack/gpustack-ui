@@ -1,5 +1,5 @@
 import { useIntl, useNavigate, useSearchParams } from '@umijs/max';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { PageContainerInner } from '../_components/page-box';
 import PageBreadcrumb from '../_components/page-breadcrumb';
 import DetailContent from './components/detail-content';
@@ -19,6 +19,11 @@ const Details: React.FC = () => {
       title: name
     }
   ];
+
+  useEffect(() => {
+    document.title = `${intl.formatMessage({ id: 'benchmark.title' })} - ${name}`;
+  }, [name, intl]);
+
   return (
     <PageContainerInner
       header={{

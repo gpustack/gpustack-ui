@@ -1,12 +1,10 @@
 import AutoTooltip from '@/components/auto-tooltip';
-import StatusTag from '@/components/status-tag';
 import { useIntl } from '@umijs/max';
 import { Col, Descriptions, DescriptionsProps, Row, Statistic } from 'antd';
 import dayjs from 'dayjs';
 import { round } from 'lodash';
 import React from 'react';
 import styled from 'styled-components';
-import { BenchmarkStatus, BenchmarkStatusLabelMap } from '../../config';
 import { useDetailContext } from '../../config/detail-context';
 import PercentileResult from './percentile-result';
 import Section from './section';
@@ -158,7 +156,7 @@ const Summary: React.FC = () => {
     <Container>
       <Row gutter={16}>
         {cardFields.map((field) => (
-          <Col span={8} key={field.key} style={{ padding: '8px' }}>
+          <Col span={4} key={field.key} style={{ padding: '8px' }}>
             <Card>
               <Statistic
                 title={field.label}
@@ -180,17 +178,7 @@ const Summary: React.FC = () => {
           </Col>
         ))}
       </Row>
-      <Section>
-        <div className="flex-center section-title gap-8">
-          <span>{detailData.model_instance_name}</span>
-          <StatusTag
-            statusValue={{
-              status: BenchmarkStatus[detailData.state],
-              text: BenchmarkStatusLabelMap[detailData.state],
-              message: detailData.state_message || undefined
-            }}
-          />
-        </div>
+      <Section title="Metadata">
         <Descriptions
           items={items}
           colon={false}
@@ -205,10 +193,7 @@ const Summary: React.FC = () => {
       </Section>
 
       <Box>
-        <Section>
-          <div className="flex-center section-title gap-8">
-            <span>Throughput</span>
-          </div>
+        <Section title="Throughput">
           <Descriptions
             items={throughputFields}
             colon={true}
@@ -220,10 +205,7 @@ const Summary: React.FC = () => {
             }}
           ></Descriptions>
         </Section>
-        <Section>
-          <div className="flex-center section-title gap-8">
-            <span>Latency</span>
-          </div>
+        <Section title="Latency">
           <Descriptions
             items={latencyFields}
             colon={true}

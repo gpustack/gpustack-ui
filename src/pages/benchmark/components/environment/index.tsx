@@ -63,7 +63,14 @@ const Environment: React.FC = () => {
         gpuData={mainWorker.gpuData}
         title={
           <div className="flex-center gap-8">
-            <Tag color="geekblue">Sub</Tag>
+            <Tag
+              style={{
+                backgroundColor: 'var(--ant-color-fill-secondary)',
+                color: 'var(--ant-color-text-tertiary)'
+              }}
+            >
+              Sub
+            </Tag>
             <span>{mainWorker?.workerData?.name}</span>
           </div>
         }

@@ -87,6 +87,7 @@ export interface FormData {
   state_message: string;
   worker_id: number;
   gpu_summary: string;
+  seed: number;
   gpu_vendor_summary: string;
 }
 
@@ -101,4 +102,16 @@ export interface DatasetListItem {
   source: string;
   prompt_tokens: number;
   output_tokens: number;
+  id: number;
+}
+
+export interface ProfileOption {
+  name: string;
+  description: string;
+  dataset_name: string;
+  dataset_source: string;
+  dataset_prompt_tokens: number;
+  dataset_output_tokens: number;
+  request_rate: number;
+  total_requests: number;
 }

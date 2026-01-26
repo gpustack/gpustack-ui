@@ -4,12 +4,15 @@ import { FilterBar } from '@/components/page-tools';
 import { PageAction } from '@/config';
 import { TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import useTableFetch from '@/hooks/use-table-fetch';
+import { useQueryModelList } from '@/pages/llmodels/services/use-query-model-list';
 import { useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { ConfigProvider, Table, message } from 'antd';
 import _ from 'lodash';
+import { useEffect, useState } from 'react';
 import NoResult from '../_components/no-result';
 import PageBox from '../_components/page-box';
+import useQueryGPUs from '../resources/services/use-query-gpus';
 import {
   createBenchmark,
   deleteBenchmark,
@@ -24,6 +27,7 @@ import { FormData, BenchmarkListItem as ListItem } from './config/types';
 import useBenchmarkColumns from './hooks/use-benchmark-columns';
 import useColumnSettings from './hooks/use-column-settings';
 import useCreateBenchmark from './hooks/use-create-benchmark';
+import useExportData from './hooks/use-export-data';
 import useViewDetail from './hooks/use-view-detail';
 
 const Benchmark: React.FC = () => {
@@ -38,6 +42,7 @@ const Benchmark: React.FC = () => {
     fetchData,
     handlePageChange,
     handleTableChange,
+    handleQueryChange,
     handleSearch,
     handleNameChange
   } = useTableFetch<ListItem>({
@@ -54,7 +59,26 @@ const Benchmark: React.FC = () => {
     closeViewDetailModal,
     openViewDetailModalStatus
   } = useViewDetail();
+  const { dataList: modelList, fetchData: fetchModelList } = useQueryModelList({
+    getValue: (item: any) => item.name
+  });
+  const { fetchData: fetchGpuList } = useQueryGPUs();
   const { SettingsButton, selectedColumns } = useColumnSettings();
+  const [gpuVendorList, setGpuVendorList] = useState<
+    Global.BaseOption<string>[]
+  >([]);
+
+  useEffect(() => {
+    fetchModelList({ page: -1 });
+    fetchGpuList({ page: -1 }).then((list) => {
+      const vendors = _.uniq(list.map((gpu) => gpu.vendor).filter((v) => !!v));
+      const vendorOptions = vendors.map((vendor: string) => ({
+        label: vendor,
+        value: vendor
+      }));
+      setGpuVendorList(vendorOptions);
+    });
+  }, []);
 
   const handleAddBenchmark = () => {
     openBenchmarkModal(PageAction.CREATE, 'Add Benchmark');
@@ -137,6 +161,15 @@ const Benchmark: React.FC = () => {
     handleOnCellClick
   );
 
+  const { exportData } = useExportData({ columns: columns });
+
+  const handleExportData = () => {
+    const list = dataSource.dataList.filter((item) =>
+      rowSelection.selectedRowKeys.includes(item.id)
+    );
+    exportData(list);
+  };
+
   return (
     <>
       <PageBox>
@@ -150,7 +183,10 @@ const Benchmark: React.FC = () => {
           widths={{ input: 300 }}
           left={
             <LeftActions
+              modelList={modelList}
+              gpuVendorList={gpuVendorList}
               handleSearch={handleSearch}
+              handleQueryChange={handleQueryChange}
               handleInputChange={handleNameChange}
             ></LeftActions>
           }
@@ -159,6 +195,7 @@ const Benchmark: React.FC = () => {
               settingButton={SettingsButton}
               handleDeleteByBatch={handleDeleteBatch}
               handleClickPrimary={handleAddBenchmark}
+              handleExport={handleExportData}
               buttonText={intl.formatMessage({
                 id: 'benchmark.button.add'
               })}
@@ -176,6 +213,7 @@ const Benchmark: React.FC = () => {
             sortDirections={TABLE_SORT_DIRECTIONS}
             showSorterTooltip={false}
             rowKey="id"
+            scroll={{ x: 1200 }}
             onChange={handleTableChange}
             pagination={{
               showSizeChanger: true,

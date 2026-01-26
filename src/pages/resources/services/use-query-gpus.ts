@@ -1,8 +1,8 @@
 import { useQueryDataList } from '@/hooks/use-query-data-list';
-import { queryModelsList } from '../apis';
-import { ListItem } from '../config/types';
+import { queryGpuDevicesList } from '../apis';
+import { GPUDeviceItem as ListItem } from '../config/types';
 
-export const useQueryModelList = (optons?: {
+export const useQueryGPUs = (optons?: {
   getLabel?: (item: ListItem) => string;
   getValue?: (item: ListItem) => any;
 }) => {
@@ -10,8 +10,8 @@ export const useQueryModelList = (optons?: {
     ListItem,
     Global.SearchParams
   >({
-    key: 'modelList',
-    fetchList: queryModelsList
+    key: 'gpuList',
+    fetchList: queryGpuDevicesList
   });
 
   return {
@@ -22,4 +22,4 @@ export const useQueryModelList = (optons?: {
   };
 };
 
-export default useQueryModelList;
+export default useQueryGPUs;

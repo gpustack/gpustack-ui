@@ -4,6 +4,7 @@ import YamlEditor from '@/pages/_components/yaml-editor';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import React, { forwardRef, useImperativeHandle } from 'react';
+import AccessToken from './access-token';
 import ProxyConfig from './proxy-config';
 
 const AdvanceConfig: React.FC<{
@@ -28,6 +29,7 @@ const AdvanceConfig: React.FC<{
   return (
     <>
       <div data-field="advanceConfig"></div>
+      <AccessToken></AccessToken>
       <ProxyConfig></ProxyConfig>
       <Form.Item
         hidden

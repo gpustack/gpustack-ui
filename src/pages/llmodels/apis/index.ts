@@ -3,6 +3,7 @@ import { downloadFile, listFiles, listModels } from '@huggingface/hub';
 import { PipelineType } from '@huggingface/tasks';
 import { request } from '@umijs/max';
 import qs from 'query-string';
+import { ACCESS_API } from '../../model-access/apis';
 import {
   AccessControlFormData,
   BackendItem,
@@ -418,7 +419,7 @@ export async function queryBackendList(params?: { cluster_id: number }) {
 }
 
 export async function queryModelAccessUserList(id: number) {
-  return request<{ items: UserListItem[] }>(`${MODELS_API}/${id}/access`, {
+  return request<{ items: UserListItem[] }>(`${ACCESS_API}/${id}/access`, {
     method: 'GET'
   });
 }
@@ -427,7 +428,7 @@ export async function updateModelAccessUser(params: {
   id: number;
   data: AccessControlFormData;
 }) {
-  return request(`${MODELS_API}/${params.id}/access`, {
+  return request(`${ACCESS_API}/${params.id}/access`, {
     method: 'POST',
     data: params.data
   });

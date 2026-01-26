@@ -255,6 +255,8 @@ export default {
   'models.catalog.precision': 'Precision',
   'models.form.gpuPerReplica.tips': 'Enter a custom number',
   'models.form.generic_proxy': 'Enable Generic Proxy',
+  'models.form.enable_model_access': 'Enable Model Access',
+  'models.form.enable_model_access.tips': 'Enable Model Access',
   'models.form.generic_proxy.tips':
     'After enabling the generic proxy, you can access URI paths that do not follow the OpenAI API standard.',
   'models.form.generic_proxy.button': 'Generic Proxy',
@@ -375,4 +377,6 @@ export default {
 // 76. 'models.form.maxContextLength': 'Maximum Context Length',
 // 77. 'models.form.backend.helperText': 'Not enabled yet. Will be enabled after deployment. ',
 // 78. 'models.table.instance.benchmark': 'Run Benchmark'
+// 77. 'models.form.enable_model_access': 'Enable Model Access',
+// 78.  'models.form.enable_model_access.tips': 'Enable Model Access',
 // ========== End of To-Do List ==========

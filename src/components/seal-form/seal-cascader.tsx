@@ -77,7 +77,10 @@ const OptionNodes = (props: {
 
 const SealCascader: React.FC<
   CascaderAutoProps &
-    SealFormItemProps & { optionNode?: React.FC<{ data: any }> }
+    SealFormItemProps & {
+      alwaysFocus?: boolean;
+      optionNode?: React.FC<{ data: any }>;
+    }
 > = (props) => {
   const {
     label,
@@ -88,6 +91,7 @@ const SealCascader: React.FC<
     options,
     allowNull,
     isInFormItems = true,
+    alwaysFocus = false,
     optionNode,
     notFoundContent,
     tagRender,
@@ -167,7 +171,7 @@ const SealCascader: React.FC<
         classList={visible ? 'dropdown-visible' : ''}
         status={status}
         label={label}
-        isFocus={isFocus}
+        isFocus={alwaysFocus || isFocus}
         required={required}
         description={description}
         disabled={props.disabled}

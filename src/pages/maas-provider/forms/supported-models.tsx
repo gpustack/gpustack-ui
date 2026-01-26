@@ -14,12 +14,12 @@ const SupportedModels = () => {
 
   const handleOpenChange = async (open: boolean) => {
     try {
-      await form.validateFields(['api_tokens', ['config', 'type']]);
+      await form.validateFields(['api_key']);
 
       if (open && providerModelList.length === 0) {
         fetchProviderModels({
           data: {
-            api_token: form.getFieldValue('api_tokens')?.[0] || '',
+            api_token: form.getFieldValue('api_key') || '',
             config: {
               type: form.getFieldValue(['config', 'type']) || ''
             }

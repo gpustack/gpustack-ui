@@ -5,8 +5,28 @@ import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+import styled from 'styled-components';
 import { FormData } from '../config/types';
 import useEndpointSourceModels from '../hooks/use-endpoint-source-models';
+
+const Inner = styled.div`
+  display: flex;
+  align-items: center;
+  width: 100%;
+  ul.ant-cascader-menu:first-child {
+    li[data-path-key='deployments'] {
+      position: relative;
+      &::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-bottom: 1px solid var(--ant-color-split);
+      }
+    }
+  }
+`;
 
 const EndpointsForm = forwardRef((props, ref) => {
   const intl = useIntl();
@@ -164,6 +184,7 @@ const EndpointsForm = forwardRef((props, ref) => {
                 showSearch
                 expandTrigger="hover"
                 multiple={false}
+                alwaysFocus={true}
                 onChange={(value, options) =>
                   handleEndpointsChange(value, index, options)
                 }
@@ -174,7 +195,7 @@ const EndpointsForm = forwardRef((props, ref) => {
                 }}
                 maxTagCount={1}
                 placeholder={intl.formatMessage({
-                  id: 'accesses.form.endpoint.model'
+                  id: 'providers.form.endpoint.placeholder'
                 })}
                 value={item.value}
                 options={sourceModels}
@@ -201,6 +222,7 @@ const EndpointsForm = forwardRef((props, ref) => {
             showSearch
             expandTrigger="hover"
             multiple={false}
+            alwaysFocus={true}
             classNames={{
               popup: {
                 root: 'cascader-popup-wrapper gpu-selector'
@@ -208,6 +230,9 @@ const EndpointsForm = forwardRef((props, ref) => {
             }}
             label={intl.formatMessage({
               id: 'accesses.form.endpoint.fallback'
+            })}
+            placeholder={intl.formatMessage({
+              id: 'providers.form.endpoint.placeholder'
             })}
             maxTagCount={1}
             value={fallbackValues.value}

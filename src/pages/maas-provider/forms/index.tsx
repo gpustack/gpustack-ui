@@ -6,6 +6,7 @@ import { useWrapperContext } from '@/pages/_components/column-wrapper/use-wrappe
 import ScrollSpyTabs from '@/pages/_components/scroll-spy-tabs';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
+import _ from 'lodash';
 import {
   forwardRef,
   useEffect,
@@ -15,7 +16,6 @@ import {
 } from 'react';
 import FormContext from '../config/form-context';
 import { FormData, MaasProviderItem as ListItem } from '../config/types';
-import AccessToken from './access-token';
 import AdvanceConfig from './advance-config';
 import Basic from './basic';
 import SupportedModels from './supported-models';
@@ -63,6 +63,17 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
     }
   ];
 
+  const handleOnFinish = (values: FormData) => {
+    const apiTokens = values.api_tokens?.filter?.(
+      (item) => item && item.trim() !== ''
+    );
+    const data = {
+      ..._.omit(values, ['api_key']),
+      api_tokens: _.concat([], values.api_key, apiTokens || [])
+    };
+    onFinish(data);
+  };
+
   const handleActiveChange = (key: string[]) => {
     setActiveKey(key);
   };
@@ -87,6 +98,8 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
     ) {
       form.setFieldsValue({
         ...currentData,
+        api_key: currentData.api_tokens?.[0] || '',
+        api_tokens: currentData.api_tokens?.slice(1) || [],
         proxy_enabled: !!currentData.proxy_url
       });
     }
@@ -108,7 +121,7 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       <FormContext.Provider value={{ action }}>
         <Form
           form={form}
-          onFinish={onFinish}
+          onFinish={handleOnFinish}
           initialValues={{
             proxy_enabled: false,
             proxy_url: '',
@@ -116,7 +129,6 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
           }}
         >
           <Basic />
-          <AccessToken />
           <CollapsePanel
             activeKey={activeKey}
             accordion={false}

@@ -54,6 +54,22 @@ const Basic = () => {
           })}
         />
       </Form.Item>
+      <Form.Item<FormData>
+        name="api_key"
+        rules={[
+          {
+            required: true,
+            message: getRuleMessage('input', 'providers.form.tokens.title')
+          }
+        ]}
+      >
+        <SealInput.Password
+          required
+          label={intl.formatMessage({
+            id: 'providers.form.tokens.title'
+          })}
+        />
+      </Form.Item>
       <Form.Item<FormData> name="description">
         <SealInput.TextArea
           scaleSize={true}

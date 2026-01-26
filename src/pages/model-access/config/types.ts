@@ -3,6 +3,7 @@ export interface FormData {
   description: string;
   categories: any[];
   meta: Record<string, any>;
+  generic_proxy: boolean;
   fallback_endpoint: {
     provider_model_name?: string;
     model_id?: number;

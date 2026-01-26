@@ -16,8 +16,14 @@ const AdvanceConfig = () => {
   const form = Form.useFormInstance();
   const EnviromentVars = Form.useWatch('env', form);
   const backend = Form.useWatch('backend', form);
-  const { onValuesChange, isGGUF, modelContextData, flatBackendOptions } =
-    useFormContext();
+  const modelAccessEnable = Form.useWatch('enable_model_access', form);
+  const {
+    onValuesChange,
+    backendOptions,
+    flatBackendOptions,
+    isGGUF,
+    modelContextData
+  } = useFormContext();
 
   const currentBackendOptions = useMemo(() => {
     return flatBackendOptions?.find((item) => item.value === backend);
@@ -128,19 +134,35 @@ const AdvanceConfig = () => {
         ></CheckboxField>
       </Form.Item>
       <Form.Item<FormData>
-        name="generic_proxy"
+        name="enable_model_access"
         valuePropName="checked"
         style={{ marginBottom: 8 }}
       >
         <CheckboxField
           description={intl.formatMessage({
-            id: 'models.form.generic_proxy.tips'
+            id: 'models.form.enable_model_access.tips'
           })}
           label={intl.formatMessage({
-            id: 'models.form.generic_proxy'
+            id: 'models.form.enable_model_access'
           })}
         ></CheckboxField>
       </Form.Item>
+      {modelAccessEnable && (
+        <Form.Item<FormData>
+          name="generic_proxy"
+          valuePropName="checked"
+          style={{ marginBottom: 8 }}
+        >
+          <CheckboxField
+            description={intl.formatMessage({
+              id: 'models.form.generic_proxy.tips'
+            })}
+            label={intl.formatMessage({
+              id: 'models.form.generic_proxy'
+            })}
+          ></CheckboxField>
+        </Form.Item>
+      )}
     </>
   );
 };

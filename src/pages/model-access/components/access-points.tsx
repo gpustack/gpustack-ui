@@ -20,11 +20,13 @@ const CellContent = styled.div`
 interface ProviderModelProps {
   dataList: AccessPointItem[];
   onSelect: (val: any, record: any) => void;
+  sourceModels: any[];
 }
 
 interface AccessItemProps {
   onSelect: (val: any, record: any) => void;
   data: any;
+  sourceModels: any[];
 }
 
 export const childActionList = [
@@ -48,13 +50,24 @@ export const childActionList = [
   }
 ];
 
-const AccessItem: React.FC<AccessItemProps> = ({ onSelect, data }) => {
+const AccessItem: React.FC<AccessItemProps> = ({
+  onSelect,
+  data,
+  sourceModels
+}) => {
   const intl = useIntl();
+
+  const renderProviderSource = () => {
+    const model = sourceModels.find(
+      (item: any) => item.value === data.provider_id || item.id === data.model
+    );
+    return model.label || '-';
+  };
   return (
     <div style={{ borderRadius: 'var(--ant-table-header-border-radius)' }}>
       <RowChildren>
         <Row gutter={16} style={{ width: '100%' }}>
-          <Col span={6}>
+          <Col span={4}>
             <CellContent
               style={{
                 paddingInline: 'var(--ant-table-cell-padding-inline)'
@@ -64,7 +77,7 @@ const AccessItem: React.FC<AccessItemProps> = ({ onSelect, data }) => {
             </CellContent>
           </Col>
           <Col span={3}>
-            <CellContent>-</CellContent>
+            <CellContent>{renderProviderSource()}</CellContent>
           </Col>
           <Col span={4}>
             <CellContent>
@@ -88,7 +101,7 @@ const AccessItem: React.FC<AccessItemProps> = ({ onSelect, data }) => {
                 )}
             </CellContent>
           </Col>
-          <Col span={3}>
+          <Col span={4}>
             <CellContent>
               <AutoTooltip ghost>
                 <StatusTag
@@ -102,16 +115,16 @@ const AccessItem: React.FC<AccessItemProps> = ({ onSelect, data }) => {
             </CellContent>
           </Col>
           <Col span={5}>
-            <CellContent style={{ marginLeft: -6 }}>
+            <CellContent style={{ paddingLeft: 45 }}>
               <AutoTooltip ghost minWidth={20}>
                 {dayjs(data.created_at).format('YYYY-MM-DD HH:mm:ss')}
               </AutoTooltip>
             </CellContent>
           </Col>
-          <Col span={3}>
+          <Col span={4}>
             <CellContent
               style={{
-                marginLeft: -12
+                paddingLeft: 38
               }}
             >
               <DropdownButtons
@@ -126,12 +139,21 @@ const AccessItem: React.FC<AccessItemProps> = ({ onSelect, data }) => {
   );
 };
 
-const AccessPoints: React.FC<ProviderModelProps> = ({ dataList, onSelect }) => {
+const AccessPoints: React.FC<ProviderModelProps> = ({
+  dataList,
+  onSelect,
+  sourceModels
+}) => {
   console.log('AccessPoints dataList:', dataList);
   return (
     <div>
       {dataList.map((item, index) => (
-        <AccessItem data={item} key={index} onSelect={onSelect}></AccessItem>
+        <AccessItem
+          data={item}
+          key={index}
+          onSelect={onSelect}
+          sourceModels={sourceModels}
+        ></AccessItem>
       ))}
     </div>
   );

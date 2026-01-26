@@ -2,6 +2,7 @@ import { queryModelsList } from '@/pages/llmodels/apis';
 import { ListItem as ModelListItem } from '@/pages/llmodels/config/types';
 import { queryMaasProviders } from '@/pages/maas-provider/apis';
 import { MaasProviderItem } from '@/pages/maas-provider/config/types';
+import { useIntl } from '@umijs/max';
 import { useState } from 'react';
 
 type EmptyObject = Record<never, never>;
@@ -15,6 +16,7 @@ type CascaderOption<T extends object = EmptyObject> = {
 } & Partial<T>;
 
 const useEndpointSourceModels = () => {
+  const intl = useIntl();
   const [sourceModels, setSourceModels] = useState<CascaderOption[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -28,7 +30,19 @@ const useEndpointSourceModels = () => {
 
       const modelsList = [
         {
-          label: 'Deployments',
+          label: (
+            <span>
+              {intl.formatMessage({ id: 'menu.models.deployment' })}
+              <span
+                style={{
+                  color: 'var(--ant-color-text-tertiary)',
+                  marginLeft: 4
+                }}
+              >
+                [GPUStack]
+              </span>
+            </span>
+          ),
           value: 'deployments',
           parent: true,
           children: models.items?.map?.((model: ModelListItem) => ({

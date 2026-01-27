@@ -76,7 +76,7 @@ const PercentileResult: React.FC = () => {
   };
 
   return (
-    <Section title="Percentiles Result">
+    <Section title="Percentiles Result" minHeight={240}>
       <Table
         size="small"
         columns={[
@@ -90,6 +90,17 @@ const PercentileResult: React.FC = () => {
         rowKey="percentile"
         pagination={false}
         styles={{
+          // header: {
+          //   row: {
+          //     background: 'none',
+          //     borderBottom: '1px solid var(--ant-color-split)'
+          //   },
+          //   cell: {
+          //     background: 'none',
+          //     paddingBottom: 0,
+          //     borderBottom: '1px solid var(--ant-color-split)'
+          //   }
+          // },
           body: {
             cell: {
               height: 54

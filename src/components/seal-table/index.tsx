@@ -27,7 +27,7 @@ const Wrapper = styled.div<{ $token: any }>`
     props.$token.tableHeaderIconHoverColor};
 `;
 
-const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
+const SealTable: React.FC<SealTableProps & { pagination?: PaginationProps }> = (
   props
 ) => {
   const {

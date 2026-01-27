@@ -81,7 +81,7 @@ export interface FormData {
   dataset_output_tokens: number;
   total_requests: number;
   request_rate: number;
-  seed: number;
+  dataset_seed: number;
   model_instance?: string;
 }
 

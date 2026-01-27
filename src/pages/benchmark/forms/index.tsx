@@ -130,7 +130,7 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
             dataset_output_tokens: null,
             total_requests: null,
             request_rate: null,
-            seed: null
+            dataset_seed: null
           }}
         >
           <Basic />

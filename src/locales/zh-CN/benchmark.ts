@@ -3,7 +3,7 @@ export default {
   'benchmark.button.add': '添加基准测试',
   'benchmark.button.compare': '对比',
   'benchmark.table.model': '模型',
-  'benchmark.table.instance': '目标实例',
+  'benchmark.table.instance': '模型实例',
   'benchmark.table.dataset': '数据集',
   'benchmark.table.requestRate': '请求率',
   'benchmark.table.gpu': 'GPU ',

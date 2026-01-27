@@ -14,6 +14,7 @@ export default {
   'menu.models.catalog': 'Каталог моделей',
   'menu.models.deployment': 'Запуск',
   'menu.models.benchmark': 'Benchmarks',
+  'menu.models.benchmarkDetail': 'Benchmark Details',
   'menu.modelCatalog': 'Каталог',
   'menu.resources': 'Ресурсы',
   'menu.apikeys': 'API-ключи',
@@ -39,4 +40,5 @@ export default {
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
 // 1. 'menu.models.benchmark': 'Benchmarks',
+// 2. 'menu.models.benchmarkDetail': 'Benchmark Details',
 // ========== End of To-Do List ==========

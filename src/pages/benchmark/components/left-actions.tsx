@@ -2,6 +2,7 @@ import BaseSelect from '@/components/seal-form/base/select';
 import { SearchOutlined, SyncOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Input, Space } from 'antd';
+import _ from 'lodash';
 import React from 'react';
 
 export interface RightActionsProps {
@@ -9,8 +10,7 @@ export interface RightActionsProps {
   handleSearch: () => void;
   handleQueryChange: (value: any, option?: any) => void;
   modelList?: Global.BaseOption<number>[];
-  datasetList?: Global.BaseOption<string>[];
-  gpuVendorList?: Global.BaseOption<string>[];
+  datasetList?: Global.BaseOption<string | number>[];
 }
 
 const RightActions: React.FC<RightActionsProps> = ({
@@ -18,10 +18,18 @@ const RightActions: React.FC<RightActionsProps> = ({
   handleSearch,
   handleQueryChange,
   modelList,
-  datasetList,
-  gpuVendorList
+  datasetList
 }) => {
   const intl = useIntl();
+
+  const debounceUpdateFilter = _.debounce((e: any) => {
+    handleQueryChange({
+      page: 1,
+      gpu_summary: e.target.value
+    });
+  }, 350);
+
+  const handleGPUChange = debounceUpdateFilter;
 
   return (
     <Space>
@@ -34,14 +42,25 @@ const RightActions: React.FC<RightActionsProps> = ({
         placeholder={intl.formatMessage({
           id: 'common.filter.name'
         })}
-        style={{ width: 230 }}
+        style={{ width: 180 }}
         allowClear
         onChange={handleInputChange}
+      ></Input>
+      <Input
+        prefix={
+          <SearchOutlined
+            style={{ color: 'var(--ant-color-text-placeholder)' }}
+          ></SearchOutlined>
+        }
+        placeholder="Filter by GPU"
+        style={{ width: 180 }}
+        allowClear
+        onChange={handleGPUChange}
       ></Input>
       <BaseSelect
         allowClear
         placeholder="Filter by model"
-        style={{ width: 150 }}
+        style={{ width: 200 }}
         options={modelList}
         onChange={(value, option) =>
           handleQueryChange({
@@ -53,26 +72,18 @@ const RightActions: React.FC<RightActionsProps> = ({
       <BaseSelect
         allowClear
         placeholder="Filter by dataset"
-        style={{ width: 150 }}
-        options={datasetList}
+        style={{ width: 200 }}
+        options={datasetList?.map((item) => ({
+          ...item,
+          label: item.label,
+          value: item.label
+        }))}
         onChange={(value, option) =>
           handleQueryChange({
             dataset_name: value,
             page: 1
           })
         }
-      ></BaseSelect>
-      <BaseSelect
-        allowClear
-        placeholder="Filter by GPU vendor"
-        onChange={(value, option) =>
-          handleQueryChange({
-            gpu_summary: value,
-            page: 1
-          })
-        }
-        style={{ width: 180 }}
-        options={gpuVendorList}
       ></BaseSelect>
       <Button
         type="text"

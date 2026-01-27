@@ -5,12 +5,13 @@ import { Form } from 'antd';
 import React from 'react';
 import { FormData } from '../config/types';
 
-const DatasetForm: React.FC<{
-  onValueChange?: (value: any) => void;
-}> = ({ onValueChange }) => {
+const RandomSettingsForm: React.FC = () => {
   const intl = useIntl();
   const form = Form.useFormInstance();
+  const profile = Form.useWatch('profile', form);
   const { getRuleMessage } = useAppUtils();
+
+  const disabled = profile !== 'Custom' && Boolean(profile);
 
   return (
     <>
@@ -25,9 +26,9 @@ const DatasetForm: React.FC<{
       >
         <SealInputNumber
           min={0}
+          disabled={disabled}
           label={intl.formatMessage({ id: 'benchmark.table.inputTokenLength' })}
           required
-          onChange={onValueChange}
         ></SealInputNumber>
       </Form.Item>
       <Form.Item<FormData>
@@ -44,11 +45,11 @@ const DatasetForm: React.FC<{
       >
         <SealInputNumber
           min={0}
+          disabled={disabled}
           label={intl.formatMessage({
             id: 'benchmark.table.outputTokenLength'
           })}
           required
-          onChange={onValueChange}
         ></SealInputNumber>
       </Form.Item>
       <Form.Item<FormData>
@@ -57,11 +58,44 @@ const DatasetForm: React.FC<{
       >
         <SealInputNumber
           min={0}
+          disabled={disabled}
           label={intl.formatMessage({ id: 'playground.image.params.seed' })}
+        ></SealInputNumber>
+      </Form.Item>
+      <Form.Item<FormData>
+        name="request_rate"
+        rules={[
+          {
+            required: true,
+            message: getRuleMessage('input', 'benchmark.table.requestRate')
+          }
+        ]}
+      >
+        <SealInputNumber
+          min={0}
+          disabled={disabled}
+          label={intl.formatMessage({ id: 'benchmark.table.requestRate' })}
+          required
+        ></SealInputNumber>
+      </Form.Item>
+      <Form.Item<FormData>
+        name="total_requests"
+        rules={[
+          {
+            required: true,
+            message: getRuleMessage('input', 'benchmark.form.totalRequests')
+          }
+        ]}
+      >
+        <SealInputNumber
+          min={0}
+          disabled={disabled}
+          label={intl.formatMessage({ id: 'benchmark.form.totalRequests' })}
+          required
         ></SealInputNumber>
       </Form.Item>
     </>
   );
 };
 
-export default DatasetForm;
+export default RandomSettingsForm;

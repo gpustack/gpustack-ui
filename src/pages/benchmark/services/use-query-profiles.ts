@@ -1,4 +1,5 @@
 import { useQueryData } from '@/hooks/use-query-data-list';
+import { useIntl } from '@umijs/max';
 import _ from 'lodash';
 import { useState } from 'react';
 import { queryProfiles } from '../apis';
@@ -11,6 +12,7 @@ export default function useQueryProfiles() {
     fetchDetail: queryProfiles,
     key: 'profiles'
   });
+  const intl = useIntl();
   const [profilesOptions, setProfilesOptions] = useState<
     {
       label: string;
@@ -35,7 +37,7 @@ export default function useQueryProfiles() {
     setProfilesOptions([
       ...list,
       {
-        label: 'Custom',
+        label: intl.formatMessage({ id: 'backend.custom' }),
         value: 'Custom',
         config: {
           dataset_name: '',

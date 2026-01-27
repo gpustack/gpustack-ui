@@ -14,6 +14,7 @@ export default {
   'menu.models.deployment': '部署',
   'menu.models.userModels': '我的模型',
   'menu.models.benchmark': '基准测试',
+  'menu.models.benchmarkDetail': '基准测试详情',
   'menu.modelCatalog': '模型库',
   'menu.models.catalog': '模型库',
   'menu.resources': '资源',

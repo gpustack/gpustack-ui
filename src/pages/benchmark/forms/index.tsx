@@ -17,6 +17,7 @@ import FormContext from '../config/form-context';
 import { FormData, BenchmarkListItem as ListItem } from '../config/types';
 import Basic from './basic';
 import DatasetForm from './dataset';
+import RandomSettingsForm from './random-settings';
 
 interface ProviderFormProps {
   ref?: any;
@@ -28,17 +29,20 @@ interface ProviderFormProps {
 
 const TABKeysMap = {
   BASIC: 'basic',
-  PROFILE: 'profile'
+  PROFILE: 'profile',
+  ADVANCED: 'advanced'
 };
 
 const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
   const { action, currentData, onFinish, open } = props;
   const intl = useIntl();
   const [form] = Form.useForm();
+  const profile = Form.useWatch('profile', form);
 
   const { getScrollElementScrollableHeight } = useWrapperContext();
   const [activeKey, setActiveKey] = useState<string[]>([TABKeysMap.PROFILE]);
   const scrollTabsRef = useRef<any>(null);
+  const showAdvanced = profile !== 'Custom' && Boolean(profile);
 
   const segmentOptions = [
     {
@@ -79,6 +83,25 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       });
     }
   }, [form, currentData, action]);
+
+  useEffect(() => {
+    if (!showAdvanced && activeKey?.includes(TABKeysMap.ADVANCED)) {
+      setActiveKey([TABKeysMap.PROFILE]);
+    }
+  }, [showAdvanced, activeKey]);
+
+  const advancedItems = showAdvanced
+    ? [
+        {
+          key: TABKeysMap.ADVANCED,
+          label: intl.formatMessage({ id: 'resources.form.advanced' }),
+          forceRender: true,
+          children: <RandomSettingsForm />
+        }
+      ]
+    : [];
+
+  console.log('render form with profile:', showAdvanced);
 
   return (
     <ScrollSpyTabs
@@ -121,7 +144,8 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
                 label: intl.formatMessage({ id: 'common.title.config' }),
                 forceRender: true,
                 children: <DatasetForm />
-              }
+              },
+              ...advancedItems
             ]}
           ></CollapsePanel>
         </Form>

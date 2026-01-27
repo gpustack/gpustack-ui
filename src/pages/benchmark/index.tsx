@@ -9,10 +9,9 @@ import { useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { ConfigProvider, Table, message } from 'antd';
 import _ from 'lodash';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import NoResult from '../_components/no-result';
 import PageBox from '../_components/page-box';
-import useQueryGPUs from '../resources/services/use-query-gpus';
 import {
   createBenchmark,
   deleteBenchmark,
@@ -20,7 +19,6 @@ import {
   updateBenchmark
 } from './apis';
 import AddBenchmarkModal from './components/add-benchmark-modal';
-import DetailModal from './components/detail-modal';
 import LeftActions from './components/left-actions';
 import RightActions from './components/right-actions';
 import { FormData, BenchmarkListItem as ListItem } from './config/types';
@@ -28,7 +26,7 @@ import useBenchmarkColumns from './hooks/use-benchmark-columns';
 import useColumnSettings from './hooks/use-column-settings';
 import useCreateBenchmark from './hooks/use-create-benchmark';
 import useExportData from './hooks/use-export-data';
-import useViewDetail from './hooks/use-view-detail';
+import useQueryDataset from './services/use-query-dataset';
 
 const Benchmark: React.FC = () => {
   const {
@@ -54,30 +52,16 @@ const Benchmark: React.FC = () => {
   const navigate = useNavigate();
   const { openBenchmarkModal, closeBenchmarkModal, openBenchmarkModalStatus } =
     useCreateBenchmark();
-  const {
-    openViewDetailModal,
-    closeViewDetailModal,
-    openViewDetailModalStatus
-  } = useViewDetail();
   const { dataList: modelList, fetchData: fetchModelList } = useQueryModelList({
     getValue: (item: any) => item.name
   });
-  const { fetchData: fetchGpuList } = useQueryGPUs();
   const { SettingsButton, selectedColumns } = useColumnSettings();
-  const [gpuVendorList, setGpuVendorList] = useState<
-    Global.BaseOption<string>[]
-  >([]);
+
+  const { datasetList, fetchDatasetData } = useQueryDataset();
 
   useEffect(() => {
     fetchModelList({ page: -1 });
-    fetchGpuList({ page: -1 }).then((list) => {
-      const vendors = _.uniq(list.map((gpu) => gpu.vendor).filter((v) => !!v));
-      const vendorOptions = vendors.map((vendor: string) => ({
-        label: vendor,
-        value: vendor
-      }));
-      setGpuVendorList(vendorOptions);
-    });
+    fetchDatasetData();
   }, []);
 
   const handleAddBenchmark = () => {
@@ -184,7 +168,7 @@ const Benchmark: React.FC = () => {
           left={
             <LeftActions
               modelList={modelList}
-              gpuVendorList={gpuVendorList}
+              datasetList={datasetList}
               handleSearch={handleSearch}
               handleQueryChange={handleQueryChange}
               handleInputChange={handleNameChange}
@@ -234,11 +218,6 @@ const Benchmark: React.FC = () => {
         onCancel={handleModalCancel}
         onOk={handleModalOk}
       ></AddBenchmarkModal>
-      <DetailModal
-        open={openViewDetailModalStatus.open}
-        currentData={openViewDetailModalStatus.currentData}
-        onClose={closeViewDetailModal}
-      ></DetailModal>
       <DeleteModal ref={modalRef}></DeleteModal>
     </>
   );

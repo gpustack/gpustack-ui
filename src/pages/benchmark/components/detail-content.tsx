@@ -8,7 +8,6 @@ import { BenchmarkListItem } from '../config/types';
 import useQueryDetail from '../services/use-query-detail';
 import Configure from './configure';
 import Environment from './environment';
-import Logs from './logs';
 import Summary from './summary';
 
 const Details: React.FC<{ currentData?: BenchmarkListItem }> = ({
@@ -43,13 +42,13 @@ const Details: React.FC<{ currentData?: BenchmarkListItem }> = ({
       label: intl.formatMessage({ id: 'benchmark.detail.environment.title' }),
       children: <Environment />,
       icon: <IconFont type="icon-server02" />
-    },
-    {
-      key: 'logs',
-      label: intl.formatMessage({ id: 'benchmark.detail.logs.title' }),
-      children: <Logs />,
-      icon: <IconFont type="icon-logs" />
     }
+    // {
+    //   key: 'logs',
+    //   label: intl.formatMessage({ id: 'benchmark.detail.logs.title' }),
+    //   children: <Logs />,
+    //   icon: <IconFont type="icon-logs" />
+    // }
   ];
 
   const handleChangeTab = (key: string) => {

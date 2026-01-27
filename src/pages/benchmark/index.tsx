@@ -21,11 +21,13 @@ import {
 import AddBenchmarkModal from './components/add-benchmark-modal';
 import LeftActions from './components/left-actions';
 import RightActions from './components/right-actions';
+import ViewLogsModal from './components/view-logs-modal';
 import { FormData, BenchmarkListItem as ListItem } from './config/types';
 import useBenchmarkColumns from './hooks/use-benchmark-columns';
 import useColumnSettings from './hooks/use-column-settings';
 import useCreateBenchmark from './hooks/use-create-benchmark';
 import useExportData from './hooks/use-export-data';
+import useViewLogs from './hooks/use-view-logs';
 import useQueryDataset from './services/use-query-dataset';
 
 const Benchmark: React.FC = () => {
@@ -55,6 +57,8 @@ const Benchmark: React.FC = () => {
   const { dataList: modelList, fetchData: fetchModelList } = useQueryModelList({
     getValue: (item: any) => item.name
   });
+  const { openViewLogsModal, closeViewLogsModal, openViewLogsModalStatus } =
+    useViewLogs();
   const { SettingsButton, selectedColumns } = useColumnSettings();
 
   const { datasetList, fetchDatasetData } = useQueryDataset();
@@ -104,6 +108,8 @@ const Benchmark: React.FC = () => {
       handleEditUser(row);
     } else if (val === 'delete') {
       handleDelete({ ...row, name: row.name });
+    } else if (val === 'viewlog') {
+      openViewLogsModal(row);
     }
   });
 
@@ -218,6 +224,12 @@ const Benchmark: React.FC = () => {
         onCancel={handleModalCancel}
         onOk={handleModalOk}
       ></AddBenchmarkModal>
+      <ViewLogsModal
+        open={openViewLogsModalStatus.open}
+        url={openViewLogsModalStatus.url}
+        tail={openViewLogsModalStatus.tail}
+        onCancel={closeViewLogsModal}
+      ></ViewLogsModal>
       <DeleteModal ref={modalRef}></DeleteModal>
     </>
   );

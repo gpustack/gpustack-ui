@@ -229,7 +229,7 @@ export default {
   'common.options.none': 'None',
   'common.options.auto': 'Auto',
   'common.search.empty': 'No matching results found.',
-  'common.button.downloadLog': 'Download Log',
+  'common.button.downloadLog': 'Download Logs',
   'common.button.faq': 'FAQ',
   'common.button.moreInfo': 'More Info',
   'common.text.warning': 'Warning',

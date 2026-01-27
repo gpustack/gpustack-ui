@@ -1,7 +1,5 @@
 // columns.ts
 import AutoTooltip from '@/components/auto-tooltip';
-import DropdownButtons from '@/components/drop-down-buttons';
-import icons from '@/components/icon-font/icons';
 import StatusTag from '@/components/status-tag';
 import { tableSorter } from '@/config/settings';
 import { useIntl } from '@umijs/max';
@@ -10,24 +8,9 @@ import { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import { useMemo } from 'react';
+import RowActions from '../components/row-actions';
 import { BenchmarkStatus, BenchmarkStatusLabelMap } from '../config';
 import { BenchmarkListItem as ListItem } from '../config/types';
-
-const actionList = [
-  {
-    key: 'edit',
-    label: 'common.button.edit',
-    icon: icons.EditOutlined
-  },
-  {
-    key: 'delete',
-    label: 'common.button.delete',
-    icon: icons.DeleteOutlined,
-    props: {
-      danger: true
-    }
-  }
-];
 
 const useBenchmarkColumns = (
   sortOrder: string[],
@@ -174,10 +157,7 @@ const useBenchmarkColumns = (
           showTitle: false
         },
         render: (value: string, record: ListItem) => (
-          <DropdownButtons
-            items={actionList}
-            onSelect={(val) => handleSelect(val, record)}
-          ></DropdownButtons>
+          <RowActions record={record} handleSelect={handleSelect}></RowActions>
         )
       }
     ];

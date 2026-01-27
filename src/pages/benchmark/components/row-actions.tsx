@@ -1,0 +1,88 @@
+import DropdownButtons from '@/components/drop-down-buttons';
+import IconFont from '@/components/icon-font';
+import icons from '@/components/icon-font/icons';
+import useDownloadLogs from '@/hooks/use-download-logs';
+import { DownloadOutlined } from '@ant-design/icons';
+import { BENCHMARKS_API } from '../apis';
+import { BenchmarkStatusValueMap } from '../config';
+import { BenchmarkListItem as ListItem } from '../config/types';
+
+const actionList = [
+  {
+    key: 'edit',
+    label: 'common.button.edit',
+    icon: icons.EditOutlined
+  },
+  {
+    label: 'common.button.viewlog',
+    key: 'viewlog',
+    status: [
+      BenchmarkStatusValueMap.Claimed,
+      BenchmarkStatusValueMap.Running,
+      BenchmarkStatusValueMap.Error,
+      BenchmarkStatusValueMap.Completed
+    ],
+    icon: <IconFont type="icon-logs" />
+  },
+  {
+    label: 'common.button.downloadLog',
+    key: 'download',
+    status: [
+      BenchmarkStatusValueMap.Claimed,
+      BenchmarkStatusValueMap.Running,
+      BenchmarkStatusValueMap.Error,
+      BenchmarkStatusValueMap.Completed
+    ],
+    icon: <DownloadOutlined />
+  },
+  {
+    key: 'delete',
+    label: 'common.button.delete',
+    icon: icons.DeleteOutlined,
+    props: {
+      danger: true
+    }
+  }
+];
+
+interface RowActionsProps {
+  record: ListItem;
+  handleSelect: (key: string, record: ListItem) => void;
+}
+
+const RowActions: React.FC<RowActionsProps> = (props) => {
+  const { record, handleSelect } = props;
+  const { onDownloadLog, contextHolder } = useDownloadLogs();
+
+  const actions = actionList.filter((action) => {
+    if (action.key === 'viewlog' || action.key === 'download') {
+      return action.status?.includes(record.state);
+    }
+
+    return true;
+  });
+
+  const handleDownloadLog = async () => {
+    onDownloadLog({
+      url: `${BENCHMARKS_API}/${record.id}/logs`,
+      name: record.name
+    });
+  };
+
+  const onSelect = (val: string) => {
+    if (val === 'download') {
+      handleDownloadLog();
+      return;
+    }
+    handleSelect(val, record);
+  };
+
+  return (
+    <>
+      {contextHolder}
+      <DropdownButtons items={actions} onSelect={onSelect}></DropdownButtons>
+    </>
+  );
+};
+
+export default RowActions;

@@ -1,5 +1,5 @@
 export default {
-  'benchmark.title': 'Benchmark',
+  'benchmark.title': 'Benchmarks',
   'benchmark.button.add': 'Add Benchmark',
   'benchmark.button.compare': 'Compare',
   'benchmark.table.model': 'Model',

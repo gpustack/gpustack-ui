@@ -22,15 +22,15 @@ const Benchmark: React.FC = () => {
       label: 'Token Length (In/Out)',
       children: (
         <span>
-          {detailData?.dataset_input_tokens || '-'} /{' '}
+          {detailData?.dataset_prompt_tokens || '-'} /{' '}
           {detailData?.dataset_output_tokens || '-'}
         </span>
       )
     },
     {
-      key: '5',
-      label: 'Seed',
-      children: detailData?.seed || '-'
+      key: '7',
+      label: 'Total Requests',
+      children: detailData?.total_requests || '-'
     },
     {
       key: '6',
@@ -38,9 +38,9 @@ const Benchmark: React.FC = () => {
       children: detailData?.request_rate || '-'
     },
     {
-      key: '7',
-      label: 'Total Requests',
-      children: detailData?.total_requests || '-'
+      key: '5',
+      label: 'Seed',
+      children: detailData?.seed || '-'
     }
   ];
 

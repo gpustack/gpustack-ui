@@ -1,5 +1,4 @@
 import IconFont from '@/components/icon-font';
-import { RightOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Checkbox } from 'antd';
 import _ from 'lodash';
@@ -88,14 +87,34 @@ const HeaderPrefix: React.FC<HeaderPrefixProps> = (props) => {
   }
   if (expandable) {
     return (
-      <div className="header-row-prefix-wrapper">
-        {_.isBoolean(expandable) ? (
-          <Button type="text" size="small">
-            <RightOutlined />
-          </Button>
-        ) : (
-          expandable
-        )}
+      <div
+        className="header-row-prefix-wrapper flex-center"
+        style={{ paddingLeft: 16 }}
+      >
+        <span style={{ marginRight: 5 }}>
+          {_.isBoolean(expandable) ? (
+            <Button
+              type="text"
+              size="small"
+              onClick={handleToggleExpand}
+              style={{ paddingInline: 6 }}
+            >
+              {expandAll ? (
+                <IconFont
+                  type="icon-collapse_all"
+                  className="font-size-16"
+                ></IconFont>
+              ) : (
+                <IconFont
+                  type="icon-uncollapse_all"
+                  className="font-size-16"
+                ></IconFont>
+              )}
+            </Button>
+          ) : (
+            expandable
+          )}
+        </span>
       </div>
     );
   }

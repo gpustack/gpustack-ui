@@ -45,7 +45,7 @@ const Benchmark: React.FC = () => {
   ];
 
   return (
-    <Section title="Benchmark Parameters">
+    <Section title="Benchmark Parameters" minHeight={132}>
       <Descriptions
         items={items}
         colon={false}

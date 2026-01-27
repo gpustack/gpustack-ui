@@ -144,7 +144,7 @@ const Instance: React.FC = () => {
   }, [detailData]);
 
   return (
-    <Section title="Model Instance">
+    <Section title="Model Instance" minHeight={220}>
       <Descriptions
         items={items}
         colon={false}

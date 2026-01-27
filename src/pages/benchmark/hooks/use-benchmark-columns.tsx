@@ -5,7 +5,6 @@ import { tableSorter } from '@/config/settings';
 import { useIntl } from '@umijs/max';
 import { Typography } from 'antd';
 import { ColumnsType } from 'antd/es/table';
-import dayjs from 'dayjs';
 import _ from 'lodash';
 import { useMemo } from 'react';
 import RowActions from '../components/row-actions';
@@ -70,16 +69,16 @@ const useBenchmarkColumns = (
           />
         )
       },
-      {
-        title: intl.formatMessage({ id: 'benchmark.table.requestRate' }),
-        dataIndex: 'request_rate',
-        sorter: tableSorter(1),
-        render: (text: string) => (
-          <AutoTooltip ghost minWidth={20}>
-            {text}
-          </AutoTooltip>
-        )
-      },
+      // {
+      //   title: intl.formatMessage({ id: 'benchmark.table.requestRate' }),
+      //   dataIndex: 'request_rate',
+      //   sorter: tableSorter(1),
+      //   render: (text: string) => (
+      //     <AutoTooltip ghost minWidth={20}>
+      //       {text}
+      //     </AutoTooltip>
+      //   )
+      // },
       {
         title: intl.formatMessage({ id: 'benchmark.table.gpu' }),
         dataIndex: 'gpu_summary',
@@ -91,7 +90,12 @@ const useBenchmarkColumns = (
         )
       },
       {
-        title: intl.formatMessage({ id: 'benchmark.table.itl' }),
+        title: (
+          <span className="flex-column">
+            <span>{intl.formatMessage({ id: 'benchmark.table.itl' })}</span>
+            <span>avg (ms)</span>
+          </span>
+        ),
         dataIndex: 'inter_token_latency_mean',
         sorter: tableSorter(1),
         render: (text: string) => (
@@ -101,7 +105,12 @@ const useBenchmarkColumns = (
         )
       },
       {
-        title: intl.formatMessage({ id: 'benchmark.table.tpot' }),
+        title: (
+          <span className="flex-column">
+            <span>{intl.formatMessage({ id: 'benchmark.table.tpot' })}</span>
+            <span>avg (ms)</span>
+          </span>
+        ),
         dataIndex: 'time_per_output_token_mean',
         sorter: tableSorter(1),
         render: (text: string) => (
@@ -111,7 +120,12 @@ const useBenchmarkColumns = (
         )
       },
       {
-        title: intl.formatMessage({ id: 'benchmark.table.ttft' }),
+        title: (
+          <span className="flex-column">
+            <span>{intl.formatMessage({ id: 'benchmark.table.ttft' })}</span>
+            <span>avg (ms)</span>
+          </span>
+        ),
         dataIndex: 'time_to_first_token_mean',
         sorter: tableSorter(1),
         render: (text: string) => (
@@ -140,16 +154,16 @@ const useBenchmarkColumns = (
           </AutoTooltip>
         )
       },
-      {
-        title: intl.formatMessage({ id: 'common.table.createTime' }),
-        dataIndex: 'created_at',
-        sorter: tableSorter(3),
-        render: (value: string) => (
-          <AutoTooltip ghost>
-            {dayjs(value).format('YYYY-MM-DD HH:mm:ss')}
-          </AutoTooltip>
-        )
-      },
+      // {
+      //   title: intl.formatMessage({ id: 'common.table.createTime' }),
+      //   dataIndex: 'created_at',
+      //   sorter: tableSorter(3),
+      //   render: (value: string) => (
+      //     <AutoTooltip ghost>
+      //       {dayjs(value).format('YYYY-MM-DD HH:mm:ss')}
+      //     </AutoTooltip>
+      //   )
+      // },
       {
         title: intl.formatMessage({ id: 'common.table.operation' }),
         dataIndex: 'operations',

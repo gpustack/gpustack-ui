@@ -1,4 +1,3 @@
-import AutoComplete from '@/components/seal-form/auto-complete';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import useAppUtils from '@/hooks/use-app-utils';
@@ -32,30 +31,17 @@ const DatasetForm: React.FC = () => {
   } = useQueryProfiles();
 
   const handleOnDataSetChange = (value: any, option: any) => {
-    if (value === 'Custom') {
-      form.setFieldsValue({
-        profile: ProfileValueMap.Custom,
-        dataset_id: null
-      });
-    } else {
-      form.setFieldsValue({
-        profile: ProfileValueMap.Custom,
-        dataset_id: option?.data?.id,
-        dataset_prompt_tokens: option?.prompt_tokens,
-        dataset_output_tokens: option?.output_tokens,
-        request_rate: null,
-        total_requests: null
-      });
-    }
+    form.setFieldsValue({
+      dataset_id: option?.data?.id,
+      dataset_prompt_tokens: option?.prompt_tokens,
+      dataset_output_tokens: option?.output_tokens,
+      request_rate: null,
+      total_requests: null
+    });
   };
 
   const handleProfileChange = (value: string, option: any) => {
-    if (value === ProfileValueMap.Custom) {
-      form.setFieldsValue({
-        dataset_name: 'Custom',
-        dataset_id: null
-      });
-    } else {
+    if (value !== ProfileValueMap.Custom) {
       const dataset_id = datasetList.find(
         (item) => item.label === option.config?.dataset_name
       )?.value;
@@ -97,31 +83,17 @@ const DatasetForm: React.FC = () => {
           required
         ></SealSelect>
       </Form.Item>
-      <Form.Item<FormData>
-        name="dataset_name"
-        rules={[
-          {
-            required: true,
-            message: getRuleMessage('select', 'benchmark.table.dataset')
-          }
-        ]}
-      >
-        <AutoComplete
-          options={datasetList.map((item) => ({
-            ...item,
-            label: item.label,
-            value: item.label
-          }))}
-          loading={datasetLoading}
-          onChange={handleOnDataSetChange}
-          label={intl.formatMessage({ id: 'benchmark.table.dataset' })}
-          required
-        ></AutoComplete>
-      </Form.Item>
+
       <Form.Item<FormData> hidden name="dataset_id">
         <SealInput.Input></SealInput.Input>
       </Form.Item>
-      {profile === 'Custom' && <RandomSettingsForm></RandomSettingsForm>}
+      {profile === 'Custom' && (
+        <RandomSettingsForm
+          datasetList={datasetList}
+          datasetLoading={datasetLoading}
+          handleOnDataSetChange={handleOnDataSetChange}
+        ></RandomSettingsForm>
+      )}
     </>
   );
 };

@@ -1,11 +1,17 @@
 import SealInputNumber from '@/components/seal-form/input-number';
+import SealSelect from '@/components/seal-form/seal-select';
 import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import React from 'react';
 import { FormData } from '../config/types';
 
-const RandomSettingsForm: React.FC = () => {
+const RandomSettingsForm: React.FC<{
+  datasetList: Global.BaseOption<number | string>[];
+  datasetLoading: boolean;
+  handleOnDataSetChange: (value: any, option: any) => void;
+}> = (props) => {
+  const { datasetList, datasetLoading, handleOnDataSetChange } = props;
   const intl = useIntl();
   const form = Form.useFormInstance();
   const profile = Form.useWatch('profile', form);
@@ -15,6 +21,28 @@ const RandomSettingsForm: React.FC = () => {
 
   return (
     <>
+      <Form.Item<FormData>
+        name="dataset_name"
+        rules={[
+          {
+            required: true,
+            message: getRuleMessage('select', 'benchmark.table.dataset')
+          }
+        ]}
+      >
+        <SealSelect
+          disabled={disabled}
+          options={datasetList?.map((item) => ({
+            ...item,
+            label: item.label,
+            value: item.label
+          }))}
+          loading={datasetLoading}
+          onChange={handleOnDataSetChange}
+          label={intl.formatMessage({ id: 'benchmark.table.dataset' })}
+          required
+        ></SealSelect>
+      </Form.Item>
       <Form.Item<FormData>
         name="dataset_prompt_tokens"
         rules={[
@@ -53,7 +81,7 @@ const RandomSettingsForm: React.FC = () => {
         ></SealInputNumber>
       </Form.Item>
       <Form.Item<FormData>
-        name="seed"
+        name="dataset_seed"
         getValueProps={(value) => ({ value: value || null })}
       >
         <SealInputNumber

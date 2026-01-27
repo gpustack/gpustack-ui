@@ -84,11 +84,12 @@ export function useQueryDataList<ListItem, Params = any>(option: {
 
 export function useQueryData<Detail, Params = any>(option: {
   key: string;
+  delay?: number;
   fetchDetail: (params: Params, options?: any) => Promise<Detail>;
   getData?: (response: Detail) => any;
   errorMsg?: string;
 }) {
-  const { key, fetchDetail, getData, errorMsg } = option;
+  const { key, fetchDetail, getData, errorMsg, delay } = option;
   const axiosTokenRef = useRef<CancelTokenSource | null>(null);
   const [detailData, setDetailData] = useState<Detail>({} as Detail);
 
@@ -104,6 +105,12 @@ export function useQueryData<Detail, Params = any>(option: {
         token: axiosTokenRef.current?.token,
         ...(extra || {})
       });
+
+      if (delay) {
+        await new Promise((resolve) => {
+          setTimeout(resolve, delay);
+        });
+      }
 
       setDetailData(getData ? getData(res) : res);
 

@@ -12,24 +12,20 @@ const columns = [
     unit: 's',
     render: (value: number) => round(value, 2)
   },
-  {
-    title: 'Concurrency',
-    dataIndex: 'request_concurrency',
-    path: ['raw_metrics', 'benchmarks', '0'],
-    unit: '',
-    render: (value: number) => {
-      return round(
-        _.get(value, 'metrics.request_concurrency.successful.mean'),
-        0
-      );
-    }
-  },
+
   {
     title: 'Total Requests',
     dataIndex: 'total_requests',
     path: 'total_requests',
     unit: '',
     render: (value: number) => round(value, 0)
+  },
+  {
+    title: 'Total token throughput',
+    dataIndex: 'tokens_per_second_mean',
+    path: 'tokens_per_second_mean',
+    unit: 'Tokens/s',
+    render: (value: number) => round(value, 2)
   },
   {
     title: 'Success Requests',
@@ -44,6 +40,17 @@ const columns = [
       );
     }
   },
+
+  {
+    title: 'Output token throughput',
+    dataIndex: 'output_tokens_per_second_mean',
+    path: 'output_tokens_per_second_mean',
+    unit: 'Tokens/s',
+    render: (value: number) => round(value, 2)
+  }
+];
+
+const columnsSub = [
   {
     title: 'Failed Requests',
     dataIndex: 'failed_requests',
@@ -58,27 +65,22 @@ const columns = [
     }
   },
   {
-    title: 'Output token throughput (t/s)',
-    dataIndex: 'output_tokens_per_second_mean',
-    path: 'output_tokens_per_second_mean',
-    unit: 't/s',
-    render: (value: number) => round(value, 2)
-  }
-];
-
-const columnsSub = [
-  {
-    title: 'Total token throughput (t/s)',
-    dataIndex: 'tokens_per_second_mean',
-    path: 'tokens_per_second_mean',
-    unit: 't/s',
-    render: (value: number) => round(value, 2)
+    title: 'Concurrency',
+    dataIndex: 'request_concurrency',
+    path: ['raw_metrics', 'benchmarks', '0'],
+    unit: '',
+    render: (value: number) => {
+      return round(
+        _.get(value, 'metrics.request_concurrency.successful.mean'),
+        0
+      );
+    }
   },
   {
-    title: 'Request token throughput (t/s)',
+    title: 'Request token throughput ',
     dataIndex: 'prompt_tokens_per_second_mean',
     path: 'prompt_tokens_per_second_mean',
-    unit: 't/s',
+    unit: 'Tokens/s',
     render: (value: number) => round(value, 2)
   },
   {
@@ -135,14 +137,19 @@ const PercentileResult: React.FC = () => {
     ({ title, dataIndex, path, render, unit }) => ({
       key: dataIndex,
       label: title,
-      children: unit
-        ? render(_.get(detailData, path) ?? 0) + ` (${unit})`
-        : render(_.get(detailData, path) ?? 0)
+      children: unit ? (
+        <span className="flex-center">
+          {render(_.get(detailData, path) ?? 0)}{' '}
+          <span className="m-l-4">({unit})</span>
+        </span>
+      ) : (
+        render(_.get(detailData, path) ?? 0)
+      )
     })
   );
 
   return (
-    <Section title="Metrics Result" minHeight={200}>
+    <Section title="Metrics Result" minHeight={210}>
       {/* <Table
         size="small"
         columns={[

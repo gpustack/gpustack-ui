@@ -6,7 +6,6 @@ import React, { useEffect, useState } from 'react';
 import DetailContext from '../config/detail-context';
 import { BenchmarkListItem } from '../config/types';
 import useQueryDetail from '../services/use-query-detail';
-import Configure from './configure';
 import Environment from './environment';
 import Summary from './summary';
 
@@ -30,12 +29,6 @@ const Details: React.FC<{ currentData?: BenchmarkListItem }> = ({
       label: intl.formatMessage({ id: 'benchmark.detail.summary.title' }),
       children: <Summary />,
       icon: <IconFont type="icon-basic" />
-    },
-    {
-      key: 'configure',
-      label: intl.formatMessage({ id: 'benchmark.detail.configure.title' }),
-      children: <Configure />,
-      icon: <IconFont type="icon-settings-02" />
     },
     {
       key: 'environment',

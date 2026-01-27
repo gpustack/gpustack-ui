@@ -132,6 +132,7 @@ const ModelInstanceForm: React.FC = () => {
     >
       <SealCascader
         required
+        showSearch
         loading={modelLoading || instanceLoading}
         changeOnSelect={false}
         expandTrigger="hover"

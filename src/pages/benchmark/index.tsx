@@ -13,6 +13,7 @@ import { useEffect } from 'react';
 import NoResult from '../_components/no-result';
 import PageBox from '../_components/page-box';
 import {
+  BENCHMARKS_API,
   createBenchmark,
   deleteBenchmark,
   queryBenchmarkList,
@@ -48,6 +49,8 @@ const Benchmark: React.FC = () => {
   } = useTableFetch<ListItem>({
     fetchAPI: queryBenchmarkList,
     deleteAPI: deleteBenchmark,
+    API: BENCHMARKS_API,
+    watch: true,
     contentForDelete: 'menu.models.benchmark'
   });
   const intl = useIntl();

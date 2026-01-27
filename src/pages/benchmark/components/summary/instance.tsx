@@ -1,11 +1,8 @@
-import StatusTag from '@/components/status-tag';
-import { InstanceStatusMapValue, status } from '@/pages/llmodels/config';
-import { convertFileSize } from '@/utils';
 import { Descriptions, Flex, Tag } from 'antd';
 import _ from 'lodash';
 import React, { useMemo } from 'react';
 import { useDetailContext } from '../../config/detail-context';
-import Section from '../summary/section';
+import Section from './section';
 
 const calcTotalVram = (vram: Record<string, number>) => {
   return _.sum(_.values(vram));
@@ -17,21 +14,16 @@ const Instance: React.FC = () => {
   const items = useMemo(() => {
     const { snapshot } = detailData;
     const [instanceName, instanceData] =
-      Object.entries(snapshot.instances || {})[0] || [];
+      Object.entries(snapshot?.instances || {})[0] || [];
     return [
       {
         key: '1',
         label: 'Instance Name',
         children: (
           <div className="flex-center gap-8">
-            <span>{instanceName}</span>
-            <StatusTag
-              statusValue={{
-                status: status[instanceData.state],
-                text: InstanceStatusMapValue[instanceData.state],
-                message: detailData.state_message || undefined
-              }}
-            />
+            <span>
+              {detailData?.model_name}/{detailData?.model_instance_name}
+            </span>
           </div>
         )
       },
@@ -39,19 +31,6 @@ const Instance: React.FC = () => {
         key: '2',
         label: 'Worker',
         children: instanceData?.worker_name || '-'
-        // children:
-        //   instanceData?.ports?.length > 0
-        //     ? `${instanceData.worker_ip}:${instanceData.ports[0]}`
-        //     : instanceData.worker_ip || '-'
-      },
-      {
-        key: '3',
-        label: 'GPU Indexes',
-        children:
-          _.join(
-            instanceData.gpu_indexes?.sort?.((a, b) => a - b),
-            ','
-          ) || '-'
       },
       {
         key: '6',
@@ -59,22 +38,11 @@ const Instance: React.FC = () => {
         children: instanceData?.gpu_type || '-'
       },
       {
-        key: '4',
-        label: 'Allocated VRAM',
-        children:
-          convertFileSize(
-            instanceData.computed_resource_claim?.vram
-              ? calcTotalVram(instanceData.computed_resource_claim?.vram)
-              : 0,
-            1
-          ) || '-'
-      },
-      {
         key: '5',
         label: 'Backend',
         children: `${instanceData?.backend || '-'} ${
-          instanceData.backend_version
-            ? `(${instanceData.backend_version})`
+          instanceData?.backend_version
+            ? `(${instanceData?.backend_version})`
             : ''
         }`
       }
@@ -84,14 +52,14 @@ const Instance: React.FC = () => {
   const paramsItems = useMemo(() => {
     const { snapshot } = detailData;
     const [instanceName, instanceData] =
-      Object.entries(snapshot.instances || {})[0] || [];
+      Object.entries(snapshot?.instances || {})[0] || [];
     return [
       {
         key: '1',
         label: 'Backend Parameters',
         children: (
           <Flex gap={8} wrap="wrap">
-            {instanceData?.backend_parameters.map(
+            {instanceData?.backend_parameters?.map(
               (param: string, index: number) => (
                 <Tag key={index} style={{ margin: 0 }}>
                   {param}
@@ -180,7 +148,7 @@ const Instance: React.FC = () => {
       <Descriptions
         items={items}
         colon={false}
-        column={3}
+        column={4}
         layout="vertical"
         styles={{
           content: {

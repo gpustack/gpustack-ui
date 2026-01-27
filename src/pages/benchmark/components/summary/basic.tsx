@@ -6,7 +6,6 @@ import _, { round } from 'lodash';
 import React from 'react';
 import styled from 'styled-components';
 import { useDetailContext } from '../../config/detail-context';
-import PercentileResult from './percentile-result';
 import Section from './section';
 
 const Container = styled.div`
@@ -239,7 +238,6 @@ const Summary: React.FC = () => {
           ></Descriptions>
         </Section>
       </Box>
-      <PercentileResult />
     </Container>
   );
 };

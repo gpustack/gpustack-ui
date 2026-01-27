@@ -1,7 +1,7 @@
 import { Descriptions, DescriptionsProps } from 'antd';
 import React from 'react';
 import { useDetailContext } from '../../config/detail-context';
-import Section from '../summary/section';
+import Section from './section';
 
 const Benchmark: React.FC = () => {
   const { detailData } = useDetailContext();
@@ -19,7 +19,7 @@ const Benchmark: React.FC = () => {
     },
     {
       key: '3',
-      label: 'Token Length (In/Out)',
+      label: 'Token Length (Prompt/Out)',
       children: (
         <span>
           {detailData?.dataset_prompt_tokens || '-'} /{' '}

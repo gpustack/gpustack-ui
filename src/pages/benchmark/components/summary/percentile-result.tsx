@@ -1,107 +1,92 @@
 import { Table } from 'antd';
+import { round } from 'lodash';
 import React from 'react';
 import { useDetailContext } from '../../config/detail-context';
 import Section from './section';
 
-// Define table columns: Percentile、 TTFT (ms) 、 ITL (ms) 、TPOT (ms)、Latency (ms)、Input Tokens (t/s)、 Output Tokens (t/s)、 Output (t/s)、Total (t/s)
-
 const columns = [
   {
-    title: 'Percentile',
-    dataIndex: 'percentile',
-    key: 'percentile'
-  },
-  {
     title: 'TTFT (ms)',
-    dataIndex: 'ttft',
-    key: 'ttft'
+    dataIndex: 'time_to_first_token_ms',
+    render: (value: number) => round(value, 2)
   },
   {
     title: 'ITL (ms)',
-    dataIndex: 'itl',
-    key: 'itl'
+    dataIndex: 'inter_token_latency_ms',
+    render: (value: number) => round(value, 2)
   },
   {
     title: 'TPOT (ms)',
-    dataIndex: 'tpot',
-    key: 'tpot'
+    dataIndex: 'time_per_output_token_ms',
+    render: (value: number) => round(value, 2)
   },
   {
-    title: 'Latency (ms)',
-    dataIndex: 'latency',
-    key: 'latency'
+    title: 'Latency (s)',
+    dataIndex: 'request_latency',
+    render: (value: number) => round(value, 2)
   },
   {
-    title: 'Input Tokens (t/s)',
-    dataIndex: 'inputTokens',
-    key: 'inputTokens'
+    title: 'Input tokens',
+    dataIndex: 'prompt_token_count',
+    render: (value: number) => round(value, 0)
   },
   {
-    title: 'Output Tokens (t/s)',
-    dataIndex: 'outputTokens',
-    key: 'outputTokens'
+    title: 'Output tokens',
+    dataIndex: 'output_token_count',
+    render: (value: number) => round(value, 0)
+  },
+  {
+    title: 'Input (t/s)',
+    dataIndex: 'prompt_tokens_per_second',
+    render: (value: number) => round(value, 2)
   },
   {
     title: 'Output (t/s)',
-    dataIndex: 'output',
-    key: 'output'
+    dataIndex: 'output_tokens_per_second',
+    render: (value: number) => round(value, 2)
   },
   {
     title: 'Total (t/s)',
-    dataIndex: 'total',
-    key: 'total'
+    dataIndex: 'tokens_per_second',
+    render: (value: number) => round(value, 2)
   }
 ];
 
-// mock data example: three rows of percentiles: 50th, 90th, 99th
-const data = [
-  {
-    key: '1',
-    percentile: '50%',
-    ttft: 100,
-    itl: 50,
-    tpot: 20,
-    latency: 200,
-    inputTokens: 300,
-    outputTokens: 400,
-    output: 500,
-    total: 600
-  },
-  {
-    key: '2',
-    percentile: '90%',
-    ttft: 150,
-    itl: 70,
-    tpot: 30,
-    latency: 250,
-    inputTokens: 350,
-    outputTokens: 450,
-    output: 550,
-    total: 650
-  },
-  {
-    key: '3',
-    percentile: '99%',
-    ttft: 200,
-    itl: 90,
-    tpot: 40,
-    latency: 300,
-    inputTokens: 400,
-    outputTokens: 500,
-    output: 600,
-    total: 700
-  }
-];
+const PERCENTILES = [
+  { key: 'p50', label: '50%' },
+  { key: 'p90', label: '90%' },
+  { key: 'p99', label: '99%' }
+] as const;
 
 const PercentileResult: React.FC = () => {
-  const { detailData, id } = useDetailContext();
+  const { detailData } = useDetailContext();
+  const metrics = detailData?.raw_metrics?.benchmarks?.[0]?.metrics || {};
+
+  const buildPercentileTable = (metrics: any) => {
+    return PERCENTILES.map(({ key, label }) => {
+      const row: any = { percentile: label };
+
+      columns.forEach(({ dataIndex }) => {
+        row[dataIndex] =
+          metrics?.[dataIndex]?.successful?.percentiles?.[key] ?? 0;
+      });
+
+      return row;
+    });
+  };
 
   return (
     <Section title="Percentiles Result">
       <Table
         size="small"
-        columns={columns}
-        dataSource={data}
+        columns={[
+          {
+            title: 'Percentile',
+            dataIndex: 'percentile'
+          },
+          ...columns
+        ]}
+        dataSource={buildPercentileTable(metrics)}
         rowKey="percentile"
         pagination={false}
         styles={{

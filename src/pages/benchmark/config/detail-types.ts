@@ -67,6 +67,12 @@ export interface GPUData {
 export interface BenchmarkDetail {
   profile: string;
   seed: number;
+  raw_metrics: {
+    benchmarks: Array<{
+      metrics: Record<string, any>;
+    }>;
+    [key: string]: any;
+  };
   requests_per_second_mean: number;
   request_latency_mean: number;
   time_per_output_token_mean: number;

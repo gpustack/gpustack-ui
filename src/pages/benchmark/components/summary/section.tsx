@@ -1,3 +1,6 @@
+import HeadlessCollapse from '@/components/collapse-container/headless-collapse';
+import IconFont from '@/components/icon-font';
+import { useState } from 'react';
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
@@ -21,9 +24,10 @@ const Container = styled.div`
 `;
 
 const Title = styled.div`
+  justify-content: space-between;
   display: flex;
+  cursor: pointer;
   font-weight: 500;
-  // margin-bottom: 12px;
   font-size: 14px;
   gap: 8px;
   padding: 12px 16px;
@@ -35,16 +39,31 @@ const Title = styled.div`
 const DetailSection: React.FC<{
   children: React.ReactNode;
   title?: React.ReactNode;
+  minHeight?: number;
   styles?: {
     wraper?: React.CSSProperties;
     container?: React.CSSProperties;
     title?: React.CSSProperties;
   };
-}> = ({ children, title, styles }) => {
+}> = ({ children, title, styles, minHeight = 100 }) => {
+  const [open, setOpen] = useState(true);
   return (
     <Wrapper style={styles?.wraper}>
-      {title && <Title style={styles?.title}>{title}</Title>}
-      <Container style={styles?.container}>{children}</Container>
+      {title && (
+        <Title style={styles?.title} onClick={() => setOpen(!open)}>
+          {title}
+          <IconFont
+            type={'icon-down'}
+            rotate={open ? 0 : -90}
+            style={{
+              transition: 'transform 0.2s'
+            }}
+          ></IconFont>
+        </Title>
+      )}
+      <HeadlessCollapse open={open} minHeight={minHeight}>
+        <Container style={styles?.container}>{children}</Container>
+      </HeadlessCollapse>
     </Wrapper>
   );
 };

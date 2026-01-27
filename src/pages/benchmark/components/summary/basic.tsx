@@ -2,7 +2,7 @@ import AutoTooltip from '@/components/auto-tooltip';
 import { useIntl } from '@umijs/max';
 import { Col, Descriptions, DescriptionsProps, Row, Statistic } from 'antd';
 import dayjs from 'dayjs';
-import { round } from 'lodash';
+import _, { round } from 'lodash';
 import React from 'react';
 import styled from 'styled-components';
 import { useDetailContext } from '../../config/detail-context';
@@ -32,6 +32,7 @@ const Box = styled.div`
 const Summary: React.FC = () => {
   const { detailData, clusterList } = useDetailContext();
   const intl = useIntl();
+  const rawMetrics = _.get(detailData, ['raw_metrics', 'benchmarks', '0'], {});
 
   const items: DescriptionsProps['items'] = [
     {
@@ -56,13 +57,8 @@ const Summary: React.FC = () => {
     },
     {
       key: '5',
-      label: 'Concurrency',
-      children: detailData.concurrency
-    },
-    {
-      key: '5',
       label: 'Duration (s)',
-      children: detailData.duration
+      children: round(rawMetrics.duration || 0, 2)
     },
     {
       key: '3',
@@ -75,43 +71,68 @@ const Summary: React.FC = () => {
       label: 'Total Requests',
       key: 'total_requests',
       value: detailData.total_requests,
+      precision: 0,
       unit: ''
     },
     {
       label: 'Success Rate',
       key: 'success_rate',
-      value: detailData.success_rate,
+      value: round(
+        (_.get(rawMetrics, 'metrics.request_totals.successful') /
+          _.get(rawMetrics, 'metrics.request_totals.total')) *
+          100 || 0,
+        1
+      ),
       color: 'var(--ant-color-success)',
+      precision: 0,
       unit: '%'
     },
     {
-      label: 'TPS',
-      key: 'tps',
-      value: detailData.tokens_per_second_mean,
-      unit: 't/s'
+      label: 'Incomplete Count',
+      key: 'incomplete_count',
+      value: _.get(rawMetrics, 'metrics.request_totals.incomplete'),
+      color: 'var(--ant-color-warning)',
+      unit: ''
+    },
+    // {
+    //   label: 'Error Count',
+    //   key: 'error_count',
+    //   value: _.get(rawMetrics, 'metrics.request_totals.error'),
+    //   color: 'var(--ant-color-error)',
+    //   unit: ''
+    // },
+    {
+      label: 'Concurrency',
+      key: 'concurrency',
+      value: _.get(rawMetrics, 'metrics.request_concurrency.successful.mean'),
+      precision: 2,
+      unit: ''
     },
     {
       label: 'RPS',
       key: 'rps',
       value: detailData.requests_per_second_mean,
+      precision: 2,
       unit: 'req/s'
     },
-    // {
-    //   label: 'ITL',
-    //   key: 'itl',
-    //   value: detailData.inter_token_latency_mean,
-    //   unit: 'ms'
-    // },
+    {
+      label: 'ITL',
+      key: 'itl',
+      value: detailData.inter_token_latency_mean,
+      unit: 'ms'
+    },
     {
       label: 'TPOT',
       key: 'time_per_output_token_mean',
       value: detailData.time_per_output_token_mean,
+      precision: 2,
       unit: 'ms'
     },
     {
       label: 'TTFT',
       key: 'time_to_first_token_mean',
       value: detailData.time_to_first_token_mean,
+      precision: 2,
       unit: 'ms'
     }
   ];
@@ -119,36 +140,36 @@ const Summary: React.FC = () => {
   const throughputFields = [
     {
       key: '3',
-      label: 'Total throughput',
-      children: `${round(detailData.total_through || 0, 2)} t/s`
+      label: 'Total token throughput',
+      children: `${round(detailData.tokens_per_second_mean || 0, 2)} t/s`
     },
     {
       key: '1',
-      label: 'Request throughput',
-      children: `${round(detailData.request_through || 0, 2)} t/s`
+      label: 'Request token throughput',
+      children: `${round(detailData.prompt_tokens_per_second_mean || 0, 2)} t/s`
     },
     {
       key: '2',
-      label: 'Output throughput',
-      children: `${round(detailData.output_through || 0, 2)} t/s`
+      label: 'Output token throughput',
+      children: `${round(detailData.output_tokens_per_second_mean || 0, 2)} t/s`
     }
   ];
 
   const latencyFields = [
     {
       key: '1',
-      label: 'Request Latency',
-      children: `${round(detailData.request_latency_mean, 2)} t/s`
+      label: 'Avg Request Latency',
+      children: `${round(detailData.request_latency_mean, 2)} ms`
     },
     {
       key: '2',
       label: 'Avg Time to First Token',
-      children: `${round(detailData.time_to_first_token_mean, 2)} t/s`
+      children: `${round(detailData.time_to_first_token_mean, 2)} ms`
     },
     {
       key: '3',
       label: 'Avg Time Per Output Token',
-      children: `${round(detailData.time_per_output_token_mean, 2)} t/s`
+      children: `${round(detailData.time_per_output_token_mean, 2)} ms`
     }
   ];
 
@@ -156,12 +177,12 @@ const Summary: React.FC = () => {
     <Container>
       <Row gutter={16}>
         {cardFields.map((field) => (
-          <Col span={4} key={field.key} style={{ padding: '8px' }}>
+          <Col span={6} key={field.key} style={{ padding: '8px' }}>
             <Card>
               <Statistic
                 title={field.label}
                 value={field.value}
-                precision={2}
+                precision={field.precision}
                 styles={{
                   content: {
                     color: field.color,

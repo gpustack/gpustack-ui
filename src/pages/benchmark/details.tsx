@@ -19,7 +19,6 @@ const Details: React.FC = () => {
       title: name
     }
   ];
-
   useEffect(() => {
     document.title = `${intl.formatMessage({ id: 'benchmark.title' })} - ${name}`;
   }, [name, intl]);

@@ -81,20 +81,18 @@ export interface FormData {
   dataset_output_tokens: number;
   total_requests: number;
   request_rate: number;
-  instance_snapshots: Record<string, InstanceSnapshot>;
-  gpu_snapshots: Record<string, GPUSnapshot>;
-  state: string;
-  state_message: string;
-  worker_id: number;
-  gpu_summary: string;
   seed: number;
-  gpu_vendor_summary: string;
+  model_instance?: string;
 }
 
 export interface BenchmarkListItem extends FormData {
   id: number;
   created_at: string;
   updated_at: string;
+  state: string;
+  state_message: string;
+  instance_snapshot: InstanceSnapshot;
+  gpu_snapshot: GPUSnapshot[];
 }
 
 export interface DatasetListItem {

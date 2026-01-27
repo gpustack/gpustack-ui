@@ -157,6 +157,7 @@ const SealCascader: React.FC<
 
   const handleDropdownVisibleChange = (open: boolean) => {
     setVisible(open);
+    props.onOpenChange?.(open);
   };
 
   return (

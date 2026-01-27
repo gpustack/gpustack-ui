@@ -1,5 +1,4 @@
 import AutoComplete from '@/components/seal-form/auto-complete';
-import SealInputNumber from '@/components/seal-form/input-number';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import useAppUtils from '@/hooks/use-app-utils';
@@ -14,18 +13,12 @@ import useQueryDataset from '../services/use-query-dataset';
 import useQueryProfiles from '../services/use-query-profiles';
 import RandomSettingsForm from './random-settings';
 
-const profileFields = [
-  'dataset_prompt_tokens',
-  'dataset_output_tokens',
-  'request_rate',
-  'total_requests'
-];
-
 const DatasetForm: React.FC = () => {
   const intl = useIntl();
   const form = Form.useFormInstance();
   const { getRuleMessage } = useAppUtils();
   const { action, open } = useFormContext();
+  const profile = Form.useWatch('profile', form);
   const {
     datasetList,
     loading: datasetLoading,
@@ -37,17 +30,12 @@ const DatasetForm: React.FC = () => {
     fetchProfilesData,
     cancelRequest: cancelProfilesRequest
   } = useQueryProfiles();
-  const profileConfigCache = React.useRef<{ [key: string]: any }>({});
 
   const handleOnDataSetChange = (value: any, option: any) => {
     if (value === 'Custom') {
       form.setFieldsValue({
         profile: ProfileValueMap.Custom,
-        dataset_id: null,
-        dataset_prompt_tokens: null,
-        dataset_output_tokens: null,
-        request_rate: null,
-        total_requests: null
+        dataset_id: null
       });
     } else {
       form.setFieldsValue({
@@ -61,21 +49,12 @@ const DatasetForm: React.FC = () => {
     }
   };
 
-  const setCustomProfileValues = () => {
-    form.setFieldsValue({
-      dataset_name: 'Custom',
-      dataset_id: null,
-      dataset_prompt_tokens: null,
-      dataset_output_tokens: null,
-      request_rate: null,
-      total_requests: null
-    });
-  };
-
   const handleProfileChange = (value: string, option: any) => {
     if (value === ProfileValueMap.Custom) {
-      setCustomProfileValues();
-      profileConfigCache.current = {};
+      form.setFieldsValue({
+        dataset_name: 'Custom',
+        dataset_id: null
+      });
     } else {
       const dataset_id = datasetList.find(
         (item) => item.label === option.config?.dataset_name
@@ -85,35 +64,7 @@ const DatasetForm: React.FC = () => {
         dataset_id: dataset_id,
         ..._.omit(option?.config, ['description', 'dataset_source'])
       });
-
-      profileConfigCache.current = {
-        profile: value,
-        config: {
-          dataset_id: dataset_id,
-          ..._.omit(option?.config, ['description', 'dataset_source'])
-        }
-      };
     }
-  };
-
-  const handleOnProfileConfigChange = async () => {
-    const values = form.getFieldsValue(profileFields);
-    if (
-      _.isEqual(values, {
-        ..._.pick(profileConfigCache.current.config, profileFields)
-      })
-    ) {
-      form.setFieldsValue({
-        profile: profileConfigCache.current.profile,
-        ...profileConfigCache.current.config
-      });
-      return;
-    }
-
-    form.setFieldsValue({
-      profile: 'Custom',
-      dataset_name: 'Custom'
-    });
   };
 
   useEffect(() => {
@@ -170,41 +121,7 @@ const DatasetForm: React.FC = () => {
       <Form.Item<FormData> hidden name="dataset_id">
         <SealInput.Input></SealInput.Input>
       </Form.Item>
-      <RandomSettingsForm
-        onValueChange={handleOnProfileConfigChange}
-      ></RandomSettingsForm>
-      <Form.Item<FormData>
-        name="request_rate"
-        rules={[
-          {
-            required: true,
-            message: getRuleMessage('input', 'benchmark.table.requestRate')
-          }
-        ]}
-      >
-        <SealInputNumber
-          min={0}
-          onChange={handleOnProfileConfigChange}
-          label={intl.formatMessage({ id: 'benchmark.table.requestRate' })}
-          required
-        ></SealInputNumber>
-      </Form.Item>
-      <Form.Item<FormData>
-        name="total_requests"
-        rules={[
-          {
-            required: true,
-            message: getRuleMessage('input', 'benchmark.form.totalRequests')
-          }
-        ]}
-      >
-        <SealInputNumber
-          min={0}
-          onChange={handleOnProfileConfigChange}
-          label={intl.formatMessage({ id: 'benchmark.form.totalRequests' })}
-          required
-        ></SealInputNumber>
-      </Form.Item>
+      {profile === 'Custom' && <RandomSettingsForm></RandomSettingsForm>}
     </>
   );
 };

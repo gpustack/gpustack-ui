@@ -1,9 +1,11 @@
 import { useQueryDataList } from '@/hooks/use-query-data-list';
+import { useIntl } from '@umijs/max';
 import { useState } from 'react';
 import { queryDatasetList } from '../apis';
 import { DatasetListItem } from '../config/types';
 
 const useQueryDataset = () => {
+  const intl = useIntl();
   const { dataList, loading, fetchData, cancelRequest } = useQueryDataList<
     DatasetListItem,
     Global.SearchParams
@@ -30,7 +32,7 @@ const useQueryDataset = () => {
     setDatasetList([
       ...list,
       {
-        label: 'Custom',
+        label: intl.formatMessage({ id: 'backend.custom' }),
         value: 'Custom'
       }
     ]);

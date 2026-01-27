@@ -3,7 +3,7 @@ export default {
   'benchmark.button.add': 'Add Benchmark',
   'benchmark.button.compare': 'Compare',
   'benchmark.table.model': 'Model',
-  'benchmark.table.instance': 'Endpoint',
+  'benchmark.table.instance': 'Model Instance',
   'benchmark.table.dataset': 'Dataset',
   'benchmark.table.requestRate': 'Request Rate',
   'benchmark.table.gpu': 'GPU ',

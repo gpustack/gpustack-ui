@@ -87,13 +87,11 @@ const DatasetForm: React.FC = () => {
       <Form.Item<FormData> hidden name="dataset_id">
         <SealInput.Input></SealInput.Input>
       </Form.Item>
-      {profile === 'Custom' && (
-        <RandomSettingsForm
-          datasetList={datasetList}
-          datasetLoading={datasetLoading}
-          handleOnDataSetChange={handleOnDataSetChange}
-        ></RandomSettingsForm>
-      )}
+      <RandomSettingsForm
+        datasetList={datasetList}
+        datasetLoading={datasetLoading}
+        handleOnDataSetChange={handleOnDataSetChange}
+      ></RandomSettingsForm>
     </>
   );
 };

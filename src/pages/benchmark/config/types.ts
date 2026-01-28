@@ -91,6 +91,7 @@ export interface BenchmarkListItem extends FormData {
   updated_at: string;
   state: string;
   state_message: string;
+  progress: number;
   instance_snapshot: InstanceSnapshot;
   gpu_snapshot: GPUSnapshot[];
 }

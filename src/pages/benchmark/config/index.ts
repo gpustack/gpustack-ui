@@ -7,6 +7,7 @@ export const BenchmarkStatusValueMap = {
   Running: 'running',
   Completed: 'completed',
   Error: 'error',
+  Stopped: 'stopped',
   Unreachable: 'unreachable'
 };
 
@@ -16,6 +17,7 @@ export const BenchmarkStatusLabelMap = {
   [BenchmarkStatusValueMap.Running]: 'Running',
   [BenchmarkStatusValueMap.Completed]: 'Completed',
   [BenchmarkStatusValueMap.Error]: 'Error',
+  [BenchmarkStatusValueMap.Stopped]: 'Stopped',
   [BenchmarkStatusValueMap.Unreachable]: 'Unreachable'
 };
 
@@ -25,7 +27,8 @@ export const BenchmarkStatus: Record<string, StatusType> = {
   [BenchmarkStatusValueMap.Running]: StatusMaps.success,
   [BenchmarkStatusValueMap.Completed]: StatusMaps.success,
   [BenchmarkStatusValueMap.Error]: StatusMaps.error,
-  [BenchmarkStatusValueMap.Unreachable]: StatusMaps.error
+  [BenchmarkStatusValueMap.Unreachable]: StatusMaps.error,
+  [BenchmarkStatusValueMap.Stopped]: StatusMaps.warning
 };
 
 export const ProfileValueMap = {

@@ -36,6 +36,7 @@ const useStyles = createStyles(({ token, css }) => {
 interface LocalUserFormProps {
   handleLogin: (values: any) => void;
   form: FormInstance;
+  loading?: boolean;
   loginOption: {
     saml: boolean;
     oidc: boolean;
@@ -144,6 +145,7 @@ const LocalUserForm: React.FC<LocalUserFormProps> = (props) => {
         htmlType="submit"
         type="primary"
         block
+        loading={props.loading}
         style={{ height: '48px', fontSize: '14px' }}
       >
         {intl.formatMessage({ id: 'common.button.login' })}

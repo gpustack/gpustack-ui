@@ -1,7 +1,7 @@
 import { Descriptions, DescriptionsProps } from 'antd';
 import React from 'react';
 import { useDetailContext } from '../../config/detail-context';
-import Section from './section';
+import Title from './title';
 
 const Benchmark: React.FC = () => {
   const { detailData } = useDetailContext();
@@ -19,7 +19,7 @@ const Benchmark: React.FC = () => {
     },
     {
       key: '3',
-      label: 'Token Length (Prompt/Out)',
+      label: 'Token Length (Prompt/Output)',
       children: (
         <span>
           {detailData?.dataset_prompt_tokens || '-'} /{' '}
@@ -45,19 +45,19 @@ const Benchmark: React.FC = () => {
   ];
 
   return (
-    <Section title="Benchmark Parameters" minHeight={132}>
+    <div>
+      <Title>Parameters</Title>
       <Descriptions
         items={items}
         colon={false}
         column={3}
-        layout="vertical"
         styles={{
           content: {
             justifyContent: 'flex-start'
           }
         }}
       ></Descriptions>
-    </Section>
+    </div>
   );
 };
 

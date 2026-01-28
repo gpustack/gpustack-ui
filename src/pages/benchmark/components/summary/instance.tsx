@@ -1,8 +1,9 @@
+import AutoTooltip from '@/components/auto-tooltip';
 import { Descriptions, Flex, Tag } from 'antd';
 import _ from 'lodash';
 import React, { useMemo } from 'react';
 import { useDetailContext } from '../../config/detail-context';
-import Section from './section';
+import Title from './title';
 
 const calcTotalVram = (vram: Record<string, number>) => {
   return _.sum(_.values(vram));
@@ -10,6 +11,8 @@ const calcTotalVram = (vram: Record<string, number>) => {
 
 const Instance: React.FC = () => {
   const { detailData } = useDetailContext();
+  const [, instanceData] =
+    Object.entries(detailData?.snapshot?.instances || {})[0] || [];
 
   const items = useMemo(() => {
     const { snapshot } = detailData;
@@ -18,25 +21,21 @@ const Instance: React.FC = () => {
     return [
       {
         key: '1',
-        label: 'Instance Name',
+        label: 'Model Name',
         children: (
-          <div className="flex-center gap-8">
-            <span>
-              {detailData?.model_name}/{detailData?.model_instance_name}
-            </span>
-          </div>
+          <AutoTooltip ghost>{detailData?.model_name || '-'}</AutoTooltip>
         )
       },
       {
         key: '2',
-        label: 'Worker',
-        children: instanceData?.worker_name || '-'
+        label: 'Instance Name',
+        children: (
+          <AutoTooltip ghost>
+            {detailData?.model_instance_name || '-'}
+          </AutoTooltip>
+        )
       },
-      {
-        key: '6',
-        label: 'GPU Type',
-        children: instanceData?.gpu_type || '-'
-      },
+
       {
         key: '5',
         label: 'Backend',
@@ -45,6 +44,13 @@ const Instance: React.FC = () => {
             ? `(${instanceData?.backend_version})`
             : ''
         }`
+      },
+      {
+        key: '6',
+        label: 'Model File',
+        children: (
+          <AutoTooltip ghost>{instanceData?.resolved_path || '-'}</AutoTooltip>
+        )
       }
     ];
   }, [detailData]);
@@ -144,7 +150,8 @@ const Instance: React.FC = () => {
   }, [detailData]);
 
   return (
-    <Section title="Model Instance" minHeight={220}>
+    <div>
+      <Title>Instance</Title>
       <Descriptions
         items={items}
         colon={false}
@@ -168,7 +175,7 @@ const Instance: React.FC = () => {
           }
         }}
       ></Descriptions>
-    </Section>
+    </div>
   );
 };
 

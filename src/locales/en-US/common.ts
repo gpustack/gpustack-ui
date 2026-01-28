@@ -269,5 +269,9 @@ export default {
   'common.button.dontshowagain': "Don't show again",
   'common.sorter.tips.ascend': 'Click to sort ascending',
   'common.sorter.tips.descend': 'Click to sort descending',
-  'common.sorter.tips.cancel': 'Click to cancel sorting'
+  'common.sorter.tips.cancel': 'Click to cancel sorting',
+  'common.button.enable': 'Enable',
+  'common.button.disable': 'Disable',
+  'common.status.enabled': 'Enabled',
+  'common.status.disabled': 'Disabled'
 };

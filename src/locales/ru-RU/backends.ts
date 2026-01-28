@@ -10,6 +10,7 @@ export default {
   'backend.framework': 'Фреймворк',
   'backend.builtin': 'Встроенный',
   'backend.custom': 'Пользовательский',
+  'backend.community': 'Сообщество',
   'backend.isDefault': 'По умолчанию',
   'backend.availableFrameworks': 'Поддерживаемые фреймворки',
   'backend.addVersion': 'Добавить версию',

@@ -22,7 +22,7 @@ const CardWrapper = styled.div.attrs({
 })`
   overflow: hidden;
   display: flex;
-  padding: 16px 20px;
+  padding: 16px 16px;
   justify-content: flex-start;
   align-items: center;
   border: 1px solid var(--ant-color-border);

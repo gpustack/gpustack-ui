@@ -25,6 +25,7 @@ import VersionInfoModal from './components/version-info-modal';
 import { json2Yaml, yaml2Json } from './config';
 import { FormData, ListItem } from './config/types';
 import useExportYAML from './hooks/use-export-yaml';
+import useEnableBackend from './services/use-enable-backend';
 
 const BackendList = () => {
   const intl = useIntl();
@@ -59,6 +60,7 @@ const BackendList = () => {
     open: boolean;
     currentData?: Partial<ListItem>;
   }>({ open: false });
+  const { handleEnableBackend } = useEnableBackend();
 
   // built_in_version_configs is read-only, but needs to be included when updating
   const handleOnSubmit = async (values: FormData) => {
@@ -150,6 +152,14 @@ const BackendList = () => {
       setOpenVersionInfoModal({
         open: true,
         currentData: item.data
+      });
+    } else if (item.action === 'enable' || item.action === 'disable') {
+      handleEnableBackend({
+        id: item.data.id,
+        data: {
+          ...item.data,
+          enabled: item.action === 'enable'
+        }
       });
     }
   };

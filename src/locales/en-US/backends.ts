@@ -10,6 +10,7 @@ export default {
   'backend.framework': 'Framework',
   'backend.builtin': 'Built-in',
   'backend.custom': 'Custom',
+  'backend.community': 'Community',
   'backend.isDefault': 'Default',
   'backend.availableFrameworks': 'Supported Frameworks',
   'backend.addVersion': 'Add Version',

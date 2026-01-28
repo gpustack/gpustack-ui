@@ -269,7 +269,11 @@ export default {
   'common.button.dontshowagain': "Don't show again",
   'common.sorter.tips.ascend': 'Click to sort ascending',
   'common.sorter.tips.descend': 'Click to sort descending',
-  'common.sorter.tips.cancel': 'Click to cancel sorting'
+  'common.sorter.tips.cancel': 'Click to cancel sorting',
+  'common.button.enable': 'Enable',
+  'common.button.disable': 'Disable',
+  'common.status.enabled': 'Enabled',
+  'common.status.disabled': 'Disabled'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -304,5 +308,9 @@ export default {
 // 29. 'common.button.dontshowagain': "Don't show again",
 // 30.  'common.sorter.tips.ascend': 'Click to sort ascending',
 // 31.  'common.sorter.tips.descend': 'Click to sort descending',
-// 32.  'common.sorter.tips.cancel': 'Click to cancel sorting'
+// 32.  'common.sorter.tips.cancel': 'Click to cancel sorting',
+// 33.   'common.button.enable': 'Enable',
+// 34.    'common.button.disable': 'Disable',
+// 35.    'common.status.enabled': 'Enabled',
+// 36.    'common.status.disabled': 'Disabled'
 // ========== End of To-Do List ==========

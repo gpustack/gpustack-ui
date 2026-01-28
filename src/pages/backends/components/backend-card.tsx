@@ -13,6 +13,8 @@ import semverGt from 'semver/functions/gt';
 import styled from 'styled-components';
 import {
   backendActions,
+  BackendSourceLabelMap,
+  BackendSourceValueMap,
   builtInBackendLogos,
   customColors,
   customIcons,
@@ -26,6 +28,23 @@ const StyledCard = styled(Card)`
       background-color: var(--ant-color-fill-tertiary);
       border-radius: var(--ant-border-radius);
     }
+  }
+`;
+
+const SourceWrapper = styled.div`
+  display: grid;
+  width: 100%;
+  grid-template-columns: max-content 1fr;
+  align-items: center;
+
+  gap: 0px;
+  .dot {
+    display: flex;
+    height: 4px;
+    width: 4px;
+    background-color: var(--ant-color-text-quaternary);
+    border-radius: 50%;
+    margin-inline: 8px;
   }
 `;
 
@@ -59,8 +78,8 @@ const CardName = styled.div`
   display: flex;
   align-items: center;
   color: var(--ant-color-text);
-  margin-bottom: 4px;
-  gap: 16px;
+  margin-bottom: 8px;
+  gap: 8px;
 `;
 
 const Content = styled.div`
@@ -68,7 +87,7 @@ const Content = styled.div`
   flex-direction: column;
   align-items: flex-start;
   margin-top: 12px;
-  gap: 16px;
+  gap: 8px;
   color: var(--ant-color-text-secondary);
   .description {
     margin-block: 12px;
@@ -103,12 +122,12 @@ const Content = styled.div`
 const InfoItem = styled.div`
   display: grid;
   width: 100%;
-  grid-template-columns: max-content 1fr;
+  grid-template-columns: max-content 1fr minmax(0, max-content);
   align-items: center;
   gap: 8px;
   color: var(--ant-color-text-tertiary);
   .icon {
-    color: var(--ant-color-text-tertiary);
+    color: var(--ant-color-text-quaternary);
   }
   .label {
     display: flex;
@@ -122,6 +141,12 @@ interface BackendCardProps {
   onSelect?: (item: any) => void;
   data: ListItem;
 }
+
+const TagColorMap: Record<string, string> = {
+  [BackendSourceValueMap.CUSTOM]: 'purple',
+  [BackendSourceValueMap.BUILTIN]: 'geekblue',
+  [BackendSourceValueMap.COMMUNITY]: 'cyan'
+};
 
 const BackendCard: React.FC<BackendCardProps> = ({ data, onSelect }) => {
   const intl = useIntl();
@@ -138,6 +163,9 @@ const BackendCard: React.FC<BackendCardProps> = ({ data, onSelect }) => {
     if (builtInBackendLogos[data.backend_name]) {
       return <img src={builtInBackendLogos[data.backend_name]} height={20} />;
     }
+    if (data.icon) {
+      return <img src={data.icon} height={20} />;
+    }
     const color = customColors[data.id % customColors.length];
     const icon = customIcons[data.id % customIcons.length];
 
@@ -149,10 +177,12 @@ const BackendCard: React.FC<BackendCardProps> = ({ data, onSelect }) => {
   };
 
   const actions = useMemo(() => {
-    if (data.is_built_in) {
-      return backendActions.filter((item) => item.key !== 'delete');
-    }
-    return backendActions.filter((item) => item.key !== 'view_versions');
+    return backendActions.filter((item) => {
+      if (item.show) {
+        return item.show(data);
+      }
+      return true;
+    });
   }, [data.is_built_in]);
 
   const onClick = (e: React.MouseEvent) => {
@@ -193,6 +223,16 @@ const BackendCard: React.FC<BackendCardProps> = ({ data, onSelect }) => {
     );
   };
 
+  const renderModel = (item: any) => {
+    return (
+      <AutoTooltip ghost minWidth={20} showTitle title={item}>
+        <ThemeTag key={item} style={{ marginRight: 0 }}>
+          {item}
+        </ThemeTag>
+      </AutoTooltip>
+    );
+  };
+
   const renderFrameworks = () => {
     const frameworks = _.keys(data.framework_index_map || {});
 
@@ -213,13 +253,30 @@ const BackendCard: React.FC<BackendCardProps> = ({ data, onSelect }) => {
     );
   };
 
+  const renderRecommendModels = () => {
+    const recommnadedModels = data.recommend_models || [];
+    if (recommnadedModels.length === 0) {
+      return null;
+    }
+    return (
+      <div className="flex-center">
+        <span className="dot"></span>
+        <TagWrapper
+          gap={8}
+          dataList={recommnadedModels}
+          renderTag={renderModel}
+        ></TagWrapper>
+      </div>
+    );
+  };
+
   return (
     <StyledCard
       onClick={handleClick}
       clickable={true}
       hoverable={true}
       disabled={false}
-      height={140}
+      height={164}
       ghost
       header={
         <Header>
@@ -244,17 +301,56 @@ const BackendCard: React.FC<BackendCardProps> = ({ data, onSelect }) => {
       <Content>
         <CardName>
           <span>{data.backend_name}</span>
-          {data.is_built_in && (
-            <Tag
-              color="geekblue"
-              className="font-400"
-              variant="filled"
-              style={{ borderRadius: 'var(--ant-border-radius)', margin: 0 }}
-            >
-              {intl.formatMessage({ id: 'backend.builtin' })}
-            </Tag>
-          )}
         </CardName>
+        <SourceWrapper>
+          <InfoItem>
+            <span className="label">
+              <IconFont type="icon-source" className="icon" />
+              <span>Source:</span>
+            </span>
+            <ThemeTag
+              color={
+                TagColorMap[
+                  data.is_built_in
+                    ? BackendSourceValueMap.BUILTIN
+                    : data.backend_source
+                ]
+              }
+              className="font-400"
+              variant="outlined"
+              style={{
+                borderRadius: 'var(--ant-border-radius)',
+                margin: 0,
+                width: 'max-content'
+              }}
+            >
+              {intl.formatMessage({
+                id: data.is_built_in
+                  ? BackendSourceLabelMap[BackendSourceValueMap.BUILTIN]
+                  : BackendSourceLabelMap[data.backend_source]
+              })}
+            </ThemeTag>
+            {data.backend_source === BackendSourceValueMap.COMMUNITY && (
+              <>
+                <ThemeTag
+                  className="font-400"
+                  variant="outlined"
+                  color={data.enabled ? 'green' : 'default'}
+                  style={{
+                    borderRadius: 'var(--ant-border-radius)',
+                    margin: 0,
+                    width: 'max-content'
+                  }}
+                >
+                  {data.enabled
+                    ? `${intl.formatMessage({ id: 'common.status.enabled' })}`
+                    : `${intl.formatMessage({ id: 'common.status.disabled' })}`}
+                </ThemeTag>
+              </>
+            )}
+          </InfoItem>
+          {/* {renderRecommendModels()} */}
+        </SourceWrapper>
         {renderFrameworks()}
       </Content>
     </StyledCard>

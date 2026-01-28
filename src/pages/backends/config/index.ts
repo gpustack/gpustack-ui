@@ -29,6 +29,20 @@ export const builtInBackendLogos: Record<string, string> = {
   [backendOptionsMap.voxBox]: VoxBoxLogo
 };
 
+export const BackendSourceValueMap = {
+  CUSTOM: 'custom',
+  BUILTIN: 'built-in',
+  COMMUNITY: 'community',
+  USER_DEFINED: 'user_defined'
+};
+
+export const BackendSourceLabelMap: Record<string, string> = {
+  [BackendSourceValueMap.CUSTOM]: 'backend.custom',
+  [BackendSourceValueMap.BUILTIN]: 'backend.builtin',
+  [BackendSourceValueMap.COMMUNITY]: 'backend.community',
+  [BackendSourceValueMap.USER_DEFINED]: 'models.form.backend.custom'
+};
+
 export const backendActions = [
   {
     label: 'common.button.edit',
@@ -45,12 +59,33 @@ export const backendActions = [
     icon: icons.Yaml
   },
   {
+    label: 'common.button.enable',
+    value: 'enable',
+    key: 'enable',
+    locale: true,
+    icon: icons.Yaml,
+    show: (record: any) =>
+      !record.enabled &&
+      record.backend_source === BackendSourceValueMap.COMMUNITY
+  },
+  {
+    label: 'common.button.disable',
+    value: 'disable',
+    key: 'disable',
+    locale: true,
+    icon: icons.Yaml,
+    show: (record: any) =>
+      record.enabled &&
+      record.backend_source === BackendSourceValueMap.COMMUNITY
+  },
+  {
     label: 'common.button.delete',
     value: 'delete',
     key: 'delete',
     icon: icons.DeleteOutlined,
     locale: true,
-    danger: true
+    danger: true,
+    show: (record: any) => !record.is_built_in
   }
 ];
 

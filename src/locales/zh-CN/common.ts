@@ -261,5 +261,9 @@ export default {
   'common.button.dontshowagain': '不再提示',
   'common.sorter.tips.ascend': '点击升序',
   'common.sorter.tips.descend': '点击降序',
-  'common.sorter.tips.cancel': '取消排序'
+  'common.sorter.tips.cancel': '取消排序',
+  'common.button.enable': '启用',
+  'common.button.disable': '禁用',
+  'common.status.enabled': '已启用',
+  'common.status.disabled': '未启用'
 };

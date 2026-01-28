@@ -2,7 +2,7 @@ import { Table } from 'antd';
 import { round } from 'lodash';
 import React from 'react';
 import { useDetailContext } from '../../config/detail-context';
-import Section from './section';
+import Title from './title';
 
 const columns = [
   {
@@ -76,13 +76,17 @@ const PercentileResult: React.FC = () => {
   };
 
   return (
-    <Section title="Percentiles Result" minHeight={240}>
+    <div>
+      <Title>Percentile</Title>
       <Table
         size="small"
         columns={[
           {
             title: 'Percentile',
-            dataIndex: 'percentile'
+            dataIndex: 'percentile',
+            render: (value: string) => (
+              <span style={{ fontWeight: 500 }}>{value}</span>
+            )
           },
           ...columns
         ]}
@@ -90,17 +94,15 @@ const PercentileResult: React.FC = () => {
         rowKey="percentile"
         pagination={false}
         styles={{
-          // header: {
-          //   row: {
-          //     background: 'none',
-          //     borderBottom: '1px solid var(--ant-color-split)'
-          //   },
-          //   cell: {
-          //     background: 'none',
-          //     paddingBottom: 0,
-          //     borderBottom: '1px solid var(--ant-color-split)'
-          //   }
-          // },
+          header: {
+            row: {
+              backgroundColor: 'transparent'
+            },
+            cell: {
+              fontWeight: 400,
+              borderBottom: '1px solid var(--ant-color-split)'
+            }
+          },
           body: {
             cell: {
               height: 54
@@ -108,7 +110,7 @@ const PercentileResult: React.FC = () => {
           }
         }}
       ></Table>
-    </Section>
+    </div>
   );
 };
 

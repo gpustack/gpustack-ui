@@ -21,7 +21,7 @@ export default {
   'benchmark.form.profile.longContext': '长上下文',
   'benchmark.form.profile.heavy': '高生成量',
   'benchmark.form.profile.custom': '自定义',
-  'benchmark.table.inputTokenLength': '输入 Token 长度',
+  'benchmark.table.inputTokenLength': '提示词 Token 长度',
   'benchmark.table.outputTokenLength': '输出 Token 长度',
   'benchmark.detail.summary.title': '摘要',
   'benchmark.detail.configure.title': '配置',

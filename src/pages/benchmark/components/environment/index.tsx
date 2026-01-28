@@ -4,7 +4,8 @@ import SealTable from '@/components/seal-table/index';
 import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import { convertFileSize } from '@/utils';
 import useMemoizedFn from 'ahooks/lib/useMemoizedFn';
-import { Col, Row } from 'antd';
+import { Col, Row, Tag } from 'antd';
+import _ from 'lodash';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import { useDetailContext } from '../../config/detail-context';
@@ -32,30 +33,31 @@ const Environment: React.FC = () => {
 
     return {
       ...workerInfo,
+      ..._.pick(gpuData?.[0], ['driver_version', 'runtime_version']),
       isMain: true,
       children: gpuData
     };
   }, [snapshot]);
 
-  // const subWorkers = useMemo(() => {
-  //   const [[mainWorkerName, mainWorkerInfo]] = Object.entries(snapshot.workers);
+  const subWorkers = useMemo(() => {
+    const [[mainWorkerName, mainWorkerInfo]] = Object.entries(snapshot.workers);
 
-  //   const subOrdinaryWorkers = Object.values(snapshot.instances).filter(
-  //     (instance) => instance.worker_name === mainWorkerName
-  //   );
+    const subOrdinaryWorkers = Object.values(snapshot.instances).filter(
+      (instance) => instance.worker_name === mainWorkerName
+    );
 
-  //   return subOrdinaryWorkers.map((worker) => {
-  //     const gpuData = Object.values(snapshot.gpus).filter(
-  //       (gpu) => gpu.worker_name === worker.worker_name
-  //     );
+    return subOrdinaryWorkers.map((worker) => {
+      const gpuData = Object.values(snapshot.gpus).filter(
+        (gpu) => gpu.worker_name === worker.worker_name
+      );
 
-  //     return {
-  //       ...worker,
-  //       isMain: false,
-  //       children: gpuData
-  //     };
-  //   });
-  // }, [snapshot, mainWorker]);
+      return {
+        ...worker,
+        isMain: false,
+        children: gpuData
+      };
+    });
+  }, [snapshot, mainWorker]);
 
   const GPUColumns = [
     {
@@ -69,18 +71,25 @@ const Environment: React.FC = () => {
       )
     },
     {
+      title: 'Index',
+      dataIndex: 'index',
+      key: 'index',
+      span: 4,
+      colStyle: { paddingLeft: 48 }
+    },
+    {
       title: 'Vendor',
       dataIndex: 'vendor',
       key: 'vendor',
-      span: 4,
-      colStyle: { paddingLeft: 46 }
+      span: 6,
+      colStyle: { paddingLeft: 110 }
     },
     {
       title: 'VRAM',
       dataIndex: 'memory_total',
       key: 'memory_total',
       label: 'VRAM',
-      span: 3,
+      span: 4,
       render: (value: number, record: any) => convertFileSize(value)
     },
     {
@@ -88,20 +97,8 @@ const Environment: React.FC = () => {
       dataIndex: 'core_total',
       key: 'core_total',
       label: 'Cores',
-      span: 3
-    },
-    {
-      title: 'Runtime Version',
-      dataIndex: 'runtime_version',
-      key: 'runtime_version',
-      span: 4
-    },
-    {
-      title: 'Driver Version',
-      dataIndex: 'driver_version',
-      key: 'driver_version',
       span: 4,
-      colStyle: { paddingLeft: 35 }
+      colStyle: { paddingLeft: 36 }
     }
   ];
 
@@ -110,31 +107,56 @@ const Environment: React.FC = () => {
       title: 'Worker Name',
       dataIndex: 'name',
       key: 'name',
-      span: 6
+      span: 6,
+      render: (value: string, record: any) => {
+        return (
+          <>
+            <AutoTooltip ghost>{value}</AutoTooltip>
+            {record.isMain && (
+              <Tag color="geekblue" style={{ marginLeft: 8 }}>
+                Main
+              </Tag>
+            )}
+          </>
+        );
+      }
     },
     {
       title: 'System',
       dataIndex: 'os',
       key: 'system',
-      span: 4,
+      span: 5,
       render: (os: { name: string; version: string }, record: any) => {
-        return `${record.os.name}`;
+        return (
+          <AutoTooltip
+            ghost
+          >{`${record.os.name} (${record.os.version})`}</AutoTooltip>
+        );
       }
     },
     {
-      title: 'Version',
-      dataIndex: 'version',
-      key: 'version',
-      span: 6,
+      title: 'Runtime Version',
+      dataIndex: 'runtime_version',
+      key: 'runtime_version',
+      span: 3,
       render: (val: any, record: any) => {
-        return <AutoTooltip ghost>{record.os.version}</AutoTooltip>;
+        return <AutoTooltip ghost>{record.runtime_version}</AutoTooltip>;
+      }
+    },
+    {
+      title: 'Driver Version',
+      dataIndex: 'driver_version',
+      key: 'driver_version',
+      span: 3,
+      render: (val: any, record: any) => {
+        return <AutoTooltip ghost>{record.driver_version}</AutoTooltip>;
       }
     },
     {
       title: 'CPU Count',
       dataIndex: 'cpu_total',
       key: 'cpu_total',
-      span: 4
+      span: 3
     },
     {
       title: 'Memory',
@@ -146,8 +168,8 @@ const Environment: React.FC = () => {
   ];
 
   const dataList = useMemo(() => {
-    return [mainWorker];
-  }, [mainWorker]);
+    return [mainWorker, ...subWorkers];
+  }, [mainWorker, subWorkers]);
 
   const handleToggleExpandAll = useMemoizedFn((expanded: boolean) => {
     const keys = dataList?.map((item) => item.id);
@@ -161,6 +183,29 @@ const Environment: React.FC = () => {
   const renderChildren = useMemoizedFn((list: any[]) => {
     return (
       <div style={{ borderRadius: 'var(--ant-table-header-border-radius)' }}>
+        <Row style={{ width: '100%' }} align="middle">
+          {GPUColumns.map((col) => (
+            <Col key={col.key} span={col.span} style={{ ...col.colStyle }}>
+              <span
+                style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: 4,
+                  flexDirection: 'column'
+                }}
+              >
+                <span
+                  style={{
+                    color: 'var(--ant-color-text-tertiary)',
+                    fontSize: 12
+                  }}
+                >
+                  {col.title}
+                </span>
+              </span>
+            </Col>
+          ))}
+        </Row>
         <RowChildren>
           {list.map((gpu) => (
             <Row key={gpu.id} style={{ width: '100%' }} align="middle">
@@ -174,14 +219,6 @@ const Environment: React.FC = () => {
                       flexDirection: 'column'
                     }}
                   >
-                    <span
-                      style={{
-                        color: 'var(--ant-color-text-tertiary)',
-                        fontSize: 12
-                      }}
-                    >
-                      {col.title}
-                    </span>
                     {col.render
                       ? col.render((gpu as any)[col.dataIndex], gpu)
                       : (gpu as any)[col.dataIndex]}

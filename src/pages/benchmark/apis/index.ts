@@ -10,6 +10,7 @@ import {
 export const BENCHMARKS_API = '/benchmarks';
 export const DATASETS_API = '/datasets';
 export const PROFILES_CONFIG_API = '/benchmark-profiles/default-config';
+export const EXPORT_BENCHMARK_LIST = '/benchmarks/export';
 
 export async function queryBenchmarkList(
   params: Global.SearchParams,
@@ -100,6 +101,22 @@ export async function queryProfiles(
     profiles: ProfileOption[];
   }>(`${PROFILES_CONFIG_API}`, {
     method: 'get',
+    cancelToken: options?.token
+  });
+}
+
+export async function exportBenchmarkList(
+  params: {
+    ids?: number[];
+  },
+  options?: {
+    token?: CancelToken;
+  }
+) {
+  return request(`${BENCHMARKS_API}/export`, {
+    method: 'POST',
+    data: params.ids,
+    responseType: 'blob',
     cancelToken: options?.token
   });
 }

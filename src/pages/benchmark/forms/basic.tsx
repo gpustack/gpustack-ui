@@ -77,6 +77,7 @@ const BasicForm: React.FC = () => {
         ]}
       >
         <SealSelect
+          disabled={action === PageAction.EDIT}
           loading={clusterLoading}
           options={clusterList}
           label={intl.formatMessage({ id: 'clusters.title' })}

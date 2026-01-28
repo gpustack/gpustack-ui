@@ -148,7 +148,7 @@ const LoginForm = () => {
   };
 
   // local user authentication
-  const { handleLogin } = useLocalAuth({
+  const { handleLogin, submitLoading } = useLocalAuth({
     fetchUserInfo,
     form,
     onSuccess: async (userInfo) => {
@@ -254,6 +254,7 @@ const LoginForm = () => {
               <LocalUserForm
                 handleLogin={handleLogin}
                 form={form}
+                loading={submitLoading}
                 loginOption={SSOAuth.options}
               />
             )}

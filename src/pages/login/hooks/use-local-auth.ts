@@ -10,7 +10,7 @@ import {
 import { FormInstance } from 'antd';
 import CryptoJS from 'crypto-js';
 import { useAtom } from 'jotai';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { login } from '../apis';
 
 interface UseLocalAuthOptions {
@@ -27,6 +27,7 @@ export const useLocalAuth = ({
   form
 }: UseLocalAuthOptions) => {
   const [initialPassword, setInitialPassword] = useAtom(initialPasswordAtom);
+  const [submitLoading, setSubmitLoading] = useState<boolean>(false);
 
   // Encrypt password before storing
   const encryptPassword = (password: string) => {
@@ -66,6 +67,7 @@ export const useLocalAuth = ({
 
   // click login button
   const handleLogin = async (values: any) => {
+    setSubmitLoading(true);
     try {
       await login({
         username: values.username,
@@ -86,6 +88,8 @@ export const useLocalAuth = ({
       onSuccess?.(userInfo);
     } catch (error: any) {
       onError?.(error);
+    } finally {
+      setSubmitLoading(false);
     }
   };
 
@@ -94,6 +98,7 @@ export const useLocalAuth = ({
   }, []);
 
   return {
-    handleLogin
+    handleLogin,
+    submitLoading
   };
 };

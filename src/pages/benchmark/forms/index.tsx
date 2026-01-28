@@ -17,7 +17,6 @@ import FormContext from '../config/form-context';
 import { FormData, BenchmarkListItem as ListItem } from '../config/types';
 import Basic from './basic';
 import DatasetForm from './dataset';
-import RandomSettingsForm from './random-settings';
 
 interface ProviderFormProps {
   ref?: any;
@@ -90,16 +89,16 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
     }
   }, [showAdvanced, activeKey]);
 
-  const advancedItems = showAdvanced
-    ? [
-        {
-          key: TABKeysMap.ADVANCED,
-          label: intl.formatMessage({ id: 'resources.form.advanced' }),
-          forceRender: true,
-          children: <RandomSettingsForm />
-        }
-      ]
-    : [];
+  // const advancedItems = showAdvanced
+  //   ? [
+  //       {
+  //         key: TABKeysMap.ADVANCED,
+  //         label: intl.formatMessage({ id: 'resources.form.advanced' }),
+  //         forceRender: true,
+  //         children: <RandomSettingsForm />
+  //       }
+  //     ]
+  //   : [];
 
   console.log('render form with profile:', showAdvanced);
 
@@ -144,8 +143,7 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
                 label: intl.formatMessage({ id: 'common.title.config' }),
                 forceRender: true,
                 children: <DatasetForm />
-              },
-              ...advancedItems
+              }
             ]}
           ></CollapsePanel>
         </Form>

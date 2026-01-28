@@ -1,9 +1,11 @@
+import { Divider } from 'antd';
 import React from 'react';
 import styled from 'styled-components';
 import BenchMark from './benchmark';
 import Instance from './instance';
 import MetricsResult from './metrics-result';
 import PercentileResult from './percentile-result';
+import Section from './section';
 
 const Container = styled.div`
   display: flex;
@@ -14,10 +16,16 @@ const Container = styled.div`
 const Summary: React.FC = () => {
   return (
     <Container>
-      <Instance />
-      <BenchMark />
-      <MetricsResult />
-      <PercentileResult />
+      <Section title="Results">
+        <MetricsResult />
+        <Divider />
+        <PercentileResult />
+      </Section>
+      <Section title="Benchmark Details">
+        <Instance />
+        <Divider />
+        <BenchMark />
+      </Section>
     </Container>
   );
 };

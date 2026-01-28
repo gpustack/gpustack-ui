@@ -3,7 +3,7 @@ import AutoTooltip from '@/components/auto-tooltip';
 import StatusTag from '@/components/status-tag';
 import { tableSorter } from '@/config/settings';
 import { useIntl } from '@umijs/max';
-import { Typography } from 'antd';
+import { Progress, Typography } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import _ from 'lodash';
 import { useMemo } from 'react';
@@ -58,15 +58,24 @@ const useBenchmarkColumns = (
         ellipsis: {
           showTitle: false
         },
-        width: 100,
+        width: 120,
         render: (value: number, record: ListItem) => (
-          <StatusTag
-            statusValue={{
-              status: BenchmarkStatus[value],
-              text: BenchmarkStatusLabelMap[value],
-              message: record.state_message || undefined
-            }}
-          />
+          <span className="flex-center gap-8">
+            <StatusTag
+              statusValue={{
+                status: BenchmarkStatus[value],
+                text: BenchmarkStatusLabelMap[value],
+                message: record.state_message || undefined
+              }}
+            />
+            {record.progress !== undefined && record.progress < 100 && (
+              <Progress
+                type="circle"
+                percent={_.round(record.progress, 0)}
+                size={20}
+              />
+            )}
+          </span>
         )
       },
       // {

@@ -27,8 +27,8 @@ import { FormData, BenchmarkListItem as ListItem } from './config/types';
 import useBenchmarkColumns from './hooks/use-benchmark-columns';
 import useColumnSettings from './hooks/use-column-settings';
 import useCreateBenchmark from './hooks/use-create-benchmark';
-import useExportData from './hooks/use-export-data';
 import useViewLogs from './hooks/use-view-logs';
+import { useExportBenchmark } from './services/use-export-benchmark';
 import useQueryDataset from './services/use-query-dataset';
 
 const Benchmark: React.FC = () => {
@@ -65,6 +65,7 @@ const Benchmark: React.FC = () => {
   const { SettingsButton, selectedColumns } = useColumnSettings();
 
   const { datasetList, fetchDatasetData } = useQueryDataset();
+  const { exportData } = useExportBenchmark();
 
   useEffect(() => {
     fetchModelList({ page: -1 });
@@ -154,13 +155,8 @@ const Benchmark: React.FC = () => {
     handleOnCellClick
   );
 
-  const { exportData } = useExportData({ columns: columns });
-
   const handleExportData = () => {
-    const list = dataSource.dataList.filter((item) =>
-      rowSelection.selectedRowKeys.includes(item.id)
-    );
-    exportData(list);
+    exportData(rowSelection.selectedRowKeys);
   };
 
   return (

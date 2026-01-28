@@ -10,6 +10,7 @@ export default {
   'backend.framework': '框架',
   'backend.builtin': '内置',
   'backend.custom': '自定义',
+  'backend.community': '社区',
   'backend.isDefault': '默认',
   'backend.availableFrameworks': '支持框架',
   'backend.addVersion': '添加版本',

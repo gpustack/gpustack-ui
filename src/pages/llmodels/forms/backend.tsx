@@ -1,14 +1,16 @@
+import SealCascader from '@/components/seal-form/seal-cascader';
+import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
-import TooltipList from '@/components/tooltip-list';
 import useAppUtils from '@/hooks/use-app-utils';
+import { BackendSourceValueMap } from '@/pages/backends/config';
 import { CaretDownOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { useIntl, useNavigate } from '@umijs/max';
 import { Form, Select } from 'antd';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
-import { backendTipsList } from '../config';
 import { backendOptionsMap } from '../config/backend-parameters';
 import { useFormContext } from '../config/form-context';
+import { BackendOption } from '../config/types';
 
 const CaretDownWrapper = styled.span`
   display: flex;
@@ -30,6 +32,8 @@ const BackendFields: React.FC = () => {
   const { onValuesChange, backendOptions, onBackendChange } = useFormContext();
   const backend = Form.useWatch('backend', form);
   const [showDeprecated, setShowDeprecated] = React.useState<boolean>(false);
+  const [selectedBackend, setSelectedBackend] =
+    React.useState<BackendOption | null>(null);
 
   const handleBackendVersionOnChange = (value: any) => {
     onValuesChange?.({}, form.getFieldsValue());
@@ -74,13 +78,10 @@ const BackendFields: React.FC = () => {
       };
     }
 
-    // find the backend item from backendOptions
-    const backendItem = backendOptions.find((item) => item.value === backend);
-
-    const versions = backendItem?.versions || [];
+    const versions = selectedBackend?.versions || [];
 
     // if it's a custom backend,
-    if (backendItem && !backendItem.isBuiltIn) {
+    if (selectedBackend && !selectedBackend.isBuiltIn) {
       return {
         builtIn: [],
         custom: versions.filter((item) => !item.is_deprecated),
@@ -108,7 +109,7 @@ const BackendFields: React.FC = () => {
       custom: customVersions,
       deprecated: deprecatedVersions
     };
-  }, [backend, backendOptions, intl]);
+  }, [backend, selectedBackend, intl]);
 
   const optionRender = (option: any) => {
     return option.data.title;
@@ -136,6 +137,13 @@ const BackendFields: React.FC = () => {
         ))}
       </Select.OptGroup>
     );
+  };
+
+  const handleOnBackendChange = (value: any[], option: any) => {
+    console.log('handleOnBackendChange value, option:', value, option);
+    form.setFieldsValue({ backend: value[0] });
+    onBackendChange?.(value[0], option[1]);
+    setSelectedBackend(option[1]);
   };
 
   const renderDeprecatedVersionOptions = (values: any[]) => {
@@ -167,10 +175,30 @@ const BackendFields: React.FC = () => {
     );
   };
 
+  const BackendNode = (props: any) => {
+    const { data: backend } = props;
+    return backend.isLeaf ? (
+      <span className="flex-center">
+        {backend.label}
+        {backend.backend_source === BackendSourceValueMap.COMMUNITY &&
+          !backend.enabled && (
+            <span className="text-tertiary m-l-4">
+              [{intl.formatMessage({ id: 'common.status.disabled' })}]
+            </span>
+          )}
+      </span>
+    ) : (
+      <span>{intl.formatMessage({ id: backend.title })}</span>
+    );
+  };
+
   return (
     <>
+      <Form.Item name="backend" hidden>
+        <SealInput.Input></SealInput.Input>
+      </Form.Item>
       <Form.Item
-        name="backend"
+        name="backend_selection"
         rules={[
           {
             required: true,
@@ -178,7 +206,7 @@ const BackendFields: React.FC = () => {
           }
         ]}
       >
-        <SealSelect
+        {/* <SealSelect
           required
           onChange={onBackendChange}
           label={intl.formatMessage({ id: 'models.form.backend' })}
@@ -186,7 +214,25 @@ const BackendFields: React.FC = () => {
           options={backendGroupedOptions}
           optionRender={optionRender}
           labelRender={labelRender}
-        ></SealSelect>
+        ></SealSelect> */}
+        <SealCascader
+          required
+          showSearch
+          changeOnSelect={false}
+          expandTrigger="hover"
+          multiple={false}
+          classNames={{
+            popup: {
+              root: 'cascader-popup-wrapper gpu-selector'
+            }
+          }}
+          maxTagCount={1}
+          label={intl.formatMessage({ id: 'models.form.backend' })}
+          options={backendOptions}
+          getPopupContainer={(triggerNode) => triggerNode.parentNode}
+          optionNode={BackendNode}
+          onChange={handleOnBackendChange}
+        ></SealCascader>
       </Form.Item>
       {backendOptionsMap.custom !== backend && (
         <Form.Item name="backend_version">

@@ -265,12 +265,19 @@ export default {
   'common.form.rule.selectInput': 'Выберите или введите {name}',
   'common.tag.experimental': 'Экспериментальный',
   'common.title.example': 'Пример',
-  'common.button.dontshowagain': "Больше не показывать",
+  'common.button.dontshowagain': 'Больше не показывать',
   'common.sorter.tips.ascend': 'Нажмите для сортировки по возрастанию',
   'common.sorter.tips.descend': 'Нажмите для сортировки по убыванию',
-  'common.sorter.tips.cancel': 'Нажмите, чтобы отменить сортировку'
+  'common.sorter.tips.cancel': 'Нажмите, чтобы отменить сортировку',
+  'common.button.enable': 'Enable',
+  'common.button.disable': 'Disable',
+  'common.status.enabled': 'Enabled',
+  'common.status.disabled': 'Disabled'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-
+// 1.  'common.button.enable': 'Enable',
+// 2.  'common.button.disable': 'Disable',
+// 3.  'common.status.enabled': 'Enabled',
+// 4.  'common.status.disabled': 'Disabled'
 // ========== End of To-Do List ==========

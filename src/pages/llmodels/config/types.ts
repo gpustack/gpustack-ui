@@ -303,6 +303,23 @@ export interface BackendGroupOption {
   versions: { label: string; value: string; title?: string }[];
 }
 
+export interface BackendGroupItem {
+  value: string;
+  label: string;
+  title?: string;
+  default_backend_param: string[];
+  default_version: string;
+  isBuiltIn: boolean;
+  backend_source: string;
+  enabled: boolean;
+  versions: {
+    label: string;
+    value: string;
+    title?: string;
+    is_deprecated: boolean;
+  }[];
+}
+
 export interface BackendOption {
   value: string;
   label: string;
@@ -310,6 +327,8 @@ export interface BackendOption {
   default_backend_param: string[];
   default_version: string;
   isBuiltIn: boolean;
+  backend_source: string;
+  enabled: boolean;
   versions: {
     label: string;
     value: string;
@@ -329,6 +348,8 @@ export interface BackendItem {
   default_version: string;
   default_backend_param: string[];
   is_built_in: boolean;
+  backend_source: string;
+  enabled: boolean;
   versions: {
     version: string;
     is_deprecated: boolean;

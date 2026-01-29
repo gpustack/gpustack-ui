@@ -120,3 +120,13 @@ export async function exportBenchmarkList(
     cancelToken: options?.token
   });
 }
+
+export async function stopBenchmark(params: {
+  id: number;
+  data: Record<string, any>;
+}) {
+  return request(`${BENCHMARKS_API}/${params.id}/state`, {
+    method: 'PATCH',
+    data: params.data
+  });
+}

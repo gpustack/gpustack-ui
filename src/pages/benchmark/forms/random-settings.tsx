@@ -1,9 +1,11 @@
 import SealInputNumber from '@/components/seal-form/input-number';
 import SealSelect from '@/components/seal-form/seal-select';
+import { PageAction } from '@/config';
 import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
-import React from 'react';
+import React, { useMemo } from 'react';
+import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
 
 const RandomSettingsForm: React.FC<{
@@ -13,11 +15,16 @@ const RandomSettingsForm: React.FC<{
 }> = (props) => {
   const { datasetList, datasetLoading, handleOnDataSetChange } = props;
   const intl = useIntl();
+  const { action, open } = useFormContext();
   const form = Form.useFormInstance();
   const profile = Form.useWatch('profile', form);
   const { getRuleMessage } = useAppUtils();
 
-  const disabled = profile !== 'Custom' && Boolean(profile);
+  const disabled = useMemo(() => {
+    return (
+      (profile !== 'Custom' && Boolean(profile)) || action === PageAction.EDIT
+    );
+  }, [profile, action]);
 
   return (
     <>

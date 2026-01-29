@@ -1,4 +1,5 @@
 import SealCascader from '@/components/seal-form/seal-cascader';
+import { PageAction } from '@/config';
 import useAppUtils from '@/hooks/use-app-utils';
 import {
   InstanceStatusMap,
@@ -133,6 +134,7 @@ const ModelInstanceForm: React.FC = () => {
       <SealCascader
         required
         showSearch
+        disabled={action === PageAction.EDIT}
         loading={modelLoading || instanceLoading}
         changeOnSelect={false}
         expandTrigger="hover"

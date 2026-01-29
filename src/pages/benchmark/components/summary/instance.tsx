@@ -64,12 +64,20 @@ const Instance: React.FC = () => {
         key: '1',
         label: 'Backend Parameters',
         children: (
-          <Flex gap={8} wrap="wrap">
+          <Flex
+            gap={8}
+            wrap="wrap"
+            style={{
+              backgroundColor: 'var(--ant-color-fill-quaternary)',
+              padding: '4px',
+              borderRadius: '2px'
+            }}
+          >
             {instanceData?.backend_parameters?.map(
               (param: string, index: number) => (
-                <Tag key={index} style={{ margin: 0 }}>
+                <span key={index} style={{ margin: 0 }}>
                   {param}
-                </Tag>
+                </span>
               )
             )}
           </Flex>

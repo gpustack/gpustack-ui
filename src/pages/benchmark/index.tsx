@@ -30,6 +30,7 @@ import useCreateBenchmark from './hooks/use-create-benchmark';
 import useViewLogs from './hooks/use-view-logs';
 import { useExportBenchmark } from './services/use-export-benchmark';
 import useQueryDataset from './services/use-query-dataset';
+import useStopBenchmark from './services/use-stop-benchmark';
 
 const Benchmark: React.FC = () => {
   const {
@@ -63,6 +64,7 @@ const Benchmark: React.FC = () => {
   const { openViewLogsModal, closeViewLogsModal, openViewLogsModalStatus } =
     useViewLogs();
   const { SettingsButton, selectedColumns } = useColumnSettings();
+  const { handleStopBenchmark } = useStopBenchmark();
 
   const { datasetList, fetchDatasetData } = useQueryDataset();
   const { exportData } = useExportBenchmark();
@@ -114,6 +116,8 @@ const Benchmark: React.FC = () => {
       handleDelete({ ...row, name: row.name });
     } else if (val === 'viewlog') {
       openViewLogsModal(row);
+    } else if (val === 'stop') {
+      handleStopBenchmark(row.id);
     }
   });
 

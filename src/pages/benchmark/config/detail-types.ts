@@ -31,7 +31,7 @@ export interface InstancesData {
   env: any;
   extended_kv_cache: any;
   speculative_config: any;
-  subordinate_workers: any;
+  subordinate_workers: any[];
 }
 
 export interface WorkerData {

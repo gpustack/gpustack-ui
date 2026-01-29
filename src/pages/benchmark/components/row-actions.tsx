@@ -14,6 +14,12 @@ const actionList = [
     icon: icons.EditOutlined
   },
   {
+    label: 'common.button.stop',
+    key: 'stop',
+    icon: icons.Stop,
+    status: [BenchmarkStatusValueMap.Claimed, BenchmarkStatusValueMap.Running]
+  },
+  {
     label: 'common.button.viewlog',
     key: 'viewlog',
     status: [
@@ -55,7 +61,7 @@ const RowActions: React.FC<RowActionsProps> = (props) => {
   const { onDownloadLog, contextHolder } = useDownloadLogs();
 
   const actions = actionList.filter((action) => {
-    if (action.key === 'viewlog' || action.key === 'download') {
+    if (action.status && action.status.length > 0) {
       return action.status?.includes(record.state);
     }
 

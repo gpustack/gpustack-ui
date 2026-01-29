@@ -69,7 +69,9 @@ const VersionInfoModal: React.FC<VersionInfoModalProps> = ({
       open={open}
       title={
         <div className="flex-center gap-16">
-          <span>{intl.formatMessage({ id: 'backend.versions' })}</span>
+          <span style={{ fontSize: 14 }}>
+            {intl.formatMessage({ id: 'backend.versions' })}
+          </span>
           <Button onClick={addVersion} type="link" size="small">
             <PlusOutlined /> {intl.formatMessage({ id: 'backend.addVersion' })}
           </Button>

@@ -3,6 +3,7 @@ import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
 import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
+import { FormContext } from '../config/form-context';
 import { FormData, ListItem } from '../config/types';
 import BasicForm from './basic';
 import VersionsForm from './versions-config';
@@ -18,6 +19,7 @@ const BackendForm: React.FC<AddModalProps> = forwardRef(
     const intl = useIntl();
     const [form] = Form.useForm();
     const [activeKey, setActiveKey] = React.useState<string[]>([]);
+    const backendSource = Form.useWatch('backend_source', form);
 
     const onFinishFailed = (errorInfo: any) => {
       const errorFields = errorInfo.errorFields || [];
@@ -79,22 +81,26 @@ const BackendForm: React.FC<AddModalProps> = forwardRef(
     }));
 
     return (
-      <Form
-        name="basicForm"
-        form={form}
-        onFinish={handleOnFinish}
-        preserve={false}
-        scrollToFirstError={true}
-        initialValues={_.omit(currentData, ['version_configs'])}
-        onFinishFailed={onFinishFailed}
+      <FormContext.Provider
+        value={{ action: action, backendSource: backendSource }}
       >
-        <BasicForm action={action} currentData={currentData}></BasicForm>
-        <VersionsForm
-          action={action}
-          currentData={currentData}
-          activeKey={activeKey}
-        ></VersionsForm>
-      </Form>
+        <Form
+          name="basicForm"
+          form={form}
+          onFinish={handleOnFinish}
+          preserve={false}
+          scrollToFirstError={true}
+          initialValues={_.omit(currentData, ['version_configs'])}
+          onFinishFailed={onFinishFailed}
+        >
+          <BasicForm></BasicForm>
+          <VersionsForm
+            action={action}
+            currentData={currentData}
+            activeKey={activeKey}
+          ></VersionsForm>
+        </Form>
+      </FormContext.Provider>
     );
   }
 );

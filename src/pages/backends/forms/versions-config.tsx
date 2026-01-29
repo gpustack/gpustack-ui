@@ -401,7 +401,7 @@ const VersionsForm: React.FC<AddModalProps> = ({
                       label={intl.formatMessage({
                         id: 'models.form.env'
                       })}
-                      labels={versionConfigs.environment}
+                      labels={versionConfigs?.[name]?.environment}
                       btnText={intl.formatMessage({ id: 'common.button.vars' })}
                       onChange={(envs) =>
                         handleEnviromentVarsChange(envs, name)

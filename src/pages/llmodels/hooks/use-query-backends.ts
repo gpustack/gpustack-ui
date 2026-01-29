@@ -15,6 +15,7 @@ interface BackendGroup {
   label: string;
   value: string;
   title?: string;
+  isLeaf?: boolean;
   children: BackendOption[];
 }
 
@@ -59,7 +60,8 @@ export default function useQueryBackends() {
             'default_version',
             'backend_source',
             'is_built_in',
-            'default_backend_param'
+            'default_backend_param',
+            'environment'
           ]),
           backend_source: item.backend_source || BackendSourceValueMap.CUSTOM,
           value: item.backend_name,
@@ -77,6 +79,7 @@ export default function useQueryBackends() {
             label: vItem.version,
             value: vItem.version,
             is_deprecated: vItem.is_deprecated,
+            environment: vItem.environment || {},
             title: vItem.version.replace(/-custom$/, '')
           }))
         };

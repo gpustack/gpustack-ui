@@ -308,6 +308,28 @@ const BackendCard: React.FC<BackendCardProps> = ({ data, onSelect }) => {
     );
   };
 
+  const renderEnabledTag = () => {
+    if (data.backend_source !== BackendSourceValueMap.COMMUNITY) {
+      return null;
+    }
+    return (
+      <ThemeTag
+        className="font-400"
+        variant="outlined"
+        color={data.enabled ? 'green' : 'default'}
+        style={{
+          borderRadius: 'var(--ant-border-radius)',
+          margin: 0,
+          width: 'max-content'
+        }}
+      >
+        {data.enabled
+          ? `${intl.formatMessage({ id: 'common.status.enabled' })}`
+          : `${intl.formatMessage({ id: 'common.status.disabled' })}`}
+      </ThemeTag>
+    );
+  };
+
   return (
     <StyledCard
       onClick={handleClick}
@@ -344,27 +366,10 @@ const BackendCard: React.FC<BackendCardProps> = ({ data, onSelect }) => {
           <InfoItem>
             <span className="label">
               <IconFont type="icon-source" className="icon" />
-              <span>Source:</span>
+              <span>{intl.formatMessage({ id: 'models.form.source' })}:</span>
             </span>
             {renderSource()}
-            {data.backend_source === BackendSourceValueMap.COMMUNITY && (
-              <>
-                <ThemeTag
-                  className="font-400"
-                  variant="outlined"
-                  color={data.enabled ? 'green' : 'default'}
-                  style={{
-                    borderRadius: 'var(--ant-border-radius)',
-                    margin: 0,
-                    width: 'max-content'
-                  }}
-                >
-                  {data.enabled
-                    ? `${intl.formatMessage({ id: 'common.status.enabled' })}`
-                    : `${intl.formatMessage({ id: 'common.status.disabled' })}`}
-                </ThemeTag>
-              </>
-            )}
+            {renderEnabledTag()}
           </InfoItem>
           {renderRecommendModels()}
         </SourceWrapper>

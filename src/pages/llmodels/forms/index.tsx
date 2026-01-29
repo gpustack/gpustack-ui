@@ -212,7 +212,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       setTimeout(resolve, 100);
     });
     form.setFieldsValue({
-      env: null,
       backend_version: null, // don't set default version here, let the user select it
       backend_parameters: option.default_backend_param || [],
       ...updateKVCacheConfig(val, option),

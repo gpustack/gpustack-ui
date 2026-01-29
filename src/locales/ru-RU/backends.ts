@@ -40,10 +40,12 @@ export default {
   'backend.entrypoint.tips':
     'Если указано, ENTRYPOINT, заданный в образе, будет проигнорирован, а вместо него для запуска контейнера будет использована команда ниже.',
   'backend.form.defaultEnvironment': 'Default Environment Variables',
-  'backend.recommendModels': 'Recommended Models'
+  'backend.recommendModels': 'Recommended Models',
+  'backend.filter.source': 'Filter by source'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
 // 1. 'backend.form.defaultEnvironment': 'Default Environment Variables',
-// 2. 'backend.recommendModels': 'Recommended Models'
+// 2. 'backend.recommendModels': 'Recommended Models',
+// 3. 'backend.filter.source': 'Filter by source'
 // ========== End of To-Do List ==========

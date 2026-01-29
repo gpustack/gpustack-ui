@@ -226,6 +226,7 @@ const BackendFields: React.FC = () => {
           backend
         ]);
       }
+      // TODO: init env variables from selected backend, when action is CREATE
     }
   }, [backend, flatBackendOptions]);
 

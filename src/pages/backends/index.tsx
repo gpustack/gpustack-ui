@@ -22,7 +22,12 @@ import {
 import AddModal from './components/add-modal';
 import BackendCardList from './components/backend-list';
 import VersionInfoModal from './components/version-info-modal';
-import { backendSourceOptions, json2Yaml, yaml2Json } from './config';
+import {
+  backendSourceOptions,
+  BackendSourceValueMap,
+  json2Yaml,
+  yaml2Json
+} from './config';
 import { FormData, ListItem } from './config/types';
 import useCreateBackend from './hooks/use-create-backend';
 import useExportYAML from './hooks/use-export-yaml';
@@ -67,9 +72,15 @@ const BackendList = () => {
       if (openBackendModalStatus.action === 'create') {
         await createBackend({ data: values });
       } else {
-        const omitFields = openBackendModalStatus.currentData?.is_built_in
-          ? ['built_in_version_configs', 'default_version']
-          : ['built_in_version_configs'];
+        console.log(
+          'openBackendModalStatus.currentData',
+          openBackendModalStatus
+        );
+        const omitFields =
+          openBackendModalStatus.currentData?.backend_source ===
+          BackendSourceValueMap.BUILTIN
+            ? ['built_in_version_configs', 'default_version']
+            : ['built_in_version_configs'];
 
         await updateBackend(openBackendModalStatus.currentData!.id!, {
           data: {

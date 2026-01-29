@@ -178,7 +178,7 @@ const BackendCard: React.FC<BackendCardProps> = ({ data, onSelect }) => {
       }
       return true;
     });
-  }, [data.is_built_in]);
+  }, [data]);
 
   const onClick = (e: React.MouseEvent) => {
     e.stopPropagation();

@@ -3,6 +3,7 @@ import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
 import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
+import { BackendSourceValueMap } from '../config';
 import { FormContext } from '../config/form-context';
 import { FormData, ListItem } from '../config/types';
 import BasicForm from './basic';
@@ -38,17 +39,19 @@ const BackendForm: React.FC<AddModalProps> = forwardRef(
     const handleOnFinish = (values: FormData) => {
       const data = {
         ...values,
-        backend_name: currentData?.is_built_in
-          ? values.backend_name
-          : `${values.backend_name}-custom`
+        backend_name:
+          backendSource === BackendSourceValueMap.CUSTOM
+            ? `${values.backend_name}-custom`
+            : values.backend_name
       };
       data.version_configs = data.version_configs?.map((item) => {
         if (item.version_no) {
           return {
             ...item,
-            version_no: currentData?.is_built_in
-              ? `${item.version_no}-custom`
-              : item.version_no
+            version_no:
+              backendSource === BackendSourceValueMap.BUILTIN
+                ? `${item.version_no}-custom`
+                : item.version_no
           };
         }
         return item;

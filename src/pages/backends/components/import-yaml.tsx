@@ -50,7 +50,7 @@ const ImportYAML: React.FC<ImportYAMLProps> = forwardRef(
 
         const jsonData = yaml2Json(content);
         const exsistingVersions = Object.keys(jsonData.version_configs || {});
-
+        console.log('exsistingVersions', jsonData);
         // Check backend version rules
         if (
           actionStatus.isBuiltIn &&

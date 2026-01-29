@@ -20,6 +20,13 @@
       "type": ["string", "null"],
       "description": "health check path"
     },
+    "default_environment": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "environment variables"
+    },
     "version_configs": {
       "type": "object",
       "patternProperties": {
@@ -41,6 +48,13 @@
             "custom_framework": {
               "type": ["string", "null"],
               "description": "custom framework"
+            },
+            "environment": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              },
+              "description": "environment variables"
             }
           },
           "required": ["image_name", "run_command"],

@@ -285,16 +285,19 @@ default_version: v0.11.0
 health_check_path: /v1/models
 default_backend_param:
   - --host
-default_run_command: {{model_path}} --port {{port}} --host {{worker_ip}} --served-model-name {{model_name}}
+default_run_command: "{{model_path}} --port {{port}} --host {{worker_ip}} --served-model-name {{model_name}}"
+default_environment:
 version_configs:
   v0.11.0:
     image_name: lm/vllm:latest
-    run_command: {{model_path}} --port {{port}} --host {{worker_ip}} --served-model-name {{model_name}}
+    run_command: "{{model_path}} --port {{port}} --host {{worker_ip}} --served-model-name {{model_name}}"
     entrypoint: "/bin/sh -c"
     custom_framework: cuda
+    environment:
   v0.10.0:
     image_name: lm/vllm:test
     entrypoint: 
     run_command:
     custom_framework: rocm
+    environment:
   `;

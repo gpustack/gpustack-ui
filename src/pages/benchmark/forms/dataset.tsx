@@ -1,5 +1,6 @@
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
+import { PageAction } from '@/config';
 import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
@@ -77,6 +78,7 @@ const DatasetForm: React.FC = () => {
         ]}
       >
         <SealSelect
+          disabled={action === PageAction.EDIT}
           onChange={handleProfileChange}
           options={profilesOptions}
           label={intl.formatMessage({ id: 'benchmark.form.profile' })}

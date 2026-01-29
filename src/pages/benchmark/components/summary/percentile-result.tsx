@@ -85,7 +85,7 @@ const PercentileResult: React.FC = () => {
             title: 'Percentile',
             dataIndex: 'percentile',
             render: (value: string) => (
-              <span style={{ fontWeight: 500 }}>{value}</span>
+              <span style={{ fontWeight: 400 }}>{value}</span>
             )
           },
           ...columns
@@ -100,6 +100,7 @@ const PercentileResult: React.FC = () => {
             },
             cell: {
               fontWeight: 400,
+              height: 40,
               borderBottom: '1px solid var(--ant-color-split)'
             }
           },

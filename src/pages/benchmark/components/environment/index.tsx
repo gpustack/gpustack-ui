@@ -40,11 +40,9 @@ const Environment: React.FC = () => {
   }, [snapshot]);
 
   const subWorkers = useMemo(() => {
-    const [[mainWorkerName, mainWorkerInfo]] = Object.entries(snapshot.workers);
+    const [[instanceName, instanceData]] = Object.entries(snapshot.instances);
 
-    const subOrdinaryWorkers = Object.values(snapshot.instances).filter(
-      (instance) => instance.worker_name === mainWorkerName
-    );
+    const subOrdinaryWorkers = instanceData?.subordinate_workers || [];
 
     return subOrdinaryWorkers.map((worker) => {
       const gpuData = Object.values(snapshot.gpus).filter(
@@ -130,7 +128,7 @@ const Environment: React.FC = () => {
         return (
           <AutoTooltip
             ghost
-          >{`${record.os.name} (${record.os.version})`}</AutoTooltip>
+          >{`${record.os?.name || ''} (${record.os?.version || ''})`}</AutoTooltip>
         );
       }
     },
@@ -140,7 +138,7 @@ const Environment: React.FC = () => {
       key: 'runtime_version',
       span: 3,
       render: (val: any, record: any) => {
-        return <AutoTooltip ghost>{record.runtime_version}</AutoTooltip>;
+        return <AutoTooltip ghost>{record.runtime_version || ''}</AutoTooltip>;
       }
     },
     {
@@ -149,7 +147,7 @@ const Environment: React.FC = () => {
       key: 'driver_version',
       span: 3,
       render: (val: any, record: any) => {
-        return <AutoTooltip ghost>{record.driver_version}</AutoTooltip>;
+        return <AutoTooltip ghost>{record.driver_version || ''}</AutoTooltip>;
       }
     },
     {

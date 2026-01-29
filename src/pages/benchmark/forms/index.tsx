@@ -78,7 +78,11 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
   useEffect(() => {
     if (action === PageAction.EDIT && currentData) {
       form.setFieldsValue({
-        ...currentData
+        ...currentData,
+        model_instance: [
+          currentData.model_name,
+          currentData.model_instance_name
+        ]
       });
     }
   }, [form, currentData, action]);

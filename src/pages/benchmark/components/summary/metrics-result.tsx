@@ -142,7 +142,7 @@ const requestFields = [
     dataIndex: 'total_requests',
     path: 'total_requests',
     precision: 0,
-    render: (value: number) => round(value, 0),
+    render: (value: number) => round(value, 0) || 0,
     unit: ''
   },
   {
@@ -151,7 +151,7 @@ const requestFields = [
     dataIndex: 'successful_requests',
     path: ['raw_metrics', 'benchmarks', '0'],
     render: (value: number) =>
-      round(_.get(value, ['metrics', 'request_totals', 'successful']), 0),
+      round(_.get(value, ['metrics', 'request_totals', 'successful']), 0) || 0,
     precision: 0,
     color: 'var(--ant-color-success)',
     unit: ''
@@ -162,7 +162,7 @@ const requestFields = [
     dataIndex: 'failed_requests',
     path: ['raw_metrics', 'benchmarks', '0'],
     render: (value: number) =>
-      round(_.get(value, ['metrics', 'request_totals', 'errored']), 0),
+      round(_.get(value, ['metrics', 'request_totals', 'errored']), 0) || 0,
     precision: 0,
     color: 'var(--ant-color-error)',
     unit: ''
@@ -173,7 +173,8 @@ const requestFields = [
     dataIndex: 'request_concurrency',
     path: ['raw_metrics', 'benchmarks', '0'],
     render: (value: number) =>
-      round(_.get(value, 'metrics.request_concurrency.successful.mean'), 0),
+      round(_.get(value, 'metrics.request_concurrency.successful.mean'), 0) ||
+      0,
     precision: 0,
     unit: ''
   }
@@ -281,15 +282,15 @@ const PercentileResult: React.FC = () => {
       <Box>
         <Descriptions
           styles={descriptionStyles}
-          title="Throughput"
-          items={throughputItems}
+          title="Latency"
+          items={latencyItems}
           colon={false}
           column={1}
         ></Descriptions>
         <Descriptions
           styles={descriptionStyles}
-          title="Latency"
-          items={latencyItems}
+          title="Throughput"
+          items={throughputItems}
           colon={false}
           column={1}
         ></Descriptions>

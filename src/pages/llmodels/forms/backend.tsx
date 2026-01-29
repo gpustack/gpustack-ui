@@ -2,7 +2,6 @@ import SealCascader from '@/components/seal-form/seal-cascader';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import TooltipList from '@/components/tooltip-list';
-import { PageAction } from '@/config';
 import useAppUtils from '@/hooks/use-app-utils';
 import { BackendSourceValueMap } from '@/pages/backends/config';
 import { CaretDownOutlined, InfoCircleOutlined } from '@ant-design/icons';
@@ -44,7 +43,15 @@ const BackendFields: React.FC = () => {
   const [selectedBackend, setSelectedBackend] =
     React.useState<BackendOption | null>(null);
 
-  const handleBackendVersionOnChange = (value: any) => {
+  const handleBackendVersionOnChange = (value: any, option: any) => {
+    if (Object.keys(option.data.environment || {}).length > 0) {
+      form.setFieldsValue({
+        env: {
+          ...(option?.data?.environment || {})
+        }
+      });
+    }
+
     onValuesChange?.({}, form.getFieldsValue());
   };
 
@@ -111,7 +118,6 @@ const BackendFields: React.FC = () => {
   }, [backend, selectedBackend, intl]);
 
   const backendVersionLabelRender = (option: any) => {
-    console.log('backendVersionLabelRender option:', option);
     return option.title;
   };
 
@@ -122,7 +128,12 @@ const BackendFields: React.FC = () => {
     return (
       <Select.OptGroup label={label}>
         {values.map((item) => (
-          <Select.Option key={item.value} value={item.value} label={item.label}>
+          <Select.Option
+            data={item}
+            key={item.value}
+            value={item.value}
+            label={item.label}
+          >
             {item.label}
           </Select.Option>
         ))}
@@ -131,9 +142,19 @@ const BackendFields: React.FC = () => {
   };
 
   const handleOnBackendChange = (value: any[], option: any) => {
-    form.setFieldValue('backend', value?.[1]);
-    onBackendChange?.(value?.[1], option?.[1] || {});
-    setSelectedBackend(option?.[1] || {});
+    const selectedBackend = value?.[1];
+    const selectedOption = option?.[1] || {};
+
+    console.log('handleOnBackendChange selectedOption:', selectedOption);
+
+    form.setFieldsValue({
+      backend: selectedBackend,
+      env: {
+        ...(selectedOption.environment || {})
+      }
+    });
+    onBackendChange?.(selectedBackend, selectedOption);
+    setSelectedBackend(selectedOption);
   };
 
   const displayRender = (labels: any[], selectedOptions?: any[]) => {
@@ -195,7 +216,7 @@ const BackendFields: React.FC = () => {
   };
 
   useEffect(() => {
-    if (action === PageAction.EDIT) {
+    if (backend) {
       const selected = flatBackendOptions?.find(
         (item) => item.value === backend
       );
@@ -206,7 +227,7 @@ const BackendFields: React.FC = () => {
         ]);
       }
     }
-  }, [backend, flatBackendOptions, action]);
+  }, [backend, flatBackendOptions]);
 
   return (
     <>

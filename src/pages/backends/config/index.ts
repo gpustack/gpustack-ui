@@ -49,6 +49,24 @@ export const TagColorMap: Record<string, string> = {
   [BackendSourceValueMap.COMMUNITY]: 'cyan'
 };
 
+export const backendSourceOptions = [
+  {
+    label: BackendSourceLabelMap[BackendSourceValueMap.BUILTIN],
+    value: BackendSourceValueMap.BUILTIN,
+    locale: true
+  },
+  {
+    label: BackendSourceLabelMap[BackendSourceValueMap.COMMUNITY],
+    value: BackendSourceValueMap.COMMUNITY,
+    locale: true
+  },
+  {
+    label: BackendSourceLabelMap[BackendSourceValueMap.CUSTOM],
+    value: BackendSourceValueMap.CUSTOM,
+    locale: true
+  }
+];
+
 export const backendActions = [
   {
     label: 'common.button.edit',

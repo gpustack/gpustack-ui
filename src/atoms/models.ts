@@ -47,7 +47,7 @@ export const workerListAtom = atom<
   }[]
 >([]);
 
-interface BackGroupOption {
+export interface BackGroupOption {
   label: string;
   value: string;
   title?: string;

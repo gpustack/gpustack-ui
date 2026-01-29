@@ -40,5 +40,6 @@ export default {
   'backend.entrypoint.tips':
     'If specified, the ENTRYPOINT defined in the image will be ignored, and the command below will be used as the container startup entrypoint.',
   'backend.form.defaultEnvironment': 'Default Environment Variables',
-  'backend.recommendModels': 'Recommended Models'
+  'backend.recommendModels': 'Recommended Models',
+  'backend.filter.source': 'Filter by source'
 };

@@ -3,22 +3,19 @@ import ListInput from '@/components/list-input';
 import SealInput from '@/components/seal-form/seal-input';
 import SealTextArea from '@/components/seal-form/seal-textarea';
 import { PageAction } from '@/config';
-import { PageActionType } from '@/config/types';
 import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { BackendSourceValueMap } from '../config';
-import { FormData, ListItem } from '../config/types';
+import { useFormContext } from '../config/form-context';
+import { FormData } from '../config/types';
 
-type AddModalProps = {
-  action: PageActionType;
-  currentData?: ListItem;
-};
-const BasicForm: React.FC<AddModalProps> = ({ action, currentData }) => {
+const BasicForm = () => {
   const form = Form.useFormInstance();
   const intl = useIntl();
   const { getRuleMessage } = useAppUtils();
+  const { action, backendSource } = useFormContext();
   const defaultEnvs = Form.useWatch('default_environment', form);
 
   const handleEnviromentVarsChange = (labels: Record<string, any>) => {
@@ -44,18 +41,18 @@ const BasicForm: React.FC<AddModalProps> = ({ action, currentData }) => {
       >
         <SealInput.Input
           trim
-          addAfter={currentData?.is_built_in ? null : '-custom'}
+          addAfter={
+            backendSource === BackendSourceValueMap.CUSTOM ? '-custom' : null
+          }
           disabled={action === PageAction.EDIT}
           label={intl.formatMessage({ id: 'common.table.name' })}
           required
         ></SealInput.Input>
       </Form.Item>
-      {action === PageAction.CREATE && (
-        <Form.Item<FormData> hidden name="backend_source">
-          <SealInput.Input></SealInput.Input>
-        </Form.Item>
-      )}
-      {!currentData?.is_built_in && (
+      <Form.Item<FormData> hidden name="backend_source">
+        <SealInput.Input></SealInput.Input>
+      </Form.Item>
+      {backendSource !== BackendSourceValueMap.BUILTIN && (
         <>
           <Form.Item<FormData>
             name="health_check_path"

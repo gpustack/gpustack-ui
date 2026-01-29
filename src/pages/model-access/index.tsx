@@ -200,6 +200,10 @@ const Accesses: React.FC = () => {
     );
   };
 
+  const setDisableExpand = (record: any) => {
+    return !record?.endpoints;
+  };
+
   useEffect(() => {
     fetchSourceModels();
   }, []);
@@ -223,7 +227,8 @@ const Accesses: React.FC = () => {
         ></FilterBar>
         <TableContext.Provider
           value={{
-            allChildren: allAccessPoints
+            allChildren: allAccessPoints,
+            setDisableExpand: setDisableExpand
           }}
         >
           <SealTable

@@ -59,11 +59,11 @@ export const ActionList: ActionItem[] = [
     key: 'api',
     icon: icons.ApiOutlined
   },
-  {
-    label: 'models.button.accessSettings',
-    key: 'accessControl',
-    icon: icons.Permission
-  },
+  // {
+  //   label: 'models.button.accessSettings',
+  //   key: 'accessControl',
+  //   icon: icons.Permission
+  // },
   {
     label: 'common.button.stop',
     key: 'stop',

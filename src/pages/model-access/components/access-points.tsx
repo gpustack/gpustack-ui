@@ -31,11 +31,6 @@ interface AccessItemProps {
 
 export const childActionList = [
   {
-    key: 'viewlog',
-    label: 'common.button.viewlog',
-    icon: <IconFont type="icon-logs" />
-  },
-  {
     key: 'fallback',
     label: 'accesses.table.setAsFallback',
     icon: <IconFont type="icon-shield" />
@@ -58,30 +53,34 @@ const AccessItem: React.FC<AccessItemProps> = ({
   const intl = useIntl();
 
   const renderProviderSource = () => {
-    const model = sourceModels.find(
-      (item: any) => item.value === data.provider_id || item.id === data.model
-    );
-    return model.label || '-';
+    const model = sourceModels.find((item: any) => {
+      if (data.model_id) {
+        return item.value === 'deployments';
+      }
+      return item.value === data.provider_id;
+    });
+    console.log('renderProviderSource model:', data, sourceModels);
+    return model?.label || '-';
   };
   return (
     <div style={{ borderRadius: 'var(--ant-table-header-border-radius)' }}>
       <RowChildren>
         <Row gutter={16} style={{ width: '100%' }}>
-          <Col span={4}>
+          <Col span={5}>
             <CellContent
               style={{
                 paddingInline: 'var(--ant-table-cell-padding-inline)'
               }}
             >
-              <AutoTooltip ghost>{data.provider_model_name}</AutoTooltip>
+              <AutoTooltip ghost>{data.name}</AutoTooltip>
             </CellContent>
           </Col>
-          <Col span={3}>
+          <Col span={4} style={{ paddingLeft: 56 }}>
             <CellContent>{renderProviderSource()}</CellContent>
           </Col>
-          <Col span={4}>
+          <Col span={3}>
             <CellContent>
-              {data.weight && (
+              {data.weight > 0 && (
                 <AutoTooltip ghost>
                   {intl.formatMessage({ id: 'accesses.form.endpoint.weight' })}:{' '}
                   {data.weight}
@@ -91,7 +90,9 @@ const AccessItem: React.FC<AccessItemProps> = ({
               {data.fallback_status_codes &&
                 data.fallback_status_codes?.length > 0 && (
                   <>
-                    <span style={{ marginInline: 8 }}>/</span>
+                    {data.weight > 0 && (
+                      <span style={{ marginInline: 8 }}>/</span>
+                    )}
                     <span>
                       {intl.formatMessage({
                         id: 'accesses.table.label.fallback'
@@ -101,7 +102,7 @@ const AccessItem: React.FC<AccessItemProps> = ({
                 )}
             </CellContent>
           </Col>
-          <Col span={4}>
+          <Col span={3}>
             <CellContent>
               <AutoTooltip ghost>
                 <StatusTag

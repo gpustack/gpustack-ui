@@ -17,14 +17,7 @@ const CategorySelect = (props: any) => {
       </span>
     );
   };
-  return (
-    <SealSelect
-      options={options}
-      optionRenderer={optionRenderer}
-      labelRender={optionRenderer}
-      {...rest}
-    />
-  );
+  return <SealSelect options={options} {...rest} />;
 };
 
 export default CategorySelect;

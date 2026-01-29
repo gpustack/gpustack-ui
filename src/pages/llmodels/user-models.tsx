@@ -146,15 +146,15 @@ const UserModels: React.FC = () => {
   };
 
   const getStatus = useCallback((model: any) => {
-    if (!model.replicas && !model.ready_replicas) {
+    if (!model.replicas && !model.ready_endpoints) {
       return MyModelsStatusValueMap.Inactive;
     }
 
-    if (model.replicas > 0 && !model.ready_replicas) {
+    if (model.replicas > 0 && !model.ready_endpoints) {
       return MyModelsStatusValueMap.Degrade;
     }
 
-    if (model.ready_replicas > 0 && model.replicas > 0) {
+    if (model.ready_endpoints > 0 && model.replicas > 0) {
       return MyModelsStatusValueMap.Active;
     }
     return MyModelsStatusValueMap.Degrade;

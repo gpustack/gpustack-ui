@@ -4,17 +4,17 @@ import { StatusType } from '@/config/types';
 
 export const EndpointsStatusValueMap: Record<string, string> = {
   Active: 'active',
-  Inactive: 'inactive'
+  Unavailable: 'unavailable'
 };
 
 export const EndpointStatusLabelMap = {
   [EndpointsStatusValueMap.Active]: 'Active',
-  [EndpointsStatusValueMap.Inactive]: 'Inactive'
+  [EndpointsStatusValueMap.Unavailable]: 'Unavailable'
 };
 
 export const EndpointStatus: Record<string, StatusType> = {
   [EndpointsStatusValueMap.Active]: StatusMaps.success,
-  [EndpointsStatusValueMap.Inactive]: StatusMaps.error
+  [EndpointsStatusValueMap.Unavailable]: StatusMaps.error
 };
 
 // actions for each row

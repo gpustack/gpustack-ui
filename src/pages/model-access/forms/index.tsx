@@ -63,35 +63,41 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
 
   const formatEndpoints = (values: FormData) => {
     console.log('formatEndpoints values:', values);
-    let endPoints = [...values.endpoints];
+    let endPoints = [...(values.endpoints || [])];
     let fallbackEndpoint = values.fallback_endpoint;
 
-    if (fallbackEndpoint && endPoints.length > 0) {
-      endPoints = endPoints?.map((ep) => {
-        if (ep.model_id === fallbackEndpoint.model_id && ep.model_id) {
-          return {
-            ...ep,
-            fallback_status_codes: ['4xx', '5xx']
-          };
+    if (fallbackEndpoint) {
+      const exsitinged = endPoints.find((ep) => {
+        if (fallbackEndpoint!.model_id) {
+          return ep.model_id === fallbackEndpoint!.model_id;
         }
-        if (
-          ep.provider_id === fallbackEndpoint.provider_id &&
-          ep.provider_model_name === fallbackEndpoint.provider_model_name &&
-          !fallbackEndpoint.model_id
-        ) {
-          return {
-            ...ep,
-            fallback_status_codes: ['4xx', '5xx']
-          };
-        }
-        return ep;
+        return (
+          ep.provider_id === fallbackEndpoint!.provider_id &&
+          ep.provider_model_name === fallbackEndpoint!.provider_model_name
+        );
       });
-    } else if (fallbackEndpoint) {
-      endPoints.push({
-        ...fallbackEndpoint,
-        weight: null,
-        fallback_status_codes: ['4xx', '5xx']
-      });
+      if (exsitinged) {
+        endPoints = endPoints.map((ep) => {
+          if (
+            ep.model_id === fallbackEndpoint.model_id ||
+            ep.provider_model_name === fallbackEndpoint.provider_model_name
+          ) {
+            return {
+              ...ep,
+              fallback_status_codes: ['4xx', '5xx']
+            };
+          }
+          return ep;
+        });
+      }
+
+      if (!exsitinged) {
+        endPoints.push({
+          ...fallbackEndpoint,
+          weight: 0,
+          fallback_status_codes: ['4xx', '5xx']
+        });
+      }
     }
 
     return endPoints;

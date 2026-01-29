@@ -16,12 +16,12 @@ const AdvanceConfig = () => {
   const form = Form.useFormInstance();
   const EnviromentVars = Form.useWatch('env', form);
   const backend = Form.useWatch('backend', form);
-  const { onValuesChange, backendOptions, isGGUF, modelContextData } =
+  const { onValuesChange, isGGUF, modelContextData, flatBackendOptions } =
     useFormContext();
 
   const currentBackendOptions = useMemo(() => {
-    return backendOptions?.find((item) => item.value === backend);
-  }, [backend, backendOptions]);
+    return flatBackendOptions?.find((item) => item.value === backend);
+  }, [backend, flatBackendOptions]);
 
   const handleEnviromentVarsChange = (labels: Record<string, any>) => {
     form.setFieldValue('env', labels);

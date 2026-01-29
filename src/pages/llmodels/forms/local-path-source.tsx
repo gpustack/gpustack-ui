@@ -18,7 +18,7 @@ const LocalPathForm: React.FC = () => {
   const {
     formKey,
     gpuOptions,
-    backendOptions,
+    flatBackendOptions,
     onValuesChange,
     onBackendChange
   } = useFormContext();
@@ -68,7 +68,7 @@ const LocalPathForm: React.FC = () => {
     });
 
     if (oldBackend !== backend) {
-      const option = backendOptions.find((item) => item.value === backend);
+      const option = flatBackendOptions.find((item) => item.value === backend);
       onBackendChange?.(backend, option);
     } else {
       onValuesChange?.({ local_path: value }, form.getFieldsValue());

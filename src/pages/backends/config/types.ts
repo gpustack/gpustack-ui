@@ -7,6 +7,8 @@ export interface VersionConfigs {
   entrypoint?: string;
   version_no?: string;
   is_built_in?: boolean;
+  backend_source?: string;
+  environment: Record<string, any>;
 }
 
 export interface VersionListItem extends VersionConfigs {
@@ -24,6 +26,8 @@ export interface FormData {
   allowed_proxy_uris?: string[];
   content?: string;
   enabled?: boolean;
+  backend_source?: string;
+  default_environment?: Record<string, any>;
 }
 
 export interface ListItem extends FormData {

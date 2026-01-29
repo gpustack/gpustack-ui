@@ -273,7 +273,9 @@ export default {
     'No compatible GPUs are available in the selected cluster for this model.',
   'models.form.modelfile.notfound': `The model file path you specified does not exist on the GPUStack server. It's recommended to place the model file at the same path on both the GPUStack server and GPUStack workers. This helps GPUStack make better decisions.`,
   'models.form.readyWorkers': 'workers ready',
-  'models.form.maxContextLength': 'Maximum Context Length'
+  'models.form.maxContextLength': 'Maximum Context Length',
+  'models.form.backend.helperText':
+    'Not enabled yet. Will be enabled after deployment. '
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -369,5 +371,6 @@ export default {
 // 73. 'models.catalog.nogpus.tips': 'No compatible GPUs are available in the selected cluster for this model.',
 // 74. 'models.form.modelfile.notfound': `The model file path you specified does not exist on the GPUStack server. It's recommended to place the model file at the same path on both the GPUStack server and GPUStack workers. This helps GPUStack make better decisions.`,
 // 75. 'models.form.readyWorkers': 'workers ready',
-// 76. 'models.form.maxContextLength': 'Maximum Context Length'
+// 76. 'models.form.maxContextLength': 'Maximum Context Length',
+// 77. 'models.form.backend.helperText': 'Not enabled yet. Will be enabled after deployment. ',
 // ========== End of To-Do List ==========

@@ -1,6 +1,7 @@
 import DeleteModal from '@/components/delete-modal';
 import IconFont from '@/components/icon-font';
 import { FilterBar } from '@/components/page-tools';
+import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { useIntl } from '@umijs/max';
@@ -122,7 +123,7 @@ const BackendList = () => {
   const handleAddBackend = () => {
     setOpenModalStatus({
       open: true,
-      action: 'create'
+      action: PageAction.CREATE
     });
   };
 
@@ -161,6 +162,7 @@ const BackendList = () => {
           enabled: item.action === 'enable'
         }
       });
+      handleSearch();
     }
   };
 

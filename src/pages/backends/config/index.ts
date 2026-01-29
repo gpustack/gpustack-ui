@@ -43,6 +43,12 @@ export const BackendSourceLabelMap: Record<string, string> = {
   [BackendSourceValueMap.USER_DEFINED]: 'models.form.backend.custom'
 };
 
+export const TagColorMap: Record<string, string> = {
+  [BackendSourceValueMap.CUSTOM]: 'purple',
+  [BackendSourceValueMap.BUILTIN]: 'geekblue',
+  [BackendSourceValueMap.COMMUNITY]: 'cyan'
+};
+
 export const backendActions = [
   {
     label: 'common.button.edit',
@@ -63,7 +69,7 @@ export const backendActions = [
     value: 'enable',
     key: 'enable',
     locale: true,
-    icon: icons.Yaml,
+    icon: icons.Charger,
     show: (record: any) =>
       !record.enabled &&
       record.backend_source === BackendSourceValueMap.COMMUNITY
@@ -73,7 +79,7 @@ export const backendActions = [
     value: 'disable',
     key: 'disable',
     locale: true,
-    icon: icons.Yaml,
+    icon: icons.Disabled,
     show: (record: any) =>
       record.enabled &&
       record.backend_source === BackendSourceValueMap.COMMUNITY

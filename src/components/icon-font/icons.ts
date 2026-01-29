@@ -60,7 +60,9 @@ const icons = {
   LockOpen: React.createElement(IconFont, { type: 'icon-lock_open' }),
   Permission: React.createElement(IconFont, { type: 'icon-permission' }),
   CaptivePortal: React.createElement(IconFont, { type: 'icon-captive_portal' }),
-  StarOutlined: React.createElement(StarOutlined)
+  StarOutlined: React.createElement(StarOutlined),
+  Charger: React.createElement(IconFont, { type: 'icon-charger' }),
+  Disabled: React.createElement(IconFont, { type: 'icon-disabled' })
 };
 
 export default icons;

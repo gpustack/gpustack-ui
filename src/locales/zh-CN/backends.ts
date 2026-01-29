@@ -35,5 +35,7 @@ export default {
   'backend.replaceEntrypoint': '覆盖镜像入口命令',
   'backend.entrypoint': '镜像入口命令',
   'backend.entrypoint.tips':
-    '如指定，镜像中定义的 ENTRYPOINT 将被忽略，下面的命令将作为容器启动入口命令使用。'
+    '如指定，镜像中定义的 ENTRYPOINT 将被忽略，下面的命令将作为容器启动入口命令使用。',
+  'backend.form.defaultEnvironment': '默认环境变量',
+  'backend.recommendModels': '推荐模型'
 };

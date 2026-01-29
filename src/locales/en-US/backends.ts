@@ -38,5 +38,7 @@ export default {
   'backend.replaceEntrypoint': 'Override Image Entrypoint',
   'backend.entrypoint': 'Image Entrypoint',
   'backend.entrypoint.tips':
-    'If specified, the ENTRYPOINT defined in the image will be ignored, and the command below will be used as the container startup entrypoint.'
+    'If specified, the ENTRYPOINT defined in the image will be ignored, and the command below will be used as the container startup entrypoint.',
+  'backend.form.defaultEnvironment': 'Default Environment Variables',
+  'backend.recommendModels': 'Recommended Models'
 };

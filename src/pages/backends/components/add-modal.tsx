@@ -11,6 +11,7 @@ import React, { useEffect, useId, useRef, useState } from 'react';
 import styled from 'styled-components';
 import ColumnWrapper from '../../_components/column-wrapper';
 import {
+  BackendSourceValueMap,
   builtInBackendFields,
   customBackendFields,
   json2Yaml
@@ -55,7 +56,8 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     'image_name',
     'run_command',
     'custom_framework',
-    'entrypoint'
+    'entrypoint',
+    'environment'
   ];
 
   // remove '-custom' suffix from version_no in currentData, when action is EDIT
@@ -64,7 +66,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     data.version_configs = Object.entries(data.version_configs || {}).reduce(
       (acc, [key, value]) => {
         const version = key.replace(/-custom$/, '');
-        acc[version] = { ...value };
+        acc[version] = { ...value, backend_source: data.backend_source };
         return acc;
       },
       {} as any
@@ -128,7 +130,9 @@ const AddModal: React.FC<AddModalProps> = (props) => {
         is_default: key === values.default_version,
         built_in_frameworks:
           values.built_in_version_configs?.[key]?.built_in_frameworks || [],
-        is_built_in: true,
+        is_built_in:
+          data.is_built_in &&
+          data.backend_source === BackendSourceValueMap.BUILTIN,
         ..._.pick(values.built_in_version_configs?.[key], [
           'image_name',
           'run_command',

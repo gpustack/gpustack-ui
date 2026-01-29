@@ -1,4 +1,5 @@
 import CollapsibleContainer from '@/components/collapse-container';
+import LabelSelector from '@/components/label-selector';
 import BaseSelect from '@/components/seal-form/base/select';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
@@ -75,7 +76,8 @@ const VersionsForm: React.FC<AddModalProps> = ({
       run_command: '',
       entrypoint: '',
       isBuiltin: false,
-      is_default: false
+      is_default: false,
+      environment: {}
     }
   ];
 
@@ -102,7 +104,8 @@ const VersionsForm: React.FC<AddModalProps> = ({
       run_command: '',
       entrypoint: '',
       isBuiltin: false,
-      is_default: false
+      is_default: false,
+      environment: {}
     };
     form.setFieldValue('version_configs', [...versions, newVersion]);
   };
@@ -134,6 +137,25 @@ const VersionsForm: React.FC<AddModalProps> = ({
     }));
     form.setFieldValue('version_configs', updatedVersions);
     setDefaultVersion(value);
+  };
+
+  const handleEnviromentVarsChange = (
+    envs: Record<string, any>,
+    name: number
+  ) => {
+    const versions = form.getFieldValue('version_configs') || [];
+    const updatedVersions = versions.map((version: any, idx: number) => {
+      if (idx === name) {
+        return {
+          ...version,
+          environment: {
+            ...envs
+          }
+        };
+      }
+      return version;
+    });
+    form.setFieldValue('version_configs', updatedVersions);
   };
 
   useEffect(() => {
@@ -227,6 +249,7 @@ const VersionsForm: React.FC<AddModalProps> = ({
             { add, remove }
           ) => {
             const versionConfigs = form.getFieldValue('version_configs');
+            console.log('versionConfigs', versionConfigs);
             return fields?.map(({ key, name }) => (
               <div
                 key={name}
@@ -356,10 +379,7 @@ const VersionsForm: React.FC<AddModalProps> = ({
                       })}
                     ></SealInput.TextArea>
                   </Form.Item>
-                  <Form.Item
-                    name={[name, 'run_command']}
-                    style={{ marginBottom: 0 }}
-                  >
+                  <Form.Item name={[name, 'run_command']}>
                     <SealTextArea
                       allowClear
                       alwaysFocus={true}
@@ -375,6 +395,18 @@ const VersionsForm: React.FC<AddModalProps> = ({
                       )}
                       label={intl.formatMessage({ id: 'backend.runCommand' })}
                     ></SealTextArea>
+                  </Form.Item>
+                  <Form.Item name={[name, 'environment']}>
+                    <LabelSelector
+                      label={intl.formatMessage({
+                        id: 'models.form.env'
+                      })}
+                      labels={versionConfigs.environment}
+                      btnText={intl.formatMessage({ id: 'common.button.vars' })}
+                      onChange={(envs) =>
+                        handleEnviromentVarsChange(envs, name)
+                      }
+                    ></LabelSelector>
                   </Form.Item>
                 </CollapsibleContainer>
               </div>

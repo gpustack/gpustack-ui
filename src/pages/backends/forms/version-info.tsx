@@ -5,7 +5,13 @@ import { useIntl } from '@umijs/max';
 import { Empty } from 'antd';
 import { useState } from 'react';
 import styled from 'styled-components';
-import { frameworks, getGpuColor } from '../config';
+import {
+  BackendSourceLabelMap,
+  BackendSourceValueMap,
+  frameworks,
+  getGpuColor,
+  TagColorMap
+} from '../config';
 import { VersionListItem } from '../config/types';
 
 const ItemWrapper = styled.div`
@@ -76,19 +82,43 @@ interface VersionItemProps {
 
 export const VersionItem: React.FC<VersionItemProps> = ({ data }) => {
   const intl = useIntl();
+
+  const renderSource = () => {
+    console.log('data.is_built_in', data.is_built_in);
+    const source = data.is_built_in
+      ? BackendSourceLabelMap[BackendSourceValueMap.BUILTIN] || ''
+      : BackendSourceLabelMap[data.backend_source || ''] || '';
+    if (!source) {
+      return null;
+    }
+    return (
+      <ThemeTag
+        color={
+          TagColorMap[
+            data.is_built_in
+              ? BackendSourceValueMap.BUILTIN
+              : data.backend_source || ''
+          ]
+        }
+        className="font-400"
+        variant="outlined"
+        style={{
+          borderRadius: 'var(--ant-border-radius)',
+          margin: 0,
+          width: 'max-content'
+        }}
+      >
+        {intl.formatMessage({
+          id: source
+        })}
+      </ThemeTag>
+    );
+  };
   return (
     <ItemWrapper>
       <div className="title">
         <span>{data.version_no}</span>
-        {data.is_built_in && (
-          <ThemeTag
-            color="geekblue"
-            className="font-400"
-            style={{ marginRight: 0 }}
-          >
-            {intl.formatMessage({ id: 'backend.builtin' })}
-          </ThemeTag>
-        )}
+        {renderSource()}
         {!data.is_built_in && data.is_default && (
           <ThemeTag
             color="geekblue"

@@ -1,13 +1,16 @@
 import SealCascader from '@/components/seal-form/seal-cascader';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
+import TooltipList from '@/components/tooltip-list';
+import { PageAction } from '@/config';
 import useAppUtils from '@/hooks/use-app-utils';
 import { BackendSourceValueMap } from '@/pages/backends/config';
 import { CaretDownOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { useIntl, useNavigate } from '@umijs/max';
 import { Form, Select } from 'antd';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
+import { backendTipsList } from '../config';
 import { backendOptionsMap } from '../config/backend-parameters';
 import { useFormContext } from '../config/form-context';
 import { BackendOption } from '../config/types';
@@ -29,7 +32,13 @@ const BackendFields: React.FC = () => {
   const navigate = useNavigate();
   const { getRuleMessage } = useAppUtils();
   const form = Form.useFormInstance();
-  const { onValuesChange, backendOptions, onBackendChange } = useFormContext();
+  const {
+    action,
+    onValuesChange,
+    backendOptions,
+    flatBackendOptions,
+    onBackendChange
+  } = useFormContext();
   const backend = Form.useWatch('backend', form);
   const [showDeprecated, setShowDeprecated] = React.useState<boolean>(false);
   const [selectedBackend, setSelectedBackend] =
@@ -39,31 +48,21 @@ const BackendFields: React.FC = () => {
     onValuesChange?.({}, form.getFieldsValue());
   };
 
-  const backendGroupedOptions = useMemo(() => {
-    const builtInBackends = backendOptions?.filter(
-      (item) => item.isBuiltIn || item.value === backendOptionsMap.custom
-    );
-    const customBackends = backendOptions?.filter(
-      (item) => !item.isBuiltIn && item.value !== backendOptionsMap.custom
-    );
-
-    const options = [];
-
-    if (builtInBackends && builtInBackends.length > 0) {
-      options.push({
-        label: intl.formatMessage({ id: 'backend.builtin' }),
-        options: builtInBackends
-      });
+  const backendHelperText = useMemo(() => {
+    const selected = flatBackendOptions?.find((item) => item.value === backend);
+    if (
+      selected &&
+      !selected.enabled &&
+      selected.backend_source === BackendSourceValueMap.COMMUNITY
+    ) {
+      return (
+        <span style={{ color: 'var(--ant-color-error)' }}>
+          {intl.formatMessage({ id: 'models.form.backend.helperText' })}
+        </span>
+      );
     }
-
-    if (customBackends && customBackends.length > 0) {
-      options.push({
-        label: intl.formatMessage({ id: 'models.form.backend.custom' }),
-        options: customBackends
-      });
-    }
-    return options;
-  }, [backendOptions, intl]);
+    return null;
+  }, [backend, flatBackendOptions, intl]);
 
   const backendVersions = useMemo((): {
     builtIn: any[];
@@ -111,14 +110,6 @@ const BackendFields: React.FC = () => {
     };
   }, [backend, selectedBackend, intl]);
 
-  const optionRender = (option: any) => {
-    return option.data.title;
-  };
-
-  const labelRender = (option: any) => {
-    return option.title;
-  };
-
   const backendVersionLabelRender = (option: any) => {
     console.log('backendVersionLabelRender option:', option);
     return option.title;
@@ -140,10 +131,21 @@ const BackendFields: React.FC = () => {
   };
 
   const handleOnBackendChange = (value: any[], option: any) => {
-    console.log('handleOnBackendChange value, option:', value, option);
-    form.setFieldsValue({ backend: value[0] });
-    onBackendChange?.(value[0], option[1]);
-    setSelectedBackend(option[1]);
+    form.setFieldValue('backend', value?.[1]);
+    onBackendChange?.(value?.[1], option?.[1] || {});
+    setSelectedBackend(option?.[1] || {});
+  };
+
+  const displayRender = (labels: any[], selectedOptions?: any[]) => {
+    const groupTitle = selectedOptions?.[0]?.title;
+    if (!groupTitle) {
+      return <span>{labels?.[0]}</span>;
+    }
+    return (
+      <span className="flex-center">
+        {intl.formatMessage({ id: groupTitle })} / {labels?.[1]}
+      </span>
+    );
   };
 
   const renderDeprecatedVersionOptions = (values: any[]) => {
@@ -192,6 +194,20 @@ const BackendFields: React.FC = () => {
     );
   };
 
+  useEffect(() => {
+    if (action === PageAction.EDIT) {
+      const selected = flatBackendOptions?.find(
+        (item) => item.value === backend
+      );
+      if (selected) {
+        form.setFieldValue('backend_selection', [
+          selected.backend_source,
+          backend
+        ]);
+      }
+    }
+  }, [backend, flatBackendOptions, action]);
+
   return (
     <>
       <Form.Item name="backend" hidden>
@@ -205,19 +221,12 @@ const BackendFields: React.FC = () => {
             message: getRuleMessage('select', 'models.form.backend')
           }
         ]}
+        help={backendHelperText}
       >
-        {/* <SealSelect
-          required
-          onChange={onBackendChange}
-          label={intl.formatMessage({ id: 'models.form.backend' })}
-          description={<TooltipList list={backendTipsList}></TooltipList>}
-          options={backendGroupedOptions}
-          optionRender={optionRender}
-          labelRender={labelRender}
-        ></SealSelect> */}
         <SealCascader
           required
           showSearch
+          allowClear={false}
           changeOnSelect={false}
           expandTrigger="hover"
           multiple={false}
@@ -231,6 +240,7 @@ const BackendFields: React.FC = () => {
           options={backendOptions}
           getPopupContainer={(triggerNode) => triggerNode.parentNode}
           optionNode={BackendNode}
+          displayRender={displayRender}
           onChange={handleOnBackendChange}
         ></SealCascader>
       </Form.Item>
@@ -244,6 +254,7 @@ const BackendFields: React.FC = () => {
             placeholder={intl.formatMessage({
               id: 'models.form.backendVersion.holder'
             })}
+            description={<TooltipList list={backendTipsList}></TooltipList>}
             onChange={handleBackendVersionOnChange}
             label={intl.formatMessage({ id: 'models.form.backendVersion' })}
             footer={

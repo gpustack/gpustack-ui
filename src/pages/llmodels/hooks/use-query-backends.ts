@@ -6,6 +6,7 @@ import {
 import { useIntl } from '@umijs/max';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
+import { useState } from 'react';
 import { queryBackendList } from '../apis';
 import { backendOptionsMap } from '../config/backend-parameters';
 import { BackendOption } from '../config/types';
@@ -43,6 +44,9 @@ const groupByBackendSource = (list: BackendOption[]): BackendGroup[] => {
 
 export default function useQueryBackends() {
   const [backendOptions, setBackendOptions] = useAtom(backendOptionsAtom);
+  const [flatBackendOptions, setFlatBackendOptions] = useState<BackendOption[]>(
+    []
+  );
   const intl = useIntl();
 
   const getBackendOptions = async (params?: { cluster_id: number }) => {
@@ -57,6 +61,7 @@ export default function useQueryBackends() {
             'is_built_in',
             'default_backend_param'
           ]),
+          backend_source: item.backend_source || BackendSourceValueMap.CUSTOM,
           value: item.backend_name,
           label:
             item.backend_name === backendOptionsMap.custom
@@ -78,22 +83,23 @@ export default function useQueryBackends() {
       });
 
       const groupList = groupByBackendSource(list);
+      setFlatBackendOptions(list);
+      setBackendOptions(groupList);
 
       console.log('Fetched backend options:', list, groupList);
 
-      if (res?.items) {
-        setBackendOptions(groupList);
-      }
       return groupList || [];
     } catch (error) {
       // ignore
       setBackendOptions([]);
+      setFlatBackendOptions([]);
       return [];
     }
   };
 
   return {
     backendOptions,
+    flatBackendOptions,
     getBackendOptions
   };
 }

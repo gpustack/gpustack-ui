@@ -1,3 +1,4 @@
+import LabelSelector from '@/components/label-selector';
 import ListInput from '@/components/list-input';
 import SealInput from '@/components/seal-form/seal-input';
 import SealTextArea from '@/components/seal-form/seal-textarea';
@@ -6,7 +7,8 @@ import { PageActionType } from '@/config/types';
 import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
-import React from 'react';
+import React, { useEffect } from 'react';
+import { BackendSourceValueMap } from '../config';
 import { FormData, ListItem } from '../config/types';
 
 type AddModalProps = {
@@ -17,6 +19,17 @@ const BasicForm: React.FC<AddModalProps> = ({ action, currentData }) => {
   const form = Form.useFormInstance();
   const intl = useIntl();
   const { getRuleMessage } = useAppUtils();
+  const defaultEnvs = Form.useWatch('default_environment', form);
+
+  const handleEnviromentVarsChange = (labels: Record<string, any>) => {
+    form.setFieldValue('env', labels);
+  };
+
+  useEffect(() => {
+    if (action === PageAction.CREATE) {
+      form.setFieldValue('backend_source', BackendSourceValueMap.CUSTOM);
+    }
+  }, [action]);
 
   return (
     <>
@@ -37,6 +50,11 @@ const BasicForm: React.FC<AddModalProps> = ({ action, currentData }) => {
           required
         ></SealInput.Input>
       </Form.Item>
+      {action === PageAction.CREATE && (
+        <Form.Item<FormData> hidden name="backend_source">
+          <SealInput.Input></SealInput.Input>
+        </Form.Item>
+      )}
       {!currentData?.is_built_in && (
         <>
           <Form.Item<FormData>
@@ -85,6 +103,16 @@ const BasicForm: React.FC<AddModalProps> = ({ action, currentData }) => {
             id: 'backend.form.defaultBackendParameters'
           })}
         ></ListInput>
+      </Form.Item>
+      <Form.Item<FormData> name="default_environment">
+        <LabelSelector
+          label={intl.formatMessage({
+            id: 'backend.form.defaultEnvironment'
+          })}
+          labels={defaultEnvs}
+          btnText={intl.formatMessage({ id: 'common.button.vars' })}
+          onChange={handleEnviromentVarsChange}
+        ></LabelSelector>
       </Form.Item>
 
       <Form.Item<FormData> name="description" rules={[{ required: false }]}>

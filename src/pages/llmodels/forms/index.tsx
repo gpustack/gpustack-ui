@@ -90,7 +90,8 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     onOk
   } = props;
   const { getScrollElementScrollableHeight } = useWrapperContext();
-  const { backendOptions, getBackendOptions } = useQueryBackends();
+  const { backendOptions, flatBackendOptions, getBackendOptions } =
+    useQueryBackends();
   const { getGPUOptionList, gpuOptions, workerLabelOptions } =
     useGenerateGPUOptions();
   const [form] = Form.useForm();
@@ -394,6 +395,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         action: action,
         gpuOptions: gpuOptions,
         backendOptions: backendOptions,
+        flatBackendOptions: flatBackendOptions,
         workerLabelOptions: workerLabelOptions,
         initialValues: initialValues,
         modelContextData: modelContextData,

@@ -277,9 +277,12 @@ export default {
     'В выбранном кластере нет доступных GPU, совместимых с этой моделью.',
   'models.form.modelfile.notfound': `Указанный путь к файлу модели не существует на сервере GPUStack. Рекомендуется размещать файл модели по одному и тому же пути как на сервере GPUStack, так и на воркерах GPUStack. Это поможет системе принимать лучшие решения по распределению ресурсов.`,
   'models.form.readyWorkers': 'воркеров готово',
-  'models.form.maxContextLength': 'Maximum Context Length'
+  'models.form.maxContextLength': 'Maximum Context Length',
+  'models.form.backend.helperText':
+    'Not enabled yet. Will be enabled after deployment. '
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'models.form.maxContextLength': 'Maximum Context Length'
+// 1. 'models.form.maxContextLength': 'Maximum Context Length',
+// 2. 'models.form.backend.helperText': 'Not enabled yet. Will be enabled after deployment. ',
 // ========== End of To-Do List ==========

@@ -5,7 +5,7 @@ import TagWrapper from '@/components/tags-wrapper';
 import ThemeTag from '@/components/tags-wrapper/theme-tag';
 import Card from '@/components/templates/card';
 import { useIntl } from '@umijs/max';
-import { Button, Tag } from 'antd';
+import { Button, Flex, Tag, Tooltip } from 'antd';
 import _ from 'lodash';
 import { useMemo } from 'react';
 import semverCoerce from 'semver/functions/coerce';
@@ -18,7 +18,8 @@ import {
   builtInBackendLogos,
   customColors,
   customIcons,
-  getGpuColor
+  getGpuColor,
+  TagColorMap
 } from '../config';
 import { ListItem } from '../config/types';
 
@@ -142,12 +143,6 @@ interface BackendCardProps {
   data: ListItem;
 }
 
-const TagColorMap: Record<string, string> = {
-  [BackendSourceValueMap.CUSTOM]: 'purple',
-  [BackendSourceValueMap.BUILTIN]: 'geekblue',
-  [BackendSourceValueMap.COMMUNITY]: 'cyan'
-};
-
 const BackendCard: React.FC<BackendCardProps> = ({ data, onSelect }) => {
   const intl = useIntl();
 
@@ -254,19 +249,62 @@ const BackendCard: React.FC<BackendCardProps> = ({ data, onSelect }) => {
   };
 
   const renderRecommendModels = () => {
-    const recommnadedModels = data.recommend_models || [];
-    if (recommnadedModels.length === 0) {
+    const recommendedModels = data.recommend_models || [];
+    if (recommendedModels.length === 0) {
       return null;
     }
     return (
       <div className="flex-center">
         <span className="dot"></span>
-        <TagWrapper
-          gap={8}
-          dataList={recommnadedModels}
-          renderTag={renderModel}
-        ></TagWrapper>
+        <Tooltip
+          title={
+            <Flex gap={4} wrap="wrap">
+              {recommendedModels.map((item) => (
+                <Tag style={{ margin: 0 }} key={item}>
+                  {item}
+                </Tag>
+              ))}
+            </Flex>
+          }
+        >
+          <span>
+            <ThemeTag color="default">
+              {intl.formatMessage({ id: 'backend.recommendModels' })}
+            </ThemeTag>
+          </span>
+        </Tooltip>
       </div>
+    );
+  };
+
+  const renderSource = () => {
+    const source = data.is_built_in
+      ? BackendSourceLabelMap[BackendSourceValueMap.BUILTIN] || ''
+      : BackendSourceLabelMap[data.backend_source] || '';
+    if (!source) {
+      return null;
+    }
+    return (
+      <ThemeTag
+        color={
+          TagColorMap[
+            data.is_built_in
+              ? BackendSourceValueMap.BUILTIN
+              : data.backend_source
+          ]
+        }
+        className="font-400"
+        variant="outlined"
+        style={{
+          borderRadius: 'var(--ant-border-radius)',
+          margin: 0,
+          width: 'max-content'
+        }}
+      >
+        {intl.formatMessage({
+          id: source
+        })}
+      </ThemeTag>
     );
   };
 
@@ -308,28 +346,7 @@ const BackendCard: React.FC<BackendCardProps> = ({ data, onSelect }) => {
               <IconFont type="icon-source" className="icon" />
               <span>Source:</span>
             </span>
-            <ThemeTag
-              color={
-                TagColorMap[
-                  data.is_built_in
-                    ? BackendSourceValueMap.BUILTIN
-                    : data.backend_source
-                ]
-              }
-              className="font-400"
-              variant="outlined"
-              style={{
-                borderRadius: 'var(--ant-border-radius)',
-                margin: 0,
-                width: 'max-content'
-              }}
-            >
-              {intl.formatMessage({
-                id: data.is_built_in
-                  ? BackendSourceLabelMap[BackendSourceValueMap.BUILTIN]
-                  : BackendSourceLabelMap[data.backend_source]
-              })}
-            </ThemeTag>
+            {renderSource()}
             {data.backend_source === BackendSourceValueMap.COMMUNITY && (
               <>
                 <ThemeTag
@@ -349,7 +366,7 @@ const BackendCard: React.FC<BackendCardProps> = ({ data, onSelect }) => {
               </>
             )}
           </InfoItem>
-          {/* {renderRecommendModels()} */}
+          {renderRecommendModels()}
         </SourceWrapper>
         {renderFrameworks()}
       </Content>

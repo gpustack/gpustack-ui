@@ -21,7 +21,7 @@ const AlgorithmMap = {
 
 const SpeculativeDecode = () => {
   const intl = useIntl();
-  const { source, backendOptions, onValuesChange } = useFormContext();
+  const { source, flatBackendOptions, onValuesChange } = useFormContext();
   const { getRuleMessage } = useAppUtils();
   const form = Form.useFormInstance();
   const backend = Form.useWatch('backend', form);
@@ -76,7 +76,7 @@ const SpeculativeDecode = () => {
   };
 
   const builtInBackend = useMemo(() => {
-    const currentBackend = backendOptions.find(
+    const currentBackend = flatBackendOptions.find(
       (item) => item.value === backend
     );
 
@@ -86,7 +86,7 @@ const SpeculativeDecode = () => {
         backend as string
       )
     );
-  }, [backend, backendOptions]);
+  }, [backend, flatBackendOptions]);
 
   return (
     <>

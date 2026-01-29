@@ -2,7 +2,9 @@ import ScrollerModal from '@/components/scroller-modal';
 import { PlusOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button } from 'antd';
+import _ from 'lodash';
 import { useEffect, useState } from 'react';
+import { BackendSourceValueMap } from '../config';
 import { VersionListItem } from '../config/types';
 import VersionInfo from '../forms/version-info';
 
@@ -26,10 +28,11 @@ const VersionInfoModal: React.FC<VersionInfoModalProps> = ({
     if (open && currentData) {
       // add is_built_in field to built_in_version_configs
       const builtInVersions = currentData.built_in_version_configs || {};
-
       for (const key in builtInVersions) {
         if (builtInVersions?.hasOwnProperty(key)) {
-          builtInVersions[key].is_built_in = true;
+          builtInVersions[key].is_built_in =
+            currentData.backend_source === BackendSourceValueMap.BUILTIN &&
+            currentData.is_built_in;
         }
       }
 
@@ -41,9 +44,13 @@ const VersionInfoModal: React.FC<VersionInfoModalProps> = ({
       const versionList: VersionListItem[] = Object.entries(versions).map(
         ([key, value]: [string, any]) => ({
           version_no: key,
-          image_name: value.image_name,
-          run_command: value.run_command,
-          entrypoint: value.entrypoint,
+          ..._.pick(value, [
+            'image_name',
+            'run_command',
+            'entrypoint',
+            'environment',
+            'backend_source'
+          ]),
           is_default: key === currentData.default_version,
           availableFrameworks: [
             ...(value.built_in_frameworks || []),

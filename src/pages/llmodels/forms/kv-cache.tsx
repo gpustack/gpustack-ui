@@ -11,7 +11,7 @@ import { FormData } from '../config/types';
 const KVCacheForm = () => {
   const intl = useIntl();
   const form = Form.useFormInstance();
-  const { onValuesChange, backendOptions, formKey } = useFormContext();
+  const { onValuesChange, flatBackendOptions, formKey } = useFormContext();
   const kvCacheEnabled = Form.useWatch(['extended_kv_cache', 'enabled'], form);
   const backend = Form.useWatch('backend', form);
   const configCacheRef = useRef<any>({});
@@ -68,7 +68,7 @@ const KVCacheForm = () => {
   };
 
   const builtInBackend = useMemo(() => {
-    const currentBackend = backendOptions.find(
+    const currentBackend = flatBackendOptions.find(
       (item) => item.value === backend
     );
 
@@ -78,7 +78,7 @@ const KVCacheForm = () => {
         backend as string
       )
     );
-  }, [backend, backendOptions]);
+  }, [backend, flatBackendOptions]);
 
   return (
     <>

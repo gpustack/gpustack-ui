@@ -38,9 +38,12 @@ export default {
   'backend.replaceEntrypoint': 'Переопределить точку входа образа',
   'backend.entrypoint': 'Точка входа образа',
   'backend.entrypoint.tips':
-    'Если указано, ENTRYPOINT, заданный в образе, будет проигнорирован, а вместо него для запуска контейнера будет использована команда ниже.'
+    'Если указано, ENTRYPOINT, заданный в образе, будет проигнорирован, а вместо него для запуска контейнера будет использована команда ниже.',
+  'backend.form.defaultEnvironment': 'Default Environment Variables',
+  'backend.recommendModels': 'Recommended Models'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-
+// 1. 'backend.form.defaultEnvironment': 'Default Environment Variables',
+// 2. 'backend.recommendModels': 'Recommended Models'
 // ========== End of To-Do List ==========

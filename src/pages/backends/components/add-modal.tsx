@@ -57,7 +57,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     'run_command',
     'custom_framework',
     'entrypoint',
-    'environment'
+    'env'
   ];
 
   // remove '-custom' suffix from version_no in currentData, when action is EDIT

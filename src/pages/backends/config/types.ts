@@ -8,7 +8,7 @@ export interface VersionConfigs {
   version_no?: string;
   is_built_in?: boolean;
   backend_source?: string;
-  environment: Record<string, any>;
+  env: Record<string, any>;
 }
 
 export interface VersionListItem extends VersionConfigs {
@@ -27,7 +27,7 @@ export interface FormData {
   content?: string;
   enabled?: boolean;
   backend_source?: string;
-  default_environment?: Record<string, any>;
+  default_env?: Record<string, any>;
 }
 
 export interface ListItem extends FormData {

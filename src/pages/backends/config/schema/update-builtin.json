@@ -20,7 +20,7 @@
       "type": ["string", "null"],
       "description": "health check path"
     },
-    "default_environment": {
+    "default_env": {
       "type": "object",
       "additionalProperties": {
         "type": "string"
@@ -49,7 +49,7 @@
               "type": ["string", "null"],
               "description": "custom framework"
             },
-            "environment": {
+            "env": {
               "type": "object",
               "additionalProperties": {
                 "type": "string"

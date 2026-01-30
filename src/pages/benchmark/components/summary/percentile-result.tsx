@@ -2,7 +2,6 @@ import { Table } from 'antd';
 import { round } from 'lodash';
 import React from 'react';
 import { useDetailContext } from '../../config/detail-context';
-import Title from './title';
 
 const columns = [
   {
@@ -77,7 +76,7 @@ const PercentileResult: React.FC = () => {
 
   return (
     <div>
-      <Title>Percentile</Title>
+      <span>Percentile</span>
       <Table
         size="small"
         columns={[

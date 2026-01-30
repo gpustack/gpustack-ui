@@ -232,16 +232,6 @@ const Environment: React.FC = () => {
 
   return (
     <Container>
-      {/* <WorkerData
-        workerData={mainWorker.workerData}
-        gpuData={mainWorker.children}
-        title={
-          <div className="flex-center gap-8">
-            <Tag color="geekblue">Main</Tag>
-            <span>{mainWorker?.workerData?.name}</span>
-          </div>
-        }
-      ></WorkerData> */}
       <SealTable
         rowKey="id"
         loadChildren={loadChildren}

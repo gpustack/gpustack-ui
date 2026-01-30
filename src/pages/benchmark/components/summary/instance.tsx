@@ -3,7 +3,6 @@ import { Descriptions, Flex, Tag } from 'antd';
 import _ from 'lodash';
 import React, { useMemo } from 'react';
 import { useDetailContext } from '../../config/detail-context';
-import Title from './title';
 
 const calcTotalVram = (vram: Record<string, number>) => {
   return _.sum(_.values(vram));
@@ -159,7 +158,7 @@ const Instance: React.FC = () => {
 
   return (
     <div>
-      <Title>Instance</Title>
+      <span>Instance</span>
       <Descriptions
         items={items}
         colon={false}

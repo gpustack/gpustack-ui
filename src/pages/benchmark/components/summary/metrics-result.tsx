@@ -49,9 +49,9 @@ const columns = [
     render: (value: number) => round(value, 2)
   },
   {
-    title: 'Prompt token throughput ',
-    dataIndex: 'prompt_tokens_per_second_mean',
-    path: 'prompt_tokens_per_second_mean',
+    title: 'Input token throughput ',
+    dataIndex: 'input_tokens_per_second_mean',
+    path: 'input_tokens_per_second_mean',
     unit: 'Tokens/s',
     render: (value: number) => round(value, 2)
   },

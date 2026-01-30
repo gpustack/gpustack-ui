@@ -77,7 +77,7 @@ export interface FormData {
   dataset_id: number;
   dataset_name: string;
   dataset_source: string;
-  dataset_prompt_tokens: number;
+  dataset_input_tokens: number;
   dataset_output_tokens: number;
   total_requests: number;
   request_rate: number;
@@ -109,7 +109,7 @@ export interface ProfileOption {
   description: string;
   dataset_name: string;
   dataset_source: string;
-  dataset_prompt_tokens: number;
+  dataset_input_tokens: number;
   dataset_output_tokens: number;
   request_rate: number;
   total_requests: number;

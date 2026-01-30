@@ -1,6 +1,7 @@
 import { useQueryDataList } from '@/hooks/use-query-data-list';
 import { useState } from 'react';
 import { queryDatasetList } from '../apis';
+import { datasetList as datasetOptions } from '../config';
 import { DatasetListItem } from '../config/types';
 
 const useQueryDataset = () => {
@@ -17,17 +18,9 @@ const useQueryDataset = () => {
   >([]);
 
   const fetchDatasetData = async () => {
-    const items = await fetchData({
-      page: -1
-    });
-    const list =
-      items?.map((item) => ({
-        ...item,
-        label: item.name,
-        value: item.id
-      })) || [];
+    // TODO: may be fetch data from server in the future.
 
-    setDatasetList([...list]);
+    setDatasetList([...datasetOptions]);
   };
 
   return {

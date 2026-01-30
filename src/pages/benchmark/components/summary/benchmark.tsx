@@ -19,10 +19,10 @@ const Benchmark: React.FC = () => {
     },
     {
       key: '3',
-      label: 'Token Length (Prompt/Output)',
+      label: 'Token Length (Input/Output)',
       children: (
         <span>
-          {detailData?.dataset_prompt_tokens || '-'} /{' '}
+          {detailData?.dataset_input_tokens || '-'} /{' '}
           {detailData?.dataset_output_tokens || '-'}
         </span>
       )

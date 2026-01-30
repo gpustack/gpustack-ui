@@ -93,19 +93,6 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
     }
   }, [showAdvanced, activeKey]);
 
-  // const advancedItems = showAdvanced
-  //   ? [
-  //       {
-  //         key: TABKeysMap.ADVANCED,
-  //         label: intl.formatMessage({ id: 'resources.form.advanced' }),
-  //         forceRender: true,
-  //         children: <RandomSettingsForm />
-  //       }
-  //     ]
-  //   : [];
-
-  console.log('render form with profile:', showAdvanced);
-
   return (
     <ScrollSpyTabs
       ref={scrollTabsRef}
@@ -129,7 +116,7 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
           form={form}
           onFinish={onFinish}
           initialValues={{
-            dataset_prompt_tokens: null,
+            dataset_input_tokens: null,
             dataset_output_tokens: null,
             total_requests: null,
             request_rate: null,

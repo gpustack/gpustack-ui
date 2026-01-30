@@ -16,7 +16,7 @@ const Container = styled.div`
 const Summary: React.FC = () => {
   return (
     <Container>
-      <Section title="Results">
+      <Section title="Results" minHeight={450}>
         <MetricsResult />
         <Divider />
         <PercentileResult />

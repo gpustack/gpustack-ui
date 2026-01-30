@@ -41,7 +41,7 @@ export default function useQueryProfiles() {
         value: 'Custom',
         config: {
           dataset_name: '',
-          dataset_prompt_tokens: null,
+          dataset_input_tokens: null,
           dataset_output_tokens: null,
           request_rate: null,
           total_requests: null

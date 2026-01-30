@@ -21,7 +21,7 @@ export default {
   'benchmark.form.profile.longContext': 'Long Context',
   'benchmark.form.profile.heavy': 'Generation Heavy',
   'benchmark.form.profile.custom': 'Custom',
-  'benchmark.table.inputTokenLength': 'Prompt Token Length',
+  'benchmark.table.inputTokenLength': 'Input Token Length',
   'benchmark.table.outputTokenLength': 'Output Token Length',
   'benchmark.detail.summary.title': 'Summary',
   'benchmark.detail.configure.title': 'Configure',

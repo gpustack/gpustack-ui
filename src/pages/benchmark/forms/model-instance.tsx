@@ -101,6 +101,10 @@ const ModelInstanceForm: React.FC = () => {
           children: []
         }));
 
+      if (modelOptions.length === 0) {
+        return;
+      }
+
       // preload instances for the first model
       const instanceList = await fetchInstanceList({ id: modelOptions[0]?.id });
       const instanceOptions = instanceList.map((instance: any) =>

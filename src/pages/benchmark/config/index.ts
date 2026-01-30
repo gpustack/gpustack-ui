@@ -3,7 +3,7 @@ import { StatusType } from '@/config/types';
 
 export const BenchmarkStatusValueMap = {
   Pending: 'pending',
-  Claimed: 'claimed',
+  QUEUED: 'queued',
   Running: 'running',
   Completed: 'completed',
   Error: 'error',
@@ -13,7 +13,7 @@ export const BenchmarkStatusValueMap = {
 
 export const BenchmarkStatusLabelMap = {
   [BenchmarkStatusValueMap.Pending]: 'Pending',
-  [BenchmarkStatusValueMap.Claimed]: 'Claimed',
+  [BenchmarkStatusValueMap.QUEUED]: 'Queued',
   [BenchmarkStatusValueMap.Running]: 'Running',
   [BenchmarkStatusValueMap.Completed]: 'Completed',
   [BenchmarkStatusValueMap.Error]: 'Error',
@@ -23,7 +23,7 @@ export const BenchmarkStatusLabelMap = {
 
 export const BenchmarkStatus: Record<string, StatusType> = {
   [BenchmarkStatusValueMap.Pending]: StatusMaps.transitioning,
-  [BenchmarkStatusValueMap.Claimed]: StatusMaps.warning,
+  [BenchmarkStatusValueMap.QUEUED]: StatusMaps.warning,
   [BenchmarkStatusValueMap.Running]: StatusMaps.success,
   [BenchmarkStatusValueMap.Completed]: StatusMaps.success,
   [BenchmarkStatusValueMap.Error]: StatusMaps.error,
@@ -72,5 +72,23 @@ export const profileOptions = [
     label: 'benchmark.form.profile.custom',
     value: ProfileValueMap.Custom,
     locale: true
+  }
+];
+
+const DatasetValueMap = {
+  ShareGPT: 'ShareGPT',
+  Random: 'Random'
+};
+
+export const datasetList = [
+  {
+    name: 'ShareGPT',
+    label: 'ShareGPT',
+    value: DatasetValueMap.ShareGPT
+  },
+  {
+    name: 'Random',
+    label: 'Random',
+    value: DatasetValueMap.Random
   }
 ];

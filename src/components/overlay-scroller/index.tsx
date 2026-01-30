@@ -19,10 +19,21 @@ export const OverlayScroller: React.FC<
   OverlayScrollerOptions & {
     maxHeight?: number;
     style?: React.CSSProperties;
+    styles?: {
+      wrapper?: React.CSSProperties;
+    };
     children: React.ReactNode;
     onScroll?: (e: React.UIEvent<HTMLDivElement, UIEvent>) => void;
   }
-> = ({ children, maxHeight, scrollbars, oppositeTheme, style, onScroll }) => {
+> = ({
+  children,
+  maxHeight,
+  scrollbars,
+  oppositeTheme,
+  style,
+  styles,
+  onScroll
+}) => {
   const scroller = React.useRef<any>(null);
   const { initialize } = useOverlayScroller({
     options: {
@@ -48,7 +59,8 @@ export const OverlayScroller: React.FC<
       style={{
         paddingInlineStart: 8,
         paddingInlineEnd: 8,
-        ...style
+        ...style,
+        ...styles?.wrapper
       }}
     >
       {children}

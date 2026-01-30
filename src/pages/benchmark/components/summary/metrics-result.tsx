@@ -3,7 +3,6 @@ import _, { round } from 'lodash';
 import React from 'react';
 import styled from 'styled-components';
 import { useDetailContext } from '../../config/detail-context';
-import Title from './title';
 
 const Card = styled.div`
   height: 78px;
@@ -278,7 +277,7 @@ const PercentileResult: React.FC = () => {
 
   return (
     <div>
-      <Title>Metrics</Title>
+      <span>Metrics</span>
       <Box>
         <Descriptions
           styles={descriptionStyles}

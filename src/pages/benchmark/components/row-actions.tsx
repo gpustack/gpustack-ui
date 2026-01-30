@@ -17,13 +17,13 @@ const actionList = [
     label: 'common.button.stop',
     key: 'stop',
     icon: icons.Stop,
-    status: [BenchmarkStatusValueMap.Claimed, BenchmarkStatusValueMap.Running]
+    status: [BenchmarkStatusValueMap.QUEUED, BenchmarkStatusValueMap.Running]
   },
   {
     label: 'common.button.viewlog',
     key: 'viewlog',
     status: [
-      BenchmarkStatusValueMap.Claimed,
+      BenchmarkStatusValueMap.QUEUED,
       BenchmarkStatusValueMap.Running,
       BenchmarkStatusValueMap.Error,
       BenchmarkStatusValueMap.Completed
@@ -34,7 +34,7 @@ const actionList = [
     label: 'common.button.downloadLog',
     key: 'download',
     status: [
-      BenchmarkStatusValueMap.Claimed,
+      BenchmarkStatusValueMap.QUEUED,
       BenchmarkStatusValueMap.Running,
       BenchmarkStatusValueMap.Error,
       BenchmarkStatusValueMap.Completed

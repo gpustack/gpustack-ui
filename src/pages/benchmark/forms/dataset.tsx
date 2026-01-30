@@ -17,7 +17,6 @@ const DatasetForm: React.FC = () => {
   const form = Form.useFormInstance();
   const { getRuleMessage } = useAppUtils();
   const { action, open } = useFormContext();
-  const profile = Form.useWatch('profile', form);
   const {
     datasetList,
     loading: datasetLoading,

@@ -1,7 +1,6 @@
 import { Descriptions, DescriptionsProps } from 'antd';
 import React from 'react';
 import { useDetailContext } from '../../config/detail-context';
-import Title from './title';
 
 const Benchmark: React.FC = () => {
   const { detailData } = useDetailContext();
@@ -46,7 +45,7 @@ const Benchmark: React.FC = () => {
 
   return (
     <div>
-      <Title>Parameters</Title>
+      <span>Parameters</span>
       <Descriptions
         items={items}
         colon={false}

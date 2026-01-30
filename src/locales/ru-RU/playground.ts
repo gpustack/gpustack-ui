@@ -160,7 +160,11 @@ export default {
   'playground.uploadImage.url.holder': 'Enter an image URL',
   'playground.uploadImage.url.button': 'Add Image from URL',
   'playground.params.duration': 'Duration (seconds)',
-  'playground.params.resolution': 'Resolution'
+  'playground.params.resolution': 'Resolution',
+  'playground.params.taskType': 'Task Type',
+  'playground.params.voiceStyle': 'Voice Style',
+  'playground.params.maxTokens': 'Maximum Generate Length',
+  'playground.params.refAudio': 'Reference Audio URL'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

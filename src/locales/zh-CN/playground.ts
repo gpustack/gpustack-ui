@@ -156,5 +156,9 @@ export default {
   'playground.uploadImage.url.holder': '请输入图片链接',
   'playground.uploadImage.url.button': '从链接添加图片',
   'playground.params.duration': '时长 (秒)',
-  'playground.params.resolution': '分辨率'
+  'playground.params.resolution': '分辨率',
+  'playground.params.taskType': '任务类型',
+  'playground.params.voiceStyle': '语音风格',
+  'playground.params.maxTokens': '最大生成长度',
+  'playground.params.refAudio': '参考音频 URL'
 };

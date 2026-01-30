@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { ParamsSchema } from './types';
 
 export interface SizeOption {
@@ -87,6 +88,124 @@ export const TTSParamsConfig: ParamsSchema[] = [
   //     }
   //   ]
   // }
+];
+
+export const TTSAdvancedParamsConfig: ParamsSchema[] = [
+  {
+    type: 'Select',
+    name: 'task_type',
+    options: [],
+    attrs: {
+      allowClear: true
+    },
+    label: {
+      text: 'playground.params.taskType',
+      isLocalized: true
+    },
+    initAttrs: (meta: any) => {
+      return {
+        options: _.map(meta?.task_types || [], (item: string) => ({
+          label: item,
+          value: item
+        }))
+      };
+    },
+    rules: [
+      {
+        required: false
+      }
+    ]
+  },
+  {
+    type: 'Select',
+    name: 'language',
+    options: [],
+    initAttrs: (meta: any) => {
+      return {
+        options: _.map(meta?.languages || [], (item: string) => ({
+          label: item,
+          value: item
+        }))
+      };
+    },
+    attrs: {
+      allowClear: true
+    },
+    label: {
+      text: 'playground.params.language',
+      isLocalized: true
+    },
+    rules: [
+      {
+        required: false
+      }
+    ]
+  },
+  {
+    type: 'Select',
+    name: 'instructions',
+    label: {
+      text: 'playground.params.voiceStyle',
+      isLocalized: true
+    },
+    attrs: {
+      allowClear: true
+    },
+    initAttrs: (meta: any) => {
+      return {
+        options: _.map(meta?.voices || [], (item: string) => ({
+          label: item,
+          value: item
+        }))
+      };
+    },
+    rules: [
+      {
+        required: false
+      }
+    ]
+  },
+  {
+    type: 'InputNumber',
+    name: 'max_new_tokens',
+    label: {
+      text: 'playground.params.maxTokens',
+      isLocalized: true
+    },
+    attrs: {
+      allowClear: true,
+      min: 0
+    },
+    formItemAttrs: {
+      hidden: true,
+      getValueProps: (value: number) => {
+        return {
+          value: value || null
+        };
+      }
+    },
+    rules: [
+      {
+        required: false
+      }
+    ]
+  },
+  {
+    type: 'Input',
+    name: 'ref_audio',
+    label: {
+      text: 'playground.params.refAudio',
+      isLocalized: true
+    },
+    attrs: {
+      allowClear: true
+    },
+    rules: [
+      {
+        required: false
+      }
+    ]
+  }
 ];
 
 export const RealtimeParamsConfig: ParamsSchema[] = [

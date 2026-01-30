@@ -53,6 +53,7 @@ export interface ParamsSchema {
     text: string;
     isLocalized?: boolean;
   };
+  initAttrs?: (meta: any) => Record<string, any>;
   dependencies?: string[];
   style?: React.CSSProperties;
   options?: Global.BaseOption<string | number | null>[];

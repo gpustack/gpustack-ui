@@ -166,7 +166,7 @@ export const TTSAdvancedParamsConfig: ParamsSchema[] = [
     ]
   },
   {
-    type: 'InputNumber',
+    type: 'Slider',
     name: 'max_new_tokens',
     label: {
       text: 'playground.params.maxTokens',
@@ -174,10 +174,11 @@ export const TTSAdvancedParamsConfig: ParamsSchema[] = [
     },
     attrs: {
       allowClear: true,
+      inputnumber: true,
+      step: 1,
       min: 0
     },
     formItemAttrs: {
-      hidden: true,
       getValueProps: (value: number) => {
         return {
           value: value || null

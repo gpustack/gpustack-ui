@@ -156,6 +156,11 @@ export const FilterBar: React.FC<FilterBarProps> = (props) => {
         {handleClickPrimary ? (
           actionType === 'dropdown' ? (
             <DropDownActions
+              styles={{
+                root: {
+                  minWidth: 140
+                }
+              }}
               menu={{
                 items: actionItems,
                 onClick: handleClickPrimary

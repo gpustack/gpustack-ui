@@ -5,7 +5,9 @@ export const INFERENCE_BACKEND_API = '/inference-backends';
 
 export const FROM_YAML_API = '/from-yaml';
 
-export async function queryBackendsList(params: Global.SearchParams) {
+export async function queryBackendsList(
+  params: Global.SearchParams & { community?: number }
+) {
   return request<Global.PageResponse<ListItem>>(`${INFERENCE_BACKEND_API}`, {
     method: 'GET',
     params

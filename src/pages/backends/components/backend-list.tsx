@@ -44,6 +44,7 @@ interface BackendListProps {
   activeId: Global.WithFalse<number>;
   isFirst: boolean;
   onSelect?: (item: any) => void;
+  renderItem?: (item: any) => React.ReactNode;
 }
 
 const ListSkeleton: React.FC<{
@@ -70,7 +71,7 @@ const ListSkeleton: React.FC<{
                   skeletonStyle={{
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: 26
+                    gap: 24
                   }}
                 ></CardSkeleton>
               </SkeletonWrapper>
@@ -89,7 +90,8 @@ const CardList: React.FC<BackendListProps> = (props) => {
     isFirst,
     defaultSpan = 8,
     resizable = true,
-    onSelect
+    onSelect,
+    renderItem
   } = props;
   const {
     total,
@@ -111,7 +113,13 @@ const CardList: React.FC<BackendListProps> = (props) => {
         defaultSpan={defaultSpan}
         resizable={resizable}
         dataList={dataList}
-        renderItem={(item) => <BackendCard data={item} onSelect={onSelect} />}
+        renderItem={(item) =>
+          renderItem ? (
+            renderItem(item)
+          ) : (
+            <BackendCard data={item} onSelect={onSelect} />
+          )
+        }
       ></ResizeContainer>
       <ListSkeleton loading={loading} isFirst={isFirst} />
     </InfiniteScroller>

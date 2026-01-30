@@ -124,7 +124,7 @@ const InfoItem = styled.div`
   display: grid;
   width: 100%;
   grid-template-columns: max-content 1fr minmax(0, max-content);
-  align-items: center;
+  align-items: end;
   gap: 8px;
   color: var(--ant-color-text-tertiary);
   .icon {
@@ -140,10 +140,37 @@ const InfoItem = styled.div`
 interface BackendCardProps {
   onClick?: (data: any) => void;
   onSelect?: (item: any) => void;
+  actionsRenderer?: (data: ListItem) => React.ReactNode;
   data: ListItem;
+  layout?: 'default' | 'community';
+  active?: boolean;
 }
 
-const BackendCard: React.FC<BackendCardProps> = ({ data, onSelect }) => {
+export const generateIcon = (data: ListItem, height = 20) => {
+  if (builtInBackendLogos[data.backend_name]) {
+    return <img src={builtInBackendLogos[data.backend_name]} height={height} />;
+  }
+  if (data.icon) {
+    return <img src={data.icon} height={height} />;
+  }
+  const color = customColors[data.id % customColors.length];
+  const icon = customIcons[data.id % customIcons.length];
+
+  return (
+    <TagInner color={color} variant="filled">
+      {icon}
+    </TagInner>
+  );
+};
+
+const BackendCard: React.FC<BackendCardProps> = ({
+  data,
+  onClick,
+  onSelect,
+  actionsRenderer,
+  layout = 'default',
+  active
+}) => {
   const intl = useIntl();
 
   const handleOnSelect = (item: any) => {
@@ -152,23 +179,11 @@ const BackendCard: React.FC<BackendCardProps> = ({ data, onSelect }) => {
 
   const handleClick = () => {
     onSelect?.({ action: 'view_versions', data: data });
+    onClick?.(data);
   };
 
   const renderIcon = () => {
-    if (builtInBackendLogos[data.backend_name]) {
-      return <img src={builtInBackendLogos[data.backend_name]} height={20} />;
-    }
-    if (data.icon) {
-      return <img src={data.icon} height={20} />;
-    }
-    const color = customColors[data.id % customColors.length];
-    const icon = customIcons[data.id % customIcons.length];
-
-    return (
-      <TagInner color={color} variant="filled">
-        {icon}
-      </TagInner>
-    );
+    return generateIcon(data);
   };
 
   const actions = useMemo(() => {
@@ -180,7 +195,7 @@ const BackendCard: React.FC<BackendCardProps> = ({ data, onSelect }) => {
     });
   }, [data]);
 
-  const onClick = (e: React.MouseEvent) => {
+  const handleonClickAction = (e: React.MouseEvent) => {
     e.stopPropagation();
   };
 
@@ -278,6 +293,9 @@ const BackendCard: React.FC<BackendCardProps> = ({ data, onSelect }) => {
   };
 
   const renderSource = () => {
+    if (layout === 'community') {
+      return null;
+    }
     const source = data.is_built_in
       ? BackendSourceLabelMap[BackendSourceValueMap.BUILTIN] || ''
       : BackendSourceLabelMap[data.backend_source] || '';
@@ -285,7 +303,7 @@ const BackendCard: React.FC<BackendCardProps> = ({ data, onSelect }) => {
       return null;
     }
     return (
-      <ThemeTag
+      <Tag
         color={
           TagColorMap[
             data.is_built_in
@@ -294,7 +312,7 @@ const BackendCard: React.FC<BackendCardProps> = ({ data, onSelect }) => {
           ]
         }
         className="font-400"
-        variant="outlined"
+        variant="filled"
         style={{
           borderRadius: 'var(--ant-border-radius)',
           margin: 0,
@@ -304,7 +322,7 @@ const BackendCard: React.FC<BackendCardProps> = ({ data, onSelect }) => {
         {intl.formatMessage({
           id: source
         })}
-      </ThemeTag>
+      </Tag>
     );
   };
 
@@ -330,49 +348,58 @@ const BackendCard: React.FC<BackendCardProps> = ({ data, onSelect }) => {
     );
   };
 
+  const renderActions = () => {
+    return actionsRenderer ? (
+      actionsRenderer(data)
+    ) : (
+      <span onClick={handleonClickAction} className="operations">
+        <DropDownActions
+          menu={{
+            items: actions,
+            onClick: handleOnSelect
+          }}
+        >
+          <Button
+            icon={<IconFont type="icon-more"></IconFont>}
+            size="small"
+            type="text"
+          ></Button>
+        </DropDownActions>
+      </span>
+    );
+  };
+
   return (
     <StyledCard
       onClick={handleClick}
       clickable={true}
       hoverable={true}
       disabled={false}
-      height={164}
+      active={active}
+      height={136}
       ghost
       header={
         <Header>
           <div className="title">{renderIcon()}</div>
-          <span onClick={onClick} className="operations">
-            <DropDownActions
-              menu={{
-                items: actions,
-                onClick: handleOnSelect
-              }}
-            >
-              <Button
-                icon={<IconFont type="icon-more"></IconFont>}
-                size="small"
-                type="text"
-              ></Button>
-            </DropDownActions>
-          </span>
+          {renderActions()}
         </Header>
       }
     >
       <Content>
         <CardName>
           <span>{data.backend_name}</span>
+          {renderSource()}
         </CardName>
-        <SourceWrapper>
+        {/* <SourceWrapper>
           <InfoItem>
             <span className="label">
               <IconFont type="icon-source" className="icon" />
               <span>{intl.formatMessage({ id: 'models.form.source' })}:</span>
             </span>
-            {renderSource()}
             {renderEnabledTag()}
           </InfoItem>
           {renderRecommendModels()}
-        </SourceWrapper>
+        </SourceWrapper> */}
         {renderFrameworks()}
       </Content>
     </StyledCard>

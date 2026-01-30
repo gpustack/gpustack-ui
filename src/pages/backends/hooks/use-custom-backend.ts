@@ -1,11 +1,9 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
-import useBodyScroll from '@/hooks/use-body-scroll';
 import { useState } from 'react';
 import { ListItem } from '../config/types';
 
-const useCreateBackend = () => {
-  const { saveScrollHeight, restoreScrollHeight } = useBodyScroll();
+const useCustomBackend = () => {
   const [openModalStatus, setOpenModalStatus] = useState<{
     open: boolean;
     action: PageActionType;
@@ -26,7 +24,6 @@ const useCreateBackend = () => {
       action,
       currentData: row
     });
-    saveScrollHeight();
   };
 
   const closeModal = () => {
@@ -36,15 +33,14 @@ const useCreateBackend = () => {
       currentData: undefined,
       title: ''
     });
-    restoreScrollHeight();
   };
 
   return {
-    openBackendModalStatus: openModalStatus,
-    setOpenBackendModalStatus: setOpenModalStatus,
-    openBackendModal: openModal,
-    closeBackendModal: closeModal
+    openCustomModalStatus: openModalStatus,
+    setOpenCustomModalStatus: setOpenModalStatus,
+    openCustomModal: openModal,
+    closeCustomModal: closeModal
   };
 };
 
-export default useCreateBackend;
+export default useCustomBackend;

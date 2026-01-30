@@ -8,11 +8,15 @@ const useEnableBackend = () => {
   const handleEnableBackend = async (params: {
     id: number;
     data: FormData;
+    showMessage?: boolean;
   }) => {
+    const { showMessage = true } = params;
     await updateBackend(params.id, {
       data: params.data
     });
-    message.success(intl.formatMessage({ id: 'common.message.success' }));
+    if (showMessage) {
+      message.success(intl.formatMessage({ id: 'common.message.success' }));
+    }
   };
 
   return { handleEnableBackend };

@@ -72,6 +72,7 @@ interface Configuration {
   checked: boolean;
 }
 
+// default need to pass content and operation
 const DeleteModal = forwardRef((props, ref) => {
   const intl = useIntl();
   const { styles } = useStyles();

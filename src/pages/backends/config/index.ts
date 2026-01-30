@@ -82,26 +82,26 @@ export const backendActions = [
     locale: true,
     icon: icons.Yaml
   },
-  {
-    label: 'common.button.enable',
-    value: 'enable',
-    key: 'enable',
-    locale: true,
-    icon: icons.Charger,
-    show: (record: any) =>
-      !record.enabled &&
-      record.backend_source === BackendSourceValueMap.COMMUNITY
-  },
-  {
-    label: 'common.button.disable',
-    value: 'disable',
-    key: 'disable',
-    locale: true,
-    icon: icons.Disabled,
-    show: (record: any) =>
-      record.enabled &&
-      record.backend_source === BackendSourceValueMap.COMMUNITY
-  },
+  // {
+  //   label: 'common.button.enable',
+  //   value: 'enable',
+  //   key: 'enable',
+  //   locale: true,
+  //   icon: icons.Charger,
+  //   show: (record: any) =>
+  //     !record.enabled &&
+  //     record.backend_source === BackendSourceValueMap.COMMUNITY
+  // },
+  // {
+  //   label: 'common.button.disable',
+  //   value: 'disable',
+  //   key: 'disable',
+  //   locale: true,
+  //   icon: icons.Disabled,
+  //   show: (record: any) =>
+  //     record.enabled &&
+  //     record.backend_source === BackendSourceValueMap.COMMUNITY
+  // },
   {
     label: 'common.button.delete',
     value: 'delete',

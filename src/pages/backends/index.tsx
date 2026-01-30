@@ -19,6 +19,7 @@ import {
   updateBackend,
   updateBackendFromYAML
 } from './apis';
+import AddCommunityModal from './community/add-community-modal';
 import AddModal from './components/add-modal';
 import BackendCardList from './components/backend-list';
 import VersionInfoModal from './components/version-info-modal';
@@ -63,8 +64,14 @@ const BackendList = () => {
     currentData?: ListItem;
   }>({ open: false });
   const { handleEnableBackend } = useEnableBackend();
-  const { openBackendModal, closeBackendModal, openBackendModalStatus } =
-    useCreateBackend();
+  const {
+    addBackend,
+    editBackend,
+    closeBackendModal,
+    openCommunityModalStatus,
+    openBackendModalStatus,
+    addActions
+  } = useCreateBackend();
 
   // built_in_version_configs is read-only, but needs to be included when updating
   const handleOnSubmit = async (values: FormData) => {
@@ -91,7 +98,7 @@ const BackendList = () => {
           }
         });
       }
-      closeBackendModal();
+      closeBackendModal('custom');
       handleSearch();
     } catch (error) {}
   };
@@ -116,7 +123,7 @@ const BackendList = () => {
           }
         });
       }
-      closeBackendModal();
+      closeBackendModal('custom');
       handleSearch();
     } catch (error) {}
   };
@@ -128,18 +135,54 @@ const BackendList = () => {
     });
   };
 
-  const handleAddBackend = () => {
-    openBackendModal(PageAction.CREATE, '');
+  const handleAddBackend = (item: { key: 'community' | 'custom' }) => {
+    addBackend(item.key);
+  };
+
+  const handleDisableCommunityBackend = async (item: any) => {
+    // use disable for community backend deletion
+    handleEnableBackend({
+      id: item.data.id,
+      data: {
+        ...item.data,
+        enabled: item.action === 'enable'
+      },
+      showMessage: false
+    });
+    // delay 200ms to refresh list
+    await new Promise((resolve) => {
+      setTimeout(resolve, 300);
+    });
+    handleSearch();
   };
 
   const handleOnSelect = async (item: any) => {
+    // ================ Edit ================
     if (item.action === 'edit') {
-      openBackendModal(PageAction.EDIT, '', item.data);
-    } else if (item.action === 'delete') {
-      handleDelete(item.data, {
-        name: item.data.backend_name
-      });
-    } else if (item.action === 'export') {
+      editBackend(PageAction.EDIT, '', item.data);
+      return;
+    }
+    // ================ Delete ================
+    if (item.action === 'delete') {
+      if (item.data.backend_source === BackendSourceValueMap.COMMUNITY) {
+        modalRef.current?.show({
+          content: 'backends.title',
+          operation: 'common.delete.single.confirm',
+          name: item.data.backend_name,
+          async onOk() {
+            handleDisableCommunityBackend(item);
+          }
+        });
+      } else {
+        handleDelete(item.data, {
+          name: item.data.backend_name
+        });
+      }
+      return;
+    }
+
+    // ================ Export YAML ================
+    if (item.action === 'export') {
       const currentData = structuredClone(item.data);
 
       currentData.version_configs = _.mapValues(
@@ -150,24 +193,15 @@ const BackendList = () => {
       );
 
       exportYAML(_.omit(currentData, ['id', 'created_at', 'updated_at']));
-    } else if (item.action === 'view_versions') {
+      return;
+    }
+
+    // ================ View Versions ================
+    if (item.action === 'view_versions') {
       setOpenVersionInfoModal({
         open: true,
         currentData: item.data
       });
-    } else if (item.action === 'enable' || item.action === 'disable') {
-      handleEnableBackend({
-        id: item.data.id,
-        data: {
-          ...item.data,
-          enabled: item.action === 'enable'
-        }
-      });
-      // delay 200ms to refresh list
-      await new Promise((resolve) => {
-        setTimeout(resolve, 300);
-      });
-      handleSearch();
     }
   };
 
@@ -176,7 +210,11 @@ const BackendList = () => {
       open: false,
       currentData: undefined
     });
-    openBackendModal(PageAction.EDIT, '', openVersionInfoModal.currentData);
+    editBackend(
+      PageAction.EDIT,
+      '',
+      openVersionInfoModal.currentData as ListItem
+    );
   };
 
   const loadMore = useMemoizedFn((nextPage: number) => {
@@ -197,6 +235,8 @@ const BackendList = () => {
         widths={{
           input: 300
         }}
+        actionItems={addActions}
+        actionType="dropdown"
         inputHolder={intl.formatMessage({ id: 'common.filter.name' })}
         selectHolder={intl.formatMessage({ id: 'backend.filter.source' })}
         buttonText={intl.formatMessage({ id: 'backend.button.add' })}
@@ -211,7 +251,6 @@ const BackendList = () => {
           value: item.value
         }))}
       ></FilterBar>
-
       <ScrollerContext.Provider
         value={{
           total: dataSource.totalPage,
@@ -239,13 +278,13 @@ const BackendList = () => {
           })}
           title={intl.formatMessage({ id: 'noresult.backend.title' })}
           subTitle={intl.formatMessage({ id: 'noresult.backend.subTitle' })}
-          onClick={handleAddBackend}
+          onClick={() => handleAddBackend({ key: 'community' })}
           buttonText={intl.formatMessage({ id: 'noresult.button.add' })}
         ></NoResult>
       </ScrollerContext.Provider>
       <AddModal
         action={openBackendModalStatus.action}
-        onClose={closeBackendModal}
+        onClose={() => closeBackendModal('custom')}
         onSubmit={handleOnSubmit}
         onSubmitYaml={handleOnSubmitYaml}
         currentData={openBackendModalStatus.currentData as ListItem}
@@ -256,6 +295,11 @@ const BackendList = () => {
             : intl.formatMessage({ id: 'backend.button.edit' })
         }
       ></AddModal>
+      <AddCommunityModal
+        open={openCommunityModalStatus.open}
+        onRefresh={handleSearch}
+        onClose={() => closeBackendModal('community')}
+      ></AddCommunityModal>
       <VersionInfoModal
         addVersion={handleAddVersion}
         open={openVersionInfoModal.open}

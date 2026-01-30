@@ -44,5 +44,5 @@ export default {
   'backend.filter.source': 'Filter by source',
   'backend.add.custom': 'Custom',
   'backend.add.community': 'Community Repository',
-  'backend.community.title': 'Community Backends'
+  'backend.community.title': 'Community Backends Marketplace'
 };

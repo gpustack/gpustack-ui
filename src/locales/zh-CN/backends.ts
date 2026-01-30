@@ -41,5 +41,5 @@ export default {
   'backend.filter.source': '按来源过滤',
   'backend.add.custom': '自定义',
   'backend.add.community': '社区仓库',
-  'backend.community.title': '社区后端'
+  'backend.community.title': '社区后端市场'
 };

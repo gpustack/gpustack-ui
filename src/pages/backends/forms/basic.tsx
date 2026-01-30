@@ -16,10 +16,10 @@ const BasicForm = () => {
   const intl = useIntl();
   const { getRuleMessage } = useAppUtils();
   const { action, backendSource } = useFormContext();
-  const defaultEnvs = Form.useWatch('default_environment', form);
+  const defaultEnvs = Form.useWatch('default_env', form);
 
   const handleEnviromentVarsChange = (labels: Record<string, any>) => {
-    form.setFieldValue('env', labels);
+    form.setFieldValue('default_env', labels);
   };
 
   useEffect(() => {
@@ -101,7 +101,7 @@ const BasicForm = () => {
           })}
         ></ListInput>
       </Form.Item>
-      <Form.Item<FormData> name="default_environment">
+      <Form.Item<FormData> name="default_env">
         <LabelSelector
           label={intl.formatMessage({
             id: 'backend.form.defaultEnvironment'

@@ -79,7 +79,7 @@ const VersionsForm: React.FC<AddModalProps> = ({
       entrypoint: '',
       isBuiltin: false,
       is_default: false,
-      environment: {}
+      env: {}
     }
   ];
 
@@ -107,7 +107,7 @@ const VersionsForm: React.FC<AddModalProps> = ({
       entrypoint: '',
       isBuiltin: false,
       is_default: false,
-      environment: {}
+      env: {}
     };
     form.setFieldValue('version_configs', [...versions, newVersion]);
   };
@@ -150,7 +150,7 @@ const VersionsForm: React.FC<AddModalProps> = ({
       if (idx === name) {
         return {
           ...version,
-          environment: {
+          env: {
             ...envs
           }
         };
@@ -400,12 +400,12 @@ const VersionsForm: React.FC<AddModalProps> = ({
                       label={intl.formatMessage({ id: 'backend.runCommand' })}
                     ></SealTextArea>
                   </Form.Item>
-                  <Form.Item name={[name, 'environment']}>
+                  <Form.Item name={[name, 'env']}>
                     <LabelSelector
                       label={intl.formatMessage({
                         id: 'models.form.env'
                       })}
-                      labels={versionConfigs?.[name]?.environment}
+                      labels={versionConfigs?.[name]?.env}
                       btnText={intl.formatMessage({ id: 'common.button.vars' })}
                       onChange={(envs) =>
                         handleEnviromentVarsChange(envs, name)

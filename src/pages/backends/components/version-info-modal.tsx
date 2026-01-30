@@ -48,7 +48,7 @@ const VersionInfoModal: React.FC<VersionInfoModalProps> = ({
             'image_name',
             'run_command',
             'entrypoint',
-            'environment',
+            'env',
             'backend_source'
           ]),
           is_default: key === currentData.default_version,

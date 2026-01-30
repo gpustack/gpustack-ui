@@ -44,12 +44,8 @@ const BackendFields: React.FC = () => {
     React.useState<BackendOption | null>(null);
 
   const handleBackendVersionOnChange = (value: any, option: any) => {
-    if (Object.keys(option.data.environment || {}).length > 0) {
-      form.setFieldsValue({
-        env: {
-          ...(option?.data?.environment || {})
-        }
-      });
+    if (Object.keys(option.data.env || {}).length > 0) {
+      form.setFieldValue('env', { ...(option?.data?.env || {}) });
     }
 
     onValuesChange?.({}, form.getFieldsValue());
@@ -141,17 +137,15 @@ const BackendFields: React.FC = () => {
     );
   };
 
-  const handleOnBackendChange = (value: any[], option: any) => {
+  const handleOnBackendChange = (value: any[], option: any[]) => {
     const selectedBackend = value?.[1];
     const selectedOption = option?.[1] || {};
 
-    console.log('handleOnBackendChange selectedOption:', selectedOption);
-
     form.setFieldsValue({
-      backend: selectedBackend,
-      env: {
-        ...(selectedOption.environment || {})
-      }
+      backend: selectedBackend
+    });
+    form.setFieldValue('env', {
+      ...(selectedOption.default_env || {})
     });
     onBackendChange?.(selectedBackend, selectedOption);
     setSelectedBackend(selectedOption);

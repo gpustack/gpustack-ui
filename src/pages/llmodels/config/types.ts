@@ -316,7 +316,7 @@ export interface BackendGroupItem {
     label: string;
     value: string;
     title?: string;
-    environment?: Record<string, any>;
+    env?: Record<string, any>;
     is_deprecated: boolean;
   }[];
 }
@@ -329,12 +329,13 @@ export interface BackendOption {
   default_version: string;
   isBuiltIn: boolean;
   backend_source: string;
+  default_env?: Record<string, any>;
   enabled: boolean;
   versions: {
     label: string;
     value: string;
     title?: string;
-    environment?: Record<string, any>;
+    env?: Record<string, any>;
     is_deprecated: boolean;
   }[];
 }
@@ -354,7 +355,7 @@ export interface BackendItem {
   enabled: boolean;
   versions: {
     version: string;
-    environment?: Record<string, any>;
+    env?: Record<string, any>;
     is_deprecated: boolean;
   }[];
 }

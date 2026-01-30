@@ -5,7 +5,7 @@ import TagWrapper from '@/components/tags-wrapper';
 import ThemeTag from '@/components/tags-wrapper/theme-tag';
 import Card from '@/components/templates/card';
 import { useIntl } from '@umijs/max';
-import { Button, Flex, Tag, Tooltip } from 'antd';
+import { Button, Tag } from 'antd';
 import _ from 'lodash';
 import { useMemo } from 'react';
 import semverCoerce from 'semver/functions/coerce';
@@ -29,23 +29,6 @@ const StyledCard = styled(Card)`
       background-color: var(--ant-color-fill-tertiary);
       border-radius: var(--ant-border-radius);
     }
-  }
-`;
-
-const SourceWrapper = styled.div`
-  display: grid;
-  width: 100%;
-  grid-template-columns: max-content 1fr;
-  align-items: center;
-
-  gap: 0px;
-  .dot {
-    display: flex;
-    height: 4px;
-    width: 4px;
-    background-color: var(--ant-color-text-quaternary);
-    border-radius: 50%;
-    margin-inline: 8px;
   }
 `;
 
@@ -237,16 +220,6 @@ const BackendCard: React.FC<BackendCardProps> = ({
     );
   };
 
-  const renderModel = (item: any) => {
-    return (
-      <AutoTooltip ghost minWidth={20} showTitle title={item}>
-        <ThemeTag key={item} style={{ marginRight: 0 }}>
-          {item}
-        </ThemeTag>
-      </AutoTooltip>
-    );
-  };
-
   const renderFrameworks = () => {
     const frameworks = _.keys(data.framework_index_map || {});
 
@@ -264,35 +237,6 @@ const BackendCard: React.FC<BackendCardProps> = ({
           renderTag={renderTag}
         ></TagWrapper>
       </InfoItem>
-    );
-  };
-
-  const renderRecommendModels = () => {
-    const recommendedModels = data.recommend_models || [];
-    if (recommendedModels.length === 0) {
-      return null;
-    }
-    return (
-      <div className="flex-center">
-        <span className="dot"></span>
-        <Tooltip
-          title={
-            <Flex gap={4} wrap="wrap">
-              {recommendedModels.map((item) => (
-                <Tag style={{ margin: 0 }} key={item}>
-                  {item}
-                </Tag>
-              ))}
-            </Flex>
-          }
-        >
-          <span>
-            <ThemeTag color="default">
-              {intl.formatMessage({ id: 'backend.recommendModels' })}
-            </ThemeTag>
-          </span>
-        </Tooltip>
-      </div>
     );
   };
 
@@ -327,28 +271,6 @@ const BackendCard: React.FC<BackendCardProps> = ({
           id: source
         })}
       </Tag>
-    );
-  };
-
-  const renderEnabledTag = () => {
-    if (data.backend_source !== BackendSourceValueMap.COMMUNITY) {
-      return null;
-    }
-    return (
-      <ThemeTag
-        className="font-400"
-        variant="outlined"
-        color={data.enabled ? 'green' : 'default'}
-        style={{
-          borderRadius: 'var(--ant-border-radius)',
-          margin: 0,
-          width: 'max-content'
-        }}
-      >
-        {data.enabled
-          ? `${intl.formatMessage({ id: 'common.status.enabled' })}`
-          : `${intl.formatMessage({ id: 'common.status.disabled' })}`}
-      </ThemeTag>
     );
   };
 
@@ -398,16 +320,6 @@ const BackendCard: React.FC<BackendCardProps> = ({
           </span>
           {renderSource()}
         </CardName>
-        {/* <SourceWrapper>
-          <InfoItem>
-            <span className="label">
-              <IconFont type="icon-source" className="icon" />
-              <span>{intl.formatMessage({ id: 'models.form.source' })}:</span>
-            </span>
-            {renderEnabledTag()}
-          </InfoItem>
-          {renderRecommendModels()}
-        </SourceWrapper> */}
         {renderFrameworks()}
       </Content>
     </StyledCard>

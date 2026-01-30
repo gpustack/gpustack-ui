@@ -3,7 +3,7 @@ import ThemeTag from '@/components/tags-wrapper/theme-tag';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { SearchOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Input, Switch, Tooltip } from 'antd';
+import { Input, Tooltip } from 'antd';
 import _ from 'lodash';
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
@@ -68,17 +68,10 @@ const CommunityBackends: React.FC<{
         }
       >
         <>
-          {data.enabled ? (
+          {data.enabled && (
             <ThemeTag style={{ margin: 0 }} color="geekblue" variant="filled">
               {intl.formatMessage({ id: 'common.status.enabled' })}
             </ThemeTag>
-          ) : (
-            <span onClick={(e) => e.stopPropagation()}>
-              <Switch
-                onChange={(checked) => handleOnEnable(checked, data)}
-                size="small"
-              ></Switch>
-            </span>
           )}
         </>
       </Tooltip>

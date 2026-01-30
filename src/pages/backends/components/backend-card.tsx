@@ -49,13 +49,14 @@ const SourceWrapper = styled.div`
   }
 `;
 
-const TagInner = styled(Tag)`
+// add height props
+const TagInner = styled(Tag)<{ height?: number }>`
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 18px;
-  height: 28px;
-  width: 28px;
+  height: ${({ height }) => (height ? `${height}px` : '28px')};
+  width: ${({ height }) => (height ? `${height}px` : '28px')};
   border-radius: 6px;
   font-weight: 400;
 `;
@@ -146,18 +147,21 @@ interface BackendCardProps {
   active?: boolean;
 }
 
-export const generateIcon = (data: ListItem, height = 20) => {
+export const generateIcon = (data: ListItem, height?: number) => {
+  const innHeight = height || 20;
   if (builtInBackendLogos[data.backend_name]) {
-    return <img src={builtInBackendLogos[data.backend_name]} height={height} />;
+    return (
+      <img src={builtInBackendLogos[data.backend_name]} height={innHeight} />
+    );
   }
   if (data.icon) {
-    return <img src={data.icon} height={height} />;
+    return <img src={data.icon} height={innHeight} />;
   }
   const color = customColors[data.id % customColors.length];
   const icon = customIcons[data.id % customIcons.length];
 
   return (
-    <TagInner color={color} variant="filled">
+    <TagInner color={color} variant="filled" height={height || 28}>
       {icon}
     </TagInner>
   );
@@ -387,7 +391,11 @@ const BackendCard: React.FC<BackendCardProps> = ({
     >
       <Content>
         <CardName>
-          <span>{data.backend_name}</span>
+          <span>
+            {data.backend_source === BackendSourceValueMap.CUSTOM
+              ? data.backend_name.replace(/-custom$/g, '')
+              : data.backend_name}
+          </span>
           {renderSource()}
         </CardName>
         {/* <SourceWrapper>

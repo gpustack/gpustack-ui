@@ -3,7 +3,7 @@ import { BulbOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Tag, Typography } from 'antd';
 import _ from 'lodash';
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { generateIcon } from '../components/backend-card';
 
@@ -62,9 +62,22 @@ const UL = styled.ul`
 const BackendDetail: React.FC<{
   onEnable: (checked: boolean, data: any) => void;
   onDisable?: () => void;
-  currentData?: any;
-}> = ({ onEnable, onDisable, currentData }) => {
+  data?: any;
+}> = ({ onEnable, onDisable, data }) => {
   const intl = useIntl();
+  const [currentData, setCurrentData] = React.useState<any>(data);
+
+  useEffect(() => {
+    setCurrentData(data);
+  }, [data]);
+
+  const handleOnEnable = async (checked: boolean) => {
+    await onEnable(true, currentData);
+    setCurrentData({
+      ...currentData,
+      enabled: checked
+    });
+  };
 
   const renderSupportedFrameworks = () => {
     const frameworks = currentData?.framework_index_map || {};
@@ -109,7 +122,7 @@ const BackendDetail: React.FC<{
               <Button
                 type="primary"
                 size="middle"
-                onClick={() => onEnable(true, currentData)}
+                onClick={() => handleOnEnable(true)}
               >
                 {intl.formatMessage({ id: 'common.button.enable' })}
               </Button>

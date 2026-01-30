@@ -83,7 +83,7 @@ const AddCommunityModal: React.FC<{
         >
           <BackendDetail
             onEnable={handleOnEnable}
-            currentData={currentData}
+            data={currentData}
           ></BackendDetail>
         </ColumnWrapper>
       </Container>

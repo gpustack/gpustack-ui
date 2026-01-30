@@ -135,6 +135,7 @@ const AddModal: FC<AddModalProps> = (props) => {
   });
   const requestModelIdRef = useRef<number>(0);
   const currentSelectedModel = useRef<any>({});
+  const flatBackendOptionsRef = useRef<any[]>([]);
 
   const { run: fetchModelFiles } = useDeferredRequest(
     () => modelFileRef.current?.fetchModelFiles?.(),
@@ -259,7 +260,8 @@ const AddModal: FC<AddModalProps> = (props) => {
 
     const modelInfo = onSelectModel(selectedModel, {
       source: props.source,
-      defaultBackend: form.current?.getFieldValue?.('backend')
+      defaultBackend: form.current?.getFieldValue?.('backend'),
+      flatBackendOptions: flatBackendOptionsRef.current
     });
 
     form.current?.setFieldsValue?.({
@@ -269,7 +271,9 @@ const AddModal: FC<AddModalProps> = (props) => {
       backend_parameters: [],
       backend_version: '',
       backend: modelInfo.backend,
-      env: {},
+      env: {
+        ...modelInfo.env
+      },
       categories: getCategory(item)
     });
 
@@ -326,11 +330,16 @@ const AddModal: FC<AddModalProps> = (props) => {
     // TODO
     form.current?.resetFields(resetFields);
     const modelInfo = onSelectModel(item, {
-      source: props.source
+      source: props.source,
+      flatBackendOptions: flatBackendOptionsRef.current
     });
     form.current?.setFieldsValue?.({
       ...defaultFormValues,
       ...modelInfo,
+      env: {
+        ...modelInfo.env
+      },
+      name: generateNameValue(item, modelInfo.name, manual),
       categories: getCategory(item)
     });
 
@@ -366,21 +375,27 @@ const AddModal: FC<AddModalProps> = (props) => {
     });
     handleCancelFiles();
     const modelInfo = onSelectModel(item, {
-      source: props.source
+      source: props.source,
+      flatBackendOptions: flatBackendOptionsRef.current
     });
 
     if (
       evaluateStateRef.current.state === EvaluateProccess.model &&
       item.evaluated
     ) {
+      const defaultSpec = getDefaultSpec(item);
       const newFormValues = {
         ...(manual
           ? { ...defaultFormValues }
           : _.omit(form.current?.form?.getFieldsValue?.(), [
               ...dropFieldsFromForm
             ])),
-        ...getDefaultSpec(item),
+        ...defaultSpec,
         ...modelInfo,
+        env: {
+          ...modelInfo.env,
+          ...defaultSpec.env
+        },
         name: generateNameValue(item, modelInfo.name, manual),
         categories: getCategory(item)
       };
@@ -464,6 +479,8 @@ const AddModal: FC<AddModalProps> = (props) => {
       })
     ]);
 
+    flatBackendOptionsRef.current = backendOptions;
+
     if (props.deploymentType === 'modelFiles') {
       form.current?.form?.setFieldsValue({
         ...props.initialValues
@@ -487,8 +504,12 @@ const AddModal: FC<AddModalProps> = (props) => {
           versions: { label: string; value: string }[];
         }) => item.value === backend
       );
+
       form.current?.setFieldsValue?.({
         backend,
+        env: {
+          ...currentDefaultBackend?.default_env
+        },
         default_version: currentDefaultBackend?.default_version,
         backend_parameters: currentDefaultBackend?.default_backend_param || [],
         cluster_id: initClusterId()

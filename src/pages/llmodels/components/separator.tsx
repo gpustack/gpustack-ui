@@ -4,7 +4,7 @@ import '../style/separator.less';
 
 const Separator: React.FC<{
   showArrow?: boolean;
-  styles: {
+  styles?: {
     arrow?: React.CSSProperties;
   };
 }> = ({ showArrow = true, styles }) => {
@@ -14,7 +14,9 @@ const Separator: React.FC<{
         orientation="vertical"
         style={{ height: 'calc(100vh - 89px)', marginInline: '0px' }}
       ></Divider>
-      {showArrow && <span className="shape" style={styles.arrow}></span>}
+      {showArrow && (
+        <span className="shape" style={{ ...styles?.arrow }}></span>
+      )}
     </div>
   );
 };

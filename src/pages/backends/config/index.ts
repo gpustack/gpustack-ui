@@ -31,7 +31,7 @@ export const builtInBackendLogos: Record<string, string> = {
 
 export const BackendSourceValueMap = {
   CUSTOM: 'custom',
-  BUILTIN: 'built-in',
+  BUILTIN: 'built_in',
   COMMUNITY: 'community',
   USER_DEFINED: 'user_defined'
 };

@@ -61,7 +61,7 @@ export default function useQueryBackends() {
             'backend_source',
             'is_built_in',
             'default_backend_param',
-            'environment'
+            'default_env'
           ]),
           backend_source: item.backend_source || BackendSourceValueMap.CUSTOM,
           value: item.backend_name,
@@ -79,7 +79,7 @@ export default function useQueryBackends() {
             label: vItem.version,
             value: vItem.version,
             is_deprecated: vItem.is_deprecated,
-            environment: vItem.environment || {},
+            env: vItem.env || {},
             title: vItem.version.replace(/-custom$/, '')
           }))
         };
@@ -91,7 +91,7 @@ export default function useQueryBackends() {
 
       console.log('Fetched backend options:', list, groupList);
 
-      return groupList || [];
+      return list || [];
     } catch (error) {
       // ignore
       setBackendOptions([]);

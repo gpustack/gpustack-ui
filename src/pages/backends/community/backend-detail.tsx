@@ -91,13 +91,6 @@ const BackendDetail: React.FC<{
             return (
               <li key={key}>
                 <div className="label">{_.upperCase(key)}</div>
-                {/* <Flex gap={8} wrap="wrap" style={{ marginBlock: 8 }}>
-                  {value?.map?.((v: string, index: number) => (
-                    <Tag key={index} style={{ margin: 0 }}>
-                      {v}
-                    </Tag>
-                  ))}
-                </Flex> */}
               </li>
             );
           }
@@ -141,21 +134,6 @@ const BackendDetail: React.FC<{
           <Content>{renderSupportedFrameworks()}</Content>
         </Section>
       )}
-      {/* <Section>
-        <Subtitle>
-          <BulbOutlined className="icon" />
-          <span>
-            {intl.formatMessage({
-              id: 'backend.form.defaultExecuteCommand'
-            })}
-          </span>
-        </Subtitle>
-        <Content style={{ padding: 0, border: 'none' }}>
-          <HighlightCode
-            code={currentData?.default_run_command}
-          ></HighlightCode>
-        </Content>
-      </Section> */}
       {currentData?.description && (
         <Section>
           <Subtitle>

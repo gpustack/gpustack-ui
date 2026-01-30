@@ -71,7 +71,13 @@ const AddCommunityModal: React.FC<{
               onEnable={handleOnEnable}
             ></CommunityBackends>
           </ColumnWrapper>
-          <Separator showArrow={false}></Separator>
+          <Separator
+            styles={{
+              arrow: {
+                top: 8
+              }
+            }}
+          ></Separator>
         </div>
         <ColumnWrapper
           maxHeight={'calc(100vh - 90px)'}

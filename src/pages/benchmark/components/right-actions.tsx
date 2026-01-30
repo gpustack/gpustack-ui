@@ -62,7 +62,7 @@ const RightActions: React.FC<RightActionsProps> = ({
           icon={<SettingOutlined />}
         ></Button>
       </Tooltip> */}
-      {settingButton}
+      {/* {settingButton} */}
       <Button
         icon={<PlusOutlined></PlusOutlined>}
         type="primary"

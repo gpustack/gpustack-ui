@@ -80,14 +80,14 @@ export interface BenchmarkDetail {
   time_to_first_token_mean: number;
   tokens_per_second_mean: number;
   output_tokens_per_second_mean: number;
-  prompt_tokens_per_second_mean: number;
+  input_tokens_per_second_mean: number;
   name: string;
   description: string;
   labels: Record<string, any>;
   dataset_id: number;
   dataset_name: string;
   dataset_source: string;
-  dataset_prompt_tokens: number;
+  dataset_input_tokens: number;
   dataset_output_tokens: number;
   cluster_id: number;
   model_id: number;
@@ -120,6 +120,6 @@ export interface BenchmarkMetricsFormData {
   time_to_first_token_mean: number;
   tokens_per_second_mean: number;
   output_tokens_per_second_mean: number;
-  prompt_tokens_per_second_mean: number;
+  input_tokens_per_second_mean: number;
   raw_metrics: Record<string, any>;
 }

@@ -140,17 +140,17 @@ const Summary: React.FC = () => {
     {
       key: '3',
       label: 'Total token throughput',
-      children: `${round(detailData.tokens_per_second_mean || 0, 2)} t/s`
+      children: `${round(detailData.tokens_per_second_mean || 0, 2)} Tokens/s`
     },
     {
       key: '1',
       label: 'Request token throughput',
-      children: `${round(detailData.prompt_tokens_per_second_mean || 0, 2)} t/s`
+      children: `${round(detailData.input_tokens_per_second_mean || 0, 2)} Tokens/s`
     },
     {
       key: '2',
       label: 'Output token throughput',
-      children: `${round(detailData.output_tokens_per_second_mean || 0, 2)} t/s`
+      children: `${round(detailData.output_tokens_per_second_mean || 0, 2)} Tokens/s`
     }
   ];
 

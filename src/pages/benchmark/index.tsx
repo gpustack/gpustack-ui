@@ -63,7 +63,9 @@ const Benchmark: React.FC = () => {
   });
   const { openViewLogsModal, closeViewLogsModal, openViewLogsModalStatus } =
     useViewLogs();
-  const { SettingsButton, selectedColumns } = useColumnSettings();
+  const { SettingsButton, selectedColumns } = useColumnSettings({
+    contentHeight: 320
+  });
   const { handleStopBenchmark } = useStopBenchmark();
 
   const { datasetList, fetchDatasetData } = useQueryDataset();

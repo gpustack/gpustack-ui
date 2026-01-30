@@ -36,17 +36,17 @@ const columns = [
     render: (value: number) => round(value, 0)
   },
   {
-    title: 'Input (t/s)',
+    title: 'Input (Tokens/s)',
     dataIndex: 'prompt_tokens_per_second',
     render: (value: number) => round(value, 2)
   },
   {
-    title: 'Output (t/s)',
+    title: 'Output (Tokens/s)',
     dataIndex: 'output_tokens_per_second',
     render: (value: number) => round(value, 2)
   },
   {
-    title: 'Total (t/s)',
+    title: 'Total (Tokens/s)',
     dataIndex: 'tokens_per_second',
     render: (value: number) => round(value, 2)
   }
@@ -82,10 +82,10 @@ const PercentileResult: React.FC = () => {
         size="small"
         columns={[
           {
-            title: 'Percentile',
+            title: <span style={{ fontWeight: 500 }}>Percentile</span>,
             dataIndex: 'percentile',
             render: (value: string) => (
-              <span style={{ fontWeight: 400 }}>{value}</span>
+              <span style={{ fontWeight: 500 }}>{value}</span>
             )
           },
           ...columns

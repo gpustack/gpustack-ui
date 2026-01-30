@@ -1,4 +1,3 @@
-import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import { PageAction } from '@/config';
 import useAppUtils from '@/hooks/use-app-utils';
@@ -30,16 +29,6 @@ const DatasetForm: React.FC = () => {
     fetchProfilesData,
     cancelRequest: cancelProfilesRequest
   } = useQueryProfiles();
-
-  const handleOnDataSetChange = (value: any, option: any) => {
-    form.setFieldsValue({
-      dataset_id: option?.data?.id,
-      dataset_prompt_tokens: option?.prompt_tokens,
-      dataset_output_tokens: option?.output_tokens,
-      request_rate: null,
-      total_requests: null
-    });
-  };
 
   const handleProfileChange = (value: string, option: any) => {
     if (value !== ProfileValueMap.Custom) {
@@ -86,13 +75,9 @@ const DatasetForm: React.FC = () => {
         ></SealSelect>
       </Form.Item>
 
-      <Form.Item<FormData> hidden name="dataset_id">
-        <SealInput.Input></SealInput.Input>
-      </Form.Item>
       <RandomSettingsForm
         datasetList={datasetList}
         datasetLoading={datasetLoading}
-        handleOnDataSetChange={handleOnDataSetChange}
       ></RandomSettingsForm>
     </>
   );

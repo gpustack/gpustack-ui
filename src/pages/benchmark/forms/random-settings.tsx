@@ -11,9 +11,8 @@ import { FormData } from '../config/types';
 const RandomSettingsForm: React.FC<{
   datasetList: Global.BaseOption<number | string>[];
   datasetLoading: boolean;
-  handleOnDataSetChange: (value: any, option: any) => void;
 }> = (props) => {
-  const { datasetList, datasetLoading, handleOnDataSetChange } = props;
+  const { datasetList, datasetLoading } = props;
   const intl = useIntl();
   const { action, open } = useFormContext();
   const form = Form.useFormInstance();
@@ -45,13 +44,12 @@ const RandomSettingsForm: React.FC<{
             value: item.label
           }))}
           loading={datasetLoading}
-          onChange={handleOnDataSetChange}
           label={intl.formatMessage({ id: 'benchmark.table.dataset' })}
           required
         ></SealSelect>
       </Form.Item>
       <Form.Item<FormData>
-        name="dataset_prompt_tokens"
+        name="dataset_input_tokens"
         rules={[
           {
             required: true,
@@ -99,6 +97,7 @@ const RandomSettingsForm: React.FC<{
       </Form.Item>
       <Form.Item<FormData>
         name="request_rate"
+        getValueProps={(value) => ({ value: value < 0 ? 'Infinity' : value })}
         rules={[
           {
             required: true,
@@ -107,7 +106,6 @@ const RandomSettingsForm: React.FC<{
         ]}
       >
         <SealInputNumber
-          min={0}
           disabled={disabled}
           label={intl.formatMessage({ id: 'benchmark.table.requestRate' })}
           required

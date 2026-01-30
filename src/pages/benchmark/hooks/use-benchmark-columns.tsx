@@ -102,7 +102,7 @@ const useBenchmarkColumns = (
         title: (
           <span className="flex-column">
             <span>{intl.formatMessage({ id: 'benchmark.table.itl' })}</span>
-            <span>avg (ms)</span>
+            <span>Avg (ms)</span>
           </span>
         ),
         dataIndex: 'inter_token_latency_mean',
@@ -117,7 +117,7 @@ const useBenchmarkColumns = (
         title: (
           <span className="flex-column">
             <span>{intl.formatMessage({ id: 'benchmark.table.tpot' })}</span>
-            <span>avg (ms)</span>
+            <span>Avg (ms)</span>
           </span>
         ),
         dataIndex: 'time_per_output_token_mean',
@@ -132,7 +132,7 @@ const useBenchmarkColumns = (
         title: (
           <span className="flex-column">
             <span>{intl.formatMessage({ id: 'benchmark.table.ttft' })}</span>
-            <span>avg (ms)</span>
+            <span>Avg (ms)</span>
           </span>
         ),
         dataIndex: 'time_to_first_token_mean',

@@ -168,7 +168,7 @@ export default {
   'playground.params.duration': 'Duration (seconds)',
   'playground.params.resolution': 'Resolution',
   'playground.params.taskType': 'Task Type',
-  'playground.params.voiceStyle': 'Instructions',
+  'playground.params.instructions': 'Instructions',
   'playground.params.maxTokens': 'Max New Tokens',
   'playground.params.refAudio': 'Reference Audio',
   'playground.params.refAudio.tips':

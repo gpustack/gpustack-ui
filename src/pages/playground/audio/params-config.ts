@@ -45,10 +45,10 @@ export const TTSAdvancedParamsConfig: ParamsSchema[] = [
     ]
   },
   {
-    type: 'AutoComplete',
+    type: 'Input',
     name: 'instructions',
     label: {
-      text: 'playground.params.voiceStyle',
+      text: 'playground.params.instructions',
       isLocalized: true
     },
     attrs: {
@@ -78,7 +78,8 @@ export const TTSAdvancedParamsConfig: ParamsSchema[] = [
     attrs: {
       allowClear: true,
       step: 1,
-      min: 0
+      min: 0,
+      max: 4096
     },
     formItemAttrs: {
       getValueProps: (value: number) => {

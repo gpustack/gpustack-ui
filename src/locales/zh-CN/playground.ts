@@ -158,7 +158,7 @@ export default {
   'playground.params.duration': '时长 (秒)',
   'playground.params.resolution': '分辨率',
   'playground.params.taskType': '任务类型',
-  'playground.params.voiceStyle': '情感',
+  'playground.params.instructions': '说明',
   'playground.params.maxTokens': '最大生成 Token 数',
   'playground.params.refAudio': '参考音频',
   'playground.params.refAudio.tips':

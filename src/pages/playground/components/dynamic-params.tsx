@@ -10,6 +10,7 @@ import React, {
   useId,
   useImperativeHandle
 } from 'react';
+import { FormContext } from '../config/form-context';
 import { ParamsSchema } from '../config/types';
 
 type ParamsSettingsProps = {
@@ -24,6 +25,7 @@ type ParamsSettingsProps = {
   extra?: React.ReactNode;
   watchFields?: string[];
   formFields?: string;
+  meta?: Record<string, any>;
 };
 
 const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
@@ -36,7 +38,8 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
       paramsConfig,
       modelList,
       showModelSelector = true,
-      extra
+      extra,
+      meta
     },
     ref
   ) => {
@@ -136,56 +139,60 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
     };
 
     return (
-      <Form
-        name={formId}
-        form={form}
-        onValuesChange={handleValuesChange}
-        onFinish={handleOnFinish}
-        onFinishFailed={handleOnFinishFailed}
-        initialValues={initialValues}
-      >
-        <div>
-          {
-            <>
-              <h3 className="m-b-20  font-size-14 line-24 font-500">
-                {parametersTitle || (
-                  <span>
-                    {intl.formatMessage({ id: 'playground.parameters' })}
-                  </span>
+      <FormContext.Provider value={{ meta }}>
+        <Form
+          name={formId}
+          form={form}
+          onValuesChange={handleValuesChange}
+          onFinish={handleOnFinish}
+          onFinishFailed={handleOnFinishFailed}
+          initialValues={initialValues}
+        >
+          <div>
+            {
+              <>
+                <h3 className="m-b-20  font-size-14 line-24 font-500">
+                  {parametersTitle || (
+                    <span>
+                      {intl.formatMessage({ id: 'playground.parameters' })}
+                    </span>
+                  )}
+                </h3>
+                {showModelSelector && (
+                  <Form.Item
+                    name="model"
+                    rules={[
+                      {
+                        required: true,
+                        message: intl.formatMessage(
+                          {
+                            id: 'common.form.rule.select'
+                          },
+                          {
+                            name: intl.formatMessage({ id: 'playground.model' })
+                          }
+                        )
+                      }
+                    ]}
+                  >
+                    <SealSelect
+                      description={intl.formatMessage({
+                        id: 'playground.model.noavailable.tips2'
+                      })}
+                      onChange={handleOnModelChange}
+                      showSearch={true}
+                      options={modelList}
+                      label={intl.formatMessage({ id: 'playground.model' })}
+                    ></SealSelect>
+                  </Form.Item>
                 )}
-              </h3>
-              {showModelSelector && (
-                <Form.Item
-                  name="model"
-                  rules={[
-                    {
-                      required: true,
-                      message: intl.formatMessage(
-                        {
-                          id: 'common.form.rule.select'
-                        },
-                        { name: intl.formatMessage({ id: 'playground.model' }) }
-                      )
-                    }
-                  ]}
-                >
-                  <SealSelect
-                    description={intl.formatMessage({
-                      id: 'playground.model.noavailable.tips2'
-                    })}
-                    onChange={handleOnModelChange}
-                    showSearch={true}
-                    options={modelList}
-                    label={intl.formatMessage({ id: 'playground.model' })}
-                  ></SealSelect>
-                </Form.Item>
-              )}
-            </>
-          }
-          {renderFields()}
-          {extra}
-        </div>
-      </Form>
+              </>
+            }
+            {renderFields()}
+            {extra}
+          </div>
+        </Form>
+      </FormContext.Provider>
     );
   }
 );

@@ -23,11 +23,12 @@ import React, {
   useState
 } from 'react';
 import { AUDIO_TEXT_TO_SPEECH_API, CHAT_API, textToSpeech } from '../apis';
-import { extractErrorMessage } from '../config';
+import { RefAudioFormItem } from '../audio/form';
 import {
   TTSParamsConfig as paramsConfig,
   TTSAdvancedParamsConfig
-} from '../config/params-config';
+} from '../audio/params-config';
+import { extractErrorMessage } from '../config';
 import { MessageItem, ParamsSchema } from '../config/types';
 import '../style/ground-llm.less';
 import '../style/system-message-wrap.less';
@@ -342,7 +343,12 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
             key: 'advanced_config',
             label: intl.formatMessage({ id: 'resources.form.advanced' }),
             forceRender: true,
-            children: formItems
+            children: (
+              <>
+                {formItems}
+                <RefAudioFormItem />
+              </>
+            )
           }
         ]}
       ></CollapsePanel>
@@ -471,6 +477,7 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
         <div className="box">
           <DynamicParams
             ref={formRef}
+            meta={modelMeta}
             onValuesChange={handleOnValuesChange}
             initialValues={parameters}
             modelList={modelList}

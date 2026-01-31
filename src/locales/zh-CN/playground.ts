@@ -158,7 +158,9 @@ export default {
   'playground.params.duration': '时长 (秒)',
   'playground.params.resolution': '分辨率',
   'playground.params.taskType': '任务类型',
-  'playground.params.voiceStyle': '语音风格',
-  'playground.params.maxTokens': '最大生成长度',
-  'playground.params.refAudio': '参考音频 URL'
+  'playground.params.voiceStyle': '情感',
+  'playground.params.maxTokens': '最大生成 Token 数',
+  'playground.params.refAudio': '参考音频',
+  'playground.params.refAudio.tips':
+    '输入一个参考音频的 URL，或上传一个音频文件。'
 };

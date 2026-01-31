@@ -162,5 +162,7 @@ export default {
   'playground.params.maxTokens': '最大生成 Token 数',
   'playground.params.refAudio': '参考音频',
   'playground.params.refAudio.tips':
-    '输入一个参考音频的 URL，或上传一个音频文件。'
+    '输入一个参考音频的 URL，或上传一个音频文件。',
+  'playground.params.refAudio.text': '参考音频文本',
+  'playground.params.refAudio.vectorMode': '使用扬声器嵌入'
 };

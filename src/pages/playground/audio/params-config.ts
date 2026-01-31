@@ -45,7 +45,7 @@ export const TTSAdvancedParamsConfig: ParamsSchema[] = [
     ]
   },
   {
-    type: 'Select',
+    type: 'AutoComplete',
     name: 'instructions',
     label: {
       text: 'playground.params.voiceStyle',

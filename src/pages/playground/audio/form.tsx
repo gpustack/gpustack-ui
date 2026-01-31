@@ -20,7 +20,7 @@ const SuffixWrapper = styled.div`
 `;
 
 export const RefAudioFormItem: React.FC = () => {
-  const { meta } = useFormContext();
+  const { meta, onValuesChange } = useFormContext();
   const form = Form.useFormInstance();
   const intl = useIntl();
   const [filleName, setFileName] = React.useState<string>('');
@@ -35,6 +35,10 @@ export const RefAudioFormItem: React.FC = () => {
     setFileName(file.name);
 
     console.log('Uploaded file base64 url:', base64);
+    onValuesChange?.(
+      { ref_audio: base64 },
+      { ...form.getFieldsValue(), ref_audio: base64 }
+    );
   };
 
   const handleClear = () => {
@@ -42,6 +46,10 @@ export const RefAudioFormItem: React.FC = () => {
       ref_audio: ''
     });
     setFileName('');
+    onValuesChange?.(
+      { ref_audio: '' },
+      { ...form.getFieldsValue(), ref_audio: '' }
+    );
   };
 
   return (

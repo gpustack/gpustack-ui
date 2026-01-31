@@ -2,6 +2,7 @@ import { createContext, useContext } from 'react';
 
 export interface FormContextProps {
   meta?: Record<string, any>;
+  onValuesChange?: (changeValues: any, value: Record<string, any>) => void;
 }
 
 /**

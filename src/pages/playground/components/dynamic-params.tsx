@@ -139,7 +139,9 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
     };
 
     return (
-      <FormContext.Provider value={{ meta }}>
+      <FormContext.Provider
+        value={{ meta, onValuesChange: handleValuesChange }}
+      >
         <Form
           name={formId}
           form={form}

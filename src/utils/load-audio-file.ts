@@ -1,6 +1,8 @@
 import { message } from 'antd';
 import { convertFileSize } from './index';
 
+// TODO: create a file.ts in utils folder to manage file related utils
+
 export const audioTypeMap: Record<string, string> = {
   'audio/wav': 'wav',
   'audio/mp3': 'mp3',

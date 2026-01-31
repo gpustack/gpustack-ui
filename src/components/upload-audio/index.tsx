@@ -47,7 +47,7 @@ const UploadAudio: React.FC<UploadAudioProps> = (props) => {
   return (
     <Tooltip
       styles={{
-        body: {
+        container: {
           maxWidth: 290,
           width: 'max-content'
         }

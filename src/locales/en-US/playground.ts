@@ -165,7 +165,9 @@ export default {
   'playground.params.duration': 'Duration (seconds)',
   'playground.params.resolution': 'Resolution',
   'playground.params.taskType': 'Task Type',
-  'playground.params.voiceStyle': 'Voice Style',
-  'playground.params.maxTokens': 'Maximum Generate Length',
-  'playground.params.refAudio': 'Reference Audio URL'
+  'playground.params.voiceStyle': 'Instructions',
+  'playground.params.maxTokens': 'Max New Tokens',
+  'playground.params.refAudio': 'Reference Audio',
+  'playground.params.refAudio.tips':
+    'Enter a reference audio URL, or upload an audio file.'
 };

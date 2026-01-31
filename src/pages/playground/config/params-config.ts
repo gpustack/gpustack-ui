@@ -27,7 +27,8 @@ export const imageSizeOptions: {
   { label: '1024x768(4:3)', value: '1024x768', width: 1024, height: 768 },
   { label: '1024x576(16:9)', value: '1024x576', width: 1024, height: 576 },
   { label: '576x1024(9:16)', value: '576x1024', width: 576, height: 1024 },
-  { label: '1024x1024(1:1)', value: '1024x1024', width: 1024, height: 1024 }
+  { label: '1024x1024(1:1)', value: '1024x1024', width: 1024, height: 1024 },
+  { label: '2048x2048(1:1)', value: '2048x2048', width: 2048, height: 2048 }
 ];
 
 export const RealtimeParamsConfig: ParamsSchema[] = [

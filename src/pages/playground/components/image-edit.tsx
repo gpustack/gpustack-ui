@@ -7,9 +7,8 @@ import { processImage } from '@/components/image-editor/extract-image-colors';
 import routeCachekey from '@/config/route-cachekey';
 import UploadImg from '@/pages/playground/components/upload-img';
 import { base64ToFile, generateRandomNumber } from '@/utils';
-import { SwapOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Divider, Tooltip } from 'antd';
+import { Divider } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
@@ -520,33 +519,6 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
             <DynamicParams
               ref={form}
               formFields={formFields}
-              parametersTitle={
-                <div className="flex-between flex-center">
-                  <span>
-                    {intl.formatMessage({ id: 'playground.parameters' })}
-                  </span>
-                  <Tooltip
-                    title={intl.formatMessage({
-                      id: 'playground.image.params.custom.tips'
-                    })}
-                  >
-                    <Button
-                      size="small"
-                      type="text"
-                      icon={<SwapOutlined />}
-                      onClick={handleToggleParamsStyle}
-                    >
-                      {isOpenaiCompatible
-                        ? intl.formatMessage({
-                            id: 'playground.image.params.custom'
-                          })
-                        : intl.formatMessage({
-                            id: 'playground.image.params.openai'
-                          })}
-                    </Button>
-                  </Tooltip>
-                </div>
-              }
               onValuesChange={handleOnValuesChange}
               paramsConfig={paramsConfig}
               initialValues={initialValues}

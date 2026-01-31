@@ -295,7 +295,9 @@ const AddModal: FC<AddModalProps> = (props) => {
     manual?: boolean
   ) => {
     if (item.name === currentSelectedModel.current.name) {
-      return manual ? modelName : form.current?.getFieldValue?.('name');
+      return manual
+        ? modelName
+        : form.current?.getFieldValue?.('name') || modelName;
     }
     return modelName;
   };
@@ -342,8 +344,6 @@ const AddModal: FC<AddModalProps> = (props) => {
       name: generateNameValue(item, modelInfo.name, manual),
       categories: getCategory(item)
     });
-
-    console.log('modelInfo:', modelInfo);
 
     let warningStatus: MessageStatus = {
       show: true,

@@ -23,7 +23,7 @@ export const RefAudioFormItem: React.FC = () => {
   const { meta, onValuesChange } = useFormContext();
   const form = Form.useFormInstance();
   const intl = useIntl();
-  const [filleName, setFileName] = React.useState<string>('');
+  const [fileName, setFileName] = React.useState<string>('');
 
   // handle upload audio file, transfer to a base64 url
   const handleUploadChange = async (data: { file: any; fileList: any }) => {
@@ -55,14 +55,14 @@ export const RefAudioFormItem: React.FC = () => {
   return (
     <Form.Item
       name="ref_audio"
-      getValueProps={(value) => ({ value: filleName ? filleName : value })}
+      getValueProps={(value) => ({ value: fileName ? fileName : value })}
     >
       <SealInput.Input
         allowClear
-        readOnly={!!filleName}
+        readOnly={!!fileName}
         suffix={
           <SuffixWrapper>
-            {filleName ? (
+            {fileName ? (
               <span onClick={handleClear}>
                 <CloseCircleFilled className="icon" />
               </span>

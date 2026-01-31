@@ -4,7 +4,7 @@ import IconFont from '@/components/icon-font';
 import routeCachekey from '@/config/route-cachekey';
 import ThumbImg from '@/pages/playground/components/thumb-img';
 import { generateRandomNumber } from '@/utils';
-import { FileImageOutlined, SwapOutlined } from '@ant-design/icons';
+import { FileImageOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Tooltip } from 'antd';
 import classNames from 'classnames';
@@ -275,33 +275,6 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
           <DynamicParams
             ref={form}
             formFields={formFields}
-            parametersTitle={
-              <div className="flex-between flex-center">
-                <span>
-                  {intl.formatMessage({ id: 'playground.parameters' })}
-                </span>
-                <Tooltip
-                  title={intl.formatMessage({
-                    id: 'playground.image.params.custom.tips'
-                  })}
-                >
-                  <Button
-                    size="small"
-                    type="text"
-                    icon={<SwapOutlined />}
-                    onClick={handleToggleParamsStyle}
-                  >
-                    {isOpenaiCompatible
-                      ? intl.formatMessage({
-                          id: 'playground.image.params.custom'
-                        })
-                      : intl.formatMessage({
-                          id: 'playground.image.params.openai'
-                        })}
-                  </Button>
-                </Tooltip>
-              </div>
-            }
             onValuesChange={handleOnValuesChange}
             paramsConfig={paramsConfig}
             initialValues={initialValues}

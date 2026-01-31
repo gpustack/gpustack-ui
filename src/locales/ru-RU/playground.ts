@@ -166,7 +166,9 @@ export default {
   'playground.params.maxTokens': 'Max New Tokens',
   'playground.params.refAudio': 'Reference Audio',
   'playground.params.refAudio.tips':
-    'Enter a reference audio URL, or upload an audio file.'
+    'Enter a reference audio URL, or upload an audio file.',
+  'playground.params.refAudio.text': 'Transcript of Reference Audio',
+  'playground.params.refAudio.vectorMode': 'Use Speaker Embedding'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

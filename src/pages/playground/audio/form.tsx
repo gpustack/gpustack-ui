@@ -1,3 +1,4 @@
+import CheckboxField from '@/components/seal-form/checkbox-field';
 import SealInput from '@/components/seal-form/seal-input';
 import UploadAudio from '@/components/upload-audio';
 import { convertFileToBase64 } from '@/utils/load-audio-file';
@@ -8,13 +9,28 @@ import React from 'react';
 import styled from 'styled-components';
 import { useFormContext } from '../config/form-context';
 
-const SuffixWrapper = styled.div`
+const SuffixWrapper = styled.div.attrs({
+  className: 'suffix-wrapper'
+})`
+  display: flex;
+  align-items: center;
   .icon {
+    display: none;
     font-size: 12px;
     color: var(--ant-color-text-quaternary);
     cursor: pointer;
     &:hover {
       color: var(--ant-color-text-tertiary);
+    }
+  }
+`;
+
+const Container = styled.div`
+  &:hover {
+    .suffix-wrapper {
+      .icon {
+        display: block;
+      }
     }
   }
 `;
@@ -34,7 +50,6 @@ export const RefAudioFormItem: React.FC = () => {
     });
     setFileName(file.name);
 
-    console.log('Uploaded file base64 url:', base64);
     onValuesChange?.(
       { ref_audio: base64 },
       { ...form.getFieldsValue(), ref_audio: base64 }
@@ -53,33 +68,51 @@ export const RefAudioFormItem: React.FC = () => {
   };
 
   return (
-    <Form.Item
-      name="ref_audio"
-      getValueProps={(value) => ({ value: fileName ? fileName : value })}
-    >
-      <SealInput.Input
-        allowClear
-        readOnly={!!fileName}
-        suffix={
-          <SuffixWrapper>
-            {fileName ? (
-              <span onClick={handleClear}>
-                <CloseCircleFilled className="icon" />
-              </span>
-            ) : null}
-            <UploadAudio
-              size="small"
-              type="text"
-              accept={['.mp3', '.mp4', '.wav', '.m4a'].join(', ')}
-              onChange={handleUploadChange}
-            ></UploadAudio>
-          </SuffixWrapper>
-        }
-        description={intl.formatMessage({
-          id: 'playground.params.refAudio.tips'
-        })}
-        label={intl.formatMessage({ id: 'playground.params.refAudio' })}
-      ></SealInput.Input>
-    </Form.Item>
+    <>
+      <Container>
+        <Form.Item
+          name="ref_audio"
+          getValueProps={(value) => ({ value: fileName ? fileName : value })}
+        >
+          <SealInput.Input
+            allowClear
+            readOnly={!!fileName}
+            suffix={
+              <SuffixWrapper>
+                {fileName ? (
+                  <span onClick={handleClear}>
+                    <CloseCircleFilled className="icon" />
+                  </span>
+                ) : null}
+                <UploadAudio
+                  size="small"
+                  type="text"
+                  accept={['.mp3', '.mp4', '.wav', '.m4a'].join(', ')}
+                  onChange={handleUploadChange}
+                ></UploadAudio>
+              </SuffixWrapper>
+            }
+            description={intl.formatMessage({
+              id: 'playground.params.refAudio.tips'
+            })}
+            label={intl.formatMessage({ id: 'playground.params.refAudio' })}
+          ></SealInput.Input>
+        </Form.Item>
+      </Container>
+      <Form.Item name="ref_text" style={{ marginBottom: 8 }}>
+        <SealInput.TextArea
+          allowClear
+          scaleSize={true}
+          label={intl.formatMessage({ id: 'playground.params.refAudio.text' })}
+        ></SealInput.TextArea>
+      </Form.Item>
+      <Form.Item name="x_vector_only_mode" valuePropName="checked">
+        <CheckboxField
+          label={intl.formatMessage({
+            id: 'playground.params.refAudio.vectorMode'
+          })}
+        ></CheckboxField>
+      </Form.Item>
+    </>
   );
 };

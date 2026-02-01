@@ -1,13 +1,8 @@
 import AutoTooltip from '@/components/auto-tooltip';
 import { useIntl } from '@umijs/max';
 import { Descriptions, Flex, Tag } from 'antd';
-import _ from 'lodash';
 import React, { useMemo } from 'react';
 import { useDetailContext } from '../../config/detail-context';
-
-const calcTotalVram = (vram: Record<string, number>) => {
-  return _.sum(_.values(vram));
-};
 
 const Instance: React.FC = () => {
   const intl = useIntl();

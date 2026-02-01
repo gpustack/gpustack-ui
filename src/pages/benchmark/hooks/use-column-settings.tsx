@@ -29,9 +29,12 @@ const defaultColumns: string[] = [
 ];
 const fixedColumns: string[] = [];
 
-const useColumnSettings = (options: { contentHeight: number }) => {
+const useColumnSettings = (options: {
+  contentHeight: number;
+  clusterList: Global.BaseOption<number>[];
+}) => {
   const intl = useIntl();
-  const { contentHeight } = options;
+  const { contentHeight, clusterList } = options;
   const [selectedColumns, setSelectedColumns] =
     React.useState<string[]>(defaultColumns);
 
@@ -241,22 +244,22 @@ const useColumnSettings = (options: { contentHeight: number }) => {
       title: renderTitle(intl.formatMessage({ id: 'clusters.title' })),
       pos: 1,
       dataIndex: 'cluster_id',
-      render: (text: string) => (
+      render: (text: number) => (
         <AutoTooltip ghost minWidth={20}>
-          {text}
+          {clusterList?.find((item) => item.value === text)?.label || text}
         </AutoTooltip>
       )
     },
-    {
-      title: renderTitle(intl.formatMessage({ id: 'resources.worker' })),
-      pos: 2,
-      dataIndex: 'worker_id',
-      render: (text: string) => (
-        <AutoTooltip ghost minWidth={20}>
-          {text}
-        </AutoTooltip>
-      )
-    },
+    // {
+    //   title: renderTitle(intl.formatMessage({ id: 'resources.worker' })),
+    //   pos: 2,
+    //   dataIndex: 'worker_id',
+    //   render: (text: string) => (
+    //     <AutoTooltip ghost minWidth={20}>
+    //       {text}
+    //     </AutoTooltip>
+    //   )
+    // },
     {
       title: renderTitle(
         intl.formatMessage({ id: 'benchmark.detail.modelName' })
@@ -364,9 +367,8 @@ const useColumnSettings = (options: { contentHeight: number }) => {
     );
     // Sort by pos
     selected.sort((a, b) => (a.pos || 0) - (b.pos || 0));
-    console.log('columns===', selected);
     return selected;
-  }, [selectedColumns]);
+  }, [selectedColumns, clusterList]);
 
   const SettingsButton = (
     <ColumnSettings

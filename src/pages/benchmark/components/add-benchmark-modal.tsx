@@ -10,6 +10,7 @@ type AddModalProps = {
   action: PageActionType;
   open: boolean;
   currentData?: ListItem; // Used when action is EDIT
+  clusterList?: Global.BaseOption<number>[];
   onOk: (values: FormData) => void;
   onCancel: () => void;
 };
@@ -18,6 +19,7 @@ const AddBenchmark: React.FC<AddModalProps> = ({
   action,
   open,
   currentData,
+  clusterList,
   onOk,
   onCancel
 }) => {
@@ -51,6 +53,7 @@ const AddBenchmark: React.FC<AddModalProps> = ({
         action={action}
         open={open}
         currentData={currentData}
+        clusterList={clusterList}
         onFinish={handleOk}
       />
     </FormDrawer>

@@ -53,15 +53,18 @@ const actionList = [
 
 interface RowActionsProps {
   record: ListItem;
+  page?: 'detail' | 'list';
   handleSelect: (key: string, record: ListItem) => void;
 }
 
 const RowActions: React.FC<RowActionsProps> = (props) => {
-  const { record, handleSelect } = props;
+  const { record, handleSelect, page = 'list' } = props;
   const { onDownloadLog, contextHolder } = useDownloadLogs();
 
   const actions = actionList.filter((action) => {
-    if (action.status && action.status.length > 0) {
+    if (page === 'detail' && action.key === 'edit') {
+      return false;
+    } else if (action.status && action.status.length > 0) {
       return action.status?.includes(record.state);
     }
 

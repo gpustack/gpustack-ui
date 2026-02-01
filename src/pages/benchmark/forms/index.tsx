@@ -23,6 +23,7 @@ interface ProviderFormProps {
   action: PageActionType;
   currentData?: ListItem; // Used when action is EDIT
   open?: boolean;
+  clusterList?: Global.BaseOption<number>[];
   onFinish: (values: FormData) => Promise<void>;
 }
 
@@ -33,7 +34,7 @@ const TABKeysMap = {
 };
 
 const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
-  const { action, currentData, onFinish, open } = props;
+  const { action, currentData, onFinish, open, clusterList } = props;
   const intl = useIntl();
   const [form] = Form.useForm();
   const profile = Form.useWatch('profile', form);
@@ -109,7 +110,8 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       <FormContext.Provider
         value={{
           action,
-          open
+          open,
+          clusterList: clusterList
         }}
       >
         <Form

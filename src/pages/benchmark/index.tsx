@@ -12,6 +12,7 @@ import _ from 'lodash';
 import { useEffect } from 'react';
 import NoResult from '../_components/no-result';
 import PageBox from '../_components/page-box';
+import { useQueryClusterList } from '../cluster-management/services/use-query-cluster-list';
 import {
   BENCHMARKS_API,
   createBenchmark,
@@ -63,17 +64,26 @@ const Benchmark: React.FC = () => {
   });
   const { openViewLogsModal, closeViewLogsModal, openViewLogsModalStatus } =
     useViewLogs();
-  const { SettingsButton, columns: selectedColumns } = useColumnSettings({
-    contentHeight: 320
-  });
   const { handleStopBenchmark } = useStopBenchmark();
-
   const { datasetList, fetchDatasetData } = useQueryDataset();
   const { exportData } = useExportBenchmark();
+  const {
+    fetchClusterList,
+    cancelRequest: cancelClusterRequest,
+    clusterList
+  } = useQueryClusterList();
+  const { SettingsButton, columns: selectedColumns } = useColumnSettings({
+    contentHeight: 320,
+    clusterList
+  });
 
   useEffect(() => {
     fetchModelList({ page: -1 });
+    fetchClusterList({ page: -1 });
     fetchDatasetData();
+    return () => {
+      cancelClusterRequest();
+    };
   }, []);
 
   const handleAddBenchmark = () => {
@@ -110,7 +120,7 @@ const Benchmark: React.FC = () => {
     closeBenchmarkModal();
   };
 
-  const handleEditUser = (row: ListItem) => {
+  const handleEdit = (row: ListItem) => {
     openBenchmarkModal(
       PageAction.EDIT,
       intl.formatMessage({ id: 'benchmark.button.edit' }),
@@ -120,7 +130,7 @@ const Benchmark: React.FC = () => {
 
   const handleSelect = useMemoizedFn((val: any, row: ListItem) => {
     if (val === 'edit') {
-      handleEditUser(row);
+      handleEdit(row);
     } else if (val === 'delete') {
       handleDelete({ ...row, name: row.name });
     } else if (val === 'viewlog') {
@@ -134,7 +144,8 @@ const Benchmark: React.FC = () => {
     (record: ListItem, dataIndex: string) => {
       if (dataIndex === 'name') {
         navigate(
-          `/models/benchmark/detail?id=${record.id}&name=${record.name}`
+          `/models/benchmark/detail?id=${record.id}&name=${record.name}`,
+          { state: 'benchmark-details' }
         );
       }
     }
@@ -230,6 +241,7 @@ const Benchmark: React.FC = () => {
         </ConfigProvider>
       </PageBox>
       <AddBenchmarkModal
+        clusterList={clusterList}
         open={openBenchmarkModalStatus.open}
         action={openBenchmarkModalStatus.action}
         title={openBenchmarkModalStatus.title}

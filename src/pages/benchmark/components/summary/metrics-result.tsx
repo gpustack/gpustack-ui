@@ -68,7 +68,7 @@ const latencyColumns = [
 
 const requestColumns = [
   {
-    label: 'benchmark.detail.requests.total',
+    title: 'benchmark.detail.requests.total',
     key: 'total_requests',
     dataIndex: 'total_requests',
     path: 'total_requests',
@@ -77,7 +77,7 @@ const requestColumns = [
     unit: ''
   },
   {
-    label: 'benchmark.detail.requests.success',
+    title: 'benchmark.detail.requests.success',
     key: 'total_requests',
     dataIndex: 'successful_requests',
     path: ['raw_metrics', 'benchmarks', '0'],
@@ -88,7 +88,7 @@ const requestColumns = [
     unit: ''
   },
   {
-    label: 'benchmark.detail.requests.failed',
+    title: 'benchmark.detail.requests.failed',
     key: 'total_requests',
     dataIndex: 'failed_requests',
     path: ['raw_metrics', 'benchmarks', '0'],
@@ -99,7 +99,7 @@ const requestColumns = [
     unit: ''
   },
   {
-    label: 'benchmark.detail.requests.concurrency',
+    title: 'benchmark.detail.requests.concurrency',
     key: 'request_concurrency',
     dataIndex: 'request_concurrency',
     path: ['raw_metrics', 'benchmarks', '0'],
@@ -180,9 +180,9 @@ const PercentileResult: React.FC = () => {
   );
 
   const requestItems = requestColumns.map(
-    ({ label, dataIndex, path, render, unit, color }) => ({
+    ({ title, dataIndex, path, render, unit, color }) => ({
       key: dataIndex,
-      label: intl.formatMessage({ id: label }),
+      label: intl.formatMessage({ id: title }),
       children: unit ? (
         <span className="flex-center" style={{ color: color }}>
           {render(_.get(detailData, path) ?? 0)}{' '}

@@ -97,7 +97,7 @@ export default {
   'common.form.field.input.required': 'required',
   'common.form.field.select.required': 'required',
   'common.select.option': 'All',
-  'common.checbox.all': 'Select all',
+  'common.checkbox.all': 'Select all',
   'common.select.all': 'All {type}',
   'common.data.unkonwn': 'Unknown',
   'common.data.none': 'No Data',

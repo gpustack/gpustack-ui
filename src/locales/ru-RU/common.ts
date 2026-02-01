@@ -97,7 +97,7 @@ export default {
   'common.form.field.input.required': 'обязательно',
   'common.form.field.select.required': 'обязательно',
   'common.select.option': 'Все',
-  'common.checbox.all': 'Все',
+  'common.checkbox.all': 'Все',
   'common.select.all': 'Все {type}',
   'common.data.unkonwn': 'Неизвестно',
   'common.data.none': 'Нет данных',

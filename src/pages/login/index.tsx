@@ -91,8 +91,6 @@ const Login = () => {
   const [userInfo, setUserInfo] = useAtom(userAtom);
   const { initialState, setInitialState } = useModel('@@initialState') || {};
 
-  console.log('useSettings==========', userSettings);
-
   const gotoDefaultPage = async (userInfo: any) => {
     if (!userInfo || userInfo?.require_password_change) {
       return;

@@ -37,14 +37,24 @@ const writeState = (key: string, data: any) => {
   }
 };
 
+const readColumnSettings = (key: string) => {
+  return readState(key);
+};
+
+const writeColumnSettings = (key: string, data: any) => {
+  writeState(key, data);
+};
+
 export {
   CRYPT_TEXT,
   IS_FIRST_LOGIN,
   REMEMBER_ME_KEY,
   getRememberMe,
+  readColumnSettings,
   readState,
   rememberMe,
   removeRememberMe,
+  writeColumnSettings,
   writeState
 };
 

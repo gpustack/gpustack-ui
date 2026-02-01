@@ -3,6 +3,7 @@ import RowChildren from '@/components/seal-table/components/row-children';
 import SealTable from '@/components/seal-table/index';
 import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import { convertFileSize } from '@/utils';
+import { useIntl } from '@umijs/max';
 import useMemoizedFn from 'ahooks/lib/useMemoizedFn';
 import { Col, Row, Tag } from 'antd';
 import _ from 'lodash';
@@ -17,6 +18,7 @@ const Container = styled.div`
 `;
 
 const Environment: React.FC = () => {
+  const intl = useIntl();
   const { detailData } = useDetailContext();
   const { snapshot } = detailData;
 
@@ -57,9 +59,16 @@ const Environment: React.FC = () => {
     });
   }, [snapshot, mainWorker]);
 
-  const GPUColumns = [
+  const GPUColumns: {
+    title: string;
+    dataIndex: string;
+    key: string;
+    span: number;
+    colStyle?: React.CSSProperties;
+    render?: (value: any, record: any) => React.ReactNode;
+  }[] = [
     {
-      title: 'GPU Name',
+      title: intl.formatMessage({ id: 'benchmark.env.gpuName' }),
       dataIndex: 'name',
       key: 'name',
       span: 6,
@@ -69,32 +78,30 @@ const Environment: React.FC = () => {
       )
     },
     {
-      title: 'Index',
+      title: intl.formatMessage({ id: 'benchmark.env.index' }),
       dataIndex: 'index',
       key: 'index',
       span: 4,
       colStyle: { paddingLeft: 48 }
     },
     {
-      title: 'Vendor',
+      title: intl.formatMessage({ id: 'resources.table.vendor' }),
       dataIndex: 'vendor',
       key: 'vendor',
       span: 6,
       colStyle: { paddingLeft: 110 }
     },
     {
-      title: 'VRAM',
+      title: intl.formatMessage({ id: 'resources.table.vram' }),
       dataIndex: 'memory_total',
       key: 'memory_total',
-      label: 'VRAM',
       span: 4,
       render: (value: number, record: any) => convertFileSize(value)
     },
     {
-      title: 'Cores',
+      title: intl.formatMessage({ id: 'resources.table.core' }),
       dataIndex: 'core_total',
       key: 'core_total',
-      label: 'Cores',
       span: 4,
       colStyle: { paddingLeft: 36 }
     }
@@ -102,7 +109,7 @@ const Environment: React.FC = () => {
 
   const columns = [
     {
-      title: 'Worker Name',
+      title: intl.formatMessage({ id: 'benchmark.env.workerName' }),
       dataIndex: 'name',
       key: 'name',
       span: 6,
@@ -120,7 +127,7 @@ const Environment: React.FC = () => {
       }
     },
     {
-      title: 'System',
+      title: intl.formatMessage({ id: 'benchmark.env.system' }),
       dataIndex: 'os',
       key: 'system',
       span: 5,
@@ -133,7 +140,7 @@ const Environment: React.FC = () => {
       }
     },
     {
-      title: 'Runtime Version',
+      title: intl.formatMessage({ id: 'benchmark.env.runtimeVersion' }),
       dataIndex: 'runtime_version',
       key: 'runtime_version',
       span: 3,
@@ -142,7 +149,7 @@ const Environment: React.FC = () => {
       }
     },
     {
-      title: 'Driver Version',
+      title: intl.formatMessage({ id: 'benchmark.env.driverVersion' }),
       dataIndex: 'driver_version',
       key: 'driver_version',
       span: 3,
@@ -151,13 +158,13 @@ const Environment: React.FC = () => {
       }
     },
     {
-      title: 'CPU Count',
+      title: intl.formatMessage({ id: 'benchmark.env.cpuCounts' }),
       dataIndex: 'cpu_total',
       key: 'cpu_total',
       span: 3
     },
     {
-      title: 'Memory',
+      title: intl.formatMessage({ id: 'resources.table.memory' }),
       dataIndex: 'memory_total',
       key: 'memory_total',
       span: 4,
@@ -218,8 +225,8 @@ const Environment: React.FC = () => {
                     }}
                   >
                     {col.render
-                      ? col.render((gpu as any)[col.dataIndex], gpu)
-                      : (gpu as any)[col.dataIndex]}
+                      ? col.render(gpu[col.dataIndex], gpu)
+                      : gpu[col.dataIndex]}
                   </span>
                 </Col>
               ))}

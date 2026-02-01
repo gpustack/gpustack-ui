@@ -3,6 +3,7 @@ import { useIntl } from '@umijs/max';
 import _ from 'lodash';
 import { useState } from 'react';
 import { queryProfiles } from '../apis';
+import { profileOptions } from '../config';
 import { ProfileOption } from '../config/types';
 
 export default function useQueryProfiles() {
@@ -23,10 +24,16 @@ export default function useQueryProfiles() {
 
   const fetchProfilesData = async () => {
     const res = await fetchData({});
+    const profileMap = profileOptions.reduce((map, obj) => {
+      map.set(obj.value, obj);
+      return map;
+    }, new Map<string, any>());
+
     const list =
       res?.profiles?.map((item) => {
         return {
-          label: item.name,
+          label: profileMap.get(item.name)?.label || item.name,
+          tips: profileMap.get(item.name)?.tips || '',
           value: item.name,
           config: {
             ..._.omit(item, 'name')
@@ -38,6 +45,7 @@ export default function useQueryProfiles() {
       ...list,
       {
         label: intl.formatMessage({ id: 'backend.custom' }),
+        tips: '',
         value: 'Custom',
         config: {
           dataset_name: '',

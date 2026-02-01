@@ -1,24 +1,28 @@
+import { useIntl } from '@umijs/max';
 import { Descriptions, DescriptionsProps } from 'antd';
 import React from 'react';
 import { useDetailContext } from '../../config/detail-context';
 
 const Benchmark: React.FC = () => {
+  const intl = useIntl();
   const { detailData } = useDetailContext();
 
   const items: DescriptionsProps['items'] = [
     {
       key: '1',
-      label: 'Profile',
+      label: intl.formatMessage({ id: 'benchmark.form.profile' }),
       children: detailData?.profile || '-'
     },
     {
       key: '2',
-      label: 'Dataset',
+      label: intl.formatMessage({ id: 'benchmark.table.dataset' }),
       children: detailData?.dataset_name || '-'
     },
     {
       key: '3',
-      label: 'Token Length (Input/Output)',
+      label: intl.formatMessage({
+        id: 'benchmark.detail.inputOutputTokenLength'
+      }),
       children: (
         <span>
           {detailData?.dataset_input_tokens || '-'} /{' '}
@@ -28,24 +32,23 @@ const Benchmark: React.FC = () => {
     },
     {
       key: '7',
-      label: 'Total Requests',
+      label: intl.formatMessage({ id: 'benchmark.form.totalRequests' }),
       children: detailData?.total_requests || '-'
     },
     {
       key: '6',
-      label: 'Request Rate',
+      label: intl.formatMessage({ id: 'benchmark.table.requestRate' }),
       children: detailData?.request_rate || '-'
     },
     {
       key: '5',
-      label: 'Seed',
+      label: intl.formatMessage({ id: 'playground.image.params.seed' }),
       children: detailData?.seed || '-'
     }
   ];
 
   return (
     <div>
-      <span>Parameters</span>
       <Descriptions
         items={items}
         colon={false}

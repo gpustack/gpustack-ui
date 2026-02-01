@@ -1,3 +1,4 @@
+import { useIntl } from '@umijs/max';
 import { Divider } from 'antd';
 import React from 'react';
 import styled from 'styled-components';
@@ -14,14 +15,18 @@ const Container = styled.div`
 `;
 
 const Summary: React.FC = () => {
+  const intl = useIntl();
   return (
     <Container>
-      <Section title="Results" minHeight={450}>
+      <Section
+        title={intl.formatMessage({ id: 'benchmark.detail.summary.results' })}
+        minHeight={450}
+      >
         <MetricsResult />
         <Divider />
         <PercentileResult />
       </Section>
-      <Section title="Benchmark Details">
+      <Section title={intl.formatMessage({ id: 'benchmark.detail.configure' })}>
         <Instance />
         <Divider />
         <BenchMark />

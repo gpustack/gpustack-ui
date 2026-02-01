@@ -30,7 +30,7 @@ export default {
   'resources.table.vram': '显存',
   'resources.table.index': '序号',
   'resources.table.workername': '节点名称',
-  'resources.table.vender': '厂商',
+  'resources.table.vendor': '厂商',
   'resources.table.temperature': '温度',
   'resources.table.core': '核数',
   'resources.table.gpuutilization': 'GPU 利用率',

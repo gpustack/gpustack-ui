@@ -32,10 +32,10 @@ export const BenchmarkStatus: Record<string, StatusType> = {
 };
 
 export const ProfileValueMap = {
-  LatencyShort: 'latency_short',
-  ThroughputMedium: 'throughput_medium',
-  LongContextStress: 'long_context_stress',
-  GenerationHeavy: 'generation_heavy',
+  LatencyShort: 'Latency',
+  ThroughputMedium: 'Throughput',
+  LongContextStress: 'Long Context',
+  GenerationHeavy: 'Generation Heavy',
   Custom: 'Custom'
 };
 
@@ -50,27 +50,26 @@ export const ProfileLabelMap = {
 export const profileOptions = [
   {
     label: 'benchmark.form.profile.latency',
+    tips: 'benchmark.form.profile.latency.tips',
     value: ProfileValueMap.LatencyShort,
     locale: true
   },
   {
     label: 'benchmark.form.profile.throughput',
+    tips: 'benchmark.form.profile.throughput.tips',
     value: ProfileValueMap.ThroughputMedium,
     locale: true
   },
   {
     label: 'benchmark.form.profile.longContext',
+    tips: 'benchmark.form.profile.longContext.tips',
     value: ProfileValueMap.LongContextStress,
     locale: true
   },
   {
     label: 'benchmark.form.profile.heavy',
+    tips: 'benchmark.form.profile.heavy.tips',
     value: ProfileValueMap.GenerationHeavy,
-    locale: true
-  },
-  {
-    label: 'benchmark.form.profile.custom',
-    value: ProfileValueMap.Custom,
     locale: true
   }
 ];

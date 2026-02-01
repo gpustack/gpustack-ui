@@ -1,4 +1,5 @@
 import AutoTooltip from '@/components/auto-tooltip';
+import { useIntl } from '@umijs/max';
 import { Descriptions, Flex, Tag } from 'antd';
 import _ from 'lodash';
 import React, { useMemo } from 'react';
@@ -9,6 +10,7 @@ const calcTotalVram = (vram: Record<string, number>) => {
 };
 
 const Instance: React.FC = () => {
+  const intl = useIntl();
   const { detailData } = useDetailContext();
   const [, instanceData] =
     Object.entries(detailData?.snapshot?.instances || {})[0] || [];
@@ -20,14 +22,14 @@ const Instance: React.FC = () => {
     return [
       {
         key: '1',
-        label: 'Model Name',
+        label: intl.formatMessage({ id: 'benchmark.detail.modelName' }),
         children: (
           <AutoTooltip ghost>{detailData?.model_name || '-'}</AutoTooltip>
         )
       },
       {
         key: '2',
-        label: 'Instance Name',
+        label: intl.formatMessage({ id: 'benchmark.detail.instanceName' }),
         children: (
           <AutoTooltip ghost>
             {detailData?.model_instance_name || '-'}
@@ -37,7 +39,7 @@ const Instance: React.FC = () => {
 
       {
         key: '5',
-        label: 'Backend',
+        label: intl.formatMessage({ id: 'models.form.backend' }),
         children: `${instanceData?.backend || '-'} ${
           instanceData?.backend_version
             ? `(${instanceData?.backend_version})`
@@ -46,7 +48,7 @@ const Instance: React.FC = () => {
       },
       {
         key: '6',
-        label: 'Model File',
+        label: intl.formatMessage({ id: 'benchmark.detail.modelFile' }),
         children: (
           <AutoTooltip ghost>{instanceData?.resolved_path || '-'}</AutoTooltip>
         )
@@ -61,7 +63,7 @@ const Instance: React.FC = () => {
     return [
       {
         key: '1',
-        label: 'Backend Parameters',
+        label: intl.formatMessage({ id: 'models.form.backend_parameters' }),
         children: (
           <Flex
             gap={8}
@@ -84,21 +86,27 @@ const Instance: React.FC = () => {
       },
       {
         key: '3',
-        label: 'Extended KV Cache',
+        label: intl.formatMessage({ id: 'benchmark.detail.kvCache' }),
         children: (
           <Flex gap={8} wrap="wrap">
             {instanceData?.extended_kv_cache?.enabled ? (
               <>
                 <span className="flex-center">
-                  <span>RAM-to-VRAM Ratio:</span>
+                  <span>
+                    {intl.formatMessage({ id: 'models.form.ramRatio' })}:
+                  </span>
                   <span>{instanceData?.extended_kv_cache?.ram_ratio}</span>
                 </span>
                 <span className="flex-center">
-                  <span>Maximum RAM Size (GiB):</span>
+                  <span>
+                    {intl.formatMessage({ id: 'models.form.ramSize' })}:
+                  </span>
                   <span>{instanceData?.extended_kv_cache?.ram_size}</span>
                 </span>
                 <span className="flex-center">
-                  <span>Size of Cache Chunks:</span>
+                  <span>
+                    {intl.formatMessage({ id: 'models.form.chunkSize' })}:
+                  </span>
                   <span>{instanceData?.extended_kv_cache?.chunk_size}</span>
                 </span>
               </>
@@ -110,21 +118,29 @@ const Instance: React.FC = () => {
       },
       {
         key: '4',
-        label: 'Speculative Decoding',
+        label: intl.formatMessage({
+          id: 'benchmark.detail.speculativeDecoding'
+        }),
         children: (
           <Flex gap={8} wrap="wrap">
             {instanceData?.speculative_config?.enabled ? (
               <>
                 <span className="flex-center">
-                  <span>Algorithm:</span>
+                  <span>
+                    {intl.formatMessage({ id: 'models.form.algorithm' })}:
+                  </span>
                   <span>{instanceData?.speculative_config?.algorithm}</span>
                 </span>
                 <span className="flex-center">
-                  <span>Draft Model:</span>
+                  <span>
+                    {intl.formatMessage({ id: 'models.form.draftModel' })}:
+                  </span>
                   <span>{instanceData?.speculative_config?.draft_model}</span>
                 </span>
                 <span className="flex-center">
-                  <span>Number of Draft Tokens:</span>
+                  <span>
+                    {intl.formatMessage({ id: 'models.form.numDraftTokens' })}:
+                  </span>
                   <span>
                     {instanceData?.speculative_config?.num_draft_tokens}
                   </span>
@@ -138,7 +154,7 @@ const Instance: React.FC = () => {
       },
       {
         key: '2',
-        label: 'Environment Variables',
+        label: intl.formatMessage({ id: 'models.form.env' }),
         children: (
           <Flex gap={8} wrap="wrap">
             {instanceData?.env
@@ -158,7 +174,6 @@ const Instance: React.FC = () => {
 
   return (
     <div>
-      <span>Instance</span>
       <Descriptions
         items={items}
         colon={false}

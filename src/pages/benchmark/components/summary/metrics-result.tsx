@@ -1,16 +1,9 @@
+import { useIntl } from '@umijs/max';
 import { Descriptions } from 'antd';
 import _, { round } from 'lodash';
 import React from 'react';
 import styled from 'styled-components';
 import { useDetailContext } from '../../config/detail-context';
-
-const Card = styled.div`
-  height: 78px;
-  padding: 12px 16px;
-  border: 1px solid var(--ant-color-border);
-  border-radius: var(--ant-border-radius);
-  background-color: var(--ant-color-bg-container);
-`;
 
 const Box = styled.div`
   display: grid;
@@ -18,58 +11,23 @@ const Box = styled.div`
   gap: 16px;
 `;
 
-const DescWrapper = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 24px;
-`;
-
-const columns = [
-  // {
-  //   title: 'Duration',
-  //   dataIndex: 'duration',
-  //   path: ['raw_metrics', 'benchmarks', '0', 'duration'],
-  //   unit: 's',
-  //   render: (value: number) => round(value, 2)
-  // },
-
-  // {
-  //   title: 'Total Requests',
-  //   dataIndex: 'total_requests',
-  //   path: 'total_requests',
-  //   unit: '',
-  //   render: (value: number) => round(value, 0)
-  // },
+const throughputColumns = [
   {
-    title: 'Total token throughput',
+    title: 'benchmark.detail.throughput.totalToken',
     dataIndex: 'tokens_per_second_mean',
     path: 'tokens_per_second_mean',
     unit: 'Tokens/s',
     render: (value: number) => round(value, 2)
   },
   {
-    title: 'Input token throughput ',
+    title: 'benchmark.detail.throughput.inputToken',
     dataIndex: 'input_tokens_per_second_mean',
     path: 'input_tokens_per_second_mean',
     unit: 'Tokens/s',
     render: (value: number) => round(value, 2)
   },
-  // {
-  //   title: 'Success Requests',
-  //   dataIndex: 'successful_requests',
-  //   path: ['raw_metrics', 'benchmarks', '0'],
-  //   unit: '',
-  //   render: (value: number) => {
-  //     return (
-  //       <span style={{ color: 'var(--ant-color-success)' }}>
-  //         {_.get(value, 'metrics.request_totals.successful')}
-  //       </span>
-  //     );
-  //   }
-  // },
-
   {
-    title: 'Output token throughput',
+    title: 'benchmark.detail.throughput.outputToken',
     dataIndex: 'output_tokens_per_second_mean',
     path: 'output_tokens_per_second_mean',
     unit: 'Tokens/s',
@@ -77,56 +35,30 @@ const columns = [
   }
 ];
 
-const columnsSub = [
-  // {
-  //   title: 'Failed Requests',
-  //   dataIndex: 'failed_requests',
-  //   path: ['raw_metrics', 'benchmarks', '0'],
-  //   unit: '',
-  //   render: (value: number) => {
-  //     return (
-  //       <span style={{ color: 'var(--ant-color-error)' }}>
-  //         {_.get(value, 'metrics.request_totals.errored')}
-  //       </span>
-  //     );
-  //   }
-  // },
-  // {
-  //   title: 'Concurrency',
-  //   dataIndex: 'request_concurrency',
-  //   path: ['raw_metrics', 'benchmarks', '0'],
-  //   unit: '',
-  //   render: (value: number) => {
-  //     return round(
-  //       _.get(value, 'metrics.request_concurrency.successful.mean'),
-  //       0
-  //     );
-  //   }
-  // },
-
+const latencyColumns = [
   {
-    title: 'Average Request Latency',
+    title: 'benchmark.detail.avg.reqLatency',
     dataIndex: 'request_latency_mean',
     path: 'request_latency_mean',
     unit: 'ms',
     render: (value: number) => round(value, 2)
   },
   {
-    title: 'Average Time To First Token',
+    title: 'benchmark.detail.avg.ttft',
     dataIndex: 'time_to_first_token_mean',
     path: 'time_to_first_token_mean',
     unit: 'ms',
     render: (value: number) => round(value, 2)
   },
   {
-    title: 'Average Time Per Output Token',
+    title: 'benchmark.detail.avg.tpot',
     dataIndex: 'time_per_output_token_mean',
     path: 'time_per_output_token_mean',
     unit: 'ms',
     render: (value: number) => round(value, 2)
   },
   {
-    title: 'Average Inter Token Latency',
+    title: 'benchmark.detail.avg.itl',
     dataIndex: 'inter_token_latency_mean',
     path: 'inter_token_latency_mean',
     unit: 'ms',
@@ -134,9 +66,9 @@ const columnsSub = [
   }
 ];
 
-const requestFields = [
+const requestColumns = [
   {
-    label: 'Total Requests',
+    label: 'benchmark.detail.requests.total',
     key: 'total_requests',
     dataIndex: 'total_requests',
     path: 'total_requests',
@@ -145,7 +77,7 @@ const requestFields = [
     unit: ''
   },
   {
-    label: 'Success Requests',
+    label: 'benchmark.detail.requests.success',
     key: 'total_requests',
     dataIndex: 'successful_requests',
     path: ['raw_metrics', 'benchmarks', '0'],
@@ -156,7 +88,7 @@ const requestFields = [
     unit: ''
   },
   {
-    label: 'Failed Requests',
+    label: 'benchmark.detail.requests.failed',
     key: 'total_requests',
     dataIndex: 'failed_requests',
     path: ['raw_metrics', 'benchmarks', '0'],
@@ -167,7 +99,7 @@ const requestFields = [
     unit: ''
   },
   {
-    label: 'Concurrency',
+    label: 'benchmark.detail.requests.concurrency',
     key: 'request_concurrency',
     dataIndex: 'request_concurrency',
     path: ['raw_metrics', 'benchmarks', '0'],
@@ -185,21 +117,24 @@ const PERCENTILES = [
 
 const PercentileResult: React.FC = () => {
   const { detailData } = useDetailContext();
+  const intl = useIntl();
   const metrics = detailData?.raw_metrics?.benchmarks?.[0]?.metrics || {};
 
   const buildPercentileTable = (metrics: any) => {
     return PERCENTILES.map(({ key, title }) => {
       const row: any = { metrics: title };
 
-      [...columns, ...columnsSub].forEach(({ dataIndex, path }) => {
-        row[dataIndex] = _.get(detailData, path) ?? 0;
-      });
+      [...throughputColumns, ...latencyColumns].forEach(
+        ({ dataIndex, path }) => {
+          row[dataIndex] = _.get(detailData, path) ?? 0;
+        }
+      );
 
       return row;
     });
   };
 
-  const items = [...columns, ...columnsSub].map(
+  const items = [...throughputColumns, ...latencyColumns].map(
     ({ title, dataIndex, path, render, unit }) => ({
       key: dataIndex,
       label: title,
@@ -214,10 +149,10 @@ const PercentileResult: React.FC = () => {
     })
   );
 
-  const throughputItems = columns.map(
+  const throughputItems = throughputColumns.map(
     ({ title, dataIndex, path, render, unit }) => ({
       key: dataIndex,
-      label: title,
+      label: intl.formatMessage({ id: title }),
       children: unit ? (
         <span className="flex-center">
           {render(_.get(detailData, path) ?? 0)}{' '}
@@ -229,10 +164,10 @@ const PercentileResult: React.FC = () => {
     })
   );
 
-  const latencyItems = columnsSub.map(
+  const latencyItems = latencyColumns.map(
     ({ title, dataIndex, path, render, unit }) => ({
       key: dataIndex,
-      label: title,
+      label: intl.formatMessage({ id: title }),
       children: unit ? (
         <span className="flex-center">
           {render(_.get(detailData, path) ?? 0)}{' '}
@@ -244,10 +179,10 @@ const PercentileResult: React.FC = () => {
     })
   );
 
-  const requestItems = requestFields.map(
+  const requestItems = requestColumns.map(
     ({ label, dataIndex, path, render, unit, color }) => ({
       key: dataIndex,
-      label: label,
+      label: intl.formatMessage({ id: label }),
       children: unit ? (
         <span className="flex-center" style={{ color: color }}>
           {render(_.get(detailData, path) ?? 0)}{' '}
@@ -277,25 +212,26 @@ const PercentileResult: React.FC = () => {
 
   return (
     <div>
-      <span>Metrics</span>
       <Box>
         <Descriptions
           styles={descriptionStyles}
-          title="Latency"
+          title={intl.formatMessage({ id: 'benchmark.detail.summary.latency' })}
           items={latencyItems}
           colon={false}
           column={1}
         ></Descriptions>
         <Descriptions
           styles={descriptionStyles}
-          title="Throughput"
+          title={intl.formatMessage({
+            id: 'benchmark.detail.summary.throughput'
+          })}
           items={throughputItems}
           colon={false}
           column={1}
         ></Descriptions>
         <Descriptions
           styles={descriptionStyles}
-          title="Requests"
+          title={intl.formatMessage({ id: 'benchmark.detail.summary.request' })}
           items={requestItems}
           colon={false}
           column={1}

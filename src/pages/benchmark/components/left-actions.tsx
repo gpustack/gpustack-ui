@@ -52,14 +52,16 @@ const RightActions: React.FC<RightActionsProps> = ({
             style={{ color: 'var(--ant-color-text-placeholder)' }}
           ></SearchOutlined>
         }
-        placeholder="Filter by GPU"
+        placeholder={intl.formatMessage({ id: 'benchmark.table.filter.bygpu' })}
         style={{ width: 180 }}
         allowClear
         onChange={handleGPUChange}
       ></Input>
       <BaseSelect
         allowClear
-        placeholder="Filter by model"
+        placeholder={intl.formatMessage({
+          id: 'benchmark.table.filter.bymodel'
+        })}
         style={{ width: 200 }}
         options={modelList}
         onChange={(value, option) =>
@@ -71,7 +73,9 @@ const RightActions: React.FC<RightActionsProps> = ({
       ></BaseSelect>
       <BaseSelect
         allowClear
-        placeholder="Filter by dataset"
+        placeholder={intl.formatMessage({
+          id: 'benchmark.table.filter.bydataset'
+        })}
         style={{ width: 200 }}
         options={datasetList?.map((item) => ({
           ...item,

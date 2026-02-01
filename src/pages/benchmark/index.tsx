@@ -77,7 +77,10 @@ const Benchmark: React.FC = () => {
   }, []);
 
   const handleAddBenchmark = () => {
-    openBenchmarkModal(PageAction.CREATE, 'Add Benchmark');
+    openBenchmarkModal(
+      PageAction.CREATE,
+      intl.formatMessage({ id: 'benchmark.button.add' })
+    );
   };
 
   const handleModalOk = async (data: FormData) => {
@@ -108,7 +111,11 @@ const Benchmark: React.FC = () => {
   };
 
   const handleEditUser = (row: ListItem) => {
-    openBenchmarkModal(PageAction.EDIT, 'Edit Benchmark', row);
+    openBenchmarkModal(
+      PageAction.EDIT,
+      intl.formatMessage({ id: 'benchmark.button.edit' }),
+      row
+    );
   };
 
   const handleSelect = useMemoizedFn((val: any, row: ListItem) => {

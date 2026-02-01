@@ -1,8 +1,9 @@
+import AutoTooltip from '@/components/auto-tooltip';
 import SealSelect from '@/components/seal-form/seal-select';
 import { PageAction } from '@/config';
 import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
-import { Form } from 'antd';
+import { Form, Select } from 'antd';
 import _ from 'lodash';
 import React, { useEffect } from 'react';
 import { ProfileValueMap } from '../config';
@@ -68,10 +69,25 @@ const DatasetForm: React.FC = () => {
         <SealSelect
           disabled={action === PageAction.EDIT}
           onChange={handleProfileChange}
-          options={profilesOptions}
           label={intl.formatMessage({ id: 'benchmark.form.profile' })}
           required
-        ></SealSelect>
+        >
+          {profilesOptions?.map((item: any) => (
+            <Select.Option key={item.value} value={item.value}>
+              <AutoTooltip
+                ghost
+                showTitle={!!item.tips}
+                title={
+                  item?.tips
+                    ? intl.formatMessage({ id: item?.tips || '' })
+                    : false
+                }
+              >
+                {intl.formatMessage({ id: item?.label || '' })}
+              </AutoTooltip>
+            </Select.Option>
+          ))}
+        </SealSelect>
       </Form.Item>
 
       <RandomSettingsForm

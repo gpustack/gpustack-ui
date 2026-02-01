@@ -81,8 +81,10 @@ const CatalogItem: React.FC<CatalogItemProps> = (props) => {
           >
             <IconFont
               type="icon-new_release_outlined"
-              className="m-r-5"
-              style={{ color: 'var(--ant-color-text-secondary)' }}
+              style={{
+                color: 'var(--ant-color-text-tertiary)',
+                marginRight: 5
+              }}
             ></IconFont>
             {data.release_date}
           </span>
@@ -90,7 +92,13 @@ const CatalogItem: React.FC<CatalogItemProps> = (props) => {
             {_.map(data.licenses, (license: string, index: number) => {
               return (
                 <span key={license} className="flex-center m-r-8">
-                  <IconFont type="icon-justice1" className="m-r-5"></IconFont>
+                  <IconFont
+                    type="icon-license"
+                    style={{
+                      color: 'var(--ant-color-text-tertiary)',
+                      marginRight: 5
+                    }}
+                  ></IconFont>
                   <span>{license}</span>
                 </span>
               );

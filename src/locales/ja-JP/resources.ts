@@ -29,7 +29,7 @@ export default {
   'resources.table.vram': 'VRAM',
   'resources.table.index': 'インデックス',
   'resources.table.workername': 'ワーカー名',
-  'resources.table.vender': 'ベンダー',
+  'resources.table.vendor': 'ベンダー',
   'resources.table.temperature': '温度',
   'resources.table.core': 'コア数',
   'resources.table.utilization': '利用率',

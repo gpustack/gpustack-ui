@@ -29,7 +29,7 @@ export default {
   'resources.table.vram': 'VRAM',
   'resources.table.index': 'Индекс',
   'resources.table.workername': 'Имя воркера',
-  'resources.table.vender': 'Производитель',
+  'resources.table.vendor': 'Производитель',
   'resources.table.temperature': 'Температура',
   'resources.table.core': 'Ядра',
   'resources.table.utilization': 'Использование',

@@ -4,14 +4,12 @@ import {
   DownloadOutlined,
   PlusOutlined
 } from '@ant-design/icons';
-import { useIntl } from '@umijs/max';
 import { Button, Space } from 'antd';
 import React from 'react';
 
 export interface RightActionsProps {
   handleDeleteByBatch: () => void;
   handleClickPrimary?: () => void;
-  handleSettingFields?: () => void;
   handleExport?: () => void;
   settingButton?: React.ReactNode;
   buttonText?: string;
@@ -23,13 +21,11 @@ export interface RightActionsProps {
 const RightActions: React.FC<RightActionsProps> = ({
   handleDeleteByBatch,
   handleClickPrimary,
-  handleSettingFields,
   handleExport,
   settingButton,
   buttonText,
   rowSelection
 }) => {
-  const intl = useIntl();
   const ButtonList = [
     {
       label: 'common.button.export',
@@ -56,13 +52,7 @@ const RightActions: React.FC<RightActionsProps> = ({
 
   return (
     <Space size={16}>
-      {/* <Tooltip title="Column Settings">
-        <Button
-          onClick={handleSettingFields}
-          icon={<SettingOutlined />}
-        ></Button>
-      </Tooltip> */}
-      {/* {settingButton} */}
+      {settingButton}
       <Button
         icon={<PlusOutlined></PlusOutlined>}
         type="primary"
@@ -70,19 +60,6 @@ const RightActions: React.FC<RightActionsProps> = ({
       >
         {buttonText}
       </Button>
-      {/* <Button
-        icon={<DeleteOutlined />}
-        danger
-        onClick={handleDeleteByBatch}
-        disabled={!rowSelection?.selectedRowKeys?.length}
-      >
-        <span>
-          {intl?.formatMessage?.({ id: 'common.button.delete' })}
-          {rowSelection?.selectedRowKeys?.length > 0 && (
-            <span>({rowSelection?.selectedRowKeys?.length})</span>
-          )}
-        </span>
-      </Button> */}
       <DropdownButtons
         items={ButtonList}
         extra={

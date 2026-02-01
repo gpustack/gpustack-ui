@@ -30,7 +30,7 @@ export default {
   'resources.table.vram': 'VRAM',
   'resources.table.index': 'Index',
   'resources.table.workername': 'Worker Name',
-  'resources.table.vender': 'Vendor',
+  'resources.table.vendor': 'Vendor',
   'resources.table.temperature': 'Temperature',
   'resources.table.core': 'Cores',
   'resources.table.utilization': 'Utilization',

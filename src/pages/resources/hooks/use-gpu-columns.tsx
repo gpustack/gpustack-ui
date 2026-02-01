@@ -84,7 +84,7 @@ const useGPUColumns = (props: {
         )
       },
       {
-        title: intl.formatMessage({ id: 'resources.table.vender' }),
+        title: intl.formatMessage({ id: 'resources.table.vendor' }),
         dataIndex: 'vendor',
         sorter: tableSorter(5)
       },

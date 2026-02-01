@@ -97,7 +97,7 @@ export default {
   'common.form.field.input.required': '必須',
   'common.form.field.select.required': '必須',
   'common.select.option': 'すべて',
-  'common.checbox.all': 'すべて',
+  'common.checkbox.all': 'すべて',
   'common.select.all': 'すべての {type}',
   'common.data.unkonwn': '不明',
   'common.data.none': 'データなし',

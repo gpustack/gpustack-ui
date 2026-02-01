@@ -63,7 +63,7 @@ const Benchmark: React.FC = () => {
   });
   const { openViewLogsModal, closeViewLogsModal, openViewLogsModalStatus } =
     useViewLogs();
-  const { SettingsButton, selectedColumns } = useColumnSettings({
+  const { SettingsButton, columns: selectedColumns } = useColumnSettings({
     contentHeight: 320
   });
   const { handleStopBenchmark } = useStopBenchmark();
@@ -162,11 +162,12 @@ const Benchmark: React.FC = () => {
     );
   };
 
-  const columns = useBenchmarkColumns(
+  const columns = useBenchmarkColumns({
     sortOrder,
+    columns: selectedColumns,
     handleSelect,
-    handleOnCellClick
-  );
+    onCellClick: handleOnCellClick
+  });
 
   const handleExportData = () => {
     exportData(rowSelection.selectedRowKeys);

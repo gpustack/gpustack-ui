@@ -113,7 +113,7 @@ const SimpleSelect: React.FC<SelectProps & { ref?: any; showTags?: boolean }> =
                 indeterminate={allSelection.indeterminate}
                 onChange={handleOnCheckboxChange}
               >
-                {intl.formatMessage({ id: 'common.checbox.all' })}
+                {intl.formatMessage({ id: 'common.checkbox.all' })}
               </Checkbox>
             </SelectAllWrapper>
           )}

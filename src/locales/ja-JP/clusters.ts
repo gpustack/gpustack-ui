@@ -91,7 +91,7 @@ export default {
   'clusters.addworker.notSpecified': 'Not Specified',
   'clusters.addworker.autoDetect': 'Auto',
   'clusters.addworker.extraVolume.holder':
-    'e.g. /data/models (path must start with /)',
+    'e.g. /data/models (path must start with /). Use commas to separate multiple paths.',
   'clusters.addworker.cacheVolume.holder':
     'e.g. /data/cache (path must start with /)',
   'clusters.addworker.vendorNotes.title': 'Notes for {vendor} Device',
@@ -200,7 +200,7 @@ export default {
 // 65. 'clusters.addworker.workerExternalIP': 'Worker External Address',
 // 65. 'clusters.addworker.notSpecified': 'Not Specified',
 // 66. 'clusters.addworker.autoDetect': 'Auto',
-// 67.  'clusters.addworker.extraVolume.holder': 'e.g. /data/models (path must start with /)'
+// 67.  'clusters.addworker.extraVolume.holder': 'e.g. /data/models (path must start with /). Use commas to separate multiple paths.',
 // 68. 'clusters.addworker.vendorNotes.title': 'Notes for {vendor} Device',
 // 69. 'clusters.button.genToken': 'Need to create a new token? Click <a href="{link}" target="_blank">here</a>.',
 // 70. 'clusters.addworker.amdNotes-01': `If the <span class="bold-text">/opt/rocm</span> directory does not exist, please create a symbolic link pointing to the ROCm installed path: <span class="bold-text">ln -s /path/to/rocm /opt/rocm</span>.`,

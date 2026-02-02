@@ -91,9 +91,9 @@ export default {
   'clusters.addworker.notSpecified': 'Не указано',
   'clusters.addworker.autoDetect': 'Автоопределение',
   'clusters.addworker.extraVolume.holder':
-    'напр. /data/models (путь должен начинаться с /)',
+    'e.g. /data/models (path must start with /). Use commas to separate multiple paths.',
   'clusters.addworker.cacheVolume.holder':
-    'напр. /data/cache (путь должен начинаться с /)',
+    'e.g. /data/cache (path must start with /)',
   'clusters.addworker.vendorNotes.title': 'Примечания для устройств {vendor}',
   'clusters.button.genToken':
     'Нужен новый токен? Нажмите <a href="{link}" target="_blank">здесь</a>.',

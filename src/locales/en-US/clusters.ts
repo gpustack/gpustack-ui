@@ -91,7 +91,7 @@ export default {
   'clusters.addworker.notSpecified': 'Not Specified',
   'clusters.addworker.autoDetect': 'Auto',
   'clusters.addworker.extraVolume.holder':
-    'e.g. /data/models (path must start with /)',
+    'e.g. /data/models (path must start with /). Use commas to separate multiple paths.',
   'clusters.addworker.cacheVolume.holder':
     'e.g. /data/cache (path must start with /)',
   'clusters.addworker.vendorNotes.title': 'Notes for {vendor} Device',

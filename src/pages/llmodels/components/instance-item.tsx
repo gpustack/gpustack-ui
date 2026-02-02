@@ -9,6 +9,7 @@ import StatusTag from '@/components/status-tag';
 import ThemeTag from '@/components/tags-wrapper/theme-tag';
 import { HandlerOptions } from '@/hooks/use-chunk-fetch';
 import useDownloadStream from '@/hooks/use-download-stream';
+import { useBenchmarkTargetInstance } from '@/pages/llmodels/hooks/use-run-benchmark';
 import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
 import { convertFileSize } from '@/utils';
 import {
@@ -334,6 +335,12 @@ const childActionList = [
     icon: <DownloadOutlined />
   },
   {
+    label: 'models.table.instance.benchmark',
+    key: 'benchmark',
+    status: [InstanceStatusMap.Running],
+    icon: <IconFont type="icon-speed" />
+  },
+  {
     label: 'common.button.delrecreate',
     key: 'delete',
     props: {
@@ -416,6 +423,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
   defaultOpenId,
   handleChildSelect
 }) => {
+  const { runBenchmarkOnInstance } = useBenchmarkTargetInstance();
   const [api, contextHolder] = notification.useNotification({
     stack: { threshold: 1 }
   });
@@ -423,7 +431,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
   const intl = useIntl();
   const actionItems = useMemo(() => {
     return _.filter(childActionList, (action: any) => {
-      if (action.key === 'viewlog' || action.key === 'download') {
+      if (action.status && action.status.length > 0) {
         return action.status.includes(instanceData.state);
       }
       return true;
@@ -662,7 +670,9 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
   ]);
 
   const handleOnSelect = (val: string) => {
-    if (val === 'download') {
+    if (val === 'benchmark') {
+      runBenchmarkOnInstance(instanceData);
+    } else if (val === 'download') {
       downloadStream({
         url: `${MODEL_INSTANCE_API}/${instanceData.id}/logs`,
         filename: createFileName(instanceData.name),

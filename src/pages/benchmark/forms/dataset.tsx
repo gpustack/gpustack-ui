@@ -43,14 +43,46 @@ const DatasetForm: React.FC = () => {
     }
   };
 
+  // Initialize profile when open form
+  const initProfile = (
+    value: string,
+    option: any,
+    datasetList: Global.BaseOption<number | string>[]
+  ) => {
+    if (value !== ProfileValueMap.Custom) {
+      const dataset_id = datasetList.find(
+        (item) => item.label === option.config?.dataset_name
+      )?.value;
+
+      form.setFieldsValue({
+        profile: value,
+        dataset_id: dataset_id,
+        ..._.omit(option?.config, ['description', 'dataset_source'])
+      });
+    }
+  };
+
   useEffect(() => {
     if (!open) {
       cancelDatasetRequest();
       cancelProfilesRequest();
     }
+
     if (open) {
-      fetchProfilesData();
-      fetchDatasetData();
+      const init = async () => {
+        const profiles = await fetchProfilesData();
+        const datasets = await fetchDatasetData();
+        // set default profile
+        if (profiles?.length > 0) {
+          const throughputProfile = profiles.find(
+            (item) => item.value === ProfileValueMap.ThroughputMedium
+          );
+          if (throughputProfile) {
+            initProfile(throughputProfile.value, throughputProfile, datasets);
+          }
+        }
+      };
+      init();
     }
   }, [open]);
 
@@ -73,7 +105,12 @@ const DatasetForm: React.FC = () => {
           required
         >
           {profilesOptions?.map((item: any) => (
-            <Select.Option key={item.value} value={item.value}>
+            <Select.Option
+              key={item.value}
+              value={item.value}
+              label={item.label}
+              config={item.config}
+            >
               <AutoTooltip
                 ghost
                 showTitle={!!item.tips}

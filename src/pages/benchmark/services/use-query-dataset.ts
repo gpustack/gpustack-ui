@@ -21,6 +21,7 @@ const useQueryDataset = () => {
     // TODO: may be fetch data from server in the future.
 
     setDatasetList([...datasetOptions]);
+    return datasetOptions;
   };
 
   return {

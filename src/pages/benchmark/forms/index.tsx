@@ -37,12 +37,9 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
   const { action, currentData, onFinish, open, clusterList } = props;
   const intl = useIntl();
   const [form] = Form.useForm();
-  const profile = Form.useWatch('profile', form);
-
   const { getScrollElementScrollableHeight } = useWrapperContext();
   const [activeKey, setActiveKey] = useState<string[]>([TABKeysMap.PROFILE]);
   const scrollTabsRef = useRef<any>(null);
-  const showAdvanced = profile !== 'Custom' && Boolean(profile);
 
   const segmentOptions = [
     {
@@ -87,12 +84,6 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       });
     }
   }, [form, currentData, action]);
-
-  useEffect(() => {
-    if (!showAdvanced && activeKey?.includes(TABKeysMap.ADVANCED)) {
-      setActiveKey([TABKeysMap.PROFILE]);
-    }
-  }, [showAdvanced, activeKey]);
 
   return (
     <ScrollSpyTabs

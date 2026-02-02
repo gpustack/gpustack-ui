@@ -205,7 +205,7 @@ export default {
   'models.form.gpusAllocationType.custom.tips':
     '您可以指定每个副本的 GPU 数量。',
   'models.mymodels.status.inactive': '已停止',
-  'models.mymodels.status.degrade': '异常',
+  'models.mymodels.status.degrade': '未就绪',
   'models.mymodels.status.active': '可用',
   'models.form.kvCache.tips':
     '扩展 KV 缓存和推测解码仅在内置后端（vLLM / SGLang）可用，请切换后端以启用。',
@@ -258,5 +258,6 @@ export default {
     '你指定的模型文件路径在 GPUStack 服务器上不存在。建议在 GPUStack 服务器和 GPUStack 节点上使用相同的模型文件路径，这有助于 GPUStack 做出更优的调度与决策。',
   'models.form.readyWorkers': '节点就绪',
   'models.form.maxContextLength': '最大上下文长度',
-  'models.form.backend.helperText': '该社区后端暂未启用，部署后将自动启用'
+  'models.form.backend.helperText': '该社区后端暂未启用，部署后将自动启用',
+  'models.table.instance.benchmark': '运行基准测试'
 };

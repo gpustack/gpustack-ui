@@ -4,6 +4,7 @@ import { FilterBar } from '@/components/page-tools';
 import { PageAction } from '@/config';
 import { TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import useTableFetch from '@/hooks/use-table-fetch';
+import { useBenchmarkTargetInstance } from '@/pages/llmodels/hooks/use-run-benchmark';
 import { useQueryModelList } from '@/pages/llmodels/services/use-query-model-list';
 import { useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
@@ -76,11 +77,19 @@ const Benchmark: React.FC = () => {
     contentHeight: 320,
     clusterList
   });
+  const { benchmarkTargetInstance } = useBenchmarkTargetInstance();
 
   useEffect(() => {
     fetchModelList({ page: -1 });
-    fetchClusterList({ page: -1 });
     fetchDatasetData();
+    fetchClusterList({ page: -1 }).then(() => {
+      if (benchmarkTargetInstance.model_name) {
+        openBenchmarkModal(
+          PageAction.CREATE,
+          intl.formatMessage({ id: 'benchmark.button.add' })
+        );
+      }
+    });
     return () => {
       cancelClusterRequest();
     };

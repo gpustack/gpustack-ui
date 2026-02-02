@@ -48,6 +48,7 @@ const BaseSelect: React.FC<
       notFoundContent={
         <NotFoundContent loading={loading} notFoundContent={notFoundContent} />
       }
+      placeholder={props.placeholder}
       ref={inputRef}
       onFocus={handleFocus}
       onBlur={handleBlur}

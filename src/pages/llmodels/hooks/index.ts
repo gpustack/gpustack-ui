@@ -285,10 +285,15 @@ export const useCheckCompatibility = () => {
           : compatibilityMessage
     };
 
+    let noResourceClaim = false;
+
     if (hasClaim) {
       const ram = convertFileSize(resource_claim?.ram || 0, 2);
       const vram = convertFileSize(resource_claim?.vram || 0, 2);
       let messageId = 'models.form.check.claims';
+      // when no ram and no vram
+      noResourceClaim = !ram && !vram;
+
       if (!ram) {
         messageId = 'models.form.check.claims2';
       }
@@ -302,7 +307,7 @@ export const useCheckCompatibility = () => {
     }
 
     return {
-      show: !compatible || hasClaim,
+      show: noResourceClaim ? false : !compatible || hasClaim,
       type: !compatible ? 'warning' : 'success',
       ...msgData
     };

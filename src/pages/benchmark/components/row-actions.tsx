@@ -31,6 +31,13 @@ const actionList = [
     icon: <IconFont type="icon-logs" />
   },
   {
+    key: 'export',
+    label: 'common.button.export',
+    icon: (
+      <IconFont type="icon-export" style={{ lineHeight: 1, fontSize: 16 }} />
+    )
+  },
+  {
     label: 'common.button.downloadLog',
     key: 'download',
     status: [

@@ -146,6 +146,8 @@ const Benchmark: React.FC = () => {
       openViewLogsModal(row);
     } else if (val === 'stop') {
       handleStopBenchmark(row.id);
+    } else if (val === 'export') {
+      exportData([row.id]);
     }
   });
 

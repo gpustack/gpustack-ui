@@ -13,6 +13,7 @@ import ViewLogsModal from './components/view-logs-modal';
 import DetailContext from './config/detail-context';
 import { BenchmarkListItem } from './config/types';
 import useViewLogs from './hooks/use-view-logs';
+import { useExportBenchmark } from './services/use-export-benchmark';
 import useQueryBenchmarkList from './services/use-query-benchmarks';
 import useQueryDetail from './services/use-query-detail';
 import useStopBenchmark from './services/use-stop-benchmark';
@@ -30,6 +31,7 @@ const Details: React.FC = () => {
   const { openViewLogsModal, closeViewLogsModal, openViewLogsModalStatus } =
     useViewLogs();
   const { handleStopBenchmark } = useStopBenchmark();
+  const { exportData } = useExportBenchmark();
   const [searchParams] = useSearchParams();
   const name = searchParams.get('name');
   const id = searchParams.get('id');
@@ -89,6 +91,8 @@ const Details: React.FC = () => {
       openViewLogsModal(row);
     } else if (val === 'stop') {
       handleStopBenchmark(row.id);
+    } else if (val === 'export') {
+      exportData([row.id]);
     }
   });
 

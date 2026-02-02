@@ -11,6 +11,33 @@ import styled from 'styled-components';
 import { BenchmarkStatus, BenchmarkStatusLabelMap } from '../config';
 import { BenchmarkListItem as ListItem } from '../config/types';
 
+const allFields = [
+  'cluster_id',
+  'model_name',
+  'dataset_name',
+  'profile',
+  'gpu_summary',
+  'state',
+  'request_rate',
+  'request_latency_mean',
+  'tokens_per_second_mean',
+  'time_to_first_token_mean',
+  'time_per_output_token_mean',
+  'inter_token_latency_mean',
+  'requests_per_second_mean',
+  'input_tokens_per_second_mean',
+  'output_tokens_per_second_mean',
+  'total_requests',
+  'successful_requests',
+  'failed_requests',
+  'request_concurrency',
+  'created_at'
+];
+
+const fieldSortPos: Record<string, number> = Object.fromEntries(
+  allFields.map((field, index) => [field, index + 1])
+);
+
 const SubTitleWrapper = styled.span.attrs({
   className: 'sub-title'
 })`
@@ -68,7 +95,6 @@ const useColumnSettings = (options: {
           subTitle: `${intl.formatMessage({ id: 'benchmark.table.avg' })} (ms)`
         }
       ),
-      pos: 11,
       dataIndex: 'request_latency_mean',
       path: 'request_latency_mean',
       unit: 'ms',
@@ -76,23 +102,9 @@ const useColumnSettings = (options: {
       render: (value: number) => round(value, 2)
     },
     {
-      title: 'TPS',
-      pos: 12,
-      dataIndex: 'tokens_per_second_mean',
-      path: 'tokens_per_second_mean',
-      unit: 'Tokens/s',
-      sorter: tableSorter(1),
-      render: (text: number) => (
-        <AutoTooltip ghost minWidth={20}>
-          {_.round(text, 2)}
-        </AutoTooltip>
-      )
-    },
-    {
       title: renderTitle('TTFT', {
         subTitle: `${intl.formatMessage({ id: 'benchmark.table.avg' })} (ms)`
       }),
-      pos: 13,
       sorter: tableSorter(1),
       dataIndex: 'time_to_first_token_mean',
       path: 'time_to_first_token_mean',
@@ -107,7 +119,6 @@ const useColumnSettings = (options: {
       title: renderTitle('TPOT', {
         subTitle: `${intl.formatMessage({ id: 'benchmark.table.avg' })} (ms)`
       }),
-      pos: 14,
       sorter: tableSorter(1),
       dataIndex: 'time_per_output_token_mean',
       path: 'time_per_output_token_mean',
@@ -122,7 +133,6 @@ const useColumnSettings = (options: {
       title: renderTitle('ITL', {
         subTitle: `${intl.formatMessage({ id: 'benchmark.table.avg' })} (ms)`
       }),
-      pos: 15,
       sorter: tableSorter(1),
       dataIndex: 'inter_token_latency_mean',
       path: 'inter_token_latency_mean',
@@ -131,12 +141,28 @@ const useColumnSettings = (options: {
     },
     {
       title: 'RPS',
-      pos: 16,
       dataIndex: 'requests_per_second_mean',
       sorter: tableSorter(1),
       render: (text: string) => (
         <AutoTooltip ghost minWidth={20}>
           {_.round(text, 0)}
+        </AutoTooltip>
+      )
+    },
+    {
+      title: renderTitle(
+        `${intl.formatMessage({ id: 'benchmark.detail.throughput.totalToken' })}`,
+        {
+          subTitle: '(Tokens/s)'
+        }
+      ),
+      dataIndex: 'tokens_per_second_mean',
+      path: 'tokens_per_second_mean',
+      unit: 'Tokens/s',
+      sorter: tableSorter(1),
+      render: (text: number) => (
+        <AutoTooltip ghost minWidth={20}>
+          {_.round(text, 2)}
         </AutoTooltip>
       )
     },
@@ -149,7 +175,6 @@ const useColumnSettings = (options: {
           subTitle: '(Tokens/s)'
         }
       ),
-      pos: 17,
       dataIndex: 'input_tokens_per_second_mean',
       path: 'input_tokens_per_second_mean',
       unit: 'Tokens/s',
@@ -168,7 +193,6 @@ const useColumnSettings = (options: {
           subTitle: '(Tokens/s)'
         }
       ),
-      pos: 18,
       dataIndex: 'output_tokens_per_second_mean',
       path: 'output_tokens_per_second_mean',
       unit: 'Tokens/s',
@@ -182,8 +206,6 @@ const useColumnSettings = (options: {
       title: renderTitle(
         intl.formatMessage({ id: 'benchmark.detail.requests.total' })
       ),
-      pos: 19,
-      key: 'total_requests',
       dataIndex: 'total_requests',
       path: 'total_requests',
       precision: 0,
@@ -198,8 +220,6 @@ const useColumnSettings = (options: {
       title: renderTitle(
         intl.formatMessage({ id: 'benchmark.detail.requests.success' })
       ),
-      pos: 20,
-      key: 'total_requests',
       dataIndex: 'successful_requests',
       path: ['raw_metrics', 'benchmarks', '0'],
       render: (value: number) =>
@@ -213,8 +233,6 @@ const useColumnSettings = (options: {
       title: renderTitle(
         intl.formatMessage({ id: 'benchmark.detail.requests.failed' })
       ),
-      pos: 21,
-      key: 'total_requests',
       dataIndex: 'failed_requests',
       path: ['raw_metrics', 'benchmarks', '0'],
       render: (value: number) =>
@@ -229,8 +247,6 @@ const useColumnSettings = (options: {
           id: 'benchmark.detail.requests.concurrency'
         })
       ),
-      pos: 22,
-      key: 'request_concurrency',
       dataIndex: 'request_concurrency',
       path: ['raw_metrics', 'benchmarks', '0'],
       render: (value: number) =>
@@ -252,22 +268,12 @@ const useColumnSettings = (options: {
         </AutoTooltip>
       )
     },
-    // {
-    //   title: renderTitle(intl.formatMessage({ id: 'resources.worker' })),
-    //   pos: 2,
-    //   dataIndex: 'worker_id',
-    //   render: (text: string) => (
-    //     <AutoTooltip ghost minWidth={20}>
-    //       {text}
-    //     </AutoTooltip>
-    //   )
-    // },
     {
       title: renderTitle(
         intl.formatMessage({ id: 'benchmark.detail.modelName' })
       ),
-      pos: 3,
       dataIndex: 'model_name',
+      sorter: tableSorter(1),
       render: (text: string) => (
         <AutoTooltip ghost minWidth={20}>
           {text}
@@ -276,7 +282,6 @@ const useColumnSettings = (options: {
     },
     {
       title: renderTitle(intl.formatMessage({ id: 'benchmark.table.dataset' })),
-      pos: 4,
       dataIndex: 'dataset_name',
       render: (text: string) => (
         <AutoTooltip ghost minWidth={20}>
@@ -286,7 +291,6 @@ const useColumnSettings = (options: {
     },
     {
       title: renderTitle(intl.formatMessage({ id: 'benchmark.form.profile' })),
-      pos: 5,
       dataIndex: 'profile',
       render: (text: string) => (
         <AutoTooltip ghost minWidth={20}>
@@ -296,7 +300,6 @@ const useColumnSettings = (options: {
     },
     {
       title: renderTitle(intl.formatMessage({ id: 'benchmark.table.gpu' })),
-      pos: 6,
       dataIndex: 'gpu_summary',
       render: (text: string) => (
         <AutoTooltip ghost minWidth={20}>
@@ -306,7 +309,6 @@ const useColumnSettings = (options: {
     },
     {
       title: renderTitle(intl.formatMessage({ id: 'common.table.status' })),
-      pos: 7,
       width: 120,
       dataIndex: 'state',
       render: (value: number, record: ListItem) => (
@@ -332,7 +334,6 @@ const useColumnSettings = (options: {
       title: renderTitle(
         intl.formatMessage({ id: 'benchmark.table.requestRate' })
       ),
-      pos: 8,
       dataIndex: 'request_rate',
       render: (text: string) => (
         <AutoTooltip ghost minWidth={20}>
@@ -342,7 +343,6 @@ const useColumnSettings = (options: {
     },
     {
       title: renderTitle(intl.formatMessage({ id: 'common.table.createTime' })),
-      pos: 23,
       dataIndex: 'created_at',
       sorter: tableSorter(6),
       render: (value: string) => (
@@ -368,7 +368,10 @@ const useColumnSettings = (options: {
       selectedColumns.includes(col.dataIndex as string)
     );
     // Sort by pos
-    selected.sort((a, b) => (a.pos || 0) - (b.pos || 0));
+    selected.sort(
+      (a, b) =>
+        (fieldSortPos[a.dataIndex] || 0) - (fieldSortPos[b.dataIndex] || 0)
+    );
     return selected;
   }, [selectedColumns, clusterList]);
 

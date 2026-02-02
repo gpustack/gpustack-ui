@@ -1,9 +1,6 @@
 import DropdownButtons from '@/components/drop-down-buttons';
-import {
-  DeleteOutlined,
-  DownloadOutlined,
-  PlusOutlined
-} from '@ant-design/icons';
+import IconFont from '@/components/icon-font';
+import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Space } from 'antd';
 import React from 'react';
 
@@ -30,7 +27,9 @@ const RightActions: React.FC<RightActionsProps> = ({
     {
       label: 'common.button.export',
       key: 'export',
-      icon: <DownloadOutlined />
+      icon: (
+        <IconFont type="icon-export" style={{ lineHeight: 1, fontSize: 16 }} />
+      )
     },
     {
       label: 'common.button.delete',

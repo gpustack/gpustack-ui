@@ -9,8 +9,8 @@ import { Col, Row } from 'antd';
 import dayjs from 'dayjs';
 import React from 'react';
 import styled from 'styled-components';
-import { EndpointStatus, EndpointStatusLabelMap } from '../config';
-import { AccessPointItem } from '../config/types';
+import { TargetStatus, TargetStatusValueMap } from '../config';
+import { RouteTarget } from '../config/types';
 const CellContent = styled.div`
   display: flex;
   align-items: center;
@@ -18,7 +18,7 @@ const CellContent = styled.div`
 `;
 
 interface ProviderModelProps {
-  dataList: AccessPointItem[];
+  dataList: RouteTarget[];
   onSelect: (val: any, record: any) => void;
   sourceModels: any[];
 }
@@ -32,7 +32,7 @@ interface AccessItemProps {
 export const childActionList = [
   {
     key: 'fallback',
-    label: 'accesses.table.setAsFallback',
+    label: 'routes.table.setAsFallback',
     icon: <IconFont type="icon-shield" />
   },
   {
@@ -45,7 +45,7 @@ export const childActionList = [
   }
 ];
 
-const AccessItem: React.FC<AccessItemProps> = ({
+const RouteItem: React.FC<AccessItemProps> = ({
   onSelect,
   data,
   sourceModels
@@ -82,7 +82,7 @@ const AccessItem: React.FC<AccessItemProps> = ({
             <CellContent>
               {data.weight > 0 && (
                 <AutoTooltip ghost>
-                  {intl.formatMessage({ id: 'accesses.form.endpoint.weight' })}:{' '}
+                  {intl.formatMessage({ id: 'routes.form.target.weight' })}:{' '}
                   {data.weight}
                 </AutoTooltip>
               )}
@@ -95,7 +95,7 @@ const AccessItem: React.FC<AccessItemProps> = ({
                     )}
                     <span>
                       {intl.formatMessage({
-                        id: 'accesses.table.label.fallback'
+                        id: 'routes.table.label.fallback'
                       })}
                     </span>
                   </>
@@ -107,8 +107,8 @@ const AccessItem: React.FC<AccessItemProps> = ({
               <AutoTooltip ghost>
                 <StatusTag
                   statusValue={{
-                    status: EndpointStatus[data.state],
-                    text: EndpointStatusLabelMap[data.state],
+                    status: TargetStatus[data.state],
+                    text: TargetStatusValueMap[data.state],
                     message: ''
                   }}
                 />
@@ -140,24 +140,23 @@ const AccessItem: React.FC<AccessItemProps> = ({
   );
 };
 
-const AccessPoints: React.FC<ProviderModelProps> = ({
+const RouteTargets: React.FC<ProviderModelProps> = ({
   dataList,
   onSelect,
   sourceModels
 }) => {
-  console.log('AccessPoints dataList:', dataList);
   return (
     <div>
       {dataList.map((item, index) => (
-        <AccessItem
+        <RouteItem
           data={item}
           key={index}
           onSelect={onSelect}
           sourceModels={sourceModels}
-        ></AccessItem>
+        ></RouteItem>
       ))}
     </div>
   );
 };
 
-export default AccessPoints;
+export default RouteTargets;

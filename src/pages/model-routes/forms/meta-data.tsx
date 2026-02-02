@@ -64,7 +64,7 @@ const MetaData = () => {
         >
           <SealInputNumber
             min={0}
-            label={`${intl.formatMessage({ id: 'accesses.form.metadata.size' })} (B)`}
+            label={`${intl.formatMessage({ id: 'routes.form.metadata.size' })} (B)`}
           ></SealInputNumber>
         </Form.Item>
         <Form.Item<FormData>
@@ -74,7 +74,7 @@ const MetaData = () => {
           <SealInputNumber
             min={0}
             label={`${intl.formatMessage({
-              id: 'accesses.form.metadata.activeSize'
+              id: 'routes.form.metadata.activeSize'
             })} (B)`}
           ></SealInputNumber>
         </Form.Item>
@@ -83,7 +83,7 @@ const MetaData = () => {
         <Form.Item<FormData> name={['meta', 'max_tokens']}>
           <SealInput.Input
             label={intl.formatMessage({
-              id: 'accesses.form.metadata.maxTokens'
+              id: 'routes.form.metadata.maxTokens'
             })}
             placeholder={intl.formatMessage(
               { id: 'common.help.eg' },
@@ -100,7 +100,7 @@ const MetaData = () => {
             step={1}
             precision={0}
             label={intl.formatMessage({
-              id: 'accesses.form.metadata.dimension'
+              id: 'routes.form.metadata.dimension'
             })}
           ></SealInputNumber>
         </Form.Item>
@@ -108,7 +108,7 @@ const MetaData = () => {
       <Form.Item<FormData> name={['meta', 'release_date']}>
         <SealInput.Input
           label={intl.formatMessage({
-            id: 'accesses.form.metadata.releaseDate'
+            id: 'routes.form.metadata.releaseDate'
           })}
           placeholder={intl.formatMessage(
             { id: 'common.help.eg' },
@@ -126,7 +126,7 @@ const MetaData = () => {
       </Form.Item>
       <Form.Item<FormData> name={['meta', 'licenses']} data-field="metadata">
         <ListInput
-          label={intl.formatMessage({ id: 'accesses.form.metadata.license' })}
+          label={intl.formatMessage({ id: 'routes.form.metadata.license' })}
           btnText={intl.formatMessage({ id: 'common.button.addLabel' })}
           dataList={[]}
           onChange={(list: string[]) => handleMetadataChange(list, 'licenses')}
@@ -134,7 +134,7 @@ const MetaData = () => {
       </Form.Item>
       <Form.Item<FormData> name={['meta', 'languages']} data-field="metadata">
         <ListInput
-          label={intl.formatMessage({ id: 'accesses.form.metadata.languages' })}
+          label={intl.formatMessage({ id: 'routes.form.metadata.languages' })}
           btnText={intl.formatMessage({ id: 'common.button.addLabel' })}
           dataList={[]}
           onChange={(list: string[]) => handleMetadataChange(list, 'languages')}
@@ -143,7 +143,7 @@ const MetaData = () => {
       <Form.Item<FormData> name={['meta', 'icon']} data-field="metadata">
         <IconBox>
           <span className="icon">
-            {intl.formatMessage({ id: 'accesses.form.metadata.icons' })}
+            {intl.formatMessage({ id: 'routes.form.metadata.icons' })}
           </span>
           <UploadWrapper>
             <UploadImg
@@ -161,7 +161,7 @@ const MetaData = () => {
               ) : (
                 <Button size="middle" variant="dashed" color="default">
                   {intl.formatMessage({
-                    id: 'accesses.form.metadata.uploadIcon'
+                    id: 'routes.form.metadata.uploadIcon'
                   })}
                 </Button>
               )}

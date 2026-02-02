@@ -20,23 +20,23 @@ import NoResult from '../_components/no-result';
 import PageBox from '../_components/page-box';
 import AccessControlModal from '../llmodels/components/access-control-modal';
 import {
-  ACCESS_API,
-  ACCESS_POINTS_API,
-  createAccess,
-  deleteAccess,
-  deleteAccessPoint,
-  queryAccessPoints,
-  queryModelAccesses,
-  setAccessPointAsFallback,
-  updateAccess
+  MODEL_ROUTES,
+  MODEL_ROUTE_TARGETS,
+  createModelRoute,
+  deleteModelRoute,
+  deleteModelRouteTarget,
+  queryModelRoutes,
+  queryRouteTargets,
+  setRouteTargetAsFallback,
+  updateModelRoute
 } from './apis';
-import AccessPoints from './components/access-points';
-import AddAccessModal from './components/add-access-modal';
-import { FormData, AccessItem as ListItem } from './config/types';
-import useAccessColumns from './hooks/use-access-columns';
+import AddRouteModal from './components/add-route-modal';
+import RouteTargets from './components/route-targets';
+import { FormData, RouteItem as ListItem } from './config/types';
 import useAccessControl from './hooks/use-access-control';
-import useCreateAccess from './hooks/use-create-access';
-import useEndpointSourceModels from './hooks/use-endpoint-source-models';
+import useCreateRoute from './hooks/use-create-route';
+import useRoutesColumns from './hooks/use-routes-columns';
+import useTargetSourceModels from './hooks/use-target-source-models';
 
 const Accesses: React.FC = () => {
   const {
@@ -52,31 +52,31 @@ const Accesses: React.FC = () => {
     handleSearch,
     handleNameChange
   } = useTableFetch<ListItem>({
-    fetchAPI: queryModelAccesses,
-    deleteAPI: deleteAccess,
+    fetchAPI: queryModelRoutes,
+    deleteAPI: deleteModelRoute,
     watch: true,
-    API: ACCESS_API,
-    contentForDelete: 'menu.models.access'
+    API: MODEL_ROUTES,
+    contentForDelete: 'menu.models.routes'
   });
-  const { watchDataList: allAccessPoints, deleteItemFromCache } =
-    useWatchList(ACCESS_POINTS_API);
+  const { watchDataList: allRouteTargets, deleteItemFromCache } =
+    useWatchList(MODEL_ROUTE_TARGETS);
   const [expandAtom] = useAtom(expandKeysAtom);
   const { handleExpandChange, handleExpandAll, expandedRowKeys } =
     useExpandedRowKeys(expandAtom);
   const intl = useIntl();
-  const { openAccessModalStatus, openAccessModal, closeAccessModal } =
-    useCreateAccess();
+  const { openRouteModalStatus, openRouteModal, closeRouteModal } =
+    useCreateRoute();
   const {
     openAccessControlModal,
     closeAccessControlModal,
     openAccessControlModalStatus
   } = useAccessControl();
-  const { sourceModels, fetchSourceModels } = useEndpointSourceModels();
+  const { sourceModels, fetchSourceModels } = useTargetSourceModels();
 
   const handleClickDropdown = () => {
-    openAccessModal(
+    openRouteModal(
       PageAction.CREATE,
-      intl.formatMessage({ id: 'accesses.button.add' })
+      intl.formatMessage({ id: 'routes.button.add' })
     );
   };
 
@@ -85,30 +85,30 @@ const Accesses: React.FC = () => {
       ...data
     };
     try {
-      if (openAccessModalStatus.action === PageAction.EDIT) {
-        await updateAccess({
+      if (openRouteModalStatus.action === PageAction.EDIT) {
+        await updateModelRoute({
           data: params,
-          id: openAccessModalStatus.currentData!.id
+          id: openRouteModalStatus.currentData!.id
         });
       }
-      if (openAccessModalStatus.action === PageAction.CREATE) {
-        await createAccess({
+      if (openRouteModalStatus.action === PageAction.CREATE) {
+        await createModelRoute({
           data: params
         });
       }
       fetchData();
-      closeAccessModal();
+      closeRouteModal();
       message.success(intl.formatMessage({ id: 'common.message.success' }));
     } catch (error) {}
   };
 
   const handleModalCancel = () => {
     console.log('handleModalCancel');
-    closeAccessModal();
+    closeRouteModal();
   };
 
   const handleEditProvider = (row: ListItem) => {
-    openAccessModal(
+    openRouteModal(
       PageAction.EDIT,
       intl.formatMessage({ id: 'common.button.edit.item' }, { name: row.name }),
       row
@@ -146,7 +146,7 @@ const Accesses: React.FC = () => {
       const params = {
         id: row.id
       };
-      const res = await queryAccessPoints(params, {
+      const res = await queryRouteTargets(params, {
         token: options?.token
       });
 
@@ -158,14 +158,14 @@ const Accesses: React.FC = () => {
     handleTableChange({}, {}, order, { action: 'sort' });
   };
 
-  const handleDeleteEndpoint = (row: any) => {
+  const handleDeleteTarget = (row: any) => {
     modalRef.current?.show({
-      content: 'accesses.table.accessPoints',
+      content: 'routes.table.routeTargets',
       okText: 'common.button.delete',
       operation: 'common.delete.single.confirm',
       name: row.name,
       async onOk() {
-        await deleteAccessPoint(row.id);
+        await deleteModelRouteTarget(row.id);
         deleteItemFromCache?.(row.id);
       }
     });
@@ -174,7 +174,7 @@ const Accesses: React.FC = () => {
   const onChildSelect = useMemoizedFn(async (val: any, record: any) => {
     try {
       if (val === 'fallback') {
-        await setAccessPointAsFallback({
+        await setRouteTargetAsFallback({
           id: record.id,
           data: {
             fallback_status_codes: ['4xx', '5xx']
@@ -182,7 +182,7 @@ const Accesses: React.FC = () => {
         });
         message.success(intl.formatMessage({ id: 'common.message.success' }));
       } else if (val === 'delete') {
-        handleDeleteEndpoint(record);
+        handleDeleteTarget(record);
       }
     } catch (error) {}
   });
@@ -192,7 +192,7 @@ const Accesses: React.FC = () => {
     options: { parent?: any; [key: string]: any }
   ) => {
     return (
-      <AccessPoints
+      <RouteTargets
         dataList={list}
         onSelect={onChildSelect}
         sourceModels={sourceModels}
@@ -201,14 +201,14 @@ const Accesses: React.FC = () => {
   };
 
   const setDisableExpand = (record: any) => {
-    return !record?.endpoints;
+    return !record?.targets;
   };
 
   useEffect(() => {
     fetchSourceModels();
   }, []);
 
-  const columns = useAccessColumns(handleSelect);
+  const columns = useRoutesColumns(handleSelect);
 
   return (
     <>
@@ -218,7 +218,7 @@ const Accesses: React.FC = () => {
           marginBottom={22}
           marginTop={30}
           widths={{ input: 300 }}
-          buttonText={intl.formatMessage({ id: 'accesses.button.add' })}
+          buttonText={intl.formatMessage({ id: 'routes.button.add' })}
           rowSelection={rowSelection}
           handleInputChange={handleNameChange}
           handleSearch={handleSearch}
@@ -227,7 +227,7 @@ const Accesses: React.FC = () => {
         ></FilterBar>
         <TableContext.Provider
           value={{
-            allChildren: allAccessPoints,
+            allChildren: allRouteTargets,
             setDisableExpand: setDisableExpand
           }}
         >
@@ -277,14 +277,14 @@ const Accesses: React.FC = () => {
           ></SealTable>
         </TableContext.Provider>
       </PageBox>
-      <AddAccessModal
-        open={openAccessModalStatus.open}
-        action={openAccessModalStatus.action}
-        title={openAccessModalStatus.title}
-        currentData={openAccessModalStatus.currentData}
+      <AddRouteModal
+        open={openRouteModalStatus.open}
+        action={openRouteModalStatus.action}
+        title={openRouteModalStatus.title}
+        currentData={openRouteModalStatus.currentData}
         onCancel={handleModalCancel}
         onOk={handleModalOk}
-      ></AddAccessModal>
+      ></AddRouteModal>
       <AccessControlModal
         onCancel={closeAccessControlModal}
         title={openAccessControlModalStatus.title}

@@ -1,9 +1,9 @@
 import { PageActionType } from '@/config/types';
 import FormDrawer from '@/pages/_components/form-drawer';
 import React, { useRef } from 'react';
-import { FormData, AccessItem as ListItem } from '../config/types';
+import { FormData, RouteItem as ListItem } from '../config/types';
 
-import ModelAccessForm from '../forms';
+import ModelRouteForm from '../forms';
 
 type AddModalProps = {
   title: string;
@@ -46,7 +46,7 @@ const AddProvider: React.FC<AddModalProps> = ({
       onSubmit={handleSubmit}
       width={600}
     >
-      <ModelAccessForm
+      <ModelRouteForm
         ref={form}
         action={action}
         currentData={currentData}

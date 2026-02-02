@@ -116,14 +116,14 @@ export default [
         component: './maas-provider/index'
       },
       {
-        name: 'accesses',
-        path: '/models/accesses',
-        key: 'accesses',
+        name: 'routes',
+        path: '/models/routes',
+        key: 'routes',
         icon: 'icon-captive_portal',
         selectedIcon: 'icon-captive_portal',
         defaultIcon: 'icon-captive_portal',
         access: 'canSeeAdmin',
-        component: './model-access/index'
+        component: './model-routes/index'
       },
       {
         name: 'userModels',

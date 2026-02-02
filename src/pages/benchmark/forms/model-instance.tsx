@@ -5,6 +5,7 @@ import {
   InstanceStatusMap,
   InstanceStatusMapValue
 } from '@/pages/llmodels/config';
+import { useBenchmarkTargetInstance } from '@/pages/llmodels/hooks/use-run-benchmark';
 import { useQueryModelInstancesList } from '@/pages/llmodels/services/use-query-model-instances';
 import { useQueryModelList } from '@/pages/llmodels/services/use-query-model-list';
 import { useIntl } from '@umijs/max';
@@ -43,12 +44,15 @@ const ModelInstanceForm: React.FC = () => {
     fetchInstanceList,
     cancelRequest: cancelInstanceRequest
   } = useQueryModelInstancesList();
+  const { benchmarkTargetInstance, clearBenchmarkTargetInstance } =
+    useBenchmarkTargetInstance();
 
   const handleOnChange = async (value: any, selectedOptions: any) => {
     form.setFieldsValue({
       model_name: value[0],
       model_id: selectedOptions[0]?.id,
-      model_instance_name: value[1]
+      model_instance_name: value[1],
+      model_instance: value
     });
   };
 
@@ -87,43 +91,60 @@ const ModelInstanceForm: React.FC = () => {
     }
   };
 
-  const handleOnOpenChange = async (open: boolean) => {
+  const initModelInstance = async () => {
     // fetch model list when dropdown is opened
-    if (open && modelList.length === 0) {
-      const list = await fetchModelList({ page: -1 });
-      const modelOptions = list
-        .filter((model: any) => model.replicas > 0)
-        .map((model: any) => ({
-          label: model.name,
-          value: model.name,
-          id: model.id,
-          isLeaf: false,
-          children: []
-        }));
+    const list = await fetchModelList({ page: -1 });
+    const modelOptions = list
+      .filter((model: any) => model.replicas > 0)
+      .map((model: any) => ({
+        label: model.name,
+        value: model.name,
+        id: model.id,
+        isLeaf: false,
+        children: []
+      }));
 
-      if (modelOptions.length === 0) {
-        return;
-      }
-
-      // preload instances for the first model
-      const instanceList = await fetchInstanceList({ id: modelOptions[0]?.id });
-      const instanceOptions = instanceList.map((instance: any) =>
-        renderInstance(instance)
-      );
-      if (modelOptions[0]) {
-        modelOptions[0].children = [...instanceOptions] as never[];
-      }
-
-      setModelList(modelOptions);
+    if (modelOptions.length === 0) {
+      return;
     }
+
+    // preload instances for the first model
+    const instanceList = await fetchInstanceList({ id: modelOptions[0]?.id });
+    const instanceOptions = instanceList.map((instance: any) =>
+      renderInstance(instance)
+    );
+    if (modelOptions[0]) {
+      modelOptions[0].children = [...instanceOptions] as never[];
+    }
+
+    // init form value for model instance
+    if (
+      benchmarkTargetInstance.model_name &&
+      benchmarkTargetInstance.model_instance_name
+    ) {
+      form.setFieldsValue({
+        ...benchmarkTargetInstance
+      });
+    } else {
+      handleOnChange(
+        [modelOptions[0].value, instanceOptions[0]?.value],
+        [modelOptions[0], instanceOptions[0]]
+      );
+    }
+
+    setModelList(modelOptions);
   };
 
   useEffect(() => {
+    if (open) {
+      initModelInstance();
+    }
     if (!open) {
       cancelModelRequest();
       cancelInstanceRequest();
+      clearBenchmarkTargetInstance();
     }
-  }, [open]);
+  }, [open, benchmarkTargetInstance]);
 
   return (
     <Form.Item<FormData>
@@ -154,7 +175,6 @@ const ModelInstanceForm: React.FC = () => {
         getPopupContainer={(triggerNode) => triggerNode.parentNode}
         optionNode={InstanceNode}
         loadData={loadInstances}
-        onOpenChange={handleOnOpenChange}
         onChange={handleOnChange}
       ></SealCascader>
     </Form.Item>

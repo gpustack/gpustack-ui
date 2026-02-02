@@ -275,5 +275,6 @@ export default {
   'models.form.readyWorkers': 'workers ready',
   'models.form.maxContextLength': 'Maximum Context Length',
   'models.form.backend.helperText':
-    'Not enabled yet. Will be enabled after deployment. '
+    'Not enabled yet. Will be enabled after deployment. ',
+  'models.table.instance.benchmark': 'Run Benchmark'
 };

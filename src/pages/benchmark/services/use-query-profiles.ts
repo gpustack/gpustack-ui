@@ -41,7 +41,7 @@ export default function useQueryProfiles() {
         };
       }) || [];
 
-    setProfilesOptions([
+    const options = [
       ...list,
       {
         label: intl.formatMessage({ id: 'backend.custom' }),
@@ -55,7 +55,9 @@ export default function useQueryProfiles() {
           total_requests: null
         }
       }
-    ]);
+    ];
+    setProfilesOptions(options);
+    return options;
   };
 
   return {

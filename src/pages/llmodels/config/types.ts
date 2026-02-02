@@ -114,6 +114,7 @@ export interface DistributedServers {
 }
 export interface ModelInstanceListItem {
   backend?: string;
+  cluster_id: number;
   backend_version?: string;
   source: string;
   huggingface_repo_id: string;

@@ -3,6 +3,7 @@ import SealSelect from '@/components/seal-form/seal-select';
 import { PageAction } from '@/config';
 import useAppUtils from '@/hooks/use-app-utils';
 import { ClusterStatusValueMap } from '@/pages/cluster-management/config';
+import { useBenchmarkTargetInstance } from '@/pages/llmodels/hooks/use-run-benchmark';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import React, { useEffect } from 'react';
@@ -15,6 +16,7 @@ const BasicForm: React.FC = () => {
   const form = Form.useFormInstance();
   const { getRuleMessage } = useAppUtils();
   const { action, open, clusterList } = useFormContext();
+  const { benchmarkTargetInstance } = useBenchmarkTargetInstance();
 
   useEffect(() => {
     const initClusterId = (list: any[]) => {
@@ -35,9 +37,12 @@ const BasicForm: React.FC = () => {
       clusterList?.length > 0 &&
       action === PageAction.CREATE
     ) {
-      form.setFieldValue('cluster_id', initClusterId(clusterList));
+      form.setFieldValue(
+        'cluster_id',
+        benchmarkTargetInstance.cluster_id || initClusterId(clusterList)
+      );
     }
-  }, [form, action, clusterList]);
+  }, [form, action, clusterList, benchmarkTargetInstance]);
 
   return (
     <>

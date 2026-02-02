@@ -279,10 +279,12 @@ export default {
   'models.form.readyWorkers': 'воркеров готово',
   'models.form.maxContextLength': 'Maximum Context Length',
   'models.form.backend.helperText':
-    'Not enabled yet. Will be enabled after deployment. '
+    'Not enabled yet. Will be enabled after deployment. ',
+  'models.table.instance.benchmark': 'Run Benchmark'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
 // 1. 'models.form.maxContextLength': 'Maximum Context Length',
 // 2. 'models.form.backend.helperText': 'Not enabled yet. Will be enabled after deployment. ',
+// 3. 'models.table.instance.benchmark': 'Run Benchmark'
 // ========== End of To-Do List ==========

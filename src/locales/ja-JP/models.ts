@@ -275,7 +275,8 @@ export default {
   'models.form.readyWorkers': 'workers ready',
   'models.form.maxContextLength': 'Maximum Context Length',
   'models.form.backend.helperText':
-    'Not enabled yet. Will be enabled after deployment. '
+    'Not enabled yet. Will be enabled after deployment. ',
+  'models.table.instance.benchmark': 'Run Benchmark'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -373,4 +374,5 @@ export default {
 // 75. 'models.form.readyWorkers': 'workers ready',
 // 76. 'models.form.maxContextLength': 'Maximum Context Length',
 // 77. 'models.form.backend.helperText': 'Not enabled yet. Will be enabled after deployment. ',
+// 78. 'models.table.instance.benchmark': 'Run Benchmark'
 // ========== End of To-Do List ==========

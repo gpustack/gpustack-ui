@@ -35,6 +35,18 @@ const Title = styled.div`
   margin-top: 4px;
 `;
 
+const LabelWrapper = styled.span`
+  color: var(--color-text-secondary);
+  > span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    .sub-title {
+      display: none;
+    }
+  }
+`;
+
 const ColumnSettings: React.FC<{
   width?: number;
   fixedColumns?: string[];
@@ -123,7 +135,6 @@ const ColumnSettings: React.FC<{
   useEffect(() => {
     const initColumns = async () => {
       const stored = await readColumnSettings(tableName);
-      console.log('stored columns:', stored);
       if (stored && stored.length > 0) {
         setInnerSelectedColumns(stored);
         onChange?.(stored);
@@ -169,7 +180,7 @@ const ColumnSettings: React.FC<{
                             value={col.dataIndex}
                             style={{ marginBottom: 8 }}
                           >
-                            <span className="text-secondary">{col.title}</span>
+                            <LabelWrapper>{col.title}</LabelWrapper>
                           </Checkbox>
                         </Col>
                       ))}
@@ -185,7 +196,7 @@ const ColumnSettings: React.FC<{
                         value={col.dataIndex}
                         style={{ marginBottom: 8 }}
                       >
-                        <span className="text-secondary">{col.title}</span>
+                        <LabelWrapper>{col.title}</LabelWrapper>
                       </Checkbox>
                     </Col>
                   ))}

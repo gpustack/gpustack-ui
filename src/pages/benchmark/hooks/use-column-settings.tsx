@@ -11,7 +11,9 @@ import styled from 'styled-components';
 import { BenchmarkStatus, BenchmarkStatusLabelMap } from '../config';
 import { BenchmarkListItem as ListItem } from '../config/types';
 
-const SubTitleWrapper = styled.span`
+const SubTitleWrapper = styled.span.attrs({
+  className: 'sub-title'
+})`
   display: list-item;
   overflow: hidden;
   text-overflow: ellipsis;

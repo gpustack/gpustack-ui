@@ -175,6 +175,19 @@ const generateEnvArgs = (params: any) => {
   return envArgs;
 };
 
+const generateExtraModelDirArg = (modelDir: string) => {
+  const pathList = modelDir
+    ?.split(',')
+    .map((item) => item.trim())
+    .filter((item) => item);
+  if (pathList && pathList.length > 0) {
+    return pathList
+      .map((item) => `--volume ${item}:${item} \\`)
+      .join('\n      ');
+  }
+  return '';
+};
+
 const setNormalArgs = (params: any) => {
   return `sudo docker run -d --name ${params.containerName || 'gpustack-worker'} \\
       -e "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=${params.containerName || 'gpustack-worker'}" \\
@@ -184,7 +197,7 @@ const setNormalArgs = (params: any) => {
       --network=host \\
       --volume /var/run/docker.sock:/var/run/docker.sock \\
       --volume ${params.gpustackDataVolume || 'gpustack-data'}:/var/lib/gpustack \\
-      ${params.modelDir ? `--volume ${params.modelDir}:${params.modelDir} \\` : ''}
+      ${generateExtraModelDirArg(params.modelDir)}
       ${params.cacheDir ? `--volume ${params.cacheDir}:/var/lib/gpustack/cache \\` : ''}`;
 };
 

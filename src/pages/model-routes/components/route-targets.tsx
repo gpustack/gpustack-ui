@@ -1,6 +1,5 @@
 import AutoTooltip from '@/components/auto-tooltip';
 import DropdownButtons from '@/components/drop-down-buttons';
-import IconFont from '@/components/icon-font';
 import RowChildren from '@/components/seal-table/components/row-children';
 import StatusTag from '@/components/status-tag';
 import { DeleteOutlined } from '@ant-design/icons';
@@ -9,7 +8,7 @@ import { Col, Row } from 'antd';
 import dayjs from 'dayjs';
 import React from 'react';
 import styled from 'styled-components';
-import { TargetStatus, TargetStatusValueMap } from '../config';
+import { TargetStatus, TargetStatusLabelMap } from '../config';
 import { RouteTarget } from '../config/types';
 const CellContent = styled.div`
   display: flex;
@@ -30,11 +29,11 @@ interface AccessItemProps {
 }
 
 export const childActionList = [
-  {
-    key: 'fallback',
-    label: 'routes.table.setAsFallback',
-    icon: <IconFont type="icon-shield" />
-  },
+  // {
+  //   key: 'fallback',
+  //   label: 'routes.table.setAsFallback',
+  //   icon: <IconFont type="icon-shield" />
+  // },
   {
     key: 'delete',
     label: 'common.button.delete',
@@ -108,7 +107,7 @@ const RouteItem: React.FC<AccessItemProps> = ({
                 <StatusTag
                   statusValue={{
                     status: TargetStatus[data.state],
-                    text: TargetStatusValueMap[data.state],
+                    text: TargetStatusLabelMap[data.state],
                     message: ''
                   }}
                 />

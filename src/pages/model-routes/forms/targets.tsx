@@ -5,28 +5,8 @@ import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
-import styled from 'styled-components';
 import { FormData } from '../config/types';
 import useTargetSourceModels from '../hooks/use-target-source-models';
-
-const Inner = styled.div`
-  display: flex;
-  align-items: center;
-  width: 100%;
-  ul.ant-cascader-menu:first-child {
-    li[data-path-key='deployments'] {
-      position: relative;
-      &::after {
-        content: '';
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        border-bottom: 1px solid var(--ant-color-split);
-      }
-    }
-  }
-`;
 
 const TargetsForm = forwardRef((props, ref) => {
   const intl = useIntl();
@@ -58,6 +38,14 @@ const TargetsForm = forwardRef((props, ref) => {
   }));
 
   const handleTargetsChange = (value: any[], index: number, options: any[]) => {
+    console.log(
+      'handleTargetsChange:',
+      value,
+      index,
+      options,
+      dataList,
+      sourceModels
+    );
     const selectedOption =
       options?.find?.((opt) => opt.value === value[1]) || {};
     const targetList = [...targets];
@@ -100,10 +88,10 @@ const TargetsForm = forwardRef((props, ref) => {
     const selectedOption =
       options?.find?.((opt) => opt.value === value[1]) || {};
 
-    console.log('fallback selected option data:', value);
     form.setFieldValue('fallback_target', {
       ...selectedOption?.data
     });
+    console.log('handleFallbackChange:', value, dataList);
     setFallbackValues({
       value: value
     });
@@ -125,6 +113,44 @@ const TargetsForm = forwardRef((props, ref) => {
       weight: value
     };
     setDataList(newDataList);
+  };
+
+  const buildKey = (path?: any[]) =>
+    Array.isArray(path) ? path.join('/') : '';
+
+  const filterOptions = (currentValue: any[]) => {
+    const currKey = buildKey(currentValue);
+
+    const selectedDataList = [...dataList, { value: fallbackValues.value }];
+
+    const selectedKeys = selectedDataList
+      .filter((item) => item.value)
+      .map((item) => buildKey(item.value));
+
+    return sourceModels
+      .map((model) => {
+        const children = model.children?.filter((child) => {
+          const key = buildKey([child.data?.parentId, child.value]);
+
+          return !selectedKeys.includes(key) || key === currKey;
+        });
+
+        return {
+          ...model,
+          children
+        };
+      })
+      .filter((model) => model.children && model.children.length > 0);
+  };
+
+  const displayRender = (labels: any[]) => {
+    return (
+      <span className="flex-center gap-4">
+        {labels[0]}
+        <span>/</span>
+        <span>{labels[1]}</span>
+      </span>
+    );
   };
 
   useEffect(() => {
@@ -188,13 +214,21 @@ const TargetsForm = forwardRef((props, ref) => {
                     root: 'cascader-popup-wrapper gpu-selector'
                   }
                 }}
+                styles={{
+                  popup: {
+                    listItem: {
+                      padding: '5px 10px'
+                    }
+                  }
+                }}
                 maxTagCount={1}
                 placeholder={intl.formatMessage({
                   id: 'providers.form.target.placeholder'
                 })}
                 value={item.value}
-                options={sourceModels}
+                options={filterOptions(item.value)}
                 showCheckedStrategy="SHOW_CHILD"
+                displayRender={displayRender}
                 getPopupContainer={(triggerNode) => triggerNode.parentNode}
               ></SealCascader>
               <span className="seprator">:</span>
@@ -223,6 +257,13 @@ const TargetsForm = forwardRef((props, ref) => {
                 root: 'cascader-popup-wrapper gpu-selector'
               }
             }}
+            styles={{
+              popup: {
+                listItem: {
+                  padding: '5px 10px'
+                }
+              }
+            }}
             label={intl.formatMessage({
               id: 'routes.form.target.fallback'
             })}
@@ -231,9 +272,10 @@ const TargetsForm = forwardRef((props, ref) => {
             })}
             maxTagCount={1}
             value={fallbackValues.value}
-            options={sourceModels}
+            options={filterOptions(fallbackValues.value)}
             onChange={(value, options) => handleFallbackChange(value, options)}
             showCheckedStrategy="SHOW_CHILD"
+            displayRender={displayRender}
             getPopupContainer={(triggerNode) => triggerNode.parentNode}
           ></SealCascader>
         </div>

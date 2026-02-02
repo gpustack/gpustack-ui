@@ -5,6 +5,7 @@ import {
   WarningOutlined
 } from '@ant-design/icons';
 import { Flex, Tag } from 'antd';
+import _ from 'lodash';
 import React from 'react';
 import { categoryConfig } from '../../_components/model-tag';
 import { ProviderModel } from '../config/types';
@@ -26,7 +27,7 @@ const ProviderModels: React.FC<ProviderModelProps> = ({ dataList }) => {
           <Tag
             key={model.name}
             icon={
-              model.accessible !== null
+              _.isBoolean(model.accessible)
                 ? iconsMap[model.accessible ? 'accessible' : 'inaccessible']
                 : iconsMap['none']
             }

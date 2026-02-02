@@ -1,17 +1,30 @@
+import GPUStackLogo from '@/assets/images/small-logo-200x200.png';
 import { queryModelsList } from '@/pages/llmodels/apis';
 import { ListItem as ModelListItem } from '@/pages/llmodels/config/types';
 import { queryMaasProviders } from '@/pages/maas-provider/apis';
+import ProviderLogo from '@/pages/maas-provider/components/provider-logo';
 import { MaasProviderItem } from '@/pages/maas-provider/config/types';
 import { useIntl } from '@umijs/max';
-import { useState } from 'react';
+import React, { useState } from 'react';
+import styled from 'styled-components';
+
+const OptionWrapper = styled.span`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
 
 type EmptyObject = Record<never, never>;
 type CascaderOption<T extends object = EmptyObject> = {
-  label: string;
+  label: React.ReactNode;
   value: string | number;
   parent?: boolean;
   disabled?: boolean;
   index?: number;
+  data?: {
+    [key: string]: any;
+    parentId?: string | number;
+  };
   children?: CascaderOption<T>[];
 } & Partial<T>;
 
@@ -31,17 +44,10 @@ const useTargetSourceModels = () => {
       const modelsList = [
         {
           label: (
-            <span>
+            <OptionWrapper>
+              <img src={GPUStackLogo} alt="GPUStack" width={16} height={16} />
               {intl.formatMessage({ id: 'menu.models.deployment' })}
-              <span
-                style={{
-                  color: 'var(--ant-color-text-tertiary)',
-                  marginLeft: 4
-                }}
-              >
-                [GPUStack]
-              </span>
-            </span>
+            </OptionWrapper>
           ),
           value: 'deployments',
           parent: true,
@@ -49,7 +55,8 @@ const useTargetSourceModels = () => {
             label: model.name,
             value: model.id,
             data: {
-              model_id: model.id
+              model_id: model.id,
+              parentId: 'deployments'
             },
             source: 'deployment'
           }))
@@ -58,7 +65,12 @@ const useTargetSourceModels = () => {
 
       const providerOptions: CascaderOption[] = providers.items
         ?.map?.((provider: MaasProviderItem) => ({
-          label: provider.name,
+          label: (
+            <OptionWrapper>
+              <ProviderLogo provider={provider.config?.type as string} />
+              <span>{provider.name}</span>
+            </OptionWrapper>
+          ),
           value: provider.id,
           parent: true,
           children: provider.models?.map?.((model) => ({
@@ -66,7 +78,8 @@ const useTargetSourceModels = () => {
             value: model.name,
             data: {
               provider_model_name: model.name,
-              provider_id: provider.id
+              provider_id: provider.id,
+              parentId: provider.id
             },
             source: 'providerModel'
           }))

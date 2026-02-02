@@ -57,8 +57,13 @@ const SupportedModels = () => {
     <>
       <Form.Item name="models" data-field="supportedModels">
         <MetadataList
+          styles={{
+            wrapper: {
+              paddingTop: 14
+            }
+          }}
           dataList={modelList}
-          label={intl.formatMessage({ id: 'providers.table.models' })}
+          label=""
           btnText={intl.formatMessage({ id: 'providers.form.models.add' })}
           onAdd={onAdd}
           onDelete={onDelete}

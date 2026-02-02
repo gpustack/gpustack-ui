@@ -15,7 +15,7 @@ type CascaderOption<T extends object = EmptyObject> = {
   children?: CascaderOption<T>[];
 } & Partial<T>;
 
-const useEndpointSourceModels = () => {
+const useTargetSourceModels = () => {
   const intl = useIntl();
   const [sourceModels, setSourceModels] = useState<CascaderOption[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -88,4 +88,4 @@ const useEndpointSourceModels = () => {
   };
 };
 
-export default useEndpointSourceModels;
+export default useTargetSourceModels;

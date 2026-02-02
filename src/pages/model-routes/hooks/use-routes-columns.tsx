@@ -8,11 +8,11 @@ import { useIntl } from '@umijs/max';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
 import { rowActionList } from '../config';
-import { AccessItem } from '../config/types';
+import { RouteItem } from '../config/types';
 
 const useAccessColumns = (
-  handleSelect: (val: string, record: AccessItem) => void,
-  onCellClick?: (record: AccessItem, dataIndex: string) => void
+  handleSelect: (val: string, record: RouteItem) => void,
+  onCellClick?: (record: RouteItem, dataIndex: string) => void
 ): SealColumnProps[] => {
   const intl = useIntl();
 
@@ -23,7 +23,7 @@ const useAccessColumns = (
         dataIndex: 'name',
         sorter: tableSorter(1),
         span: 5,
-        render: (text: string, record: AccessItem) => (
+        render: (text: string, record: RouteItem) => (
           <span className="flex-center" style={{ maxWidth: '100%' }}>
             <AutoTooltip ghost title={text}>
               <span className="m-r-5">{text}</span>
@@ -33,12 +33,12 @@ const useAccessColumns = (
         )
       },
       {
-        title: intl.formatMessage({ id: 'accesses.table.accessPoints' }),
-        dataIndex: 'endpoints',
+        title: intl.formatMessage({ id: 'routes.table.routeTargets' }),
+        dataIndex: 'targets',
         span: 10,
-        render: (value: number, record: AccessItem) => (
+        render: (value: number, record: RouteItem) => (
           <span>
-            {record.ready_endpoints} / {value}
+            {record.ready_targets} / {value}
           </span>
         )
       },
@@ -57,7 +57,7 @@ const useAccessColumns = (
         title: intl.formatMessage({ id: 'common.table.operation' }),
         dataIndex: 'operations',
         span: 4,
-        render: (value: string, record: AccessItem) => (
+        render: (value: string, record: RouteItem) => (
           <DropdownButtons
             items={rowActionList}
             onSelect={(val) => handleSelect(val, record)}

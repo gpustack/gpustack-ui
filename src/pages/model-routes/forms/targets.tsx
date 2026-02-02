@@ -7,7 +7,7 @@ import _ from 'lodash';
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import styled from 'styled-components';
 import { FormData } from '../config/types';
-import useEndpointSourceModels from '../hooks/use-endpoint-source-models';
+import useTargetSourceModels from '../hooks/use-target-source-models';
 
 const Inner = styled.div`
   display: flex;
@@ -28,12 +28,11 @@ const Inner = styled.div`
   }
 `;
 
-const EndpointsForm = forwardRef((props, ref) => {
+const TargetsForm = forwardRef((props, ref) => {
   const intl = useIntl();
-  const { sourceModels, loading, fetchSourceModels } =
-    useEndpointSourceModels();
+  const { sourceModels, loading, fetchSourceModels } = useTargetSourceModels();
   const form = Form.useFormInstance<FormData>();
-  const endpoints = Form.useWatch('endpoints', form) || [];
+  const targets = Form.useWatch('targets', form) || [];
   const [fallbackValues, setFallbackValues] = useState<{ value: any[] }>({
     value: []
   });
@@ -58,20 +57,16 @@ const EndpointsForm = forwardRef((props, ref) => {
     }
   }));
 
-  const handleEndpointsChange = (
-    value: any[],
-    index: number,
-    options: any[]
-  ) => {
+  const handleTargetsChange = (value: any[], index: number, options: any[]) => {
     const selectedOption =
       options?.find?.((opt) => opt.value === value[1]) || {};
-    const endpointList = [...endpoints];
-    endpointList[index] = {
-      weight: endpointList[index]?.weight || null,
+    const targetList = [...targets];
+    targetList[index] = {
+      weight: targetList[index]?.weight || null,
       ...selectedOption?.data
     };
 
-    form.setFieldValue('endpoints', [...endpointList]);
+    form.setFieldValue('targets', [...targetList]);
 
     const newDataList = [...dataList];
     newDataList[index] = {
@@ -96,9 +91,9 @@ const EndpointsForm = forwardRef((props, ref) => {
     const newDataList = dataList.filter((_, i) => i !== index);
     setDataList(newDataList);
 
-    const endpointList = [...endpoints];
-    endpointList.splice(index, 1);
-    form.setFieldValue('endpoints', [...endpointList]);
+    const targetList = [...targets];
+    targetList.splice(index, 1);
+    form.setFieldValue('targets', [...targetList]);
   };
 
   const handleFallbackChange = (value: any[], options?: any[]) => {
@@ -106,7 +101,7 @@ const EndpointsForm = forwardRef((props, ref) => {
       options?.find?.((opt) => opt.value === value[1]) || {};
 
     console.log('fallback selected option data:', value);
-    form.setFieldValue('fallback_endpoint', {
+    form.setFieldValue('fallback_target', {
       ...selectedOption?.data
     });
     setFallbackValues({
@@ -115,13 +110,13 @@ const EndpointsForm = forwardRef((props, ref) => {
   };
 
   const handleOnWeightChange = (value: any, index: number) => {
-    const endpointList = [...endpoints];
-    if (endpointList[index]) {
-      endpointList[index] = {
-        ...endpointList[index],
+    const targetList = [...targets];
+    if (targetList[index]) {
+      targetList[index] = {
+        ...targetList[index],
         weight: value
       };
-      form.setFieldValue('endpoints', [...endpointList]);
+      form.setFieldValue('targets', [...targetList]);
     }
 
     const newDataList = [...dataList];
@@ -139,8 +134,8 @@ const EndpointsForm = forwardRef((props, ref) => {
   return (
     <>
       <Form.Item
-        name="endpoints"
-        data-field="endpoints"
+        name="targets"
+        data-field="targets"
         rules={[
           ({ getFieldValue }) => ({
             validator(rule, value) {
@@ -173,7 +168,7 @@ const EndpointsForm = forwardRef((props, ref) => {
             }
           }}
           dataList={dataList}
-          btnText={intl.formatMessage({ id: 'accesses.form.endpoint.add' })}
+          btnText={intl.formatMessage({ id: 'routes.form.target.add' })}
           onAdd={handleOnAdd}
           onDelete={handleOnDelete}
         >
@@ -186,7 +181,7 @@ const EndpointsForm = forwardRef((props, ref) => {
                 multiple={false}
                 alwaysFocus={true}
                 onChange={(value, options) =>
-                  handleEndpointsChange(value, index, options)
+                  handleTargetsChange(value, index, options)
                 }
                 classNames={{
                   popup: {
@@ -195,7 +190,7 @@ const EndpointsForm = forwardRef((props, ref) => {
                 }}
                 maxTagCount={1}
                 placeholder={intl.formatMessage({
-                  id: 'providers.form.endpoint.placeholder'
+                  id: 'providers.form.target.placeholder'
                 })}
                 value={item.value}
                 options={sourceModels}
@@ -209,14 +204,14 @@ const EndpointsForm = forwardRef((props, ref) => {
                 value={item.weight}
                 onChange={(value) => handleOnWeightChange(value, index)}
                 placeholder={intl.formatMessage({
-                  id: 'accesses.form.endpoint.weight'
+                  id: 'routes.form.target.weight'
                 })}
               ></SealInput.Number>
             </>
           )}
         </MetadataList>
       </Form.Item>
-      <Form.Item name="fallback_endpoint">
+      <Form.Item name="fallback_target">
         <div>
           <SealCascader
             showSearch
@@ -229,10 +224,10 @@ const EndpointsForm = forwardRef((props, ref) => {
               }
             }}
             label={intl.formatMessage({
-              id: 'accesses.form.endpoint.fallback'
+              id: 'routes.form.target.fallback'
             })}
             placeholder={intl.formatMessage({
-              id: 'providers.form.endpoint.placeholder'
+              id: 'providers.form.target.placeholder'
             })}
             maxTagCount={1}
             value={fallbackValues.value}
@@ -247,4 +242,4 @@ const EndpointsForm = forwardRef((props, ref) => {
   );
 });
 
-export default EndpointsForm;
+export default TargetsForm;

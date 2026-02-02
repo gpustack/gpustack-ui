@@ -13,6 +13,6 @@ export default {
   'providers.form.customConfig': 'Custom Configuration',
   'providers.form.model.test': 'Test',
   'providers.form.model.test.tips': 'Test Connection',
-  'providers.form.endpoint.placeholder': 'provider/models',
+  'providers.form.target.placeholder': 'provider/models',
   'providers.form.fallback.token': 'Fallback API Keys'
 };

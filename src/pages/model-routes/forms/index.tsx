@@ -14,10 +14,10 @@ import {
   useRef,
   useState
 } from 'react';
-import { FormData, AccessItem as ListItem } from '../config/types';
-import useEditEndpoints from '../hooks/use-edit-endpoints';
+import { FormData, RouteItem as ListItem } from '../config/types';
+import useEditTargets from '../hooks/use-edit-targets';
 import Basic from './basic';
-import Endpoints from './endpoints';
+import Targets from './targets';
 
 interface ProviderFormProps {
   ref?: any;
@@ -29,7 +29,7 @@ interface ProviderFormProps {
 const TABKeysMap = {
   BASIC: 'basic',
   METADATA: 'metadata',
-  ENDPOINTS: 'endpoints',
+  TARGETS: 'targets',
   ADVANCED: 'advanced'
 };
 
@@ -40,8 +40,8 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
   const [activeKey, setActiveKey] = useState<string[]>([TABKeysMap.BASIC]);
   const [form] = Form.useForm();
   const scrollTabsRef = useRef<any>(null);
-  const endpointsRef = useRef<any>(null);
-  const { generateEndpointData, fetchEndpoints } = useEditEndpoints();
+  const targetsRef = useRef<any>(null);
+  const { generateTargetData, fetchTargets } = useEditTargets();
   const segmentOptions = [
     {
       value: TABKeysMap.BASIC,
@@ -50,10 +50,10 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       field: 'name'
     },
     {
-      value: TABKeysMap.ENDPOINTS,
-      label: intl.formatMessage({ id: 'accesses.form.endpoint.title' }),
+      value: TABKeysMap.TARGETS,
+      label: intl.formatMessage({ id: 'routes.form.target.title' }),
       icon: <IconFont type="icon-language" />,
-      field: 'endpoints'
+      field: 'targets'
     }
   ];
 
@@ -61,26 +61,25 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
     setActiveKey(key);
   };
 
-  const formatEndpoints = (values: FormData) => {
-    console.log('formatEndpoints values:', values);
-    let endPoints = [...(values.endpoints || [])];
-    let fallbackEndpoint = values.fallback_endpoint;
+  const formatTargets = (values: FormData) => {
+    let targetList = [...(values.targets || [])];
+    let fallbackTarget = values.fallback_target;
 
-    if (fallbackEndpoint) {
-      const exsitinged = endPoints.find((ep) => {
-        if (fallbackEndpoint!.model_id) {
-          return ep.model_id === fallbackEndpoint!.model_id;
+    if (fallbackTarget) {
+      const exsitinged = targetList.find((ep) => {
+        if (fallbackTarget!.model_id) {
+          return ep.model_id === fallbackTarget!.model_id;
         }
         return (
-          ep.provider_id === fallbackEndpoint!.provider_id &&
-          ep.provider_model_name === fallbackEndpoint!.provider_model_name
+          ep.provider_id === fallbackTarget!.provider_id &&
+          ep.provider_model_name === fallbackTarget!.provider_model_name
         );
       });
       if (exsitinged) {
-        endPoints = endPoints.map((ep) => {
+        targetList = targetList.map((ep) => {
           if (
-            ep.model_id === fallbackEndpoint.model_id ||
-            ep.provider_model_name === fallbackEndpoint.provider_model_name
+            ep.model_id === fallbackTarget.model_id ||
+            ep.provider_model_name === fallbackTarget.provider_model_name
           ) {
             return {
               ...ep,
@@ -92,22 +91,22 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       }
 
       if (!exsitinged) {
-        endPoints.push({
-          ...fallbackEndpoint,
+        targetList.push({
+          ...fallbackTarget,
           weight: 0,
           fallback_status_codes: ['4xx', '5xx']
         });
       }
     }
 
-    return endPoints;
+    return targetList;
   };
 
   const handleOnFinish = (values: FormData) => {
-    const endpoints = formatEndpoints(values);
+    const targets = formatTargets(values);
     const data = {
-      ..._.omit(values, ['endpoints', 'fallback_endpoint']),
-      endpoints: endpoints
+      ..._.omit(values, ['targets', 'fallback_target']),
+      targets: targets
     };
     console.log('data=========', data);
     onFinish(data);
@@ -119,26 +118,19 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
 
   useEffect(() => {
     const initEditionForm = async () => {
-      const endpointList = await fetchEndpoints(currentData!.id);
-      const { endpoints, fallbackEndpoint } =
-        generateEndpointData(endpointList);
-      console.log(
-        'endpoints:',
-        endpoints,
-        'fallbackEndpoint:',
-        fallbackEndpoint
-      );
+      const targetList = await fetchTargets(currentData!.id);
+      const { targets, fallbackTarget } = generateTargetData(targetList);
 
       // init form values
       form.setFieldsValue({
         ...currentData,
-        endpoints: endpoints,
-        fallback_endpoint: fallbackEndpoint
+        targets: targets,
+        fallback_target: fallbackTarget
       });
 
-      // init endpoints form list
-      endpointsRef.current?.initDataList(
-        endpoints?.map((ep) => ({
+      // init targets form list
+      targetsRef.current?.initDataList(
+        targets?.map((ep) => ({
           weight: ep.weight,
           value: ep.model_id
             ? ['deployments', ep.model_id]
@@ -147,14 +139,11 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       );
 
       // init fallback value
-      if (fallbackEndpoint) {
-        endpointsRef.current?.initFallbackValues({
-          value: fallbackEndpoint.model_id
-            ? ['deployments', fallbackEndpoint.model_id]
-            : [
-                fallbackEndpoint.provider_id,
-                fallbackEndpoint.provider_model_name
-              ]
+      if (fallbackTarget) {
+        targetsRef.current?.initFallbackValues({
+          value: fallbackTarget.model_id
+            ? ['deployments', fallbackTarget.model_id]
+            : [fallbackTarget.provider_id, fallbackTarget.provider_model_name]
         });
       }
     };
@@ -202,10 +191,10 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
           onChange={handleOnCollapseChange}
           items={[
             {
-              key: TABKeysMap.ENDPOINTS,
-              label: intl.formatMessage({ id: 'accesses.form.endpoint.title' }),
+              key: TABKeysMap.TARGETS,
+              label: intl.formatMessage({ id: 'routes.form.target.title' }),
               forceRender: true,
-              children: <Endpoints ref={endpointsRef}></Endpoints>
+              children: <Targets ref={targetsRef}></Targets>
             }
           ]}
         ></CollapsePanel>

@@ -1,9 +1,9 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { useState } from 'react';
-import { AccessItem as ListItem } from '../config/types';
+import { RouteItem as ListItem } from '../config/types';
 
-const useCreateAccess = (options?: { refresh: () => void }) => {
+const useAccessControl = () => {
   const [openModalStatus, setOpenModalStatus] = useState<{
     open: boolean;
     action: PageActionType;
@@ -39,11 +39,11 @@ const useCreateAccess = (options?: { refresh: () => void }) => {
   };
 
   return {
-    openAccessModalStatus: openModalStatus,
-    setOpenAccessModalStatus: setOpenModalStatus,
-    openAccessModal: openModal,
-    closeAccessModal: closeModal
+    openAccessControlModalStatus: openModalStatus,
+    setOpenAccessControlModalStatus: setOpenModalStatus,
+    openAccessControlModal: openModal,
+    closeAccessControlModal: closeModal
   };
 };
 
-export default useCreateAccess;
+export default useAccessControl;

@@ -1,6 +1,6 @@
 import FormDrawer from '@/pages/_components/form-drawer';
 import React, { useRef } from 'react';
-import { FormData, AccessItem as ListItem } from '../config/types';
+import { FormData, RouteItem as ListItem } from '../config/types';
 import FallbackSettings from '../forms/fallback-settings';
 
 type AddModalProps = {

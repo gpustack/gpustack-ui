@@ -13,6 +13,6 @@ export default {
   'providers.form.customConfig': '自定义配置',
   'providers.form.model.test': '测试',
   'providers.form.model.test.tips': '测试连接',
-  'providers.form.endpoint.placeholder': '提供商/模型',
+  'providers.form.target.placeholder': '提供商/模型',
   'providers.form.fallback.token': '备用 API Key'
 };

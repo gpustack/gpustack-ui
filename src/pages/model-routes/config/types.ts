@@ -4,13 +4,13 @@ export interface FormData {
   categories: any[];
   meta: Record<string, any>;
   generic_proxy: boolean;
-  fallback_endpoint: {
+  fallback_target: {
     provider_model_name?: string;
     model_id?: number;
     provider_id?: number;
     fallback_status_codes?: string[];
   };
-  endpoints: {
+  targets: {
     provider_model_name?: string;
     weight?: number | null;
     model_id?: number;
@@ -19,7 +19,7 @@ export interface FormData {
   }[];
 }
 
-export interface AccessItem {
+export interface RouteItem {
   id: number;
   created_at: string;
   updated_at: string;
@@ -29,12 +29,12 @@ export interface AccessItem {
   categories: string[];
   meta: Record<string, any>;
   created_by_model: boolean;
-  endpoints: number;
-  ready_endpoints: number;
+  targets: number;
+  ready_targets: number;
   access_policy: string;
 }
 
-export interface AccessPointItem {
+export interface RouteTarget {
   id: number;
   created_at: string;
   updated_at: string;
@@ -44,7 +44,7 @@ export interface AccessPointItem {
   model_id: number;
   provider_id: number;
   name: string;
-  access_id: number;
+  route_id: number;
   state: string;
   fallback_status_codes: string[];
 }

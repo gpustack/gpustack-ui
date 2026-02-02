@@ -2,19 +2,19 @@ import icons from '@/components/icon-font/icons';
 import { StatusMaps } from '@/config';
 import { StatusType } from '@/config/types';
 
-export const EndpointsStatusValueMap: Record<string, string> = {
+export const TargetStatusValueMap: Record<string, string> = {
   Active: 'active',
   Unavailable: 'unavailable'
 };
 
-export const EndpointStatusLabelMap = {
-  [EndpointsStatusValueMap.Active]: 'Active',
-  [EndpointsStatusValueMap.Unavailable]: 'Unavailable'
+export const TargetStatusLabelMap = {
+  [TargetStatusValueMap.Active]: 'Active',
+  [TargetStatusValueMap.Unavailable]: 'Unavailable'
 };
 
-export const EndpointStatus: Record<string, StatusType> = {
-  [EndpointsStatusValueMap.Active]: StatusMaps.success,
-  [EndpointsStatusValueMap.Unavailable]: StatusMaps.error
+export const TargetStatus: Record<string, StatusType> = {
+  [TargetStatusValueMap.Active]: StatusMaps.success,
+  [TargetStatusValueMap.Unavailable]: StatusMaps.error
 };
 
 // actions for each row

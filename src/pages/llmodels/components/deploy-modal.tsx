@@ -319,7 +319,6 @@ const AddModal: FC<AddModalProps> = (props) => {
     ) {
       return;
     }
-    console.log('handleOnSelectModel:', item, selectedModel);
     setIsGGUF(item.isGGUF);
     clearCacheFormValues();
     unlockWarningStatus();
@@ -327,7 +326,6 @@ const AddModal: FC<AddModalProps> = (props) => {
       state: EvaluateProccess.model,
       requestModelId: updateRequestModelId()
     });
-    updateSelectedModel(item);
 
     // TODO
     form.current?.resetFields(resetFields);
@@ -344,6 +342,8 @@ const AddModal: FC<AddModalProps> = (props) => {
       name: generateNameValue(item, modelInfo.name, manual),
       categories: getCategory(item)
     });
+
+    updateSelectedModel(item);
 
     let warningStatus: MessageStatus = {
       show: true,
@@ -425,7 +425,6 @@ const AddModal: FC<AddModalProps> = (props) => {
   };
 
   const handleBackendChange = async (backend: string) => {
-    console.log('handleBackendChange:', backend);
     const data = form.current.form.getFieldsValue?.();
     const res = handleBackendChangeBefore(data);
     if (res.show) {

@@ -43,7 +43,7 @@ export default {
   'backend.recommendModels': 'Recommended Models',
   'backend.filter.source': 'Filter by source',
   'backend.add.custom': 'Custom',
-  'backend.add.community': 'Community Repository',
+  'backend.add.community': 'Community Backends',
   'backend.community.title': 'Community Backends Marketplace'
 };
 
@@ -52,6 +52,6 @@ export default {
 // 2. 'backend.recommendModels': 'Recommended Models',
 // 3. 'backend.filter.source': 'Filter by source',
 // 4.  'backend.add.custom': 'Custom',
-// 5.  'backend.add.community': 'Community Repository',
+// 5.  'backend.add.community': 'Community Backends',
 // 6. 'backend.community.title': 'Community Backends Marketplace'
 // ========== End of To-Do List ==========

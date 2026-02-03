@@ -143,7 +143,9 @@ const BackendDetail: React.FC<{
             </span>
           </Subtitle>
           <Content>
-            <Typography.Text>{currentData?.description}</Typography.Text>
+            <Typography.Paragraph>
+              {currentData?.description}
+            </Typography.Paragraph>
           </Content>
         </Section>
       )}

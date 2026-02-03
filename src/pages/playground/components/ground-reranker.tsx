@@ -38,6 +38,7 @@ import { rerankerSamples } from '../config/samples';
 import { ParamsSchema } from '../config/types';
 import { LLM_METAKEYS } from '../hooks/config';
 import { useInitLLmMeta } from '../hooks/use-init-meta';
+import useRerankerResponse from '../reranker/hooks/use-reranker-response';
 import '../style/ground-llm.less';
 import '../style/rerank.less';
 import '../style/system-message-wrap.less';
@@ -88,7 +89,7 @@ const fieldConfig: ParamsSchema[] = [
 
 const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
   const { modelList } = props;
-
+  const { handleSGlangResponse } = useRerankerResponse();
   const intl = useIntl();
   const requestSource = useRequestToken();
   const [show, setShow] = useState(false);
@@ -285,7 +286,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
 
       setTextList(filledList);
 
-      const result: any = await rerankerQuery(
+      const res: any = await rerankerQuery(
         {
           model: parameters.model,
           top_n: parameters.top_n,
@@ -296,6 +297,9 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
           token: requestToken.current.token
         }
       );
+
+      // detect response type
+      const result = Array.isArray(res) ? handleSGlangResponse(res) : res;
 
       setMessageId();
       setTokenResult(result.usage);

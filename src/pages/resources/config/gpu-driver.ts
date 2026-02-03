@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 export const GPUDriverMap = {
   NVIDIA: 'cuda',
   AMD: 'rocm',
@@ -184,7 +186,7 @@ const generateExtraArgs = (params: any) => {
   }
   let argsStr = '';
   argsList.forEach(([key, value]) => {
-    argsStr += `${key} ${value} \\\n      `;
+    argsStr += `${key} ${_.isBoolean(value) ? value : value || ''} \\\n      `;
   });
   return argsStr;
 };

@@ -35,7 +35,6 @@ const Models: React.FC<{ clusterId?: number }> = ({ clusterId }) => {
     loadend: false,
     total: 0
   });
-
   const chunkRequedtRef = useRef<any>();
   const chunkInstanceRequedtRef = useRef<any>();
   const isPageHidden = useRef(false);

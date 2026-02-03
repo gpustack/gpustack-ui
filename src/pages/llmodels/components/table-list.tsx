@@ -9,7 +9,6 @@ import SealTable from '@/components/seal-table';
 import { TableOrder } from '@/components/seal-table/types';
 import { PageAction } from '@/config';
 import { TABLE_SORT_DIRECTIONS } from '@/config/settings';
-import { PageActionType } from '@/config/types';
 import useBodyScroll from '@/hooks/use-body-scroll';
 import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
@@ -18,6 +17,7 @@ import useNoResourceResult from '@/pages/llmodels/hooks/use-no-resource-result';
 import { TargetStatusValueMap } from '@/pages/model-routes/config';
 import useOpenPlayground from '@/pages/model-routes/hooks/use-open-playground';
 import useQueryTargets from '@/pages/model-routes/services/use-query-targets';
+import useGranfanaLink from '@/pages/resources/hooks/use-grafana-link';
 import { handleBatchRequest } from '@/utils';
 import { DownOutlined, SearchOutlined, SyncOutlined } from '@ant-design/icons';
 import { useIntl, useNavigate, useSearchParams } from '@umijs/max';
@@ -170,6 +170,9 @@ const Models: React.FC<ModelsProps> = ({
   useEffect(() => {
     fetchTargets({});
   }, []);
+  const { goToGrafana } = useGranfanaLink({
+    type: 'model'
+  });
 
   const [openLogModal, setOpenLogModal] = useState(false);
   const [openDeployModal, setOpenDeployModal] = useState<{
@@ -450,6 +453,9 @@ const Models: React.FC<ModelsProps> = ({
           categories: row.categories || [],
           name: targetRoute?.route_name || ''
         });
+      }
+      if (val === 'metrics') {
+        goToGrafana(row);
       }
     } catch (error) {
       // ignore

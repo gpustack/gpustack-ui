@@ -1,5 +1,6 @@
 import AutoTooltip from '@/components/auto-tooltip';
 import DropdownButtons from '@/components/drop-down-buttons';
+import IconFont from '@/components/icon-font';
 import LabelsCell from '@/components/label-cell';
 import ProgressBar from '@/components/progress-bar';
 import InfoColumn from '@/components/simple-table/info-column';
@@ -42,6 +43,11 @@ const IPWrapper = styled.span`
 
 const ActionList = [
   { label: 'common.button.edit', key: 'edit', icon: <EditOutlined /> },
+  {
+    label: 'resources.metrics.details',
+    key: 'metrics',
+    icon: <IconFont type="icon-metrics" />
+  },
   // {
   //   label: 'common.button.detail',
   //   key: 'details',

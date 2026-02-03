@@ -105,7 +105,8 @@ export default {
   'resources.worker.maintenance.tips':
     'When maintenance mode is enabled, the node will stop scheduling new model deployment tasks. Running instances will not be affected.',
   'resources.worker.noCluster.tips':
-    'No available clusters. Please create a cluster before adding a node.'
+    'No available clusters. Please create a cluster before adding a node.',
+  'resources.metrics.details': 'Metrics Details'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -115,5 +116,6 @@ export default {
 // 5. 'resources.worker.maintenance.remark': 'Remark',
 // 6. 'resources.worker.maintenance.remark.rules': 'Please enter maintenance remarks',
 // 7. 'resources.worker.maintenance.tips': 'When maintenance mode is enabled, the node will stop scheduling new model deployment tasks. Running instances will not be affected.',
-// 8. 'resources.worker.noCluster.tips': 'No available clusters. Please create a cluster before adding a node.'
+// 8. 'resources.worker.noCluster.tips': 'No available clusters. Please create a cluster before adding a node.',
+// 9. 'resources.metrics.details': 'Metrics Details'
 // ========== End of To-Do List ==========

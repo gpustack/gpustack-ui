@@ -162,6 +162,13 @@ const BackendFields: React.FC = () => {
     return option.title;
   };
 
+  const backendGroupList = useMemo(() => {
+    if (backendOptions.length === 1) {
+      return [...backendOptions[0].options];
+    }
+    return backendOptions;
+  }, [backendOptions]);
+
   return (
     <>
       <Form.Item
@@ -179,7 +186,7 @@ const BackendFields: React.FC = () => {
           onChange={handleOnBackendChange}
           label={intl.formatMessage({ id: 'models.form.backend' })}
           description={<TooltipList list={backendTipsList}></TooltipList>}
-          options={backendOptions}
+          options={backendGroupList}
           optionRender={optionRender}
           labelRender={labelRender}
         ></SealSelect>

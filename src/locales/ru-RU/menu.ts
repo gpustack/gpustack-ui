@@ -15,7 +15,6 @@ export default {
   'menu.models.deployment': 'Запуск',
   'menu.models.benchmark': 'Benchmarks',
   'menu.models.benchmarkDetail': 'Benchmark Details',
-  'menu.models.provider': 'Provider',
   'menu.models.providers': 'Providers',
   'menu.models.routes': 'Routes',
   'menu.modelCatalog': 'Каталог',

@@ -205,22 +205,13 @@ const MaasProvider: React.FC = () => {
           <Table
             rowKey="id"
             tableLayout="auto"
-            loadChildren={loadChildrenData}
             sortDirections={TABLE_SORT_DIRECTIONS}
-            expandedRowKeys={expandedRowKeys}
-            onExpand={handleExpandChange}
-            onExpandAll={handleToggleExpandAll}
-            renderChildren={renderChildren}
-            onTableSort={handleOnSortChange}
             showSorterTooltip={false}
             dataSource={dataSource.dataList}
             loading={dataSource.loading}
-            loadend={dataSource.loadend}
             rowSelection={rowSelection}
             columns={columns}
-            childParentKey="provider_id"
             scroll={{ x: true }}
-            expandable={true}
             pagination={{
               showSizeChanger: true,
               pageSize: queryParams.perPage,

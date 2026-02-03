@@ -430,7 +430,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
             restart_on_error: true,
             distributed_inference_across_workers: true,
             mode: 'throughput',
-            enable_model_access: true,
+            enable_model_route: true,
             generic_proxy: false,
             extended_kv_cache: {
               enabled: false,

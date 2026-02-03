@@ -16,7 +16,7 @@ const AdvanceConfig = () => {
   const form = Form.useFormInstance();
   const EnviromentVars = Form.useWatch('env', form);
   const backend = Form.useWatch('backend', form);
-  const modelAccessEnable = Form.useWatch('enable_model_access', form);
+  const modelAccessEnable = Form.useWatch('enable_model_route', form);
   const {
     onValuesChange,
     backendOptions,
@@ -134,7 +134,7 @@ const AdvanceConfig = () => {
         ></CheckboxField>
       </Form.Item>
       <Form.Item<FormData>
-        name="enable_model_access"
+        name="enable_model_route"
         valuePropName="checked"
         style={{ marginBottom: 8 }}
       >

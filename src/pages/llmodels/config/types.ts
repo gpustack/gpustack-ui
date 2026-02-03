@@ -44,7 +44,7 @@ export type SourceType =
 export interface FormData {
   image_name?: string;
   run_command?: string;
-  enable_model_access?: boolean;
+  enable_model_route?: boolean;
   backend: string;
   restart_on_error?: boolean;
   env?: Record<string, any>;

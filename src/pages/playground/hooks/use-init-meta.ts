@@ -77,7 +77,7 @@ export const useInitLLmMeta = (
     let max_tokens: number = 0;
 
     if (n_ctx && n_slot) {
-      max_tokens = _.divide(n_ctx, n_slot);
+      max_tokens = _.floor(_.divide(n_ctx, n_slot));
     } else if (max_model_len) {
       max_tokens = max_model_len;
     } else if (max_total_tokens) {
@@ -86,7 +86,7 @@ export const useInitLLmMeta = (
 
     return {
       max_tokens: max_tokens || 16 * 1024,
-      defaultFormValue: max_tokens ? _.divide(max_tokens, 2) : 1024
+      defaultFormValue: max_tokens ? _.floor(_.divide(max_tokens, 2)) : 1024
     };
   };
 

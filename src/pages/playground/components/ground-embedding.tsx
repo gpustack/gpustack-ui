@@ -352,7 +352,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
           <SealInputNumber
             disabled
             label="Max Tokens"
-            value={_.divide(modelMeta?.n_ctx, modelMeta?.n_slot)}
+            value={_.floor(_.divide(modelMeta?.n_ctx, modelMeta?.n_slot))}
           ></SealInputNumber>
         </Form.Item>
       );

@@ -40,6 +40,11 @@ export const ActionList: ActionItem[] = [
     icon: icons.EditOutlined
   },
   {
+    label: 'resources.metrics.details',
+    key: 'metrics',
+    icon: icons.Metrics
+  },
+  {
     label: 'models.openinplayground',
     key: 'chat',
     icon: icons.ExperimentOutlined

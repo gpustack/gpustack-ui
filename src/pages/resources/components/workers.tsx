@@ -8,6 +8,7 @@ import { DockerStepsFromWorker } from '@/pages/cluster-management/components/add
 import { ClusterListItem } from '@/pages/cluster-management/config/types';
 import useAddWorker from '@/pages/cluster-management/hooks/use-add-worker';
 import useNoResourceResult from '@/pages/llmodels/hooks/use-no-resource-result';
+import useGranfanaLink from '@/pages/resources/hooks/use-grafana-link';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { ConfigProvider, Table, message } from 'antd';
@@ -20,7 +21,6 @@ import {
   updateWorker
 } from '../apis';
 import { ListItem } from '../config/types';
-import useTerminalTabs from '../hooks/use-terminal-tabs';
 import useWorkerColumns from '../hooks/use-worker-columns';
 import useWorkerMaintenance from '../hooks/use-worker-maintenance';
 import UpdateLabels from './update-labels';
@@ -65,7 +65,7 @@ const Workers: React.FC<{
       cluster_id: clusterId
     }
   });
-  const { TerminalPanel, terminals, handleAddTerminal } = useTerminalTabs();
+  const { goToGrafana } = useGranfanaLink({ type: 'worker' });
   const { MaintenanceModal, handleStopMaintenance, setOpenStatus } =
     useWorkerMaintenance({ fetchData: handleSearch });
 
@@ -199,9 +199,8 @@ const Workers: React.FC<{
     if (val === 'stop_maintenance') {
       handleStopMaintenance(record);
     }
-
-    if (val === 'terminal') {
-      handleAddTerminal(record);
+    if (val === 'metrics') {
+      goToGrafana(record);
     }
   });
 

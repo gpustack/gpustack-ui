@@ -11,6 +11,7 @@ import { HandlerOptions } from '@/hooks/use-chunk-fetch';
 import useDownloadStream from '@/hooks/use-download-stream';
 import { useBenchmarkTargetInstance } from '@/pages/llmodels/hooks/use-run-benchmark';
 import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
+import useGranfanaLink from '@/pages/resources/hooks/use-grafana-link';
 import { convertFileSize } from '@/utils';
 import {
   DeleteOutlined,
@@ -328,6 +329,12 @@ const childActionList = [
     icon: <IconFont type="icon-logs" />
   },
   {
+    label: 'resources.metrics.details',
+    key: 'metrics',
+    status: [InstanceStatusMap.Running],
+    icon: <IconFont type="icon-metrics" />
+  },
+  {
     label: 'common.button.downloadLog',
     key: 'download',
     status: [
@@ -428,6 +435,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
   defaultOpenId,
   handleChildSelect
 }) => {
+  const { goToGrafana } = useGranfanaLink({ type: 'instance' });
   const { runBenchmarkOnInstance } = useBenchmarkTargetInstance();
   const [api, contextHolder] = notification.useNotification({
     stack: { threshold: 1 }
@@ -689,6 +697,8 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
         filename: createFileName(instanceData.name),
         downloadNotification
       });
+    } else if (val === 'metrics') {
+      goToGrafana(instanceData);
     } else {
       handleChildSelect(val, instanceData);
     }

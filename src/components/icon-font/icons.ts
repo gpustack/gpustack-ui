@@ -64,7 +64,8 @@ const icons = {
   StarOutlined: React.createElement(StarOutlined),
   Charger: React.createElement(IconFont, { type: 'icon-charger' }),
   Disabled: React.createElement(IconFont, { type: 'icon-disabled' }),
-  CopyOutlined: React.createElement(CopyOutlined)
+  CopyOutlined: React.createElement(CopyOutlined),
+  Metrics: React.createElement(IconFont, { type: 'icon-metrics' })
 };
 
 export default icons;

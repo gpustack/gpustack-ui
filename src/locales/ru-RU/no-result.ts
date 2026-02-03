@@ -50,9 +50,9 @@ export default {
   'noresult.providers.title': 'No Providers',
   'noresult.providers.subTitle': 'No providers have been added yet.',
   'noresult.providers.nofound': 'No matching providers found.',
-  'noresult.accesses.title': 'No Accesses',
-  'noresult.accesses.subTitle': 'No accesses have been added yet.',
-  'noresult.accesses.nofound': 'No matching accesses found.'
+  'noresult.routes.title': 'No Routes',
+  'noresult.routes.subTitle': 'No routes have been added yet.',
+  'noresult.routes.nofound': 'No matching routes found.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -69,7 +69,7 @@ export default {
 // 5. 'noresult.providers.title': 'No Providers',
 // 6. 'noresult.providers.subTitle': 'No providers have been added yet.',
 // 7. 'noresult.providers.nofound': 'No matching providers found.',
-// 8. 'noresult.accesses.title': 'No Accesses',
-// 9. 'noresult.accesses.subTitle': 'No accesses have been added yet.',
-// 10. 'noresult.accesses.nofound': 'No matching accesses found.'
+// 8. 'noresult.routes.title': 'No Routes',
+// 9. 'noresult.routes.subTitle': 'No routes have been added yet.',
+// 10. 'noresult.routes.nofound': 'No matching routes found.'
 // ========================================================================

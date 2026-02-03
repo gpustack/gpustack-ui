@@ -3,6 +3,7 @@ import { StatusType } from '@/config/types';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { Button, Divider, Tooltip } from 'antd';
 import classNames from 'classnames';
+import _ from 'lodash';
 import React, { useMemo } from 'react';
 import 'simplebar-react/dist/simplebar.min.css';
 import styled from 'styled-components';
@@ -91,8 +92,13 @@ const StatusTag: React.FC<StatusTagProps> = ({
     if (download && percent > 0 && percent <= 100) {
       return (
         <>
-          <span className="progress">{download?.percent || 0}%</span>
-          <span className="download" style={{ width: `${percent}%` }}></span>
+          <span className="progress">
+            {_.round(download?.percent, 0) || 0}%
+          </span>
+          <span
+            className="download"
+            style={{ width: `${_.round(percent, 0)}%` }}
+          ></span>
         </>
       );
     }

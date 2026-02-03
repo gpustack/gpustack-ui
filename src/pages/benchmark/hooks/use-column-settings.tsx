@@ -3,12 +3,15 @@ import StatusTag from '@/components/status-tag';
 import { tableSorter } from '@/config/settings';
 import ColumnSettings from '@/pages/_components/column-settings';
 import { useIntl } from '@umijs/max';
-import { Progress } from 'antd';
 import dayjs from 'dayjs';
 import _, { round } from 'lodash';
 import React from 'react';
 import styled from 'styled-components';
-import { BenchmarkStatus, BenchmarkStatusLabelMap } from '../config';
+import {
+  BenchmarkStatus,
+  BenchmarkStatusLabelMap,
+  BenchmarkStatusValueMap
+} from '../config';
 import { BenchmarkListItem as ListItem } from '../config/types';
 
 const allFields = [
@@ -57,6 +60,35 @@ const defaultColumns: string[] = [
   'time_per_output_token_mean'
 ];
 const fixedColumns: string[] = [];
+
+const BenchmarkStateTag = (props: { data: ListItem }) => {
+  const { data } = props;
+  if (!data.state) {
+    return null;
+  }
+  return (
+    <StatusTag
+      download={
+        data.state === BenchmarkStatusValueMap.Running
+          ? { percent: data.progress || 0 }
+          : undefined
+      }
+      statusValue={{
+        status:
+          data.state === BenchmarkStatusValueMap.Running &&
+          data.progress === 100
+            ? BenchmarkStatus[BenchmarkStatusValueMap.Completed]
+            : BenchmarkStatus[data.state],
+        text: BenchmarkStatusLabelMap[data.state],
+        message:
+          data.state === BenchmarkStatusValueMap.Running &&
+          data.progress === 100
+            ? ''
+            : data.state_message
+      }}
+    />
+  );
+};
 
 const useColumnSettings = (options: {
   contentHeight: number;
@@ -312,22 +344,7 @@ const useColumnSettings = (options: {
       width: 120,
       dataIndex: 'state',
       render: (value: number, record: ListItem) => (
-        <span className="flex-center gap-8">
-          <StatusTag
-            statusValue={{
-              status: BenchmarkStatus[value],
-              text: BenchmarkStatusLabelMap[value],
-              message: record.state_message || undefined
-            }}
-          />
-          {record.progress !== undefined && record.progress < 100 && (
-            <Progress
-              type="circle"
-              percent={_.round(record.progress, 0)}
-              size={20}
-            />
-          )}
-        </span>
+        <BenchmarkStateTag data={record} />
       )
     },
     {

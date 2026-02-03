@@ -39,7 +39,7 @@ import useCreateRoute from './hooks/use-create-route';
 import useRoutesColumns from './hooks/use-routes-columns';
 import useTargetSourceModels from './hooks/use-target-source-models';
 
-const Accesses: React.FC = () => {
+const ModelRoutes: React.FC = () => {
   const {
     dataSource,
     rowSelection,
@@ -317,4 +317,4 @@ const Accesses: React.FC = () => {
   );
 };
 
-export default Accesses;
+export default ModelRoutes;

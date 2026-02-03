@@ -49,7 +49,7 @@ export default {
   'noresult.providers.title': 'No Providers',
   'noresult.providers.subTitle': 'No providers have been added yet.',
   'noresult.providers.nofound': 'No matching providers found.',
-  'noresult.accesses.title': 'No Accesses',
-  'noresult.accesses.subTitle': 'No accesses have been added yet.',
-  'noresult.accesses.nofound': 'No matching accesses found.'
+  'noresult.routes.title': 'No Routes',
+  'noresult.routes.subTitle': 'No routes have been added yet.',
+  'noresult.routes.nofound': 'No matching routes found.'
 };

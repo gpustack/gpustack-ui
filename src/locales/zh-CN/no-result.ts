@@ -44,7 +44,7 @@ export default {
   'noresult.providers.title': '暂无提供商',
   'noresult.providers.subTitle': '尚未添加任何提供商。',
   'noresult.providers.nofound': '未找到匹配的提供商',
-  'noresult.accesses.title': '暂无接入',
-  'noresult.accesses.subTitle': '尚未添加任何接入。',
-  'noresult.accesses.nofound': '未找到匹配的接入'
+  'noresult.routes.title': '暂无路由',
+  'noresult.routes.subTitle': '尚未添加任何路由。',
+  'noresult.routes.nofound': '未找到匹配的路由'
 };

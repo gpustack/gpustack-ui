@@ -1,4 +1,4 @@
-type PageActionType = 'create' | 'update' | 'view' | 'edit';
+type PageActionType = 'create' | 'update' | 'view' | 'edit' | 'copy';
 declare namespace Global {
   type WithFalse<T> = T | false;
   interface Pagination {

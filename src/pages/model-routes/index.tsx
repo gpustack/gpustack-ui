@@ -15,9 +15,10 @@ import { useMemoizedFn } from 'ahooks';
 import { message } from 'antd';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import NoResult from '../_components/no-result';
 import PageBox from '../_components/page-box';
+import { queryModelsList } from '../llmodels/apis';
 import AccessControlModal from '../llmodels/components/access-control-modal';
 import {
   MODEL_ROUTES,
@@ -72,6 +73,24 @@ const Accesses: React.FC = () => {
     openAccessControlModalStatus
   } = useAccessControl();
   const { sourceModels, fetchSourceModels } = useTargetSourceModels();
+  const [modelList, setModelsList] = useState<Global.BaseOption<number>[]>([]);
+
+  useEffect(() => {
+    const fetchModels = async () => {
+      try {
+        const res = await queryModelsList({ page: -1 });
+        const models =
+          res.items?.map((model) => ({
+            label: model.name,
+            value: model.id
+          })) || [];
+        setModelsList(models);
+      } catch (error) {
+        setModelsList([]);
+      }
+    };
+    fetchModels();
+  }, []);
 
   const handleClickDropdown = () => {
     openRouteModal(
@@ -193,6 +212,7 @@ const Accesses: React.FC = () => {
   ) => {
     return (
       <RouteTargets
+        modelList={modelList}
         dataList={list}
         onSelect={onChildSelect}
         sourceModels={sourceModels}
@@ -289,7 +309,7 @@ const Accesses: React.FC = () => {
         onCancel={closeAccessControlModal}
         title={openAccessControlModalStatus.title}
         open={openAccessControlModalStatus.open}
-        currentData={openAccessControlModalStatus.currentData || null}
+        currentData={openAccessControlModalStatus.currentData}
         action={openAccessControlModalStatus.action}
       ></AccessControlModal>
       <DeleteModal ref={modalRef}></DeleteModal>

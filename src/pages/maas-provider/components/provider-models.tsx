@@ -21,45 +21,43 @@ const ProviderModels: React.FC<ProviderModelProps> = ({ dataList }) => {
     none: <WarningOutlined />
   };
   return (
-    <div style={{ paddingInline: 16 }}>
-      <Flex gap="8px" wrap="wrap">
-        {dataList.map((model) => (
-          <Tag
-            key={model.name}
-            icon={
-              _.isBoolean(model.accessible)
-                ? iconsMap[model.accessible ? 'accessible' : 'inaccessible']
-                : iconsMap['none']
+    <Flex gap="8px" wrap="wrap">
+      {dataList.map((model) => (
+        <Tag
+          key={model.name}
+          icon={
+            _.isBoolean(model.accessible)
+              ? iconsMap[model.accessible ? 'accessible' : 'inaccessible']
+              : iconsMap['none']
+          }
+          variant="outlined"
+          styles={{
+            root: {
+              backgroundColor: 'transparent',
+              display: 'flex',
+              alignItems: 'center',
+              borderRadius: 4
             }
-            variant="outlined"
-            styles={{
-              root: {
-                backgroundColor: 'transparent',
-                display: 'flex',
-                alignItems: 'center',
-                borderRadius: 4
-              }
-            }}
-            color={
-              model.accessible === true
-                ? 'success'
-                : model.accessible === false
-                  ? 'error'
-                  : 'warning'
-            }
-          >
-            <span className="flex-center">
-              <AutoTooltip ghost maxWidth={'120px'}>
-                {model.name}
-              </AutoTooltip>
-              <span style={{ marginLeft: 8 }}>
-                {categoryConfig[model.category]?.icon}
-              </span>
+          }}
+          color={
+            model.accessible === true
+              ? 'success'
+              : model.accessible === false
+                ? 'error'
+                : 'warning'
+          }
+        >
+          <span className="flex-center">
+            <AutoTooltip ghost maxWidth={'120px'}>
+              {model.name}
+            </AutoTooltip>
+            <span style={{ marginLeft: 8 }}>
+              {categoryConfig[model.category]?.icon}
             </span>
-          </Tag>
-        ))}
-      </Flex>
-    </div>
+          </span>
+        </Tag>
+      ))}
+    </Flex>
   );
 };
 

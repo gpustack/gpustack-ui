@@ -50,6 +50,7 @@ const useTargetSourceModels = () => {
             </OptionWrapper>
           ),
           value: 'deployments',
+          providerType: 'deployments',
           parent: true,
           children: models.items?.map?.((model: ModelListItem) => ({
             label: model.name,
@@ -73,6 +74,7 @@ const useTargetSourceModels = () => {
           ),
           value: provider.id,
           parent: true,
+          providerType: provider.config?.type,
           children: provider.models?.map?.((model) => ({
             label: model.name,
             value: model.name,

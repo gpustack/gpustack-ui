@@ -1,3 +1,4 @@
+import GPUStackLogo from '@/assets/images/small-logo-200x200.png';
 import ai360 from '@/assets/providers-logo/ai360.svg';
 import azure from '@/assets/providers-logo/azureai.svg';
 import baichuan from '@/assets/providers-logo/baichuan.svg';
@@ -66,7 +67,8 @@ const ProviderLogoMap: Record<string, string> = {
   [ProviderEnum.TOGETHERAI]: togetherai,
   [ProviderEnum.ZHIPUAI]: zhipuai,
   [ProviderEnum.GITHUB]: github,
-  [ProviderEnum.TRITON]: triton
+  [ProviderEnum.TRITON]: triton,
+  ['deployments']: GPUStackLogo
 };
 
 const ProviderLogo: React.FC<{

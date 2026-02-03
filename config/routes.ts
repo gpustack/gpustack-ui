@@ -86,14 +86,14 @@ export default [
         redirect: '/models/deployments'
       },
       {
-        name: 'modelCatalog',
-        path: '/models/catalog',
-        key: 'modelsCatalog',
-        icon: 'icon-layers',
-        selectedIcon: 'icon-layers-filled',
-        defaultIcon: 'icon-layers',
+        name: 'routes',
+        path: '/models/routes',
+        key: 'routes',
+        icon: 'icon-captive_portal',
+        selectedIcon: 'icon-captive_portal',
+        defaultIcon: 'icon-captive_portal',
         access: 'canSeeAdmin',
-        component: './llmodels/catalog'
+        component: './model-routes/index'
       },
       {
         name: 'deployment',
@@ -106,6 +106,16 @@ export default [
         component: './llmodels/index'
       },
       {
+        name: 'modelCatalog',
+        path: '/models/catalog',
+        key: 'modelsCatalog',
+        icon: 'icon-layers',
+        selectedIcon: 'icon-layers-filled',
+        defaultIcon: 'icon-layers',
+        access: 'canSeeAdmin',
+        component: './llmodels/catalog'
+      },
+      {
         name: 'providers',
         path: '/models/providers',
         key: 'modelProviders',
@@ -115,16 +125,7 @@ export default [
         access: 'canSeeAdmin',
         component: './maas-provider/index'
       },
-      {
-        name: 'routes',
-        path: '/models/routes',
-        key: 'routes',
-        icon: 'icon-captive_portal',
-        selectedIcon: 'icon-captive_portal',
-        defaultIcon: 'icon-captive_portal',
-        access: 'canSeeAdmin',
-        component: './model-routes/index'
-      },
+
       {
         name: 'userModels',
         path: '/models/user-models',

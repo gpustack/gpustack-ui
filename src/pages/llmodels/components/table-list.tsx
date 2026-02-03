@@ -41,12 +41,10 @@ import {
 import {
   InstanceRealtimeLogStatus,
   modelCategories,
-  modelCategoriesMap,
   modelSourceMap
 } from '../config';
 import {
   ButtonList,
-  categoryToPathMap,
   modalConfig,
   sourceOptions
 } from '../config/button-actions';
@@ -351,26 +349,6 @@ const Models: React.FC<ModelsProps> = ({
     });
   };
 
-  const handleOpenPlayGround = (row: any) => {
-    for (const [category, path] of Object.entries(categoryToPathMap)) {
-      if (
-        row.categories?.includes(category) &&
-        [
-          modelCategoriesMap.text_to_speech,
-          modelCategoriesMap.speech_to_text
-        ].includes(category)
-      ) {
-        navigate(`${path}&model=${row.name}`);
-        return;
-      }
-      if (row.categories?.includes(category)) {
-        navigate(`${path}?model=${row.name}`);
-        return;
-      }
-    }
-    navigate(`/playground/chat?model=${row.name}`);
-  };
-
   const handleViewLogs = async (row: any) => {
     try {
       setCurrentInstance({
@@ -444,9 +422,6 @@ const Models: React.FC<ModelsProps> = ({
     try {
       if (val === 'edit') {
         handleEdit(row);
-      }
-      if (val === 'chat') {
-        handleOpenPlayGround(row);
       }
       if (val === 'delete') {
         handleDelete(row);

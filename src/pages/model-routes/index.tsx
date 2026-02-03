@@ -36,6 +36,7 @@ import RouteTargets from './components/route-targets';
 import { FormData, RouteItem as ListItem } from './config/types';
 import useAccessControl from './hooks/use-access-control';
 import useCreateRoute from './hooks/use-create-route';
+import useOpenPlayground from './hooks/use-open-playground';
 import useRoutesColumns from './hooks/use-routes-columns';
 import useTargetSourceModels from './hooks/use-target-source-models';
 
@@ -73,6 +74,7 @@ const ModelRoutes: React.FC = () => {
     openAccessControlModalStatus
   } = useAccessControl();
   const { sourceModels, fetchSourceModels } = useTargetSourceModels();
+  const { handleOpenPlayGround } = useOpenPlayground();
   const [modelList, setModelsList] = useState<Global.BaseOption<number>[]>([]);
 
   useEffect(() => {
@@ -145,6 +147,8 @@ const ModelRoutes: React.FC = () => {
         intl.formatMessage({ id: 'models.button.accessSettings' }),
         row
       );
+    } else if (val === 'chat') {
+      handleOpenPlayGround(row);
     }
   });
 

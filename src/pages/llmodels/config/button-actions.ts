@@ -39,16 +39,6 @@ export const ActionList: ActionItem[] = [
     key: 'edit',
     icon: icons.EditOutlined
   },
-  // {
-  //   label: 'common.button.detail',
-  //   key: 'details',
-  //   icon: icons.FileTextOutlined
-  // },
-  {
-    label: 'models.openinplayground',
-    key: 'chat',
-    icon: icons.ExperimentOutlined
-  },
   {
     label: 'common.button.start',
     key: 'start',
@@ -59,11 +49,6 @@ export const ActionList: ActionItem[] = [
     key: 'api',
     icon: icons.ApiOutlined
   },
-  // {
-  //   label: 'models.button.accessSettings',
-  //   key: 'accessControl',
-  //   icon: icons.Permission
-  // },
   {
     label: 'common.button.stop',
     key: 'stop',

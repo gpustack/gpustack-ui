@@ -25,6 +25,11 @@ export const rowActionList = [
     icon: icons.EditOutlined
   },
   {
+    label: 'models.openinplayground',
+    key: 'chat',
+    icon: icons.ExperimentOutlined
+  },
+  {
     label: 'models.button.accessSettings',
     key: 'accessControl',
     icon: icons.Permission

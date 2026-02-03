@@ -16,6 +16,15 @@ const useAccessColumns = (
 ): SealColumnProps[] => {
   const intl = useIntl();
 
+  const filterActions = (record: RouteItem) => {
+    return rowActionList.filter((action) => {
+      if (action.key === 'chat') {
+        return record.ready_targets > 0;
+      }
+      return true;
+    });
+  };
+
   return useMemo(() => {
     return [
       {
@@ -59,7 +68,7 @@ const useAccessColumns = (
         span: 4,
         render: (value: string, record: RouteItem) => (
           <DropdownButtons
-            items={rowActionList}
+            items={filterActions(record)}
             onSelect={(val) => handleSelect(val, record)}
           ></DropdownButtons>
         )

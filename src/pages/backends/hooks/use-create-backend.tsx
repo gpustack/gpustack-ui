@@ -60,7 +60,7 @@ const useCreateBackend = () => {
     closeBackendModal: handleCloseModal,
     addBackend: handleAddBackend,
     editBackend: handleEditBackend,
-    openBackendModalStatus: openCustomModalStatus, // for create custom backend and edit
+    openBackendModalStatus: openCustomModalStatus, // for create custom backend and edit custom/builtin/community backend
     openCommunityModalStatus: openCommunityModalStatus, // for create community backend
     addActions: addItems
   };

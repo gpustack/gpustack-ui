@@ -67,7 +67,7 @@ const VersionsForm: React.FC<AddModalProps> = ({
   const defaultCollapseKey =
     action === 'edit' ? new Set<number>() : new Set([0]);
   const form = Form.useFormInstance();
-  const { backendSource } = useFormContext();
+  const { backendSource, showCustomSuffix } = useFormContext();
   const version_configs = Form.useWatch('version_configs', form);
   const [collapseKey, setCollapseKey] =
     React.useState<Set<number | string>>(defaultCollapseKey);
@@ -329,7 +329,7 @@ const VersionsForm: React.FC<AddModalProps> = ({
                     >
                       <SealInput.Input
                         trim
-                        addAfter={isBuiltin ? '-custom' : null}
+                        addAfter={showCustomSuffix ? '-custom' : null}
                         onChange={handleVersionChange}
                         label={intl.formatMessage({ id: 'backend.version' })}
                         required

@@ -22,6 +22,10 @@ const BackendForm: React.FC<AddModalProps> = forwardRef(
     const [activeKey, setActiveKey] = React.useState<string[]>([]);
     const backendSource = Form.useWatch('backend_source', form);
 
+    const showCustomSuffix =
+      currentData?.backend_source === BackendSourceValueMap.BUILTIN ||
+      currentData?.backend_source === BackendSourceValueMap.COMMUNITY;
+
     const onFinishFailed = (errorInfo: any) => {
       const errorFields = errorInfo.errorFields || [];
       if (errorFields.length > 0) {
@@ -44,14 +48,18 @@ const BackendForm: React.FC<AddModalProps> = forwardRef(
             ? `${values.backend_name}-custom`
             : values.backend_name
       };
+
+      // add '-custom' suffix to version_no in version_configs when backendSource is BUILTIN or COMMUNITY
       data.version_configs = data.version_configs?.map((item) => {
         if (item.version_no) {
           return {
             ...item,
-            version_no:
-              backendSource === BackendSourceValueMap.BUILTIN
-                ? `${item.version_no}-custom`
-                : item.version_no
+            version_no: [
+              BackendSourceValueMap.BUILTIN,
+              BackendSourceValueMap.COMMUNITY
+            ].includes(backendSource)
+              ? `${item.version_no}-custom`
+              : item.version_no
           };
         }
         return item;
@@ -85,7 +93,11 @@ const BackendForm: React.FC<AddModalProps> = forwardRef(
 
     return (
       <FormContext.Provider
-        value={{ action: action, backendSource: backendSource }}
+        value={{
+          action: action,
+          backendSource: backendSource,
+          showCustomSuffix: showCustomSuffix
+        }}
       >
         <Form
           name="basicForm"

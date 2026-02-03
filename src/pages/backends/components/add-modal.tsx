@@ -7,7 +7,7 @@ import { PageActionType } from '@/config/types';
 import { useIntl } from '@umijs/max';
 import { Tabs } from 'antd';
 import _ from 'lodash';
-import React, { useEffect, useId, useRef, useState } from 'react';
+import React, { useEffect, useId, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import ColumnWrapper from '../../_components/column-wrapper';
 import {
@@ -41,6 +41,14 @@ interface AddModalProps {
   title?: string;
 }
 
+const versionFields = [
+  'image_name',
+  'run_command',
+  'custom_framework',
+  'entrypoint',
+  'env'
+];
+
 const AddModal: React.FC<AddModalProps> = (props) => {
   const { action, currentData, onClose, onSubmit, onSubmitYaml, open, title } =
     props;
@@ -52,25 +60,29 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   const [yamlContent, setYamlContent] = useState<string>('');
   const [formContent, setFormContent] = useState<FormData>({} as FormData);
 
-  const versionFields = [
-    'image_name',
-    'run_command',
-    'custom_framework',
-    'entrypoint',
-    'env'
-  ];
+  const showVersionCustomSuffix =
+    currentData?.backend_source === BackendSourceValueMap.BUILTIN ||
+    currentData?.backend_source === BackendSourceValueMap.COMMUNITY;
+
+  const backendSource = useMemo(
+    () => currentData?.backend_source || BackendSourceValueMap.CUSTOM,
+    [currentData]
+  );
 
   // remove '-custom' suffix from version_no in currentData, when action is EDIT
   const genertateCurrentVersionData = (values: ListItem): ListItem => {
     const data = { ...values };
-    data.version_configs = Object.entries(data.version_configs || {}).reduce(
-      (acc, [key, value]) => {
-        const version = key.replace(/-custom$/, '');
-        acc[version] = { ...value, backend_source: data.backend_source };
-        return acc;
-      },
-      {} as any
-    );
+
+    if (showVersionCustomSuffix) {
+      data.version_configs = Object.entries(data.version_configs || {}).reduce(
+        (acc, [key, value]) => {
+          const version = key.replace(/-custom$/, '');
+          acc[version] = { ...value, backend_source: data.backend_source };
+          return acc;
+        },
+        {} as any
+      );
+    }
 
     return data;
   };
@@ -267,7 +279,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
                 <ImportYAML
                   actionStatus={{
                     action: action,
-                    isBuiltIn: currentData?.is_built_in || false
+                    backendSource: backendSource
                   }}
                   ref={editorRef}
                   content={yamlContent}

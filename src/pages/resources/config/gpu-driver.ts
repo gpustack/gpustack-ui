@@ -175,6 +175,20 @@ const generateEnvArgs = (params: any) => {
   return envArgs;
 };
 
+// concat the args, the args is a key-value
+const generateExtraArgs = (params: any) => {
+  const args = params.registrationInfo?.args || {};
+  const argsList = Object.entries(args);
+  if (argsList.length === 0) {
+    return '';
+  }
+  let argsStr = '';
+  argsList.forEach(([key, value]) => {
+    argsStr += `${key} ${value} \\\n      `;
+  });
+  return argsStr;
+};
+
 const generateExtraModelDirArg = (modelDir: string) => {
   const pathList = modelDir
     ?.split(',')
@@ -208,7 +222,8 @@ const setWorkerIPArg = (params: any) => {
 
 const setImageArgs = (params: any) => {
   return `${params.image} \\
-      --server-url ${params.server} \\`;
+      --server-url ${params.server} \\
+      ${generateExtraArgs(params)}`;
 };
 
 // avaliable for  NVIDIA、MThreads

@@ -1,13 +1,10 @@
-import SealCascader from '@/components/seal-form/seal-cascader';
-import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import TooltipList from '@/components/tooltip-list';
 import useAppUtils from '@/hooks/use-app-utils';
-import { BackendSourceValueMap } from '@/pages/backends/config';
 import { CaretDownOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { useIntl, useNavigate } from '@umijs/max';
 import { Form, Select } from 'antd';
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import { backendTipsList } from '../config';
 import { backendOptionsMap } from '../config/backend-parameters';
@@ -31,13 +28,8 @@ const BackendFields: React.FC = () => {
   const navigate = useNavigate();
   const { getRuleMessage } = useAppUtils();
   const form = Form.useFormInstance();
-  const {
-    action,
-    onValuesChange,
-    backendOptions,
-    flatBackendOptions,
-    onBackendChange
-  } = useFormContext();
+  const { action, onValuesChange, backendOptions, onBackendChange } =
+    useFormContext();
   const backend = Form.useWatch('backend', form);
   const [showDeprecated, setShowDeprecated] = React.useState<boolean>(false);
   const [selectedBackend, setSelectedBackend] =
@@ -50,22 +42,6 @@ const BackendFields: React.FC = () => {
 
     onValuesChange?.({}, form.getFieldsValue());
   };
-
-  const backendHelperText = useMemo(() => {
-    const selected = flatBackendOptions?.find((item) => item.value === backend);
-    if (
-      selected &&
-      !selected.enabled &&
-      selected.backend_source === BackendSourceValueMap.COMMUNITY
-    ) {
-      return (
-        <span style={{ color: 'var(--ant-color-error)' }}>
-          {intl.formatMessage({ id: 'models.form.backend.helperText' })}
-        </span>
-      );
-    }
-    return null;
-  }, [backend, flatBackendOptions, intl]);
 
   const backendVersions = useMemo((): {
     builtIn: any[];
@@ -137,30 +113,16 @@ const BackendFields: React.FC = () => {
     );
   };
 
-  const handleOnBackendChange = (value: any[], option: any[]) => {
-    const selectedBackend = value?.[1];
-    const selectedOption = option?.[1] || {};
-
+  const handleOnBackendChange = (value: any, option: any) => {
+    console.log('Selected backend value:', value, option);
     form.setFieldsValue({
-      backend: selectedBackend
+      backend: value
     });
     form.setFieldValue('env', {
-      ...(selectedOption.default_env || {})
+      ...(option.default_env || {})
     });
-    onBackendChange?.(selectedBackend, selectedOption);
-    setSelectedBackend(selectedOption);
-  };
-
-  const displayRender = (labels: any[], selectedOptions?: any[]) => {
-    const groupTitle = selectedOptions?.[0]?.title;
-    if (!groupTitle) {
-      return <span>{labels?.[0]}</span>;
-    }
-    return (
-      <span className="flex-center">
-        {intl.formatMessage({ id: groupTitle })} / {labels?.[1]}
-      </span>
-    );
+    onBackendChange?.(value, option);
+    setSelectedBackend(option);
   };
 
   const renderDeprecatedVersionOptions = (values: any[]) => {
@@ -192,73 +154,35 @@ const BackendFields: React.FC = () => {
     );
   };
 
-  const BackendNode = (props: any) => {
-    const { data: backend } = props;
-    return backend.isLeaf ? (
-      <span className="flex-center">
-        {backend.label}
-        {backend.backend_source === BackendSourceValueMap.COMMUNITY &&
-          !backend.enabled && (
-            <span className="text-tertiary m-l-4">
-              [{intl.formatMessage({ id: 'common.status.disabled' })}]
-            </span>
-          )}
-      </span>
-    ) : (
-      <span>{intl.formatMessage({ id: backend.title })}</span>
-    );
+  const optionRender = (option: any) => {
+    return option.data.title;
   };
 
-  useEffect(() => {
-    if (backend) {
-      const selected = flatBackendOptions?.find(
-        (item) => item.value === backend
-      );
-      if (selected) {
-        form.setFieldValue('backend_selection', [
-          selected.backend_source,
-          backend
-        ]);
-      }
-      // TODO: init env variables from selected backend, when action is CREATE
-    }
-  }, [backend, flatBackendOptions]);
+  const labelRender = (option: any) => {
+    return option.title;
+  };
 
   return (
     <>
-      <Form.Item name="backend" hidden>
-        <SealInput.Input></SealInput.Input>
-      </Form.Item>
       <Form.Item
-        name="backend_selection"
+        name="backend"
         rules={[
           {
             required: true,
             message: getRuleMessage('select', 'models.form.backend')
           }
         ]}
-        help={backendHelperText}
       >
-        <SealCascader
+        <SealSelect
           required
           showSearch
-          allowClear={false}
-          changeOnSelect={false}
-          expandTrigger="hover"
-          multiple={false}
-          classNames={{
-            popup: {
-              root: 'cascader-popup-wrapper gpu-selector'
-            }
-          }}
-          maxTagCount={1}
-          label={intl.formatMessage({ id: 'models.form.backend' })}
-          options={backendOptions}
-          getPopupContainer={(triggerNode) => triggerNode.parentNode}
-          optionNode={BackendNode}
-          displayRender={displayRender}
           onChange={handleOnBackendChange}
-        ></SealCascader>
+          label={intl.formatMessage({ id: 'models.form.backend' })}
+          description={<TooltipList list={backendTipsList}></TooltipList>}
+          options={backendOptions}
+          optionRender={optionRender}
+          labelRender={labelRender}
+        ></SealSelect>
       </Form.Item>
       {backendOptionsMap.custom !== backend && (
         <Form.Item name="backend_version">

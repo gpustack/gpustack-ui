@@ -2,16 +2,17 @@ import AlertBlockInfo from '@/components/alert-info/block';
 import ModalFooter from '@/components/modal-footer';
 import { PageActionType } from '@/config/types';
 import FormDrawer from '@/pages/_components/form-drawer';
+import { RouteItem } from '@/pages/model-routes/config/types';
 import { useIntl } from '@umijs/max';
 import { message } from 'antd';
 import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
 import { updateModelAccessUser } from '../../apis';
-import { AccessControlFormData, ListItem } from '../../config/types';
+import { AccessControlFormData } from '../../config/types';
 import AccessControlForm from './form';
 
 const AccessControlModal: React.FC<
-  Global.ScrollerModalProps<ListItem, AccessControlFormData>
+  Global.ScrollerModalProps<RouteItem, AccessControlFormData>
 > = ({ open, title, currentData, action, onCancel }) => {
   const intl = useIntl();
   const form = useRef<any>(null);

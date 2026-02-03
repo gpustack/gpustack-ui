@@ -2,6 +2,7 @@ import AutoTooltip from '@/components/auto-tooltip';
 import DropdownButtons from '@/components/drop-down-buttons';
 import RowChildren from '@/components/seal-table/components/row-children';
 import StatusTag from '@/components/status-tag';
+import ProviderLogo from '@/pages/maas-provider/components/provider-logo';
 import { DeleteOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Col, Row } from 'antd';
@@ -10,6 +11,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { TargetStatus, TargetStatusLabelMap } from '../config';
 import { RouteTarget } from '../config/types';
+
 const CellContent = styled.div`
   display: flex;
   align-items: center;
@@ -20,12 +22,14 @@ interface ProviderModelProps {
   dataList: RouteTarget[];
   onSelect: (val: any, record: any) => void;
   sourceModels: any[];
+  modelList?: Global.BaseOption<number>[];
 }
 
-interface AccessItemProps {
+interface TargetItemProps {
   onSelect: (val: any, record: any) => void;
   data: any;
   sourceModels: any[];
+  modelList?: Global.BaseOption<number>[];
 }
 
 export const childActionList = [
@@ -44,10 +48,11 @@ export const childActionList = [
   }
 ];
 
-const RouteItem: React.FC<AccessItemProps> = ({
+const RouteItem: React.FC<TargetItemProps> = ({
   onSelect,
   data,
-  sourceModels
+  sourceModels,
+  modelList
 }) => {
   const intl = useIntl();
 
@@ -58,8 +63,19 @@ const RouteItem: React.FC<AccessItemProps> = ({
       }
       return item.value === data.provider_id;
     });
-    console.log('renderProviderSource model:', data, sourceModels);
-    return model?.label || '-';
+    if (!model) {
+      return '-';
+    }
+    return (
+      <span className="flex-center" style={{ gap: 8, width: '100%' }}>
+        <ProviderLogo provider={model.providerType}></ProviderLogo>
+        <AutoTooltip ghost minWidth={20}>
+          {data.model_id
+            ? modelList?.find((m) => m.value === data.model_id)?.label
+            : data.provider_model_name}
+        </AutoTooltip>
+      </span>
+    );
   };
   return (
     <div style={{ borderRadius: 'var(--ant-table-header-border-radius)' }}>
@@ -74,7 +90,7 @@ const RouteItem: React.FC<AccessItemProps> = ({
               <AutoTooltip ghost>{data.name}</AutoTooltip>
             </CellContent>
           </Col>
-          <Col span={4} style={{ paddingLeft: 56 }}>
+          <Col span={5} style={{ paddingLeft: 56 }}>
             <CellContent>{renderProviderSource()}</CellContent>
           </Col>
           <Col span={3}>
@@ -101,7 +117,7 @@ const RouteItem: React.FC<AccessItemProps> = ({
                 )}
             </CellContent>
           </Col>
-          <Col span={3}>
+          <Col span={2}>
             <CellContent>
               <AutoTooltip ghost>
                 <StatusTag
@@ -142,6 +158,7 @@ const RouteItem: React.FC<AccessItemProps> = ({
 const RouteTargets: React.FC<ProviderModelProps> = ({
   dataList,
   onSelect,
+  modelList,
   sourceModels
 }) => {
   return (
@@ -152,6 +169,7 @@ const RouteTargets: React.FC<ProviderModelProps> = ({
           key={index}
           onSelect={onSelect}
           sourceModels={sourceModels}
+          modelList={modelList}
         ></RouteItem>
       ))}
     </div>

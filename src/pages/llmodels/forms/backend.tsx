@@ -9,7 +9,6 @@ import styled from 'styled-components';
 import { backendTipsList } from '../config';
 import { backendOptionsMap } from '../config/backend-parameters';
 import { useFormContext } from '../config/form-context';
-import { BackendOption } from '../config/types';
 
 const CaretDownWrapper = styled.span`
   display: flex;
@@ -28,12 +27,15 @@ const BackendFields: React.FC = () => {
   const navigate = useNavigate();
   const { getRuleMessage } = useAppUtils();
   const form = Form.useFormInstance();
-  const { action, onValuesChange, backendOptions, onBackendChange } =
-    useFormContext();
+  const {
+    action,
+    onValuesChange,
+    backendOptions,
+    flatBackendOptions,
+    onBackendChange
+  } = useFormContext();
   const backend = Form.useWatch('backend', form);
   const [showDeprecated, setShowDeprecated] = React.useState<boolean>(false);
-  const [selectedBackend, setSelectedBackend] =
-    React.useState<BackendOption | null>(null);
 
   const handleBackendVersionOnChange = (value: any, option: any) => {
     if (Object.keys(option.data.env || {}).length > 0) {
@@ -55,6 +57,10 @@ const BackendFields: React.FC = () => {
         deprecated: []
       };
     }
+
+    const selectedBackend = flatBackendOptions.find(
+      (item) => item.value === backend
+    );
 
     const versions = selectedBackend?.versions || [];
 
@@ -87,7 +93,7 @@ const BackendFields: React.FC = () => {
       custom: customVersions,
       deprecated: deprecatedVersions
     };
-  }, [backend, selectedBackend, intl]);
+  }, [backend, flatBackendOptions, intl]);
 
   const backendVersionLabelRender = (option: any) => {
     return option.title;
@@ -114,7 +120,6 @@ const BackendFields: React.FC = () => {
   };
 
   const handleOnBackendChange = (value: any, option: any) => {
-    console.log('Selected backend value:', value, option);
     form.setFieldsValue({
       backend: value
     });
@@ -122,7 +127,6 @@ const BackendFields: React.FC = () => {
       ...(option.default_env || {})
     });
     onBackendChange?.(value, option);
-    setSelectedBackend(option);
   };
 
   const renderDeprecatedVersionOptions = (values: any[]) => {

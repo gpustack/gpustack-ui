@@ -280,11 +280,11 @@ const ModelRoutes: React.FC = () => {
                 image={<IconFont type="icon-extension-outline" />}
                 filters={_.omit(queryParams, ['sort_by'])}
                 noFoundText={intl.formatMessage({
-                  id: 'noresult.accesses.nofound'
+                  id: 'noresult.routes.nofound'
                 })}
-                title={intl.formatMessage({ id: 'noresult.accesses.title' })}
+                title={intl.formatMessage({ id: 'noresult.routes.title' })}
                 subTitle={intl.formatMessage({
-                  id: 'noresult.accesses.subTitle'
+                  id: 'noresult.routes.subTitle'
                 })}
                 onClick={handleClickDropdown}
                 buttonText={intl.formatMessage({ id: 'noresult.button.add' })}

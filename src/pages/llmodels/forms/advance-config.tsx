@@ -16,7 +16,7 @@ const AdvanceConfig = () => {
   const form = Form.useFormInstance();
   const EnviromentVars = Form.useWatch('env', form);
   const backend = Form.useWatch('backend', form);
-  const modelAccessEnable = Form.useWatch('enable_model_route', form);
+  const modelRouteEnable = Form.useWatch('enable_model_route', form);
   const {
     onValuesChange,
     backendOptions,
@@ -139,15 +139,12 @@ const AdvanceConfig = () => {
         style={{ marginBottom: 8 }}
       >
         <CheckboxField
-          description={intl.formatMessage({
-            id: 'models.form.enable_model_access.tips'
-          })}
           label={intl.formatMessage({
-            id: 'models.form.enable_model_access'
+            id: 'models.form.enableModelRoute'
           })}
         ></CheckboxField>
       </Form.Item>
-      {modelAccessEnable && (
+      {modelRouteEnable && (
         <Form.Item<FormData>
           name="generic_proxy"
           valuePropName="checked"

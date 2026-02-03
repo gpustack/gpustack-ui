@@ -242,8 +242,8 @@ export default {
   'models.catalog.precision': '精度',
   'models.form.gpuPerReplica.tips': '输入自定义数值',
   'models.form.generic_proxy': '启用通用代理',
-  'models.form.enable_model_access': '启用模型接入',
-  'models.form.enable_model_access.tips': '启用模型接入',
+  'models.form.enableModelRoute': '启用模型路由',
+  'models.form.enableModelRoute.tips': '启用模型路由',
   'models.form.generic_proxy.tips':
     '启用通用代理后可支持访问非 OpenAI-API 标准的 URI 路径。',
   'models.form.generic_proxy.button': '通用代理',

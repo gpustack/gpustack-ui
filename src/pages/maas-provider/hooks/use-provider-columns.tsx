@@ -9,7 +9,8 @@ import dayjs from 'dayjs';
 import { useMemo } from 'react';
 import ProviderLogo from '../components/provider-logo';
 import ProviderModels from '../components/provider-models';
-import { maasProviderLabelMap, rowActionList } from '../config';
+import { rowActionList } from '../config';
+import { maasProviderLabelMap } from '../config/providers';
 import { MaasProviderItem, ProviderModel } from '../config/types';
 
 const useProviderColumns = (

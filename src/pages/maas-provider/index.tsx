@@ -23,7 +23,7 @@ import {
 } from './apis';
 import AddMaasProvider from './components/add-provider-modal';
 import ProviderModels from './components/provider-models';
-import { maasProviderOptions } from './config';
+import { maasProviderOptions } from './config/providers';
 import {
   FormData,
   MaasProviderItem as ListItem,

@@ -8,7 +8,7 @@ import React, {
   useRef,
   useState
 } from 'react';
-import { yaml2Json, yamlTemplate } from '../config';
+import { BackendSourceValueMap, yaml2Json, yamlTemplate } from '../config';
 import createSchema from '../config/schema/create.json';
 import updateBuiltinSchema from '../config/schema/update-builtin.json';
 import udpateCustomSchema from '../config/schema/update-custom.json';
@@ -17,7 +17,7 @@ interface ImportYAMLProps {
   ref?: any;
   actionStatus: {
     action: PageActionType;
-    isBuiltIn: boolean;
+    backendSource: string;
   };
   content?: string;
   onSubmit?: (content: string) => void;
@@ -53,7 +53,7 @@ const ImportYAML: React.FC<ImportYAMLProps> = forwardRef(
         console.log('exsistingVersions', jsonData);
         // Check backend version rules
         if (
-          actionStatus.isBuiltIn &&
+          actionStatus.backendSource === BackendSourceValueMap.BUILTIN &&
           exsistingVersions.find((v) => !v?.endsWith('-custom'))
         ) {
           setError(intl.formatMessage({ id: 'backend.version.no.tips' }));
@@ -62,7 +62,7 @@ const ImportYAML: React.FC<ImportYAMLProps> = forwardRef(
 
         // Check custom backend name rule
         if (
-          !actionStatus.isBuiltIn &&
+          actionStatus.backendSource === BackendSourceValueMap.CUSTOM &&
           actionStatus.action === PageAction.CREATE &&
           !jsonData.backend_name?.endsWith('-custom')
         ) {
@@ -74,7 +74,7 @@ const ImportYAML: React.FC<ImportYAMLProps> = forwardRef(
         if (
           jsonData.default_version &&
           !exsistingVersions.includes(jsonData.default_version) &&
-          !actionStatus.isBuiltIn
+          actionStatus.backendSource === BackendSourceValueMap.CUSTOM
         ) {
           // the default_version must be in [existingVersions]
           setError(
@@ -118,7 +118,7 @@ const ImportYAML: React.FC<ImportYAMLProps> = forwardRef(
         schema={
           actionStatus.action === PageAction.CREATE
             ? createSchema
-            : actionStatus.isBuiltIn
+            : actionStatus.backendSource === BackendSourceValueMap.BUILTIN
               ? updateBuiltinSchema
               : udpateCustomSchema
         }

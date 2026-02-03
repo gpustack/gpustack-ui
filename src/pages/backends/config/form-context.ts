@@ -4,6 +4,7 @@ import { createContext, useContext } from 'react';
 interface FormContextProps {
   action: PageActionType;
   backendSource: string;
+  showCustomSuffix: boolean;
 }
 
 export const FormContext = createContext<FormContextProps | null>(

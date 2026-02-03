@@ -16,32 +16,8 @@ interface BackendGroup {
   value: string;
   title?: string;
   isLeaf?: boolean;
-  children: BackendOption[];
+  options: BackendOption[];
 }
-
-const groupByBackendSource = (list: BackendOption[]): BackendGroup[] => {
-  const map = list.reduce<Record<string, BackendOption[]>>((acc, item) => {
-    const key = item.backend_source;
-
-    if (!acc[key]) {
-      acc[key] = [];
-    }
-
-    acc[key].push(item);
-    return acc;
-  }, {});
-
-  return Object.entries(map).map(([backend_source, backends]) => ({
-    label: backend_source,
-    value: backend_source,
-    title:
-      backend_source === BackendSourceValueMap.CUSTOM
-        ? BackendSourceLabelMap[BackendSourceValueMap.USER_DEFINED]
-        : BackendSourceLabelMap[backend_source],
-    isLeaf: false,
-    children: backends
-  }));
-};
 
 export default function useQueryBackends() {
   const [backendOptions, setBackendOptions] = useAtom(backendOptionsAtom);
@@ -49,6 +25,32 @@ export default function useQueryBackends() {
     []
   );
   const intl = useIntl();
+
+  const groupByBackendSource = (list: BackendOption[]): BackendGroup[] => {
+    const map = list.reduce<Record<string, BackendOption[]>>((acc, item) => {
+      const key = item.backend_source;
+
+      if (!acc[key]) {
+        acc[key] = [];
+      }
+
+      acc[key].push(item);
+      return acc;
+    }, {});
+
+    return Object.entries(map).map(([backend_source, backends]) => {
+      const title =
+        backend_source === BackendSourceValueMap.CUSTOM
+          ? BackendSourceLabelMap[BackendSourceValueMap.USER_DEFINED]
+          : BackendSourceLabelMap[backend_source];
+      return {
+        value: backend_source,
+        label: title ? intl.formatMessage({ id: title }) : backend_source,
+        isLeaf: false,
+        options: backends
+      };
+    });
+  };
 
   const getBackendOptions = async (params?: { cluster_id: number }) => {
     try {

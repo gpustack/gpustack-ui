@@ -24,7 +24,7 @@ interface FormContextProps {
     label: string;
     value: string;
     title?: string;
-    children: BackendOption[];
+    options: BackendOption[];
   }[];
   flatBackendOptions: BackendOption[];
   initialValues?: FormData; // for editing model

@@ -51,7 +51,7 @@ export interface BackGroupOption {
   label: string;
   value: string;
   title?: string;
-  children: BackendOption[];
+  options: BackendOption[];
 }
 
 export const backendOptionsAtom = atom<BackGroupOption[]>([]);

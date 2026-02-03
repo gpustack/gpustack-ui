@@ -4,6 +4,7 @@ import { PageActionType } from '@/config/types';
 import CollapsePanel from '@/pages/_components/collapse-panel';
 import { useWrapperContext } from '@/pages/_components/column-wrapper/use-wrapper-context';
 import ScrollSpyTabs from '@/pages/_components/scroll-spy-tabs';
+import { json2Yaml, yaml2Json } from '@/pages/backends/config';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
@@ -41,6 +42,7 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
   const { getScrollElementScrollableHeight } = useWrapperContext();
   const [activeKey, setActiveKey] = useState<string[]>([TABKeysMap.BASIC]);
   const scrollTabsRef = useRef<any>(null);
+  const advanceRef = useRef<any>(null);
 
   const segmentOptions = [
     {
@@ -69,7 +71,11 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
     );
     const data = {
       ..._.omit(values, ['api_key']),
-      api_tokens: _.concat([], values.api_key, apiTokens || [])
+      api_tokens: _.concat([], values.api_key, apiTokens || []),
+      config: {
+        type: values.config.type,
+        ...yaml2Json(advanceRef.current?.getYamlValue() || '')
+      }
     };
     onFinish(data);
   };
@@ -100,7 +106,8 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
         ...currentData,
         api_key: currentData.api_tokens?.[0] || '',
         api_tokens: currentData.api_tokens?.slice(1) || [],
-        proxy_enabled: !!currentData.proxy_url
+        proxy_enabled: !!currentData.proxy_url,
+        custom_config: json2Yaml(_.omit(currentData.config, ['type']) || {})
       });
     }
   }, [form, currentData, action]);
@@ -144,7 +151,12 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
                 key: TABKeysMap.ADVANCED,
                 label: intl.formatMessage({ id: 'resources.form.advanced' }),
                 forceRender: true,
-                children: <AdvanceConfig action={action}></AdvanceConfig>
+                children: (
+                  <AdvanceConfig
+                    action={action}
+                    ref={advanceRef}
+                  ></AdvanceConfig>
+                )
               }
             ]}
           ></CollapsePanel>

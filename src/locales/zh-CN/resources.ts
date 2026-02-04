@@ -103,5 +103,5 @@ export default {
   'resources.worker.maintenance.tips':
     '进入维护模式后，节点将停止调度新的模型实例部署任务，正在运行的实例不会受到影响。',
   'resources.worker.noCluster.tips': '当前无可用集群，请先创建集群再添加节点。',
-  'resources.metrics.details': '监控详情'
+  'resources.metrics.details': '监控'
 };

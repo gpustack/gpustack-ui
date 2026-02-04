@@ -86,14 +86,14 @@ export default [
         redirect: '/models/deployments'
       },
       {
-        name: 'routes',
-        path: '/models/routes',
-        key: 'routes',
-        icon: 'icon-captive_portal',
-        selectedIcon: 'icon-captive_portal',
-        defaultIcon: 'icon-captive_portal',
+        name: 'modelCatalog',
+        path: '/models/catalog',
+        key: 'modelsCatalog',
+        icon: 'icon-layers',
+        selectedIcon: 'icon-layers-filled',
+        defaultIcon: 'icon-layers',
         access: 'canSeeAdmin',
-        component: './model-routes/index'
+        component: './llmodels/catalog'
       },
       {
         name: 'deployment',
@@ -106,14 +106,14 @@ export default [
         component: './llmodels/index'
       },
       {
-        name: 'modelCatalog',
-        path: '/models/catalog',
-        key: 'modelsCatalog',
-        icon: 'icon-layers',
-        selectedIcon: 'icon-layers-filled',
-        defaultIcon: 'icon-layers',
+        name: 'routes',
+        path: '/models/routes',
+        key: 'routes',
+        icon: 'icon-captive_portal',
+        selectedIcon: 'icon-captive_portal',
+        defaultIcon: 'icon-captive_portal',
         access: 'canSeeAdmin',
-        component: './llmodels/catalog'
+        component: './model-routes/index'
       },
       {
         name: 'providers',

@@ -3,7 +3,7 @@ import { getAtomStorage } from '@/atoms/utils';
 import VersionInfo, { modalConfig } from '@/components/version-info';
 import externalLinks from '@/constants/external-links';
 import { useIntl } from '@umijs/max';
-import { Button, Divider, Modal } from 'antd';
+import { Button, Divider, Modal, Typography } from 'antd';
 import { createStyles } from 'antd-style';
 import styled from 'styled-components';
 
@@ -54,7 +54,13 @@ const Footer: React.FC = () => {
               <CompanyWrapper>
                 <span>&copy;</span>
                 <span> {new Date().getFullYear()}</span>
-                <span> {intl.formatMessage({ id: 'settings.company' })}</span>
+                <Typography.Link
+                  href="https://gpustack.ai"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {intl.formatMessage({ id: 'settings.company' })}
+                </Typography.Link>
               </CompanyWrapper>
               <Divider orientation="vertical" />
               <Button

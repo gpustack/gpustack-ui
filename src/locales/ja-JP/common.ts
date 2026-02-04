@@ -205,7 +205,7 @@ export default {
   'common.form.password': 'パスワード',
   'common.form.username': 'ユーザー名',
   'common.login.rember': 'ログイン状態を保持',
-  'settings.company': 'SEAL',
+  'settings.company': 'GPUStack.ai',
   'common.button.help': 'ヘルプ',
   'common.button.feedback': 'フィードバック',
   'common.button.docs': 'ドキュメント',

@@ -40,14 +40,19 @@ export const ActionList: ActionItem[] = [
     icon: icons.EditOutlined
   },
   {
+    label: 'models.openinplayground',
+    key: 'chat',
+    icon: icons.ExperimentOutlined
+  },
+  {
+    key: 'copy',
+    label: 'common.button.duplicate',
+    icon: icons.CopyOutlined
+  },
+  {
     label: 'common.button.start',
     key: 'start',
     icon: icons.Play
-  },
-  {
-    label: 'models.table.button.apiAccessInfo',
-    key: 'api',
-    icon: icons.ApiOutlined
   },
   {
     label: 'common.button.stop',

@@ -10,6 +10,7 @@ import { TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import useTableFetch from '@/hooks/use-table-fetch';
 import useWatchList from '@/hooks/use-watch-list';
+import APIAccessInfoModal from '@/pages/llmodels/components/api-access-info';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { message } from 'antd';
@@ -39,6 +40,7 @@ import useCreateRoute from './hooks/use-create-route';
 import useOpenPlayground from './hooks/use-open-playground';
 import useRoutesColumns from './hooks/use-routes-columns';
 import useTargetSourceModels from './hooks/use-target-source-models';
+import useViewApIInfo from './hooks/use-view-api-info';
 
 const ModelRoutes: React.FC = () => {
   const {
@@ -75,6 +77,7 @@ const ModelRoutes: React.FC = () => {
   } = useAccessControl();
   const { sourceModels, fetchSourceModels } = useTargetSourceModels();
   const { handleOpenPlayGround } = useOpenPlayground();
+  const { apiAccessInfo, openViewAPIInfo, closeViewAPIInfo } = useViewApIInfo();
   const [modelList, setModelsList] = useState<Global.BaseOption<number>[]>([]);
 
   useEffect(() => {
@@ -149,6 +152,8 @@ const ModelRoutes: React.FC = () => {
       );
     } else if (val === 'chat') {
       handleOpenPlayGround(row);
+    } else if (val === 'api') {
+      openViewAPIInfo(row);
     }
   });
 
@@ -316,6 +321,11 @@ const ModelRoutes: React.FC = () => {
         currentData={openAccessControlModalStatus.currentData}
         action={openAccessControlModalStatus.action}
       ></AccessControlModal>
+      <APIAccessInfoModal
+        open={apiAccessInfo.show}
+        data={apiAccessInfo.data}
+        onClose={closeViewAPIInfo}
+      ></APIAccessInfoModal>
       <DeleteModal ref={modalRef}></DeleteModal>
     </>
   );

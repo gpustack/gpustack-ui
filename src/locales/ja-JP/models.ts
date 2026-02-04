@@ -2,6 +2,7 @@ export default {
   'models.button.deploy': 'モデルをデプロイ',
   'models.title': 'モデル',
   'models.title.edit': 'モデルを編集',
+  'models.title.duplicate': 'モデルを複製',
   'models.table.models': 'モデル',
   'models.table.name': 'モデル名',
   'models.form.source': 'ソース',

@@ -13,10 +13,19 @@ const Basic = () => {
   const { getRuleMessage } = useAppUtils();
   return (
     <>
-      <Form.Item name="name" data-field="name">
+      <Form.Item
+        name="name"
+        data-field="name"
+        rules={[
+          {
+            required: true,
+            message: getRuleMessage('input', 'common.table.name')
+          }
+        ]}
+      >
         <SealInput.Input
           required
-          label={intl.formatMessage({ id: 'models.table.name' })}
+          label={intl.formatMessage({ id: 'common.table.name' })}
         />
       </Form.Item>
       <Form.Item

@@ -1,10 +1,10 @@
 import ModalFooter from '@/components/modal-footer';
 import GSDrawer from '@/components/scroller-modal/gs-drawer';
+import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { useIntl } from '@umijs/max';
-import { Button } from 'antd';
 import _ from 'lodash';
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import ColumnWrapper from '../../_components/column-wrapper';
 import {
   DeployFormKeyMap,
@@ -22,9 +22,10 @@ type AddModalProps = {
   title: string;
   action: PageActionType;
   open: boolean;
-  updateFormInitials: {
+  currentData: {
     data: FormData;
     isGGUF: boolean;
+    realAction?: PageActionType;
   };
   clusterList: Global.BaseOption<
     number,
@@ -48,7 +49,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     onOk,
     onCancel,
     clusterList,
-    updateFormInitials: { isGGUF, data: formData }
+    currentData: { isGGUF, data: formData, realAction }
   } = props || {};
   const intl = useIntl();
   const {
@@ -198,14 +199,6 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     onCancel?.();
   };
 
-  const showExtraButton = useMemo(() => {
-    return (
-      warningStatus.show &&
-      warningStatus.type !== 'success' &&
-      !warningStatus.isDefault
-    );
-  }, [warningStatus.show, warningStatus.type, warningStatus.isDefault]);
-
   useEffect(() => {
     const initGPUSelector = async () => {
       const gpuOptions = await formRef.current?.getGPUOptionList({
@@ -256,31 +249,23 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
         }}
         footer={
           <>
-            <CompatibilityAlert
-              showClose={false}
-              onClose={() => {
-                setWarningStatus({
-                  show: false,
-                  message: ''
-                });
-              }}
-              warningStatus={warningStatus}
-              contentStyle={{ paddingInline: 0 }}
-            ></CompatibilityAlert>
+            {realAction === PageAction.EDIT && (
+              <CompatibilityAlert
+                showClose={false}
+                onClose={() => {
+                  setWarningStatus({
+                    show: false,
+                    message: ''
+                  });
+                }}
+                warningStatus={warningStatus}
+                contentStyle={{ paddingInline: 0 }}
+              ></CompatibilityAlert>
+            )}
             <ModalFooter
               style={ModalFooterStyle}
               onCancel={onCancel}
               onOk={handleSumit}
-              showOkBtn={!showExtraButton}
-              extra={
-                showExtraButton && (
-                  <Button type="primary" onClick={handleSubmitAnyway}>
-                    {intl.formatMessage({
-                      id: 'models.form.submit.anyway'
-                    })}
-                  </Button>
-                )
-              }
             ></ModalFooter>
           </>
         }

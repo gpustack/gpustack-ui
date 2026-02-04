@@ -38,13 +38,10 @@ export interface RouteTarget {
   id: number;
   created_at: string;
   updated_at: string;
-  deleted_at: string;
-  provider_model_name: string;
-  weight: number | null;
+  weight: number;
   model_id: number;
-  provider_id: number;
   name: string;
+  route_name: string;
   route_id: number;
   state: string;
-  fallback_status_codes: string[];
 }

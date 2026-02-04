@@ -179,14 +179,13 @@ const generateEnvArgs = (params: any) => {
 
 // concat the args, the args is a key-value
 const generateExtraArgs = (params: any) => {
-  const args = params.registrationInfo?.args || {};
-  const argsList = Object.entries(args);
-  if (argsList.length === 0) {
+  const args = params.registrationInfo?.args || [];
+  if (args.length === 0) {
     return '';
   }
   let argsStr = '';
-  argsList.forEach(([key, value]) => {
-    argsStr += `${key} ${_.isBoolean(value) ? value : value || ''} \\\n      `;
+  args.forEach((item: string[]) => {
+    argsStr += `${item[0]} ${_.isBoolean(item[1]) ? item[1] : item[1] || ''} \\\n      `;
   });
   return argsStr;
 };

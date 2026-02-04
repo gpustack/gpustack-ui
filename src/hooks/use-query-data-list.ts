@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from 'react';
 
  *  generic hook to query data list
  * @template ListItem
+ * @param Params - query params type, e.g. { page: number; perPage: number }
  * @param option.fetchList: (params, extra) => Promise<{ items: ListItem[] }>
  * @returns loading, dataList, fetchData, cancelRequest
  */

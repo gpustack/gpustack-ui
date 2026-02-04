@@ -36,17 +36,18 @@ export async function deleteModelRoute(id: number) {
   });
 }
 
-export async function queryRouteTargets(params: { id: number }, options?: any) {
-  return request<Global.PageResponse<RouteTarget>>(
-    `${MODEL_ROUTE_TARGETS}?route_id=${params.id}`,
-    {
-      method: 'GET',
-      params: {
-        page: -1
-      },
-      cancelToken: options?.token
-    }
-  );
+export async function queryRouteTargets(
+  params: { id?: number },
+  options?: any
+) {
+  return request<Global.PageResponse<RouteTarget>>(`${MODEL_ROUTE_TARGETS}`, {
+    method: 'GET',
+    params: {
+      route_id: params.id,
+      page: -1
+    },
+    cancelToken: options?.token
+  });
 }
 
 export async function deleteModelRouteTarget(id: number) {

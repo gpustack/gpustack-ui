@@ -27,7 +27,12 @@ import _ from 'lodash';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import { MODEL_INSTANCE_API } from '../apis';
-import { InstanceStatusMap, InstanceStatusMapValue, status } from '../config';
+import {
+  InstanceStatusMap,
+  InstanceStatusMapValue,
+  modelCategoriesMap,
+  status
+} from '../config';
 import { backendOptionsMap } from '../config/backend-parameters';
 import { generateSource } from '../config/button-actions';
 import {
@@ -431,12 +436,18 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
   const intl = useIntl();
   const actionItems = useMemo(() => {
     return _.filter(childActionList, (action: any) => {
+      if (action.key === 'benchmark') {
+        return (
+          action.status.includes(instanceData.state) &&
+          modelData?.categories?.includes(modelCategoriesMap.llm)
+        );
+      }
       if (action.status && action.status.length > 0) {
         return action.status.includes(instanceData.state);
       }
       return true;
     });
-  }, [instanceData.state]);
+  }, [instanceData.state, modelData]);
 
   const createFileName = (name: string) => {
     const timestamp = dayjs().format('YYYY-MM-DD_HH-mm-ss');

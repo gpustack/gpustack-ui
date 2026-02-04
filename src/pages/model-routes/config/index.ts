@@ -30,6 +30,11 @@ export const rowActionList = [
     icon: icons.ExperimentOutlined
   },
   {
+    label: 'models.table.button.apiAccessInfo',
+    key: 'api',
+    icon: icons.ApiOutlined
+  },
+  {
     label: 'models.button.accessSettings',
     key: 'accessControl',
     icon: icons.Permission

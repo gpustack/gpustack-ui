@@ -18,7 +18,7 @@ const useAccessColumns = (
 
   const filterActions = (record: RouteItem) => {
     return rowActionList.filter((action) => {
-      if (action.key === 'chat') {
+      if (action.key === 'chat' || action.key === 'api') {
         return record.ready_targets > 0;
       }
       return true;

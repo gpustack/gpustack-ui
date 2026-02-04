@@ -3,8 +3,10 @@ import AutoTooltip from '@/components/auto-tooltip';
 import DropdownButtons from '@/components/drop-down-buttons';
 import { SealColumnProps } from '@/components/seal-table/types';
 import { OPENAI_COMPATIBLE, tableSorter } from '@/config/settings';
+import { TargetStatusValueMap } from '@/pages/model-routes/config';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
+import { useMemoizedFn } from 'ahooks';
 import { Tooltip } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
@@ -12,24 +14,6 @@ import { useMemo } from 'react';
 import ModelTag from '../../_components/model-tag';
 import { ActionList, generateSource } from '../config/button-actions';
 import { ListItem } from '../config/types';
-
-const setModelActionList = (record: any) => {
-  return _.filter(ActionList, (action: any) => {
-    if (action.key === 'chat' || action.key === 'api') {
-      return record.ready_replicas > 0;
-    }
-
-    if (action.key === 'start') {
-      return record.replicas === 0;
-    }
-
-    if (action.key === 'stop') {
-      return record.replicas > 0;
-    }
-
-    return true;
-  });
-};
 
 interface ModelsColumnsHookProps {
   handleSelect: (val: string, record: ListItem) => void;
@@ -43,9 +27,35 @@ interface ModelsColumnsHookProps {
 const useModelsColumns = ({
   handleSelect,
   clusterList,
-  sortOrder
-}: ModelsColumnsHookProps): SealColumnProps[] => {
+  sortOrder,
+  targetList
+}: ModelsColumnsHookProps & { targetList: any[] }): SealColumnProps[] => {
   const intl = useIntl();
+
+  const setModelActionList = useMemoizedFn((record: any) => {
+    return _.filter(ActionList, (action: any) => {
+      if (action.key === 'chat') {
+        return (
+          record.ready_replicas > 0 &&
+          targetList?.find(
+            (target) =>
+              target.model_id === record.id &&
+              target.state === TargetStatusValueMap.Active
+          )
+        );
+      }
+
+      if (action.key === 'start') {
+        return record.replicas === 0;
+      }
+
+      if (action.key === 'stop') {
+        return record.replicas > 0;
+      }
+
+      return true;
+    });
+  });
 
   return useMemo(() => {
     return [
@@ -137,7 +147,7 @@ const useModelsColumns = ({
         key: 'operation',
         dataIndex: 'operation',
         span: 3,
-        render: (text, record) => (
+        render: (text: any, record: ListItem) => (
           <DropdownButtons
             items={setModelActionList(record)}
             onSelect={(val) => handleSelect(val, record)}

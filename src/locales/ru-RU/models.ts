@@ -2,6 +2,7 @@ export default {
   'models.button.deploy': 'Развернуть модель',
   'models.title': 'Модели',
   'models.title.edit': 'Редактировать модель',
+  'models.title.duplicate': 'Дублировать модель',
   'models.table.models': 'Модели',
   'models.table.name': 'Название модели',
   'models.form.source': 'Источник',

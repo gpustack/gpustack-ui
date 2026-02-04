@@ -113,7 +113,7 @@ export default {
   'clusters.table.ip.internal': 'Internal',
   'clusters.table.ip.external': 'External',
   'clusters.form.serverUrl.tips':
-    'Specify an externally accessible GPUStack service URL if the worker cannot access GPUStack directly.',
+    'Specify an externally accessible GPUStack service URL if the worker cannot access GPUStack Server directly.',
   'clusters.form.setDefault': 'Set as Default',
   'clusters.form.setDefault.tips': 'Default for deployment.',
   'clusters.addworker.noClusters': 'No available Docker clusters found',
@@ -217,7 +217,7 @@ export default {
 // 78.  'clusters.addworker.dataVolume.tips': 'Specify a data storage path for GPUStack.',
 // 79.  'clusters.table.ip.internal': 'Internal',
 // 80.  'clusters.table.ip.external': 'External',
-// 81.  'clusters.form.serverUrl.tips': 'Specify an externally accessible GPUStack service URL if the worker cannot access GPUStack directly.',
+// 81.  'clusters.form.serverUrl.tips': 'Specify an externally accessible GPUStack service URL if the worker cannot access GPUStack Server directly.',
 // 82. 'clusters.addworker.externalIP.tips': 'Specify an external IP if the worker is in a VPC or private network.',
 // 83. 'clusters.form.setDefault': 'Set as Default',
 // 84. 'clusters.form.setDefault.tips': 'Default for deployment',

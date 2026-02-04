@@ -39,5 +39,5 @@ export default {
   'users.status.deactivate': 'Deactivate Account',
   'users.status.inactiveAccount': 'Inactive Account',
   'users.login.getInitialPassword':
-    'Run the following command on your server to retrieve the initial admin password.'
+    'Run the following command on your GPUStack Server to retrieve the initial admin password.'
 };

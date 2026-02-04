@@ -1,8 +1,10 @@
+import { enabledBackendsAtom } from '@/atoms/backend';
 import GSDrawer from '@/components/scroller-modal/gs-drawer';
 import ColumnWrapper from '@/pages/_components/column-wrapper';
 import Separator from '@/pages/llmodels/components/separator';
 import { useIntl } from '@umijs/max';
-import React from 'react';
+import { useAtom } from 'jotai';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { ListItem } from '../config/types';
 import useEnableBackend from '../services/use-enable-backend';
@@ -23,6 +25,7 @@ const AddCommunityModal: React.FC<{
   const intl = useIntl();
   const { handleEnableBackend } = useEnableBackend();
   const [currentData, setCurrentData] = React.useState<any>(null);
+  const [, setEnabledBackendAtom] = useAtom(enabledBackendsAtom);
 
   const handleOnEnable = async (checked: boolean, data: ListItem) => {
     await handleEnableBackend({
@@ -32,12 +35,23 @@ const AddCommunityModal: React.FC<{
         enabled: checked
       }
     });
+    setEnabledBackendAtom({
+      ...data,
+      enabled: checked
+    });
     onRefresh?.();
   };
 
   const handleOnClick = (data: ListItem) => {
     setCurrentData(data);
   };
+
+  useEffect(() => {
+    if (!open) {
+      setEnabledBackendAtom(null);
+    }
+  }, [open]);
+
   return (
     <GSDrawer
       open={open}

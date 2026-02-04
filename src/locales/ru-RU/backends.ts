@@ -44,7 +44,7 @@ export default {
   'backend.filter.source': 'Filter by source',
   'backend.add.custom': 'Custom',
   'backend.add.community': 'Community Backends',
-  'backend.community.title': 'Community Backends Marketplace'
+  'backend.community.title': 'Community Backend Marketplace'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -53,5 +53,5 @@ export default {
 // 3. 'backend.filter.source': 'Filter by source',
 // 4.  'backend.add.custom': 'Custom',
 // 5.  'backend.add.community': 'Community Backends',
-// 6. 'backend.community.title': 'Community Backends Marketplace'
+// 6. 'backend.community.title': 'Community Backend Marketplace'
 // ========== End of To-Do List ==========

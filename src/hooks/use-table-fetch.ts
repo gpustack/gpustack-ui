@@ -430,6 +430,7 @@ export default function useTableFetch<T>(
     extraStatus,
     TABLE_SORT_DIRECTIONS,
     debounceFetchData,
+    setDataSource,
     setQueryParams,
     handleDelete,
     handleDeleteBatch,

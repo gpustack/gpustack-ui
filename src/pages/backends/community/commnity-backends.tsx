@@ -1,9 +1,11 @@
+import { enabledBackendsAtom } from '@/atoms/backend';
 import IconFont from '@/components/icon-font';
 import ThemeTag from '@/components/tags-wrapper/theme-tag';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { SearchOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Input, Tooltip } from 'antd';
+import { useAtom } from 'jotai';
 import _ from 'lodash';
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
@@ -28,19 +30,46 @@ const CommunityBackends: React.FC<{
   onClick: (data: ListItem) => void;
 }> = ({ onEnable, onClick }) => {
   const intl = useIntl();
+  const [enabledBackendAtom] = useAtom(enabledBackendsAtom);
   const [currentData, setCurrentData] = React.useState<ListItem | null>(null);
-  const { dataSource, loadMore, queryParams, handleSearch, handleNameChange } =
-    useTableFetch<ListItem>({
-      fetchAPI: queryBackendsList,
-      API: INFERENCE_BACKEND_API,
-      watch: false,
-      isInfiniteScroll: true,
-      contentForDelete: 'backends.title',
-      defaultQueryParams: {
-        perPage: 24,
-        community: 1
-      }
-    });
+  const {
+    dataSource,
+    loadMore,
+    queryParams,
+    handleSearch,
+    setDataSource,
+    handleNameChange
+  } = useTableFetch<ListItem>({
+    fetchAPI: queryBackendsList,
+    API: INFERENCE_BACKEND_API,
+    watch: false,
+    isInfiniteScroll: true,
+    contentForDelete: 'backends.title',
+    defaultQueryParams: {
+      perPage: 24,
+      community: 1
+    }
+  });
+
+  useEffect(() => {
+    if (enabledBackendAtom) {
+      setDataSource((prev) => {
+        const newDataList = prev.dataList.map((item) => {
+          if (item.id === enabledBackendAtom.id) {
+            return {
+              ...item,
+              enabled: enabledBackendAtom.enabled
+            };
+          }
+          return item;
+        });
+        return {
+          ...prev,
+          dataList: newDataList
+        };
+      });
+    }
+  }, [enabledBackendAtom]);
 
   const handleOnClickItem = (data: ListItem) => {
     onClick(data);

@@ -40,18 +40,13 @@ export const ActionList: ActionItem[] = [
     icon: icons.EditOutlined
   },
   {
-    label: 'resources.metrics.details',
-    key: 'metrics',
-    icon: icons.Metrics
-  },
-  {
     label: 'models.openinplayground',
     key: 'chat',
     icon: icons.ExperimentOutlined
   },
   {
     key: 'copy',
-    label: 'common.button.duplicate',
+    label: 'common.button.clone',
     icon: icons.CopyOutlined
   },
   {
@@ -63,6 +58,11 @@ export const ActionList: ActionItem[] = [
     label: 'common.button.stop',
     key: 'stop',
     icon: icons.Stop
+  },
+  {
+    label: 'resources.metrics.details',
+    key: 'metrics',
+    icon: icons.Metrics
   },
   {
     label: 'common.button.delete',

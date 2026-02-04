@@ -9,6 +9,7 @@ import SealTable from '@/components/seal-table';
 import { TableOrder } from '@/components/seal-table/types';
 import { PageAction } from '@/config';
 import { TABLE_SORT_DIRECTIONS } from '@/config/settings';
+import { PageActionType } from '@/config/types';
 import useBodyScroll from '@/hooks/use-body-scroll';
 import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
@@ -170,8 +171,9 @@ const Models: React.FC<ModelsProps> = ({
   useEffect(() => {
     fetchTargets({});
   }, []);
-  const { goToGrafana } = useGranfanaLink({
-    type: 'model'
+  const { goToGrafana, ActionButton } = useGranfanaLink({
+    type: 'model',
+    dataList: dataSource || []
   });
 
   const [openLogModal, setOpenLogModal] = useState(false);
@@ -660,6 +662,7 @@ const Models: React.FC<ModelsProps> = ({
           }
           right={
             <Space size={16}>
+              {ActionButton()}
               {page !== 'clusters' && (
                 <DropDownActions
                   menu={{

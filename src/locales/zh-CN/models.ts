@@ -2,7 +2,7 @@ export default {
   'models.button.deploy': '部署模型',
   'models.title': '模型',
   'models.title.edit': '编辑模型',
-  'models.title.duplicate': '复制模型',
+  'models.title.duplicate': '克隆模型',
   'models.table.models': '模型',
   'models.table.name': '模型名称',
   'models.form.source': '来源',

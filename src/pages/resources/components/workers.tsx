@@ -25,6 +25,7 @@ import useWorkerColumns from '../hooks/use-worker-columns';
 import useWorkerMaintenance from '../hooks/use-worker-maintenance';
 import UpdateLabels from './update-labels';
 import WorkerDetailModal from './worker-detail-modal';
+import WorkerRightActions from './worker-right-actions';
 
 const Workers: React.FC<{
   clusterId?: string | number | null;
@@ -65,7 +66,10 @@ const Workers: React.FC<{
       cluster_id: clusterId
     }
   });
-  const { goToGrafana } = useGranfanaLink({ type: 'worker' });
+  const { goToGrafana, ActionButton } = useGranfanaLink({
+    type: 'worker',
+    dataList: dataSource.dataList || []
+  });
   const { MaintenanceModal, handleStopMaintenance, setOpenStatus } =
     useWorkerMaintenance({ fetchData: handleSearch });
 
@@ -268,11 +272,19 @@ const Workers: React.FC<{
           handleDeleteByBatch={handleDeleteBatch}
           handleSearch={handleSearch}
           handleSelectChange={handleClusterChange}
-          handleClickPrimary={showAddButton ? handleOnAddWorker : undefined}
+          handleClickPrimary={handleOnAddWorker}
           handleInputChange={handleNameChange}
           rowSelection={rowSelection}
           selectOptions={clusterData.list}
           widths={widths}
+          right={
+            <WorkerRightActions
+              handleDeleteByBatch={handleDeleteBatch}
+              handleClickPrimary={handleOnAddWorker}
+              rowSelection={rowSelection}
+              MonitorButton={ActionButton()}
+            ></WorkerRightActions>
+          }
         ></FilterBar>
         <ConfigProvider renderEmpty={renderEmpty}>
           <Table

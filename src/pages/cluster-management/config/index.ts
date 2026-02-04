@@ -95,6 +95,11 @@ export const clusterActionList = [
     icon: icons.EditOutlined
   },
   {
+    label: 'resources.metrics.details',
+    key: 'metrics',
+    icon: icons.Metrics
+  },
+  {
     key: 'add_worker',
     label: 'resources.button.create',
     provider: ProviderValueMap.Docker,

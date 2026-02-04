@@ -19,6 +19,7 @@ import _ from 'lodash';
 import { useEffect, useState } from 'react';
 import NoResult from '../_components/no-result';
 import PageBox from '../_components/page-box';
+import useGranfanaLink from '../resources/hooks/use-grafana-link';
 import {
   CLUSTERS_API,
   createWorkerPool,
@@ -38,6 +39,7 @@ import {
   K8sStepsFromCluter
 } from './components/add-worker/config';
 import PoolRows from './components/pool-rows';
+import RightActions from './components/right-actions';
 import { ProviderType, ProviderValueMap } from './config';
 import {
   ClusterListItem,
@@ -71,6 +73,10 @@ const Clusters: React.FC = () => {
     contentForDelete: 'menu.clusterManagement.clusters'
   });
   const navigate = useNavigate();
+  const { goToGrafana, ActionButton } = useGranfanaLink({
+    type: 'cluster',
+    dataList: dataSource.dataList || []
+  });
   const { watchDataList: allWorkerPoolList } = useWatchList(WORKER_POOLS_API);
   const [expandAtom] = useAtom(expandKeysAtom);
   const [clusterSession, setClusterSession] = useAtom(clusterSessionAtom);
@@ -196,6 +202,8 @@ const Clusters: React.FC = () => {
       setDefaultCluster({ id: row.id }).then(() => {
         message.success(intl.formatMessage({ id: 'common.message.success' }));
       });
+    } else if (val === 'metrics') {
+      goToGrafana(row);
     }
   });
 
@@ -337,6 +345,14 @@ const Clusters: React.FC = () => {
           handleSearch={handleSearch}
           handleDeleteByBatch={handleDeleteBatch}
           handleClickPrimary={handleClickDropdown}
+          right={
+            <RightActions
+              handleDeleteByBatch={handleDeleteBatch}
+              handleClickPrimary={handleClickDropdown}
+              rowSelection={rowSelection}
+              MonitorButton={ActionButton()}
+            ></RightActions>
+          }
         ></FilterBar>
         <TableContext.Provider
           value={{

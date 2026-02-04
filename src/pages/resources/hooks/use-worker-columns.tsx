@@ -1,3 +1,4 @@
+import { systemConfigAtom } from '@/atoms/system';
 import AutoTooltip from '@/components/auto-tooltip';
 import DropdownButtons from '@/components/drop-down-buttons';
 import IconFont from '@/components/icon-font';
@@ -18,6 +19,7 @@ import {
 import { useIntl } from '@umijs/max';
 import { Tooltip } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
+import { useAtomValue } from 'jotai';
 import _ from 'lodash';
 import { useMemo } from 'react';
 import styled from 'styled-components';
@@ -82,21 +84,6 @@ const ActionList = [
     icon: <DeleteOutlined />
   }
 ];
-
-const setActions = (row: ListItem) => {
-  return ActionList.filter((action) => {
-    if (action.key === 'download_ssh_key') {
-      return !!row.ssh_key_id;
-    }
-    if (action.key === 'star_maintenance') {
-      return !row.maintenance?.enabled;
-    }
-    if (action.key === 'stop_maintenance') {
-      return row.maintenance?.enabled;
-    }
-    return true;
-  });
-};
 
 const fieldList = [
   {
@@ -252,6 +239,7 @@ const useWorkerColumns = ({
   handleSelect: (action: string, record: ListItem) => void;
 }): ColumnsType<ListItem> => {
   const intl = useIntl();
+  const systemConfig = useAtomValue(systemConfigAtom);
 
   const renderIP = (text: string, record: ListItem) => {
     if (record.advertise_address === record.ip) {
@@ -275,6 +263,25 @@ const useWorkerColumns = ({
       );
     }
     return record.ip || record.advertise_address || '';
+  };
+
+  const setActions = (row: ListItem) => {
+    return ActionList.filter((action) => {
+      if (action.key === 'download_ssh_key') {
+        return !!row.ssh_key_id;
+      }
+      if (action.key === 'star_maintenance') {
+        return !row.maintenance?.enabled;
+      }
+      if (action.key === 'stop_maintenance') {
+        return row.maintenance?.enabled;
+      }
+
+      if (action.key === 'metrics') {
+        return systemConfig.showMonitoring;
+      }
+      return true;
+    });
   };
 
   return useMemo<ColumnsType<ListItem>>(

@@ -9,7 +9,7 @@ export default {
   'ai.provider.cohere': 'Cohere',
   'ai.provider.coze': 'Coze',
   'ai.provider.deepl': 'DeepL',
-  'ai.provider.deepseek': 'Deepseek',
+  'ai.provider.deepseek': 'DeepSeek',
   'ai.provider.dify': 'Dify',
   'ai.provider.doubao': 'Doubao',
   'ai.provider.fireworks': 'Fireworks',

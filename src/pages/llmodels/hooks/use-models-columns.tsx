@@ -1,4 +1,5 @@
 // columns.ts
+import { systemConfigAtom } from '@/atoms/system';
 import AutoTooltip from '@/components/auto-tooltip';
 import DropdownButtons from '@/components/drop-down-buttons';
 import { SealColumnProps } from '@/components/seal-table/types';
@@ -9,6 +10,7 @@ import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { Tooltip } from 'antd';
 import dayjs from 'dayjs';
+import { useAtomValue } from 'jotai';
 import _ from 'lodash';
 import { useMemo } from 'react';
 import ModelTag from '../../_components/model-tag';
@@ -31,6 +33,7 @@ const useModelsColumns = ({
   targetList
 }: ModelsColumnsHookProps & { targetList: any[] }): SealColumnProps[] => {
   const intl = useIntl();
+  const systemConfig = useAtomValue(systemConfigAtom);
 
   const setModelActionList = useMemoizedFn((record: any) => {
     return _.filter(ActionList, (action: any) => {
@@ -51,6 +54,9 @@ const useModelsColumns = ({
 
       if (action.key === 'stop') {
         return record.replicas > 0;
+      }
+      if (action.key === 'metrics') {
+        return systemConfig.showMonitoring;
       }
 
       return true;

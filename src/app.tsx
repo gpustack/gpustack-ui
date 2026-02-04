@@ -7,6 +7,7 @@ import {
   queryVersionInfo,
   updateCheck
 } from '@/services/profile/apis';
+import { fetchSystemConfig } from '@/services/system/query-system-config';
 import { isOnline } from '@/utils';
 import {
   IS_FIRST_LOGIN,
@@ -57,6 +58,7 @@ export async function getInitialState(): Promise<{
       });
       if (data.is_admin) {
         getUpdateCheck();
+        fetchSystemConfig();
       }
       return data;
     } catch (error: any) {

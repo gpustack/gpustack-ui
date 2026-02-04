@@ -108,7 +108,7 @@ export default {
     'When maintenance mode is enabled, the node will stop scheduling new model deployment tasks. Running instances will not be affected.',
   'resources.worker.noCluster.tips':
     'No available clusters. Please create a cluster before adding a node.',
-  'resources.metrics.details': 'Metrics Details'
+  'resources.metrics.details': 'Monitoring'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

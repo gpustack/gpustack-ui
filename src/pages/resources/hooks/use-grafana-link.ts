@@ -1,5 +1,7 @@
 import { GPUSTACK_API_BASE_URL } from '@/config/settings';
 
+// 1. /grafana/d/gpustack-model/gpustack-model
+// 2. /grafana/d/gpustack-worker/gpustack-worker
 const useGranfanaLink = (options: {
   type: 'model' | 'worker' | 'instance';
 }) => {

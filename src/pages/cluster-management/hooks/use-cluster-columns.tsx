@@ -1,4 +1,5 @@
 // columns.ts
+import { systemConfigAtom } from '@/atoms/system';
 import AutoTooltip from '@/components/auto-tooltip';
 import DropdownButtons from '@/components/drop-down-buttons';
 import { SealColumnProps } from '@/components/seal-table/types';
@@ -8,6 +9,7 @@ import { StarFilled } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Tooltip } from 'antd';
 import dayjs from 'dayjs';
+import { useAtomValue } from 'jotai';
 import { useMemo } from 'react';
 import {
   ClusterStatus,
@@ -17,20 +19,24 @@ import {
 } from '../config';
 import { ClusterListItem } from '../config/types';
 
-const setActionsItems = (row: ClusterListItem) => {
-  return clusterActionList.filter((item) => {
-    if (item.provider) {
-      return item.provider === row.provider;
-    }
-    return true;
-  });
-};
-
 const useClusterColumns = (
   handleSelect: (val: string, record: ClusterListItem) => void,
   onCellClick?: (record: ClusterListItem, dataIndex: string) => void
 ): SealColumnProps[] => {
   const intl = useIntl();
+  const systemConfig = useAtomValue(systemConfigAtom);
+
+  const setActionsItems = (row: ClusterListItem) => {
+    return clusterActionList.filter((item) => {
+      if (item.provider) {
+        return item.provider === row.provider;
+      }
+      if (item.key === 'metrics') {
+        return systemConfig?.showMonitoring;
+      }
+      return true;
+    });
+  };
 
   return useMemo(() => {
     return [
@@ -42,9 +48,6 @@ const useClusterColumns = (
         render: (text: string, record: ClusterListItem) => (
           <>
             <AutoTooltip ghost title={text}>
-              {/* <Typography.Link onClick={() => onCellClick?.(record, 'name')}>
-                {record.name}
-              </Typography.Link> */}
               {text}
             </AutoTooltip>
             {record.is_default && (

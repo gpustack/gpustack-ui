@@ -1,3 +1,4 @@
+import { systemConfigAtom } from '@/atoms/system';
 import AutoTooltip from '@/components/auto-tooltip';
 import DropdownButtons from '@/components/drop-down-buttons';
 import IconFont from '@/components/icon-font';
@@ -24,6 +25,7 @@ import {
 import { useIntl } from '@umijs/max';
 import { Button, Col, Progress, Row, Tooltip, notification } from 'antd';
 import dayjs from 'dayjs';
+import { useAtomValue } from 'jotai';
 import _ from 'lodash';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import styled from 'styled-components';
@@ -435,6 +437,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
   defaultOpenId,
   handleChildSelect
 }) => {
+  const systemConfig = useAtomValue(systemConfigAtom);
   const { goToGrafana } = useGranfanaLink({ type: 'instance' });
   const { runBenchmarkOnInstance } = useBenchmarkTargetInstance();
   const [api, contextHolder] = notification.useNotification({
@@ -453,9 +456,12 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
       if (action.status && action.status.length > 0) {
         return action.status.includes(instanceData.state);
       }
+      if (action.key === 'metrics') {
+        return systemConfig.showMonitoring;
+      }
       return true;
     });
-  }, [instanceData.state, modelData]);
+  }, [instanceData.state, modelData, systemConfig.showMonitoring]);
 
   const createFileName = (name: string) => {
     const timestamp = dayjs().format('YYYY-MM-DD_HH-mm-ss');

@@ -1,7 +1,9 @@
+import { systemConfigAtom } from '@/atoms/system';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import ColumnWrapper from '@/pages/_components/column-wrapper';
 import { useIntl } from '@umijs/max';
+import { useAtom } from 'jotai';
 import _ from 'lodash';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
@@ -23,7 +25,6 @@ import { ProviderType, ProviderValueMap } from './config';
 import providerList from './config/providers';
 import { StepsContext } from './config/steps-context';
 import { ClusterFormData } from './config/types';
-import useSystemConfig from './services/use-system-config';
 import { moduleMap, moduleRegistry } from './step-forms/module-registry';
 import useStepList from './step-forms/use-step-list';
 
@@ -59,7 +60,7 @@ const ClusterCreate: React.FC<{
 }> = ({ onClose, action, setCurrentTitle }) => {
   const startStep = 0;
   const stepList = useStepList();
-  const { systemConfig } = useSystemConfig();
+  const [systemConfigState] = useAtom(systemConfigAtom);
   const intl = useIntl();
   const [credentialList, setCredentialList] = useState<
     Global.BaseOption<number, { provider: ProviderType }>[]
@@ -361,7 +362,7 @@ const ClusterCreate: React.FC<{
           <StepsContext.Provider
             value={{
               formValues: formValues,
-              systemConfig: systemConfig
+              systemConfig: systemConfigState
             }}
           >
             {renderModules()}

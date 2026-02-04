@@ -9,7 +9,7 @@ export default {
   'ai.provider.cohere': 'Cohere',
   'ai.provider.coze': '扣子',
   'ai.provider.deepl': 'DeepL',
-  'ai.provider.deepseek': '深度求索',
+  'ai.provider.deepseek': 'DeepSeek',
   'ai.provider.dify': 'Dify',
   'ai.provider.doubao': '豆包',
   'ai.provider.fireworks': 'Fireworks AI',

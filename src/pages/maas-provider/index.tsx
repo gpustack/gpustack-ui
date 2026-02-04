@@ -2,7 +2,6 @@ import { expandKeysAtom } from '@/atoms/clusters';
 import DeleteModal from '@/components/delete-modal';
 import IconFont from '@/components/icon-font';
 import { FilterBar } from '@/components/page-tools';
-import { TableOrder } from '@/components/seal-table/types';
 import { PageAction } from '@/config';
 import { TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
@@ -22,13 +21,8 @@ import {
   updateProvider
 } from './apis';
 import AddMaasProvider from './components/add-provider-modal';
-import ProviderModels from './components/provider-models';
 import { maasProviderOptions } from './config/providers';
-import {
-  FormData,
-  MaasProviderItem as ListItem,
-  MaasProviderItem
-} from './config/types';
+import { FormData, MaasProviderItem as ListItem } from './config/types';
 import useCreateProvider from './hooks/use-create-provider';
 import useProviderColumns from './hooks/use-provider-columns';
 
@@ -116,45 +110,13 @@ const MaasProvider: React.FC = () => {
       handleDelete({ ...row, name: row.name });
     }
     if (val === 'copy') {
-      openProviderModal(PageAction.COPY, 'Copy Provider', row);
+      openProviderModal(
+        PageAction.COPY,
+        intl.formatMessage({ id: 'providers.button.clone' }),
+        row
+      );
     }
   });
-
-  const handleOnToggleExpandAll = () => {
-    // do nothing
-  };
-
-  const handleToggleExpandAll = useMemoizedFn((expanded: boolean) => {
-    const keys = dataSource.dataList?.map((item) => item.id);
-    handleExpandAll(expanded, keys);
-    if (expanded) {
-      handleOnToggleExpandAll();
-    }
-  });
-
-  const loadChildrenData = useMemoizedFn(
-    async (row: MaasProviderItem, options?: any) => {
-      const params = {
-        cluster_id: row.id,
-        page: -1
-      };
-      // const data = await queryProviderModels(params, {
-      //   token: options?.token
-      // });
-      return [1, 2, 3];
-    }
-  );
-
-  const handleOnSortChange = (order: TableOrder | Array<TableOrder>) => {
-    handleTableChange({}, {}, order, { action: 'sort' });
-  };
-
-  const renderChildren = (
-    list: any,
-    options: { parent?: any; [key: string]: any }
-  ) => {
-    return <ProviderModels dataList={list} />;
-  };
 
   const renderEmpty = (type?: string) => {
     if (type !== 'Table') return;

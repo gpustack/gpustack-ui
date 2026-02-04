@@ -1,6 +1,7 @@
 export default {
   'providers.title': 'Providers',
   'providers.button.add': 'Add Provider',
+  'providers.button.clone': 'Clone Provider',
   'providers.table.providerName': 'Provider',
   'providers.table.models': 'Models',
   'providers.table.proxy': 'Proxy',

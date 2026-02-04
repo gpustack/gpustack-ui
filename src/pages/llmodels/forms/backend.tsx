@@ -38,7 +38,7 @@ const BackendFields: React.FC = () => {
   const [showDeprecated, setShowDeprecated] = React.useState<boolean>(false);
 
   const handleBackendVersionOnChange = (value: any, option: any) => {
-    if (Object.keys(option.data.env || {}).length > 0) {
+    if (Object.keys(option.data?.env || {}).length > 0) {
       form.setFieldValue('env', { ...(option?.data?.env || {}) });
     }
 

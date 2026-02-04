@@ -34,7 +34,8 @@ const useEditDeployment = () => {
       currentData: {
         isGGUF: false,
         data: formData,
-        row: row
+        row: row,
+        realAction: PageAction.EDIT
       },
       title: intl.formatMessage({ id: 'models.title.edit' })
     });

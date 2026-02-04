@@ -194,24 +194,3 @@ export const hotkeyConfigs = [
   },
   { keys: HotKeys.NEW4, width: 600, source: modelSourceMap.local_path_value }
 ];
-
-/**
- * hotkeyConfigs.map(({ keys, width, source }) =>
-       useHotkeys(
-         keys.join(','),
-         () => {
-           setOpenDeployModal({
-             show: true,
-             width,
-             source,
-             gpuOptions: gpuDeviceList.current
-           });
-         },
-         {
-           preventDefault: true,
-           enabled: !openAddModal && !openDeployModal.show && !openLogModal
-         }
-       )
-     );
- * 
- */

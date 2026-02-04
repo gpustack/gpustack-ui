@@ -67,6 +67,11 @@ const options: BackendParameter[] = [
     options: []
   },
   {
+    label: '--data-parallel-size-local',
+    value: '--data-parallel-size-local',
+    options: []
+  },
+  {
     label: '--enable-ssl-refresh',
     value: '--enable-ssl-refresh',
     options: []

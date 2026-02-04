@@ -21,7 +21,12 @@ export function useQueryDataList<ListItem, Params = any>(option: {
   getLabel?: (item: ListItem) => string;
   getValue?: (item: ListItem) => any;
   errorMsg?: string;
-}) {
+}): {
+  loading: boolean;
+  dataList: Array<ListItem & { label: string; value: any }>;
+  cancelRequest: () => void;
+  fetchData: (params: Params, extra?: any) => Promise<ListItem[]>;
+} {
   const { key, fetchList, getLabel, getValue, errorMsg } = option;
   const axiosTokenRef = useRef<CancelTokenSource | null>(null);
   const [dataList, setDataList] = useState<
@@ -89,7 +94,12 @@ export function useQueryData<Detail, Params = any>(option: {
   fetchDetail: (params: Params, options?: any) => Promise<Detail>;
   getData?: (response: Detail) => any;
   errorMsg?: string;
-}) {
+}): {
+  loading: boolean;
+  detailData: Detail;
+  cancelRequest: () => void;
+  fetchData: (params: Params, extra?: any) => Promise<Detail>;
+} {
   const { key, fetchDetail, getData, errorMsg, delay } = option;
   const axiosTokenRef = useRef<CancelTokenSource | null>(null);
   const [detailData, setDetailData] = useState<Detail>({} as Detail);

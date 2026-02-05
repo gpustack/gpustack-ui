@@ -18,6 +18,7 @@ interface FormContextProps {
   formKey: DeployFormKey;
   source: string;
   action: PageActionType;
+  realAction?: PageActionType;
   gpuOptions: CascaderOption[];
   workerLabelOptions: CascaderOption[];
   backendOptions: {

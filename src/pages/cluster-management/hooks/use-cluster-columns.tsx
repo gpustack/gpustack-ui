@@ -2,9 +2,11 @@
 import { systemConfigAtom } from '@/atoms/system';
 import AutoTooltip from '@/components/auto-tooltip';
 import DropdownButtons from '@/components/drop-down-buttons';
+import icons from '@/components/icon-font/icons';
 import { SealColumnProps } from '@/components/seal-table/types';
 import StatusTag from '@/components/status-tag';
 import { tableSorter } from '@/config/settings';
+import GrafanaIcon from '@/pages/_components/grafana-icon';
 import { StarFilled } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Tooltip } from 'antd';
@@ -15,9 +17,60 @@ import {
   ClusterStatus,
   ClusterStatusLabelMap,
   ProviderLabelMap,
-  clusterActionList
+  ProviderValueMap
 } from '../config';
 import { ClusterListItem } from '../config/types';
+
+const clusterActionList = [
+  {
+    key: 'edit',
+    label: 'common.button.edit',
+    icon: icons.EditOutlined
+  },
+  {
+    label: 'resources.metrics.details',
+    key: 'metrics',
+    icon: (
+      <span className="flex-center">
+        <GrafanaIcon style={{ width: 14, height: 14 }}></GrafanaIcon>
+      </span>
+    )
+  },
+  {
+    key: 'add_worker',
+    label: 'resources.button.create',
+    provider: ProviderValueMap.Docker,
+    locale: true,
+    icon: icons.DockerOutlined
+  },
+  {
+    key: 'register_cluster',
+    label: 'clusters.button.register',
+    provider: ProviderValueMap.Kubernetes,
+    locale: true,
+    icon: icons.KubernetesOutlined
+  },
+  {
+    key: 'addPool',
+    label: 'clusters.button.addNodePool',
+    provider: ProviderValueMap.DigitalOcean,
+    locale: true,
+    icon: icons.Catalog1
+  },
+  {
+    key: 'isDefault',
+    label: 'clusters.form.setDefault',
+    icon: icons.StarOutlined
+  },
+  {
+    key: 'delete',
+    label: 'common.button.delete',
+    icon: icons.DeleteOutlined,
+    props: {
+      danger: true
+    }
+  }
+];
 
 const useClusterColumns = (
   handleSelect: (val: string, record: ClusterListItem) => void,

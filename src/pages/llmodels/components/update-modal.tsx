@@ -275,6 +275,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
           initialValues={formData}
           source={formData.source || ''}
           action={action}
+          realAction={realAction}
           clusterList={clusterList}
           onOk={handleOk}
           ref={formRef}

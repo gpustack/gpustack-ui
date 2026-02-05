@@ -50,6 +50,7 @@ interface DataFormProps {
   ref?: any;
   source: SourceType;
   action: PageActionType;
+  realAction?: PageActionType;
   isGGUF: boolean;
   formKey: DeployFormKey;
   sourceDisable?: boolean;
@@ -77,6 +78,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     isGGUF,
     formKey,
     source,
+    realAction,
     initialValues,
     sourceDisable = true,
     sourceList,
@@ -392,6 +394,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         formKey: formKey,
         source: props.source,
         action: action,
+        realAction: realAction,
         gpuOptions: gpuOptions,
         backendOptions: backendOptions,
         flatBackendOptions: flatBackendOptions,

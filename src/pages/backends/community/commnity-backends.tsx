@@ -98,7 +98,11 @@ const CommunityBackends: React.FC<{
       >
         <>
           {data.enabled && (
-            <ThemeTag style={{ margin: 0 }} color="geekblue" variant="filled">
+            <ThemeTag
+              style={{ margin: 0, fontWeight: 400 }}
+              color="geekblue"
+              variant="filled"
+            >
               {intl.formatMessage({ id: 'common.status.enabled' })}
             </ThemeTag>
           )}

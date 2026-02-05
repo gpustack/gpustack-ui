@@ -1,6 +1,7 @@
 import LabelSelector from '@/components/label-selector';
 import CheckboxField from '@/components/seal-form/checkbox-field';
 import SealSelect from '@/components/seal-form/seal-select';
+import { PageAction } from '@/config';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
@@ -19,6 +20,8 @@ const AdvanceConfig = () => {
   const modelRouteEnable = Form.useWatch('enable_model_route', form);
   const {
     onValuesChange,
+    realAction,
+    action,
     backendOptions,
     flatBackendOptions,
     isGGUF,
@@ -133,33 +136,37 @@ const AdvanceConfig = () => {
           })}
         ></CheckboxField>
       </Form.Item>
-      <Form.Item<FormData>
-        name="enable_model_route"
-        valuePropName="checked"
-        style={{ marginBottom: 8 }}
-      >
-        <CheckboxField
-          label={intl.formatMessage({
-            id: 'models.form.enableModelRoute'
-          })}
-        ></CheckboxField>
-      </Form.Item>
-      {modelRouteEnable && (
-        <Form.Item<FormData>
-          name="generic_proxy"
-          valuePropName="checked"
-          style={{ marginBottom: 8 }}
-        >
-          <CheckboxField
-            description={intl.formatMessage({
-              id: 'models.form.generic_proxy.tips'
-            })}
-            label={intl.formatMessage({
-              id: 'models.form.generic_proxy'
-            })}
-          ></CheckboxField>
-        </Form.Item>
-      )}
+      {realAction === PageAction.COPY || action === PageAction.CREATE ? (
+        <>
+          <Form.Item<FormData>
+            name="enable_model_route"
+            valuePropName="checked"
+            style={{ marginBottom: 8 }}
+          >
+            <CheckboxField
+              label={intl.formatMessage({
+                id: 'models.form.enableModelRoute'
+              })}
+            ></CheckboxField>
+          </Form.Item>
+          {modelRouteEnable && (
+            <Form.Item<FormData>
+              name="generic_proxy"
+              valuePropName="checked"
+              style={{ marginBottom: 8 }}
+            >
+              <CheckboxField
+                description={intl.formatMessage({
+                  id: 'models.form.generic_proxy.tips'
+                })}
+                label={intl.formatMessage({
+                  id: 'models.form.generic_proxy'
+                })}
+              ></CheckboxField>
+            </Form.Item>
+          )}
+        </>
+      ) : null}
     </>
   );
 };

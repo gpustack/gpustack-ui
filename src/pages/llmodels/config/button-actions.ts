@@ -33,47 +33,6 @@ interface ActionItem {
   };
 }
 
-export const ActionList: ActionItem[] = [
-  {
-    label: 'common.button.edit',
-    key: 'edit',
-    icon: icons.EditOutlined
-  },
-  {
-    label: 'models.openinplayground',
-    key: 'chat',
-    icon: icons.ExperimentOutlined
-  },
-  {
-    key: 'copy',
-    label: 'common.button.clone',
-    icon: icons.CopyOutlined
-  },
-  {
-    label: 'common.button.start',
-    key: 'start',
-    icon: icons.Play
-  },
-  {
-    label: 'common.button.stop',
-    key: 'stop',
-    icon: icons.Stop
-  },
-  {
-    label: 'resources.metrics.details',
-    key: 'metrics',
-    icon: icons.Metrics
-  },
-  {
-    label: 'common.button.delete',
-    key: 'delete',
-    props: {
-      danger: true
-    },
-    icon: icons.DeleteOutlined
-  }
-];
-
 export const ButtonList = [
   {
     label: 'common.button.start',

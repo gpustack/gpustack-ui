@@ -102,7 +102,7 @@ const useGPUColumns = (props: {
         sorter: tableSorter(6),
         render: (text: number, record: GPUDeviceItem) => {
           return (
-            <>
+            <span className="flex-center flex-full">
               {record.core ? (
                 <ProgressBar
                   percent={_.round(record.core?.utilization_rate, 2)}
@@ -110,7 +110,7 @@ const useGPUColumns = (props: {
               ) : (
                 '-'
               )}
-            </>
+            </span>
           );
         }
       },
@@ -121,23 +121,25 @@ const useGPUColumns = (props: {
         sorter: tableSorter(7),
         render: (text: number, record: GPUDeviceItem, index: number) => {
           return (
-            <ProgressBar
-              defaultOpen={index === 0 && loadend && firstLoad}
-              percent={
-                record.memory?.used
-                  ? _.round(record.memory?.utilization_rate, 0)
-                  : _.round(
-                      record.memory?.allocated / record.memory?.total,
-                      0
-                    ) * 100
-              }
-              label={
-                <InfoColumn
-                  fieldList={fieldList}
-                  data={record.memory}
-                ></InfoColumn>
-              }
-            ></ProgressBar>
+            <span className="flex-center flex-full">
+              <ProgressBar
+                defaultOpen={index === 0 && loadend && firstLoad}
+                percent={
+                  record.memory?.used
+                    ? _.round(record.memory?.utilization_rate, 0)
+                    : _.round(
+                        record.memory?.allocated / record.memory?.total,
+                        0
+                      ) * 100
+                }
+                label={
+                  <InfoColumn
+                    fieldList={fieldList}
+                    data={record.memory}
+                  ></InfoColumn>
+                }
+              ></ProgressBar>
+            </span>
           );
         }
       }

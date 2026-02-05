@@ -271,12 +271,6 @@ export const useCheckCompatibility = () => {
 
     let compatibilityMessage = compatibility_messages.join(' ');
 
-    compatibilityMessage = compatibilityMessage.startsWith(
-      'The model file path you specified does not exist on the GPUStack server'
-    )
-      ? intl.formatMessage({ id: 'models.form.modelfile.notfound' })
-      : compatibilityMessage;
-
     let msgData = {
       title: scheduling_messages?.length > 0 ? compatibilityMessage : '',
       message:

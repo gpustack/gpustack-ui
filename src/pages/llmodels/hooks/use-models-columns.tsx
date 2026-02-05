@@ -2,8 +2,10 @@
 import { systemConfigAtom } from '@/atoms/system';
 import AutoTooltip from '@/components/auto-tooltip';
 import DropdownButtons from '@/components/drop-down-buttons';
+import icons from '@/components/icon-font/icons';
 import { SealColumnProps } from '@/components/seal-table/types';
 import { OPENAI_COMPATIBLE, tableSorter } from '@/config/settings';
+import GrafanaIcon from '@/pages/_components/grafana-icon';
 import { TargetStatusValueMap } from '@/pages/model-routes/config';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
@@ -14,8 +16,62 @@ import { useAtomValue } from 'jotai';
 import _ from 'lodash';
 import { useMemo } from 'react';
 import ModelTag from '../../_components/model-tag';
-import { ActionList, generateSource } from '../config/button-actions';
+import { generateSource } from '../config/button-actions';
 import { ListItem } from '../config/types';
+
+interface ActionItem {
+  label: string;
+  key: string;
+  icon: React.ReactNode;
+  props?: {
+    danger?: boolean;
+  };
+}
+
+const ActionList: ActionItem[] = [
+  {
+    label: 'common.button.edit',
+    key: 'edit',
+    icon: icons.EditOutlined
+  },
+  {
+    label: 'models.openinplayground',
+    key: 'chat',
+    icon: icons.ExperimentOutlined
+  },
+  {
+    label: 'common.button.start',
+    key: 'start',
+    icon: icons.Play
+  },
+  {
+    label: 'common.button.stop',
+    key: 'stop',
+    icon: icons.Stop
+  },
+  {
+    label: 'resources.metrics.details',
+    key: 'metrics',
+    icon: (
+      <span className="flex-center">
+        <GrafanaIcon style={{ width: 14, height: 14 }}></GrafanaIcon>
+      </span>
+    )
+  },
+  {
+    key: 'copy',
+    label: 'common.button.clone',
+    icon: icons.CopyOutlined
+  },
+  {
+    label: 'common.button.delete',
+    key: 'delete',
+    props: {
+      danger: true
+    },
+    icon: icons.DeleteOutlined
+  }
+];
 
 interface ModelsColumnsHookProps {
   handleSelect: (val: string, record: ListItem) => void;

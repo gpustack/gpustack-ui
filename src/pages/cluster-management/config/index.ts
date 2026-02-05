@@ -88,53 +88,6 @@ export const credentialActionList = [
   }
 ];
 
-export const clusterActionList = [
-  {
-    key: 'edit',
-    label: 'common.button.edit',
-    icon: icons.EditOutlined
-  },
-  {
-    label: 'resources.metrics.details',
-    key: 'metrics',
-    icon: icons.Metrics
-  },
-  {
-    key: 'add_worker',
-    label: 'resources.button.create',
-    provider: ProviderValueMap.Docker,
-    locale: true,
-    icon: icons.DockerOutlined
-  },
-  {
-    key: 'register_cluster',
-    label: 'clusters.button.register',
-    provider: ProviderValueMap.Kubernetes,
-    locale: true,
-    icon: icons.KubernetesOutlined
-  },
-  {
-    key: 'addPool',
-    label: 'clusters.button.addNodePool',
-    provider: ProviderValueMap.DigitalOcean,
-    locale: true,
-    icon: icons.Catalog1
-  },
-  {
-    key: 'isDefault',
-    label: 'clusters.form.setDefault',
-    icon: icons.StarOutlined
-  },
-  {
-    key: 'delete',
-    label: 'common.button.delete',
-    icon: icons.DeleteOutlined,
-    props: {
-      danger: true
-    }
-  }
-];
-
 export const CloudOptionItems = [
   {
     label: 'Volumes',

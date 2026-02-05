@@ -1,13 +1,13 @@
 import { systemConfigAtom } from '@/atoms/system';
-import IconFont from '@/components/icon-font';
 import { GPUSTACK_API_BASE_URL } from '@/config/settings';
+import GrafanaIcon from '@/pages/_components/grafana-icon';
 import { useIntl } from '@umijs/max';
 import { Button } from 'antd';
 import { useAtomValue } from 'jotai';
 
 const useGranfanaLink = (options: {
   type: 'model' | 'worker' | 'instance' | 'cluster';
-  dataList: any[];
+  dataList?: any[];
 }) => {
   const intl = useIntl();
   const systemConfig = useAtomValue(systemConfigAtom);
@@ -53,7 +53,7 @@ const useGranfanaLink = (options: {
   };
 
   const handleClick = () => {
-    if (options.dataList?.length > 0) {
+    if (options.dataList && options.dataList.length > 0) {
       goToGrafana(options.dataList?.[0]);
     }
   };
@@ -63,7 +63,7 @@ const useGranfanaLink = (options: {
       return (
         <Button
           onClick={handleClick}
-          icon={<IconFont type="icon-metrics" style={{ fontSize: 16 }} />}
+          icon={<GrafanaIcon style={{ width: 16, height: 16 }}></GrafanaIcon>}
         >
           {intl.formatMessage({ id: 'resources.metrics.details' })}
         </Button>

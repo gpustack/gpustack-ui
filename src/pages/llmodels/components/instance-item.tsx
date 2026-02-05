@@ -12,7 +12,6 @@ import { HandlerOptions } from '@/hooks/use-chunk-fetch';
 import useDownloadStream from '@/hooks/use-download-stream';
 import { useBenchmarkTargetInstance } from '@/pages/llmodels/hooks/use-run-benchmark';
 import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
-import useGranfanaLink from '@/pages/resources/hooks/use-grafana-link';
 import { convertFileSize } from '@/utils';
 import {
   DeleteOutlined,
@@ -331,12 +330,6 @@ const childActionList = [
     icon: <IconFont type="icon-logs" />
   },
   {
-    label: 'resources.metrics.details',
-    key: 'metrics',
-    status: [InstanceStatusMap.Running],
-    icon: <IconFont type="icon-metrics" />
-  },
-  {
     label: 'common.button.downloadLog',
     key: 'download',
     status: [
@@ -438,7 +431,6 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
   handleChildSelect
 }) => {
   const systemConfig = useAtomValue(systemConfigAtom);
-  const { goToGrafana } = useGranfanaLink({ type: 'instance' });
   const { runBenchmarkOnInstance } = useBenchmarkTargetInstance();
   const [api, contextHolder] = notification.useNotification({
     stack: { threshold: 1 }
@@ -455,9 +447,6 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
       }
       if (action.status && action.status.length > 0) {
         return action.status.includes(instanceData.state);
-      }
-      if (action.key === 'metrics') {
-        return systemConfig.showMonitoring;
       }
       return true;
     });
@@ -668,25 +657,27 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
           <InfoColumn fieldList={fieldList} data={offloadData}></InfoColumn>
         }
       >
-        <ThemeTag
-          opacity={0.75}
-          color="cyan"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            maxWidth: '100%',
-            minWidth: 50,
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            borderRadius: 12
-          }}
-        >
-          <InfoCircleOutlined className="m-r-5" />
-          {intl.formatMessage({
-            id: 'models.table.cpuoffload'
-          })}
-        </ThemeTag>
+        <span>
+          <ThemeTag
+            opacity={0.75}
+            color="cyan"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              maxWidth: '100%',
+              minWidth: 50,
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              borderRadius: 12
+            }}
+          >
+            <InfoCircleOutlined className="m-r-5" />
+            {intl.formatMessage({
+              id: 'models.table.cpuoffload'
+            })}
+          </ThemeTag>
+        </span>
       </Tooltip>
     );
   }, [
@@ -703,8 +694,6 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
         filename: createFileName(instanceData.name),
         downloadNotification
       });
-    } else if (val === 'metrics') {
-      goToGrafana(instanceData);
     } else {
       handleChildSelect(val, instanceData);
     }

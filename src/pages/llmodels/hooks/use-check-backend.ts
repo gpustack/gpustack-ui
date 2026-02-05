@@ -25,7 +25,8 @@ export default function useCheckBackend() {
   }) => {
     const { isAudio, gpuOptions, defaultBackend } = data;
     if (isAudio) {
-      return backendOptionsMap.voxBox;
+      // audio model use vllm backend by default
+      return backendOptionsMap.vllm;
     }
 
     if (checkOnlyAscendNPU(gpuOptions)) {

@@ -265,6 +265,7 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
         ..._.pick(model?.meta || {}, MetaFields),
         task_type: model?.meta?.task_type,
         model: value,
+        language: model?.meta?.language?.[0] || '',
         voice: newList[0]?.value
       };
     });
@@ -272,7 +273,6 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   const handleOnValuesChange = useCallback(
     (changeValues: Record<string, any>, allValues: Record<string, any>) => {
-      console.log('handleOnValuesChange', changeValues, allValues);
       if (changeValues.model) {
         handleSelectModel(changeValues.model);
       } else {

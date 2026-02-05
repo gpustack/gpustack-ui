@@ -166,10 +166,11 @@ export default {
   'playground.params.resolution': 'Resolution',
   'playground.params.taskType': 'Task Type',
   'playground.params.instructions': 'Instructions',
+  'playground.params.instructions.tips': 'Voice style/emotion instructions',
   'playground.params.maxTokens': 'Max New Tokens',
   'playground.params.refAudio': 'Reference Audio',
   'playground.params.refAudio.tips':
     'Enter a reference audio URL, or upload an audio file.',
-  'playground.params.refAudio.text': 'Transcript of Reference Audio',
-  'playground.params.refAudio.vectorMode': 'Use Speaker Embedding'
+  'playground.params.refAudio.text': 'Transcript of Reference Audio (no ICL)',
+  'playground.params.refAudio.vectorMode': 'Use Speaker Embedding Only (no ICL)'
 };

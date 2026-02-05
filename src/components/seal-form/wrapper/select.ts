@@ -89,12 +89,17 @@ const SelectWrapper = styled.div`
         }
         .ant-select-placeholder {
           position: absolute;
-          top: 10px;
+          top: 1px;
           left: 0;
           right: 0;
         }
         .ant-select .ant-select-content {
           padding-block: 0px 0;
+        }
+        .ant-select-auto-complete {
+          .ant-select-placeholder {
+            top: 1px;
+          }
         }
         .ant-select.ant-cascader {
           .ant-select-placeholder {

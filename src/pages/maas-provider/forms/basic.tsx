@@ -21,6 +21,13 @@ const Basic = () => {
     );
   };
 
+  const filterOption = (input: string, option?: any) => {
+    return (
+      option?.label?.toLowerCase().includes(input.toLowerCase()) ||
+      option?.value?.toLowerCase().includes(input.toLowerCase())
+    );
+  };
+
   return (
     <>
       <Form.Item<FormData> name="name" data-field="name">
@@ -38,19 +45,21 @@ const Basic = () => {
             required: true,
             message: getRuleMessage(
               'select',
-              intl.formatMessage({ id: 'providers.table.providerName' })
+              intl.formatMessage({ id: 'common.table.type' })
             )
           }
         ]}
       >
         <SealSelect
-          showSearch
+          showSearch={{
+            filterOption: filterOption
+          }}
           required
           options={maasProviderOptions}
           optionRender={optionRender}
           labelRender={optionRender}
           label={intl.formatMessage({
-            id: 'providers.table.providerName'
+            id: 'common.table.type'
           })}
         />
       </Form.Item>

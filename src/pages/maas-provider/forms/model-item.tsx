@@ -1,3 +1,4 @@
+import AutoComplete from '@/components/seal-form/auto-complete';
 import SealSelect from '@/components/seal-form/seal-select';
 import { categoryOptions } from '@/pages/llmodels/config';
 import {
@@ -28,7 +29,8 @@ const SelectWrapper = styled.div`
 interface ModelItemProps {
   onOpenChange: (open: boolean) => void;
   onChange: (data: ProviderModel) => void;
-  providerModelList: ProviderModel[];
+  providerModelList: Global.BaseOption<string>[];
+  selectedModelList: ProviderModel[];
   item: ProviderModel;
   loading?: boolean;
 }
@@ -38,6 +40,7 @@ const ModelItem: React.FC<ModelItemProps> = ({
   onChange,
   loading,
   providerModelList,
+  selectedModelList,
   item
 }) => {
   const intl = useIntl();
@@ -96,20 +99,30 @@ const ModelItem: React.FC<ModelItemProps> = ({
     return null;
   };
 
+  // filter out already selected models, but keep the current one
+  const selectedModelMap = new Map(
+    selectedModelList?.map((model) => [model.name, true])
+  );
+  const filteredOptions = () => {
+    return providerModelList.filter((model) => {
+      return model.value === item.name || !selectedModelMap.has(model.value);
+    });
+  };
+
   return (
     <SelectWrapper>
-      <SealSelect
+      <AutoComplete
         loading={loading}
         showSearch
         onOpenChange={onOpenChange}
         suffixIcon={renderSuffixIcon()}
-        alwaysFocus={true}
         value={item.name}
         onChange={handleOnChange}
-        options={providerModelList}
+        options={filteredOptions()}
+        placeholder={intl.formatMessage({ id: 'providers.table.models' })}
       />
       <SealSelect
-        value={item.category}
+        value={item.category || undefined}
         onChange={handleOnCategoryChange}
         options={categoryOptions}
         placeholder={intl.formatMessage({

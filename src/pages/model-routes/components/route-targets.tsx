@@ -33,11 +33,6 @@ interface TargetItemProps {
 }
 
 export const childActionList = [
-  // {
-  //   key: 'fallback',
-  //   label: 'routes.table.setAsFallback',
-  //   icon: <IconFont type="icon-shield" />
-  // },
   {
     key: 'delete',
     label: 'common.button.delete',

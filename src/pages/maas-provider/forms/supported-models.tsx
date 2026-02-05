@@ -71,6 +71,7 @@ const SupportedModels = () => {
           {(item, index) => (
             <ModelItem
               key={index}
+              selectedModelList={modelList}
               onOpenChange={handleOpenChange}
               onChange={(data) => onChange(data, index)}
               loading={loading}

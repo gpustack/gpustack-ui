@@ -159,10 +159,12 @@ export default {
   'playground.params.resolution': '分辨率',
   'playground.params.taskType': '任务类型',
   'playground.params.instructions': '说明',
+  'playground.params.instructions.tips': '语音风格/情感说明',
   'playground.params.maxTokens': '最大生成 Token 数',
   'playground.params.refAudio': '参考音频',
   'playground.params.refAudio.tips':
     '输入一个参考音频的 URL，或上传一个音频文件。',
-  'playground.params.refAudio.text': '参考音频文本',
-  'playground.params.refAudio.vectorMode': '使用扬声器嵌入'
+  'playground.params.refAudio.text': '参考音频文本（用于上下文学习模式）',
+  'playground.params.refAudio.vectorMode':
+    '仅使用说话人嵌入（不使用上下文学习）'
 };

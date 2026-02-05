@@ -51,6 +51,10 @@ export const TTSAdvancedParamsConfig: ParamsSchema[] = [
       text: 'playground.params.instructions',
       isLocalized: true
     },
+    description: {
+      text: 'playground.params.instructions.tips',
+      isLocalized: true
+    },
     attrs: {
       allowClear: true
     },

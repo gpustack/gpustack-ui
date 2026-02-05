@@ -182,3 +182,12 @@ export const scaleImageSize = (size: { width: number; height: number }) => {
 // png, jpg, jpeg
 const acceptImageType = ['image/png', 'image/jpg', 'image/jpeg'];
 export const EDIT_IMAGE_ACCEPT = acceptImageType.join(',');
+
+export const defaultLanguages = [
+  { label: 'Auto', value: 'auto' },
+  { label: 'English', value: 'en' },
+  { label: '中文', value: 'zh' },
+  { label: '日本語', value: 'ja' },
+  { label: 'Français', value: 'fr' },
+  { label: 'Deutsch', value: 'de' }
+];

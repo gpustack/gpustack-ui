@@ -1,6 +1,7 @@
 import CheckboxField from '@/components/seal-form/checkbox-field';
 import SealInput from '@/components/seal-form/seal-input';
 import UploadAudio from '@/components/upload-audio';
+import useAppUtils from '@/hooks/use-app-utils';
 import { convertFileToBase64 } from '@/utils/load-audio-file';
 import { CloseCircleFilled } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
@@ -36,10 +37,12 @@ const Container = styled.div`
 `;
 
 export const RefAudioFormItem: React.FC = () => {
+  const { getRuleMessage } = useAppUtils();
   const { meta, onValuesChange } = useFormContext();
   const form = Form.useFormInstance();
   const intl = useIntl();
   const [fileName, setFileName] = React.useState<string>('');
+  const taskType = Form.useWatch('task_type', form);
 
   // handle upload audio file, transfer to a base64 url
   const handleUploadChange = async (data: { file: any; fileList: any }) => {
@@ -73,10 +76,18 @@ export const RefAudioFormItem: React.FC = () => {
         <Form.Item
           name="ref_audio"
           getValueProps={(value) => ({ value: fileName ? fileName : value })}
+          rules={[
+            {
+              required: taskType === 'Base',
+              message: getRuleMessage('input', 'playground.params.refAudio')
+            }
+          ]}
+          dependencies={['task_type']}
         >
           <SealInput.Input
             allowClear
             readOnly={!!fileName}
+            required={taskType === 'Base'}
             suffix={
               <SuffixWrapper>
                 {fileName ? (

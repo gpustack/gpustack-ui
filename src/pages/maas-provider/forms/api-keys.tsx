@@ -42,10 +42,7 @@ const AccessToken = () => {
         rules={[
           {
             required: false,
-            message: getRuleMessage(
-              'input',
-              intl.formatMessage({ id: 'providers.form.tokens.title' })
-            )
+            message: getRuleMessage('input', 'providers.form.tokens.title')
           }
         ]}
       >

@@ -14,7 +14,7 @@ export const TargetStatusLabelMap = {
 
 export const TargetStatus: Record<string, StatusType> = {
   [TargetStatusValueMap.Active]: StatusMaps.success,
-  [TargetStatusValueMap.Unavailable]: StatusMaps.error
+  [TargetStatusValueMap.Unavailable]: StatusMaps.warning
 };
 
 // actions for each row

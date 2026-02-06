@@ -29,6 +29,7 @@ const SealAutoComplete: React.FC<
     extra,
     style,
     addAfter,
+    suffixIcon,
     loading,
     allowClear,
     clearSpaceOnBlur,
@@ -103,7 +104,7 @@ const SealAutoComplete: React.FC<
         </Link>
       );
     }
-    return null;
+    return suffixIcon || null;
   };
 
   const popupRender = (originNode: React.ReactElement): React.ReactElement => {

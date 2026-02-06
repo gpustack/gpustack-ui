@@ -181,8 +181,11 @@ const SelectWrapper = styled.div`
     }
 
     &.validate-status-error {
-      &.dropdown-visible {
-        .ant-select-dropdown {
+      .ant-select-dropdown {
+        border-color: var(--ant-color-error) !important;
+      }
+      .__wrapper__ {
+        .ant-cascader.ant-select.ant-select-outlined {
           border-color: var(--ant-color-error) !important;
         }
       }

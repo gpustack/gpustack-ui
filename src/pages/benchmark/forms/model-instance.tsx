@@ -3,19 +3,22 @@ import { PageAction } from '@/config';
 import useAppUtils from '@/hooks/use-app-utils';
 import {
   InstanceStatusMap,
-  InstanceStatusMapValue
+  InstanceStatusMapValue,
+  modelCategoriesMap
 } from '@/pages/llmodels/config';
 import { useBenchmarkTargetInstance } from '@/pages/llmodels/hooks/use-run-benchmark';
 import { useQueryModelInstancesList } from '@/pages/llmodels/services/use-query-model-instances';
 import { useQueryModelList } from '@/pages/llmodels/services/use-query-model-list';
 import { useIntl } from '@umijs/max';
-import { Form } from 'antd';
+import { Form, Tooltip } from 'antd';
 import React, { useEffect } from 'react';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
 
+// benchmark.form.nonLlmModel.tips
 const InstanceNode = (props: any) => {
   const { data: instance } = props;
+  const intl = useIntl();
   return instance.isLeaf ? (
     <span className="flex-center">
       {instance.label}
@@ -24,7 +27,17 @@ const InstanceNode = (props: any) => {
       )}
     </span>
   ) : (
-    <span>{instance.label}</span>
+    <>
+      {instance.disabled ? (
+        <Tooltip
+          title={intl.formatMessage({ id: 'benchmark.form.nonLlmModel.tips' })}
+        >
+          <span>{instance.label}</span>
+        </Tooltip>
+      ) : (
+        <span>{instance.label}</span>
+      )}
+    </>
   );
 };
 
@@ -99,6 +112,7 @@ const ModelInstanceForm: React.FC = () => {
       .map((model: any) => ({
         label: model.name,
         value: model.name,
+        disabled: modelCategoriesMap.llm !== model.categories?.[0],
         id: model.id,
         isLeaf: false,
         children: []
@@ -109,12 +123,17 @@ const ModelInstanceForm: React.FC = () => {
     }
 
     // preload instances for the first model
-    const instanceList = await fetchInstanceList({ id: modelOptions[0]?.id });
+    const selectedllmModel = modelOptions.find((model) => !model.disabled);
+    if (!selectedllmModel) {
+      setModelList(modelOptions);
+      return;
+    }
+    const instanceList = await fetchInstanceList({ id: selectedllmModel.id });
     const instanceOptions = instanceList.map((instance: any) =>
       renderInstance(instance)
     );
-    if (modelOptions[0]) {
-      modelOptions[0].children = [...instanceOptions] as never[];
+    if (selectedllmModel) {
+      selectedllmModel.children = [...instanceOptions] as never[];
     }
 
     // init form value for model instance
@@ -127,8 +146,8 @@ const ModelInstanceForm: React.FC = () => {
       });
     } else {
       handleOnChange(
-        [modelOptions[0].value, instanceOptions[0]?.value],
-        [modelOptions[0], instanceOptions[0]]
+        [selectedllmModel.value, instanceOptions[0]?.value],
+        [selectedllmModel, instanceOptions[0]]
       );
     }
 

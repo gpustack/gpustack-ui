@@ -283,7 +283,7 @@ export default function useTableFetch<T>(
     }
   ) => {
     loadendRef.current = false;
-    const newQueryParams = { ...queryParams, ...params };
+    const newQueryParams = { ...queryParams, ...params, page: 1 };
     setQueryParams(newQueryParams);
     await fetchData({ query: newQueryParams });
     if (watch && !options?.paginate) {

@@ -80,5 +80,8 @@ export default {
   'benchmark.env.system': 'System',
   'benchmark.env.runtimeVersion': 'Runtime Version',
   'benchmark.env.driverVersion': 'Driver Version',
-  'benchmark.env.cpuCounts': 'CPU Counts'
+  'benchmark.env.cpuCounts': 'CPU Cores',
+  'benchmark.table.export.results': 'Export Results',
+  'benchmark.form.nonLlmModel.tips':
+    'Benchmarking currently only supports LLM models'
 };

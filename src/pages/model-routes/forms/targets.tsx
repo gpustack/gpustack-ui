@@ -1,6 +1,7 @@
 import MetadataList from '@/components/metadata-list';
 import SealCascader from '@/components/seal-form/seal-cascader';
 import SealInput from '@/components/seal-form/seal-input';
+import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
@@ -10,6 +11,7 @@ import useTargetSourceModels from '../hooks/use-target-source-models';
 
 const TargetsForm = forwardRef((props, ref) => {
   const intl = useIntl();
+  const { getRuleMessage } = useAppUtils();
   const { sourceModels, loading, fetchSourceModels } = useTargetSourceModels();
   const form = Form.useFormInstance<FormData>();
   const targets = Form.useWatch('targets', form) || [];
@@ -38,19 +40,11 @@ const TargetsForm = forwardRef((props, ref) => {
   }));
 
   const handleTargetsChange = (value: any[], index: number, options: any[]) => {
-    console.log(
-      'handleTargetsChange:',
-      value,
-      index,
-      options,
-      dataList,
-      sourceModels
-    );
     const selectedOption =
       options?.find?.((opt) => opt.value === value[1]) || {};
     const targetList = [...targets];
     targetList[index] = {
-      weight: targetList[index]?.weight || null,
+      weight: targetList[index]?.weight,
       ...selectedOption?.data
     };
 
@@ -68,11 +62,19 @@ const TargetsForm = forwardRef((props, ref) => {
     const newDataList = [
       ...dataList,
       {
-        weight: null,
+        weight: 100,
         value: []
       }
     ];
     setDataList(newDataList);
+    const newTargets = [
+      ...targets,
+      {
+        weight: 100,
+        value: []
+      }
+    ];
+    form.setFieldValue('targets', newTargets);
   };
 
   const handleOnDelete = (index: number, item: any) => {
@@ -85,13 +87,19 @@ const TargetsForm = forwardRef((props, ref) => {
   };
 
   const handleFallbackChange = (value: any[], options?: any[]) => {
+    if (!value || value.length === 0) {
+      form.setFieldValue('fallback_target', null);
+      setFallbackValues({
+        value: []
+      });
+      return;
+    }
     const selectedOption =
       options?.find?.((opt) => opt.value === value[1]) || {};
 
     form.setFieldValue('fallback_target', {
       ...selectedOption?.data
     });
-    console.log('handleFallbackChange:', value, dataList);
     setFallbackValues({
       value: value
     });
@@ -163,27 +171,29 @@ const TargetsForm = forwardRef((props, ref) => {
         name="targets"
         data-field="targets"
         rules={[
-          ({ getFieldValue }) => ({
+          {
             validator(rule, value) {
-              if (_.keys(value).length > 0) {
-                if (_.some(_.keys(value), (k: string) => !value[k])) {
+              if (value && value?.length > 0) {
+                if (_.some(value, (item: any) => !item.weight)) {
                   return Promise.reject(
-                    intl.formatMessage(
-                      {
-                        id: 'common.validate.value'
-                      },
-                      {
-                        name: intl.formatMessage({
-                          id: 'models.form.selector'
-                        })
-                      }
-                    )
+                    getRuleMessage('input', 'routes.form.target.weight')
+                  );
+                }
+
+                if (
+                  _.some(
+                    dataList,
+                    (item: any) => !item.value || item.value.length === 0
+                  )
+                ) {
+                  return Promise.reject(
+                    getRuleMessage('input', 'providers.form.target.placeholder')
                   );
                 }
               }
               return Promise.resolve();
             }
-          })
+          }
         ]}
       >
         <MetadataList
@@ -203,6 +213,9 @@ const TargetsForm = forwardRef((props, ref) => {
               <SealCascader
                 required
                 showSearch
+                status={
+                  !item.value || item.value.length === 0 ? 'error' : 'success'
+                }
                 expandTrigger="hover"
                 multiple={false}
                 alwaysFocus={true}
@@ -235,6 +248,8 @@ const TargetsForm = forwardRef((props, ref) => {
               <SealInput.Number
                 style={{ flex: 100 }}
                 min={0}
+                step={1}
+                status={item.weight === null ? 'error' : 'success'}
                 value={item.weight}
                 onChange={(value) => handleOnWeightChange(value, index)}
                 placeholder={intl.formatMessage({

@@ -15,5 +15,11 @@ export default {
   'providers.form.model.test': '测试',
   'providers.form.model.test.tips': '测试连接',
   'providers.form.target.placeholder': '提供商/模型',
-  'providers.form.fallback.token': '备用 API Key'
+  'providers.form.fallback.token': '备用 API Key',
+  'providers.form.custombeckendUrl': '自定义 Base URL',
+  'providers.form.more': '+{count} 更多',
+  'providers.form.addAll': '添加全部',
+  'providers.form.rules.models': '请选择至少一个模型',
+  'providers.form.rules.tokens': '请输入有效的 API Key',
+  'providers.form.rules.model': '请选择模型'
 };

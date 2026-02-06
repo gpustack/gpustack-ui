@@ -4,12 +4,15 @@ import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import ProviderLogo from '../components/provider-logo';
-import { maasProviderOptions } from '../config/providers';
+import { maasProviderOptions, ProviderEnum } from '../config/providers';
 import { FormData } from '../config/types';
 
-const Basic = () => {
+const Basic: React.FC<{
+  onAPIKeyBlur?: (e: any) => void;
+}> = ({ onAPIKeyBlur }) => {
   const intl = useIntl();
   const form = Form.useFormInstance<FormData>();
+  const providerType = Form.useWatch(['config', 'type'], form);
   const { getRuleMessage } = useAppUtils();
 
   const optionRender = (option: any) => {
@@ -30,7 +33,17 @@ const Basic = () => {
 
   return (
     <>
-      <Form.Item<FormData> name="name" data-field="name">
+      <Form.Item<FormData>
+        name="name"
+        data-field="name"
+        required
+        rules={[
+          {
+            required: true,
+            message: getRuleMessage('input', 'common.table.name')
+          }
+        ]}
+      >
         <SealInput.Input
           required
           label={intl.formatMessage({
@@ -43,10 +56,7 @@ const Basic = () => {
         rules={[
           {
             required: true,
-            message: getRuleMessage(
-              'select',
-              intl.formatMessage({ id: 'common.table.type' })
-            )
+            message: getRuleMessage('select', 'common.table.type')
           }
         ]}
       >
@@ -63,6 +73,16 @@ const Basic = () => {
           })}
         />
       </Form.Item>
+      {providerType === ProviderEnum.OPENAI && (
+        <Form.Item<FormData> name={['config', 'openaiCustomUrl']}>
+          <SealInput.Input
+            placeholder="http://<your-inference-server>/v1"
+            label={intl.formatMessage({
+              id: 'providers.form.custombeckendUrl'
+            })}
+          />
+        </Form.Item>
+      )}
       <Form.Item<FormData>
         name="api_key"
         rules={[
@@ -74,6 +94,7 @@ const Basic = () => {
       >
         <SealInput.Password
           required
+          onBlur={onAPIKeyBlur}
           label={intl.formatMessage({
             id: 'providers.form.tokens.title'
           })}

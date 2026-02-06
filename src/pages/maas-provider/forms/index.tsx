@@ -107,7 +107,9 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
         api_key: currentData.api_tokens?.[0] || '',
         api_tokens: currentData.api_tokens?.slice(1) || [],
         proxy_enabled: !!currentData.proxy_url,
-        custom_config: json2Yaml(_.omit(currentData.config, ['type']) || {})
+        custom_config: json2Yaml(
+          _.omit(currentData.config, ['type', 'openaiCustomUrl']) || {}
+        )
       });
     }
   }, [form, currentData, action]);

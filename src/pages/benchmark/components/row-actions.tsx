@@ -9,17 +9,6 @@ import { BenchmarkListItem as ListItem } from '../config/types';
 
 const actionList = [
   {
-    key: 'edit',
-    label: 'common.button.edit',
-    icon: icons.EditOutlined
-  },
-  {
-    label: 'common.button.stop',
-    key: 'stop',
-    icon: icons.Stop,
-    status: [BenchmarkStatusValueMap.QUEUED, BenchmarkStatusValueMap.Running]
-  },
-  {
     label: 'common.button.viewlog',
     key: 'viewlog',
     status: [
@@ -31,8 +20,19 @@ const actionList = [
     icon: <IconFont type="icon-logs" />
   },
   {
+    key: 'edit',
+    label: 'common.button.edit',
+    icon: icons.EditOutlined
+  },
+  {
+    label: 'common.button.stop',
+    key: 'stop',
+    icon: icons.Stop,
+    status: [BenchmarkStatusValueMap.QUEUED, BenchmarkStatusValueMap.Running]
+  },
+  {
     key: 'export',
-    label: 'common.button.export',
+    label: 'benchmark.table.export.results',
     icon: (
       <IconFont type="icon-export" style={{ lineHeight: 1, fontSize: 16 }} />
     )

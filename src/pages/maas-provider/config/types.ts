@@ -12,6 +12,7 @@ export interface FormData {
   api_key: string;
   config: {
     type: maasProviderType;
+    openaiCustomUrl?: string;
     [key: string]: any;
   };
 }

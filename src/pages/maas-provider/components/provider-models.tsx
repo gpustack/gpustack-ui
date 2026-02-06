@@ -1,10 +1,8 @@
 import AutoTooltip from '@/components/auto-tooltip';
-import {
-  CheckCircleOutlined,
-  CloseCircleOutlined,
-  WarningOutlined
-} from '@ant-design/icons';
-import { Flex, Tag } from 'antd';
+import OverlayScroller from '@/components/overlay-scroller';
+import { CheckCircleOutlined } from '@ant-design/icons';
+import { useIntl } from '@umijs/max';
+import { Flex, Popover, Tag } from 'antd';
 import _ from 'lodash';
 import React from 'react';
 import { categoryConfig } from '../../_components/model-tag';
@@ -17,47 +15,101 @@ interface ProviderModelProps {
 const ProviderModels: React.FC<ProviderModelProps> = ({ dataList }) => {
   const iconsMap = {
     accessible: <CheckCircleOutlined />,
-    inaccessible: <CloseCircleOutlined />,
-    none: <WarningOutlined />
+    inaccessible: null,
+    none: null
+  };
+
+  const intl = useIntl();
+
+  const head12Items = dataList.slice(0, 8);
+  const restItems = dataList.slice(8);
+
+  const renderModels = (dataList: ProviderModel[]) => {
+    return (
+      <>
+        {dataList.map((model, index) => (
+          <Tag
+            key={index}
+            icon={
+              _.isBoolean(model.accessible)
+                ? iconsMap[model.accessible ? 'accessible' : 'inaccessible']
+                : iconsMap['none']
+            }
+            variant="outlined"
+            styles={{
+              root: {
+                backgroundColor: 'transparent',
+                display: 'flex',
+                alignItems: 'center',
+                borderRadius: 4
+              }
+            }}
+            color={
+              model.accessible === true ? 'var(--ant-color-success)' : 'default'
+            }
+          >
+            <span className="flex-center">
+              <AutoTooltip ghost maxWidth={'120px'}>
+                {model.name}
+              </AutoTooltip>
+              <span style={{ marginLeft: 8 }}>
+                {categoryConfig[model.category]?.icon}
+              </span>
+            </span>
+          </Tag>
+        ))}
+      </>
+    );
   };
   return (
-    <Flex gap="8px" wrap="wrap">
-      {dataList.map((model) => (
-        <Tag
-          key={model.name}
-          icon={
-            _.isBoolean(model.accessible)
-              ? iconsMap[model.accessible ? 'accessible' : 'inaccessible']
-              : iconsMap['none']
-          }
-          variant="outlined"
-          styles={{
-            root: {
-              backgroundColor: 'transparent',
-              display: 'flex',
-              alignItems: 'center',
-              borderRadius: 4
+    <div>
+      <Flex gap="8px" wrap="wrap">
+        {renderModels(head12Items)}
+        {restItems.length > 0 && (
+          <Popover
+            placement="right"
+            content={
+              <OverlayScroller
+                maxHeight={420}
+                styles={{
+                  wrapper: {
+                    paddingInlineStart: 0
+                  }
+                }}
+              >
+                <Flex gap="8px" wrap="wrap">
+                  {renderModels(restItems)}
+                </Flex>
+              </OverlayScroller>
             }
-          }}
-          color={
-            model.accessible === true
-              ? 'success'
-              : model.accessible === false
-                ? 'error'
-                : 'warning'
-          }
-        >
-          <span className="flex-center">
-            <AutoTooltip ghost maxWidth={'120px'}>
-              {model.name}
-            </AutoTooltip>
-            <span style={{ marginLeft: 8 }}>
-              {categoryConfig[model.category]?.icon}
-            </span>
-          </span>
-        </Tag>
-      ))}
-    </Flex>
+            styles={{
+              root: { maxWidth: '400px' },
+              container: {
+                paddingInlineEnd: 4
+              }
+            }}
+          >
+            <Tag
+              variant="outlined"
+              styles={{
+                root: {
+                  width: 'fit-content',
+                  backgroundColor: 'transparent',
+                  display: 'flex',
+                  alignItems: 'center',
+                  borderRadius: 4
+                }
+              }}
+            >
+              {intl.formatMessage(
+                { id: 'providers.form.more' },
+                { count: restItems.length }
+              )}
+            </Tag>
+          </Popover>
+        )}
+      </Flex>
+    </div>
   );
 };
 

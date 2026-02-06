@@ -95,7 +95,8 @@ const Catalog: React.FC = () => {
 
   const handleCategoryChange = (value: any) => {
     handleQueryChange({
-      categories: value
+      categories: value,
+      page: 1
     });
   };
 

@@ -1,13 +1,16 @@
 import { useIntl } from '@umijs/max';
-import { Descriptions, DescriptionsProps } from 'antd';
+import { Descriptions } from 'antd';
+import { DescriptionsItemType } from 'antd/es/descriptions';
 import React from 'react';
+import { DatasetValueMap } from '../../config';
 import { useDetailContext } from '../../config/detail-context';
 
 const Benchmark: React.FC = () => {
   const intl = useIntl();
   const { detailData, profilesOptions } = useDetailContext();
 
-  const items: DescriptionsProps['items'] = [
+  type ItemTyp = DescriptionsItemType & { hidden?: boolean };
+  const items: ItemTyp[] = [
     {
       key: '1',
       label: intl.formatMessage({ id: 'benchmark.form.profile' }),
@@ -27,6 +30,7 @@ const Benchmark: React.FC = () => {
       label: intl.formatMessage({
         id: 'benchmark.detail.inputOutputTokenLength'
       }),
+      hidden: detailData?.dataset_name === DatasetValueMap.ShareGPT,
       children: (
         <span>
           {detailData?.dataset_input_tokens || '-'} /{' '}
@@ -47,6 +51,7 @@ const Benchmark: React.FC = () => {
     {
       key: '5',
       label: intl.formatMessage({ id: 'playground.image.params.seed' }),
+      hidden: detailData?.dataset_name === DatasetValueMap.ShareGPT,
       children: detailData?.dataset_seed || '-'
     }
   ];
@@ -54,9 +59,9 @@ const Benchmark: React.FC = () => {
   return (
     <div>
       <Descriptions
-        items={items}
+        items={items.filter((item) => !item.hidden)}
         colon={false}
-        column={3}
+        column={detailData?.dataset_name === DatasetValueMap.ShareGPT ? 2 : 3}
         styles={{
           content: {
             justifyContent: 'flex-start'

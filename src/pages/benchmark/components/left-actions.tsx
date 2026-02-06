@@ -1,4 +1,5 @@
 import BaseSelect from '@/components/seal-form/base/select';
+import { modelCategoriesMap } from '@/pages/llmodels/config';
 import { SearchOutlined, SyncOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Input, Space } from 'antd';
@@ -30,6 +31,15 @@ const RightActions: React.FC<RightActionsProps> = ({
   }, 350);
 
   const handleGPUChange = debounceUpdateFilter;
+
+  const modelOptions = modelList
+    ?.filter((item) => {
+      return item.categories.includes(modelCategoriesMap.llm);
+    })
+    .map((item) => ({
+      label: item.label,
+      value: item.label
+    }));
 
   return (
     <Space>
@@ -63,7 +73,7 @@ const RightActions: React.FC<RightActionsProps> = ({
           id: 'benchmark.table.filter.bymodel'
         })}
         style={{ width: 200 }}
-        options={modelList}
+        options={modelOptions}
         onChange={(value, option) =>
           handleQueryChange({
             model_name: value,

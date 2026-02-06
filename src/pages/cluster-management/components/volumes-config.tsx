@@ -15,7 +15,8 @@ const CloudOptions: React.FC<{
   const { disabled } = props;
   const intl = useIntl();
   const form = Form.useFormInstance();
-  const volumes = Form.useWatch(['cloud_options', volumeOptions.name], form);
+  const volumes =
+    Form.useWatch(['cloud_options', volumeOptions.name], form) || [];
   const [validateStatusList, setValidateStatusList] = useState<
     { [key: string]: statusType }[]
   >([]);
@@ -45,10 +46,15 @@ const CloudOptions: React.FC<{
     form.setFieldValue(['cloud_options', volumeOptions.name], data);
     toggleValidation(true);
   };
-  console.log('disabled=====', disabled);
   return (
     <Form.Item
       name={['cloud_options', volumeOptions.name as string]}
+      style={{
+        backgroundColor:
+          disabled && volumes?.length === 0
+            ? 'var(--ant-color-bg-container-disabled)'
+            : ''
+      }}
       rules={[
         {
           validator: listMapValidator

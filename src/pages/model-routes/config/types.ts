@@ -43,5 +43,8 @@ export interface RouteTarget {
   name: string;
   route_name: string;
   route_id: number;
+  provider_id: number;
+  provider_model_name: string;
+  fallback_status_codes: string[];
   state: string;
 }

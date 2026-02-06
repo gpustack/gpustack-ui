@@ -1,6 +1,7 @@
 import { GPUSTACK_API_BASE_URL } from '@/config/settings';
 import { downloadFile } from '@/utils/download-stream';
 import { message } from 'antd';
+import dayjs from 'dayjs';
 import { EXPORT_BENCHMARK_LIST } from '../apis';
 
 const matchFilename = (disposition: string | null): string | undefined => {
@@ -12,7 +13,9 @@ const matchFilename = (disposition: string | null): string | undefined => {
 };
 
 export function useExportBenchmark() {
-  const exportData = async (data: any[]) => {
+  const exportData = async (data: any[], name: string) => {
+    const date = dayjs().format('YYYYMMDD_HHmmss');
+    const fileName = `${name || 'benchmark'}_${date}`;
     try {
       const res = await fetch(
         `${GPUSTACK_API_BASE_URL}${EXPORT_BENCHMARK_LIST}`,
@@ -26,8 +29,7 @@ export function useExportBenchmark() {
       );
       // header
       const contentDispostion = res.headers.get('content-Disposition');
-      const filename =
-        matchFilename(contentDispostion) || `benchmark-export.yml`;
+      const filename = matchFilename(contentDispostion) || `${fileName}.yml`;
       if (res.ok) {
         const blob = await res.blob();
         downloadFile(blob, filename);

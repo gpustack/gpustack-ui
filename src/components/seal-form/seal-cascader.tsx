@@ -106,7 +106,9 @@ const SealCascader: React.FC<
   // the status can be controlled by Form.Item
   if (isInFormItems) {
     const statusData = Form?.Item?.useStatus?.();
-    status = statusData?.status || '';
+    status = props.status || statusData?.status || '';
+  } else {
+    status = props.status || '';
   }
 
   const _options = useMemo(() => {

@@ -33,7 +33,9 @@ export const useQueryProviderModels = () => {
         setProviderModelList(
           response.data?.map((item: any) => ({
             label: item.id,
-            value: item.id
+            value: item.id,
+            accessible: item.accessible,
+            category: item.categories?.[0] || ''
           })) || []
         );
       },

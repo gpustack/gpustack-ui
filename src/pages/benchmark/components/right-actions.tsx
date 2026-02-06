@@ -25,7 +25,7 @@ const RightActions: React.FC<RightActionsProps> = ({
 }) => {
   const ButtonList = [
     {
-      label: 'common.button.export',
+      label: 'benchmark.table.export.results',
       key: 'export',
       icon: (
         <IconFont type="icon-export" style={{ lineHeight: 1, fontSize: 16 }} />

@@ -1,9 +1,11 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
+import useBodyScroll from '@/hooks/use-body-scroll';
 import { useState } from 'react';
 import { RouteItem as ListItem } from '../config/types';
 
 const useCreateRoute = (options?: { refresh: () => void }) => {
+  const { saveScrollHeight, restoreScrollHeight } = useBodyScroll();
   const [openModalStatus, setOpenModalStatus] = useState<{
     open: boolean;
     action: PageActionType;
@@ -27,6 +29,7 @@ const useCreateRoute = (options?: { refresh: () => void }) => {
       currentData,
       title: title
     });
+    saveScrollHeight();
   };
 
   const closeModal = () => {
@@ -36,6 +39,7 @@ const useCreateRoute = (options?: { refresh: () => void }) => {
       currentData: undefined,
       title: ''
     });
+    restoreScrollHeight();
   };
 
   return {

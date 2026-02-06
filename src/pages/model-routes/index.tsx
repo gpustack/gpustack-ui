@@ -275,7 +275,7 @@ const ModelRoutes: React.FC = () => {
             loadend={dataSource.loadend}
             rowSelection={rowSelection}
             columns={columns}
-            childParentKey="access_id"
+            childParentKey="route_id"
             expandable={true}
             empty={
               <NoResult

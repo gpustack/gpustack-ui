@@ -80,5 +80,7 @@ export default {
   'benchmark.env.system': '系统',
   'benchmark.env.runtimeVersion': '运行时版本',
   'benchmark.env.driverVersion': '驱动版本',
-  'benchmark.env.cpuCounts': 'CPU 核心数'
+  'benchmark.env.cpuCounts': 'CPU 核心数',
+  'benchmark.table.export.results': '导出结果',
+  'benchmark.form.nonLlmModel.tips': '基准测试目前仅支持 LLM 模型'
 };

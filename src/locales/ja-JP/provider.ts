@@ -15,5 +15,11 @@ export default {
   'providers.form.model.test': 'Test',
   'providers.form.model.test.tips': 'Test Connection',
   'providers.form.target.placeholder': 'provider/models',
-  'providers.form.fallback.token': 'Fallback API Keys'
+  'providers.form.fallback.token': 'Fallback API Keys',
+  'providers.form.custombeckendUrl': 'Custom Base URL',
+  'providers.form.more': '+{count} more',
+  'providers.form.addAll': 'Add All',
+  'providers.form.rules.models': 'Please select at least one model',
+  'providers.form.rules.tokens': 'Please enter a valid API Key',
+  'providers.form.rules.model': 'Please select a model'
 };

@@ -3,8 +3,8 @@ import SealSelect from '@/components/seal-form/seal-select';
 import { categoryOptions } from '@/pages/llmodels/config';
 import {
   CheckCircleFilled,
-  CloseCircleFilled,
-  LoadingOutlined
+  LoadingOutlined,
+  WarningFilled
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Form, Tooltip } from 'antd';
@@ -27,9 +27,15 @@ const SelectWrapper = styled.div`
 `;
 
 interface ModelItemProps {
-  onOpenChange: (open: boolean) => void;
+  onOpenChange?: (open: boolean) => void;
   onChange: (data: ProviderModel) => void;
-  providerModelList: Global.BaseOption<string>[];
+  providerModelList: Global.BaseOption<
+    string,
+    {
+      category: string;
+      accessible: boolean;
+    }
+  >[];
   selectedModelList: ProviderModel[];
   item: ProviderModel;
   loading?: boolean;
@@ -63,10 +69,9 @@ const ModelItem: React.FC<ModelItemProps> = ({
     });
   };
 
-  const handleOnChange = (value: string) => {
+  const handleOnChange = (value: string, option: any) => {
     onChange({
-      ...item,
-      accessible: null,
+      ...option,
       name: value
     });
   };
@@ -79,20 +84,26 @@ const ModelItem: React.FC<ModelItemProps> = ({
   };
 
   const renderSuffixIcon = () => {
+    console.log(
+      'testLoading',
+      testLoading,
+      item.accessible,
+      item.accessible === false
+    );
     if (testLoading) {
       return <LoadingOutlined />;
     }
     if (item.accessible === true) {
       return (
         <CheckCircleFilled
-          style={{ color: 'var(--ant-color-success)', fontSize: 16 }}
+          style={{ color: 'var(--ant-color-success)', fontSize: 14 }}
         />
       );
     }
     if (item.accessible === false) {
       return (
-        <CloseCircleFilled
-          style={{ color: 'var(--ant-color-error)', fontSize: 16 }}
+        <WarningFilled
+          style={{ color: 'var(--ant-color-error)', fontSize: 14 }}
         />
       );
     }

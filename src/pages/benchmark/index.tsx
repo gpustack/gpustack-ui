@@ -147,7 +147,7 @@ const Benchmark: React.FC = () => {
     } else if (val === 'stop') {
       handleStopBenchmark(row.id);
     } else if (val === 'export') {
-      exportData([row.id]);
+      exportData([row.id], row.name);
     }
   });
 
@@ -192,7 +192,11 @@ const Benchmark: React.FC = () => {
   });
 
   const handleExportData = () => {
-    exportData(rowSelection.selectedRowKeys);
+    const firstSelectedRow = dataSource.dataList.find(
+      (item) => item.id === rowSelection.selectedRowKeys[0]
+    );
+    const name = firstSelectedRow ? firstSelectedRow.name : 'benchmark';
+    exportData(rowSelection.selectedRowKeys, name);
   };
 
   return (

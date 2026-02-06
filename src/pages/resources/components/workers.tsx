@@ -67,8 +67,7 @@ const Workers: React.FC<{
     }
   });
   const { goToGrafana, ActionButton } = useGranfanaLink({
-    type: 'worker',
-    dataList: dataSource.dataList || []
+    type: 'worker'
   });
   const { MaintenanceModal, handleStopMaintenance, setOpenStatus } =
     useWorkerMaintenance({ fetchData: handleSearch });

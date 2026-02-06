@@ -7,11 +7,12 @@ import { useAtomValue } from 'jotai';
 
 const useGranfanaLink = (options: {
   type: 'model' | 'worker' | 'instance' | 'cluster';
-  dataList?: any[];
 }) => {
   const intl = useIntl();
   const systemConfig = useAtomValue(systemConfigAtom);
+  const grafanaUrl = systemConfig.grafana_url || 'grafana';
 
+  // for worker/model/instance/cluster item entry
   const goToModelGrafana = (row: { id: number }) => {
     window.open(
       `/${GPUSTACK_API_BASE_URL}/models/${row.id}/dashboard`,
@@ -52,9 +53,22 @@ const useGranfanaLink = (options: {
     }
   };
 
+  // all endpoints of grafana
+  const modelEntry = () => {
+    const modelURL = systemConfig.grafana_model_dashboard_uid;
+    window.open(`${grafanaUrl}/d/${modelURL}/gpustack-model`, '_blank');
+  };
+
+  const workerEntry = () => {
+    const workerURL = systemConfig.grafana_worker_dashboard_uid;
+    window.open(`${grafanaUrl}/d/${workerURL}/gpustack-worker`, '_blank');
+  };
+
   const handleClick = () => {
-    if (options.dataList && options.dataList.length > 0) {
-      goToGrafana(options.dataList?.[0]);
+    if (options.type === 'model') {
+      modelEntry();
+    } else if (options.type === 'worker' || options.type === 'cluster') {
+      workerEntry();
     }
   };
 

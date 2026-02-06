@@ -1,8 +1,10 @@
 import AutoTooltip from '@/components/auto-tooltip';
+import InfoColumn from '@/components/simple-table/info-column';
 import StatusTag from '@/components/status-tag';
 import { tableSorter } from '@/config/settings';
 import ColumnSettings from '@/pages/_components/column-settings';
 import { useIntl } from '@umijs/max';
+import { Typography } from 'antd';
 import dayjs from 'dayjs';
 import _, { round } from 'lodash';
 import React from 'react';
@@ -120,6 +122,21 @@ const useColumnSettings = (options: {
     );
   };
 
+  const fieldList = [
+    {
+      label: 'benchmark.detail.throughput.inputToken',
+      key: 'input_tokens_per_second_mean',
+      locale: true,
+      render: (val: any) => round(val, 2)
+    },
+    {
+      label: 'benchmark.detail.throughput.outputToken',
+      key: 'output_tokens_per_second_mean',
+      locale: true,
+      render: (val: any) => round(val, 2)
+    }
+  ];
+
   const resultColumns = [
     {
       title: renderTitle(
@@ -144,7 +161,7 @@ const useColumnSettings = (options: {
       unit: 'ms',
       render: (text: number) => (
         <AutoTooltip ghost minWidth={20}>
-          {_.round(text, 2)}
+          {_.round(text, 2) || '-'}
         </AutoTooltip>
       )
     },
@@ -158,7 +175,7 @@ const useColumnSettings = (options: {
       unit: 'ms',
       render: (text: number) => (
         <AutoTooltip ghost minWidth={20}>
-          {_.round(text, 2)}
+          {_.round(text, 2) || '-'}
         </AutoTooltip>
       )
     },
@@ -170,7 +187,7 @@ const useColumnSettings = (options: {
       dataIndex: 'inter_token_latency_mean',
       path: 'inter_token_latency_mean',
       unit: 'ms',
-      render: (value: number) => round(value, 2)
+      render: (value: number) => round(value, 2) || '-'
     },
     {
       title: 'RPS',
@@ -178,7 +195,7 @@ const useColumnSettings = (options: {
       sorter: tableSorter(1),
       render: (text: string) => (
         <AutoTooltip ghost minWidth={20}>
-          {_.round(text, 2)}
+          {_.round(text, 2) || '-'}
         </AutoTooltip>
       )
     },
@@ -193,9 +210,14 @@ const useColumnSettings = (options: {
       path: 'tokens_per_second_mean',
       unit: 'Tokens/s',
       sorter: tableSorter(1),
-      render: (text: number) => (
-        <AutoTooltip ghost minWidth={20}>
-          {_.round(text, 2)}
+      render: (text: number, record: any) => (
+        <AutoTooltip
+          ghost
+          minWidth={20}
+          showTitle
+          title={<InfoColumn fieldList={fieldList} data={record}></InfoColumn>}
+        >
+          {_.round(text, 2) || '-'}
         </AutoTooltip>
       )
     },
@@ -213,7 +235,7 @@ const useColumnSettings = (options: {
       unit: 'Tokens/s',
       render: (value: number) => (
         <AutoTooltip ghost minWidth={20}>
-          {round(value, 2)}
+          {round(value, 2) || 0}
         </AutoTooltip>
       )
     },
@@ -231,7 +253,7 @@ const useColumnSettings = (options: {
       unit: 'Tokens/s',
       render: (value: number) => (
         <AutoTooltip ghost minWidth={20}>
-          {round(value, 2)}
+          {round(value, 2) || 0}
         </AutoTooltip>
       )
     },
@@ -249,14 +271,53 @@ const useColumnSettings = (options: {
       ),
       unit: ''
     }
+    // {
+    //   title: renderTitle(
+    //     intl.formatMessage({ id: 'benchmark.detail.requests.success' })
+    //   ),
+    //   dataIndex: 'successful_requests',
+    //   path: ['raw_metrics', 'benchmarks', '0'],
+    //   render: (value: number) =>
+    //     round(_.get(value, ['metrics', 'request_totals', 'successful']), 0) ||
+    //     0,
+    //   precision: 0,
+    //   color: 'var(--ant-color-success)',
+    //   unit: ''
+    // },
+    // {
+    //   title: renderTitle(
+    //     intl.formatMessage({ id: 'benchmark.detail.requests.failed' })
+    //   ),
+    //   dataIndex: 'failed_requests',
+    //   path: ['raw_metrics', 'benchmarks', '0'],
+    //   render: (value: number) =>
+    //     round(_.get(value, ['metrics', 'request_totals', 'errored']), 0) || 0,
+    //   precision: 0,
+    //   color: 'var(--ant-color-error)',
+    //   unit: ''
+    // },
+    // {
+    //   title: renderTitle(
+    //     intl.formatMessage({
+    //       id: 'benchmark.detail.requests.concurrency'
+    //     })
+    //   ),
+    //   dataIndex: 'request_concurrency',
+    //   path: ['raw_metrics', 'benchmarks', '0'],
+    //   render: (value: number) =>
+    //     round(_.get(value, 'metrics.request_concurrency.successful.mean'), 0) ||
+    //     0,
+    //   precision: 0,
+    //   unit: ''
+    // }
   ];
 
   const metadataColumns = [
     {
       title: (
-        <AutoTooltip ghost minWidth={20}>
+        <Typography.Text ellipsis={{ tooltip: true }}>
           {intl.formatMessage({ id: 'clusters.title' })}
-        </AutoTooltip>
+        </Typography.Text>
       ),
       dataIndex: 'cluster_id',
       render: (text: number) => (
@@ -266,8 +327,10 @@ const useColumnSettings = (options: {
       )
     },
     {
-      title: renderTitle(
-        intl.formatMessage({ id: 'benchmark.detail.modelName' })
+      title: (
+        <Typography.Text ellipsis={{ tooltip: true }}>
+          {intl.formatMessage({ id: 'benchmark.detail.modelName' })}
+        </Typography.Text>
       ),
       dataIndex: 'model_name',
       sorter: tableSorter(1),
@@ -287,7 +350,11 @@ const useColumnSettings = (options: {
       )
     },
     {
-      title: renderTitle(intl.formatMessage({ id: 'benchmark.form.profile' })),
+      title: (
+        <Typography.Text ellipsis={{ tooltip: true }}>
+          {intl.formatMessage({ id: 'benchmark.form.profile' })}
+        </Typography.Text>
+      ),
       dataIndex: 'profile',
       render: (text: string) => (
         <AutoTooltip ghost minWidth={20}>

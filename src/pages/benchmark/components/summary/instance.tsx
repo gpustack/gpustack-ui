@@ -59,25 +59,29 @@ const Instance: React.FC = () => {
       {
         key: '1',
         label: intl.formatMessage({ id: 'models.form.backend_parameters' }),
-        children: (
-          <Flex
-            gap={8}
-            wrap="wrap"
-            style={{
-              backgroundColor: 'var(--ant-color-fill-quaternary)',
-              padding: '4px',
-              borderRadius: '2px'
-            }}
-          >
-            {instanceData?.backend_parameters?.map(
-              (param: string, index: number) => (
-                <span key={index} style={{ margin: 0 }}>
-                  {param}
-                </span>
-              )
-            )}
-          </Flex>
-        )
+        children:
+          instanceData?.backend_parameters &&
+          instanceData?.backend_parameters.length > 0 ? (
+            <Flex
+              gap={8}
+              wrap="wrap"
+              style={{
+                backgroundColor: 'var(--ant-color-fill-quaternary)',
+                padding: '4px',
+                borderRadius: '2px'
+              }}
+            >
+              {instanceData?.backend_parameters?.map(
+                (param: string, index: number) => (
+                  <span key={index} style={{ margin: 0 }}>
+                    {param}
+                  </span>
+                )
+              )}
+            </Flex>
+          ) : (
+            '-'
+          )
       },
       {
         key: '3',
@@ -86,24 +90,32 @@ const Instance: React.FC = () => {
           <Flex gap={8} wrap="wrap">
             {instanceData?.extended_kv_cache?.enabled ? (
               <>
-                <span className="flex-center">
-                  <span>
-                    {intl.formatMessage({ id: 'models.form.ramRatio' })}:
+                {instanceData?.extended_kv_cache?.ram_ratio && (
+                  <span className="flex-center">
+                    <span>
+                      {intl.formatMessage({ id: 'models.form.ramRatio' })}:
+                    </span>
+                    <span>{instanceData?.extended_kv_cache?.ram_ratio}</span>
                   </span>
-                  <span>{instanceData?.extended_kv_cache?.ram_ratio}</span>
-                </span>
-                <span className="flex-center">
-                  <span>
-                    {intl.formatMessage({ id: 'models.form.ramSize' })}:
+                )}
+
+                {instanceData?.extended_kv_cache?.ram_size && (
+                  <span className="flex-center">
+                    <span>
+                      {intl.formatMessage({ id: 'models.form.ramSize' })}:
+                    </span>
+                    <span>{instanceData?.extended_kv_cache?.ram_size}</span>
                   </span>
-                  <span>{instanceData?.extended_kv_cache?.ram_size}</span>
-                </span>
-                <span className="flex-center">
-                  <span>
-                    {intl.formatMessage({ id: 'models.form.chunkSize' })}:
+                )}
+
+                {instanceData?.extended_kv_cache?.chunk_size && (
+                  <span className="flex-center">
+                    <span>
+                      {intl.formatMessage({ id: 'models.form.chunkSize' })}:
+                    </span>
+                    <span>{instanceData?.extended_kv_cache?.chunk_size}</span>
                   </span>
-                  <span>{instanceData?.extended_kv_cache?.chunk_size}</span>
-                </span>
+                )}
               </>
             ) : (
               '-'

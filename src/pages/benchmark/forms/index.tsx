@@ -24,6 +24,8 @@ interface ProviderFormProps {
   currentData?: ListItem; // Used when action is EDIT
   open?: boolean;
   clusterList?: Global.BaseOption<number>[];
+  datasetList: Global.BaseOption<number | string>[];
+  profilesOptions: Global.BaseOption<string>[];
   onFinish: (values: FormData) => Promise<void>;
 }
 
@@ -34,7 +36,15 @@ const TABKeysMap = {
 };
 
 const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
-  const { action, currentData, onFinish, open, clusterList } = props;
+  const {
+    action,
+    currentData,
+    onFinish,
+    open,
+    clusterList,
+    profilesOptions,
+    datasetList
+  } = props;
   const intl = useIntl();
   const [form] = Form.useForm();
   const { getScrollElementScrollableHeight } = useWrapperContext();
@@ -102,7 +112,9 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
         value={{
           action,
           open,
-          clusterList: clusterList
+          clusterList: clusterList,
+          profilesOptions: profilesOptions,
+          datasetList: datasetList
         }}
       >
         <Form

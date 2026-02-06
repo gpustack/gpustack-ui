@@ -66,7 +66,7 @@ export interface GPUData {
 
 export interface BenchmarkDetail {
   profile: string;
-  seed: number;
+  dataset_seed: number;
   raw_metrics: {
     benchmarks: Array<{
       metrics: Record<string, any>;

@@ -56,6 +56,7 @@ export default function useQueryProfiles() {
         }
       }
     ];
+    console.log('options===', options);
     setProfilesOptions(options);
     return options;
   };

@@ -92,10 +92,11 @@ const BenchmarkStateTag = (props: { data: ListItem }) => {
 
 const useColumnSettings = (options: {
   contentHeight: number;
+  profileOptions: Global.BaseOption<string>[];
   clusterList: Global.BaseOption<number>[];
 }) => {
   const intl = useIntl();
-  const { contentHeight, clusterList } = options;
+  const { contentHeight, clusterList, profileOptions } = options;
   const [selectedColumns, setSelectedColumns] =
     React.useState<string[]>(defaultColumns);
 
@@ -111,10 +112,10 @@ const useColumnSettings = (options: {
           title={`${title} ${options?.subTitle || ''}`}
         >
           {title}
+          {options?.subTitle && (
+            <div className="sub-title">{options.subTitle}</div>
+          )}
         </AutoTooltip>
-        {options?.subTitle && (
-          <SubTitleWrapper>{options.subTitle}</SubTitleWrapper>
-        )}
       </span>
     );
   };
@@ -247,45 +248,6 @@ const useColumnSettings = (options: {
         </AutoTooltip>
       ),
       unit: ''
-    },
-    {
-      title: renderTitle(
-        intl.formatMessage({ id: 'benchmark.detail.requests.success' })
-      ),
-      dataIndex: 'successful_requests',
-      path: ['raw_metrics', 'benchmarks', '0'],
-      render: (value: number) =>
-        round(_.get(value, ['metrics', 'request_totals', 'successful']), 0) ||
-        0,
-      precision: 0,
-      color: 'var(--ant-color-success)',
-      unit: ''
-    },
-    {
-      title: renderTitle(
-        intl.formatMessage({ id: 'benchmark.detail.requests.failed' })
-      ),
-      dataIndex: 'failed_requests',
-      path: ['raw_metrics', 'benchmarks', '0'],
-      render: (value: number) =>
-        round(_.get(value, ['metrics', 'request_totals', 'errored']), 0) || 0,
-      precision: 0,
-      color: 'var(--ant-color-error)',
-      unit: ''
-    },
-    {
-      title: renderTitle(
-        intl.formatMessage({
-          id: 'benchmark.detail.requests.concurrency'
-        })
-      ),
-      dataIndex: 'request_concurrency',
-      path: ['raw_metrics', 'benchmarks', '0'],
-      render: (value: number) =>
-        round(_.get(value, 'metrics.request_concurrency.successful.mean'), 0) ||
-        0,
-      precision: 0,
-      unit: ''
     }
   ];
 
@@ -326,7 +288,8 @@ const useColumnSettings = (options: {
       dataIndex: 'profile',
       render: (text: string) => (
         <AutoTooltip ghost minWidth={20}>
-          {text}
+          {profileOptions.find((option) => option.value === text)?.label ||
+            text}
         </AutoTooltip>
       )
     },

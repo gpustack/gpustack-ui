@@ -1,6 +1,6 @@
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
-import { PageAction } from '@/config';
+import { modelNameReg, PageAction } from '@/config';
 import useAppUtils from '@/hooks/use-app-utils';
 import { ClusterStatusValueMap } from '@/pages/cluster-management/config';
 import { useBenchmarkTargetInstance } from '@/pages/llmodels/hooks/use-run-benchmark';
@@ -53,6 +53,10 @@ const BasicForm: React.FC = () => {
           {
             required: true,
             message: getRuleMessage('input', 'common.table.name')
+          },
+          {
+            pattern: modelNameReg,
+            message: intl.formatMessage({ id: 'models.form.rules.name' })
           }
         ]}
       >

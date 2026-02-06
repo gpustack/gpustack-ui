@@ -5,13 +5,17 @@ import { useDetailContext } from '../../config/detail-context';
 
 const Benchmark: React.FC = () => {
   const intl = useIntl();
-  const { detailData } = useDetailContext();
+  const { detailData, profilesOptions } = useDetailContext();
 
   const items: DescriptionsProps['items'] = [
     {
       key: '1',
       label: intl.formatMessage({ id: 'benchmark.form.profile' }),
-      children: detailData?.profile || '-'
+      children:
+        profilesOptions.find((option) => option.value === detailData?.profile)
+          ?.label ||
+        detailData?.profile ||
+        '-'
     },
     {
       key: '2',
@@ -43,7 +47,7 @@ const Benchmark: React.FC = () => {
     {
       key: '5',
       label: intl.formatMessage({ id: 'playground.image.params.seed' }),
-      children: detailData?.seed || '-'
+      children: detailData?.dataset_seed || '-'
     }
   ];
 

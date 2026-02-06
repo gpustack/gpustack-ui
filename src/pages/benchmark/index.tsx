@@ -32,6 +32,7 @@ import useCreateBenchmark from './hooks/use-create-benchmark';
 import useViewLogs from './hooks/use-view-logs';
 import { useExportBenchmark } from './services/use-export-benchmark';
 import useQueryDataset from './services/use-query-dataset';
+import useQueryProfiles from './services/use-query-profiles';
 import useStopBenchmark from './services/use-stop-benchmark';
 
 const Benchmark: React.FC = () => {
@@ -73,15 +74,22 @@ const Benchmark: React.FC = () => {
     cancelRequest: cancelClusterRequest,
     clusterList
   } = useQueryClusterList();
+  const { benchmarkTargetInstance } = useBenchmarkTargetInstance();
+  const {
+    profilesOptions,
+    fetchProfilesData,
+    cancelRequest: cancelProfilesRequest
+  } = useQueryProfiles();
   const { SettingsButton, columns: selectedColumns } = useColumnSettings({
     contentHeight: 320,
-    clusterList
+    clusterList,
+    profileOptions: profilesOptions
   });
-  const { benchmarkTargetInstance } = useBenchmarkTargetInstance();
 
   useEffect(() => {
     fetchModelList({ page: -1 });
     fetchDatasetData();
+    fetchProfilesData();
     fetchClusterList({ page: -1 }).then(() => {
       if (benchmarkTargetInstance.model_name) {
         openBenchmarkModal(
@@ -92,6 +100,7 @@ const Benchmark: React.FC = () => {
     });
     return () => {
       cancelClusterRequest();
+      cancelProfilesRequest();
     };
   }, []);
 
@@ -261,6 +270,8 @@ const Benchmark: React.FC = () => {
         action={openBenchmarkModalStatus.action}
         title={openBenchmarkModalStatus.title}
         currentData={openBenchmarkModalStatus.currentData}
+        profilesOptions={profilesOptions}
+        datasetList={datasetList}
         onCancel={handleModalCancel}
         onOk={handleModalOk}
       ></AddBenchmarkModal>

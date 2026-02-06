@@ -64,6 +64,11 @@ export interface GPUData {
   core_total: number;
 }
 
+export interface Snapshot {
+  instances: Record<string, InstancesData>;
+  workers: Record<string, WorkerData>;
+  gpus: Record<string, GPUData>;
+}
 export interface BenchmarkDetail {
   profile: string;
   dataset_seed: number;
@@ -100,11 +105,7 @@ export interface BenchmarkDetail {
   progress: any;
   worker_id: number;
   pid: number;
-  snapshot: {
-    instances: Record<string, InstancesData>;
-    workers: Record<string, WorkerData>;
-    gpus: Record<string, GPUData>;
-  };
+  snapshot: Snapshot;
   gpu_summary: string;
   gpu_vendor_summary: string;
   id: number;

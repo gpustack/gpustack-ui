@@ -214,7 +214,7 @@ const useColumnSettings = (options: {
         <AutoTooltip
           ghost
           minWidth={20}
-          showTitle
+          showTitle={text > 0}
           title={<InfoColumn fieldList={fieldList} data={record}></InfoColumn>}
         >
           {_.round(text, 2) || '-'}

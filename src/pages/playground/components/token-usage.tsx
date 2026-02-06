@@ -23,7 +23,7 @@ const TokenUsage: React.FC<{
   }
   return (
     <TokenUsageWrapper {...rest}>
-      {tokenResult?.total_tokens && (
+      {tokenResult?.total_tokens > 0 && (
         <span className="text">
           {intl.formatMessage({ id: 'playground.tokenusage' })}:{' '}
           {tokenResult?.total_tokens}

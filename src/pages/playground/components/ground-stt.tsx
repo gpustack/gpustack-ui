@@ -282,10 +282,16 @@ const GroundSTT: React.FC<MessageProps> = forwardRef((props, ref) => {
     const languages = selected?.meta?.languages || [];
     let currentLanguage = [...defaultLanguages];
     if (languages.length > 0) {
-      currentLanguage = allLanguages.filter(
-        (lang) =>
-          languages.includes(lang.value) || languages.includes(lang.label)
-      );
+      // sort languages based on the order in the model meta
+      currentLanguage = [];
+
+      languages.forEach((langCode: string) => {
+        const langItem = allLanguages.find((item) => item.value === langCode);
+        if (langItem) {
+          currentLanguage.push(langItem);
+        }
+      });
+
       const newConfig = paramsConfig.map((item) => {
         const oItem = _.cloneDeep(item);
         if (item.name === 'language') {

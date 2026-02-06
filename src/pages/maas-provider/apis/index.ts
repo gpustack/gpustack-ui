@@ -42,6 +42,7 @@ export async function queryProviderModels(
   params: {
     data: {
       api_token: string;
+      proxy_url: string;
       config: {
         type: string;
       };
@@ -59,11 +60,35 @@ export async function queryProviderModels(
   );
 }
 
+export async function queryProviderModelsInEditing(
+  params: {
+    id?: number;
+    data: {
+      api_token: string;
+      proxy_url: string;
+      config: {
+        type: string;
+      };
+    };
+  },
+  options?: any
+) {
+  return request<{ data: any[] }>(
+    `${MAAS_PROVIDERS_API}/${params.id}/get-models`,
+    {
+      method: 'POST',
+      data: params.data,
+      cancelToken: options?.token
+    }
+  );
+}
+
 export async function testProviderModel(
   params: {
     data: {
       model_name: string;
       api_token: string;
+      proxy_url: string;
       config: {
         type: string;
       };
@@ -76,4 +101,28 @@ export async function testProviderModel(
     data: params.data,
     cancelToken: options?.token
   });
+}
+
+export async function testProviderModelInEditing(
+  params: {
+    id?: number;
+    data: {
+      model_name: string;
+      api_token: string;
+      proxy_url: string;
+      config: {
+        type: string;
+      };
+    };
+  },
+  options?: any
+) {
+  return request<any>(
+    `${MAAS_PROVIDERS_API}/${params.id}${TEST_PROVIDER_MODEL_API}`,
+    {
+      method: 'post',
+      data: params.data,
+      cancelToken: options?.token
+    }
+  );
 }

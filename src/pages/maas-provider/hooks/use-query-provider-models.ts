@@ -3,7 +3,12 @@ import { useRequest } from 'ahooks';
 import { message } from 'antd';
 import { CancelTokenSource } from 'axios';
 import { useEffect, useRef, useState } from 'react';
-import { queryProviderModels, testProviderModel } from '../apis';
+import {
+  queryProviderModels,
+  queryProviderModelsInEditing,
+  testProviderModel,
+  testProviderModelInEditing
+} from '../apis';
 
 /**
  *
@@ -19,10 +24,16 @@ export const useQueryProviderModels = () => {
     cancel
   } = useRequest(
     async (params: {
-      data: { api_token: string; config: { type: string } };
+      id: number;
+      data: { api_token: string; config: { type: string }; proxy_url: string };
     }) => {
       axiosTokenRef.current?.cancel();
       axiosTokenRef.current = createAxiosToken();
+      if (params.id) {
+        return await queryProviderModelsInEditing(params, {
+          token: axiosTokenRef.current.token
+        });
+      }
       return await queryProviderModels(params, {
         token: axiosTokenRef.current.token
       });
@@ -68,14 +79,27 @@ export const useTestProviderModel = () => {
     cancel
   } = useRequest(
     async (params: {
-      data: { api_token: string; config: { type: string }; model_name: string };
+      id: number;
+      data: {
+        api_token: string;
+        config: { type: string };
+        model_name: string;
+        proxy_url: string;
+      };
     }) => {
       axiosTokenRef.current?.cancel();
       axiosTokenRef.current = createAxiosToken();
-      const response = await testProviderModel(params, {
+
+      // for edit page
+      if (params.id) {
+        return await testProviderModelInEditing(params, {
+          token: axiosTokenRef.current.token
+        });
+      }
+      // for create page
+      return await testProviderModel(params, {
         token: axiosTokenRef.current.token
       });
-      return response;
     },
     {
       manual: true,

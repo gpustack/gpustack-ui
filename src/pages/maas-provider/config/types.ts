@@ -10,6 +10,8 @@ export interface FormData {
   api_tokens: string[];
   models: ProviderModel[];
   api_key: string;
+  proxy_url: string;
+  proxy_timeout: number;
   config: {
     type: maasProviderType;
     openaiCustomUrl?: string;
@@ -23,8 +25,6 @@ export interface MaasProviderItem extends FormData {
   deleted_at: string;
   timeout: number;
   models: ProviderModel[];
-  proxy_url: string;
-  proxy_timeout: number;
   builtin: boolean;
   provider_model_count: number;
   api_token_count: number;

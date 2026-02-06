@@ -1,8 +1,10 @@
 import MetadataList from '@/components/metadata-list';
+import { PageAction } from '@/config';
 import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import { useRef } from 'react';
+import { useFormContext } from '../config/form-context';
 import { FormData, ProviderModel } from '../config/types';
 import { useQueryProviderModels } from '../hooks/use-query-provider-models';
 import ModelItem from './model-item';
@@ -15,6 +17,17 @@ const SupportedModels = () => {
   const modelList = Form.useWatch('models', form) || [];
   const prevAPIKeyRef = useRef<string>('');
   const { getRuleMessage } = useAppUtils();
+  const { id, action, currentData } = useFormContext();
+
+  const generateCurrentAPIKey = (currentAPIKey: string) => {
+    if (
+      action === PageAction.EDIT &&
+      currentAPIKey === currentData?.api_tokens?.[0]?.hash
+    ) {
+      return undefined;
+    }
+    return currentAPIKey;
+  };
 
   const handleOpenChange = async (open: boolean) => {
     try {
@@ -31,8 +44,10 @@ const SupportedModels = () => {
       ) {
         prevAPIKeyRef.current = currentAPIKey;
         fetchProviderModels({
+          id: action === PageAction.EDIT ? id! : 0,
           data: {
-            api_token: currentAPIKey,
+            api_token: generateCurrentAPIKey(currentAPIKey) as string,
+            proxy_url: form.getFieldValue('proxy_url') || undefined,
             config: {
               type: form.getFieldValue(['config', 'type']) || ''
             }

@@ -71,7 +71,9 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
     );
     const data = {
       ..._.omit(values, ['api_key']),
-      api_tokens: _.concat([], values.api_key, apiTokens || []),
+      api_tokens: _.concat([], values.api_key, apiTokens || []).map(
+        (item: string) => ({ input: item })
+      ),
       config: {
         type: values.config.type,
         ...yaml2Json(advanceRef.current?.getYamlValue() || '')
@@ -102,10 +104,13 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       (action === PageAction.EDIT || action === PageAction.COPY) &&
       currentData
     ) {
+      const apiTokensList = _.get(currentData, 'api_tokens', []).map(
+        (item: any) => item.hash || ''
+      );
       form.setFieldsValue({
         ...currentData,
-        api_key: currentData.api_tokens?.[0] || '',
-        api_tokens: currentData.api_tokens?.slice(1) || [],
+        api_key: apiTokensList?.[0] || '',
+        api_tokens: apiTokensList?.slice(1) || [],
         proxy_enabled: !!currentData.proxy_url,
         custom_config: json2Yaml(
           _.omit(currentData.config, ['type', 'openaiCustomUrl']) || {}
@@ -127,7 +132,9 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       }}
       getScrollElementScrollableHeight={getScrollElementScrollableHeight}
     >
-      <FormContext.Provider value={{ action }}>
+      <FormContext.Provider
+        value={{ action, id: currentData?.id, currentData }}
+      >
         <Form
           form={form}
           onFinish={handleOnFinish}

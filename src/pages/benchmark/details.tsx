@@ -16,6 +16,7 @@ import useViewLogs from './hooks/use-view-logs';
 import { useExportBenchmark } from './services/use-export-benchmark';
 import useQueryBenchmarkList from './services/use-query-benchmarks';
 import useQueryDetail from './services/use-query-detail';
+import useQueryProfiles from './services/use-query-profiles';
 import useStopBenchmark from './services/use-stop-benchmark';
 
 const Details: React.FC = () => {
@@ -27,6 +28,11 @@ const Details: React.FC = () => {
     fetchData: fetchBenchmarkList,
     cancelRequest: cancelBenchmarkRequest
   } = useQueryBenchmarkList();
+  const {
+    profilesOptions,
+    fetchProfilesData,
+    cancelRequest: cancelProfilesRequest
+  } = useQueryProfiles();
   const { loading, detailData, cancelRequest, fetchData } = useQueryDetail();
   const { openViewLogsModal, closeViewLogsModal, openViewLogsModalStatus } =
     useViewLogs();
@@ -92,7 +98,7 @@ const Details: React.FC = () => {
     } else if (val === 'stop') {
       handleStopBenchmark(row.id);
     } else if (val === 'export') {
-      exportData([row.id]);
+      exportData([row.id], row.name);
     }
   });
 
@@ -102,8 +108,10 @@ const Details: React.FC = () => {
 
   useEffect(() => {
     fetchBenchmarkList({ page: -1 });
+    fetchProfilesData();
     return () => {
       cancelBenchmarkRequest();
+      cancelProfilesRequest();
     };
   }, []);
 
@@ -126,7 +134,8 @@ const Details: React.FC = () => {
           detailData: detailData || {},
           clusterList: [],
           loading: loading,
-          id: Number(id)
+          id: Number(id),
+          profilesOptions: profilesOptions
         }}
       >
         <DetailContent

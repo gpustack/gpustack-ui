@@ -11,6 +11,8 @@ type AddModalProps = {
   open: boolean;
   currentData?: ListItem; // Used when action is EDIT
   clusterList?: Global.BaseOption<number>[];
+  profilesOptions?: Global.BaseOption<string>[];
+  datasetList?: Global.BaseOption<number | string>[];
   onOk: (values: FormData) => void;
   onCancel: () => void;
 };
@@ -20,6 +22,8 @@ const AddBenchmark: React.FC<AddModalProps> = ({
   open,
   currentData,
   clusterList,
+  profilesOptions,
+  datasetList,
   onOk,
   onCancel
 }) => {
@@ -54,6 +58,8 @@ const AddBenchmark: React.FC<AddModalProps> = ({
         open={open}
         currentData={currentData}
         clusterList={clusterList}
+        profilesOptions={profilesOptions}
+        datasetList={datasetList}
         onFinish={handleOk}
       />
     </FormDrawer>

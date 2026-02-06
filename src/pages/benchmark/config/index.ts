@@ -74,7 +74,7 @@ export const profileOptions = [
   }
 ];
 
-const DatasetValueMap = {
+export const DatasetValueMap = {
   ShareGPT: 'ShareGPT',
   Random: 'Random'
 };

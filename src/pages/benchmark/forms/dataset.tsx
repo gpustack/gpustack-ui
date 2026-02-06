@@ -9,26 +9,13 @@ import React, { useEffect } from 'react';
 import { ProfileValueMap } from '../config';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
-import useQueryDataset from '../services/use-query-dataset';
-import useQueryProfiles from '../services/use-query-profiles';
 import RandomSettingsForm from './random-settings';
 
 const DatasetForm: React.FC = () => {
   const intl = useIntl();
   const form = Form.useFormInstance();
   const { getRuleMessage } = useAppUtils();
-  const { action, open } = useFormContext();
-  const {
-    datasetList,
-    loading: datasetLoading,
-    fetchDatasetData,
-    cancelRequest: cancelDatasetRequest
-  } = useQueryDataset();
-  const {
-    profilesOptions,
-    fetchProfilesData,
-    cancelRequest: cancelProfilesRequest
-  } = useQueryProfiles();
+  const { action, open, profilesOptions, datasetList } = useFormContext();
 
   const handleProfileChange = (value: string, option: any) => {
     if (value !== ProfileValueMap.Custom) {
@@ -42,6 +29,8 @@ const DatasetForm: React.FC = () => {
       });
     }
   };
+
+  const labelRender = (label: string) => {};
 
   // Initialize profile when open form
   const initProfile = (
@@ -63,28 +52,28 @@ const DatasetForm: React.FC = () => {
   };
 
   useEffect(() => {
-    if (!open) {
-      cancelDatasetRequest();
-      cancelProfilesRequest();
-    }
-
     if (open) {
       const init = async () => {
-        const profiles = await fetchProfilesData();
-        const datasets = await fetchDatasetData();
-        // set default profile
-        if (profiles?.length > 0) {
-          const throughputProfile = profiles.find(
+        if (
+          profilesOptions &&
+          profilesOptions.length > 0 &&
+          action === PageAction.CREATE
+        ) {
+          const throughputProfile = profilesOptions.find(
             (item) => item.value === ProfileValueMap.ThroughputMedium
           );
           if (throughputProfile) {
-            initProfile(throughputProfile.value, throughputProfile, datasets);
+            initProfile(
+              throughputProfile.value,
+              throughputProfile,
+              datasetList
+            );
           }
         }
       };
       init();
     }
-  }, [open]);
+  }, [open, action, profilesOptions, datasetList]);
 
   return (
     <>
@@ -127,10 +116,7 @@ const DatasetForm: React.FC = () => {
         </SealSelect>
       </Form.Item>
 
-      <RandomSettingsForm
-        datasetList={datasetList}
-        datasetLoading={datasetLoading}
-      ></RandomSettingsForm>
+      <RandomSettingsForm datasetList={datasetList}></RandomSettingsForm>
     </>
   );
 };

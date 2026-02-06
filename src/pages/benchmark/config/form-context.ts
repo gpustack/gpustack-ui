@@ -6,6 +6,8 @@ interface FormContextProps {
   open?: boolean;
   clusterList?: Global.BaseOption<number>[];
   modelList?: Global.BaseOption<number>[];
+  profilesOptions: Global.BaseOption<string>[];
+  datasetList: Global.BaseOption<number | string>[];
 }
 
 const FormContext = createContext<FormContextProps>({} as FormContextProps);

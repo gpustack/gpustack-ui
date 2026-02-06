@@ -6,6 +6,7 @@ interface DetailContextProps {
   clusterList?: Global.BaseOption<number>[];
   id: number;
   loading?: boolean;
+  profilesOptions: Global.BaseOption<string>[];
 }
 
 const DetailContext = createContext<DetailContextProps>(

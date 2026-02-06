@@ -170,8 +170,7 @@ const Models: React.FC<ModelsProps> = ({
   const { watchDataList: targetList } = useWatchList(MODEL_ROUTE_TARGETS);
 
   const { goToGrafana, ActionButton } = useGranfanaLink({
-    type: 'model',
-    dataList: dataSource || []
+    type: 'model'
   });
 
   const [openLogModal, setOpenLogModal] = useState(false);

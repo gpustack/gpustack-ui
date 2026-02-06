@@ -6,7 +6,8 @@ const proxyTableList = [
   'v1-openai',
   'version',
   'proxy',
-  'update'
+  'update',
+  'grafana'
 ];
 
 // @ts-ingore

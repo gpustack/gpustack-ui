@@ -74,8 +74,7 @@ const Clusters: React.FC = () => {
   });
   const navigate = useNavigate();
   const { goToGrafana, ActionButton } = useGranfanaLink({
-    type: 'cluster',
-    dataList: dataSource.dataList || []
+    type: 'cluster'
   });
   const { watchDataList: allWorkerPoolList } = useWatchList(WORKER_POOLS_API);
   const [expandAtom] = useAtom(expandKeysAtom);

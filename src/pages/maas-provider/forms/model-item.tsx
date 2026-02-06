@@ -1,5 +1,6 @@
 import AutoComplete from '@/components/seal-form/auto-complete';
 import SealSelect from '@/components/seal-form/seal-select';
+import { PageAction } from '@/config';
 import { categoryOptions } from '@/pages/llmodels/config';
 import {
   CheckCircleFilled,
@@ -10,6 +11,7 @@ import { useIntl } from '@umijs/max';
 import { Button, Form, Tooltip } from 'antd';
 import React from 'react';
 import styled from 'styled-components';
+import { useFormContext } from '../config/form-context';
 import { FormData, ProviderModel } from '../config/types';
 import { useTestProviderModel } from '../hooks/use-query-provider-models';
 
@@ -52,12 +54,27 @@ const ModelItem: React.FC<ModelItemProps> = ({
   const intl = useIntl();
   const form = Form.useFormInstance<FormData>();
   const { runTestModel, loading: testLoading } = useTestProviderModel();
+  const { id, action, currentData } = useFormContext();
+
+  const generateCurrentAPIKey = (currentAPIKey: string) => {
+    if (
+      action === PageAction.EDIT &&
+      currentAPIKey === currentData?.api_tokens?.[0]?.hash
+    ) {
+      return undefined;
+    }
+    return currentAPIKey;
+  };
 
   const handleTestModel = async () => {
     const res = await runTestModel({
+      id: action === PageAction.EDIT ? id! : 0,
       data: {
         model_name: item.name,
-        api_token: form.getFieldValue('api_key') || '',
+        api_token: generateCurrentAPIKey(
+          form.getFieldValue('api_key')
+        ) as string,
+        proxy_url: form.getFieldValue('proxy_url') || undefined,
         config: {
           type: form.getFieldValue(['config', 'type']) || ''
         }
@@ -103,7 +120,7 @@ const ModelItem: React.FC<ModelItemProps> = ({
     if (item.accessible === false) {
       return (
         <WarningFilled
-          style={{ color: 'var(--ant-color-error)', fontSize: 14 }}
+          style={{ color: 'var(--ant-color-warning)', fontSize: 14 }}
         />
       );
     }

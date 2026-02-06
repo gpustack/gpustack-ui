@@ -155,7 +155,7 @@ const ModelInstanceForm: React.FC = () => {
   };
 
   useEffect(() => {
-    if (open) {
+    if (open && action === PageAction.CREATE) {
       initModelInstance();
     }
     if (!open) {
@@ -163,7 +163,7 @@ const ModelInstanceForm: React.FC = () => {
       cancelInstanceRequest();
       clearBenchmarkTargetInstance();
     }
-  }, [open, benchmarkTargetInstance]);
+  }, [open, benchmarkTargetInstance, action]);
 
   return (
     <Form.Item<FormData>

@@ -31,8 +31,9 @@ export default function useQueryProfiles() {
 
     const list =
       res?.profiles?.map((item) => {
+        const label = profileMap.get(item.name)?.label;
         return {
-          label: profileMap.get(item.name)?.label || item.name,
+          label: label ? intl.formatMessage({ id: label }) : item.name,
           tips: profileMap.get(item.name)?.tips || '',
           value: item.name,
           config: {

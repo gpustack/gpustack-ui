@@ -99,7 +99,7 @@ const DatasetForm: React.FC = () => {
                     : false
                 }
               >
-                {intl.formatMessage({ id: item?.label || '' })}
+                {item?.label}
               </AutoTooltip>
             </Select.Option>
           ))}

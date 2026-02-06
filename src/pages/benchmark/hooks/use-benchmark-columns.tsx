@@ -20,7 +20,11 @@ const useBenchmarkColumns = (params: {
   return useMemo(() => {
     return [
       {
-        title: intl.formatMessage({ id: 'common.table.name' }),
+        title: (
+          <AutoTooltip ghost minWidth={20}>
+            {intl.formatMessage({ id: 'common.table.name' })}
+          </AutoTooltip>
+        ),
         dataIndex: 'name',
         sorter: tableSorter(1),
         render: (text: string, record) => (
@@ -33,7 +37,11 @@ const useBenchmarkColumns = (params: {
       },
       ...columns,
       {
-        title: intl.formatMessage({ id: 'common.table.operation' }),
+        title: (
+          <AutoTooltip ghost minWidth={20}>
+            {intl.formatMessage({ id: 'common.table.operation' })}
+          </AutoTooltip>
+        ),
         dataIndex: 'operations',
         ellipsis: {
           showTitle: false

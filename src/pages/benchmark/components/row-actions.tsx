@@ -33,6 +33,7 @@ const actionList = [
   {
     key: 'export',
     label: 'benchmark.table.export.results',
+    status: [BenchmarkStatusValueMap.Completed],
     icon: (
       <IconFont type="icon-export" style={{ lineHeight: 1, fontSize: 16 }} />
     )

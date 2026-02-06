@@ -201,11 +201,7 @@ const Benchmark: React.FC = () => {
   });
 
   const handleExportData = () => {
-    const firstSelectedRow = dataSource.dataList.find(
-      (item) => item.id === rowSelection.selectedRowKeys[0]
-    );
-    const name = firstSelectedRow ? firstSelectedRow.name : 'benchmark';
-    exportData(rowSelection.selectedRowKeys, name);
+    exportData(rowSelection.selectedRowKeys);
   };
 
   return (

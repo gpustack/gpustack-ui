@@ -13,7 +13,7 @@ const matchFilename = (disposition: string | null): string | undefined => {
 };
 
 export function useExportBenchmark() {
-  const exportData = async (data: any[], name: string) => {
+  const exportData = async (data: any[], name?: string) => {
     const date = dayjs().format('YYYYMMDD_HHmmss');
     const fileName = `${name || 'benchmark'}_${date}`;
     try {

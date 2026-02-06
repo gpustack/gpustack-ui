@@ -178,7 +178,7 @@ const useColumnSettings = (options: {
       sorter: tableSorter(1),
       render: (text: string) => (
         <AutoTooltip ghost minWidth={20}>
-          {_.round(text, 0)}
+          {_.round(text, 2)}
         </AutoTooltip>
       )
     },
@@ -253,8 +253,11 @@ const useColumnSettings = (options: {
 
   const metadataColumns = [
     {
-      title: renderTitle(intl.formatMessage({ id: 'clusters.title' })),
-      pos: 1,
+      title: (
+        <AutoTooltip ghost minWidth={20}>
+          {intl.formatMessage({ id: 'clusters.title' })}
+        </AutoTooltip>
+      ),
       dataIndex: 'cluster_id',
       render: (text: number) => (
         <AutoTooltip ghost minWidth={20}>
@@ -353,7 +356,7 @@ const useColumnSettings = (options: {
         (fieldSortPos[a.dataIndex] || 0) - (fieldSortPos[b.dataIndex] || 0)
     );
     return selected;
-  }, [selectedColumns, clusterList]);
+  }, [selectedColumns, clusterList, intl, profileOptions]);
 
   const SettingsButton = (
     <ColumnSettings

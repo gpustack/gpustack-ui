@@ -30,8 +30,6 @@ const DatasetForm: React.FC = () => {
     }
   };
 
-  const labelRender = (label: string) => {};
-
   // Initialize profile when open form
   const initProfile = (
     value: string,
@@ -52,23 +50,15 @@ const DatasetForm: React.FC = () => {
   };
 
   useEffect(() => {
-    if (open) {
+    if (open && action === PageAction.CREATE) {
       const init = async () => {
-        if (
-          profilesOptions &&
-          profilesOptions.length > 0 &&
-          action === PageAction.CREATE
-        ) {
-          const throughputProfile = profilesOptions.find(
-            (item) => item.value === ProfileValueMap.ThroughputMedium
-          );
-          if (throughputProfile) {
-            initProfile(
-              throughputProfile.value,
-              throughputProfile,
-              datasetList
-            );
-          }
+        if (!profilesOptions || profilesOptions.length === 0) return;
+
+        const throughputProfile = profilesOptions.find(
+          (item) => item.value === ProfileValueMap.ThroughputMedium
+        );
+        if (throughputProfile) {
+          initProfile(throughputProfile.value, throughputProfile, datasetList);
         }
       };
       init();

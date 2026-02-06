@@ -43,6 +43,6 @@ export default {
   'backend.recommendModels': 'Recommended Models',
   'backend.filter.source': 'Filter by source',
   'backend.add.custom': 'Custom',
-  'backend.add.community': 'Community Backends',
+  'backend.add.community': 'Community',
   'backend.community.title': 'Community Backend Marketplace'
 };

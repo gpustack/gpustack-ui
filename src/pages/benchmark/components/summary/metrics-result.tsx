@@ -108,46 +108,21 @@ const requestColumns = [
       0,
     precision: 0,
     unit: ''
+  },
+  {
+    title: 'benchmark.detail.result.duration',
+    key: 'duration',
+    dataIndex: 'duration',
+    path: ['raw_metrics', 'benchmarks', '0', 'duration'],
+    precision: 0,
+    render: (value: number) => (value ? `${round(value, 2)} (s)` : 0),
+    unit: ''
   }
 ];
-
-const PERCENTILES = [
-  { key: 'metrics', label: 'Metrics', title: 'N/A' }
-] as const;
 
 const PercentileResult: React.FC = () => {
   const { detailData } = useDetailContext();
   const intl = useIntl();
-  const metrics = detailData?.raw_metrics?.benchmarks?.[0]?.metrics || {};
-
-  const buildPercentileTable = (metrics: any) => {
-    return PERCENTILES.map(({ key, title }) => {
-      const row: any = { metrics: title };
-
-      [...throughputColumns, ...latencyColumns].forEach(
-        ({ dataIndex, path }) => {
-          row[dataIndex] = _.get(detailData, path) ?? 0;
-        }
-      );
-
-      return row;
-    });
-  };
-
-  const items = [...throughputColumns, ...latencyColumns].map(
-    ({ title, dataIndex, path, render, unit }) => ({
-      key: dataIndex,
-      label: title,
-      children: unit ? (
-        <span className="flex-center">
-          {render(_.get(detailData, path) ?? 0)}{' '}
-          <span className="m-l-4">({unit})</span>
-        </span>
-      ) : (
-        render(_.get(detailData, path) ?? 0)
-      )
-    })
-  );
 
   const throughputItems = throughputColumns.map(
     ({ title, dataIndex, path, render, unit }) => ({
@@ -215,8 +190,8 @@ const PercentileResult: React.FC = () => {
       <Box>
         <Descriptions
           styles={descriptionStyles}
-          title={intl.formatMessage({ id: 'benchmark.detail.summary.latency' })}
-          items={latencyItems}
+          title={intl.formatMessage({ id: 'benchmark.detail.result.basic' })}
+          items={requestItems}
           colon={false}
           column={1}
         ></Descriptions>
@@ -231,8 +206,8 @@ const PercentileResult: React.FC = () => {
         ></Descriptions>
         <Descriptions
           styles={descriptionStyles}
-          title={intl.formatMessage({ id: 'benchmark.detail.summary.request' })}
-          items={requestItems}
+          title={intl.formatMessage({ id: 'benchmark.detail.summary.latency' })}
+          items={latencyItems}
           colon={false}
           column={1}
         ></Descriptions>

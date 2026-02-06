@@ -38,14 +38,11 @@ const useBenchmarkColumns = (params: {
       ...columns,
       {
         title: (
-          <AutoTooltip ghost minWidth={20}>
+          <Typography.Text ellipsis={{ tooltip: true }}>
             {intl.formatMessage({ id: 'common.table.operation' })}
-          </AutoTooltip>
+          </Typography.Text>
         ),
         dataIndex: 'operations',
-        ellipsis: {
-          showTitle: false
-        },
         render: (value: string, record: ListItem) => (
           <RowActions record={record} handleSelect={handleSelect}></RowActions>
         )

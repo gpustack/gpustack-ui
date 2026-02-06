@@ -215,7 +215,7 @@ const ColumnSettings: React.FC<{
               {intl.formatMessage({ id: 'common.checkbox.all' })}
             </Button>
             <Button size="middle" type="primary" onClick={handleConfirm}>
-              {intl.formatMessage({ id: 'common.button.confirm' })}
+              {intl.formatMessage({ id: 'common.button.save' })}
             </Button>
           </div>
         </div>

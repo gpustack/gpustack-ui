@@ -83,5 +83,7 @@ export default {
   'benchmark.env.cpuCounts': 'CPU Cores',
   'benchmark.table.export.results': 'Export Results',
   'benchmark.form.nonLlmModel.tips':
-    'Benchmarking currently only supports LLM models'
+    'Benchmarking currently only supports LLM models',
+  'benchmark.detail.result.duration': 'Duration',
+  'benchmark.detail.result.basic': 'Basic'
 };

@@ -50,7 +50,6 @@ const CopyButton: React.FC<CopyButtonProps> = ({
   return (
     <Typography.Text
       style={{ ...btnStyle }}
-      disabled={!!disabled}
       copyable={{
         text: text,
         tooltips: tooltips,

@@ -157,10 +157,12 @@ interface AddWorkerCommandParams {
 }
 
 const generateEnvArgs = (params: any) => {
-  const registrationInfo = params.registrationInfo || {};
-  registrationInfo.env = {
-    ...registrationInfo.env,
-    ...params.extraEnv
+  const registrationInfo = {
+    ...params.registrationInfo,
+    env: {
+      ...(params.registrationInfo?.env || {}),
+      ...params.extraEnv
+    }
   };
   // generate environment variables args from registrationInfo.env
   let envArgs = '';

@@ -13,7 +13,7 @@ const SelectWrapper = styled.div`
           border-color: var(--ant-input-active-border-color) !important;
           outline: 0;
           background-color: var(--ant-input-active-bg);
-          border-bottom: none !important;
+          border-bottom-color: transparent !important;
           border-radius: ${BORDERRADIUS}px ${BORDERRADIUS}px 0 0;
           transition: all 0.2s ease;
           box-shadow: none;
@@ -24,7 +24,7 @@ const SelectWrapper = styled.div`
             height: 1px;
             margin-inline: 1px;
             bottom: 0;
-            left: 0;
+            left: 0px;
             right: 0;
             background-color: var(--ant-color-split);
           }

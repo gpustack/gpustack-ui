@@ -1,11 +1,11 @@
 import useAddWorkerMessage from '@/pages/cluster-management/hooks/use-add-worker-message';
 import { useIntl } from '@umijs/max';
-import { Alert } from 'antd';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import { ProviderType, ProviderValueMap } from '../../config';
 import { ClusterListItem } from '../../config/types';
 import { AddWorkerContext } from './add-worker-context';
+import AddedMessage from './added-message';
 import CheckEnvironment from './check-environment';
 import { StepName, StepNamesMap } from './config';
 import DockerRunCommand from './docker-run-command';
@@ -90,23 +90,6 @@ const AddWorkerSteps: React.FC<AddWorkerProps> = (props) => {
     }
   }, [actionSource, registrationInfo?.cluster_id]);
 
-  const renderMessage = (count: number) => {
-    if (count === 1) {
-      return intl.formatMessage(
-        {
-          id: 'clusters.addworker.message.success_single'
-        },
-        { count: addedCount }
-      );
-    }
-    return intl.formatMessage(
-      {
-        id: 'clusters.addworker.message.success_multiple'
-      },
-      { count: addedCount }
-    );
-  };
-
   const disabled = useMemo(() => {
     return (
       stepList.includes(StepNamesMap.SelectCluster) && !clusterList?.length
@@ -154,17 +137,8 @@ const AddWorkerSteps: React.FC<AddWorkerProps> = (props) => {
             )}
           </>
         )}
-        {addedCount > 0 && (
-          <Alert
-            style={{
-              textAlign: 'left',
-              borderColor: 'var(--ant-color-success)',
-              width: '100%'
-            }}
-            type="success"
-            title={renderMessage(addedCount)}
-            closable
-          />
+        {actionSource === 'modal' && (
+          <AddedMessage addedCount={addedCount}></AddedMessage>
         )}
       </Container>
     </AddWorkerContext.Provider>

@@ -66,3 +66,5 @@ export const clusterSessionAtom = atom<{
 } | null>(null);
 
 export const clusterDetailAtom = atom<ClusterListItem | null>(null);
+
+export const workerAddedCountAtom = atom(0);

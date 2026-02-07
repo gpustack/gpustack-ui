@@ -108,7 +108,6 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       ..._.omit(values, ['targets', 'fallback_target']),
       targets: targets
     };
-    console.log('data=========', data);
     onFinish(data);
   };
 

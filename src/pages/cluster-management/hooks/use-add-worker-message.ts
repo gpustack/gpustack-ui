@@ -1,5 +1,7 @@
+import { workerAddedCountAtom } from '@/atoms/clusters';
 import useSetChunkRequest from '@/hooks/use-chunk-request';
 import useUpdateChunkedList from '@/hooks/use-update-chunk-list';
+import { useAtom } from 'jotai';
 import _ from 'lodash';
 import qs from 'query-string';
 import { useEffect, useRef, useState } from 'react';
@@ -11,11 +13,16 @@ export default function useAddWorkerMessage() {
   const [addedCount, setAddedCount] = useState(0);
   const timerRef = useRef<any>(null);
   const triggerAtRef = useRef<number>(0);
+  const [, setWorkerAddedCount] = useAtom(workerAddedCountAtom);
 
+  const updateAddedCount = (count: number) => {
+    setAddedCount(count);
+    setWorkerAddedCount(count);
+  };
   const showAddWorkerMessage = () => {
     if (newItemsRef.current.length > 0) {
       const count = newItemsRef.current.length;
-      setAddedCount(count);
+      updateAddedCount(count);
     }
   };
 
@@ -39,7 +46,7 @@ export default function useAddWorkerMessage() {
   };
 
   const resetAddedCount = () => {
-    setAddedCount(0);
+    updateAddedCount(0);
     chunkRequestRef.current?.current?.cancel?.();
     newItemsRef.current = [];
     triggerAtRef.current = 0;

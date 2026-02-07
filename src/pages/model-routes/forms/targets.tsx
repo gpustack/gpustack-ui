@@ -12,7 +12,8 @@ import useTargetSourceModels from '../hooks/use-target-source-models';
 const TargetsForm = forwardRef((props, ref) => {
   const intl = useIntl();
   const { getRuleMessage } = useAppUtils();
-  const { sourceModels, loading, fetchSourceModels } = useTargetSourceModels();
+  const { sourceModels, fetchSourceModels } = useTargetSourceModels();
+  const [validTriggered, setValidTriggered] = useState<boolean>(false);
   const form = Form.useFormInstance<FormData>();
   const targets = Form.useWatch('targets', form) || [];
   const [fallbackValues, setFallbackValues] = useState<{ value: any[] }>({
@@ -55,6 +56,7 @@ const TargetsForm = forwardRef((props, ref) => {
       weight: newDataList[index]?.weight || null,
       value: value
     };
+    form.validateFields(['targets']);
     setDataList(newDataList);
   };
 
@@ -120,6 +122,7 @@ const TargetsForm = forwardRef((props, ref) => {
       ...newDataList[index],
       weight: value
     };
+    form.validateFields(['targets']);
     setDataList(newDataList);
   };
 
@@ -170,11 +173,13 @@ const TargetsForm = forwardRef((props, ref) => {
       <Form.Item
         name="targets"
         data-field="targets"
+        trigger=""
         rules={[
           {
             validator(rule, value) {
               if (value && value?.length > 0) {
                 if (_.some(value, (item: any) => !item.weight)) {
+                  setValidTriggered(true);
                   return Promise.reject(
                     getRuleMessage('input', 'routes.form.target.weight')
                   );
@@ -186,11 +191,13 @@ const TargetsForm = forwardRef((props, ref) => {
                     (item: any) => !item.value || item.value.length === 0
                   )
                 ) {
+                  setValidTriggered(true);
                   return Promise.reject(
                     getRuleMessage('input', 'providers.form.target.placeholder')
                   );
                 }
               }
+              setValidTriggered(false);
               return Promise.resolve();
             }
           }
@@ -214,7 +221,9 @@ const TargetsForm = forwardRef((props, ref) => {
                 required
                 showSearch
                 status={
-                  !item.value || item.value.length === 0 ? 'error' : 'success'
+                  (!item.value || item.value.length === 0) && validTriggered
+                    ? 'error'
+                    : 'success'
                 }
                 expandTrigger="hover"
                 multiple={false}
@@ -249,7 +258,9 @@ const TargetsForm = forwardRef((props, ref) => {
                 style={{ flex: 100 }}
                 min={0}
                 step={1}
-                status={item.weight === null ? 'error' : 'success'}
+                status={
+                  item.weight === null && validTriggered ? 'error' : 'success'
+                }
                 value={item.weight}
                 onChange={(value) => handleOnWeightChange(value, index)}
                 placeholder={intl.formatMessage({

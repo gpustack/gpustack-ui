@@ -1,8 +1,9 @@
 import AutoTooltip from '@/components/auto-tooltip';
+import CopyButton from '@/components/copy-button';
 import BaseSelect from '@/components/seal-form/base/select';
 import ThemeTag from '@/components/tags-wrapper/theme-tag';
 import { useIntl } from '@umijs/max';
-import { Empty } from 'antd';
+import { Empty, Typography } from 'antd';
 import { useState } from 'react';
 import styled from 'styled-components';
 import {
@@ -135,11 +136,16 @@ export const VersionItem: React.FC<VersionItemProps> = ({ data }) => {
             <span className="label">
               {intl.formatMessage({ id: 'backend.imageName' })}:
             </span>
-            <AutoTooltip ghost minWidth={20}>
+            <CopyButton
+              text={data.image_name}
+              ellipsis={{
+                tooltip: !data.is_built_in ? data.image_name : false
+              }}
+            >
               {data.is_built_in
                 ? intl.formatMessage({ id: 'backend.versionInfo.autoImage' })
                 : data.image_name}
-            </AutoTooltip>
+            </CopyButton>
           </InfoItem>
         )}
         {data.entrypoint && (
@@ -157,9 +163,9 @@ export const VersionItem: React.FC<VersionItemProps> = ({ data }) => {
             <span className="label">
               {intl.formatMessage({ id: 'backend.runCommand' })}:
             </span>
-            <AutoTooltip ghost minWidth={20}>
+            <Typography.Text ellipsis={{ tooltip: data.run_command }}>
               {data.run_command}
-            </AutoTooltip>
+            </Typography.Text>
           </InfoItem>
         )}
         <InfoItem>

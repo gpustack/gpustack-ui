@@ -1,11 +1,14 @@
 import type { InputProps } from 'antd';
 import { Form, Input } from 'antd';
+import { PasswordProps } from 'antd/lib/input/Password';
 import React, { useEffect, useRef, useState } from 'react';
 import { SealFormItemProps } from './types';
 import Wrapper from './wrapper';
 import InputWrapper from './wrapper/input';
 
-const SealPassword: React.FC<InputProps & SealFormItemProps> = (props) => {
+const SealPassword: React.FC<InputProps & SealFormItemProps & PasswordProps> = (
+  props
+) => {
   const {
     label,
     placeholder,

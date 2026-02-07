@@ -1,9 +1,12 @@
+import Password from '@/components/seal-form/password';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
+import { PageAction } from '@/config';
 import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import ProviderLogo from '../components/provider-logo';
+import { useFormContext } from '../config/form-context';
 import { maasProviderOptions, ProviderEnum } from '../config/providers';
 import { FormData } from '../config/types';
 
@@ -12,6 +15,7 @@ const Basic: React.FC<{
 }> = ({ onAPIKeyBlur }) => {
   const intl = useIntl();
   const form = Form.useFormInstance<FormData>();
+  const { action } = useFormContext();
   const providerType = Form.useWatch(['config', 'type'], form);
   const { getRuleMessage } = useAppUtils();
 
@@ -92,8 +96,9 @@ const Basic: React.FC<{
           }
         ]}
       >
-        <SealInput.Password
+        <Password
           required
+          visibilityToggle={action !== PageAction.EDIT}
           onBlur={onAPIKeyBlur}
           label={intl.formatMessage({
             id: 'providers.form.tokens.title'

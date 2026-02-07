@@ -20,7 +20,7 @@ const SelectVendor: React.FC<AddWorkerStepProps> = ({ disabled }) => {
   );
 
   const handleSelectProvider = (value: string, item: any) => {
-    console.log('selected gpu driver:', value, item);
+    if (value === currentGPU) return;
     setCurrentGPU(value);
 
     updateField('currentGPU', value);

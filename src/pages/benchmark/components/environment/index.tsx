@@ -30,7 +30,7 @@ const Environment: React.FC = () => {
   const { snapshot } = detailData;
 
   // instance info
-  const instanceEntry = Object.entries(snapshot.instances ?? {})[0];
+  const instanceEntry = Object.entries(snapshot.instances || {})[0];
   const instanceData = instanceEntry?.[1];
 
   const { handleExpandChange, handleExpandAll, expandedRowKeys } =
@@ -38,7 +38,7 @@ const Environment: React.FC = () => {
 
   const workerMap = useMemo(() => {
     return new Map(
-      Object.entries(snapshot.workers ?? {}).map(([workerName, workerInfo]) => [
+      Object.entries(snapshot.workers || {}).map(([workerName, workerInfo]) => [
         workerInfo.id,
         workerInfo
       ])
@@ -46,7 +46,7 @@ const Environment: React.FC = () => {
   }, [snapshot.workers]);
 
   const gpuList = useMemo(() => {
-    return Object.values(snapshot.gpus ?? {}) || [];
+    return Object.values(snapshot.gpus || {}) || [];
   }, [snapshot.gpus]);
 
   const findWorkerById = (workerID: number): WorkerData | undefined => {
@@ -97,7 +97,7 @@ const Environment: React.FC = () => {
         children: gpuData
       };
     });
-  }, [snapshot]);
+  }, [snapshot.gpus, snapshot.workers, instanceData]);
 
   const dataList = useMemo(() => {
     return [mainWorker, ...subWorkerList].filter(Boolean) as WorkerData[];

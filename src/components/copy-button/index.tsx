@@ -1,42 +1,24 @@
 import { CheckCircleFilled, CopyOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Typography } from 'antd';
+import { TextProps } from 'antd/es/typography/Text';
 import React, { useMemo } from 'react';
 
 type CopyButtonProps = {
   children?: React.ReactNode;
   text: string;
-  disabled?: boolean;
   fontSize?: string;
-  type?: 'text' | 'primary' | 'dashed' | 'link' | 'default';
-  size?: 'small' | 'middle' | 'large';
-  shape?: 'circle' | 'round' | 'default';
-  tips?: string;
-  placement?:
-    | 'top'
-    | 'left'
-    | 'right'
-    | 'bottom'
-    | 'topLeft'
-    | 'topRight'
-    | 'bottomLeft'
-    | 'bottomRight';
   btnStyle?: React.CSSProperties;
   style?: React.CSSProperties;
 };
 
-const CopyButton: React.FC<CopyButtonProps> = ({
+const CopyButton: React.FC<CopyButtonProps & TextProps> = ({
   children,
-  tips,
   text,
-  disabled,
-  type = 'text',
-  shape = 'default',
   fontSize = '14px',
   style,
   btnStyle,
-  placement,
-  size = 'middle'
+  ...rest
 }) => {
   const intl = useIntl();
 
@@ -50,6 +32,7 @@ const CopyButton: React.FC<CopyButtonProps> = ({
   return (
     <Typography.Text
       style={{ ...btnStyle }}
+      {...rest}
       copyable={{
         text: text,
         tooltips: tooltips,

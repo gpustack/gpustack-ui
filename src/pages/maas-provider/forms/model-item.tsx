@@ -9,7 +9,7 @@ import {
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Form, Tooltip } from 'antd';
-import React from 'react';
+import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import { useFormContext } from '../config/form-context';
 import { FormData, ProviderModel } from '../config/types';
@@ -128,25 +128,36 @@ const ModelItem: React.FC<ModelItemProps> = ({
   };
 
   // filter out already selected models, but keep the current one
-  const selectedModelMap = new Map(
-    selectedModelList?.map((model) => [model.name, true])
-  );
-  const filteredOptions = () => {
+  const selectedModelSet = useMemo(() => {
+    return new Set(selectedModelList?.map((model) => model.name));
+  }, [selectedModelList]);
+
+  const filteredOptions = useMemo(() => {
     return providerModelList.filter((model) => {
-      return model.value === item.name || !selectedModelMap.has(model.value);
+      return model.value === item.name || !selectedModelSet.has(model.value);
     });
-  };
+  }, [providerModelList, item.name, selectedModelSet]);
 
   return (
     <SelectWrapper>
       <AutoComplete
         loading={loading}
-        showSearch
+        showSearch={{
+          filterOption: (inputValue, option: any) => {
+            return (
+              option!.value.toLowerCase().includes(inputValue.toLowerCase()) ||
+              option.label
+                ?.toString()
+                .toLowerCase()
+                .includes(inputValue.toLowerCase())
+            );
+          }
+        }}
         onOpenChange={onOpenChange}
         suffixIcon={renderSuffixIcon()}
         value={item.name}
         onChange={handleOnChange}
-        options={filteredOptions()}
+        options={filteredOptions}
         placeholder={intl.formatMessage({ id: 'providers.table.models' })}
       />
       <SealSelect

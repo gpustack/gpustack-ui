@@ -31,9 +31,10 @@ const SupportedModels = () => {
 
   const handleOpenChange = async (open: boolean) => {
     try {
-      await form.validateFields(['api_key']);
+      await form.validateFields(['api_key', ['config', 'type']]);
 
       const currentAPIKey = form.getFieldValue('api_key') || '';
+      console.log('handleOpenChange', { open, currentAPIKey });
 
       // Avoid repeated requests with the same API key
       if (
@@ -54,7 +55,9 @@ const SupportedModels = () => {
           }
         });
       }
-    } catch (error) {}
+    } catch (error) {
+      prevAPIKeyRef.current = '';
+    }
   };
 
   const updateModelList = (models: ProviderModel[]) => {

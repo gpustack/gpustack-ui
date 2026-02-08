@@ -34,7 +34,6 @@ const SupportedModels = () => {
       await form.validateFields(['api_key', ['config', 'type']]);
 
       const currentAPIKey = form.getFieldValue('api_key') || '';
-      console.log('handleOpenChange', { open, currentAPIKey });
 
       // Avoid repeated requests with the same API key
       if (

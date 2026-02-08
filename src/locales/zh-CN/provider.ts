@@ -21,5 +21,6 @@ export default {
   'providers.form.addAll': '添加全部',
   'providers.form.rules.models': '请选择至少一个模型',
   'providers.form.rules.tokens': '请输入有效的 API Key',
-  'providers.form.rules.model': '请选择模型'
+  'providers.form.rules.model': '请选择模型',
+  'providers.form.model.duplicate': '存在相同的模型'
 };

@@ -1,8 +1,22 @@
 import { userAtom } from '@/atoms/user';
 import { clearAtomStorage } from '@/atoms/utils';
-import { RequestConfig, history } from '@umijs/max';
-import { message } from 'antd';
+import { history, RequestConfig } from '@umijs/max';
+import { message, Typography } from 'antd';
+import styled from 'styled-components';
 import { DEFAULT_ENTER_PAGE } from './config/settings';
+
+const Content = styled.div`
+  position: relative;
+  .cp-btn {
+    position: absolute;
+    top: 0px;
+    right: -4px;
+    opacity: 5;
+  }
+  .msg {
+    display: none;
+  }
+`;
 
 //  these APIs do not via the GPUSTACK_API_BASE_URL
 const NoBaseURLAPIs = ['/auth', '/v1', '/version', '/proxy', '/update'];
@@ -24,7 +38,21 @@ export const requestConfig: RequestConfig = {
         errorMessage;
 
       if (!opts?.skipErrorHandler && response?.status) {
-        message.error(errMsg);
+        message.error({
+          content: (
+            <Content>
+              <Typography.Text
+                className="cp-btn"
+                copyable={{
+                  text: errMsg
+                }}
+              >
+                <span className="msg">{errMsg}</span>
+              </Typography.Text>
+              {errMsg}
+            </Content>
+          )
+        });
       }
       if (response?.status === 401) {
         clearAtomStorage(userAtom);

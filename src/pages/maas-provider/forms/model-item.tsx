@@ -55,6 +55,7 @@ const ModelItem: React.FC<ModelItemProps> = ({
   const form = Form.useFormInstance<FormData>();
   const { runTestModel, loading: testLoading } = useTestProviderModel();
   const { id, action, currentData } = useFormContext();
+  const [openTip, setOpenTip] = React.useState(false);
 
   const generateCurrentAPIKey = (currentAPIKey: string) => {
     if (
@@ -87,6 +88,7 @@ const ModelItem: React.FC<ModelItemProps> = ({
   };
 
   const handleOnChange = (value: string, option: any) => {
+    console.log('selected model', value, option);
     onChange({
       ...option,
       name: value
@@ -100,13 +102,26 @@ const ModelItem: React.FC<ModelItemProps> = ({
     });
   };
 
-  const renderSuffixIcon = () => {
-    console.log(
-      'testLoading',
-      testLoading,
-      item.accessible,
-      item.accessible === false
+  const handleOnBlur = (e: any) => {
+    const value = e.target.value;
+
+    const isDuplicate = selectedModelList.some(
+      (model) => model.name === value && model !== item
     );
+    setOpenTip(isDuplicate);
+    // if duplicate, clear the value, and close the tooltip after 2 seconds
+    if (isDuplicate) {
+      onChange({
+        ...item,
+        name: ''
+      });
+      setTimeout(() => {
+        setOpenTip(false);
+      }, 2000);
+    }
+  };
+
+  const renderSuffixIcon = () => {
     if (testLoading) {
       return <LoadingOutlined />;
     }
@@ -140,26 +155,36 @@ const ModelItem: React.FC<ModelItemProps> = ({
 
   return (
     <SelectWrapper>
-      <AutoComplete
-        loading={loading}
-        showSearch={{
-          filterOption: (inputValue, option: any) => {
-            return (
-              option!.value.toLowerCase().includes(inputValue.toLowerCase()) ||
-              option.label
-                ?.toString()
-                .toLowerCase()
-                .includes(inputValue.toLowerCase())
-            );
-          }
-        }}
-        onOpenChange={onOpenChange}
-        suffixIcon={renderSuffixIcon()}
-        value={item.name}
-        onChange={handleOnChange}
-        options={filteredOptions}
-        placeholder={intl.formatMessage({ id: 'providers.table.models' })}
-      />
+      <Tooltip
+        title={intl.formatMessage({ id: 'providers.form.model.duplicate' })}
+        open={openTip}
+      >
+        <span>
+          <AutoComplete
+            loading={loading}
+            showSearch={{
+              filterOption: (inputValue, option: any) => {
+                return (
+                  option!.value
+                    .toLowerCase()
+                    .includes(inputValue.toLowerCase()) ||
+                  option.label
+                    ?.toString()
+                    .toLowerCase()
+                    .includes(inputValue.toLowerCase())
+                );
+              }
+            }}
+            onOpenChange={onOpenChange}
+            suffixIcon={renderSuffixIcon()}
+            value={item.name}
+            onChange={handleOnChange}
+            onBlur={handleOnBlur}
+            options={filteredOptions}
+            placeholder={intl.formatMessage({ id: 'providers.table.models' })}
+          />
+        </span>
+      </Tooltip>
       <SealSelect
         value={item.category || undefined}
         onChange={handleOnCategoryChange}

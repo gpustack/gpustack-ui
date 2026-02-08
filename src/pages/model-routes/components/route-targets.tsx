@@ -88,7 +88,7 @@ const RouteItem: React.FC<TargetItemProps> = ({
           <Col span={5} style={{ paddingLeft: 56 }}>
             <CellContent>{renderProviderSource()}</CellContent>
           </Col>
-          <Col span={3}>
+          <Col span={2}>
             <CellContent>
               {data.weight > 0 && (
                 <AutoTooltip ghost>
@@ -112,7 +112,7 @@ const RouteItem: React.FC<TargetItemProps> = ({
                 )}
             </CellContent>
           </Col>
-          <Col span={2}>
+          <Col span={3}>
             <CellContent>
               <AutoTooltip ghost>
                 <StatusTag

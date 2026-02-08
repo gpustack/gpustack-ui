@@ -65,8 +65,13 @@ const ModelRoutes: React.FC = () => {
   const { watchDataList: allRouteTargets, deleteItemFromCache } =
     useWatchList(MODEL_ROUTE_TARGETS);
   const [expandAtom] = useAtom(expandKeysAtom);
-  const { handleExpandChange, handleExpandAll, expandedRowKeys } =
-    useExpandedRowKeys(expandAtom);
+  const {
+    handleExpandChange,
+    handleExpandAll,
+    updateExpandedRowKeys,
+    removeExpandedRowKey,
+    expandedRowKeys
+  } = useExpandedRowKeys(expandAtom);
   const intl = useIntl();
   const { openRouteModalStatus, openRouteModal, closeRouteModal } =
     useCreateRoute();
@@ -109,16 +114,21 @@ const ModelRoutes: React.FC = () => {
       ...data
     };
     try {
+      let data: ListItem = {} as any;
       if (openRouteModalStatus.action === PageAction.EDIT) {
-        await updateModelRoute({
+        data = await updateModelRoute({
           data: params,
           id: openRouteModalStatus.currentData!.id
         });
       }
       if (openRouteModalStatus.action === PageAction.CREATE) {
-        await createModelRoute({
+        data = await createModelRoute({
           data: params
         });
+      }
+
+      if (data.targets > 0) {
+        updateExpandedRowKeys([data.id, ...expandedRowKeys]);
       }
       fetchData();
       closeRouteModal();

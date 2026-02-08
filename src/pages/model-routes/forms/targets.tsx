@@ -134,16 +134,18 @@ const TargetsForm = forwardRef((props, ref) => {
 
     const selectedDataList = [...dataList, { value: fallbackValues.value }];
 
-    const selectedKeys = selectedDataList
-      .filter((item) => item.value)
-      .map((item) => buildKey(item.value));
+    const selectedKeys = new Set(
+      selectedDataList
+        .filter((item) => item.value)
+        .map((item) => buildKey(item.value))
+    );
 
     return sourceModels
       .map((model) => {
         const children = model.children?.filter((child) => {
           const key = buildKey([child.data?.parentId, child.value]);
 
-          return !selectedKeys.includes(key) || key === currKey;
+          return !selectedKeys.has(key) || key === currKey;
         });
 
         return {

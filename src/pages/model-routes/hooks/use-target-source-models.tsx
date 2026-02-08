@@ -5,6 +5,7 @@ import { queryMaasProviders } from '@/pages/maas-provider/apis';
 import ProviderLogo from '@/pages/maas-provider/components/provider-logo';
 import { MaasProviderItem } from '@/pages/maas-provider/config/types';
 import { useIntl } from '@umijs/max';
+import _ from 'lodash';
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
@@ -52,30 +53,27 @@ const useTargetSourceModels = () => {
           value: 'deployments',
           providerType: 'deployments',
           parent: true,
-          children: models.items?.map?.((model: ModelListItem) => ({
-            label: model.name,
-            value: model.id,
-            data: {
-              model_id: model.id,
-              parentId: 'deployments'
-            },
-            source: 'deployment'
-          }))
+          children: _.uniqBy(
+            models.items?.map?.((model: ModelListItem) => [
+              model.id,
+              {
+                label: model.name,
+                value: model.id,
+                data: {
+                  model_id: model.id,
+                  parentId: 'deployments'
+                },
+                source: 'deployment'
+              }
+            ]),
+            'value'
+          )
         }
       ].filter((group) => group.children && group.children.length > 0);
 
       const providerOptions: CascaderOption[] = providers.items
-        ?.map?.((provider: MaasProviderItem) => ({
-          label: (
-            <OptionWrapper>
-              <ProviderLogo provider={provider.config?.type as string} />
-              <span>{provider.name}</span>
-            </OptionWrapper>
-          ),
-          value: provider.id,
-          parent: true,
-          providerType: provider.config?.type,
-          children: provider.models?.map?.((model) => ({
+        ?.map?.((provider: MaasProviderItem) => {
+          const children = provider.models?.map?.((model) => ({
             label: model.name,
             value: model.name,
             data: {
@@ -84,8 +82,21 @@ const useTargetSourceModels = () => {
               parentId: provider.id
             },
             source: 'providerModel'
-          }))
-        }))
+          }));
+
+          return {
+            label: (
+              <OptionWrapper>
+                <ProviderLogo provider={provider.config?.type as string} />
+                <span>{provider.name}</span>
+              </OptionWrapper>
+            ),
+            value: provider.id,
+            parent: true,
+            providerType: provider.config?.type,
+            children: _.uniqBy(children, 'value')
+          };
+        })
         .filter((group) => group.children && group.children.length > 0);
 
       setSourceModels([...modelsList, ...providerOptions]);

@@ -15,10 +15,10 @@ const Dot = ({ color }: { color: string }) => {
   );
 };
 
-const useFilterStatus = (options: {
-  onStatusChange: (value?: any) => void;
+const useFilterStatus = (options?: {
+  onStatusChange?: (value?: any) => void;
 }) => {
-  const { onStatusChange } = options;
+  const { onStatusChange } = options || {};
   const intl = useIntl();
 
   const statusOptions = [
@@ -49,7 +49,7 @@ const useFilterStatus = (options: {
     const current = statusOptions.find((option) => option.value === item.value);
     return (
       <span className="flex-center gap-8">
-        <Dot color={current!.color}></Dot>
+        {current && <Dot color={current.color}></Dot>}
         {item.label}
       </span>
     );
@@ -65,7 +65,7 @@ const useFilterStatus = (options: {
   };
 
   const handleStatusChange = (value: string | undefined) => {
-    onStatusChange(value);
+    onStatusChange?.(value);
   };
 
   return {

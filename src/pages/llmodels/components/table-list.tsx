@@ -83,6 +83,7 @@ interface ModelsProps {
   onTableSort?: (order: TableOrder | Array<TableOrder>) => void;
   onStatusChange: (value?: any) => void;
   onDeleteInstanceFromCache?: (instanceId: number) => void;
+  onFilterChange?: (filters: any) => void;
   sortOrder: string[];
   queryParams: {
     page: number;
@@ -126,6 +127,7 @@ const Models: React.FC<ModelsProps> = ({
   onTableSort,
   onStatusChange,
   onDeleteInstanceFromCache,
+  onFilterChange,
   sortOrder,
   deleteIds,
   dataSource,
@@ -623,20 +625,18 @@ const Models: React.FC<ModelsProps> = ({
                 onChange={handleCategoryChange}
                 options={modelCategories.filter((item) => item.value)}
               ></BaseSelect>
-              {page !== 'clusters' && (
-                <BaseSelect
-                  allowClear
-                  showSearch={false}
-                  placeholder={intl.formatMessage({
-                    id: 'clusters.filterBy.cluster'
-                  })}
-                  style={{ width: 160 }}
-                  size="large"
-                  maxTagCount={1}
-                  onChange={handleClusterChange}
-                  options={clusterList}
-                ></BaseSelect>
-              )}
+              <BaseSelect
+                allowClear
+                showSearch={false}
+                placeholder={intl.formatMessage({
+                  id: 'clusters.filterBy.cluster'
+                })}
+                style={{ width: 160 }}
+                size="large"
+                maxTagCount={1}
+                onChange={handleClusterChange}
+                options={clusterList}
+              ></BaseSelect>
               <BaseSelect
                 allowClear
                 showSearch={false}
@@ -649,6 +649,15 @@ const Models: React.FC<ModelsProps> = ({
                 options={statusOptions}
                 onChange={handleStatusChange}
               ></BaseSelect>
+              {/* <Filters
+                initialValues={{
+                  cluster_id: undefined,
+                  state: undefined,
+                  categories: undefined
+                }}
+                clusterList={clusterList}
+                onValuesChange={onFilterChange}
+              ></Filters> */}
               <Button
                 type="text"
                 style={{ color: 'var(--ant-color-text-tertiary)' }}

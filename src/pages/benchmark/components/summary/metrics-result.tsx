@@ -99,6 +99,17 @@ const requestColumns = [
     unit: ''
   },
   {
+    title: 'benchmark.detail.requests.incomplete',
+    key: 'total_requests',
+    dataIndex: 'failed_requests',
+    path: ['raw_metrics', 'benchmarks', '0'],
+    render: (value: number) =>
+      round(_.get(value, ['metrics', 'request_totals', 'incomplete']), 0) || 0,
+    precision: 0,
+    color: 'var(--ant-color-warning)',
+    unit: ''
+  },
+  {
     title: 'benchmark.detail.requests.concurrency',
     key: 'request_concurrency',
     dataIndex: 'request_concurrency',

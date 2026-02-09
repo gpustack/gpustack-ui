@@ -147,6 +147,7 @@ const TargetsForm = forwardRef((props, ref) => {
 
           return !selectedKeys.has(key) || key === currKey;
         });
+        console.log('children', children);
 
         return {
           ...model,

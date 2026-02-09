@@ -77,7 +77,8 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       config: {
         type: values.config.type,
         ...yaml2Json(advanceRef.current?.getYamlValue() || '')
-      }
+      },
+      models: _.uniqBy(values.models, 'name')
     };
     onFinish(data);
   };

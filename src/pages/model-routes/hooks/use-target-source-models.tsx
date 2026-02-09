@@ -54,18 +54,15 @@ const useTargetSourceModels = () => {
           providerType: 'deployments',
           parent: true,
           children: _.uniqBy(
-            models.items?.map?.((model: ModelListItem) => [
-              model.id,
-              {
-                label: model.name,
-                value: model.id,
-                data: {
-                  model_id: model.id,
-                  parentId: 'deployments'
-                },
-                source: 'deployment'
-              }
-            ]),
+            models.items?.map?.((model: ModelListItem) => ({
+              label: model.name,
+              value: model.id,
+              data: {
+                model_id: model.id,
+                parentId: 'deployments'
+              },
+              source: 'deployment'
+            })),
             'value'
           )
         }

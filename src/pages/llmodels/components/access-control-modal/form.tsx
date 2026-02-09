@@ -3,6 +3,7 @@ import TooltipList from '@/components/tooltip-list';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import TransferInner from '@/pages/_components/transfer';
+import { RouteItem } from '@/pages/model-routes/config/types';
 import { queryUsersList } from '@/pages/users/apis';
 import { DownOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
@@ -26,7 +27,7 @@ import {
 } from 'react';
 import styled from 'styled-components';
 import { queryModelAccessUserList } from '../../apis';
-import { AccessControlFormData, ListItem } from '../../config/types';
+import { AccessControlFormData } from '../../config/types';
 
 type TransferKey = string | number | bigint;
 
@@ -66,7 +67,7 @@ const Label = styled.div`
 
 interface AccessControlFormProps {
   action: PageActionType;
-  currentData?: ListItem | null;
+  currentData?: RouteItem | null;
   onFinish: (values: AccessControlFormData) => void;
   onValuesChange?: (changedValues: any, allValues: any) => void;
 }

@@ -1,21 +1,31 @@
 import MetadataList from '@/components/metadata-list';
 import SealCascader from '@/components/seal-form/seal-cascader';
 import SealInput from '@/components/seal-form/seal-input';
+import { PageAction } from '@/config';
 import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
-import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState
+} from 'react';
+import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
 import useTargetSourceModels from '../hooks/use-target-source-models';
 
 const TargetsForm = forwardRef((props, ref) => {
+  const { onFallbackChange, action } = useFormContext();
   const intl = useIntl();
   const { getRuleMessage } = useAppUtils();
   const { sourceModels, fetchSourceModels } = useTargetSourceModels();
   const [validTriggered, setValidTriggered] = useState<boolean>(false);
   const form = Form.useFormInstance<FormData>();
   const targets = Form.useWatch('targets', form) || [];
+  const fallbackCacheRef = useRef<{ value: any[] }>({ value: [] });
   const [fallbackValues, setFallbackValues] = useState<{ value: any[] }>({
     value: []
   });
@@ -29,6 +39,7 @@ const TargetsForm = forwardRef((props, ref) => {
   useImperativeHandle(ref, () => ({
     initFallbackValues: (values: { value: any[] }) => {
       setFallbackValues(values);
+      fallbackCacheRef.current = values;
     },
     initDataList: (
       list: {
@@ -105,6 +116,10 @@ const TargetsForm = forwardRef((props, ref) => {
     setFallbackValues({
       value: value
     });
+    if (action === PageAction.EDIT) {
+      const isEqual = _.isEqual(fallbackCacheRef.current.value, value);
+      onFallbackChange?.(!isEqual);
+    }
   };
 
   const handleOnWeightChange = (value: any, index: number) => {

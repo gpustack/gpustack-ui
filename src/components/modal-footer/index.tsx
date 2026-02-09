@@ -18,6 +18,9 @@ type ModalFooterProps = {
   extra?: React.ReactNode;
   form?: any;
   description?: React.ReactNode;
+  styles?: {
+    wrapper?: React.CSSProperties;
+  };
 };
 
 const Wrapper = styled.div`
@@ -38,6 +41,7 @@ const ModalFooter: React.FC<ModalFooterProps> = ({
   htmlType = 'button',
   style,
   showOkBtn = true,
+  styles,
   description,
   extra,
   showCancelBtn = true,
@@ -45,7 +49,7 @@ const ModalFooter: React.FC<ModalFooterProps> = ({
 }) => {
   const intl = useIntl();
   return (
-    <Wrapper>
+    <Wrapper style={{ ...styles?.wrapper }}>
       <div>{description}</div>
       <Space size={20} style={{ ...style }}>
         {showCancelBtn && (

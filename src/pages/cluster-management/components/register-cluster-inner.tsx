@@ -1,8 +1,9 @@
 import HighlightCode from '@/components/highlight-code';
 import React, { useMemo } from 'react';
-import { generateRegisterCommand } from '../config';
+import { generateK8sRegisterCommand } from '../config';
 
 type AddModalProps = {
+  currentGPU?: string;
   registrationInfo: {
     token: string;
     image: string;
@@ -10,14 +11,18 @@ type AddModalProps = {
     cluster_id: number | null;
   };
 };
-const AddCluster: React.FC<AddModalProps> = ({ registrationInfo }) => {
+const AddCluster: React.FC<AddModalProps> = ({
+  registrationInfo,
+  currentGPU
+}) => {
   const code = useMemo(() => {
-    return generateRegisterCommand({
+    return generateK8sRegisterCommand({
       server: registrationInfo?.server_url || window.location.origin,
       clusterId: registrationInfo?.cluster_id,
-      registrationToken: registrationInfo?.token
+      registrationToken: registrationInfo?.token,
+      currentGPU
     });
-  }, [registrationInfo]);
+  }, [registrationInfo, currentGPU]);
 
   return (
     <div>

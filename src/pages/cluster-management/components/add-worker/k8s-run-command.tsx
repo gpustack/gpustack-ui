@@ -7,10 +7,11 @@ import { Title } from './constainers';
 import StepCollapse from './step-collapse';
 
 const K8sRunCommand: React.FC<AddWorkerStepProps> = ({ disabled }) => {
-  const { registrationInfo, stepList } = useAddWorkerContext();
+  const { registrationInfo, stepList, summary } = useAddWorkerContext();
   const intl = useIntl();
 
   const stepIndex = stepList.indexOf(StepNamesMap.RunCommand) + 1;
+  const currentGPU = summary.get('currentGPU') || '';
 
   return (
     <StepCollapse
@@ -32,7 +33,10 @@ const K8sRunCommand: React.FC<AddWorkerStepProps> = ({ disabled }) => {
           id: 'clusters.create.addCommand.tips'
         })}
       </Typography.Paragraph>
-      <RegisterClusterInner registrationInfo={registrationInfo} />
+      <RegisterClusterInner
+        registrationInfo={registrationInfo}
+        currentGPU={currentGPU}
+      />
     </StepCollapse>
   );
 };

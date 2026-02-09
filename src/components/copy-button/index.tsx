@@ -31,25 +31,30 @@ const CopyButton: React.FC<CopyButtonProps & TextProps> = ({
     ];
   }, [intl]);
 
+  const onCopy = () => {
+    console.log('copied');
+  };
+
   return (
-    <Typography.Text
-      style={{ ...btnStyle }}
+    <Typography.Paragraph
+      style={{ ...btnStyle, marginBottom: 0 }}
       {...rest}
       copyable={{
         text: text,
         format: format,
         tooltips: tooltips,
+        onCopy: onCopy,
         icon: [
           <CopyOutlined style={{ fontSize: fontSize, ...style }} key="copy" />,
           <CheckCircleFilled
             style={{ color: 'var(--ant-color-success)', fontSize: fontSize }}
-            key="check"
+            key="copied"
           />
         ]
       }}
     >
       {children}
-    </Typography.Text>
+    </Typography.Paragraph>
   );
 };
 

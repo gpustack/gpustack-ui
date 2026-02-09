@@ -2,6 +2,7 @@ import icons from '@/components/icon-font/icons';
 import { StatusMaps } from '@/config';
 import { GPUSTACK_API_BASE_URL } from '@/config/settings';
 import { StatusType } from '@/config/types';
+import { GPUsConfigs } from '@/pages/resources/config/gpu-driver';
 
 export const ClusterStatusValueMap = {
   Provisioning: 'provisioning',
@@ -42,12 +43,14 @@ export const ProviderLabelMap = {
   [ProviderValueMap.Docker]: 'Docker'
 };
 
-export const generateRegisterCommand = (params: {
+export const generateK8sRegisterCommand = (params: {
+  currentGPU?: string;
   server: string;
-  clusterId: number;
+  clusterId: number | null;
   registrationToken: string;
 }) => {
-  return `curl -k -L '${params.server}/${GPUSTACK_API_BASE_URL}/clusters/${params.clusterId}/manifests' \\
+  const runtime = GPUsConfigs[params.currentGPU || '']?.runtime || '';
+  return `curl -k -L '${params.server}/${GPUSTACK_API_BASE_URL}/clusters/${params.clusterId}/manifests${runtime ? `?runtime=${runtime}` : ''}' \\
 --header 'Authorization: Bearer ${params.registrationToken}' | kubectl apply -f -`;
 };
 

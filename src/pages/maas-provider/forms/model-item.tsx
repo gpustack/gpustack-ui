@@ -115,9 +115,6 @@ const ModelItem: React.FC<ModelItemProps> = ({
         ...item,
         name: ''
       });
-      setTimeout(() => {
-        setOpenTip(false);
-      }, 2000);
     }
   };
 
@@ -152,6 +149,14 @@ const ModelItem: React.FC<ModelItemProps> = ({
       return model.value === item.name || !selectedModelSet.has(model.value);
     });
   }, [providerModelList, item.name, selectedModelSet]);
+
+  React.useEffect(() => {
+    if (openTip) {
+      const timerId = setTimeout(() => setOpenTip(false), 2000);
+      return () => clearTimeout(timerId);
+    }
+    return () => {};
+  }, [openTip]);
 
   return (
     <SelectWrapper>

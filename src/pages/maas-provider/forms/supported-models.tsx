@@ -36,12 +36,7 @@ const SupportedModels = () => {
       const currentAPIKey = form.getFieldValue('api_key') || '';
 
       // Avoid repeated requests with the same API key
-      if (
-        open &&
-        providerModelList.length === 0 &&
-        prevAPIKeyRef.current !== currentAPIKey &&
-        currentAPIKey
-      ) {
+      if (open && prevAPIKeyRef.current !== currentAPIKey && currentAPIKey) {
         prevAPIKeyRef.current = currentAPIKey;
         fetchProviderModels({
           id: action === PageAction.EDIT ? id! : 0,

@@ -11,7 +11,10 @@ const Content = styled.div`
     position: absolute;
     top: 0px;
     right: -4px;
-    opacity: 5;
+    display: none;
+  }
+  &:hover .cp-btn {
+    display: inline-block;
   }
   .msg {
     display: none;

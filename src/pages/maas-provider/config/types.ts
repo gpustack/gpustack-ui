@@ -18,7 +18,16 @@ export interface FormData {
     [key: string]: any;
   };
 }
-export interface MaasProviderItem extends FormData {
+export interface MaasProviderItem {
+  name: string;
+  description: string;
+  proxy_url: string;
+  proxy_timeout: number;
+  config: {
+    type: maasProviderType;
+    openaiCustomUrl?: string;
+    [key: string]: any;
+  };
   id: number;
   created_at: string;
   updated_at: string;
@@ -28,4 +37,5 @@ export interface MaasProviderItem extends FormData {
   builtin: boolean;
   provider_model_count: number;
   api_token_count: number;
+  api_tokens: { hash: string }[];
 }

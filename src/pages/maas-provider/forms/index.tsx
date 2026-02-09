@@ -65,20 +65,33 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
     }
   ];
 
-  const handleOnFinish = (values: FormData) => {
+  const formatAPIKeys = (values: FormData) => {
     const apiTokens = values.api_tokens?.filter?.(
       (item) => item && item.trim() !== ''
     );
+    const apiTokenList = _.concat([], values.api_key, apiTokens || []);
+    if (action === PageAction.CREATE) {
+      return apiTokenList.map((item: string) => ({ input: item }));
+    }
+
+    const existingTokens = new Set(
+      (currentData?.api_tokens || []).map((item: { hash: string }) => item.hash)
+    );
+    return apiTokenList.map((item: string) =>
+      existingTokens.has(item) ? { hash: item } : { input: item }
+    );
+  };
+
+  const handleOnFinish = (values: FormData) => {
     const data = {
       ..._.omit(values, ['api_key']),
-      api_tokens: _.concat([], values.api_key, apiTokens || []).map(
-        (item: string) => ({ input: item })
-      ),
+      api_tokens: formatAPIKeys(values),
       config: {
         type: values.config.type,
         ...yaml2Json(advanceRef.current?.getYamlValue() || '')
       },
-      models: _.uniqBy(values.models, 'name')
+      models: _.uniqBy(values.models, 'name'),
+      clone_from_id: action === PageAction.COPY ? currentData?.id : undefined
     };
     onFinish(data);
   };

@@ -2,7 +2,6 @@ import BaseSelect from '@/components/seal-form/base/select';
 import FilterForm from '@/pages/_components/filter-form';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
-import _ from 'lodash';
 import styled from 'styled-components';
 import { modelCategories } from '../config';
 import useFilterStatus from '../hooks/use-filter-status';
@@ -25,12 +24,10 @@ const FilterFormContent: React.FC<FilterFormContentProps> = ({
   onValuesChange
 }) => {
   const intl = useIntl();
-  const form = Form.useFormInstance();
   const { labelRender, optionRender, statusOptions } = useFilterStatus();
 
   const handleOnValuesChange = (changedValues: any, allValues: any) => {
-    const query = _.pickBy(allValues, (value: any) => !!value);
-    onValuesChange?.(query);
+    onValuesChange?.(allValues);
   };
 
   return (

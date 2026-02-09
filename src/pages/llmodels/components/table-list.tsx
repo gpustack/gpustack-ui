@@ -59,6 +59,7 @@ import {
   ModelInstanceListItem,
   SourceType
 } from '../config/types';
+import Filters from '../filters';
 import useEditDeployment from '../hooks/use-edit-deployment';
 import useFilterStatus from '../hooks/use-filter-status';
 import useFormInitialValues from '../hooks/use-form-initial-values';
@@ -649,7 +650,7 @@ const Models: React.FC<ModelsProps> = ({
                 options={statusOptions}
                 onChange={handleStatusChange}
               ></BaseSelect>
-              {/* <Filters
+              <Filters
                 initialValues={{
                   cluster_id: undefined,
                   state: undefined,
@@ -657,7 +658,7 @@ const Models: React.FC<ModelsProps> = ({
                 }}
                 clusterList={clusterList}
                 onValuesChange={onFilterChange}
-              ></Filters> */}
+              ></Filters>
               <Button
                 type="text"
                 style={{ color: 'var(--ant-color-text-tertiary)' }}

@@ -21,7 +21,6 @@ import {
   updateProvider
 } from './apis';
 import AddMaasProvider from './components/add-provider-modal';
-import { maasProviderOptions } from './config/providers';
 import { FormData, MaasProviderItem as ListItem } from './config/types';
 import useCreateProvider from './hooks/use-create-provider';
 import useProviderColumns from './hooks/use-provider-columns';
@@ -57,7 +56,7 @@ const MaasProvider: React.FC = () => {
 
   const handleClickDropdown = () => {
     openProviderModal(
-      'create',
+      PageAction.CREATE,
       intl.formatMessage({ id: 'providers.button.add' })
     );
   };
@@ -88,7 +87,6 @@ const MaasProvider: React.FC = () => {
   };
 
   const handleModalCancel = () => {
-    console.log('handleModalCancel');
     closeProviderModal();
   };
 
@@ -113,7 +111,10 @@ const MaasProvider: React.FC = () => {
       openProviderModal(
         PageAction.COPY,
         intl.formatMessage({ id: 'providers.button.clone' }),
-        row
+        {
+          ...row,
+          name: `${row.name}-copy`
+        }
       );
     }
   });
@@ -156,12 +157,6 @@ const MaasProvider: React.FC = () => {
           handleSearch={handleSearch}
           handleDeleteByBatch={handleDeleteBatch}
           handleClickPrimary={handleClickDropdown}
-          actionItems={maasProviderOptions.map((option) => ({
-            ...option,
-            icon: (
-              <IconFont type={option.icon as string} style={{ fontSize: 14 }} />
-            )
-          }))}
         ></FilterBar>
         <ConfigProvider renderEmpty={renderEmpty}>
           <Table

@@ -429,7 +429,7 @@ const useColumnSettings = (options: {
     <ColumnSettings
       tableName="benchmark"
       contentHeight={contentHeight}
-      defaultSelectedColumns={selectedColumns}
+      defaultSelectedColumns={defaultColumns}
       selectedColumns={selectedColumns}
       onChange={handleOnChange}
       onReset={handleOnReset}

@@ -21,5 +21,7 @@ export default {
   'routes.form.metadata.releaseDate': 'Release Date',
   'routes.form.metadata.languages': 'Languages',
   'routes.form.metadata.icons': 'Icon',
-  'routes.form.metadata.uploadIcon': 'Upload Icon'
+  'routes.form.metadata.uploadIcon': 'Upload Icon',
+  'routes.form.fallback.warning':
+    'Changes to fallback route target take effect after one minute.'
 };

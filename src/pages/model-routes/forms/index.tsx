@@ -14,6 +14,7 @@ import {
   useRef,
   useState
 } from 'react';
+import FormContext from '../config/form-context';
 import { FormData, RouteItem as ListItem } from '../config/types';
 import useEditTargets from '../hooks/use-edit-targets';
 import Basic from './basic';
@@ -24,6 +25,7 @@ interface ProviderFormProps {
   action: PageActionType;
   currentData?: ListItem; // Used when action is EDIT
   onFinish: (values: FormData) => Promise<void>;
+  onFallbackChange?: (changed: boolean) => void;
 }
 
 const TABKeysMap = {
@@ -34,7 +36,7 @@ const TABKeysMap = {
 };
 
 const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
-  const { action, currentData, onFinish } = props;
+  const { action, currentData, onFinish, onFallbackChange } = props;
   const intl = useIntl();
   const { getScrollElementScrollableHeight } = useWrapperContext();
   const [activeKey, setActiveKey] = useState<string[]>([TABKeysMap.BASIC]);
@@ -175,29 +177,31 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       }}
       getScrollElementScrollableHeight={getScrollElementScrollableHeight}
     >
-      <Form
-        form={form}
-        onFinish={handleOnFinish}
-        initialValues={{
-          categories: [],
-          meta: {}
-        }}
-      >
-        <Basic />
-        <CollapsePanel
-          activeKey={activeKey}
-          accordion={false}
-          onChange={handleOnCollapseChange}
-          items={[
-            {
-              key: TABKeysMap.TARGETS,
-              label: intl.formatMessage({ id: 'routes.form.target.title' }),
-              forceRender: true,
-              children: <Targets ref={targetsRef}></Targets>
-            }
-          ]}
-        ></CollapsePanel>
-      </Form>
+      <FormContext.Provider value={{ onFallbackChange, action, currentData }}>
+        <Form
+          form={form}
+          onFinish={handleOnFinish}
+          initialValues={{
+            categories: [],
+            meta: {}
+          }}
+        >
+          <Basic />
+          <CollapsePanel
+            activeKey={activeKey}
+            accordion={false}
+            onChange={handleOnCollapseChange}
+            items={[
+              {
+                key: TABKeysMap.TARGETS,
+                label: intl.formatMessage({ id: 'routes.form.target.title' }),
+                forceRender: true,
+                children: <Targets ref={targetsRef}></Targets>
+              }
+            ]}
+          ></CollapsePanel>
+        </Form>
+      </FormContext.Provider>
     </ScrollSpyTabs>
   );
 });

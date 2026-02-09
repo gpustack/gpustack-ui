@@ -10,6 +10,7 @@ type CopyButtonProps = {
   fontSize?: string;
   btnStyle?: React.CSSProperties;
   style?: React.CSSProperties;
+  format?: 'text/plain' | 'text/html';
 };
 
 const CopyButton: React.FC<CopyButtonProps & TextProps> = ({
@@ -18,6 +19,7 @@ const CopyButton: React.FC<CopyButtonProps & TextProps> = ({
   fontSize = '14px',
   style,
   btnStyle,
+  format = 'text/plain',
   ...rest
 }) => {
   const intl = useIntl();
@@ -35,6 +37,7 @@ const CopyButton: React.FC<CopyButtonProps & TextProps> = ({
       {...rest}
       copyable={{
         text: text,
+        format: format,
         tooltips: tooltips,
         icon: [
           <CopyOutlined style={{ fontSize: fontSize, ...style }} key="copy" />,

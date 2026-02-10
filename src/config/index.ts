@@ -1,12 +1,12 @@
-import { StatusType } from './types';
+import { PageActionType, StatusType } from './types';
 
-export enum PageAction {
-  CREATE = 'create',
-  UPDATE = 'update',
-  VIEW = 'view',
-  EDIT = 'edit',
-  COPY = 'copy'
-}
+export const PageAction: Record<string, PageActionType> = {
+  CREATE: 'create',
+  UPDATE: 'update',
+  VIEW: 'view',
+  EDIT: 'edit',
+  COPY: 'copy'
+};
 
 export const StatusColorMap: Record<
   StatusType,

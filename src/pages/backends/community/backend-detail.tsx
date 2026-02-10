@@ -143,7 +143,7 @@ const BackendDetail: React.FC<{
             </span>
           </Subtitle>
           <Content>
-            <Typography.Paragraph>
+            <Typography.Paragraph style={{ whiteSpace: 'pre-line' }}>
               {currentData?.description}
             </Typography.Paragraph>
           </Content>

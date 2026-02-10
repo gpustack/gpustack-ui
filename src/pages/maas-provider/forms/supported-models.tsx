@@ -21,7 +21,7 @@ const SupportedModels = () => {
 
   const generateCurrentAPIKey = (currentAPIKey: string) => {
     if (
-      action === PageAction.EDIT &&
+      [PageAction.EDIT, PageAction.COPY].includes(action) &&
       currentAPIKey === currentData?.api_tokens?.[0]?.hash
     ) {
       return undefined;

@@ -4,12 +4,12 @@ import { maasProviderType } from '.';
 
 interface FormContextProps {
   providerType?: maasProviderType;
-  action?: PageActionType;
+  action: PageActionType;
   currentData?: any;
   id?: number;
 }
 
-const FormContext = createContext<FormContextProps>({});
+const FormContext = createContext<FormContextProps>({} as FormContextProps);
 
 export const useFormContext = () => {
   const context = useContext(FormContext);

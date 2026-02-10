@@ -161,14 +161,14 @@ const MaasProvider: React.FC = () => {
         <ConfigProvider renderEmpty={renderEmpty}>
           <Table
             rowKey="id"
-            tableLayout="auto"
+            tableLayout="fixed"
             sortDirections={TABLE_SORT_DIRECTIONS}
             showSorterTooltip={false}
             dataSource={dataSource.dataList}
             loading={dataSource.loading}
             rowSelection={rowSelection}
             columns={columns}
-            scroll={{ x: true }}
+            scroll={{ x: 900 }}
             pagination={{
               showSizeChanger: true,
               pageSize: queryParams.perPage,

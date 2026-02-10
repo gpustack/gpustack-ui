@@ -35,7 +35,7 @@ const renderTag = (props: any) => {
 const OptionNodes = (props: {
   data: any;
   notFoundContent?: React.ReactNode;
-  optionNode: React.FC<{ data: any }>;
+  optionNode?: React.FC<{ data: any }>;
 }) => {
   const intl = useIntl();
   const { data, optionNode: OptionNode, notFoundContent } = props;
@@ -68,11 +68,17 @@ const OptionNodes = (props: {
   if (data.parent) {
     return (
       <AutoTooltip ghost {...width}>
-        {data.label}
+        <span>{data.label}</span>
       </AutoTooltip>
     );
   }
-  return OptionNode ? <OptionNode data={data}></OptionNode> : data.label;
+  return OptionNode ? (
+    <OptionNode data={data}></OptionNode>
+  ) : (
+    <AutoTooltip ghost>
+      <span>{data.label}</span>
+    </AutoTooltip>
+  );
 };
 
 const SealCascader: React.FC<
@@ -183,17 +189,13 @@ const SealCascader: React.FC<
           {...rest}
           placeholder={placeholder}
           suffixIcon={<IconFont type="icon-down"></IconFont>}
-          optionRender={
-            optionNode
-              ? (data) => (
-                  <OptionNodes
-                    data={data}
-                    notFoundContent={notFoundContent}
-                    optionNode={optionNode}
-                  ></OptionNodes>
-                )
-              : undefined
-          }
+          optionRender={(data) => (
+            <OptionNodes
+              data={data}
+              notFoundContent={notFoundContent}
+              optionNode={optionNode}
+            ></OptionNodes>
+          )}
           tagRender={tagRender ?? renderTag}
           ref={inputRef}
           options={children ? null : _options}

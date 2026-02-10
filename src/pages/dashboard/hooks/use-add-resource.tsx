@@ -147,11 +147,7 @@ export default function useAddResource(options?: { onCreated?: () => void }) {
       }}
       onCancel={handleCancel}
     >
-      <Content
-        style={{
-          marginTop: !resourceCount.cluster_count ? 32 : 16
-        }}
-      >
+      <Content>
         <div className="icon">
           <IconFont type="icon-dashboard" />
         </div>

@@ -80,7 +80,8 @@ const SupportedModels = () => {
   };
 
   const onChange = (data: ProviderModel, index: number) => {
-    const newList = [...modelList];
+    const dataList = form.getFieldValue('models') || [];
+    const newList = [...dataList];
     newList[index] = { ...data };
     updateModelList(newList);
   };

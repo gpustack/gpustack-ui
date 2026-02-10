@@ -1,8 +1,10 @@
+import AutoTooltip from '@/components/auto-tooltip';
 import MetadataList from '@/components/metadata-list';
 import SealCascader from '@/components/seal-form/seal-cascader';
 import SealInput from '@/components/seal-form/seal-input';
 import { PageAction } from '@/config';
 import useAppUtils from '@/hooks/use-app-utils';
+import ProviderLogo from '@/pages/maas-provider/components/provider-logo';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
@@ -13,9 +15,22 @@ import {
   useRef,
   useState
 } from 'react';
+import styled from 'styled-components';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
 import useTargetSourceModels from '../hooks/use-target-source-models';
+
+const OptionWrapper = styled.span`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+const LabelWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
 
 const TargetsForm = forwardRef((props, ref) => {
   const { onFallbackChange, action } = useFormContext();
@@ -162,7 +177,6 @@ const TargetsForm = forwardRef((props, ref) => {
 
           return !selectedKeys.has(key) || key === currKey;
         });
-        console.log('children', children);
 
         return {
           ...model,
@@ -172,13 +186,52 @@ const TargetsForm = forwardRef((props, ref) => {
       .filter((model) => model.children && model.children.length > 0);
   };
 
-  const displayRender = (labels: any[]) => {
+  const displayRender = (labels: any[], option: any) => {
     return (
-      <span className="flex-center gap-4">
-        {labels[0]}
-        <span>/</span>
-        <span>{labels[1]}</span>
-      </span>
+      <LabelWrapper>
+        <ProviderLogo provider={_.get(option, '0.providerType') as string} />
+        <AutoTooltip
+          ghost
+          maxWidth={300}
+          title={
+            <span>
+              {labels[0]} / {labels[1]}
+            </span>
+          }
+        >
+          <span>
+            {labels[0]} / {labels[1]}
+          </span>
+        </AutoTooltip>
+      </LabelWrapper>
+    );
+  };
+
+  const optionRender = (option: any) => {
+    const { data } = option;
+
+    if (!data.isParent) {
+      return <AutoTooltip ghost>{data.label}</AutoTooltip>;
+    }
+
+    if (data.providerType === 'deployments') {
+      return (
+        <AutoTooltip ghost maxWidth={140}>
+          <OptionWrapper>
+            <ProviderLogo provider={data.providerType as string} />
+            {intl.formatMessage({ id: 'menu.models.deployment' })}
+          </OptionWrapper>
+        </AutoTooltip>
+      );
+    }
+
+    return (
+      <AutoTooltip ghost maxWidth={140}>
+        <OptionWrapper>
+          <ProviderLogo provider={data.providerType as string} />
+          <span>{data.label}</span>
+        </OptionWrapper>
+      </AutoTooltip>
     );
   };
 
@@ -269,6 +322,7 @@ const TargetsForm = forwardRef((props, ref) => {
                 options={filterOptions(item.value)}
                 showCheckedStrategy="SHOW_CHILD"
                 displayRender={displayRender}
+                optionNode={optionRender}
                 getPopupContainer={(triggerNode) => triggerNode.parentNode}
               ></SealCascader>
               <span className="seprator">:</span>
@@ -320,6 +374,7 @@ const TargetsForm = forwardRef((props, ref) => {
             onChange={(value, options) => handleFallbackChange(value, options)}
             showCheckedStrategy="SHOW_CHILD"
             displayRender={displayRender}
+            optionNode={optionRender}
             getPopupContainer={(triggerNode) => triggerNode.parentNode}
           ></SealCascader>
         </div>

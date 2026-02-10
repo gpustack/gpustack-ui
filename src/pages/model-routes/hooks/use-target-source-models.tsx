@@ -1,8 +1,6 @@
-import GPUStackLogo from '@/assets/images/small-logo-200x200.png';
 import { queryModelsList } from '@/pages/llmodels/apis';
 import { ListItem as ModelListItem } from '@/pages/llmodels/config/types';
 import { queryMaasProviders } from '@/pages/maas-provider/apis';
-import ProviderLogo from '@/pages/maas-provider/components/provider-logo';
 import { MaasProviderItem } from '@/pages/maas-provider/config/types';
 import { useIntl } from '@umijs/max';
 import _ from 'lodash';
@@ -44,15 +42,11 @@ const useTargetSourceModels = () => {
 
       const modelsList = [
         {
-          label: (
-            <OptionWrapper>
-              <img src={GPUStackLogo} alt="GPUStack" width={16} height={16} />
-              {intl.formatMessage({ id: 'menu.models.deployment' })}
-            </OptionWrapper>
-          ),
+          label: intl.formatMessage({ id: 'menu.models.deployment' }),
           value: 'deployments',
           providerType: 'deployments',
-          parent: true,
+          parent: false,
+          isParent: true,
           children: _.uniqBy(
             models.items?.map?.((model: ModelListItem) => ({
               label: model.name,
@@ -82,14 +76,10 @@ const useTargetSourceModels = () => {
           }));
 
           return {
-            label: (
-              <OptionWrapper>
-                <ProviderLogo provider={provider.config?.type as string} />
-                <span>{provider.name}</span>
-              </OptionWrapper>
-            ),
+            label: provider.name,
             value: provider.id,
-            parent: true,
+            parent: false,
+            isParent: true,
             providerType: provider.config?.type,
             children: _.uniqBy(children, 'value')
           };

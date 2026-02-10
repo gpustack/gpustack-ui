@@ -1,14 +1,15 @@
 import IconFont from '@/components/icon-font';
 import SealInput from '@/components/seal-form/seal-input';
+import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import YamlEditor from '@/pages/_components/yaml-editor';
 import { useIntl } from '@umijs/max';
 import { Button, Form } from 'antd';
-import React, { forwardRef, useImperativeHandle } from 'react';
-import { ProviderType } from '../config';
+import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
+import { ProviderType, ProviderValueMap } from '../config';
 import { ClusterFormData as FormData } from '../config/types';
 import schema from '../config/worker-config.json';
-import yamlTemplate from '../config/yaml-template';
+import { dockerConfig, kubernetesConfig } from '../config/yaml-template';
 
 const ClusterAdvanceConfig: React.FC<{
   action: PageActionType;
@@ -18,17 +19,31 @@ const ClusterAdvanceConfig: React.FC<{
   const [form] = Form.useForm();
   const intl = useIntl();
   const editorRef = React.useRef<any>(null);
-  const [fileContent, setFileContent] = React.useState<string>(yamlTemplate);
+  const [fileContent, setFileContent] = React.useState<string>('');
 
   useImperativeHandle(ref, () => ({
     getYamlValue: () => {
       return editorRef.current?.getValue();
     },
     setYamlValue: (values: any) => {
-      console.log('setYamlValue:', values);
-      editorRef.current?.setValue(values || yamlTemplate);
+      editorRef.current?.setValue(
+        values ||
+          (provider === ProviderValueMap.Kubernetes
+            ? kubernetesConfig
+            : dockerConfig)
+      );
     }
   }));
+
+  useEffect(() => {
+    if (action === PageAction.CREATE) {
+      setFileContent(
+        provider === ProviderValueMap.Kubernetes
+          ? kubernetesConfig
+          : dockerConfig
+      );
+    }
+  }, [provider, action]);
 
   return (
     <>

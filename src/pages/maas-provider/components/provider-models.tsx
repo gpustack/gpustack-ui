@@ -21,8 +21,8 @@ const ProviderModels: React.FC<ProviderModelProps> = ({ dataList }) => {
 
   const intl = useIntl();
 
-  const head12Items = dataList.slice(0, 8);
-  const restItems = dataList.slice(8);
+  const head12Items = dataList.slice(0, 4);
+  const restItems = dataList.slice(4);
 
   const renderModels = (dataList: ProviderModel[]) => {
     return (

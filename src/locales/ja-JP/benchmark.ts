@@ -60,6 +60,7 @@ export default {
   'benchmark.detail.requests.failed': 'Failed Requests',
   'benchmark.detail.requests.incomplete': 'Incomplete Requests',
   'benchmark.detail.requests.concurrency': 'Concurrency Avg',
+  'benchmark.detail.requests.concurrency.max': 'Concurrency Max',
   'benchmark.detail.percentile.latency': 'Latency',
   'benchmark.detail.percentile.inputTokens': 'Input Tokens',
   'benchmark.detail.percentile.outputTokens': 'Output Tokens',

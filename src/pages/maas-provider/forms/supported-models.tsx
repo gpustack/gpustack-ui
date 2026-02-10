@@ -29,6 +29,13 @@ const SupportedModels = () => {
     return currentAPIKey;
   };
 
+  const generateID = () => {
+    if (action === PageAction.EDIT || action === PageAction.COPY) {
+      return id!;
+    }
+    return 0;
+  };
+
   const handleOpenChange = async (open: boolean) => {
     try {
       await form.validateFields(['api_key', ['config', 'type']]);
@@ -39,7 +46,7 @@ const SupportedModels = () => {
       if (open && prevAPIKeyRef.current !== currentAPIKey && currentAPIKey) {
         prevAPIKeyRef.current = currentAPIKey;
         fetchProviderModels({
-          id: action === PageAction.EDIT ? id! : 0,
+          id: generateID(),
           data: {
             api_token: generateCurrentAPIKey(currentAPIKey) as string,
             proxy_url: form.getFieldValue('proxy_url') || undefined,

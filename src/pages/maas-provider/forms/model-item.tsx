@@ -67,9 +67,16 @@ const ModelItem: React.FC<ModelItemProps> = ({
     return currentAPIKey;
   };
 
+  const generateID = () => {
+    if (action === PageAction.EDIT || action === PageAction.COPY) {
+      return id!;
+    }
+    return 0;
+  };
+
   const handleTestModel = async () => {
     const res = await runTestModel({
-      id: action === PageAction.EDIT ? id! : 0,
+      id: generateID(),
       data: {
         model_name: item.name,
         api_token: generateCurrentAPIKey(
@@ -88,7 +95,6 @@ const ModelItem: React.FC<ModelItemProps> = ({
   };
 
   const handleOnChange = (value: string, option: any) => {
-    console.log('selected model', value, option);
     onChange({
       ...option,
       name: value

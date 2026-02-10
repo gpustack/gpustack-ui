@@ -31,10 +31,6 @@ const CopyButton: React.FC<CopyButtonProps & TextProps> = ({
     ];
   }, [intl]);
 
-  const onCopy = () => {
-    console.log('copied');
-  };
-
   return (
     <Typography.Paragraph
       style={{ ...btnStyle, marginBottom: 0 }}
@@ -42,8 +38,10 @@ const CopyButton: React.FC<CopyButtonProps & TextProps> = ({
       copyable={{
         text: text,
         format: format,
-        tooltips: tooltips,
-        onCopy: onCopy,
+        tooltips: [
+          intl.formatMessage({ id: 'common.button.copy' }),
+          intl.formatMessage({ id: 'common.button.copied' })
+        ],
         icon: [
           <CopyOutlined style={{ fontSize: fontSize, ...style }} key="copy" />,
           <CheckCircleFilled

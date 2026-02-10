@@ -39,10 +39,16 @@ const ActiveTable = () => {
       ellipsis: true,
       render: (text: any, record: any) => {
         return (
-          <AutoTooltip ghost>
-            {convertFileSize(record.resource_claim?.vram || 0)} /{' '}
-            {convertFileSize(record.resource_claim?.ram || 0)}
-          </AutoTooltip>
+          <>
+            {record.provider_name ? (
+              <span>N/A</span>
+            ) : (
+              <AutoTooltip ghost>
+                {convertFileSize(record.resource_claim?.vram || 0)} /{' '}
+                {convertFileSize(record.resource_claim?.ram || 0)}
+              </AutoTooltip>
+            )}
+          </>
         );
       }
     },
@@ -58,6 +64,9 @@ const ActiveTable = () => {
       ellipsis: true,
       render: (text: any, record: any) => {
         let val = text;
+        if (record.provider_name) {
+          return <span>N/A</span>;
+        }
         if (!text) {
           val = !NACategories.includes(record.categories?.[0]) ? 'N/A' : 0;
         }

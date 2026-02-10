@@ -55,7 +55,13 @@ const ActiveTable = () => {
     {
       title: intl.formatMessage({ id: 'models.form.replicas' }),
       dataIndex: 'instance_count',
-      key: 'instance_count'
+      key: 'instance_count',
+      render(text: any, record: any) {
+        if (record.provider_name) {
+          return <span>N/A</span>;
+        }
+        return text;
+      }
     },
     {
       title: intl.formatMessage({ id: 'dashboard.tokens' }),
@@ -64,9 +70,7 @@ const ActiveTable = () => {
       ellipsis: true,
       render: (text: any, record: any) => {
         let val = text;
-        if (record.provider_name) {
-          return <span>N/A</span>;
-        }
+
         if (!text) {
           val = !NACategories.includes(record.categories?.[0]) ? 'N/A' : 0;
         }

@@ -92,11 +92,11 @@ export default {
   'models.form.backend.llamabox':
     'Для моделей формата GGUF. Поддержка Linux, macOS и Windows.',
   'models.form.backend.vllm':
-    'Встроенная поддержка устройств NVIDIA, AMD, Ascend, Hygon, Iluvatar и MetaX.',
+    'Built-in support for NVIDIA, AMD, Ascend, Hygon, Moore Threads, Iluvatar, MetaX, T-Head PPU devices.',
   'models.form.backend.voxbox': 'Поддерживает только GPU NVIDIA и CPU.',
   'models.form.backend.mindie': 'Поддерживает только Ascend NPU.',
   'models.form.backend.sglang':
-    'Встроенная поддержка GPU NVIDIA/AMD и Ascend NPU.',
+    'Built-in support for NVIDIA, AMD, Ascend, Moore Threads, MetaX, T-Head PPU devices.',
   'models.form.search.gguftips':
     'Для воркеров на macOS/Windows отметьте GGUF (для аудиомоделей снимите).',
   'models.form.button.addlabel': 'Добавить метку',
@@ -292,4 +292,6 @@ export default {
 // 3. 'models.table.instance.benchmark': 'Run Benchmark'
 // 2. 'models.form.enableModelRoute': 'Enable Model Route',
 // 3.  'models.form.enableModelRoute.tips': 'Enable Model Route',
+// 4. 'models.form.backend.vllm': 'Built-in support for NVIDIA, AMD, Ascend, Hygon, Moore Threads, Iluvatar, MetaX, T-Head PPU devices.',
+// 5.  'models.form.backend.sglang': 'Built-in support for NVIDIA, AMD, Ascend, Moore Threads, MetaX, T-Head PPU devices.',
 // ========== End of To-Do List ==========

@@ -2,6 +2,8 @@ import LabelSelector from '@/components/label-selector';
 import CheckboxField from '@/components/seal-form/checkbox-field';
 import SealSelect from '@/components/seal-form/seal-select';
 import { PageAction } from '@/config';
+import DocLink from '@/pages/_components/doc-link';
+import { genericReferLink } from '@/pages/model-routes/config';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
@@ -156,9 +158,14 @@ const AdvanceConfig = () => {
               style={{ marginBottom: 8 }}
             >
               <CheckboxField
-                description={intl.formatMessage({
-                  id: 'models.form.generic_proxy.tips'
-                })}
+                description={
+                  <DocLink
+                    title={intl.formatMessage({
+                      id: 'models.form.generic_proxy.tips'
+                    })}
+                    link={genericReferLink}
+                  ></DocLink>
+                }
                 label={intl.formatMessage({
                   id: 'models.form.generic_proxy'
                 })}

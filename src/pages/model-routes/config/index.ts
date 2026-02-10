@@ -48,3 +48,5 @@ export const rowActionList = [
     }
   }
 ];
+
+export const genericReferLink = `https://docs.gpustack.ai/latest/user-guide/model-deployment-management/#enable-generic-proxy`;

@@ -2,7 +2,7 @@ import AutoTooltip from '@/components/auto-tooltip';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import { modelNameReg, PageAction } from '@/config';
-import { GPUSTACK_API_BASE_URL } from '@/config/settings';
+import { OPENAI_COMPATIBLE } from '@/config/settings';
 import useAppUtils from '@/hooks/use-app-utils';
 import {
   ClusterStatusLabelMap,
@@ -248,7 +248,7 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
           required
           description={intl.formatMessage(
             { id: 'models.form.replicas.tips' },
-            { api: `${window.location.origin}/${GPUSTACK_API_BASE_URL}` }
+            { api: `${window.location.origin}/${OPENAI_COMPATIBLE}` }
           )}
           min={0}
         ></SealInput.Number>

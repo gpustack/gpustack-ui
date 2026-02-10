@@ -60,6 +60,7 @@ export default {
   'benchmark.detail.requests.failed': '请求失败数',
   'benchmark.detail.requests.incomplete': '请求未完成数',
   'benchmark.detail.requests.concurrency': '请求并发数均值',
+  'benchmark.detail.requests.concurrency.max': '请求并发数峰值',
   'benchmark.detail.percentile.latency': '延迟',
   'benchmark.detail.percentile.inputTokens': '输入 Token',
   'benchmark.detail.percentile.outputTokens': '输出 Token',

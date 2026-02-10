@@ -33,9 +33,11 @@ const allFields = [
   'input_tokens_per_second_mean',
   'output_tokens_per_second_mean',
   'total_requests',
-  'successful_requests',
-  'failed_requests',
-  'request_concurrency',
+  'request_successful',
+  'request_errored',
+  'request_incomplete',
+  'request_concurrency_mean',
+  'request_concurrency_max',
   'created_at'
 ];
 
@@ -270,46 +272,79 @@ const useColumnSettings = (options: {
         </AutoTooltip>
       ),
       unit: ''
+    },
+    {
+      title: renderTitle(
+        intl.formatMessage({ id: 'benchmark.detail.requests.success' })
+      ),
+      dataIndex: 'request_successful',
+      render: (value: number) => (
+        <AutoTooltip ghost minWidth={20}>
+          {round(value, 0) || 0}
+        </AutoTooltip>
+      ),
+      precision: 0,
+      color: 'var(--ant-color-success)',
+      unit: ''
+    },
+    {
+      title: renderTitle(
+        intl.formatMessage({ id: 'benchmark.detail.requests.failed' })
+      ),
+      dataIndex: 'request_errored',
+      render: (value: number) => (
+        <AutoTooltip ghost minWidth={20}>
+          {round(value, 0) || 0}
+        </AutoTooltip>
+      ),
+      precision: 0,
+      color: 'var(--ant-color-error)',
+      unit: ''
+    },
+    {
+      title: renderTitle(
+        intl.formatMessage({ id: 'benchmark.detail.requests.incomplete' })
+      ),
+      dataIndex: 'request_incomplete',
+      render: (value: number) => (
+        <AutoTooltip ghost minWidth={20}>
+          {round(value, 0) || 0}
+        </AutoTooltip>
+      ),
+      precision: 0,
+      color: 'var(--ant-color-error)',
+      unit: ''
+    },
+    {
+      title: renderTitle(
+        intl.formatMessage({
+          id: 'benchmark.detail.requests.concurrency'
+        })
+      ),
+      dataIndex: 'request_concurrency_mean',
+      render: (value: number) => (
+        <AutoTooltip ghost minWidth={20}>
+          {round(value, 0) || 0}
+        </AutoTooltip>
+      ),
+      precision: 0,
+      unit: ''
+    },
+    {
+      title: renderTitle(
+        intl.formatMessage({
+          id: 'benchmark.detail.requests.concurrency.max'
+        })
+      ),
+      dataIndex: 'request_concurrency_max',
+      render: (value: number) => (
+        <AutoTooltip ghost minWidth={20}>
+          {round(value, 0) || 0}
+        </AutoTooltip>
+      ),
+      precision: 0,
+      unit: ''
     }
-    // {
-    //   title: renderTitle(
-    //     intl.formatMessage({ id: 'benchmark.detail.requests.success' })
-    //   ),
-    //   dataIndex: 'successful_requests',
-    //   path: ['raw_metrics', 'benchmarks', '0'],
-    //   render: (value: number) =>
-    //     round(_.get(value, ['metrics', 'request_totals', 'successful']), 0) ||
-    //     0,
-    //   precision: 0,
-    //   color: 'var(--ant-color-success)',
-    //   unit: ''
-    // },
-    // {
-    //   title: renderTitle(
-    //     intl.formatMessage({ id: 'benchmark.detail.requests.failed' })
-    //   ),
-    //   dataIndex: 'failed_requests',
-    //   path: ['raw_metrics', 'benchmarks', '0'],
-    //   render: (value: number) =>
-    //     round(_.get(value, ['metrics', 'request_totals', 'errored']), 0) || 0,
-    //   precision: 0,
-    //   color: 'var(--ant-color-error)',
-    //   unit: ''
-    // },
-    // {
-    //   title: renderTitle(
-    //     intl.formatMessage({
-    //       id: 'benchmark.detail.requests.concurrency'
-    //     })
-    //   ),
-    //   dataIndex: 'request_concurrency',
-    //   path: ['raw_metrics', 'benchmarks', '0'],
-    //   render: (value: number) =>
-    //     round(_.get(value, 'metrics.request_concurrency.successful.mean'), 0) ||
-    //     0,
-    //   precision: 0,
-    //   unit: ''
-    // }
   ];
 
   const metadataColumns = [

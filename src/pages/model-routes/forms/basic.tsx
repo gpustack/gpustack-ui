@@ -2,9 +2,11 @@ import CheckboxField from '@/components/seal-form/checkbox-field';
 import SealInput from '@/components/seal-form/seal-input';
 import useAppUtils from '@/hooks/use-app-utils';
 import CategorySelect from '@/pages/_components/category-select';
+import DocLink from '@/pages/_components/doc-link';
 import { categoryOptions } from '@/pages/llmodels/config';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
+import { genericReferLink } from '../config';
 import { FormData } from '../config/types';
 
 const Basic = () => {
@@ -61,9 +63,14 @@ const Basic = () => {
         style={{ marginBottom: 8 }}
       >
         <CheckboxField
-          description={intl.formatMessage({
-            id: 'models.form.generic_proxy.tips'
-          })}
+          description={
+            <DocLink
+              title={intl.formatMessage({
+                id: 'models.form.generic_proxy.tips'
+              })}
+              link={genericReferLink}
+            ></DocLink>
+          }
           label={intl.formatMessage({
             id: 'models.form.generic_proxy'
           })}

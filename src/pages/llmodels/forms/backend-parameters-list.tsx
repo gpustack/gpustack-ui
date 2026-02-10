@@ -59,11 +59,6 @@ const BackendParametersList: React.FC = () => {
         description={
           backendParamsTips.link && (
             <span>
-              {backend === backendOptionsMap.ascendMindie && (
-                <span>
-                  {intl.formatMessage({ id: 'models.backend.mindie.310p' })}
-                </span>
-              )}
               <span
                 style={{
                   marginLeft: backend === backendOptionsMap.ascendMindie ? 4 : 0

@@ -216,22 +216,22 @@ const TargetsForm = forwardRef((props, ref) => {
 
     if (data.providerType === 'deployments') {
       return (
-        <AutoTooltip ghost maxWidth={140}>
-          <OptionWrapper>
-            <ProviderLogo provider={data.providerType as string} />
+        <OptionWrapper>
+          <ProviderLogo provider={data.providerType as string} />
+          <AutoTooltip ghost maxWidth={105}>
             {intl.formatMessage({ id: 'menu.models.deployment' })}
-          </OptionWrapper>
-        </AutoTooltip>
+          </AutoTooltip>
+        </OptionWrapper>
       );
     }
 
     return (
-      <AutoTooltip ghost maxWidth={140}>
-        <OptionWrapper>
-          <ProviderLogo provider={data.providerType as string} />
+      <OptionWrapper>
+        <ProviderLogo provider={data.providerType as string} />
+        <AutoTooltip ghost maxWidth={105}>
           <span>{data.label}</span>
-        </OptionWrapper>
-      </AutoTooltip>
+        </AutoTooltip>
+      </OptionWrapper>
     );
   };
 

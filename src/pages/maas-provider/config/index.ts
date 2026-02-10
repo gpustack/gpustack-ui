@@ -44,3 +44,6 @@ export const rowActionList = [
     }
   }
 ];
+
+export const referLinkZh = `https://higress.cn/docs/latest/plugins/ai/api-provider/ai-proxy/?spm=36971b57.3562eb7c.0.0.31764f5f7uLs2F#%E6%8F%90%E4%BE%9B%E5%95%86%E7%89%B9%E6%9C%89%E9%85%8D%E7%BD%AE`;
+export const referLinkEn = `https://higress.cn/en/docs/latest/plugins/ai/api-provider/ai-proxy/?spm=36971b57.4a688c53.0.0.64ac436ewz1xGA`;

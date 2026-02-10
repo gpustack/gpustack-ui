@@ -22,5 +22,6 @@ export default {
   'routes.form.metadata.languages': '语言',
   'routes.form.metadata.icons': '图标',
   'routes.form.metadata.uploadIcon': '上传图标',
-  'routes.form.fallback.warning': 'Fallback 路由目标的更改将在一分钟后生效。'
+  'routes.form.fallback.warning': 'Fallback 路由目标的更改将在一分钟后生效。',
+  'routes.form.weight.tips': '权重默认值为 100，数值越大，优先级越高。'
 };

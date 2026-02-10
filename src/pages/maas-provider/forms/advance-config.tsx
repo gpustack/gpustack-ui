@@ -5,11 +5,9 @@ import YamlEditor from '@/pages/_components/yaml-editor';
 import { useIntl } from '@umijs/max';
 import { Button, Form } from 'antd';
 import React, { forwardRef, useImperativeHandle } from 'react';
+import { referLinkEn, referLinkZh } from '../config';
 import APIKeys from './api-keys';
 import ProxyConfig from './proxy-config';
-
-const referLinkZh = `https://higress.cn/docs/latest/plugins/ai/api-provider/ai-proxy/?spm=36971b57.3562eb7c.0.0.31764f5f7uLs2F#%E6%8F%90%E4%BE%9B%E5%95%86%E7%89%B9%E6%9C%89%E9%85%8D%E7%BD%AE`;
-const referLinkEn = `https://higress.cn/en/docs/latest/plugins/ai/api-provider/ai-proxy/?spm=36971b57.4a688c53.0.0.64ac436ewz1xGA`;
 
 const AdvanceConfig: React.FC<{
   action: PageActionType;

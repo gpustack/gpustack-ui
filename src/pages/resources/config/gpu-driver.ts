@@ -77,7 +77,7 @@ export const GPUsConfigs: Record<
     driver: 'mx-smi'
   },
   [GPUDriverMap.THEAD]: {
-    label: 'T-Head',
+    label: 'T-Head PPU',
     value: GPUDriverMap.THEAD,
     runtime: '', // TODO: confirm runtime name
     driver: 'ppu-smi'

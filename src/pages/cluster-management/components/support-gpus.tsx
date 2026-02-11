@@ -101,7 +101,7 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
       icon: <ProviderImage src={nvidiaLogo} height={18} />
     },
     {
-      label: 'AMD',
+      label: `AMD `,
       hiddenTitle: true,
       description: '',
       value: GPUDriverMap.AMD,
@@ -183,7 +183,7 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
       icon: <ProviderImage src={metaxLogo} height={20} />
     },
     {
-      label: intl.formatMessage({ id: 'vendor.thead' }),
+      label: `${intl.formatMessage({ id: 'vendor.thead' })} `,
       hiddenTitle: true,
       extra: intl.formatMessage({ id: 'common.tag.experimental' }),
       value: GPUDriverMap.THEAD,

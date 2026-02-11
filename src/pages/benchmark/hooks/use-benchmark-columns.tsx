@@ -43,7 +43,7 @@ const useBenchmarkColumns = (params: {
           </Typography.Text>
         ),
         dataIndex: 'operations',
-        width: 100,
+        width: 140,
         render: (value: string, record: ListItem) => (
           <RowActions record={record} handleSelect={handleSelect}></RowActions>
         )

@@ -522,6 +522,7 @@ export const useSelectModel = (data: { gpuOptions: any[] }) => {
       flatBackendOptions?: any[];
     }
   ) => {
+    console.log('options==========', options);
     const { source, defaultBackend, flatBackendOptions } = options;
     let name = _.split(selectModel.name, '/').slice(-1)[0];
     const reg = /(-gguf)$/i;

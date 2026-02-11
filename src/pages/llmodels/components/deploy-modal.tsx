@@ -269,7 +269,7 @@ const AddModal: FC<AddModalProps> = (props) => {
       huggingface_filename: item.fakeName,
       model_scope_file_path: item.fakeName,
       backend_parameters: [],
-      backend_version: '',
+      backend_version: null,
       backend: modelInfo.backend,
       env: {
         ...modelInfo.env
@@ -315,7 +315,7 @@ const AddModal: FC<AddModalProps> = (props) => {
     handleCancelFiles();
     if (
       _.isEmpty(item) ||
-      (item.isGGUF === selectedModel.isGGUF && item.name === selectedModel.name)
+      (item.isGGUF === selectedModel.isGGUF && item.name === selectedModel.name) // --- because sometimes has the same model name with different isGGUF value
     ) {
       return;
     }
@@ -420,7 +420,6 @@ const AddModal: FC<AddModalProps> = (props) => {
   };
 
   const handleSetIsGGUF = async (flag: boolean) => {
-    console.log('isgguf==================>', flag);
     setIsGGUF(flag);
   };
 
@@ -593,6 +592,7 @@ const AddModal: FC<AddModalProps> = (props) => {
                     onCollapse={setCollapsed}
                     collapsed={collapsed}
                     modelSource={props.source}
+                    isGGUF={isGGUF}
                     setIsGGUF={handleSetIsGGUF}
                   ></ModelCard>
                   {isGGUF && (

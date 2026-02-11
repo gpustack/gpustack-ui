@@ -138,6 +138,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
 
   const handleOnSelectModel = (model: any, manual?: boolean) => {
     const item = model || {};
+    // because need cancel the fetch file request when select another model, so check the empty model in the parent level handler.
     if (!item.evaluated || item.isGGUF) {
       onSelectModel(item, manual);
     } else {

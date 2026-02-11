@@ -442,7 +442,8 @@ const GroundSTT: React.FC<MessageProps> = forwardRef((props, ref) => {
                 style={{
                   position: 'absolute',
                   top: 20,
-                  right: 2
+                  right: 32,
+                  zIndex: 10
                 }}
               >
                 <CopyButton text={messageList[0]?.content}></CopyButton>

@@ -53,7 +53,8 @@ const RowWrapper = styled.div`
 
 const InfoItem = styled.div`
   display: grid;
-  grid-template-columns: max-content 1fr;
+  align-items: center;
+  grid-template-columns: max-content minmax(0, 1fr);
   gap: 8px;
   .label {
     color: var(--ant-color-text-tertiary);
@@ -136,12 +137,7 @@ export const VersionItem: React.FC<VersionItemProps> = ({ data }) => {
             <span className="label">
               {intl.formatMessage({ id: 'backend.imageName' })}:
             </span>
-            <CopyButton
-              text={data.image_name}
-              ellipsis={{
-                tooltip: !data.is_built_in ? data.image_name : false
-              }}
-            >
+            <CopyButton text={data.image_name} type="link">
               {data.is_built_in
                 ? intl.formatMessage({ id: 'backend.versionInfo.autoImage' })
                 : data.image_name}

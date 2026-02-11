@@ -146,7 +146,7 @@ const Details: React.FC = () => {
                   style={{
                     opacity: loading ? 0 : 1,
                     position: 'relative',
-                    bottom: -2,
+                    bottom: 1,
                     right: -1
                   }}
                 >

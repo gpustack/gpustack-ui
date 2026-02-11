@@ -114,11 +114,28 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
     return selectModel || modelList[0]?.value || '';
   }, [modelList]);
 
+  const dropEmptyFields = (parameters: Record<string, any>) => {
+    const fields = [
+      'task_type',
+      'instructions',
+      'max_new_tokens',
+      'ref_audio',
+      'ref_text',
+      'language',
+      'x_vector_only_mode'
+    ];
+    const newParams = { ...parameters };
+
+    return _.omitBy(newParams, (value: any, key: string) => {
+      return fields.includes(key) && !value;
+    });
+  };
+
   const viewCodeContent = useMemo(() => {
     return TextToSpeechCode({
       api: AUDIO_TEXT_TO_SPEECH_API,
       parameters: {
-        ...parameters,
+        ...dropEmptyFields(parameters),
         input: currentPrompt
       }
     });
@@ -185,7 +202,7 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
       const signal = controllerRef.current.signal;
 
       const params = {
-        ...parameters,
+        ...dropEmptyFields(parameters),
         input: current?.content || currentPrompt
       };
       const res: any = await textToSpeech({
@@ -193,6 +210,8 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
         url: CHAT_API,
         signal
       });
+
+      setParams(params);
 
       console.log('result:', res);
 

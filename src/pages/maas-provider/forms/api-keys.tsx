@@ -1,14 +1,17 @@
 import MetadataList from '@/components/metadata-list';
-import SealInput from '@/components/seal-form/seal-input';
+import Password from '@/components/seal-form/password';
+import { PageAction } from '@/config';
 import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
+import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
 
 const AccessToken = () => {
   const intl = useIntl();
   const { getRuleMessage } = useAppUtils();
   const form = Form.useFormInstance<FormData>();
+  const { action } = useFormContext();
   const tokenList = Form.useWatch('api_tokens', form) || [];
 
   const onAdd = () => {
@@ -55,10 +58,11 @@ const AccessToken = () => {
         >
           {(item, index) => (
             <div style={{ width: '100%' }} key={index}>
-              <SealInput.Password
+              <Password
                 value={item}
+                visibilityToggle={action !== PageAction.EDIT}
                 onChange={(e) => handleInputChange(index, e)}
-              ></SealInput.Password>
+              ></Password>
             </div>
           )}
         </MetadataList>

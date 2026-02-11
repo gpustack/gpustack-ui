@@ -62,36 +62,33 @@ const LogsList: React.FC<LogsListProps> = forwardRef((props, ref) => {
     scroller: scroller.current
   }));
 
-  const handleOnWheel = useCallback(
-    (e: any) => {
-      const scrollTop = scrollEventElement?.current.scrollTop;
-      const scrollHeight = scrollEventElement?.current.scrollHeight;
-      const clientHeight = scrollEventElement?.current.clientHeight;
+  const handleOnWheel = (e: any) => {
+    const scrollTop = scrollEventElement?.current?.scrollTop;
+    const scrollHeight = scrollEventElement?.current?.scrollHeight;
+    const clientHeight = scrollEventElement?.current?.clientHeight;
 
-      stopScroll.current = scrollTop + clientHeight <= scrollHeight;
+    stopScroll.current = scrollTop + clientHeight <= scrollHeight;
 
-      const isBottom = scrollTop + clientHeight + 150 >= scrollHeight;
-      // is scroll to top
-      if (scrollTop <= 10) {
-        onScroll?.({
-          isTop: true,
-          isBottom: false
-        });
-      } else if (isBottom) {
-        onScroll?.({
-          isTop: false,
-          isBottom: true
-        });
-        stopScroll.current = false;
-      } else {
-        onScroll?.({
-          isTop: false,
-          isBottom: false
-        });
-      }
-    },
-    [debounceResetStopScroll, scrollEventElement]
-  );
+    const isBottom = scrollTop + clientHeight + 150 >= scrollHeight;
+    // is scroll to top
+    if (scrollTop <= 10) {
+      onScroll?.({
+        isTop: true,
+        isBottom: false
+      });
+    } else if (isBottom) {
+      onScroll?.({
+        isTop: false,
+        isBottom: true
+      });
+      stopScroll.current = false;
+    } else {
+      onScroll?.({
+        isTop: false,
+        isBottom: false
+      });
+    }
+  };
 
   const debounceUpdateScrollerPosition = _.debounce(() => {
     generateInstance();

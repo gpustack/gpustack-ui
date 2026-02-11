@@ -1,12 +1,12 @@
 import AutoTooltip from '@/components/auto-tooltip';
 import MetadataList from '@/components/metadata-list';
+import InputNumber from '@/components/seal-form/input-number';
 import SealCascader from '@/components/seal-form/seal-cascader';
-import SealInput from '@/components/seal-form/seal-input';
 import { PageAction } from '@/config';
 import useAppUtils from '@/hooks/use-app-utils';
 import ProviderLogo from '@/pages/maas-provider/components/provider-logo';
 import { useIntl } from '@umijs/max';
-import { Form } from 'antd';
+import { Form, Tooltip } from 'antd';
 import _ from 'lodash';
 import {
   forwardRef,
@@ -326,19 +326,29 @@ const TargetsForm = forwardRef((props, ref) => {
                 getPopupContainer={(triggerNode) => triggerNode.parentNode}
               ></SealCascader>
               <span className="seprator">:</span>
-              <SealInput.Number
-                style={{ flex: 100 }}
-                min={0}
-                step={1}
-                status={
-                  item.weight === null && validTriggered ? 'error' : 'success'
-                }
-                value={item.weight}
-                onChange={(value) => handleOnWeightChange(value, index)}
-                placeholder={intl.formatMessage({
-                  id: 'routes.form.target.weight'
+              <Tooltip
+                title={intl.formatMessage({
+                  id: 'routes.form.weight.tips'
                 })}
-              ></SealInput.Number>
+              >
+                <span>
+                  <InputNumber
+                    style={{ flex: 100 }}
+                    min={0}
+                    step={1}
+                    status={
+                      item.weight === null && validTriggered
+                        ? 'error'
+                        : 'success'
+                    }
+                    value={item.weight}
+                    onChange={(value) => handleOnWeightChange(value, index)}
+                    placeholder={intl.formatMessage({
+                      id: 'routes.form.target.weight'
+                    })}
+                  ></InputNumber>
+                </span>
+              </Tooltip>
             </>
           )}
         </MetadataList>

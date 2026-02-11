@@ -4,9 +4,8 @@ import { PageActionType } from '@/config/types';
 import CollapsePanel from '@/pages/_components/collapse-panel';
 import { useWrapperContext } from '@/pages/_components/column-wrapper/use-wrapper-context';
 import ScrollSpyTabs from '@/pages/_components/scroll-spy-tabs';
-import { QuestionCircleOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Flex, Form, Tooltip } from 'antd';
+import { Form } from 'antd';
 import _ from 'lodash';
 import {
   forwardRef,
@@ -195,18 +194,7 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
             items={[
               {
                 key: TABKeysMap.TARGETS,
-                label: (
-                  <Flex gap={4} align="center">
-                    {intl.formatMessage({ id: 'routes.form.target.title' })}
-                    <Tooltip
-                      title={intl.formatMessage({
-                        id: 'routes.form.weight.tips'
-                      })}
-                    >
-                      <QuestionCircleOutlined />
-                    </Tooltip>
-                  </Flex>
-                ),
+                label: intl.formatMessage({ id: 'routes.form.target.title' }),
                 forceRender: true,
                 children: <Targets ref={targetsRef}></Targets>
               }

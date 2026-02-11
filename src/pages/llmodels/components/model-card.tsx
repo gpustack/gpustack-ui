@@ -46,7 +46,6 @@ const MarkDownTitle: React.FC<{
   loading: boolean;
   onCollapse: () => void;
 }> = ({ collapsed, loading, onCollapse }) => {
-  const intl = useIntl();
   return (
     <MkdTitle onClick={onCollapse}>
       <span>
@@ -68,12 +67,13 @@ const MarkDownTitle: React.FC<{
 const ModelCard: React.FC<{
   onCollapse: (flag: boolean) => void;
   setIsGGUF: (flag: boolean) => void;
+  isGGUF?: boolean;
   selectedModel: any;
   collapsed: boolean;
   loadingModel?: boolean;
   modelSource: string;
 }> = (props) => {
-  const { onCollapse, setIsGGUF, collapsed, modelSource } = props;
+  const { onCollapse, setIsGGUF, collapsed, modelSource, isGGUF } = props;
   const intl = useIntl();
   const requestSource = useRequestToken();
   const [modelData, setModelData] = useState<any>(null);
@@ -82,7 +82,6 @@ const ModelCard: React.FC<{
   const axiosTokenRef = useRef<any>(null);
   const loadConfigTokenRef = useRef<any>(null);
   const loadConfigJsonTokenRef = useRef<any>(null);
-  const [isGGUFModel, setIsGGUFModel] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
   const modelTags = useMemo(() => {
@@ -169,8 +168,7 @@ const ModelCard: React.FC<{
       setReadmeText(newReadme);
       handleOnCollapse(newReadme);
       const isGGUF = modelcard.tags?.includes('gguf');
-      setIsGGUF(isGGUF);
-      setIsGGUFModel(isGGUF);
+      setIsGGUF(isGGUF || props.selectedModel?.isGGUF);
     } catch (error) {
       setModelData(null);
       setReadmeText(null);
@@ -198,8 +196,7 @@ const ModelCard: React.FC<{
         data?.Data?.Tags,
         (tag: string) => tag?.indexOf('gguf') > -1
       );
-      setIsGGUF(isGGUF);
-      setIsGGUFModel(isGGUF);
+      setIsGGUF(isGGUF || props.selectedModel?.isGGUF);
     } catch (error) {
       setModelData(null);
       setReadmeText(null);
@@ -290,11 +287,8 @@ const ModelCard: React.FC<{
 
   useEffect(() => {
     if (!props.selectedModel.name) return;
-
     getModelCardData();
-    setIsGGUFModel(props.selectedModel.isGGUF);
     setModelData(() => ({
-      ...modelData,
       id: props.selectedModel.name,
       name: props.selectedModel.name,
       isGGUF: props.selectedModel.isGGUF
@@ -328,7 +322,7 @@ const ModelCard: React.FC<{
                   {modelType}
                 </ThemeTag>
               )}
-              {isGGUFModel && (
+              {isGGUF && (
                 <ThemeTag className="tag-item" color="magenta" opacity={0.65}>
                   GGUF
                 </ThemeTag>
@@ -347,7 +341,7 @@ const ModelCard: React.FC<{
                   );
                 })}
             </div>
-            {readmeText && isGGUFModel && (
+            {readmeText && isGGUF && (
               <div
                 style={{
                   borderRadius: 4,
@@ -388,7 +382,7 @@ const ModelCard: React.FC<{
           </>
         )}
       </div>
-      {!isGGUFModel && (
+      {!isGGUF && (
         <Spin spinning={loading}>
           <div style={{ minHeight: 200 }}>
             {readmeText && (

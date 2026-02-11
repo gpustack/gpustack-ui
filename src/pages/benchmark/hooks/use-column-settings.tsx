@@ -8,7 +8,6 @@ import { Typography } from 'antd';
 import dayjs from 'dayjs';
 import _, { round } from 'lodash';
 import React from 'react';
-import styled from 'styled-components';
 import {
   BenchmarkStatus,
   BenchmarkStatusLabelMap,
@@ -16,6 +15,7 @@ import {
 } from '../config';
 import { BenchmarkListItem as ListItem } from '../config/types';
 
+// sort by this order
 const allFields = [
   'cluster_id',
   'model_name',
@@ -44,15 +44,6 @@ const allFields = [
 const fieldSortPos: Record<string, number> = Object.fromEntries(
   allFields.map((field, index) => [field, index + 1])
 );
-
-const SubTitleWrapper = styled.span.attrs({
-  className: 'sub-title'
-})`
-  display: list-item;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-`;
 
 const defaultColumns: string[] = [
   'model_name',

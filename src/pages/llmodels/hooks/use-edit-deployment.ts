@@ -1,6 +1,7 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { useIntl } from '@umijs/max';
+import _ from 'lodash';
 import { useState } from 'react';
 import { ListItem } from '../config/types';
 
@@ -27,12 +28,26 @@ const useEditDeployment = () => {
     title: ''
   });
 
+  const checkIsGGUF = (row: ListItem): boolean => {
+    const huggingface_filename = row.huggingface_filename;
+    const model_scope_file_path = row.model_scope_file_path;
+    const local_path = row.local_path || '';
+
+    if (local_path) {
+      const isEndwithGGUF = _.endsWith(local_path, '.gguf');
+      const isBlobFile = local_path.split('/').pop()?.includes('sha256');
+      return isEndwithGGUF || isBlobFile;
+    }
+
+    return Boolean(huggingface_filename || model_scope_file_path);
+  };
+
   const openEditModal = (formData: any, row: ListItem) => {
     setOpenModalStatus({
       open: true,
       action: PageAction.EDIT,
       currentData: {
-        isGGUF: false,
+        isGGUF: checkIsGGUF(row),
         data: formData,
         row: row,
         realAction: PageAction.EDIT
@@ -46,7 +61,7 @@ const useEditDeployment = () => {
       open: true,
       action: PageAction.EDIT,
       currentData: {
-        isGGUF: false,
+        isGGUF: checkIsGGUF(row),
         data: {
           ...formData,
           name: `${formData.name}-copy`

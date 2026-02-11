@@ -9,6 +9,7 @@ import styled from 'styled-components';
 import { backendTipsList } from '../config';
 import { backendOptionsMap } from '../config/backend-parameters';
 import { useFormContext } from '../config/form-context';
+import useCompareEnvs from '../hooks/use-compare-envs';
 
 const CaretDownWrapper = styled.span`
   display: flex;
@@ -36,6 +37,7 @@ const BackendFields: React.FC = () => {
   } = useFormContext();
   const backend = Form.useWatch('backend', form);
   const [showDeprecated, setShowDeprecated] = React.useState<boolean>(false);
+  const { openTips, handleToggleTips, handleCompareEnvs } = useCompareEnvs();
 
   const handleBackendVersionOnChange = (value: any, option: any) => {
     if (Object.keys(option.data?.env || {}).length > 0) {

@@ -1,5 +1,6 @@
 import RowChildren from '@/components/seal-table/components/row-children';
 import SealTable from '@/components/seal-table/index';
+import TableContext from '@/components/seal-table/table-context';
 import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import useMemoizedFn from 'ahooks/lib/useMemoizedFn';
 import { Col, Row } from 'antd';
@@ -16,6 +17,12 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
+`;
+
+const GPURowWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 `;
 
 /**
@@ -53,8 +60,8 @@ const Environment: React.FC = () => {
     return workerMap.get(workerID) || undefined;
   };
 
-  const findGPUByWorkerName = (name: string): GPUData[] => {
-    return gpuList.filter((gpu) => gpu.worker_name === name);
+  const findGPUByGPUIds = (ids: string[]): GPUData[] => {
+    return gpuList.filter((gpu) => ids.includes(gpu.id));
   };
 
   // main worker
@@ -66,7 +73,7 @@ const Environment: React.FC = () => {
       return null;
     }
 
-    const gpuData = findGPUByWorkerName(mainworker.name);
+    const gpuData = findGPUByGPUIds(instanceData.gpu_ids);
 
     return {
       ...mainworker,
@@ -88,7 +95,7 @@ const Environment: React.FC = () => {
       if (!subWorker) {
         return null;
       }
-      const gpuData = findGPUByWorkerName(subWorker.name);
+      const gpuData = findGPUByGPUIds(worker.gpu_ids);
 
       return {
         ...subWorker,
@@ -103,61 +110,92 @@ const Environment: React.FC = () => {
     return [mainWorker, ...subWorkerList].filter(Boolean) as WorkerData[];
   }, [mainWorker, subWorkerList]);
 
-  const handleToggleExpandAll = useMemoizedFn((expanded: boolean) => {
-    const keys = dataList?.map((item) => item.id);
-    handleExpandAll(expanded, keys);
-  });
+  const allChildren = useMemo(() => {
+    return dataList.reduce<GPUData[]>(
+      (
+        acc,
+        worker: {
+          children?: GPUData[];
+          [key: string]: any;
+        }
+      ) => {
+        if (worker.children && worker.children.length > 0) {
+          acc.push(...(worker.children as GPUData[]));
+        }
+        return acc;
+      },
+      []
+    );
+  }, [dataList]);
 
   const loadChildren = useMemoizedFn(async (record: any) => {
     return record.children || [];
+  });
+
+  const handleToggleExpandAll = useMemoizedFn(async (expanded: boolean) => {
+    const keys = dataList?.map((item) => item.id);
+    handleExpandAll(expanded, keys);
   });
 
   const renderChildren = useMemoizedFn((list: any[]) => {
     return (
       <div style={{ borderRadius: 'var(--ant-table-header-border-radius)' }}>
         <GPUHeader columns={GPUColumns}></GPUHeader>
-        <RowChildren>
+        <GPURowWrapper>
           {list.map((gpu) => (
-            <Row key={gpu.id} style={{ width: '100%' }} align="middle">
-              {GPUColumns.map((col) => (
-                <Col key={col.key} span={col.span} style={{ ...col.colStyle }}>
-                  <span
-                    style={{
-                      display: 'flex',
-                      alignItems: 'flex-start',
-                      gap: 4,
-                      flexDirection: 'column'
-                    }}
+            <RowChildren key={gpu.id}>
+              <Row key={gpu.id} style={{ width: '100%' }} align="middle">
+                {GPUColumns.map((col) => (
+                  <Col
+                    key={col.key}
+                    span={col.span}
+                    style={{ ...col.colStyle }}
                   >
-                    {col.render
-                      ? col.render(gpu[col.dataIndex], gpu)
-                      : gpu[col.dataIndex]}
-                  </span>
-                </Col>
-              ))}
-            </Row>
+                    <span
+                      style={{
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: 4,
+                        flexDirection: 'column'
+                      }}
+                    >
+                      {col.render
+                        ? col.render(gpu[col.dataIndex], gpu)
+                        : gpu[col.dataIndex]}
+                    </span>
+                  </Col>
+                ))}
+              </Row>
+            </RowChildren>
           ))}
-        </RowChildren>
+        </GPURowWrapper>
       </div>
     );
   });
 
   return (
     <Container>
-      <SealTable
-        rowKey="id"
-        loadChildren={loadChildren}
-        expandedRowKeys={expandedRowKeys}
-        onExpand={handleExpandChange}
-        onExpandAll={handleToggleExpandAll}
-        renderChildren={renderChildren}
-        showSorterTooltip={false}
-        dataSource={dataList}
-        loading={false}
-        loadend={true}
-        columns={workerColumns}
-        expandable={true}
-      ></SealTable>
+      <TableContext.Provider
+        value={{
+          allChildren: allChildren
+        }}
+      >
+        <SealTable
+          rowKey="id"
+          loadChildren={loadChildren}
+          expandedRowKeys={expandedRowKeys}
+          onExpand={handleExpandChange}
+          onExpandAll={handleToggleExpandAll}
+          renderChildren={renderChildren}
+          showSorterTooltip={false}
+          childParentKey="worker_id"
+          dataSource={dataList}
+          loading={false}
+          loadend={true}
+          columns={workerColumns}
+          expandable={true}
+        ></SealTable>
+      </TableContext.Provider>
     </Container>
   );
 };

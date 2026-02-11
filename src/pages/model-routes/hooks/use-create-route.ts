@@ -11,10 +11,12 @@ const useCreateRoute = (options?: { refresh: () => void }) => {
     action: PageActionType;
     currentData?: ListItem;
     title: string;
+    realAction?: string;
   }>({
     open: false,
     action: PageAction.CREATE,
     currentData: undefined,
+    realAction: undefined,
     title: ''
   });
 
@@ -26,6 +28,21 @@ const useCreateRoute = (options?: { refresh: () => void }) => {
     setOpenModalStatus({
       open: true,
       action,
+      currentData,
+      title: title
+    });
+    saveScrollHeight();
+  };
+
+  const registerRoute = (
+    action: PageActionType,
+    title: string,
+    currentData?: ListItem
+  ) => {
+    setOpenModalStatus({
+      open: true,
+      action,
+      realAction: 'register',
       currentData,
       title: title
     });
@@ -46,6 +63,7 @@ const useCreateRoute = (options?: { refresh: () => void }) => {
     openRouteModalStatus: openModalStatus,
     setOpenRouteModalStatus: setOpenModalStatus,
     openRouteModal: openModal,
+    registerRouteModal: registerRoute,
     closeRouteModal: closeModal
   };
 };

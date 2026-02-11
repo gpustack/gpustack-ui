@@ -102,6 +102,7 @@ const TargetsForm = forwardRef((props, ref) => {
         value: []
       }
     ];
+
     form.setFieldValue('targets', newTargets);
   };
 
@@ -238,6 +239,12 @@ const TargetsForm = forwardRef((props, ref) => {
   useEffect(() => {
     fetchSourceModels();
   }, []);
+
+  useEffect(() => {
+    if (action === PageAction.CREATE) {
+      handleOnAdd();
+    }
+  }, [action]);
 
   return (
     <>

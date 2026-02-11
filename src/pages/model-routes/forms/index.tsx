@@ -4,6 +4,7 @@ import { PageActionType } from '@/config/types';
 import CollapsePanel from '@/pages/_components/collapse-panel';
 import { useWrapperContext } from '@/pages/_components/column-wrapper/use-wrapper-context';
 import ScrollSpyTabs from '@/pages/_components/scroll-spy-tabs';
+import { modelCategoriesMap } from '@/pages/llmodels/config';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
@@ -22,8 +23,17 @@ import Targets from './targets';
 
 interface ProviderFormProps {
   ref?: any;
+  open: boolean;
   action: PageActionType;
-  currentData?: ListItem; // Used when action is EDIT
+  realAction?: string;
+  currentData?: ListItem & {
+    routeTargets?: {
+      weight?: number;
+      model_id?: number;
+      provider_id?: number;
+      provider_model_name?: string;
+    }[];
+  }; // Used when action is EDIT
   onFinish: (values: FormData) => Promise<void>;
   onFallbackChange?: (changed: boolean) => void;
 }
@@ -36,14 +46,16 @@ const TABKeysMap = {
 };
 
 const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
-  const { action, currentData, onFinish, onFallbackChange } = props;
   const intl = useIntl();
+  const { action, realAction, currentData, open, onFinish, onFallbackChange } =
+    props;
   const { getScrollElementScrollableHeight } = useWrapperContext();
   const [activeKey, setActiveKey] = useState<string[]>([TABKeysMap.BASIC]);
   const [form] = Form.useForm();
   const scrollTabsRef = useRef<any>(null);
   const targetsRef = useRef<any>(null);
   const { generateTargetData, fetchTargets } = useEditTargets();
+
   const segmentOptions = [
     {
       value: TABKeysMap.BASIC,
@@ -117,7 +129,32 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
     setActiveKey(Array.isArray(keys) ? keys : [keys]);
   };
 
+  // init form values
   useEffect(() => {
+    if (!open) {
+      form.resetFields();
+      return;
+    }
+
+    const initDataList = async (
+      targets: {
+        weight?: number;
+        model_id?: number;
+        provider_id?: number;
+        provider_model_name?: string;
+      }[]
+    ) => {
+      // init targets form list
+      targetsRef.current?.initDataList(
+        targets?.map((ep) => ({
+          weight: ep.weight,
+          value: ep.model_id
+            ? ['deployments', ep.model_id]
+            : [ep.provider_id, ep.provider_model_name]
+        })) || []
+      );
+    };
+
     const initEditionForm = async () => {
       const targetList = await fetchTargets(currentData!.id);
       const { targets, fallbackTarget } = generateTargetData(targetList);
@@ -129,15 +166,7 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
         fallback_target: fallbackTarget
       });
 
-      // init targets form list
-      targetsRef.current?.initDataList(
-        targets?.map((ep) => ({
-          weight: ep.weight,
-          value: ep.model_id
-            ? ['deployments', ep.model_id]
-            : [ep.provider_id, ep.provider_model_name]
-        })) || []
-      );
+      initDataList(targets);
 
       // init fallback value
       if (fallbackTarget) {
@@ -148,12 +177,22 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
         });
       }
     };
+
+    const initRegisterForm = () => {
+      form.setFieldsValue({
+        ...currentData,
+        targets: currentData?.routeTargets || []
+      });
+      initDataList(currentData?.routeTargets || []);
+    };
+
+    // --- register from provider page ---
     if (action === PageAction.EDIT && currentData) {
       initEditionForm();
-    } else {
-      form.resetFields();
+    } else if (realAction === 'register' && currentData) {
+      initRegisterForm();
     }
-  }, [action, currentData, form]);
+  }, [action, currentData, form, open, realAction]);
 
   useImperativeHandle(ref, () => ({
     submit: () => {
@@ -177,12 +216,14 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       }}
       getScrollElementScrollableHeight={getScrollElementScrollableHeight}
     >
-      <FormContext.Provider value={{ onFallbackChange, action, currentData }}>
+      <FormContext.Provider
+        value={{ onFallbackChange, action, realAction, currentData }}
+      >
         <Form
           form={form}
           onFinish={handleOnFinish}
           initialValues={{
-            categories: [],
+            categories: [modelCategoriesMap.llm],
             meta: {}
           }}
         >

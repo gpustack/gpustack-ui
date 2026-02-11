@@ -10,6 +10,7 @@ import ModelRouteForm from '../forms';
 type AddModalProps = {
   title: string;
   action: PageActionType;
+  realAction?: string;
   open: boolean;
   currentData?: ListItem; // Used when action is EDIT
   onOk: (values: FormData) => void;
@@ -18,6 +19,7 @@ type AddModalProps = {
 const AddProvider: React.FC<AddModalProps> = ({
   title,
   action,
+  realAction,
   open,
   currentData,
   onOk,
@@ -75,8 +77,10 @@ const AddProvider: React.FC<AddModalProps> = ({
       <ModelRouteForm
         ref={form}
         action={action}
+        realAction={realAction}
         currentData={currentData}
         onFinish={onFinish}
+        open={open}
         onFallbackChange={(changed: boolean) => {
           setIsChanged(changed);
         }}

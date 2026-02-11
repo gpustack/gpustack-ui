@@ -96,8 +96,6 @@ const SealTextArea: React.FC<InputTextareaProps & SealFormItemProps> = (
     onInput?.(e);
   };
 
-  console.log('style=========', style, rest);
-
   return (
     <InputWrapper className="textarea-input-wrapper">
       <Wrapper

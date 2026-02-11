@@ -4,6 +4,7 @@ import { createContext, useContext } from 'react';
 interface FormContextProps {
   onFallbackChange?: (changed: boolean) => void;
   action?: PageActionType;
+  realAction?: string;
   currentData?: any;
 }
 

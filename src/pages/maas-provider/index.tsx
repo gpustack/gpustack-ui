@@ -1,15 +1,12 @@
-import { expandKeysAtom } from '@/atoms/clusters';
 import DeleteModal from '@/components/delete-modal';
 import IconFont from '@/components/icon-font';
 import { FilterBar } from '@/components/page-tools';
 import { PageAction } from '@/config';
 import { TABLE_SORT_DIRECTIONS } from '@/config/settings';
-import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { ConfigProvider, message, Table } from 'antd';
-import { useAtom } from 'jotai';
 import _ from 'lodash';
 import NoResult from '../_components/no-result';
 import PageBox from '../_components/page-box';
@@ -24,6 +21,7 @@ import AddMaasProvider from './components/add-provider-modal';
 import { FormData, MaasProviderItem as ListItem } from './config/types';
 import useCreateProvider from './hooks/use-create-provider';
 import useProviderColumns from './hooks/use-provider-columns';
+import useRegisterRoute from './hooks/use-register-route';
 
 const MaasProvider: React.FC = () => {
   const {
@@ -45,10 +43,8 @@ const MaasProvider: React.FC = () => {
     API: MAAS_PROVIDERS_API,
     contentForDelete: 'menu.models.providers'
   });
-  const [expandAtom] = useAtom(expandKeysAtom);
-  const { handleExpandChange, handleExpandAll, expandedRowKeys } =
-    useExpandedRowKeys(expandAtom);
   const intl = useIntl();
+  const { handleRegisterRoute } = useRegisterRoute();
   const { openProviderModalStatus, openProviderModal, closeProviderModal } =
     useCreateProvider({
       refresh: handleSearch
@@ -116,6 +112,10 @@ const MaasProvider: React.FC = () => {
           name: `${row.name}-copy`
         }
       );
+    }
+
+    if (val === 'registerRoute') {
+      handleRegisterRoute(row);
     }
   });
 

@@ -98,7 +98,7 @@ const SupportedModels = () => {
               if (!value || value.length === 0) {
                 return Promise.reject(
                   new Error(
-                    getRuleMessage('input', 'providers.form.rules.models')
+                    intl.formatMessage({ id: 'providers.form.rules.models' })
                   )
                 );
               }
@@ -106,7 +106,7 @@ const SupportedModels = () => {
               if (value.some((item: ProviderModel) => !item.name)) {
                 return Promise.reject(
                   new Error(
-                    getRuleMessage('select', 'providers.form.rules.model')
+                    intl.formatMessage({ id: 'providers.form.rules.model' })
                   )
                 );
               }

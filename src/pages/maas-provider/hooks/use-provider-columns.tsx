@@ -1,10 +1,10 @@
 // columns.ts
 import AutoTooltip from '@/components/auto-tooltip';
 import DropdownButtons from '@/components/drop-down-buttons';
-import { SealColumnProps } from '@/components/seal-table/types';
 import { tableSorter } from '@/config/settings';
 import { useIntl } from '@umijs/max';
 import { Tag } from 'antd';
+import { ColumnsType } from 'antd/lib/table';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
 import ProviderLogo from '../components/provider-logo';
@@ -16,10 +16,18 @@ import { MaasProviderItem, ProviderModel } from '../config/types';
 const useProviderColumns = (
   handleSelect: (val: string, record: MaasProviderItem) => void,
   onCellClick?: (record: MaasProviderItem, dataIndex: string) => void
-): SealColumnProps[] => {
+): ColumnsType<MaasProviderItem> => {
   const intl = useIntl();
 
   return useMemo(() => {
+    const setActionList = (record: MaasProviderItem) => {
+      return rowActionList.filter((action) => {
+        if (action.key === 'registerRoute') {
+          return record.models && record.models.length > 0;
+        }
+        return true;
+      });
+    };
     return [
       {
         title: intl.formatMessage({ id: 'common.table.name' }),
@@ -84,7 +92,7 @@ const useProviderColumns = (
         minWidth: 120,
         render: (value: string, record: MaasProviderItem) => (
           <DropdownButtons
-            items={rowActionList}
+            items={setActionList(record)}
             onSelect={(val) => handleSelect(val, record)}
           ></DropdownButtons>
         )

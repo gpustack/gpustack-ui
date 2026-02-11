@@ -22,5 +22,6 @@ export default {
   'providers.form.rules.models': 'Please select at least one model',
   'providers.form.rules.tokens': 'Please enter a valid API Key',
   'providers.form.rules.model': 'Please select a model',
-  'providers.form.model.duplicate': 'Duplicate model exists'
+  'providers.form.model.duplicate': 'Duplicate model exists',
+  'providers.table.registerRoute': 'Register Route'
 };

@@ -63,7 +63,7 @@ const ClusterAdvanceConfig: React.FC<{
         ref={editorRef}
         title={
           <span className="flex-center">
-            <span>{`${intl.formatMessage({ id: 'clusters.create.workerConfig' })} YAML`}</span>
+            <span>{`${intl.formatMessage({ id: 'clusters.create.workerConfig' })} (YAML)`}</span>
             <Button
               size="small"
               type="link"

@@ -19,8 +19,8 @@ import { BenchmarkListItem as ListItem } from '../config/types';
 const allFields = [
   'cluster_id',
   'model_name',
-  'dataset_name',
   'profile',
+  'dataset_name',
   'gpu_summary',
   'state',
   'request_rate',
@@ -47,7 +47,7 @@ const fieldSortPos: Record<string, number> = Object.fromEntries(
 
 const defaultColumns: string[] = [
   'model_name',
-  'dataset_name',
+  'profile',
   'state',
   'gpu_summary',
   'tokens_per_second_mean',
@@ -107,10 +107,18 @@ const useColumnSettings = (options: {
           title={`${title} ${options?.subTitle || ''}`}
         >
           {title}
-          {options?.subTitle && (
-            <div className="sub-title">{options.subTitle}</div>
-          )}
         </AutoTooltip>
+        {options?.subTitle && (
+          <span className="sub-title">
+            <AutoTooltip
+              ghost
+              minWidth={20}
+              title={`${title} ${options?.subTitle || ''}`}
+            >
+              {options.subTitle}
+            </AutoTooltip>
+          </span>
+        )}
       </span>
     );
   };
@@ -142,7 +150,11 @@ const useColumnSettings = (options: {
       path: 'request_latency_mean',
       unit: 'ms',
       sorter: tableSorter(1),
-      render: (value: number) => round(value, 2)
+      render: (value: number) => (
+        <AutoTooltip ghost minWidth={20}>
+          {round(value, 2)}
+        </AutoTooltip>
+      )
     },
     {
       title: renderTitle('TTFT', {
@@ -180,7 +192,11 @@ const useColumnSettings = (options: {
       dataIndex: 'inter_token_latency_mean',
       path: 'inter_token_latency_mean',
       unit: 'ms',
-      render: (value: number) => round(value, 2) || '-'
+      render: (value: number) => (
+        <AutoTooltip ghost minWidth={20}>
+          {round(value, 2) || '-'}
+        </AutoTooltip>
+      )
     },
     {
       title: 'RPS',

@@ -51,7 +51,7 @@ const AdvanceConfig: React.FC<{
         ref={editorRef}
         title={
           <span className="flex-center">
-            <span>{`${intl.formatMessage({ id: 'providers.form.customConfig' })} YAML`}</span>
+            <span>{`${intl.formatMessage({ id: 'providers.form.customConfig' })} (YAML)`}</span>
             <Button size="small" type="link" target="_blank" href={referLink}>
               {intl.formatMessage({ id: 'playground.audio.enablemic.doc' })}{' '}
               <IconFont

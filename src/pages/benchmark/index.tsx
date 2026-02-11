@@ -247,7 +247,7 @@ const Benchmark: React.FC = () => {
             sortDirections={TABLE_SORT_DIRECTIONS}
             showSorterTooltip={false}
             rowKey="id"
-            scroll={{ x: 1200 }}
+            scroll={{ x: 1260 }}
             onChange={handleTableChange}
             pagination={{
               showSizeChanger: true,

@@ -446,7 +446,10 @@ const GroundSTT: React.FC<MessageProps> = forwardRef((props, ref) => {
                   zIndex: 10
                 }}
               >
-                <CopyButton text={messageList[0]?.content}></CopyButton>
+                <CopyButton
+                  text={messageList[0]?.content}
+                  type="link"
+                ></CopyButton>
               </span>
             )}
             <div

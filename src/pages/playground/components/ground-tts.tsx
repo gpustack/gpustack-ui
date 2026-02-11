@@ -284,7 +284,7 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
         ..._.pick(model?.meta || {}, MetaFields),
         task_type: model?.meta?.task_type,
         model: value,
-        language: model?.meta?.language?.[0] || '',
+        language: model?.meta?.languages?.[0] || '',
         voice: newList[0]?.value
       };
     });

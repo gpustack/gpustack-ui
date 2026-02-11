@@ -24,6 +24,5 @@ export default {
   'routes.form.metadata.uploadIcon': 'Upload Icon',
   'routes.form.fallback.warning':
     'Changes to fallback route target take effect after one minute.',
-  'routes.form.weight.tips':
-    'Default weight is 100. A higher value means higher priority.'
+  'routes.form.weight.tips': 'Target traffic weight.'
 };

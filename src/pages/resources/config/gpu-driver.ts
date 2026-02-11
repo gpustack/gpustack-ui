@@ -302,9 +302,7 @@ const registerIluvatarWorker = (params: AddWorkerCommandParams) => {
   const commonArgs = setNormalArgs(params);
   const imageArgs = setImageArgs(params);
   return `${commonArgs}
-      --volume /lib/modules:/lib/modules:ro \\
       --volume /usr/local/corex:/usr/local/corex:ro \\
-      --volume /usr/bin/ixsmi:/usr/bin/ixsmi \\
       --runtime ${config.runtime} \\
       ${imageArgs}
       ${setWorkerIPArg(params)}`;

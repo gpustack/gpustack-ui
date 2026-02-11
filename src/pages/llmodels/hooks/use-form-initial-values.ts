@@ -312,7 +312,6 @@ export default function useFormInitialValues() {
     const formData = {
       ...data,
       categories: data?.categories?.length ? data.categories[0] : null,
-      enable_model_route: data.enable_model_route ?? false,
       scheduleType: data?.gpu_selector
         ? ScheduleValueMap.Manual
         : ScheduleValueMap.Auto

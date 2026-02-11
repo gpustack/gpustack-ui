@@ -15,6 +15,7 @@ export interface ListItem {
   ready_replicas: number;
   speech_to_text?: boolean;
   text_to_speech?: boolean;
+  enable_model_route?: boolean;
   replicas: number;
   s3Address: string;
   name: string;

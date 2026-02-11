@@ -31,6 +31,11 @@ export const rowActionList = [
     icon: icons.EditOutlined
   },
   {
+    key: 'registerRoute',
+    label: 'providers.table.registerRoute',
+    icon: icons.CaptivePortal
+  },
+  {
     key: 'copy',
     label: 'common.button.clone',
     icon: icons.CopyOutlined

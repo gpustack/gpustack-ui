@@ -1,4 +1,5 @@
 import { expandKeysAtom } from '@/atoms/clusters';
+import { registerRouteConfigAtom } from '@/atoms/routes';
 import DeleteModal from '@/components/delete-modal';
 import IconFont from '@/components/icon-font';
 import { FilterBar } from '@/components/page-tools';
@@ -73,8 +74,12 @@ const ModelRoutes: React.FC = () => {
     expandedRowKeys
   } = useExpandedRowKeys(expandAtom);
   const intl = useIntl();
-  const { openRouteModalStatus, openRouteModal, closeRouteModal } =
-    useCreateRoute();
+  const {
+    openRouteModalStatus,
+    openRouteModal,
+    registerRouteModal,
+    closeRouteModal
+  } = useCreateRoute();
   const {
     openAccessControlModal,
     closeAccessControlModal,
@@ -83,6 +88,9 @@ const ModelRoutes: React.FC = () => {
   const { sourceModels, fetchSourceModels } = useTargetSourceModels();
   const { handleOpenPlayGround } = useOpenPlayground();
   const { apiAccessInfo, openViewAPIInfo, closeViewAPIInfo } = useViewApIInfo();
+  const [registerRouteConfig, setRegisterRouteConfig] = useAtom(
+    registerRouteConfigAtom
+  );
   const [modelList, setModelsList] = useState<Global.BaseOption<number>[]>([]);
 
   useEffect(() => {
@@ -101,6 +109,14 @@ const ModelRoutes: React.FC = () => {
     };
     fetchModels();
   }, []);
+
+  const handleCloseRouteModal = () => {
+    closeRouteModal();
+    setRegisterRouteConfig({
+      initialValues: null,
+      create: false
+    });
+  };
 
   const handleClickDropdown = () => {
     openRouteModal(
@@ -131,14 +147,14 @@ const ModelRoutes: React.FC = () => {
         updateExpandedRowKeys([data.id, ...expandedRowKeys]);
       }
       fetchData();
-      closeRouteModal();
+      handleCloseRouteModal();
       message.success(intl.formatMessage({ id: 'common.message.success' }));
     } catch (error) {}
   };
 
   const handleModalCancel = () => {
     console.log('handleModalCancel');
-    closeRouteModal();
+    handleCloseRouteModal();
   };
 
   const handleEditProvider = (row: ListItem) => {
@@ -247,6 +263,16 @@ const ModelRoutes: React.FC = () => {
     fetchSourceModels();
   }, []);
 
+  useEffect(() => {
+    if (registerRouteConfig.create && dataSource.loadend) {
+      registerRouteModal(
+        PageAction.CREATE,
+        intl.formatMessage({ id: 'routes.button.add' }),
+        registerRouteConfig.initialValues
+      );
+    }
+  }, [registerRouteConfig, dataSource.loadend]);
+
   const columns = useRoutesColumns(handleSelect);
 
   return (
@@ -318,6 +344,7 @@ const ModelRoutes: React.FC = () => {
       </PageBox>
       <AddRouteModal
         open={openRouteModalStatus.open}
+        realAction={openRouteModalStatus.realAction}
         action={openRouteModalStatus.action}
         title={openRouteModalStatus.title}
         currentData={openRouteModalStatus.currentData}

@@ -1,25 +1,9 @@
 import { userAtom } from '@/atoms/user';
 import { clearAtomStorage } from '@/atoms/utils';
 import { history, RequestConfig } from '@umijs/max';
-import { message, Typography } from 'antd';
-import styled from 'styled-components';
+import { message } from 'antd';
 import { DEFAULT_ENTER_PAGE } from './config/settings';
-
-const Content = styled.div`
-  position: relative;
-  .cp-btn {
-    position: absolute;
-    top: 0px;
-    right: -4px;
-    display: none;
-  }
-  &:hover .cp-btn {
-    display: inline-block;
-  }
-  .msg {
-    display: none;
-  }
-`;
+import ErrorMessageContent from './pages/_components/error-message-content';
 
 //  these APIs do not via the GPUSTACK_API_BASE_URL
 const NoBaseURLAPIs = ['/auth', '/v1', '/version', '/proxy', '/update'];
@@ -42,19 +26,7 @@ export const requestConfig: RequestConfig = {
 
       if (!opts?.skipErrorHandler && response?.status) {
         message.error({
-          content: (
-            <Content>
-              <Typography.Text
-                className="cp-btn"
-                copyable={{
-                  text: errMsg
-                }}
-              >
-                <span className="msg">{errMsg}</span>
-              </Typography.Text>
-              {errMsg}
-            </Content>
-          )
+          content: <ErrorMessageContent errMsg={errMsg}></ErrorMessageContent>
         });
       }
       if (response?.status === 401) {

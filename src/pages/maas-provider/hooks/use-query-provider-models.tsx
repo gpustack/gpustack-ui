@@ -1,4 +1,5 @@
 import { createAxiosToken } from '@/hooks/use-chunk-request';
+import ErrorMessageContent from '@/pages/_components/error-message-content';
 import { useRequest } from 'ahooks';
 import { message } from 'antd';
 import { CancelTokenSource } from 'axios';
@@ -105,11 +106,23 @@ export const useTestProviderModel = () => {
       manual: true,
       onSuccess: (response) => {
         if (!response?.accessible) {
-          message.error(response?.error_message || 'Test model failed');
+          message.error({
+            content: (
+              <ErrorMessageContent
+                errMsg={response?.error_message || 'Test model failed'}
+              ></ErrorMessageContent>
+            )
+          });
         }
       },
       onError: (error) => {
-        message.error(error?.message || 'Test model failed');
+        message.error({
+          content: (
+            <ErrorMessageContent
+              errMsg={error?.message || 'Test model failed'}
+            ></ErrorMessageContent>
+          )
+        });
       }
     }
   );

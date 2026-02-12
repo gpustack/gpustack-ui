@@ -61,6 +61,7 @@ export default function useChatCompletion(
       _.get(chunk, 'choices.0.delta.content', '') === null
         ? ''
         : _.get(chunk, 'choices.0.delta.content', '');
+    console.log('deltaContent:', deltaContent);
 
     reasonContentRef.current = reasonContentRef.current + deltaReasoningContent;
     contentRef.current = contentRef.current + deltaContent;

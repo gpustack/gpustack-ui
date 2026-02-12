@@ -274,7 +274,8 @@ export default {
   'common.button.disable': 'Disable',
   'common.status.enabled': 'Enabled',
   'common.status.disabled': 'Disabled',
-  'common.button.duplicate': 'Duplicate'
+  'common.button.duplicate': 'Duplicate',
+  'common.option.other': 'Другое'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

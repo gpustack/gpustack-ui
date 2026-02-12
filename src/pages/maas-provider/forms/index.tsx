@@ -4,17 +4,13 @@ import { PageActionType } from '@/config/types';
 import CollapsePanel from '@/pages/_components/collapse-panel';
 import { useWrapperContext } from '@/pages/_components/column-wrapper/use-wrapper-context';
 import ScrollSpyTabs from '@/pages/_components/scroll-spy-tabs';
+import useFinishFailed from '@/pages/_components/scroll-spy-tabs/use-finish-failed';
+import useScrollActiveChange from '@/pages/_components/scroll-spy-tabs/use-scroll-active-change';
 import { json2Yaml, yaml2Json } from '@/pages/backends/config';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
-import {
-  forwardRef,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState
-} from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 import FormContext from '../config/form-context';
 import { FormData, MaasProviderItem as ListItem } from '../config/types';
 import AdvanceConfig from './advance-config';
@@ -31,8 +27,18 @@ interface ProviderFormProps {
 const TABKeysMap = {
   BASIC: 'basic',
   SUPPORTEDMODELS: 'supportedModels',
-  CUSTOMCONFIG: 'customConfig',
   ADVANCED: 'advanced'
+};
+
+const requiredFields = {
+  [TABKeysMap.BASIC]: {
+    sort: 1,
+    fields: ['name', 'config.type', 'api_key']
+  },
+  [TABKeysMap.SUPPORTEDMODELS]: {
+    sort: 2,
+    fields: ['models']
+  }
 };
 
 const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
@@ -40,9 +46,18 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
   const intl = useIntl();
   const [form] = Form.useForm();
   const { getScrollElementScrollableHeight } = useWrapperContext();
-  const [activeKey, setActiveKey] = useState<string[]>([TABKeysMap.BASIC]);
   const scrollTabsRef = useRef<any>(null);
   const advanceRef = useRef<any>(null);
+  const {
+    activeKey,
+    collapseKeys,
+    handleActiveChange,
+    handleOnCollapseChange,
+    updateActiveKey
+  } = useScrollActiveChange({
+    initalActiveKeys: [TABKeysMap.BASIC],
+    initialCollapseKeys: [TABKeysMap.SUPPORTEDMODELS]
+  });
 
   const segmentOptions = [
     {
@@ -96,13 +111,15 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
     onFinish(data);
   };
 
-  const handleActiveChange = (key: string[]) => {
-    setActiveKey(key);
+  const onTargetChange = (key: string) => {
+    scrollTabsRef.current?.handleTargetChange(key);
   };
 
-  const handleOnCollapseChange = (keys: string | string[]) => {
-    setActiveKey(Array.isArray(keys) ? keys : [keys]);
-  };
+  const { handleOnFinishFailed } = useFinishFailed({
+    requiredFields,
+    onTargetChange,
+    updateActiveKey
+  });
 
   useImperativeHandle(ref, () => ({
     submit: () => {
@@ -152,6 +169,7 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
         <Form
           form={form}
           onFinish={handleOnFinish}
+          onFinishFailed={handleOnFinishFailed}
           initialValues={{
             proxy_enabled: false,
             proxy_url: '',
@@ -160,7 +178,7 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
         >
           <Basic />
           <CollapsePanel
-            activeKey={activeKey}
+            activeKey={collapseKeys}
             accordion={false}
             onChange={handleOnCollapseChange}
             items={[

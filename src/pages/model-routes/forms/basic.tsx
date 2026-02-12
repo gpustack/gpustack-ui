@@ -38,13 +38,20 @@ const Basic = () => {
         })}
         rules={[
           {
-            required: false,
+            required: true,
             message: getRuleMessage('select', 'models.form.categories')
           }
         ]}
       >
         <CategorySelect
-          options={[{ label: '', value: '' }, ...categoryOptions]}
+          required={true}
+          options={[
+            ...categoryOptions,
+            {
+              label: intl.formatMessage({ id: 'common.option.other' }),
+              value: 'other'
+            }
+          ]}
           label={intl.formatMessage({ id: 'models.form.categories' })}
         ></CategorySelect>
       </Form.Item>

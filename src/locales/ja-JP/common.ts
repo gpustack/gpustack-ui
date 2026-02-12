@@ -275,7 +275,8 @@ export default {
   'common.button.disable': 'Disable',
   'common.status.enabled': 'Enabled',
   'common.status.disabled': 'Disabled',
-  'common.button.duplicate': 'Duplicate'
+  'common.button.duplicate': 'Duplicate',
+  'common.option.other': 'Other'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -315,5 +316,6 @@ export default {
 // 34.    'common.button.disable': 'Disable',
 // 35.    'common.status.enabled': 'Enabled',
 // 36.    'common.status.disabled': 'Disabled'
-// 33. 'common.button.duplicate': 'Duplicate'
+// 33. 'common.button.duplicate': 'Duplicate',
+// 34. 'common.option.other': 'Other'
 // ========== End of To-Do List ==========

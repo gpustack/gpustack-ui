@@ -275,5 +275,6 @@ export default {
   'common.button.disable': 'Disable',
   'common.status.enabled': 'Enabled',
   'common.status.disabled': 'Disabled',
-  'common.button.duplicate': 'Duplicate'
+  'common.button.duplicate': 'Duplicate',
+  'common.option.other': 'Other'
 };

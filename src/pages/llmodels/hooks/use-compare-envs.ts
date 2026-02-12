@@ -37,16 +37,11 @@ export default function useCompareEnvs() {
     }
   };
 
-  const handleToggleTips = () => {
-    setOpenTips(!openTips);
-  };
-
   return {
     openTips,
     diffEnvs,
     handleOpenTips,
     handleCloseTips,
-    handleCompareEnvs,
-    handleToggleTips
+    handleCompareEnvs
   };
 }

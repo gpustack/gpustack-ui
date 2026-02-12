@@ -10,6 +10,7 @@ import { backendTipsList } from '../config';
 import { backendOptionsMap } from '../config/backend-parameters';
 import { useFormContext } from '../config/form-context';
 import useCompareEnvs from '../hooks/use-compare-envs';
+import EnvsOverridePopover from './envs-override-popover';
 
 const CaretDownWrapper = styled.span`
   display: flex;
@@ -30,6 +31,7 @@ const BackendFields: React.FC = () => {
   const form = Form.useFormInstance();
   const {
     action,
+    initialValues,
     onValuesChange,
     backendOptions,
     flatBackendOptions,
@@ -37,9 +39,15 @@ const BackendFields: React.FC = () => {
   } = useFormContext();
   const backend = Form.useWatch('backend', form);
   const [showDeprecated, setShowDeprecated] = React.useState<boolean>(false);
-  const { openTips, handleToggleTips, handleCompareEnvs } = useCompareEnvs();
+  const { openTips, diffEnvs, handleCloseTips, handleCompareEnvs } =
+    useCompareEnvs();
 
   const handleBackendVersionOnChange = (value: any, option: any) => {
+    // const oldEnvs = _.get(initialValues, 'env', {});
+    // const newEnvs = option.data?.env || {};
+
+    // handleCompareEnvs(oldEnvs, newEnvs);
+
     if (Object.keys(option.data?.env || {}).length > 0) {
       form.setFieldValue('env', { ...(option?.data?.env || {}) });
     }
@@ -160,6 +168,14 @@ const BackendFields: React.FC = () => {
     );
   };
 
+  const handleOnSaveEnvsOverride = (envs: Record<string, any>) => {
+    form.setFieldsValue({
+      env: { ...envs }
+    });
+    onValuesChange?.({}, form.getFieldsValue());
+    handleCloseTips();
+  };
+
   const optionRender = (option: any) => {
     return option.data.title;
   };
@@ -198,7 +214,17 @@ const BackendFields: React.FC = () => {
         ></SealSelect>
       </Form.Item>
       {backendOptionsMap.custom !== backend && (
-        <Form.Item name="backend_version">
+        <Form.Item
+          name="backend_version"
+          help={
+            openTips && (
+              <EnvsOverridePopover
+                onSave={handleOnSaveEnvsOverride}
+                diffEnvs={diffEnvs}
+              ></EnvsOverridePopover>
+            )
+          }
+        >
           <SealSelect
             allowClear
             showSearch

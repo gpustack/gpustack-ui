@@ -32,7 +32,7 @@ export const rowActionList = [
   },
   {
     key: 'registerRoute',
-    label: 'providers.table.registerRoute',
+    label: 'routes.button.add',
     icon: icons.CaptivePortal
   },
   {

@@ -384,15 +384,6 @@ const useColumnSettings = (options: {
       )
     },
     {
-      title: renderTitle(intl.formatMessage({ id: 'benchmark.table.dataset' })),
-      dataIndex: 'dataset_name',
-      render: (text: string) => (
-        <AutoTooltip ghost minWidth={20}>
-          {text}
-        </AutoTooltip>
-      )
-    },
-    {
       title: (
         <Typography.Text ellipsis={{ tooltip: true }}>
           {intl.formatMessage({ id: 'benchmark.form.profile' })}
@@ -403,6 +394,15 @@ const useColumnSettings = (options: {
         <AutoTooltip ghost minWidth={20}>
           {profileOptions.find((option) => option.value === text)?.label ||
             text}
+        </AutoTooltip>
+      )
+    },
+    {
+      title: renderTitle(intl.formatMessage({ id: 'benchmark.table.dataset' })),
+      dataIndex: 'dataset_name',
+      render: (text: string) => (
+        <AutoTooltip ghost minWidth={20}>
+          {text}
         </AutoTooltip>
       )
     },

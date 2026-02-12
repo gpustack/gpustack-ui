@@ -33,7 +33,7 @@ const TABKeysMap = {
 const requiredFields = {
   [TABKeysMap.BASIC]: {
     sort: 1,
-    fields: ['name', 'config.type', 'api_key']
+    fields: ['name', 'config', 'api_key']
   },
   [TABKeysMap.SUPPORTEDMODELS]: {
     sort: 2,

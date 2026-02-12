@@ -52,12 +52,13 @@ export default {
   'clusters.addworker.hygonNotes': `如果 <span class="bold-text">/opt/hyhal</span> 或 <span class="bold-text">/opt/dtk</span> 不存在，请创建指向对应海光安装路径的符号链接，例如：
   <span class="desc-fill line-6">ln -s /path/to/hyhal /opt/hyhal</span>
   <span class="desc-fill line-6">ln -s /path/to/dtk /opt/dtk</span>`,
-  'clusters.addworker.corexNotes':
-    '如果 <span class="bold-text">/lib/modules</span> 目录不存在，请创建指向天数智芯 SDK 安装路径的符号链接：<span class="bold-text">ln -s /path/to/corex /lib/modules</span>。与 <span class="bold-text">/usr/local/corex</span> 目录相同。',
-  'clusters.addworker.metaxNotes':
-    '如果 <span class="bold-text">/opt/mxdriver</span> 目录不存在，请创建指向沐曦驱动和 SDK 安装路径的符号链接：<span class="bold-text">ln -s /path/to/metax /opt/mxdriver</span>。与 <span class="bold-text">/opt/maca</span> 目录相同。',
-  'clusters.addworker.cambriconNotes':
-    '如果 <span class="bold-text">/usr/local/neuware</span> 目录不存在，请创建指向寒武纪安装路径的符号链接：<span class="bold-text">ln -s /path/to/neuware /usr/local/neuware</span>。',
+  'clusters.addworker.corexNotes': `如果 <span class="bold-text">/usr/local/corex</span> 目录不存在，请创建指向天数智芯 SDK 安装路径的符号链接：
+    <span class="bold-text">ln -s /path/to/corex /usr/local/corex</span>。`,
+  'clusters.addworker.metaxNotes': `如果 <span class="bold-text">/opt/mxdriver</span> 或 <span class="bold-text">/opt/maca</span> 目录不存在，请创建指向沐曦驱动和 SDK 安装路径的符号链接：
+    <span class="desc-fill">ln -s /path/to/mxdriver /opt/mxdriver</span>
+    <span class="desc-fill">ln -s /path/to/maca /opt/maca</span>。`,
+  'clusters.addworker.cambriconNotes': `如果 <span class="bold-text">/usr/local/neuware</span> 目录不存在，请创建指向寒武纪安装路径的符号链接：
+  <span class="bold-text">ln -s /path/to/neuware /usr/local/neuware</span>。`,
   'clusters.addworker.hygonNotes-02':
     '如果未能检测到设备，请尝试移除 <span class="bold-text">--env ROCM_SMI_LIB_PATH=/opt/hyhal/lib</span>。',
   'clusters.addworker.selectCluster': '选择集群',
@@ -96,8 +97,8 @@ export default {
   'clusters.addworker.vendorNotes.title': '{vendor}设备注意事项',
   'clusters.button.genToken':
     '需要创建令牌？点击<a href="{link}" target="_blank">这里</a>。',
-  'clusters.addworker.amdNotes-01':
-    '如果 <span class="bold-text">/opt/rocm</span> 目录不存在，请创建一个指向已安装 ROCm 路径的符号链接：<span class="bold-text">ln -s /path/to/rocm /opt/rocm</span>。',
+  'clusters.addworker.amdNotes-01': `如果 <span class="bold-text">/opt/rocm</span> 目录不存在，请创建一个指向已安装 ROCm 路径的符号链接：
+    <span class="bold-text">ln -s /path/to/rocm /opt/rocm</span>。`,
   'clusters.addworker.message.success_single':
     '已将 {count} 个新节点添加到集群中。',
   'clusters.addworker.message.success_multiple':

@@ -47,6 +47,7 @@ const Content = styled.div`
     width: 100%;
     padding: 0 16px;
     margin-top: 32px;
+    margin-bottom: 4px;
     display: flex;
     gap: 16px;
     justify-content: center;

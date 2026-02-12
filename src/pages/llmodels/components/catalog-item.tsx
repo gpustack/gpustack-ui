@@ -146,7 +146,7 @@ const CatalogItem: React.FC<CatalogItemProps> = (props) => {
                 }}
               >
                 {data.activated_size
-                  ? `${data.size}${data.size_unit || 'B'}-A${data.activated_size}${data.size_unit || 'B'}`
+                  ? `${data.size}${data.size_unit || 'B'}-A${data.activated_size}B`
                   : `${data.size}${data.size_unit || 'B'}`}
               </AutoTooltip>
             </>

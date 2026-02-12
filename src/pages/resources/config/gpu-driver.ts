@@ -9,7 +9,7 @@ export const GPUDriverMap = {
   ILUVATAR: 'corex',
   CAMBRICON: 'neuware',
   METAX: 'maca',
-  THEAD: 'ppu'
+  THEAD: 'hggc'
 };
 
 export const ManufacturerMap = {

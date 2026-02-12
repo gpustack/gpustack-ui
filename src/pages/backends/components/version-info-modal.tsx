@@ -40,7 +40,6 @@ const VersionInfoModal: React.FC<VersionInfoModalProps> = ({
         ...builtInVersions,
         ...currentData.version_configs
       };
-
       const versionList: VersionListItem[] = Object.entries(versions).map(
         ([key, value]: [string, any]) => ({
           version_no: key,

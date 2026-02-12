@@ -38,18 +38,18 @@ const Basic = () => {
         })}
         rules={[
           {
-            required: true,
+            required: false,
             message: getRuleMessage('select', 'models.form.categories')
           }
         ]}
       >
         <CategorySelect
-          required={true}
+          allowNull
           options={[
             ...categoryOptions,
             {
               label: intl.formatMessage({ id: 'common.option.other' }),
-              value: 'other'
+              value: null
             }
           ]}
           label={intl.formatMessage({ id: 'models.form.categories' })}

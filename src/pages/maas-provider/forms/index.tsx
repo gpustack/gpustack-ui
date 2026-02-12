@@ -138,15 +138,17 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       const apiTokensList = _.get(currentData, 'api_tokens', []).map(
         (item: any) => item.hash || ''
       );
+      const customConfigYaml = json2Yaml(
+        _.omit(currentData.config, ['type', 'openaiCustomUrl']) || {}
+      );
       form.setFieldsValue({
         ...currentData,
         api_key: apiTokensList?.[0] || '',
         api_tokens: apiTokensList?.slice(1) || [],
         proxy_enabled: !!currentData.proxy_url,
-        custom_config: json2Yaml(
-          _.omit(currentData.config, ['type', 'openaiCustomUrl']) || {}
-        )
+        custom_config: customConfigYaml
       });
+      advanceRef.current?.setYamlValue?.(customConfigYaml);
     }
   }, [form, currentData, action]);
 

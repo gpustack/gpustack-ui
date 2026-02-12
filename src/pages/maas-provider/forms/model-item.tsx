@@ -1,7 +1,7 @@
 import AutoComplete from '@/components/seal-form/auto-complete';
 import SealSelect from '@/components/seal-form/seal-select';
 import { PageAction } from '@/config';
-import { categoryOptions } from '@/pages/llmodels/config';
+import { categoryOptions, modelCategoriesMap } from '@/pages/llmodels/config';
 import {
   CheckCircleFilled,
   LoadingOutlined,
@@ -197,9 +197,16 @@ const ModelItem: React.FC<ModelItemProps> = ({
         </span>
       </Tooltip>
       <SealSelect
-        value={item.category || undefined}
+        allowNull
+        value={item.category}
         onChange={handleOnCategoryChange}
-        options={categoryOptions}
+        options={[
+          ...categoryOptions,
+          {
+            label: intl.formatMessage({ id: 'common.option.other' }),
+            value: null
+          }
+        ]}
         placeholder={intl.formatMessage({
           id: 'models.form.categories'
         })}
@@ -207,7 +214,12 @@ const ModelItem: React.FC<ModelItemProps> = ({
       <Tooltip
         title={intl.formatMessage({ id: 'providers.form.model.test.tips' })}
       >
-        <Button type="link" size="small" onClick={handleTestModel}>
+        <Button
+          type="link"
+          size="small"
+          onClick={handleTestModel}
+          disabled={item.category !== modelCategoriesMap.llm || !item.name}
+        >
           {testLoading ? (
             <LoadingOutlined />
           ) : (

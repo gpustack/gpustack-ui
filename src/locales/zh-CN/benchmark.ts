@@ -40,6 +40,7 @@ export default {
   'benchmark.table.filter.bygpu': '按 GPU 过滤',
   'benchmark.table.filter.bymodel': '按模型过滤',
   'benchmark.table.filter.bydataset': '按数据集过滤',
+  'benchmark.table.filter.byProfile': '按模式过滤',
   'benchmark.table.avg': '均值',
   'benchmark.table.columnSettings': '列设置',
   'benchmark.detail.summary.results': '测试结果',

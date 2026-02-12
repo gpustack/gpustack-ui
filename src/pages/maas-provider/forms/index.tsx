@@ -143,6 +143,10 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       );
       form.setFieldsValue({
         ...currentData,
+        models: (currentData.models || []).map((item) => ({
+          ...item,
+          category: item.category || null
+        })),
         api_key: apiTokensList?.[0] || '',
         api_tokens: apiTokensList?.slice(1) || [],
         proxy_enabled: !!currentData.proxy_url,

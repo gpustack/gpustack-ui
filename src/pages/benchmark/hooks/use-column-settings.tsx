@@ -223,6 +223,7 @@ const useColumnSettings = (options: {
         <AutoTooltip
           ghost
           minWidth={20}
+          maxWidth={'max-content'}
           showTitle={text > 0}
           title={<InfoColumn fieldList={fieldList} data={record}></InfoColumn>}
         >

@@ -14,8 +14,6 @@ const useFinishFailed = (options: FinishFailedOptions) => {
   const handleOnFinishFailed = (errorInfo: any) => {
     const { errorFields } = errorInfo;
 
-    console.log('Finish failed:', errorInfo);
-
     if (errorFields && errorFields.length > 0) {
       const collapseKeys: { sort: number; key: string }[] = [];
       const names = errorFields.map((item: any) => item.name[0]);

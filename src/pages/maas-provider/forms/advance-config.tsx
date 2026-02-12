@@ -27,6 +27,7 @@ const AdvanceConfig: React.FC<{
     setYamlValue: (values: any) => {
       console.log('setYamlValue:', values);
       editorRef.current?.setValue(values || '');
+      setFileContent(values || '');
     }
   }));
 

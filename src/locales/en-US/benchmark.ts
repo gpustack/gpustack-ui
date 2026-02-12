@@ -40,6 +40,7 @@ export default {
   'benchmark.table.filter.bygpu': 'Filter by GPU',
   'benchmark.table.filter.bymodel': 'Filter by Model',
   'benchmark.table.filter.bydataset': 'Filter by Dataset',
+  'benchmark.table.filter.byProfile': 'Filter by Profile',
   'benchmark.table.avg': 'Avg',
   'benchmark.table.columnSettings': 'Column Settings',
   'benchmark.detail.summary.results': 'Test Results',

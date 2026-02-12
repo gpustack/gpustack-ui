@@ -166,7 +166,7 @@ const EnvsOverridePopover: React.FC<EnvsOverridePopoverProps> = (props) => {
           icon={<WarningOutlined />}
           type="warning"
           showIcon
-          title={'有环境变量冲突，点击查看详情'}
+          title={'检测到环境变量值不一致，请确认使用的值'}
         ></Alert>
       </div>
     </Popover>

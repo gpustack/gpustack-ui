@@ -1,7 +1,7 @@
 import { maasProviderType } from '.';
 export interface ProviderModel {
   name: string;
-  category: string;
+  category?: string;
   accessible: boolean | null;
 }
 export interface FormData {

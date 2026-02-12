@@ -5,12 +5,13 @@ import { useIntl } from '@umijs/max';
 import { Button, Input, Space } from 'antd';
 import _ from 'lodash';
 import React from 'react';
+import { profileOptions } from '../../benchmark/config';
 
 export interface RightActionsProps {
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSearch: () => void;
   handleQueryChange: (value: any, option?: any) => void;
-  modelList?: Global.BaseOption<number>[];
+  modelList?: Global.BaseOption<number, { categories: string[] }>[];
   datasetList?: Global.BaseOption<string | number>[];
 }
 
@@ -34,7 +35,7 @@ const RightActions: React.FC<RightActionsProps> = ({
 
   const modelOptions = modelList
     ?.filter((item) => {
-      return item.categories.includes(modelCategoriesMap.llm);
+      return item.categories?.includes(modelCategoriesMap.llm);
     })
     .map((item) => ({
       label: item.label,
@@ -84,17 +85,16 @@ const RightActions: React.FC<RightActionsProps> = ({
       <BaseSelect
         allowClear
         placeholder={intl.formatMessage({
-          id: 'benchmark.table.filter.bydataset'
+          id: 'benchmark.table.filter.byProfile'
         })}
         style={{ width: 200 }}
-        options={datasetList?.map((item) => ({
-          ...item,
-          label: item.label,
-          value: item.label
+        options={profileOptions.map((item) => ({
+          label: intl.formatMessage({ id: item.label }),
+          value: item.value
         }))}
         onChange={(value, option) =>
           handleQueryChange({
-            dataset_name: value,
+            profile: value,
             page: 1
           })
         }

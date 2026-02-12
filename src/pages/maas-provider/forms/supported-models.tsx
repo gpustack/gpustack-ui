@@ -69,7 +69,7 @@ const SupportedModels = () => {
 
   const onAdd = () => {
     const newList = [...modelList];
-    newList.push({ name: '', category: '', accessible: null });
+    newList.push({ name: '', category: undefined, accessible: null });
     updateModelList(newList);
   };
 

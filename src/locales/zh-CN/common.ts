@@ -267,5 +267,6 @@ export default {
   'common.button.disable': '禁用',
   'common.status.enabled': '已启用',
   'common.status.disabled': '未启用',
-  'common.button.duplicate': '复制'
+  'common.button.duplicate': '复制',
+  'common.option.other': '其它'
 };

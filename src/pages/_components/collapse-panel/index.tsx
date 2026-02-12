@@ -33,9 +33,10 @@ const CollapsePanel: React.FC<{
   items: CollapseProps['items'];
   activeKey: string | string[];
   accordion?: boolean;
+  defaultActiveKey?: string | string[];
   onChange?: (key: string | string[]) => void;
   styles?: Record<string, React.CSSProperties>;
-}> = ({ items, activeKey, accordion, onChange, styles }) => {
+}> = ({ items, activeKey, accordion, defaultActiveKey, onChange, styles }) => {
   return (
     <CollapseInner
       expandIconPlacement="start"
@@ -43,6 +44,7 @@ const CollapsePanel: React.FC<{
       ghost
       accordion={accordion}
       activeKey={activeKey}
+      defaultActiveKey={defaultActiveKey}
       onChange={onChange}
       destroyOnHidden={false}
       styles={{

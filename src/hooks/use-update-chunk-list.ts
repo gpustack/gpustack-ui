@@ -71,9 +71,9 @@ export function useUpdateChunkedList(options: {
           (sItem: any) => sItem.id === item.id
         );
         const updateItem = { ...item };
-        if (updateIndex === -1) {
+        if (updateIndex === -1 && !triggerAt?.current) {
           acc.push(updateItem);
-        } else {
+        } else if (!triggerAt?.current) {
           cacheDataListRef.current[updateIndex] = updateItem;
         }
 
@@ -116,8 +116,6 @@ export function useUpdateChunkedList(options: {
         deletedIds: [...deletedIdsRef.current]
       });
 
-      console.log('deletedList:', deletedList);
-
       options.onDelete?.(deletedList);
     }
 
@@ -135,9 +133,9 @@ export function useUpdateChunkedList(options: {
             updateItem,
             ...cacheDataListRef.current.slice(0, limit - 1)
           ];
-          if (options.onCreate && triggerAt?.current) {
+          if (options.onUpdate && triggerAt?.current) {
             if (Date.parse(item.created_at) >= triggerAt.current) {
-              options.onCreate?.([updateItem]);
+              options.onUpdate?.([updateItem]);
             }
           }
         }

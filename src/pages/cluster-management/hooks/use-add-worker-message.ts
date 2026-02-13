@@ -36,6 +36,12 @@ export default function useAddWorkerMessage() {
         newItemsRef.current = newItemsRef.current.concat(newItems);
         showAddWorkerMessage();
       }
+    },
+    onUpdate: (newItems: any) => {
+      if (triggerAtRef.current) {
+        newItemsRef.current = newItemsRef.current.concat(newItems);
+        showAddWorkerMessage();
+      }
     }
   });
 

@@ -112,7 +112,6 @@ export default function useTableFetch<T>(
       const params = {
         ..._.pickBy(query || queryParams, (val: any) => !!val)
       };
-      chunkRequestRef.current?.current?.cancel?.();
       axiosTokenRef.current?.cancel?.('CANCEL_PREVIOUS_REQUEST');
       axiosTokenRef.current = createAxiosToken();
       const res = await fetchAPI(params, {
@@ -187,8 +186,8 @@ export default function useTableFetch<T>(
     }
   };
 
-  // @ts-ignore
-  const debounceFetchData = _.debounce(() => fetchData(), 300);
+  // @ts-ignore for watch mode
+  const debounceFetchData = _.debounce(() => fetchData({}, true), 1000);
 
   const { updateChunkedList, cacheDataListRef } = useUpdateChunkedList({
     events: events,
@@ -269,6 +268,8 @@ export default function useTableFetch<T>(
       paginate?: boolean;
     }
   ) => {
+    // cancel previous chunk request so that we can create a new one with updated params
+    chunkRequestRef.current?.current?.cancel?.();
     const newQueryParams = { ...queryParams, ...params };
     setQueryParams(newQueryParams);
     const res = await fetchData({ query: newQueryParams });

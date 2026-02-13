@@ -3,10 +3,10 @@ import { FilterBar } from '@/components/page-tools';
 import { TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import useTableFetch from '@/hooks/use-table-fetch';
 import PageBox from '@/pages/_components/page-box';
-import { queryClusterList } from '@/pages/cluster-management/apis';
 import { DockerStepsFromWorker } from '@/pages/cluster-management/components/add-worker/config';
 import { ClusterListItem } from '@/pages/cluster-management/config/types';
 import useAddWorker from '@/pages/cluster-management/hooks/use-add-worker';
+import { useQueryClusterList } from '@/pages/cluster-management/services/use-query-cluster-list';
 import useNoResourceResult from '@/pages/llmodels/hooks/use-no-resource-result';
 import useGranfanaLink from '@/pages/resources/hooks/use-grafana-link';
 import { useIntl } from '@umijs/max';
@@ -56,6 +56,7 @@ const Workers: React.FC<{
     handleQueryChange,
     handleNameChange
   } = useTableFetch<ListItem>({
+    events: ['UPDATE', 'DELETE', 'CREATE'],
     fetchAPI: queryWorkersList,
     deleteAPI: deleteWorker,
     contentForDelete: 'resources.worker',
@@ -71,6 +72,9 @@ const Workers: React.FC<{
   });
   const { MaintenanceModal, handleStopMaintenance, setOpenStatus } =
     useWorkerMaintenance({ fetchData: handleSearch });
+  const { fetchClusterList } = useQueryClusterList({
+    useStateData: false
+  });
 
   const intl = useIntl();
   const [updateLabelsData, setUpdateLabelsData] = useState<{
@@ -107,15 +111,15 @@ const Workers: React.FC<{
       const params = {
         page: -1
       };
-      const res = await queryClusterList(params);
-      const clusterMap = res?.items?.reduce(
+      const items = await fetchClusterList(params);
+      const clusterMap = items?.reduce(
         (acc: Record<number, string>, item: any) => {
           acc[item.id] = item.name;
           return acc;
         },
         {}
       );
-      const list = res?.items?.map((item: any) => ({
+      const list = items?.map((item: any) => ({
         label: item.name,
         value: item.id,
         id: item.id,

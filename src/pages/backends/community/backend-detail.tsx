@@ -8,6 +8,10 @@ import styled from 'styled-components';
 import { generateIcon } from '../components/backend-card';
 
 const Title = styled.div`
+  position: sticky;
+  top: 0;
+  padding-bottom: 16px;
+  background-color: var(--ant-color-bg-elevated);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -54,7 +58,6 @@ const UL = styled.ul`
   flex-direction: column;
   gap: 12px;
   .label {
-    font-weight: 500;
     font-size: 14px;
   }
 `;

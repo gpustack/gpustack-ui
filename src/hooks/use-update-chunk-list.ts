@@ -76,6 +76,8 @@ export function useUpdateChunkedList(options: {
         } else {
           cacheDataListRef.current[updateIndex] = updateItem;
         }
+
+        // TODO： only push items created after triggerAt
         if (
           triggerAt?.current &&
           Date.parse(item.created_at) >= triggerAt.current

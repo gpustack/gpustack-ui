@@ -13,7 +13,7 @@ export default {
   'providers.form.proxy.timeout': 'Proxy Timeout (seconds)',
   'providers.form.customConfig': 'Custom Configuration',
   'providers.form.model.test': 'Test',
-  'providers.form.model.test.tips': 'Test Connection',
+  'providers.form.model.test.tips': 'Test Connection (LLM only)',
   'providers.form.target.placeholder': 'provider/models',
   'providers.form.fallback.token': 'Fallback API Keys',
   'providers.form.custombeckendUrl': 'Custom Base URL',

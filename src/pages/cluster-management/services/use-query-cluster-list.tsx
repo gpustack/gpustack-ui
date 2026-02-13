@@ -10,7 +10,8 @@ import { ClusterListItem } from '../config/types';
  *
  * @returns loading, fetch, dataList
  */
-export const useQueryClusterList = () => {
+export const useQueryClusterList = (options?: { useStateData?: boolean }) => {
+  const { useStateData = true } = options || {};
   const axiosTokenRef = useRef<CancelTokenSource | null>(null);
   const [dataList, setDataList] = useState<
     Array<Partial<ClusterListItem> & { label: string; value: number }>
@@ -27,13 +28,15 @@ export const useQueryClusterList = () => {
       const res = await queryClusterList(params, {
         token: axiosTokenRef.current.token
       });
-      setDataList(
-        res.items?.map((item: ClusterListItem) => ({
-          ...item,
-          label: item.name,
-          value: item.id
-        })) || []
-      );
+      if (useStateData) {
+        setDataList(
+          res.items?.map((item: ClusterListItem) => ({
+            ...item,
+            label: item.name,
+            value: item.id
+          })) || []
+        );
+      }
       return res.items || [];
     },
     {

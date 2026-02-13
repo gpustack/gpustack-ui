@@ -1,4 +1,3 @@
-import { WatchEventType } from '@/config';
 import { TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import useSetChunkRequest, {
   createAxiosToken
@@ -65,12 +64,6 @@ export default function useTableFetch<T>(
   const axiosTokenRef = useRef<any>(null);
   const timerIDRef = useRef<any>(null);
 
-  // ======= to resolve worker upate issue =======
-  const shouldUpdateRef = useRef(false);
-  const loadendRef = useRef(false);
-  const currentWatchParamsRef = useRef<any>(null);
-  // ============================================
-
   // for skeleton loading
   const [extraStatus, setExtraStatus] = useState<Record<string, any>>({
     firstLoad: true
@@ -97,23 +90,10 @@ export default function useTableFetch<T>(
     ...defaultQueryParams
   });
 
+  // for recognize the current watch trigger time, so that we can ignore the previous events
+  const triggerAtRef = useRef<number>(0);
+
   const { setChunkRequest } = useSetChunkRequest();
-  const { updateChunkedList, cacheDataListRef } = useUpdateChunkedList({
-    events: events,
-    dataList: dataSource.dataList,
-    setDataList(list, opts?: any) {
-      setDataSource((pre) => {
-        return {
-          total: pre.total,
-          totalPage: pre.totalPage,
-          loading: false,
-          loadend: true,
-          dataList: list,
-          deletedIds: opts?.deletedIds || []
-        };
-      });
-    }
-  });
 
   const debounceSetExtraStatus = _.debounce(setExtraStatus, 3000);
 
@@ -132,16 +112,12 @@ export default function useTableFetch<T>(
       const params = {
         ..._.pickBy(query || queryParams, (val: any) => !!val)
       };
-      currentWatchParamsRef.current = {
-        query: { ...params }
-      };
+      chunkRequestRef.current?.current?.cancel?.();
       axiosTokenRef.current?.cancel?.('CANCEL_PREVIOUS_REQUEST');
       axiosTokenRef.current = createAxiosToken();
       const res = await fetchAPI(params, {
         token: axiosTokenRef.current?.token
       });
-      shouldUpdateRef.current = false;
-      loadendRef.current = true;
       if (!dataSource.loadend) {
         // add a delay to avoid flash
         await new Promise((resolve) => {
@@ -156,9 +132,6 @@ export default function useTableFetch<T>(
         const newParams = {
           ...params,
           page: res.pagination.totalPage
-        };
-        currentWatchParamsRef.current = {
-          query: { ...newParams }
         };
         const newRes = await fetchAPI(newParams, {
           token: axiosTokenRef.current?.token
@@ -177,7 +150,7 @@ export default function useTableFetch<T>(
         if (isInfiniteScroll) {
           setQueryParams(newParams);
         }
-        return;
+        return true;
       }
 
       setDataSource({
@@ -195,6 +168,7 @@ export default function useTableFetch<T>(
           ...query
         });
       }
+      return true;
     } catch (error: any) {
       if (error.message !== 'CANCEL_PREVIOUS_REQUEST') {
         setDataSource({
@@ -205,9 +179,7 @@ export default function useTableFetch<T>(
           totalPage: dataSource.totalPage
         });
       }
-
-      loadendRef.current = true;
-      shouldUpdateRef.current = false;
+      return false;
     } finally {
       debounceSetExtraStatus({
         firstLoad: false
@@ -216,32 +188,46 @@ export default function useTableFetch<T>(
   };
 
   // @ts-ignore
-  const debounceFetchData = _.debounce(
-    (params: any) => fetchData(params, true),
-    300
-  );
+  const debounceFetchData = _.debounce(() => fetchData(), 300);
+
+  const { updateChunkedList, cacheDataListRef } = useUpdateChunkedList({
+    events: events,
+    dataList: dataSource.dataList,
+    triggerAt: updateManually ? triggerAtRef : undefined,
+    setDataList(list, opts?: any) {
+      setDataSource((pre) => {
+        return {
+          total: pre.total,
+          totalPage: pre.totalPage,
+          loading: false,
+          loadend: true,
+          dataList: list,
+          deletedIds: opts?.deletedIds || []
+        };
+      });
+    },
+    onCreate: (newItems: any) => {
+      // ======= to resolve worker update issue =======
+      if (updateManually && triggerAtRef.current && newItems.length > 0) {
+        debounceFetchData();
+      }
+    },
+    onDelete: (newItems: any) => {
+      // ======= to resolve worker update issue =======
+      if (updateManually && triggerAtRef.current && newItems.length > 0) {
+        debounceFetchData();
+      }
+    }
+  });
 
   const updateHandler = (list: any) => {
     _.each(list, (data: any) => {
       updateChunkedList(data);
     });
-    shouldUpdateRef.current = list.some(
-      (data: any) =>
-        data.type === WatchEventType.DELETE ||
-        data.type === WatchEventType.CREATE
-    );
-
-    // ======= to resolve worker upate issue =======
-    // when worker list change (create/delete), fetch data again to update the list
-    if (shouldUpdateRef.current && updateManually && loadendRef.current) {
-      debounceFetchData(currentWatchParamsRef.current || undefined);
-    }
-    // ============================================
   };
 
   const createTableListChunkRequest = async (params?: any) => {
     if (!API || !watch) return;
-    shouldUpdateRef.current = false;
     chunkRequestRef.current?.current?.cancel?.();
     try {
       const currentParams = params || queryParams;
@@ -252,6 +238,7 @@ export default function useTableFetch<T>(
         url: `${API}?${qs.stringify(_.pickBy(query, (val: any) => !!val))}`,
         handler: updateHandler
       });
+      triggerAtRef.current = Date.now();
     } catch (error) {
       // ignore
     }
@@ -282,11 +269,10 @@ export default function useTableFetch<T>(
       paginate?: boolean;
     }
   ) => {
-    loadendRef.current = false;
     const newQueryParams = { ...queryParams, ...params };
     setQueryParams(newQueryParams);
-    await fetchData({ query: newQueryParams });
-    if (watch && !options?.paginate) {
+    const res = await fetchData({ query: newQueryParams });
+    if (watch && !options?.paginate && res) {
       createTableListChunkRequest(newQueryParams);
     }
   };
@@ -418,6 +404,7 @@ export default function useTableFetch<T>(
       chunkRequestRef.current?.current?.cancel?.();
       axiosTokenRef.current?.cancel?.();
       cacheDataListRef.current = [];
+      triggerAtRef.current = 0;
     };
   }, []);
 

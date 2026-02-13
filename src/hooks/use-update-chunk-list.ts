@@ -98,8 +98,16 @@ export function useUpdateChunkedList(options: {
 
     // DELETE
     if (data?.type === WatchEventType.DELETE && events.includes('DELETE')) {
+      const deletedList: any[] = [];
+
       cacheDataListRef.current = cacheDataListRef.current?.filter(
         (item: any) => {
+          // collect deleted items
+          if (triggerAt?.current) {
+            if (ids?.includes(item.id)) {
+              deletedList.push(item);
+            }
+          }
           return !ids?.includes(item.id);
         }
       );
@@ -107,6 +115,10 @@ export function useUpdateChunkedList(options: {
       options.setDataList?.([...cacheDataListRef.current], {
         deletedIds: [...deletedIdsRef.current]
       });
+
+      console.log('deletedList:', deletedList);
+
+      options.onDelete?.(deletedList);
     }
 
     // UPDATE

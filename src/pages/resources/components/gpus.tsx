@@ -4,7 +4,7 @@ import { TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import useTableFetch from '@/hooks/use-table-fetch';
 import NoResult from '@/pages/_components/no-result';
 import PageBox from '@/pages/_components/page-box';
-import { queryClusterList } from '@/pages/cluster-management/apis';
+import { useQueryClusterList } from '@/pages/cluster-management/services/use-query-cluster-list';
 import { useIntl, useSearchParams } from '@umijs/max';
 import { ConfigProvider, Table } from 'antd';
 import _ from 'lodash';
@@ -41,11 +41,14 @@ const GPUList: React.FC<{ clusterId?: number; widths?: { input: number } }> = ({
   const [clusterList, setClusterList] = useState<Global.BaseOption<number>[]>(
     []
   );
+  const { fetchClusterList } = useQueryClusterList({
+    useStateData: false
+  });
 
   const getClusterList = async () => {
     try {
-      const res = await queryClusterList({ page: -1 });
-      const list = res.items?.map((item) => ({
+      const items = await fetchClusterList({ page: -1 });
+      const list = items?.map((item) => ({
         label: item.name,
         value: item.id
       }));

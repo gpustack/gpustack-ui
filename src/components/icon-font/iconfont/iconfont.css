@@ -1,8 +1,8 @@
 @font-face {
   font-family: iconfont; /* Project id 4613488 */
-  src: url('iconfont.woff2?t=1766993792323') format('woff2'),
-       url('iconfont.woff?t=1766993792323') format('woff'),
-       url('iconfont.ttf?t=1766993792323') format('truetype');
+  src: url('iconfont.woff2?t=1770985961668') format('woff2'),
+       url('iconfont.woff?t=1770985961668') format('woff'),
+       url('iconfont.ttf?t=1770985961668') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,150 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-grafana::before {
+  content: "\e61e";
+}
+
+.icon-chart::before {
+  content: "\e6da";
+}
+
+.icon-monitor-02::before {
+  content: "\e6d9";
+}
+
+.icon-monitor::before {
+  content: "\e6d8";
+}
+
+.icon-metrics::before {
+  content: "\e6d6";
+}
+
+.icon-export::before {
+  content: "\e6d7";
+}
+
+.icon-license::before {
+  content: "\e6d5";
+}
+
+.icon-community::before {
+  content: "\e6d3";
+}
+
+.icon-person::before {
+  content: "\e6d4";
+}
+
+.icon-public::before {
+  content: "\e6d2";
+}
+
+.icon-charger::before {
+  content: "\e6d0";
+}
+
+.icon-disabled::before {
+  content: "\e6d1";
+}
+
+.icon-source::before {
+  content: "\e6cf";
+}
+
+.icon-Serviceprovider::before {
+  content: "\e630";
+}
+
+.icon-database::before {
+  content: "\e6ce";
+}
+
+.icon-filters::before {
+  content: "\e6cc";
+}
+
+.icon-speed-filled::before {
+  content: "\e6cb";
+}
+
+.icon-shield::before {
+  content: "\e6c9";
+}
+
+.icon-shield-filled::before {
+  content: "\e6ca";
+}
+
+.icon-openai::before {
+  content: "\e61d";
+}
+
+.icon-anthropic::before {
+  content: "\e74d";
+}
+
+.icon-doubao::before {
+  content: "\e618";
+}
+
+.icon-qwen::before {
+  content: "\e8b2";
+}
+
+.icon-deepseek::before {
+  content: "\e61c";
+}
+
+.icon-extension-outline::before {
+  content: "\e6c7";
+}
+
+.icon-extension-filled::before {
+  content: "\e6c8";
+}
+
+.icon-thead::before {
+  content: "\e617";
+}
+
+.icon-video-filled02::before {
+  content: "\e6c5";
+}
+
+.icon-video-outline::before {
+  content: "\e6c6";
+}
+
+.icon-video::before {
+  content: "\e6c3";
+}
+
+.icon-video-filled::before {
+  content: "\e6c4";
+}
+
+.icon-refresh::before {
+  content: "\e6c2";
+}
+
+.icon-settings-02::before {
+  content: "\e6bf";
+}
+
+.icon-arrow_forward::before {
+  content: "\e6c0";
+}
+
+.icon-logout::before {
+  content: "\e6c1";
+}
+
+.icon-amd-logo::before {
+  content: "\e6be";
 }
 
 .icon-cloud::before {

@@ -89,6 +89,7 @@ export default function useTableFetch<T>(
     sort_by: '',
     ...defaultQueryParams
   });
+  const queryParamsRef = useRef(queryParams);
 
   // for recognize the current watch trigger time, so that we can ignore the previous events
   const triggerAtRef = useRef<number>(0);
@@ -96,6 +97,10 @@ export default function useTableFetch<T>(
   const { setChunkRequest } = useSetChunkRequest();
 
   const debounceSetExtraStatus = _.debounce(setExtraStatus, 3000);
+
+  useEffect(() => {
+    queryParamsRef.current = queryParams;
+  }, [queryParams]);
 
   const fetchData = async (
     externalParams?: { query: Record<string, any>; loadmore?: boolean },
@@ -187,9 +192,21 @@ export default function useTableFetch<T>(
   };
 
   // @ts-ignore for watch mode
-  const debounceFetchData = _.debounce(() => fetchData({}, true), 1000);
+  const debounceFetchData = _.debounce(
+    () =>
+      fetchData(
+        {
+          query: {
+            ...queryParamsRef.current
+          }
+        },
+        true
+      ),
+    1000
+  );
 
   const { updateChunkedList, cacheDataListRef } = useUpdateChunkedList({
+    limit: queryParams.perPage,
     events: events,
     dataList: dataSource.dataList,
     triggerAt: updateManually ? triggerAtRef : undefined,

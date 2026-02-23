@@ -103,6 +103,7 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       api_tokens: formatAPIKeys(values),
       config: {
         type: values.config.type,
+        openaiCustomUrl: values.config.openaiCustomUrl || undefined,
         ...yaml2Json(advanceRef.current?.getYamlValue() || '')
       },
       models: _.uniqBy(values.models, 'name'),

@@ -201,6 +201,7 @@ const VersionsForm: React.FC<AddModalProps> = ({
   };
 
   const isBuiltin = backendSource === BackendSourceValueMap.BUILTIN;
+  const isCommunity = backendSource === BackendSourceValueMap.COMMUNITY;
 
   return (
     <>
@@ -305,7 +306,7 @@ const VersionsForm: React.FC<AddModalProps> = ({
                           ></Form.Item>
                         )}
                       </span>
-                      {(fields.length > 1 || isBuiltin) && (
+                      {(fields.length > 1 || isBuiltin || isCommunity) && (
                         <Button
                           size="small"
                           shape="circle"

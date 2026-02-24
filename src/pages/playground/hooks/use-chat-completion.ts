@@ -53,9 +53,9 @@ export default function useChatCompletion(
     }
 
     const deltaReasoningContent =
-      _.get(chunk, 'choices.0.delta.reasoning_content', '') === null
-        ? ''
-        : _.get(chunk, 'choices.0.delta.reasoning_content', '');
+      _.get(chunk, 'choices.0.delta.reasoning_content', '') ||
+      _.get(chunk, 'choices.0.delta.reasoning', '') ||
+      '';
 
     const deltaContent =
       _.get(chunk, 'choices.0.delta.content', '') === null

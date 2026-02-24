@@ -92,7 +92,7 @@ export function useQueryData<Detail, Params = any>(option: {
   key: string;
   delay?: number;
   fetchDetail: (params: Params, options?: any) => Promise<Detail>;
-  getData?: (response: Detail) => any;
+  getData?: (response: Detail, params?: any) => any;
   errorMsg?: string;
 }): {
   loading: boolean;
@@ -123,7 +123,7 @@ export function useQueryData<Detail, Params = any>(option: {
         });
       }
 
-      setDetailData(getData ? getData(res) : res);
+      setDetailData(getData ? getData(res, params) : res);
 
       return res;
     },
@@ -132,7 +132,7 @@ export function useQueryData<Detail, Params = any>(option: {
       onSuccess: () => {},
       onError: (error) => {
         message.error(
-          error?.message || errorMsg || `Failed to fetch ${key} list`
+          error?.message || errorMsg || `Failed to fetch ${key} data`
         );
         setDetailData({} as Detail);
       }
@@ -146,8 +146,7 @@ export function useQueryData<Detail, Params = any>(option: {
 
   useEffect(() => {
     return () => {
-      cancel();
-      axiosTokenRef.current?.cancel();
+      cancelRequest();
     };
   }, []);
 

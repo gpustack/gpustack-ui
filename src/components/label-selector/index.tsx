@@ -80,13 +80,12 @@ const LabelSelector: React.FC<LabelSelectorProps> = ({
     if (!clipboardText || clipboardText.indexOf('=') === -1) return;
     e.preventDefault();
 
-    const lines = clipboardText
-      .split(/\r?\n/)
-      .map((line) => line.trim())
-      .filter((line) => line && line.includes('='));
+    const lines = _.split(clipboardText, /\r?\n/)
+      .map((line: string) => line.trim())
+      .filter((line: string) => line && line.includes('='));
 
-    const parsedData = lines.map((line) => {
-      const [key, value] = line.split('=').map((part) => part.trim());
+    const parsedData = lines.map((line: string) => {
+      const [key, value] = line.split(/=(.+)/).map((s) => s.trim());
       return { key, value };
     });
 

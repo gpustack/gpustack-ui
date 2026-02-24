@@ -318,7 +318,7 @@ const ModelRoutes: React.FC = () => {
                 loading={dataSource.loading}
                 loadend={dataSource.loadend}
                 dataSource={dataSource.dataList}
-                image={<IconFont type="icon-extension-outline" />}
+                image={<IconFont type="icon-captive_portal" />}
                 filters={_.omit(queryParams, ['sort_by'])}
                 noFoundText={intl.formatMessage({
                   id: 'noresult.routes.nofound'

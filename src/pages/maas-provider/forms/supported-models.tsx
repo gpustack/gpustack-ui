@@ -1,6 +1,5 @@
 import MetadataList from '@/components/metadata-list';
 import { PageAction } from '@/config';
-import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import { useRef } from 'react';
@@ -15,8 +14,10 @@ const SupportedModels = () => {
     useQueryProviderModels();
   const form = Form.useFormInstance<FormData>();
   const modelList = Form.useWatch('models', form) || [];
-  const prevAPIKeyRef = useRef<string>('');
-  const { getRuleMessage } = useAppUtils();
+  const prevConfigRef = useRef<{
+    type: string;
+    api_key: string;
+  }>({ type: '', api_key: '' });
   const { id, action, currentData } = useFormContext();
 
   const generateCurrentAPIKey = (currentAPIKey: string) => {
@@ -36,15 +37,31 @@ const SupportedModels = () => {
     return 0;
   };
 
+  const checkConfigChange = (current: { type: string; api_key: string }) => {
+    return (
+      (current.type !== prevConfigRef.current.type ||
+        current.api_key !== prevConfigRef.current.api_key) &&
+      current.api_key &&
+      current.type
+    );
+  };
+
   const handleOpenChange = async (open: boolean) => {
     try {
       await form.validateFields(['api_key', ['config', 'type']]);
 
       const currentAPIKey = form.getFieldValue('api_key') || '';
+      const configType = form.getFieldValue(['config', 'type']);
 
       // Avoid repeated requests with the same API key
-      if (open && prevAPIKeyRef.current !== currentAPIKey && currentAPIKey) {
-        prevAPIKeyRef.current = currentAPIKey;
+      if (
+        open &&
+        checkConfigChange({ type: configType, api_key: currentAPIKey })
+      ) {
+        prevConfigRef.current = {
+          type: configType,
+          api_key: currentAPIKey
+        };
         fetchProviderModels({
           id: generateID(),
           data: {
@@ -57,7 +74,11 @@ const SupportedModels = () => {
         });
       }
     } catch (error) {
-      prevAPIKeyRef.current = '';
+      prevConfigRef.current = {
+        type: '',
+        api_key: ''
+      };
+      // If validation fails, reset the provider model list to avoid confusion
     }
   };
 

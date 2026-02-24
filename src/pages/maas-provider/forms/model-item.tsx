@@ -75,6 +75,7 @@ const ModelItem: React.FC<ModelItemProps> = ({
   };
 
   const handleTestModel = async () => {
+    const proxyConfigEnabled = form.getFieldValue('proxy_enabled');
     const res = await runTestModel({
       id: generateID(),
       data: {
@@ -82,7 +83,9 @@ const ModelItem: React.FC<ModelItemProps> = ({
         api_token: generateCurrentAPIKey(
           form.getFieldValue('api_key')
         ) as string,
-        proxy_url: form.getFieldValue('proxy_url') || undefined,
+        proxy_url: proxyConfigEnabled
+          ? form.getFieldValue('proxy_url') || undefined
+          : null,
         config: {
           type: form.getFieldValue(['config', 'type']) || ''
         }

@@ -12,6 +12,7 @@ export interface FormData {
   api_key: string;
   proxy_url: string;
   proxy_timeout: number;
+  proxy_enabled?: boolean;
   config: {
     type: maasProviderType;
     openaiCustomUrl?: string;

@@ -18,7 +18,7 @@ const SupportedModels = () => {
     type: string;
     api_key: string;
   }>({ type: '', api_key: '' });
-  const { id, action, currentData } = useFormContext();
+  const { id, action, currentData, getCustomConfig } = useFormContext();
 
   const generateCurrentAPIKey = (currentAPIKey: string) => {
     if (
@@ -50,6 +50,7 @@ const SupportedModels = () => {
     try {
       await form.validateFields(['api_key', ['config', 'type']]);
 
+      const proxyConfigEnabled = form.getFieldValue('proxy_enabled');
       const currentAPIKey = form.getFieldValue('api_key') || '';
       const configType = form.getFieldValue(['config', 'type']);
 
@@ -66,9 +67,15 @@ const SupportedModels = () => {
           id: generateID(),
           data: {
             api_token: generateCurrentAPIKey(currentAPIKey) as string,
-            proxy_url: form.getFieldValue('proxy_url') || undefined,
+            proxy_url: proxyConfigEnabled
+              ? form.getFieldValue('proxy_url') || null
+              : null,
             config: {
-              type: form.getFieldValue(['config', 'type']) || ''
+              type: form.getFieldValue(['config', 'type']) || '',
+              openaiCustomUrl:
+                form.getFieldValue(['config', 'openaiCustomUrl']) ||
+                getCustomConfig?.()?.openaiCustomUrl ||
+                null
             }
           }
         });

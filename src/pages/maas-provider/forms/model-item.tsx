@@ -84,7 +84,7 @@ const ModelItem: React.FC<ModelItemProps> = ({
           form.getFieldValue('api_key')
         ) as string,
         proxy_url: proxyConfigEnabled
-          ? form.getFieldValue('proxy_url') || undefined
+          ? form.getFieldValue('proxy_url') || null
           : null,
         config: {
           type: form.getFieldValue(['config', 'type']) || ''

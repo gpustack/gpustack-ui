@@ -26,7 +26,11 @@ export const useQueryProviderModels = () => {
   } = useRequest(
     async (params: {
       id: number;
-      data: { api_token: string; config: { type: string }; proxy_url: string };
+      data: {
+        api_token: string;
+        config: { type: string; [key: string]: any };
+        proxy_url: string;
+      };
     }) => {
       axiosTokenRef.current?.cancel();
       axiosTokenRef.current = createAxiosToken();

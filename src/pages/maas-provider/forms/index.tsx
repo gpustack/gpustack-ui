@@ -97,6 +97,11 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
     );
   };
 
+  const getCustomConfig = () => {
+    const customConfig = yaml2Json(advanceRef.current?.getYamlValue() || '');
+    return customConfig;
+  };
+
   const handleOnFinish = (values: FormData) => {
     const data = {
       ..._.omit(values, ['api_key']),
@@ -171,7 +176,12 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       getScrollElementScrollableHeight={getScrollElementScrollableHeight}
     >
       <FormContext.Provider
-        value={{ action, id: currentData?.id, currentData }}
+        value={{
+          action,
+          id: currentData?.id,
+          currentData,
+          getCustomConfig: getCustomConfig
+        }}
       >
         <Form
           form={form}

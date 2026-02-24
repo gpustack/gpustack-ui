@@ -7,6 +7,7 @@ interface FormContextProps {
   action: PageActionType;
   currentData?: any;
   id?: number;
+  getCustomConfig?: () => Record<string, any>;
 }
 
 const FormContext = createContext<FormContextProps>({} as FormContextProps);

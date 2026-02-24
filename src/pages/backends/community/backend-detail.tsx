@@ -1,7 +1,8 @@
 import AutoTooltip from '@/components/auto-tooltip';
+import FullMarkdown from '@/components/markdown-viewer/full-markdown';
 import { BulbOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Tag, Typography } from 'antd';
+import { Button, Tag } from 'antd';
 import _ from 'lodash';
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
@@ -146,9 +147,7 @@ const BackendDetail: React.FC<{
             </span>
           </Subtitle>
           <Content>
-            <Typography.Paragraph style={{ whiteSpace: 'pre-line' }}>
-              {currentData?.description}
-            </Typography.Paragraph>
+            <FullMarkdown content={currentData?.description}></FullMarkdown>
           </Content>
         </Section>
       )}

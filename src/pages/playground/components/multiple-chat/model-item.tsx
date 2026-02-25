@@ -248,7 +248,7 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef((props, ref) => {
       <div className="header">
         <span className="title">
           <BaseSelect
-            style={{ width: '100%' }}
+            style={{ width: '100%', minWidth: 'fit-content' }}
             variant="borderless"
             options={modelFullList}
             onChange={onModelChange}

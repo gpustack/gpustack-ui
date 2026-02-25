@@ -2,6 +2,7 @@ import MetadataList from '@/components/metadata-list';
 import { PageAction } from '@/config';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
+import _ from 'lodash';
 import { useRef } from 'react';
 import { useFormContext } from '../config/form-context';
 import { FormData, ProviderModel } from '../config/types';
@@ -17,7 +18,8 @@ const SupportedModels = () => {
   const prevConfigRef = useRef<{
     type: string;
     api_key: string;
-  }>({ type: '', api_key: '' });
+    openaiCustomUrl: string;
+  }>({ type: '', api_key: '', openaiCustomUrl: '' });
   const { id, action, currentData, getCustomConfig } = useFormContext();
 
   const generateCurrentAPIKey = (currentAPIKey: string) => {
@@ -37,10 +39,13 @@ const SupportedModels = () => {
     return 0;
   };
 
-  const checkConfigChange = (current: { type: string; api_key: string }) => {
+  const checkConfigChange = (current: {
+    type: string;
+    api_key: string;
+    openaiCustomUrl: string;
+  }) => {
     return (
-      (current.type !== prevConfigRef.current.type ||
-        current.api_key !== prevConfigRef.current.api_key) &&
+      !_.isEqual(current, prevConfigRef.current) &&
       current.api_key &&
       current.type
     );
@@ -53,16 +58,21 @@ const SupportedModels = () => {
       const proxyConfigEnabled = form.getFieldValue('proxy_enabled');
       const currentAPIKey = form.getFieldValue('api_key') || '';
       const configType = form.getFieldValue(['config', 'type']);
+      const openaiCustomUrl = form.getFieldValue(['config', 'openaiCustomUrl']);
+      const customConfig = getCustomConfig?.();
+
+      const currentConfig = {
+        type: configType,
+        api_key: currentAPIKey,
+        openaiCustomUrl: customConfig?.openaiCustomUrl || openaiCustomUrl || ''
+      };
 
       // Avoid repeated requests with the same API key
-      if (
-        open &&
-        checkConfigChange({ type: configType, api_key: currentAPIKey })
-      ) {
+      if (open && checkConfigChange(currentConfig)) {
         prevConfigRef.current = {
-          type: configType,
-          api_key: currentAPIKey
+          ...currentConfig
         };
+
         fetchProviderModels({
           id: generateID(),
           data: {
@@ -73,9 +83,8 @@ const SupportedModels = () => {
             config: {
               type: form.getFieldValue(['config', 'type']) || '',
               openaiCustomUrl:
-                form.getFieldValue(['config', 'openaiCustomUrl']) ||
-                getCustomConfig?.()?.openaiCustomUrl ||
-                null
+                openaiCustomUrl || customConfig?.openaiCustomUrl || null,
+              ...customConfig
             }
           }
         });
@@ -83,7 +92,8 @@ const SupportedModels = () => {
     } catch (error) {
       prevConfigRef.current = {
         type: '',
-        api_key: ''
+        api_key: '',
+        openaiCustomUrl: ''
       };
       // If validation fails, reset the provider model list to avoid confusion
     }

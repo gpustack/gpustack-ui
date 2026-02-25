@@ -87,7 +87,7 @@ export const useTestProviderModel = () => {
       id: number;
       data: {
         api_token: string;
-        config: { type: string };
+        config: { type: string; [key: string]: any };
         model_name: string;
         proxy_url: string;
       };

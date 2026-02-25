@@ -54,7 +54,7 @@ const ModelItem: React.FC<ModelItemProps> = ({
   const intl = useIntl();
   const form = Form.useFormInstance<FormData>();
   const { runTestModel, loading: testLoading } = useTestProviderModel();
-  const { id, action, currentData } = useFormContext();
+  const { id, action, currentData, getCustomConfig } = useFormContext();
   const [openTip, setOpenTip] = React.useState(false);
 
   const generateCurrentAPIKey = (currentAPIKey: string) => {
@@ -76,6 +76,7 @@ const ModelItem: React.FC<ModelItemProps> = ({
 
   const handleTestModel = async () => {
     const proxyConfigEnabled = form.getFieldValue('proxy_enabled');
+    const customConfig = getCustomConfig?.();
     const res = await runTestModel({
       id: generateID(),
       data: {
@@ -87,7 +88,12 @@ const ModelItem: React.FC<ModelItemProps> = ({
           ? form.getFieldValue('proxy_url') || null
           : null,
         config: {
-          type: form.getFieldValue(['config', 'type']) || ''
+          type: form.getFieldValue(['config', 'type']) || '',
+          openaiCustomUrl:
+            form.getFieldValue(['config', 'openaiCustomUrl']) ||
+            customConfig?.openaiCustomUrl ||
+            null,
+          ...customConfig
         }
       }
     });

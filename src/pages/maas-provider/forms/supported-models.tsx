@@ -82,9 +82,9 @@ const SupportedModels = () => {
               : null,
             config: {
               type: form.getFieldValue(['config', 'type']) || '',
+              ...customConfig,
               openaiCustomUrl:
-                openaiCustomUrl || customConfig?.openaiCustomUrl || null,
-              ...customConfig
+                customConfig?.openaiCustomUrl || openaiCustomUrl || null
             }
           }
         });

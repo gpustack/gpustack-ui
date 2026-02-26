@@ -15,4 +15,5 @@ export interface FormData {
   description: string;
   allowed_model_names: string[];
   expires_in: number | null;
+  custom_key?: string; // Optional custom API key
 }

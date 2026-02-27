@@ -15,10 +15,10 @@ interface SingleImageProps {
   maxWidth?: number;
   dataUrl: string;
   label?: React.ReactNode;
-  uid: number;
+  uid: number | string;
   preview?: boolean;
   autoSize?: boolean;
-  onDelete: (uid: number) => void;
+  onDelete: (uid: number | string) => void;
   onClick?: (item: any) => void;
   autoBgColor?: boolean;
   editable?: boolean;
@@ -94,7 +94,7 @@ const SingleImage: React.FC<SingleImageProps> = (props) => {
 
   const handleOnLoad = React.useCallback(async () => {}, []);
 
-  const handleOnDelete = (uid: number, e: any) => {
+  const handleOnDelete = (uid: number | string, e: any) => {
     e.stopPropagation();
     onDelete(uid);
   };

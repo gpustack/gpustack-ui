@@ -122,6 +122,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
       name: string;
       score?: number;
       showExtra?: boolean;
+      dataUrl?: string;
       percent?: number;
       rank?: number;
     }[]
@@ -129,12 +130,14 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     {
       text: '',
       uid: -1,
-      name: ''
+      name: '',
+      dataUrl: ''
     },
     {
       text: '',
       uid: -2,
-      name: ''
+      name: '',
+      dataUrl: ''
     }
   ]);
   const [queryValue, setQueryValue] = useState<string>('');
@@ -388,6 +391,44 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     selectionTextRef.current = data;
   };
 
+  const handleOnUploadImage = (
+    list: { uid: number | string; dataUrl: string }[],
+    index: number
+  ) => {
+    // replace the text with dataUrl in the textList
+    setTextList((preList) => {
+      const newList = [...preList];
+      const current = newList[index];
+      if (current) {
+        newList[index] = {
+          ...current,
+          text: '',
+          uid: list[0].uid,
+          dataUrl: list[0].dataUrl
+        };
+      }
+      return newList;
+    });
+  };
+
+  const handleOnDeleteImage = (item: {
+    text: string;
+    uid: number | string;
+    name: string;
+    dataUrl?: string;
+  }) => {
+    // replace the dataUrl with empty text in the textList
+    setTextList((preList) => {
+      const newList = [...preList];
+      const current = newList.find((i) => i.uid === item.uid);
+      if (current) {
+        current.text = '';
+        current.dataUrl = '';
+      }
+      return newList;
+    });
+  };
+
   const handleOnPaste = (e: any, index: number) => {
     if (!multiplePasteEnable.current) return;
     const text = e.clipboardData.getData('text');
@@ -559,7 +600,9 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
                 onChange={handleTextListChange}
                 extra={renderPercent}
                 onSelect={handleonSelect}
+                onUploadImage={handleOnUploadImage}
                 onPaste={handleOnPaste}
+                onDeleteImage={handleOnDeleteImage}
               ></InputList>
               {isEmptyText && (
                 <div className="m-t-16">

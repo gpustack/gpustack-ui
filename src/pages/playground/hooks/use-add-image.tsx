@@ -30,15 +30,27 @@ const ImgInputWrapper = styled.div`
 
 const useAddImage = (options: {
   size?: 'small' | 'middle' | 'large';
+  inputProps?: Record<string, any>;
   handleUpdateImgList: (
     list: { uid: number | string; dataUrl: string }[]
   ) => void;
   updateUidCount: () => number | string;
 }) => {
-  const { handleUpdateImgList, updateUidCount, size = 'middle' } = options;
+  const {
+    handleUpdateImgList,
+    updateUidCount,
+    size = 'middle',
+    inputProps
+  } = options;
   const intl = useIntl();
   const [isFromUrl, setIsFromUrl] = useState(false);
   const [openImgTips, setOpenImgTips] = useState(false);
+  const [dropDownOpen, setDropDownOpen] = useState(false);
+
+  const handleOnOpenChange = (open: boolean) => {
+    setDropDownOpen(open);
+    console.log('handleOnOpenChange', open);
+  };
   const inputImgRef = useRef<any>(null);
 
   const handleAddImgFromUrl = () => {
@@ -93,6 +105,7 @@ const useAddImage = (options: {
     >
       <ImgInputWrapper>
         <Input
+          {...inputProps}
           ref={inputImgRef}
           status={openImgTips ? 'error' : ''}
           placeholder={intl.formatMessage({
@@ -117,6 +130,7 @@ const useAddImage = (options: {
 
   const UploadImageButton = (
     <DropDownActions
+      onOpenChange={handleOnOpenChange}
       placement={'topLeft'}
       menu={{
         items: [
@@ -143,13 +157,21 @@ const useAddImage = (options: {
         ]
       }}
     >
-      <Button type="text" size={size} icon={<PictureOutlined />}></Button>
+      <Button
+        type="text"
+        size={size}
+        icon={<PictureOutlined />}
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
+      ></Button>
     </DropDownActions>
   );
 
   return {
     isFromUrl,
     ImageURLInput,
+    dropDownOpen,
     UploadImageButton
   };
 };

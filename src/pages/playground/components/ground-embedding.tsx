@@ -80,17 +80,19 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
   const selectionTextRef = useRef<any>(null);
 
   const [textList, setTextList] = useState<
-    { text: string; uid: number | string; name: string }[]
+    { text: string; dataUrl?: string; uid: number | string; name: string }[]
   >([
     {
       text: '',
       uid: -1,
-      name: ''
+      name: '',
+      dataUrl: ''
     },
     {
       text: '',
       uid: -2,
-      name: ''
+      name: '',
+      dataUrl: ''
     }
   ]);
 
@@ -169,12 +171,14 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
     try {
       await formRef.current?.form.validateFields();
       if (!parameters.model) return;
-      const validTextList = textList.filter((item) => item.text);
+      const validTextList = textList.filter(
+        (item) => item.text || item.dataUrl
+      );
       const validFileList = fileList.filter((item) => item.text);
 
       const inputList = [
-        ...validTextList.map((item) => item.text),
-        ...validFileList.map((item) => item.text)
+        ...validTextList.map((item) => item.text || item.dataUrl || ''),
+        ...validFileList.map((item) => item.text || '')
       ];
 
       if (inputList.length < 2) {
@@ -278,6 +282,44 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
     list: { text: string; uid: number | string; name: string }[]
   ) => {
     setTextList(list);
+  };
+
+  const handleOnUploadImage = (
+    list: { uid: number | string; dataUrl: string }[],
+    index: number
+  ) => {
+    // replace the text with dataUrl in the textList
+    setTextList((preList) => {
+      const newList = [...preList];
+      const current = newList[index];
+      if (current) {
+        newList[index] = {
+          ...current,
+          text: '',
+          uid: list[0].uid,
+          dataUrl: list[0].dataUrl
+        };
+      }
+      return newList;
+    });
+  };
+
+  const handleOnDeleteImage = (item: {
+    text: string;
+    uid: number | string;
+    name: string;
+    dataUrl?: string;
+  }) => {
+    // replace the dataUrl with empty text in the textList
+    setTextList((preList) => {
+      const newList = [...preList];
+      const current = newList.find((i) => i.uid === item.uid);
+      if (current) {
+        current.text = '';
+        current.dataUrl = '';
+      }
+      return newList;
+    });
   };
 
   const handleonSelect = useCallback(
@@ -540,6 +582,8 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
                 onChange={handleTextListChange}
                 onSelect={handleonSelect}
                 onPaste={handleOnPaste}
+                onUploadImage={handleOnUploadImage}
+                onDeleteImage={handleOnDeleteImage}
               ></InputList>
               {fileList.length > 0 && (
                 <div style={{ marginTop: 8 }}>
@@ -576,7 +620,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
           }}
         >
           <h3 className="m-l-10 flex-between flex-center font-size-14 line-24 m-b-16">
-            <div className="flex gap-20">
+            <div className="flex gap-16">
               <span className="flex-center">
                 {intl.formatMessage({ id: 'playground.embedding.output' })}
                 <Tooltip
@@ -602,6 +646,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
               </span>
               <AlertInfo
                 type="danger"
+                style={{ marginRight: 16 }}
                 message={tokenResult?.errorMessage}
               ></AlertInfo>
             </div>

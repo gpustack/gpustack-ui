@@ -330,7 +330,6 @@ const langConfigMap = {
     title: '語言'
   }
 };
-
 export type LangConfigType = keyof typeof langConfigMap;
 
 export default langConfigMap;

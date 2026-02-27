@@ -1,53 +1,12 @@
 .input-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 
   .input-item {
     position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0;
-    padding-right: 6px;
-    overflow: hidden;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    border-radius: var(--border-radius-base);
-    border: 1px solid var(--ant-color-border);
-
-    .btn-group {
-      display: none;
-    }
-
-    &:hover {
-      //background-color: var(--ant-color-fill-tertiary);
-      &::before {
-        content: '';
-        display: flex;
-        position: absolute;
-        left: 0;
-        bottom: 0;
-        right: 0;
-        top: 0;
-        background-color: var(--ant-color-fill-tertiary);
-        z-index: 5;
-        pointer-events: none;
-      }
-
-      .btn-group {
-        display: flex;
-        gap: 8px;
-      }
-
-      .hover-hidden {
-        opacity: 0;
-      }
-    }
 
     &:focus-within {
-      //background-color: transparent;
-
       &::before {
         background-color: transparent;
       }

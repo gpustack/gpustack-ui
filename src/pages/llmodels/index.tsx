@@ -172,6 +172,7 @@ const Models: React.FC<{ clusterId?: number }> = ({ clusterId }) => {
 
   const handlePageChange = useMemoizedFn(
     (page: number, pageSize: number | undefined) => {
+      console.log('page change', page, pageSize);
       handleQueryChange({
         page: page,
         perPage: pageSize || 10

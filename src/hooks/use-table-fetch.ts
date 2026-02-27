@@ -8,6 +8,8 @@ import { handleBatchRequest } from '@/utils';
 import _ from 'lodash';
 import qs from 'query-string';
 import { useEffect, useRef, useState } from 'react';
+import { PaginationKey } from '../config/settings';
+import { usePaginationStatus } from './use-pagination-status';
 import { useTableMultiSort } from './use-table-sort';
 
 type EventsType = 'CREATE' | 'UPDATE' | 'DELETE' | 'INSERT';
@@ -33,6 +35,7 @@ type WatchConfig =
  */
 export default function useTableFetch<T>(
   options: {
+    key?: (typeof PaginationKey)[keyof typeof PaginationKey];
     fetchAPI: (params: any, options?: any) => Promise<Global.PageResponse<T>>;
     deleteAPI?: (id: number, params?: any) => Promise<any>;
     contentForDelete?: string;
@@ -63,6 +66,9 @@ export default function useTableFetch<T>(
   const { sortOrder, handleMultiSortChange } = useTableMultiSort();
   const axiosTokenRef = useRef<any>(null);
   const timerIDRef = useRef<any>(null);
+  const hasInitRef = useRef(false);
+  const mountedRef = useRef(true);
+  const { pagination, setPagination } = usePaginationStatus(options.key || '');
 
   // for skeleton loading
   const [extraStatus, setExtraStatus] = useState<Record<string, any>>({
@@ -87,6 +93,7 @@ export default function useTableFetch<T>(
     perPage: 10,
     search: '',
     sort_by: '',
+    ...pagination,
     ...defaultQueryParams
   });
   const queryParamsRef = useRef(queryParams);
@@ -297,6 +304,9 @@ export default function useTableFetch<T>(
 
   const handlePageChange = (page: number, pageSize: number) => {
     handleQueryChange({ page, perPage: pageSize || 10 }, { paginate: true });
+    setPagination({
+      perPage: pageSize || 10
+    });
   };
 
   const handleTableChange = (
@@ -402,22 +412,26 @@ export default function useTableFetch<T>(
   }, [dataSource.loadend, queryParams]);
 
   useEffect(() => {
-    let mounted = true;
-
     const init = async () => {
-      await fetchData();
+      if (hasInitRef.current) return;
+      hasInitRef.current = true;
+      await fetchData({
+        query: { ...queryParams, ...pagination }
+      });
 
       timerIDRef.current = setTimeout(() => {
-        if (mounted) {
+        if (mountedRef.current) {
           createTableListChunkRequest();
         }
       }, 200);
     };
 
     init();
+  }, [pagination?.perPage]);
 
+  useEffect(() => {
     return () => {
-      mounted = false;
+      mountedRef.current = false;
       clearTimeout(timerIDRef.current);
       chunkRequestRef.current?.current?.cancel?.();
       axiosTokenRef.current?.cancel?.();

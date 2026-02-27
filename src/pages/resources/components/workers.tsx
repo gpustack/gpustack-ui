@@ -1,6 +1,6 @@
 import DeleteModal from '@/components/delete-modal';
 import { FilterBar } from '@/components/page-tools';
-import { TABLE_SORT_DIRECTIONS } from '@/config/settings';
+import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import useTableFetch from '@/hooks/use-table-fetch';
 import PageBox from '@/pages/_components/page-box';
 import { DockerStepsFromWorker } from '@/pages/cluster-management/components/add-worker/config';
@@ -56,6 +56,7 @@ const Workers: React.FC<{
     handleQueryChange,
     handleNameChange
   } = useTableFetch<ListItem>({
+    key: PaginationKey.Workers,
     events: ['UPDATE', 'DELETE', 'CREATE'],
     fetchAPI: queryWorkersList,
     deleteAPI: deleteWorker,

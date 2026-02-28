@@ -89,6 +89,7 @@ const PasswordForm: React.FC = () => {
           ]}
         >
           <SealInput.Password
+            autoComplete="new-password"
             prefix={<LockOutlined />}
             label={intl.formatMessage({ id: 'users.form.newpassword' })}
           />
@@ -118,6 +119,7 @@ const PasswordForm: React.FC = () => {
           ]}
         >
           <SealInput.Password
+            autoComplete="new-password"
             prefix={<LockOutlined />}
             label={intl.formatMessage({ id: 'users.password.confirm' })}
           />

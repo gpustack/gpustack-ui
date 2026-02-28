@@ -7,7 +7,6 @@ import { generateRandomNumber } from '@/utils';
 import { FileImageOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Tooltip } from 'antd';
-import classNames from 'classnames';
 import _ from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
 import React, {
@@ -26,6 +25,7 @@ import '../style/system-message-wrap.less';
 import { generateImageCode, generateOpenaiImageCode } from '../view-code/image';
 import DynamicParams from './dynamic-params';
 import MessageInput from './message-input';
+import RightContainer from './right-container';
 import ViewCommonCode from './view-common-code';
 
 interface MessageProps {
@@ -265,23 +265,16 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
           />
         </div>
       </div>
-      <div
-        className={classNames('params-wrapper', {
-          collapsed: collapse
-        })}
-        ref={paramsRef}
-      >
-        <div className="box">
-          <DynamicParams
-            ref={form}
-            formFields={formFields}
-            onValuesChange={handleOnValuesChange}
-            paramsConfig={paramsConfig}
-            initialValues={initialValues}
-            modelList={modelList}
-          />
-        </div>
-      </div>
+      <RightContainer collapsed={collapse}>
+        <DynamicParams
+          ref={form}
+          formFields={formFields}
+          onValuesChange={handleOnValuesChange}
+          paramsConfig={paramsConfig}
+          initialValues={initialValues}
+          modelList={modelList}
+        />
+      </RightContainer>
       <ViewCommonCode
         open={show}
         viewCodeContent={viewCodeContent}

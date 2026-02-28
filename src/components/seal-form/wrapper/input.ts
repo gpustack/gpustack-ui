@@ -171,7 +171,7 @@ const InputWrapper = styled.div`
   }
   .seal-textarea-wrapper {
     height: auto;
-    padding-right: 10px;
+    padding-right: 4px;
     textarea {
       overflow-y: auto !important;
     }

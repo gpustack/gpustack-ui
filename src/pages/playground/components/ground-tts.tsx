@@ -10,7 +10,6 @@ import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import CollapsePanel from '@/pages/_components/collapse-panel';
 import { getLocale, useIntl, useSearchParams } from '@umijs/max';
 import { Form, Spin } from 'antd';
-import classNames from 'classnames';
 import _ from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
 import React, {
@@ -35,6 +34,7 @@ import '../style/system-message-wrap.less';
 import { TextToSpeechCode } from '../view-code/audio';
 import DynamicParams from './dynamic-params';
 import MessageInput from './message-input';
+import RightContainer from './right-container';
 import ViewCommonCode from './view-common-code';
 
 const MetaFields = [
@@ -487,28 +487,21 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
           />
         </div>
       </div>
-      <div
-        className={classNames('params-wrapper', {
-          collapsed: collapse
-        })}
-        ref={paramsRef}
-      >
-        <div className="box">
-          <DynamicParams
-            ref={formRef}
-            meta={modelMeta}
-            onValuesChange={handleOnValuesChange}
-            initialValues={parameters}
-            modelList={modelList}
-            extra={[
-              <>
-                {renderExtra()}
-                {renderAdvancedFields()}
-              </>
-            ]}
-          />
-        </div>
-      </div>
+      <RightContainer collapsed={collapse}>
+        <DynamicParams
+          ref={formRef}
+          meta={modelMeta}
+          onValuesChange={handleOnValuesChange}
+          initialValues={parameters}
+          modelList={modelList}
+          extra={[
+            <>
+              {renderExtra()}
+              {renderAdvancedFields()}
+            </>
+          ]}
+        />
+      </RightContainer>
       <ViewCommonCode
         open={show}
         viewCodeContent={viewCodeContent}

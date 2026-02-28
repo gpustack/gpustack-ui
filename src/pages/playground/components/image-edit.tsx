@@ -9,7 +9,6 @@ import UploadImg from '@/pages/playground/components/upload-img';
 import { base64ToFile, generateRandomNumber } from '@/utils';
 import { useIntl } from '@umijs/max';
 import { Divider } from 'antd';
-import classNames from 'classnames';
 import _ from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
 import React, {
@@ -30,6 +29,7 @@ import '../style/system-message-wrap.less';
 import { generateImageCode, generateOpenaiImageCode } from '../view-code/image';
 import DynamicParams from './dynamic-params';
 import MessageInput from './message-input';
+import RightContainer from './right-container';
 import ViewCommonCode from './view-common-code';
 
 interface MessageProps {
@@ -500,59 +500,46 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
           </div>
         </div>
       </div>
-      <div
-        className={classNames('params-wrapper', {
-          collapsed: collapse
-        })}
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden'
-        }}
-      >
-        <div
-          style={{ flex: 1, overflow: 'auto' }}
-          ref={paramsRef}
-          data-overlayscrollbars-initialize
-        >
-          <div className="box">
-            <DynamicParams
-              ref={form}
-              formFields={formFields}
-              onValuesChange={handleOnValuesChange}
-              paramsConfig={paramsConfig}
-              initialValues={initialValues}
-              modelList={modelList}
+      <RightContainer
+        collapsed={collapse}
+        footer={
+          <div style={{ width: 389 }}>
+            <MessageInput
+              actions={[]}
+              defaultSize={{
+                minRows: 5,
+                maxRows: 5
+              }}
+              ref={inputRef}
+              placeholer={intl.formatMessage({
+                id: 'playground.input.prompt.holder'
+              })}
+              title={
+                <span className="font-600">
+                  {intl.formatMessage({ id: 'playground.image.prompt' })}
+                </span>
+              }
+              loading={loading}
+              disabled={!parameters.model}
+              isEmpty={!imageList.length}
+              handleSubmit={handleSendMessage}
+              handleAbortFetch={handleStopConversation}
+              onInputChange={handleInputChange}
+              shouldResetMessage={false}
+              clearAll={handleClear}
             />
           </div>
-        </div>
-        <div style={{ width: 389 }}>
-          <MessageInput
-            actions={[]}
-            defaultSize={{
-              minRows: 5,
-              maxRows: 5
-            }}
-            ref={inputRef}
-            placeholer={intl.formatMessage({
-              id: 'playground.input.prompt.holder'
-            })}
-            title={
-              <span className="font-600">
-                {intl.formatMessage({ id: 'playground.image.prompt' })}
-              </span>
-            }
-            loading={loading}
-            disabled={!parameters.model}
-            isEmpty={!imageList.length}
-            handleSubmit={handleSendMessage}
-            handleAbortFetch={handleStopConversation}
-            onInputChange={handleInputChange}
-            shouldResetMessage={false}
-            clearAll={handleClear}
-          />
-        </div>
-      </div>
+        }
+      >
+        <DynamicParams
+          ref={form}
+          formFields={formFields}
+          onValuesChange={handleOnValuesChange}
+          paramsConfig={paramsConfig}
+          initialValues={initialValues}
+          modelList={modelList}
+        />
+      </RightContainer>
       <ViewCommonCode
         open={show}
         viewCodeContent={viewCodeContent}

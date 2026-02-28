@@ -14,7 +14,6 @@ import {
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Checkbox, Form, Segmented, Spin, Tabs, Tooltip } from 'antd';
-import classNames from 'classnames';
 import _ from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
 import React, {
@@ -38,6 +37,7 @@ import { generateEmbeddingCode } from '../view-code/embedding';
 import DynamicParams from './dynamic-params';
 import FileList from './file-list';
 import InputList from './input-list';
+import RightContainer from './right-container';
 import TokenUsage from './token-usage';
 import ViewCommonCode from './view-common-code';
 
@@ -710,23 +710,16 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
           </div>
         </div>
       </div>
-      <div
-        className={classNames('params-wrapper', {
-          collapsed: collapse
-        })}
-        ref={paramsRef}
-      >
-        <div className="box">
-          <DynamicParams
-            ref={formRef}
-            onValuesChange={onValuesChange}
-            paramsConfig={paramsConfig}
-            initialValues={initialValues}
-            modelList={modelList}
-            extra={renderExtra}
-          />
-        </div>
-      </div>
+      <RightContainer collapsed={collapse}>
+        <DynamicParams
+          ref={formRef}
+          onValuesChange={onValuesChange}
+          paramsConfig={paramsConfig}
+          initialValues={initialValues}
+          modelList={modelList}
+          extra={renderExtra}
+        />
+      </RightContainer>
       <ViewCommonCode
         open={show}
         viewCodeContent={viewCodeContent}

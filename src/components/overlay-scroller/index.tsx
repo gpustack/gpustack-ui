@@ -2,15 +2,9 @@ import useOverlayScroller, {
   OverlayScrollerOptions
 } from '@/hooks/use-overlay-scroller';
 import { Tooltip, TooltipProps } from 'antd';
+import classNames from 'classnames';
 import React from 'react';
-import styled from 'styled-components';
-
-const Wrapper = styled.div<{ $maxHeight?: number }>`
-  max-height: ${({ $maxHeight }) =>
-    typeof $maxHeight === 'number' ? `${$maxHeight}px` : $maxHeight};
-  overflow-y: auto;
-  width: 100%;
-`;
+import s from './index.module.less';
 
 // export OverlayScrollerOptions
 export type { OverlayScrollerOptions };
@@ -49,22 +43,20 @@ export const OverlayScroller: React.FC<
   }, []);
 
   return (
-    <Wrapper
+    <div
       ref={scroller}
       data-overlayscrollbars-initialize
-      className="overlay-scroller-wrapper"
-      $maxHeight={maxHeight || 200}
+      className={classNames(s.wrapper, 'overlay-scroller-wrapper')}
       hidden={false}
       onWheel={onScroll}
       style={{
-        paddingInlineStart: 8,
-        paddingInlineEnd: 8,
+        maxHeight: maxHeight || 200,
         ...style,
         ...styles?.wrapper
       }}
     >
       {children}
-    </Wrapper>
+    </div>
   );
 };
 

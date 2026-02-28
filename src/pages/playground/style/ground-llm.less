@@ -3,39 +3,6 @@
 .ground-left-wrapper {
   display: flex;
 
-  .params-wrapper {
-    position: relative;
-    overflow-x: hidden;
-    width: 390px;
-    border-left: 1px solid var(--ant-color-split);
-    transition: width 0.3s ease;
-    height: calc(100vh - @HEADER_HEIGHT);
-    padding-top: 16px;
-    overflow-y: auto;
-
-    &::-webkit-scrollbar {
-      width: 0;
-    }
-
-    .box {
-      width: 390px;
-      padding-inline: 24px;
-    }
-
-    &.collapsed {
-      width: 0;
-      overflow: hidden;
-      transition: width 0.3s ease;
-      border-left: none;
-
-      .box {
-        width: 0;
-        padding: 0;
-        overflow: hidden;
-      }
-    }
-  }
-
   .ground-left {
     flex: 1;
     display: flex;

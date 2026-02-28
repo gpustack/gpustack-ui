@@ -19,7 +19,6 @@ import {
   Tooltip,
   Typography
 } from 'antd';
-import classNames from 'classnames';
 import _ from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
 import React, {
@@ -45,6 +44,7 @@ import '../style/system-message-wrap.less';
 import { generateRerankCode } from '../view-code/rerank';
 import DynamicParams from './dynamic-params';
 import InputList from './input-list';
+import RightContainer from './right-container';
 import TokenUsage from './token-usage';
 import ViewCommonCode from './view-common-code';
 
@@ -637,23 +637,16 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
           </div>
         </div>
       </div>
-      <div
-        className={classNames('params-wrapper', {
-          collapsed: collapse
-        })}
-        ref={paramsRef}
-      >
-        <div className="box">
-          <DynamicParams
-            ref={formRef}
-            onValuesChange={onValuesChange}
-            paramsConfig={paramsConfig}
-            initialValues={initialValues}
-            modelList={modelList}
-            extra={renderExtra}
-          />
-        </div>
-      </div>
+      <RightContainer collapsed={collapse}>
+        <DynamicParams
+          ref={formRef}
+          onValuesChange={onValuesChange}
+          paramsConfig={paramsConfig}
+          initialValues={initialValues}
+          modelList={modelList}
+          extra={renderExtra}
+        />
+      </RightContainer>
       <ViewCommonCode
         open={show}
         viewCodeContent={viewCodeContent}

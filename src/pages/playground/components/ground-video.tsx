@@ -4,7 +4,6 @@ import routeCachekey from '@/config/route-cachekey';
 import { VideoCameraOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Spin } from 'antd';
-import classNames from 'classnames';
 import _ from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
 import React, {
@@ -23,6 +22,7 @@ import '../style/system-message-wrap.less';
 import { generateCode } from '../view-code/video';
 import DynamicParams from './dynamic-params';
 import MessageInput from './message-input';
+import RightContainer from './right-container';
 import ViewCommonCode from './view-common-code';
 
 interface MessageProps {
@@ -241,22 +241,15 @@ const GroundVideo: React.FC<MessageProps> = forwardRef((props, ref) => {
           />
         </div>
       </div>
-      <div
-        className={classNames('params-wrapper', {
-          collapsed: collapse
-        })}
-        ref={paramsRef}
-      >
-        <div className="box">
-          <DynamicParams
-            ref={form}
-            onValuesChange={handleOnValuesChange}
-            paramsConfig={paramsConfig}
-            initialValues={initialValues}
-            modelList={modelList}
-          />
-        </div>
-      </div>
+      <RightContainer collapsed={collapse}>
+        <DynamicParams
+          ref={form}
+          onValuesChange={handleOnValuesChange}
+          paramsConfig={paramsConfig}
+          initialValues={initialValues}
+          modelList={modelList}
+        />
+      </RightContainer>
       <ViewCommonCode
         open={show}
         viewCodeContent={viewCodeContent}

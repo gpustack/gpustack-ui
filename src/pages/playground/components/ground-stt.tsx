@@ -13,7 +13,6 @@ import { readAudioFile } from '@/utils/load-audio-file';
 import { SendOutlined } from '@ant-design/icons';
 import { useIntl, useSearchParams } from '@umijs/max';
 import { Button, Spin, Tooltip } from 'antd';
-import classNames from 'classnames';
 import _ from 'lodash';
 import React, {
   forwardRef,
@@ -39,6 +38,7 @@ import '../style/system-message-wrap.less';
 import { speechToTextCode } from '../view-code/audio';
 import AudioInput from './audio-input';
 import DynamicParams from './dynamic-params';
+import RightContainer from './right-container';
 import ViewCommonCode from './view-common-code';
 
 interface MessageProps {
@@ -499,22 +499,15 @@ const GroundSTT: React.FC<MessageProps> = forwardRef((props, ref) => {
           </div>
         </div>
       </div>
-      <div
-        className={classNames('params-wrapper', {
-          collapsed: collapse
-        })}
-        ref={paramsRef}
-      >
-        <div className="box">
-          <DynamicParams
-            ref={formRef}
-            onValuesChange={handleOnValuesChange}
-            paramsConfig={fieldsConfig}
-            initialValues={parameters}
-            modelList={modelList}
-          />
-        </div>
-      </div>
+      <RightContainer collapsed={collapse}>
+        <DynamicParams
+          ref={formRef}
+          onValuesChange={handleOnValuesChange}
+          paramsConfig={fieldsConfig}
+          initialValues={parameters}
+          modelList={modelList}
+        />
+      </RightContainer>
       <ViewCommonCode
         open={show}
         viewCodeContent={viewCodeContent}

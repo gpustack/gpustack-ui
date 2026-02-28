@@ -1,5 +1,4 @@
 import { Spin } from 'antd';
-import classNames from 'classnames';
 import 'overlayscrollbars/overlayscrollbars.css';
 import React, {
   forwardRef,
@@ -23,6 +22,7 @@ import MessageInput from './message-input';
 import MessageContent from './multiple-chat/message-content';
 import SystemMessage from './multiple-chat/system-message';
 import ReferenceParams from './reference-params';
+import RightContainer from './right-container';
 import ViewCommonCode from './view-common-code';
 
 interface MessageProps {
@@ -180,23 +180,16 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
           />
         </div>
       </div>
-      <div
-        className={classNames('params-wrapper', {
-          collapsed: collapse
-        })}
-        ref={paramsRef}
-      >
-        <div className="box">
-          <DynamicParams
-            ref={formRef}
-            onValuesChange={handleOnValuesChange}
-            paramsConfig={paramsConfig}
-            initialValues={initialValues}
-            modelList={modelList}
-            showModelSelector={true}
-          />
-        </div>
-      </div>
+      <RightContainer collapsed={collapse}>
+        <DynamicParams
+          ref={formRef}
+          onValuesChange={handleOnValuesChange}
+          paramsConfig={paramsConfig}
+          initialValues={initialValues}
+          modelList={modelList}
+          showModelSelector={true}
+        />
+      </RightContainer>
       <ViewCommonCode
         open={show}
         viewCodeContent={viewCodeContent}

@@ -8,12 +8,12 @@ import classNames from 'classnames';
 import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { PageContainerInner } from '../_components/page-box';
-import { queryModelsList } from './apis';
-import GroundVideo from './components/ground-video';
-import ViewCodeButtons from './components/view-code-buttons';
-import useCollapseLayout from './hooks/use-collapse-layout';
-import './style/play-ground.less';
+import { PageContainerInner } from '../../_components/page-box';
+import { queryModelsList } from '../apis';
+import ViewCodeButtons from '../components/view-code-buttons';
+import useCollapseLayout from '../hooks/use-collapse-layout';
+import '../style/play-ground.less';
+import GroundVideo from './page';
 
 const PlaygroundRerank: React.FC = () => {
   const intl = useIntl();

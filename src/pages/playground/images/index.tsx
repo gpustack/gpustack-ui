@@ -1,57 +1,47 @@
-import IconFont from '@/components/icon-font';
 import breakpoints from '@/config/breakpoints';
 import HotKeys from '@/config/hotkeys';
 import useWindowResize from '@/hooks/use-window-resize';
 import { ExtraContent } from '@/layouts/extraRender';
 import { modelCategoriesMap } from '@/pages/llmodels/config';
-import { AudioOutlined } from '@ant-design/icons';
-import { useIntl, useSearchParams } from '@umijs/max';
-import useMemoizedFn from 'ahooks/lib/useMemoizedFn';
+import { DiffOutlined, HighlightOutlined } from '@ant-design/icons';
+import { useIntl } from '@umijs/max';
+import { useMemoizedFn } from 'ahooks';
 import { Divider, Segmented, Tabs, TabsProps } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { PageContainerInner } from '../_components/page-box';
-import { queryModelsList } from './apis';
-import GroundSTT from './components/ground-stt';
-import GroundTTS from './components/ground-tts';
-import ViewCodeButtons from './components/view-code-buttons';
-import './style/play-ground.less';
+import { PageContainerInner } from '../../_components/page-box';
+import { queryModelsList } from '../apis';
+import ViewCodeButtons from '../components/view-code-buttons';
+import '../style/play-ground.less';
+import ImageCreate from './create';
+import ImageEdit from './edit';
 
 const TabsValueMap = {
-  Tab1: 'tts',
-  Tab2: 'stt',
-  tts: 'tts',
-  stt: 'stt'
+  Tab1: 'generate',
+  Tab2: 'edit'
 };
 
-const Playground: React.FC = () => {
+const TextToImages: React.FC = () => {
   const intl = useIntl();
-  const [searchParams] = useSearchParams();
-  const modelType = searchParams.get('type') || '';
   const { size } = useWindowResize();
-  const [activeKey, setActiveKey] = useState(modelType || TabsValueMap.Tab1);
+  const [activeKey, setActiveKey] = useState(TabsValueMap.Tab1);
   const groundTabRef1 = useRef<any>(null);
   const groundTabRef2 = useRef<any>(null);
-  const [textToSpeechModels, setTextToSpeechModels] = useState<
-    Global.BaseOption<string>[]
-  >([]);
-  const [speechModelList, setSpeechModelList] = useState<
-    Global.BaseOption<string>[]
-  >([]);
+  const [modelList, setModelList] = useState<Global.BaseOption<string>[]>([]);
 
   const optionsList = useMemo(() => {
     return [
       {
-        label: intl.formatMessage({ id: 'playground.audio.texttospeech' }),
+        label: intl.formatMessage({ id: 'playground.image.generate' }),
         value: TabsValueMap.Tab1,
-        icon: <IconFont type={'icon-audio'}></IconFont>
+        icon: <DiffOutlined />
       },
       {
-        label: intl.formatMessage({ id: 'playground.audio.speechtotext' }),
+        label: intl.formatMessage({ id: 'playground.image.edit' }),
         value: TabsValueMap.Tab2,
-        icon: <AudioOutlined />
+        icon: <HighlightOutlined />
       }
     ];
   }, [intl]);
@@ -75,22 +65,19 @@ const Playground: React.FC = () => {
   const items: TabsProps['items'] = useMemo(() => {
     return [
       {
-        key: 'tts',
-        label: 'TTS',
+        key: TabsValueMap.Tab1,
+        label: 'Generate',
         children: (
-          <GroundTTS
-            ref={groundTabRef1}
-            modelList={textToSpeechModels}
-          ></GroundTTS>
+          <ImageCreate ref={groundTabRef1} modelList={modelList}></ImageCreate>
         )
       },
       {
-        key: 'stt',
-        label: 'Realtime',
-        children: <GroundSTT modelList={speechModelList} ref={groundTabRef2} />
+        key: TabsValueMap.Tab2,
+        label: 'Edit',
+        children: <ImageEdit modelList={modelList} ref={groundTabRef2} />
       }
     ];
-  }, [textToSpeechModels, speechModelList]);
+  }, [modelList]);
 
   useEffect(() => {
     if (size.width < breakpoints.lg) {
@@ -104,35 +91,13 @@ const Playground: React.FC = () => {
   }, [size.width]);
 
   useEffect(() => {
-    const getTextToSpeechModels = async () => {
+    const getModelList = async () => {
       try {
         const params = {
-          categories: modelCategoriesMap.text_to_speech,
+          categories: modelCategoriesMap.image,
           with_meta: true
         };
         const res = await queryModelsList(params);
-
-        const list = _.map(res.data || [], (item: any) => {
-          return {
-            value: item.id,
-            label: item.id,
-            meta: item.meta
-          };
-        }) as Global.BaseOption<string>[];
-        return list;
-      } catch (error) {
-        console.error(error);
-        return [];
-      }
-    };
-    const getSpeechToText = async () => {
-      try {
-        const params = {
-          categories: modelCategoriesMap.speech_to_text,
-          with_meta: true
-        };
-        const res = await queryModelsList(params);
-
         const list = _.map(res.data || [], (item: any) => {
           return {
             value: item.id,
@@ -149,13 +114,8 @@ const Playground: React.FC = () => {
 
     const fetchData = async () => {
       try {
-        const [textToSpeechModels, speechToTextModels] = await Promise.all([
-          getTextToSpeechModels(),
-          getSpeechToText()
-        ]);
-
-        setTextToSpeechModels(textToSpeechModels);
-        setSpeechModelList(speechToTextModels);
+        const modelist = await getModelList();
+        setModelList(modelist);
       } catch (error) {
         // error
       }
@@ -168,7 +128,7 @@ const Playground: React.FC = () => {
       title: (
         <div className="flex items-center">
           <span className="font-600">
-            {intl.formatMessage({ id: 'menu.playground.speech' })}
+            {intl.formatMessage({ id: 'menu.playground.text2images' })}
           </span>
           {
             <Segmented
@@ -199,9 +159,9 @@ const Playground: React.FC = () => {
       header={header}
       extra={[
         <ViewCodeButtons
-          activeKey=""
           handleViewCode={handleViewCode}
           handleToggleCollapse={handleToggleCollapse}
+          activeKey={activeKey}
           key="view-code-buttons"
         ></ViewCodeButtons>,
         <Divider
@@ -211,10 +171,7 @@ const Playground: React.FC = () => {
         />,
         <ExtraContent key="extra-content" />
       ]}
-      className={classNames('playground-container', {
-        compare: activeKey === 'compare',
-        chat: activeKey !== 'compare'
-      })}
+      className={classNames('playground-container chat')}
     >
       <div className="play-ground">
         <div className="chat">
@@ -225,4 +182,4 @@ const Playground: React.FC = () => {
   );
 };
 
-export default Playground;
+export default TextToImages;

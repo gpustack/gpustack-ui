@@ -22,20 +22,20 @@ import React, {
   useState
 } from 'react';
 import { AUDIO_TEXT_TO_SPEECH_API, CHAT_API, textToSpeech } from '../apis';
-import { RefAudioFormItem } from '../audio/form';
-import {
-  TTSParamsConfig as paramsConfig,
-  TTSAdvancedParamsConfig
-} from '../audio/params-config';
+import DynamicParams from '../components/dynamic-params';
+import MessageInput from '../components/message-input';
+import RightContainer from '../components/right-container';
+import ViewCommonCode from '../components/view-common-code';
 import { extractErrorMessage } from '../config';
 import { MessageItem, ParamsSchema } from '../config/types';
 import '../style/ground-llm.less';
 import '../style/system-message-wrap.less';
 import { TextToSpeechCode } from '../view-code/audio';
-import DynamicParams from './dynamic-params';
-import MessageInput from './message-input';
-import RightContainer from './right-container';
-import ViewCommonCode from './view-common-code';
+import { RefAudioFormItem } from './form';
+import {
+  TTSParamsConfig as paramsConfig,
+  TTSAdvancedParamsConfig
+} from './params-config';
 
 const MetaFields = [
   'task_type',
@@ -83,7 +83,6 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
   const [collapse, setCollapse] = useState(false);
   const controllerRef = useRef<any>(null);
   const scroller = useRef<any>(null);
-  const paramsRef = useRef<any>(null);
   const checkvalueRef = useRef<any>(true);
   const [currentPrompt, setCurrentPrompt] = useState<string>('');
   const [voiceDataList, setVoiceList] = useState<Global.BaseOption<string>[]>(
@@ -93,7 +92,6 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
   const formRef = useRef<any>(null);
 
   const { initialize } = useOverlayScroller();
-  const { initialize: innitializeParams } = useOverlayScroller();
   const [activeKey, setActiveKey] = useState<string | string[]>(
     'advanced_config'
   );
@@ -301,12 +299,6 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
     [handleSelectModel]
   );
 
-  useEffect(() => {
-    if (paramsRef.current) {
-      innitializeParams(paramsRef.current);
-    }
-  }, [innitializeParams]);
-
   const handleOnCheckChange = (e: any) => {
     checkvalueRef.current = e.target.checked;
   };
@@ -408,12 +400,6 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
       initialize(scroller.current);
     }
   }, [initialize]);
-
-  useEffect(() => {
-    if (paramsRef.current) {
-      innitializeParams(paramsRef.current);
-    }
-  }, [innitializeParams]);
 
   return (
     <div className="ground-left-wrapper">

@@ -8,8 +8,14 @@ import React, {
   useState
 } from 'react';
 import { CHAT_API } from '../apis';
+import DynamicParams from '../components/dynamic-params';
+import MessageInput from '../components/message-input';
+import MessageContent from '../components/multiple-chat/message-content';
+import SystemMessage from '../components/multiple-chat/system-message';
+import ReferenceParams from '../components/reference-params';
+import RightContainer from '../components/right-container';
+import ViewCommonCode from '../components/view-common-code';
 import { Roles, generateMessagesByListContent } from '../config';
-import { ChatParamsConfig } from '../config/params-config';
 import { MessageItem, MessageItemAction } from '../config/types';
 import { LLM_METAKEYS, llmInitialValues } from '../hooks/config';
 import useChatCompletion from '../hooks/use-chat-completion';
@@ -17,13 +23,7 @@ import { useInitLLmMeta } from '../hooks/use-init-meta';
 import '../style/ground-llm.less';
 import '../style/system-message-wrap.less';
 import { generateLLMCode } from '../view-code/llm';
-import DynamicParams from './dynamic-params';
-import MessageInput from './message-input';
-import MessageContent from './multiple-chat/message-content';
-import SystemMessage from './multiple-chat/system-message';
-import ReferenceParams from './reference-params';
-import RightContainer from './right-container';
-import ViewCommonCode from './view-common-code';
+import { ChatParamsConfig } from './params-config';
 
 interface MessageProps {
   modelList: Global.BaseOption<string>[];
@@ -57,7 +57,6 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   const {
     handleOnValuesChange,
     formRef,
-    paramsRef,
     paramsConfig,
     initialValues,
     parameters

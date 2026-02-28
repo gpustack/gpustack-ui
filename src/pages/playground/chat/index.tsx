@@ -11,12 +11,12 @@ import classNames from 'classnames';
 import _ from 'lodash';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { PageContainerInner } from '../_components/page-box';
-import { queryModelsList } from './apis';
-import GroundLLM from './components/ground-llm';
-import MultipleChat from './components/multiple-chat';
-import ViewCodeButtons from './components/view-code-buttons';
-import './style/play-ground.less';
+import { PageContainerInner } from '../../_components/page-box';
+import { queryModelsList } from '../apis';
+import MultipleChat from '../components/multiple-chat';
+import ViewCodeButtons from '../components/view-code-buttons';
+import '../style/play-ground.less';
+import GroundChat from './page';
 
 const Playground: React.FC = () => {
   const intl = useIntl();
@@ -65,7 +65,7 @@ const Playground: React.FC = () => {
         label: 'Chat',
         icon: <MessageOutlined />,
         children: (
-          <GroundLLM ref={groundLeftRef} modelList={modelList}></GroundLLM>
+          <GroundChat ref={groundLeftRef} modelList={modelList}></GroundChat>
         )
       },
       {

@@ -94,6 +94,7 @@ const LocalUserForm: React.FC<LocalUserFormProps> = (props) => {
         ]}
       >
         <SealInput.Input
+          autoComplete="username"
           label={intl.formatMessage({ id: 'common.form.username' })}
           prefix={<UserOutlined />}
         />
@@ -114,6 +115,7 @@ const LocalUserForm: React.FC<LocalUserFormProps> = (props) => {
         ]}
       >
         <SealInput.Password
+          autoComplete="current-password"
           prefix={<LockOutlined />}
           label={intl.formatMessage({ id: 'common.form.password' })}
         />

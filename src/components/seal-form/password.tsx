@@ -73,8 +73,8 @@ const SealPassword: React.FC<InputProps & SealFormItemProps & PasswordProps> = (
       >
         <Input.Password
           {...rest}
+          autoComplete={rest.autoComplete || 'off'}
           ref={inputRef}
-          autoComplete="off"
           className="seal-input-password"
           onFocus={handleOnFocus}
           onBlur={handleOnBlur}

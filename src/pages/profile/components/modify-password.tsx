@@ -58,6 +58,7 @@ const Profile: React.FC = () => {
         ]}
       >
         <SealInput.Password
+          autoComplete="current-password"
           label={intl.formatMessage({ id: 'users.form.currentpassword' })}
           required
           style={{ width: INPUT_WIDTH.default }}
@@ -76,6 +77,7 @@ const Profile: React.FC = () => {
         ]}
       >
         <SealInput.Password
+          autoComplete="new-password"
           label={intl.formatMessage({ id: 'users.form.newpassword' })}
           required
           style={{ width: INPUT_WIDTH.default }}
@@ -107,6 +109,7 @@ const Profile: React.FC = () => {
       >
         <SealInput.Password
           required={true}
+          autoComplete="new-password"
           style={{ width: INPUT_WIDTH.default }}
           label={intl.formatMessage({ id: 'users.password.confirm' })}
         />

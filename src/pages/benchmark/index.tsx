@@ -2,7 +2,7 @@ import DeleteModal from '@/components/delete-modal';
 import IconFont from '@/components/icon-font';
 import { FilterBar } from '@/components/page-tools';
 import { PageAction } from '@/config';
-import { TABLE_SORT_DIRECTIONS } from '@/config/settings';
+import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { useBenchmarkTargetInstance } from '@/pages/llmodels/hooks/use-run-benchmark';
 import { useQueryModelList } from '@/pages/llmodels/services/use-query-model-list';
@@ -51,6 +51,7 @@ const Benchmark: React.FC = () => {
     handleSearch,
     handleNameChange
   } = useTableFetch<ListItem>({
+    key: PaginationKey.Benchmarks,
     fetchAPI: queryBenchmarkList,
     deleteAPI: deleteBenchmark,
     API: BENCHMARKS_API,

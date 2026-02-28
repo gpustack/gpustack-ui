@@ -1,6 +1,6 @@
 import IconFont from '@/components/icon-font';
 import { FilterBar } from '@/components/page-tools';
-import { TABLE_SORT_DIRECTIONS } from '@/config/settings';
+import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import useTableFetch from '@/hooks/use-table-fetch';
 import NoResult from '@/pages/_components/no-result';
 import PageBox from '@/pages/_components/page-box';
@@ -28,6 +28,7 @@ const GPUList: React.FC<{ clusterId?: number; widths?: { input: number } }> = ({
     handleSearch,
     handleNameChange
   } = useTableFetch<GPUDeviceItem>({
+    key: PaginationKey.GPUs,
     fetchAPI: queryGpuDevicesList,
     polling: true,
     API: GPU_DEVICES_API,

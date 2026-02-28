@@ -6,7 +6,7 @@ import SealTable from '@/components/seal-table';
 import TableContext from '@/components/seal-table/table-context';
 import { TableOrder } from '@/components/seal-table/types';
 import { PageAction } from '@/config';
-import { TABLE_SORT_DIRECTIONS } from '@/config/settings';
+import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import type { PageActionType } from '@/config/types';
 import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import useTableFetch from '@/hooks/use-table-fetch';
@@ -66,6 +66,7 @@ const Clusters: React.FC = () => {
     handleSearch,
     handleNameChange
   } = useTableFetch<ListItem>({
+    key: PaginationKey.Clusters,
     fetchAPI: queryClusterList,
     deleteAPI: deleteCluster,
     watch: true,

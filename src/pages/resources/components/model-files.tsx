@@ -3,7 +3,7 @@ import DeleteModal from '@/components/delete-modal';
 import IconFont from '@/components/icon-font';
 import { FilterBar } from '@/components/page-tools';
 import { PageAction } from '@/config';
-import { TABLE_SORT_DIRECTIONS } from '@/config/settings';
+import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import useAppUtils from '@/hooks/use-app-utils';
 import useBodyScroll from '@/hooks/use-body-scroll';
 import useTableFetch from '@/hooks/use-table-fetch';
@@ -64,6 +64,7 @@ const ModelFiles = () => {
     handleNameChange,
     handleQueryChange
   } = useTableFetch<ListItem>({
+    key: PaginationKey.ModelFiles,
     fetchAPI: queryModelFilesList,
     deleteAPI: deleteModelFile,
     API: MODEL_FILES_API,

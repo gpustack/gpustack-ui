@@ -2,47 +2,45 @@ import HotKeys from '@/config/hotkeys';
 import { ExtraContent } from '@/layouts/extraRender';
 import { modelCategoriesMap } from '@/pages/llmodels/config';
 import { useIntl } from '@umijs/max';
-import useMemoizedFn from 'ahooks/lib/useMemoizedFn';
+import { useMemoizedFn } from 'ahooks';
 import { Divider } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { PageContainerInner } from '../_components/page-box';
-import { queryModelsList } from './apis';
-import GroundReranker from './components/ground-reranker';
-import ViewCodeButtons from './components/view-code-buttons';
-import useCollapseLayout from './hooks/use-collapse-layout';
-import './style/play-ground.less';
+import { PageContainerInner } from '../../_components/page-box';
+import { queryModelsList } from '../apis';
+import ViewCodeButtons from '../components/view-code-buttons';
+import useCollapseLayout from '../hooks/use-collapse-layout';
+import '../style/play-ground.less';
+import GroundEmbedding from './page';
 
-const PlaygroundRerank: React.FC = () => {
+const PlaygroundEmbedding: React.FC = () => {
   const intl = useIntl();
-  const groundRerankerRef = useRef<any>(null);
-  const [rerankerModelList, setRerankerModelList] = useState<
-    Global.BaseOption<string>[]
-  >([]);
+  const groundLeftRef = useRef<any>(null);
+  const [modelList, setModelList] = useState<Global.BaseOption<string>[]>([]);
   const [loaded, setLoaded] = useState(false);
 
   useCollapseLayout({
     handler: () => {
-      groundRerankerRef.current?.setCollapse?.();
+      groundLeftRef.current?.setCollapse?.();
+      groundLeftRef.current?.calculateNewMaxFromBoundary?.(500, 300);
     },
-    triggeredRef: groundRerankerRef.current
+    triggeredRef: groundLeftRef.current
   });
 
   const handleViewCode = useMemoizedFn(() => {
-    groundRerankerRef.current?.viewCode?.();
+    groundLeftRef.current?.viewCode?.();
   });
-
   const handleToggleCollapse = useMemoizedFn(() => {
-    groundRerankerRef.current?.setCollapse?.();
+    groundLeftRef.current?.setCollapse?.();
   });
 
   useEffect(() => {
-    const getModelListByReranker = async () => {
+    const getModelListByEmbedding = async () => {
       try {
         const params = {
-          categories: modelCategoriesMap.reranker,
+          categories: modelCategoriesMap.embedding,
           with_meta: true
         };
         const res = await queryModelsList(params);
@@ -61,10 +59,8 @@ const PlaygroundRerank: React.FC = () => {
     };
     const fetchData = async () => {
       try {
-        const [rerankerModelList] = await Promise.all([
-          getModelListByReranker()
-        ]);
-        setRerankerModelList(rerankerModelList);
+        const [dataList] = await Promise.all([getModelListByEmbedding()]);
+        setModelList(dataList);
       } catch (error) {
         setLoaded(true);
       }
@@ -75,7 +71,7 @@ const PlaygroundRerank: React.FC = () => {
   useHotkeys(
     HotKeys.RIGHT.join(','),
     () => {
-      groundRerankerRef.current?.setCollapse?.();
+      groundLeftRef.current?.setCollapse?.();
     },
     {
       preventDefault: true
@@ -91,7 +87,7 @@ const PlaygroundRerank: React.FC = () => {
           handleViewCode={handleViewCode}
           handleToggleCollapse={handleToggleCollapse}
           key="view-code-buttons"
-        ></ViewCodeButtons>,
+        />,
         <Divider
           key="divider"
           orientation="vertical"
@@ -102,15 +98,15 @@ const PlaygroundRerank: React.FC = () => {
     >
       <div className="play-ground">
         <div className="chat">
-          <GroundReranker
-            ref={groundRerankerRef}
-            modelList={rerankerModelList}
+          <GroundEmbedding
+            ref={groundLeftRef}
+            modelList={modelList}
             loaded={loaded}
-          ></GroundReranker>
+          ></GroundEmbedding>
         </div>
       </div>
     </PageContainerInner>
   );
 };
 
-export default PlaygroundRerank;
+export default PlaygroundEmbedding;

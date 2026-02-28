@@ -14,7 +14,7 @@ const ODD_STRING = 'AAAABJRU5ErkJgg===';
 
 export default function useTextImage(props: any) {
   const intl = useIntl();
-  const { scroller, paramsRef, chunkFields, API } = props;
+  const { scroller, chunkFields, API } = props;
   const [loading, setLoading] = useState(false);
   const [tokenResult, setTokenResult] = useState<any>(null);
   const [imageList, setImageList] = useState<
@@ -35,7 +35,6 @@ export default function useTextImage(props: any) {
   const messageId = useRef<number>(0);
   const requestToken = useRef<any>(null);
   const { initialize } = useOverlayScroller();
-  const { initialize: innitializeParams } = useOverlayScroller();
   const streamReaderRef = useRef<any>(null);
   const requestIdRef = useRef<number>(0);
 
@@ -44,11 +43,6 @@ export default function useTextImage(props: any) {
       initialize(scroller.current);
     }
   }, [initialize]);
-  useEffect(() => {
-    if (paramsRef.current) {
-      innitializeParams(paramsRef.current);
-    }
-  }, [innitializeParams]);
 
   const updateRequestId = () => {
     requestIdRef.current = requestIdRef.current + 1;

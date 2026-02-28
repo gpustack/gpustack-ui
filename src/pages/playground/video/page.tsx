@@ -15,15 +15,15 @@ import React, {
   useState
 } from 'react';
 import { CREATE_VIDEO_API } from '../apis';
+import DynamicParams from '../components/dynamic-params';
+import MessageInput from '../components/message-input';
+import RightContainer from '../components/right-container';
+import ViewCommonCode from '../components/view-common-code';
 import { useInitVideoMeta } from '../hooks/use-init-video-meta';
 import useTextVideo from '../hooks/use-text-video';
 import '../style/ground-llm.less';
 import '../style/system-message-wrap.less';
 import { generateCode } from '../view-code/video';
-import DynamicParams from './dynamic-params';
-import MessageInput from './message-input';
-import RightContainer from './right-container';
-import ViewCommonCode from './view-common-code';
 
 interface MessageProps {
   modelList: Global.BaseOption<string>[];
@@ -66,7 +66,6 @@ const GroundVideo: React.FC<MessageProps> = forwardRef((props, ref) => {
     submitMessage
   } = useTextVideo({
     scroller,
-    paramsRef,
     API: CREATE_VIDEO_API
   });
 

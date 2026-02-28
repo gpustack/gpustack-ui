@@ -8,7 +8,7 @@ import { createVideo } from '../apis';
 
 export default function useTextVideo(props: any) {
   const intl = useIntl();
-  const { scroller, paramsRef } = props;
+  const { scroller } = props;
   const [loading, setLoading] = useState(false);
   const [tokenResult, setTokenResult] = useState<any>(null);
   const [videoList, setVideoList] = useState<
@@ -25,7 +25,6 @@ export default function useTextVideo(props: any) {
   const messageId = useRef<number>(0);
   const requestToken = useRef<any>(null);
   const { initialize } = useOverlayScroller();
-  const { initialize: innitializeParams } = useOverlayScroller();
   const requestIdRef = useRef<number>(0);
 
   useEffect(() => {
@@ -33,11 +32,6 @@ export default function useTextVideo(props: any) {
       initialize(scroller.current);
     }
   }, [initialize]);
-  useEffect(() => {
-    if (paramsRef.current) {
-      innitializeParams(paramsRef.current);
-    }
-  }, [innitializeParams]);
 
   const updateRequestId = () => {
     requestIdRef.current = requestIdRef.current + 1;

@@ -32,21 +32,21 @@ import React, {
 } from 'react';
 import styled from 'styled-components';
 import { RERANKER_API, rerankerQuery } from '../apis';
+import DynamicParams from '../components/dynamic-params';
+import InputList from '../components/input-list';
+import RightContainer from '../components/right-container';
+import TokenUsage from '../components/token-usage';
+import ViewCommonCode from '../components/view-common-code';
 import { extractErrorMessage } from '../config';
 import { rerankerSamples } from '../config/samples';
 import { ParamsSchema } from '../config/types';
 import { LLM_METAKEYS } from '../hooks/config';
 import { useInitLLmMeta } from '../hooks/use-init-meta';
-import useRerankerResponse from '../reranker/hooks/use-reranker-response';
 import '../style/ground-llm.less';
 import '../style/rerank.less';
 import '../style/system-message-wrap.less';
 import { generateRerankCode } from '../view-code/rerank';
-import DynamicParams from './dynamic-params';
-import InputList from './input-list';
-import RightContainer from './right-container';
-import TokenUsage from './token-usage';
-import ViewCommonCode from './view-common-code';
+import useRerankerResponse from './hooks/use-reranker-response';
 
 const { Text } = Typography;
 
@@ -152,7 +152,6 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     paramsConfig,
     initialValues,
     parameters,
-    paramsRef,
     modelMeta,
     formFields
   } = useInitLLmMeta(

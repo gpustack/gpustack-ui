@@ -26,6 +26,12 @@ import React, {
   useState
 } from 'react';
 import { EMBEDDING_API, handleEmbedding } from '../apis';
+import DynamicParams from '../components/dynamic-params';
+import FileList from '../components/file-list';
+import InputList from '../components/input-list';
+import RightContainer from '../components/right-container';
+import TokenUsage from '../components/token-usage';
+import ViewCommonCode from '../components/view-common-code';
 import { extractErrorMessage } from '../config';
 import { embeddingSamples } from '../config/samples';
 import { LLM_METAKEYS } from '../hooks/config';
@@ -34,12 +40,6 @@ import { useInitLLmMeta } from '../hooks/use-init-meta';
 import '../style/ground-llm.less';
 import '../style/rerank.less';
 import { generateEmbeddingCode } from '../view-code/embedding';
-import DynamicParams from './dynamic-params';
-import FileList from './file-list';
-import InputList from './input-list';
-import RightContainer from './right-container';
-import TokenUsage from './token-usage';
-import ViewCommonCode from './view-common-code';
 
 interface MessageProps {
   modelList: Global.BaseOption<string>[];
@@ -109,7 +109,6 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
     paramsConfig,
     initialValues,
     parameters,
-    paramsRef,
     modelMeta,
     formFields
   } = useInitLLmMeta(

@@ -2,7 +2,7 @@ import DeleteModal from '@/components/delete-modal';
 import IconFont from '@/components/icon-font';
 import { FilterBar } from '@/components/page-tools';
 import { PageAction } from '@/config';
-import { TABLE_SORT_DIRECTIONS } from '@/config/settings';
+import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
@@ -37,6 +37,7 @@ const MaasProvider: React.FC = () => {
     handleSearch,
     handleNameChange
   } = useTableFetch<ListItem>({
+    key: PaginationKey.Providers,
     fetchAPI: queryMaasProviders,
     deleteAPI: deleteProvider,
     watch: false,

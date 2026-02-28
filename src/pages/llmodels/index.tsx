@@ -1,6 +1,8 @@
 import TableContext from '@/components/seal-table/table-context';
 import { TableOrder } from '@/components/seal-table/types';
+import { PaginationKey } from '@/config/settings';
 import useSetChunkRequest from '@/hooks/use-chunk-request';
+import { usePaginationStatus } from '@/hooks/use-pagination-status';
 import { useTableMultiSort } from '@/hooks/use-table-sort';
 import useUpdateChunkedList from '@/hooks/use-update-chunk-list';
 import { useMemoizedFn } from 'ahooks';
@@ -17,6 +19,9 @@ import TableList from './components/table-list';
 import { ListItem } from './config/types';
 
 const Models: React.FC<{ clusterId?: number }> = ({ clusterId }) => {
+  const { pagination, setPagination } = usePaginationStatus(
+    PaginationKey.Deployments
+  );
   const { sortOrder, handleMultiSortChange } = useTableMultiSort();
   const { setChunkRequest, createAxiosToken } = useSetChunkRequest();
   const { setChunkRequest: setModelInstanceChunkRequest } =
@@ -47,7 +52,8 @@ const Models: React.FC<{ clusterId?: number }> = ({ clusterId }) => {
     cluster_id: clusterId || 0,
     categories: [],
     state: '',
-    sort_by: ''
+    sort_by: '',
+    ...pagination
   });
 
   const { updateChunkedList, cacheDataListRef } = useUpdateChunkedList({
@@ -175,6 +181,9 @@ const Models: React.FC<{ clusterId?: number }> = ({ clusterId }) => {
       console.log('page change', page, pageSize);
       handleQueryChange({
         page: page,
+        perPage: pageSize || 10
+      });
+      setPagination({
         perPage: pageSize || 10
       });
     }

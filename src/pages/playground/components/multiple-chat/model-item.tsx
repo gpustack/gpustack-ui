@@ -24,9 +24,9 @@ import React, {
 } from 'react';
 import 'simplebar-react/dist/simplebar.min.css';
 import { CHAT_API } from '../../apis';
+import { ChatParamsConfig } from '../../chat/params-config';
 import { Roles, generateMessagesByListContent } from '../../config';
 import CompareContext from '../../config/compare-context';
-import { ChatParamsConfig } from '../../config/params-config';
 import { MessageItem, ModelSelectionItem } from '../../config/types';
 import { LLM_METAKEYS, llmInitialValues } from '../../hooks/config';
 import useChatCompletion from '../../hooks/use-chat-completion';

@@ -24,6 +24,10 @@ import React, {
   useState
 } from 'react';
 import { AUDIO_SPEECH_TO_TEXT_API, speechToText } from '../apis';
+import AudioInput from '../components/audio-input';
+import DynamicParams from '../components/dynamic-params';
+import RightContainer from '../components/right-container';
+import ViewCommonCode from '../components/view-common-code';
 import {
   SpeechToTextFormat,
   defaultLanguages,
@@ -36,10 +40,6 @@ import '../style/ground-llm.less';
 import '../style/speech-to-text.less';
 import '../style/system-message-wrap.less';
 import { speechToTextCode } from '../view-code/audio';
-import AudioInput from './audio-input';
-import DynamicParams from './dynamic-params';
-import RightContainer from './right-container';
-import ViewCommonCode from './view-common-code';
 
 interface MessageProps {
   modelList: Global.BaseOption<string>[];
@@ -68,7 +68,6 @@ const GroundSTT: React.FC<MessageProps> = forwardRef((props, ref) => {
   const [tokenResult, setTokenResult] = useState<any>(null);
   const [collapse, setCollapse] = useState(false);
   const scroller = useRef<any>(null);
-  const paramsRef = useRef<any>(null);
   const [audioPermissionOn, setAudioPermissionOn] = useState(true);
   const [audioData, setAudioData] = useState<any>(null);
   const [audioChunks, setAudioChunks] = useState<any>({
@@ -81,7 +80,6 @@ const GroundSTT: React.FC<MessageProps> = forwardRef((props, ref) => {
     useCancelToken();
 
   const { initialize, updateScrollerPosition } = useOverlayScroller();
-  const { initialize: innitializeParams } = useOverlayScroller();
   const [modelMeta, setModelMeta] = useState<any>(null);
   const [fieldsConfig, setFieldsConfig] =
     useState<ParamsSchema[]>(paramsConfig);
@@ -327,12 +325,6 @@ const GroundSTT: React.FC<MessageProps> = forwardRef((props, ref) => {
       initialize(scroller.current);
     }
   }, [initialize]);
-
-  useEffect(() => {
-    if (paramsRef.current) {
-      innitializeParams(paramsRef.current);
-    }
-  }, [innitializeParams]);
 
   useEffect(() => {
     if (loading) {

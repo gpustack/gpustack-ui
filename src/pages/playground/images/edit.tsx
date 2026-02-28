@@ -21,16 +21,16 @@ import React, {
   useState
 } from 'react';
 import { EDIT_IMAGE_API } from '../apis';
+import DynamicParams from '../components/dynamic-params';
+import MessageInput from '../components/message-input';
+import RightContainer from '../components/right-container';
+import ViewCommonCode from '../components/view-common-code';
 import { EDIT_IMAGE_ACCEPT, scaleImageSize } from '../config';
 import { useInitImageMeta } from '../hooks/use-init-meta';
 import useTextImage from '../hooks/use-text-image';
 import '../style/ground-llm.less';
 import '../style/system-message-wrap.less';
 import { generateImageCode, generateOpenaiImageCode } from '../view-code/image';
-import DynamicParams from './dynamic-params';
-import MessageInput from './message-input';
-import RightContainer from './right-container';
-import ViewCommonCode from './view-common-code';
 
 interface MessageProps {
   modelList: Global.BaseOption<string>[];
@@ -45,7 +45,6 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   const [show, setShow] = useState(false);
   const [collapse, setCollapse] = useState(false);
   const scroller = useRef<any>(null);
-  const paramsRef = useRef<any>(null);
   const inputRef = useRef<any>(null);
   const [image, setImage] = useState<string>('');
   const [mask, setMask] = useState<string | null>(null);
@@ -95,7 +94,6 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     submitMessage
   } = useTextImage({
     scroller,
-    paramsRef,
     chunkFields: ['stream_options_chunk_result'],
     API: EDIT_IMAGE_API
   });

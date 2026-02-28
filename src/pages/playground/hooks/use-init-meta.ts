@@ -1,4 +1,3 @@
-import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import {
   CustomSizeConfig,
   ImageCountConfig,
@@ -59,9 +58,6 @@ export const useInitLLmMeta = (
   });
   const [paramsConfig, setParamsConfig] =
     useState<ParamsSchema[]>(defaultParamsConfig);
-  const paramsRef = useRef<any>(null);
-
-  const { initialize: innitializeParams } = useOverlayScroller();
 
   const defaultModel = useMemo(() => {
     if (isChat) {
@@ -172,12 +168,6 @@ export const useInitLLmMeta = (
     }
   }, [defaultModel, modelList.length]);
 
-  useEffect(() => {
-    if (paramsRef.current) {
-      innitializeParams(paramsRef.current);
-    }
-  }, [innitializeParams]);
-
   return {
     extractLLMMeta,
     handleOnModelChange,
@@ -191,7 +181,6 @@ export const useInitLLmMeta = (
     initialValues,
     parameters,
     modelMeta,
-    paramsRef,
     formFields
   };
 };

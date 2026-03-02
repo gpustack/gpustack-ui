@@ -145,11 +145,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
         is_built_in:
           data.is_built_in &&
           data.backend_source === BackendSourceValueMap.BUILTIN,
-        ..._.pick(values.built_in_version_configs?.[key], [
-          'image_name',
-          'run_command',
-          'entrypoint'
-        ])
+        ..._.pick(values.built_in_version_configs?.[key], versionFields)
       }));
 
       return {

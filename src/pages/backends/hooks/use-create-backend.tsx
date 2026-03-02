@@ -1,5 +1,6 @@
 import IconFont from '@/components/icon-font';
 import { PageAction } from '@/config';
+import { PageActionType } from '@/config/types';
 import useBodyScroll from '@/hooks/use-body-scroll';
 import { ListItem } from '../config/types';
 import useCommunityBackend from './use-community-backend';
@@ -30,7 +31,7 @@ const useCreateBackend = () => {
   ];
 
   const handleEditBackend = (
-    action: PageAction,
+    action: PageActionType,
     title: string,
     row: ListItem
   ) => {

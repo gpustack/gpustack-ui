@@ -192,7 +192,8 @@ export const customBackendFields = [
   'health_check_path',
   'default_run_command',
   'version_configs',
-  'default_backend_param'
+  'default_backend_param',
+  'default_env'
 ];
 
 /**
@@ -201,7 +202,8 @@ export const customBackendFields = [
 export const builtInBackendFields = [
   'description',
   'version_configs',
-  'default_backend_param'
+  'default_backend_param',
+  'default_env'
 ];
 
 export const frameworks = [
@@ -278,6 +280,7 @@ export const yamlTemplate = `# ----------------------------------------
 #   - custom_framework:
 #       - required
 #       - choose from: ${Object.values(GPUDriverMap).join(', ')}, cpu
+#   - env: optional, map of env key and value
 
 backend_name: vllm-custom
 description: this is my custom vllm backend

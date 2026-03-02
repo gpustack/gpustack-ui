@@ -5,6 +5,11 @@ export default {
   'apikeys.title.save': 'APIキーを保存',
   'apikeys.form.expiretime': '有効期限',
   'apikeys.form.apikey': 'APIキー',
+  'apikeys.form.keytype': 'キーの種類',
+  'apikeys.form.keytype.auto': '自動生成',
+  'apikeys.form.keytype.custom': 'カスタム',
+  'apikeys.form.customkey': 'カスタムAPIキー',
+  'apikeys.form.customkey.minlength': 'カスタムAPIキーは空にできません',
   'apikeys.table.name': 'キー名',
   'apikeys.table.save.tips':
     'キーをすぐにコピーしてください。一度閉じると再表示はできません。',

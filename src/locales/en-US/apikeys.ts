@@ -5,6 +5,11 @@ export default {
   'apikeys.title.save': 'Save API Key',
   'apikeys.form.expiretime': 'Expiration',
   'apikeys.form.apikey': 'API Key',
+  'apikeys.form.keytype': 'Key Type',
+  'apikeys.form.keytype.auto': 'Auto-generated',
+  'apikeys.form.keytype.custom': 'Custom',
+  'apikeys.form.customkey': 'Custom API Key',
+  'apikeys.form.customkey.minlength': 'Custom API key must not be empty',
   'apikeys.table.name': 'Key Name',
   'apikeys.table.save.tips':
     'Make sure to copy your key immediately. You will not be able to see it again.',

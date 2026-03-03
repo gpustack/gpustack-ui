@@ -53,7 +53,7 @@ const RightActions: React.FC<RightActionsProps> = ({
         placeholder={intl.formatMessage({
           id: 'common.filter.name'
         })}
-        style={{ width: 180 }}
+        style={{ width: 200 }}
         allowClear
         onChange={handleInputChange}
       ></Input>
@@ -64,7 +64,7 @@ const RightActions: React.FC<RightActionsProps> = ({
           ></SearchOutlined>
         }
         placeholder={intl.formatMessage({ id: 'benchmark.table.filter.bygpu' })}
-        style={{ width: 180 }}
+        style={{ width: 160 }}
         allowClear
         onChange={handleGPUChange}
       ></Input>

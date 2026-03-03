@@ -5,6 +5,7 @@ import { useIntl } from '@umijs/max';
 import { Button, Input, Space } from 'antd';
 import _ from 'lodash';
 import React from 'react';
+import { profileOptions } from '../config';
 
 export interface RightActionsProps {
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -52,7 +53,7 @@ const RightActions: React.FC<RightActionsProps> = ({
         placeholder={intl.formatMessage({
           id: 'common.filter.name'
         })}
-        style={{ width: 180 }}
+        style={{ width: 200 }}
         allowClear
         onChange={handleInputChange}
       ></Input>
@@ -63,16 +64,33 @@ const RightActions: React.FC<RightActionsProps> = ({
           ></SearchOutlined>
         }
         placeholder={intl.formatMessage({ id: 'benchmark.table.filter.bygpu' })}
-        style={{ width: 180 }}
+        style={{ width: 160 }}
         allowClear
         onChange={handleGPUChange}
       ></Input>
       <BaseSelect
         allowClear
         placeholder={intl.formatMessage({
+          id: 'benchmark.table.filter.byProfile'
+        })}
+        style={{ width: 160 }}
+        options={profileOptions.map((item) => ({
+          label: intl.formatMessage({ id: item.label }),
+          value: item.value
+        }))}
+        onChange={(value, option) =>
+          handleQueryChange({
+            profile: value,
+            page: 1
+          })
+        }
+      ></BaseSelect>
+      <BaseSelect
+        allowClear
+        placeholder={intl.formatMessage({
           id: 'benchmark.table.filter.bymodel'
         })}
-        style={{ width: 200 }}
+        style={{ width: 180 }}
         options={modelOptions}
         onChange={(value, option) =>
           handleQueryChange({

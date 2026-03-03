@@ -16,7 +16,7 @@ import { queryModelsList } from '../apis';
 import MultipleChat from '../components/multiple-chat';
 import ViewCodeButtons from '../components/view-code-buttons';
 import '../style/play-ground.less';
-import GroundChat from './page';
+import SingleChat from './single-chat';
 
 const Playground: React.FC = () => {
   const intl = useIntl();
@@ -65,7 +65,7 @@ const Playground: React.FC = () => {
         label: 'Chat',
         icon: <MessageOutlined />,
         children: (
-          <GroundChat ref={groundLeftRef} modelList={modelList}></GroundChat>
+          <SingleChat ref={groundLeftRef} modelList={modelList}></SingleChat>
         )
       },
       {

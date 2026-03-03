@@ -1,49 +1,29 @@
 import { setRouteCache } from '@/atoms/route-cache';
 import AlertInfo from '@/components/alert-info';
 import IconFont from '@/components/icon-font';
-import AutoComplete from '@/components/seal-form/auto-complete';
-import FieldComponent from '@/components/seal-form/field-component';
-import SealSelect from '@/components/seal-form/seal-select';
 import SpeechContent from '@/components/speech-content';
 import routeCachekey from '@/config/route-cachekey';
-import useOverlayScroller from '@/hooks/use-overlay-scroller';
-import CollapsePanel from '@/pages/_components/collapse-panel';
-import { getLocale, useIntl, useSearchParams } from '@umijs/max';
-import { Form, Spin } from 'antd';
+import { useIntl } from '@umijs/max';
+import { Spin } from 'antd';
 import _ from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
 import React, {
   forwardRef,
-  useCallback,
-  useEffect,
   useImperativeHandle,
   useMemo,
   useRef,
   useState
 } from 'react';
 import { AUDIO_TEXT_TO_SPEECH_API, CHAT_API, textToSpeech } from '../apis';
-import DynamicParams from '../components/dynamic-params';
 import MessageInput from '../components/message-input';
 import RightContainer from '../components/right-container';
 import ViewCommonCode from '../components/view-common-code';
 import { extractErrorMessage } from '../config';
-import { MessageItem, ParamsSchema } from '../config/types';
+import { MessageItem } from '../config/types';
 import '../style/ground-llm.less';
 import '../style/system-message-wrap.less';
 import { TextToSpeechCode } from '../view-code/audio';
-import { RefAudioFormItem } from './form';
-import {
-  TTSParamsConfig as paramsConfig,
-  TTSAdvancedParamsConfig
-} from './params-config';
-
-const MetaFields = [
-  'task_type',
-  'language',
-  'instructions',
-  'max_new_tokens',
-  'ref_audio'
-];
+import TTSDataForm from './forms/tts-form';
 
 interface MessageProps {
   modelList: Global.BaseOption<string>[];
@@ -65,15 +45,9 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
       audioUrl: string;
     }[]
   >([]);
-  const locale = getLocale();
   const intl = useIntl();
-  const [searchParams] = useSearchParams();
-  const modelType = searchParams.get('type') || '';
-  const selectModel = searchParams.get('model')
-    ? modelType === 'tts' && searchParams.get('model')
-    : '';
   const [parameters, setParams] = useState<any>({
-    model: selectModel,
+    model: '',
     voice: '',
     response_format: 'mp3'
   });
@@ -82,19 +56,9 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
   const [tokenResult, setTokenResult] = useState<any>(null);
   const [collapse, setCollapse] = useState(false);
   const controllerRef = useRef<any>(null);
-  const scroller = useRef<any>(null);
   const checkvalueRef = useRef<any>(true);
   const [currentPrompt, setCurrentPrompt] = useState<string>('');
-  const [voiceDataList, setVoiceList] = useState<Global.BaseOption<string>[]>(
-    []
-  );
-  const [modelMeta, setModelMeta] = useState<any>({});
   const formRef = useRef<any>(null);
-
-  const { initialize } = useOverlayScroller();
-  const [activeKey, setActiveKey] = useState<string | string[]>(
-    'advanced_config'
-  );
 
   useImperativeHandle(ref, () => {
     return {
@@ -107,10 +71,6 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
       collapse: collapse
     };
   });
-
-  const defaultModel = useMemo(() => {
-    return selectModel || modelList[0]?.value || '';
-  }, [modelList]);
 
   const dropEmptyFields = (parameters: Record<string, any>) => {
     const fields = [
@@ -138,37 +98,6 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
       }
     });
   }, [parameters, currentPrompt]);
-
-  const sortVoiceList = useCallback(
-    (locale: string, voiceDataList: Global.BaseOption<string>[]) => {
-      const lang = locale === 'en-US' ? 'english' : 'chinese';
-
-      const list = voiceDataList.sort((a, b) => {
-        const aContains = a.value.toLowerCase().includes(lang) ? 1 : 0;
-        const bContains = b.value.toLowerCase().includes(lang) ? 1 : 0;
-        return bContains - aContains;
-      });
-      return list;
-    },
-    []
-  );
-
-  const voiceList = useMemo(() => {
-    if (!voiceDataList.length) return [];
-    const newList = sortVoiceList(locale, voiceDataList);
-    return newList;
-  }, [locale, voiceDataList, sortVoiceList]);
-
-  useEffect(() => {
-    const newList = sortVoiceList(locale, voiceDataList);
-    setParams((pre: any) => {
-      return {
-        ...pre,
-        voice: newList[0]?.value
-      };
-    });
-    formRef.current?.form.setFieldValue('voice', newList[0]?.value);
-  }, [locale, voiceDataList, sortVoiceList]);
 
   const setMessageId = () => {
     messageId.current = messageId.current + 1;
@@ -261,145 +190,18 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
     setShow(false);
   };
 
-  const handleSelectModel = async (value: string) => {
-    if (!value) {
-      return;
-    }
-    const model = modelList.find((item) => item.value === value);
-    const list = _.map(model?.meta?.voices || [], (item: any) => {
-      return {
-        label: item,
-        value: item
-      };
-    });
-
-    const newList = sortVoiceList(locale, list);
-    setVoiceList(newList);
-    setModelMeta(model?.meta || {});
+  const updatateParams = (values: Record<string, any>) => {
     setParams((pre: any) => {
       return {
         ...pre,
-        ..._.pick(model?.meta || {}, MetaFields),
-        task_type: model?.meta?.task_type,
-        model: value,
-        language: model?.meta?.languages?.[0] || '',
-        voice: newList[0]?.value
+        ...values
       };
     });
   };
-
-  const handleOnValuesChange = useCallback(
-    (changeValues: Record<string, any>, allValues: Record<string, any>) => {
-      if (changeValues.model) {
-        handleSelectModel(changeValues.model);
-      } else {
-        setParams(allValues);
-      }
-    },
-    [handleSelectModel]
-  );
 
   const handleOnCheckChange = (e: any) => {
     checkvalueRef.current = e.target.checked;
   };
-
-  const handleOnCollapse = (keys: string | string[]) => {
-    setActiveKey(keys);
-  };
-
-  const renderAdvancedFields = () => {
-    const formItems = TTSAdvancedParamsConfig.map((item: ParamsSchema) => {
-      const comProps = {
-        ...item.attrs,
-        label: item.label.isLocalized
-          ? intl.formatMessage({ id: item.label.text })
-          : item.label.text
-      };
-      return (
-        <>
-          <Form.Item
-            name={item.name}
-            rules={item.rules}
-            key={item.name}
-            {...item.formItemAttrs}
-          >
-            <FieldComponent
-              {...comProps}
-              description={
-                item.description?.isLocalized
-                  ? intl.formatMessage({ id: item.description.text })
-                  : item.description?.text
-              }
-              onChange={null}
-              {..._.omit(item, [
-                'name',
-                'rules',
-                'disabledConfig',
-                'description'
-              ])}
-              {...item.initAttrs?.(modelMeta)}
-            ></FieldComponent>
-          </Form.Item>
-        </>
-      );
-    });
-
-    return (
-      <CollapsePanel
-        activeKey={activeKey}
-        onChange={handleOnCollapse}
-        accordion={false}
-        items={[
-          {
-            key: 'advanced_config',
-            label: intl.formatMessage({ id: 'resources.form.advanced' }),
-            forceRender: true,
-            children: (
-              <>
-                {formItems}
-                <RefAudioFormItem />
-              </>
-            )
-          }
-        ]}
-      ></CollapsePanel>
-    );
-  };
-
-  const renderExtra = () => {
-    return paramsConfig.map((item: ParamsSchema) => {
-      const comProps = {
-        ...item.attrs,
-        options: item.name === 'voice' ? voiceList : item.options,
-        label: item.label.isLocalized
-          ? intl.formatMessage({ id: item.label.text })
-          : item.label.text
-      };
-      return (
-        <>
-          <Form.Item name={item.name} rules={item.rules} key={item.name}>
-            {item.type === 'AutoComplete' ? (
-              <AutoComplete {...comProps} />
-            ) : (
-              <SealSelect {...comProps}></SealSelect>
-            )}
-          </Form.Item>
-        </>
-      );
-    });
-  };
-
-  useEffect(() => {
-    if (defaultModel && modelList.length) {
-      handleSelectModel(defaultModel);
-    }
-  }, [defaultModel, modelList.length]);
-
-  useEffect(() => {
-    if (scroller.current) {
-      initialize(scroller.current);
-    }
-  }, [initialize]);
 
   return (
     <div className="ground-left-wrapper">
@@ -474,18 +276,10 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
         </div>
       </div>
       <RightContainer collapsed={collapse}>
-        <DynamicParams
+        <TTSDataForm
           ref={formRef}
-          meta={modelMeta}
-          onValuesChange={handleOnValuesChange}
-          initialValues={parameters}
           modelList={modelList}
-          extra={[
-            <>
-              {renderExtra()}
-              {renderAdvancedFields()}
-            </>
-          ]}
+          updatateParams={updatateParams}
         />
       </RightContainer>
       <ViewCommonCode

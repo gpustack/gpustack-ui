@@ -18,16 +18,15 @@ import React, {
   useState
 } from 'react';
 import { CREAT_IMAGE_API } from '../apis';
-import DynamicParams from '../components/dynamic-params';
 import MessageInput from '../components/message-input';
 import RightContainer from '../components/right-container';
 import ViewCommonCode from '../components/view-common-code';
-import { useInitImageMeta } from '../hooks/use-init-meta';
+import { useInitImageMeta } from '../hooks/use-init-image';
 import useTextImage from '../hooks/use-text-image';
 import '../style/ground-llm.less';
 import '../style/system-message-wrap.less';
 import { generateImageCode, generateOpenaiImageCode } from '../view-code/image';
-
+import DataForm from './forms';
 interface MessageProps {
   modelList: Global.BaseOption<string>[];
   loaded?: boolean;
@@ -48,7 +47,6 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     handleToggleParamsStyle,
     setParams,
     form,
-    formFields,
     paramsConfig,
     initialValues,
     parameters,
@@ -264,9 +262,8 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
         </div>
       </div>
       <RightContainer collapsed={collapse}>
-        <DynamicParams
+        <DataForm
           ref={form}
-          formFields={formFields}
           onValuesChange={handleOnValuesChange}
           paramsConfig={paramsConfig}
           initialValues={initialValues}

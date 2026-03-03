@@ -8,7 +8,6 @@ import React, {
   useState
 } from 'react';
 import { CHAT_API } from '../apis';
-import DynamicParams from '../components/dynamic-params';
 import MessageInput from '../components/message-input';
 import MessageContent from '../components/multiple-chat/message-content';
 import SystemMessage from '../components/multiple-chat/system-message';
@@ -16,13 +15,14 @@ import ReferenceParams from '../components/reference-params';
 import RightContainer from '../components/right-container';
 import ViewCommonCode from '../components/view-common-code';
 import { Roles, generateMessagesByListContent } from '../config';
-import { MessageItem, MessageItemAction } from '../config/types';
+import { MessageItem } from '../config/types';
 import { LLM_METAKEYS, llmInitialValues } from '../hooks/config';
 import useChatCompletion from '../hooks/use-chat-completion';
-import { useInitLLmMeta } from '../hooks/use-init-meta';
+import { useInitLLmMeta } from '../hooks/use-init-llm';
 import '../style/ground-llm.less';
 import '../style/system-message-wrap.less';
 import { generateLLMCode } from '../view-code/llm';
+import DataForm from './forms';
 import { ChatParamsConfig } from './params-config';
 
 interface MessageProps {
@@ -37,12 +37,6 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   const [show, setShow] = useState(false);
   const [collapse, setCollapse] = useState(false);
   const scroller = useRef<any>(null);
-  const [actions, setActions] = useState<MessageItemAction[]>([
-    'upload',
-    'delete',
-    'copy',
-    'edit'
-  ]);
 
   const {
     submitMessage,
@@ -54,23 +48,15 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     messageList,
     loading
   } = useChatCompletion(scroller);
-  const {
-    handleOnValuesChange,
-    formRef,
-    paramsConfig,
-    initialValues,
-    parameters
-  } = useInitLLmMeta(
-    { modelList, isChat: true },
-    {
-      defaultValues: {
-        ...llmInitialValues,
-        model: modelList[0]?.value
-      },
-      defaultParamsConfig: ChatParamsConfig,
-      metaKeys: LLM_METAKEYS
-    }
-  );
+  const { handleOnValuesChange, formRef, paramsConfig, parameters } =
+    useInitLLmMeta(
+      { modelList, isChat: true },
+      {
+        defaultValues: llmInitialValues,
+        defaultParamsConfig: ChatParamsConfig,
+        metaKeys: LLM_METAKEYS
+      }
+    );
 
   useImperativeHandle(ref, () => {
     return {
@@ -146,7 +132,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
                 setMessageList={setMessageList}
                 editable={true}
                 loading={loading}
-                actions={actions}
+                actions={['upload', 'delete', 'copy', 'edit']}
               />
               {loading && (
                 <Spin size="small">
@@ -180,13 +166,12 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         </div>
       </div>
       <RightContainer collapsed={collapse}>
-        <DynamicParams
+        <DataForm
           ref={formRef}
           onValuesChange={handleOnValuesChange}
           paramsConfig={paramsConfig}
-          initialValues={initialValues}
+          initialValues={llmInitialValues}
           modelList={modelList}
-          showModelSelector={true}
         />
       </RightContainer>
       <ViewCommonCode

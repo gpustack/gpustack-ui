@@ -15,7 +15,6 @@ import React, {
   useState
 } from 'react';
 import { CREATE_VIDEO_API } from '../apis';
-import DynamicParams from '../components/dynamic-params';
 import MessageInput from '../components/message-input';
 import RightContainer from '../components/right-container';
 import ViewCommonCode from '../components/view-common-code';
@@ -24,6 +23,7 @@ import useTextVideo from '../hooks/use-text-video';
 import '../style/ground-llm.less';
 import '../style/system-message-wrap.less';
 import { generateCode } from '../view-code/video';
+import DataForm from './forms';
 
 interface MessageProps {
   modelList: Global.BaseOption<string>[];
@@ -241,7 +241,7 @@ const GroundVideo: React.FC<MessageProps> = forwardRef((props, ref) => {
         </div>
       </div>
       <RightContainer collapsed={collapse}>
-        <DynamicParams
+        <DataForm
           ref={form}
           onValuesChange={handleOnValuesChange}
           paramsConfig={paramsConfig}

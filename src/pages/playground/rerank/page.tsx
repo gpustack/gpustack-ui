@@ -1,5 +1,4 @@
 import AlertInfo from '@/components/alert-info';
-import SealInputNumber from '@/components/seal-form/input-number';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import useRequestToken from '@/hooks/use-request-token';
 import {
@@ -9,16 +8,7 @@ import {
   SendOutlined
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import {
-  Button,
-  Checkbox,
-  Form,
-  Input,
-  Spin,
-  Tag,
-  Tooltip,
-  Typography
-} from 'antd';
+import { Button, Checkbox, Input, Spin, Tag, Tooltip, Typography } from 'antd';
 import _ from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
 import React, {
@@ -32,21 +22,21 @@ import React, {
 } from 'react';
 import styled from 'styled-components';
 import { RERANKER_API, rerankerQuery } from '../apis';
-import DynamicParams from '../components/dynamic-params';
 import InputList from '../components/input-list';
 import RightContainer from '../components/right-container';
 import TokenUsage from '../components/token-usage';
 import ViewCommonCode from '../components/view-common-code';
 import { extractErrorMessage } from '../config';
 import { rerankerSamples } from '../config/samples';
-import { ParamsSchema } from '../config/types';
 import { LLM_METAKEYS } from '../hooks/config';
-import { useInitLLmMeta } from '../hooks/use-init-meta';
+import { useInitLLmMeta } from '../hooks/use-init-llm';
 import '../style/ground-llm.less';
 import '../style/rerank.less';
 import '../style/system-message-wrap.less';
 import { generateRerankCode } from '../view-code/rerank';
+import DataForm from './forms';
 import useRerankerResponse from './hooks/use-reranker-response';
+import { fieldConfig } from './params-config';
 
 const { Text } = Typography;
 
@@ -66,26 +56,6 @@ interface MessageProps {
   loaded?: boolean;
   ref?: any;
 }
-
-const fieldConfig: ParamsSchema[] = [
-  {
-    type: 'InputNumber',
-    name: 'top_n',
-    label: {
-      text: 'Top N',
-      isLocalized: false
-    },
-    attrs: {
-      min: 1
-    },
-    rules: [
-      {
-        required: true,
-        message: 'Top N is required'
-      }
-    ]
-  }
-];
 
 const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
   const { modelList } = props;
@@ -146,25 +116,18 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
   const { initialize, updateScrollerPosition: updateDocumentScrollerPosition } =
     useOverlayScroller();
 
-  const {
-    handleOnValuesChange,
-    formRef,
-    paramsConfig,
-    initialValues,
-    parameters,
-    modelMeta,
-    formFields
-  } = useInitLLmMeta(
-    {
-      modelList,
-      isChat: true
-    },
-    {
-      defaultValues: { top_n: 3 },
-      defaultParamsConfig: fieldConfig,
-      metaKeys: LLM_METAKEYS
-    }
-  );
+  const { handleOnValuesChange, formRef, parameters, modelMeta } =
+    useInitLLmMeta(
+      {
+        modelList,
+        isChat: true
+      },
+      {
+        defaultValues: { top_n: 3 },
+        defaultParamsConfig: fieldConfig,
+        metaKeys: LLM_METAKEYS
+      }
+    );
 
   useImperativeHandle(ref, () => {
     return {
@@ -206,14 +169,14 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     return generateRerankCode({
       api: RERANKER_API,
       parameters: {
-        ..._.pick(parameters, ['model', ..._.split(formFields, ',')]),
+        ...parameters,
         query: queryValue,
         documents: [...textList, ...fileList]
           .map((item) => item.text)
           .filter((text) => text)
       }
     });
-  }, [parameters, formFields, queryValue, textList, fileList]);
+  }, [parameters, queryValue, textList, fileList]);
 
   // [0.1, 1.0]
   const normalizValue = (data: { min: number; max: number; value: number }) => {
@@ -453,21 +416,6 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     }
   };
 
-  const renderExtra = useMemo(() => {
-    if (modelMeta?.n_ctx && modelMeta?.n_slot) {
-      return (
-        <Form.Item>
-          <SealInputNumber
-            disabled
-            label="Max Tokens"
-            value={_.floor(_.divide(modelMeta?.n_ctx, modelMeta?.n_slot))}
-          ></SealInputNumber>
-        </Form.Item>
-      );
-    }
-    return null;
-  }, [modelMeta]);
-
   const handleClearDocuments = () => {
     setTextList([
       {
@@ -637,14 +585,13 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
         </div>
       </div>
       <RightContainer collapsed={collapse}>
-        <DynamicParams
+        <DataForm
           ref={formRef}
           onValuesChange={onValuesChange}
-          paramsConfig={paramsConfig}
-          initialValues={initialValues}
+          initialValues={{ top_n: 3 }}
           modelList={modelList}
-          extra={renderExtra}
-        />
+          meta={modelMeta}
+        ></DataForm>
       </RightContainer>
       <ViewCommonCode
         open={show}

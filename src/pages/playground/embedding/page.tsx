@@ -13,6 +13,7 @@ import {
   SendOutlined
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
+import { useMemoizedFn } from 'ahooks';
 import { Button, Checkbox, Form, Segmented, Spin, Tabs, Tooltip } from 'antd';
 import _ from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
@@ -26,7 +27,6 @@ import React, {
   useState
 } from 'react';
 import { EMBEDDING_API, handleEmbedding } from '../apis';
-import DynamicParams from '../components/dynamic-params';
 import FileList from '../components/file-list';
 import InputList from '../components/input-list';
 import RightContainer from '../components/right-container';
@@ -36,10 +36,11 @@ import { extractErrorMessage } from '../config';
 import { embeddingSamples } from '../config/samples';
 import { LLM_METAKEYS } from '../hooks/config';
 import useEmbeddingWorker from '../hooks/use-embedding-worker';
-import { useInitLLmMeta } from '../hooks/use-init-meta';
+import { useInitLLmMeta } from '../hooks/use-init-llm';
 import '../style/ground-llm.less';
 import '../style/rerank.less';
 import { generateEmbeddingCode } from '../view-code/embedding';
+import DataForm from './forms';
 
 interface MessageProps {
   modelList: Global.BaseOption<string>[];
@@ -103,25 +104,18 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
   const { initialize, updateScrollerPosition: updateDocumentScrollerPosition } =
     useOverlayScroller();
 
-  const {
-    handleOnValuesChange,
-    formRef,
-    paramsConfig,
-    initialValues,
-    parameters,
-    modelMeta,
-    formFields
-  } = useInitLLmMeta(
-    {
-      modelList,
-      isChat: true
-    },
-    {
-      defaultValues: {},
-      defaultParamsConfig: [],
-      metaKeys: LLM_METAKEYS
-    }
-  );
+  const { handleOnValuesChange, formRef, parameters, modelMeta } =
+    useInitLLmMeta(
+      {
+        modelList,
+        isChat: true
+      },
+      {
+        defaultValues: {},
+        defaultParamsConfig: [],
+        metaKeys: LLM_METAKEYS
+      }
+    );
 
   useImperativeHandle(ref, () => {
     return {
@@ -143,14 +137,14 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
     return generateEmbeddingCode({
       api: EMBEDDING_API,
       parameters: {
-        ..._.pick(parameters, ['model', ..._.split(formFields, ',')]),
+        ...parameters,
         input: [
           ...textList.map((item) => item.text).filter((item) => item),
           ...fileList.map((item) => item.text).filter((item) => item)
         ]
       }
     });
-  }, [parameters, formFields, textList, fileList]);
+  }, [parameters, textList, fileList]);
 
   const inputEmpty = useMemo(() => {
     const list = [...textList, ...fileList];
@@ -441,15 +435,14 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
     ];
   }, [outputHeight, collapse, scatterData, embeddingData]);
 
-  const onValuesChange = useCallback(
+  const onValuesChange = useMemoizedFn(
     (changeValues: Record<string, any>, allValues: Record<string, any>) => {
       if (changeValues.model) {
         setScatterData([]);
         setTokenResult(null);
       }
       handleOnValuesChange(changeValues, allValues);
-    },
-    []
+    }
   );
 
   useEffect(() => {
@@ -710,13 +703,11 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
         </div>
       </div>
       <RightContainer collapsed={collapse}>
-        <DynamicParams
+        <DataForm
           ref={formRef}
           onValuesChange={onValuesChange}
-          paramsConfig={paramsConfig}
-          initialValues={initialValues}
+          initialValues={{}}
           modelList={modelList}
-          extra={renderExtra}
         />
       </RightContainer>
       <ViewCommonCode

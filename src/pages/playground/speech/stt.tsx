@@ -11,9 +11,8 @@ import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import { useCancelToken } from '@/hooks/use-request-token';
 import { readAudioFile } from '@/utils/load-audio-file';
 import { SendOutlined } from '@ant-design/icons';
-import { useIntl, useSearchParams } from '@umijs/max';
+import { useIntl } from '@umijs/max';
 import { Button, Spin, Tooltip } from 'antd';
-import _ from 'lodash';
 import React, {
   forwardRef,
   useCallback,
@@ -25,21 +24,14 @@ import React, {
 } from 'react';
 import { AUDIO_SPEECH_TO_TEXT_API, speechToText } from '../apis';
 import AudioInput from '../components/audio-input';
-import DynamicParams from '../components/dynamic-params';
 import RightContainer from '../components/right-container';
 import ViewCommonCode from '../components/view-common-code';
-import {
-  SpeechToTextFormat,
-  defaultLanguages,
-  extractErrorMessage
-} from '../config';
-import { allLanguages } from '../config/languages';
-import { RealtimeParamsConfig as paramsConfig } from '../config/params-config';
-import { ParamsSchema } from '../config/types';
+import { SpeechToTextFormat, extractErrorMessage } from '../config';
 import '../style/ground-llm.less';
 import '../style/speech-to-text.less';
 import '../style/system-message-wrap.less';
 import { speechToTextCode } from '../view-code/audio';
+import STTForm from './forms/stt-form';
 
 interface MessageProps {
   modelList: Global.BaseOption<string>[];
@@ -53,14 +45,8 @@ const GroundSTT: React.FC<MessageProps> = forwardRef((props, ref) => {
   const [messageList, setMessageList] = useState<
     { uid: number; content: string }[]
   >([]);
-  const [searchParams] = useSearchParams();
-  const modelType = searchParams.get('type') || '';
-  const selectModel = searchParams.get('model')
-    ? modelType === 'stt' && searchParams.get('model')
-    : '';
-  const defaultModel = selectModel || modelList[0]?.value || '';
   const [parameters, setParams] = useState<any>({
-    model: defaultModel,
+    model: '',
     language: 'auto'
   });
   const [show, setShow] = useState(false);
@@ -80,9 +66,6 @@ const GroundSTT: React.FC<MessageProps> = forwardRef((props, ref) => {
     useCancelToken();
 
   const { initialize, updateScrollerPosition } = useOverlayScroller();
-  const [modelMeta, setModelMeta] = useState<any>(null);
-  const [fieldsConfig, setFieldsConfig] =
-    useState<ParamsSchema[]>(paramsConfig);
 
   useImperativeHandle(ref, () => {
     return {
@@ -273,51 +256,13 @@ const GroundSTT: React.FC<MessageProps> = forwardRef((props, ref) => {
     );
   };
 
-  const handleSelectModel = (model: string) => {
-    if (!model) return;
-    const selected = modelList.find((item) => item.value === model);
-    setModelMeta(selected?.meta || {});
-    const languages = selected?.meta?.languages || [];
-    let currentLanguage = [...defaultLanguages];
-    if (languages.length > 0) {
-      // sort languages based on the order in the model meta
-      currentLanguage = [];
-
-      languages.forEach((langCode: string) => {
-        const langItem = allLanguages.find((item) => item.value === langCode);
-        if (langItem) {
-          currentLanguage.push(langItem);
-        }
-      });
-
-      const newConfig = paramsConfig.map((item) => {
-        const oItem = _.cloneDeep(item);
-        if (item.name === 'language') {
-          return {
-            ...oItem,
-            options: currentLanguage
-          };
-        }
-        return oItem;
-      });
-      setFieldsConfig(newConfig);
-    }
-    setParams((pre: any) => {
+  const updateParams = (values: any) => {
+    setParams((pre: Record<string, any>) => {
       return {
         ...pre,
-        language:
-          selected?.meta?.language || currentLanguage[0]?.value || 'auto',
-        model: model
+        ...values
       };
     });
-  };
-
-  const handleOnValuesChange = (changedValues: any, allValues: any) => {
-    if (changedValues.model) {
-      handleSelectModel(changedValues.model);
-    } else {
-      setParams(allValues);
-    }
   };
 
   useEffect(() => {
@@ -331,11 +276,6 @@ const GroundSTT: React.FC<MessageProps> = forwardRef((props, ref) => {
       updateScrollerPosition();
     }
   }, [messageList, loading]);
-
-  useEffect(() => {
-    const defaultModel = selectModel || modelList[0]?.value || '';
-    handleSelectModel(defaultModel);
-  }, [modelList, selectModel]);
 
   return (
     <div
@@ -492,11 +432,9 @@ const GroundSTT: React.FC<MessageProps> = forwardRef((props, ref) => {
         </div>
       </div>
       <RightContainer collapsed={collapse}>
-        <DynamicParams
+        <STTForm
           ref={formRef}
-          onValuesChange={handleOnValuesChange}
-          paramsConfig={fieldsConfig}
-          initialValues={parameters}
+          updateParams={updateParams}
           modelList={modelList}
         />
       </RightContainer>

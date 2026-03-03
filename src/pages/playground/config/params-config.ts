@@ -31,30 +31,6 @@ export const imageSizeOptions: {
   { label: '2048x2048(1:1)', value: '2048x2048', width: 2048, height: 2048 }
 ];
 
-export const RealtimeParamsConfig: ParamsSchema[] = [
-  {
-    type: 'Select',
-    name: 'language',
-    options: [
-      { label: 'Auto', value: 'auto' },
-      { label: 'English', value: 'en' },
-      { label: '中文', value: 'zh' },
-      { label: '日本語', value: 'ja' },
-      { label: 'Français', value: 'fr' },
-      { label: 'Deutsch', value: 'de' }
-    ],
-    label: {
-      text: 'playground.params.language',
-      isLocalized: true
-    },
-    rules: [
-      {
-        required: true
-      }
-    ]
-  }
-];
-
 export const ImageParamsConfig: ParamsSchema[] = [
   {
     type: 'InputNumber',
@@ -394,49 +370,6 @@ const advancedConfig = [
       scaleSize: true,
       trim: false,
       autoSize: { minRows: 2, maxRows: 2 }
-    },
-    rules: [
-      {
-        required: false
-      }
-    ]
-  }
-];
-
-export const ImageAdvancedParamsConfig: ParamsSchema[] = [
-  {
-    type: 'InputNumber',
-    name: 'seed',
-    label: {
-      text: 'playground.image.params.seed',
-      isLocalized: true
-    },
-    attrs: {
-      min: 0
-    },
-    dependencies: ['random_seed'],
-    disabledConfig: {
-      depends: ['random_seed'],
-      when: (values: Record<string, any>): boolean => values?.random_seed
-    },
-    rules: [
-      {
-        required: false
-      }
-    ]
-  },
-  {
-    type: 'Checkbox',
-    name: 'random_seed',
-    label: {
-      text: 'playground.image.params.randomseed',
-      isLocalized: true
-    },
-    style: {
-      marginBottom: 20
-    },
-    formItemAttrs: {
-      noStyle: true
     },
     rules: [
       {

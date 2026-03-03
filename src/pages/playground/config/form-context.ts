@@ -2,7 +2,9 @@ import { createContext, useContext } from 'react';
 
 export interface FormContextProps {
   meta?: Record<string, any>;
+  modelList: Global.BaseOption<string, Global.EmptyObject>[];
   onValuesChange?: (changeValues: any, value: Record<string, any>) => void;
+  onModelChange?: (model: string) => void;
 }
 
 /**

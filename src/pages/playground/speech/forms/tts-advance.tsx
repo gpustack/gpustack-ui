@@ -8,7 +8,7 @@ import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import React from 'react';
 import styled from 'styled-components';
-import { useFormContext } from '../config/form-context';
+import { useFormContext } from '../../config/form-context';
 
 const SuffixWrapper = styled.div.attrs({
   className: 'suffix-wrapper'
@@ -36,7 +36,7 @@ const Container = styled.div`
   }
 `;
 
-export const RefAudioFormItem: React.FC = () => {
+const TTSAdvanceConfig: React.FC = () => {
   const { getRuleMessage } = useAppUtils();
   const { meta, onValuesChange } = useFormContext();
   const form = Form.useFormInstance();
@@ -127,3 +127,5 @@ export const RefAudioFormItem: React.FC = () => {
     </>
   );
 };
+
+export default TTSAdvanceConfig;

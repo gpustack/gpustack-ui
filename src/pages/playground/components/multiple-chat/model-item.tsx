@@ -24,16 +24,16 @@ import React, {
 } from 'react';
 import 'simplebar-react/dist/simplebar.min.css';
 import { CHAT_API } from '../../apis';
+import DataForm from '../../chat/forms';
 import { ChatParamsConfig } from '../../chat/params-config';
 import { Roles, generateMessagesByListContent } from '../../config';
 import CompareContext from '../../config/compare-context';
 import { MessageItem, ModelSelectionItem } from '../../config/types';
 import { LLM_METAKEYS, llmInitialValues } from '../../hooks/config';
 import useChatCompletion from '../../hooks/use-chat-completion';
-import { useInitLLmMeta } from '../../hooks/use-init-meta';
+import { useInitLLmMeta } from '../../hooks/use-init-llm';
 import '../../style/model-item.less';
 import { generateLLMCode } from '../../view-code/llm';
-import DynamicParams from '../dynamic-params';
 import ReferenceParams from '../reference-params';
 import ViewCommonCode from '../view-common-code';
 import MessageContent from './message-content';
@@ -62,10 +62,8 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef((props, ref) => {
     handleOnValuesChange,
     handleOnModelChange,
     setParams,
-    setInitialValues,
     formRef,
     paramsConfig,
-    initialValues,
     parameters
   } = useInitLLmMeta(
     {
@@ -73,10 +71,7 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef((props, ref) => {
       modelList: modelFullList
     },
     {
-      defaultValues: {
-        ...llmInitialValues,
-        model: model
-      },
+      defaultValues: llmInitialValues,
       defaultParamsConfig: ChatParamsConfig,
       metaKeys: LLM_METAKEYS
     }
@@ -86,6 +81,8 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef((props, ref) => {
   const [systemMessage, setSystemMessage] = useState<string>('');
   const [show, setShow] = useState(false);
   const scroller = useRef<any>(null);
+
+  console.log('render model item', formRef);
 
   const {
     submitMessage,
@@ -217,11 +214,8 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef((props, ref) => {
         ...globalParams
       };
     });
-    setInitialValues((prev: any) => {
-      return {
-        ...prev,
-        ...globalParams
-      };
+    formRef.current?.setFieldsValue({
+      ...globalParams
     });
   }, [globalParams]);
 
@@ -313,11 +307,11 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef((props, ref) => {
                 style={{ paddingInline: '24px' }}
                 oppositeTheme={true}
               >
-                <DynamicParams
+                <DataForm
                   ref={formRef}
                   onValuesChange={OnValuesChange}
                   paramsConfig={paramsConfig}
-                  initialValues={initialValues}
+                  initialValues={parameters}
                   showModelSelector={false}
                   parametersTitle={
                     <div className="flex-center flex-between">

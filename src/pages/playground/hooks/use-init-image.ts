@@ -3,7 +3,6 @@ import {
   ImageCountConfig,
   ImageSizeConfig,
   ImageconstExtraConfig,
-  ImageAdvancedParamsConfig as ImgAdvancedParamsConfig,
   SizeOption,
   imageSizeOptions as imageSizeList
 } from '@/pages/playground/config/params-config';
@@ -17,8 +16,7 @@ import {
   IMG_METAKEYS,
   advancedFieldsDefaultValus,
   imgInitialValues,
-  openaiCompatibleFieldsDefaultValus,
-  precisionTwoKeys
+  openaiCompatibleFieldsDefaultValus
 } from './config';
 
 interface MessageProps {
@@ -29,171 +27,12 @@ interface MessageProps {
   ref?: any;
 }
 
-interface InitMetaOptions {
-  metaKeys?: Record<string, any> | string[];
-  defaultValues?: Record<string, any>;
-  defaultParamsConfig?: ParamsSchema[];
-}
-
-// init not image meta, for params form
-export const useInitLLmMeta = (
-  props: MessageProps,
-  options: InitMetaOptions
-) => {
-  const { modelList, model, isChat } = props;
-  const {
-    metaKeys = {},
-    defaultValues = {},
-    defaultParamsConfig = []
-  } = options;
-  const formRef = useRef<any>(null);
-  const [searchParams] = useSearchParams();
-  const [modelMeta, setModelMeta] = useState<any>({});
-  const [initialValues, setInitialValues] = useState<any>({
-    ...defaultValues,
-    model: ''
-  });
-  const [parameters, setParams] = useState<any>({
-    model: ''
-  });
-  const [paramsConfig, setParamsConfig] =
-    useState<ParamsSchema[]>(defaultParamsConfig);
-
-  const defaultModel = useMemo(() => {
-    if (isChat) {
-      return searchParams.get('model') || model || modelList?.[0]?.value;
-    }
-    // use for multiple chat
-    return model;
-  }, [model, modelList, isChat]);
-
-  const getMaxTokens = (meta: any) => {
-    const { max_model_len, n_ctx, n_slot, max_total_tokens } = meta || {};
-
-    let max_tokens: number = 0;
-
-    if (n_ctx && n_slot) {
-      max_tokens = _.floor(_.divide(n_ctx, n_slot));
-    } else if (max_model_len) {
-      max_tokens = max_model_len;
-    } else if (max_total_tokens) {
-      max_tokens = max_total_tokens;
-    }
-
-    return {
-      max_tokens: max_tokens || 16 * 1024,
-      defaultFormValue: max_tokens ? _.floor(_.divide(max_tokens, 2)) : 1024
-    };
-  };
-
-  const extractLLMMeta = (meta: any) => {
-    const towKeys = new Set(precisionTwoKeys);
-    const modelMeta = meta || {};
-    const modelMetaValue = _.pick(modelMeta, _.keys(metaKeys));
-    const obj = Object.entries(metaKeys).reduce((acc: any, [key, value]) => {
-      const val = modelMetaValue[key];
-      if (_.hasIn(modelMetaValue, key)) {
-        acc[value] = towKeys.has(key) ? _.round(val, 2) : val;
-      }
-      return acc;
-    }, {});
-
-    const tokensRes = getMaxTokens(obj);
-
-    return {
-      form: _.merge({}, defaultValues, {
-        ..._.omit(obj, [
-          'n_ctx',
-          'n_slot',
-          'max_model_len',
-          'max_total_tokens'
-        ]),
-        seed: obj.seed === -1 ? null : obj.seed,
-        max_tokens: tokensRes.defaultFormValue
-      }),
-      meta: {
-        ...obj,
-        max_tokens: tokensRes.max_tokens
-      }
-    };
-  };
-
-  const formFields = useMemo(() => {
-    const fields = paramsConfig?.map((item) => item.name);
-    return fields?.join(',');
-  }, [paramsConfig]);
-
-  const handleOnModelChange = useMemoizedFn((val: string) => {
-    if (!val) return;
-    const model = modelList.find((item) => item.value === val);
-    const { form: initialData, meta } = extractLLMMeta(model?.meta);
-    setModelMeta(meta);
-    setInitialValues({
-      ...initialData,
-      model: val
-    });
-    setParams({
-      ...initialData,
-      model: val
-    });
-    const config = defaultParamsConfig.map((item) => {
-      return {
-        ...item,
-        attrs:
-          item.name === 'max_tokens'
-            ? { ...item.attrs, max: meta.max_tokens }
-            : {
-                ...item.attrs
-              }
-      };
-    });
-    setParamsConfig(config);
-  });
-
-  const handleOnValuesChange = useMemoizedFn(
-    (changeValues: Record<string, any>, allValues: Record<string, any>) => {
-      if (changeValues.model) {
-        handleOnModelChange(changeValues.model);
-        return;
-      } else {
-        setParams(allValues);
-        setInitialValues(allValues);
-      }
-    }
-  );
-
-  useEffect(() => {
-    if (defaultModel && modelList.length) {
-      handleOnModelChange(defaultModel);
-    }
-  }, [defaultModel, modelList.length]);
-
-  return {
-    extractLLMMeta,
-    handleOnModelChange,
-    handleOnValuesChange,
-    setModelMeta,
-    setInitialValues,
-    setParams,
-    setParamsConfig,
-    formRef,
-    paramsConfig,
-    initialValues,
-    parameters,
-    modelMeta,
-    formFields
-  };
-};
-
 export const useInitImageMeta = (
   props: MessageProps,
   options: { type: string }
 ) => {
   const { modelList } = props;
-  const ImageAdvancedParamsConfig =
-    options.type === 'edit'
-      ? ImgAdvancedParamsConfig
-      : ImgAdvancedParamsConfig.filter((item) => item.name !== 'strength');
+  const ImageAdvancedParamsConfig: ParamsSchema[] = [];
 
   const form = useRef<any>(null);
   const [searchParams] = useSearchParams();
@@ -380,11 +219,6 @@ export const useInitImageMeta = (
     });
   };
 
-  const formFields = useMemo(() => {
-    const fields = paramsConfig?.map((item) => item.name);
-    return fields?.join(',');
-  }, [paramsConfig]);
-
   const handleOnModelChange = useMemoizedFn((val: string) => {
     if (!val) return;
     const model = modelList.find((item) => item.value === val);
@@ -488,7 +322,6 @@ export const useInitImageMeta = (
     setParamsConfig,
     form,
     modelMeta,
-    formFields,
     paramsConfig,
     initialValues,
     parameters,
@@ -498,7 +331,6 @@ export const useInitImageMeta = (
     imageSizeOptions,
     openaiCompatibleFieldsDefaultValus,
     advancedFieldsDefaultValus,
-    ImageAdvancedParamsConfig,
     imgInitialValues,
     ImageCountConfig,
     ImageSizeConfig,

@@ -21,16 +21,16 @@ import React, {
   useState
 } from 'react';
 import { EDIT_IMAGE_API } from '../apis';
-import DynamicParams from '../components/dynamic-params';
 import MessageInput from '../components/message-input';
 import RightContainer from '../components/right-container';
 import ViewCommonCode from '../components/view-common-code';
 import { EDIT_IMAGE_ACCEPT, scaleImageSize } from '../config';
-import { useInitImageMeta } from '../hooks/use-init-meta';
+import { useInitImageMeta } from '../hooks/use-init-image';
 import useTextImage from '../hooks/use-text-image';
 import '../style/ground-llm.less';
 import '../style/system-message-wrap.less';
 import { generateImageCode, generateOpenaiImageCode } from '../view-code/image';
+import DataForm from './forms';
 
 interface MessageProps {
   modelList: Global.BaseOption<string>[];
@@ -75,7 +75,6 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     setParamsConfig,
     form,
     modelMeta,
-    formFields,
     paramsConfig,
     initialValues,
     parameters,
@@ -529,9 +528,8 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
           </div>
         }
       >
-        <DynamicParams
+        <DataForm
           ref={form}
-          formFields={formFields}
           onValuesChange={handleOnValuesChange}
           paramsConfig={paramsConfig}
           initialValues={initialValues}

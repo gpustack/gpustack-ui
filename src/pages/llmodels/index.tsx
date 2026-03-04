@@ -8,7 +8,7 @@ import useUpdateChunkedList from '@/hooks/use-update-chunk-list';
 import { useMemoizedFn } from 'ahooks';
 import _ from 'lodash';
 import qs from 'query-string';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   MODELS_API,
   MODEL_INSTANCE_API,
@@ -18,7 +18,7 @@ import {
 import TableList from './components/table-list';
 import { ListItem } from './config/types';
 
-const Models: React.FC<{ clusterId?: number }> = ({ clusterId }) => {
+const Models = () => {
   const { pagination, setPagination } = usePaginationStatus(
     PaginationKey.Deployments
   );
@@ -49,7 +49,7 @@ const Models: React.FC<{ clusterId?: number }> = ({ clusterId }) => {
     page: 1,
     perPage: 10,
     search: '',
-    cluster_id: clusterId || 0,
+    cluster_id: 0,
     categories: [],
     state: '',
     sort_by: '',

@@ -8,11 +8,13 @@ interface LabelItemProps {
   onRemove: () => void;
   onChange: (value: string) => void;
   onBlur?: (e: any) => void;
+  onPaste?: (e: any) => void;
   renderItem?: (
     data: any,
     props: {
       onChange: (value: string) => void;
       onBlur?: (e: any) => void;
+      onPaste?: (e: any) => void;
     }
   ) => React.ReactNode;
   value: string;
@@ -29,6 +31,7 @@ const ListItem: React.FC<LabelItemProps> = (props) => {
     onRemove,
     onChange,
     onBlur,
+    onPaste,
     label,
     value,
     options,
@@ -47,13 +50,15 @@ const ListItem: React.FC<LabelItemProps> = (props) => {
       {renderItem ? (
         renderItem(data, {
           onChange: handleOnChange,
-          onBlur
+          onBlur,
+          onPaste
         })
       ) : (
         <HintInput
           value={value}
           onChange={handleOnChange}
           onBlur={onBlur}
+          onPaste={onPaste}
           label={label}
           sourceOptions={options}
           trim={trim}

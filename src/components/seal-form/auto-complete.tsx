@@ -12,6 +12,7 @@ const Link = Typography.Link;
 const SealAutoComplete: React.FC<
   AutoCompleteProps &
     SealFormItemProps & {
+      onPaste?: (e: any) => void;
       onInput?: (e: Event) => void;
       clearSpaceOnBlur?: boolean;
     }
@@ -148,6 +149,7 @@ const SealAutoComplete: React.FC<
           onChange={handleChange}
           popupRender={popupRender}
           onInput={handleOnInput}
+          onPaste={props.onPaste}
         ></AutoComplete>
       </Wrapper>
     </SelectWrapper>

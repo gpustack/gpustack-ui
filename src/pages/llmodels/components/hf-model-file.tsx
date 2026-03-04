@@ -311,7 +311,7 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
           }}
           options={modelFilesSortOptions.current}
           size="middle"
-          style={{ width: '120px' }}
+          style={{ width: '120px', fontWeight: 400 }}
         ></BaseSelect>
       </TitleWrapper>
       {dataSource.loading && (

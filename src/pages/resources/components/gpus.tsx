@@ -8,15 +8,12 @@ import { useQueryClusterList } from '@/pages/cluster-management/services/use-que
 import { useIntl, useSearchParams } from '@umijs/max';
 import { ConfigProvider, Table } from 'antd';
 import _ from 'lodash';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { GPU_DEVICES_API, queryGpuDevicesList } from '../apis';
 import { GPUDeviceItem } from '../config/types';
 import useGPUColumns from '../hooks/use-gpu-columns';
 
-const GPUList: React.FC<{ clusterId?: number; widths?: { input: number } }> = ({
-  clusterId,
-  widths
-}) => {
+const GPUList = () => {
   const {
     dataSource,
     queryParams,
@@ -31,10 +28,7 @@ const GPUList: React.FC<{ clusterId?: number; widths?: { input: number } }> = ({
     key: PaginationKey.GPUs,
     fetchAPI: queryGpuDevicesList,
     polling: true,
-    API: GPU_DEVICES_API,
-    defaultQueryParams: {
-      cluster_id: clusterId
-    }
+    API: GPU_DEVICES_API
   });
   const [searchParams] = useSearchParams();
   const page = searchParams.get('page');
@@ -108,8 +102,7 @@ const GPUList: React.FC<{ clusterId?: number; widths?: { input: number } }> = ({
           handleInputChange={handleNameChange}
           handleSelectChange={handleClusterChange}
           selectOptions={clusterList}
-          showSelect={page !== 'clusters'}
-          widths={{ input: widths?.input || 200 }}
+          showSelect={true}
         ></FilterBar>
         <ConfigProvider renderEmpty={renderEmpty}>
           <Table

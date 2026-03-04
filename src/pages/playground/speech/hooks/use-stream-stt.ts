@@ -2,6 +2,7 @@ import {
   fetchChunkedDataPostFormData,
   readStreamData
 } from '@/utils/fetch-chunk-data';
+import _ from 'lodash';
 import { useCallback, useRef, useState } from 'react';
 import { AUDIO_SPEECH_TO_TEXT_API } from '../../apis';
 import { extractErrorMessage } from '../../config';
@@ -72,30 +73,29 @@ export const useStreamSTT = (params?: UseStreamSTTParams) => {
         await readStreamData(
           reader,
           decoder,
-          (chunks: any[]) => {
-            chunks.forEach((chunk) => {
-              if (chunk.error) {
-                const errorMessage = extractErrorMessage(chunk.error);
-                setError({
-                  error: true,
-                  errorMessage
-                });
-                params?.onError?.(errorMessage);
-                return;
-              }
+          (chunk: any) => {
+            if (chunk.error) {
+              const errorMessage = extractErrorMessage(chunk.error);
+              setError({
+                error: true,
+                errorMessage
+              });
+              params?.onError?.(errorMessage);
+              return;
+            } else {
+              const deltaContent =
+                _.get(chunk, 'choices.0.delta.content', '') === null
+                  ? ''
+                  : _.get(chunk, 'choices.0.delta.content', '');
 
-              // STT stream response format: { text: "..." }
-              if (chunk.text) {
-                fullText += chunk.text;
-                params?.onChunk?.(fullText);
-                setProgress((prev) => prev + 1);
-              }
-            });
+              fullText += deltaContent;
+              params?.onChunk?.(fullText);
+              setProgress((prev) => prev + 1);
+            }
           },
-          100 // throttle delay
+          100
         );
 
-        // Stream completed
         params?.onComplete?.(fullText);
       } catch (err: any) {
         if (err.name === 'AbortError') {

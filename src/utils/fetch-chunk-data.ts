@@ -178,6 +178,19 @@ export const readStreamData = async (
     try {
       textBuffer += decoder.decode(value, { stream: true });
 
+      // Check if it's a pure JSON error response (not SSE format)
+      if (!textBuffer.startsWith('data:') && !textBuffer.startsWith('error:')) {
+        try {
+          const jsonData = JSON.parse(textBuffer);
+          bufferManager.add({ error: jsonData });
+          textBuffer = '';
+          throttledCallback();
+          continue;
+        } catch {
+          // Not a complete JSON yet, might be SSE format or incomplete data
+        }
+      }
+
       if (textBuffer.startsWith('error:')) {
         const errorStr = textBuffer.slice(7).trim();
         const jsonData = JSON.parse(errorStr);

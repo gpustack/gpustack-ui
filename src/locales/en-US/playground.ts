@@ -173,5 +173,7 @@ export default {
     'Enter a reference audio URL, or upload an audio file.',
   'playground.params.refAudio.text':
     'Transcript of Reference Audio (for ICL mode)',
-  'playground.params.refAudio.vectorMode': 'Use Speaker Embedding Only (no ICL)'
+  'playground.params.refAudio.vectorMode':
+    'Use Speaker Embedding Only (no ICL)',
+  'playground.params.streamMode': 'Enable Streaming'
 };

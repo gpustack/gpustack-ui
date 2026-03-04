@@ -170,7 +170,9 @@ export default {
     'Enter a reference audio URL, or upload an audio file.',
   'playground.params.refAudio.text':
     'Transcript of Reference Audio (for ICL mode)',
-  'playground.params.refAudio.vectorMode': 'Use Speaker Embedding Only (no ICL)'
+  'playground.params.refAudio.vectorMode':
+    'Use Speaker Embedding Only (no ICL)',
+  'playground.params.streamMode': 'Enable Streaming'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -178,5 +180,6 @@ export default {
 // 2. 'playground.uploadImage.url.holder': 'Enter an image URL',
 // 3.  'playground.uploadImage.url.button': 'Add Image from URL',
 // 4. 'playground.params.duration': 'Duration (seconds)',
-// 5. 'playground.params.resolution': 'Resolution'
+// 5. 'playground.params.resolution': 'Resolution',
+// 6.  'playground.params.streamMode': 'Enable Streaming'
 // ========== End of To-Do List ==========

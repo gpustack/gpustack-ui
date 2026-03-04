@@ -22,16 +22,17 @@ import React, {
   useRef,
   useState
 } from 'react';
-import { AUDIO_SPEECH_TO_TEXT_API, speechToText } from '../apis';
+import { AUDIO_SPEECH_TO_TEXT_API } from '../apis';
 import AudioInput from '../components/audio-input';
 import RightContainer from '../components/right-container';
 import ViewCommonCode from '../components/view-common-code';
-import { SpeechToTextFormat, extractErrorMessage } from '../config';
+import { SpeechToTextFormat } from '../config';
 import '../style/ground-llm.less';
 import '../style/speech-to-text.less';
 import '../style/system-message-wrap.less';
 import { speechToTextCode } from '../view-code/audio';
 import STTForm from './forms/stt-form';
+import { useNonStreamSTT, useStreamSTT } from './hooks';
 
 interface MessageProps {
   modelList: Global.BaseOption<string>[];
@@ -67,6 +68,46 @@ const GroundSTT: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   const { initialize, updateScrollerPosition } = useOverlayScroller();
 
+  // Initialize non-stream STT hook
+  const nonStreamSTT = useNonStreamSTT({
+    onSuccess: (result) => {
+      setMessageList([
+        {
+          content: result.text,
+          uid: messageId.current
+        }
+      ]);
+    },
+    onError: (error) => {
+      setTokenResult({
+        error: true,
+        errorMessage: error
+      });
+    }
+  });
+
+  // Initialize stream STT hook
+  const streamSTT = useStreamSTT({
+    onChunk: (text) => {
+      // Update message list with streaming text
+      setMessageList([
+        {
+          content: text,
+          uid: messageId.current
+        }
+      ]);
+    },
+    onComplete: () => {
+      console.log('Stream transcription completed');
+    },
+    onError: (error) => {
+      setTokenResult({
+        error: true,
+        errorMessage: error
+      });
+    }
+  });
+
   useImperativeHandle(ref, () => {
     return {
       viewCode() {
@@ -94,6 +135,7 @@ const GroundSTT: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   const handleStopConversation = () => {
     cancelRequest();
+    streamSTT.abort();
     setLoading(false);
   };
 
@@ -115,40 +157,21 @@ const GroundSTT: React.FC<MessageProps> = forwardRef((props, ref) => {
           type: audioData.type
         })
       };
-      const result: any = await speechToText(
-        {
-          data: params
-        },
-        {
-          cancelToken: getCanceltToken()
-        }
-      );
 
-      if (
-        (result?.status_code && result?.status_code !== 200) ||
-        result?.error
-      ) {
-        setTokenResult({
-          error: true,
-          errorMessage: extractErrorMessage(result)
-        });
-        return;
+      // Choose stream or non-stream based on parameters
+      if (parameters.stream) {
+        // Stream mode: text will be updated in real-time
+        await streamSTT.generate(params);
+      } else {
+        // Non-stream mode: get complete text at once
+        await nonStreamSTT.generate(params, getCanceltToken());
       }
-      setMessageList([
-        {
-          content: result.text,
-          uid: messageId.current
-        }
-      ]);
     } catch (error: any) {
       console.log('error:', error);
-      const res = error?.response?.data;
-      if (res?.error || (res?.status_code && res?.status_code !== 200)) {
-        setTokenResult({
-          error: true,
-          errorMessage: extractErrorMessage(res)
-        });
-      }
+      setTokenResult({
+        error: true,
+        errorMessage: error?.message || 'Unknown error'
+      });
     } finally {
       setLoading(false);
       setIsRecording(false);
@@ -202,7 +225,7 @@ const GroundSTT: React.FC<MessageProps> = forwardRef((props, ref) => {
   );
 
   const handleOnAnalyse = useCallback((data: any, analyser: any) => {
-    setAudioChunks((pre: any) => {
+    setAudioChunks(() => {
       return {
         data: data,
         analyser: analyser

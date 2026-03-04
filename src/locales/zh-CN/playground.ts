@@ -166,5 +166,6 @@ export default {
     '输入一个参考音频的 URL，或上传一个音频文件。',
   'playground.params.refAudio.text': '参考音频文本（用于上下文学习模式）',
   'playground.params.refAudio.vectorMode':
-    '仅使用说话人嵌入（不使用上下文学习）'
+    '仅使用说话人嵌入（不使用上下文学习）',
+  'playground.params.streamMode': '启用流式输出'
 };

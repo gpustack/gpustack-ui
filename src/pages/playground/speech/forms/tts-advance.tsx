@@ -110,17 +110,32 @@ const TTSAdvanceConfig: React.FC = () => {
           ></SealInput.Input>
         </Form.Item>
       </Container>
-      <Form.Item name="ref_text" style={{ marginBottom: 8 }}>
+      <Form.Item name="ref_text">
         <SealInput.TextArea
           allowClear
           scaleSize={true}
           label={intl.formatMessage({ id: 'playground.params.refAudio.text' })}
         ></SealInput.TextArea>
       </Form.Item>
-      <Form.Item name="x_vector_only_mode" valuePropName="checked">
+      <Form.Item
+        name="x_vector_only_mode"
+        valuePropName="checked"
+        style={{ marginBottom: 8 }}
+      >
         <CheckboxField
           label={intl.formatMessage({
             id: 'playground.params.refAudio.vectorMode'
+          })}
+        ></CheckboxField>
+      </Form.Item>
+      <Form.Item
+        name="stream"
+        valuePropName="checked"
+        style={{ marginBottom: 8 }}
+      >
+        <CheckboxField
+          label={intl.formatMessage({
+            id: 'playground.params.streamMode'
           })}
         ></CheckboxField>
       </Form.Item>

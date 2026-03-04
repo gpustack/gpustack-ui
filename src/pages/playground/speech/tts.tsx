@@ -14,16 +14,16 @@ import React, {
   useRef,
   useState
 } from 'react';
-import { AUDIO_TEXT_TO_SPEECH_API, CHAT_API, textToSpeech } from '../apis';
+import { AUDIO_TEXT_TO_SPEECH_API } from '../apis';
 import MessageInput from '../components/message-input';
 import RightContainer from '../components/right-container';
 import ViewCommonCode from '../components/view-common-code';
-import { extractErrorMessage } from '../config';
 import { MessageItem } from '../config/types';
 import '../style/ground-llm.less';
 import '../style/system-message-wrap.less';
 import { TextToSpeechCode } from '../view-code/audio';
 import TTSDataForm from './forms/tts-form';
+import { useNonStreamTTS, useStreamTTS } from './hooks';
 
 interface MessageProps {
   modelList: Global.BaseOption<string>[];
@@ -55,10 +55,57 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
   const [loading, setLoading] = useState(false);
   const [tokenResult, setTokenResult] = useState<any>(null);
   const [collapse, setCollapse] = useState(false);
-  const controllerRef = useRef<any>(null);
   const checkvalueRef = useRef<any>(true);
   const [currentPrompt, setCurrentPrompt] = useState<string>('');
   const formRef = useRef<any>(null);
+
+  // Initialize non-stream TTS hook
+  const nonStreamTTS = useNonStreamTTS({
+    onSuccess: (result) => {
+      setMessageList([
+        {
+          input: currentPrompt,
+          voice: parameters.voice,
+          format: parameters.response_format,
+          speed: parameters.speed,
+          uid: messageId.current,
+          autoplay: checkvalueRef.current,
+          audioUrl: result.url
+        }
+      ]);
+    },
+    onError: (error) => {
+      setTokenResult({
+        error: true,
+        errorMessage: error
+      });
+      setMessageList([]);
+    }
+  });
+
+  // Initialize stream TTS hook
+  const streamTTS = useStreamTTS({
+    autoPlay: checkvalueRef.current,
+    onComplete: (audioUrl) => {
+      // Update messageList with complete audio URL when stream finishes
+      setMessageList((prev) => {
+        if (prev.length > 0) {
+          const updated = [...prev];
+          updated[updated.length - 1].audioUrl = audioUrl;
+          return updated;
+        }
+        return prev;
+      });
+      console.log('Stream playback completed');
+    },
+    onError: (error) => {
+      setTokenResult({
+        error: true,
+        errorMessage: error
+      });
+      setMessageList([]);
+    }
+  });
 
   useImperativeHandle(ref, () => {
     return {
@@ -104,7 +151,8 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
   };
 
   const handleStopConversation = () => {
-    controllerRef.current?.abort?.();
+    nonStreamTTS.abort();
+    streamTTS.abort();
     setLoading(false);
   };
 
@@ -116,61 +164,48 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
     try {
       await formRef.current?.form.validateFields();
       if (!parameters.model) return;
+
       setLoading(true);
       setMessageId();
       setTokenResult(null);
-      setCurrentPrompt(current?.content || '');
+      const inputText = current?.content || currentPrompt;
+      setCurrentPrompt(inputText);
       setMessageList([]);
 
       setRouteCache(routeCachekey['/playground/speech'], true);
 
-      controllerRef.current?.abort?.();
-      controllerRef.current = new AbortController();
-      const signal = controllerRef.current.signal;
-
       const params = {
         ...dropEmptyFields(parameters),
-        input: current?.content || currentPrompt
+        input: inputText
       };
-      const res: any = await textToSpeech({
-        data: params,
-        url: CHAT_API,
-        signal
-      });
 
       setParams(params);
 
-      console.log('result:', res);
-
-      if ((res?.status_code && res?.status_code !== 200) || res?.error) {
-        setTokenResult({
-          error: true,
-          errorMessage: extractErrorMessage(res)
-        });
-        setMessageList([]);
-        return;
+      // Choose stream or non-stream based on parameters
+      if (parameters.stream) {
+        // Stream mode: audio will play in real-time
+        setMessageList([
+          {
+            input: inputText,
+            voice: parameters.voice,
+            format: parameters.response_format,
+            speed: parameters.speed,
+            uid: messageId.current,
+            autoplay: checkvalueRef.current,
+            audioUrl: '' // No URL for stream mode, audio plays in real-time
+          }
+        ]);
+        await streamTTS.generate(params);
+      } else {
+        // Non-stream mode: get complete audio URL
+        await nonStreamTTS.generate(params);
       }
-
-      setMessageList([
-        {
-          input: current?.content || currentPrompt,
-          voice: parameters.voice,
-          format: parameters.response_format,
-          speed: parameters.speed,
-          uid: messageId.current,
-          autoplay: checkvalueRef.current,
-          audioUrl: res.url
-        }
-      ]);
     } catch (error: any) {
-      const res = error?.response?.data;
       console.log('error:', error);
-      if (res?.error) {
-        setTokenResult({
-          error: true,
-          errorMessage: extractErrorMessage(res)
-        });
-      }
+      setTokenResult({
+        error: true,
+        errorMessage: error?.message || 'Unknown error'
+      });
     } finally {
       setLoading(false);
       setRouteCache(routeCachekey['/playground/speech'], false);

@@ -68,7 +68,6 @@ const GroundSTT: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   const { initialize, updateScrollerPosition } = useOverlayScroller();
 
-  // Initialize non-stream STT hook
   const nonStreamSTT = useNonStreamSTT({
     onSuccess: (result) => {
       setMessageList([
@@ -86,10 +85,8 @@ const GroundSTT: React.FC<MessageProps> = forwardRef((props, ref) => {
     }
   });
 
-  // Initialize stream STT hook
   const streamSTT = useStreamSTT({
     onChunk: (text) => {
-      // Update message list with streaming text
       setMessageList([
         {
           content: text,
@@ -158,12 +155,9 @@ const GroundSTT: React.FC<MessageProps> = forwardRef((props, ref) => {
         })
       };
 
-      // Choose stream or non-stream based on parameters
       if (parameters.stream) {
-        // Stream mode: text will be updated in real-time
         await streamSTT.generate(params);
       } else {
-        // Non-stream mode: get complete text at once
         await nonStreamSTT.generate(params, getCanceltToken());
       }
     } catch (error: any) {
@@ -417,7 +411,7 @@ const GroundSTT: React.FC<MessageProps> = forwardRef((props, ref) => {
                   <div
                     style={{
                       padding: '8px 14px',
-                      lineHeight: '20px',
+                      lineHeight: '22px',
                       display: 'flex',
                       justifyContent: 'center',
                       wordBreak: 'break-word'

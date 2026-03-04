@@ -1,3 +1,4 @@
+import CheckboxField from '@/components/seal-form/checkbox-field';
 import SealSelect from '@/components/seal-form/seal-select';
 import { useIntl, useSearchParams } from '@umijs/max';
 import { Form } from 'antd';
@@ -122,6 +123,17 @@ const STTForm: React.FC<ParamsSettingsProps> = forwardRef(
               label={intl.formatMessage({ id: 'playground.params.language' })}
               options={languageOptions}
             ></SealSelect>
+          </Form.Item>
+          <Form.Item
+            name="stream"
+            valuePropName="checked"
+            style={{ marginBottom: 8 }}
+          >
+            <CheckboxField
+              label={intl.formatMessage({
+                id: 'playground.params.streamMode'
+              })}
+            ></CheckboxField>
           </Form.Item>
         </Form>
       </FormContext.Provider>

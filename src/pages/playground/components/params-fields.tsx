@@ -55,8 +55,10 @@ const ParamsFields: React.FC<ParamsFieldsProps> = ({ paramsConfig = [] }) => {
               'formItemAttrs',
               'dependencies',
               'disabledConfig',
-              'description'
+              'description',
+              'initAttrs'
             ])}
+            {...item.initAttrs?.(meta)}
           />
         </Form.Item>
       );
@@ -93,7 +95,8 @@ const ParamsFields: React.FC<ParamsFieldsProps> = ({ paramsConfig = [] }) => {
                 'formItemAttrs',
                 'dependencies',
                 'disabledConfig',
-                'description'
+                'description',
+                'initAttrs'
               ])}
               {...item.initAttrs?.(meta)}
             />

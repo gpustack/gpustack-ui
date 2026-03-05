@@ -1,4 +1,5 @@
 import AutoComplete from '@/components/seal-form/auto-complete';
+import CheckboxField from '@/components/seal-form/checkbox-field';
 import SealSelect from '@/components/seal-form/seal-select';
 import CollapsePanel from '@/pages/_components/collapse-panel';
 import { getLocale, useIntl, useSearchParams } from '@umijs/max';
@@ -13,7 +14,7 @@ import React, {
 } from 'react';
 import ModelSelect from '../../components/model-select';
 import ParamsFields from '../../components/params-fields';
-import { FormContext } from '../../config/form-context';
+import { FormContext, useFormContext } from '../../config/form-context';
 import { TTSAdvancedParamsConfig } from '../params-config';
 import AdvanceConfig from './tts-advance';
 
@@ -35,6 +36,7 @@ type ParamsSettingsProps = {
 
 const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
   ({ onFinish, onFinishFailed, updatateParams, modelList = [] }, ref) => {
+    const { onValuesChange } = useFormContext();
     const [searchParams] = useSearchParams();
     const modelType = searchParams.get('type') || '';
     const selectModel = searchParams.get('model')
@@ -124,6 +126,14 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
       if (changeValues.model) {
         return;
       }
+
+      if ('stream' in changeValues && changeValues.stream) {
+        allValues.response_format = 'pcm';
+        form.setFieldsValue({
+          response_format: 'pcm'
+        });
+      }
+
       updatateParams(allValues);
     };
 
@@ -164,14 +174,26 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
               options={vociceOptions}
             ></AutoComplete>
           </Form.Item>
-          <Form.Item name="response_format">
+          <Form.Item name="response_format" style={{ marginBottom: 8 }}>
             <SealSelect
               label={intl.formatMessage({ id: 'playground.params.format' })}
               options={[
                 { label: 'mp3', value: 'mp3' },
-                { label: 'wav', value: 'wav' }
+                { label: 'wav', value: 'wav' },
+                { label: 'pcm', value: 'pcm' }
               ]}
             ></SealSelect>
+          </Form.Item>
+          <Form.Item
+            name="stream"
+            valuePropName="checked"
+            style={{ marginBottom: 8 }}
+          >
+            <CheckboxField
+              label={intl.formatMessage({
+                id: 'playground.params.streamMode'
+              })}
+            ></CheckboxField>
           </Form.Item>
           <CollapsePanel
             activeKey={activeKey}

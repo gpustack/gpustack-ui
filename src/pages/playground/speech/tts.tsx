@@ -58,8 +58,18 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
   const checkvalueRef = useRef<any>(true);
   const [currentPrompt, setCurrentPrompt] = useState<string>('');
   const formRef = useRef<any>(null);
+  const [playingStream, setPlayingStream] = useState(false);
 
-  // Initialize non-stream TTS hook
+  const handleOnPlay = () => {
+    // TODO
+    console.log('Play audio');
+  };
+
+  const handleOnPause = () => {
+    // TODO
+    console.log('Pause audio');
+  };
+
   const nonStreamTTS = useNonStreamTTS({
     onSuccess: (result) => {
       setMessageList([
@@ -83,11 +93,25 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
     }
   });
 
-  // Initialize stream TTS hook
+  const playerRef = useRef<any>(null);
+
   const streamTTS = useStreamTTS({
     autoPlay: checkvalueRef.current,
+    playerRef: playerRef,
+    onUrlReady: (url) => {
+      console.log('onUrlReady called with URL:', url);
+      // Update messageList with stream URL when it's ready
+      setMessageList((prev) => {
+        if (prev.length > 0) {
+          const updated = [...prev];
+          updated[updated.length - 1].audioUrl = url;
+          return updated;
+        }
+        return prev;
+      });
+    },
     onComplete: (audioUrl) => {
-      // Update messageList with complete audio URL when stream finishes
+      console.log('onComplete called with audioUrl:', audioUrl);
       setMessageList((prev) => {
         if (prev.length > 0) {
           const updated = [...prev];
@@ -96,7 +120,7 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
         }
         return prev;
       });
-      console.log('Stream playback completed');
+      setPlayingStream(false);
     },
     onError: (error) => {
       setTokenResult({
@@ -104,8 +128,11 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
         errorMessage: error
       });
       setMessageList([]);
+      setPlayingStream(false);
     }
   });
+
+  console.log('isPlaying:', streamTTS.isPlaying);
 
   useImperativeHandle(ref, () => {
     return {
@@ -180,10 +207,12 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
       };
 
       setParams(params);
+      console.log('submitMessage params:', streamTTS.isPlaying);
 
       // Choose stream or non-stream based on parameters
       if (parameters.stream) {
-        // Stream mode: audio will play in real-time
+        setPlayingStream(true);
+        // Stream mode: create initial message entry, URL will be set via onUrlReady callback
         setMessageList([
           {
             input: inputText,
@@ -191,8 +220,8 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
             format: parameters.response_format,
             speed: parameters.speed,
             uid: messageId.current,
-            autoplay: checkvalueRef.current,
-            audioUrl: '' // No URL for stream mode, audio plays in real-time
+            autoplay: false,
+            audioUrl: '' // Will be updated via onUrlReady callback
           }
         ]);
         await streamTTS.generate(params);
@@ -202,6 +231,7 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
       }
     } catch (error: any) {
       console.log('error:', error);
+      setPlayingStream(false);
       setTokenResult({
         error: true,
         errorMessage: error?.message || 'Unknown error'
@@ -252,7 +282,16 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
           >
             <div className="content" style={{ maxWidth: 1000 }}>
               {messageList.length ? (
-                <SpeechContent dataList={messageList} loading={loading} />
+                <SpeechContent
+                  dataList={messageList}
+                  loading={loading}
+                  onPlay={handleOnPlay}
+                  onPause={handleOnPause}
+                  playerRef={playerRef}
+                  isPlaying={playingStream}
+                  isStream={parameters.stream}
+                  analyserData={streamTTS.audioChunks}
+                />
               ) : (
                 <div className="flex-column font-size-14 flex-center gap-20">
                   <span>

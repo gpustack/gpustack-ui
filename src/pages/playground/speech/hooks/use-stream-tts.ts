@@ -1,13 +1,18 @@
 import { fetchChunkedData } from '@/utils/fetch-chunk-data';
+import { pcmToWav } from '@/utils/pcm-to-wav';
+import { useMemoizedFn } from 'ahooks';
 import { useCallback, useRef, useState } from 'react';
 import { AUDIO_TEXT_TO_SPEECH_API } from '../../apis';
 import { extractErrorMessage } from '../../config';
+import { usePCMStreamPlayer } from './use-pcm-stream-player';
 
 interface UseStreamTTSParams {
   onChunk?: (chunk: ArrayBuffer) => void;
   onComplete?: (audioUrl: string) => void; // Return complete audio URL when done
   onError?: (error: any) => void;
+  onUrlReady?: (url: string) => void; // Called when the stream URL is ready
   autoPlay?: boolean;
+  playerRef?: React.RefObject<any>; // Reference to the player for controlling playback
 }
 
 interface TTSParams {
@@ -20,262 +25,325 @@ interface TTSParams {
   [key: string]: any;
 }
 
-/**
- * Audio chunk queue manager for smooth playback
- * Uses a single Audio element for better performance and seamless playback
- */
-class AudioQueue {
-  private queue: Blob[] = [];
-  private audioElement: HTMLAudioElement;
-  private isPlaying = false;
-  private currentIndex = 0;
-  private onComplete?: () => void;
-  private streamEnded = false;
-  private minBufferSize = 2; // Minimum chunks to buffer before starting playback
-  private maxQueueSize = 10; // Maximum queue size to prevent memory issues
-  private currentBlobUrl: string | null = null;
+// MediaSource codec mapping for different formats
+const MEDIA_SOURCE_CODECS: Record<string, string> = {
+  mp4: 'audio/mp4; codecs="mp4a.40.2"',
+  webm: 'audio/webm; codecs="opus"',
+  ogg: 'audio/ogg; codecs="opus"',
+  opus: 'audio/webm; codecs="opus"',
+  pcm: 'audio/pcm; codecs=pcm'
+};
 
-  constructor(onComplete?: () => void) {
-    this.onComplete = onComplete;
-    // Create a single Audio element for the entire playback session
-    this.audioElement = new Audio();
-    this.setupAudioListeners();
-  }
-
-  private setupAudioListeners() {
-    this.audioElement.onended = () => {
-      this.cleanupCurrentBlob();
-      this.playNext();
-    };
-
-    this.audioElement.onerror = () => {
-      console.error('Audio playback error');
-      this.cleanupCurrentBlob();
-      this.playNext();
-    };
-  }
-
-  private cleanupCurrentBlob() {
-    if (this.currentBlobUrl) {
-      URL.revokeObjectURL(this.currentBlobUrl);
-      this.currentBlobUrl = null;
-    }
-  }
-
-  addChunk(chunk: Blob) {
-    this.queue.push(chunk);
-
-    // Start playback if we have enough buffer
-    if (!this.isPlaying && this.queue.length >= this.minBufferSize) {
-      this.playNext();
-    }
-  }
-
-  // Check if queue is full (for backpressure)
-  isFull(): boolean {
-    return this.queue.length - this.currentIndex >= this.maxQueueSize;
-  }
-
-  // Get current queue size (unplayed chunks)
-  getQueueSize(): number {
-    return this.queue.length - this.currentIndex;
-  }
-
-  private async playNext() {
-    if (this.currentIndex >= this.queue.length) {
-      // If stream has ended and no more chunks, complete
-      if (this.streamEnded) {
-        this.isPlaying = false;
-        this.onComplete?.();
-      }
-      return;
-    }
-
-    this.isPlaying = true;
-    const chunk = this.queue[this.currentIndex];
-    this.currentIndex++;
-
-    // Reuse the same Audio element, just update the src
-    this.cleanupCurrentBlob();
-    this.currentBlobUrl = URL.createObjectURL(chunk);
-    this.audioElement.src = this.currentBlobUrl;
-
-    try {
-      await this.audioElement.play();
-    } catch (error) {
-      console.error('Failed to play audio chunk:', error);
-      this.cleanupCurrentBlob();
-      this.playNext();
-    }
-  }
-
-  markStreamEnded() {
-    this.streamEnded = true;
-    // If not playing and has remaining chunks, start playing
-    if (!this.isPlaying && this.currentIndex < this.queue.length) {
-      this.playNext();
-    }
-  }
-
-  stop() {
-    this.isPlaying = false;
-    this.audioElement.pause();
-    this.cleanupCurrentBlob();
-  }
-
-  clear() {
-    this.stop();
-    this.queue = [];
-    this.currentIndex = 0;
-    this.streamEnded = false;
-  }
-}
+// Check if format supports MediaSource API
+const supportsMediaSource = (format: string): boolean => {
+  if (!window.MediaSource) return false;
+  const codec = MEDIA_SOURCE_CODECS[format];
+  return codec ? MediaSource.isTypeSupported(codec) : false;
+};
 
 export const useStreamTTS = (params?: UseStreamTTSParams) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<any>(null);
   const [progress, setProgress] = useState(0);
+  const [streamUrl, setStreamUrl] = useState<string>('');
   const controllerRef = useRef<AbortController | null>(null);
-  const audioQueueRef = useRef<AudioQueue | null>(null);
+  const mediaSourceRef = useRef<MediaSource | null>(null);
+  const sourceBufferRef = useRef<SourceBuffer | null>(null);
+  const queueRef = useRef<Uint8Array[]>([]);
+  const isAppendingRef = useRef(false);
+  const allChunksRef = useRef<Uint8Array[]>([]);
+  const [isPCM, setIsPCM] = useState(false);
+  const completeAudioUrlRef = useRef<string>('');
 
-  const generate = useCallback(
-    async (ttsParams: TTSParams) => {
-      try {
-        setLoading(true);
-        setError(null);
-        setProgress(0);
+  // PCM stream player instance
+  const pcmPlayer = usePCMStreamPlayer({
+    onError: (error) => {
+      console.error('PCM player error:', error);
+      params?.onError?.(error);
+    },
+    onPlaybackComplete: () => {
+      console.log('PCM playback complete');
+      // Create complete audio URL from all chunks when playback finishes
+      if (allChunksRef.current.length > 0) {
+        const totalLength = allChunksRef.current.reduce(
+          (acc, chunk) => acc + chunk.length,
+          0
+        );
+        const pcmData = new Uint8Array(totalLength);
+        let offset = 0;
+        for (const chunk of allChunksRef.current) {
+          pcmData.set(chunk, offset);
+          offset += chunk.length;
+        }
 
-        // Abort previous request if exists
-        controllerRef.current?.abort();
-        audioQueueRef.current?.clear();
+        // Convert combined PCM data to WAV and create URL
+        const wavBlob = pcmToWav(pcmData.buffer);
+        const completeUrl = URL.createObjectURL(wavBlob);
+        params?.onComplete?.(completeUrl);
+        // when the stream ends, should clear the audio analyer data, because the the audio elment will play the complete audio, and the analyser will generate new.
+        pcmPlayer.setAudioChunks(null);
+      }
+    }
+  });
 
-        controllerRef.current = new AbortController();
-        const signal = controllerRef.current.signal;
+  const processQueue = useCallback(() => {
+    if (
+      isAppendingRef.current ||
+      queueRef.current.length === 0 ||
+      !sourceBufferRef.current ||
+      sourceBufferRef.current.updating
+    ) {
+      return;
+    }
 
-        // Create audio queue for smooth playback
-        audioQueueRef.current = new AudioQueue();
+    isAppendingRef.current = true;
+    const chunk = queueRef.current.shift()!;
+    try {
+      sourceBufferRef.current.appendBuffer(chunk.buffer as ArrayBuffer);
+    } catch (error) {
+      console.error('Failed to append buffer:', error);
+      isAppendingRef.current = false;
+    }
+  }, []);
 
-        // Add stream parameter
-        const streamParams = {
-          ...ttsParams,
-          stream: true
-        };
+  const generate = useMemoizedFn(async (ttsParams: TTSParams) => {
+    try {
+      setLoading(true);
+      setError(null);
+      setProgress(0);
+      setIsPCM(ttsParams.response_format === 'pcm');
+      allChunksRef.current = [];
 
-        const result = await fetchChunkedData({
-          url: AUDIO_TEXT_TO_SPEECH_API,
-          data: streamParams,
-          signal
-        });
+      // Abort previous request if exists
+      controllerRef.current?.abort();
 
-        if ('error' in result) {
-          const errorMessage = extractErrorMessage(result.data);
-          setError({
-            error: true,
-            errorMessage
+      // Clean up previous PCM player
+      pcmPlayer.stop();
+
+      // Clean up previous MediaSource/URL
+      if (streamUrl) {
+        URL.revokeObjectURL(streamUrl);
+        setStreamUrl('');
+      }
+
+      if (mediaSourceRef.current) {
+        if (mediaSourceRef.current.readyState === 'open') {
+          mediaSourceRef.current.endOfStream();
+        }
+        mediaSourceRef.current = null;
+      }
+
+      sourceBufferRef.current = null;
+      queueRef.current = [];
+      isAppendingRef.current = false;
+
+      controllerRef.current = new AbortController();
+      const signal = controllerRef.current.signal;
+
+      const format = ttsParams.response_format || 'mp3';
+      const isPCM = format === 'pcm';
+      const useMediaSource = !isPCM && supportsMediaSource(format);
+
+      let url = '';
+      console.log(
+        'format:',
+        format,
+        'isPCM:',
+        isPCM,
+        'useMediaSource:',
+        useMediaSource
+      );
+
+      if (isPCM) {
+        // PCM format: use Web Audio API for playback
+        pcmPlayer.initialize();
+        // Create a virtual URL identifier for PCM stream (not an actual URL since we're using Web Audio API)
+        url = 'pcm-stream://playing';
+        setStreamUrl(url);
+        params?.onUrlReady?.(url);
+      } else if (useMediaSource) {
+        // Use MediaSource API for supported formats
+        const mediaSource = new MediaSource();
+        mediaSourceRef.current = mediaSource;
+        url = URL.createObjectURL(mediaSource);
+        console.log('Created MediaSource URL:', url);
+        setStreamUrl(url);
+        params?.onUrlReady?.(url); // Notify that URL is ready
+        console.log('Called onUrlReady with URL:', url);
+
+        // Wait for MediaSource to be ready
+        await new Promise<void>((resolve, reject) => {
+          const handleSourceOpen = () => {
+            try {
+              const mimeType = MEDIA_SOURCE_CODECS[format];
+              const sourceBuffer = mediaSource.addSourceBuffer(mimeType);
+              sourceBufferRef.current = sourceBuffer;
+
+              sourceBuffer.addEventListener('updateend', () => {
+                isAppendingRef.current = false;
+                processQueue();
+              });
+
+              sourceBuffer.addEventListener('error', (e) => {
+                console.error('SourceBuffer error:', e);
+              });
+
+              resolve();
+            } catch (error) {
+              reject(error);
+            }
+          };
+
+          mediaSource.addEventListener('sourceopen', handleSourceOpen, {
+            once: true
           });
-          params?.onError?.(errorMessage);
-          return;
-        }
 
-        const { reader } = result;
-
-        if (!reader) {
-          throw new Error('Failed to get reader from response');
-        }
-
-        // Read stream data
-        let audioChunks: Uint8Array[] = [];
-        let allAudioChunks: Uint8Array[] = []; // Collect all chunks for final URL
-        let chunkCount = 0;
-
-        while (true) {
-          // Backpressure: wait if queue is full
-          while (audioQueueRef.current?.isFull()) {
-            await new Promise((resolve) => {
-              setTimeout(resolve, 100);
-            });
-          }
-
-          const { done, value } = await reader.read();
-
-          if (done) {
-            // Process remaining chunks for playback
-            if (audioChunks.length > 0) {
-              const blob = new Blob(audioChunks as any, {
-                type: `audio/${ttsParams.response_format || 'mp3'}`
-              });
-              audioQueueRef.current?.addChunk(blob);
-              params?.onChunk?.(blob.arrayBuffer() as any);
+          // Timeout fallback
+          setTimeout(() => {
+            if (mediaSource.readyState !== 'open') {
+              reject(new Error('MediaSource failed to open'));
             }
-            audioQueueRef.current?.markStreamEnded();
+          }, 5000);
+        });
+      }
 
-            // Create complete audio URL from all chunks
-            if (allAudioChunks.length > 0) {
-              const completeBlob = new Blob(allAudioChunks as any, {
-                type: `audio/${ttsParams.response_format || 'mp3'}`
-              });
-              const completeUrl = URL.createObjectURL(completeBlob);
-              params?.onComplete?.(completeUrl);
-            }
-            break;
-          }
+      // Add stream parameter
+      const streamParams = {
+        ...ttsParams,
+        stream: true
+      };
 
-          if (value) {
-            audioChunks.push(value);
-            allAudioChunks.push(value); // Keep all chunks for final URL
-            chunkCount++;
+      const result = await fetchChunkedData({
+        url: AUDIO_TEXT_TO_SPEECH_API,
+        data: streamParams,
+        signal
+      });
 
-            // For fast API responses, batch chunks to avoid too many small audio elements
-            // Create a blob every N chunks or when chunk size exceeds threshold
-            const totalSize = audioChunks.reduce(
-              (sum, chunk) => sum + chunk.length,
-              0
-            );
-            const shouldFlush = chunkCount >= 5 || totalSize >= 50000; // ~50KB threshold
-
-            if (shouldFlush) {
-              const blob = new Blob(audioChunks as any, {
-                type: `audio/${ttsParams.response_format || 'mp3'}`
-              });
-              audioQueueRef.current?.addChunk(blob);
-              params?.onChunk?.(blob.arrayBuffer() as any);
-
-              audioChunks = [];
-              chunkCount = 0;
-              setProgress((prev) => prev + 1);
-            }
-          }
-        }
-      } catch (err: any) {
-        if (err.name === 'AbortError') {
-          console.log('Stream aborted');
-          return;
-        }
-
-        const errorMessage = err?.message || 'Stream processing failed';
+      if ('error' in result) {
+        const errorMessage = extractErrorMessage(result.data);
         setError({
           error: true,
           errorMessage
         });
         params?.onError?.(errorMessage);
-      } finally {
-        setLoading(false);
+        return;
       }
-    },
-    [params]
-  );
+
+      const { reader } = result;
+
+      if (!reader) {
+        throw new Error('Failed to get reader from response');
+      }
+
+      // Read stream data
+      while (true) {
+        const { done, value } = await reader.read();
+
+        if (done) {
+          if (useMediaSource) {
+            // Wait for all chunks to be appended before ending stream
+            await new Promise<void>((resolve) => {
+              const checkQueue = () => {
+                if (queueRef.current.length === 0 && !isAppendingRef.current) {
+                  if (mediaSourceRef.current?.readyState === 'open') {
+                    try {
+                      mediaSourceRef.current.endOfStream();
+                      setLoading(false);
+                    } catch (error) {
+                      console.error('Failed to end stream:', error);
+                    }
+                  }
+                  resolve();
+                } else {
+                  setTimeout(checkQueue, 100);
+                }
+              };
+              checkQueue();
+            });
+          }
+
+          // Handle completion based on format
+          if (allChunksRef.current.length > 0) {
+            if (isPCM) {
+              // PCM format: notify the player that streaming has ended
+              // onComplete will be called by the player when playback finishes
+              pcmPlayer.endStream();
+            } else {
+              const completeBlob = new Blob(allChunksRef.current as any, {
+                type: `audio/${format}`
+              });
+              const completeUrl = URL.createObjectURL(completeBlob);
+            }
+          }
+          break;
+        }
+
+        if (value) {
+          allChunksRef.current.push(value);
+          if (isPCM) {
+            // PCM chunks are sent directly to the player for real-time playback
+            pcmPlayer.addChunk(value);
+          } else if (useMediaSource) {
+            queueRef.current.push(value);
+            processQueue();
+          }
+
+          params?.onChunk?.(value.buffer);
+          setProgress((prev) => prev + 1);
+        }
+      }
+    } catch (err: any) {
+      if (err.name === 'AbortError') {
+        console.log('Stream aborted');
+        return;
+      }
+
+      const errorMessage = err?.message || 'Stream processing failed';
+      setError({
+        error: true,
+        errorMessage
+      });
+      params?.onError?.(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  });
 
   const abort = useCallback(() => {
     controllerRef.current?.abort();
-    audioQueueRef.current?.stop();
+    pcmPlayer.stop();
+    if (streamUrl) {
+      URL.revokeObjectURL(streamUrl);
+    }
+    if (mediaSourceRef.current?.readyState === 'open') {
+      try {
+        mediaSourceRef.current.endOfStream();
+      } catch (error) {
+        console.error('Failed to end stream on abort:', error);
+      }
+    }
     setLoading(false);
-  }, []);
+  }, [streamUrl, pcmPlayer]);
+
+  const play = useCallback(() => {
+    params?.playerRef?.current?.play();
+  }, [params?.playerRef]);
+
+  const pause = useCallback(() => {
+    params?.playerRef?.current?.pause();
+  }, [params?.playerRef]);
 
   return {
     generate,
     abort,
     loading,
     error,
-    progress
+    progress,
+    streamUrl,
+    audioChunks: isPCM ? pcmPlayer.audioChunks : undefined,
+    isPlaying: pcmPlayer.isPlaying,
+    pcmPlayer,
+    play,
+    pause
   };
 };

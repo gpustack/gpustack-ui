@@ -128,17 +128,6 @@ const TTSAdvanceConfig: React.FC = () => {
           })}
         ></CheckboxField>
       </Form.Item>
-      <Form.Item
-        name="stream"
-        valuePropName="checked"
-        style={{ marginBottom: 8 }}
-      >
-        <CheckboxField
-          label={intl.formatMessage({
-            id: 'playground.params.streamMode'
-          })}
-        ></CheckboxField>
-      </Form.Item>
     </>
   );
 };

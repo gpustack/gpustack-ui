@@ -8,8 +8,14 @@ import { useIntl } from '@umijs/max';
 import { Button, Slider, Tooltip } from 'antd';
 import dayjs from 'dayjs';
 import _, { throttle } from 'lodash';
-import React, { useCallback, useRef, useState } from 'react';
-import AudioPlayer from './audio-player';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react';
+import RawAudioPlayer from '../audio-player/raw-audio-player';
 import './styles/index.less';
 import './styles/slider-progress.less';
 
@@ -34,10 +40,25 @@ interface SpeechContentProps {
   format: string;
   speed: number;
   audioUrl: string;
+  onPlay?: () => void;
+  onPause?: () => void;
+  isStream?: boolean;
+  isPlaying?: boolean;
+  playerRef?: React.RefObject<any>;
+  analyserData?: {
+    data: Uint8Array;
+    analyser: any;
+  };
 }
 const SpeechItem: React.FC<SpeechContentProps> = (props) => {
+  const { isStream } = props;
+  console.log(
+    'Rendering SpeechItem with props:',
+    props.isStream,
+    props.analyserData
+  );
   const intl = useIntl();
-  const [isPlay, setIsPlay] = useState(props.autoplay);
+  const [isPlay, setIsPlay] = useState(props.autoplay || props.isPlaying);
   const [duration, setDuration] = useState<number>(0);
   const [animationSize, setAnimationSize] = useState({ width: 900, height: 0 });
   const [currentTime, setCurrentTime] = useState(0);
@@ -48,23 +69,47 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
   const wrapper = useRef<any>(null);
   const ref = useRef<any>(null);
 
-  const handlePlay = useCallback(async () => {
+  useEffect(() => {
+    setIsPlay(props.autoplay || props.isPlaying);
+  }, [props.autoplay, props.isPlaying]);
+
+  const isPCMStream = useMemo(() => {
+    return props.audioUrl?.startsWith('pcm-stream://');
+  }, [props.audioUrl]);
+
+  // Sync internal ref with external playerRef if provided
+  React.useEffect(() => {
+    if (props.playerRef) {
+      (props.playerRef as any).current = ref.current;
+    }
+  }, [props.playerRef, ref.current]);
+
+  const onPause = () => {
+    ref.current?.pause();
+    props.onPause?.();
+  };
+
+  const onPlay = async () => {
+    await ref.current?.wavesurfer.current?.play();
+    props.onPlay?.();
+  };
+
+  const handlePlay = async () => {
     try {
       if (ref.current?.wavesurfer.current?.isPlaying()) {
-        ref.current?.pause();
+        onPause();
         setIsPlay(false);
         return;
       } else {
-        await ref.current?.wavesurfer.current?.play();
+        await onPlay();
         setIsPlay(true);
       }
     } catch (error) {
       console.log('error:', error);
     }
-  }, [ref.current]);
+  };
 
   const handleOnAnalyse = useCallback((data: any, analyser: any) => {
-    console.log('data+++++++++++++++++=:', data);
     setAudioChunks((pre: any) => {
       return {
         data: data,
@@ -76,9 +121,11 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
   const handleOnFinish = useCallback(() => {
     setIsPlay(false);
   }, []);
+
   const handleOnPlay = useCallback(() => {
     setIsPlay(true);
   }, []);
+
   const handleOnPause = useCallback(() => {
     setIsPlay(false);
   }, []);
@@ -87,22 +134,9 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
     setCurrentTime(current);
   }, 100);
 
-  const handleOnAudioprocess = useCallback(
-    (current: number) => {
-      console.log('current:', current);
-      throttleUpdateCurrentTime(current);
-    },
-    [throttleUpdateCurrentTime]
-  );
-
-  const handleReay = useCallback((duration: number) => {
-    setIsPlay(props.autoplay);
-    setDuration(duration);
-  }, []);
-
-  const handleOnClick = useCallback((value: number) => {
-    console.log('current:', value);
-  }, []);
+  const handleOnAudioprocess = (current: number) => {
+    throttleUpdateCurrentTime(current);
+  };
 
   const handleAnimationResize = useCallback((size: any) => {
     setAnimationSize({
@@ -121,7 +155,6 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
   };
 
   const handleReady = useCallback((duration: number) => {
-    console.log('ready+++++++++++++++', duration);
     setDuration(duration);
   }, []);
 
@@ -130,9 +163,16 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
     setCurrentTime(value);
   }, []);
 
+  const convertFormat = () => {
+    if (props.format === 'pcm') {
+      return 'wav';
+    }
+    return props.format;
+  };
+
   const onDownload = useCallback(() => {
     const url = props.audioUrl || '';
-    const filename = `audio-${dayjs().format('YYYYMMDDHHmmss')}.${props.format}`;
+    const filename = `audio-${dayjs().format('YYYYMMDDHHmmss')}.${convertFormat()}`;
 
     const link = document.createElement('a');
     link.href = url;
@@ -142,6 +182,71 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
     link.remove();
   }, [props.audioUrl, props.format]);
 
+  console.log('isPCMStream:', isPCMStream, isPlay);
+
+  console.log('props.analyserData:', props.analyserData);
+
+  const renderPlayerActions = () => {
+    if (isPCMStream) {
+      return null;
+    }
+    return (
+      <div>
+        <Slider
+          className="slider-progress"
+          value={currentTime}
+          max={duration}
+          step={0.01}
+          onChange={handleSliderChange}
+        ></Slider>
+        <div className="speech-actions">
+          <span className="tags">
+            <span className="item">{props.format}</span>
+          </span>
+          <span className="duration">
+            {_.round(currentTime, 2) || _.round(duration, 2)}
+          </span>
+          <div className="actions">
+            <Tooltip
+              title={
+                isPlay
+                  ? intl.formatMessage({ id: 'playground.audio.button.stop' })
+                  : intl.formatMessage({ id: 'playground.audio.button.play' })
+              }
+            >
+              <Button
+                disabled={!props.audioUrl || duration === 0}
+                onClick={handlePlay}
+                icon={
+                  isPlay ? (
+                    <PauseCircleOutlined className="font-size-16" />
+                  ) : (
+                    <PlayCircleOutlined className="font-size-16" />
+                  )
+                }
+                type="text"
+                size="small"
+              ></Button>
+            </Tooltip>
+            <Tooltip
+              title={intl.formatMessage({
+                id: 'playground.audio.button.download'
+              })}
+            >
+              <Button
+                disabled={!props.audioUrl || duration === 0}
+                onClick={onDownload}
+                icon={<DownloadOutlined className="font-size-16" />}
+                type="text"
+                size="small"
+              ></Button>
+            </Tooltip>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div>
       <div className="speech-item">
@@ -150,93 +255,51 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
           style={{ height: 120, width: '100%' }}
           ref={wrapper}
         >
-          <AudioPlayer
-            {...props}
-            audioUrl={props.audioUrl}
-            onReady={handleReady}
-            onFinish={handleOnFinish}
-            onPlay={handleOnPlay}
-            onPause={handleOnPause}
-            onAnalyse={handleOnAnalyse}
-            onAudioprocess={handleOnAudioprocess}
-            ref={ref}
-          ></AudioPlayer>
-          {/* <RawAudioPlayer
-            {...props}
-            url={props.audioUrl}
-            onReady={handleReady}
-            onEnded={handleOnFinish}
-            onPlay={handleOnPlay}
-            onPause={handleOnPause}
-            onAnalyse={handleOnAnalyse}
-            onAudioProcess={handleOnAudioprocess}
-            ref={ref}
-          ></RawAudioPlayer> */}
-          {isPlay && (
-            <AudioAnimation
-              maxBarCount={100}
-              amplitude={60}
-              fixedHeight={true}
-              height={120}
-              width={800}
-              analyserData={audioChunks}
-            ></AudioAnimation>
-          )}
+          <>
+            {/* {!isPCMStream && (
+              <AudioPlayer
+                {...props}
+                audioUrl={props.audioUrl}
+                onReady={handleReady}
+                onFinish={handleOnFinish}
+                onPlay={handleOnPlay}
+                onPause={handleOnPause}
+                onAnalyse={handleOnAnalyse}
+                onAudioprocess={handleOnAudioprocess}
+                ref={ref}
+              ></AudioPlayer>
+            )} */}
+            {!isPCMStream && (
+              <RawAudioPlayer
+                {...props}
+                url={props.audioUrl}
+                onReady={handleReady}
+                onEnded={handleOnFinish}
+                onPlay={handleOnPlay}
+                onPause={handleOnPause}
+                onAnalyse={handleOnAnalyse}
+                onAudioProcess={handleOnAudioprocess}
+                ref={ref}
+              ></RawAudioPlayer>
+            )}
+            {isPlay &&
+              (props.analyserData?.analyser?.current ||
+                audioChunks.analyser?.current) && (
+                <AudioAnimation
+                  maxBarCount={100}
+                  amplitude={60}
+                  fixedHeight={true}
+                  height={120}
+                  width={800}
+                  analyserData={props.analyserData || audioChunks}
+                ></AudioAnimation>
+              )}
+          </>
         </div>
       </div>
-      <Slider
-        className="slider-progress"
-        value={currentTime}
-        max={duration}
-        step={0.01}
-        onChange={handleSliderChange}
-      ></Slider>
-      <div className="speech-actions">
-        <span className="tags">
-          <span className="item">{props.format}</span>
-        </span>
-        <span className="duration">
-          {_.round(currentTime, 2) || _.round(duration, 2)}
-        </span>
-        <div className="actions">
-          <Tooltip
-            title={
-              isPlay
-                ? intl.formatMessage({ id: 'playground.audio.button.stop' })
-                : intl.formatMessage({ id: 'playground.audio.button.play' })
-            }
-          >
-            <Button
-              disabled={!props.audioUrl || duration === 0}
-              onClick={handlePlay}
-              icon={
-                isPlay ? (
-                  <PauseCircleOutlined className="font-size-16" />
-                ) : (
-                  <PlayCircleOutlined className="font-size-16" />
-                )
-              }
-              type="text"
-              size="small"
-            ></Button>
-          </Tooltip>
-          <Tooltip
-            title={intl.formatMessage({
-              id: 'playground.audio.button.download'
-            })}
-          >
-            <Button
-              disabled={!props.audioUrl || duration === 0}
-              onClick={onDownload}
-              icon={<DownloadOutlined className="font-size-16" />}
-              type="text"
-              size="small"
-            ></Button>
-          </Tooltip>
-        </div>
-      </div>
+      {renderPlayerActions()}
     </div>
   );
 };
 
-export default React.memo(SpeechItem);
+export default SpeechItem;

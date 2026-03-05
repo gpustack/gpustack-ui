@@ -18,8 +18,9 @@ const RawAudioPlayer: React.FC<AudioPlayerProps> = forwardRef((props, ref) => {
   // ========================================================
 
   const initAudioContext = useCallback(() => {
-    audioContext.current = new (window.AudioContext ||
-      window.webkitAudioContext)();
+    audioContext.current = new (
+      window.AudioContext || (window as any).webkitAudioContext
+    )();
 
     analyser.current = audioContext.current.createAnalyser();
     analyser.current.fftSize = 512;
@@ -52,7 +53,9 @@ const RawAudioPlayer: React.FC<AudioPlayerProps> = forwardRef((props, ref) => {
     });
 
     audioRef.current.addEventListener('timeupdate', () => {
+      const current = audioRef.current?.currentTime || 0;
       props.onTimeUpdate?.();
+      props.onAudioProcess?.(current);
     });
 
     audioRef.current.addEventListener('ended', () => {
@@ -85,11 +88,6 @@ const RawAudioPlayer: React.FC<AudioPlayerProps> = forwardRef((props, ref) => {
       props.onVolumeChange?.();
     });
 
-    audioRef.current.addEventListener('audioprocess', () => {
-      const current = audioRef.current?.currentTime || 0;
-      props.onAudioProcess?.(current);
-    });
-
     audioRef.current.addEventListener('playing', () => {
       props.onPlaying?.();
     });
@@ -111,16 +109,44 @@ const RawAudioPlayer: React.FC<AudioPlayerProps> = forwardRef((props, ref) => {
 
   useImperativeHandle(ref, () => ({
     play: () => {
-      audioRef.current?.play();
+      if (audioRef.current) {
+        // If playback has ended, reset to beginning
+        if (audioRef.current.currentTime >= audioRef.current.duration) {
+          audioRef.current.currentTime = 0;
+        }
+        audioRef.current.play();
+      }
     },
     pause: () => {
       audioRef.current?.pause();
+    },
+    seekTo: (ratio: number) => {
+      if (audioRef.current && audioRef.current.duration) {
+        audioRef.current.currentTime = ratio * audioRef.current.duration;
+      }
+    },
+    // Compatibility layer for wavesurfer interface
+    wavesurfer: {
+      current: {
+        play: () => {
+          if (audioRef.current) {
+            // If playback has ended, reset to beginning
+            if (audioRef.current.currentTime >= audioRef.current.duration) {
+              audioRef.current.currentTime = 0;
+            }
+            return audioRef.current.play();
+          }
+          return Promise.resolve();
+        },
+        isPlaying: () => {
+          return audioRef.current ? !audioRef.current?.paused : false;
+        }
+      }
     }
   }));
 
   useEffect(() => {
     if (audioRef.current) {
-      console.log('audioRef.current', audioRef.current, props.url);
       initEnvents();
     }
     return () => {
@@ -138,13 +164,19 @@ const RawAudioPlayer: React.FC<AudioPlayerProps> = forwardRef((props, ref) => {
       audioRef.current?.removeEventListener('seeked', () => {});
       audioRef.current?.removeEventListener('seeking', () => {});
       audioRef.current?.removeEventListener('volumechange', () => {});
-      audioRef.current?.removeEventListener('audioprocess', () => {});
       audioRef.current?.removeEventListener('playing', () => {});
       audioRef.current?.removeEventListener('loadedmetadata', () => {});
       audioRef.current?.removeEventListener('ended', () => {});
       audioRef.current?.removeEventListener('loadeddata', () => {});
     };
   }, [audioRef.current]);
+
+  // Reload audio when URL changes
+  useEffect(() => {
+    if (audioRef.current && props.url) {
+      audioRef.current.load();
+    }
+  }, [props.url]);
 
   return (
     <audio

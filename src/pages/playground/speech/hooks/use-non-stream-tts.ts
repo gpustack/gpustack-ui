@@ -1,3 +1,4 @@
+import { pcmToWav } from '@/utils/pcm-to-wav';
 import { useCallback, useRef, useState } from 'react';
 import { textToSpeech } from '../../apis';
 import { extractErrorMessage } from '../../config';
@@ -20,6 +21,35 @@ export const useNonStreamTTS = (params?: UseNonStreamTTSParams) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<any>(null);
   const controllerRef = useRef<AbortController | null>(null);
+
+  const convertPCMToWav = async (ab: Blob) => {
+    let audioBlob = ab;
+    // Convert PCM to WAV for browser playback
+    const arrayBuffer = await audioBlob.arrayBuffer();
+    audioBlob = pcmToWav(arrayBuffer);
+
+    const audioUrl = audioBlob.size > 0 ? URL.createObjectURL(audioBlob) : '';
+    return {
+      url: audioUrl,
+      type: audioBlob.type
+    };
+  };
+
+  // handle non-pcm formats
+  const generateAudioUrl = async (audioBlob: Blob) => {
+    const audioUrl = audioBlob.size > 0 ? URL.createObjectURL(audioBlob) : '';
+    return {
+      url: audioUrl,
+      type: audioBlob.type
+    };
+  };
+
+  const isPCMFormat = (audioBlob: Blob) => {
+    return (
+      audioBlob.type === 'audio/pcm' ||
+      audioBlob.type === 'application/octet-stream'
+    );
+  };
 
   const generate = useCallback(
     async (ttsParams: TTSParams) => {
@@ -47,7 +77,26 @@ export const useNonStreamTTS = (params?: UseNonStreamTTSParams) => {
           return null;
         }
 
-        params?.onSuccess?.(res);
+        let result = {
+          url: '',
+          type: ''
+        };
+
+        if (res.audioBlob?.type?.indexOf('audio') === -1) {
+          result = {
+            url: '',
+            type: ''
+          };
+        } else if (
+          ttsParams.response_format === 'pcm' ||
+          isPCMFormat(res.audioBlob)
+        ) {
+          result = await convertPCMToWav(res.audioBlob);
+        } else {
+          result = await generateAudioUrl(res.audioBlob);
+        }
+
+        params?.onSuccess?.(result);
         return res;
       } catch (err: any) {
         const res = err?.response?.data;

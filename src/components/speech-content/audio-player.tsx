@@ -36,8 +36,9 @@ const AudioPlayer: React.FC<
   const mediaElement = useRef<any>(null);
 
   const initAudioContext = useCallback(() => {
-    audioContext.current = new (window.AudioContext ||
-      window.webkitAudioContext)();
+    audioContext.current = new (
+      window.AudioContext || window.webkitAudioContext
+    )();
 
     analyser.current = audioContext.current.createAnalyser();
     analyser.current.fftSize = 512;
@@ -218,4 +219,4 @@ const AudioPlayer: React.FC<
   );
 });
 
-export default React.memo(AudioPlayer);
+export default AudioPlayer;

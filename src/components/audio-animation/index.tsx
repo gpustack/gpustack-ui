@@ -189,4 +189,4 @@ const AudioAnimation: React.FC<AudioAnimationProps> = (props) => {
   );
 };
 
-export default React.memo(AudioAnimation);
+export default AudioAnimation;

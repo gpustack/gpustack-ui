@@ -80,7 +80,6 @@ export const TTSAdvancedParamsConfig: ParamsSchema[] = [
       isLocalized: true
     },
     attrs: {
-      allowClear: true,
       step: 1,
       min: 0,
       max: 4096

@@ -87,5 +87,9 @@ export default {
   'benchmark.table.export.results': '导出结果',
   'benchmark.form.nonLlmModel.tips': '基准测试目前仅支持 LLM 模型',
   'benchmark.detail.result.duration': '耗时',
-  'benchmark.detail.result.basic': '基础信息'
+  'benchmark.detail.result.basic': '基础信息',
+  'benchmark.detail.result.unavailable':
+    '未采集到指标数据，请检查基准测试日志。',
+  'benchmark.form.longContext.tips':
+    '长上下文压测需要模型 context size 至少设置为 8192。'
 };

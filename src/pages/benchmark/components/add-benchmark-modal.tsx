@@ -1,9 +1,19 @@
+import ModalFooter from '@/components/modal-footer';
+import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import FormDrawer from '@/pages/_components/form-drawer';
+import CompatibilityAlert from '@/pages/llmodels/components/compatible-alert';
+import { useIntl } from '@umijs/max';
 import React, { useRef } from 'react';
+import { ProfileValueMap } from '../config';
 import { FormData, BenchmarkListItem as ListItem } from '../config/types';
-
 import BenchmarkForm from '../forms';
+
+const ModalFooterStyle = {
+  padding: '16px 24px 8px',
+  display: 'flex',
+  justifyContent: 'flex-end'
+};
 
 type AddModalProps = {
   title: string;
@@ -11,8 +21,8 @@ type AddModalProps = {
   open: boolean;
   currentData?: ListItem; // Used when action is EDIT
   clusterList?: Global.BaseOption<number>[];
-  profilesOptions?: Global.BaseOption<string>[];
-  datasetList?: Global.BaseOption<number | string>[];
+  profilesOptions: Global.BaseOption<string>[];
+  datasetList: Global.BaseOption<number | string>[];
   onOk: (values: FormData) => void;
   onCancel: () => void;
 };
@@ -27,7 +37,13 @@ const AddBenchmark: React.FC<AddModalProps> = ({
   onOk,
   onCancel
 }) => {
+  const intl = useIntl();
   const form = useRef<any>(null);
+  const [profile, setProfile] = React.useState<string>('');
+
+  const handleProfileChange = (value: string) => {
+    setProfile(value);
+  };
 
   const handleSubmit = () => {
     form.current?.submit();
@@ -51,6 +67,28 @@ const AddBenchmark: React.FC<AddModalProps> = ({
       onCancel={handleCancel}
       onSubmit={handleSubmit}
       width={600}
+      footer={
+        <>
+          {action === PageAction.CREATE &&
+            profile === ProfileValueMap.LongContextStress && (
+              <CompatibilityAlert
+                showClose={false}
+                warningStatus={{
+                  show: true,
+                  message: intl.formatMessage({
+                    id: 'benchmark.form.longContext.tips'
+                  })
+                }}
+                contentStyle={{ paddingInline: 0 }}
+              ></CompatibilityAlert>
+            )}
+          <ModalFooter
+            onOk={handleSubmit}
+            onCancel={handleCancel}
+            style={ModalFooterStyle}
+          ></ModalFooter>
+        </>
+      }
     >
       <BenchmarkForm
         ref={form}
@@ -61,6 +99,7 @@ const AddBenchmark: React.FC<AddModalProps> = ({
         profilesOptions={profilesOptions}
         datasetList={datasetList}
         onFinish={handleOk}
+        onProfileChange={handleProfileChange}
       />
     </FormDrawer>
   );

@@ -15,7 +15,8 @@ const DatasetForm: React.FC = () => {
   const intl = useIntl();
   const form = Form.useFormInstance();
   const { getRuleMessage } = useAppUtils();
-  const { action, open, profilesOptions, datasetList } = useFormContext();
+  const { action, open, profilesOptions, datasetList, onProfileChange } =
+    useFormContext();
 
   const handleProfileChange = (value: string, option: any) => {
     if (value !== ProfileValueMap.Custom) {
@@ -28,6 +29,7 @@ const DatasetForm: React.FC = () => {
         ..._.omit(option?.config, ['description', 'dataset_source'])
       });
     }
+    onProfileChange?.(value, option);
   };
 
   // Initialize profile when open form

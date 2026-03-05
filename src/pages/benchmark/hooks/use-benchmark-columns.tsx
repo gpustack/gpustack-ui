@@ -1,12 +1,27 @@
 // columns.ts
 import AutoTooltip from '@/components/auto-tooltip';
 import { tableSorter } from '@/config/settings';
+import { WarningOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Typography } from 'antd';
+import { Tooltip, Typography } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { useMemo } from 'react';
 import RowActions from '../components/row-actions';
+import { BenchmarkStatusValueMap } from '../config';
 import { BenchmarkListItem as ListItem } from '../config/types';
+
+const resultFields: string[] = [
+  'request_latency_mean',
+  'time_to_first_token_mean',
+  'time_per_output_token_mean',
+  'inter_token_latency_mean',
+  'requests_per_second_mean',
+  'tokens_per_second_mean',
+  'input_tokens_per_second_mean',
+  'output_tokens_per_second_mean',
+  'request_successful',
+  'request_concurrency_mean'
+];
 
 const useBenchmarkColumns = (params: {
   sortOrder: string[];
@@ -16,6 +31,11 @@ const useBenchmarkColumns = (params: {
 }): ColumnsType<ListItem> => {
   const intl = useIntl();
   const { onCellClick, handleSelect, columns } = params;
+
+  const isNoData = (record: Record<string, any>) => {
+    const isComplete = record.state === BenchmarkStatusValueMap.Completed;
+    return isComplete && resultFields.every((field: string) => !record[field]);
+  };
 
   return useMemo(() => {
     return [
@@ -28,11 +48,24 @@ const useBenchmarkColumns = (params: {
         dataIndex: 'name',
         sorter: tableSorter(1),
         render: (text: string, record) => (
-          <AutoTooltip ghost minWidth={20}>
-            <Typography.Link onClick={() => onCellClick?.(record, 'name')}>
-              {text}
-            </Typography.Link>
-          </AutoTooltip>
+          <span className="flex-center gap-4">
+            <AutoTooltip ghost minWidth={20}>
+              <Typography.Link onClick={() => onCellClick?.(record, 'name')}>
+                {text}
+              </Typography.Link>
+            </AutoTooltip>
+            {isNoData(record) && (
+              <Tooltip
+                title={intl.formatMessage({
+                  id: 'benchmark.detail.result.unavailable'
+                })}
+              >
+                <WarningOutlined
+                  style={{ color: 'var(--ant-color-warning)' }}
+                ></WarningOutlined>
+              </Tooltip>
+            )}
+          </span>
         )
       },
       ...columns,

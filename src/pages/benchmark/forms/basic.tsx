@@ -15,7 +15,7 @@ const BasicForm: React.FC = () => {
   const intl = useIntl();
   const form = Form.useFormInstance();
   const { getRuleMessage } = useAppUtils();
-  const { action, open, clusterList } = useFormContext();
+  const { action, clusterList } = useFormContext();
   const { benchmarkTargetInstance } = useBenchmarkTargetInstance();
 
   useEffect(() => {

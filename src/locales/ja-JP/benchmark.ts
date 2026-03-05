@@ -88,5 +88,9 @@ export default {
   'benchmark.form.nonLlmModel.tips':
     'Benchmarking currently only supports LLM models',
   'benchmark.detail.result.duration': 'Duration',
-  'benchmark.detail.result.basic': 'Basic'
+  'benchmark.detail.result.basic': 'Basic',
+  'benchmark.detail.result.unavailable':
+    'No data available, please check the benchmark log.',
+  'benchmark.form.longContext.tips':
+    'Long-context testing requires a model context size of at least 8192.'
 };

@@ -8,6 +8,7 @@ interface FormContextProps {
   modelList?: Global.BaseOption<number>[];
   profilesOptions: Global.BaseOption<string>[];
   datasetList: Global.BaseOption<number | string>[];
+  onProfileChange?: (value: string, option: Global.BaseOption<string>) => void;
 }
 
 const FormContext = createContext<FormContextProps>({} as FormContextProps);

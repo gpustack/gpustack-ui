@@ -27,6 +27,7 @@ interface ProviderFormProps {
   datasetList: Global.BaseOption<number | string>[];
   profilesOptions: Global.BaseOption<string>[];
   onFinish: (values: FormData) => Promise<void>;
+  onProfileChange?: (value: string, option: Global.BaseOption<string>) => void;
 }
 
 const TABKeysMap = {
@@ -40,6 +41,7 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
     action,
     currentData,
     onFinish,
+    onProfileChange,
     open,
     clusterList,
     profilesOptions,
@@ -75,6 +77,7 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
   };
 
   useImperativeHandle(ref, () => ({
+    form,
     submit: () => {
       form.submit();
     },
@@ -114,7 +117,8 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
           open,
           clusterList: clusterList,
           profilesOptions: profilesOptions,
-          datasetList: datasetList
+          datasetList: datasetList,
+          onProfileChange: onProfileChange
         }}
       >
         <Form

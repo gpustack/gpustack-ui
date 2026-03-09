@@ -43,6 +43,11 @@ const BackendFields: React.FC = () => {
     useCompareEnvs();
 
   const handleBackendVersionOnChange = (value: any, option: any) => {
+    // const oldEnvs = _.get(initialValues, 'env') || {};
+    // const newEnvs = option.data?.env || {};
+
+    // handleCompareEnvs(oldEnvs, newEnvs);
+
     if (Object.keys(option.data?.env || {}).length > 0) {
       form.setFieldValue('env', { ...(option?.data?.env || {}) });
     }

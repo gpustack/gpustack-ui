@@ -263,3 +263,102 @@ export const genColors = ({
     base.setAlpha(alpha_end).toRgbString()
   ];
 };
+
+/**
+ * Parse a command-line parameter string into an array format.
+ * @param paramsString - The parameter string to parse (supports multiline).
+ * @returns An array of parameters, e.g. ['--param=value', '--flag']
+ *
+ * @example
+ * parseParamsString('--foo=bar --baz 123 --flag')
+ * // Returns: ['--foo=bar', '--baz=123', '--flag']
+ *
+ * parseParamsString(`--foo bar
+ * --baz=123`)
+ * // Returns: ['--foo=bar', '--baz=123']
+ */
+export const parseParamsString = (paramsString: string): string[] => {
+  if (!paramsString || !paramsString.trim()) {
+    return [];
+  }
+
+  // Convert multiline to single line, replace newlines with spaces
+  const normalizedString = paramsString
+    .replace(/\n/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  const result: string[] = [];
+  const tokens: string[] = [];
+  let current = '';
+  let inQuote = false;
+  let quoteChar = '';
+  let braceDepth = 0; // Curly brace depth
+
+  // Tokenize, handle quotes and curly braces
+  for (let i = 0; i < normalizedString.length; i++) {
+    const char = normalizedString[i];
+
+    if (
+      (char === '"' || char === "'") &&
+      (i === 0 || normalizedString[i - 1] !== '\\')
+    ) {
+      if (!inQuote) {
+        inQuote = true;
+        quoteChar = char;
+        current += char;
+      } else if (char === quoteChar) {
+        inQuote = false;
+        quoteChar = '';
+        current += char;
+      } else {
+        current += char;
+      }
+    } else if (char === '{' && !inQuote) {
+      braceDepth++;
+      current += char;
+    } else if (char === '}' && !inQuote) {
+      braceDepth--;
+      current += char;
+    } else if (char === ' ' && !inQuote && braceDepth === 0) {
+      if (current) {
+        tokens.push(current);
+        current = '';
+      }
+    } else {
+      current += char;
+    }
+  }
+
+  if (current) {
+    tokens.push(current);
+  }
+
+  // Parse tokens into parameter array
+  for (let i = 0; i < tokens.length; i++) {
+    const token = tokens[i];
+
+    // Check if already contains '=' with value
+    if (token.includes('=')) {
+      result.push(token);
+    } else if (token.startsWith('-')) {
+      // Check if next token is a value (does not start with '-')
+      const nextToken = tokens[i + 1];
+      if (nextToken && !nextToken.startsWith('-')) {
+        // If value is quoted, keep space format
+        if (nextToken.startsWith('"') || nextToken.startsWith("'")) {
+          result.push(`${token} ${nextToken}`);
+        } else {
+          // Otherwise, use '=' to join
+          result.push(`${token}=${nextToken}`);
+        }
+        i++; // Skip next token, already consumed
+      } else {
+        // This is a flag without value
+        result.push(token);
+      }
+    }
+  }
+
+  return result;
+};

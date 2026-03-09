@@ -98,7 +98,7 @@ const GroundVideo: React.FC<MessageProps> = forwardRef((props, ref) => {
   const finalParameters = useMemo(() => {
     if (parameters.size === 'custom') {
       return {
-        ..._.omit(parameters, ['width', 'height', 'random_seed', 'seed']),
+        ..._.omit(parameters, ['width', 'height']),
         size:
           parameters.width && parameters.height
             ? `${parameters.width}x${parameters.height}`
@@ -106,7 +106,7 @@ const GroundVideo: React.FC<MessageProps> = forwardRef((props, ref) => {
       };
     }
     return {
-      ..._.omit(parameters, ['width', 'height', 'random_seed', 'seed'])
+      ..._.omit(parameters, ['width', 'height'])
     };
   }, [parameters]);
 

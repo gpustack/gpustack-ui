@@ -24,13 +24,14 @@ export default function useCompareEnvs() {
       new: {} as Record<string, any>
     };
 
-    Object.keys(oldEnvs).forEach((key) => {
+    Object.keys(oldEnvs || {}).forEach((key) => {
       if (key in newEnvs && oldEnvs[key] !== newEnvs[key]) {
         result.old[key] = oldEnvs[key];
         result.new[key] = newEnvs[key];
       }
     });
 
+    console.log('compare result:', oldEnvs, newEnvs, result);
     setDiffEnvs(result);
     if (Object.keys(result.old).length > 0) {
       handleOpenTips();

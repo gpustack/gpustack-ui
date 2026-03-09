@@ -41,5 +41,7 @@ export default {
   'backend.filter.source': '按来源过滤',
   'backend.add.custom': '自定义',
   'backend.add.community': '社区',
-  'backend.community.title': '社区后端市场'
+  'backend.community.title': '社区后端市场',
+  'backend.form.add.hint':
+    '如果需要使用内置后端（如 vLLM、SGLang、MindIE）的其他版本，请在对应后端中添加新版本，而不是添加自定义后端。'
 };

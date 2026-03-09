@@ -44,7 +44,9 @@ export default {
   'backend.filter.source': 'Filter by source',
   'backend.add.custom': 'Custom',
   'backend.add.community': 'Community',
-  'backend.community.title': 'Community Backend Marketplace'
+  'backend.community.title': 'Community Backend Marketplace',
+  'backend.form.add.hint':
+    'To use a different version of a built-in backend (e.g., vLLM, SGLang, MindIE), please add a new version to the existing backend instead of adding a custom backend.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -54,4 +56,5 @@ export default {
 // 4.  'backend.add.custom': 'Custom',
 // 5.  'backend.add.community': 'Community',
 // 6. 'backend.community.title': 'Community Backend Marketplace'
+// 7. 'backend.form.add.hint': 'To use a different version of a built-in backend (e.g., vLLM, SGLang, MindIE), please add a new version to the existing backend instead of adding a custom backend.'
 // ========== End of To-Do List ==========

@@ -1,3 +1,4 @@
+import AlertBlockInfo from '@/components/alert-info/block';
 import IconFont from '@/components/icon-font';
 import ModalFooter from '@/components/modal-footer';
 import GSDrawer from '@/components/scroller-modal/gs-drawer';
@@ -244,11 +245,24 @@ const AddModal: React.FC<AddModalProps> = (props) => {
           }
         }}
         footer={
-          <ModalFooter
-            onCancel={onClose}
-            onOk={onOk}
-            style={ModalFooterStyle}
-          ></ModalFooter>
+          <>
+            {action === PageAction.CREATE && (
+              <div style={{ marginInline: 24, paddingTop: 8 }}>
+                <AlertBlockInfo
+                  type="warning"
+                  contentStyle={{ paddingInline: 0 }}
+                  message={intl.formatMessage({
+                    id: 'backend.form.add.hint'
+                  })}
+                ></AlertBlockInfo>
+              </div>
+            )}
+            <ModalFooter
+              onCancel={onClose}
+              onOk={onOk}
+              style={ModalFooterStyle}
+            ></ModalFooter>
+          </>
         }
       >
         <Tabs

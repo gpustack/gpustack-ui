@@ -1,3 +1,4 @@
+import { parseParamsString } from '@/utils';
 import _ from 'lodash';
 import React, { useEffect } from 'react';
 import Wrapper from '../label-selector/wrapper';
@@ -83,10 +84,7 @@ const ListInput: React.FC<ListInputProps> = (props) => {
     const pastedText = e.clipboardData?.getData('text');
     if (!pastedText) return;
 
-    const lines = pastedText.split(/\r?\n/).filter((line: string) => {
-      const trimmedLine = trim ? line.trim() : line;
-      return trimmedLine.length > 0;
-    });
+    const lines = parseParamsString(pastedText);
 
     if (lines.length <= 1) {
       // if there's only one line, let the default paste behavior handle it

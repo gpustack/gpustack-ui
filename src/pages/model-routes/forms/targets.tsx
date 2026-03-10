@@ -139,11 +139,12 @@ const TargetsForm = forwardRef((props, ref) => {
   };
 
   const handleOnWeightChange = (value: any, index: number) => {
+    const weight = value || 0;
     const targetList = [...targets];
     if (targetList[index]) {
       targetList[index] = {
         ...targetList[index],
-        weight: value
+        weight: weight
       };
       form.setFieldValue('targets', [...targetList]);
     }
@@ -151,7 +152,7 @@ const TargetsForm = forwardRef((props, ref) => {
     const newDataList = [...dataList];
     newDataList[index] = {
       ...newDataList[index],
-      weight: value
+      weight: weight
     };
     form.validateFields(['targets']);
     setDataList(newDataList);
@@ -256,12 +257,12 @@ const TargetsForm = forwardRef((props, ref) => {
           {
             validator(rule, value) {
               if (value && value?.length > 0) {
-                if (_.some(value, (item: any) => !item.weight)) {
-                  setValidTriggered(true);
-                  return Promise.reject(
-                    getRuleMessage('input', 'routes.form.target.weight')
-                  );
-                }
+                // if (_.some(value, (item: any) => !item.weight)) {
+                //   setValidTriggered(true);
+                //   return Promise.reject(
+                //     getRuleMessage('input', 'routes.form.target.weight')
+                //   );
+                // }
 
                 if (
                   _.some(

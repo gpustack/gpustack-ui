@@ -60,6 +60,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   const [activeKey, setActiveKey] = useState<string>('form');
   const [yamlContent, setYamlContent] = useState<string>('');
   const [formContent, setFormContent] = useState<FormData>({} as FormData);
+  const alertRef = useRef<HTMLDivElement>(null);
 
   const showVersionCustomSuffix =
     currentData?.backend_source === BackendSourceValueMap.BUILTIN ||
@@ -193,6 +194,15 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     }
   }, [action, currentData, open]);
 
+  const yamlHeight = useMemo(() => {
+    if (action !== PageAction.CREATE) {
+      return undefined;
+    }
+    const baseHeight = 260;
+    const alertHeight = alertRef.current?.offsetHeight || 0;
+    return `calc(100vh - ${baseHeight + alertHeight}px)`;
+  }, [action, activeKey]);
+
   return (
     <GSDrawer
       title={title}
@@ -247,7 +257,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
         footer={
           <>
             {action === PageAction.CREATE && (
-              <div style={{ marginInline: 24, paddingTop: 8 }}>
+              <div style={{ marginInline: 24, paddingTop: 8 }} ref={alertRef}>
                 <AlertBlockInfo
                   type="warning"
                   contentStyle={{ paddingInline: 0 }}
@@ -287,6 +297,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
               label: intl.formatMessage({ id: 'backend.mode.yaml' }),
               children: (
                 <ImportYAML
+                  height={yamlHeight}
                   actionStatus={{
                     action: action,
                     backendSource: backendSource

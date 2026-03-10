@@ -18,9 +18,7 @@ const { Text } = Typography;
 
 loader.config({ monaco });
 
-const Container = styled.div<{ $minHeight: string | number }>`
-  min-height: ${({ $minHeight }) =>
-    typeof $minHeight === 'number' ? `${$minHeight}px` : $minHeight};
+const Container = styled.div`
   position: relative;
   border: 1px solid var(--ant-color-border);
   border-radius: var(--ant-border-radius);
@@ -153,7 +151,11 @@ const YamlEditor: React.FC<ViewerProps> = forwardRef((props, ref) => {
   }, [value]);
 
   return (
-    <Container $minHeight={height}>
+    <Container
+      style={{
+        minHeight: height
+      }}
+    >
       <EditorInner
         ref={editorRef}
         header={renderHeader()}

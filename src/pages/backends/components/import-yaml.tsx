@@ -19,12 +19,13 @@ interface ImportYAMLProps {
     action: PageActionType;
     backendSource: string;
   };
+  height?: string | number;
   content?: string;
   onSubmit?: (content: string) => void;
 }
 
 const ImportYAML: React.FC<ImportYAMLProps> = forwardRef(
-  ({ actionStatus, content = '' }, ref) => {
+  ({ actionStatus, content = '', height }, ref) => {
     const intl = useIntl();
     const editorRef = useRef<any>(null);
     const [fileContent, setFileContent] = useState<string>(
@@ -109,7 +110,7 @@ const ImportYAML: React.FC<ImportYAMLProps> = forwardRef(
       <YamlEditor
         ref={editorRef}
         value={fileContent}
-        height={'calc(100vh - 260px)'}
+        height={height || 'calc(100vh - 260px)'}
         validateMessage={error}
         onUpload={(content) => {
           setError('');

@@ -220,11 +220,6 @@ export const useInitVideoMeta = (
     });
   };
 
-  const formFields = useMemo(() => {
-    const fields = paramsConfig?.map((item) => item.name);
-    return fields?.join(',');
-  }, [paramsConfig]);
-
   const handleOnModelChange = useMemoizedFn((val: string) => {
     if (!val) return;
     const model = modelList.find((item) => item.value === val);
@@ -328,7 +323,6 @@ export const useInitVideoMeta = (
     setParamsConfig,
     form,
     modelMeta,
-    formFields,
     paramsConfig,
     initialValues,
     parameters,

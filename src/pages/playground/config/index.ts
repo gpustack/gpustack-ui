@@ -191,3 +191,22 @@ export const defaultLanguages = [
   { label: 'Français', value: 'fr' },
   { label: 'Deutsch', value: 'de' }
 ];
+
+export const videoPromptList = [
+  'A golden retriever running on the beach at sunset, cinematic lighting.',
+  'A futuristic city at night with neon lights and flying cars, cyberpunk style.',
+  'A peaceful mountain lake at sunrise, mist on the water, cinematic drone shot.',
+  'A cute orange cat sitting on a desk typing on a laptop, cozy room lighting.',
+  'Rain falling on a Tokyo street at night, neon reflections on wet road.',
+  'A rocket launching into space, dramatic lighting, slow motion.',
+  'A field of sunflowers blowing in the wind under blue sky, natural lighting.',
+  'A cup of coffee on a wooden table with steam rising, warm morning light.',
+  'A lone astronaut walking across a vast desert at sunset, wind blowing sand, cinematic wide shot, volumetric lighting, ultra realistic.',
+  'A futuristic cyberpunk city at night, neon lights reflecting on wet streets, flying cars passing by, camera slowly dollying forward, cinematic lighting, ultra detailed.',
+  'A luxury perfume bottle on a marble table, golden sunlight shining through a window, water droplets floating in the air, macro lens, high-end commercial style.',
+  'A medieval knight standing on a mountain cliff during a storm, cape blowing in the wind, lightning in the background, epic cinematic lighting.',
+  'A peaceful forest in early morning, sunlight streaming through the trees, fog drifting slowly, cinematic nature documentary style, ultra realistic.',
+  'A young woman walking through a rainy Tokyo street at night, neon signs glowing, reflections on wet pavement, tracking shot, cinematic atmosphere.',
+  'A dragon flying above snowy mountains, clouds swirling below, epic fantasy cinematic shot, dramatic lighting, ultra detailed.',
+  'A spaceship landing on an alien planet, glowing plants and mist surrounding the area, cinematic wide shot, science fiction movie style.'
+];

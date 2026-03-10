@@ -1,6 +1,6 @@
 import { createAxiosToken } from '@/hooks/use-chunk-request';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
-import { extractErrorMessage, promptList } from '@/pages/playground/config';
+import { extractErrorMessage } from '@/pages/playground/config';
 import { useIntl } from '@umijs/max';
 import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
@@ -142,7 +142,6 @@ export default function useTextVideo(props: any) {
     loading,
     tokenResult,
     videoList,
-    promptList,
     currentPrompt,
     setVideoList,
     setTokenResult,

@@ -344,7 +344,7 @@ export const parseParamsString = (paramsString: string): string[] => {
     } else if (token.startsWith('-')) {
       // Check if next token is a value (does not start with '-')
       const nextToken = tokens[i + 1];
-      if (nextToken && !nextToken.startsWith('-')) {
+      if (nextToken && !nextToken.startsWith('-') && !nextToken.includes('=')) {
         // If value is quoted, keep space format
         if (nextToken.startsWith('"') || nextToken.startsWith("'")) {
           result.push(`${token} ${nextToken}`);

@@ -1,9 +1,10 @@
 import { setRouteCache } from '@/atoms/route-cache';
 import AlertInfo from '@/components/alert-info';
+import IconFont from '@/components/icon-font';
 import routeCachekey from '@/config/route-cachekey';
 import { VideoCameraOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Spin } from 'antd';
+import { Button, Spin, Tooltip } from 'antd';
 import _ from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
 import React, {
@@ -18,6 +19,7 @@ import { CREATE_VIDEO_API } from '../apis';
 import MessageInput from '../components/message-input';
 import RightContainer from '../components/right-container';
 import ViewCommonCode from '../components/view-common-code';
+import { videoPromptList } from '../config';
 import { useInitVideoMeta } from '../hooks/use-init-video-meta';
 import useTextVideo from '../hooks/use-text-video';
 import '../style/ground-llm.less';
@@ -38,7 +40,6 @@ const GroundVideo: React.FC<MessageProps> = forwardRef((props, ref) => {
   const [show, setShow] = useState(false);
   const [collapse, setCollapse] = useState(false);
   const scroller = useRef<any>(null);
-  const paramsRef = useRef<any>(null);
   const inputRef = useRef<any>(null);
 
   const {
@@ -46,7 +47,6 @@ const GroundVideo: React.FC<MessageProps> = forwardRef((props, ref) => {
     handleToggleParamsStyle,
     setParams,
     form,
-    formFields,
     paramsConfig,
     initialValues,
     parameters,
@@ -58,7 +58,6 @@ const GroundVideo: React.FC<MessageProps> = forwardRef((props, ref) => {
     loading,
     tokenResult,
     videoList,
-    promptList,
     currentPrompt,
     setCurrentPrompt,
     handleClear,
@@ -86,8 +85,8 @@ const GroundVideo: React.FC<MessageProps> = forwardRef((props, ref) => {
   };
 
   const handleRandomPrompt = useCallback(() => {
-    const randomIndex = generateNumber(0, promptList.length - 1);
-    const randomPrompt = promptList[randomIndex];
+    const randomIndex = generateNumber(0, videoPromptList.length - 1);
+    const randomPrompt = videoPromptList[randomIndex];
     inputRef.current?.handleInputChange({
       target: {
         value: randomPrompt
@@ -237,6 +236,22 @@ const GroundVideo: React.FC<MessageProps> = forwardRef((props, ref) => {
             onInputChange={handleInputChange}
             shouldResetMessage={false}
             clearAll={handleClear}
+            tools={
+              <>
+                <Tooltip
+                  title={intl.formatMessage({
+                    id: 'playground.image.prompt.random'
+                  })}
+                >
+                  <Button
+                    onClick={handleRandomPrompt}
+                    size="middle"
+                    type="text"
+                    icon={<IconFont type="icon-random"></IconFont>}
+                  ></Button>
+                </Tooltip>
+              </>
+            }
           />
         </div>
       </div>

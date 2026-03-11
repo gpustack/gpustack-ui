@@ -77,6 +77,7 @@ const AddModal: React.FC<AddModalProps> = ({
           ]}
         >
           <SealInput.Input
+            autoComplete="off"
             label={intl.formatMessage({ id: 'common.table.name' })}
             required
           ></SealInput.Input>
@@ -150,6 +151,7 @@ const AddModal: React.FC<AddModalProps> = ({
           ]}
         >
           <SealInput.Password
+            autoComplete={'new-password'}
             label={intl.formatMessage({ id: 'common.form.password' })}
             required={action === PageAction.CREATE}
           ></SealInput.Password>

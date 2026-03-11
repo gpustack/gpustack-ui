@@ -126,5 +126,7 @@ export default {
   'clusters.addworker.theadNotes':
     '如果 <span class="bold-text">/usr/local/PPU_SDK</span> 目录不存在，请创建一个指向已安装平头哥（T-Head）PPU SDK 路径的符号链接：<span class="bold-text">ln -s /path/to/PPU_SDK /usr/local/PPU_SDK</span>。',
   'clusters.addworker.theadNotes-02':
-    '平头哥（T-Head）PPU 使用容器设备接口（CDI）进行设备注入，因此需要确保 <span class="bold-text">/var/run/cdi</span> 目录可用以生成 CDI。'
+    '平头哥（T-Head）PPU 使用容器设备接口（CDI）进行设备注入，因此需要确保 <span class="bold-text">/var/run/cdi</span> 目录可用以生成 CDI。',
+  'clusters.addworker.nvidiaNotes':
+    'GPUStack v2.1 内置推理后端依赖 <span class="bold-text">CUDA 12.6</span> 及以上版本，请确保 NVIDIA 驱动版本为 <span class="bold-text">560</span> 或以上。'
 };

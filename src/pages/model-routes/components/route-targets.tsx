@@ -90,26 +90,24 @@ const RouteItem: React.FC<TargetItemProps> = ({
           </Col>
           <Col span={2}>
             <CellContent>
-              {data.weight > 0 && (
+              {data.fallback_status_codes &&
+              data.fallback_status_codes?.length > 0 ? (
+                <>
+                  {data.weight > 0 && (
+                    <span style={{ marginInline: 8 }}>/</span>
+                  )}
+                  <span>
+                    {intl.formatMessage({
+                      id: 'routes.table.label.fallback'
+                    })}
+                  </span>
+                </>
+              ) : (
                 <AutoTooltip ghost>
                   {intl.formatMessage({ id: 'routes.form.target.weight' })}:{' '}
-                  {data.weight}
+                  {data.weight || 0}
                 </AutoTooltip>
               )}
-
-              {data.fallback_status_codes &&
-                data.fallback_status_codes?.length > 0 && (
-                  <>
-                    {data.weight > 0 && (
-                      <span style={{ marginInline: 8 }}>/</span>
-                    )}
-                    <span>
-                      {intl.formatMessage({
-                        id: 'routes.table.label.fallback'
-                      })}
-                    </span>
-                  </>
-                )}
             </CellContent>
           </Col>
           <Col span={3}>

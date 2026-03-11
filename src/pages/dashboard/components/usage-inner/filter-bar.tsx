@@ -1,4 +1,7 @@
+import AutoTooltip from '@/components/auto-tooltip';
+import SealCascader from '@/components/seal-form/seal-cascader';
 import SimpleSelect from '@/components/seal-form/simple-select';
+import ProviderLogo from '@/pages/maas-provider/components/provider-logo';
 import { DownloadOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, DatePicker, Tooltip } from 'antd';
@@ -8,12 +11,26 @@ import styled from 'styled-components';
 import { DASHBOARD_STATS_API } from '../../apis';
 import useRangePickerPreset from '../../hooks/use-rangepicker-preset';
 
+const OptionWrapper = styled.span`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+const LabelWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
 const DefaultDateConfig = {
   maxRange: 60,
   defaultRange: 29
 };
 
 const FilterWrapper = styled.div`
+  poisiton: relative;
+  z-index: 10;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -36,8 +53,10 @@ interface FilterBarProps {
   handleUsersChange: (value: any) => void;
   handleModelsChange: (value: any) => void;
   handleExport?: () => void;
+  selectedModels: string[][];
   url: string;
   disabledDate?: boolean;
+  cascaderWidth?: number;
 }
 
 const FilterBar: React.FC<FilterBarProps> = (props) => {
@@ -45,6 +64,8 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
     query,
     userList,
     modelList,
+    selectedModels,
+    cascaderWidth = 300,
     handleDateChange,
     handleUsersChange,
     handleModelsChange,
@@ -52,13 +73,56 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
     url,
     disabledDate
   } = props;
-
   const { disabledRangeDaysDate, rangePresets } = useRangePickerPreset({
     range: DefaultDateConfig.maxRange,
     disabledDate: disabledDate
   });
 
   const intl = useIntl();
+
+  const displayRender = (labels: any[], option: any) => {
+    return (
+      <AutoTooltip
+        ghost
+        maxWidth={150}
+        title={
+          <span>
+            {labels[0]} / {labels[1]}
+          </span>
+        }
+      >
+        {labels[0]} / {labels[1]}
+      </AutoTooltip>
+    );
+  };
+
+  const optionRender = (option: any) => {
+    const { data } = option;
+
+    if (!data.isParent) {
+      return <AutoTooltip ghost>{data.label}</AutoTooltip>;
+    }
+
+    if (data.providerType === 'deployments') {
+      return (
+        <OptionWrapper>
+          <ProviderLogo provider={data.providerType as string} />
+          <AutoTooltip ghost maxWidth={105}>
+            {intl.formatMessage({ id: 'menu.models.deployment' })}
+          </AutoTooltip>
+        </OptionWrapper>
+      );
+    }
+
+    return (
+      <OptionWrapper>
+        <ProviderLogo provider={data.providerType as string} />
+        <AutoTooltip ghost maxWidth={105}>
+          <span>{data.label}</span>
+        </AutoTooltip>
+      </OptionWrapper>
+    );
+  };
 
   return (
     <FilterWrapper>
@@ -89,19 +153,37 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
           value={query.user_ids}
           onChange={handleUsersChange}
         ></SimpleSelect>
-        <SimpleSelect
-          allowClear
+        <SealCascader
           showSearch
-          mode="multiple"
-          options={modelList}
-          maxTagCount={0}
+          multiple={true}
+          onChange={handleModelsChange}
+          classNames={{
+            popup: {
+              root: 'cascader-popup-wrapper gpu-selector'
+            }
+          }}
+          styles={{
+            root: {
+              width: cascaderWidth
+            },
+            popup: {
+              listItem: {
+                padding: '5px 10px'
+              }
+            }
+          }}
+          maxTagCount={1}
+          size="small"
           placeholder={intl.formatMessage({
             id: 'dashboard.usage.selectmodel'
           })}
-          value={query.model_ids}
-          style={{ maxWidth: 200, minWidth: 160 }}
-          onChange={handleModelsChange}
-        ></SimpleSelect>
+          options={modelList}
+          value={selectedModels}
+          showCheckedStrategy="SHOW_CHILD"
+          displayRender={displayRender}
+          optionNode={optionRender}
+          getPopupContainer={(triggerNode) => triggerNode.parentNode}
+        ></SealCascader>
         {url === DASHBOARD_STATS_API && (
           <Tooltip title={intl.formatMessage({ id: 'common.button.export' })}>
             <Button icon={<DownloadOutlined />} onClick={handleExport}></Button>

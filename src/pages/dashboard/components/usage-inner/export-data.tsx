@@ -24,6 +24,7 @@ const ExportData: React.FC<{
     result,
     userList,
     modelList,
+    selectedModels,
     query,
     setQuery,
     handleExport,
@@ -36,6 +37,21 @@ const ExportData: React.FC<{
     url: DASHBOARD_USAGE_API,
     disabledDate: false
   });
+
+  const getModelName = (record: any) => {
+    if (record.model_id) {
+      const children =
+        modelList.find((item) => item.value === 'deployments')?.children || [];
+      return (
+        children?.find((item) => item.value === record.model_id)?.label ||
+        record.model_id
+      );
+    }
+    const provider =
+      modelList.find((item) => item.value === record.provider_id)?.label ||
+      record.provider_id;
+    return `${provider} / ${record.model_name}`;
+  };
 
   const exportTableColumns: TableColumnType[] = [
     {
@@ -63,12 +79,9 @@ const ExportData: React.FC<{
     {
       title: intl.formatMessage({ id: 'dashboard.usage.export.model' }),
       dataIndex: 'model_id',
-      render: (text: string) => {
-        return (
-          <AutoTooltip ghost>
-            {modelList.find((item) => item.value === text)?.label || text}
-          </AutoTooltip>
-        );
+      render: (text: string, record: any) => {
+        console.log('render model id: ', record, modelList);
+        return <AutoTooltip ghost>{getModelName(record)}</AutoTooltip>;
       }
     },
 
@@ -91,6 +104,8 @@ const ExportData: React.FC<{
       width: 150
     }
   ];
+
+  console.log('export data: ', modelList);
   const handleSubmit = () => {
     const fileName = `usage-data_${query.start_date || ''}_${query.end_date || ''}.xlsx`;
     exportJsonToExcel({
@@ -111,8 +126,8 @@ const ExportData: React.FC<{
         user_id: (value: string) => {
           return userList.find((item) => item.value === value)?.label || value;
         },
-        model_id: (value: string) => {
-          return modelList.find((item) => item.value === value)?.label || value;
+        model_id: (value: string, record: any) => {
+          return getModelName(record);
         }
       }
     });
@@ -126,6 +141,7 @@ const ExportData: React.FC<{
         start_date: dayjs().subtract(29, 'days').format('YYYY-MM-DD'),
         end_date: dayjs().format('YYYY-MM-DD'),
         model_ids: [],
+        provider_model_names: [],
         user_ids: []
       });
       setResult({
@@ -164,6 +180,8 @@ const ExportData: React.FC<{
         query={query}
         userList={userList}
         modelList={modelList}
+        selectedModels={selectedModels}
+        cascaderWidth={360}
         handleDateChange={handleDateChange}
         handleUsersChange={handleUsersChange}
         handleModelsChange={handleModelsChange}
@@ -171,7 +189,7 @@ const ExportData: React.FC<{
       <Table
         columns={exportTableColumns}
         tableLayout={'auto'}
-        style={{ width: '100%', marginTop: '16px' }}
+        style={{ width: '100%', marginTop: '16px', minHeight: 300 }}
         dataSource={result.data?.items || []}
         loading={loading}
         rowKey="id"

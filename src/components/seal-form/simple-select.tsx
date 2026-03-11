@@ -179,8 +179,8 @@ const SimpleSelect: React.FC<SelectProps & { ref?: any; showTags?: boolean }> =
           closable={props.closable}
           onClose={props.onClose}
           style={{
-            height: 24,
-            backgroundColor: 'var(--ant-color-fill-tertiary)',
+            height: 22,
+            backgroundColor: 'var(--ant-color-fill-secondary)',
             fontSize: 'var(--ant-font-size)'
           }}
           className="flex-center"

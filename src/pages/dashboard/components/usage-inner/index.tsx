@@ -16,6 +16,7 @@ import useUsageData from './use-usage-data';
 const TitleWrapper = styled.div`
   margin: 0;
   font-weight: 700;
+  min-width: max-content;
 `;
 
 const UsageInner: FC<{ maxWidth: number }> = ({ maxWidth }) => {
@@ -27,6 +28,7 @@ const UsageInner: FC<{ maxWidth: number }> = ({ maxWidth }) => {
     query,
     userList,
     modelList,
+    selectedModels,
     handleOnCancel,
     init,
     handleExport,
@@ -109,6 +111,7 @@ const UsageInner: FC<{ maxWidth: number }> = ({ maxWidth }) => {
               query={query}
               userList={userList}
               modelList={modelList}
+              selectedModels={selectedModels}
               disabledDate={true}
               handleDateChange={handleDateChange}
               handleUsersChange={handleUsersChange}

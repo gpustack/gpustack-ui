@@ -3,34 +3,13 @@ import { isNotEmptyValue } from '@/utils/index';
 import { useIntl } from '@umijs/max';
 import type { CascaderAutoProps } from 'antd';
 import { Cascader, Empty, Form } from 'antd';
+import classNames from 'classnames';
 import _, { cloneDeep } from 'lodash';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import AutoTooltip from '../auto-tooltip';
 import { SealFormItemProps } from './types';
 import Wrapper from './wrapper';
 import SelectWrapper from './wrapper/select';
-
-const tag = (props: any) => {
-  if (props.isMaxTag) {
-    return props.label?.slice(0, -3);
-  }
-  const parent = _.split(props.value, '__RC_CASCADER_SPLIT__')?.[0];
-  return `${parent} / ${props?.label}`;
-};
-
-const renderTag = (props: any) => {
-  return (
-    <AutoTooltip
-      closable={props.closable}
-      onClose={props.onClose}
-      maxWidth={240}
-      style={{ marginRight: 4 }}
-      filled
-    >
-      {tag(props)}
-    </AutoTooltip>
-  );
-};
 
 const OptionNodes = (props: {
   data: any;
@@ -100,7 +79,9 @@ const SealCascader: React.FC<
     alwaysFocus = false,
     optionNode,
     notFoundContent,
+    size = 'middle',
     tagRender,
+    displayRender,
     ...rest
   } = props;
   const intl = useIntl();
@@ -172,10 +153,34 @@ const SealCascader: React.FC<
     props.onOpenChange?.(open);
   };
 
+  const tag = (props: any) => {
+    if (props.isMaxTag) {
+      return props.label?.slice(0, -3);
+    }
+    const parent = _.split(props.value, '__RC_CASCADER_SPLIT__')?.[0];
+    return displayRender ? props.label : `${parent} / ${props?.label}`;
+  };
+
+  const renderTag = (props: any) => {
+    return (
+      <AutoTooltip
+        closable={props.closable}
+        onClose={props.onClose}
+        maxWidth={240}
+        style={{ marginRight: 4 }}
+        filled
+      >
+        {tag(props)}
+      </AutoTooltip>
+    );
+  };
+
   return (
     <SelectWrapper>
       <Wrapper
-        className="seal-select-wrapper"
+        className={classNames('seal-select-wrapper', {
+          'seal-cascader-wrapper-small': size === 'small'
+        })}
         classList={visible ? 'dropdown-visible' : ''}
         status={status}
         label={label}
@@ -188,6 +193,7 @@ const SealCascader: React.FC<
         <Cascader
           {...rest}
           placeholder={placeholder}
+          className={size === 'small' ? 'seal-cascader-small' : ''}
           suffixIcon={<IconFont type="icon-down"></IconFont>}
           optionRender={(data) => (
             <OptionNodes
@@ -196,7 +202,8 @@ const SealCascader: React.FC<
               optionNode={optionNode}
             ></OptionNodes>
           )}
-          tagRender={tagRender ?? renderTag}
+          tagRender={tagRender || renderTag}
+          displayRender={displayRender}
           ref={inputRef}
           options={children ? null : _options}
           onFocus={handleOnFocus}

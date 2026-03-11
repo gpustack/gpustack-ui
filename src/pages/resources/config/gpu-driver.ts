@@ -343,7 +343,7 @@ export const registerAddWokerCommandMap = {
 };
 
 export const AddWorkerDockerNotes: Record<string, string[]> = {
-  [GPUDriverMap.NVIDIA]: [],
+  [GPUDriverMap.NVIDIA]: ['clusters.addworker.nvidiaNotes'],
   [GPUDriverMap.AMD]: ['clusters.addworker.amdNotes-01'],
   [GPUDriverMap.MOORE_THREADS]: [],
   [GPUDriverMap.ASCEND]: [],

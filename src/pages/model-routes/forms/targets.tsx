@@ -257,13 +257,6 @@ const TargetsForm = forwardRef((props, ref) => {
           {
             validator(rule, value) {
               if (value && value?.length > 0) {
-                // if (_.some(value, (item: any) => !item.weight)) {
-                //   setValidTriggered(true);
-                //   return Promise.reject(
-                //     getRuleMessage('input', 'routes.form.target.weight')
-                //   );
-                // }
-
                 if (
                   _.some(
                     dataList,

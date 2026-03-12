@@ -143,7 +143,7 @@ const useColumnSettings = (options: {
       title: renderTitle(
         `${intl.formatMessage({ id: 'benchmark.detail.summary.latency' })}`,
         {
-          subTitle: `${intl.formatMessage({ id: 'benchmark.table.avg' })} (ms)`
+          subTitle: `${intl.formatMessage({ id: 'benchmark.table.avg' })} (s)`
         }
       ),
       dataIndex: 'request_latency_mean',

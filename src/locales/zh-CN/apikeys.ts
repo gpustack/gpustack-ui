@@ -2,6 +2,7 @@ export default {
   'apikeys.title': 'API 密钥',
   'apikeys.table.apikeys': '密钥',
   'apikeys.button.create': '添加 API 密钥',
+  'apikeys.button.edit': '编辑 API 密钥',
   'apikeys.title.save': '保存 API 密钥',
   'apikeys.form.expiretime': '过期时间',
   'apikeys.form.apikey': 'API 密钥',

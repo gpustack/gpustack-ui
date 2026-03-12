@@ -62,7 +62,7 @@ const APIKeys: React.FC = () => {
   const handleEditKey = (record: ListItem) => {
     setOpenAddModal({
       open: true,
-      title: 'Edit API Key',
+      title: intl.formatMessage({ id: 'apikeys.button.edit' }),
       action: PageAction.EDIT,
       currentData: record
     });

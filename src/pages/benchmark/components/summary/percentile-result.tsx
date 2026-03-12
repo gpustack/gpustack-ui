@@ -32,7 +32,7 @@ const PercentileResult: React.FC = () => {
       render: (value: number) => round(value, 2)
     },
     {
-      title: `${intl.formatMessage({ id: 'benchmark.detail.percentile.latency' })} (ms)`,
+      title: `${intl.formatMessage({ id: 'benchmark.detail.percentile.latency' })} (s)`,
       dataIndex: 'request_latency',
       render: (value: number) => round(value, 2)
     },

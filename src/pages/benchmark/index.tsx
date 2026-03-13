@@ -9,7 +9,6 @@ import { useQueryModelList } from '@/pages/llmodels/services/use-query-model-lis
 import { useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { ConfigProvider, Table, message } from 'antd';
-import { createStyles } from 'antd-style';
 import _ from 'lodash';
 import { useEffect } from 'react';
 import NoResult from '../_components/no-result';
@@ -36,23 +35,6 @@ import useQueryDataset from './services/use-query-dataset';
 import useQueryProfiles from './services/use-query-profiles';
 import useStopBenchmark from './services/use-stop-benchmark';
 
-const useStyle = createStyles(({ css, token }) => {
-  const antCls = '.ant';
-  return {
-    customTable: css`
-      ${antCls}-table {
-        ${antCls}-table-container {
-          ${antCls}-table-body,
-          ${antCls}-table-content {
-            scrollbar-width: thin;
-            scrollbar-color: var(--color-scrollbar-thumb) transparent;
-          }
-        }
-      }
-    `
-  };
-});
-
 const Benchmark: React.FC = () => {
   const {
     dataSource,
@@ -76,7 +58,6 @@ const Benchmark: React.FC = () => {
     watch: true,
     contentForDelete: 'menu.models.benchmark'
   });
-  const { styles } = useStyle();
   const intl = useIntl();
   const navigate = useNavigate();
   const { openBenchmarkModal, closeBenchmarkModal, openBenchmarkModalStatus } =
@@ -261,7 +242,7 @@ const Benchmark: React.FC = () => {
           <Table
             tableLayout="fixed"
             columns={columns}
-            className={styles.customTable}
+            className={'scroll-table'}
             dataSource={dataSource.dataList}
             rowSelection={rowSelection}
             loading={dataSource.loading}

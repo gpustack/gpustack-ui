@@ -27,7 +27,7 @@ const ExportData: React.FC<{
     selectedModels,
     query,
     setQuery,
-    handleExport,
+    resetQuery,
     handleDateChange,
     handleUsersChange,
     handleModelsChange
@@ -105,7 +105,6 @@ const ExportData: React.FC<{
     }
   ];
 
-  console.log('export data: ', modelList);
   const handleSubmit = () => {
     const fileName = `usage-data_${query.start_date || ''}_${query.end_date || ''}.xlsx`;
     exportJsonToExcel({
@@ -133,6 +132,11 @@ const ExportData: React.FC<{
     });
   };
 
+  const handleOnCancel = () => {
+    onCancel?.();
+    resetQuery();
+  };
+
   useEffect(() => {
     if (open) {
       init();
@@ -157,7 +161,7 @@ const ExportData: React.FC<{
       title={intl.formatMessage({ id: 'dashboard.usage.export' })}
       open={open}
       centered={false}
-      onCancel={onCancel}
+      onCancel={handleOnCancel}
       destroyOnHidden={true}
       closeIcon={true}
       maskClosable={false}
@@ -169,7 +173,7 @@ const ExportData: React.FC<{
       footer={
         <ModalFooter
           onOk={handleSubmit}
-          onCancel={onCancel}
+          onCancel={handleOnCancel}
           okText={intl.formatMessage({ id: 'common.button.export' })}
         ></ModalFooter>
       }

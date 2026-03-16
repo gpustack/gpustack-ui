@@ -217,7 +217,7 @@ const useModelsColumns = ({
         )
       }
     ];
-  }, [sortOrder, clusterList, intl, handleSelect]);
+  }, [sortOrder, clusterList, intl, handleSelect, setModelActionList]);
 };
 
 export default useModelsColumns;

@@ -1,5 +1,3 @@
-import { queryModelsList } from '@/pages/llmodels/apis';
-import { ListItem as ModelListItem } from '@/pages/llmodels/config/types';
 import useTargetSourceModels from '@/pages/model-routes/hooks/use-target-source-models';
 import { queryUsersList } from '@/pages/users/apis';
 import dayjs from 'dayjs';
@@ -107,7 +105,6 @@ export default function useUseageData<T>(config: {
   });
   const { sourceModels: modelList, fetchSourceModels } =
     useTargetSourceModels();
-  const [models, setModelList] = useState<Global.BaseOption<string>[]>([]);
   const [userList, setUserList] = useState<Global.BaseOption<string>[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedModels, setSelectedModels] = useState<string[][]>([]);
@@ -214,25 +211,6 @@ export default function useUseageData<T>(config: {
     };
   }, [result, url]);
 
-  const fetchModelsList = async () => {
-    try {
-      const params = {
-        page: -1
-      };
-
-      const response = await queryModelsList(params);
-      const list = _.map(response.items || [], (item: ModelListItem) => {
-        return {
-          label: item.name,
-          value: item.id
-        };
-      });
-      setModelList(list);
-    } catch (error) {
-      setModelList([]);
-    }
-  };
-
   const fetchUsersList = async () => {
     try {
       const params = {
@@ -333,6 +311,19 @@ export default function useUseageData<T>(config: {
     fetchUsageData({ ...query, ...generateModelsValue(value) });
   };
 
+  const resetQuery = () => {
+    setQuery({
+      start_date: dayjs()
+        .subtract(DefaultDateConfig.defaultRange, 'days')
+        .format('YYYY-MM-DD'),
+      end_date: dayjs().format('YYYY-MM-DD'),
+      model_ids: [],
+      user_ids: [],
+      provider_model_names: []
+    });
+    setSelectedModels([]);
+  };
+
   const init = () => {
     fetchUsageData(query);
     fetchSourceModels();
@@ -355,6 +346,7 @@ export default function useUseageData<T>(config: {
     handleExport,
     handleDateChange,
     handleUsersChange,
-    handleModelsChange
+    handleModelsChange,
+    resetQuery
   };
 }

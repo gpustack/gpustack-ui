@@ -83,15 +83,17 @@ const LabelItem: React.FC<LabelItemProps> = ({
             open={open}
             title={intl.formatMessage({ id: 'resources.table.key.tips' })}
           >
-            <SealInput.Input
-              disabled={disabled}
-              checkStatus="success"
-              label={intl.formatMessage({ id: 'common.input.key' })}
-              value={label.key}
-              onChange={handleOnKeyChange}
-              onBlur={(e: any) => handleKeyOnBlur(e, 'key')}
-              onPaste={onPaste}
-            ></SealInput.Input>
+            <span>
+              <SealInput.Input
+                disabled={disabled}
+                checkStatus="success"
+                label={intl.formatMessage({ id: 'common.input.key' })}
+                value={label.key}
+                onChange={handleOnKeyChange}
+                onBlur={(e: any) => handleKeyOnBlur(e, 'key')}
+                onPaste={onPaste}
+              ></SealInput.Input>
+            </span>
           </Tooltip>
         )}
       </div>

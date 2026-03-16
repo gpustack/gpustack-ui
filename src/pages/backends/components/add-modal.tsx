@@ -256,7 +256,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
         }}
         footer={
           <>
-            {action === PageAction.CREATE && (
+            {action === PageAction.CREATE && open && (
               <div style={{ marginInline: 24, paddingTop: 8 }} ref={alertRef}>
                 <AlertBlockInfo
                   type="warning"

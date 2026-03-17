@@ -48,6 +48,16 @@ const useModelsColumns = ({
         )
       },
       {
+        title: intl.formatMessage({ id: 'apikeys.table.key' }),
+        dataIndex: 'masked_value',
+        key: 'masked_value',
+        render: (text: string, record: ListItem) => (
+          <AutoTooltip ghost style={{ maxWidth: 400 }}>
+            {text}
+          </AutoTooltip>
+        )
+      },
+      {
         title: intl.formatMessage({ id: 'apikeys.form.expiretime' }),
         dataIndex: 'expires_at',
         key: 'expires_at',

@@ -1,6 +1,7 @@
 export default {
   'apikeys.title': 'APIキー',
   'apikeys.table.apikeys': 'キー',
+  'apikeys.table.key': 'キー',
   'apikeys.button.create': '新しいAPIキーを作成',
   'apikeys.button.edit': 'APIキーを編集',
   'apikeys.title.save': 'APIキーを保存',

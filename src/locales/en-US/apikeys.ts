@@ -1,6 +1,7 @@
 export default {
   'apikeys.title': 'API Keys',
   'apikeys.table.apikeys': 'keys',
+  'apikeys.table.key': 'Key',
   'apikeys.button.create': 'Add API Key',
   'apikeys.button.edit': 'Edit API Key',
   'apikeys.title.save': 'Save API Key',

@@ -9,7 +9,7 @@ import { tableSorter } from '@/config/settings';
 import GrafanaIcon from '@/pages/_components/grafana-icon';
 import { StarFilled } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Tooltip, Typography } from 'antd';
+import { Tooltip } from 'antd';
 import dayjs from 'dayjs';
 import { useAtomValue } from 'jotai';
 import { useMemo } from 'react';
@@ -100,9 +100,7 @@ const useClusterColumns = (
         span: 3,
         render: (text: string, record: ClusterListItem) => (
           <>
-            <Typography.Link onClick={() => onCellClick?.(record, 'name')}>
-              {record.name}
-            </Typography.Link>
+            <AutoTooltip ghost>{record.name}</AutoTooltip>
             {record.is_default && (
               <Tooltip
                 title={intl.formatMessage({

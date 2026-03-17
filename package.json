@@ -31,7 +31,7 @@
     "@xterm/xterm": "^5.5.0",
     "ahooks": "^3.8.5",
     "ansi-to-html": "^0.7.2",
-    "antd": "^6.1.2",
+    "antd": "^6.3.3",
     "antd-style": "^3.6.2",
     "axios": "^1.8.2",
     "classnames": "^2.5.1",

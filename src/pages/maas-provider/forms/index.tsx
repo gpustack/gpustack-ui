@@ -51,6 +51,7 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
   const {
     activeKey,
     collapseKeys,
+    setCollapseKeys,
     handleActiveChange,
     handleOnCollapseChange,
     updateActiveKey
@@ -147,6 +148,14 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       const customConfigYaml = json2Yaml(
         _.omit(currentData.config, ['type', 'openaiCustomUrl']) || {}
       );
+
+      const customConfig =
+        _.omit(currentData.config, ['type', 'openaiCustomUrl']) || {};
+
+      if (Object.keys(customConfig).length > 0) {
+        setCollapseKeys((prev) => [...new Set([...prev, TABKeysMap.ADVANCED])]);
+      }
+
       form.setFieldsValue({
         ...currentData,
         models: (currentData.models || []).map((item) => ({

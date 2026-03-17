@@ -73,18 +73,18 @@ export default [
         selectedIcon: 'icon-audio-filled',
         defaultIcon: 'icon-audio1',
         component: './playground/speech/index'
-      },
-      {
-        name: 'video',
-        title: 'Video',
-        path: '/playground/video',
-        key: 'video',
-        icon: 'icon-video-outline',
-        hideInMenu: false,
-        selectedIcon: 'icon-video-filled02',
-        defaultIcon: 'icon-video-outline',
-        component: './playground/video'
       }
+      // {
+      //   name: 'video',
+      //   title: 'Video',
+      //   path: '/playground/video',
+      //   key: 'video',
+      //   icon: 'icon-video-outline',
+      //   hideInMenu: false,
+      //   selectedIcon: 'icon-video-filled02',
+      //   defaultIcon: 'icon-video-outline',
+      //   component: './playground/video'
+      // }
     ]
   },
   {
@@ -242,16 +242,16 @@ export default [
           '/cluster-management/clusters/create'
         ]
       },
-      {
-        name: 'clusterDetail',
-        path: '/cluster-management/clusters/detail',
-        key: 'clusterDetail',
-        icon: 'icon-cluster2-outline',
-        selectedIcon: 'icon-cluster2-filled',
-        defaultIcon: 'icon-cluster2-outline',
-        hideInMenu: true,
-        component: './cluster-management/cluster-detail'
-      },
+      // {
+      //   name: 'clusterDetail',
+      //   path: '/cluster-management/clusters/detail',
+      //   key: 'clusterDetail',
+      //   icon: 'icon-cluster2-outline',
+      //   selectedIcon: 'icon-cluster2-filled',
+      //   defaultIcon: 'icon-cluster2-outline',
+      //   hideInMenu: true,
+      //   component: './cluster-management/cluster-detail'
+      // },
       {
         name: 'credentials',
         path: '/cluster-management/credentials',

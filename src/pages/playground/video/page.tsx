@@ -1,3 +1,4 @@
+import VideoPoster from '@/assets/images/video-poster.png';
 import { setRouteCache } from '@/atoms/route-cache';
 import AlertInfo from '@/components/alert-info';
 import IconFont from '@/components/icon-font';
@@ -180,10 +181,20 @@ const GroundVideo: React.FC<MessageProps> = forwardRef((props, ref) => {
                     boxShadow: '0 4px 24px rgba(0,0,0,0.12)'
                   }}
                 >
-                  <Spin spinning={loading}>
+                  <Spin
+                    spinning={loading}
+                    styles={{
+                      root: {
+                        height: '100%'
+                      },
+                      container: {
+                        height: '100%'
+                      }
+                    }}
+                  >
                     <video
                       src={videoList[0]?.dataUrl}
-                      poster="https://placehold.co/640x360.png?text=GPUStack"
+                      poster={VideoPoster}
                       controls
                       disablePictureInPicture
                       style={{

@@ -30,6 +30,7 @@ const useScrollActiveChange = (options: {
   return {
     activeKey,
     collapseKeys,
+    setCollapseKeys,
     handleActiveChange,
     handleOnCollapseChange,
     updateActiveKey

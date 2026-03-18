@@ -10,9 +10,16 @@ import { json2Yaml, yaml2Json } from '@/pages/backends/config';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
-import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef
+} from 'react';
 import FormContext from '../config/form-context';
 import { FormData, MaasProviderItem as ListItem } from '../config/types';
+import useProviderRequiredFields from '../hooks/use-provider-required-fields';
 import AdvanceConfig from './advance-config';
 import Basic from './basic';
 import SupportedModels from './supported-models';
@@ -44,14 +51,15 @@ const requiredFields = {
 const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
   const { action, currentData, onFinish } = props;
   const intl = useIntl();
+  const providerRequiredFieldsMap = useProviderRequiredFields();
   const [form] = Form.useForm();
   const { getScrollElementScrollableHeight } = useWrapperContext();
+  const configType = Form.useWatch(['config', 'type'], form);
   const scrollTabsRef = useRef<any>(null);
   const advanceRef = useRef<any>(null);
   const {
     activeKey,
     collapseKeys,
-    setCollapseKeys,
     handleActiveChange,
     handleOnCollapseChange,
     updateActiveKey
@@ -81,6 +89,11 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
     }
   ];
 
+  const providerFields = useMemo(() => {
+    const currentProviderFields = providerRequiredFieldsMap[configType] || [];
+    return currentProviderFields;
+  }, [providerRequiredFieldsMap, configType]);
+
   const formatAPIKeys = (values: FormData) => {
     const apiTokens = values.api_tokens?.filter?.(
       (item) => item && item.trim() !== ''
@@ -100,7 +113,11 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
 
   const getCustomConfig = () => {
     const customConfig = yaml2Json(advanceRef.current?.getYamlValue() || '');
-    return customConfig;
+    const config = form.getFieldValue('config') || {};
+    return {
+      ...config,
+      ...customConfig
+    };
   };
 
   const handleOnFinish = (values: FormData) => {
@@ -108,8 +125,7 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       ..._.omit(values, ['api_key']),
       api_tokens: formatAPIKeys(values),
       config: {
-        type: values.config.type,
-        openaiCustomUrl: values.config.openaiCustomUrl || undefined,
+        ...values.config,
         ...yaml2Json(advanceRef.current?.getYamlValue() || '')
       },
       models: _.uniqBy(values.models, 'name'),
@@ -145,16 +161,19 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       const apiTokensList = _.get(currentData, 'api_tokens', []).map(
         (item: any) => item.hash || ''
       );
-      const customConfigYaml = json2Yaml(
-        _.omit(currentData.config, ['type', 'openaiCustomUrl']) || {}
+      const currentProvider = _.get(
+        providerRequiredFieldsMap,
+        [currentData.config.type],
+        []
       );
 
-      const customConfig =
-        _.omit(currentData.config, ['type', 'openaiCustomUrl']) || {};
+      const currentRequiredFields = currentProvider.map(
+        (item: { name: string }) => item.name
+      );
 
-      if (Object.keys(customConfig).length > 0) {
-        setCollapseKeys((prev) => [...new Set([...prev, TABKeysMap.ADVANCED])]);
-      }
+      const customConfigYaml = json2Yaml(
+        _.omit(currentData.config, ['type', ...currentRequiredFields]) || {}
+      );
 
       form.setFieldsValue({
         ...currentData,
@@ -189,6 +208,7 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
           action,
           id: currentData?.id,
           currentData,
+          providerFields,
           getCustomConfig: getCustomConfig
         }}
       >

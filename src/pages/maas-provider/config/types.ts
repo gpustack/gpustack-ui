@@ -40,3 +40,19 @@ export interface MaasProviderItem {
   api_token_count: number;
   api_tokens: { hash: string }[];
 }
+
+export interface RequiredFields {
+  type: 'Input' | 'Select' | 'Password';
+  name: string;
+  label: {
+    text: string;
+    locale?: boolean;
+  };
+  required?: boolean;
+  placeholder?: string;
+  description?: {
+    text: string;
+    locale?: boolean;
+  };
+  rules?: any[];
+}

@@ -20,7 +20,6 @@ import {
   modelSourceMap,
   ScheduleValueMap
 } from '../config';
-import { backendOptionsMap } from '../config/backend-parameters';
 import { FormContext } from '../config/form-context';
 import {
   BackendOption,
@@ -28,10 +27,11 @@ import {
   FormData,
   SourceType
 } from '../config/types';
-import { generateGPUIds } from '../config/utils';
+import { backendOptionsMap } from '../constants/backend-parameters';
 import { useGenerateGPUOptions } from '../hooks/use-form-initial-values';
 import useQueryBackends from '../hooks/use-query-backends';
 import { useQueryContextLength } from '../services/use-query-context-length';
+import { generateGPUIds } from '../utils';
 import AdvanceConfig from './advance-config';
 import BasicForm from './basic';
 import Performance from './performance';

@@ -26,10 +26,10 @@ import {
   downloadModelFile,
   queryHuggingfaceModelDetail,
   queryModelScopeModelDetail
-} from '../apis';
-import { modelSourceMap } from '../config';
-import '../style/model-card.less';
-import TitleWrapper from './title-wrapper';
+} from '../../apis';
+import { modelSourceMap } from '../../config';
+import '../../style/model-card.less';
+import TitleWrapper from '../title-wrapper';
 
 const MkdTitle = styled.span`
   cursor: pointer;
@@ -354,7 +354,7 @@ const ModelCard: React.FC<{
                   collapsed={collapsed}
                   loading={loading}
                 ></MarkDownTitle>
-                <Spin spinning={loading && collapsed}>
+                <Spin spinning={loading && collapsed} size="middle">
                   <SimpleOverlay
                     style={{
                       paddingTop: collapsed ? 12 : 0,
@@ -383,7 +383,7 @@ const ModelCard: React.FC<{
         )}
       </div>
       {!isGGUF && (
-        <Spin spinning={loading}>
+        <Spin spinning={loading} size="middle">
           <div style={{ minHeight: 200 }}>
             {readmeText && (
               <>

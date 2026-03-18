@@ -4,10 +4,10 @@ import { DownloadOutlined, HeartOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
 import dayjs from 'dayjs';
 import React from 'react';
-import { modelSourceMap } from '../config';
-import { EvaluateResult } from '../config/types';
-import '../style/hf-model-item.less';
-import IncompatiableInfo from './incompatiable-info';
+import { modelSourceMap } from '../../config';
+import { EvaluateResult } from '../../config/types';
+import '../../style/hf-model-item.less';
+import IncompatiableInfo from '../incompatiable-info';
 
 interface HFModelItemProps {
   title: string;

@@ -13,12 +13,15 @@ import React, {
 } from 'react';
 import 'simplebar-react/dist/simplebar.min.css';
 import styled from 'styled-components';
-import { queryHuggingfaceModelFiles, queryModelScopeModelFiles } from '../apis';
-import { modelSourceMap } from '../config';
-import '../style/hf-model-file.less';
+import {
+  queryHuggingfaceModelFiles,
+  queryModelScopeModelFiles
+} from '../../apis';
+import { modelSourceMap } from '../../config';
+import '../../style/hf-model-file.less';
+import TitleWrapper from '../title-wrapper';
 import FileSkeleton from './file-skeleton';
 import ModelFileItem from './model-file-item';
-import TitleWrapper from './title-wrapper';
 
 const ItemFileWrapper = styled.div`
   display: flex;

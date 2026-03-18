@@ -6,7 +6,7 @@ import { Input } from 'antd';
 import React, { useRef } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import styled from 'styled-components';
-import { modelSourceMap, modelSourceValueMap } from '../config';
+import { modelSourceMap, modelSourceValueMap } from '../../config';
 
 const SearchInputWrapper = styled.div`
   position: relative;

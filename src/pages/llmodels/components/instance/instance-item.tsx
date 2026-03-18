@@ -28,21 +28,21 @@ import { useAtomValue } from 'jotai';
 import _ from 'lodash';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import styled from 'styled-components';
-import { MODEL_INSTANCE_API } from '../apis';
+import { MODEL_INSTANCE_API } from '../../apis';
 import {
   InstanceStatusMap,
   InstanceStatusMapValue,
   modelCategoriesMap,
   status
-} from '../config';
-import { backendOptionsMap } from '../config/backend-parameters';
-import { generateSource } from '../config/button-actions';
+} from '../../config';
+import { generateSource } from '../../config/button-actions';
 import {
   DistributedServerItem,
   DistributedServers,
   ModelInstanceListItem
-} from '../config/types';
-import '../style/instance-item.less';
+} from '../../config/types';
+import { backendOptionsMap } from '../../constants/backend-parameters';
+import '../../style/instance-item.less';
 
 interface InstanceItemProps {
   instanceData: ModelInstanceListItem;

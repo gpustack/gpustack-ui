@@ -2,8 +2,8 @@ import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
 import _ from 'lodash';
 import React, { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
-import { ModelInstanceListItem } from '../config/types';
-import '../style/instance-item.less';
+import { ModelInstanceListItem } from '../../config/types';
+import '../../style/instance-item.less';
 import InstanceItem from './instance-item';
 
 const Wrapper = styled.div`

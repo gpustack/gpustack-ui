@@ -2,21 +2,21 @@ import ModalFooter from '@/components/modal-footer';
 import GSDrawer from '@/components/scroller-modal/gs-drawer';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
+import ColumnWrapper from '@/pages/_components/column-wrapper';
 import { useIntl } from '@umijs/max';
 import _ from 'lodash';
 import React, { useEffect, useRef } from 'react';
-import ColumnWrapper from '../../_components/column-wrapper';
 import {
   DeployFormKeyMap,
   DO_NOT_NOTIFY_RECREATE,
   ScheduleValueMap
-} from '../config';
-import { backendOptionsMap } from '../config/backend-parameters';
-import { FormData } from '../config/types';
-import { generateGPUSelector } from '../config/utils';
-import DataForm from '../forms';
-import { useCheckCompatibility } from '../hooks';
-import CompatibilityAlert from './compatible-alert';
+} from '../../config';
+import { FormData } from '../../config/types';
+import { backendOptionsMap } from '../../constants/backend-parameters';
+import DataForm from '../../forms';
+import { useCheckCompatibility } from '../../hooks';
+import { generateGPUSelector } from '../../utils';
+import CompatibilityAlert from '../compatible-alert';
 
 type AddModalProps = {
   title: string;

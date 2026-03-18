@@ -7,10 +7,10 @@ import classNames from 'classnames';
 import _ from 'lodash';
 import React from 'react';
 import 'simplebar-react/dist/simplebar.min.css';
-import { getFileType } from '../config/file-type';
-import '../style/hf-model-file.less';
+import { getFileType } from '../../constants/file-type';
+import '../../style/hf-model-file.less';
+import IncompatiableInfo from '../incompatiable-info';
 import FileParts from './file-parts';
-import IncompatiableInfo from './incompatiable-info';
 
 interface ModelFileItemProps {
   data: Record<string, any>;

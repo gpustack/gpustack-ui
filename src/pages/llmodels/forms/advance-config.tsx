@@ -9,9 +9,9 @@ import { Form } from 'antd';
 import _ from 'lodash';
 import { useMemo } from 'react';
 import { modelCategories } from '../config';
-import { backendOptionsMap } from '../config/backend-parameters';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
+import { backendOptionsMap } from '../constants/backend-parameters';
 import BackendParametersList from './backend-parameters-list';
 
 const AdvanceConfig = () => {

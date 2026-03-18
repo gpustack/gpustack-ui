@@ -8,8 +8,8 @@ import { useAtom } from 'jotai';
 import _ from 'lodash';
 import { useState } from 'react';
 import { queryBackendList } from '../apis';
-import { backendOptionsMap } from '../config/backend-parameters';
 import { BackendOption } from '../config/types';
+import { backendOptionsMap } from '../constants/backend-parameters';
 
 interface BackendGroup {
   label: string;

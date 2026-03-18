@@ -29,7 +29,7 @@ const DefaultDateConfig = {
 };
 
 const FilterWrapper = styled.div`
-  poisiton: relative;
+  position: relative;
   z-index: 10;
   display: flex;
   justify-content: space-between;

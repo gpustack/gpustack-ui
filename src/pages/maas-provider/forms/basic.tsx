@@ -7,8 +7,9 @@ import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import ProviderLogo from '../components/provider-logo';
 import { useFormContext } from '../config/form-context';
-import { maasProviderOptions, ProviderEnum } from '../config/providers';
+import { maasProviderOptions } from '../config/providers';
 import { FormData } from '../config/types';
+import ProviderConfigs from './provider-configs';
 
 const Basic: React.FC<{
   onAPIKeyBlur?: (e: any) => void;
@@ -77,16 +78,7 @@ const Basic: React.FC<{
           })}
         />
       </Form.Item>
-      {providerType === ProviderEnum.OPENAI && (
-        <Form.Item<FormData> name={['config', 'openaiCustomUrl']}>
-          <SealInput.Input
-            placeholder="http://<your-inference-server>/v1"
-            label={intl.formatMessage({
-              id: 'providers.form.custombeckendUrl'
-            })}
-          />
-        </Form.Item>
-      )}
+      <ProviderConfigs />
       <Form.Item<FormData>
         name="api_key"
         rules={[

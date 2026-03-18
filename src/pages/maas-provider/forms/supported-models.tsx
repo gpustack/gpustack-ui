@@ -18,8 +18,8 @@ const SupportedModels = () => {
   const prevConfigRef = useRef<{
     type: string;
     api_key: string;
-    openaiCustomUrl: string;
-  }>({ type: '', api_key: '', openaiCustomUrl: '' });
+    [key: string]: any;
+  }>({ type: '', api_key: '' });
   const { id, action, currentData, getCustomConfig } = useFormContext();
 
   const generateCurrentAPIKey = (currentAPIKey: string) => {
@@ -42,7 +42,7 @@ const SupportedModels = () => {
   const checkConfigChange = (current: {
     type: string;
     api_key: string;
-    openaiCustomUrl: string;
+    [key: string]: any;
   }) => {
     return (
       !_.isEqual(current, prevConfigRef.current) &&
@@ -58,13 +58,12 @@ const SupportedModels = () => {
       const proxyConfigEnabled = form.getFieldValue('proxy_enabled');
       const currentAPIKey = form.getFieldValue('api_key') || '';
       const configType = form.getFieldValue(['config', 'type']);
-      const openaiCustomUrl = form.getFieldValue(['config', 'openaiCustomUrl']);
       const customConfig = getCustomConfig?.();
 
       const currentConfig = {
         type: configType,
         api_key: currentAPIKey,
-        openaiCustomUrl: customConfig?.openaiCustomUrl || openaiCustomUrl || ''
+        ...customConfig
       };
 
       // Avoid repeated requests with the same API key
@@ -82,9 +81,7 @@ const SupportedModels = () => {
               : null,
             config: {
               type: form.getFieldValue(['config', 'type']) || '',
-              ...customConfig,
-              openaiCustomUrl:
-                customConfig?.openaiCustomUrl || openaiCustomUrl || null
+              ...customConfig
             }
           }
         });
@@ -92,8 +89,7 @@ const SupportedModels = () => {
     } catch (error) {
       prevConfigRef.current = {
         type: '',
-        api_key: '',
-        openaiCustomUrl: ''
+        api_key: ''
       };
       // If validation fails, reset the provider model list to avoid confusion
     }

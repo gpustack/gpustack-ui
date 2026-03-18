@@ -23,5 +23,19 @@ export default {
   'providers.form.rules.tokens': 'Please enter a valid API Key',
   'providers.form.rules.model': 'Please select a model',
   'providers.form.model.duplicate': 'Duplicate model exists',
-  'providers.table.registerRoute': 'Register Route'
+  'providers.table.registerRoute': 'Register Route',
+  'providers.form.azureServiceUrl': 'Azure OpenAI Service URL',
+  'providers.form.ollamaServerHost': 'Ollama Server Host',
+  'providers.form.ollamaServerPort': 'Ollama Server Port',
+  'providers.form.hunyuanAuthId': 'Hunyuan Auth ID',
+  'providers.form.hunyuanAuthKey': 'Hunyuan Auth Key',
+  'providers.form.cloudflareAccountId': 'Cloudflare Account ID',
+  'providers.form.targetLang': 'Target Language',
+  'providers.form.modelVersion': 'Model Version',
+  'providers.form.tritonDomain': 'Triton Server Domain',
+  'providers.form.modelVersion.tips':
+    'Specifies the model version used in Triton Server.',
+  'providers.form.tritonDomain.tips':
+    'The domain used to send requests to the Triton Server deployment.',
+  'providers.form.awsRegion': 'AWS Region'
 };

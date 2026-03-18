@@ -1,12 +1,14 @@
 import { PageActionType } from '@/config/types';
 import { createContext, useContext } from 'react';
 import { maasProviderType } from '.';
+import { RequiredFields } from './types';
 
 interface FormContextProps {
   providerType?: maasProviderType;
   action: PageActionType;
   currentData?: any;
   id?: number;
+  providerFields?: RequiredFields[];
   getCustomConfig?: () => Record<string, any>;
 }
 

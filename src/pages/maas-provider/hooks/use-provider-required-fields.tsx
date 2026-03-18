@@ -141,34 +141,6 @@ const useProviderRequiredFields = () => {
     [ProviderEnum.BEDROCK]: [
       {
         type: 'Input',
-        name: 'modelVersion',
-        required: false,
-        label: {
-          text: 'providers.form.modelVersion',
-          locale: true
-        },
-        description: {
-          text: 'providers.form.modelVersion.tips',
-          locale: true
-        }
-      },
-      {
-        type: 'Input',
-        name: 'tritonDomain',
-        required: false,
-        label: {
-          text: 'providers.form.tritonDomain',
-          locale: true
-        },
-        description: {
-          text: 'providers.form.tritonDomain.tips',
-          locale: true
-        }
-      }
-    ],
-    [ProviderEnum.TRITON]: [
-      {
-        type: 'Input',
         name: 'awsAccessKey',
         required: true,
         label: {
@@ -200,6 +172,10 @@ const useProviderRequiredFields = () => {
       {
         type: 'Input',
         name: 'awsRegion',
+        placeholder: intl.formatMessage(
+          { id: 'common.help.eg' },
+          { content: 'us-eest-1' }
+        ),
         required: true,
         label: {
           text: 'providers.form.awsRegion',

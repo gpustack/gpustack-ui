@@ -23,5 +23,17 @@ export default {
   'providers.form.rules.tokens': '请输入有效的 API Key',
   'providers.form.rules.model': '请选择模型',
   'providers.form.model.duplicate': '存在相同的模型',
-  'providers.table.registerRoute': '注册路由'
+  'providers.table.registerRoute': '注册路由',
+  'providers.form.azureServiceUrl': 'Azure OpenAI 服务 URL',
+  'providers.form.ollamaServerHost': 'Ollama 服务地址',
+  'providers.form.ollamaServerPort': 'Ollama 服务端口',
+  'providers.form.hunyuanAuthId': '混元认证 ID',
+  'providers.form.hunyuanAuthKey': '混元认证 Key',
+  'providers.form.cloudflareAccountId': 'Cloudflare 账号 ID',
+  'providers.form.targetLang': '翻译目标语言',
+  'providers.form.modelVersion': '模型版本',
+  'providers.form.modelVersion.tips': '用于指定 Triton Server 中的模型版本。',
+  'providers.form.tritonDomain': 'Triton Server 域名',
+  'providers.form.tritonDomain.tips': 'Triton Server 部署的指定请求的域名。',
+  'providers.form.awsRegion': 'AWS 区域'
 };

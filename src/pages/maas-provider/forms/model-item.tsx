@@ -89,11 +89,7 @@ const ModelItem: React.FC<ModelItemProps> = ({
           : null,
         config: {
           type: form.getFieldValue(['config', 'type']) || '',
-          ...customConfig,
-          openaiCustomUrl:
-            customConfig?.openaiCustomUrl ||
-            form.getFieldValue(['config', 'openaiCustomUrl']) ||
-            null
+          ...customConfig
         }
       }
     });

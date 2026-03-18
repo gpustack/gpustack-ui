@@ -4,9 +4,9 @@ import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
 import { useMemo, useRef } from 'react';
-import { backendOptionsMap } from '../config/backend-parameters';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
+import { backendOptionsMap } from '../constants/backend-parameters';
 
 const KVCacheForm = () => {
   const intl = useIntl();

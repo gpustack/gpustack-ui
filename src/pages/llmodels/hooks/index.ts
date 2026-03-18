@@ -9,12 +9,12 @@ import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
 import { evaluationsModelSpec } from '../apis';
 import { modelSourceMap, modelTaskMap } from '../config';
+import { EvaluateResult, FormData } from '../config/types';
 import {
   backendOptionsMap,
   BuiltInBackendOptions
-} from '../config/backend-parameters';
-import { EvaluateResult, FormData } from '../config/types';
-import { generateGPUIds } from '../config/utils';
+} from '../constants/backend-parameters';
+import { generateGPUIds } from '../utils';
 import useCheckBackend from './use-check-backend';
 import useRecognizeAudio from './use-recognize-audio';
 

@@ -2,15 +2,15 @@ import fallbackImg from '@/assets/images/img.png';
 import AutoTooltip from '@/components/auto-tooltip';
 import IconFont from '@/components/icon-font';
 import ThemeTag from '@/components/tags-wrapper/theme-tag';
+import { categoryConfig } from '@/pages/_components/model-tag';
 import { useIntl } from '@umijs/max';
 import { Typography } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import React, { useCallback, useMemo } from 'react';
-import { categoryConfig } from '../../_components/model-tag';
-import { modelCategories } from '../config';
-import { CatalogItem as CatalogItemType } from '../config/types';
-import '../style/catalog-item.less';
+import { modelCategories } from '../../config';
+import { CatalogItem as CatalogItemType } from '../../config/types';
+import '../../style/catalog-item.less';
 
 interface CatalogItemProps {
   activeId: number;

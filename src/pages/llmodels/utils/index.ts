@@ -1,6 +1,6 @@
 import _ from 'lodash';
-import { backendOptionsMap } from '../config/backend-parameters';
-import { FormData } from './types';
+import { FormData } from '../config/types';
+import { backendOptionsMap } from '../constants/backend-parameters';
 
 // generate the gpu_selector field for form initial values, when eidting a model
 export const generateGPUSelector = (data: any, gpuOptions: any[]) => {

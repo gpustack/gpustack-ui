@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { backendOptionsMap } from '../config/backend-parameters';
+import { backendOptionsMap } from '../constants/backend-parameters';
 
 export default function useCheckBackend() {
   // handle for ascend npu only

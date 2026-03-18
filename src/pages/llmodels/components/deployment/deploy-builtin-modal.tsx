@@ -2,23 +2,28 @@ import ModalFooter from '@/components/modal-footer';
 import GSDrawer from '@/components/scroller-modal/gs-drawer';
 import { PageActionType } from '@/config/types';
 import { createAxiosToken } from '@/hooks/use-chunk-request';
+import ColumnWrapper from '@/pages/_components/column-wrapper';
 import { ClusterStatusValueMap } from '@/pages/cluster-management/config';
 import { useIntl } from '@umijs/max';
 import { Button, message } from 'antd';
 import _ from 'lodash';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
-import ColumnWrapper from '../../_components/column-wrapper';
-import { queryCatalogItemSpec } from '../apis';
-import { DeployFormKeyMap, sourceOptions } from '../config';
-import { backendOptionsMap } from '../config/backend-parameters';
-import { CatalogFormContext } from '../config/form-context';
-import { CatalogSpec, FormData, ListItem, SourceType } from '../config/types';
-import { generateGPUIds } from '../config/utils';
-import DataForm from '../forms';
-import { useCheckCompatibility } from '../hooks';
-import useFormInitialValues from '../hooks/use-form-initial-values';
-import CompatibilityAlert from './compatible-alert';
+import { queryCatalogItemSpec } from '../../apis';
+import { DeployFormKeyMap, sourceOptions } from '../../config';
+import { CatalogFormContext } from '../../config/form-context';
+import {
+  CatalogSpec,
+  FormData,
+  ListItem,
+  SourceType
+} from '../../config/types';
+import { backendOptionsMap } from '../../constants/backend-parameters';
+import DataForm from '../../forms';
+import { useCheckCompatibility } from '../../hooks';
+import useFormInitialValues from '../../hooks/use-form-initial-values';
+import { generateGPUIds } from '../../utils';
+import CompatibilityAlert from '../compatible-alert';
 
 const ModesMap: Record<string, string> = {
   latency: 'models.form.mode.latency',

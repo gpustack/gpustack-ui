@@ -3,7 +3,7 @@ import SGLangLogo from '@/assets/logo/sglang.png';
 import vLLMLogo from '@/assets/logo/vllm.png';
 import VoxBoxLogo from '@/assets/logo/voxbox.png';
 import icons from '@/components/icon-font/icons';
-import { backendOptionsMap } from '@/pages/llmodels/config/backend-parameters';
+import { backendOptionsMap } from '@/pages/llmodels/constants/backend-parameters';
 import {
   GPUDriverMap,
   ManufacturerMap

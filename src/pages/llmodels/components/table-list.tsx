@@ -63,9 +63,9 @@ import useEditDeployment from '../hooks/use-edit-deployment';
 import useFilterStatus from '../hooks/use-filter-status';
 import useFormInitialValues from '../hooks/use-form-initial-values';
 import useModelsColumns from '../hooks/use-models-columns';
-import DeployModal from './deploy-modal';
-import Instances from './instances';
-import UpdateModelModal from './update-modal';
+import DeployModal from './deployment/deploy-modal';
+import UpdateModelModal from './deployment/update-modal';
+import Instances from './instance/instances';
 import ViewLogsModal from './view-logs-modal';
 interface ModelsProps {
   handleSearch: (params?: any) => void;

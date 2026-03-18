@@ -15,8 +15,8 @@ import React, { useCallback, useEffect, useState } from 'react';
 import NoResult from '../_components/no-result';
 import PageBox from '../_components/page-box';
 import { createModel, queryCatalogItemSpec, queryCatalogList } from './apis';
-import CatalogList from './components/catalog-list';
-import DelopyBuiltInModal from './components/deploy-builtin-modal';
+import CatalogList from './components/catalog/catalog-list';
+import DelopyBuiltInModal from './components/deployment/deploy-builtin-modal';
 import { modelCategories, modelSourceMap } from './config';
 import { CatalogItem as CatalogItemType, FormData } from './config/types';
 

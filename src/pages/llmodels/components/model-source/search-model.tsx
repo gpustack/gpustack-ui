@@ -11,12 +11,16 @@ import {
   evaluationsModelSpec,
   queryHuggingfaceModels,
   queryModelScopeModels
-} from '../apis';
-import { ModelScopeSortType, ModelSortType, modelSourceMap } from '../config';
-import { MessageStatus, WarningStausOptions } from '../hooks';
-import useCheckBackend from '../hooks/use-check-backend';
-import useRecognizeAudio from '../hooks/use-recognize-audio';
-import SearchStyle from '../style/search-result.less';
+} from '../../apis';
+import {
+  ModelScopeSortType,
+  ModelSortType,
+  modelSourceMap
+} from '../../config';
+import { MessageStatus, WarningStausOptions } from '../../hooks';
+import useCheckBackend from '../../hooks/use-check-backend';
+import useRecognizeAudio from '../../hooks/use-recognize-audio';
+import SearchStyle from '../../style/search-result.less';
 import SearchInput from './search-input';
 import SearchResult from './search-result';
 

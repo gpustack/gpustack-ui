@@ -1,6 +1,6 @@
 import { StatusMaps } from '@/config';
 import { EditOutlined } from '@ant-design/icons';
-import { backendOptionsMap } from './backend-parameters';
+import { backendOptionsMap } from '../constants/backend-parameters';
 
 export const backendTipsList = [
   {

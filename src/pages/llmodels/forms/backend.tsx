@@ -7,8 +7,8 @@ import { Form, Select } from 'antd';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import { backendTipsList } from '../config';
-import { backendOptionsMap } from '../config/backend-parameters';
 import { useFormContext } from '../config/form-context';
+import { backendOptionsMap } from '../constants/backend-parameters';
 import useCompareEnvs from '../hooks/use-compare-envs';
 import EnvsOverridePopover from './envs-override-popover';
 

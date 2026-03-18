@@ -4,11 +4,11 @@ import { Form } from 'antd';
 import _ from 'lodash';
 import { useMemo } from 'react';
 import { backendParamsHolderTips, getBackendParamsTips } from '../config';
-import BackendParameters, {
-  backendOptionsMap
-} from '../config/backend-parameters';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
+import BackendParameters, {
+  backendOptionsMap
+} from '../constants/backend-parameters';
 
 const BackendParametersList: React.FC = () => {
   const intl = useIntl();

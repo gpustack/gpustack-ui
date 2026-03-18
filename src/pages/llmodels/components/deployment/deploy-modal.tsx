@@ -10,24 +10,28 @@ import { Button } from 'antd';
 import _ from 'lodash';
 import { FC, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
-import ColumnWrapper from '../../_components/column-wrapper';
-import { defaultFormValues, DeployFormKeyMap, modelSourceMap } from '../config';
-import { backendOptionsMap } from '../config/backend-parameters';
-import { FormData, SourceType } from '../config/types';
-import DataForm from '../forms';
+import ColumnWrapper from '../../../_components/column-wrapper';
+import {
+  defaultFormValues,
+  DeployFormKeyMap,
+  modelSourceMap
+} from '../../config';
+import { FormData, SourceType } from '../../config/types';
+import { backendOptionsMap } from '../../constants/backend-parameters';
+import DataForm from '../../forms';
 import {
   MessageStatus,
   useCheckCompatibility,
   useSelectModel,
   WarningStausOptions
-} from '../hooks';
-import useCheckBackend from '../hooks/use-check-backend';
-import CompatibilityAlert from './compatible-alert';
-import HFModelFile from './hf-model-file';
-import ModelCard from './model-card';
-import SearchModel from './search-model';
-import Separator from './separator';
-import TitleWrapper from './title-wrapper';
+} from '../../hooks';
+import useCheckBackend from '../../hooks/use-check-backend';
+import CompatibilityAlert from '../compatible-alert';
+import HFModelFile from '../model-source/hf-model-file';
+import ModelCard from '../model-source/model-card';
+import SearchModel from '../model-source/search-model';
+import Separator from '../separator';
+import TitleWrapper from '../title-wrapper';
 
 const pickFieldsFromSpec = ['backend_version', 'backend_parameters', 'env'];
 const dropFieldsFromForm = [

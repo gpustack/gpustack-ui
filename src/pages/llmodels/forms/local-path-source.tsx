@@ -6,9 +6,9 @@ import { Form } from 'antd';
 import _ from 'lodash';
 import React, { useRef } from 'react';
 import { DeployFormKeyMap, localPathTipsList, modelSourceMap } from '../config';
-import { backendOptionsMap } from '../config/backend-parameters';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
+import { backendOptionsMap } from '../constants/backend-parameters';
 import useCheckBackend from '../hooks/use-check-backend';
 
 const LocalPathForm: React.FC = () => {

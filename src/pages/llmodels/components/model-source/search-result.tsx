@@ -6,8 +6,8 @@ import _ from 'lodash';
 import React, { useMemo } from 'react';
 import 'simplebar-react/dist/simplebar.min.css';
 import styled from 'styled-components';
-import { modelSourceMap } from '../config';
-import '../style/search-result.less';
+import { modelSourceMap } from '../../config';
+import '../../style/search-result.less';
 import FileSkeleton from './file-skeleton';
 import HFModelItem from './hf-model-item';
 
@@ -122,7 +122,7 @@ const SearchResult: React.FC<SearchResultProps> = (props) => {
   return (
     <>
       <div style={{ ...props.style }} className="search-result-wrap">
-        <Spin spinning={props.loading}>
+        <Spin spinning={props.loading} size={'middle'}>
           <div style={{ minHeight: 200 }}>
             {resultList.length ? (
               <ItemFileWrapper>

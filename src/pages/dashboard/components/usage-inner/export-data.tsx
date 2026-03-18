@@ -164,7 +164,9 @@ const ExportData: React.FC<{
       onCancel={handleOnCancel}
       destroyOnHidden={true}
       closeIcon={true}
-      maskClosable={false}
+      mask={{
+        closable: false
+      }}
       keyboard={false}
       width={1000}
       style={{

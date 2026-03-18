@@ -80,7 +80,9 @@ const VersionInfoModal: React.FC<VersionInfoModalProps> = ({
       centered
       destroyOnHidden
       closable={true}
-      maskClosable={false}
+      mask={{
+        closable: false
+      }}
       onOk={onClose}
       onCancel={onClose}
       footer={null}

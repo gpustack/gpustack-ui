@@ -211,7 +211,9 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       onClose={onClose}
       destroyOnHidden={true}
       closeIcon={false}
-      maskClosable={false}
+      mask={{
+        closable: false
+      }}
       keyboard={false}
       styles={{
         body: {

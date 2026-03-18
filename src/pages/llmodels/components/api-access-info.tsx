@@ -129,7 +129,9 @@ const ApiAccessInfo = ({ open, data, onClose }: ApiAccessInfoProps) => {
       width={600}
       destroyOnHidden
       closable={true}
-      maskClosable={false}
+      mask={{
+        closable: false
+      }}
       onOk={handleClose}
       onCancel={handleClose}
       footer={null}

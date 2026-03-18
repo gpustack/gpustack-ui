@@ -234,7 +234,9 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
       onClose={handleOnClose}
       destroyOnHidden={true}
       closeIcon={true}
-      maskClosable={false}
+      mask={{
+        closable: false
+      }}
       keyboard={false}
       styles={{
         wrapper: { width: 600 }

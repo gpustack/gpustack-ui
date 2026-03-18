@@ -559,7 +559,9 @@ const AddModal: FC<AddModalProps> = (props) => {
       onClose={handleCancel}
       destroyOnHidden={true}
       closeIcon={false}
-      maskClosable={false}
+      mask={{
+        closable: false
+      }}
       keyboard={false}
       styles={{
         wrapper: { width: width }

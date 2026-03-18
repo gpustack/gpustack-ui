@@ -40,7 +40,9 @@ const ListSkeleton: React.FC<{
             style={{
               width: '100%'
             }}
-            wrapperClassName="skelton-wrapper"
+            classNames={{
+              root: 'skelton-wrapper'
+            }}
           >
             {isFirst && <CatalogSkelton></CatalogSkelton>}
           </Spin>

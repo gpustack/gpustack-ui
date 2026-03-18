@@ -162,7 +162,9 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
       onClose={handleCancel}
       destroyOnHidden={true}
       closeIcon={false}
-      maskClosable={false}
+      mask={{
+        closable: false
+      }}
       keyboard={false}
       zIndex={2000}
       styles={{

@@ -208,7 +208,9 @@ const AddModal: React.FC<AddModalProps> = ({
       afterOpenChange={handleAfterOpenChange}
       destroyOnHidden={true}
       closeIcon={false}
-      maskClosable={false}
+      mask={{
+        closable: false
+      }}
       keyboard={false}
       styles={{
         wrapper: { width: 600 }

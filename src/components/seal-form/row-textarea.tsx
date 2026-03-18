@@ -211,7 +211,7 @@ const RowTextarea: React.FC<SystemMessageProps> = (props) => {
             {!expanded && data.text && (
               <SmallCloseButton onClick={handleClear}></SmallCloseButton>
             )}
-            {/* {UploadImageButton} */}
+            {UploadImageButton}
             <Tooltip title={intl.formatMessage({ id: 'common.button.delete' })}>
               <Button
                 danger

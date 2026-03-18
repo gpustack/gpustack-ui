@@ -139,7 +139,9 @@ export default function useAddResource(options?: { onCreated?: () => void }) {
     <ScrollerModal
       open={open && !hideModalTemporarily}
       footer={null}
-      maskClosable={false}
+      mask={{
+        closable: false
+      }}
       keyboard={false}
       closeIcon={null}
       destroyOnHidden={false}

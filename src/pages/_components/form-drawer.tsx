@@ -56,7 +56,9 @@ const FormDrawer: React.FC<AddModalProps> = ({
       onClose={onCancel}
       destroyOnHidden={true}
       closeIcon={false}
-      maskClosable={false}
+      mask={{
+        closable: false
+      }}
       keyboard={false}
       styles={{
         wrapper: { width }

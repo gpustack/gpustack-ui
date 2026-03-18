@@ -129,7 +129,9 @@ const AddWorker: React.FC<AddWorkerProps> = (props) => {
       onClose={onCancel}
       destroyOnHidden={true}
       closeIcon={false}
-      maskClosable={false}
+      mask={{
+        closable: false
+      }}
       keyboard={false}
       styles={{
         body: {

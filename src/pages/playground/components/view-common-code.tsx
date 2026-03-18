@@ -64,7 +64,9 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
         onCancel={handleClose}
         destroyOnHidden={true}
         closeIcon={true}
-        maskClosable={false}
+        mask={{
+          closable: false
+        }}
         keyboard={false}
         width={600}
         footer={null}

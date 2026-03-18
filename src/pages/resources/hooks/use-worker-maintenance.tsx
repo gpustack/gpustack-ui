@@ -70,7 +70,9 @@ const useWorkerMaintenance = ({ fetchData }: { fetchData: () => void }) => {
       onCancel={onCancel}
       destroyOnHidden={true}
       closeIcon={true}
-      maskClosable={false}
+      mask={{
+        closable: false
+      }}
       keyboard={false}
       width={600}
       maxContentHeight={'max(calc(100vh - 300px), 500px)'}

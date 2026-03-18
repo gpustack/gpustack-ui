@@ -60,7 +60,9 @@ const AddCommunityModal: React.FC<{
       onClose={onClose}
       destroyOnHidden={true}
       closeIcon={false}
-      maskClosable={false}
+      mask={{
+        closable: false
+      }}
       keyboard={false}
       styles={{
         wrapper: { width: 'max(50vw, 900px)' }

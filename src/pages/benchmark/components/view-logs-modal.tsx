@@ -74,7 +74,9 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
       onCancel={handleCancel}
       destroyOnHidden={true}
       closeIcon={true}
-      maskClosable={false}
+      mask={{
+        closable: false
+      }}
       keyboard={true}
       styles={{
         wrapper: {

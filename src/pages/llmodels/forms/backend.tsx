@@ -97,7 +97,6 @@ const BackendFields: React.FC = () => {
 
     // ============ Deprecated Versions ============
     const deprecatedVersions = versions.filter((item) => item.is_deprecated);
-
     return {
       builtIn: builtInVersions,
       custom: customVersions,
@@ -113,6 +112,7 @@ const BackendFields: React.FC = () => {
     if (!values || values.length === 0) {
       return null;
     }
+
     return (
       <Select.OptGroup label={label}>
         {values.map((item) => (

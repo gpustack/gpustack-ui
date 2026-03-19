@@ -671,7 +671,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
                   alignItems: 'center'
                 }}
               >
-                <Spin spinning={true}></Spin>
+                <Spin spinning={true} size="middle"></Spin>
               </div>
             )}
             <ResizeContainer

@@ -37,6 +37,7 @@ const ListSkeleton: React.FC<{
         <SpinWrapper>
           <Spin
             spinning={loading}
+            size="middle"
             style={{
               width: '100%'
             }}

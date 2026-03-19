@@ -10,13 +10,7 @@ import React from 'react';
  * @returns
  */
 const ScrollerModal = (props: DrawerProps) => {
-  const {
-    title,
-    closable = true,
-    maskClosable = false,
-    styles,
-    ...restProps
-  } = props;
+  const { title, closable = true, mask, styles, ...restProps } = props;
   const { EscHint } = useEscHint({
     enabled: !props.keyboard && props.open
   });
@@ -48,7 +42,7 @@ const ScrollerModal = (props: DrawerProps) => {
           }
         }}
         closable={false}
-        maskClosable={maskClosable}
+        mask={mask}
         title={
           <div className="flex-between flex-center">
             <span

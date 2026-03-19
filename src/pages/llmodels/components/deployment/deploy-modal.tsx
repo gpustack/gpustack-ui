@@ -472,6 +472,9 @@ const AddModal: FC<AddModalProps> = (props) => {
   };
 
   const handleOnOpen = async () => {
+    await new Promise((resolve) => {
+      setTimeout(resolve, 100);
+    });
     const [backendOptions, gpuOptions] = await Promise.all([
       form.current?.getBackendOptions?.({
         cluster_id: initClusterId()

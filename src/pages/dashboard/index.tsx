@@ -18,7 +18,7 @@ const Dashboard: React.FC = () => {
   return (
     <DashboardContext.Provider value={{ ...data, fetchData: fetchData }}>
       <PageBox>
-        <Spin spinning={loading} style={{ minHeight: 300 }}>
+        <Spin spinning={loading} style={{ minHeight: 300 }} size="middle">
           <DashboardInner />
         </Spin>
       </PageBox>

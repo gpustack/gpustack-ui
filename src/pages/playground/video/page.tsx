@@ -183,6 +183,7 @@ const GroundVideo: React.FC<MessageProps> = forwardRef((props, ref) => {
                 >
                   <Spin
                     spinning={loading}
+                    size="middle"
                     styles={{
                       root: {
                         height: '100%'

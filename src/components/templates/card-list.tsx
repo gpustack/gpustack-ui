@@ -40,11 +40,14 @@ const ListSkeleton: React.FC<{
       {loading && (
         <SpinWrapper>
           <Spin
+            size="middle"
             spinning={loading}
             style={{
               width: '100%'
             }}
-            wrapperClassName="skelton-wrapper"
+            classNames={{
+              root: 'skelton-wrapper'
+            }}
           >
             {isFirst && <CardSkeleton></CardSkeleton>}
           </Spin>

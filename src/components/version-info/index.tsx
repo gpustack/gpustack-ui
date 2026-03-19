@@ -87,7 +87,9 @@ const VersionInfo: React.FC<{ intl: any }> = ({ intl }) => {
 export const modalConfig = {
   icon: null,
   centered: false,
-  maskClosable: true,
+  mask: {
+    closeable: true
+  },
   footer: null,
   style: {
     top: '30%'

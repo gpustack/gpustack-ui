@@ -179,7 +179,7 @@ const SealTable: React.FC<SealTableProps & { pagination?: PaginationProps }> = (
             showSorterTooltip={showSorterTooltip}
           ></Header>
         </div>
-        <Spin spinning={loading}>
+        <Spin spinning={loading} size="middle">
           <TableBody
             empty={empty}
             dataSource={props.dataSource}

@@ -321,6 +321,7 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
         <div className="spin-wrapper">
           <Spin
             spinning={dataSource.loading}
+            size="middle"
             style={{ height: '100%', width: '100%' }}
           ></Spin>
         </div>

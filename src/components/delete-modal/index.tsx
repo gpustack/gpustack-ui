@@ -144,7 +144,9 @@ const DeleteModal = forwardRef((props, ref) => {
       onCancel={handleCancel}
       destroyOnHidden={false}
       closeIcon={false}
-      maskClosable={false}
+      mask={{
+        closable: false
+      }}
       keyboard={false}
       width={460}
       styles={{

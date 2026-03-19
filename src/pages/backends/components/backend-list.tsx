@@ -57,10 +57,13 @@ const ListSkeleton: React.FC<{
         <SpinWrapper>
           <Spin
             spinning={loading}
+            size="middle"
             style={{
               width: '100%'
             }}
-            wrapperClassName="skelton-wrapper"
+            classNames={{
+              root: 'skelton-wrapper'
+            }}
           >
             {isFirst && (
               <SkeletonWrapper>

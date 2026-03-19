@@ -319,6 +319,7 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
           ></LogsList>
         </div>
         <Spin
+          size="middle"
           spinning={loading}
           className={classNames({
             loading: loading

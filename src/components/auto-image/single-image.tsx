@@ -152,6 +152,7 @@ const SingleImage: React.FC<SingleImageProps> = (props) => {
                 }}
               >
                 <Spin
+                  size="middle"
                   indicator={<LoadingOutlined style={{ fontSize: 32 }} spin />}
                 />
               </span>

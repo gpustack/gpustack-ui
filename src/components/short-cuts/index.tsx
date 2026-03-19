@@ -81,7 +81,9 @@ const ShortCuts: React.FC<{ intl: any }> = ({ intl }) => {
 export const modalConfig = {
   icon: null,
   centered: false,
-  maskClosable: true,
+  mask: {
+    closeable: true
+  },
   footer: null,
   style: {
     top: '10%'
@@ -89,4 +91,4 @@ export const modalConfig = {
   width: 700
 };
 
-export default React.memo(ShortCuts);
+export default ShortCuts;

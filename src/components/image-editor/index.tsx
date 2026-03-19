@@ -32,7 +32,7 @@ const Loading = (props: { width: number; height: number }) => {
   const { width, height } = props;
   return (
     <LoadWrapper width={width} height={height}>
-      <Spin spinning></Spin>
+      <Spin spinning size="middle"></Spin>
     </LoadWrapper>
   );
 };

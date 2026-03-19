@@ -79,7 +79,7 @@ const SelectCluster: React.FC<AddWorkerStepProps> = ({ disabled }) => {
         </div>
       }
     >
-      <Spin spinning={clusterLoading}>
+      <Spin spinning={clusterLoading} size="middle">
         <BaseSelect
           defaultValue={registrationInfo.cluster_id}
           options={clusterList}

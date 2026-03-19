@@ -47,6 +47,7 @@ const NO_CONTAINER_PAGES = [
   'clusterDetail',
   'clusterCreate',
   'benchmarkDetail',
+  'deployment',
   'video'
 ];
 

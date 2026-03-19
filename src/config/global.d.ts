@@ -69,7 +69,7 @@ declare namespace Global {
     onCancel: () => void;
   }
 
-  interface ActionItem {
+  interface ActionItem<T> {
     label: string;
     key: string;
     icon: React.ReactNode;
@@ -77,6 +77,8 @@ declare namespace Global {
     props?: {
       danger?: boolean;
     };
+    visible?: (record: T) => boolean;
+    disabled?: (record: T) => boolean;
   }
 }
 

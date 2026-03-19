@@ -5,14 +5,14 @@ import { useIntl } from '@umijs/max';
 import { debounce } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import ColumnWrapper from '../../_components/column-wrapper';
-import HFModelFile from '../components/model-source/hf-model-file';
-import ModelCard from '../components/model-source/model-card';
-import SearchModel from '../components/model-source/search-model';
-import Separator from '../components/separator';
-import TitleWrapper from '../components/title-wrapper';
-import { modelSourceMap } from '../config';
-import { FormData } from '../config/types';
+import ColumnWrapper from '../../../_components/column-wrapper';
+import { modelSourceMap } from '../../config';
+import { FormData } from '../../config/types';
+import HFModelFile from '../model-source/hf-model-file';
+import ModelCard from '../model-source/model-card';
+import SearchModel from '../model-source/search-model';
+import Separator from '../separator';
+import TitleWrapper from '../title-wrapper';
 import TargetForm from './target-form';
 
 type AddModalProps = {

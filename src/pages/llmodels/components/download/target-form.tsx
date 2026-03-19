@@ -14,8 +14,8 @@ import React, {
   useImperativeHandle,
   useMemo
 } from 'react';
-import { localPathTipsList, modelSourceMap, sourceOptions } from '../config';
-import { useGenerateWorkersModelFileOptions } from '../hooks';
+import { localPathTipsList, modelSourceMap, sourceOptions } from '../../config';
+import { useGenerateWorkersModelFileOptions } from '../../hooks';
 
 type EmptyObject = Record<never, never>;
 

@@ -11,6 +11,7 @@ import NoResult from '@/pages/_components/no-result';
 import PageBox from '@/pages/_components/page-box';
 import { createModel } from '@/pages/llmodels/apis';
 import DeployModal from '@/pages/llmodels/components/deployment/deploy-modal';
+import DownloadModal from '@/pages/llmodels/components/download';
 import { modelSourceMap } from '@/pages/llmodels/config';
 import {
   modalConfig,
@@ -18,7 +19,6 @@ import {
 } from '@/pages/llmodels/config/button-actions';
 import { SourceType } from '@/pages/llmodels/config/types';
 import { backendOptionsMap } from '@/pages/llmodels/constants/backend-parameters';
-import DownloadModal from '@/pages/llmodels/download';
 import useCheckBackend from '@/pages/llmodels/hooks/use-check-backend';
 import { useGenerateWorkerOptions } from '@/pages/llmodels/hooks/use-form-initial-values';
 import useRecognizeAudio from '@/pages/llmodels/hooks/use-recognize-audio';

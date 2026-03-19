@@ -325,7 +325,10 @@ const ModelFiles = () => {
             }}
             onChange={handleTableChange}
             dataSource={dataSource.dataList}
-            loading={dataSource.loading}
+            loading={{
+              spinning: dataSource.loading,
+              size: 'middle'
+            }}
             rowSelection={rowSelection}
             columns={columns}
             pagination={{

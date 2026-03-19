@@ -280,7 +280,10 @@ const Workers = () => {
             showSorterTooltip={false}
             tableLayout={'auto'}
             dataSource={dataSource.dataList}
-            loading={dataSource.loading}
+            loading={{
+              spinning: dataSource.loading,
+              size: 'middle'
+            }}
             rowKey="id"
             scroll={{ x: 900 }}
             onChange={handleTableChange}

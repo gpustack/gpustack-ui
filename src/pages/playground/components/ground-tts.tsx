@@ -454,7 +454,7 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
           </div>
         </div>
         {tokenResult && (
-          <div style={{ height: 40 }}>
+          <div style={{ minHeight: 40 }}>
             <AlertInfo
               type="danger"
               message={tokenResult?.errorMessage}

@@ -219,7 +219,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
           </>
         </div>
         {tokenResult && (
-          <div style={{ height: 40 }}>
+          <div style={{ minHeight: 40 }}>
             <AlertInfo
               type="danger"
               message={tokenResult?.errorMessage}

@@ -436,7 +436,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
         </div>
         <div className="ground-left-footer" style={{ padding: 10 }}>
           {tokenResult && (
-            <div style={{ height: 40 }}>
+            <div style={{ minHeight: 40 }}>
               <AlertInfo
                 type="danger"
                 message={tokenResult?.errorMessage}

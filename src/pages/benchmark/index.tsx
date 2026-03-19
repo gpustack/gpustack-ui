@@ -245,7 +245,10 @@ const Benchmark: React.FC = () => {
             className={'scroll-table'}
             dataSource={dataSource.dataList}
             rowSelection={rowSelection}
-            loading={dataSource.loading}
+            loading={{
+              spinning: dataSource.loading,
+              size: 'middle'
+            }}
             sortDirections={TABLE_SORT_DIRECTIONS}
             showSorterTooltip={false}
             rowKey="id"

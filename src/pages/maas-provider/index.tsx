@@ -166,7 +166,10 @@ const MaasProvider: React.FC = () => {
             sortDirections={TABLE_SORT_DIRECTIONS}
             showSorterTooltip={false}
             dataSource={dataSource.dataList}
-            loading={dataSource.loading}
+            loading={{
+              spinning: dataSource.loading,
+              size: 'middle'
+            }}
             rowSelection={rowSelection}
             columns={columns}
             scroll={{ x: 900 }}

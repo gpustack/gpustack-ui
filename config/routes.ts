@@ -114,7 +114,7 @@ export default [
         selectedIcon: 'icon-rocket-launch-fill',
         defaultIcon: 'icon-rocket-launch1',
         access: 'canSeeAdmin',
-        component: './llmodels/deployments'
+        component: './llmodels/index'
       },
       {
         name: 'routes',

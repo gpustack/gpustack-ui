@@ -16,6 +16,7 @@ export default {
   'menu.models.benchmark': '基准测试',
   'menu.models.benchmarkDetail': '基准测试详情',
   'menu.models.providers': '提供商',
+  'menu.models.instances': '实例',
   'menu.models.routes': '路由',
   'menu.modelCatalog': '模型库',
   'menu.models.catalog': '模型库',

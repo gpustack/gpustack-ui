@@ -16,6 +16,7 @@ export default {
   'menu.models.benchmark': 'Benchmarks',
   'menu.models.benchmarkDetail': 'Benchmark Details',
   'menu.models.providers': 'Providers',
+  'menu.models.instances': 'Instances',
   'menu.models.routes': 'Routes',
   'menu.modelCatalog': 'Каталог',
   'menu.resources': 'Ресурсы',
@@ -45,4 +46,5 @@ export default {
 // 2. 'menu.models.benchmarkDetail': 'Benchmark Details',
 // 3. 'menu.models.providers': 'Providers',
 // 4. 'menu.models.routes': 'Routes',
+// 5. 'menu.models.instances': 'Instances',
 // ========== End of To-Do List ==========

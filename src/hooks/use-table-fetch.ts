@@ -249,6 +249,10 @@ export default function useTableFetch<T>(
     });
   };
 
+  const cancelChunkRequest = () => {
+    chunkRequestRef.current?.current?.cancel?.();
+  };
+
   const createTableListChunkRequest = async (params?: any) => {
     if (!API || !watch) return;
     chunkRequestRef.current?.current?.cancel?.();
@@ -289,7 +293,7 @@ export default function useTableFetch<T>(
   const handleQueryChange = async (
     params: any,
     options?: {
-      paginate?: boolean;
+      paginate?: boolean; // it's change for pagination
     }
   ) => {
     // cancel previous chunk request so that we can create a new one with updated params
@@ -459,6 +463,8 @@ export default function useTableFetch<T>(
     handleSearch,
     handleQueryChange,
     loadMore,
+    cancelChunkRequest,
+    createTableListChunkRequest,
     handleNameChange
   };
 }

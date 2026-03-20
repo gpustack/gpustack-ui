@@ -279,5 +279,7 @@ export default {
   'models.form.maxContextLength': 'Maximum Context Length',
   'models.form.backend.helperText':
     'Not enabled yet. Will be enabled after deployment. ',
-  'models.table.instance.benchmark': 'Run Benchmark'
+  'models.table.instance.benchmark': 'Run Benchmark',
+  'models.table.modelView': 'Model View',
+  'models.table.instanceView': 'Instance View'
 };

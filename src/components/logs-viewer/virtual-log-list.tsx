@@ -318,13 +318,15 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
             onScroll={handleOnScroll}
           ></LogsList>
         </div>
-        <Spin
-          size="middle"
-          spinning={loading}
-          className={classNames({
-            loading: loading
-          })}
-        ></Spin>
+        {loading && (
+          <Spin
+            size="middle"
+            spinning={loading}
+            className={classNames({
+              loading: loading
+            })}
+          ></Spin>
+        )}
         {totalPage > 1 && (
           <div className="pg">
             <div

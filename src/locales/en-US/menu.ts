@@ -17,6 +17,7 @@ export default {
   'menu.models.benchmark': 'Benchmarks',
   'menu.models.benchmarkDetail': 'Benchmark Details',
   'menu.models.providers': 'Providers',
+  'menu.models.instances': 'Instances',
   'menu.models.routes': 'Routes',
   'menu.modelCatalog': 'Catalog',
   'menu.resources': 'Resources',

@@ -17,8 +17,9 @@ const Dot = ({ color }: { color: string }) => {
 
 const useFilterStatus = (options?: {
   onStatusChange?: (value?: any) => void;
+  optionList?: (Global.BaseOption<string> & { color: string })[];
 }) => {
-  const { onStatusChange } = options || {};
+  const { onStatusChange, optionList } = options || {};
   const intl = useIntl();
 
   const statusOptions = [
@@ -45,8 +46,10 @@ const useFilterStatus = (options?: {
     }
   ];
 
+  const mergedOptions = optionList || statusOptions;
+
   const labelRender = (item: any) => {
-    const current = statusOptions.find((option) => option.value === item.value);
+    const current = mergedOptions.find((option) => option.value === item.value);
     return (
       <span className="flex-center gap-8">
         {current && <Dot color={current.color}></Dot>}
@@ -69,7 +72,7 @@ const useFilterStatus = (options?: {
   };
 
   return {
-    statusOptions,
+    statusOptions: mergedOptions,
     labelRender,
     optionRender,
     handleStatusChange

@@ -69,8 +69,7 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
   }, [open]);
 
   useEffect(() => {
-    if (!props.id) return;
-    if (open) {
+    if (open && props.id) {
       requestRef.current?.current?.cancel?.();
       requestRef.current = setChunkRequest({
         url: `${MODELS_API}/${props.modelId}/instances`,

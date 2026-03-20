@@ -49,7 +49,11 @@ export default {
   'noresult.providers.nofound': 'No matching providers found.',
   'noresult.routes.title': 'No Routes',
   'noresult.routes.subTitle': 'No routes have been added yet.',
-  'noresult.routes.nofound': 'No matching routes found.'
+  'noresult.routes.nofound': 'No matching routes found.',
+  'noresult.instances.title': 'No instances',
+  'noresult.instances.subTitle':
+    'There are no running model instances. Deploy a model to create one automatically.',
+  'noresult.instances.nofound': 'No matching instances found.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -66,4 +70,7 @@ export default {
 // 8. 'noresult.routes.title': 'No Routes',
 // 9. 'noresult.routes.subTitle': 'No routes have been added yet.',
 // 10. 'noresult.routes.nofound': 'No matching routes found.'
+// 11. 'noresult.instances.title': 'No instances',
+// 12. 'noresult.instances.subTitle': 'There are no running model instances. Deploy a model to create one automatically.',
+// 13. 'noresult.instances.nofound': 'No matching instances found.'
 // ========================================================================

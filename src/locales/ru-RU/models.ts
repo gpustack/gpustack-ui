@@ -283,7 +283,9 @@ export default {
   'models.form.maxContextLength': 'Maximum Context Length',
   'models.form.backend.helperText':
     'Not enabled yet. Will be enabled after deployment. ',
-  'models.table.instance.benchmark': 'Run Benchmark'
+  'models.table.instance.benchmark': 'Run Benchmark',
+  'models.table.modelView': 'Model View',
+  'models.table.instanceView': 'Instance View'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -294,4 +296,6 @@ export default {
 // 3.  'models.form.enableModelRoute.tips': 'Enable Model Route',
 // 4. 'models.form.backend.vllm': 'Built-in support for NVIDIA, AMD, Ascend, Hygon, Moore Threads, Iluvatar, MetaX, T-Head PPU devices.',
 // 5.  'models.form.backend.sglang': 'Built-in support for NVIDIA, AMD, Ascend, Moore Threads, MetaX, T-Head PPU devices.',
+// 6.  'models.table.modelView': 'Model View',
+// 7.  'models.table.instanceView': 'Instance View'
 // ========== End of To-Do List ==========

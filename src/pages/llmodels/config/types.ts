@@ -119,6 +119,7 @@ export interface ModelInstanceListItem {
   cluster_id: number;
   backend_version?: string;
   source: string;
+  categories?: string[];
   huggingface_repo_id: string;
   huggingface_filename: string;
   ollama_library_model_name: string;

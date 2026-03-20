@@ -279,7 +279,9 @@ export default {
   'models.form.maxContextLength': 'Maximum Context Length',
   'models.form.backend.helperText':
     'Not enabled yet. Will be enabled after deployment. ',
-  'models.table.instance.benchmark': 'Run Benchmark'
+  'models.table.instance.benchmark': 'Run Benchmark',
+  'models.table.modelView': 'Model View',
+  'models.table.instanceView': 'Instance View'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -380,4 +382,6 @@ export default {
 // 78. 'models.table.instance.benchmark': 'Run Benchmark'
 // 77. 'models.form.enableModelRoute': 'Enable Model Route',
 // 78.  'models.form.enableModelRoute.tips': 'Enable Model Route',
+// 79.  'models.table.modelView': 'Model View',
+// 80.  'models.table.instanceView': 'Instance View'
 // ========== End of To-Do List ==========

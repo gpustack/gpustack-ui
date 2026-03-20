@@ -9,38 +9,71 @@ import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { ConfigProvider, Table } from 'antd';
 import _ from 'lodash';
+import { forwardRef, useImperativeHandle } from 'react';
 import {
   deleteModelInstance,
   MODEL_INSTANCE_API,
   queryModelsInstances
 } from '../apis';
+import ViewLogsModal from '../components/view-logs-modal';
+import { useDeploymentsContext } from '../config/deploments-context';
 import { ModelInstanceListItem as ListItem } from '../config/types';
+import useViewInstanceLogs from '../hooks/use-view-instance-logs';
+import LeftFilters from './left-filters';
 import useInstanceColumns from './use-instance-columns';
 
-const InstanceView: React.FC = () => {
+const InstanceView = forwardRef((props, ref) => {
   const {
     dataSource,
     rowSelection,
     queryParams,
     modalRef,
     handleTableChange,
+    cancelChunkRequest,
+    createTableListChunkRequest,
     handleDelete,
     handleDeleteBatch,
     fetchData,
+    handleQueryChange,
     handlePageChange,
     handleSearch,
     handleNameChange
   } = useTableFetch<ListItem>({
-    key: PaginationKey.Providers,
+    key: PaginationKey.Instances,
     fetchAPI: queryModelsInstances,
     deleteAPI: deleteModelInstance,
-    watch: false,
+    watch: true,
     API: MODEL_INSTANCE_API,
-    contentForDelete: 'menu.models.providers'
+    contentForDelete: 'menu.models.instances'
   });
   const intl = useIntl();
+  const { clusterList, workerList } = useDeploymentsContext();
+  const { openViewLogsModal, openViewLogsModalStatus, closeViewLogsModal } =
+    useViewInstanceLogs();
 
-  const handleSelect = useMemoizedFn((val: any, row: ListItem) => {});
+  const handleSelect = useMemoizedFn((val: any, row: ListItem) => {
+    if (val === 'delete') {
+      handleDelete(row);
+    }
+
+    if (val === 'viewlog') {
+      openViewLogsModal(row);
+    }
+  });
+
+  const cancelRequestsOnPageInactive = useMemoizedFn(() => {
+    cancelChunkRequest();
+  });
+
+  const resumeRequestsOnPageActive = useMemoizedFn(() => {
+    fetchData({} as any, true);
+    createTableListChunkRequest();
+  });
+
+  useImperativeHandle(ref, () => ({
+    resumeRequestsOnPageActive,
+    cancelRequestsOnPageInactive
+  }));
 
   const renderEmpty = (type?: string) => {
     if (type !== 'Table') return;
@@ -49,21 +82,46 @@ const InstanceView: React.FC = () => {
         loading={dataSource.loading}
         loadend={dataSource.loadend}
         dataSource={dataSource.dataList}
-        image={<IconFont type="icon-extension-outline" />}
+        image={<IconFont type="icon-instance-outline" />}
         filters={_.omit(queryParams, ['sort_by'])}
         noFoundText={intl.formatMessage({
-          id: 'noresult.providers.nofound'
+          id: 'noresult.instances.nofound'
         })}
-        title={intl.formatMessage({ id: 'noresult.providers.title' })}
+        title={intl.formatMessage({ id: 'noresult.instances.title' })}
         subTitle={intl.formatMessage({
-          id: 'noresult.providers.subTitle'
+          id: 'noresult.instances.subTitle'
         })}
         buttonText={intl.formatMessage({ id: 'noresult.button.add' })}
       ></NoResult>
     );
   };
 
-  const columns = useInstanceColumns(handleSelect);
+  const handleonClusterChange = (value: number) => {
+    handleQueryChange({
+      page: 1,
+      cluster_id: value
+    });
+  };
+
+  const handleStatusChange = (value: string) => {
+    handleQueryChange({
+      page: 1,
+      state: value
+    });
+  };
+
+  const handleOnWorkerChange = (value: number) => {
+    handleQueryChange({
+      page: 1,
+      worker_id: value
+    });
+  };
+
+  const columns = useInstanceColumns({
+    handleSelect,
+    clusterList,
+    workerList
+  });
 
   return (
     <>
@@ -77,6 +135,17 @@ const InstanceView: React.FC = () => {
           handleInputChange={handleNameChange}
           handleSearch={handleSearch}
           handleDeleteByBatch={handleDeleteBatch}
+          left={
+            <LeftFilters
+              handleNameChange={handleNameChange}
+              handleClusterChange={handleonClusterChange}
+              handleStatusChange={handleStatusChange}
+              handleWorkerChange={handleOnWorkerChange}
+              handleSearch={handleSearch}
+              clusterList={clusterList}
+              workerList={workerList}
+            ></LeftFilters>
+          }
         ></FilterBar>
         <ConfigProvider renderEmpty={renderEmpty}>
           <Table
@@ -103,9 +172,18 @@ const InstanceView: React.FC = () => {
           ></Table>
         </ConfigProvider>
       </PageBox>
+      <ViewLogsModal
+        status={openViewLogsModalStatus.currentData.status}
+        url={openViewLogsModalStatus.currentData.url}
+        tail={openViewLogsModalStatus.currentData.tail}
+        id={openViewLogsModalStatus.currentData.id}
+        modelId={openViewLogsModalStatus.currentData.modelId}
+        open={openViewLogsModalStatus.open}
+        onCancel={closeViewLogsModal}
+      ></ViewLogsModal>
       <DeleteModal ref={modalRef}></DeleteModal>
     </>
   );
-};
+});
 
 export default InstanceView;

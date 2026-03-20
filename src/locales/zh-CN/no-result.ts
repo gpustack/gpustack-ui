@@ -46,5 +46,9 @@ export default {
   'noresult.providers.nofound': '未找到匹配的提供商',
   'noresult.routes.title': '暂无路由',
   'noresult.routes.subTitle': '尚未添加任何路由。',
-  'noresult.routes.nofound': '未找到匹配的路由'
+  'noresult.routes.nofound': '未找到匹配的路由',
+  'noresult.instances.title': '暂无实例',
+  'noresult.instances.subTitle':
+    '当前没有运行中的模型实例，部署模型后将自动创建。',
+  'noresult.instances.nofound': '未找到匹配的实例'
 };

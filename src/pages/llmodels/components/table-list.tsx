@@ -2,9 +2,7 @@ import { modelsExpandKeysAtom, modelsSessionAtom } from '@/atoms/models';
 import DeleteModal from '@/components/delete-modal';
 import DropDownActions from '@/components/drop-down-actions';
 import DropdownButtons from '@/components/drop-down-buttons';
-import { PageSize } from '@/components/logs-viewer/config';
 import PageTools from '@/components/page-tools';
-import BaseSelect from '@/components/seal-form/base/select';
 import SealTable from '@/components/seal-table';
 import { TableOrder } from '@/components/seal-table/types';
 import { PageAction } from '@/config';
@@ -21,10 +19,10 @@ import { TargetStatusValueMap } from '@/pages/model-routes/config';
 import useOpenPlayground from '@/pages/model-routes/hooks/use-open-playground';
 import useGranfanaLink from '@/pages/resources/hooks/use-grafana-link';
 import { handleBatchRequest } from '@/utils';
-import { DownOutlined, SearchOutlined, SyncOutlined } from '@ant-design/icons';
+import { DownOutlined } from '@ant-design/icons';
 import { useIntl, useNavigate, useSearchParams } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { Button, Input, Space, message } from 'antd';
+import { Button, Space, message } from 'antd';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
 import React, {
@@ -36,23 +34,19 @@ import React, {
 } from 'react';
 import {
   MODELS_API,
-  MODEL_INSTANCE_API,
   createModel,
   deleteModel,
   deleteModelInstance,
   queryModelInstancesList,
   updateModel
 } from '../apis';
-import {
-  InstanceRealtimeLogStatus,
-  modelCategories,
-  modelSourceMap
-} from '../config';
+import { modelSourceMap } from '../config';
 import {
   ButtonList,
   modalConfig,
   sourceOptions
 } from '../config/button-actions';
+import { useDeploymentsContext } from '../config/deploments-context';
 import {
   FormData,
   ListItem,
@@ -60,12 +54,12 @@ import {
   SourceType
 } from '../config/types';
 import useEditDeployment from '../hooks/use-edit-deployment';
-import useFilterStatus from '../hooks/use-filter-status';
-import useFormInitialValues from '../hooks/use-form-initial-values';
 import useModelsColumns from '../hooks/use-models-columns';
+import useViewInstanceLogs from '../hooks/use-view-instance-logs';
 import DeployModal from './deployment/deploy-modal';
 import UpdateModelModal from './deployment/update-modal';
 import Instances from './instance/instances';
+import LeftFilters from './left-filters';
 import ViewLogsModal from './view-logs-modal';
 interface ModelsProps {
   handleSearch: (params?: any) => void;
@@ -136,13 +130,8 @@ const Models: React.FC<ModelsProps> = ({
   loadend,
   total
 }) => {
-  const {
-    generateFormValues,
-    clusterList,
-    getClusterList,
-    getWorkerList,
-    workerList
-  } = useFormInitialValues();
+  const { generateFormValues, clusterList, workerList } =
+    useDeploymentsContext();
   const [searchParams] = useSearchParams();
   const page = searchParams.get('page');
   const { saveScrollHeight, restoreScrollHeight } = useBodyScroll();
@@ -165,11 +154,9 @@ const Models: React.FC<ModelsProps> = ({
     expandedRowKeys
   } = useExpandedRowKeys(expandAtom);
   const { handleOpenPlayGround } = useOpenPlayground();
-  const { labelRender, optionRender, handleStatusChange, statusOptions } =
-    useFilterStatus({
-      onStatusChange: onStatusChange
-    });
   const { watchDataList: targetList } = useWatchList(MODEL_ROUTE_TARGETS);
+  const { openViewLogsModal, openViewLogsModalStatus, closeViewLogsModal } =
+    useViewInstanceLogs();
 
   const { goToGrafana, ActionButton } = useGranfanaLink({
     type: 'model'
@@ -189,16 +176,6 @@ const Models: React.FC<ModelsProps> = ({
     isGGUF: false,
     source: modelSourceMap.huggingface_value as SourceType
   });
-  const [currentInstance, setCurrentInstance] = useState<{
-    url: string;
-    status: string;
-    id?: number | string;
-    modelId?: number | string;
-    tail?: number;
-  }>({
-    url: '',
-    status: ''
-  });
   const modalRef = useRef<any>(null);
 
   useEffect(() => {
@@ -208,10 +185,6 @@ const Models: React.FC<ModelsProps> = ({
   }, [deleteIds]);
 
   useEffect(() => {
-    const getData = async () => {
-      await Promise.all([getClusterList(), getWorkerList()]);
-    };
-    getData();
     return () => {
       setExpandAtom([]);
     };
@@ -308,11 +281,10 @@ const Models: React.FC<ModelsProps> = ({
     } catch (error) {}
   };
 
-  const handleLogModalCancel = useCallback(() => {
-    setOpenLogModal(false);
+  const handleLogModalCancel = () => {
     onCancelViewLogs();
-    restoreScrollHeight();
-  }, [onCancelViewLogs]);
+    closeViewLogsModal();
+  };
 
   const handleDelete = async (row: any) => {
     modalRef.current?.show({
@@ -352,22 +324,8 @@ const Models: React.FC<ModelsProps> = ({
   };
 
   const handleViewLogs = async (row: any) => {
-    try {
-      setCurrentInstance({
-        url: `${MODEL_INSTANCE_API}/${row.id}/logs`,
-        status: row.state,
-        id: row.id,
-        modelId: row.model_id,
-        tail: InstanceRealtimeLogStatus.includes(row.state)
-          ? undefined
-          : PageSize - 1
-      });
-      setOpenLogModal(true);
-      onViewLogs();
-      saveScrollHeight();
-    } catch (error) {
-      console.log('error:', error);
-    }
+    openViewLogsModal(row);
+    onViewLogs();
   };
 
   const handleDeleteInstace = (row: any) => {
@@ -600,62 +558,14 @@ const Models: React.FC<ModelsProps> = ({
           marginBottom={22}
           marginTop={0}
           left={
-            <Space>
-              <Input
-                prefix={
-                  <SearchOutlined
-                    style={{ color: 'var(--ant-color-text-placeholder)' }}
-                  ></SearchOutlined>
-                }
-                placeholder={intl.formatMessage({ id: 'common.filter.name' })}
-                style={{ width: 200 }}
-                size="large"
-                allowClear
-                onChange={handleNameChange}
-              ></Input>
-              <BaseSelect
-                allowClear
-                showSearch={false}
-                placeholder={intl.formatMessage({
-                  id: 'models.filter.category'
-                })}
-                style={{ width: 160 }}
-                size="large"
-                maxTagCount={1}
-                onChange={handleCategoryChange}
-                options={modelCategories.filter((item) => item.value)}
-              ></BaseSelect>
-              <BaseSelect
-                allowClear
-                showSearch={false}
-                placeholder={intl.formatMessage({
-                  id: 'clusters.filterBy.cluster'
-                })}
-                style={{ width: 160 }}
-                size="large"
-                maxTagCount={1}
-                onChange={handleClusterChange}
-                options={clusterList}
-              ></BaseSelect>
-              <BaseSelect
-                allowClear
-                showSearch={false}
-                placeholder={intl.formatMessage({ id: 'common.filter.status' })}
-                style={{ width: 180 }}
-                size="large"
-                maxTagCount={1}
-                optionRender={optionRender}
-                labelRender={labelRender}
-                options={statusOptions}
-                onChange={handleStatusChange}
-              ></BaseSelect>
-              <Button
-                type="text"
-                style={{ color: 'var(--ant-color-text-tertiary)' }}
-                onClick={handleSearch}
-                icon={<SyncOutlined></SyncOutlined>}
-              ></Button>
-            </Space>
+            <LeftFilters
+              handleNameChange={handleNameChange}
+              handleClusterChange={handleClusterChange}
+              handleCategoryChange={handleCategoryChange}
+              handleStatusChange={onStatusChange}
+              handleSearch={handleSearch}
+              clusterList={clusterList}
+            ></LeftFilters>
           }
           right={
             <Space size={16}>
@@ -720,6 +630,7 @@ const Models: React.FC<ModelsProps> = ({
             pageSize: queryParams.perPage,
             current: queryParams.page,
             total: total,
+            size: 'middle',
             hideOnSinglePage: queryParams.perPage === 10,
             onChange: handlePageChange
           }}
@@ -747,12 +658,12 @@ const Models: React.FC<ModelsProps> = ({
         onOk={handleCreateModel}
       ></DeployModal>
       <ViewLogsModal
-        status={currentInstance.status}
-        url={currentInstance.url}
-        tail={currentInstance.tail}
-        id={currentInstance.id}
-        modelId={currentInstance.modelId}
-        open={openLogModal}
+        status={openViewLogsModalStatus.currentData.status}
+        url={openViewLogsModalStatus.currentData.url}
+        tail={openViewLogsModalStatus.currentData.tail}
+        id={openViewLogsModalStatus.currentData.id}
+        modelId={openViewLogsModalStatus.currentData.modelId}
+        open={openViewLogsModalStatus.open}
         onCancel={handleLogModalCancel}
       ></ViewLogsModal>
       <DeleteModal ref={modalRef}></DeleteModal>

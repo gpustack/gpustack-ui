@@ -17,6 +17,7 @@ export default {
   'menu.models.benchmarkDetail': 'Benchmark Details',
   'menu.modelCatalog': 'カタログ',
   'menu.models.providers': 'Providers',
+  'menu.models.instances': 'Instances',
   'menu.models.routes': 'Routes',
   'menu.resources': 'リソース',
   'menu.apikeys': 'APIキー',

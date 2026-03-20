@@ -283,8 +283,10 @@ export const parseParamsString = (paramsString: string): string[] => {
   }
 
   // Convert multiline to single line, replace newlines with spaces
+  // Remove line-continuation backslashes (surrounded by spaces or at end of line)
   const normalizedString = paramsString
     .replace(/\n/g, ' ')
+    .replace(/\s\\\s/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
 

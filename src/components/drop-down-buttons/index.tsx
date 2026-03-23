@@ -123,7 +123,7 @@ const DropdownButtons: React.FC<
             menu={{
               onClick: handleMenuClick,
               items: _.tail(items).map((item: any) => ({
-                ...item,
+                ..._.omit(item, ['label', 'locale']),
                 ...item.props,
                 label:
                   item.locale || item.locale === undefined

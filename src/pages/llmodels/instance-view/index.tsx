@@ -53,7 +53,9 @@ const InstanceView = forwardRef((props, ref) => {
 
   const handleSelect = useMemoizedFn((val: any, row: ListItem) => {
     if (val === 'delete') {
-      handleDelete(row);
+      handleDelete(row, {
+        okText: 'common.button.delrecreate'
+      });
     }
 
     if (val === 'viewlog') {
@@ -151,6 +153,7 @@ const InstanceView = forwardRef((props, ref) => {
           <Table
             rowKey="id"
             tableLayout="fixed"
+            className={'scroll-table'}
             sortDirections={TABLE_SORT_DIRECTIONS}
             showSorterTooltip={false}
             dataSource={dataSource.dataList}

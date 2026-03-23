@@ -1,8 +1,10 @@
 // columns.ts
 import AutoTooltip from '@/components/auto-tooltip';
+import IconFont from '@/components/icon-font';
 import { tableSorter } from '@/config/settings';
 import { ListItem as workerListItem } from '@/pages/resources/config/types';
 import { convertFileSize } from '@/utils';
+import { ThunderboltFilled } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { ColumnsType } from 'antd/lib/table';
 import dayjs from 'dayjs';
@@ -12,11 +14,55 @@ import ActionsCell from '../components/instance-cells/actions-cell';
 import DistributeInfoCell from '../components/instance-cells/distribute-info-cell';
 import DownloadingStatusCell from '../components/instance-cells/downloading-status-cell';
 import InstanceStatusCell from '../components/instance-cells/instance-status-cell';
-import NameCell from '../components/instance-cells/name-cell';
+import NameCell, {
+  NameCellProps
+} from '../components/instance-cells/name-cell';
 import { ModelInstanceListItem as ListItem } from '../config/types';
+import { calcTotalVram } from '../utils';
 
-const calcTotalVram = (vram: Record<string, number>) => {
-  return _.sum(_.values(vram));
+const WorkerInfoContent: React.FC<NameCellProps> = ({ record, modelData }) => {
+  let workerIp = '-';
+  if (record.worker_ip) {
+    workerIp = record.port
+      ? `${record.worker_ip}:${record.port}`
+      : record.worker_ip;
+  }
+  return (
+    <div>
+      <div>{record.worker_name}</div>
+      {/* <div className="flex-center">
+        <HddFilled className="m-r-5 text-tertiary" style={{ fontSize: 12 }} />
+        <span className="text-secondary">{workerIp}</span>
+      </div> */}
+      <div className="flex-center">
+        <IconFont
+          type="icon-filled-gpu"
+          className="m-r-5 text-tertiary"
+          style={{ fontSize: 12 }}
+        />
+        <span className="text-tertiary">
+          GPU:[
+          {_.join(
+            record.gpu_indexes?.sort?.((a, b) => a - b),
+            ','
+          )}
+          ]
+        </span>
+      </div>
+      {/* <div className="flex-center">
+        <ThunderboltFilled
+          className="m-r-5 text-tertiary"
+          style={{ fontSize: 12 }}
+        />
+        <span className="text-secondary">
+          {record?.backend || modelData?.backend || ''}
+          {record.backend_version || modelData?.backend_version
+            ? `(${record.backend_version || modelData?.backend_version})`
+            : ''}
+        </span>
+      </div> */}
+    </div>
+  );
 };
 
 const useProviderColumns = (options: {
@@ -35,6 +81,21 @@ const useProviderColumns = (options: {
   const intl = useIntl();
   const { workerList, clusterList, handleSelect, onCellClick } = options;
 
+  const renderWorkerCell = (text: number, record: ListItem) => {
+    if (text) {
+      return (
+        <WorkerInfoContent
+          record={record}
+          modelData={{
+            backend: record.backend,
+            backend_version: record.backend_version
+          }}
+        ></WorkerInfoContent>
+      );
+    }
+    return null;
+  };
+
   return useMemo(() => {
     return [
       {
@@ -43,13 +104,28 @@ const useProviderColumns = (options: {
         sorter: tableSorter(1),
         minWidth: 160,
         render: (value: string, record: ListItem) => (
-          <NameCell
-            record={record}
-            modelData={{
-              backend: record.backend,
-              backend_version: record.backend_version
-            }}
-          ></NameCell>
+          <>
+            <NameCell
+              showWorkerInfo={false}
+              record={record}
+              modelData={{
+                backend: record.backend,
+                backend_version: record.backend_version
+              }}
+            ></NameCell>
+            <div className="flex-center">
+              <ThunderboltFilled
+                className="m-r-5 text-tertiary"
+                style={{ fontSize: 12 }}
+              />
+              <span className="text-tertiary">
+                {record?.backend || record?.backend || ''}
+                {record.backend_version || record?.backend_version
+                  ? `(${record.backend_version || record?.backend_version})`
+                  : ''}
+              </span>
+            </div>
+          </>
         )
       },
       {
@@ -67,19 +143,14 @@ const useProviderColumns = (options: {
       {
         title: intl.formatMessage({ id: 'resources.worker' }),
         dataIndex: 'worker_id',
-        minWidth: 200,
         render: (text, record) => (
-          <AutoTooltip ghost>
-            {text &&
-            (!record.distributed_servers?.subordinate_workers ||
-              !record.distributed_servers?.subordinate_workers.length)
-              ? workerList.find((worker) => worker.id === text)?.name
-              : ''}
+          <div className="flex-center gap-8">
+            <AutoTooltip ghost>{renderWorkerCell(text, record)}</AutoTooltip>
             <DistributeInfoCell
               record={record}
               workerList={workerList}
             ></DistributeInfoCell>
-          </AutoTooltip>
+          </div>
         )
       },
       {
@@ -89,9 +160,7 @@ const useProviderColumns = (options: {
         render: (text, record) => (
           <AutoTooltip ghost>
             {convertFileSize(
-              record.computed_resource_claim?.vram
-                ? calcTotalVram(record.computed_resource_claim?.vram)
-                : 0,
+              record.computed_resource_claim?.vram ? calcTotalVram(record) : 0,
               1
             )}
           </AutoTooltip>
@@ -128,7 +197,7 @@ const useProviderColumns = (options: {
         title: intl.formatMessage({ id: 'common.table.operation' }),
         dataIndex: 'operations',
         span: 3,
-        minWidth: 120,
+        width: 120,
         render: (value: string, record: ListItem) => (
           <ActionsCell
             record={record}

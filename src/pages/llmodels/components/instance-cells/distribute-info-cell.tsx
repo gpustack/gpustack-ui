@@ -163,7 +163,7 @@ const DistributeInfoCell: React.FC<{
             marginRight: 0,
             display: 'flex',
             alignItems: 'center',
-            maxWidth: '100%',
+            maxWidth: 'max-content',
             minWidth: 50,
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',

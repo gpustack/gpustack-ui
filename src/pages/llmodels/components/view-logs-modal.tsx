@@ -96,7 +96,6 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
           </span>
         </span>
       }
-      zIndex={3000}
       open={open}
       centered={true}
       onCancel={handleCancel}

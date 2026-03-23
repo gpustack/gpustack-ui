@@ -69,3 +69,15 @@ export const generateGPUIds = (data: FormData) => {
     worker_selector: null
   };
 };
+
+export const calcTotalVram = (record: any) => {
+  const vramInMain = _.sum(
+    _.values(record.computed_resource_claim?.vram || {})
+  );
+  const vramInDistributed = _.sum(
+    _.values(record.distributed_servers?.subordinate_workers || []).map(
+      (item: any) => _.sum(_.values(item.computed_resource_claim?.vram || {}))
+    )
+  );
+  return vramInMain + vramInDistributed;
+};

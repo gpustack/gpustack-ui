@@ -32,7 +32,7 @@ export const PageContainerInner: React.FC<PageContainerProps> = ({
   return (
     <StyledPageContainer
       {...rest}
-      fixedHeader
+      fixedHeader={true}
       token={{
         paddingInlinePageContainerContent: paddingInlinePageContainerContent
       }}

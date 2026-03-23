@@ -14,10 +14,11 @@ import React, { useEffect } from 'react';
 import { ModelInstanceListItem } from '../../config/types';
 import '../../style/instance-item.less';
 
-interface NameCellProps {
+export interface NameCellProps {
   record: ModelInstanceListItem;
   modelData: any;
   defaultOpenId?: string;
+  showWorkerInfo?: boolean;
 }
 
 const calcTotalVram = (vram: Record<string, number>) => {
@@ -108,14 +109,15 @@ const WorkerInfo = (props: {
 const NameCell: React.FC<NameCellProps> = ({
   record,
   modelData,
-  defaultOpenId
+  defaultOpenId,
+  showWorkerInfo = true
 }) => {
   return (
     <span className="flex-center instance-name">
       <AutoTooltip title={record.name} ghost>
         <span className="m-r-5">{record.name}</span>
       </AutoTooltip>
-      {!!record.worker_id && (
+      {!!record.worker_id && showWorkerInfo && (
         <WorkerInfo
           title={
             <WorkerInfoContent

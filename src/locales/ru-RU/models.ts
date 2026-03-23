@@ -284,8 +284,8 @@ export default {
   'models.form.backend.helperText':
     'Not enabled yet. Will be enabled after deployment. ',
   'models.table.instance.benchmark': 'Run Benchmark',
-  'models.table.modelView': 'Model View',
-  'models.table.instanceView': 'Instance View'
+  'models.table.modelView': 'Model List',
+  'models.table.instanceView': 'Instance List'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -296,6 +296,6 @@ export default {
 // 3.  'models.form.enableModelRoute.tips': 'Enable Model Route',
 // 4. 'models.form.backend.vllm': 'Built-in support for NVIDIA, AMD, Ascend, Hygon, Moore Threads, Iluvatar, MetaX, T-Head PPU devices.',
 // 5.  'models.form.backend.sglang': 'Built-in support for NVIDIA, AMD, Ascend, Moore Threads, MetaX, T-Head PPU devices.',
-// 6.  'models.table.modelView': 'Model View',
-// 7.  'models.table.instanceView': 'Instance View'
+// 6.  'models.table.modelView': 'Model List',
+// 7.  'models.table.instanceView': 'Instance List'
 // ========== End of To-Do List ==========

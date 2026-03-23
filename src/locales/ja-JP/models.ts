@@ -280,8 +280,8 @@ export default {
   'models.form.backend.helperText':
     'Not enabled yet. Will be enabled after deployment. ',
   'models.table.instance.benchmark': 'Run Benchmark',
-  'models.table.modelView': 'Model View',
-  'models.table.instanceView': 'Instance View'
+  'models.table.modelView': 'Model List',
+  'models.table.instanceView': 'Instance List'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

@@ -8,7 +8,7 @@ const requireContext = require.context(`./tr-TR`, false, /\.ts$/);
 
 let languageConfig: Record<string, string> = {};
 
-  requireContext.keys().forEach((fileName: string) => {
+  requireContext.keys().forEach((fileName: any) => {
   const moduleConfig = requireContext(fileName).default;
   languageConfig = {
     ...languageConfig,

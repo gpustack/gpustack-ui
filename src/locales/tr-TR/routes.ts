@@ -1,0 +1,28 @@
+export default {
+  'routes.title': 'Yönlendirmeler',
+  'routes.button.add': 'Yönlendirme Ekle',
+  'routes.table.routeTargets': 'Yönlendirme Hedefleri',
+  'routes.table.traffic': 'Trafik Payı',
+  'routes.table.setAsFallback': 'Yedek Olarak Ayarla',
+  'routes.form.target.title': 'Yönlendirme Hedefleri',
+  'routes.form.target.add': 'Yönlendirme Hedefi Ekle',
+  'routes.form.target.fallback': 'Yedek Yönlendirme Hedefi',
+  'routes.form.target.weight': 'Ağırlık',
+  'routes.form.target.model': 'Model',
+  'routes.form.metadata.title': 'Meta Veriler',
+  'routes.form.metadata.add': 'Meta Veri Ekle',
+  'routes.table.label.fallback': 'Yedek',
+  'routes.form.metadata.size': 'Boyut',
+  'routes.form.metadata.activeSize': 'Aktif Boyut',
+  'routes.form.metadata.tags': 'Etiketler',
+  'routes.form.metadata.maxTokens': 'Maks. Token',
+  'routes.form.metadata.dimension': 'Boyutlar',
+  'routes.form.metadata.license': 'Lisanslar',
+  'routes.form.metadata.releaseDate': 'Yayınlanma Tarihi',
+  'routes.form.metadata.languages': 'Diller',
+  'routes.form.metadata.icons': 'Simge',
+  'routes.form.metadata.uploadIcon': 'Simge Yükle',
+  'routes.form.fallback.warning':
+    'Yedek yönlendirme hedefi değişiklikleri bir dakika sonra geçerli olur.',
+  'routes.form.weight.tips': 'Hedef trafik ağırlığı.'
+};

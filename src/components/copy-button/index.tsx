@@ -1,13 +1,7 @@
 import { CheckCircleFilled, CopyOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, message, Tooltip } from 'antd';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import AutoTooltip from '../auto-tooltip';
 
 type CopyButtonProps = {
@@ -55,39 +49,63 @@ const CopyButton: React.FC<CopyButtonProps> = ({
   };
 
   /**
-   * fallback：execCommand（old Safari /  NON-HTTPS）
+   * Modern clipboard API (works in secure contexts: HTTPS or localhost)
    */
-  const legacyCopy = (value: string) => {
-    const textarea = document.createElement('textarea');
-    textarea.value = value;
-    textarea.style.position = 'fixed';
-    textarea.style.opacity = '0';
-    document.body.appendChild(textarea);
-    textarea.select();
+  const asyncCopy = async (value: string): Promise<boolean> => {
     try {
-      document.execCommand('copy');
+      await navigator.clipboard.writeText(value);
       return true;
-    } catch {
+    } catch (error) {
       return false;
-    } finally {
-      document.body.removeChild(textarea);
     }
   };
 
-  const handleCopy = useCallback(async () => {
+  /**
+   * Fallback: execCommand with copy event listener
+   * More reliable than textarea selection method
+   */
+  const execCopy = (value: string): boolean => {
+    let copySuccess = false;
+
+    const onCopy = (event: ClipboardEvent) => {
+      event.stopPropagation();
+      event.preventDefault();
+      event.clipboardData?.clearData();
+      event.clipboardData?.setData('text/plain', value);
+      copySuccess = true;
+    };
+
     try {
-      if (navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(text);
-      } else {
-        const success = legacyCopy(text);
-        if (!success) throw new Error('legacy copy failed');
+      document.addEventListener('copy', onCopy, { capture: true });
+      document.execCommand('copy');
+      return copySuccess;
+    } catch (error) {
+      return false;
+    } finally {
+      document.removeEventListener('copy', onCopy, { capture: true });
+    }
+  };
+
+  const handleCopy = async () => {
+    try {
+      // Try modern clipboard API first
+      if (await asyncCopy(text)) {
+        setCopied(true);
+        return;
       }
 
-      setCopied(true);
-    } catch {
+      // Fallback to execCommand method
+      if (execCopy(text)) {
+        setCopied(true);
+        return;
+      }
+
+      // Both methods failed
+      throw new Error('Copy failed');
+    } catch (error) {
       message.error(intl.formatMessage({ id: 'common.copy.fail' }) as string);
     }
-  }, [text, intl]);
+  };
 
   const tipTitle = useMemo(() => {
     if (copied) {

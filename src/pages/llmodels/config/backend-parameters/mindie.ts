@@ -209,6 +209,10 @@ const options: BackendParameter[] = [
   {
     label: '--max-iter-times',
     value: '--max-iter-times'
+  },
+  {
+    label: '--openai-support',
+    value: '--openai-support'
   }
 ];
 

@@ -1,0 +1,21 @@
+export default {
+  'apikeys.title': 'API Anahtarları',
+  'apikeys.table.apikeys': 'anahtarlar',
+  'apikeys.table.key': 'Anahtar',
+  'apikeys.button.create': 'API Anahtarı Ekle',
+  'apikeys.button.edit': 'API Anahtarını Düzenle',
+  'apikeys.title.save': 'API Anahtarını Kaydet',
+  'apikeys.form.expiretime': 'Son Kullanma',
+  'apikeys.form.apikey': 'API Anahtarı',
+  'apikeys.table.name': 'Anahtar Adı',
+  'apikeys.table.save.tips':
+    'Anahtarınızı hemen kopyaladığınızdan emin olun. Tekrar görüntüleyemezsiniz.',
+  'apikeys.form.expiration.7days': '7 gün',
+  'apikeys.form.expiration.1month': '1 ay',
+  'apikeys.form.expiration.6months': '6 ay',
+  'apikeys.form.expiration.never': 'Süresiz',
+  'apikeys.table.bindModels': 'Model Erişimi',
+  'apikeys.models.all': 'Tüm modeller',
+  'apikeys.models.selected': 'İzin verilen modeller',
+  'apikeys.models.noModelsFound': 'Model bulunamadı'
+};

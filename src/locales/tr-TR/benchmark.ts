@@ -88,5 +88,8 @@ export default {
   'benchmark.form.nonLlmModel.tips':
     'Kıyaslama şu anda yalnızca LLM modellerini destekliyor',
   'benchmark.detail.result.duration': 'Süre',
-  'benchmark.detail.result.basic': 'Temel'
+  'benchmark.detail.result.basic': 'Temel',
+  'benchmark.form.profile.ShareGPT': 'ShareGPT',
+  'benchmark.form.profile.ShareGPT.tips':
+    'Gerçekçi istem uzunluğuyla maksimum verim. GPU ve model karşılaştırması için en yaygın kullanılan referans noktası.'
 };

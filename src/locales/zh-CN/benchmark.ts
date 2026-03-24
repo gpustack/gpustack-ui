@@ -90,5 +90,5 @@ export default {
   'benchmark.detail.result.basic': '基础信息',
   'benchmark.form.profile.ShareGPT': 'ShareGPT',
   'benchmark.form.profile.ShareGPT.tips':
-    '基于真实提示词长度的最大吞吐表现，是最常用的 GPU 与模型对比基准。'
+    '用于测量基于真实对话数据的最大吞吐量，适合进行 GPU 与模型性能基准测试。'
 };

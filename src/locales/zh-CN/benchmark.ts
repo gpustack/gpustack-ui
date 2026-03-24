@@ -87,5 +87,8 @@ export default {
   'benchmark.table.export.results': '导出结果',
   'benchmark.form.nonLlmModel.tips': '基准测试目前仅支持 LLM 模型',
   'benchmark.detail.result.duration': '耗时',
-  'benchmark.detail.result.basic': '基础信息'
+  'benchmark.detail.result.basic': '基础信息',
+  'benchmark.form.profile.ShareGPT': 'ShareGPT',
+  'benchmark.form.profile.ShareGPT.tips':
+    '基于真实提示词长度的最大吞吐表现，是最常用的 GPU 与模型对比基准。'
 };

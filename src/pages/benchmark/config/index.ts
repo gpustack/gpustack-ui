@@ -36,6 +36,7 @@ export const ProfileValueMap = {
   ThroughputMedium: 'Throughput',
   LongContextStress: 'Long Context',
   GenerationHeavy: 'Generation Heavy',
+  ShareGPT: 'ShareGPT',
   Custom: 'Custom'
 };
 
@@ -44,6 +45,7 @@ export const ProfileLabelMap = {
   [ProfileValueMap.ThroughputMedium]: 'benchmark.form.profile.throughput',
   [ProfileValueMap.LongContextStress]: 'benchmark.form.profile.longContext',
   [ProfileValueMap.GenerationHeavy]: 'benchmark.form.profile.heavy',
+  [ProfileValueMap.ShareGPT]: 'benchmark.form.profile.ShareGPT',
   [ProfileValueMap.Custom]: 'benchmark.form.profile.custom'
 };
 
@@ -70,6 +72,12 @@ export const profileOptions = [
     label: 'benchmark.form.profile.heavy',
     tips: 'benchmark.form.profile.heavy.tips',
     value: ProfileValueMap.GenerationHeavy,
+    locale: true
+  },
+  {
+    label: 'benchmark.form.profile.ShareGPT',
+    tips: 'benchmark.form.profile.ShareGPT.tips',
+    value: ProfileValueMap.ShareGPT,
     locale: true
   }
 ];

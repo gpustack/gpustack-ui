@@ -91,5 +91,5 @@ export default {
   'benchmark.detail.result.basic': 'Basic',
   'benchmark.form.profile.ShareGPT': 'ShareGPT',
   'benchmark.form.profile.ShareGPT.tips':
-    'Max throughput with realistic prompt length. The most commonly used baseline for GPU and model comparison.'
+    'Measures maximum throughput using real conversational data. Suitable for GPU and model performance benchmarking.'
 };

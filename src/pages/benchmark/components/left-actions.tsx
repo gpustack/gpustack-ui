@@ -74,8 +74,17 @@ const RightActions: React.FC<RightActionsProps> = ({
           id: 'benchmark.table.filter.byProfile'
         })}
         style={{ width: 160 }}
-        options={profileOptions.map((item) => ({
-          label: intl.formatMessage({ id: item.label }),
+        options={[
+          ...profileOptions,
+          {
+            label: 'backend.custom',
+            locale: true,
+            value: 'Custom'
+          }
+        ].map((item) => ({
+          label: item.locale
+            ? intl.formatMessage({ id: item.label })
+            : item.label,
           value: item.value
         }))}
         onChange={(value, option) =>

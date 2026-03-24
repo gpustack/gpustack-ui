@@ -88,5 +88,8 @@ export default {
   'benchmark.form.nonLlmModel.tips':
     'Benchmarking currently only supports LLM models',
   'benchmark.detail.result.duration': 'Duration',
-  'benchmark.detail.result.basic': 'Basic'
+  'benchmark.detail.result.basic': 'Basic',
+  'benchmark.form.profile.ShareGPT': 'ShareGPT',
+  'benchmark.form.profile.ShareGPT.tips':
+    'Max throughput with realistic prompt length. The most commonly used baseline for GPU and model comparison.'
 };

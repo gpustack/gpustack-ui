@@ -115,6 +115,7 @@ const ModelInstanceForm: React.FC = () => {
         disabled: modelCategoriesMap.llm !== model.categories?.[0],
         id: model.id,
         isLeaf: false,
+        ready_replicas: model.ready_replicas,
         children: []
       }));
 
@@ -123,15 +124,20 @@ const ModelInstanceForm: React.FC = () => {
     }
 
     // preload instances for the first model
-    const selectedllmModel = modelOptions.find((model) => !model.disabled);
+    const selectedllmModel = modelOptions.find(
+      (model) => !model.disabled && model.ready_replicas > 0
+    );
+
     if (!selectedllmModel) {
       setModelList(modelOptions);
       return;
     }
+
     const instanceList = await fetchInstanceList({ id: selectedllmModel.id });
     const instanceOptions = instanceList.map((instance: any) =>
       renderInstance(instance)
     );
+
     if (selectedllmModel) {
       selectedllmModel.children = [...instanceOptions] as never[];
     }

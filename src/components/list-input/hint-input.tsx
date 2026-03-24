@@ -100,7 +100,7 @@ const HintInput: React.FC<HintInputProps> = (props) => {
       label={label}
       options={options}
       trim={trim}
-      style={{ flex: 1 }}
+      style={{ flex: 1, minWidth: 0 }}
       onPaste={onPaste}
     />
   );

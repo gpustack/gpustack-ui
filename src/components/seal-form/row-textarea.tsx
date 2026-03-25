@@ -11,16 +11,19 @@ import './styles/row-textarea.less';
 interface SystemMessageProps {
   style?: React.CSSProperties;
   data: {
-    text: string;
+    content: string;
+    imgs?: { uid: number | string; dataUrl: string }[];
     uid: number | string;
     name: string;
-    dataUrl?: string;
+    role?: string;
   };
   placeholder?: string;
   label?: React.ReactNode;
   height?: number;
   onUploadImage?: (list: { uid: number | string; dataUrl: string }[]) => void;
-  onDeleteImage?: () => void;
+  onDeleteImage?: (
+    updatedImgs: { uid: number | string; dataUrl: string }[]
+  ) => void;
   onChange: (e: any) => void;
   onPaste?: (e: any) => void;
   onDelete?: () => void;
@@ -90,8 +93,8 @@ const RowTextarea: React.FC<SystemMessageProps> = (props) => {
     const start = e.target.selectionStart;
     const end = e.target.selectionEnd;
 
-    const beforeText = data.text.substring(0, start);
-    const afterText = data.text.substring(end, data.text.length);
+    const beforeText = data.content.substring(0, start);
+    const afterText = data.content.substring(end, data.content.length);
     onSelect?.({
       start,
       end,
@@ -116,8 +119,12 @@ const RowTextarea: React.FC<SystemMessageProps> = (props) => {
       updateUidCount: () => `img-${Date.now()}`
     });
 
-  const expanded = autoSize.focus || !!data.dataUrl || isFromUrl;
-  // const expanded = true;
+  const handleDeleteImage = (uid: number) => {
+    const updatedImgs = (data.imgs || []).filter((img) => img.uid !== uid);
+    onDeleteImage?.(updatedImgs);
+  };
+
+  const expanded = autoSize.focus || !!data.imgs?.length || isFromUrl;
 
   console.log('expanded===========', expanded);
 
@@ -141,14 +148,12 @@ const RowTextarea: React.FC<SystemMessageProps> = (props) => {
           className="textarea-wrapper"
         >
           {label && <span className="textarea-label">{label}</span>}
-          {data.dataUrl && (
+          {!!data.imgs?.length && (
             <div style={{ padding: 8 }}>
               <ThumbImg
                 editable
-                dataList={
-                  data.dataUrl ? [{ uid: data.uid, dataUrl: data.dataUrl }] : []
-                }
-                onDelete={onDeleteImage}
+                dataList={data.imgs}
+                onDelete={handleDeleteImage}
               />
             </div>
           )}
@@ -164,7 +169,7 @@ const RowTextarea: React.FC<SystemMessageProps> = (props) => {
               width: '100%',
               boxShadow: 'none'
             }}
-            value={data.text}
+            value={data.content}
             autoSize={
               expanded
                 ? {
@@ -192,7 +197,7 @@ const RowTextarea: React.FC<SystemMessageProps> = (props) => {
             {
               <div className="content" style={{ height: height }}>
                 {label && <span className="title">{label}</span>}
-                {data.text || (
+                {data.content || (
                   <span style={{ color: 'var(--ant-color-text-tertiary)' }}>
                     {placeholder}
                   </span>
@@ -208,7 +213,7 @@ const RowTextarea: React.FC<SystemMessageProps> = (props) => {
         >
           {ImageURLInput}
           <div className={'actions'}>
-            {!expanded && data.text && (
+            {!expanded && data.content && (
               <SmallCloseButton onClick={handleClear}></SmallCloseButton>
             )}
             {UploadImageButton}

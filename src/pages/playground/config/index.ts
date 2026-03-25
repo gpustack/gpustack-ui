@@ -49,9 +49,13 @@ export const formatMessageParams = (messageList: any[]) => {
   return result;
 };
 
-export const generateMessagesByListContent = (messageList: any[]) => {
+export const generateMessagesByListContent = (
+  messageList: any[],
+  multimodal?: boolean
+) => {
   if (!messageList.length) return [];
   return messageList.map((item: MessageItem) => {
+    // image
     if (item.imgs?.length || item.audio?.length) {
       const content: any[] = [];
       // image
@@ -90,7 +94,25 @@ export const generateMessagesByListContent = (messageList: any[]) => {
       };
     }
 
-    return _.omit(item, ['uid', 'imgs', 'audio']);
+    // for multimodal model, if there is text content but no image or audio, also send as multimodal format
+    if (
+      multimodal &&
+      item.content &&
+      !item.imgs?.length &&
+      !item.audio?.length
+    ) {
+      return {
+        role: item.role,
+        content: [
+          {
+            type: 'text',
+            text: item.content
+          }
+        ]
+      };
+    }
+
+    return _.omit(item, ['uid', 'imgs', 'audio', 'name']);
   });
 };
 

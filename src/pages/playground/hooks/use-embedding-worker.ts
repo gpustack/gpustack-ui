@@ -17,8 +17,18 @@ export default function useEmbeddingWorker() {
 
   const postMessage = (params: {
     embeddings: any[];
-    textList: { text: string; name: string; uid: number | string }[];
-    fileList: { text: string; name: string; uid: number | string }[];
+    textList: {
+      content: string;
+      imgs?: { uid: number | string; dataUrl: string }[];
+      name: string;
+      uid: number | string;
+    }[];
+    fileList?: {
+      content: string;
+      imgs?: { uid: number | string; dataUrl: string }[];
+      name: string;
+      uid: number | string;
+    }[];
   }) => {
     if (workerRef.current) {
       workerRef.current.postMessage(params);

@@ -50,11 +50,21 @@ const normalizeEmbeddingToCanvas = (
 self.onmessage = (
   event: MessageEvent<{
     embeddings: any[];
-    fileList: { text: string; name: string; uid: number | string }[];
-    textList: { text: string; name: string; uid: number | string }[];
+    fileList: {
+      content: string;
+      imgs?: { uid: number | string; dataUrl: string }[];
+      name: string;
+      uid: number | string;
+    }[];
+    textList: {
+      content: string;
+      imgs?: { uid: number | string; dataUrl: string }[];
+      name: string;
+      uid: number | string;
+    }[];
   }>
 ) => {
-  const { embeddings, fileList, textList } = event.data;
+  const { embeddings, fileList = [], textList } = event.data;
 
   try {
     const dataList = embeddings.map((item) => {
@@ -71,8 +81,12 @@ self.onmessage = (
     const pcadata = pca.predict(dataList, { nComponents: 2 }).to2DArray();
 
     const input = [
-      ...textList.map((item) => item.text).filter((item) => item),
-      ...fileList.map((item) => item.text).filter((item) => item)
+      ...textList
+        .map((item) => item.content || (item.imgs?.length ? `[image]` : ''))
+        .filter((item) => item),
+      ...fileList
+        .map((item) => item.content || (item.imgs?.length ? `[image]` : ''))
+        .filter((item) => item)
     ];
 
     const list = pcadata.map((item: number[], index: number) => {
@@ -83,7 +97,7 @@ self.onmessage = (
       };
     });
 
-    const embeddingJson = embeddings.map((o, index) => {
+    const embeddingJson = embeddings.map((o) => {
       const item = _.cloneDeep(o);
       item.embedding = item.embedding.slice(0, 5);
       item.embedding.push(null);

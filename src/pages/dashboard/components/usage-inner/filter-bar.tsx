@@ -7,43 +7,14 @@ import { useIntl } from '@umijs/max';
 import { Button, DatePicker, Tooltip } from 'antd';
 import dayjs from 'dayjs';
 import React from 'react';
-import styled from 'styled-components';
 import { DASHBOARD_STATS_API } from '../../apis';
 import useRangePickerPreset from '../../hooks/use-rangepicker-preset';
-
-const OptionWrapper = styled.span`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-`;
-
-const LabelWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-`;
+import FilterBarCss from '../../styles/filter-bar.less';
 
 const DefaultDateConfig = {
   maxRange: 60,
   defaultRange: 29
 };
-
-const FilterWrapper = styled.div`
-  position: relative;
-  z-index: 10;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0px;
-  .selection {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .ant-select-selection-overflow-item > span {
-    height: 24px;
-  }
-`;
 
 interface FilterBarProps {
   query: any;
@@ -105,28 +76,28 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
 
     if (data.providerType === 'deployments') {
       return (
-        <OptionWrapper>
+        <span className={FilterBarCss.optionsWrapper}>
           <ProviderLogo provider={data.providerType as string} />
-          <AutoTooltip ghost maxWidth={105}>
+          <AutoTooltip ghost>
             {intl.formatMessage({ id: 'menu.models.deployment' })}
           </AutoTooltip>
-        </OptionWrapper>
+        </span>
       );
     }
 
     return (
-      <OptionWrapper>
+      <span className={FilterBarCss.optionsWrapper}>
         <ProviderLogo provider={data.providerType as string} />
-        <AutoTooltip ghost maxWidth={105}>
+        <AutoTooltip ghost>
           <span>{data.label}</span>
         </AutoTooltip>
-      </OptionWrapper>
+      </span>
     );
   };
 
   return (
-    <FilterWrapper>
-      <div className="selection">
+    <div className={FilterBarCss.wrapper}>
+      <div className={FilterBarCss.selection}>
         <DatePicker.RangePicker
           maxDate={dayjs()}
           defaultValue={[
@@ -149,7 +120,7 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
           placeholder={intl.formatMessage({
             id: 'dashboard.usage.selectuser'
           })}
-          style={{ maxWidth: 200, minWidth: 160 }}
+          style={{ width: '100%' }}
           value={query.user_ids}
           onChange={handleUsersChange}
         ></SimpleSelect>
@@ -164,9 +135,12 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
           }}
           styles={{
             root: {
-              width: cascaderWidth
+              width: '100%'
             },
             popup: {
+              list: {
+                flex: 1
+              },
               listItem: {
                 padding: '5px 10px'
               }
@@ -190,7 +164,7 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
           </Tooltip>
         )}
       </div>
-    </FilterWrapper>
+    </div>
   );
 };
 

@@ -1,0 +1,46 @@
+.wrapper {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0;
+  gap: 16px;
+  flex: 1;
+
+  .selection {
+    display: grid;
+    flex: 1;
+    grid-template-columns:
+      max-content minmax(160px, 200px) minmax(300px, 1fr)
+      max-content;
+    gap: 12px;
+    align-items: center;
+  }
+
+  :global {
+    .ant-select-selection-overflow-item > span {
+      height: 24px;
+    }
+  }
+}
+
+.optionsWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-right: 4px;
+}
+
+.usageTitle {
+  margin: 20px 0;
+  display: grid;
+  align-items: center;
+  grid-template-columns: minmax(45px, 200px) 1fr;
+}
+
+.usageTitleText {
+  margin: 0;
+  font-weight: 700;
+  min-width: max-content;
+}

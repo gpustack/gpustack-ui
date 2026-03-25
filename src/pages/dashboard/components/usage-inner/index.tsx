@@ -2,22 +2,16 @@ import breakpoints from '@/config/breakpoints';
 import { useIntl } from '@umijs/max';
 import { Col, Row } from 'antd';
 import { FC, useContext, useEffect, useMemo } from 'react';
-import styled from 'styled-components';
 import { DASHBOARD_STATS_API } from '../../apis';
 import { baseColorMap } from '../../config';
 import { DashboardContext } from '../../config/dashboard-context';
 import { DashboardUsageData } from '../../config/types';
+import FilterBarCss from '../../styles/filter-bar.less';
 import ExportData from './export-data';
 import FilterBar from './filter-bar';
 import RequestTokenInner from './request-token-inner';
 import TopUser from './top-user';
 import useUsageData from './use-usage-data';
-
-const TitleWrapper = styled.div`
-  margin: 0;
-  font-weight: 700;
-  min-width: max-content;
-`;
 
 const UsageInner: FC<{ maxWidth: number }> = ({ maxWidth }) => {
   const intl = useIntl();
@@ -95,17 +89,10 @@ const UsageInner: FC<{ maxWidth: number }> = ({ maxWidth }) => {
     <div>
       <Row gutter={maxWidth < breakpoints.xl ? [0, 0] : [20, 20]}>
         <Col xs={24} sm={24} md={24} lg={24} xl={16}>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              margin: '20px 0 '
-            }}
-          >
-            <TitleWrapper>
+          <div className={FilterBarCss.usageTitle}>
+            <div className={FilterBarCss.usageTitleText}>
               {intl.formatMessage({ id: 'dashboard.usage' })}
-            </TitleWrapper>
+            </div>
             <FilterBar
               url={DASHBOARD_STATS_API}
               query={query}
@@ -129,9 +116,9 @@ const UsageInner: FC<{ maxWidth: number }> = ({ maxWidth }) => {
           <div
             style={{ margin: maxWidth < breakpoints.xl ? '26px 0' : '32px 0' }}
           >
-            <TitleWrapper>
+            <div className={FilterBarCss.usageTitleText}>
               {intl.formatMessage({ id: 'dashboard.topusers' })}
-            </TitleWrapper>
+            </div>
           </div>
           <TopUser
             userData={topUserData.userData}

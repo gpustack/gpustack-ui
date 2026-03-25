@@ -9,25 +9,26 @@ interface InputListProps {
   extra?: (data: any) => React.ReactNode;
   showLabel?: boolean;
   textList: {
-    text: string;
+    content: string;
+    imgs?: { uid: number | string; dataUrl: string }[];
     uid: number | string;
     name: string;
-    dataUrl?: string;
+    role: string;
   }[];
   onChange?: (
     textList: {
-      text: string;
+      content: string;
+      imgs?: { uid: number | string; dataUrl: string }[];
       uid: number | string;
       name: string;
-      dataUrl?: string;
+      role: string;
     }[]
   ) => void;
   onPaste?: (e: any, index: number) => void;
-  onDeleteImage?: (dataItem: {
-    text: string;
-    uid: number | string;
-    name: string;
-  }) => void;
+  onDeleteImage?: (
+    itemUid: number | string,
+    updatedImgs: { uid: number | string; dataUrl: string }[]
+  ) => void;
   onUploadImage?: (
     list: { uid: number | string; dataUrl: string }[],
     index: number
@@ -69,14 +70,15 @@ const InputList: React.FC<InputListProps> = forwardRef(
       setMessageId();
       const dataList = [...textList];
       dataList.push({
-        text: '',
+        content: '',
         uid: messageId.current,
-        name: `Text ${dataList.length + 1}`
+        name: `Text ${dataList.length + 1}`,
+        role: 'user'
       });
       onChange?.(dataList);
     };
 
-    const handleDelete = (dataItem: { text: string; uid: number | string }) => {
+    const handleDelete = (dataItem: { uid: number | string }) => {
       const dataList = [...textList];
       const index = dataList.findIndex((item) => item.uid === dataItem.uid);
       dataList.splice(index, 1);
@@ -85,11 +87,11 @@ const InputList: React.FC<InputListProps> = forwardRef(
 
     const handleTextChange = (
       value: string,
-      dataItem: { text: string; uid: number | string }
+      dataItem: { uid: number | string }
     ) => {
       const dataList = [...textList];
       const index = dataList.findIndex((item) => item.uid === dataItem.uid);
-      dataList[index].text = value;
+      dataList[index].content = value;
       onChange?.(dataList);
     };
 
@@ -117,7 +119,9 @@ const InputList: React.FC<InputListProps> = forwardRef(
                   onPaste={(e) => onPaste?.(e, index)}
                   onSelect={(data) => onSelect?.({ ...data, index })}
                   onUploadImage={(list) => onUploadImage?.(list, index)}
-                  onDeleteImage={() => onDeleteImage?.(item)}
+                  onDeleteImage={(updatedImgs) =>
+                    onDeleteImage?.(item.uid, updatedImgs)
+                  }
                   onDelete={() => handleDelete(item)}
                 ></RowTextarea>
               </div>

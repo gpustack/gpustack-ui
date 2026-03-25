@@ -27,12 +27,11 @@ import React, {
   useState
 } from 'react';
 import { EMBEDDING_API, handleEmbedding } from '../apis';
-import FileList from '../components/file-list';
 import InputList from '../components/input-list';
 import RightContainer from '../components/right-container';
 import TokenUsage from '../components/token-usage';
 import ViewCommonCode from '../components/view-common-code';
-import { extractErrorMessage } from '../config';
+import { extractErrorMessage, generateMessagesByListContent } from '../config';
 import { embeddingSamples } from '../config/samples';
 import { LLM_METAKEYS } from '../hooks/config';
 import useEmbeddingWorker from '../hooks/use-embedding-worker';
@@ -64,9 +63,6 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
   const inputListRef = useRef<any>(null);
   const messageListLengthCache = useRef<number>(0);
   const requestToken = useRef<any>(null);
-  const [fileList, setFileList] = useState<
-    { text: string; name: string; uid: number | string }[]
-  >([]);
   const [outputType, setOutputType] = useState<string>('chart');
   const [outputHeight, setOutputHeight] = useState<number>(180);
   const [embeddingData, setEmbeddingData] = useState<{
@@ -81,19 +77,25 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
   const selectionTextRef = useRef<any>(null);
 
   const [textList, setTextList] = useState<
-    { text: string; dataUrl?: string; uid: number | string; name: string }[]
+    {
+      content: string;
+      imgs?: { uid: number | string; dataUrl: string }[];
+      uid: number | string;
+      name: string;
+      role: string;
+    }[]
   >([
     {
-      text: '',
+      content: '',
       uid: -1,
       name: '',
-      dataUrl: ''
+      role: 'user'
     },
     {
-      text: '',
+      content: '',
       uid: -2,
       name: '',
-      dataUrl: ''
+      role: 'user'
     }
   ]);
 
@@ -132,24 +134,47 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
     };
   });
 
+  const formatInputs = (
+    list: {
+      content: string;
+      imgs?: { uid: number | string; dataUrl: string }[];
+      uid: number | string;
+      name: string;
+      role: string;
+    }[]
+  ) => {
+    const validTextList = textList.filter(
+      (item) => item.content || item.imgs?.length
+    );
+
+    const hasImages = validTextList.some((item) => item.imgs?.length);
+
+    const mutipleInput = generateMessagesByListContent(validTextList, true);
+
+    // const firstInput = mutipleInput?.[0];
+    // mutipleInput.forEach((item: any) => {
+    //   firstInput.content = firstInput.content.concat(item.content);
+    // });
+
+    return hasImages
+      ? { messages: mutipleInput }
+      : { input: [...validTextList.map((item) => item.content || '')] };
+  };
+
   const viewCodeContent = useMemo(() => {
-    console.log('viewCodeContent:', embeddingData.copyValue);
     return generateEmbeddingCode({
       api: EMBEDDING_API,
       parameters: {
         ...parameters,
-        input: [
-          ...textList.map((item) => item.text).filter((item) => item),
-          ...fileList.map((item) => item.text).filter((item) => item)
-        ]
+        ...formatInputs(textList)
       }
     });
-  }, [parameters, textList, fileList]);
+  }, [parameters, textList]);
 
   const inputEmpty = useMemo(() => {
-    const list = [...textList, ...fileList];
+    const list = [...textList];
     return list.length < 2;
-  }, [textList, fileList]);
+  }, [textList]);
 
   const setMessageId = () => {
     return inputListRef.current?.setMessageId?.();
@@ -165,23 +190,18 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
       await formRef.current?.form.validateFields();
       if (!parameters.model) return;
       const validTextList = textList.filter(
-        (item) => item.text || item.dataUrl
+        (item) => item.content || item.imgs?.length
       );
-      const validFileList = fileList.filter((item) => item.text);
 
-      const inputList = [
-        ...validTextList.map((item) => item.text || item.dataUrl || ''),
-        ...validFileList.map((item) => item.text || '')
-      ];
+      const inputList = formatInputs(textList);
 
-      if (inputList.length < 2) {
+      if (validTextList.length < 2) {
         setLessTwoInput(true);
 
         return;
       }
 
       setTextList(validTextList);
-      setFileList(validFileList);
 
       setLessTwoInput(false);
       setLoading(true);
@@ -197,7 +217,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
         {
           model: parameters.model,
           encoding_format: 'float',
-          input: inputList
+          ...inputList
         },
         {
           token: requestToken.current.token
@@ -220,8 +240,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
 
       postMessage({
         embeddings: embeddingsList,
-        textList: textList,
-        fileList: fileList
+        textList: textList
       });
     } catch (error: any) {
       setTokenResult({
@@ -262,17 +281,18 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
     }
   };
 
-  const handleDeleteFile = (uid: number | string) => {
-    setFileList((preList) => {
-      return preList.filter((item) => item.uid !== uid);
-    });
-  };
   const handleAddText = () => {
     inputListRef.current?.handleAdd();
   };
 
   const handleTextListChange = (
-    list: { text: string; uid: number | string; name: string }[]
+    list: {
+      content: string;
+      imgs?: { uid: number | string; dataUrl: string }[];
+      uid: number | string;
+      name: string;
+      role: string;
+    }[]
   ) => {
     setTextList(list);
   };
@@ -281,35 +301,29 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
     list: { uid: number | string; dataUrl: string }[],
     index: number
   ) => {
-    // replace the text with dataUrl in the textList
     setTextList((preList) => {
       const newList = [...preList];
       const current = newList[index];
       if (current) {
         newList[index] = {
           ...current,
-          text: '',
-          uid: list[0].uid,
-          dataUrl: list[0].dataUrl
+          content: '',
+          imgs: list
         };
       }
       return newList;
     });
   };
 
-  const handleOnDeleteImage = (item: {
-    text: string;
-    uid: number | string;
-    name: string;
-    dataUrl?: string;
-  }) => {
-    // replace the dataUrl with empty text in the textList
+  const handleOnDeleteImage = (
+    itemUid: number | string,
+    updatedImgs: { uid: number | string; dataUrl: string }[]
+  ) => {
     setTextList((preList) => {
       const newList = [...preList];
-      const current = newList.find((i) => i.uid === item.uid);
+      const current = newList.find((i) => i.uid === itemUid);
       if (current) {
-        current.text = '';
-        current.dataUrl = '';
+        current.imgs = updatedImgs;
       }
       return newList;
     });
@@ -335,17 +349,18 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
       if (text) {
         const dataLlist = text.split('\n').map((item: string) => {
           return {
-            text: item?.trim(),
+            content: item?.trim(),
             name: '',
-            uid: setMessageId()
+            uid: setMessageId(),
+            role: 'user'
           };
         });
-        dataLlist[0].text = `${selectionTextRef.current?.beforeText || ''}${dataLlist[0].text}${selectionTextRef.current?.afterText || ''}`;
+        dataLlist[0].content = `${selectionTextRef.current?.beforeText || ''}${dataLlist[0].content}${selectionTextRef.current?.afterText || ''}`;
         const result = [
           ...textList.slice(0, index),
           ...dataLlist,
           ...textList.slice(index + 1)
-        ].filter((item) => item.text);
+        ].filter((item) => item.content || item.imgs?.length);
 
         setTextList(result);
       }
@@ -356,17 +371,18 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
   const handleClearDocuments = () => {
     setTextList([
       {
-        text: '',
+        content: '',
         uid: -1,
-        name: ''
+        name: '',
+        role: 'user'
       },
       {
-        text: '',
+        content: '',
         uid: -2,
-        name: ''
+        name: '',
+        role: 'user'
       }
     ]);
-    setFileList([]);
     setScatterData([]);
     setTokenResult(null);
     setLessTwoInput(false);
@@ -452,11 +468,11 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
   }, [initialize]);
 
   useEffect(() => {
-    if (textList.length + fileList.length > messageListLengthCache.current) {
+    if (textList.length > messageListLengthCache.current) {
       updateDocumentScrollerPosition();
     }
-    messageListLengthCache.current = textList.length + fileList.length;
-  }, [textList.length, fileList.length]);
+    messageListLengthCache.current = textList.length;
+  }, [textList.length]);
 
   useEffect(() => {
     if (intl.locale || 'en-US') {
@@ -465,9 +481,10 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
       if (sample) {
         setTextList(
           sample.map((item: string, index: number) => ({
-            text: item,
+            content: item,
             uid: setMessageId(),
-            name: `Document ${index + 1}`
+            name: `Document ${index + 1}`,
+            role: 'user'
           }))
         );
       }
@@ -577,15 +594,6 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
                 onUploadImage={handleOnUploadImage}
                 onDeleteImage={handleOnDeleteImage}
               ></InputList>
-              {fileList.length > 0 && (
-                <div style={{ marginTop: 8 }}>
-                  <FileList
-                    fileList={fileList}
-                    textListCount={textList.length || 0}
-                    onDelete={handleDeleteFile}
-                  ></FileList>
-                </div>
-              )}
               {lessTwoInput && (
                 <div className="m-t-16">
                   <AlertInfo
@@ -645,6 +653,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
             <Segmented
               onChange={handleOutputTypeChange}
               value={outputType}
+              size="middle"
               options={[
                 {
                   label: intl.formatMessage({

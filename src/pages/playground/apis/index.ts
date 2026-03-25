@@ -58,6 +58,16 @@ export const handleEmbedding = async (
     encoding_format?: string;
     dimensions?: number;
     input: string[];
+    messages?: {
+      role: string;
+      content: Array<{
+        type: string;
+        text?: string;
+        image_url?: {
+          url: string;
+        };
+      }>;
+    }[];
   },
   options?: any
 ) => {

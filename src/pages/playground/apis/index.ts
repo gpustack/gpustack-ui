@@ -41,7 +41,7 @@ export const rerankerQuery = async (
     model: string;
     query: string;
     top_n: number;
-    documents: string[];
+    documents: any[];
   },
   options?: any
 ) => {
@@ -57,7 +57,7 @@ export const handleEmbedding = async (
     model: string;
     encoding_format?: string;
     dimensions?: number;
-    input: string[];
+    input?: any[];
     messages?: {
       role: string;
       content: Array<{

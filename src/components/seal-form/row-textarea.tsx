@@ -81,9 +81,6 @@ const RowTextarea: React.FC<SystemMessageProps> = (props) => {
     onChange?.(e);
   };
 
-  const handleClear = () => {
-    onChange?.({ target: { value: '' } });
-  };
   const handleOnPaste = (e: any) => {
     props.onPaste?.(e);
   };
@@ -119,20 +116,41 @@ const RowTextarea: React.FC<SystemMessageProps> = (props) => {
       updateUidCount: () => `img-${Date.now()}`
     });
 
+  const handleClear = () => {
+    onChange?.({ target: { value: '' } });
+    onDeleteImage?.([]);
+  };
+
   const handleDeleteImage = (uid: number) => {
     const updatedImgs = (data.imgs || []).filter((img) => img.uid !== uid);
     onDeleteImage?.(updatedImgs);
   };
 
-  const expanded = autoSize.focus || !!data.imgs?.length || isFromUrl;
+  const renderTextContent = () => {
+    if (data.imgs?.length || isFromUrl) {
+      return null;
+    }
 
-  console.log('expanded===========', expanded);
+    return (
+      <>
+        {label && <span className="title">{label}</span>}
+        {data.content || (
+          <span style={{ color: 'var(--ant-color-text-tertiary)' }}>
+            {placeholder}
+          </span>
+        )}
+      </>
+    );
+  };
+
+  const expanded = autoSize.focus && !isFromUrl && !data.imgs?.length;
 
   return (
     <div
       className={classNames('row-textarea-wrapper', {
         dropDownOpen: dropDownOpen,
-        expanded: expanded
+        expanded: expanded,
+        'from-url': isFromUrl
       })}
     >
       <div
@@ -141,51 +159,45 @@ const RowTextarea: React.FC<SystemMessageProps> = (props) => {
         })}
         style={{ ...style }}
       >
-        <div
-          style={{
-            display: expanded ? 'block' : 'none'
-          }}
-          className="textarea-wrapper"
-        >
-          {label && <span className="textarea-label">{label}</span>}
-          {!!data.imgs?.length && (
-            <div style={{ padding: 8 }}>
-              <ThumbImg
-                editable
-                dataList={data.imgs}
-                onDelete={handleDeleteImage}
-              />
-            </div>
-          )}
-
-          <Input.TextArea
-            className="custome-scrollbar"
-            allowClear
-            ref={rowTextAreaRef}
-            placeholder={placeholder}
+        {!data.imgs?.length && (
+          <div
             style={{
-              borderRadius: '0',
-              border: 'none',
-              width: '100%',
-              boxShadow: 'none'
+              display: expanded ? 'block' : 'none'
             }}
-            value={data.content}
-            autoSize={
-              expanded
-                ? {
-                    minRows: 5,
-                    maxRows: 5
-                  }
-                : { minRows: autoSize.minRows, maxRows: autoSize.maxRows }
+            className="textarea-wrapper"
+          >
+            {label && <span className="textarea-label">{label}</span>}
+            {
+              <Input.TextArea
+                className="custome-scrollbar"
+                allowClear
+                ref={rowTextAreaRef}
+                placeholder={placeholder}
+                style={{
+                  borderRadius: '0',
+                  border: 'none',
+                  width: '100%',
+                  boxShadow: 'none'
+                }}
+                value={data.content}
+                autoSize={
+                  expanded
+                    ? {
+                        minRows: 5,
+                        maxRows: 5
+                      }
+                    : { minRows: autoSize.minRows, maxRows: autoSize.maxRows }
+                }
+                onFocus={handleFocus}
+                onBlur={handleBlur}
+                onChange={handleOnChange}
+                onSelect={handleOnSelect}
+                onPaste={handleOnPaste}
+                onClear={handleClear}
+              ></Input.TextArea>
             }
-            onFocus={handleFocus}
-            onBlur={handleBlur}
-            onChange={handleOnChange}
-            onSelect={handleOnSelect}
-            onPaste={handleOnPaste}
-            onClear={handleClear}
-          ></Input.TextArea>
-        </div>
+          </div>
+        )}
 
         {!expanded && (
           <div
@@ -194,16 +206,19 @@ const RowTextarea: React.FC<SystemMessageProps> = (props) => {
             })}
             onClick={handleFocus}
           >
-            {
-              <div className="content" style={{ height: height }}>
-                {label && <span className="title">{label}</span>}
-                {data.content || (
-                  <span style={{ color: 'var(--ant-color-text-tertiary)' }}>
-                    {placeholder}
-                  </span>
-                )}
-              </div>
-            }
+            <div className="content" style={{ height: height }}>
+              {renderTextContent()}
+              {!!data.imgs?.length && (
+                <div className="flex-center">
+                  {label && <span className="title">{label}</span>}
+                  <ThumbImg
+                    editable
+                    dataList={data.imgs}
+                    onDelete={handleDeleteImage}
+                  />
+                </div>
+              )}
+            </div>
           </div>
         )}
         <div
@@ -213,7 +228,7 @@ const RowTextarea: React.FC<SystemMessageProps> = (props) => {
         >
           {ImageURLInput}
           <div className={'actions'}>
-            {!expanded && data.content && (
+            {!expanded && (data.content || !!data.imgs?.length) && (
               <SmallCloseButton onClick={handleClear}></SmallCloseButton>
             )}
             {UploadImageButton}

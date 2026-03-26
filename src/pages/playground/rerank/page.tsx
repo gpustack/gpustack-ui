@@ -26,7 +26,7 @@ import InputList from '../components/input-list';
 import RightContainer from '../components/right-container';
 import TokenUsage from '../components/token-usage';
 import ViewCommonCode from '../components/view-common-code';
-import { extractErrorMessage } from '../config';
+import { extractErrorMessage, generateMessagesByListContent } from '../config';
 import { rerankerSamples } from '../config/samples';
 import { LLM_METAKEYS } from '../hooks/config';
 import { useInitLLmMeta } from '../hooks/use-init-llm';
@@ -72,42 +72,32 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
   const requestToken = useRef<any>(null);
   const multiplePasteEnable = useRef<boolean>(true);
   const [isEmptyText, setIsEmptyText] = useState<boolean>(false);
-  const [fileList, setFileList] = useState<
-    {
-      text: string;
-      name: string;
-      uid: number | string;
-      score?: number;
-      showExtra?: boolean;
-      percent?: number;
-      rank?: number;
-    }[]
-  >([]);
   const [isEmptyQuery, setIsEmptyQuery] = useState<boolean>(false);
 
   const [textList, setTextList] = useState<
     {
-      text: string;
+      content: string;
       uid: number | string;
       name: string;
       score?: number;
       showExtra?: boolean;
-      dataUrl?: string;
+      imgs?: { uid: number | string; dataUrl: string }[];
       percent?: number;
       rank?: number;
+      role: string;
     }[]
   >([
     {
-      text: '',
+      content: '',
       uid: -1,
       name: '',
-      dataUrl: ''
+      role: 'user'
     },
     {
-      text: '',
+      content: '',
       uid: -2,
       name: '',
-      dataUrl: ''
+      role: 'user'
     }
   ]);
   const [queryValue, setQueryValue] = useState<string>('');
@@ -152,9 +142,10 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
       if (sample) {
         setTextList(
           sample.documents.map((item: string, index: number) => ({
-            text: item,
+            content: item,
             uid: setMessageId(),
             name: `Document ${index + 1}`,
+            role: 'user',
             percent: undefined,
             score: undefined,
             rank: undefined
@@ -165,18 +156,40 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     }
   }, []);
 
+  const formatDocuments = (
+    list: {
+      content: string;
+      imgs?: { uid: number | string; dataUrl: string }[];
+      uid: number | string;
+      name: string;
+      role?: string;
+    }[]
+  ) => {
+    const validTextList = list.filter(
+      (item) => item.content || item.imgs?.length
+    );
+
+    const hasImages = validTextList.some((item) => item.imgs?.length);
+
+    if (hasImages) {
+      return generateMessagesByListContent(validTextList, true).map(
+        (msg: any) => ({ content: msg.content })
+      );
+    }
+
+    return validTextList.map((item) => item.content || '');
+  };
+
   const viewCodeContent = useMemo(() => {
     return generateRerankCode({
       api: RERANKER_API,
       parameters: {
         ...parameters,
         query: queryValue,
-        documents: [...textList, ...fileList]
-          .map((item) => item.text)
-          .filter((text) => text)
+        documents: formatDocuments(textList as any)
       }
     });
-  }, [parameters, queryValue, textList, fileList]);
+  }, [parameters, queryValue, textList]);
 
   // [0.1, 1.0]
   const normalizValue = (data: { min: number; max: number; value: number }) => {
@@ -232,9 +245,11 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
       await formRef.current?.form.validateFields();
 
       if (!parameters.model || !queryValue) return;
-      const documentList: any[] = [...textList, ...fileList];
+      const documentList: any[] = [...textList];
 
-      const validDocus = documentList.filter((item) => item.text);
+      const validDocus = documentList.filter(
+        (item) => item.content || item.imgs?.length
+      );
 
       if (!validDocus.length) {
         setIsEmptyText(true);
@@ -247,7 +262,9 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
       requestToken.current?.cancel?.();
       requestToken.current = requestSource();
 
-      const filledList = textList.filter((item) => item.text);
+      const filledList = textList.filter(
+        (item) => item.content || item.imgs?.length
+      );
 
       setTextList(filledList);
 
@@ -256,7 +273,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
           model: parameters.model,
           top_n: parameters.top_n,
           query: query,
-          documents: filledList.map((item) => item.text)
+          documents: formatDocuments(filledList)
         },
         {
           token: requestToken.current.token
@@ -332,7 +349,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
   };
 
   const handleTextListChange = (
-    list: { text: string; uid: number | string; name: string }[]
+    list: { content: string; uid: number | string; name: string }[]
   ) => {
     const newList = list?.map((item: any) => {
       item.percent = undefined;
@@ -357,35 +374,33 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     list: { uid: number | string; dataUrl: string }[],
     index: number
   ) => {
-    // replace the text with dataUrl in the textList
     setTextList((preList) => {
       const newList = [...preList];
       const current = newList[index];
       if (current) {
         newList[index] = {
           ...current,
-          text: '',
-          uid: list[0].uid,
-          dataUrl: list[0].dataUrl
+          content: '',
+          imgs: list.map((item) => ({
+            ...item,
+            width: 32,
+            height: 32
+          }))
         };
       }
       return newList;
     });
   };
 
-  const handleOnDeleteImage = (item: {
-    text: string;
-    uid: number | string;
-    name: string;
-    dataUrl?: string;
-  }) => {
-    // replace the dataUrl with empty text in the textList
+  const handleOnDeleteImage = (
+    itemUid: number | string,
+    updatedImgs: { uid: number | string; dataUrl: string }[]
+  ) => {
     setTextList((preList) => {
       const newList = [...preList];
-      const current = newList.find((i) => i.uid === item.uid);
+      const current = newList.find((i) => i.uid === itemUid);
       if (current) {
-        current.text = '';
-        current.dataUrl = '';
+        current.imgs = updatedImgs;
       }
       return newList;
     });
@@ -397,20 +412,21 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     if (text) {
       const dataLlist = text.split('\n').map((item: string) => {
         return {
-          text: item?.trim(),
+          content: item?.trim(),
           name: '',
           uid: setMessageId(),
+          role: 'user',
           percent: undefined,
           score: undefined,
           rank: undefined
         };
       });
-      dataLlist[0].text = `${selectionTextRef.current?.beforeText || ''}${dataLlist[0].text}${selectionTextRef.current?.afterText || ''}`;
+      dataLlist[0].content = `${selectionTextRef.current?.beforeText || ''}${dataLlist[0].content}${selectionTextRef.current?.afterText || ''}`;
       const result = [
         ...textList.slice(0, index),
         ...dataLlist,
         ...textList.slice(index + 1)
-      ].filter((item) => item.text);
+      ].filter((item) => item.content || item.imgs?.length);
 
       setTextList(result);
     }
@@ -419,17 +435,18 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
   const handleClearDocuments = () => {
     setTextList([
       {
-        text: '',
+        content: '',
         uid: setMessageId(),
-        name: ''
+        name: '',
+        role: 'user'
       },
       {
-        text: '',
+        content: '',
         uid: setMessageId(),
-        name: ''
+        name: '',
+        role: 'user'
       }
     ]);
-    setFileList([]);
     setTokenResult(null);
     setIsEmptyText(false);
   };
@@ -448,11 +465,11 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
   }, [initialize]);
 
   useEffect(() => {
-    if (textList.length + fileList.length > messageListLengthCache.current) {
+    if (textList.length > messageListLengthCache.current) {
       updateDocumentScrollerPosition();
     }
-    messageListLengthCache.current = textList.length + fileList.length;
-  }, [textList.length, fileList.length]);
+    messageListLengthCache.current = textList.length;
+  }, [textList.length]);
 
   return (
     <div className="ground-left-wrapper rerank">

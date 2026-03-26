@@ -19,6 +19,7 @@ const ImgInputWrapper = styled.div`
     right: 8px;
     top: 50%;
     transform: translateY(-50%);
+    border-radius: var(--ant-border-radius);
     background: var(--ant-color-bg-container);
   }
   &:hover {
@@ -85,7 +86,8 @@ const useAddImage = (options: {
     }
   };
 
-  const handleClose = () => {
+  const handleClose = (e?: any) => {
+    e?.stopPropagation();
     setIsFromUrl(false);
     setOpenImgTips(false);
   };

@@ -308,7 +308,13 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
         newList[index] = {
           ...current,
           content: '',
-          imgs: list
+          imgs: list.map((item) => {
+            return {
+              ...item,
+              width: 32,
+              height: 32
+            };
+          })
         };
       }
       return newList;

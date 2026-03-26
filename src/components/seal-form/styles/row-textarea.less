@@ -14,6 +14,7 @@
   }
 
   .actions {
+    display: flex;
     gap: 4px;
     align-items: center;
     border-radius: var(--ant-border-radius);
@@ -32,6 +33,12 @@
   }
 
   &.dropDownOpen {
+    .actions-wrapper {
+      display: flex;
+    }
+  }
+
+  &.from-url {
     .actions-wrapper {
       display: flex;
     }

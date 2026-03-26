@@ -37,12 +37,12 @@ const LeftFilters: React.FC<LeftFiltersProps> = (props) => {
         label: 'Error',
         value: 'error',
         color: 'var(--ant-color-error)'
-      },
-      {
-        label: 'Provisioning',
-        value: 'provisioning',
-        color: 'var(--ant-blue-5)'
       }
+      // {
+      //   label: 'Provisioning',
+      //   value: 'provisioning',
+      //   color: 'var(--ant-blue-5)'
+      // }
     ]
   });
   const intl = useIntl();

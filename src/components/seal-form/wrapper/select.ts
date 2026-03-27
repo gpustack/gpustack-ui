@@ -151,7 +151,6 @@ const SelectWrapper = styled.div`
       }
 
       .ant-select-input {
-        height: ${INPUTHEIGHT}px !important;
         top: 14px !important;
       }
       .ant-select-placeholder {

@@ -2,16 +2,8 @@ import IconFont from '@/components/icon-font';
 import type { SelectProps } from 'antd';
 import { Select } from 'antd';
 import React, { forwardRef, useImperativeHandle } from 'react';
-import styled from 'styled-components';
 import NotFoundContent from '../components/not-found-content';
-
-const Footer = styled.div`
-  color: var(--ant-color-text-tertiary);
-  margin-top: 8px;
-  margin-bottom: 0;
-  padding: 8px 12px;
-  border-top: 1px solid var(--ant-color-split);
-`;
+import SelectCss from './styles.less';
 
 const BaseSelect: React.FC<
   SelectProps & { ref?: any; footer?: React.ReactNode }
@@ -58,7 +50,9 @@ const BaseSelect: React.FC<
           ? (originNode) => (
               <>
                 {originNode}
-                {props.footer && <Footer>{props.footer}</Footer>}
+                {props.footer && (
+                  <div className={SelectCss.footer}>{props.footer}</div>
+                )}
               </>
             )
           : undefined

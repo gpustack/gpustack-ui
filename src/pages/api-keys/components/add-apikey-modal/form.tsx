@@ -3,7 +3,7 @@ import SealSelect from '@/components/seal-form/seal-select';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { useIntl } from '@umijs/max';
-import { Form } from 'antd';
+import { Form, Radio } from 'antd';
 import React from 'react';
 import { expirationOptions } from '../../config';
 import { FormData, ListItem } from '../../config/types';
@@ -15,6 +15,7 @@ const APIKeyForm: React.FC<{
   onValuesChange?: (changedValues: any, allValues: any) => void;
 }> = ({ action, currentData, onValuesChange }) => {
   const intl = useIntl();
+  const [keyType, setKeyType] = React.useState<'auto' | 'custom'>('auto');
 
   return (
     <>
@@ -39,6 +40,54 @@ const APIKeyForm: React.FC<{
           required
         ></SealInput.Input>
       </Form.Item>
+
+      {/* Key type selection - only for create action */}
+      {action === PageAction.CREATE && (
+        <Form.Item label={intl.formatMessage({ id: 'apikeys.form.keytype' })}>
+          <Radio.Group
+            value={keyType}
+            onChange={(e) => setKeyType(e.target.value)}
+          >
+            <Radio value="auto">
+              {intl.formatMessage({ id: 'apikeys.form.keytype.auto' })}
+            </Radio>
+            <Radio value="custom">
+              {intl.formatMessage({ id: 'apikeys.form.keytype.custom' })}
+            </Radio>
+          </Radio.Group>
+        </Form.Item>
+      )}
+
+      {/* Custom API Key field - only shown when custom type is selected */}
+      {action === PageAction.CREATE && keyType === 'custom' && (
+        <Form.Item<FormData>
+          name="custom_key"
+          rules={[
+            {
+              required: true,
+              message: intl.formatMessage(
+                { id: 'common.form.rule.input' },
+                {
+                  name: intl.formatMessage({ id: 'apikeys.form.customkey' })
+                }
+              )
+            },
+            {
+              min: 1,
+              message: intl.formatMessage({
+                id: 'apikeys.form.customkey.minlength'
+              })
+            }
+          ]}
+        >
+          <SealInput.Input
+            trim
+            label={intl.formatMessage({ id: 'apikeys.form.customkey' })}
+            required
+          ></SealInput.Input>
+        </Form.Item>
+      )}
+
       <Form.Item<FormData>
         name="expires_in"
         rules={[

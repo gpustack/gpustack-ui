@@ -15,7 +15,7 @@ const ViewCodeButtons: React.FC<{
   }
 
   return (
-    <Space key="buttons" style={{ marginRight: 8 }}>
+    <Space key="buttons">
       <Button
         size="middle"
         onClick={handleViewCode}

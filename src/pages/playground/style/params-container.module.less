@@ -5,7 +5,10 @@
   width: 390px;
   border-left: 1px solid var(--ant-color-split);
   transition: width 0.3s ease;
-  height: calc(100vh - @HEADER_HEIGHT);
+  height: calc(
+    100vh - @HEADER_HEIGHT - var(--page-content-padding) -
+      var(--page-header-height)
+  );
   padding-top: 16px;
   display: flex;
   flex-direction: column;

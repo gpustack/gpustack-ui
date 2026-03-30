@@ -60,7 +60,7 @@ const Wrapper = styled.div`
   display: flex;
   align-items: center;
   gap: 24px;
-  height: 40px;
+  height: 32px;
 `;
 const DropdownWrapper = styled.div`
   min-width: 160px;

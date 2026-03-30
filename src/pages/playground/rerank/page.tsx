@@ -41,7 +41,7 @@ import { fieldConfig } from './params-config';
 const { Text } = Typography;
 
 const SearchInputWrapper = styled.div`
-  margin: 16px 32px 10px;
+  margin: 16px var(--layout-content-inlinepadding) 10px;
   position: relative;
 `;
 
@@ -477,7 +477,10 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
         <div className="ground-left-footer">
           <h3
             className="m-l-10 flex-between flex-center font-size-14 line-24 m-b-0"
-            style={{ padding: '0 32px', marginTop: 16 }}
+            style={{
+              padding: '0 var(--layout-content-inlinepadding)',
+              marginTop: 16
+            }}
           >
             <span>{intl.formatMessage({ id: 'playground.rerank.query' })}</span>
           </h3>

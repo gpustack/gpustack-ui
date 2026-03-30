@@ -2,12 +2,11 @@ import IconFont from '@/components/icon-font';
 import breakpoints from '@/config/breakpoints';
 import HotKeys from '@/config/hotkeys';
 import useWindowResize from '@/hooks/use-window-resize';
-import { ExtraContent } from '@/layouts/extraRender';
 import { modelCategoriesMap } from '@/pages/llmodels/config';
 import { AudioOutlined } from '@ant-design/icons';
 import { useIntl, useSearchParams } from '@umijs/max';
 import useMemoizedFn from 'ahooks/lib/useMemoizedFn';
-import { Divider, Segmented, Tabs, TabsProps } from 'antd';
+import { Segmented, Tabs, TabsProps } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -196,21 +195,34 @@ const Playground: React.FC = () => {
 
   return (
     <PageContainerInner
-      header={header}
-      extra={[
+      leftContent={
+        <div className="flex items-center">
+          <span className="font-600 flex-center">
+            {intl.formatMessage({ id: 'menu.playground.speech' })}
+          </span>
+          {
+            <Segmented
+              shape="round"
+              style={{
+                backgroundColor: 'var(--ant-color-fill-secondary)'
+              }}
+              size="middle"
+              className="m-l-24 font-400"
+              options={optionsList}
+              value={activeKey}
+              onChange={(key) => setActiveKey(key)}
+            ></Segmented>
+          }
+        </div>
+      }
+      rightContent={
         <ViewCodeButtons
           activeKey=""
           handleViewCode={handleViewCode}
           handleToggleCollapse={handleToggleCollapse}
           key="view-code-buttons"
-        ></ViewCodeButtons>,
-        <Divider
-          key="divider"
-          orientation="vertical"
-          style={{ height: 16, marginInline: 16 }}
-        />,
-        <ExtraContent key="extra-content" />
-      ]}
+        ></ViewCodeButtons>
+      }
       className={classNames('playground-container', {
         compare: activeKey === 'compare',
         chat: activeKey !== 'compare'

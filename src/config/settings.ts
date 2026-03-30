@@ -1,4 +1,4 @@
-export const HEADER_HEIGHT = 56;
+export const HEADER_HEIGHT = 48;
 
 export const DEFAULT_ENTER_PAGE = {
   adminForNormal: '/dashboard',

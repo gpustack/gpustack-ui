@@ -1,0 +1,62 @@
+.containerWrapper {
+  :global {
+    .ant-affix {
+      top: 0 !important;
+      height: auto;
+    }
+
+    .ant-page-header {
+      padding-block-end: 8px;
+
+      .ant-page-header-heading {
+        padding-block-start: 0;
+      }
+    }
+
+    .ant-page-header-heading-title {
+      font-size: 16px;
+    }
+
+    .ant-pro-page-container-children-container {
+      height: calc(100vh - 56px);
+      display: flex;
+      flex-direction: column;
+      border: 1px solid rgb(237, 237, 237);
+      border-radius: 8px;
+      overflow: hidden;
+      background-color: var(--ant-color-bg-container);
+      padding: 0;
+    }
+  }
+
+  .contentWrapper {
+    flex: 1;
+    overflow-y: auto;
+    padding-block: var(--layout-content-blockpadding);
+    padding-inline: var(--layout-content-inlinepadding);
+  }
+
+  .title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding-inline: var(--layout-content-inlinepadding);
+    font-size: 16px;
+    color: var(--ant-color-text);
+    font-weight: 600;
+    padding-block: 9px 8px;
+    height: 56px;
+    border-bottom: 1px solid var(--ant-color-split);
+
+    .left {
+      display: flex;
+      align-items: center;
+    }
+
+    .right {
+      display: flex;
+      align-items: center;
+    }
+  }
+}

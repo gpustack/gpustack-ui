@@ -9,7 +9,10 @@
     justify-content: space-between;
     flex-direction: column;
     position: relative;
-    height: calc(100vh - @HEADER_HEIGHT);
+    height: calc(
+      100vh - @HEADER_HEIGHT - var(--page-content-padding) -
+        var(--page-header-height)
+    );
     width: calc(100% - 390px);
 
     .message-list-wrap {

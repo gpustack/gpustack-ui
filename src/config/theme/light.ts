@@ -4,6 +4,9 @@ export default {
   'root-entry-name': 'variable',
   hashed: false,
   components: {
+    Layout: {
+      headerHeight: 48
+    },
     Input: {
       inputFontSize: 14,
       inputFontSizeLG: 14

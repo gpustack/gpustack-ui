@@ -1,9 +1,7 @@
 import HotKeys from '@/config/hotkeys';
-import { ExtraContent } from '@/layouts/extraRender';
 import { modelCategoriesMap } from '@/pages/llmodels/config';
 import { useIntl } from '@umijs/max';
 import useMemoizedFn from 'ahooks/lib/useMemoizedFn';
-import { Divider } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
@@ -85,20 +83,19 @@ const PlaygroundRerank: React.FC = () => {
   return (
     <PageContainerInner
       className={classNames('playground-container chat')}
-      extra={[
+      styles={{
+        containerWrapper: {
+          padding: 0
+        }
+      }}
+      rightContent={
         <ViewCodeButtons
           activeKey=""
           handleViewCode={handleViewCode}
           handleToggleCollapse={handleToggleCollapse}
           key="view-code-buttons"
-        ></ViewCodeButtons>,
-        <Divider
-          key="divider"
-          orientation="vertical"
-          style={{ height: 16, marginInline: 16 }}
-        />,
-        <ExtraContent key="extra-content" />
-      ]}
+        ></ViewCodeButtons>
+      }
     >
       <div className="play-ground">
         <div className="chat">

@@ -1,12 +1,11 @@
 import breakpoints from '@/config/breakpoints';
 import HotKeys from '@/config/hotkeys';
 import useWindowResize from '@/hooks/use-window-resize';
-import { ExtraContent } from '@/layouts/extraRender';
 import { modelCategoriesMap } from '@/pages/llmodels/config';
 import { MessageOutlined, OneToOneOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { Divider, Segmented, Tabs, TabsProps } from 'antd';
+import { Segmented, Tabs, TabsProps } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -109,11 +108,11 @@ const Playground: React.FC = () => {
     fetchData();
   }, []);
 
-  const header = useMemo(() => {
-    return {
-      title: (
+  const title = useMemo(() => {
+    return (
+      <div className="flex justify-between items-center">
         <div className="flex items-center">
-          <span className="font-600">
+          <span className="font-600 flex-center">
             {intl.formatMessage({ id: 'menu.playground.chat' })}
           </span>
           {
@@ -126,8 +125,14 @@ const Playground: React.FC = () => {
             ></Segmented>
           }
         </div>
-      )
-    };
+        <ViewCodeButtons
+          handleViewCode={handleViewCode}
+          handleToggleCollapse={handleToggleCollapse}
+          activeKey={activeKey}
+          key="view-code-buttons"
+        />
+      </div>
+    );
   }, [activeKey, optionsList, intl]);
 
   useHotkeys(
@@ -148,25 +153,39 @@ const Playground: React.FC = () => {
         compare: activeKey === 'compare',
         chat: activeKey !== 'compare'
       })}
-      header={header}
-      extra={[
+      styles={{
+        containerWrapper: {
+          padding: 0
+        }
+      }}
+      leftContent={
+        <div className="flex items-center">
+          <span className="font-600 flex-center">
+            {intl.formatMessage({ id: 'menu.playground.chat' })}
+          </span>
+          {
+            <Segmented
+              shape="round"
+              style={{
+                backgroundColor: 'var(--ant-color-fill-secondary)'
+              }}
+              size="middle"
+              className="m-l-24 font-400"
+              options={optionsList}
+              value={activeKey}
+              onChange={(key) => setActiveKey(key)}
+            ></Segmented>
+          }
+        </div>
+      }
+      rightContent={
         <ViewCodeButtons
           handleViewCode={handleViewCode}
           handleToggleCollapse={handleToggleCollapse}
           activeKey={activeKey}
           key="view-code-buttons"
-        />,
-        <div key="divider-wrapper">
-          {activeKey === 'chat' && (
-            <Divider
-              key="divider"
-              orientation="vertical"
-              style={{ height: 16, marginInline: 16 }}
-            />
-          )}
-        </div>,
-        <ExtraContent key="extra-content" />
-      ]}
+        />
+      }
     >
       <div className="play-ground">
         <div className="chat">

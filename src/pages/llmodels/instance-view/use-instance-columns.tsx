@@ -131,7 +131,7 @@ const useProviderColumns = (options: {
       {
         title: intl.formatMessage({ id: 'clusters.title' }),
         dataIndex: 'cluster_id',
-        minWidth: 200,
+        width: 200,
         render: (text: number) => (
           <AutoTooltip ghost>
             {text
@@ -157,6 +157,7 @@ const useProviderColumns = (options: {
         title: intl.formatMessage({ id: 'models.table.vram.allocated' }),
         dataIndex: 'allocated_vram',
         sorter: tableSorter(6),
+        width: 160,
         render: (text, record) => (
           <AutoTooltip ghost>
             {convertFileSize(

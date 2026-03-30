@@ -46,34 +46,36 @@ const LLModels: React.FC = () => {
     setActiveKey(key);
   });
 
-  const header = useMemo(() => {
-    return {
-      title: (
-        <div className="flex items-center">
-          <span className="font-600">
-            {intl.formatMessage({ id: 'menu.models.deployment' })}
-          </span>
-          <Segmented
-            options={[
-              {
-                label: intl.formatMessage({ id: 'models.table.modelView' }),
-                value: TabsValueMap.ModelView,
-                icon: <IconFont type={'icon-models'}></IconFont>
-              },
-              {
-                label: intl.formatMessage({ id: 'models.table.instanceView' }),
-                value: TabsValueMap.InstanceView,
-                icon: <IconFont type={'icon-instance-outline'}></IconFont>
-              }
-            ]}
-            size="middle"
-            className="m-l-24 font-600"
-            value={activeKey}
-            onChange={handleTabChange}
-          ></Segmented>
-        </div>
-      )
-    };
+  const title = useMemo(() => {
+    return (
+      <div className="flex items-center">
+        <span className="font-600 flex-center">
+          {intl.formatMessage({ id: 'menu.models.deployment' })}
+        </span>
+        <Segmented
+          shape="round"
+          style={{
+            backgroundColor: 'var(--ant-color-fill-secondary)'
+          }}
+          size="middle"
+          className="m-l-24 font-400"
+          options={[
+            {
+              label: intl.formatMessage({ id: 'models.table.modelView' }),
+              value: TabsValueMap.ModelView,
+              icon: <IconFont type={'icon-models'}></IconFont>
+            },
+            {
+              label: intl.formatMessage({ id: 'models.table.instanceView' }),
+              value: TabsValueMap.InstanceView,
+              icon: <IconFont type={'icon-instance-outline'}></IconFont>
+            }
+          ]}
+          value={activeKey}
+          onChange={handleTabChange}
+        ></Segmented>
+      </div>
+    );
   }, [activeKey, intl]);
 
   useEffect(() => {
@@ -103,7 +105,7 @@ const LLModels: React.FC = () => {
   }, [activeKey]);
 
   return (
-    <PageContainerInner header={header}>
+    <PageContainerInner leftContent={title}>
       <DeploymentsContext.Provider
         value={{
           generateFormValues,

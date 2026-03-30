@@ -1,12 +1,11 @@
 import breakpoints from '@/config/breakpoints';
 import HotKeys from '@/config/hotkeys';
 import useWindowResize from '@/hooks/use-window-resize';
-import { ExtraContent } from '@/layouts/extraRender';
 import { modelCategoriesMap } from '@/pages/llmodels/config';
 import { DiffOutlined, HighlightOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { Divider, Segmented, Tabs, TabsProps } from 'antd';
+import { Segmented, Tabs, TabsProps } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -156,21 +155,33 @@ const TextToImages: React.FC = () => {
 
   return (
     <PageContainerInner
-      header={header}
-      extra={[
+      leftContent={
+        <div className="flex items-center">
+          <span className="font-600 flex-center">
+            {intl.formatMessage({ id: 'menu.playground.text2images' })}
+          </span>
+          <Segmented
+            shape="round"
+            style={{
+              backgroundColor: 'var(--ant-color-fill-secondary)'
+            }}
+            size="middle"
+            className="m-l-24 font-400"
+            options={optionsList}
+            value={activeKey}
+            onChange={(key) => setActiveKey(key)}
+          ></Segmented>
+        </div>
+      }
+      rightContent={
         <ViewCodeButtons
           handleViewCode={handleViewCode}
           handleToggleCollapse={handleToggleCollapse}
           activeKey={activeKey}
           key="view-code-buttons"
-        ></ViewCodeButtons>,
-        <Divider
-          key="divider"
-          orientation="vertical"
-          style={{ height: 16, marginInline: 16 }}
-        />,
-        <ExtraContent key="extra-content" />
-      ]}
+        ></ViewCodeButtons>
+      }
+      styles={{ containerWrapper: { padding: 0 } }}
       className={classNames('playground-container chat')}
     >
       <div className="play-ground">

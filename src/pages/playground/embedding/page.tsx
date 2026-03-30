@@ -622,7 +622,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
           className="ground-left-footer"
           style={{
             width: '100%',
-            padding: '0 32px 16px'
+            padding: '0 var(--layout-content-inlinepadding) 16px'
           }}
         >
           <h3 className="m-l-10 flex-between flex-center font-size-14 line-24 m-b-16">

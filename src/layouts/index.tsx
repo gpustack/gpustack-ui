@@ -215,10 +215,28 @@ export default (props: any) => {
   }, [matchedRoute]);
 
   useEffect(() => {
-    const body = document.querySelector('body');
-    if (body) {
-      const ins = initialize(body);
-      window.__GPUSTACK_BODY_SCROLLER__ = ins;
+    const initializeScroller = () => {
+      // const body = document.querySelector('.ant-pro-grid-content-children');
+      // if (body) {
+      //   const ins = initialize(body);
+      //   window.__GPUSTACK_BODY_SCROLLER__ = ins;
+      //   return true;
+      // }
+      // return false;
+      return true;
+    };
+
+    // Try to initialize immediately
+    if (!initializeScroller()) {
+      // If element not found, retry with requestAnimationFrame
+      const rafId = requestAnimationFrame(() => {
+        if (!initializeScroller()) {
+          // If still not found, retry after a short delay
+          const timeoutId = setTimeout(initializeScroller, 100);
+          return () => clearTimeout(timeoutId);
+        }
+      });
+      return () => cancelAnimationFrame(rafId);
     }
   }, [initialize]);
 
@@ -312,6 +330,8 @@ export default (props: any) => {
     });
   };
 
+  console.log('userConfig==========title', userConfig.title);
+
   return (
     <ConfigProvider
       componentSize="large"
@@ -336,7 +356,7 @@ export default (props: any) => {
       <DarkMask></DarkMask>
       <ProLayout
         fixSiderbar
-        fixedHeader={true}
+        fixedHeader={false}
         breadcrumbRender={false}
         route={route}
         location={location}
@@ -384,7 +404,9 @@ export default (props: any) => {
             <Outlet />
           ) : (
             <PageContainerInner>
-              <Outlet />
+              <div>
+                <Outlet />
+              </div>
             </PageContainerInner>
           )}
         </Exception>

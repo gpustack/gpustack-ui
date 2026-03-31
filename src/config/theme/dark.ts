@@ -96,6 +96,7 @@ export default {
     colorText: '#ccc',
     colorPrimary: COLOR_PRIMARY,
     colorSuccess: '#48A77E',
+    colorBorder: '#3a3a3a',
     borderRadius: 4,
     borderRadiusSM: 2,
     fontSize: 14,

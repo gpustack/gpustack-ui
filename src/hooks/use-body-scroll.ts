@@ -16,7 +16,7 @@ export default function useBodyScroll() {
     instanceRef.current = window.__GPUSTACK_BODY_SCROLLER__;
   };
 
-  const saveScrollHeight = React.useCallback(() => {
+  const saveScrollHeight = () => {
     if (!bodyScroller.current) {
       init();
     }
@@ -27,12 +27,12 @@ export default function useBodyScroll() {
     instanceRef.current?.options?.({
       overflow: {
         x: 'hidden',
-        y: 'visible'
+        y: 'hidden'
       }
     });
-  }, []);
+  };
 
-  const restoreScrollHeight = React.useCallback(() => {
+  const restoreScrollHeight = () => {
     if (timer.current) {
       clearTimeout(timer.current);
     }
@@ -44,7 +44,7 @@ export default function useBodyScroll() {
         }
       });
     }, 650);
-  }, []);
+  };
 
   React.useEffect(() => {
     init();

@@ -24,7 +24,7 @@ export default {
   'model.deploy.sort': 'Sırala',
   'model.deploy.search.placeholder': 'Modelleri aramak için <kbd>/</kbd> yazın',
   'model.form.ollamatips':
-    'İpucu: Aşağıdakiler GPUStack\'te önceden yapılandırılmış Ollama modelleridir. İstediğiniz modeli seçin veya dağıtmak istediğiniz modeli doğrudan sağdaki 【{name}】 giriş kutusuna yazın.',
+    "İpucu: Aşağıdakiler GPUStack'te önceden yapılandırılmış Ollama modelleridir. İstediğiniz modeli seçin veya dağıtmak istediğiniz modeli doğrudan sağdaki 【{name}】 giriş kutusuna yazın.",
   'models.sort.name': 'Ad',
   'models.sort.size': 'Boyut',
   'models.sort.likes': 'Beğeniler',
@@ -34,8 +34,8 @@ export default {
   'models.search.result': '{count} sonuç',
   'models.data.card': 'Model Kartı',
   'models.available.files': 'Mevcut Dosyalar',
-  'models.viewin.hf': 'Hugging Face\'de Görüntüle',
-  'models.viewin.modelscope': 'ModelScope\'da Görüntüle',
+  'models.viewin.hf': "Hugging Face'de Görüntüle",
+  'models.viewin.modelscope': "ModelScope'da Görüntüle",
   'models.architecture': 'Mimari',
   'models.search.noresult': 'İlgili model bulunamadı',
   'models.search.nofiles': 'Mevcut dosya yok',
@@ -50,9 +50,9 @@ export default {
   'models.form.scheduletype.gpu': 'GPU Belirle',
   'models.form.scheduletype.gpuType': 'GPU Türü Belirle',
   'models.form.scheduletype.auto.tips':
-    'Mevcut kaynak koşullarına göre model örneklerini uygun GPU\'lara otomatik olarak dağıtır.',
+    "Mevcut kaynak koşullarına göre model örneklerini uygun GPU'lara otomatik olarak dağıtır.",
   'models.form.scheduletype.manual.tips':
-    'Model örneklerinin dağıtılacağı GPU\'ları manuel olarak belirlemenize olanak tanır.',
+    "Model örneklerinin dağıtılacağı GPU'ları manuel olarak belirlemenize olanak tanır.",
   'models.form.manual.schedule': 'Manuel Zamanlama',
   'models.table.gpuindex': 'GPU İndeksi',
   'models.table.backend': 'Altyapılar',
@@ -91,12 +91,13 @@ export default {
     'GGUF format modeller için, Linux, macOS ve Windows destekler.',
   'models.form.backend.vllm':
     'NVIDIA, AMD, Ascend, Hygon, Moore Threads, Iluvatar, MetaX, T-Head PPU cihazları için yerleşik destek.',
-  'models.form.backend.voxbox': 'Yalnızca NVIDIA GPU\'ları ve CPU\'ları destekler.',
-  'models.form.backend.mindie': 'Yalnızca Ascend NPU\'ları destekler.',
+  'models.form.backend.voxbox':
+    "Yalnızca NVIDIA GPU'ları ve CPU'ları destekler.",
+  'models.form.backend.mindie': "Yalnızca Ascend NPU'ları destekler.",
   'models.form.backend.sglang':
     'NVIDIA, AMD, Ascend, Moore Threads, MetaX, T-Head PPU cihazları için yerleşik destek.',
   'models.form.search.gguftips':
-    'İşçi düğüm olarak macOS veya Windows kullanılıyorsa GGUF\'u işaretleyin (ses modelleri için işareti kaldırın).',
+    "İşçi düğüm olarak macOS veya Windows kullanılıyorsa GGUF'u işaretleyin (ses modelleri için işareti kaldırın).",
   'models.form.button.addlabel': 'Etiket Ekle',
   'models.filter.category': 'Kategoriye göre filtrele',
   'models.list.more.logs': 'Daha Fazla Göster',
@@ -141,16 +142,14 @@ export default {
   'models.form.check.passed': 'Uyumluluk Kontrolü Başarılı',
   'models.form.check.claims':
     'Model yaklaşık {vram} VRAM ve {ram} RAM tüketecektir.',
-  'models.form.check.claims2':
-    'Model yaklaşık {vram} VRAM tüketecektir.',
-  'models.form.check.claims3':
-    'Model yaklaşık {ram} RAM tüketecektir.',
+  'models.form.check.claims2': 'Model yaklaşık {vram} VRAM tüketecektir.',
+  'models.form.check.claims3': 'Model yaklaşık {ram} RAM tüketecektir.',
   'models.form.update.tips':
     'Değişiklikler yalnızca örneği silip yeniden oluşturduğunuzda geçerli olur.',
   'models.table.download.progress': 'İlerleme',
   'models.table.button.apiAccessInfo': 'API Erişim Bilgisi',
-  'models.table.button.apiAccessInfo.tips': `Bu modeli üçüncü taraf uygulamalarla entegre etmek için şu bilgileri kullanın: erişim URL\'si, model adı ve API anahtarı. Bu kimlik bilgileri, model hizmetine düzgün bağlantı ve kullanım sağlamak için gereklidir.`,
-  'models.table.apiAccessInfo.endpoint': 'Erişim URL\'si',
+  'models.table.button.apiAccessInfo.tips': `Bu modeli üçüncü taraf uygulamalarla entegre etmek için şu bilgileri kullanın: erişim URL'si, model adı ve API anahtarı. Bu kimlik bilgileri, model hizmetine düzgün bağlantı ve kullanım sağlamak için gereklidir.`,
+  'models.table.apiAccessInfo.endpoint': "Erişim URL'si",
   'models.table.apiAccessInfo.modelName': 'Model Adı',
   'models.table.apiAccessInfo.apikey': 'API Anahtarı',
   'models.table.apiAccessInfo.openaiCompatible': 'OpenAI Uyumlu',
@@ -196,7 +195,7 @@ export default {
   'models.form.extendedkvcache': 'Genişletilmiş KV Önbelleğini Etkinleştir',
   'models.form.chunkSize': 'Önbellek Parça Boyutu',
   'models.form.maxCPUSize': 'Maksimum CPU Önbellek Boyutu (GiB)',
-  'models.form.remoteURL': 'Uzak Depolama URL\'si',
+  'models.form.remoteURL': "Uzak Depolama URL'si",
   'models.form.remoteURL.tips':
     'Ayrıntılar için <a href="https://docs.lmcache.ai/api_reference/configurations.html" target="_blank">yapılandırma dokümantasyonuna</a> bakın.',
   'models.form.runCommandPlaceholder':
@@ -213,7 +212,7 @@ export default {
   'models.form.gpusAllocationType.auto': 'Otomatik',
   'models.form.gpusAllocationType.custom': 'Özel',
   'models.form.gpusAllocationType.auto.tips':
-    'Sistem kopya başına GPU sayısını otomatik hesaplar, varsayılan olarak ikinin kuvvetlerini kullanır ve seçilen GPU\'larla sınırlandırılır.',
+    "Sistem kopya başına GPU sayısını otomatik hesaplar, varsayılan olarak ikinin kuvvetlerini kullanır ve seçilen GPU'larla sınırlandırılır.",
   'models.form.gpusAllocationType.custom.tips':
     'Kopya başına tam GPU sayısını belirleyebilirsiniz.',
   'models.mymodels.status.inactive': 'Durduruldu',
@@ -227,7 +226,7 @@ export default {
   'models.form.ramRatio': 'RAM-VRAM Oranı',
   'models.form.ramSize': 'Maksimum RAM Boyutu (GiB)',
   'models.form.ramRatio.tips':
-    'KV önbellek için kullanılan sistem RAM\'in GPU VRAM\'e oranı. Örneğin, 2.0 RAM\'deki önbelleğin GPU VRAM\'in iki katı olabileceği anlamına gelir.',
+    "KV önbellek için kullanılan sistem RAM'in GPU VRAM'e oranı. Örneğin, 2.0 RAM'deki önbelleğin GPU VRAM'in iki katı olabileceği anlamına gelir.",
   'models.form.ramSize.tips': `Sistem belleğinde depolanan KV önbelleğin maksimum boyutu (GiB). Ayarlanırsa, bu değer "{content}" değerini geçersiz kılar.`,
   'models.form.chunkSize.tips': 'KV önbellek parçası başına token sayısı.',
   'models.form.mode': 'Mod',
@@ -245,9 +244,10 @@ export default {
     'Düşük istek eşzamanlılığı altında düşük gecikme için optimize edilmiştir.',
   'models.form.mode.baseline.tips':
     'Tam (orijinal) hassasiyette çalışır ve uyumluluğu ön planda tutar.',
-  'models.form.draftModel.placeholder': 'Lütfen bir taslak model seçin veya girin',
+  'models.form.draftModel.placeholder':
+    'Lütfen bir taslak model seçin veya girin',
   'models.form.draftModel.tips':
-    'Yerel yol (örn., /path/to/model) girebilir veya Hugging Face ya da ModelScope\'dan bir model seçebilirsiniz (örn., Tengyunw/qwen3_8b_eagle3). Sistem birincil model kaynağına göre otomatik eşleme yapar.',
+    "Yerel yol (örn., /path/to/model) girebilir veya Hugging Face ya da ModelScope'dan bir model seçebilirsiniz (örn., Tengyunw/qwen3_8b_eagle3). Sistem birincil model kaynağına göre otomatik eşleme yapar.",
   'models.form.quantization': 'Niceleme',
   'models.form.backend.custom': 'Kullanıcı tanımlı',
   'models.form.rules.name':
@@ -255,7 +255,7 @@ export default {
   'models.catalog.button.explore': 'Daha Fazla Model Keşfet',
   'models.catalog.precision': 'Hassasiyet',
   'models.form.gpuPerReplica.tips': 'Özel bir sayı girin',
-  'models.form.generic_proxy': 'Genel Proxy\'yi Etkinleştir',
+  'models.form.generic_proxy': "Genel Proxy'yi Etkinleştir",
   'models.form.enableModelRoute': 'Model Yönlendirmesini Etkinleştir',
   'models.form.enableModelRoute.tips': 'Model Yönlendirmesini Etkinleştir',
   'models.form.generic_proxy.tips':
@@ -274,10 +274,17 @@ export default {
   'models.form.backendVersions.tips': `Daha fazla sürüm kullanmak için {link} sayfasına gidin ve sürüm eklemek üzere altyapıyı düzenleyin.`,
   'models.catalog.nogpus.tips':
     'Seçili kümede bu model için uyumlu GPU bulunmuyor.',
-  'models.form.modelfile.notfound': `Belirttiğiniz model dosyası yolu GPUStack sunucusunda mevcut değil. Model dosyasını hem GPUStack sunucusunda hem de GPUStack işçi düğümlerinde aynı yola yerleştirmeniz önerilir. Bu, GPUStack\'in daha iyi kararlar almasına yardımcı olur.`,
+  'models.form.modelfile.notfound': `Belirttiğiniz model dosyası yolu GPUStack sunucusunda mevcut değil. Model dosyasını hem GPUStack sunucusunda hem de GPUStack işçi düğümlerinde aynı yola yerleştirmeniz önerilir. Bu, GPUStack'in daha iyi kararlar almasına yardımcı olur.`,
   'models.form.readyWorkers': 'hazır işçi düğüm',
   'models.form.maxContextLength': 'Maksimum Bağlam Uzunluğu',
   'models.form.backend.helperText':
     'Henüz etkinleştirilmedi. Dağıtımdan sonra etkinleştirilecektir. ',
-  'models.table.instance.benchmark': 'Kıyaslama Çalıştır'
+  'models.table.instance.benchmark': 'Kıyaslama Çalıştır',
+  'models.table.modelView': 'Model List',
+  'models.table.instanceView': 'Instance List'
 };
+
+// ========== To-Do: Translate Keys (Remove After Translation) ==========
+// 1. 'models.table.modelView': 'Model List',
+// 2. 'models.table.instanceView': 'Instance List',
+// ========== End of To-Do List ==========

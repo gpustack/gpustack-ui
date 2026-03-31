@@ -1,0 +1,34 @@
+.SpinWrapper {
+  width: 100%;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 0;
+  left: 0;
+  max-height: 400px;
+  right: 0;
+
+  :global {
+    .skelton-wrapper {
+      width: 100%;
+    }
+  }
+}
+
+.SkeletonWrapper {
+  :global {
+    .ant-skeleton-content {
+      .ant-skeleton-paragraph {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-bottom: 0;
+
+        li {
+          margin-top: 0 !important;
+        }
+      }
+    }
+  }
+}

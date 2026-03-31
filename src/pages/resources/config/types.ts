@@ -69,6 +69,7 @@ export interface ListItem {
   ssh_key_id: string;
   advertise_address: string;
   provision_progress: string;
+  worker_version: string;
   maintenance: {
     enabled: boolean;
     message: string;

@@ -106,7 +106,9 @@ export default {
     'When maintenance mode is enabled, the node will stop scheduling new model deployment tasks. Running instances will not be affected.',
   'resources.worker.noCluster.tips':
     'No available clusters. Please create a cluster before adding a node.',
-  'resources.metrics.details': 'Monitoring'
+  'resources.metrics.details': 'Monitoring',
+  'resoureces.worker.upgrade.tips':
+    'Please upgrade to match the GPUStack Server version.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -117,5 +119,6 @@ export default {
 // 6. 'resources.worker.maintenance.remark.rules': 'Please enter maintenance remarks',
 // 7. 'resources.worker.maintenance.tips': 'When maintenance mode is enabled, the node will stop scheduling new model deployment tasks. Running instances will not be affected.',
 // 8. 'resources.worker.noCluster.tips': 'No available clusters. Please create a cluster before adding a node.',
-// 9. 'resources.metrics.details': 'Monitoring'
+// 9. 'resources.metrics.details': 'Monitoring',
+// 10. 'resoureces.worker.upgrade.tips': 'Please upgrade to match the GPUStack Server version.'
 // ========== End of To-Do List ==========

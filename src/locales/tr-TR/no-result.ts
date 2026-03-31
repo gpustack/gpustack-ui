@@ -1,13 +1,15 @@
 export default {
   'noresult.button.add': 'Şimdi Ekle',
   'noresult.mymodels.title': 'Erişilebilir Model Yok',
-  'noresult.mymodels.subTitle': 'Erişim için lütfen yöneticiyle iletişime geçin.',
+  'noresult.mymodels.subTitle':
+    'Erişim için lütfen yöneticiyle iletişime geçin.',
   'noresult.mymodels.nofound': 'Eşleşen model bulunamadı',
   'noresult.deployments.title': 'Dağıtılmış Model Yok',
   'noresult.deployments.subTitle':
     'Henüz hiç model dağıtmadınız. Başlamak için aşağıdaki düğmeye tıklayın.',
   'noresult.gpus.title': 'GPU Cihazı Algılanamadı',
-  'noresult.gpus.subTitle': 'Lütfen İşçi Düğüm durumunun HAZIR olup olmadığını kontrol edin.',
+  'noresult.gpus.subTitle':
+    'Lütfen İşçi Düğüm durumunun HAZIR olup olmadığını kontrol edin.',
   'noresult.gpus.nofound': 'Eşleşen GPU cihazı bulunamadı.',
   'noresult.workers.title': 'İşçi Düğüm Yok',
   'noresult.workers.subTitle': 'Hiçbir kümede işçi düğüm bulunamadı.',
@@ -48,5 +50,15 @@ export default {
   'noresult.providers.nofound': 'Eşleşen sağlayıcı bulunamadı.',
   'noresult.routes.title': 'Yönlendirme Yok',
   'noresult.routes.subTitle': 'Henüz yönlendirme eklenmedi.',
-  'noresult.routes.nofound': 'Eşleşen yönlendirme bulunamadı.'
+  'noresult.routes.nofound': 'Eşleşen yönlendirme bulunamadı.',
+  'noresult.instances.title': 'No instances',
+  'noresult.instances.subTitle':
+    'There are no running model instances. Deploy a model to create one automatically.',
+  'noresult.instances.nofound': 'No matching instances found.'
 };
+
+// ========== To-Do: Translate Keys (Remove After Translation) ==========
+// 1. 'noresult.instances.title': 'No instances',
+// 2. 'noresult.instances.subTitle': 'There are no running model instances. Deploy a model to create one automatically.',
+// 3. 'noresult.instances.nofound': 'No matching instances found.'
+// ========== End of To-Do List ==========

@@ -37,10 +37,10 @@ const WorkerInfoContent: React.FC<NameCellProps> = ({ record, modelData }) => {
       <div className="flex-center">
         <IconFont
           type="icon-filled-gpu"
-          className="m-r-5 text-tertiary"
+          className="m-r-5 text-quaternary"
           style={{ fontSize: 12 }}
         />
-        <span className="text-tertiary">
+        <span className="text-quaternary">
           GPU:[
           {_.join(
             record.gpu_indexes?.sort?.((a, b) => a - b),
@@ -115,10 +115,10 @@ const useProviderColumns = (options: {
             ></NameCell>
             <div className="flex-center">
               <ThunderboltFilled
-                className="m-r-5 text-tertiary"
-                style={{ fontSize: 12 }}
+                className="m-r-5 text-quaternary"
+                style={{ fontSize: 12, position: 'relative', top: 2 }}
               />
-              <span className="text-tertiary">
+              <span className="text-quaternary">
                 {record?.backend || record?.backend || ''}
                 {record.backend_version || record?.backend_version
                   ? `(${record.backend_version || record?.backend_version})`

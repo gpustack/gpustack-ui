@@ -88,7 +88,7 @@ export const modalConfig = {
   icon: null,
   centered: false,
   mask: {
-    closeable: true
+    closable: true
   },
   footer: null,
   style: {

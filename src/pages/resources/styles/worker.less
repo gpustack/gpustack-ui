@@ -1,0 +1,52 @@
+.name {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  .worker-version {
+    color: var(--ant-color-text-tertiary);
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    gap: 4px;
+
+    :global(.anticon) {
+      color: var(--ant-color-warning);
+      font-size: 14px;
+    }
+
+    :global {
+      .version-tag {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 12px;
+        height: auto;
+        border-radius: 4px;
+        line-height: unset;
+        background-color: unset;
+        color: var(--ant-color-text-quaternary);
+        border: 1px solid var(--ant-color-split);
+      }
+    }
+  }
+}
+
+.ipWrapper {
+  display: flex;
+  flex-direction: column;
+
+  .item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 4px 8px;
+
+    .label {
+      text-align: right;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      color: var(--ant-color-text-tertiary);
+    }
+  }
+}

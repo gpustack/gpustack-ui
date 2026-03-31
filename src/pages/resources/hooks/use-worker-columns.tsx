@@ -1,6 +1,8 @@
 import { systemConfigAtom } from '@/atoms/system';
+import { GPUStackVersionAtom } from '@/atoms/user';
 import AutoTooltip from '@/components/auto-tooltip';
 import DropdownButtons from '@/components/drop-down-buttons';
+import IconFont from '@/components/icon-font';
 import LabelsCell from '@/components/label-cell';
 import ProgressBar from '@/components/progress-bar';
 import InfoColumn from '@/components/simple-table/info-column';
@@ -17,31 +19,16 @@ import {
   ToolOutlined
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Tooltip } from 'antd';
+import { Tag, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
-import { useAtomValue } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import _ from 'lodash';
 import { useMemo } from 'react';
-import styled from 'styled-components';
+import semverCoerce from 'semver/functions/coerce';
+import semverGt from 'semver/functions/gt';
 import { status, WorkerStatusMap, WorkerStatusMapValue } from '../config';
 import { Filesystem, GPUDeviceItem, ListItem } from '../config/types';
-
-const IPWrapper = styled.span`
-  display: flex;
-  flex-direction: column;
-  .item {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 4px 8px;
-    .label {
-      text-align: right;
-      font-size: 13px;
-      display: flex;
-      align-items: center;
-      color: var(--ant-color-text-tertiary);
-    }
-  }
-`;
+import workerCss from '../styles/worker.less';
 
 const ActionList = [
   { label: 'common.button.edit', key: 'edit', icon: <EditOutlined /> },
@@ -109,6 +96,16 @@ const fieldList = [
     render: (val: any) => convertFileSize(val, 0)
   }
 ];
+
+const showUpgrade = (
+  workerVersion: string,
+  currentVersion: string
+): boolean => {
+  const w_ver = semverCoerce(workerVersion);
+  const c_ver = semverCoerce(currentVersion);
+
+  return !!w_ver && !!c_ver && semverGt(c_ver, w_ver);
+};
 
 const formateUtilization = (val1: number, val2: number): number =>
   val1 && val2 ? _.round((val1 / val2) * 100, 0) : 0;
@@ -248,6 +245,9 @@ const useWorkerColumns = ({
 }): ColumnsType<ListItem> => {
   const intl = useIntl();
   const systemConfig = useAtomValue(systemConfigAtom);
+  const [version] = useAtom(GPUStackVersionAtom);
+
+  console.log('version in useWorkerColumns', version);
 
   const renderIP = (text: string, record: ListItem) => {
     if (record.advertise_address === record.ip) {
@@ -260,14 +260,14 @@ const useWorkerColumns = ({
       record.ip
     ) {
       return (
-        <IPWrapper>
+        <span className={workerCss.ipWrapper}>
           <span className="item">
             <span>{record.ip}</span>
             <span className="label">{`(${intl.formatMessage({ id: 'clusters.table.ip.internal' })})`}</span>
             <span> {record.advertise_address}</span>
             <span className="label">{`(${intl.formatMessage({ id: 'clusters.table.ip.external' })})`}</span>
           </span>
-        </IPWrapper>
+        </span>
       );
     }
     return record.ip || record.advertise_address || '';
@@ -297,12 +297,30 @@ const useWorkerColumns = ({
       {
         title: intl.formatMessage({ id: 'common.table.name' }),
         dataIndex: 'name',
-        width: 100,
+        width: 140,
         sorter: tableSorter(1),
-        render: (text: string) => (
-          <AutoTooltip ghost maxWidth={200}>
-            {text}
-          </AutoTooltip>
+        render: (text: string, record: ListItem) => (
+          <div className={workerCss.name}>
+            <AutoTooltip ghost maxWidth={200}>
+              <span className="name-text">{text}</span>
+            </AutoTooltip>
+            <div className={workerCss['worker-version']}>
+              <AutoTooltip
+                ghost
+                showTitle={showUpgrade(record.worker_version, version.version)}
+                title={intl.formatMessage({
+                  id: 'resoureces.worker.upgrade.tips'
+                })}
+              >
+                <Tag className="version-tag" variant="outlined">
+                  {version.version}
+                  {showUpgrade(record.worker_version, version.version) && (
+                    <IconFont type="icon-upgrade"></IconFont>
+                  )}
+                </Tag>
+              </AutoTooltip>
+            </div>
+          </div>
         )
       },
       {

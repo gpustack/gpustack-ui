@@ -4,37 +4,8 @@ import InfiniteScroller from '@/pages/_components/infinite-scroller';
 import { useScrollerContext } from '@/pages/_components/infinite-scroller/use-scroller-context';
 import { Spin } from 'antd';
 import React from 'react';
-import styled from 'styled-components';
+import backendListCss from '../styles/backend-list.less';
 import BackendCard from './backend-card';
-
-const SpinWrapper = styled.div`
-  width: 100%;
-  position: absolute;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  top: 0;
-  left: 0;
-  max-height: 400px;
-  right: 0;
-  .skelton-wrapper {
-    width: 100%;
-  }
-`;
-
-const SkeletonWrapper = styled.div`
-  .ant-skeleton-content {
-    .ant-skeleton-paragraph {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      margin-bottom: 0;
-      li {
-        margin-top: 0 !important;
-      }
-    }
-  }
-`;
 
 interface BackendListProps {
   defaultSpan?: number;
@@ -54,7 +25,7 @@ const ListSkeleton: React.FC<{
   return (
     <div>
       {loading && (
-        <SpinWrapper>
+        <div className={backendListCss.SpinWrapper}>
           <Spin
             spinning={loading}
             size="middle"
@@ -66,7 +37,7 @@ const ListSkeleton: React.FC<{
             }}
           >
             {isFirst && (
-              <SkeletonWrapper>
+              <div className={backendListCss.SkeletonWrapper}>
                 <CardSkeleton
                   skeletonProps={{
                     title: false
@@ -77,10 +48,10 @@ const ListSkeleton: React.FC<{
                     gap: 24
                   }}
                 ></CardSkeleton>
-              </SkeletonWrapper>
+              </div>
             )}
           </Spin>
-        </SpinWrapper>
+        </div>
       )}
     </div>
   );

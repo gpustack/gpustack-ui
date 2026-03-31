@@ -23,7 +23,7 @@ export default {
   'menu.apikeys': 'API Anahtarları',
   'menu.users': 'Kullanıcılar',
   'menu.resources.workers': 'İşçi Düğümler',
-  'menu.resources.gpus': 'GPU\'lar',
+  'menu.resources.gpus': "GPU'lar",
   'menu.resources.modelfiles': 'Model Dosyaları',
   'menu.accessControl': 'Erişim Kontrolü',
   'menu.accessControl.apikeys': 'API Anahtarları',
@@ -37,5 +37,10 @@ export default {
   'menu.clusterManagement.credentials': 'Bulut Kimlik Bilgileri',
   'menu.clusterManagement.clusterDetail': 'Küme Detayı',
   'menu.clusterManagement.clusterCreate': 'Küme Oluştur',
-  'menu.resources.backendsList': 'Çıkarım Altyapıları'
+  'menu.resources.backendsList': 'Çıkarım Altyapıları',
+  'menu.models.instances': 'Instances'
 };
+
+// ========== To-Do: Translate Keys (Remove After Translation) ==========
+// 1. 'menu.models.instances': 'Instances'
+// ========== End of To-Do List ==========

@@ -279,6 +279,7 @@ const Workers = () => {
             sortDirections={TABLE_SORT_DIRECTIONS}
             showSorterTooltip={false}
             tableLayout={'auto'}
+            className={'scroll-table'}
             dataSource={dataSource.dataList}
             loading={{
               spinning: dataSource.loading,

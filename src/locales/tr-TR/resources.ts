@@ -19,7 +19,7 @@ export default {
   'resources.form.spread.tips':
     'Tüm kümenin kaynaklarını tüm işçi düğümler arasında nispeten eşit dağıtır. Tek bir işçi düğümde daha fazla kaynak parçalanması oluşturabilir.',
   'resources.form.binpack.tips':
-    'Küme kaynaklarının genel kullanımını önceliklendirerek GPU\'lar/İşçi Düğümlerdeki kaynak parçalanmasını azaltır.',
+    "Küme kaynaklarının genel kullanımını önceliklendirerek GPU'lar/İşçi Düğümlerdeki kaynak parçalanmasını azaltır.",
   'resources.form.workerSelector.description':
     'Sistem, önceden tanımlanmış etiketlere göre model örneklerini dağıtmak için en uygun İşçi Düğümü seçer.',
   'resources.table.ip': 'IP',
@@ -56,7 +56,7 @@ export default {
     'Komutu oluşturmak için bir etiket seçin ve kopyala düğmesiyle kopyalayın.',
   'resources.worker.script.install': 'Betik Kurulumu',
   'resources.worker.container.install': 'Konteyner Kurulumu (Yalnızca Linux)',
-  'resources.worker.cann.tips': `Gerekli NPU indeksine göre <span class="bold-text">--device /dev/davinci{index}</span> ayarlayın. Örneğin, NPU0 ve NPU1\'i bağlamak için <span class="bold-text">--device /dev/davinci0 --device /dev/davinci1</span> ekleyin.`,
+  'resources.worker.cann.tips': `Gerekli NPU indeksine göre <span class="bold-text">--device /dev/davinci{index}</span> ayarlayın. Örneğin, NPU0 ve NPU1'i bağlamak için <span class="bold-text">--device /dev/davinci0 --device /dev/davinci1</span> ekleyin.`,
   'resources.modelfiles.form.path': 'Depolama Yolu',
   'resources.modelfiles.modelfile': 'Model Dosyaları',
   'resources.modelfiles.download': 'Model Dosyası Ekle',
@@ -101,11 +101,16 @@ export default {
   'resources.worker.maintenance.enable': 'Bakım Moduna Gir',
   'resources.worker.maintenance.disable': 'Bakım Modundan Çık',
   'resources.worker.maintenance.remark': 'Not',
-  'resources.worker.maintenance.remark.rules':
-    'Lütfen bakım notlarını girin',
+  'resources.worker.maintenance.remark.rules': 'Lütfen bakım notlarını girin',
   'resources.worker.maintenance.tips':
     'Bakım moduna girildiğinde, düğüm yeni model dağıtım görevlerini zamanlamayı durduracaktır. Çalışan örnekler etkilenmez.',
   'resources.worker.noCluster.tips':
     'Kullanılabilir küme yok. Lütfen düğüm eklemeden önce bir küme oluşturun.',
-  'resources.metrics.details': 'İzleme'
+  'resources.metrics.details': 'İzleme',
+  'resoureces.worker.upgrade.tips':
+    'Please upgrade to match the GPUStack Server version.'
 };
+
+// ========== To-Do: Translate Keys (Remove After Translation) ==========
+// 1. 'resoureces.worker.upgrade.tips': 'Please upgrade to match the GPUStack Server version.'
+// ========== End of To-Do List ==========

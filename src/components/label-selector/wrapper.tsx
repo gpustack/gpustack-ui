@@ -25,7 +25,7 @@ const Container = styled.div`
   padding: 14px;
   padding-top: 34px;
   border: 1px solid var(--ant-color-border);
-  border-radius: var(--border-radius-base);
+  border-radius: var(--ant-border-radius-lg);
   display: flex;
   width: 100%;
   flex-direction: column;
@@ -71,7 +71,13 @@ const Wrapper: React.FC<WrapperProps> = ({
       {!disabled && (
         <ButtonWrapper>
           {button || (
-            <Button variant="filled" color="default" block onClick={onAdd}>
+            <Button
+              variant="filled"
+              color="default"
+              block
+              onClick={onAdd}
+              style={{ borderRadius: 'var(--border-radius-base)' }}
+            >
               <PlusOutlined className="font-size-14" />
               {btnText ||
                 intl.formatMessage({

@@ -100,7 +100,9 @@ const useClusterColumns = (
         span: 3,
         render: (text: string, record: ClusterListItem) => (
           <>
-            <AutoTooltip ghost>{record.name}</AutoTooltip>
+            <AutoTooltip ghost>
+              <span className="text-primary">{record.name}</span>
+            </AutoTooltip>
             {record.is_default && (
               <Tooltip
                 title={intl.formatMessage({

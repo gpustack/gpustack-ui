@@ -156,6 +156,7 @@ const WorkerPools = () => {
         rowSelection={rowSelection}
         columns={columns}
         pagination={{
+          size: 'middle',
           showSizeChanger: true,
           pageSize: queryParams.perPage,
           current: queryParams.page,

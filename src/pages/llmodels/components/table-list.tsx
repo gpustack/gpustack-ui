@@ -564,6 +564,7 @@ const Models: React.FC<ModelsProps> = ({
               handleCategoryChange={handleCategoryChange}
               handleStatusChange={onStatusChange}
               handleSearch={handleSearch}
+              onFilterChange={onFilterChange}
               clusterList={clusterList}
             ></LeftFilters>
           }

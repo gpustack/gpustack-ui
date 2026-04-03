@@ -223,6 +223,7 @@ const Playground: React.FC = () => {
           key="view-code-buttons"
         ></ViewCodeButtons>
       }
+      styles={{ containerWrapper: { padding: 0 } }}
       className={classNames('playground-container', {
         compare: activeKey === 'compare',
         chat: activeKey !== 'compare'

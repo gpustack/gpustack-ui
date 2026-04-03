@@ -19,6 +19,9 @@ export interface NameCellProps {
   modelData: any;
   defaultOpenId?: string;
   showWorkerInfo?: boolean;
+  styles?: {
+    label?: React.CSSProperties;
+  };
 }
 
 const calcTotalVram = (vram: Record<string, number>) => {
@@ -110,12 +113,15 @@ const NameCell: React.FC<NameCellProps> = ({
   record,
   modelData,
   defaultOpenId,
-  showWorkerInfo = true
+  showWorkerInfo = true,
+  styles
 }) => {
   return (
     <span className="flex-center instance-name">
       <AutoTooltip title={record.name} ghost>
-        <span className="m-r-5">{record.name}</span>
+        <span className="m-r-5" style={styles?.label}>
+          {record.name}
+        </span>
       </AutoTooltip>
       {!!record.worker_id && showWorkerInfo && (
         <WorkerInfo

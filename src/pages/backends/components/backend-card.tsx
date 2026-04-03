@@ -27,7 +27,7 @@ const StyledCard = styled(Card)`
   &:hover {
     .operations {
       background-color: var(--ant-color-fill-tertiary);
-      border-radius: var(--ant-border-radius);
+      border-radius: var(--ant-border-radius-lg);
     }
   }
 `;
@@ -40,7 +40,7 @@ const TagInner = styled(Tag)<{ height?: number }>`
   font-size: 18px;
   height: ${({ height }) => (height ? `${height}px` : '28px')};
   width: ${({ height }) => (height ? `${height}px` : '28px')};
-  border-radius: 6px;
+  border-radius: var(--ant-border-radius-lg);
   font-weight: 400;
 `;
 

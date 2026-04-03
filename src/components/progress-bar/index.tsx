@@ -41,6 +41,7 @@ const RenderProgress = memo(
             return (
               <span
                 style={{
+                  fontSize: 12,
                   color: 'var(--color-progress-text)'
                 }}
               >

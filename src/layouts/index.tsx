@@ -32,7 +32,6 @@ import Exception from './Exception';
 import './Layout.css';
 import { LogoIcon, SLogoIcon } from './Logo';
 import ErrorBoundary from './error-boundary';
-import { ExtraContent } from './extraRender';
 import { patchRoutes } from './runtime';
 import SiderMenu from './sider-menu';
 
@@ -385,13 +384,6 @@ export default (props: any) => {
         menuContentRender={menuContentRender}
         {...runtimeConfig}
         ErrorBoundary={ErrorBoundary}
-        // @ts-ignore
-        extra={[
-          <ExtraContent
-            key="extra-content"
-            isDarkTheme={userSettings.isDarkTheme}
-          />
-        ]}
       >
         <Exception
           route={matchedRoute}

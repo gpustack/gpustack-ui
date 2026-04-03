@@ -237,7 +237,9 @@ const ResolvedPathColumn = (props: { record: ListItem }) => {
               <TooltipTitle path={record.resolved_paths?.[0]}></TooltipTitle>
             }
           >
-            <span>{getResolvedPath(record.resolved_paths)}</span>
+            <span className="text-primary">
+              {getResolvedPath(record.resolved_paths)}
+            </span>
           </AutoTooltip>
         </TextWrapper>
         <RenderParts record={record}></RenderParts>
@@ -273,7 +275,11 @@ const useFilesColumns = (props: {
           const modelInfo = getModelInfo(record);
           const { source } = modelInfo;
           return (
-            <TextWrapper style={{ paddingRight: 8 }}>
+            <TextWrapper
+              style={{
+                paddingRight: 8
+              }}
+            >
               <AutoTooltip ghost title={source}>
                 {source}
               </AutoTooltip>

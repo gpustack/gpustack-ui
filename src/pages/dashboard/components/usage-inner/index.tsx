@@ -114,7 +114,7 @@ const UsageInner: FC<{ maxWidth: number }> = ({ maxWidth }) => {
         </Col>
         <Col xs={24} sm={24} md={24} lg={24} xl={8} style={{ margin: 0 }}>
           <div
-            style={{ margin: maxWidth < breakpoints.xl ? '26px 0' : '32px 0' }}
+            style={{ margin: maxWidth < breakpoints.xl ? '26px 0' : '29px 0' }}
           >
             <div className={FilterBarCss.usageTitleText}>
               {intl.formatMessage({ id: 'dashboard.topusers' })}

@@ -333,6 +333,7 @@ const ModelRoutes: React.FC = () => {
               ></NoResult>
             }
             pagination={{
+              size: 'middle',
               showSizeChanger: true,
               pageSize: queryParams.perPage,
               current: queryParams.page,

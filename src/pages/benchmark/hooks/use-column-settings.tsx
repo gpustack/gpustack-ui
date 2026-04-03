@@ -358,7 +358,10 @@ const useColumnSettings = (options: {
   const metadataColumns = [
     {
       title: (
-        <Typography.Text ellipsis={{ tooltip: true }}>
+        <Typography.Text
+          ellipsis={{ tooltip: true }}
+          style={{ color: 'var(--color-text-table-header)' }}
+        >
           {intl.formatMessage({ id: 'clusters.title' })}
         </Typography.Text>
       ),
@@ -371,7 +374,10 @@ const useColumnSettings = (options: {
     },
     {
       title: (
-        <Typography.Text ellipsis={{ tooltip: true }}>
+        <Typography.Text
+          ellipsis={{ tooltip: true }}
+          style={{ color: 'var(--color-text-table-header)' }}
+        >
           {intl.formatMessage({ id: 'benchmark.detail.modelName' })}
         </Typography.Text>
       ),
@@ -385,7 +391,10 @@ const useColumnSettings = (options: {
     },
     {
       title: (
-        <Typography.Text ellipsis={{ tooltip: true }}>
+        <Typography.Text
+          ellipsis={{ tooltip: true }}
+          style={{ color: 'var(--color-text-table-header)' }}
+        >
           {intl.formatMessage({ id: 'benchmark.form.profile' })}
         </Typography.Text>
       ),

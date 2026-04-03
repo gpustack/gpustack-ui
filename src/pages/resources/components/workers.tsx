@@ -290,6 +290,7 @@ const Workers = () => {
             onChange={handleTableChange}
             rowSelection={rowSelection}
             pagination={{
+              size: 'middle',
               showSizeChanger: true,
               pageSize: queryParams.perPage,
               current: queryParams.page,

@@ -174,6 +174,7 @@ const MaasProvider: React.FC = () => {
             columns={columns}
             scroll={{ x: 900 }}
             pagination={{
+              size: 'middle',
               showSizeChanger: true,
               pageSize: queryParams.perPage,
               current: queryParams.page,

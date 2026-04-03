@@ -151,6 +151,7 @@ const APIKeys: React.FC = () => {
             rowKey="id"
             onChange={handleTableChange}
             pagination={{
+              size: 'middle',
               showSizeChanger: true,
               pageSize: queryParams.perPage,
               current: queryParams.page,

@@ -89,7 +89,7 @@ const useStyles = createStyles(({ css, token }) => {
       white-space: nowrap;
       height: ${Menu.itemHeight}px;
       line-height: ${Menu.itemHeight}px;
-      color: var(--ant-color-text-secondary);
+      color: var(--ant-color-text-tertiary);
       &:hover {
         background-color: ${Menu.itemHoverBg};
         color: ${Menu.itemHoverColor};

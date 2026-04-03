@@ -26,7 +26,7 @@ const CardWrapper = styled.div.attrs({
   justify-content: flex-start;
   align-items: center;
   border: 1px solid var(--ant-color-border);
-  border-radius: var(--border-radius-base);
+  border-radius: var(--ant-border-radius-lg);
   cursor: default;
   width: 100%;
   &.clickable:hover:not(.disabled) {

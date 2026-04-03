@@ -75,7 +75,10 @@ const RouteItem: React.FC<TargetItemProps> = ({
   return (
     <div style={{ borderRadius: 'var(--ant-table-header-border-radius)' }}>
       <RowChildren>
-        <Row gutter={16} style={{ width: '100%' }}>
+        <Row
+          gutter={16}
+          style={{ width: '100%', color: 'var(--ant-color-text-secondary)' }}
+        >
           <Col span={5}>
             <CellContent
               style={{

@@ -30,7 +30,7 @@ const useStyles = createStyles(({ token, css }) => {
       position: relative;
       padding-left: 32px;
       text-align: left;
-      border-radius: ${token.borderRadius}px;
+      border-radius: ${token.borderRadiusLG}px;
       margin: 0;
       border: 1px solid transparent;
       .ant-typography {

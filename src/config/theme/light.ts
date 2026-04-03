@@ -22,7 +22,7 @@ export default {
       iconSizeSM: 20
     },
     Table: {
-      headerBorderRadius: 4,
+      headerBorderRadius: 6,
       cellPaddingInline: 16,
       cellPaddingBlock: 6,
       cellFontSize: 14,
@@ -58,7 +58,7 @@ export default {
       itemActiveBg: 'rgba(0,0,0,0.04)'
     },
     Progress: {
-      lineBorderRadius: 2
+      lineBorderRadius: 3
     },
     Select: {
       optionSelectedBg: 'rgba(230, 230, 230, 88%)',
@@ -96,11 +96,19 @@ export default {
     fontFamily:
       "Helvetica Neue, -apple-system, BlinkMacSystemFont, Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'",
     colorText: '#1F1F1F',
+    // colorTextSecondary: '#484848',
+    // colorTextTertiary: '#757576',
+    // colorTextQuaternary: '#A6A6A7',
+    colorFillSecondary: '#eaebec',
+    colorFillTertiary: '#f1f2f3',
+    colorFillQuaternary: '#f7f8fa',
     colorPrimary: COLOR_PRIMARY,
     colorSuccess: '#54cc98',
-    colorBorder: '#d3d0d9',
+    colorBorder: '#d3d8de',
+    borderRadiusOuter: 6,
+    borderRadiusLG: 6,
     borderRadius: 4,
-    borderRadiusSM: 2,
+    borderRadiusSM: 3,
     colorBgContainer: '#fff',
     fontSize: 14,
     motion: true

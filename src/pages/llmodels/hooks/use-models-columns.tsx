@@ -28,6 +28,20 @@ interface ActionItem {
   };
 }
 
+const Dot = ({ color }: { color: string }) => {
+  return (
+    <span
+      style={{
+        backgroundColor: color,
+        borderRadius: '50%',
+        height: 8,
+        width: 8,
+        display: 'flex'
+      }}
+    ></span>
+  );
+};
+
 const ActionList: ActionItem[] = [
   {
     label: 'common.button.edit',
@@ -119,6 +133,21 @@ const useModelsColumns = ({
     });
   });
 
+  const getColor = (record: ListItem) => {
+    if (!record.replicas && !record.ready_replicas) {
+      return 'var(--ant-color-fill-secondary)';
+    }
+
+    if (record.replicas > 0 && !record.ready_replicas) {
+      return 'var(--ant-color-warning)';
+    }
+
+    if (record.ready_replicas > 0 && record.replicas > 0) {
+      return 'var(--ant-color-success)';
+    }
+    return 'var(--ant-color-warning)';
+  };
+
   return useMemo(() => {
     return [
       {
@@ -130,7 +159,7 @@ const useModelsColumns = ({
         render: (text: string, record: ListItem) => (
           <span className="flex-center" style={{ maxWidth: '100%' }}>
             <AutoTooltip ghost>
-              <span>{text}</span>
+              <span className="text-primary font-400">{text}</span>
             </AutoTooltip>
             <ModelTag categoryKey={record.categories?.[0] || ''} />
           </span>
@@ -171,9 +200,7 @@ const useModelsColumns = ({
               { api: `${window.location.origin}/${OPENAI_COMPATIBLE}` }
             )}
           >
-            <span style={{ fontWeight: 'var(--font-weight-medium)' }}>
-              {intl.formatMessage({ id: 'models.form.replicas' })}
-            </span>
+            <span>{intl.formatMessage({ id: 'models.form.replicas' })}</span>
             <QuestionCircleOutlined className="m-l-5" />
           </Tooltip>
         ),
@@ -187,7 +214,16 @@ const useModelsColumns = ({
           title: intl.formatMessage({ id: 'models.table.replicas.edit' })
         },
         render: (text: number, record: ListItem) => (
-          <span style={{ minWidth: '23px' }}>
+          <span
+            style={{
+              minWidth: '23px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              color: 'var(--ant-color-text)'
+            }}
+          >
+            <Dot color={getColor(record)}></Dot>
             {record.ready_replicas} / {record.replicas}
           </span>
         )

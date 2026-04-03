@@ -1,4 +1,4 @@
-@HEADER_HEIGHT: 56px;
+@HEADER_HEIGHT: 0px;
 
 .ground-left-wrapper {
   display: flex;
@@ -11,7 +11,7 @@
     position: relative;
     height: calc(
       100vh - @HEADER_HEIGHT - var(--page-content-padding) -
-        var(--page-header-height)
+        var(--page-content-padding) - var(--page-header-height)
     );
     width: calc(100% - 390px);
 

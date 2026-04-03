@@ -38,7 +38,7 @@ const useProviderColumns = (
         render: (text: string, record: MaasProviderItem) => (
           <>
             <AutoTooltip ghost title={text}>
-              {text}
+              <span className="text-primary">{text}</span>
             </AutoTooltip>
             {record.builtin && (
               <Tag color="blue" style={{ marginLeft: 8 }}>

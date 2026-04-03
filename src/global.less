@@ -28,12 +28,11 @@ html {
   --layout-content-inlinepadding: 24px;
   --layout-content-header-inlinepadding: 40px;
   --border-radius-modal: 12px;
-  --menu-border-radius-base: 4px;
+  --menu-border-radius-base: 6px;
+  --border-radius-lg: 6px;
   --border-radius-base: 4px;
-  --border-radius-middle: 20px;
-  --border-radius-small: 4px;
-  --border-radius-mdium: 4px;
-  --border-radius-mini: 4px;
+  --border-radius-small: 3px;
+  --border-radius-mini: 2px;
   --border-radius-2px: 2px;
   --color-white-1: rgba(255, 255, 255, 100%);
   --font-weight-500: 500;
@@ -59,8 +58,8 @@ html {
   --font-size-base: 14px;
   --font-size-large: 16px;
   --font-size-middle: 14px;
-  --table-td-radius: 4px;
-  --checkbox-border-radius: 2px;
+  --table-td-radius: 6px;
+  --checkbox-border-radius: 4px;
   --ant-color-success-bg: #f0fff6;
   --ant-color-success: #54cc98;
   --ant-color-error-bg: #fff2f0;
@@ -82,7 +81,7 @@ html {
   --color-spotlight-bg: rgba(255, 255, 255, 100%);
   // ======== input ============
   --box-shadow-base: 0 4px 6px rgba(227, 232, 240, 70%);
-  --ant-border-radius-lg: 4px;
+  --ant-border-radius-lg: 6px;
   --color-selected-bg: rgba(230, 230, 230, 88%);
   --ant-color-border: #d9d9d9;
   --ant-line-type: solid;
@@ -90,6 +89,7 @@ html {
   --color-esc-hint-bg: rgba(0, 0, 0, 75%);
   // ======== container ============
   --color-border-container: #ededed;
+  --color-text-table-header: #71717a;
 }
 
 html[data-theme='realDark'] {
@@ -107,6 +107,7 @@ html[data-theme='realDark'] {
   --color-spotlight-bg: #3e3e3e;
   --color-esc-hint-bg: rgba(150, 150, 150, 75%);
   --color-border-container: #3a3a3a;
+  --color-text-table-header: rgba(255, 255, 255, 30%);
 
   background: #141414;
 
@@ -126,7 +127,7 @@ html[data-theme='light'] {
     transition: none !important;
   }
 
-  background-color: #f5f5f5;
+  background-color: #f4f5f6;
 }
 
 body {
@@ -160,6 +161,7 @@ body {
   .ant-table-wrapper {
     .ant-table {
       background: transparent !important;
+      color: var(--ant-color-text-secondary);
     }
 
     .ant-table-selection-column {
@@ -197,6 +199,8 @@ body {
           padding-block: 0;
           height: 50px;
           background-color: transparent;
+          color: var(--color-text-table-header);
+          font-weight: 500;
 
           &::before {
             transition: none !important;
@@ -829,4 +833,5 @@ body {
 
 .ant-pro-grid-content {
   padding-right: 8px;
+  padding-block: 8px;
 }

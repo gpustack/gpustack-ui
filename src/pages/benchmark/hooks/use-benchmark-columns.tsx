@@ -38,7 +38,10 @@ const useBenchmarkColumns = (params: {
       ...columns,
       {
         title: (
-          <Typography.Text ellipsis={{ tooltip: true }}>
+          <Typography.Text
+            ellipsis={{ tooltip: true }}
+            style={{ color: 'var(--color-text-table-header)' }}
+          >
             {intl.formatMessage({ id: 'common.table.operation' })}
           </Typography.Text>
         ),

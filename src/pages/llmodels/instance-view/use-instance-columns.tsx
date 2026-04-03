@@ -65,7 +65,7 @@ const WorkerInfoContent: React.FC<NameCellProps> = ({ record, modelData }) => {
   );
 };
 
-const useProviderColumns = (options: {
+const useInstancesColumns = (options: {
   workerList: workerListItem[];
   clusterList: Global.BaseOption<
     number,
@@ -111,6 +111,11 @@ const useProviderColumns = (options: {
               modelData={{
                 backend: record.backend,
                 backend_version: record.backend_version
+              }}
+              styles={{
+                label: {
+                  color: 'var(--ant-color-text)'
+                }
               }}
             ></NameCell>
             <div className="flex-center">
@@ -213,4 +218,4 @@ const useProviderColumns = (options: {
   }, [handleSelect, onCellClick, workerList, clusterList]);
 };
 
-export default useProviderColumns;
+export default useInstancesColumns;

@@ -19,7 +19,7 @@ export default {
       iconSizeSM: 20
     },
     Table: {
-      headerBorderRadius: 4,
+      headerBorderRadius: 6,
       cellPaddingInline: 16,
       cellPaddingBlock: 6,
       cellFontSize: 14,
@@ -57,7 +57,7 @@ export default {
       itemActiveBg: 'rgb(24 25 27)'
     },
     Progress: {
-      lineBorderRadius: 2
+      lineBorderRadius: 4
     },
     Select: {
       optionSelectedBg: '#333',
@@ -97,8 +97,10 @@ export default {
     colorPrimary: COLOR_PRIMARY,
     colorSuccess: '#48A77E',
     colorBorder: '#3a3a3a',
+    borderRadiusOuter: 6,
+    borderRadiusLG: 6,
     borderRadius: 4,
-    borderRadiusSM: 2,
+    borderRadiusSM: 3,
     fontSize: 14,
     motion: true,
     colorFill: '#0A0A0A',

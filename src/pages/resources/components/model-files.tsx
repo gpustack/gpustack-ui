@@ -337,7 +337,8 @@ const ModelFiles = () => {
               current: queryParams.page,
               total: dataSource.total,
               hideOnSinglePage: queryParams.perPage === 10,
-              onChange: handlePageChange
+              onChange: handlePageChange,
+              size: 'middle'
             }}
           ></Table>
         </ConfigProvider>

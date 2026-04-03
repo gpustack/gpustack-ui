@@ -1,9 +1,8 @@
-import BaseSelect from '@/components/seal-form/base/select';
 import { SearchOutlined, SyncOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Input, Space } from 'antd';
 import React from 'react';
-import { modelCategories } from '../config';
+import Filters from '../filters';
 import useFilterStatus from '../hooks/use-filter-status';
 
 interface LeftFiltersProps {
@@ -12,6 +11,7 @@ interface LeftFiltersProps {
   handleStatusChange: (value: string) => void;
   handleSearch: () => void;
   handleCategoryChange: (value: string) => void;
+  onFilterChange: (allValues: any) => void;
   clusterList: Global.BaseOption<number>[];
 }
 
@@ -22,6 +22,7 @@ const LeftFilters: React.FC<LeftFiltersProps> = (props) => {
     handleStatusChange,
     handleSearch,
     handleCategoryChange,
+    onFilterChange,
     clusterList
   } = props;
   const { labelRender, optionRender, statusOptions } = useFilterStatus();
@@ -36,12 +37,19 @@ const LeftFilters: React.FC<LeftFiltersProps> = (props) => {
           ></SearchOutlined>
         }
         placeholder={intl.formatMessage({ id: 'common.filter.name' })}
-        style={{ width: 200 }}
+        style={{ width: 400 }}
         size="large"
         allowClear
+        suffix={
+          <Filters
+            clusterList={clusterList}
+            onValuesChange={onFilterChange}
+          ></Filters>
+        }
         onChange={handleNameChange}
       ></Input>
-      <BaseSelect
+
+      {/* <BaseSelect
         allowClear
         showSearch={false}
         placeholder={intl.formatMessage({
@@ -76,7 +84,7 @@ const LeftFilters: React.FC<LeftFiltersProps> = (props) => {
         labelRender={labelRender}
         options={statusOptions}
         onChange={handleStatusChange}
-      ></BaseSelect>
+      ></BaseSelect> */}
       <Button
         type="text"
         style={{ color: 'var(--ant-color-text-tertiary)' }}

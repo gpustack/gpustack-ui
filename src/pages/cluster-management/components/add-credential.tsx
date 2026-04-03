@@ -6,24 +6,12 @@ import FormDrawer from '@/pages/_components/form-drawer';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import React, { useEffect } from 'react';
-import styled from 'styled-components';
 import { ProviderType, ProviderValueMap } from '../config';
 import {
   CredentialFormData as FormData,
   CredentialListItem as ListItem
 } from '../config/types';
 
-const ExtraContent = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  position: absolute;
-  bottom: 6px;
-  right: 32px;
-  z-index: 1;
-  background: var(--ant-color-bg-container);
-  padding-inline: 8px;
-`;
 type AddModalProps = {
   title: string;
   action: PageActionType;

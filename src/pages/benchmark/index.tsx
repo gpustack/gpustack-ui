@@ -255,6 +255,7 @@ const Benchmark: React.FC = () => {
             scroll={{ x: 1200 }}
             onChange={handleTableChange}
             pagination={{
+              size: 'middle',
               showSizeChanger: true,
               pageSize: queryParams.perPage,
               current: queryParams.page,

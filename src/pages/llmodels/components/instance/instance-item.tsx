@@ -31,7 +31,10 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
   return (
     <div style={{ borderRadius: 'var(--ant-table-header-border-radius)' }}>
       <RowChildren>
-        <Row style={{ width: '100%' }} align="middle">
+        <Row
+          style={{ width: '100%', color: 'var(--ant-color-text-secondary)' }}
+          align="middle"
+        >
           <Col
             span={6}
             style={{

@@ -36,11 +36,12 @@ const Title = styled.div`
 `;
 
 const LabelWrapper = styled.span`
-  color: var(--color-text-secondary);
+  color: var(--ant-color-text-secondary);
   > span {
     display: flex;
     align-items: center;
     gap: 4px;
+    color: var(--ant-color-text-secondary);
     .sub-title {
       display: none;
     }

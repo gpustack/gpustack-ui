@@ -26,13 +26,15 @@ const useFilterStatus = (options?: {
     {
       value: MyModelsStatusValueMap.Active,
       color: 'var(--ant-color-success)',
+      icon: <Dot color="var(--ant-color-success)"></Dot>,
       label: intl.formatMessage({
         id: 'models.mymodels.status.active'
       })
     },
     {
       value: MyModelsStatusValueMap.Inactive,
-      color: 'var(--ant-color-fill)',
+      color: 'var(--ant-color-fill-secondary)',
+      icon: <Dot color="var(--ant-color-fill-secondary)"></Dot>,
       label: intl.formatMessage({
         id: 'models.mymodels.status.inactive'
       })
@@ -40,6 +42,7 @@ const useFilterStatus = (options?: {
     {
       value: MyModelsStatusValueMap.Degrade,
       color: 'var(--ant-color-warning)',
+      icon: <Dot color="var(--ant-color-warning)"></Dot>,
       label: intl.formatMessage({
         id: 'models.mymodels.status.degrade'
       })

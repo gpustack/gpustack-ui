@@ -1,0 +1,31 @@
+.pill-item {
+  height: 28px;
+  line-height: 28px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+  border-radius: var(--ant-border-radius);
+  background-color: var(--ant-color-fill-tertiary);
+  color: var(--ant-color-text-secondary);
+  padding: 0 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+
+  &.active {
+    background-color: var(--ant-color-fill);
+    color: var(--ant-color-text);
+    font-weight: 500;
+  }
+
+  &:not(.active):hover {
+    background-color: var(--ant-color-fill-secondary);
+  }
+}
+
+.wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  align-items: center;
+}

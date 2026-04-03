@@ -14,6 +14,7 @@ const CellWrapper = styled.div`
   word-break: break-word;
   min-width: 20px;
   overflow: hidden;
+  color: var(--ant-color-text-secondary);
 
   &.left {
     justify-content: flex-start;

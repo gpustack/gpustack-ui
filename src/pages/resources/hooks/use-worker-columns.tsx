@@ -251,7 +251,7 @@ const useWorkerColumns = ({
 
   const renderIP = (text: string, record: ListItem) => {
     if (record.advertise_address === record.ip) {
-      return record.ip;
+      return <span className="text-primary">{record.ip}</span>;
     }
 
     if (
@@ -262,15 +262,19 @@ const useWorkerColumns = ({
       return (
         <span className={workerCss.ipWrapper}>
           <span className="item">
-            <span>{record.ip}</span>
+            <span className="text-primary">{record.ip}</span>
             <span className="label">{`(${intl.formatMessage({ id: 'clusters.table.ip.internal' })})`}</span>
-            <span> {record.advertise_address}</span>
+            <span className="text-primary">{record.advertise_address}</span>
             <span className="label">{`(${intl.formatMessage({ id: 'clusters.table.ip.external' })})`}</span>
           </span>
         </span>
       );
     }
-    return record.ip || record.advertise_address || '';
+    return (
+      <span className="text-primary">
+        {record.ip || record.advertise_address || ''}
+      </span>
+    );
   };
 
   const setActions = (row: ListItem) => {

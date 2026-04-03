@@ -107,6 +107,7 @@ const WorkerDetailContent: React.FC<{ worker_id: number | undefined }> = ({
           rowKey="id"
           onChange={handleTableChange}
           pagination={{
+            size: 'middle',
             showSizeChanger: true,
             pageSize: queryParams.perPage,
             current: queryParams.page,

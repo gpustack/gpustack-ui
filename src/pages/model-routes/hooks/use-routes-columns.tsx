@@ -35,7 +35,7 @@ const useAccessColumns = (
         render: (text: string, record: RouteItem) => (
           <span className="flex-center" style={{ maxWidth: '100%' }}>
             <AutoTooltip ghost title={text}>
-              <span className="m-r-5">{text}</span>
+              <span className="m-r-5 text-primary">{text}</span>
             </AutoTooltip>
             <ModelTag categoryKey={record.categories?.[0]}></ModelTag>
           </span>

@@ -1,9 +1,11 @@
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
+import { ExtraContent } from '@/layouts/extraRender';
 import {
   PageContainer,
   RouteContext,
   type PageContainerProps
 } from '@ant-design/pro-components';
+import { Divider } from 'antd';
 import classNames from 'classnames';
 import { useContext, useEffect, useRef } from 'react';
 import pageBoxCss from './styles/page-box.less';
@@ -38,6 +40,7 @@ export const PageContainerInner: React.FC<
         {...rest}
         fixedHeader={false}
         title={false}
+        pageHeaderRender={false}
         style={{
           flex: 1
         }}
@@ -49,9 +52,15 @@ export const PageContainerInner: React.FC<
           <div className={pageBoxCss.left}>
             {leftContent || pageContext.title}
           </div>
-          {rightContent && (
-            <div className={pageBoxCss.right}>{rightContent}</div>
-          )}
+          <div className={pageBoxCss.right}>
+            {rightContent && (
+              <div>
+                {rightContent}
+                <Divider orientation="vertical" style={{ margin: '0 16px' }} />
+              </div>
+            )}
+            <ExtraContent />
+          </div>
         </div>
         <div
           className={classNames(pageBoxCss.contentWrapper)}

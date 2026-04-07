@@ -81,14 +81,6 @@ const FilterFormContent: React.FC<FilterFormContentProps> = ({
           })}
         >
           <PillButtonGroup
-            allowClear
-            showSearch={false}
-            placeholder={intl.formatMessage({
-              id: 'models.filter.category'
-            })}
-            size="large"
-            maxTagCount={1}
-            variant="filled"
             options={modelCategories.filter((item) => item.value)}
           ></PillButtonGroup>
         </Form.Item>
@@ -105,18 +97,7 @@ const FilterFormContent: React.FC<FilterFormContentProps> = ({
             id: 'common.filter.status'
           })}
         >
-          <PillButtonGroup
-            allowClear
-            showSearch={false}
-            placeholder={intl.formatMessage({
-              id: 'common.filter.status'
-            })}
-            size="large"
-            maxTagCount={1}
-            optionRender={optionRender}
-            labelRender={labelRender}
-            options={statusOptions}
-          ></PillButtonGroup>
+          <PillButtonGroup options={statusOptions}></PillButtonGroup>
         </Form.Item>
       </Content>
     </FilterForm>

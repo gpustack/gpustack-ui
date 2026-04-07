@@ -4,13 +4,13 @@ import pillButtonCss from './styles.less';
 
 type Option = {
   label: string;
-  value: string | number;
+  value: string | number | null;
   icon?: React.ReactNode;
 };
 
 type Props = {
   value?: string | number;
-  onChange?: (value: string | number | undefined) => void;
+  onChange?: (value: string | number | undefined | null) => void;
   options: Option[];
   disabled?: boolean;
   variant?: 'filled' | 'outlined' | 'solid';

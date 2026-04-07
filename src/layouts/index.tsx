@@ -356,6 +356,7 @@ export default (props: any) => {
       <ProLayout
         fixSiderbar
         fixedHeader={false}
+        headerRender={false}
         breadcrumbRender={false}
         route={route}
         location={location}

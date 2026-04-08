@@ -1,0 +1,47 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+
+  .count {
+    display: flex;
+    width: 16px;
+    height: 16px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 500;
+    background-color: var(--ant-color-bg-text-active);
+    color: var(--ant-color-text-secondary);
+  }
+}
+
+.buttonWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+
+  .close-btn {
+    border-radius: 50%;
+    color: var(--ant-color-text-quaternary);
+    display: none;
+    font-size: 16px;
+
+    &:hover {
+      color: var(--ant-color-text-tertiary);
+    }
+  }
+
+  &:hover {
+    .count {
+      display: none;
+    }
+
+    .close-btn {
+      display: block;
+    }
+  }
+}

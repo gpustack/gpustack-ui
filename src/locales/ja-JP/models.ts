@@ -281,7 +281,8 @@ export default {
     'Not enabled yet. Will be enabled after deployment. ',
   'models.table.instance.benchmark': 'Run Benchmark',
   'models.table.modelView': 'Model List',
-  'models.table.instanceView': 'Instance List'
+  'models.table.instanceView': 'Instance List',
+  'models.table.category': 'Category'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -383,5 +384,6 @@ export default {
 // 77. 'models.form.enableModelRoute': 'Enable Model Route',
 // 78.  'models.form.enableModelRoute.tips': 'Enable Model Route',
 // 79.  'models.table.modelView': 'Model View',
-// 80.  'models.table.instanceView': 'Instance View'
+// 80.  'models.table.instanceView': 'Instance View',
+// 81. 'models.table.category': 'Category'
 // ========== End of To-Do List ==========

@@ -285,7 +285,8 @@ export default {
     'Not enabled yet. Will be enabled after deployment. ',
   'models.table.instance.benchmark': 'Run Benchmark',
   'models.table.modelView': 'Model List',
-  'models.table.instanceView': 'Instance List'
+  'models.table.instanceView': 'Instance List',
+  'models.table.category': 'Category'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -297,5 +298,6 @@ export default {
 // 4. 'models.form.backend.vllm': 'Built-in support for NVIDIA, AMD, Ascend, Hygon, Moore Threads, Iluvatar, MetaX, T-Head PPU devices.',
 // 5.  'models.form.backend.sglang': 'Built-in support for NVIDIA, AMD, Ascend, Moore Threads, MetaX, T-Head PPU devices.',
 // 6.  'models.table.modelView': 'Model List',
-// 7.  'models.table.instanceView': 'Instance List'
+// 7.  'models.table.instanceView': 'Instance List',
+// 8. 'models.table.category': 'Category'
 // ========== End of To-Do List ==========

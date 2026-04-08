@@ -281,5 +281,6 @@ export default {
     'Not enabled yet. Will be enabled after deployment. ',
   'models.table.instance.benchmark': 'Run Benchmark',
   'models.table.modelView': 'Model List',
-  'models.table.instanceView': 'Instance List'
+  'models.table.instanceView': 'Instance List',
+  'models.table.category': 'Category'
 };

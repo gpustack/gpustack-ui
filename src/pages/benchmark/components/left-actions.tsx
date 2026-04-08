@@ -1,11 +1,10 @@
-import BaseSelect from '@/components/seal-form/base/select';
+import { FiltersButton } from '@/components/page-tools';
 import { modelCategoriesMap } from '@/pages/llmodels/config';
 import { SearchOutlined, SyncOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Input, Space } from 'antd';
 import _ from 'lodash';
 import React from 'react';
-import { profileOptions } from '../config';
 
 export interface RightActionsProps {
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -13,12 +12,18 @@ export interface RightActionsProps {
   handleQueryChange: (value: any, option?: any) => void;
   modelList?: Global.BaseOption<number, { categories: string[] }>[];
   datasetList?: Global.BaseOption<string | number>[];
+  toggleFilters: () => void;
+  count?: number;
+  onClear: () => void;
 }
 
 const RightActions: React.FC<RightActionsProps> = ({
   handleInputChange,
   handleSearch,
   handleQueryChange,
+  toggleFilters,
+  count,
+  onClear,
   modelList,
   datasetList
 }) => {
@@ -44,6 +49,11 @@ const RightActions: React.FC<RightActionsProps> = ({
 
   return (
     <Space>
+      <FiltersButton
+        onClick={toggleFilters}
+        count={count}
+        onClear={onClear}
+      ></FiltersButton>
       <Input
         prefix={
           <SearchOutlined
@@ -53,11 +63,11 @@ const RightActions: React.FC<RightActionsProps> = ({
         placeholder={intl.formatMessage({
           id: 'common.filter.name'
         })}
-        style={{ width: 200 }}
+        style={{ width: 300 }}
         allowClear
         onChange={handleInputChange}
       ></Input>
-      <Input
+      {/* <Input
         prefix={
           <SearchOutlined
             style={{ color: 'var(--ant-color-text-placeholder)' }}
@@ -107,7 +117,7 @@ const RightActions: React.FC<RightActionsProps> = ({
             page: 1
           })
         }
-      ></BaseSelect>
+      ></BaseSelect> */}
       <Button
         type="text"
         style={{ color: 'var(--ant-color-text-tertiary)' }}

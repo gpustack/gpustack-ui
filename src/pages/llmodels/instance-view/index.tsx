@@ -126,7 +126,7 @@ const InstanceView = forwardRef((props, ref) => {
   });
 
   return (
-    <>
+    <div style={{ padding: 24 }}>
       <PageBox>
         <FilterBar
           showSelect={false}
@@ -186,7 +186,7 @@ const InstanceView = forwardRef((props, ref) => {
         onCancel={closeViewLogsModal}
       ></ViewLogsModal>
       <DeleteModal ref={modalRef}></DeleteModal>
-    </>
+    </div>
   );
 });
 

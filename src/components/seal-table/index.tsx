@@ -10,6 +10,7 @@ import { SealColumnProps, SealTableProps } from './types';
 import useSorter from './use-sorter';
 
 const Wrapper = styled.div<{ $token: any }>`
+  width: 100%;
   --ant-table-cell-padding-inline: ${(props) =>
     props.$token.cellPaddingInline}px;
   --ant-table-cell-padding-block: ${(props) => props.$token.cellPaddingBlock}px;

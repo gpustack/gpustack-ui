@@ -11,7 +11,7 @@ export type { OverlayScrollerOptions };
 
 export const OverlayScroller: React.FC<
   OverlayScrollerOptions & {
-    maxHeight?: number;
+    maxHeight?: number | string;
     style?: React.CSSProperties;
     styles?: {
       wrapper?: React.CSSProperties;

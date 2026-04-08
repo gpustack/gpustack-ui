@@ -74,8 +74,11 @@ export const PageContainerInner: React.FC<
   );
 };
 
-const PageBox: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  return <div>{children}</div>;
+const PageBox: React.FC<{
+  children: React.ReactNode;
+  style?: React.CSSProperties;
+}> = ({ children, style }) => {
+  return <div style={style}>{children}</div>;
 };
 
 export default PageBox;

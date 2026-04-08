@@ -1,5 +1,6 @@
 import DropDownActions from '@/components/drop-down-actions';
 import {
+  CloseCircleFilled,
   DeleteOutlined,
   DownOutlined,
   PlusOutlined,
@@ -9,7 +10,9 @@ import {
 import { useIntl } from '@umijs/max';
 import { Button, Input, Space } from 'antd';
 import React, { useMemo } from 'react';
+import IconFont from '../icon-font';
 import BaseSelect from '../seal-form/base/select';
+import filtersButtonCss from './filters-button.less';
 import './index.less';
 
 type PageToolsProps = {
@@ -18,6 +21,49 @@ type PageToolsProps = {
   marginBottom?: number;
   marginTop?: number;
   style?: React.CSSProperties;
+};
+
+export const FiltersButton = ({
+  onClick,
+  onClear,
+  count
+}: {
+  onClick: () => void;
+  onClear: () => void;
+  count?: number;
+}) => {
+  const handleClear = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onClear();
+  };
+  const intl = useIntl();
+
+  return (
+    <div className={filtersButtonCss.buttonWrapper}>
+      <Button
+        onClick={onClick}
+        style={{
+          color: 'var(--ant-color-text-tertiary)'
+        }}
+        icon={
+          <IconFont type="icon-filter-list" style={{ fontSize: 14 }}></IconFont>
+        }
+      >
+        <span className={filtersButtonCss.wrapper}>
+          <span>{intl.formatMessage({ id: 'common.filter.label' })}</span>
+          {!!count && <span className={filtersButtonCss.count}>{count}</span>}
+          {!!count && (
+            <span
+              className={filtersButtonCss['close-btn']}
+              onClick={handleClear}
+            >
+              <CloseCircleFilled />
+            </span>
+          )}
+        </span>
+      </Button>
+    </div>
+  );
 };
 
 const PageTools: React.FC<PageToolsProps> = (props) => {
@@ -77,6 +123,12 @@ interface FilterBarProps {
   showDeleteButton?: boolean;
   right?: React.ReactNode;
   left?: React.ReactNode;
+  filtersButtonProps?: {
+    show: boolean;
+    count: number;
+    onClick: () => void;
+    onClear: () => void;
+  };
   widths?: {
     input?: number;
     select?: number;
@@ -103,13 +155,21 @@ export const FilterBar: React.FC<FilterBarProps> = (props) => {
     selectHolder,
     right,
     left,
-    widths
+    widths,
+    filtersButtonProps
   } = props;
   const intl = useIntl();
 
   const renderLeft = () => {
     return (
       <Space>
+        {filtersButtonProps?.show && (
+          <FiltersButton
+            onClear={filtersButtonProps.onClear}
+            onClick={filtersButtonProps.onClick}
+            count={filtersButtonProps.count}
+          ></FiltersButton>
+        )}
         <Input
           prefix={
             <SearchOutlined

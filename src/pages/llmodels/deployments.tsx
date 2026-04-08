@@ -87,6 +87,8 @@ const Models = forwardRef((props, ref) => {
     setDataList: setModelInstances
   });
 
+  const [filterValues, setFilterValues] = useState<any>({});
+
   const getAllModelInstances = useMemoizedFn(async () => {
     try {
       instancesToken.current?.cancel?.();
@@ -368,6 +370,8 @@ const Models = forwardRef((props, ref) => {
       search: queryParams.search,
       ...filters
     });
+
+    setFilterValues(filters);
   };
 
   const handleDeleteInstanceFromCache = (id: number) => {
@@ -464,6 +468,7 @@ const Models = forwardRef((props, ref) => {
         loadend={dataSource.loadend}
         total={dataSource.total}
         deleteIds={dataSource.deletedIds}
+        filterValues={filterValues}
       ></TableList>
     </TableContext.Provider>
   );

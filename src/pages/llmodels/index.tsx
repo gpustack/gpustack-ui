@@ -105,7 +105,14 @@ const LLModels: React.FC = () => {
   }, [activeKey]);
 
   return (
-    <PageContainerInner leftContent={title}>
+    <PageContainerInner
+      leftContent={title}
+      styles={{
+        containerWrapper: {
+          padding: 0
+        }
+      }}
+    >
       <DeploymentsContext.Provider
         value={{
           generateFormValues,

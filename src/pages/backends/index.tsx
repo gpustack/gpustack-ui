@@ -233,7 +233,7 @@ const BackendList = () => {
         marginBottom={22}
         marginTop={30}
         widths={{
-          input: 300
+          input: 230
         }}
         actionItems={addActions}
         actionType="dropdown"

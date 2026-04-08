@@ -7,10 +7,10 @@ import useTableFetch from '@/hooks/use-table-fetch';
 import { useBenchmarkTargetInstance } from '@/pages/llmodels/hooks/use-run-benchmark';
 import { useQueryModelList } from '@/pages/llmodels/services/use-query-model-list';
 import { useIntl, useNavigate } from '@umijs/max';
-import { useMemoizedFn } from 'ahooks';
+import { useMemoizedFn, useToggle } from 'ahooks';
 import { ConfigProvider, Table, message } from 'antd';
 import _ from 'lodash';
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import NoResult from '../_components/no-result';
 import PageBox from '../_components/page-box';
 import { useQueryClusterList } from '../cluster-management/services/use-query-cluster-list';
@@ -26,6 +26,7 @@ import LeftActions from './components/left-actions';
 import RightActions from './components/right-actions';
 import ViewLogsModal from './components/view-logs-modal';
 import { FormData, BenchmarkListItem as ListItem } from './config/types';
+import Filters from './filters';
 import useBenchmarkColumns from './hooks/use-benchmark-columns';
 import useColumnSettings from './hooks/use-column-settings';
 import useCreateBenchmark from './hooks/use-create-benchmark';
@@ -86,6 +87,9 @@ const Benchmark: React.FC = () => {
     clusterList,
     profileOptions: profilesOptions
   });
+  const [filtersVisible, { toggle: toggleFilters }] = useToggle();
+  const filterRef = useRef<any>(null);
+  const [filterValues, setFilterValues] = useState<any>({});
 
   useEffect(() => {
     fetchModelList({ page: -1 });
@@ -205,9 +209,38 @@ const Benchmark: React.FC = () => {
     exportData(rowSelection.selectedRowKeys);
   };
 
+  const handleOnFilterChange = (filters: any) => {
+    handleQueryChange({
+      page: 1,
+      ...filters
+    });
+
+    setFilterValues(filters);
+  };
+
+  const handleOnClearFilters = () => {
+    filterRef.current?.reset();
+  };
+
+  const filtersCount = Object.values(filterValues).filter(
+    (value) => value !== undefined && value !== null && value !== ''
+  );
+
   return (
-    <>
-      <PageBox>
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'flex-start'
+      }}
+    >
+      <Filters
+        ref={filterRef}
+        open={filtersVisible}
+        onValuesChange={handleOnFilterChange}
+        onClose={toggleFilters}
+        onClear={handleOnClearFilters}
+      ></Filters>
+      <PageBox style={{ flex: 1 }}>
         <FilterBar
           showSelect={false}
           marginBottom={22}
@@ -223,6 +256,9 @@ const Benchmark: React.FC = () => {
               handleSearch={handleSearch}
               handleQueryChange={handleQueryChange}
               handleInputChange={handleNameChange}
+              count={filtersCount.length}
+              toggleFilters={toggleFilters}
+              onClear={handleOnClearFilters}
             ></LeftActions>
           }
           right={
@@ -284,7 +320,7 @@ const Benchmark: React.FC = () => {
         onCancel={closeViewLogsModal}
       ></ViewLogsModal>
       <DeleteModal ref={modalRef}></DeleteModal>
-    </>
+    </div>
   );
 };
 

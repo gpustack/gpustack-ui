@@ -281,10 +281,12 @@ export default {
     'Henüz etkinleştirilmedi. Dağıtımdan sonra etkinleştirilecektir. ',
   'models.table.instance.benchmark': 'Kıyaslama Çalıştır',
   'models.table.modelView': 'Model List',
-  'models.table.instanceView': 'Instance List'
+  'models.table.instanceView': 'Instance List',
+  'models.table.category': 'Category'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
 // 1. 'models.table.modelView': 'Model List',
 // 2. 'models.table.instanceView': 'Instance List',
+// 3. 'models.table.category': 'Category'
 // ========== End of To-Do List ==========

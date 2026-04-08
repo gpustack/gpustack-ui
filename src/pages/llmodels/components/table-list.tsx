@@ -12,7 +12,6 @@ import useBodyScroll from '@/hooks/use-body-scroll';
 import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useWatchList from '@/hooks/use-watch-list';
-import PageBox from '@/pages/_components/page-box';
 import useNoResourceResult from '@/pages/llmodels/hooks/use-no-resource-result';
 import { MODEL_ROUTE_TARGETS } from '@/pages/model-routes/apis';
 import { TargetStatusValueMap } from '@/pages/model-routes/config';
@@ -21,7 +20,7 @@ import useGranfanaLink from '@/pages/resources/hooks/use-grafana-link';
 import { handleBatchRequest } from '@/utils';
 import { DownOutlined } from '@ant-design/icons';
 import { useIntl, useNavigate, useSearchParams } from '@umijs/max';
-import { useMemoizedFn } from 'ahooks';
+import { useMemoizedFn, useToggle } from 'ahooks';
 import { Button, Space, message } from 'antd';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
@@ -53,6 +52,7 @@ import {
   ModelInstanceListItem,
   SourceType
 } from '../config/types';
+import Filters from '../filters';
 import useEditDeployment from '../hooks/use-edit-deployment';
 import useModelsColumns from '../hooks/use-models-columns';
 import useViewInstanceLogs from '../hooks/use-view-instance-logs';
@@ -77,7 +77,7 @@ interface ModelsProps {
   onTableSort?: (order: TableOrder | Array<TableOrder>) => void;
   onStatusChange: (value?: any) => void;
   onDeleteInstanceFromCache?: (instanceId: number) => void;
-  onFilterChange?: (filters: any) => void;
+  onFilterChange: (filters: any) => void;
   sortOrder: string[];
   queryParams: {
     page: number;
@@ -90,6 +90,7 @@ interface ModelsProps {
   loading: boolean;
   loadend: boolean;
   total: number;
+  filterValues?: Record<string, any>;
 }
 
 const getFormattedData = (record: any, extraData = {}) => ({
@@ -128,7 +129,8 @@ const Models: React.FC<ModelsProps> = ({
   queryParams,
   loading,
   loadend,
-  total
+  total,
+  filterValues = {}
 }) => {
   const { generateFormValues, clusterList, workerList } =
     useDeploymentsContext();
@@ -177,6 +179,8 @@ const Models: React.FC<ModelsProps> = ({
     source: modelSourceMap.huggingface_value as SourceType
   });
   const modalRef = useRef<any>(null);
+  const [filtersVisible, { toggle: toggleFilters }] = useToggle();
+  const filterRef = useRef<any>(null);
 
   useEffect(() => {
     if (deleteIds?.length) {
@@ -540,6 +544,14 @@ const Models: React.FC<ModelsProps> = ({
     }
   });
 
+  const handleOnClearFilters = () => {
+    filterRef.current?.reset();
+  };
+
+  const filtersCount = Object.values(filterValues).filter(
+    (value) => value !== undefined && value !== null && value !== ''
+  );
+
   useEffect(() => {
     if (modelsSession.source && loadend) {
       handleClickDropdown({
@@ -552,13 +564,29 @@ const Models: React.FC<ModelsProps> = ({
   }, [loadend]);
 
   return (
-    <>
-      <PageBox>
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'flex-start'
+      }}
+    >
+      <Filters
+        ref={filterRef}
+        open={filtersVisible}
+        onValuesChange={onFilterChange}
+        clusterList={clusterList}
+        onClose={toggleFilters}
+        onClear={handleOnClearFilters}
+      ></Filters>
+      <div style={{ flex: 1, padding: '24px' }}>
         <PageTools
           marginBottom={22}
           marginTop={0}
           left={
             <LeftFilters
+              count={filtersCount.length}
+              toggleFilters={toggleFilters}
+              onClear={handleOnClearFilters}
               handleNameChange={handleNameChange}
               handleClusterChange={handleClusterChange}
               handleCategoryChange={handleCategoryChange}
@@ -603,7 +631,6 @@ const Models: React.FC<ModelsProps> = ({
             </Space>
           }
         ></PageTools>
-
         <SealTable
           columns={columns}
           sortDirections={TABLE_SORT_DIRECTIONS}
@@ -636,7 +663,7 @@ const Models: React.FC<ModelsProps> = ({
             onChange: handlePageChange
           }}
         ></SealTable>
-      </PageBox>
+      </div>
       <UpdateModelModal
         open={openEditModalStatus.open}
         action={openEditModalStatus.action}
@@ -668,7 +695,7 @@ const Models: React.FC<ModelsProps> = ({
         onCancel={handleLogModalCancel}
       ></ViewLogsModal>
       <DeleteModal ref={modalRef}></DeleteModal>
-    </>
+    </div>
   );
 };
 

@@ -52,7 +52,7 @@ export const generateImageCode = ({
   });
 
   // ========================= Python =========================
-  const pythonCode = `
+  let pythonCode = `
 import requests\n
 url="${host}${api}"
 headers = {
@@ -62,6 +62,25 @@ headers = {
 data = ${JSON.stringify(parameters, null, 2).replace(/null/g, 'None')}\n
 response = requests.post(url, headers=headers, json=data)
 print(response.json()['data'][0]['b64_json'])`.trim();
+
+  if (edit) {
+    const files = {
+      image: `open(image.png, 'rb')`,
+      mask: `open(mask.png, 'rb')`
+    };
+
+    pythonCode = `
+import requests\n
+url="${host}${api}"
+headers = {
+  "Content-type": "multipart/form-data",
+  "Authorization": "Bearer $\{YOUR_GPUSTACK_API_KEY}"
+}
+data = ${JSON.stringify(_.omit(parameters, ['mask', 'image']), null, 2).replace(/null/g, 'None')}
+files = ${JSON.stringify(files, null, 2).replace(/null/g, 'None')}\n
+response = requests.post(url, headers=headers, json=data, files=files)
+print(response.json()['data'][0]['b64_json'])`.trim();
+  }
 
   // ========================= Node.js =========================
   const nodeJsCode = `

@@ -96,6 +96,12 @@ const AddModal: React.FC<AddModalProps> = ({
       expires_in: getExpireValue(data.expires_in)
     };
     const res = await createApisKey({ data: params });
+
+    // if custom value
+    if (data.custom) {
+      return onOk();
+    }
+
     setAPIKeyValue(res.value);
     setShowKey(true);
   };
@@ -107,6 +113,7 @@ const AddModal: React.FC<AddModalProps> = ({
 
   const handleOnOk = async (formdata: FormData) => {
     try {
+      console.log('formdata=========', formdata);
       setLoading(true);
       const data = {
         ..._.omit(formdata, ['allowed_type']),
@@ -261,6 +268,9 @@ const AddModal: React.FC<AddModalProps> = ({
           form={form}
           onFinish={handleOnOk}
           preserve={false}
+          initialValues={{
+            scope: ['*']
+          }}
         >
           {!showKey && (
             <APIKeyForm

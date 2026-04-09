@@ -1,3 +1,4 @@
+import Password from '@/components/seal-form/password';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import { PageAction } from '@/config';
@@ -5,7 +6,7 @@ import { PageActionType } from '@/config/types';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import React from 'react';
-import { expirationOptions } from '../../config';
+import { accessScopeOptions, expirationOptions } from '../../config';
 import { FormData, ListItem } from '../../config/types';
 import AllowModelsForm from './allow-models';
 
@@ -15,6 +16,17 @@ const APIKeyForm: React.FC<{
   onValuesChange?: (changedValues: any, allValues: any) => void;
 }> = ({ action, currentData, onValuesChange }) => {
   const intl = useIntl();
+
+  const optionRender = (option: any) => {
+    return (
+      <span className="flex-center gap-4">
+        {option.label}
+        {option.data.description && (
+          <span className="text-tertiary">[{option.data.description}]</span>
+        )}
+      </span>
+    );
+  };
 
   return (
     <>
@@ -38,6 +50,28 @@ const APIKeyForm: React.FC<{
           label={intl.formatMessage({ id: 'common.table.name' })}
           required
         ></SealInput.Input>
+      </Form.Item>
+      {action === PageAction.CREATE && (
+        <Form.Item<FormData> name="custom">
+          <Password
+            trim
+            autoComplete="new-password"
+            label={intl.formatMessage({ id: 'playground.params.custom' })}
+          ></Password>
+        </Form.Item>
+      )}
+      <Form.Item<FormData>
+        name="scope"
+        normalize={(value) => (value ? [value] : [])}
+        getValueProps={(value) => ({
+          value: Array.isArray(value) ? value[0] : value
+        })}
+      >
+        <SealSelect
+          optionRender={optionRender}
+          options={accessScopeOptions}
+          label={intl.formatMessage({ id: 'models.table.accessScope' })}
+        ></SealSelect>
       </Form.Item>
       <Form.Item<FormData>
         name="expires_in"

@@ -323,6 +323,20 @@ const useWorkerColumns = ({
                   )}
                 </Tag>
               </AutoTooltip>
+              <Tooltip
+                title={
+                  <span>
+                    {intl.formatMessage({
+                      id: 'benchmark.env.driverVersion'
+                    })}
+                    : {_.get(record, 'status.gpu_devices[0].driver_version')}
+                  </span>
+                }
+              >
+                <Tag className="version-tag" variant="outlined">
+                  {_.get(record, 'status.gpu_devices[0].driver_version', '')}
+                </Tag>
+              </Tooltip>
             </div>
           </div>
         )

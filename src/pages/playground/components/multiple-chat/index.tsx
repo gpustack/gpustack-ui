@@ -39,7 +39,7 @@ const MultiCompare: React.FC<MultiCompareProps> = ({ modelList, loaded }) => {
   const modelsCounterMap = useRef<Record<string, number>>({});
   const modelRefs = useRef<any>({});
   const chatListScrollRef = useRef<any>(null);
-  const boxHeight = `calc(100vh - ${HEADER_HEIGHT}px)`;
+  const boxHeight = `calc(100vh - ${HEADER_HEIGHT}px - 2px - var(--page-header-height) - var(--page-content-padding) - var(--page-content-padding))`;
   const [actions, setActions] = useState<MessageItemAction[]>([
     'upload',
     'delete',

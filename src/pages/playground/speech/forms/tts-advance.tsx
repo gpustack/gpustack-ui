@@ -1,4 +1,5 @@
 import CheckboxField from '@/components/seal-form/checkbox-field';
+import InputNumber from '@/components/seal-form/input-number';
 import SealInput from '@/components/seal-form/seal-input';
 import UploadAudio from '@/components/upload-audio';
 import useAppUtils from '@/hooks/use-app-utils';
@@ -6,7 +7,7 @@ import { convertFileToBase64 } from '@/utils/load-audio-file';
 import { CloseCircleFilled } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { useFormContext } from '../../config/form-context';
 
@@ -70,24 +71,74 @@ const TTSAdvanceConfig: React.FC = () => {
     );
   };
 
+  const atLeastOneValidator = (relateField: string) => () => ({
+    validator(rule: any, value: string) {
+      const type = form.getFieldValue('task_type');
+      const relateFieldValue = form.getFieldValue(relateField);
+      if (type !== 'Base') return Promise.resolve();
+
+      if (value || relateFieldValue) return Promise.resolve();
+
+      return Promise.reject(
+        new Error(
+          intl.formatMessage({ id: 'playground.speech.rules.refAudio' })
+        )
+      );
+    }
+  });
+
+  useEffect(() => {
+    if (taskType === 'Base') {
+      form.setFieldsValue({
+        x_vector_only_mode: true
+      });
+      onValuesChange?.(
+        { x_vector_only_mode: true },
+        { ...form.getFieldsValue(), x_vector_only_mode: true }
+      );
+    }
+  }, [taskType]);
+
   return (
     <>
+      <Form.Item
+        name="instructions"
+        rules={[
+          {
+            required: taskType === 'VoiceDesign',
+            message: getRuleMessage('input', 'playground.params.instructions')
+          }
+        ]}
+      >
+        <SealInput.Input
+          allowClear
+          required={taskType === 'VoiceDesign'}
+          description={intl.formatMessage({
+            id: 'playground.params.instructions.tips'
+          })}
+          label={intl.formatMessage({ id: 'playground.params.instructions' })}
+        ></SealInput.Input>
+      </Form.Item>
+      <Form.Item
+        name="max_new_tokens"
+        getValueProps={(value) => ({ value: value || null })}
+      >
+        <InputNumber
+          min={0}
+          step={1}
+          max={4096}
+          label={intl.formatMessage({ id: 'playground.params.maxTokens' })}
+        ></InputNumber>
+      </Form.Item>
       <Container>
         <Form.Item
           name="ref_audio"
           getValueProps={(value) => ({ value: fileName ? fileName : value })}
-          rules={[
-            {
-              required: taskType === 'Base',
-              message: getRuleMessage('input', 'playground.params.refAudio')
-            }
-          ]}
           dependencies={['task_type']}
         >
           <SealInput.Input
             allowClear
             readOnly={!!fileName}
-            required={taskType === 'Base'}
             suffix={
               <SuffixWrapper>
                 {fileName ? (
@@ -110,7 +161,12 @@ const TTSAdvanceConfig: React.FC = () => {
           ></SealInput.Input>
         </Form.Item>
       </Container>
-      <Form.Item name="ref_text">
+      <Form.Item
+        name="ref_text"
+        style={{ marginBottom: 12 }}
+        dependencies={['task_type', 'x_vector_only_mode']}
+        rules={[atLeastOneValidator('x_vector_only_mode')]}
+      >
         <SealInput.TextArea
           allowClear
           scaleSize={true}
@@ -118,9 +174,11 @@ const TTSAdvanceConfig: React.FC = () => {
         ></SealInput.TextArea>
       </Form.Item>
       <Form.Item
+        dependencies={['task_type', 'ref_text']}
+        style={{ marginBottom: 12 }}
         name="x_vector_only_mode"
         valuePropName="checked"
-        style={{ marginBottom: 8 }}
+        rules={[atLeastOneValidator('ref_text')]}
       >
         <CheckboxField
           label={intl.formatMessage({

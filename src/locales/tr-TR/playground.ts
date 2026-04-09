@@ -132,7 +132,8 @@ export default {
     'Sınıflandırıcısız rehberlik ölçeği, görselin isteme bağlılığını etkiler.',
   'playground.image.strength.tip':
     'Değer ne kadar yüksek olursa, orijinal görsel üzerindeki değişiklik o kadar büyük olur.',
-  'playground.image.edit.tips': 'Yüklemek için görseli tıklayın veya bu alana sürükleyin',
+  'playground.image.edit.tips':
+    'Yüklemek için görseli tıklayın veya bu alana sürükleyin',
   'playground.image.saveMask': 'Maskeyi Kaydet',
   'playground.image.negativeMask': 'Maskeyi Ters Çevir',
   'playground.image.brushSize': 'Fırça Boyutu',
@@ -154,14 +155,13 @@ export default {
   'playground.model.noavailable.tips2':
     'Beklenen model görünmüyorsa, çalıştığından ve doğru kategoride olduğundan emin olun. Kategori yanlışsa, modelin ayarlarından manuel olarak düzeltebilirsiniz.',
   'playground.rerank.query.validate': 'Sorgu gereklidir.',
-  'playground.image.generate.error':
-    'Bir sorun oluştu. Görsel oluşturulamadı.',
+  'playground.image.generate.error': 'Bir sorun oluştu. Görsel oluşturulamadı.',
   'playground.uploadfile.sizeError':
     'Dosya boyutu sınırı aşıyor. İzin verilen maksimum: {size}.',
   'playground.uploadImage.url.invalid':
-    'Lütfen doğrudan bir görsel URL\'si girin (örn. https://.../image.png). İptal etmek için ESC tuşuna basın.',
-  'playground.uploadImage.url.holder': 'Görsel URL\'si girin',
-  'playground.uploadImage.url.button': 'URL\'den Görsel Ekle',
+    "Lütfen doğrudan bir görsel URL'si girin (örn. https://.../image.png). İptal etmek için ESC tuşuna basın.",
+  'playground.uploadImage.url.holder': "Görsel URL'si girin",
+  'playground.uploadImage.url.button': "URL'den Görsel Ekle",
   'playground.params.duration': 'Süre (saniye)',
   'playground.params.resolution': 'Çözünürlük',
   'playground.params.taskType': 'Görev Türü',
@@ -170,10 +170,15 @@ export default {
   'playground.params.maxTokens': 'Maksimum Yeni Token',
   'playground.params.refAudio': 'Referans Ses',
   'playground.params.refAudio.tips':
-    'Referans ses URL\'si girin veya bir ses dosyası yükleyin.',
-  'playground.params.refAudio.text':
-    'Referans Ses Transkripti (ICL modu için)',
+    "Referans ses URL'si girin veya bir ses dosyası yükleyin.",
+  'playground.params.refAudio.text': 'Referans Ses Transkripti (ICL modu için)',
   'playground.params.refAudio.vectorMode':
     'Yalnızca Konuşmacı Gömme Kullan (ICL yok)',
-  'playground.params.streamMode': 'Akışı Etkinleştir'
+  'playground.params.streamMode': 'Akışı Etkinleştir',
+  'playground.speech.rules.refAudio':
+    'Either the reference audio transcript or speaker embedding must be set.'
 };
+
+// ========== To-Do: Translate Keys (Remove After Translation) ==========
+// 1. 'playground.speech.rules.refAudio': 'Either the reference audio transcript or speaker embedding must be set.'
+// ========== End of To-Do List ==========

@@ -189,9 +189,6 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   const submitMessage = async (current?: { role: string; content: string }) => {
     try {
-      await formRef.current?.form.validateFields();
-      if (!parameters.model) return;
-
       setLoading(true);
       setMessageId();
       setTokenResult(null);
@@ -207,7 +204,6 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
       };
 
       setParams(params);
-      console.log('submitMessage params:', streamTTS.isPlaying);
 
       // Choose stream or non-stream based on parameters
       if (parameters.stream) {
@@ -230,7 +226,6 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
         await nonStreamTTS.generate(params);
       }
     } catch (error: any) {
-      console.log('error:', error);
       setPlayingStream(false);
       setTokenResult({
         error: true,
@@ -248,7 +243,7 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
   };
 
   const handleSendMessage = (message: Omit<MessageItem, 'uid'>) => {
-    submitMessage(message);
+    formRef.current?.form.submit();
   };
 
   const handleCloseViewCode = () => {
@@ -353,6 +348,7 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
         <TTSDataForm
           ref={formRef}
           modelList={modelList}
+          onFinish={submitMessage}
           updatateParams={updatateParams}
         />
       </RightContainer>

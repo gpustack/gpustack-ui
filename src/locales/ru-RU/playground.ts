@@ -172,7 +172,9 @@ export default {
     'Transcript of Reference Audio (for ICL mode)',
   'playground.params.refAudio.vectorMode':
     'Use Speaker Embedding Only (no ICL)',
-  'playground.params.streamMode': 'Enable Streaming'
+  'playground.params.streamMode': 'Enable Streaming',
+  'playground.speech.rules.refAudio':
+    'Either the reference audio transcript or speaker embedding must be set.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -181,5 +183,6 @@ export default {
 // 3.  'playground.uploadImage.url.button': 'Add Image from URL',
 // 4. 'playground.params.duration': 'Duration (seconds)',
 // 5. 'playground.params.resolution': 'Resolution',
-// 6.  'playground.params.streamMode': 'Enable Streaming'
+// 6.  'playground.params.streamMode': 'Enable Streaming',
+// 7. 'playground.speech.rules.refAudio': 'Either the reference audio transcript or speaker embedding must be set.'
 // ========== End of To-Do List ==========

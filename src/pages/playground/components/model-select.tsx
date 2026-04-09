@@ -35,6 +35,7 @@ const ModelSelect: React.FC<{
           ]}
         >
           <SealSelect
+            required
             description={intl.formatMessage({
               id: 'playground.model.noavailable.tips2'
             })}

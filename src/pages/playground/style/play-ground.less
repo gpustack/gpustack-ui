@@ -41,7 +41,7 @@
     overflow: hidden;
     height: calc(
       100vh - var(--page-header-height) - var(--page-content-padding) -
-        @HEADER_HEIGHT
+        var(--page-content-padding) - @HEADER_HEIGHT
     );
 
     .collapse {
@@ -74,8 +74,8 @@
     .ant-divider {
       margin: 0;
       height: calc(
-        100vh - var(--page-header-height) - var(--page-content-padding) -
-          @HEADER_HEIGHT
+        100vh - var(--page-header-height) - 2px - var(--page-content-padding) -
+          var(--page-content-padding) - @HEADER_HEIGHT
       );
     }
   }

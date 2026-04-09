@@ -167,5 +167,7 @@ export default {
   'playground.params.refAudio.text': '参考音频文本（用于上下文学习模式）',
   'playground.params.refAudio.vectorMode':
     '仅使用说话人嵌入（不使用上下文学习）',
-  'playground.params.streamMode': '启用流式输出'
+  'playground.params.streamMode': '启用流式输出',
+  'playground.speech.rules.refAudio':
+    '设置参考音频文本或仅使用说话人嵌入的任意一项。'
 };

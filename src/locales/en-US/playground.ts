@@ -175,5 +175,7 @@ export default {
     'Transcript of Reference Audio (for ICL mode)',
   'playground.params.refAudio.vectorMode':
     'Use Speaker Embedding Only (no ICL)',
-  'playground.params.streamMode': 'Enable Streaming'
+  'playground.params.streamMode': 'Enable Streaming',
+  'playground.speech.rules.refAudio':
+    'Either the reference audio transcript or speaker embedding must be set.'
 };

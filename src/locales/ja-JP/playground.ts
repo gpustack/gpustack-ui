@@ -178,7 +178,9 @@ export default {
     'Transcript of Reference Audio (for ICL mode)',
   'playground.params.refAudio.vectorMode':
     'Use Speaker Embedding Only (no ICL)',
-  'playground.params.streamMode': 'Enable Streaming'
+  'playground.params.streamMode': 'Enable Streaming',
+  'playground.speech.rules.refAudio':
+    'Either the reference audio transcript or speaker embedding must be set.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -191,4 +193,5 @@ export default {
 // 7. 'playground.params.duration': 'Duration (seconds)',
 // 8. 'playground.params.resolution': 'Resolution'
 // 9.  'playground.params.streamMode': 'Enable Streaming'
+// 10. 'playground.speech.rules.refAudio': 'Either the reference audio transcript or speaker embedding must be set.'
 // ========== End of To-Do List ==========

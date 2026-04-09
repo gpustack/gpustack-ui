@@ -43,58 +43,5 @@ export const TTSAdvancedParamsConfig: ParamsSchema[] = [
         required: false
       }
     ]
-  },
-  {
-    type: 'Input',
-    name: 'instructions',
-    label: {
-      text: 'playground.params.instructions',
-      isLocalized: true
-    },
-    description: {
-      text: 'playground.params.instructions.tips',
-      isLocalized: true
-    },
-    attrs: {
-      allowClear: true
-    },
-    initAttrs: (meta: any) => {
-      return {
-        options: _.map(meta?.voices || [], (item: string) => ({
-          label: item,
-          value: item
-        }))
-      };
-    },
-    rules: [
-      {
-        required: false
-      }
-    ]
-  },
-  {
-    type: 'InputNumber',
-    name: 'max_new_tokens',
-    label: {
-      text: 'playground.params.maxTokens',
-      isLocalized: true
-    },
-    attrs: {
-      step: 1,
-      min: 0,
-      max: 4096
-    },
-    formItemAttrs: {
-      getValueProps: (value: number) => {
-        return {
-          value: value || null
-        };
-      }
-    },
-    rules: [
-      {
-        required: false
-      }
-    ]
   }
 ];

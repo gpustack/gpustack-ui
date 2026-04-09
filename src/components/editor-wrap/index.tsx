@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import './index.less';
 
 const HeaderWrapper = styled.div<{ $height?: number }>`
-  height: ${(props) => (props.$height ? `${props.$height}px` : 'auto')};
   display: flex;
   padding-block: 0;
   justify-content: space-between;
@@ -12,7 +11,7 @@ const HeaderWrapper = styled.div<{ $height?: number }>`
 `;
 
 const Wrapper = styled.div`
-  border-radius: var(--border-radius-mini);
+  border-radius: var(--border-radius);
   overflow: hidden;
 
   &.bordered {
@@ -57,7 +56,15 @@ const EditorWrap: React.FC<EditorwrapProps> = ({
         borderless: variant === 'borderless'
       })}
     >
-      {header && <HeaderWrapper $height={headerHeight}>{header}</HeaderWrapper>}
+      {header && (
+        <HeaderWrapper
+          style={{
+            height: headerHeight || 'auto'
+          }}
+        >
+          {header}
+        </HeaderWrapper>
+      )}
       <div>{children}</div>
     </Wrapper>
   );

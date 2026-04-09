@@ -4,9 +4,11 @@ import DropdownButtons from '@/components/drop-down-buttons';
 import icons from '@/components/icon-font/icons';
 import { tableSorter } from '@/config/settings';
 import { useIntl } from '@umijs/max';
+import { Tag } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
+import { accessScopeOptions } from '../config';
 import { ListItem } from '../config/types';
 
 interface ColumnsHookProps {
@@ -34,6 +36,20 @@ const useModelsColumns = ({
 }: ColumnsHookProps): ColumnsType<ListItem> => {
   const intl = useIntl();
 
+  const renderAPIs = (record: ListItem) => {
+    const option = accessScopeOptions.find(
+      (item) => item.value === record.scope?.[0]
+    );
+    return (
+      <span className="flex-center gap-4">
+        {intl.formatMessage({
+          id: option?.label || ''
+        })}
+        <span>[{option?.description}]</span>
+      </span>
+    );
+  };
+
   return useMemo(() => {
     return [
       {
@@ -42,9 +58,23 @@ const useModelsColumns = ({
         key: 'name',
         sorter: tableSorter(1),
         render: (text: string, record: ListItem) => (
-          <AutoTooltip ghost style={{ maxWidth: 400 }}>
-            {text}
-          </AutoTooltip>
+          <span className="flex items-center">
+            <AutoTooltip ghost style={{ maxWidth: 400 }}>
+              <span className="text-primary">{text}</span>
+            </AutoTooltip>
+            <Tag
+              style={{
+                marginLeft: 8,
+                borderRadius: 12,
+                color: 'var(--ant-color-text-tertiary)',
+                borderColor: 'var(--ant-color-split)',
+                backgroundColor: 'transparent'
+              }}
+              variant="outlined"
+            >
+              {intl.formatMessage({ id: 'playground.params.custom' })}
+            </Tag>
+          </span>
         )
       },
       {
@@ -73,18 +103,34 @@ const useModelsColumns = ({
         )
       },
       {
-        title: intl.formatMessage({ id: 'apikeys.table.bindModels' }),
+        title: intl.formatMessage({ id: 'apikeys.access.permissions' }),
         dataIndex: 'allowed_model_names',
         key: 'allowed_model_names',
         ellipsis: {
           showTitle: false
         },
         render: (text: string[], record: ListItem) => (
-          <AutoTooltip ghost>
-            {text?.length
-              ? text?.join(', ')
-              : intl.formatMessage({ id: 'common.select.option' })}
-          </AutoTooltip>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'max-content 1fr',
+              gap: 8,
+              alignItems: 'center'
+            }}
+          >
+            <span className="text-primary">APIs:</span>
+            <AutoTooltip ghost>{renderAPIs(record)}</AutoTooltip>
+            <span className="text-primary">
+              {intl.formatMessage({ id: 'models.title' })}:
+            </span>
+            <AutoTooltip ghost>
+              <span>
+                {text?.length
+                  ? text?.join(', ')
+                  : intl.formatMessage({ id: 'common.select.option' })}
+              </span>
+            </AutoTooltip>
+          </div>
         )
       },
       {

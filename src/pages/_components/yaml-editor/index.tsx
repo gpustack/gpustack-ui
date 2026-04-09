@@ -22,6 +22,7 @@ const Container = styled.div`
   position: relative;
   border: 1px solid var(--ant-color-border);
   border-radius: var(--ant-border-radius);
+  overflow: hidden;
   .monaco-editor .scroll-decoration {
     box-shadow: none;
   }

@@ -16,5 +16,9 @@ export default {
   'apikeys.table.bindModels': '模型访问',
   'apikeys.models.all': '所有模型',
   'apikeys.models.selected': '指定模型',
-  'apikeys.models.noModelsFound': '未找到模型'
+  'apikeys.models.noModelsFound': '未找到模型',
+  'apikeys.accessScope.all': '全部',
+  'apikeys.accessScope.management': '管理接口',
+  'apikeys.accessScope.inference': '推理接口',
+  'apikeys.access.permissions': '访问权限'
 };

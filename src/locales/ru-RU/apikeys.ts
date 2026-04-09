@@ -17,7 +17,11 @@ export default {
   'apikeys.table.bindModels': 'Доступ к моделям',
   'apikeys.models.all': 'Все модели',
   'apikeys.models.selected': 'Разрешенные модели',
-  'apikeys.models.noModelsFound': 'Модели не найдены'
+  'apikeys.models.noModelsFound': 'Модели не найдены',
+  'apikeys.accessScope.all': 'All',
+  'apikeys.accessScope.management': 'Management APIs',
+  'apikeys.accessScope.inference': 'Inference APIs',
+  'apikeys.access.permissions': 'Access Permissions'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

@@ -17,5 +17,9 @@ export default {
   'apikeys.table.bindModels': 'Model Access',
   'apikeys.models.all': 'All models',
   'apikeys.models.selected': 'Allowed models',
-  'apikeys.models.noModelsFound': 'No models found'
+  'apikeys.models.noModelsFound': 'No models found',
+  'apikeys.accessScope.all': 'All',
+  'apikeys.accessScope.management': 'Management APIs',
+  'apikeys.accessScope.inference': 'Inference APIs',
+  'apikeys.access.permissions': 'Access Permissions'
 };

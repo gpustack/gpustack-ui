@@ -7,6 +7,8 @@ export interface ListItem {
   updated_at: string;
   expires_at: string;
   allowed_model_names: string[];
+  custom?: string;
+  scope?: string[];
 }
 
 export interface FormData {
@@ -15,4 +17,6 @@ export interface FormData {
   description: string;
   allowed_model_names: string[];
   expires_in: number | null;
+  custom?: string;
+  scope?: string[];
 }

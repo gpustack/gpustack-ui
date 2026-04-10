@@ -60,7 +60,7 @@ const VolumeMountsForm: React.FC<{ action: PageActionType }> = ({ action }) => {
 
   useEffect(() => {
     if (action === PageAction.CREATE) {
-      form.setFieldValue('k8s_volume_mounts', volumeList);
+      form.setFieldValue('k8s_volume_mounts', []);
     }
   }, [action]);
 

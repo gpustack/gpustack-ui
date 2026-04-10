@@ -37,6 +37,7 @@ const VolumeMountsForm: React.FC<{ action: PageActionType }> = ({ action }) => {
   const form = Form.useFormInstance();
   const intl = useIntl();
   const { getRuleMessage } = useAppUtils();
+  const k8sVolumeMounts = Form.useWatch('k8s_volume_mounts', form);
 
   const [collapseKey, setCollapseKey] = useState<Set<number | string>>(
     new Set([0])
@@ -103,35 +104,26 @@ const VolumeMountsForm: React.FC<{ action: PageActionType }> = ({ action }) => {
   };
 
   const handleSourceChange = (value: string, index: number) => {
-    const list = form.getFieldValue('k8s_volume_mounts') || [];
+    let volumeSource: any = {};
 
-    const updated = list.map((item: any, i: number) => {
-      if (i !== index) return item;
-
-      let volumeSource: any = {};
-
-      if (value === 'hostPath') {
-        volumeSource = {
-          hostPath: { path: '', type: 'DirectoryOrCreate' }
-        };
-      } else if (value === 'pvc') {
-        volumeSource = {
-          persistentVolumeClaim: { claimName: '', readOnly: false }
-        };
-      } else if (value === 'configMap') {
-        volumeSource = {
-          configMap: { name: '', optional: false }
-        };
-      }
-
-      return {
-        ...item,
-        sourceType: value,
-        volumeSource
+    if (value === 'hostPath') {
+      volumeSource = {
+        hostPath: { path: '', type: 'DirectoryOrCreate' }
       };
-    });
+    } else if (value === 'persistentVolumeClaim') {
+      volumeSource = {
+        persistentVolumeClaim: { claimName: '', readOnly: false }
+      };
+    } else if (value === 'configMap') {
+      volumeSource = {
+        configMap: { name: '', optional: false }
+      };
+    }
 
-    form.setFieldValue('k8s_volume_mounts', updated);
+    form.setFieldValue(
+      ['k8s_volume_mounts', index, 'volumeSource'],
+      volumeSource
+    );
   };
 
   return (
@@ -184,7 +176,7 @@ const VolumeMountsForm: React.FC<{ action: PageActionType }> = ({ action }) => {
                         <span>
                           {intl.formatMessage({ id: 'clusters.volume.name' })}:
                         </span>
-                        <span>{list[name]?.name}</span>
+                        <span>{item.name}</span>
                       </Label>
                     }
                     right={
@@ -228,6 +220,12 @@ const VolumeMountsForm: React.FC<{ action: PageActionType }> = ({ action }) => {
                                 'input',
                                 'clusters.volume.mountPath'
                               )
+                            },
+                            {
+                              pattern: /^\//,
+                              message: intl.formatMessage({
+                                id: 'clusters.volume.mountPath.format'
+                              })
                             }
                           ]}
                         >
@@ -294,6 +292,12 @@ const VolumeMountsForm: React.FC<{ action: PageActionType }> = ({ action }) => {
                                   'input',
                                   'clusters.volume.hostPath.path'
                                 )
+                              },
+                              {
+                                pattern: /^\//,
+                                message: intl.formatMessage({
+                                  id: 'clusters.volume.mountPath.format'
+                                })
                               }
                             ]}
                           >
@@ -333,7 +337,7 @@ const VolumeMountsForm: React.FC<{ action: PageActionType }> = ({ action }) => {
                       </Flex>
                     )}
 
-                    {item.sourceType === 'pvc' && (
+                    {item.sourceType === 'persistentVolumeClaim' && (
                       <Flex style={{ gap: 16 }}>
                         <div style={{ flex: 1 }}>
                           <Form.Item

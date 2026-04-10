@@ -45,7 +45,7 @@ const useModelsColumns = ({
         {intl.formatMessage({
           id: option?.label || ''
         })}
-        <span>[{option?.description}]</span>
+        {option?.description && <span>[{option?.description}]</span>}
       </span>
     );
   };

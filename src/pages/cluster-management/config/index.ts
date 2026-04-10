@@ -97,3 +97,55 @@ export const CloudOptionItems = [
     key: 'volumes'
   }
 ];
+
+export const hostTypeOptions = [
+  {
+    label: 'clusters.volume.hostPath.type.directory',
+    locale: true,
+    value: 'Directory'
+  },
+  {
+    label: 'clusters.volume.hostPath.type.directoryOrCreate',
+    locale: true,
+    value: 'DirectoryOrCreate'
+  },
+  {
+    label: 'clusters.volume.hostPath.type.file',
+    locale: true,
+    value: 'File'
+  },
+  {
+    label: 'clusters.volume.hostPath.type.fileOrCreate',
+    locale: true,
+    value: 'FileOrCreate'
+  },
+  {
+    label: 'clusters.volume.hostPath.type.socket',
+    locale: true,
+    value: 'Socket'
+  },
+  {
+    label: 'clusters.volume.hostPath.type.charDevice',
+    locale: true,
+    value: 'CharDevice'
+  },
+  {
+    label: 'clusters.volume.hostPath.type.blockDevice',
+    locale: true,
+    value: 'BlockDevice'
+  }
+];
+
+export const sourceTypeOptions = [
+  {
+    label: 'clusters.volume.sourceType.hostPath',
+    locale: true,
+    value: 'hostPath'
+  },
+  { label: 'clusters.volume.sourceType.pvc', locale: true, value: 'pvc' },
+  {
+    label: 'clusters.volume.sourceType.configMap',
+    locale: true,
+    value: 'configMap'
+  }
+];

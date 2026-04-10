@@ -142,7 +142,11 @@ export const sourceTypeOptions = [
     locale: true,
     value: 'hostPath'
   },
-  { label: 'clusters.volume.sourceType.pvc', locale: true, value: 'pvc' },
+  {
+    label: 'clusters.volume.sourceType.pvc',
+    locale: true,
+    value: 'persistentVolumeClaim'
+  },
   {
     label: 'clusters.volume.sourceType.configMap',
     locale: true,

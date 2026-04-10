@@ -174,10 +174,7 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
           ></SealTextArea>
         </Form.Item>
         {provider === ProviderValueMap.Kubernetes && (
-          <K8SVolumeMount
-            action={action}
-            currentData={currentData}
-          ></K8SVolumeMount>
+          <K8SVolumeMount action={action}></K8SVolumeMount>
         )}
         <CollapsePanel
           accordion={false}

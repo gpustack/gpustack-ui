@@ -48,6 +48,25 @@ export interface NodePoolListItem extends NodePoolFormData {
   updated_at: string;
   cluster_id: number;
 }
+export interface VolumeMount {
+  name: string;
+  mountPath: string;
+  readOnly: boolean;
+  volumeSource: {
+    hostPath: {
+      path: string;
+      type: string;
+    };
+    persistentVolumeClaim: {
+      claimName: string;
+      readOnly: boolean;
+    };
+    configMap: {
+      name: string;
+      optional: boolean;
+    };
+  };
+}
 
 export interface ClusterListItem {
   name: string;
@@ -68,6 +87,7 @@ export interface ClusterListItem {
   state: ClusterStatusType;
   state_message: string;
   worker_pools: NodePoolListItem[];
+  k8s_volume_mounts?: VolumeMount[];
 }
 
 export interface ClusterFormData {
@@ -81,6 +101,7 @@ export interface ClusterFormData {
   server_url?: string;
   worker_config?: Record<string, any>;
   worker_pools?: NodePoolFormData[];
+  k8s_volume_mounts?: VolumeMount[];
 }
 
 export interface SystemConfig {

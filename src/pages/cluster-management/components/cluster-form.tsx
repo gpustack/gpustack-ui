@@ -14,6 +14,7 @@ import {
 } from '../config/types';
 import AdvanceConfig from '../step-forms/advance-config';
 import CloudProvider from './cloud-provider-form';
+import K8SVolumeMount from './k8s-volume-mount';
 
 type AddModalProps = {
   action: PageActionType;
@@ -60,7 +61,17 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
 
     useEffect(() => {
       if (currentData) {
-        form.setFieldsValue(currentData);
+        const volumeMounts = currentData?.k8s_volume_mounts || [];
+        const realVolumeList = (volumeMounts || []).map(
+          (item: any, index: number) => ({
+            ...item,
+            sourceType: Object.keys(item.volumeSource || {})[0] || 'hostPath'
+          })
+        );
+        form.setFieldsValue({
+          ...currentData,
+          k8s_volume_mounts: realVolumeList
+        });
       }
     }, [currentData]);
 
@@ -151,6 +162,7 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
             credentialList={credentialList}
           ></CloudProvider>
         )}
+
         <Form.Item<FormData>
           name="description"
           rules={[{ required: false }]}
@@ -161,6 +173,12 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
             label={intl.formatMessage({ id: 'common.table.description' })}
           ></SealTextArea>
         </Form.Item>
+        {provider === ProviderValueMap.Kubernetes && (
+          <K8SVolumeMount
+            action={action}
+            currentData={currentData}
+          ></K8SVolumeMount>
+        )}
         <CollapsePanel
           accordion={false}
           activeKey={activeKey}

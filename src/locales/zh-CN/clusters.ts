@@ -128,5 +128,28 @@ export default {
   'clusters.addworker.theadNotes-02':
     '平头哥（T-Head）PPU 使用容器设备接口（CDI）进行设备注入，因此需要确保 <span class="bold-text">/var/run/cdi</span> 目录可用以生成 CDI。',
   'clusters.addworker.nvidiaNotes':
-    'GPUStack v2.1 内置推理后端依赖 <span class="bold-text">CUDA 12.6</span> 及以上版本，请确保 NVIDIA 驱动版本为 <span class="bold-text">560</span> 或以上。'
+    'GPUStack v2.1 内置推理后端依赖 <span class="bold-text">CUDA 12.6</span> 及以上版本，请确保 NVIDIA 驱动版本为 <span class="bold-text">560</span> 或以上。',
+  'clusters.volume.title': '卷挂载',
+  'clusters.volume.name': '卷名称',
+  'clusters.volume.mountPath': '容器内路径',
+  'clusters.volume.mountPath.format': '路径必须以 / 开头',
+  'clusters.volume.readOnly': '只读',
+  'clusters.volume.sourceType': '存储来源',
+  'clusters.volume.sourceType.hostPath': '主机路径',
+  'clusters.volume.sourceType.pvc': '存储卷声明（PVC）',
+  'clusters.volume.sourceType.configMap': '配置映射（ConfigMap）',
+  'clusters.volume.hostPath.path': '宿主机路径',
+  'clusters.volume.hostPath.type': '路径类型',
+  'clusters.volume.hostPath.type.directory': '目录',
+  'clusters.volume.hostPath.type.directoryOrCreate': '目录（不存在则创建）',
+  'clusters.volume.hostPath.type.file': '文件',
+  'clusters.volume.hostPath.type.fileOrCreate': '文件（不存在则创建）',
+  'clusters.volume.hostPath.type.socket': '套接字',
+  'clusters.volume.hostPath.type.charDevice': '字符设备',
+  'clusters.volume.hostPath.type.blockDevice': '块设备',
+  'clusters.volume.pvc.claimName': 'PVC 名称',
+  'clusters.volume.pvc.readOnly': '只读',
+  'clusters.volume.configMap.name': '配置名称',
+  'clusters.volume.configMap.optional': '可选',
+  'clusters.volume.add': '添加卷挂载'
 };

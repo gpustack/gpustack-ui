@@ -259,7 +259,7 @@ const VersionsForm: React.FC<AddModalProps> = ({
               <div
                 key={name}
                 style={{
-                  borderRadius: 'var(--ant-border-radius)',
+                  borderRadius: 'var(--ant-border-radius-lg)',
                   border: '1px solid var(--ant-color-split)'
                 }}
               >

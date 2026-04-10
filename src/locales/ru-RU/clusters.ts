@@ -135,7 +135,31 @@ export default {
   'clusters.addworker.theadNotes-02':
     'T-Head PPU uses the Container Device Interface (CDI) for device injection and requires the <span class="bold-text">/var/run/cdi</span> directory to be available for CDI generation.',
   'clusters.addworker.nvidiaNotes':
-    'The built-in inference backends in GPUStack v2.1 require <span class="bold-text">CUDA 12.6+</span>. Please ensure your NVIDIA driver version is <span class="bold-text">560</span> or newer.'
+    'The built-in inference backends in GPUStack v2.1 require <span class="bold-text">CUDA 12.6+</span>. Please ensure your NVIDIA driver version is <span class="bold-text">560</span> or newer.',
+  'clusters.volume.title': 'Volume Mounts',
+  'clusters.volume.name': 'Volume Name',
+  'clusters.volume.mountPath': 'Container Path',
+  'clusters.volume.mountPath.format': 'Path must start with /',
+  'clusters.volume.readOnly': 'Read Only',
+  'clusters.volume.sourceType': 'Source Type',
+  'clusters.volume.sourceType.hostPath': 'Host Path',
+  'clusters.volume.sourceType.pvc': 'Persistent Volume Claim (PVC)',
+  'clusters.volume.sourceType.configMap': 'ConfigMap',
+  'clusters.volume.hostPath.path': 'Host Path',
+  'clusters.volume.hostPath.type': 'Path Type',
+  'clusters.volume.hostPath.type.directory': 'Directory',
+  'clusters.volume.hostPath.type.directoryOrCreate':
+    'Directory (create if not exists)',
+  'clusters.volume.hostPath.type.file': 'File',
+  'clusters.volume.hostPath.type.fileOrCreate': 'File (create if not exists)',
+  'clusters.volume.hostPath.type.socket': 'Socket',
+  'clusters.volume.hostPath.type.charDevice': 'Character Device',
+  'clusters.volume.hostPath.type.blockDevice': 'Block Device',
+  'clusters.volume.pvc.claimName': 'PVC Name',
+  'clusters.volume.pvc.readOnly': 'Read Only',
+  'clusters.volume.configMap.name': 'ConfigMap Name',
+  'clusters.volume.configMap.optional': 'Optional',
+  'clusters.volume.add': 'Add Volume Mount'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

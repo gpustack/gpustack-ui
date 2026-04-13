@@ -1,6 +1,5 @@
 import { modelNameReg, PageAction } from '@/config';
 import { OPENAI_COMPATIBLE } from '@/config/settings';
-import useAppUtils from '@/hooks/use-app-utils';
 import {
   ClusterStatusLabelMap,
   ClusterStatusValueMap
@@ -8,7 +7,8 @@ import {
 import {
   AutoTooltip,
   Input as CInput,
-  Select as SealSelect
+  Select as SealSelect,
+  useAppUtils
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';

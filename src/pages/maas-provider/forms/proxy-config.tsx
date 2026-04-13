@@ -1,5 +1,4 @@
-import useAppUtils from '@/hooks/use-app-utils';
-import { CheckboxField, Input as CInput } from '@gpustack/core-ui';
+import { CheckboxField, Input as CInput, useAppUtils } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import React from 'react';

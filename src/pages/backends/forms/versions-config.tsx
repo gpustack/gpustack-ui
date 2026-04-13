@@ -1,5 +1,4 @@
 import { PageActionType } from '@/config/types';
-import useAppUtils from '@/hooks/use-app-utils';
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import {
   BaseSelect,
@@ -7,7 +6,8 @@ import {
   CollapseContainer,
   LabelSelector,
   Select as SealSelect,
-  Textarea as SealTextArea
+  Textarea as SealTextArea,
+  useAppUtils
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Form, Tag } from 'antd';

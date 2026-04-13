@@ -1,11 +1,11 @@
-import useAppUtils from '@/hooks/use-app-utils';
 import { convertFileToBase64 } from '@/utils/load-audio-file';
 import { CloseCircleFilled } from '@ant-design/icons';
 import {
   CheckboxField,
   Input as CInput,
   InputNumber,
-  UploadAudio
+  UploadAudio,
+  useAppUtils
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';

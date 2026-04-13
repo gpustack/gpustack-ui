@@ -1,11 +1,11 @@
 import { PageAction } from '@/config';
-import useAppUtils from '@/hooks/use-app-utils';
 import ProviderLogo from '@/pages/maas-provider/components/provider-logo';
 import {
   AutoTooltip,
   InputNumber,
   MetadataList,
-  Cascader as SealCascader
+  Cascader as SealCascader,
+  useAppUtils
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form, Tooltip } from 'antd';

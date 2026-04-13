@@ -1,7 +1,6 @@
 import { setRouteCache } from '@/atoms/route-cache';
 import routeCachekey from '@/config/route-cachekey';
 import { HEADER_HEIGHT } from '@/config/settings';
-import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import { useCancelToken } from '@/hooks/use-request-token';
 import { readAudioFile } from '@/utils/load-audio-file';
 import { SendOutlined } from '@ant-design/icons';
@@ -11,7 +10,8 @@ import {
   AudioPlayer,
   CopyButton,
   IconFont,
-  UploadAudio
+  UploadAudio,
+  useOverlayScroller
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Spin, Tooltip } from 'antd';

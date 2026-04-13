@@ -64,6 +64,6 @@ const KeyMap: Record<KeyBindingType, KeybindingValue> = KeybiningList.reduce(
   {}
 );
 
-export { KeyMap, KeybiningList };
+export { KeybiningList, KeyMap };
 
 export default KeybindingsMap;

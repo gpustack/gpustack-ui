@@ -4,7 +4,6 @@ import {
 } from '@/atoms/clusters';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
-import useAppUtils from '@/hooks/use-app-utils';
 import { CardContainer } from '@/pages/llmodels/components/gpu-card';
 import { DeleteOutlined } from '@ant-design/icons';
 import {
@@ -14,7 +13,8 @@ import {
   CollapseContainer,
   IconFont,
   LabelSelector,
-  Select as SealSelect
+  Select as SealSelect,
+  useAppUtils
 } from '@gpustack/core-ui';
 import { type CollapseContainerProps } from '@gpustack/core-ui/lib/components/collapse-container';
 import { useIntl } from '@umijs/max';

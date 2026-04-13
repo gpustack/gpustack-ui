@@ -1,10 +1,10 @@
-import useAppUtils from '@/hooks/use-app-utils';
 import {
   AutoComplete,
   CheckboxField,
   Input as CInput,
   InputNumber as CInputNumber,
-  Select as SealSelect
+  Select as SealSelect,
+  useAppUtils
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';

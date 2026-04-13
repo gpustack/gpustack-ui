@@ -1,4 +1,4 @@
-import useAppUtils from '@/hooks/use-app-utils';
+import { useAppUtils } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { ProviderEnum } from '../config/providers';
 import { RequiredFields } from '../config/types';

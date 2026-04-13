@@ -1,6 +1,9 @@
 import { PageAction } from '@/config';
-import useAppUtils from '@/hooks/use-app-utils';
-import { AutoTooltip, Select as SealSelect } from '@gpustack/core-ui';
+import {
+  AutoTooltip,
+  Select as SealSelect,
+  useAppUtils
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form, Select } from 'antd';
 import _ from 'lodash';

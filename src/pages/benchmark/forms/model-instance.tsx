@@ -1,5 +1,4 @@
 import { PageAction } from '@/config';
-import useAppUtils from '@/hooks/use-app-utils';
 import {
   InstanceStatusMap,
   InstanceStatusMapValue,
@@ -8,7 +7,7 @@ import {
 import { useBenchmarkTargetInstance } from '@/pages/llmodels/hooks/use-run-benchmark';
 import { useQueryModelInstancesList } from '@/pages/llmodels/services/use-query-model-instances';
 import { useQueryModelList } from '@/pages/llmodels/services/use-query-model-list';
-import { Cascader as SealCascader } from '@gpustack/core-ui';
+import { Cascader as SealCascader, useAppUtils } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form, Tooltip } from 'antd';
 import React, { useEffect } from 'react';

@@ -1,4 +1,4 @@
-import useOverlayScroller from '@/hooks/use-overlay-scroller';
+import { useOverlayScroller } from '@gpustack/core-ui';
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import { WrapperContext } from './use-wrapper-context';

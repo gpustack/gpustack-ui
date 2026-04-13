@@ -1,8 +1,7 @@
-import useAppUtils from '@/hooks/use-app-utils';
 import CategorySelect from '@/pages/_components/category-select';
 import DocLink from '@/pages/_components/doc-link';
 import { categoryOptions } from '@/pages/llmodels/config';
-import { CheckboxField, Input as CInput } from '@gpustack/core-ui';
+import { CheckboxField, Input as CInput, useAppUtils } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import { genericReferLink } from '../config';

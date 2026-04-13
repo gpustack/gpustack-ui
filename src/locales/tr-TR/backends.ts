@@ -30,8 +30,7 @@ export default {
   'backend.version.rules.builtin': '"-custom" ile bitmelidir',
   'backend.version.no.tips':
     'Yerleşik altyapının özel sürüm adı "-custom" ile bitmelidir.',
-  'backend.backend.rules.custom':
-    'Özel altyapı adı "-custom" ile bitmelidir.',
+  'backend.backend.rules.custom': 'Özel altyapı adı "-custom" ile bitmelidir.',
   'backend.quickConfig': 'Hızlı Yapılandırma',
   'backend.version.default.not.exists':
     'Varsayılan sürüm {versions} içinde mevcut değil.',

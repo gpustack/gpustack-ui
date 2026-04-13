@@ -1,6 +1,5 @@
-import useDownloadLogs from '@/hooks/use-download-logs';
 import { DownloadOutlined } from '@ant-design/icons';
-import { DropdownButtons, IconFont } from '@gpustack/core-ui';
+import { DropdownButtons, IconFont, useDownloadLogs } from '@gpustack/core-ui';
 import icons from '@gpustack/core-ui/lib/components/icon-font/icons';
 import { BENCHMARKS_API } from '../apis';
 import { BenchmarkStatusValueMap } from '../config';

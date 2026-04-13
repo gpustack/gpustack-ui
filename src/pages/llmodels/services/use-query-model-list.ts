@@ -1,4 +1,4 @@
-import { useQueryDataList } from '@/hooks/use-query-data-list';
+import { useQueryDataList } from '@gpustack/core-ui';
 import { queryModelsList } from '../apis';
 import { ListItem } from '../config/types';
 

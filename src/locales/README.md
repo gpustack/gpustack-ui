@@ -24,7 +24,6 @@ To add a new language configuration, follow these steps:
 
 - Open the `.ts` file in the **new directory**.
 - For each key-value pair:
-
   - If a translation is available, replace the value with the translated text.
   - If no translation is available, keep the `English` value as default.
 

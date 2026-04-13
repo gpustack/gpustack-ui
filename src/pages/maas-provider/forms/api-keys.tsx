@@ -1,6 +1,5 @@
 import { PageAction } from '@/config';
-import useAppUtils from '@/hooks/use-app-utils';
-import { MetadataList, Password } from '@gpustack/core-ui';
+import { MetadataList, Password, useAppUtils } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import { useFormContext } from '../config/form-context';

@@ -1,4 +1,3 @@
-import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import useRequestToken from '@/hooks/use-request-token';
 import {
   ClearOutlined,
@@ -12,7 +11,8 @@ import {
   HighlightCode,
   IconFont,
   ResizeContainer,
-  ScatterChart
+  ScatterChart,
+  useOverlayScroller
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';

@@ -1,5 +1,5 @@
 import { HEADER_HEIGHT } from '@/config/settings';
-import useOverlayScroller from '@/hooks/use-overlay-scroller';
+import { useOverlayScroller } from '@gpustack/core-ui';
 import _ from 'lodash';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import CompareContext from '../../config/compare-context';

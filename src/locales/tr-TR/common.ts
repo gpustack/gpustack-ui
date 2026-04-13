@@ -123,10 +123,8 @@ export default {
   'common.chart.filter.holder': 'veri öğelerini filtrele',
   'common.chart.filter.tips': 'Filtreleme ile daha fazla görüntüle',
   'common.permission.401': 'Oturum açılmadı',
-  'common.permission.403':
-    'Üzgünüz, bu sayfaya erişim izniniz bulunmuyor.',
-  'common.permission.404':
-    'Üzgünüz, erişmeye çalıştığınız sayfa bulunamadı.',
+  'common.permission.403': 'Üzgünüz, bu sayfaya erişim izniniz bulunmuyor.',
+  'common.permission.404': 'Üzgünüz, erişmeye çalıştığınız sayfa bulunamadı.',
   'common.permission.action.post': 'Oluştur',
   'common.permission.action.get': 'Ara',
   'common.permission.action.delete': 'Sil',
@@ -144,7 +142,7 @@ export default {
   'common.search.nodata': 'eşleşen veri bulunamadı',
   'common.data.empty': 'Veri Yok',
   'common.tips.change': 'kaydedilmemiş değişiklikler var!',
-  'common.copy.notSupport': 'Tarayıcınız Pano API\'sini desteklemiyor',
+  'common.copy.notSupport': "Tarayıcınız Pano API'sini desteklemiyor",
   'common.title.basicInfo': 'Temel Bilgiler',
   'common.help.need': 'Yardıma mı ihtiyacınız var?',
   'common.help.eg': 'örn., {content}',
@@ -163,7 +161,7 @@ export default {
   'common.time.hour': 'saat',
   'common.time.minute': 'dakika',
   'common.issue.report': 'Sorun bildir',
-  'common.social.discord': 'Discord\'umuza Katılın',
+  'common.social.discord': "Discord'umuza Katılın",
   'common.table.mark': 'Yorum',
   'common.table.rollback.mark': 'Geri Alma Yorumu',
   'common.button.saveDeploy': 'Kaydet ve Dağıt',
@@ -174,17 +172,20 @@ export default {
   'common.button.stop': 'Durdur',
   'common.button.start': 'Başlat',
   'common.rule.object.key': 'anahtar boş olamaz',
-  'common.confirm.title': '{action} işlemini gerçekleştirmek istediğinizden emin misiniz?',
+  'common.confirm.title':
+    '{action} işlemini gerçekleştirmek istediğinizden emin misiniz?',
   'common.rule.name': 'Ad gereklidir',
   'common.rule.wordlimit': 'En fazla {length} karakter',
   'common.docs.link.tips': 'Dokümantasyonu Görüntüle',
   'common.docs.link': 'buraya tıklayın',
-  'common.result.nodata.subtitle': 'Lütfen oluşturulup oluşturulmadığını kontrol edin',
+  'common.result.nodata.subtitle':
+    'Lütfen oluşturulup oluşturulmadığını kontrol edin',
   'common.result.nodata.title': '{type} bulunamadı',
   'common.rule.array': 'dizi biçiminde olmalıdır',
   'common.rule.object': 'nesne biçiminde olmalıdır',
   'common.rule.syntaxerror': 'söz dizimi hatası',
-  'common.code.hide.tips': '... {rows} satır gizlendi, genişletmek için tıklayın ...',
+  'common.code.hide.tips':
+    '... {rows} satır gizlendi, genişletmek için tıklayın ...',
   'common.nodata.created': 'Henüz {type} oluşturulmadı',
   'common.nodata.added': 'Henüz {type} eklenmedi',
   'common.status.edited': 'Düzenlendi',
@@ -195,10 +196,12 @@ export default {
     'Seçili {type} öğesini silmek istediğinizden emin misiniz?',
   'common.delete.single.confirm':
     'Silmek istediğinizden emin misiniz? \n <span style="font-size: 13px;font-weight: 700">{name}</span>',
-  'common.stop.confirm': 'Seçili {type} öğesini durdurmak istediğinizden emin misiniz?',
+  'common.stop.confirm':
+    'Seçili {type} öğesini durdurmak istediğinizden emin misiniz?',
   'common.stop.single.confirm':
     'Durdurmak istediğinizden emin misiniz? \n <span style="font-size: 13px;font-weight: 700">{name}</span>',
-  'common.start.confirm': 'Seçili {type} öğesini başlatmak istediğinizden emin misiniz?',
+  'common.start.confirm':
+    'Seçili {type} öğesini başlatmak istediğinizden emin misiniz?',
   'common.start.single.confirm':
     'Başlatmak istediğinizden emin misiniz? \n <span style="font-size: 13px;font-weight: 700">{name}</span>',
   'common.filter.name': 'Ada göre filtrele',

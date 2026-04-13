@@ -1,5 +1,5 @@
-import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import { fetchChunkedData, readStreamData } from '@/utils/fetch-chunk-data';
+import { useOverlayScroller } from '@gpustack/core-ui';
 import _ from 'lodash';
 import React, { useEffect, useRef, useState } from 'react';
 import { CHAT_API } from '../apis';

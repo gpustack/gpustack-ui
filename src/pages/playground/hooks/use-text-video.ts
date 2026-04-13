@@ -1,6 +1,6 @@
 import { createAxiosToken } from '@/hooks/use-chunk-request';
-import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import { extractErrorMessage } from '@/pages/playground/config';
+import { useOverlayScroller } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';

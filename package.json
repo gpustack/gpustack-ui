@@ -12,9 +12,6 @@
     "setup": "max setup",
     "start": "npm run dev"
   },
-  "resolutions": {
-    "immer": "^9.0.6"
-  },
   "dependencies": {
     "@ant-design/icons": "^6.1.0",
     "@ant-design/pro-components": "3.1.0-0",
@@ -105,9 +102,9 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-unused-imports": "^4.4.1",
-    "globals": "^17.4.0",
     "extract-css-loader": "^0.0.1",
     "file-loader": "^6.2.0",
+    "globals": "^17.4.0",
     "husky": "^9.0.11",
     "less-loader": "^12.2.0",
     "lint-staged": "^15.2.2",

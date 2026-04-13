@@ -1,4 +1,5 @@
 import {
+  Input as CInput,
   ModalFooter,
   ScrollerModal,
   Textarea as SealTextArea

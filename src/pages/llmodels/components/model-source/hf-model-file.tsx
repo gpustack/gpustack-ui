@@ -1,6 +1,5 @@
 import { getRequestId } from '@/atoms/models';
-import BaseSelect from '@/components/seal-form/base/select';
-import SimpleOverlay from '@/components/simple-overlay';
+import { BaseSelect, SimpleOverlay } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Empty, Spin } from 'antd';
 import _ from 'lodash';
@@ -22,7 +21,6 @@ import '../../style/hf-model-file.less';
 import TitleWrapper from '../title-wrapper';
 import FileSkeleton from './file-skeleton';
 import ModelFileItem from './model-file-item';
-
 const ItemFileWrapper = styled.div`
   display: flex;
   flex-direction: column;

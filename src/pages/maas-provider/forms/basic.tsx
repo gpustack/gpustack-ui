@@ -1,8 +1,10 @@
-import Password from '@/components/seal-form/password';
-import SealInput from '@/components/seal-form/seal-input';
-import SealSelect from '@/components/seal-form/seal-select';
 import { PageAction } from '@/config';
 import useAppUtils from '@/hooks/use-app-utils';
+import {
+  Input as CInput,
+  Password,
+  Select as SealSelect
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import ProviderLogo from '../components/provider-logo';
@@ -10,7 +12,6 @@ import { useFormContext } from '../config/form-context';
 import { maasProviderOptions } from '../config/providers';
 import { FormData } from '../config/types';
 import ProviderConfigs from './provider-configs';
-
 const Basic: React.FC<{
   onAPIKeyBlur?: (e: any) => void;
 }> = ({ onAPIKeyBlur }) => {
@@ -49,7 +50,7 @@ const Basic: React.FC<{
           }
         ]}
       >
-        <SealInput.Input
+        <CInput.Input
           required
           label={intl.formatMessage({
             id: 'common.table.name'
@@ -98,12 +99,12 @@ const Basic: React.FC<{
         />
       </Form.Item>
       <Form.Item<FormData> name="description">
-        <SealInput.TextArea
+        <CInput.TextArea
           scaleSize={true}
           label={intl.formatMessage({
             id: 'common.table.description'
           })}
-        ></SealInput.TextArea>
+        ></CInput.TextArea>
       </Form.Item>
     </>
   );

@@ -1,9 +1,8 @@
 import { getRequestId } from '@/atoms/models';
-import ModalFooter from '@/components/modal-footer';
-import GSDrawer from '@/components/scroller-modal/gs-drawer';
 import { PageActionType } from '@/config/types';
 import useDeferredRequest from '@/hooks/use-deferred-request';
 import { ClusterStatusValueMap } from '@/pages/cluster-management/config';
+import { GSDrawer, ModalFooter } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { Button } from 'antd';
@@ -349,7 +348,7 @@ const AddModal: FC<AddModalProps> = (props) => {
 
     updateSelectedModel(item);
 
-    let warningStatus: MessageStatus = {
+    const warningStatus: MessageStatus = {
       show: true,
       title: '',
       type: 'transition',
@@ -496,7 +495,7 @@ const AddModal: FC<AddModalProps> = (props) => {
         source: source
       });
     } else {
-      let backend = checkOnlyAscendNPU(gpuOptions)
+      const backend = checkOnlyAscendNPU(gpuOptions)
         ? backendOptionsMap.ascendMindie
         : backendOptionsMap.vllm;
 

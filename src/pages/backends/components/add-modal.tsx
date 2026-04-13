@@ -1,10 +1,12 @@
-import AlertBlockInfo from '@/components/alert-info/block';
-import IconFont from '@/components/icon-font';
-import ModalFooter from '@/components/modal-footer';
-import GSDrawer from '@/components/scroller-modal/gs-drawer';
-import SegmentLine from '@/components/segment-line';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
+import {
+  AlertBlockInfo,
+  GSDrawer,
+  IconFont,
+  ModalFooter,
+  SegmentLine
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Tabs } from 'antd';
 import _ from 'lodash';

@@ -1,5 +1,5 @@
 import { createAxiosToken } from '@/hooks/use-chunk-request';
-import ErrorMessageContent from '@/pages/_components/error-message-content';
+import { ErrorMessage } from '@gpustack/core-ui';
 import { useRequest } from 'ahooks';
 import { message } from 'antd';
 import { CancelTokenSource } from 'axios';
@@ -112,9 +112,9 @@ export const useTestProviderModel = () => {
         if (!response?.accessible) {
           message.error({
             content: (
-              <ErrorMessageContent
+              <ErrorMessage
                 errMsg={response?.error_message || 'Test model failed'}
-              ></ErrorMessageContent>
+              ></ErrorMessage>
             )
           });
         }
@@ -122,9 +122,9 @@ export const useTestProviderModel = () => {
       onError: (error) => {
         message.error({
           content: (
-            <ErrorMessageContent
+            <ErrorMessage
               errMsg={error?.message || 'Test model failed'}
-            ></ErrorMessageContent>
+            ></ErrorMessage>
           )
         });
       }

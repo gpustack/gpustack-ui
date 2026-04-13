@@ -1,8 +1,6 @@
-import AlertBlockInfo from '@/components/alert-info/block';
-import ModalFooter from '@/components/modal-footer';
 import { PageActionType } from '@/config/types';
-import FormDrawer from '@/pages/_components/form-drawer';
 import { RouteItem } from '@/pages/model-routes/config/types';
+import { AlertBlockInfo, FormDrawer, ModalFooter } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { message } from 'antd';
 import _ from 'lodash';

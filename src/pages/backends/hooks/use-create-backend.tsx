@@ -1,7 +1,7 @@
-import IconFont from '@/components/icon-font';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import useBodyScroll from '@/hooks/use-body-scroll';
+import { IconFont } from '@gpustack/core-ui';
 import { ListItem } from '../config/types';
 import useCommunityBackend from './use-community-backend';
 import useCustomBackend from './use-custom-backend';

@@ -1,9 +1,7 @@
-import IconFont from '@/components/icon-font';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
-import CollapsePanel from '@/pages/_components/collapse-panel';
-import { useWrapperContext } from '@/pages/_components/column-wrapper/use-wrapper-context';
-import ScrollSpyTabs from '@/pages/_components/scroll-spy-tabs';
+import { CollapsePanel, IconFont, ScrollSpyTabs } from '@gpustack/core-ui';
+import { useWrapperContext } from '@gpustack/core-ui/lib/components/column-wrapper/use-wrapper-context';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
@@ -212,7 +210,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
 
   // generate the data is available for the backend including the gpu_ids
   const handleOk = async (formdata: FormData) => {
-    let data = _.cloneDeep(formdata);
+    const data = _.cloneDeep(formdata);
     data.categories = data.categories ? [data.categories] : [];
     const gpuSelector = generateGPUIds(data);
     const allValues = {

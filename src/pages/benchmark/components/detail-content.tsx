@@ -1,4 +1,4 @@
-import IconFont from '@/components/icon-font';
+import { IconFont } from '@gpustack/core-ui';
 import { useIntl, useSearchParams } from '@umijs/max';
 import { Tabs, TabsProps } from 'antd';
 import React, { useState } from 'react';

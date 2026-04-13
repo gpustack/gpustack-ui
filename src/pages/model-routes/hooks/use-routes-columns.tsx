@@ -1,19 +1,17 @@
 // columns.ts
-import AutoTooltip from '@/components/auto-tooltip';
-import DropdownButtons from '@/components/drop-down-buttons';
-import { SealColumnProps } from '@/components/seal-table/types';
 import { tableSorter } from '@/config/settings';
 import ModelTag from '@/pages/_components/model-tag';
+import { AutoTooltip, DropdownButtons } from '@gpustack/core-ui';
+import { type ColumnProps } from '@gpustack/core-ui/lib/components/table/types';
 import { useIntl } from '@umijs/max';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
 import { rowActionList } from '../config';
 import { RouteItem } from '../config/types';
-
 const useAccessColumns = (
   handleSelect: (val: string, record: RouteItem) => void,
   onCellClick?: (record: RouteItem, dataIndex: string) => void
-): SealColumnProps[] => {
+): ColumnProps[] => {
   const intl = useIntl();
 
   const filterActions = (record: RouteItem) => {

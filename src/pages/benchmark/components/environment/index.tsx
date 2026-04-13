@@ -1,7 +1,9 @@
-import RowChildren from '@/components/seal-table/components/row-children';
-import SealTable from '@/components/seal-table/index';
-import TableContext from '@/components/seal-table/table-context';
 import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
+import {
+  RowChildren,
+  Table as SealTable,
+  TableProvider
+} from '@gpustack/core-ui';
 import useMemoizedFn from 'ahooks/lib/useMemoizedFn';
 import { Col, Row } from 'antd';
 import _ from 'lodash';
@@ -175,7 +177,7 @@ const Environment: React.FC = () => {
 
   return (
     <Container>
-      <TableContext.Provider
+      <TableProvider
         value={{
           allChildren: allChildren
         }}
@@ -195,7 +197,7 @@ const Environment: React.FC = () => {
           columns={workerColumns}
           expandable={true}
         ></SealTable>
-      </TableContext.Provider>
+      </TableProvider>
     </Container>
   );
 };

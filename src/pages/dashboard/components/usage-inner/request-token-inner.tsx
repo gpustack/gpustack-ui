@@ -1,7 +1,5 @@
-import CardWrapper from '@/components/card-wrapper';
-import { SimpleCard } from '@/components/card-wrapper/simple-card';
-import MixLineBar from '@/components/echarts/mix-line-bar';
 import { formatLargeNumber } from '@/utils';
+import { CardWrapper, MixLineBarChart, SimpleCard } from '@gpustack/core-ui';
 import { Button } from 'antd';
 import dayjs from 'dayjs';
 import React, { useMemo } from 'react';
@@ -103,7 +101,7 @@ const RequestTokenInner: React.FC<RequestTokenInnerProps> = (props) => {
     <CardWrapperBox>
       <CardWrapper style={{ width: '100%', position: 'relative' }}>
         <SimpleCard dataList={totalData} height={80}></SimpleCard>
-        <MixLineBar
+        <MixLineBarChart
           chartData={{
             line: requestData,
             bar: tokenData
@@ -114,7 +112,7 @@ const RequestTokenInner: React.FC<RequestTokenInnerProps> = (props) => {
           smooth={false}
           legendData={legendData}
           labelFormatter={labelFormatter}
-        ></MixLineBar>
+        ></MixLineBarChart>
       </CardWrapper>
     </CardWrapperBox>
   );

@@ -1,5 +1,4 @@
-import IconFont from '@/components/icon-font';
-import Card from '@/components/templates/card';
+import { IconFont, TemplateCard } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Tooltip } from 'antd';
 import React, { useMemo } from 'react';
@@ -147,7 +146,7 @@ const ProviderCatalog: React.FC<ProviderCatalogProps> = ({
                 key={action.key}
               >
                 <CardBox>
-                  <Card
+                  <TemplateCard
                     height={height}
                     onClick={() => onSelect?.(action.key as string, action)}
                     active={current === action.key}
@@ -155,7 +154,7 @@ const ProviderCatalog: React.FC<ProviderCatalogProps> = ({
                     clickable={clickable}
                     header={renderTitle(action)}
                     icon={action.icon}
-                  ></Card>
+                  ></TemplateCard>
                 </CardBox>
               </Tooltip>
             ))}

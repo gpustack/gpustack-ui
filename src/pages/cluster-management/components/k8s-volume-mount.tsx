@@ -1,12 +1,14 @@
-import CollapsibleContainer from '@/components/collapse-container';
-import SealCheckbox from '@/components/seal-form/seal-checkbox';
-import SealInput from '@/components/seal-form/seal-input';
-import SealSelect from '@/components/seal-form/seal-select';
-import SealSwitch from '@/components/seal-form/seal-switch';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import useAppUtils from '@/hooks/use-app-utils';
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
+import {
+  Input as CInput,
+  CollapseContainer,
+  Checkbox as SealCheckbox,
+  Select as SealSelect,
+  Switch as SealSwitch
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Flex, Form } from 'antd';
 import React, { useEffect, useState } from 'react';
@@ -157,11 +159,11 @@ const VolumeMountsForm: React.FC<{ action: PageActionType }> = ({ action }) => {
                     borderRadius: 'var(--ant-border-radius-lg)'
                   }}
                 >
-                  <CollapsibleContainer
+                  <CollapseContainer
                     collapsible={true}
                     showExpandIcon={true}
                     open={collapseKey.has(name)}
-                    onToggle={(open) => onToggle(open, name)}
+                    onToggle={(open: boolean) => onToggle(open, name)}
                     styles={{
                       body: collapseKey.has(name) ? { padding: 16 } : {},
                       content: { paddingTop: 0 },
@@ -203,13 +205,12 @@ const VolumeMountsForm: React.FC<{ action: PageActionType }> = ({ action }) => {
                         }
                       ]}
                     >
-                      <SealInput.Input
-                        disabled={name === 0}
+                      <CInput.Input
                         label={intl.formatMessage({
                           id: 'clusters.volume.name'
                         })}
                         required
-                      ></SealInput.Input>
+                      ></CInput.Input>
                     </Form.Item>
                     <Flex style={{ gap: 16, width: '100%' }}>
                       {/* Mount Path */}
@@ -232,7 +233,7 @@ const VolumeMountsForm: React.FC<{ action: PageActionType }> = ({ action }) => {
                             }
                           ]}
                         >
-                          <SealInput.Input
+                          <CInput.Input
                             required
                             disabled={name === 0}
                             placeholder={intl.formatMessage({
@@ -241,7 +242,7 @@ const VolumeMountsForm: React.FC<{ action: PageActionType }> = ({ action }) => {
                             label={intl.formatMessage({
                               id: 'clusters.volume.mountPath'
                             })}
-                          ></SealInput.Input>
+                          ></CInput.Input>
                         </Form.Item>
                       </div>
 
@@ -307,7 +308,7 @@ const VolumeMountsForm: React.FC<{ action: PageActionType }> = ({ action }) => {
                               }
                             ]}
                           >
-                            <SealInput.Input
+                            <CInput.Input
                               required
                               placeholder={intl.formatMessage({
                                 id: 'clusters.volume.mountPath.format'
@@ -315,7 +316,7 @@ const VolumeMountsForm: React.FC<{ action: PageActionType }> = ({ action }) => {
                               label={intl.formatMessage({
                                 id: 'clusters.volume.sourceType.hostPath'
                               })}
-                            ></SealInput.Input>
+                            ></CInput.Input>
                           </Form.Item>
                         </div>
 
@@ -364,7 +365,7 @@ const VolumeMountsForm: React.FC<{ action: PageActionType }> = ({ action }) => {
                               }
                             ]}
                           >
-                            <SealInput.Input
+                            <CInput.Input
                               label={intl.formatMessage({
                                 id: 'clusters.volume.pvc.claimName'
                               })}
@@ -390,7 +391,7 @@ const VolumeMountsForm: React.FC<{ action: PageActionType }> = ({ action }) => {
                               }
                             ]}
                           >
-                            <SealInput.Input
+                            <CInput.Input
                               label={intl.formatMessage({
                                 id: 'clusters.volume.configMap.name'
                               })}
@@ -412,7 +413,7 @@ const VolumeMountsForm: React.FC<{ action: PageActionType }> = ({ action }) => {
                         </Form.Item>
                       </Flex>
                     )}
-                  </CollapsibleContainer>
+                  </CollapseContainer>
                 </div>
               );
             });

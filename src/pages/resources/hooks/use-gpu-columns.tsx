@@ -1,14 +1,11 @@
-import AutoTooltip from '@/components/auto-tooltip';
-import ProgressBar from '@/components/progress-bar';
-import InfoColumn from '@/components/simple-table/info-column';
 import { tableSorter } from '@/config/settings';
 import { convertFileSize } from '@/utils';
+import { AutoTooltip, InfoColumn, ProgressBar } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { ColumnsType } from 'antd/lib/table';
 import _ from 'lodash';
 import { useMemo } from 'react';
 import { GPUDeviceItem } from '../config/types';
-
 const fieldList = [
   {
     label: 'resources.table.total',

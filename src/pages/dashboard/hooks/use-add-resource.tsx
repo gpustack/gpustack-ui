@@ -1,9 +1,8 @@
 import { clusterSessionAtom } from '@/atoms/clusters';
 import { hideModalTemporarilyAtom } from '@/atoms/settings';
-import IconFont from '@/components/icon-font';
-import ScrollerModal from '@/components/scroller-modal/index';
 import useUserSettings from '@/hooks/use-user-settings';
 import useClusterList from '@/pages/cluster-management/hooks/use-cluster-list';
+import { IconFont, ScrollerModal } from '@gpustack/core-ui';
 import { useIntl, useNavigate } from '@umijs/max';
 import { Button } from 'antd';
 import { useAtom } from 'jotai';

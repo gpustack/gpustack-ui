@@ -1,7 +1,5 @@
-import AutoTooltip from '@/components/auto-tooltip';
-import ModalFooter from '@/components/modal-footer';
-import ScrollerModal from '@/components/scroller-modal';
 import { exportJsonToExcel } from '@/utils/excel-reader';
+import { AutoTooltip, ModalFooter, ScrollerModal } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Table, TableColumnType } from 'antd';
 import dayjs from 'dayjs';
@@ -10,7 +8,6 @@ import { DASHBOARD_USAGE_API } from '../../apis';
 import { TableRow } from '../../config/types';
 import FilterBar from './filter-bar';
 import useUsageData from './use-usage-data';
-
 const ExportData: React.FC<{
   open: boolean;
   onCancel: () => void;

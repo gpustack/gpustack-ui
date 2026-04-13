@@ -1,10 +1,8 @@
-import IconFont from '@/components/icon-font';
-import { FilterBar } from '@/components/page-tools';
 import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import useTableFetch from '@/hooks/use-table-fetch';
-import NoResult from '@/pages/_components/no-result';
 import PageBox from '@/pages/_components/page-box';
 import { useQueryClusterList } from '@/pages/cluster-management/services/use-query-cluster-list';
+import { FilterBar, IconFont, NoResult } from '@gpustack/core-ui';
 import { useIntl, useSearchParams } from '@umijs/max';
 import { ConfigProvider, Table } from 'antd';
 import _ from 'lodash';

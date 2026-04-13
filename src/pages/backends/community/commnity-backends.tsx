@@ -1,8 +1,7 @@
 import { enabledBackendsAtom } from '@/atoms/backend';
-import IconFont from '@/components/icon-font';
-import ThemeTag from '@/components/tags-wrapper/theme-tag';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { SearchOutlined } from '@ant-design/icons';
+import { IconFont, ThemeTag } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Input, Tooltip } from 'antd';
 import { useAtom } from 'jotai';

@@ -1,7 +1,6 @@
 import { enabledBackendsAtom } from '@/atoms/backend';
-import GSDrawer from '@/components/scroller-modal/gs-drawer';
-import ColumnWrapper from '@/pages/_components/column-wrapper';
 import Separator from '@/pages/llmodels/components/separator';
+import { ColumnWrapper, GSDrawer } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useAtom } from 'jotai';
 import React, { useEffect } from 'react';

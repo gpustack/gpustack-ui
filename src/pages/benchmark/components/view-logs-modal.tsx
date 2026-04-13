@@ -1,4 +1,4 @@
-import LogsViewer from '@/components/logs-viewer/virtual-log-list';
+import { LogsViewer } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Modal } from 'antd';
 import React, { useCallback, useEffect } from 'react';

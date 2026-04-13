@@ -1,5 +1,3 @@
-import CopyButton from '@/components/copy-button';
-import UploadAudio from '@/components/upload-audio';
 import {
   audioTypeMap,
   convertFileToBase64,
@@ -10,6 +8,7 @@ import {
   EditOutlined,
   MinusCircleOutlined
 } from '@ant-design/icons';
+import { CopyButton, UploadAudio } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Tooltip } from 'antd';
 import classNames from 'classnames';

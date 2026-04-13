@@ -1,6 +1,5 @@
-import DropdownButtons from '@/components/drop-down-buttons';
-import IconFont from '@/components/icon-font';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
+import { DropdownButtons, IconFont } from '@gpustack/core-ui';
 import { Button, Space } from 'antd';
 import React from 'react';
 

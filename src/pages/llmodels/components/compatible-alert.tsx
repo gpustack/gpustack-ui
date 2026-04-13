@@ -1,5 +1,5 @@
-import AlertBlockInfo from '@/components/alert-info/block';
 import { CloseOutlined } from '@ant-design/icons';
+import { AlertBlockInfo } from '@gpustack/core-ui';
 import { Button } from 'antd';
 import { isArray } from 'lodash';
 import React, { useCallback, useMemo } from 'react';

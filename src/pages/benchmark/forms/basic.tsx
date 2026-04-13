@@ -1,9 +1,8 @@
-import SealInput from '@/components/seal-form/seal-input';
-import SealSelect from '@/components/seal-form/seal-select';
 import { modelNameReg, PageAction } from '@/config';
 import useAppUtils from '@/hooks/use-app-utils';
 import { ClusterStatusValueMap } from '@/pages/cluster-management/config';
 import { useBenchmarkTargetInstance } from '@/pages/llmodels/hooks/use-run-benchmark';
+import { Input as CInput, Select as SealSelect } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import React, { useEffect } from 'react';
@@ -60,10 +59,10 @@ const BasicForm: React.FC = () => {
           }
         ]}
       >
-        <SealInput.Input
+        <CInput.Input
           label={intl.formatMessage({ id: 'common.table.name' })}
           required
-        ></SealInput.Input>
+        ></CInput.Input>
       </Form.Item>
       <Form.Item<FormData>
         name="cluster_id"
@@ -82,22 +81,22 @@ const BasicForm: React.FC = () => {
         ></SealSelect>
       </Form.Item>
       <Form.Item<FormData> name="model_name" hidden={true}>
-        <SealInput.Input></SealInput.Input>
+        <CInput.Input></CInput.Input>
       </Form.Item>
       <Form.Item<FormData> name="model_id" hidden={true}>
-        <SealInput.Input></SealInput.Input>
+        <CInput.Input></CInput.Input>
       </Form.Item>
       <Form.Item<FormData> name="model_instance_name" hidden={true}>
-        <SealInput.Input></SealInput.Input>
+        <CInput.Input></CInput.Input>
       </Form.Item>
       <ModelInstanceForm></ModelInstanceForm>
       <Form.Item<FormData> name="description">
-        <SealInput.TextArea
+        <CInput.TextArea
           scaleSize={true}
           label={intl.formatMessage({
             id: 'common.table.description'
           })}
-        ></SealInput.TextArea>
+        ></CInput.TextArea>
       </Form.Item>
     </>
   );

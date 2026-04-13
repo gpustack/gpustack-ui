@@ -1,10 +1,10 @@
-import DropDownActions from '@/components/drop-down-actions';
 import {
   DeleteOutlined,
   LinkOutlined,
   PictureOutlined,
   UploadOutlined
 } from '@ant-design/icons';
+import { DropdownActions } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Input, Tooltip } from 'antd';
 import { useRef, useState } from 'react';
@@ -131,7 +131,7 @@ const useAddImage = (options: {
   ) : null;
 
   const UploadImageButton = (
-    <DropDownActions
+    <DropdownActions
       onOpenChange={handleOnOpenChange}
       placement={'topLeft'}
       menu={{
@@ -167,7 +167,7 @@ const useAddImage = (options: {
           e.stopPropagation();
         }}
       ></Button>
-    </DropDownActions>
+    </DropdownActions>
   );
 
   return {

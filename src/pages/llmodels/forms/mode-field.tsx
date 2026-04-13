@@ -1,11 +1,9 @@
-import AutoTooltip from '@/components/auto-tooltip';
-import SealSelect from '@/components/seal-form/seal-select';
+import { AutoTooltip, Select as SealSelect } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form, Select } from 'antd';
 import React from 'react';
 import { DeployFormKeyMap } from '../config';
 import { useCatalogFormContext, useFormContext } from '../config/form-context';
-
 const Performance: React.FC = () => {
   const intl = useIntl();
   const { formKey } = useFormContext();

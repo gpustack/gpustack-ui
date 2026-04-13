@@ -1,4 +1,4 @@
-import SealSelect from '@/components/seal-form/seal-select';
+import { Select as SealSelect } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import React from 'react';

@@ -1,6 +1,5 @@
 import { clusterSessionAtom } from '@/atoms/clusters';
-import IconFont from '@/components/icon-font';
-import NoResult from '@/pages/_components/no-result';
+import { IconFont, NoResult } from '@gpustack/core-ui';
 import { useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { useAtom } from 'jotai';

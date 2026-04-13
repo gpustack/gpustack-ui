@@ -1,7 +1,9 @@
-import SealInputNumber from '@/components/seal-form/input-number';
-import SealSelect from '@/components/seal-form/seal-select';
 import { PageAction } from '@/config';
 import useAppUtils from '@/hooks/use-app-utils';
+import {
+  InputNumber as CInputNumber,
+  Select as SealSelect
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import React, { useMemo } from 'react';
@@ -62,14 +64,14 @@ const RandomSettingsForm: React.FC<{
               }
             ]}
           >
-            <SealInputNumber
+            <CInputNumber
               min={0}
               disabled={disabled}
               label={intl.formatMessage({
                 id: 'benchmark.table.inputTokenLength'
               })}
               required
-            ></SealInputNumber>
+            ></CInputNumber>
           </Form.Item>
           <Form.Item<FormData>
             name="dataset_output_tokens"
@@ -83,24 +85,24 @@ const RandomSettingsForm: React.FC<{
               }
             ]}
           >
-            <SealInputNumber
+            <CInputNumber
               min={0}
               disabled={disabled}
               label={intl.formatMessage({
                 id: 'benchmark.table.outputTokenLength'
               })}
               required
-            ></SealInputNumber>
+            ></CInputNumber>
           </Form.Item>
           <Form.Item<FormData>
             name="dataset_seed"
             getValueProps={(value) => ({ value: value || null })}
           >
-            <SealInputNumber
+            <CInputNumber
               min={0}
               disabled={disabled}
               label={intl.formatMessage({ id: 'playground.image.params.seed' })}
-            ></SealInputNumber>
+            ></CInputNumber>
           </Form.Item>
         </>
       )}
@@ -114,11 +116,11 @@ const RandomSettingsForm: React.FC<{
           }
         ]}
       >
-        <SealInputNumber
+        <CInputNumber
           disabled={disabled}
           label={intl.formatMessage({ id: 'benchmark.table.requestRate' })}
           required
-        ></SealInputNumber>
+        ></CInputNumber>
       </Form.Item>
       <Form.Item<FormData>
         name="total_requests"
@@ -129,12 +131,12 @@ const RandomSettingsForm: React.FC<{
           }
         ]}
       >
-        <SealInputNumber
+        <CInputNumber
           min={0}
           disabled={disabled}
           label={intl.formatMessage({ id: 'benchmark.form.totalRequests' })}
           required
-        ></SealInputNumber>
+        ></CInputNumber>
       </Form.Item>
     </>
   );

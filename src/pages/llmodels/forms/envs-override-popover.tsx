@@ -1,6 +1,9 @@
-import OverlayScroller from '@/components/overlay-scroller';
-import SimpleTabel, { ColumnProps } from '@/components/simple-table';
 import { WarningOutlined } from '@ant-design/icons';
+import {
+  OverlayScroller,
+  SimpleTable,
+  type ColumnProps
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Alert, Button, Popover, Radio } from 'antd';
 import React, { useMemo } from 'react';
@@ -128,7 +131,7 @@ const EnvsOverridePopover: React.FC<EnvsOverridePopoverProps> = (props) => {
               }
             }}
           >
-            <SimpleTabel
+            <SimpleTable
               columns={columns}
               dataSource={dataList}
               rowKey="env_name"

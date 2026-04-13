@@ -1,7 +1,3 @@
-import AutoTooltip from '@/components/auto-tooltip';
-import DropdownButtons from '@/components/drop-down-buttons';
-import { TooltipOverlayScroller } from '@/components/overlay-scroller';
-import StatusTag from '@/components/status-tag';
 import { tableSorter } from '@/config/settings';
 import { modelSourceMap } from '@/pages/llmodels/config';
 import { modelFileActions } from '@/pages/llmodels/config/button-actions';
@@ -11,6 +7,12 @@ import {
   CopyOutlined,
   InfoCircleOutlined
 } from '@ant-design/icons';
+import {
+  AutoTooltip,
+  DropdownButtons,
+  StatusTag,
+  TooltipOverlayScroller
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Tag, Typography } from 'antd';
 import { ColumnsType } from 'antd/lib/table';

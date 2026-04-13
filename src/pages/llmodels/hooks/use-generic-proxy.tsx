@@ -1,4 +1,3 @@
-import CommandViewer from '@/pages/_components/command-viewer';
 import {
   AUDIO_SPEECH_TO_TEXT_API,
   AUDIO_TEXT_TO_SPEECH_API,
@@ -16,6 +15,7 @@ import { generateEmbeddingCurlCode } from '@/pages/playground/view-code/embeddin
 import { generateImageCurlCode } from '@/pages/playground/view-code/image';
 import { generateLLmCurlCode } from '@/pages/playground/view-code/llm';
 import { generateRerankCurlCode } from '@/pages/playground/view-code/rerank';
+import { CommandViewer } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { useState } from 'react';

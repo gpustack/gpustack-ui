@@ -1,7 +1,4 @@
-import LabelSelector from '@/components/label-selector';
-import ModalFooter from '@/components/modal-footer';
-import ScrollerModal from '@/components/scroller-modal';
-import SealInput from '@/components/seal-form/seal-input';
+import { LabelSelector, ModalFooter, ScrollerModal } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
@@ -66,7 +63,7 @@ const UpdateLabels: React.FC<ViewModalProps> = (props) => {
         }}
       >
         <Form.Item<FormData> name="name">
-          <SealInput.Input
+          <CInput.Input
             label={intl.formatMessage({
               id: 'common.table.name'
             })}

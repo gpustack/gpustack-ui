@@ -1,5 +1,5 @@
-import IconFont from '@/components/icon-font';
 import { CaretDownOutlined } from '@ant-design/icons';
+import { IconFont } from '@gpustack/core-ui';
 import { Link, useLocation } from '@umijs/max';
 import { Tooltip } from 'antd';
 import { createStyles } from 'antd-style';

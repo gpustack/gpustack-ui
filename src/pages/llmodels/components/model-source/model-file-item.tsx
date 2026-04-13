@@ -1,7 +1,6 @@
-import { TooltipOverlayScroller } from '@/components/overlay-scroller';
-import ThemeTag from '@/components/tags-wrapper/theme-tag';
 import { convertFileSize } from '@/utils';
 import { InfoCircleOutlined } from '@ant-design/icons';
+import { ThemeTag, TooltipOverlayScroller } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import classNames from 'classnames';
 import _ from 'lodash';

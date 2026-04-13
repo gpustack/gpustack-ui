@@ -1,9 +1,11 @@
-import SealCascader from '@/components/seal-form/seal-cascader';
-import SealInput from '@/components/seal-form/seal-input';
-import SealSelect from '@/components/seal-form/seal-select';
-import TooltipList from '@/components/tooltip-list';
 import useAppUtils from '@/hooks/use-app-utils';
 import { ModelFileFormData as FormData } from '@/pages/resources/config/types';
+import {
+  Input as CInput,
+  Cascader as SealCascader,
+  Select as SealSelect,
+  TooltipList
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
@@ -131,12 +133,12 @@ const TargetForm: React.FC<TargetFormProps> = forwardRef((props, ref) => {
             }
           ]}
         >
-          <SealInput.Input
+          <CInput.Input
             required
             label={intl.formatMessage({ id: 'models.form.filePath' })}
             onBlur={handleOnLocalPathBlur}
             description={<TooltipList list={localPathTipsList}></TooltipList>}
-          ></SealInput.Input>
+          ></CInput.Input>
         </Form.Item>
       </>
     );
@@ -222,7 +224,7 @@ const TargetForm: React.FC<TargetFormProps> = forwardRef((props, ref) => {
               }
             ]}
           >
-            <SealInput.Input
+            <CInput.Input
               description={
                 <span
                   dangerouslySetInnerHTML={{
@@ -235,7 +237,7 @@ const TargetForm: React.FC<TargetFormProps> = forwardRef((props, ref) => {
               label={intl.formatMessage({
                 id: 'resources.modelfiles.form.localdir'
               })}
-            ></SealInput.Input>
+            ></CInput.Input>
           </Form.Item>
         )}
       </Form>

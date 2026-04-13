@@ -1,13 +1,12 @@
 // columns.ts
-import AutoTooltip from '@/components/auto-tooltip';
 import { tableSorter } from '@/config/settings';
+import { AutoTooltip } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Typography } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { useMemo } from 'react';
 import RowActions from '../components/row-actions';
 import { BenchmarkListItem as ListItem } from '../config/types';
-
 const useBenchmarkColumns = (params: {
   sortOrder: string[];
   columns: ColumnsType<ListItem>;

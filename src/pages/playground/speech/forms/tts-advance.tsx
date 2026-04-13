@@ -1,10 +1,12 @@
-import CheckboxField from '@/components/seal-form/checkbox-field';
-import InputNumber from '@/components/seal-form/input-number';
-import SealInput from '@/components/seal-form/seal-input';
-import UploadAudio from '@/components/upload-audio';
 import useAppUtils from '@/hooks/use-app-utils';
 import { convertFileToBase64 } from '@/utils/load-audio-file';
 import { CloseCircleFilled } from '@ant-design/icons';
+import {
+  CheckboxField,
+  Input as CInput,
+  InputNumber,
+  UploadAudio
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import React, { useEffect } from 'react';
@@ -110,14 +112,14 @@ const TTSAdvanceConfig: React.FC = () => {
           }
         ]}
       >
-        <SealInput.Input
+        <CInput.Input
           allowClear
           required={taskType === 'VoiceDesign'}
           description={intl.formatMessage({
             id: 'playground.params.instructions.tips'
           })}
           label={intl.formatMessage({ id: 'playground.params.instructions' })}
-        ></SealInput.Input>
+        ></CInput.Input>
       </Form.Item>
       <Form.Item
         name="max_new_tokens"
@@ -136,7 +138,7 @@ const TTSAdvanceConfig: React.FC = () => {
           getValueProps={(value) => ({ value: fileName ? fileName : value })}
           dependencies={['task_type']}
         >
-          <SealInput.Input
+          <CInput.Input
             allowClear
             readOnly={!!fileName}
             suffix={
@@ -158,7 +160,7 @@ const TTSAdvanceConfig: React.FC = () => {
               id: 'playground.params.refAudio.tips'
             })}
             label={intl.formatMessage({ id: 'playground.params.refAudio' })}
-          ></SealInput.Input>
+          ></CInput.Input>
         </Form.Item>
       </Container>
       <Form.Item
@@ -167,11 +169,11 @@ const TTSAdvanceConfig: React.FC = () => {
         dependencies={['task_type', 'x_vector_only_mode']}
         rules={[atLeastOneValidator('x_vector_only_mode')]}
       >
-        <SealInput.TextArea
+        <CInput.TextArea
           allowClear
           scaleSize={true}
           label={intl.formatMessage({ id: 'playground.params.refAudio.text' })}
-        ></SealInput.TextArea>
+        ></CInput.TextArea>
       </Form.Item>
       <Form.Item
         dependencies={['task_type', 'ref_text']}

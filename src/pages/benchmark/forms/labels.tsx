@@ -1,4 +1,4 @@
-import LabelSelector from '@/components/label-selector';
+import { LabelSelector } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';

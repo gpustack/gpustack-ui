@@ -1,6 +1,7 @@
-import DropDownActions from '@/components/drop-down-actions';
-import ListMap from '@/components/dynamic-form/components/list-map';
-import { FieldSchema } from '@/components/dynamic-form/config/types';
+import { DropdownActions } from '@gpustack/core-ui';
+import ListMap from '@gpustack/core-ui/lib/components/dynamic-form/components/list-map';
+import { FieldSchema } from '@gpustack/core-ui/lib/components/dynamic-form/config/types';
+
 import { PlusOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
@@ -87,14 +88,14 @@ const CloudOptions: React.FC<{
   return (
     <>
       <Title>
-        <DropDownActions menu={menu}>
+        <DropdownActions menu={menu}>
           <Button variant="filled" color="default">
             <PlusOutlined />
             <span>
               {intl.formatMessage({ id: 'clusters.workerpool.cloudOptions' })}
             </span>
           </Button>
-        </DropDownActions>
+        </DropdownActions>
       </Title>
       {fieldList.length > 0 &&
         fieldList.map((field) => (

@@ -1,9 +1,11 @@
-import SealInput from '@/components/seal-form/seal-input';
-import SealTextArea from '@/components/seal-form/seal-textarea';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
-import CollapsePanel from '@/pages/_components/collapse-panel';
 import { json2Yaml, yaml2Json } from '@/pages/backends/config';
+import {
+  Input as CInput,
+  CollapsePanel,
+  Textarea as SealTextArea
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
@@ -164,11 +166,11 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
             }
           ]}
         >
-          <SealInput.Input
+          <CInput.Input
             label={intl.formatMessage({ id: 'common.table.name' })}
             required
             trim={false}
-          ></SealInput.Input>
+          ></CInput.Input>
         </Form.Item>
         {provider === ProviderValueMap.DigitalOcean && (
           <CloudProvider

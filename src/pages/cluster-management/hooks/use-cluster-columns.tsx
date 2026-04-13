@@ -1,13 +1,15 @@
 // columns.ts
 import { systemConfigAtom } from '@/atoms/system';
-import AutoTooltip from '@/components/auto-tooltip';
-import DropdownButtons from '@/components/drop-down-buttons';
-import icons from '@/components/icon-font/icons';
-import { SealColumnProps } from '@/components/seal-table/types';
-import StatusTag from '@/components/status-tag';
 import { tableSorter } from '@/config/settings';
-import GrafanaIcon from '@/pages/_components/grafana-icon';
 import { StarFilled } from '@ant-design/icons';
+import {
+  AutoTooltip,
+  DropdownButtons,
+  GrafanaIcon,
+  StatusTag
+} from '@gpustack/core-ui';
+import icons from '@gpustack/core-ui/lib/components/icon-font/icons';
+import { ColumnProps as SealColumnProps } from '@gpustack/core-ui/lib/components/table/types';
 import { useIntl } from '@umijs/max';
 import { Tooltip } from 'antd';
 import dayjs from 'dayjs';
@@ -20,7 +22,6 @@ import {
   ProviderValueMap
 } from '../config';
 import { ClusterListItem } from '../config/types';
-
 const clusterActionList = [
   {
     key: 'edit',

@@ -1,4 +1,4 @@
-import FormDrawer from '@/pages/_components/form-drawer';
+import { FormDrawer } from '@gpustack/core-ui';
 import { BenchmarkListItem } from '../config/types';
 import DetailContent from './detail-content';
 

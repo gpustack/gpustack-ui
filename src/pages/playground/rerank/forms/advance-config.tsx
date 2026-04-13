@@ -1,4 +1,4 @@
-import SealInputNumber from '@/components/seal-form/input-number';
+import { InputNumber as CInputNumber } from '@gpustack/core-ui';
 import { Form } from 'antd';
 import _ from 'lodash';
 import React from 'react';
@@ -11,11 +11,11 @@ const AdvanceConfig: React.FC = () => {
     <>
       {modelMeta?.n_ctx && modelMeta?.n_slot && (
         <Form.Item name="max_tokens">
-          <SealInputNumber
+          <CInputNumber
             disabled
             label="Max Tokens"
             value={_.floor(_.divide(modelMeta?.n_ctx, modelMeta?.n_slot))}
-          ></SealInputNumber>
+          ></CInputNumber>
         </Form.Item>
       )}
     </>

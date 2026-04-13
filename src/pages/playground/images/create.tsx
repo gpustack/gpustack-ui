@@ -1,10 +1,9 @@
 import { setRouteCache } from '@/atoms/route-cache';
-import AlertInfo from '@/components/alert-info';
-import IconFont from '@/components/icon-font';
 import routeCachekey from '@/config/route-cachekey';
 import ThumbImg from '@/pages/playground/components/thumb-img';
 import { generateRandomNumber } from '@/utils';
 import { FileImageOutlined } from '@ant-design/icons';
+import { AlertInfo, IconFont } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Tooltip } from 'antd';
 import _ from 'lodash';

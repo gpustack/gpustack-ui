@@ -1,17 +1,19 @@
-import AlertInfo from '@/components/alert-info';
-import ScatterChart from '@/components/echarts/scatter';
-import HighlightCode from '@/components/highlight-code';
-import IconFont from '@/components/icon-font';
-import SealInputNumber from '@/components/seal-form/input-number';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import useRequestToken from '@/hooks/use-request-token';
-import ResizeContainer from '@/pages/_components/terminal-tabs/resize-container';
 import {
   ClearOutlined,
   PlusOutlined,
   QuestionCircleOutlined,
   SendOutlined
 } from '@ant-design/icons';
+import {
+  AlertInfo,
+  InputNumber as CInputNumber,
+  HighlightCode,
+  IconFont,
+  ResizeContainer,
+  ScatterChart
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { Button, Checkbox, Form, Segmented, Spin, Tabs, Tooltip } from 'antd';
@@ -406,11 +408,11 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
     if (modelMeta?.n_ctx && modelMeta?.n_slot) {
       return (
         <Form.Item>
-          <SealInputNumber
+          <CInputNumber
             disabled
             label="Max Tokens"
             value={_.floor(_.divide(modelMeta?.n_ctx, modelMeta?.n_slot))}
-          ></SealInputNumber>
+          ></CInputNumber>
         </Form.Item>
       );
     }

@@ -1,16 +1,18 @@
 import { clusterSessionAtom, expandKeysAtom } from '@/atoms/clusters';
-import DeleteModal from '@/components/delete-modal';
-import IconFont from '@/components/icon-font';
-import { FilterBar } from '@/components/page-tools';
-import SealTable from '@/components/seal-table';
-import TableContext from '@/components/seal-table/table-context';
-import { TableOrder } from '@/components/seal-table/types';
 import { PageAction } from '@/config';
 import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import type { PageActionType } from '@/config/types';
 import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import useTableFetch from '@/hooks/use-table-fetch';
 import useWatchList from '@/hooks/use-watch-list';
+import {
+  DeleteModal,
+  FilterBar,
+  IconFont,
+  Table as SealTable,
+  TableProvider
+} from '@gpustack/core-ui';
+import { TableOrder } from '@gpustack/core-ui/lib/components/table/types';
 import { useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { message } from 'antd';
@@ -354,7 +356,7 @@ const Clusters: React.FC = () => {
             ></RightActions>
           }
         ></FilterBar>
-        <TableContext.Provider
+        <TableProvider
           value={{
             allChildren: allWorkerPoolList,
             setDisableExpand: setDisableExpand
@@ -405,7 +407,7 @@ const Clusters: React.FC = () => {
               onChange: handlePageChange
             }}
           ></SealTable>
-        </TableContext.Provider>
+        </TableProvider>
       </PageBox>
       <AddCluster
         provider={openAddModal.provider}

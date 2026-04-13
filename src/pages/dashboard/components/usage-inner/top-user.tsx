@@ -1,5 +1,4 @@
-import CardWrapper from '@/components/card-wrapper';
-import HBar from '@/components/echarts/h-bar';
+import { CardWrapper, HBarChart } from '@gpustack/core-ui';
 import React from 'react';
 
 interface TopUserProps {
@@ -13,12 +12,12 @@ const TopUser: React.FC<TopUserProps> = (props) => {
 
   return (
     <CardWrapper>
-      <HBar
+      <HBarChart
         seriesData={userData}
         xAxisData={topUserList}
         height={440}
         maxItems={10}
-      ></HBar>
+      ></HBarChart>
     </CardWrapper>
   );
 };

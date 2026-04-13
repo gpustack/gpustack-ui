@@ -1,5 +1,4 @@
-import GaugeChart from '@/components/echarts/gauge';
-import Card from '@/components/templates/card';
+import { GaugeChart, TemplateCard } from '@gpustack/core-ui';
 import { useSearchParams } from '@umijs/max';
 import { Col, Row } from 'antd';
 import _ from 'lodash';
@@ -196,46 +195,46 @@ const ClusterMetrics = () => {
       <SubTitle>System Load</SubTitle>
       <Row style={{ marginBottom: 16 }} gutter={16}>
         <Col span={12}>
-          <Card height={CardHeight} clickable={false} ghost>
+          <TemplateCard height={CardHeight} clickable={false} ghost>
             <TrendChart
               data={detailContent?.history}
               metrics={['vram']}
               metricsMap={metricsMap}
               title="VRAM"
             ></TrendChart>
-          </Card>
+          </TemplateCard>
         </Col>
         <Col span={12}>
-          <Card height={CardHeight} clickable={false} ghost>
+          <TemplateCard height={CardHeight} clickable={false} ghost>
             <TrendChart
               data={detailContent?.history}
               metrics={['ram']}
               metricsMap={metricsMap}
               title="RAM"
             ></TrendChart>
-          </Card>
+          </TemplateCard>
         </Col>
       </Row>
       <Row gutter={16}>
         <Col span={12}>
-          <Card height={CardHeight} clickable={false} ghost>
+          <TemplateCard height={CardHeight} clickable={false} ghost>
             <TrendChart
               data={detailContent?.history}
               metrics={['cpu']}
               metricsMap={metricsMap}
               title="CPU"
             ></TrendChart>
-          </Card>
+          </TemplateCard>
         </Col>
         <Col span={12}>
-          <Card height={CardHeight} clickable={false} ghost>
+          <TemplateCard height={CardHeight} clickable={false} ghost>
             <TrendChart
               data={detailContent?.history}
               metrics={['gpu']}
               metricsMap={metricsMap}
               title="GPU"
             ></TrendChart>
-          </Card>
+          </TemplateCard>
         </Col>
       </Row>
     </div>

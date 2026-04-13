@@ -1,5 +1,5 @@
-import MetadataList from '@/components/metadata-list';
 import { PageAction } from '@/config';
+import { MetadataList } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';

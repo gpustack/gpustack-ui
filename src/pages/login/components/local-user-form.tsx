@@ -1,11 +1,10 @@
-import HighlightCode from '@/components/highlight-code';
-import SealInput from '@/components/seal-form/seal-input';
 import externalLinks from '@/constants/external-links';
 import {
   InfoCircleOutlined,
   LockOutlined,
   UserOutlined
 } from '@ant-design/icons';
+import { Input as CInput, HighlightCode } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Checkbox, Divider, Form, FormInstance } from 'antd';
 import { createStyles } from 'antd-style';
@@ -93,7 +92,7 @@ const LocalUserForm: React.FC<LocalUserFormProps> = (props) => {
           }
         ]}
       >
-        <SealInput.Input
+        <CInput.Input
           autoComplete="username"
           label={intl.formatMessage({ id: 'common.form.username' })}
           prefix={<UserOutlined />}
@@ -114,7 +113,7 @@ const LocalUserForm: React.FC<LocalUserFormProps> = (props) => {
           }
         ]}
       >
-        <SealInput.Password
+        <CInput.Password
           autoComplete="current-password"
           prefix={<LockOutlined />}
           label={intl.formatMessage({ id: 'common.form.password' })}

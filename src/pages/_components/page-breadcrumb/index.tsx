@@ -1,4 +1,4 @@
-import IconFont from '@/components/icon-font';
+import { IconFont } from '@gpustack/core-ui';
 import { Breadcrumb, type BreadcrumbProps } from 'antd';
 import React from 'react';
 import styled from 'styled-components';

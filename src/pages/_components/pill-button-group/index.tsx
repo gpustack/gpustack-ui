@@ -1,7 +1,6 @@
-import AutoTooltip from '@/components/auto-tooltip';
+import { AutoTooltip } from '@gpustack/core-ui';
 import React from 'react';
 import pillButtonCss from './styles.less';
-
 type Option = {
   label: string;
   value: string | number | null;

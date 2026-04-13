@@ -1,7 +1,8 @@
-import ModalFooter from '@/components/modal-footer';
-import ScrollerModal from '@/components/scroller-modal';
-import SealInput from '@/components/seal-form/seal-input';
-import SealTextArea from '@/components/seal-form/seal-textarea';
+import {
+  ModalFooter,
+  ScrollerModal,
+  Textarea as SealTextArea
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form, message } from 'antd';
 import React from 'react';
@@ -90,7 +91,7 @@ const useWorkerMaintenance = ({ fetchData }: { fetchData: () => void }) => {
         }}
       >
         <Form.Item name="name">
-          <SealInput.Input
+          <CInput.Input
             label={intl.formatMessage({
               id: 'common.table.name'
             })}

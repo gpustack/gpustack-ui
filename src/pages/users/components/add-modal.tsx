@@ -1,9 +1,11 @@
-import IconFont from '@/components/icon-font';
-import SealInput from '@/components/seal-form/seal-input';
-import SealSelect from '@/components/seal-form/seal-select';
-import SealSwitch from '@/components/seal-form/seal-switch';
 import { PageAction, PasswordReg } from '@/config';
 import { PageActionType } from '@/config/types';
+import {
+  Input as CInput,
+  IconFont,
+  Select as SealSelect,
+  Switch as SealSwitch
+} from '@gpustack/core-ui';
 import { useIntl, useModel } from '@umijs/max';
 import { Form, Select } from 'antd';
 import { useEffect } from 'react';
@@ -76,17 +78,17 @@ const AddModal: React.FC<AddModalProps> = ({
             }
           ]}
         >
-          <SealInput.Input
+          <CInput.Input
             autoComplete="off"
             label={intl.formatMessage({ id: 'common.table.name' })}
             required
-          ></SealInput.Input>
+          ></CInput.Input>
         </Form.Item>
         <Form.Item<FormData> name="full_name" rules={[{ required: false }]}>
-          <SealInput.Input
+          <CInput.Input
             trim={false}
             label={intl.formatMessage({ id: 'users.form.fullname' })}
-          ></SealInput.Input>
+          ></CInput.Input>
         </Form.Item>
         <div style={{ display: 'flex', gap: '16px' }}>
           <div style={{ flex: 1 }}>
@@ -150,11 +152,11 @@ const AddModal: React.FC<AddModalProps> = ({
             }
           ]}
         >
-          <SealInput.Password
+          <CInput.Password
             autoComplete={'new-password'}
             label={intl.formatMessage({ id: 'common.form.password' })}
             required={action === PageAction.CREATE}
-          ></SealInput.Password>
+          ></CInput.Password>
         </Form.Item>
       </Form>
     </FormDrawer>

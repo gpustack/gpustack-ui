@@ -1,5 +1,3 @@
-import AutoComplete from '@/components/seal-form/auto-complete';
-import SealSelect from '@/components/seal-form/seal-select';
 import { PageAction } from '@/config';
 import { categoryOptions, modelCategoriesMap } from '@/pages/llmodels/config';
 import {
@@ -7,6 +5,7 @@ import {
   LoadingOutlined,
   WarningFilled
 } from '@ant-design/icons';
+import { AutoComplete, Select as SealSelect } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Form, Tooltip } from 'antd';
 import React, { useMemo } from 'react';

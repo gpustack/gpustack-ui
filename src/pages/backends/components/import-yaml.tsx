@@ -1,6 +1,6 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
-import YamlEditor from '@/pages/_components/yaml-editor';
+import { YamlEditor } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import React, {
   forwardRef,

@@ -1,12 +1,10 @@
-import BaseSelect from '@/components/seal-form/base/select';
-import FilterForm from '@/pages/_components/filter-form';
+import { BaseSelect, FilterForm } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import { forwardRef, useImperativeHandle, useRef } from 'react';
 import styled from 'styled-components';
 import { modelCategories } from '../config';
 import useFilterStatus from '../hooks/use-filter-status';
-
 const Content = styled.div`
   display: flex;
   flex-direction: column;

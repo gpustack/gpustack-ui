@@ -2,12 +2,12 @@ import MindIELogo from '@/assets/logo/ascend.png';
 import SGLangLogo from '@/assets/logo/sglang.png';
 import vLLMLogo from '@/assets/logo/vllm.png';
 import VoxBoxLogo from '@/assets/logo/voxbox.png';
-import icons from '@/components/icon-font/icons';
 import { backendOptionsMap } from '@/pages/llmodels/constants/backend-parameters';
 import {
   GPUDriverMap,
   ManufacturerMap
 } from '@/pages/resources/config/gpu-driver';
+import icons from '@gpustack/core-ui/lib/components/icon-font/icons';
 import jsYaml from 'js-yaml';
 import { trim } from 'lodash';
 

@@ -2,7 +2,6 @@ import type { ErrorInfo } from 'react';
 import React from 'react';
 import ErrorResult from './error-result';
 
-// eslint-disable-next-line @typescript-eslint/ban-types
 class ErrorBoundary extends React.Component<
   { children?: React.ReactNode },
   { hasError: boolean; errorInfo: string }
@@ -15,7 +14,7 @@ class ErrorBoundary extends React.Component<
 
   componentDidCatch(error: any, errorInfo: ErrorInfo) {
     // You can also log the error to an error reporting service
-    // eslint-disable-next-line no-console
+
     console.log(error, errorInfo);
   }
 

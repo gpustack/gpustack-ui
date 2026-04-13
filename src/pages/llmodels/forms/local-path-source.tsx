@@ -1,6 +1,5 @@
-import SealInput from '@/components/seal-form/seal-input';
-import TooltipList from '@/components/tooltip-list';
 import useAppUtils from '@/hooks/use-app-utils';
+import { Input as CInput, TooltipList } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
@@ -91,14 +90,14 @@ const LocalPathForm: React.FC = () => {
           }
         ]}
       >
-        <SealInput.Input
+        <CInput.Input
           allowClear
           required
           onFocus={handleOnFocus}
           onBlur={handleOnBlur}
           label={intl.formatMessage({ id: 'models.form.filePath' })}
           description={<TooltipList list={localPathTipsList}></TooltipList>}
-        ></SealInput.Input>
+        ></CInput.Input>
       </Form.Item>
     </>
   );

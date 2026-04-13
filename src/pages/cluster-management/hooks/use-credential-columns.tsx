@@ -1,14 +1,12 @@
 // columns.ts
-import AutoTooltip from '@/components/auto-tooltip';
-import DropdownButtons from '@/components/drop-down-buttons';
 import { tableSorter } from '@/config/settings';
+import { AutoTooltip, DropdownButtons } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
 import { ProviderLabelMap, credentialActionList } from '../config';
 import { CredentialListItem as ListItem } from '../config/types';
-
 const useCredentialColumns = (
   sortOrder: string[],
   handleSelect: (val: string, record: ListItem) => void

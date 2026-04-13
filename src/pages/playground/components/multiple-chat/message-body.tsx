@@ -1,5 +1,4 @@
-import SimpleAudio from '@/components/audio-player/simple-audio';
-import FullMarkdown from '@/components/markdown-viewer/full-markdown';
+import { FullMarkdown, SimpleAudio } from '@gpustack/core-ui';
 import { Input } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
@@ -78,7 +77,7 @@ const MessageBody: React.FC<MessageBodyProps> = forwardRef(
         const imgPromises: Promise<string>[] = [];
 
         for (let i = 0; i < items.length; i++) {
-          let item = items[i];
+          const item = items[i];
 
           if (item.kind === 'file' && item.type.indexOf('image') !== -1) {
             const file = item.getAsFile();

@@ -1,7 +1,3 @@
-import AutoTooltip from '@/components/auto-tooltip';
-import CopyButton from '@/components/copy-button';
-import IconFont from '@/components/icon-font';
-import ScrollerModal from '@/components/scroller-modal';
 import { OPENAI_COMPATIBLE } from '@/config/settings';
 import {
   AUDIO_SPEECH_TO_TEXT_API,
@@ -13,6 +9,12 @@ import {
   RERANKER_API
 } from '@/pages/playground/apis';
 import { BulbOutlined } from '@ant-design/icons';
+import {
+  AutoTooltip,
+  CopyButton,
+  IconFont,
+  ScrollerModal
+} from '@gpustack/core-ui';
 import { useIntl, useNavigate } from '@umijs/max';
 import { Button, Tag } from 'antd';
 import _ from 'lodash';
@@ -21,7 +23,6 @@ import styled from 'styled-components';
 import { modelCategoriesMap } from '../config';
 import { ListItem } from '../config/types';
 import useGenericProxy from '../hooks/use-generic-proxy';
-
 const API_MAP: Record<string, { api: string }> = {
   [modelCategoriesMap.embedding]: {
     api: EMBEDDING_API

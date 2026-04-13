@@ -1,5 +1,4 @@
-import CheckboxField from '@/components/seal-form/checkbox-field';
-import SealInputNumber from '@/components/seal-form/input-number';
+import { InputNumber as CInputNumber, CheckboxField } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
@@ -99,10 +98,10 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
           ></ModelSelect>
           <ParamsFields paramsConfig={paramsConfig}></ParamsFields>
           <Form.Item name="seed">
-            <SealInputNumber
+            <CInputNumber
               disabled={randomSeed}
               label={intl.formatMessage({ id: 'playground.image.params.seed' })}
-            ></SealInputNumber>
+            ></CInputNumber>
           </Form.Item>
           <Form.Item
             name="random_seed"

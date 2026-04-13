@@ -1,5 +1,5 @@
-import AlertInfoBlock from '@/components/alert-info/block';
 import { ExclamationCircleFilled } from '@ant-design/icons';
+import { AlertBlockInfo as AlertInfoBlock } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Input, Switch, Typography } from 'antd';
 import React, { useEffect } from 'react';

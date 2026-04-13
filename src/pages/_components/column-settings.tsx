@@ -1,9 +1,9 @@
-import OverlayScroller from '@/components/overlay-scroller';
 import {
   readColumnSettings,
   writeColumnSettings
 } from '@/utils/localstore/index';
 import { SettingOutlined } from '@ant-design/icons';
+import { OverlayScroller } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Checkbox, Col, Popover, Row, Tooltip } from 'antd';
 import React, { useEffect } from 'react';

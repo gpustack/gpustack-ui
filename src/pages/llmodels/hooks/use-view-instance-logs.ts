@@ -1,5 +1,5 @@
-import { PageSize } from '@/components/logs-viewer/config';
 import useBodyScroll from '@/hooks/use-body-scroll';
+import { PageSize } from '@gpustack/core-ui/lib/components/logs-viewer/config';
 import { useState } from 'react';
 import { MODEL_INSTANCE_API } from '../apis';
 import { InstanceRealtimeLogStatus } from '../config';

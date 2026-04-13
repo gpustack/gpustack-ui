@@ -1,9 +1,11 @@
-import AutoComlete from '@/components/seal-form/auto-complete';
-import CheckboxField from '@/components/seal-form/checkbox-field';
-import SealInputNumber from '@/components/seal-form/input-number';
-import SealInput from '@/components/seal-form/seal-input';
-import SealSelect from '@/components/seal-form/seal-select';
 import useAppUtils from '@/hooks/use-app-utils';
+import {
+  AutoComplete,
+  CheckboxField,
+  Input as CInput,
+  InputNumber as CInputNumber,
+  Select as SealSelect
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
@@ -154,7 +156,7 @@ const SpeculativeDecode = () => {
                 }
               ]}
             >
-              <AutoComlete
+              <AutoComplete
                 required
                 allowClear
                 loading={loading}
@@ -173,14 +175,14 @@ const SpeculativeDecode = () => {
                 }}
                 onBlur={handleOnDraftBlur}
                 onSelect={handleDraftSelect}
-              ></AutoComlete>
+              ></AutoComplete>
             </Form.Item>
           )}
 
           <Form.Item<FormData>
             name={['speculative_config', 'num_draft_tokens']}
           >
-            <SealInputNumber
+            <CInputNumber
               label={intl.formatMessage({ id: 'models.form.numDraftTokens' })}
               min={1}
               step={1}
@@ -193,7 +195,7 @@ const SpeculativeDecode = () => {
               <Form.Item<FormData>
                 name={['speculative_config', 'ngram_min_match_length']}
               >
-                <SealInputNumber
+                <CInputNumber
                   label={intl.formatMessage({
                     id: 'models.form.ngramMinMatchLength'
                   })}
@@ -204,7 +206,7 @@ const SpeculativeDecode = () => {
               <Form.Item<FormData>
                 name={['speculative_config', 'ngram_max_match_length']}
               >
-                <SealInput.Input
+                <CInput.Input
                   label={intl.formatMessage({
                     id: 'models.form.ngramMaxMatchLength'
                   })}

@@ -1,10 +1,9 @@
 // columns.ts
-import AutoTooltip from '@/components/auto-tooltip';
-import IconFont from '@/components/icon-font';
 import { tableSorter } from '@/config/settings';
 import { ListItem as workerListItem } from '@/pages/resources/config/types';
 import { convertFileSize } from '@/utils';
 import { ThunderboltFilled } from '@ant-design/icons';
+import { AutoTooltip, IconFont } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { ColumnsType } from 'antd/lib/table';
 import dayjs from 'dayjs';
@@ -19,7 +18,6 @@ import NameCell, {
 } from '../components/instance-cells/name-cell';
 import { ModelInstanceListItem as ListItem } from '../config/types';
 import { calcTotalVram } from '../utils';
-
 const WorkerInfoContent: React.FC<NameCellProps> = ({ record, modelData }) => {
   let workerIp = '-';
   if (record.worker_ip) {

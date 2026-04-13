@@ -7,12 +7,12 @@ import mooreLogo from '@/assets/logo/moore-logo.png';
 import nvidiaLogo from '@/assets/logo/nvidia.png';
 import theadLogoEN from '@/assets/logo/t-head-en.png';
 import theadLogoZH from '@/assets/logo/t-head-zh.png';
-import IconFont from '@/components/icon-font';
 import useUserSettings from '@/hooks/use-user-settings';
 import {
   AddWorkerDockerNotes,
   GPUDriverMap
 } from '@/pages/resources/config/gpu-driver';
+import { IconFont } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import styled from 'styled-components';
 import ProviderCatalog from './provider-catalog';

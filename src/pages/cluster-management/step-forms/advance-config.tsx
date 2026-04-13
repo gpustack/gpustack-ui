@@ -1,8 +1,6 @@
-import IconFont from '@/components/icon-font';
-import SealInput from '@/components/seal-form/seal-input';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
-import YamlEditor from '@/pages/_components/yaml-editor';
+import { Input as CInput, IconFont, YamlEditor } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Form } from 'antd';
 import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
@@ -71,7 +69,7 @@ const ClusterAdvanceConfig: React.FC<{
           }
         ]}
       >
-        <SealInput.TextArea required={false} trim={false}></SealInput.TextArea>
+        <CInput.TextArea required={false} trim={false}></CInput.TextArea>
       </Form.Item>
       {provider === ProviderValueMap.Kubernetes && (
         <K8SVolumeMount action={action}></K8SVolumeMount>

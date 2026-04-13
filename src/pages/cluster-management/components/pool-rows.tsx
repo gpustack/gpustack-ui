@@ -1,9 +1,11 @@
-import DeleteModal from '@/components/delete-modal';
-import CellContent from '@/components/seal-table/components/cell-content';
-import RowChildren from '@/components/seal-table/components/row-children';
-import RowContext from '@/components/seal-table/row-context';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
+import {
+  CellContent,
+  DeleteModal,
+  RowChildren,
+  TableRowProvider
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { Col, message, Row } from 'antd';
@@ -120,7 +122,7 @@ const PoolRows: React.FC<PoolRowsProps> = ({
             key={data.id}
             style={{ borderRadius: 'var(--ant-table-header-border-radius)' }}
           >
-            <RowContext.Provider value={{ row: data, onCell: handleOnCell }}>
+            <TableRowProvider value={{ row: data, onCell: handleOnCell }}>
               <RowChildren>
                 <Row style={{ width: '100%' }} align="middle">
                   {columns.map((col: Record<string, any>) => {
@@ -139,7 +141,7 @@ const PoolRows: React.FC<PoolRowsProps> = ({
                   })}
                 </Row>
               </RowChildren>
-            </RowContext.Provider>
+            </TableRowProvider>
           </div>
         );
       })}

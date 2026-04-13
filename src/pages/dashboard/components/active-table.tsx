@@ -1,12 +1,10 @@
-import AutoTooltip from '@/components/auto-tooltip';
-import PageTools from '@/components/page-tools';
 import { modelCategoriesMap } from '@/pages/llmodels/config';
 import { convertFileSize } from '@/utils';
+import { AutoTooltip, PageTools } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Col, Row, Table } from 'antd';
 import { useContext } from 'react';
 import { DashboardContext } from '../config/dashboard-context';
-
 const NACategories = [
   modelCategoriesMap.llm,
   modelCategoriesMap.embedding,

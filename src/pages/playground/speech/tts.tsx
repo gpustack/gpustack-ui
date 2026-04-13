@@ -1,8 +1,6 @@
 import { setRouteCache } from '@/atoms/route-cache';
-import AlertInfo from '@/components/alert-info';
-import IconFont from '@/components/icon-font';
-import SpeechContent from '@/components/speech-content';
 import routeCachekey from '@/config/route-cachekey';
+import { AlertInfo, IconFont, SpeechContent } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Spin } from 'antd';
 import _ from 'lodash';

@@ -1,9 +1,11 @@
-import AutoTooltip from '@/components/auto-tooltip';
-import DropdownButtons from '@/components/drop-down-buttons';
-import RowChildren from '@/components/seal-table/components/row-children';
-import StatusTag from '@/components/status-tag';
 import ProviderLogo from '@/pages/maas-provider/components/provider-logo';
 import { DeleteOutlined } from '@ant-design/icons';
+import {
+  AutoTooltip,
+  DropdownButtons,
+  RowChildren,
+  StatusTag
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Col, Row } from 'antd';
 import dayjs from 'dayjs';
@@ -11,7 +13,6 @@ import React from 'react';
 import styled from 'styled-components';
 import { TargetStatus, TargetStatusLabelMap } from '../config';
 import { RouteTarget } from '../config/types';
-
 const CellContent = styled.div`
   display: flex;
   align-items: center;

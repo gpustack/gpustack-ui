@@ -1,8 +1,8 @@
 import { clusterDetailAtom } from '@/atoms/clusters';
-import IconFont from '@/components/icon-font';
 import Deployments from '@/pages/llmodels/deployments';
 import GPUList from '@/pages/resources/components/gpus';
 import WorkerList from '@/pages/resources/components/workers';
+import { IconFont } from '@gpustack/core-ui';
 import { useIntl, useNavigate, useSearchParams } from '@umijs/max';
 import { Tabs } from 'antd';
 import { useAtomValue } from 'jotai';

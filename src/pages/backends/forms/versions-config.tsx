@@ -1,12 +1,14 @@
-import CollapsibleContainer from '@/components/collapse-container';
-import LabelSelector from '@/components/label-selector';
-import BaseSelect from '@/components/seal-form/base/select';
-import SealInput from '@/components/seal-form/seal-input';
-import SealSelect from '@/components/seal-form/seal-select';
-import SealTextArea from '@/components/seal-form/seal-textarea';
 import { PageActionType } from '@/config/types';
 import useAppUtils from '@/hooks/use-app-utils';
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
+import {
+  BaseSelect,
+  Input as CInput,
+  CollapseContainer,
+  LabelSelector,
+  Select as SealSelect,
+  Textarea as SealTextArea
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Form, Tag } from 'antd';
 import React, { useEffect, useMemo } from 'react';
@@ -14,7 +16,6 @@ import styled from 'styled-components';
 import { BackendSourceValueMap, frameworks } from '../config';
 import { useFormContext } from '../config/form-context';
 import { ListItem } from '../config/types';
-
 // version must be endwith '-custom'
 
 const Box = styled.div`
@@ -263,7 +264,7 @@ const VersionsForm: React.FC<AddModalProps> = ({
                   border: '1px solid var(--ant-color-split)'
                 }}
               >
-                <CollapsibleContainer
+                <CollapseContainer
                   collapsible={true}
                   showExpandIcon={true}
                   key={name}
@@ -289,7 +290,7 @@ const VersionsForm: React.FC<AddModalProps> = ({
                       )}
                     </Label>
                   }
-                  onToggle={(open) => onToggle(open, name)}
+                  onToggle={(open: boolean) => onToggle(open, name)}
                   deleteBtn={false}
                   right={
                     <div className="flex-center gap-8">
@@ -328,13 +329,13 @@ const VersionsForm: React.FC<AddModalProps> = ({
                         }
                       ]}
                     >
-                      <SealInput.Input
+                      <CInput.Input
                         trim
                         addAfter={showCustomSuffix ? '-custom' : null}
                         onChange={handleVersionChange}
                         label={intl.formatMessage({ id: 'backend.version' })}
                         required
-                      ></SealInput.Input>
+                      ></CInput.Input>
                     </Form.Item>
                     <Form.Item
                       name={[name, 'image_name']}
@@ -345,7 +346,7 @@ const VersionsForm: React.FC<AddModalProps> = ({
                         }
                       ]}
                     >
-                      <SealInput.Input
+                      <CInput.Input
                         trim
                         required
                         placeholder={intl.formatMessage(
@@ -353,7 +354,7 @@ const VersionsForm: React.FC<AddModalProps> = ({
                           { content: 'vllm/vllm-openai:v0.12.0' }
                         )}
                         label={intl.formatMessage({ id: 'backend.imageName' })}
-                      ></SealInput.Input>
+                      ></CInput.Input>
                     </Form.Item>
                   </Box>
                   <Form.Item
@@ -374,7 +375,7 @@ const VersionsForm: React.FC<AddModalProps> = ({
                     />
                   </Form.Item>
                   <Form.Item name={[name, 'entrypoint']}>
-                    <SealInput.TextArea
+                    <CInput.TextArea
                       allowClear
                       description={intl.formatMessage({
                         id: 'backend.entrypoint.tips'
@@ -382,7 +383,7 @@ const VersionsForm: React.FC<AddModalProps> = ({
                       label={intl.formatMessage({
                         id: 'backend.replaceEntrypoint'
                       })}
-                    ></SealInput.TextArea>
+                    ></CInput.TextArea>
                   </Form.Item>
                   <Form.Item name={[name, 'run_command']}>
                     <SealTextArea
@@ -413,7 +414,7 @@ const VersionsForm: React.FC<AddModalProps> = ({
                       }
                     ></LabelSelector>
                   </Form.Item>
-                </CollapsibleContainer>
+                </CollapseContainer>
               </div>
             ));
           }}

@@ -1,16 +1,18 @@
 import { setRouteCache } from '@/atoms/route-cache';
-import AlertInfo from '@/components/alert-info';
-import AudioAnimation from '@/components/audio-animation';
-import AudioPlayer from '@/components/audio-player';
-import CopyButton from '@/components/copy-button';
-import IconFont from '@/components/icon-font';
-import UploadAudio from '@/components/upload-audio';
 import routeCachekey from '@/config/route-cachekey';
 import { HEADER_HEIGHT } from '@/config/settings';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import { useCancelToken } from '@/hooks/use-request-token';
 import { readAudioFile } from '@/utils/load-audio-file';
 import { SendOutlined } from '@ant-design/icons';
+import {
+  AlertInfo,
+  AudioAnimation,
+  AudioPlayer,
+  CopyButton,
+  IconFont,
+  UploadAudio
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Spin, Tooltip } from 'antd';
 import React, {

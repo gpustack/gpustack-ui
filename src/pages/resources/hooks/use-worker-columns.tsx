@@ -1,14 +1,6 @@
 import { systemConfigAtom } from '@/atoms/system';
 import { GPUStackVersionAtom } from '@/atoms/user';
-import AutoTooltip from '@/components/auto-tooltip';
-import DropdownButtons from '@/components/drop-down-buttons';
-import IconFont from '@/components/icon-font';
-import LabelsCell from '@/components/label-cell';
-import ProgressBar from '@/components/progress-bar';
-import InfoColumn from '@/components/simple-table/info-column';
-import StatusTag from '@/components/status-tag';
 import { tableSorter } from '@/config/settings';
-import GrafanaIcon from '@/pages/_components/grafana-icon';
 import { convertFileSize } from '@/utils';
 import {
   DeleteOutlined,
@@ -18,6 +10,16 @@ import {
   SafetyOutlined,
   ToolOutlined
 } from '@ant-design/icons';
+import {
+  AutoTooltip,
+  DropdownButtons,
+  GrafanaIcon,
+  IconFont,
+  InfoColumn,
+  LabelCell,
+  ProgressBar,
+  StatusTag
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Tooltip } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
@@ -29,7 +31,6 @@ import semverGt from 'semver/functions/gt';
 import { status, WorkerStatusMap, WorkerStatusMapValue } from '../config';
 import { Filesystem, GPUDeviceItem, ListItem } from '../config/types';
 import workerCss from '../styles/worker.less';
-
 const ActionList = [
   { label: 'common.button.edit', key: 'edit', icon: <EditOutlined /> },
   {
@@ -400,7 +401,7 @@ const useWorkerColumns = ({
         title: intl.formatMessage({ id: 'resources.table.labels' }),
         dataIndex: 'labels',
         width: 200,
-        render: (_, record) => <LabelsCell labels={record.labels} />
+        render: (_, record) => <LabelCell labels={record.labels} />
       },
       {
         title: intl.formatMessage({ id: 'clusters.title' }),

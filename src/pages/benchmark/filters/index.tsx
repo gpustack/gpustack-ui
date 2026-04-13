@@ -1,13 +1,11 @@
-import BaseSelect from '@/components/seal-form/base/select';
-import FilterForm from '@/pages/_components/filter-form';
 import { modelCategoriesMap } from '@/pages/llmodels/config';
 import { SearchOutlined } from '@ant-design/icons';
+import { BaseSelect, FilterForm } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form, Input } from 'antd';
 import { forwardRef, useImperativeHandle, useRef } from 'react';
 import styled from 'styled-components';
 import { profileOptions } from '../config';
-
 const Content = styled.div`
   display: flex;
   flex-direction: column;

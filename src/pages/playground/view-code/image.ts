@@ -44,7 +44,7 @@ export const generateImageCode = ({
   const api = url;
 
   // ========================= Curl =========================
-  let curlCode = generateImageCurlCode({
+  const curlCode = generateImageCurlCode({
     api: url,
     parameters,
     isFormdata,

@@ -1,5 +1,5 @@
-import AlertInfoBlock from '@/components/alert-info/block';
 import { ExclamationCircleFilled } from '@ant-design/icons';
+import { AlertBlockInfo } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useAddWorkerContext } from './add-worker-context';
 import { NotesWrapper } from './constainers';
@@ -15,7 +15,7 @@ const VendorNotes = () => {
     } as { label: string; notes: string[] });
 
   return (
-    <AlertInfoBlock
+    <AlertBlockInfo
       maxHeight={200}
       title={intl.formatMessage(
         { id: 'clusters.addworker.vendorNotes.title' },
@@ -41,7 +41,7 @@ const VendorNotes = () => {
           </NotesWrapper>
         ) : null
       }
-    ></AlertInfoBlock>
+    ></AlertBlockInfo>
   );
 };
 

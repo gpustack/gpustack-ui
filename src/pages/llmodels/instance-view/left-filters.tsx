@@ -1,11 +1,10 @@
-import BaseSelect from '@/components/seal-form/base/select';
 import { ListItem as workerListItem } from '@/pages/resources/config/types';
 import { SearchOutlined, SyncOutlined } from '@ant-design/icons';
+import { BaseSelect } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Input, Space } from 'antd';
 import React from 'react';
 import useFilterStatus from '../hooks/use-filter-status';
-
 interface LeftFiltersProps {
   handleNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleClusterChange: (value: number) => void;

@@ -1,4 +1,4 @@
-import SealSelect from '@/components/seal-form/seal-select';
+import { Select as SealSelect } from '@gpustack/core-ui';
 import React from 'react';
 import { categoryConfig } from './model-tag';
 

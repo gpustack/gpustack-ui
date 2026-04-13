@@ -1,11 +1,10 @@
-import AutoTooltip from '@/components/auto-tooltip';
 import { convertFileSize } from '@/utils';
+import { AutoTooltip } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import _ from 'lodash';
 import React from 'react';
 import styled from 'styled-components';
 import '../style/gpu-card.less';
-
 const CardWrapper = styled.div`
   display: flex;
   gap: 8px;

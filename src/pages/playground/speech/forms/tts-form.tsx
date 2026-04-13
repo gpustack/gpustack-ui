@@ -1,7 +1,9 @@
-import AutoComplete from '@/components/seal-form/auto-complete';
-import CheckboxField from '@/components/seal-form/checkbox-field';
-import SealSelect from '@/components/seal-form/seal-select';
-import CollapsePanel from '@/pages/_components/collapse-panel';
+import {
+  AutoComplete,
+  CheckboxField,
+  CollapsePanel,
+  Select as SealSelect
+} from '@gpustack/core-ui';
 import { getLocale, useIntl, useSearchParams } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { Form } from 'antd';

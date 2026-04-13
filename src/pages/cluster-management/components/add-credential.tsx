@@ -1,8 +1,7 @@
-import SealInput from '@/components/seal-form/seal-input';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import useAppUtils from '@/hooks/use-app-utils';
-import FormDrawer from '@/pages/_components/form-drawer';
+import { Input as CInput, FormDrawer } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import React, { useEffect } from 'react';
@@ -74,10 +73,10 @@ const AddModal: React.FC<AddModalProps> = ({
             }
           ]}
         >
-          <SealInput.Input
+          <CInput.Input
             label={intl.formatMessage({ id: 'common.table.name' })}
             required
-          ></SealInput.Input>
+          ></CInput.Input>
         </Form.Item>
         {provider === ProviderValueMap.DigitalOcean && (
           <>
@@ -90,7 +89,7 @@ const AddModal: React.FC<AddModalProps> = ({
                 }
               ]}
             >
-              <SealInput.Password
+              <CInput.Password
                 label={intl.formatMessage({
                   id: 'clusters.credential.token'
                 })}
@@ -109,14 +108,14 @@ const AddModal: React.FC<AddModalProps> = ({
                     }}
                   ></span>
                 }
-              ></SealInput.Password>
+              ></CInput.Password>
             </Form.Item>
           </>
         )}
         <Form.Item<FormData> name="description" rules={[{ required: false }]}>
-          <SealInput.TextArea
+          <CInput.TextArea
             label={intl.formatMessage({ id: 'common.table.description' })}
-          ></SealInput.TextArea>
+          ></CInput.TextArea>
         </Form.Item>
       </Form>
     </FormDrawer>

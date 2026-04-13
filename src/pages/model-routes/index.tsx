@@ -1,17 +1,19 @@
 import { expandKeysAtom } from '@/atoms/clusters';
 import { registerRouteConfigAtom } from '@/atoms/routes';
-import DeleteModal from '@/components/delete-modal';
-import IconFont from '@/components/icon-font';
-import { FilterBar } from '@/components/page-tools';
-import SealTable from '@/components/seal-table';
-import TableContext from '@/components/seal-table/table-context';
-import { TableOrder } from '@/components/seal-table/types';
 import { PageAction } from '@/config';
 import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import useTableFetch from '@/hooks/use-table-fetch';
 import useWatchList from '@/hooks/use-watch-list';
 import APIAccessInfoModal from '@/pages/llmodels/components/api-access-info';
+import {
+  DeleteModal,
+  FilterBar,
+  IconFont,
+  Table as SealTable,
+  TableProvider
+} from '@gpustack/core-ui';
+import { TableOrder } from '@gpustack/core-ui/lib/components/table/types';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { message } from 'antd';
@@ -291,7 +293,7 @@ const ModelRoutes: React.FC = () => {
           handleDeleteByBatch={handleDeleteBatch}
           handleClickPrimary={handleClickDropdown}
         ></FilterBar>
-        <TableContext.Provider
+        <TableProvider
           value={{
             allChildren: allRouteTargets,
             setDisableExpand: setDisableExpand
@@ -342,7 +344,7 @@ const ModelRoutes: React.FC = () => {
               onChange: handlePageChange
             }}
           ></SealTable>
-        </TableContext.Provider>
+        </TableProvider>
       </PageBox>
       <AddRouteModal
         open={openRouteModalStatus.open}

@@ -1,5 +1,5 @@
-import OverlayScroller from '@/components/overlay-scroller';
 import { CloseOutlined } from '@ant-design/icons';
+import { OverlayScroller } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Form } from 'antd';
 import classNames from 'classnames';

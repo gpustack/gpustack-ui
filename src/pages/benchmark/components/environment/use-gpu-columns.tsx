@@ -1,7 +1,6 @@
-import AutoTooltip from '@/components/auto-tooltip';
 import { convertFileSize } from '@/utils';
+import { AutoTooltip } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-
 export default function useGPUColumns(): {
   title: string;
   dataIndex: string;

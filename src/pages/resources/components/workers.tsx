@@ -1,5 +1,3 @@
-import DeleteModal from '@/components/delete-modal';
-import { FilterBar } from '@/components/page-tools';
 import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import useTableFetch from '@/hooks/use-table-fetch';
 import PageBox from '@/pages/_components/page-box';
@@ -9,6 +7,7 @@ import useAddWorker from '@/pages/cluster-management/hooks/use-add-worker';
 import { useQueryClusterList } from '@/pages/cluster-management/services/use-query-cluster-list';
 import useNoResourceResult from '@/pages/llmodels/hooks/use-no-resource-result';
 import useGranfanaLink from '@/pages/resources/hooks/use-grafana-link';
+import { DeleteModal, FilterBar } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { ConfigProvider, Table, message } from 'antd';

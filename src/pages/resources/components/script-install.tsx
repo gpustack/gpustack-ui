@@ -1,4 +1,4 @@
-import HighlightCode from '@/components/highlight-code';
+import { HighlightCode } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import React, { useMemo } from 'react';
 import { addWorkerGuide } from '../config';

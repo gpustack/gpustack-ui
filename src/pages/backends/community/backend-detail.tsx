@@ -1,13 +1,11 @@
-import AutoTooltip from '@/components/auto-tooltip';
-import FullMarkdown from '@/components/markdown-viewer/full-markdown';
 import { BulbOutlined } from '@ant-design/icons';
+import { AutoTooltip, FullMarkdown } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Tag } from 'antd';
 import _ from 'lodash';
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { generateIcon } from '../components/backend-card';
-
 const Title = styled.div`
   position: sticky;
   top: 0;

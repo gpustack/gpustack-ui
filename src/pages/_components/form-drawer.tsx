@@ -1,6 +1,4 @@
-import ModalFooter from '@/components/modal-footer';
-import GSDrawer from '@/components/scroller-modal/gs-drawer';
-import ColumnWrapper from '@/pages/_components/column-wrapper';
+import { ColumnWrapper, GSDrawer, ModalFooter } from '@gpustack/core-ui';
 import { Tag } from 'antd';
 import React from 'react';
 

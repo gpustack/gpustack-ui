@@ -1,8 +1,8 @@
-import icons from '@/components/icon-font/icons';
 import { StatusMaps } from '@/config';
 import { GPUSTACK_API_BASE_URL } from '@/config/settings';
 import { StatusType } from '@/config/types';
 import { GPUsConfigs } from '@/pages/resources/config/gpu-driver';
+import icons from '@gpustack/core-ui/lib/components/icon-font/icons';
 
 export const ClusterStatusValueMap = {
   Provisioning: 'provisioning',

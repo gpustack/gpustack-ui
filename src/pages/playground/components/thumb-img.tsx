@@ -1,4 +1,4 @@
-import SingleImage from '@/components/auto-image/single-image';
+import { SingleImage } from '@gpustack/core-ui';
 import { Col, Row } from 'antd';
 import _ from 'lodash';
 import React, { useCallback, useMemo } from 'react';

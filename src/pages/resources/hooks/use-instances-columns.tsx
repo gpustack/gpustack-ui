@@ -1,9 +1,3 @@
-import AutoTooltip from '@/components/auto-tooltip';
-import { TooltipOverlayScroller } from '@/components/overlay-scroller';
-import SimpleTabel, { ColumnProps } from '@/components/simple-table';
-import InfoColumn from '@/components/simple-table/info-column';
-import StatusTag from '@/components/status-tag';
-import ThemeTag from '@/components/tags-wrapper/theme-tag';
 import {
   InstanceStatusMap,
   InstanceStatusMapValue,
@@ -16,13 +10,21 @@ import {
 } from '@/pages/llmodels/config/types';
 import { convertFileSize } from '@/utils';
 import { InfoCircleOutlined } from '@ant-design/icons';
+import {
+  AutoTooltip,
+  InfoColumn,
+  SimpleTable,
+  StatusTag,
+  ThemeTag,
+  TooltipOverlayScroller,
+  type ColumnProps
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import _ from 'lodash';
 import { useMemo } from 'react';
 import styled from 'styled-components';
-
 const GPUIndexWrapper = styled.span`
   display: flex;
   flex-direction: column;
@@ -133,11 +135,11 @@ const renderDistributedServer = (
 
   return (
     <div>
-      <SimpleTabel
+      <SimpleTable
         rowKey="worker_name"
         columns={distributeCols}
         dataSource={[...mainWorker]}
-      ></SimpleTabel>
+      ></SimpleTable>
     </div>
   );
 };

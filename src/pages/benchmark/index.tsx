@@ -1,11 +1,9 @@
-import DeleteModal from '@/components/delete-modal';
-import IconFont from '@/components/icon-font';
-import { FilterBar } from '@/components/page-tools';
 import { PageAction } from '@/config';
 import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { useBenchmarkTargetInstance } from '@/pages/llmodels/hooks/use-run-benchmark';
 import { useQueryModelList } from '@/pages/llmodels/services/use-query-model-list';
+import { DeleteModal, FilterBar, IconFont } from '@gpustack/core-ui';
 import { useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn, useToggle } from 'ahooks';
 import { ConfigProvider, Table, message } from 'antd';

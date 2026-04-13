@@ -1,4 +1,4 @@
-import { FieldSchema } from '@/components/dynamic-form/config/types';
+import { FieldSchema } from '@gpustack/core-ui/lib/components/dynamic-form/config/types';
 
 export const fields = {
   volumes: {

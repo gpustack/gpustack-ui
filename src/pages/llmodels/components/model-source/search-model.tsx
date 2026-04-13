@@ -1,7 +1,6 @@
 import { getRequestId, setRquestId } from '@/atoms/models';
-import BaseSelect from '@/components/seal-form/base/select';
 import { createAxiosToken } from '@/hooks/use-chunk-request';
-import ColumnWrapper from '@/pages/_components/column-wrapper';
+import { BaseSelect, ColumnWrapper } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Pagination } from 'antd';
 import _ from 'lodash';
@@ -23,7 +22,6 @@ import useRecognizeAudio from '../../hooks/use-recognize-audio';
 import SearchStyle from '../../style/search-result.less';
 import SearchInput from './search-input';
 import SearchResult from './search-result';
-
 const filterOptions = [
   { label: 'FP8', value: 'fp8' },
   { label: 'AWQ', value: 'awq' },
@@ -173,7 +171,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     if (getRequestId() !== currentSearchId) {
       throw 'new request has been sent';
     }
-    let list = _.map(data || [], (item: any) => {
+    const list = _.map(data || [], (item: any) => {
       return {
         ...item,
         value: item.name,
@@ -210,28 +208,31 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
         throw 'new request has been sent';
       }
 
-      let list = _.map(_.get(data, 'Data.Model.Models') || [], (item: any) => {
-        return {
-          path: item.Path,
-          name: `${item.Path}/${item.Name}`,
-          downloads: item.Downloads,
-          id: `${item.Path}/${item.Name}`,
-          updatedAt: item.LastUpdatedTime * 1000,
-          likes: item.Stars,
-          value: item.Name,
-          label: item.Name,
-          revision: item.Revision,
-          task: item.Tasks?.map((sItem: any) => sItem.Name).join(','),
-          tags: item.Tags,
-          libraries: item.Libraries,
-          avatar: item.Avatar,
-          isGGUF: checkIsGGUF({
+      const list = _.map(
+        _.get(data, 'Data.Model.Models') || [],
+        (item: any) => {
+          return {
+            path: item.Path,
+            name: `${item.Path}/${item.Name}`,
+            downloads: item.Downloads,
+            id: `${item.Path}/${item.Name}`,
+            updatedAt: item.LastUpdatedTime * 1000,
+            likes: item.Stars,
+            value: item.Name,
+            label: item.Name,
+            revision: item.Revision,
+            task: item.Tasks?.map((sItem: any) => sItem.Name).join(','),
             tags: item.Tags,
-            libraries: item.Libraries
-          }),
-          source: modelSource
-        };
-      });
+            libraries: item.Libraries,
+            avatar: item.Avatar,
+            isGGUF: checkIsGGUF({
+              tags: item.Tags,
+              libraries: item.Libraries
+            }),
+            source: modelSource
+          };
+        }
+      );
 
       setPaginationInfo((prev) => {
         return {

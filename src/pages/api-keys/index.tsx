@@ -1,12 +1,10 @@
-import DeleteModal from '@/components/delete-modal';
-import IconFont from '@/components/icon-font';
-import { FilterBar } from '@/components/page-tools';
 import { PageAction } from '@/config';
 import { PaginationKey } from '@/config/settings';
 import type { PageActionType } from '@/config/types';
 import useTableFetch from '@/hooks/use-table-fetch';
 import useQueryUserList from '@/pages/users/services/use-query-user-list';
 import { useModel } from '@@/plugin-model';
+import { DeleteModal, FilterBar, IconFont } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import useMemoizedFn from 'ahooks/lib/useMemoizedFn';
 import { ConfigProvider, Table } from 'antd';
@@ -191,7 +189,7 @@ const APIKeys: React.FC = () => {
             rowKey="id"
             onChange={handleTableChange}
             pagination={{
-              size: 'default',
+              size: 'middle',
               showSizeChanger: true,
               pageSize: queryParams.perPage,
               current: queryParams.page,

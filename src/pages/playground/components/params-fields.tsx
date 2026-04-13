@@ -1,4 +1,4 @@
-import FieldComponent from '@/components/seal-form/field-component';
+import { FieldComponent } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';

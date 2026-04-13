@@ -1,10 +1,4 @@
 import { modelsExpandKeysAtom, modelsSessionAtom } from '@/atoms/models';
-import DeleteModal from '@/components/delete-modal';
-import DropDownActions from '@/components/drop-down-actions';
-import DropdownButtons from '@/components/drop-down-buttons';
-import PageTools from '@/components/page-tools';
-import SealTable from '@/components/seal-table';
-import { TableOrder } from '@/components/seal-table/types';
 import { PageAction } from '@/config';
 import { TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import { PageActionType } from '@/config/types';
@@ -19,6 +13,14 @@ import useOpenPlayground from '@/pages/model-routes/hooks/use-open-playground';
 import useGranfanaLink from '@/pages/resources/hooks/use-grafana-link';
 import { handleBatchRequest } from '@/utils';
 import { DownOutlined } from '@ant-design/icons';
+import {
+  DeleteModal,
+  DropdownActions,
+  DropdownButtons,
+  PageTools,
+  Table as SealTable
+} from '@gpustack/core-ui';
+import { TableOrder } from '@gpustack/core-ui/lib/components/table/types';
 import { useIntl, useNavigate, useSearchParams } from '@umijs/max';
 import { useMemoizedFn, useToggle } from 'ahooks';
 import { Button, Space, message } from 'antd';
@@ -164,7 +166,6 @@ const Models: React.FC<ModelsProps> = ({
     type: 'model'
   });
 
-  const [openLogModal, setOpenLogModal] = useState(false);
   const [openDeployModal, setOpenDeployModal] = useState<{
     show: boolean;
     width: number | string;
@@ -599,23 +600,21 @@ const Models: React.FC<ModelsProps> = ({
           right={
             <Space size={16}>
               {ActionButton()}
-              {page !== 'clusters' && (
-                <DropDownActions
-                  menu={{
-                    items: sourceOptions,
-                    onClick: handleClickDropdown
-                  }}
-                  placement="bottomRight"
+              <DropdownActions
+                menu={{
+                  items: sourceOptions,
+                  onClick: handleClickDropdown
+                }}
+                placement="bottomRight"
+              >
+                <Button
+                  icon={<DownOutlined></DownOutlined>}
+                  type="primary"
+                  iconPlacement="end"
                 >
-                  <Button
-                    icon={<DownOutlined></DownOutlined>}
-                    type="primary"
-                    iconPlacement="end"
-                  >
-                    {intl?.formatMessage?.({ id: 'models.button.deploy' })}
-                  </Button>
-                </DropDownActions>
-              )}
+                  {intl?.formatMessage?.({ id: 'models.button.deploy' })}
+                </Button>
+              </DropdownActions>
               <DropdownButtons
                 items={ButtonList}
                 extra={

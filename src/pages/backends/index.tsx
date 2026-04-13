@@ -1,8 +1,6 @@
-import DeleteModal from '@/components/delete-modal';
-import IconFont from '@/components/icon-font';
-import { FilterBar } from '@/components/page-tools';
 import { PageAction } from '@/config';
 import useTableFetch from '@/hooks/use-table-fetch';
+import { DeleteModal, FilterBar, IconFont } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import useMemoizedFn from 'ahooks/lib/useMemoizedFn';
 import _ from 'lodash';

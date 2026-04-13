@@ -1,6 +1,6 @@
-import PageTools from '@/components/page-tools';
 import { PageActionType } from '@/config/types';
 import { PlusOutlined } from '@ant-design/icons';
+import { PageTools } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, FormInstance } from 'antd';
 import {

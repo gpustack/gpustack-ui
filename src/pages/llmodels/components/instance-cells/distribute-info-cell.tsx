@@ -1,9 +1,12 @@
-import { TooltipOverlayScroller } from '@/components/overlay-scroller';
-import SimpleTabel, { ColumnProps } from '@/components/simple-table';
-import ThemeTag from '@/components/tags-wrapper/theme-tag';
 import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
 import { convertFileSize } from '@/utils';
 import { InfoCircleOutlined } from '@ant-design/icons';
+import {
+  SimpleTable,
+  ThemeTag,
+  TooltipOverlayScroller,
+  type ColumnProps
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import _ from 'lodash';
 import React from 'react';
@@ -114,11 +117,11 @@ const DistributedServerList: React.FC<DistributeInfoCellProps> = ({
 
   return (
     <div>
-      <SimpleTabel
+      <SimpleTable
         rowKey="worker_name"
         columns={distributeCols}
         dataSource={[...mainWorker, ...list]}
-      ></SimpleTabel>
+      ></SimpleTable>
     </div>
   );
 };

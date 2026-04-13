@@ -1,4 +1,4 @@
-import HighlightCode from '@/components/highlight-code';
+import { HighlightCode } from '@gpustack/core-ui';
 import React, { useMemo } from 'react';
 import { generateK8sRegisterCommand } from '../config';
 

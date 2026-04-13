@@ -1,4 +1,4 @@
-import BaseSelect from '@/components/seal-form/base/select';
+import { BaseSelect } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Spin, Typography } from 'antd';
 import { useEffect, useState } from 'react';
@@ -6,7 +6,6 @@ import { useAddWorkerContext } from './add-worker-context';
 import { AddWorkerStepProps, StepNamesMap } from './config';
 import { Title } from './constainers';
 import StepCollapse from './step-collapse';
-
 const SelectCluster: React.FC<AddWorkerStepProps> = ({ disabled }) => {
   const {
     clusterList,

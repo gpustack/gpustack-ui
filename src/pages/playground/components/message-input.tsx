@@ -1,6 +1,3 @@
-import SimpleAudio from '@/components/audio-player/simple-audio';
-import IconFont from '@/components/icon-font';
-import UploadAudio from '@/components/upload-audio';
 import HotKeys, { KeyMap } from '@/config/hotkeys';
 import {
   audioTypeMap,
@@ -13,6 +10,7 @@ import {
   SendOutlined,
   SwapOutlined
 } from '@ant-design/icons';
+import { IconFont, SimpleAudio, UploadAudio } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Checkbox, Divider, Input, Tooltip } from 'antd';
 import _ from 'lodash';
@@ -241,7 +239,7 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
         const imgPromises: Promise<string>[] = [];
 
         for (let i = 0; i < items.length; i++) {
-          let item = items[i];
+          const item = items[i];
 
           if (item.kind === 'file' && item.type.indexOf('image') !== -1) {
             const file = item.getAsFile();

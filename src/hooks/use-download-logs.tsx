@@ -1,5 +1,5 @@
 import { HandlerOptions } from '@/hooks/use-chunk-fetch';
-import useDownloadStream from '@/hooks/use-download-stream';
+import { useDownloadStream } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Progress, notification } from 'antd';
 import dayjs from 'dayjs';

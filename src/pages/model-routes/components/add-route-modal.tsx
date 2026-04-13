@@ -1,7 +1,5 @@
-import AlertBlockInfo from '@/components/alert-info/block';
-import ModalFooter from '@/components/modal-footer';
 import { PageActionType } from '@/config/types';
-import FormDrawer from '@/pages/_components/form-drawer';
+import { AlertBlockInfo, FormDrawer, ModalFooter } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import React, { useRef } from 'react';
 import { FormData, RouteItem as ListItem } from '../config/types';

@@ -1,4 +1,4 @@
-import CardWrapper from '@/components/card-wrapper';
+import { CardWrapper } from '@gpustack/core-ui';
 import { Col, Progress, Row, Tag } from 'antd';
 import { round } from 'lodash';
 import React, { useEffect } from 'react';

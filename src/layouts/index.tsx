@@ -1,21 +1,30 @@
 import { routeCacheAtom, setRouteCache } from '@/atoms/route-cache';
 import { userAtom } from '@/atoms/user';
 import DarkMask from '@/components/dark-mask';
-import IconFont from '@/components/icon-font';
 import routeCachekey from '@/config/route-cachekey';
-import { DEFAULT_ENTER_PAGE } from '@/config/settings';
+import { DEFAULT_ENTER_PAGE, GPUSTACK_API_BASE_URL } from '@/config/settings';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import useUserSettings from '@/hooks/use-user-settings';
 import useAddResource from '@/pages/dashboard/hooks/use-add-resource';
 import { logout } from '@/pages/login/apis';
+import {
+  readColumnSettings,
+  readState,
+  writeColumnSettings,
+  writeState
+} from '@/utils/localstore';
 import { useAccessMarkedRoutes } from '@@/plugin-access';
 import { useModel } from '@@/plugin-model';
 import { ProLayout } from '@ant-design/pro-components';
+import { CoreUIProvider, IconFont } from '@gpustack/core-ui';
 import {
   Outlet,
   dropByCacheKey,
+  getAllLocales,
   history,
   matchRoutes,
+  request,
+  setLocale,
   useAppData,
   useIntl,
   useLocation,
@@ -23,7 +32,6 @@ import {
   type IRoute
 } from '@umijs/max';
 import { Button, ConfigProvider, Modal, theme } from 'antd';
-import 'driver.js/dist/driver.css';
 import { useAtom } from 'jotai';
 import 'overlayscrollbars/overlayscrollbars.css';
 import { useEffect, useMemo, useRef } from 'react';
@@ -73,7 +81,7 @@ const filterRoutes = (
     return [];
   }
 
-  let newRoutes: NewRoute[] = [];
+  const newRoutes: NewRoute[] = [];
   for (const route of routes) {
     const newRoute = { ...route };
     if (filterFn(route)) {
@@ -158,7 +166,7 @@ export default (props: any) => {
   };
 
   const dropRouteCache = (pathname: string) => {
-    for (let key of routeCache.keys()) {
+    for (const key of routeCache.keys()) {
       if (key !== pathname && !routeCache.get(key) && routeCachekey[key]) {
         dropByCacheKey(key);
         routeCache.delete(key);
@@ -329,8 +337,6 @@ export default (props: any) => {
     });
   };
 
-  console.log('userConfig==========title', userConfig.title);
-
   return (
     <ConfigProvider
       componentSize="large"
@@ -352,60 +358,83 @@ export default (props: any) => {
         }
       }}
     >
-      <DarkMask></DarkMask>
-      <ProLayout
-        fixSiderbar
-        fixedHeader={false}
-        headerRender={false}
-        breadcrumbRender={false}
-        route={route}
-        location={location}
-        title={userConfig.title}
-        navTheme={userSettings.theme}
-        layout="side"
-        contentStyle={{
-          paddingBlock: 0,
-          paddingInline: 0
+      <CoreUIProvider
+        config={{
+          apiBaseUrl: GPUSTACK_API_BASE_URL,
+          theme: userSettings.theme,
+          iconUrl: '//at.alicdn.com/t/c/font_4613488_8fi68fmt1th.js',
+          isDarkTheme: userSettings.isDarkTheme
         }}
-        openKeys={false}
-        disableMobile={true}
-        siderWidth={220}
-        onCollapse={onCollapse}
-        onMenuHeaderClick={onMenuHeaderClick}
-        menuHeaderRender={renderMenuHeader}
-        collapsed={userSettings.collapsed}
-        onPageChange={onPageChange}
-        formatMessage={formatMessage}
-        menu={{
-          locale: true,
-          type: 'group'
+        i18n={intl}
+        locale={{
+          getAllLocales: getAllLocales,
+          setLocale: setLocale
         }}
-        splitMenus={true}
-        logo={userSettings.collapsed ? <SLogoIcon /> : <LogoIcon />}
-        menuContentRender={menuContentRender}
-        {...runtimeConfig}
-        ErrorBoundary={ErrorBoundary}
+        services={{
+          request: request
+        }}
+        localStore={{
+          readColumnSettings,
+          writeColumnSettings,
+          readState,
+          writeState
+        }}
       >
-        <Exception
-          route={matchedRoute}
-          notFound={runtimeConfig?.notFound}
-          noFound={runtimeConfig?.noFound}
-          unAccessible={runtimeConfig?.unAccessible}
-          noAccessible={runtimeConfig?.noAccessible}
+        <DarkMask></DarkMask>
+        <ProLayout
+          fixSiderbar
+          fixedHeader={false}
+          headerRender={false}
+          breadcrumbRender={false}
+          route={route}
+          location={location}
+          title={userConfig.title}
+          navTheme={userSettings.theme}
+          layout="side"
+          contentStyle={{
+            paddingBlock: 0,
+            paddingInline: 0
+          }}
+          openKeys={false}
+          disableMobile={true}
+          siderWidth={220}
+          onCollapse={onCollapse}
+          onMenuHeaderClick={onMenuHeaderClick}
+          menuHeaderRender={renderMenuHeader}
+          collapsed={userSettings.collapsed}
+          onPageChange={onPageChange}
+          formatMessage={formatMessage}
+          menu={{
+            locale: true,
+            type: 'group'
+          }}
+          splitMenus={true}
+          logo={userSettings.collapsed ? <SLogoIcon /> : <LogoIcon />}
+          menuContentRender={menuContentRender}
+          {...runtimeConfig}
+          ErrorBoundary={ErrorBoundary}
         >
-          {isNoContainerPage ? (
-            <Outlet />
-          ) : (
-            <PageContainerInner>
-              <div>
-                <Outlet />
-              </div>
-            </PageContainerInner>
-          )}
-        </Exception>
-        {NoResourceModal}
-        {contextHolder}
-      </ProLayout>
+          <Exception
+            route={matchedRoute}
+            notFound={runtimeConfig?.notFound}
+            noFound={runtimeConfig?.noFound}
+            unAccessible={runtimeConfig?.unAccessible}
+            noAccessible={runtimeConfig?.noAccessible}
+          >
+            {isNoContainerPage ? (
+              <Outlet />
+            ) : (
+              <PageContainerInner>
+                <div>
+                  <Outlet />
+                </div>
+              </PageContainerInner>
+            )}
+          </Exception>
+          {NoResourceModal}
+          {contextHolder}
+        </ProLayout>
+      </CoreUIProvider>
     </ConfigProvider>
   );
 };

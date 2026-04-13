@@ -1,5 +1,5 @@
-import HighlightCode from '@/components/highlight-code';
 import { addWorkerGuide } from '@/pages/resources/config';
+import { HighlightCode } from '@gpustack/core-ui';
 import React from 'react';
 
 type ViewModalProps = {

@@ -1,8 +1,10 @@
-import IconFont from '@/components/icon-font';
-import StatusTag from '@/components/status-tag';
-import TagWrapper from '@/components/tags-wrapper';
-import ThemeTag from '@/components/tags-wrapper/theme-tag';
-import Card from '@/components/templates/card';
+import {
+  IconFont,
+  StatusTag,
+  TagsWrapper,
+  TemplateCard,
+  ThemeTag
+} from '@gpustack/core-ui';
 import { useIntl, useNavigate } from '@umijs/max';
 import { Button } from 'antd';
 import _ from 'lodash';
@@ -163,7 +165,7 @@ const ModelItem: React.FC<{
 
   return (
     <CardWrapper>
-      <Card
+      <TemplateCard
         height={140}
         onClick={() => onClick(model)}
         clickable={false}
@@ -222,11 +224,11 @@ const ModelItem: React.FC<{
                 {model.meta?.voices?.length > 0 && (
                   <>
                     <Dot></Dot>
-                    <TagWrapper
+                    <TagsWrapper
                       gap={8}
                       dataList={model.meta?.voices}
                       renderTag={renderTag}
-                    ></TagWrapper>
+                    ></TagsWrapper>
                   </>
                 )}
               </div>
@@ -243,7 +245,7 @@ const ModelItem: React.FC<{
             </div>
           </div>
         </ModelItemContent>
-      </Card>
+      </TemplateCard>
     </CardWrapper>
   );
 };

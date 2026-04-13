@@ -1,6 +1,5 @@
-import InfoColumn from '@/components/simple-table/info-column';
-import ThemeTag from '@/components/tags-wrapper/theme-tag';
 import { InfoCircleOutlined } from '@ant-design/icons';
+import { InfoColumn, ThemeTag } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Tooltip } from 'antd';
 import _ from 'lodash';

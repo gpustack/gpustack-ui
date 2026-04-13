@@ -1,5 +1,3 @@
-import AutoTooltip from '@/components/auto-tooltip';
-import IconFont from '@/components/icon-font';
 import { convertFileSize } from '@/utils';
 import {
   HddFilled,
@@ -7,13 +5,13 @@ import {
   PieChartFilled,
   ThunderboltFilled
 } from '@ant-design/icons';
+import { AutoTooltip, IconFont } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Tooltip } from 'antd';
 import _ from 'lodash';
 import React, { useEffect } from 'react';
 import { ModelInstanceListItem } from '../../config/types';
 import '../../style/instance-item.less';
-
 export interface NameCellProps {
   record: ModelInstanceListItem;
   modelData: any;

@@ -1,7 +1,9 @@
-import AutoTooltip from '@/components/auto-tooltip';
-import CopyButton from '@/components/copy-button';
-import BaseSelect from '@/components/seal-form/base/select';
-import ThemeTag from '@/components/tags-wrapper/theme-tag';
+import {
+  AutoTooltip,
+  BaseSelect,
+  CopyButton,
+  ThemeTag
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Empty, Typography } from 'antd';
 import { useState } from 'react';
@@ -14,7 +16,6 @@ import {
   TagColorMap
 } from '../config';
 import { VersionListItem } from '../config/types';
-
 const ItemWrapper = styled.div`
   display: flex;
   flex-direction: column;

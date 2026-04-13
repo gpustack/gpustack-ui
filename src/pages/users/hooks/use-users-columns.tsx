@@ -1,9 +1,7 @@
 // columns.ts
-import AutoTooltip from '@/components/auto-tooltip';
-import DropdownButtons from '@/components/drop-down-buttons';
-import IconFont from '@/components/icon-font';
-import icons from '@/components/icon-font/icons';
 import { tableSorter } from '@/config/settings';
+import { AutoTooltip, DropdownButtons, IconFont } from '@gpustack/core-ui';
+import icons from '@gpustack/core-ui/lib/components/icon-font/icons';
 import { useIntl, useModel } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { Tag } from 'antd';
@@ -11,7 +9,6 @@ import { ColumnsType } from 'antd/lib/table';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
 import { ListItem } from '../config/types';
-
 interface ColumnsHookProps {
   handleSelect: (val: string, record: ListItem) => void;
   sortOrder: string[];

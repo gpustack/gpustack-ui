@@ -1,9 +1,9 @@
-import IconFont from '@/components/icon-font';
 import {
   AudioOutlined,
   PictureOutlined,
   WechatWorkOutlined
 } from '@ant-design/icons';
+import { IconFont } from '@gpustack/core-ui';
 import { Tag } from 'antd';
 import { modelCategoriesMap } from '../llmodels/config';
 

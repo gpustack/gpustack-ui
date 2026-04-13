@@ -1,8 +1,10 @@
-import AutoTooltip from '@/components/auto-tooltip';
-import SealCascader from '@/components/seal-form/seal-cascader';
-import SimpleSelect from '@/components/seal-form/simple-select';
 import ProviderLogo from '@/pages/maas-provider/components/provider-logo';
 import { DownloadOutlined } from '@ant-design/icons';
+import {
+  AutoTooltip,
+  Cascader as SealCascader,
+  SimpleSelect
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, DatePicker, Tooltip } from 'antd';
 import dayjs from 'dayjs';
@@ -10,7 +12,6 @@ import React from 'react';
 import { DASHBOARD_STATS_API } from '../../apis';
 import useRangePickerPreset from '../../hooks/use-rangepicker-preset';
 import FilterBarCss from '../../styles/filter-bar.less';
-
 const DefaultDateConfig = {
   maxRange: 60,
   defaultRange: 29

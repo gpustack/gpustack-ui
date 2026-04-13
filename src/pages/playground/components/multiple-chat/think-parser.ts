@@ -13,8 +13,8 @@ class ThinkParser {
 
   parse(chunk: string) {
     while (this.lastCheckedIndex < chunk.length) {
-      let startIndex = chunk.indexOf('<think>', this.lastCheckedIndex);
-      let endIndex = chunk.indexOf('</think>', this.lastCheckedIndex);
+      const startIndex = chunk.indexOf('<think>', this.lastCheckedIndex);
+      const endIndex = chunk.indexOf('</think>', this.lastCheckedIndex);
 
       if (!this.collecting) {
         if (endIndex !== -1 && (startIndex === -1 || endIndex < startIndex)) {

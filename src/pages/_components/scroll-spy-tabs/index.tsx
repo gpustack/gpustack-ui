@@ -1,4 +1,4 @@
-import SegmentLine from '@/components/segment-line';
+import { SegmentLine } from '@gpustack/core-ui';
 import { useMemoizedFn } from 'ahooks';
 import _ from 'lodash';
 import React, { forwardRef, useImperativeHandle } from 'react';

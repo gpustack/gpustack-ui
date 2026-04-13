@@ -1,4 +1,4 @@
-import IconFont from '@/components/icon-font';
+import { IconFont } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button } from 'antd';
 import React from 'react';

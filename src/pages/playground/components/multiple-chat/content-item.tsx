@@ -1,5 +1,5 @@
-import IconFont from '@/components/icon-font';
 import { StopOutlined } from '@ant-design/icons';
+import { IconFont } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button } from 'antd';
 import React, { useMemo } from 'react';

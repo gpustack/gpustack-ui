@@ -1,4 +1,4 @@
-import FullMarkdown from '@/components/markdown-viewer/full-markdown';
+import { FullMarkdown } from '@gpustack/core-ui';
 import React from 'react';
 import '../../style/think-content.less';
 

@@ -1,5 +1,5 @@
-import { TooltipOverlayScroller } from '@/components/overlay-scroller';
 import { LoadingOutlined, WarningOutlined } from '@ant-design/icons';
+import { TooltipOverlayScroller } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Tag, Tooltip } from 'antd';
 import React from 'react';

@@ -1,4 +1,4 @@
-import LineChart from '@/components/echarts/line-chart';
+import { LineChart } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import dayjs from 'dayjs';
 import _ from 'lodash';

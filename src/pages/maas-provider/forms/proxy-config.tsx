@@ -1,6 +1,5 @@
-import CheckboxField from '@/components/seal-form/checkbox-field';
-import SealInput from '@/components/seal-form/seal-input';
 import useAppUtils from '@/hooks/use-app-utils';
+import { CheckboxField, Input as CInput } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import React from 'react';
@@ -60,17 +59,17 @@ const AdvanceConfig = () => {
               }
             ]}
           >
-            <SealInput.Input
+            <CInput.Input
               required
               label={intl.formatMessage({ id: 'providers.form.proxy.url' })}
               placeholder="http://proxy.example.com:8080"
-            ></SealInput.Input>
+            ></CInput.Input>
           </Form.Item>
           <Form.Item name="proxy_timeout">
-            <SealInput.Number
+            <CInput.Number
               label={intl.formatMessage({ id: 'providers.form.proxy.timeout' })}
               placeholder="30"
-            ></SealInput.Number>
+            ></CInput.Number>
           </Form.Item>
         </>
       )}

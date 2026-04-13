@@ -1,6 +1,6 @@
-import SealInput from '@/components/seal-form/seal-input';
 import { PageAction } from '@/config';
 import useAppUtils from '@/hooks/use-app-utils';
+import { Input as CInput } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import React from 'react';
@@ -44,22 +44,22 @@ const HuggingFaceForm: React.FC = () => {
               }
             ]}
           >
-            <SealInput.Input
+            <CInput.Input
               label={intl.formatMessage({ id: 'models.form.repoid' })}
               required
               disabled={action === PageAction.CREATE}
               onBlur={handleOnBlur}
-            ></SealInput.Input>
+            ></CInput.Input>
           </Form.Item>
           {isGGUF && (
             <Form.Item<FormData>
               name="huggingface_filename"
               key="huggingface_filename"
             >
-              <SealInput.Input
+              <CInput.Input
                 label={intl.formatMessage({ id: 'models.form.filename' })}
                 disabled={action === PageAction.CREATE}
-              ></SealInput.Input>
+              ></CInput.Input>
             </Form.Item>
           )}
         </>
@@ -75,22 +75,22 @@ const HuggingFaceForm: React.FC = () => {
               }
             ]}
           >
-            <SealInput.Input
+            <CInput.Input
               required
               label={intl.formatMessage({ id: 'models.form.repoid' })}
               disabled={action === PageAction.CREATE}
               onBlur={handleOnBlur}
-            ></SealInput.Input>
+            ></CInput.Input>
           </Form.Item>
           {isGGUF && (
             <Form.Item<FormData>
               name="model_scope_file_path"
               key="model_scope_file_path"
             >
-              <SealInput.Input
+              <CInput.Input
                 label={intl.formatMessage({ id: 'models.form.filename' })}
                 disabled={action === PageAction.CREATE}
-              ></SealInput.Input>
+              ></CInput.Input>
             </Form.Item>
           )}
         </>

@@ -1,5 +1,5 @@
-import IconFont from '@/components/icon-font';
 import { PageContainerInner } from '@/pages/_components/page-box';
+import { IconFont } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { Segmented, Tabs } from 'antd';

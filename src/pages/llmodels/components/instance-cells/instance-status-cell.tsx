@@ -1,4 +1,4 @@
-import StatusTag from '@/components/status-tag';
+import { StatusTag } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button } from 'antd';
 import React from 'react';

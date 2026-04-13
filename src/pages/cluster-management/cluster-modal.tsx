@@ -1,5 +1,5 @@
-import GSDrawer from '@/components/scroller-modal/gs-drawer';
 import { PageAction } from '@/config';
+import { GSDrawer } from '@gpustack/core-ui';
 import React from 'react';
 import ClusterCreate from './cluster-create';
 

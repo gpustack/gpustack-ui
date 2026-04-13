@@ -1,10 +1,10 @@
-import TableContext from '@/components/seal-table/table-context';
-import { TableOrder } from '@/components/seal-table/types';
 import { PaginationKey } from '@/config/settings';
 import useSetChunkRequest from '@/hooks/use-chunk-request';
 import { usePaginationStatus } from '@/hooks/use-pagination-status';
 import { useTableMultiSort } from '@/hooks/use-table-sort';
 import useUpdateChunkedList from '@/hooks/use-update-chunk-list';
+import { TableProvider } from '@gpustack/core-ui';
+import { TableOrder } from '@gpustack/core-ui/lib/components/table/types';
 import { useMemoizedFn } from 'ahooks';
 import _ from 'lodash';
 import qs from 'query-string';
@@ -337,7 +337,7 @@ const Models = forwardRef((props, ref) => {
   };
 
   const handleOnSortChange = (order: TableOrder | Array<TableOrder>) => {
-    let orderList = Array.isArray(order) ? order : [order];
+    const orderList = Array.isArray(order) ? order : [order];
     if (orderList[0].columnKey === 'replicas') {
       orderList.push({
         columnKey: 'ready_replicas',
@@ -439,7 +439,7 @@ const Models = forwardRef((props, ref) => {
   }));
 
   return (
-    <TableContext.Provider
+    <TableProvider
       value={{
         allChildren: modelInstances,
         setDisableExpand: setDisableExpand
@@ -470,7 +470,7 @@ const Models = forwardRef((props, ref) => {
         deleteIds={dataSource.deletedIds}
         filterValues={filterValues}
       ></TableList>
-    </TableContext.Provider>
+    </TableProvider>
   );
 });
 

@@ -1,10 +1,12 @@
-import AutoTooltip from '@/components/auto-tooltip';
-import MetadataList from '@/components/metadata-list';
-import InputNumber from '@/components/seal-form/input-number';
-import SealCascader from '@/components/seal-form/seal-cascader';
 import { PageAction } from '@/config';
 import useAppUtils from '@/hooks/use-app-utils';
 import ProviderLogo from '@/pages/maas-provider/components/provider-logo';
+import {
+  AutoTooltip,
+  InputNumber,
+  MetadataList,
+  Cascader as SealCascader
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form, Tooltip } from 'antd';
 import _ from 'lodash';
@@ -19,7 +21,6 @@ import styled from 'styled-components';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
 import useTargetSourceModels from '../hooks/use-target-source-models';
-
 const OptionWrapper = styled.span`
   display: flex;
   align-items: center;

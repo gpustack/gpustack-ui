@@ -1,6 +1,5 @@
-import ModalFooter from '@/components/modal-footer';
-import GSDrawer from '@/components/scroller-modal/gs-drawer';
 import { ProviderValueMap } from '@/pages/cluster-management/config';
+import { GSDrawer, ModalFooter } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { debounce } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';

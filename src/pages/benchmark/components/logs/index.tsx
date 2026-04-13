@@ -1,4 +1,4 @@
-import LogsViewer from '@/components/logs-viewer/virtual-log-list';
+import { LogsViewer } from '@gpustack/core-ui';
 import React, { useRef } from 'react';
 import { BENCHMARKS_API } from '../../apis';
 import { useDetailContext } from '../../config/detail-context';

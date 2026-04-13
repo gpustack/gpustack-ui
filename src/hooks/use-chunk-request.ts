@@ -143,7 +143,7 @@ const useSetChunkRequest = () => {
           total.current = e.total || 0;
 
           if (contentType === 'json') {
-            let currentRes = sliceData(response, e.loaded, loadedSize);
+            const currentRes = sliceData(response, e.loaded, loadedSize);
             workerRef.current.postMessage(currentRes);
           } else {
             handler(response);

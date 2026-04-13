@@ -1,4 +1,4 @@
-import RowTextarea from '@/components/seal-form/row-textarea';
+import { RowTextarea } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import React, { forwardRef, useImperativeHandle, useRef } from 'react';
 import '../style/input-list.less';

@@ -1,13 +1,11 @@
 // columns.ts
 import { systemConfigAtom } from '@/atoms/system';
-import AutoTooltip from '@/components/auto-tooltip';
-import DropdownButtons from '@/components/drop-down-buttons';
-import icons from '@/components/icon-font/icons';
-import { SealColumnProps } from '@/components/seal-table/types';
 import { OPENAI_COMPATIBLE, tableSorter } from '@/config/settings';
-import GrafanaIcon from '@/pages/_components/grafana-icon';
 import { TargetStatusValueMap } from '@/pages/model-routes/config';
 import { QuestionCircleOutlined } from '@ant-design/icons';
+import { AutoTooltip, DropdownButtons, GrafanaIcon } from '@gpustack/core-ui';
+import icons from '@gpustack/core-ui/lib/components/icon-font/icons';
+import { ColumnProps } from '@gpustack/core-ui/lib/components/table/types';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { Tooltip } from 'antd';
@@ -18,7 +16,6 @@ import { useMemo } from 'react';
 import ModelTag from '../../_components/model-tag';
 import { generateSource } from '../config/button-actions';
 import { ListItem } from '../config/types';
-
 interface ActionItem {
   label: string;
   key: string;
@@ -101,7 +98,7 @@ const useModelsColumns = ({
   clusterList,
   sortOrder,
   targetList
-}: ModelsColumnsHookProps & { targetList: any[] }): SealColumnProps[] => {
+}: ModelsColumnsHookProps & { targetList: any[] }): ColumnProps[] => {
   const intl = useIntl();
   const systemConfig = useAtomValue(systemConfigAtom);
 

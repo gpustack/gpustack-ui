@@ -1,6 +1,6 @@
 import { systemConfigAtom } from '@/atoms/system';
 import { GPUSTACK_API_BASE_URL } from '@/config/settings';
-import GrafanaIcon from '@/pages/_components/grafana-icon';
+import { GrafanaIcon } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button } from 'antd';
 import { useAtomValue } from 'jotai';

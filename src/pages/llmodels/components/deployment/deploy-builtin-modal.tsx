@@ -1,9 +1,7 @@
-import ModalFooter from '@/components/modal-footer';
-import GSDrawer from '@/components/scroller-modal/gs-drawer';
 import { PageActionType } from '@/config/types';
 import { createAxiosToken } from '@/hooks/use-chunk-request';
-import ColumnWrapper from '@/pages/_components/column-wrapper';
 import { ClusterStatusValueMap } from '@/pages/cluster-management/config';
+import { ColumnWrapper, GSDrawer, ModalFooter } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, message } from 'antd';
 import _ from 'lodash';

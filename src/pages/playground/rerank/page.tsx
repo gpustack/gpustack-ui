@@ -1,4 +1,3 @@
-import AlertInfo from '@/components/alert-info';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import useRequestToken from '@/hooks/use-request-token';
 import {
@@ -7,6 +6,7 @@ import {
   QuestionCircleOutlined,
   SendOutlined
 } from '@ant-design/icons';
+import { AlertInfo } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Checkbox, Input, Spin, Tag, Tooltip, Typography } from 'antd';
 import _ from 'lodash';

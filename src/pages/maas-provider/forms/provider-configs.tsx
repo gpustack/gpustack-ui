@@ -1,10 +1,8 @@
-import Password from '@/components/seal-form/password';
-import SealInput from '@/components/seal-form/seal-input';
+import { Input as CInput, Password } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
-
 const ProviderConfigs = () => {
   const intl = useIntl();
   const form = Form.useFormInstance<FormData>();
@@ -35,12 +33,12 @@ const ProviderConfigs = () => {
                 key={item.name}
               >
                 {item.type === 'Input' && (
-                  <SealInput.Input
+                  <CInput.Input
                     required={item.required}
                     description={renderDescription(item)}
                     label={renderLabel(item)}
                     placeholder={item.placeholder}
-                  ></SealInput.Input>
+                  ></CInput.Input>
                 )}
                 {item.type === 'Password' && (
                   <Password

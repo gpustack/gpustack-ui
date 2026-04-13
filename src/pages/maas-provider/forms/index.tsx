@@ -1,12 +1,10 @@
-import IconFont from '@/components/icon-font';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
-import CollapsePanel from '@/pages/_components/collapse-panel';
-import { useWrapperContext } from '@/pages/_components/column-wrapper/use-wrapper-context';
-import ScrollSpyTabs from '@/pages/_components/scroll-spy-tabs';
-import useFinishFailed from '@/pages/_components/scroll-spy-tabs/use-finish-failed';
-import useScrollActiveChange from '@/pages/_components/scroll-spy-tabs/use-scroll-active-change';
 import { json2Yaml, yaml2Json } from '@/pages/backends/config';
+import { CollapsePanel, IconFont, ScrollSpyTabs } from '@gpustack/core-ui';
+import { useWrapperContext } from '@gpustack/core-ui/lib/components/column-wrapper/use-wrapper-context';
+import useFinishFailed from '@gpustack/core-ui/lib/components/scroll-spy-tabs/use-finish-failed';
+import useScrollActiveChange from '@gpustack/core-ui/lib/components/scroll-spy-tabs/use-scroll-active-change';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';

@@ -1,5 +1,5 @@
-import IconFont from '@/components/icon-font';
 import { SearchOutlined } from '@ant-design/icons';
+import { IconFont } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Empty, Spin } from 'antd';
 import _ from 'lodash';

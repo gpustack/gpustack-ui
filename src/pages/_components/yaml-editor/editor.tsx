@@ -1,5 +1,5 @@
-import EditorWrap from '@/components/editor-wrap';
 import { LoadingOutlined } from '@ant-design/icons';
+import { EditorWrap } from '@gpustack/core-ui';
 import Editor, { loader } from '@monaco-editor/react';
 import * as monaco from 'monaco-editor';
 import { yamlDefaults } from 'monaco-yaml';

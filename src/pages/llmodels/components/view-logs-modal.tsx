@@ -1,5 +1,5 @@
-import LogsViewer from '@/components/logs-viewer/virtual-log-list';
 import useSetChunkRequest from '@/hooks/use-chunk-request';
+import { LogsViewer } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Modal } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';

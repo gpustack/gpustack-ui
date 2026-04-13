@@ -1,8 +1,7 @@
-import AutoTooltip from '@/components/auto-tooltip';
 import { convertFileSize } from '@/utils';
+import { AutoTooltip } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Tag } from 'antd';
-
 export default function useWorkerColumns(): {
   title: string;
   dataIndex: string;

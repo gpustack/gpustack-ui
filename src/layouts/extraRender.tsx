@@ -1,6 +1,4 @@
 import { GPUStackVersionAtom, UpdateCheckAtom } from '@/atoms/user';
-import DropDownActions from '@/components/drop-down-actions';
-import IconFont from '@/components/icon-font';
 import VersionInfo, { modalConfig } from '@/components/version-info';
 import externalLinks from '@/constants/external-links';
 import useBodyScroll from '@/hooks/use-body-scroll';
@@ -12,6 +10,7 @@ import {
   HomeOutlined,
   ReadOutlined
 } from '@ant-design/icons';
+import { DropdownActions, IconFont } from '@gpustack/core-ui';
 import { history, useIntl, useNavigate } from '@umijs/max';
 import { Avatar, Button, Divider, Modal } from 'antd';
 import { useAtom } from 'jotai';
@@ -292,7 +291,7 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
           </NewLabel>
         )}
       </div>
-      <DropDownActions menu={{ ...helpMenu }} popupRender={helpPopupRender}>
+      <DropdownActions menu={{ ...helpMenu }} popupRender={helpPopupRender}>
         <IconWrapper>
           <IconFont
             type="icon-help"
@@ -300,8 +299,8 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
             style={{ color: 'var(--ant-color-text-tertiary)' }}
           />
         </IconWrapper>
-      </DropDownActions>
-      <DropDownActions menu={{ ...userMenu }} popupRender={userPopupRender}>
+      </DropdownActions>
+      <DropdownActions menu={{ ...userMenu }} popupRender={userPopupRender}>
         <IconWrapper>
           <Avatar
             size={24}
@@ -310,7 +309,7 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
             icon={<IconFont type="icon-user-filled" className="font-size-24" />}
           />
         </IconWrapper>
-      </DropDownActions>
+      </DropdownActions>
     </Wrapper>
   );
 };

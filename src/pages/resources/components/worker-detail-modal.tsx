@@ -1,4 +1,4 @@
-import GSDrawer from '@/components/scroller-modal/gs-drawer';
+import { GSDrawer } from '@gpustack/core-ui';
 import React from 'react';
 import { ListItem } from '../config/types';
 import WorkerDetailContent from './worker-detail-content';

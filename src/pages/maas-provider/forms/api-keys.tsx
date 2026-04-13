@@ -1,12 +1,10 @@
-import MetadataList from '@/components/metadata-list';
-import Password from '@/components/seal-form/password';
 import { PageAction } from '@/config';
 import useAppUtils from '@/hooks/use-app-utils';
+import { MetadataList, Password } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
-
 const AccessToken = () => {
   const intl = useIntl();
   const { getRuleMessage } = useAppUtils();

@@ -1,6 +1,3 @@
-import AutoTooltip from '@/components/auto-tooltip';
-import SealInput from '@/components/seal-form/seal-input';
-import SealSelect from '@/components/seal-form/seal-select';
 import { modelNameReg, PageAction } from '@/config';
 import { OPENAI_COMPATIBLE } from '@/config/settings';
 import useAppUtils from '@/hooks/use-app-utils';
@@ -8,6 +5,11 @@ import {
   ClusterStatusLabelMap,
   ClusterStatusValueMap
 } from '@/pages/cluster-management/config';
+import {
+  AutoTooltip,
+  Input as CInput,
+  Select as SealSelect
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import { useMemo } from 'react';
@@ -21,7 +23,6 @@ import CustomBackend from './custom-backend';
 import LocalPathSource from './local-path-source';
 import ModeField from './mode-field';
 import OnlineSource from './online-source';
-
 const ClusterOption = styled.span`
   display: flex;
   padding: 8px 0;
@@ -173,14 +174,14 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
           }
         ]}
       >
-        <SealInput.Input
+        <CInput.Input
           onBlur={handleNameBlur}
           description={intl.formatMessage({ id: 'models.form.rules.name' })}
           label={intl.formatMessage({
             id: 'common.table.name'
           })}
           required
-        ></SealInput.Input>
+        ></CInput.Input>
       </Form.Item>
       {fields.includes('source') && (
         <Form.Item<FormData>
@@ -240,7 +241,7 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
           }
         ]}
       >
-        <SealInput.Number
+        <CInput.Number
           style={{ width: '100%' }}
           label={intl.formatMessage({
             id: 'models.form.replicas'
@@ -251,15 +252,15 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
             { api: `${window.location.origin}/${OPENAI_COMPATIBLE}` }
           )}
           min={0}
-        ></SealInput.Number>
+        ></CInput.Number>
       </Form.Item>
       <Form.Item<FormData> name="description">
-        <SealInput.TextArea
+        <CInput.TextArea
           scaleSize={true}
           label={intl.formatMessage({
             id: 'common.table.description'
           })}
-        ></SealInput.TextArea>
+        ></CInput.TextArea>
       </Form.Item>
     </>
   );

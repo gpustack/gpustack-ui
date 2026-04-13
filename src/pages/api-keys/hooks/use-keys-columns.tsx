@@ -1,15 +1,13 @@
 // columns.ts
-import AutoTooltip from '@/components/auto-tooltip';
-import DropdownButtons from '@/components/drop-down-buttons';
-import icons from '@/components/icon-font/icons';
 import { tableSorter } from '@/config/settings';
+import { AutoTooltip, DropdownButtons } from '@gpustack/core-ui';
+import icons from '@gpustack/core-ui/lib/components/icon-font/icons';
 import { useIntl } from '@umijs/max';
 import { Tag } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
 import { ListItem } from '../config/types';
-
 interface ColumnsHookProps {
   handleSelect: (val: string, record: ListItem) => void;
   sortOrder: string[];

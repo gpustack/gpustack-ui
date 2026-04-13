@@ -1,11 +1,13 @@
-import AlertBlockInfo from '@/components/alert-info/block';
-import TooltipList from '@/components/tooltip-list';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
-import TransferInner from '@/pages/_components/transfer';
 import { RouteItem } from '@/pages/model-routes/config/types';
 import { queryUsersList } from '@/pages/users/apis';
 import { DownOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import {
+  AlertBlockInfo,
+  TooltipList,
+  Transfer as TransferInner
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import {
   Checkbox,

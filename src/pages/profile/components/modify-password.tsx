@@ -1,8 +1,7 @@
-import FormButtons from '@/components/form-buttons';
-import SealInput from '@/components/seal-form/seal-input';
 import { PasswordReg } from '@/config';
 import { INPUT_WIDTH } from '@/constants';
 import { updatePassword } from '@/pages/login/apis';
+import { Input as CInput, FormButtons } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form, message } from 'antd';
 import React from 'react';
@@ -57,12 +56,12 @@ const Profile: React.FC = () => {
           }
         ]}
       >
-        <SealInput.Password
+        <CInput.Password
           autoComplete="current-password"
           label={intl.formatMessage({ id: 'users.form.currentpassword' })}
           required
           style={{ width: INPUT_WIDTH.default }}
-        ></SealInput.Password>
+        ></CInput.Password>
       </Form.Item>
       <Form.Item<ProfileProps>
         name="new_password"
@@ -76,12 +75,12 @@ const Profile: React.FC = () => {
           }
         ]}
       >
-        <SealInput.Password
+        <CInput.Password
           autoComplete="new-password"
           label={intl.formatMessage({ id: 'users.form.newpassword' })}
           required
           style={{ width: INPUT_WIDTH.default }}
-        ></SealInput.Password>
+        ></CInput.Password>
       </Form.Item>
       <Form.Item
         name="confirm_password"
@@ -107,7 +106,7 @@ const Profile: React.FC = () => {
           })
         ]}
       >
-        <SealInput.Password
+        <CInput.Password
           required={true}
           autoComplete="new-password"
           style={{ width: INPUT_WIDTH.default }}

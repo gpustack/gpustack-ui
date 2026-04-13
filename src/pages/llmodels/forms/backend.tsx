@@ -1,7 +1,6 @@
-import SealSelect from '@/components/seal-form/seal-select';
-import TooltipList from '@/components/tooltip-list';
 import useAppUtils from '@/hooks/use-app-utils';
 import { CaretDownOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { Select as SealSelect, TooltipList } from '@gpustack/core-ui';
 import { useIntl, useNavigate } from '@umijs/max';
 import { Form, Select } from 'antd';
 import React, { useMemo } from 'react';

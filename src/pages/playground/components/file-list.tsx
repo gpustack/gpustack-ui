@@ -1,11 +1,10 @@
-import AutoTooltip from '@/components/auto-tooltip';
 import { DeleteOutlined, PaperClipOutlined } from '@ant-design/icons';
+import { AutoTooltip } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Tooltip } from 'antd';
 import classNames from 'classnames';
 import React from 'react';
 import '../style/file-list.less';
-
 interface FileListProps {
   fileList: { text: string; name: string; uid: number | string }[];
   ghost?: boolean;

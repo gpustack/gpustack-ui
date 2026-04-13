@@ -1,6 +1,5 @@
-import AutoTooltip from '@/components/auto-tooltip';
-import RowChildren from '@/components/seal-table/components/row-children';
 import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
+import { AutoTooltip, RowChildren } from '@gpustack/core-ui';
 import { Col, Row } from 'antd';
 import dayjs from 'dayjs';
 import React from 'react';
@@ -12,7 +11,6 @@ import DistributeInfoCell from '../instance-cells/distribute-info-cell';
 import DownloadingStatusCell from '../instance-cells/downloading-status-cell';
 import InstanceStatusCell from '../instance-cells/instance-status-cell';
 import NameCell from '../instance-cells/name-cell';
-
 interface InstanceItemProps {
   instanceData: ModelInstanceListItem;
   workerList: WorkerListItem[];

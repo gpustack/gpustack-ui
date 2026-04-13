@@ -1,5 +1,4 @@
-import CheckboxField from '@/components/seal-form/checkbox-field';
-import SealInputNumber from '@/components/seal-form/input-number';
+import { CheckboxField, InputNumber as CInputNumber } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
@@ -100,7 +99,7 @@ const KVCacheForm = () => {
       {kvCacheEnabled && (
         <>
           <Form.Item<FormData> name={['extended_kv_cache', 'ram_ratio']}>
-            <SealInputNumber
+            <CInputNumber
               onChange={(value) => handleRamRatioChange(value, 'ram_ratio')}
               label={intl.formatMessage({ id: 'models.form.ramRatio' })}
               description={intl.formatMessage({
@@ -112,7 +111,7 @@ const KVCacheForm = () => {
             />
           </Form.Item>
           <Form.Item<FormData> name={['extended_kv_cache', 'ram_size']}>
-            <SealInputNumber
+            <CInputNumber
               onInput={(value) => handleRamSizeInput(value)}
               label={intl.formatMessage({ id: 'models.form.ramSize' })}
               description={intl.formatMessage(
@@ -127,7 +126,7 @@ const KVCacheForm = () => {
             />
           </Form.Item>
           <Form.Item<FormData> name={['extended_kv_cache', 'chunk_size']}>
-            <SealInputNumber
+            <CInputNumber
               onChange={(value) => handleRamRatioChange(value, 'chunk_size')}
               label={intl.formatMessage({ id: 'models.form.chunkSize' })}
               description={intl.formatMessage({

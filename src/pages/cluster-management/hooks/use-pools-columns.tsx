@@ -1,14 +1,12 @@
-import AutoTooltip from '@/components/auto-tooltip';
-import DropdownButtons from '@/components/drop-down-buttons';
-import { SealColumnProps } from '@/components/seal-table/types';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { AutoTooltip, DropdownButtons } from '@gpustack/core-ui';
+import { ColumnProps } from '@gpustack/core-ui/lib/components/table/types';
 import { useIntl } from '@umijs/max';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import { useMemo } from 'react';
 import { RenderOption } from '../components/pool-form';
 import { NodePoolListItem as ListItem } from '../config/types';
-
 const actionItems = [
   {
     key: 'edit',
@@ -29,7 +27,7 @@ const actionItems = [
 const usePoolsColumns = (
   handleSelect: (val: string, record: ListItem) => void,
   sortOrder?: string[]
-): SealColumnProps[] => {
+): ColumnProps[] => {
   const intl = useIntl();
 
   return useMemo(() => {

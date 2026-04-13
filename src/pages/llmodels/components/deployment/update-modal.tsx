@@ -1,8 +1,6 @@
-import ModalFooter from '@/components/modal-footer';
-import GSDrawer from '@/components/scroller-modal/gs-drawer';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
-import ColumnWrapper from '@/pages/_components/column-wrapper';
+import { ColumnWrapper, GSDrawer, ModalFooter } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import _ from 'lodash';
 import React, { useEffect, useRef } from 'react';

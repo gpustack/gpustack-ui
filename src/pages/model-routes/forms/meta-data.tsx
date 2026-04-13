@@ -1,8 +1,10 @@
-import SingleImage from '@/components/auto-image/single-image';
-import ListInput from '@/components/list-input';
-import SealInputNumber from '@/components/seal-form/input-number';
-import SealInput from '@/components/seal-form/seal-input';
 import UploadImg from '@/pages/playground/components/upload-img';
+import {
+  Input as CInput,
+  InputNumber as CInputNumber,
+  ListInput,
+  SingleImage
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Form } from 'antd';
 import styled from 'styled-components';
@@ -62,26 +64,26 @@ const MetaData = () => {
           name={['meta', 'size']}
           normalize={(v) => (v === 0 ? null : v)}
         >
-          <SealInputNumber
+          <CInputNumber
             min={0}
             label={`${intl.formatMessage({ id: 'routes.form.metadata.size' })} (B)`}
-          ></SealInputNumber>
+          ></CInputNumber>
         </Form.Item>
         <Form.Item<FormData>
           name={['meta', 'activated_size']}
           normalize={(v) => (v === 0 ? null : v)}
         >
-          <SealInputNumber
+          <CInputNumber
             min={0}
             label={`${intl.formatMessage({
               id: 'routes.form.metadata.activeSize'
             })} (B)`}
-          ></SealInputNumber>
+          ></CInputNumber>
         </Form.Item>
       </SizeWrapper>
       <SizeWrapper>
         <Form.Item<FormData> name={['meta', 'max_tokens']}>
-          <SealInput.Input
+          <CInput.Input
             label={intl.formatMessage({
               id: 'routes.form.metadata.maxTokens'
             })}
@@ -89,24 +91,24 @@ const MetaData = () => {
               { id: 'common.help.eg' },
               { content: 'context/128k' }
             )}
-          ></SealInput.Input>
+          ></CInput.Input>
         </Form.Item>
         <Form.Item<FormData>
           name={['meta', 'dimensions']}
           normalize={(v) => (v === 0 ? null : v)}
         >
-          <SealInputNumber
+          <CInputNumber
             min={0}
             step={1}
             precision={0}
             label={intl.formatMessage({
               id: 'routes.form.metadata.dimension'
             })}
-          ></SealInputNumber>
+          ></CInputNumber>
         </Form.Item>
       </SizeWrapper>
       <Form.Item<FormData> name={['meta', 'release_date']}>
-        <SealInput.Input
+        <CInput.Input
           label={intl.formatMessage({
             id: 'routes.form.metadata.releaseDate'
           })}
@@ -114,7 +116,7 @@ const MetaData = () => {
             { id: 'common.help.eg' },
             { content: '2025-05-19' }
           )}
-        ></SealInput.Input>
+        ></CInput.Input>
       </Form.Item>
       <Form.Item<FormData> name={['meta', 'tags']} data-field="metadata">
         <ListInput

@@ -1,7 +1,7 @@
 import { systemConfigAtom } from '@/atoms/system';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
-import ColumnWrapper from '@/pages/_components/column-wrapper';
+import { ColumnWrapper } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useAtom } from 'jotai';
 import _ from 'lodash';

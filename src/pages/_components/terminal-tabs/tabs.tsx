@@ -1,5 +1,5 @@
-import XTerminal from '@/components/x-terminal';
 import { CloseOutlined } from '@ant-design/icons';
+import { XTerminal } from '@gpustack/core-ui';
 import { Button, Tabs } from 'antd';
 import { throttle } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';

@@ -1,12 +1,11 @@
-import BaseSelect from '@/components/seal-form/base/select';
 import useUserSettings from '@/hooks/use-user-settings';
 import langConfigMap from '@/locales/lang-config-map';
 import { MoonOutlined, SunOutlined } from '@ant-design/icons';
+import { BaseSelect } from '@gpustack/core-ui';
 import { getAllLocales, setLocale, useIntl } from '@umijs/max';
 import _ from 'lodash';
 import React from 'react';
 import styled from 'styled-components';
-
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;

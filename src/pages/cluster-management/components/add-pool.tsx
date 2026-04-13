@@ -1,5 +1,5 @@
 import { PageActionType } from '@/config/types';
-import FormDrawer from '@/pages/_components/form-drawer';
+import { FormDrawer } from '@gpustack/core-ui';
 import React, { useEffect, useRef } from 'react';
 import { ProviderType } from '../config';
 import {

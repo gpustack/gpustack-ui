@@ -1,11 +1,13 @@
-import AlertBlockInfo from '@/components/alert-info/block';
-import CopyButton from '@/components/copy-button';
-import ModalFooter from '@/components/modal-footer';
-import GSDrawer from '@/components/scroller-modal/gs-drawer';
-import SealInput from '@/components/seal-form/seal-input';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
-import ColumnWrapper from '@/pages/_components/column-wrapper';
+import {
+  AlertBlockInfo,
+  Input as CInput,
+  ColumnWrapper,
+  CopyButton,
+  GSDrawer,
+  ModalFooter
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form, Tag } from 'antd';
 import dayjs from 'dayjs';
@@ -296,7 +298,7 @@ const AddModal: React.FC<AddModalProps> = ({
                   {intl.formatMessage({ id: 'apikeys.table.save.tips' })}
                 </Tag>
               </div>
-              <SealInput.Input
+              <CInput.Input
                 label={intl.formatMessage({ id: 'apikeys.form.apikey' })}
                 value={apikeyValue}
                 addAfter={
@@ -307,7 +309,7 @@ const AddModal: React.FC<AddModalProps> = ({
                     type="text"
                   ></CopyButton>
                 }
-              ></SealInput.Input>
+              ></CInput.Input>
             </Form.Item>
           )}
         </Form>

@@ -1,8 +1,10 @@
-import Password from '@/components/seal-form/password';
-import SealInput from '@/components/seal-form/seal-input';
-import SealSelect from '@/components/seal-form/seal-select';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
+import {
+  Input as CInput,
+  Password,
+  Select as SealSelect
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import React from 'react';
@@ -34,12 +36,12 @@ const APIKeyForm: React.FC<{
           }
         ]}
       >
-        <SealInput.Input
+        <CInput.Input
           trim
           disabled={action === PageAction.EDIT}
           label={intl.formatMessage({ id: 'common.table.name' })}
           required
-        ></SealInput.Input>
+        ></CInput.Input>
       </Form.Item>
 
       <Form.Item<FormData>
@@ -66,10 +68,10 @@ const APIKeyForm: React.FC<{
         ></SealSelect>
       </Form.Item>
       <Form.Item<FormData> name="description" rules={[{ required: false }]}>
-        <SealInput.TextArea
+        <CInput.TextArea
           scaleSize={true}
           label={intl.formatMessage({ id: 'common.table.description' })}
-        ></SealInput.TextArea>
+        ></CInput.TextArea>
       </Form.Item>
       {action === PageAction.CREATE && (
         <>

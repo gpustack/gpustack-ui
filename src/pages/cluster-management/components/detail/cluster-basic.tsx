@@ -1,7 +1,5 @@
-import CardWrapper from '@/components/card-wrapper';
-import IconFont from '@/components/icon-font';
-import StatusTag from '@/components/status-tag';
 import { StarFilled } from '@ant-design/icons';
+import { CardWrapper, IconFont, StatusTag } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import type { DescriptionsProps } from 'antd';
 import { Descriptions, Tooltip } from 'antd';

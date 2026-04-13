@@ -1,13 +1,11 @@
-import AutoTooltip from '@/components/auto-tooltip';
-import OverlayScroller from '@/components/overlay-scroller';
 import { CheckCircleOutlined } from '@ant-design/icons';
+import { AutoTooltip, OverlayScroller } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Flex, Popover, Tag } from 'antd';
 import _ from 'lodash';
 import React from 'react';
 import { categoryConfig } from '../../_components/model-tag';
 import { ProviderModel } from '../config/types';
-
 interface ProviderModelProps {
   dataList: ProviderModel[];
 }

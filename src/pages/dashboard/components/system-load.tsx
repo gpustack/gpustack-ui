@@ -1,15 +1,16 @@
-import CardWrapper from '@/components/card-wrapper';
-import GaugeChart from '@/components/echarts/gauge';
-import PageTools from '@/components/page-tools';
-import BaseSelect from '@/components/seal-form/base/select';
 import { queryClusterList } from '@/pages/cluster-management/apis';
+import {
+  BaseSelect,
+  CardWrapper,
+  GaugeChart,
+  PageTools
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Col, Row } from 'antd';
 import _ from 'lodash';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { DashboardContext } from '../config/dashboard-context';
 import ResourceUtilization from './resource-utilization';
-
 const smallChartHeight = 190;
 const largeChartHeight = 400;
 const resourceChartHeight = 400;

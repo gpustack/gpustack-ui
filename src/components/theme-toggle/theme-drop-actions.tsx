@@ -1,9 +1,9 @@
 import useUserSettings from '@/hooks/use-user-settings';
 import { MoonOutlined, SunOutlined } from '@ant-design/icons';
+import { IconFont } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Dropdown } from 'antd';
 import { createStyles } from 'antd-style';
-import IconFont from '../icon-font';
 
 const useStyles = createStyles(({ token, css }) => ({
   inner: css`

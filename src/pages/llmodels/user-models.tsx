@@ -1,15 +1,17 @@
-import IconFont from '@/components/icon-font';
-import PageTools from '@/components/page-tools';
-import BaseSelect from '@/components/seal-form/base/select';
-import CardList from '@/components/templates/card-list';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { SyncOutlined } from '@ant-design/icons';
+import {
+  BaseSelect,
+  IconFont,
+  InfiniteScrollerProvider,
+  NoResult,
+  PageTools,
+  TemplateCardList
+} from '@gpustack/core-ui';
 import { useIntl, useNavigate } from '@umijs/max';
 import useMemoizedFn from 'ahooks/lib/useMemoizedFn';
 import { Button, Input, Space } from 'antd';
 import React, { useCallback, useMemo } from 'react';
-import { ScrollerContext } from '../_components/infinite-scroller/use-scroller-context';
-import NoResult from '../_components/no-result';
 import PageBox from '../_components/page-box';
 import { MY_MODELS_API, queryMyModels } from './apis';
 import ModelItem from './components/model-item';
@@ -19,7 +21,6 @@ import {
   MyModelsStatusValueMap
 } from './config';
 import { categoryToPathMap } from './config/button-actions';
-
 const Dot = ({ color }: { color: string }) => {
   return (
     <span
@@ -222,7 +223,7 @@ const UserModels: React.FC = () => {
           </Space>
         }
       ></PageTools>
-      <ScrollerContext.Provider
+      <InfiniteScrollerProvider
         value={{
           total: dataSource.totalPage,
           current: queryParams.page,
@@ -230,13 +231,13 @@ const UserModels: React.FC = () => {
           refresh: loadMore
         }}
       >
-        <CardList
+        <TemplateCardList
           dataList={dataList}
           loading={dataSource.loading}
           activeId={false}
           isFirst={!dataSource.loadend}
           renderItem={renderCard}
-        ></CardList>
+        ></TemplateCardList>
         <NoResult
           loading={dataSource.loading}
           loadend={dataSource.loadend}
@@ -249,7 +250,7 @@ const UserModels: React.FC = () => {
           title={intl.formatMessage({ id: 'noresult.mymodels.title' })}
           subTitle={intl.formatMessage({ id: 'noresult.mymodels.subTitle' })}
         ></NoResult>
-      </ScrollerContext.Provider>
+      </InfiniteScrollerProvider>
     </PageBox>
   );
 };

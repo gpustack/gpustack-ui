@@ -1,5 +1,5 @@
-import ScrollerModal from '@/components/scroller-modal';
 import { PlusOutlined } from '@ant-design/icons';
+import { ScrollerModal } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button } from 'antd';
 import _ from 'lodash';

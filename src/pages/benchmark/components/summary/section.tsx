@@ -1,5 +1,4 @@
-import HeadlessCollapse from '@/components/collapse-container/headless-collapse';
-import IconFont from '@/components/icon-font';
+import { HeadlessCollapse, IconFont } from '@gpustack/core-ui';
 import { useState } from 'react';
 import styled from 'styled-components';
 

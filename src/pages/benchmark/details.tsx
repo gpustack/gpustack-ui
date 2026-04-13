@@ -1,5 +1,4 @@
-import DeleteModal from '@/components/delete-modal';
-import BaseSelect from '@/components/seal-form/base/select';
+import { BaseSelect, DeleteModal } from '@gpustack/core-ui';
 import { useIntl, useNavigate, useSearchParams } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import React, { useEffect, useRef } from 'react';
@@ -18,7 +17,6 @@ import useQueryBenchmarkList from './services/use-query-benchmarks';
 import useQueryDetail from './services/use-query-detail';
 import useQueryProfiles from './services/use-query-profiles';
 import useStopBenchmark from './services/use-stop-benchmark';
-
 const Details: React.FC = () => {
   const modalRef = useRef<any>(null);
   const navigate = useNavigate();

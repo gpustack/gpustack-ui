@@ -1,7 +1,6 @@
 // columns.ts
-import AutoTooltip from '@/components/auto-tooltip';
-import DropdownButtons from '@/components/drop-down-buttons';
 import { tableSorter } from '@/config/settings';
+import { AutoTooltip, DropdownButtons } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Tag } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
@@ -12,7 +11,6 @@ import ProviderModels from '../components/provider-models';
 import { rowActionList } from '../config';
 import { maasProviderLabelMap } from '../config/providers';
 import { MaasProviderItem, ProviderModel } from '../config/types';
-
 const useProviderColumns = (
   handleSelect: (val: string, record: MaasProviderItem) => void,
   onCellClick?: (record: MaasProviderItem, dataIndex: string) => void

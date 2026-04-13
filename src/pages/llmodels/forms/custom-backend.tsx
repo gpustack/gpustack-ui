@@ -1,6 +1,5 @@
-import SealInput from '@/components/seal-form/seal-input';
-import SealTextArea from '@/components/seal-form/seal-textarea';
 import useAppUtils from '@/hooks/use-app-utils';
+import { Input as CInput, Textarea as SealTextArea } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import React from 'react';
@@ -44,12 +43,12 @@ const CustomBackend: React.FC = () => {
               }
             ]}
           >
-            <SealInput.Input
+            <CInput.Input
               required
               allowClear
               onBlur={handleImageNameOnBlur}
               label={intl.formatMessage({ id: 'backend.imageName' })}
-            ></SealInput.Input>
+            ></CInput.Input>
           </Form.Item>
           <Form.Item<FormData>
             name="run_command"

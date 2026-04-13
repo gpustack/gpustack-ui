@@ -1,9 +1,11 @@
-import LabelSelector from '@/components/label-selector';
-import ListInput from '@/components/list-input';
-import SealInput from '@/components/seal-form/seal-input';
-import SealTextArea from '@/components/seal-form/seal-textarea';
 import { PageAction } from '@/config';
 import useAppUtils from '@/hooks/use-app-utils';
+import {
+  Input as CInput,
+  LabelSelector,
+  ListInput,
+  Textarea as SealTextArea
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import { useEffect } from 'react';
@@ -39,7 +41,7 @@ const BasicForm = () => {
           }
         ]}
       >
-        <SealInput.Input
+        <CInput.Input
           trim
           addAfter={
             backendSource === BackendSourceValueMap.CUSTOM ? '-custom' : null
@@ -47,10 +49,10 @@ const BasicForm = () => {
           disabled={action === PageAction.EDIT}
           label={intl.formatMessage({ id: 'common.table.name' })}
           required
-        ></SealInput.Input>
+        ></CInput.Input>
       </Form.Item>
       <Form.Item<FormData> hidden name="backend_source">
-        <SealInput.Input></SealInput.Input>
+        <CInput.Input></CInput.Input>
       </Form.Item>
       {backendSource !== BackendSourceValueMap.BUILTIN && (
         <>
@@ -58,11 +60,11 @@ const BasicForm = () => {
             name="health_check_path"
             rules={[{ required: false }]}
           >
-            <SealInput.Input
+            <CInput.Input
               trim
               placeholder={`/v1/models`}
               label={intl.formatMessage({ id: 'backend.form.healthCheckPath' })}
-            ></SealInput.Input>
+            ></CInput.Input>
           </Form.Item>
           <Form.Item name="default_run_command">
             <SealTextArea
@@ -113,10 +115,10 @@ const BasicForm = () => {
       </Form.Item>
 
       <Form.Item<FormData> name="description" rules={[{ required: false }]}>
-        <SealInput.TextArea
+        <CInput.TextArea
           scaleSize={true}
           label={intl.formatMessage({ id: 'common.table.description' })}
-        ></SealInput.TextArea>
+        ></CInput.TextArea>
       </Form.Item>
     </>
   );

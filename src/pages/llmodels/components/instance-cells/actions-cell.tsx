@@ -1,9 +1,11 @@
-import DropdownButtons from '@/components/drop-down-buttons';
-import IconFont from '@/components/icon-font';
-import { HandlerOptions } from '@/hooks/use-chunk-fetch';
-import useDownloadStream from '@/hooks/use-download-stream';
 import { useBenchmarkTargetInstance } from '@/pages/llmodels/hooks/use-run-benchmark';
 import { DeleteOutlined, DownloadOutlined } from '@ant-design/icons';
+import {
+  DropdownButtons,
+  IconFont,
+  useDownloadStream
+} from '@gpustack/core-ui';
+import { HandlerOptions } from '@gpustack/core-ui/lib/hooks/use-chunk-fetch';
 import { useIntl } from '@umijs/max';
 import { Progress, notification } from 'antd';
 import dayjs from 'dayjs';

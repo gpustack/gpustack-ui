@@ -1,6 +1,6 @@
-import { FiltersButton } from '@/components/page-tools';
 import { modelCategoriesMap } from '@/pages/llmodels/config';
 import { SearchOutlined, SyncOutlined } from '@ant-design/icons';
+import { FiltersButton } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Input, Space } from 'antd';
 import _ from 'lodash';

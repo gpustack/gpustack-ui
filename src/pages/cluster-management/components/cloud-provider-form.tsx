@@ -1,9 +1,8 @@
 import { fromClusterCreationAtom } from '@/atoms/clusters';
-import SealInput from '@/components/seal-form/seal-input';
-import SealSelect from '@/components/seal-form/seal-select';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import useAppUtils from '@/hooks/use-app-utils';
+import { Input as CInput, Select as SealSelect } from '@gpustack/core-ui';
 import { Link, useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import { useAtom } from 'jotai';
@@ -193,14 +192,14 @@ const CloudProvider: React.FC<CloudProviderProps> = (props) => {
           }
         ]}
       >
-        <SealInput.Input
+        <CInput.Input
           description={intl.formatMessage({
             id: 'clusters.form.serverUrl.tips'
           })}
           label={intl.formatMessage({ id: 'clusters.create.serverUrl' })}
           required={true}
           trim={true}
-        ></SealInput.Input>
+        ></CInput.Input>
       </Form.Item>
     </>
   );

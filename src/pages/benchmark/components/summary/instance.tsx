@@ -1,9 +1,8 @@
-import AutoTooltip from '@/components/auto-tooltip';
+import { AutoTooltip } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Descriptions, Flex, Tag } from 'antd';
 import React, { useMemo } from 'react';
 import { useDetailContext } from '../../config/detail-context';
-
 const Instance: React.FC = () => {
   const intl = useIntl();
   const { detailData } = useDetailContext();

@@ -1,9 +1,11 @@
-import LabelSelector from '@/components/label-selector';
-import { LabelSelectorContext } from '@/components/label-selector/context';
-import SealCascader from '@/components/seal-form/seal-cascader';
-import SealSelect from '@/components/seal-form/seal-select';
-import TooltipList from '@/components/tooltip-list';
 import useAppUtils from '@/hooks/use-app-utils';
+import {
+  LabelSelector,
+  LabelSelectorProvider,
+  Cascader as SealCascader,
+  Select as SealSelect,
+  TooltipList
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form, InputNumber } from 'antd';
 import _ from 'lodash';
@@ -258,9 +260,7 @@ const ScheduleTypeForm: React.FC = () => {
               }
             ></SealSelect>
           </Form.Item>
-          <LabelSelectorContext.Provider
-            value={{ options: workerLabelOptions }}
-          >
+          <LabelSelectorProvider value={{ options: workerLabelOptions }}>
             <Form.Item<FormData>
               name="worker_selector"
               rules={[
@@ -308,7 +308,7 @@ const ScheduleTypeForm: React.FC = () => {
                 }
               ></LabelSelector>
             </Form.Item>
-          </LabelSelectorContext.Provider>
+          </LabelSelectorProvider>
         </>
       )}
     </>

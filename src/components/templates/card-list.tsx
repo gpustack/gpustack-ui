@@ -1,7 +1,9 @@
-import ResizeContainer from '@/components/resize-container';
-import CardSkeleton from '@/components/templates/card-skelton';
-import InfiniteScroller from '@/pages/_components/infinite-scroller';
-import { useScrollerContext } from '@/pages/_components/infinite-scroller/use-scroller-context';
+import {
+  InfiniteScroller,
+  ResizeContainer,
+  TemplateCardSkeleton
+} from '@gpustack/core-ui';
+import { useScrollerContext } from '@gpustack/core-ui/lib/components/infinite-scroller/use-scroller-context';
 import { Spin } from 'antd';
 import React from 'react';
 import styled from 'styled-components';
@@ -49,7 +51,7 @@ const ListSkeleton: React.FC<{
               root: 'skelton-wrapper'
             }}
           >
-            {isFirst && <CardSkeleton></CardSkeleton>}
+            {isFirst && <TemplateCardSkeleton></TemplateCardSkeleton>}
           </Spin>
         </SpinWrapper>
       )}

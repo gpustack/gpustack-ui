@@ -1,6 +1,5 @@
 import { initialPasswordAtom, userAtom } from '@/atoms/user';
 import { resetStorageUserSettings } from '@/atoms/utils';
-import SealInput from '@/components/seal-form/seal-input';
 import { PasswordReg } from '@/config';
 import {
   CRYPT_TEXT,
@@ -8,6 +7,7 @@ import {
   writeState
 } from '@/utils/localstore/index';
 import { LockOutlined } from '@ant-design/icons';
+import { Input as CInput } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Form, message } from 'antd';
 import CryptoJS from 'crypto-js';
@@ -88,7 +88,7 @@ const PasswordForm: React.FC = () => {
             }
           ]}
         >
-          <SealInput.Password
+          <CInput.Password
             autoComplete="new-password"
             prefix={<LockOutlined />}
             label={intl.formatMessage({ id: 'users.form.newpassword' })}
@@ -118,7 +118,7 @@ const PasswordForm: React.FC = () => {
             })
           ]}
         >
-          <SealInput.Password
+          <CInput.Password
             autoComplete="new-password"
             prefix={<LockOutlined />}
             label={intl.formatMessage({ id: 'users.password.confirm' })}

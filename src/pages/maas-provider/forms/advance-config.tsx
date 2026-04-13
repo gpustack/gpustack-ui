@@ -1,7 +1,5 @@
-import IconFont from '@/components/icon-font';
-import SealInput from '@/components/seal-form/seal-input';
 import { PageActionType } from '@/config/types';
-import YamlEditor from '@/pages/_components/yaml-editor';
+import { Input as CInput, IconFont, YamlEditor } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Form } from 'antd';
 import React, { forwardRef, useImperativeHandle } from 'react';
@@ -46,7 +44,7 @@ const AdvanceConfig: React.FC<{
           }
         ]}
       >
-        <SealInput.TextArea required={false} trim={false}></SealInput.TextArea>
+        <CInput.TextArea required={false} trim={false}></CInput.TextArea>
       </Form.Item>
       <YamlEditor
         ref={editorRef}

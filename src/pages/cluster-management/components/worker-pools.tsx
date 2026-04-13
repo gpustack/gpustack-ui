@@ -1,7 +1,6 @@
-import DeleteModal from '@/components/delete-modal';
-import { FilterBar } from '@/components/page-tools';
 import { PageAction } from '@/config';
 import useTableFetch from '@/hooks/use-table-fetch';
+import { DeleteModal, FilterBar } from '@gpustack/core-ui';
 import { useIntl, useSearchParams } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { message, Table } from 'antd';

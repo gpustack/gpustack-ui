@@ -1,6 +1,6 @@
-import IconFont from '@/components/icon-font';
 import { formatNumber } from '@/utils';
 import { DownloadOutlined, HeartOutlined } from '@ant-design/icons';
+import { IconFont } from '@gpustack/core-ui';
 import classNames from 'classnames';
 import dayjs from 'dayjs';
 import React from 'react';

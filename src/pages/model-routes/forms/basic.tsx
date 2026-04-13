@@ -1,9 +1,8 @@
-import CheckboxField from '@/components/seal-form/checkbox-field';
-import SealInput from '@/components/seal-form/seal-input';
 import useAppUtils from '@/hooks/use-app-utils';
 import CategorySelect from '@/pages/_components/category-select';
 import DocLink from '@/pages/_components/doc-link';
 import { categoryOptions } from '@/pages/llmodels/config';
+import { CheckboxField, Input as CInput } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import { genericReferLink } from '../config';
@@ -25,7 +24,7 @@ const Basic = () => {
           }
         ]}
       >
-        <SealInput.Input
+        <CInput.Input
           required
           label={intl.formatMessage({ id: 'common.table.name' })}
         />
@@ -56,12 +55,12 @@ const Basic = () => {
         ></CategorySelect>
       </Form.Item>
       <Form.Item name="description" style={{ marginBottom: 8 }}>
-        <SealInput.TextArea
+        <CInput.TextArea
           scaleSize={true}
           label={intl.formatMessage({
             id: 'common.table.description'
           })}
-        ></SealInput.TextArea>
+        ></CInput.TextArea>
       </Form.Item>
       <Form.Item<FormData>
         name="generic_proxy"

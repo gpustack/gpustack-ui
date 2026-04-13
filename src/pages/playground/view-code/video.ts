@@ -34,7 +34,7 @@ export const generateCode = ({
   const api = url;
 
   // ========================= Curl =========================
-  let curlCode = generateCurlCode({
+  const curlCode = generateCurlCode({
     api: url,
     parameters,
     isFormdata

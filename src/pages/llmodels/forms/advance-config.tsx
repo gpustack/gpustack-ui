@@ -1,9 +1,11 @@
-import LabelSelector from '@/components/label-selector';
-import CheckboxField from '@/components/seal-form/checkbox-field';
-import SealSelect from '@/components/seal-form/seal-select';
 import { PageAction } from '@/config';
 import DocLink from '@/pages/_components/doc-link';
 import { genericReferLink } from '@/pages/model-routes/config';
+import {
+  CheckboxField,
+  LabelSelector,
+  Select as SealSelect
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';

@@ -1,12 +1,14 @@
 import { setRouteCache } from '@/atoms/route-cache';
-import AlertInfo from '@/components/alert-info';
-import SingleImage from '@/components/auto-image/single-image';
-import IconFont from '@/components/icon-font';
-import CanvasImageEditor from '@/components/image-editor';
-import { processImage } from '@/components/image-editor/extract-image-colors';
 import routeCachekey from '@/config/route-cachekey';
 import UploadImg from '@/pages/playground/components/upload-img';
 import { base64ToFile, generateRandomNumber } from '@/utils';
+import {
+  AlertInfo,
+  ImageEditor as CanvasImageEditor,
+  IconFont,
+  SingleImage
+} from '@gpustack/core-ui';
+import { processImage } from '@gpustack/core-ui/lib/components/image-editor/extract-image-colors';
 import { useIntl } from '@umijs/max';
 import { Divider } from 'antd';
 import _ from 'lodash';

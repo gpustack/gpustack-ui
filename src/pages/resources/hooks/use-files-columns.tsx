@@ -203,7 +203,7 @@ const RenderParts = (props: { record: ListItem }) => {
 
   return (
     <TooltipOverlayScroller title={renderItem()}>
-      <FilesTag color="purple" icon={<InfoCircleOutlined />}>
+      <FilesTag color="purple" icon={<InfoCircleOutlined />} variant="outlined">
         <span style={{ opacity: 1 }}>
           {record.resolved_paths?.length}{' '}
           {intl.formatMessage({ id: 'models.form.files' })}

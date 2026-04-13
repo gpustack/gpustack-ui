@@ -1,4 +1,9 @@
-import { LabelSelector, ModalFooter, ScrollerModal } from '@gpustack/core-ui';
+import {
+  Input as CInput,
+  LabelSelector,
+  ModalFooter,
+  ScrollerModal
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';

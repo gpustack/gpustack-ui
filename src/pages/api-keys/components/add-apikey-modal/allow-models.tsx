@@ -1,8 +1,7 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
-import useAppUtils from '@/hooks/use-app-utils';
 import { queryMyModels } from '@/pages/llmodels/apis';
-import { SelectPanel } from '@gpustack/core-ui';
+import { SelectPanel, useAppUtils } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Checkbox, Divider, Form, Radio } from 'antd';
 import { useEffect, useState } from 'react';

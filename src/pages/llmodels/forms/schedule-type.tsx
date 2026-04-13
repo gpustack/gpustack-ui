@@ -1,10 +1,10 @@
-import useAppUtils from '@/hooks/use-app-utils';
 import {
   LabelSelector,
   LabelSelectorProvider,
   Cascader as SealCascader,
   Select as SealSelect,
-  TooltipList
+  TooltipList,
+  useAppUtils
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form, InputNumber } from 'antd';

@@ -1,4 +1,4 @@
-import { useQueryData } from '@/hooks/use-query-data-list';
+import { useQueryData } from '@gpustack/core-ui';
 import { omit } from 'lodash';
 import { queryDashboardData } from '../apis';
 

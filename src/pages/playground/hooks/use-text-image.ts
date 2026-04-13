@@ -1,5 +1,5 @@
-import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import { extractErrorMessage, promptList } from '@/pages/playground/config';
+import { useOverlayScroller } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';

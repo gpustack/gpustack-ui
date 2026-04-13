@@ -67,8 +67,9 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
   const sampleRate = 44100; // mp3
 
   const initAudioContext = useCallback(() => {
-    audioContext.current = new (window.AudioContext ||
-      window.webkitAudioContext)();
+    audioContext.current = new (
+      window.AudioContext || window.webkitAudioContext
+    )();
 
     analyser.current = audioContext.current.createAnalyser();
     analyser.current.fftSize = 512;

@@ -1,5 +1,4 @@
-import useAppUtils from '@/hooks/use-app-utils';
-import { Input as CInput, TooltipList } from '@gpustack/core-ui';
+import { Input as CInput, TooltipList, useAppUtils } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';

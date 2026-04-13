@@ -1,4 +1,4 @@
-import { useQueryDataList } from '@/hooks/use-query-data-list';
+import { useQueryDataList } from '@gpustack/core-ui';
 import { useState } from 'react';
 import { queryDatasetList } from '../apis';
 import { datasetList as datasetOptions } from '../config';

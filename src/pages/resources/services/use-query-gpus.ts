@@ -1,4 +1,4 @@
-import { useQueryDataList } from '@/hooks/use-query-data-list';
+import { useQueryDataList } from '@gpustack/core-ui';
 import { queryGpuDevicesList } from '../apis';
 import { GPUDeviceItem as ListItem } from '../config/types';
 

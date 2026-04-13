@@ -1,4 +1,4 @@
-import { useQueryData } from '@/hooks/use-query-data-list';
+import { useQueryData } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import _ from 'lodash';
 import { useState } from 'react';

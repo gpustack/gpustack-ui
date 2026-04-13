@@ -9,7 +9,8 @@ export default {
   'users.status.active': 'Aktif',
   'users.status.inactive': 'Pasif',
   'users.form.active': 'Hesap Etkin',
-  'users.form.active.description': 'Bu kullanıcı hesabını etkinleştir veya devre dışı bırak',
+  'users.form.active.description':
+    'Bu kullanıcı hesabını etkinleştir veya devre dışı bırak',
   'users.form.fullname': 'Tam Ad',
   'users.form.source': 'Kaynak',
   'users.table.user': 'kullanıcılar',

@@ -61,6 +61,7 @@ export default defineConfig([
       'unused-imports/no-unused-imports': 'error',
       'unused-imports/no-unused-vars': 'off',
       'import/no-unresolved': 'off',
+      'import/no-duplicates': 'error',
       'react-hooks/exhaustive-deps': 'off',
       'react-hooks/preserve-manual-memoization': 'off',
       'react-hooks/set-state-in-effect': 'off',

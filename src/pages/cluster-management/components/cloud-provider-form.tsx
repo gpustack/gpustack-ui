@@ -1,8 +1,11 @@
 import { fromClusterCreationAtom } from '@/atoms/clusters';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
-import useAppUtils from '@/hooks/use-app-utils';
-import { Input as CInput, Select as SealSelect } from '@gpustack/core-ui';
+import {
+  Input as CInput,
+  Select as SealSelect,
+  useAppUtils
+} from '@gpustack/core-ui';
 import { Link, useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import { useAtom } from 'jotai';

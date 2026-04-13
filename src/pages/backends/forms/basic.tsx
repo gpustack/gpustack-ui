@@ -1,10 +1,10 @@
 import { PageAction } from '@/config';
-import useAppUtils from '@/hooks/use-app-utils';
 import {
   Input as CInput,
   LabelSelector,
   ListInput,
-  Textarea as SealTextArea
+  Textarea as SealTextArea,
+  useAppUtils
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';

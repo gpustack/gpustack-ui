@@ -1,13 +1,13 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
-import useAppUtils from '@/hooks/use-app-utils';
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import {
   Input as CInput,
   CollapseContainer,
   Checkbox as SealCheckbox,
   Select as SealSelect,
-  Switch as SealSwitch
+  Switch as SealSwitch,
+  useAppUtils
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Flex, Form } from 'antd';

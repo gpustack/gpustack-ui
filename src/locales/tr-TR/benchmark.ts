@@ -37,7 +37,7 @@ export default {
     'Uzun bağlam işleme için stres testi. KV önbellek davranışını, bellek kullanımını ve altyapı kararlılığını değerlendirir.',
   'benchmark.form.profile.heavy.tips':
     'Çözümleme ağırlıklı üretim kıyaslaması. Sürekli çözümleme hızını ve çıkış token verimini ölçer.',
-  'benchmark.table.filter.bygpu': 'GPU\'ya göre filtrele',
+  'benchmark.table.filter.bygpu': "GPU'ya göre filtrele",
   'benchmark.table.filter.bymodel': 'Modele göre filtrele',
   'benchmark.table.filter.bydataset': 'Veri Kümesine göre filtrele',
   'benchmark.table.filter.byProfile': 'Profile göre filtrele',

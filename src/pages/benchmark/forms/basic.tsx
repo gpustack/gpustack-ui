@@ -1,8 +1,11 @@
 import { modelNameReg, PageAction } from '@/config';
-import useAppUtils from '@/hooks/use-app-utils';
 import { ClusterStatusValueMap } from '@/pages/cluster-management/config';
 import { useBenchmarkTargetInstance } from '@/pages/llmodels/hooks/use-run-benchmark';
-import { Input as CInput, Select as SealSelect } from '@gpustack/core-ui';
+import {
+  Input as CInput,
+  Select as SealSelect,
+  useAppUtils
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import React, { useEffect } from 'react';

@@ -1,10 +1,10 @@
-import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import { ExtraContent } from '@/layouts/extraRender';
 import {
   PageContainer,
   RouteContext,
   type PageContainerProps
 } from '@ant-design/pro-components';
+import { useOverlayScroller } from '@gpustack/core-ui';
 import { Divider } from 'antd';
 import classNames from 'classnames';
 import { useContext, useEffect, useRef } from 'react';

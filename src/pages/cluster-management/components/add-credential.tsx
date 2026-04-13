@@ -1,7 +1,6 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
-import useAppUtils from '@/hooks/use-app-utils';
-import { Input as CInput, FormDrawer } from '@gpustack/core-ui';
+import { Input as CInput, FormDrawer, useAppUtils } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import React, { useEffect } from 'react';

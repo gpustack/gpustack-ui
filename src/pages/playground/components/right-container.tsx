@@ -1,4 +1,4 @@
-import useOverlayScroller from '@/hooks/use-overlay-scroller';
+import { useOverlayScroller } from '@gpustack/core-ui';
 import classNames from 'classnames';
 import React, { useEffect } from 'react';
 import s from '../style/params-container.module.less';

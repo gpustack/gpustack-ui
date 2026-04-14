@@ -113,12 +113,12 @@ const AddModal: React.FC<AddModalProps> = ({
 
   const handleOnOk = async (formdata: FormData) => {
     try {
-      console.log('formdata=========', formdata);
       setLoading(true);
       const data = {
         ..._.omit(formdata, ['allowed_type']),
         allowed_model_names:
-          formdata.allowed_type === 'all'
+          formdata.allowed_type === 'all' ||
+          formdata.allowed_type === 'management'
             ? []
             : formdata.allowed_model_names || []
       };
@@ -183,9 +183,12 @@ const AddModal: React.FC<AddModalProps> = ({
       form.setFieldsValue({
         name: currentData.name,
         description: currentData.description,
+        scope: currentData.scope,
         allowed_type: currentData.allowed_model_names?.length
           ? 'custom'
-          : 'all',
+          : currentData.scope?.includes('management')
+            ? 'management'
+            : 'all',
         expires_in: parseExpireValue(currentData as ListItem),
         allowed_model_names: currentData.allowed_model_names || []
       });
@@ -269,7 +272,7 @@ const AddModal: React.FC<AddModalProps> = ({
           onFinish={handleOnOk}
           preserve={false}
           initialValues={{
-            scope: ['*']
+            scope: ['inference']
           }}
         >
           {!showKey && (

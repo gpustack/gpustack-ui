@@ -13,7 +13,8 @@ export interface ListItem {
 
 export interface FormData {
   name: string;
-  allowed_type: 'all' | 'custom';
+  allowed_type: 'all' | 'custom' | 'management';
+  key_type: 'auto' | 'custom';
   description: string;
   allowed_model_names: string[];
   expires_in: number | null;

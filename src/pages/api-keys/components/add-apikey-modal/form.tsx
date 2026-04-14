@@ -16,17 +16,7 @@ const APIKeyForm: React.FC<{
   onValuesChange?: (changedValues: any, allValues: any) => void;
 }> = ({ action, currentData, onValuesChange }) => {
   const intl = useIntl();
-
-  const optionRender = (option: any) => {
-    return (
-      <span className="flex-center gap-4">
-        {option.label}
-        {option.data.description && (
-          <span className="text-tertiary">[{option.data.description}]</span>
-        )}
-      </span>
-    );
-  };
+  const keyType = Form.useWatch('key_type') as FormData['key_type'];
 
   return (
     <>
@@ -51,28 +41,7 @@ const APIKeyForm: React.FC<{
           required
         ></SealInput.Input>
       </Form.Item>
-      {action === PageAction.CREATE && (
-        <Form.Item<FormData> name="custom">
-          <Password
-            trim
-            autoComplete="new-password"
-            label={intl.formatMessage({ id: 'playground.params.custom' })}
-          ></Password>
-        </Form.Item>
-      )}
-      <Form.Item<FormData>
-        name="scope"
-        normalize={(value) => (value ? [value] : [])}
-        getValueProps={(value) => ({
-          value: Array.isArray(value) ? value[0] : value
-        })}
-      >
-        <SealSelect
-          optionRender={optionRender}
-          options={accessScopeOptions}
-          label={intl.formatMessage({ id: 'models.table.accessScope' })}
-        ></SealSelect>
-      </Form.Item>
+
       <Form.Item<FormData>
         name="expires_in"
         rules={[
@@ -101,6 +70,63 @@ const APIKeyForm: React.FC<{
           scaleSize={true}
           label={intl.formatMessage({ id: 'common.table.description' })}
         ></SealInput.TextArea>
+      </Form.Item>
+      {action === PageAction.CREATE && (
+        <>
+          <Form.Item<FormData> name="key_type" initialValue="auto">
+            <SealSelect
+              options={[
+                {
+                  label: intl.formatMessage({ id: 'apikeys.type.auto' }),
+                  value: 'auto'
+                },
+                {
+                  label: intl.formatMessage({ id: 'apikeys.type.custom' }),
+                  value: 'custom'
+                }
+              ]}
+              label={intl.formatMessage({ id: 'common.table.type' })}
+            ></SealSelect>
+          </Form.Item>
+          {keyType === 'custom' && (
+            <Form.Item<FormData>
+              name="custom"
+              rules={[
+                {
+                  required: true,
+                  message: intl.formatMessage(
+                    { id: 'common.form.rule.input' },
+                    {
+                      name: intl.formatMessage({
+                        id: 'apikeys.table.key'
+                      })
+                    }
+                  )
+                }
+              ]}
+            >
+              <Password
+                trim
+                required
+                autoComplete="new-password"
+                label={intl.formatMessage({ id: 'apikeys.table.key' })}
+              ></Password>
+            </Form.Item>
+          )}
+        </>
+      )}
+      <Form.Item<FormData>
+        name="scope"
+        hidden
+        normalize={(value) => (value ? [value] : [])}
+        getValueProps={(value) => ({
+          value: Array.isArray(value) ? value[0] : value
+        })}
+      >
+        <SealSelect
+          options={accessScopeOptions}
+          label={intl.formatMessage({ id: 'models.table.accessScope' })}
+        ></SealSelect>
       </Form.Item>
       <AllowModelsForm
         currentData={currentData}

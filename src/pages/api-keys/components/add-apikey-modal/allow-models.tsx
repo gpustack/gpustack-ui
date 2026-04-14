@@ -32,13 +32,12 @@ const AllowModelsForm: React.FC<{
   const [modelList, setModelList] = useState<{ key: string; title: string }[]>(
     []
   );
-  const [queryParams, setQueryParams] = useState<Global.SearchParams>({
-    page: -1
-  });
 
   const getModelList = async () => {
     try {
-      const res = await queryMyModels(queryParams);
+      const res = await queryMyModels({
+        page: -1
+      });
       const options = res.items.map((item) => item.name);
       if (action === PageAction.EDIT && currentData) {
         const list = new Set([
@@ -57,6 +56,11 @@ const AllowModelsForm: React.FC<{
   const handleAllowTypeChange = (e: any) => {
     const value = e.target.value;
     onValuesChange?.({ allowed_type: value }, form.getFieldsValue());
+    if (value === 'management') {
+      form.setFieldsValue({ scope: ['management'] });
+    } else {
+      form.setFieldsValue({ scope: ['inference'] });
+    }
   };
 
   useEffect(() => {
@@ -66,7 +70,7 @@ const AllowModelsForm: React.FC<{
   return (
     <div>
       <Divider></Divider>
-      <Label>{intl.formatMessage({ id: 'apikeys.table.bindModels' })}</Label>
+      <Label>{intl.formatMessage({ id: 'apikeys.access.permissions' })}</Label>
       <Form.Item
         name="allowed_type"
         initialValue="all"
@@ -75,6 +79,12 @@ const AllowModelsForm: React.FC<{
         <Radio.Group
           onChange={handleAllowTypeChange}
           options={[
+            {
+              label: intl.formatMessage({
+                id: 'apikeys.accessScope.management'
+              }),
+              value: 'management'
+            },
             {
               label: intl.formatMessage({ id: 'apikeys.models.all' }),
               value: 'all'
@@ -88,7 +98,7 @@ const AllowModelsForm: React.FC<{
       </Form.Item>
       <Form.Item
         name="allowed_model_names"
-        hidden={allowedType === 'all'}
+        hidden={allowedType === 'all' || allowedType === 'management'}
         rules={[
           {
             required: allowedType === 'custom',

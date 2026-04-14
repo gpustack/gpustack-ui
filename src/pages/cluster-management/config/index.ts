@@ -146,10 +146,10 @@ export const sourceTypeOptions = [
     label: 'clusters.volume.sourceType.pvc',
     locale: true,
     value: 'persistentVolumeClaim'
-  },
-  {
-    label: 'clusters.volume.sourceType.configMap',
-    locale: true,
-    value: 'configMap'
   }
+  // {
+  //   label: 'clusters.volume.sourceType.configMap',
+  //   locale: true,
+  //   value: 'configMap'
+  // }
 ];

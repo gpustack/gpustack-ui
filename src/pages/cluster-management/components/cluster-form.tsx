@@ -14,7 +14,6 @@ import {
 } from '../config/types';
 import AdvanceConfig from '../step-forms/advance-config';
 import CloudProvider from './cloud-provider-form';
-import K8SVolumeMount from './k8s-volume-mount';
 
 type AddModalProps = {
   action: PageActionType;
@@ -71,6 +70,23 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
         form.setFieldsValue({
           ...currentData,
           k8s_volume_mounts: realVolumeList
+        });
+      } else {
+        form.setFieldsValue({
+          k8s_volume_mounts: [
+            {
+              name: 'gpustack-data-dir',
+              mountPath: '/var/lib/gpustack',
+              readOnly: false,
+              sourceType: 'hostPath',
+              volumeSource: {
+                hostPath: {
+                  path: '/var/lib/gpustack',
+                  type: 'DirectoryOrCreate'
+                }
+              }
+            }
+          ]
         });
       }
     }, [currentData]);
@@ -173,9 +189,7 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
             label={intl.formatMessage({ id: 'common.table.description' })}
           ></SealTextArea>
         </Form.Item>
-        {provider === ProviderValueMap.Kubernetes && (
-          <K8SVolumeMount action={action}></K8SVolumeMount>
-        )}
+
         <CollapsePanel
           accordion={false}
           activeKey={activeKey}

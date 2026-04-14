@@ -53,6 +53,7 @@ const SealSlider: React.FC<SealSwitchProps> = (props) => {
       required={required}
       status={checkStatus || status}
       className="no-focus"
+      disabled={props.disabled}
     >
       <Inner>
         <LabelInfo label={label} description={description}></LabelInfo>

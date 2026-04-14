@@ -110,7 +110,10 @@ export default {
     'No available clusters. Please create a cluster before adding a node.',
   'resources.metrics.details': 'Monitoring',
   'resoureces.worker.upgrade.tips':
-    'Please upgrade to match the GPUStack Server version.'
+    'Please upgrade to match the GPUStack Server version.',
+  'resources.worker.version': 'Worker Version',
+  'resources.worker.currentVersion': 'Current Version: {version}',
+  'resources.worker.targetVersion': 'Target Version: {version}'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

@@ -19,7 +19,7 @@ import {
   ToolOutlined
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Tag, Tooltip } from 'antd';
+import { Tooltip } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { useAtom, useAtomValue } from 'jotai';
 import _ from 'lodash';
@@ -296,6 +296,80 @@ const useWorkerColumns = ({
     });
   };
 
+  const renderVersionInfo = (record: ListItem) => {
+    const shouldUpgrade = showUpgrade(record.worker_version, version.version);
+
+    const defaultVersionInfo = (
+      <span className="flex-center gap-4">
+        <span>{intl.formatMessage({ id: 'resources.worker.version' })}:</span>
+        <span> {version.version}</span>
+      </span>
+    );
+
+    const upgradeVersionInfo = (
+      <span className="flex-center gap-8">
+        <span>
+          {intl.formatMessage(
+            { id: 'resources.worker.currentVersion' },
+            { version: record.worker_version }
+          )}
+        </span>
+        <span>
+          {intl.formatMessage(
+            { id: 'resources.worker.targetVersion' },
+            { version: version.version }
+          )}
+        </span>
+      </span>
+    );
+
+    return (
+      <Tooltip
+        title={
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 4,
+              fontSize: 13
+            }}
+          >
+            {shouldUpgrade && (
+              <span
+                style={{
+                  color: 'var(--ant-color-warning)'
+                }}
+              >
+                {intl.formatMessage({
+                  id: 'resoureces.worker.upgrade.tips'
+                })}
+              </span>
+            )}
+            {shouldUpgrade ? upgradeVersionInfo : defaultVersionInfo}
+            <span className="flex-center gap-4">
+              <span>
+                {intl.formatMessage({
+                  id: 'benchmark.env.driverVersion'
+                })}
+                :
+              </span>
+              {_.get(record, 'status.gpu_devices[0].driver_version')}
+            </span>
+          </div>
+        }
+      >
+        {shouldUpgrade ? (
+          <IconFont
+            type="icon-upgrade"
+            style={{ color: 'var(--ant-color-warning)' }}
+          ></IconFont>
+        ) : (
+          <InfoCircleOutlined style={{ color: 'var(--ant-blue-5)' }} />
+        )}
+      </Tooltip>
+    );
+  };
+
   return useMemo<ColumnsType<ListItem>>(
     () => [
       {
@@ -308,36 +382,7 @@ const useWorkerColumns = ({
             <AutoTooltip ghost maxWidth={200}>
               <span className="name-text">{text}</span>
             </AutoTooltip>
-            <div className={workerCss['worker-version']}>
-              <AutoTooltip
-                ghost
-                showTitle={showUpgrade(record.worker_version, version.version)}
-                title={intl.formatMessage({
-                  id: 'resoureces.worker.upgrade.tips'
-                })}
-              >
-                <Tag className="version-tag" variant="outlined">
-                  {version.version}
-                  {showUpgrade(record.worker_version, version.version) && (
-                    <IconFont type="icon-upgrade"></IconFont>
-                  )}
-                </Tag>
-              </AutoTooltip>
-              <Tooltip
-                title={
-                  <span>
-                    {intl.formatMessage({
-                      id: 'benchmark.env.driverVersion'
-                    })}
-                    : {_.get(record, 'status.gpu_devices[0].driver_version')}
-                  </span>
-                }
-              >
-                <Tag className="version-tag" variant="outlined">
-                  {_.get(record, 'status.gpu_devices[0].driver_version', '')}
-                </Tag>
-              </Tooltip>
-            </div>
+            {renderVersionInfo(record)}
           </div>
         )
       },

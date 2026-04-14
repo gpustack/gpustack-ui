@@ -108,7 +108,10 @@ export default {
     'Kullanılabilir küme yok. Lütfen düğüm eklemeden önce bir küme oluşturun.',
   'resources.metrics.details': 'İzleme',
   'resoureces.worker.upgrade.tips':
-    'Please upgrade to match the GPUStack Server version.'
+    'Please upgrade to match the GPUStack Server version.',
+  'resources.worker.version': 'Worker Version',
+  'resources.worker.currentVersion': 'Current Version: {version}',
+  'resources.worker.targetVersion': 'Target Version: {version}'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

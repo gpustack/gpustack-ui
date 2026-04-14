@@ -6,10 +6,24 @@ import YamlEditor from '@/pages/_components/yaml-editor';
 import { useIntl } from '@umijs/max';
 import { Button, Form } from 'antd';
 import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
+import styled from 'styled-components';
+import K8SVolumeMount from '../components/k8s-volume-mount';
 import { ProviderType, ProviderValueMap } from '../config';
 import { ClusterFormData as FormData } from '../config/types';
 import schema from '../config/worker-config.json';
 import { dockerConfig, kubernetesConfig } from '../config/yaml-template';
+
+const Title = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--ant-color-bg-container);
+  font-weight: 500;
+  font-size: 14px;
+  padding-top: 0px;
+  height: 56px;
+  padding-bottom: 8px;
+`;
 
 const ClusterAdvanceConfig: React.FC<{
   action: PageActionType;
@@ -59,11 +73,17 @@ const ClusterAdvanceConfig: React.FC<{
       >
         <SealInput.TextArea required={false} trim={false}></SealInput.TextArea>
       </Form.Item>
+      {provider === ProviderValueMap.Kubernetes && (
+        <K8SVolumeMount action={action}></K8SVolumeMount>
+      )}
+      <Title>
+        {intl.formatMessage({ id: 'clusters.create.workerConfig' })}
+      </Title>
       <YamlEditor
         ref={editorRef}
         title={
           <span className="flex-center">
-            <span>{`${intl.formatMessage({ id: 'clusters.create.workerConfig' })} (YAML)`}</span>
+            <span>{`YAML`}</span>
             <Button
               size="small"
               type="link"

@@ -83,7 +83,7 @@ const useModelsColumns = ({
         key: 'masked_value',
         render: (text: string, record: ListItem) => (
           <AutoTooltip ghost style={{ maxWidth: 400 }}>
-            {text}
+            {text || '-'}
           </AutoTooltip>
         )
       },

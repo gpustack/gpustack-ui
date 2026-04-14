@@ -21,15 +21,13 @@ const Label = styled.span`
 `;
 
 const Title = styled.div`
-  position: sticky;
-  top: -16px;
-  z-index: 100;
   display: flex;
   align-items: center;
   justify-content: space-between;
   background-color: var(--ant-color-bg-container);
-  font-weight: 600;
-  padding-top: 8px;
+  font-weight: 500;
+  font-size: 14px;
+  padding-top: 0px;
   padding-bottom: 8px;
 `;
 
@@ -141,7 +139,7 @@ const VolumeMountsForm: React.FC<{ action: PageActionType }> = ({ action }) => {
           display: 'flex',
           flexDirection: 'column',
           gap: '16px',
-          marginBottom: '24px'
+          marginBottom: '8px'
         }}
       >
         <Form.List name="k8s_volume_mounts">
@@ -180,13 +178,17 @@ const VolumeMountsForm: React.FC<{ action: PageActionType }> = ({ action }) => {
                       </Label>
                     }
                     right={
-                      <Button
-                        size="small"
-                        shape="circle"
-                        onClick={() => remove(name)}
-                      >
-                        <MinusOutlined />
-                      </Button>
+                      <>
+                        {name > 0 && (
+                          <Button
+                            size="small"
+                            shape="circle"
+                            onClick={() => remove(name)}
+                          >
+                            <MinusOutlined />
+                          </Button>
+                        )}
+                      </>
                     }
                   >
                     <Form.Item
@@ -202,6 +204,7 @@ const VolumeMountsForm: React.FC<{ action: PageActionType }> = ({ action }) => {
                       ]}
                     >
                       <SealInput.Input
+                        disabled={name === 0}
                         label={intl.formatMessage({
                           id: 'clusters.volume.name'
                         })}
@@ -231,6 +234,7 @@ const VolumeMountsForm: React.FC<{ action: PageActionType }> = ({ action }) => {
                         >
                           <SealInput.Input
                             required
+                            disabled={name === 0}
                             placeholder={intl.formatMessage({
                               id: 'clusters.volume.mountPath.format'
                             })}
@@ -248,6 +252,7 @@ const VolumeMountsForm: React.FC<{ action: PageActionType }> = ({ action }) => {
                         valuePropName="checked"
                       >
                         <SealSwitch
+                          disabled={name === 0}
                           label={intl.formatMessage({
                             id: 'clusters.volume.readOnly'
                           })}
@@ -270,6 +275,7 @@ const VolumeMountsForm: React.FC<{ action: PageActionType }> = ({ action }) => {
                     >
                       <SealSelect
                         required
+                        disabled={name === 0}
                         label={intl.formatMessage({
                           id: 'clusters.volume.sourceType'
                         })}
@@ -328,6 +334,7 @@ const VolumeMountsForm: React.FC<{ action: PageActionType }> = ({ action }) => {
                         >
                           <SealSelect
                             required
+                            disabled={name === 0}
                             options={hostTypeOptions}
                             label={intl.formatMessage({
                               id: 'clusters.volume.hostPath.type'
@@ -365,23 +372,6 @@ const VolumeMountsForm: React.FC<{ action: PageActionType }> = ({ action }) => {
                             />
                           </Form.Item>
                         </div>
-
-                        <Form.Item
-                          style={{ width: 240 }}
-                          name={[
-                            name,
-                            'volumeSource',
-                            'persistentVolumeClaim',
-                            'readOnly'
-                          ]}
-                          valuePropName="checked"
-                        >
-                          <SealSwitch
-                            label={intl.formatMessage({
-                              id: 'clusters.volume.pvc.readOnly'
-                            })}
-                          />
-                        </Form.Item>
                       </Flex>
                     )}
 

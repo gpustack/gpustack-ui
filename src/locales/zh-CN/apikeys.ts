@@ -18,7 +18,9 @@ export default {
   'apikeys.models.selected': '指定模型',
   'apikeys.models.noModelsFound': '未找到模型',
   'apikeys.accessScope.all': '全部',
-  'apikeys.accessScope.management': '管理接口',
+  'apikeys.accessScope.management': '平台管理',
   'apikeys.accessScope.inference': '推理接口',
-  'apikeys.access.permissions': '访问权限'
+  'apikeys.access.permissions': '访问权限',
+  'apikeys.type.auto': '自动生成',
+  'apikeys.type.custom': '自定义'
 };

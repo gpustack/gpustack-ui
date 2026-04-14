@@ -110,27 +110,13 @@ const useModelsColumns = ({
           showTitle: false
         },
         render: (text: string[], record: ListItem) => (
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'max-content 1fr',
-              gap: 8,
-              alignItems: 'center'
-            }}
-          >
-            <span className="text-primary">APIs:</span>
-            <AutoTooltip ghost>{renderAPIs(record)}</AutoTooltip>
-            <span className="text-primary">
-              {intl.formatMessage({ id: 'models.title' })}:
-            </span>
-            <AutoTooltip ghost>
-              <span>
-                {text?.length
-                  ? text?.join(', ')
-                  : intl.formatMessage({ id: 'common.select.option' })}
-              </span>
-            </AutoTooltip>
-          </div>
+          <AutoTooltip ghost>
+            {record.scope?.[0] === 'management'
+              ? intl.formatMessage({ id: 'apikeys.accessScope.management' })
+              : record.allowed_model_names?.length
+                ? record.allowed_model_names.join(', ')
+                : intl.formatMessage({ id: 'apikeys.models.all' })}
+          </AutoTooltip>
         )
       },
       {

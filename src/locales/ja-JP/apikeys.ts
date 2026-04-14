@@ -19,9 +19,11 @@ export default {
   'apikeys.models.selected': 'Allowed models',
   'apikeys.models.noModelsFound': 'No models found',
   'apikeys.accessScope.all': 'All',
-  'apikeys.accessScope.management': 'Management APIs',
+  'apikeys.accessScope.management': 'Platform Management',
   'apikeys.accessScope.inference': 'Inference APIs',
-  'apikeys.access.permissions': 'Access Permissions'
+  'apikeys.access.permissions': 'Access Permissions',
+  'apikeys.type.auto': 'Auto-generated',
+  'apikeys.type.custom': 'Custom'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

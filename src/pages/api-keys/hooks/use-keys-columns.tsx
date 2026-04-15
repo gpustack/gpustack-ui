@@ -62,18 +62,20 @@ const useModelsColumns = ({
             <AutoTooltip ghost style={{ maxWidth: 400 }}>
               <span className="text-primary">{text}</span>
             </AutoTooltip>
-            <Tag
-              style={{
-                marginLeft: 8,
-                borderRadius: 12,
-                color: 'var(--ant-color-text-tertiary)',
-                borderColor: 'var(--ant-color-split)',
-                backgroundColor: 'transparent'
-              }}
-              variant="outlined"
-            >
-              {intl.formatMessage({ id: 'playground.params.custom' })}
-            </Tag>
+            {record.is_custom && (
+              <Tag
+                style={{
+                  marginLeft: 8,
+                  borderRadius: 12,
+                  color: 'var(--ant-color-text-tertiary)',
+                  borderColor: 'var(--ant-color-split)',
+                  backgroundColor: 'transparent'
+                }}
+                variant="outlined"
+              >
+                {intl.formatMessage({ id: 'playground.params.custom' })}
+              </Tag>
+            )}
           </span>
         )
       },

@@ -105,7 +105,9 @@ export default {
   'resources.worker.noCluster.tips': '当前无可用集群，请先创建集群再添加节点。',
   'resources.metrics.details': '监控',
   'resoureces.worker.upgrade.tips': '请升级到与 GPUStack Server 版本一致。',
-  'resources.worker.version': '节点版本',
-  'resources.worker.currentVersion': '当前版本: {version}',
-  'resources.worker.targetVersion': '目标版本: {version}'
+  'resources.worker.version': '节点版本：{version}',
+  'resources.server.version': 'Server 版本：{version}',
+  'resources.worker.currentVersion': '当前版本：{version}',
+  'resources.worker.targetVersion': '目标版本：{version}',
+  'resources.driver.version': '驱动版本：{version}'
 };

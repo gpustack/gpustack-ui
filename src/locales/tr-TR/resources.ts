@@ -109,9 +109,11 @@ export default {
   'resources.metrics.details': 'İzleme',
   'resoureces.worker.upgrade.tips':
     'Please upgrade to match the GPUStack Server version.',
-  'resources.worker.version': 'Worker Version',
+  'resources.worker.version': 'Worker Version: {version}',
+  'resources.server.version': 'Server Version: {version}',
   'resources.worker.currentVersion': 'Current Version: {version}',
-  'resources.worker.targetVersion': 'Target Version: {version}'
+  'resources.worker.targetVersion': 'Target Version: {version}',
+  'resources.driver.version': 'Driver Version: {version}'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

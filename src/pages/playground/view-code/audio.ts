@@ -110,6 +110,19 @@ export const TextToSpeechCode = ({
   const curlCode = generateTextToSpeechCurlCode({ api: url, parameters });
 
   // ========================= Python =========================
+  const extraBody = _.pickBy(
+    parameters,
+    (value: any, key: string) =>
+      !['model', 'response_format', 'input', 'voice'].includes(key) &&
+      value !== '' &&
+      value !== undefined
+  );
+
+  const pythonParams = {
+    ..._.pick(parameters, ['model', 'response_format', 'input', 'voice']),
+    extra_body: Object.keys(extraBody).length > 0 ? extraBody : undefined
+  };
+
   const pythonCode = `
 from pathlib import Path
 from openai import OpenAI\n
@@ -119,7 +132,7 @@ client = OpenAI(
   api_key="YOUR_GPUSTACK_API_KEY"
 )
 
-response = client.audio.speech.create(\n${formatPyParams({ ...parameters })})\n
+response = client.audio.speech.create(\n${formatPyParams(pythonParams)})\n
 with open(output_file_path, "wb") as f:
     for chunk in response.iter_bytes(): 
         f.write(chunk)

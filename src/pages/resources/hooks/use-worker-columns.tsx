@@ -301,8 +301,12 @@ const useWorkerColumns = ({
 
     const defaultVersionInfo = (
       <span className="flex-center gap-4">
-        <span>{intl.formatMessage({ id: 'resources.worker.version' })}:</span>
-        <span> {version.version}</span>
+        <span>
+          {intl.formatMessage(
+            { id: 'resources.worker.version' },
+            { version: version.version }
+          )}
+        </span>
       </span>
     );
 
@@ -310,13 +314,13 @@ const useWorkerColumns = ({
       <span className="flex-center gap-8">
         <span>
           {intl.formatMessage(
-            { id: 'resources.worker.currentVersion' },
+            { id: 'resources.worker.version' },
             { version: record.worker_version }
           )}
         </span>
         <span>
           {intl.formatMessage(
-            { id: 'resources.worker.targetVersion' },
+            { id: 'resources.server.version' },
             { version: version.version }
           )}
         </span>
@@ -348,12 +352,18 @@ const useWorkerColumns = ({
             {shouldUpgrade ? upgradeVersionInfo : defaultVersionInfo}
             <span className="flex-center gap-4">
               <span>
-                {intl.formatMessage({
-                  id: 'benchmark.env.driverVersion'
-                })}
-                :
+                {intl.formatMessage(
+                  {
+                    id: 'resources.driver.version'
+                  },
+                  {
+                    version: _.get(
+                      record,
+                      'status.gpu_devices[0].driver_version'
+                    )
+                  }
+                )}
               </span>
-              {_.get(record, 'status.gpu_devices[0].driver_version')}
             </span>
           </div>
         }

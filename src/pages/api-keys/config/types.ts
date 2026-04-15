@@ -9,6 +9,7 @@ export interface ListItem {
   allowed_model_names: string[];
   custom?: string;
   scope?: string[];
+  is_custom?: boolean;
 }
 
 export interface FormData {

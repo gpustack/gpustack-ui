@@ -282,7 +282,9 @@ export default {
   'models.table.instance.benchmark': 'Run Benchmark',
   'models.table.modelView': 'Model List',
   'models.table.instanceView': 'Instance List',
-  'models.table.category': 'Category'
+  'models.table.category': 'Category',
+  'models.instance.firstStart': 'First Deployment',
+  'models.instance.startHistory': 'Startup History'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

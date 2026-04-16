@@ -1,15 +1,19 @@
 import LogsViewer from '@/components/logs-viewer/virtual-log-list';
+import BaseSelect from '@/components/seal-form/base/select';
 import useSetChunkRequest from '@/hooks/use-chunk-request';
+import { CloseOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Modal } from 'antd';
+import { Button, Modal } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
 import { MODELS_API } from '../apis';
+
 import { InstanceRealtimeLogStatus, InstanceStatusMap } from '../config';
+import useQueryModelInstanceRestartCount from '../services/use-query-instance-restart-count';
 
 type ViewModalProps = {
   open: boolean;
   url: string;
-  id?: number | string;
+  id?: number;
   modelId?: number | string;
   tail?: number;
   status?: string;
@@ -24,7 +28,12 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
   const [isDownloading, setIsDownloading] = useState<boolean>(
     status === InstanceStatusMap.Downloading
   );
+  const [params, setParams] = useState<any>({
+    follow: true
+  });
   const logsViewerRef = React.useRef<any>(null);
+  const { countOptions, fetchData, cancelRequest } =
+    useQueryModelInstanceRestartCount();
   const requestRef = React.useRef<any>(null);
   const contentRef = React.useRef<any>(null);
 
@@ -68,6 +77,82 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
     };
   }, [open]);
 
+  const cancelOnClose = () => {
+    logsViewerRef.current?.abort();
+    requestRef.current?.current?.cancel?.();
+    cancelRequest();
+  };
+
+  const handleOnChange = (value: number, option: any) => {
+    if (!option) {
+      setParams({
+        follow: true
+      });
+    } else {
+      setParams({
+        follow: true,
+        watch: false,
+        restart_count: option.value,
+        worker_id: option.worker_id
+      });
+    }
+  };
+
+  const renderTitle = () => {
+    return (
+      <span className="flex-between flex-center gap-16">
+        <span style={{ fontWeight: 'var(--font-weight-bold)' }}>
+          {intl.formatMessage({ id: 'common.button.viewlog' })}
+        </span>
+        <span>
+          <BaseSelect
+            allowClear
+            onChange={handleOnChange}
+            prefix={
+              <span
+                style={{
+                  fontWeight: 400,
+                  fontSize: 13,
+                  marginRight: 8,
+                  paddingRight: 8,
+                  color: 'var(--ant-color-text-secondary)',
+                  borderRight: '1px solid var(--ant-color-split)'
+                }}
+              >
+                {intl.formatMessage({ id: 'models.instance.startHistory' })} (
+                {countOptions.length})
+              </span>
+            }
+            options={countOptions}
+            labelRender={(option) => {
+              return (
+                <span
+                  style={{
+                    fontWeight: 500,
+                    fontSize: 13
+                  }}
+                >
+                  {option?.label}
+                </span>
+              );
+            }}
+            style={{
+              width: 400,
+              marginRight: 16
+            }}
+          ></BaseSelect>
+          <Button
+            type="text"
+            color="default"
+            icon={<CloseOutlined />}
+            onClick={handleCancel}
+            size="middle"
+          ></Button>
+        </span>
+      </span>
+    );
+  };
+
   useEffect(() => {
     if (open && props.id) {
       requestRef.current?.current?.cancel?.();
@@ -75,32 +160,24 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
         url: `${MODELS_API}/${props.modelId}/instances`,
         handler: updateHandler
       });
+      fetchData(props.id);
     } else {
-      logsViewerRef.current?.abort();
-      requestRef.current?.current?.cancel?.();
+      cancelOnClose();
     }
 
     return () => {
-      logsViewerRef.current?.abort();
-      requestRef.current?.current?.cancel?.();
+      cancelOnClose();
     };
   }, [props.id, open]);
 
   return (
     <Modal
-      title={
-        <span className="flex flex-center">
-          <span style={{ fontWeight: 'var(--font-weight-bold)' }}>
-            {' '}
-            {intl.formatMessage({ id: 'common.button.viewlog' })}
-          </span>
-        </span>
-      }
+      title={renderTitle()}
       open={open}
       centered={true}
       onCancel={handleCancel}
       destroyOnHidden={true}
-      closeIcon={true}
+      closeIcon={false}
       mask={{
         closable: false
       }}
@@ -116,14 +193,12 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
       <div className="viewer-wrapper" ref={contentRef}>
         <LogsViewer
           ref={logsViewerRef}
-          diffHeight={78}
+          diffHeight={95}
           url={url}
           tail={tail}
           enableScorllLoad={enableScorllLoad}
           isDownloading={isDownloading}
-          params={{
-            follow: true
-          }}
+          params={params}
         ></LogsViewer>
       </div>
     </Modal>

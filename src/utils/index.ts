@@ -364,3 +364,18 @@ export const parseParamsString = (paramsString: string): string[] => {
 
   return result;
 };
+
+// ordinal.ts
+const enOrdinalRules = new Intl.PluralRules('en', { type: 'ordinal' });
+
+const suffixMap: Record<string, string> = {
+  one: 'st',
+  two: 'nd',
+  few: 'rd',
+  other: 'th'
+};
+
+export function formatOrdinal(n: number): string {
+  const rule = enOrdinalRules.select(n);
+  return `${n}${suffixMap[rule]}`;
+}

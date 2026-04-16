@@ -20,7 +20,7 @@ interface LogsViewerProps {
   height?: number;
   content?: string;
   url: string;
-  params?: object;
+  params?: Record<string, any>;
   ref?: any;
   tail?: number;
   enableScorllLoad?: boolean;
@@ -34,7 +34,8 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
     url,
     tail: defaultTail,
     enableScorllLoad = true,
-    isDownloading
+    isDownloading,
+    params
   } = props;
   const { pageSize, page, setPage, setTotalPage, totalPage } =
     useLogsPagination();
@@ -164,13 +165,19 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
 
   const createChunkConnection = async () => {
     chunkRequedtRef.current?.current?.abort?.();
+    logParseWorker.current?.postMessage({
+      inputStr: '',
+      page: pageRef.current,
+      reset: true,
+      isDownloading: isDownloading
+    });
     chunkRequedtRef.current = setChunkFetch({
       url,
       params: {
-        ...props.params,
         tail: tail.current,
-        watch: true
+        ...props.params
       },
+      watch: params?.watch ?? true,
       contentType: 'text',
       handler: updateContent
     });
@@ -237,7 +244,7 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
     return () => {
       chunkRequedtRef.current?.current?.abort?.();
     };
-  }, [url, isDownloading]);
+  }, [url, isDownloading, props.params]);
 
   useEffect(() => {
     debouncedScroll();
@@ -311,7 +318,7 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
         </div>
         {loading && (
           <Spin
-            size="middle"
+            size="default"
             spinning={loading}
             className={classNames({
               loading: loading

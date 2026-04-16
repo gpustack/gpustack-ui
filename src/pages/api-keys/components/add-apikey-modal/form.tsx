@@ -6,7 +6,7 @@ import { PageActionType } from '@/config/types';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import React from 'react';
-import { accessScopeOptions, expirationOptions } from '../../config';
+import { expirationOptions } from '../../config';
 import { FormData, ListItem } from '../../config/types';
 import AllowModelsForm from './allow-models';
 
@@ -115,19 +115,7 @@ const APIKeyForm: React.FC<{
           )}
         </>
       )}
-      <Form.Item<FormData>
-        name="scope"
-        hidden
-        normalize={(value) => (value ? [value] : [])}
-        getValueProps={(value) => ({
-          value: Array.isArray(value) ? value[0] : value
-        })}
-      >
-        <SealSelect
-          options={accessScopeOptions}
-          label={intl.formatMessage({ id: 'models.table.accessScope' })}
-        ></SealSelect>
-      </Form.Item>
+
       <AllowModelsForm
         currentData={currentData}
         action={action}

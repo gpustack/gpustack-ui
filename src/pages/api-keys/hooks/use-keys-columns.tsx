@@ -8,7 +8,6 @@ import { Tag } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
-import { accessScopeOptions } from '../config';
 import { ListItem } from '../config/types';
 
 interface ColumnsHookProps {
@@ -16,7 +15,7 @@ interface ColumnsHookProps {
   sortOrder: string[];
 }
 
-const actionList: Global.ActionItem[] = [
+const actionList: Global.ActionItem<string>[] = [
   {
     label: 'common.button.edit',
     key: 'edit',
@@ -35,20 +34,6 @@ const useModelsColumns = ({
   sortOrder
 }: ColumnsHookProps): ColumnsType<ListItem> => {
   const intl = useIntl();
-
-  const renderAPIs = (record: ListItem) => {
-    const option = accessScopeOptions.find(
-      (item) => item.value === record.scope?.[0]
-    );
-    return (
-      <span className="flex-center gap-4">
-        {intl.formatMessage({
-          id: option?.label || ''
-        })}
-        {option?.description && <span>[{option?.description}]</span>}
-      </span>
-    );
-  };
 
   return useMemo(() => {
     return [
@@ -112,13 +97,34 @@ const useModelsColumns = ({
           showTitle: false
         },
         render: (text: string[], record: ListItem) => (
-          <AutoTooltip ghost>
-            {record.scope?.[0] === 'management'
-              ? intl.formatMessage({ id: 'apikeys.accessScope.management' })
-              : record.allowed_model_names?.length
-                ? record.allowed_model_names.join(', ')
-                : intl.formatMessage({ id: 'apikeys.models.all' })}
-          </AutoTooltip>
+          <div className="flex-column gap-4">
+            {record.scope?.includes('management') && (
+              <AutoTooltip ghost>
+                {intl.formatMessage({ id: 'apikeys.accessScope.management' })}
+              </AutoTooltip>
+            )}
+            {record.scope?.includes('inference') && (
+              <div
+                style={{
+                  border: '1px solid var(--ant-color-split)',
+                  color: 'var(--ant-color-text-tertiary)',
+                  backgroundColor: 'var(--ant-color-fill-quaternary)',
+                  borderRadius: 4,
+                  paddingInline: 8,
+                  flexGrow: 0,
+                  maxWidth: '100%',
+                  width: 'max-content',
+                  display: 'flex'
+                }}
+              >
+                <AutoTooltip ghost>
+                  {record.allowed_model_names?.length
+                    ? record.allowed_model_names.join(', ')
+                    : intl.formatMessage({ id: 'apikeys.models.all' })}
+                </AutoTooltip>
+              </div>
+            )}
+          </div>
         )
       },
       {

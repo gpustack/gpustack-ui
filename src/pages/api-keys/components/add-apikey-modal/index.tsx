@@ -118,7 +118,7 @@ const AddModal: React.FC<AddModalProps> = ({
         ..._.omit(formdata, ['allowed_type']),
         allowed_model_names:
           formdata.allowed_type === 'all' ||
-          formdata.allowed_type === 'management'
+          !formdata.scope?.includes('inference')
             ? []
             : formdata.allowed_model_names || []
       };
@@ -186,9 +186,7 @@ const AddModal: React.FC<AddModalProps> = ({
         scope: currentData.scope,
         allowed_type: currentData.allowed_model_names?.length
           ? 'custom'
-          : currentData.scope?.includes('management')
-            ? 'management'
-            : 'all',
+          : 'all',
         expires_in: parseExpireValue(currentData as ListItem),
         allowed_model_names: currentData.allowed_model_names || []
       });
@@ -272,6 +270,7 @@ const AddModal: React.FC<AddModalProps> = ({
           onFinish={handleOnOk}
           preserve={false}
           initialValues={{
+            allowed_type: 'all',
             scope: ['inference']
           }}
         >

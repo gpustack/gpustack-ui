@@ -27,13 +27,13 @@ export const expirationOptions = [
 
 export const accessScopeOptions = [
   {
-    label: 'management',
+    label: 'apikeys.accessScope.management',
     value: 'management',
     description: 'v2/',
     locale: true
   },
   {
-    label: 'inference',
+    label: 'apikeys.table.bindModels',
     value: 'inference',
     description: 'v1/',
     locale: true

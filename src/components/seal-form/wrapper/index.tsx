@@ -170,6 +170,7 @@ const Extra = styled.div`
 
 const AddAfter = styled.div`
   position: relative;
+  border-radius: 0 var(--ant-border-radius) var(--ant-border-radius) 0;
   color: var(--ant-color-text-tertiary);
   font-size: var(--font-size-base);
   padding-inline: calc(var(--ant-padding-sm) - 1px);

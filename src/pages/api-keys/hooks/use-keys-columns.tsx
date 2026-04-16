@@ -110,6 +110,7 @@ const useModelsColumns = ({
                   color: 'var(--ant-color-text-tertiary)',
                   backgroundColor: 'var(--ant-color-fill-quaternary)',
                   borderRadius: 4,
+                  fontSize: 13,
                   paddingInline: 8,
                   flexGrow: 0,
                   maxWidth: '100%',

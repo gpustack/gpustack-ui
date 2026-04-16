@@ -266,5 +266,7 @@ export default {
   'models.table.instance.benchmark': '运行基准测试',
   'models.table.modelView': '模型列表',
   'models.table.instanceView': '实例列表',
-  'models.table.category': '类别'
+  'models.table.category': '类别',
+  'models.instance.firstStart': '首次部署',
+  'models.instance.startHistory': '启动记录'
 };

@@ -375,3 +375,8 @@ export interface DraftModelItem {
   name: string;
   algorithm: string;
 }
+
+export interface InstanceRestartCount {
+  restart_counts: number[];
+  workers: { id: number; name: string }[];
+}

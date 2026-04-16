@@ -152,6 +152,11 @@ export async function queryModelInstanceLogs(id: number) {
     method: 'GET'
   });
 }
+export async function queryModelInstanceRestartCount(id: number) {
+  return request(`${MODEL_INSTANCE_API}/${id}/log-options`, {
+    method: 'GET'
+  });
+}
 
 // ===================== Model Instances end =====================
 

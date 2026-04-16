@@ -19,6 +19,7 @@ export default {
   'menu.models.providers': 'Providers',
   'menu.models.instances': 'Instances',
   'menu.models.routes': 'Routes',
+  'menu.models.usage': 'Usage',
   'menu.modelCatalog': 'Catalog',
   'menu.resources': 'Resources',
   'menu.apikeys': 'API Keys',

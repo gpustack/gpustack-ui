@@ -31,6 +31,7 @@ export default {
   'dashboard.usage.datePicker.last7days': 'Последние 7 Days',
   'dashboard.usage.datePicker.last30days': 'Последние 30 Days',
   'dashboard.usage.datePicker.last60days': 'Последние 60 Days',
+  'dashboard.usage.datePicker.last90days': 'Последние 90 Days',
   'dashboard.clusters': 'Кластеры'
 };
 

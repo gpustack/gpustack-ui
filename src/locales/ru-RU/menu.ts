@@ -18,6 +18,7 @@ export default {
   'menu.models.providers': 'Providers',
   'menu.models.instances': 'Instances',
   'menu.models.routes': 'Routes',
+  'menu.models.usage': 'Usage',
   'menu.modelCatalog': 'Каталог',
   'menu.resources': 'Ресурсы',
   'menu.apikeys': 'API-ключи',

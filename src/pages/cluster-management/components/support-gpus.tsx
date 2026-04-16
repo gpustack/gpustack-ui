@@ -139,6 +139,16 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
       icon: <ProviderImage src={hyponPNG} height={18} />
     },
     {
+      label: intl.formatMessage({ id: 'vendor.metax' }),
+      hiddenTitle: true,
+      value: GPUDriverMap.METAX,
+      key: GPUDriverMap.METAX,
+      locale: false,
+      link: 'https://docs.gpustack.ai/latest/installation/requirements/#metax-gpu',
+      notes: AddWorkerDockerNotes[GPUDriverMap.METAX],
+      icon: <ProviderImage src={metaxLogo} height={20} />
+    },
+    {
       label: intl.formatMessage({ id: 'vendor.moorthreads' }),
       hiddenTitle: true,
       extra: intl.formatMessage({ id: 'common.tag.experimental' }),
@@ -170,17 +180,6 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
       notes: AddWorkerDockerNotes[GPUDriverMap.CAMBRICON],
       link: 'https://docs.gpustack.ai/latest/installation/requirements/#cambricon-mlu',
       icon: <ProviderImage src={CambriconPNG} height={24} />
-    },
-    {
-      label: intl.formatMessage({ id: 'vendor.metax' }),
-      hiddenTitle: true,
-      extra: intl.formatMessage({ id: 'common.tag.experimental' }),
-      value: GPUDriverMap.METAX,
-      key: GPUDriverMap.METAX,
-      locale: false,
-      link: 'https://docs.gpustack.ai/latest/installation/requirements/#metax-gpu',
-      notes: AddWorkerDockerNotes[GPUDriverMap.METAX],
-      icon: <ProviderImage src={metaxLogo} height={20} />
     },
     {
       label: `${intl.formatMessage({ id: 'vendor.thead' })} `,

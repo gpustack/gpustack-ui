@@ -12,8 +12,13 @@ import { useEffect, useRef, useState } from 'react';
  * @param option.fetchList: (params, extra) => Promise<{ items: ListItem[] }>
  * @returns loading, dataList, fetchData, cancelRequest
  */
-export function useQueryDataList<ListItem, Params = any>(option: {
+export function useQueryDataList<
+  ListItem,
+  Params = any,
+  Response = Array<ListItem>
+>(option: {
   key: string;
+  responseType?: 'array' | 'object';
   fetchList: (
     params: Params,
     options?: any
@@ -21,13 +26,21 @@ export function useQueryDataList<ListItem, Params = any>(option: {
   getLabel?: (item: ListItem) => string;
   getValue?: (item: ListItem) => any;
   errorMsg?: string;
+  debounceWait?: number;
 }): {
   loading: boolean;
   dataList: Array<ListItem & { label: string; value: any }>;
   cancelRequest: () => void;
-  fetchData: (params: Params, extra?: any) => Promise<ListItem[]>;
+  fetchData: (params: Params, extra?: any) => Promise<Response>;
 } {
-  const { key, fetchList, getLabel, getValue, errorMsg } = option;
+  const {
+    key,
+    fetchList,
+    getLabel,
+    getValue,
+    responseType = 'array',
+    errorMsg
+  } = option;
   const axiosTokenRef = useRef<CancelTokenSource | null>(null);
   const [dataList, setDataList] = useState<
     Array<ListItem & { label: string; value: any }>
@@ -54,10 +67,11 @@ export function useQueryDataList<ListItem, Params = any>(option: {
         })) || []
       );
 
-      return res.items || [];
+      return responseType === 'array' ? res.items || [] : res;
     },
     {
       manual: true,
+      debounceWait: option.debounceWait || 300,
       onSuccess: () => {},
       onError: (error) => {
         message.error(

@@ -16,10 +16,6 @@ export default function readExcelContent(file: File): Promise<string> {
   });
 }
 
-interface FormatMap {
-  [key: string]: (value: any, row?: any) => any;
-}
-
 /**
  * @param jsonData raw JSON data to export
  * @param fields export fields (keys in the JSON objects)
@@ -27,45 +23,70 @@ interface FormatMap {
  * @param formatMap custom the cell format functions
  * @param fileName file name for the exported Excel file
  */
-export function exportJsonToExcel(data: {
+
+interface FormatMap {
+  [key: string]: (value: any, row?: any) => any;
+}
+
+interface ExportSheetConfig {
+  sheetName: string;
   jsonData: any[];
   fields: string[];
   fieldLabels?: Record<string, string>;
   formatMap?: FormatMap;
+}
+
+interface ExportExcelOptions {
+  sheets: ExportSheetConfig[];
   fileName: string;
-}) {
-  const {
-    jsonData,
-    fields,
-    fieldLabels,
-    formatMap,
-    fileName = 'data.xlsx'
-  } = data;
-  // 1. Process data: filter fields and format values
-  const formattedData = jsonData.map((row) => {
-    const result: Record<string, any> = {};
-    for (const field of fields) {
-      const rawValue = row[field];
-      const formatFn = formatMap?.[field];
-      result[field] = formatFn ? formatFn(rawValue, row) : rawValue;
+}
+
+export function exportJsonToExcel({
+  sheets,
+  fileName = 'data.xlsx'
+}: ExportExcelOptions) {
+  const workbook = XLSX.utils.book_new();
+
+  sheets.forEach((sheet) => {
+    const { sheetName, jsonData, fields, fieldLabels, formatMap } = sheet;
+
+    // 1. format data
+    const formattedData = jsonData.map((row) => {
+      const result: Record<string, any> = {};
+
+      for (const field of fields) {
+        const rawValue = row[field];
+        const formatFn = formatMap?.[field];
+        result[field] = formatFn ? formatFn(rawValue, row) : rawValue;
+      }
+
+      return result;
+    });
+
+    // 2. convert to  worksheet
+    const worksheet = XLSX.utils.json_to_sheet(formattedData, {
+      header: fields
+    });
+
+    // 3. customize headers
+    if (fieldLabels) {
+      const headerRow = fields.map((key) => fieldLabels[key] || key);
+      XLSX.utils.sheet_add_aoa(worksheet, [headerRow], { origin: 'A1' });
     }
-    return result;
+
+    // 4. add to workbook
+    XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
   });
 
-  // 2. Convert to worksheet
-  const worksheet = XLSX.utils.json_to_sheet(formattedData, { header: fields });
+  // 5. export file
+  const excelBuffer = XLSX.write(workbook, {
+    bookType: 'xlsx',
+    type: 'array'
+  });
 
-  // 3. Add headers if provided
-  if (fieldLabels) {
-    const headerRow = fields.map((key) => fieldLabels[key] || key);
-    XLSX.utils.sheet_add_aoa(worksheet, [headerRow], { origin: 'A1' });
-  }
+  const blob = new Blob([excelBuffer], {
+    type: 'application/octet-stream'
+  });
 
-  // 4. Create workbook and write to file
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
-
-  const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-  const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
   saveAs(blob, fileName);
 }

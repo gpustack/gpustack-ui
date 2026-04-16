@@ -18,6 +18,7 @@ export default {
   'menu.models.providers': '提供商',
   'menu.models.instances': '实例',
   'menu.models.routes': '路由',
+  'menu.models.usage': '用量统计',
   'menu.modelCatalog': '模型库',
   'menu.models.catalog': '模型库',
   'menu.resources': '资源',

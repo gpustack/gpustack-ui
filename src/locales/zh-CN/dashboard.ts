@@ -31,5 +31,6 @@ export default {
   'dashboard.usage.export.date': '日期',
   'dashboard.usage.datePicker.last7days': '最近 7 天',
   'dashboard.usage.datePicker.last30days': '最近 30 天',
-  'dashboard.usage.datePicker.last60days': '最近 60 天'
+  'dashboard.usage.datePicker.last60days': '最近 60 天',
+  'dashboard.usage.datePicker.last90days': '最近 90 天'
 };

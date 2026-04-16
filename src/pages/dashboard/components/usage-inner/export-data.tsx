@@ -108,27 +108,34 @@ const ExportData: React.FC<{
   const handleSubmit = () => {
     const fileName = `usage-data_${query.start_date || ''}_${query.end_date || ''}.xlsx`;
     exportJsonToExcel({
-      jsonData: result.data?.items || [],
       fileName: fileName,
-      fields: exportTableColumns
-        .map((col) => col.dataIndex)
-        .filter(Boolean) as string[],
-      fieldLabels: {
-        user_id: 'User',
-        model_id: 'Model',
-        date: 'Date',
-        prompt_token_count: 'Prompt Tokens',
-        completion_token_count: 'Completion Tokens',
-        request_count: 'API Requests'
-      },
-      formatMap: {
-        user_id: (value: string) => {
-          return userList.find((item) => item.value === value)?.label || value;
-        },
-        model_id: (value: string, record: any) => {
-          return getModelName(record);
+      sheets: [
+        {
+          jsonData: result.data?.items || [],
+          sheetName: 'usage_data',
+          fields: exportTableColumns
+            .map((col) => col.dataIndex)
+            .filter(Boolean) as string[],
+          fieldLabels: {
+            user_id: 'User',
+            model_id: 'Model',
+            date: 'Date',
+            prompt_token_count: 'Prompt Tokens',
+            completion_token_count: 'Completion Tokens',
+            request_count: 'API Requests'
+          },
+          formatMap: {
+            user_id: (value: string) => {
+              return (
+                userList.find((item) => item.value === value)?.label || value
+              );
+            },
+            model_id: (value: string, record: any) => {
+              return getModelName(record);
+            }
+          }
         }
-      }
+      ]
     });
   };
 

@@ -4,6 +4,10 @@ import dayjs, { type Dayjs } from 'dayjs';
 
 interface RangePickerPreset {
   range: number;
+  presetRanges?: {
+    label: React.ReactNode;
+    value: [Dayjs, Dayjs] | (() => [Dayjs, Dayjs]);
+  }[];
   disabledDate?: boolean;
 }
 
@@ -15,7 +19,7 @@ export default function useRangePickerPreset(options?: RangePickerPreset): {
   }[];
   range: number;
 } {
-  const { range = 60, disabledDate } = options || {};
+  const { range = 60, disabledDate, presetRanges } = options || {};
   const intl = useIntl();
 
   const getYearMonth = (date: Dayjs) => date.year() * 12 + date.month();
@@ -54,7 +58,7 @@ export default function useRangePickerPreset(options?: RangePickerPreset): {
   const rangePresets: {
     label: React.ReactNode;
     value: [Dayjs, Dayjs] | (() => [Dayjs, Dayjs]);
-  }[] = [
+  }[] = presetRanges || [
     {
       label: intl.formatMessage({ id: 'dashboard.usage.datePicker.last7days' }),
       value: [dayjs().add(-6, 'd'), dayjs()]

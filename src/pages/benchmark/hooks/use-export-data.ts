@@ -15,11 +15,16 @@ const useExportData = (params: { columns: any[] }) => {
   const exportData = (dataList: any[]) => {
     const fileName = `benchmark.xlsx`;
     exportJsonToExcel({
-      jsonData: dataList || [],
-      fileName: fileName,
-      fields: Object.keys(colIndexMap),
-      fieldLabels: colIndexMap,
-      formatMap: {}
+      fileName,
+      sheets: [
+        {
+          jsonData: dataList || [],
+          sheetName: 'benchmark_data',
+          fields: Object.keys(colIndexMap),
+          fieldLabels: colIndexMap,
+          formatMap: {}
+        }
+      ]
     });
   };
   return { exportData };

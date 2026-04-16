@@ -127,6 +127,15 @@ export default [
         component: './model-routes/index'
       },
       {
+        name: 'usage',
+        path: '/models/usage',
+        key: 'usage',
+        icon: 'icon-usage-outlined',
+        selectedIcon: 'icon-usage-filled',
+        defaultIcon: 'icon-usage-outlined',
+        component: './usage/index'
+      },
+      {
         name: 'providers',
         path: '/models/providers',
         key: 'modelProviders',

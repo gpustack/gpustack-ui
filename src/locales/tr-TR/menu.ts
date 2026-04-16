@@ -18,6 +18,7 @@ export default {
   'menu.models.benchmarkDetail': 'Kıyaslama Detayları',
   'menu.models.providers': 'Sağlayıcılar',
   'menu.models.routes': 'Yönlendirmeler',
+  'menu.models.usage': 'Usage',
   'menu.modelCatalog': 'Katalog',
   'menu.resources': 'Kaynaklar',
   'menu.apikeys': 'API Anahtarları',
@@ -43,4 +44,5 @@ export default {
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
 // 1. 'menu.models.instances': 'Instances'
+// 2. 'menu.models.usage': 'Usage',
 // ========== End of To-Do List ==========

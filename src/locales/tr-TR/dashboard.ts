@@ -3,8 +3,8 @@ export default {
   'dashboard.workers': 'İşçi Düğümler',
   'dashboard.models': 'Modeller',
   'dashboard.clusters': 'Kümeler',
-  'dashboard.totalgpus': 'GPU\'lar',
-  'dashboard.allocategpus': 'Ayrılan GPU\'lar',
+  'dashboard.totalgpus': "GPU'lar",
+  'dashboard.allocategpus': "Ayrılan GPU'lar",
   'dashboard.instances': 'Örnekler',
   'dashboard.systemload': 'Sistem Yükü',
   'dashboard.memory': 'RAM',
@@ -31,5 +31,6 @@ export default {
   'dashboard.usage.export.date': 'Tarih',
   'dashboard.usage.datePicker.last7days': 'Son 7 Gün',
   'dashboard.usage.datePicker.last30days': 'Son 30 Gün',
-  'dashboard.usage.datePicker.last60days': 'Son 60 Gün'
+  'dashboard.usage.datePicker.last60days': 'Son 60 Gün',
+  'dashboard.usage.datePicker.last90days': 'Son 90 Gün'
 };

@@ -1,6 +1,7 @@
 // columns.ts
 import AutoTooltip from '@/components/auto-tooltip';
 import { tableSorter } from '@/config/settings';
+import ProviderLogo from '@/pages/maas-provider/components/provider-logo';
 import { useIntl } from '@umijs/max';
 import { useMemo } from 'react';
 import { BreakdownItem as ListItem } from '../config/types';
@@ -32,22 +33,27 @@ const useModelsColumns = (): Array<{
         )
       },
       {
-        title: 'Provider',
-        dataIndex: 'provider',
-        key: 'provider',
-        render: (text: string, record: ListItem) => (
-          <AutoTooltip ghost style={{ maxWidth: 400 }}>
-            {text || '-'}
-          </AutoTooltip>
-        )
-      },
-      {
         title: 'Cluster',
         dataIndex: 'cluster_name',
         key: 'cluster_name',
         sorter: tableSorter(2),
         render: (text: string, record: ListItem) => (
           <AutoTooltip ghost>{text || '-'}</AutoTooltip>
+        )
+      },
+      {
+        title: 'Provider',
+        dataIndex: 'provider_name',
+        key: 'provider_name',
+        render: (text: string, record: ListItem) => (
+          <span className="flex-center gap-8">
+            <ProviderLogo provider={record.provider_type || 'deployments'} />
+            <AutoTooltip ghost style={{ maxWidth: 400 }}>
+              {text ||
+                (!record.provider_type &&
+                  intl.formatMessage({ id: 'menu.models.deployment' }))}
+            </AutoTooltip>
+          </span>
         )
       },
       {

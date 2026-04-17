@@ -92,7 +92,7 @@ const DailyUsage: React.FC<DailyUsageProps> = (props) => {
       },
       {
         label: summary.models_called.toString(),
-        value: 'Models called',
+        value: 'Models used',
         color: baseColorMap.baseR2,
         iconType: 'roundRect'
       }

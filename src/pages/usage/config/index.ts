@@ -1,5 +1,9 @@
 export const groupByOptions = [
   {
+    value: '',
+    label: 'None'
+  },
+  {
     value: 'model',
     label: 'Model'
   },

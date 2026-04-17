@@ -56,6 +56,8 @@ export type BreakdownItem = UsageFilterItem & {
   models_called: number;
   api_keys_used: number;
   last_active: string;
+  provider_type: string;
+  provider_name: string;
 };
 
 export interface UsageMeta {

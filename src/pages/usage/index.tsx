@@ -1,6 +1,7 @@
 import { exportJsonToExcel } from '@/utils/excel-reader';
 import { useModel } from '@@/plugin-model';
 import dayjs from 'dayjs';
+import _ from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import BreakdownTabs from './components/breakdown-tabs';
 import DailyUsage from './components/daily-usage';
@@ -134,6 +135,10 @@ const Usage: React.FC = () => {
     currentSelectedFilters = commonFilters,
     currentChartFilters = chartFilters
   ) => {
+    const filteredChartFilters = _.pickBy(
+      currentChartFilters,
+      (value: string) => value
+    );
     fetchTimeSeriesData({
       ...currentChartFilters,
       start_date: currentSelectedFilters.start_date,
@@ -172,6 +177,10 @@ const Usage: React.FC = () => {
   const handleChartFilterChange = (type: string, value: string) => {
     setChartFilters((prev) => ({ ...prev, [type]: value }));
     fetchData(commonFilters, { ...chartFilters, [type]: value });
+  };
+
+  const handleSearch = () => {
+    fetchData(commonFilters, chartFilters);
   };
 
   console.log('timeSeriesData:', timeSeriesData);
@@ -228,7 +237,7 @@ const Usage: React.FC = () => {
         modelOptions={metaData?.models || []}
         userOptions={metaData?.users || []}
         apiKeyOptions={metaData?.api_keys || []}
-        handleSearch={fetchData}
+        handleSearch={handleSearch}
         onScopeChange={handleScopeChange}
         onDateChange={handleDateChange}
         onModelsChange={(value) => handleFilterChange('models', value)}

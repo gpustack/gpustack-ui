@@ -13,6 +13,7 @@ import { ListItem } from '../config/types';
 interface ColumnsHookProps {
   handleSelect: (val: string, record: ListItem) => void;
   sortOrder: string[];
+  is_admin?: boolean;
 }
 
 const actionList: Global.ActionItem<string>[] = [
@@ -31,7 +32,8 @@ const actionList: Global.ActionItem<string>[] = [
 
 const useModelsColumns = ({
   handleSelect,
-  sortOrder
+  sortOrder,
+  is_admin
 }: ColumnsHookProps): ColumnsType<ListItem> => {
   const intl = useIntl();
 
@@ -69,7 +71,18 @@ const useModelsColumns = ({
         dataIndex: 'masked_value',
         key: 'masked_value',
         render: (text: string, record: ListItem) => (
-          <AutoTooltip ghost style={{ maxWidth: 400 }}>
+          <AutoTooltip ghost style={{ maxWidth: 200 }}>
+            {text || '-'}
+          </AutoTooltip>
+        )
+      },
+      {
+        title: intl.formatMessage({ id: 'users.table.username' }),
+        dataIndex: 'user_name',
+        key: 'user_name',
+        hidden: !is_admin,
+        render: (text: string, record: ListItem) => (
+          <AutoTooltip ghost style={{ maxWidth: 200 }}>
             {text || '-'}
           </AutoTooltip>
         )
@@ -166,7 +179,7 @@ const useModelsColumns = ({
         )
       }
     ];
-  }, [intl, handleSelect]);
+  }, [intl, is_admin, handleSelect]);
 };
 
 export default useModelsColumns;

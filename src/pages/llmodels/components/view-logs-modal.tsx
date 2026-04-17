@@ -1,8 +1,10 @@
 import useSetChunkRequest from '@/hooks/use-chunk-request';
+import { formatOrdinal } from '@/utils';
 import { CloseOutlined } from '@ant-design/icons';
 import { BaseSelect, LogsViewer } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Modal } from 'antd';
+import dayjs from 'dayjs';
 import React, { useCallback, useEffect, useState } from 'react';
 import { MODELS_API } from '../apis';
 
@@ -27,6 +29,7 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
   const [isDownloading, setIsDownloading] = useState<boolean>(
     status === InstanceStatusMap.Downloading
   );
+  const [record, setRecord] = useState<number>(0);
   const [params, setParams] = useState<any>({
     follow: true
   });
@@ -95,6 +98,36 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
         worker_id: option.worker_id
       });
     }
+    setRecord(value);
+  };
+
+  const renderLabel = (label: string, time: string) => {
+    return (
+      <span className="flex-between gap-8">
+        <span>{label}</span>
+        <span className="text-tertiary font-400">
+          {dayjs(time).format('YYYY-MM-DD HH:mm:ss')}
+        </span>
+      </span>
+    );
+  };
+
+  const optionRender = (option: any) => {
+    const { data = {} } = option || {};
+    let label = formatOrdinal(data.value);
+    if (data.value === 0) {
+      label = intl.formatMessage({ id: 'models.instance.firstStart' });
+    }
+    if (data.isLast) {
+      label = intl.formatMessage({ id: 'models.instance.lastStart' });
+    }
+    return renderLabel(label, data.start_at);
+  };
+
+  const labelRender = (option: any) => {
+    const data = countOptions.find((item) => item.value === option.value);
+    if (!data) return '';
+    return optionRender({ data });
   };
 
   const renderTitle = () => {
@@ -106,6 +139,7 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
         <span>
           <BaseSelect
             allowClear
+            value={record}
             onChange={handleOnChange}
             prefix={
               <span
@@ -123,18 +157,8 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
               </span>
             }
             options={countOptions}
-            labelRender={(option) => {
-              return (
-                <span
-                  style={{
-                    fontWeight: 500,
-                    fontSize: 13
-                  }}
-                >
-                  {option?.label}
-                </span>
-              );
-            }}
+            labelRender={labelRender}
+            optionRender={optionRender}
             style={{
               width: 400,
               marginRight: 16
@@ -159,7 +183,13 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
         url: `${MODELS_API}/${props.modelId}/instances`,
         handler: updateHandler
       });
-      fetchData(props.id);
+      fetchData(props.id).then((list) => {
+        if (list.length === 1) {
+          setRecord(list[0].value);
+        } else if (list.length > 1) {
+          setRecord(list[1].value);
+        }
+      });
     } else {
       cancelOnClose();
     }

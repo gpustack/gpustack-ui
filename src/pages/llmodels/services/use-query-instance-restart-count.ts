@@ -1,5 +1,4 @@
 import { useQueryData } from '@/hooks/use-query-data-list';
-import { formatOrdinal } from '@/utils';
 import { useIntl } from '@umijs/max';
 import { useState } from 'react';
 import { queryModelInstanceRestartCount } from '../apis';
@@ -14,24 +13,25 @@ export default function useQueryModelInstanceRestartCount() {
   const intl = useIntl();
 
   const [dataList, setDataList] = useState<
-    { value: number; label: number | string; worker_id: number }[]
+    { value: number; label: React.ReactNode; worker_id: number }[]
   >([]);
 
   const fetchRestartCount = async (instance_id: number) => {
     const res = await fetchData(instance_id);
-    const workerId = res?.workers?.[0]?.id || 0;
+    const workerId = res?.workers?.[0]?.worker_id || 0;
+    const workerItem = res?.workers?.[0];
     const dataList =
-      res?.restart_counts?.map((count, index) => {
+      workerItem?.restarts?.map((restart, index) => {
         return {
-          value: count,
-          label:
-            count === 0
-              ? intl.formatMessage({ id: 'models.instance.firstStart' })
-              : formatOrdinal(count),
-          worker_id: workerId
+          value: restart.restart_count,
+          label: restart.restart_count,
+          start_at: restart.started_at,
+          worker_id: workerId,
+          isLast: index === 1
         };
       }) || [];
     setDataList(dataList);
+    return dataList;
   };
   return {
     countOptions: dataList,

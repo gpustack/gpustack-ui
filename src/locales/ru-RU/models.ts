@@ -288,6 +288,7 @@ export default {
   'models.table.instanceView': 'Instance List',
   'models.table.category': 'Category',
   'models.instance.firstStart': 'First Deployment',
+  'models.instance.lastStart': 'Last Startup',
   'models.instance.startHistory': 'Startup History'
 };
 

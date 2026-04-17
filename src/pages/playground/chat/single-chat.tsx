@@ -48,7 +48,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     messageList,
     loading
   } = useChatCompletion(scroller);
-  const { handleOnValuesChange, formRef, paramsConfig, parameters } =
+  const { handleOnValuesChange, formRef, setParams, paramsConfig, parameters } =
     useInitLLmMeta(
       { modelList, isChat: true },
       {
@@ -57,7 +57,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         metaKeys: LLM_METAKEYS
       }
     );
-
+  console.log('parameters', parameters);
   useImperativeHandle(ref, () => {
     return {
       viewCode() {
@@ -75,6 +75,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       ? [{ role: Roles.System, content: systemMessage }]
       : [];
     const list = generateMessagesByListContent([...messageList]);
+    console.log('viewCodeContent+++', parameters);
     return generateLLMCode({
       api: CHAT_API,
       parameters: {
@@ -99,6 +100,13 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         : undefined,
       current: currentMessage,
       parameters
+    });
+  };
+
+  const handleOnModelChange = (model: string) => {
+    setParams({
+      ...formRef.current?.getFieldsValue(),
+      model
     });
   };
 
@@ -169,6 +177,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         <DataForm
           ref={formRef}
           onValuesChange={handleOnValuesChange}
+          onModelChange={handleOnModelChange}
           paramsConfig={paramsConfig}
           initialValues={llmInitialValues}
           modelList={modelList}

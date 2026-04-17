@@ -268,5 +268,6 @@ export default {
   'models.table.instanceView': '实例列表',
   'models.table.category': '类别',
   'models.instance.firstStart': '首次部署',
+  'models.instance.lastStart': '最近启动',
   'models.instance.startHistory': '启动记录'
 };

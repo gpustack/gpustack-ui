@@ -5,11 +5,13 @@ import { PageAction } from '@/config';
 import { PaginationKey } from '@/config/settings';
 import type { PageActionType } from '@/config/types';
 import useTableFetch from '@/hooks/use-table-fetch';
+import useQueryUserList from '@/pages/users/services/use-query-user-list';
+import { useModel } from '@@/plugin-model';
 import { useIntl } from '@umijs/max';
 import useMemoizedFn from 'ahooks/lib/useMemoizedFn';
 import { ConfigProvider, Table } from 'antd';
 import _ from 'lodash';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import NoResult from '../_components/no-result';
 import PageBox from '../_components/page-box';
 import { deleteApisKey, queryApisKeysList } from './apis';
@@ -18,6 +20,8 @@ import { ListItem } from './config/types';
 import useKeysColumns from './hooks/use-keys-columns';
 
 const APIKeys: React.FC = () => {
+  const { initialState } = useModel('@@initialState');
+  const currentUser = initialState?.currentUser;
   const {
     TABLE_SORT_DIRECTIONS,
     dataSource,
@@ -30,13 +34,25 @@ const APIKeys: React.FC = () => {
     fetchData,
     handlePageChange,
     handleTableChange,
+    handleQueryChange,
     handleSearch,
     handleNameChange
   } = useTableFetch<ListItem>({
     key: PaginationKey.APIKeys,
     fetchAPI: queryApisKeysList,
     deleteAPI: deleteApisKey,
-    contentForDelete: 'apikeys.table.apikeys'
+    contentForDelete: 'apikeys.table.apikeys',
+    defaultQueryParams: {
+      user_id: currentUser?.is_admin ? '*' : undefined
+    }
+  });
+  const {
+    dataList: userList,
+    fetchData: fetchUserData,
+    cancelRequest: cancelUserRequest
+  } = useQueryUserList({
+    getLabel: (item) => item.username,
+    getValue: (item) => item.id
   });
 
   const intl = useIntl();
@@ -51,6 +67,15 @@ const APIKeys: React.FC = () => {
     title: '',
     currentData: null
   });
+
+  useEffect(() => {
+    fetchUserData({
+      page: -1
+    });
+    return () => {
+      cancelUserRequest();
+    };
+  }, []);
 
   const handleAddKey = () => {
     setOpenAddModal({
@@ -101,6 +126,12 @@ const APIKeys: React.FC = () => {
     }
   });
 
+  const handleUserChange = (val: string) => {
+    handleQueryChange({
+      user_id: val || '*'
+    });
+  };
+
   const renderEmpty = (type?: string) => {
     if (type !== 'Table') return;
     return (
@@ -121,7 +152,11 @@ const APIKeys: React.FC = () => {
     );
   };
 
-  const columns = useKeysColumns({ handleSelect: onSelect, sortOrder });
+  const columns = useKeysColumns({
+    handleSelect: onSelect,
+    sortOrder,
+    is_admin: currentUser?.is_admin
+  });
 
   return (
     <>
@@ -129,10 +164,15 @@ const APIKeys: React.FC = () => {
         <FilterBar
           marginBottom={22}
           marginTop={30}
+          showSelect={currentUser?.is_admin}
+          selectOptions={userList}
+          select={{ showSearch: true }}
+          selectHolder={intl.formatMessage({ id: 'models.table.filterByName' })}
           buttonText={intl.formatMessage({ id: 'apikeys.button.create' })}
           handleSearch={handleSearch}
           handleDeleteByBatch={handleDeleteBatch}
           handleClickPrimary={handleAddKey}
+          handleSelectChange={handleUserChange}
           handleInputChange={handleNameChange}
           rowSelection={rowSelection}
           widths={{ input: 300 }}
@@ -144,14 +184,14 @@ const APIKeys: React.FC = () => {
             rowSelection={rowSelection}
             loading={{
               spinning: dataSource.loading,
-              size: 'middle'
+              size: 'default'
             }}
             sortDirections={TABLE_SORT_DIRECTIONS}
             showSorterTooltip={false}
             rowKey="id"
             onChange={handleTableChange}
             pagination={{
-              size: 'middle',
+              size: 'default',
               showSizeChanger: true,
               pageSize: queryParams.perPage,
               current: queryParams.page,

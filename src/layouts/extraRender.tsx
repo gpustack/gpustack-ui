@@ -216,20 +216,6 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
   const userMenu = {
     items: [
       {
-        key: 'apikeys',
-        label: (
-          <span className="flex flex-center">
-            <IconFont type="icon-key" />
-            <span className="m-l-8" style={{ marginLeft: 8 }}>
-              {intl?.formatMessage?.({ id: 'menu.apikeys' })}
-            </span>
-          </span>
-        ),
-        onClick: () => {
-          history.push('/api-keys');
-        }
-      },
-      {
         key: 'settings',
         label: (
           <span className="flex flex-center">

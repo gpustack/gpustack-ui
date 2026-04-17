@@ -94,7 +94,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
                     <Button
                       type="link"
                       size="small"
-                      href="#/api-keys"
+                      href="#/access-control/api-keys"
                       target="_blank"
                       style={{ paddingInline: 2 }}
                     >

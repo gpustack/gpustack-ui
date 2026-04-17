@@ -129,6 +129,9 @@ interface FilterBarProps {
     onClick: () => void;
     onClear: () => void;
   };
+  select?: {
+    showSearch?: boolean;
+  };
   widths?: {
     input?: number;
     select?: number;
@@ -148,6 +151,7 @@ export const FilterBar: React.FC<FilterBarProps> = (props) => {
     showSelect,
     buttonText,
     buttonIcon,
+    select,
     actionType = 'button',
     marginBottom = 10,
     marginTop = 10,
@@ -189,7 +193,7 @@ export const FilterBar: React.FC<FilterBarProps> = (props) => {
         {showSelect && (
           <BaseSelect
             allowClear
-            showSearch={false}
+            showSearch={select?.showSearch}
             placeholder={selectHolder}
             style={{ width: widths?.select || 230 }}
             size="large"

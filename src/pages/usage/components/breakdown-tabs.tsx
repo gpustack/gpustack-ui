@@ -36,7 +36,13 @@ const BreakdownTabs: React.FC<{
       key: 'users',
       label: 'Users',
       forceRender: true,
-      children: <UsersTable users={filters.users || []} dateRange={dateRange} />
+      children: (
+        <UsersTable
+          users={filters.users || []}
+          dateRange={dateRange}
+          scope={scope}
+        />
+      )
     },
     {
       key: 'api_keys',

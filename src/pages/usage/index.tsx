@@ -259,7 +259,10 @@ const Usage: React.FC = () => {
       />
       <BreakdownTabs
         filters={filters}
-        dateRange={commonFilters}
+        dateRange={{
+          start_date: commonFilters.start_date,
+          end_date: commonFilters.end_date
+        }}
         scope={commonFilters.scope}
       ></BreakdownTabs>
     </div>

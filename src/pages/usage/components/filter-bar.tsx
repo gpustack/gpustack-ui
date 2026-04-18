@@ -1,4 +1,3 @@
-import BaseSelect from '@/components/seal-form/base/select';
 import SimpleSelect from '@/components/seal-form/simple-select';
 import useRangePickerPreset from '@/pages/dashboard/hooks/use-rangepicker-preset';
 import { useModel } from '@@/plugin-model';
@@ -7,7 +6,6 @@ import { useIntl } from '@umijs/max';
 import { Button, DatePicker, Dropdown, MenuProps } from 'antd';
 import dayjs from 'dayjs';
 import React from 'react';
-import { scopeOptions } from '../config';
 import { UsageFilterItem } from '../config/types';
 import FilterBarCss from '../styles/filter-bar.less';
 
@@ -109,14 +107,14 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
   return (
     <div className={FilterBarCss.wrapper}>
       <div className={FilterBarCss.filters}>
-        {initialState?.currentUser?.is_admin && (
+        {/* {initialState?.currentUser?.is_admin && (
           <BaseSelect
             options={scopeOptions}
             value={scope}
             onChange={onScopeChange}
             style={{ width: 150 }}
           />
-        )}
+        )} */}
         <DatePicker.RangePicker
           maxDate={dayjs()}
           defaultValue={[
@@ -143,19 +141,20 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
           value={selectedModels}
           onChange={onModelsChange}
         />
-        <SimpleSelect
-          allowClear
-          showSearch
-          mode="multiple"
-          options={userOptions}
-          maxTagCount={0}
-          placeholder="User"
-          styles={{
-            wrapper: { flex: 1, maxWidth: 240, minWidth: 150 }
-          }}
-          value={selectedUsers}
-          onChange={onUsersChange}
-        />
+        {initialState?.currentUser?.is_admin && (
+          <SimpleSelect
+            allowClear
+            showSearch
+            mode="multiple"
+            options={userOptions}
+            placeholder="User"
+            styles={{
+              wrapper: { flex: 1, maxWidth: 240, minWidth: 150 }
+            }}
+            value={selectedUsers}
+            onChange={onUsersChange}
+          />
+        )}
         <SimpleSelect
           allowClear
           showSearch

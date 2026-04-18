@@ -54,7 +54,13 @@ const SimpleSelect: React.FC<
   }
 > = forwardRef((props, ref) => {
   const intl = useIntl();
-  const { options = [], showTags, styles = {}, ...restProps } = props;
+  const {
+    options = [],
+    showTags: tagsVisible,
+    styles = {},
+    maxTagCount: tagCount,
+    ...restProps
+  } = props;
 
   const [allSelection, setAllSelection] = React.useState<{
     checked: boolean;
@@ -66,6 +72,10 @@ const SimpleSelect: React.FC<
   const [optionsList, setOptionsList] = React.useState<any[]>(options || []);
   const selectRef = React.useRef<any>(null);
   const selectorRef = React.useRef<any>(null);
+
+  const showTags = Array.isArray(props.value) && props.value.length === 1;
+  const maxTagCount =
+    Array.isArray(props.value) && props.value.length === 1 ? 1 : 0;
 
   useEffect(() => {
     setOptionsList(options || []);
@@ -268,8 +278,9 @@ const SimpleSelect: React.FC<
           ...styles.select
         }}
         ref={selectorRef}
+        maxTagTextLength={restProps.maxTagTextLength ?? 15}
         options={optionsList}
-        maxTagCount={restProps.maxTagCount || 0}
+        maxTagCount={maxTagCount}
         defaultActiveFirstOption={false}
         popupRender={dropdownRender}
         optionRender={optionRender}

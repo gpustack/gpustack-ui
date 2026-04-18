@@ -13,7 +13,8 @@ import useQueryBreakdownList from '../services/use-query-breakdown-list';
 const Users: React.FC<{
   users: FilterOptionType[];
   dateRange: { start_date: string; end_date: string };
-}> = ({ users, dateRange }) => {
+  scope: string;
+}> = ({ users, dateRange, scope }) => {
   const intl = useIntl();
 
   const { loading, dataSource, fetchData } = useQueryBreakdownList({
@@ -54,16 +55,18 @@ const Users: React.FC<{
   };
 
   useEffect(() => {
-    fetchData({
-      ...queryParams,
-      group_by: 'user',
-      filters: {
-        users: users || []
-      },
-      scope: 'all',
-      ...dateRange
-    });
-  }, [dateRange, users, queryParams]);
+    if (scope === 'all') {
+      fetchData({
+        ...queryParams,
+        group_by: 'user',
+        filters: {
+          users: users || []
+        },
+        scope: scope,
+        ...dateRange
+      });
+    }
+  }, [dateRange, users, queryParams, scope]);
 
   return (
     <>

@@ -1,3 +1,5 @@
+import { UsageFilterItem } from './types';
+
 export const groupByOptions = [
   {
     value: '',
@@ -106,3 +108,63 @@ export const generateColumns = (data: SourceItem[]) => {
     }))
   ];
 };
+
+interface DataItem {
+  identity: {
+    value: {
+      provider_name: string | null;
+      provider_type: string | null;
+      model_name: string;
+    };
+  };
+  label: string;
+}
+
+interface GroupedOption {
+  value: string;
+  label: string;
+  providerType: string;
+  children: {
+    label: string;
+    value: string;
+    identity: UsageFilterItem['identity'];
+  }[];
+}
+
+export interface GroupOption<TChild> {
+  value: string | number | null;
+  label: string;
+  type: string;
+  isParent: boolean;
+  children: (TChild & { value: string })[];
+}
+
+export function groupToOptions<T, TChild>(
+  data: T[],
+  options: {
+    getGroupKey: (item: T) => string;
+    getGroupType: (item: T) => string;
+    getChild: (item: T) => TChild;
+  }
+): GroupOption<TChild>[] {
+  const groupedMap = new Map<string, GroupOption<TChild>>();
+
+  data.forEach((item) => {
+    const groupKey = options.getGroupKey(item);
+    const groupType = options.getGroupType(item);
+
+    if (!groupedMap.has(groupKey)) {
+      groupedMap.set(groupKey, {
+        value: groupKey,
+        label: groupKey,
+        type: groupType,
+        isParent: true,
+        children: []
+      });
+    }
+
+    groupedMap.get(groupKey)!.children.push(options.getChild(item));
+  });
+
+  return Array.from(groupedMap.values());
+}

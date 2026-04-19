@@ -1,11 +1,13 @@
 import { Tabs } from 'antd';
 import React from 'react';
+import { GroupOption } from '../config';
 import { UsageFilterItem } from '../config/types';
 import ApiKeysTable from '../tables/apikeys-table';
 import ModelsTable from '../tables/models-table';
 import UsersTable from '../tables/users-table';
 
 type FilterOptionType = Omit<UsageFilterItem, 'label' | 'deleted'>;
+type GroupOptionType = GroupOption<UsageFilterItem>;
 
 const BreakdownTabs: React.FC<{
   dateRange: {

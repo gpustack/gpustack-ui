@@ -1,12 +1,15 @@
 import { exportJsonToExcel } from '@/utils/excel-reader';
 import { useModel } from '@@/plugin-model';
 import dayjs from 'dayjs';
-import _ from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import BreakdownTabs from './components/breakdown-tabs';
 import DailyUsage from './components/daily-usage';
 import FilterBar from './components/filter-bar';
-import { generateColumns, transformTimelineToTable } from './config';
+import {
+  generateColumns,
+  GroupOption,
+  transformTimelineToTable
+} from './config';
 import { UsageFilterItem } from './config/types';
 import useExportTable from './hooks/use-export-table';
 import useQueryUsageMetaData from './services/use-query-meta-data';
@@ -17,6 +20,7 @@ const DefaultDateConfig = {
 };
 
 type FilterOptionType = Omit<UsageFilterItem, 'label' | 'deleted'>;
+type GroupOptionType = GroupOption<UsageFilterItem>;
 
 const Usage: React.FC = () => {
   const initialInfo = useModel('@@initialState');
@@ -99,9 +103,12 @@ const Usage: React.FC = () => {
     } = {};
 
     if (selected.models?.length > 0) {
+      const modelsSet = new Set(selected.models);
       // filter the options
       filters.models = modelOptions
-        .filter((item) => selected.models?.includes(item.value || ''))
+        .flatMap((group) =>
+          group.children.filter((item) => modelsSet.has(item.value))
+        )
         .map((item) => ({
           identity: item.identity
         }));
@@ -116,8 +123,11 @@ const Usage: React.FC = () => {
     }
 
     if (selected.api_keys?.length > 0) {
+      const apiKeysSet = new Set(selected.api_keys);
       filters.api_keys = apiKeyOptions
-        .filter((item) => selected.api_keys?.includes(item.value || ''))
+        .flatMap((group) =>
+          group.children.filter((item) => apiKeysSet.has(item.value))
+        )
         .map((item) => ({
           identity: item.identity
         }));
@@ -135,10 +145,6 @@ const Usage: React.FC = () => {
     currentSelectedFilters = commonFilters,
     currentChartFilters = chartFilters
   ) => {
-    const filteredChartFilters = _.pickBy(
-      currentChartFilters,
-      (value: string) => value
-    );
     fetchTimeSeriesData({
       ...currentChartFilters,
       start_date: currentSelectedFilters.start_date,
@@ -170,6 +176,7 @@ const Usage: React.FC = () => {
   };
 
   const handleFilterChange = (type: string, value: string[]) => {
+    console.log('handleFilterChange:', type, value);
     setCommonFilters((prev) => ({ ...prev, [type]: value }));
     fetchData({ ...commonFilters, [type]: value }, chartFilters);
   };

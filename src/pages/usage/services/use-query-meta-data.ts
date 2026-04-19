@@ -1,9 +1,10 @@
 import { useQueryData } from '@/hooks/use-query-data-list';
 import { useState } from 'react';
 import { queryUsageMetaData } from '../apis';
+import { GroupOption, groupToOptions } from '../config';
 import { UsageFilterItem, UsageMeta } from '../config/types';
 
-type OptionType = UsageFilterItem & {
+type UserOptionType = UsageFilterItem & {
   value: string;
 };
 
@@ -15,9 +16,9 @@ export default function useQueryUsageMetaData() {
     });
 
   const [result, setResult] = useState<{
-    models: OptionType[];
-    users: OptionType[];
-    api_keys: OptionType[];
+    models: GroupOption<UsageFilterItem>[];
+    users: UserOptionType[];
+    api_keys: GroupOption<UsageFilterItem>[];
   }>({
     models: [],
     users: [],
@@ -28,21 +29,31 @@ export default function useQueryUsageMetaData() {
     const res = await fetchData({});
 
     const data = {
-      models:
-        res?.filters?.models?.map((item) => ({
+      models: groupToOptions(res?.filters?.models || [], {
+        getGroupKey: (item) => item.identity.value.provider_name || 'gpustack',
+        getGroupType: (item) =>
+          item.identity.value.provider_type || 'deployments',
+        getChild: (item) => ({
+          ...item,
           value: item.label,
-          ...item
-        })) || [],
+          label: item.identity.value.model_name || ''
+        })
+      }),
       users:
         res?.filters?.users?.map((item) => ({
           value: item.label,
           ...item
         })) || [],
-      api_keys:
-        res?.filters?.api_keys?.map((item) => ({
+      api_keys: groupToOptions(res?.filters?.api_keys || [], {
+        getGroupKey: (item) => item.identity.value.user_name || 'unknown_user',
+        getGroupType: (item) =>
+          item.identity.value.api_key_is_custom ? 'custom' : 'default',
+        getChild: (item) => ({
+          ...item,
           value: item.label,
-          ...item
-        })) || []
+          label: item.identity.value.api_key_name || ''
+        })
+      })
     };
     setResult(data);
   };

@@ -1,14 +1,19 @@
+import AutoTooltip from '@/components/auto-tooltip';
+import SealCascader from '@/components/seal-form/seal-cascader';
 import SimpleSelect from '@/components/seal-form/simple-select';
 import useRangePickerPreset from '@/pages/dashboard/hooks/use-rangepicker-preset';
+import ProviderLogo from '@/pages/maas-provider/components/provider-logo';
 import { useModel } from '@@/plugin-model';
 import { DownloadOutlined, SyncOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, DatePicker, Dropdown, MenuProps } from 'antd';
 import dayjs from 'dayjs';
 import React from 'react';
+import { GroupOption } from '../config';
 import { UsageFilterItem } from '../config/types';
 import FilterBarCss from '../styles/filter-bar.less';
 
+type valueType = string | number | null;
 const DefaultDateConfig = {
   maxRange: 90,
   defaultRange: 29
@@ -23,9 +28,9 @@ interface FilterBarProps {
   selectedModels: string[];
   selectedUsers: string[];
   selectedApiKeys: string[];
-  modelOptions: OptionType[];
+  modelOptions: GroupOption<UsageFilterItem>[];
   userOptions: OptionType[];
-  apiKeyOptions: OptionType[];
+  apiKeyOptions: GroupOption<UsageFilterItem>[];
   onScopeChange: (value: string) => void;
   onDateChange: (dates: any, dateStrings: [string, string]) => void;
   onModelsChange: (value: string[]) => void;
@@ -88,6 +93,11 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
       }
     ]
   });
+  const [activeModels, setActiveModels] = React.useState<valueType[][]>([]);
+  const [activeApiKeys, setActiveApiKeys] = React.useState<valueType[][]>([]);
+  const [activeUserApiKeys, setActiveUserApiKeys] = React.useState<valueType[]>(
+    []
+  );
   const initialInfo = useModel('@@initialState');
   const { initialState } = initialInfo || {};
 
@@ -104,17 +114,79 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
     }
   ];
 
+  const handleOnModelsChange = (value: valueType[][], selectedOptions: any) => {
+    setActiveModels(value);
+    const selectedValues: string[] = value.map((item) => {
+      if (Array.isArray(item)) {
+        return item[item.length - 1] as string; // Get the last value in the array
+      }
+      return item as string;
+    });
+    onModelsChange(selectedValues);
+  };
+
+  const handleOnApiKeysChange = (
+    value: valueType[][],
+    selectedOptions: any
+  ) => {
+    setActiveApiKeys(value);
+    const selectedValues: string[] = value.map((item) => {
+      if (Array.isArray(item)) {
+        return item[item.length - 1] as string; // Get the last value in the array
+      }
+      return item as string;
+    });
+    onApiKeysChange(selectedValues);
+  };
+
+  const displayRender = (labels: any[], option: any) => {
+    return (
+      <AutoTooltip
+        ghost
+        maxWidth={150}
+        title={
+          <span>
+            {labels[0]} / {labels[1]}
+          </span>
+        }
+      >
+        {labels[0]} / {labels[1]}
+      </AutoTooltip>
+    );
+  };
+
+  const optionRender = (option: any) => {
+    const { data } = option;
+    console.log('optionRender', option);
+
+    if (!data.isParent) {
+      return <AutoTooltip ghost>{data.label}</AutoTooltip>;
+    }
+
+    if (data.type === 'deployments') {
+      return (
+        <span className={FilterBarCss.optionsWrapper}>
+          <ProviderLogo provider={data.type as string} />
+          <AutoTooltip ghost>
+            {intl.formatMessage({ id: 'menu.models.deployment' })}
+          </AutoTooltip>
+        </span>
+      );
+    }
+
+    return (
+      <span className={FilterBarCss.optionsWrapper}>
+        <ProviderLogo provider={data.type as string} />
+        <AutoTooltip ghost>
+          <span>{data.label}</span>
+        </AutoTooltip>
+      </span>
+    );
+  };
+
   return (
     <div className={FilterBarCss.wrapper}>
       <div className={FilterBarCss.filters}>
-        {/* {initialState?.currentUser?.is_admin && (
-          <BaseSelect
-            options={scopeOptions}
-            value={scope}
-            onChange={onScopeChange}
-            style={{ width: 150 }}
-          />
-        )} */}
         <DatePicker.RangePicker
           maxDate={dayjs()}
           defaultValue={[
@@ -128,46 +200,117 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
           value={[dayjs(startDate), dayjs(endDate)]}
           onChange={onDateChange}
         />
-        <SimpleSelect
-          allowClear
-          showSearch
-          mode="multiple"
-          options={modelOptions}
-          maxTagCount={0}
-          placeholder="Model"
-          styles={{
-            wrapper: { flex: 1, maxWidth: 300, minWidth: 150 }
+        <div
+          style={{
+            maxWidth: 400,
+            flex: 1,
+            minWidth: 200
           }}
-          value={selectedModels}
-          onChange={onModelsChange}
-        />
+        >
+          <SealCascader
+            showSearch
+            multiple={true}
+            classNames={{
+              popup: {
+                root: 'cascader-popup-wrapper gpu-selector'
+              }
+            }}
+            styles={{
+              root: {
+                width: '100%'
+              },
+              popup: {
+                list: {
+                  flex: 1
+                },
+                listItem: {
+                  padding: '5px 10px'
+                }
+              }
+            }}
+            maxTagCount={1}
+            size="small"
+            placeholder={intl.formatMessage({
+              id: 'dashboard.usage.selectmodel'
+            })}
+            options={modelOptions}
+            showCheckedStrategy="SHOW_CHILD"
+            displayRender={displayRender}
+            optionNode={optionRender}
+            value={activeModels}
+            onChange={handleOnModelsChange}
+            getPopupContainer={(triggerNode) => triggerNode.parentNode}
+          ></SealCascader>
+        </div>
         {initialState?.currentUser?.is_admin && (
+          <>
+            <SimpleSelect
+              allowClear
+              showSearch
+              mode="multiple"
+              options={userOptions}
+              placeholder="User"
+              styles={{
+                wrapper: { flex: 1, maxWidth: 240, minWidth: 150 }
+              }}
+              value={selectedUsers}
+              onChange={onUsersChange}
+            />
+            <div
+              style={{
+                maxWidth: 400,
+                flex: 1,
+                minWidth: 200
+              }}
+            >
+              <SealCascader
+                showSearch
+                multiple={true}
+                classNames={{
+                  popup: {
+                    root: 'cascader-popup-wrapper gpu-selector'
+                  }
+                }}
+                styles={{
+                  root: {
+                    width: '100%'
+                  },
+                  popup: {
+                    list: {
+                      flex: 1
+                    },
+                    listItem: {
+                      padding: '5px 10px'
+                    }
+                  }
+                }}
+                maxTagCount={1}
+                size="small"
+                placeholder="API Key"
+                options={apiKeyOptions}
+                showCheckedStrategy="SHOW_CHILD"
+                value={activeApiKeys}
+                onChange={handleOnApiKeysChange}
+                getPopupContainer={(triggerNode) => triggerNode.parentNode}
+              ></SealCascader>
+            </div>
+          </>
+        )}
+        {!initialState?.currentUser?.is_admin && (
           <SimpleSelect
             allowClear
             showSearch
             mode="multiple"
-            options={userOptions}
-            placeholder="User"
+            options={apiKeyOptions?.[0]?.children || []}
+            maxTagCount={0}
+            placeholder="API Key"
             styles={{
-              wrapper: { flex: 1, maxWidth: 240, minWidth: 150 }
+              wrapper: { flex: 1, maxWidth: 240, minWidth: 100 }
             }}
-            value={selectedUsers}
-            onChange={onUsersChange}
+            value={selectedApiKeys}
+            onChange={onApiKeysChange}
           />
         )}
-        <SimpleSelect
-          allowClear
-          showSearch
-          mode="multiple"
-          options={apiKeyOptions}
-          maxTagCount={0}
-          placeholder="API Key"
-          styles={{
-            wrapper: { flex: 1, maxWidth: 240, minWidth: 100 }
-          }}
-          value={selectedApiKeys}
-          onChange={onApiKeysChange}
-        />
         <Button
           type="text"
           style={{ color: 'var(--ant-color-text-tertiary)' }}

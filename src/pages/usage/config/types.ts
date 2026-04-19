@@ -7,6 +7,8 @@ export interface UsageFilterItem {
       api_key_name: string | null;
       access_key: string | null;
       api_key_is_custom: boolean | null;
+      provider_type: string | null;
+      provider_name: string | null;
     };
     current: {
       model_id: string | null;

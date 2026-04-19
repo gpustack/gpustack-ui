@@ -183,7 +183,7 @@ const DailyUsage: React.FC<DailyUsageProps> = (props) => {
           chartData={chartData}
           seriesData={[]}
           xAxisData={xAxisData}
-          height={360}
+          height={280}
           smooth={false}
           legendData={legendData}
           labelFormatter={labelFormatter}

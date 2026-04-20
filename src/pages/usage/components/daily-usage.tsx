@@ -1,10 +1,9 @@
 import CardWrapper from '@/components/card-wrapper';
-import { SimpleCard } from '@/components/card-wrapper/simple-card';
 import MixLineBar from '@/components/echarts/mix-line-bar';
 import BaseSelect from '@/components/seal-form/base/select';
 import { baseColorMap } from '@/pages/dashboard/config';
 import { formatLargeNumber } from '@/utils';
-import { Divider, Segmented } from 'antd';
+import { Segmented } from 'antd';
 import dayjs from 'dayjs';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
@@ -151,7 +150,7 @@ const DailyUsage: React.FC<DailyUsageProps> = (props) => {
         <ControlsWrapper>
           <div className="group">
             <BaseSelect
-              variant="outlined"
+              variant="borderless"
               prefix={<ControlLabel>Metric</ControlLabel>}
               options={metricOptions}
               value={metric}
@@ -160,7 +159,7 @@ const DailyUsage: React.FC<DailyUsageProps> = (props) => {
             />
 
             <BaseSelect
-              variant="outlined"
+              variant="borderless"
               prefix={<ControlLabel>Group by</ControlLabel>}
               options={groupByOptions}
               value={groupBy}
@@ -176,9 +175,9 @@ const DailyUsage: React.FC<DailyUsageProps> = (props) => {
             onChange={onGranularityChange}
           ></Segmented>
         </ControlsWrapper>
-        <Divider style={{ margin: 0 }} />
+        {/* <Divider style={{ margin: 0 }} /> */}
 
-        <SimpleCard dataList={summaryCards} height={80} />
+        {/* <SimpleCard dataList={summaryCards} height={80} /> */}
         <MixLineBar
           chartData={chartData}
           seriesData={[]}

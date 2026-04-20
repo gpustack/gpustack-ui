@@ -6,7 +6,7 @@ import ProviderLogo from '@/pages/maas-provider/components/provider-logo';
 import { useModel } from '@@/plugin-model';
 import { DownloadOutlined, SyncOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, DatePicker, Dropdown, MenuProps } from 'antd';
+import { Button, DatePicker, Dropdown, MenuProps, Segmented } from 'antd';
 import dayjs from 'dayjs';
 import React from 'react';
 import { GroupOption } from '../config';
@@ -22,6 +22,7 @@ type OptionType = UsageFilterItem & {
   value: string;
 };
 interface FilterBarProps {
+  pageType?: 'page' | 'modal';
   scope: string;
   startDate: string;
   endDate: string;
@@ -38,22 +39,20 @@ interface FilterBarProps {
   onApiKeysChange: (value: string[]) => void;
   onExport?: () => void;
   handleSearch?: () => void;
-  onExportChart: () => void;
-  onExportTable: () => void;
+  onExportChart?: () => void;
+  onExportTable?: () => void;
 }
 
 const FilterBar: React.FC<FilterBarProps> = (props) => {
   const {
-    scope,
+    pageType = 'page',
     startDate,
     endDate,
-    selectedModels,
     selectedUsers,
     selectedApiKeys,
     modelOptions,
     userOptions,
     apiKeyOptions,
-    onScopeChange,
     onDateChange,
     onModelsChange,
     onUsersChange,
@@ -63,41 +62,40 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
     handleSearch
   } = props;
   const intl = useIntl();
-  const { disabledRangeDaysDate, rangePresets } = useRangePickerPreset({
-    range: DefaultDateConfig.maxRange,
-    disabledDate: true,
-    presetRanges: [
-      {
-        label: intl.formatMessage({
-          id: 'dashboard.usage.datePicker.last7days'
-        }),
-        value: [dayjs().add(-6, 'd'), dayjs()]
-      },
-      {
-        label: intl.formatMessage({
-          id: 'dashboard.usage.datePicker.last30days'
-        }),
-        value: [dayjs().add(-29, 'd'), dayjs()]
-      },
-      {
-        label: intl.formatMessage({
-          id: 'dashboard.usage.datePicker.last60days'
-        }),
-        value: [dayjs().add(-59, 'd'), dayjs()]
-      },
-      {
-        label: intl.formatMessage({
-          id: 'dashboard.usage.datePicker.last90days'
-        }),
-        value: [dayjs().add(-89, 'd'), dayjs()]
-      }
-    ]
-  });
+  const { disabledRangeDaysDate, rangePresets, picker, handleOnPickerChange } =
+    useRangePickerPreset({
+      range: DefaultDateConfig.maxRange,
+      disabledDate: true,
+      presetRanges: [
+        {
+          label: intl.formatMessage({
+            id: 'dashboard.usage.datePicker.last7days'
+          }),
+          value: [dayjs().add(-6, 'd'), dayjs()]
+        },
+        {
+          label: intl.formatMessage({
+            id: 'dashboard.usage.datePicker.last30days'
+          }),
+          value: [dayjs().add(-29, 'd'), dayjs()]
+        },
+        {
+          label: intl.formatMessage({
+            id: 'dashboard.usage.datePicker.last60days'
+          }),
+          value: [dayjs().add(-59, 'd'), dayjs()]
+        },
+        {
+          label: intl.formatMessage({
+            id: 'dashboard.usage.datePicker.last90days'
+          }),
+          value: [dayjs().add(-89, 'd'), dayjs()]
+        }
+      ]
+    });
   const [activeModels, setActiveModels] = React.useState<valueType[][]>([]);
   const [activeApiKeys, setActiveApiKeys] = React.useState<valueType[][]>([]);
-  const [activeUserApiKeys, setActiveUserApiKeys] = React.useState<valueType[]>(
-    []
-  );
+
   const initialInfo = useModel('@@initialState');
   const { initialState } = initialInfo || {};
 
@@ -184,6 +182,46 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
     );
   };
 
+  const renderFooter = () => {
+    return (
+      <Segmented
+        size="middle"
+        shape="round"
+        value={picker}
+        styles={{
+          root: {
+            width: '100%',
+            display: 'flex',
+            marginBlock: 8
+          },
+          item: {
+            flex: 1
+          },
+          label: {
+            display: 'flex',
+            justifyContent: 'center',
+            flex: 1
+          }
+        }}
+        onChange={handleOnPickerChange}
+        options={[
+          {
+            label: 'Day',
+            value: 'date'
+          },
+          {
+            label: 'Week',
+            value: 'week'
+          },
+          {
+            label: 'Month',
+            value: 'month'
+          }
+        ]}
+      ></Segmented>
+    );
+  };
+
   return (
     <div className={FilterBarCss.wrapper}>
       <div className={FilterBarCss.filters}>
@@ -193,12 +231,14 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
             dayjs().add(-DefaultDateConfig.defaultRange, 'd'),
             dayjs()
           ]}
+          picker={picker}
           disabledDate={disabledRangeDaysDate}
           presets={rangePresets}
           allowClear={false}
           style={{ width: 240 }}
           value={[dayjs(startDate), dayjs(endDate)]}
           onChange={onDateChange}
+          renderExtraFooter={renderFooter}
         />
         <div
           style={{
@@ -318,9 +358,11 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
           icon={<SyncOutlined></SyncOutlined>}
         ></Button>
       </div>
-      <Dropdown menu={{ items: exportMenuItems }}>
-        <Button icon={<DownloadOutlined />} />
-      </Dropdown>
+      {pageType === 'page' && (
+        <Dropdown menu={{ items: exportMenuItems }}>
+          <Button icon={<DownloadOutlined />} />
+        </Dropdown>
+      )}
     </div>
   );
 };

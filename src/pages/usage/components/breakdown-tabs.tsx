@@ -28,6 +28,7 @@ const BreakdownTabs: React.FC<{
       forceRender: true,
       children: (
         <ModelsTable
+          key="models"
           models={filters.models || []}
           dateRange={dateRange}
           scope={scope}
@@ -40,6 +41,7 @@ const BreakdownTabs: React.FC<{
       forceRender: true,
       children: (
         <UsersTable
+          key="users"
           users={filters.users || []}
           dateRange={dateRange}
           scope={scope}
@@ -52,6 +54,7 @@ const BreakdownTabs: React.FC<{
       forceRender: true,
       children: (
         <ApiKeysTable
+          key="api_keys"
           apiKeys={filters.api_keys || []}
           dateRange={dateRange}
           scope={scope}

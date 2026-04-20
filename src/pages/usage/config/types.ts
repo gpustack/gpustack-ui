@@ -12,7 +12,7 @@ export interface UsageFilterItem {
     };
     current: {
       model_id: string | null;
-      user_id: string | null;
+      user_id: number | null;
       api_key_id: string | null;
     };
   };

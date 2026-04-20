@@ -47,6 +47,7 @@ const SimpleSelect: React.FC<
   SelectProps & {
     ref?: any;
     showTags?: boolean;
+    optionLabelRender?: (option: any) => React.ReactNode;
     styles?: {
       wrapper?: React.CSSProperties;
       select?: React.CSSProperties;
@@ -58,6 +59,7 @@ const SimpleSelect: React.FC<
     options = [],
     showTags: tagsVisible,
     styles = {},
+    optionLabelRender,
     maxTagCount: tagCount,
     ...restProps
   } = props;
@@ -90,7 +92,9 @@ const SimpleSelect: React.FC<
         ) : (
           <Checkbox></Checkbox>
         )}
-        <AutoTooltip ghost>{label}</AutoTooltip>
+        <AutoTooltip ghost>
+          {optionLabelRender ? optionLabelRender(option) : label}
+        </AutoTooltip>
       </OptionWrapper>
     );
   };

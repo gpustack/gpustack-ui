@@ -18,6 +18,11 @@ export default function useRangePickerPreset(options?: RangePickerPreset): {
     label: React.ReactNode;
     value: [Dayjs, Dayjs] | (() => [Dayjs, Dayjs]);
   }[];
+  normalizeRangeValue: (
+    startDate: string,
+    endDate: string,
+    picker: 'date' | 'week' | 'month' | 'quarter' | 'year'
+  ) => [Dayjs, Dayjs];
   handleOnPickerChange: (
     value: 'date' | 'week' | 'month' | 'quarter' | 'year'
   ) => void;
@@ -28,22 +33,76 @@ export default function useRangePickerPreset(options?: RangePickerPreset): {
   const intl = useIntl();
   const [picker, setPicker] = useState<
     'date' | 'week' | 'month' | 'quarter' | 'year'
-  >('month');
+  >('date');
 
   const getYearMonth = (date: Dayjs) => date.year() * 12 + date.month();
+
+  const normalizeRangeValue = (
+    startDate: string,
+    endDate: string,
+    picker: 'date' | 'week' | 'month' | 'quarter' | 'year'
+  ): [Dayjs, Dayjs] => {
+    const start = dayjs(startDate);
+    const end = dayjs(endDate);
+
+    switch (picker) {
+      case 'week':
+        return [start.startOf('week'), end.endOf('week')];
+
+      case 'month':
+        return [start.startOf('month'), end.endOf('month')];
+
+      case 'year':
+        return [start.startOf('year'), end.endOf('year')];
+
+      default:
+        return [start, end];
+    }
+  };
+
+  const getRangeBoundary = (
+    from: Dayjs,
+    range: number,
+    type: 'date' | 'week' | 'month' | 'quarter' | 'year'
+  ) => {
+    switch (type) {
+      case 'year':
+        return {
+          minDate: from.add(1 - range, 'year'),
+          maxDate: from.add(range - 1, 'year')
+        };
+
+      case 'month':
+        return {
+          minDate: from.add(1 - range, 'month'),
+          maxDate: from.add(range - 1, 'month')
+        };
+
+      case 'week':
+        return {
+          minDate: from.add(1 - range, 'week'),
+          maxDate: from.add(range - 1, 'week')
+        };
+
+      default:
+        return {
+          minDate: from.add(1 - range, 'day'),
+          maxDate: from.add(range - 1, 'day')
+        };
+    }
+  };
 
   const disabledRangeDaysDate: DatePickerProps['disabledDate'] = (
     current,
     { from, type }
   ) => {
-    if (!disabledDate) {
+    if (!disabledDate || !from) {
       return false;
     }
 
-    if (from) {
-      const minDate = from.add(1 - range, 'days');
-      const maxDate = from.add(range - 1, 'days');
+    const { minDate, maxDate } = getRangeBoundary(from, range, type as any);
 
+    if (from) {
       switch (type) {
         case 'year':
           return (
@@ -55,6 +114,16 @@ export default function useRangePickerPreset(options?: RangePickerPreset): {
             getYearMonth(current) < getYearMonth(minDate) ||
             getYearMonth(current) > getYearMonth(maxDate)
           );
+
+        case 'week': {
+          const currentWeekStart = current.startOf('week');
+          const currentWeekEnd = current.endOf('week');
+
+          return (
+            currentWeekEnd.isBefore(minDate, 'day') ||
+            currentWeekStart.isAfter(maxDate, 'day')
+          );
+        }
 
         default:
           return current.isBefore(minDate) || current.isAfter(maxDate);
@@ -94,6 +163,7 @@ export default function useRangePickerPreset(options?: RangePickerPreset): {
   return {
     disabledRangeDaysDate,
     handleOnPickerChange,
+    normalizeRangeValue,
     rangePresets,
     picker,
     range

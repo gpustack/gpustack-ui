@@ -62,37 +62,42 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
     handleSearch
   } = props;
   const intl = useIntl();
-  const { disabledRangeDaysDate, rangePresets, picker, handleOnPickerChange } =
-    useRangePickerPreset({
-      range: DefaultDateConfig.maxRange,
-      disabledDate: true,
-      presetRanges: [
-        {
-          label: intl.formatMessage({
-            id: 'dashboard.usage.datePicker.last7days'
-          }),
-          value: [dayjs().add(-6, 'd'), dayjs()]
-        },
-        {
-          label: intl.formatMessage({
-            id: 'dashboard.usage.datePicker.last30days'
-          }),
-          value: [dayjs().add(-29, 'd'), dayjs()]
-        },
-        {
-          label: intl.formatMessage({
-            id: 'dashboard.usage.datePicker.last60days'
-          }),
-          value: [dayjs().add(-59, 'd'), dayjs()]
-        },
-        {
-          label: intl.formatMessage({
-            id: 'dashboard.usage.datePicker.last90days'
-          }),
-          value: [dayjs().add(-89, 'd'), dayjs()]
-        }
-      ]
-    });
+  const {
+    disabledRangeDaysDate,
+    rangePresets,
+    picker,
+    normalizeRangeValue,
+    handleOnPickerChange
+  } = useRangePickerPreset({
+    range: DefaultDateConfig.maxRange,
+    disabledDate: true,
+    presetRanges: [
+      {
+        label: intl.formatMessage({
+          id: 'dashboard.usage.datePicker.last7days'
+        }),
+        value: [dayjs().add(-6, 'd'), dayjs()]
+      },
+      {
+        label: intl.formatMessage({
+          id: 'dashboard.usage.datePicker.last30days'
+        }),
+        value: [dayjs().add(-29, 'd'), dayjs()]
+      },
+      {
+        label: intl.formatMessage({
+          id: 'dashboard.usage.datePicker.last60days'
+        }),
+        value: [dayjs().add(-59, 'd'), dayjs()]
+      },
+      {
+        label: intl.formatMessage({
+          id: 'dashboard.usage.datePicker.last90days'
+        }),
+        value: [dayjs().add(-89, 'd'), dayjs()]
+      }
+    ]
+  });
   const [activeModels, setActiveModels] = React.useState<valueType[][]>([]);
   const [activeApiKeys, setActiveApiKeys] = React.useState<valueType[][]>([]);
 
@@ -222,6 +227,16 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
     );
   };
 
+  const userOptionRender = (option: any) => {
+    const { data } = option;
+    return (
+      <span className="flex-center gap-8">
+        <span>{data.label}</span>
+        {data.isCurrent && <span className="text-tertiary"> [Current]</span>}
+      </span>
+    );
+  };
+
   return (
     <div className={FilterBarCss.wrapper}>
       <div className={FilterBarCss.filters}>
@@ -231,12 +246,12 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
             dayjs().add(-DefaultDateConfig.defaultRange, 'd'),
             dayjs()
           ]}
+          format={'YYYY-MM-DD'}
           picker={picker}
           disabledDate={disabledRangeDaysDate}
           presets={rangePresets}
           allowClear={false}
           style={{ width: 240 }}
-          value={[dayjs(startDate), dayjs(endDate)]}
           onChange={onDateChange}
           renderExtraFooter={renderFooter}
         />
@@ -294,6 +309,7 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
                 wrapper: { flex: 1, maxWidth: 240, minWidth: 150 }
               }}
               value={selectedUsers}
+              optionLabelRender={userOptionRender}
               onChange={onUsersChange}
             />
             <div

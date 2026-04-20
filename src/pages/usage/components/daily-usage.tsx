@@ -25,8 +25,6 @@ const ControlsWrapper = styled.div`
 const ControlLabel = styled.span`
   font-size: 14px;
   color: var(--ant-color-text-tertiary);
-  border-right: 1px solid var(--ant-color-split);
-  padding-right: 8px;
   margin-right: 8px;
 `;
 
@@ -154,8 +152,9 @@ const DailyUsage: React.FC<DailyUsageProps> = (props) => {
               prefix={<ControlLabel>Metric</ControlLabel>}
               options={metricOptions}
               value={metric}
+              popupMatchSelectWidth={false}
               onChange={onMetricChange}
-              style={{ width: 200 }}
+              style={{ width: 180 }}
             />
 
             <BaseSelect
@@ -163,19 +162,17 @@ const DailyUsage: React.FC<DailyUsageProps> = (props) => {
               prefix={<ControlLabel>Group by</ControlLabel>}
               options={groupByOptions}
               value={groupBy}
+              popupMatchSelectWidth={false}
               onChange={onGroupByChange}
-              style={{ width: 200 }}
             />
           </div>
           <Segmented
-            size="middle"
-            shape="round"
+            size="small"
             options={granularities}
             value={granularity}
             onChange={onGranularityChange}
           ></Segmented>
         </ControlsWrapper>
-        {/* <Divider style={{ margin: 0 }} /> */}
 
         {/* <SimpleCard dataList={summaryCards} height={80} /> */}
         <MixLineBar

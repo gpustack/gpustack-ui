@@ -129,6 +129,7 @@ export const useUsageFilters = ({
   };
 
   const handleDateChange = (_: any, dateStrings: [string, string]) => {
+    console.log('Selected Time: ', dateStrings);
     const [start_date, end_date] = dateStrings;
     const next = { ...commonFilters, start_date, end_date };
     setCommonFilters(next);

@@ -267,7 +267,8 @@ export default {
   'models.table.modelView': '模型列表',
   'models.table.instanceView': '实例列表',
   'models.table.category': '类别',
-  'models.instance.firstStart': '首次部署',
-  'models.instance.lastStart': '最近启动',
-  'models.instance.startHistory': '启动记录'
+  'models.instance.currentRun': '当前运行',
+  'models.instance.previousRun': '上一次运行',
+  'models.instance.startHistory': '运行记录',
+  'models.instance.startHistory.tips': '显示当前重启之前那次运行的日志。'
 };

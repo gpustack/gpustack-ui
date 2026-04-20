@@ -1,31 +1,21 @@
-import { exportJsonToExcel } from '@/utils/excel-reader';
+import { SimpleCard } from '@/components/card-wrapper/simple-card';
+import { baseColorMap } from '@/pages/dashboard/config';
+import { formatLargeNumber } from '@/utils';
 import { useModel } from '@@/plugin-model';
-import dayjs from 'dayjs';
 import React, { useEffect, useMemo, useState } from 'react';
 import BreakdownTabs from './components/breakdown-tabs';
 import DailyUsage from './components/daily-usage';
+import ExportData from './components/export-data';
 import FilterBar from './components/filter-bar';
-import {
-  generateColumns,
-  GroupOption,
-  transformTimelineToTable
-} from './config';
-import { UsageFilterItem } from './config/types';
 import useExportTable from './hooks/use-export-table';
+import { useUsageFilters } from './hooks/use-usage-filters';
 import useQueryUsageMetaData from './services/use-query-meta-data';
-import useQueryTimeSeriesData from './services/use-query-timeseries-data';
-
-const DefaultDateConfig = {
-  defaultRange: 29
-};
-
-type FilterOptionType = Omit<UsageFilterItem, 'label' | 'deleted'>;
-type GroupOptionType = GroupOption<UsageFilterItem>;
 
 const Usage: React.FC = () => {
   const initialInfo = useModel('@@initialState');
   const { initialState } = initialInfo || {};
   const { exportTable } = useExportTable();
+  const [openExportModal, setOpenExportModal] = useState(false);
 
   const summaryColumns = [
     {
@@ -64,195 +54,98 @@ const Usage: React.FC = () => {
     group_by: 'model',
     granularity: 'day'
   });
-  const [commonFilters, setCommonFilters] = useState<{
-    models: string[];
-    users: string[];
-    api_keys: string[];
-    start_date: string;
-    end_date: string;
-    scope: string;
-  }>({
-    scope: initialState?.currentUser?.is_admin ? 'all' : 'self',
-    models: [],
-    users: [],
-    api_keys: [],
-    start_date: dayjs()
-      .subtract(DefaultDateConfig.defaultRange, 'days')
-      .format('YYYY-MM-DD'),
-    end_date: dayjs().format('YYYY-MM-DD')
-  });
 
   const { detailData: metaData, fetchData: fetchMetaData } =
     useQueryUsageMetaData();
-  const { detailData: timeSeriesData, fetchData: fetchTimeSeriesData } =
-    useQueryTimeSeriesData();
 
-  const modelOptions = metaData?.models || [];
-  const userOptions = metaData?.users || [];
-  const apiKeyOptions = metaData?.api_keys || [];
-
-  const buildFilters = (selected: {
-    models: string[];
-    users: string[];
-    api_keys: string[];
-  }) => {
-    const filters: {
-      models?: FilterOptionType[];
-      users?: FilterOptionType[];
-      api_keys?: FilterOptionType[];
-    } = {};
-
-    if (selected.models?.length > 0) {
-      const modelsSet = new Set(selected.models);
-      // filter the options
-      filters.models = modelOptions
-        .flatMap((group) =>
-          group.children.filter((item) => modelsSet.has(item.value))
-        )
-        .map((item) => ({
-          identity: item.identity
-        }));
-    }
-
-    if (selected.users?.length > 0) {
-      filters.users = userOptions
-        .filter((item) => selected.users?.includes(item.value || ''))
-        .map((item) => ({
-          identity: item.identity
-        }));
-    }
-
-    if (selected.api_keys?.length > 0) {
-      const apiKeysSet = new Set(selected.api_keys);
-      filters.api_keys = apiKeyOptions
-        .flatMap((group) =>
-          group.children.filter((item) => apiKeysSet.has(item.value))
-        )
-        .map((item) => ({
-          identity: item.identity
-        }));
-    }
-
-    return filters;
-  };
-
-  const filters = useMemo(
-    () => buildFilters(commonFilters),
-    [commonFilters, modelOptions, userOptions, apiKeyOptions]
-  );
-
-  const fetchData = (
-    currentSelectedFilters = commonFilters,
-    currentChartFilters = chartFilters
-  ) => {
-    fetchTimeSeriesData({
-      ...currentChartFilters,
-      start_date: currentSelectedFilters.start_date,
-      end_date: currentSelectedFilters.end_date,
-      filters: buildFilters(currentSelectedFilters)
+  const { filters, commonFilters, fetchData, timeSeriesData, filterBar } =
+    useUsageFilters({
+      initialScope: initialState?.currentUser?.is_admin ? 'all' : 'self',
+      metaData,
+      chartFilters,
+      summaryColumns
     });
-  };
 
   useEffect(() => {
     fetchMetaData();
     fetchData(commonFilters, chartFilters);
   }, []);
 
-  const handleScopeChange = (value: string) => {
-    setCommonFilters((prev) => ({ ...prev, scope: value }));
-    fetchData(
-      {
-        ...commonFilters,
-        scope: value
-      },
-      chartFilters
-    );
-  };
-
-  const handleDateChange = (_dates: any, dateStrings: [string, string]) => {
-    const [start_date, end_date] = dateStrings;
-    setCommonFilters((prev) => ({ ...prev, start_date, end_date }));
-    fetchData({ ...commonFilters, start_date, end_date }, chartFilters);
-  };
-
-  const handleFilterChange = (type: string, value: string[]) => {
-    console.log('handleFilterChange:', type, value);
-    setCommonFilters((prev) => ({ ...prev, [type]: value }));
-    fetchData({ ...commonFilters, [type]: value }, chartFilters);
-  };
-
   const handleChartFilterChange = (type: string, value: string) => {
     setChartFilters((prev) => ({ ...prev, [type]: value }));
     fetchData(commonFilters, { ...chartFilters, [type]: value });
   };
 
-  const handleSearch = () => {
-    fetchData(commonFilters, chartFilters);
-  };
+  const summaryCards = useMemo(() => {
+    const summary = timeSeriesData?.summary || {
+      input_tokens: 0,
+      output_tokens: 0,
+      total_tokens: 0,
+      api_requests: 0,
+      models_called: 0
+    };
+    return [
+      {
+        label: formatLargeNumber(summary.input_tokens) as string,
+        value: 'Input tokens',
+        color: baseColorMap.baseR3
+        // iconType: 'roundRect'
+      },
+      {
+        label: formatLargeNumber(summary.output_tokens) as string,
+        value: 'Output tokens',
+        color: baseColorMap.base
+        // iconType: 'roundRect'
+      },
+      {
+        label: formatLargeNumber(summary.total_tokens) as string,
+        value: 'Total tokens',
+        color: baseColorMap.baseL1
+        // iconType: 'roundRect'
+      },
+      {
+        label: formatLargeNumber(summary.api_requests) as string,
+        value: 'API requests',
+        color: baseColorMap.baseR1
+        // iconType: 'circle'
+      },
+      {
+        label: summary.models_called.toString(),
+        value: 'Models used',
+        color: baseColorMap.baseR2
+        // iconType: 'roundRect'
+      }
+    ];
+  }, [timeSeriesData.summary]);
 
-  console.log('timeSeriesData:', timeSeriesData);
-
-  const handleOnExportChart = () => {
-    const columns = generateColumns(timeSeriesData.series);
-    const tableData = transformTimelineToTable(timeSeriesData.series);
-    exportJsonToExcel({
-      fileName: `${chartFilters.metric}_${chartFilters.group_by}_${chartFilters.granularity}_${commonFilters.start_date}_${commonFilters.end_date}.xlsx`,
-      sheets: [
-        {
-          jsonData: tableData || [],
-          sheetName: `${chartFilters.metric}`,
-          fields: columns
-            .map((col) => col.dataIndex)
-            .filter(Boolean) as string[],
-          fieldLabels: columns.reduce(
-            (map, col) => {
-              map[col.dataIndex] = col.title;
-              return map;
-            },
-            {} as Record<string, any>
-          ),
-          formatMap: {}
-        },
-        {
-          jsonData: [timeSeriesData.summary || {}],
-          sheetName: `summary`,
-          fields: summaryColumns
-            .map((col) => col.dataIndex)
-            .filter(Boolean) as string[],
-          fieldLabels: summaryColumns.reduce(
-            (map, col) => {
-              map[col.dataIndex] = col.title;
-              return map;
-            },
-            {} as Record<string, any>
-          ),
-          formatMap: {}
-        }
-      ]
-    });
+  const handleExportChart = () => {
+    setOpenExportModal(true);
   };
 
   return (
     <div>
       <FilterBar
-        scope={commonFilters.scope}
-        startDate={commonFilters.start_date}
-        endDate={commonFilters.end_date}
-        selectedModels={commonFilters.models || []}
-        selectedUsers={commonFilters.users || []}
-        selectedApiKeys={commonFilters.api_keys || []}
-        modelOptions={metaData?.models || []}
-        userOptions={metaData?.users || []}
-        apiKeyOptions={metaData?.api_keys || []}
-        handleSearch={handleSearch}
-        onScopeChange={handleScopeChange}
-        onDateChange={handleDateChange}
-        onModelsChange={(value) => handleFilterChange('models', value)}
-        onUsersChange={(value) => handleFilterChange('users', value)}
-        onApiKeysChange={(value) => handleFilterChange('api_keys', value)}
-        onExportChart={handleOnExportChart}
+        {...filterBar}
         onExportTable={exportTable}
+        onExportChart={handleExportChart}
       />
+      <div
+        style={{
+          marginBlock: 24
+        }}
+      >
+        <SimpleCard
+          dataList={summaryCards}
+          height={80}
+          styles={{
+            item: {
+              borderBottom: '1px solid var(--ant-color-split)',
+              backgroundColor: 'var(--ant-color-fill-quaternary)',
+              borderRadius: '6px 6px 0 0'
+            }
+          }}
+        />
+      </div>
       <DailyUsage
         timeSeriesData={timeSeriesData}
         metric={chartFilters.metric}
@@ -272,6 +165,12 @@ const Usage: React.FC = () => {
         }}
         scope={commonFilters.scope}
       ></BreakdownTabs>
+      <ExportData
+        metaData={metaData}
+        initialScope={commonFilters.scope}
+        open={openExportModal}
+        onCancel={() => setOpenExportModal(false)}
+      ></ExportData>
     </div>
   );
 };

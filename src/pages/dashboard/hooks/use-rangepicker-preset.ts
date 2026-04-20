@@ -1,6 +1,7 @@
 import { useIntl } from '@umijs/max';
 import { DatePickerProps } from 'antd';
 import dayjs, { type Dayjs } from 'dayjs';
+import { useState } from 'react';
 
 interface RangePickerPreset {
   range: number;
@@ -17,10 +18,17 @@ export default function useRangePickerPreset(options?: RangePickerPreset): {
     label: React.ReactNode;
     value: [Dayjs, Dayjs] | (() => [Dayjs, Dayjs]);
   }[];
+  handleOnPickerChange: (
+    value: 'date' | 'week' | 'month' | 'quarter' | 'year'
+  ) => void;
+  picker: 'date' | 'week' | 'month' | 'quarter' | 'year';
   range: number;
 } {
   const { range = 60, disabledDate, presetRanges } = options || {};
   const intl = useIntl();
+  const [picker, setPicker] = useState<
+    'date' | 'week' | 'month' | 'quarter' | 'year'
+  >('month');
 
   const getYearMonth = (date: Dayjs) => date.year() * 12 + date.month();
 
@@ -55,6 +63,12 @@ export default function useRangePickerPreset(options?: RangePickerPreset): {
     return false;
   };
 
+  const handleOnPickerChange = (
+    value: 'date' | 'week' | 'month' | 'quarter' | 'year'
+  ) => {
+    setPicker(value);
+  };
+
   const rangePresets: {
     label: React.ReactNode;
     value: [Dayjs, Dayjs] | (() => [Dayjs, Dayjs]);
@@ -79,7 +93,9 @@ export default function useRangePickerPreset(options?: RangePickerPreset): {
 
   return {
     disabledRangeDaysDate,
+    handleOnPickerChange,
     rangePresets,
+    picker,
     range
   };
 }

@@ -283,7 +283,9 @@ export default {
   'models.table.modelView': 'Model List',
   'models.table.instanceView': 'Instance List',
   'models.table.category': 'Category',
-  'models.instance.firstStart': 'First Deployment',
-  'models.instance.lastStart': 'Last Startup',
-  'models.instance.startHistory': 'Startup History'
+  'models.instance.currentRun': 'Current Run',
+  'models.instance.previousRun': 'Previous Run',
+  'models.instance.startHistory': 'Run History',
+  'models.instance.startHistory.tips':
+    'Logs from the previous run before the current restart.'
 };

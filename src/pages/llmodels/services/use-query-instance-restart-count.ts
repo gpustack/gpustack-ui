@@ -27,7 +27,8 @@ export default function useQueryModelInstanceRestartCount() {
           label: restart.restart_count,
           start_at: restart.started_at,
           worker_id: workerId,
-          isLast: index === 1
+          isCurrent: index === 0,
+          isPrevious: index === 1
         };
       }) || [];
     setDataList(dataList);

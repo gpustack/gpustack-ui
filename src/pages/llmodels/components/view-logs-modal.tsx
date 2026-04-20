@@ -2,9 +2,9 @@ import LogsViewer from '@/components/logs-viewer/virtual-log-list';
 import BaseSelect from '@/components/seal-form/base/select';
 import useSetChunkRequest from '@/hooks/use-chunk-request';
 import { formatOrdinal } from '@/utils';
-import { CloseOutlined } from '@ant-design/icons';
+import { CloseOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Modal } from 'antd';
+import { Button, Modal, Tooltip } from 'antd';
 import dayjs from 'dayjs';
 import React, { useCallback, useEffect, useState } from 'react';
 import { MODELS_API } from '../apis';
@@ -116,11 +116,11 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
   const optionRender = (option: any) => {
     const { data = {} } = option || {};
     let label = formatOrdinal(data.value);
-    if (data.value === 0) {
-      label = intl.formatMessage({ id: 'models.instance.firstStart' });
+    if (data.isCurrent) {
+      label = intl.formatMessage({ id: 'models.instance.currentRun' });
     }
-    if (data.isLast) {
-      label = intl.formatMessage({ id: 'models.instance.lastStart' });
+    if (data.isPrevious) {
+      label = intl.formatMessage({ id: 'models.instance.previousRun' });
     }
     return renderLabel(label, data.start_at);
   };
@@ -133,38 +133,58 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
 
   const renderTitle = () => {
     return (
-      <span className="flex-between flex-center gap-16">
+      <span className="flex-between flex-center gap-16" style={{ height: 40 }}>
         <span style={{ fontWeight: 'var(--font-weight-bold)' }}>
           {intl.formatMessage({ id: 'common.button.viewlog' })}
         </span>
         <span>
-          <BaseSelect
-            allowClear
-            value={record}
-            onChange={handleOnChange}
-            prefix={
-              <span
-                style={{
-                  fontWeight: 400,
-                  fontSize: 13,
-                  marginRight: 8,
-                  paddingRight: 8,
-                  color: 'var(--ant-color-text-secondary)',
-                  borderRight: '1px solid var(--ant-color-split)'
-                }}
-              >
-                {intl.formatMessage({ id: 'models.instance.startHistory' })} (
-                {countOptions.length})
-              </span>
-            }
-            options={countOptions}
-            labelRender={labelRender}
-            optionRender={optionRender}
-            style={{
-              width: 400,
-              marginRight: 16
-            }}
-          ></BaseSelect>
+          {countOptions.length > 1 && (
+            <BaseSelect
+              allowClear
+              value={record}
+              onChange={handleOnChange}
+              prefix={
+                <span
+                  style={{
+                    fontWeight: 400,
+                    fontSize: 13,
+                    display: 'flex',
+                    alignItems: 'center',
+                    marginRight: 8,
+                    paddingRight: 8,
+                    color: 'var(--ant-color-text-secondary)',
+                    borderRight: '1px solid var(--ant-color-split)'
+                  }}
+                >
+                  {intl.formatMessage({ id: 'models.instance.startHistory' })}
+                  <Tooltip
+                    title={
+                      <span>
+                        <span className="font-600 m-r-8">
+                          {intl.formatMessage({
+                            id: 'models.instance.previousRun'
+                          })}
+                          :
+                        </span>
+                        {intl.formatMessage({
+                          id: 'models.instance.startHistory.tips'
+                        })}
+                      </span>
+                    }
+                  >
+                    <QuestionCircleOutlined style={{ marginLeft: 4 }} />
+                  </Tooltip>
+                </span>
+              }
+              options={countOptions}
+              labelRender={labelRender}
+              optionRender={optionRender}
+              style={{
+                width: 400,
+                marginRight: 16
+              }}
+            ></BaseSelect>
+          )}
           <Button
             type="text"
             color="default"
@@ -185,10 +205,9 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
         handler: updateHandler
       });
       fetchData(props.id).then((list) => {
-        if (list.length === 1) {
-          setRecord(list[0].value);
-        } else if (list.length > 1) {
-          setRecord(list[1].value);
+        const lastItem = list?.[0];
+        if (lastItem) {
+          setRecord(lastItem.value);
         }
       });
     } else {

@@ -33,7 +33,7 @@ const useModelsColumns = (): Array<{
         )
       },
       {
-        title: 'Cluster',
+        title: intl.formatMessage({ id: 'usage.table.cluster' }),
         dataIndex: ['model', 'identity', 'value', 'cluster_name'],
         key: 'cluster_name',
         sorter: tableSorter(2),
@@ -42,7 +42,7 @@ const useModelsColumns = (): Array<{
         )
       },
       {
-        title: 'Provider',
+        title: intl.formatMessage({ id: 'usage.table.provider' }),
         dataIndex: 'provider_name',
         key: 'provider_name',
         render: (text: string, record: ListItem) => (
@@ -57,7 +57,7 @@ const useModelsColumns = (): Array<{
         )
       },
       {
-        title: 'Input Tokens',
+        title: intl.formatMessage({ id: 'usage.filter.inputTokens' }),
         dataIndex: 'input_tokens',
         key: 'input_tokens',
         render: (text: string[], record: ListItem) => (
@@ -65,7 +65,7 @@ const useModelsColumns = (): Array<{
         )
       },
       {
-        title: 'Output Tokens',
+        title: intl.formatMessage({ id: 'usage.filter.outputTokens' }),
         dataIndex: 'output_tokens',
         key: 'output_tokens',
         render: (text: string[], record: ListItem) => (
@@ -73,7 +73,7 @@ const useModelsColumns = (): Array<{
         )
       },
       {
-        title: 'Total Tokens',
+        title: intl.formatMessage({ id: 'usage.filter.totalTokens' }),
         dataIndex: 'total_tokens',
         key: 'total_tokens',
         sorter: tableSorter(3),
@@ -83,7 +83,7 @@ const useModelsColumns = (): Array<{
         render: (text: number) => <AutoTooltip ghost>{text}</AutoTooltip>
       },
       {
-        title: 'API Requests',
+        title: intl.formatMessage({ id: 'usage.filter.apiRequests' }),
         dataIndex: 'api_requests',
         key: 'api_requests',
         sorter: tableSorter(3),
@@ -93,7 +93,7 @@ const useModelsColumns = (): Array<{
         render: (text: number) => <AutoTooltip ghost>{text}</AutoTooltip>
       },
       {
-        title: 'Last Active',
+        title: intl.formatMessage({ id: 'usage.table.lastActive' }),
         dataIndex: 'last_active',
         key: 'last_active',
         sorter: tableSorter(3),

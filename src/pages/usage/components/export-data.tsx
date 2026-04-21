@@ -23,6 +23,14 @@ const ExportData: React.FC<{
     activeModels: ValueType[][];
     activeApiKeys: ValueType[][];
   };
+  commonFilters: {
+    scope: string;
+    start_date: string;
+    end_date: string;
+    models: string[];
+    users: string[];
+    api_keys: string[];
+  };
 
   handlePickerChange: (picker: DateType) => void;
 }> = (props) => {
@@ -53,6 +61,8 @@ const ExportData: React.FC<{
   } = useQueryBreakdownList({
     key: 'exportTableData'
   });
+
+  console.log('initialState========', initialState);
 
   const { filters, commonFilters, filterBar } = useUsageFilters({
     initialScope: initialScope,
@@ -102,7 +112,7 @@ const ExportData: React.FC<{
       }
     },
     {
-      title: 'Cluster',
+      title: intl.formatMessage({ id: 'usage.table.cluster' }),
       dataIndex: ['model', 'identity', 'value', 'cluster_name'],
       render: (text: string) => {
         return <AutoTooltip ghost>{text}</AutoTooltip>;
@@ -129,26 +139,26 @@ const ExportData: React.FC<{
       }
     },
     {
-      title: 'API Key',
+      title: intl.formatMessage({ id: 'usage.filter.group.apikey' }),
       dataIndex: ['api_key', 'label'],
       render: (text: string, record: any) => {
         return <AutoTooltip ghost>{text}</AutoTooltip>;
       }
     },
     {
-      title: 'Input Tokens',
+      title: intl.formatMessage({ id: 'usage.filter.inputTokens' }),
       dataIndex: 'input_tokens'
     },
     {
-      title: 'Output Tokens',
+      title: intl.formatMessage({ id: 'usage.filter.outputTokens' }),
       dataIndex: 'output_tokens'
     },
     {
-      title: 'Total Tokens',
+      title: intl.formatMessage({ id: 'usage.filter.totalTokens' }),
       dataIndex: 'total_tokens'
     },
     {
-      title: 'API Requests',
+      title: intl.formatMessage({ id: 'usage.filter.apiRequests' }),
       dataIndex: 'api_requests'
     }
   ];
@@ -183,13 +193,19 @@ const ExportData: React.FC<{
           fieldLabels: {
             date: intl.formatMessage({ id: 'dashboard.usage.export.date' }),
             user: intl.formatMessage({ id: 'dashboard.usage.export.user' }),
-            cluster: 'Cluster',
+            cluster: intl.formatMessage({ id: 'usage.table.cluster' }),
             model: intl.formatMessage({ id: 'dashboard.usage.export.model' }),
-            api_key: 'API Key',
-            input_tokens: 'Input Tokens',
-            output_tokens: 'Output Tokens',
-            total_tokens: 'Total Tokens',
-            api_requests: 'API Requests'
+            api_key: intl.formatMessage({ id: 'usage.table.provider' }),
+            input_tokens: intl.formatMessage({
+              id: 'usage.filter.inputTokens'
+            }),
+            output_tokens: intl.formatMessage({
+              id: 'usage.filter.outputTokens'
+            }),
+            total_tokens: intl.formatMessage({
+              id: 'usage.filter.totalTokens'
+            }),
+            api_requests: intl.formatMessage({ id: 'usage.filter.apiRequests' })
           },
           formatMap: {}
         }

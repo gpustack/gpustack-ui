@@ -2,6 +2,7 @@ import { SimpleCard } from '@/components/card-wrapper/simple-card';
 import { baseColorMap } from '@/pages/dashboard/config';
 import { formatLargeNumber } from '@/utils';
 import { useModel } from '@@/plugin-model';
+import { useIntl } from '@umijs/max';
 import React, { useEffect, useMemo, useState } from 'react';
 import BreakdownTabs from './components/breakdown-tabs';
 import DailyUsage from './components/daily-usage';
@@ -14,6 +15,7 @@ import useQueryUsageMetaData from './services/use-query-meta-data';
 type DateType = 'date' | 'week' | 'month' | 'quarter' | 'year';
 
 const Usage: React.FC = () => {
+  const intl = useIntl();
   const initialInfo = useModel('@@initialState');
   const { initialState } = initialInfo || {};
   const { exportTable } = useExportTable();
@@ -22,27 +24,27 @@ const Usage: React.FC = () => {
 
   const summaryColumns = [
     {
-      title: 'Input Tokens',
+      title: intl.formatMessage({ id: 'usage.filter.inputTokens' }),
       dataIndex: 'input_tokens',
       key: 'input_tokens'
     },
     {
-      title: 'Output Tokens',
+      title: intl.formatMessage({ id: 'usage.filter.outputTokens' }),
       dataIndex: 'output_tokens',
       key: 'output_tokens'
     },
     {
-      title: 'Total Tokens',
+      title: intl.formatMessage({ id: 'usage.filter.totalTokens' }),
       dataIndex: 'total_tokens',
       key: 'total_tokens'
     },
     {
-      title: 'API Requests',
+      title: intl.formatMessage({ id: 'usage.filter.apiRequests' }),
       dataIndex: 'api_requests',
       key: 'api_requests'
     },
     {
-      title: 'Models Used',
+      title: intl.formatMessage({ id: 'usage.filter.modelsUsed' }),
       dataIndex: 'models_called',
       key: 'models_called'
     }
@@ -90,31 +92,31 @@ const Usage: React.FC = () => {
     return [
       {
         label: formatLargeNumber(summary.input_tokens) as string,
-        value: 'Input tokens',
+        value: intl.formatMessage({ id: 'usage.filter.inputTokens' }),
         color: baseColorMap.baseR3
         // iconType: 'roundRect'
       },
       {
         label: formatLargeNumber(summary.output_tokens) as string,
-        value: 'Output tokens',
+        value: intl.formatMessage({ id: 'usage.filter.outputTokens' }),
         color: baseColorMap.base
         // iconType: 'roundRect'
       },
       {
         label: formatLargeNumber(summary.total_tokens) as string,
-        value: 'Total tokens',
+        value: intl.formatMessage({ id: 'usage.filter.totalTokens' }),
         color: baseColorMap.baseL1
         // iconType: 'roundRect'
       },
       {
         label: formatLargeNumber(summary.api_requests) as string,
-        value: 'API requests',
+        value: intl.formatMessage({ id: 'usage.filter.apiRequests' }),
         color: baseColorMap.baseR1
         // iconType: 'circle'
       },
       {
         label: summary.models_called.toString(),
-        value: 'Models used',
+        value: intl.formatMessage({ id: 'usage.filter.modelsUsed' }),
         color: baseColorMap.baseR2
         // iconType: 'roundRect'
       }
@@ -176,7 +178,9 @@ const Usage: React.FC = () => {
         groupBy={chartFilters.group_by}
         granularity={chartFilters.granularity}
         onMetricChange={(value) => handleChartFilterChange('metric', value)}
-        onGroupByChange={(value) => handleChartFilterChange('group_by', value)}
+        onGroupByChange={(value) =>
+          handleChartFilterChange('group_by', value as string)
+        }
         onGranularityChange={(value) =>
           handleChartFilterChange('granularity', value)
         }
@@ -191,7 +195,7 @@ const Usage: React.FC = () => {
         metaData={metaData}
         granularity={chartFilters.granularity}
         initialScope={commonFilters.scope}
-        initialCommonFilters={commonFilters}
+        commonFilters={commonFilters}
         open={openExportModal}
         handlePickerChange={handlePickerChange}
         onCancel={() => setOpenExportModal(false)}

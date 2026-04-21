@@ -184,6 +184,14 @@ export const useUsageFilters = ({
     }
   };
 
+  const handleActiveModelsChange = (value: ValueType[][]) => {
+    setActiveModels(value);
+  };
+
+  const handleActiveApiKeysChange = (value: ValueType[][]) => {
+    setActiveApiKeys(value);
+  };
+
   const handleFilterChange = (
     type: 'models' | 'users' | 'api_keys',
     value: string[]
@@ -248,6 +256,8 @@ export const useUsageFilters = ({
     activeApiKeys,
     activeModels,
     handleSearch,
+    handleActiveModelsChange,
+    handleActiveApiKeysChange,
     onScopeChange: handleScopeChange,
     onDateChange: handleDateChange,
     onModelsChange: (value: string[]) => handleFilterChange('models', value),

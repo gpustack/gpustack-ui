@@ -201,7 +201,10 @@ const Usage: React.FC = () => {
         onCancel={() => setOpenExportModal(false)}
         initialState={{
           activeModels: filterBar.activeModels,
-          activeApiKeys: filterBar.activeApiKeys
+          activeApiKeys: filterBar.activeApiKeys,
+          users: commonFilters.users,
+          start_date: commonFilters.start_date,
+          end_date: commonFilters.end_date
         }}
       ></ExportData>
     </div>

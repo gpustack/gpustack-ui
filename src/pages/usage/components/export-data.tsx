@@ -12,6 +12,10 @@ import FilterBar from './filter-bar';
 
 type DateType = 'date' | 'week' | 'month' | 'quarter' | 'year';
 type ValueType = string | number | null;
+const INITIAL_PAGE_PARAMS = {
+  page: 1,
+  perPage: 100
+};
 
 const ExportData: React.FC<{
   open: boolean;
@@ -22,6 +26,9 @@ const ExportData: React.FC<{
   initialState: {
     activeModels: ValueType[][];
     activeApiKeys: ValueType[][];
+    users: string[];
+    start_date: string;
+    end_date: string;
   };
   commonFilters: {
     scope: string;
@@ -48,10 +55,7 @@ const ExportData: React.FC<{
   const [pageParams, setPageParams] = React.useState<{
     page: number;
     perPage: number;
-  }>({
-    page: 1,
-    perPage: 100
-  });
+  }>(INITIAL_PAGE_PARAMS);
 
   const {
     fetchData: fetchExportData,
@@ -61,8 +65,6 @@ const ExportData: React.FC<{
   } = useQueryBreakdownList({
     key: 'exportTableData'
   });
-
-  console.log('initialState========', initialState);
 
   const { filters, commonFilters, filterBar } = useUsageFilters({
     initialScope: initialScope,
@@ -234,8 +236,9 @@ const ExportData: React.FC<{
 
   useEffect(() => {
     if (open) {
+      setPageParams(INITIAL_PAGE_PARAMS);
       fetchExportData({
-        ...pageParams,
+        ...INITIAL_PAGE_PARAMS,
         granularity,
         group_by: ['date', 'user', 'model', 'api_key'],
         filters,
@@ -247,8 +250,6 @@ const ExportData: React.FC<{
       cancelRequest();
     }
   }, [open]);
-
-  console.log('export dataSource', filterBar);
 
   return (
     <ScrollerModal
@@ -282,7 +283,7 @@ const ExportData: React.FC<{
       <Table
         columns={exportTableColumns}
         tableLayout={'auto'}
-        style={{ width: '100%', marginTop: '16px', minHeight: 300 }}
+        style={{ width: '100%', marginTop: '16px', minHeight: 400 }}
         dataSource={dataSource.dataList || []}
         rowKey={getBreakdownRowKey}
         loading={{

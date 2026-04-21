@@ -226,6 +226,11 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
     handlePickerChange(picker);
   };
 
+  const rangePickerValue: [dayjs.Dayjs, dayjs.Dayjs] =
+    startDate && endDate
+      ? normalizeRangeValue(startDate, endDate, picker)
+      : [dayjs().add(-DefaultDateConfig.defaultRange, 'd'), dayjs()];
+
   const renderFooter = () => {
     return (
       <Segmented
@@ -291,10 +296,7 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
       <div className={FilterBarCss.filters}>
         <DatePicker.RangePicker
           maxDate={dayjs()}
-          defaultValue={[
-            dayjs().add(-DefaultDateConfig.defaultRange, 'd'),
-            dayjs()
-          ]}
+          value={rangePickerValue}
           format={'YYYY-MM-DD'}
           picker={picker}
           disabledDate={disabledDate}

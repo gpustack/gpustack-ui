@@ -1,6 +1,6 @@
 import { exportJsonToExcel } from '@/utils/excel-reader';
 import dayjs from 'dayjs';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   generateColumns,
   GroupOption,
@@ -36,6 +36,9 @@ interface UseUsageFiltersParams {
   initialState?: {
     activeModels?: ValueType[][];
     activeApiKeys?: ValueType[][];
+    users?: string[];
+    start_date?: string;
+    end_date?: string;
   };
   summaryColumns: {
     title: string;
@@ -66,28 +69,43 @@ export const useUsageFilters = ({
   metaData,
   chartFilters,
   summaryColumns,
-  initialState: {
-    activeModels: initialActiveModels = [],
-    activeApiKeys: initialActiveApiKeys = []
-  } = {},
-
+  initialState,
   autoFetchOnFilterChange = true,
   onFetchData
 }: UseUsageFiltersParams) => {
+  const {
+    activeModels: initialActiveModels = [],
+    activeApiKeys: initialActiveApiKeys = [],
+    users: initialUsers = [],
+    start_date = '',
+    end_date = ''
+  } = initialState || {};
   const {
     detailData: timeSeriesData,
     loading,
     fetchData: fetchTimeSeriesData
   } = useQueryTimeSeriesData();
+
+  const extractSelectedValues = (value: ValueType[][] = []) =>
+    value.map((item) => {
+      if (Array.isArray(item)) {
+        return item[item.length - 1] as string;
+      }
+
+      return item as string;
+    });
+
   const [commonFilters, setCommonFilters] = useState({
     scope: initialScope,
-    models: [] as string[],
-    users: [] as string[],
-    api_keys: [] as string[],
-    start_date: dayjs()
-      .subtract(DefaultDateConfig.defaultRange, 'days')
-      .format('YYYY-MM-DD'),
-    end_date: dayjs().format('YYYY-MM-DD')
+    models: extractSelectedValues(initialActiveModels),
+    users: initialUsers || [],
+    api_keys: extractSelectedValues(initialActiveApiKeys),
+    start_date:
+      start_date ||
+      dayjs()
+        .subtract(DefaultDateConfig.defaultRange, 'days')
+        .format('YYYY-MM-DD'),
+    end_date: end_date || dayjs().format('YYYY-MM-DD')
   });
 
   const modelOptions = metaData?.models || [];
@@ -97,6 +115,36 @@ export const useUsageFilters = ({
     useState<ValueType[][]>(initialActiveModels);
   const [activeApiKeys, setActiveApiKeys] =
     useState<ValueType[][]>(initialActiveApiKeys);
+
+  useEffect(() => {
+    if (!initialState) {
+      return;
+    }
+
+    setActiveModels(initialActiveModels);
+    setActiveApiKeys(initialActiveApiKeys);
+    setCommonFilters((prev) => ({
+      ...prev,
+      scope: initialScope,
+      models: extractSelectedValues(initialActiveModels),
+      users: initialUsers || [],
+      api_keys: extractSelectedValues(initialActiveApiKeys),
+      start_date:
+        start_date ||
+        dayjs()
+          .subtract(DefaultDateConfig.defaultRange, 'days')
+          .format('YYYY-MM-DD'),
+      end_date: end_date || dayjs().format('YYYY-MM-DD')
+    }));
+  }, [
+    end_date,
+    initialActiveApiKeys,
+    initialActiveModels,
+    initialUsers,
+    initialScope,
+    initialState,
+    start_date
+  ]);
 
   const buildFilters = (selected: typeof commonFilters) => {
     const filters: {

@@ -27,5 +27,6 @@ export default {
   'usage.export.table': '导出表格数据',
   'usage.user.currentAccount': '当前账户',
   'usage.table.cluster': '集群',
-  'usage.table.provider': '提供商'
+  'usage.table.provider': '提供商',
+  'usage.table.deleted': '已删除'
 };

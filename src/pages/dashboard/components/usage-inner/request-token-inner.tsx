@@ -97,6 +97,8 @@ const RequestTokenInner: React.FC<RequestTokenInnerProps> = (props) => {
     }));
   }, [requestData, tokenData]);
 
+  console.log('xAxisData', xAxisData, tokenData);
+
   return (
     <CardWrapperBox>
       <CardWrapper style={{ width: '100%', position: 'relative' }}>

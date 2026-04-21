@@ -2,6 +2,7 @@
 import AutoTooltip from '@/components/auto-tooltip';
 import ProviderLogo from '@/pages/maas-provider/components/provider-logo';
 import { useIntl } from '@umijs/max';
+import { Tag } from 'antd';
 import { useMemo } from 'react';
 import { BreakdownItem as ListItem } from '../config/types';
 
@@ -24,9 +25,27 @@ const useModelsColumns = (): Array<{
         key: 'model_name',
         render: (text: string, record: ListItem) => (
           <span className="flex items-center">
-            <AutoTooltip ghost style={{ maxWidth: 400 }}>
+            <AutoTooltip
+              ghost
+              style={{ maxWidth: 400 }}
+              title={<span>{text}</span>}
+            >
               <span className="text-primary">{text}</span>
             </AutoTooltip>
+            {record.model?.deleted && (
+              <Tag
+                style={{
+                  marginLeft: 8,
+                  borderRadius: 12,
+                  color: 'var(--ant-color-text-tertiary)',
+                  borderColor: 'var(--ant-color-split)',
+                  backgroundColor: 'transparent'
+                }}
+                variant="outlined"
+              >
+                {intl.formatMessage({ id: 'usage.table.deleted' })}
+              </Tag>
+            )}
           </span>
         )
       },
@@ -40,15 +59,14 @@ const useModelsColumns = (): Array<{
       },
       {
         title: intl.formatMessage({ id: 'usage.table.provider' }),
-        dataIndex: 'provider_name',
-        key: 'provider_name',
+        dataIndex: ['model', 'identity', 'value', 'provider_type'],
+        key: 'provider_type',
         render: (text: string, record: ListItem) => (
           <span className="flex-center gap-8">
-            <ProviderLogo provider={record.provider_type || 'deployments'} />
+            <ProviderLogo provider={text || 'deployments'} />
             <AutoTooltip ghost style={{ maxWidth: 400 }}>
               {text ||
-                (!record.provider_type &&
-                  intl.formatMessage({ id: 'menu.models.deployment' }))}
+                (!text && intl.formatMessage({ id: 'menu.models.deployment' }))}
             </AutoTooltip>
           </span>
         )

@@ -45,7 +45,7 @@ export interface TimeSeriesData {
   series: TimeSeriesItem[];
 }
 
-export type BreakdownItem = UsageFilterItem & {
+export type BreakdownItem = {
   cluster_name: string;
   model_name: string;
   user_name: string;
@@ -60,6 +60,9 @@ export type BreakdownItem = UsageFilterItem & {
   last_active: string;
   provider_type: string;
   provider_name: string;
+  user: UsageFilterItem;
+  model: UsageFilterItem;
+  api_key: UsageFilterItem;
 };
 
 export interface UsageMeta {

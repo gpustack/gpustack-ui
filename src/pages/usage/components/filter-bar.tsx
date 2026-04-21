@@ -7,7 +7,7 @@ import ProviderLogo from '@/pages/maas-provider/components/provider-logo';
 import { useModel } from '@@/plugin-model';
 import { DownloadOutlined, SyncOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, DatePicker, Dropdown, MenuProps, Segmented } from 'antd';
+import { Button, DatePicker, Dropdown, MenuProps } from 'antd';
 import dayjs from 'dayjs';
 import React from 'react';
 import { GroupOption } from '../config';
@@ -120,8 +120,6 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
       }
     ]
   });
-  // const [activeModels, setActiveModels] = React.useState<valueType[][]>([]);
-  // const [activeApiKeys, setActiveApiKeys] = React.useState<valueType[][]>([]);
 
   const initialInfo = useModel('@@initialState');
   const { initialState } = initialInfo || {};
@@ -149,8 +147,15 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
     }
   ];
 
+  const renderTag = (tag: string) => {
+    return (
+      <span className="text-tertiary" style={{ fontSize: 12, marginRight: 4 }}>
+        [{tag}]
+      </span>
+    );
+  };
+
   const handleOnModelsChange = (value: valueType[][], selectedOptions: any) => {
-    // setActiveModels(value);
     const selectedValues: string[] = value.map((item) => {
       if (Array.isArray(item)) {
         return item[item.length - 1] as string; // Get the last value in the array
@@ -165,7 +170,6 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
     value: valueType[][],
     selectedOptions: any
   ) => {
-    // setActiveApiKeys(value);
     const selectedValues: string[] = value.map((item) => {
       if (Array.isArray(item)) {
         return item[item.length - 1] as string; // Get the last value in the array
@@ -194,10 +198,14 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
 
   const optionRender = (option: any) => {
     const { data } = option;
-    console.log('optionRender', option);
-
     if (!data.isParent) {
-      return <AutoTooltip ghost>{data.label}</AutoTooltip>;
+      return (
+        <span className="flex-center gap-4">
+          <AutoTooltip ghost>{data.label}</AutoTooltip>
+          {data.deleted &&
+            renderTag(intl.formatMessage({ id: 'usage.table.deleted' }))}
+        </span>
+      );
     }
 
     if (data.type === 'deployments') {
@@ -221,6 +229,36 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
     );
   };
 
+  const apiKeyOptionRender = (option: any) => {
+    const { data } = option;
+    if (!data.isParent) {
+      return (
+        <span className="flex-center gap-4">
+          <AutoTooltip ghost>{data.label}</AutoTooltip>
+          {data.deleted &&
+            renderTag(intl.formatMessage({ id: 'usage.table.deleted' }))}
+        </span>
+      );
+    }
+
+    return (
+      <AutoTooltip ghost>
+        <span>{data.label}</span>
+      </AutoTooltip>
+    );
+  };
+
+  const singleOptionRender = (option: any) => {
+    const { data } = option;
+    return (
+      <span className="flex-center gap-4">
+        <AutoTooltip ghost>{data.label}</AutoTooltip>
+        {data.deleted &&
+          renderTag(intl.formatMessage({ id: 'usage.table.deleted' }))}
+      </span>
+    );
+  };
+
   const onPickerChange = (picker: DateType) => {
     handleOnPickerChange(picker);
     handlePickerChange(picker);
@@ -231,57 +269,15 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
       ? normalizeRangeValue(startDate, endDate, picker)
       : [dayjs().add(-DefaultDateConfig.defaultRange, 'd'), dayjs()];
 
-  const renderFooter = () => {
-    return (
-      <Segmented
-        size="middle"
-        shape="round"
-        value={picker}
-        styles={{
-          root: {
-            width: '100%',
-            display: 'flex',
-            marginBlock: 8
-          },
-          item: {
-            flex: 1
-          },
-          label: {
-            display: 'flex',
-            justifyContent: 'center',
-            flex: 1
-          }
-        }}
-        onChange={onPickerChange}
-        options={[
-          {
-            label: 'Day',
-            value: 'date'
-          },
-          {
-            label: 'Month',
-            value: 'month'
-          },
-          {
-            label: 'Week',
-            value: 'week'
-          }
-        ]}
-      ></Segmented>
-    );
-  };
-
   const userOptionRender = (option: any) => {
     const { data } = option;
     return (
-      <span className="flex-center gap-8">
-        <span>{data.label}</span>
-        {data.isCurrent && (
-          <span className="text-tertiary">
-            {' '}
-            [{intl.formatMessage({ id: 'usage.user.currentAccount' })}]
-          </span>
-        )}
+      <span className="flex-center gap-4">
+        <AutoTooltip ghost>{data.label}</AutoTooltip>
+        {data.isCurrent &&
+          renderTag(intl.formatMessage({ id: 'usage.user.currentAccount' }))}
+        {data.deleted &&
+          renderTag(intl.formatMessage({ id: 'usage.table.deleted' }))}
       </span>
     );
   };
@@ -394,6 +390,7 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
                 options={apiKeyOptions}
                 showCheckedStrategy="SHOW_CHILD"
                 value={activeApiKeys}
+                optionNode={apiKeyOptionRender}
                 onChange={handleOnApiKeysChange}
                 getPopupContainer={(triggerNode) => triggerNode.parentNode}
               ></SealCascader>
@@ -412,6 +409,7 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
               wrapper: { flex: 1, maxWidth: 240, minWidth: 100 }
             }}
             value={selectedApiKeys}
+            optionRender={singleOptionRender}
             onChange={onApiKeysChange}
           />
         )}

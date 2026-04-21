@@ -744,12 +744,22 @@ body {
   font-size: 11px;
   background-color: transparent;
   min-width: 100px;
-  max-width: 360px;
+  max-width: 500px;
 
   &.scatter {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(48%, 1fr));
     gap: 8px;
+  }
+
+  &.tooltip-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px 12px;
+
+    .tooltip-x-name {
+      grid-column: 1 / -1;
+    }
   }
 
   .tooltip-x-name {
@@ -766,12 +776,34 @@ body {
     justify-content: space-between;
     align-items: center;
 
+    .tooltip-item-name {
+      display: inline-flex;
+      align-items: center;
+      min-width: 0;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .tooltip-item-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      margin-right: 5px;
+      flex-shrink: 0;
+    }
+
     .tooltip-item-title {
       margin-right: 2px;
+      display: inline-block;
+      max-width: 200px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .tooltip-value {
       margin-left: 10px;
+      flex-shrink: 0;
       color: var(--ant-color-text);
       text-overflow: ellipsis;
       overflow: hidden;

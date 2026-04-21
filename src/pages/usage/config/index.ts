@@ -1,10 +1,10 @@
 import { UsageFilterItem } from './types';
 
 export const groupByOptions = [
-  {
-    value: '',
-    label: 'None'
-  },
+  // {
+  //   value: null,
+  //   label: 'None'
+  // },
   {
     value: 'model',
     label: 'Model'
@@ -163,7 +163,8 @@ export function groupToOptions<T, TChild>(
       });
     }
 
-    groupedMap.get(groupKey)!.children.push(options.getChild(item));
+    const child = options.getChild(item) as TChild & { value: string };
+    groupedMap.get(groupKey)!.children.push(child);
   });
 
   return Array.from(groupedMap.values());

@@ -1,4 +1,5 @@
 import AutoTooltip from '@/components/auto-tooltip';
+import IconFont from '@/components/icon-font';
 import SealCascader from '@/components/seal-form/seal-cascader';
 import SimpleSelect from '@/components/seal-form/simple-select';
 import useRangePickerPreset from '@/pages/dashboard/hooks/use-rangepicker-preset';
@@ -21,6 +22,9 @@ const DefaultDateConfig = {
 type OptionType = UsageFilterItem & {
   value: string;
 };
+
+type DateType = 'date' | 'week' | 'month' | 'quarter' | 'year';
+
 interface FilterBarProps {
   pageType?: 'page' | 'modal';
   scope: string;
@@ -32,6 +36,7 @@ interface FilterBarProps {
   modelOptions: GroupOption<UsageFilterItem>[];
   userOptions: OptionType[];
   apiKeyOptions: GroupOption<UsageFilterItem>[];
+  handlePickerChange: (picker: DateType) => void;
   onScopeChange: (value: string) => void;
   onDateChange: (dates: any, dateStrings: [string, string]) => void;
   onModelsChange: (value: string[]) => void;
@@ -53,6 +58,7 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
     modelOptions,
     userOptions,
     apiKeyOptions,
+    handlePickerChange,
     onDateChange,
     onModelsChange,
     onUsersChange,
@@ -107,12 +113,22 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
   const exportMenuItems: MenuProps['items'] = [
     {
       key: 'chart',
-      label: 'Export Chart Data',
+      label: (
+        <span className="flex-center gap-8">
+          <IconFont type="icon-chart-01" style={{ fontSize: 14 }} />
+          <span>Export Chart Data</span>
+        </span>
+      ),
       onClick: onExportChart
     },
     {
       key: 'table',
-      label: 'Export Table Data',
+      label: (
+        <span className="flex-center gap-8">
+          <IconFont type="icon-table" style={{ fontSize: 14 }} />
+          <span>Export Table Data</span>
+        </span>
+      ),
       onClick: onExportTable
     }
   ];
@@ -187,6 +203,11 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
     );
   };
 
+  const onPickerChange = (picker: DateType) => {
+    handleOnPickerChange(picker);
+    handlePickerChange(picker);
+  };
+
   const renderFooter = () => {
     return (
       <Segmented
@@ -208,19 +229,19 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
             flex: 1
           }
         }}
-        onChange={handleOnPickerChange}
+        onChange={onPickerChange}
         options={[
           {
             label: 'Day',
             value: 'date'
           },
           {
-            label: 'Week',
-            value: 'week'
-          },
-          {
             label: 'Month',
             value: 'month'
+          },
+          {
+            label: 'Week',
+            value: 'week'
           }
         ]}
       ></Segmented>
@@ -232,9 +253,16 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
     return (
       <span className="flex-center gap-8">
         <span>{data.label}</span>
-        {data.isCurrent && <span className="text-tertiary"> [Current]</span>}
+        {data.isCurrent && (
+          <span className="text-tertiary"> [Current Account]</span>
+        )}
       </span>
     );
+  };
+
+  // only for dates greater than the current day should be disabled.
+  const disabledDate = (current: dayjs.Dayjs) => {
+    return current && current > dayjs().endOf('day');
   };
 
   return (
@@ -248,12 +276,11 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
           ]}
           format={'YYYY-MM-DD'}
           picker={picker}
-          disabledDate={disabledRangeDaysDate}
+          disabledDate={disabledDate}
           presets={rangePresets}
           allowClear={false}
           style={{ width: 240 }}
           onChange={onDateChange}
-          renderExtraFooter={renderFooter}
         />
         <div
           style={{
@@ -285,9 +312,7 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
             }}
             maxTagCount={1}
             size="small"
-            placeholder={intl.formatMessage({
-              id: 'dashboard.usage.selectmodel'
-            })}
+            placeholder={'Filter by model'}
             options={modelOptions}
             showCheckedStrategy="SHOW_CHILD"
             displayRender={displayRender}
@@ -304,7 +329,7 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
               showSearch
               mode="multiple"
               options={userOptions}
-              placeholder="User"
+              placeholder="Filter by user"
               styles={{
                 wrapper: { flex: 1, maxWidth: 240, minWidth: 150 }
               }}
@@ -342,7 +367,7 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
                 }}
                 maxTagCount={1}
                 size="small"
-                placeholder="API Key"
+                placeholder="Filter by API key"
                 options={apiKeyOptions}
                 showCheckedStrategy="SHOW_CHILD"
                 value={activeApiKeys}
@@ -359,7 +384,7 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
             mode="multiple"
             options={apiKeyOptions?.[0]?.children || []}
             maxTagCount={0}
-            placeholder="API Key"
+            placeholder="Filter by API key"
             styles={{
               wrapper: { flex: 1, maxWidth: 240, minWidth: 100 }
             }}

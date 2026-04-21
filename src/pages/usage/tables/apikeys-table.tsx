@@ -9,12 +9,14 @@ import { useEffect, useState } from 'react';
 import { FilterOptionType } from '../config/types';
 import useAPIKeys from '../hooks/use-apikeys-columns';
 import useQueryBreakdownList from '../services/use-query-breakdown-list';
+import getBreakdownRowKey from '../utils/get-breakdown-row-key';
 
 const APIKeys: React.FC<{
   apiKeys: FilterOptionType[];
   dateRange: { start_date: string; end_date: string };
   scope: string;
-}> = ({ apiKeys, dateRange, scope }) => {
+  refreshKey?: number;
+}> = ({ apiKeys, dateRange, scope, refreshKey = 0 }) => {
   const intl = useIntl();
 
   const { loading, dataSource, fetchData } = useQueryBreakdownList({
@@ -57,14 +59,23 @@ const APIKeys: React.FC<{
   useEffect(() => {
     fetchData({
       ...queryParams,
-      group_by: 'api_key',
+      group_by: ['api_key'],
       filters: {
-        api_keys: apiKeys || []
+        api_keys: apiKeys
       },
       scope: scope,
       ...dateRange
     });
-  }, [dateRange, apiKeys, queryParams, scope]);
+  }, [
+    apiKeys,
+    dateRange.end_date,
+    dateRange.start_date,
+    queryParams.page,
+    queryParams.perPage,
+    queryParams.sort_by,
+    refreshKey,
+    scope
+  ]);
 
   return (
     <>
@@ -73,13 +84,13 @@ const APIKeys: React.FC<{
           <Table
             columns={columns}
             dataSource={dataSource.dataList}
+            rowKey={getBreakdownRowKey}
             loading={{
               spinning: loading,
               size: 'middle'
             }}
             sortDirections={TABLE_SORT_DIRECTIONS}
             showSorterTooltip={false}
-            rowKey="id"
             onChange={handleTableChange}
             pagination={{
               size: 'middle',

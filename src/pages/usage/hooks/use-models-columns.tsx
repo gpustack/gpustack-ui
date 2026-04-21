@@ -12,7 +12,7 @@ interface ColumnsHookProps {
 
 const useModelsColumns = (): Array<{
   title: string;
-  dataIndex: string;
+  dataIndex: string | string[];
   key: string;
 }> => {
   const intl = useIntl();
@@ -21,7 +21,7 @@ const useModelsColumns = (): Array<{
     return [
       {
         title: intl.formatMessage({ id: 'common.table.name' }),
-        dataIndex: 'model_name',
+        dataIndex: ['model', 'identity', 'value', 'model_name'],
         key: 'model_name',
         sorter: tableSorter(1),
         render: (text: string, record: ListItem) => (
@@ -34,7 +34,7 @@ const useModelsColumns = (): Array<{
       },
       {
         title: 'Cluster',
-        dataIndex: 'cluster_name',
+        dataIndex: ['model', 'identity', 'value', 'cluster_name'],
         key: 'cluster_name',
         sorter: tableSorter(2),
         render: (text: string, record: ListItem) => (

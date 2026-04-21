@@ -7,7 +7,7 @@ import { BreakdownItem as ListItem } from '../config/types';
 
 const useModelsColumns = (): Array<{
   title: string;
-  dataIndex: string;
+  dataIndex: string | string[];
   key: string;
 }> => {
   const intl = useIntl();
@@ -16,7 +16,7 @@ const useModelsColumns = (): Array<{
     return [
       {
         title: intl.formatMessage({ id: 'common.table.name' }),
-        dataIndex: 'api_key_name',
+        dataIndex: ['api_key', 'identity', 'value', 'api_key_name'],
         key: 'api_key_name',
         sorter: tableSorter(1),
         render: (text: string, record: ListItem) => (
@@ -29,7 +29,7 @@ const useModelsColumns = (): Array<{
       },
       {
         title: 'User',
-        dataIndex: 'user_name',
+        dataIndex: ['api_key', 'identity', 'value', 'user_name'],
         key: 'user_name',
         render: (text: string, record: ListItem) => (
           <AutoTooltip ghost style={{ maxWidth: 400 }}>

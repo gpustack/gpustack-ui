@@ -87,7 +87,7 @@ export const SimpleCard: React.FC<{
     label: string;
     value: React.ReactNode;
     color: string;
-    iconType: string;
+    iconType?: string;
   }[];
   height?: string | number;
   bordered?: boolean;

@@ -2,7 +2,6 @@ import CardWrapper from '@/components/card-wrapper';
 import MixLineBar from '@/components/echarts/mix-line-bar';
 import BaseSelect from '@/components/seal-form/base/select';
 import { baseColorMap } from '@/pages/dashboard/config';
-import { formatLargeNumber } from '@/utils';
 import { Segmented } from 'antd';
 import dayjs from 'dayjs';
 import React, { useMemo } from 'react';
@@ -31,10 +30,10 @@ const ControlLabel = styled.span`
 interface DailyUsageProps {
   timeSeriesData: TimeSeriesData | null;
   metric: string;
-  groupBy: string;
+  groupBy: string | null;
   granularity: string;
   onMetricChange: (value: string) => void;
-  onGroupByChange: (value: string) => void;
+  onGroupByChange: (value: string | null) => void;
   onGranularityChange: (value: string) => void;
 }
 
@@ -52,49 +51,6 @@ const DailyUsage: React.FC<DailyUsageProps> = (props) => {
     onGroupByChange,
     onGranularityChange
   } = props;
-
-  const summary = timeSeriesData?.summary || {
-    input_tokens: 0,
-    output_tokens: 0,
-    total_tokens: 0,
-    api_requests: 0,
-    models_called: 0
-  };
-
-  const summaryCards = useMemo(() => {
-    return [
-      {
-        label: formatLargeNumber(summary.input_tokens) as string,
-        value: 'Input tokens',
-        color: baseColorMap.baseR3,
-        iconType: 'roundRect'
-      },
-      {
-        label: formatLargeNumber(summary.output_tokens) as string,
-        value: 'Output tokens',
-        color: baseColorMap.base,
-        iconType: 'roundRect'
-      },
-      {
-        label: formatLargeNumber(summary.total_tokens) as string,
-        value: 'Total tokens',
-        color: baseColorMap.baseL1,
-        iconType: 'roundRect'
-      },
-      {
-        label: formatLargeNumber(summary.api_requests) as string,
-        value: 'API requests',
-        color: baseColorMap.baseR1,
-        iconType: 'circle'
-      },
-      {
-        label: summary.models_called.toString(),
-        value: 'Models used',
-        color: baseColorMap.baseR2,
-        iconType: 'roundRect'
-      }
-    ];
-  }, [summary]);
 
   const { chartData, xAxisData } = useMemo(() => {
     if (!timeSeriesData?.series || timeSeriesData.series.length === 0) {
@@ -120,17 +76,10 @@ const DailyUsage: React.FC<DailyUsageProps> = (props) => {
     }));
 
     // API requests use line chart, tokens use bar chart
-    if (metric === 'api_requests') {
-      return {
-        chartData: { line: chartSeries, bar: [] },
-        xAxisData: xAxis
-      };
-    } else {
-      return {
-        chartData: { line: [], bar: chartSeries },
-        xAxisData: xAxis
-      };
-    }
+    return {
+      chartData: { line: [], bar: chartSeries },
+      xAxisData: xAxis
+    };
   }, [timeSeriesData, metric]);
 
   const legendData = useMemo(() => {
@@ -141,6 +90,10 @@ const DailyUsage: React.FC<DailyUsageProps> = (props) => {
       icon: metric === 'api_requests' ? 'circle' : 'roundRect'
     }));
   }, [timeSeriesData, metric]);
+
+  const handleOnGroupByChange = (value: string) => {
+    onGroupByChange(value || null);
+  };
 
   return (
     <div>
@@ -154,16 +107,18 @@ const DailyUsage: React.FC<DailyUsageProps> = (props) => {
               value={metric}
               popupMatchSelectWidth={false}
               onChange={onMetricChange}
-              style={{ width: 180 }}
+              style={{ width: 'max-content' }}
             />
 
             <BaseSelect
+              allowClear
               variant="borderless"
               prefix={<ControlLabel>Group by</ControlLabel>}
               options={groupByOptions}
               value={groupBy}
               popupMatchSelectWidth={false}
-              onChange={onGroupByChange}
+              onChange={handleOnGroupByChange}
+              style={{ width: 'max-content' }}
             />
           </div>
           <Segmented
@@ -173,8 +128,6 @@ const DailyUsage: React.FC<DailyUsageProps> = (props) => {
             onChange={onGranularityChange}
           ></Segmented>
         </ControlsWrapper>
-
-        {/* <SimpleCard dataList={summaryCards} height={80} /> */}
         <MixLineBar
           chartData={chartData}
           seriesData={[]}

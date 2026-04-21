@@ -11,11 +11,14 @@ import useExportTable from './hooks/use-export-table';
 import { useUsageFilters } from './hooks/use-usage-filters';
 import useQueryUsageMetaData from './services/use-query-meta-data';
 
+type DateType = 'date' | 'week' | 'month' | 'quarter' | 'year';
+
 const Usage: React.FC = () => {
   const initialInfo = useModel('@@initialState');
   const { initialState } = initialInfo || {};
   const { exportTable } = useExportTable();
   const [openExportModal, setOpenExportModal] = useState(false);
+  const [breakdownRefreshKey, setBreakdownRefreshKey] = useState(0);
 
   const summaryColumns = [
     {
@@ -47,11 +50,11 @@ const Usage: React.FC = () => {
 
   const [chartFilters, setChartFilters] = useState<{
     metric: string;
-    group_by: string;
+    group_by: string | null;
     granularity: string;
   }>({
     metric: 'total_tokens',
-    group_by: 'model',
+    group_by: null,
     granularity: 'day'
   });
 
@@ -118,14 +121,36 @@ const Usage: React.FC = () => {
     ];
   }, [timeSeriesData.summary]);
 
+  const breakdownDateRange = useMemo(
+    () => ({
+      start_date: commonFilters.start_date,
+      end_date: commonFilters.end_date
+    }),
+    [commonFilters.end_date, commonFilters.start_date]
+  );
+
+  const handlePickerChange = (picker: DateType) => {
+    setChartFilters((prev) => ({
+      ...prev,
+      granularity: picker === 'date' ? 'day' : picker
+    }));
+  };
+
   const handleExportChart = () => {
     setOpenExportModal(true);
+  };
+
+  const handleSearch = () => {
+    filterBar.handleSearch();
+    setBreakdownRefreshKey((prev) => prev + 1);
   };
 
   return (
     <div>
       <FilterBar
         {...filterBar}
+        handleSearch={handleSearch}
+        handlePickerChange={handlePickerChange}
         onExportTable={exportTable}
         onExportChart={handleExportChart}
       />
@@ -139,9 +164,8 @@ const Usage: React.FC = () => {
           height={80}
           styles={{
             item: {
-              borderBottom: '1px solid var(--ant-color-split)',
               backgroundColor: 'var(--ant-color-fill-quaternary)',
-              borderRadius: '6px 6px 0 0'
+              borderRadius: '6px'
             }
           }}
         />
@@ -159,17 +183,22 @@ const Usage: React.FC = () => {
       />
       <BreakdownTabs
         filters={filters}
-        dateRange={{
-          start_date: commonFilters.start_date,
-          end_date: commonFilters.end_date
-        }}
+        dateRange={breakdownDateRange}
         scope={commonFilters.scope}
+        refreshKey={breakdownRefreshKey}
       ></BreakdownTabs>
       <ExportData
         metaData={metaData}
+        granularity={chartFilters.granularity}
         initialScope={commonFilters.scope}
+        initialCommonFilters={commonFilters}
         open={openExportModal}
+        handlePickerChange={handlePickerChange}
         onCancel={() => setOpenExportModal(false)}
+        initialState={{
+          activeModels: filterBar.activeModels,
+          activeApiKeys: filterBar.activeApiKeys
+        }}
       ></ExportData>
     </div>
   );

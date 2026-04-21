@@ -4,7 +4,7 @@ const Wrapper = styled.div`
   border-radius: var(--border-radius-lg);
   background-color: var(--ant-color-bg-container);
   box-shadow: none;
-  padding: 10px 16px;
+  padding: 8px 16px;
   border: 1px solid var(--ant-color-border);
 `;
 

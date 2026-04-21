@@ -16,6 +16,7 @@ const DefaultDateConfig = {
 type UserOptionType = UsageFilterItem & {
   value: string;
 };
+type ValueType = string | number | null;
 
 type FilterOptionType = Omit<UsageFilterItem, 'label' | 'deleted'>;
 type GroupOptionType = GroupOption<UsageFilterItem>;
@@ -29,21 +30,49 @@ interface UseUsageFiltersParams {
   };
   chartFilters: {
     metric: string;
-    group_by: string;
+    group_by: string | null;
     granularity: string;
+  };
+  initialState?: {
+    activeModels?: ValueType[][];
+    activeApiKeys?: ValueType[][];
   };
   summaryColumns: {
     title: string;
     dataIndex: string;
     key: string;
   }[];
+  autoFetchOnFilterChange?: boolean;
+  onFetchData?: (params: {
+    chartFilters: UseUsageFiltersParams['chartFilters'];
+    filters: {
+      models?: FilterOptionType[];
+      users?: FilterOptionType[];
+      api_keys?: FilterOptionType[];
+    };
+    commonFilters: {
+      scope: string;
+      models: string[];
+      users: string[];
+      api_keys: string[];
+      start_date: string;
+      end_date: string;
+    };
+  }) => void;
 }
 
 export const useUsageFilters = ({
   initialScope,
   metaData,
   chartFilters,
-  summaryColumns
+  summaryColumns,
+  initialState: {
+    activeModels: initialActiveModels = [],
+    activeApiKeys: initialActiveApiKeys = []
+  } = {},
+
+  autoFetchOnFilterChange = true,
+  onFetchData
 }: UseUsageFiltersParams) => {
   const {
     detailData: timeSeriesData,
@@ -64,6 +93,10 @@ export const useUsageFilters = ({
   const modelOptions = metaData?.models || [];
   const userOptions = metaData?.users || [];
   const apiKeyOptions = metaData?.api_keys || [];
+  const [activeModels, setActiveModels] =
+    useState<ValueType[][]>(initialActiveModels);
+  const [activeApiKeys, setActiveApiKeys] =
+    useState<ValueType[][]>(initialActiveApiKeys);
 
   const buildFilters = (selected: typeof commonFilters) => {
     const filters: {
@@ -114,18 +147,31 @@ export const useUsageFilters = ({
     currentSelectedFilters = commonFilters,
     currentChartFilters = chartFilters
   ) => {
+    const nextFilters = buildFilters(currentSelectedFilters);
+
+    if (onFetchData) {
+      onFetchData({
+        chartFilters: currentChartFilters,
+        filters: nextFilters,
+        commonFilters: currentSelectedFilters
+      });
+      return;
+    }
+
     fetchTimeSeriesData({
       ...currentChartFilters,
       start_date: currentSelectedFilters.start_date,
       end_date: currentSelectedFilters.end_date,
-      filters: buildFilters(currentSelectedFilters)
+      filters: nextFilters
     });
   };
 
   const handleScopeChange = (value: string) => {
     const next = { ...commonFilters, scope: value };
     setCommonFilters(next);
-    fetchData(next, chartFilters);
+    if (autoFetchOnFilterChange) {
+      fetchData(next, chartFilters);
+    }
   };
 
   const handleDateChange = (_: any, dateStrings: [string, string]) => {
@@ -133,16 +179,27 @@ export const useUsageFilters = ({
     const [start_date, end_date] = dateStrings;
     const next = { ...commonFilters, start_date, end_date };
     setCommonFilters(next);
-    fetchData(next, chartFilters);
+    if (autoFetchOnFilterChange) {
+      fetchData(next, chartFilters);
+    }
   };
 
   const handleFilterChange = (
     type: 'models' | 'users' | 'api_keys',
     value: string[]
   ) => {
-    const next = { ...commonFilters, [type]: value };
+    const selectedValues: string[] = value.map((item) => {
+      if (Array.isArray(item)) {
+        return item[item.length - 1] as string; // Get the last value in the array
+      }
+      return item as string;
+    });
+
+    const next = { ...commonFilters, [type]: selectedValues };
     setCommonFilters(next);
-    fetchData(next, chartFilters);
+    if (autoFetchOnFilterChange) {
+      fetchData(next, chartFilters);
+    }
   };
 
   const handleSearch = () => {
@@ -188,6 +245,8 @@ export const useUsageFilters = ({
     modelOptions,
     userOptions,
     apiKeyOptions,
+    activeApiKeys,
+    activeModels,
     handleSearch,
     onScopeChange: handleScopeChange,
     onDateChange: handleDateChange,

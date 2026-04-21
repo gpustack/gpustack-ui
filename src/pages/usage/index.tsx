@@ -21,6 +21,7 @@ const Usage: React.FC = () => {
   const { exportTable } = useExportTable();
   const [openExportModal, setOpenExportModal] = useState(false);
   const [breakdownRefreshKey, setBreakdownRefreshKey] = useState(0);
+  const [breakdownPageResetKey, setBreakdownPageResetKey] = useState(0);
 
   const summaryColumns = [
     {
@@ -147,10 +148,34 @@ const Usage: React.FC = () => {
     setBreakdownRefreshKey((prev) => prev + 1);
   };
 
+  const handleBreakdownPageReset = () => {
+    setBreakdownPageResetKey((prev) => prev + 1);
+  };
+
   return (
     <div>
       <FilterBar
         {...filterBar}
+        onScopeChange={(value) => {
+          filterBar.onScopeChange(value);
+          handleBreakdownPageReset();
+        }}
+        onDateChange={(dates, dateStrings) => {
+          filterBar.onDateChange(dates, dateStrings);
+          handleBreakdownPageReset();
+        }}
+        onModelsChange={(value) => {
+          filterBar.onModelsChange(value);
+          handleBreakdownPageReset();
+        }}
+        onUsersChange={(value) => {
+          filterBar.onUsersChange(value);
+          handleBreakdownPageReset();
+        }}
+        onApiKeysChange={(value) => {
+          filterBar.onApiKeysChange(value);
+          handleBreakdownPageReset();
+        }}
         handleSearch={handleSearch}
         handlePickerChange={handlePickerChange}
         onExportTable={exportTable}
@@ -189,6 +214,7 @@ const Usage: React.FC = () => {
         filters={filters}
         dateRange={breakdownDateRange}
         scope={commonFilters.scope}
+        pageResetKey={breakdownPageResetKey}
         refreshKey={breakdownRefreshKey}
       ></BreakdownTabs>
       <ExportData

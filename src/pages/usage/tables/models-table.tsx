@@ -5,7 +5,7 @@ import PageBox from '@/pages/_components/page-box';
 import { useIntl } from '@umijs/max';
 import { ConfigProvider, Table } from 'antd';
 import _ from 'lodash';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FilterOptionType } from '../config/types';
 import useUsersColumns from '../hooks/use-models-columns';
 import useQueryBreakdownList from '../services/use-query-breakdown-list';
@@ -15,8 +15,9 @@ const Models: React.FC<{
   models: FilterOptionType[];
   dateRange: { start_date: string; end_date: string };
   scope: string;
+  pageResetKey?: number;
   refreshKey?: number;
-}> = ({ models, dateRange, scope, refreshKey = 0 }) => {
+}> = ({ models, dateRange, scope, pageResetKey = 0, refreshKey = 0 }) => {
   const intl = useIntl();
 
   const { loading, dataSource, fetchData } = useQueryBreakdownList({
@@ -31,6 +32,7 @@ const Models: React.FC<{
     perPage: 10,
     sort_by: ''
   });
+  const pendingPageResetRef = useRef(false);
 
   const handleTableChange = (pagination: any, filters: any, sorter: any) => {
     console.log('pagination, filters, sorter: ', pagination, filters, sorter);
@@ -52,6 +54,16 @@ const Models: React.FC<{
 
   const columns = useUsersColumns();
 
+  useEffect(() => {
+    if (queryParams.page !== 1) {
+      pendingPageResetRef.current = true;
+      setQueryParams((prev) => ({
+        ...prev,
+        page: 1
+      }));
+    }
+  }, [pageResetKey]);
+
   const renderEmpty = (type?: string) => {
     if (type !== 'Table') return;
     return (
@@ -71,6 +83,11 @@ const Models: React.FC<{
   };
 
   useEffect(() => {
+    if (pendingPageResetRef.current && queryParams.page !== 1) {
+      return;
+    }
+    pendingPageResetRef.current = false;
+
     fetchData({
       ...queryParams,
       group_by: ['model'],

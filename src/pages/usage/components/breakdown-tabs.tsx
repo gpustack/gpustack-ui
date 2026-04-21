@@ -17,13 +17,14 @@ const BreakdownTabs: React.FC<{
     end_date: string;
   };
   scope: string;
+  pageResetKey?: number;
   refreshKey?: number;
   filters: {
     models?: FilterOptionType[];
     users?: FilterOptionType[];
     api_keys?: FilterOptionType[];
   };
-}> = ({ filters, dateRange, scope, refreshKey = 0 }) => {
+}> = ({ filters, dateRange, scope, pageResetKey = 0, refreshKey = 0 }) => {
   const intl = useIntl();
   const models = filters.models || EMPTY_FILTERS;
   const users = filters.users || EMPTY_FILTERS;
@@ -41,6 +42,7 @@ const BreakdownTabs: React.FC<{
             models={models}
             dateRange={dateRange}
             scope={scope}
+            pageResetKey={pageResetKey}
             refreshKey={refreshKey}
           />
         )
@@ -55,6 +57,7 @@ const BreakdownTabs: React.FC<{
             users={users}
             dateRange={dateRange}
             scope={scope}
+            pageResetKey={pageResetKey}
             refreshKey={refreshKey}
           />
         )
@@ -69,6 +72,7 @@ const BreakdownTabs: React.FC<{
             apiKeys={apiKeys}
             dateRange={dateRange}
             scope={scope}
+            pageResetKey={pageResetKey}
             refreshKey={refreshKey}
           />
         )
@@ -79,7 +83,7 @@ const BreakdownTabs: React.FC<{
       }
       return true;
     });
-  }, [apiKeys, dateRange, models, refreshKey, scope, users]);
+  }, [apiKeys, dateRange, models, pageResetKey, refreshKey, scope, users]);
 
   return (
     <div style={{ marginTop: 16 }}>

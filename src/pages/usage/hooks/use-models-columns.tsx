@@ -1,6 +1,5 @@
 // columns.ts
 import AutoTooltip from '@/components/auto-tooltip';
-import { tableSorter } from '@/config/settings';
 import ProviderLogo from '@/pages/maas-provider/components/provider-logo';
 import { useIntl } from '@umijs/max';
 import { useMemo } from 'react';
@@ -23,7 +22,6 @@ const useModelsColumns = (): Array<{
         title: intl.formatMessage({ id: 'common.table.name' }),
         dataIndex: ['model', 'identity', 'value', 'model_name'],
         key: 'model_name',
-        sorter: tableSorter(1),
         render: (text: string, record: ListItem) => (
           <span className="flex items-center">
             <AutoTooltip ghost style={{ maxWidth: 400 }}>
@@ -36,7 +34,6 @@ const useModelsColumns = (): Array<{
         title: intl.formatMessage({ id: 'usage.table.cluster' }),
         dataIndex: ['model', 'identity', 'value', 'cluster_name'],
         key: 'cluster_name',
-        sorter: tableSorter(2),
         render: (text: string, record: ListItem) => (
           <AutoTooltip ghost>{text || '-'}</AutoTooltip>
         )
@@ -60,6 +57,7 @@ const useModelsColumns = (): Array<{
         title: intl.formatMessage({ id: 'usage.filter.inputTokens' }),
         dataIndex: 'input_tokens',
         key: 'input_tokens',
+        sorter: true,
         render: (text: string[], record: ListItem) => (
           <AutoTooltip ghost>{text}</AutoTooltip>
         )
@@ -68,6 +66,7 @@ const useModelsColumns = (): Array<{
         title: intl.formatMessage({ id: 'usage.filter.outputTokens' }),
         dataIndex: 'output_tokens',
         key: 'output_tokens',
+        sorter: true,
         render: (text: string[], record: ListItem) => (
           <AutoTooltip ghost>{text}</AutoTooltip>
         )
@@ -76,7 +75,7 @@ const useModelsColumns = (): Array<{
         title: intl.formatMessage({ id: 'usage.filter.totalTokens' }),
         dataIndex: 'total_tokens',
         key: 'total_tokens',
-        sorter: tableSorter(3),
+        sorter: true,
         ellipsis: {
           showTitle: false
         },
@@ -86,7 +85,7 @@ const useModelsColumns = (): Array<{
         title: intl.formatMessage({ id: 'usage.filter.apiRequests' }),
         dataIndex: 'api_requests',
         key: 'api_requests',
-        sorter: tableSorter(3),
+        sorter: true,
         ellipsis: {
           showTitle: false
         },
@@ -96,7 +95,6 @@ const useModelsColumns = (): Array<{
         title: intl.formatMessage({ id: 'usage.table.lastActive' }),
         dataIndex: 'last_active',
         key: 'last_active',
-        sorter: tableSorter(3),
         ellipsis: {
           showTitle: false
         },

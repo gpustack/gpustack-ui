@@ -12,6 +12,8 @@ interface RangePickerPreset {
   disabledDate?: boolean;
 }
 
+type DateType = 'date' | 'week' | 'month' | 'quarter' | 'year';
+
 export default function useRangePickerPreset(options?: RangePickerPreset): {
   disabledRangeDaysDate: DatePickerProps['disabledDate'];
   rangePresets: {
@@ -21,19 +23,15 @@ export default function useRangePickerPreset(options?: RangePickerPreset): {
   normalizeRangeValue: (
     startDate: string,
     endDate: string,
-    picker: 'date' | 'week' | 'month' | 'quarter' | 'year'
+    picker: DateType
   ) => [Dayjs, Dayjs];
-  handleOnPickerChange: (
-    value: 'date' | 'week' | 'month' | 'quarter' | 'year'
-  ) => void;
-  picker: 'date' | 'week' | 'month' | 'quarter' | 'year';
+  handleOnPickerChange: (value: DateType) => void;
+  picker: DateType;
   range: number;
 } {
   const { range = 60, disabledDate, presetRanges } = options || {};
   const intl = useIntl();
-  const [picker, setPicker] = useState<
-    'date' | 'week' | 'month' | 'quarter' | 'year'
-  >('date');
+  const [picker, setPicker] = useState<DateType>('date');
 
   const getYearMonth = (date: Dayjs) => date.year() * 12 + date.month();
 
@@ -132,9 +130,7 @@ export default function useRangePickerPreset(options?: RangePickerPreset): {
     return false;
   };
 
-  const handleOnPickerChange = (
-    value: 'date' | 'week' | 'month' | 'quarter' | 'year'
-  ) => {
+  const handleOnPickerChange = (value: DateType) => {
     setPicker(value);
   };
 

@@ -9,12 +9,14 @@ import { useEffect, useState } from 'react';
 import { FilterOptionType } from '../config/types';
 import useUsersColumns from '../hooks/use-models-columns';
 import useQueryBreakdownList from '../services/use-query-breakdown-list';
+import getBreakdownRowKey from '../utils/get-breakdown-row-key';
 
 const Models: React.FC<{
   models: FilterOptionType[];
   dateRange: { start_date: string; end_date: string };
   scope: string;
-}> = ({ models, dateRange, scope }) => {
+  refreshKey?: number;
+}> = ({ models, dateRange, scope, refreshKey = 0 }) => {
   const intl = useIntl();
 
   const { loading, dataSource, fetchData } = useQueryBreakdownList({
@@ -43,13 +45,13 @@ const Models: React.FC<{
         loading={loading}
         loadend={dataSource.loadend}
         dataSource={dataSource.dataList}
-        image={<IconFont type="icon-key" />}
+        image={<IconFont type="icon-resources" />}
         filters={_.omit(queryParams, ['sort_by'])}
         noFoundText={intl.formatMessage({
-          id: 'noresult.keys.nofound'
+          id: 'noresult.mymodels.nofound'
         })}
-        title={intl.formatMessage({ id: 'noresult.keys.title' })}
-        subTitle={intl.formatMessage({ id: 'noresult.keys.subTitle' })}
+        title={intl.formatMessage({ id: 'noresult.deployments.title' })}
+        subTitle={intl.formatMessage({ id: 'noresult.deployments.subTitle' })}
       ></NoResult>
     );
   };
@@ -57,14 +59,23 @@ const Models: React.FC<{
   useEffect(() => {
     fetchData({
       ...queryParams,
-      group_by: 'model',
+      group_by: ['model'],
       filters: {
-        models: models || []
+        models
       },
       scope: scope,
       ...dateRange
     });
-  }, [dateRange, models, queryParams, scope]);
+  }, [
+    dateRange.end_date,
+    dateRange.start_date,
+    models,
+    queryParams.page,
+    queryParams.perPage,
+    queryParams.sort_by,
+    refreshKey,
+    scope
+  ]);
 
   return (
     <>
@@ -73,13 +84,13 @@ const Models: React.FC<{
           <Table
             columns={columns}
             dataSource={dataSource.dataList}
+            rowKey={getBreakdownRowKey}
             loading={{
               spinning: loading,
               size: 'middle'
             }}
             sortDirections={TABLE_SORT_DIRECTIONS}
             showSorterTooltip={false}
-            rowKey="id"
             onChange={handleTableChange}
             pagination={{
               size: 'middle',

@@ -2,6 +2,7 @@ import CardWrapper from '@/components/card-wrapper';
 import MixLineBar from '@/components/echarts/mix-line-bar';
 import BaseSelect from '@/components/seal-form/base/select';
 import { baseColorMap } from '@/pages/dashboard/config';
+import { useIntl } from '@umijs/max';
 import { Segmented } from 'antd';
 import dayjs from 'dayjs';
 import React, { useMemo } from 'react';
@@ -42,6 +43,7 @@ const labelFormatter = (v: any) => {
 };
 
 const DailyUsage: React.FC<DailyUsageProps> = (props) => {
+  const intl = useIntl();
   const {
     timeSeriesData,
     metric,
@@ -102,8 +104,15 @@ const DailyUsage: React.FC<DailyUsageProps> = (props) => {
           <div className="group">
             <BaseSelect
               variant="borderless"
-              prefix={<ControlLabel>Metric</ControlLabel>}
-              options={metricOptions}
+              prefix={
+                <ControlLabel>
+                  {intl.formatMessage({ id: 'usage.filter.metric' })}
+                </ControlLabel>
+              }
+              options={metricOptions.map((item) => ({
+                label: intl.formatMessage({ id: item.label }),
+                value: item.value
+              }))}
               value={metric}
               popupMatchSelectWidth={false}
               onChange={onMetricChange}
@@ -113,8 +122,15 @@ const DailyUsage: React.FC<DailyUsageProps> = (props) => {
             <BaseSelect
               allowClear
               variant="borderless"
-              prefix={<ControlLabel>Group by</ControlLabel>}
-              options={groupByOptions}
+              prefix={
+                <ControlLabel>
+                  {intl.formatMessage({ id: 'usage.filter.groupBy' })}
+                </ControlLabel>
+              }
+              options={groupByOptions.map((item) => ({
+                label: intl.formatMessage({ id: item.label }),
+                value: item.value
+              }))}
               value={groupBy}
               popupMatchSelectWidth={false}
               onChange={handleOnGroupByChange}
@@ -123,7 +139,10 @@ const DailyUsage: React.FC<DailyUsageProps> = (props) => {
           </div>
           <Segmented
             size="small"
-            options={granularities}
+            options={granularities.map((item) => ({
+              label: intl.formatMessage({ id: item.label }),
+              value: item.value
+            }))}
             value={granularity}
             onChange={onGranularityChange}
           ></Segmented>

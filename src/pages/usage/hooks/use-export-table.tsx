@@ -5,6 +5,7 @@ import {
 } from '@/atoms/usage';
 import { exportJsonToExcel } from '@/utils/excel-reader';
 import { useStore } from 'jotai';
+import _ from 'lodash';
 import useAPIKeysColumns from './use-apikeys-columns';
 import useModelsColumns from './use-models-columns';
 import useUsersColumns from './use-users-columns';
@@ -26,11 +27,11 @@ const useExportTable = () => {
           jsonData: modelsTableData.dataList || [],
           sheetName: 'models',
           fields: modelsColumns
-            .map((col: any) => col.dataIndex)
+            .map((col: any) => _.join(col.dataIndex, '_'))
             .filter(Boolean) as string[],
           fieldLabels: modelsColumns.reduce(
             (map, col) => {
-              map[col.dataIndex] = col.title;
+              map[_.join(col.dataIndex, '_')] = col.title;
               return map;
             },
             {} as Record<string, any>
@@ -45,7 +46,7 @@ const useExportTable = () => {
             .filter(Boolean) as string[],
           fieldLabels: apiKeysColumns.reduce(
             (map, col) => {
-              map[col.dataIndex] = col.title;
+              map[_.join(col.dataIndex, '_')] = col.title;
               return map;
             },
             {} as Record<string, any>
@@ -60,7 +61,7 @@ const useExportTable = () => {
             .filter(Boolean) as string[],
           fieldLabels: usersColumns.reduce(
             (map, col) => {
-              map[col.dataIndex] = col.title;
+              map[_.join(col.dataIndex, '_')] = col.title;
               return map;
             },
             {} as Record<string, any>

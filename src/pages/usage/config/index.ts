@@ -7,60 +7,49 @@ export const groupByOptions = [
   // },
   {
     value: 'model',
-    label: 'Model'
+    label: 'usage.filter.group.model'
   },
   {
     value: 'user',
-    label: 'User'
+    label: 'usage.filter.group.user'
   },
   {
     value: 'api_key',
-    label: 'API Key'
+    label: 'usage.filter.group.apikey'
   }
 ];
 
 export const granularities = [
   {
     value: 'day',
-    label: 'Day'
+    label: 'usage.filter.granularity.day'
   },
   {
     value: 'week',
-    label: 'Week'
+    label: 'usage.filter.granularity.week'
   },
   {
     value: 'month',
-    label: 'Month'
+    label: 'usage.filter.granularity.month'
   }
 ];
 
 export const metricOptions = [
   {
     value: 'input_tokens',
-    label: 'Input Tokens'
+    label: 'usage.filter.inputTokens'
   },
   {
     value: 'output_tokens',
-    label: 'Output Tokens'
+    label: 'usage.filter.outputTokens'
   },
   {
     value: 'total_tokens',
-    label: 'Total Tokens'
+    label: 'usage.filter.totalTokens'
   },
   {
     value: 'api_requests',
-    label: 'API Requests'
-  }
-];
-
-export const scopeOptions = [
-  {
-    value: 'all',
-    label: 'All Users'
-  },
-  {
-    value: 'self',
-    label: 'My Usage'
+    label: 'usage.filter.apiRequests'
   }
 ];
 

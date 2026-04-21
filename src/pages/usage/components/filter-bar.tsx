@@ -36,16 +36,28 @@ interface FilterBarProps {
   modelOptions: GroupOption<UsageFilterItem>[];
   userOptions: OptionType[];
   apiKeyOptions: GroupOption<UsageFilterItem>[];
+  activeModels: valueType[][];
+  activeApiKeys: valueType[][];
   handlePickerChange: (picker: DateType) => void;
   onScopeChange: (value: string) => void;
   onDateChange: (dates: any, dateStrings: [string, string]) => void;
   onModelsChange: (value: string[]) => void;
   onUsersChange: (value: string[]) => void;
   onApiKeysChange: (value: string[]) => void;
+  handleActiveModelsChange: (value: valueType[][]) => void;
+  handleActiveApiKeysChange: (value: valueType[][]) => void;
   onExport?: () => void;
   handleSearch?: () => void;
   onExportChart?: () => void;
   onExportTable?: () => void;
+  commonFilters?: {
+    scope: string;
+    start_date: string;
+    end_date: string;
+    models: string[];
+    users: string[];
+    api_keys: string[];
+  };
 }
 
 const FilterBar: React.FC<FilterBarProps> = (props) => {
@@ -58,6 +70,10 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
     modelOptions,
     userOptions,
     apiKeyOptions,
+    activeModels,
+    activeApiKeys,
+    handleActiveModelsChange,
+    handleActiveApiKeysChange,
     handlePickerChange,
     onDateChange,
     onModelsChange,
@@ -104,8 +120,8 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
       }
     ]
   });
-  const [activeModels, setActiveModels] = React.useState<valueType[][]>([]);
-  const [activeApiKeys, setActiveApiKeys] = React.useState<valueType[][]>([]);
+  // const [activeModels, setActiveModels] = React.useState<valueType[][]>([]);
+  // const [activeApiKeys, setActiveApiKeys] = React.useState<valueType[][]>([]);
 
   const initialInfo = useModel('@@initialState');
   const { initialState } = initialInfo || {};
@@ -116,7 +132,7 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
       label: (
         <span className="flex-center gap-8">
           <IconFont type="icon-chart-01" style={{ fontSize: 14 }} />
-          <span>Export Chart Data</span>
+          <span>{intl.formatMessage({ id: 'usage.export.chart' })}</span>
         </span>
       ),
       onClick: onExportChart
@@ -126,7 +142,7 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
       label: (
         <span className="flex-center gap-8">
           <IconFont type="icon-table" style={{ fontSize: 14 }} />
-          <span>Export Table Data</span>
+          <span>{intl.formatMessage({ id: 'usage.export.table' })}</span>
         </span>
       ),
       onClick: onExportTable
@@ -134,13 +150,14 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
   ];
 
   const handleOnModelsChange = (value: valueType[][], selectedOptions: any) => {
-    setActiveModels(value);
+    // setActiveModels(value);
     const selectedValues: string[] = value.map((item) => {
       if (Array.isArray(item)) {
         return item[item.length - 1] as string; // Get the last value in the array
       }
       return item as string;
     });
+    handleActiveModelsChange(value);
     onModelsChange(selectedValues);
   };
 
@@ -148,13 +165,14 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
     value: valueType[][],
     selectedOptions: any
   ) => {
-    setActiveApiKeys(value);
+    // setActiveApiKeys(value);
     const selectedValues: string[] = value.map((item) => {
       if (Array.isArray(item)) {
         return item[item.length - 1] as string; // Get the last value in the array
       }
       return item as string;
     });
+    handleActiveApiKeysChange(value);
     onApiKeysChange(selectedValues);
   };
 
@@ -254,7 +272,10 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
       <span className="flex-center gap-8">
         <span>{data.label}</span>
         {data.isCurrent && (
-          <span className="text-tertiary"> [Current Account]</span>
+          <span className="text-tertiary">
+            {' '}
+            [{intl.formatMessage({ id: 'usage.user.currentAccount' })}]
+          </span>
         )}
       </span>
     );
@@ -312,7 +333,7 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
             }}
             maxTagCount={1}
             size="small"
-            placeholder={'Filter by model'}
+            placeholder={intl.formatMessage({ id: 'usage.filter.model' })}
             options={modelOptions}
             showCheckedStrategy="SHOW_CHILD"
             displayRender={displayRender}
@@ -329,7 +350,7 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
               showSearch
               mode="multiple"
               options={userOptions}
-              placeholder="Filter by user"
+              placeholder={intl.formatMessage({ id: 'usage.filter.user' })}
               styles={{
                 wrapper: { flex: 1, maxWidth: 240, minWidth: 150 }
               }}
@@ -367,7 +388,7 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
                 }}
                 maxTagCount={1}
                 size="small"
-                placeholder="Filter by API key"
+                placeholder={intl.formatMessage({ id: 'usage.filter.apikey' })}
                 options={apiKeyOptions}
                 showCheckedStrategy="SHOW_CHILD"
                 value={activeApiKeys}
@@ -384,7 +405,7 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
             mode="multiple"
             options={apiKeyOptions?.[0]?.children || []}
             maxTagCount={0}
-            placeholder="Filter by API key"
+            placeholder={intl.formatMessage({ id: 'usage.filter.apikey' })}
             styles={{
               wrapper: { flex: 1, maxWidth: 240, minWidth: 100 }
             }}

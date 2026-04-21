@@ -1,3 +1,4 @@
+import { useIntl } from '@umijs/max';
 import { Tabs } from 'antd';
 import React, { useMemo } from 'react';
 import { GroupOption } from '../config';
@@ -23,6 +24,7 @@ const BreakdownTabs: React.FC<{
     api_keys?: FilterOptionType[];
   };
 }> = ({ filters, dateRange, scope, refreshKey = 0 }) => {
+  const intl = useIntl();
   const models = filters.models || EMPTY_FILTERS;
   const users = filters.users || EMPTY_FILTERS;
   const apiKeys = filters.api_keys || EMPTY_FILTERS;
@@ -31,7 +33,7 @@ const BreakdownTabs: React.FC<{
     return [
       {
         key: 'models',
-        label: 'Models',
+        label: intl.formatMessage({ id: 'usage.tabs.models' }),
         forceRender: true,
         children: (
           <ModelsTable
@@ -45,7 +47,7 @@ const BreakdownTabs: React.FC<{
       },
       {
         key: 'users',
-        label: 'Users',
+        label: intl.formatMessage({ id: 'usage.tabs.users' }),
         forceRender: true,
         children: (
           <UsersTable
@@ -59,7 +61,7 @@ const BreakdownTabs: React.FC<{
       },
       {
         key: 'api_keys',
-        label: 'API Keys',
+        label: intl.formatMessage({ id: 'usage.tabs.apikeys' }),
         forceRender: true,
         children: (
           <ApiKeysTable

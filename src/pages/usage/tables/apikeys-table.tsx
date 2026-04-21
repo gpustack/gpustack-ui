@@ -32,10 +32,22 @@ const APIKeys: React.FC<{
     sort_by: ''
   });
 
-  const handleTableChange = (pagination: any, filters: any, sorter: any) => {};
+  const handleTableChange = (pagination: any, filters: any, sorter: any) => {
+    let sort_by =
+      sorter.order === 'descend' ? `-${sorter.field}` : sorter.field;
+    setQueryParams((prev) => ({
+      ...prev,
+      sort_by
+    }));
+  };
 
-  const handlePageChange = (page: number, pageSize: number) => {};
-
+  const handlePageChange = (page: number, pageSize: number) => {
+    setQueryParams((prev) => ({
+      ...prev,
+      page,
+      perPage: pageSize
+    }));
+  };
   const columns = useAPIKeys();
 
   const renderEmpty = (type?: string) => {

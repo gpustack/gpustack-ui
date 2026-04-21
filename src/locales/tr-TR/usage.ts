@@ -27,5 +27,6 @@ export default {
   'usage.export.table': 'Export Table Data',
   'usage.user.currentAccount': 'Current Account',
   'usage.table.cluster': 'Cluster',
-  'usage.table.provider': 'Provider'
+  'usage.table.provider': 'Provider',
+  'usage.table.deleted': 'Deleted'
 };

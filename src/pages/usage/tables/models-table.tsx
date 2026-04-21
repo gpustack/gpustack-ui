@@ -30,7 +30,7 @@ const Models: React.FC<{
   }>({
     page: 1,
     perPage: 10,
-    sort_by: ''
+    sort_by: '-total_tokens'
   });
   const pendingPageResetRef = useRef(false);
 
@@ -115,7 +115,7 @@ const Models: React.FC<{
           <Table
             columns={columns}
             dataSource={dataSource.dataList}
-            rowKey={getBreakdownRowKey}
+            rowKey={(record) => getBreakdownRowKey(record, 'models')}
             loading={{
               spinning: loading,
               size: 'middle'

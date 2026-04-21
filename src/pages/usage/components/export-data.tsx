@@ -84,7 +84,8 @@ const ExportData: React.FC<{
     }) => {
       fetchExportData({
         ...pageParams,
-        granularity: nextChartFilters.granularity,
+        granularity: 'day',
+        sort_by: '-date',
         group_by: ['date', 'user', 'model', 'api_key'],
         filters: nextFilters,
         scope: initialScope,
@@ -221,9 +222,10 @@ const ExportData: React.FC<{
       ...pageParams,
       page,
       perPage: pageSize,
-      granularity,
+      granularity: 'day',
       group_by: ['date', 'user', 'model', 'api_key'],
       filters,
+      sort_by: '-date',
       scope: initialScope,
       start_date: commonFilters.start_date,
       end_date: commonFilters.end_date
@@ -239,9 +241,10 @@ const ExportData: React.FC<{
       setPageParams(INITIAL_PAGE_PARAMS);
       fetchExportData({
         ...INITIAL_PAGE_PARAMS,
-        granularity,
+        granularity: 'day',
         group_by: ['date', 'user', 'model', 'api_key'],
         filters,
+        sort_by: '-date',
         scope: initialScope,
         start_date: commonFilters.start_date,
         end_date: commonFilters.end_date
@@ -263,7 +266,7 @@ const ExportData: React.FC<{
         closable: false
       }}
       keyboard={false}
-      width={1200}
+      width={1280}
       style={{
         top: '10%'
       }}

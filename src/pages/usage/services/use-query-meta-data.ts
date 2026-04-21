@@ -32,8 +32,8 @@ export default function useQueryUsageMetaData() {
     if (!currentUserId) return users;
 
     const sortedUsers = [...users].sort((a, b) => {
-      if (a.identity.current.user_id === currentUserId) return -1;
-      if (b.identity.current.user_id === currentUserId) return 1;
+      if (a.identity.current?.user_id === currentUserId) return -1;
+      if (b.identity.current?.user_id === currentUserId) return 1;
       return 0;
     });
 
@@ -58,7 +58,7 @@ export default function useQueryUsageMetaData() {
         sortedUsers.map((item) => ({
           value: item.label,
           isCurrent:
-            item.identity.current.user_id === initialState?.currentUser?.id,
+            item.identity.current?.user_id === initialState?.currentUser?.id,
           ...item
         })) || [],
       api_keys: groupToOptions(res?.filters?.api_keys || [], {

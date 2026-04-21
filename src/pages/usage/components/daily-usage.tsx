@@ -28,6 +28,20 @@ const ControlLabel = styled.span`
   margin-right: 8px;
 `;
 
+function getColorForIndex(index: number) {
+  const hue = (index * 137.5) % 360;
+  return `oklch(70% 0.12 ${hue})`;
+}
+
+const colors = [
+  baseColorMap.base,
+  baseColorMap.baseR3,
+  baseColorMap.baseL1,
+  baseColorMap.baseR1,
+  baseColorMap.baseR2,
+  baseColorMap.baseL2
+];
+
 interface DailyUsageProps {
   timeSeriesData: TimeSeriesData | null;
   metric: string;
@@ -60,22 +74,33 @@ const DailyUsage: React.FC<DailyUsageProps> = (props) => {
     }
 
     const series = timeSeriesData.series;
-    const xAxis = series[0]?.timeline?.map((item) => item.date) || [];
+    const dateSet = new Set<string>();
 
-    const colors = [
-      baseColorMap.base,
-      baseColorMap.baseR3,
-      baseColorMap.baseL1,
-      baseColorMap.baseR1,
-      baseColorMap.baseR2,
-      baseColorMap.baseL2
-    ];
+    for (const item of series) {
+      for (const point of item.timeline) {
+        dateSet.add(point.date);
+      }
+    }
 
-    const chartSeries = series.map((item, index) => ({
-      name: item.label,
-      data: item.timeline.map((t) => ({ time: t.date, value: t.value })),
-      color: colors[index % colors.length]
-    }));
+    // sort dates in ascending order
+    const xAxis = Array.from(dateSet).sort(
+      (a, b) => dayjs(a).valueOf() - dayjs(b).valueOf()
+    );
+
+    const chartSeries = series.map((item, index) => {
+      const timelineMap = new Map(
+        item.timeline.map((point) => [
+          point.date,
+          { time: point.date, value: point.value }
+        ])
+      );
+
+      return {
+        name: item.label,
+        data: xAxis.map((date) => timelineMap.get(date) ?? null),
+        color: colors[index % colors.length]
+      };
+    });
 
     // API requests use line chart, tokens use bar chart
     return {

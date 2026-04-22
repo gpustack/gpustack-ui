@@ -4,6 +4,22 @@ import { useState } from 'react';
 import { queryModelInstanceRestartCount } from '../apis';
 import { InstanceRestartCount } from '../config/types';
 
+interface RestartCountOption {
+  label: string;
+  value: number;
+  worker_id: number;
+  name: string;
+  isParent: boolean;
+  children?: {
+    value: number;
+    label: string;
+    start_at: string;
+    worker_id: number;
+    isCurrent: boolean;
+    isPrevious: boolean;
+  }[];
+}
+
 export default function useQueryModelInstanceRestartCount() {
   const { detailData, loading, cancelRequest, fetchData } =
     useQueryData<InstanceRestartCount>({
@@ -11,28 +27,38 @@ export default function useQueryModelInstanceRestartCount() {
       key: 'modelInstanceRestartCount'
     });
   const intl = useIntl();
-
-  const [dataList, setDataList] = useState<
-    { value: number; label: React.ReactNode; worker_id: number }[]
-  >([]);
+  const [dataList, setDataList] = useState<RestartCountOption[]>([]);
 
   const fetchRestartCount = async (instance_id: number) => {
     const res = await fetchData(instance_id);
-    const workerId = res?.workers?.[0]?.worker_id || 0;
-    const workerItem = res?.workers?.[0];
-    const dataList =
-      workerItem?.restarts?.map((restart, index) => {
+
+    const list =
+      res.workers?.map((worker) => {
         return {
-          value: restart.restart_count,
-          label: restart.restart_count,
-          start_at: restart.started_at,
-          worker_id: workerId,
-          isCurrent: index === 0,
-          isPrevious: index === 1
+          value: worker.worker_id,
+          label: worker.name,
+          worker_id: worker.worker_id,
+          name: worker.name,
+          isParent: true,
+          children:
+            worker.restarts?.map((restart, index) => {
+              return {
+                value: restart.restart_count,
+                label:
+                  index === 0
+                    ? intl.formatMessage({ id: 'models.instance.currentRun' })
+                    : intl.formatMessage({ id: 'models.instance.previousRun' }),
+                start_at: restart.started_at,
+                worker_id: worker.worker_id,
+                isCurrent: index === 0,
+                isPrevious: index === 1
+              };
+            }) || []
         };
       }) || [];
-    setDataList(dataList);
-    return dataList;
+
+    setDataList(list);
+    return list;
   };
   return {
     countOptions: dataList,

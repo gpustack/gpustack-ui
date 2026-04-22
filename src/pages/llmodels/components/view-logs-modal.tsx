@@ -1,7 +1,5 @@
 import LogsViewer from '@/components/logs-viewer/virtual-log-list';
-import BaseSelect from '@/components/seal-form/base/select';
 import useSetChunkRequest from '@/hooks/use-chunk-request';
-import { formatOrdinal } from '@/utils';
 import { CloseOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Modal, Tooltip } from 'antd';
@@ -9,6 +7,7 @@ import dayjs from 'dayjs';
 import React, { useCallback, useEffect, useState } from 'react';
 import { MODELS_API } from '../apis';
 
+import SealCascader from '@/components/seal-form/seal-cascader';
 import { InstanceRealtimeLogStatus, InstanceStatusMap } from '../config';
 import useQueryModelInstanceRestartCount from '../services/use-query-instance-restart-count';
 
@@ -30,7 +29,7 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
   const [isDownloading, setIsDownloading] = useState<boolean>(
     status === InstanceStatusMap.Downloading
   );
-  const [record, setRecord] = useState<number>(0);
+  const [record, setRecord] = useState<number[]>([]);
   const [params, setParams] = useState<any>({
     follow: true
   });
@@ -86,7 +85,7 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
     cancelRequest();
   };
 
-  const handleOnChange = (value: number, option: any) => {
+  const handleOnChange = (value: number[], option: any) => {
     if (!option) {
       setParams({
         follow: true
@@ -115,20 +114,55 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
 
   const optionRender = (option: any) => {
     const { data = {} } = option || {};
-    let label = formatOrdinal(data.value);
-    if (data.isCurrent) {
-      label = intl.formatMessage({ id: 'models.instance.currentRun' });
+    if (data.isParent) {
+      return <span style={{ fontWeight: 400 }}>{data.label}</span>;
     }
-    if (data.isPrevious) {
-      label = intl.formatMessage({ id: 'models.instance.previousRun' });
-    }
-    return renderLabel(label, data.start_at);
+    return renderLabel(data.label, data.start_at);
   };
 
-  const labelRender = (option: any) => {
-    const data = countOptions.find((item) => item.value === option.value);
-    if (!data) return '';
-    return optionRender({ data });
+  const handleOnCountChange = (value: any[], selectedOptions: any[]) => {
+    const option = selectedOptions?.[1];
+    handleOnChange(value, option);
+  };
+
+  const showCascader =
+    countOptions?.some((option) => option.children!?.length >= 2) ||
+    countOptions?.length > 1;
+
+  const renderPrefix = () => {
+    return (
+      <span
+        style={{
+          fontWeight: 400,
+          fontSize: 13,
+          display: 'flex',
+          alignItems: 'center',
+          marginRight: 8,
+          paddingRight: 8,
+          color: 'var(--ant-color-text-secondary)',
+          borderRight: '1px solid var(--ant-color-split)'
+        }}
+      >
+        {intl.formatMessage({ id: 'models.instance.startHistory' })}
+        <Tooltip
+          title={
+            <span>
+              <span className="font-600 m-r-8">
+                {intl.formatMessage({
+                  id: 'models.instance.previousRun'
+                })}
+                :
+              </span>
+              {intl.formatMessage({
+                id: 'models.instance.startHistory.tips'
+              })}
+            </span>
+          }
+        >
+          <QuestionCircleOutlined style={{ marginLeft: 4 }} />
+        </Tooltip>
+      </span>
+    );
   };
 
   const renderTitle = () => {
@@ -137,53 +171,29 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
         <span style={{ fontWeight: 'var(--font-weight-bold)' }}>
           {intl.formatMessage({ id: 'common.button.viewlog' })}
         </span>
-        <span>
-          {countOptions.length > 1 && (
-            <BaseSelect
-              allowClear
-              value={record}
-              onChange={handleOnChange}
-              prefix={
-                <span
-                  style={{
-                    fontWeight: 400,
-                    fontSize: 13,
-                    display: 'flex',
-                    alignItems: 'center',
-                    marginRight: 8,
-                    paddingRight: 8,
-                    color: 'var(--ant-color-text-secondary)',
-                    borderRight: '1px solid var(--ant-color-split)'
-                  }}
-                >
-                  {intl.formatMessage({ id: 'models.instance.startHistory' })}
-                  <Tooltip
-                    title={
-                      <span>
-                        <span className="font-600 m-r-8">
-                          {intl.formatMessage({
-                            id: 'models.instance.previousRun'
-                          })}
-                          :
-                        </span>
-                        {intl.formatMessage({
-                          id: 'models.instance.startHistory.tips'
-                        })}
-                      </span>
-                    }
-                  >
-                    <QuestionCircleOutlined style={{ marginLeft: 4 }} />
-                  </Tooltip>
-                </span>
-              }
-              options={countOptions}
-              labelRender={labelRender}
-              optionRender={optionRender}
-              style={{
-                width: 400,
-                marginRight: 16
+        <span className="flex-center gap-8" style={{ height: 32 }}>
+          {showCascader && (
+            <SealCascader
+              size="small"
+              prefix={renderPrefix()}
+              required
+              showSearch
+              changeOnSelect={false}
+              expandTrigger="hover"
+              style={{ width: 400 }}
+              multiple={false}
+              classNames={{
+                popup: {
+                  root: 'cascader-popup-wrapper gpu-selector'
+                }
               }}
-            ></BaseSelect>
+              maxTagCount={1}
+              value={record}
+              options={countOptions}
+              getPopupContainer={(triggerNode) => triggerNode.parentNode}
+              optionNode={optionRender}
+              onChange={handleOnCountChange}
+            ></SealCascader>
           )}
           <Button
             type="text"
@@ -207,7 +217,10 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
       fetchData(props.id).then((list) => {
         const lastItem = list?.[0];
         if (lastItem) {
-          setRecord(lastItem.value);
+          handleOnChange(
+            [lastItem.value, lastItem.children?.[0]?.value],
+            lastItem.children?.[0]
+          );
         }
       });
     } else {

@@ -1,4 +1,4 @@
-import { COLOR_PRIMARY } from './index';
+import { COLOR_PRIMARY } from './constants';
 
 export default {
   'root-entry-name': 'variable',

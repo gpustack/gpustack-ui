@@ -1,6 +1,4 @@
-import ListMap from '@gpustack/core-ui/lib/components/dynamic-form/components/list-map';
-import { statusType } from '@gpustack/core-ui/lib/components/dynamic-form/config/types';
-import useValidateFields from '@gpustack/core-ui/lib/components/dynamic-form/hooks/use-validate-fields';
+import { ListMap, type statusType, useValidateFields } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import React, { forwardRef, useState } from 'react';

@@ -1,6 +1,5 @@
 import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
-import { SimpleTable, StatusTag } from '@gpustack/core-ui';
-import { type ColumnProps } from '@gpustack/core-ui/lib/components/simple-table';
+import { SimpleTable, StatusTag, type ColumnProps } from '@gpustack/core-ui';
 import { Progress, Tooltip } from 'antd';
 import _ from 'lodash';
 import { InstanceStatusMap, status } from '../../config';

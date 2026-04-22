@@ -7,7 +7,7 @@ import {
   GPUDriverMap,
   ManufacturerMap
 } from '@/pages/resources/config/gpu-driver';
-import icons from '@gpustack/core-ui/lib/components/icon-font/icons';
+import { icons } from '@gpustack/core-ui';
 import jsYaml from 'js-yaml';
 import { trim } from 'lodash';
 

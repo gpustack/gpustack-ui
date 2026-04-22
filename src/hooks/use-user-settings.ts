@@ -1,7 +1,7 @@
-import { userSettingsHelperAtom } from '@/atoms/settings';
-import themeConfig from '@/config/theme';
 import { useAtom } from 'jotai';
 import { useEffect, useMemo } from 'react';
+import { userSettingsHelperAtom } from '../atoms/settings';
+import themeConfig from '../config/theme';
 
 type Theme = 'light' | 'realDark' | 'auto';
 

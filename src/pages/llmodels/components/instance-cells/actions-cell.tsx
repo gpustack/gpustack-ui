@@ -2,10 +2,10 @@ import { useBenchmarkTargetInstance } from '@/pages/llmodels/hooks/use-run-bench
 import { DeleteOutlined, DownloadOutlined } from '@ant-design/icons';
 import {
   DropdownButtons,
+  type HandlerOptions,
   IconFont,
   useDownloadStream
 } from '@gpustack/core-ui';
-import { HandlerOptions } from '@gpustack/core-ui/lib/hooks/use-chunk-fetch';
 import { useIntl } from '@umijs/max';
 import { Progress, notification } from 'antd';
 import dayjs from 'dayjs';

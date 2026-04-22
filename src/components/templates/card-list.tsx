@@ -1,9 +1,9 @@
 import {
   InfiniteScroller,
   ResizeContainer,
-  TemplateCardSkeleton
+  TemplateCardSkeleton,
+  useScrollerContext
 } from '@gpustack/core-ui';
-import { useScrollerContext } from '@gpustack/core-ui/lib/components/infinite-scroller/use-scroller-context';
 import { Spin } from 'antd';
 import React from 'react';
 import styled from 'styled-components';

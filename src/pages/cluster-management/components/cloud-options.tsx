@@ -1,6 +1,4 @@
-import { DropdownActions } from '@gpustack/core-ui';
-import ListMap from '@gpustack/core-ui/lib/components/dynamic-form/components/list-map';
-import { FieldSchema } from '@gpustack/core-ui/lib/components/dynamic-form/config/types';
+import { DropdownActions, type FieldSchema, ListMap } from '@gpustack/core-ui';
 
 import { PlusOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';

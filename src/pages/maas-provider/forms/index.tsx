@@ -1,10 +1,14 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { json2Yaml, yaml2Json } from '@/pages/backends/config';
-import { CollapsePanel, IconFont, ScrollSpyTabs } from '@gpustack/core-ui';
-import { useWrapperContext } from '@gpustack/core-ui/lib/components/column-wrapper/use-wrapper-context';
-import useFinishFailed from '@gpustack/core-ui/lib/components/scroll-spy-tabs/use-finish-failed';
-import useScrollActiveChange from '@gpustack/core-ui/lib/components/scroll-spy-tabs/use-scroll-active-change';
+import {
+  CollapsePanel,
+  IconFont,
+  ScrollSpyTabs,
+  useFinishFailed,
+  useScrollActiveChange,
+  useWrapperContext
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';

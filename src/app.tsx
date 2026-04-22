@@ -1,6 +1,9 @@
 import { GPUStackVersionAtom, UpdateCheckAtom } from '@/atoms/user';
 import { setAtomStorage } from '@/atoms/utils';
 import { DEFAULT_ENTER_PAGE, GPUSTACK_API_BASE_URL } from '@/config/settings';
+import { getGPUStackPlugin } from '@/plugins';
+import { GPUStackPluginManager } from '@/plugins/manager';
+import { mergeEnterpriseRoutes } from '@/plugins/route-merger';
 import { requestConfig } from '@/request-config';
 import {
   queryCurrentUserState,
@@ -14,6 +17,7 @@ import {
   readState,
   writeState
 } from '@/utils/localstore/index';
+import '@gpustack/core-ui/style.css';
 import { RequestConfig, history } from '@umijs/max';
 import { message } from 'antd';
 
@@ -33,8 +37,18 @@ const checkDefaultPage = async (userInfo: any) => {
 export async function getInitialState(): Promise<{
   fetchUserInfo: () => Promise<Global.UserInfo>;
   currentUser?: Global.UserInfo;
+  pluginData?: Record<string, any>;
 }> {
   const { location } = history;
+  const enterprisePlugin = getGPUStackPlugin();
+
+  // initialize plugins and merge enterprise locales
+  let pluginData = {};
+  try {
+    pluginData = await GPUStackPluginManager.initialize();
+  } catch (error) {
+    console.error('Failed to initialize plugins:', error);
+  }
 
   const getUpdateCheck = async () => {
     try {
@@ -103,11 +117,13 @@ export async function getInitialState(): Promise<{
     checkDefaultPage(userInfo);
     return {
       fetchUserInfo,
-      currentUser: userInfo
+      currentUser: userInfo,
+      pluginData
     };
   }
   return {
-    fetchUserInfo
+    fetchUserInfo,
+    pluginData
   };
 }
 
@@ -115,3 +131,11 @@ export const request: RequestConfig = {
   baseURL: `/${GPUSTACK_API_BASE_URL}`,
   ...requestConfig
 };
+
+/**
+ * 动态修改路由
+ * @param routes 路由配置
+ */
+export function patchClientRoutes({ routes }: any) {
+  mergeEnterpriseRoutes(routes);
+}

@@ -1,7 +1,6 @@
 // columns.ts
 import { tableSorter } from '@/config/settings';
-import { AutoTooltip, DropdownButtons } from '@gpustack/core-ui';
-import icons from '@gpustack/core-ui/lib/components/icon-font/icons';
+import { AutoTooltip, DropdownButtons, icons } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Tag } from 'antd';
 import { ColumnsType } from 'antd/lib/table';

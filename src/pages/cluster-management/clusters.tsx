@@ -10,9 +10,9 @@ import {
   FilterBar,
   IconFont,
   Table as SealTable,
+  TableOrder,
   TableProvider
 } from '@gpustack/core-ui';
-import { TableOrder } from '@gpustack/core-ui/lib/components/table/types';
 import { useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { message } from 'antd';

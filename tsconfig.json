@@ -17,22 +17,8 @@
     "paths": {
       "@/*": ["./src/*"],
       "@@/*": ["./src/.umi/*"],
-      "@@test/*": ["./src/.umi-test/*"],
-      "@gpustack/core-ui": ["../core-ui/src/index.ts"],
-      "@gpustack/core-ui/*": ["../core-ui/src/*"],
-      "@gpustack/core-ui/hooks": ["../core-ui/src/lib/hooks"],
-      "@gpustack/core-ui/utils": ["../core-ui/src/lib/utils"],
-      "@gpustack/core-ui/types": ["../core-ui/src/lib/types"],
-      "@gpustack/core-ui/components": ["../core-ui/src/lib/components"],
-      "@gpustack/core-ui/lib/*": ["../core-ui/src/lib/*"]
+      "@@test/*": ["./src/.umi-test/*"]
     }
   },
-  "include": [
-    "./**/*.d.ts",
-    "./**/*.ts",
-    "./**/*.tsx",
-    "@gpustack/core-ui/lib/components/logs-viewer/parse-worker.ts",
-    "@gpustack/core-ui/lib/components/image-editor/invert-worker.ts",
-    "@gpustack/core-ui/lib/components/image-editor/offscreen-worker.ts"
-  ]
+  "include": ["./**/*.d.ts", "./**/*.ts", "./**/*.tsx"]
 }

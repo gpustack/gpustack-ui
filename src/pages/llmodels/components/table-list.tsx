@@ -18,9 +18,9 @@ import {
   DropdownActions,
   DropdownButtons,
   PageTools,
-  Table as SealTable
+  Table as SealTable,
+  TableOrder
 } from '@gpustack/core-ui';
-import { TableOrder } from '@gpustack/core-ui/lib/components/table/types';
 import { useIntl, useNavigate, useSearchParams } from '@umijs/max';
 import { useMemoizedFn, useToggle } from 'ahooks';
 import { Button, Space, message } from 'antd';

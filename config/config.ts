@@ -19,6 +19,9 @@ export default defineConfig({
   history: {
     type: 'hash'
   },
+  define: {
+    'process.env.ENABLE_ENTERPRISE': process.env.ENABLE_ENTERPRISE
+  },
   analyze: {
     analyzerMode: 'server',
     analyzerPort: 8888,

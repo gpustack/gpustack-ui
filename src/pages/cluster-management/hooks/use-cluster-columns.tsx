@@ -6,10 +6,10 @@ import {
   AutoTooltip,
   DropdownButtons,
   GrafanaIcon,
-  StatusTag
+  StatusTag,
+  icons,
+  type TableColumnProps as SealColumnProps
 } from '@gpustack/core-ui';
-import icons from '@gpustack/core-ui/lib/components/icon-font/icons';
-import { ColumnProps as SealColumnProps } from '@gpustack/core-ui/lib/components/table/types';
 import { useIntl } from '@umijs/max';
 import { Tooltip } from 'antd';
 import dayjs from 'dayjs';

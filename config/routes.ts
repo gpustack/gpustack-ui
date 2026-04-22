@@ -303,6 +303,26 @@ export default [
     ]
   },
   {
+    name: 'apikeys',
+    path: '/api-keys',
+    key: 'apikeys',
+    hideInMenu: true,
+    selectedIcon: 'icon-key-filled',
+    icon: 'icon-key',
+    defaultIcon: 'icon-key',
+    component: './api-keys'
+  },
+  {
+    name: 'settings',
+    path: '/settings',
+    key: 'settings',
+    hideInMenu: true,
+    selectedIcon: 'icon-settings-filled',
+    icon: 'icon-settings',
+    defaultIcon: 'icon-settings',
+    component: './settings'
+  },
+  {
     name: 'profile',
     path: '/profile',
     key: 'profile',

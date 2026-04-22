@@ -3,8 +3,10 @@ import { userAtom } from '@/atoms/user';
 import DarkMask from '@/components/dark-mask';
 import routeCachekey from '@/config/route-cachekey';
 import { DEFAULT_ENTER_PAGE, GPUSTACK_API_BASE_URL } from '@/config/settings';
+import { COLOR_PRIMARY } from '@/config/theme';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import useUserSettings from '@/hooks/use-user-settings';
+import useUserSettingsStorage from '@/hooks/use-user-settings-storage';
 import useAddResource from '@/pages/dashboard/hooks/use-add-resource';
 import { logout } from '@/pages/login/apis';
 import {
@@ -128,6 +130,7 @@ export default (props: any) => {
   });
   const [, contextHolder] = Modal.useModal();
   const { themeData, setUserSettings, userSettings } = useUserSettings();
+  const userSettingsStorage = useUserSettingsStorage();
   const [userInfo] = useAtom(userAtom);
   const [routeCache] = useAtom(routeCacheAtom);
   const location = useLocation();
@@ -205,7 +208,7 @@ export default (props: any) => {
 
   const role = initialState?.currentUser?.is_admin ? 'admin' : 'user';
   const [route] = useAccessMarkedRoutes(mapRoutes(newRoutes, role));
-
+  console.log('route++++++++', route, clientRoutes);
   patchRoutes({
     routes: route.children,
     initialState: initialInfo.initialState
@@ -363,7 +366,13 @@ export default (props: any) => {
           apiBaseUrl: GPUSTACK_API_BASE_URL,
           theme: userSettings.theme,
           iconUrl: '//at.alicdn.com/t/c/font_4613488_8fi68fmt1th.js',
-          isDarkTheme: userSettings.isDarkTheme
+          isDarkTheme: userSettings.isDarkTheme,
+          defaultColorPrimary: COLOR_PRIMARY
+        }}
+        hooks={{
+          useUserSettings: useUserSettings,
+          useUserSettingsStorage: () => userSettingsStorage,
+          useIntl: useIntl
         }}
         i18n={intl}
         locale={{
@@ -371,7 +380,12 @@ export default (props: any) => {
           setLocale: setLocale
         }}
         services={{
-          request: request
+          request: request,
+          router: {
+            push: (path: string) => navigate(path),
+            replace: (path: string) => navigate(path, { replace: true }),
+            goBack: () => navigate(-1)
+          }
         }}
         localStore={{
           readColumnSettings,

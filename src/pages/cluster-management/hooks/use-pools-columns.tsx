@@ -1,6 +1,9 @@
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { AutoTooltip, DropdownButtons } from '@gpustack/core-ui';
-import { ColumnProps } from '@gpustack/core-ui/lib/components/table/types';
+import {
+  AutoTooltip,
+  DropdownButtons,
+  type TableColumnProps
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import dayjs from 'dayjs';
 import _ from 'lodash';
@@ -27,7 +30,7 @@ const actionItems = [
 const usePoolsColumns = (
   handleSelect: (val: string, record: ListItem) => void,
   sortOrder?: string[]
-): ColumnProps[] => {
+): TableColumnProps[] => {
   const intl = useIntl();
 
   return useMemo(() => {

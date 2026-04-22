@@ -3,13 +3,19 @@
   "author": "jialin",
   "scripts": {
     "build": "max build",
+    "build:enterprise": "node ./scripts/run-enterprise-build.cjs",
     "check:locales": "npx tsx ./src/locales/check.ts",
     "dev": "max dev",
+    "dev:enterprise": "node ./scripts/run-enterprise-dev.cjs",
     "format": "prettier --cache --write .",
     "postinstall": "max setup",
     "prepare": "husky",
     "preview": "max preview",
     "setup": "max setup",
+    "sync:enterprise-config:clean": "node ./scripts/sync-enterprise-config.cjs clean",
+    "sync:enterprise-config": "node ./scripts/sync-enterprise-config.cjs",
+    "sync:enterprise-global:clean": "npm run sync:enterprise-config:clean",
+    "sync:enterprise-global": "npm run sync:enterprise-config",
     "start": "npm run dev"
   },
   "dependencies": {
@@ -94,6 +100,7 @@
     "babel-plugin-named-asset-import": "^0.3.8",
     "case-sensitive-paths-webpack-plugin": "^2.4.0",
     "compression-webpack-plugin": "^11.1.0",
+    "cross-env": "^7.0.3",
     "css-loader": "^7.1.2",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",

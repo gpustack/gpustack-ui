@@ -1,7 +1,11 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
-import { CollapsePanel, IconFont, ScrollSpyTabs } from '@gpustack/core-ui';
-import { useWrapperContext } from '@gpustack/core-ui/lib/components/column-wrapper/use-wrapper-context';
+import {
+  CollapsePanel,
+  IconFont,
+  ScrollSpyTabs,
+  useWrapperContext
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';

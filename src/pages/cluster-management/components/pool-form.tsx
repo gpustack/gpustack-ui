@@ -14,9 +14,9 @@ import {
   IconFont,
   LabelSelector,
   Select as SealSelect,
-  useAppUtils
+  useAppUtils,
+  type CollapseContainerProps
 } from '@gpustack/core-ui';
-import { type CollapseContainerProps } from '@gpustack/core-ui/lib/components/collapse-container';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { Button, Form } from 'antd';

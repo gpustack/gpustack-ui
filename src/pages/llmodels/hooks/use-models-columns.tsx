@@ -3,9 +3,13 @@ import { systemConfigAtom } from '@/atoms/system';
 import { OPENAI_COMPATIBLE, tableSorter } from '@/config/settings';
 import { TargetStatusValueMap } from '@/pages/model-routes/config';
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import { AutoTooltip, DropdownButtons, GrafanaIcon } from '@gpustack/core-ui';
-import icons from '@gpustack/core-ui/lib/components/icon-font/icons';
-import { ColumnProps } from '@gpustack/core-ui/lib/components/table/types';
+import {
+  AutoTooltip,
+  DropdownButtons,
+  GrafanaIcon,
+  icons,
+  type TableColumnProps
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { Tooltip } from 'antd';
@@ -98,7 +102,7 @@ const useModelsColumns = ({
   clusterList,
   sortOrder,
   targetList
-}: ModelsColumnsHookProps & { targetList: any[] }): ColumnProps[] => {
+}: ModelsColumnsHookProps & { targetList: any[] }): TableColumnProps[] => {
   const intl = useIntl();
   const systemConfig = useAtomValue(systemConfigAtom);
 

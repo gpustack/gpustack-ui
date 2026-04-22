@@ -6,9 +6,9 @@ import {
   AlertInfo,
   ImageEditor as CanvasImageEditor,
   IconFont,
+  processImage,
   SingleImage
 } from '@gpustack/core-ui';
-import { processImage } from '@gpustack/core-ui/lib/components/image-editor/extract-image-colors';
 import { useIntl } from '@umijs/max';
 import { Divider } from 'antd';
 import _ from 'lodash';

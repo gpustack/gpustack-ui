@@ -39,6 +39,7 @@ export default function useQueryModelInstanceRestartCount() {
           label: worker.name,
           worker_id: worker.worker_id,
           name: worker.name,
+          isMain: res.main_worker_id === worker.worker_id,
           isParent: true,
           children:
             worker.restarts?.map((restart, index) => {

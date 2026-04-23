@@ -377,6 +377,7 @@ export interface DraftModelItem {
 }
 
 export interface InstanceRestartCount {
+  main_worker_id: number;
   workers: {
     worker_id: number;
     name: string;

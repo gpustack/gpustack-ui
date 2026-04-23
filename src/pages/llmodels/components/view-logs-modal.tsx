@@ -215,7 +215,7 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
         handler: updateHandler
       });
       fetchData(props.id).then((list) => {
-        const lastItem = list?.[0];
+        const lastItem = list.find((item) => item.isMain);
         if (lastItem) {
           handleOnChange(
             [lastItem.value, lastItem.children?.[0]?.value],

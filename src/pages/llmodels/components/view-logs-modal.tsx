@@ -1,13 +1,11 @@
 import useSetChunkRequest from '@/hooks/use-chunk-request';
 import { CloseOutlined, QuestionCircleOutlined } from '@ant-design/icons';
-import { LogsViewer } from '@gpustack/core-ui';
+import { BaseSelect, LogsViewer } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Button, Modal, Tooltip } from 'antd';
-import dayjs from 'dayjs';
-import React, { useCallback, useEffect, useState } from 'react';
+import { Button, Checkbox, Modal, Tooltip } from 'antd';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { MODELS_API } from '../apis';
 
-import SealCascader from '@/components/seal-form/seal-cascader';
 import { InstanceRealtimeLogStatus, InstanceStatusMap } from '../config';
 import useQueryModelInstanceRestartCount from '../services/use-query-instance-restart-count';
 
@@ -29,15 +27,23 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
   const [isDownloading, setIsDownloading] = useState<boolean>(
     status === InstanceStatusMap.Downloading
   );
-  const [record, setRecord] = useState<number[]>([]);
+  const [selectedWorkerID, setSelectedWorkerID] = useState<number | null>(null);
   const [params, setParams] = useState<any>({
     follow: true
   });
+  const [showPrevious, setShowPrevious] = useState(false);
   const logsViewerRef = React.useRef<any>(null);
   const { countOptions, fetchData, cancelRequest } =
     useQueryModelInstanceRestartCount();
   const requestRef = React.useRef<any>(null);
   const contentRef = React.useRef<any>(null);
+
+  const currentWorkerCountList = useMemo(() => {
+    return (
+      countOptions?.find((option) => option.worker_id === selectedWorkerID)
+        ?.children || []
+    );
+  }, [countOptions, selectedWorkerID]);
 
   const handleCancel = useCallback(() => {
     logsViewerRef.current?.abort();
@@ -82,10 +88,12 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
   const cancelOnClose = () => {
     logsViewerRef.current?.abort();
     requestRef.current?.current?.cancel?.();
+    setSelectedWorkerID(null);
+    setShowPrevious(false);
     cancelRequest();
   };
 
-  const handleOnChange = (value: number[], option: any) => {
+  const handleOnChange = (option: any) => {
     if (!option) {
       setParams({
         follow: true
@@ -93,76 +101,39 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
     } else {
       setParams({
         follow: true,
-        watch: false,
-        restart_count: option.value,
+        watch: !option.previous,
+        previous: option.previous,
         worker_id: option.worker_id
       });
     }
-    setRecord(value);
+    setSelectedWorkerID(option?.worker_id || null);
   };
 
-  const renderLabel = (label: string, time: string) => {
-    return (
-      <span className="flex-between gap-8">
-        <span>{label}</span>
-        <span className="text-tertiary font-400">
-          {dayjs(time).format('YYYY-MM-DD HH:mm:ss')}
-        </span>
-      </span>
-    );
-  };
-
-  const optionRender = (option: any) => {
-    const { data = {} } = option || {};
-    if (data.isParent) {
-      return <span style={{ fontWeight: 400 }}>{data.label}</span>;
+  const handleWorkerChange = (value: number, option: any) => {
+    setSelectedWorkerID(value);
+    setShowPrevious(false);
+    const counts = option?.children || [];
+    const lastItem = counts.find((item: any) => !item.previous);
+    if (lastItem) {
+      handleOnChange(lastItem);
     }
-    return renderLabel(data.label, data.start_at);
-  };
-
-  const handleOnCountChange = (value: any[], selectedOptions: any[]) => {
-    const option = selectedOptions?.[1];
-    handleOnChange(value, option);
   };
 
   const showCascader =
     countOptions?.some((option) => option.children!?.length >= 2) ||
     countOptions?.length > 1;
 
-  const renderPrefix = () => {
-    return (
-      <span
-        style={{
-          fontWeight: 400,
-          fontSize: 13,
-          display: 'flex',
-          alignItems: 'center',
-          marginRight: 8,
-          paddingRight: 8,
-          color: 'var(--ant-color-text-secondary)',
-          borderRight: '1px solid var(--ant-color-split)'
-        }}
-      >
-        {intl.formatMessage({ id: 'models.instance.startHistory' })}
-        <Tooltip
-          title={
-            <span>
-              <span className="font-600 m-r-8">
-                {intl.formatMessage({
-                  id: 'models.instance.previousRun'
-                })}
-                :
-              </span>
-              {intl.formatMessage({
-                id: 'models.instance.startHistory.tips'
-              })}
-            </span>
-          }
-        >
-          <QuestionCircleOutlined style={{ marginLeft: 4 }} />
-        </Tooltip>
-      </span>
+  const handleOnChecked = (e: any) => {
+    const checked = e.target.checked;
+    const selectItem = currentWorkerCountList.find(
+      (item) => item.previous === checked
     );
+    setShowPrevious(checked);
+    handleOnChange(selectItem);
+  };
+
+  const labelRender = (option: any) => {
+    return <span style={{ fontWeight: 400 }}>{option.label}</span>;
   };
 
   const renderTitle = () => {
@@ -173,28 +144,63 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
         </span>
         <span className="flex-center gap-8" style={{ height: 32 }}>
           {showCascader && (
-            <SealCascader
-              size="small"
-              prefix={renderPrefix()}
-              required
-              showSearch
-              changeOnSelect={false}
-              expandTrigger="hover"
-              style={{ width: 400 }}
-              multiple={false}
-              classNames={{
-                popup: {
-                  root: 'cascader-popup-wrapper gpu-selector'
-                }
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 16,
+                marginRight: 8
               }}
-              maxTagCount={1}
-              value={record}
-              options={countOptions}
-              getPopupContainer={(triggerNode) => triggerNode.parentNode}
-              optionNode={optionRender}
-              onChange={handleOnCountChange}
-            ></SealCascader>
+            >
+              {currentWorkerCountList.length > 1 && (
+                <Checkbox onChange={handleOnChecked} checked={showPrevious}>
+                  <Tooltip
+                    title={
+                      <span>
+                        <span className="font-600 m-r-8">
+                          {intl.formatMessage({
+                            id: 'models.instance.previousRun'
+                          })}
+                          :
+                        </span>
+                        {intl.formatMessage({
+                          id: 'models.instance.startHistory.tips'
+                        })}
+                      </span>
+                    }
+                  >
+                    <span style={{ fontWeight: 400 }}>
+                      {intl.formatMessage({
+                        id: 'models.instance.previousRun'
+                      })}
+                    </span>
+                    <QuestionCircleOutlined style={{ marginLeft: 4 }} />
+                  </Tooltip>
+                </Checkbox>
+              )}
+              <BaseSelect
+                prefix={
+                  <span
+                    style={{
+                      color: 'var(--ant-color-text-tertiary)',
+                      fontWeight: 400,
+                      borderRight: '1px solid var(--ant-color-split)',
+                      paddingRight: 8,
+                      marginRight: 8
+                    }}
+                  >
+                    {intl.formatMessage({ id: 'resources.worker' })}
+                  </span>
+                }
+                options={countOptions}
+                value={selectedWorkerID || undefined}
+                labelRender={labelRender}
+                onChange={handleWorkerChange}
+                style={{ width: 300 }}
+              ></BaseSelect>
+            </div>
           )}
+
           <Button
             type="text"
             color="default"
@@ -215,12 +221,9 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
         handler: updateHandler
       });
       fetchData(props.id).then((list) => {
-        const lastItem = list?.[0];
+        const lastItem = list.find((item) => item.isMain);
         if (lastItem) {
-          handleOnChange(
-            [lastItem.value, lastItem.children?.[0]?.value],
-            lastItem.children?.[0]
-          );
+          handleOnChange(lastItem.children?.[0]);
         }
       });
     } else {
@@ -245,6 +248,9 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
       }}
       keyboard={true}
       styles={{
+        container: {
+          padding: '12px 24px 24px 20px'
+        },
         wrapper: {
           borderRadius: 0
         }
@@ -255,7 +261,7 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
       <div className="viewer-wrapper" ref={contentRef}>
         <LogsViewer
           ref={logsViewerRef}
-          diffHeight={95}
+          diffHeight={91}
           url={url}
           tail={tail}
           enableScorllLoad={enableScorllLoad}

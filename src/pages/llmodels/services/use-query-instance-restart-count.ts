@@ -14,6 +14,7 @@ interface RestartCountOption {
     value: number;
     label: string;
     start_at: string;
+    previous: boolean;
     worker_id: number;
     isCurrent: boolean;
     isPrevious: boolean;
@@ -39,11 +40,13 @@ export default function useQueryModelInstanceRestartCount() {
           label: worker.name,
           worker_id: worker.worker_id,
           name: worker.name,
+          isMain: res.main_worker_id === worker.worker_id,
           isParent: true,
           children:
             worker.restarts?.map((restart, index) => {
               return {
-                value: restart.restart_count,
+                value: index,
+                previous: restart.previous,
                 label:
                   index === 0
                     ? intl.formatMessage({ id: 'models.instance.currentRun' })

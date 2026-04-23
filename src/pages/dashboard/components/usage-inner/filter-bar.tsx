@@ -152,6 +152,7 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
           placeholder={intl.formatMessage({
             id: 'dashboard.usage.selectmodel'
           })}
+          isInFormItems={false}
           options={modelList}
           value={selectedModels}
           showCheckedStrategy="SHOW_CHILD"

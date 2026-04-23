@@ -1,7 +1,5 @@
-import AutoTooltip from '@/components/auto-tooltip';
-import ModalFooter from '@/components/modal-footer';
-import ScrollerModal from '@/components/scroller-modal';
 import { exportJsonToExcel } from '@/utils/excel-reader';
+import { AutoTooltip, ModalFooter, ScrollerModal } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Table, TableColumnType } from 'antd';
 import React, { useEffect } from 'react';

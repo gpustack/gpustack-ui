@@ -182,7 +182,7 @@ const APIKeys: React.FC = () => {
             rowSelection={rowSelection}
             loading={{
               spinning: dataSource.loading,
-              size: 'default'
+              size: 'middle'
             }}
             sortDirections={TABLE_SORT_DIRECTIONS}
             showSorterTooltip={false}

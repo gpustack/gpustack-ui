@@ -1,5 +1,5 @@
 // columns.ts
-import AutoTooltip from '@/components/auto-tooltip';
+import { AutoTooltip } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Tag } from 'antd';
 import { useMemo } from 'react';

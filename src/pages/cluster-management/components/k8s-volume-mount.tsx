@@ -206,6 +206,7 @@ const VolumeMountsForm: React.FC<{ action: PageActionType }> = ({ action }) => {
                       ]}
                     >
                       <CInput.Input
+                        disabled={name === 0}
                         label={intl.formatMessage({
                           id: 'clusters.volume.name'
                         })}

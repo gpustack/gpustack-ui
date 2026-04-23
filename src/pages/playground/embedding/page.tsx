@@ -10,7 +10,7 @@ import {
   InputNumber as CInputNumber,
   HighlightCode,
   IconFont,
-  ResizeContainer,
+  ResizePanel,
   ScatterChart,
   useOverlayScroller
 } from '@gpustack/core-ui';
@@ -691,7 +691,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
                 <Spin spinning={true} size="middle"></Spin>
               </div>
             )}
-            <ResizeContainer
+            <ResizePanel
               ref={resizeRef}
               maxHeight={resizeMaxHeight}
               minHeight={180}
@@ -715,7 +715,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
                   items={outputItems}
                 ></Tabs>
               </div>
-            </ResizeContainer>
+            </ResizePanel>
           </div>
         </div>
       </div>

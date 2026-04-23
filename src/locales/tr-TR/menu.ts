@@ -39,7 +39,8 @@ export default {
   'menu.clusterManagement.clusterDetail': 'Küme Detayı',
   'menu.clusterManagement.clusterCreate': 'Küme Oluştur',
   'menu.resources.backendsList': 'Çıkarım Altyapıları',
-  'menu.models.instances': 'Instances'
+  'menu.models.instances': 'Instances',
+  'menu.settings': 'Settings'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

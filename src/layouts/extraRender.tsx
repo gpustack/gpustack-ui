@@ -294,18 +294,6 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
           </NewLabel>
         )}
       </div>
-      <Button
-        type="text"
-        size="small"
-        onClick={() => {
-          history.push('/settings');
-        }}
-        style={{
-          color: 'var(--ant-color-text-tertiary)'
-        }}
-      >
-        <IconFont type="icon-settings-02" style={{ fontSize: 18 }} />
-      </Button>
       <DropdownActions menu={{ ...helpMenu }} popupRender={helpPopupRender}>
         <IconWrapper>
           <IconFont

@@ -1,10 +1,10 @@
 {
   "private": true,
-  "author": "jialin",
+  "author": "gpustack",
   "scripts": {
     "build": "max build",
     "build:enterprise": "node ./scripts/run-enterprise-build.cjs",
-    "check:locales": "npx tsx ./src/locales/check.ts",
+    "check:locales": "node --import tsx ./src/locales/check.ts",
     "dev": "max dev",
     "dev:enterprise": "node ./scripts/run-enterprise-dev.cjs",
     "format": "prettier --cache --write .",
@@ -22,7 +22,7 @@
     "@ant-design/icons": "^6.1.0",
     "@ant-design/pro-components": "3.1.0-0",
     "@braintree/sanitize-url": "^7.1.1",
-    "@gpustack/core-ui": "^1.0.0",
+    "@gpustack/core-ui": "^1.0.1",
     "@huggingface/gguf": "^0.1.7",
     "@huggingface/hub": "^0.15.1",
     "@huggingface/tasks": "^0.11.6",

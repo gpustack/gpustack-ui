@@ -1,7 +1,7 @@
-import { SimpleCard } from '@/components/card-wrapper/simple-card';
 import { baseColorMap } from '@/pages/dashboard/config';
 import { formatLargeNumber } from '@/utils';
 import { useModel } from '@@/plugin-model';
+import { SimpleCard } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import React, { useEffect, useMemo, useState } from 'react';
 import BreakdownTabs from './components/breakdown-tabs';

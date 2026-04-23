@@ -80,6 +80,13 @@ const ActiveTable = () => {
       }
     }
   ];
+
+  const generateRowKey = (record: any) => {
+    return record.provider_name
+      ? `${record.provider_name}/${record.name}`
+      : record.name;
+  };
+
   return (
     <Row gutter={[20, 0]}>
       <Col xs={24} sm={24} md={24} lg={24} xl={24}>
@@ -101,7 +108,7 @@ const ActiveTable = () => {
             columns={modelColumns}
             dataSource={data}
             pagination={false}
-            rowKey="id"
+            rowKey={generateRowKey}
           />
         </div>
       </Col>

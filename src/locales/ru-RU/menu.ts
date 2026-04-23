@@ -39,7 +39,8 @@ export default {
   'menu.models.userModels': 'Мои модели',
   'menu.clusterManagement.clusterDetail': 'Детали кластера',
   'menu.clusterManagement.clusterCreate': 'Создать кластер',
-  'menu.resources.backendsList': 'Бэкенды запуска'
+  'menu.resources.backendsList': 'Бэкенды запуска',
+  'menu.settings': 'Settings'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

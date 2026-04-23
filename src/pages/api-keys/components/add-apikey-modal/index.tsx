@@ -201,10 +201,11 @@ const AddModal: React.FC<AddModalProps> = ({
   };
 
   useEffect(() => {
-    initValues();
     if (!open) {
       setIsChanged(false);
       cacheFormRef.current = {} as any;
+    } else {
+      initValues();
     }
   }, [open]);
 

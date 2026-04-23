@@ -27,6 +27,7 @@ export default {
   'menu.login': 'ログイン',
   'menu.usage': '使用状況',
   'menu.404': '404',
+  'menu.settings': 'Settings',
   'menu.resources.workers': 'Workers',
   'menu.resources.gpus': 'GPUs',
   'menu.resources.modelfiles': 'Model Files',

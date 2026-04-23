@@ -1,7 +1,5 @@
-import CardWrapper from '@/components/card-wrapper';
-import MixLineBar from '@/components/echarts/mix-line-bar';
-import BaseSelect from '@/components/seal-form/base/select';
 import { baseColorMap } from '@/pages/dashboard/config';
+import { BaseSelect, CardWrapper, MixLineBarChart } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Segmented } from 'antd';
 import dayjs from 'dayjs';
@@ -172,7 +170,7 @@ const DailyUsage: React.FC<DailyUsageProps> = (props) => {
             onChange={onGranularityChange}
           ></Segmented>
         </ControlsWrapper>
-        <MixLineBar
+        <MixLineBarChart
           chartData={chartData}
           seriesData={[]}
           xAxisData={xAxisData}

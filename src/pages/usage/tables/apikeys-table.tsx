@@ -1,7 +1,6 @@
-import IconFont from '@/components/icon-font';
 import { TABLE_SORT_DIRECTIONS } from '@/config/settings';
-import NoResult from '@/pages/_components/no-result';
 import PageBox from '@/pages/_components/page-box';
+import { IconFont, NoResult } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { ConfigProvider, Table } from 'antd';
 import _ from 'lodash';
@@ -35,7 +34,7 @@ const APIKeys: React.FC<{
   const pendingPageResetRef = useRef(false);
 
   const handleTableChange = (pagination: any, filters: any, sorter: any) => {
-    let sort_by =
+    const sort_by =
       sorter.order === 'descend' ? `-${sorter.field}` : sorter.field;
     setQueryParams((prev) => ({
       ...prev,

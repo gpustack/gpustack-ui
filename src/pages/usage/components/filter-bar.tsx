@@ -1,11 +1,13 @@
-import AutoTooltip from '@/components/auto-tooltip';
-import IconFont from '@/components/icon-font';
-import SealCascader from '@/components/seal-form/seal-cascader';
-import SimpleSelect from '@/components/seal-form/simple-select';
 import useRangePickerPreset from '@/pages/dashboard/hooks/use-rangepicker-preset';
 import ProviderLogo from '@/pages/maas-provider/components/provider-logo';
 import { useModel } from '@@/plugin-model';
 import { DownloadOutlined, SyncOutlined } from '@ant-design/icons';
+import {
+  AutoTooltip,
+  Cascader,
+  IconFont,
+  SimpleSelect
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, DatePicker, Dropdown, MenuProps } from 'antd';
 import dayjs from 'dayjs';
@@ -308,7 +310,7 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
             minWidth: 200
           }}
         >
-          <SealCascader
+          <Cascader
             showSearch
             multiple={true}
             classNames={{
@@ -331,6 +333,7 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
             }}
             maxTagCount={1}
             size="small"
+            isInFormItems={false}
             placeholder={intl.formatMessage({ id: 'usage.filter.model' })}
             options={modelOptions}
             showCheckedStrategy="SHOW_CHILD"
@@ -339,7 +342,7 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
             value={activeModels}
             onChange={handleOnModelsChange}
             getPopupContainer={(triggerNode) => triggerNode.parentNode}
-          ></SealCascader>
+          ></Cascader>
         </div>
         {initialState?.currentUser?.is_admin && (
           <>
@@ -363,8 +366,9 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
                 minWidth: 200
               }}
             >
-              <SealCascader
+              <Cascader
                 showSearch
+                isInFormItems={false}
                 multiple={true}
                 classNames={{
                   popup: {
@@ -393,7 +397,7 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
                 optionNode={apiKeyOptionRender}
                 onChange={handleOnApiKeysChange}
                 getPopupContainer={(triggerNode) => triggerNode.parentNode}
-              ></SealCascader>
+              ></Cascader>
             </div>
           </>
         )}

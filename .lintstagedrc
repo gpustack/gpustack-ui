@@ -2,7 +2,7 @@
   "*.{md,json}": ["prettier --cache --write"],
   "*.{js,jsx}": ["max lint --fix --eslint-only", "prettier --cache --write"],
   "*.{css,less}": [
-    "max lint --fix --stylelint-only",
+    "node ./scripts/stylelint-compat.cjs --fix --allow-empty-input",
     "prettier --cache --write"
   ],
   "!public/vs/**": [],
@@ -10,5 +10,5 @@
     "max lint --fix --eslint-only",
     "prettier --cache --parser=typescript --write"
   ],
-  "src/locales/**/*.ts": ["npx tsx src/locales/check.ts"]
+  "src/locales/**/*.ts": ["node --import tsx src/locales/check.ts"]
 }

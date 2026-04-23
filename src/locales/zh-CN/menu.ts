@@ -21,6 +21,7 @@ export default {
   'menu.models.usage': '用量统计',
   'menu.modelCatalog': '模型库',
   'menu.models.catalog': '模型库',
+  'menu.settings': '设置',
   'menu.resources': '资源',
   'menu.apikeys': 'API 密钥',
   'menu.users': '用户',

@@ -22,6 +22,7 @@ export default {
   'menu.models.usage': 'Usage',
   'menu.modelCatalog': 'Catalog',
   'menu.resources': 'Resources',
+  'menu.settings': 'Settings',
   'menu.apikeys': 'API Keys',
   'menu.users': 'Users',
   'menu.resources.workers': 'Workers',

@@ -12,17 +12,17 @@
     "prepare": "husky",
     "preview": "max preview",
     "setup": "max setup",
-    "sync:enterprise-config:clean": "node ./scripts/sync-enterprise-config.cjs clean",
+    "start": "npm run dev",
     "sync:enterprise-config": "node ./scripts/sync-enterprise-config.cjs",
-    "sync:enterprise-global:clean": "npm run sync:enterprise-config:clean",
+    "sync:enterprise-config:clean": "node ./scripts/sync-enterprise-config.cjs clean",
     "sync:enterprise-global": "npm run sync:enterprise-config",
-    "start": "npm run dev"
+    "sync:enterprise-global:clean": "npm run sync:enterprise-config:clean"
   },
   "dependencies": {
     "@ant-design/icons": "^6.1.0",
     "@ant-design/pro-components": "3.1.0-0",
     "@braintree/sanitize-url": "^7.1.1",
-    "@gpustack/core-ui": "workspace:*",
+    "@gpustack/core-ui": "^1.0.0",
     "@huggingface/gguf": "^0.1.7",
     "@huggingface/hub": "^0.15.1",
     "@huggingface/tasks": "^0.11.6",

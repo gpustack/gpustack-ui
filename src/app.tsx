@@ -133,8 +133,8 @@ export const request: RequestConfig = {
 };
 
 /**
- * 动态修改路由
- * @param routes 路由配置
+ * @description patch the client routes
+ * @param routes routes
  */
 export function patchClientRoutes({ routes }: any) {
   mergeEnterpriseRoutes(routes);

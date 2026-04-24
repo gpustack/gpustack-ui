@@ -40,7 +40,11 @@ export default {
   'menu.clusterManagement.clusterCreate': 'Küme Oluştur',
   'menu.resources.backendsList': 'Çıkarım Altyapıları',
   'menu.models.instances': 'Instances',
-  'menu.settings': 'Settings'
+  'menu.settings': 'Settings',
+  'menu.gpuService': 'GPU Service',
+  'menu.gpuService.instances': 'GPU Instances',
+  'menu.gpuService.templates': 'Instance Templates',
+  'menu.gpuService.storage': 'Storage Management'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

@@ -40,7 +40,11 @@ export default {
   'menu.clusterManagement.clusterDetail': 'Детали кластера',
   'menu.clusterManagement.clusterCreate': 'Создать кластер',
   'menu.resources.backendsList': 'Бэкенды запуска',
-  'menu.settings': 'Settings'
+  'menu.settings': 'Settings',
+  'menu.gpuService': 'GPU Service',
+  'menu.gpuService.instances': 'GPU Instances',
+  'menu.gpuService.templates': 'Instance Templates',
+  'menu.gpuService.storage': 'Storage Management'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

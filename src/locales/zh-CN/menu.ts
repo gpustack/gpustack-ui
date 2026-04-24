@@ -40,5 +40,9 @@ export default {
   'menu.clusterManagement.credentials': '云凭证',
   'menu.clusterManagement.clusterDetail': '集群详情',
   'menu.clusterManagement.clusterCreate': '创建集群',
-  'menu.resources.backendsList': '推理后端'
+  'menu.resources.backendsList': '推理后端',
+  'menu.gpuService': 'GPU 服务',
+  'menu.gpuService.instances': 'GPU 实例',
+  'menu.gpuService.templates': '实例模板',
+  'menu.gpuService.storage': '存储管理'
 };

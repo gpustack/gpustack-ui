@@ -64,7 +64,9 @@ const NO_CONTAINER_PAGES = [
   'clusterCreate',
   'benchmarkDetail',
   'deployment',
-  'video'
+  'video',
+  'instances',
+  'storage'
 ];
 
 const CHECK_RESOURCE_PATH = [

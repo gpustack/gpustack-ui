@@ -44,7 +44,7 @@ export default {
   'menu.gpuService': 'GPU Service',
   'menu.gpuService.instances': 'GPU Instances',
   'menu.gpuService.templates': 'Instance Templates',
-  'menu.gpuService.storage': 'Storage Management'
+  'menu.gpuService.storage': 'Storage'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

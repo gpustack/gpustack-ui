@@ -1,4 +1,5 @@
 import { ColumnWrapper, GSDrawer, ModalFooter } from '@gpustack/core-ui';
+import type { DrawerProps } from 'antd';
 import { Tag } from 'antd';
 import React from 'react';
 
@@ -17,6 +18,7 @@ type AddModalProps = {
   width?: number | string;
   footer?: React.ReactNode;
   subTitle?: React.ReactNode;
+  push?: DrawerProps['push'];
 };
 const FormDrawer: React.FC<AddModalProps> = ({
   title,
@@ -26,7 +28,8 @@ const FormDrawer: React.FC<AddModalProps> = ({
   children,
   width = 600,
   subTitle,
-  footer
+  footer,
+  push
 }) => {
   return (
     <GSDrawer
@@ -58,6 +61,7 @@ const FormDrawer: React.FC<AddModalProps> = ({
         closable: false
       }}
       keyboard={false}
+      push={push}
       styles={{
         wrapper: { width }
       }}

@@ -3,7 +3,7 @@ import { ModalFooter } from '@gpustack/core-ui';
 import { useRef } from 'react';
 import FormDrawer from '../../../_components/form-drawer';
 import { FormData, ListItem } from '../config/types';
-import GPUServiceInstanceForm from '../forms';
+import GPUServiceStorageForm from '../forms';
 
 type AddModalProps = {
   title: string;
@@ -46,7 +46,6 @@ const AddModal: React.FC<AddModalProps> = ({
       onCancel={handleCancel}
       onSubmit={handleSubmit}
       width={600}
-      push={{ distance: 24 }}
       footer={
         <ModalFooter
           onOk={handleSubmit}
@@ -59,7 +58,7 @@ const AddModal: React.FC<AddModalProps> = ({
         />
       }
     >
-      <GPUServiceInstanceForm
+      <GPUServiceStorageForm
         ref={form}
         action={action}
         currentData={data}

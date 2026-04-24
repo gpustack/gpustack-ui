@@ -1,14 +1,14 @@
 import { request } from '@umijs/max';
-import { mockInstanceData } from '../config/mock-data';
+import { mockStorageData } from '../config/mock-data';
 import { FormData, ListItem } from '../config/types';
 
-export const GPU_SERVICE_INSTANCES_API = '/gpu-service-instances';
+export const GPU_SERVICE_STORAGE_API = '/gpu-service-storage';
 
-export async function queryGPUServiceInstances(
+export async function queryGPUServiceStorage(
   params: Global.SearchParams,
   options?: any
 ) {
-  // return request<Global.PageResponse<ListItem>>(GPU_SERVICE_INSTANCES_API, {
+  // return request<Global.PageResponse<ListItem>>(GPU_SERVICE_STORAGE_API, {
   //   method: 'GET',
   //   params,
   //   cancelToken: options?.token
@@ -17,7 +17,7 @@ export async function queryGPUServiceInstances(
   const perPage = params.perPage || 10;
   const search = params.search?.toLowerCase();
   const clusterId = params.cluster_id;
-  const filteredData = mockInstanceData.filter((item) => {
+  const filteredData = mockStorageData.filter((item) => {
     const matchSearch = search
       ? item.name.toLowerCase().includes(search)
       : true;
@@ -38,27 +38,27 @@ export async function queryGPUServiceInstances(
   } as Global.PageResponse<ListItem>;
 }
 
-export async function createGPUServiceInstance(params: { data: FormData }) {
-  // return request<ListItem>(GPU_SERVICE_INSTANCES_API, {
+export async function createGPUServiceStorage(params: { data: FormData }) {
+  // return request<ListItem>(GPU_SERVICE_STORAGE_API, {
   //   method: 'POST',
   //   data: params.data
   // });
   return true;
 }
 
-export async function updateGPUServiceInstance(params: {
+export async function updateGPUServiceStorage(params: {
   id: number;
   data: FormData;
 }) {
-  // return request<ListItem>(`${GPU_SERVICE_INSTANCES_API}/${params.id}`, {
+  // return request<ListItem>(`${GPU_SERVICE_STORAGE_API}/${params.id}`, {
   //   method: 'PUT',
   //   data: params.data
   // });
   return true;
 }
 
-export async function deleteGPUServiceInstance(id: number) {
-  return request(`${GPU_SERVICE_INSTANCES_API}/${id}`, {
+export async function deleteGPUServiceStorage(id: number) {
+  return request(`${GPU_SERVICE_STORAGE_API}/${id}`, {
     method: 'DELETE'
   });
 }

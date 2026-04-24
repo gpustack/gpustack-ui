@@ -186,11 +186,11 @@ const baseRoutes = [
     routes: [
       {
         path: '/gpu-service',
-        redirect: '/gpu-service/list'
+        redirect: '/gpu-service/instances'
       },
       {
         name: 'instances',
-        path: '/gpu-service/list',
+        path: '/gpu-service/instances',
         key: 'gpuServiceList',
         icon: 'icon-instances-outlined',
         selectedIcon: 'icon-instances-filled',

@@ -1,5 +1,7 @@
 import { PageActionType } from '@/config/types';
-import { Input as CInput, IconFont, YamlEditor } from '@gpustack/core-ui';
+import useUserSettings from '@/hooks/use-user-settings';
+import { Input as CInput, IconFont } from '@gpustack/core-ui';
+import { YamlEditor } from '@gpustack/core-ui/yaml-editor';
 import { useIntl } from '@umijs/max';
 import { Button, Form } from 'antd';
 import React, { forwardRef, useImperativeHandle } from 'react';
@@ -11,6 +13,7 @@ const AdvanceConfig: React.FC<{
   action: PageActionType;
   ref?: any;
 }> = forwardRef(({ action }, ref) => {
+  const { isDarkTheme } = useUserSettings();
   const form = Form.useFormInstance();
   const intl = useIntl();
   const editorRef = React.useRef<any>(null);
@@ -48,6 +51,7 @@ const AdvanceConfig: React.FC<{
       </Form.Item>
       <YamlEditor
         ref={editorRef}
+        isDarkTheme={isDarkTheme}
         title={
           <span className="flex-center">
             <span>{`${intl.formatMessage({ id: 'providers.form.customConfig' })} (YAML)`}</span>

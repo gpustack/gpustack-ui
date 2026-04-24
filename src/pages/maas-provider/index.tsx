@@ -1,12 +1,11 @@
 import { PageAction } from '@/config';
 import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import useTableFetch from '@/hooks/use-table-fetch';
-import { DeleteModal, FilterBar, IconFont } from '@gpustack/core-ui';
+import { DeleteModal, FilterBar, IconFont, NoResult } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { ConfigProvider, message, Table } from 'antd';
 import _ from 'lodash';
-import NoResult from '../_components/no-result';
 import PageBox from '../_components/page-box';
 import {
   createProvider,

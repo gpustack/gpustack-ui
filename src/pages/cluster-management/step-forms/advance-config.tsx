@@ -1,6 +1,8 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
-import { Input as CInput, IconFont, YamlEditor } from '@gpustack/core-ui';
+import useUserSettings from '@/hooks/use-user-settings';
+import { Input as CInput, IconFont } from '@gpustack/core-ui';
+import { YamlEditor } from '@gpustack/core-ui/yaml-editor';
 import { useIntl } from '@umijs/max';
 import { Button, Form } from 'antd';
 import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
@@ -31,6 +33,7 @@ const ClusterAdvanceConfig: React.FC<{
   const [form] = Form.useForm();
   const intl = useIntl();
   const editorRef = React.useRef<any>(null);
+  const { isDarkTheme } = useUserSettings();
   const [fileContent, setFileContent] = React.useState<string>('');
 
   useImperativeHandle(ref, () => ({
@@ -79,6 +82,7 @@ const ClusterAdvanceConfig: React.FC<{
       </Title>
       <YamlEditor
         ref={editorRef}
+        isDarkTheme={isDarkTheme}
         title={
           <span className="flex-center">
             <span>{`YAML`}</span>

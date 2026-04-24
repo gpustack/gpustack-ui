@@ -1,5 +1,4 @@
 import _ from 'lodash';
-import tinycolor from 'tinycolor2';
 
 export const isNotEmptyValue = (value: any) => {
   if (Array.isArray(value)) {
@@ -243,25 +242,6 @@ export const base64ToFile = (base64String: string, fileName: string) => {
 // check onlinestatus
 export const isOnline = () => {
   return window.navigator.onLine;
-};
-
-export const genColors = ({
-  color,
-  alpha1,
-  alpha2
-}: {
-  color: string;
-  alpha1?: number;
-  alpha2?: number;
-}) => {
-  const base = tinycolor(color);
-  const alpha_start = alpha1 || base.getAlpha();
-  const alpha_end = alpha2 || base.getAlpha();
-
-  return [
-    base.setAlpha(alpha_start).toRgbString(),
-    base.setAlpha(alpha_end).toRgbString()
-  ];
 };
 
 /**

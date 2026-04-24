@@ -1,12 +1,16 @@
 import { PageAction } from '@/config';
 import useTableFetch from '@/hooks/use-table-fetch';
-import { DeleteModal, FilterBar, IconFont } from '@gpustack/core-ui';
+import {
+  DeleteModal,
+  FilterBar,
+  IconFont,
+  InfiniteScrollerProvider,
+  NoResult
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import useMemoizedFn from 'ahooks/lib/useMemoizedFn';
 import _ from 'lodash';
 import { useState } from 'react';
-import { ScrollerContext } from '../_components/infinite-scroller/use-scroller-context';
-import NoResult from '../_components/no-result';
 import PageBox from '../_components/page-box';
 import {
   createBackend,
@@ -249,7 +253,7 @@ const BackendList = () => {
           value: item.value
         }))}
       ></FilterBar>
-      <ScrollerContext.Provider
+      <InfiniteScrollerProvider
         value={{
           total: dataSource.totalPage,
           current: queryParams.page!,
@@ -279,7 +283,7 @@ const BackendList = () => {
           onClick={() => handleAddBackend({ key: 'community' })}
           buttonText={intl.formatMessage({ id: 'noresult.button.add' })}
         ></NoResult>
-      </ScrollerContext.Provider>
+      </InfiniteScrollerProvider>
       <AddModal
         action={openBackendModalStatus.action}
         onClose={() => closeBackendModal('custom')}

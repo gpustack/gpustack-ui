@@ -1,5 +1,5 @@
-import { exportJsonToExcel } from '@/utils/excel-reader';
 import { AutoTooltip, ModalFooter, ScrollerModal } from '@gpustack/core-ui';
+import { exportJsonToExcel } from '@gpustack/core-ui/excel';
 import { useIntl } from '@umijs/max';
 import { Table, TableColumnType } from 'antd';
 import dayjs from 'dayjs';

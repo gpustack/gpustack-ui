@@ -4,7 +4,6 @@ import DarkMask from '@/components/dark-mask';
 import routeCachekey from '@/config/route-cachekey';
 import { DEFAULT_ENTER_PAGE, GPUSTACK_API_BASE_URL } from '@/config/settings';
 import { COLOR_PRIMARY } from '@/config/theme';
-import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import useUserSettings from '@/hooks/use-user-settings';
 import useUserSettingsStorage from '@/hooks/use-user-settings-storage';
 import useAddResource from '@/pages/dashboard/hooks/use-add-resource';
@@ -18,7 +17,11 @@ import {
 import { useAccessMarkedRoutes } from '@@/plugin-access';
 import { useModel } from '@@/plugin-model';
 import { ProLayout } from '@ant-design/pro-components';
-import { CoreUIProvider, IconFont } from '@gpustack/core-ui';
+import {
+  CoreUIProvider,
+  IconFont,
+  useOverlayScroller
+} from '@gpustack/core-ui';
 import {
   Outlet,
   dropByCacheKey,

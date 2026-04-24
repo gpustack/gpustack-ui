@@ -5,16 +5,11 @@ import {
   FileMarkdownOutlined,
   RightOutlined
 } from '@ant-design/icons';
-import {
-  IconFont,
-  MarkdownViewer,
-  SimpleOverlay,
-  ThemeTag
-} from '@gpustack/core-ui';
+import { IconFont, SimpleOverlay, ThemeTag } from '@gpustack/core-ui';
+import { MarkdownViewer } from '@gpustack/core-ui/markdown';
 import { useIntl } from '@umijs/max';
 import { Button, Empty, Spin, Tooltip } from 'antd';
 import { some } from 'lodash';
-import 'overlayscrollbars/overlayscrollbars.css';
 import React, {
   useCallback,
   useEffect,

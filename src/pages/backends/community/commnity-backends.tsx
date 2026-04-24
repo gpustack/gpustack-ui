@@ -1,15 +1,18 @@
 import { enabledBackendsAtom } from '@/atoms/backend';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { SearchOutlined } from '@ant-design/icons';
-import { IconFont, ThemeTag } from '@gpustack/core-ui';
+import {
+  IconFont,
+  InfiniteScrollerProvider,
+  NoResult,
+  ThemeTag
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Input, Tooltip } from 'antd';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
-import { ScrollerContext } from '../../_components/infinite-scroller/use-scroller-context';
-import NoResult from '../../_components/no-result';
 import { INFERENCE_BACKEND_API, queryBackendsList } from '../apis';
 import BackendCard from '../components/backend-card';
 import BackendCardList from '../components/backend-list';
@@ -144,7 +147,7 @@ const CommunityBackends: React.FC<{
           onChange={handleNameChange}
         ></Input>
       </FilterBox>
-      <ScrollerContext.Provider
+      <InfiniteScrollerProvider
         value={{
           total: dataSource.totalPage,
           current: queryParams.page!,
@@ -170,7 +173,7 @@ const CommunityBackends: React.FC<{
             id: 'noresult.backend.nofound'
           })}
         ></NoResult>
-      </ScrollerContext.Provider>
+      </InfiniteScrollerProvider>
     </div>
   );
 };

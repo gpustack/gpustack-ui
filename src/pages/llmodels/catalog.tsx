@@ -7,14 +7,14 @@ import { SearchOutlined } from '@ant-design/icons';
 import {
   FilterBar,
   IconFont,
-  InfiniteScrollerProvider
+  InfiniteScrollerProvider,
+  NoResult
 } from '@gpustack/core-ui';
 import { useIntl, useNavigate } from '@umijs/max';
 import { message } from 'antd';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
-import NoResult from '../_components/no-result';
 import PageBox from '../_components/page-box';
 import { createModel, queryCatalogItemSpec, queryCatalogList } from './apis';
 import CatalogList from './components/catalog/catalog-list';

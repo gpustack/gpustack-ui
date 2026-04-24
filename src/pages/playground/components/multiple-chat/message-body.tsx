@@ -1,4 +1,5 @@
-import { FullMarkdown, SimpleAudio } from '@gpustack/core-ui';
+import { SimpleAudio } from '@gpustack/core-ui';
+import { FullMarkdown } from '@gpustack/core-ui/markdown';
 import { Input } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';

@@ -1,4 +1,4 @@
-import { exportJsonToExcel } from '@/utils/excel-reader';
+import { exportJsonToExcel } from '@gpustack/core-ui/excel';
 import dayjs from 'dayjs';
 import { useEffect, useMemo, useState } from 'react';
 import {

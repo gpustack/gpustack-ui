@@ -1,6 +1,7 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
-import { YamlEditor } from '@gpustack/core-ui';
+import useUserSettings from '@/hooks/use-user-settings';
+import { YamlEditor } from '@gpustack/core-ui/yaml-editor';
 import { useIntl } from '@umijs/max';
 import React, {
   forwardRef,
@@ -27,6 +28,7 @@ interface ImportYAMLProps {
 const ImportYAML: React.FC<ImportYAMLProps> = forwardRef(
   ({ actionStatus, content = '', height }, ref) => {
     const intl = useIntl();
+    const { isDarkTheme } = useUserSettings();
     const editorRef = useRef<any>(null);
     const [fileContent, setFileContent] = useState<string>(
       actionStatus.action === PageAction.CREATE ? yamlTemplate : content
@@ -116,6 +118,7 @@ const ImportYAML: React.FC<ImportYAMLProps> = forwardRef(
           setError('');
           setContent(content);
         }}
+        isDarkTheme={isDarkTheme}
         schema={
           actionStatus.action === PageAction.CREATE
             ? createSchema

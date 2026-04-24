@@ -1,28 +1,28 @@
 import { request } from '@umijs/max';
-import { mockInstanceData } from '../config/mock-data';
+import { mockTemplateData } from '../config/mock-data';
 import { FormData, ListItem } from '../config/types';
 
-export const GPU_SERVICE_INSTANCES_API = '/gpu-service-instances';
+export const GPU_SERVICE_TEMPLATES_API = '/gpu-service-templates';
 
-export async function queryGPUServiceInstances(
+export async function queryGPUServiceTemplates(
   params: Global.SearchParams,
   options?: any
 ) {
-  // return request<Global.PageResponse<ListItem>>(GPU_SERVICE_INSTANCES_API, {
+  // return request<Global.PageResponse<ListItem>>(GPU_SERVICE_TEMPLATES_API, {
   //   method: 'GET',
   //   params,
   //   cancelToken: options?.token
   // });
   const page = params.page || 1;
-  const perPage = params.perPage || 10;
+  const perPage = params.perPage || 24;
   const search = params.search?.toLowerCase();
-  const clusterId = params.cluster_id;
-  const filteredData = mockInstanceData.filter((item) => {
+  const vendor = params.vendor;
+  const filteredData = mockTemplateData.filter((item) => {
     const matchSearch = search
       ? item.name.toLowerCase().includes(search)
       : true;
-    const matchCluster = clusterId ? item.cluster_id === clusterId : true;
-    return matchSearch && matchCluster;
+    const matchVendor = vendor ? item.vendor === vendor : true;
+    return matchSearch && matchVendor;
   });
   const start = (page - 1) * perPage;
   const items = filteredData.slice(start, start + perPage);
@@ -38,27 +38,27 @@ export async function queryGPUServiceInstances(
   } as Global.PageResponse<ListItem>;
 }
 
-export async function createGPUServiceInstance(params: { data: FormData }) {
-  // return request<ListItem>(GPU_SERVICE_INSTANCES_API, {
+export async function createGPUServiceTemplate(params: { data: FormData }) {
+  // return request<ListItem>(GPU_SERVICE_TEMPLATES_API, {
   //   method: 'POST',
   //   data: params.data
   // });
   return true;
 }
 
-export async function updateGPUServiceInstance(params: {
+export async function updateGPUServiceTemplate(params: {
   id: number;
   data: FormData;
 }) {
-  // return request<ListItem>(`${GPU_SERVICE_INSTANCES_API}/${params.id}`, {
+  // return request<ListItem>(`${GPU_SERVICE_TEMPLATES_API}/${params.id}`, {
   //   method: 'PUT',
   //   data: params.data
   // });
   return true;
 }
 
-export async function deleteGPUServiceInstance(id: number) {
-  return request(`${GPU_SERVICE_INSTANCES_API}/${id}`, {
+export async function deleteGPUServiceTemplate(id: number) {
+  return request(`${GPU_SERVICE_TEMPLATES_API}/${id}`, {
     method: 'DELETE'
   });
 }

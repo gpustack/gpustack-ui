@@ -4,10 +4,11 @@ import type { ColumnsType } from 'antd/lib/table';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
 import {
-  InstanceStatusLabelMap,
-  InstanceStatusValueMap,
   rowActionList,
-  status
+  status,
+  StorageStatusLabelMap,
+  StorageStatusValueMap,
+  StorageTypeLabelMap
 } from '../config';
 import { ListItem } from '../config/types';
 
@@ -16,7 +17,7 @@ interface ColumnsHookProps {
   sortOrder: string[];
 }
 
-const useInstancesColumns = ({
+const useStorageColumns = ({
   handleSelect,
   sortOrder
 }: ColumnsHookProps): ColumnsType<ListItem> => {
@@ -37,29 +38,49 @@ const useInstancesColumns = ({
         )
       },
       {
+        title: '类型',
+        dataIndex: 'type',
+        key: 'type',
+        sorter: tableSorter(2),
+        render: (value: string) => StorageTypeLabelMap[value] || value || '-'
+      },
+      {
         title: '状态',
         dataIndex: 'status',
         key: 'status',
-        sorter: tableSorter(2),
+        sorter: tableSorter(3),
         render: (statusValue: string) => {
-          const value = statusValue || InstanceStatusValueMap.Ready;
+          const value = statusValue || StorageStatusValueMap.Available;
           return (
             <StatusTag
               statusValue={{
                 status: status[value],
-                text: InstanceStatusLabelMap[value] || value
+                text: StorageStatusLabelMap[value] || value
               }}
-            ></StatusTag>
+            />
           );
         }
       },
       {
-        title: '实例类型',
-        dataIndex: 'instance_type',
-        key: 'instance_type',
-        sorter: tableSorter(3),
-        render: (value: string) => value ?? '-'
+        title: '容量 (GB)',
+        dataIndex: 'capacity_gb',
+        key: 'capacity_gb',
+        sorter: tableSorter(4),
+        render: (value: number) => value ?? '-'
       },
+      // {
+      //   title: '挂载路径',
+      //   dataIndex: 'mount_path',
+      //   key: 'mount_path',
+      //   ellipsis: {
+      //     showTitle: false
+      //   },
+      //   render: (text: string) => (
+      //     <AutoTooltip ghost minWidth={20}>
+      //       {text || '-'}
+      //     </AutoTooltip>
+      //   )
+      // },
       {
         title: '创建时间',
         dataIndex: 'created_at',
@@ -89,4 +110,4 @@ const useInstancesColumns = ({
   }, [handleSelect, sortOrder]);
 };
 
-export default useInstancesColumns;
+export default useStorageColumns;

@@ -1,5 +1,4 @@
 import { Spin } from 'antd';
-import 'overlayscrollbars/overlayscrollbars.css';
 import React, {
   forwardRef,
   useImperativeHandle,

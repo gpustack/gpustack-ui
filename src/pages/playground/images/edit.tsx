@@ -12,7 +12,6 @@ import {
 import { useIntl } from '@umijs/max';
 import { Divider } from 'antd';
 import _ from 'lodash';
-import 'overlayscrollbars/overlayscrollbars.css';
 import React, {
   forwardRef,
   useCallback,

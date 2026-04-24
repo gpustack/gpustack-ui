@@ -1,11 +1,13 @@
 import { readBlob } from '@/utils';
-import readEpubContent from '@/utils/epub-reader';
-import readExcelContent from '@/utils/excel-reader';
-import readPDFContent from '@/utils/pdf-reader';
-import readPptxContent from '@/utils/pptx-reader';
-import readHtmlContent from '@/utils/read-html';
-import readWordContent from '@/utils/word-reader';
 import { PaperClipOutlined } from '@ant-design/icons';
+import {
+  readEpubContent,
+  readExcelContent,
+  readHtmlContent,
+  readPDFContent,
+  readPptxContent,
+  readWordContent
+} from '@gpustack/core-ui/file-readers';
 import { useIntl } from '@umijs/max';
 import { Button, Tooltip, Upload } from 'antd';
 import type { UploadFile } from 'antd/es/upload';

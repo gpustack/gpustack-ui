@@ -4,7 +4,6 @@ import { AlertInfo, IconFont, SpeechContent } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Spin } from 'antd';
 import _ from 'lodash';
-import 'overlayscrollbars/overlayscrollbars.css';
 import React, {
   forwardRef,
   useImperativeHandle,

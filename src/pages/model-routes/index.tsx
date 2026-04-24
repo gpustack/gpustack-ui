@@ -10,6 +10,7 @@ import {
   DeleteModal,
   FilterBar,
   IconFont,
+  NoResult,
   Table as SealTable,
   TableOrder,
   TableProvider
@@ -20,7 +21,6 @@ import { message } from 'antd';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
 import { useEffect, useState } from 'react';
-import NoResult from '../_components/no-result';
 import PageBox from '../_components/page-box';
 import { queryModelsList } from '../llmodels/apis';
 import AccessControlModal from '../llmodels/components/access-control-modal';

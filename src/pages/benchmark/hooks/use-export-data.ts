@@ -1,4 +1,4 @@
-import { exportJsonToExcel } from '@/utils/excel-reader';
+import { exportJsonToExcel } from '@gpustack/core-ui/excel';
 
 const useExportData = (params: { columns: any[] }) => {
   const { columns } = params;

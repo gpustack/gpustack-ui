@@ -3,7 +3,7 @@ import {
   modelsTableDataAtom,
   usersTableDataAtom
 } from '@/atoms/usage';
-import { exportJsonToExcel } from '@/utils/excel-reader';
+import { exportJsonToExcel } from '@gpustack/core-ui/excel';
 import { useStore } from 'jotai';
 import _ from 'lodash';
 import useAPIKeysColumns from './use-apikeys-columns';

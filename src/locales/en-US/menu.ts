@@ -40,5 +40,9 @@ export default {
   'menu.clusterManagement.credentials': 'Cloud Credentials',
   'menu.clusterManagement.clusterDetail': 'Cluster Detail',
   'menu.clusterManagement.clusterCreate': 'Create Cluster',
-  'menu.resources.backendsList': 'Inference Backends'
+  'menu.resources.backendsList': 'Inference Backends',
+  'menu.gpuService': 'GPU Service',
+  'menu.gpuService.instances': 'GPU Instances',
+  'menu.gpuService.templates': 'Instance Templates',
+  'menu.gpuService.storage': 'Storage Management'
 };

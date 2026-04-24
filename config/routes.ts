@@ -180,6 +180,47 @@ const baseRoutes = [
     ]
   },
   {
+    name: 'gpuService',
+    path: '/gpu-service',
+    key: 'gpuService',
+    routes: [
+      {
+        path: '/gpu-service',
+        redirect: '/gpu-service/list'
+      },
+      {
+        name: 'instances',
+        path: '/gpu-service/list',
+        key: 'gpuServiceList',
+        icon: 'icon-instances-outlined',
+        selectedIcon: 'icon-instances-filled',
+        defaultIcon: 'icon-instances-outlined',
+        access: 'canSeeAdmin',
+        component: './gpu-service/instances'
+      },
+      {
+        name: 'templates',
+        path: '/gpu-service/templates',
+        key: 'gpuServiceTemplates',
+        icon: 'icon-instance-template-outlined',
+        selectedIcon: 'icon-instance-template-filled',
+        defaultIcon: 'icon-instance-template-outlined',
+        access: 'canSeeAdmin',
+        component: './gpu-service/templates'
+      },
+      {
+        name: 'storage',
+        path: '/gpu-service/storage',
+        key: 'gpuServiceStorage',
+        icon: 'icon-storage-outlined',
+        selectedIcon: 'icon-storage-filled',
+        defaultIcon: 'icon-storage-outlined',
+        access: 'canSeeAdmin',
+        component: './gpu-service/storage'
+      }
+    ]
+  },
+  {
     name: 'resources',
     path: '/resources',
     key: 'resources',

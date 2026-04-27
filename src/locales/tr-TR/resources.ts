@@ -2,6 +2,7 @@ export default {
   'resources.title': 'Kaynaklar',
   'resources.nodes': 'İşçi Düğümler',
   'resources.worker': 'İşçi Düğüm',
+  'resources.container': 'Konteyner',
   'resources.button.create': 'İşçi Düğüm Ekle',
   'resources.button.edit': 'İşçi Düğümü Düzenle',
   'resources.button.edittags': 'Etiketleri Düzenle',

@@ -1,6 +1,7 @@
 export default {
   'resources.title': 'リソース',
   'resources.nodes': 'ノード',
+  'resources.container': 'コンテナ',
   'resources.button.create': 'ワーカーを追加',
   'resources.button.edit': 'ワーカーを編集',
   'resources.button.edittags': 'ラベルを編集',

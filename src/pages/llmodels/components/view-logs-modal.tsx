@@ -2,7 +2,8 @@ import useSetChunkRequest from '@/hooks/use-chunk-request';
 import { CloseOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { BaseSelect, LogsViewer } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Button, Checkbox, Modal, Tooltip } from 'antd';
+import { Button, Checkbox, Flex, Modal, Tooltip } from 'antd';
+import dayjs from 'dayjs';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { MODELS_API } from '../apis';
 
@@ -27,7 +28,9 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
   const [isDownloading, setIsDownloading] = useState<boolean>(
     status === InstanceStatusMap.Downloading
   );
-  const [selectedWorkerID, setSelectedWorkerID] = useState<number | null>(null);
+  const [selectedContainer, setSelectedContainer] = useState<string | null>(
+    null
+  );
   const [params, setParams] = useState<any>({
     follow: true
   });
@@ -40,10 +43,17 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
 
   const currentWorkerCountList = useMemo(() => {
     return (
-      countOptions?.find((option) => option.worker_id === selectedWorkerID)
+      countOptions?.find((option) => option.value === selectedContainer)
         ?.children || []
     );
-  }, [countOptions, selectedWorkerID]);
+  }, [countOptions, selectedContainer]);
+
+  const filteredCountOptions = useMemo(() => {
+    if (!showPrevious) return countOptions;
+    return countOptions?.filter((option) =>
+      option.children?.some((child) => child.previous)
+    );
+  }, [countOptions, showPrevious]);
 
   const handleCancel = useCallback(() => {
     logsViewerRef.current?.abort();
@@ -88,7 +98,7 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
   const cancelOnClose = () => {
     logsViewerRef.current?.abort();
     requestRef.current?.current?.cancel?.();
-    setSelectedWorkerID(null);
+    setSelectedContainer(null);
     setShowPrevious(false);
     cancelRequest();
   };
@@ -103,14 +113,15 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
         follow: true,
         watch: !option.previous,
         previous: option.previous,
-        worker_id: option.worker_id
+        worker_id: option.worker_id,
+        container: option.container
       });
     }
-    setSelectedWorkerID(option?.worker_id || null);
+    setSelectedContainer(option?.parentValue || null);
   };
 
-  const handleWorkerChange = (value: number, option: any) => {
-    setSelectedWorkerID(value);
+  const handleContainerChange = (value: string, option: any) => {
+    setSelectedContainer(value);
     setShowPrevious(false);
     const counts = option?.children || [];
     const lastItem = counts.find((item: any) => !item.previous);
@@ -132,8 +143,22 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
     handleOnChange(selectItem);
   };
 
-  const labelRender = (option: any) => {
-    return <span style={{ fontWeight: 400 }}>{option.label}</span>;
+  const optionRender = (option: any) => {
+    const optionData = option?.data || option;
+    const [container, worker] = optionData.label.split(':');
+    const startAt = optionData.start_at
+      ? dayjs(optionData.start_at).format('YYYY-MM-DD HH:mm:ss')
+      : '';
+
+    return (
+      <Flex align="center" justify="space-between">
+        <Flex align="center" gap={8}>
+          <span>{container}</span>
+          <span className="text-tertiary">[{worker}]</span>
+        </Flex>
+        {startAt && <span className="text-tertiary">{startAt}</span>}
+      </Flex>
+    );
   };
 
   const renderTitle = () => {
@@ -189,14 +214,15 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
                       marginRight: 8
                     }}
                   >
-                    {intl.formatMessage({ id: 'resources.worker' })}
+                    {intl.formatMessage({ id: 'resources.container' })}
                   </span>
                 }
-                options={countOptions}
-                value={selectedWorkerID || undefined}
-                labelRender={labelRender}
-                onChange={handleWorkerChange}
-                style={{ width: 300 }}
+                options={filteredCountOptions}
+                value={selectedContainer || undefined}
+                labelRender={optionRender}
+                optionRender={optionRender}
+                onChange={handleContainerChange}
+                style={{ width: 360 }}
               ></BaseSelect>
             </div>
           )}

@@ -6,18 +6,21 @@ import { InstanceRestartCount } from '../config/types';
 
 interface RestartCountOption {
   label: string;
-  value: number;
+  value: string;
   worker_id: number;
   name: string;
+  container: string;
+  start_at: string;
   isParent: boolean;
+  isMain: boolean;
   children?: {
-    value: number;
+    value: string;
     label: string;
     start_at: string;
     previous: boolean;
     worker_id: number;
-    isCurrent: boolean;
-    isPrevious: boolean;
+    container: string;
+    parentValue: string;
   }[];
 }
 
@@ -34,32 +37,48 @@ export default function useQueryModelInstanceRestartCount() {
     const res = await fetchData(instance_id);
 
     const list =
-      res.workers?.map((worker) => {
-        return {
-          value: worker.worker_id,
-          label: worker.name,
-          worker_id: worker.worker_id,
-          name: worker.name,
-          isMain: res.main_worker_id === worker.worker_id,
-          isParent: true,
-          children:
-            worker.restarts?.map((restart, index) => {
-              return {
-                value: index,
-                previous: restart.previous,
-                label:
-                  index === 0
-                    ? intl.formatMessage({ id: 'models.instance.currentRun' })
-                    : intl.formatMessage({ id: 'models.instance.previousRun' }),
-                start_at: restart.started_at,
-                worker_id: worker.worker_id,
-                isCurrent: index === 0,
-                isPrevious: index === 1
-              };
-            }) || []
-        };
+      res.workers?.flatMap((worker) => {
+        const containerMap = new Map<string, RestartCountOption>();
+        const isMain = res.main_worker_id === worker.worker_id;
+
+        worker.restarts?.forEach((restart, index) => {
+          restart.containers?.forEach((container) => {
+            const parentValue = `${worker.worker_id}:${container}`;
+            const option = containerMap.get(container) || {
+              value: parentValue,
+              label: `${container}:${worker.name}`,
+              worker_id: worker.worker_id,
+              name: worker.name,
+              container,
+              start_at: restart.started_at,
+              isMain,
+              isParent: true,
+              children: []
+            };
+
+            if (!restart.previous) {
+              option.start_at = restart.started_at;
+            }
+
+            option.children?.push({
+              value: `${parentValue}:${index}`,
+              previous: restart.previous,
+              label: restart.previous
+                ? intl.formatMessage({ id: 'models.instance.previousRun' })
+                : intl.formatMessage({ id: 'models.instance.currentRun' }),
+              start_at: restart.started_at,
+              worker_id: worker.worker_id,
+              container,
+              parentValue
+            });
+            containerMap.set(container, option);
+          });
+        });
+
+        return Array.from(containerMap.values());
       }) || [];
 
+    console.log('restart count list: ', list);
     setDataList(list);
     return list;
   };

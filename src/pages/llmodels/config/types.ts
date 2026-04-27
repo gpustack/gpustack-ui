@@ -384,6 +384,8 @@ export interface InstanceRestartCount {
     restarts: {
       previous: boolean;
       started_at: string;
+      containers: string[];
     }[];
+    error?: string | null;
   }[];
 }

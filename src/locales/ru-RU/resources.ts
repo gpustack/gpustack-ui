@@ -1,6 +1,7 @@
 export default {
   'resources.title': 'Ресурсы',
   'resources.nodes': 'Ноды',
+  'resources.container': 'Контейнер',
   'resources.button.create': 'Добавить воркер',
   'resources.button.edit': 'Редактировать воркер',
   'resources.button.edittags': 'Редактировать метки',

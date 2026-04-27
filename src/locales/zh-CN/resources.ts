@@ -6,6 +6,7 @@ export default {
   'resources.button.update': '更新标签',
   'resources.nodes': '节点',
   'resources.worker': '节点',
+  'resources.container': '容器',
   'resources.table.hostname': '主机名',
   'resources.table.key.tips': '存在相同的 key.',
   'resources.form.label': '标签',

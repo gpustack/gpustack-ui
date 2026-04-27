@@ -2,6 +2,7 @@ export default {
   'resources.title': 'Resources',
   'resources.nodes': 'Workers',
   'resources.worker': 'Worker',
+  'resources.container': 'Container',
   'resources.button.create': 'Add Worker',
   'resources.button.edit': 'Edit Worker',
   'resources.button.edittags': 'Edit Labels',

@@ -1,4 +1,4 @@
-import { AppPlugin, IPluginManager } from './types';
+import { AppPlugin, AppPluginContext, IPluginManager } from './types';
 
 class PluginManager implements IPluginManager {
   private plugins = new Map<string, AppPlugin>();
@@ -38,7 +38,7 @@ class PluginManager implements IPluginManager {
   /**
    * initialize all plugins
    */
-  async initialize(): Promise<Record<string, any>> {
+  async initialize(context: AppPluginContext): Promise<Record<string, any>> {
     if (this.initialized) {
       return {};
     }
@@ -46,9 +46,10 @@ class PluginManager implements IPluginManager {
     const initData: Record<string, any> = {};
 
     for (const [name, plugin] of this.plugins.entries()) {
+      console.log(`Initializing plugin "${name}"...`);
       if (plugin.onAppInit) {
         try {
-          const data = await plugin.onAppInit();
+          const data = await plugin.onAppInit(context);
           if (data) {
             initData[name] = data;
           }
@@ -63,7 +64,7 @@ class PluginManager implements IPluginManager {
   }
 
   /**
-   * 通知所有插件应用已就绪
+   * notify all plugins that the app is ready
    */
   async notifyReady(): Promise<void> {
     for (const [name, plugin] of this.plugins.entries()) {

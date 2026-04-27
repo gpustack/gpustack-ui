@@ -1,19 +1,47 @@
-import Bg2 from '@/assets/images/bg-2.png';
-import { userAtom } from '@/atoms/user';
+import LogoIcon from '@/assets/images/gpustack-logo.png';
+import { initialPasswordAtom, userAtom } from '@/atoms/user';
+import { resetStorageUserSettings } from '@/atoms/utils';
 import DarkMask from '@/components/dark-mask';
 import Footer from '@/components/footer';
 import LangSelect from '@/components/lang-select';
 import ThemeDropActions from '@/components/theme-toggle/theme-drop-actions';
+import { PasswordReg } from '@/config';
+import { GPUSTACK_API_BASE_URL } from '@/config/settings';
+import { COLOR_PRIMARY } from '@/config/theme/constants';
+import externalLinks from '@/constants/external-links';
 import useUserSettings from '@/hooks/use-user-settings';
-import { useModel } from '@umijs/max';
+import useUserSettingsStorage from '@/hooks/use-user-settings-storage';
+import { getGPUStackPlugin } from '@/plugins';
+import {
+  CRYPT_TEXT,
+  IS_FIRST_LOGIN,
+  writeState
+} from '@/utils/localstore/index';
+import { CoreUIProvider } from '@gpustack/core-ui';
+import {
+  getAllLocales,
+  request,
+  setLocale,
+  useIntl,
+  useModel,
+  useNavigate
+} from '@umijs/max';
 import { ConfigProvider, theme } from 'antd';
 import { createStyles } from 'antd-style';
+import CryptoJS from 'crypto-js';
 import { useAtom } from 'jotai';
-import { useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
+import { flushSync } from 'react-dom';
 import styled from 'styled-components';
+import { updatePassword as updatePasswordApi } from './apis';
+import Background from './components/background';
 import LoginForm from './components/login-form';
 import PasswordForm from './components/password-form';
+import { useLocalAuth } from './hooks/use-local-auth';
+import { useSSOAuth } from './hooks/use-sso-auth';
 import { checkDefaultPage } from './utils';
+
+const COLOR_LINK = '#1677ff';
 
 const useStyles = createStyles(({ token, css }) => ({
   header: css`
@@ -25,6 +53,7 @@ const useStyles = createStyles(({ token, css }) => ({
     top: 0;
     height: 60px;
     padding: 20px;
+    z-index: 100;
     .anticon-global {
       color: ${token.colorText};
     }
@@ -37,23 +66,6 @@ const useStyles = createStyles(({ token, css }) => ({
     width: 100%;
   `
 }));
-
-const Wrapper = styled.div<{ $isDarkTheme: boolean }>`
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  min-height: 100vh;
-  z-index: -1;
-  background: ${({ $isDarkTheme }) =>
-    $isDarkTheme
-      ? `radial-gradient(at 50% 20%, #383838 0%, #292929 40%, #000 100%)`
-      : `url(${Bg2}) center center no-repeat`};
-  background-size: ${({ $isDarkTheme }) =>
-    $isDarkTheme ? 'contain' : 'cover'};
-  opacity: ${({ $isDarkTheme }) => ($isDarkTheme ? 1 : 0.6)};
-`;
 
 const Box = styled.div`
   display: flex;
@@ -85,22 +97,43 @@ const FormWrapper = styled.div`
   }
 `;
 
+const decryptInitialPassword = (password: string) => {
+  const bytes = CryptoJS.AES?.decrypt?.(password, CRYPT_TEXT);
+  return bytes.toString(CryptoJS.enc.Utf8);
+};
+
 const Login = () => {
   const { styles } = useStyles();
+  const intl = useIntl();
+  const navigate = useNavigate();
+  const userSettingsStorage = useUserSettingsStorage();
   const { themeData, userSettings, isDarkTheme } = useUserSettings();
   const [userInfo, setUserInfo] = useAtom(userAtom);
+  const [initialPassword, setInitialPassword] = useAtom(initialPasswordAtom);
   const { initialState, setInitialState } = useModel('@@initialState') || {};
 
-  const gotoDefaultPage = async (userInfo: any) => {
-    if (!userInfo || userInfo?.require_password_change) {
+  const enterprisePlugin = getGPUStackPlugin();
+
+  const CustomLoginComponent = enterprisePlugin?.login?.CustomLoginComponent;
+  const shouldUseCustomLogin = enterprisePlugin?.login?.shouldUseCustomLogin;
+
+  const useCustomLogin = useMemo(
+    () => shouldUseCustomLogin?.(userSettings),
+    [shouldUseCustomLogin, userSettings]
+  );
+
+  console.log('useCustomLogin', useCustomLogin, userSettings);
+
+  const gotoDefaultPage = async (info: any) => {
+    if (!info || info?.require_password_change) {
       return;
     }
 
-    checkDefaultPage(userInfo, true);
+    checkDefaultPage(info, true);
     if (!initialState?.currentUser) {
       setInitialState((preState: any) => ({
         ...preState,
-        currentUser: userInfo
+        currentUser: info
       }));
     }
   };
@@ -109,39 +142,115 @@ const Login = () => {
     gotoDefaultPage(userInfo);
   }, [userInfo]);
 
-  useEffect(() => {
-    document.title = 'GPUStack';
+  const fetchUserInfo = useCallback(async () => {
+    const info = await initialState?.fetchUserInfo?.();
+    if (info) {
+      flushSync(() => {
+        setInitialState((s: any) => ({
+          ...s,
+          currentUser: info
+        }));
+      });
+    }
+    return info;
+  }, [initialState, setInitialState]);
+
+  const onPasswordChanged = useCallback(() => {
+    resetStorageUserSettings();
+    writeState(IS_FIRST_LOGIN, null);
   }, []);
 
+  const kit = useMemo(
+    () => ({
+      useLocalAuth,
+      useSSOAuth,
+      userInfo,
+      setUserInfo,
+      fetchUserInfo,
+      checkDefaultPage,
+      initialPassword,
+      setInitialPassword,
+      decryptInitialPassword,
+      updatePassword: updatePasswordApi,
+      passwordReg: PasswordReg,
+      onPasswordChanged,
+      resetPasswordUrl: externalLinks.resetPassword,
+      formLogoUrl: LogoIcon
+    }),
+    [
+      userInfo,
+      setUserInfo,
+      fetchUserInfo,
+      initialPassword,
+      setInitialPassword,
+      onPasswordChanged
+    ]
+  );
   return (
     <ConfigProvider
       componentSize="large"
-      key={userSettings.colorPrimary}
       theme={{
         algorithm: userSettings.isDarkTheme
           ? theme.darkAlgorithm
           : theme.defaultAlgorithm,
-        ...themeData
+        ...themeData,
+        token: {
+          ...themeData?.token,
+          colorPrimary:
+            enterprisePlugin?.getPrimaryColor?.(userSettings)?.colorPrimary ||
+            COLOR_PRIMARY
+        }
       }}
     >
-      <div className={styles.header}>
-        <ThemeDropActions></ThemeDropActions>
-        <LangSelect />
-      </div>
-      <DarkMask></DarkMask>
-      <Wrapper $isDarkTheme={isDarkTheme}></Wrapper>
-      <Box>
-        <div className={styles.formContainer}>
-          <FormWrapper>
-            {userInfo?.require_password_change ? (
-              <PasswordForm />
-            ) : (
-              <LoginForm />
-            )}
-          </FormWrapper>
+      <CoreUIProvider
+        config={{
+          apiBaseUrl: GPUSTACK_API_BASE_URL,
+          theme: userSettings.theme,
+          isDarkTheme: userSettings.isDarkTheme,
+          defaultColorPrimary: COLOR_PRIMARY
+        }}
+        hooks={{
+          useUserSettings: useUserSettings as any,
+          useUserSettingsStorage: () => userSettingsStorage,
+          useIntl: useIntl
+        }}
+        i18n={intl}
+        locale={{
+          getAllLocales: getAllLocales,
+          setLocale: setLocale
+        }}
+        services={{
+          request: request,
+          router: {
+            push: (path: string) => navigate(path),
+            replace: (path: string) => navigate(path, { replace: true }),
+            goBack: () => navigate(-1)
+          }
+        }}
+      >
+        <div className={styles.header}>
+          <ThemeDropActions></ThemeDropActions>
+          <LangSelect />
         </div>
-        <Footer />
-      </Box>
+        <DarkMask></DarkMask>
+        <Background isDarkTheme={isDarkTheme} />
+        {useCustomLogin && CustomLoginComponent ? (
+          <CustomLoginComponent kit={kit} />
+        ) : (
+          <Box>
+            <div className={styles.formContainer}>
+              <FormWrapper>
+                {userInfo?.require_password_change ? (
+                  <PasswordForm />
+                ) : (
+                  <LoginForm />
+                )}
+              </FormWrapper>
+            </div>
+            <Footer />
+          </Box>
+        )}
+      </CoreUIProvider>
     </ConfigProvider>
   );
 };

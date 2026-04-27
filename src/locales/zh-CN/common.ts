@@ -268,5 +268,9 @@ export default {
   'common.status.enabled': '已启用',
   'common.status.disabled': '未启用',
   'common.button.duplicate': '复制',
-  'common.option.other': '其它'
+  'common.option.other': '其它',
+  'common.file.size.limit': '文件大小不超过{size}。',
+  'common.file.format.limit': '文件格式不正确，仅支持{formats}。',
+  'common.image.limit.width': '图片宽度须为{width}。',
+  'common.image.limit.height': '图片高度须为{height}。'
 };

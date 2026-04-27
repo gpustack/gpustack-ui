@@ -275,7 +275,11 @@ export default {
   'common.status.enabled': 'Enabled',
   'common.status.disabled': 'Disabled',
   'common.button.duplicate': 'Duplicate',
-  'common.option.other': 'Другое'
+  'common.option.other': 'Другое',
+  'common.file.size.limit': 'File size must not exceed {size}.',
+  'common.file.format.limit': 'Invalid file format. Allowed: {formats}.',
+  'common.image.limit.width': 'Image width must be {width}.',
+  'common.image.limit.height': 'Image height must be {height}.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

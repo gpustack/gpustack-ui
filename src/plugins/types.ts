@@ -11,11 +11,51 @@ export interface RouteConfig {
 }
 
 /**
+ * dependency kit passed from host to plugin's custom login component
+ */
+export interface LoginKit {
+  useLocalAuth: (opts: any) => {
+    handleLogin: (values: any) => void;
+    submitLoading: boolean;
+  };
+  useSSOAuth: (opts: any) => {
+    options: {
+      saml: boolean;
+      oidc: boolean;
+      first_time_setup: boolean;
+      get_initial_password_command: string;
+    };
+    loginWithOIDC: () => void;
+    loginWithSAML: () => void;
+  };
+  userInfo: any;
+  setUserInfo: (info: any) => void;
+  fetchUserInfo: () => Promise<any>;
+  checkDefaultPage: (userInfo: any, replace: boolean) => Promise<void>;
+  initialPassword: string;
+  setInitialPassword: (val: string) => void;
+  decryptInitialPassword: (encrypted: string) => string;
+  updatePassword: (data: any) => Promise<any>;
+  passwordReg: RegExp;
+  onPasswordChanged: () => void;
+  resetPasswordUrl: string;
+  formLogoUrl: string;
+}
+
+/**
  * login module configuration
  */
 export interface LoginPlugin {
-  shouldUseCustomLogin?: () => boolean;
-  CustomLoginComponent?: ComponentType;
+  shouldUseCustomLogin?: (enterpriseSettings: any) => boolean;
+  CustomLoginComponent?: ComponentType<{ kit: LoginKit }>;
+}
+
+/**
+ * resolved logo URLs for sidebar and collapsed-state mini icon
+ */
+export interface LogoSet {
+  sidebarLogo?: string;
+  miniLogo?: string;
 }
 
 /**
@@ -23,6 +63,7 @@ export interface LoginPlugin {
  */
 export interface BrandingPlugin {
   ConfigPage?: ComponentType;
+  resolveLogos?: (userSettings: any, isDarkTheme: boolean) => LogoSet;
 }
 
 /**
@@ -33,6 +74,16 @@ export interface LocalesConfig {
 }
 
 /**
+ * runtime context passed to plugin lifecycle hooks
+ */
+export interface AppPluginContext {
+  request: <T = any>(url: string, options?: Record<string, any>) => Promise<T>;
+  setUserSettings?: (value: Record<string, any>) => void;
+  setStorageUserSettings?: (value: Record<string, any>) => void;
+  defaultColorPrimary?: string;
+}
+
+/**
  * application plugin interface
  */
 export interface AppPlugin {
@@ -40,7 +91,9 @@ export interface AppPlugin {
    * application initialization hook
    * called when the application starts, can return initialization data
    */
-  onAppInit?: () => Promise<Record<string, any>> | Record<string, any>;
+  onAppInit?: (
+    context: AppPluginContext
+  ) => Promise<Record<string, any>> | Record<string, any>;
 
   /**
    * application ready hook

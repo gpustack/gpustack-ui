@@ -26,7 +26,7 @@ export function mergeEnterpriseLocales(locales: Record<string, any> = {}) {
         antd: locale
       });
       mergedLocales.add(locale);
-      console.log(`✓ Merged enterprise locale: ${locale}`);
+      console.log(`✓ Merged enterprise locale: ${locale}`, messages);
     } catch (error) {
       console.error(`Failed to merge enterprise locale ${locale}:`, error);
     }

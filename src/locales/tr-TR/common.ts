@@ -279,5 +279,9 @@ export default {
   'common.status.enabled': 'Etkin',
   'common.status.disabled': 'Devre dışı',
   'common.button.duplicate': 'Çoğalt',
-  'common.option.other': 'Diğer'
+  'common.option.other': 'Diğer',
+  'common.file.size.limit': 'File size must not exceed {size}.',
+  'common.file.format.limit': 'Invalid file format. Allowed: {formats}.',
+  'common.image.limit.width': 'Image width must be {width}.',
+  'common.image.limit.height': 'Image height must be {height}.'
 };

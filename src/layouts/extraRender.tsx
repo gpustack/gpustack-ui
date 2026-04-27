@@ -119,6 +119,7 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
   };
 
   const { initialState } = initialInfo;
+  const GlobalSettings = pluginManager?.components?.GlobalSettings;
   console.log('plugin+++++++++', pluginManager);
 
   const navigate = useNavigate();
@@ -303,6 +304,7 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
           />
         </IconWrapper>
       </DropdownActions>
+      {GlobalSettings && <GlobalSettings></GlobalSettings>}
       <DropdownActions menu={{ ...userMenu }} popupRender={userPopupRender}>
         <IconWrapper>
           <Avatar

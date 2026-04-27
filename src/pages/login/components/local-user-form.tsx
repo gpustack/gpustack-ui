@@ -98,7 +98,6 @@ const LocalUserForm: React.FC<LocalUserFormProps> = (props) => {
           prefix={<UserOutlined />}
         />
       </Form.Item>
-
       <Form.Item
         name="password"
         rules={[

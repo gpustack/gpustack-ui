@@ -76,6 +76,7 @@ export default defineConfig({
   antd: {
     style: 'less'
   },
+  title: 'GPUStack',
   hash: true,
   access: {},
   model: {},

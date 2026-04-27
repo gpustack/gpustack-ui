@@ -1,7 +1,9 @@
+import { userSettingsHelperAtom } from '@/atoms/settings';
 import { GPUStackVersionAtom, UpdateCheckAtom } from '@/atoms/user';
 import { setAtomStorage } from '@/atoms/utils';
 import { DEFAULT_ENTER_PAGE, GPUSTACK_API_BASE_URL } from '@/config/settings';
-import { getGPUStackPlugin } from '@/plugins';
+import { COLOR_PRIMARY } from '@/config/theme/constants';
+import { enterprisePluginReady } from '@/plugins/enterprise-ready';
 import { GPUStackPluginManager } from '@/plugins/manager';
 import { mergeEnterpriseRoutes } from '@/plugins/route-merger';
 import { requestConfig } from '@/request-config';
@@ -18,7 +20,7 @@ import {
   writeState
 } from '@/utils/localstore/index';
 import '@gpustack/core-ui/style.css';
-import { RequestConfig, history } from '@umijs/max';
+import { RequestConfig, history, request as umiRequest } from '@umijs/max';
 import { message } from 'antd';
 
 // only for the first login and access from http://localhost
@@ -40,12 +42,20 @@ export async function getInitialState(): Promise<{
   pluginData?: Record<string, any>;
 }> {
   const { location } = history;
-  const enterprisePlugin = getGPUStackPlugin();
+
+  // In open-source builds the promise resolves immediately.
+  await enterprisePluginReady;
 
   // initialize plugins and merge enterprise locales
   let pluginData = {};
   try {
-    pluginData = await GPUStackPluginManager.initialize();
+    pluginData = await GPUStackPluginManager.initialize({
+      request: umiRequest,
+      setUserSettings: (value) => setAtomStorage(userSettingsHelperAtom, value),
+      setStorageUserSettings: (value) =>
+        setAtomStorage(userSettingsHelperAtom, value),
+      defaultColorPrimary: COLOR_PRIMARY
+    });
   } catch (error) {
     console.error('Failed to initialize plugins:', error);
   }

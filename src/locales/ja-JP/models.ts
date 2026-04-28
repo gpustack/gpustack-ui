@@ -287,7 +287,7 @@ export default {
   'models.instance.previousRun': 'Previous Run',
   'models.instance.startHistory': 'Run History',
   'models.instance.startHistory.tips':
-    'Logs from the previous run before the current restart.'
+    'Shows logs from the run before the last error-triggered restart.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

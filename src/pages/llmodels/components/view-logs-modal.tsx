@@ -131,16 +131,34 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
   };
 
   const showCascader =
-    countOptions?.some((option) => option.children!?.length >= 2) ||
+    countOptions?.some((option) => option.children?.length >= 2) ||
     countOptions?.length > 1;
 
   const handleOnChecked = (e: any) => {
     const checked = e.target.checked;
-    const selectItem = currentWorkerCountList.find(
-      (item) => item.previous === checked
-    );
     setShowPrevious(checked);
-    handleOnChange(selectItem);
+
+    if (checked) {
+      const currentPrev = currentWorkerCountList.find((item) => item.previous);
+      if (currentPrev) {
+        handleOnChange(currentPrev);
+        return;
+      }
+      const mainOptionWithPrev = countOptions?.find(
+        (option) =>
+          option.isMain && option.children?.some((child) => child.previous)
+      );
+      const prevChild = mainOptionWithPrev?.children?.find(
+        (child) => child.previous
+      );
+      if (prevChild) {
+        handleOnChange(prevChild);
+      }
+      return;
+    }
+
+    const currentItem = currentWorkerCountList.find((item) => !item.previous);
+    handleOnChange(currentItem);
   };
 
   const optionRender = (option: any) => {
@@ -177,32 +195,30 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
                 marginRight: 8
               }}
             >
-              {currentWorkerCountList.length > 1 && (
-                <Checkbox onChange={handleOnChecked} checked={showPrevious}>
-                  <Tooltip
-                    title={
-                      <span>
-                        <span className="font-600 m-r-8">
-                          {intl.formatMessage({
-                            id: 'models.instance.previousRun'
-                          })}
-                          :
-                        </span>
+              <Checkbox onChange={handleOnChecked} checked={showPrevious}>
+                <Tooltip
+                  title={
+                    <span>
+                      <span className="font-600 m-r-8">
                         {intl.formatMessage({
-                          id: 'models.instance.startHistory.tips'
+                          id: 'models.instance.previousRun'
                         })}
+                        :
                       </span>
-                    }
-                  >
-                    <span style={{ fontWeight: 400 }}>
                       {intl.formatMessage({
-                        id: 'models.instance.previousRun'
+                        id: 'models.instance.startHistory.tips'
                       })}
                     </span>
-                    <QuestionCircleOutlined style={{ marginLeft: 4 }} />
-                  </Tooltip>
-                </Checkbox>
-              )}
+                  }
+                >
+                  <span style={{ fontWeight: 400 }}>
+                    {intl.formatMessage({
+                      id: 'models.instance.previousRun'
+                    })}
+                  </span>
+                  <QuestionCircleOutlined style={{ marginLeft: 4 }} />
+                </Tooltip>
+              </Checkbox>
               <BaseSelect
                 prefix={
                   <span

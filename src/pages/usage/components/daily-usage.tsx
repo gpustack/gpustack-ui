@@ -86,6 +86,10 @@ const DailyUsage: React.FC<DailyUsageProps> = (props) => {
     return dayjs(v).format('MM-DD');
   };
 
+  // Recompute only when data (or locale) changes, NOT when metric/groupBy/granularity change.
+  // Filter changes already trigger a refetch; deriving on stale data with new filters
+  // produces an inconsistent intermediate frame (e.g. grouped data flattened to total),
+  // which is the visible flicker.
   const { seriesData, xAxisData, legendData } = useMemo(() => {
     const items = timeSeriesData?.items || [];
     if (items.length === 0) {
@@ -233,7 +237,7 @@ const DailyUsage: React.FC<DailyUsageProps> = (props) => {
       xAxisData: xAxis,
       legendData: dedupedLegend
     };
-  }, [timeSeriesData, metric, groupBy, granularity, startDate, endDate, intl]);
+  }, [timeSeriesData, intl]);
 
   const handleOnGroupByChange = (value: string) => {
     onGroupByChange(value || null);

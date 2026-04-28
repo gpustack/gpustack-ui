@@ -182,7 +182,11 @@ const ExportData: React.FC<{
       }
     },
     {
-      title: intl.formatMessage({ id: 'usage.filter.totalTokens' }),
+      title: (
+        <AutoTooltip ghost>
+          {intl.formatMessage({ id: 'usage.filter.totalTokens' })}
+        </AutoTooltip>
+      ),
       dataIndex: 'total_tokens',
       render: (text: string, record: any) => {
         return <AutoTooltip ghost>{text}</AutoTooltip>;
@@ -322,7 +326,9 @@ const ExportData: React.FC<{
         style={{
           position: 'sticky',
           top: 0,
-          zIndex: 1
+          zIndex: 1,
+          backgroundColor: 'var(--ant-color-bg-elevated)',
+          paddingBottom: 8
         }}
       >
         <FilterBar

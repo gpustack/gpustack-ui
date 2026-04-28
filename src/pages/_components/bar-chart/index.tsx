@@ -180,10 +180,14 @@ const BarChart: React.FC<BarChartProps> = (props) => {
         }
       },
       legend: {
+        type: 'scroll',
         itemWidth: 8,
         itemHeight: 8,
         itemGap: 12,
         textStyle: { color: token.colorTextTertiary },
+        pageTextStyle: { color: token.colorTextTertiary },
+        pageIconColor: token.colorTextTertiary,
+        pageIconInactiveColor: token.colorTextDisabled,
         bottom: 0,
         data: legendData,
         show: !!legendData?.length

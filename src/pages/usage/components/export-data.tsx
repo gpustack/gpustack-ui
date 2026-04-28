@@ -147,20 +147,57 @@ const ExportData: React.FC<{
       }
     },
     {
-      title: intl.formatMessage({ id: 'usage.filter.inputTokens' }),
-      dataIndex: 'input_tokens'
+      title: (
+        <AutoTooltip ghost>
+          {intl.formatMessage({ id: 'usage.filter.inputTokens' })}
+        </AutoTooltip>
+      ),
+      width: 130,
+      dataIndex: 'input_tokens',
+      render: (text: string, record: any) => {
+        return <AutoTooltip ghost>{text}</AutoTooltip>;
+      }
     },
     {
-      title: intl.formatMessage({ id: 'usage.filter.outputTokens' }),
-      dataIndex: 'output_tokens'
+      title: (
+        <AutoTooltip ghost>
+          {intl.formatMessage({ id: 'usage.table.inputTokensCached' })}
+        </AutoTooltip>
+      ),
+      width: 150,
+      dataIndex: 'input_cached_tokens',
+      render: (text: string, record: any) => {
+        return <AutoTooltip ghost>{text}</AutoTooltip>;
+      }
+    },
+    {
+      title: (
+        <AutoTooltip ghost>
+          {intl.formatMessage({ id: 'usage.filter.outputTokens' })}
+        </AutoTooltip>
+      ),
+      dataIndex: 'output_tokens',
+      render: (text: string, record: any) => {
+        return <AutoTooltip ghost>{text}</AutoTooltip>;
+      }
     },
     {
       title: intl.formatMessage({ id: 'usage.filter.totalTokens' }),
-      dataIndex: 'total_tokens'
+      dataIndex: 'total_tokens',
+      render: (text: string, record: any) => {
+        return <AutoTooltip ghost>{text}</AutoTooltip>;
+      }
     },
     {
-      title: intl.formatMessage({ id: 'usage.filter.apiRequests' }),
-      dataIndex: 'api_requests'
+      title: (
+        <AutoTooltip ghost>
+          {intl.formatMessage({ id: 'usage.filter.apiRequests' })}
+        </AutoTooltip>
+      ),
+      dataIndex: 'api_requests',
+      render: (text: string, record: any) => {
+        return <AutoTooltip ghost>{text}</AutoTooltip>;
+      }
     }
   ];
 
@@ -176,6 +213,7 @@ const ExportData: React.FC<{
             model: item?.model?.identity?.value?.model_name,
             api_key: item?.api_key?.label,
             input_tokens: item?.input_tokens,
+            input_cached_tokens: item?.input_cached_tokens,
             output_tokens: item?.output_tokens,
             total_tokens: item?.total_tokens,
             api_requests: item?.api_requests
@@ -187,6 +225,7 @@ const ExportData: React.FC<{
             'model',
             'api_key',
             'input_tokens',
+            'input_cached_tokens',
             'output_tokens',
             'total_tokens',
             'api_requests'
@@ -199,6 +238,9 @@ const ExportData: React.FC<{
             api_key: intl.formatMessage({ id: 'usage.table.provider' }),
             input_tokens: intl.formatMessage({
               id: 'usage.filter.inputTokens'
+            }),
+            input_cached_tokens: intl.formatMessage({
+              id: 'usage.table.inputTokensCached'
             }),
             output_tokens: intl.formatMessage({
               id: 'usage.filter.outputTokens'
@@ -276,17 +318,26 @@ const ExportData: React.FC<{
         ></ModalFooter>
       }
     >
-      <FilterBar
-        {...filterBar}
-        pageType="modal"
-        handlePickerChange={handlePickerChange}
-      ></FilterBar>
+      <div
+        style={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 1
+        }}
+      >
+        <FilterBar
+          {...filterBar}
+          pageType="modal"
+          handlePickerChange={handlePickerChange}
+        ></FilterBar>
+      </div>
       <Table
         columns={exportTableColumns}
+        className={'scroll-table'}
         tableLayout={'auto'}
         style={{ width: '100%', marginTop: '16px', minHeight: 400 }}
         dataSource={dataSource.dataList || []}
-        rowKey={getBreakdownRowKey}
+        rowKey={(record) => getBreakdownRowKey(record, 'export')}
         loading={{
           spinning: loading,
           size: 'middle'

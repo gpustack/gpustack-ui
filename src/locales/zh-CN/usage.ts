@@ -28,5 +28,9 @@ export default {
   'usage.user.currentAccount': '当前账户',
   'usage.table.cluster': '集群',
   'usage.table.provider': '提供商',
-  'usage.table.deleted': '已删除'
+  'usage.table.deleted': '已删除',
+  'usage.chart.cached': '缓存',
+  'usage.chart.uncached': '非缓存',
+  'usage.chart.inputTokensCached': '输入 Token 数（缓存/非缓存）',
+  'usage.table.inputTokensCached': '输入 Token 缓存数'
 };

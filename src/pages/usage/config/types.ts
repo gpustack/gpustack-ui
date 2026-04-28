@@ -54,6 +54,7 @@ export type BreakdownItem = {
   output_tokens: number;
   total_tokens: number;
   api_requests: number;
+  input_cached_tokens: number;
   avg_tokens_per_request: number;
   models_called: number;
   api_keys_used: number;
@@ -63,7 +64,24 @@ export type BreakdownItem = {
   user: UsageFilterItem;
   model: UsageFilterItem;
   api_key: UsageFilterItem;
+  date: {
+    value: string;
+    label: string;
+  };
 };
+
+export interface UsageBreakdownResponse {
+  summary: TimeSeriesSummary;
+  group_by: string[];
+  granularity: string;
+  pagination: {
+    page: number;
+    perPage: number;
+    total: number;
+    totalPage: number;
+  };
+  items: BreakdownItem[];
+}
 
 export interface UsageMeta {
   filters: {

@@ -1,12 +1,8 @@
 import { exportJsonToExcel } from '@gpustack/core-ui/excel';
 import dayjs from 'dayjs';
 import { useEffect, useMemo, useState } from 'react';
-import {
-  generateColumns,
-  GroupOption,
-  transformTimelineToTable
-} from '../config';
-import { UsageFilterItem } from '../config/types';
+import { GroupOption } from '../config';
+import { BreakdownItem, UsageFilterItem } from '../config/types';
 import useQueryTimeSeriesData from '../services/use-query-timeseries-data';
 
 const DefaultDateConfig = {
@@ -206,8 +202,13 @@ export const useUsageFilters = ({
       return;
     }
 
+    const groupByArray = currentChartFilters.group_by
+      ? ['date', currentChartFilters.group_by]
+      : ['date'];
+
     fetchTimeSeriesData({
       ...currentChartFilters,
+      group_by: groupByArray,
       start_date: currentSelectedFilters.start_date,
       end_date: currentSelectedFilters.end_date,
       filters: nextFilters
@@ -263,8 +264,39 @@ export const useUsageFilters = ({
   };
 
   const handleOnExportChart = () => {
-    const columns = generateColumns(timeSeriesData?.series || []);
-    const tableData = transformTimelineToTable(timeSeriesData?.series || []);
+    const items = timeSeriesData?.items || [];
+    const groupDim = chartFilters.group_by as
+      | 'user'
+      | 'model'
+      | 'api_key'
+      | null;
+    const metric = chartFilters.metric as keyof BreakdownItem;
+
+    const dateMap: Record<string, Record<string, any>> = {};
+    const groupLabels = new Set<string>();
+
+    items.forEach((item) => {
+      const date = item.date?.value;
+      if (!date) return;
+      const groupLabel = groupDim
+        ? ((item[groupDim] as UsageFilterItem)?.label ?? '-')
+        : metric;
+      groupLabels.add(groupLabel);
+      if (!dateMap[date]) dateMap[date] = { date };
+      dateMap[date][groupLabel] = item[metric];
+    });
+
+    const tableData = Object.values(dateMap).sort((a, b) =>
+      String(a.date).localeCompare(String(b.date))
+    );
+
+    const columns = [
+      { title: 'Date', dataIndex: 'date' },
+      ...Array.from(groupLabels).map((label) => ({
+        title: label,
+        dataIndex: label
+      }))
+    ];
 
     exportJsonToExcel({
       fileName: `${chartFilters.metric}_${chartFilters.group_by}_${chartFilters.granularity}_${commonFilters.start_date}_${commonFilters.end_date}.xlsx`,

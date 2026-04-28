@@ -2,7 +2,7 @@ import { TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import PageBox from '@/pages/_components/page-box';
 import { IconFont, NoResult } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { ConfigProvider, Table } from 'antd';
+import { Table } from 'antd';
 import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
 import { FilterOptionType } from '../config/types';
@@ -108,29 +108,27 @@ const APIKeys: React.FC<{
   return (
     <>
       <PageBox>
-        <ConfigProvider renderEmpty={renderEmpty}>
-          <Table
-            columns={columns}
-            dataSource={dataSource.dataList}
-            rowKey={(record) => getBreakdownRowKey(record, 'api_keys')}
-            loading={{
-              spinning: loading,
-              size: 'middle'
-            }}
-            sortDirections={TABLE_SORT_DIRECTIONS}
-            showSorterTooltip={false}
-            onChange={handleTableChange}
-            pagination={{
-              size: 'middle',
-              showSizeChanger: true,
-              pageSize: queryParams.perPage,
-              current: queryParams.page,
-              total: dataSource.total,
-              hideOnSinglePage: queryParams.perPage === 10,
-              onChange: handlePageChange
-            }}
-          ></Table>
-        </ConfigProvider>
+        <Table
+          columns={columns}
+          dataSource={dataSource.dataList}
+          rowKey={(record) => getBreakdownRowKey(record, 'api_keys')}
+          loading={{
+            spinning: loading,
+            size: 'middle'
+          }}
+          sortDirections={TABLE_SORT_DIRECTIONS}
+          showSorterTooltip={false}
+          onChange={handleTableChange}
+          pagination={{
+            size: 'middle',
+            showSizeChanger: true,
+            pageSize: queryParams.perPage,
+            current: queryParams.page,
+            total: dataSource.total,
+            hideOnSinglePage: queryParams.perPage === 10,
+            onChange: handlePageChange
+          }}
+        ></Table>
       </PageBox>
     </>
   );

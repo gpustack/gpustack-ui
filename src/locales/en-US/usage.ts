@@ -28,5 +28,9 @@ export default {
   'usage.user.currentAccount': 'Current Account',
   'usage.table.cluster': 'Cluster',
   'usage.table.provider': 'Provider',
-  'usage.table.deleted': 'Deleted'
+  'usage.table.deleted': 'Deleted',
+  'usage.chart.cached': 'Cached',
+  'usage.chart.uncached': 'Uncached',
+  'usage.chart.inputTokensCached': 'Input Tokens (Cached/Uncached)',
+  'usage.table.inputTokensCached': 'Input Tokens Cached'
 };

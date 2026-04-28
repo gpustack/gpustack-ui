@@ -2,12 +2,11 @@ import { request } from '@umijs/max';
 import {
   BreakdownItem,
   FilterOptionType,
-  TimeSeriesData,
+  UsageBreakdownResponse,
   UsageMeta
 } from '../config/types';
 
 export const USAGE_META = '/usage/meta';
-export const USAGE_TIMESERIES = '/usage/timeseries';
 export const USAGE_BREAKDOWN = '/usage/breakdown';
 
 export const MODEL_ROUTE_TARGETS = '/model-route-targets';
@@ -29,7 +28,7 @@ export async function queryUsageTimeSeriesData(
     end_date: string;
     scope: string;
     metric: string;
-    group_by: string;
+    group_by: string[];
     granularity: string;
     filters: {
       models?: FilterOptionType[];
@@ -38,8 +37,8 @@ export async function queryUsageTimeSeriesData(
     };
   },
   options?: any
-): Promise<TimeSeriesData> {
-  return request<TimeSeriesData>(USAGE_TIMESERIES, {
+): Promise<UsageBreakdownResponse> {
+  return request<UsageBreakdownResponse>(USAGE_BREAKDOWN, {
     data: params,
     method: 'POST',
     cancelToken: options?.token

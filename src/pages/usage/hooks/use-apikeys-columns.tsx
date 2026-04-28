@@ -69,6 +69,15 @@ const useModelsColumns = (): Array<{
         )
       },
       {
+        title: intl.formatMessage({ id: 'usage.table.inputTokensCached' }),
+        dataIndex: 'input_cached_tokens',
+        key: 'input_cached_tokens',
+        sorter: true,
+        render: (text: number, record: ListItem) => (
+          <AutoTooltip ghost>{text ?? '-'}</AutoTooltip>
+        )
+      },
+      {
         title: intl.formatMessage({ id: 'usage.filter.outputTokens' }),
         dataIndex: 'output_tokens',
         key: 'output_tokens',

@@ -202,6 +202,8 @@ const Usage: React.FC = () => {
         metric={chartFilters.metric}
         groupBy={chartFilters.group_by}
         granularity={chartFilters.granularity}
+        startDate={commonFilters.start_date}
+        endDate={commonFilters.end_date}
         onMetricChange={(value) => handleChartFilterChange('metric', value)}
         onGroupByChange={(value) =>
           handleChartFilterChange('group_by', value as string)

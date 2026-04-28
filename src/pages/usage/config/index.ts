@@ -40,6 +40,10 @@ export const metricOptions = [
     label: 'usage.filter.inputTokens'
   },
   {
+    value: 'input_cached_tokens',
+    label: 'usage.chart.inputTokensCached'
+  },
+  {
     value: 'output_tokens',
     label: 'usage.filter.outputTokens'
   },

@@ -16,7 +16,7 @@ export const getBreakdownRowKey = (
     return `${record.api_key.label}`;
   }
 
-  return record.last_active;
+  return `${record.date?.value || ''}-${record.model.label}-${record.user.label}-${record.api_key.label}`;
 };
 
 export default getBreakdownRowKey;

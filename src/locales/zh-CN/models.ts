@@ -270,5 +270,6 @@ export default {
   'models.instance.currentRun': '当前运行',
   'models.instance.previousRun': '上一次运行',
   'models.instance.startHistory': '运行记录',
-  'models.instance.startHistory.tips': '显示当前重启之前那次运行的日志。'
+  'models.instance.startHistory.tips':
+    '显示上一次因错误自动重启之前的那次运行的日志。'
 };

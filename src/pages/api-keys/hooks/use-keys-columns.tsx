@@ -1,38 +1,65 @@
 // columns.ts
 import { tableSorter } from '@/config/settings';
-import { AutoTooltip, DropdownButtons, icons } from '@gpustack/core-ui';
+import { getGPUStackPlugin } from '@/plugins';
+import {
+  AutoTooltip,
+  DropdownButtons,
+  IconFont,
+  icons
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Tag } from 'antd';
+import { MenuProps, Tag } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
 import { ListItem } from '../config/types';
+
+type APIKeyAction = Global.ActionItem<ListItem> & {
+  onClick?: (record: ListItem) => void;
+};
+
 interface ColumnsHookProps {
-  handleSelect: (val: string, record: ListItem) => void;
+  handleSelect: (val: string, record: ListItem, item?: APIKeyAction) => void;
   sortOrder: string[];
   is_admin?: boolean;
+  onIPConfig?: (record: ListItem) => void;
 }
-
-const actionList: Global.ActionItem<string>[] = [
-  {
-    label: 'common.button.edit',
-    key: 'edit',
-    icon: icons.EditOutlined
-  },
-  {
-    label: 'common.button.delete',
-    key: 'delete',
-    icon: icons.DeleteOutlined,
-    props: { danger: true }
-  }
-];
 
 const useModelsColumns = ({
   handleSelect,
   sortOrder,
-  is_admin
+  is_admin,
+  onIPConfig
 }: ColumnsHookProps): ColumnsType<ListItem> => {
   const intl = useIntl();
+
+  const actionList = useMemo<APIKeyAction[]>(() => {
+    const list: APIKeyAction[] = [
+      {
+        label: 'common.button.edit',
+        key: 'edit',
+        icon: icons.EditOutlined
+      },
+      {
+        label: 'common.button.delete',
+        key: 'delete',
+        icon: icons.DeleteOutlined,
+        props: { danger: true }
+      }
+    ];
+
+    const ipConfigComponent = getGPUStackPlugin()?.APIKeyIPConfig?.form;
+    if (ipConfigComponent && onIPConfig) {
+      list.splice(1, 0, {
+        label: 'apikeys.button.ipConfig',
+        key: 'ipConfig',
+        icon: <IconFont type="icon-safe-ip" />,
+        onClick: (record: ListItem) => onIPConfig(record)
+      });
+    }
+
+    return list;
+  }, [onIPConfig]);
 
   return useMemo(() => {
     return [
@@ -172,13 +199,15 @@ const useModelsColumns = ({
         span: 3,
         render: (text, record) => (
           <DropdownButtons
-            items={actionList}
-            onSelect={(val) => handleSelect(val, record)}
+            items={actionList as MenuProps['items']}
+            onSelect={(val, item) =>
+              handleSelect(val, record, item as APIKeyAction)
+            }
           />
         )
       }
     ];
-  }, [intl, is_admin, handleSelect]);
+  }, [intl, is_admin, handleSelect, actionList]);
 };
 
 export default useModelsColumns;

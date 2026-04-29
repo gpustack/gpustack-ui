@@ -2,6 +2,7 @@ import { PageAction, PasswordReg } from '@/config';
 import { PageActionType } from '@/config/types';
 import {
   Input as CInput,
+  FormDrawer,
   IconFont,
   Select as SealSelect,
   Switch as SealSwitch
@@ -9,7 +10,6 @@ import {
 import { useIntl, useModel } from '@umijs/max';
 import { Form, Select } from 'antd';
 import { useEffect } from 'react';
-import FormDrawer from '../../_components/form-drawer';
 import { UserRoles, UserRolesOptions } from '../config';
 import { FormData, ListItem } from '../config/types';
 

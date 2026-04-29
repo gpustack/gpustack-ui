@@ -124,7 +124,7 @@ export interface AppPlugin {
   /**
    * components extension
    */
-  components?: Record<string, ComponentType>;
+  components?: Record<string, ComponentType<any>>;
 
   /**
    * Hooks extension

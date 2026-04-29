@@ -22,7 +22,6 @@ ${formatCurlArgs(parameters, isFormdata)}`.trim();
   if (edit) {
     curlCode = `
 curl ${host}${api} \\
--H "Content-Type: multipart/form-data" \\
 -H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\${modelProxy ? `\n-H "X-GPUStack-Model: ${parameters.model}" \\` : ''}
 -F image="@image.png" \\
 -F mask="@mask.png" \\

@@ -70,7 +70,7 @@ const useModelsColumns = ({
         sorter: tableSorter(1),
         render: (text: string, record: ListItem) => (
           <span className="flex items-center">
-            <AutoTooltip ghost style={{ maxWidth: 400 }}>
+            <AutoTooltip ghost style={{ maxWidth: 400 }} title={text}>
               <span className="text-primary">{text}</span>
             </AutoTooltip>
             {record.is_custom && (

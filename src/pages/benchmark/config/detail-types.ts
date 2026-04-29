@@ -26,6 +26,7 @@ export interface InstancesData {
   backend_version: any;
   api_detected_backend_version: any;
   backend_parameters: any;
+  injected_backend_parameters: string[];
   image_name: any;
   run_command: any;
   env: any;

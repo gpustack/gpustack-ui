@@ -15,6 +15,7 @@ import {
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Spin, Tooltip } from 'antd';
+import _ from 'lodash';
 import React, {
   forwardRef,
   useCallback,
@@ -163,10 +164,9 @@ const GroundSTT: React.FC<MessageProps> = forwardRef((props, ref) => {
         await nonStreamSTT.generate(params, getCanceltToken());
       }
     } catch (error: any) {
-      console.log('error:', error);
       setTokenResult({
         error: true,
-        errorMessage: error?.message || 'Unknown error'
+        errorMessage: error?.message || _.toString(error)
       });
     } finally {
       setLoading(false);

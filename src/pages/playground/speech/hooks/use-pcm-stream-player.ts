@@ -1,6 +1,5 @@
 import { useMemoizedFn } from 'ahooks';
 import { useRef, useState } from 'react';
-import { workerletUrl } from '../audio/pcm-player-workerlet';
 
 interface Params {
   sampleRate?: number;
@@ -10,6 +9,8 @@ interface Params {
   onError?: (err: any) => void;
   onPlaybackComplete?: () => void;
 }
+
+const JITTER_DELAY = 0.1;
 
 export const usePCMStreamPlayer = (params?: Params) => {
   const {
@@ -24,15 +25,23 @@ export const usePCMStreamPlayer = (params?: Params) => {
   const [isPlaying, setIsPlaying] = useState(false);
 
   const audioContextRef = useRef<AudioContext | null>(null);
-  const workletNodeRef = useRef<AudioWorkletNode | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
 
   const leftoverRef = useRef<Uint8Array | null>(null);
   const streamEndedRef = useRef(false);
+  const nextStartTimeRef = useRef(0);
+  const pendingSourcesRef = useRef(0);
 
   const [audioChunks, setAudioChunks] = useState<any>({
     data: new Uint8Array(128),
     analyser: null
+  });
+
+  const checkComplete = useMemoizedFn(() => {
+    if (streamEndedRef.current && pendingSourcesRef.current === 0) {
+      setIsPlaying(false);
+      onPlaybackComplete?.();
+    }
   });
 
   const initialize = useMemoizedFn(async () => {
@@ -41,41 +50,26 @@ export const usePCMStreamPlayer = (params?: Params) => {
     try {
       const ctx = new AudioContext({ sampleRate });
 
-      const workletUrl = workerletUrl();
-
-      await ctx.audioWorklet.addModule(workletUrl);
-
-      URL.revokeObjectURL(workletUrl);
-      const node = new AudioWorkletNode(ctx, 'pcm-player');
-
-      // Listen for messages from the worklet
-      node.port.onmessage = (event) => {
-        if (event.data.type === 'playback-complete') {
-          setIsPlaying(false);
-          onPlaybackComplete?.();
-        }
-      };
-
       const analyser = ctx.createAnalyser();
       analyser.fftSize = 512;
-
-      node.connect(analyser);
       analyser.connect(ctx.destination);
 
       audioContextRef.current = ctx;
-      workletNodeRef.current = node;
       analyserRef.current = analyser;
+
+      leftoverRef.current = null;
+      streamEndedRef.current = false;
+      nextStartTimeRef.current = 0;
+      pendingSourcesRef.current = 0;
 
       setAudioChunks({
         data: new Uint8Array(analyser.frequencyBinCount),
         analyser: analyserRef
       });
 
-      streamEndedRef.current = false;
-
       onReady?.();
-    } catch (err) {
-      onError?.(err);
+    } catch (err: any) {
+      onError?.(err?.message ?? String(err));
     }
   });
 
@@ -84,7 +78,6 @@ export const usePCMStreamPlayer = (params?: Params) => {
     const bytesPerSample = bitsPerSample / 8;
     const frameSize = bytesPerSample * numChannels;
 
-    // If there's leftover data from the previous chunk, prepend it to the current chunk
     if (leftoverRef.current) {
       const merged = new Uint8Array(leftoverRef.current.length + pcm.length);
       merged.set(leftoverRef.current);
@@ -116,32 +109,67 @@ export const usePCMStreamPlayer = (params?: Params) => {
   };
 
   const addChunk = useMemoizedFn((pcmChunk: Uint8Array) => {
-    const node = workletNodeRef.current;
-    if (!node) return;
+    const ctx = audioContextRef.current;
+    const analyser = analyserRef.current;
+    if (!ctx || !analyser) return;
 
-    setIsPlaying(true);
     const floatData = convertPCM(pcmChunk);
-
     if (!floatData.length) return;
 
-    node.port.postMessage({
-      type: 'push',
-      data: floatData
-    });
+    setIsPlaying(true);
+
+    const frames = floatData.length / numChannels;
+    const buffer = ctx.createBuffer(numChannels, frames, sampleRate);
+
+    if (numChannels === 1) {
+      buffer.copyToChannel(floatData, 0);
+    } else {
+      for (let ch = 0; ch < numChannels; ch++) {
+        const channelData = new Float32Array(frames);
+        for (let i = 0; i < frames; i++) {
+          channelData[i] = floatData[i * numChannels + ch];
+        }
+        buffer.copyToChannel(channelData, ch);
+      }
+    }
+
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+    source.connect(analyser);
+
+    const now = ctx.currentTime;
+    if (nextStartTimeRef.current < now) {
+      nextStartTimeRef.current = now + JITTER_DELAY;
+    }
+
+    const startAt = nextStartTimeRef.current;
+    source.start(startAt);
+    nextStartTimeRef.current = startAt + buffer.duration;
+
+    pendingSourcesRef.current++;
+    source.onended = () => {
+      try {
+        source.disconnect();
+      } catch {
+        // ignore
+      }
+      pendingSourcesRef.current--;
+      checkComplete();
+    };
   });
 
   const stop = useMemoizedFn(() => {
     const ctx = audioContextRef.current;
     if (!ctx) return;
 
-    workletNodeRef.current?.port.postMessage({ type: 'clear' });
-
     ctx.close();
 
     audioContextRef.current = null;
-    workletNodeRef.current = null;
     analyserRef.current = null;
+    leftoverRef.current = null;
     streamEndedRef.current = false;
+    nextStartTimeRef.current = 0;
+    pendingSourcesRef.current = 0;
 
     setIsPlaying(false);
   });
@@ -151,11 +179,10 @@ export const usePCMStreamPlayer = (params?: Params) => {
   });
 
   const endStream = useMemoizedFn(() => {
-    const node = workletNodeRef.current;
-    if (!node) return;
+    if (!audioContextRef.current) return;
 
     streamEndedRef.current = true;
-    node.port.postMessage({ type: 'end-stream' });
+    checkComplete();
   });
 
   return {

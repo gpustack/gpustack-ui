@@ -28,11 +28,6 @@ const UpdateLabels: React.FC<ViewModalProps> = (props) => {
   const { open, onCancel, data, onOk } = props || {};
   const intl = useIntl();
   const [form] = Form.useForm();
-  const labels = Form.useWatch('labels', form);
-
-  const handleLabelsChange = (labels: object) => {
-    form.setFieldValue('labels', labels);
-  };
 
   const handleSumit = () => {
     form.submit();
@@ -105,9 +100,7 @@ const UpdateLabels: React.FC<ViewModalProps> = (props) => {
             label={intl.formatMessage({
               id: 'resources.table.labels'
             })}
-            labels={labels}
             btnText={intl.formatMessage({ id: 'common.button.addLabel' })}
-            onChange={handleLabelsChange}
           ></LabelSelector>
         </Form.Item>
       </Form>

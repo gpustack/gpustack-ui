@@ -17,11 +17,7 @@
     "paths": {
       "@/*": ["./src/*"],
       "@@/*": ["./src/.umi/*"],
-      "@@test/*": ["./src/.umi-test/*"],
-      "@gpustack/gpustack-ui-enterprise": [
-        "../gpustack-ui-enterprise/src/index.ts"
-      ],
-      "@gpustack/gpustack-ui-enterprise/*": ["../gpustack-ui-enterprise/src/*"]
+      "@@test/*": ["./src/.umi-test/*"]
     }
   },
   "include": ["./**/*.d.ts", "./**/*.ts", "./**/*.tsx"]

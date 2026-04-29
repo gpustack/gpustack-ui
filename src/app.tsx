@@ -5,7 +5,6 @@ import { DEFAULT_ENTER_PAGE, GPUSTACK_API_BASE_URL } from '@/config/settings';
 import { COLOR_PRIMARY } from '@/config/theme/constants';
 import { enterprisePluginReady } from '@/plugins/enterprise-ready';
 import { GPUStackPluginManager } from '@/plugins/manager';
-import { mergeEnterpriseRoutes } from '@/plugins/route-merger';
 import { requestConfig } from '@/request-config';
 import {
   queryCurrentUserState,
@@ -141,11 +140,3 @@ export const request: RequestConfig = {
   baseURL: `/${GPUSTACK_API_BASE_URL}`,
   ...requestConfig
 };
-
-/**
- * @description patch the client routes
- * @param routes routes
- */
-export function patchClientRoutes({ routes }: any) {
-  mergeEnterpriseRoutes(routes);
-}

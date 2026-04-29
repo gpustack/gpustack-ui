@@ -3,6 +3,7 @@ import { PaginationKey } from '@/config/settings';
 import type { PageActionType } from '@/config/types';
 import useTableFetch from '@/hooks/use-table-fetch';
 import useQueryUserList from '@/pages/users/services/use-query-user-list';
+import { getGPUStackPlugin } from '@/plugins';
 import { useModel } from '@@/plugin-model';
 import { DeleteModal, FilterBar, IconFont, NoResult } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
@@ -53,6 +54,12 @@ const APIKeys: React.FC = () => {
   });
 
   const intl = useIntl();
+
+  const apiKeyIPConfig = getGPUStackPlugin()?.APIKeyIPConfig;
+  const APIKeyIPConfigForm = apiKeyIPConfig?.form;
+  const { openIPConfigModalStatus, openIPConfigModal, closeIPConfigModal } =
+    apiKeyIPConfig?.useCreateIPConfig?.() || {};
+
   const [openAddModal, setOpenAddModal] = useState<{
     open: boolean;
     action: PageActionType;
@@ -115,13 +122,23 @@ const APIKeys: React.FC = () => {
     });
   };
 
-  const onSelect = useMemoizedFn(async (val: string, record: ListItem) => {
-    if (val === 'delete') {
-      handleDelete(record);
-    } else if (val === 'edit') {
-      handleEditKey(record);
+  const onSelect = useMemoizedFn(
+    async (
+      val: string,
+      record: ListItem,
+      item?: { onClick?: (r: ListItem) => void }
+    ) => {
+      if (item?.onClick) {
+        item.onClick(record);
+        return;
+      }
+      if (val === 'delete') {
+        handleDelete(record);
+      } else if (val === 'edit') {
+        handleEditKey(record);
+      }
     }
-  });
+  );
 
   const handleUserChange = (val: string) => {
     handleQueryChange({
@@ -152,7 +169,8 @@ const APIKeys: React.FC = () => {
   const columns = useKeysColumns({
     handleSelect: onSelect,
     sortOrder,
-    is_admin: currentUser?.is_admin
+    is_admin: currentUser?.is_admin,
+    onIPConfig: openIPConfigModal
   });
 
   return (
@@ -207,6 +225,13 @@ const APIKeys: React.FC = () => {
         onCancel={handleModalCancel}
         onOk={handleModalOk}
       ></AddAPIKeyModal>
+      {APIKeyIPConfigForm && (
+        <APIKeyIPConfigForm
+          open={openIPConfigModalStatus.open}
+          apiKey={openIPConfigModalStatus.currentData}
+          onClose={closeIPConfigModal}
+        />
+      )}
       <DeleteModal ref={modalRef}></DeleteModal>
     </>
   );

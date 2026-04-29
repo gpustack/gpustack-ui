@@ -108,12 +108,14 @@ const useModelsColumns = ({
         },
         render: (text: string[], record: ListItem) => (
           <div className="flex-column gap-4">
-            {record.scope?.includes('management') && (
+            {(record.scope?.includes('management') ||
+              record.scope?.includes('*')) && (
               <AutoTooltip ghost>
                 {intl.formatMessage({ id: 'apikeys.accessScope.management' })}
               </AutoTooltip>
             )}
-            {record.scope?.includes('inference') && (
+            {(record.scope?.includes('inference') ||
+              record.scope?.includes('*')) && (
               <div
                 style={{
                   border: '1px solid var(--ant-color-split)',

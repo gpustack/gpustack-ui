@@ -163,7 +163,7 @@ const APIKeys: React.FC = () => {
           marginTop={30}
           showSelect={currentUser?.is_admin}
           selectOptions={userList}
-          select={{ showSearch: true }}
+          select={{ showSearch: { optionFilterProp: 'label' } }}
           selectHolder={intl.formatMessage({ id: 'models.table.filterByName' })}
           buttonText={intl.formatMessage({ id: 'apikeys.button.create' })}
           handleSearch={handleSearch}

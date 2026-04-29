@@ -182,15 +182,20 @@ const AddModal: React.FC<AddModalProps> = ({
     }
     if (action === PageAction.EDIT && currentData && open) {
       parseExpireValue(currentData as ListItem);
+      const isLegacyAllScope = currentData.scope?.includes('*');
+      const normalizedScope = isLegacyAllScope
+        ? ['management', 'inference']
+        : currentData.scope;
+      const normalizedAllowedModelNames = isLegacyAllScope
+        ? []
+        : currentData.allowed_model_names || [];
       form.setFieldsValue({
         name: currentData.name,
         description: currentData.description,
-        scope: currentData.scope,
-        allowed_type: currentData.allowed_model_names?.length
-          ? 'custom'
-          : 'all',
+        scope: normalizedScope,
+        allowed_type: normalizedAllowedModelNames.length ? 'custom' : 'all',
         expires_in: parseExpireValue(currentData as ListItem),
-        allowed_model_names: currentData.allowed_model_names || []
+        allowed_model_names: normalizedAllowedModelNames
       });
     }
 

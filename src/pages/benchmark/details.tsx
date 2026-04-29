@@ -123,9 +123,7 @@ const Details: React.FC = () => {
 
   return (
     <PageContainerInner
-      header={{
-        title: <PageBreadcrumb items={breadcrumbItems} />
-      }}
+      leftContent={<PageBreadcrumb items={breadcrumbItems} />}
     >
       <DetailContext.Provider
         value={{

@@ -22,6 +22,7 @@ ${formatCurlArgs(parameters, isFormdata)}`.trim();
   if (edit) {
     curlCode = `
 curl ${host}${api} \\
+-H "Content-Type: multipart/form-data" \\
 -H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\${modelProxy ? `\n-H "X-GPUStack-Model: ${parameters.model}" \\` : ''}
 -F image="@image.png" \\
 -F mask="@mask.png" \\
@@ -72,7 +73,6 @@ print(response.json()['data'][0]['b64_json'])`.trim();
 import requests\n
 url="${host}${api}"
 headers = {
-  "Content-type": "multipart/form-data",
   "Authorization": "Bearer $\{YOUR_GPUSTACK_API_KEY}"
 }
 data = ${JSON.stringify(_.omit(parameters, ['mask', 'image']), null, 2).replace(/null/g, 'None')}

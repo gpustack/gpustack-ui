@@ -76,7 +76,6 @@ const ScheduleTypeForm: React.FC = () => {
   const { getRuleMessage } = useAppUtils();
   const form = Form.useFormInstance();
   const scheduleType = Form.useWatch('scheduleType', form);
-  const workerSelector = Form.useWatch('worker_selector', form);
   const GPUsPerReplicas = Form.useWatch(
     ['gpu_selector', 'gpus_per_replica'],
     form
@@ -124,10 +123,6 @@ const ScheduleTypeForm: React.FC = () => {
     if (!hasEmptyValue || allowEmpty) {
       onValuesChange?.({}, form.getFieldsValue());
     }
-  };
-
-  const handleWorkerLabelsChange = (labels: Record<string, any>) => {
-    form.setFieldValue('worker_selector', labels);
   };
 
   const handleSelectorOnBlur = () => {
@@ -295,8 +290,6 @@ const ScheduleTypeForm: React.FC = () => {
                 label={intl.formatMessage({
                   id: 'resources.form.workerSelector'
                 })}
-                labels={workerSelector}
-                onChange={handleWorkerLabelsChange}
                 onBlur={handleSelectorOnBlur}
                 onDelete={handleDeleteWorkerSelector}
                 description={

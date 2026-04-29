@@ -142,25 +142,6 @@ const VersionsForm: React.FC<AddModalProps> = ({
     setDefaultVersion(value);
   };
 
-  const handleEnviromentVarsChange = (
-    envs: Record<string, any>,
-    name: number
-  ) => {
-    const versions = form.getFieldValue('version_configs') || [];
-    const updatedVersions = versions.map((version: any, idx: number) => {
-      if (idx === name) {
-        return {
-          ...version,
-          env: {
-            ...envs
-          }
-        };
-      }
-      return version;
-    });
-    form.setFieldValue('version_configs', updatedVersions);
-  };
-
   useEffect(() => {
     const versions = form.getFieldValue('version_configs') || [];
 
@@ -407,11 +388,7 @@ const VersionsForm: React.FC<AddModalProps> = ({
                       label={intl.formatMessage({
                         id: 'models.form.env'
                       })}
-                      labels={versionConfigs?.[name]?.env}
                       btnText={intl.formatMessage({ id: 'common.button.vars' })}
-                      onChange={(envs) =>
-                        handleEnviromentVarsChange(envs, name)
-                      }
                     ></LabelSelector>
                   </Form.Item>
                 </CollapseContainer>

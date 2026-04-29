@@ -18,11 +18,6 @@ const BasicForm = () => {
   const intl = useIntl();
   const { getRuleMessage } = useAppUtils();
   const { action, backendSource } = useFormContext();
-  const defaultEnvs = Form.useWatch('default_env', form);
-
-  const handleEnviromentVarsChange = (labels: Record<string, any>) => {
-    form.setFieldValue('default_env', labels);
-  };
 
   useEffect(() => {
     if (action === PageAction.CREATE) {
@@ -93,10 +88,6 @@ const BasicForm = () => {
         rules={[{ required: false }]}
       >
         <ListInput
-          dataList={form.getFieldValue('default_backend_param') || []}
-          onChange={(data: string[]) => {
-            form.setFieldValue('default_backend_param', data);
-          }}
           btnText={intl.formatMessage({ id: 'backend.form.addParameter' })}
           label={intl.formatMessage({
             id: 'backend.form.defaultBackendParameters'
@@ -108,9 +99,7 @@ const BasicForm = () => {
           label={intl.formatMessage({
             id: 'backend.form.defaultEnvironment'
           })}
-          labels={defaultEnvs}
           btnText={intl.formatMessage({ id: 'common.button.vars' })}
-          onChange={handleEnviromentVarsChange}
         ></LabelSelector>
       </Form.Item>
 

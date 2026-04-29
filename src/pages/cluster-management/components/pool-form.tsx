@@ -179,7 +179,6 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
   const [form] = Form.useForm();
   const intl = useIntl();
   const { getRuleMessage } = useAppUtils();
-  const labels = Form.useWatch('labels', form);
   const title = Form.useWatch('name', form);
   const [instanceSpec, setInstanceSpec] = useState<Record<string, any>>({});
 
@@ -481,7 +480,6 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
           >
             <LabelSelector
               label={intl.formatMessage({ id: 'resources.table.labels' })}
-              labels={labels || {}}
               btnText={intl.formatMessage({ id: 'common.button.addLabel' })}
             ></LabelSelector>
           </Form.Item>

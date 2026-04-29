@@ -24,10 +24,6 @@ const BackendParametersList: React.FC = () => {
     return _.get(BackendParameters, backend, []);
   }, [backend]);
 
-  const handleBackendParametersChange = (list: string[]) => {
-    form.setFieldValue('backend_parameters', list);
-  };
-
   const handleBackendParametersOnBlur = () => {
     onValuesChange?.({}, form.getFieldsValue());
   };
@@ -51,8 +47,6 @@ const BackendParametersList: React.FC = () => {
         label={intl.formatMessage({
           id: 'models.form.backend_parameters'
         })}
-        dataList={form.getFieldValue('backend_parameters') || []}
-        onChange={handleBackendParametersChange}
         onBlur={handleBackendParametersOnBlur}
         onDelete={handleDeleteBackendParameters}
         options={paramsConfig}

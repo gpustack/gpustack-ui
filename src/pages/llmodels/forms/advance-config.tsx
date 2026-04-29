@@ -19,7 +19,6 @@ import BackendParametersList from './backend-parameters-list';
 const AdvanceConfig = () => {
   const intl = useIntl();
   const form = Form.useFormInstance();
-  const EnviromentVars = Form.useWatch('env', form);
   const backend = Form.useWatch('backend', form);
   const modelRouteEnable = Form.useWatch('enable_model_route', form);
   const {
@@ -35,10 +34,6 @@ const AdvanceConfig = () => {
   const currentBackendOptions = useMemo(() => {
     return flatBackendOptions?.find((item) => item.value === backend);
   }, [backend, flatBackendOptions]);
-
-  const handleEnviromentVarsChange = (labels: Record<string, any>) => {
-    form.setFieldValue('env', labels);
-  };
 
   const onSelectorChange = (field: string, allowEmpty?: boolean) => {
     const workerSelector = form.getFieldValue(field);
@@ -86,11 +81,9 @@ const AdvanceConfig = () => {
           label={intl.formatMessage({
             id: 'models.form.env'
           })}
-          labels={EnviromentVars}
           btnText={intl.formatMessage({ id: 'common.button.vars' })}
           onBlur={handleEnvSelectorOnBlur}
           onDelete={handleDeleteEnvSelector}
-          onChange={handleEnviromentVarsChange}
         ></LabelSelector>
       </Form.Item>
       {(backend === backendOptionsMap.custom ||

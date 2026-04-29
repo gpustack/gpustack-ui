@@ -54,13 +54,18 @@ const Instance: React.FC = () => {
     const { snapshot } = detailData;
     const [instanceName, instanceData] =
       Object.entries(snapshot?.instances || {})[0] || [];
+
+    const params = [
+      ...(instanceData?.backend_parameters || []),
+      ...(instanceData?.injected_backend_parameters || [])
+    ];
+
     return [
       {
         key: '1',
         label: intl.formatMessage({ id: 'models.form.backend_parameters' }),
         children:
-          instanceData?.backend_parameters &&
-          instanceData?.backend_parameters.length > 0 ? (
+          params.length > 0 ? (
             <Flex
               gap={8}
               wrap="wrap"
@@ -70,13 +75,11 @@ const Instance: React.FC = () => {
                 borderRadius: '2px'
               }}
             >
-              {instanceData?.backend_parameters?.map(
-                (param: string, index: number) => (
-                  <span key={index} style={{ margin: 0 }}>
-                    {param}
-                  </span>
-                )
-              )}
+              {params?.map((param: string, index: number) => (
+                <span key={index} style={{ margin: 0 }}>
+                  {param}
+                </span>
+              ))}
             </Flex>
           ) : (
             '-'

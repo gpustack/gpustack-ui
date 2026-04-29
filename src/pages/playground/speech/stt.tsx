@@ -103,7 +103,7 @@ const GroundSTT: React.FC<MessageProps> = forwardRef((props, ref) => {
     onError: (error) => {
       setTokenResult({
         error: true,
-        errorMessage: error
+        errorMessage: error?.message || _.toString(error)
       });
     }
   });

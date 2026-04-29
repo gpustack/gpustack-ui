@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { useCallback, useRef, useState } from 'react';
 import { speechToText } from '../../apis';
 import { extractErrorMessage } from '../../config';
@@ -52,15 +53,19 @@ export const useNonStreamSTT = (params?: UseNonStreamSTTParams) => {
         params?.onSuccess?.(result);
         return result;
       } catch (err: any) {
-        const res = err?.response?.data;
-        if (res?.error || (res?.status_code && res?.status_code !== 200)) {
-          const errorMessage = extractErrorMessage(res);
-          setError({
-            error: true,
-            errorMessage
-          });
-          params?.onError?.(errorMessage);
+        if (axios.isCancel(err)) {
+          return null;
         }
+        const res = err?.response?.data;
+        const errorMessage =
+          res?.error || (res?.status_code && res?.status_code !== 200)
+            ? extractErrorMessage(res)
+            : err?.response?.statusText || err?.message || 'Request failed';
+        setError({
+          error: true,
+          errorMessage
+        });
+        params?.onError?.(errorMessage);
         return null;
       } finally {
         setLoading(false);

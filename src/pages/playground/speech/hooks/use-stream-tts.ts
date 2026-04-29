@@ -220,7 +220,7 @@ export const useStreamTTS = (params?: UseStreamTTSParams) => {
       });
 
       if ('error' in result) {
-        const errorMessage = extractErrorMessage(result.data);
+        const errorMessage = extractErrorMessage(result);
         setError({
           error: true,
           errorMessage

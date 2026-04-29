@@ -52,7 +52,7 @@ export const useStreamSTT = (params?: UseStreamSTTParams) => {
         });
 
         if ('error' in result) {
-          const errorMessage = extractErrorMessage(result.data);
+          const errorMessage = extractErrorMessage(result);
           setError({
             error: true,
             errorMessage

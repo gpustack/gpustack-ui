@@ -35,6 +35,8 @@ const AdvanceConfig = () => {
     return flatBackendOptions?.find((item) => item.value === backend);
   }, [backend, flatBackendOptions]);
 
+  console.log('currentBackendOptions', currentBackendOptions);
+
   const onSelectorChange = (field: string, allowEmpty?: boolean) => {
     const workerSelector = form.getFieldValue(field);
     // check if all keys have values
@@ -103,7 +105,7 @@ const AdvanceConfig = () => {
           ></CheckboxField>
         </Form.Item>
       )}
-      {backend !== backendOptionsMap.voxBox && (
+      {currentBackendOptions?.isBuiltIn && (
         <Form.Item<FormData>
           name="distributed_inference_across_workers"
           valuePropName="checked"

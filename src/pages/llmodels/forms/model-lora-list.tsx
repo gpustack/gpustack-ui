@@ -1,4 +1,5 @@
 import { MetadataList } from '@gpustack/core-ui';
+import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { FormData, LoraListItem } from '../config/types';
@@ -8,6 +9,7 @@ import LoraItem from './lora-list-item';
 type ItemValue = { value: any[]; lora_name: string };
 
 const ModelLoraList = () => {
+  const intl = useIntl();
   const form = Form.useFormInstance<FormData>();
   const huggingfaceRepoId = Form.useWatch('huggingface_repo_id', form);
   const modelScopeModelId = Form.useWatch('model_scope_model_id', form);
@@ -18,6 +20,7 @@ const ModelLoraList = () => {
   const { dataList: defaultDataList, fetchData } = useQueryModelLoraList();
 
   const [itemList, setItemList] = useState<ItemValue[]>([]);
+  const [validated, setValidated] = useState(false);
   const initializedRef = useRef(false);
   const prevBaseRef = useRef<string>('');
 
@@ -59,6 +62,19 @@ const ModelLoraList = () => {
     );
   }, [itemList]);
 
+  const duplicateNames = useMemo(() => {
+    const counts = new Map<string, number>();
+    itemList.forEach((it) => {
+      const n = it.lora_name?.trim();
+      if (n) counts.set(n, (counts.get(n) ?? 0) + 1);
+    });
+    return new Set(
+      Array.from(counts.entries())
+        .filter(([, c]) => c > 1)
+        .map(([n]) => n)
+    );
+  }, [itemList]);
+
   const syncFormField = (newItemList: ItemValue[]) => {
     const newFormList = newItemList
       .map((it) => ({
@@ -66,9 +82,15 @@ const ModelLoraList = () => {
         lora_repo_name: it.value?.[1] || '',
         lora_name: it.lora_name || ''
       }))
-      .filter((it) => it.lora_repo_name?.trim() && it.lora_name?.trim());
+      .filter((it) => it.lora_repo_name?.trim() || it.lora_name?.trim());
     form.setFieldValue('lora_list', newFormList);
   };
+
+  useEffect(() => {
+    if (validated) {
+      form.validateFields(['lora_list']).catch(() => {});
+    }
+  }, [itemList, validated]);
 
   const handleItemChange = (
     index: number,
@@ -93,11 +115,42 @@ const ModelLoraList = () => {
   };
 
   return (
-    <Form.Item<FormData> name="lora_list">
+    <Form.Item<FormData>
+      name="lora_list"
+      rules={[
+        {
+          validator: async (_, value: LoraListItem[]) => {
+            if (!validated) {
+              setValidated(true);
+            }
+            if (!value || value.length === 0) return;
+
+            for (const it of value) {
+              const hasRepo = !!it.lora_repo_name?.trim();
+              const hasName = !!it.lora_name?.trim();
+              if (hasRepo !== hasName) {
+                throw new Error(
+                  intl.formatMessage({ id: 'models.form.lora.rule.empty' })
+                );
+              }
+            }
+
+            const names = value
+              .map((it) => it.lora_name?.trim())
+              .filter(Boolean) as string[];
+            if (names.length !== new Set(names).size) {
+              throw new Error(
+                intl.formatMessage({ id: 'models.form.lora.rule.duplicate' })
+              );
+            }
+          }
+        }
+      ]}
+    >
       <MetadataList
-        label="LoRA Adapter"
+        label={intl.formatMessage({ id: 'models.form.lora.label' })}
         dataList={itemList}
-        btnText="Add LoRA Adapter"
+        btnText={intl.formatMessage({ id: 'models.form.lora.add' })}
         onAdd={handleAdd}
         onDelete={handleDelete}
       >
@@ -107,6 +160,8 @@ const ModelLoraList = () => {
             base={base}
             defaultDataList={defaultDataList}
             selectedRepoNames={selectedRepoNames}
+            duplicateNames={duplicateNames}
+            validated={validated}
             onChange={(partial) => handleItemChange(index, partial)}
           />
         )}

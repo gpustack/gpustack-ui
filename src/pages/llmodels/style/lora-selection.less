@@ -1,0 +1,26 @@
+.item {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  flex: 1;
+  :global {
+    .ant-select-dropdown {
+      > div {
+        .ant-cascader-menus {
+          display: grid;
+          grid-template-columns: 140px 1fr;
+        }
+      }
+    }
+  }
+
+  > *:nth-child(1) {
+    flex: 1 1 320px;
+    min-width: 0;
+  }
+  > *:nth-child(2) {
+    flex: 1 1 120px;
+    min-width: 0;
+  }
+}

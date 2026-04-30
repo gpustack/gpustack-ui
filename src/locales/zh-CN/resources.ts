@@ -96,6 +96,7 @@ export default {
   'resources.worker.download.privatekey': '下载私钥',
   'resources.modelfiles.form.exsting': '已下载',
   'resources.modelfiles.form.added': '已添加',
+  'resources.modelfiles.form.isLora': '是否 LoRA',
   'resources.worker.maintenance.title': '系统维护',
   'resources.worker.maintenance.enable': '进入维护模式',
   'resources.worker.maintenance.disable': '退出维护模式',

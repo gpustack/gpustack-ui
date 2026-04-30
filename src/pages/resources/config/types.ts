@@ -124,6 +124,7 @@ export interface ModelFile {
   id: number;
   created_at: string;
   updated_at: string;
+  is_lora: boolean;
 }
 
 export interface ModelFileFormData {
@@ -135,4 +136,5 @@ export interface ModelFileFormData {
   model_scope_file_path: string;
   local_path: string;
   local_dir: string;
+  is_lora: boolean;
 }

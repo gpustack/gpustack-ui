@@ -287,7 +287,13 @@ export default {
   'models.instance.previousRun': 'Previous Run',
   'models.instance.startHistory': 'Run History',
   'models.instance.startHistory.tips':
-    'Shows logs from the run before the last error-triggered restart.'
+    'Shows logs from the run before the last error-triggered restart.',
+  'models.form.lora.label': 'LoRA Adapter',
+  'models.form.lora.add': 'Add LoRA Adapter',
+  'models.form.lora.select': 'Select LoRA',
+  'models.form.lora.name': 'LoRA name',
+  'models.form.lora.rule.empty': 'Input cannot be empty',
+  'models.form.lora.rule.duplicate': 'LoRA name cannot be duplicated'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -390,5 +396,11 @@ export default {
 // 78.  'models.form.enableModelRoute.tips': 'Enable Model Route',
 // 79.  'models.table.modelView': 'Model View',
 // 80.  'models.table.instanceView': 'Instance View',
-// 81. 'models.table.category': 'Category'
+// 81. 'models.table.category': 'Category',
+// 82. 'models.form.lora.label': 'LoRA Adapter',
+// 83. 'models.form.lora.add': 'Add LoRA Adapter',
+// 84. 'models.form.lora.select': 'Select LoRA',
+// 85. 'models.form.lora.name': 'LoRA name',
+// 86. 'models.form.lora.rule.empty': 'Input cannot be empty',
+// 87. 'models.form.lora.rule.duplicate': 'LoRA name cannot be duplicated'
 // ========== End of To-Do List ==========

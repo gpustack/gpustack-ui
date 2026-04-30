@@ -271,5 +271,11 @@ export default {
   'models.instance.previousRun': '上一次运行',
   'models.instance.startHistory': '运行记录',
   'models.instance.startHistory.tips':
-    '显示上一次因错误自动重启之前的那次运行的日志。'
+    '显示上一次因错误自动重启之前的那次运行的日志。',
+  'models.form.lora.label': 'LoRA 适配器',
+  'models.form.lora.add': '添加 LoRA 适配器',
+  'models.form.lora.select': '选择 LoRA',
+  'models.form.lora.name': 'LoRA 名称',
+  'models.form.lora.rule.empty': '输入不能为空',
+  'models.form.lora.rule.duplicate': 'LoRA name 不能重复'
 };

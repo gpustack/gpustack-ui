@@ -291,7 +291,13 @@ export default {
   'models.instance.previousRun': 'Previous Run',
   'models.instance.startHistory': 'Run History',
   'models.instance.startHistory.tips':
-    'Shows logs from the run before the last error-triggered restart.'
+    'Shows logs from the run before the last error-triggered restart.',
+  'models.form.lora.label': 'LoRA Adapter',
+  'models.form.lora.add': 'Add LoRA Adapter',
+  'models.form.lora.select': 'Select LoRA',
+  'models.form.lora.name': 'LoRA name',
+  'models.form.lora.rule.empty': 'Input cannot be empty',
+  'models.form.lora.rule.duplicate': 'LoRA name cannot be duplicated'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -304,5 +310,11 @@ export default {
 // 5.  'models.form.backend.sglang': 'Built-in support for NVIDIA, AMD, Ascend, Moore Threads, MetaX, T-Head PPU devices.',
 // 6.  'models.table.modelView': 'Model List',
 // 7.  'models.table.instanceView': 'Instance List',
-// 8. 'models.table.category': 'Category'
+// 8. 'models.table.category': 'Category',
+// 9. 'models.form.lora.label': 'LoRA Adapter',
+// 10. 'models.form.lora.add': 'Add LoRA Adapter',
+// 11. 'models.form.lora.select': 'Select LoRA',
+// 12. 'models.form.lora.name': 'LoRA name',
+// 13. 'models.form.lora.rule.empty': 'Input cannot be empty',
+// 14. 'models.form.lora.rule.duplicate': 'LoRA name cannot be duplicated'
 // ========== End of To-Do List ==========

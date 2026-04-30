@@ -3,17 +3,21 @@ import {
   Input as CInput,
   Cascader as SealCascader
 } from '@gpustack/core-ui';
+import { useIntl } from '@umijs/max';
 import _ from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
 import useQueryModelLoraList, {
   LoraOptionGroup
 } from '../services/use-query-lora-list';
+import loraSelectionStyles from '../style/lora-selection.less';
 
 interface LoraListItemProps {
   item: { value: any[]; lora_name: string };
   base: string;
   defaultDataList: LoraOptionGroup[];
   selectedRepoNames: Set<string>;
+  duplicateNames: Set<string>;
+  validated: boolean;
   onChange: (partial: { value?: any[]; lora_name?: string }) => void;
 }
 
@@ -22,8 +26,11 @@ const LoraListItem: React.FC<LoraListItemProps> = ({
   base,
   defaultDataList,
   selectedRepoNames,
+  duplicateNames,
+  validated,
   onChange
 }) => {
+  const intl = useIntl();
   const { dataList: ownSearchList, fetchData } = useQueryModelLoraList();
   const [hasSearched, setHasSearched] = useState(false);
 
@@ -79,11 +86,15 @@ const LoraListItem: React.FC<LoraListItemProps> = ({
   };
 
   const cascaderEmpty = !item.value || item.value.length === 0;
-  const nameEmpty = !item.lora_name;
+  const nameEmpty = !item.lora_name?.trim();
+  const isDuplicate =
+    !!item.lora_name?.trim() && duplicateNames.has(item.lora_name.trim());
+
   const cascaderStatus =
-    cascaderEmpty && !nameEmpty ? ('error' as const) : undefined;
+    validated && cascaderEmpty ? ('error' as const) : 'success';
+
   const inputStatus =
-    nameEmpty && !cascaderEmpty ? ('error' as const) : undefined;
+    validated && (nameEmpty || isDuplicate) ? ('error' as const) : 'success';
 
   const displayRender = (labels: any[]) => {
     return (
@@ -105,41 +116,27 @@ const LoraListItem: React.FC<LoraListItemProps> = ({
 
   const optionNode = (option: any) => {
     const { data } = option;
-    if (data.isParent) {
-      return (
-        <AutoTooltip ghost maxWidth={100}>
-          {data.label}
-        </AutoTooltip>
-      );
-    }
     return (
-      <AutoTooltip ghost maxWidth={180}>
+      <AutoTooltip ghost maxWidth={'100%'}>
         {data.label}
       </AutoTooltip>
     );
   };
 
   return (
-    <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: '1fr 120px',
-        gap: 8,
-        alignItems: 'center',
-        flex: 1
-      }}
-    >
+    <div className={loraSelectionStyles.item}>
       <SealCascader
-        showSearch
-        expandTrigger="hover"
+        expandTrigger="click"
         multiple={false}
         alwaysFocus={true}
         status={cascaderStatus}
         value={item.value}
         options={groupedOptions}
         onChange={handleCascaderChange}
-        onSearch={handleSearch}
-        placeholder="Select LoRA"
+        showSearch={{
+          onSearch: handleSearch
+        }}
+        placeholder={intl.formatMessage({ id: 'models.form.lora.select' })}
         showCheckedStrategy="SHOW_CHILD"
         displayRender={displayRender}
         optionNode={optionNode}
@@ -158,11 +155,10 @@ const LoraListItem: React.FC<LoraListItemProps> = ({
         getPopupContainer={(triggerNode) => triggerNode.parentNode}
       ></SealCascader>
       <CInput.Input
-        style={{ flex: 1 }}
         status={inputStatus}
         value={item.lora_name}
         onChange={handleNameChange}
-        placeholder="LoRA name"
+        placeholder={intl.formatMessage({ id: 'models.form.lora.name' })}
       />
     </div>
   );

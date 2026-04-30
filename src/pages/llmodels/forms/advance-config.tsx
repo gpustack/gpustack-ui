@@ -15,6 +15,7 @@ import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
 import { backendOptionsMap } from '../constants/backend-parameters';
 import BackendParametersList from './backend-parameters-list';
+import ModelLoraList from './model-lora-list';
 
 const AdvanceConfig = () => {
   const intl = useIntl();
@@ -88,6 +89,7 @@ const AdvanceConfig = () => {
           onDelete={handleDeleteEnvSelector}
         ></LabelSelector>
       </Form.Item>
+      <ModelLoraList></ModelLoraList>
       {(backend === backendOptionsMap.custom ||
         !currentBackendOptions?.isBuiltIn) && (
         <Form.Item<FormData>

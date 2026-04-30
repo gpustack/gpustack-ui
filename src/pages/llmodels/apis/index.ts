@@ -16,7 +16,8 @@ import {
   GPUListItem,
   ListItem,
   ModelInstanceFormData,
-  ModelInstanceListItem
+  ModelInstanceListItem,
+  ModelLoraAdapterResult
 } from '../config/types';
 
 export const MODELS_API = '/models';
@@ -32,6 +33,8 @@ export const MY_MODELS_API = '/my-models';
 export const DRAFT_MODELS_API = '/draft-models';
 
 export const CATALOG_LIST_API = '/model-sets';
+
+export const MODEL_LORA_ADAPTER_API = '/models/adapters';
 
 const setProxyUrl = (url: string) => {
   return `/proxy?url=${encodeURIComponent(url)}`;
@@ -96,6 +99,21 @@ export async function updateModel(params: { id: number; data: FormData }) {
 
 export async function queryModelDetail(id: number) {
   return request(`${MODELS_API}/${id}`, {
+    method: 'GET'
+  });
+}
+
+export async function queryModelLoraAdapter(
+  params: {
+    base: string;
+    q?: string;
+    limit?: number;
+  },
+  options?: any
+) {
+  return request<ModelLoraAdapterResult>(`${MODEL_LORA_ADAPTER_API}`, {
+    params,
+    cancelToken: options?.token,
     method: 'GET'
   });
 }

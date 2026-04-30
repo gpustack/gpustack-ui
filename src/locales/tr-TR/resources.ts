@@ -98,6 +98,7 @@ export default {
   'resources.worker.download.privatekey': 'Özel Anahtarı İndir',
   'resources.modelfiles.form.exsting': 'İndirilmiş',
   'resources.modelfiles.form.added': 'Eklenmiş',
+  'resources.modelfiles.form.isLora': 'Is LoRA',
   'resources.worker.maintenance.title': 'Sistem Bakımı',
   'resources.worker.maintenance.enable': 'Bakım Moduna Gir',
   'resources.worker.maintenance.disable': 'Bakım Modundan Çık',

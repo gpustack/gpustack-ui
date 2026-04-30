@@ -46,7 +46,10 @@ export const useQueryModelLoraList = () => {
   const [dataList, setDataList] = useState<LoraOptionGroup[]>([]);
 
   const getData = (params: Parameters) => {
-    fetchData(params).then((result) => {
+    fetchData({
+      ...params,
+      limit: params.limit || 40
+    }).then((result) => {
       if (result) {
         const groups: Record<string, LoraOptionGroup> = {};
         result.lora_list.forEach((item) => {

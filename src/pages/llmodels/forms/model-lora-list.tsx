@@ -60,11 +60,13 @@ const ModelLoraList = () => {
   }, [itemList]);
 
   const syncFormField = (newItemList: ItemValue[]) => {
-    const newFormList = newItemList.map((it) => ({
-      source: (it.value?.[0] || '') as 'huggingface' | 'model_scope',
-      lora_repo_name: it.value?.[1] || '',
-      lora_name: it.lora_name || ''
-    }));
+    const newFormList = newItemList
+      .map((it) => ({
+        source: (it.value?.[0] || '') as 'huggingface' | 'model_scope',
+        lora_repo_name: it.value?.[1] || '',
+        lora_name: it.lora_name || ''
+      }))
+      .filter((it) => it.lora_repo_name?.trim() && it.lora_name?.trim());
     form.setFieldValue('lora_list', newFormList);
   };
 
@@ -91,7 +93,7 @@ const ModelLoraList = () => {
   };
 
   return (
-    <Form.Item<FormData> name="lora_list" trigger="">
+    <Form.Item<FormData> name="lora_list">
       <MetadataList
         label="LoRA Adapter"
         dataList={itemList}

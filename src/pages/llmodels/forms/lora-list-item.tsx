@@ -5,33 +5,17 @@ import {
 } from '@gpustack/core-ui';
 import _ from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
-import { modelSourceMap } from '../config';
-import useQueryModelLoraList from '../services/use-query-lora-list';
-
-type LoraDataItem = {
-  label: string;
-  value: string;
-  lora_repo_name: string;
-  source: string;
-};
+import useQueryModelLoraList, {
+  LoraOptionGroup
+} from '../services/use-query-lora-list';
 
 interface LoraListItemProps {
   item: { value: any[]; lora_name: string };
   base: string;
-  defaultDataList: LoraDataItem[];
+  defaultDataList: LoraOptionGroup[];
   selectedRepoNames: Set<string>;
   onChange: (partial: { value?: any[]; lora_name?: string }) => void;
 }
-
-const sourceLabel = (source: string) => {
-  if (source === modelSourceMap.huggingface_value) {
-    return modelSourceMap.huggingface;
-  }
-  if (source === modelSourceMap.modelscope_value) {
-    return modelSourceMap.modelScope;
-  }
-  return source;
-};
 
 const LoraListItem: React.FC<LoraListItemProps> = ({
   item,
@@ -64,40 +48,16 @@ const LoraListItem: React.FC<LoraListItemProps> = ({
   }, [base]);
 
   const groupedOptions = useMemo(() => {
-    const groups: Record<
-      string,
-      {
-        label: string;
-        value: string;
-        isParent: boolean;
-        children: any[];
-      }
-    > = {};
     const currentRepo = item.value?.[1];
-
-    itemDataList.forEach((it) => {
-      if (!groups[it.source]) {
-        groups[it.source] = {
-          label: sourceLabel(it.source),
-          value: it.source,
-          isParent: true,
-          children: []
-        };
-      }
-      const isSelectedByOther =
-        selectedRepoNames.has(it.lora_repo_name) &&
-        it.lora_repo_name !== currentRepo;
-      if (!isSelectedByOther) {
-        groups[it.source].children.push({
-          label: it.lora_repo_name,
-          value: it.lora_repo_name,
-          source: it.source,
-          isParent: false
-        });
-      }
-    });
-
-    return Object.values(groups).filter((g) => g.children.length > 0);
+    return itemDataList
+      .map((group) => ({
+        ...group,
+        children: group.children.filter(
+          (child) =>
+            !selectedRepoNames.has(child.value) || child.value === currentRepo
+        )
+      }))
+      .filter((group) => group.children.length > 0);
   }, [itemDataList, selectedRepoNames, item.value]);
 
   const handleSearch = (q: string) => {
@@ -153,7 +113,7 @@ const LoraListItem: React.FC<LoraListItemProps> = ({
       );
     }
     return (
-      <AutoTooltip ghost maxWidth={200}>
+      <AutoTooltip ghost maxWidth={180}>
         {data.label}
       </AutoTooltip>
     );

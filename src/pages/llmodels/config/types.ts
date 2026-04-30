@@ -18,6 +18,16 @@ export interface ListItem {
   enable_model_route?: boolean;
   replicas: number;
   s3Address: string;
+  lora_list: Array<{
+    huggingface_filename: string;
+    local_path: string;
+    lora_name: string;
+    lora_repo_name: string;
+    model_file_id: string;
+    model_scope_file_path: string;
+    path: string;
+    source: string;
+  }>;
   name: string;
   description: string;
   id: number;

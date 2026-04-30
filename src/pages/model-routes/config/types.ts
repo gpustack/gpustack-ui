@@ -8,6 +8,7 @@ export interface FormData {
     provider_model_name?: string;
     model_id?: number;
     provider_id?: number;
+    lora_module_name?: string;
     fallback_status_codes?: string[];
   };
   targets: {
@@ -15,6 +16,7 @@ export interface FormData {
     weight?: number | null;
     model_id?: number;
     provider_id?: number;
+    lora_module_name?: string;
     fallback_status_codes?: string[];
   }[];
 }
@@ -46,5 +48,6 @@ export interface RouteTarget {
   provider_id: number;
   provider_model_name: string;
   fallback_status_codes: string[];
+  lora_module_name?: string;
   state: string;
 }

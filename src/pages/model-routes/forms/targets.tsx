@@ -25,6 +25,18 @@ const OptionWrapper = styled.span`
   display: flex;
   align-items: center;
   gap: 8px;
+  .lora-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 7px;
+    height: 18px;
+    font-size: 11px;
+    line-height: 18px;
+    border: 1px solid var(--ant-color-split);
+    border-radius: 12px;
+    color: var(--ant-color-text-tertiary);
+    background-color: transparent;
+  }
 `;
 
 const LabelWrapper = styled.div`
@@ -214,6 +226,14 @@ const TargetsForm = forwardRef((props, ref) => {
     const { data } = option;
 
     if (!data.isParent) {
+      if (data.isLora) {
+        return (
+          <OptionWrapper>
+            <AutoTooltip ghost>{data.label}</AutoTooltip>
+            <span className="lora-tag">LoRA</span>
+          </OptionWrapper>
+        );
+      }
       return <AutoTooltip ghost>{data.label}</AutoTooltip>;
     }
 

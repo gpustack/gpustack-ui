@@ -48,15 +48,37 @@ const useTargetSourceModels = () => {
           parent: false,
           isParent: true,
           children: _.uniqBy(
-            models.items?.map?.((model: ModelListItem) => ({
-              label: model.name,
-              value: model.id,
-              data: {
-                model_id: model.id,
-                parentId: 'deployments'
-              },
-              source: 'deployment'
-            })),
+            models.items?.flatMap?.((model: ModelListItem) => {
+              const items: any[] = [
+                {
+                  label: model.name,
+                  value: model.id,
+                  data: {
+                    model_id: model.id,
+                    parentId: 'deployments'
+                  },
+                  source: 'deployment'
+                }
+              ];
+              model.lora_list?.forEach?.((lora) => {
+                const loraName = lora.lora_name || lora.lora_repo_name;
+                if (!loraName) {
+                  return;
+                }
+                items.push({
+                  label: loraName,
+                  value: `${model.id}_lora_${loraName}`,
+                  data: {
+                    model_id: model.id,
+                    parentId: 'deployments',
+                    lora_module_name: loraName
+                  },
+                  source: 'deployment',
+                  isLora: true
+                });
+              });
+              return items;
+            }) || [],
             'value'
           )
         }

@@ -4,16 +4,17 @@ import { fomatNodeJsParams, formatCurlArgs, formatPyParams } from './utils';
 export const generateLLmCurlCode = ({
   api: url,
   modelProxy,
+  routeID,
   parameters
 }: Record<string, any>) => {
   const host = window.location.origin;
-  const api = modelProxy ? `${MODEL_PROXY}/\${YOUR_API_PATH}` : url;
+  const api = modelProxy ? `${MODEL_PROXY}/${routeID}/\${YOUR_API_PATH}` : url;
 
   // ========================= Curl =========================
   const curlCode = `
 curl ${host}${api} \\
 -H "Content-Type: application/json" \\
--H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\${modelProxy ? `\n-H "X-GPUStack-Model: ${parameters.model}" \\` : ''}
+-H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\
 ${formatCurlArgs(parameters, false)}`.trim();
 
   return curlCode;

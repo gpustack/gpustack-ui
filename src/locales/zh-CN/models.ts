@@ -61,6 +61,7 @@ export default {
   'models.table.layers': '层',
   'models.form.backend': '后端',
   'models.form.backend_parameters': '后端参数',
+  'models.form.backend_parameters.injected': '注入的后端参数',
   'models.search.gguf.tips':
     'GGUF 模型用 llama-box（支持 Linux, macOS 和 Windows）。',
   'models.search.vllm.tips':

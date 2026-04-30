@@ -55,35 +55,39 @@ const Instance: React.FC = () => {
     const [instanceName, instanceData] =
       Object.entries(snapshot?.instances || {})[0] || [];
 
-    const params = [
-      ...(instanceData?.backend_parameters || []),
-      ...(instanceData?.injected_backend_parameters || [])
-    ];
+    const renderParams = (params: string[]) =>
+      params.length > 0 ? (
+        <Flex
+          gap={'4px 8px'}
+          wrap="wrap"
+          style={{
+            backgroundColor: 'var(--ant-color-fill-quaternary)',
+            padding: '4px 6px',
+            borderRadius: '2px'
+          }}
+        >
+          {params.map((param: string, index: number) => (
+            <span key={index} style={{ margin: 0 }}>
+              {param}
+            </span>
+          ))}
+        </Flex>
+      ) : (
+        '-'
+      );
 
     return [
       {
         key: '1',
         label: intl.formatMessage({ id: 'models.form.backend_parameters' }),
-        children:
-          params.length > 0 ? (
-            <Flex
-              gap={8}
-              wrap="wrap"
-              style={{
-                backgroundColor: 'var(--ant-color-fill-quaternary)',
-                padding: '4px',
-                borderRadius: '2px'
-              }}
-            >
-              {params?.map((param: string, index: number) => (
-                <span key={index} style={{ margin: 0 }}>
-                  {param}
-                </span>
-              ))}
-            </Flex>
-          ) : (
-            '-'
-          )
+        children: renderParams(instanceData?.backend_parameters || [])
+      },
+      {
+        key: '1-1',
+        label: intl.formatMessage({
+          id: 'models.form.backend_parameters.injected'
+        }),
+        children: renderParams(instanceData?.injected_backend_parameters || [])
       },
       {
         key: '3',

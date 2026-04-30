@@ -46,7 +46,6 @@ const API_MAP: Record<string, { api: string }> = {
 
 const ApiAccessInfoWrapper = styled.div`
   display: grid;
-  padding-left: 20px;
   grid-template-columns: max-content 1fr max-content;
   gap: 8px 0px;
   justify-items: start;
@@ -103,7 +102,7 @@ const ApiAccessInfo = ({ open, data, onClose }: ApiAccessInfoProps) => {
     if (!data.generic_proxy) {
       return `${window.location.origin}/${OPENAI_COMPATIBLE}`;
     }
-    return `${window.location.origin}${MODEL_PROXY}/<YOUR_API_PATH>`;
+    return `${window.location.origin}${MODEL_PROXY}/${data.id}/<YOUR_API_PATH>`;
   }, [data]);
 
   const isRanker = useMemo(() => {
@@ -114,29 +113,8 @@ const ApiAccessInfo = ({ open, data, onClose }: ApiAccessInfoProps) => {
     onClose();
   };
 
-  useEffect(() => {
-    if (open && data.generic_proxy) {
-      openProxyModal(data);
-    }
-  }, [open, data, openProxyModal]);
-
-  return (
-    <ScrollerModal
-      open={open}
-      style={{
-        top: '20%'
-      }}
-      title={intl.formatMessage({ id: 'models.table.button.apiAccessInfo' })}
-      width={600}
-      destroyOnHidden
-      closable={true}
-      mask={{
-        closable: false
-      }}
-      onOk={handleClose}
-      onCancel={handleClose}
-      footer={null}
-    >
+  const renderTips = () => {
+    return (
       <Tips>
         <dl className="tips">
           <dt>
@@ -155,7 +133,36 @@ const ApiAccessInfo = ({ open, data, onClose }: ApiAccessInfoProps) => {
           ></dd>
         </dl>
       </Tips>
+    );
+  };
 
+  useEffect(() => {
+    if (open && data.generic_proxy) {
+      openProxyModal(data);
+    }
+  }, [open, data, openProxyModal]);
+
+  return (
+    <ScrollerModal
+      open={open}
+      style={{
+        top: '20%'
+      }}
+      title={
+        <span style={{ marginBottom: 8 }}>
+          {intl.formatMessage({ id: 'models.table.button.apiAccessInfo' })}
+        </span>
+      }
+      width={600}
+      destroyOnHidden
+      closable={true}
+      mask={{
+        closable: false
+      }}
+      onOk={handleClose}
+      onCancel={handleClose}
+      footer={null}
+    >
       <ApiAccessInfoWrapper>
         <span className="label">
           {intl.formatMessage({ id: 'models.table.apiAccessInfo.endpoint' })}
@@ -212,9 +219,7 @@ const ApiAccessInfo = ({ open, data, onClose }: ApiAccessInfoProps) => {
         </span>
       </ApiAccessInfoWrapper>
       {data.generic_proxy && (
-        <div style={{ paddingLeft: 20, marginTop: 12 }}>
-          {GenericProxyCommandCode}
-        </div>
+        <div style={{ marginTop: 12 }}>{GenericProxyCommandCode}</div>
       )}
     </ScrollerModal>
   );

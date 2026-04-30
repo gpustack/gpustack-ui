@@ -4,16 +4,19 @@ import { formatCurlArgs } from './utils';
 export const generateRerankCurlCode = ({
   api,
   modelProxy,
+  routeID,
   parameters
 }: Record<string, any>) => {
   const host = window.location.origin;
-  const apiUrl = modelProxy ? `${MODEL_PROXY}/\${YOUR_API_PATH}` : api;
+  const apiUrl = modelProxy
+    ? `${MODEL_PROXY}/${routeID}/\${YOUR_API_PATH}`
+    : api;
 
   // ========================= Curl =========================
   const curlCode = `
 curl ${host}${apiUrl} \\
 -H "Content-Type: application/json" \\
--H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\${modelProxy ? `\n-H "X-GPUStack-Model: ${parameters.model}" \\` : ''}
+-H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\
 ${formatCurlArgs(parameters, false)}`.trim();
 
   return curlCode;

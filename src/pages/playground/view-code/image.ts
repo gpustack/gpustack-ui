@@ -6,24 +6,25 @@ export const generateImageCurlCode = ({
   api: url,
   parameters,
   modelProxy,
+  routeID,
   isFormdata = false,
   edit = false
 }: Record<string, any>) => {
   const host = window.location.origin;
-  const api = modelProxy ? `${MODEL_PROXY}/\${YOUR_API_PATH}` : url;
+  const api = modelProxy ? `${MODEL_PROXY}/${routeID}/\${YOUR_API_PATH}` : url;
 
   // ========================= Curl =========================
   let curlCode = `
 curl ${host}${api} \\
 -H "Content-Type: application/json" \\
--H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\${modelProxy ? `\n-H "X-GPUStack-Model: ${parameters.model}" \\` : ''}
+-H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\
 ${formatCurlArgs(parameters, isFormdata)}`.trim();
 
   if (edit) {
     curlCode = `
 curl ${host}${api} \\
 -H "Content-Type: multipart/form-data" \\
--H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\${modelProxy ? `\n-H "X-GPUStack-Model: ${parameters.model}" \\` : ''}
+-H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\
 -F image="@image.png" \\
 -F mask="@mask.png" \\
 ${formatCurlArgs(_.omit(parameters, ['mask', 'image']), isFormdata)}`

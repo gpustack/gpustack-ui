@@ -62,6 +62,7 @@ export default {
   'models.table.layers': 'レイヤー',
   'models.form.backend': 'バックエンド',
   'models.form.backend_parameters': 'バックエンドパラメータ',
+  'models.form.backend_parameters.injected': '注入されたバックエンドパラメータ',
   'models.search.gguf.tips':
     'GGUFモデルはllama-boxを使用します（Linux、macOS、Windowsをサポート）。',
   'models.search.vllm.tips':

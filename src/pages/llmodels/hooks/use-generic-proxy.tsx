@@ -113,6 +113,7 @@ const useGenericProxy = () => {
       codeValue: generateCurlCode({
         api,
         modelProxy: true,
+        routeID: data?.id || '',
         parameters: {
           model: data?.name || '',
           ...parameters

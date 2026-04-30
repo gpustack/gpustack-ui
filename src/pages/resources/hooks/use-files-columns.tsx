@@ -98,7 +98,7 @@ const getResolvedPath = (pathList: string[]) => {
 const setActionList = (record: ListItem) => {
   return _.filter(modelFileActions, (item: { key: string }) => {
     if (item.key === 'deploy') {
-      return record.state === ModelfileStateMap.Ready;
+      return record.state === ModelfileStateMap.Ready && !record.is_lora;
     }
     return true;
   });
@@ -244,6 +244,11 @@ const ResolvedPathColumn = (props: { record: ListItem }) => {
             </span>
           </AutoTooltip>
         </TextWrapper>
+        {record.is_lora && (
+          <FilesTag color="purple" variant="outlined">
+            <span style={{ opacity: 1 }}>LoRA</span>
+          </FilesTag>
+        )}
         <RenderParts record={record}></RenderParts>
       </PathWrapper>
     )

@@ -97,6 +97,7 @@ export default {
   'resources.worker': 'Рабочий узел',
   'resources.modelfiles.form.exsting': 'Загружено',
   'resources.modelfiles.form.added': 'Добавлено',
+  'resources.modelfiles.form.isLora': 'Is LoRA',
   'resources.worker.maintenance.title': 'System Maintenance',
   'resources.worker.maintenance.enable': 'Enter Maintenance Mode',
   'resources.worker.maintenance.disable': 'Exit Maintenance Mode',

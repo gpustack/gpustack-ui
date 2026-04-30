@@ -94,7 +94,10 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
     if (fallbackTarget) {
       const exsitinged = targetList.find((ep) => {
         if (fallbackTarget!.model_id) {
-          return ep.model_id === fallbackTarget!.model_id;
+          return (
+            ep.model_id === fallbackTarget!.model_id &&
+            ep.lora_module_name === fallbackTarget!.lora_module_name
+          );
         }
         return (
           ep.provider_id === fallbackTarget!.provider_id &&
@@ -104,7 +107,8 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       if (exsitinged) {
         targetList = targetList.map((ep) => {
           if (
-            ep.model_id === fallbackTarget.model_id ||
+            (ep.model_id === fallbackTarget.model_id &&
+              ep.lora_module_name === fallbackTarget.lora_module_name) ||
             ep.provider_model_name === fallbackTarget.provider_model_name
           ) {
             return {
@@ -150,6 +154,7 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
         model_id?: number;
         provider_id?: number;
         provider_model_name?: string;
+        lora_module_name?: string;
       }[]
     ) => {
       // init targets form list
@@ -157,7 +162,12 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
         targets?.map((ep) => ({
           weight: ep.weight,
           value: ep.model_id
-            ? ['deployments', ep.model_id]
+            ? [
+                'deployments',
+                ep.lora_module_name
+                  ? `${ep.model_id}_lora_${ep.lora_module_name}`
+                  : ep.model_id
+              ]
             : [ep.provider_id, ep.provider_model_name]
         })) || []
       );
@@ -180,7 +190,12 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       if (fallbackTarget) {
         targetsRef.current?.initFallbackValues({
           value: fallbackTarget.model_id
-            ? ['deployments', fallbackTarget.model_id]
+            ? [
+                'deployments',
+                fallbackTarget.lora_module_name
+                  ? `${fallbackTarget.model_id}_lora_${fallbackTarget.lora_module_name}`
+                  : fallbackTarget.model_id
+              ]
             : [fallbackTarget.provider_id, fallbackTarget.provider_model_name]
         });
       }

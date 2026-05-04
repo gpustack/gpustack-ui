@@ -79,13 +79,15 @@ const Instance: React.FC = () => {
     return [
       {
         key: '1',
-        label: intl.formatMessage({ id: 'models.form.backend_parameters' }),
+        label: intl.formatMessage({
+          id: 'models.instance.params.configured'
+        }),
         children: renderParams(instanceData?.backend_parameters || [])
       },
       {
         key: '1-1',
         label: intl.formatMessage({
-          id: 'models.form.backend_parameters.injected'
+          id: 'models.instance.params.autoInjected'
         }),
         children: renderParams(instanceData?.injected_backend_parameters || [])
       },
@@ -130,23 +132,6 @@ const Instance: React.FC = () => {
         )
       },
       {
-        key: '2',
-        label: intl.formatMessage({ id: 'models.form.env' }),
-        children: (
-          <Flex gap={8} wrap="wrap">
-            {instanceData?.env
-              ? Object.entries(instanceData?.env || {}).map(
-                  ([key, value], index: number) => (
-                    <Tag key={index} style={{ margin: 0 }}>
-                      {`${key}=${value}`}
-                    </Tag>
-                  )
-                )
-              : '-'}
-          </Flex>
-        )
-      },
-      {
         key: '4',
         label: intl.formatMessage({
           id: 'benchmark.detail.speculativeDecoding'
@@ -179,6 +164,23 @@ const Instance: React.FC = () => {
             ) : (
               '-'
             )}
+          </Flex>
+        )
+      },
+      {
+        key: '2',
+        label: intl.formatMessage({ id: 'models.form.env' }),
+        children: (
+          <Flex gap={8} wrap="wrap">
+            {instanceData?.env
+              ? Object.entries(instanceData?.env || {}).map(
+                  ([key, value], index: number) => (
+                    <Tag key={index} style={{ margin: 0 }}>
+                      {`${key}=${value}`}
+                    </Tag>
+                  )
+                )
+              : '-'}
           </Flex>
         )
       }

@@ -125,6 +125,7 @@ export interface ModelInstanceListItem {
   ollama_library_model_name: string;
   distributed_servers?: DistributedServers;
   computed_resource_claim?: ComputedResourceClaim;
+  injected_backend_parameters?: string[];
   s3_address: string;
   worker_id: number;
   gpu_indexes?: number[];

@@ -5,6 +5,7 @@ import { convertFileSize } from '@/utils';
 import { ThunderboltFilled } from '@ant-design/icons';
 import { AutoTooltip, IconFont } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
+import { Flex } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import dayjs from 'dayjs';
 import _ from 'lodash';
@@ -12,6 +13,7 @@ import { useMemo } from 'react';
 import ActionsCell from '../components/instance-cells/actions-cell';
 import DistributeInfoCell from '../components/instance-cells/distribute-info-cell';
 import DownloadingStatusCell from '../components/instance-cells/downloading-status-cell';
+import InjectedParamsCell from '../components/instance-cells/injected-params-cell';
 import InstanceStatusCell from '../components/instance-cells/instance-status-cell';
 import NameCell, {
   NameCellProps
@@ -103,19 +105,22 @@ const useInstancesColumns = (options: {
         minWidth: 160,
         render: (value: string, record: ListItem) => (
           <>
-            <NameCell
-              showWorkerInfo={false}
-              record={record}
-              modelData={{
-                backend: record.backend,
-                backend_version: record.backend_version
-              }}
-              styles={{
-                label: {
-                  color: 'var(--ant-color-text)'
-                }
-              }}
-            ></NameCell>
+            <Flex gap={8} wrap="wrap">
+              <NameCell
+                showWorkerInfo={false}
+                record={record}
+                modelData={{
+                  backend: record.backend,
+                  backend_version: record.backend_version
+                }}
+                styles={{
+                  label: {
+                    color: 'var(--ant-color-text)'
+                  }
+                }}
+              ></NameCell>
+              <InjectedParamsCell record={record}></InjectedParamsCell>
+            </Flex>
             <div className="flex-center">
               <ThunderboltFilled
                 className="m-r-5 text-quaternary"

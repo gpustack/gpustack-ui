@@ -65,7 +65,7 @@ interface TemplateOverlayProps {
   onCreate?: () => void;
 }
 
-const TemplateSelector: React.FC<TemplateSelectorProps> = ({
+export const TemplateSelector: React.FC<TemplateSelectorProps> = ({
   value,
   onChange,
   dataList = mockTemplateData

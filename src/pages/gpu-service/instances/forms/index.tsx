@@ -12,12 +12,12 @@ import { Form } from 'antd';
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 import { mockStorageData } from '../../storage/config/mock-data';
 import { mockTemplateData } from '../../templates/config/mock-data';
+import TemplateBasicForm from '../../templates/forms/basic';
 import { instanceTypeOptions, StorageModeValueMap } from '../config';
 import { FormData, ListItem } from '../config/types';
 import Basic from './basic';
 import InstanceTypeFormItem from './instance-type';
 import StorageVolume from './storage-volume';
-import TemplateFormItem from './template';
 
 interface InstanceFormProps {
   ref?: any;
@@ -196,7 +196,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
                 key: TABKeysMap.TEMPLATE,
                 label: '实例模板',
                 forceRender: true,
-                children: <TemplateFormItem />
+                children: <TemplateBasicForm />
               },
               {
                 key: TABKeysMap.STORAGE,

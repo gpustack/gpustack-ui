@@ -3,7 +3,7 @@ import {
   Input as CInput,
   InputNumber as CInputNumber
 } from '@gpustack/core-ui';
-import { Button, Flex, Form, Tag } from 'antd';
+import { Flex, Form } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { instanceTypeOptions, InstanceTypeStatusValueMap } from '../config';
@@ -68,20 +68,15 @@ const InstanceTypePicker: React.FC<InstanceTypePickerProps> = ({
               <AutoTooltip ghost minWidth={20}>
                 {selected?.name || '请选择实例类型'}
               </AutoTooltip>
-              <Tag
+              {/* <Tag
                 style={{
                   fontWeight: 400,
                   color: 'var(--ant-color-text-tertiary)'
                 }}
               >
                 库存 {selected?.gpu_count}
-              </Tag>
+              </Tag> */}
             </Flex>
-            {/* {selected && (
-              <Tag color="success" style={{ margin: 0 }}>
-                可用
-              </Tag>
-            )} */}
           </SummaryTitle>
           <SummaryMeta>
             <span>显存 {selected?.vram ?? '-'} GiB</span>
@@ -91,7 +86,7 @@ const InstanceTypePicker: React.FC<InstanceTypePickerProps> = ({
             </Flex>
           </SummaryMeta>
         </div>
-        <Button onClick={() => setOpen(true)}>更换</Button>
+        {/* <Button onClick={() => setOpen(true)}>更换</Button> */}
       </SelectedCard>
       <InstanceTypeOverlay
         open={open}

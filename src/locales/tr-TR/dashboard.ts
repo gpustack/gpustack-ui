@@ -20,6 +20,12 @@ export default {
   'dashboard.tokens': 'Token Kullanımı',
   'dashboard.topusers': 'En Aktif Kullanıcılar',
   'dashboard.activeModels': 'Aktif Modeller',
+  'dashboard.activeUsers': 'Aktif Kullanıcılar',
+  'dashboard.tokenUsageByModel': 'Modele Göre Token Kullanımı',
+  'dashboard.apiRequestsByModel': 'Modele Göre API İstekleri',
+  'dashboard.topTokenUsageByUser': 'Kullanıcıya Göre İlk 10 Token Kullanımı',
+  'dashboard.topTokenUsageByApiKey':
+    'API Anahtarına Göre İlk 10 Token Kullanımı',
   'dashboard.runninginstances': 'Çalışan Örnekler',
   'dashboard.activeModels.name': 'Model Adı',
   'dashboard.allocatevram': 'Ayrılan VRAM / RAM',

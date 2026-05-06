@@ -2,7 +2,6 @@
 import { tableSorter } from '@/config/settings';
 import { ListItem as workerListItem } from '@/pages/resources/config/types';
 import { convertFileSize } from '@/utils';
-import { ThunderboltFilled } from '@ant-design/icons';
 import { AutoTooltip, IconFont } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Flex } from 'antd';
@@ -107,7 +106,7 @@ const useInstancesColumns = (options: {
           <>
             <Flex gap={8} wrap="wrap">
               <NameCell
-                showWorkerInfo={false}
+                showWorkerInfo={true}
                 record={record}
                 modelData={{
                   backend: record.backend,
@@ -121,7 +120,7 @@ const useInstancesColumns = (options: {
               ></NameCell>
               <InjectedParamsCell record={record}></InjectedParamsCell>
             </Flex>
-            <div className="flex-center">
+            {/* <div className="flex-center">
               <ThunderboltFilled
                 className="m-r-5 text-quaternary"
                 style={{ fontSize: 12, position: 'relative', top: 2 }}
@@ -132,7 +131,7 @@ const useInstancesColumns = (options: {
                   ? `(${record.backend_version || record?.backend_version})`
                   : ''}
               </span>
-            </div>
+            </div> */}
           </>
         )
       },
@@ -153,7 +152,7 @@ const useInstancesColumns = (options: {
         dataIndex: 'worker_id',
         render: (text, record) => (
           <div className="flex-center gap-8">
-            <AutoTooltip ghost>{renderWorkerCell(text, record)}</AutoTooltip>
+            <AutoTooltip ghost>{record.worker_name}</AutoTooltip>
             <DistributeInfoCell
               record={record}
               workerList={workerList}

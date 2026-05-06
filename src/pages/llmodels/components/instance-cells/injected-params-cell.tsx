@@ -95,7 +95,7 @@ const InjectedParamsCell: React.FC<InjectedParamsCellProps> = ({
   if (!injectedBackendParameters.length) {
     return null;
   }
-
+  return null;
   return (
     <Tooltip
       color="var(--ant-color-bg-elevated)"

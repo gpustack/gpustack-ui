@@ -91,7 +91,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
         value: TABKeysMap.TEMPLATE,
         label: '实例模板',
         icon: <IconFont type="icon-model" />,
-        field: 'template'
+        field: 'vendor'
       },
       {
         value: TABKeysMap.STORAGE,
@@ -168,8 +168,8 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
         activeKey={activeKey}
         setActiveKey={handleActiveChange}
         segmentedTop={{
-          top: 0,
-          offsetTop: 96
+          top: 40,
+          offsetTop: 130
         }}
         getScrollElementScrollableHeight={getScrollElementScrollableHeight}
       >
@@ -196,7 +196,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
                 key: TABKeysMap.TEMPLATE,
                 label: '实例模板',
                 forceRender: true,
-                children: <TemplateBasicForm />
+                children: <TemplateBasicForm page="instance" />
               },
               {
                 key: TABKeysMap.STORAGE,

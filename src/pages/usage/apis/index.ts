@@ -30,6 +30,9 @@ export async function queryUsageTimeSeriesData(
     metric: string;
     group_by: string[];
     granularity: string;
+    page?: number;
+    perPage?: number;
+    sort_by?: string;
     filters: {
       models?: FilterOptionType[];
       users?: FilterOptionType[];

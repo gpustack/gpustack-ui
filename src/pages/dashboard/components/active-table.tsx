@@ -1,9 +1,11 @@
+import { activeModelsAtom } from '@/atoms/dashboard';
 import { modelCategoriesMap } from '@/pages/llmodels/config';
 import { convertFileSize } from '@/utils';
 import { AutoTooltip, PageTools } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Col, Row, Table } from 'antd';
-import { useContext } from 'react';
+import { useSetAtom } from 'jotai';
+import { useContext, useEffect } from 'react';
 import { DashboardContext } from '../config/dashboard-context';
 const NACategories = [
   modelCategoriesMap.llm,
@@ -14,6 +16,12 @@ const NACategories = [
 const ActiveTable = () => {
   const intl = useIntl();
   const data = useContext(DashboardContext).active_models || [];
+  const setActiveModels = useSetAtom(activeModelsAtom);
+
+  useEffect(() => {
+    setActiveModels(data);
+  }, [data, setActiveModels]);
+
   const modelColumns = [
     {
       title: intl.formatMessage({ id: 'common.table.name' }),

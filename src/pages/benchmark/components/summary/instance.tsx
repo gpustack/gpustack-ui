@@ -80,17 +80,17 @@ const Instance: React.FC = () => {
       {
         key: '1',
         label: intl.formatMessage({
-          id: 'models.instance.params.configured'
+          id: 'models.form.backend_parameters'
         }),
         children: renderParams(instanceData?.backend_parameters || [])
       },
-      {
-        key: '1-1',
-        label: intl.formatMessage({
-          id: 'models.instance.params.autoInjected'
-        }),
-        children: renderParams(instanceData?.injected_backend_parameters || [])
-      },
+      // {
+      //   key: '1-1',
+      //   label: intl.formatMessage({
+      //     id: 'models.instance.params.autoInjected'
+      //   }),
+      //   children: renderParams(instanceData?.injected_backend_parameters || [])
+      // },
       {
         key: '3',
         label: intl.formatMessage({ id: 'benchmark.detail.kvCache' }),

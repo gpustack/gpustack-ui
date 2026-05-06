@@ -10,6 +10,10 @@
         .ant-cascader-menus {
           display: grid;
           grid-template-columns: 140px 1fr;
+
+          .ant-cascader-menu:only-child {
+            grid-column: 1 / -1;
+          }
         }
       }
     }

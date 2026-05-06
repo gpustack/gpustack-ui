@@ -12,13 +12,17 @@ import useQueryModelLoraList, {
 import loraSelectionStyles from '../style/lora-selection.less';
 
 interface LoraListItemProps {
-  item: { value: any[]; lora_name: string };
+  item: { value: any[]; lora_name: string; source: string };
   base: string;
   defaultDataList: LoraOptionGroup[];
   selectedRepoNames: Set<string>;
   duplicateNames: Set<string>;
   validated: boolean;
-  onChange: (partial: { value?: any[]; lora_name?: string }) => void;
+  onChange: (partial: {
+    value?: any[];
+    lora_name?: string;
+    source?: string;
+  }) => void;
 }
 
 const LoraListItem: React.FC<LoraListItemProps> = ({
@@ -77,8 +81,9 @@ const LoraListItem: React.FC<LoraListItemProps> = ({
     debouncedSearch(q);
   };
 
-  const handleCascaderChange = (value: any) => {
-    onChange({ value: value || [] });
+  const handleCascaderChange = (value: any, selectedOptions?: any[]) => {
+    const leaf = selectedOptions?.[selectedOptions.length - 1];
+    onChange({ value: value || [], source: leaf?.source || '' });
   };
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -97,19 +102,18 @@ const LoraListItem: React.FC<LoraListItemProps> = ({
     validated && (nameEmpty || isDuplicate) ? ('error' as const) : 'success';
 
   const displayRender = (labels: any[]) => {
+    const left =
+      typeof labels[0] === 'string' ? labels[0].replace(/\/+$/, '') : labels[0];
+    const right =
+      typeof labels[1] === 'string' ? labels[1].replace(/^\/+/, '') : labels[1];
+    const content = (
+      <span>
+        {left}/{right}
+      </span>
+    );
     return (
-      <AutoTooltip
-        ghost
-        maxWidth={300}
-        title={
-          <span>
-            {labels[0]} / {labels[1]}
-          </span>
-        }
-      >
-        <span>
-          {labels[0]} / {labels[1]}
-        </span>
+      <AutoTooltip ghost maxWidth={300} title={content}>
+        {content}
       </AutoTooltip>
     );
   };

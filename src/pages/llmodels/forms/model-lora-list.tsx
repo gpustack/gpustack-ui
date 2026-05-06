@@ -6,7 +6,7 @@ import { FormData, LoraListItem } from '../config/types';
 import useQueryModelLoraList from '../services/use-query-lora-list';
 import LoraItem from './lora-list-item';
 
-type ItemValue = { value: any[]; lora_name: string };
+type ItemValue = { value: any[]; lora_name: string; source: string };
 
 const ModelLoraList = () => {
   const intl = useIntl();
@@ -37,7 +37,8 @@ const ModelLoraList = () => {
             it.source && it.lora_repo_name
               ? [it.source, it.lora_repo_name]
               : [],
-          lora_name: it.lora_name || ''
+          lora_name: it.lora_name || '',
+          source: it.source || ''
         }))
       );
     }
@@ -55,6 +56,30 @@ const ModelLoraList = () => {
     }
     prevBaseRef.current = base;
   }, [base]);
+
+  useEffect(() => {
+    if (!defaultDataList.length) return;
+    const groupByRepo: Record<string, string> = {};
+    defaultDataList.forEach((group) => {
+      group.children.forEach((child) => {
+        groupByRepo[child.value] = group.value;
+      });
+    });
+    setItemList((prev) => {
+      let changed = false;
+      const next = prev.map((it) => {
+        const repo = it.value?.[1];
+        if (!repo) return it;
+        const groupValue = groupByRepo[repo];
+        if (groupValue && groupValue !== it.value[0]) {
+          changed = true;
+          return { ...it, value: [groupValue, repo] };
+        }
+        return it;
+      });
+      return changed ? next : prev;
+    });
+  }, [defaultDataList]);
 
   const selectedRepoNames = useMemo(() => {
     return new Set(
@@ -78,7 +103,9 @@ const ModelLoraList = () => {
   const syncFormField = (newItemList: ItemValue[]) => {
     const newFormList = newItemList
       .map((it) => ({
-        source: (it.value?.[0] || '') as 'huggingface' | 'model_scope',
+        source: (it.source || it.value?.[0] || '') as
+          | 'huggingface'
+          | 'model_scope',
         lora_repo_name: it.value?.[1] || '',
         lora_name: it.lora_name || ''
       }))
@@ -103,7 +130,7 @@ const ModelLoraList = () => {
   };
 
   const handleAdd = () => {
-    const newItemList = [...itemList, { value: [], lora_name: '' }];
+    const newItemList = [...itemList, { value: [], lora_name: '', source: '' }];
     setItemList(newItemList);
     syncFormField(newItemList);
   };

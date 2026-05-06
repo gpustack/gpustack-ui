@@ -422,7 +422,8 @@ export interface InstanceRestartCount {
 
 export interface ModelLoraAdapterResult {
   lora_list: Array<{
+    is_local: boolean;
     lora_repo_name: string;
-    source: string;
+    source: 'huggingface' | 'model_scope' | 'local_path';
   }>;
 }

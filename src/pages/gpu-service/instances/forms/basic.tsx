@@ -4,8 +4,9 @@ import { FormData } from '../config/types';
 
 const Basic = () => {
   return (
-    <div data-field="name">
+    <>
       <Form.Item<FormData>
+        data-field="name"
         name="name"
         rules={[
           {
@@ -19,7 +20,7 @@ const Basic = () => {
       <Form.Item<FormData> name="description">
         <CInput.TextArea label="描述" scaleSize />
       </Form.Item>
-    </div>
+    </>
   );
 };
 

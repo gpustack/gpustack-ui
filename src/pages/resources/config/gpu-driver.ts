@@ -129,7 +129,7 @@ export const dockerEnvCommandMap = {
   [GPUDriverMap.HYGON]: generateHygonDockerEnvCommand(
     GPUsConfigs[GPUDriverMap.HYGON]
   ),
-  [GPUDriverMap.ILUVATAR]: generateHygonDockerEnvCommand(
+  [GPUDriverMap.ILUVATAR]: generateNvidiaDockerEnvCommand(
     GPUsConfigs[GPUDriverMap.ILUVATAR]
   ),
   [GPUDriverMap.CAMBRICON]: generateHygonDockerEnvCommand(

@@ -12,8 +12,8 @@ const useViewInstanceLogs = () => {
     currentData: {
       url: string;
       status: string;
-      id?: number | string;
-      modelId?: number | string;
+      id?: number;
+      modelId?: number;
       tail?: number;
     };
   }>({

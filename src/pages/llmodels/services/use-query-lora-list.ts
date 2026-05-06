@@ -31,6 +31,9 @@ const sourceLabel = (source: string) => {
   if (source === modelSourceMap.modelscope_value) {
     return modelSourceMap.modelScope;
   }
+  if (source === modelSourceMap.local_path_value) {
+    return modelSourceMap.local_path;
+  }
   return source;
 };
 
@@ -53,15 +56,19 @@ export const useQueryModelLoraList = () => {
       if (result) {
         const groups: Record<string, LoraOptionGroup> = {};
         result.lora_list.forEach((item) => {
-          if (!groups[item.source]) {
-            groups[item.source] = {
-              label: sourceLabel(item.source),
-              value: item.source,
+          const groupKey =
+            item.is_local || item.source === modelSourceMap.local_path_value
+              ? modelSourceMap.local_path_value
+              : item.source;
+          if (!groups[groupKey]) {
+            groups[groupKey] = {
+              label: sourceLabel(groupKey),
+              value: groupKey,
               isParent: true,
               children: []
             };
           }
-          groups[item.source].children.push({
+          groups[groupKey].children.push({
             label: item.lora_repo_name,
             value: item.lora_repo_name,
             source: item.source,

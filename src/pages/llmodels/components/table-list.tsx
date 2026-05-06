@@ -212,7 +212,7 @@ const Models: React.FC<ModelsProps> = ({
   });
 
   const handleStartModel = async (row: ListItem) => {
-    await updateModel(getFormattedData(row, { replicas: 1 }));
+    await updateModel(getFormattedData(row, { replicas: row.replicas || 1 }));
   };
 
   const handleStopModel = async (row: ListItem) => {
@@ -478,7 +478,11 @@ const Models: React.FC<ModelsProps> = ({
       okText: 'common.button.start',
       operation: 'common.start.confirm',
       async onOk() {
-        await handleBatchRequest(rowSelection.selectedRows, handleStartModel);
+        const selectedKeySet = new Set(rowSelection.selectedRowKeys);
+        const latestRows = dataSource.filter((item) =>
+          selectedKeySet.has(item.id)
+        );
+        await handleBatchRequest(latestRows, handleStartModel);
         onStart?.();
       }
     });

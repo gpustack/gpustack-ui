@@ -131,7 +131,7 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
   };
 
   const showCascader =
-    countOptions?.some((option) => option.children?.length >= 2) ||
+    countOptions?.some((option) => (option.children?.length ?? 0) >= 2) ||
     countOptions?.length > 1;
 
   const handleOnChecked = (e: any) => {

@@ -156,6 +156,7 @@ export default {
   'models.table.apiAccessInfo.modelName': 'モデル名',
   'models.table.apiAccessInfo.apikey': 'APIキー',
   'models.table.apiAccessInfo.openaiCompatible': 'OpenAI互換',
+  'models.table.apiAccessInfo.anthropicCompatible': 'Anthropic互換',
   'models.table.apiAccessInfo.jinaCompatible': 'Jina互換',
   'models.table.apiAccessInfo.gotoCreate': '作成に移動',
   'models.search.parts': '{n} 部分',

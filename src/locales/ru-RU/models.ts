@@ -158,6 +158,7 @@ export default {
   'models.table.apiAccessInfo.modelName': 'Имя модели',
   'models.table.apiAccessInfo.apikey': 'Ключ API',
   'models.table.apiAccessInfo.openaiCompatible': 'Совместимо с OpenAI',
+  'models.table.apiAccessInfo.anthropicCompatible': 'Совместимо с Anthropic',
   'models.table.apiAccessInfo.jinaCompatible': 'Совместимо с Jina',
   'models.table.apiAccessInfo.gotoCreate': 'Перейти к созданию',
   'models.search.parts': '{n} частей',

@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { usageChartCardHeight, usageChartHeight } from '../../config';
 
 export const ChartTitle = styled.div`
-  font-weight: var(--font-weight-bold);
+  font-weight: 500;
   margin-bottom: 12px;
 `;
 

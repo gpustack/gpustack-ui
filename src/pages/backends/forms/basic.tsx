@@ -1,4 +1,5 @@
 import { PageAction } from '@/config';
+import { backendOptionsMap } from '@/pages/llmodels/constants/backend-parameters';
 import {
   Input as CInput,
   LabelSelector,
@@ -12,12 +13,32 @@ import { useEffect } from 'react';
 import { BackendSourceValueMap } from '../config';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
+import formStyles from '../styles/form.less';
+
+const defaultCommand = {
+  [backendOptionsMap.SGLang]: {
+    defaultEntry: 'sglang serve',
+    defaultCommand:
+      '--model-path {{model_path}} --host {{worker_ip}} --port {{port}}'
+  },
+  [backendOptionsMap.vllm]: {
+    defaultEntry: 'vllm serve',
+    defaultCommand:
+      '{{model_path}} --host {{worker_ip}} --port {{port}} --served-model-name {{model_name}}'
+  }
+};
 
 const BasicForm = () => {
   const form = Form.useFormInstance();
   const intl = useIntl();
   const { getRuleMessage } = useAppUtils();
   const { action, backendSource } = useFormContext();
+  const backendName = Form.useWatch('backend_name', form);
+
+  const showBuiltinPreset =
+    action === PageAction.EDIT &&
+    backendSource === BackendSourceValueMap.BUILTIN &&
+    !!defaultCommand[backendName];
 
   useEffect(() => {
     if (action === PageAction.CREATE) {
@@ -82,6 +103,34 @@ const BasicForm = () => {
             ></SealTextArea>
           </Form.Item>
         </>
+      )}
+      {showBuiltinPreset && (
+        <div className={formStyles.command}>
+          <Form.Item>
+            <CInput.Input
+              disabled
+              value={defaultCommand[backendName].defaultEntry}
+              label={intl.formatMessage({
+                id: 'backend.form.defaultEntrypoint'
+              })}
+            ></CInput.Input>
+          </Form.Item>
+          <Form.Item>
+            <SealTextArea
+              scaleSize={false}
+              disabled
+              value={defaultCommand[backendName].defaultCommand}
+              autoSize={{ minRows: 2, maxRows: 5 }}
+              label={
+                <span style={{ backgroundColor: 'transparent' }}>
+                  {intl.formatMessage({
+                    id: 'backend.form.defaultExecuteCommand'
+                  })}
+                </span>
+              }
+            ></SealTextArea>
+          </Form.Item>
+        </div>
       )}
       <Form.Item<FormData>
         name="default_backend_param"

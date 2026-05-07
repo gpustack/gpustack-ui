@@ -348,7 +348,22 @@ export default (props: any) => {
         hooks={{
           useUserSettings: useUserSettings,
           useUserSettingsStorage: () => userSettingsStorage,
-          useIntl: useIntl
+          useIntl: useIntl,
+          // Bridge umi's `@@initialState` model so plugins consuming
+          // `useCurrentUser` from @gpustack/core-ui get the signed-in
+          // user without depending on @umijs/max directly. Translate
+          // the host's snake_case fields to core-ui's camelCase
+          // `CurrentUser` shape, but pass everything else through so
+          // hosts can carry extra fields.
+          useCurrentUser: () => {
+            const cu = useModel?.('@@initialState')?.initialState?.currentUser;
+            if (!cu) return undefined;
+            return {
+              ...cu,
+              fullName: cu.full_name ?? cu.fullName,
+              isAdmin: cu.is_admin ?? cu.isAdmin
+            };
+          }
         }}
         i18n={intl}
         locale={{

@@ -1,11 +1,14 @@
+import { LoadingOutlined } from '@ant-design/icons';
 import {
   AutoTooltip,
   Input as CInput,
-  Cascader as SealCascader
+  Select as SealSelect
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
+import { Button } from 'antd';
 import _ from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
+import { modelSourceMap } from '../config';
 import useQueryModelLoraList, {
   LoraOptionGroup
 } from '../services/use-query-lora-list';
@@ -25,6 +28,12 @@ interface LoraListItemProps {
   }) => void;
 }
 
+type RenderableGroup = {
+  label: string;
+  groupValue: string;
+  options: { label: string; value: string; source: string }[];
+};
+
 const LoraListItem: React.FC<LoraListItemProps> = ({
   item,
   base,
@@ -35,7 +44,11 @@ const LoraListItem: React.FC<LoraListItemProps> = ({
   onChange
 }) => {
   const intl = useIntl();
-  const { dataList: ownSearchList, fetchData } = useQueryModelLoraList();
+  const {
+    dataList: ownSearchList,
+    fetchData,
+    loading
+  } = useQueryModelLoraList();
   const [hasSearched, setHasSearched] = useState(false);
 
   const itemDataList = hasSearched ? ownSearchList : defaultDataList;
@@ -58,18 +71,44 @@ const LoraListItem: React.FC<LoraListItemProps> = ({
     setHasSearched(false);
   }, [base]);
 
-  const groupedOptions = useMemo(() => {
+  const groupedOptions = useMemo<RenderableGroup[]>(() => {
     const currentRepo = item.value?.[1];
-    return itemDataList
-      .map((group) => ({
-        ...group,
-        children: group.children.filter(
-          (child) =>
-            !selectedRepoNames.has(child.value) || child.value === currentRepo
-        )
-      }))
-      .filter((group) => group.children.length > 0);
-  }, [itemDataList, selectedRepoNames, item.value]);
+    const sourcePrefix = intl.formatMessage({ id: 'models.form.source' });
+    const groups: RenderableGroup[] = [];
+    let hasLocal = false;
+
+    itemDataList.forEach((group) => {
+      const isLocal = group.value === modelSourceMap.local_path_value;
+      if (isLocal) hasLocal = true;
+      const filtered = group.children.filter(
+        (child) =>
+          !selectedRepoNames.has(child.value) || child.value === currentRepo
+      );
+      const labelText = isLocal
+        ? intl.formatMessage({ id: 'menu.resources.modelfiles' })
+        : group.label;
+      groups.push({
+        label: `${sourcePrefix}: ${labelText}`,
+        groupValue: group.value,
+        options: filtered.map((c) => ({
+          label: c.label,
+          value: c.value,
+          source: c.source,
+          data: { source: c.source, groupValue: group.value }
+        }))
+      });
+    });
+
+    if (!hasLocal) {
+      groups.push({
+        label: `${sourcePrefix}: ${intl.formatMessage({ id: 'menu.resources.modelfiles' })}`,
+        groupValue: modelSourceMap.local_path_value,
+        options: []
+      });
+    }
+
+    return groups;
+  }, [itemDataList, selectedRepoNames, item.value, intl]);
 
   const handleSearch = (q: string) => {
     if (!base || !q) {
@@ -81,83 +120,64 @@ const LoraListItem: React.FC<LoraListItemProps> = ({
     debouncedSearch(q);
   };
 
-  const handleCascaderChange = (value: any, selectedOptions?: any[]) => {
-    const leaf = selectedOptions?.[selectedOptions.length - 1];
-    onChange({ value: value || [], source: leaf?.source || '' });
+  const handleSelectChange = (value: string, option: any) => {
+    if (!value) {
+      onChange({ value: [], source: '' });
+      return;
+    }
+    const data = option?.data || {};
+    const groupValue = data.groupValue || modelSourceMap.local_path_value;
+    const source = data.source || modelSourceMap.local_path_value;
+    onChange({ value: [groupValue, value], source });
   };
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange({ lora_name: e.target.value });
   };
 
-  const cascaderEmpty = !item.value || item.value.length === 0;
+  const optionRender = (option: any) => {
+    return <AutoTooltip ghost>{option.label}</AutoTooltip>;
+  };
+
+  const labelRender = (option: any) => {
+    return option.label;
+  };
+
+  const valueEmpty = !item.value?.[1];
   const nameEmpty = !item.lora_name?.trim();
   const isDuplicate =
     !!item.lora_name?.trim() && duplicateNames.has(item.lora_name.trim());
 
-  const cascaderStatus =
-    validated && cascaderEmpty ? ('error' as const) : 'success';
+  const selectStatus = validated && valueEmpty ? ('error' as const) : 'success';
 
   const inputStatus =
     validated && (nameEmpty || isDuplicate) ? ('error' as const) : 'success';
 
-  const displayRender = (labels: any[]) => {
-    const left =
-      typeof labels[0] === 'string' ? labels[0].replace(/\/+$/, '') : labels[0];
-    const right =
-      typeof labels[1] === 'string' ? labels[1].replace(/^\/+/, '') : labels[1];
-    const content = (
-      <span>
-        {left}/{right}
-      </span>
-    );
-    return (
-      <AutoTooltip ghost maxWidth={300} title={content}>
-        {content}
-      </AutoTooltip>
-    );
-  };
-
-  const optionNode = (option: any) => {
-    const { data } = option;
-    return (
-      <AutoTooltip ghost maxWidth={'100%'}>
-        {data.label}
-      </AutoTooltip>
-    );
-  };
-
   return (
-    <div className={loraSelectionStyles.item}>
-      <SealCascader
-        expandTrigger="click"
-        multiple={false}
-        alwaysFocus={true}
-        status={cascaderStatus}
-        value={item.value}
-        options={groupedOptions}
-        onChange={handleCascaderChange}
-        showSearch={{
-          onSearch: handleSearch
-        }}
-        placeholder={intl.formatMessage({ id: 'models.form.lora.select' })}
-        showCheckedStrategy="SHOW_CHILD"
-        displayRender={displayRender}
-        optionNode={optionNode}
-        classNames={{
-          popup: {
-            root: 'cascader-popup-wrapper'
+    <div className={loraSelectionStyles.wrapper}>
+      <div style={{ minWidth: 0 }}>
+        <SealSelect
+          allowClear={!loading}
+          showSearch
+          filterOption={false}
+          status={selectStatus}
+          loading={loading}
+          suffixIcon={
+            loading ? (
+              <Button size="small" type="link">
+                <LoadingOutlined />
+              </Button>
+            ) : null
           }
-        }}
-        styles={{
-          popup: {
-            listItem: {
-              padding: '5px 10px'
-            }
-          }
-        }}
-        getPopupContainer={(triggerNode) => triggerNode.parentNode}
-      ></SealCascader>
+          value={item.value?.[1] || undefined}
+          onChange={handleSelectChange}
+          onSearch={handleSearch}
+          labelRender={labelRender}
+          optionRender={optionRender}
+          placeholder={intl.formatMessage({ id: 'models.form.lora.select' })}
+          options={groupedOptions}
+        ></SealSelect>
+      </div>
       <CInput.Input
         status={inputStatus}
         value={item.lora_name}

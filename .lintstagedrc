@@ -1,10 +1,7 @@
 {
   "*.{md,json}": ["prettier --cache --write"],
   "*.{js,jsx}": ["max lint --fix --eslint-only", "prettier --cache --write"],
-  "*.{css,less}": [
-    "node ./scripts/stylelint-compat.cjs --fix --allow-empty-input",
-    "prettier --cache --write"
-  ],
+  "*.{css,less}": ["prettier --cache --write"],
   "!public/vs/**": [],
   "*.ts?(x)": [
     "max lint --fix --eslint-only",

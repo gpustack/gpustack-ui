@@ -19,6 +19,7 @@ export default {
   'backend.mode.form': 'Form Mode',
   'backend.mode.yaml': 'YAML Mode',
   'backend.form.healthCheckPath': 'Health Check Path',
+  'backend.form.defaultEntrypoint': 'Default Image Entrypoint',
   'backend.form.defaultExecuteCommand': 'Default Execution Command',
   'backend.form.defaultExecuteCommand.tips': `'{{'model_path'}}', '{{'port'}}', '{{'worker_ip'}}' and '{{'model_name'}}' are placeholders that will be substituted with the actual values during deployment.`,
   'backend.form.defaultBackendParameters': 'Default Backend Parameters',

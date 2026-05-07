@@ -19,6 +19,7 @@ export default {
   'backend.mode.form': 'Form Modu',
   'backend.mode.yaml': 'YAML Modu',
   'backend.form.healthCheckPath': 'Sağlık Kontrolü Yolu',
+  'backend.form.defaultEntrypoint': 'Varsayılan İmaj Giriş Noktası',
   'backend.form.defaultExecuteCommand': 'Varsayılan Çalıştırma Komutu',
   'backend.form.defaultExecuteCommand.tips': `'{{'model_path'}}', '{{'port'}}', '{{'worker_ip'}}' ve '{{'model_name'}}' dağıtım sırasında gerçek değerlerle değiştirilecek yer tutuculardır.`,
   'backend.form.defaultBackendParameters': 'Varsayılan Altyapı Parametreleri',

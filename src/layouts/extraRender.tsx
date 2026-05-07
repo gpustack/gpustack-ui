@@ -119,11 +119,7 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
   };
 
   const { initialState } = initialInfo;
-  const GlobalSettings = pluginManager?.components?.GlobalSettings;
-  // Plugin slot. A registered plugin can supply an Org switcher via
-  // components.OrgSwitcher; the host renders nothing when no plugin
-  // provides it.
-  const OrgSwitcher = pluginManager?.components?.OrgSwitcher;
+  const { GlobalSettings, OrgSwitcher } = pluginManager?.components || {};
   console.log('plugin+++++++++', pluginManager);
 
   const navigate = useNavigate();

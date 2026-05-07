@@ -4,6 +4,7 @@ import DarkMask from '@/components/dark-mask';
 import routeCachekey from '@/config/route-cachekey';
 import { DEFAULT_ENTER_PAGE, GPUSTACK_API_BASE_URL } from '@/config/settings';
 import { COLOR_PRIMARY } from '@/config/theme';
+import useCurrentUser from '@/hooks/use-current-user';
 import useUserSettings from '@/hooks/use-user-settings';
 import useUserSettingsStorage from '@/hooks/use-user-settings-storage';
 import useAddResource from '@/pages/dashboard/hooks/use-add-resource';
@@ -133,7 +134,6 @@ export default (props: any) => {
   });
   const [, contextHolder] = Modal.useModal();
   const { themeData, setUserSettings, userSettings } = useUserSettings();
-  const userSettingsStorage = useUserSettingsStorage();
   const [userInfo] = useAtom(userAtom);
   const [routeCache] = useAtom(routeCacheAtom);
   const location = useLocation();
@@ -346,24 +346,10 @@ export default (props: any) => {
           defaultColorPrimary: COLOR_PRIMARY
         }}
         hooks={{
-          useUserSettings: useUserSettings,
-          useUserSettingsStorage: () => userSettingsStorage,
-          useIntl: useIntl,
-          // Bridge umi's `@@initialState` model so plugins consuming
-          // `useCurrentUser` from @gpustack/core-ui get the signed-in
-          // user without depending on @umijs/max directly. Translate
-          // the host's snake_case fields to core-ui's camelCase
-          // `CurrentUser` shape, but pass everything else through so
-          // hosts can carry extra fields.
-          useCurrentUser: () => {
-            const cu = useModel?.('@@initialState')?.initialState?.currentUser;
-            if (!cu) return undefined;
-            return {
-              ...cu,
-              fullName: cu.full_name ?? cu.fullName,
-              isAdmin: cu.is_admin ?? cu.isAdmin
-            };
-          }
+          useUserSettings,
+          useUserSettingsStorage,
+          useIntl,
+          useCurrentUser
         }}
         i18n={intl}
         locale={{

@@ -148,6 +148,7 @@ export default {
   'models.table.apiAccessInfo.modelName': '模型名称',
   'models.table.apiAccessInfo.apikey': 'API 密钥',
   'models.table.apiAccessInfo.openaiCompatible': 'OpenAI 兼容',
+  'models.table.apiAccessInfo.anthropicCompatible': 'Anthropic 兼容',
   'models.table.apiAccessInfo.jinaCompatible': 'Jina 兼容',
   'models.table.apiAccessInfo.gotoCreate': '去创建',
   'models.search.parts': '{n} 个文件',

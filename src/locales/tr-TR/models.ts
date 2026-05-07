@@ -155,6 +155,7 @@ export default {
   'models.table.apiAccessInfo.modelName': 'Model Adı',
   'models.table.apiAccessInfo.apikey': 'API Anahtarı',
   'models.table.apiAccessInfo.openaiCompatible': 'OpenAI Uyumlu',
+  'models.table.apiAccessInfo.anthropicCompatible': 'Anthropic Uyumlu',
   'models.table.apiAccessInfo.jinaCompatible': 'Jina Uyumlu',
   'models.table.apiAccessInfo.gotoCreate': 'Oluşturmaya Git',
   'models.search.parts': '{n} parça',

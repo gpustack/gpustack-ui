@@ -1,4 +1,5 @@
 import { PageActionType } from '@/config/types';
+import { backendOptionsMap } from '@/pages/llmodels/constants/backend-parameters';
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import {
   BaseSelect,
@@ -49,6 +50,19 @@ const Title = styled.div`
   padding-top: 8px;
   padding-bottom: 8px;
 `;
+
+const backendHolder = {
+  [backendOptionsMap.SGLang]: {
+    defaultEntry: 'sglang serve',
+    defaultCommand:
+      '--model-path {{model_path}} --host {{worker_ip}} --port {{port}}'
+  },
+  [backendOptionsMap.vllm]: {
+    defaultEntry: 'vllm serve',
+    defaultCommand:
+      '{{model_path}} --host {{worker_ip}} --port {{port}} --served-model-name {{model_name}}'
+  }
+};
 
 type AddModalProps = {
   action: PageActionType;
@@ -142,6 +156,16 @@ const VersionsForm: React.FC<AddModalProps> = ({
     setDefaultVersion(value);
   };
 
+  const getDefaultHolder = (content: string) => {
+    if (!content) return '';
+    return intl.formatMessage(
+      { id: 'common.help.default' },
+      {
+        content: content
+      }
+    );
+  };
+
   useEffect(() => {
     const versions = form.getFieldValue('version_configs') || [];
 
@@ -184,6 +208,7 @@ const VersionsForm: React.FC<AddModalProps> = ({
 
   const isBuiltin = backendSource === BackendSourceValueMap.BUILTIN;
   const isCommunity = backendSource === BackendSourceValueMap.COMMUNITY;
+  const backend = currentData?.backend_name;
 
   return (
     <>
@@ -358,12 +383,24 @@ const VersionsForm: React.FC<AddModalProps> = ({
                   <Form.Item name={[name, 'entrypoint']}>
                     <CInput.TextArea
                       allowClear
+                      alwaysFocus={true}
                       description={intl.formatMessage({
                         id: 'backend.entrypoint.tips'
                       })}
                       label={intl.formatMessage({
                         id: 'backend.replaceEntrypoint'
                       })}
+                      placeholder={
+                        getDefaultHolder(
+                          backendHolder[backend as string]?.defaultEntry
+                        ) ||
+                        intl.formatMessage(
+                          { id: 'common.help.eg' },
+                          {
+                            content: 'vllm serve'
+                          }
+                        )
+                      }
                     ></CInput.TextArea>
                   </Form.Item>
                   <Form.Item name={[name, 'run_command']}>
@@ -373,13 +410,18 @@ const VersionsForm: React.FC<AddModalProps> = ({
                       description={intl.formatMessage({
                         id: 'backend.form.defaultExecuteCommand.tips'
                       })}
-                      placeholder={intl.formatMessage(
-                        { id: 'common.help.eg' },
-                        {
-                          content:
-                            '{{model_path}} --port {{port}} --host {{worker_ip}} --served-model-name {{model_name}}'
-                        }
-                      )}
+                      placeholder={
+                        getDefaultHolder(
+                          backendHolder[backend as string]?.defaultCommand
+                        ) ||
+                        intl.formatMessage(
+                          { id: 'common.help.eg' },
+                          {
+                            content:
+                              '{{model_path}} --port {{port}} --host {{worker_ip}} --served-model-name {{model_name}}'
+                          }
+                        )
+                      }
                       label={intl.formatMessage({ id: 'backend.runCommand' })}
                     ></SealTextArea>
                   </Form.Item>

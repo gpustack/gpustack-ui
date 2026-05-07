@@ -8,7 +8,6 @@ import {
   MODEL_PROXY,
   RERANKER_API
 } from '@/pages/playground/apis';
-import { BulbOutlined } from '@ant-design/icons';
 import {
   AutoTooltip,
   CopyButton,
@@ -117,18 +116,11 @@ const ApiAccessInfo = ({ open, data, onClose }: ApiAccessInfoProps) => {
     return (
       <Tips>
         <dl className="tips">
-          <dt>
-            <BulbOutlined />
-          </dt>
           <dd
             dangerouslySetInnerHTML={{
-              __html: data.generic_proxy
-                ? intl.formatMessage({
-                    id: 'models.table.genericProxy'
-                  })
-                : intl.formatMessage({
-                    id: 'models.table.button.apiAccessInfo.tips'
-                  })
+              __html: intl.formatMessage({
+                id: 'models.table.button.apiAccessInfo.tips'
+              })
             }}
           ></dd>
         </dl>
@@ -163,6 +155,7 @@ const ApiAccessInfo = ({ open, data, onClose }: ApiAccessInfoProps) => {
       onCancel={handleClose}
       footer={null}
     >
+      {renderTips()}
       <ApiAccessInfoWrapper>
         <span className="label">
           {intl.formatMessage({ id: 'models.table.apiAccessInfo.endpoint' })}
@@ -172,15 +165,22 @@ const ApiAccessInfo = ({ open, data, onClose }: ApiAccessInfoProps) => {
             {endPoint}
           </AutoTooltip>
           {!data.generic_proxy && (
-            <APITAG color="geekblue">
-              {isRanker
-                ? intl.formatMessage({
-                    id: 'models.table.apiAccessInfo.jinaCompatible'
-                  })
-                : intl.formatMessage({
-                    id: 'models.table.apiAccessInfo.openaiCompatible'
-                  })}
-            </APITAG>
+            <>
+              <APITAG color="geekblue">
+                {isRanker
+                  ? intl.formatMessage({
+                      id: 'models.table.apiAccessInfo.jinaCompatible'
+                    })
+                  : intl.formatMessage({
+                      id: 'models.table.apiAccessInfo.openaiCompatible'
+                    })}
+              </APITAG>
+              <APITAG color="geekblue">
+                {intl.formatMessage({
+                  id: 'models.table.apiAccessInfo.anthropicCompatible'
+                })}
+              </APITAG>
+            </>
           )}
         </span>
         <span className="copy-btn">

@@ -156,6 +156,7 @@ export default {
   'models.table.apiAccessInfo.modelName': 'Model Name',
   'models.table.apiAccessInfo.apikey': 'API Key',
   'models.table.apiAccessInfo.openaiCompatible': 'OpenAI Compatible',
+  'models.table.apiAccessInfo.anthropicCompatible': 'Anthropic Compatible',
   'models.table.apiAccessInfo.jinaCompatible': 'Jina Compatible',
   'models.table.apiAccessInfo.gotoCreate': 'Go to Create',
   'models.search.parts': '{n} parts',

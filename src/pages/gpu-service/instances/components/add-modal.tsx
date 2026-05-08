@@ -3,13 +3,13 @@ import Separator from '@/pages/llmodels/components/separator';
 import { SearchOutlined } from '@ant-design/icons';
 import { ColumnWrapper, GSDrawer, ModalFooter } from '@gpustack/core-ui';
 import { Empty, Input, Typography } from 'antd';
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { mockTemplateData } from '../../templates/config/mock-data';
-import { instanceTypeOptions } from '../config';
-import { FormData, ListItem } from '../config/types';
+import { FormData, InstanceTypeItem, ListItem } from '../config/types';
 import GPUServiceInstanceForm from '../forms';
 import TemplateSelector from '../forms/template-selector';
+import useQueryInstanceTypes from '../services/use-query-instance-types';
 import InstanceTypeList from './instance-type-list';
 
 const Container = styled.div`
@@ -58,26 +58,37 @@ const AddModal: React.FC<AddModalProps> = ({
   onCancel
 }) => {
   const form = useRef<any>(null);
-  const [instanceTypeId, setInstanceTypeId] = useState<number>();
+  const [instanceTypeName, setInstanceTypeName] = useState<string>();
   const [templateId, setTemplateId] = useState<number>();
   const [instanceKeyword, setInstanceKeyword] = useState('');
   const [templateKeyword, setTemplateKeyword] = useState('');
 
+  const { detailData, fetchData } = useQueryInstanceTypes();
+
+  useEffect(() => {
+    if (open) {
+      fetchData({});
+    }
+  }, [open, fetchData]);
+
+  const instanceTypeList = detailData?.items || [];
+
   const filteredInstanceTypes = useMemo(() => {
     const keyword = instanceKeyword.trim().toLowerCase();
     if (!keyword) {
-      return instanceTypeOptions;
+      return instanceTypeList;
     }
-    return instanceTypeOptions.filter((item) =>
-      [
-        item.name,
-        String(item.gpu_count),
-        String(item.vram),
-        String(item.ram),
-        String(item.vCPU)
-      ].some((text) => text.toLowerCase().includes(keyword))
-    );
-  }, [instanceKeyword]);
+    return instanceTypeList.filter((item) => {
+      const name = item.metadata?.name || item.name || '';
+      return [
+        name,
+        item.spec?.memory ?? '',
+        item.status?.cpu?.capacity ?? '',
+        item.status?.ram?.capacity ?? '',
+        item.status?.accelerator?.remaining ?? ''
+      ].some((text) => String(text).toLowerCase().includes(keyword));
+    });
+  }, [instanceKeyword, instanceTypeList]);
 
   const filteredTemplates = useMemo(() => {
     const keyword = templateKeyword.trim().toLowerCase();
@@ -85,13 +96,9 @@ const AddModal: React.FC<AddModalProps> = ({
       return mockTemplateData;
     }
     return mockTemplateData.filter((item) =>
-      [
-        item.name,
-        item.image,
-        item.vendor,
-        item.volume_mount_path,
-        String(item.volume_size_gb ?? '')
-      ].some((text) => (text || '').toLowerCase().includes(keyword))
+      [item.name, item.image, item.volumeMount].some((text) =>
+        (text || '').toLowerCase().includes(keyword)
+      )
     );
   }, [templateKeyword]);
 
@@ -108,6 +115,10 @@ const AddModal: React.FC<AddModalProps> = ({
     onOk({
       ...values
     });
+  };
+
+  const handleInstanceTypeChange = (item: InstanceTypeItem) => {
+    setInstanceTypeName(item.metadata?.name || item.name);
   };
 
   return (
@@ -142,16 +153,16 @@ const AddModal: React.FC<AddModalProps> = ({
                 <Input
                   allowClear
                   prefix={<SearchOutlined className="text-tertiary" />}
-                  placeholder="搜索名称、GPU、显存、内存或 vCPU"
+                  placeholder="搜索名称、显存、内存或 vCPU"
                   value={instanceKeyword}
                   onChange={(e) => setInstanceKeyword(e.target.value)}
                 />
               </div>
               {filteredInstanceTypes.length > 0 ? (
                 <InstanceTypeList
-                  value={instanceTypeId}
+                  value={instanceTypeName}
                   dataList={filteredInstanceTypes}
-                  onChange={setInstanceTypeId}
+                  onChange={handleInstanceTypeChange}
                 />
               ) : (
                 <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
@@ -174,7 +185,7 @@ const AddModal: React.FC<AddModalProps> = ({
                 <Input
                   allowClear
                   prefix={<SearchOutlined className="text-tertiary" />}
-                  placeholder="搜索模板名称、镜像、厂商或挂载路径"
+                  placeholder="搜索模板名称、镜像或挂载路径"
                   value={templateKeyword}
                   onChange={(e) => setTemplateKeyword(e.target.value)}
                 />

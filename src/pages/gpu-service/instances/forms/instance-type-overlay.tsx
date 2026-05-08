@@ -4,7 +4,7 @@ import { Empty, Input } from 'antd';
 import { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import InstanceTypeList from '../components/instance-type-list';
-import { instanceTypeOptions } from '../config';
+import { InstanceTypeItem } from '../config/types';
 
 const DrawerBody = styled.div`
   display: flex;
@@ -14,14 +14,16 @@ const DrawerBody = styled.div`
 
 interface InstanceTypeOverlayProps {
   open: boolean;
-  value?: number;
+  value?: string;
+  dataList: InstanceTypeItem[];
   onCancel: () => void;
-  onChange?: (value: number) => void;
+  onChange?: (item: InstanceTypeItem) => void;
 }
 
 const InstanceTypeOverlay: React.FC<InstanceTypeOverlayProps> = ({
   open,
   value,
+  dataList,
   onCancel,
   onChange
 }) => {
@@ -30,22 +32,23 @@ const InstanceTypeOverlay: React.FC<InstanceTypeOverlayProps> = ({
   const filteredOptions = useMemo(() => {
     const currentKeyword = keyword.trim().toLowerCase();
     if (!currentKeyword) {
-      return instanceTypeOptions;
+      return dataList;
     }
 
-    return instanceTypeOptions.filter((item) => {
+    return dataList.filter((item) => {
+      const name = item.metadata?.name || item.name || '';
       return [
-        item.name,
-        String(item.gpu_count),
-        String(item.vram),
-        String(item.ram),
-        String(item.vCPU)
-      ].some((text) => text.toLowerCase().includes(currentKeyword));
+        name,
+        item.spec?.memory ?? '',
+        item.status?.cpu?.capacity ?? '',
+        item.status?.ram?.capacity ?? '',
+        item.status?.accelerator?.remaining ?? ''
+      ].some((text) => String(text).toLowerCase().includes(currentKeyword));
     });
-  }, [keyword]);
+  }, [keyword, dataList]);
 
-  const handleChange = (id: number) => {
-    onChange?.(id);
+  const handleChange = (item: InstanceTypeItem) => {
+    onChange?.(item);
     onCancel();
   };
 
@@ -70,7 +73,7 @@ const InstanceTypeOverlay: React.FC<InstanceTypeOverlayProps> = ({
         <Input
           allowClear
           prefix={<SearchOutlined className="text-tertiary" />}
-          placeholder="搜索名称、GPU、显存、内存或 vCPU"
+          placeholder="搜索名称、显存、内存或 vCPU"
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
         />

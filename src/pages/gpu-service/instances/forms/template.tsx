@@ -16,7 +16,6 @@ import {
 } from '../../templates/config/types';
 import useCreateTemplate from '../../templates/hooks/use-create-template';
 import { FormData } from '../config/types';
-import { useSelectedInstanceType } from './instance-type';
 import TemplateOverlay from './template-overlay';
 
 const FieldBlock = styled.div`
@@ -25,7 +24,6 @@ const FieldBlock = styled.div`
 
 const SelectedCard = styled.div`
   display: grid;
-  height: 102px;
   grid-template-columns: minmax(0, 1fr) max-content;
   align-items: center;
   gap: 12px;
@@ -78,23 +76,12 @@ const TemplatePicker: React.FC<TemplateSelectorProps> = ({
             <AutoTooltip ghost minWidth={20}>
               {selected?.name || '请选择实例模板'}
             </AutoTooltip>
-            {/* {selected && (
-              <Tag
-                color={selected.status === 'enabled' ? 'success' : 'default'}
-                style={{ margin: 0 }}
-              >
-                {selected.status === 'enabled' ? '启用' : '停用'}
-              </Tag>
-            )} */}
           </SummaryTitle>
           <SummaryMeta>
             <AutoTooltip ghost minWidth={20}>
               <span>镜像: {selected?.image || '-'}</span>
             </AutoTooltip>
-            <span>
-              存储: {selected?.volume_size_gb ?? '-'} GB /{' '}
-              {selected?.volume_mount_path || '-'}
-            </span>
+            <span>挂载: {selected?.volumeMount || '-'}</span>
           </SummaryMeta>
         </div>
         <Flex gap={8}>
@@ -115,7 +102,6 @@ const TemplatePicker: React.FC<TemplateSelectorProps> = ({
         onCancel={() => setOpen(false)}
         onChange={onChange}
         onCreate={() => {
-          // setOpen(false);
           onCreate?.();
         }}
       />
@@ -124,10 +110,8 @@ const TemplatePicker: React.FC<TemplateSelectorProps> = ({
 };
 
 const TemplateFormItem = () => {
-  const form = Form.useFormInstance<FormData>();
-  const templateId = Form.useWatch('template_id', form);
-  const selectedInstanceType = useSelectedInstanceType();
-  const maxGpuCount = selectedInstanceType?.gpu_count ?? 1;
+  const form = Form.useFormInstance<FormData & { template_id?: number }>();
+  const templateId = Form.useWatch('template_id', form) as number | undefined;
   const { openTemplateModalStatus, openTemplateModal, closeTemplateModal } =
     useCreateTemplate();
 
@@ -136,13 +120,23 @@ const TemplateFormItem = () => {
   }, [templateId]);
 
   useEffect(() => {
-    if (!templateId) {
-      form.setFieldValue('template_id', mockTemplateData[0]?.id);
+    if (!templateId && mockTemplateData[0]) {
+      form.setFieldValue('template_id', mockTemplateData[0].id);
       return;
     }
 
     if (selectedTemplate) {
-      form.setFieldValue('image', selectedTemplate.image);
+      form.setFieldValue(['spec', 'image'], selectedTemplate.image);
+      form.setFieldValue(['spec', 'command'], selectedTemplate.command || []);
+      form.setFieldValue(['spec', 'ports'], selectedTemplate.ports || []);
+      form.setFieldValue(['spec', 'env'], selectedTemplate.env || []);
+      form.setFieldValue(['spec', 'volumeMount'], selectedTemplate.volumeMount);
+      const currentResources = form.getFieldValue(['spec', 'resources']) || {};
+      form.setFieldValue(['spec', 'resources'], {
+        ...currentResources,
+        cpu: selectedTemplate.resources?.cpu,
+        ram: selectedTemplate.resources?.ram
+      });
     }
   }, [form, selectedTemplate, templateId]);
 
@@ -174,7 +168,7 @@ const TemplateFormItem = () => {
   return (
     <div>
       <FieldBlock data-field="template">
-        <Form.Item<FormData>
+        <Form.Item
           name="template_id"
           rules={[
             {
@@ -190,7 +184,7 @@ const TemplateFormItem = () => {
         </Form.Item>
       </FieldBlock>
 
-      <Form.Item<FormData> name="image" hidden>
+      <Form.Item<FormData> name={['spec', 'image']} hidden>
         <CInput.Input />
       </Form.Item>
 

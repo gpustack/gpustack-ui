@@ -33,6 +33,7 @@ export interface FormData {
     namespace: string;
   };
   spec: {
+    type: string;
     image: string;
     displayName: string;
     command: string[];

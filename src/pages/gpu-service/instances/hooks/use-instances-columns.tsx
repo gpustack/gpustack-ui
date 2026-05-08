@@ -24,7 +24,7 @@ const useInstancesColumns = ({
     return [
       {
         title: '名称',
-        dataIndex: 'name',
+        dataIndex: ['metadata', 'name'],
         key: 'name',
         sorter: tableSorter(1),
         ellipsis: {
@@ -54,11 +54,16 @@ const useInstancesColumns = ({
         }
       },
       {
-        title: '实例类型',
-        dataIndex: 'instance_type',
-        key: 'instance_type',
+        title: '镜像',
+        dataIndex: ['spec', 'image'],
+        key: 'image',
         sorter: tableSorter(3),
-        render: (value: string) => value ?? '-'
+        ellipsis: {
+          showTitle: false
+        },
+        render: (value: string) => (
+          <AutoTooltip ghost>{value || '-'}</AutoTooltip>
+        )
       },
       {
         title: '创建时间',

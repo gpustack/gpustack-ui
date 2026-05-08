@@ -1,8 +1,8 @@
 import { AutoTooltip, TemplateCard } from '@gpustack/core-ui';
 import { Flex, Tag } from 'antd';
 import styled from 'styled-components';
-import { InstanceTypeStatusValueMap, instanceTypeOptions } from '../config';
-import { InstanceItem } from '../config/types';
+import { InstanceTypePhaseValueMap } from '../config';
+import { InstanceTypeItem } from '../config/types';
 
 const TypeGrid = styled.div`
   display: flex;
@@ -38,43 +38,44 @@ const TypeMeta = styled.div`
 `;
 
 interface InstanceTypeListProps {
-  value?: number;
-  onChange?: (value: number) => void;
-  dataList?: InstanceItem[];
+  value?: string;
+  onChange?: (item: InstanceTypeItem) => void;
+  dataList?: InstanceTypeItem[];
 }
+
+const isAvailable = (item: InstanceTypeItem) =>
+  item.status?.phase === InstanceTypePhaseValueMap.Available;
 
 const InstanceTypeList: React.FC<InstanceTypeListProps> = ({
   value,
   onChange,
-  dataList = instanceTypeOptions
+  dataList = []
 }) => {
-  const handleSelect = (item: InstanceItem) => {
-    if (item.status !== InstanceTypeStatusValueMap.Available) {
-      return;
-    }
-
-    onChange?.(item.id);
+  const handleSelect = (item: InstanceTypeItem) => {
+    if (!isAvailable(item)) return;
+    onChange?.(item);
   };
 
   return (
     <TypeGrid>
       {dataList.map((item) => {
-        const disabled = item.status !== InstanceTypeStatusValueMap.Available;
+        const disabled = !isAvailable(item);
+        const name = item.metadata?.name || item.name;
         return (
           <TemplateCard
-            key={item.id}
+            key={name}
             clickable
             ghost
             hoverable
             height={104}
-            active={value === item.id}
+            active={value === name}
             disabled={disabled}
             onClick={() => handleSelect(item)}
           >
             <TypeName>
               <Flex gap={16}>
                 <AutoTooltip ghost minWidth={20}>
-                  {item.name}
+                  {name}
                 </AutoTooltip>
               </Flex>
               <Tag
@@ -83,14 +84,14 @@ const InstanceTypeList: React.FC<InstanceTypeListProps> = ({
                   color: 'var(--ant-color-text-tertiary)'
                 }}
               >
-                <span>库存 {item.gpu_count}</span>
+                <span>库存 {item.status?.accelerator?.remaining ?? '-'}</span>
               </Tag>
             </TypeName>
             <TypeMeta>
-              <span className="meta-row">显存 {item.vram} GiB</span>
+              <span className="meta-row">显存 {item.spec?.memory ?? '-'}</span>
               <span className="meta-row gap-16">
-                <span> 内存 {item.ram} GiB</span>
-                <span>CPU {item.vCPU}</span>
+                <span>内存 {item.status?.ram?.capacity ?? '-'}</span>
+                <span>vCPU {item.status?.cpu?.capacity ?? '-'}</span>
               </span>
             </TypeMeta>
           </TemplateCard>

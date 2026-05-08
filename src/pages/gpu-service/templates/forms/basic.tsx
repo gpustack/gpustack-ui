@@ -8,7 +8,7 @@ interface BasicProps {
   page?: 'template' | 'instance';
 }
 
-const Basic: React.FC<BasicProps> = () => {
+const Basic: React.FC<BasicProps> = ({ page = 'template' }) => {
   const form = Form.useFormInstance<FormData>();
 
   const handleCommandChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -25,17 +25,19 @@ const Basic: React.FC<BasicProps> = () => {
 
   return (
     <>
-      <Form.Item<FormData>
-        name="name"
-        rules={[
-          {
-            required: true,
-            message: '请输入模板名称'
-          }
-        ]}
-      >
-        <CInput.Input label="名称" required />
-      </Form.Item>
+      {page === 'template' && (
+        <Form.Item<FormData>
+          name="name"
+          rules={[
+            {
+              required: true,
+              message: '请输入模板名称'
+            }
+          ]}
+        >
+          <CInput.Input label="名称" required />
+        </Form.Item>
+      )}
       <Form.Item<FormData>
         name="image"
         rules={[

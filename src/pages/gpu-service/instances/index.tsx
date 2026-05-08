@@ -3,6 +3,7 @@ import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import type { PageActionType } from '@/config/types';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { useQueryClusterList } from '@/pages/cluster-management/services/use-query-cluster-list';
+import { useModel } from '@@/plugin-model';
 import {
   BaseSelect,
   DeleteModal,
@@ -14,20 +15,52 @@ import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { ConfigProvider, Divider, Flex, message, Table } from 'antd';
 import _ from 'lodash';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { PageContainerInner } from '../../_components/page-box';
 import {
-  createGPUServiceInstance,
   deleteGPUServiceInstance,
   GPU_SERVICE_INSTANCES_API,
-  queryGPUServiceInstances,
-  updateGPUServiceInstance
+  queryGPUServiceInstances
 } from './apis';
 import AddModal from './components/add-modal';
 import { FormData, ListItem } from './config/types';
 import useInstancesColumns from './hooks/use-instances-columns';
+import useCreateInstance from './services/use-create-instance';
+import useUpdateInstance from './services/use-update-instance';
 
 const GPUService: React.FC = () => {
+  const { initialState } = useModel('@@initialState');
+  const namespace = initialState?.currentUser?.org_name || 'default';
+
+  const deleteInstance = useCallback(
+    (id: number) => deleteGPUServiceInstance({ namespace, id }),
+    [namespace]
+  );
+
+  const fetchInstances = useCallback(
+    async (
+      params: any,
+      options?: any
+    ): Promise<Global.PageResponse<ListItem>> => {
+      const res = await queryGPUServiceInstances(
+        { ...params, namespace },
+        options
+      );
+      const total = res.items?.length ?? 0;
+      const perPage = params.perPage || 10;
+      return {
+        items: res.items ?? [],
+        pagination: {
+          total,
+          totalPage: Math.ceil(total / perPage),
+          page: params.page || 1,
+          perPage
+        }
+      };
+    },
+    [namespace]
+  );
+
   const {
     dataSource,
     rowSelection,
@@ -44,12 +77,15 @@ const GPUService: React.FC = () => {
     handleNameChange
   } = useTableFetch<ListItem>({
     key: PaginationKey.Instances,
-    fetchAPI: queryGPUServiceInstances,
-    deleteAPI: deleteGPUServiceInstance,
+    fetchAPI: fetchInstances,
+    deleteAPI: deleteInstance,
     watch: false,
-    API: GPU_SERVICE_INSTANCES_API,
+    API: GPU_SERVICE_INSTANCES_API(namespace),
     contentForDelete: 'GPU 实例'
   });
+
+  const { fetchData: createInstance } = useCreateInstance();
+  const { fetchData: updateInstance } = useUpdateInstance();
   const {
     fetchClusterList,
     cancelRequest: cancelClusterRequest,
@@ -113,12 +149,12 @@ const GPUService: React.FC = () => {
   const handleModalOk = async (data: FormData) => {
     try {
       if (openAddModalStatus.action === PageAction.EDIT) {
-        await updateGPUServiceInstance({
+        await updateInstance({
           id: openAddModalStatus.currentData!.id,
           data
         });
       } else {
-        await createGPUServiceInstance({ data });
+        await createInstance({ data });
       }
 
       fetchData();
@@ -133,7 +169,7 @@ const GPUService: React.FC = () => {
     if (val === 'edit') {
       handleEditInstance(row);
     } else if (val === 'delete') {
-      handleDelete({ ...row, name: row.name });
+      handleDelete({ ...row, name: row.metadata?.name });
     }
   });
 

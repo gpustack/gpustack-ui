@@ -1,6 +1,7 @@
 import { keepAliveRoutes } from './keep-alive';
+import { applyRouteExtensions } from './routes.extensions';
 
-export default [
+const baseRoutes = [
   {
     name: 'dashboard',
     path: '/dashboard',
@@ -313,16 +314,6 @@ export default [
     component: './api-keys'
   },
   {
-    name: 'settings',
-    path: '/settings',
-    key: 'settings',
-    hideInMenu: true,
-    selectedIcon: 'icon-settings-filled',
-    icon: 'icon-settings',
-    defaultIcon: 'icon-settings',
-    component: './settings'
-  },
-  {
     name: 'profile',
     path: '/profile',
     key: 'profile',
@@ -346,3 +337,5 @@ export default [
     component: './404'
   }
 ];
+
+export default applyRouteExtensions(baseRoutes);

@@ -1,53 +1,40 @@
-import { GPUsConfigs } from '@/pages/resources/config/gpu-driver';
-import {
-  Input as CInput,
-  InputNumber as CInputNumber,
-  LabelSelector,
-  Select as SealSelect,
-  Textarea
-} from '@gpustack/core-ui';
+import { Input as CInput, Textarea } from '@gpustack/core-ui';
 import { Form } from 'antd';
 import { FormData } from '../config/types';
+import Env from './env';
 import Ports from './ports';
 
 interface BasicProps {
   page?: 'template' | 'instance';
 }
 
-const Basic: React.FC<BasicProps> = ({ page = 'template' }) => {
+const Basic: React.FC<BasicProps> = () => {
   const form = Form.useFormInstance<FormData>();
-  const gpuVendorOptions = Object.values(GPUsConfigs);
+
+  const handleCommandChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const value = e.target.value;
+    const list = value
+      .split('\n')
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0);
+    form.setFieldValue('command', list);
+  };
+
+  const command = Form.useWatch('command', form);
+  const commandText = Array.isArray(command) ? command.join('\n') : '';
 
   return (
     <>
-      {page === 'template' && (
-        <Form.Item<FormData>
-          name="name"
-          rules={[
-            {
-              required: true,
-              message: '请输入模板名称'
-            }
-          ]}
-        >
-          <CInput.Input label="名称" required />
-        </Form.Item>
-      )}
       <Form.Item<FormData>
-        name="vendor"
-        data-field="vendor"
+        name="name"
         rules={[
           {
             required: true,
-            message: '请选择适用设备厂商'
+            message: '请输入模板名称'
           }
         ]}
       >
-        <SealSelect
-          label="适用设备厂商"
-          required
-          options={[...gpuVendorOptions, { label: 'CPU', value: 'cpu' }]}
-        ></SealSelect>
+        <CInput.Input label="名称" required />
       </Form.Item>
       <Form.Item<FormData>
         name="image"
@@ -60,22 +47,34 @@ const Basic: React.FC<BasicProps> = ({ page = 'template' }) => {
       >
         <CInput.Input label="容器镜像" required />
       </Form.Item>
-      <Form.Item<FormData> name="run_command">
+      <Form.Item>
         <Textarea
           label="容器启动命令"
-          placeholder={'例如：/bin/bash -c "your command"'}
+          placeholder={'每行一个参数，例如：\n/bin/bash\n-c\nyour command'}
           trim={false}
           alwaysFocus
           scaleSize
+          value={commandText}
+          onChange={handleCommandChange}
         />
       </Form.Item>
-      <Form.Item<FormData> name="boot_disk_size_gb">
-        <CInputNumber min={1} precision={0} label="容器启动盘大小 (GB)" />
+      <Form.Item<FormData> name="volumeMount">
+        <CInput.Input label="挂载路径" placeholder="例如：/workspace" />
       </Form.Item>
+      <div style={{ display: 'flex', gap: 16 }}>
+        <div style={{ flex: 1 }}>
+          <Form.Item<FormData> name={['resources', 'cpu']}>
+            <CInput.Input label="CPU" placeholder="例如：4" />
+          </Form.Item>
+        </div>
+        <div style={{ flex: 1 }}>
+          <Form.Item<FormData> name={['resources', 'ram']}>
+            <CInput.Input label="内存" placeholder="例如：8Gi" />
+          </Form.Item>
+        </div>
+      </div>
       <Ports />
-      <Form.Item<FormData> name="env">
-        <LabelSelector label="环境变量" btnText="添加变量" />
-      </Form.Item>
+      <Env />
     </>
   );
 };

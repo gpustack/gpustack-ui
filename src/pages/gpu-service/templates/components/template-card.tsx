@@ -1,23 +1,12 @@
-import ascendLogo from '@/assets/logo/ascend.png';
-import CambriconPNG from '@/assets/logo/cambricon.png';
-import hygonPNG from '@/assets/logo/hygon.png';
-import iluvatarLogo from '@/assets/logo/Iluvatar.png';
-import metaxLogo from '@/assets/logo/metax.png';
-import mooreLogo from '@/assets/logo/moore-logo.png';
-import nvidiaLogo from '@/assets/logo/nvidia.png';
-import theadLogoEN from '@/assets/logo/t-head-en.png';
-import theadLogoZH from '@/assets/logo/t-head-zh.png';
-import { GPUDriverMap, GPUsConfigs } from '@/pages/resources/config/gpu-driver';
 import {
   AutoTooltip,
   DropdownActions,
   IconFont,
   TemplateCard
 } from '@gpustack/core-ui';
-import { useIntl } from '@umijs/max';
 import { Button } from 'antd';
 import styled from 'styled-components';
-import { templateActions, TemplateStatusValueMap } from '../config';
+import { templateActions } from '../config';
 import { ListItem } from '../config/types';
 
 const StyledCard = styled(TemplateCard)`
@@ -37,32 +26,15 @@ const Header = styled.div`
   width: 100%;
 `;
 
-const VendorLogo = styled.span`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 48px;
-  max-width: 88px;
-  height: 18px;
-  .logo-img {
-    max-width: 100%;
-    object-fit: contain;
-  }
-  .amd-logo {
-    font-size: 28px;
-    line-height: 1;
-    color: var(--ant-color-text);
-  }
-`;
-
-const CardName = styled.div`
+const CardTitle = styled.div`
   font-weight: 500;
   font-size: 14px;
   display: flex;
   align-items: center;
   color: var(--ant-color-text);
-  margin-bottom: 8px;
   gap: 8px;
+  flex: 1;
+  min-width: 0;
 `;
 
 const Content = styled.div`
@@ -94,55 +66,7 @@ interface TemplateCardProps {
   onSelect?: (item: { action: string; data: ListItem }) => void;
 }
 
-const vendorLogoMap: Record<string, { src: string; height: number }> = {
-  [GPUDriverMap.NVIDIA]: { src: nvidiaLogo, height: 16 },
-  [GPUDriverMap.ASCEND]: { src: ascendLogo, height: 18 },
-  [GPUDriverMap.HYGON]: { src: hygonPNG, height: 16 },
-  [GPUDriverMap.MOORE_THREADS]: { src: mooreLogo, height: 18 },
-  [GPUDriverMap.ILUVATAR]: { src: iluvatarLogo, height: 18 },
-  [GPUDriverMap.CAMBRICON]: { src: CambriconPNG, height: 18 },
-  [GPUDriverMap.METAX]: { src: metaxLogo, height: 18 }
-};
-
 const TemplateCardItem: React.FC<TemplateCardProps> = ({ data, onSelect }) => {
-  const intl = useIntl();
-  const vendorLabel = data.vendor
-    ? GPUsConfigs[data.vendor]?.label || data.vendor
-    : '-';
-
-  const renderVendor = () => {
-    if (data.vendor === GPUDriverMap.AMD) {
-      return (
-        <VendorLogo title={vendorLabel}>
-          <IconFont className="amd-logo" type="icon-amd-logo" />
-        </VendorLogo>
-      );
-    }
-
-    const logo =
-      data.vendor === GPUDriverMap.THEAD
-        ? {
-            src: intl.locale === 'zh-CN' ? theadLogoZH : theadLogoEN,
-            height: 18
-          }
-        : vendorLogoMap[data.vendor || ''];
-
-    if (!logo) {
-      return vendorLabel;
-    }
-
-    return (
-      <VendorLogo title={vendorLabel}>
-        <img
-          alt={vendorLabel}
-          className="logo-img"
-          src={logo.src}
-          style={{ height: logo.height }}
-        />
-      </VendorLogo>
-    );
-  };
-
   const handleOnSelect = (item: any) => {
     onSelect?.({ action: item.key, data });
   };
@@ -170,7 +94,14 @@ const TemplateCardItem: React.FC<TemplateCardProps> = ({ data, onSelect }) => {
     );
   };
 
-  const status = data.status || TemplateStatusValueMap.Enabled;
+  const ports = data.ports || [];
+  const portText = ports.length
+    ? ports.map((p) => `${p.protocol?.toUpperCase()}:${p.port}`).join(', ')
+    : '-';
+
+  const resources = [data.resources?.cpu, data.resources?.ram]
+    .filter(Boolean)
+    .join(' / ');
 
   return (
     <StyledCard
@@ -181,23 +112,46 @@ const TemplateCardItem: React.FC<TemplateCardProps> = ({ data, onSelect }) => {
       ghost
       header={
         <Header>
-          {renderVendor()}
+          <CardTitle>
+            <AutoTooltip ghost minWidth={20}>
+              {data.name || '-'}
+            </AutoTooltip>
+          </CardTitle>
           {renderActions()}
         </Header>
       }
     >
       <Content>
-        <CardName>
-          <AutoTooltip ghost minWidth={20}>
-            {data.name}
-          </AutoTooltip>
-        </CardName>
         <InfoItem>
           <span>
             <IconFont className="icon" type="icon-model" /> 镜像:
           </span>
           <AutoTooltip ghost minWidth={20}>
             <span className="value">{data.image || '-'}</span>
+          </AutoTooltip>
+        </InfoItem>
+        <InfoItem>
+          <span>
+            <IconFont className="icon" type="icon-storage-outlined" /> 挂载:
+          </span>
+          <AutoTooltip ghost minWidth={20}>
+            <span className="value">{data.volumeMount || '-'}</span>
+          </AutoTooltip>
+        </InfoItem>
+        <InfoItem>
+          <span>
+            <IconFont className="icon" type="icon-gpu1" /> 资源:
+          </span>
+          <AutoTooltip ghost minWidth={20}>
+            <span className="value">{resources || '-'}</span>
+          </AutoTooltip>
+        </InfoItem>
+        <InfoItem>
+          <span>
+            <IconFont className="icon" type="icon-network" /> 端口:
+          </span>
+          <AutoTooltip ghost minWidth={20}>
+            <span className="value">{portText}</span>
           </AutoTooltip>
         </InfoItem>
       </Content>

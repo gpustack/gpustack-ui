@@ -46,11 +46,11 @@ const PortItem: React.FC<PortItemProps> = ({ item, index, onChange }) => {
           min={1}
           max={65535}
           precision={0}
-          value={item.value}
+          value={item.port}
           onChange={(value) => {
             onChange({
               ...item,
-              value: typeof value === 'number' ? value : undefined
+              port: typeof value === 'number' ? value : (undefined as any)
             });
           }}
           style={{ width: '100%' }}
@@ -72,7 +72,8 @@ const Ports: React.FC = () => {
     updatePorts([
       ...ports,
       {
-        protocol: 'tcp'
+        protocol: 'tcp',
+        port: undefined as any
       }
     ]);
   };
@@ -99,7 +100,7 @@ const Ports: React.FC = () => {
               return Promise.resolve();
             }
             const hasInvalidPort = value.some(
-              (item: PortItemType) => !item.protocol || !item.value
+              (item: PortItemType) => !item.protocol || !item.port
             );
             if (hasInvalidPort) {
               return Promise.reject(new Error('请填写完整的端口配置'));

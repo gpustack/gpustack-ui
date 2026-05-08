@@ -5,6 +5,7 @@ import routeCachekey from '@/config/route-cachekey';
 import { DEFAULT_ENTER_PAGE, GPUSTACK_API_BASE_URL } from '@/config/settings';
 import { COLOR_PRIMARY } from '@/config/theme';
 import useCurrentUser from '@/hooks/use-current-user';
+import useTableFetch from '@/hooks/use-table-fetch';
 import useUserSettings from '@/hooks/use-user-settings';
 import useUserSettingsStorage from '@/hooks/use-user-settings-storage';
 import useAddResource from '@/pages/dashboard/hooks/use-add-resource';
@@ -349,7 +350,8 @@ export default (props: any) => {
           useUserSettings,
           useUserSettingsStorage,
           useIntl,
-          useCurrentUser
+          useCurrentUser,
+          useTableFetch
         }}
         i18n={intl}
         locale={{

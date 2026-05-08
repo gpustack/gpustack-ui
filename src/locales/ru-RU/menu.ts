@@ -44,7 +44,8 @@ export default {
   'menu.gpuService': 'GPU Service',
   'menu.gpuService.instances': 'GPU Instances',
   'menu.gpuService.templates': 'Instance Templates',
-  'menu.gpuService.storage': 'Storage'
+  'menu.gpuService.storage': 'Storage',
+  'menu.gpuService.publicKeys': 'SSH Public Keys'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

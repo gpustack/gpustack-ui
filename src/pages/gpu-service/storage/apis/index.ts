@@ -1,64 +1,60 @@
 import { request } from '@umijs/max';
-import { mockStorageData } from '../config/mock-data';
-import { FormData, ListItem } from '../config/types';
+import { ListItem } from '../config/types';
 
-export const GPU_SERVICE_STORAGE_API = '/gpu-service-storage';
+export const GPU_SERVICE_STORAGE_API = (namespace: string) =>
+  `/proxy/apis/worker.gpustack.ai/v1/namespaces/${namespace}/instancepersistentvolumes`;
 
 export async function queryGPUServiceStorage(
-  params: Global.SearchParams,
+  params: Global.K8sSearchParams,
   options?: any
 ) {
-  // return request<Global.PageResponse<ListItem>>(GPU_SERVICE_STORAGE_API, {
-  //   method: 'GET',
-  //   params,
-  //   cancelToken: options?.token
-  // });
-  const page = params.page || 1;
-  const perPage = params.perPage || 10;
-  const search = params.search?.toLowerCase();
-  const clusterId = params.cluster_id;
-  const filteredData = mockStorageData.filter((item) => {
-    const matchSearch = search
-      ? item.name.toLowerCase().includes(search)
-      : true;
-    const matchCluster = clusterId ? item.cluster_id === clusterId : true;
-    return matchSearch && matchCluster;
-  });
-  const start = (page - 1) * perPage;
-  const items = filteredData.slice(start, start + perPage);
-
-  return {
-    items,
-    pagination: {
-      total: filteredData.length,
-      totalPage: Math.ceil(filteredData.length / perPage),
-      page,
-      perPage
+  return request<Global.K8sPageResponse<ListItem>>(
+    GPU_SERVICE_STORAGE_API(params.namespace || ''),
+    {
+      method: 'GET',
+      params,
+      cancelToken: options?.token
     }
-  } as Global.PageResponse<ListItem>;
+  );
 }
 
-export async function createGPUServiceStorage(params: { data: FormData }) {
-  // return request<ListItem>(GPU_SERVICE_STORAGE_API, {
-  //   method: 'POST',
-  //   data: params.data
-  // });
-  return true;
+export async function createGPUServiceStorage(
+  params: {
+    namespace: string;
+    data: Global.K8sCommonData;
+  },
+  option?: any
+) {
+  return request<ListItem>(GPU_SERVICE_STORAGE_API(params.namespace), {
+    method: 'POST',
+    data: params.data,
+    cancelToken: option?.token
+  });
 }
 
-export async function updateGPUServiceStorage(params: {
+export async function updateGPUServiceStorage(
+  params: {
+    namespace: string;
+    id: number;
+    data: Global.K8sCommonData;
+  },
+  option?: any
+) {
+  return request<ListItem>(
+    `${GPU_SERVICE_STORAGE_API(params.namespace)}/${params.id}`,
+    {
+      method: 'PUT',
+      data: params.data,
+      cancelToken: option?.token
+    }
+  );
+}
+
+export async function deleteGPUServiceStorage(params: {
+  namespace: string;
   id: number;
-  data: FormData;
 }) {
-  // return request<ListItem>(`${GPU_SERVICE_STORAGE_API}/${params.id}`, {
-  //   method: 'PUT',
-  //   data: params.data
-  // });
-  return true;
-}
-
-export async function deleteGPUServiceStorage(id: number) {
-  return request(`${GPU_SERVICE_STORAGE_API}/${id}`, {
+  return request(`${GPU_SERVICE_STORAGE_API(params.namespace)}/${params.id}`, {
     method: 'DELETE'
   });
 }

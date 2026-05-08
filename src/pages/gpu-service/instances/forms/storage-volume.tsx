@@ -1,7 +1,6 @@
-import { InputNumber as CInputNumber, Input, Select } from '@gpustack/core-ui';
+import { InputNumber as CInputNumber, Select } from '@gpustack/core-ui';
 import { Button, Flex, Form, Radio } from 'antd';
 import styled from 'styled-components';
-import { StorageStatusValueMap } from '../../storage/config';
 import { mockStorageData } from '../../storage/config/mock-data';
 import { StorageModeValueMap } from '../config';
 import { FormData } from '../config/types';
@@ -57,29 +56,24 @@ const StorageVolume = () => {
       </Flex>
 
       {storageMode === StorageModeValueMap.Existing && (
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-          <div style={{ flex: 1 }}>
-            <Form.Item<FormData>
-              name="storage_id"
-              rules={[
-                {
-                  required: true,
-                  message: '请选择预存储卷'
-                }
-              ]}
-            >
-              <Select
-                label="持久卷"
-                required
-                options={mockStorageData.map((item) => ({
-                  label: `${item.name} / ${item.capacity_gb ?? '-'} GB`,
-                  value: item.id,
-                  disabled: item.status !== StorageStatusValueMap.Available
-                }))}
-              />
-            </Form.Item>
-          </div>
-        </div>
+        <Form.Item<FormData>
+          name="storage_id"
+          rules={[
+            {
+              required: true,
+              message: '请选择预存储卷'
+            }
+          ]}
+        >
+          <Select
+            label="持久卷"
+            required
+            options={mockStorageData.map((item) => ({
+              label: `${item.metadata?.name} / ${item.spec?.capacity ?? '-'}`,
+              value: item.id
+            }))}
+          />
+        </Form.Item>
       )}
 
       {storageMode === StorageModeValueMap.Temporary && (
@@ -95,22 +89,6 @@ const StorageVolume = () => {
           <CInputNumber min={1} precision={0} label="存储容量 (GB)" required />
         </Form.Item>
       )}
-      {/* 挂载路径 */}
-      <Form.Item<FormData>
-        name="mount_path"
-        rules={[
-          {
-            required: true,
-            message: '请输入存储挂载路径'
-          }
-        ]}
-      >
-        <Input.Input
-          label="挂载路径"
-          required
-          placeholder="挂载路径须以 / 开头"
-        />
-      </Form.Item>
     </FieldBlock>
   );
 };

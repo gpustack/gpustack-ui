@@ -356,7 +356,7 @@ export default (props: any) => {
         config={{
           apiBaseUrl: GPUSTACK_API_BASE_URL,
           theme: userSettings.theme,
-          iconUrl: '//at.alicdn.com/t/c/font_4613488_tzcsatubq4f.js',
+          iconUrl: '//at.alicdn.com/t/c/font_4613488_ieeghfm8o3o.js',
           isDarkTheme: userSettings.isDarkTheme,
           defaultColorPrimary: COLOR_PRIMARY
         }}

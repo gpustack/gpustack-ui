@@ -1,6 +1,8 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import {
+  CheckboxField,
+  Input as CInput,
   CollapsePanel,
   IconFont,
   ScrollSpyTabs,
@@ -206,6 +208,20 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
               }
             ]}
           />
+          <Form.Item<FormData>
+            name="enable_ssh"
+            valuePropName="checked"
+            style={{ marginBottom: 8 }}
+          >
+            <CheckboxField label={'SSH Terminal Access'}></CheckboxField>
+          </Form.Item>
+          <Form.Item<FormData>
+            data-field="name"
+            hidden
+            name={['spec', 'sshPublicKey', 'name']}
+          >
+            <CInput.Input />
+          </Form.Item>
         </Form>
       </ScrollSpyTabs>
     );

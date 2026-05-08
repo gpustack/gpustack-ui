@@ -1,5 +1,3 @@
-import { StatusMaps } from '@/config';
-import { StatusType } from '@/config/types';
 import { icons } from '@gpustack/core-ui';
 
 export const StorageTypeValueMap = {
@@ -9,52 +7,72 @@ export const StorageTypeValueMap = {
 };
 
 export const StorageTypeLabelMap: Record<string, string> = {
-  [StorageTypeValueMap.Local]: '默认存储',
-  [StorageTypeValueMap.Shared]: '默认存储',
+  [StorageTypeValueMap.Local]: '本地存储',
+  [StorageTypeValueMap.Shared]: '共享存储',
   [StorageTypeValueMap.Object]: '对象存储'
 };
 
-export const StorageAccessModeValueMap = {
-  ReadWriteOnce: 'ReadWriteOnce',
-  ReadOnlyMany: 'ReadOnlyMany',
-  ReadWriteMany: 'ReadWriteMany'
-};
-
-export const StorageAccessModeOptions = [
+export const StorageTypeOptions = [
   {
-    label: 'ReadWriteOnce',
-    value: StorageAccessModeValueMap.ReadWriteOnce
+    label: StorageTypeLabelMap[StorageTypeValueMap.Local],
+    value: StorageTypeValueMap.Local
   },
   {
-    label: 'ReadWriteMany',
-    value: StorageAccessModeValueMap.ReadWriteMany
+    label: StorageTypeLabelMap[StorageTypeValueMap.Shared],
+    value: StorageTypeValueMap.Shared
   },
   {
-    label: 'ReadOnlyMany',
-    value: StorageAccessModeValueMap.ReadOnlyMany
+    label: StorageTypeLabelMap[StorageTypeValueMap.Object],
+    value: StorageTypeValueMap.Object
   }
 ];
 
-export const StorageStatusValueMap = {
-  Available: 'Available',
-  Bound: 'Bound',
-  Released: 'Released',
-  Failed: 'Failed'
+export const AccessModeValueMap = {
+  ReadWriteOnce: 'ReadWriteOnce',
+  ReadOnlyMany: 'ReadOnlyMany',
+  ReadWriteMany: 'ReadWriteMany',
+  ReadWriteOncePod: 'ReadWriteOncePod'
 };
 
-export const StorageStatusLabelMap: Record<string, string> = {
-  [StorageStatusValueMap.Available]: 'Available',
-  [StorageStatusValueMap.Bound]: 'Bound',
-  [StorageStatusValueMap.Released]: 'Released',
-  [StorageStatusValueMap.Failed]: 'Failed'
+export const AccessModeOptions = [
+  {
+    label: 'ReadWriteOnce',
+    value: AccessModeValueMap.ReadWriteOnce
+  },
+  {
+    label: 'ReadWriteMany',
+    value: AccessModeValueMap.ReadWriteMany
+  },
+  {
+    label: 'ReadOnlyMany',
+    value: AccessModeValueMap.ReadOnlyMany
+  },
+  {
+    label: 'ReadWriteOncePod',
+    value: AccessModeValueMap.ReadWriteOncePod
+  }
+];
+
+export const ReClaimPolicyValueMap = {
+  Retain: 'Retain',
+  Delete: 'Delete',
+  Recycle: 'Recycle'
 };
 
-export const status: Record<string, StatusType> = {
-  [StorageStatusValueMap.Available]: StatusMaps.success,
-  [StorageStatusValueMap.Bound]: StatusMaps.transitioning,
-  [StorageStatusValueMap.Released]: StatusMaps.inactive,
-  [StorageStatusValueMap.Failed]: StatusMaps.error
-};
+export const ReClaimPolicyOptions = [
+  {
+    label: 'Retain',
+    value: ReClaimPolicyValueMap.Retain
+  },
+  {
+    label: 'Delete',
+    value: ReClaimPolicyValueMap.Delete
+  },
+  {
+    label: 'Recycle',
+    value: ReClaimPolicyValueMap.Recycle
+  }
+];
 
 export const rowActionList = [
   {

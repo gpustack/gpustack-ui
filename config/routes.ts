@@ -192,9 +192,9 @@ const baseRoutes = [
         name: 'instances',
         path: '/gpu-service/instances',
         key: 'gpuServiceList',
-        icon: 'icon-instances-outlined',
-        selectedIcon: 'icon-instances-filled',
-        defaultIcon: 'icon-instances-outlined',
+        icon: 'icon-cloud-outlined',
+        selectedIcon: 'icon-cloud-filled',
+        defaultIcon: 'icon-cloud-outlined',
         access: 'canSeeAdmin',
         component: './gpu-service/instances'
       },
@@ -217,6 +217,16 @@ const baseRoutes = [
         defaultIcon: 'icon-storage-outlined',
         access: 'canSeeAdmin',
         component: './gpu-service/storage'
+      },
+      {
+        name: 'publicKeys',
+        path: '/gpu-service/public-keys',
+        key: 'gpuServicePublicKeys',
+        icon: 'icon-ssh-outlined',
+        selectedIcon: 'icon-ssh-filled',
+        defaultIcon: 'icon-ssh-outlined',
+        access: 'canSeeAdmin',
+        component: './gpu-service/public-keys'
       }
     ]
   },

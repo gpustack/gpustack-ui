@@ -72,3 +72,16 @@ export const lengthReg = /^.{6,64}$/;
  */
 export const modelNameReg =
   /^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,61}[A-Za-z0-9])?$/g;
+
+/**
+ * Label name rules:
+ * 1. no more than 63 characters
+ * 2. contain only lowercase alphanumeric characters and '-'
+ * 3. start and end with an alphanumeric character
+ * 4. must not contain consecutive '-' characters
+ * 5. must not start with a digit
+ * 6. must not end with a '-'
+ */
+
+export const validateLabelNameRegxFor63 =
+  /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/;

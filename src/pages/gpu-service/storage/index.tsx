@@ -3,6 +3,7 @@ import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import type { PageActionType } from '@/config/types';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { useQueryClusterList } from '@/pages/cluster-management/services/use-query-cluster-list';
+import { useModel } from '@@/plugin-model';
 import {
   BaseSelect,
   DeleteModal,
@@ -14,20 +15,53 @@ import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { ConfigProvider, Divider, Flex, message, Table } from 'antd';
 import _ from 'lodash';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { PageContainerInner } from '../../_components/page-box';
 import {
-  createGPUServiceStorage,
   deleteGPUServiceStorage,
   GPU_SERVICE_STORAGE_API,
-  queryGPUServiceStorage,
-  updateGPUServiceStorage
+  queryGPUServiceStorage
 } from './apis';
+
 import AddModal from './components/add-modal';
 import { FormData, ListItem } from './config/types';
 import useStorageColumns from './hooks/use-storage-columns';
+import useCreateStorage from './services/use-create-storage';
+import useUpdateStorage from './services/use-update-storage';
 
 const GPUServiceStorage: React.FC = () => {
+  const { initialState } = useModel('@@initialState');
+  const namespace = initialState?.currentUser?.org_name || 'default';
+
+  const deleteStorage = useCallback(
+    (id: number) => deleteGPUServiceStorage({ namespace, id }),
+    [namespace]
+  );
+
+  const fetchStorage = useCallback(
+    async (
+      params: any,
+      options?: any
+    ): Promise<Global.PageResponse<ListItem>> => {
+      const res = await queryGPUServiceStorage(
+        { ...params, namespace },
+        options
+      );
+      const total = res.items?.length ?? 0;
+      const perPage = params.perPage || 10;
+      return {
+        items: res.items ?? [],
+        pagination: {
+          total,
+          totalPage: Math.ceil(total / perPage),
+          page: params.page || 1,
+          perPage
+        }
+      };
+    },
+    [namespace]
+  );
+
   const {
     dataSource,
     rowSelection,
@@ -44,12 +78,15 @@ const GPUServiceStorage: React.FC = () => {
     handleNameChange
   } = useTableFetch<ListItem>({
     key: PaginationKey.Storage,
-    fetchAPI: queryGPUServiceStorage,
-    deleteAPI: deleteGPUServiceStorage,
+    fetchAPI: fetchStorage,
+    deleteAPI: deleteStorage,
     watch: false,
-    API: GPU_SERVICE_STORAGE_API,
+    API: GPU_SERVICE_STORAGE_API(namespace),
     contentForDelete: '存储'
   });
+
+  const { fetchData: createStorage } = useCreateStorage();
+  const { fetchData: updateStorage } = useUpdateStorage();
   const {
     fetchClusterList,
     cancelRequest: cancelClusterRequest,
@@ -113,12 +150,12 @@ const GPUServiceStorage: React.FC = () => {
   const handleModalOk = async (data: FormData) => {
     try {
       if (openAddModalStatus.action === PageAction.EDIT) {
-        await updateGPUServiceStorage({
+        await updateStorage({
           id: openAddModalStatus.currentData!.id,
           data
         });
       } else {
-        await createGPUServiceStorage({ data });
+        await createStorage({ data });
       }
 
       fetchData();
@@ -133,7 +170,7 @@ const GPUServiceStorage: React.FC = () => {
     if (val === 'edit') {
       handleEditStorage(row);
     } else if (val === 'delete') {
-      handleDelete({ ...row, name: row.name });
+      handleDelete({ ...row, name: row.metadata?.name });
     }
   });
 

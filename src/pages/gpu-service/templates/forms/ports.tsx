@@ -45,7 +45,6 @@ const PortItem: React.FC<PortItemProps> = ({ item, index, onChange }) => {
         <CInputNumber
           min={1}
           max={65535}
-          disabled={index === 0}
           precision={0}
           value={item.value}
           onChange={(value) => {

@@ -1,3 +1,4 @@
+import PluginExtraFields from '@/components/plugin-extra-fields';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { json2Yaml, yaml2Json } from '@/pages/backends/config';
@@ -172,6 +173,7 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
             trim={false}
           ></CInput.Input>
         </Form.Item>
+        <PluginExtraFields name="CreateOrgScopeField" context={{ action }} />
         {provider === ProviderValueMap.DigitalOcean && (
           <CloudProvider
             provider={provider}

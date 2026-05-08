@@ -1,3 +1,4 @@
+import PluginExtraFields from '@/components/plugin-extra-fields';
 import {
   AutoTooltip,
   DropdownActions,
@@ -248,30 +249,39 @@ const BackendCard: React.FC<BackendCardProps> = ({
     const source = data.is_built_in
       ? BackendSourceLabelMap[BackendSourceValueMap.BUILTIN] || ''
       : BackendSourceLabelMap[data.backend_source] || '';
+    const ownerTag = (
+      <PluginExtraFields
+        name="BackendOwnerTag"
+        context={{ organizationId: data.organization_id }}
+      />
+    );
     if (!source) {
-      return null;
+      return ownerTag;
     }
     return (
-      <Tag
-        color={
-          TagColorMap[
-            data.is_built_in
-              ? BackendSourceValueMap.BUILTIN
-              : data.backend_source
-          ]
-        }
-        className="font-400"
-        variant="filled"
-        style={{
-          borderRadius: 'var(--ant-border-radius)',
-          margin: 0,
-          width: 'max-content'
-        }}
-      >
-        {intl.formatMessage({
-          id: source
-        })}
-      </Tag>
+      <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+        <Tag
+          color={
+            TagColorMap[
+              data.is_built_in
+                ? BackendSourceValueMap.BUILTIN
+                : data.backend_source
+            ]
+          }
+          className="font-400"
+          variant="filled"
+          style={{
+            borderRadius: 'var(--ant-border-radius)',
+            margin: 0,
+            width: 'max-content'
+          }}
+        >
+          {intl.formatMessage({
+            id: source
+          })}
+        </Tag>
+        {ownerTag}
+      </div>
     );
   };
 

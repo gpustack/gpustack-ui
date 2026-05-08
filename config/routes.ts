@@ -104,8 +104,18 @@ const baseRoutes = [
         icon: 'icon-layers',
         selectedIcon: 'icon-layers-filled',
         defaultIcon: 'icon-layers',
-        access: 'canSeeAdmin',
+        access: 'canSeeOrgAdmin',
         component: './llmodels/catalog'
+      },
+      {
+        name: 'userModels',
+        path: '/models/user-models',
+        key: 'userModels',
+        icon: 'icon-models',
+        selectedIcon: 'icon-models-filled',
+        defaultIcon: 'icon-models',
+        access: 'canSeeUser',
+        component: './llmodels/user-models'
       },
       {
         name: 'deployment',
@@ -114,7 +124,7 @@ const baseRoutes = [
         icon: 'icon-rocket-launch1',
         selectedIcon: 'icon-rocket-launch-fill',
         defaultIcon: 'icon-rocket-launch1',
-        access: 'canSeeAdmin',
+        access: 'canSeeOrgAdmin',
         component: './llmodels/index'
       },
       {
@@ -124,7 +134,7 @@ const baseRoutes = [
         icon: 'icon-captive_portal',
         selectedIcon: 'icon-captive_portal',
         defaultIcon: 'icon-captive_portal',
-        access: 'canSeeAdmin',
+        access: 'canSeeOrgAdmin',
         component: './model-routes/index'
       },
       {
@@ -143,19 +153,8 @@ const baseRoutes = [
         icon: 'icon-extension-outline',
         selectedIcon: 'icon-extension-filled',
         defaultIcon: 'icon-extension-outline',
-        access: 'canSeeAdmin',
+        access: 'canSeeOrgAdmin',
         component: './maas-provider/index'
-      },
-
-      {
-        name: 'userModels',
-        path: '/models/user-models',
-        key: 'userModels',
-        icon: 'icon-models',
-        selectedIcon: 'icon-models-filled',
-        defaultIcon: 'icon-models',
-        access: 'canSeeUser',
-        component: './llmodels/user-models'
       },
       {
         name: 'benchmark',
@@ -164,7 +163,7 @@ const baseRoutes = [
         icon: 'icon-speed',
         selectedIcon: 'icon-speed-filled',
         defaultIcon: 'icon-speed',
-        access: 'canSeeAdmin',
+        access: 'canSeeOrgAdmin',
         component: './benchmark/index'
       },
       {
@@ -174,7 +173,7 @@ const baseRoutes = [
         icon: 'icon-speed',
         selectedIcon: 'icon-speed-filled',
         defaultIcon: 'icon-speed',
-        access: 'canSeeAdmin',
+        access: 'canSeeOrgAdmin',
         hideInMenu: true,
         component: './benchmark/details'
       }
@@ -184,7 +183,7 @@ const baseRoutes = [
     name: 'resources',
     path: '/resources',
     key: 'resources',
-    access: 'canSeeAdmin',
+    access: 'canSeeOrgAdmin',
     routes: [
       {
         path: '/resources',
@@ -215,7 +214,7 @@ const baseRoutes = [
         icon: 'icon-backend',
         selectedIcon: 'icon-backend-filled',
         defaultIcon: 'icon-backend',
-        access: 'canSeeAdmin',
+        access: 'canSeeOrgAdmin',
         component: './backends/index'
       },
       {
@@ -233,7 +232,7 @@ const baseRoutes = [
     name: 'clusterManagement',
     path: '/cluster-management',
     key: 'clusterManagement',
-    access: 'canSeeAdmin',
+    access: 'canSeeOrgAdmin',
     routes: [
       {
         path: '/cluster-management',

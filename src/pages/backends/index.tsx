@@ -166,7 +166,15 @@ const BackendList = () => {
     }
     // ================ Delete ================
     if (item.action === 'delete') {
-      if (item.data.backend_source === BackendSourceValueMap.COMMUNITY) {
+      // Platform community rows aren't actually deletable — the
+      // "delete" action there is a soft-disable on the admin-curated
+      // catalog. An org-scoped row of any source (including an org's
+      // override of a community backend) IS owner-mutable data and
+      // gets a real DELETE.
+      const isPlatformCommunity =
+        item.data.backend_source === BackendSourceValueMap.COMMUNITY &&
+        item.data.organization_id == null;
+      if (isPlatformCommunity) {
         modalRef.current?.show({
           content: 'backends.title',
           operation: 'common.delete.single.confirm',

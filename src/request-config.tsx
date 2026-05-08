@@ -4,6 +4,7 @@ import { history, RequestConfig } from '@umijs/max';
 import { message } from 'antd';
 import { DEFAULT_ENTER_PAGE } from './config/settings';
 import ErrorMessageContent from './pages/_components/error-message-content';
+import { extraRequestInterceptors } from './request.extensions';
 
 //  these APIs do not via the GPUSTACK_API_BASE_URL
 const NoBaseURLAPIs = ['/auth', '/v1', '/version', '/proxy', '/update'];
@@ -43,7 +44,10 @@ export const requestConfig: RequestConfig = {
         return { url, options };
       }
       return { url, options };
-    }
+    },
+    // Build-time tooling can plug additional interceptors via
+    // `request.extensions.ts`. Default is an empty list.
+    ...extraRequestInterceptors
   ],
   responseInterceptors: [
     (response) => {

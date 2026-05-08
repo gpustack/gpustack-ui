@@ -1,3 +1,4 @@
+import PluginExtraFields from '@/components/plugin-extra-fields';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import {
@@ -43,6 +44,8 @@ const APIKeyForm: React.FC<{
           required
         ></CInput.Input>
       </Form.Item>
+
+      <PluginExtraFields name="CreateOrgScopeField" context={{ action }} />
 
       <Form.Item<FormData>
         name="expires_in"

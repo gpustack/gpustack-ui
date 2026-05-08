@@ -5,26 +5,17 @@ export const mockTemplateData: ListItem[] = [
     id: 1,
     name: 'Ubuntu CUDA Dev',
     image: 'nvidia/cuda:12.4.1-devel-ubuntu22.04',
-    vendor: 'cuda',
-    run_command: '/bin/bash',
-    boot_disk_size_gb: 30,
-    volume_size_gb: 100,
-    volume_mount_path: '/workspace',
-    ports: [
-      {
-        protocol: 'tcp',
-        value: 22
-      },
-      {
-        protocol: 'udp',
-        value: 8888
-      }
-    ],
-    env: {
-      NVIDIA_VISIBLE_DEVICES: 'all'
+    command: ['/bin/bash'],
+    volumeMount: '/workspace',
+    resources: {
+      cpu: '4',
+      ram: '16Gi'
     },
-    gpu_count: 1,
-    replicas: 1,
+    ports: [
+      { protocol: 'tcp', port: 22 },
+      { protocol: 'udp', port: 8888 }
+    ],
+    env: [{ name: 'NVIDIA_VISIBLE_DEVICES', value: 'all' }],
     status: 'enabled',
     created_at: '2026-04-01T10:00:00Z',
     updated_at: '2026-04-10T10:00:00Z'
@@ -33,22 +24,14 @@ export const mockTemplateData: ListItem[] = [
     id: 2,
     name: 'PyTorch Training',
     image: 'pytorch/pytorch:2.5.1-cuda12.4-cudnn9-devel',
-    vendor: 'cuda',
-    run_command: 'python train.py',
-    boot_disk_size_gb: 50,
-    volume_size_gb: 200,
-    volume_mount_path: '/data',
-    ports: [
-      {
-        protocol: 'tcp',
-        value: 6006
-      }
-    ],
-    env: {
-      PYTHONUNBUFFERED: '1'
+    command: ['python', 'train.py'],
+    volumeMount: '/data',
+    resources: {
+      cpu: '8',
+      ram: '32Gi'
     },
-    gpu_count: 2,
-    replicas: 1,
+    ports: [{ protocol: 'tcp', port: 6006 }],
+    env: [{ name: 'PYTHONUNBUFFERED', value: '1' }],
     status: 'enabled',
     created_at: '2026-04-02T10:00:00Z',
     updated_at: '2026-04-11T10:00:00Z'
@@ -57,22 +40,14 @@ export const mockTemplateData: ListItem[] = [
     id: 3,
     name: 'ROCm Notebook',
     image: 'rocm/pytorch:latest',
-    vendor: 'rocm',
-    run_command: 'jupyter lab --ip=0.0.0.0 --allow-root',
-    boot_disk_size_gb: 40,
-    volume_size_gb: 120,
-    volume_mount_path: '/notebooks',
-    ports: [
-      {
-        protocol: 'http',
-        value: 8888
-      }
-    ],
-    env: {
-      HSA_OVERRIDE_GFX_VERSION: '10.3.0'
+    command: ['jupyter', 'lab', '--ip=0.0.0.0', '--allow-root'],
+    volumeMount: '/notebooks',
+    resources: {
+      cpu: '4',
+      ram: '16Gi'
     },
-    gpu_count: 1,
-    replicas: 1,
+    ports: [{ protocol: 'tcp', port: 8888 }],
+    env: [{ name: 'HSA_OVERRIDE_GFX_VERSION', value: '10.3.0' }],
     status: 'enabled',
     created_at: '2026-04-03T10:00:00Z',
     updated_at: '2026-04-12T10:00:00Z'
@@ -81,22 +56,14 @@ export const mockTemplateData: ListItem[] = [
     id: 4,
     name: 'Ascend MindIE',
     image: 'ascend/mindie:latest',
-    vendor: 'cann',
-    run_command: '/usr/local/Ascend/mindie/latest/bin/mindieservice_daemon',
-    boot_disk_size_gb: 60,
-    volume_size_gb: 160,
-    volume_mount_path: '/models',
-    ports: [
-      {
-        protocol: 'http',
-        value: 1025
-      }
-    ],
-    env: {
-      ASCEND_VISIBLE_DEVICES: '0'
+    command: ['/usr/local/Ascend/mindie/latest/bin/mindieservice_daemon'],
+    volumeMount: '/models',
+    resources: {
+      cpu: '4',
+      ram: '16Gi'
     },
-    gpu_count: 1,
-    replicas: 1,
+    ports: [{ protocol: 'tcp', port: 1025 }],
+    env: [{ name: 'ASCEND_VISIBLE_DEVICES', value: '0' }],
     status: 'enabled',
     created_at: '2026-04-04T10:00:00Z',
     updated_at: '2026-04-13T10:00:00Z'
@@ -105,20 +72,14 @@ export const mockTemplateData: ListItem[] = [
     id: 5,
     name: 'CPU Utility',
     image: 'ubuntu:22.04',
-    vendor: 'cuda',
-    run_command: 'sleep infinity',
-    boot_disk_size_gb: 20,
-    volume_size_gb: 50,
-    volume_mount_path: '/mnt/data',
-    ports: [
-      {
-        protocol: 'tcp',
-        value: 22
-      }
-    ],
-    env: {},
-    gpu_count: 0,
-    replicas: 1,
+    command: ['sleep', 'infinity'],
+    volumeMount: '/mnt/data',
+    resources: {
+      cpu: '2',
+      ram: '4Gi'
+    },
+    ports: [{ protocol: 'tcp', port: 22 }],
+    env: [],
     status: 'disabled',
     created_at: '2026-04-05T10:00:00Z',
     updated_at: '2026-04-14T10:00:00Z'
@@ -127,26 +88,17 @@ export const mockTemplateData: ListItem[] = [
     id: 6,
     name: 'Inference Server',
     image: 'vllm/vllm-openai:latest',
-    vendor: 'cuda',
-    run_command: 'python -m vllm.entrypoints.openai.api_server',
-    boot_disk_size_gb: 80,
-    volume_size_gb: 300,
-    volume_mount_path: '/models',
-    ports: [
-      {
-        protocol: 'udp',
-        value: 8000
-      },
-      {
-        protocol: 'tcp',
-        value: 8080
-      }
-    ],
-    env: {
-      VLLM_WORKER_MULTIPROC_METHOD: 'spawn'
+    command: ['python', '-m', 'vllm.entrypoints.openai.api_server'],
+    volumeMount: '/models',
+    resources: {
+      cpu: '16',
+      ram: '64Gi'
     },
-    gpu_count: 4,
-    replicas: 2,
+    ports: [
+      { protocol: 'udp', port: 8000 },
+      { protocol: 'tcp', port: 8080 }
+    ],
+    env: [{ name: 'VLLM_WORKER_MULTIPROC_METHOD', value: 'spawn' }],
     status: 'enabled',
     created_at: '2026-04-06T10:00:00Z',
     updated_at: '2026-04-15T10:00:00Z'

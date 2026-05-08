@@ -1,6 +1,5 @@
 import { PageAction } from '@/config';
 import useTableFetch from '@/hooks/use-table-fetch';
-import { GPUsConfigs } from '@/pages/resources/config/gpu-driver';
 import {
   DeleteModal,
   FilterBar,
@@ -30,7 +29,6 @@ const GPUServiceTemplates: React.FC = () => {
     rowSelection,
     queryParams,
     modalRef,
-    handleQueryChange,
     fetchData,
     handleDelete,
     handleSearch,
@@ -75,18 +73,6 @@ const GPUServiceTemplates: React.FC = () => {
     }
   };
 
-  const gpuVendorOptions = Object.values(GPUsConfigs).map((item) => ({
-    label: item.label,
-    value: item.value
-  }));
-
-  const handleFilterByVendor = (value: string) => {
-    handleQueryChange({
-      vendor: value,
-      page: 1
-    });
-  };
-
   const handleOnSelect = (item: { action: string; data: ListItem }) => {
     if (item.action === 'edit') {
       handleEditTemplate(item.data);
@@ -116,15 +102,12 @@ const GPUServiceTemplates: React.FC = () => {
           input: 230
         }}
         inputHolder="按名称过滤"
-        selectHolder="按厂商过滤"
         buttonText="添加实例模板"
         handleClickPrimary={handleAddTemplate}
         handleSearch={handleSearch}
-        handleSelectChange={handleFilterByVendor}
         handleInputChange={handleNameChange}
         rowSelection={rowSelection}
-        showSelect={true}
-        selectOptions={gpuVendorOptions}
+        showSelect={false}
       />
       <InfiniteScrollerProvider
         value={{

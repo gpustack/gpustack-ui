@@ -28,26 +28,27 @@ const GPUServiceTemplateForm: React.FC<TemplateFormProps> = forwardRef(
         form.setFieldsValue({
           name: currentData.name,
           image: currentData.image,
-          vendor: currentData.vendor,
-          image_pull_policy: currentData.image_pull_policy,
-          run_command: currentData.run_command,
-          boot_disk_size_gb: currentData.boot_disk_size_gb,
-          volume_size_gb: currentData.volume_size_gb,
-          volume_mount_path: currentData.volume_mount_path,
+          command: currentData.command || [],
           ports: currentData.ports || [],
-          env: currentData.env || {}
+          env: currentData.env || [],
+          volumeMount: currentData.volumeMount,
+          resources: {
+            cpu: currentData.resources?.cpu,
+            ram: currentData.resources?.ram
+          }
         });
         return;
       }
 
       form.setFieldsValue({
+        command: [],
         ports: [
           {
             protocol: 'tcp',
-            value: 22
+            port: 22
           }
         ],
-        env: {}
+        env: []
       });
     }, [action, currentData, form, open]);
 
@@ -66,15 +67,6 @@ const GPUServiceTemplateForm: React.FC<TemplateFormProps> = forwardRef(
         form={form}
         onFinish={onFinish}
         preserve={false}
-        initialValues={{
-          boot_disk_size_gb: 30,
-          ports: [
-            {
-              protocol: 'udp',
-              value: 22
-            }
-          ]
-        }}
       >
         <Basic />
       </Form>

@@ -9,13 +9,13 @@ export interface EnvItem {
 }
 
 export interface FormData {
+  name: string;
   image: string;
-  imagePullPolicy: string;
-  imagePullSecret: {
-    name: string;
-  };
+  // imagePullPolicy: string;
+  // imagePullSecret: {
+  //   name: string;
+  // };
   command: string[];
-  privileged: boolean;
   ports: PortItem[];
   env: EnvItem[];
   volumeMount: string;

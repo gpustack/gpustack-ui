@@ -7,16 +7,26 @@ import {
   StatusTag
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Col, Row } from 'antd';
+import { Col, Row, Tag } from 'antd';
 import dayjs from 'dayjs';
 import React from 'react';
 import styled from 'styled-components';
 import { TargetStatus, TargetStatusLabelMap } from '../config';
 import { RouteTarget } from '../config/types';
+
 const CellContent = styled.div`
   display: flex;
   align-items: center;
   height: 100%;
+`;
+
+const FilesTag = styled(Tag)`
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  margin-inline: 4px 0;
+  transform: scale(0.9);
+  border-radius: 12px;
 `;
 
 interface ProviderModelProps {
@@ -83,10 +93,16 @@ const RouteItem: React.FC<TargetItemProps> = ({
           <Col span={5}>
             <CellContent
               style={{
+                gap: 4,
                 paddingInline: 'var(--ant-table-cell-padding-inline)'
               }}
             >
               <AutoTooltip ghost>{data.name}</AutoTooltip>
+              {!!data.lora_module_name && (
+                <FilesTag color="purple" variant="outlined">
+                  <span style={{ opacity: 1 }}>LoRA</span>
+                </FilesTag>
+              )}
             </CellContent>
           </Col>
           <Col span={5} style={{ paddingLeft: 64 }}>

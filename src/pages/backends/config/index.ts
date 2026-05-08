@@ -109,7 +109,11 @@ export const backendActions = [
     icon: icons.DeleteOutlined,
     locale: true,
     danger: true,
-    show: (record: any) => !record.is_built_in
+    // Platform built-ins are admin-curated and not user-deletable.
+    // An org-scoped override of a built-in IS deletable — deleting
+    // the override is how the user reverts to the Platform row.
+    // Plain custom backends are always deletable.
+    show: (record: any) => !record.is_built_in || record.organization_id != null
   }
 ];
 

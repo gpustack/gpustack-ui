@@ -1,3 +1,4 @@
+import PluginExtraFields from '@/components/plugin-extra-fields';
 import { PageAction } from '@/config';
 import { backendOptionsMap } from '@/pages/llmodels/constants/backend-parameters';
 import {
@@ -67,6 +68,10 @@ const BasicForm = () => {
           required
         ></CInput.Input>
       </Form.Item>
+      <PluginExtraFields
+        name="CreateOrgScopeField"
+        context={{ action, allowGlobal: true }}
+      />
       <Form.Item<FormData> hidden name="backend_source">
         <CInput.Input></CInput.Input>
       </Form.Item>

@@ -1,3 +1,4 @@
+import PluginExtraFields from '@/components/plugin-extra-fields';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { Input as CInput, FormDrawer, useAppUtils } from '@gpustack/core-ui';
@@ -77,6 +78,7 @@ const AddModal: React.FC<AddModalProps> = ({
             required
           ></CInput.Input>
         </Form.Item>
+        <PluginExtraFields name="CreateOrgScopeField" context={{ action }} />
         {provider === ProviderValueMap.DigitalOcean && (
           <>
             <Form.Item<FormData>

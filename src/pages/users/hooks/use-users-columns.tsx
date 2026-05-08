@@ -1,4 +1,5 @@
 // columns.ts
+import PluginExtraFields from '@/components/plugin-extra-fields';
 import { tableSorter } from '@/config/settings';
 import {
   AutoTooltip,
@@ -8,7 +9,7 @@ import {
 } from '@gpustack/core-ui';
 import { useIntl, useModel } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { Tag } from 'antd';
+import { Space, Tag } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
@@ -197,10 +198,19 @@ const useUsersColumns = ({
         dataIndex: 'operation',
         span: 3,
         render: (text, record) => (
-          <DropdownButtons
-            items={setActions(record)}
-            onSelect={(val) => handleSelect(val, record)}
-          />
+          // Plugin slot for per-row user actions. If no plugin is
+          // registered, `PluginExtraFields` renders nothing and the
+          // cell looks exactly as before.
+          <Space size={4}>
+            <DropdownButtons
+              items={setActions(record)}
+              onSelect={(val) => handleSelect(val, record)}
+            />
+            <PluginExtraFields
+              name="UserRowActions"
+              context={{ user: record }}
+            />
+          </Space>
         )
       }
     ];

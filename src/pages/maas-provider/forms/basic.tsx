@@ -1,3 +1,4 @@
+import PluginExtraFields from '@/components/plugin-extra-fields';
 import { PageAction } from '@/config';
 import {
   Input as CInput,
@@ -57,6 +58,7 @@ const Basic: React.FC<{
           })}
         />
       </Form.Item>
+      <PluginExtraFields name="CreateOrgScopeField" context={{ action }} />
       <Form.Item<FormData>
         name={['config', 'type']}
         rules={[

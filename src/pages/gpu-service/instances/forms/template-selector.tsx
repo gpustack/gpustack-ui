@@ -81,11 +81,9 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
             </div>
             <div className="info">
               <span>
-                <IconFont className="icon" type="icon-storage-outlined" /> 存储:
+                <IconFont className="icon" type="icon-storage-outlined" /> 挂载:
               </span>
-              <span className="value">
-                {item.volume_size_gb ?? '-'} GB {item.volume_mount_path || '-'}
-              </span>
+              <span className="value">{item.volumeMount || '-'}</span>
             </div>
           </TemplateContent>
         </TemplateCard>

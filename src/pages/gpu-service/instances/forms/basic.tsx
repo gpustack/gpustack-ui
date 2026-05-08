@@ -7,7 +7,7 @@ const Basic = () => {
     <>
       <Form.Item<FormData>
         data-field="name"
-        name="name"
+        name={['metadata', 'name']}
         rules={[
           {
             required: true,
@@ -17,7 +17,7 @@ const Basic = () => {
       >
         <CInput.Input label="实例名称" required />
       </Form.Item>
-      <Form.Item<FormData> name="description">
+      <Form.Item<FormData> name={['spec', 'description']}>
         <CInput.TextArea label="描述" scaleSize />
       </Form.Item>
     </>

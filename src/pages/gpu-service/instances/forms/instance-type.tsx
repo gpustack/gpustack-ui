@@ -3,11 +3,12 @@ import {
   Input as CInput,
   InputNumber as CInputNumber
 } from '@gpustack/core-ui';
-import { Flex, Form } from 'antd';
+import { Flex, Form, Tag } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { instanceTypeOptions, InstanceTypeStatusValueMap } from '../config';
-import { FormData } from '../config/types';
+import { InstanceTypePhaseValueMap } from '../config';
+import { FormData, InstanceTypeItem } from '../config/types';
+import useQueryInstanceTypes from '../services/use-query-instance-types';
 import InstanceTypeOverlay from './instance-type-overlay';
 
 const FieldBlock = styled.div`
@@ -16,7 +17,6 @@ const FieldBlock = styled.div`
 
 const SelectedCard = styled.div`
   display: grid;
-  height: 102px;
   grid-template-columns: minmax(0, 1fr) max-content;
   align-items: center;
   gap: 12px;
@@ -38,83 +38,112 @@ const SummaryTitle = styled.div`
 const SummaryMeta = styled.div`
   display: flex;
   flex-direction: column;
-  flex-wrap: wrap;
   gap: 4px;
   color: var(--ant-color-text-secondary);
   font-size: 13px;
 `;
 
 interface InstanceTypePickerProps {
-  value?: number;
-  onChange?: (value: number) => void;
+  value?: string;
+  onChange?: (value: string) => void;
+  dataList: InstanceTypeItem[];
 }
 
 const InstanceTypePicker: React.FC<InstanceTypePickerProps> = ({
   value,
-  onChange
+  onChange,
+  dataList
 }) => {
   const [open, setOpen] = useState(false);
 
   const selected = useMemo(() => {
-    return instanceTypeOptions.find((item) => item.id === value);
-  }, [value]);
+    return dataList.find(
+      (item) => (item.metadata?.name || item.name) === value
+    );
+  }, [value, dataList]);
+
+  const handleChange = (item: InstanceTypeItem) => {
+    onChange?.(item.metadata?.name || item.name);
+  };
 
   return (
     <>
       <SelectedCard>
         <div>
           <SummaryTitle>
-            <Flex gap={16}>
+            <Flex gap={16} align="center">
               <AutoTooltip ghost minWidth={20}>
-                {selected?.name || '请选择实例类型'}
+                {(selected?.metadata?.name || selected?.name) ??
+                  '请选择实例类型'}
               </AutoTooltip>
-              {/* <Tag
-                style={{
-                  fontWeight: 400,
-                  color: 'var(--ant-color-text-tertiary)'
-                }}
-              >
-                库存 {selected?.gpu_count}
-              </Tag> */}
+              {selected && (
+                <Tag
+                  style={{
+                    fontWeight: 400,
+                    color: 'var(--ant-color-text-tertiary)'
+                  }}
+                >
+                  库存 {selected?.status?.accelerator?.remaining ?? '-'}
+                </Tag>
+              )}
             </Flex>
           </SummaryTitle>
           <SummaryMeta>
-            <span>显存 {selected?.vram ?? '-'} GiB</span>
+            <span>显存 {selected?.spec?.memory ?? '-'}</span>
             <Flex gap={16}>
-              <span>内存 {selected?.ram ?? '-'} GiB</span>
-              <span>CPU {selected?.vCPU ?? '-'}</span>
+              <span>内存 {selected?.status?.ram?.capacity ?? '-'}</span>
+              <span>vCPU {selected?.status?.cpu?.capacity ?? '-'}</span>
             </Flex>
           </SummaryMeta>
         </div>
-        {/* <Button onClick={() => setOpen(true)}>更换</Button> */}
       </SelectedCard>
       <InstanceTypeOverlay
         open={open}
         value={value}
+        dataList={dataList}
         onCancel={() => setOpen(false)}
-        onChange={onChange}
+        onChange={handleChange}
       />
     </>
   );
 };
 
 const InstanceTypeFormItem = () => {
-  const form = Form.useFormInstance<FormData>();
-  const instanceTypeId = Form.useWatch('instance_type_id', form);
+  const form = Form.useFormInstance<
+    FormData & { type?: string; gpu_count?: number }
+  >();
+  const typeName = Form.useWatch('type', form) as string | undefined;
 
-  const selectedInstanceType = useMemo(() => {
-    return instanceTypeOptions.find((item) => item.id === instanceTypeId);
-  }, [instanceTypeId]);
-
-  const maxGpuCount = selectedInstanceType?.gpu_count ?? 1;
+  const { detailData, fetchData } = useQueryInstanceTypes();
 
   useEffect(() => {
-    if (!instanceTypeId) {
-      const defaultType = instanceTypeOptions.find(
-        (item) => item.status === InstanceTypeStatusValueMap.Available
+    fetchData({});
+  }, [fetchData]);
+
+  const dataList = detailData?.items || [];
+
+  const selectedInstanceType = useMemo(() => {
+    return dataList.find(
+      (item) => (item.metadata?.name || item.name) === typeName
+    );
+  }, [dataList, typeName]);
+
+  const maxGpuCount = useMemo(() => {
+    const remaining = selectedInstanceType?.status?.accelerator?.remaining;
+    const num = remaining ? Number(remaining) : NaN;
+    return Number.isFinite(num) && num > 0 ? num : 1;
+  }, [selectedInstanceType]);
+
+  useEffect(() => {
+    if (!typeName && dataList.length > 0) {
+      const defaultType = dataList.find(
+        (item) => item.status?.phase === InstanceTypePhaseValueMap.Available
       );
       if (defaultType) {
-        form.setFieldValue('instance_type_id', defaultType.id);
+        form.setFieldValue(
+          'type',
+          defaultType.metadata?.name || defaultType.name
+        );
       }
       return;
     }
@@ -127,17 +156,13 @@ const InstanceTypeFormItem = () => {
     if (currentGpuCount < 1) {
       form.setFieldValue('gpu_count', 1);
     }
-
-    if (selectedInstanceType) {
-      form.setFieldValue('instance_type', selectedInstanceType.name);
-    }
-  }, [form, instanceTypeId, maxGpuCount, selectedInstanceType]);
+  }, [form, typeName, maxGpuCount, dataList]);
 
   return (
     <>
       <FieldBlock data-field="instanceType">
-        <Form.Item<FormData>
-          name="instance_type_id"
+        <Form.Item
+          name="type"
           rules={[
             {
               required: true,
@@ -145,10 +170,10 @@ const InstanceTypeFormItem = () => {
             }
           ]}
         >
-          <InstanceTypePicker />
+          <InstanceTypePicker dataList={dataList} />
         </Form.Item>
       </FieldBlock>
-      <Form.Item<FormData>
+      <Form.Item
         name="gpu_count"
         rules={[
           {
@@ -171,11 +196,11 @@ const InstanceTypeFormItem = () => {
           min={1}
           max={maxGpuCount}
           precision={0}
-          label={`GPU 数量`}
+          label="GPU 数量"
           required
         />
       </Form.Item>
-      <Form.Item<FormData> name="instance_type" hidden>
+      <Form.Item name="type_display" hidden>
         <CInput.Input />
       </Form.Item>
     </>
@@ -183,12 +208,16 @@ const InstanceTypeFormItem = () => {
 };
 
 export const useSelectedInstanceType = () => {
-  const form = Form.useFormInstance<FormData>();
-  const instanceTypeId = Form.useWatch('instance_type_id', form);
+  const form = Form.useFormInstance<FormData & { type?: string }>();
+  const typeName = Form.useWatch('type', form) as string | undefined;
+  const { detailData } = useQueryInstanceTypes();
+  const dataList = detailData?.items || [];
 
   return useMemo(() => {
-    return instanceTypeOptions.find((item) => item.id === instanceTypeId);
-  }, [instanceTypeId]);
+    return dataList.find(
+      (item) => (item.metadata?.name || item.name) === typeName
+    );
+  }, [dataList, typeName]);
 };
 
 export default InstanceTypeFormItem;

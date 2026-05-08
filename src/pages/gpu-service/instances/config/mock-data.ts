@@ -1,58 +1,94 @@
 import { InstanceStatusValueMap } from '.';
 import { ListItem } from './types';
 
-export const mockInstanceData: ListItem[] = [
+export const mockInstanceData: (ListItem & { cluster_id: number })[] = [
   {
     id: 1,
-    name: 'cuda-dev-01',
-    instance_type: 'NVIDIA L4 Small',
-    instance_type_id: 1,
-    template_id: 1,
-    image: 'nvidia/cuda:12.4.1-devel-ubuntu22.04',
-    gpu_count: 1,
-    replicas: 1,
-    storage_mode: 'existing',
-    storage_id: 1,
     cluster_id: 1,
+    metadata: {
+      name: 'cuda-dev-01',
+      namespace: 'default'
+    },
+    spec: {
+      type: 'nvidia-l4-small',
+      image: 'nvidia/cuda:12.4.1-devel-ubuntu22.04',
+      displayName: 'CUDA Dev 01',
+      command: ['/bin/bash'],
+      ports: [{ protocol: 'tcp', port: 22 }],
+      env: [],
+      volumeMount: '/workspace',
+      resources: {
+        cpu: '4',
+        ram: '16Gi',
+        accelerator: '1'
+      },
+      description: 'CUDA development workspace',
+      volume: {
+        persistent: { name: 'local-nvme-cache' }
+      },
+      sshPublicKey: { name: 'default' }
+    },
     status: InstanceStatusValueMap.Ready,
-    endpoint: 'https://cuda-dev-01.example.com',
-    description: 'CUDA development workspace',
     created_at: '2026-04-01T10:00:00Z',
     updated_at: '2026-04-10T10:00:00Z'
   },
   {
     id: 2,
-    name: 'training-job-a100',
-    instance_type: 'NVIDIA A100 Training',
-    instance_type_id: 2,
-    template_id: 2,
-    image: 'pytorch/pytorch:2.5.1-cuda12.4-cudnn9-devel',
-    gpu_count: 4,
-    replicas: 1,
-    storage_mode: 'existing',
-    storage_id: 2,
     cluster_id: 1,
+    metadata: {
+      name: 'training-job-a100',
+      namespace: 'default'
+    },
+    spec: {
+      type: 'nvidia-a100-training',
+      image: 'pytorch/pytorch:2.5.1-cuda12.4-cudnn9-devel',
+      displayName: 'Training A100',
+      command: ['python', 'train.py'],
+      ports: [],
+      env: [{ name: 'PYTHONUNBUFFERED', value: '1' }],
+      volumeMount: '/data',
+      resources: {
+        cpu: '32',
+        ram: '128Gi',
+        accelerator: '4'
+      },
+      description: 'PyTorch training environment',
+      volume: {
+        persistent: { name: 'shared-model-store' }
+      },
+      sshPublicKey: { name: '' }
+    },
     status: InstanceStatusValueMap.Pending,
-    endpoint: 'https://training-job-a100.example.com',
-    description: 'PyTorch training environment',
     created_at: '2026-04-02T10:00:00Z',
     updated_at: '2026-04-11T10:00:00Z'
   },
   {
     id: 3,
-    name: 'inference-vllm',
-    instance_type: 'NVIDIA H100 Inference',
-    instance_type_id: 3,
-    template_id: 6,
-    image: 'vllm/vllm-openai:latest',
-    gpu_count: 2,
-    replicas: 2,
-    storage_mode: 'temporary',
-    local_storage_size_gb: 100,
     cluster_id: 1,
+    metadata: {
+      name: 'inference-vllm',
+      namespace: 'default'
+    },
+    spec: {
+      type: 'nvidia-h100-inference',
+      image: 'vllm/vllm-openai:latest',
+      displayName: 'Inference vLLM',
+      command: ['python', '-m', 'vllm.entrypoints.openai.api_server'],
+      ports: [{ protocol: 'tcp', port: 8080 }],
+      env: [{ name: 'VLLM_WORKER_MULTIPROC_METHOD', value: 'spawn' }],
+      volumeMount: '/models',
+      resources: {
+        cpu: '16',
+        ram: '64Gi',
+        accelerator: '2'
+      },
+      description: 'OpenAI-compatible inference service',
+      volume: {
+        ephemeral: { capacity: '100Gi' }
+      },
+      sshPublicKey: { name: '' }
+    },
     status: InstanceStatusValueMap.Error,
-    endpoint: 'http://inference-vllm.example.com',
-    description: 'OpenAI-compatible inference service',
     created_at: '2026-04-03T10:00:00Z',
     updated_at: '2026-04-12T10:00:00Z'
   }

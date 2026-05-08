@@ -1,6 +1,5 @@
 import { request } from '@umijs/max';
-import { mockInstanceData } from '../config/mock-data';
-import { FormData, InstanceTypeItem, ListItem } from '../config/types';
+import { InstanceTypeItem, ListItem } from '../config/types';
 
 export const GPU_SERVICE_INSTANCES_API = (namespace: string) =>
   `/proxy/apis/worker.gpustack.ai/v1/namespaces/${namespace}/instances`;
@@ -12,59 +11,62 @@ export async function queryGPUServiceInstances(
   params: Global.K8sSearchParams,
   options?: any
 ) {
-  // return request<Global.PageResponse<ListItem>>(GPU_SERVICE_INSTANCES_API, {
-  //   method: 'GET',
-  //   params,
-  //   cancelToken: options?.token
-  // });
-  const page = params.page || 1;
-  const perPage = params.perPage || 10;
-  const search = params.search?.toLowerCase();
-  const clusterId = params.cluster_id;
-  const filteredData = mockInstanceData.filter((item) => {
-    const matchSearch = search
-      ? item.name.toLowerCase().includes(search)
-      : true;
-    const matchCluster = clusterId ? item.cluster_id === clusterId : true;
-    return matchSearch && matchCluster;
-  });
-  const start = (page - 1) * perPage;
-  const items = filteredData.slice(start, start + perPage);
-
-  return {
-    items,
-    pagination: {
-      total: filteredData.length,
-      totalPage: Math.ceil(filteredData.length / perPage),
-      page,
-      perPage
+  return request<Global.K8sPageResponse<ListItem>>(
+    GPU_SERVICE_INSTANCES_API(params.namespace || ''),
+    {
+      method: 'GET',
+      params,
+      cancelToken: options?.token
     }
-  } as Global.K8sPageResponse<ListItem>;
+  );
 }
 
-export async function createGPUServiceInstance(params: { data: FormData }) {
-  // return request<ListItem>(GPU_SERVICE_INSTANCES_API, {
-  //   method: 'POST',
-  //   data: params.data
-  // });
-  return true;
-}
-
-export async function updateGPUServiceInstance(params: {
-  id: number;
-  data: FormData;
-}) {
-  // return request<ListItem>(`${GPU_SERVICE_INSTANCES_API}/${params.id}`, {
-  //   method: 'PUT',
-  //   data: params.data
-  // });
-  return true;
-}
-
-export async function deleteGPUServiceInstance(id: number) {
-  return request(`${GPU_SERVICE_INSTANCES_API}/${id}`, {
-    method: 'DELETE'
+export async function createGPUServiceInstance(
+  params: {
+    namespace: string;
+    data: Global.K8sCommonData;
+  },
+  option?: any
+) {
+  return request<ListItem>(GPU_SERVICE_INSTANCES_API(params.namespace), {
+    method: 'POST',
+    data: params.data,
+    cancelToken: option?.token
   });
+}
+
+export async function updateGPUServiceInstance(
+  params: {
+    namespace: string;
+    id: number;
+    data: Global.K8sCommonData;
+  },
+  option?: any
+) {
+  return request<ListItem>(
+    `${GPU_SERVICE_INSTANCES_API(params.namespace)}/${params.id}`,
+    {
+      method: 'PUT',
+      data: params.data,
+      cancelToken: option?.token
+    }
+  );
+}
+
+export async function deleteGPUServiceInstance(
+  params: {
+    namespace: string;
+    id: number;
+  },
+  option?: any
+) {
+  return request(
+    `${GPU_SERVICE_INSTANCES_API(params.namespace)}/${params.id}`,
+    {
+      method: 'DELETE',
+      cancelToken: option?.token
+    }
+  );
 }
 
 // =========== Instance Types ===========

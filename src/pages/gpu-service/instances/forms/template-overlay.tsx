@@ -36,13 +36,9 @@ const TemplateOverlay: React.FC<TemplateOverlayProps> = ({
     }
 
     return mockTemplateData.filter((item) => {
-      return [
-        item.name,
-        item.image,
-        item.vendor,
-        item.volume_mount_path,
-        String(item.volume_size_gb ?? '')
-      ].some((text) => (text || '').toLowerCase().includes(currentKeyword));
+      return [item.name, item.image, item.volumeMount].some((text) =>
+        (text || '').toLowerCase().includes(currentKeyword)
+      );
     });
   }, [keyword]);
 
@@ -73,7 +69,7 @@ const TemplateOverlay: React.FC<TemplateOverlayProps> = ({
           <Input
             allowClear
             prefix={<SearchOutlined className="text-tertiary" />}
-            placeholder="搜索模板名称、镜像、厂商或挂载路径"
+            placeholder="搜索模板名称、镜像或挂载路径"
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
           />

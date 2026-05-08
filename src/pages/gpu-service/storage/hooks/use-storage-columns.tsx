@@ -1,15 +1,9 @@
 import { tableSorter } from '@/config/settings';
-import { AutoTooltip, DropdownButtons, StatusTag } from '@gpustack/core-ui';
+import { AutoTooltip, DropdownButtons } from '@gpustack/core-ui';
 import type { ColumnsType } from 'antd/lib/table';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
-import {
-  rowActionList,
-  status,
-  StorageStatusLabelMap,
-  StorageStatusValueMap,
-  StorageTypeLabelMap
-} from '../config';
+import { rowActionList, StorageTypeLabelMap } from '../config';
 import { ListItem } from '../config/types';
 
 interface ColumnsHookProps {
@@ -25,7 +19,7 @@ const useStorageColumns = ({
     return [
       {
         title: '名称',
-        dataIndex: 'name',
+        dataIndex: ['metadata', 'name'],
         key: 'name',
         sorter: tableSorter(1),
         ellipsis: {
@@ -39,48 +33,25 @@ const useStorageColumns = ({
       },
       {
         title: '类型',
-        dataIndex: 'type',
+        dataIndex: ['spec', 'type'],
         key: 'type',
         sorter: tableSorter(2),
         render: (value: string) => StorageTypeLabelMap[value] || value || '-'
       },
       {
-        title: '状态',
-        dataIndex: 'status',
-        key: 'status',
+        title: '容量',
+        dataIndex: ['spec', 'capacity'],
+        key: 'capacity',
         sorter: tableSorter(3),
-        render: (statusValue: string) => {
-          const value = statusValue || StorageStatusValueMap.Available;
-          return (
-            <StatusTag
-              statusValue={{
-                status: status[value],
-                text: StorageStatusLabelMap[value] || value
-              }}
-            />
-          );
-        }
+        render: (value: string) => value ?? '-'
       },
       {
-        title: '容量 (GB)',
-        dataIndex: 'capacity_gb',
-        key: 'capacity_gb',
+        title: '访问模式',
+        dataIndex: ['spec', 'accessMode'],
+        key: 'accessMode',
         sorter: tableSorter(4),
-        render: (value: number) => value ?? '-'
+        render: (value: string) => value || '-'
       },
-      // {
-      //   title: '挂载路径',
-      //   dataIndex: 'mount_path',
-      //   key: 'mount_path',
-      //   ellipsis: {
-      //     showTitle: false
-      //   },
-      //   render: (text: string) => (
-      //     <AutoTooltip ghost minWidth={20}>
-      //       {text || '-'}
-      //     </AutoTooltip>
-      //   )
-      // },
       {
         title: '创建时间',
         dataIndex: 'created_at',

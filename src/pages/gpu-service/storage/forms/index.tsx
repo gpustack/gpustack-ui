@@ -2,7 +2,7 @@ import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { Form } from 'antd';
 import { forwardRef, useEffect, useImperativeHandle } from 'react';
-import { StorageStatusValueMap } from '../config';
+import { AccessModeValueMap, StorageTypeValueMap } from '../config';
 import { FormData, ListItem } from '../config/types';
 import Basic from './basic';
 
@@ -11,12 +11,19 @@ interface StorageFormProps {
   open: boolean;
   action: PageActionType;
   currentData?: ListItem | null;
+  namespace?: string;
   onFinish: (values: FormData) => Promise<void>;
 }
 
 const GPUServiceStorageForm: React.FC<StorageFormProps> = forwardRef(
   (props, ref) => {
-    const { action, currentData, open, onFinish } = props;
+    const {
+      action,
+      currentData,
+      open,
+      namespace = 'default',
+      onFinish
+    } = props;
     const [form] = Form.useForm<FormData>();
 
     useEffect(() => {
@@ -27,24 +34,30 @@ const GPUServiceStorageForm: React.FC<StorageFormProps> = forwardRef(
 
       if (action === PageAction.EDIT && currentData) {
         form.setFieldsValue({
-          name: currentData.name,
-          description: currentData.description,
-          type: currentData.type,
-          capacity_gb: currentData.capacity_gb,
-          mount_path: currentData.mount_path,
-          access_modes: currentData.access_modes,
-          parameters: currentData.parameters,
-          status: currentData.status
+          metadata: {
+            name: currentData.metadata?.name,
+            namespace: currentData.metadata?.namespace
+          },
+          spec: {
+            accessMode: currentData.spec?.accessMode,
+            capacity: currentData.spec?.capacity,
+            type: currentData.spec?.type
+          }
         });
         return;
       }
 
       form.setFieldsValue({
-        type: '默认存储',
-        parameters: {},
-        status: StorageStatusValueMap.Available
+        metadata: {
+          namespace
+        },
+        spec: {
+          accessMode:
+            AccessModeValueMap.ReadWriteOnce as FormData['spec']['accessMode'],
+          type: StorageTypeValueMap.Local
+        }
       });
-    }, [action, currentData, form, open]);
+    }, [action, currentData, form, open, namespace]);
 
     useImperativeHandle(ref, () => ({
       submit: () => {

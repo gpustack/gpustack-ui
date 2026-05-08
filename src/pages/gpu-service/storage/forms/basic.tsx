@@ -1,24 +1,13 @@
-import {
-  Input as CInput,
-  InputNumber as CInputNumber,
-  Select as SealSelect
-} from '@gpustack/core-ui';
+import { Input as CInput, Select as SealSelect } from '@gpustack/core-ui';
 import { Form } from 'antd';
-import { StorageAccessModeOptions } from '../config';
+import { AccessModeOptions, StorageTypeOptions } from '../config';
 import { FormData } from '../config/types';
 
 const Basic = () => {
-  const form = Form.useFormInstance<FormData>();
-  const parameters = Form.useWatch('parameters', form);
-
-  const handleParametersChange = (value: Record<string, any>) => {
-    form.setFieldValue('parameters', value);
-  };
-
   return (
     <>
       <Form.Item<FormData>
-        name="name"
+        name={['metadata', 'name']}
         rules={[
           {
             required: true,
@@ -31,7 +20,7 @@ const Basic = () => {
       <div style={{ display: 'flex', gap: 16 }}>
         <div style={{ flex: 1 }}>
           <Form.Item<FormData>
-            name="type"
+            name={['spec', 'type']}
             rules={[
               {
                 required: true,
@@ -39,12 +28,16 @@ const Basic = () => {
               }
             ]}
           >
-            <SealSelect label="存储类型" required options={[]}></SealSelect>
+            <SealSelect
+              label="存储类型"
+              required
+              options={StorageTypeOptions}
+            ></SealSelect>
           </Form.Item>
         </div>
         <div style={{ flex: 1 }}>
           <Form.Item<FormData>
-            name="capacity_gb"
+            name={['spec', 'capacity']}
             rules={[
               {
                 required: true,
@@ -52,27 +45,24 @@ const Basic = () => {
               }
             ]}
           >
-            <CInputNumber min={1} precision={0} label="容量 (GB)" required />
+            <CInput.Input label="容量" required placeholder="例如：10Gi" />
           </Form.Item>
         </div>
       </div>
-      <Form.Item<FormData> name="access_modes">
+      <Form.Item<FormData>
+        name={['spec', 'accessMode']}
+        rules={[
+          {
+            required: true,
+            message: '请选择访问模式'
+          }
+        ]}
+      >
         <SealSelect
           label="存储卷访问方式"
-          allowClear
-          options={StorageAccessModeOptions}
+          required
+          options={AccessModeOptions}
         ></SealSelect>
-      </Form.Item>
-      {/* <Form.Item<FormData> name="parameters">
-        <LabelSelector
-          label="存储卷配置参数"
-          labels={parameters || {}}
-          btnText="添加参数"
-          onChange={handleParametersChange}
-        />
-      </Form.Item> */}
-      <Form.Item<FormData> name="description">
-        <CInput.TextArea label="描述" scaleSize />
       </Form.Item>
     </>
   );

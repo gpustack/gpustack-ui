@@ -6,7 +6,6 @@ import styled from 'styled-components';
 import PageBox from '../_components/page-box';
 import Appearance from './components/appearance';
 import ModifyPasswordn from './components/modify-password';
-import PublicKey from './components/public-key';
 
 const Wrapper = styled.div`
   .ant-page-header-heading {
@@ -28,11 +27,6 @@ const Profile: React.FC = () => {
     if (initialState?.currentUser?.source !== 'Local') {
       return [
         {
-          key: 'public-key',
-          label: 'SSH Public Key',
-          children: <PublicKey />
-        },
-        {
           key: 'appearance',
           label: intl.formatMessage({ id: 'common.appearance' }),
           children: <Appearance />
@@ -44,11 +38,6 @@ const Profile: React.FC = () => {
         key: 'modify-password',
         label: intl.formatMessage({ id: 'users.form.updatepassword' }),
         children: <ModifyPasswordn />
-      },
-      {
-        key: 'public-key',
-        label: 'SSH 公钥',
-        children: <PublicKey />
       },
       {
         key: 'appearance',

@@ -1,11 +1,15 @@
 import { request } from '@umijs/max';
 import { mockInstanceData } from '../config/mock-data';
-import { FormData, ListItem } from '../config/types';
+import { FormData, InstanceTypeItem, ListItem } from '../config/types';
 
-export const GPU_SERVICE_INSTANCES_API = '/gpu-service-instances';
+export const GPU_SERVICE_INSTANCES_API = (namespace: string) =>
+  `/proxy/apis/worker.gpustack.ai/v1/namespaces/${namespace}/instances`;
+
+export const GPU_SERVICE_INSTANCES_TYPE_API =
+  '/proxy/apis/worker.gpustack.ai/v1/instancetypes';
 
 export async function queryGPUServiceInstances(
-  params: Global.SearchParams,
+  params: Global.K8sSearchParams,
   options?: any
 ) {
   // return request<Global.PageResponse<ListItem>>(GPU_SERVICE_INSTANCES_API, {
@@ -35,7 +39,7 @@ export async function queryGPUServiceInstances(
       page,
       perPage
     }
-  } as Global.PageResponse<ListItem>;
+  } as Global.K8sPageResponse<ListItem>;
 }
 
 export async function createGPUServiceInstance(params: { data: FormData }) {
@@ -61,4 +65,36 @@ export async function deleteGPUServiceInstance(id: number) {
   return request(`${GPU_SERVICE_INSTANCES_API}/${id}`, {
     method: 'DELETE'
   });
+}
+
+// =========== Instance Types ===========
+
+export async function queryGPUServiceInstanceTypes(
+  params: Global.K8sSearchParams,
+  options?: any
+) {
+  return request<Global.K8sPageResponse<InstanceTypeItem>>(
+    GPU_SERVICE_INSTANCES_TYPE_API,
+    {
+      method: 'GET',
+      params,
+      cancelToken: options?.token
+    }
+  );
+}
+
+export async function queryGPUServiceInstanceTypeItems(
+  params: {
+    name: string;
+  },
+  options?: any
+) {
+  return request<InstanceTypeItem>(
+    `${GPU_SERVICE_INSTANCES_TYPE_API}/${params.name}`,
+    {
+      method: 'GET',
+      params,
+      cancelToken: options?.token
+    }
+  );
 }

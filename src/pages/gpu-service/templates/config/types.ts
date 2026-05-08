@@ -1,26 +1,32 @@
 export interface PortItem {
   protocol: 'udp' | 'tcp';
-  value?: number;
+  port: number;
+}
+
+export interface EnvItem {
+  name: string;
+  value: string;
 }
 
 export interface FormData {
-  name: string;
-  image?: string;
-  vendor?: string;
-  image_pull_policy?: string;
-  run_command?: string;
-  boot_disk_size_gb?: number;
-  volume_size_gb?: number;
-  volume_mount_path?: string;
-  ports?: PortItem[];
-  env?: Record<string, any>;
+  image: string;
+  imagePullPolicy: string;
+  imagePullSecret: {
+    name: string;
+  };
+  command: string[];
+  privileged: boolean;
+  ports: PortItem[];
+  env: EnvItem[];
+  volumeMount: string;
+  resources: {
+    cpu: string;
+    ram: string;
+  };
 }
 
 export interface ListItem extends FormData {
   id: number;
-  description?: string;
-  gpu_count?: number;
-  replicas?: number;
   status?: string;
   created_at?: string;
   updated_at?: string;

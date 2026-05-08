@@ -11,7 +11,7 @@ import { FormData } from '../config/types';
 import Ports from './ports';
 
 interface BasicProps {
-  page: 'template' | 'instance';
+  page?: 'template' | 'instance';
 }
 
 const Basic: React.FC<BasicProps> = ({ page = 'template' }) => {

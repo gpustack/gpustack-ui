@@ -16,6 +16,43 @@ declare namespace Global {
     };
   }
 
+  interface K8sPageResponse<T> {
+    apiVersion: string;
+    items: T[];
+    kind: string;
+    metadata: {
+      continue?: string;
+      resourceVersion: string;
+      selfLink?: string;
+      [key: string]: any;
+    };
+  }
+
+  interface K8sCommonData {
+    kind: string;
+    apiVersion: string;
+    metadata: {
+      name: string;
+      namespace: string;
+      [key: string]: any;
+    };
+    [key: string]: any;
+  }
+
+  interface K8sSearchParams {
+    allowWatchBookmarks?: boolean;
+    continue?: string;
+    fieldSelector?: string;
+    labelSelector?: string;
+    limit?: number;
+    resourceVersion?: string;
+    resourceVersionMatch?: string;
+    sendInitialEvents?: boolean;
+    timeoutSeconds?: number;
+    watch?: boolean;
+    [key: string]: any;
+  }
+
   interface UserInfo {
     username: string;
     is_admin: boolean;
@@ -24,6 +61,7 @@ declare namespace Global {
     id: number;
     source: string;
     avatar_url: string;
+    org_name?: string;
   }
   type EmptyObject = Record<never, never>;
 

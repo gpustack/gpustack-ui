@@ -1,7 +1,6 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import {
-  CheckboxField,
   Input as CInput,
   CollapsePanel,
   IconFont,
@@ -18,9 +17,10 @@ import {
   useMemo,
   useRef
 } from 'react';
+import useGetSshkey from '../../public-keys/services/use-get-sshkey';
 import { DefaultImagePullPolicy } from '../../templates/config';
 import TemplateBasicForm from '../../templates/forms/basic';
-import { DEFAULT_SSH_PUBLIC_KEY_NAME, StorageModeValueMap } from '../config';
+import { DEFAULT_SSH_PUBLIC_KEY_NAME } from '../config';
 import { FormData, InstancePort, ListItem } from '../config/types';
 import Basic from './basic';
 import InstanceTypeFormItem from './instance-type';
@@ -29,10 +29,6 @@ import StorageVolume from './storage-volume';
 const SSH_PORT = 22;
 
 type InstanceFormValues = FormData & {
-  // storage holders
-  storage_mode?: string;
-  storage_name?: string;
-  local_storage_size_gb?: number;
   // ssh holder
   enable_ssh?: boolean;
 };
@@ -68,7 +64,7 @@ const requiredFields = {
   },
   [TABKeysMap.STORAGE]: {
     sort: 4,
-    fields: ['storage_mode', 'storage_name', 'local_storage_size_gb']
+    fields: ['volume']
   }
 };
 
@@ -83,6 +79,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
     } = props;
     const [form] = Form.useForm<InstanceFormValues>();
     const scrollTabsRef = useRef<any>(null);
+    const { detailData, fetchData } = useGetSshkey();
     const { getScrollElementScrollableHeight } = useWrapperContext();
     const {
       activeKey,
@@ -98,6 +95,14 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
         TABKeysMap.STORAGE
       ]
     });
+
+    useEffect(() => {
+      if (open) {
+        fetchData({}).then((res) => {
+          form?.setFieldValue(['spec', 'sshPublicKey', 'name'], res.name);
+        });
+      }
+    }, [open]);
 
     const segmentOptions = useMemo(
       () => [
@@ -153,14 +158,6 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       }
 
       if (action === PageAction.EDIT && currentData) {
-        const persistentName = currentData.spec?.volume?.persistent?.name;
-        const ephemeralCapacity = currentData.spec?.volume?.ephemeral?.capacity;
-        const isExisting = !!persistentName;
-        const isTemporary = !!ephemeralCapacity;
-        const localSizeGb = ephemeralCapacity
-          ? Number(String(ephemeralCapacity).replace(/Gi$/i, '')) || undefined
-          : undefined;
-
         form.setFieldsValue({
           metadata: {
             name: currentData.metadata?.name,
@@ -171,39 +168,10 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
             imagePullPolicy:
               currentData.spec?.imagePullPolicy || DefaultImagePullPolicy
           },
-          storage_mode: isExisting
-            ? StorageModeValueMap.Existing
-            : isTemporary
-              ? StorageModeValueMap.Temporary
-              : StorageModeValueMap.Existing,
-          storage_name: persistentName,
-          local_storage_size_gb: localSizeGb,
           enable_ssh: !!currentData.spec?.sshPublicKey?.name
         });
         return;
       }
-
-      form.setFieldsValue({
-        metadata: {
-          namespace
-        },
-        spec: {
-          description: '',
-          displayName: '',
-          image: '',
-          imagePullPolicy: DefaultImagePullPolicy,
-          command: [],
-          ports: [],
-          env: [],
-          volumeMount: '',
-          resources: {
-            accelerator: '1'
-          }
-        } as Partial<FormData['spec']> as FormData['spec'],
-        storage_mode: StorageModeValueMap.Existing,
-        local_storage_size_gb: 50,
-        enable_ssh: false
-      });
     }, [action, currentData, form, open, namespace]);
 
     const buildPayload = (values: InstanceFormValues): FormData => {
@@ -222,19 +190,6 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
           accelerator: acceleratorStr
         }
       } as FormData['spec'];
-
-      // Storage volume mapping
-      if (values.storage_mode === StorageModeValueMap.Existing) {
-        spec.volume = { persistent: { name: values.storage_name || '' } };
-      } else if (values.storage_mode === StorageModeValueMap.Temporary) {
-        spec.volume = {
-          ephemeral: {
-            capacity: values.local_storage_size_gb
-              ? `${values.local_storage_size_gb}Gi`
-              : ''
-          }
-        };
-      }
 
       // SSH public key — include only when checkbox is checked AND port 22 is in ports
       const portsList = (values.spec?.ports || []) as InstancePort[];
@@ -268,7 +223,8 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       },
       setFieldsValue: (values: Partial<InstanceFormValues>) => {
         form.setFieldsValue(values as any);
-      }
+      },
+      getFieldsValue: () => form.getFieldsValue()
     }));
 
     return (
@@ -290,6 +246,26 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
           onFinish={handleFinish}
           onFinishFailed={handleOnFinishFailed}
           preserve={false}
+          initialValues={{
+            spec: {
+              description: '',
+              displayName: '',
+              image: '',
+              imagePullPolicy: DefaultImagePullPolicy,
+              command: [],
+              ports: [],
+              env: [],
+              volumeMount: '',
+              resources: {
+                accelerator: '1'
+              },
+              volume: { persistent: { name: '' } },
+              sshPublicKey: {
+                name: 'gpustack-organization-ssh-public-key'
+              }
+            },
+            enable_ssh: false
+          }}
         >
           <Basic />
           <CollapsePanel
@@ -318,17 +294,10 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
             ]}
           />
           {hasSshPort && (
-            <Form.Item
-              name="enable_ssh"
-              valuePropName="checked"
-              style={{ marginBottom: 8 }}
-            >
-              <CheckboxField label="SSH Terminal Access" />
+            <Form.Item<FormData> hidden name={['spec', 'sshPublicKey', 'name']}>
+              <CInput.Input />
             </Form.Item>
           )}
-          <Form.Item<FormData> hidden name={['spec', 'sshPublicKey', 'name']}>
-            <CInput.Input />
-          </Form.Item>
         </Form>
       </ScrollSpyTabs>
     );

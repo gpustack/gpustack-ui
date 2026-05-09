@@ -50,23 +50,24 @@ const Basic: React.FC<BasicProps> = ({ page = 'template' }) => {
               required
             />
           </Form.Item>
+          <Form.Item<FormData>
+            name="manufacturer"
+            rules={[
+              {
+                required: true,
+                message: getRuleMessage('select', 'resources.table.vendor')
+              }
+            ]}
+          >
+            <SealSelect
+              label={intl.formatMessage({ id: 'resources.table.vendor' })}
+              required
+              options={[...manufacturerOptions, { label: 'CPU', value: 'cpu' }]}
+            />
+          </Form.Item>
         </>
       )}
-      <Form.Item<FormData>
-        name="manufacturer"
-        rules={[
-          {
-            required: true,
-            message: getRuleMessage('select', 'resources.table.vendor')
-          }
-        ]}
-      >
-        <SealSelect
-          label={intl.formatMessage({ id: 'resources.table.vendor' })}
-          required
-          options={[...manufacturerOptions, { label: 'CPU', value: 'cpu' }]}
-        />
-      </Form.Item>
+
       <Form.Item<FormData>
         name={['spec', 'image']}
         rules={[
@@ -112,7 +113,9 @@ const Basic: React.FC<BasicProps> = ({ page = 'template' }) => {
         <div style={{ flex: 1 }}>
           <Form.Item<FormData> name={['spec', 'volumeMount']}>
             <CInput.Input
-              label={intl.formatMessage({ id: 'gpuservice.template.mountPath' })}
+              label={intl.formatMessage({
+                id: 'gpuservice.template.mountPath'
+              })}
               placeholder={intl.formatMessage({
                 id: 'clusters.volume.mountPath.format'
               })}

@@ -1,8 +1,4 @@
-import {
-  AutoTooltip,
-  Input as CInput,
-  InputNumber as CInputNumber
-} from '@gpustack/core-ui';
+import { AutoTooltip, InputNumber as CInputNumber } from '@gpustack/core-ui';
 import { Flex, Form, Tag } from 'antd';
 import { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
@@ -44,19 +40,15 @@ const SummaryMeta = styled.div`
 
 interface InstanceTypePickerProps {
   value?: string;
-  onChange?: (value: string) => void;
   dataList: InstanceTypeItem[];
 }
 
 const InstanceTypePicker: React.FC<InstanceTypePickerProps> = ({
   value,
-  onChange,
   dataList
 }) => {
   const selected = useMemo(() => {
-    return dataList.find(
-      (item) => (item.metadata?.name || item.name) === value
-    );
+    return dataList.find((item) => (item.metadata?.name || '') === value);
   }, [value, dataList]);
 
   return (
@@ -66,10 +58,9 @@ const InstanceTypePicker: React.FC<InstanceTypePickerProps> = ({
           <SummaryTitle>
             <Flex gap={16} align="center">
               <AutoTooltip ghost minWidth={20}>
-                {(selected?.metadata?.name || selected?.name) ??
-                  '请选择实例类型'}
+                {selected?.metadata?.name || '-'}
               </AutoTooltip>
-              {selected && (
+              {selected && selected.spec?.acceleratable && (
                 <Tag
                   style={{
                     fontWeight: 400,
@@ -82,7 +73,9 @@ const InstanceTypePicker: React.FC<InstanceTypePickerProps> = ({
             </Flex>
           </SummaryTitle>
           <SummaryMeta>
-            <span>显存 {selected?.spec?.memory ?? '-'}</span>
+            {selected?.spec?.acceleratable && (
+              <span>显存 {selected?.spec?.memory ?? '-'}</span>
+            )}
             <Flex gap={16}>
               <span>内存 {selected?.status?.ram?.capacity ?? '-'}</span>
               <span>vCPU {selected?.status?.cpu?.capacity ?? '-'}</span>
@@ -95,8 +88,8 @@ const InstanceTypePicker: React.FC<InstanceTypePickerProps> = ({
 };
 
 const InstanceTypeFormItem = () => {
-  const form = Form.useFormInstance<FormData & { type?: string }>();
-  const typeName = Form.useWatch('type', form) as string | undefined;
+  const form = Form.useFormInstance<FormData>();
+  const typeName = Form.useWatch(['spec', 'type'], form) as string | undefined;
 
   const { detailData, fetchData } = useQueryInstanceTypes();
 
@@ -107,9 +100,7 @@ const InstanceTypeFormItem = () => {
   const dataList = detailData?.items || [];
 
   const selectedInstanceType = useMemo(() => {
-    return dataList.find(
-      (item) => (item.metadata?.name || item.name) === typeName
-    );
+    return dataList.find((item) => (item.metadata?.name || '') === typeName);
   }, [dataList, typeName]);
 
   const maxGpuCount = useMemo(() => {
@@ -121,13 +112,10 @@ const InstanceTypeFormItem = () => {
   useEffect(() => {
     if (!typeName && dataList.length > 0) {
       const defaultType = dataList.find(
-        (item) => item.status?.phase === InstanceTypePhaseValueMap.Available
+        (item) => item.status?.phase === InstanceTypePhaseValueMap.Active
       );
       if (defaultType) {
-        form.setFieldValue(
-          'type',
-          defaultType.metadata?.name || defaultType.name
-        );
+        form.setFieldValue(['spec', 'type'], defaultType.metadata?.name || '');
       }
       return;
     }
@@ -147,7 +135,7 @@ const InstanceTypeFormItem = () => {
     <>
       <FieldBlock data-field="instanceType">
         <Form.Item
-          name="type"
+          name={['spec', 'type']}
           rules={[
             {
               required: true,
@@ -155,54 +143,40 @@ const InstanceTypeFormItem = () => {
             }
           ]}
         >
-          <InstanceTypePicker dataList={dataList} />
+          <InstanceTypePicker dataList={dataList} value={typeName} />
         </Form.Item>
       </FieldBlock>
-      <Form.Item
-        name={['spec', 'resources', 'accelerator']}
-        rules={[
-          {
-            required: true,
-            message: '请输入 GPU 数量'
-          },
-          {
-            validator: (_, value) => {
-              if (value > maxGpuCount) {
-                return Promise.reject(
-                  new Error(`当前实例类型最多支持 ${maxGpuCount} 个 GPU`)
-                );
+      {selectedInstanceType?.spec?.acceleratable && (
+        <Form.Item
+          name={['spec', 'resources', 'accelerator']}
+          rules={[
+            {
+              required: true,
+              message: '请输入 GPU 数量'
+            },
+            {
+              validator: (_, value) => {
+                if (value > maxGpuCount) {
+                  return Promise.reject(
+                    new Error(`当前实例类型最多支持 ${maxGpuCount} 个 GPU`)
+                  );
+                }
+                return Promise.resolve();
               }
-              return Promise.resolve();
             }
-          }
-        ]}
-      >
-        <CInputNumber
-          min={1}
-          max={maxGpuCount}
-          precision={0}
-          label="GPU 数量"
-          required
-        />
-      </Form.Item>
-      <Form.Item name="type_display" hidden>
-        <CInput.Input />
-      </Form.Item>
+          ]}
+        >
+          <CInputNumber
+            min={1}
+            max={maxGpuCount}
+            precision={0}
+            label="GPU 数量"
+            required
+          />
+        </Form.Item>
+      )}
     </>
   );
-};
-
-export const useSelectedInstanceType = () => {
-  const form = Form.useFormInstance<FormData & { type?: string }>();
-  const typeName = Form.useWatch('type', form) as string | undefined;
-  const { detailData } = useQueryInstanceTypes();
-  const dataList = detailData?.items || [];
-
-  return useMemo(() => {
-    return dataList.find(
-      (item) => (item.metadata?.name || item.name) === typeName
-    );
-  }, [dataList, typeName]);
 };
 
 export default InstanceTypeFormItem;

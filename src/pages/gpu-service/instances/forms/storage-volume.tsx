@@ -1,44 +1,48 @@
 import { useModel } from '@@/plugin-model';
 import { InputNumber as CInputNumber, Select } from '@gpustack/core-ui';
-import { Button, Flex, Form, message, Radio } from 'antd';
+import { Button, Flex, Form, Radio } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { FormData as StorageFormData } from '../../storage/config/types';
 import useCreateStorage from '../../storage/services/use-create-storage';
 import useQueryStorage from '../../storage/services/use-query-storage';
 import { StorageModeValueMap } from '../config';
-import { FormData } from '../config/types';
+import { FormData, InstanceVolume } from '../config/types';
 import StorageOverlay from './storage-overlay';
 
 const FieldBlock = styled.div`
   margin-bottom: 24px;
 `;
 
-type StorageHolderFields = {
-  storage_mode?: string;
-  storage_name?: string;
-  local_storage_size_gb?: number;
-};
+const DEFAULT_TEMP_CAPACITY_GB = 50;
 
 const StorageVolume = () => {
   const { initialState } = useModel('@@initialState');
-  const namespace = initialState?.currentUser?.org_name || 'default';
+  const { fetchData: createStorage } = useCreateStorage();
+  const { detailData: storageData, fetchData: fetchStorage } =
+    useQueryStorage();
+  const [overlayOpen, setOverlayOpen] = useState(false);
+  const [storageMode, setStorageMode] = useState<string>(
+    StorageModeValueMap.Existing
+  );
 
-  const form = Form.useFormInstance<FormData & StorageHolderFields>();
-  const storageMode = Form.useWatch('storage_mode', form) as string | undefined;
-  const storageName = Form.useWatch('storage_name', form) as string | undefined;
-  const localSize = Form.useWatch('local_storage_size_gb', form) as
-    | number
+  const form = Form.useFormInstance<FormData>();
+  const volume = Form.useWatch(['spec', 'volume'], form) as
+    | InstanceVolume
     | undefined;
 
-  const [overlayOpen, setOverlayOpen] = useState(false);
-
-  const { fetchData: createStorage } = useCreateStorage();
-  const { detailData: storageData, fetchData: fetchStorage } = useQueryStorage();
+  const namespace = initialState?.currentUser?.org_name || 'default';
 
   useEffect(() => {
     fetchStorage({});
-  }, [fetchStorage]);
+  }, []);
+
+  // const storageMode = useMemo(() => {
+  //   if (volume?.ephemeral && !volume?.persistent) {
+  //     return StorageModeValueMap.Temporary;
+  //   }
+  //   return StorageModeValueMap.Existing;
+  // }, [volume?.ephemeral, volume?.persistent]);
 
   const storageOptions = useMemo(
     () =>
@@ -49,29 +53,28 @@ const StorageVolume = () => {
     [storageData]
   );
 
-  useEffect(() => {
-    if (storageMode === StorageModeValueMap.Existing) {
+  const handleModeChange = (mode: string) => {
+    console.log('selected storage mode', mode);
+    if (mode === StorageModeValueMap.Existing) {
+      form.setFieldValue(['spec', 'volume'], { persistent: { name: '' } });
+    } else {
       form.setFieldValue(['spec', 'volume'], {
-        persistent: { name: storageName || '' }
-      });
-    } else if (storageMode === StorageModeValueMap.Temporary) {
-      form.setFieldValue(['spec', 'volume'], {
-        ephemeral: {
-          capacity: localSize ? `${localSize}Gi` : ''
-        }
+        ephemeral: { capacity: `${DEFAULT_TEMP_CAPACITY_GB}Gi` }
       });
     }
-  }, [form, storageMode, storageName, localSize]);
+    setStorageMode(mode);
+  };
 
   const handleCreateStorage = async (values: StorageFormData) => {
     try {
       await createStorage({ data: values });
       await fetchStorage({});
-      form.setFieldValue('storage_name', values.metadata.name);
+      form.setFieldValue(['spec', 'volume'], {
+        persistent: { name: values.metadata.name }
+      });
       setOverlayOpen(false);
-      message.success('操作成功');
     } catch (error) {
-      message.error('操作失败');
+      // ignore
     }
   };
 
@@ -84,23 +87,15 @@ const StorageVolume = () => {
           marginBottom: 6
         }}
       >
-        <Form.Item
-          name="storage_mode"
+        <Radio.Group
           style={{ marginBottom: 12 }}
-          rules={[
-            {
-              required: true,
-              message: '请选择存储卷'
-            }
+          value={storageMode}
+          onChange={(e) => handleModeChange(e.target.value)}
+          options={[
+            { label: '持久存储', value: StorageModeValueMap.Existing },
+            { label: '临时存储', value: StorageModeValueMap.Temporary }
           ]}
-        >
-          <Radio.Group
-            options={[
-              { label: '持久存储', value: StorageModeValueMap.Existing },
-              { label: '临时存储', value: StorageModeValueMap.Temporary }
-            ]}
-          />
-        </Form.Item>
+        />
         <Button
           type="link"
           size="small"
@@ -113,7 +108,7 @@ const StorageVolume = () => {
 
       {storageMode === StorageModeValueMap.Existing && (
         <Form.Item
-          name="storage_name"
+          name={['spec', 'volume', 'persistent', 'name']}
           rules={[
             {
               required: true,
@@ -127,7 +122,13 @@ const StorageVolume = () => {
 
       {storageMode === StorageModeValueMap.Temporary && (
         <Form.Item
-          name="local_storage_size_gb"
+          name={['spec', 'volume', 'ephemeral', 'capacity']}
+          getValueProps={(val) => ({
+            value: val
+              ? Number(String(val).replace(/Gi$/i, '')) || undefined
+              : undefined
+          })}
+          normalize={(val) => (val ? `${val}Gi` : '')}
           rules={[
             {
               required: true,

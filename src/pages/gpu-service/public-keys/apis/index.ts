@@ -3,10 +3,7 @@ import { FormData, ListItem } from '../types';
 
 export const GPU_SERVICE_PUBLIC_KEY_API = '/gpu-instance-ssh-public-keys/data';
 
-export async function queryGPUServicePublicKeys(
-  params: Global.SearchParams,
-  options?: any
-) {
+export async function queryGPUServicePublicKeys(params: {}, options?: any) {
   return request<ListItem>(GPU_SERVICE_PUBLIC_KEY_API, {
     method: 'GET',
     params,

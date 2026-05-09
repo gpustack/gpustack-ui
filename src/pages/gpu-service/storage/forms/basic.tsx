@@ -1,9 +1,24 @@
-import { Input as CInput, Select as SealSelect } from '@gpustack/core-ui';
-import { Form } from 'antd';
-import { AccessModeOptions, StorageTypeOptions } from '../config';
+import {
+  Input as CInput,
+  InputNumber,
+  Select as SealSelect,
+  useAppUtils
+} from '@gpustack/core-ui';
+import { Flex, Form } from 'antd';
+import { useEffect } from 'react';
 import { FormData } from '../config/types';
+import useQueryStorageClass from '../services/use-query-storage-class';
 
-const Basic = () => {
+const Basic = ({ open }: { open: boolean }) => {
+  const { getRuleMessage } = useAppUtils();
+  const { storageClassList, fetchData, loading } = useQueryStorageClass();
+
+  useEffect(() => {
+    if (open) {
+      fetchData({});
+    }
+  }, [open]);
+
   return (
     <>
       <Form.Item<FormData>
@@ -11,59 +26,49 @@ const Basic = () => {
         rules={[
           {
             required: true,
-            message: '请输入存储名称'
+            message: getRuleMessage('input', '名称')
           }
         ]}
       >
         <CInput.Input label="名称" required />
       </Form.Item>
-      <div style={{ display: 'flex', gap: 16 }}>
+      <Flex gap={16}>
         <div style={{ flex: 1 }}>
           <Form.Item<FormData>
             name={['spec', 'type']}
             rules={[
               {
                 required: true,
-                message: '请选择存储类型'
+                message: getRuleMessage('select', '存储类型')
               }
             ]}
           >
             <SealSelect
               label="存储类型"
               required
-              options={StorageTypeOptions}
-            ></SealSelect>
+              loading={loading}
+              options={storageClassList}
+            />
           </Form.Item>
         </div>
         <div style={{ flex: 1 }}>
           <Form.Item<FormData>
             name={['spec', 'capacity']}
+            normalize={(value) => (value ? `${value}Gi` : undefined)}
+            getValueProps={(value) => ({
+              value: value ? String(value).replace(/Gi$/, '') : ''
+            })}
             rules={[
               {
                 required: true,
-                message: '请输入容量'
+                message: getRuleMessage('input', '容量')
               }
             ]}
           >
-            <CInput.Input label="容量" required placeholder="例如：10Gi" />
+            <InputNumber label="容量" required />
           </Form.Item>
         </div>
-      </div>
-      <Form.Item<FormData>
-        name={['spec', 'accessMode']}
-        rules={[
-          {
-            required: true,
-            message: '请选择访问模式'
-          }
-        ]}
-      >
-        <SealSelect
-          label="存储卷访问方式"
-          required
-          options={AccessModeOptions}
-        ></SealSelect>
-      </Form.Item>
+      </Flex>
     </>
   );
 };

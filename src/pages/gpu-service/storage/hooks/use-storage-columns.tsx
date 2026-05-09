@@ -54,8 +54,8 @@ const useStorageColumns = ({
       },
       {
         title: '创建时间',
-        dataIndex: 'created_at',
-        key: 'created_at',
+        dataIndex: ['metadata', 'creationTimestamp'],
+        key: 'creationTimestamp',
         sorter: tableSorter(5),
         ellipsis: {
           showTitle: false

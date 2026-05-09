@@ -2,7 +2,6 @@ import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { Form } from 'antd';
 import { forwardRef, useEffect, useImperativeHandle } from 'react';
-import { AccessModeValueMap, StorageTypeValueMap } from '../config';
 import { FormData, ListItem } from '../config/types';
 import Basic from './basic';
 
@@ -39,25 +38,12 @@ const GPUServiceStorageForm: React.FC<StorageFormProps> = forwardRef(
             namespace: currentData.metadata?.namespace
           },
           spec: {
-            accessMode: currentData.spec?.accessMode,
             capacity: currentData.spec?.capacity,
             type: currentData.spec?.type
           }
         });
-        return;
       }
-
-      form.setFieldsValue({
-        metadata: {
-          namespace
-        },
-        spec: {
-          accessMode:
-            AccessModeValueMap.ReadWriteOnce as FormData['spec']['accessMode'],
-          type: StorageTypeValueMap.Local
-        }
-      });
-    }, [action, currentData, form, open, namespace]);
+    }, [action, currentData, form, open]);
 
     useImperativeHandle(ref, () => ({
       submit: () => {
@@ -74,8 +60,9 @@ const GPUServiceStorageForm: React.FC<StorageFormProps> = forwardRef(
         form={form}
         onFinish={onFinish}
         preserve={false}
+        initialValues={{}}
       >
-        <Basic />
+        <Basic open={open} />
       </Form>
     );
   }

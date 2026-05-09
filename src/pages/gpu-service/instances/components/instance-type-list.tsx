@@ -1,7 +1,11 @@
-import { AutoTooltip, TemplateCard } from '@gpustack/core-ui';
+import { AutoTooltip, StatusTag, TemplateCard } from '@gpustack/core-ui';
 import { Flex, Tag } from 'antd';
 import styled from 'styled-components';
-import { InstanceTypePhaseValueMap } from '../config';
+import {
+  InstanceTypePhaseLabelMap,
+  InstanceTypePhaseStatus,
+  InstanceTypePhaseValueMap
+} from '../config';
 import { InstanceTypeItem } from '../config/types';
 
 const TypeGrid = styled.div`
@@ -44,7 +48,7 @@ interface InstanceTypeListProps {
 }
 
 const isAvailable = (item: InstanceTypeItem) =>
-  item.status?.phase === InstanceTypePhaseValueMap.Available;
+  item.status?.phase === InstanceTypePhaseValueMap.Active;
 
 const InstanceTypeList: React.FC<InstanceTypeListProps> = ({
   value,
@@ -60,35 +64,60 @@ const InstanceTypeList: React.FC<InstanceTypeListProps> = ({
     <TypeGrid>
       {dataList.map((item) => {
         const disabled = !isAvailable(item);
-        const name = item.metadata?.name || item.name;
+        const name = item.metadata?.name;
         return (
           <TemplateCard
             key={name}
             clickable
             ghost
             hoverable
-            height={104}
+            height={106}
             active={value === name}
             disabled={disabled}
             onClick={() => handleSelect(item)}
           >
             <TypeName>
-              <Flex gap={16}>
+              <Flex gap={8} align="center">
                 <AutoTooltip ghost minWidth={20}>
                   {name}
                 </AutoTooltip>
               </Flex>
-              <Tag
-                style={{
-                  fontWeight: 400,
-                  color: 'var(--ant-color-text-tertiary)'
-                }}
-              >
-                <span>库存 {item.status?.accelerator?.remaining ?? '-'}</span>
-              </Tag>
+              <Flex gap={8} align="center">
+                {item.status?.phase && (
+                  <StatusTag
+                    statusValue={{
+                      status:
+                        InstanceTypePhaseStatus[item.status.phase] ??
+                        'inactive',
+                      text:
+                        InstanceTypePhaseLabelMap[item.status.phase] ??
+                        item.status.phase,
+                      message: ''
+                    }}
+                  />
+                )}
+                {item.spec?.acceleratable && (
+                  <Tag
+                    style={{
+                      fontWeight: 400,
+                      color: 'var(--ant-color-text-tertiary)'
+                    }}
+                  >
+                    <span>
+                      库存 {item.status?.accelerator?.remaining ?? '-'}
+                    </span>
+                  </Tag>
+                )}
+              </Flex>
             </TypeName>
             <TypeMeta>
-              <span className="meta-row">显存 {item.spec?.memory ?? '-'}</span>
+              <span style={{ display: 'flex', height: 15 }}>
+                {item.spec?.acceleratable && (
+                  <span className="meta-row">
+                    显存 {item.spec?.memory ?? '-'}
+                  </span>
+                )}
+              </span>
               <span className="meta-row gap-16">
                 <span>内存 {item.status?.ram?.capacity ?? '-'}</span>
                 <span>vCPU {item.status?.cpu?.capacity ?? '-'}</span>

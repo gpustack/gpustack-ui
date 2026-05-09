@@ -50,5 +50,8 @@ export default {
   'noresult.instances.title': '暂无实例',
   'noresult.instances.subTitle':
     '当前没有运行中的模型实例，部署模型后将自动创建。',
-  'noresult.instances.nofound': '未找到匹配的实例'
+  'noresult.instances.nofound': '未找到匹配的实例',
+  'noresult.gpuservice.template.title': '暂无实例模板',
+  'noresult.gpuservice.template.subTitle': '创建一个实例模板后会显示在这里',
+  'noresult.gpuservice.template.nofound': '未找到匹配的实例模板'
 };

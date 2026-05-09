@@ -29,7 +29,7 @@ export const GPUsConfigs: Record<
   { label: string; value: string; runtime: string; driver: string }
 > = {
   [GPUDriverMap.NVIDIA]: {
-    label: 'Nvidia', // this label is used in echo command, do not translate
+    label: 'NVIDIA', // this label is used in echo command, do not translate
     value: GPUDriverMap.NVIDIA,
     runtime: 'nvidia',
     driver: 'nvidia-smi'

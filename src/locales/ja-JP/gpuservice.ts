@@ -1,0 +1,33 @@
+export default {
+  'gpuservice.template': 'GPU インスタンステンプレート',
+  'gpuservice.template.add': 'インスタンステンプレートを追加',
+  'gpuservice.template.edit': 'インスタンステンプレートを編集',
+  'gpuservice.template.filter.name': '名前でフィルター',
+  'gpuservice.template.filter.vendor': 'ベンダーでフィルター',
+  'gpuservice.template.image': 'コンテナイメージ',
+  'gpuservice.template.imagePullPolicy': 'イメージ取得ポリシー',
+  'gpuservice.template.imagePullPolicy.always': '常に取得',
+  'gpuservice.template.imagePullPolicy.ifNotPresent': '存在しない場合に取得',
+  'gpuservice.template.imagePullPolicy.never': '取得しない',
+  'gpuservice.template.command': 'コンテナ起動コマンド',
+  'gpuservice.template.command.placeholder':
+    '1行に1つの引数、例：\n/bin/bash\n-c\nyour command',
+  'gpuservice.template.mountPath': 'マウントパス',
+  'gpuservice.template.containerDisk': 'コンテナディスク (Gi)',
+  'gpuservice.template.memory': 'メモリ (Gi)',
+  'gpuservice.template.ports': 'ポート',
+  'gpuservice.template.ports.add': 'ポートを追加',
+  'gpuservice.template.ports.invalid': 'ポート設定を完成させてください。',
+  'gpuservice.template.env': '環境変数',
+  'gpuservice.template.env.add': '環境変数を追加',
+  'gpuservice.template.env.invalid': '環境変数を完成させてください。',
+  'gpuservice.template.env.name': '名前',
+  'gpuservice.template.env.value': '値',
+  'gpuservice.template.card.image': 'イメージ',
+  'gpuservice.template.card.mount': 'マウント',
+  'gpuservice.template.card.resources': 'リソース',
+  'gpuservice.template.card.ports': 'ポート',
+  'gpuservice.publicKey.label': 'SSH 公開鍵',
+  'gpuservice.publicKey.placeholder':
+    'ssh-rsa または ssh-ed25519 で始まり、各公開鍵は1行ずつ記述します\n\n公開鍵を確認：\n- RSA\ncat ~/.ssh/id_rsa.pub\n- Ed25519\ncat ~/.ssh/id_ed25519.pub'
+};

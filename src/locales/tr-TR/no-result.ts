@@ -54,7 +54,11 @@ export default {
   'noresult.instances.title': 'No instances',
   'noresult.instances.subTitle':
     'There are no running model instances. Deploy a model to create one automatically.',
-  'noresult.instances.nofound': 'No matching instances found.'
+  'noresult.instances.nofound': 'No matching instances found.',
+  'noresult.gpuservice.template.title': 'Örnek Şablonu Yok',
+  'noresult.gpuservice.template.subTitle':
+    'Bir örnek şablonu oluşturduğunuzda burada görünecek.',
+  'noresult.gpuservice.template.nofound': 'Eşleşen örnek şablonu bulunamadı.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

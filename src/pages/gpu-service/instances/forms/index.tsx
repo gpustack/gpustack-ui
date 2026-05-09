@@ -18,15 +18,10 @@ import {
   useMemo,
   useRef
 } from 'react';
-import { mockStorageData } from '../../storage/config/mock-data';
-import { mockTemplateData } from '../../templates/config/mock-data';
-import {
-  EnvItem as TemplateEnvItem,
-  PortItem as TemplatePortItem
-} from '../../templates/config/types';
+import { DefaultImagePullPolicy } from '../../templates/config';
 import TemplateBasicForm from '../../templates/forms/basic';
 import { DEFAULT_SSH_PUBLIC_KEY_NAME, StorageModeValueMap } from '../config';
-import { FormData, ListItem } from '../config/types';
+import { FormData, InstancePort, ListItem } from '../config/types';
 import Basic from './basic';
 import InstanceTypeFormItem from './instance-type';
 import StorageVolume from './storage-volume';
@@ -34,16 +29,6 @@ import StorageVolume from './storage-volume';
 const SSH_PORT = 22;
 
 type InstanceFormValues = FormData & {
-  // instance-type holders
-  type?: string;
-  gpu_count?: number;
-  // template holders (mirrored into spec.* on submit)
-  image?: string;
-  command?: string[];
-  ports?: TemplatePortItem[];
-  env?: TemplateEnvItem[];
-  volumeMount?: string;
-  resources?: { cpu?: string; ram?: string };
   // storage holders
   storage_mode?: string;
   storage_name?: string;
@@ -75,7 +60,7 @@ const requiredFields = {
   },
   [TABKeysMap.INSTANCE_TYPE]: {
     sort: 2,
-    fields: ['type', 'gpu_count']
+    fields: ['type']
   },
   [TABKeysMap.TEMPLATE]: {
     sort: 3,
@@ -144,7 +129,8 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       []
     );
 
-    const ports = (Form.useWatch('ports', form) || []) as TemplatePortItem[];
+    const ports = (Form.useWatch(['spec', 'ports'], form) ||
+      []) as InstancePort[];
     const hasSshPort = useMemo(
       () => ports.some((p) => Number(p?.port) === SSH_PORT),
       [ports]
@@ -180,20 +166,10 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
             name: currentData.metadata?.name,
             namespace: currentData.metadata?.namespace
           },
-          spec: { ...currentData.spec },
-          type: currentData.spec?.type,
-          gpu_count: currentData.spec?.resources?.accelerator
-            ? Number(currentData.spec.resources.accelerator) || 1
-            : 1,
-          // template holders mirrored from spec.*
-          image: currentData.spec?.image,
-          command: currentData.spec?.command || [],
-          ports: (currentData.spec?.ports || []) as TemplatePortItem[],
-          env: (currentData.spec?.env || []) as TemplateEnvItem[],
-          volumeMount: currentData.spec?.volumeMount,
-          resources: {
-            cpu: currentData.spec?.resources?.cpu,
-            ram: currentData.spec?.resources?.ram
+          spec: {
+            ...currentData.spec,
+            imagePullPolicy:
+              currentData.spec?.imagePullPolicy || DefaultImagePullPolicy
           },
           storage_mode: isExisting
             ? StorageModeValueMap.Existing
@@ -207,53 +183,42 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
         return;
       }
 
-      const defaultTemplate = mockTemplateData[0];
-      const defaultStorage = mockStorageData[0];
-
       form.setFieldsValue({
         metadata: {
           namespace
         },
         spec: {
           description: '',
-          displayName: ''
-        } as FormData['spec'],
-        gpu_count: 1,
-        // template holders seeded from default template
-        image: defaultTemplate?.image || '',
-        command: defaultTemplate?.command || [],
-        ports: (defaultTemplate?.ports || []) as TemplatePortItem[],
-        env: (defaultTemplate?.env || []) as TemplateEnvItem[],
-        volumeMount: defaultTemplate?.volumeMount || '',
-        resources: {
-          cpu: defaultTemplate?.resources?.cpu,
-          ram: defaultTemplate?.resources?.ram
-        },
+          displayName: '',
+          image: '',
+          imagePullPolicy: DefaultImagePullPolicy,
+          command: [],
+          ports: [],
+          env: [],
+          volumeMount: '',
+          resources: {
+            accelerator: '1'
+          }
+        } as Partial<FormData['spec']> as FormData['spec'],
         storage_mode: StorageModeValueMap.Existing,
-        storage_name: defaultStorage?.metadata?.name,
         local_storage_size_gb: 50,
         enable_ssh: false
       });
     }, [action, currentData, form, open, namespace]);
 
     const buildPayload = (values: InstanceFormValues): FormData => {
-      const acceleratorStr = values.gpu_count
-        ? String(values.gpu_count)
-        : undefined;
+      const acceleratorVal = values.spec?.resources?.accelerator;
+      const acceleratorStr =
+        acceleratorVal !== undefined &&
+        acceleratorVal !== null &&
+        (acceleratorVal as unknown) !== ''
+          ? String(acceleratorVal)
+          : undefined;
 
       const spec: FormData['spec'] = {
         ...values.spec,
-        type: values.type || values.spec?.type,
-        image: values.image ?? values.spec?.image,
-        command: values.command ?? values.spec?.command,
-        ports: (values.ports ??
-          values.spec?.ports) as FormData['spec']['ports'],
-        env: (values.env ?? values.spec?.env) as FormData['spec']['env'],
-        volumeMount: values.volumeMount ?? values.spec?.volumeMount,
         resources: {
           ...values.spec?.resources,
-          cpu: values.resources?.cpu ?? values.spec?.resources?.cpu,
-          ram: values.resources?.ram ?? values.spec?.resources?.ram,
           accelerator: acceleratorStr
         }
       } as FormData['spec'];
@@ -272,7 +237,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       }
 
       // SSH public key — include only when checkbox is checked AND port 22 is in ports
-      const portsList = (values.ports || []) as TemplatePortItem[];
+      const portsList = (values.spec?.ports || []) as InstancePort[];
       const has22 = portsList.some((p) => Number(p?.port) === SSH_PORT);
       if (values.enable_ssh && has22) {
         spec.sshPublicKey = { name: DEFAULT_SSH_PUBLIC_KEY_NAME };
@@ -300,6 +265,9 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       },
       resetFields: () => {
         form.resetFields();
+      },
+      setFieldsValue: (values: Partial<InstanceFormValues>) => {
+        form.setFieldsValue(values as any);
       }
     }));
 

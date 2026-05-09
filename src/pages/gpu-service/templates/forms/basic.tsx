@@ -1,5 +1,16 @@
-import { Input as CInput, Textarea } from '@gpustack/core-ui';
-import { Form } from 'antd';
+import {
+  Input as CInput,
+  InputNumber,
+  Select as SealSelect,
+  Textarea,
+  useAppUtils
+} from '@gpustack/core-ui';
+import { useIntl } from '@umijs/max';
+import { Flex, Form } from 'antd';
+import _ from 'lodash';
+import { useMemo } from 'react';
+import { GPUsConfigs } from '../../../resources/config/gpu-driver';
+import { ImagePullPolicyOptions } from '../config';
 import { FormData } from '../config/types';
 import Env from './env';
 import Ports from './ports';
@@ -9,72 +20,146 @@ interface BasicProps {
 }
 
 const Basic: React.FC<BasicProps> = ({ page = 'template' }) => {
-  const form = Form.useFormInstance<FormData>();
+  const { getRuleMessage } = useAppUtils();
+  const intl = useIntl();
 
-  const handleCommandChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const value = e.target.value;
-    const list = value
-      .split('\n')
-      .map((line) => line.trim())
-      .filter((line) => line.length > 0);
-    form.setFieldValue('command', list);
-  };
-
-  const command = Form.useWatch('command', form);
-  const commandText = Array.isArray(command) ? command.join('\n') : '';
+  const manufacturerOptions = useMemo(
+    () =>
+      Object.values(GPUsConfigs).map((item) => ({
+        label: item.label,
+        value: item.value
+      })),
+    []
+  );
 
   return (
     <>
       {page === 'template' && (
-        <Form.Item<FormData>
-          name="name"
-          rules={[
-            {
-              required: true,
-              message: '请输入模板名称'
-            }
-          ]}
-        >
-          <CInput.Input label="名称" required />
-        </Form.Item>
+        <>
+          <Form.Item<FormData>
+            name="name"
+            rules={[
+              {
+                required: true,
+                message: getRuleMessage('input', 'common.table.name')
+              }
+            ]}
+          >
+            <CInput.Input
+              label={intl.formatMessage({ id: 'common.table.name' })}
+              required
+            />
+          </Form.Item>
+        </>
       )}
       <Form.Item<FormData>
-        name="image"
+        name="manufacturer"
         rules={[
           {
             required: true,
-            message: '请输入容器镜像'
+            message: getRuleMessage('select', 'resources.table.vendor')
           }
         ]}
       >
-        <CInput.Input label="容器镜像" required />
+        <SealSelect
+          label={intl.formatMessage({ id: 'resources.table.vendor' })}
+          required
+          options={[...manufacturerOptions, { label: 'CPU', value: 'cpu' }]}
+        />
       </Form.Item>
-      <Form.Item>
+      <Form.Item<FormData>
+        name={['spec', 'image']}
+        rules={[
+          {
+            required: true,
+            message: getRuleMessage('input', 'gpuservice.template.image')
+          }
+        ]}
+      >
+        <CInput.Input
+          label={intl.formatMessage({ id: 'gpuservice.template.image' })}
+          required
+        />
+      </Form.Item>
+      <Form.Item<FormData> name={['spec', 'imagePullPolicy']}>
+        <SealSelect
+          label={intl.formatMessage({
+            id: 'gpuservice.template.imagePullPolicy'
+          })}
+          options={ImagePullPolicyOptions.map((item) => ({
+            label: intl.formatMessage({ id: item.label }),
+            value: item.value
+          }))}
+        />
+      </Form.Item>
+      <Form.Item<FormData>
+        name={['spec', 'command']}
+        normalize={(value: string) => _.split(value, '\n').map(_.trim)}
+        getValueProps={(value) => ({ value: _.join(value, '\n') })}
+      >
         <Textarea
-          label="容器启动命令"
-          placeholder={'每行一个参数，例如：\n/bin/bash\n-c\nyour command'}
+          label={intl.formatMessage({ id: 'gpuservice.template.command' })}
+          placeholder={intl.formatMessage({
+            id: 'gpuservice.template.command.placeholder'
+          })}
           trim={false}
           alwaysFocus
           scaleSize
-          value={commandText}
-          onChange={handleCommandChange}
         />
       </Form.Item>
-      <Form.Item<FormData> name="volumeMount">
-        <CInput.Input label="挂载路径" placeholder="例如：/workspace" />
-      </Form.Item>
-      <div style={{ display: 'flex', gap: 16 }}>
+
+      <Flex gap={16}>
         <div style={{ flex: 1 }}>
-          <Form.Item<FormData> name={['resources', 'cpu']}>
-            <CInput.Input label="CPU" placeholder="例如：4" />
+          <Form.Item<FormData> name={['spec', 'volumeMount']}>
+            <CInput.Input
+              label={intl.formatMessage({ id: 'gpuservice.template.mountPath' })}
+              placeholder={intl.formatMessage({
+                id: 'clusters.volume.mountPath.format'
+              })}
+            />
           </Form.Item>
         </div>
         <div style={{ flex: 1 }}>
-          <Form.Item<FormData> name={['resources', 'ram']}>
-            <CInput.Input label="内存" placeholder="例如：8Gi" />
+          <Form.Item<FormData>
+            name={['spec', 'resources', 'localStorage']}
+            normalize={(value) => (value ? `${value}Gi` : undefined)}
+            getValueProps={(value) => ({
+              value: value ? String(value).replace(/Gi$/, '') : ''
+            })}
+          >
+            <InputNumber
+              label={intl.formatMessage({
+                id: 'gpuservice.template.containerDisk'
+              })}
+            />
           </Form.Item>
         </div>
-      </div>
+      </Flex>
+      <Flex gap={16}>
+        <div style={{ flex: 1 }}>
+          <Form.Item<FormData>
+            name={['spec', 'resources', 'cpu']}
+            normalize={(value) => (value ? `${value}` : '')}
+            getValueProps={(value) => ({ value: value ? String(value) : '' })}
+          >
+            <InputNumber label="CPU" />
+          </Form.Item>
+        </div>
+        <div style={{ flex: 1 }}>
+          <Form.Item<FormData>
+            name={['spec', 'resources', 'ram']}
+            normalize={(value) => (value ? `${value}Gi` : undefined)}
+            getValueProps={(value) => ({
+              value: value ? String(value).replace(/Gi$/, '') : ''
+            })}
+          >
+            <InputNumber
+              label={intl.formatMessage({ id: 'gpuservice.template.memory' })}
+            />
+          </Form.Item>
+        </div>
+      </Flex>
+
       <Ports />
       <Env />
     </>

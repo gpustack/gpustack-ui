@@ -1,0 +1,33 @@
+export default {
+  'gpuservice.template': 'GPU 实例模板',
+  'gpuservice.template.add': '添加实例模板',
+  'gpuservice.template.edit': '编辑实例模板',
+  'gpuservice.template.filter.name': '按名称过滤',
+  'gpuservice.template.filter.vendor': '按厂商过滤',
+  'gpuservice.template.image': '镜像',
+  'gpuservice.template.imagePullPolicy': '镜像拉取策略',
+  'gpuservice.template.imagePullPolicy.always': '总是拉取',
+  'gpuservice.template.imagePullPolicy.ifNotPresent': '不存在时拉取',
+  'gpuservice.template.imagePullPolicy.never': '从不拉取',
+  'gpuservice.template.command': '容器启动命令',
+  'gpuservice.template.command.placeholder':
+    '每行一个参数，例如：\n/bin/bash\n-c\nyour command',
+  'gpuservice.template.mountPath': '挂载路径',
+  'gpuservice.template.containerDisk': '容器磁盘(Gi)',
+  'gpuservice.template.memory': '内存(Gi)',
+  'gpuservice.template.ports': '端口',
+  'gpuservice.template.ports.add': '添加端口',
+  'gpuservice.template.ports.invalid': '请填写完整的端口配置',
+  'gpuservice.template.env': '环境变量',
+  'gpuservice.template.env.add': '添加环境变量',
+  'gpuservice.template.env.invalid': '请填写完整的环境变量',
+  'gpuservice.template.env.name': '名称',
+  'gpuservice.template.env.value': '值',
+  'gpuservice.template.card.image': '镜像',
+  'gpuservice.template.card.mount': '挂载',
+  'gpuservice.template.card.resources': '资源',
+  'gpuservice.template.card.ports': '端口',
+  'gpuservice.publicKey.label': 'SSH 公钥',
+  'gpuservice.publicKey.placeholder':
+    '以 ssh-rsa 或 ssh-ed25519 开头，每个 Public Key 单独一行\n\n查看 Public Key：\n- RSA\ncat ~/.ssh/id_rsa.pub\n- Ed25519\ncat ~/.ssh/id_ed25519.pub'
+};

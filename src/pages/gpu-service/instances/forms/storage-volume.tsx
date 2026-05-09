@@ -1,10 +1,14 @@
+import { useModel } from '@@/plugin-model';
 import { InputNumber as CInputNumber, Select } from '@gpustack/core-ui';
-import { Button, Flex, Form, Radio } from 'antd';
-import { useEffect } from 'react';
+import { Button, Flex, Form, message, Radio } from 'antd';
+import { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { mockStorageData } from '../../storage/config/mock-data';
+import { FormData as StorageFormData } from '../../storage/config/types';
+import useCreateStorage from '../../storage/services/use-create-storage';
+import useQueryStorage from '../../storage/services/use-query-storage';
 import { StorageModeValueMap } from '../config';
 import { FormData } from '../config/types';
+import StorageOverlay from './storage-overlay';
 
 const FieldBlock = styled.div`
   margin-bottom: 24px;
@@ -17,12 +21,33 @@ type StorageHolderFields = {
 };
 
 const StorageVolume = () => {
+  const { initialState } = useModel('@@initialState');
+  const namespace = initialState?.currentUser?.org_name || 'default';
+
   const form = Form.useFormInstance<FormData & StorageHolderFields>();
   const storageMode = Form.useWatch('storage_mode', form) as string | undefined;
   const storageName = Form.useWatch('storage_name', form) as string | undefined;
   const localSize = Form.useWatch('local_storage_size_gb', form) as
     | number
     | undefined;
+
+  const [overlayOpen, setOverlayOpen] = useState(false);
+
+  const { fetchData: createStorage } = useCreateStorage();
+  const { detailData: storageData, fetchData: fetchStorage } = useQueryStorage();
+
+  useEffect(() => {
+    fetchStorage({});
+  }, [fetchStorage]);
+
+  const storageOptions = useMemo(
+    () =>
+      (storageData?.items || []).map((item) => ({
+        label: `${item.metadata?.name} / ${item.spec?.capacity ?? '-'}`,
+        value: item.metadata?.name
+      })),
+    [storageData]
+  );
 
   useEffect(() => {
     if (storageMode === StorageModeValueMap.Existing) {
@@ -37,6 +62,18 @@ const StorageVolume = () => {
       });
     }
   }, [form, storageMode, storageName, localSize]);
+
+  const handleCreateStorage = async (values: StorageFormData) => {
+    try {
+      await createStorage({ data: values });
+      await fetchStorage({});
+      form.setFieldValue('storage_name', values.metadata.name);
+      setOverlayOpen(false);
+      message.success('操作成功');
+    } catch (error) {
+      message.error('操作失败');
+    }
+  };
 
   return (
     <FieldBlock data-field="storage">
@@ -64,7 +101,12 @@ const StorageVolume = () => {
             ]}
           />
         </Form.Item>
-        <Button type="link" size="small" style={{ marginBottom: 6 }}>
+        <Button
+          type="link"
+          size="small"
+          style={{ marginBottom: 6 }}
+          onClick={() => setOverlayOpen(true)}
+        >
           添加存储
         </Button>
       </Flex>
@@ -79,14 +121,7 @@ const StorageVolume = () => {
             }
           ]}
         >
-          <Select
-            label="持久卷"
-            required
-            options={mockStorageData.map((item) => ({
-              label: `${item.metadata?.name} / ${item.spec?.capacity ?? '-'}`,
-              value: item.metadata?.name
-            }))}
-          />
+          <Select label="持久卷" required options={storageOptions} />
         </Form.Item>
       )}
 
@@ -103,6 +138,13 @@ const StorageVolume = () => {
           <CInputNumber min={1} precision={0} label="存储容量 (GB)" required />
         </Form.Item>
       )}
+
+      <StorageOverlay
+        open={overlayOpen}
+        namespace={namespace}
+        onCancel={() => setOverlayOpen(false)}
+        onSubmit={handleCreateStorage}
+      />
     </FieldBlock>
   );
 };

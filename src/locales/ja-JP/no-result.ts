@@ -52,5 +52,10 @@ export default {
   'noresult.instances.title': 'No instances',
   'noresult.instances.subTitle':
     'There are no running model instances. Deploy a model to create one automatically.',
-  'noresult.instances.nofound': 'No matching instances found.'
+  'noresult.instances.nofound': 'No matching instances found.',
+  'noresult.gpuservice.template.title': 'インスタンステンプレートなし',
+  'noresult.gpuservice.template.subTitle':
+    'インスタンステンプレートを作成すると、ここに表示されます。',
+  'noresult.gpuservice.template.nofound':
+    '一致するインスタンステンプレートが見つかりません。'
 };

@@ -1,34 +1,17 @@
-import { useModel } from '@@/plugin-model';
 import { useQueryData } from '@gpustack/core-ui';
 import { useCallback } from 'react';
-import { apiVersion, KindMapping } from '../../constants';
 import { createGPUServicePublicKey } from '../apis';
-import { ListItem } from '../types';
+import { FormData, ListItem } from '../types';
 
 interface CreateSshkeyParams {
-  name: string;
-  data: string;
+  data: FormData;
 }
 
 export default function useCreateSshkey() {
-  const { initialState } = useModel('@@initialState');
-  const namespace = initialState?.currentUser?.org_name || 'default';
-
   const fetchDetail = useCallback(
     (params: CreateSshkeyParams) =>
-      createGPUServicePublicKey({
-        namespace,
-        data: {
-          apiVersion,
-          kind: KindMapping.sshPublicKey,
-          metadata: {
-            name: params.name,
-            namespace
-          },
-          data: params.data
-        }
-      }),
-    [namespace]
+      createGPUServicePublicKey({ data: params.data }),
+    []
   );
 
   const { detailData, loading, cancelRequest, fetchData } = useQueryData<

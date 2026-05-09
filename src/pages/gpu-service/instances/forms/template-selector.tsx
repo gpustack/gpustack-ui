@@ -1,6 +1,5 @@
 import { AutoTooltip, IconFont, TemplateCard } from '@gpustack/core-ui';
 import styled from 'styled-components';
-import { mockTemplateData } from '../../templates/config/mock-data';
 import { ListItem as TemplateItem } from '../../templates/config/types';
 
 const TemplateGrid = styled.div`
@@ -43,14 +42,14 @@ const TemplateContent = styled.div`
 
 interface TemplateSelectorProps {
   value?: number;
-  onChange?: (value: number) => void;
+  onChange?: (value: number, item: TemplateItem) => void;
   dataList?: TemplateItem[];
 }
 
 const TemplateSelector: React.FC<TemplateSelectorProps> = ({
   value,
   onChange,
-  dataList = mockTemplateData
+  dataList = []
 }) => {
   return (
     <TemplateGrid>
@@ -63,7 +62,7 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
           height={102}
           active={value === item.id}
           disabled={item.status !== 'enabled'}
-          onClick={() => onChange?.(item.id)}
+          onClick={() => onChange?.(item.id, item)}
         >
           <TemplateContent>
             <div className="name">
@@ -76,14 +75,14 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
                 <IconFont className="icon" type="icon-model" /> 镜像:
               </span>
               <AutoTooltip ghost minWidth={20}>
-                <span className="value">{item.image || '-'}</span>
+                <span className="value">{item.spec?.image || '-'}</span>
               </AutoTooltip>
             </div>
             <div className="info">
               <span>
                 <IconFont className="icon" type="icon-storage-outlined" /> 挂载:
               </span>
-              <span className="value">{item.volumeMount || '-'}</span>
+              <span className="value">{item.spec?.volumeMount || '-'}</span>
             </div>
           </TemplateContent>
         </TemplateCard>

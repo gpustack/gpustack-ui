@@ -1,7 +1,9 @@
 export interface PortItem {
-  protocol: 'udp' | 'tcp';
+  protocol: 'UDP' | 'TCP';
   port: number;
 }
+
+export type ImagePullPolicy = 'Always' | 'IfNotPresent' | 'Never';
 
 export interface EnvItem {
   name: string;
@@ -10,18 +12,21 @@ export interface EnvItem {
 
 export interface FormData {
   name: string;
-  image: string;
-  // imagePullPolicy: string;
-  // imagePullSecret: {
-  //   name: string;
-  // };
-  command: string[];
-  ports: PortItem[];
-  env: EnvItem[];
-  volumeMount: string;
-  resources: {
-    cpu: string;
-    ram: string;
+  description: string;
+  manufacturer: string;
+  spec: {
+    image: string;
+    imagePullPolicy: ImagePullPolicy;
+    command: string[];
+    ports: PortItem[];
+    env: EnvItem[];
+    volumeMount: string;
+    resources: {
+      cpu: string;
+      ram: string;
+      localStorage: string;
+      accelerator: string;
+    };
   };
 }
 

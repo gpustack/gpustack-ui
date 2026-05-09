@@ -7,9 +7,11 @@ import {
   InfiniteScrollerProvider,
   NoResult
 } from '@gpustack/core-ui';
+import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { message } from 'antd';
 import _ from 'lodash';
+import { useMemo } from 'react';
+import { GPUsConfigs } from '../../resources/config/gpu-driver';
 import PageBox from '../../_components/page-box';
 import {
   createGPUServiceTemplate,
@@ -24,6 +26,7 @@ import { FormData, ListItem } from './config/types';
 import useCreateTemplate from './hooks/use-create-template';
 
 const GPUServiceTemplates: React.FC = () => {
+  const intl = useIntl();
   const {
     dataSource,
     rowSelection,
@@ -32,14 +35,15 @@ const GPUServiceTemplates: React.FC = () => {
     fetchData,
     handleDelete,
     handleSearch,
-    handleNameChange
+    handleNameChange,
+    handleQueryChange
   } = useTableFetch<ListItem>({
     fetchAPI: queryGPUServiceTemplates,
     deleteAPI: deleteGPUServiceTemplate,
     API: GPU_SERVICE_TEMPLATES_API,
     watch: false,
     isInfiniteScroll: true,
-    contentForDelete: 'GPU 实例模板',
+    contentForDelete: intl.formatMessage({ id: 'gpuservice.template' }),
     defaultQueryParams: {
       perPage: 24
     }
@@ -47,12 +51,37 @@ const GPUServiceTemplates: React.FC = () => {
   const { openTemplateModalStatus, openTemplateModal, closeTemplateModal } =
     useCreateTemplate();
 
+  const manufacturerOptions = useMemo(
+    () => [
+      ...Object.values(GPUsConfigs).map((item) => ({
+        label: item.label,
+        value: item.value
+      })),
+      { label: 'CPU', value: 'cpu' }
+    ],
+    []
+  );
+
+  const handleFilterByManufacturer = (value: string) => {
+    handleQueryChange({
+      manufacturer: value,
+      page: 1
+    });
+  };
+
   const handleAddTemplate = () => {
-    openTemplateModal(PageAction.CREATE, '添加实例模板');
+    openTemplateModal(
+      PageAction.CREATE,
+      intl.formatMessage({ id: 'gpuservice.template.add' })
+    );
   };
 
   const handleEditTemplate = (row: ListItem) => {
-    openTemplateModal(PageAction.EDIT, '编辑实例模板', row);
+    openTemplateModal(
+      PageAction.EDIT,
+      intl.formatMessage({ id: 'gpuservice.template.edit' }),
+      row
+    );
   };
 
   const handleModalOk = async (data: FormData) => {
@@ -67,9 +96,8 @@ const GPUServiceTemplates: React.FC = () => {
       }
       closeTemplateModal();
       handleSearch();
-      message.success('操作成功');
     } catch (error) {
-      message.error('操作失败');
+      // ignore
     }
   };
 
@@ -101,13 +129,20 @@ const GPUServiceTemplates: React.FC = () => {
         widths={{
           input: 230
         }}
-        inputHolder="按名称过滤"
-        buttonText="添加实例模板"
+        inputHolder={intl.formatMessage({
+          id: 'gpuservice.template.filter.name'
+        })}
+        selectHolder={intl.formatMessage({
+          id: 'gpuservice.template.filter.vendor'
+        })}
+        buttonText={intl.formatMessage({ id: 'gpuservice.template.add' })}
         handleClickPrimary={handleAddTemplate}
         handleSearch={handleSearch}
+        handleSelectChange={handleFilterByManufacturer}
         handleInputChange={handleNameChange}
         rowSelection={rowSelection}
-        showSelect={false}
+        showSelect={true}
+        selectOptions={manufacturerOptions}
       />
       <InfiniteScrollerProvider
         value={{
@@ -130,11 +165,17 @@ const GPUServiceTemplates: React.FC = () => {
           dataSource={dataSource.dataList}
           image={<IconFont type="icon-instance-template-filled" />}
           filters={_.omit(queryParams, ['sort_by'])}
-          noFoundText="未找到匹配的实例模板"
-          title="暂无实例模板"
-          subTitle="创建一个实例模板后会显示在这里"
+          noFoundText={intl.formatMessage({
+            id: 'noresult.gpuservice.template.nofound'
+          })}
+          title={intl.formatMessage({
+            id: 'noresult.gpuservice.template.title'
+          })}
+          subTitle={intl.formatMessage({
+            id: 'noresult.gpuservice.template.subTitle'
+          })}
           onClick={handleAddTemplate}
-          buttonText="立即添加"
+          buttonText={intl.formatMessage({ id: 'noresult.button.add' })}
         />
       </InfiniteScrollerProvider>
       <AddModal

@@ -4,12 +4,11 @@ import {
   InputNumber as CInputNumber
 } from '@gpustack/core-ui';
 import { Flex, Form, Tag } from 'antd';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import { InstanceTypePhaseValueMap } from '../config';
 import { FormData, InstanceTypeItem } from '../config/types';
 import useQueryInstanceTypes from '../services/use-query-instance-types';
-import InstanceTypeOverlay from './instance-type-overlay';
 
 const FieldBlock = styled.div`
   margin-bottom: 24px;
@@ -54,17 +53,11 @@ const InstanceTypePicker: React.FC<InstanceTypePickerProps> = ({
   onChange,
   dataList
 }) => {
-  const [open, setOpen] = useState(false);
-
   const selected = useMemo(() => {
     return dataList.find(
       (item) => (item.metadata?.name || item.name) === value
     );
   }, [value, dataList]);
-
-  const handleChange = (item: InstanceTypeItem) => {
-    onChange?.(item.metadata?.name || item.name);
-  };
 
   return (
     <>
@@ -97,21 +90,12 @@ const InstanceTypePicker: React.FC<InstanceTypePickerProps> = ({
           </SummaryMeta>
         </div>
       </SelectedCard>
-      <InstanceTypeOverlay
-        open={open}
-        value={value}
-        dataList={dataList}
-        onCancel={() => setOpen(false)}
-        onChange={handleChange}
-      />
     </>
   );
 };
 
 const InstanceTypeFormItem = () => {
-  const form = Form.useFormInstance<
-    FormData & { type?: string; gpu_count?: number }
-  >();
+  const form = Form.useFormInstance<FormData & { type?: string }>();
   const typeName = Form.useWatch('type', form) as string | undefined;
 
   const { detailData, fetchData } = useQueryInstanceTypes();
@@ -148,13 +132,14 @@ const InstanceTypeFormItem = () => {
       return;
     }
 
-    const currentGpuCount = form.getFieldValue('gpu_count') ?? 1;
-    if (currentGpuCount > maxGpuCount) {
-      form.setFieldValue('gpu_count', maxGpuCount);
+    const currentAccelerator =
+      Number(form.getFieldValue(['spec', 'resources', 'accelerator'])) || 1;
+    if (currentAccelerator > maxGpuCount) {
+      form.setFieldValue(['spec', 'resources', 'accelerator'], maxGpuCount);
     }
 
-    if (currentGpuCount < 1) {
-      form.setFieldValue('gpu_count', 1);
+    if (currentAccelerator < 1) {
+      form.setFieldValue(['spec', 'resources', 'accelerator'], 1);
     }
   }, [form, typeName, maxGpuCount, dataList]);
 
@@ -174,7 +159,7 @@ const InstanceTypeFormItem = () => {
         </Form.Item>
       </FieldBlock>
       <Form.Item
-        name="gpu_count"
+        name={['spec', 'resources', 'accelerator']}
         rules={[
           {
             required: true,

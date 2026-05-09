@@ -52,5 +52,10 @@ export default {
   'noresult.instances.title': 'No instances',
   'noresult.instances.subTitle':
     'There are no running model instances. Deploy a model to create one automatically.',
-  'noresult.instances.nofound': 'No matching instances found.'
+  'noresult.instances.nofound': 'No matching instances found.',
+  'noresult.gpuservice.template.title': 'No Instance Templates',
+  'noresult.gpuservice.template.subTitle':
+    'Once you create an instance template, it will appear here.',
+  'noresult.gpuservice.template.nofound':
+    'No matching instance templates found.'
 };

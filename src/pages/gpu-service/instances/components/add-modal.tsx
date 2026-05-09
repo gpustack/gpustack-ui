@@ -5,7 +5,8 @@ import { ColumnWrapper, GSDrawer, ModalFooter } from '@gpustack/core-ui';
 import { Empty, Input, Typography } from 'antd';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { mockTemplateData } from '../../templates/config/mock-data';
+import useQueryTemplates from '../../templates/services/use-query-templates';
+import { ListItem as TemplateItem } from '../../templates/config/types';
 import { FormData, InstanceTypeItem, ListItem } from '../config/types';
 import GPUServiceInstanceForm from '../forms';
 import TemplateSelector from '../forms/template-selector';
@@ -64,14 +65,18 @@ const AddModal: React.FC<AddModalProps> = ({
   const [templateKeyword, setTemplateKeyword] = useState('');
 
   const { detailData, fetchData } = useQueryInstanceTypes();
+  const { detailData: templatesData, fetchData: fetchTemplates } =
+    useQueryTemplates();
 
   useEffect(() => {
     if (open) {
       fetchData({});
+      fetchTemplates({ page: 1, perPage: 100 });
     }
-  }, [open, fetchData]);
+  }, [open, fetchData, fetchTemplates]);
 
   const instanceTypeList = detailData?.items || [];
+  const templateList = templatesData?.items || [];
 
   const filteredInstanceTypes = useMemo(() => {
     const keyword = instanceKeyword.trim().toLowerCase();
@@ -93,14 +98,14 @@ const AddModal: React.FC<AddModalProps> = ({
   const filteredTemplates = useMemo(() => {
     const keyword = templateKeyword.trim().toLowerCase();
     if (!keyword) {
-      return mockTemplateData;
+      return templateList;
     }
-    return mockTemplateData.filter((item) =>
-      [item.name, item.image, item.volumeMount].some((text) =>
+    return templateList.filter((item) =>
+      [item.name, item.spec?.image, item.spec?.volumeMount].some((text) =>
         (text || '').toLowerCase().includes(keyword)
       )
     );
-  }, [templateKeyword]);
+  }, [templateKeyword, templateList]);
 
   const handleSubmit = () => {
     form.current?.submit();
@@ -118,7 +123,30 @@ const AddModal: React.FC<AddModalProps> = ({
   };
 
   const handleInstanceTypeChange = (item: InstanceTypeItem) => {
-    setInstanceTypeName(item.metadata?.name || item.name);
+    const name = item.metadata?.name || item.name;
+    setInstanceTypeName(name);
+    form.current?.setFieldsValue({
+      type: name,
+      spec: { resources: { accelerator: '1' } }
+    });
+  };
+
+  const handleTemplateChange = (id: number, item: TemplateItem) => {
+    setTemplateId(id);
+    form.current?.setFieldsValue({
+      spec: {
+        image: item.spec?.image,
+        imagePullPolicy: item.spec?.imagePullPolicy,
+        command: item.spec?.command || [],
+        ports: item.spec?.ports || [],
+        env: item.spec?.env || [],
+        volumeMount: item.spec?.volumeMount,
+        resources: {
+          cpu: item.spec?.resources?.cpu,
+          ram: item.spec?.resources?.ram
+        }
+      }
+    });
   };
 
   return (
@@ -194,7 +222,7 @@ const AddModal: React.FC<AddModalProps> = ({
                 <TemplateSelector
                   value={templateId}
                   dataList={filteredTemplates}
-                  onChange={setTemplateId}
+                  onChange={handleTemplateChange}
                 />
               ) : (
                 <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />

@@ -1,4 +1,5 @@
 import { Input as CInput, MetadataList } from '@gpustack/core-ui';
+import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import { EnvItem as EnvItemType, FormData } from '../config/types';
 
@@ -9,12 +10,15 @@ interface EnvItemProps {
 }
 
 const EnvItem: React.FC<EnvItemProps> = ({ item, onChange }) => {
+  const intl = useIntl();
   return (
     <div style={{ display: 'flex', gap: 12, width: '100%' }}>
       <div style={{ flex: 1 }}>
         <CInput.Input
           value={item.name}
-          placeholder="名称"
+          placeholder={intl.formatMessage({
+            id: 'gpuservice.template.env.name'
+          })}
           onChange={(e) => {
             onChange({
               ...item,
@@ -27,7 +31,9 @@ const EnvItem: React.FC<EnvItemProps> = ({ item, onChange }) => {
       <div style={{ flex: 1 }}>
         <CInput.Input
           value={item.value}
-          placeholder="值"
+          placeholder={intl.formatMessage({
+            id: 'gpuservice.template.env.value'
+          })}
           onChange={(e) => {
             onChange({
               ...item,
@@ -42,11 +48,12 @@ const EnvItem: React.FC<EnvItemProps> = ({ item, onChange }) => {
 };
 
 const Env: React.FC = () => {
+  const intl = useIntl();
   const form = Form.useFormInstance<FormData>();
-  const env = Form.useWatch('env', form) || [];
+  const env = Form.useWatch(['spec', 'env'], form) || [];
 
   const updateEnv = (list: EnvItemType[]) => {
-    form.setFieldValue('env', list);
+    form.setFieldValue(['spec', 'env'], list);
   };
 
   const handleAdd = () => {
@@ -73,7 +80,7 @@ const Env: React.FC = () => {
 
   return (
     <Form.Item<FormData>
-      name="env"
+      name={['spec', 'env']}
       rules={[
         {
           validator: async (_, value) => {
@@ -82,7 +89,13 @@ const Env: React.FC = () => {
             }
             const hasInvalid = value.some((item: EnvItemType) => !item.name);
             if (hasInvalid) {
-              return Promise.reject(new Error('请填写完整的环境变量'));
+              return Promise.reject(
+                new Error(
+                  intl.formatMessage({
+                    id: 'gpuservice.template.env.invalid'
+                  })
+                )
+              );
             }
             return Promise.resolve();
           }
@@ -91,8 +104,8 @@ const Env: React.FC = () => {
     >
       <MetadataList
         dataList={env}
-        btnText="添加环境变量"
-        label="环境变量"
+        btnText={intl.formatMessage({ id: 'gpuservice.template.env.add' })}
+        label={intl.formatMessage({ id: 'gpuservice.template.env' })}
         onAdd={handleAdd}
         onDelete={handleDelete}
       >

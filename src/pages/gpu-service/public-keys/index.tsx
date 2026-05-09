@@ -1,31 +1,42 @@
 import { INPUT_WIDTH } from '@/constants';
-import { Textarea } from '@gpustack/core-ui';
+import { Input as CInput, Textarea, useAppUtils } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Button, Form, message } from 'antd';
-import React from 'react';
+import { Button, Form } from 'antd';
+import React, { useEffect } from 'react';
 import PageBox from '../../_components/page-box';
-
-interface PublicKeyFormData {
-  public_key?: string;
-}
-
-const PLACEHOLDER = `以 ssh-rsa 或 ssh-ed25519 开头，每个 Public Key 单独一行
-
-查看 Public Key：
-- RSA
-cat ~/.ssh/id_rsa.pub
-- Ed25519
-cat ~/.ssh/id_ed25519.pub`;
+import useGetSshkey from './services/use-get-sshkey';
+import useUpdateSshkey from './services/use-update-sshkey';
+import { FormData } from './types';
 
 const GPUServicePublicKeys: React.FC = () => {
   const intl = useIntl();
-  const [form] = Form.useForm<PublicKeyFormData>();
+  const [form] = Form.useForm<FormData>();
+  const { getRuleMessage } = useAppUtils();
+  const { fetchData: fetchSshkey } = useGetSshkey();
+  const { fetchData: updateSshkey, loading: updating } = useUpdateSshkey();
+
+  useEffect(() => {
+    fetchSshkey({ page: 1, perPage: 100 }).then((res) => {
+      const data = res?.spec?.data || '';
+      form.setFieldsValue({
+        name: res?.name,
+        spec: {
+          data
+        }
+      });
+    });
+  }, []);
 
   const handleSave = async () => {
+    form.submit();
+  };
+
+  const onFinish = async (values: FormData) => {
     try {
-      await form.validateFields();
-      message.success('操作成功');
-    } catch {
+      await updateSshkey({
+        data: values
+      });
+    } catch (error) {
       // ignore
     }
   };
@@ -36,12 +47,32 @@ const GPUServicePublicKeys: React.FC = () => {
         style={{ width: INPUT_WIDTH.large }}
         name="gpuServicePublicKeyForm"
         form={form}
+        onFinish={onFinish}
+        initialValues={{
+          name: 'SSHPublicKey',
+          spec: {
+            data: ''
+          }
+        }}
       >
-        <Form.Item<PublicKeyFormData> name="public_key">
+        <Form.Item<FormData> name="name" hidden>
+          <CInput.Input />
+        </Form.Item>
+        <Form.Item<FormData>
+          name={['spec', 'data']}
+          rules={[
+            {
+              required: true,
+              message: getRuleMessage('input', 'gpuservice.publicKey.label')
+            }
+          ]}
+        >
           <Textarea
             required
-            label="SSH Public Key"
-            placeholder={PLACEHOLDER}
+            label={intl.formatMessage({ id: 'gpuservice.publicKey.label' })}
+            placeholder={intl.formatMessage({
+              id: 'gpuservice.publicKey.placeholder'
+            })}
             trim={false}
             alwaysFocus
             autoSize={{ minRows: 8, maxRows: 16 }}
@@ -50,6 +81,7 @@ const GPUServicePublicKeys: React.FC = () => {
         </Form.Item>
         <Button
           type="primary"
+          loading={updating}
           style={{ width: 120, marginTop: 24 }}
           onClick={handleSave}
         >

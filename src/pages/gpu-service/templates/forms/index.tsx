@@ -2,6 +2,7 @@ import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { Form } from 'antd';
 import { forwardRef, useEffect, useImperativeHandle } from 'react';
+import { DefaultImagePullPolicy } from '../config';
 import { FormData, ListItem } from '../config/types';
 import Basic from './basic';
 
@@ -26,31 +27,21 @@ const GPUServiceTemplateForm: React.FC<TemplateFormProps> = forwardRef(
 
       if (action === PageAction.EDIT && currentData) {
         form.setFieldsValue({
-          name: currentData.name,
-          image: currentData.image,
-          command: currentData.command || [],
-          ports: currentData.ports || [],
-          env: currentData.env || [],
-          volumeMount: currentData.volumeMount,
-          resources: {
-            cpu: currentData.resources?.cpu,
-            ram: currentData.resources?.ram
-          }
+          ...currentData
         });
         return;
       }
-
-      form.setFieldsValue({
-        command: [],
-        ports: [
-          {
-            protocol: 'tcp',
-            port: 22
-          }
-        ],
-        env: []
-      });
     }, [action, currentData, form, open]);
+
+    const handleFinish = async (values: FormData) => {
+      await onFinish({
+        ...values,
+        spec: {
+          ...values.spec,
+          command: values.spec?.command?.filter(Boolean) ?? []
+        }
+      });
+    };
 
     useImperativeHandle(ref, () => ({
       submit: () => {
@@ -65,8 +56,21 @@ const GPUServiceTemplateForm: React.FC<TemplateFormProps> = forwardRef(
       <Form
         name="gpuServiceTemplateForm"
         form={form}
-        onFinish={onFinish}
+        onFinish={handleFinish}
         preserve={false}
+        initialValues={{
+          spec: {
+            imagePullPolicy: DefaultImagePullPolicy,
+            command: [],
+            ports: [
+              {
+                protocol: 'TCP',
+                port: 22
+              }
+            ],
+            env: []
+          }
+        }}
       >
         <Basic />
       </Form>

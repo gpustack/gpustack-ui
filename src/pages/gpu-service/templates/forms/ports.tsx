@@ -3,6 +3,7 @@ import {
   MetadataList,
   Select as SealSelect
 } from '@gpustack/core-ui';
+import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import { FormData, PortItem as PortItemType } from '../config/types';
 
@@ -11,11 +12,11 @@ type PortProtocol = PortItemType['protocol'];
 const protocolOptions = [
   {
     label: 'UDP',
-    value: 'udp'
+    value: 'UDP'
   },
   {
     label: 'TCP',
-    value: 'tcp'
+    value: 'TCP'
   }
 ];
 
@@ -41,7 +42,7 @@ const PortItem: React.FC<PortItemProps> = ({ item, index, onChange }) => {
           style={{ width: '100%' }}
         ></SealSelect>
       </div>
-      <div style={{ flex: 2 }}>
+      <div style={{ flex: 1 }}>
         <CInputNumber
           min={1}
           max={65535}
@@ -61,18 +62,19 @@ const PortItem: React.FC<PortItemProps> = ({ item, index, onChange }) => {
 };
 
 const Ports: React.FC = () => {
+  const intl = useIntl();
   const form = Form.useFormInstance<FormData>();
-  const ports = Form.useWatch('ports', form) || [];
+  const ports = Form.useWatch(['spec', 'ports'], form) || [];
 
   const updatePorts = (list: PortItemType[]) => {
-    form.setFieldValue('ports', list);
+    form.setFieldValue(['spec', 'ports'], list);
   };
 
   const handleAdd = () => {
     updatePorts([
       ...ports,
       {
-        protocol: 'tcp',
+        protocol: 'TCP',
         port: undefined as any
       }
     ]);
@@ -92,7 +94,7 @@ const Ports: React.FC = () => {
 
   return (
     <Form.Item<FormData>
-      name="ports"
+      name={['spec', 'ports']}
       rules={[
         {
           validator: async (_, value) => {
@@ -103,7 +105,13 @@ const Ports: React.FC = () => {
               (item: PortItemType) => !item.protocol || !item.port
             );
             if (hasInvalidPort) {
-              return Promise.reject(new Error('请填写完整的端口配置'));
+              return Promise.reject(
+                new Error(
+                  intl.formatMessage({
+                    id: 'gpuservice.template.ports.invalid'
+                  })
+                )
+              );
             }
             return Promise.resolve();
           }
@@ -112,8 +120,8 @@ const Ports: React.FC = () => {
     >
       <MetadataList
         dataList={ports}
-        btnText="添加端口"
-        label="端口"
+        btnText={intl.formatMessage({ id: 'gpuservice.template.ports.add' })}
+        label={intl.formatMessage({ id: 'gpuservice.template.ports' })}
         onAdd={handleAdd}
         onDelete={handleDelete}
       >

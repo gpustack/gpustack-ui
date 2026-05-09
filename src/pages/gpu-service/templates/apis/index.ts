@@ -1,7 +1,7 @@
 import { request } from '@umijs/max';
 import { FormData, ListItem } from '../config/types';
 
-export const GPU_SERVICE_TEMPLATES_API = '/gpu-service-templates';
+export const GPU_SERVICE_TEMPLATES_API = '/gpu-instance-templates';
 
 export async function queryGPUServiceTemplates(
   params: Global.SearchParams,

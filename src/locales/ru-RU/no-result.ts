@@ -53,7 +53,12 @@ export default {
   'noresult.instances.title': 'No instances',
   'noresult.instances.subTitle':
     'There are no running model instances. Deploy a model to create one automatically.',
-  'noresult.instances.nofound': 'No matching instances found.'
+  'noresult.instances.nofound': 'No matching instances found.',
+  'noresult.gpuservice.template.title': 'Нет шаблонов экземпляров',
+  'noresult.gpuservice.template.subTitle':
+    'После создания шаблона экземпляра он появится здесь.',
+  'noresult.gpuservice.template.nofound':
+    'Подходящие шаблоны экземпляров не найдены.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

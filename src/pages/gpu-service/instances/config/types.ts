@@ -35,6 +35,7 @@ export interface FormData {
   spec: {
     type: string;
     image: string;
+    imagePullPolicy: ImagePullPolicy;
     displayName: string;
     command: string[];
     ports: InstancePort[];

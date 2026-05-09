@@ -50,12 +50,30 @@ export interface FormData {
   };
 }
 
+export interface ManagedField {
+  manager: string;
+  operation: string;
+  apiVersion: string;
+  time: string;
+  fieldsType: string;
+  fieldsV1: Record<string, any>;
+}
+
+export interface Metadata {
+  name: string;
+  namespace?: string;
+  uid: string;
+  resourceVersion: string;
+  creationTimestamp: string;
+  annotations?: Record<string, string>;
+  managedFields?: ManagedField[];
+}
+
 // instance list item
-export interface ListItem extends FormData {
+export interface ListItem extends Omit<FormData, 'metadata'> {
   id: number;
   status?: string;
-  created_at?: string;
-  updated_at?: string;
+  metadata: Metadata;
 }
 
 export interface InstanceItem {
@@ -79,10 +97,12 @@ export interface InstanceTypeSpec {
   sliced?: number;
 }
 
+type Quality = `${number}Ki` | `${number}Gi`;
+
 export interface InstanceTypeResource {
-  capacity?: string;
-  onceMaxRequest?: string;
-  remaining?: string;
+  capacity?: Quality;
+  onceMaxRequest?: Quality;
+  remaining?: Quality;
 }
 
 export interface InstanceTypeStatus {
@@ -102,7 +122,6 @@ export interface InstanceTypeItem {
     namespace: string;
   };
   id: number;
-  name: string;
   spec: InstanceTypeSpec;
   status: InstanceTypeStatus;
 }

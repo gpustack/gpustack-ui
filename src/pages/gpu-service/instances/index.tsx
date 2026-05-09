@@ -1,7 +1,9 @@
+import { currentClusterAtom } from '@/atoms/gpuservice';
 import { PageAction } from '@/config';
 import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import type { PageActionType } from '@/config/types';
 import useTableFetch from '@/hooks/use-table-fetch';
+import { ProviderValueMap } from '@/pages/cluster-management/config';
 import { useQueryClusterList } from '@/pages/cluster-management/services/use-query-cluster-list';
 import { useModel } from '@@/plugin-model';
 import {
@@ -14,8 +16,9 @@ import {
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { ConfigProvider, Divider, Flex, message, Table } from 'antd';
+import { useAtom } from 'jotai';
 import _ from 'lodash';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { PageContainerInner } from '../../_components/page-box';
 import {
   deleteGPUServiceInstance,
@@ -31,10 +34,12 @@ import useUpdateInstance from './services/use-update-instance';
 const GPUService: React.FC = () => {
   const { initialState } = useModel('@@initialState');
   const namespace = initialState?.currentUser?.org_name || 'default';
+  const [currentCluster, setCurrentCluster] = useAtom(currentClusterAtom);
+  const clusterID = currentCluster?.id;
 
   const deleteInstance = useCallback(
-    (id: number) => deleteGPUServiceInstance({ namespace, id }),
-    [namespace]
+    (id: number) => deleteGPUServiceInstance({ namespace, clusterID, id }),
+    [namespace, clusterID]
   );
 
   const fetchInstances = useCallback(
@@ -42,8 +47,19 @@ const GPUService: React.FC = () => {
       params: any,
       options?: any
     ): Promise<Global.PageResponse<ListItem>> => {
+      if (!clusterID) {
+        return {
+          items: [],
+          pagination: {
+            total: 0,
+            totalPage: 0,
+            page: 1,
+            perPage: params.perPage || 10
+          }
+        } as Global.PageResponse<ListItem>;
+      }
       const res = await queryGPUServiceInstances(
-        { ...params, namespace },
+        { ...params, namespace, clusterID: params.cluster_id ?? clusterID },
         options
       );
       const total = res.items?.length ?? 0;
@@ -58,7 +74,7 @@ const GPUService: React.FC = () => {
         }
       };
     },
-    [namespace]
+    [namespace, clusterID]
   );
 
   const {
@@ -79,8 +95,8 @@ const GPUService: React.FC = () => {
     key: PaginationKey.Instances,
     fetchAPI: fetchInstances,
     deleteAPI: deleteInstance,
-    watch: false,
-    API: GPU_SERVICE_INSTANCES_API(namespace),
+    watch: true,
+    API: GPU_SERVICE_INSTANCES_API({ namespace, clusterID }),
     contentForDelete: 'GPU 实例'
   });
 
@@ -92,6 +108,14 @@ const GPUService: React.FC = () => {
     clusterList
   } = useQueryClusterList();
   const intl = useIntl();
+
+  const k8sClusterList = useMemo(
+    () =>
+      clusterList.filter(
+        (item) => item.provider === ProviderValueMap.Kubernetes
+      ),
+    [clusterList]
+  );
 
   const [openAddModalStatus, setOpenAddModalStatus] = useState<{
     action: PageActionType;
@@ -107,9 +131,18 @@ const GPUService: React.FC = () => {
 
   useEffect(() => {
     fetchClusterList({ page: -1 }).then((clusters) => {
-      if (clusters.length > 0) {
+      const k8sClusters = clusters.filter(
+        (item: any) => item.provider === ProviderValueMap.Kubernetes
+      );
+      if (k8sClusters.length > 0) {
+        const firstCluster = k8sClusters[0];
+        setCurrentCluster({
+          ...firstCluster,
+          label: firstCluster.name,
+          value: firstCluster.id
+        });
         handleQueryChange({
-          cluster_id: clusters[0].id,
+          cluster_id: firstCluster.id,
           page: 1
         });
       }
@@ -174,6 +207,10 @@ const GPUService: React.FC = () => {
   });
 
   const handleClusterChange = (value: number) => {
+    const cluster = k8sClusterList.find((item) => item.value === value);
+    if (cluster) {
+      setCurrentCluster(cluster);
+    }
     handleQueryChange({
       cluster_id: value,
       page: 1
@@ -217,7 +254,7 @@ const GPUService: React.FC = () => {
           <BaseSelect
             variant="borderless"
             value={queryParams.cluster_id}
-            options={clusterList}
+            options={k8sClusterList}
             onChange={handleClusterChange}
             style={{ minWidth: 120, fontWeight: 500 }}
           ></BaseSelect>
@@ -228,7 +265,7 @@ const GPUService: React.FC = () => {
         marginBottom={22}
         marginTop={30}
         showSelect={false}
-        selectOptions={clusterList}
+        selectOptions={k8sClusterList}
         select={{ showSearch: true }}
         selectHolder="按集群过滤"
         buttonText="添加 GPU 实例"
@@ -251,7 +288,7 @@ const GPUService: React.FC = () => {
           }}
           sortDirections={TABLE_SORT_DIRECTIONS}
           showSorterTooltip={false}
-          rowKey="id"
+          rowKey={(record) => record.metadata.name}
           onChange={handleTableChange}
           pagination={{
             size: 'middle',

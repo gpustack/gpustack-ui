@@ -1,5 +1,7 @@
+import { currentClusterAtom } from '@/atoms/gpuservice';
 import { useModel } from '@@/plugin-model';
 import { useQueryData } from '@gpustack/core-ui';
+import { useAtomValue } from 'jotai';
 import { useCallback } from 'react';
 import { apiVersion, KindMapping } from '../../constants';
 import { createGPUServiceStorage } from '../apis';
@@ -12,12 +14,15 @@ interface CreateStorageParams {
 export default function useCreateStorage() {
   const { initialState } = useModel('@@initialState');
   const namespace = initialState?.currentUser?.org_name || 'default';
+  const currentCluster = useAtomValue(currentClusterAtom);
+  const clusterID = currentCluster?.id;
 
   const fetchDetail = useCallback(
     (params: CreateStorageParams, option?: any) =>
       createGPUServiceStorage(
         {
           namespace,
+          clusterID,
           data: {
             apiVersion,
             kind: KindMapping.instancePersistentVolume,
@@ -30,7 +35,7 @@ export default function useCreateStorage() {
         },
         option
       ),
-    [namespace]
+    [namespace, clusterID]
   );
 
   const { detailData, loading, cancelRequest, fetchData } = useQueryData<

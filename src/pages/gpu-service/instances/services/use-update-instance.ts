@@ -1,5 +1,7 @@
+import { currentClusterAtom } from '@/atoms/gpuservice';
 import { useModel } from '@@/plugin-model';
 import { useQueryData } from '@gpustack/core-ui';
+import { useAtomValue } from 'jotai';
 import { useCallback } from 'react';
 import { apiVersion, KindMapping } from '../../constants';
 import { updateGPUServiceInstance } from '../apis';
@@ -13,12 +15,15 @@ interface UpdateInstanceParams {
 export default function useUpdateInstance() {
   const { initialState } = useModel('@@initialState');
   const namespace = initialState?.currentUser?.org_name || 'default';
+  const currentCluster = useAtomValue(currentClusterAtom);
+  const clusterID = currentCluster?.id;
 
   const fetchDetail = useCallback(
     (params: UpdateInstanceParams, option?: any) =>
       updateGPUServiceInstance(
         {
           namespace,
+          clusterID,
           id: params.id,
           data: {
             apiVersion,
@@ -32,7 +37,7 @@ export default function useUpdateInstance() {
         },
         option
       ),
-    [namespace]
+    [namespace, clusterID]
   );
 
   const { detailData, loading, cancelRequest, fetchData } = useQueryData<

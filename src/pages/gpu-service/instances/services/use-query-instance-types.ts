@@ -1,17 +1,27 @@
-import { useModel } from '@@/plugin-model';
+import { currentClusterAtom } from '@/atoms/gpuservice';
 import { useQueryData } from '@gpustack/core-ui';
+import { useAtomValue } from 'jotai';
 import { useCallback } from 'react';
 import { queryGPUServiceInstanceTypes } from '../apis';
+import { transformInstanceType } from '../config';
 import { InstanceTypeItem } from '../config/types';
 
 export default function useQueryInstanceTypes() {
-  const { initialState } = useModel('@@initialState');
-  const namespace = initialState?.currentUser?.org_name || 'default';
+  const currentCluster = useAtomValue(currentClusterAtom);
+  const clusterID = currentCluster?.id;
 
   const fetchDetail = useCallback(
-    (params: Global.K8sSearchParams = {}, options?: any) =>
-      queryGPUServiceInstanceTypes({ ...params, namespace }, options),
-    [namespace]
+    async (params: Global.K8sSearchParams = {}, options?: any) => {
+      const res = await queryGPUServiceInstanceTypes(
+        { ...params, clusterID },
+        options
+      );
+      return {
+        ...res,
+        items: (res?.items || []).map(transformInstanceType)
+      };
+    },
+    [clusterID]
   );
 
   const { detailData, loading, cancelRequest, fetchData } = useQueryData<

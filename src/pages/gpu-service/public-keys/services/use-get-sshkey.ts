@@ -5,8 +5,7 @@ import { ListItem } from '../types';
 
 export default function useGetSshkey() {
   const fetchDetail = useCallback(
-    (params: Global.SearchParams = { page: 1, perPage: 100 }, options?: any) =>
-      queryGPUServicePublicKeys(params, options),
+    (params: {}, options?: any) => queryGPUServicePublicKeys(params, options),
     []
   );
 

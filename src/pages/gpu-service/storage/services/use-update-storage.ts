@@ -1,5 +1,7 @@
+import { currentClusterAtom } from '@/atoms/gpuservice';
 import { useModel } from '@@/plugin-model';
 import { useQueryData } from '@gpustack/core-ui';
+import { useAtomValue } from 'jotai';
 import { useCallback } from 'react';
 import { apiVersion, KindMapping } from '../../constants';
 import { updateGPUServiceStorage } from '../apis';
@@ -13,12 +15,15 @@ interface UpdateStorageParams {
 export default function useUpdateStorage() {
   const { initialState } = useModel('@@initialState');
   const namespace = initialState?.currentUser?.org_name || 'default';
+  const currentCluster = useAtomValue(currentClusterAtom);
+  const clusterID = currentCluster?.id;
 
   const fetchDetail = useCallback(
     (params: UpdateStorageParams, option?: any) =>
       updateGPUServiceStorage(
         {
           namespace,
+          clusterID,
           id: params.id,
           data: {
             apiVersion,
@@ -32,7 +37,7 @@ export default function useUpdateStorage() {
         },
         option
       ),
-    [namespace]
+    [namespace, clusterID]
   );
 
   const { detailData, loading, cancelRequest, fetchData } = useQueryData<

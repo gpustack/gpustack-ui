@@ -3,12 +3,7 @@ import { AutoTooltip, DropdownButtons, StatusTag } from '@gpustack/core-ui';
 import type { ColumnsType } from 'antd/lib/table';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
-import {
-  InstanceStatusLabelMap,
-  InstanceStatusValueMap,
-  rowActionList,
-  status
-} from '../config';
+import { InstanceStatusLabelMap, rowActionList, status } from '../config';
 import { ListItem } from '../config/types';
 
 interface ColumnsHookProps {
@@ -38,11 +33,10 @@ const useInstancesColumns = ({
       },
       {
         title: '状态',
-        dataIndex: 'status',
+        dataIndex: ['status', 'phase'],
         key: 'status',
         sorter: tableSorter(2),
-        render: (statusValue: string) => {
-          const value = statusValue || InstanceStatusValueMap.Ready;
+        render: (value: string, record: ListItem) => {
           return (
             <StatusTag
               statusValue={{
@@ -67,8 +61,8 @@ const useInstancesColumns = ({
       },
       {
         title: '创建时间',
-        dataIndex: 'created_at',
-        key: 'created_at',
+        dataIndex: ['metadata', 'creationTimestamp'],
+        key: 'creationTimestamp',
         sorter: tableSorter(5),
         ellipsis: {
           showTitle: false

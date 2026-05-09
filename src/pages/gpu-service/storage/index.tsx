@@ -1,7 +1,9 @@
+import { currentClusterAtom } from '@/atoms/gpuservice';
 import { PageAction } from '@/config';
 import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import type { PageActionType } from '@/config/types';
 import useTableFetch from '@/hooks/use-table-fetch';
+import { ProviderValueMap } from '@/pages/cluster-management/config';
 import { useQueryClusterList } from '@/pages/cluster-management/services/use-query-cluster-list';
 import { useModel } from '@@/plugin-model';
 import {
@@ -14,8 +16,9 @@ import {
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { ConfigProvider, Divider, Flex, message, Table } from 'antd';
+import { useAtom } from 'jotai';
 import _ from 'lodash';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { PageContainerInner } from '../../_components/page-box';
 import {
   deleteGPUServiceStorage,
@@ -32,10 +35,12 @@ import useUpdateStorage from './services/use-update-storage';
 const GPUServiceStorage: React.FC = () => {
   const { initialState } = useModel('@@initialState');
   const namespace = initialState?.currentUser?.org_name || 'default';
+  const [currentCluster, setCurrentCluster] = useAtom(currentClusterAtom);
+  const clusterID = currentCluster?.id;
 
   const deleteStorage = useCallback(
-    (id: number) => deleteGPUServiceStorage({ namespace, id }),
-    [namespace]
+    (id: number) => deleteGPUServiceStorage({ namespace, clusterID, id }),
+    [namespace, clusterID]
   );
 
   const fetchStorage = useCallback(
@@ -43,8 +48,19 @@ const GPUServiceStorage: React.FC = () => {
       params: any,
       options?: any
     ): Promise<Global.PageResponse<ListItem>> => {
+      if (!clusterID) {
+        return {
+          items: [],
+          pagination: {
+            total: 0,
+            totalPage: 0,
+            page: 1,
+            perPage: params.perPage || 10
+          }
+        } as Global.PageResponse<ListItem>;
+      }
       const res = await queryGPUServiceStorage(
-        { ...params, namespace },
+        { ...params, namespace, clusterID: params.cluster_id ?? clusterID },
         options
       );
       const total = res.items?.length ?? 0;
@@ -59,7 +75,7 @@ const GPUServiceStorage: React.FC = () => {
         }
       };
     },
-    [namespace]
+    [namespace, clusterID]
   );
 
   const {
@@ -81,7 +97,7 @@ const GPUServiceStorage: React.FC = () => {
     fetchAPI: fetchStorage,
     deleteAPI: deleteStorage,
     watch: false,
-    API: GPU_SERVICE_STORAGE_API(namespace),
+    API: GPU_SERVICE_STORAGE_API({ namespace, clusterID }),
     contentForDelete: '存储'
   });
 
@@ -93,6 +109,14 @@ const GPUServiceStorage: React.FC = () => {
     clusterList
   } = useQueryClusterList();
   const intl = useIntl();
+
+  const k8sClusterList = useMemo(
+    () =>
+      clusterList.filter(
+        (item) => item.provider === ProviderValueMap.Kubernetes
+      ),
+    [clusterList]
+  );
 
   const [openAddModalStatus, setOpenAddModalStatus] = useState<{
     action: PageActionType;
@@ -108,9 +132,18 @@ const GPUServiceStorage: React.FC = () => {
 
   useEffect(() => {
     fetchClusterList({ page: -1 }).then((clusters) => {
-      if (clusters.length > 0) {
+      const k8sClusters = clusters.filter(
+        (item: any) => item.provider === ProviderValueMap.Kubernetes
+      );
+      if (k8sClusters.length > 0) {
+        const firstCluster = k8sClusters[0];
+        setCurrentCluster({
+          ...firstCluster,
+          label: firstCluster.name,
+          value: firstCluster.id
+        });
         handleQueryChange({
-          cluster_id: clusters[0].id,
+          cluster_id: firstCluster.id,
           page: 1
         });
       }
@@ -175,6 +208,10 @@ const GPUServiceStorage: React.FC = () => {
   });
 
   const handleClusterChange = (value: number) => {
+    const cluster = k8sClusterList.find((item) => item.value === value);
+    if (cluster) {
+      setCurrentCluster(cluster);
+    }
     handleQueryChange({
       cluster_id: value,
       page: 1
@@ -219,7 +256,7 @@ const GPUServiceStorage: React.FC = () => {
             <BaseSelect
               variant="borderless"
               value={queryParams.cluster_id}
-              options={clusterList}
+              options={k8sClusterList}
               style={{ minWidth: 120, fontWeight: 500 }}
               onChange={handleClusterChange}
             ></BaseSelect>
@@ -230,7 +267,7 @@ const GPUServiceStorage: React.FC = () => {
           marginBottom={22}
           marginTop={30}
           showSelect={false}
-          selectOptions={clusterList}
+          selectOptions={k8sClusterList}
           select={{ showSearch: true }}
           selectHolder="按集群过滤"
           buttonText="添加存储"

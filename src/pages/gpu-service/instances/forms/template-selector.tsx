@@ -61,7 +61,6 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
           hoverable
           height={102}
           active={value === item.id}
-          disabled={item.status !== 'enabled'}
           onClick={() => onChange?.(item.id, item)}
         >
           <TemplateContent>

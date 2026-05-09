@@ -5,8 +5,8 @@ import { ColumnWrapper, GSDrawer, ModalFooter } from '@gpustack/core-ui';
 import { Empty, Input, Typography } from 'antd';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
-import useQueryTemplates from '../../templates/services/use-query-templates';
 import { ListItem as TemplateItem } from '../../templates/config/types';
+import useQueryTemplates from '../../templates/services/use-query-templates';
 import { FormData, InstanceTypeItem, ListItem } from '../config/types';
 import GPUServiceInstanceForm from '../forms';
 import TemplateSelector from '../forms/template-selector';
@@ -59,7 +59,7 @@ const AddModal: React.FC<AddModalProps> = ({
   onCancel
 }) => {
   const form = useRef<any>(null);
-  const [instanceTypeName, setInstanceTypeName] = useState<string>();
+  const [selectedInstanceType, setSelectedInstanceType] = useState<string>();
   const [templateId, setTemplateId] = useState<number>();
   const [instanceKeyword, setInstanceKeyword] = useState('');
   const [templateKeyword, setTemplateKeyword] = useState('');
@@ -84,7 +84,7 @@ const AddModal: React.FC<AddModalProps> = ({
       return instanceTypeList;
     }
     return instanceTypeList.filter((item) => {
-      const name = item.metadata?.name || item.name || '';
+      const name = item.metadata?.name || '';
       return [
         name,
         item.spec?.memory ?? '',
@@ -123,28 +123,23 @@ const AddModal: React.FC<AddModalProps> = ({
   };
 
   const handleInstanceTypeChange = (item: InstanceTypeItem) => {
-    const name = item.metadata?.name || item.name;
-    setInstanceTypeName(name);
+    const name = item.metadata?.name;
+    setSelectedInstanceType(name);
     form.current?.setFieldsValue({
-      type: name,
-      spec: { resources: { accelerator: '1' } }
+      spec: {
+        type: name,
+        resources: { accelerator: '1' }
+      }
     });
   };
 
   const handleTemplateChange = (id: number, item: TemplateItem) => {
     setTemplateId(id);
     form.current?.setFieldsValue({
+      manufacturer: item.manufacturer,
       spec: {
-        image: item.spec?.image,
-        imagePullPolicy: item.spec?.imagePullPolicy,
-        command: item.spec?.command || [],
-        ports: item.spec?.ports || [],
-        env: item.spec?.env || [],
-        volumeMount: item.spec?.volumeMount,
-        resources: {
-          cpu: item.spec?.resources?.cpu,
-          ram: item.spec?.resources?.ram
-        }
+        ...form.current?.getFieldsValue()?.spec,
+        ...item.spec
       }
     });
   };
@@ -188,7 +183,7 @@ const AddModal: React.FC<AddModalProps> = ({
               </div>
               {filteredInstanceTypes.length > 0 ? (
                 <InstanceTypeList
-                  value={instanceTypeName}
+                  value={selectedInstanceType}
                   dataList={filteredInstanceTypes}
                   onChange={handleInstanceTypeChange}
                 />

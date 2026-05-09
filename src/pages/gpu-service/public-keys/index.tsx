@@ -16,7 +16,7 @@ const GPUServicePublicKeys: React.FC = () => {
   const { fetchData: updateSshkey, loading: updating } = useUpdateSshkey();
 
   useEffect(() => {
-    fetchSshkey({ page: 1, perPage: 100 }).then((res) => {
+    fetchSshkey({}).then((res) => {
       const data = res?.spec?.data || '';
       form.setFieldsValue({
         name: res?.name,
@@ -76,7 +76,7 @@ const GPUServicePublicKeys: React.FC = () => {
             trim={false}
             alwaysFocus
             autoSize={{ minRows: 8, maxRows: 16 }}
-            style={{ width: INPUT_WIDTH.large }}
+            style={{ width: INPUT_WIDTH.large, minHeight: 186 }}
           />
         </Form.Item>
         <Button

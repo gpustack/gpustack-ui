@@ -32,6 +32,7 @@ import {
   matchRoutes,
   request,
   setLocale,
+  useAccess,
   useAppData,
   useIntl,
   useLocation,
@@ -156,6 +157,7 @@ export default (props: any) => {
   };
 
   const { initialState, loading, setInitialState } = initialInfo;
+  const access = useAccess();
 
   const userConfig = {
     title: '',
@@ -290,7 +292,14 @@ export default (props: any) => {
     if (!initialState?.currentUser && location.pathname !== loginPath) {
       history.push(loginPath);
     } else if (location.pathname === '/') {
-      const pathname = initialState?.currentUser?.is_admin
+      // Pick a landing route the caller can actually see. Access
+      // extensions can narrow ``canSeeAdmin`` to ``false`` even when
+      // ``currentUser.is_admin`` is ``true``; pushing an admin to
+      // ``/dashboard`` (gated by ``canSeeAdmin``) in that case
+      // dead-ends in ``Exception`` 403 → redirect-to-``/`` →
+      // re-push, looping into a blank screen. Honoring the resolved
+      // predicate keeps the user on a route they can render.
+      const pathname = access?.canSeeAdmin
         ? DEFAULT_ENTER_PAGE.adminForNormal
         : DEFAULT_ENTER_PAGE.user;
       history.push(pathname);
@@ -300,7 +309,7 @@ export default (props: any) => {
   const onMenuHeaderClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    const pagepath = initialState?.currentUser?.is_admin
+    const pagepath = access?.canSeeAdmin
       ? DEFAULT_ENTER_PAGE.adminForNormal
       : DEFAULT_ENTER_PAGE.user;
 

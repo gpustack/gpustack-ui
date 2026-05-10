@@ -21,7 +21,6 @@ import {
 import useGetSshkey from '../../public-keys/services/use-get-sshkey';
 import { DefaultImagePullPolicy } from '../../templates/config';
 import TemplateBasicForm from '../../templates/forms/basic';
-import { DEFAULT_SSH_PUBLIC_KEY_NAME } from '../config';
 import { FormData, InstancePort, ListItem } from '../config/types';
 import Basic from './basic';
 import InstanceTypeFormItem from './instance-type';
@@ -53,19 +52,19 @@ const TABKeysMap = {
 const requiredFields = {
   [TABKeysMap.BASIC]: {
     sort: 1,
-    fields: ['name']
+    fields: ['metadata.name']
   },
   [TABKeysMap.INSTANCE_TYPE]: {
     sort: 2,
-    fields: ['type']
+    fields: ['spec.type', 'spec.resources.accelerator']
   },
   [TABKeysMap.TEMPLATE]: {
     sort: 3,
-    fields: ['image', 'ports']
+    fields: ['spec.image', 'spec.ports', 'spec.env']
   },
   [TABKeysMap.STORAGE]: {
     sort: 4,
-    fields: ['volume']
+    fields: ['spec.volume.persistent.name', 'spec.volume.ephemeral.capacity']
   }
 };
 
@@ -143,7 +142,8 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
     const ports = (Form.useWatch(['spec', 'ports'], form) ||
       []) as InstancePort[];
     const hasSshPort = useMemo(
-      () => ports.some((p) => Number(p?.port) === SSH_PORT),
+      () =>
+        ports.some((p) => Number(p?.port) === SSH_PORT && p.protocol === 'TCP'),
       [ports]
     );
 
@@ -151,11 +151,24 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       scrollTabsRef.current?.handleTargetChange(key);
     };
 
-    const { handleOnFinishFailed } = useFinishFailed({
+    const { handleOnFinishFailed: rawHandleOnFinishFailed } = useFinishFailed({
       requiredFields,
       onTargetChange,
       updateActiveKey
     });
+
+    // useFinishFailed only matches errorFields[].name[0] against `fields`,
+    // but our form fields are nested (e.g. ['spec','type']), so collapse each
+    // error path into a single dotted string before delegating.
+    const handleOnFinishFailed = (errorInfo: any) => {
+      const errorFields = (errorInfo?.errorFields || []).map((field: any) => ({
+        ...field,
+        name: [
+          Array.isArray(field.name) ? field.name.join('.') : String(field.name)
+        ]
+      }));
+      rawHandleOnFinishFailed({ ...errorInfo, errorFields });
+    };
 
     useEffect(() => {
       if (!open) {
@@ -180,43 +193,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       }
     }, [action, currentData, form, open, namespace]);
 
-    const buildPayload = (values: InstanceFormValues): FormData => {
-      const acceleratorVal = values.spec?.resources?.accelerator;
-      const acceleratorStr =
-        acceleratorVal !== undefined &&
-        acceleratorVal !== null &&
-        (acceleratorVal as unknown) !== ''
-          ? String(acceleratorVal)
-          : undefined;
-
-      const spec: FormData['spec'] = {
-        ...values.spec,
-        resources: {
-          ...values.spec?.resources,
-          accelerator: acceleratorStr
-        }
-      } as FormData['spec'];
-
-      // SSH public key — include only when checkbox is checked AND port 22 is in ports
-      const portsList = (values.spec?.ports || []) as InstancePort[];
-      const has22 = portsList.some((p) => Number(p?.port) === SSH_PORT);
-      if (values.enable_ssh && has22) {
-        spec.sshPublicKey = { name: DEFAULT_SSH_PUBLIC_KEY_NAME };
-      } else {
-        delete (spec as any).sshPublicKey;
-      }
-
-      return {
-        metadata: {
-          name: values.metadata?.name,
-          namespace: values.metadata?.namespace || namespace
-        },
-        spec
-      } as FormData;
-    };
-
     const handleFinish = async (values: InstanceFormValues) => {
-      const payload = buildPayload(values);
       await onFinish(values);
     };
 
@@ -265,9 +242,16 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
               resources: {
                 accelerator: '1'
               },
-              volume: { persistent: { name: '' } },
               sshPublicKey: {
                 name: 'gpustack-organization-ssh-public-key'
+              },
+              volume: {
+                ephemeral: {
+                  capacity: '20Gi'
+                },
+                persistent: {
+                  name: ''
+                }
               }
             },
             enable_ssh: false

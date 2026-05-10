@@ -1,4 +1,5 @@
 import { request } from '@umijs/max';
+import { omitPathParams } from '../../utils';
 import { InstanceTypeItem, ListItem } from '../config/types';
 
 export const GPU_SERVICE_INSTANCES_API = (params: {
@@ -19,6 +20,9 @@ export async function queryGPUServiceInstances(
   },
   options?: any
 ) {
+  if (!params.clusterID) {
+    return;
+  }
   return request<Global.K8sPageResponse<ListItem>>(
     GPU_SERVICE_INSTANCES_API({
       namespace: params.namespace,
@@ -26,7 +30,7 @@ export async function queryGPUServiceInstances(
     }),
     {
       method: 'GET',
-      params,
+      params: omitPathParams(params),
       cancelToken: options?.token
     }
   );
@@ -40,6 +44,9 @@ export async function createGPUServiceInstance(
   },
   option?: any
 ) {
+  if (!params.clusterID) {
+    return;
+  }
   return request<ListItem>(
     GPU_SERVICE_INSTANCES_API({
       namespace: params.namespace,
@@ -62,6 +69,9 @@ export async function updateGPUServiceInstance(
   },
   option?: any
 ) {
+  if (!params.clusterID) {
+    return;
+  }
   return request<ListItem>(
     `${GPU_SERVICE_INSTANCES_API({
       namespace: params.namespace,
@@ -83,6 +93,9 @@ export async function deleteGPUServiceInstance(
   },
   option?: any
 ) {
+  if (!params.clusterID) {
+    return;
+  }
   return request(
     `${GPU_SERVICE_INSTANCES_API({
       namespace: params.namespace,
@@ -101,11 +114,14 @@ export async function queryGPUServiceInstanceTypes(
   params: Global.K8sSearchParams & { clusterID?: number },
   options?: any
 ) {
+  if (!params.clusterID) {
+    return;
+  }
   return request<Global.K8sPageResponse<InstanceTypeItem>>(
     GPU_SERVICE_INSTANCES_TYPE_API({ clusterID: params.clusterID }),
     {
       method: 'GET',
-      params,
+      params: omitPathParams(params),
       cancelToken: options?.token
     }
   );
@@ -118,11 +134,14 @@ export async function queryGPUServiceInstanceTypeItems(
   },
   options?: any
 ) {
+  if (!params.clusterID) {
+    return;
+  }
   return request<InstanceTypeItem>(
     `${GPU_SERVICE_INSTANCES_TYPE_API({ clusterID: params.clusterID })}/${params.name}`,
     {
       method: 'GET',
-      params,
+      params: omitPathParams(params),
       cancelToken: options?.token
     }
   );

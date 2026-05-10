@@ -11,7 +11,7 @@ export default {
   'gpuservice.template.imagePullPolicy.never': 'Asla çekme',
   'gpuservice.template.command': 'Konteyner Başlatma Komutu',
   'gpuservice.template.command.placeholder':
-    'Her satırda bir argüman, örn.:\n/bin/bash\n-c\nyour command',
+    'Argümanları boşlukla ayırın; boşluk içeren argümanları tırnak içine alın, örn.: /bin/bash -c "echo hello world"',
   'gpuservice.template.mountPath': 'Bağlama Yolu',
   'gpuservice.template.containerDisk': 'Konteyner Diski (Gi)',
   'gpuservice.template.memory': 'Bellek (Gi)',
@@ -47,14 +47,16 @@ export default {
   'gpuservice.instance.gpuCount.max':
     'Mevcut örnek türü en fazla {count} GPU destekler',
   'gpuservice.instance.stock': 'Stok',
-  'gpuservice.instance.memory': 'VRAM',
-  'gpuservice.instance.ram': 'Bellek',
+  'gpuservice.instance.memory': 'Bellek',
+  'gpuservice.instance.ram': 'RAM',
   'gpuservice.instance.search.type.placeholder':
     "Ada, VRAM, belleğe veya vCPU'ya göre ara",
   'gpuservice.instance.search.template.placeholder':
     'Şablon adına, imaja veya bağlama yoluna göre ara',
   'gpuservice.instance.template.image': 'İmaj',
   'gpuservice.instance.template.mount': 'Bağlama',
+  'gpuservice.instance.connect': 'Bağlan',
+  'gpuservice.instance.connect.copySshCommand': 'SSH Komutunu Kopyala',
   'gpuservice.storage': 'Depolama',
   'gpuservice.storage.add': 'Depolama Ekle',
   'gpuservice.storage.edit': 'Depolamayı Düzenle',

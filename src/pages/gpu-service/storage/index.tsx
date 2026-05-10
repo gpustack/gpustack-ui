@@ -1,11 +1,11 @@
 import { currentClusterAtom } from '@/atoms/gpuservice';
+import { getCurrentOrganizationId } from '@/atoms/user';
 import { PageAction } from '@/config';
 import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import type { PageActionType } from '@/config/types';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { ProviderValueMap } from '@/pages/cluster-management/config';
 import { useQueryClusterList } from '@/pages/cluster-management/services/use-query-cluster-list';
-import { useModel } from '@@/plugin-model';
 import {
   BaseSelect,
   DeleteModal,
@@ -34,8 +34,7 @@ import useUpdateStorage from './services/use-update-storage';
 
 const GPUServiceStorage: React.FC = () => {
   const intl = useIntl();
-  const { initialState } = useModel('@@initialState');
-  const namespace = initialState?.currentUser?.org_name || 'default';
+  const namespace = getCurrentOrganizationId();
   const [currentCluster, setCurrentCluster] = useAtom(currentClusterAtom);
   const clusterID = currentCluster?.id;
 
@@ -49,7 +48,8 @@ const GPUServiceStorage: React.FC = () => {
       params: any,
       options?: any
     ): Promise<Global.PageResponse<ListItem>> => {
-      if (!clusterID) {
+      const effectiveClusterID = params.cluster_id ?? clusterID;
+      if (!effectiveClusterID) {
         return {
           items: [],
           pagination: {
@@ -61,7 +61,7 @@ const GPUServiceStorage: React.FC = () => {
         } as Global.PageResponse<ListItem>;
       }
       const res = await queryGPUServiceStorage(
-        { ...params, namespace, clusterID: params.cluster_id ?? clusterID },
+        { ...params, namespace, clusterID: effectiveClusterID },
         options
       );
       const total = res.items?.length ?? 0;
@@ -98,6 +98,7 @@ const GPUServiceStorage: React.FC = () => {
     fetchAPI: fetchStorage,
     deleteAPI: deleteStorage,
     watch: false,
+    polling: true,
     API: GPU_SERVICE_STORAGE_API({ namespace, clusterID }),
     contentForDelete: intl.formatMessage({ id: 'gpuservice.storage' })
   });
@@ -184,7 +185,7 @@ const GPUServiceStorage: React.FC = () => {
     try {
       if (openAddModalStatus.action === PageAction.EDIT) {
         await updateStorage({
-          id: openAddModalStatus.currentData!.id,
+          id: openAddModalStatus.currentData!.metadata?.name as any,
           data
         });
       } else {
@@ -203,7 +204,11 @@ const GPUServiceStorage: React.FC = () => {
     if (val === 'edit') {
       handleEditStorage(row);
     } else if (val === 'delete') {
-      handleDelete({ ...row, name: row.metadata?.name });
+      handleDelete({
+        ...row,
+        name: row.metadata?.name,
+        id: row.metadata?.name as any
+      });
     }
   });
 
@@ -226,7 +231,7 @@ const GPUServiceStorage: React.FC = () => {
         loadend={dataSource.loadend}
         dataSource={dataSource.dataList}
         image={<IconFont type="icon-storage-outlined" />}
-        filters={_.omit(queryParams, ['sort_by'])}
+        filters={_.pick(queryParams, ['search'])}
         noFoundText={intl.formatMessage({
           id: 'noresult.gpuservice.storage.nofound'
         })}
@@ -296,7 +301,7 @@ const GPUServiceStorage: React.FC = () => {
             }}
             sortDirections={TABLE_SORT_DIRECTIONS}
             showSorterTooltip={false}
-            rowKey="id"
+            rowKey={(record) => record.metadata?.name as any}
             onChange={handleTableChange}
             pagination={{
               size: 'middle',

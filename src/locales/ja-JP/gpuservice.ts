@@ -11,7 +11,7 @@ export default {
   'gpuservice.template.imagePullPolicy.never': '取得しない',
   'gpuservice.template.command': 'コンテナ起動コマンド',
   'gpuservice.template.command.placeholder':
-    '1行に1つの引数、例：\n/bin/bash\n-c\nyour command',
+    '引数はスペースで区切り、スペースを含む引数は引用符で囲んでください。例：/bin/bash -c "echo hello world"',
   'gpuservice.template.mountPath': 'マウントパス',
   'gpuservice.template.containerDisk': 'コンテナディスク (Gi)',
   'gpuservice.template.memory': 'メモリ (Gi)',
@@ -46,14 +46,16 @@ export default {
   'gpuservice.instance.gpuCount.max':
     '現在のインスタンスタイプは最大 {count} 個の GPU をサポートします',
   'gpuservice.instance.stock': '在庫',
-  'gpuservice.instance.memory': 'VRAM',
-  'gpuservice.instance.ram': 'メモリ',
+  'gpuservice.instance.memory': 'Memory',
+  'gpuservice.instance.ram': 'RAM',
   'gpuservice.instance.search.type.placeholder':
     '名前、VRAM、メモリまたは vCPU で検索',
   'gpuservice.instance.search.template.placeholder':
     'テンプレート名、イメージまたはマウントパスで検索',
   'gpuservice.instance.template.image': 'イメージ',
   'gpuservice.instance.template.mount': 'マウント',
+  'gpuservice.instance.connect': '接続',
+  'gpuservice.instance.connect.copySshCommand': 'SSH コマンドをコピー',
   'gpuservice.storage': 'ストレージ',
   'gpuservice.storage.add': 'ストレージを追加',
   'gpuservice.storage.edit': 'ストレージを編集',

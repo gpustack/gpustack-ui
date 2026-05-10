@@ -1,4 +1,24 @@
+import { StatusMaps } from '@/config';
+import { StatusType } from '@/config/types';
 import { icons } from '@gpustack/core-ui';
+
+export const StoragePhaseValueMap = {
+  Available: 'Available',
+  Unavailable: 'Unavailable',
+  Pending: 'Pending'
+};
+
+export const StoragePhaseLabelMap: Record<string, string> = {
+  [StoragePhaseValueMap.Available]: 'Available',
+  [StoragePhaseValueMap.Unavailable]: 'Unavailable',
+  [StoragePhaseValueMap.Pending]: 'Pending'
+};
+
+export const status: Record<string, StatusType> = {
+  [StoragePhaseValueMap.Available]: StatusMaps.success,
+  [StoragePhaseValueMap.Unavailable]: StatusMaps.error,
+  [StoragePhaseValueMap.Pending]: StatusMaps.transitioning
+};
 
 export const StorageTypeValueMap = {
   Local: 'local',

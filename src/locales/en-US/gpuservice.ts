@@ -11,7 +11,7 @@ export default {
   'gpuservice.template.imagePullPolicy.never': 'Never',
   'gpuservice.template.command': 'Container Startup Command',
   'gpuservice.template.command.placeholder':
-    'One argument per line, e.g.:\n/bin/bash\n-c\nyour command',
+    'Separate arguments with spaces; wrap arguments containing spaces in quotes, e.g.: /bin/bash -c "echo hello world"',
   'gpuservice.template.mountPath': 'Mount Path',
   'gpuservice.template.containerDisk': 'Container Disk (Gi)',
   'gpuservice.template.memory': 'Memory (Gi)',
@@ -48,14 +48,16 @@ export default {
   'gpuservice.instance.gpuCount.max':
     'The current instance type supports at most {count} GPU(s)',
   'gpuservice.instance.stock': 'Stock',
-  'gpuservice.instance.memory': 'VRAM',
-  'gpuservice.instance.ram': 'Memory',
+  'gpuservice.instance.memory': 'Memory',
+  'gpuservice.instance.ram': 'RAM',
   'gpuservice.instance.search.type.placeholder':
     'Search by name, VRAM, memory or vCPU',
   'gpuservice.instance.search.template.placeholder':
     'Search by template name, image or mount path',
   'gpuservice.instance.template.image': 'Image',
   'gpuservice.instance.template.mount': 'Mount',
+  'gpuservice.instance.connect': 'Connect',
+  'gpuservice.instance.connect.copySshCommand': 'Copy SSH Command',
   'gpuservice.storage': 'Storage',
   'gpuservice.storage.add': 'Add Storage',
   'gpuservice.storage.edit': 'Edit Storage',

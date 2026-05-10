@@ -82,7 +82,12 @@ export interface ListItem extends Omit<FormData, 'metadata'> {
   };
 }
 
-type Quality = `${number}Ki` | `${number}Gi`;
+type Quality =
+  | `${number}`
+  | `${number}Ki`
+  | `${number}Mi`
+  | `${number}Gi`
+  | `${number}Ti`;
 
 export interface InstanceTypeResource {
   capacity?: Quality;
@@ -90,30 +95,42 @@ export interface InstanceTypeResource {
   remaining?: Quality;
 }
 
+export interface InstanceTypeStatus {
+  accelerator: InstanceTypeResource;
+  cpu: InstanceTypeResource;
+  localStorage: InstanceTypeResource;
+  phase: string;
+  phaseMessage?: string;
+  ram: InstanceTypeResource;
+}
+
+export interface InstanceTypeMetadata {
+  name: string;
+  namespace?: string;
+  uid?: string;
+  resourceVersion?: string;
+  creationTimestamp?: string;
+  generateName?: string;
+  generation?: number;
+  finalizers?: string[];
+}
+
+export interface InstanceTypeSpec {
+  acceleratable: boolean;
+  group: string;
+  computeCapability?: string;
+  family?: string;
+  manufacturer?: string;
+  memory?: string;
+  product?: string;
+  sliced?: number;
+}
+
 export interface InstanceTypeItem {
   apiVersion: string;
   kind: string;
-  metadata: {
-    name: string;
-    namespace: string;
-  };
   id: number;
-  spec: {
-    acceleratable: boolean;
-    computeCapability?: string;
-    family?: string;
-    group: string;
-    manufacturer?: string;
-    memory?: string;
-    product?: string;
-    sliced?: number;
-  };
-  status: {
-    accelerator: InstanceTypeResource;
-    cpu: InstanceTypeResource;
-    localStorage: InstanceTypeResource;
-    phase: string;
-    phaseMessage?: string;
-    ram: InstanceTypeResource;
-  };
+  metadata: InstanceTypeMetadata;
+  spec: InstanceTypeSpec;
+  status: InstanceTypeStatus;
 }

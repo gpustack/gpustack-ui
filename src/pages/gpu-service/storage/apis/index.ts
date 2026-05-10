@@ -1,4 +1,5 @@
 import { request } from '@umijs/max';
+import { omitPathParams } from '../../utils';
 import { ListItem, StorageClassItem } from '../config/types';
 
 export const GPU_SERVICE_STORAGE_API = (params: {
@@ -17,6 +18,9 @@ export async function queryGPUServiceStorage(
   },
   options?: any
 ) {
+  if (!params.clusterID) {
+    return;
+  }
   return request<Global.K8sPageResponse<ListItem>>(
     GPU_SERVICE_STORAGE_API({
       namespace: params.namespace,
@@ -24,7 +28,7 @@ export async function queryGPUServiceStorage(
     }),
     {
       method: 'GET',
-      params,
+      params: omitPathParams(params),
       cancelToken: options?.token
     }
   );
@@ -38,6 +42,9 @@ export async function createGPUServiceStorage(
   },
   option?: any
 ) {
+  if (!params.clusterID) {
+    return;
+  }
   return request<ListItem>(
     GPU_SERVICE_STORAGE_API({
       namespace: params.namespace,
@@ -60,6 +67,9 @@ export async function updateGPUServiceStorage(
   },
   option?: any
 ) {
+  if (!params.clusterID) {
+    return;
+  }
   return request<ListItem>(
     `${GPU_SERVICE_STORAGE_API({
       namespace: params.namespace,
@@ -78,6 +88,9 @@ export async function deleteGPUServiceStorage(params: {
   clusterID?: number;
   id: number;
 }) {
+  if (!params.clusterID) {
+    return;
+  }
   return request(
     `${GPU_SERVICE_STORAGE_API({
       namespace: params.namespace,
@@ -95,11 +108,14 @@ export async function queryStorageClass(
   },
   options?: any
 ) {
+  if (!params.clusterID) {
+    return;
+  }
   return request<Global.K8sPageResponse<StorageClassItem>>(
     STORAGE_CLASS_API({ clusterID: params.clusterID }),
     {
       method: 'GET',
-      params,
+      params: omitPathParams(params),
       cancelToken: options?.token
     }
   );

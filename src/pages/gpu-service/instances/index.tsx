@@ -1,11 +1,11 @@
 import { currentClusterAtom } from '@/atoms/gpuservice';
+import { getCurrentOrganizationId } from '@/atoms/user';
 import { PageAction } from '@/config';
 import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import type { PageActionType } from '@/config/types';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { ProviderValueMap } from '@/pages/cluster-management/config';
 import { useQueryClusterList } from '@/pages/cluster-management/services/use-query-cluster-list';
-import { useModel } from '@@/plugin-model';
 import {
   BaseSelect,
   DeleteModal,
@@ -33,8 +33,7 @@ import useUpdateInstance from './services/use-update-instance';
 
 const GPUService: React.FC = () => {
   const intl = useIntl();
-  const { initialState } = useModel('@@initialState');
-  const namespace = initialState?.currentUser?.org_name || 'default';
+  const namespace = getCurrentOrganizationId();
   const [currentCluster, setCurrentCluster] = useAtom(currentClusterAtom);
   const clusterID = currentCluster?.id;
 
@@ -43,12 +42,13 @@ const GPUService: React.FC = () => {
     [namespace, clusterID]
   );
 
-  const fetchInstances = useCallback(
+  const fetchInstances = useMemoizedFn(
     async (
       params: any,
       options?: any
     ): Promise<Global.PageResponse<ListItem>> => {
-      if (!clusterID) {
+      const effectiveClusterID = params.cluster_id ?? clusterID;
+      if (!effectiveClusterID) {
         return {
           items: [],
           pagination: {
@@ -60,7 +60,7 @@ const GPUService: React.FC = () => {
         } as Global.PageResponse<ListItem>;
       }
       const res = await queryGPUServiceInstances(
-        { ...params, namespace, clusterID: params.cluster_id ?? clusterID },
+        { ...params, namespace, clusterID: effectiveClusterID },
         options
       );
       const total = res.items?.length ?? 0;
@@ -74,8 +74,7 @@ const GPUService: React.FC = () => {
           perPage
         }
       };
-    },
-    [namespace, clusterID]
+    }
   );
 
   const {
@@ -96,7 +95,8 @@ const GPUService: React.FC = () => {
     key: PaginationKey.Instances,
     fetchAPI: fetchInstances,
     deleteAPI: deleteInstance,
-    watch: true,
+    watch: false,
+    polling: true,
     API: GPU_SERVICE_INSTANCES_API({ namespace, clusterID }),
     contentForDelete: intl.formatMessage({ id: 'gpuservice.instance' })
   });
@@ -134,18 +134,24 @@ const GPUService: React.FC = () => {
       const k8sClusters = clusters.filter(
         (item: any) => item.provider === ProviderValueMap.Kubernetes
       );
-      if (k8sClusters.length > 0) {
-        const firstCluster = k8sClusters[0];
+      if (k8sClusters.length === 0) {
+        return;
+      }
+      const storedCluster = k8sClusters.find(
+        (item: any) => item.id === currentCluster?.id
+      );
+      const targetCluster = storedCluster ?? k8sClusters[0];
+      if (!storedCluster) {
         setCurrentCluster({
-          ...firstCluster,
-          label: firstCluster.name,
-          value: firstCluster.id
-        });
-        handleQueryChange({
-          cluster_id: firstCluster.id,
-          page: 1
+          ...targetCluster,
+          label: targetCluster.name,
+          value: targetCluster.id
         });
       }
+      handleQueryChange({
+        cluster_id: targetCluster.id,
+        page: 1
+      });
     });
     return () => {
       cancelClusterRequest();
@@ -202,7 +208,11 @@ const GPUService: React.FC = () => {
     if (val === 'edit') {
       handleEditInstance(row);
     } else if (val === 'delete') {
-      handleDelete({ ...row, name: row.metadata?.name });
+      handleDelete({
+        ...row,
+        name: row.metadata?.name,
+        id: row.metadata?.name as any
+      });
     }
   });
 
@@ -225,7 +235,7 @@ const GPUService: React.FC = () => {
         loadend={dataSource.loadend}
         dataSource={dataSource.dataList}
         image={<IconFont type="icon-cloud-outlined" />}
-        filters={_.omit(queryParams, ['sort_by'])}
+        filters={_.pick(queryParams, ['search', 'manufacturer'])}
         noFoundText={intl.formatMessage({
           id: 'noresult.gpuservice.instance.nofound'
         })}

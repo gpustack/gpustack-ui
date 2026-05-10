@@ -12,7 +12,7 @@ export default {
   'gpuservice.template.imagePullPolicy.never': 'Никогда не загружать',
   'gpuservice.template.command': 'Команда запуска контейнера',
   'gpuservice.template.command.placeholder':
-    'Один аргумент на строку, например:\n/bin/bash\n-c\nyour command',
+    'Разделяйте аргументы пробелами; аргументы с пробелами заключайте в кавычки, например: /bin/bash -c "echo hello world"',
   'gpuservice.template.mountPath': 'Путь монтирования',
   'gpuservice.template.containerDisk': 'Диск контейнера (Gi)',
   'gpuservice.template.memory': 'Память (Gi)',
@@ -48,14 +48,16 @@ export default {
   'gpuservice.instance.gpuCount.max':
     'Текущий тип экземпляра поддерживает максимум {count} GPU',
   'gpuservice.instance.stock': 'Остаток',
-  'gpuservice.instance.memory': 'VRAM',
-  'gpuservice.instance.ram': 'Память',
+  'gpuservice.instance.memory': 'Память',
+  'gpuservice.instance.ram': 'RAM',
   'gpuservice.instance.search.type.placeholder':
     'Поиск по имени, VRAM, памяти или vCPU',
   'gpuservice.instance.search.template.placeholder':
     'Поиск по имени шаблона, образу или пути монтирования',
   'gpuservice.instance.template.image': 'Образ',
   'gpuservice.instance.template.mount': 'Монтирование',
+  'gpuservice.instance.connect': 'Подключение',
+  'gpuservice.instance.connect.copySshCommand': 'Скопировать команду SSH',
   'gpuservice.storage': 'Хранилище',
   'gpuservice.storage.add': 'Добавить хранилище',
   'gpuservice.storage.edit': 'Редактировать хранилище',

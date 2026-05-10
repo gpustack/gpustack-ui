@@ -1,4 +1,4 @@
-import { useModel } from '@@/plugin-model';
+import { getCurrentOrganizationId } from '@/atoms/user';
 import { InputNumber as CInputNumber, Select } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Flex, Form, Radio } from 'antd';
@@ -8,7 +8,7 @@ import { FormData as StorageFormData } from '../../storage/config/types';
 import useCreateStorage from '../../storage/services/use-create-storage';
 import useQueryStorage from '../../storage/services/use-query-storage';
 import { StorageModeValueMap } from '../config';
-import { FormData, InstanceVolume } from '../config/types';
+import { FormData } from '../config/types';
 import StorageOverlay from './storage-overlay';
 
 const FieldBlock = styled.div`
@@ -19,32 +19,21 @@ const DEFAULT_TEMP_CAPACITY_GB = 50;
 
 const StorageVolume = () => {
   const intl = useIntl();
-  const { initialState } = useModel('@@initialState');
   const { fetchData: createStorage } = useCreateStorage();
   const { detailData: storageData, fetchData: fetchStorage } =
     useQueryStorage();
   const [overlayOpen, setOverlayOpen] = useState(false);
   const [storageMode, setStorageMode] = useState<string>(
-    StorageModeValueMap.Existing
+    StorageModeValueMap.Temporary
   );
 
   const form = Form.useFormInstance<FormData>();
-  const volume = Form.useWatch(['spec', 'volume'], form) as
-    | InstanceVolume
-    | undefined;
 
-  const namespace = initialState?.currentUser?.org_name || 'default';
+  const namespace = getCurrentOrganizationId();
 
   useEffect(() => {
     fetchStorage({});
   }, []);
-
-  // const storageMode = useMemo(() => {
-  //   if (volume?.ephemeral && !volume?.persistent) {
-  //     return StorageModeValueMap.Temporary;
-  //   }
-  //   return StorageModeValueMap.Existing;
-  // }, [volume?.ephemeral, volume?.persistent]);
 
   const storageOptions = useMemo(
     () =>
@@ -95,14 +84,14 @@ const StorageVolume = () => {
           onChange={(e) => handleModeChange(e.target.value)}
           options={[
             {
+              label: intl.formatMessage({ id: 'gpuservice.storage.temporary' }),
+              value: StorageModeValueMap.Temporary
+            },
+            {
               label: intl.formatMessage({
                 id: 'gpuservice.storage.persistent'
               }),
               value: StorageModeValueMap.Existing
-            },
-            {
-              label: intl.formatMessage({ id: 'gpuservice.storage.temporary' }),
-              value: StorageModeValueMap.Temporary
             }
           ]}
         />

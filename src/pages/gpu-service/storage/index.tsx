@@ -136,18 +136,24 @@ const GPUServiceStorage: React.FC = () => {
       const k8sClusters = clusters.filter(
         (item: any) => item.provider === ProviderValueMap.Kubernetes
       );
-      if (k8sClusters.length > 0) {
-        const firstCluster = k8sClusters[0];
+      if (k8sClusters.length === 0) {
+        return;
+      }
+      const storedCluster = k8sClusters.find(
+        (item: any) => item.id === currentCluster?.id
+      );
+      const targetCluster = storedCluster ?? k8sClusters[0];
+      if (!storedCluster) {
         setCurrentCluster({
-          ...firstCluster,
-          label: firstCluster.name,
-          value: firstCluster.id
-        });
-        handleQueryChange({
-          cluster_id: firstCluster.id,
-          page: 1
+          ...targetCluster,
+          label: targetCluster.name,
+          value: targetCluster.id
         });
       }
+      handleQueryChange({
+        cluster_id: targetCluster.id,
+        page: 1
+      });
     });
     return () => {
       cancelClusterRequest();

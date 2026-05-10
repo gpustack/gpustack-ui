@@ -40,7 +40,7 @@ export const status: Record<string, StatusType> = {
   [InstanceStatusValueMap.InitializeFailed]: StatusMaps.error,
   [InstanceStatusValueMap.Initialized]: StatusMaps.transitioning,
   [InstanceStatusValueMap.Preparing]: StatusMaps.transitioning,
-  [InstanceStatusValueMap.NotReady]: StatusMaps.warning,
+  [InstanceStatusValueMap.NotReady]: StatusMaps.error,
   [InstanceStatusValueMap.Ready]: StatusMaps.success
 };
 
@@ -90,13 +90,19 @@ export const StorageModeValueMap = {
 // Constant SSH public key resource name used when SSH is enabled
 export const DEFAULT_SSH_PUBLIC_KEY_NAME = 'default';
 
-const KI_TO_GI = 1024 * 1024;
+const GI_DIVISOR: Record<string, number> = {
+  Ki: 1024 * 1024,
+  Mi: 1024,
+  Gi: 1
+};
 
 export const convertKiToGi = (value?: string): string | undefined => {
   if (!value) return value;
-  const match = /^(-?\d+(?:\.\d+)?)Ki$/.exec(value);
+  const match = /^(-?\d+(?:\.\d+)?)(Ki|Mi|Gi|Ti)$/.exec(value);
   if (!match) return value;
-  return `${_.round(Number(match[1]) / KI_TO_GI, 2)}Gi`;
+  const [, num, unit] = match;
+  if (unit === 'Ti') return `${_.round(Number(num), 2)}Ti`;
+  return `${_.round(Number(num) / GI_DIVISOR[unit], 2)}Gi`;
 };
 
 export const transformInstanceTypeResource = (

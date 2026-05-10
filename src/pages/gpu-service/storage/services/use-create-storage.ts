@@ -1,5 +1,5 @@
 import { currentClusterAtom } from '@/atoms/gpuservice';
-import { useModel } from '@@/plugin-model';
+import { getCurrentOrganizationId } from '@/atoms/user';
 import { useQueryData } from '@gpustack/core-ui';
 import { useAtomValue } from 'jotai';
 import { useCallback } from 'react';
@@ -12,8 +12,7 @@ interface CreateStorageParams {
 }
 
 export default function useCreateStorage() {
-  const { initialState } = useModel('@@initialState');
-  const namespace = initialState?.currentUser?.org_name || 'default';
+  const namespace = getCurrentOrganizationId();
   const currentCluster = useAtomValue(currentClusterAtom);
   const clusterID = currentCluster?.id;
 

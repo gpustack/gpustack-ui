@@ -1,3 +1,4 @@
+import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import Separator from '@/pages/llmodels/components/separator';
 import { SearchOutlined } from '@ant-design/icons';
@@ -61,20 +62,32 @@ const AddModal: React.FC<AddModalProps> = ({
 }) => {
   const intl = useIntl();
   const form = useRef<any>(null);
+  const autoSelectedRef = useRef(false);
   const [selectedInstanceType, setSelectedInstanceType] = useState<string>();
   const [selectedManufacturer, setSelectedManufacturer] = useState<string>();
   const [templateId, setTemplateId] = useState<number>();
   const [instanceKeyword, setInstanceKeyword] = useState('');
   const [templateKeyword, setTemplateKeyword] = useState('');
 
-  const { detailData, fetchData } = useQueryInstanceTypes();
+  const {
+    detailData,
+    loading: instanceTypesLoading,
+    fetchData
+  } = useQueryInstanceTypes();
   const { detailData: templatesData, fetchData: fetchTemplates } =
     useQueryTemplates();
 
   useEffect(() => {
     if (open) {
+      autoSelectedRef.current = false;
       fetchData({});
       fetchTemplates({ page: 1, perPage: 100 });
+    } else {
+      setSelectedInstanceType(undefined);
+      setSelectedManufacturer(undefined);
+      setTemplateId(undefined);
+      setInstanceKeyword('');
+      setTemplateKeyword('');
     }
   }, [open, fetchData, fetchTemplates]);
 
@@ -118,6 +131,59 @@ const AddModal: React.FC<AddModalProps> = ({
       )
     );
   }, [templateKeyword, manufacturerMatchedTemplates]);
+
+  useEffect(() => {
+    if (!open) return;
+    if (action !== PageAction.CREATE) return;
+    if (autoSelectedRef.current) return;
+    if (!instanceTypeList.length) return;
+    if (!templatesData) return;
+
+    const firstInstanceType = instanceTypeList[0];
+    const manufacturer = firstInstanceType.spec?.manufacturer;
+    const name = firstInstanceType.metadata?.name;
+    const matchedTemplate = manufacturer
+      ? templateList.find((t) => t.manufacturer === manufacturer)
+      : templateList[0];
+
+    autoSelectedRef.current = true;
+    setSelectedInstanceType(name);
+    setSelectedManufacturer(manufacturer);
+    if (matchedTemplate) {
+      setTemplateId(matchedTemplate.id);
+    }
+
+    const applyToForm = () => {
+      const currentSpec = form.current?.getFieldsValue()?.spec || {};
+      const updatedSpec = {
+        ...currentSpec,
+        type: name,
+        resources: { ...(currentSpec.resources || {}), accelerator: '1' }
+      };
+
+      if (matchedTemplate) {
+        form.current?.setFieldsValue({
+          manufacturer: matchedTemplate.manufacturer,
+          spec: {
+            ...updatedSpec,
+            ...matchedTemplate.spec,
+            resources: {
+              ...(updatedSpec.resources || {}),
+              ...(matchedTemplate.spec?.resources || {})
+            }
+          }
+        });
+      } else {
+        form.current?.setFieldsValue({ spec: updatedSpec });
+      }
+    };
+
+    if (form.current) {
+      applyToForm();
+    } else {
+      queueMicrotask(applyToForm);
+    }
+  }, [open, action, instanceTypeList, templateList, templatesData]);
 
   const handleSubmit = () => {
     form.current?.submit();
@@ -229,15 +295,12 @@ const AddModal: React.FC<AddModalProps> = ({
                   onChange={(e) => setInstanceKeyword(e.target.value)}
                 />
               </div>
-              {filteredInstanceTypes.length > 0 ? (
-                <InstanceTypeList
-                  value={selectedInstanceType}
-                  dataList={filteredInstanceTypes}
-                  onChange={handleInstanceTypeChange}
-                />
-              ) : (
-                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-              )}
+              <InstanceTypeList
+                value={selectedInstanceType}
+                dataList={filteredInstanceTypes}
+                loading={instanceTypesLoading}
+                onChange={handleInstanceTypeChange}
+              />
             </PanelBody>
           </ColumnWrapper>
           <Separator></Separator>

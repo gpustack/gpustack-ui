@@ -7,10 +7,13 @@ import {
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Flex, Form } from 'antd';
-import _ from 'lodash';
 import { useMemo } from 'react';
 import { GPUsConfigs } from '../../../resources/config/gpu-driver';
-import { ImagePullPolicyOptions } from '../config';
+import {
+  ImagePullPolicyOptions,
+  normalizeCommand,
+  stringifyCommand
+} from '../config';
 import { FormData } from '../config/types';
 import Env from './env';
 import Ports from './ports';
@@ -96,8 +99,8 @@ const Basic: React.FC<BasicProps> = ({ page = 'template' }) => {
       </Form.Item>
       <Form.Item<FormData>
         name={['spec', 'command']}
-        normalize={(value: string) => _.split(value, '\n').map(_.trim)}
-        getValueProps={(value) => ({ value: _.join(value, '\n') })}
+        normalize={normalizeCommand}
+        getValueProps={(value) => ({ value: stringifyCommand(value) })}
       >
         <Textarea
           label={intl.formatMessage({ id: 'gpuservice.template.command' })}

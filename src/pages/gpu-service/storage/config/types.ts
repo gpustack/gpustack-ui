@@ -32,12 +32,23 @@ export interface Metadata {
   resourceVersion: string;
   creationTimestamp: string;
   annotations?: Record<string, string>;
+  finalizers?: string[];
   managedFields?: ManagedField[];
 }
 
-export interface ListItem extends Omit<FormData, 'metadata'> {
-  id: number;
+export interface ListItem {
   metadata: Metadata;
+  spec: {
+    type: string;
+    capacity: string;
+    accessMode: AccessModeType;
+  };
+  status: {
+    phase: 'Available' | 'Unavailable' | 'Pending';
+    volume: {
+      name: string;
+    };
+  };
 }
 
 export interface StorageClassItem {

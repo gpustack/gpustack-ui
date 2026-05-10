@@ -27,3 +27,14 @@ export const initialPasswordAtom = atomWithStorage<string>(
   'initialPassword',
   ''
 );
+
+export const getCurrentOrganizationId = (): string => {
+  try {
+    const raw = localStorage.getItem('currentOrganizationId');
+    if (raw) {
+      const value = JSON.parse(raw);
+      if (value != null) return String(value);
+    }
+  } catch {}
+  return 'gpustack-organization-1';
+};

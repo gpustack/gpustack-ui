@@ -1,10 +1,14 @@
-import { AutoTooltip, InputNumber as CInputNumber } from '@gpustack/core-ui';
+import { InputNumber as CInputNumber } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Flex, Form, Tag } from 'antd';
+import { Form } from 'antd';
 import { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
+import InstanceTypeItem from '../components/instance-type-item';
 import { InstanceTypePhaseValueMap } from '../config';
-import { FormData, InstanceTypeItem } from '../config/types';
+import {
+  FormData,
+  InstanceTypeItem as InstanceTypeItemModel
+} from '../config/types';
 import useQueryInstanceTypes from '../services/use-query-instance-types';
 
 const FieldBlock = styled.div`
@@ -12,87 +16,31 @@ const FieldBlock = styled.div`
 `;
 
 const SelectedCard = styled.div`
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) max-content;
-  align-items: center;
-  gap: 12px;
   padding: 14px;
   border: 1px solid var(--ant-color-border);
   border-radius: var(--ant-border-radius-lg);
   background: var(--ant-color-bg-container);
 `;
 
-const SummaryTitle = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
-  color: var(--ant-color-text);
-  font-weight: 500;
-`;
-
-const SummaryMeta = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  color: var(--ant-color-text-secondary);
-  font-size: 13px;
-`;
-
 interface InstanceTypePickerProps {
   value?: string;
-  dataList: InstanceTypeItem[];
+  dataList: InstanceTypeItemModel[];
 }
 
 const InstanceTypePicker: React.FC<InstanceTypePickerProps> = ({
   value,
   dataList
 }) => {
-  const intl = useIntl();
   const selected = useMemo(() => {
     return dataList.find((item) => (item.metadata?.name || '') === value);
   }, [value, dataList]);
 
+  if (!selected) return null;
+
   return (
-    <>
-      <SelectedCard>
-        <div>
-          <SummaryTitle>
-            <Flex gap={16} align="center">
-              <AutoTooltip ghost minWidth={20}>
-                {selected?.metadata?.name || '-'}
-              </AutoTooltip>
-              {selected && selected.spec?.acceleratable && (
-                <Tag
-                  style={{
-                    fontWeight: 400,
-                    color: 'var(--ant-color-text-tertiary)'
-                  }}
-                >
-                  {intl.formatMessage({ id: 'gpuservice.instance.stock' })}{' '}
-                  {selected?.status?.accelerator?.remaining ?? '-'}
-                </Tag>
-              )}
-            </Flex>
-          </SummaryTitle>
-          <SummaryMeta>
-            {selected?.spec?.acceleratable && (
-              <span>
-                {intl.formatMessage({ id: 'gpuservice.instance.memory' })}{' '}
-                {selected?.spec?.memory ?? '-'}
-              </span>
-            )}
-            <Flex gap={16}>
-              <span>
-                {intl.formatMessage({ id: 'gpuservice.instance.ram' })}{' '}
-                {selected?.status?.ram?.capacity ?? '-'}
-              </span>
-              <span>vCPU {selected?.status?.cpu?.capacity ?? '-'}</span>
-            </Flex>
-          </SummaryMeta>
-        </div>
-      </SelectedCard>
-    </>
+    <SelectedCard>
+      <InstanceTypeItem item={selected} showStatus={false} />
+    </SelectedCard>
   );
 };
 
@@ -114,8 +62,9 @@ const InstanceTypeFormItem = () => {
   }, [dataList, typeName]);
 
   const maxGpuCount = useMemo(() => {
-    const remaining = selectedInstanceType?.status?.accelerator?.remaining;
-    const num = remaining ? Number(remaining) : NaN;
+    const onceMaxRequest =
+      selectedInstanceType?.status?.accelerator?.onceMaxRequest;
+    const num = onceMaxRequest ? Number(onceMaxRequest) : NaN;
     return Number.isFinite(num) && num > 0 ? num : 1;
   }, [selectedInstanceType]);
 

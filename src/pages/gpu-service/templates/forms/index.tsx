@@ -61,13 +61,20 @@ const GPUServiceTemplateForm: React.FC<TemplateFormProps> = forwardRef(
         initialValues={{
           spec: {
             imagePullPolicy: DefaultImagePullPolicy,
-            command: [],
+            command: ['tail', '-f', '/dev/null'],
             ports: [
               {
                 protocol: 'TCP',
                 port: 22
               }
             ],
+            volumeMount: '/workspace',
+            resources: {
+              cpu: '1',
+              ram: '2Gi',
+              localStorage: '15Gi',
+              accelerator: ''
+            },
             env: []
           }
         }}

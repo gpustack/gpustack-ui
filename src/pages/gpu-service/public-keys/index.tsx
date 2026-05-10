@@ -1,7 +1,6 @@
-import { INPUT_WIDTH } from '@/constants';
 import { Input as CInput, Textarea, useAppUtils } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Button, Form } from 'antd';
+import { Button, Form, message } from 'antd';
 import React, { useEffect } from 'react';
 import PageBox from '../../_components/page-box';
 import useGetSshkey from './services/use-get-sshkey';
@@ -36,6 +35,7 @@ const GPUServicePublicKeys: React.FC = () => {
       await updateSshkey({
         data: values
       });
+      message.success(intl.formatMessage({ id: 'common.message.success' }));
     } catch (error) {
       // ignore
     }
@@ -44,7 +44,7 @@ const GPUServicePublicKeys: React.FC = () => {
   return (
     <PageBox>
       <Form
-        style={{ width: INPUT_WIDTH.large }}
+        style={{ width: 700 }}
         name="gpuServicePublicKeyForm"
         form={form}
         onFinish={onFinish}
@@ -76,7 +76,7 @@ const GPUServicePublicKeys: React.FC = () => {
             trim={false}
             alwaysFocus
             autoSize={{ minRows: 8, maxRows: 16 }}
-            style={{ width: INPUT_WIDTH.large, minHeight: 186 }}
+            style={{ width: 700, minHeight: 186 }}
           />
         </Form.Item>
         <Button

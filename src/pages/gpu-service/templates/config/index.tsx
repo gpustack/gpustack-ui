@@ -35,6 +35,49 @@ export const ImagePullPolicyOptions: {
 
 export const DefaultImagePullPolicy: ImagePullPolicy = 'IfNotPresent';
 
+export const normalizeCommand = (value: string): string[] => {
+  if (!value) return [];
+  const tokens: string[] = [];
+  let current = '';
+  let inQuote: '"' | "'" | null = null;
+  let quoteStart = -1;
+  for (const ch of value) {
+    if (inQuote) {
+      if (ch === inQuote) {
+        inQuote = null;
+        quoteStart = -1;
+      } else {
+        current += ch;
+      }
+    } else if (ch === '"' || ch === "'") {
+      inQuote = ch;
+      quoteStart = current.length;
+    } else if (/\s/.test(ch)) {
+      tokens.push(current);
+      current = '';
+    } else {
+      current += ch;
+    }
+  }
+  if (inQuote && quoteStart >= 0) {
+    current =
+      current.slice(0, quoteStart) + inQuote + current.slice(quoteStart);
+  }
+  tokens.push(current);
+  return tokens;
+};
+
+export const stringifyCommand = (tokens?: string[]): string => {
+  if (!tokens?.length) return '';
+  return tokens
+    .map((token) => {
+      if (!/\s/.test(token)) return token;
+      if (token.startsWith('"') || token.startsWith("'")) return token;
+      return `"${token}"`;
+    })
+    .join(' ');
+};
+
 export const templateActions = [
   {
     label: 'common.button.edit',

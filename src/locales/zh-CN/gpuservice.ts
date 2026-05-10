@@ -11,7 +11,7 @@ export default {
   'gpuservice.template.imagePullPolicy.never': '从不拉取',
   'gpuservice.template.command': '容器启动命令',
   'gpuservice.template.command.placeholder':
-    '每行一个参数，例如：\n/bin/bash\n-c\nyour command',
+    '使用空格分隔参数；含空格的参数请用引号包裹，例如：/bin/bash -c "echo hello world"',
   'gpuservice.template.mountPath': '挂载路径',
   'gpuservice.template.containerDisk': '容器磁盘(Gi)',
   'gpuservice.template.memory': '内存(Gi)',
@@ -52,6 +52,8 @@ export default {
     '搜索模板名称、镜像或挂载路径',
   'gpuservice.instance.template.image': '镜像',
   'gpuservice.instance.template.mount': '挂载',
+  'gpuservice.instance.connect': '连接',
+  'gpuservice.instance.connect.copySshCommand': '复制 SSH 命令',
   'gpuservice.storage': '存储',
   'gpuservice.storage.add': '添加存储',
   'gpuservice.storage.edit': '编辑存储',

@@ -1,10 +1,14 @@
-import { tableSorter } from '@/config/settings';
-import { AutoTooltip, DropdownButtons } from '@gpustack/core-ui';
+import { AutoTooltip, DropdownButtons, StatusTag } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import type { ColumnsType } from 'antd/lib/table';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
-import { rowActionList, StorageTypeLabelMap } from '../config';
+import {
+  rowActionList,
+  status,
+  StoragePhaseLabelMap,
+  StorageTypeLabelMap
+} from '../config';
 import { ListItem } from '../config/types';
 
 interface ColumnsHookProps {
@@ -23,7 +27,7 @@ const useStorageColumns = ({
         title: intl.formatMessage({ id: 'common.table.name' }),
         dataIndex: ['metadata', 'name'],
         key: 'name',
-        sorter: tableSorter(1),
+        sorter: false,
         ellipsis: {
           showTitle: false
         },
@@ -37,7 +41,7 @@ const useStorageColumns = ({
         title: intl.formatMessage({ id: 'common.table.type' }),
         dataIndex: ['spec', 'type'],
         key: 'type',
-        sorter: tableSorter(2),
+        sorter: false,
         render: (value: string) =>
           StorageTypeLabelMap[value]
             ? intl.formatMessage({ id: StorageTypeLabelMap[value] })
@@ -47,21 +51,28 @@ const useStorageColumns = ({
         title: intl.formatMessage({ id: 'gpuservice.storage.capacity' }),
         dataIndex: ['spec', 'capacity'],
         key: 'capacity',
-        sorter: tableSorter(3),
+        sorter: false,
         render: (value: string) => value ?? '-'
       },
       {
-        title: intl.formatMessage({ id: 'gpuservice.storage.accessMode' }),
-        dataIndex: ['spec', 'accessMode'],
-        key: 'accessMode',
-        sorter: tableSorter(4),
-        render: (value: string) => value || '-'
+        title: intl.formatMessage({ id: 'common.table.status' }),
+        dataIndex: ['status', 'phase'],
+        key: 'status',
+        sorter: false,
+        render: (value: string) => (
+          <StatusTag
+            statusValue={{
+              status: status[value],
+              text: StoragePhaseLabelMap[value] || value
+            }}
+          ></StatusTag>
+        )
       },
       {
         title: intl.formatMessage({ id: 'common.table.createTime' }),
         dataIndex: ['metadata', 'creationTimestamp'],
         key: 'creationTimestamp',
-        sorter: tableSorter(5),
+        sorter: false,
         ellipsis: {
           showTitle: false
         },

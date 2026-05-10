@@ -1,13 +1,11 @@
-import { AutoTooltip, StatusTag, TemplateCard } from '@gpustack/core-ui';
-import { useIntl } from '@umijs/max';
-import { Flex, Tag } from 'antd';
+import FileSkeleton from '@/pages/llmodels/components/model-source/file-skeleton';
+import { TemplateCard } from '@gpustack/core-ui';
+import { Empty, Spin } from 'antd';
+import _ from 'lodash';
 import styled from 'styled-components';
-import {
-  InstanceTypePhaseLabelMap,
-  InstanceTypePhaseStatus,
-  InstanceTypePhaseValueMap
-} from '../config';
-import { InstanceTypeItem } from '../config/types';
+import { InstanceTypePhaseValueMap } from '../config';
+import { InstanceTypeItem as InstanceTypeItemModel } from '../config/types';
+import InstanceTypeItem from './instance-type-item';
 
 const TypeGrid = styled.div`
   display: flex;
@@ -15,52 +13,41 @@ const TypeGrid = styled.div`
   gap: 16px;
 `;
 
-const TypeName = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 12px;
-  color: var(--ant-color-text);
-  font-weight: 500;
-`;
-
-const TypeMeta = styled.div`
-  display: grid;
-  gap: 8px;
-  color: var(--ant-color-text-secondary);
-  font-size: 13px;
-
-  .meta-row {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
-
-  .icon {
-    color: var(--ant-color-text-quaternary);
-  }
-`;
-
 interface InstanceTypeListProps {
   value?: string;
-  onChange?: (item: InstanceTypeItem) => void;
-  dataList?: InstanceTypeItem[];
+  onChange?: (item: InstanceTypeItemModel) => void;
+  dataList?: InstanceTypeItemModel[];
+  loading?: boolean;
 }
 
-const isAvailable = (item: InstanceTypeItem) =>
+const isAvailable = (item: InstanceTypeItemModel) =>
   item.status?.phase === InstanceTypePhaseValueMap.Active;
 
 const InstanceTypeList: React.FC<InstanceTypeListProps> = ({
   value,
   onChange,
-  dataList = []
+  dataList = [],
+  loading
 }) => {
-  const intl = useIntl();
-  const handleSelect = (item: InstanceTypeItem) => {
+  const handleSelect = (item: InstanceTypeItemModel) => {
     if (!isAvailable(item)) return;
     onChange?.(item);
   };
+
+  if (!dataList.length) {
+    if (loading) {
+      return (
+        <Spin spinning size="middle">
+          <TypeGrid style={{ minHeight: 200 }}>
+            {_.times(6, (index: number) => (
+              <FileSkeleton key={index} counts={3} itemHeight={106} />
+            ))}
+          </TypeGrid>
+        </Spin>
+      );
+    }
+    return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />;
+  }
 
   return (
     <TypeGrid>
@@ -78,58 +65,7 @@ const InstanceTypeList: React.FC<InstanceTypeListProps> = ({
             disabled={disabled}
             onClick={() => handleSelect(item)}
           >
-            <TypeName>
-              <Flex gap={8} align="center">
-                <AutoTooltip ghost minWidth={20}>
-                  {name}
-                </AutoTooltip>
-              </Flex>
-              <Flex gap={8} align="center">
-                {item.status?.phase && (
-                  <StatusTag
-                    statusValue={{
-                      status:
-                        InstanceTypePhaseStatus[item.status.phase] ??
-                        'inactive',
-                      text:
-                        InstanceTypePhaseLabelMap[item.status.phase] ??
-                        item.status.phase,
-                      message: ''
-                    }}
-                  />
-                )}
-                {item.spec?.acceleratable && (
-                  <Tag
-                    style={{
-                      fontWeight: 400,
-                      color: 'var(--ant-color-text-tertiary)'
-                    }}
-                  >
-                    <span>
-                      {intl.formatMessage({ id: 'gpuservice.instance.stock' })}{' '}
-                      {item.status?.accelerator?.remaining ?? '-'}
-                    </span>
-                  </Tag>
-                )}
-              </Flex>
-            </TypeName>
-            <TypeMeta>
-              <span style={{ display: 'flex', height: 15 }}>
-                {item.spec?.acceleratable && (
-                  <span className="meta-row">
-                    {intl.formatMessage({ id: 'gpuservice.instance.memory' })}{' '}
-                    {item.spec?.memory ?? '-'}
-                  </span>
-                )}
-              </span>
-              <span className="meta-row gap-16">
-                <span>
-                  {intl.formatMessage({ id: 'gpuservice.instance.ram' })}{' '}
-                  {item.status?.ram?.capacity ?? '-'}
-                </span>
-                <span>vCPU {item.status?.cpu?.capacity ?? '-'}</span>
-              </span>
-            </TypeMeta>
+            <InstanceTypeItem item={item} />
           </TemplateCard>
         );
       })}

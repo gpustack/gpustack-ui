@@ -33,6 +33,7 @@ import useCreateStorage from './services/use-create-storage';
 import useUpdateStorage from './services/use-update-storage';
 
 const GPUServiceStorage: React.FC = () => {
+  const intl = useIntl();
   const { initialState } = useModel('@@initialState');
   const namespace = initialState?.currentUser?.org_name || 'default';
   const [currentCluster, setCurrentCluster] = useAtom(currentClusterAtom);
@@ -98,7 +99,7 @@ const GPUServiceStorage: React.FC = () => {
     deleteAPI: deleteStorage,
     watch: false,
     API: GPU_SERVICE_STORAGE_API({ namespace, clusterID }),
-    contentForDelete: '存储'
+    contentForDelete: intl.formatMessage({ id: 'gpuservice.storage' })
   });
 
   const { fetchData: createStorage } = useCreateStorage();
@@ -108,7 +109,6 @@ const GPUServiceStorage: React.FC = () => {
     cancelRequest: cancelClusterRequest,
     clusterList
   } = useQueryClusterList();
-  const intl = useIntl();
 
   const k8sClusterList = useMemo(
     () =>
@@ -156,7 +156,7 @@ const GPUServiceStorage: React.FC = () => {
   const handleAddStorage = () => {
     setOpenAddModalStatus({
       action: PageAction.CREATE,
-      title: '添加存储',
+      title: intl.formatMessage({ id: 'gpuservice.storage.add' }),
       open: true,
       currentData: null
     });
@@ -165,7 +165,7 @@ const GPUServiceStorage: React.FC = () => {
   const handleEditStorage = (row: ListItem) => {
     setOpenAddModalStatus({
       action: PageAction.EDIT,
-      title: '编辑存储',
+      title: intl.formatMessage({ id: 'gpuservice.storage.edit' }),
       open: true,
       currentData: row
     });
@@ -193,9 +193,9 @@ const GPUServiceStorage: React.FC = () => {
 
       fetchData();
       closeModal();
-      message.success('操作成功');
+      message.success(intl.formatMessage({ id: 'common.message.success' }));
     } catch (error) {
-      message.error('操作失败');
+      message.error(intl.formatMessage({ id: 'common.message.fail' }));
     }
   };
 
@@ -227,11 +227,15 @@ const GPUServiceStorage: React.FC = () => {
         dataSource={dataSource.dataList}
         image={<IconFont type="icon-storage-outlined" />}
         filters={_.omit(queryParams, ['sort_by'])}
-        noFoundText="未找到匹配的存储"
-        title="暂无存储"
-        subTitle="创建一个存储后会显示在这里"
+        noFoundText={intl.formatMessage({
+          id: 'noresult.gpuservice.storage.nofound'
+        })}
+        title={intl.formatMessage({ id: 'noresult.gpuservice.storage.title' })}
+        subTitle={intl.formatMessage({
+          id: 'noresult.gpuservice.storage.subTitle'
+        })}
         onClick={handleAddStorage}
-        buttonText="立即添加"
+        buttonText={intl.formatMessage({ id: 'noresult.button.add' })}
       />
     );
   };
@@ -269,8 +273,10 @@ const GPUServiceStorage: React.FC = () => {
           showSelect={false}
           selectOptions={k8sClusterList}
           select={{ showSearch: true }}
-          selectHolder="按集群过滤"
-          buttonText="添加存储"
+          selectHolder={intl.formatMessage({
+            id: 'gpuservice.storage.filter.cluster'
+          })}
+          buttonText={intl.formatMessage({ id: 'gpuservice.storage.add' })}
           handleSearch={handleSearch}
           handleSelectChange={handleClusterChange}
           handleDeleteByBatch={handleDeleteBatch}

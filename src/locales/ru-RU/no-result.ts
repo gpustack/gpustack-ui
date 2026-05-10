@@ -58,7 +58,16 @@ export default {
   'noresult.gpuservice.template.subTitle':
     'После создания шаблона экземпляра он появится здесь.',
   'noresult.gpuservice.template.nofound':
-    'Подходящие шаблоны экземпляров не найдены.'
+    'Подходящие шаблоны экземпляров не найдены.',
+  'noresult.gpuservice.instance.title': 'Нет экземпляров GPU',
+  'noresult.gpuservice.instance.subTitle':
+    'После создания экземпляра GPU он появится здесь.',
+  'noresult.gpuservice.instance.nofound':
+    'Подходящие экземпляры GPU не найдены.',
+  'noresult.gpuservice.storage.title': 'Нет хранилищ',
+  'noresult.gpuservice.storage.subTitle':
+    'После создания хранилища оно появится здесь.',
+  'noresult.gpuservice.storage.nofound': 'Подходящие хранилища не найдены.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

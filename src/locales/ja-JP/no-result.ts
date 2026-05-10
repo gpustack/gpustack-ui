@@ -57,5 +57,14 @@ export default {
   'noresult.gpuservice.template.subTitle':
     'インスタンステンプレートを作成すると、ここに表示されます。',
   'noresult.gpuservice.template.nofound':
-    '一致するインスタンステンプレートが見つかりません。'
+    '一致するインスタンステンプレートが見つかりません。',
+  'noresult.gpuservice.instance.title': 'GPU インスタンスなし',
+  'noresult.gpuservice.instance.subTitle':
+    'GPU インスタンスを作成すると、ここに表示されます。',
+  'noresult.gpuservice.instance.nofound':
+    '一致する GPU インスタンスが見つかりません。',
+  'noresult.gpuservice.storage.title': 'ストレージなし',
+  'noresult.gpuservice.storage.subTitle':
+    'ストレージを作成すると、ここに表示されます。',
+  'noresult.gpuservice.storage.nofound': '一致するストレージが見つかりません。'
 };

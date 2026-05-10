@@ -30,5 +30,47 @@ export default {
   'gpuservice.template.card.ports': 'Bağlantı Noktaları',
   'gpuservice.publicKey.label': 'SSH Açık Anahtarı',
   'gpuservice.publicKey.placeholder':
-    'ssh-rsa veya ssh-ed25519 ile başlar, her açık anahtar ayrı bir satırda\n\nAçık anahtarı görüntüle:\n- RSA\ncat ~/.ssh/id_rsa.pub\n- Ed25519\ncat ~/.ssh/id_ed25519.pub'
+    'ssh-rsa veya ssh-ed25519 ile başlar, her açık anahtar ayrı bir satırda\n\nAçık anahtarı görüntüle:\n- RSA\ncat ~/.ssh/id_rsa.pub\n- Ed25519\ncat ~/.ssh/id_ed25519.pub',
+  'gpuservice.instance': 'GPU Örneği',
+  'gpuservice.instance.add': 'GPU Örneği Ekle',
+  'gpuservice.instance.edit': 'GPU Örneğini Düzenle',
+  'gpuservice.instance.filter.cluster': 'Kümeye göre filtrele',
+  'gpuservice.instance.name': 'Örnek Adı',
+  'gpuservice.instance.name.required': 'Lütfen örnek adını girin',
+  'gpuservice.instance.section.basic': 'Temel Bilgiler',
+  'gpuservice.instance.section.type': 'Örnek Türü',
+  'gpuservice.instance.section.template': 'Örnek Şablonu',
+  'gpuservice.instance.section.storage': 'Depolama Hacmi',
+  'gpuservice.instance.type.required': 'Lütfen bir örnek türü seçin',
+  'gpuservice.instance.gpuCount': 'GPU Sayısı',
+  'gpuservice.instance.gpuCount.required': 'Lütfen GPU sayısını girin',
+  'gpuservice.instance.gpuCount.max':
+    'Mevcut örnek türü en fazla {count} GPU destekler',
+  'gpuservice.instance.stock': 'Stok',
+  'gpuservice.instance.memory': 'VRAM',
+  'gpuservice.instance.ram': 'Bellek',
+  'gpuservice.instance.search.type.placeholder':
+    "Ada, VRAM, belleğe veya vCPU'ya göre ara",
+  'gpuservice.instance.search.template.placeholder':
+    'Şablon adına, imaja veya bağlama yoluna göre ara',
+  'gpuservice.instance.template.image': 'İmaj',
+  'gpuservice.instance.template.mount': 'Bağlama',
+  'gpuservice.storage': 'Depolama',
+  'gpuservice.storage.add': 'Depolama Ekle',
+  'gpuservice.storage.edit': 'Depolamayı Düzenle',
+  'gpuservice.storage.filter.cluster': 'Kümeye göre filtrele',
+  'gpuservice.storage.type': 'Depolama Türü',
+  'gpuservice.storage.type.local': 'Yerel Depolama',
+  'gpuservice.storage.type.shared': 'Paylaşımlı Depolama',
+  'gpuservice.storage.type.object': 'Nesne Depolama',
+  'gpuservice.storage.capacity': 'Kapasite',
+  'gpuservice.storage.accessMode': 'Erişim Modu',
+  'gpuservice.storage.persistent': 'Kalıcı Depolama',
+  'gpuservice.storage.temporary': 'Geçici Depolama',
+  'gpuservice.storage.persistentVolume': 'Kalıcı Hacim',
+  'gpuservice.storage.persistentVolume.required':
+    'Lütfen bir kalıcı hacim seçin',
+  'gpuservice.storage.tempCapacity': 'Depolama Kapasitesi (GB)',
+  'gpuservice.storage.tempCapacity.required':
+    'Lütfen yerel geçici depolama kapasitesini girin'
 };

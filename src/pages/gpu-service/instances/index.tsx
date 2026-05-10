@@ -32,6 +32,7 @@ import useCreateInstance from './services/use-create-instance';
 import useUpdateInstance from './services/use-update-instance';
 
 const GPUService: React.FC = () => {
+  const intl = useIntl();
   const { initialState } = useModel('@@initialState');
   const namespace = initialState?.currentUser?.org_name || 'default';
   const [currentCluster, setCurrentCluster] = useAtom(currentClusterAtom);
@@ -97,7 +98,7 @@ const GPUService: React.FC = () => {
     deleteAPI: deleteInstance,
     watch: true,
     API: GPU_SERVICE_INSTANCES_API({ namespace, clusterID }),
-    contentForDelete: 'GPU 实例'
+    contentForDelete: intl.formatMessage({ id: 'gpuservice.instance' })
   });
 
   const { fetchData: createInstance } = useCreateInstance();
@@ -107,7 +108,6 @@ const GPUService: React.FC = () => {
     cancelRequest: cancelClusterRequest,
     clusterList
   } = useQueryClusterList();
-  const intl = useIntl();
 
   const k8sClusterList = useMemo(
     () =>
@@ -155,7 +155,7 @@ const GPUService: React.FC = () => {
   const handleAddInstance = () => {
     setOpenAddModalStatus({
       action: PageAction.CREATE,
-      title: '添加 GPU 实例',
+      title: intl.formatMessage({ id: 'gpuservice.instance.add' }),
       open: true,
       currentData: null
     });
@@ -164,7 +164,7 @@ const GPUService: React.FC = () => {
   const handleEditInstance = (row: ListItem) => {
     setOpenAddModalStatus({
       action: PageAction.EDIT,
-      title: '编辑 GPU 实例',
+      title: intl.formatMessage({ id: 'gpuservice.instance.edit' }),
       open: true,
       currentData: row
     });
@@ -192,9 +192,9 @@ const GPUService: React.FC = () => {
 
       fetchData();
       closeModal();
-      message.success('操作成功');
+      message.success(intl.formatMessage({ id: 'common.message.success' }));
     } catch (error) {
-      message.error('操作失败');
+      message.error(intl.formatMessage({ id: 'common.message.fail' }));
     }
   };
 
@@ -224,13 +224,19 @@ const GPUService: React.FC = () => {
         loading={dataSource.loading}
         loadend={dataSource.loadend}
         dataSource={dataSource.dataList}
-        image={<IconFont type="icon-instances-outlined" />}
+        image={<IconFont type="icon-cloud-outlined" />}
         filters={_.omit(queryParams, ['sort_by'])}
-        noFoundText="未找到匹配的 GPU 实例"
-        title="暂无 GPU 实例"
-        subTitle="创建一个 GPU 实例后会显示在这里"
+        noFoundText={intl.formatMessage({
+          id: 'noresult.gpuservice.instance.nofound'
+        })}
+        title={intl.formatMessage({
+          id: 'noresult.gpuservice.instance.title'
+        })}
+        subTitle={intl.formatMessage({
+          id: 'noresult.gpuservice.instance.subTitle'
+        })}
         onClick={handleAddInstance}
-        buttonText="立即添加"
+        buttonText={intl.formatMessage({ id: 'noresult.button.add' })}
       />
     );
   };
@@ -267,8 +273,10 @@ const GPUService: React.FC = () => {
         showSelect={false}
         selectOptions={k8sClusterList}
         select={{ showSearch: true }}
-        selectHolder="按集群过滤"
-        buttonText="添加 GPU 实例"
+        selectHolder={intl.formatMessage({
+          id: 'gpuservice.instance.filter.cluster'
+        })}
+        buttonText={intl.formatMessage({ id: 'gpuservice.instance.add' })}
         handleSearch={handleSearch}
         handleSelectChange={handleClusterChange}
         handleDeleteByBatch={handleDeleteBatch}

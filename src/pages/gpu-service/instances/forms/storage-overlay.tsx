@@ -1,6 +1,7 @@
 import { PageAction } from '@/config';
 import FormOverlayView from '@/pages/_components/form-overlay-view';
 import { ModalFooter } from '@gpustack/core-ui';
+import { useIntl } from '@umijs/max';
 import { useCallback, useRef } from 'react';
 import { FormData as StorageFormData } from '../../storage/config/types';
 import GPUServiceStorageForm from '../../storage/forms';
@@ -18,6 +19,7 @@ const StorageOverlay: React.FC<StorageOverlayProps> = ({
   onCancel,
   onSubmit
 }) => {
+  const intl = useIntl();
   const formRef = useRef<any>(null);
 
   const handleSubmit = () => {
@@ -43,7 +45,7 @@ const StorageOverlay: React.FC<StorageOverlayProps> = ({
 
   return (
     <FormOverlayView
-      title="添加存储"
+      title={intl.formatMessage({ id: 'gpuservice.storage.add' })}
       open={open}
       width={600}
       onCancel={handleCancel}

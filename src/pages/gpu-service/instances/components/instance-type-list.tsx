@@ -1,4 +1,5 @@
 import { AutoTooltip, StatusTag, TemplateCard } from '@gpustack/core-ui';
+import { useIntl } from '@umijs/max';
 import { Flex, Tag } from 'antd';
 import styled from 'styled-components';
 import {
@@ -55,6 +56,7 @@ const InstanceTypeList: React.FC<InstanceTypeListProps> = ({
   onChange,
   dataList = []
 }) => {
+  const intl = useIntl();
   const handleSelect = (item: InstanceTypeItem) => {
     if (!isAvailable(item)) return;
     onChange?.(item);
@@ -104,7 +106,8 @@ const InstanceTypeList: React.FC<InstanceTypeListProps> = ({
                     }}
                   >
                     <span>
-                      库存 {item.status?.accelerator?.remaining ?? '-'}
+                      {intl.formatMessage({ id: 'gpuservice.instance.stock' })}{' '}
+                      {item.status?.accelerator?.remaining ?? '-'}
                     </span>
                   </Tag>
                 )}
@@ -114,12 +117,16 @@ const InstanceTypeList: React.FC<InstanceTypeListProps> = ({
               <span style={{ display: 'flex', height: 15 }}>
                 {item.spec?.acceleratable && (
                   <span className="meta-row">
-                    显存 {item.spec?.memory ?? '-'}
+                    {intl.formatMessage({ id: 'gpuservice.instance.memory' })}{' '}
+                    {item.spec?.memory ?? '-'}
                   </span>
                 )}
               </span>
               <span className="meta-row gap-16">
-                <span>内存 {item.status?.ram?.capacity ?? '-'}</span>
+                <span>
+                  {intl.formatMessage({ id: 'gpuservice.instance.ram' })}{' '}
+                  {item.status?.ram?.capacity ?? '-'}
+                </span>
                 <span>vCPU {item.status?.cpu?.capacity ?? '-'}</span>
               </span>
             </TypeMeta>

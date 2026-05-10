@@ -29,5 +29,47 @@ export default {
   'gpuservice.template.card.ports': 'ポート',
   'gpuservice.publicKey.label': 'SSH 公開鍵',
   'gpuservice.publicKey.placeholder':
-    'ssh-rsa または ssh-ed25519 で始まり、各公開鍵は1行ずつ記述します\n\n公開鍵を確認：\n- RSA\ncat ~/.ssh/id_rsa.pub\n- Ed25519\ncat ~/.ssh/id_ed25519.pub'
+    'ssh-rsa または ssh-ed25519 で始まり、各公開鍵は1行ずつ記述します\n\n公開鍵を確認：\n- RSA\ncat ~/.ssh/id_rsa.pub\n- Ed25519\ncat ~/.ssh/id_ed25519.pub',
+  'gpuservice.instance': 'GPU インスタンス',
+  'gpuservice.instance.add': 'GPU インスタンスを追加',
+  'gpuservice.instance.edit': 'GPU インスタンスを編集',
+  'gpuservice.instance.filter.cluster': 'クラスターでフィルター',
+  'gpuservice.instance.name': 'インスタンス名',
+  'gpuservice.instance.name.required': 'インスタンス名を入力してください',
+  'gpuservice.instance.section.basic': '基本情報',
+  'gpuservice.instance.section.type': 'インスタンスタイプ',
+  'gpuservice.instance.section.template': 'インスタンステンプレート',
+  'gpuservice.instance.section.storage': 'ストレージボリューム',
+  'gpuservice.instance.type.required': 'インスタンスタイプを選択してください',
+  'gpuservice.instance.gpuCount': 'GPU 数',
+  'gpuservice.instance.gpuCount.required': 'GPU 数を入力してください',
+  'gpuservice.instance.gpuCount.max':
+    '現在のインスタンスタイプは最大 {count} 個の GPU をサポートします',
+  'gpuservice.instance.stock': '在庫',
+  'gpuservice.instance.memory': 'VRAM',
+  'gpuservice.instance.ram': 'メモリ',
+  'gpuservice.instance.search.type.placeholder':
+    '名前、VRAM、メモリまたは vCPU で検索',
+  'gpuservice.instance.search.template.placeholder':
+    'テンプレート名、イメージまたはマウントパスで検索',
+  'gpuservice.instance.template.image': 'イメージ',
+  'gpuservice.instance.template.mount': 'マウント',
+  'gpuservice.storage': 'ストレージ',
+  'gpuservice.storage.add': 'ストレージを追加',
+  'gpuservice.storage.edit': 'ストレージを編集',
+  'gpuservice.storage.filter.cluster': 'クラスターでフィルター',
+  'gpuservice.storage.type': 'ストレージタイプ',
+  'gpuservice.storage.type.local': 'ローカルストレージ',
+  'gpuservice.storage.type.shared': '共有ストレージ',
+  'gpuservice.storage.type.object': 'オブジェクトストレージ',
+  'gpuservice.storage.capacity': '容量',
+  'gpuservice.storage.accessMode': 'アクセスモード',
+  'gpuservice.storage.persistent': '永続ストレージ',
+  'gpuservice.storage.temporary': '一時ストレージ',
+  'gpuservice.storage.persistentVolume': '永続ボリューム',
+  'gpuservice.storage.persistentVolume.required':
+    '永続ボリュームを選択してください',
+  'gpuservice.storage.tempCapacity': 'ストレージ容量 (GB)',
+  'gpuservice.storage.tempCapacity.required':
+    'ローカルの一時ストレージ容量を入力してください'
 };

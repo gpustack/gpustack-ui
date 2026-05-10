@@ -1,5 +1,6 @@
 import { tableSorter } from '@/config/settings';
 import { AutoTooltip, DropdownButtons } from '@gpustack/core-ui';
+import { useIntl } from '@umijs/max';
 import type { ColumnsType } from 'antd/lib/table';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
@@ -15,10 +16,11 @@ const useStorageColumns = ({
   handleSelect,
   sortOrder
 }: ColumnsHookProps): ColumnsType<ListItem> => {
+  const intl = useIntl();
   return useMemo(() => {
     return [
       {
-        title: '名称',
+        title: intl.formatMessage({ id: 'common.table.name' }),
         dataIndex: ['metadata', 'name'],
         key: 'name',
         sorter: tableSorter(1),
@@ -32,28 +34,31 @@ const useStorageColumns = ({
         )
       },
       {
-        title: '类型',
+        title: intl.formatMessage({ id: 'common.table.type' }),
         dataIndex: ['spec', 'type'],
         key: 'type',
         sorter: tableSorter(2),
-        render: (value: string) => StorageTypeLabelMap[value] || value || '-'
+        render: (value: string) =>
+          StorageTypeLabelMap[value]
+            ? intl.formatMessage({ id: StorageTypeLabelMap[value] })
+            : value || '-'
       },
       {
-        title: '容量',
+        title: intl.formatMessage({ id: 'gpuservice.storage.capacity' }),
         dataIndex: ['spec', 'capacity'],
         key: 'capacity',
         sorter: tableSorter(3),
         render: (value: string) => value ?? '-'
       },
       {
-        title: '访问模式',
+        title: intl.formatMessage({ id: 'gpuservice.storage.accessMode' }),
         dataIndex: ['spec', 'accessMode'],
         key: 'accessMode',
         sorter: tableSorter(4),
         render: (value: string) => value || '-'
       },
       {
-        title: '创建时间',
+        title: intl.formatMessage({ id: 'common.table.createTime' }),
         dataIndex: ['metadata', 'creationTimestamp'],
         key: 'creationTimestamp',
         sorter: tableSorter(5),
@@ -67,7 +72,7 @@ const useStorageColumns = ({
         )
       },
       {
-        title: '操作',
+        title: intl.formatMessage({ id: 'common.table.operation' }),
         key: 'operation',
         dataIndex: 'operation',
         render: (_text, record) => (
@@ -78,7 +83,7 @@ const useStorageColumns = ({
         )
       }
     ];
-  }, [handleSelect, sortOrder]);
+  }, [handleSelect, sortOrder, intl]);
 };
 
 export default useStorageColumns;

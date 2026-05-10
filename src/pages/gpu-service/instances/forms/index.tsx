@@ -9,6 +9,7 @@ import {
   useScrollActiveChange,
   useWrapperContext
 } from '@gpustack/core-ui';
+import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import {
   forwardRef,
@@ -77,6 +78,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       namespace = 'default',
       onFinish
     } = props;
+    const intl = useIntl();
     const [form] = Form.useForm<InstanceFormValues>();
     const scrollTabsRef = useRef<any>(null);
     const { detailData, fetchData } = useGetSshkey();
@@ -98,9 +100,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
 
     useEffect(() => {
       if (open) {
-        fetchData({}).then((res) => {
-          form?.setFieldValue(['spec', 'sshPublicKey', 'name'], res.name);
-        });
+        fetchData({});
       }
     }, [open]);
 
@@ -108,30 +108,36 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       () => [
         {
           value: TABKeysMap.BASIC,
-          label: '基础信息',
+          label: intl.formatMessage({
+            id: 'gpuservice.instance.section.basic'
+          }),
           icon: <IconFont type="icon-basic" />,
           field: 'name'
         },
         {
           value: TABKeysMap.INSTANCE_TYPE,
-          label: '实例类型',
+          label: intl.formatMessage({ id: 'gpuservice.instance.section.type' }),
           icon: <IconFont type="icon-gpu1" />,
           field: 'instanceType'
         },
         {
           value: TABKeysMap.TEMPLATE,
-          label: '实例模板',
+          label: intl.formatMessage({
+            id: 'gpuservice.instance.section.template'
+          }),
           icon: <IconFont type="icon-model" />,
           field: 'template'
         },
         {
           value: TABKeysMap.STORAGE,
-          label: '存储卷',
+          label: intl.formatMessage({
+            id: 'gpuservice.instance.section.storage'
+          }),
           icon: <IconFont type="icon-storage-outlined" />,
           field: 'storage'
         }
       ],
-      []
+      [intl]
     );
 
     const ports = (Form.useWatch(['spec', 'ports'], form) ||
@@ -211,7 +217,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
 
     const handleFinish = async (values: InstanceFormValues) => {
       const payload = buildPayload(values);
-      await onFinish(payload);
+      await onFinish(values);
     };
 
     useImperativeHandle(ref, () => ({
@@ -275,19 +281,25 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
             items={[
               {
                 key: TABKeysMap.INSTANCE_TYPE,
-                label: '实例类型',
+                label: intl.formatMessage({
+                  id: 'gpuservice.instance.section.type'
+                }),
                 forceRender: true,
                 children: <InstanceTypeFormItem />
               },
               {
                 key: TABKeysMap.TEMPLATE,
-                label: '实例模板',
+                label: intl.formatMessage({
+                  id: 'gpuservice.instance.section.template'
+                }),
                 forceRender: true,
                 children: <TemplateBasicForm page="instance" />
               },
               {
                 key: TABKeysMap.STORAGE,
-                label: '存储卷',
+                label: intl.formatMessage({
+                  id: 'gpuservice.instance.section.storage'
+                }),
                 forceRender: true,
                 children: <StorageVolume />
               }

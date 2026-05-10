@@ -1,4 +1,5 @@
 import { AutoTooltip, IconFont, TemplateCard } from '@gpustack/core-ui';
+import { useIntl } from '@umijs/max';
 import styled from 'styled-components';
 import { ListItem as TemplateItem } from '../../templates/config/types';
 
@@ -51,6 +52,7 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
   onChange,
   dataList = []
 }) => {
+  const intl = useIntl();
   return (
     <TemplateGrid>
       {dataList.map((item: TemplateItem) => (
@@ -71,7 +73,11 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
             </div>
             <div className="info">
               <span>
-                <IconFont className="icon" type="icon-model" /> 镜像:
+                <IconFont className="icon" type="icon-model" />{' '}
+                {intl.formatMessage({
+                  id: 'gpuservice.instance.template.image'
+                })}
+                :
               </span>
               <AutoTooltip ghost minWidth={20}>
                 <span className="value">{item.spec?.image || '-'}</span>
@@ -79,7 +85,11 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
             </div>
             <div className="info">
               <span>
-                <IconFont className="icon" type="icon-storage-outlined" /> 挂载:
+                <IconFont className="icon" type="icon-storage-outlined" />{' '}
+                {intl.formatMessage({
+                  id: 'gpuservice.instance.template.mount'
+                })}
+                :
               </span>
               <span className="value">{item.spec?.volumeMount || '-'}</span>
             </div>

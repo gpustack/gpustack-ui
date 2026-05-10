@@ -1,5 +1,6 @@
 import { tableSorter } from '@/config/settings';
 import { AutoTooltip, DropdownButtons, StatusTag } from '@gpustack/core-ui';
+import { useIntl } from '@umijs/max';
 import type { ColumnsType } from 'antd/lib/table';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
@@ -15,10 +16,11 @@ const useInstancesColumns = ({
   handleSelect,
   sortOrder
 }: ColumnsHookProps): ColumnsType<ListItem> => {
+  const intl = useIntl();
   return useMemo(() => {
     return [
       {
-        title: '名称',
+        title: intl.formatMessage({ id: 'common.table.name' }),
         dataIndex: ['metadata', 'name'],
         key: 'name',
         sorter: tableSorter(1),
@@ -32,7 +34,7 @@ const useInstancesColumns = ({
         )
       },
       {
-        title: '状态',
+        title: intl.formatMessage({ id: 'common.table.status' }),
         dataIndex: ['status', 'phase'],
         key: 'status',
         sorter: tableSorter(2),
@@ -48,7 +50,7 @@ const useInstancesColumns = ({
         }
       },
       {
-        title: '镜像',
+        title: intl.formatMessage({ id: 'gpuservice.template.image' }),
         dataIndex: ['spec', 'image'],
         key: 'image',
         sorter: tableSorter(3),
@@ -60,7 +62,7 @@ const useInstancesColumns = ({
         )
       },
       {
-        title: '创建时间',
+        title: intl.formatMessage({ id: 'common.table.createTime' }),
         dataIndex: ['metadata', 'creationTimestamp'],
         key: 'creationTimestamp',
         sorter: tableSorter(5),
@@ -74,7 +76,7 @@ const useInstancesColumns = ({
         )
       },
       {
-        title: '操作',
+        title: intl.formatMessage({ id: 'common.table.operation' }),
         key: 'operation',
         dataIndex: 'operation',
         render: (_text, record) => (
@@ -85,7 +87,7 @@ const useInstancesColumns = ({
         )
       }
     ];
-  }, [handleSelect, sortOrder]);
+  }, [handleSelect, sortOrder, intl]);
 };
 
 export default useInstancesColumns;

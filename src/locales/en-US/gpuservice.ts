@@ -31,5 +31,47 @@ export default {
   'gpuservice.template.card.ports': 'Ports',
   'gpuservice.publicKey.label': 'SSH Public Key',
   'gpuservice.publicKey.placeholder':
-    'Begin with ssh-rsa or ssh-ed25519. One Public Key per line.\n\nView Public Key:\n- RSA\ncat ~/.ssh/id_rsa.pub\n- Ed25519\ncat ~/.ssh/id_ed25519.pub'
+    'Begin with ssh-rsa or ssh-ed25519. One Public Key per line.\n\nView Public Key:\n- RSA\ncat ~/.ssh/id_rsa.pub\n- Ed25519\ncat ~/.ssh/id_ed25519.pub',
+  'gpuservice.instance': 'GPU Instance',
+  'gpuservice.instance.add': 'Add GPU Instance',
+  'gpuservice.instance.edit': 'Edit GPU Instance',
+  'gpuservice.instance.filter.cluster': 'Filter by cluster',
+  'gpuservice.instance.name': 'Instance Name',
+  'gpuservice.instance.name.required': 'Please enter the instance name',
+  'gpuservice.instance.section.basic': 'Basic Info',
+  'gpuservice.instance.section.type': 'Instance Type',
+  'gpuservice.instance.section.template': 'Instance Template',
+  'gpuservice.instance.section.storage': 'Storage Volume',
+  'gpuservice.instance.type.required': 'Please select an instance type',
+  'gpuservice.instance.gpuCount': 'GPU Count',
+  'gpuservice.instance.gpuCount.required': 'Please enter the GPU count',
+  'gpuservice.instance.gpuCount.max':
+    'The current instance type supports at most {count} GPU(s)',
+  'gpuservice.instance.stock': 'Stock',
+  'gpuservice.instance.memory': 'VRAM',
+  'gpuservice.instance.ram': 'Memory',
+  'gpuservice.instance.search.type.placeholder':
+    'Search by name, VRAM, memory or vCPU',
+  'gpuservice.instance.search.template.placeholder':
+    'Search by template name, image or mount path',
+  'gpuservice.instance.template.image': 'Image',
+  'gpuservice.instance.template.mount': 'Mount',
+  'gpuservice.storage': 'Storage',
+  'gpuservice.storage.add': 'Add Storage',
+  'gpuservice.storage.edit': 'Edit Storage',
+  'gpuservice.storage.filter.cluster': 'Filter by cluster',
+  'gpuservice.storage.type': 'Storage Type',
+  'gpuservice.storage.type.local': 'Local Storage',
+  'gpuservice.storage.type.shared': 'Shared Storage',
+  'gpuservice.storage.type.object': 'Object Storage',
+  'gpuservice.storage.capacity': 'Capacity',
+  'gpuservice.storage.accessMode': 'Access Mode',
+  'gpuservice.storage.persistent': 'Persistent Storage',
+  'gpuservice.storage.temporary': 'Temporary Storage',
+  'gpuservice.storage.persistentVolume': 'Persistent Volume',
+  'gpuservice.storage.persistentVolume.required':
+    'Please select a persistent volume',
+  'gpuservice.storage.tempCapacity': 'Storage Capacity (GB)',
+  'gpuservice.storage.tempCapacity.required':
+    'Please enter the local temporary storage capacity'
 };

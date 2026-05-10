@@ -31,5 +31,46 @@ export default {
   'gpuservice.template.card.ports': 'Порты',
   'gpuservice.publicKey.label': 'Открытый ключ SSH',
   'gpuservice.publicKey.placeholder':
-    'Начинается с ssh-rsa или ssh-ed25519, по одному открытому ключу на строку\n\nПросмотр открытого ключа:\n- RSA\ncat ~/.ssh/id_rsa.pub\n- Ed25519\ncat ~/.ssh/id_ed25519.pub'
+    'Начинается с ssh-rsa или ssh-ed25519, по одному открытому ключу на строку\n\nПросмотр открытого ключа:\n- RSA\ncat ~/.ssh/id_rsa.pub\n- Ed25519\ncat ~/.ssh/id_ed25519.pub',
+  'gpuservice.instance': 'Экземпляр GPU',
+  'gpuservice.instance.add': 'Добавить экземпляр GPU',
+  'gpuservice.instance.edit': 'Редактировать экземпляр GPU',
+  'gpuservice.instance.filter.cluster': 'Фильтр по кластеру',
+  'gpuservice.instance.name': 'Имя экземпляра',
+  'gpuservice.instance.name.required': 'Введите имя экземпляра',
+  'gpuservice.instance.section.basic': 'Основная информация',
+  'gpuservice.instance.section.type': 'Тип экземпляра',
+  'gpuservice.instance.section.template': 'Шаблон экземпляра',
+  'gpuservice.instance.section.storage': 'Том хранилища',
+  'gpuservice.instance.type.required': 'Выберите тип экземпляра',
+  'gpuservice.instance.gpuCount': 'Количество GPU',
+  'gpuservice.instance.gpuCount.required': 'Введите количество GPU',
+  'gpuservice.instance.gpuCount.max':
+    'Текущий тип экземпляра поддерживает максимум {count} GPU',
+  'gpuservice.instance.stock': 'Остаток',
+  'gpuservice.instance.memory': 'VRAM',
+  'gpuservice.instance.ram': 'Память',
+  'gpuservice.instance.search.type.placeholder':
+    'Поиск по имени, VRAM, памяти или vCPU',
+  'gpuservice.instance.search.template.placeholder':
+    'Поиск по имени шаблона, образу или пути монтирования',
+  'gpuservice.instance.template.image': 'Образ',
+  'gpuservice.instance.template.mount': 'Монтирование',
+  'gpuservice.storage': 'Хранилище',
+  'gpuservice.storage.add': 'Добавить хранилище',
+  'gpuservice.storage.edit': 'Редактировать хранилище',
+  'gpuservice.storage.filter.cluster': 'Фильтр по кластеру',
+  'gpuservice.storage.type': 'Тип хранилища',
+  'gpuservice.storage.type.local': 'Локальное хранилище',
+  'gpuservice.storage.type.shared': 'Общее хранилище',
+  'gpuservice.storage.type.object': 'Объектное хранилище',
+  'gpuservice.storage.capacity': 'Объём',
+  'gpuservice.storage.accessMode': 'Режим доступа',
+  'gpuservice.storage.persistent': 'Постоянное хранилище',
+  'gpuservice.storage.temporary': 'Временное хранилище',
+  'gpuservice.storage.persistentVolume': 'Постоянный том',
+  'gpuservice.storage.persistentVolume.required': 'Выберите постоянный том',
+  'gpuservice.storage.tempCapacity': 'Объём хранилища (ГБ)',
+  'gpuservice.storage.tempCapacity.required':
+    'Введите объём локального временного хранилища'
 };

@@ -1,8 +1,10 @@
 import { Input as CInput } from '@gpustack/core-ui';
+import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import { FormData } from '../config/types';
 
 const Basic = () => {
+  const intl = useIntl();
   return (
     <>
       <Form.Item<FormData>
@@ -11,14 +13,22 @@ const Basic = () => {
         rules={[
           {
             required: true,
-            message: '请输入实例名称'
+            message: intl.formatMessage({
+              id: 'gpuservice.instance.name.required'
+            })
           }
         ]}
       >
-        <CInput.Input label="实例名称" required />
+        <CInput.Input
+          label={intl.formatMessage({ id: 'gpuservice.instance.name' })}
+          required
+        />
       </Form.Item>
       <Form.Item<FormData> name={['spec', 'description']}>
-        <CInput.TextArea label="描述" scaleSize />
+        <CInput.TextArea
+          label={intl.formatMessage({ id: 'common.table.description' })}
+          scaleSize
+        />
       </Form.Item>
     </>
   );

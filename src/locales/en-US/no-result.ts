@@ -57,5 +57,13 @@ export default {
   'noresult.gpuservice.template.subTitle':
     'Once you create an instance template, it will appear here.',
   'noresult.gpuservice.template.nofound':
-    'No matching instance templates found.'
+    'No matching instance templates found.',
+  'noresult.gpuservice.instance.title': 'No GPU Instances',
+  'noresult.gpuservice.instance.subTitle':
+    'Once you create a GPU instance, it will appear here.',
+  'noresult.gpuservice.instance.nofound': 'No matching GPU instances found.',
+  'noresult.gpuservice.storage.title': 'No Storage',
+  'noresult.gpuservice.storage.subTitle':
+    'Once you create a storage, it will appear here.',
+  'noresult.gpuservice.storage.nofound': 'No matching storage found.'
 };

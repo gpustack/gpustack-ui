@@ -58,7 +58,15 @@ export default {
   'noresult.gpuservice.template.title': 'Örnek Şablonu Yok',
   'noresult.gpuservice.template.subTitle':
     'Bir örnek şablonu oluşturduğunuzda burada görünecek.',
-  'noresult.gpuservice.template.nofound': 'Eşleşen örnek şablonu bulunamadı.'
+  'noresult.gpuservice.template.nofound': 'Eşleşen örnek şablonu bulunamadı.',
+  'noresult.gpuservice.instance.title': 'GPU Örneği Yok',
+  'noresult.gpuservice.instance.subTitle':
+    'Bir GPU örneği oluşturduğunuzda burada görünecek.',
+  'noresult.gpuservice.instance.nofound': 'Eşleşen GPU örneği bulunamadı.',
+  'noresult.gpuservice.storage.title': 'Depolama Yok',
+  'noresult.gpuservice.storage.subTitle':
+    'Bir depolama oluşturduğunuzda burada görünecek.',
+  'noresult.gpuservice.storage.nofound': 'Eşleşen depolama bulunamadı.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

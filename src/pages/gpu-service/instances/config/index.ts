@@ -46,13 +46,15 @@ export const status: Record<string, StatusType> = {
 
 export const rowActionList = [
   {
-    label: '编辑',
+    label: 'common.button.edit',
     key: 'edit',
+    locale: true,
     icon: icons.EditOutlined
   },
   {
-    label: '删除',
+    label: 'common.button.delete',
     key: 'delete',
+    locale: true,
     icon: icons.DeleteOutlined,
     props: {
       danger: true

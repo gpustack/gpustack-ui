@@ -1,31 +1,5 @@
 export type ImagePullPolicy = 'Always' | 'IfNotPresent' | 'Never';
 
-export interface InstanceEnvVar {
-  name: string;
-  value?: string;
-}
-
-export interface InstancePort {
-  port: number;
-  protocol?: string;
-}
-
-export interface InstanceResources {
-  cpu?: string;
-  ram?: string;
-  localStorage?: string;
-  accelerator?: string;
-}
-
-export interface InstanceVolume {
-  ephemeral?: {
-    capacity?: string;
-  };
-  persistent?: {
-    name: string;
-  };
-}
-
 // instance form data
 export interface FormData {
   metadata: {
@@ -38,63 +12,74 @@ export interface FormData {
     imagePullPolicy: ImagePullPolicy;
     displayName: string;
     command: string[];
-    ports: InstancePort[];
-    env: InstanceEnvVar[];
+    ports: {
+      port: number;
+      protocol?: string;
+    }[];
+    env: {
+      name: string;
+      value?: string;
+    }[];
     volumeMount: string;
-    resources: InstanceResources;
+    resources: {
+      cpu?: string;
+      ram?: string;
+      localStorage?: string;
+      accelerator?: string;
+    };
     description: string;
-    volume: InstanceVolume;
+    volume: {
+      ephemeral?: {
+        capacity?: string;
+      };
+      persistent?: {
+        name: string;
+      };
+    };
     sshPublicKey: {
       name: string;
     };
   };
 }
 
-export interface ManagedField {
-  manager: string;
-  operation: string;
-  apiVersion: string;
-  time: string;
-  fieldsType: string;
-  fieldsV1: Record<string, any>;
-}
+export type InstanceServicePortProtocol = 'TCP' | 'UDP';
 
-export interface Metadata {
-  name: string;
-  namespace?: string;
-  uid: string;
-  resourceVersion: string;
-  creationTimestamp: string;
-  annotations?: Record<string, string>;
-  managedFields?: ManagedField[];
+export interface InstanceStatus {
+  hostIPs?: {
+    ip: string;
+  }[];
+  phase?: string;
+  phaseMessage?: string;
+  podIPs?: {
+    ip: string;
+  }[];
+  ports?: {
+    port: number;
+    nodePort?: number;
+    protocol?: InstanceServicePortProtocol;
+  }[];
 }
 
 // instance list item
 export interface ListItem extends Omit<FormData, 'metadata'> {
   id: number;
-  status?: string;
-  metadata: Metadata;
-}
-
-export interface InstanceItem {
-  id: number;
-  name: string;
-  vram: number; // GiB
-  ram: number; // GiB
-  vCPU: number; // cores
-  gpu_count: number;
-  status: string; // available, unavailable
-}
-
-export interface InstanceTypeSpec {
-  acceleratable: boolean;
-  computeCapability?: string;
-  family?: string;
-  group: string;
-  manufacturer?: string;
-  memory?: string;
-  product?: string;
-  sliced?: number;
+  status?: InstanceStatus;
+  metadata: {
+    name: string;
+    namespace?: string;
+    uid: string;
+    resourceVersion: string;
+    creationTimestamp: string;
+    annotations?: Record<string, string>;
+    managedFields?: {
+      manager: string;
+      operation: string;
+      apiVersion: string;
+      time: string;
+      fieldsType: string;
+      fieldsV1: Record<string, any>;
+    }[];
+  };
 }
 
 type Quality = `${number}Ki` | `${number}Gi`;
@@ -105,15 +90,6 @@ export interface InstanceTypeResource {
   remaining?: Quality;
 }
 
-export interface InstanceTypeStatus {
-  accelerator: InstanceTypeResource;
-  cpu: InstanceTypeResource;
-  localStorage: InstanceTypeResource;
-  phase: string;
-  phaseMessage?: string;
-  ram: InstanceTypeResource;
-}
-
 export interface InstanceTypeItem {
   apiVersion: string;
   kind: string;
@@ -122,6 +98,22 @@ export interface InstanceTypeItem {
     namespace: string;
   };
   id: number;
-  spec: InstanceTypeSpec;
-  status: InstanceTypeStatus;
+  spec: {
+    acceleratable: boolean;
+    computeCapability?: string;
+    family?: string;
+    group: string;
+    manufacturer?: string;
+    memory?: string;
+    product?: string;
+    sliced?: number;
+  };
+  status: {
+    accelerator: InstanceTypeResource;
+    cpu: InstanceTypeResource;
+    localStorage: InstanceTypeResource;
+    phase: string;
+    phaseMessage?: string;
+    ram: InstanceTypeResource;
+  };
 }

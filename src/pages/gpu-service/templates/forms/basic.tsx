@@ -34,6 +34,7 @@ const Basic: React.FC<BasicProps> = ({ page = 'template' }) => {
 
   return (
     <>
+      <div data-field="template"></div>
       {page === 'template' && (
         <>
           <Form.Item<FormData>

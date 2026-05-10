@@ -2,6 +2,7 @@ import { PageActionType } from '@/config/types';
 import Separator from '@/pages/llmodels/components/separator';
 import { SearchOutlined } from '@ant-design/icons';
 import { ColumnWrapper, GSDrawer, ModalFooter } from '@gpustack/core-ui';
+import { useIntl } from '@umijs/max';
 import { Empty, Input, Typography } from 'antd';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
@@ -58,8 +59,10 @@ const AddModal: React.FC<AddModalProps> = ({
   data,
   onCancel
 }) => {
+  const intl = useIntl();
   const form = useRef<any>(null);
   const [selectedInstanceType, setSelectedInstanceType] = useState<string>();
+  const [selectedManufacturer, setSelectedManufacturer] = useState<string>();
   const [templateId, setTemplateId] = useState<number>();
   const [instanceKeyword, setInstanceKeyword] = useState('');
   const [templateKeyword, setTemplateKeyword] = useState('');
@@ -95,17 +98,26 @@ const AddModal: React.FC<AddModalProps> = ({
     });
   }, [instanceKeyword, instanceTypeList]);
 
+  const manufacturerMatchedTemplates = useMemo(() => {
+    if (!selectedManufacturer) {
+      return templateList;
+    }
+    return templateList.filter(
+      (item) => item.manufacturer === selectedManufacturer
+    );
+  }, [selectedManufacturer, templateList]);
+
   const filteredTemplates = useMemo(() => {
     const keyword = templateKeyword.trim().toLowerCase();
     if (!keyword) {
-      return templateList;
+      return manufacturerMatchedTemplates;
     }
-    return templateList.filter((item) =>
+    return manufacturerMatchedTemplates.filter((item) =>
       [item.name, item.spec?.image, item.spec?.volumeMount].some((text) =>
         (text || '').toLowerCase().includes(keyword)
       )
     );
-  }, [templateKeyword, templateList]);
+  }, [templateKeyword, manufacturerMatchedTemplates]);
 
   const handleSubmit = () => {
     form.current?.submit();
@@ -124,13 +136,47 @@ const AddModal: React.FC<AddModalProps> = ({
 
   const handleInstanceTypeChange = (item: InstanceTypeItem) => {
     const name = item.metadata?.name;
+    const manufacturer = item.spec?.manufacturer;
     setSelectedInstanceType(name);
-    form.current?.setFieldsValue({
-      spec: {
-        type: name,
-        resources: { accelerator: '1' }
-      }
-    });
+    setSelectedManufacturer(manufacturer);
+
+    const currentSpec = form.current?.getFieldsValue()?.spec || {};
+    const updatedSpec = {
+      ...currentSpec,
+      type: name,
+      resources: { ...(currentSpec.resources || {}), accelerator: '1' }
+    };
+
+    const currentTemplate = templateList.find((t) => t.id === templateId);
+    const isMatched =
+      !manufacturer ||
+      (!!currentTemplate && currentTemplate.manufacturer === manufacturer);
+
+    if (isMatched) {
+      form.current?.setFieldsValue({ spec: updatedSpec });
+      return;
+    }
+
+    const firstTemplate = templateList.find(
+      (t) => t.manufacturer === manufacturer
+    );
+
+    if (firstTemplate) {
+      setTemplateId(firstTemplate.id);
+      form.current?.setFieldsValue({
+        manufacturer: firstTemplate.manufacturer,
+        spec: {
+          ...updatedSpec,
+          ...firstTemplate.spec
+        }
+      });
+    } else {
+      setTemplateId(undefined);
+      form.current?.setFieldsValue({
+        manufacturer: undefined,
+        spec: updatedSpec
+      });
+    }
   };
 
   const handleTemplateChange = (id: number, item: TemplateItem) => {
@@ -176,7 +222,9 @@ const AddModal: React.FC<AddModalProps> = ({
                 <Input
                   allowClear
                   prefix={<SearchOutlined className="text-tertiary" />}
-                  placeholder="搜索名称、显存、内存或 vCPU"
+                  placeholder={intl.formatMessage({
+                    id: 'gpuservice.instance.search.type.placeholder'
+                  })}
                   value={instanceKeyword}
                   onChange={(e) => setInstanceKeyword(e.target.value)}
                 />
@@ -208,7 +256,9 @@ const AddModal: React.FC<AddModalProps> = ({
                 <Input
                   allowClear
                   prefix={<SearchOutlined className="text-tertiary" />}
-                  placeholder="搜索模板名称、镜像或挂载路径"
+                  placeholder={intl.formatMessage({
+                    id: 'gpuservice.instance.search.template.placeholder'
+                  })}
                   value={templateKeyword}
                   onChange={(e) => setTemplateKeyword(e.target.value)}
                 />

@@ -7,23 +7,26 @@ export const StorageTypeValueMap = {
 };
 
 export const StorageTypeLabelMap: Record<string, string> = {
-  [StorageTypeValueMap.Local]: '本地存储',
-  [StorageTypeValueMap.Shared]: '共享存储',
-  [StorageTypeValueMap.Object]: '对象存储'
+  [StorageTypeValueMap.Local]: 'gpuservice.storage.type.local',
+  [StorageTypeValueMap.Shared]: 'gpuservice.storage.type.shared',
+  [StorageTypeValueMap.Object]: 'gpuservice.storage.type.object'
 };
 
 export const StorageTypeOptions = [
   {
     label: StorageTypeLabelMap[StorageTypeValueMap.Local],
-    value: StorageTypeValueMap.Local
+    value: StorageTypeValueMap.Local,
+    locale: true
   },
   {
     label: StorageTypeLabelMap[StorageTypeValueMap.Shared],
-    value: StorageTypeValueMap.Shared
+    value: StorageTypeValueMap.Shared,
+    locale: true
   },
   {
     label: StorageTypeLabelMap[StorageTypeValueMap.Object],
-    value: StorageTypeValueMap.Object
+    value: StorageTypeValueMap.Object,
+    locale: true
   }
 ];
 
@@ -76,13 +79,15 @@ export const ReClaimPolicyOptions = [
 
 export const rowActionList = [
   {
-    label: '编辑',
+    label: 'common.button.edit',
     key: 'edit',
+    locale: true,
     icon: icons.EditOutlined
   },
   {
-    label: '删除',
+    label: 'common.button.delete',
     key: 'delete',
+    locale: true,
     icon: icons.DeleteOutlined,
     props: {
       danger: true

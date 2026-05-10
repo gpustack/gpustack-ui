@@ -1,5 +1,6 @@
 import { useModel } from '@@/plugin-model';
 import { InputNumber as CInputNumber, Select } from '@gpustack/core-ui';
+import { useIntl } from '@umijs/max';
 import { Button, Flex, Form, Radio } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
@@ -17,6 +18,7 @@ const FieldBlock = styled.div`
 const DEFAULT_TEMP_CAPACITY_GB = 50;
 
 const StorageVolume = () => {
+  const intl = useIntl();
   const { initialState } = useModel('@@initialState');
   const { fetchData: createStorage } = useCreateStorage();
   const { detailData: storageData, fetchData: fetchStorage } =
@@ -92,8 +94,16 @@ const StorageVolume = () => {
           value={storageMode}
           onChange={(e) => handleModeChange(e.target.value)}
           options={[
-            { label: '持久存储', value: StorageModeValueMap.Existing },
-            { label: '临时存储', value: StorageModeValueMap.Temporary }
+            {
+              label: intl.formatMessage({
+                id: 'gpuservice.storage.persistent'
+              }),
+              value: StorageModeValueMap.Existing
+            },
+            {
+              label: intl.formatMessage({ id: 'gpuservice.storage.temporary' }),
+              value: StorageModeValueMap.Temporary
+            }
           ]}
         />
         <Button
@@ -102,7 +112,7 @@ const StorageVolume = () => {
           style={{ marginBottom: 6 }}
           onClick={() => setOverlayOpen(true)}
         >
-          添加存储
+          {intl.formatMessage({ id: 'gpuservice.storage.add' })}
         </Button>
       </Flex>
 
@@ -112,11 +122,19 @@ const StorageVolume = () => {
           rules={[
             {
               required: true,
-              message: '请选择持久卷'
+              message: intl.formatMessage({
+                id: 'gpuservice.storage.persistentVolume.required'
+              })
             }
           ]}
         >
-          <Select label="持久卷" required options={storageOptions} />
+          <Select
+            label={intl.formatMessage({
+              id: 'gpuservice.storage.persistentVolume'
+            })}
+            required
+            options={storageOptions}
+          />
         </Form.Item>
       )}
 
@@ -132,11 +150,20 @@ const StorageVolume = () => {
           rules={[
             {
               required: true,
-              message: '请输入本地临时存储容量'
+              message: intl.formatMessage({
+                id: 'gpuservice.storage.tempCapacity.required'
+              })
             }
           ]}
         >
-          <CInputNumber min={1} precision={0} label="存储容量 (GB)" required />
+          <CInputNumber
+            min={1}
+            precision={0}
+            label={intl.formatMessage({
+              id: 'gpuservice.storage.tempCapacity'
+            })}
+            required
+          />
         </Form.Item>
       )}
 

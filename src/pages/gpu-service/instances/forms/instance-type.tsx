@@ -1,4 +1,5 @@
 import { AutoTooltip, InputNumber as CInputNumber } from '@gpustack/core-ui';
+import { useIntl } from '@umijs/max';
 import { Flex, Form, Tag } from 'antd';
 import { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
@@ -47,6 +48,7 @@ const InstanceTypePicker: React.FC<InstanceTypePickerProps> = ({
   value,
   dataList
 }) => {
+  const intl = useIntl();
   const selected = useMemo(() => {
     return dataList.find((item) => (item.metadata?.name || '') === value);
   }, [value, dataList]);
@@ -67,17 +69,24 @@ const InstanceTypePicker: React.FC<InstanceTypePickerProps> = ({
                     color: 'var(--ant-color-text-tertiary)'
                   }}
                 >
-                  库存 {selected?.status?.accelerator?.remaining ?? '-'}
+                  {intl.formatMessage({ id: 'gpuservice.instance.stock' })}{' '}
+                  {selected?.status?.accelerator?.remaining ?? '-'}
                 </Tag>
               )}
             </Flex>
           </SummaryTitle>
           <SummaryMeta>
             {selected?.spec?.acceleratable && (
-              <span>显存 {selected?.spec?.memory ?? '-'}</span>
+              <span>
+                {intl.formatMessage({ id: 'gpuservice.instance.memory' })}{' '}
+                {selected?.spec?.memory ?? '-'}
+              </span>
             )}
             <Flex gap={16}>
-              <span>内存 {selected?.status?.ram?.capacity ?? '-'}</span>
+              <span>
+                {intl.formatMessage({ id: 'gpuservice.instance.ram' })}{' '}
+                {selected?.status?.ram?.capacity ?? '-'}
+              </span>
               <span>vCPU {selected?.status?.cpu?.capacity ?? '-'}</span>
             </Flex>
           </SummaryMeta>
@@ -88,6 +97,7 @@ const InstanceTypePicker: React.FC<InstanceTypePickerProps> = ({
 };
 
 const InstanceTypeFormItem = () => {
+  const intl = useIntl();
   const form = Form.useFormInstance<FormData>();
   const typeName = Form.useWatch(['spec', 'type'], form) as string | undefined;
 
@@ -132,14 +142,16 @@ const InstanceTypeFormItem = () => {
   }, [form, typeName, maxGpuCount, dataList]);
 
   return (
-    <>
-      <FieldBlock data-field="instanceType">
+    <div data-field="instanceType">
+      <FieldBlock>
         <Form.Item
           name={['spec', 'type']}
           rules={[
             {
               required: true,
-              message: '请选择实例类型'
+              message: intl.formatMessage({
+                id: 'gpuservice.instance.type.required'
+              })
             }
           ]}
         >
@@ -152,13 +164,20 @@ const InstanceTypeFormItem = () => {
           rules={[
             {
               required: true,
-              message: '请输入 GPU 数量'
+              message: intl.formatMessage({
+                id: 'gpuservice.instance.gpuCount.required'
+              })
             },
             {
               validator: (_, value) => {
                 if (value > maxGpuCount) {
                   return Promise.reject(
-                    new Error(`当前实例类型最多支持 ${maxGpuCount} 个 GPU`)
+                    new Error(
+                      intl.formatMessage(
+                        { id: 'gpuservice.instance.gpuCount.max' },
+                        { count: maxGpuCount }
+                      )
+                    )
                   );
                 }
                 return Promise.resolve();
@@ -170,12 +189,12 @@ const InstanceTypeFormItem = () => {
             min={1}
             max={maxGpuCount}
             precision={0}
-            label="GPU 数量"
+            label={intl.formatMessage({ id: 'gpuservice.instance.gpuCount' })}
             required
           />
         </Form.Item>
       )}
-    </>
+    </div>
   );
 };
 

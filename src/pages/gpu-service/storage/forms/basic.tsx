@@ -4,12 +4,14 @@ import {
   Select as SealSelect,
   useAppUtils
 } from '@gpustack/core-ui';
+import { useIntl } from '@umijs/max';
 import { Flex, Form } from 'antd';
 import { useEffect } from 'react';
 import { FormData } from '../config/types';
 import useQueryStorageClass from '../services/use-query-storage-class';
 
 const Basic = ({ open }: { open: boolean }) => {
+  const intl = useIntl();
   const { getRuleMessage } = useAppUtils();
   const { storageClassList, fetchData, loading } = useQueryStorageClass();
 
@@ -26,11 +28,17 @@ const Basic = ({ open }: { open: boolean }) => {
         rules={[
           {
             required: true,
-            message: getRuleMessage('input', '名称')
+            message: getRuleMessage(
+              'input',
+              intl.formatMessage({ id: 'common.table.name' })
+            )
           }
         ]}
       >
-        <CInput.Input label="名称" required />
+        <CInput.Input
+          label={intl.formatMessage({ id: 'common.table.name' })}
+          required
+        />
       </Form.Item>
       <Flex gap={16}>
         <div style={{ flex: 1 }}>
@@ -39,12 +47,15 @@ const Basic = ({ open }: { open: boolean }) => {
             rules={[
               {
                 required: true,
-                message: getRuleMessage('select', '存储类型')
+                message: getRuleMessage(
+                  'select',
+                  intl.formatMessage({ id: 'gpuservice.storage.type' })
+                )
               }
             ]}
           >
             <SealSelect
-              label="存储类型"
+              label={intl.formatMessage({ id: 'gpuservice.storage.type' })}
               required
               loading={loading}
               options={storageClassList}
@@ -61,11 +72,17 @@ const Basic = ({ open }: { open: boolean }) => {
             rules={[
               {
                 required: true,
-                message: getRuleMessage('input', '容量')
+                message: getRuleMessage(
+                  'input',
+                  intl.formatMessage({ id: 'gpuservice.storage.capacity' })
+                )
               }
             ]}
           >
-            <InputNumber label="容量" required />
+            <InputNumber
+              label={intl.formatMessage({ id: 'gpuservice.storage.capacity' })}
+              required
+            />
           </Form.Item>
         </div>
       </Flex>

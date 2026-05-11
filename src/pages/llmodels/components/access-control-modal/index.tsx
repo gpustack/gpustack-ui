@@ -23,7 +23,7 @@ const AccessControlModal: React.FC<
 
   const handleOnFinish = async (values: AccessControlFormData) => {
     try {
-      const data: any = {
+      const data: AccessControlFormData = {
         access_policy: values.access_policy,
         // `users` is only meaningful for the legacy `allowed_users`
         // policy; for the plugin override (typically the principal-

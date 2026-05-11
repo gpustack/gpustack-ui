@@ -25,7 +25,13 @@ export interface ListItem {
   local_path?: string;
   created_at: string;
   updated_at: string;
-  access_policy: 'public' | 'authed' | 'allowed_users';
+  // Built-in values are 'public' | 'authed' | 'allowed_users';
+  // additional values (e.g. 'allowed_principals') may be contributed
+  // by plugins via `accessControl.prependedPolicies` or by
+  // overriding the default via `accessControl.allowedUsersOverride`.
+  // The `(string & {})` tail keeps literal autocomplete for the
+  // built-ins while still accepting plugin-defined values.
+  access_policy: 'public' | 'authed' | 'allowed_users' | (string & {});
   generic_proxy?: boolean;
   gpu_selector?: {
     gpu_ids: string[];
@@ -346,7 +352,9 @@ export interface BackendOption {
 }
 
 export interface AccessControlFormData {
-  access_policy: 'public' | 'authed' | 'allowed_users';
+  // See `RouteItem.access_policy` for why plugin-defined values are
+  // accepted alongside the built-ins.
+  access_policy: 'public' | 'authed' | 'allowed_users' | (string & {});
   users: { id: number }[];
 }
 

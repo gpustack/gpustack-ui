@@ -221,6 +221,10 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
       const userMap = new Map(allusers.map((u) => [u.key, u]));
 
       if (currentData?.id) {
+        // Seed the radio from the parent's snapshot so the form isn't
+        // momentarily unselected; the GET below replaces it with the
+        // server's authoritative value, which is what survives a save
+        // when the parent list hasn't been refreshed.
         form.setFieldsValue({
           access_policy: currentData?.access_policy
         });
@@ -246,7 +250,7 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
           setFilterInUsers(filterSet);
 
           form.setFieldsValue({
-            access_policy: currentData.access_policy,
+            access_policy: res.access_policy ?? currentData.access_policy,
             users: res.items.map((item) => ({ id: item.id }))
           });
         });

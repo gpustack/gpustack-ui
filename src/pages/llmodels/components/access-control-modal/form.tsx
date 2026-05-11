@@ -1,7 +1,7 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { RouteItem } from '@/pages/model-routes/config/types';
-import { queryUsersList } from '@/pages/users/apis';
+import { queryUserDirectory } from '@/pages/users/apis';
 import { DownOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import {
   AlertBlockInfo,
@@ -112,7 +112,7 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
 
   const getUserList = async (query: Global.SearchParams) => {
     try {
-      const res = await queryUsersList(query);
+      const res = await queryUserDirectory(query);
       const options = res.items.map((item) => ({
         title: item.username,
         key: item.id,

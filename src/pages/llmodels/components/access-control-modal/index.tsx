@@ -23,8 +23,14 @@ const AccessControlModal: React.FC<
 
   const handleOnFinish = async (values: AccessControlFormData) => {
     try {
-      const data = {
+      const data: any = {
         access_policy: values.access_policy,
+        // `users` is only meaningful for the legacy `allowed_users`
+        // policy; for the plugin override (typically the principal-
+        // based policy) the plugin's Field manages its own state
+        // inline via the principal CRUD endpoints, so we send an
+        // empty list to clear any stale user grants from a prior
+        // policy switch.
         users:
           values.access_policy === 'allowed_users' ? values.users || [] : []
       };

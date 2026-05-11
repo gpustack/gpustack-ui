@@ -2,6 +2,7 @@ import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { RouteItem } from '@/pages/model-routes/config/types';
 import { queryUserDirectory } from '@/pages/users/apis';
+import { getGPUStackPlugin } from '@/plugins';
 import { DownOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import {
   AlertBlockInfo,
@@ -33,7 +34,7 @@ import { AccessControlFormData } from '../../config/types';
 
 type TransferKey = string | number | bigint;
 
-const accessScopeTips = [
+const buildAccessScopeTips = (override?: AllowedUsersOverride) => [
   {
     title: {
       text: 'models.accessSettings.authed',
@@ -43,10 +44,10 @@ const accessScopeTips = [
   },
   {
     title: {
-      text: 'models.accessSettings.allowedUsers',
+      text: override?.labelId ?? 'models.accessSettings.allowedUsers',
       locale: true
     },
-    tips: 'models.accessSettings.allowedUsers.tips'
+    tips: override?.tipsId ?? 'models.accessSettings.allowedUsers.tips'
   },
   {
     title: {
@@ -74,11 +75,31 @@ interface AccessControlFormProps {
   onValuesChange?: (changedValues: any, allValues: any) => void;
 }
 
+// Extension seam: an enterprise plugin can substitute the legacy
+// `allowed_users` policy entry with a different one (e.g. the
+// principal-based ALLOWED_PRINCIPALS surface). When the override is
+// present, the OSS `allowed_users` radio option is swapped out and
+// the override's ``Field`` component is rendered when that policy is
+// active. Without a plugin the OSS form is unchanged.
+type AllowedUsersOverride = {
+  policyValue: string;
+  labelId: string;
+  tipsId?: string;
+  Field: React.ComponentType<{
+    form: any;
+    routeId?: number;
+    action: PageActionType;
+  }>;
+};
+
 const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
   const { action, currentData, onFinish, onValuesChange } = props;
   const intl = useIntl();
   const [form] = Form.useForm();
   const accessPolicy = Form.useWatch('access_policy', form);
+  const allowedUsersOverride: AllowedUsersOverride | undefined =
+    getGPUStackPlugin()?.accessControl?.allowedUsersOverride;
+  const overridePolicyValue = allowedUsersOverride?.policyValue;
   const [targetKeys, setTargetKeys] = useState<TransferKey[]>([]);
   const [totalPages, setTotalPages] = useState(0);
   const [userList, setUserList] = useState<
@@ -296,7 +317,13 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
     >
       <Label>
         {intl.formatMessage({ id: 'models.table.accessScope' })}
-        <Tooltip title={<TooltipList list={accessScopeTips}></TooltipList>}>
+        <Tooltip
+          title={
+            <TooltipList
+              list={buildAccessScopeTips(allowedUsersOverride)}
+            ></TooltipList>
+          }
+        >
           <QuestionCircleOutlined />
         </Tooltip>
       </Label>
@@ -310,12 +337,19 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
               label: intl.formatMessage({ id: 'models.accessSettings.authed' }),
               value: 'authed'
             },
-            {
-              label: intl.formatMessage({
-                id: 'models.accessSettings.allowedUsers'
-              }),
-              value: 'allowed_users'
-            },
+            allowedUsersOverride
+              ? {
+                  label: intl.formatMessage({
+                    id: allowedUsersOverride.labelId
+                  }),
+                  value: allowedUsersOverride.policyValue
+                }
+              : {
+                  label: intl.formatMessage({
+                    id: 'models.accessSettings.allowedUsers'
+                  }),
+                  value: 'allowed_users'
+                },
             {
               label: intl.formatMessage({
                 id: 'models.accessSettings.public'
@@ -335,7 +369,15 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
           ></AlertBlockInfo>
         </div>
       )}
-      {accessPolicy === 'allowed_users' && (
+      {allowedUsersOverride &&
+        accessPolicy === overridePolicyValue && (
+          <allowedUsersOverride.Field
+            form={form}
+            routeId={currentData?.id}
+            action={action}
+          />
+        )}
+      {!allowedUsersOverride && accessPolicy === 'allowed_users' && (
         <>
           <Label>
             {intl.formatMessage({ id: 'models.table.userSelection' })}

@@ -1,3 +1,4 @@
+import PluginExtraFields from '@/components/plugin-extra-fields';
 import { PageAction } from '@/config';
 import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import type { PageActionType } from '@/config/types';
@@ -216,6 +217,11 @@ const Users: React.FC = () => {
         onOk={handleModalOk}
       ></AddModal>
       <DeleteModal ref={modalRef}></DeleteModal>
+      {/* Plugin mount point for global Users-page UI (e.g. a
+          memberships drawer driven from a `users.rowActions`
+          entry's onClick). Renders nothing when no plugin is
+          registered. */}
+      <PluginExtraFields name="UsersPageGlobal" />
     </>
   );
 };

@@ -1,6 +1,6 @@
 // columns.ts
-import PluginExtraFields from '@/components/plugin-extra-fields';
 import { tableSorter } from '@/config/settings';
+import { getGPUStackPlugin } from '@/plugins';
 import {
   AutoTooltip,
   DropdownButtons,
@@ -9,11 +9,32 @@ import {
 } from '@gpustack/core-ui';
 import { useIntl, useModel } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { Space, Tag } from 'antd';
+import { Tag } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
 import { ListItem } from '../config/types';
+
+// Plugin slot: an enterprise plugin can contribute additional entries
+// to the user-row action dropdown via `users.rowActions`. Each entry
+// owns its own click behaviour (the host just dispatches by key);
+// register a single global drawer/modal under `components.
+// UsersPageGlobal` to host any UI state the click needs to open.
+//
+// `placement` controls where the entry lands relative to the built-in
+// items. Default: `before-danger` — appended after the safe entries
+// and before the destructive ones (delete). `after-edit` slots the
+// entry right after `Edit`, grouping "modify the user" actions
+// together before any lifecycle ops.
+type PluginRowAction = {
+  key: string;
+  labelId: string;
+  icon?: React.ReactNode;
+  danger?: boolean;
+  placement?: 'after-edit' | 'before-danger';
+  show?: (user: ListItem) => boolean;
+  onClick: (user: ListItem) => void;
+};
 interface ColumnsHookProps {
   handleSelect: (val: string, record: ListItem) => void;
   sortOrder: string[];
@@ -49,9 +70,11 @@ const useUsersColumns = ({
 }: ColumnsHookProps): ColumnsType<ListItem> => {
   const intl = useIntl();
   const { initialState } = useModel('@@initialState') || {};
+  const pluginRowActions: PluginRowAction[] =
+    getGPUStackPlugin()?.users?.rowActions ?? [];
 
   const setActions = useMemoizedFn((record: ListItem) => {
-    return actionList.filter((action) => {
+    const builtIn = actionList.filter((action) => {
       if (action.key === 'delete') {
         return initialState?.currentUser?.id !== record.id;
       }
@@ -63,6 +86,48 @@ const useUsersColumns = ({
       }
       return true;
     });
+    const eligible = pluginRowActions.filter((a) =>
+      a.show ? a.show(record) : true
+    );
+    const toItem = (a: PluginRowAction): Global.ActionItem<ListItem> => ({
+      label: a.labelId,
+      key: a.key,
+      icon: a.icon,
+      props: a.danger ? { danger: true } : undefined
+    });
+    const afterEdit = eligible
+      .filter((a) => a.placement === 'after-edit')
+      .map(toItem);
+    const beforeDanger = eligible
+      .filter((a) => (a.placement ?? 'before-danger') === 'before-danger')
+      .map(toItem);
+
+    // Splice in `after-edit` entries right after the `edit` built-in
+    // so "modify the user" actions group together. Everything else
+    // goes after the safe built-ins; danger built-ins (delete) stay
+    // at the very bottom regardless of where plugin items landed.
+    const editIdx = builtIn.findIndex((a) => a.key === 'edit');
+    const withAfterEdit =
+      editIdx >= 0
+        ? [
+            ...builtIn.slice(0, editIdx + 1),
+            ...afterEdit,
+            ...builtIn.slice(editIdx + 1)
+          ]
+        : [...afterEdit, ...builtIn];
+    const merged = [...withAfterEdit, ...beforeDanger];
+    const safe = merged.filter((a) => !a.props?.danger);
+    const danger = merged.filter((a) => a.props?.danger);
+    return [...safe, ...danger];
+  });
+
+  const onSelectAction = useMemoizedFn((val: string, record: ListItem) => {
+    const fromPlugin = pluginRowActions.find((a) => a.key === val);
+    if (fromPlugin) {
+      fromPlugin.onClick(record);
+      return;
+    }
+    handleSelect(val, record);
   });
 
   return useMemo(() => {
@@ -198,23 +263,14 @@ const useUsersColumns = ({
         dataIndex: 'operation',
         span: 3,
         render: (text, record) => (
-          // Plugin slot for per-row user actions. If no plugin is
-          // registered, `PluginExtraFields` renders nothing and the
-          // cell looks exactly as before.
-          <Space size={4}>
-            <DropdownButtons
-              items={setActions(record)}
-              onSelect={(val) => handleSelect(val, record)}
-            />
-            <PluginExtraFields
-              name="UserRowActions"
-              context={{ user: record }}
-            />
-          </Space>
+          <DropdownButtons
+            items={setActions(record)}
+            onSelect={(val) => onSelectAction(val, record)}
+          />
         )
       }
     ];
-  }, [sortOrder, intl, handleSelect, setActions]);
+  }, [sortOrder, intl, setActions, onSelectAction]);
 };
 
 export default useUsersColumns;

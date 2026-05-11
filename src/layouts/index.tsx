@@ -48,6 +48,7 @@ import Exception from './Exception';
 import './Layout.css';
 import { LogoIcon, SLogoIcon } from './Logo';
 import ErrorBoundary from './error-boundary';
+import { ExtraContent } from './extraRender';
 import { patchRoutes } from './runtime';
 import SiderMenu from './sider-menu';
 
@@ -193,6 +194,8 @@ export default (props: any) => {
     showShortcuts: () => {},
     notFound: <span>404 not found</span>
   };
+
+  const coreUISlots = useMemo(() => ({ ExtraContent }), []);
 
   const handleToggleCollapse = (e: any) => {
     e.stopPropagation();
@@ -381,6 +384,7 @@ export default (props: any) => {
           readState,
           writeState
         }}
+        slots={coreUISlots}
       >
         <DarkMask></DarkMask>
         <ProLayout

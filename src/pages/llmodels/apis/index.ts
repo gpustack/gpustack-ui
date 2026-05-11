@@ -424,9 +424,14 @@ export async function queryBackendList(params?: { cluster_id: number }) {
 }
 
 export async function queryModelAccessUserList(id: number) {
-  return request<{ items: UserListItem[] }>(`${MODEL_ROUTES}/${id}/access`, {
-    method: 'GET'
-  });
+  // The response carries `access_policy` alongside `items` so the
+  // Access Settings dialog can refresh both halves from a single
+  // GET (the calling list snapshot may be stale after a prior
+  // save).
+  return request<{ items: UserListItem[]; access_policy?: string }>(
+    `${MODEL_ROUTES}/${id}/access`,
+    { method: 'GET' }
+  );
 }
 
 export async function updateModelAccessUser(params: {

@@ -34,7 +34,14 @@ import { AccessControlFormData } from '../../config/types';
 
 type TransferKey = string | number | bigint;
 
-const buildAccessScopeTips = (override?: AllowedUsersOverride) => [
+const buildAccessScopeTips = (
+  override?: AllowedUsersOverride,
+  prepended: PrependedPolicy[] = []
+) => [
+  ...prepended.map((p) => ({
+    title: { text: p.labelId, locale: true },
+    tips: p.tipsId ?? p.labelId
+  })),
   {
     title: {
       text: 'models.accessSettings.authed',
@@ -92,14 +99,37 @@ type AllowedUsersOverride = {
   }>;
 };
 
+// Extra policy entries prepended to the radio list (rendered before
+// `authed`). Each entry can optionally bring a `Field` that renders
+// when its policy is selected — leave it out for plain "scope"
+// policies that need no extra config (e.g. ORG).
+type PrependedPolicy = {
+  policyValue: string;
+  labelId: string;
+  tipsId?: string;
+  Field?: React.ComponentType<{
+    form: any;
+    routeId?: number;
+    action: PageActionType;
+  }>;
+};
+
 const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
   const { action, currentData, onFinish, onValuesChange } = props;
   const intl = useIntl();
   const [form] = Form.useForm();
   const accessPolicy = Form.useWatch('access_policy', form);
+  const pluginAccessControl = getGPUStackPlugin()?.accessControl;
   const allowedUsersOverride: AllowedUsersOverride | undefined =
-    getGPUStackPlugin()?.accessControl?.allowedUsersOverride;
+    pluginAccessControl?.allowedUsersOverride;
   const overridePolicyValue = allowedUsersOverride?.policyValue;
+  const prependedPolicies: PrependedPolicy[] =
+    pluginAccessControl?.prependedPolicies ?? [];
+  const resolveCreateDefault: (() => string | undefined) | undefined =
+    pluginAccessControl?.resolveCreateDefault;
+  const activePrependedPolicy = prependedPolicies.find(
+    (p) => p.policyValue === accessPolicy
+  );
   const [targetKeys, setTargetKeys] = useState<TransferKey[]>([]);
   const [totalPages, setTotalPages] = useState(0);
   const [userList, setUserList] = useState<
@@ -316,7 +346,14 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
       scrollToFirstError={true}
       initialValues={{
         users: [],
-        access_policy: action === PageAction.CREATE ? 'authed' : undefined
+        // For create the plugin (if registered) may supply a context-
+        // sensitive default — e.g. routes in a non-platform Org
+        // default to the Org-scoped policy. Fall back to `authed`
+        // (the OSS default) if the plugin doesn't return a value.
+        access_policy:
+          action === PageAction.CREATE
+            ? (resolveCreateDefault?.() ?? 'authed')
+            : undefined
       }}
     >
       <Label>
@@ -324,7 +361,10 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
         <Tooltip
           title={
             <TooltipList
-              list={buildAccessScopeTips(allowedUsersOverride)}
+              list={buildAccessScopeTips(
+                allowedUsersOverride,
+                prependedPolicies
+              )}
             ></TooltipList>
           }
         >
@@ -337,6 +377,10 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
           onChange={handleOnPolicyChange}
           style={{ marginBottom: 12 }}
           options={[
+            ...prependedPolicies.map((p) => ({
+              label: intl.formatMessage({ id: p.labelId }),
+              value: p.policyValue
+            })),
             {
               label: intl.formatMessage({ id: 'models.accessSettings.authed' }),
               value: 'authed'
@@ -372,6 +416,13 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
             })}
           ></AlertBlockInfo>
         </div>
+      )}
+      {activePrependedPolicy?.Field && (
+        <activePrependedPolicy.Field
+          form={form}
+          routeId={currentData?.id}
+          action={action}
+        />
       )}
       {allowedUsersOverride &&
         accessPolicy === overridePolicyValue && (

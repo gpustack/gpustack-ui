@@ -280,5 +280,6 @@ export default {
   'common.file.size.limit': 'File size must not exceed {size}.',
   'common.file.format.limit': 'Invalid file format. Allowed: {formats}.',
   'common.image.limit.width': 'Image width must be {width}.',
-  'common.image.limit.height': 'Image height must be {height}.'
+  'common.image.limit.height': 'Image height must be {height}.',
+  'common.max': 'Max {count}'
 };

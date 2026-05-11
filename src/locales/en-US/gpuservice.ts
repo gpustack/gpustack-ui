@@ -13,8 +13,8 @@ export default {
   'gpuservice.template.command.placeholder':
     'Separate arguments with spaces; wrap arguments containing spaces in quotes, e.g.: /bin/bash -c "echo hello world"',
   'gpuservice.template.mountPath': 'Mount Path',
-  'gpuservice.template.containerDisk': 'Container Disk (Gi)',
-  'gpuservice.template.memory': 'Memory (Gi)',
+  'gpuservice.template.containerDisk': 'Container Disk (GB)',
+  'gpuservice.template.memory': 'Memory (GB)',
   'gpuservice.template.ports': 'Ports',
   'gpuservice.template.ports.add': 'Add Port',
   'gpuservice.template.ports.invalid':
@@ -41,13 +41,16 @@ export default {
   'gpuservice.instance.section.basic': 'Basic Info',
   'gpuservice.instance.section.type': 'Instance Type',
   'gpuservice.instance.section.template': 'Instance Template',
-  'gpuservice.instance.section.storage': 'Storage Volume',
+  'gpuservice.instance.types': 'Instance Types',
+  'gpuservice.instance.templates': 'Instance Templates',
+  'gpuservice.instance.section.storage': 'Storage',
   'gpuservice.instance.type.required': 'Please select an instance type',
   'gpuservice.instance.gpuCount': 'GPU Count',
   'gpuservice.instance.gpuCount.required': 'Please enter the GPU count',
   'gpuservice.instance.gpuCount.max':
     'The current instance type supports at most {count} GPU(s)',
   'gpuservice.instance.stock': 'Stock',
+  'gpuservice.instance.sliced': 'Sliced',
   'gpuservice.instance.memory': 'Memory',
   'gpuservice.instance.ram': 'RAM',
   'gpuservice.instance.search.type.placeholder':
@@ -68,8 +71,8 @@ export default {
   'gpuservice.storage.type.object': 'Object Storage',
   'gpuservice.storage.capacity': 'Capacity',
   'gpuservice.storage.accessMode': 'Access Mode',
-  'gpuservice.storage.persistent': 'Persistent Storage',
-  'gpuservice.storage.temporary': 'Temporary Storage',
+  'gpuservice.storage.persistent': 'Persistent',
+  'gpuservice.storage.temporary': 'Temporary',
   'gpuservice.storage.persistentVolume': 'Persistent Volume',
   'gpuservice.storage.persistentVolume.required':
     'Please select a persistent volume',

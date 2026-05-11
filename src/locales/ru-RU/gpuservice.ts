@@ -14,8 +14,8 @@ export default {
   'gpuservice.template.command.placeholder':
     'Разделяйте аргументы пробелами; аргументы с пробелами заключайте в кавычки, например: /bin/bash -c "echo hello world"',
   'gpuservice.template.mountPath': 'Путь монтирования',
-  'gpuservice.template.containerDisk': 'Диск контейнера (Gi)',
-  'gpuservice.template.memory': 'Память (Gi)',
+  'gpuservice.template.containerDisk': 'Диск контейнера (GB)',
+  'gpuservice.template.memory': 'Память (GB)',
   'gpuservice.template.ports': 'Порты',
   'gpuservice.template.ports.add': 'Добавить порт',
   'gpuservice.template.ports.invalid': 'Заполните настройки портов полностью.',
@@ -41,6 +41,8 @@ export default {
   'gpuservice.instance.section.basic': 'Основная информация',
   'gpuservice.instance.section.type': 'Тип экземпляра',
   'gpuservice.instance.section.template': 'Шаблон экземпляра',
+  'gpuservice.instance.types': 'Типы экземпляров',
+  'gpuservice.instance.templates': 'Шаблоны экземпляров',
   'gpuservice.instance.section.storage': 'Том хранилища',
   'gpuservice.instance.type.required': 'Выберите тип экземпляра',
   'gpuservice.instance.gpuCount': 'Количество GPU',
@@ -48,6 +50,7 @@ export default {
   'gpuservice.instance.gpuCount.max':
     'Текущий тип экземпляра поддерживает максимум {count} GPU',
   'gpuservice.instance.stock': 'Остаток',
+  'gpuservice.instance.sliced': 'Разделено',
   'gpuservice.instance.memory': 'Память',
   'gpuservice.instance.ram': 'RAM',
   'gpuservice.instance.search.type.placeholder':
@@ -68,8 +71,8 @@ export default {
   'gpuservice.storage.type.object': 'Объектное хранилище',
   'gpuservice.storage.capacity': 'Объём',
   'gpuservice.storage.accessMode': 'Режим доступа',
-  'gpuservice.storage.persistent': 'Постоянное хранилище',
-  'gpuservice.storage.temporary': 'Временное хранилище',
+  'gpuservice.storage.persistent': 'Постоянное',
+  'gpuservice.storage.temporary': 'Временное',
   'gpuservice.storage.persistentVolume': 'Постоянный том',
   'gpuservice.storage.persistentVolume.required': 'Выберите постоянный том',
   'gpuservice.storage.tempCapacity': 'Объём хранилища (ГБ)',

@@ -36,5 +36,5 @@ export const getCurrentOrganizationId = (): string => {
       if (value != null) return String(value);
     }
   } catch {}
-  return 'gpustack-organization-1';
+  return 'gpustack-default';
 };

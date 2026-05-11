@@ -52,7 +52,7 @@ const useStorageColumns = ({
         dataIndex: ['spec', 'capacity'],
         key: 'capacity',
         sorter: false,
-        render: (value: string) => value ?? '-'
+        render: (value: string) => (value ? value.replace(/Gi$/, 'GB') : '-')
       },
       {
         title: intl.formatMessage({ id: 'common.table.status' }),

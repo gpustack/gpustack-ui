@@ -116,7 +116,10 @@ export async function queryStorageClass(
     {
       method: 'GET',
       params: omitPathParams(params),
-      cancelToken: options?.token
+      cancelToken: options?.token,
+      headers: {
+        skipErrorHandler: 'true'
+      }
     }
   );
 }

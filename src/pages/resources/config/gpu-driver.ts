@@ -24,63 +24,90 @@ export const ManufacturerMap = {
   [GPUDriverMap.THEAD]: 'vendor.thead'
 };
 
+export const manfacturerValueMap = {
+  NVIDIA: 'nvidia',
+  AMD: 'amd',
+  ASCEND: 'ascend',
+  HYGON: 'hygon',
+  MOORE_THREADS: 'moorthreads',
+  ILUVATAR: 'iluvatar',
+  CAMBRICON: 'cambricon',
+  METAX: 'metax',
+  THEAD: 'thead'
+};
+
 export const GPUsConfigs: Record<
   string,
-  { label: string; value: string; runtime: string; driver: string }
+  {
+    label: string;
+    value: string;
+    runtime: string;
+    driver: string;
+    gpuVendor?: string;
+  }
 > = {
   [GPUDriverMap.NVIDIA]: {
     label: 'NVIDIA', // this label is used in echo command, do not translate
     value: GPUDriverMap.NVIDIA,
     runtime: 'nvidia',
-    driver: 'nvidia-smi'
+    driver: 'nvidia-smi',
+    gpuVendor: 'nvidia'
   },
   [GPUDriverMap.AMD]: {
     label: 'AMD',
     value: GPUDriverMap.AMD,
     runtime: 'amd',
-    driver: 'amd-smi static'
+    driver: 'amd-smi static',
+    gpuVendor: 'amd'
   },
   [GPUDriverMap.ASCEND]: {
     label: 'Ascend',
     value: GPUDriverMap.ASCEND,
     runtime: 'ascend',
-    driver: 'npu-smi info'
+    driver: 'npu-smi info',
+    gpuVendor: 'ascend'
   },
   [GPUDriverMap.HYGON]: {
     label: 'Hygon',
     value: GPUDriverMap.HYGON,
     runtime: '', // TODO: confirm runtime name
-    driver: 'hy-smi'
+    driver: 'hy-smi',
+    gpuVendor: 'hygon'
   },
   [GPUDriverMap.MOORE_THREADS]: {
     label: 'Moore Threads',
     value: GPUDriverMap.MOORE_THREADS,
     runtime: 'mthreads',
-    driver: 'mthreads-gmi'
+    driver: 'mthreads-gmi',
+    gpuVendor: 'mthreads'
   },
   [GPUDriverMap.ILUVATAR]: {
     label: 'Iluvatar',
     value: GPUDriverMap.ILUVATAR,
     runtime: 'iluvatar',
-    driver: 'ixsmi'
+    driver: 'ixsmi',
+    gpuVendor: 'iluvatar'
   },
   [GPUDriverMap.CAMBRICON]: {
     label: 'Cambricon',
     value: GPUDriverMap.CAMBRICON,
     runtime: 'cambricon',
-    driver: 'cnmon info'
+    driver: 'cnmon info',
+    gpuVendor: 'cambricon'
   },
   [GPUDriverMap.METAX]: {
     label: 'Metax',
     value: GPUDriverMap.METAX,
     runtime: 'metax',
-    driver: 'mx-smi'
+    driver: 'mx-smi',
+    gpuVendor: 'metax'
   },
   [GPUDriverMap.THEAD]: {
     label: 'T-Head PPU',
     value: GPUDriverMap.THEAD,
     runtime: '', // TODO: confirm runtime name
-    driver: 'ppu-smi'
+    driver: 'ppu-smi',
+    gpuVendor: 'thead'
   }
 };
 

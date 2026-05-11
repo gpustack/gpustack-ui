@@ -7,7 +7,7 @@ import mooreLogo from '@/assets/logo/moore-logo.png';
 import nvidiaLogo from '@/assets/logo/nvidia.png';
 import theadLogoEN from '@/assets/logo/t-head-en.png';
 import theadLogoZH from '@/assets/logo/t-head-zh.png';
-import { GPUDriverMap } from '@/pages/resources/config/gpu-driver';
+import { manfacturerValueMap } from '@/pages/resources/config/gpu-driver';
 import {
   AutoTooltip,
   DropdownActions,
@@ -73,7 +73,7 @@ const InfoItem = styled.div`
     color: var(--ant-color-text-quaternary);
   }
   .value {
-    color: var(--ant-color-text);
+    color: var(--ant-color-text-secondary);
   }
 `;
 
@@ -99,28 +99,28 @@ const TemplateCardItem: React.FC<TemplateCardProps> = ({ data, onSelect }) => {
 
   const renderLogo = () => {
     switch (data.manufacturer) {
-      case GPUDriverMap.NVIDIA:
+      case manfacturerValueMap.NVIDIA:
         return <LogoImg src={nvidiaLogo} height={18} />;
-      case GPUDriverMap.AMD:
+      case manfacturerValueMap.AMD:
         return (
           <IconFont
             type="icon-amd-logo"
             style={{ fontSize: 36, color: 'var(--ant-color-text)' }}
           />
         );
-      case GPUDriverMap.ASCEND:
+      case manfacturerValueMap.ASCEND:
         return <LogoImg src={ascendLogo} height={24} />;
-      case GPUDriverMap.HYGON:
+      case manfacturerValueMap.HYGON:
         return <LogoImg src={hyponPNG} height={18} />;
-      case GPUDriverMap.METAX:
+      case manfacturerValueMap.METAX:
         return <LogoImg src={metaxLogo} height={20} />;
-      case GPUDriverMap.MOORE_THREADS:
+      case manfacturerValueMap.MOORE_THREADS:
         return <LogoImg src={mooreLogo} height={22} />;
-      case GPUDriverMap.ILUVATAR:
+      case manfacturerValueMap.ILUVATAR:
         return <LogoImg src={iluvatarWEBP} height={22} />;
-      case GPUDriverMap.CAMBRICON:
+      case manfacturerValueMap.CAMBRICON:
         return <LogoImg src={CambriconPNG} height={22} />;
-      case GPUDriverMap.THEAD:
+      case manfacturerValueMap.THEAD:
         return (
           <LogoImg
             src={intl?.locale === 'zh-CN' ? theadLogoZH : theadLogoEN}

@@ -130,6 +130,10 @@ export const transformInstanceType = (
   const status = item.status;
   return {
     ...item,
+    spec: {
+      ...item.spec,
+      manufacturer: !item.spec?.acceleratable ? 'cpu' : item.spec.manufacturer
+    },
     status: {
       ...status,
       accelerator: transformInstanceTypeResource(

@@ -209,11 +209,18 @@ const Login = () => {
           isDarkTheme: userSettings.isDarkTheme,
           defaultColorPrimary: COLOR_PRIMARY
         }}
-        hooks={{
-          useUserSettings: useUserSettings as any,
-          useUserSettingsStorage: () => userSettingsStorage,
-          useIntl: useIntl
-        }}
+        hooks={
+          {
+            useUserSettings: useUserSettings as any,
+            useUserSettingsStorage: () => userSettingsStorage,
+            useIntl: useIntl
+            // useCurrentUser / useTableFetch are required by the
+            // 1.0.10 CoreHooks type but the login page doesn't use
+            // either — nothing here lists data or reads the current
+            // user. Cast away rather than mounting stubs that would
+            // never run.
+          } as any
+        }
         i18n={intl}
         locale={{
           getAllLocales: getAllLocales,

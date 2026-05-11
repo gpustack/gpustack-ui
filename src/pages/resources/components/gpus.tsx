@@ -11,7 +11,15 @@ import { GPU_DEVICES_API, queryGpuDevicesList } from '../apis';
 import { GPUDeviceItem } from '../config/types';
 import useGPUColumns from '../hooks/use-gpu-columns';
 
-const GPUList = () => {
+// Optional ``clusterId`` pins the list to a single cluster (used by
+// the cluster-detail page) and hides the cluster-filter dropdown so
+// the user can't change scope away from the cluster they're already
+// inside.
+interface GPUListProps {
+  clusterId?: number;
+}
+
+const GPUList: React.FC<GPUListProps> = ({ clusterId }) => {
   const {
     dataSource,
     queryParams,
@@ -26,7 +34,8 @@ const GPUList = () => {
     key: PaginationKey.GPUs,
     fetchAPI: queryGpuDevicesList,
     polling: true,
-    API: GPU_DEVICES_API
+    API: GPU_DEVICES_API,
+    defaultQueryParams: clusterId ? { cluster_id: clusterId } : undefined
   });
   const [searchParams] = useSearchParams();
   const page = searchParams.get('page');
@@ -100,7 +109,7 @@ const GPUList = () => {
           handleInputChange={handleNameChange}
           handleSelectChange={handleClusterChange}
           selectOptions={clusterList}
-          showSelect={true}
+          showSelect={!clusterId}
         ></FilterBar>
         <ConfigProvider renderEmpty={renderEmpty}>
           <Table

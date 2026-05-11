@@ -1,10 +1,10 @@
 import { clusterDetailAtom } from '@/atoms/clusters';
-import Deployments from '@/pages/llmodels/deployments';
 import GPUList from '@/pages/resources/components/gpus';
 import WorkerList from '@/pages/resources/components/workers';
+import { getGPUStackPlugin } from '@/plugins';
 import { IconFont } from '@gpustack/core-ui';
 import { useIntl, useNavigate, useSearchParams } from '@umijs/max';
-import { Tabs } from 'antd';
+import { Tabs, type TabsProps } from 'antd';
 import { useAtomValue } from 'jotai';
 import { PageContainerInner } from '../_components/page-box';
 import PageBreadcrumb from '../_components/page-breadcrumb';
@@ -29,6 +29,22 @@ const ClusterDetailModal = () => {
     }
   ];
 
+  // Extension slot: a registered plugin may inject additional tab
+  // items (e.g. per-cluster access / quota panels) by exporting
+  // ``clusterDetail.extraTabs(clusterId, intl)`` that returns an
+  // ``items`` array. The plugin's items are appended after the
+  // built-in tabs; without a plugin this is just ``[]`` and the
+  // tab strip is unchanged. ``intl`` is threaded through so plugin
+  // tabs can resolve i18n labels to plain strings — antd Tabs'
+  // icon-text gap collapses when ``label`` is a ReactNode rather
+  // than a string, so matching the built-in tabs' shape keeps the
+  // gap visually consistent.
+  type TabItem = NonNullable<TabsProps['items']>[number];
+  const extraTabs = (getGPUStackPlugin()?.clusterDetail?.extraTabs?.(
+    Number(id),
+    intl
+  ) ?? []) as TabItem[];
+
   return (
     <PageContainerInner
       header={{
@@ -46,20 +62,15 @@ const ClusterDetailModal = () => {
             key: 'workers',
             label: `Workers`,
             icon: <IconFont type="icon-resources" />,
-            children: <WorkerList />
-          },
-          {
-            key: 'deployments',
-            label: `Deployments`,
-            icon: <IconFont type="icon-rocket-launch1" />,
-            children: <Deployments></Deployments>
+            children: <WorkerList clusterId={Number(id)} />
           },
           {
             key: 'gpus',
             label: `GPUs`,
             icon: <IconFont type="icon-gpu1" />,
-            children: <GPUList />
-          }
+            children: <GPUList clusterId={Number(id)} />
+          },
+          ...extraTabs
         ]}
       />
     </PageContainerInner>

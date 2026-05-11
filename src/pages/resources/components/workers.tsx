@@ -26,7 +26,15 @@ import UpdateLabels from './update-labels';
 import WorkerDetailModal from './worker-detail-modal';
 import WorkerRightActions from './worker-right-actions';
 
-const Workers = () => {
+// Optional ``clusterId`` pins the list to a single cluster (used by
+// the cluster-detail page) and hides the cluster-filter dropdown so
+// the user can't change scope away from the cluster they're already
+// inside.
+interface WorkersProps {
+  clusterId?: number;
+}
+
+const Workers: React.FC<WorkersProps> = ({ clusterId }) => {
   const {
     dataSource,
     rowSelection,
@@ -50,7 +58,8 @@ const Workers = () => {
     contentForDelete: 'resources.worker',
     watch: true,
     API: WORKERS_API,
-    updateManually: true
+    updateManually: true,
+    defaultQueryParams: clusterId ? { cluster_id: clusterId } : undefined
   });
   const { goToGrafana, ActionButton } = useGranfanaLink({
     type: 'worker'
@@ -251,7 +260,7 @@ const Workers = () => {
     <>
       <PageBox>
         <FilterBar
-          showSelect={true}
+          showSelect={!clusterId}
           selectHolder={intl.formatMessage({ id: 'clusters.filterBy.cluster' })}
           marginBottom={22}
           marginTop={30}

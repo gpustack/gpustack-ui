@@ -113,7 +113,8 @@ export const backendActions = [
     // An org-scoped override of a built-in IS deletable — deleting
     // the override is how the user reverts to the Platform row.
     // Plain custom backends are always deletable.
-    show: (record: any) => !record.is_built_in || record.organization_id != null
+    show: (record: any) =>
+      !record.is_built_in || record.owner_principal_id != null
   }
 ];
 

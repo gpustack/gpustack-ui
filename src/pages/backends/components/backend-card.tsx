@@ -252,7 +252,7 @@ const BackendCard: React.FC<BackendCardProps> = ({
     const ownerTag = (
       <PluginExtraFields
         name="BackendOwnerTag"
-        context={{ organizationId: data.organization_id }}
+        context={{ ownerPrincipalId: data.owner_principal_id }}
       />
     );
     if (!source) {

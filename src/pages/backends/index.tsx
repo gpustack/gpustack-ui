@@ -173,7 +173,7 @@ const BackendList = () => {
       // gets a real DELETE.
       const isPlatformCommunity =
         item.data.backend_source === BackendSourceValueMap.COMMUNITY &&
-        item.data.organization_id == null;
+        item.data.owner_principal_id == null;
       if (isPlatformCommunity) {
         modalRef.current?.show({
           content: 'backends.title',

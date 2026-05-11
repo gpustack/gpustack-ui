@@ -18,11 +18,18 @@ import { FormData } from '../config/types';
 import Env from './env';
 import Ports from './ports';
 
-interface BasicProps {
-  page?: 'template' | 'instance';
+export interface BasicResourceMax {
+  cpu?: number | null;
+  memory?: number | null;
+  localStorage?: number | null;
 }
 
-const Basic: React.FC<BasicProps> = ({ page = 'template' }) => {
+interface BasicProps {
+  page?: 'template' | 'instance';
+  onceMaxRequest?: BasicResourceMax;
+}
+
+const Basic: React.FC<BasicProps> = ({ page = 'template', onceMaxRequest }) => {
   const { getRuleMessage } = useAppUtils();
   const intl = useIntl();
 
@@ -30,10 +37,25 @@ const Basic: React.FC<BasicProps> = ({ page = 'template' }) => {
     () =>
       Object.values(GPUsConfigs).map((item) => ({
         label: item.label,
-        value: item.value
+        value: item.gpuVendor
       })),
     []
   );
+
+  const renderMaxLabel = (
+    label: React.ReactNode,
+    max?: number | null
+  ): React.ReactNode => {
+    if (max == null) return label;
+    return (
+      <Flex gap={4} align="center">
+        {label}
+        <span>
+          ({intl.formatMessage({ id: 'common.max' }, { count: max })})
+        </span>
+      </Flex>
+    );
+  };
 
   return (
     <>
@@ -135,9 +157,11 @@ const Basic: React.FC<BasicProps> = ({ page = 'template' }) => {
             })}
           >
             <InputNumber
-              label={intl.formatMessage({
-                id: 'gpuservice.template.containerDisk'
-              })}
+              label={renderMaxLabel(
+                intl.formatMessage({ id: 'gpuservice.template.containerDisk' }),
+                onceMaxRequest?.localStorage
+              )}
+              max={onceMaxRequest?.localStorage ?? undefined}
             />
           </Form.Item>
         </div>
@@ -149,7 +173,10 @@ const Basic: React.FC<BasicProps> = ({ page = 'template' }) => {
             normalize={(value) => (value ? `${value}` : '')}
             getValueProps={(value) => ({ value: value ? String(value) : '' })}
           >
-            <InputNumber label="CPU" />
+            <InputNumber
+              label={renderMaxLabel('CPU', onceMaxRequest?.cpu)}
+              max={onceMaxRequest?.cpu ?? undefined}
+            />
           </Form.Item>
         </div>
         <div style={{ flex: 1 }}>
@@ -161,7 +188,11 @@ const Basic: React.FC<BasicProps> = ({ page = 'template' }) => {
             })}
           >
             <InputNumber
-              label={intl.formatMessage({ id: 'gpuservice.template.memory' })}
+              label={renderMaxLabel(
+                intl.formatMessage({ id: 'gpuservice.template.memory' }),
+                onceMaxRequest?.memory
+              )}
+              max={onceMaxRequest?.memory ?? undefined}
             />
           </Form.Item>
         </div>

@@ -52,12 +52,12 @@ export default {
     '当前没有运行中的模型实例，部署模型后将自动创建。',
   'noresult.instances.nofound': '未找到匹配的实例',
   'noresult.gpuservice.template.title': '暂无实例模板',
-  'noresult.gpuservice.template.subTitle': '创建一个实例模板后会显示在这里',
+  'noresult.gpuservice.template.subTitle': '尚未添加任何实例模板。',
   'noresult.gpuservice.template.nofound': '未找到匹配的实例模板',
   'noresult.gpuservice.instance.title': '暂无 GPU 实例',
-  'noresult.gpuservice.instance.subTitle': '创建一个 GPU 实例后会显示在这里',
+  'noresult.gpuservice.instance.subTitle': '尚未添加任何 GPU 实例。',
   'noresult.gpuservice.instance.nofound': '未找到匹配的 GPU 实例',
   'noresult.gpuservice.storage.title': '暂无存储',
-  'noresult.gpuservice.storage.subTitle': '创建一个存储后会显示在这里',
+  'noresult.gpuservice.storage.subTitle': '尚未添加任何存储。',
   'noresult.gpuservice.storage.nofound': '未找到匹配的存储'
 };

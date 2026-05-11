@@ -21,8 +21,8 @@ export default function useQueryStorageClass() {
   >({
     key: 'storageClass',
     fetchList,
-    getLabel: (item) => item.metadata.name,
-    getValue: (item) => item.metadata.name
+    getLabel: (item) => item?.metadata.name,
+    getValue: (item) => item?.metadata.name
   });
 
   return {

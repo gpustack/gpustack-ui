@@ -24,7 +24,7 @@ const Container = styled.div`
 const ColWrapper = styled.div`
   display: flex;
   flex: 1;
-  max-width: 33.33%;
+  max-width: 33%;
   min-height: 0;
 `;
 
@@ -39,7 +39,7 @@ const PanelBody = styled.div`
 const FormWrapper = styled.div`
   display: flex;
   flex: 1;
-  max-width: 33.33%;
+  max-width: 34%;
   min-height: 0;
 `;
 
@@ -50,6 +50,30 @@ type AddModalProps = {
   onOk: (values: FormData) => void;
   data?: ListItem | null;
   onCancel: () => void;
+};
+
+const ColTitle: React.FC<{
+  children: React.ReactNode;
+  style?: React.CSSProperties;
+}> = ({ children, style }) => {
+  return (
+    <Typography.Title
+      level={3}
+      style={{
+        fontSize: 14,
+        paddingTop: 10,
+        paddingBottom: 16,
+        margin: 0,
+        position: 'sticky',
+        top: 0,
+        zIndex: 100,
+        backgroundColor: 'var(--ant-color-bg-elevated)',
+        ...style
+      }}
+    >
+      {children}
+    </Typography.Title>
+  );
 };
 
 const AddModal: React.FC<AddModalProps> = ({
@@ -81,7 +105,7 @@ const AddModal: React.FC<AddModalProps> = ({
     if (open) {
       autoSelectedRef.current = false;
       fetchData({});
-      fetchTemplates({ page: 1, perPage: 100 });
+      fetchTemplates({ page: -1 });
     } else {
       setSelectedInstanceType(undefined);
       setSelectedManufacturer(undefined);
@@ -112,6 +136,11 @@ const AddModal: React.FC<AddModalProps> = ({
   }, [instanceKeyword, instanceTypeList]);
 
   const manufacturerMatchedTemplates = useMemo(() => {
+    console.log(
+      'Filtering templates by manufacturer:',
+      templateList,
+      selectedManufacturer
+    );
     if (!selectedManufacturer) {
       return templateList;
     }
@@ -277,6 +306,9 @@ const AddModal: React.FC<AddModalProps> = ({
         <ColWrapper>
           <ColumnWrapper styles={{ container: { paddingBlock: 0 } }}>
             <PanelBody>
+              <ColTitle style={{ paddingBottom: 0 }}>
+                {intl.formatMessage({ id: 'gpuservice.instance.types' })}
+              </ColTitle>
               <div
                 style={{
                   position: 'sticky',
@@ -308,6 +340,9 @@ const AddModal: React.FC<AddModalProps> = ({
         <ColWrapper>
           <ColumnWrapper styles={{ container: { paddingBlock: 0 } }}>
             <PanelBody>
+              <ColTitle style={{ paddingBottom: 0 }}>
+                {intl.formatMessage({ id: 'gpuservice.instance.templates' })}
+              </ColTitle>
               <div
                 style={{
                   position: 'sticky',
@@ -355,27 +390,16 @@ const AddModal: React.FC<AddModalProps> = ({
             }
           >
             <>
-              <Typography.Title
-                level={3}
-                style={{
-                  fontSize: 14,
-                  paddingTop: 10,
-                  paddingBottom: 16,
-                  margin: 0,
-                  position: 'sticky',
-                  top: 0,
-                  zIndex: 100,
-                  backgroundColor: 'var(--ant-color-bg-elevated)'
-                }}
-              >
-                Configuration
-              </Typography.Title>
+              <ColTitle>
+                {intl.formatMessage({ id: 'common.title.config' })}
+              </ColTitle>
               <GPUServiceInstanceForm
                 ref={form}
                 action={action}
                 currentData={data}
                 onFinish={onFinish}
                 open={open}
+                instanceTypeList={instanceTypeList}
               />
             </>
           </ColumnWrapper>

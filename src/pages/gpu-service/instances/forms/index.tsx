@@ -20,8 +20,10 @@ import {
 } from 'react';
 import useGetSshkey from '../../public-keys/services/use-get-sshkey';
 import { DefaultImagePullPolicy } from '../../templates/config';
-import TemplateBasicForm from '../../templates/forms/basic';
-import { FormData, InstancePort, ListItem } from '../config/types';
+import TemplateBasicForm, {
+  BasicResourceMax
+} from '../../templates/forms/basic';
+import { FormData, InstanceTypeItem, ListItem } from '../config/types';
 import Basic from './basic';
 import InstanceTypeFormItem from './instance-type';
 import StorageVolume from './storage-volume';
@@ -39,8 +41,17 @@ interface InstanceFormProps {
   action: PageActionType;
   currentData?: ListItem | null;
   namespace?: string;
+  instanceTypeList?: InstanceTypeItem[];
   onFinish: (values: FormData) => Promise<void>;
 }
+
+const parseQuantityToNumber = (value?: string): number | null => {
+  if (!value) return null;
+  const match = /^(-?\d+(?:\.\d+)?)/.exec(String(value));
+  if (!match) return null;
+  const num = Number(match[1]);
+  return Number.isFinite(num) && num > 0 ? num : null;
+};
 
 const TABKeysMap = {
   BASIC: 'basic',
@@ -75,6 +86,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       currentData,
       open,
       namespace = 'default',
+      instanceTypeList = [],
       onFinish
     } = props;
     const intl = useIntl();
@@ -108,7 +120,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
         {
           value: TABKeysMap.BASIC,
           label: intl.formatMessage({
-            id: 'gpuservice.instance.section.basic'
+            id: 'common.title.basicInfo'
           }),
           icon: <IconFont type="icon-basic" />,
           field: 'name'
@@ -139,13 +151,30 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       [intl]
     );
 
-    const ports = (Form.useWatch(['spec', 'ports'], form) ||
-      []) as InstancePort[];
+    const ports = Form.useWatch(['spec', 'ports'], form) || [];
     const hasSshPort = useMemo(
       () =>
         ports.some((p) => Number(p?.port) === SSH_PORT && p.protocol === 'TCP'),
       [ports]
     );
+
+    const selectedTypeName = Form.useWatch(['spec', 'type'], form) as
+      | string
+      | undefined;
+
+    const onceMaxRequest = useMemo<BasicResourceMax>(() => {
+      const selected = instanceTypeList.find(
+        (item) => (item.metadata?.name || '') === selectedTypeName
+      );
+      const status = selected?.status;
+      return {
+        cpu: parseQuantityToNumber(status?.cpu?.onceMaxRequest),
+        memory: parseQuantityToNumber(status?.ram?.onceMaxRequest),
+        localStorage: parseQuantityToNumber(
+          status?.localStorage?.onceMaxRequest
+        )
+      };
+    }, [instanceTypeList, selectedTypeName]);
 
     const onTargetChange = (key: string) => {
       scrollTabsRef.current?.handleTargetChange(key);
@@ -277,7 +306,12 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
                   id: 'gpuservice.instance.section.template'
                 }),
                 forceRender: true,
-                children: <TemplateBasicForm page="instance" />
+                children: (
+                  <TemplateBasicForm
+                    page="instance"
+                    onceMaxRequest={onceMaxRequest}
+                  />
+                )
               },
               {
                 key: TABKeysMap.STORAGE,

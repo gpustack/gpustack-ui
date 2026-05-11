@@ -55,16 +55,16 @@ export default {
   'noresult.instances.nofound': 'No matching instances found.',
   'noresult.gpuservice.template.title': 'インスタンステンプレートなし',
   'noresult.gpuservice.template.subTitle':
-    'インスタンステンプレートを作成すると、ここに表示されます。',
+    'インスタンステンプレートはまだ追加されていません。',
   'noresult.gpuservice.template.nofound':
     '一致するインスタンステンプレートが見つかりません。',
   'noresult.gpuservice.instance.title': 'GPU インスタンスなし',
   'noresult.gpuservice.instance.subTitle':
-    'GPU インスタンスを作成すると、ここに表示されます。',
+    'GPU インスタンスはまだ追加されていません。',
   'noresult.gpuservice.instance.nofound':
     '一致する GPU インスタンスが見つかりません。',
   'noresult.gpuservice.storage.title': 'ストレージなし',
   'noresult.gpuservice.storage.subTitle':
-    'ストレージを作成すると、ここに表示されます。',
+    'ストレージはまだ追加されていません。',
   'noresult.gpuservice.storage.nofound': '一致するストレージが見つかりません。'
 };

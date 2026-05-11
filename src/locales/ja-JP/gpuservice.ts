@@ -13,8 +13,8 @@ export default {
   'gpuservice.template.command.placeholder':
     '引数はスペースで区切り、スペースを含む引数は引用符で囲んでください。例：/bin/bash -c "echo hello world"',
   'gpuservice.template.mountPath': 'マウントパス',
-  'gpuservice.template.containerDisk': 'コンテナディスク (Gi)',
-  'gpuservice.template.memory': 'メモリ (Gi)',
+  'gpuservice.template.containerDisk': 'コンテナディスク (GB)',
+  'gpuservice.template.memory': 'メモリ (GB)',
   'gpuservice.template.ports': 'ポート',
   'gpuservice.template.ports.add': 'ポートを追加',
   'gpuservice.template.ports.invalid': 'ポート設定を完成させてください。',
@@ -39,6 +39,8 @@ export default {
   'gpuservice.instance.section.basic': '基本情報',
   'gpuservice.instance.section.type': 'インスタンスタイプ',
   'gpuservice.instance.section.template': 'インスタンステンプレート',
+  'gpuservice.instance.types': 'インスタンスタイプ',
+  'gpuservice.instance.templates': 'インスタンステンプレート',
   'gpuservice.instance.section.storage': 'ストレージボリューム',
   'gpuservice.instance.type.required': 'インスタンスタイプを選択してください',
   'gpuservice.instance.gpuCount': 'GPU 数',
@@ -46,6 +48,7 @@ export default {
   'gpuservice.instance.gpuCount.max':
     '現在のインスタンスタイプは最大 {count} 個の GPU をサポートします',
   'gpuservice.instance.stock': '在庫',
+  'gpuservice.instance.sliced': '分割',
   'gpuservice.instance.memory': 'Memory',
   'gpuservice.instance.ram': 'RAM',
   'gpuservice.instance.search.type.placeholder':
@@ -66,8 +69,8 @@ export default {
   'gpuservice.storage.type.object': 'オブジェクトストレージ',
   'gpuservice.storage.capacity': '容量',
   'gpuservice.storage.accessMode': 'アクセスモード',
-  'gpuservice.storage.persistent': '永続ストレージ',
-  'gpuservice.storage.temporary': '一時ストレージ',
+  'gpuservice.storage.persistent': '永続',
+  'gpuservice.storage.temporary': '一時',
   'gpuservice.storage.persistentVolume': '永続ボリューム',
   'gpuservice.storage.persistentVolume.required':
     '永続ボリュームを選択してください',

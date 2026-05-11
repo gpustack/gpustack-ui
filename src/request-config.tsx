@@ -10,10 +10,6 @@ import { extraRequestInterceptors } from './request.extensions';
 const NoBaseURLAPIs = ['/auth', '/v1', '/version', '/proxy', '/update'];
 
 export const requestConfig: RequestConfig = {
-  headers: {
-    'Content-Security-Policy': "frame-ancestors 'self'",
-    'X-Frame-Options': 'SAMEORIGIN'
-  },
   errorConfig: {
     errorThrower: (res: any) => {
       // to do something

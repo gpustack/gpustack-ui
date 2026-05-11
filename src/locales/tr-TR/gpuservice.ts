@@ -13,8 +13,8 @@ export default {
   'gpuservice.template.command.placeholder':
     'Argümanları boşlukla ayırın; boşluk içeren argümanları tırnak içine alın, örn.: /bin/bash -c "echo hello world"',
   'gpuservice.template.mountPath': 'Bağlama Yolu',
-  'gpuservice.template.containerDisk': 'Konteyner Diski (Gi)',
-  'gpuservice.template.memory': 'Bellek (Gi)',
+  'gpuservice.template.containerDisk': 'Konteyner Diski (GB)',
+  'gpuservice.template.memory': 'Bellek (GB)',
   'gpuservice.template.ports': 'Bağlantı Noktaları',
   'gpuservice.template.ports.add': 'Bağlantı Noktası Ekle',
   'gpuservice.template.ports.invalid':
@@ -40,6 +40,8 @@ export default {
   'gpuservice.instance.section.basic': 'Temel Bilgiler',
   'gpuservice.instance.section.type': 'Örnek Türü',
   'gpuservice.instance.section.template': 'Örnek Şablonu',
+  'gpuservice.instance.types': 'Örnek Türleri',
+  'gpuservice.instance.templates': 'Örnek Şablonları',
   'gpuservice.instance.section.storage': 'Depolama Hacmi',
   'gpuservice.instance.type.required': 'Lütfen bir örnek türü seçin',
   'gpuservice.instance.gpuCount': 'GPU Sayısı',
@@ -47,6 +49,7 @@ export default {
   'gpuservice.instance.gpuCount.max':
     'Mevcut örnek türü en fazla {count} GPU destekler',
   'gpuservice.instance.stock': 'Stok',
+  'gpuservice.instance.sliced': 'Bölünmüş',
   'gpuservice.instance.memory': 'Bellek',
   'gpuservice.instance.ram': 'RAM',
   'gpuservice.instance.search.type.placeholder':
@@ -67,8 +70,8 @@ export default {
   'gpuservice.storage.type.object': 'Nesne Depolama',
   'gpuservice.storage.capacity': 'Kapasite',
   'gpuservice.storage.accessMode': 'Erişim Modu',
-  'gpuservice.storage.persistent': 'Kalıcı Depolama',
-  'gpuservice.storage.temporary': 'Geçici Depolama',
+  'gpuservice.storage.persistent': 'Kalıcı',
+  'gpuservice.storage.temporary': 'Geçici',
   'gpuservice.storage.persistentVolume': 'Kalıcı Hacim',
   'gpuservice.storage.persistentVolume.required':
     'Lütfen bir kalıcı hacim seçin',

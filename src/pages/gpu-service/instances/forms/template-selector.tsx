@@ -33,7 +33,7 @@ const TemplateContent = styled.div`
   }
 
   .value {
-    color: var(--ant-color-text);
+    color: var(--ant-color-text-secondary);
   }
 
   .icon {

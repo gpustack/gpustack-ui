@@ -115,16 +115,38 @@ const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({
                   <span>{convertKiToGi(item.spec?.memory) ?? '-'}</span>
                 </Flex>
               </span>
-              <span className="dot"></span>
-              <span className="meta-item">
-                <IconFont type="icon-cube" className="meta-icon" />
-                <Flex align="center" gap={4}>
-                  <span>
-                    {intl.formatMessage({ id: 'gpuservice.instance.stock' })}
+              {item.spec?.sliced && (
+                <>
+                  <span className="dot"></span>
+                  <span className="meta-item">
+                    <IconFont type="icon-sliced" className="meta-icon" />
+                    <Flex align="center" gap={4}>
+                      <span>
+                        {intl.formatMessage({
+                          id: 'gpuservice.instance.sliced'
+                        })}
+                      </span>
+                      <span>{item.spec?.sliced ?? '-'}</span>
+                    </Flex>
                   </span>
-                  <span>{item.status?.accelerator?.remaining ?? '-'}</span>
-                </Flex>
-              </span>
+                </>
+              )}
+              {item.status?.accelerator?.remaining && (
+                <>
+                  <span className="dot"></span>
+                  <span className="meta-item">
+                    <IconFont type="icon-cube" className="meta-icon" />
+                    <Flex align="center" gap={4}>
+                      <span>
+                        {intl.formatMessage({
+                          id: 'gpuservice.instance.stock'
+                        })}
+                      </span>
+                      <span>{item.status?.accelerator?.remaining ?? '-'}</span>
+                    </Flex>
+                  </span>
+                </>
+              )}
             </span>
           )}
         </span>

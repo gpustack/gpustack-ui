@@ -56,16 +56,13 @@ export default {
     'There are no running model instances. Deploy a model to create one automatically.',
   'noresult.instances.nofound': 'No matching instances found.',
   'noresult.gpuservice.template.title': 'Örnek Şablonu Yok',
-  'noresult.gpuservice.template.subTitle':
-    'Bir örnek şablonu oluşturduğunuzda burada görünecek.',
+  'noresult.gpuservice.template.subTitle': 'Henüz örnek şablonu eklenmedi.',
   'noresult.gpuservice.template.nofound': 'Eşleşen örnek şablonu bulunamadı.',
   'noresult.gpuservice.instance.title': 'GPU Örneği Yok',
-  'noresult.gpuservice.instance.subTitle':
-    'Bir GPU örneği oluşturduğunuzda burada görünecek.',
+  'noresult.gpuservice.instance.subTitle': 'Henüz GPU örneği eklenmedi.',
   'noresult.gpuservice.instance.nofound': 'Eşleşen GPU örneği bulunamadı.',
   'noresult.gpuservice.storage.title': 'Depolama Yok',
-  'noresult.gpuservice.storage.subTitle':
-    'Bir depolama oluşturduğunuzda burada görünecek.',
+  'noresult.gpuservice.storage.subTitle': 'Henüz depolama eklenmedi.',
   'noresult.gpuservice.storage.nofound': 'Eşleşen depolama bulunamadı.'
 };
 

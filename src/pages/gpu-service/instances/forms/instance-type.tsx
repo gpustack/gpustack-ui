@@ -1,6 +1,6 @@
 import { InputNumber as CInputNumber } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Form } from 'antd';
+import { Flex, Form } from 'antd';
 import { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import InstanceTypeItem from '../components/instance-type-item';
@@ -138,7 +138,19 @@ const InstanceTypeFormItem = () => {
             min={1}
             max={maxGpuCount}
             precision={0}
-            label={intl.formatMessage({ id: 'gpuservice.instance.gpuCount' })}
+            label={
+              <Flex gap={4} align="center">
+                {intl.formatMessage({ id: 'gpuservice.instance.gpuCount' })}
+                <span>
+                  (
+                  {intl.formatMessage(
+                    { id: 'common.max' },
+                    { count: maxGpuCount }
+                  )}
+                  )
+                </span>
+              </Flex>
+            }
             required
           />
         </Form.Item>

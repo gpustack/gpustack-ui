@@ -28,10 +28,7 @@ const Basic = ({ open }: { open: boolean }) => {
         rules={[
           {
             required: true,
-            message: getRuleMessage(
-              'input',
-              intl.formatMessage({ id: 'common.table.name' })
-            )
+            message: getRuleMessage('input', 'common.table.name')
           }
         ]}
       >
@@ -47,10 +44,7 @@ const Basic = ({ open }: { open: boolean }) => {
             rules={[
               {
                 required: true,
-                message: getRuleMessage(
-                  'select',
-                  intl.formatMessage({ id: 'gpuservice.storage.type' })
-                )
+                message: getRuleMessage('select', 'gpuservice.storage.type')
               }
             ]}
           >
@@ -72,10 +66,7 @@ const Basic = ({ open }: { open: boolean }) => {
             rules={[
               {
                 required: true,
-                message: getRuleMessage(
-                  'input',
-                  intl.formatMessage({ id: 'gpuservice.storage.capacity' })
-                )
+                message: getRuleMessage('input', 'gpuservice.storage.capacity')
               }
             ]}
           >

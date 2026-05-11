@@ -134,7 +134,7 @@ const useInstancesColumns = ({
                         backgroundColor: 'var(--ant-color-fill-tertiary)'
                       }}
                     >
-                      {entry.port}
+                      <span>{entry.port}</span>
                       <ExportOutlined style={{ fontSize: 10, marginLeft: 4 }} />
                     </Button>
                   </Flex>

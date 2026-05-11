@@ -117,6 +117,7 @@
     "webpack-bundle-analyzer": "^4.10.2",
     "worker-loader": "^3.0.8"
   },
+  "packageManager": "pnpm@9.3.0",
   "pnpm": {
     "overrides": {
       "elliptic": "^6.6.1"

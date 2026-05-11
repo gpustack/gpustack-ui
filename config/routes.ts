@@ -195,7 +195,6 @@ const baseRoutes = [
         icon: 'icon-cloud-outlined',
         selectedIcon: 'icon-cloud-filled',
         defaultIcon: 'icon-cloud-outlined',
-        access: 'canSeeAdmin',
         component: './gpu-service/instances'
       },
       {
@@ -205,7 +204,6 @@ const baseRoutes = [
         icon: 'icon-instance-template-outlined',
         selectedIcon: 'icon-instance-template-filled',
         defaultIcon: 'icon-instance-template-outlined',
-        access: 'canSeeAdmin',
         component: './gpu-service/templates'
       },
       {
@@ -215,7 +213,6 @@ const baseRoutes = [
         icon: 'icon-storage-outlined',
         selectedIcon: 'icon-storage-filled',
         defaultIcon: 'icon-storage-outlined',
-        access: 'canSeeAdmin',
         component: './gpu-service/storage'
       },
       {
@@ -225,7 +222,6 @@ const baseRoutes = [
         icon: 'icon-ssh-outlined',
         selectedIcon: 'icon-ssh-filled',
         defaultIcon: 'icon-ssh-outlined',
-        access: 'canSeeAdmin',
         component: './gpu-service/public-keys'
       }
     ]

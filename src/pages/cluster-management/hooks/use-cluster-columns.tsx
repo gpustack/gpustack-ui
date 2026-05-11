@@ -1,6 +1,7 @@
 // columns.ts
 import { systemConfigAtom } from '@/atoms/system';
 import { tableSorter } from '@/config/settings';
+import { getGPUStackPlugin } from '@/plugins';
 import { StarFilled } from '@ant-design/icons';
 import {
   AutoTooltip,
@@ -11,7 +12,7 @@ import {
   type TableColumnProps as SealColumnProps
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Tooltip } from 'antd';
+import { Tooltip, Typography } from 'antd';
 import dayjs from 'dayjs';
 import { useAtomValue } from 'jotai';
 import { useMemo } from 'react';
@@ -79,6 +80,14 @@ const useClusterColumns = (
 ): SealColumnProps[] => {
   const intl = useIntl();
   const systemConfig = useAtomValue(systemConfigAtom);
+  // The cluster-detail page is shipped in OSS source, but OSS keeps
+  // it unreachable from the cluster list — the link is only
+  // surfaced when a plugin opts in via
+  // `clusterDetail.linkableName`. Without a plugin we render the
+  // name as plain text (matches the pre-restore behaviour); with one
+  // we use Typography.Link wired to the parent's `onCellClick`.
+  const nameLinkable: boolean = !!getGPUStackPlugin()?.clusterDetail
+    ?.linkableName;
 
   const setActionsItems = (row: ClusterListItem) => {
     return clusterActionList.filter((item) => {
@@ -101,8 +110,16 @@ const useClusterColumns = (
         span: 3,
         render: (text: string, record: ClusterListItem) => (
           <>
-            <AutoTooltip ghost>
-              <span className="text-primary">{record.name}</span>
+            <AutoTooltip ghost title={text}>
+              {nameLinkable ? (
+                <Typography.Link
+                  onClick={() => onCellClick?.(record, 'name')}
+                >
+                  {record.name}
+                </Typography.Link>
+              ) : (
+                <span className="text-primary">{record.name}</span>
+              )}
             </AutoTooltip>
             {record.is_default && (
               <Tooltip

@@ -1,9 +1,9 @@
 import { GPUStackVersionAtom, UpdateCheckAtom } from '@/atoms/user';
+import PluginExtraField from '@/components/plugin-extra-fields';
 import VersionInfo, { modalConfig } from '@/components/version-info';
 import externalLinks from '@/constants/external-links';
 import useBodyScroll from '@/hooks/use-body-scroll';
 import { logout } from '@/pages/login/apis';
-import { getGPUStackPlugin } from '@/plugins';
 import { useModel } from '@@/plugin-model';
 import {
   DiscordOutlined,
@@ -18,15 +18,6 @@ import { useAtom } from 'jotai';
 import { useMemo } from 'react';
 import styled from 'styled-components';
 import { DEFAULT_ENTER_PAGE } from '../config/settings';
-
-const UpdateDot = styled.span`
-  margin-left: 5px;
-  display: flex;
-  width: 8px;
-  height: 8px;
-  border-radius: 4px;
-  background-color: var(--ant-orange-5);
-`;
 
 const NewLabel = styled.span`
   position: relative;
@@ -106,7 +97,6 @@ const CustomItem = styled.div`
 
 export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
   const { isDarkTheme } = props;
-  const pluginManager = getGPUStackPlugin();
   const { saveScrollHeight, restoreScrollHeight } = useBodyScroll();
   const [modal, contextHolder] = Modal.useModal();
   const [version] = useAtom(GPUStackVersionAtom);
@@ -119,8 +109,6 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
   };
 
   const { initialState } = initialInfo;
-  const { GlobalSettings, OrgSwitcher } = pluginManager?.components || {};
-  console.log('plugin+++++++++', pluginManager);
 
   const navigate = useNavigate();
 
@@ -271,7 +259,7 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
   return (
     <Wrapper>
       {contextHolder}
-      {OrgSwitcher && <OrgSwitcher isDarkTheme={isDarkTheme} />}
+      <PluginExtraField name="OrgSwitcher" isDarkTheme={isDarkTheme} />
       <div
         style={{
           display: 'flex',
@@ -305,7 +293,7 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
           />
         </IconWrapper>
       </DropdownActions>
-      {GlobalSettings && <GlobalSettings></GlobalSettings>}
+      <PluginExtraField name="GlobalSettings" />
       <DropdownActions menu={{ ...userMenu }} popupRender={userPopupRender}>
         <IconWrapper>
           <Avatar

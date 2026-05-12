@@ -16,12 +16,13 @@ const PluginExtraFields: React.FC<{
   // form-specific slot can pass its action / record context if it
   // needs to.
   context?: Record<string, any>;
-}> = ({ name, context }) => {
+  [key: string]: any;
+}> = ({ name, context, ...rest }) => {
   const Slot = getGPUStackPlugin()?.components?.[name];
   if (!Slot) {
     return null;
   }
-  return <Slot context={context} />;
+  return <Slot context={context} {...rest} />;
 };
 
 export default PluginExtraFields;

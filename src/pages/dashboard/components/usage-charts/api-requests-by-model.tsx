@@ -53,7 +53,7 @@ const ApiRequestsByModel: React.FC<ApiRequestsByModelProps> = ({
         data={chartData}
         height={usageChartHeight}
         loading={query.loading}
-        colorOffset={1}
+        colorOffset={5}
         total={total}
       />
     </UsageChartCard>

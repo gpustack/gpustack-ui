@@ -38,7 +38,7 @@ const TokenUsageByModel: React.FC<TokenUsageByModelProps> = ({
         data={chartData}
         height={usageChartHeight}
         loading={loading}
-        colorOffset={3}
+        colorOffset={2}
         total={total}
       />
     </UsageChartCard>

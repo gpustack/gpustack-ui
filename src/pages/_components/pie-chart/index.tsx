@@ -1,8 +1,8 @@
+import useCoolColors from '@/hooks/use-cool-colors';
 import { Chart } from '@gpustack/core-ui';
 import { formatLargeNumber } from '@gpustack/core-ui/utils';
 import { Empty, Spin, theme } from 'antd';
 import React, { useMemo, useRef } from 'react';
-import { generateCoolColors } from '../bar-chart';
 
 export interface PieChartItem {
   name: string;
@@ -30,11 +30,12 @@ const PieChart: React.FC<PieChartProps> = ({
 }) => {
   const { token } = theme.useToken();
   const chartRef = useRef<{ chart: any } | null>(null);
+  const generateCoolColors = useCoolColors();
 
   const colors = useMemo(() => {
     const generatedColors = generateCoolColors(data.length + colorOffset);
     return generatedColors.slice(colorOffset);
-  }, [colorOffset, data.length]);
+  }, [colorOffset, data.length, generateCoolColors]);
 
   const options = useMemo(
     () => ({

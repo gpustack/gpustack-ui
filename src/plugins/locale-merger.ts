@@ -1,32 +1,27 @@
 import { addLocale } from '@umijs/max';
 
-const mergedLocales = new Set<string>();
-
 /**
- * Merge enterprise plugin locales into the main application
+ * Merge enterprise plugin locales into the main application.
+ *
+ * `addLocale` is idempotent: re-calling with the latest message dict
+ * overwrites previous entries, so we always pass the freshest plugin
+ * locales through. A previous version deduped via a module-level Set
+ * and that broke HMR — newly added keys in plugin locale files were
+ * skipped on the second merge, leaving the placeholder/validation
+ * strings unresolved until a full server restart.
  */
 export function mergeEnterpriseLocales(locales: Record<string, any> = {}) {
   if (!locales) {
     return;
   }
 
-  console.log('Merging enterprise plugin locales:', Object.keys(locales));
-
-  // Iterate over all locale configurations of the enterprise plugin
   Object.entries(locales).forEach(([locale, messages]) => {
     try {
-      if (mergedLocales.has(locale)) {
-        return;
-      }
-
-      // Merge the enterprise locale into the main application
       addLocale(locale, messages, {
         momentLocale: '',
         // @ts-ignore
         antd: locale
       });
-      mergedLocales.add(locale);
-      console.log(`✓ Merged enterprise locale: ${locale}`, messages);
     } catch (error) {
       console.error(`Failed to merge enterprise locale ${locale}:`, error);
     }

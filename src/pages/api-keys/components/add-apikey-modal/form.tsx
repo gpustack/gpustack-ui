@@ -45,7 +45,10 @@ const APIKeyForm: React.FC<{
         ></CInput.Input>
       </Form.Item>
 
-      <PluginExtraFields name="CreateOrgScopeField" context={{ action }} />
+      <PluginExtraFields
+        name="CreateOrgScopeField"
+        context={{ action, allowPersonal: true }}
+      />
 
       <Form.Item<FormData>
         name="expires_in"

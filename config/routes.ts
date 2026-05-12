@@ -9,7 +9,10 @@ const baseRoutes = [
     icon: 'icon-dashboard',
     selectedIcon: 'icon-dashboard-filled',
     defaultIcon: 'icon-dashboard',
-    access: 'canSeeAdmin',
+    // `canSeeOrgAdmin` widens to anyone the access seam grants
+    // admin-ish visibility — by default platform admin, plus
+    // whatever the routes extension chooses to allow.
+    access: 'canSeeOrgAdmin',
     component: './dashboard',
     routes: []
   },

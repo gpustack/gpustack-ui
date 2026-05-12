@@ -1,26 +1,9 @@
+import useCoolColors from '@/hooks/use-cool-colors';
 import { Chart } from '@gpustack/core-ui';
 import { formatLargeNumber } from '@gpustack/core-ui/utils';
 import { theme } from 'antd';
 import _ from 'lodash';
 import React, { useEffect, useMemo, useRef } from 'react';
-
-const COOL_HUE_START = 180;
-const COOL_HUE_END = 280;
-const COOL_HUE_RANGE = COOL_HUE_END - COOL_HUE_START;
-// golden angle (137.508) mod COOL_HUE_RANGE — coprime offset for even spread
-const HUE_STEP = 37.508;
-
-export function generateCoolColors(count: number): string[] {
-  if (count <= 0) return [];
-  const colors: string[] = [];
-  for (let i = 0; i < count; i++) {
-    const hue = COOL_HUE_START + ((i * HUE_STEP) % COOL_HUE_RANGE);
-    const saturation = 55 + (i % 3) * 5;
-    const lightness = 60 + (i % 2) * 6;
-    colors.push(`hsl(${Math.round(hue)}, ${saturation}%, ${lightness}%)`);
-  }
-  return colors;
-}
 
 export interface BarSeriesItem {
   name: string;
@@ -55,10 +38,11 @@ const BarChart: React.FC<BarChartProps> = (props) => {
   } = props;
   const { token } = theme.useToken();
   const chartRef = useRef<{ chart: any } | null>(null);
+  const generateCoolColors = useCoolColors();
 
   const dynamicColors = useMemo(
     () => generateCoolColors(seriesData.length),
-    [seriesData.length]
+    [seriesData.length, generateCoolColors]
   );
 
   const options = useMemo(() => {

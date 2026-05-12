@@ -1,4 +1,5 @@
-import BarChart, { generateCoolColors } from '@/pages/_components/bar-chart';
+import useCoolColors from '@/hooks/use-cool-colors';
+import BarChart from '@/pages/_components/bar-chart';
 import { BaseSelect, CardWrapper } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Segmented } from 'antd';
@@ -78,6 +79,7 @@ const DailyUsage: React.FC<DailyUsageProps> = (props) => {
     onGroupByChange,
     onGranularityChange
   } = props;
+  const generateCoolColors = useCoolColors();
 
   const labelFormatter = (v: any) => {
     if (granularity === 'month') {
@@ -237,7 +239,7 @@ const DailyUsage: React.FC<DailyUsageProps> = (props) => {
       xAxisData: xAxis,
       legendData: dedupedLegend
     };
-  }, [timeSeriesData, intl]);
+  }, [timeSeriesData, intl, generateCoolColors]);
 
   const handleOnGroupByChange = (value: string) => {
     onGroupByChange(value || null);

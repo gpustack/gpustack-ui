@@ -77,6 +77,9 @@ importers:
       crypto-js:
         specifier: ^4.2.0
         version: 4.2.0
+      culori:
+        specifier: ^4.0.2
+        version: 4.0.2
       dayjs:
         specifier: ^1.11.11
         version: 1.11.20
@@ -3809,6 +3812,10 @@ packages:
 
   csstype@3.2.3:
     resolution: {integrity: sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3UVJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ==, tarball: https://registry.npmjs.org/csstype/-/csstype-3.2.3.tgz}
+
+  culori@4.0.2:
+    resolution: {integrity: sha512-1+BhOB8ahCn4O0cep0Sh2l9KCOfOdY+BXJnKMHFFzDEouSr/el18QwXEMRlOj9UY5nCeA8UN3a/82rUWRBeyBw==, tarball: https://registry.npmjs.org/culori/-/culori-4.0.2.tgz}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
 
   current-script-polyfill@1.0.0:
     resolution: {integrity: sha512-qv8s+G47V6Hq+g2kRE5th+ASzzrL7b6l+tap1DHKK25ZQJv3yIFhH96XaQ7NGL+zRW3t/RDbweJf/dJDe5Z5KA==, tarball: https://registry.npmjs.org/current-script-polyfill/-/current-script-polyfill-1.0.0.tgz}
@@ -13698,6 +13705,8 @@ snapshots:
       css-tree: 1.1.3
 
   csstype@3.2.3: {}
+
+  culori@4.0.2: {}
 
   current-script-polyfill@1.0.0: {}
 

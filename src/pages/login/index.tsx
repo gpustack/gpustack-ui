@@ -112,10 +112,10 @@ const Login = () => {
   const [initialPassword, setInitialPassword] = useAtom(initialPasswordAtom);
   const { initialState, setInitialState } = useModel('@@initialState') || {};
 
-  const enterprisePlugin = getGPUStackPlugin();
+  const plugin = getGPUStackPlugin();
 
-  const CustomLoginComponent = enterprisePlugin?.login?.CustomLoginComponent;
-  const shouldUseCustomLogin = enterprisePlugin?.login?.shouldUseCustomLogin;
+  const CustomLoginComponent = plugin?.login?.CustomLoginComponent;
+  const shouldUseCustomLogin = plugin?.login?.shouldUseCustomLogin;
 
   const useCustomLogin = useMemo(
     () => shouldUseCustomLogin?.(userSettings),
@@ -197,7 +197,7 @@ const Login = () => {
         token: {
           ...themeData?.token,
           colorPrimary:
-            enterprisePlugin?.getPrimaryColor?.(userSettings)?.colorPrimary ||
+            plugin?.getPrimaryColor?.(userSettings)?.colorPrimary ||
             COLOR_PRIMARY
         }
       }}

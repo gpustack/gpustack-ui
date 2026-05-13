@@ -26,8 +26,10 @@ import {
   queryGPUServiceInstances
 } from './apis';
 import AddModal from './components/add-modal';
+import ViewLogsModal from './components/view-logs-modal';
 import { FormData, ListItem } from './config/types';
 import useInstancesColumns from './hooks/use-instances-columns';
+import useViewLogs from './hooks/use-view-logs';
 import useCreateInstance from './services/use-create-instance';
 import useUpdateInstance from './services/use-update-instance';
 
@@ -105,6 +107,8 @@ const GPUService: React.FC = () => {
 
   const { fetchData: createInstance } = useCreateInstance();
   const { fetchData: updateInstance } = useUpdateInstance();
+  const { openViewLogsModal, closeViewLogsModal, openViewLogsModalStatus } =
+    useViewLogs();
   const {
     fetchClusterList,
     cancelRequest: cancelClusterRequest,
@@ -215,6 +219,8 @@ const GPUService: React.FC = () => {
         name: row.metadata?.name,
         id: row.metadata?.name as any
       });
+    } else if (val === 'viewlog') {
+      openViewLogsModal(row);
     }
   });
 
@@ -328,6 +334,12 @@ const GPUService: React.FC = () => {
         data={openAddModalStatus.currentData}
         onCancel={closeModal}
         onOk={handleModalOk}
+      />
+      <ViewLogsModal
+        open={openViewLogsModalStatus.open}
+        url={openViewLogsModalStatus.url}
+        tail={openViewLogsModalStatus.tail}
+        onCancel={closeViewLogsModal}
       />
       <DeleteModal ref={modalRef} />
     </PageContainerInner>

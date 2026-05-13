@@ -1,6 +1,13 @@
 import { request } from '@umijs/max';
+import _ from 'lodash';
 import { omitPathParams } from '../../utils';
-import { InstanceTypeItem, ListItem } from '../config/types';
+import {
+  InstanceEvents,
+  InstanceLog,
+  InstanceLogQueryParams,
+  InstanceTypeItem,
+  ListItem
+} from '../config/types';
 
 export const GPU_SERVICE_INSTANCES_API = (params: {
   namespace: string;
@@ -122,6 +129,55 @@ export async function queryGPUServiceInstanceTypes(
     {
       method: 'GET',
       params: omitPathParams(params),
+      cancelToken: options?.token
+    }
+  );
+}
+
+export async function queryGPUServiceInstanceEvents(
+  params: {
+    namespace: string;
+    name: string;
+    clusterID?: number;
+    pretty?: string;
+  },
+  options?: any
+) {
+  if (!params.clusterID) {
+    return;
+  }
+  return request<InstanceEvents>(
+    `${GPU_SERVICE_INSTANCES_API({
+      namespace: params.namespace,
+      clusterID: params.clusterID
+    })}/${params.name}/events`,
+    {
+      method: 'GET',
+      params: omitPathParams(_.omit(params, ['name'])),
+      cancelToken: options?.token
+    }
+  );
+}
+
+export async function queryGPUServiceInstanceLog(
+  params: InstanceLogQueryParams & {
+    namespace: string;
+    name: string;
+    clusterID?: number;
+  },
+  options?: any
+) {
+  if (!params.clusterID) {
+    return;
+  }
+  return request<InstanceLog>(
+    `${GPU_SERVICE_INSTANCES_API({
+      namespace: params.namespace,
+      clusterID: params.clusterID
+    })}/${params.name}/log`,
+    {
+      method: 'GET',
+      params: omitPathParams(_.omit(params, ['name'])),
       cancelToken: options?.token
     }
   );

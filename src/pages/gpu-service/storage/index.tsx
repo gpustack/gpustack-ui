@@ -1,5 +1,5 @@
 import { currentClusterAtom } from '@/atoms/gpuservice';
-import { getCurrentOrganizationId } from '@/atoms/user';
+import { getCurrentOrgNamespace } from '@/atoms/user';
 import { PageAction } from '@/config';
 import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import type { PageActionType } from '@/config/types';
@@ -34,9 +34,11 @@ import useUpdateStorage from './services/use-update-storage';
 
 const GPUServiceStorage: React.FC = () => {
   const intl = useIntl();
-  const namespace = getCurrentOrganizationId();
   const [currentCluster, setCurrentCluster] = useAtom(currentClusterAtom);
   const clusterID = currentCluster?.id;
+  // Admin "All" view falls back to the cluster's owner Org slug —
+  // see :func:`getCurrentOrgNamespace`.
+  const namespace = getCurrentOrgNamespace(currentCluster?.owner_principal_id);
 
   const deleteStorage = useCallback(
     (id: number) => deleteGPUServiceStorage({ namespace, clusterID, id }),

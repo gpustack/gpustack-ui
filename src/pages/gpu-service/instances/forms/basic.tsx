@@ -1,3 +1,4 @@
+import { validateLabelNameRegxFor63 } from '@/config';
 import { Input as CInput } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
@@ -16,6 +17,10 @@ const Basic = () => {
             message: intl.formatMessage({
               id: 'gpuservice.instance.name.required'
             })
+          },
+          {
+            pattern: validateLabelNameRegxFor63,
+            message: intl.formatMessage({ id: 'gpuservice.form.rule.name' })
           }
         ]}
       >

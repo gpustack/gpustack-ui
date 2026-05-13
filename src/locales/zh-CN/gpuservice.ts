@@ -71,6 +71,8 @@ export default {
   'gpuservice.storage.temporary': '临时',
   'gpuservice.storage.persistentVolume': '持久卷',
   'gpuservice.storage.persistentVolume.required': '请选择持久卷',
-  'gpuservice.storage.tempCapacity': '存储容量 (GB)',
-  'gpuservice.storage.tempCapacity.required': '请输入本地临时存储容量'
+  'gpuservice.storage.tempCapacity': '容量（GB）',
+  'gpuservice.storage.tempCapacity.required': '请输入临时存储容量',
+  'gpuservice.form.rule.name':
+    '由小写字母、数字和 "-" 组成，以字母或数字开头和结尾，不能包含连续的 "-"，最多 63 个字符。'
 };

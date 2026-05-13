@@ -32,10 +32,11 @@ const InstanceTypePicker: React.FC<InstanceTypePickerProps> = ({
   dataList
 }) => {
   const selected = useMemo(() => {
-    return dataList.find((item) => (item.metadata?.name || '') === value);
+    return (
+      dataList.find((item) => (item.metadata?.name || '') === value) ||
+      ({} as InstanceTypeItemModel)
+    );
   }, [value, dataList]);
-
-  if (!selected) return null;
 
   return (
     <SelectedCard>

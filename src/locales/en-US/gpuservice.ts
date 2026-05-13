@@ -76,7 +76,9 @@ export default {
   'gpuservice.storage.persistentVolume': 'Persistent Volume',
   'gpuservice.storage.persistentVolume.required':
     'Please select a persistent volume',
-  'gpuservice.storage.tempCapacity': 'Storage Capacity (GB)',
+  'gpuservice.storage.tempCapacity': 'Capacity (GB)',
   'gpuservice.storage.tempCapacity.required':
-    'Please enter the local temporary storage capacity'
+    'Please enter the temporary storage capacity',
+  'gpuservice.form.rule.name':
+    "Lowercase letters, numbers, and '-'. Start and end with a letter or number, no consecutive '-', max 63 characters."
 };

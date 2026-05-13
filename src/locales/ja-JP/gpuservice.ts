@@ -74,7 +74,9 @@ export default {
   'gpuservice.storage.persistentVolume': '永続ボリューム',
   'gpuservice.storage.persistentVolume.required':
     '永続ボリュームを選択してください',
-  'gpuservice.storage.tempCapacity': 'ストレージ容量 (GB)',
+  'gpuservice.storage.tempCapacity': '容量 (GB)',
   'gpuservice.storage.tempCapacity.required':
-    'ローカルの一時ストレージ容量を入力してください'
+    '一時ストレージ容量を入力してください',
+  'gpuservice.form.rule.name':
+    "小文字、数字、'-' のみ使用可能。文字または数字で始まり、文字または数字で終わる必要があり、連続する '-' は不可、最大 63 文字。"
 };

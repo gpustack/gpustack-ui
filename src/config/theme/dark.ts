@@ -59,6 +59,10 @@ export default {
     Progress: {
       lineBorderRadius: 4
     },
+    Dropdown: {
+      controlItemBgActive: '#333',
+      controlItemBgActiveHover: '#333'
+    },
     Select: {
       optionSelectedBg: '#333',
       fontSizeLG: 14

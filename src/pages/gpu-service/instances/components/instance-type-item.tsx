@@ -72,7 +72,7 @@ const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({
       <Title>
         <Flex gap={8} align="center">
           <AutoTooltip ghost minWidth={20} maxWidth={180}>
-            {displayName}
+            {item.spec ? displayName : '-'}
           </AutoTooltip>
           {acceleratable && manufacturer && (
             <span

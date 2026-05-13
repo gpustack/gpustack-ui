@@ -75,7 +75,9 @@ export default {
   'gpuservice.storage.persistentVolume': 'Kalıcı Hacim',
   'gpuservice.storage.persistentVolume.required':
     'Lütfen bir kalıcı hacim seçin',
-  'gpuservice.storage.tempCapacity': 'Depolama Kapasitesi (GB)',
+  'gpuservice.storage.tempCapacity': 'Kapasite (GB)',
   'gpuservice.storage.tempCapacity.required':
-    'Lütfen yerel geçici depolama kapasitesini girin'
+    'Lütfen geçici depolama kapasitesini girin',
+  'gpuservice.form.rule.name':
+    "Küçük harfler, rakamlar ve '-'. Harf veya rakamla başlamalı ve bitmeli, ardışık '-' içermemeli, en fazla 63 karakter."
 };

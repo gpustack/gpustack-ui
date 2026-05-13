@@ -1,3 +1,4 @@
+import { validateLabelNameRegxFor63 } from '@/config';
 import {
   Input as CInput,
   InputNumber,
@@ -29,6 +30,10 @@ const Basic = ({ open }: { open: boolean }) => {
           {
             required: true,
             message: getRuleMessage('input', 'common.table.name')
+          },
+          {
+            pattern: validateLabelNameRegxFor63,
+            message: intl.formatMessage({ id: 'gpuservice.form.rule.name' })
           }
         ]}
       >

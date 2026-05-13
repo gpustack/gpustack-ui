@@ -75,7 +75,9 @@ export default {
   'gpuservice.storage.temporary': 'Временное',
   'gpuservice.storage.persistentVolume': 'Постоянный том',
   'gpuservice.storage.persistentVolume.required': 'Выберите постоянный том',
-  'gpuservice.storage.tempCapacity': 'Объём хранилища (ГБ)',
+  'gpuservice.storage.tempCapacity': 'Объём (ГБ)',
   'gpuservice.storage.tempCapacity.required':
-    'Введите объём локального временного хранилища'
+    'Введите объём временного хранилища',
+  'gpuservice.form.rule.name':
+    "Строчные буквы, цифры и '-'. Должно начинаться и заканчиваться буквой или цифрой, без подряд идущих '-', максимум 63 символа."
 };

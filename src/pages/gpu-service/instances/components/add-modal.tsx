@@ -6,42 +6,14 @@ import { ColumnWrapper, GSDrawer, ModalFooter } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Empty, Input, Typography } from 'antd';
 import { useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
 import { ListItem as TemplateItem } from '../../templates/config/types';
 import useQueryTemplates from '../../templates/services/use-query-templates';
 import { FormData, InstanceTypeItem, ListItem } from '../config/types';
 import GPUServiceInstanceForm from '../forms';
 import TemplateSelector from '../forms/template-selector';
 import useQueryInstanceTypes from '../services/use-query-instance-types';
+import styles from '../styles/instances.module.less';
 import InstanceTypeList from './instance-type-list';
-
-const Container = styled.div`
-  display: flex;
-  height: 100%;
-  min-height: 0;
-`;
-
-const ColWrapper = styled.div`
-  display: flex;
-  flex: 1;
-  max-width: 33%;
-  min-height: 0;
-`;
-
-const PanelBody = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  height: 100%;
-  min-height: 0;
-`;
-
-const FormWrapper = styled.div`
-  display: flex;
-  flex: 1;
-  max-width: 34%;
-  min-height: 0;
-`;
 
 type AddModalProps = {
   title: string;
@@ -280,10 +252,10 @@ const AddModal: React.FC<AddModalProps> = ({
       }}
       footer={false}
     >
-      <Container>
-        <ColWrapper>
+      <div className={styles.container}>
+        <div className={styles.colWrapper}>
           <ColumnWrapper styles={{ container: { paddingBlock: 0 } }}>
-            <PanelBody>
+            <div className={styles.panelBody}>
               <ColTitle style={{ paddingBottom: 0 }}>
                 {intl.formatMessage({ id: 'gpuservice.instance.types' })}
               </ColTitle>
@@ -311,13 +283,13 @@ const AddModal: React.FC<AddModalProps> = ({
                 loading={instanceTypesLoading}
                 onChange={handleInstanceTypeChange}
               />
-            </PanelBody>
+            </div>
           </ColumnWrapper>
           <Separator></Separator>
-        </ColWrapper>
-        <ColWrapper>
+        </div>
+        <div className={styles.colWrapper}>
           <ColumnWrapper styles={{ container: { paddingBlock: 0 } }}>
-            <PanelBody>
+            <div className={styles.panelBody}>
               <ColTitle style={{ paddingBottom: 0 }}>
                 {intl.formatMessage({ id: 'gpuservice.instance.templates' })}
               </ColTitle>
@@ -348,11 +320,11 @@ const AddModal: React.FC<AddModalProps> = ({
               ) : (
                 <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
               )}
-            </PanelBody>
+            </div>
           </ColumnWrapper>
           <Separator></Separator>
-        </ColWrapper>
-        <FormWrapper>
+        </div>
+        <div className={styles.formWrapper}>
           <ColumnWrapper
             styles={{ container: { paddingBlock: 0 } }}
             footer={
@@ -381,8 +353,8 @@ const AddModal: React.FC<AddModalProps> = ({
               />
             </>
           </ColumnWrapper>
-        </FormWrapper>
-      </Container>
+        </div>
+      </div>
     </GSDrawer>
   );
 };

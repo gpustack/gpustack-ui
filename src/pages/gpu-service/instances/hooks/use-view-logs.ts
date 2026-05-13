@@ -1,14 +1,14 @@
 import { currentClusterAtom } from '@/atoms/gpuservice';
-import { getCurrentOrganizationId } from '@/atoms/user';
+import { getCurrentOrgNamespace } from '@/atoms/user';
 import { useAtomValue } from 'jotai';
 import { useState } from 'react';
 import { GPU_SERVICE_INSTANCES_API } from '../apis';
 import { ListItem } from '../config/types';
 
 const useViewLogs = () => {
-  const namespace = getCurrentOrganizationId();
   const currentCluster = useAtomValue(currentClusterAtom);
   const clusterID = currentCluster?.id;
+  const namespace = getCurrentOrgNamespace(currentCluster?.owner_principal_id);
 
   const [openModalStatus, setOpenModalStatus] = useState<{
     open: boolean;

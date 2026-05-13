@@ -134,3 +134,69 @@ export interface InstanceTypeItem {
   spec: InstanceTypeSpec;
   status: InstanceTypeStatus;
 }
+
+export interface InstanceEventObjectReference {
+  apiVersion?: string;
+  fieldPath?: string;
+  kind?: string;
+  name?: string;
+  namespace?: string;
+  resourceVersion?: string;
+  uid?: string;
+}
+
+export interface InstanceEventSource {
+  component?: string;
+  host?: string;
+}
+
+export interface InstanceEventSeries {
+  count?: number;
+  lastObservedTime?: string;
+}
+
+export interface InstanceEventItem {
+  action?: string;
+  apiVersion?: string;
+  count?: number;
+  eventTime?: string;
+  firstTimestamp?: string;
+  involvedObject: InstanceEventObjectReference;
+  kind?: string;
+  lastTimestamp?: string;
+  message?: string;
+  metadata: {
+    name?: string;
+    namespace?: string;
+    uid?: string;
+    resourceVersion?: string;
+    creationTimestamp?: string;
+  };
+  reason?: string;
+  related?: InstanceEventObjectReference;
+  reportingComponent?: string;
+  reportingInstance?: string;
+  series?: InstanceEventSeries;
+  source?: InstanceEventSource;
+  type?: string;
+}
+
+export interface InstanceEvents {
+  apiVersion?: string;
+  kind?: string;
+  metadata?: {
+    resourceVersion?: string;
+  };
+  items: InstanceEventItem[];
+}
+
+export interface InstanceLogQueryParams {
+  follow?: boolean;
+  limitBytes?: number;
+  sinceSeconds?: number;
+  tailLines?: number;
+  timestamps?: boolean;
+  pretty?: string;
+}
+
+export type InstanceLog = string;

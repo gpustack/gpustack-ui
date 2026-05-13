@@ -1,7 +1,8 @@
 import { StatusMaps } from '@/config';
 import { StatusType } from '@/config/types';
-import { icons } from '@gpustack/core-ui';
+import { IconFont, icons } from '@gpustack/core-ui';
 import _ from 'lodash';
+import React from 'react';
 import {
   InstanceTypeItem,
   InstanceTypeResource,
@@ -45,6 +46,12 @@ export const status: Record<string, StatusType> = {
 };
 
 export const rowActionList = [
+  {
+    label: 'common.button.viewlog',
+    key: 'viewlog',
+    locale: true,
+    icon: React.createElement(IconFont, { type: 'icon-logs' })
+  },
   {
     label: 'common.button.edit',
     key: 'edit',

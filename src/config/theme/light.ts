@@ -60,6 +60,10 @@ export default {
     Progress: {
       lineBorderRadius: 3
     },
+    Dropdown: {
+      controlItemBgActive: 'rgba(230, 230, 230, 88%)',
+      controlItemBgActiveHover: 'rgba(230, 230, 230, 88%)'
+    },
     Select: {
       optionSelectedBg: 'rgba(230, 230, 230, 88%)',
       fontSizeLG: 14

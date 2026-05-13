@@ -1,5 +1,5 @@
 import { currentClusterAtom } from '@/atoms/gpuservice';
-import { getCurrentOrganizationId } from '@/atoms/user';
+import { getCurrentOrgNamespace } from '@/atoms/user';
 import { useQueryData } from '@gpustack/core-ui';
 import { useAtomValue } from 'jotai';
 import { useCallback } from 'react';
@@ -12,9 +12,11 @@ interface CreateStorageParams {
 }
 
 export default function useCreateStorage() {
-  const namespace = getCurrentOrganizationId();
   const currentCluster = useAtomValue(currentClusterAtom);
   const clusterID = currentCluster?.id;
+  // Admin "All" view has no Org context — fall back to the
+  // selected cluster's owner Org slug for the K8s namespace.
+  const namespace = getCurrentOrgNamespace(currentCluster?.owner_principal_id);
 
   const fetchDetail = useCallback(
     (params: CreateStorageParams, option?: any) =>

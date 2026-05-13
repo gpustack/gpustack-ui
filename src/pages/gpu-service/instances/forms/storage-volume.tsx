@@ -1,7 +1,9 @@
-import { getCurrentOrganizationId } from '@/atoms/user';
+import { currentClusterAtom } from '@/atoms/gpuservice';
+import { getCurrentOrgNamespace } from '@/atoms/user';
 import { InputNumber as CInputNumber, Select } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Flex, Form, Radio } from 'antd';
+import { useAtomValue } from 'jotai';
 import { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { FormData as StorageFormData } from '../../storage/config/types';
@@ -29,7 +31,8 @@ const StorageVolume = () => {
 
   const form = Form.useFormInstance<FormData>();
 
-  const namespace = getCurrentOrganizationId();
+  const currentCluster = useAtomValue(currentClusterAtom);
+  const namespace = getCurrentOrgNamespace(currentCluster?.owner_principal_id);
 
   useEffect(() => {
     fetchStorage({});

@@ -1,5 +1,5 @@
 import { currentClusterAtom } from '@/atoms/gpuservice';
-import { getCurrentOrganizationId } from '@/atoms/user';
+import { getCurrentOrgNamespace } from '@/atoms/user';
 import { PageAction } from '@/config';
 import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import type { PageActionType } from '@/config/types';
@@ -33,9 +33,11 @@ import useUpdateInstance from './services/use-update-instance';
 
 const GPUService: React.FC = () => {
   const intl = useIntl();
-  const namespace = getCurrentOrganizationId();
   const [currentCluster, setCurrentCluster] = useAtom(currentClusterAtom);
   const clusterID = currentCluster?.id;
+  // In admin "All" view there's no Org context, so the helper falls
+  // back to the selected cluster's owner Org slug.
+  const namespace = getCurrentOrgNamespace(currentCluster?.owner_principal_id);
 
   const deleteInstance = useCallback(
     (id: number) => deleteGPUServiceInstance({ namespace, clusterID, id }),

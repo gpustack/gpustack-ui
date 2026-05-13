@@ -5,7 +5,7 @@ import { SearchOutlined } from '@ant-design/icons';
 import { ColumnWrapper, GSDrawer, ModalFooter } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Empty, Input, Typography } from 'antd';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { ListItem as TemplateItem } from '../../templates/config/types';
 import useQueryTemplates from '../../templates/services/use-query-templates';
@@ -52,6 +52,23 @@ type AddModalProps = {
   onCancel: () => void;
 };
 
+type InstanceTypeSelection = {
+  instanceType?: string;
+  manufacturer?: string;
+};
+
+const EMPTY_INSTANCE_TYPE_SELECTION: InstanceTypeSelection = {};
+
+const matchKeyword = (fields: Array<unknown>, keyword: string) => {
+  const trimmed = keyword.trim().toLowerCase();
+  if (!trimmed) return true;
+  return fields.some((text) =>
+    String(text ?? '')
+      .toLowerCase()
+      .includes(trimmed)
+  );
+};
+
 const ColTitle: React.FC<{
   children: React.ReactNode;
   style?: React.CSSProperties;
@@ -86,10 +103,10 @@ const AddModal: React.FC<AddModalProps> = ({
 }) => {
   const intl = useIntl();
   const form = useRef<any>(null);
-  const autoSelectedRef = useRef(false);
-  const [selectedInstanceType, setSelectedInstanceType] = useState<string>();
-  const [selectedManufacturer, setSelectedManufacturer] = useState<string>();
-  const [templateId, setTemplateId] = useState<number>();
+  const sessionRef = useRef(0);
+  const [instanceTypeSelection, setInstanceTypeSelection] =
+    useState<InstanceTypeSelection>(EMPTY_INSTANCE_TYPE_SELECTION);
+  const [templateId, setTemplateId] = useState<number | undefined>();
   const [instanceKeyword, setInstanceKeyword] = useState('');
   const [templateKeyword, setTemplateKeyword] = useState('');
 
@@ -101,118 +118,117 @@ const AddModal: React.FC<AddModalProps> = ({
   const { detailData: templatesData, fetchData: fetchTemplates } =
     useQueryTemplates();
 
-  useEffect(() => {
-    if (open) {
-      autoSelectedRef.current = false;
-      fetchData({});
-      fetchTemplates({ page: -1 });
-    } else {
-      setSelectedInstanceType(undefined);
-      setSelectedManufacturer(undefined);
-      setTemplateId(undefined);
-      setInstanceKeyword('');
-      setTemplateKeyword('');
-    }
-  }, [open, fetchData, fetchTemplates]);
-
   const instanceTypeList = detailData?.items || [];
   const templateList = templatesData?.items || [];
 
-  const filteredInstanceTypes = useMemo(() => {
-    const keyword = instanceKeyword.trim().toLowerCase();
-    if (!keyword) {
-      return instanceTypeList;
-    }
-    return instanceTypeList.filter((item) => {
-      const name = item.metadata?.name || '';
-      return [
-        name,
-        item.spec?.memory ?? '',
-        item.status?.cpu?.capacity ?? '',
-        item.status?.ram?.capacity ?? '',
-        item.status?.accelerator?.remaining ?? ''
-      ].some((text) => String(text).toLowerCase().includes(keyword));
-    });
-  }, [instanceKeyword, instanceTypeList]);
+  const findTemplateByManufacturer = (
+    manufacturer: string | undefined,
+    templates: TemplateItem[]
+  ) => {
+    return manufacturer
+      ? templates.find((t) => t.manufacturer === manufacturer)
+      : undefined;
+  };
 
-  const manufacturerMatchedTemplates = useMemo(() => {
-    console.log(
-      'Filtering templates by manufacturer:',
-      templateList,
-      selectedManufacturer
-    );
-    if (!selectedManufacturer) {
-      return templateList;
-    }
-    return templateList.filter(
-      (item) => item.manufacturer === selectedManufacturer
-    );
-  }, [selectedManufacturer, templateList]);
+  const applySelection = (
+    instanceType: InstanceTypeItem,
+    template: TemplateItem | undefined
+  ) => {
+    const name = instanceType.metadata?.name;
+    const manufacturer = instanceType.spec?.manufacturer;
 
-  const filteredTemplates = useMemo(() => {
-    const keyword = templateKeyword.trim().toLowerCase();
-    if (!keyword) {
-      return manufacturerMatchedTemplates;
-    }
-    return manufacturerMatchedTemplates.filter((item) =>
-      [item.name, item.spec?.image, item.spec?.volumeMount].some((text) =>
-        (text || '').toLowerCase().includes(keyword)
-      )
-    );
-  }, [templateKeyword, manufacturerMatchedTemplates]);
+    setInstanceTypeSelection({ instanceType: name, manufacturer });
+    setTemplateId(template?.id);
 
-  useEffect(() => {
-    if (!open) return;
-    if (action !== PageAction.CREATE) return;
-    if (autoSelectedRef.current) return;
-    if (!instanceTypeList.length) return;
-    if (!templatesData) return;
-
-    const firstInstanceType = instanceTypeList[0];
-    const manufacturer = firstInstanceType.spec?.manufacturer;
-    const name = firstInstanceType.metadata?.name;
-    const matchedTemplate = manufacturer
-      ? templateList.find((t) => t.manufacturer === manufacturer)
-      : templateList[0];
-
-    autoSelectedRef.current = true;
-    setSelectedInstanceType(name);
-    setSelectedManufacturer(manufacturer);
-    if (matchedTemplate) {
-      setTemplateId(matchedTemplate.id);
-    }
-
-    const applyToForm = () => {
-      const currentSpec = form.current?.getFieldsValue()?.spec || {};
-      const updatedSpec = {
-        ...currentSpec,
-        type: name,
-        resources: { ...(currentSpec.resources || {}), accelerator: '1' }
-      };
-
-      if (matchedTemplate) {
-        form.current?.setFieldsValue({
-          manufacturer: matchedTemplate.manufacturer,
-          spec: {
-            ...updatedSpec,
-            ...matchedTemplate.spec,
-            resources: {
-              ...(updatedSpec.resources || {}),
-              ...(matchedTemplate.spec?.resources || {})
-            }
-          }
-        });
-      } else {
-        form.current?.setFieldsValue({ spec: updatedSpec });
-      }
+    const currentSpec = form.current?.getFieldsValue()?.spec || {};
+    const updatedSpec = {
+      ...currentSpec,
+      type: name,
+      resources: { ...(currentSpec.resources || {}), accelerator: '1' }
     };
 
-    if (form.current) {
-      applyToForm();
+    if (template) {
+      form.current?.setFieldsValue({
+        manufacturer: template.manufacturer,
+        spec: {
+          ...updatedSpec,
+          ...template.spec,
+          resources: {
+            ...(updatedSpec.resources || {}),
+            ...(template.spec?.resources || {})
+          }
+        }
+      });
     } else {
-      queueMicrotask(applyToForm);
+      form.current?.setFieldsValue({
+        manufacturer: undefined,
+        spec: updatedSpec
+      });
     }
-  }, [open, action, instanceTypeList, templateList, templatesData]);
+  };
+
+  const applyAutoSelection = (
+    instanceTypes: InstanceTypeItem[],
+    templates: TemplateItem[]
+  ) => {
+    if (action !== PageAction.CREATE) return;
+    if (!instanceTypes.length) return;
+
+    const first = instanceTypes[0];
+    const template = findTemplateByManufacturer(
+      first.spec?.manufacturer,
+      templates
+    );
+
+    applySelection(first, template);
+  };
+
+  useEffect(() => {
+    if (!open) {
+      sessionRef.current += 1;
+      setInstanceTypeSelection(EMPTY_INSTANCE_TYPE_SELECTION);
+      setTemplateId(undefined);
+      setInstanceKeyword('');
+      setTemplateKeyword('');
+      return;
+    }
+
+    const session = ++sessionRef.current;
+    Promise.all([fetchData({}), fetchTemplates({ page: -1 })]).then(
+      ([instanceRes, templatesRes]) => {
+        if (sessionRef.current !== session) return;
+        applyAutoSelection(instanceRes?.items || [], templatesRes?.items || []);
+      }
+    );
+  }, [open]);
+
+  // filter instance types
+  const filteredInstanceTypes = instanceTypeList.filter((item) =>
+    matchKeyword(
+      [
+        item.metadata?.name,
+        item.spec?.memory,
+        item.status?.cpu?.capacity,
+        item.status?.ram?.capacity,
+        item.status?.accelerator?.remaining
+      ],
+      instanceKeyword
+    )
+  );
+
+  // filter templates based on selection and keyword
+  const filteredTemplates = templateList.filter((item) => {
+    if (
+      instanceTypeSelection.manufacturer &&
+      item.manufacturer !== instanceTypeSelection.manufacturer
+    ) {
+      return false;
+    }
+    return matchKeyword(
+      [item.name, item.spec?.image, item.spec?.volumeMount],
+      templateKeyword
+    );
+  });
 
   const handleSubmit = () => {
     form.current?.submit();
@@ -230,54 +246,16 @@ const AddModal: React.FC<AddModalProps> = ({
   };
 
   const handleInstanceTypeChange = (item: InstanceTypeItem) => {
-    const name = item.metadata?.name;
-    const manufacturer = item.spec?.manufacturer;
-    setSelectedInstanceType(name);
-    setSelectedManufacturer(manufacturer);
-
-    const currentSpec = form.current?.getFieldsValue()?.spec || {};
-    const updatedSpec = {
-      ...currentSpec,
-      type: name,
-      resources: { ...(currentSpec.resources || {}), accelerator: '1' }
-    };
-
-    const currentTemplate = templateList.find((t) => t.id === templateId);
-    const isMatched =
-      !manufacturer ||
-      (!!currentTemplate && currentTemplate.manufacturer === manufacturer);
-
-    if (isMatched) {
-      form.current?.setFieldsValue({ spec: updatedSpec });
-      return;
-    }
-
-    const firstTemplate = templateList.find(
-      (t) => t.manufacturer === manufacturer
+    const template = findTemplateByManufacturer(
+      item.spec?.manufacturer,
+      templateList
     );
-
-    if (firstTemplate) {
-      setTemplateId(firstTemplate.id);
-      form.current?.setFieldsValue({
-        manufacturer: firstTemplate.manufacturer,
-        spec: {
-          ...updatedSpec,
-          ...firstTemplate.spec
-        }
-      });
-    } else {
-      setTemplateId(undefined);
-      form.current?.setFieldsValue({
-        manufacturer: undefined,
-        spec: updatedSpec
-      });
-    }
+    applySelection(item, template);
   };
 
   const handleTemplateChange = (id: number, item: TemplateItem) => {
     setTemplateId(id);
     form.current?.setFieldsValue({
-      manufacturer: item.manufacturer,
       spec: {
         ...form.current?.getFieldsValue()?.spec,
         ...item.spec
@@ -328,7 +306,7 @@ const AddModal: React.FC<AddModalProps> = ({
                 />
               </div>
               <InstanceTypeList
-                value={selectedInstanceType}
+                value={instanceTypeSelection.instanceType}
                 dataList={filteredInstanceTypes}
                 loading={instanceTypesLoading}
                 onChange={handleInstanceTypeChange}

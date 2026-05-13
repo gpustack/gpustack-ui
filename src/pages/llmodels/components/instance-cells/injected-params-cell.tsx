@@ -1,5 +1,5 @@
 import { InfoCircleOutlined } from '@ant-design/icons';
-import { CopyButton, OverlayScroller, ThemeTag } from '@gpustack/core-ui';
+import { OverlayScroller, ThemeTag } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Divider, Flex, Tooltip } from 'antd';
 import React from 'react';
@@ -95,7 +95,7 @@ const InjectedParamsCell: React.FC<InjectedParamsCellProps> = ({
   if (!injectedBackendParameters.length) {
     return null;
   }
-  return null;
+  // return null;
   return (
     <Tooltip
       color="var(--ant-color-bg-elevated)"
@@ -124,14 +124,6 @@ const InjectedParamsCell: React.FC<InjectedParamsCellProps> = ({
                 id: 'models.form.backend_parameters'
               })}
             </div>
-            <CopyButton
-              type="link"
-              text={[
-                ...(backendParameters || []),
-                ...injectedBackendParameters
-              ].join('\n')}
-              style={{ marginLeft: 'auto' }}
-            />
           </Flex>
           <Divider style={{ margin: '0 0 8px 0' }} />
           <TooltipContent

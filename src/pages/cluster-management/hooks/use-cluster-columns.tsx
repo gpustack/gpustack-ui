@@ -27,7 +27,8 @@ const clusterActionList = [
   {
     key: 'edit',
     label: 'common.button.edit',
-    icon: icons.EditOutlined
+    icon: icons.EditOutlined,
+    order: 10
   },
   {
     label: 'resources.metrics.details',
@@ -36,33 +37,38 @@ const clusterActionList = [
       <span className="flex-center">
         <GrafanaIcon style={{ width: 14, height: 14 }}></GrafanaIcon>
       </span>
-    )
+    ),
+    order: 20
   },
   {
     key: 'add_worker',
     label: 'resources.button.create',
     provider: ProviderValueMap.Docker,
     locale: true,
-    icon: icons.DockerOutlined
+    icon: icons.DockerOutlined,
+    order: 30
   },
   {
     key: 'register_cluster',
     label: 'clusters.button.register',
     provider: ProviderValueMap.Kubernetes,
     locale: true,
-    icon: icons.KubernetesOutlined
+    icon: icons.KubernetesOutlined,
+    order: 40
   },
   {
     key: 'addPool',
     label: 'clusters.button.addNodePool',
     provider: ProviderValueMap.DigitalOcean,
     locale: true,
-    icon: icons.Catalog1
+    icon: icons.Catalog1,
+    order: 50
   },
   {
     key: 'isDefault',
     label: 'clusters.form.setDefault',
-    icon: icons.StarOutlined
+    icon: icons.StarOutlined,
+    order: 60
   },
   {
     key: 'delete',
@@ -70,7 +76,8 @@ const clusterActionList = [
     icon: icons.DeleteOutlined,
     props: {
       danger: true
-    }
+    },
+    order: 99
   }
 ];
 
@@ -86,11 +93,13 @@ const useClusterColumns = (
   // `clusterDetail.linkableName`. Without a plugin we render the
   // name as plain text (matches the pre-restore behaviour); with one
   // we use Typography.Link wired to the parent's `onCellClick`.
-  const nameLinkable: boolean = !!getGPUStackPlugin()?.clusterDetail
-    ?.linkableName;
+  const { nameLinkable, useGenerateActions } =
+    getGPUStackPlugin()?.clusterDetail || {};
+  const actions: typeof clusterActionList =
+    useGenerateActions?.({ actions: clusterActionList }) || clusterActionList;
 
   const setActionsItems = (row: ClusterListItem) => {
-    return clusterActionList.filter((item) => {
+    return actions.filter((item) => {
       if (item.provider) {
         return item.provider === row.provider;
       }
@@ -112,9 +121,7 @@ const useClusterColumns = (
           <>
             <AutoTooltip ghost title={text}>
               {nameLinkable ? (
-                <Typography.Link
-                  onClick={() => onCellClick?.(record, 'name')}
-                >
+                <Typography.Link onClick={() => onCellClick?.(record, 'name')}>
                   {record.name}
                 </Typography.Link>
               ) : (

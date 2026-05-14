@@ -9,7 +9,6 @@ import ActionsCell from '../instance-cells/actions-cell';
 import CPUOffloadingCell from '../instance-cells/cpu-offloading-cell';
 import DistributeInfoCell from '../instance-cells/distribute-info-cell';
 import DownloadingStatusCell from '../instance-cells/downloading-status-cell';
-import InjectedParamsCell from '../instance-cells/injected-params-cell';
 import InstanceStatusCell from '../instance-cells/instance-status-cell';
 import NameCell from '../instance-cells/name-cell';
 interface InstanceItemProps {
@@ -56,10 +55,6 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
               className="flex align-center"
             >
               <CPUOffloadingCell record={instanceData}></CPUOffloadingCell>
-              <InjectedParamsCell
-                record={instanceData}
-                backendParameters={modelData?.backend_parameters}
-              ></InjectedParamsCell>
               <DistributeInfoCell
                 record={instanceData}
                 workerList={workerList}

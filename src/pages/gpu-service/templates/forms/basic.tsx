@@ -77,6 +77,25 @@ const Basic: React.FC<BasicProps> = ({ page = 'template', onceMaxRequest }) => {
             />
           </Form.Item>
           <Form.Item<FormData>
+            name="displayName"
+            rules={[
+              {
+                max: 63,
+                message: intl.formatMessage({
+                  id: 'gpuservice.template.displayName.max'
+                })
+              }
+            ]}
+          >
+            <CInput.Input
+              label={intl.formatMessage({
+                id: 'gpuservice.template.displayName'
+              })}
+              showCount
+              maxLength={63}
+            />
+          </Form.Item>
+          <Form.Item<FormData>
             name="manufacturer"
             rules={[
               {

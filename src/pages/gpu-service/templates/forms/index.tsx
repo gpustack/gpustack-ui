@@ -36,6 +36,7 @@ const GPUServiceTemplateForm: React.FC<TemplateFormProps> = forwardRef(
     const handleFinish = async (values: FormData) => {
       await onFinish({
         ...values,
+        displayName: values.displayName?.trim() || values.name,
         spec: {
           ...values.spec,
           command: values.spec?.command?.filter(Boolean) ?? []
@@ -65,7 +66,8 @@ const GPUServiceTemplateForm: React.FC<TemplateFormProps> = forwardRef(
             ports: [
               {
                 protocol: 'TCP',
-                port: 22
+                port: 22,
+                name: 'SSH'
               }
             ],
             volumeMount: '/workspace',

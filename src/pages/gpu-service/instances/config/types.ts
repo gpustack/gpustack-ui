@@ -15,6 +15,7 @@ export interface FormData {
     ports: {
       port: number;
       protocol?: string;
+      name?: string;
     }[];
     env: {
       name: string;

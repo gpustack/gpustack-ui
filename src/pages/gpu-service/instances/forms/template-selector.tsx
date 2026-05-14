@@ -68,7 +68,7 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
           <TemplateContent>
             <div className="name">
               <AutoTooltip ghost minWidth={20}>
-                {item.name}
+                {item.displayName || item.name || '-'}
               </AutoTooltip>
             </div>
             <div className="info">

@@ -1,6 +1,7 @@
 export interface PortItem {
   protocol: 'UDP' | 'TCP';
   port: number;
+  name?: string;
 }
 
 export type ImagePullPolicy = 'Always' | 'IfNotPresent' | 'Never';
@@ -13,6 +14,7 @@ export interface EnvItem {
 export interface FormData {
   name: string;
   description: string;
+  displayName?: string;
   manufacturer: string;
   spec: {
     image: string;

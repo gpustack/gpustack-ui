@@ -15,10 +15,16 @@ export default {
   'gpuservice.template.mountPath': 'Mount Path',
   'gpuservice.template.containerDisk': 'Container Disk (GB)',
   'gpuservice.template.memory': 'Memory (GB)',
+  'gpuservice.template.displayName': 'Display Name',
+  'gpuservice.template.displayName.max':
+    'Display name cannot exceed 63 characters.',
   'gpuservice.template.ports': 'Ports',
   'gpuservice.template.ports.add': 'Add Port',
   'gpuservice.template.ports.invalid':
     'Please complete the port configuration.',
+  'gpuservice.template.ports.name': 'Name',
+  'gpuservice.template.ports.name.max':
+    'Port name cannot exceed 16 characters.',
   'gpuservice.template.env': 'Environment Variables',
   'gpuservice.template.env.add': 'Add Environment Variable',
   'gpuservice.template.env.invalid':
@@ -53,8 +59,7 @@ export default {
   'gpuservice.instance.sliced': 'Sliced',
   'gpuservice.instance.memory': 'Memory',
   'gpuservice.instance.ram': 'RAM',
-  'gpuservice.instance.search.type.placeholder':
-    'Search by name, VRAM, memory or vCPU',
+  'gpuservice.instance.search.type.placeholder': 'Search by name',
   'gpuservice.instance.search.template.placeholder':
     'Search by template name, image or mount path',
   'gpuservice.instance.template.image': 'Image',

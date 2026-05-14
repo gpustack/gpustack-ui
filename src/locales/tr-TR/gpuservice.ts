@@ -15,10 +15,16 @@ export default {
   'gpuservice.template.mountPath': 'Bağlama Yolu',
   'gpuservice.template.containerDisk': 'Konteyner Diski (GB)',
   'gpuservice.template.memory': 'Bellek (GB)',
+  'gpuservice.template.displayName': 'Görünen Ad',
+  'gpuservice.template.displayName.max':
+    'Görünen ad 63 karakterden uzun olamaz.',
   'gpuservice.template.ports': 'Bağlantı Noktaları',
   'gpuservice.template.ports.add': 'Bağlantı Noktası Ekle',
   'gpuservice.template.ports.invalid':
     'Bağlantı noktası yapılandırmasını eksiksiz doldurun.',
+  'gpuservice.template.ports.name': 'Ad',
+  'gpuservice.template.ports.name.max':
+    'Bağlantı noktası adı 16 karakterden uzun olamaz.',
   'gpuservice.template.env': 'Ortam Değişkenleri',
   'gpuservice.template.env.add': 'Ortam Değişkeni Ekle',
   'gpuservice.template.env.invalid': 'Ortam değişkenlerini eksiksiz doldurun.',
@@ -52,8 +58,7 @@ export default {
   'gpuservice.instance.sliced': 'Bölünmüş',
   'gpuservice.instance.memory': 'Bellek',
   'gpuservice.instance.ram': 'RAM',
-  'gpuservice.instance.search.type.placeholder':
-    "Ada, VRAM, belleğe veya vCPU'ya göre ara",
+  'gpuservice.instance.search.type.placeholder': 'Ada göre ara',
   'gpuservice.instance.search.template.placeholder':
     'Şablon adına, imaja veya bağlama yoluna göre ara',
   'gpuservice.instance.template.image': 'İmaj',

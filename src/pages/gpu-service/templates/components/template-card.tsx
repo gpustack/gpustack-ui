@@ -2,23 +2,83 @@ import ascendLogo from '@/assets/logo/ascend.png';
 import CambriconPNG from '@/assets/logo/cambricon.png';
 import hyponPNG from '@/assets/logo/hygon.png';
 import iluvatarWEBP from '@/assets/logo/Iluvatar.png';
+import jupyterLogo from '@/assets/logo/jupyter.png';
 import metaxLogo from '@/assets/logo/metax.png';
 import mooreLogo from '@/assets/logo/moore-logo.png';
 import nvidiaLogo from '@/assets/logo/nvidia.png';
+import pytorchBlackLogo from '@/assets/logo/pytorch_black.png';
+import sgLangLogo from '@/assets/logo/sglang.png';
 import theadLogoEN from '@/assets/logo/t-head-en.png';
 import theadLogoZH from '@/assets/logo/t-head-zh.png';
-import { manfacturerValueMap } from '@/pages/resources/config/gpu-driver';
+import tensorflowkLogo from '@/assets/logo/tensorflow.svg';
+import ubuntuLogo from '@/assets/logo/ubuntu.png';
+import vllmLogo from '@/assets/logo/vllm.png';
+import {
+  GPUsConfigs,
+  manfacturerValueMap
+} from '@/pages/resources/config/gpu-driver';
 import {
   AutoTooltip,
   DropdownActions,
   IconFont,
-  TemplateCard
+  TemplateCard,
+  ThemeTag
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Tag } from 'antd';
 import styled from 'styled-components';
 import { templateActions } from '../config';
 import { ListItem } from '../config/types';
+
+const imageLogoMap = {
+  vllm: vllmLogo,
+  sglang: sgLangLogo,
+  cann: ascendLogo,
+  jupyter: jupyterLogo,
+  pytorch: pytorchBlackLogo,
+  tensorflow: tensorflowkLogo,
+  ubuntu: ubuntuLogo
+} as const;
+
+export const manufactureColorMap: Record<string, string> = {
+  nvidia: 'green',
+  amd: 'volcano',
+  ascend: 'orange',
+  hygon: 'magenta',
+  moorthreads: 'cyan',
+  iluvatar: 'purple',
+  metax: 'geekblue',
+  cambricon: 'gold',
+  thead: 'red',
+  cpu: 'blue'
+};
+
+const manufacturerLabelMap: Record<string, string> = Object.values(
+  GPUsConfigs
+).reduce(
+  (acc, item) => {
+    if (item.gpuVendor) acc[item.gpuVendor] = item.label;
+    return acc;
+  },
+  { cpu: 'CPU' } as Record<string, string>
+);
+
+const matchImageLogo = (image: string | undefined): string | null => {
+  if (!image) return null;
+  const lower = image.toLowerCase();
+  let matched: keyof typeof imageLogoMap | null = null;
+  let earliest = Infinity;
+  (Object.keys(imageLogoMap) as Array<keyof typeof imageLogoMap>).forEach(
+    (key) => {
+      const idx = lower.indexOf(key);
+      if (idx !== -1 && idx < earliest) {
+        earliest = idx;
+        matched = key;
+      }
+    }
+  );
+  return matched ? imageLogoMap[matched] : null;
+};
 
 const StyledCard = styled(TemplateCard)`
   &:hover {
@@ -38,6 +98,8 @@ const Header = styled.div`
   .title {
     display: flex;
     align-items: center;
+    gap: 8px;
+    min-width: 0;
   }
 `;
 
@@ -73,7 +135,7 @@ const InfoItem = styled.div`
     color: var(--ant-color-text-quaternary);
   }
   .value {
-    color: var(--ant-color-text-secondary);
+    color: var(--ant-color-text-tertiary);
   }
 `;
 
@@ -98,6 +160,10 @@ const TemplateCardItem: React.FC<TemplateCardProps> = ({ data, onSelect }) => {
   };
 
   const renderLogo = () => {
+    const imageLogo = matchImageLogo(data.spec?.image);
+    if (imageLogo) {
+      return <LogoImg src={imageLogo} height={22} />;
+    }
     switch (data.manufacturer) {
       case manfacturerValueMap.NVIDIA:
         return <LogoImg src={nvidiaLogo} height={18} />;
@@ -141,6 +207,19 @@ const TemplateCardItem: React.FC<TemplateCardProps> = ({ data, onSelect }) => {
     }
   };
 
+  const renderManufacturerTag = () => {
+    if (!data.manufacturer) return null;
+    const label =
+      manufacturerLabelMap[data.manufacturer] ??
+      data.manufacturer.toUpperCase();
+    const color = manufactureColorMap[data.manufacturer] ?? 'purple';
+    return (
+      <ThemeTag color={color} style={{ fontWeight: 400 }}>
+        {label}
+      </ThemeTag>
+    );
+  };
+
   const renderActions = () => {
     return (
       <span onClick={handleonClickAction} className="operations">
@@ -177,8 +256,9 @@ const TemplateCardItem: React.FC<TemplateCardProps> = ({ data, onSelect }) => {
       <Content>
         <CardName>
           <AutoTooltip ghost minWidth={20}>
-            {data.name || '-'}
+            {data.displayName || data.name || '-'}
           </AutoTooltip>
+          {renderManufacturerTag()}
         </CardName>
         <InfoItem>
           <span>

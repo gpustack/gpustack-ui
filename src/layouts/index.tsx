@@ -25,6 +25,7 @@ import {
   useOverlayScroller
 } from '@gpustack/core-ui';
 import {
+  Access,
   Outlet,
   dropByCacheKey,
   getAllLocales,
@@ -387,6 +388,7 @@ export default (props: any) => {
           writeState
         }}
         slots={coreUISlots}
+        access={{ Access, useAccess }}
       >
         <DarkMask></DarkMask>
         <ProLayout

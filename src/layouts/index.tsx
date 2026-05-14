@@ -1,6 +1,7 @@
 import { routeCacheAtom, setRouteCache } from '@/atoms/route-cache';
 import { userAtom } from '@/atoms/user';
 import DarkMask from '@/components/dark-mask';
+import PluginExtraFields from '@/components/plugin-extra-fields';
 import routeCachekey from '@/config/route-cachekey';
 import { DEFAULT_ENTER_PAGE, GPUSTACK_API_BASE_URL } from '@/config/settings';
 import { COLOR_PRIMARY } from '@/config/theme';
@@ -424,6 +425,13 @@ export default (props: any) => {
           {...runtimeConfig}
           ErrorBoundary={ErrorBoundary}
         >
+          {/* Enterprise plugin slot: license status banner. The plugin
+              package registers `GlobalLicenseBanner` under this name; in
+              OSS builds no plugin is registered → PluginExtraFields
+              renders null. Polls /v2/enterprise/licenses/banner and
+              surfaces problems (expiring / expired / invalid signature /
+              over quota / trial mode). */}
+          <PluginExtraFields name="GlobalLicenseBanner" />
           <Exception
             route={matchedRoute}
             notFound={runtimeConfig?.notFound}

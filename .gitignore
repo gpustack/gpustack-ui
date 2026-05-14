@@ -15,3 +15,4 @@
 .idea
 .claude
 /dist.zip
+.cache

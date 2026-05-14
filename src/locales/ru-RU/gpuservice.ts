@@ -16,9 +16,15 @@ export default {
   'gpuservice.template.mountPath': 'Путь монтирования',
   'gpuservice.template.containerDisk': 'Диск контейнера (GB)',
   'gpuservice.template.memory': 'Память (GB)',
+  'gpuservice.template.displayName': 'Отображаемое имя',
+  'gpuservice.template.displayName.max':
+    'Отображаемое имя не должно превышать 63 символа.',
   'gpuservice.template.ports': 'Порты',
   'gpuservice.template.ports.add': 'Добавить порт',
   'gpuservice.template.ports.invalid': 'Заполните настройки портов полностью.',
+  'gpuservice.template.ports.name': 'Имя',
+  'gpuservice.template.ports.name.max':
+    'Имя порта не должно превышать 16 символов.',
   'gpuservice.template.env': 'Переменные окружения',
   'gpuservice.template.env.add': 'Добавить переменную окружения',
   'gpuservice.template.env.invalid':
@@ -53,8 +59,7 @@ export default {
   'gpuservice.instance.sliced': 'Разделено',
   'gpuservice.instance.memory': 'Память',
   'gpuservice.instance.ram': 'RAM',
-  'gpuservice.instance.search.type.placeholder':
-    'Поиск по имени, VRAM, памяти или vCPU',
+  'gpuservice.instance.search.type.placeholder': 'Поиск по имени',
   'gpuservice.instance.search.template.placeholder':
     'Поиск по имени шаблона, образу или пути монтирования',
   'gpuservice.instance.template.image': 'Образ',

@@ -176,16 +176,7 @@ const AddModal: React.FC<AddModalProps> = ({
 
   // filter instance types
   const filteredInstanceTypes = instanceTypeList.filter((item) =>
-    matchKeyword(
-      [
-        item.metadata?.name,
-        item.spec?.memory,
-        item.status?.cpu?.capacity,
-        item.status?.ram?.capacity,
-        item.status?.accelerator?.remaining
-      ],
-      instanceKeyword
-    )
+    matchKeyword([item.metadata?.name], instanceKeyword)
   );
 
   // filter templates based on selection and keyword
@@ -256,17 +247,20 @@ const AddModal: React.FC<AddModalProps> = ({
         <div className={styles.colWrapper}>
           <ColumnWrapper styles={{ container: { paddingBlock: 0 } }}>
             <div className={styles.panelBody}>
-              <ColTitle style={{ paddingBottom: 0 }}>
-                {intl.formatMessage({ id: 'gpuservice.instance.types' })}
-              </ColTitle>
               <div
                 style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 16,
                   position: 'sticky',
                   top: 0,
                   zIndex: 10,
                   backgroundColor: 'var(--ant-color-bg-elevated)'
                 }}
               >
+                <ColTitle style={{ paddingBottom: 0 }}>
+                  {intl.formatMessage({ id: 'gpuservice.instance.types' })}
+                </ColTitle>
                 <Input
                   allowClear
                   prefix={<SearchOutlined className="text-tertiary" />}
@@ -290,17 +284,20 @@ const AddModal: React.FC<AddModalProps> = ({
         <div className={styles.colWrapper}>
           <ColumnWrapper styles={{ container: { paddingBlock: 0 } }}>
             <div className={styles.panelBody}>
-              <ColTitle style={{ paddingBottom: 0 }}>
-                {intl.formatMessage({ id: 'gpuservice.instance.templates' })}
-              </ColTitle>
               <div
                 style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 16,
                   position: 'sticky',
                   top: 0,
                   zIndex: 10,
                   backgroundColor: 'var(--ant-color-bg-elevated)'
                 }}
               >
+                <ColTitle style={{ paddingBottom: 0 }}>
+                  {intl.formatMessage({ id: 'gpuservice.instance.templates' })}
+                </ColTitle>
                 <Input
                   allowClear
                   prefix={<SearchOutlined className="text-tertiary" />}

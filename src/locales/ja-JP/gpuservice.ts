@@ -15,9 +15,15 @@ export default {
   'gpuservice.template.mountPath': 'マウントパス',
   'gpuservice.template.containerDisk': 'コンテナディスク (GB)',
   'gpuservice.template.memory': 'メモリ (GB)',
+  'gpuservice.template.displayName': '表示名',
+  'gpuservice.template.displayName.max':
+    '表示名は 63 文字以内で入力してください。',
   'gpuservice.template.ports': 'ポート',
   'gpuservice.template.ports.add': 'ポートを追加',
   'gpuservice.template.ports.invalid': 'ポート設定を完成させてください。',
+  'gpuservice.template.ports.name': '名前',
+  'gpuservice.template.ports.name.max':
+    'ポート名は 16 文字以内で入力してください。',
   'gpuservice.template.env': '環境変数',
   'gpuservice.template.env.add': '環境変数を追加',
   'gpuservice.template.env.invalid': '環境変数を完成させてください。',
@@ -51,8 +57,7 @@ export default {
   'gpuservice.instance.sliced': '分割',
   'gpuservice.instance.memory': 'Memory',
   'gpuservice.instance.ram': 'RAM',
-  'gpuservice.instance.search.type.placeholder':
-    '名前、VRAM、メモリまたは vCPU で検索',
+  'gpuservice.instance.search.type.placeholder': '名前で検索',
   'gpuservice.instance.search.template.placeholder':
     'テンプレート名、イメージまたはマウントパスで検索',
   'gpuservice.instance.template.image': 'イメージ',

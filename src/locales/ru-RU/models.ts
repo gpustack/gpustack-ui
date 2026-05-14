@@ -64,7 +64,7 @@ export default {
   'models.form.backend': 'Бэкенд',
   'models.form.backend_parameters': 'Параметры бэкенда',
   'models.instance.params.configured': 'User Configured',
-  'models.instance.params.autoInjected': 'Автовнедрённые',
+  'models.instance.params.autoInjected': 'Автовнедрённые параметры',
   'models.search.gguf.tips':
     'GGUF-модели используют llama-box (поддерживает Linux, macOS и Windows).',
   'models.search.vllm.tips':

@@ -62,7 +62,7 @@ export default {
   'models.form.backend': 'Backend',
   'models.form.backend_parameters': 'Backend Parameters',
   'models.instance.params.configured': 'User Configured',
-  'models.instance.params.autoInjected': 'Auto-injected',
+  'models.instance.params.autoInjected': 'Auto-injected Parameters',
   'models.search.gguf.tips':
     'GGUF models use llama-box(supports Linux, macOS and Windows).',
   'models.search.vllm.tips':

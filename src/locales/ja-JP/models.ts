@@ -63,7 +63,7 @@ export default {
   'models.form.backend': 'バックエンド',
   'models.form.backend_parameters': 'バックエンドパラメータ',
   'models.instance.params.configured': 'User Configured',
-  'models.instance.params.autoInjected': '自動注入',
+  'models.instance.params.autoInjected': '自動注入パラメータ',
   'models.search.gguf.tips':
     'GGUFモデルはllama-boxを使用します（Linux、macOS、Windowsをサポート）。',
   'models.search.vllm.tips':

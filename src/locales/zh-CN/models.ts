@@ -62,7 +62,7 @@ export default {
   'models.form.backend': '后端',
   'models.form.backend_parameters': '后端参数',
   'models.instance.params.configured': '用户配置',
-  'models.instance.params.autoInjected': '自动注入',
+  'models.instance.params.autoInjected': '自动注入参数',
   'models.search.gguf.tips':
     'GGUF 模型用 llama-box（支持 Linux, macOS 和 Windows）。',
   'models.search.vllm.tips':

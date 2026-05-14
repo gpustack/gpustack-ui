@@ -62,7 +62,7 @@ export default {
   'models.form.backend': 'Altyapı',
   'models.form.backend_parameters': 'Altyapı Parametreleri',
   'models.instance.params.configured': 'User Configured',
-  'models.instance.params.autoInjected': 'Otomatik Enjekte',
+  'models.instance.params.autoInjected': 'Otomatik Enjekte Edilen Parametreler',
   'models.search.gguf.tips':
     'GGUF modelleri llama-box kullanır (Linux, macOS ve Windows destekler).',
   'models.search.vllm.tips':

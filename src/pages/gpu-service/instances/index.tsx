@@ -15,7 +15,7 @@ import {
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { ConfigProvider, Divider, Flex, message, Table } from 'antd';
+import { ConfigProvider, Divider, Flex, message, Modal, Table } from 'antd';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -26,15 +26,18 @@ import {
   queryGPUServiceInstances
 } from './apis';
 import AddModal from './components/add-modal';
+import ViewEventsModal from './components/view-events-modal';
 import ViewLogsModal from './components/view-logs-modal';
 import { FormData, ListItem } from './config/types';
 import useInstancesColumns from './hooks/use-instances-columns';
+import useViewEvents from './hooks/use-view-events';
 import useViewLogs from './hooks/use-view-logs';
 import useCreateInstance from './services/use-create-instance';
 import useUpdateInstance from './services/use-update-instance';
 
 const GPUService: React.FC = () => {
   const intl = useIntl();
+  const [modal, modalContextHolder] = Modal.useModal();
   const [currentCluster, setCurrentCluster] = useAtom(currentClusterAtom);
   const clusterID = currentCluster?.id;
   // In admin "All" view there's no Org context, so the helper falls
@@ -67,10 +70,10 @@ const GPUService: React.FC = () => {
         { ...params, namespace, clusterID: effectiveClusterID },
         options
       );
-      const total = res.items?.length ?? 0;
+      const total = res?.items?.length ?? 0;
       const perPage = params.perPage || 10;
       return {
-        items: res.items ?? [],
+        items: res?.items ?? [],
         pagination: {
           total,
           totalPage: Math.ceil(total / perPage),
@@ -109,6 +112,11 @@ const GPUService: React.FC = () => {
   const { fetchData: updateInstance } = useUpdateInstance();
   const { openViewLogsModal, closeViewLogsModal, openViewLogsModalStatus } =
     useViewLogs();
+  const {
+    openViewEventsModal,
+    closeViewEventsModal,
+    openViewEventsModalStatus
+  } = useViewEvents();
   const {
     fetchClusterList,
     cancelRequest: cancelClusterRequest,
@@ -210,6 +218,36 @@ const GPUService: React.FC = () => {
     }
   };
 
+  const handleRecreate = useMemoizedFn((row: ListItem) => {
+    modalRef.current?.show({
+      title: intl.formatMessage({
+        id: 'gpuservice.instance.recreate.confirm.title'
+      }),
+      content: 'gpuservice.instance.recreate.confirm.content',
+      okText: 'common.button.recreate',
+      operation: 'gpuservice.instance.recreate.confirm.content',
+      name: row.metadata?.name,
+      onOk: async () => {
+        try {
+          await deleteInstance(row.metadata?.name as any);
+          await new Promise((resolve) => {
+            setTimeout(resolve, 500);
+          });
+          await createInstance({
+            data: {
+              metadata: { name: row.metadata.name, namespace },
+              spec: row.spec
+            } as FormData
+          });
+          message.success(intl.formatMessage({ id: 'common.message.success' }));
+          handleSearch();
+        } catch (error) {
+          message.error(intl.formatMessage({ id: 'common.message.fail' }));
+        }
+      }
+    });
+  });
+
   const handleSelect = useMemoizedFn((val: string, row: ListItem) => {
     if (val === 'edit') {
       handleEditInstance(row);
@@ -219,8 +257,12 @@ const GPUService: React.FC = () => {
         name: row.metadata?.name,
         id: row.metadata?.name as any
       });
+    } else if (val === 'recreate') {
+      handleRecreate(row);
     } else if (val === 'viewlog') {
       openViewLogsModal(row);
+    } else if (val === 'viewevent') {
+      openViewEventsModal(row);
     }
   });
 
@@ -316,15 +358,7 @@ const GPUService: React.FC = () => {
           showSorterTooltip={false}
           rowKey={(record) => record.metadata.name}
           onChange={handleTableChange}
-          pagination={{
-            size: 'middle',
-            showSizeChanger: true,
-            pageSize: queryParams.perPage,
-            current: queryParams.page,
-            total: dataSource.total,
-            hideOnSinglePage: queryParams.perPage === 10,
-            onChange: handlePageChange
-          }}
+          pagination={false}
         />
       </ConfigProvider>
       <AddModal
@@ -341,7 +375,15 @@ const GPUService: React.FC = () => {
         tail={openViewLogsModalStatus.tail}
         onCancel={closeViewLogsModal}
       />
+      <ViewEventsModal
+        open={openViewEventsModalStatus.open}
+        name={openViewEventsModalStatus.name}
+        namespace={openViewEventsModalStatus.namespace}
+        clusterID={openViewEventsModalStatus.clusterID}
+        onCancel={closeViewEventsModal}
+      />
       <DeleteModal ref={modalRef} />
+      {modalContextHolder}
     </PageContainerInner>
   );
 };

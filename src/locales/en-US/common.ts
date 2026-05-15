@@ -52,6 +52,8 @@ export default {
   'common.button.authorize': 'Role Authorization',
   'common.button.confirm': 'Confirm',
   'common.button.viewlog': 'View Logs',
+  'common.button.viewevent': 'View Events',
+  'common.button.recreate': 'Recreate',
   'common.table.operation': 'Operations',
   'common.table.createTime': 'Created',
   'common.table.updateTime': 'Updated',

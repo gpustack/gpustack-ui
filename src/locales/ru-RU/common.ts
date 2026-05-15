@@ -52,6 +52,8 @@ export default {
   'common.button.authorize': 'Настройка прав',
   'common.button.confirm': 'Подтвердить',
   'common.button.viewlog': 'Просмотр логов',
+  'common.button.viewevent': 'Просмотр событий',
+  'common.button.recreate': 'Пересоздать',
   'common.table.operation': 'Действия',
   'common.table.createTime': 'Создано',
   'common.table.updateTime': 'Обновлено',

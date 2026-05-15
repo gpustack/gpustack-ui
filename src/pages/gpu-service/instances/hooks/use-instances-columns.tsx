@@ -9,13 +9,27 @@ import { useIntl } from '@umijs/max';
 import { Button, Flex } from 'antd';
 import type { ColumnsType } from 'antd/lib/table';
 import dayjs from 'dayjs';
+import _ from 'lodash';
 import { useMemo } from 'react';
 import { InstanceStatusLabelMap, rowActionList, status } from '../config';
 import { ListItem } from '../config/types';
 
 type ConnectEntry =
-  | { type: 'ssh'; key: string; command: string }
-  | { type: 'http'; key: string; port: number; url: string };
+  | {
+      type: 'ssh';
+      key: string;
+      command: string;
+      name: string;
+      protocol: string;
+    }
+  | {
+      type: 'http';
+      key: string;
+      port: number;
+      url: string;
+      name: string;
+      protocol: string;
+    };
 
 const getConnectEntries = (record: ListItem): ConnectEntry[] => {
   const ip = record.status?.hostIPs?.[0]?.ip;
@@ -33,13 +47,17 @@ const getConnectEntries = (record: ListItem): ConnectEntry[] => {
       return isSsh
         ? {
             type: 'ssh',
+            name: 'SSH',
             key: `ssh-${p.nodePort}`,
+            protocol: _.toUpper(p.protocol),
             command: `ssh root@${ip} -p ${p.nodePort}`
           }
         : {
             type: 'http',
+            name: p.name || 'HTTP',
             key: `http-${p.nodePort}`,
             port: p.port,
+            protocol: _.toUpper(p.protocol),
             url: `http://${ip}:${p.nodePort}`
           };
     });
@@ -116,7 +134,7 @@ const useInstancesColumns = ({
                       className="text-tertiary"
                       style={{ fontSize: 12, width: 34, flexShrink: 0 }}
                     >
-                      HTTP
+                      {entry.name || entry.protocol}
                     </span>
                     <Button
                       type="link"

@@ -95,6 +95,9 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
           enableScorllLoad={true}
           isDownloading={false}
           params={{
+            watchable: false,
+            watch: false,
+            tailLines: 1000,
             follow: true
           }}
         ></LogsViewer>

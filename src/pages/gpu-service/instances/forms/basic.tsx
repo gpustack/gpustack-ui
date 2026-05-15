@@ -1,10 +1,11 @@
-import { validateLabelNameRegxFor63 } from '@/config';
+import { PageAction, validateLabelNameRegxFor63 } from '@/config';
+import { PageActionType } from '@/config/types';
 import { Input as CInput } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import { FormData } from '../config/types';
 
-const Basic = () => {
+const Basic = ({ action }: { action: PageActionType }) => {
   const intl = useIntl();
   return (
     <>
@@ -25,6 +26,7 @@ const Basic = () => {
         ]}
       >
         <CInput.Input
+          disabled={action === PageAction.EDIT}
           label={intl.formatMessage({ id: 'gpuservice.instance.name' })}
           required
         />

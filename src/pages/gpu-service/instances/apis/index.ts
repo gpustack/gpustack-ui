@@ -17,8 +17,27 @@ export const GPU_SERVICE_INSTANCES_API = (params: {
 
 export const GPU_SERVICE_INSTANCES_TYPE_API = (params: {
   clusterID?: number;
-}) =>
-  `/clusters/${params.clusterID}/proxy/apis/worker.gpustack.ai/v1/instancetypes`;
+}) => {
+  return `/clusters/${params.clusterID}/proxy/apis/worker.gpustack.ai/v1/instancetypes`;
+};
+
+export const GPU_SERVICE_INSTANCES_LOG_API = (params: {
+  namespace: string;
+  name: string;
+  clusterID?: number;
+}) => {
+  return `/clusters/${params.clusterID}/proxy/apis/worker.gpustack.ai/v1/namespaces/${params.namespace}/instances/${params.name}/log`;
+};
+
+export const GPU_SERVICE_INSTANCES_EVENTS_API = (params: {
+  namespace: string;
+  name: string;
+  clusterID?: number;
+}) => {
+  return `/clusters/${params.clusterID}/proxy/apis/worker.gpustack.ai/v1/namespaces/${params.namespace}/instances/${params.name}/events`;
+};
+
+// =========== Instances ===========
 
 export async function queryGPUServiceInstances(
   params: Global.K8sSearchParams & {
@@ -147,10 +166,11 @@ export async function queryGPUServiceInstanceEvents(
     return;
   }
   return request<InstanceEvents>(
-    `${GPU_SERVICE_INSTANCES_API({
+    `${GPU_SERVICE_INSTANCES_EVENTS_API({
       namespace: params.namespace,
-      clusterID: params.clusterID
-    })}/${params.name}/events`,
+      clusterID: params.clusterID,
+      name: params.name
+    })}`,
     {
       method: 'GET',
       params: omitPathParams(_.omit(params, ['name'])),
@@ -171,10 +191,11 @@ export async function queryGPUServiceInstanceLog(
     return;
   }
   return request<InstanceLog>(
-    `${GPU_SERVICE_INSTANCES_API({
+    `${GPU_SERVICE_INSTANCES_LOG_API({
       namespace: params.namespace,
-      clusterID: params.clusterID
-    })}/${params.name}/log`,
+      clusterID: params.clusterID,
+      name: params.name
+    })}`,
     {
       method: 'GET',
       params: omitPathParams(_.omit(params, ['name'])),

@@ -66,10 +66,10 @@ const GPUServiceStorage: React.FC = () => {
         { ...params, namespace, clusterID: effectiveClusterID },
         options
       );
-      const total = res.items?.length ?? 0;
+      const total = res?.items?.length ?? 0;
       const perPage = params.perPage || 10;
       return {
-        items: res.items ?? [],
+        items: res?.items ?? [],
         pagination: {
           total,
           totalPage: Math.ceil(total / perPage),
@@ -311,15 +311,7 @@ const GPUServiceStorage: React.FC = () => {
             showSorterTooltip={false}
             rowKey={(record) => record.metadata?.name as any}
             onChange={handleTableChange}
-            pagination={{
-              size: 'middle',
-              showSizeChanger: true,
-              pageSize: queryParams.perPage,
-              current: queryParams.page,
-              total: dataSource.total,
-              hideOnSinglePage: queryParams.perPage === 10,
-              onChange: handlePageChange
-            }}
+            pagination={false}
           />
         </ConfigProvider>
       </PageContainerInner>

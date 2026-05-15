@@ -1,5 +1,6 @@
 import { currentClusterAtom } from '@/atoms/gpuservice';
 import { getCurrentOrgNamespace } from '@/atoms/user';
+import { PageAction } from '@/config';
 import { InputNumber as CInputNumber, Select } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Flex, Form, Radio } from 'antd';
@@ -19,7 +20,13 @@ const FieldBlock = styled.div`
 
 const DEFAULT_TEMP_CAPACITY_GB = 50;
 
-const StorageVolume = () => {
+const StorageVolume = ({
+  disabled,
+  action
+}: {
+  disabled?: boolean;
+  action: PageActionType;
+}) => {
   const intl = useIntl();
   const { fetchData: createStorage } = useCreateStorage();
   const { detailData: storageData, fetchData: fetchStorage } =
@@ -82,6 +89,7 @@ const StorageVolume = () => {
         }}
       >
         <Radio.Group
+          disabled={disabled}
           style={{ marginBottom: 12 }}
           value={storageMode}
           onChange={(e) => handleModeChange(e.target.value)}
@@ -98,14 +106,16 @@ const StorageVolume = () => {
             }
           ]}
         />
-        <Button
-          type="link"
-          size="small"
-          style={{ marginBottom: 6 }}
-          onClick={() => setOverlayOpen(true)}
-        >
-          {intl.formatMessage({ id: 'gpuservice.storage.add' })}
-        </Button>
+        {action === PageAction.CREATE && (
+          <Button
+            type="link"
+            size="small"
+            style={{ marginBottom: 6 }}
+            onClick={() => setOverlayOpen(true)}
+          >
+            {intl.formatMessage({ id: 'gpuservice.storage.add' })}
+          </Button>
+        )}
       </Flex>
 
       {storageMode === StorageModeValueMap.Existing && (
@@ -121,6 +131,7 @@ const StorageVolume = () => {
           ]}
         >
           <Select
+            disabled={disabled}
             label={intl.formatMessage({
               id: 'gpuservice.storage.persistentVolume'
             })}
@@ -149,6 +160,7 @@ const StorageVolume = () => {
           ]}
         >
           <CInputNumber
+            disabled={disabled}
             min={1}
             precision={0}
             label={intl.formatMessage({

@@ -2,59 +2,50 @@ import { currentClusterAtom } from '@/atoms/gpuservice';
 import { getCurrentOrgNamespace } from '@/atoms/user';
 import { useAtomValue } from 'jotai';
 import { useState } from 'react';
-import { GPU_SERVICE_INSTANCES_LOG_API } from '../apis';
 import { ListItem } from '../config/types';
 
-const useViewLogs = () => {
+const useViewEvents = () => {
   const currentCluster = useAtomValue(currentClusterAtom);
   const clusterID = currentCluster?.id;
   const namespace = getCurrentOrgNamespace(currentCluster?.owner_principal_id);
 
   const [openModalStatus, setOpenModalStatus] = useState<{
     open: boolean;
-    url: string;
-    tail?: number;
-    status?: string;
+    name: string;
+    namespace: string;
+    clusterID?: number;
   }>({
     open: false,
-    url: '',
-    tail: 1000,
-    status: undefined
+    name: '',
+    namespace: '',
+    clusterID: undefined
   });
 
   const openModal = (row?: ListItem) => {
-    const name = row?.metadata?.name;
+    const name = row?.metadata?.name || '';
     const rowNamespace = row?.metadata?.namespace || namespace;
     setOpenModalStatus({
       open: true,
-      url:
-        name && clusterID
-          ? `${GPU_SERVICE_INSTANCES_LOG_API({
-              namespace: rowNamespace,
-              clusterID,
-              name
-            })}`
-          : '',
-      tail: 1000,
-      status: row?.status?.phase || undefined
+      name,
+      namespace: rowNamespace,
+      clusterID
     });
   };
 
   const closeModal = () => {
     setOpenModalStatus({
       open: false,
-      url: '',
-      tail: 1000,
-      status: undefined
+      name: '',
+      namespace: '',
+      clusterID: undefined
     });
   };
 
   return {
-    openViewLogsModalStatus: openModalStatus,
-    setOpenViewLogsModalStatus: setOpenModalStatus,
-    openViewLogsModal: openModal,
-    closeViewLogsModal: closeModal
+    openViewEventsModalStatus: openModalStatus,
+    openViewEventsModal: openModal,
+    closeViewEventsModal: closeModal
   };
 };
 
-export default useViewLogs;
+export default useViewEvents;

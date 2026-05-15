@@ -11,6 +11,7 @@ import {
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
+import _ from 'lodash';
 import {
   forwardRef,
   useEffect,
@@ -50,7 +51,7 @@ const parseQuantityToNumber = (value?: string): number | null => {
   const match = /^(-?\d+(?:\.\d+)?)/.exec(String(value));
   if (!match) return null;
   const num = Number(match[1]);
-  return Number.isFinite(num) && num > 0 ? num : null;
+  return Number.isFinite(num) && num > 0 ? _.floor(num, 1) : null;
 };
 
 const TABKeysMap = {
@@ -92,7 +93,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
     const intl = useIntl();
     const [form] = Form.useForm<InstanceFormValues>();
     const scrollTabsRef = useRef<any>(null);
-    const { detailData, fetchData } = useGetSshkey();
+    const { detailData: sshKeyData, fetchData: fetchSSHData } = useGetSshkey();
     const { getScrollElementScrollableHeight } = useWrapperContext();
     const {
       activeKey,
@@ -111,9 +112,9 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
 
     useEffect(() => {
       if (open) {
-        fetchData({});
+        fetchSSHData({});
       }
-    }, [open]);
+    }, [open, action]);
 
     const segmentOptions = useMemo(
       () => [
@@ -223,7 +224,13 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
     }, [action, currentData, form, open, namespace]);
 
     const handleFinish = async (values: InstanceFormValues) => {
-      await onFinish(values);
+      await onFinish({
+        ...values,
+        spec: {
+          ...values.spec,
+          sshPublicKey: { name: sshKeyData?.name }
+        }
+      });
     };
 
     useImperativeHandle(ref, () => ({
@@ -272,7 +279,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
                 accelerator: '1'
               },
               sshPublicKey: {
-                name: 'gpustack-organization-ssh-public-key'
+                name: 'gpustack-ssh-public-key'
               },
               volume: {
                 ephemeral: {
@@ -286,7 +293,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
             enable_ssh: false
           }}
         >
-          <Basic />
+          <Basic action={action} />
           <CollapsePanel
             activeKey={collapseKeys}
             accordion={false}
@@ -309,6 +316,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
                 children: (
                   <TemplateBasicForm
                     page="instance"
+                    disabled={action === PageAction.EDIT}
                     onceMaxRequest={onceMaxRequest}
                   />
                 )
@@ -319,7 +327,12 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
                   id: 'gpuservice.instance.section.storage'
                 }),
                 forceRender: true,
-                children: <StorageVolume />
+                children: (
+                  <StorageVolume
+                    disabled={action === PageAction.EDIT}
+                    action={action}
+                  />
+                )
               }
             ]}
           />

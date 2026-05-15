@@ -52,6 +52,8 @@ export default {
   'common.button.authorize': 'Rol Yetkilendirme',
   'common.button.confirm': 'Onayla',
   'common.button.viewlog': 'Günlükleri Görüntüle',
+  'common.button.viewevent': 'Olayları Görüntüle',
+  'common.button.recreate': 'Yeniden Oluştur',
   'common.table.operation': 'İşlemler',
   'common.table.createTime': 'Oluşturulma',
   'common.table.updateTime': 'Güncellenme',

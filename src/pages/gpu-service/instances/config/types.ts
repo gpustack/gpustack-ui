@@ -56,6 +56,7 @@ export interface InstanceStatus {
   }[];
   ports?: {
     port: number;
+    name: string;
     nodePort?: number;
     protocol?: InstanceServicePortProtocol;
   }[];

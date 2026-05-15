@@ -9,6 +9,9 @@ import {
 } from '../config';
 import { InstanceTypeItem as InstanceTypeItemModel } from '../config/types';
 
+const toDisplayUnit = (value?: string) =>
+  value ? value.replace(/Gi$/, 'GB').replace(/Ti$/, 'TB') : value;
+
 const Title = styled.div`
   display: flex;
   align-items: center;
@@ -112,7 +115,9 @@ const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({
                   <span>
                     {intl.formatMessage({ id: 'gpuservice.instance.memory' })}
                   </span>
-                  <span>{convertKiToGi(item.spec?.memory) ?? '-'}</span>
+                  <span>
+                    {toDisplayUnit(convertKiToGi(item.spec?.memory)) ?? '-'}
+                  </span>
                 </Flex>
               </span>
               {item.spec?.sliced && (
@@ -157,7 +162,7 @@ const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({
               <span>
                 {intl.formatMessage({ id: 'gpuservice.instance.ram' })}
               </span>
-              <span>{item.status?.ram?.capacity ?? '-'}</span>
+              <span>{toDisplayUnit(item.status?.ram?.capacity) ?? '-'}</span>
             </Flex>
           </span>
           <span className="dot"></span>

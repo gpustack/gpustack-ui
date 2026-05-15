@@ -283,7 +283,7 @@ export default {
   'common.file.format.limit': 'Invalid file format. Allowed: {formats}.',
   'common.image.limit.width': 'Image width must be {width}.',
   'common.image.limit.height': 'Image height must be {height}.',
-  'common.max': '最大 {count}'
+  'common.remaining': '残り {count}'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

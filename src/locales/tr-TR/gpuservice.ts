@@ -54,8 +54,8 @@ export default {
   'gpuservice.instance.type.required': 'Lütfen bir örnek türü seçin',
   'gpuservice.instance.gpuCount': 'GPU Sayısı',
   'gpuservice.instance.gpuCount.required': 'Lütfen GPU sayısını girin',
-  'gpuservice.instance.gpuCount.max':
-    'Mevcut örnek türü en fazla {count} GPU destekler',
+  'gpuservice.instance.gpuCount.max': 'En fazla {count} GPU kartı seçin',
+  'gpuservice.instance.gpuCount.min': 'En az {count} GPU kartı seçin',
   'gpuservice.instance.stock': 'Stok',
   'gpuservice.instance.sliced': 'Bölünmüş',
   'gpuservice.instance.memory': 'Bellek',

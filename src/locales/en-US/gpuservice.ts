@@ -55,7 +55,9 @@ export default {
   'gpuservice.instance.gpuCount': 'GPU Count',
   'gpuservice.instance.gpuCount.required': 'Please enter the GPU count',
   'gpuservice.instance.gpuCount.max':
-    'The current instance type supports at most {count} GPU(s)',
+    'Please select at most {count} GPU card(s)',
+  'gpuservice.instance.gpuCount.min':
+    'Please select at least {count} GPU card(s)',
   'gpuservice.instance.stock': 'Stock',
   'gpuservice.instance.sliced': 'Sliced',
   'gpuservice.instance.memory': 'Memory',

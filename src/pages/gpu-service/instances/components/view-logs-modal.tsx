@@ -1,7 +1,8 @@
 import { LogsViewer } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
+import { useMemoizedFn } from 'ahooks';
 import { Modal } from 'antd';
-import React, { useCallback, useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
 type ViewModalProps = {
   open: boolean;
@@ -12,16 +13,17 @@ type ViewModalProps = {
 };
 
 const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
+  console.log('ViewLogsModal props:', props);
   const intl = useIntl();
-  const { open, onCancel, url } = props || {};
+  const { open, onCancel, url, tail } = props || {};
   const logsViewerRef = React.useRef<any>(null);
   const requestRef = React.useRef<any>(null);
   const contentRef = React.useRef<any>(null);
 
-  const handleCancel = useCallback(() => {
+  const handleCancel = useMemoizedFn(() => {
     logsViewerRef.current?.abort();
     onCancel();
-  }, [onCancel]);
+  });
 
   useEffect(() => {
     const handleKeyDown = (e: any) => {
@@ -59,6 +61,15 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
     };
   }, [url, open]);
 
+  const params = useMemo(() => {
+    return {
+      watchable: false,
+      watch: false,
+      tailLines: 1000,
+      follow: true
+    };
+  }, []);
+
   return (
     <Modal
       title={
@@ -91,15 +102,10 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
           ref={logsViewerRef}
           diffHeight={78}
           url={url}
-          tail={undefined}
+          tail={1000}
           enableScorllLoad={true}
           isDownloading={false}
-          params={{
-            watchable: false,
-            watch: false,
-            tailLines: 1000,
-            follow: true
-          }}
+          params={params}
         ></LogsViewer>
       </div>
     </Modal>

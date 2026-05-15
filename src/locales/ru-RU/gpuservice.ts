@@ -55,8 +55,8 @@ export default {
   'gpuservice.instance.type.required': 'Выберите тип экземпляра',
   'gpuservice.instance.gpuCount': 'Количество GPU',
   'gpuservice.instance.gpuCount.required': 'Введите количество GPU',
-  'gpuservice.instance.gpuCount.max':
-    'Текущий тип экземпляра поддерживает максимум {count} GPU',
+  'gpuservice.instance.gpuCount.max': 'Выберите максимум {count} GPU-карт',
+  'gpuservice.instance.gpuCount.min': 'Выберите минимум {count} GPU-карт',
   'gpuservice.instance.stock': 'Остаток',
   'gpuservice.instance.sliced': 'Разделено',
   'gpuservice.instance.memory': 'Память',

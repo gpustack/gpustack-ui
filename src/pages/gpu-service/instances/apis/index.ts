@@ -102,7 +102,7 @@ export async function updateGPUServiceInstance(
     `${GPU_SERVICE_INSTANCES_API({
       namespace: params.namespace,
       clusterID: params.clusterID
-    })}/${params.id}`,
+    })}/${params.data?.metadata?.name}`,
     {
       method: 'PUT',
       data: params.data,

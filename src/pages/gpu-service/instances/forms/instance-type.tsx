@@ -1,6 +1,8 @@
-import { InputNumber as CInputNumber } from '@gpustack/core-ui';
+import { PageAction } from '@/config';
+import { PageActionType } from '@/config/types';
+import NumberSelection from '@/pages/_components/number-selection';
 import { useIntl } from '@umijs/max';
-import { Flex, Form } from 'antd';
+import { Form } from 'antd';
 import { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import InstanceTypeItem from '../components/instance-type-item';
@@ -45,7 +47,13 @@ const InstanceTypePicker: React.FC<InstanceTypePickerProps> = ({
   );
 };
 
-const InstanceTypeFormItem = () => {
+interface InstanceTypeFormItemProps {
+  action: PageActionType;
+}
+
+const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
+  action
+}) => {
   const intl = useIntl();
   const form = Form.useFormInstance<FormData>();
   const typeName = Form.useWatch(['spec', 'type'], form) as string | undefined;
@@ -65,8 +73,8 @@ const InstanceTypeFormItem = () => {
   const maxGpuCount = useMemo(() => {
     const onceMaxRequest =
       selectedInstanceType?.status?.accelerator?.onceMaxRequest;
-    const num = onceMaxRequest ? Number(onceMaxRequest) : NaN;
-    return Number.isFinite(num) && num > 0 ? num : 1;
+    const num = onceMaxRequest ? Number(onceMaxRequest) : 0;
+    return num;
   }, [selectedInstanceType]);
 
   useEffect(() => {
@@ -135,24 +143,12 @@ const InstanceTypeFormItem = () => {
             }
           ]}
         >
-          <CInputNumber
+          <NumberSelection
             min={1}
             max={maxGpuCount}
-            precision={0}
-            label={
-              <Flex gap={4} align="center">
-                {intl.formatMessage({ id: 'gpuservice.instance.gpuCount' })}
-                <span>
-                  (
-                  {intl.formatMessage(
-                    { id: 'common.max' },
-                    { count: maxGpuCount }
-                  )}
-                  )
-                </span>
-              </Flex>
-            }
-            required
+            step={1}
+            disabled={action === PageAction.EDIT}
+            label={intl.formatMessage({ id: 'gpuservice.instance.gpuCount' })}
           />
         </Form.Item>
       )}

@@ -425,12 +425,6 @@ export default (props: any) => {
           {...runtimeConfig}
           ErrorBoundary={ErrorBoundary}
         >
-          {/* Enterprise plugin slot: license status banner. The plugin
-              package registers `GlobalLicenseBanner` under this name; in
-              OSS builds no plugin is registered → PluginExtraFields
-              renders null. Polls /v2/enterprise/licenses/banner and
-              surfaces problems (expiring / expired / invalid signature /
-              over quota / trial mode). */}
           <PluginExtraFields name="GlobalLicenseBanner" />
           <Exception
             route={matchedRoute}

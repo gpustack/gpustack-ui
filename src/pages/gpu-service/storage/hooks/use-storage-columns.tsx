@@ -59,11 +59,12 @@ const useStorageColumns = ({
         dataIndex: ['status', 'phase'],
         key: 'status',
         sorter: false,
-        render: (value: string) => (
+        render: (value: string, record: ListItem) => (
           <StatusTag
             statusValue={{
               status: status[value],
-              text: StoragePhaseLabelMap[value] || value
+              text: StoragePhaseLabelMap[value] || value,
+              message: record.status?.phaseMessage || ''
             }}
           ></StatusTag>
         )

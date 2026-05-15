@@ -44,6 +44,7 @@ export interface ListItem {
     accessMode: AccessModeType;
   };
   status: {
+    phaseMessage?: string;
     phase: 'Available' | 'Unavailable' | 'Pending';
     volume: {
       name: string;

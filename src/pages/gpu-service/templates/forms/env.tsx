@@ -9,12 +9,17 @@ interface EnvItemProps {
   onChange: (item: EnvItemType) => void;
 }
 
-const EnvItem: React.FC<EnvItemProps> = ({ item, onChange }) => {
+const EnvItem: React.FC<EnvItemProps & { disabled?: boolean }> = ({
+  item,
+  onChange,
+  disabled = false
+}) => {
   const intl = useIntl();
   return (
     <div style={{ display: 'flex', gap: 12, width: '100%' }}>
       <div style={{ flex: 1 }}>
         <CInput.Input
+          disabled={disabled}
           value={item.name}
           placeholder={intl.formatMessage({
             id: 'gpuservice.template.env.name'
@@ -30,6 +35,7 @@ const EnvItem: React.FC<EnvItemProps> = ({ item, onChange }) => {
       </div>
       <div style={{ flex: 1 }}>
         <CInput.Input
+          disabled={disabled}
           value={item.value}
           placeholder={intl.formatMessage({
             id: 'gpuservice.template.env.value'
@@ -47,7 +53,7 @@ const EnvItem: React.FC<EnvItemProps> = ({ item, onChange }) => {
   );
 };
 
-const Env: React.FC = () => {
+const Env: React.FC<{ disabled?: boolean }> = ({ disabled = false }) => {
   const intl = useIntl();
   const form = Form.useFormInstance<FormData>();
   const env = Form.useWatch(['spec', 'env'], form) || [];
@@ -103,6 +109,7 @@ const Env: React.FC = () => {
       ]}
     >
       <MetadataList
+        disabled={disabled}
         dataList={env}
         btnText={intl.formatMessage({ id: 'gpuservice.template.env.add' })}
         label={intl.formatMessage({ id: 'gpuservice.template.env' })}
@@ -111,6 +118,7 @@ const Env: React.FC = () => {
       >
         {(item, index) => (
           <EnvItem
+            disabled={disabled}
             key={index}
             index={index}
             item={item}

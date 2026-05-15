@@ -1,4 +1,4 @@
-import { validateLabelNameRegxFor63 } from '@/config';
+import { PageAction, validateLabelNameRegxFor63 } from '@/config';
 import {
   Input as CInput,
   InputNumber,
@@ -11,7 +11,7 @@ import { useEffect } from 'react';
 import { FormData } from '../config/types';
 import useQueryStorageClass from '../services/use-query-storage-class';
 
-const Basic = ({ open }: { open: boolean }) => {
+const Basic = ({ open, action }: { open: boolean; action: string }) => {
   const intl = useIntl();
   const { getRuleMessage } = useAppUtils();
   const { storageClassList, fetchData, loading } = useQueryStorageClass();
@@ -38,6 +38,7 @@ const Basic = ({ open }: { open: boolean }) => {
         ]}
       >
         <CInput.Input
+          disabled={action === PageAction.EDIT}
           label={intl.formatMessage({ id: 'common.table.name' })}
           required
         />
@@ -54,6 +55,7 @@ const Basic = ({ open }: { open: boolean }) => {
             ]}
           >
             <SealSelect
+              disabled={action === PageAction.EDIT}
               label={intl.formatMessage({ id: 'gpuservice.storage.type' })}
               required
               loading={loading}
@@ -76,6 +78,7 @@ const Basic = ({ open }: { open: boolean }) => {
             ]}
           >
             <InputNumber
+              disabled={action === PageAction.EDIT}
               label={intl.formatMessage({ id: 'gpuservice.storage.capacity' })}
               required
             />

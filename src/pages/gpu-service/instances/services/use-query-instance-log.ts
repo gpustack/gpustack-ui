@@ -1,5 +1,5 @@
 import { currentClusterAtom } from '@/atoms/gpuservice';
-import { getCurrentOrganizationId } from '@/atoms/user';
+import { getCurrentOrgNamespace } from '@/atoms/user';
 import { useQueryData } from '@gpustack/core-ui';
 import { useAtomValue } from 'jotai';
 import { useCallback } from 'react';
@@ -11,8 +11,8 @@ interface QueryInstanceLogParams extends InstanceLogQueryParams {
 }
 
 export default function useQueryInstanceLog() {
-  const namespace = getCurrentOrganizationId();
   const currentCluster = useAtomValue(currentClusterAtom);
+  const namespace = getCurrentOrgNamespace(currentCluster?.owner_principal_id);
   const clusterID = currentCluster?.id;
 
   const fetchDetail = useCallback(

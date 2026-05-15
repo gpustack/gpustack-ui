@@ -52,6 +52,8 @@ export default {
   'common.button.authorize': 'ロール認可',
   'common.button.confirm': '確認',
   'common.button.viewlog': 'ログを表示',
+  'common.button.viewevent': 'イベントを表示',
+  'common.button.recreate': '再作成',
   'common.table.operation': '操作',
   'common.table.createTime': '作成日時',
   'common.table.updateTime': '更新日時',

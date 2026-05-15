@@ -53,10 +53,22 @@ export const rowActionList = [
     icon: React.createElement(IconFont, { type: 'icon-logs' })
   },
   {
+    label: 'common.button.viewevent',
+    key: 'viewevent',
+    locale: true,
+    icon: icons.ProfileOutlined
+  },
+  {
     label: 'common.button.edit',
     key: 'edit',
     locale: true,
     icon: icons.EditOutlined
+  },
+  {
+    label: 'common.button.recreate',
+    key: 'recreate',
+    locale: true,
+    icon: icons.RetweetOutlined
   },
   {
     label: 'common.button.delete',

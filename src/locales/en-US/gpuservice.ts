@@ -25,6 +25,7 @@ export default {
   'gpuservice.template.ports.name': 'Name',
   'gpuservice.template.ports.name.max':
     'Port name cannot exceed 16 characters.',
+  'gpuservice.template.ports.name.duplicate': 'Port names must be unique.',
   'gpuservice.template.env': 'Environment Variables',
   'gpuservice.template.env.add': 'Add Environment Variable',
   'gpuservice.template.env.invalid':
@@ -66,6 +67,16 @@ export default {
   'gpuservice.instance.template.mount': 'Mount',
   'gpuservice.instance.connect': 'Connect',
   'gpuservice.instance.connect.copySshCommand': 'Copy SSH Command',
+  'gpuservice.instance.event.reason': 'Reason',
+  'gpuservice.instance.event.message': 'Message',
+  'gpuservice.instance.event.source': 'Source',
+  'gpuservice.instance.event.count': 'Count',
+  'gpuservice.instance.event.lastSeen': 'Last Seen',
+  'gpuservice.instance.event.recentHourTip':
+    'Only events from the last hour are shown',
+  'gpuservice.instance.recreate.confirm.title': 'Confirm recreation',
+  'gpuservice.instance.recreate.confirm.content':
+    'The current instance will be deleted first, then recreated with the current configuration.\n <span style="font-size: 13px;font-weight: 700">{name}</span>',
   'gpuservice.storage': 'Storage',
   'gpuservice.storage.add': 'Add Storage',
   'gpuservice.storage.edit': 'Edit Storage',

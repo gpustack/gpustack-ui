@@ -1,3 +1,4 @@
+import { validateLabelNameRegxFor63 } from '@/config';
 import {
   Input as CInput,
   InputNumber,
@@ -26,10 +27,15 @@ export interface BasicResourceMax {
 
 interface BasicProps {
   page?: 'template' | 'instance';
+  disabled?: boolean;
   onceMaxRequest?: BasicResourceMax;
 }
 
-const Basic: React.FC<BasicProps> = ({ page = 'template', onceMaxRequest }) => {
+const Basic: React.FC<BasicProps> = ({
+  page = 'template',
+  onceMaxRequest,
+  disabled
+}) => {
   const { getRuleMessage } = useAppUtils();
   const intl = useIntl();
 
@@ -68,10 +74,17 @@ const Basic: React.FC<BasicProps> = ({ page = 'template', onceMaxRequest }) => {
               {
                 required: true,
                 message: getRuleMessage('input', 'common.table.name')
+              },
+              {
+                pattern: validateLabelNameRegxFor63,
+                message: intl.formatMessage({
+                  id: 'gpuservice.form.rule.name'
+                })
               }
             ]}
           >
             <CInput.Input
+              disabled={disabled}
               label={intl.formatMessage({ id: 'common.table.name' })}
               required
             />
@@ -105,6 +118,7 @@ const Basic: React.FC<BasicProps> = ({ page = 'template', onceMaxRequest }) => {
             ]}
           >
             <SealSelect
+              disabled={disabled}
               label={intl.formatMessage({ id: 'resources.table.vendor' })}
               required
               options={[...manufacturerOptions, { label: 'CPU', value: 'cpu' }]}
@@ -123,12 +137,14 @@ const Basic: React.FC<BasicProps> = ({ page = 'template', onceMaxRequest }) => {
         ]}
       >
         <CInput.Input
+          disabled={disabled}
           label={intl.formatMessage({ id: 'gpuservice.template.image' })}
           required
         />
       </Form.Item>
       <Form.Item<FormData> name={['spec', 'imagePullPolicy']}>
         <SealSelect
+          disabled={disabled}
           label={intl.formatMessage({
             id: 'gpuservice.template.imagePullPolicy'
           })}
@@ -144,6 +160,7 @@ const Basic: React.FC<BasicProps> = ({ page = 'template', onceMaxRequest }) => {
         getValueProps={(value) => ({ value: stringifyCommand(value) })}
       >
         <Textarea
+          disabled={disabled}
           label={intl.formatMessage({ id: 'gpuservice.template.command' })}
           placeholder={intl.formatMessage({
             id: 'gpuservice.template.command.placeholder'
@@ -164,6 +181,7 @@ const Basic: React.FC<BasicProps> = ({ page = 'template', onceMaxRequest }) => {
               placeholder={intl.formatMessage({
                 id: 'clusters.volume.mountPath.format'
               })}
+              disabled={disabled}
             />
           </Form.Item>
         </div>
@@ -181,6 +199,7 @@ const Basic: React.FC<BasicProps> = ({ page = 'template', onceMaxRequest }) => {
                 onceMaxRequest?.localStorage
               )}
               max={onceMaxRequest?.localStorage ?? undefined}
+              disabled={disabled}
             />
           </Form.Item>
         </div>
@@ -195,6 +214,7 @@ const Basic: React.FC<BasicProps> = ({ page = 'template', onceMaxRequest }) => {
             <InputNumber
               label={renderMaxLabel('CPU', onceMaxRequest?.cpu)}
               max={onceMaxRequest?.cpu ?? undefined}
+              disabled={disabled}
             />
           </Form.Item>
         </div>
@@ -212,13 +232,14 @@ const Basic: React.FC<BasicProps> = ({ page = 'template', onceMaxRequest }) => {
                 onceMaxRequest?.memory
               )}
               max={onceMaxRequest?.memory ?? undefined}
+              disabled={disabled}
             />
           </Form.Item>
         </div>
       </Flex>
 
-      <Ports />
-      <Env />
+      <Ports disabled={disabled} />
+      <Env disabled={disabled} />
     </>
   );
 };

@@ -135,7 +135,7 @@ const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({
                 <>
                   <span className="dot"></span>
                   <span className="meta-item">
-                    <IconFont type="icon-cube" className="meta-icon" />
+                    <IconFont type="icon-database" className="meta-icon" />
                     <Flex align="center" gap={4}>
                       <span>
                         {intl.formatMessage({

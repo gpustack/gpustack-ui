@@ -25,6 +25,8 @@ export default {
   'gpuservice.template.ports.name': 'Ad',
   'gpuservice.template.ports.name.max':
     'Bağlantı noktası adı 16 karakterden uzun olamaz.',
+  'gpuservice.template.ports.name.duplicate':
+    'Bağlantı noktası adları benzersiz olmalıdır.',
   'gpuservice.template.env': 'Ortam Değişkenleri',
   'gpuservice.template.env.add': 'Ortam Değişkeni Ekle',
   'gpuservice.template.env.invalid': 'Ortam değişkenlerini eksiksiz doldurun.',
@@ -65,6 +67,17 @@ export default {
   'gpuservice.instance.template.mount': 'Bağlama',
   'gpuservice.instance.connect': 'Bağlan',
   'gpuservice.instance.connect.copySshCommand': 'SSH Komutunu Kopyala',
+  'gpuservice.instance.event.reason': 'Neden',
+  'gpuservice.instance.event.message': 'Mesaj',
+  'gpuservice.instance.event.source': 'Kaynak',
+  'gpuservice.instance.event.count': 'Sayı',
+  'gpuservice.instance.event.lastSeen': 'Son Görülen',
+  'gpuservice.instance.event.recentHourTip':
+    'Yalnızca son bir saatteki olaylar gösterilir',
+  'gpuservice.instance.recreate.confirm.title':
+    'Yeniden oluşturma onaylansın mı',
+  'gpuservice.instance.recreate.confirm.content':
+    'Mevcut örnek önce silinecek, ardından mevcut yapılandırmayla yeniden oluşturulacaktır.\n <span style="font-size: 13px;font-weight: 700">{name}</span>',
   'gpuservice.storage': 'Depolama',
   'gpuservice.storage.add': 'Depolama Ekle',
   'gpuservice.storage.edit': 'Depolamayı Düzenle',

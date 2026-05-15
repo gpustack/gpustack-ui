@@ -25,6 +25,8 @@ export default {
   'gpuservice.template.ports.name': 'Имя',
   'gpuservice.template.ports.name.max':
     'Имя порта не должно превышать 16 символов.',
+  'gpuservice.template.ports.name.duplicate':
+    'Имена портов должны быть уникальными.',
   'gpuservice.template.env': 'Переменные окружения',
   'gpuservice.template.env.add': 'Добавить переменную окружения',
   'gpuservice.template.env.invalid':
@@ -66,6 +68,16 @@ export default {
   'gpuservice.instance.template.mount': 'Монтирование',
   'gpuservice.instance.connect': 'Подключение',
   'gpuservice.instance.connect.copySshCommand': 'Скопировать команду SSH',
+  'gpuservice.instance.event.reason': 'Причина',
+  'gpuservice.instance.event.message': 'Сообщение',
+  'gpuservice.instance.event.source': 'Источник',
+  'gpuservice.instance.event.count': 'Кол-во',
+  'gpuservice.instance.event.lastSeen': 'Последнее событие',
+  'gpuservice.instance.event.recentHourTip':
+    'Отображаются только события за последний час',
+  'gpuservice.instance.recreate.confirm.title': 'Подтвердить пересоздание',
+  'gpuservice.instance.recreate.confirm.content':
+    'Текущий экземпляр будет сначала удалён, а затем пересоздан с текущей конфигурацией.\n <span style="font-size: 13px;font-weight: 700">{name}</span>',
   'gpuservice.storage': 'Хранилище',
   'gpuservice.storage.add': 'Добавить хранилище',
   'gpuservice.storage.edit': 'Редактировать хранилище',

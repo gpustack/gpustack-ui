@@ -11,8 +11,8 @@ import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import _ from 'lodash';
 import { useMemo } from 'react';
-import { GPUsConfigs } from '../../resources/config/gpu-driver';
 import PageBox from '../../_components/page-box';
+import { GPUsConfigs } from '../../resources/config/gpu-driver';
 import {
   createGPUServiceTemplate,
   deleteGPUServiceTemplate,
@@ -55,7 +55,7 @@ const GPUServiceTemplates: React.FC = () => {
     () => [
       ...Object.values(GPUsConfigs).map((item) => ({
         label: item.label,
-        value: item.value
+        value: item.gpuVendor as string
       })),
       { label: 'CPU', value: 'cpu' }
     ],

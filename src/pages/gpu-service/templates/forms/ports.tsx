@@ -6,12 +6,15 @@ import {
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
+import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
 import { FormData, PortItem as PortItemType } from '../config/types';
 
 type PortProtocol = PortItemType['protocol'];
 
 const PORT_NAME_MAX = 16;
+const PORT_MIN = 1;
+const PORT_MAX = 65535;
 
 const protocolOptions = [
   {
@@ -25,9 +28,9 @@ const protocolOptions = [
 ];
 
 const wellKnownTcpPortNames: Record<number, string> = {
-  22: 'SSH',
-  80: 'HTTP',
-  443: 'HTTPS'
+  22: 'ssh',
+  80: 'http',
+  443: 'https'
 };
 
 const getAutoFilledName = (
@@ -57,6 +60,7 @@ const getAutoFilledName = (
 };
 
 interface PortItemProps {
+  disabled?: boolean;
   item: PortItemType;
   index: number;
   onChange: (item: PortItemType) => void;
@@ -68,10 +72,11 @@ interface PortNameInputProps {
   placeholder: string;
 }
 
-const PortNameInput: React.FC<PortNameInputProps> = ({
+const PortNameInput: React.FC<PortNameInputProps & { disabled?: boolean }> = ({
   value,
   onChange,
-  placeholder
+  placeholder,
+  disabled = false
 }) => {
   const [localValue, setLocalValue] = useState<string>(value ?? '');
   const isComposingRef = useRef(false);
@@ -85,6 +90,7 @@ const PortNameInput: React.FC<PortNameInputProps> = ({
   return (
     <CInput.Input
       showCount
+      disabled={disabled}
       maxLength={PORT_NAME_MAX}
       value={localValue}
       placeholder={placeholder}
@@ -109,12 +115,13 @@ const PortNameInput: React.FC<PortNameInputProps> = ({
   );
 };
 
-const PortItem: React.FC<PortItemProps> = ({ item, index, onChange }) => {
+const PortItem: React.FC<PortItemProps & { disabled?: boolean }> = ({ item, index, disabled = false, onChange }) => {
   const intl = useIntl();
   return (
     <div style={{ display: 'flex', gap: 12, width: '100%' }}>
       <div style={{ width: 120 }}>
         <SealSelect
+          disabled={disabled}
           value={item.protocol}
           options={protocolOptions}
           onChange={(value) => {
@@ -136,8 +143,9 @@ const PortItem: React.FC<PortItemProps> = ({ item, index, onChange }) => {
       </div>
       <div style={{ width: 120 }}>
         <CInputNumber
-          min={1}
-          max={65535}
+          min={PORT_MIN}
+          max={PORT_MAX}
+          disabled={disabled}
           precision={0}
           value={item.port}
           onChange={(value) => {
@@ -160,6 +168,7 @@ const PortItem: React.FC<PortItemProps> = ({ item, index, onChange }) => {
       </div>
       <div style={{ flex: 1 }}>
         <PortNameInput
+          disabled={disabled}
           value={item.name}
           placeholder={intl.formatMessage({
             id: 'gpuservice.template.ports.name'
@@ -176,13 +185,15 @@ const PortItem: React.FC<PortItemProps> = ({ item, index, onChange }) => {
   );
 };
 
-const Ports: React.FC = () => {
+const Ports: React.FC<{ disabled?: boolean }> = ({ disabled = false }) => {
   const intl = useIntl();
   const form = Form.useFormInstance<FormData>();
   const ports = Form.useWatch(['spec', 'ports'], form) || [];
 
   const updatePorts = (list: PortItemType[]) => {
     form.setFieldValue(['spec', 'ports'], list);
+    // setFieldValue doesn't run validators — re-run them so users see errors live.
+    form.validateFields([['spec', 'ports']]).catch(() => {});
   };
 
   const handleAdd = () => {
@@ -213,27 +224,31 @@ const Ports: React.FC = () => {
       name={['spec', 'ports']}
       rules={[
         {
-          validator: async (_, value) => {
+          validator: async (_rule, value) => {
             if (!value?.length) {
               return Promise.resolve();
             }
-            const hasInvalidPort = value.some(
-              (item: PortItemType) => !item.protocol || !item.port
-            );
-            if (hasInvalidPort) {
+
+            const items = value as PortItemType[];
+
+            if (_.some(items, (item) => !item.protocol || !item.port)) {
               return Promise.reject(
                 new Error(
-                  intl.formatMessage({
-                    id: 'gpuservice.template.ports.invalid'
-                  })
+                  intl.formatMessage(
+                    { id: 'common.validate.value' },
+                    {
+                      name: intl.formatMessage({
+                        id: 'gpuservice.template.ports'
+                      })
+                    }
+                  )
                 )
               );
             }
-            const hasInvalidName = value.some(
-              (item: PortItemType) =>
-                item.name && item.name.length > PORT_NAME_MAX
-            );
-            if (hasInvalidName) {
+
+            const namedItems = items.filter((item) => !!item.name);
+
+            if (_.some(namedItems, (item) => item.name!.length > PORT_NAME_MAX)) {
               return Promise.reject(
                 new Error(
                   intl.formatMessage({
@@ -242,12 +257,25 @@ const Ports: React.FC = () => {
                 )
               );
             }
+
+            const names = namedItems.map((item) => item.name);
+            if (_.uniq(names).length !== names.length) {
+              return Promise.reject(
+                new Error(
+                  intl.formatMessage({
+                    id: 'gpuservice.template.ports.name.duplicate'
+                  })
+                )
+              );
+            }
+
             return Promise.resolve();
           }
         }
       ]}
     >
       <MetadataList
+        disabled={disabled}
         dataList={ports}
         btnText={intl.formatMessage({ id: 'gpuservice.template.ports.add' })}
         label={intl.formatMessage({ id: 'gpuservice.template.ports' })}
@@ -256,6 +284,7 @@ const Ports: React.FC = () => {
       >
         {(item, index) => (
           <PortItem
+            disabled={disabled}
             key={index}
             index={index}
             item={item}

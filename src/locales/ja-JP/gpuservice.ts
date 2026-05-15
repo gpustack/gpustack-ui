@@ -24,6 +24,7 @@ export default {
   'gpuservice.template.ports.name': '名前',
   'gpuservice.template.ports.name.max':
     'ポート名は 16 文字以内で入力してください。',
+  'gpuservice.template.ports.name.duplicate': 'ポート名は重複できません。',
   'gpuservice.template.env': '環境変数',
   'gpuservice.template.env.add': '環境変数を追加',
   'gpuservice.template.env.invalid': '環境変数を完成させてください。',
@@ -64,6 +65,16 @@ export default {
   'gpuservice.instance.template.mount': 'マウント',
   'gpuservice.instance.connect': '接続',
   'gpuservice.instance.connect.copySshCommand': 'SSH コマンドをコピー',
+  'gpuservice.instance.event.reason': '理由',
+  'gpuservice.instance.event.message': 'メッセージ',
+  'gpuservice.instance.event.source': 'ソース',
+  'gpuservice.instance.event.count': '回数',
+  'gpuservice.instance.event.lastSeen': '最終発生',
+  'gpuservice.instance.event.recentHourTip':
+    '直近 1 時間のイベントのみ表示されます',
+  'gpuservice.instance.recreate.confirm.title': '再作成を確認しますか',
+  'gpuservice.instance.recreate.confirm.content':
+    '現在のインスタンスを削除した後、現在の構成で再作成します。\n <span style="font-size: 13px;font-weight: 700">{name}</span>',
   'gpuservice.storage': 'ストレージ',
   'gpuservice.storage.add': 'ストレージを追加',
   'gpuservice.storage.edit': 'ストレージを編集',

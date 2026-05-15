@@ -98,12 +98,12 @@ export const ReClaimPolicyOptions = [
 ];
 
 export const rowActionList = [
-  {
-    label: 'common.button.edit',
-    key: 'edit',
-    locale: true,
-    icon: icons.EditOutlined
-  },
+  // {
+  //   label: 'common.button.edit',
+  //   key: 'edit',
+  //   locale: true,
+  //   icon: icons.EditOutlined
+  // },
   {
     label: 'common.button.delete',
     key: 'delete',

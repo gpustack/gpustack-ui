@@ -224,13 +224,14 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
     }, [action, currentData, form, open, namespace]);
 
     const handleFinish = async (values: InstanceFormValues) => {
-      await onFinish({
-        ...values,
-        spec: {
-          ...values.spec,
-          sshPublicKey: { name: sshKeyData?.name }
-        }
-      });
+      console.log('values=========', values);
+      // await onFinish({
+      //   ...values,
+      //   spec: {
+      //     ...values.spec,
+      //     sshPublicKey: { name: sshKeyData?.name }
+      //   }
+      // });
     };
 
     useImperativeHandle(ref, () => ({
@@ -305,7 +306,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
                   id: 'gpuservice.instance.section.type'
                 }),
                 forceRender: true,
-                children: <InstanceTypeFormItem />
+                children: <InstanceTypeFormItem action={action} />
               },
               {
                 key: TABKeysMap.TEMPLATE,

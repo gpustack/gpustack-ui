@@ -106,16 +106,17 @@ const StorageVolume = ({
             }
           ]}
         />
-        {action === PageAction.CREATE && (
-          <Button
-            type="link"
-            size="small"
-            style={{ marginBottom: 6 }}
-            onClick={() => setOverlayOpen(true)}
-          >
-            {intl.formatMessage({ id: 'gpuservice.storage.add' })}
-          </Button>
-        )}
+        {action === PageAction.CREATE &&
+          storageMode === StorageModeValueMap.Existing && (
+            <Button
+              type="link"
+              size="small"
+              style={{ marginBottom: 6 }}
+              onClick={() => setOverlayOpen(true)}
+            >
+              {intl.formatMessage({ id: 'gpuservice.storage.add' })}
+            </Button>
+          )}
       </Flex>
 
       {storageMode === StorageModeValueMap.Existing && (

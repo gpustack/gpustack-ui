@@ -1,0 +1,92 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+  border-radius: var(--ant-border-radius-lg);
+  border: 1px solid var(--ant-color-border);
+  overflow: hidden;
+  background-color: var(--ant-color-fill-quaternary);
+  .inputContainer {
+    &.hasValue {
+      background-color: var(--ant-color-bg-container);
+      :global {
+        .ant-input-number-action {
+          border-color: var(--ant-color-split) !important;
+        }
+        .ant-input-number-actions {
+          width: 32px !important;
+          opacity: 1 !important;
+        }
+      }
+    }
+    margin-inline: 4px;
+    border-radius: 4px;
+  }
+  .inputWrapper {
+    display: flex;
+    align-items: center;
+    .line {
+      display: flex;
+      height: 22px;
+      border-left: 1px solid var(--ant-color-split);
+    }
+  }
+
+  .label {
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    color: var(--ant-color-text-tertiary);
+    white-space: nowrap;
+    border-right: 1px solid var(--ant-color-split);
+  }
+  .content {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    gap: 4px;
+    padding: 4px;
+  }
+  .numberItem {
+    position: relative;
+    color: var(--ant-color-text-secondary);
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    outline: none;
+    transition:
+      color 0.2s,
+      background-color 0.2s,
+      border-color 0.2s;
+    &:hover {
+      background-color: var(--ant-color-fill-secondary);
+    }
+    &:focus-visible {
+      border-color: var(--ant-color-primary);
+    }
+    &.active {
+      background-color: var(--ant-color-bg-container);
+      color: var(--ant-color-text);
+      font-weight: 500;
+      border-color: var(--ant-color-split);
+    }
+  }
+  &.disabled {
+    cursor: not-allowed;
+    background-color: var(--ant-color-bg-container-disabled);
+    .label {
+      color: var(--ant-color-text-disabled);
+    }
+    .numberItem {
+      cursor: not-allowed;
+      color: var(--ant-color-text-disabled);
+      &:hover:not(.active) {
+        background-color: transparent;
+      }
+    }
+  }
+}

@@ -116,7 +116,7 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
           <InstanceTypePicker dataList={dataList} value={typeName} />
         </Form.Item>
       </FieldBlock>
-      {selectedInstanceType?.spec?.acceleratable && (
+      {!selectedInstanceType?.spec?.acceleratable && (
         <Form.Item
           name={['spec', 'resources', 'accelerator']}
           rules={[
@@ -135,6 +135,15 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
                         { id: 'gpuservice.instance.gpuCount.max' },
                         { count: maxGpuCount }
                       )
+                    )
+                  );
+                }
+                if (value < 1) {
+                  return Promise.reject(
+                    new Error(
+                      intl.formatMessage({
+                        id: 'gpuservice.instance.gpuCount.min'
+                      })
                     )
                   );
                 }

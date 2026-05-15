@@ -57,7 +57,7 @@ const Basic: React.FC<BasicProps> = ({
       <Flex gap={4} align="center">
         {label}
         <span>
-          ({intl.formatMessage({ id: 'common.max' }, { count: max })})
+          ({intl.formatMessage({ id: 'common.remaining' }, { count: max })})
         </span>
       </Flex>
     );

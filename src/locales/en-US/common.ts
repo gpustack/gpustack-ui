@@ -283,5 +283,5 @@ export default {
   'common.file.format.limit': 'Invalid file format. Allowed: {formats}.',
   'common.image.limit.width': 'Image width must be {width}.',
   'common.image.limit.height': 'Image height must be {height}.',
-  'common.max': 'Max {count}'
+  'common.remaining': 'Remaining {count}'
 };

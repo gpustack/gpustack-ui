@@ -11,7 +11,6 @@ import {
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
-import _ from 'lodash';
 import {
   forwardRef,
   useEffect,
@@ -51,7 +50,7 @@ const parseQuantityToNumber = (value?: string): number | null => {
   const match = /^(-?\d+(?:\.\d+)?)/.exec(String(value));
   if (!match) return null;
   const num = Number(match[1]);
-  return Number.isFinite(num) && num > 0 ? _.floor(num, 1) : null;
+  return Number.isFinite(num) && num > 0 ? num : null;
 };
 
 const TABKeysMap = {
@@ -224,14 +223,13 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
     }, [action, currentData, form, open, namespace]);
 
     const handleFinish = async (values: InstanceFormValues) => {
-      console.log('values=========', values);
-      // await onFinish({
-      //   ...values,
-      //   spec: {
-      //     ...values.spec,
-      //     sshPublicKey: { name: sshKeyData?.name }
-      //   }
-      // });
+      await onFinish({
+        ...values,
+        spec: {
+          ...values.spec,
+          sshPublicKey: { name: sshKeyData?.name }
+        }
+      });
     };
 
     useImperativeHandle(ref, () => ({

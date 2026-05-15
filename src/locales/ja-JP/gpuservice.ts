@@ -53,7 +53,9 @@ export default {
   'gpuservice.instance.gpuCount': 'GPU 数',
   'gpuservice.instance.gpuCount.required': 'GPU 数を入力してください',
   'gpuservice.instance.gpuCount.max':
-    '現在のインスタンスタイプは最大 {count} 個の GPU をサポートします',
+    '最大 {count} 枚の GPU カードを選択してください',
+  'gpuservice.instance.gpuCount.min':
+    '少なくとも {count} 枚の GPU カードを選択してください',
   'gpuservice.instance.stock': '在庫',
   'gpuservice.instance.sliced': '分割',
   'gpuservice.instance.memory': 'Memory',

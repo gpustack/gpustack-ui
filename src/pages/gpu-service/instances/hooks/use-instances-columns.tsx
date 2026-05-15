@@ -6,11 +6,11 @@ import {
   StatusTag
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Button, Flex } from 'antd';
+import { Button } from 'antd';
 import type { ColumnsType } from 'antd/lib/table';
 import dayjs from 'dayjs';
 import _ from 'lodash';
-import { useMemo } from 'react';
+import { Fragment, useMemo } from 'react';
 import { InstanceStatusLabelMap, rowActionList, status } from '../config';
 import { ListItem } from '../config/types';
 
@@ -35,6 +35,7 @@ const getConnectEntries = (record: ListItem): ConnectEntry[] => {
   const ip = record.status?.hostIPs?.[0]?.ip;
   const ports = record.status?.ports || [];
   const hasSshKey = !!record.spec?.sshPublicKey?.name;
+  const configPorts = record.spec?.ports || [];
 
   if (!ip) {
     return [];
@@ -54,7 +55,9 @@ const getConnectEntries = (record: ListItem): ConnectEntry[] => {
           }
         : {
             type: 'http',
-            name: p.name || 'HTTP',
+            name:
+              configPorts.find((port) => port.port === p.port)?.name ||
+              _.toUpper(p.protocol),
             key: `http-${p.nodePort}`,
             port: p.port,
             protocol: _.toUpper(p.protocol),
@@ -100,16 +103,32 @@ const useInstancesColumns = ({
           }
 
           return (
-            <Flex gap={6} vertical>
-              {entries.map((entry) =>
-                entry.type === 'ssh' ? (
-                  <Flex key={entry.key} align="center" style={{ height: 22 }}>
-                    <span
-                      className="text-tertiary"
-                      style={{ fontSize: 12, width: 34, flexShrink: 0 }}
-                    >
-                      SSH
-                    </span>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'max-content max-content',
+                rowGap: 6,
+                columnGap: 8,
+                alignItems: 'center'
+              }}
+            >
+              {entries.map((entry) => (
+                <Fragment key={entry.key}>
+                  <span
+                    className="text-tertiary"
+                    style={{
+                      fontSize: 12,
+                      maxWidth: 80,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap'
+                    }}
+                  >
+                    {entry.type === 'ssh'
+                      ? 'SSH'
+                      : entry.name || entry.protocol}
+                  </span>
+                  {entry.type === 'ssh' ? (
                     <CopyButton
                       text={entry.command}
                       type="link"
@@ -127,15 +146,7 @@ const useInstancesColumns = ({
                         fontSize: 12
                       }}
                     />
-                  </Flex>
-                ) : (
-                  <Flex key={entry.key} align="center" style={{ height: 22 }}>
-                    <span
-                      className="text-tertiary"
-                      style={{ fontSize: 12, width: 34, flexShrink: 0 }}
-                    >
-                      {entry.name || entry.protocol}
-                    </span>
+                  ) : (
                     <Button
                       type="link"
                       size="small"
@@ -155,10 +166,10 @@ const useInstancesColumns = ({
                       <span>{entry.port}</span>
                       <ExportOutlined style={{ fontSize: 10, marginLeft: 4 }} />
                     </Button>
-                  </Flex>
-                )
-              )}
-            </Flex>
+                  )}
+                </Fragment>
+              ))}
+            </div>
           );
         }
       },

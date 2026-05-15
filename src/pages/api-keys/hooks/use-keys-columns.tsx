@@ -1,65 +1,74 @@
 // columns.ts
 import { tableSorter } from '@/config/settings';
-import { getGPUStackPlugin } from '@/plugins';
-import {
-  AutoTooltip,
-  DropdownButtons,
-  IconFont,
-  icons
-} from '@gpustack/core-ui';
+import { AutoTooltip, DropdownButtons, icons } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { MenuProps, Tag } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
 import { ListItem } from '../config/types';
+import type { APIKeyConfigAction } from '../plugin';
 
 type APIKeyAction = Global.ActionItem<ListItem> & {
   onClick?: (record: ListItem) => void;
 };
 
+type RankedAction = APIKeyAction & { priority: number };
+
 interface ColumnsHookProps {
   handleSelect: (val: string, record: ListItem, item?: APIKeyAction) => void;
   sortOrder: string[];
   is_admin?: boolean;
-  onIPConfig?: (record: ListItem) => void;
+  configActions?: APIKeyConfigAction[];
+  // Dispatches the click for a plugin-contributed dropdown entry to the
+  // controller `useCreate()` returned for that entry.
+  onConfigAction?: (actionKey: string, record: ListItem) => void;
 }
 
 const useModelsColumns = ({
   handleSelect,
   sortOrder,
   is_admin,
-  onIPConfig
+  configActions = [],
+  onConfigAction
 }: ColumnsHookProps): ColumnsType<ListItem> => {
   const intl = useIntl();
 
   const actionList = useMemo<APIKeyAction[]>(() => {
-    const list: APIKeyAction[] = [
+    // Built-ins use a step-of-10 priority scale so plugins have room
+    // to insert at any position (e.g. 5 before Edit, 15 between Edit
+    // and Delete, 25 after Delete). The final list is sorted purely
+    // by priority — Delete sits last by virtue of its higher number,
+    // not by a special-case for `danger`.
+    const builtIns: RankedAction[] = [
       {
         label: 'common.button.edit',
         key: 'edit',
-        icon: icons.EditOutlined
+        icon: icons.EditOutlined,
+        priority: 10
       },
       {
         label: 'common.button.delete',
         key: 'delete',
         icon: icons.DeleteOutlined,
-        props: { danger: true }
+        props: { danger: true },
+        priority: 20
       }
     ];
 
-    const ipConfigComponent = getGPUStackPlugin()?.APIKeyIPConfig?.form;
-    if (ipConfigComponent && onIPConfig) {
-      list.splice(1, 0, {
-        label: 'apikeys.button.ipConfig',
-        key: 'ipConfig',
-        icon: <IconFont type="icon-safe-ip" />,
-        onClick: (record: ListItem) => onIPConfig(record)
-      });
-    }
+    const fromPlugins: RankedAction[] = configActions.map((a) => ({
+      label: a.labelId,
+      key: a.key,
+      icon: a.icon,
+      priority: a.priority ?? 100,
+      props: a.danger ? { danger: true } : undefined,
+      onClick: (record: ListItem) => onConfigAction?.(a.key, record)
+    }));
 
-    return list;
-  }, [onIPConfig]);
+    return [...builtIns, ...fromPlugins].sort(
+      (a, b) => a.priority - b.priority
+    );
+  }, [configActions, onConfigAction]);
 
   return useMemo(() => {
     return [

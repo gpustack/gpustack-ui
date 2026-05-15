@@ -1,5 +1,6 @@
 import { expandKeysAtom } from '@/atoms/clusters';
 import { registerRouteConfigAtom } from '@/atoms/routes';
+import PluginExtraFields from '@/components/plugin-extra-fields';
 import { PageAction } from '@/config';
 import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
@@ -20,7 +21,7 @@ import { useMemoizedFn } from 'ahooks';
 import { message } from 'antd';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import PageBox from '../_components/page-box';
 import { queryModelsList } from '../llmodels/apis';
 import AccessControlModal from '../llmodels/components/access-control-modal';
@@ -44,8 +45,39 @@ import useOpenPlayground from './hooks/use-open-playground';
 import useRoutesColumns from './hooks/use-routes-columns';
 import useTargetSourceModels from './hooks/use-target-source-models';
 import useViewApIInfo from './hooks/use-view-api-info';
+import {
+  ModelRouteConfigActionMount,
+  getModelRouteConfigActions,
+  type ModelRouteConfigActionController
+} from './plugin';
 
 const ModelRoutes: React.FC = () => {
+  // Single source of truth for plugin data lifecycle. Every successful
+  // table fetch updates this atomically: `routeIds` mirrors the rows
+  // currently visible (so plugins can bulk-fetch per-row data without
+  // N round-trips), and `refreshToken` bumps so plugins refetch even
+  // when the id set is unchanged — e.g. an in-place save from the
+  // quota-limit drawer leaves the row set intact but invalidates the
+  // derived defaults map.
+  const [pluginContext, setPluginContext] = useState<{
+    routeIds: number[];
+    refreshToken: number;
+  }>({
+    routeIds: [],
+    refreshToken: 0
+  });
+
+  // Wraps `queryModelRoutes` so the plugin context updates in lockstep
+  // with the table data — no separate "bump after save" signal needed.
+  const fetchAPI = useMemoizedFn(async (params: any, options?: any) => {
+    const res = await queryModelRoutes(params, options);
+    setPluginContext((prev) => ({
+      routeIds: (res.items ?? []).map((r: ListItem) => r.id),
+      refreshToken: prev.refreshToken + 1
+    }));
+    return res;
+  });
+
   const {
     dataSource,
     rowSelection,
@@ -60,7 +92,7 @@ const ModelRoutes: React.FC = () => {
     handleNameChange
   } = useTableFetch<ListItem>({
     key: PaginationKey.Routes,
-    fetchAPI: queryModelRoutes,
+    fetchAPI,
     deleteAPI: deleteModelRoute,
     watch: true,
     API: MODEL_ROUTES,
@@ -276,7 +308,46 @@ const ModelRoutes: React.FC = () => {
     }
   }, [registerRouteConfig, dataSource.loadend]);
 
-  const columns = useRoutesColumns(handleSelect);
+  // Generic per-row plugin slot. Each enterprise plugin contributes a
+  // `{ key, labelId, icon, priority, form, useCreate }` entry; the host
+  // renders a button per entry in the dropdown and renders one
+  // `ModelRouteConfigActionMount` per entry — those mounts own each
+  // entry's controller and register it back into `controllersRef` so
+  // dropdown clicks can route to the correct `openModal`. See
+  // `./plugin.tsx`.
+  //
+  // The action list is read once. Plugins are registered at boot and
+  // never recompute, so the reference is stable for the lifetime of
+  // the page and `useMemo([])` is safe.
+  const configActions = useMemo(() => getModelRouteConfigActions(), []);
+  const controllersRef = useRef<
+    Record<string, ModelRouteConfigActionController>
+  >({});
+  const registerController = useCallback(
+    (key: string, controller: ModelRouteConfigActionController) => {
+      controllersRef.current[key] = controller;
+    },
+    []
+  );
+
+  const handleConfigAction = useMemoizedFn(
+    (actionKey: string, record: ListItem) => {
+      controllersRef.current[actionKey]?.openModal(record);
+    }
+  );
+
+  // Per-row save closes the drawer and refetches the table. The wrapped
+  // `fetchAPI` above takes care of bumping `pluginContext.refreshToken`
+  // for derived plugin data.
+  const handleConfigActionOk = useMemoizedFn(() => {
+    fetchData();
+  });
+
+  const columns = useRoutesColumns({
+    handleSelect,
+    configActions,
+    onConfigAction: handleConfigAction
+  });
 
   return (
     <>
@@ -368,6 +439,27 @@ const ModelRoutes: React.FC = () => {
         onClose={closeViewAPIInfo}
       ></APIAccessInfoModal>
       <DeleteModal ref={modalRef}></DeleteModal>
+      {/* One mount per registered action. Each mount calls its
+          entry's `useCreate` (single hook per component, so iterating
+          the plugin list doesn't violate the Rules of Hooks),
+          renders the form, and registers its controller so dropdown
+          clicks can dispatch to it. */}
+      {configActions.map((action) => (
+        <ModelRouteConfigActionMount
+          key={action.key}
+          action={action}
+          registerController={registerController}
+          onOk={handleConfigActionOk}
+        />
+      ))}
+      {/* Page-level data lifecycle for plugin-contributed extra
+          columns. Receives the current list of visible route ids so
+          the plugin can bulk-fetch their per-user defaults in one
+          call (used by the quota-default column cells); `refreshToken`
+          bumps after a per-row save so derived page data refetches
+          even when the row set is unchanged. Renders nothing when no
+          plugin is registered. */}
+      <PluginExtraFields name="ModelRoutesPageGlobal" context={pluginContext} />
     </>
   );
 };

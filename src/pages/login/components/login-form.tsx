@@ -28,9 +28,12 @@ const Buttons = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  align-items: flex-start;
+  align-items: stretch;
   gap: 24px;
-  width: 360px;
+  // Stretch to the parent's inner width — a hardcoded 360px overflowed
+  // the right edge of the login card on the cover layout (272px inner)
+  // and ran tight against the edge on the wide layout (320px inner).
+  width: 100%;
   margin-top: 52px;
 `;
 

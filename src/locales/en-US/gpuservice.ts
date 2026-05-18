@@ -76,6 +76,8 @@ export default {
   'gpuservice.instance.event.lastSeen': 'Last Seen',
   'gpuservice.instance.event.recentHourTip':
     'Only events from the last hour are shown',
+  'gpuservice.instance.event.tab.instance': 'Instance Events',
+  'gpuservice.instance.event.tab.volume': 'Volume Events',
   'gpuservice.instance.recreate.confirm.title': 'Confirm recreation',
   'gpuservice.instance.recreate.confirm.content':
     'The current instance will be deleted first, then recreated with the current configuration.\n <span style="font-size: 13px;font-weight: 700">{name}</span>',

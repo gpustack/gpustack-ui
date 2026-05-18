@@ -75,6 +75,8 @@ export default {
   'gpuservice.instance.event.lastSeen': 'Последнее событие',
   'gpuservice.instance.event.recentHourTip':
     'Отображаются только события за последний час',
+  'gpuservice.instance.event.tab.instance': 'События экземпляра',
+  'gpuservice.instance.event.tab.volume': 'События тома',
   'gpuservice.instance.recreate.confirm.title': 'Подтвердить пересоздание',
   'gpuservice.instance.recreate.confirm.content':
     'Текущий экземпляр будет сначала удалён, а затем пересоздан с текущей конфигурацией.\n <span style="font-size: 13px;font-weight: 700">{name}</span>',

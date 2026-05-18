@@ -49,10 +49,12 @@ const InstanceTypePicker: React.FC<InstanceTypePickerProps> = ({
 
 interface InstanceTypeFormItemProps {
   action: PageActionType;
+  disabled?: boolean;
 }
 
 const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
-  action
+  action,
+  disabled
 }) => {
   const intl = useIntl();
   const form = Form.useFormInstance<FormData>();
@@ -116,7 +118,7 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
           <InstanceTypePicker dataList={dataList} value={typeName} />
         </Form.Item>
       </FieldBlock>
-      {!selectedInstanceType?.spec?.acceleratable && (
+      {selectedInstanceType?.spec?.acceleratable && (
         <Form.Item
           name={['spec', 'resources', 'accelerator']}
           rules={[
@@ -156,7 +158,8 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
             min={1}
             max={maxGpuCount}
             step={1}
-            disabled={action === PageAction.EDIT}
+            required
+            disabled={disabled || action === PageAction.EDIT}
             label={intl.formatMessage({ id: 'gpuservice.instance.gpuCount' })}
           />
         </Form.Item>

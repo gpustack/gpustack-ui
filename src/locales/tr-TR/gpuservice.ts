@@ -97,5 +97,9 @@ export default {
   'gpuservice.storage.tempCapacity.required':
     'Lütfen geçici depolama kapasitesini girin',
   'gpuservice.form.rule.name':
-    "Küçük harfler, rakamlar ve '-'. Harf veya rakamla başlamalı ve bitmeli, ardışık '-' içermemeli, en fazla 63 karakter."
+    "Küçük harfler, rakamlar ve '-'. Harf veya rakamla başlamalı ve bitmeli, ardışık '-' içermemeli, en fazla 63 karakter.",
+  'gpuservice.storage.temporary.tips':
+    'Data is cleared when the instance stops.',
+  'gpuservice.storage.persistentVolume.tips':
+    'Data persists across restarts and is deleted only when the instance is terminated. Cannot be shared with other instances.'
 };

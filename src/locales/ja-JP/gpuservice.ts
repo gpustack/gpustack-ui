@@ -96,5 +96,9 @@ export default {
   'gpuservice.storage.tempCapacity.required':
     '一時ストレージ容量を入力してください',
   'gpuservice.form.rule.name':
-    "小文字、数字、'-' のみ使用可能。文字または数字で始まり、文字または数字で終わる必要があり、連続する '-' は不可、最大 63 文字。"
+    "小文字、数字、'-' のみ使用可能。文字または数字で始まり、文字または数字で終わる必要があり、連続する '-' は不可、最大 63 文字。",
+  'gpuservice.storage.temporary.tips':
+    'Data is cleared when the instance stops.',
+  'gpuservice.storage.persistentVolume.tips':
+    'Data persists across restarts and is deleted only when the instance is terminated. Cannot be shared with other instances.'
 };

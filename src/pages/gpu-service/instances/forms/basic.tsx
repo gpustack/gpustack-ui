@@ -5,7 +5,13 @@ import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import { FormData } from '../config/types';
 
-const Basic = ({ action }: { action: PageActionType }) => {
+const Basic = ({
+  action,
+  disabled
+}: {
+  action: PageActionType;
+  disabled?: boolean;
+}) => {
   const intl = useIntl();
   return (
     <>
@@ -26,13 +32,14 @@ const Basic = ({ action }: { action: PageActionType }) => {
         ]}
       >
         <CInput.Input
-          disabled={action === PageAction.EDIT}
+          disabled={disabled || action === PageAction.EDIT}
           label={intl.formatMessage({ id: 'gpuservice.instance.name' })}
           required
         />
       </Form.Item>
       <Form.Item<FormData> name={['spec', 'description']}>
         <CInput.TextArea
+          disabled={disabled}
           label={intl.formatMessage({ id: 'common.table.description' })}
           scaleSize
         />

@@ -1,7 +1,11 @@
 import { currentClusterAtom } from '@/atoms/gpuservice';
 import { getCurrentOrgNamespace } from '@/atoms/user';
 import { PageAction } from '@/config';
-import { InputNumber as CInputNumber, Select } from '@gpustack/core-ui';
+import {
+  InputNumber as CInputNumber,
+  LabelInfo,
+  Select
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Flex, Form, Radio } from 'antd';
 import { useAtomValue } from 'jotai';
@@ -95,13 +99,37 @@ const StorageVolume = ({
           onChange={(e) => handleModeChange(e.target.value)}
           options={[
             {
-              label: intl.formatMessage({ id: 'gpuservice.storage.temporary' }),
+              label: (
+                <LabelInfo
+                  description={intl.formatMessage({
+                    id: 'gpuservice.storage.temporary.tips'
+                  })}
+                  label={
+                    <span className="text-primary">
+                      {intl.formatMessage({
+                        id: 'gpuservice.storage.temporary'
+                      })}
+                    </span>
+                  }
+                />
+              ),
               value: StorageModeValueMap.Temporary
             },
             {
-              label: intl.formatMessage({
-                id: 'gpuservice.storage.persistent'
-              }),
+              label: (
+                <LabelInfo
+                  description={intl.formatMessage({
+                    id: 'gpuservice.storage.persistentVolume.tips'
+                  })}
+                  label={
+                    <span className="text-primary">
+                      {intl.formatMessage({
+                        id: 'gpuservice.storage.persistentVolume'
+                      })}
+                    </span>
+                  }
+                />
+              ),
               value: StorageModeValueMap.Existing
             }
           ]}

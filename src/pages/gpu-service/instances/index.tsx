@@ -2,7 +2,6 @@ import { currentClusterAtom } from '@/atoms/gpuservice';
 import { getCurrentOrgNamespace } from '@/atoms/user';
 import { PageAction } from '@/config';
 import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
-import type { PageActionType } from '@/config/types';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { ProviderValueMap } from '@/pages/cluster-management/config';
 import { useQueryClusterList } from '@/pages/cluster-management/services/use-query-cluster-list';
@@ -18,7 +17,7 @@ import { useMemoizedFn } from 'ahooks';
 import { ConfigProvider, Divider, Flex, message, Modal, Table } from 'antd';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { PageContainerInner } from '../../_components/page-box';
 import {
   deleteGPUServiceInstance,
@@ -29,10 +28,11 @@ import AddModal from './components/add-modal';
 import ViewEventsModal from './components/view-events-modal';
 import ViewLogsModal from './components/view-logs-modal';
 import { FormData, ListItem } from './config/types';
+import useCreateInstance from './hooks/use-create-instance';
 import useInstancesColumns from './hooks/use-instances-columns';
 import useViewEvents from './hooks/use-view-events';
 import useViewLogs from './hooks/use-view-logs';
-import useCreateInstance from './services/use-create-instance';
+import useCreateInstanceRequest from './services/use-create-instance';
 import useUpdateInstance from './services/use-update-instance';
 
 const GPUService: React.FC = () => {
@@ -108,8 +108,16 @@ const GPUService: React.FC = () => {
     contentForDelete: intl.formatMessage({ id: 'gpuservice.instance' })
   });
 
-  const { fetchData: createInstance } = useCreateInstance();
+  const { fetchData: createInstance } = useCreateInstanceRequest();
   const { fetchData: updateInstance } = useUpdateInstance();
+  const {
+    openInstanceModalStatus,
+    openCreateInstanceModal,
+    openEditInstanceModal,
+    openViewInstanceModal,
+    openRecreateInstanceModal,
+    closeInstanceModal
+  } = useCreateInstance();
   const { openViewLogsModal, closeViewLogsModal, openViewLogsModalStatus } =
     useViewLogs();
   const {
@@ -130,18 +138,6 @@ const GPUService: React.FC = () => {
       ),
     [clusterList]
   );
-
-  const [openAddModalStatus, setOpenAddModalStatus] = useState<{
-    action: PageActionType;
-    open: boolean;
-    title: string;
-    currentData?: ListItem | null;
-  }>({
-    action: PageAction.CREATE,
-    title: '',
-    open: false,
-    currentData: null
-  });
 
   useEffect(() => {
     fetchClusterList({ page: -1 }).then((clusters) => {
@@ -172,38 +168,19 @@ const GPUService: React.FC = () => {
     };
   }, []);
 
-  const handleAddInstance = () => {
-    setOpenAddModalStatus({
-      action: PageAction.CREATE,
-      title: intl.formatMessage({ id: 'gpuservice.instance.add' }),
-      open: true,
-      currentData: null
-    });
-  };
-
-  const handleEditInstance = (row: ListItem) => {
-    setOpenAddModalStatus({
-      action: PageAction.EDIT,
-      title: intl.formatMessage({ id: 'gpuservice.instance.edit' }),
-      open: true,
-      currentData: row
-    });
-  };
-
-  const closeModal = () => {
-    setOpenAddModalStatus({
-      action: PageAction.CREATE,
-      title: '',
-      open: false,
-      currentData: null
-    });
-  };
-
   const handleModalOk = async (data: FormData) => {
     try {
-      if (openAddModalStatus.action === PageAction.EDIT) {
+      if (openInstanceModalStatus.realAction === PageAction.CREATE) {
+        await deleteInstance(
+          openInstanceModalStatus.currentData!.metadata?.name as any
+        );
+        await new Promise((resolve) => {
+          setTimeout(resolve, 500);
+        });
+        await createInstance({ data });
+      } else if (openInstanceModalStatus.action === PageAction.EDIT) {
         await updateInstance({
-          id: openAddModalStatus.currentData!.id,
+          id: openInstanceModalStatus.currentData!.id,
           data
         });
       } else {
@@ -211,7 +188,7 @@ const GPUService: React.FC = () => {
       }
 
       fetchData();
-      closeModal();
+      closeInstanceModal();
       message.success(intl.formatMessage({ id: 'common.message.success' }));
     } catch (error) {
       message.error(intl.formatMessage({ id: 'common.message.fail' }));
@@ -249,8 +226,10 @@ const GPUService: React.FC = () => {
   });
 
   const handleSelect = useMemoizedFn((val: string, row: ListItem) => {
-    if (val === 'edit') {
-      handleEditInstance(row);
+    if (val === 'view') {
+      openViewInstanceModal(row);
+    } else if (val === 'edit') {
+      openEditInstanceModal(row);
     } else if (val === 'delete') {
       handleDelete({
         ...row,
@@ -258,7 +237,9 @@ const GPUService: React.FC = () => {
         id: row.metadata?.name as any
       });
     } else if (val === 'recreate') {
-      handleRecreate(row);
+      // Keep handleRecreate above for the old confirm-modal flow. The current
+      // UX opens the editable form and recreates after submit.
+      openRecreateInstanceModal(row);
     } else if (val === 'viewlog') {
       openViewLogsModal(row);
     } else if (val === 'viewevent') {
@@ -295,7 +276,7 @@ const GPUService: React.FC = () => {
         subTitle={intl.formatMessage({
           id: 'noresult.gpuservice.instance.subTitle'
         })}
-        onClick={handleAddInstance}
+        onClick={openCreateInstanceModal}
         buttonText={intl.formatMessage({ id: 'noresult.button.add' })}
       />
     );
@@ -340,7 +321,7 @@ const GPUService: React.FC = () => {
         handleSearch={handleSearch}
         handleSelectChange={handleClusterChange}
         handleDeleteByBatch={handleDeleteBatch}
-        handleClickPrimary={handleAddInstance}
+        handleClickPrimary={openCreateInstanceModal}
         handleInputChange={handleNameChange}
         rowSelection={rowSelection}
         widths={{ input: 300 }}
@@ -362,11 +343,13 @@ const GPUService: React.FC = () => {
         />
       </ConfigProvider>
       <AddModal
-        open={openAddModalStatus.open}
-        action={openAddModalStatus.action}
-        title={openAddModalStatus.title}
-        data={openAddModalStatus.currentData}
-        onCancel={closeModal}
+        open={openInstanceModalStatus.open}
+        action={openInstanceModalStatus.action}
+        title={openInstanceModalStatus.title}
+        data={openInstanceModalStatus.currentData}
+        width={openInstanceModalStatus.width}
+        realAction={openInstanceModalStatus.realAction}
+        onCancel={closeInstanceModal}
         onOk={handleModalOk}
       />
       <ViewLogsModal

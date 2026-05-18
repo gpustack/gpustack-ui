@@ -127,7 +127,7 @@ const useModelsColumns = ({
         return record.replicas > 0;
       }
       if (action.key === 'metrics') {
-        return systemConfig.showMonitoring;
+        return systemConfig?.showMonitoring;
       }
 
       return true;

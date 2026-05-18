@@ -22,7 +22,7 @@ const ExportData: React.FC<{
   metaData: any;
   granularity: string;
   initialState: {
-    activeModels: ValueType[][];
+    activeRoutes: string[];
     activeApiKeys: ValueType[][];
     users: string[];
     start_date: string;
@@ -32,7 +32,7 @@ const ExportData: React.FC<{
     scope: string;
     start_date: string;
     end_date: string;
-    models: string[];
+    routes: string[];
     users: string[];
     api_keys: string[];
   };
@@ -84,7 +84,7 @@ const ExportData: React.FC<{
         ...pageParams,
         granularity: 'day',
         sort_by: '-date',
-        group_by: ['date', 'user', 'model', 'api_key'],
+        group_by: ['date', 'user', 'route', 'api_key'],
         filters: nextFilters,
         scope: initialScope,
         start_date: nextCommonFilters.start_date,
@@ -113,23 +113,10 @@ const ExportData: React.FC<{
       }
     },
     {
-      title: intl.formatMessage({ id: 'usage.table.cluster' }),
-      dataIndex: ['model', 'identity', 'value', 'cluster_name'],
+      title: intl.formatMessage({ id: 'usage.filter.group.model' }),
+      dataIndex: ['route', 'label'],
       render: (text: string) => {
         return <AutoTooltip ghost>{text}</AutoTooltip>;
-      }
-    },
-    {
-      title: intl.formatMessage({ id: 'dashboard.usage.export.model' }),
-      dataIndex: ['model', 'identity', 'value', 'model_name'],
-      render: (text: string, record: any) => {
-        return (
-          <AutoTooltip ghost>
-            {record?.model?.identity?.value?.provider_name
-              ? `${record?.model?.identity?.value?.provider_name}/${text}`
-              : text}
-          </AutoTooltip>
-        );
       }
     },
     {
@@ -213,8 +200,7 @@ const ExportData: React.FC<{
           jsonData: (dataSource.dataList || []).map((item: any) => ({
             date: item?.date?.label,
             user: item?.user?.label,
-            cluster: item?.model?.identity?.value?.cluster_name,
-            model: item?.model?.identity?.value?.model_name,
+            route: item?.route?.label,
             api_key: item?.api_key?.label,
             input_tokens: item?.input_tokens,
             input_cached_tokens: item?.input_cached_tokens,
@@ -226,7 +212,7 @@ const ExportData: React.FC<{
           fields: [
             'date',
             'user',
-            'model',
+            'route',
             'api_key',
             'input_tokens',
             'input_cached_tokens',
@@ -237,8 +223,7 @@ const ExportData: React.FC<{
           fieldLabels: {
             date: intl.formatMessage({ id: 'dashboard.usage.export.date' }),
             user: intl.formatMessage({ id: 'dashboard.usage.export.user' }),
-            cluster: intl.formatMessage({ id: 'usage.table.cluster' }),
-            model: intl.formatMessage({ id: 'dashboard.usage.export.model' }),
+            route: intl.formatMessage({ id: 'usage.filter.group.model' }),
             api_key: intl.formatMessage({ id: 'usage.table.provider' }),
             input_tokens: intl.formatMessage({
               id: 'usage.filter.inputTokens'
@@ -286,7 +271,7 @@ const ExportData: React.FC<{
       fetchExportData({
         ...INITIAL_PAGE_PARAMS,
         granularity: 'day',
-        group_by: ['date', 'user', 'model', 'api_key'],
+        group_by: ['date', 'user', 'route', 'api_key'],
         filters,
         sort_by: '-date',
         scope: initialScope,

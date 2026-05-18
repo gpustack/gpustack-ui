@@ -9,6 +9,10 @@ type UserOptionType = UsageFilterItem & {
   value: string;
 };
 
+type RouteOptionType = UsageFilterItem & {
+  value: string;
+};
+
 export default function useQueryUsageMetaData() {
   const { detailData, loading, cancelRequest, fetchData } =
     useQueryData<UsageMeta>({
@@ -20,10 +24,12 @@ export default function useQueryUsageMetaData() {
     models: GroupOption<UsageFilterItem>[];
     users: UserOptionType[];
     api_keys: GroupOption<UsageFilterItem>[];
+    routes: RouteOptionType[];
   }>({
     models: [],
     users: [],
-    api_keys: []
+    api_keys: [],
+    routes: []
   });
 
   // the current user sort in the first place
@@ -70,7 +76,12 @@ export default function useQueryUsageMetaData() {
           value: item.label,
           label: item.identity.value.api_key_name || ''
         })
-      })
+      }),
+      routes:
+        (res?.filters?.routes || []).map((item) => ({
+          ...item,
+          value: item.label
+        })) || []
     };
     setResult(data);
   };

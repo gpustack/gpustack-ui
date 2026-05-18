@@ -9,11 +9,13 @@ export interface UsageFilterItem {
       api_key_is_custom: boolean | null;
       provider_type: string | null;
       provider_name: string | null;
+      route_name: string | null;
     };
     current: {
       model_id: string | null;
       user_id: number | null;
       api_key_id: string | null;
+      route_id: number | null;
     };
   };
   label: string;
@@ -63,6 +65,7 @@ export type BreakdownItem = {
   provider_name: string;
   user: UsageFilterItem;
   model: UsageFilterItem;
+  route: UsageFilterItem;
   api_key: UsageFilterItem;
   date: {
     value: string;
@@ -88,6 +91,7 @@ export interface UsageMeta {
     models: UsageFilterItem[];
     users: UsageFilterItem[];
     api_keys: UsageFilterItem[];
+    routes: UsageFilterItem[];
   };
 }
 

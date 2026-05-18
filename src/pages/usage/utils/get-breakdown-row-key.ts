@@ -5,7 +5,7 @@ export const getBreakdownRowKey = (
   type: string
 ): string => {
   if (type === 'models') {
-    return `${record.model.label}`;
+    return `${record.route?.label || ''}`;
   }
 
   if (type === 'users') {
@@ -16,7 +16,7 @@ export const getBreakdownRowKey = (
     return `${record.api_key.label}`;
   }
 
-  return `${record.date?.value || ''}-${record.model.label}-${record.user.label}-${record.api_key.label}`;
+  return `${record.date?.value || ''}-${record.route?.label || ''}-${record.user.label}-${record.api_key.label}`;
 };
 
 export default getBreakdownRowKey;

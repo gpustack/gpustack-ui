@@ -1,5 +1,4 @@
 import useRangePickerPreset from '@/pages/dashboard/hooks/use-rangepicker-preset';
-import ProviderLogo from '@/pages/maas-provider/components/provider-logo';
 import { useModel } from '@@/plugin-model';
 import { DownloadOutlined, SyncOutlined } from '@ant-design/icons';
 import {
@@ -32,21 +31,19 @@ interface FilterBarProps {
   scope: string;
   startDate: string;
   endDate: string;
-  selectedModels: string[];
+  selectedRoutes: string[];
   selectedUsers: string[];
   selectedApiKeys: string[];
-  modelOptions: GroupOption<UsageFilterItem>[];
+  routeOptions: OptionType[];
   userOptions: OptionType[];
   apiKeyOptions: GroupOption<UsageFilterItem>[];
-  activeModels: valueType[][];
   activeApiKeys: valueType[][];
   handlePickerChange: (picker: DateType) => void;
   onScopeChange: (value: string) => void;
   onDateChange: (dates: any, dateStrings: [string, string]) => void;
-  onModelsChange: (value: string[]) => void;
+  onRoutesChange: (value: string[]) => void;
   onUsersChange: (value: string[]) => void;
   onApiKeysChange: (value: string[]) => void;
-  handleActiveModelsChange: (value: valueType[][]) => void;
   handleActiveApiKeysChange: (value: valueType[][]) => void;
   onExport?: () => void;
   handleSearch?: () => void;
@@ -56,7 +53,7 @@ interface FilterBarProps {
     scope: string;
     start_date: string;
     end_date: string;
-    models: string[];
+    routes: string[];
     users: string[];
     api_keys: string[];
   };
@@ -67,18 +64,17 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
     pageType = 'page',
     startDate,
     endDate,
+    selectedRoutes,
     selectedUsers,
     selectedApiKeys,
-    modelOptions,
+    routeOptions,
     userOptions,
     apiKeyOptions,
-    activeModels,
     activeApiKeys,
-    handleActiveModelsChange,
     handleActiveApiKeysChange,
     handlePickerChange,
     onDateChange,
-    onModelsChange,
+    onRoutesChange,
     onUsersChange,
     onApiKeysChange,
     onExportChart,
@@ -157,17 +153,6 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
     );
   };
 
-  const handleOnModelsChange = (value: valueType[][], selectedOptions: any) => {
-    const selectedValues: string[] = value.map((item) => {
-      if (Array.isArray(item)) {
-        return item[item.length - 1] as string; // Get the last value in the array
-      }
-      return item as string;
-    });
-    handleActiveModelsChange(value);
-    onModelsChange(selectedValues);
-  };
-
   const handleOnApiKeysChange = (
     value: valueType[][],
     selectedOptions: any
@@ -180,55 +165,6 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
     });
     handleActiveApiKeysChange(value);
     onApiKeysChange(selectedValues);
-  };
-
-  const displayRender = (labels: any[], option: any) => {
-    return (
-      <AutoTooltip
-        ghost
-        maxWidth={150}
-        title={
-          <span>
-            {labels[0]} / {labels[1]}
-          </span>
-        }
-      >
-        {labels[0]} / {labels[1]}
-      </AutoTooltip>
-    );
-  };
-
-  const optionRender = (option: any) => {
-    const { data } = option;
-    if (!data.isParent) {
-      return (
-        <span className="flex-center gap-4">
-          <AutoTooltip ghost>{data.label}</AutoTooltip>
-          {data.deleted &&
-            renderTag(intl.formatMessage({ id: 'usage.table.deleted' }))}
-        </span>
-      );
-    }
-
-    if (data.type === 'deployments') {
-      return (
-        <span className={FilterBarCss.optionsWrapper}>
-          <ProviderLogo provider={data.type as string} />
-          <AutoTooltip ghost>
-            {intl.formatMessage({ id: 'menu.models.deployment' })}
-          </AutoTooltip>
-        </span>
-      );
-    }
-
-    return (
-      <span className={FilterBarCss.optionsWrapper}>
-        <ProviderLogo provider={data.type as string} />
-        <AutoTooltip ghost>
-          <span>{data.label}</span>
-        </AutoTooltip>
-      </span>
-    );
   };
 
   const apiKeyOptionRender = (option: any) => {
@@ -303,47 +239,19 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
           style={{ width: 240 }}
           onChange={onDateChange}
         />
-        <div
-          style={{
-            maxWidth: 400,
-            flex: 1,
-            minWidth: 200
+        <SimpleSelect
+          allowClear
+          showSearch
+          mode="multiple"
+          options={routeOptions}
+          placeholder={intl.formatMessage({ id: 'usage.filter.model' })}
+          styles={{
+            wrapper: { flex: 1, maxWidth: 400, minWidth: 200 }
           }}
-        >
-          <Cascader
-            showSearch
-            multiple={true}
-            classNames={{
-              popup: {
-                root: 'cascader-popup-wrapper gpu-selector'
-              }
-            }}
-            styles={{
-              root: {
-                width: '100%'
-              },
-              popup: {
-                list: {
-                  flex: 1
-                },
-                listItem: {
-                  padding: '5px 10px'
-                }
-              }
-            }}
-            maxTagCount={1}
-            size="small"
-            isInFormItems={false}
-            placeholder={intl.formatMessage({ id: 'usage.filter.model' })}
-            options={modelOptions}
-            showCheckedStrategy="SHOW_CHILD"
-            displayRender={displayRender}
-            optionNode={optionRender}
-            value={activeModels}
-            onChange={handleOnModelsChange}
-            getPopupContainer={(triggerNode) => triggerNode.parentNode}
-          ></Cascader>
-        </div>
+          value={selectedRoutes}
+          optionLabelRender={singleOptionRender}
+          onChange={onRoutesChange}
+        />
         {initialState?.currentUser?.is_admin && (
           <>
             <SimpleSelect

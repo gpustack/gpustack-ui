@@ -164,8 +164,8 @@ const Usage: React.FC = () => {
           filterBar.onDateChange(dates, dateStrings);
           handleBreakdownPageReset();
         }}
-        onModelsChange={(value) => {
-          filterBar.onModelsChange(value);
+        onRoutesChange={(value) => {
+          filterBar.onRoutesChange(value);
           handleBreakdownPageReset();
         }}
         onUsersChange={(value) => {
@@ -228,7 +228,7 @@ const Usage: React.FC = () => {
         handlePickerChange={handlePickerChange}
         onCancel={() => setOpenExportModal(false)}
         initialState={{
-          activeModels: filterBar.activeModels,
+          activeRoutes: filterBar.selectedRoutes,
           activeApiKeys: filterBar.activeApiKeys,
           users: commonFilters.users,
           start_date: commonFilters.start_date,

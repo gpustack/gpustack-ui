@@ -104,7 +104,7 @@ const DailyUsage: React.FC<DailyUsageProps> = (props) => {
       };
     }
 
-    const groupDim = groupBy as 'user' | 'model' | 'api_key' | null;
+    const groupDim = groupBy as 'user' | 'route' | 'api_key' | null;
     const isCached = metric === CACHED_METRIC;
 
     const dateSet = new Set<string>(

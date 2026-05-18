@@ -6,7 +6,7 @@ export const groupByOptions = [
   //   label: 'None'
   // },
   {
-    value: 'model',
+    value: 'route',
     label: 'usage.filter.group.model'
   },
   {

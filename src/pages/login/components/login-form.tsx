@@ -30,10 +30,12 @@ const Buttons = styled.div`
   justify-content: flex-start;
   align-items: stretch;
   gap: 24px;
-  // Stretch to the parent's inner width — a hardcoded 360px overflowed
-  // the right edge of the login card on the cover layout (272px inner)
-  // and ran tight against the edge on the wide layout (320px inner).
-  width: 100%;
+  // Match LocalUserForm's 360px on roomy layouts so switching between
+  // SSO and password doesn't resize the card, but cap at the parent's
+  // inner width so the column doesn't overflow when the parent is
+  // tighter (e.g. the enterprise login's cover variant: 272px inner).
+  width: 360px;
+  max-width: 100%;
   margin-top: 52px;
 `;
 

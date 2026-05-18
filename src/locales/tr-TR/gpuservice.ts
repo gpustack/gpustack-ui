@@ -74,6 +74,8 @@ export default {
   'gpuservice.instance.event.lastSeen': 'Son Görülen',
   'gpuservice.instance.event.recentHourTip':
     'Yalnızca son bir saatteki olaylar gösterilir',
+  'gpuservice.instance.event.tab.instance': 'Örnek Olayları',
+  'gpuservice.instance.event.tab.volume': 'Birim Olayları',
   'gpuservice.instance.recreate.confirm.title':
     'Yeniden oluşturma onaylansın mı',
   'gpuservice.instance.recreate.confirm.content':

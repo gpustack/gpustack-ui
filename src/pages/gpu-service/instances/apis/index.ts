@@ -187,6 +187,31 @@ export async function queryGPUServiceInstanceEvents(
   );
 }
 
+export async function queryGPUServiceInstancePVEvents(
+  params: {
+    namespace: string;
+    name: string;
+    clusterID?: number;
+  },
+  options?: any
+) {
+  if (!params.clusterID) {
+    return;
+  }
+  return request<InstanceEvents>(
+    `${GPU_SERVICE_INSTANCE_PV_EVENTS_API({
+      namespace: params.namespace,
+      clusterID: params.clusterID,
+      name: params.name
+    })}`,
+    {
+      method: 'GET',
+      params: omitPathParams(_.omit(params, ['name'])),
+      cancelToken: options?.token
+    }
+  );
+}
+
 export async function queryGPUServiceInstanceLog(
   params: InstanceLogQueryParams & {
     namespace: string;

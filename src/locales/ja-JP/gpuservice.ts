@@ -74,6 +74,8 @@ export default {
   'gpuservice.instance.event.lastSeen': '最終発生',
   'gpuservice.instance.event.recentHourTip':
     '直近 1 時間のイベントのみ表示されます',
+  'gpuservice.instance.event.tab.instance': 'インスタンスイベント',
+  'gpuservice.instance.event.tab.volume': 'ボリュームイベント',
   'gpuservice.instance.recreate.confirm.title': '再作成を確認しますか',
   'gpuservice.instance.recreate.confirm.content':
     '現在のインスタンスを削除した後、現在の構成で再作成します。\n <span style="font-size: 13px;font-weight: 700">{name}</span>',

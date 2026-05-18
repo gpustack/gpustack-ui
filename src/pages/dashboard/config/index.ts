@@ -60,6 +60,24 @@ export interface DashboardUsageCommonParams {
 export const usageChartHeight = 300;
 export const usageChartCardHeight = usageChartHeight + 52;
 
+export const usageRankMaxItems = 10;
+export const usageRankDefaultHeight = 460;
+export const usageRankMinHeight = 300;
+export const usageRankItemHeight = 46;
+
+export const getUsageRankHeight = (count: number) => {
+  const safeCount = Math.min(Math.max(count, 0), usageRankMaxItems);
+  return Math.max(
+    usageRankMinHeight,
+    usageRankDefaultHeight -
+      (usageRankMaxItems - safeCount) * usageRankItemHeight
+  );
+};
+
+export const getUsageRankSlotCount = (height: number) => {
+  return Math.max(Math.floor(height / usageRankItemHeight), 1);
+};
+
 export const buildUsageLabel = (item: BreakdownItem, groupBy: UsageGroupBy) => {
   const rawItem = item as any;
   const groupItem = rawItem[groupBy];

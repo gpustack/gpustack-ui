@@ -1,7 +1,7 @@
 import useCoolColors from '@/hooks/use-cool-colors';
 import { Chart } from '@gpustack/core-ui';
 import { formatLargeNumber } from '@gpustack/core-ui/utils';
-import { theme } from 'antd';
+import { Empty, theme } from 'antd';
 import _ from 'lodash';
 import React, { useEffect, useMemo, useRef } from 'react';
 
@@ -254,7 +254,19 @@ const BarChart: React.FC<BarChartProps> = (props) => {
   }, [legendIsolate, seriesData, legendData]);
 
   if (!seriesData.length) {
-    return <div style={{ width: width || '100%', height }} />;
+    return (
+      <div
+        style={{
+          width: width || '100%',
+          height,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >
+        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+      </div>
+    );
   }
 
   return (

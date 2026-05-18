@@ -1,10 +1,11 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import {
-  Input as CInput,
+  CheckboxField,
   CollapsePanel,
   IconFont,
   ScrollSpyTabs,
+  Select,
   useFinishFailed,
   useScrollActiveChange,
   useWrapperContext
@@ -39,9 +40,11 @@ interface InstanceFormProps {
   ref?: any;
   open: boolean;
   action: PageActionType;
+  realAction?: PageActionType | string;
   currentData?: ListItem | null;
   namespace?: string;
   instanceTypeList?: InstanceTypeItem[];
+  disabled?: boolean;
   onFinish: (values: FormData) => Promise<void>;
 }
 
@@ -83,7 +86,9 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
   (props, ref) => {
     const {
       action,
+      realAction,
       currentData,
+      disabled,
       open,
       namespace = 'default',
       instanceTypeList = [],
@@ -92,6 +97,9 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
     const intl = useIntl();
     const [form] = Form.useForm<InstanceFormValues>();
     const scrollTabsRef = useRef<any>(null);
+    const formAction =
+      realAction === PageAction.CREATE ? PageAction.CREATE : action;
+    const sshEnabled = Form.useWatch('enable_ssh', form);
     const { detailData: sshKeyData, fetchData: fetchSSHData } = useGetSshkey();
     const { getScrollElementScrollableHeight } = useWrapperContext();
     const {
@@ -186,9 +194,6 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       updateActiveKey
     });
 
-    // useFinishFailed only matches errorFields[].name[0] against `fields`,
-    // but our form fields are nested (e.g. ['spec','type']), so collapse each
-    // error path into a single dotted string before delegating.
     const handleOnFinishFailed = (errorInfo: any) => {
       const errorFields = (errorInfo?.errorFields || []).map((field: any) => ({
         ...field,
@@ -205,7 +210,12 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
         return;
       }
 
-      if (action === PageAction.EDIT && currentData) {
+      if (
+        currentData &&
+        (action === PageAction.EDIT ||
+          action === PageAction.VIEW ||
+          realAction === PageAction.CREATE)
+      ) {
         form.setFieldsValue({
           metadata: {
             name: currentData.metadata?.name,
@@ -220,7 +230,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
         });
         return;
       }
-    }, [action, currentData, form, open, namespace]);
+    }, [action, currentData, form, open, namespace, realAction]);
 
     const handleFinish = async (values: InstanceFormValues) => {
       await onFinish({
@@ -261,6 +271,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
         <Form
           name="gpuServiceInstanceForm"
           form={form}
+          disabled={disabled}
           onFinish={handleFinish}
           onFinishFailed={handleOnFinishFailed}
           preserve={false}
@@ -292,7 +303,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
             enable_ssh: false
           }}
         >
-          <Basic action={action} />
+          <Basic action={formAction} disabled={disabled} />
           <CollapsePanel
             activeKey={collapseKeys}
             accordion={false}
@@ -304,7 +315,12 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
                   id: 'gpuservice.instance.section.type'
                 }),
                 forceRender: true,
-                children: <InstanceTypeFormItem action={action} />
+                children: (
+                  <InstanceTypeFormItem
+                    action={formAction}
+                    disabled={disabled}
+                  />
+                )
               },
               {
                 key: TABKeysMap.TEMPLATE,
@@ -315,7 +331,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
                 children: (
                   <TemplateBasicForm
                     page="instance"
-                    disabled={action === PageAction.EDIT}
+                    disabled={disabled || formAction === PageAction.EDIT}
                     onceMaxRequest={onceMaxRequest}
                   />
                 )
@@ -328,16 +344,46 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
                 forceRender: true,
                 children: (
                   <StorageVolume
-                    disabled={action === PageAction.EDIT}
-                    action={action}
+                    disabled={disabled || formAction === PageAction.EDIT}
+                    action={formAction}
                   />
                 )
               }
             ]}
           />
-          {hasSshPort && (
-            <Form.Item<FormData> hidden name={['spec', 'sshPublicKey', 'name']}>
-              <CInput.Input />
+
+          <Form.Item<FormData>
+            name="enable_ssh"
+            valuePropName="checked"
+            style={{ marginBottom: 8 }}
+          >
+            <CheckboxField
+              disabled={disabled}
+              label={'启用 SSH 访问'}
+            ></CheckboxField>
+          </Form.Item>
+          {sshEnabled && (
+            <Form.Item<FormData> name={['spec', 'sshPublicKey', 'name']}>
+              <Select
+                disabled={disabled}
+                mode="multiple"
+                maxTagCount={1}
+                label={'SSH 公钥'}
+                options={[
+                  {
+                    label: 'SSH-key-1',
+                    value: 'gpustack-ssh-public-key'
+                  },
+                  {
+                    label: 'SSH-key-2',
+                    value: 'gpustack-ssh-public-key-2'
+                  },
+                  {
+                    label: 'SSH-key-3',
+                    value: 'gpustack-ssh-public-key-3'
+                  }
+                ]}
+              ></Select>
             </Form.Item>
           )}
         </Form>

@@ -47,6 +47,12 @@ export const status: Record<string, StatusType> = {
 
 export const rowActionList = [
   {
+    label: 'common.button.view',
+    key: 'view',
+    locale: true,
+    icon: icons.DetailInfo
+  },
+  {
     label: 'common.button.viewlog',
     key: 'viewlog',
     locale: true,
@@ -58,12 +64,12 @@ export const rowActionList = [
     locale: true,
     icon: icons.ProfileOutlined
   },
-  {
-    label: 'common.button.edit',
-    key: 'edit',
-    locale: true,
-    icon: icons.EditOutlined
-  },
+  // {
+  //   label: 'common.button.edit',
+  //   key: 'edit',
+  //   locale: true,
+  //   icon: icons.EditOutlined
+  // },
   {
     label: 'common.button.recreate',
     key: 'recreate',

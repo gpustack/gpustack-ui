@@ -2,7 +2,12 @@ import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import Separator from '@/pages/llmodels/components/separator';
 import { SearchOutlined } from '@ant-design/icons';
-import { ColumnWrapper, GSDrawer, ModalFooter } from '@gpustack/core-ui';
+import {
+  AlertBlockInfo,
+  ColumnWrapper,
+  GSDrawer,
+  ModalFooter
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Empty, Input, Typography } from 'antd';
 import { useEffect, useRef, useState } from 'react';
@@ -19,6 +24,8 @@ type AddModalProps = {
   title: string;
   action: PageActionType;
   open: boolean;
+  width?: number | string;
+  realAction?: string;
   onOk: (values: FormData) => void;
   data?: ListItem | null;
   onCancel: () => void;
@@ -71,7 +78,9 @@ const AddModal: React.FC<AddModalProps> = ({
   open,
   onOk,
   data,
-  onCancel
+  onCancel,
+  width,
+  realAction
 }) => {
   const intl = useIntl();
   const form = useRef<any>(null);
@@ -92,6 +101,10 @@ const AddModal: React.FC<AddModalProps> = ({
 
   const instanceTypeList = detailData?.items || [];
   const templateList = templatesData?.items || [];
+  const readonly = action === PageAction.VIEW;
+  const isRecreate = realAction === PageAction.CREATE;
+  const showResourceSelectors = action === PageAction.CREATE || isRecreate;
+  const shouldAutoSelectResource = action === PageAction.CREATE && !isRecreate;
 
   const findTemplateByManufacturer = (
     manufacturer: string | undefined,
@@ -143,7 +156,7 @@ const AddModal: React.FC<AddModalProps> = ({
     instanceTypes: InstanceTypeItem[],
     templates: TemplateItem[]
   ) => {
-    if (action !== PageAction.CREATE) return;
+    if (!shouldAutoSelectResource) return;
     if (!instanceTypes.length) return;
 
     const first = instanceTypes[0];
@@ -172,7 +185,7 @@ const AddModal: React.FC<AddModalProps> = ({
         applyAutoSelection(instanceRes?.items || [], templatesRes?.items || []);
       }
     );
-  }, [open]);
+  }, [open, shouldAutoSelectResource]);
 
   // filter instance types
   const filteredInstanceTypes = instanceTypeList.filter((item) =>
@@ -238,102 +251,122 @@ const AddModal: React.FC<AddModalProps> = ({
       }}
       keyboard={false}
       styles={{
-        wrapper: { width: 'calc(100vw - 220px)' },
+        wrapper: { width: width || 'calc(100vw - 220px)' },
         body: { overflowY: 'hidden' }
       }}
       footer={false}
     >
       <div className={styles.container}>
-        <div className={styles.colWrapper}>
-          <ColumnWrapper styles={{ container: { paddingBlock: 0 } }}>
-            <div className={styles.panelBody}>
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 16,
-                  position: 'sticky',
-                  top: 0,
-                  zIndex: 10,
-                  backgroundColor: 'var(--ant-color-bg-elevated)'
-                }}
-              >
-                <ColTitle style={{ paddingBottom: 0 }}>
-                  {intl.formatMessage({ id: 'gpuservice.instance.types' })}
-                </ColTitle>
-                <Input
-                  allowClear
-                  prefix={<SearchOutlined className="text-tertiary" />}
-                  placeholder={intl.formatMessage({
-                    id: 'gpuservice.instance.search.type.placeholder'
-                  })}
-                  value={instanceKeyword}
-                  onChange={(e) => setInstanceKeyword(e.target.value)}
-                />
-              </div>
-              <InstanceTypeList
-                value={instanceTypeSelection.instanceType}
-                dataList={filteredInstanceTypes}
-                loading={instanceTypesLoading}
-                onChange={handleInstanceTypeChange}
-              />
+        {showResourceSelectors && (
+          <>
+            <div className={styles.colWrapper}>
+              <ColumnWrapper styles={{ container: { paddingBlock: 0 } }}>
+                <div className={styles.panelBody}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 16,
+                      position: 'sticky',
+                      top: 0,
+                      zIndex: 10,
+                      backgroundColor: 'var(--ant-color-bg-elevated)'
+                    }}
+                  >
+                    <ColTitle style={{ paddingBottom: 0 }}>
+                      {intl.formatMessage({ id: 'gpuservice.instance.types' })}
+                    </ColTitle>
+                    <Input
+                      allowClear
+                      prefix={<SearchOutlined className="text-tertiary" />}
+                      placeholder={intl.formatMessage({
+                        id: 'gpuservice.instance.search.type.placeholder'
+                      })}
+                      value={instanceKeyword}
+                      onChange={(e) => setInstanceKeyword(e.target.value)}
+                    />
+                  </div>
+                  <InstanceTypeList
+                    value={instanceTypeSelection.instanceType}
+                    dataList={filteredInstanceTypes}
+                    loading={instanceTypesLoading}
+                    onChange={handleInstanceTypeChange}
+                  />
+                </div>
+              </ColumnWrapper>
+              <Separator></Separator>
             </div>
-          </ColumnWrapper>
-          <Separator></Separator>
-        </div>
-        <div className={styles.colWrapper}>
-          <ColumnWrapper styles={{ container: { paddingBlock: 0 } }}>
-            <div className={styles.panelBody}>
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 16,
-                  position: 'sticky',
-                  top: 0,
-                  zIndex: 10,
-                  backgroundColor: 'var(--ant-color-bg-elevated)'
-                }}
-              >
-                <ColTitle style={{ paddingBottom: 0 }}>
-                  {intl.formatMessage({ id: 'gpuservice.instance.templates' })}
-                </ColTitle>
-                <Input
-                  allowClear
-                  prefix={<SearchOutlined className="text-tertiary" />}
-                  placeholder={intl.formatMessage({
-                    id: 'gpuservice.instance.search.template.placeholder'
-                  })}
-                  value={templateKeyword}
-                  onChange={(e) => setTemplateKeyword(e.target.value)}
-                />
-              </div>
-              {filteredTemplates.length > 0 ? (
-                <TemplateSelector
-                  value={templateId}
-                  dataList={filteredTemplates}
-                  onChange={handleTemplateChange}
-                />
-              ) : (
-                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-              )}
+            <div className={styles.colWrapper}>
+              <ColumnWrapper styles={{ container: { paddingBlock: 0 } }}>
+                <div className={styles.panelBody}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 16,
+                      position: 'sticky',
+                      top: 0,
+                      zIndex: 10,
+                      backgroundColor: 'var(--ant-color-bg-elevated)'
+                    }}
+                  >
+                    <ColTitle style={{ paddingBottom: 0 }}>
+                      {intl.formatMessage({
+                        id: 'gpuservice.instance.templates'
+                      })}
+                    </ColTitle>
+                    <Input
+                      allowClear
+                      prefix={<SearchOutlined className="text-tertiary" />}
+                      placeholder={intl.formatMessage({
+                        id: 'gpuservice.instance.search.template.placeholder'
+                      })}
+                      value={templateKeyword}
+                      onChange={(e) => setTemplateKeyword(e.target.value)}
+                    />
+                  </div>
+                  {filteredTemplates.length > 0 ? (
+                    <TemplateSelector
+                      value={templateId}
+                      dataList={filteredTemplates}
+                      onChange={handleTemplateChange}
+                    />
+                  ) : (
+                    <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                  )}
+                </div>
+              </ColumnWrapper>
+              <Separator></Separator>
             </div>
-          </ColumnWrapper>
-          <Separator></Separator>
-        </div>
+          </>
+        )}
         <div className={styles.formWrapper}>
           <ColumnWrapper
             styles={{ container: { paddingBlock: 0 } }}
             footer={
-              <ModalFooter
-                onOk={handleSubmit}
-                onCancel={handleCancel}
-                style={{
-                  padding: '16px 24px 8px',
-                  display: 'flex',
-                  justifyContent: 'flex-end'
-                }}
-              />
+              <>
+                {isRecreate && open && (
+                  <div style={{ marginInline: 24, paddingTop: 8 }}>
+                    <AlertBlockInfo
+                      type="warning"
+                      contentStyle={{ paddingInline: 0 }}
+                      message={intl.formatMessage({
+                        id: 'gpuservice.instance.recreate.confirm.content'
+                      })}
+                    />
+                  </div>
+                )}
+                <ModalFooter
+                  onOk={handleSubmit}
+                  onCancel={handleCancel}
+                  showOkBtn={!readonly}
+                  style={{
+                    padding: '16px 24px 8px',
+                    display: 'flex',
+                    justifyContent: 'flex-end'
+                  }}
+                />
+              </>
             }
           >
             <>
@@ -343,7 +376,9 @@ const AddModal: React.FC<AddModalProps> = ({
               <GPUServiceInstanceForm
                 ref={form}
                 action={action}
+                realAction={realAction}
                 currentData={data}
+                disabled={readonly}
                 onFinish={onFinish}
                 open={open}
                 instanceTypeList={instanceTypeList}

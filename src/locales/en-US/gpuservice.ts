@@ -92,6 +92,10 @@ export default {
   'gpuservice.storage.persistent': 'Persistent',
   'gpuservice.storage.temporary': 'Temporary',
   'gpuservice.storage.persistentVolume': 'Persistent Volume',
+  'gpuservice.storage.temporary.tips':
+    'Data is cleared when the instance stops.',
+  'gpuservice.storage.persistentVolume.tips':
+    'Data persists across restarts and is deleted only when the instance is terminated. Cannot be shared with other instances.',
   'gpuservice.storage.persistentVolume.required':
     'Please select a persistent volume',
   'gpuservice.storage.tempCapacity': 'Capacity (GB)',

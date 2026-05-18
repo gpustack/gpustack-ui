@@ -6,7 +6,7 @@ import {
   StatusTag
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Button } from 'antd';
+import { Button, Flex } from 'antd';
 import type { ColumnsType } from 'antd/lib/table';
 import dayjs from 'dayjs';
 import _ from 'lodash';
@@ -189,6 +189,44 @@ const useInstancesColumns = ({
             ></StatusTag>
           );
         }
+      },
+      {
+        title: 'Instance Type',
+        dataIndex: ['spec', 'type'],
+        key: 'type',
+        sorter: false,
+        ellipsis: {
+          showTitle: false
+        },
+        width: 230,
+        render: (text: string) => (
+          <AutoTooltip
+            ghost
+            style={{ maxWidth: 360, color: 'var(--ant-color-text) !important' }}
+          >
+            <Flex align="center">
+              <span
+                style={{
+                  fontWeight: 400
+                }}
+              >
+                NVIDIA A100 (x2)
+              </span>
+              <span
+                className="text-secondary"
+                style={{
+                  display: 'flex',
+                  width: 4,
+                  height: 4,
+                  borderRadius: '50%',
+                  backgroundColor: 'var(--ant-color-text-secondary)',
+                  margin: '0 8px'
+                }}
+              ></span>
+              <span className="text-tertiary">4C / 16GB</span>
+            </Flex>
+          </AutoTooltip>
+        )
       },
       {
         title: intl.formatMessage({ id: 'common.table.createTime' }),

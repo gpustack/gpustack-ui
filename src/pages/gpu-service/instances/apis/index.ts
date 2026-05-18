@@ -37,6 +37,14 @@ export const GPU_SERVICE_INSTANCES_EVENTS_API = (params: {
   return `/clusters/${params.clusterID}/proxy/apis/worker.gpustack.ai/v1/namespaces/${params.namespace}/instances/${params.name}/events`;
 };
 
+export const GPU_SERVICE_INSTANCE_PV_EVENTS_API = (params: {
+  namespace: string;
+  name: string;
+  clusterID?: number;
+}) => {
+  return `/clusters/${params.clusterID}/proxy/apis/worker.gpustack.ai/v1/namespaces/${params.namespace}/instancepersistentvolumes/${params.name}/events`;
+};
+
 // =========== Instances ===========
 
 export async function queryGPUServiceInstances(

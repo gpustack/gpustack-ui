@@ -279,7 +279,8 @@ const AddModal: React.FC<AddModalProps> = ({
           preserve={false}
           initialValues={{
             allowed_type: 'all',
-            scope: ['inference']
+            scope: ['inference'],
+            allowed_model_names: []
           }}
         >
           {!showKey && (

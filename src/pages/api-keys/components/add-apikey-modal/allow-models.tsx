@@ -131,11 +131,11 @@ const AllowModelsForm: React.FC<{
                   id: 'common.filter.name'
                 })}
                 options={modelList}
-                selectedKeys={allowedModelNames || []}
+                value={allowedModelNames || []}
                 notFoundContent={intl.formatMessage({
                   id: 'apikeys.models.noModelsFound'
                 })}
-                onSelectChange={(selectedKeys) => {
+                onChange={(selectedKeys) => {
                   form.setFieldsValue({ allowed_model_names: selectedKeys });
                   onValuesChange?.(
                     { allowed_model_names: selectedKeys },

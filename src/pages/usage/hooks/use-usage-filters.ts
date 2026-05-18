@@ -12,6 +12,9 @@ const DefaultDateConfig = {
 type UserOptionType = UsageFilterItem & {
   value: string;
 };
+type RouteOptionType = UsageFilterItem & {
+  value: string;
+};
 type ValueType = string | number | null;
 
 type FilterOptionType = Omit<UsageFilterItem, 'label' | 'deleted'>;
@@ -23,6 +26,7 @@ interface UseUsageFiltersParams {
     models?: GroupOptionType[];
     users?: UserOptionType[];
     api_keys?: GroupOptionType[];
+    routes?: RouteOptionType[];
   };
   chartFilters: {
     metric: string;
@@ -30,7 +34,7 @@ interface UseUsageFiltersParams {
     granularity: string;
   };
   initialState?: {
-    activeModels?: ValueType[][];
+    activeRoutes?: string[];
     activeApiKeys?: ValueType[][];
     users?: string[];
     start_date?: string;
@@ -45,13 +49,13 @@ interface UseUsageFiltersParams {
   onFetchData?: (params: {
     chartFilters: UseUsageFiltersParams['chartFilters'];
     filters: {
-      models?: FilterOptionType[];
+      routes?: FilterOptionType[];
       users?: FilterOptionType[];
       api_keys?: FilterOptionType[];
     };
     commonFilters: {
       scope: string;
-      models: string[];
+      routes: string[];
       users: string[];
       api_keys: string[];
       start_date: string;
@@ -70,7 +74,7 @@ export const useUsageFilters = ({
   onFetchData
 }: UseUsageFiltersParams) => {
   const {
-    activeModels: initialActiveModels = [],
+    activeRoutes: initialActiveRoutes = [],
     activeApiKeys: initialActiveApiKeys = [],
     users: initialUsers = [],
     start_date = '',
@@ -93,7 +97,7 @@ export const useUsageFilters = ({
 
   const [commonFilters, setCommonFilters] = useState({
     scope: initialScope,
-    models: extractSelectedValues(initialActiveModels),
+    routes: initialActiveRoutes,
     users: initialUsers || [],
     api_keys: extractSelectedValues(initialActiveApiKeys),
     start_date:
@@ -104,11 +108,9 @@ export const useUsageFilters = ({
     end_date: end_date || dayjs().format('YYYY-MM-DD')
   });
 
-  const modelOptions = metaData?.models || [];
+  const routeOptions = metaData?.routes || [];
   const userOptions = metaData?.users || [];
   const apiKeyOptions = metaData?.api_keys || [];
-  const [activeModels, setActiveModels] =
-    useState<ValueType[][]>(initialActiveModels);
   const [activeApiKeys, setActiveApiKeys] =
     useState<ValueType[][]>(initialActiveApiKeys);
 
@@ -117,12 +119,11 @@ export const useUsageFilters = ({
       return;
     }
 
-    setActiveModels(initialActiveModels);
     setActiveApiKeys(initialActiveApiKeys);
     setCommonFilters((prev) => ({
       ...prev,
       scope: initialScope,
-      models: extractSelectedValues(initialActiveModels),
+      routes: initialActiveRoutes,
       users: initialUsers || [],
       api_keys: extractSelectedValues(initialActiveApiKeys),
       start_date:
@@ -135,7 +136,7 @@ export const useUsageFilters = ({
   }, [
     end_date,
     initialActiveApiKeys,
-    initialActiveModels,
+    initialActiveRoutes,
     initialUsers,
     initialScope,
     initialState,
@@ -144,17 +145,15 @@ export const useUsageFilters = ({
 
   const buildFilters = (selected: typeof commonFilters) => {
     const filters: {
-      models?: FilterOptionType[];
+      routes?: FilterOptionType[];
       users?: FilterOptionType[];
       api_keys?: FilterOptionType[];
     } = {};
 
-    if (selected.models.length > 0) {
-      const modelsSet = new Set(selected.models);
-      filters.models = modelOptions
-        .flatMap((group) =>
-          group.children.filter((item) => modelsSet.has(item.value))
-        )
+    if (selected.routes.length > 0) {
+      const routesSet = new Set(selected.routes);
+      filters.routes = routeOptions
+        .filter((item) => routesSet.has(item.value))
         .map((item) => ({
           identity: item.identity
         }));
@@ -184,7 +183,7 @@ export const useUsageFilters = ({
 
   const filters = useMemo(
     () => buildFilters(commonFilters),
-    [commonFilters, modelOptions, userOptions, apiKeyOptions]
+    [commonFilters, routeOptions, userOptions, apiKeyOptions]
   );
 
   const fetchData = (
@@ -233,16 +232,12 @@ export const useUsageFilters = ({
     }
   };
 
-  const handleActiveModelsChange = (value: ValueType[][]) => {
-    setActiveModels(value);
-  };
-
   const handleActiveApiKeysChange = (value: ValueType[][]) => {
     setActiveApiKeys(value);
   };
 
   const handleFilterChange = (
-    type: 'models' | 'users' | 'api_keys',
+    type: 'routes' | 'users' | 'api_keys',
     value: string[]
   ) => {
     const selectedValues: string[] = value.map((item) => {
@@ -267,7 +262,7 @@ export const useUsageFilters = ({
     const items = timeSeriesData?.items || [];
     const groupDim = chartFilters.group_by as
       | 'user'
-      | 'model'
+      | 'route'
       | 'api_key'
       | null;
     const metric = chartFilters.metric as keyof BreakdownItem;
@@ -327,20 +322,18 @@ export const useUsageFilters = ({
     scope: commonFilters.scope,
     startDate: commonFilters.start_date,
     endDate: commonFilters.end_date,
-    selectedModels: commonFilters.models,
+    selectedRoutes: commonFilters.routes,
     selectedUsers: commonFilters.users,
     selectedApiKeys: commonFilters.api_keys,
-    modelOptions,
+    routeOptions,
     userOptions,
     apiKeyOptions,
     activeApiKeys,
-    activeModels,
     handleSearch,
-    handleActiveModelsChange,
     handleActiveApiKeysChange,
     onScopeChange: handleScopeChange,
     onDateChange: handleDateChange,
-    onModelsChange: (value: string[]) => handleFilterChange('models', value),
+    onRoutesChange: (value: string[]) => handleFilterChange('routes', value),
     onUsersChange: (value: string[]) => handleFilterChange('users', value),
     onApiKeysChange: (value: string[]) => handleFilterChange('api_keys', value),
     onExportChart: handleOnExportChart

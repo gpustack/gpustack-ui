@@ -34,7 +34,7 @@ export async function queryUsageTimeSeriesData(
     perPage?: number;
     sort_by?: string;
     filters: {
-      models?: FilterOptionType[];
+      routes?: FilterOptionType[];
       users?: FilterOptionType[];
       api_keys?: FilterOptionType[];
     };
@@ -51,7 +51,7 @@ export async function queryUsageTimeSeriesData(
 export async function queryUsageBreakdownList(
   params: Global.SearchParams & {
     filters: {
-      models?: FilterOptionType[];
+      routes?: FilterOptionType[];
       users?: FilterOptionType[];
       api_keys?: FilterOptionType[];
     };

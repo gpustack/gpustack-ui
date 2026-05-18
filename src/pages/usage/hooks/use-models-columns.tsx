@@ -1,14 +1,9 @@
 // columns.ts
-import ProviderLogo from '@/pages/maas-provider/components/provider-logo';
 import { AutoTooltip } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Tag } from 'antd';
 import { useMemo } from 'react';
 import { BreakdownItem as ListItem } from '../config/types';
-
-interface ColumnsHookProps {
-  sortOrder: string[];
-}
 
 const useModelsColumns = (): Array<{
   title: string;
@@ -21,8 +16,8 @@ const useModelsColumns = (): Array<{
     return [
       {
         title: intl.formatMessage({ id: 'common.table.name' }),
-        dataIndex: ['model', 'identity', 'value', 'model_name'],
-        key: 'model_name',
+        dataIndex: ['route', 'label'],
+        key: 'route_name',
         render: (text: string, record: ListItem) => (
           <span className="flex items-center">
             <AutoTooltip
@@ -32,7 +27,7 @@ const useModelsColumns = (): Array<{
             >
               <span className="text-primary">{text}</span>
             </AutoTooltip>
-            {record.model?.deleted && (
+            {record.route?.deleted && (
               <Tag
                 style={{
                   marginLeft: 8,
@@ -46,28 +41,6 @@ const useModelsColumns = (): Array<{
                 {intl.formatMessage({ id: 'usage.table.deleted' })}
               </Tag>
             )}
-          </span>
-        )
-      },
-      {
-        title: intl.formatMessage({ id: 'usage.table.cluster' }),
-        dataIndex: ['model', 'identity', 'value', 'cluster_name'],
-        key: 'cluster_name',
-        render: (text: string, record: ListItem) => (
-          <AutoTooltip ghost>{text || '-'}</AutoTooltip>
-        )
-      },
-      {
-        title: intl.formatMessage({ id: 'usage.table.provider' }),
-        dataIndex: ['model', 'identity', 'value', 'provider_type'],
-        key: 'provider_type',
-        render: (text: string, record: ListItem) => (
-          <span className="flex-center gap-8">
-            <ProviderLogo provider={text || 'deployments'} />
-            <AutoTooltip ghost style={{ maxWidth: 400 }}>
-              {text ||
-                (!text && intl.formatMessage({ id: 'menu.models.deployment' }))}
-            </AutoTooltip>
           </span>
         )
       },

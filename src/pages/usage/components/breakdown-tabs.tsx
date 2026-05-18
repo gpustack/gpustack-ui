@@ -1,14 +1,12 @@
 import { useIntl } from '@umijs/max';
 import { Tabs } from 'antd';
 import React, { useMemo } from 'react';
-import { GroupOption } from '../config';
 import { UsageFilterItem } from '../config/types';
 import ApiKeysTable from '../tables/apikeys-table';
 import ModelsTable from '../tables/models-table';
 import UsersTable from '../tables/users-table';
 
 type FilterOptionType = Omit<UsageFilterItem, 'label' | 'deleted'>;
-type GroupOptionType = GroupOption<UsageFilterItem>;
 const EMPTY_FILTERS: FilterOptionType[] = [];
 
 const BreakdownTabs: React.FC<{
@@ -20,13 +18,13 @@ const BreakdownTabs: React.FC<{
   pageResetKey?: number;
   refreshKey?: number;
   filters: {
-    models?: FilterOptionType[];
+    routes?: FilterOptionType[];
     users?: FilterOptionType[];
     api_keys?: FilterOptionType[];
   };
 }> = ({ filters, dateRange, scope, pageResetKey = 0, refreshKey = 0 }) => {
   const intl = useIntl();
-  const models = filters.models || EMPTY_FILTERS;
+  const routes = filters.routes || EMPTY_FILTERS;
   const users = filters.users || EMPTY_FILTERS;
   const apiKeys = filters.api_keys || EMPTY_FILTERS;
 
@@ -39,7 +37,7 @@ const BreakdownTabs: React.FC<{
         children: (
           <ModelsTable
             key="models"
-            models={models}
+            routes={routes}
             dateRange={dateRange}
             scope={scope}
             pageResetKey={pageResetKey}
@@ -83,7 +81,7 @@ const BreakdownTabs: React.FC<{
       }
       return true;
     });
-  }, [apiKeys, dateRange, models, pageResetKey, refreshKey, scope, users]);
+  }, [apiKeys, dateRange, routes, pageResetKey, refreshKey, scope, users]);
 
   return (
     <div style={{ marginTop: 16 }}>

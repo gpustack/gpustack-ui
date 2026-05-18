@@ -31,7 +31,7 @@ export const useQueryBreakdownList = (options?: {
     ListItem,
     Global.SearchParams & {
       filters: {
-        models?: FilterOptionType[];
+        routes?: FilterOptionType[];
         users?: FilterOptionType[];
         api_keys?: FilterOptionType[];
       };
@@ -46,7 +46,7 @@ export const useQueryBreakdownList = (options?: {
   const fetchListData = async (
     params: Global.SearchParams & {
       filters: {
-        models?: FilterOptionType[];
+        routes?: FilterOptionType[];
         users?: FilterOptionType[];
         api_keys?: FilterOptionType[];
       };

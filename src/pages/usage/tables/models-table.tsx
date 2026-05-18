@@ -6,17 +6,17 @@ import { Table } from 'antd';
 import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
 import { BreakdownItem, FilterOptionType } from '../config/types';
-import useUsersColumns from '../hooks/use-models-columns';
+import useModelsColumns from '../hooks/use-models-columns';
 import useQueryBreakdownList from '../services/use-query-breakdown-list';
 import getBreakdownRowKey from '../utils/get-breakdown-row-key';
 
 const Models: React.FC<{
-  models: FilterOptionType[];
+  routes: FilterOptionType[];
   dateRange: { start_date: string; end_date: string };
   scope: string;
   pageResetKey?: number;
   refreshKey?: number;
-}> = ({ models, dateRange, scope, pageResetKey = 0, refreshKey = 0 }) => {
+}> = ({ routes, dateRange, scope, pageResetKey = 0, refreshKey = 0 }) => {
   const intl = useIntl();
 
   const { loading, dataSource, fetchData } = useQueryBreakdownList({
@@ -51,7 +51,7 @@ const Models: React.FC<{
     }));
   };
 
-  const columns = useUsersColumns();
+  const columns = useModelsColumns();
 
   useEffect(() => {
     if (queryParams.page !== 1) {
@@ -89,9 +89,9 @@ const Models: React.FC<{
 
     fetchData({
       ...queryParams,
-      group_by: ['model'],
+      group_by: ['route'],
       filters: {
-        models
+        routes
       },
       scope: scope,
       ...dateRange
@@ -99,7 +99,7 @@ const Models: React.FC<{
   }, [
     dateRange.end_date,
     dateRange.start_date,
-    models,
+    routes,
     queryParams.page,
     queryParams.perPage,
     queryParams.sort_by,

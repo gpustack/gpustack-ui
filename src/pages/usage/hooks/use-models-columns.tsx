@@ -81,7 +81,11 @@ const useModelsColumns = (): Array<{
         )
       },
       {
-        title: intl.formatMessage({ id: 'usage.table.inputTokensCached' }),
+        title: (
+          <AutoTooltip ghost>
+            {intl.formatMessage({ id: 'usage.table.inputTokensCached' })}
+          </AutoTooltip>
+        ),
         dataIndex: 'input_cached_tokens',
         key: 'input_cached_tokens',
         sorter: true,

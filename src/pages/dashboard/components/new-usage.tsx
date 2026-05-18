@@ -1,4 +1,3 @@
-import useQueryBreakdownList from '@/pages/usage/services/use-query-breakdown-list';
 import useQueryTimeSeriesData from '@/pages/usage/services/use-query-timeseries-data';
 import { PageTools } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
@@ -6,7 +5,13 @@ import { Col, Row } from 'antd';
 import dayjs from 'dayjs';
 import { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
-import { DashboardUsageCommonParams } from '../config';
+import {
+  DashboardUsageCommonParams,
+  getUsageRankHeight,
+  getUsageRankSlotCount
+} from '../config';
+import useTopTokenUsageByApiKey from '../hooks/use-top-token-usage-by-api-key';
+import useTopTokenUsageByUser from '../hooks/use-top-token-usage-by-user';
 import ApiRequestsByModel from './usage-charts/api-requests-by-model';
 import TokenUsageByModel from './usage-charts/token-usage-by-model';
 import TopTokenUsageByApiKey from './usage-charts/top-token-usage-by-api-key';
@@ -20,9 +25,6 @@ const NewUsage = () => {
   const intl = useIntl();
   const tokenByModelQuery = useQueryTimeSeriesData({
     key: 'tokenUsageByModelData'
-  });
-  const activeUsersQuery = useQueryBreakdownList({
-    key: 'dashboardActiveUsersData'
   });
 
   const dateRange = useMemo(
@@ -58,6 +60,23 @@ const NewUsage = () => {
     fetchData().catch(() => {});
   }, [commonParams, dateRange]);
 
+  const userUsage = useTopTokenUsageByUser(commonParams);
+  const apiKeyUsage = useTopTokenUsageByApiKey(commonParams);
+
+  const userCount = userUsage.rankData.names.length;
+  const apiKeyCount = apiKeyUsage.rankData.names.length;
+
+  const rankHeight = Math.max(
+    getUsageRankHeight(userCount),
+    getUsageRankHeight(apiKeyCount)
+  );
+
+  const rankMaxItems = Math.max(
+    getUsageRankSlotCount(rankHeight),
+    userCount,
+    apiKeyCount
+  );
+
   return (
     <>
       <PageTools
@@ -84,10 +103,20 @@ const NewUsage = () => {
       <Section>
         <Row gutter={[20, 20]}>
           <Col xs={24} sm={24} md={24} lg={12}>
-            <TopTokenUsageByUser commonParams={commonParams} height={460} />
+            <TopTokenUsageByUser
+              rankData={userUsage.rankData}
+              loading={userUsage.loading}
+              height={rankHeight}
+              maxItems={rankMaxItems}
+            />
           </Col>
           <Col xs={24} sm={24} md={24} lg={12}>
-            <TopTokenUsageByApiKey commonParams={commonParams} height={460} />
+            <TopTokenUsageByApiKey
+              rankData={apiKeyUsage.rankData}
+              loading={apiKeyUsage.loading}
+              height={rankHeight}
+              maxItems={rankMaxItems}
+            />
           </Col>
         </Row>
       </Section>

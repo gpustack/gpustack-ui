@@ -70,7 +70,7 @@ export const GPUsConfigs: Record<
   [GPUDriverMap.HYGON]: {
     label: 'Hygon',
     value: GPUDriverMap.HYGON,
-    runtime: '', // TODO: confirm runtime name
+    runtime: 'hygon', // TODO: confirm runtime name
     driver: 'hy-smi',
     gpuVendor: 'hygon'
   },
@@ -105,7 +105,7 @@ export const GPUsConfigs: Record<
   [GPUDriverMap.THEAD]: {
     label: 'T-Head PPU',
     value: GPUDriverMap.THEAD,
-    runtime: '', // TODO: confirm runtime name
+    runtime: 'thead', // TODO: confirm runtime name
     driver: 'ppu-smi',
     gpuVendor: 'thead'
   }

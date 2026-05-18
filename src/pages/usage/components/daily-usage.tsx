@@ -1,7 +1,7 @@
 import useCoolColors from '@/hooks/use-cool-colors';
 import BarChart from '@/pages/_components/bar-chart';
 import { BaseSelect, CardWrapper } from '@gpustack/core-ui';
-import { useIntl } from '@umijs/max';
+import { useIntl, useModel } from '@umijs/max';
 import { Segmented } from 'antd';
 import dayjs from 'dayjs';
 import React, { useMemo } from 'react';
@@ -80,6 +80,8 @@ const DailyUsage: React.FC<DailyUsageProps> = (props) => {
     onGranularityChange
   } = props;
   const generateCoolColors = useCoolColors();
+  const { initialState } = useModel('@@initialState');
+  const { currentUser } = initialState || {};
 
   const labelFormatter = (v: any) => {
     if (granularity === 'month') {
@@ -245,6 +247,18 @@ const DailyUsage: React.FC<DailyUsageProps> = (props) => {
     onGroupByChange(value || null);
   };
 
+  const groupByOptionsFiltered = groupByOptions
+    .map((item) => ({
+      label: intl.formatMessage({ id: item.label }),
+      value: item.value
+    }))
+    .filter((option) => {
+      if (currentUser?.is_admin) {
+        return true;
+      }
+      return option.value !== 'user';
+    });
+
   return (
     <div>
       <CardWrapper style={{ width: '100%', marginTop: 20 }}>
@@ -275,10 +289,7 @@ const DailyUsage: React.FC<DailyUsageProps> = (props) => {
                   {intl.formatMessage({ id: 'usage.filter.groupBy' })}
                 </ControlLabel>
               }
-              options={groupByOptions.map((item) => ({
-                label: intl.formatMessage({ id: item.label }),
-                value: item.value
-              }))}
+              options={groupByOptionsFiltered}
               value={groupBy}
               popupMatchSelectWidth={false}
               onChange={handleOnGroupByChange}

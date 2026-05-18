@@ -4,7 +4,7 @@ import {
   LockOutlined,
   UserOutlined
 } from '@ant-design/icons';
-import { Input as CInput, HighlightCode } from '@gpustack/core-ui';
+import { Input as CInput, HighlightCode, IconFont } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Checkbox, Divider, Form, FormInstance } from 'antd';
 import { createStyles } from 'antd-style';
@@ -149,6 +149,7 @@ const LocalUserForm: React.FC<LocalUserFormProps> = (props) => {
         type="primary"
         block
         loading={props.loading}
+        icon={<IconFont type="icon-login" />}
         style={{ height: '48px', fontSize: '14px' }}
       >
         {intl.formatMessage({ id: 'common.button.login' })}

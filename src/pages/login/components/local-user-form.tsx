@@ -75,7 +75,10 @@ const LocalUserForm: React.FC<LocalUserFormProps> = (props) => {
   return (
     <Form
       form={form}
-      style={{ width: '360px', margin: '0 auto' }}
+      // Same shape Buttons uses: 360px design width, capped at the
+      // parent's inner width so the form doesn't overflow on the
+      // enterprise cover layout (272px inner).
+      style={{ width: '360px', maxWidth: '100%', margin: '0 auto' }}
       onFinish={handleLogin}
     >
       <Form.Item

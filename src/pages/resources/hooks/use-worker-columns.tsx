@@ -291,7 +291,7 @@ const useWorkerColumns = ({
       }
 
       if (action.key === 'metrics') {
-        return systemConfig.showMonitoring;
+        return systemConfig?.showMonitoring;
       }
       return true;
     });

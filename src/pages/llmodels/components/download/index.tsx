@@ -190,6 +190,7 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
                   onCollapse={setCollapsed}
                   collapsed={collapsed}
                   modelSource={props.source}
+                  isGGUF={isGGUF}
                   setIsGGUF={handleSetIsGGUF}
                 ></ModelCard>
                 {isGGUF && (

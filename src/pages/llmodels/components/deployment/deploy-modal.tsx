@@ -104,6 +104,7 @@ const AddModal: FC<AddModalProps> = (props) => {
     width = 600,
     deploymentType = 'modelList',
     initialValues,
+    isGGUF: isGGUFProp,
     clusterList
   } = props || {};
   const SEARCH_SOURCE = [
@@ -543,6 +544,7 @@ const AddModal: FC<AddModalProps> = (props) => {
 
   useEffect(() => {
     if (open) {
+      setIsGGUF(isGGUFProp || false);
       handleOnOpen();
     } else {
       cancelEvaluate();
@@ -556,7 +558,7 @@ const AddModal: FC<AddModalProps> = (props) => {
         message: []
       });
     };
-  }, [open, clusterList, initialValues?.cluster_id]);
+  }, [open, clusterList, initialValues?.cluster_id, isGGUFProp]);
 
   return (
     <GSDrawer

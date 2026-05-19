@@ -55,6 +55,7 @@ const TTSAdvanceConfig: React.FC = () => {
       ref_audio: base64
     });
     setFileName(file.name);
+    form.validateFields(['ref_audio']);
 
     onValuesChange?.(
       { ref_audio: base64 },
@@ -67,6 +68,7 @@ const TTSAdvanceConfig: React.FC = () => {
       ref_audio: ''
     });
     setFileName('');
+    form.validateFields(['ref_audio']);
     onValuesChange?.(
       { ref_audio: '' },
       { ...form.getFieldsValue(), ref_audio: '' }
@@ -137,9 +139,17 @@ const TTSAdvanceConfig: React.FC = () => {
           name="ref_audio"
           getValueProps={(value) => ({ value: fileName ? fileName : value })}
           dependencies={['task_type']}
+          rules={[
+            {
+              required: taskType === 'Base',
+              whitespace: true,
+              message: getRuleMessage('input', 'playground.params.refAudio')
+            }
+          ]}
         >
           <CInput.Input
             allowClear
+            required={taskType === 'Base'}
             readOnly={!!fileName}
             suffix={
               <SuffixWrapper>
@@ -163,12 +173,7 @@ const TTSAdvanceConfig: React.FC = () => {
           ></CInput.Input>
         </Form.Item>
       </Container>
-      <Form.Item
-        name="ref_text"
-        style={{ marginBottom: 12 }}
-        dependencies={['task_type', 'x_vector_only_mode']}
-        rules={[atLeastOneValidator('x_vector_only_mode')]}
-      >
+      <Form.Item name="ref_text" style={{ marginBottom: 12 }}>
         <CInput.TextArea
           allowClear
           scaleSize={true}

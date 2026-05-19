@@ -1,0 +1,305 @@
+import useCoolColors from '@/hooks/use-cool-colors';
+import useQueryTimeSeriesData from '@/pages/usage/services/use-query-timeseries-data';
+import { Chart } from '@gpustack/core-ui';
+import { formatLargeNumber } from '@gpustack/core-ui/utils';
+import { useIntl } from '@umijs/max';
+import type { GlobalToken } from 'antd';
+import { Empty, Spin, theme } from 'antd';
+import { useEffect, useMemo } from 'react';
+import {
+  DashboardUsageCommonParams,
+  getUsageSummary,
+  toUsagePieData,
+  UsageChartDatum,
+  usageChartHeight
+} from '../../config';
+import UsageChartCard from './shared';
+
+const HTML_ESCAPES: Record<string, string> = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#39;'
+};
+
+// Tooltip strings come from route names (user-controlled via the API) and
+// translated metric labels, so they must be escaped before being interpolated
+// into raw HTML for ECharts' tooltip formatter.
+const escapeHtml = (value: unknown): string =>
+  String(value ?? '').replace(/[&<>"']/g, (c) => HTML_ESCAPES[c] ?? c);
+
+interface UsageByModelProps {
+  commonParams: DashboardUsageCommonParams;
+  height?: number;
+}
+
+const UsageByModel: React.FC<UsageByModelProps> = ({
+  commonParams,
+  height = usageChartHeight
+}) => {
+  const intl = useIntl();
+  const { token } = theme.useToken();
+  const generateCoolColors = useCoolColors();
+
+  const tokenQuery = useQueryTimeSeriesData({ key: 'tokenUsageByModelData' });
+  const apiQuery = useQueryTimeSeriesData({ key: 'apiRequestsByModelData' });
+
+  useEffect(() => {
+    tokenQuery
+      .fetchData({
+        ...commonParams,
+        metric: 'total_tokens',
+        group_by: ['date', 'route'],
+        page: 1,
+        perPage: 10,
+        sort_by: '-total_tokens'
+      })
+      .catch(() => {});
+    apiQuery
+      .fetchData({
+        ...commonParams,
+        metric: 'api_requests',
+        group_by: ['date', 'route'],
+        page: 1,
+        perPage: 10,
+        sort_by: '-api_requests'
+      })
+      .catch(() => {});
+  }, [commonParams]);
+
+  const tokenData = useMemo<UsageChartDatum[]>(
+    () => toUsagePieData(tokenQuery.detailData, 'route', 'total_tokens'),
+    [tokenQuery.detailData]
+  );
+  const apiData = useMemo<UsageChartDatum[]>(
+    () => toUsagePieData(apiQuery.detailData, 'route', 'api_requests'),
+    [apiQuery.detailData]
+  );
+
+  const tokenTotal = useMemo(() => {
+    const summary = getUsageSummary(tokenQuery.detailData);
+    return Number(summary?.total_tokens ?? 0);
+  }, [tokenQuery.detailData]);
+
+  const apiTotal = useMemo(() => {
+    const summary = getUsageSummary(apiQuery.detailData);
+    return Number(summary?.api_requests ?? 0);
+  }, [apiQuery.detailData]);
+
+  // Build a shared name->color map so legend toggles both donuts and
+  // matching slices read the same color across the pair.
+  const { legendNames, colorMap } = useMemo(() => {
+    const names: string[] = [];
+    const seen = new Set<string>();
+    [...tokenData, ...apiData].forEach((d) => {
+      if (!seen.has(d.name)) {
+        seen.add(d.name);
+        names.push(d.name);
+      }
+    });
+    const colors = generateCoolColors(names.length);
+    const map: Record<string, string> = {};
+    names.forEach((name, i) => {
+      map[name] = colors[i];
+    });
+    return { legendNames: names, colorMap: map };
+  }, [tokenData, apiData, generateCoolColors]);
+
+  const tokenLabel = intl.formatMessage({ id: 'usage.filter.totalTokens' });
+  const apiLabel = intl.formatMessage({ id: 'usage.filter.apiRequests' });
+
+  const isEmpty = tokenData.length === 0 && apiData.length === 0;
+  const isLoading = tokenQuery.loading || apiQuery.loading;
+
+  const options = useMemo(() => {
+    const paintData = (rows: UsageChartDatum[]) =>
+      rows.map((row) => ({
+        name: row.name,
+        value: row.value,
+        itemStyle: { color: colorMap[row.name] }
+      }));
+
+    return {
+      tooltip: {
+        trigger: 'item',
+        backgroundColor: token.colorBgElevated,
+        borderColor: 'transparent',
+        formatter: (params: any) => {
+          const seriesName = escapeHtml(params.seriesName);
+          const name = escapeHtml(params.name);
+          const value = escapeHtml(formatLargeNumber(params.value));
+          return `<div class="tooltip-wrapper">
+            <span class="tooltip-item">
+              <span class="tooltip-item-name">
+                ${params.marker}
+                <span class="tooltip-item-title">${seriesName} · ${name}</span>:
+              </span>
+              <span class="tooltip-value">${value}</span>
+            </span>
+          </div>`;
+        }
+      },
+      legend: {
+        type: 'scroll',
+        orient: 'vertical',
+        right: 0,
+        top: 18,
+        bottom: 18,
+        itemWidth: 8,
+        itemHeight: 8,
+        itemGap: 12,
+        textStyle: {
+          color: token.colorTextTertiary,
+          overflow: 'truncate',
+          width: 140
+        },
+        pageTextStyle: { color: token.colorTextTertiary },
+        pageIconColor: token.colorTextTertiary,
+        pageIconInactiveColor: token.colorTextDisabled,
+        data: legendNames,
+        show: legendNames.length > 0
+      },
+      series: [
+        {
+          name: tokenLabel,
+          type: 'pie',
+          radius: ['50%', '70%'],
+          center: ['20%', '50%'],
+          avoidLabelOverlap: true,
+          label: { show: false },
+          labelLine: { show: false },
+          emphasis: {
+            label: {
+              show: true,
+              formatter: (params: any) => `${params.percent}%`,
+              fontSize: 14,
+              fontWeight: 600,
+              color: token.colorText
+            }
+          },
+          data: paintData(tokenData)
+        },
+        {
+          name: apiLabel,
+          type: 'pie',
+          radius: ['50%', '70%'],
+          center: ['60%', '50%'],
+          avoidLabelOverlap: true,
+          label: { show: false },
+          labelLine: { show: false },
+          emphasis: {
+            label: {
+              show: true,
+              formatter: (params: any) => `${params.percent}%`,
+              fontSize: 14,
+              fontWeight: 600,
+              color: token.colorText
+            }
+          },
+          data: paintData(apiData)
+        }
+      ]
+    };
+  }, [tokenData, apiData, colorMap, legendNames, token, tokenLabel, apiLabel]);
+
+  return (
+    <UsageChartCard
+      title={intl.formatMessage({ id: 'dashboard.usageByModel' })}
+      height={height + 52}
+    >
+      <div style={{ position: 'relative', width: '100%', height }}>
+        {isEmpty && !isLoading ? (
+          <div
+            style={{
+              height,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+          </div>
+        ) : (
+          <>
+            <Chart options={options as any} height={height} width="100%" />
+            <DonutCenter
+              left="20%"
+              top="50%"
+              total={tokenTotal}
+              label={tokenLabel}
+              token={token}
+            />
+            <DonutCenter
+              left="60%"
+              top="50%"
+              total={apiTotal}
+              label={apiLabel}
+              token={token}
+            />
+            {isLoading && (
+              <div
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: token.colorBgContainer,
+                  opacity: 0.6,
+                  pointerEvents: 'none'
+                }}
+              >
+                <Spin size="middle" />
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </UsageChartCard>
+  );
+};
+
+const DonutCenter: React.FC<{
+  left: string;
+  top: string;
+  total: number;
+  label: string;
+  token: GlobalToken;
+}> = ({ left, top, total, label, token }) => (
+  <div
+    style={{
+      position: 'absolute',
+      left,
+      top,
+      transform: 'translate(-50%, -50%)',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      pointerEvents: 'none',
+      textAlign: 'center'
+    }}
+  >
+    <span
+      style={{
+        fontSize: 18,
+        fontWeight: 600,
+        color: token.colorText,
+        lineHeight: 1.2
+      }}
+    >
+      {formatLargeNumber(total)}
+    </span>
+    <span
+      style={{
+        fontSize: 12,
+        color: token.colorTextTertiary,
+        marginTop: 4
+      }}
+    >
+      {label}
+    </span>
+  </div>
+);
+
+export default UsageByModel;

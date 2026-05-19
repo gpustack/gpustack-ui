@@ -14,11 +14,8 @@ export default {
   'dashboard.tokens': 'Token Kullanımı',
   'dashboard.topusers': 'En Aktif Kullanıcılar',
   'dashboard.activeDeployments': 'Active Deployments',
-  'dashboard.tokenUsageByModel': 'Modele Göre Token Kullanımı',
-  'dashboard.apiRequestsByModel': 'Modele Göre API İstekleri',
+  'dashboard.usageByModel': 'Modele Göre Kullanım',
   'dashboard.topTokenUsageByUser': 'Kullanıcıya Göre İlk 10 Token Kullanımı',
-  'dashboard.topTokenUsageByApiKey':
-    'API Anahtarına Göre İlk 10 Token Kullanımı',
   'dashboard.allocatevram': 'Ayrılan VRAM / RAM',
   'dashboard.usage.selectuser': 'Kullanıcı seçin',
   'dashboard.usage.selectmodel': 'Model seçin',

@@ -11,6 +11,8 @@ export default {
   'dashboard.vramutilization': '平均显存利用率',
   'dashboard.gpuutilization': '平均 GPU 利用率',
   'dashboard.usage': '使用量',
+  'dashboard.usage.title': '最近 {days} 天使用量',
+  'dashboard.usage.others': '其他',
   'dashboard.tokens': 'Token 使用量',
   'dashboard.topusers': '用户排行',
   'dashboard.activeDeployments': '活跃部署',

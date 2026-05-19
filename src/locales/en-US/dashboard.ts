@@ -11,6 +11,8 @@ export default {
   'dashboard.vramutilization': 'Average VRAM Utilization',
   'dashboard.gpuutilization': 'Average GPU Utilization',
   'dashboard.usage': 'Usage',
+  'dashboard.usage.title': 'Last {days} days usage',
+  'dashboard.usage.others': 'Others',
   'dashboard.tokens': 'Token Usage',
   'dashboard.topusers': 'Top Users',
   'dashboard.activeDeployments': 'Active Deployments',

@@ -2,7 +2,7 @@ import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import NumberSelection from '@/pages/_components/number-selection';
 import { useIntl } from '@umijs/max';
-import { Form } from 'antd';
+import { Alert, Form } from 'antd';
 import { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import InstanceTypeItem from '../components/instance-type-item';
@@ -118,17 +118,12 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
           <InstanceTypePicker dataList={dataList} value={typeName} />
         </Form.Item>
       </FieldBlock>
-      {selectedInstanceType?.spec?.acceleratable && (
+      {!selectedInstanceType?.spec?.acceleratable && (
         <Form.Item
           name={['spec', 'resources', 'accelerator']}
           rules={[
             {
               required: true,
-              message: intl.formatMessage({
-                id: 'gpuservice.instance.gpuCount.required'
-              })
-            },
-            {
               validator: (_, value) => {
                 if (value > maxGpuCount) {
                   return Promise.reject(
@@ -143,9 +138,14 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
                 if (value < 1) {
                   return Promise.reject(
                     new Error(
-                      intl.formatMessage({
-                        id: 'gpuservice.instance.gpuCount.min'
-                      })
+                      intl.formatMessage(
+                        {
+                          id: 'gpuservice.instance.gpuCount.min'
+                        },
+                        {
+                          count: 1
+                        }
+                      )
                     )
                   );
                 }
@@ -160,6 +160,23 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
             step={1}
             required
             disabled={disabled || action === PageAction.EDIT}
+            labelExtra={
+              !maxGpuCount && (
+                <Alert
+                  showIcon
+                  type="warning"
+                  title={intl.formatMessage({
+                    id: 'gpuservice.instance.gpuCount.noAvailable'
+                  })}
+                  styles={{
+                    root: {
+                      marginLeft: 4,
+                      paddingBlock: 0
+                    }
+                  }}
+                ></Alert>
+              )
+            }
             label={intl.formatMessage({ id: 'gpuservice.instance.gpuCount' })}
           />
         </Form.Item>

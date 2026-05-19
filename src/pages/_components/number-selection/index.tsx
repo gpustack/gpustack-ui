@@ -1,6 +1,6 @@
 import { LabelInfo } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { InputNumber } from 'antd';
+import { Flex, InputNumber } from 'antd';
 import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
 import styles from './styles.less';
@@ -19,6 +19,7 @@ interface NumberSelectionProps {
   styles?: {
     input?: React.CSSProperties;
   };
+  labelExtra?: React.ReactNode;
   onChange?: (value: number) => void;
 }
 
@@ -33,6 +34,7 @@ const NumberSelection: React.FC<NumberSelectionProps> = ({
   disabled,
   label,
   required,
+  labelExtra,
   className,
   style,
   onChange
@@ -93,70 +95,77 @@ const NumberSelection: React.FC<NumberSelectionProps> = ({
     >
       {label !== undefined && label !== null && (
         <div className={styles.label}>
-          <LabelInfo label={label} required={required}></LabelInfo>
+          <LabelInfo
+            label={label}
+            required={required}
+            labelExtra={labelExtra}
+          ></LabelInfo>
         </div>
       )}
-      <div className={styles.content}>
-        {items.map((num) => {
-          return (
+      <Flex className={styles.contentWrapper} align="center">
+        <div className={styles.content}>
+          {items.map((num) => {
+            return (
+              <div
+                key={num}
+                role="radio"
+                aria-checked={num === value}
+                aria-disabled={disabled}
+                tabIndex={disabled ? -1 : 0}
+                className={classNames(styles.numberItem, {
+                  [styles.active]: num === value
+                })}
+                onClick={() => handleSelect(num)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleSelect(num);
+                  }
+                }}
+              >
+                {num}
+              </div>
+            );
+          })}
+        </div>
+        {showCustomInput && (
+          <div className={styles.inputWrapper}>
+            <div className={styles.line}></div>
             <div
-              key={num}
-              role="radio"
-              aria-checked={num === value}
-              aria-disabled={disabled}
-              tabIndex={disabled ? -1 : 0}
-              className={classNames(styles.numberItem, {
-                [styles.active]: num === value
+              className={classNames(styles.inputContainer, {
+                [styles.hasValue]: !!inputValue
               })}
-              onClick={() => handleSelect(num)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  handleSelect(num);
-                }
-              }}
             >
-              {num}
+              <InputNumber
+                controls
+                variant="borderless"
+                min={min}
+                max={max}
+                step={step}
+                disabled={disabled}
+                value={inputValue || undefined}
+                style={{
+                  fontSize: 14,
+                  width: 140,
+                  height: 32,
+                  backgroundColor: 'var(--ant-color-bg-container)',
+                  ...style
+                }}
+                styles={{
+                  input: {
+                    fontWeight: inputValue ? 500 : 400,
+                    ...(styles?.input as React.CSSProperties)
+                  }
+                }}
+                placeholder={intl.formatMessage({ id: 'common.option.other' })}
+                onChange={handleInputChange}
+                onBlur={commitInput}
+                onPressEnter={commitInput}
+              />
             </div>
-          );
-        })}
-      </div>
-      {showCustomInput && (
-        <div className={styles.inputWrapper}>
-          <div className={styles.line}></div>
-          <div
-            className={classNames(styles.inputContainer, {
-              [styles.hasValue]: !!inputValue
-            })}
-          >
-            <InputNumber
-              controls
-              variant="borderless"
-              min={min}
-              max={max}
-              step={step}
-              disabled={disabled}
-              value={inputValue || undefined}
-              style={{
-                fontSize: 14,
-                width: 140,
-                backgroundColor: 'var(--ant-color-bg-container)',
-                ...style
-              }}
-              styles={{
-                input: {
-                  fontWeight: inputValue ? 500 : 400,
-                  ...(styles?.input as React.CSSProperties)
-                }
-              }}
-              placeholder={intl.formatMessage({ id: 'common.option.other' })}
-              onChange={handleInputChange}
-              onBlur={commitInput}
-              onPressEnter={commitInput}
-            />
           </div>
-        </div>
-      )}
+        )}
+      </Flex>
     </div>
   );
 };

@@ -66,16 +66,23 @@ const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({
   const intl = useIntl();
   const name = item.metadata?.name;
   const acceleratable = item.spec?.acceleratable;
-  const product = item.spec?.product;
-  const displayName = product || (!acceleratable ? 'CPU' : name);
+
   const manufacturer = item.spec?.manufacturer?.toUpperCase();
+
+  const renderName = () => {
+    const product = item.spec?.product;
+    const displayName =
+      product ||
+      (!acceleratable ? `${item.status?.cpu?.capacity} vCPUs` : name);
+    return displayName;
+  };
 
   return (
     <>
       <Title>
         <Flex gap={8} align="center">
           <AutoTooltip ghost minWidth={20} maxWidth={180}>
-            {item.spec ? displayName : '-'}
+            {item.spec ? renderName() : '-'}
           </AutoTooltip>
           {acceleratable && manufacturer && (
             <span
@@ -165,14 +172,18 @@ const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({
               <span>{toDisplayUnit(item.status?.ram?.capacity) ?? '-'}</span>
             </Flex>
           </span>
-          <span className="dot"></span>
-          <span className="meta-item">
-            <IconFont type="icon-cpu" className="meta-icon" />
-            <Flex align="center" gap={4}>
-              <span>vCPU</span>
-              <span>{item.status?.cpu?.capacity ?? '-'}</span>
-            </Flex>
-          </span>
+          {acceleratable && (
+            <>
+              <span className="dot"></span>
+              <span className="meta-item">
+                <IconFont type="icon-cpu" className="meta-icon" />
+                <Flex align="center" gap={4}>
+                  <span>vCPU</span>
+                  <span>{item.status?.cpu?.capacity ?? '-'}</span>
+                </Flex>
+              </span>
+            </>
+          )}
         </span>
       </Meta>
     </>

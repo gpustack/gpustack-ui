@@ -2,9 +2,11 @@ import { currentClusterAtom } from '@/atoms/gpuservice';
 import { getCurrentOrgNamespace } from '@/atoms/user';
 import { PageAction } from '@/config';
 import {
+  Input as CInput,
   InputNumber as CInputNumber,
   LabelInfo,
-  Select
+  Select,
+  useAppUtils
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Flex, Form, Radio } from 'antd';
@@ -32,6 +34,7 @@ const StorageVolume = ({
   action: PageActionType;
 }) => {
   const intl = useIntl();
+  const { getRuleMessage } = useAppUtils();
   const { fetchData: createStorage } = useCreateStorage();
   const { detailData: storageData, fetchData: fetchStorage } =
     useQueryStorage();
@@ -84,7 +87,7 @@ const StorageVolume = ({
   };
 
   return (
-    <FieldBlock data-field="storage">
+    <FieldBlock>
       <Flex
         style={{
           justifyContent: 'space-between',
@@ -146,6 +149,7 @@ const StorageVolume = ({
             </Button>
           )}
       </Flex>
+      <div data-field="storage"></div>
 
       {storageMode === StorageModeValueMap.Existing && (
         <Form.Item
@@ -199,6 +203,26 @@ const StorageVolume = ({
           />
         </Form.Item>
       )}
+      <Form.Item<FormData>
+        name={['spec', 'volumeMount']}
+        rules={[
+          {
+            required: true,
+            message: getRuleMessage('input', 'gpuservice.template.mountPath')
+          }
+        ]}
+      >
+        <CInput.Input
+          required
+          label={intl.formatMessage({
+            id: 'gpuservice.template.mountPath'
+          })}
+          placeholder={intl.formatMessage({
+            id: 'clusters.volume.mountPath.format'
+          })}
+          disabled={disabled}
+        />
+      </Form.Item>
 
       <StorageOverlay
         open={overlayOpen}

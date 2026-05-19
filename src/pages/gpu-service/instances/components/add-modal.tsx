@@ -370,9 +370,11 @@ const AddModal: React.FC<AddModalProps> = ({
             }
           >
             <>
-              <ColTitle>
-                {intl.formatMessage({ id: 'common.title.config' })}
-              </ColTitle>
+              {action !== PageAction.VIEW && (
+                <ColTitle>
+                  {intl.formatMessage({ id: 'common.title.config' })}
+                </ColTitle>
+              )}
               <GPUServiceInstanceForm
                 ref={form}
                 action={action}

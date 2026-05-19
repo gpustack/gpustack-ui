@@ -225,7 +225,6 @@ export default {
   'common.text.latest': '最新',
   'common.text.new': '新規',
   'common.text.changelog': 'リリースノート',
-  'common.button.recreate': '再作成',
   'common.button.delrecreate': '削除（再作成）',
   'common.options.all': 'すべて',
   'common.options.none': 'なし',
@@ -283,7 +282,8 @@ export default {
   'common.file.format.limit': 'Invalid file format. Allowed: {formats}.',
   'common.image.limit.width': 'Image width must be {width}.',
   'common.image.limit.height': 'Image height must be {height}.',
-  'common.remaining': '残り {count}'
+  'common.remaining': '残り {count}',
+  'common.validate.group': 'Please complete the {group} configuration'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

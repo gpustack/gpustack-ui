@@ -9,6 +9,7 @@ import { Form } from 'antd';
 import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
 import { FormData, PortItem as PortItemType } from '../config/types';
+import styles from '../styles/template.less';
 
 type PortProtocol = PortItemType['protocol'];
 
@@ -115,11 +116,16 @@ const PortNameInput: React.FC<PortNameInputProps & { disabled?: boolean }> = ({
   );
 };
 
-const PortItem: React.FC<PortItemProps & { disabled?: boolean }> = ({ item, index, disabled = false, onChange }) => {
+const PortItem: React.FC<PortItemProps & { disabled?: boolean }> = ({
+  item,
+  index,
+  disabled = false,
+  onChange
+}) => {
   const intl = useIntl();
   return (
-    <div style={{ display: 'flex', gap: 12, width: '100%' }}>
-      <div style={{ width: 120 }}>
+    <div className={styles.portItem}>
+      <div className={styles.select}>
         <SealSelect
           disabled={disabled}
           value={item.protocol}
@@ -141,10 +147,9 @@ const PortItem: React.FC<PortItemProps & { disabled?: boolean }> = ({ item, inde
           style={{ width: '100%' }}
         ></SealSelect>
       </div>
-      <div style={{ width: 120 }}>
+      <div className={styles.port}>
         <CInputNumber
           min={PORT_MIN}
-          max={PORT_MAX}
           disabled={disabled}
           precision={0}
           value={item.port}
@@ -166,7 +171,7 @@ const PortItem: React.FC<PortItemProps & { disabled?: boolean }> = ({ item, inde
           style={{ width: '100%' }}
         />
       </div>
-      <div style={{ flex: 1 }}>
+      <div className={styles.name}>
         <PortNameInput
           disabled={disabled}
           value={item.name}
@@ -192,8 +197,6 @@ const Ports: React.FC<{ disabled?: boolean }> = ({ disabled = false }) => {
 
   const updatePorts = (list: PortItemType[]) => {
     form.setFieldValue(['spec', 'ports'], list);
-    // setFieldValue doesn't run validators — re-run them so users see errors live.
-    form.validateFields([['spec', 'ports']]).catch(() => {});
   };
 
   const handleAdd = () => {
@@ -231,13 +234,19 @@ const Ports: React.FC<{ disabled?: boolean }> = ({ disabled = false }) => {
 
             const items = value as PortItemType[];
 
-            if (_.some(items, (item) => !item.protocol || !item.port)) {
+            if (
+              _.some(
+                items,
+                (item: PortItemType) =>
+                  !item.protocol || !item.port || !item.name
+              )
+            ) {
               return Promise.reject(
                 new Error(
                   intl.formatMessage(
-                    { id: 'common.validate.value' },
+                    { id: 'common.validate.group' },
                     {
-                      name: intl.formatMessage({
+                      group: intl.formatMessage({
                         id: 'gpuservice.template.ports'
                       })
                     }
@@ -247,16 +256,6 @@ const Ports: React.FC<{ disabled?: boolean }> = ({ disabled = false }) => {
             }
 
             const namedItems = items.filter((item) => !!item.name);
-
-            if (_.some(namedItems, (item) => item.name!.length > PORT_NAME_MAX)) {
-              return Promise.reject(
-                new Error(
-                  intl.formatMessage({
-                    id: 'gpuservice.template.ports.name.max'
-                  })
-                )
-              );
-            }
 
             const names = namedItems.map((item) => item.name);
             if (_.uniq(names).length !== names.length) {

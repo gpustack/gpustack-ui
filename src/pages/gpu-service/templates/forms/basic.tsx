@@ -10,6 +10,7 @@ import { useIntl } from '@umijs/max';
 import { Flex, Form } from 'antd';
 import { useMemo } from 'react';
 import { GPUsConfigs } from '../../../resources/config/gpu-driver';
+import formStyles from '../../instances/styles/instances.module.less';
 import {
   ImagePullPolicyOptions,
   normalizeCommand,
@@ -154,22 +155,24 @@ const Basic: React.FC<BasicProps> = ({
           }))}
         />
       </Form.Item>
-      <Form.Item<FormData>
-        name={['spec', 'command']}
-        normalize={normalizeCommand}
-        getValueProps={(value) => ({ value: stringifyCommand(value) })}
-      >
-        <Textarea
-          disabled={disabled}
-          label={intl.formatMessage({ id: 'gpuservice.template.command' })}
-          placeholder={intl.formatMessage({
-            id: 'gpuservice.template.command.placeholder'
-          })}
-          trim={false}
-          alwaysFocus
-          scaleSize
-        />
-      </Form.Item>
+      <div className={formStyles.command}>
+        <Form.Item<FormData>
+          name={['spec', 'command']}
+          normalize={normalizeCommand}
+          getValueProps={(value) => ({ value: stringifyCommand(value) })}
+        >
+          <Textarea
+            disabled={disabled}
+            label={intl.formatMessage({ id: 'gpuservice.template.command' })}
+            placeholder={intl.formatMessage({
+              id: 'gpuservice.template.command.placeholder'
+            })}
+            trim={false}
+            alwaysFocus
+            scaleSize
+          />
+        </Form.Item>
+      </div>
 
       <Flex gap={16}>
         <div style={{ flex: 1 }}>

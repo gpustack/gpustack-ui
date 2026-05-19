@@ -42,6 +42,8 @@ export default {
     'Aşağıdaki komutu çalıştırmadan önce lütfen {label} için <a href={link} target="_blank">ön koşulların</a> karşılandığından emin olun.',
   'clusters.create.addCommand.tips':
     'Eklenmesi gereken İşçi Düğümde, kümeye katılması için aşağıdaki komutu çalıştırın.',
+  'clusters.create.addCommand.k8s.tips':
+    'Kaydedilmesi gereken Kubernetes kümesinde, Kubernetes kaynaklarını oluşturmak ve kümeyi kaydetmek için aşağıdaki komutu çalıştırın.',
   'clusters.create.register.tips':
     'Eklenmesi gereken Kubernetes kümesinde, düğümlerini kümeye katılması için aşağıdaki komutu çalıştırın.',
   'cluster.create.checkEnv.tips':

@@ -2,6 +2,7 @@ import { AutoTooltip, IconFont, StatusTag, ThemeTag } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Flex } from 'antd';
 import styled from 'styled-components';
+import { manufactureColorMap } from '../../templates/config';
 import {
   convertKiToGi,
   InstanceTypePhaseLabelMap,
@@ -67,7 +68,10 @@ const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({
   const name = item.metadata?.name;
   const acceleratable = item.spec?.acceleratable;
 
-  const manufacturer = item.spec?.manufacturer?.toUpperCase();
+  const manufacturerKey = item.spec?.manufacturer;
+  const manufacturer = manufacturerKey?.toUpperCase();
+  const manufacturerColor =
+    (manufacturerKey && manufactureColorMap[manufacturerKey]) ?? 'purple';
 
   const renderName = () => {
     const product = item.spec?.product;
@@ -91,7 +95,7 @@ const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({
                 fontWeight: 400
               }}
             >
-              <ThemeTag color="purple">{manufacturer}</ThemeTag>
+              <ThemeTag color={manufacturerColor}>{manufacturer}</ThemeTag>
             </span>
           )}
         </Flex>

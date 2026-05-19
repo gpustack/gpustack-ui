@@ -41,6 +41,8 @@ export default {
     '在执行以下命令之前，请确保已满足 {label} 的<a href={link} target="_blank">先决条件</a>。',
   'clusters.create.addCommand.tips':
     '在需要添加的节点上运行以下命令，将其加入到集群中。',
+  'clusters.create.addCommand.k8s.tips':
+    '在需要注册的 Kubernetes 集群中运行以下命令，创建 Kubernetes 资源，注册该集群。',
   'clusters.create.register.tips':
     '在需要添加的 Kubernetes 集群上运行以下命令，将其中的节点加入到集群中。',
   'cluster.create.checkEnv.tips': '使用以下命令检查环境是否准备妥当。',

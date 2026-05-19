@@ -6,6 +6,7 @@ export interface FormData {
     name: string;
     namespace: string;
   };
+  enable_ssh?: boolean;
   spec: {
     type: string;
     image: string;

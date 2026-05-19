@@ -160,11 +160,6 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
     );
 
     const ports = Form.useWatch(['spec', 'ports'], form) || [];
-    const hasSshPort = useMemo(
-      () =>
-        ports.some((p) => Number(p?.port) === SSH_PORT && p.protocol === 'TCP'),
-      [ports]
-    );
 
     const selectedTypeName = Form.useWatch(['spec', 'type'], form) as
       | string
@@ -242,6 +237,17 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       });
     };
 
+    const segmentedTop =
+      action === PageAction.VIEW
+        ? {
+            top: 0,
+            offsetTop: 100
+          }
+        : {
+            top: 40,
+            offsetTop: 130
+          };
+
     useImperativeHandle(ref, () => ({
       submit: () => {
         form.submit();
@@ -262,10 +268,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
         segmentOptions={segmentOptions}
         activeKey={activeKey}
         setActiveKey={handleActiveChange}
-        segmentedTop={{
-          top: 40,
-          offsetTop: 130
-        }}
+        segmentedTop={segmentedTop}
         getScrollElementScrollableHeight={getScrollElementScrollableHeight}
       >
         <Form

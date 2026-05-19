@@ -15,6 +15,9 @@ export default {
   'gpuservice.template.mountPath': 'マウントパス',
   'gpuservice.template.containerDisk': 'コンテナディスク (GB)',
   'gpuservice.template.memory': 'メモリ (GB)',
+  'gpuservice.instance.containerDisk.remaining':
+    'コンテナディスク (残り {count} GB)',
+  'gpuservice.instance.memory.remaining': 'メモリ (残り {count} GB)',
   'gpuservice.template.displayName': '表示名',
   'gpuservice.template.displayName.max':
     '表示名は 63 文字以内で入力してください。',
@@ -56,6 +59,8 @@ export default {
     '最大 {count} 枚の GPU カードを選択してください',
   'gpuservice.instance.gpuCount.min':
     '少なくとも {count} 枚の GPU カードを選択してください',
+  'gpuservice.instance.gpuCount.noAvailable':
+    '利用可能な GPU リソースがありません。別のインスタンスタイプを選択してください。',
   'gpuservice.instance.stock': '在庫',
   'gpuservice.instance.sliced': '分割',
   'gpuservice.instance.memory': 'Memory',

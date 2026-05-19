@@ -15,6 +15,8 @@ export default {
   'gpuservice.template.mountPath': '挂载路径',
   'gpuservice.template.containerDisk': '容器磁盘(GB)',
   'gpuservice.template.memory': '内存(GB)',
+  'gpuservice.instance.containerDisk.remaining': '容器磁盘(剩余{count}GB)',
+  'gpuservice.instance.memory.remaining': '内存(剩余{count}GB)',
   'gpuservice.template.displayName': '显示名称',
   'gpuservice.template.displayName.max': '显示名称不能超过 63 个字符',
   'gpuservice.template.ports': '端口',
@@ -52,6 +54,8 @@ export default {
   'gpuservice.instance.gpuCount.required': '请输入 GPU 数量',
   'gpuservice.instance.gpuCount.max': '最多选择 {count} 张卡',
   'gpuservice.instance.gpuCount.min': '至少选择 {count} 张卡',
+  'gpuservice.instance.gpuCount.noAvailable':
+    '没有可用的 GPU 资源，请选择其他实例类型。',
   'gpuservice.instance.stock': '库存',
   'gpuservice.instance.sliced': '切分',
   'gpuservice.instance.memory': '显存',

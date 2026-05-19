@@ -16,6 +16,9 @@ export default {
   'gpuservice.template.mountPath': 'Путь монтирования',
   'gpuservice.template.containerDisk': 'Диск контейнера (GB)',
   'gpuservice.template.memory': 'Память (GB)',
+  'gpuservice.instance.containerDisk.remaining':
+    'Диск контейнера (Остаток {count} GB)',
+  'gpuservice.instance.memory.remaining': 'Память (Остаток {count} GB)',
   'gpuservice.template.displayName': 'Отображаемое имя',
   'gpuservice.template.displayName.max':
     'Отображаемое имя не должно превышать 63 символа.',
@@ -57,6 +60,8 @@ export default {
   'gpuservice.instance.gpuCount.required': 'Введите количество GPU',
   'gpuservice.instance.gpuCount.max': 'Выберите максимум {count} GPU-карт',
   'gpuservice.instance.gpuCount.min': 'Выберите минимум {count} GPU-карт',
+  'gpuservice.instance.gpuCount.noAvailable':
+    'Нет доступных ресурсов GPU, выберите другой тип экземпляра.',
   'gpuservice.instance.stock': 'Остаток',
   'gpuservice.instance.sliced': 'Разделено',
   'gpuservice.instance.memory': 'Память',

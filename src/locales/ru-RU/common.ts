@@ -223,7 +223,6 @@ export default {
   'common.text.latest': 'Последняя',
   'common.text.new': 'Новая',
   'common.text.changelog': 'История изменений',
-  'common.button.recreate': 'Пересоздать',
   'common.button.delrecreate': 'Удалить (Пересоздать)',
   'common.options.all': 'Все',
   'common.options.none': 'Нет',
@@ -282,7 +281,8 @@ export default {
   'common.file.format.limit': 'Invalid file format. Allowed: {formats}.',
   'common.image.limit.width': 'Image width must be {width}.',
   'common.image.limit.height': 'Image height must be {height}.',
-  'common.remaining': 'Остаток {count}'
+  'common.remaining': 'Остаток {count}',
+  'common.validate.group': 'Please complete the {group} configuration'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

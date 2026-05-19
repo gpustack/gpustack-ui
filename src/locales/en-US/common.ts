@@ -225,7 +225,6 @@ export default {
   'common.text.latest': 'Latest',
   'common.text.new': 'New',
   'common.text.changelog': 'Release Notes',
-  'common.button.recreate': 'Recreate',
   'common.button.delrecreate': 'Delete (Recreate)',
   'common.options.all': 'All',
   'common.options.none': 'None',
@@ -283,5 +282,6 @@ export default {
   'common.file.format.limit': 'Invalid file format. Allowed: {formats}.',
   'common.image.limit.width': 'Image width must be {width}.',
   'common.image.limit.height': 'Image height must be {height}.',
-  'common.remaining': 'Remaining {count}'
+  'common.remaining': 'Remaining {count}',
+  'common.validate.group': 'Please complete the {group} configuration'
 };

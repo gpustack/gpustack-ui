@@ -275,5 +275,6 @@ export default {
   'common.file.format.limit': '文件格式不正确，仅支持{formats}。',
   'common.image.limit.width': '图片宽度须为{width}。',
   'common.image.limit.height': '图片高度须为{height}。',
-  'common.remaining': '剩余 {count}'
+  'common.remaining': '剩余 {count}',
+  'common.validate.group': '请填写完整的{group}配置'
 };

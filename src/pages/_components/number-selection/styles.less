@@ -4,7 +4,10 @@
   border-radius: var(--ant-border-radius-lg);
   border: 1px solid var(--ant-color-border);
   overflow: hidden;
-  background-color: var(--ant-color-fill-quaternary);
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 4px;
+
   .inputContainer {
     &.hasValue {
       background-color: var(--ant-color-bg-container);
@@ -28,6 +31,7 @@
       display: flex;
       height: 22px;
       border-left: 1px solid var(--ant-color-split);
+      margin-inline: 4px;
     }
   }
 
@@ -37,14 +41,21 @@
     padding: 0 12px;
     color: var(--ant-color-text-tertiary);
     white-space: nowrap;
-    border-right: 1px solid var(--ant-color-split);
+    padding-block: 6px;
+  }
+  .contentWrapper {
+    width: 100%;
+    background-color: var(--ant-color-fill-quaternary);
+    border-radius: 4px;
+    height: 36px;
+    padding-left: 4px;
   }
   .content {
     display: flex;
     align-items: center;
     flex: 1;
     gap: 4px;
-    padding: 4px;
+    padding: 0px;
   }
   .numberItem {
     position: relative;
@@ -53,7 +64,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 40px;
+    height: 32px;
     border-radius: 4px;
     cursor: pointer;
     border: 1px solid transparent;

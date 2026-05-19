@@ -15,6 +15,9 @@ export default {
   'gpuservice.template.mountPath': 'Bağlama Yolu',
   'gpuservice.template.containerDisk': 'Konteyner Diski (GB)',
   'gpuservice.template.memory': 'Bellek (GB)',
+  'gpuservice.instance.containerDisk.remaining':
+    'Konteyner Diski (Kalan {count} GB)',
+  'gpuservice.instance.memory.remaining': 'Bellek (Kalan {count} GB)',
   'gpuservice.template.displayName': 'Görünen Ad',
   'gpuservice.template.displayName.max':
     'Görünen ad 63 karakterden uzun olamaz.',
@@ -56,6 +59,8 @@ export default {
   'gpuservice.instance.gpuCount.required': 'Lütfen GPU sayısını girin',
   'gpuservice.instance.gpuCount.max': 'En fazla {count} GPU kartı seçin',
   'gpuservice.instance.gpuCount.min': 'En az {count} GPU kartı seçin',
+  'gpuservice.instance.gpuCount.noAvailable':
+    'Kullanılabilir GPU kaynağı yok, lütfen başka bir örnek türü seçin.',
   'gpuservice.instance.stock': 'Stok',
   'gpuservice.instance.sliced': 'Bölünmüş',
   'gpuservice.instance.memory': 'Bellek',

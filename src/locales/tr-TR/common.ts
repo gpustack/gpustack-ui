@@ -228,7 +228,6 @@ export default {
   'common.text.latest': 'En Son',
   'common.text.new': 'Yeni',
   'common.text.changelog': 'Sürüm Notları',
-  'common.button.recreate': 'Yeniden oluştur',
   'common.button.delrecreate': 'Sil (Yeniden oluştur)',
   'common.options.all': 'Tümü',
   'common.options.none': 'Hiçbiri',
@@ -286,5 +285,6 @@ export default {
   'common.file.format.limit': 'Invalid file format. Allowed: {formats}.',
   'common.image.limit.width': 'Image width must be {width}.',
   'common.image.limit.height': 'Image height must be {height}.',
-  'common.remaining': 'Kalan {count}'
+  'common.remaining': 'Kalan {count}',
+  'common.validate.group': 'Please complete the {group} configuration'
 };

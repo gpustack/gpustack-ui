@@ -64,6 +64,26 @@ const Basic: React.FC<BasicProps> = ({
     );
   };
 
+  const renderStorageLabel = (): React.ReactNode => {
+    if (page === 'instance' && onceMaxRequest?.localStorage != null) {
+      return intl.formatMessage(
+        { id: 'gpuservice.instance.containerDisk.remaining' },
+        { count: onceMaxRequest.localStorage }
+      );
+    }
+    return intl.formatMessage({ id: 'gpuservice.template.containerDisk' });
+  };
+
+  const renderMemoryLabel = (): React.ReactNode => {
+    if (page === 'instance' && onceMaxRequest?.memory != null) {
+      return intl.formatMessage(
+        { id: 'gpuservice.instance.memory.remaining' },
+        { count: onceMaxRequest.memory }
+      );
+    }
+    return intl.formatMessage({ id: 'gpuservice.template.memory' });
+  };
+
   return (
     <>
       <div data-field="template"></div>
@@ -174,20 +194,22 @@ const Basic: React.FC<BasicProps> = ({
         </Form.Item>
       </div>
 
-      <Flex gap={16}>
-        <div style={{ flex: 1 }}>
-          <Form.Item<FormData> name={['spec', 'volumeMount']}>
-            <CInput.Input
-              label={intl.formatMessage({
-                id: 'gpuservice.template.mountPath'
-              })}
-              placeholder={intl.formatMessage({
-                id: 'clusters.volume.mountPath.format'
-              })}
-              disabled={disabled}
-            />
-          </Form.Item>
-        </div>
+      <Flex gap={12}>
+        {page === 'template' && (
+          <div style={{ flex: 1 }}>
+            <Form.Item<FormData> name={['spec', 'volumeMount']}>
+              <CInput.Input
+                label={intl.formatMessage({
+                  id: 'gpuservice.template.mountPath'
+                })}
+                placeholder={intl.formatMessage({
+                  id: 'clusters.volume.mountPath.format'
+                })}
+                disabled={disabled}
+              />
+            </Form.Item>
+          </div>
+        )}
         <div style={{ flex: 1 }}>
           <Form.Item<FormData>
             name={['spec', 'resources', 'localStorage']}
@@ -197,17 +219,14 @@ const Basic: React.FC<BasicProps> = ({
             })}
           >
             <InputNumber
-              label={renderMaxLabel(
-                intl.formatMessage({ id: 'gpuservice.template.containerDisk' }),
-                onceMaxRequest?.localStorage
-              )}
+              label={renderStorageLabel()}
               max={onceMaxRequest?.localStorage ?? undefined}
               disabled={disabled}
             />
           </Form.Item>
         </div>
       </Flex>
-      <Flex gap={16}>
+      <Flex gap={12}>
         <div style={{ flex: 1 }}>
           <Form.Item<FormData>
             name={['spec', 'resources', 'cpu']}
@@ -230,10 +249,7 @@ const Basic: React.FC<BasicProps> = ({
             })}
           >
             <InputNumber
-              label={renderMaxLabel(
-                intl.formatMessage({ id: 'gpuservice.template.memory' }),
-                onceMaxRequest?.memory
-              )}
+              label={renderMemoryLabel()}
               max={onceMaxRequest?.memory ?? undefined}
               disabled={disabled}
             />

@@ -10,6 +10,8 @@ export default {
   'dashboard.vramutilization': 'Средняя загрузка видеопамяти',
   'dashboard.gpuutilization': 'Средняя загрузка GPU',
   'dashboard.usage': 'Использование',
+  'dashboard.usage.title': 'Использование за последние {days} дн.',
+  'dashboard.usage.others': 'Прочее',
   'dashboard.tokens': 'Использование токенов',
   'dashboard.topusers': 'Топ пользователей',
   'dashboard.activeDeployments': 'Active Deployments',

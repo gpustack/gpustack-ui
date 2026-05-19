@@ -17,12 +17,19 @@ const Section = styled.div`
   margin-top: 16px;
 `;
 
+// Rolling lookback window applied to every chart in the usage section.
+// Keep the constant and the date math wired together so the label and the
+// API request can't drift apart.
+const USAGE_LOOKBACK_DAYS = 30;
+
 const NewUsage = () => {
   const intl = useIntl();
 
   const dateRange = useMemo(
     () => ({
-      start_date: dayjs().subtract(29, 'days').format('YYYY-MM-DD'),
+      start_date: dayjs()
+        .subtract(USAGE_LOOKBACK_DAYS - 1, 'days')
+        .format('YYYY-MM-DD'),
       end_date: dayjs().format('YYYY-MM-DD')
     }),
     []
@@ -50,7 +57,10 @@ const NewUsage = () => {
         style={{ margin: '24px 0 0' }}
         left={
           <span className="font-700">
-            {intl.formatMessage({ id: 'dashboard.usage' })}
+            {intl.formatMessage(
+              { id: 'dashboard.usage.title' },
+              { days: USAGE_LOOKBACK_DAYS }
+            )}
           </span>
         }
       />

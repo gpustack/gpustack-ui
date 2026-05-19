@@ -5,7 +5,7 @@ import { formatLargeNumber } from '@gpustack/core-ui/utils';
 import { useIntl } from '@umijs/max';
 import type { GlobalToken } from 'antd';
 import { Empty, Spin, theme } from 'antd';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import {
   DashboardUsageCommonParams,
   getUsageSummary,
@@ -29,6 +29,12 @@ const HTML_ESCAPES: Record<string, string> = {
 const escapeHtml = (value: unknown): string =>
   String(value ?? '').replace(/[&<>"']/g, (c) => HTML_ESCAPES[c] ?? c);
 
+// Cap individual entries in the shared legend. Anything beyond this rolls up
+// into a single "Others" bucket. The cap is filled by alternating top picks
+// from the API-request and token rankings (request-priority first), so both
+// metrics get fair representation even when leaders heavily overlap.
+const MAX_LEGEND_NAMED_ITEMS = 10;
+
 interface UsageByModelProps {
   commonParams: DashboardUsageCommonParams;
   height?: number;
@@ -41,6 +47,7 @@ const UsageByModel: React.FC<UsageByModelProps> = ({
   const intl = useIntl();
   const { token } = theme.useToken();
   const generateCoolColors = useCoolColors();
+  const chartRef = useRef<{ chart: any } | null>(null);
 
   const tokenQuery = useQueryTimeSeriesData({ key: 'tokenUsageByModelData' });
   const apiQuery = useQueryTimeSeriesData({ key: 'apiRequestsByModelData' });
@@ -87,13 +94,84 @@ const UsageByModel: React.FC<UsageByModelProps> = ({
     return Number(summary?.api_requests ?? 0);
   }, [apiQuery.detailData]);
 
-  // Build a shared name->color map so legend toggles both donuts and
-  // matching slices read the same color across the pair.
+  const tokenLabel = intl.formatMessage({ id: 'usage.filter.totalTokens' });
+  const apiLabel = intl.formatMessage({ id: 'usage.filter.apiRequests' });
+  const othersLabel = intl.formatMessage({ id: 'dashboard.usage.others' });
+
+  // Pick legend entries by alternating between the two metrics' ranked
+  // lists — API request first (request-priority), then tokens, repeat.
+  // Each turn advances its own cursor past entries already picked from the
+  // other side, so overlapping leaders don't burn the alternation slot
+  // (and both metrics get fair representation when sets diverge).
+  // Everything beyond the cap collapses into a single Others bucket.
+  const pickedNames = useMemo(() => {
+    const apiSorted = [...apiData]
+      .sort((a, b) => b.value - a.value)
+      .map((d) => d.name);
+    const tokenSorted = [...tokenData]
+      .sort((a, b) => b.value - a.value)
+      .map((d) => d.name);
+    const picked = new Set<string>();
+    let apiIdx = 0;
+    let tokenIdx = 0;
+
+    const takeFromApi = (): boolean => {
+      while (apiIdx < apiSorted.length && picked.has(apiSorted[apiIdx]))
+        apiIdx++;
+      if (apiIdx >= apiSorted.length) return false;
+      picked.add(apiSorted[apiIdx++]);
+      return true;
+    };
+
+    const takeFromToken = (): boolean => {
+      while (tokenIdx < tokenSorted.length && picked.has(tokenSorted[tokenIdx]))
+        tokenIdx++;
+      if (tokenIdx >= tokenSorted.length) return false;
+      picked.add(tokenSorted[tokenIdx++]);
+      return true;
+    };
+
+    while (picked.size < MAX_LEGEND_NAMED_ITEMS) {
+      const apiOk = takeFromApi();
+      if (picked.size >= MAX_LEGEND_NAMED_ITEMS) break;
+      const tokenOk = takeFromToken();
+      if (!apiOk && !tokenOk) break;
+    }
+
+    return picked;
+  }, [tokenData, apiData]);
+
+  // Project raw data into (pickedRoutes..., Others). Others is only appended
+  // when at least one route was rolled up.
+  const project = (rows: UsageChartDatum[]): UsageChartDatum[] => {
+    const kept: UsageChartDatum[] = [];
+    let othersValue = 0;
+    for (const row of rows) {
+      if (pickedNames.has(row.name)) kept.push(row);
+      else othersValue += row.value;
+    }
+    if (othersValue > 0) kept.push({ name: othersLabel, value: othersValue });
+    return kept;
+  };
+
+  const projectedTokenData = useMemo(
+    () => project(tokenData),
+    [tokenData, pickedNames, othersLabel]
+  );
+  const projectedApiData = useMemo(
+    () => project(apiData),
+    [apiData, pickedNames, othersLabel]
+  );
+
+  // Build a shared name->color map from the projected data so legend toggles
+  // both donuts together and matching slices read the same color. Others
+  // sticks to the end and uses a muted token so it visually reads as "the
+  // long tail" rather than a real route.
   const { legendNames, colorMap } = useMemo(() => {
     const names: string[] = [];
     const seen = new Set<string>();
-    [...tokenData, ...apiData].forEach((d) => {
-      if (!seen.has(d.name)) {
+    [...projectedTokenData, ...projectedApiData].forEach((d) => {
+      if (!seen.has(d.name) && d.name !== othersLabel) {
         seen.add(d.name);
         names.push(d.name);
       }
@@ -103,13 +181,24 @@ const UsageByModel: React.FC<UsageByModelProps> = ({
     names.forEach((name, i) => {
       map[name] = colors[i];
     });
+    const hasOthers = [...projectedTokenData, ...projectedApiData].some(
+      (d) => d.name === othersLabel
+    );
+    if (hasOthers) {
+      names.push(othersLabel);
+      map[othersLabel] = token.colorTextQuaternary;
+    }
     return { legendNames: names, colorMap: map };
-  }, [tokenData, apiData, generateCoolColors]);
+  }, [
+    projectedTokenData,
+    projectedApiData,
+    generateCoolColors,
+    othersLabel,
+    token
+  ]);
 
-  const tokenLabel = intl.formatMessage({ id: 'usage.filter.totalTokens' });
-  const apiLabel = intl.formatMessage({ id: 'usage.filter.apiRequests' });
-
-  const isEmpty = tokenData.length === 0 && apiData.length === 0;
+  const isEmpty =
+    projectedTokenData.length === 0 && projectedApiData.length === 0;
   const isLoading = tokenQuery.loading || apiQuery.loading;
 
   const options = useMemo(() => {
@@ -141,8 +230,16 @@ const UsageByModel: React.FC<UsageByModelProps> = ({
         }
       },
       legend: {
-        type: 'scroll',
         orient: 'vertical',
+        // Anchor the legend column's LEFT edge at 85% of the chart canvas
+        // (right edge fills to canvas right). ECharts' legend.align only
+        // controls intra-item marker/text ordering — not item-in-container
+        // alignment — so a right-anchored + fixed-width legend always
+        // packs items flush right. Anchoring from the left instead makes
+        // items naturally start at the container's left edge, so a short
+        // label like `qwen3-0.6b` stays close to the donut instead of
+        // floating in a void at the canvas edge.
+        left: '85%',
         right: 0,
         top: 18,
         bottom: 18,
@@ -152,11 +249,10 @@ const UsageByModel: React.FC<UsageByModelProps> = ({
         textStyle: {
           color: token.colorTextTertiary,
           overflow: 'truncate',
-          width: 140
+          // 15% of typical xl card canvas (~680-900px) ≈ 102-135px column;
+          // marker(8) + gap(5) + 90 = 103 fits even at the narrow end.
+          width: 90
         },
-        pageTextStyle: { color: token.colorTextTertiary },
-        pageIconColor: token.colorTextTertiary,
-        pageIconInactiveColor: token.colorTextDisabled,
         data: legendNames,
         show: legendNames.length > 0
       },
@@ -170,15 +266,9 @@ const UsageByModel: React.FC<UsageByModelProps> = ({
           label: { show: false },
           labelLine: { show: false },
           emphasis: {
-            label: {
-              show: true,
-              formatter: (params: any) => `${params.percent}%`,
-              fontSize: 14,
-              fontWeight: 600,
-              color: token.colorText
-            }
+            label: { show: false }
           },
-          data: paintData(tokenData)
+          data: paintData(projectedTokenData)
         },
         {
           name: apiLabel,
@@ -189,19 +279,72 @@ const UsageByModel: React.FC<UsageByModelProps> = ({
           label: { show: false },
           labelLine: { show: false },
           emphasis: {
-            label: {
-              show: true,
-              formatter: (params: any) => `${params.percent}%`,
-              fontSize: 14,
-              fontWeight: 600,
-              color: token.colorText
-            }
+            label: { show: false }
           },
-          data: paintData(apiData)
+          data: paintData(projectedApiData)
         }
       ]
     };
-  }, [tokenData, apiData, colorMap, legendNames, token, tokenLabel, apiLabel]);
+  }, [
+    projectedTokenData,
+    projectedApiData,
+    colorMap,
+    legendNames,
+    token,
+    tokenLabel,
+    apiLabel
+  ]);
+
+  // Association: hovering a slice in one donut highlights the same route in
+  // the other donut. The Chart wrapper's imperative handle is committed
+  // before its own init effect runs, so chartRef can be { chart: undefined }
+  // on the first useEffect tick — poll via rAF until the instance shows up,
+  // then bind once. ECharts' clear() preserves user listeners, so we don't
+  // need to re-bind on every options change.
+  useEffect(() => {
+    let raf: number | undefined;
+    let detach: (() => void) | undefined;
+
+    const tryBind = () => {
+      const inst = chartRef.current?.chart;
+      if (!inst) {
+        raf = requestAnimationFrame(tryBind);
+        return;
+      }
+
+      const dispatchFor = (params: any, type: 'highlight' | 'downplay') => {
+        if (
+          params.componentType !== 'series' ||
+          typeof params.seriesIndex !== 'number'
+        )
+          return;
+        const otherIndex = params.seriesIndex === 0 ? 1 : 0;
+        inst.dispatchAction({
+          type,
+          seriesIndex: otherIndex,
+          name: params.name
+        });
+      };
+
+      const handleOver = (params: any) => dispatchFor(params, 'highlight');
+      const handleOut = (params: any) => dispatchFor(params, 'downplay');
+
+      inst.on('mouseover', handleOver);
+      inst.on('mouseout', handleOut);
+
+      detach = () => {
+        inst.off('mouseover', handleOver);
+        inst.off('mouseout', handleOut);
+      };
+    };
+
+    tryBind();
+
+    return () => {
+      if (raf !== undefined) cancelAnimationFrame(raf);
+      detach?.();
+    };
+  }, []);
 
   return (
     <UsageChartCard
@@ -222,7 +365,12 @@ const UsageByModel: React.FC<UsageByModelProps> = ({
           </div>
         ) : (
           <>
-            <Chart options={options as any} height={height} width="100%" />
+            <Chart
+              ref={chartRef as any}
+              options={options as any}
+              height={height}
+              width="100%"
+            />
             <DonutCenter
               left="20%"
               top="50%"

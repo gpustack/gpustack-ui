@@ -11,6 +11,8 @@ export default {
   'dashboard.vramutilization': 'Ortalama VRAM Kullanımı',
   'dashboard.gpuutilization': 'Ortalama GPU Kullanımı',
   'dashboard.usage': 'Kullanım',
+  'dashboard.usage.title': 'Son {days} günün kullanımı',
+  'dashboard.usage.others': 'Diğer',
   'dashboard.tokens': 'Token Kullanımı',
   'dashboard.topusers': 'En Aktif Kullanıcılar',
   'dashboard.activeDeployments': 'Active Deployments',

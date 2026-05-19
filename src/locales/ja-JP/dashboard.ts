@@ -10,6 +10,8 @@ export default {
   'dashboard.vramutilization': '平均VRAM使用率',
   'dashboard.gpuutilization': '平均GPU使用率',
   'dashboard.usage': '使用状況',
+  'dashboard.usage.title': '過去 {days} 日間の使用状況',
+  'dashboard.usage.others': 'その他',
   'dashboard.tokens': 'トークン使用量',
   'dashboard.topusers': 'トップユーザー',
   'dashboard.activeDeployments': 'Active Deployments',

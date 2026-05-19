@@ -45,6 +45,24 @@ export const GPU_SERVICE_INSTANCE_PV_EVENTS_API = (params: {
   return `/clusters/${params.clusterID}/proxy/apis/worker.gpustack.ai/v1/namespaces/${params.namespace}/instancepersistentvolumes/${params.name}/events`;
 };
 
+// TODO: replace placeholder once start/stop endpoints are finalized
+export const GPU_SERVICE_INSTANCE_START_API = (params: {
+  namespace: string;
+  name: string;
+  clusterID?: number;
+}) => {
+  return `/clusters/${params.clusterID}/proxy/apis/worker.gpustack.ai/v1/namespaces/${params.namespace}/instances/${params.name}/start`;
+};
+
+// TODO: replace placeholder once start/stop endpoints are finalized
+export const GPU_SERVICE_INSTANCE_STOP_API = (params: {
+  namespace: string;
+  name: string;
+  clusterID?: number;
+}) => {
+  return `/clusters/${params.clusterID}/proxy/apis/worker.gpustack.ai/v1/namespaces/${params.namespace}/instances/${params.name}/stop`;
+};
+
 // =========== Instances ===========
 
 export async function queryGPUServiceInstances(
@@ -208,6 +226,56 @@ export async function queryGPUServiceInstancePVEvents(
       method: 'GET',
       params: omitPathParams(_.omit(params, ['name'])),
       cancelToken: options?.token
+    }
+  );
+}
+
+// TODO: replace placeholder once start/stop endpoints are finalized
+export async function startGPUServiceInstance(
+  params: {
+    namespace: string;
+    name: string;
+    clusterID?: number;
+  },
+  option?: any
+) {
+  if (!params.clusterID) {
+    return;
+  }
+  return request(
+    GPU_SERVICE_INSTANCE_START_API({
+      namespace: params.namespace,
+      clusterID: params.clusterID,
+      name: params.name
+    }),
+    {
+      method: 'POST',
+      cancelToken: option?.token
+    }
+  );
+}
+
+// TODO: replace placeholder once start/stop endpoints are finalized
+export async function stopGPUServiceInstance(
+  params: {
+    namespace: string;
+    name: string;
+    clusterID?: number;
+  },
+  option?: any
+) {
+  if (!params.clusterID) {
+    return;
+  }
+  return request(
+    GPU_SERVICE_INSTANCE_STOP_API({
+      namespace: params.namespace,
+      clusterID: params.clusterID,
+      name: params.name
+    }),
+    {
+      method: 'POST',
+      cancelToken: option?.token
     }
   );
 }

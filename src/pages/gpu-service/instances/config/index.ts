@@ -64,6 +64,18 @@ export const rowActionList = [
     locale: true,
     icon: icons.ProfileOutlined
   },
+  {
+    label: 'common.button.start',
+    key: 'start',
+    locale: true,
+    icon: icons.Play
+  },
+  {
+    label: 'common.button.stop',
+    key: 'stop',
+    locale: true,
+    icon: icons.Stop
+  },
   // {
   //   label: 'common.button.edit',
   //   key: 'edit',
@@ -80,6 +92,27 @@ export const rowActionList = [
     label: 'common.button.delete',
     key: 'delete',
     locale: true,
+    icon: icons.DeleteOutlined,
+    props: {
+      danger: true
+    }
+  }
+];
+
+export const batchActionList = [
+  {
+    label: 'common.button.start',
+    key: 'start',
+    icon: icons.Play
+  },
+  {
+    label: 'common.button.stop',
+    key: 'stop',
+    icon: icons.Stop
+  },
+  {
+    label: 'common.button.delete',
+    key: 'delete',
     icon: icons.DeleteOutlined,
     props: {
       danger: true

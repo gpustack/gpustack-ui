@@ -4,6 +4,7 @@ import { Input as CInput } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import { FormData } from '../config/types';
+import formStyles from '../styles/instances.module.less';
 
 const Basic = ({
   action,
@@ -37,13 +38,15 @@ const Basic = ({
           required
         />
       </Form.Item>
-      <Form.Item<FormData> name={['spec', 'description']}>
-        <CInput.TextArea
-          disabled={disabled}
-          label={intl.formatMessage({ id: 'common.table.description' })}
-          scaleSize
-        />
-      </Form.Item>
+      <div className={formStyles.command}>
+        <Form.Item<FormData> name={['spec', 'description']}>
+          <CInput.TextArea
+            disabled={disabled}
+            label={intl.formatMessage({ id: 'common.table.description' })}
+            scaleSize
+          />
+        </Form.Item>
+      </div>
     </>
   );
 };

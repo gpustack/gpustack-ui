@@ -87,7 +87,8 @@ const StorageVolume = ({
   };
 
   return (
-    <FieldBlock>
+    <>
+      <div data-field="storage"></div>
       <Flex
         style={{
           justifyContent: 'space-between',
@@ -149,7 +150,6 @@ const StorageVolume = ({
             </Button>
           )}
       </Flex>
-      <div data-field="storage"></div>
 
       {storageMode === StorageModeValueMap.Existing && (
         <Form.Item
@@ -230,7 +230,7 @@ const StorageVolume = ({
         onCancel={() => setOverlayOpen(false)}
         onSubmit={handleCreateStorage}
       />
-    </FieldBlock>
+    </>
   );
 };
 

@@ -30,7 +30,7 @@ const K8sRunCommand: React.FC<AddWorkerStepProps> = ({ disabled }) => {
         }}
       >
         {intl.formatMessage({
-          id: 'clusters.create.addCommand.tips'
+          id: 'clusters.create.addCommand.k8s.tips'
         })}
       </Typography.Paragraph>
       <RegisterClusterInner

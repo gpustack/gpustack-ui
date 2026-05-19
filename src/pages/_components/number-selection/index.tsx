@@ -113,7 +113,7 @@ const NumberSelection: React.FC<NumberSelectionProps> = ({
                 aria-disabled={disabled}
                 tabIndex={disabled ? -1 : 0}
                 className={classNames(styles.numberItem, {
-                  [styles.active]: num === value
+                  [styles.active]: num === value && !!value
                 })}
                 onClick={() => handleSelect(num)}
                 onKeyDown={(e) => {

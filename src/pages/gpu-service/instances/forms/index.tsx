@@ -4,8 +4,8 @@ import {
   CheckboxField,
   CollapsePanel,
   IconFont,
+  MultipleSelect,
   ScrollSpyTabs,
-  Select,
   useFinishFailed,
   useScrollActiveChange,
   useWrapperContext
@@ -25,6 +25,7 @@ import TemplateBasicForm, {
   BasicResourceMax
 } from '../../templates/forms/basic';
 import { FormData, InstanceTypeItem, ListItem } from '../config/types';
+import instanceStyles from '../styles/instances.module.less';
 import Basic from './basic';
 import InstanceTypeFormItem from './instance-type';
 import StorageVolume from './storage-volume';
@@ -122,6 +123,22 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
         fetchSSHData({});
       }
     }, [open, action]);
+
+    const handleSSHEnableChange = (e: any) => {
+      if (!e?.target?.checked) {
+        return;
+      }
+      const currentPorts = form.getFieldValue(['spec', 'ports']) || [];
+      const hasSSHPort = currentPorts.some(
+        (item: any) => item?.protocol === 'TCP' && item?.port === SSH_PORT
+      );
+      if (!hasSSHPort) {
+        form.setFieldValue(
+          ['spec', 'ports'],
+          [...currentPorts, { protocol: 'TCP', port: SSH_PORT, name: 'SSH' }]
+        );
+      }
+    };
 
     const segmentOptions = useMemo(
       () => [
@@ -363,31 +380,39 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
             <CheckboxField
               disabled={disabled}
               label={'启用 SSH 访问'}
+              onChange={handleSSHEnableChange}
             ></CheckboxField>
           </Form.Item>
           {sshEnabled && (
-            <Form.Item<FormData> name={['spec', 'sshPublicKey', 'name']}>
-              <Select
-                disabled={disabled}
-                mode="multiple"
-                maxTagCount={1}
-                label={'SSH 公钥'}
-                options={[
-                  {
-                    label: 'SSH-key-1',
-                    value: 'gpustack-ssh-public-key'
-                  },
-                  {
-                    label: 'SSH-key-2',
-                    value: 'gpustack-ssh-public-key-2'
-                  },
-                  {
-                    label: 'SSH-key-3',
-                    value: 'gpustack-ssh-public-key-3'
-                  }
-                ]}
-              ></Select>
-            </Form.Item>
+            <div className={instanceStyles.sshkeySelection}>
+              <Form.Item<FormData> name={['spec', 'sshPublicKey', 'name']}>
+                <MultipleSelect
+                  disabled={disabled}
+                  mode="multiple"
+                  maxTagCount={1}
+                  label={'SSH 公钥'}
+                  styles={{
+                    wrapper: {
+                      width: '100%'
+                    }
+                  }}
+                  options={[
+                    {
+                      label: 'SSH-key-1',
+                      value: 'gpustack-ssh-public-key'
+                    },
+                    {
+                      label: 'SSH-key-2',
+                      value: 'gpustack-ssh-public-key-2'
+                    },
+                    {
+                      label: 'SSH-key-3',
+                      value: 'gpustack-ssh-public-key-3'
+                    }
+                  ]}
+                ></MultipleSelect>
+              </Form.Item>
+            </div>
           )}
         </Form>
       </ScrollSpyTabs>

@@ -27,7 +27,7 @@ import {
 import { useIntl } from '@umijs/max';
 import { Button, Tag } from 'antd';
 import styled from 'styled-components';
-import { templateActions } from '../config';
+import { manufactureColorMap, templateActions } from '../config';
 import { ListItem } from '../config/types';
 
 const imageLogoMap = {
@@ -39,19 +39,6 @@ const imageLogoMap = {
   tensorflow: tensorflowkLogo,
   ubuntu: ubuntuLogo
 } as const;
-
-export const manufactureColorMap: Record<string, string> = {
-  nvidia: 'green',
-  amd: 'volcano',
-  ascend: 'orange',
-  hygon: 'magenta',
-  moorthreads: 'cyan',
-  iluvatar: 'purple',
-  metax: 'geekblue',
-  cambricon: 'gold',
-  thead: 'red',
-  cpu: 'blue'
-};
 
 const manufacturerLabelMap: Record<string, string> = Object.values(
   GPUsConfigs

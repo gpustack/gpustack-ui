@@ -35,6 +35,19 @@ export const ImagePullPolicyOptions: {
 
 export const DefaultImagePullPolicy: ImagePullPolicy = 'IfNotPresent';
 
+export const manufactureColorMap: Record<string, string> = {
+  nvidia: 'green',
+  amd: 'volcano',
+  ascend: 'orange',
+  hygon: 'magenta',
+  moorthreads: 'cyan',
+  iluvatar: 'purple',
+  metax: 'geekblue',
+  cambricon: 'gold',
+  thead: 'red',
+  cpu: 'blue'
+};
+
 export const normalizeCommand = (value: string): string[] => {
   if (!value) return [];
   const tokens: string[] = [];

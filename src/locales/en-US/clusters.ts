@@ -42,6 +42,8 @@ export default {
     'Please make sure the <a href={link} target="_blank">prerequisites</a> for {label} are met before executing the following command.',
   'clusters.create.addCommand.tips':
     'On the Worker that needs to be added, run the following command to join it to the cluster.',
+  'clusters.create.addCommand.k8s.tips':
+    'On the Kubernetes cluster that needs to be registered, run the following command to create the Kubernetes resources and register the cluster.',
   'clusters.create.register.tips':
     'On the Kubernetes cluster that needs to be added, run the following command to join its nodes to the cluster.',
   'cluster.create.checkEnv.tips':

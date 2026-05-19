@@ -106,7 +106,7 @@ const ActiveTable = () => {
                 fontWeight: 'var(--font-weight-bold)'
               }}
             >
-              {intl.formatMessage({ id: 'dashboard.activeModels' })}
+              {intl.formatMessage({ id: 'dashboard.activeDeployments' })}
             </span>
           }
           right={false}

@@ -27,7 +27,7 @@ const ApiRequestsByModel: React.FC<ApiRequestsByModelProps> = ({
       .fetchData({
         ...commonParams,
         metric: 'api_requests',
-        group_by: ['date', 'model'],
+        group_by: ['date', 'route'],
         page: 1,
         perPage: 10,
         sort_by: '-api_requests'
@@ -36,7 +36,7 @@ const ApiRequestsByModel: React.FC<ApiRequestsByModelProps> = ({
   }, [commonParams]);
 
   const chartData = useMemo(
-    () => toUsagePieData(query.detailData, 'model', 'api_requests'),
+    () => toUsagePieData(query.detailData, 'route', 'api_requests'),
     [query.detailData]
   );
 

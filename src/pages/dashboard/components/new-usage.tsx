@@ -51,7 +51,7 @@ const NewUsage = () => {
         tokenByModelQuery.fetchData({
           ...commonParams,
           metric: 'total_tokens',
-          group_by: ['date', 'model'],
+          group_by: ['date', 'route'],
           sort_by: '-total_tokens'
         })
       ]);

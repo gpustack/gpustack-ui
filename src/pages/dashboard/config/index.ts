@@ -22,7 +22,7 @@ export const overviewConfigs = [
 
   {
     key: 'model_count',
-    label: 'dashboard.models',
+    label: 'dashboard.deployments',
     backgroundColor: 'var(--color-white-1)'
   },
   {
@@ -41,7 +41,7 @@ export const baseColorMap = {
   baseR3: 'rgba(85,167,255,0.8)'
 };
 
-export type UsageGroupBy = 'model' | 'user' | 'api_key';
+export type UsageGroupBy = 'model' | 'route' | 'user' | 'api_key';
 export type UsageMetric = 'total_tokens' | 'api_requests';
 
 export interface UsageChartDatum {
@@ -102,6 +102,15 @@ export const buildUsageLabel = (item: BreakdownItem, groupBy: UsageGroupBy) => {
     }
 
     return groupItem?.label || modelName || '-';
+  }
+
+  if (groupBy === 'route') {
+    return (
+      groupItem?.label ||
+      identityValue?.route_name ||
+      groupValue?.route_name ||
+      '-'
+    );
   }
 
   return (

@@ -21,7 +21,7 @@ const TokenUsageByModel: React.FC<TokenUsageByModelProps> = ({
   const intl = useIntl();
 
   const chartData = useMemo(
-    () => toUsagePieData(data, 'model', 'total_tokens'),
+    () => toUsagePieData(data, 'route', 'total_tokens'),
     [data]
   );
 

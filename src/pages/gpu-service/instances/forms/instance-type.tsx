@@ -118,7 +118,7 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
           <InstanceTypePicker dataList={dataList} value={typeName} />
         </Form.Item>
       </FieldBlock>
-      {!selectedInstanceType?.spec?.acceleratable && (
+      {selectedInstanceType?.spec?.acceleratable && (
         <Form.Item
           name={['spec', 'resources', 'accelerator']}
           rules={[

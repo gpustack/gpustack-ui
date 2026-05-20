@@ -1,17 +1,21 @@
+import { addSSHKeyPageAtom } from '@/atoms/gpuservice';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
+import { PlusOutlined } from '@ant-design/icons';
 import {
   CheckboxField,
   CollapsePanel,
   IconFont,
   MultipleSelect,
   ScrollSpyTabs,
+  useAppUtils,
   useFinishFailed,
   useScrollActiveChange,
   useWrapperContext
 } from '@gpustack/core-ui';
-import { useIntl } from '@umijs/max';
-import { Form } from 'antd';
+import { useIntl, useNavigate } from '@umijs/max';
+import { Button, Empty, Form } from 'antd';
+import { useSetAtom } from 'jotai';
 import {
   forwardRef,
   useEffect,
@@ -96,6 +100,9 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       onFinish
     } = props;
     const intl = useIntl();
+    const navigate = useNavigate();
+    const setAddSSHKeyPage = useSetAtom(addSSHKeyPageAtom);
+    const { getRuleMessage } = useAppUtils();
     const [form] = Form.useForm<InstanceFormValues>();
     const scrollTabsRef = useRef<any>(null);
     const formAction =
@@ -278,6 +285,12 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       getFieldsValue: () => form.getFieldsValue()
     }));
 
+    const handleAddSSHKey = () => {
+      setAddSSHKeyPage({ create: true });
+      // to go ssh key page
+      navigate('/gpu-service/public-keys');
+    };
+
     return (
       <ScrollSpyTabs
         ref={scrollTabsRef}
@@ -307,9 +320,6 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
               volumeMount: '',
               resources: {
                 accelerator: '1'
-              },
-              sshPublicKey: {
-                name: 'gpustack-ssh-public-key'
               },
               volume: {
                 ephemeral: {
@@ -379,37 +389,70 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
           >
             <CheckboxField
               disabled={disabled}
-              label={'启用 SSH 访问'}
+              label={intl.formatMessage({
+                id: 'gpuservice.instance.ssh.enable'
+              })}
               onChange={handleSSHEnableChange}
             ></CheckboxField>
           </Form.Item>
           {sshEnabled && (
             <div className={instanceStyles.sshkeySelection}>
-              <Form.Item<FormData> name={['spec', 'sshPublicKey', 'name']}>
+              <Form.Item<FormData>
+                name={['spec', 'sshPublicKey', 'name']}
+                style={{
+                  marginBottom: 12
+                }}
+                rules={[
+                  {
+                    required: true,
+                    message: getRuleMessage(
+                      'select',
+                      'gpuservice.instance.ssh.assignKey'
+                    )
+                  }
+                ]}
+              >
                 <MultipleSelect
+                  required
                   disabled={disabled}
                   mode="multiple"
                   maxTagCount={1}
-                  label={'SSH 公钥'}
+                  label={intl.formatMessage({
+                    id: 'gpuservice.instance.ssh.assignKey'
+                  })}
                   styles={{
                     wrapper: {
                       width: '100%'
                     }
                   }}
-                  options={[
-                    {
-                      label: 'SSH-key-1',
-                      value: 'gpustack-ssh-public-key'
-                    },
-                    {
-                      label: 'SSH-key-2',
-                      value: 'gpustack-ssh-public-key-2'
-                    },
-                    {
-                      label: 'SSH-key-3',
-                      value: 'gpustack-ssh-public-key-3'
-                    }
-                  ]}
+                  options={[]}
+                  notFoundContent={
+                    <Empty
+                      image={Empty.PRESENTED_IMAGE_SIMPLE}
+                      description={intl.formatMessage({
+                        id: 'noresult.gpuservice.sshkey.title'
+                      })}
+                      styles={{
+                        image: {
+                          height: 32
+                        },
+                        root: {
+                          margin: 0
+                        }
+                      }}
+                    >
+                      <Button
+                        size="small"
+                        type="link"
+                        icon={<PlusOutlined />}
+                        onClick={handleAddSSHKey}
+                      >
+                        {intl.formatMessage({
+                          id: 'gpuservice.instance.ssh.addKey'
+                        })}
+                      </Button>
+                    </Empty>
+                  }
                 ></MultipleSelect>
               </Form.Item>
             </div>

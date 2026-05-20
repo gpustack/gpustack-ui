@@ -64,5 +64,9 @@ export default {
   'noresult.gpuservice.instance.nofound': 'No matching GPU instances found.',
   'noresult.gpuservice.storage.title': 'No Storage',
   'noresult.gpuservice.storage.subTitle': 'No storage has been added yet.',
-  'noresult.gpuservice.storage.nofound': 'No matching storage found.'
+  'noresult.gpuservice.storage.nofound': 'No matching storage found.',
+  'noresult.gpuservice.sshkey.title': 'No SSH Public Keys',
+  'noresult.gpuservice.sshkey.subTitle':
+    'No SSH public keys have been added yet.',
+  'noresult.gpuservice.sshkey.nofound': 'No matching SSH public keys found.'
 };

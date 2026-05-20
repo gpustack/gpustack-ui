@@ -40,6 +40,9 @@ export default {
   'gpuservice.template.card.resources': 'Kaynaklar',
   'gpuservice.template.card.ports': 'Bağlantı Noktaları',
   'gpuservice.publicKey.label': 'SSH Açık Anahtarı',
+  'gpuservice.instance.ssh.enable': 'SSH Erişimini Etkinleştir',
+  'gpuservice.instance.ssh.assignKey': 'SSH Açık Anahtarı Ata',
+  'gpuservice.instance.ssh.addKey': 'SSH Açık Anahtarı Ekle',
   'gpuservice.publicKey.placeholder':
     'ssh-rsa veya ssh-ed25519 ile başlar, her açık anahtar ayrı bir satırda\n\nAçık anahtarı görüntüle:\n- RSA\ncat ~/.ssh/id_rsa.pub\n- Ed25519\ncat ~/.ssh/id_ed25519.pub',
   'gpuservice.instance': 'GPU Örneği',

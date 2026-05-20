@@ -63,7 +63,10 @@ export default {
   'noresult.gpuservice.instance.nofound': 'Eşleşen GPU örneği bulunamadı.',
   'noresult.gpuservice.storage.title': 'Depolama Yok',
   'noresult.gpuservice.storage.subTitle': 'Henüz depolama eklenmedi.',
-  'noresult.gpuservice.storage.nofound': 'Eşleşen depolama bulunamadı.'
+  'noresult.gpuservice.storage.nofound': 'Eşleşen depolama bulunamadı.',
+  'noresult.gpuservice.sshkey.title': 'SSH Açık Anahtarı Yok',
+  'noresult.gpuservice.sshkey.subTitle': 'Henüz SSH açık anahtarı eklenmedi.',
+  'noresult.gpuservice.sshkey.nofound': 'Eşleşen SSH açık anahtarı bulunamadı.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

@@ -59,5 +59,8 @@ export default {
   'noresult.gpuservice.instance.nofound': '未找到匹配的 GPU 实例',
   'noresult.gpuservice.storage.title': '暂无存储',
   'noresult.gpuservice.storage.subTitle': '尚未添加任何存储。',
-  'noresult.gpuservice.storage.nofound': '未找到匹配的存储'
+  'noresult.gpuservice.storage.nofound': '未找到匹配的存储',
+  'noresult.gpuservice.sshkey.title': '暂无 SSH 公钥',
+  'noresult.gpuservice.sshkey.subTitle': '尚未添加任何 SSH 公钥。',
+  'noresult.gpuservice.sshkey.nofound': '未找到匹配的 SSH 公钥'
 };

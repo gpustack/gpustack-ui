@@ -35,6 +35,9 @@ export default {
   'gpuservice.template.card.resources': '资源',
   'gpuservice.template.card.ports': '端口',
   'gpuservice.publicKey.label': 'SSH 公钥',
+  'gpuservice.instance.ssh.enable': '启用 SSH 访问',
+  'gpuservice.instance.ssh.assignKey': '分配 SSH 公钥',
+  'gpuservice.instance.ssh.addKey': '添加 SSH 公钥',
   'gpuservice.publicKey.placeholder':
     '以 ssh-rsa 或 ssh-ed25519 开头，每个公钥单独一行\n\n查看公钥：\n- RSA\ncat ~/.ssh/id_rsa.pub\n- Ed25519\ncat ~/.ssh/id_ed25519.pub',
   'gpuservice.instance': 'GPU 实例',

@@ -300,7 +300,7 @@ const GroundSTT: React.FC<MessageProps> = forwardRef((props, ref) => {
     <div
       className="ground-left-wrapper"
       style={{
-        height: `calc(100vh - ${HEADER_HEIGHT}px)`
+        height: `calc(100vh - var(--app-banner-height, 0px) - ${HEADER_HEIGHT}px)`
       }}
     >
       <div className="ground-left">

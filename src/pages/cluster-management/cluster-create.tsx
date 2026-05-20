@@ -331,7 +331,9 @@ const ClusterCreate: React.FC<{
       )}
       <ColumnWrapper
         maxHeight={
-          isAddWorkerStep ? 'calc(100vh - 200px)' : 'calc(100vh - 150px)'
+          isAddWorkerStep
+            ? 'calc(100vh - var(--app-banner-height, 0px) - 200px)'
+            : 'calc(100vh - var(--app-banner-height, 0px) - 150px)'
         }
         styles={{
           container: { paddingTop: 16, paddingBottom: 16 }

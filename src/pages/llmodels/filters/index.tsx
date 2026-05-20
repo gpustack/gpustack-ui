@@ -50,7 +50,7 @@ const FilterFormContent: React.FC<FilterFormContentProps> = forwardRef(
       <FilterForm
         ref={filterRef}
         width={232}
-        contentHeight={'calc(100vh - 74px)'}
+        contentHeight={'calc(100vh - var(--app-banner-height, 0px) - 74px)'}
         open={open}
         onClose={onClose}
         onClear={onClear}

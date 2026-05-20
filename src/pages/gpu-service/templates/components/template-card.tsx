@@ -96,7 +96,6 @@ const CardName = styled.div`
   display: flex;
   align-items: center;
   color: var(--ant-color-text);
-  margin-bottom: 8px;
   gap: 8px;
   width: 100%;
   min-width: 0;
@@ -107,7 +106,7 @@ const Content = styled.div`
   flex-direction: column;
   align-items: flex-start;
   margin-top: 12px;
-  gap: 8px;
+  gap: 12px;
   color: var(--ant-color-text-secondary);
 `;
 

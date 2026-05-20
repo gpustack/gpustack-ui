@@ -65,7 +65,11 @@ export default {
     'Подходящие экземпляры GPU не найдены.',
   'noresult.gpuservice.storage.title': 'Нет хранилищ',
   'noresult.gpuservice.storage.subTitle': 'Хранилища ещё не добавлены.',
-  'noresult.gpuservice.storage.nofound': 'Подходящие хранилища не найдены.'
+  'noresult.gpuservice.storage.nofound': 'Подходящие хранилища не найдены.',
+  'noresult.gpuservice.sshkey.title': 'Нет открытых ключей SSH',
+  'noresult.gpuservice.sshkey.subTitle': 'Открытые ключи SSH ещё не добавлены.',
+  'noresult.gpuservice.sshkey.nofound':
+    'Подходящие открытые ключи SSH не найдены.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

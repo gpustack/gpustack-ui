@@ -41,6 +41,9 @@ export default {
   'gpuservice.template.card.resources': 'Ресурсы',
   'gpuservice.template.card.ports': 'Порты',
   'gpuservice.publicKey.label': 'Открытый ключ SSH',
+  'gpuservice.instance.ssh.enable': 'Включить SSH-доступ',
+  'gpuservice.instance.ssh.assignKey': 'Назначить открытый ключ SSH',
+  'gpuservice.instance.ssh.addKey': 'Добавить открытый ключ SSH',
   'gpuservice.publicKey.placeholder':
     'Начинается с ssh-rsa или ssh-ed25519, по одному открытому ключу на строку\n\nПросмотр открытого ключа:\n- RSA\ncat ~/.ssh/id_rsa.pub\n- Ed25519\ncat ~/.ssh/id_ed25519.pub',
   'gpuservice.instance': 'Экземпляр GPU',

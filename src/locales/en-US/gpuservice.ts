@@ -40,6 +40,9 @@ export default {
   'gpuservice.template.card.resources': 'Resources',
   'gpuservice.template.card.ports': 'Ports',
   'gpuservice.publicKey.label': 'SSH Public Key',
+  'gpuservice.instance.ssh.enable': 'Enable SSH Access',
+  'gpuservice.instance.ssh.assignKey': 'Assign SSH Public Key',
+  'gpuservice.instance.ssh.addKey': 'Add SSH Public Key',
   'gpuservice.publicKey.placeholder':
     'Begin with ssh-rsa or ssh-ed25519. One Public Key per line.\n\nView Public Key:\n- RSA\ncat ~/.ssh/id_rsa.pub\n- Ed25519\ncat ~/.ssh/id_ed25519.pub',
   'gpuservice.instance': 'GPU Instance',

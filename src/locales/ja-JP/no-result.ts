@@ -66,5 +66,8 @@ export default {
   'noresult.gpuservice.storage.title': 'ストレージなし',
   'noresult.gpuservice.storage.subTitle':
     'ストレージはまだ追加されていません。',
-  'noresult.gpuservice.storage.nofound': '一致するストレージが見つかりません。'
+  'noresult.gpuservice.storage.nofound': '一致するストレージが見つかりません。',
+  'noresult.gpuservice.sshkey.title': 'SSH 公開鍵なし',
+  'noresult.gpuservice.sshkey.subTitle': 'SSH 公開鍵はまだ追加されていません。',
+  'noresult.gpuservice.sshkey.nofound': '一致する SSH 公開鍵が見つかりません。'
 };

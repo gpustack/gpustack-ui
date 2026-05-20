@@ -38,6 +38,9 @@ export default {
   'gpuservice.template.card.resources': 'リソース',
   'gpuservice.template.card.ports': 'ポート',
   'gpuservice.publicKey.label': 'SSH 公開鍵',
+  'gpuservice.instance.ssh.enable': 'SSH アクセスを有効化',
+  'gpuservice.instance.ssh.assignKey': 'SSH 公開鍵を割り当て',
+  'gpuservice.instance.ssh.addKey': 'SSH 公開鍵を追加',
   'gpuservice.publicKey.placeholder':
     'ssh-rsa または ssh-ed25519 で始まり、各公開鍵は1行ずつ記述します\n\n公開鍵を確認：\n- RSA\ncat ~/.ssh/id_rsa.pub\n- Ed25519\ncat ~/.ssh/id_ed25519.pub',
   'gpuservice.instance': 'GPU インスタンス',

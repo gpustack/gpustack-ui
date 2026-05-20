@@ -10,8 +10,9 @@
     flex-direction: column;
     position: relative;
     height: calc(
-      100vh - @HEADER_HEIGHT - 4px - var(--page-content-padding) -
-        var(--page-content-padding) - var(--page-header-height)
+      100vh - var(--app-banner-height, 0px) - @HEADER_HEIGHT - 4px -
+        var(--page-content-padding) - var(--page-content-padding) -
+        var(--page-header-height)
     );
     width: calc(100% - 390px);
 

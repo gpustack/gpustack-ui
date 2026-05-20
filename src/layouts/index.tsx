@@ -425,24 +425,33 @@ export default (props: any) => {
           {...runtimeConfig}
           ErrorBoundary={ErrorBoundary}
         >
-          <PluginExtraFields name="GlobalLicenseBanner" />
-          <Exception
-            route={matchedRoute}
-            notFound={runtimeConfig?.notFound}
-            noFound={runtimeConfig?.noFound}
-            unAccessible={runtimeConfig?.unAccessible}
-            noAccessible={runtimeConfig?.noAccessible}
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              height: '100vh',
+              overflow: 'hidden'
+            }}
           >
-            {isNoContainerPage ? (
-              <Outlet />
-            ) : (
-              <PageContainerInner>
-                <div>
-                  <Outlet />
-                </div>
-              </PageContainerInner>
-            )}
-          </Exception>
+            <PluginExtraFields name="GlobalLicenseBanner" />
+            <Exception
+              route={matchedRoute}
+              notFound={runtimeConfig?.notFound}
+              noFound={runtimeConfig?.noFound}
+              unAccessible={runtimeConfig?.unAccessible}
+              noAccessible={runtimeConfig?.noAccessible}
+            >
+              {isNoContainerPage ? (
+                <Outlet />
+              ) : (
+                <PageContainerInner>
+                  <div>
+                    <Outlet />
+                  </div>
+                </PageContainerInner>
+              )}
+            </Exception>
+          </div>
           {NoResourceModal}
           {contextHolder}
         </ProLayout>

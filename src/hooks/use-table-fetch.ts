@@ -1,4 +1,4 @@
-import { TABLE_SORT_DIRECTIONS } from '@/config/settings';
+import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import useSetChunkRequest, {
   createAxiosToken
 } from '@/hooks/use-chunk-request';
@@ -8,7 +8,6 @@ import { handleBatchRequest } from '@/utils';
 import _ from 'lodash';
 import qs from 'query-string';
 import { useEffect, useRef, useState } from 'react';
-import { PaginationKey } from '../config/settings';
 import { usePaginationStatus } from './use-pagination-status';
 import { useTableMultiSort } from './use-table-sort';
 
@@ -265,6 +264,7 @@ export default function useTableFetch<T>(
         url: `${API}?${qs.stringify(_.pickBy(query, (val: any) => !!val))}`,
         handler: updateHandler
       });
+      // eslint-disable-next-line react-hooks/purity
       triggerAtRef.current = Date.now();
     } catch (error) {
       // ignore
@@ -360,6 +360,9 @@ export default function useTableFetch<T>(
         await deleteAPI?.(row.id, {
           ...modalRef.current?.configuration
         });
+
+        // remove the deleted id from selected ids in row selection
+        rowSelection.removeSelectedKeys([row.id]);
 
         // ======== to avoid fetch data twice, because of debounceFetchData has been run =======
         if (!updateManually) {

@@ -15,7 +15,7 @@ export default function useCreateStorage() {
   const currentCluster = useAtomValue(currentClusterAtom);
   const clusterID = currentCluster?.id;
   // Admin "All" view has no Org context — fall back to the
-  // selected cluster's owner Org slug for the K8s namespace.
+  // selected cluster's owner Org name for the K8s namespace.
   const namespace = getCurrentOrgNamespace(currentCluster?.owner_principal_id);
 
   const fetchDetail = useCallback(

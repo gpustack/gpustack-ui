@@ -36,7 +36,7 @@ const GPUServiceStorage: React.FC = () => {
   const intl = useIntl();
   const [currentCluster, setCurrentCluster] = useAtom(currentClusterAtom);
   const clusterID = currentCluster?.id;
-  // Admin "All" view falls back to the cluster's owner Org slug —
+  // Admin "All" view falls back to the cluster's owner Org name —
   // see :func:`getCurrentOrgNamespace`.
   const namespace = getCurrentOrgNamespace(currentCluster?.owner_principal_id);
 

@@ -89,7 +89,7 @@ export interface ClusterListItem {
   worker_pools: NodePoolListItem[];
   k8s_volume_mounts?: VolumeMount[];
   // Backend ClusterPublic carries this; admin-"All" namespace
-  // resolution falls back to the cluster's owner Org slug.
+  // resolution falls back to the cluster's owner Org name.
   owner_principal_id?: number;
 }
 

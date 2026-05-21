@@ -6,12 +6,17 @@ export const clearStorageUserSettings = () => {
     const savedSettings = JSON.parse(
       localStorage.getItem('userSettings') || '{}'
     );
+    // colorPrimary is an enterprise-wide branding setting (set by admins
+    // and applied by `onAppInit` from /enterprise/settings), not a per-user
+    // preference. Preserve it across login — otherwise the next layout
+    // mount triggers `atomWithStorage.onMount`, re-reads localStorage,
+    // and falls back to the default color until a full page refresh
+    // re-runs `applyEnterpriseSettings`.
     localStorage.setItem(
       'userSettings',
       JSON.stringify({
         ...savedSettings,
-        hideAddResourceModal: false,
-        colorPrimary: undefined
+        hideAddResourceModal: false
       })
     );
   } catch (error) {

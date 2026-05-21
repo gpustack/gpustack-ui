@@ -31,6 +31,7 @@ export default {
       rowSelectedBg: 'transparent',
       headerSortActiveBg: 'transparent',
       headerSortHoverBg: 'transparent',
+      headerSplitColor: '#e8e8e8',
       headerBg: 'none'
     },
     Button: {

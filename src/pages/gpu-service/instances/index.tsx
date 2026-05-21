@@ -41,7 +41,7 @@ const GPUService: React.FC = () => {
   const [currentCluster, setCurrentCluster] = useAtom(currentClusterAtom);
   const clusterID = currentCluster?.id;
   // In admin "All" view there's no Org context, so the helper falls
-  // back to the selected cluster's owner Org slug.
+  // back to the selected cluster's owner Org name.
   const namespace = getCurrentOrgNamespace(currentCluster?.owner_principal_id);
 
   const deleteInstance = useCallback(

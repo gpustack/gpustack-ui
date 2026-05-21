@@ -30,9 +30,11 @@ export const initialPasswordAtom = atomWithStorage<string>(
 
 // Namespace the server creates for an Org's resources on each Kubernetes
 // cluster. The format must match the backend's ``get_namespace_name``
-// helper — ``gpustack-{slug}`` — because the GPU-instance / storage CRDs
+// helper — ``gpustack-{name}`` — because the GPU-instance / storage CRDs
 // (worker.gpustack.ai/v1) are namespaced and the server-side admission
-// keys off this exact name.
+// keys off this exact name. The identifier column on the unified
+// Principal table is now ``name`` (post identity-consolidation rename
+// of the legacy ``slug``); the namespace prefix is unchanged.
 //
 // Resolution path:
 //   1. The Org the caller is currently acting under — the enterprise
@@ -75,7 +77,7 @@ const getStoredCurrentOrgId = (): number | null => {
 // the caller's member orgs; ``allOrganizations`` is admin-only (every
 // Org on the platform) so admin sessions can resolve any owner Org id.
 // Both are checked because ``currentOrganizationId`` is null in the
-// admin "All" view but a member org's slug might still cover the
+// admin "All" view but a member org's ``name`` might still cover the
 // cluster-owner fallback.
 const ORG_CACHE_KEYS = ['organizationList', 'allOrganizations'] as const;
 
@@ -89,10 +91,10 @@ const lookupOrgNamespace = (id: number | null): string | null => {
     try {
       const raw = localStorage.getItem(key);
       if (!raw) continue;
-      const list = JSON.parse(raw) as Array<{ id: number; slug?: string }>;
+      const list = JSON.parse(raw) as Array<{ id: number; name?: string }>;
       if (!Array.isArray(list)) continue;
       const match = list.find((item) => String(item?.id) === target);
-      if (match?.slug) return `gpustack-${match.slug}`;
+      if (match?.name) return `gpustack-${match.name}`;
     } catch {
       // ignore malformed cache; continue checking other keys
     }

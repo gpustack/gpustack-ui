@@ -208,6 +208,12 @@ export const useUsageFilters = ({
     fetchTimeSeriesData({
       ...currentChartFilters,
       group_by: groupByArray,
+      // Without ``scope`` the backend defaults to ``all``, while the
+      // breakdown tables pass ``scope`` explicitly. The mismatch makes
+      // the chart and the tables run different filters on the same
+      // page — an Org owner viewing a cross-Org-granted model sees the
+      // chart empty while the tables render the same usage.
+      scope: currentSelectedFilters.scope,
       start_date: currentSelectedFilters.start_date,
       end_date: currentSelectedFilters.end_date,
       filters: nextFilters

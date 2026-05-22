@@ -12,7 +12,11 @@ import useUsersColumns from './use-users-columns';
 
 type ColumnLike = {
   title: any;
-  dataIndex: string | string[];
+  // Plugin-contributed columns may omit `dataIndex` — they render via a
+  // bound component and aren't tied to a single row field. The export
+  // path skips those entries; an exported sheet has no place for a
+  // computed cell anyway.
+  dataIndex?: string | string[];
   key?: string;
 };
 

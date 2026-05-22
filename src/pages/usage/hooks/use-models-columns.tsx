@@ -1,18 +1,50 @@
 // columns.ts
+import { getGPUStackPlugin } from '@/plugins';
 import { AutoTooltip } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Tag } from 'antd';
 import { useMemo } from 'react';
 import { BreakdownItem as ListItem } from '../config/types';
 
-const useModelsColumns = (): Array<{
-  title: string;
-  dataIndex: string | string[];
+// Plugin slot: enterprise plugins can contribute extra columns to the
+// usage breakdown Models table via `usage.modelsExtraColumns`. Each
+// entry renders a per-row cell keyed off `record.route.identity.current
+// .route_id`. `placement` decides where in the existing column order
+// the column lands (currently only `before-last-active` is supported,
+// which is the natural spot for per-route quota / usage indicators).
+export type UsageModelsPluginColumn = {
   key: string;
-}> => {
+  titleId: string;
+  placement?: 'before-last-active';
+  render: (record: ListItem) => React.ReactNode;
+};
+
+type ColumnDef = {
+  title: React.ReactNode;
+  dataIndex?: string | string[];
+  key: string;
+  sorter?: boolean;
+  ellipsis?: { showTitle: boolean };
+  render?: (text: any, record: ListItem) => React.ReactNode;
+};
+
+const useModelsColumns = (): ColumnDef[] => {
   const intl = useIntl();
 
   return useMemo(() => {
+    const pluginColumns: UsageModelsPluginColumn[] =
+      getGPUStackPlugin()?.usage?.modelsExtraColumns ?? [];
+
+    const pluginCols: ColumnDef[] = pluginColumns.map((c) => ({
+      title: intl.formatMessage({ id: c.titleId }),
+      key: c.key,
+      render: (_text: any, record: ListItem) => c.render(record)
+    }));
+    const beforeLastActive = pluginCols.filter(
+      (_c, i) =>
+        (pluginColumns[i].placement ?? 'before-last-active') ===
+        'before-last-active'
+    );
     return [
       {
         title: intl.formatMessage({ id: 'common.table.name' }),
@@ -95,6 +127,7 @@ const useModelsColumns = (): Array<{
         },
         render: (text: number) => <AutoTooltip ghost>{text}</AutoTooltip>
       },
+      ...beforeLastActive,
       {
         title: intl.formatMessage({ id: 'usage.table.lastActive' }),
         dataIndex: 'last_active',

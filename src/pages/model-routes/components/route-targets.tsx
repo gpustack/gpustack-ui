@@ -68,7 +68,7 @@ const RouteItem: React.FC<TargetItemProps> = ({
         <AutoTooltip ghost minWidth={20}>
           {data.model_id
             ? modelList?.find((m) => m.value === data.model_id)?.label
-            : data.provider_model_name}
+            : data.overridden_model_name}
         </AutoTooltip>
       </span>
     );

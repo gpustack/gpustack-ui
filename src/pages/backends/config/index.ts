@@ -198,6 +198,8 @@ export const customBackendFields = [
   'default_run_command',
   'version_configs',
   'default_backend_param',
+  'parameter_format',
+  'common_parameters',
   'default_env'
 ];
 
@@ -208,6 +210,8 @@ export const builtInBackendFields = [
   'description',
   'version_configs',
   'default_backend_param',
+  'parameter_format',
+  'common_parameters',
   'default_env'
 ];
 
@@ -293,6 +297,10 @@ default_version: v0.11.0
 health_check_path: /v1/models
 default_backend_param:
   - --host
+parameter_format: space
+common_parameters:
+  - --max-model-len
+  - --gpu-memory-utilization
 default_run_command: "{{model_path}} --port {{port}} --host {{worker_ip}} --served-model-name {{model_name}}"
 default_env:
 version_configs:

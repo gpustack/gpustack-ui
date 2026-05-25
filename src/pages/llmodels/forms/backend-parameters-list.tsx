@@ -12,7 +12,7 @@ import BackendParameters, {
 
 const BackendParametersList: React.FC = () => {
   const intl = useIntl();
-  const { onValuesChange } = useFormContext();
+  const { onValuesChange, flatBackendOptions } = useFormContext();
   const form = Form.useFormInstance();
   const backend = Form.useWatch('backend', form);
 
@@ -21,8 +21,18 @@ const BackendParametersList: React.FC = () => {
   }, [backend]);
 
   const paramsConfig = useMemo(() => {
-    return _.get(BackendParameters, backend, []);
-  }, [backend]);
+    const builtIn = _.get(BackendParameters, backend, []) as Array<{
+      label: string;
+      value: string;
+      opts?: { label: any; value: any }[];
+    }>;
+    const selected = flatBackendOptions?.find((o) => o.value === backend);
+    const extra = (selected?.common_parameters || []).map((v) => ({
+      label: v,
+      value: v
+    }));
+    return _.uniqBy([...extra, ...builtIn], 'value');
+  }, [backend, flatBackendOptions]);
 
   const handleBackendParametersOnBlur = () => {
     onValuesChange?.({}, form.getFieldsValue());

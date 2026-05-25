@@ -5,6 +5,7 @@ import {
   Input as CInput,
   LabelSelector,
   ListInput,
+  Select as SealSelect,
   Textarea as SealTextArea,
   useAppUtils
 } from '@gpustack/core-ui';
@@ -145,6 +146,46 @@ const BasicForm = () => {
           btnText={intl.formatMessage({ id: 'backend.form.addParameter' })}
           label={intl.formatMessage({
             id: 'backend.form.defaultBackendParameters'
+          })}
+        ></ListInput>
+      </Form.Item>
+      <Form.Item<FormData>
+        name="parameter_format"
+        initialValue="auto"
+        rules={[{ required: false }]}
+      >
+        <SealSelect
+          label={intl.formatMessage({ id: 'backend.form.parameterFormat' })}
+          options={[
+            {
+              label: intl.formatMessage({
+                id: 'backend.form.parameterFormat.default'
+              }),
+              value: 'auto'
+            },
+            {
+              label: intl.formatMessage({
+                id: 'backend.form.parameterFormat.space'
+              }),
+              value: 'space'
+            },
+            {
+              label: intl.formatMessage({
+                id: 'backend.form.parameterFormat.equal'
+              }),
+              value: 'equal'
+            }
+          ]}
+        ></SealSelect>
+      </Form.Item>
+      <Form.Item<FormData>
+        name="common_parameters"
+        rules={[{ required: false }]}
+      >
+        <ListInput
+          btnText={intl.formatMessage({ id: 'backend.form.addParameter' })}
+          label={intl.formatMessage({
+            id: 'backend.form.commonParameters'
           })}
         ></ListInput>
       </Form.Item>

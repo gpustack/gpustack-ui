@@ -23,6 +23,13 @@ export default {
   'backend.form.defaultExecuteCommand': 'Varsayılan Çalıştırma Komutu',
   'backend.form.defaultExecuteCommand.tips': `'{{'model_path'}}', '{{'port'}}', '{{'worker_ip'}}' ve '{{'model_name'}}' dağıtım sırasında gerçek değerlerle değiştirilecek yer tutuculardır.`,
   'backend.form.defaultBackendParameters': 'Varsayılan Altyapı Parametreleri',
+  'backend.form.parameterFormat': 'Parametre Biçimi',
+  'backend.form.parameterFormat.default': 'Varsayılan',
+  'backend.form.parameterFormat.space': 'Boşluk (--key value)',
+  'backend.form.parameterFormat.equal': 'Eşittir (--key=value)',
+  'backend.form.commonParameters': 'Yaygın Parametreler',
+  'backend.form.commonParameters.tips':
+    'Dağıtım sırasında altyapı parametreleri girişinde öneri olarak gösterilir.',
   'backend.form.versionConfig': 'Sürüm Yapılandırması',
   'backend.form.addParameter': 'Parametre Ekle',
   'backend.form.noVersion': 'Sürüm eklenmedi',

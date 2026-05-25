@@ -23,6 +23,13 @@ export default {
   'backend.form.defaultExecuteCommand': 'Default Execution Command',
   'backend.form.defaultExecuteCommand.tips': `'{{'model_path'}}', '{{'port'}}', '{{'worker_ip'}}' and '{{'model_name'}}' are placeholders that will be substituted with the actual values during deployment.`,
   'backend.form.defaultBackendParameters': 'Default Backend Parameters',
+  'backend.form.parameterFormat': 'パラメータ形式',
+  'backend.form.parameterFormat.default': 'バックエンドのデフォルト',
+  'backend.form.parameterFormat.space': 'スペース区切り (--key value)',
+  'backend.form.parameterFormat.equal': 'イコール連結 (--key=value)',
+  'backend.form.commonParameters': 'よく使うパラメータ',
+  'backend.form.commonParameters.tips':
+    'モデルのデプロイ時にバックエンドパラメータ入力欄の候補として表示されます。',
   'backend.form.versionConfig': 'Versions Config',
   'backend.form.addParameter': 'Add Parameter',
   'backend.form.noVersion': 'No versions added',

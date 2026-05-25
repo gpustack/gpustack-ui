@@ -28,6 +28,8 @@ export interface FormData {
   enabled?: boolean;
   backend_source?: string;
   default_env?: Record<string, any>;
+  parameter_format?: 'space' | 'equal' | 'auto' | null;
+  common_parameters?: string[];
 }
 
 export interface ListItem extends FormData {

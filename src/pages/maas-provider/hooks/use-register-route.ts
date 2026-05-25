@@ -15,9 +15,8 @@ const useRegisterRoute = () => {
       routeTargets: [
         {
           weight: 100,
-          provider_model_name: model.name,
-          provider_id: record.id,
-          parentId: record.id
+          overridden_model_name: model.name,
+          provider_id: record.id
         }
       ]
     };

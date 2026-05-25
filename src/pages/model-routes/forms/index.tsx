@@ -14,10 +14,48 @@ import { Form } from 'antd';
 import _ from 'lodash';
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 import FormContext from '../config/form-context';
-import { FormData, RouteItem as ListItem } from '../config/types';
+import {
+  FormData,
+  RouteItem as ListItem,
+  RouteTargetFormItem
+} from '../config/types';
 import useEditTargets from '../hooks/use-edit-targets';
 import Basic from './basic';
 import Targets from './targets';
+
+const isSameTarget = (
+  left?: RouteTargetFormItem | null,
+  right?: RouteTargetFormItem | null
+) => {
+  if (!left || !right) {
+    return false;
+  }
+
+  if (left.model_id != null || right.model_id != null) {
+    return left.model_id != null && left.model_id === right.model_id;
+  }
+
+  return (
+    left.provider_id != null &&
+    left.provider_id === right.provider_id &&
+    left.overridden_model_name === right.overridden_model_name
+  );
+};
+
+const normalizeTarget = (
+  target: RouteTargetFormItem | null | undefined
+): RouteTargetFormItem => {
+  const normalizedTarget = {
+    id: target?.id,
+    weight: target?.weight ?? 0,
+    model_id: target?.model_id,
+    provider_id: target?.provider_id,
+    overridden_model_name: target?.overridden_model_name,
+    fallback_status_codes: target?.fallback_status_codes
+  };
+
+  return _.omitBy(normalizedTarget, _.isUndefined) as RouteTargetFormItem;
+};
 
 interface ProviderFormProps {
   ref?: any;
@@ -25,12 +63,7 @@ interface ProviderFormProps {
   action: PageActionType;
   realAction?: string;
   currentData?: ListItem & {
-    routeTargets?: {
-      weight?: number;
-      model_id?: number;
-      provider_id?: number;
-      provider_model_name?: string;
-    }[];
+    routeTargets?: RouteTargetFormItem[];
   }; // Used when action is EDIT
   onFinish: (values: FormData) => Promise<void>;
   onFallbackChange?: (changed: boolean) => void;
@@ -92,25 +125,12 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
     const fallbackTarget = values.fallback_target;
 
     if (fallbackTarget) {
-      const exsitinged = targetList.find((ep) => {
-        if (fallbackTarget!.model_id) {
-          return (
-            ep.model_id === fallbackTarget!.model_id &&
-            ep.lora_module_name === fallbackTarget!.lora_module_name
-          );
-        }
-        return (
-          ep.provider_id === fallbackTarget!.provider_id &&
-          ep.provider_model_name === fallbackTarget!.provider_model_name
-        );
-      });
-      if (exsitinged) {
+      const existingTarget = targetList.find((target) =>
+        isSameTarget(target, fallbackTarget)
+      );
+      if (existingTarget) {
         targetList = targetList.map((ep) => {
-          if (
-            (ep.model_id === fallbackTarget.model_id &&
-              ep.lora_module_name === fallbackTarget.lora_module_name) ||
-            ep.provider_model_name === fallbackTarget.provider_model_name
-          ) {
+          if (isSameTarget(ep, fallbackTarget)) {
             return {
               ...ep,
               fallback_status_codes: ['4xx', '5xx']
@@ -120,7 +140,7 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
         });
       }
 
-      if (!exsitinged) {
+      if (!existingTarget) {
         targetList.push({
           ...fallbackTarget,
           weight: 0,
@@ -129,7 +149,7 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       }
     }
 
-    return targetList;
+    return targetList.map((target) => normalizeTarget(target));
   };
 
   const handleOnFinish = (values: FormData) => {
@@ -148,27 +168,14 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       return;
     }
 
-    const initDataList = async (
-      targets: {
-        weight?: number;
-        model_id?: number;
-        provider_id?: number;
-        provider_model_name?: string;
-        lora_module_name?: string;
-      }[]
-    ) => {
+    const initDataList = async (targets: RouteTargetFormItem[]) => {
       // init targets form list
       targetsRef.current?.initDataList(
         targets?.map((ep) => ({
           weight: ep.weight,
           value: ep.model_id
-            ? [
-                'deployments',
-                ep.lora_module_name
-                  ? `${ep.model_id}_lora_${ep.lora_module_name}`
-                  : ep.model_id
-              ]
-            : [ep.provider_id, ep.provider_model_name]
+            ? ['deployments', ep.model_id]
+            : [ep.provider_id, ep.overridden_model_name]
         })) || []
       );
     };
@@ -190,13 +197,8 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       if (fallbackTarget) {
         targetsRef.current?.initFallbackValues({
           value: fallbackTarget.model_id
-            ? [
-                'deployments',
-                fallbackTarget.lora_module_name
-                  ? `${fallbackTarget.model_id}_lora_${fallbackTarget.lora_module_name}`
-                  : fallbackTarget.model_id
-              ]
-            : [fallbackTarget.provider_id, fallbackTarget.provider_model_name]
+            ? ['deployments', fallbackTarget.model_id]
+            : [fallbackTarget.provider_id, fallbackTarget.overridden_model_name]
         });
       }
     };

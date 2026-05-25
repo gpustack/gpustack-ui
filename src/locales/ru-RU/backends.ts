@@ -23,6 +23,13 @@ export default {
   'backend.form.defaultExecuteCommand': 'Команда выполнения по умолчанию',
   'backend.form.defaultExecuteCommand.tips': `'{{'model_path'}}', '{{'port'}}', '{{'worker_ip'}}' и '{{'model_name'}}' заполняются реальными значениями во время запуска`,
   'backend.form.defaultBackendParameters': 'Параметры бэкенда по умолчанию',
+  'backend.form.parameterFormat': 'Формат параметров',
+  'backend.form.parameterFormat.default': 'По умолчанию бэкенда',
+  'backend.form.parameterFormat.space': 'Пробел (--key value)',
+  'backend.form.parameterFormat.equal': 'Знак равенства (--key=value)',
+  'backend.form.commonParameters': 'Часто используемые параметры',
+  'backend.form.commonParameters.tips':
+    'Отображаются как подсказки в поле параметров бэкенда при развёртывании.',
   'backend.form.versionConfig': 'Конфигурация версий',
   'backend.form.addParameter': 'Добавить параметр',
   'backend.form.noVersion': 'Версии не добавлены',

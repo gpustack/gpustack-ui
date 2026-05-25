@@ -16,6 +16,18 @@
       },
       "description": "default backend parameter"
     },
+    "parameter_format": {
+      "type": ["string", "null"],
+      "enum": ["space", "equal", null],
+      "description": "parameter output format: 'space' -> --key value, 'equal' -> --key=value"
+    },
+    "common_parameters": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "commonly used parameters shown as hints in deployment UI"
+    },
     "default_run_command": {
       "type": ["string", "null"],
       "description": "default start command"

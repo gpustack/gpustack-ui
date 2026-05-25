@@ -344,6 +344,8 @@ export interface BackendGroupItem {
   isBuiltIn: boolean;
   backend_source: string;
   enabled: boolean;
+  common_parameters?: string[];
+  parameter_format?: 'space' | 'equal' | null;
   versions: {
     label: string;
     value: string;
@@ -363,6 +365,8 @@ export interface BackendOption {
   backend_source: string;
   default_env?: Record<string, any>;
   enabled: boolean;
+  common_parameters?: string[];
+  parameter_format?: 'space' | 'equal' | null;
   versions: {
     label: string;
     value: string;
@@ -387,6 +391,8 @@ export interface BackendItem {
   is_built_in: boolean;
   backend_source: string;
   enabled: boolean;
+  common_parameters?: string[];
+  parameter_format?: 'space' | 'equal' | null;
   versions: {
     version: string;
     env?: Record<string, any>;

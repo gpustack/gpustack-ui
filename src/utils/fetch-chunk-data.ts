@@ -3,6 +3,48 @@ import qs from 'query-string';
 
 const extractStreamRegx = /(data|error):\s*({.*?})(?=\n|$)/g;
 
+const readJsonNumber = (
+  storage: Storage | null,
+  key: string
+): number | null => {
+  if (storage == null) {
+    return null;
+  }
+  try {
+    const raw = storage.getItem(key);
+    if (raw == null) {
+      return null;
+    }
+    const parsed = JSON.parse(raw);
+    return typeof parsed === 'number' ? parsed : null;
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * Read the active Org id the same way the umi request interceptor in
+ * ``request.extensions.ts`` does, then translate it to the header the
+ * backend's tenant resolver expects. Lets non-umi ``fetch()`` paths —
+ * streaming Playground completions, raw image / TTS POSTs — pin
+ * tenant context with the same precedence rules as everywhere else
+ * (createScope override first, current org second). Returns an empty
+ * object when no active org context is set.
+ */
+export const tenantHeaders = (): Record<string, string> => {
+  if (typeof window === 'undefined') {
+    return {};
+  }
+  try {
+    const orgId =
+      readJsonNumber(window.sessionStorage, 'createScopeOrgOverride') ??
+      readJsonNumber(window.localStorage, 'currentOrganizationId');
+    return orgId == null ? {} : { 'X-Organization-Id': String(orgId) };
+  } catch {
+    return {};
+  }
+};
+
 const extractJSON = (
   dataStr: string
 ): { results: any[]; remaining: string } => {
@@ -71,7 +113,8 @@ export const fetchChunkedData = async (params: {
     signal: params.signal,
     headers: {
       'Content-Type': 'application/json',
-      ...params.headers
+      ...tenantHeaders(),
+      ...(params.headers || {})
     }
   });
 
@@ -122,7 +165,11 @@ export const fetchChunkedDataPostFormData = async (params: {
   const response = await fetch(url, {
     method: 'POST',
     body: createFormData(params.data),
-    signal: params.signal
+    signal: params.signal,
+    headers: {
+      ...tenantHeaders(),
+      ...(params.headers || {})
+    }
   });
   if (!response.ok) {
     return await errorHandler(response);

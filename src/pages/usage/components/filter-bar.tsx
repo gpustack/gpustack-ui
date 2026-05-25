@@ -1,5 +1,4 @@
 import useRangePickerPreset from '@/pages/dashboard/hooks/use-rangepicker-preset';
-import { useModel } from '@@/plugin-model';
 import { DownloadOutlined, SyncOutlined } from '@ant-design/icons';
 import {
   AutoTooltip,
@@ -7,7 +6,7 @@ import {
   IconFont,
   SimpleSelect
 } from '@gpustack/core-ui';
-import { useIntl } from '@umijs/max';
+import { useAccess, useIntl } from '@umijs/max';
 import { Button, DatePicker, Dropdown, MenuProps } from 'antd';
 import dayjs from 'dayjs';
 import React from 'react';
@@ -119,8 +118,12 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
     ]
   });
 
-  const initialInfo = useModel('@@initialState');
-  const { initialState } = initialInfo || {};
+  // ``canSeeOrgAdmin`` already encodes "platform admin OR owner of the
+  // selected (non-Personal) Org" via the access seam. Mirrors the
+  // backend's ``_can_use_all_scope`` predicate for the user-filter
+  // drill-down surface.
+  const access = useAccess();
+  const canManageUsers = !!access.canSeeOrgAdmin;
 
   const exportMenuItems: MenuProps['items'] = [
     {
@@ -252,7 +255,7 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
           optionLabelRender={singleOptionRender}
           onChange={onRoutesChange}
         />
-        {initialState?.currentUser?.is_admin && (
+        {canManageUsers && (
           <>
             <SimpleSelect
               allowClear
@@ -309,7 +312,7 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
             </div>
           </>
         )}
-        {!initialState?.currentUser?.is_admin && (
+        {!canManageUsers && (
           <SimpleSelect
             allowClear
             showSearch

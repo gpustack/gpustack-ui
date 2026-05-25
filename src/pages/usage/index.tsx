@@ -1,8 +1,7 @@
 import { baseColorMap } from '@/pages/dashboard/config';
 import { formatLargeNumber } from '@/utils';
-import { useModel } from '@@/plugin-model';
 import { SimpleCard } from '@gpustack/core-ui';
-import { useIntl } from '@umijs/max';
+import { useAccess, useIntl } from '@umijs/max';
 import React, { useEffect, useMemo, useState } from 'react';
 import BreakdownTabs from './components/breakdown-tabs';
 import DailyUsage from './components/daily-usage';
@@ -16,8 +15,7 @@ type DateType = 'date' | 'week' | 'month' | 'quarter' | 'year';
 
 const Usage: React.FC = () => {
   const intl = useIntl();
-  const initialInfo = useModel('@@initialState');
-  const { initialState } = initialInfo || {};
+  const access = useAccess();
   const { exportTable } = useExportTable();
   const [openExportModal, setOpenExportModal] = useState(false);
   const [breakdownRefreshKey, setBreakdownRefreshKey] = useState(0);
@@ -66,7 +64,10 @@ const Usage: React.FC = () => {
 
   const { filters, commonFilters, fetchData, timeSeriesData, filterBar } =
     useUsageFilters({
-      initialScope: initialState?.currentUser?.is_admin ? 'all' : 'self',
+      // ``canSeeOrgAdmin`` widens to Org owners of the selected Org in
+      // the enterprise build (Personal Org excluded). Mirrors the BE's
+      // ``_can_use_all_scope`` gate one-to-one.
+      initialScope: access.canSeeOrgAdmin ? 'all' : 'self',
       metaData,
       chartFilters,
       summaryColumns

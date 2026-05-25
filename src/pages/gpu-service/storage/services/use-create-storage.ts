@@ -1,9 +1,5 @@
-import { currentClusterAtom } from '@/atoms/gpuservice';
-import { getCurrentOrgNamespace } from '@/atoms/user';
 import { useQueryData } from '@gpustack/core-ui';
-import { useAtomValue } from 'jotai';
 import { useCallback } from 'react';
-import { apiVersion, KindMapping } from '../../constants';
 import { createGPUServiceStorage } from '../apis';
 import { FormData, ListItem } from '../config/types';
 
@@ -12,31 +8,10 @@ interface CreateStorageParams {
 }
 
 export default function useCreateStorage() {
-  const currentCluster = useAtomValue(currentClusterAtom);
-  const clusterID = currentCluster?.id;
-  // Admin "All" view has no Org context — fall back to the
-  // selected cluster's owner Org name for the K8s namespace.
-  const namespace = getCurrentOrgNamespace(currentCluster?.owner_principal_id);
-
   const fetchDetail = useCallback(
-    (params: CreateStorageParams, option?: any) =>
-      createGPUServiceStorage(
-        {
-          namespace,
-          clusterID,
-          data: {
-            apiVersion,
-            kind: KindMapping.instancePersistentVolume,
-            metadata: {
-              name: params.data.metadata.name,
-              namespace
-            },
-            spec: params.data.spec
-          }
-        },
-        option
-      ),
-    [namespace, clusterID]
+    (params: CreateStorageParams) =>
+      createGPUServiceStorage({ data: params.data }),
+    []
   );
 
   const { detailData, loading, cancelRequest, fetchData } = useQueryData<

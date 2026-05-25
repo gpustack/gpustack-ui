@@ -1,16 +1,17 @@
 import { useQueryData } from '@gpustack/core-ui';
 import { useCallback } from 'react';
 import { updateGPUServicePublicKey } from '../apis';
-import { FormData, ListItem } from '../types';
+import { FormData, ListItem } from '../config/types';
 
 interface UpdateSshkeyParams {
-  data: FormData;
+  id: number;
+  data: Omit<FormData, 'name'>;
 }
 
 export default function useUpdateSshkey() {
   const fetchDetail = useCallback(
     (params: UpdateSshkeyParams) =>
-      updateGPUServicePublicKey({ data: params.data }),
+      updateGPUServicePublicKey({ id: params.id, data: params.data }),
     []
   );
 

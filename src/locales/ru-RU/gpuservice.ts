@@ -40,6 +40,36 @@ export default {
   'gpuservice.template.card.mount': 'Монтирование',
   'gpuservice.template.card.resources': 'Ресурсы',
   'gpuservice.template.card.ports': 'Порты',
+  'gpuservice.storageType': 'Тип хранилища',
+  'gpuservice.storageType.add': 'Добавить тип хранилища',
+  'gpuservice.storageType.edit': 'Изменить тип хранилища',
+  'gpuservice.storageType.filter.name': 'Поиск по имени',
+  'gpuservice.storageType.kind': 'Тип',
+  'gpuservice.storageType.mountOptions': 'Параметры монтирования',
+  'gpuservice.storageType.nfs.server': 'Сервер NFS',
+  'gpuservice.storageType.nfs.share': 'Путь общего ресурса',
+  'gpuservice.storageType.nfs.subDirectory': 'Подкаталог',
+  'gpuservice.storageType.nfs.subDirectory.tips':
+    'Если поле пустое, будет создан подкаталог с именем постоянного тома. Если задано, под этим подкаталогом будет создан каталог с именем постоянного тома.',
+  'gpuservice.storageType.nfs.mountPermissions': 'Права монтирования',
+  'gpuservice.storageType.nfs.mountPermissions.tips':
+    'Наследует права файлов с NFS-сервера.',
+  'gpuservice.storageType.s3.endpoint': 'Endpoint',
+  'gpuservice.storageType.s3.endpoint.rule':
+    'Должен начинаться с http или https',
+  'gpuservice.storageType.s3.region': 'Регион',
+  'gpuservice.storageType.s3.bucket': 'Бакет',
+  'gpuservice.storageType.s3.bucket.tips':
+    'Если поле пустое, будет создан новый бакет с именем постоянного тома. Если задано, в этом бакете будет создан подкаталог с именем постоянного тома.',
+  'gpuservice.storageType.s3.accessKey': 'Access Key',
+  'gpuservice.storageType.s3.secretKey': 'Secret Key',
+  'gpuservice.storageType.s3.insecure': 'Пропустить проверку сертификата TLS/SSL',
+  'gpuservice.storageType.s3.insecure.tips':
+    'Если включено, сертификат сервера S3 не проверяется. Подходит для внутреннего тестирования или самоподписанных сертификатов; в производственной среде включайте с осторожностью.',
+  'gpuservice.publicKey': 'Открытый ключ SSH',
+  'gpuservice.publicKey.add': 'Добавить открытый ключ SSH',
+  'gpuservice.publicKey.edit': 'Изменить открытый ключ SSH',
+  'gpuservice.publicKey.filter.name': 'Поиск по имени',
   'gpuservice.publicKey.label': 'Открытый ключ SSH',
   'gpuservice.instance.ssh.enable': 'Включить SSH-доступ',
   'gpuservice.instance.ssh.assignKey': 'Назначить открытый ключ SSH',
@@ -102,6 +132,10 @@ export default {
   'gpuservice.storage.temporary': 'Временное',
   'gpuservice.storage.persistentVolume': 'Постоянный том',
   'gpuservice.storage.persistentVolume.required': 'Выберите постоянный том',
+  'gpuservice.storage.persistentVolume.capacity': 'Ёмкость (ГБ)',
+  'gpuservice.storage.persistentVolume.capacity.required': 'Введите ёмкость',
+  'gpuservice.storage.persistentVolume.releaseWithInstance':
+    'Освобождать вместе с экземпляром',
   'gpuservice.storage.tempCapacity': 'Объём (ГБ)',
   'gpuservice.storage.tempCapacity.required':
     'Введите объём временного хранилища',

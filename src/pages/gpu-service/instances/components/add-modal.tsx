@@ -101,7 +101,8 @@ const AddModal: React.FC<AddModalProps> = ({
 
   const instanceTypeList = detailData?.items || [];
   const templateList = templatesData?.items || [];
-  const readonly = action === PageAction.VIEW;
+  // const readonly = action === PageAction.VIEW;
+  const readonly = false;
   const isRecreate = realAction === PageAction.CREATE;
   const showResourceSelectors = action === PageAction.CREATE || isRecreate;
   const shouldAutoSelectResource = action === PageAction.CREATE && !isRecreate;
@@ -119,27 +120,33 @@ const AddModal: React.FC<AddModalProps> = ({
     instanceType: InstanceTypeItem,
     template: TemplateItem | undefined
   ) => {
-    const name = instanceType.metadata?.name;
     const manufacturer = instanceType.spec?.manufacturer;
 
-    setInstanceTypeSelection({ instanceType: name, manufacturer });
+    setInstanceTypeSelection({
+      instanceType: instanceType.name,
+      manufacturer
+    });
     setTemplateId(template?.id);
 
-    const currentSpec = form.current?.getFieldsValue()?.spec || {};
-    const updatedSpec = {
-      ...currentSpec,
-      type: name,
-      resources: { ...(currentSpec.resources || {}), accelerator: '1' }
-    };
-
     if (template) {
+      const currentSpec = form.current?.getFieldsValue()?.spec || {};
       form.current?.setFieldsValue({
         manufacturer: template.manufacturer,
+        description: JSON.stringify(
+          {
+            name: instanceType.name,
+            spec: {
+              ...instanceType.spec
+            }
+          },
+          null,
+          2
+        ),
         spec: {
-          ...updatedSpec,
+          ...currentSpec,
           ...template.spec,
           resources: {
-            ...(updatedSpec.resources || {}),
+            ...(currentSpec.resources || {}),
             ...(template.spec?.resources || {})
           }
         }
@@ -147,16 +154,46 @@ const AddModal: React.FC<AddModalProps> = ({
     } else {
       form.current?.setFieldsValue({
         manufacturer: undefined,
-        spec: updatedSpec
+        description: JSON.stringify(instanceType.spec, null, 2)
       });
     }
+    form.current?.applyInstanceType?.(instanceType);
+  };
+
+  const findAggregateOf = (
+    candidateName: string | undefined,
+    clusterId: number | null | undefined,
+    instanceTypes: InstanceTypeItem[]
+  ): InstanceTypeItem | undefined => {
+    if (!candidateName) return undefined;
+    return instanceTypes.find((item) =>
+      (item.status?.acceleratorTiers ?? []).some((tier) =>
+        (tier.candidates ?? []).some(
+          (c) => c.name === candidateName && Number(c.cluster) === clusterId
+        )
+      )
+    );
   };
 
   const applyAutoSelection = (
     instanceTypes: InstanceTypeItem[],
     templates: TemplateItem[]
   ) => {
-    if (!shouldAutoSelectResource) return;
+    // On edit / view, surface the persisted selection in the card list.
+    if (!shouldAutoSelectResource) {
+      const aggregate = findAggregateOf(
+        data?.spec?.type,
+        data?.clusterId,
+        instanceTypes
+      );
+      if (aggregate) {
+        setInstanceTypeSelection({
+          instanceType: aggregate.name,
+          manufacturer: aggregate.spec?.manufacturer
+        });
+      }
+      return;
+    }
     if (!instanceTypes.length) return;
 
     const first = instanceTypes[0];
@@ -178,18 +215,21 @@ const AddModal: React.FC<AddModalProps> = ({
       return;
     }
 
-    const session = ++sessionRef.current;
-    Promise.all([fetchData({}), fetchTemplates({ page: -1 })]).then(
-      ([instanceRes, templatesRes]) => {
+    if (action === PageAction.CREATE) {
+      const session = ++sessionRef.current;
+      Promise.all([
+        fetchData({ page: 1, perPage: 100 }),
+        fetchTemplates({ page: -1 })
+      ]).then(([instanceRes, templatesRes]) => {
         if (sessionRef.current !== session) return;
         applyAutoSelection(instanceRes?.items || [], templatesRes?.items || []);
-      }
-    );
-  }, [open, shouldAutoSelectResource]);
+      });
+    }
+  }, [open, shouldAutoSelectResource, action]);
 
   // filter instance types
   const filteredInstanceTypes = instanceTypeList.filter((item) =>
-    matchKeyword([item.metadata?.name], instanceKeyword)
+    matchKeyword([item.name], instanceKeyword)
   );
 
   // filter templates based on selection and keyword
@@ -370,7 +410,7 @@ const AddModal: React.FC<AddModalProps> = ({
             }
           >
             <>
-              {action !== PageAction.VIEW && (
+              {action !== PageAction.EDIT && (
                 <ColTitle>
                   {intl.formatMessage({ id: 'common.title.config' })}
                 </ColTitle>

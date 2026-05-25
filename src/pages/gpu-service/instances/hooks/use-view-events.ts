@@ -1,14 +1,9 @@
-import { currentClusterAtom } from '@/atoms/gpuservice';
-import { getCurrentOrgNamespace } from '@/atoms/user';
-import { useAtomValue } from 'jotai';
 import { useState } from 'react';
 import { ListItem } from '../config/types';
 
+// View events still hits the K8s proxy. clusterID and namespace are taken
+// from the row itself (`row.clusterId`, `row.status.namespace`).
 const useViewEvents = () => {
-  const currentCluster = useAtomValue(currentClusterAtom);
-  const clusterID = currentCluster?.id;
-  const namespace = getCurrentOrgNamespace(currentCluster?.owner_principal_id);
-
   const [openModalStatus, setOpenModalStatus] = useState<{
     open: boolean;
     name: string;
@@ -22,13 +17,11 @@ const useViewEvents = () => {
   });
 
   const openModal = (row?: ListItem) => {
-    const name = row?.metadata?.name || '';
-    const rowNamespace = row?.metadata?.namespace || namespace;
     setOpenModalStatus({
       open: true,
-      name,
-      namespace: rowNamespace,
-      clusterID
+      name: row?.name || '',
+      namespace: row?.status?.namespace || '',
+      clusterID: row?.clusterId ?? undefined
     });
   };
 

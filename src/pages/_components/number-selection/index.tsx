@@ -20,10 +20,9 @@ interface NumberSelectionProps {
     input?: React.CSSProperties;
   };
   labelExtra?: React.ReactNode;
+  maxCount?: number;
   onChange?: (value: number) => void;
 }
-
-const PRESET_ITEMS = [1, 2, 4, 8];
 
 const NumberSelection: React.FC<NumberSelectionProps> = ({
   id,
@@ -36,21 +35,26 @@ const NumberSelection: React.FC<NumberSelectionProps> = ({
   required,
   labelExtra,
   className,
+  maxCount = 8,
   style,
   onChange
 }) => {
   const intl = useIntl();
-  const showCustomInput = max > 8;
+
+  const showCustomInput = max > maxCount;
+  const presetItems = Array.from(
+    { length: Math.max(0, maxCount) },
+    (_, i) => i + 1
+  );
   const computedItems = showCustomInput
-    ? PRESET_ITEMS.filter((n) => n >= min && n <= max)
+    ? presetItems.filter((n) => n >= min && n <= max)
     : Array.from(
         { length: Math.max(0, Math.floor((max - min) / step) + 1) },
         (_, i) => min + i * step
       );
   const items = computedItems.length === 0 ? [0] : computedItems;
-
   const [inputValue, setInputValue] = useState<number | null>(() =>
-    value !== undefined && value !== null && !PRESET_ITEMS.includes(value)
+    value !== undefined && value !== null && !presetItems.includes(value)
       ? value
       : null
   );
@@ -58,7 +62,7 @@ const NumberSelection: React.FC<NumberSelectionProps> = ({
   useEffect(() => {
     if (value === undefined || value === null) {
       setInputValue(null);
-    } else if (PRESET_ITEMS.includes(value)) {
+    } else if (presetItems.includes(value)) {
       setInputValue(null);
     } else {
       setInputValue(value);
@@ -83,7 +87,6 @@ const NumberSelection: React.FC<NumberSelectionProps> = ({
     }
     onChange?.(inputValue);
   };
-  console.log('value+++', value, 'inputValue', items, inputValue);
   return (
     <div
       id={id}
@@ -137,7 +140,7 @@ const NumberSelection: React.FC<NumberSelectionProps> = ({
               })}
             >
               <InputNumber
-                controls
+                controls={false}
                 variant="borderless"
                 min={min}
                 max={max}
@@ -146,7 +149,7 @@ const NumberSelection: React.FC<NumberSelectionProps> = ({
                 value={inputValue || undefined}
                 style={{
                   fontSize: 14,
-                  width: 140,
+                  width: 60,
                   height: 32,
                   backgroundColor: 'var(--ant-color-bg-container)',
                   ...style

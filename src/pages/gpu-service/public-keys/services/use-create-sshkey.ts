@@ -1,7 +1,7 @@
 import { useQueryData } from '@gpustack/core-ui';
 import { useCallback } from 'react';
 import { createGPUServicePublicKey } from '../apis';
-import { FormData, ListItem } from '../types';
+import { FormData, ListItem } from '../config/types';
 
 interface CreateSshkeyParams {
   data: FormData;

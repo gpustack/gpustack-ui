@@ -2,16 +2,17 @@ import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import NumberSelection from '@/pages/_components/number-selection';
 import { useIntl } from '@umijs/max';
-import { Alert, Form } from 'antd';
-import { useEffect, useMemo } from 'react';
+import { Alert, Flex, Form } from 'antd';
+import _ from 'lodash';
+import { useMemo } from 'react';
 import styled from 'styled-components';
 import InstanceTypeItem from '../components/instance-type-item';
-import { InstanceTypePhaseValueMap } from '../config';
+import { getAcceleratorMax } from '../config';
 import {
   FormData,
-  InstanceTypeItem as InstanceTypeItemModel
+  InstanceTypeItem as InstanceTypeItemModel,
+  ListItem
 } from '../config/types';
-import useQueryInstanceTypes from '../services/use-query-instance-types';
 
 const FieldBlock = styled.div`
   margin-bottom: 24px;
@@ -25,24 +26,22 @@ const SelectedCard = styled.div`
 `;
 
 interface InstanceTypePickerProps {
-  value?: string;
-  dataList: InstanceTypeItemModel[];
+  selectedInstanceType?: InstanceTypeItemModel;
 }
 
 const InstanceTypePicker: React.FC<InstanceTypePickerProps> = ({
-  value,
-  dataList
+  selectedInstanceType
 }) => {
-  const selected = useMemo(() => {
-    return (
-      dataList.find((item) => (item.metadata?.name || '') === value) ||
-      ({} as InstanceTypeItemModel)
-    );
-  }, [value, dataList]);
-
+  const intl = useIntl();
   return (
     <SelectedCard>
-      <InstanceTypeItem item={selected} showStatus={false} />
+      {selectedInstanceType ? (
+        <InstanceTypeItem item={selectedInstanceType} showStatus={false} />
+      ) : (
+        <span style={{ color: 'var(--ant-color-text-tertiary)' }}>
+          {intl.formatMessage({ id: 'gpuservice.instance.type.required' })}
+        </span>
+      )}
     </SelectedCard>
   );
 };
@@ -50,56 +49,62 @@ const InstanceTypePicker: React.FC<InstanceTypePickerProps> = ({
 interface InstanceTypeFormItemProps {
   action: PageActionType;
   disabled?: boolean;
+  currentData?: ListItem;
+  selectedInstanceType?: InstanceTypeItemModel;
+  onGPUCountChange?: (value: number) => void;
 }
 
 const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
   action,
-  disabled
+  disabled,
+  currentData,
+  selectedInstanceType,
+  onGPUCountChange
 }) => {
   const intl = useIntl();
-  const form = Form.useFormInstance<FormData>();
-  const typeName = Form.useWatch(['spec', 'type'], form) as string | undefined;
 
-  const { detailData, fetchData } = useQueryInstanceTypes();
+  const maxGpuCount =
+    action === PageAction.EDIT
+      ? _.toNumber(currentData?.spec?.resources?.accelerator) || 0
+      : getAcceleratorMax(selectedInstanceType?.status?.acceleratorTiers);
 
-  useEffect(() => {
-    fetchData({});
-  }, [fetchData]);
+  const handleOnGPUCountChange = (value: number) => {
+    onGPUCountChange?.(value);
+  };
 
-  const dataList = detailData?.items || [];
-
-  const selectedInstanceType = useMemo(() => {
-    return dataList.find((item) => (item.metadata?.name || '') === typeName);
-  }, [dataList, typeName]);
-
-  const maxGpuCount = useMemo(() => {
-    const onceMaxRequest =
-      selectedInstanceType?.status?.accelerator?.onceMaxRequest;
-    const num = onceMaxRequest ? Number(onceMaxRequest) : 0;
-    return num;
-  }, [selectedInstanceType]);
-
-  useEffect(() => {
-    if (!typeName && dataList.length > 0) {
-      const defaultType = dataList.find(
-        (item) => item.status?.phase === InstanceTypePhaseValueMap.Active
-      );
-      if (defaultType) {
-        form.setFieldValue(['spec', 'type'], defaultType.metadata?.name || '');
-      }
-      return;
+  const showGPUCount = useMemo(() => {
+    if (action === PageAction.EDIT) {
+      return _.toNumber(currentData?.spec?.resources?.accelerator) > 0;
     }
+    return selectedInstanceType?.spec?.acceleratable;
+  }, [selectedInstanceType, action]);
 
-    const currentAccelerator =
-      Number(form.getFieldValue(['spec', 'resources', 'accelerator'])) || 1;
-    if (currentAccelerator > maxGpuCount) {
-      form.setFieldValue(['spec', 'resources', 'accelerator'], maxGpuCount);
+  const selectedInstanceData = useMemo(() => {
+    if (action === PageAction.EDIT) {
+      return JSON.parse(currentData?.description || '{}') || {};
     }
+    return selectedInstanceType;
+  }, [selectedInstanceType, action, currentData]);
 
-    if (currentAccelerator < 1) {
-      form.setFieldValue(['spec', 'resources', 'accelerator'], 1);
-    }
-  }, [form, typeName, maxGpuCount, dataList]);
+  const renderInstanceType = () => {
+    const description = JSON.parse(currentData?.description || '{}').spec || {};
+    return (
+      <SelectedCard>
+        <Flex align="flex-start" orientation="vertical">
+          <span
+            style={{
+              color: 'var(--ant-color-text)',
+              fontWeight: 400
+            }}
+          >
+            {description.manufacturer
+              ? `${description.product} x ${currentData?.spec?.resources?.accelerator}`
+              : ''}
+          </span>
+        </Flex>
+      </SelectedCard>
+    );
+  };
 
   return (
     <div data-field="instanceType">
@@ -115,17 +120,22 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
             }
           ]}
         >
-          <InstanceTypePicker dataList={dataList} value={typeName} />
+          {action === PageAction.CREATE && (
+            <InstanceTypePicker selectedInstanceType={selectedInstanceType} />
+          )}
+          {action === PageAction.EDIT && renderInstanceType()}
         </Form.Item>
       </FieldBlock>
-      {selectedInstanceType?.spec?.acceleratable && (
-        <Form.Item
+      {showGPUCount && (
+        <Form.Item<FormData>
           name={['spec', 'resources', 'accelerator']}
+          hidden={action === PageAction.EDIT}
           rules={[
             {
               required: true,
               validator: (_, value) => {
-                if (value > maxGpuCount) {
+                const num = Number(value);
+                if (num > maxGpuCount) {
                   return Promise.reject(
                     new Error(
                       intl.formatMessage(
@@ -135,16 +145,12 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
                     )
                   );
                 }
-                if (value < 1) {
+                if (num < 1) {
                   return Promise.reject(
                     new Error(
                       intl.formatMessage(
-                        {
-                          id: 'gpuservice.instance.gpuCount.min'
-                        },
-                        {
-                          count: 1
-                        }
+                        { id: 'gpuservice.instance.gpuCount.min' },
+                        { count: 1 }
                       )
                     )
                   );
@@ -156,12 +162,14 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
         >
           <NumberSelection
             min={1}
+            onChange={handleOnGPUCountChange}
             max={maxGpuCount}
             step={1}
             required
             disabled={disabled || action === PageAction.EDIT}
             labelExtra={
-              !maxGpuCount && (
+              !maxGpuCount &&
+              action !== PageAction.EDIT && (
                 <Alert
                   showIcon
                   type="warning"

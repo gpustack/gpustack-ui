@@ -213,10 +213,19 @@ const baseRoutes = [
         name: 'storage',
         path: '/gpu-service/storage',
         key: 'gpuServiceStorage',
+        icon: 'icon-database-outlined',
+        selectedIcon: 'icon-database-filled',
+        defaultIcon: 'icon-database-outlined',
+        component: './gpu-service/storage'
+      },
+      {
+        name: 'storageTypes',
+        path: '/gpu-service/storage-types',
+        key: 'gpuServiceStorageTypes',
         icon: 'icon-storage-outlined',
         selectedIcon: 'icon-storage-filled',
         defaultIcon: 'icon-storage-outlined',
-        component: './gpu-service/storage'
+        component: './gpu-service/storage-types'
       },
       {
         name: 'publicKeys',

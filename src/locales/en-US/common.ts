@@ -58,6 +58,7 @@ export default {
   'common.table.createTime': 'Created',
   'common.table.updateTime': 'Updated',
   'common.table.description': 'Description',
+  'common.table.displayName': 'Display Name',
   'common.table.name': 'Name',
   'common.table.status': 'Status',
   'common.table.name.list': '{type} Name',
@@ -283,5 +284,6 @@ export default {
   'common.image.limit.width': 'Image width must be {width}.',
   'common.image.limit.height': 'Image height must be {height}.',
   'common.remaining': 'Remaining {count}',
+  'common.max': 'Maximum {count}',
   'common.validate.group': 'Please complete the {group} configuration'
 };

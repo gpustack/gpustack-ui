@@ -66,9 +66,7 @@ const NO_CONTAINER_PAGES = [
   'clusterCreate',
   'benchmarkDetail',
   'deployment',
-  'video',
-  'instances',
-  'storage'
+  'video'
 ];
 
 const CHECK_RESOURCE_PATH = [
@@ -358,7 +356,7 @@ export default (props: any) => {
         config={{
           apiBaseUrl: GPUSTACK_API_BASE_URL,
           theme: userSettings.theme,
-          iconUrl: '//at.alicdn.com/t/c/font_4613488_13sztx8tdru.js',
+          iconUrl: '//at.alicdn.com/t/c/font_4613488_jmdepcs90im.js',
           isDarkTheme: userSettings.isDarkTheme,
           defaultColorPrimary: COLOR_PRIMARY
         }}

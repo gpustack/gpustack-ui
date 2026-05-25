@@ -56,6 +56,7 @@ export default {
   'common.table.createTime': '创建时间',
   'common.table.updateTime': '更新时间',
   'common.table.description': '描述',
+  'common.table.displayName': '显示名称',
   'common.table.name': '名称',
   'common.table.status': '状态',
   'common.table.name.list': '{type}名称',
@@ -276,5 +277,6 @@ export default {
   'common.image.limit.width': '图片宽度须为{width}。',
   'common.image.limit.height': '图片高度须为{height}。',
   'common.remaining': '剩余 {count}',
+  'common.max': '最大 {count}',
   'common.validate.group': '请填写完整的{group}配置'
 };

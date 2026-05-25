@@ -1,15 +1,11 @@
-import { currentClusterAtom } from '@/atoms/gpuservice';
-import { getCurrentOrgNamespace } from '@/atoms/user';
-import { useAtomValue } from 'jotai';
 import { useState } from 'react';
 import { GPU_SERVICE_INSTANCES_LOG_API } from '../apis';
 import { ListItem } from '../config/types';
 
+// View logs still hits the K8s proxy. clusterID and namespace are taken
+// from the row itself (`row.clusterId`, `row.status.namespace`) since the
+// page no longer has a global cluster selector.
 const useViewLogs = () => {
-  const currentCluster = useAtomValue(currentClusterAtom);
-  const clusterID = currentCluster?.id;
-  const namespace = getCurrentOrgNamespace(currentCluster?.owner_principal_id);
-
   const [openModalStatus, setOpenModalStatus] = useState<{
     open: boolean;
     url: string;
@@ -23,17 +19,14 @@ const useViewLogs = () => {
   });
 
   const openModal = (row?: ListItem) => {
-    const name = row?.metadata?.name;
-    const rowNamespace = row?.metadata?.namespace || namespace;
+    const name = row?.name;
+    const namespace = row?.status?.namespace;
+    const clusterID = row?.clusterId ?? undefined;
     setOpenModalStatus({
       open: true,
       url:
-        name && clusterID
-          ? `${GPU_SERVICE_INSTANCES_LOG_API({
-              namespace: rowNamespace,
-              clusterID,
-              name
-            })}`
+        name && namespace && clusterID
+          ? GPU_SERVICE_INSTANCES_LOG_API({ namespace, clusterID, name })
           : '',
       tail: 1000,
       status: row?.status?.phase || undefined

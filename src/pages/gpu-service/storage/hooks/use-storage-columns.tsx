@@ -3,12 +3,7 @@ import { useIntl } from '@umijs/max';
 import type { ColumnsType } from 'antd/lib/table';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
-import {
-  rowActionList,
-  status,
-  StoragePhaseLabelMap,
-  StorageTypeLabelMap
-} from '../config';
+import { rowActionList, status, StoragePhaseLabelMap } from '../config';
 import { ListItem } from '../config/types';
 
 interface ColumnsHookProps {
@@ -25,15 +20,15 @@ const useStorageColumns = ({
     return [
       {
         title: intl.formatMessage({ id: 'common.table.name' }),
-        dataIndex: ['metadata', 'name'],
+        dataIndex: 'name',
         key: 'name',
         sorter: false,
         ellipsis: {
           showTitle: false
         },
-        render: (text: string) => (
+        render: (text: string, record: ListItem) => (
           <AutoTooltip ghost style={{ maxWidth: 360 }}>
-            <span className="text-primary">{text}</span>
+            <span className="text-primary">{record.displayName || text}</span>
           </AutoTooltip>
         )
       },
@@ -42,10 +37,7 @@ const useStorageColumns = ({
         dataIndex: ['spec', 'type'],
         key: 'type',
         sorter: false,
-        render: (value: string) =>
-          StorageTypeLabelMap[value]
-            ? intl.formatMessage({ id: StorageTypeLabelMap[value] })
-            : value || '-'
+        render: (value: string) => value || '-'
       },
       {
         title: intl.formatMessage({ id: 'gpuservice.storage.capacity' }),
@@ -59,20 +51,22 @@ const useStorageColumns = ({
         dataIndex: ['status', 'phase'],
         key: 'status',
         sorter: false,
-        render: (value: string, record: ListItem) => (
-          <StatusTag
-            statusValue={{
-              status: status[value],
-              text: StoragePhaseLabelMap[value] || value,
-              message: record.status?.phaseMessage || ''
-            }}
-          ></StatusTag>
-        )
+        render: (value: string) =>
+          value ? (
+            <StatusTag
+              statusValue={{
+                status: status[value],
+                text: StoragePhaseLabelMap[value] || value
+              }}
+            ></StatusTag>
+          ) : (
+            '-'
+          )
       },
       {
         title: intl.formatMessage({ id: 'common.table.createTime' }),
-        dataIndex: ['metadata', 'creationTimestamp'],
-        key: 'creationTimestamp',
+        dataIndex: 'created_at',
+        key: 'created_at',
         sorter: false,
         ellipsis: {
           showTitle: false

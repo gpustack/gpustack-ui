@@ -1,7 +1,7 @@
 import useCoolColors from '@/hooks/use-cool-colors';
 import BarChart from '@/pages/_components/bar-chart';
 import { BaseSelect, CardWrapper } from '@gpustack/core-ui';
-import { useIntl, useModel } from '@umijs/max';
+import { useAccess, useIntl } from '@umijs/max';
 import { Segmented } from 'antd';
 import dayjs from 'dayjs';
 import React, { useMemo } from 'react';
@@ -80,8 +80,12 @@ const DailyUsage: React.FC<DailyUsageProps> = (props) => {
     onGranularityChange
   } = props;
   const generateCoolColors = useCoolColors();
-  const { initialState } = useModel('@@initialState');
-  const { currentUser } = initialState || {};
+  // ``canSeeOrgAdmin`` widens to Org owners of the selected Org
+  // (Personal Org excluded). Mirrors the BE's
+  // ``_can_use_all_scope`` gate for the per-user breakdown
+  // dimension.
+  const access = useAccess();
+  const canGroupByUser = !!access.canSeeOrgAdmin;
 
   const labelFormatter = (v: any) => {
     if (granularity === 'month') {
@@ -253,7 +257,7 @@ const DailyUsage: React.FC<DailyUsageProps> = (props) => {
       value: item.value
     }))
     .filter((option) => {
-      if (currentUser?.is_admin) {
+      if (canGroupByUser) {
         return true;
       }
       return option.value !== 'user';

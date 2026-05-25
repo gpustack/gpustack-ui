@@ -1,24 +1,21 @@
+export interface RouteTargetFormItem {
+  id?: number;
+  overridden_model_name?: string;
+  weight?: number | null;
+  model_id?: number;
+  provider_id?: number;
+  fallback_status_codes?: string[];
+  parentId?: string | number;
+}
+
 export interface FormData {
   name: string;
   description: string;
   categories: any[];
   meta: Record<string, any>;
   generic_proxy: boolean;
-  fallback_target: {
-    provider_model_name?: string;
-    model_id?: number;
-    provider_id?: number;
-    lora_module_name?: string;
-    fallback_status_codes?: string[];
-  };
-  targets: {
-    provider_model_name?: string;
-    weight?: number | null;
-    model_id?: number;
-    provider_id?: number;
-    lora_module_name?: string;
-    fallback_status_codes?: string[];
-  }[];
+  fallback_target: RouteTargetFormItem | null;
+  targets: RouteTargetFormItem[];
 }
 
 export interface RouteItem {
@@ -36,7 +33,7 @@ export interface RouteItem {
   access_policy: string;
 }
 
-export interface RouteTarget {
+export interface RouteTarget extends RouteTargetFormItem {
   id: number;
   created_at: string;
   updated_at: string;
@@ -46,8 +43,7 @@ export interface RouteTarget {
   route_name: string;
   route_id: number;
   provider_id: number;
-  provider_model_name: string;
+  overridden_model_name: string;
   fallback_status_codes: string[];
-  lora_module_name?: string;
   state: string;
 }

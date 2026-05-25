@@ -90,7 +90,7 @@ const useTargetSourceModels = () => {
             label: model.name,
             value: model.name,
             data: {
-              provider_model_name: model.name,
+              overridden_model_name: model.name,
               provider_id: provider.id,
               parentId: provider.id
             },

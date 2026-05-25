@@ -1,125 +1,56 @@
 import { request } from '@umijs/max';
-import { omitPathParams } from '../../utils';
-import { ListItem, StorageClassItem } from '../config/types';
+import {
+  FormData,
+  ListItem,
+  StorageClassItem,
+  UpdateData
+} from '../config/types';
 
-export const GPU_SERVICE_STORAGE_API = (params: {
-  namespace: string;
-  clusterID?: number;
-}) =>
-  `/clusters/${params.clusterID}/proxy/apis/worker.gpustack.ai/v1/namespaces/${params.namespace}/instancepersistentvolumes`;
+export const GPU_SERVICE_STORAGE_API = '/gpu-instance-persistent-volumes';
 
-export const STORAGE_CLASS_API = (params: { clusterID?: number }) =>
-  `/clusters/${params.clusterID}/proxy/apis/storage.k8s.io/v1/storageclasses`;
+export const STORAGE_CLASS_API = '/gpu-instance-persistent-volume-types';
 
 export async function queryGPUServiceStorage(
-  params: Global.K8sSearchParams & {
-    namespace: string;
-    clusterID?: number;
-  },
+  params: Global.SearchParams,
   options?: any
 ) {
-  if (!params.clusterID) {
-    return;
-  }
-  return request<Global.K8sPageResponse<ListItem>>(
-    GPU_SERVICE_STORAGE_API({
-      namespace: params.namespace,
-      clusterID: params.clusterID
-    }),
-    {
-      method: 'GET',
-      params: omitPathParams(params),
-      cancelToken: options?.token
-    }
-  );
+  return request<Global.PageResponse<ListItem>>(GPU_SERVICE_STORAGE_API, {
+    method: 'GET',
+    params,
+    cancelToken: options?.token
+  });
 }
 
-export async function createGPUServiceStorage(
-  params: {
-    namespace: string;
-    clusterID?: number;
-    data: Global.K8sCommonData;
-  },
-  option?: any
-) {
-  if (!params.clusterID) {
-    return;
-  }
-  return request<ListItem>(
-    GPU_SERVICE_STORAGE_API({
-      namespace: params.namespace,
-      clusterID: params.clusterID
-    }),
-    {
-      method: 'POST',
-      data: params.data,
-      cancelToken: option?.token
-    }
-  );
+export async function createGPUServiceStorage(params: { data: FormData }) {
+  return request<ListItem>(GPU_SERVICE_STORAGE_API, {
+    method: 'POST',
+    data: params.data
+  });
 }
 
-export async function updateGPUServiceStorage(
-  params: {
-    namespace: string;
-    clusterID?: number;
-    id: number;
-    data: Global.K8sCommonData;
-  },
-  option?: any
-) {
-  if (!params.clusterID) {
-    return;
-  }
-  return request<ListItem>(
-    `${GPU_SERVICE_STORAGE_API({
-      namespace: params.namespace,
-      clusterID: params.clusterID
-    })}/${params.id}`,
-    {
-      method: 'PUT',
-      data: params.data,
-      cancelToken: option?.token
-    }
-  );
-}
-
-export async function deleteGPUServiceStorage(params: {
-  namespace: string;
-  clusterID?: number;
+export async function updateGPUServiceStorage(params: {
   id: number;
+  data: UpdateData;
 }) {
-  if (!params.clusterID) {
-    return;
-  }
-  return request(
-    `${GPU_SERVICE_STORAGE_API({
-      namespace: params.namespace,
-      clusterID: params.clusterID
-    })}/${params.id}`,
-    {
-      method: 'DELETE'
-    }
-  );
+  return request<ListItem>(`${GPU_SERVICE_STORAGE_API}/${params.id}`, {
+    method: 'PUT',
+    data: params.data
+  });
+}
+
+export async function deleteGPUServiceStorage(id: number) {
+  return request(`${GPU_SERVICE_STORAGE_API}/${id}`, {
+    method: 'DELETE'
+  });
 }
 
 export async function queryStorageClass(
-  params: Global.K8sSearchParams & {
-    clusterID?: number;
-  },
+  params: Global.SearchParams,
   options?: any
 ) {
-  if (!params.clusterID) {
-    return;
-  }
-  return request<Global.K8sPageResponse<StorageClassItem>>(
-    STORAGE_CLASS_API({ clusterID: params.clusterID }),
-    {
-      method: 'GET',
-      params: omitPathParams(params),
-      cancelToken: options?.token,
-      headers: {
-        skipErrorHandler: 'true'
-      }
-    }
-  );
+  return request<Global.PageResponse<StorageClassItem>>(STORAGE_CLASS_API, {
+    method: 'GET',
+    params,
+    cancelToken: options?.token
+  });
 }

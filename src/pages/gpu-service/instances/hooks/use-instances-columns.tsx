@@ -34,7 +34,7 @@ type ConnectEntry =
 const getConnectEntries = (record: ListItem): ConnectEntry[] => {
   const ip = record.status?.hostIPs?.[0]?.ip;
   const ports = record.status?.ports || [];
-  const hasSshKey = !!record.spec?.sshPublicKey?.name;
+  const hasSshKey = !!record.spec?.sshPublicKeys?.length;
   const configPorts = record.spec?.ports || [];
 
   if (!ip) {
@@ -66,6 +66,27 @@ const getConnectEntries = (record: ListItem): ConnectEntry[] => {
     });
 };
 
+const renderInstanceType = (record: ListItem) => {
+  const description = JSON.parse(record?.description || '{}').spec || {};
+  return (
+    <Flex align="flex-start" orientation="vertical">
+      <span
+        style={{
+          color: 'var(--ant-color-text)',
+          fontWeight: 400
+        }}
+      >
+        {description.manufacturer
+          ? `${description.product} x ${record.spec?.resources?.accelerator}`
+          : ''}
+      </span>
+      <span className="text-tertiary">
+        {`${record.spec.resources?.cpu}C / RAM: ${record.spec.resources?.ram?.replace('Gi', 'GB')} / Disk: ${record.spec.resources?.localStorage?.replace('Gi', 'GB')}`}{' '}
+      </span>
+    </Flex>
+  );
+};
+
 interface ColumnsHookProps {
   handleSelect: (val: string, record: ListItem) => void;
   sortOrder: string[];
@@ -80,15 +101,15 @@ const useInstancesColumns = ({
     return [
       {
         title: intl.formatMessage({ id: 'common.table.name' }),
-        dataIndex: ['metadata', 'name'],
+        dataIndex: 'name',
         key: 'name',
         sorter: false,
         ellipsis: {
           showTitle: false
         },
-        render: (text: string) => (
+        render: (text: string, record: ListItem) => (
           <AutoTooltip ghost style={{ maxWidth: 360 }}>
-            <span className="text-primary">{text}</span>
+            <span className="text-primary">{text || record.displayName}</span>
           </AutoTooltip>
         )
       },
@@ -198,40 +219,19 @@ const useInstancesColumns = ({
         ellipsis: {
           showTitle: false
         },
-        width: 230,
-        render: (text: string) => (
+        render: (_text: string, record: ListItem) => (
           <AutoTooltip
             ghost
             style={{ maxWidth: 360, color: 'var(--ant-color-text) !important' }}
           >
-            <Flex align="center">
-              <span
-                style={{
-                  fontWeight: 400
-                }}
-              >
-                NVIDIA A100 (x2)
-              </span>
-              <span
-                className="text-secondary"
-                style={{
-                  display: 'flex',
-                  width: 4,
-                  height: 4,
-                  borderRadius: '50%',
-                  backgroundColor: 'var(--ant-color-text-secondary)',
-                  margin: '0 8px'
-                }}
-              ></span>
-              <span className="text-tertiary">4C / 16GB</span>
-            </Flex>
+            {renderInstanceType(record)}
           </AutoTooltip>
         )
       },
       {
         title: intl.formatMessage({ id: 'common.table.createTime' }),
-        dataIndex: ['metadata', 'creationTimestamp'],
-        key: 'creationTimestamp',
+        dataIndex: 'created_at',
+        key: 'created_at',
         sorter: false,
         ellipsis: {
           showTitle: false

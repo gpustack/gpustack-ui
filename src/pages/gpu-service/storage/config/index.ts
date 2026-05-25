@@ -20,90 +20,13 @@ export const status: Record<string, StatusType> = {
   [StoragePhaseValueMap.Pending]: StatusMaps.transitioning
 };
 
-export const StorageTypeValueMap = {
-  Local: 'local',
-  Shared: 'shared',
-  Object: 'object'
-};
-
-export const StorageTypeLabelMap: Record<string, string> = {
-  [StorageTypeValueMap.Local]: 'gpuservice.storage.type.local',
-  [StorageTypeValueMap.Shared]: 'gpuservice.storage.type.shared',
-  [StorageTypeValueMap.Object]: 'gpuservice.storage.type.object'
-};
-
-export const StorageTypeOptions = [
-  {
-    label: StorageTypeLabelMap[StorageTypeValueMap.Local],
-    value: StorageTypeValueMap.Local,
-    locale: true
-  },
-  {
-    label: StorageTypeLabelMap[StorageTypeValueMap.Shared],
-    value: StorageTypeValueMap.Shared,
-    locale: true
-  },
-  {
-    label: StorageTypeLabelMap[StorageTypeValueMap.Object],
-    value: StorageTypeValueMap.Object,
-    locale: true
-  }
-];
-
-export const AccessModeValueMap = {
-  ReadWriteOnce: 'ReadWriteOnce',
-  ReadOnlyMany: 'ReadOnlyMany',
-  ReadWriteMany: 'ReadWriteMany',
-  ReadWriteOncePod: 'ReadWriteOncePod'
-};
-
-export const AccessModeOptions = [
-  {
-    label: 'ReadWriteOnce',
-    value: AccessModeValueMap.ReadWriteOnce
-  },
-  {
-    label: 'ReadWriteMany',
-    value: AccessModeValueMap.ReadWriteMany
-  },
-  {
-    label: 'ReadOnlyMany',
-    value: AccessModeValueMap.ReadOnlyMany
-  },
-  {
-    label: 'ReadWriteOncePod',
-    value: AccessModeValueMap.ReadWriteOncePod
-  }
-];
-
-export const ReClaimPolicyValueMap = {
-  Retain: 'Retain',
-  Delete: 'Delete',
-  Recycle: 'Recycle'
-};
-
-export const ReClaimPolicyOptions = [
-  {
-    label: 'Retain',
-    value: ReClaimPolicyValueMap.Retain
-  },
-  {
-    label: 'Delete',
-    value: ReClaimPolicyValueMap.Delete
-  },
-  {
-    label: 'Recycle',
-    value: ReClaimPolicyValueMap.Recycle
-  }
-];
-
 export const rowActionList = [
-  // {
-  //   label: 'common.button.edit',
-  //   key: 'edit',
-  //   locale: true,
-  //   icon: icons.EditOutlined
-  // },
+  {
+    label: 'common.button.edit',
+    key: 'edit',
+    locale: true,
+    icon: icons.EditOutlined
+  },
   {
     label: 'common.button.delete',
     key: 'delete',

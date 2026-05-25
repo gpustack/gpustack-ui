@@ -3,7 +3,7 @@ import { TemplateCard } from '@gpustack/core-ui';
 import { Empty, Spin } from 'antd';
 import _ from 'lodash';
 import styled from 'styled-components';
-import { InstanceTypePhaseValueMap } from '../config';
+import { getAcceleratorMax } from '../config';
 import { InstanceTypeItem as InstanceTypeItemModel } from '../config/types';
 import InstanceTypeItem from './instance-type-item';
 
@@ -20,8 +20,12 @@ interface InstanceTypeListProps {
   loading?: boolean;
 }
 
-const isAvailable = (item: InstanceTypeItemModel) =>
-  item.status?.phase === InstanceTypePhaseValueMap.Active;
+// CPU types always have stock (no accelerator). Accelerated types are
+// considered available when at least one tier offers onceMaxRequest > 0.
+const isAvailable = (item: InstanceTypeItemModel) => {
+  if (!item.spec?.acceleratable) return true;
+  return getAcceleratorMax(item.status?.acceleratorTiers) > 0;
+};
 
 const InstanceTypeList: React.FC<InstanceTypeListProps> = ({
   value,
@@ -53,7 +57,7 @@ const InstanceTypeList: React.FC<InstanceTypeListProps> = ({
     <TypeGrid>
       {dataList.map((item) => {
         const disabled = !isAvailable(item);
-        const name = item.metadata?.name;
+        const name = item.name;
         return (
           <TemplateCard
             key={name}

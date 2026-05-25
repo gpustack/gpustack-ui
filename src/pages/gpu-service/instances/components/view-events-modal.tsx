@@ -31,7 +31,7 @@ const eventTypeStatus: Record<string, 'success' | 'warning' | 'error'> = {
 
 const ViewEventsModal: React.FC<ViewEventsModalProps> = (props) => {
   const intl = useIntl();
-  const { open, onCancel, name } = props || {};
+  const { open, onCancel, name, namespace, clusterID } = props || {};
   const [activeKey, setActiveKey] = useState('instance');
 
   const {
@@ -52,9 +52,9 @@ const ViewEventsModal: React.FC<ViewEventsModalProps> = (props) => {
   const volumeEvents = volumeEventsData?.items ?? [];
 
   const refreshAll = () => {
-    if (!name) return;
-    fetchInstanceEvents({ name });
-    fetchVolumeEvents({ name });
+    if (!name || !namespace || !clusterID) return;
+    fetchInstanceEvents({ name, namespace, clusterID });
+    fetchVolumeEvents({ name, namespace, clusterID });
   };
 
   useEffect(() => {

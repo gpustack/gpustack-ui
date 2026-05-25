@@ -39,6 +39,36 @@ export default {
   'gpuservice.template.card.mount': 'Bağlama',
   'gpuservice.template.card.resources': 'Kaynaklar',
   'gpuservice.template.card.ports': 'Bağlantı Noktaları',
+  'gpuservice.storageType': 'Depolama Türü',
+  'gpuservice.storageType.add': 'Depolama Türü Ekle',
+  'gpuservice.storageType.edit': 'Depolama Türünü Düzenle',
+  'gpuservice.storageType.filter.name': 'Ada göre ara',
+  'gpuservice.storageType.kind': 'Tür',
+  'gpuservice.storageType.mountOptions': 'Bağlama Seçenekleri',
+  'gpuservice.storageType.nfs.server': 'NFS Sunucusu',
+  'gpuservice.storageType.nfs.share': 'Paylaşım Yolu',
+  'gpuservice.storageType.nfs.subDirectory': 'Alt Dizin',
+  'gpuservice.storageType.nfs.subDirectory.tips':
+    'Boş bırakılırsa kalıcı hacim adıyla bir alt dizin oluşturulur. Doldurulursa bu alt dizinin altında kalıcı hacim adıyla bir dizin oluşturulur.',
+  'gpuservice.storageType.nfs.mountPermissions': 'Bağlama İzinleri',
+  'gpuservice.storageType.nfs.mountPermissions.tips':
+    'NFS sunucusundaki dosya izinleri devralınır.',
+  'gpuservice.storageType.s3.endpoint': 'Endpoint',
+  'gpuservice.storageType.s3.endpoint.rule':
+    'http veya https ile başlamalıdır',
+  'gpuservice.storageType.s3.region': 'Bölge',
+  'gpuservice.storageType.s3.bucket': 'Kova',
+  'gpuservice.storageType.s3.bucket.tips':
+    'Boş bırakılırsa kalıcı hacim adıyla yeni bir kova oluşturulur. Doldurulursa bu kova içinde kalıcı hacim adıyla bir alt dizin oluşturulur.',
+  'gpuservice.storageType.s3.accessKey': 'Access Key',
+  'gpuservice.storageType.s3.secretKey': 'Secret Key',
+  'gpuservice.storageType.s3.insecure': 'TLS/SSL sertifika doğrulamasını atla',
+  'gpuservice.storageType.s3.insecure.tips':
+    'Etkinleştirildiğinde S3 sunucu sertifikası doğrulanmaz. İç ağ testleri veya kendinden imzalı sertifikalar için uygundur; üretim ortamında dikkatli kullanın.',
+  'gpuservice.publicKey': 'SSH Açık Anahtarı',
+  'gpuservice.publicKey.add': 'SSH Açık Anahtarı Ekle',
+  'gpuservice.publicKey.edit': 'SSH Açık Anahtarını Düzenle',
+  'gpuservice.publicKey.filter.name': 'Ada göre ara',
   'gpuservice.publicKey.label': 'SSH Açık Anahtarı',
   'gpuservice.instance.ssh.enable': 'SSH Erişimini Etkinleştir',
   'gpuservice.instance.ssh.assignKey': 'SSH Açık Anahtarı Ata',
@@ -103,6 +133,11 @@ export default {
   'gpuservice.storage.persistentVolume': 'Kalıcı Hacim',
   'gpuservice.storage.persistentVolume.required':
     'Lütfen bir kalıcı hacim seçin',
+  'gpuservice.storage.persistentVolume.capacity': 'Kapasite (GB)',
+  'gpuservice.storage.persistentVolume.capacity.required':
+    'Lütfen kapasiteyi girin',
+  'gpuservice.storage.persistentVolume.releaseWithInstance':
+    'Örnekle birlikte serbest bırak',
   'gpuservice.storage.tempCapacity': 'Kapasite (GB)',
   'gpuservice.storage.tempCapacity.required':
     'Lütfen geçici depolama kapasitesini girin',

@@ -3,11 +3,13 @@ import {
   Input as CInput,
   InputNumber,
   Select as SealSelect,
+  Textarea,
   useAppUtils
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Flex, Form } from 'antd';
 import { useEffect } from 'react';
+import OwnerPrincipalIdField from '../../../_components/owner-principal-id-field';
 import { FormData } from '../config/types';
 import useQueryStorageClass from '../services/use-query-storage-class';
 
@@ -18,14 +20,15 @@ const Basic = ({ open, action }: { open: boolean; action: string }) => {
 
   useEffect(() => {
     if (open) {
-      fetchData({});
+      fetchData({ page: 1, perPage: 100 });
     }
   }, [open]);
 
   return (
     <>
+      <OwnerPrincipalIdField name="owner_principal_id" />
       <Form.Item<FormData>
-        name={['metadata', 'name']}
+        name="name"
         rules={[
           {
             required: true,
@@ -41,6 +44,19 @@ const Basic = ({ open, action }: { open: boolean; action: string }) => {
           disabled={action === PageAction.EDIT}
           label={intl.formatMessage({ id: 'common.table.name' })}
           required
+        />
+      </Form.Item>
+      <Form.Item<FormData> name="displayName">
+        <CInput.Input
+          trim={false}
+          label={intl.formatMessage({ id: 'common.table.displayName' })}
+        />
+      </Form.Item>
+      <Form.Item<FormData> name="description">
+        <Textarea
+          trim={false}
+          scaleSize={true}
+          label={intl.formatMessage({ id: 'common.table.description' })}
         />
       </Form.Item>
       <Flex gap={16}>
@@ -79,7 +95,9 @@ const Basic = ({ open, action }: { open: boolean; action: string }) => {
           >
             <InputNumber
               disabled={action === PageAction.EDIT}
-              label={intl.formatMessage({ id: 'gpuservice.storage.capacity' })}
+              label={intl.formatMessage({
+                id: 'gpuservice.storage.persistentVolume.capacity'
+              })}
               required
             />
           </Form.Item>

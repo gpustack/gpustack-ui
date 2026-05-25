@@ -8,14 +8,12 @@ import GPUServiceStorageForm from '../../storage/forms';
 
 interface StorageOverlayProps {
   open: boolean;
-  namespace?: string;
   onCancel: () => void;
   onSubmit: (values: StorageFormData) => Promise<void> | void;
 }
 
 const StorageOverlay: React.FC<StorageOverlayProps> = ({
   open,
-  namespace,
   onCancel,
   onSubmit
 }) => {
@@ -66,7 +64,6 @@ const StorageOverlay: React.FC<StorageOverlayProps> = ({
         ref={formRef}
         action={PageAction.CREATE}
         open={open}
-        namespace={namespace}
         onFinish={handleFinish}
       />
     </FormOverlayView>

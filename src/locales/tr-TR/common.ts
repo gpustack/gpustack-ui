@@ -58,6 +58,7 @@ export default {
   'common.table.createTime': 'Oluşturulma',
   'common.table.updateTime': 'Güncellenme',
   'common.table.description': 'Açıklama',
+  'common.table.displayName': 'Görünen Ad',
   'common.table.name': 'Ad',
   'common.table.status': 'Durum',
   'common.table.name.list': '{type} Adı',
@@ -286,5 +287,6 @@ export default {
   'common.image.limit.width': 'Image width must be {width}.',
   'common.image.limit.height': 'Image height must be {height}.',
   'common.remaining': 'Kalan {count}',
+  'common.max': 'Maksimum {count}',
   'common.validate.group': 'Please complete the {group} configuration'
 };

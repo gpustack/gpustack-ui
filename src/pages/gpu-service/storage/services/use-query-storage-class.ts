@@ -1,28 +1,23 @@
-import { currentClusterAtom } from '@/atoms/gpuservice';
 import { useQueryDataList } from '@gpustack/core-ui';
-import { useAtomValue } from 'jotai';
 import { useCallback } from 'react';
 import { queryStorageClass } from '../apis';
 import { StorageClassItem } from '../config/types';
 
 export default function useQueryStorageClass() {
-  const currentCluster = useAtomValue(currentClusterAtom);
-  const clusterID = currentCluster?.id;
-
   const fetchList = useCallback(
-    (params: Global.K8sSearchParams = {}, options?: any) =>
-      queryStorageClass({ ...params, clusterID }, options),
-    [clusterID]
+    (params: Global.SearchParams = { page: 1, perPage: 100 }, options?: any) =>
+      queryStorageClass(params, options),
+    []
   );
 
   const { dataList, loading, cancelRequest, fetchData } = useQueryDataList<
     StorageClassItem,
-    Global.K8sSearchParams
+    Global.SearchParams
   >({
     key: 'storageClass',
     fetchList,
-    getLabel: (item) => item?.metadata.name,
-    getValue: (item) => item?.metadata.name
+    getLabel: (item) => item?.displayName || item?.name,
+    getValue: (item) => item?.name
   });
 
   return {

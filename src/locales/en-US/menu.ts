@@ -45,5 +45,6 @@ export default {
   'menu.gpuService.instances': 'GPU Instances',
   'menu.gpuService.templates': 'Instance Templates',
   'menu.gpuService.storage': 'Storage',
+  'menu.gpuService.storageTypes': 'Storage Types',
   'menu.gpuService.publicKeys': 'SSH Public Keys'
 };

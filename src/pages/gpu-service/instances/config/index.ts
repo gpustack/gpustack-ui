@@ -3,11 +3,6 @@ import { StatusType } from '@/config/types';
 import { IconFont, icons } from '@gpustack/core-ui';
 import _ from 'lodash';
 import React from 'react';
-import {
-  InstanceTypeItem,
-  InstanceTypeResource,
-  InstanceTypeStatus
-} from './types';
 
 export const InstanceStatusValueMap = {
   Scheduling: 'Scheduling',
@@ -45,13 +40,22 @@ export const status: Record<string, StatusType> = {
   [InstanceStatusValueMap.Ready]: StatusMaps.success
 };
 
+// Lifecycle actions (logs/events/start/stop) require K8s proxy endpoints that
+// the new /v2/gpu-instances API does not yet expose; keep them visible but
+// disabled until backend support lands.
 export const rowActionList = [
   {
-    label: 'common.button.view',
-    key: 'view',
+    label: 'common.button.edit',
+    key: 'edit',
     locale: true,
-    icon: icons.DetailInfo
+    icon: icons.EditOutlined
   },
+  // {
+  //   label: 'common.button.view',
+  //   key: 'view',
+  //   locale: true,
+  //   icon: icons.DetailInfo
+  // },
   {
     label: 'common.button.viewlog',
     key: 'viewlog',
@@ -64,30 +68,30 @@ export const rowActionList = [
     locale: true,
     icon: icons.ProfileOutlined
   },
-  {
-    label: 'common.button.start',
-    key: 'start',
-    locale: true,
-    icon: icons.Play
-  },
-  {
-    label: 'common.button.stop',
-    key: 'stop',
-    locale: true,
-    icon: icons.Stop
-  },
   // {
-  //   label: 'common.button.edit',
-  //   key: 'edit',
+  //   label: 'common.button.start',
+  //   key: 'start',
   //   locale: true,
-  //   icon: icons.EditOutlined
+  //   icon: icons.Play,
+  //   props: {
+  //     disabled: true
+  //   }
   // },
-  {
-    label: 'common.button.recreate',
-    key: 'recreate',
-    locale: true,
-    icon: icons.RetweetOutlined
-  },
+  // {
+  //   label: 'common.button.stop',
+  //   key: 'stop',
+  //   locale: true,
+  //   icon: icons.Stop,
+  //   props: {
+  //     disabled: true
+  //   }
+  // },
+  // {
+  //   label: 'common.button.recreate',
+  //   key: 'recreate',
+  //   locale: true,
+  //   icon: icons.RetweetOutlined
+  // },
   {
     label: 'common.button.delete',
     key: 'delete',
@@ -103,12 +107,18 @@ export const batchActionList = [
   {
     label: 'common.button.start',
     key: 'start',
-    icon: icons.Play
+    icon: icons.Play,
+    props: {
+      disabled: true
+    }
   },
   {
     label: 'common.button.stop',
     key: 'stop',
-    icon: icons.Stop
+    icon: icons.Stop,
+    props: {
+      disabled: true
+    }
   },
   {
     label: 'common.button.delete',
@@ -121,8 +131,6 @@ export const batchActionList = [
 ];
 
 export const InstanceTypePhaseValueMap = {
-  // Available: 'Available',
-  // Unavailable: 'Unavailable'
   PreParing: 'Preparing',
   Inactive: 'Inactive',
   Active: 'Active'
@@ -141,9 +149,11 @@ export const InstanceTypePhaseStatus: Record<string, StatusType> = {
 };
 
 export const StorageModeValueMap = {
-  Existing: 'existing',
-  Temporary: 'temporary'
+  Temporary: 'temporary',
+  Persistent: 'persistent'
 };
+
+export const DEFAULT_PV_CAPACITY_GB = 20;
 
 // Constant SSH public key resource name used when SSH is enabled
 export const DEFAULT_SSH_PUBLIC_KEY_NAME = 'default';
@@ -163,49 +173,40 @@ export const convertKiToGi = (value?: string): string | undefined => {
   return `${_.round(Number(num) / GI_DIVISOR[unit], 2)}Gi`;
 };
 
-export const transformInstanceTypeResource = (
-  resource?: InstanceTypeResource
-): InstanceTypeResource | undefined => {
-  if (!resource) return resource;
-  return {
-    ...resource,
-    capacity: convertKiToGi(
-      resource.capacity
-    ) as InstanceTypeResource['capacity'],
-    onceMaxRequest: convertKiToGi(
-      resource.onceMaxRequest
-    ) as InstanceTypeResource['onceMaxRequest'],
-    remaining: convertKiToGi(
-      resource.remaining
-    ) as InstanceTypeResource['remaining']
-  };
+const parseQuantity = (value?: string | null): number => {
+  if (!value) return 0;
+  const match = /^(-?\d+(?:\.\d+)?)/.exec(String(value));
+  return match ? Number(match[1]) || 0 : 0;
 };
 
-export const transformInstanceType = (
-  item: InstanceTypeItem
-): InstanceTypeItem => {
-  if (!item?.status) return item;
-  const status = item.status;
-  return {
-    ...item,
-    spec: {
-      ...item.spec,
-      manufacturer: !item.spec?.acceleratable ? 'cpu' : item.spec.manufacturer
-    },
-    status: {
-      ...status,
-      accelerator: transformInstanceTypeResource(
-        status.accelerator
-      ) as InstanceTypeStatus['accelerator'],
-      cpu: transformInstanceTypeResource(
-        status.cpu
-      ) as InstanceTypeStatus['cpu'],
-      localStorage: transformInstanceTypeResource(
-        status.localStorage
-      ) as InstanceTypeStatus['localStorage'],
-      ram: transformInstanceTypeResource(
-        status.ram
-      ) as InstanceTypeStatus['ram']
-    }
-  };
+// Returns the slider max for the accelerator count: the largest
+// tier.onceMaxRequest across all acceleratorTiers (not from candidates).
+export const getAcceleratorMax = (
+  tiers?: { onceMaxRequest: string }[] | null
+) => {
+  if (!tiers?.length) return 0;
+  return tiers.reduce((acc, tier) => {
+    const n = parseQuantity(tier.onceMaxRequest);
+    return n > acc ? n : acc;
+  }, 0);
+};
+
+// Picks the candidate (cluster + type name) that should fulfill a requested
+// accelerator count: the first candidate of the smallest tier whose
+// onceMaxRequest is >= the requested count.
+export const pickCandidateForAccelerator = <
+  C extends { cluster: string; name: string }
+>(
+  tiers:
+    | { onceMaxRequest: string; candidates?: C[] | null }[]
+    | undefined
+    | null,
+  count: number
+): C | null => {
+  if (!tiers?.length) return null;
+  const sorted = [...tiers].sort(
+    (a, b) => parseQuantity(a.onceMaxRequest) - parseQuantity(b.onceMaxRequest)
+  );
+  const tier = sorted.find((t) => parseQuantity(t.onceMaxRequest) >= count);
+  return tier?.candidates?.[0] ?? null;
 };

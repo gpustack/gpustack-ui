@@ -4,6 +4,7 @@ import { PageActionType } from '@/config/types';
 import { PlusOutlined } from '@ant-design/icons';
 import {
   CheckboxField,
+  Input as CInput,
   CollapsePanel,
   IconFont,
   MultipleSelect,
@@ -21,13 +22,15 @@ import {
   useEffect,
   useImperativeHandle,
   useMemo,
-  useRef
+  useRef,
+  useState
 } from 'react';
-import useGetSshkey from '../../public-keys/services/use-get-sshkey';
+import useQuerySshkeys from '../../public-keys/services/use-query-sshkeys';
 import { DefaultImagePullPolicy } from '../../templates/config';
 import TemplateBasicForm, {
   BasicResourceMax
 } from '../../templates/forms/basic';
+import { pickCandidateForAccelerator } from '../config';
 import { FormData, InstanceTypeItem, ListItem } from '../config/types';
 import instanceStyles from '../styles/instances.module.less';
 import Basic from './basic';
@@ -53,12 +56,33 @@ interface InstanceFormProps {
   onFinish: (values: FormData) => Promise<void>;
 }
 
-const parseQuantityToNumber = (value?: string): number | null => {
+const parseQuantityToNumber = (value?: string | null): number | null => {
   if (!value) return null;
   const match = /^(-?\d+(?:\.\d+)?)/.exec(String(value));
   if (!match) return null;
   const num = Number(match[1]);
   return Number.isFinite(num) && num > 0 ? num : null;
+};
+
+// Converts a K8s-style quantity ("24314504Ki", "2Ti", "10Gi", or a bare
+// number assumed to be Gi) to an integer GiB. memory and localStorage
+// inputs are displayed in GB, so the max bound and the "Remaining {count}
+// GB" label need the converted value.
+const GI_FROM_UNIT: Record<string, number> = {
+  Ki: 1 / (1024 * 1024),
+  Mi: 1 / 1024,
+  Gi: 1,
+  Ti: 1024
+};
+
+const parseQuantityToGi = (value?: string | null): number | null => {
+  if (!value) return null;
+  const match = /^(-?\d+(?:\.\d+)?)(Ki|Mi|Gi|Ti)?$/.exec(String(value));
+  if (!match) return null;
+  const num = Number(match[1]);
+  if (!Number.isFinite(num) || num <= 0) return null;
+  const factor = match[2] ? GI_FROM_UNIT[match[2]] : 1;
+  return Math.floor(num * factor);
 };
 
 const TABKeysMap = {
@@ -71,7 +95,7 @@ const TABKeysMap = {
 const requiredFields = {
   [TABKeysMap.BASIC]: {
     sort: 1,
-    fields: ['metadata.name']
+    fields: ['name']
   },
   [TABKeysMap.INSTANCE_TYPE]: {
     sort: 2,
@@ -95,7 +119,6 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       currentData,
       disabled,
       open,
-      namespace = 'default',
       instanceTypeList = [],
       onFinish
     } = props;
@@ -108,7 +131,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
     const formAction =
       realAction === PageAction.CREATE ? PageAction.CREATE : action;
     const sshEnabled = Form.useWatch('enable_ssh', form);
-    const { detailData: sshKeyData, fetchData: fetchSSHData } = useGetSshkey();
+    const { sshkeyOptions, fetchData: fetchSSHData } = useQuerySshkeys();
     const { getScrollElementScrollableHeight } = useWrapperContext();
     const {
       activeKey,
@@ -127,25 +150,25 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
 
     useEffect(() => {
       if (open) {
-        fetchSSHData({});
+        fetchSSHData({ page: 1, perPage: 100 });
       }
     }, [open, action]);
 
-    const handleSSHEnableChange = (e: any) => {
-      if (!e?.target?.checked) {
-        return;
+    const ports = Form.useWatch(['spec', 'ports'], form) || [];
+
+    const hasSSHPort = useMemo(
+      () =>
+        ports.some(
+          (item: any) => item?.protocol === 'TCP' && item?.port === SSH_PORT
+        ),
+      [ports]
+    );
+
+    useEffect(() => {
+      if (hasSSHPort && !form.getFieldValue('enable_ssh')) {
+        form.setFieldValue('enable_ssh', true);
       }
-      const currentPorts = form.getFieldValue(['spec', 'ports']) || [];
-      const hasSSHPort = currentPorts.some(
-        (item: any) => item?.protocol === 'TCP' && item?.port === SSH_PORT
-      );
-      if (!hasSSHPort) {
-        form.setFieldValue(
-          ['spec', 'ports'],
-          [...currentPorts, { protocol: 'TCP', port: SSH_PORT, name: 'SSH' }]
-        );
-      }
-    };
+    }, [hasSSHPort, form]);
 
     const segmentOptions = useMemo(
       () => [
@@ -183,25 +206,50 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       [intl]
     );
 
-    const ports = Form.useWatch(['spec', 'ports'], form) || [];
+    const [selectedInstanceType, setSelectedInstanceType] = useState<
+      InstanceTypeItem | undefined
+    >(undefined);
+    const [onceMaxRequest, setOnceMaxRequest] = useState<BasicResourceMax>({
+      cpu: null,
+      memory: null,
+      localStorage: null
+    });
 
-    const selectedTypeName = Form.useWatch(['spec', 'type'], form) as
-      | string
-      | undefined;
-
-    const onceMaxRequest = useMemo<BasicResourceMax>(() => {
-      const selected = instanceTypeList.find(
-        (item) => (item.metadata?.name || '') === selectedTypeName
+    const resolveAndApply = (
+      instanceType: InstanceTypeItem | undefined,
+      count: number,
+      options: { writeAccelerator?: boolean } = {}
+    ) => {
+      if (!instanceType) {
+        setSelectedInstanceType(undefined);
+        setOnceMaxRequest({ cpu: null, memory: null, localStorage: null });
+        return;
+      }
+      const candidate = pickCandidateForAccelerator(
+        instanceType.status?.acceleratorTiers,
+        count
       );
-      const status = selected?.status;
-      return {
-        cpu: parseQuantityToNumber(status?.cpu?.onceMaxRequest),
-        memory: parseQuantityToNumber(status?.ram?.onceMaxRequest),
-        localStorage: parseQuantityToNumber(
-          status?.localStorage?.onceMaxRequest
-        )
-      };
-    }, [instanceTypeList, selectedTypeName]);
+      setSelectedInstanceType(instanceType);
+      setOnceMaxRequest({
+        cpu: parseQuantityToNumber(candidate?.cpu?.onceMaxRequest),
+        memory: parseQuantityToGi(candidate?.ram?.onceMaxRequest),
+        localStorage: parseQuantityToGi(candidate?.localStorage?.onceMaxRequest)
+      });
+
+      form.setFieldsValue({
+        clusterId: candidate?.cluster ? Number(candidate.cluster) : null,
+        spec: {
+          type: candidate?.name || '',
+          ...(options.writeAccelerator
+            ? { resources: { accelerator: count } }
+            : {})
+        } as any
+      });
+    };
+
+    const handleAcceleratorChange = (count: number) => {
+      resolveAndApply(selectedInstanceType, count);
+    };
 
     const onTargetChange = (key: string) => {
       scrollTabsRef.current?.handleTargetChange(key);
@@ -235,34 +283,110 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
           action === PageAction.VIEW ||
           realAction === PageAction.CREATE)
       ) {
+        // The server returns `accelerator` as a string; coerce to a number
+        // so NumberSelection's strict equality picks up the active item.
+        const persistedAccelerator = currentData.spec?.resources?.accelerator;
+        const acceleratorAsNumber =
+          persistedAccelerator != null && persistedAccelerator !== ''
+            ? Number(persistedAccelerator)
+            : undefined;
         form.setFieldsValue({
-          metadata: {
-            name: currentData.metadata?.name,
-            namespace: currentData.metadata?.namespace
-          },
+          name: currentData.name,
+          displayName: currentData.displayName,
+          description: currentData.description,
+          clusterId: currentData.clusterId,
           spec: {
             ...currentData.spec,
             imagePullPolicy:
-              currentData.spec?.imagePullPolicy || DefaultImagePullPolicy
-          },
-          enable_ssh: !!currentData.spec?.sshPublicKey?.name
+              currentData.spec?.imagePullPolicy || DefaultImagePullPolicy,
+            resources: {
+              ...currentData.spec?.resources,
+              accelerator: acceleratorAsNumber
+            },
+            sshPublicKeys:
+              currentData.spec?.sshPublicKeys?.map((k) => k.name) ?? []
+          } as any,
+          enable_ssh: !!currentData.spec?.sshPublicKeys?.length
         });
+
+        const candidateName = currentData.spec?.type;
+        const clusterId = currentData.clusterId;
+        const aggregate = instanceTypeList.find((item) =>
+          (item.status?.acceleratorTiers ?? []).some((tier) =>
+            (tier.candidates ?? []).some(
+              (c) => c.name === candidateName && Number(c.cluster) === clusterId
+            )
+          )
+        );
+        if (aggregate) {
+          const count =
+            Number(currentData.spec?.resources?.accelerator) ||
+            (aggregate.spec?.acceleratable ? 1 : 0);
+          // No accelerator rewrite — the form already has the persisted value.
+          resolveAndApply(aggregate, count);
+        }
         return;
       }
-    }, [action, currentData, form, open, namespace, realAction]);
+    }, [action, currentData, form, open, realAction, instanceTypeList]);
 
     const handleFinish = async (values: InstanceFormValues) => {
+      const selectedKeys = (values.spec as any)?.sshPublicKeys as
+        | string[]
+        | undefined;
+      const volume = values.spec?.volume ?? {};
+      const normalizedVolume = volume.persistentTemplate
+        ? {
+            persistentTemplate: {
+              ...volume.persistentTemplate,
+              name: volume.persistentTemplate.name || values.name || ''
+            }
+          }
+        : volume.persistent
+          ? { persistent: volume.persistent }
+          : volume.ephemeral
+            ? { ephemeral: volume.ephemeral }
+            : {};
+
+      // `spec.type` and `clusterId` are kept in sync with the resolved
+      // candidate via `resolveAndApply`, so submission is a straight pass
+      // -through. The API expects `accelerator` as a string per the schema.
+      const acceleratorValue = values.spec?.resources?.accelerator;
+      const normalizedResources = {
+        ...values.spec?.resources,
+        accelerator:
+          acceleratorValue != null && acceleratorValue !== ''
+            ? String(acceleratorValue)
+            : undefined
+      };
+
+      const submittedPorts = [...(values.spec?.ports ?? [])];
+      const submittedHasSSHPort = submittedPorts.some(
+        (item: any) => item?.protocol === 'TCP' && item?.port === SSH_PORT
+      );
+      if (values.enable_ssh && !submittedHasSSHPort) {
+        submittedPorts.push({
+          protocol: 'TCP',
+          port: SSH_PORT,
+          name: 'SSH'
+        });
+      }
+
       await onFinish({
         ...values,
         spec: {
           ...values.spec,
-          sshPublicKey: { name: sshKeyData?.name }
+          ports: submittedPorts,
+          resources: normalizedResources,
+          volume: normalizedVolume,
+          sshPublicKeys: values.enable_ssh
+            ? (selectedKeys ?? []).map((name) => ({ name }))
+            : []
         }
       });
     };
 
     const segmentedTop =
-      action === PageAction.VIEW
+      action === PageAction.EDIT
         ? {
             top: 0,
             offsetTop: 100
@@ -282,7 +406,11 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       setFieldsValue: (values: Partial<InstanceFormValues>) => {
         form.setFieldsValue(values as any);
       },
-      getFieldsValue: () => form.getFieldsValue()
+      getFieldsValue: () => form.getFieldsValue(),
+      applyInstanceType: (instanceType: InstanceTypeItem) => {
+        const count = instanceType.spec?.acceleratable ? 1 : 0;
+        resolveAndApply(instanceType, count, { writeAccelerator: true });
+      }
     }));
 
     const handleAddSSHKey = () => {
@@ -319,7 +447,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
               env: [],
               volumeMount: '',
               resources: {
-                accelerator: '1'
+                accelerator: 1
               },
               volume: {
                 ephemeral: {
@@ -334,6 +462,11 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
           }}
         >
           <Basic action={formAction} disabled={disabled} />
+          {/* Hidden form field: the candidate.cluster resolved from the
+              selected aggregate + accelerator count. */}
+          <Form.Item name="clusterId" hidden>
+            <CInput.Input />
+          </Form.Item>
           <CollapsePanel
             activeKey={collapseKeys}
             accordion={false}
@@ -349,6 +482,9 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
                   <InstanceTypeFormItem
                     action={formAction}
                     disabled={disabled}
+                    selectedInstanceType={selectedInstanceType}
+                    currentData={currentData as any}
+                    onGPUCountChange={handleAcceleratorChange}
                   />
                 )
               },
@@ -392,13 +528,12 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
               label={intl.formatMessage({
                 id: 'gpuservice.instance.ssh.enable'
               })}
-              onChange={handleSSHEnableChange}
             ></CheckboxField>
           </Form.Item>
           {sshEnabled && (
             <div className={instanceStyles.sshkeySelection}>
               <Form.Item<FormData>
-                name={['spec', 'sshPublicKey', 'name']}
+                name={['spec', 'sshPublicKeys']}
                 style={{
                   marginBottom: 12
                 }}
@@ -425,7 +560,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
                       width: '100%'
                     }
                   }}
-                  options={[]}
+                  options={sshkeyOptions}
                   notFoundContent={
                     <Empty
                       image={Empty.PRESENTED_IMAGE_SIMPLE}

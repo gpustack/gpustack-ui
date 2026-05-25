@@ -1,60 +1,68 @@
-export type AccessModeType =
-  | 'ReadOnlyMany'
-  | 'ReadWriteMany'
-  | 'ReadWriteOnce'
-  | 'ReadWriteOncePod';
-
-export type ReClaimPolicyType = 'Retain' | 'Delete' | 'Recycle';
 export interface FormData {
-  metadata: {
-    name: string;
-    namespace: string;
-  };
-  spec: {
-    capacity: string;
-    type: string;
-  };
-}
-
-export interface ManagedField {
-  manager: string;
-  operation: string;
-  apiVersion: string;
-  time: string;
-  fieldsType: string;
-  fieldsV1: Record<string, any>;
-}
-
-export interface Metadata {
   name: string;
-  namespace?: string;
-  uid: string;
-  resourceVersion: string;
-  creationTimestamp: string;
-  annotations?: Record<string, string>;
-  finalizers?: string[];
-  managedFields?: ManagedField[];
+  owner_principal_id?: number | null;
+  displayName?: string | null;
+  description?: string | null;
+  spec: {
+    type: string;
+    capacity: string;
+  };
+}
+
+// Per `GPUInstancePersistentVolumeUpdate`, only displayName / description /
+// owner_principal_id are mutable post-create.
+export interface UpdateData {
+  owner_principal_id?: number | null;
+  displayName?: string | null;
+  description?: string | null;
 }
 
 export interface ListItem {
-  metadata: Metadata;
+  id: number;
+  created_at: string;
+  updated_at: string;
+  deleted_at?: string | null;
+  owner_principal_id?: number | null;
+  displayName?: string | null;
+  description?: string | null;
+  name: string;
   spec: {
     type: string;
     capacity: string;
-    accessMode: AccessModeType;
   };
-  status: {
-    phaseMessage?: string;
-    phase: 'Available' | 'Unavailable' | 'Pending';
-    volume: {
-      name: string;
-    };
-  };
+  status?: {
+    phase?: string | null;
+  } | null;
+}
+
+export interface StorageClassNFS {
+  server: string;
+  share: string;
+  subDirectory?: string | null;
+  mountPermissions?: string | null;
+  mountOptions?: string[] | null;
+}
+
+export interface StorageClassS3 {
+  endpoint: string;
+  region?: string | null;
+  insecure?: boolean | null;
+  accessKey?: string | null;
+  bucket?: string | null;
+  mountOptions?: string[] | null;
 }
 
 export interface StorageClassItem {
-  metadata: Metadata;
-  provisioner: string;
-  reclaimPolicy: 'Delete' | 'Retain';
-  volumeBindingMode: 'Immediate' | 'WaitForFirstConsumer';
+  id: number;
+  created_at: string;
+  updated_at: string;
+  deleted_at?: string | null;
+  owner_principal_id?: number | null;
+  displayName?: string | null;
+  description?: string | null;
+  name: string;
+  spec: {
+    nfs?: StorageClassNFS | null;
+    s3?: StorageClassS3 | null;
+  };
 }

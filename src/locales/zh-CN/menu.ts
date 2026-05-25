@@ -45,5 +45,6 @@ export default {
   'menu.gpuService.instances': 'GPU 实例',
   'menu.gpuService.templates': '实例模板',
   'menu.gpuService.storage': '存储',
+  'menu.gpuService.storageTypes': '存储类型',
   'menu.gpuService.publicKeys': 'SSH 公钥'
 };

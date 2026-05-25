@@ -3,6 +3,7 @@ import { PageActionType } from '@/config/types';
 import { Input as CInput } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
+import OwnerPrincipalIdField from '../../../_components/owner-principal-id-field';
 import { FormData } from '../config/types';
 import formStyles from '../styles/instances.module.less';
 
@@ -16,9 +17,10 @@ const Basic = ({
   const intl = useIntl();
   return (
     <>
+      <OwnerPrincipalIdField name="owner_principal_id" />
       <Form.Item<FormData>
         data-field="name"
-        name={['metadata', 'name']}
+        name="name"
         rules={[
           {
             required: true,
@@ -38,10 +40,17 @@ const Basic = ({
           required
         />
       </Form.Item>
+      <Form.Item<FormData> name="displayName">
+        <CInput.Input
+          trim={false}
+          disabled={false}
+          label={intl.formatMessage({ id: 'common.table.displayName' })}
+        />
+      </Form.Item>
       <div className={formStyles.command}>
-        <Form.Item<FormData> name={['spec', 'description']}>
+        <Form.Item<FormData> name="description" hidden>
           <CInput.TextArea
-            disabled={disabled}
+            disabled={false}
             label={intl.formatMessage({ id: 'common.table.description' })}
             scaleSize
           />

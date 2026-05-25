@@ -1,16 +1,12 @@
-import { AutoTooltip, IconFont, StatusTag, ThemeTag } from '@gpustack/core-ui';
+import { AutoTooltip, IconFont, ThemeTag } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Flex } from 'antd';
 import styled from 'styled-components';
 import { manufactureColorMap } from '../../templates/config';
-import {
-  convertKiToGi,
-  InstanceTypePhaseLabelMap,
-  InstanceTypePhaseStatus
-} from '../config';
+import { convertKiToGi } from '../config';
 import { InstanceTypeItem as InstanceTypeItemModel } from '../config/types';
 
-const toDisplayUnit = (value?: string) =>
+const toDisplayUnit = (value?: string | null) =>
   value ? value.replace(/Gi$/, 'GB').replace(/Ti$/, 'TB') : value;
 
 const Title = styled.div`
@@ -60,24 +56,48 @@ interface InstanceTypeItemProps {
   showStatus?: boolean;
 }
 
-const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({
-  item,
-  showStatus = true
-}) => {
-  const intl = useIntl();
-  const name = item.metadata?.name;
-  const acceleratable = item.spec?.acceleratable;
+const MetaItem: React.FC<{
+  icon: string;
+  label: string;
+  value?: string | null;
+  showDot?: boolean;
+  show?: boolean;
+}> = ({ icon, label, value, showDot = true, show = true }) => {
+  if (!show) return null;
+  return (
+    <>
+      {showDot && <span className="dot"></span>}
+      <span className="meta-item">
+        <IconFont type={icon} className="meta-icon" />
+        <Flex align="center" gap={4}>
+          <span>{label}</span>
+          <span>{value || '-'}</span>
+        </Flex>
+      </span>
+    </>
+  );
+};
 
-  const manufacturerKey = item.spec?.manufacturer;
+const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({ item }) => {
+  const intl = useIntl();
+  const name = item.name;
+  const specData = item.spec || {};
+  const acceleratable = specData.acceleratable;
+
+  const manufacturerKey = specData.manufacturer || (acceleratable ? '' : 'cpu');
   const manufacturer = manufacturerKey?.toUpperCase();
   const manufacturerColor =
     (manufacturerKey && manufactureColorMap[manufacturerKey]) ?? 'purple';
 
+  // resource remaining status
+  const remainingData = item.status?.remaining || {};
+
   const renderName = () => {
-    const product = item.spec?.product;
+    const product = specData.product;
+    const cpuCapacity = remainingData.cpu;
     const displayName =
       product ||
-      (!acceleratable ? `${item.status?.cpu?.capacity} vCPUs` : name);
+      (!acceleratable && cpuCapacity ? `${cpuCapacity} vCPUs` : name);
     return displayName;
   };
 
@@ -85,8 +105,8 @@ const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({
     <>
       <Title>
         <Flex gap={8} align="center">
-          <AutoTooltip ghost minWidth={20} maxWidth={180}>
-            {item.spec ? renderName() : '-'}
+          <AutoTooltip ghost minWidth={20} maxWidth={200}>
+            {renderName() || '-'}
           </AutoTooltip>
           {acceleratable && manufacturer && (
             <span
@@ -95,99 +115,59 @@ const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({
                 fontWeight: 400
               }}
             >
-              <ThemeTag color={manufacturerColor}>{manufacturer}</ThemeTag>
+              <ThemeTag color={manufacturerColor} disabled={false}>
+                {manufacturer}
+              </ThemeTag>
             </span>
           )}
         </Flex>
-        {showStatus && (
-          <Flex gap={8} align="center">
-            {item.status?.phase && (
-              <StatusTag
-                statusValue={{
-                  status:
-                    InstanceTypePhaseStatus[item.status.phase] ?? 'inactive',
-                  text:
-                    InstanceTypePhaseLabelMap[item.status.phase] ??
-                    item.status.phase,
-                  message: ''
-                }}
-              />
-            )}
-          </Flex>
-        )}
       </Title>
       <Meta>
         <span style={{ display: 'flex', height: 15 }}>
           {acceleratable && (
             <span className="meta-row">
-              <span className="meta-item">
-                <IconFont type="icon-gpu1" className="meta-icon" />
-                <Flex align="center" gap={4}>
-                  <span>
-                    {intl.formatMessage({ id: 'gpuservice.instance.memory' })}
-                  </span>
-                  <span>
-                    {toDisplayUnit(convertKiToGi(item.spec?.memory)) ?? '-'}
-                  </span>
-                </Flex>
-              </span>
-              {item.spec?.sliced && (
-                <>
-                  <span className="dot"></span>
-                  <span className="meta-item">
-                    <IconFont type="icon-sliced" className="meta-icon" />
-                    <Flex align="center" gap={4}>
-                      <span>
-                        {intl.formatMessage({
-                          id: 'gpuservice.instance.sliced'
-                        })}
-                      </span>
-                      <span>{item.spec?.sliced ?? '-'}</span>
-                    </Flex>
-                  </span>
-                </>
-              )}
-              {item.status?.accelerator?.remaining && (
-                <>
-                  <span className="dot"></span>
-                  <span className="meta-item">
-                    <IconFont type="icon-database" className="meta-icon" />
-                    <Flex align="center" gap={4}>
-                      <span>
-                        {intl.formatMessage({
-                          id: 'gpuservice.instance.stock'
-                        })}
-                      </span>
-                      <span>{item.status?.accelerator?.remaining ?? '-'}</span>
-                    </Flex>
-                  </span>
-                </>
-              )}
+              <MetaItem
+                showDot={false}
+                icon="icon-gpu1"
+                label={intl.formatMessage({ id: 'gpuservice.instance.memory' })}
+                value={
+                  toDisplayUnit(convertKiToGi(specData?.memory ?? undefined)) ??
+                  '-'
+                }
+              ></MetaItem>
+              <MetaItem
+                show={!!specData?.sliced}
+                icon="icon-sliced"
+                label={intl.formatMessage({
+                  id: 'gpuservice.instance.sliced'
+                })}
+                value={specData?.sliced}
+              ></MetaItem>
+              <MetaItem
+                show={!!remainingData.accelerator}
+                icon="icon-database"
+                label={intl.formatMessage({
+                  id: 'gpuservice.instance.stock'
+                })}
+                value={remainingData.accelerator}
+              ></MetaItem>
             </span>
           )}
         </span>
         <span className="meta-row">
-          <span className="meta-item">
-            <IconFont type="icon-ram-02" className="meta-icon" />
-            <Flex align="center" gap={4}>
-              <span>
-                {intl.formatMessage({ id: 'gpuservice.instance.ram' })}
-              </span>
-              <span>{toDisplayUnit(item.status?.ram?.capacity) ?? '-'}</span>
-            </Flex>
-          </span>
-          {acceleratable && (
-            <>
-              <span className="dot"></span>
-              <span className="meta-item">
-                <IconFont type="icon-cpu" className="meta-icon" />
-                <Flex align="center" gap={4}>
-                  <span>vCPU</span>
-                  <span>{item.status?.cpu?.capacity ?? '-'}</span>
-                </Flex>
-              </span>
-            </>
-          )}
+          <MetaItem
+            showDot={false}
+            icon="icon-ram-02"
+            label={intl.formatMessage({ id: 'gpuservice.instance.ram' })}
+            value={toDisplayUnit(convertKiToGi(remainingData.ram)) ?? '-'}
+          ></MetaItem>
+          <MetaItem
+            show={acceleratable}
+            showDot={true}
+            icon="icon-cpu"
+            label="vCPU"
+            value={remainingData.cpu ?? '-'}
+          ></MetaItem>
         </span>
       </Meta>
     </>

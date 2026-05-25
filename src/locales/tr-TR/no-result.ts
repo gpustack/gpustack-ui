@@ -64,6 +64,10 @@ export default {
   'noresult.gpuservice.storage.title': 'Depolama Yok',
   'noresult.gpuservice.storage.subTitle': 'Henüz depolama eklenmedi.',
   'noresult.gpuservice.storage.nofound': 'Eşleşen depolama bulunamadı.',
+  'noresult.gpuservice.storageType.title': 'Depolama Türü Yok',
+  'noresult.gpuservice.storageType.subTitle': 'Henüz depolama türü eklenmedi.',
+  'noresult.gpuservice.storageType.nofound':
+    'Eşleşen depolama türü bulunamadı.',
   'noresult.gpuservice.sshkey.title': 'SSH Açık Anahtarı Yok',
   'noresult.gpuservice.sshkey.subTitle': 'Henüz SSH açık anahtarı eklenmedi.',
   'noresult.gpuservice.sshkey.nofound': 'Eşleşen SSH açık anahtarı bulunamadı.'

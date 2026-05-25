@@ -2,16 +2,16 @@ export type ImagePullPolicy = 'Always' | 'IfNotPresent' | 'Never';
 
 // instance form data
 export interface FormData {
-  metadata: {
-    name: string;
-    namespace: string;
-  };
+  name: string;
+  clusterId?: number | null;
+  owner_principal_id?: number | null;
+  displayName?: string | null;
+  description?: string | null;
   enable_ssh?: boolean;
   spec: {
     type: string;
     image: string;
     imagePullPolicy: ImagePullPolicy;
-    displayName: string;
     command: string[];
     ports: {
       port: number;
@@ -27,9 +27,11 @@ export interface FormData {
       cpu?: string;
       ram?: string;
       localStorage?: string;
-      accelerator?: string;
+      // Stored in the form as a number so NumberSelection's strict
+      // equality picks up the active item. Serialized to a string at the
+      // API boundary in handleFinish.
+      accelerator?: number | string;
     };
-    description: string;
     volume: {
       ephemeral?: {
         capacity?: string;
@@ -37,161 +39,135 @@ export interface FormData {
       persistent?: {
         name: string;
       };
+      persistentTemplate?: {
+        name?: string;
+        spec: {
+          type: string;
+          capacity: string;
+        };
+        releaseWithInstance?: boolean;
+      };
     };
-    sshPublicKey: {
-      name: string;
-    };
+    sshPublicKeys?: { name: string }[];
   };
 }
 
 export type InstanceServicePortProtocol = 'TCP' | 'UDP';
 
+export interface InstanceIP {
+  ip: string;
+}
+
+export interface InstanceServicePort {
+  port: number;
+  name: string;
+  nodePort?: number;
+  protocol?: InstanceServicePortProtocol;
+}
+
 export interface InstanceStatus {
-  hostIPs?: {
-    ip: string;
-  }[];
+  namespace?: string;
   phase?: string;
   phaseMessage?: string;
-  podIPs?: {
-    ip: string;
-  }[];
-  ports?: {
-    port: number;
-    name: string;
-    nodePort?: number;
-    protocol?: InstanceServicePortProtocol;
-  }[];
+  hostIPs?: InstanceIP[];
+  podIPs?: InstanceIP[];
+  ports?: InstanceServicePort[];
 }
 
 // instance list item
-export interface ListItem extends Omit<FormData, 'metadata'> {
+export interface ListItem extends FormData {
   id: number;
-  status?: InstanceStatus;
-  metadata: {
-    name: string;
-    namespace?: string;
-    uid: string;
-    resourceVersion: string;
-    creationTimestamp: string;
-    annotations?: Record<string, string>;
-    managedFields?: {
-      manager: string;
-      operation: string;
-      apiVersion: string;
-      time: string;
-      fieldsType: string;
-      fieldsV1: Record<string, any>;
-    }[];
-  };
+  created_at: string;
+  updated_at: string;
+  deleted_at?: string | null;
+  status?: InstanceStatus | null;
 }
 
-type Quality =
-  | `${number}`
-  | `${number}Ki`
-  | `${number}Mi`
-  | `${number}Gi`
-  | `${number}Ti`;
+// =========== Instance Types ===========
 
 export interface InstanceTypeResource {
-  capacity?: Quality;
-  onceMaxRequest?: Quality;
-  remaining?: Quality;
+  onceMaxRequest: string;
+  remaining: string;
+  capacity: string;
 }
 
-export interface InstanceTypeStatus {
+export interface InstanceTypeCandidate {
+  cluster: string;
+  name: string;
   accelerator: InstanceTypeResource;
   cpu: InstanceTypeResource;
-  localStorage: InstanceTypeResource;
-  phase: string;
-  phaseMessage?: string;
   ram: InstanceTypeResource;
+  localStorage: InstanceTypeResource;
 }
 
-export interface InstanceTypeMetadata {
-  name: string;
-  namespace?: string;
-  uid?: string;
-  resourceVersion?: string;
-  creationTimestamp?: string;
-  generateName?: string;
-  generation?: number;
-  finalizers?: string[];
+export interface InstanceTypeTier {
+  onceMaxRequest: string;
+  candidates?: InstanceTypeCandidate[] | null;
+}
+
+export interface InstanceTypeRemainingResource {
+  accelerator?: string | null;
+  cpu: string;
+  ram: string;
+  localStorage: string;
 }
 
 export interface InstanceTypeSpec {
-  acceleratable: boolean;
   group: string;
-  computeCapability?: string;
-  family?: string;
-  manufacturer?: string;
-  memory?: string;
-  product?: string;
-  sliced?: number;
+  acceleratable: boolean;
+  manufacturer: string;
+  product?: string | null;
+  memory?: string | null;
+  family?: string | null;
+  computeCapability?: string | null;
+  sliced?: string | null;
+}
+
+export interface InstanceTypeStatus {
+  remaining: InstanceTypeRemainingResource;
+  acceleratorTiers?: InstanceTypeTier[] | null;
 }
 
 export interface InstanceTypeItem {
-  apiVersion: string;
-  kind: string;
-  id: number;
-  metadata: InstanceTypeMetadata;
+  name: string;
   spec: InstanceTypeSpec;
   status: InstanceTypeStatus;
 }
 
-export interface InstanceEventObjectReference {
-  apiVersion?: string;
-  fieldPath?: string;
-  kind?: string;
-  name?: string;
-  namespace?: string;
-  resourceVersion?: string;
-  uid?: string;
-}
-
-export interface InstanceEventSource {
-  component?: string;
-  host?: string;
-}
-
-export interface InstanceEventSeries {
-  count?: number;
-  lastObservedTime?: string;
-}
+// =========== Events / logs (placeholder) ===========
+// The /v2/gpu-instances API does not yet expose log/event endpoints. These
+// shapes are retained as minimal placeholders so disabled UI continues to
+// compile until backend support lands.
 
 export interface InstanceEventItem {
-  action?: string;
-  apiVersion?: string;
+  type?: string;
+  reason?: string;
+  message?: string;
   count?: number;
   eventTime?: string;
   firstTimestamp?: string;
-  involvedObject: InstanceEventObjectReference;
-  kind?: string;
   lastTimestamp?: string;
-  message?: string;
-  metadata: {
-    name?: string;
-    namespace?: string;
-    uid?: string;
-    resourceVersion?: string;
-    creationTimestamp?: string;
-  };
-  reason?: string;
-  related?: InstanceEventObjectReference;
   reportingComponent?: string;
   reportingInstance?: string;
-  series?: InstanceEventSeries;
-  source?: InstanceEventSource;
-  type?: string;
+  source?: {
+    component?: string;
+    host?: string;
+  };
+  series?: {
+    count?: number;
+    lastObservedTime?: string;
+  };
+  metadata?: {
+    name?: string;
+    namespace?: string;
+  };
 }
 
 export interface InstanceEvents {
-  apiVersion?: string;
-  kind?: string;
-  metadata?: {
-    resourceVersion?: string;
-  };
   items: InstanceEventItem[];
 }
+
+export type InstanceLog = string;
 
 export interface InstanceLogQueryParams {
   follow?: boolean;
@@ -201,5 +177,3 @@ export interface InstanceLogQueryParams {
   timestamps?: boolean;
   pretty?: string;
 }
-
-export type InstanceLog = string;

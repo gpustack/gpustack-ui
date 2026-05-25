@@ -58,6 +58,7 @@ export default {
   'common.table.createTime': '作成日時',
   'common.table.updateTime': '更新日時',
   'common.table.description': '説明',
+  'common.table.displayName': '表示名',
   'common.table.name': '名前',
   'common.table.status': 'ステータス',
   'common.table.name.list': '{type} 名称',
@@ -283,6 +284,7 @@ export default {
   'common.image.limit.width': 'Image width must be {width}.',
   'common.image.limit.height': 'Image height must be {height}.',
   'common.remaining': '残り {count}',
+  'common.max': 'Maximum {count}',
   'common.validate.group': 'Please complete the {group} configuration'
 };
 

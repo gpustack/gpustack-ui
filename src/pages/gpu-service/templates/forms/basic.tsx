@@ -58,7 +58,7 @@ const Basic: React.FC<BasicProps> = ({
       <Flex gap={4} align="center">
         {label}
         <span>
-          ({intl.formatMessage({ id: 'common.remaining' }, { count: max })})
+          ({intl.formatMessage({ id: 'common.max' }, { count: max })})
         </span>
       </Flex>
     );
@@ -126,6 +126,7 @@ const Basic: React.FC<BasicProps> = ({
                 id: 'gpuservice.template.displayName'
               })}
               showCount
+              trim={false}
               maxLength={63}
             />
           </Form.Item>

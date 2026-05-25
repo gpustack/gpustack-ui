@@ -37,6 +37,36 @@ export default {
   'gpuservice.template.card.mount': 'マウント',
   'gpuservice.template.card.resources': 'リソース',
   'gpuservice.template.card.ports': 'ポート',
+  'gpuservice.storageType': 'ストレージタイプ',
+  'gpuservice.storageType.add': 'ストレージタイプを追加',
+  'gpuservice.storageType.edit': 'ストレージタイプを編集',
+  'gpuservice.storageType.filter.name': '名前で検索',
+  'gpuservice.storageType.kind': '種別',
+  'gpuservice.storageType.mountOptions': 'マウントオプション',
+  'gpuservice.storageType.nfs.server': 'NFS サーバー',
+  'gpuservice.storageType.nfs.share': '共有パス',
+  'gpuservice.storageType.nfs.subDirectory': 'サブディレクトリ',
+  'gpuservice.storageType.nfs.subDirectory.tips':
+    '空の場合、永続ボリューム名のサブディレクトリが作成されます。設定されている場合、このサブディレクトリ配下に永続ボリューム名のディレクトリが作成されます。',
+  'gpuservice.storageType.nfs.mountPermissions': 'マウント権限',
+  'gpuservice.storageType.nfs.mountPermissions.tips':
+    'NFS サーバー上のファイル権限を継承します。',
+  'gpuservice.storageType.s3.endpoint': 'エンドポイント',
+  'gpuservice.storageType.s3.endpoint.rule':
+    'http または https で始まる必要があります',
+  'gpuservice.storageType.s3.region': 'リージョン',
+  'gpuservice.storageType.s3.bucket': 'バケット',
+  'gpuservice.storageType.s3.bucket.tips':
+    '空の場合、永続ボリューム名で新しいバケットが作成されます。設定されている場合、このバケット配下に永続ボリューム名のサブディレクトリが作成されます。',
+  'gpuservice.storageType.s3.accessKey': 'アクセスキー',
+  'gpuservice.storageType.s3.secretKey': 'シークレットキー',
+  'gpuservice.storageType.s3.insecure': 'TLS/SSL 証明書の検証をスキップ',
+  'gpuservice.storageType.s3.insecure.tips':
+    '有効にすると S3 サーバーの証明書検証を無視します。社内テストや自己署名証明書の利用時に適しており、本番環境では慎重に有効化してください。',
+  'gpuservice.publicKey': 'SSH 公開鍵',
+  'gpuservice.publicKey.add': 'SSH 公開鍵を追加',
+  'gpuservice.publicKey.edit': 'SSH 公開鍵を編集',
+  'gpuservice.publicKey.filter.name': '名前で検索',
   'gpuservice.publicKey.label': 'SSH 公開鍵',
   'gpuservice.instance.ssh.enable': 'SSH アクセスを有効化',
   'gpuservice.instance.ssh.assignKey': 'SSH 公開鍵を割り当て',
@@ -102,6 +132,11 @@ export default {
   'gpuservice.storage.persistentVolume': '永続ボリューム',
   'gpuservice.storage.persistentVolume.required':
     '永続ボリュームを選択してください',
+  'gpuservice.storage.persistentVolume.capacity': '容量 (GB)',
+  'gpuservice.storage.persistentVolume.capacity.required':
+    '容量を入力してください',
+  'gpuservice.storage.persistentVolume.releaseWithInstance':
+    'インスタンスと共に解放',
   'gpuservice.storage.tempCapacity': '容量 (GB)',
   'gpuservice.storage.tempCapacity.required':
     '一時ストレージ容量を入力してください',

@@ -10,19 +10,12 @@ interface StorageFormProps {
   open: boolean;
   action: PageActionType;
   currentData?: ListItem | null;
-  namespace?: string;
   onFinish: (values: FormData) => Promise<void>;
 }
 
 const GPUServiceStorageForm: React.FC<StorageFormProps> = forwardRef(
   (props, ref) => {
-    const {
-      action,
-      currentData,
-      open,
-      namespace = 'default',
-      onFinish
-    } = props;
+    const { action, currentData, open, onFinish } = props;
     const [form] = Form.useForm<FormData>();
 
     useEffect(() => {
@@ -33,10 +26,9 @@ const GPUServiceStorageForm: React.FC<StorageFormProps> = forwardRef(
 
       if (action === PageAction.EDIT && currentData) {
         form.setFieldsValue({
-          metadata: {
-            name: currentData.metadata?.name,
-            namespace: currentData.metadata?.namespace
-          },
+          name: currentData.name,
+          displayName: currentData.displayName,
+          description: currentData.description,
           spec: {
             capacity: currentData.spec?.capacity,
             type: currentData.spec?.type

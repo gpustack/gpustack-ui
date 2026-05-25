@@ -39,6 +39,35 @@ export default {
   'gpuservice.template.card.mount': 'Mount',
   'gpuservice.template.card.resources': 'Resources',
   'gpuservice.template.card.ports': 'Ports',
+  'gpuservice.storageType': 'Storage Type',
+  'gpuservice.storageType.add': 'Add Storage Type',
+  'gpuservice.storageType.edit': 'Edit Storage Type',
+  'gpuservice.storageType.filter.name': 'Search by name',
+  'gpuservice.storageType.kind': 'Type',
+  'gpuservice.storageType.mountOptions': 'Mount Options',
+  'gpuservice.storageType.nfs.server': 'NFS Server',
+  'gpuservice.storageType.nfs.share': 'Share Path',
+  'gpuservice.storageType.nfs.subDirectory': 'Sub Directory',
+  'gpuservice.storageType.nfs.subDirectory.tips':
+    'If empty, a subdirectory named after the persistent volume will be created. If set, a directory with the persistent volume name will be created beneath this subdirectory.',
+  'gpuservice.storageType.nfs.mountPermissions': 'Mount Permissions',
+  'gpuservice.storageType.nfs.mountPermissions.tips':
+    'Inherit the file permissions from the NFS server.',
+  'gpuservice.storageType.s3.endpoint': 'Endpoint',
+  'gpuservice.storageType.s3.endpoint.rule': 'Must start with http or https',
+  'gpuservice.storageType.s3.region': 'Region',
+  'gpuservice.storageType.s3.bucket': 'Bucket',
+  'gpuservice.storageType.s3.bucket.tips':
+    'If empty, a new bucket named after the persistent volume will be created. If set, a subdirectory with the persistent volume name will be created inside this bucket.',
+  'gpuservice.storageType.s3.accessKey': 'Access Key',
+  'gpuservice.storageType.s3.secretKey': 'Secret Key',
+  'gpuservice.storageType.s3.insecure': 'Skip TLS/SSL certificate verification',
+  'gpuservice.storageType.s3.insecure.tips':
+    'When enabled, the S3 server certificate is not validated. Use this for internal testing or self-signed certificates; enable with caution in production.',
+  'gpuservice.publicKey': 'SSH Public Key',
+  'gpuservice.publicKey.add': 'Add SSH Public Key',
+  'gpuservice.publicKey.edit': 'Edit SSH Public Key',
+  'gpuservice.publicKey.filter.name': 'Search by name',
   'gpuservice.publicKey.label': 'SSH Public Key',
   'gpuservice.instance.ssh.enable': 'Enable SSH Access',
   'gpuservice.instance.ssh.assignKey': 'Assign SSH Public Key',
@@ -108,6 +137,11 @@ export default {
     'Data persists across restarts and is deleted only when the instance is terminated. Cannot be shared with other instances.',
   'gpuservice.storage.persistentVolume.required':
     'Please select a persistent volume',
+  'gpuservice.storage.persistentVolume.capacity': 'Capacity (GB)',
+  'gpuservice.storage.persistentVolume.capacity.required':
+    'Please enter capacity',
+  'gpuservice.storage.persistentVolume.releaseWithInstance':
+    'Release with instance',
   'gpuservice.storage.tempCapacity': 'Capacity (GB)',
   'gpuservice.storage.tempCapacity.required':
     'Please enter the temporary storage capacity',

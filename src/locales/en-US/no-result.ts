@@ -65,6 +65,10 @@ export default {
   'noresult.gpuservice.storage.title': 'No Storage',
   'noresult.gpuservice.storage.subTitle': 'No storage has been added yet.',
   'noresult.gpuservice.storage.nofound': 'No matching storage found.',
+  'noresult.gpuservice.storageType.title': 'No Storage Types',
+  'noresult.gpuservice.storageType.subTitle':
+    'No storage types have been added yet.',
+  'noresult.gpuservice.storageType.nofound': 'No matching storage types found.',
   'noresult.gpuservice.sshkey.title': 'No SSH Public Keys',
   'noresult.gpuservice.sshkey.subTitle':
     'No SSH public keys have been added yet.',

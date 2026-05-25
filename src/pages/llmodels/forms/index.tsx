@@ -27,6 +27,7 @@ import {
   BackendOption,
   DeployFormKey,
   FormData,
+  LoraListItem,
   SourceType
 } from '../config/types';
 import { backendOptionsMap } from '../constants/backend-parameters';
@@ -216,6 +217,14 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   const handleOk = async (formdata: FormData) => {
     const data = _.cloneDeep(formdata);
     data.categories = data.categories ? [data.categories] : [];
+    if (data.lora_list && data.lora_list.length > 0) {
+      data.lora_list = data.lora_list.map((item: LoraListItem) => ({
+        ...item,
+        huggingface_filename: data.huggingface_filename || '',
+        model_scope_file_path: data.model_scope_file_path || '',
+        local_path: data.local_path || ''
+      }));
+    }
     const gpuSelector = generateGPUIds(data);
     const allValues = {
       ..._.omit(data, ['scheduleType']),

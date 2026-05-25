@@ -1,0 +1,38 @@
+.item {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  flex: 1;
+  :global {
+    .ant-select-dropdown {
+      > div {
+        .ant-cascader-menus {
+          display: grid;
+          grid-template-columns: 140px 1fr;
+
+          .ant-cascader-menu:only-child {
+            grid-column: 1 / -1;
+          }
+        }
+      }
+    }
+  }
+
+  > *:nth-child(1) {
+    flex: 1 1 320px;
+    min-width: 0;
+  }
+  > *:nth-child(2) {
+    flex: 1 1 120px;
+    min-width: 0;
+  }
+}
+
+.wrapper {
+  display: grid;
+  width: 100%;
+  grid-template-columns: 1fr 140px;
+  gap: 8px;
+  align-items: center;
+}

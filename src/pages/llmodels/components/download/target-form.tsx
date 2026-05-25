@@ -1,5 +1,6 @@
 import { ModelFileFormData as FormData } from '@/pages/resources/config/types';
 import {
+  CheckboxField,
   Input as CInput,
   Cascader as SealCascader,
   Select as SealSelect,
@@ -238,6 +239,20 @@ const TargetForm: React.FC<TargetFormProps> = forwardRef((props, ref) => {
                 id: 'resources.modelfiles.form.localdir'
               })}
             ></CInput.Input>
+          </Form.Item>
+        )}
+        {source === modelSourceMap.local_path_value && (
+          <Form.Item<FormData>
+            name="is_lora"
+            key="is_lora"
+            valuePropName="checked"
+            noStyle
+          >
+            <CheckboxField
+              label={intl.formatMessage({
+                id: 'resources.modelfiles.form.isLora'
+              })}
+            ></CheckboxField>
           </Form.Item>
         )}
       </Form>

@@ -99,6 +99,7 @@ export default {
   'resources.worker': 'Worker',
   'resources.modelfiles.form.exsting': 'Downloaded',
   'resources.modelfiles.form.added': 'Added',
+  'resources.modelfiles.form.isLora': 'Is LoRA',
   'resources.worker.maintenance.title': 'System Maintenance',
   'resources.worker.maintenance.enable': 'Enter Maintenance Mode',
   'resources.worker.maintenance.disable': 'Exit Maintenance Mode',

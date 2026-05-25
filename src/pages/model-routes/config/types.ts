@@ -45,5 +45,6 @@ export interface RouteTarget extends RouteTargetFormItem {
   provider_id: number;
   overridden_model_name: string;
   fallback_status_codes: string[];
+  lora_module_name?: string;
   state: string;
 }

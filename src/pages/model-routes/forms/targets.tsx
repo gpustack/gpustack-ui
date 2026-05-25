@@ -24,7 +24,11 @@ import useTargetSourceModels from '../hooks/use-target-source-models';
 const OptionWrapper = styled.span`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
+  .lora-tag {
+    font-size: 12px;
+    color: var(--ant-color-text-tertiary);
+  }
 `;
 
 const LabelWrapper = styled.div`
@@ -214,6 +218,14 @@ const TargetsForm = forwardRef((props, ref) => {
     const { data } = option;
 
     if (!data.isParent) {
+      if (data.isLora) {
+        return (
+          <OptionWrapper>
+            <AutoTooltip ghost>{data.label}</AutoTooltip>
+            <span className="lora-tag">[LoRA]</span>
+          </OptionWrapper>
+        );
+      }
       return <AutoTooltip ghost>{data.label}</AutoTooltip>;
     }
 

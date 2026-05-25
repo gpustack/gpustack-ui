@@ -18,6 +18,16 @@ export interface ListItem {
   enable_model_route?: boolean;
   replicas: number;
   s3Address: string;
+  lora_list: Array<{
+    huggingface_filename: string;
+    local_path: string;
+    lora_name: string;
+    lora_repo_name: string;
+    model_file_id: string;
+    model_scope_file_path: string;
+    path: string;
+    source: string;
+  }>;
   name: string;
   description: string;
   id: number;
@@ -48,6 +58,16 @@ export type SourceType =
   | 'local_path'
   | 'ollama_library';
 
+export interface LoraListItem {
+  lora_name: string;
+  lora_repo_name: string;
+  source: 'huggingface' | 'model_scope';
+  huggingface_filename: string;
+  model_scope_file_path: string;
+  local_path: string;
+  path: string;
+  model_file_id: number;
+}
 export interface FormData {
   image_name?: string;
   run_command?: string;
@@ -66,6 +86,7 @@ export interface FormData {
   s3_address: string;
   ollama_library_model_name: string;
   distributed_inference_across_workers?: boolean;
+  lora_list: LoraListItem[];
   local_path?: string;
   model_scope_model_id?: string;
   model_scope_file_path?: string;
@@ -397,4 +418,12 @@ export interface InstanceRestartCount {
     }[];
     error?: string | null;
   }[];
+}
+
+export interface ModelLoraAdapterResult {
+  lora_list: Array<{
+    is_local: boolean;
+    lora_repo_name: string;
+    source: 'huggingface' | 'model_scope' | 'local_path';
+  }>;
 }

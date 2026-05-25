@@ -1,10 +1,11 @@
+import PluginExtraFields from '@/components/plugin-extra-fields';
 import { TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import PageBox from '@/pages/_components/page-box';
 import { IconFont, NoResult } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Table } from 'antd';
 import _ from 'lodash';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { BreakdownItem, FilterOptionType } from '../config/types';
 import useModelsColumns from '../hooks/use-models-columns';
 import useQueryBreakdownList from '../services/use-query-breakdown-list';
@@ -107,6 +108,22 @@ const Models: React.FC<{
     scope
   ]);
 
+  // Route ids currently visible in the Models tab. Mirrored to the
+  // plugin slot below so enterprise plugins can bulk-fetch per-route
+  // data (e.g. the caller's quota / usage on each route) in one call
+  // rather than firing N round-trips from each cell. `refreshToken`
+  // bumps with every successful fetch so plugins re-pull even when the
+  // id set hasn't changed.
+  const pluginContext = useMemo(
+    () => ({
+      routeIds: (dataSource.dataList || [])
+        .map((item) => item.route?.identity?.current?.route_id)
+        .filter((id): id is number => id != null),
+      refreshToken: refreshKey
+    }),
+    [dataSource.dataList, refreshKey]
+  );
+
   return (
     <>
       <PageBox>
@@ -134,6 +151,11 @@ const Models: React.FC<{
           }}
         ></Table>
       </PageBox>
+      {/* Page-level data lifecycle for plugin-contributed extra
+          columns on this tab. Receives the visible route ids so the
+          plugin can bulk-fetch per-route data in one call; renders
+          nothing when no plugin is registered. */}
+      <PluginExtraFields name="UsageModelsPageGlobal" context={pluginContext} />
     </>
   );
 };

@@ -131,6 +131,7 @@ export interface InstanceTypeStatus {
 export interface InstanceTypeItem {
   name: string;
   spec: InstanceTypeSpec;
+  disabled?: boolean;
   status: InstanceTypeStatus;
 }
 

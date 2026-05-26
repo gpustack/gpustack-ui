@@ -150,6 +150,7 @@ const PortItem: React.FC<PortItemProps & { disabled?: boolean }> = ({
       <div className={styles.port}>
         <CInputNumber
           min={PORT_MIN}
+          controls={false}
           disabled={disabled}
           precision={0}
           value={item.port}

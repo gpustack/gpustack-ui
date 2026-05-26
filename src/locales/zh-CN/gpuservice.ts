@@ -92,6 +92,7 @@ export default {
   'gpuservice.instance.sliced': '切分',
   'gpuservice.instance.memory': '显存',
   'gpuservice.instance.ram': '内存',
+  'gpuservice.instance.disk': '磁盘',
   'gpuservice.instance.search.type.placeholder': '搜索名称',
   'gpuservice.instance.search.template.placeholder':
     '搜索模板名称、镜像或挂载路径',

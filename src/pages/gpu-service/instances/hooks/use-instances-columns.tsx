@@ -13,6 +13,7 @@ import _ from 'lodash';
 import { Fragment, useMemo } from 'react';
 import { InstanceStatusLabelMap, rowActionList, status } from '../config';
 import { ListItem } from '../config/types';
+import tableSyles from '../styles/table.module.less';
 
 type ConnectEntry =
   | {
@@ -66,27 +67,6 @@ const getConnectEntries = (record: ListItem): ConnectEntry[] => {
     });
 };
 
-const renderInstanceType = (record: ListItem) => {
-  const description = JSON.parse(record?.description || '{}').spec || {};
-  return (
-    <Flex align="flex-start" orientation="vertical">
-      <span
-        style={{
-          color: 'var(--ant-color-text)',
-          fontWeight: 400
-        }}
-      >
-        {description.manufacturer
-          ? `${description.product} x ${record.spec?.resources?.accelerator}`
-          : ''}
-      </span>
-      <span className="text-tertiary">
-        {`${record.spec.resources?.cpu}C / RAM: ${record.spec.resources?.ram?.replace('Gi', 'GB')} / Disk: ${record.spec.resources?.localStorage?.replace('Gi', 'GB')}`}{' '}
-      </span>
-    </Flex>
-  );
-};
-
 interface ColumnsHookProps {
   handleSelect: (val: string, record: ListItem) => void;
   sortOrder: string[];
@@ -97,6 +77,36 @@ const useInstancesColumns = ({
   sortOrder
 }: ColumnsHookProps): ColumnsType<ListItem> => {
   const intl = useIntl();
+
+  const renderInstanceType = (record: ListItem) => {
+    const description = JSON.parse(record?.description || '{}').spec || {};
+    return (
+      <Flex align="flex-start" orientation="vertical">
+        <span className="text-primary">
+          {description.acceleratable
+            ? `${description.product} x ${record.spec?.resources?.accelerator}`
+            : 'CPU'}
+        </span>
+        <Flex
+          align="center"
+          style={{ fontSize: 13, color: 'var(--ant-color-text-tertiary)' }}
+        >
+          <span>{record.spec.resources?.cpu}C</span>
+          <span className={tableSyles.dot} />
+          <span>
+            {intl.formatMessage({ id: 'gpuservice.instance.ram' })}:{' '}
+            {record.spec.resources?.ram?.replace('Gi', 'GB')}
+          </span>
+          <span className={tableSyles.dot} />
+          <span>
+            {intl.formatMessage({ id: 'gpuservice.instance.disk' })}:{' '}
+            {record.spec.resources?.localStorage?.replace('Gi', 'GB')}
+          </span>
+        </Flex>
+      </Flex>
+    );
+  };
+
   return useMemo(() => {
     return [
       {
@@ -116,6 +126,9 @@ const useInstancesColumns = ({
       {
         title: intl.formatMessage({ id: 'gpuservice.instance.connect' }),
         key: 'connect',
+        ellipsis: {
+          showTitle: false
+        },
         render: (_text, record: ListItem) => {
           const entries = getConnectEntries(record);
 
@@ -199,6 +212,9 @@ const useInstancesColumns = ({
         dataIndex: ['status', 'phase'],
         key: 'status',
         sorter: false,
+        ellipsis: {
+          showTitle: false
+        },
         render: (value: string, record: ListItem) => {
           return (
             <StatusTag
@@ -212,7 +228,7 @@ const useInstancesColumns = ({
         }
       },
       {
-        title: 'Instance Type',
+        title: intl.formatMessage({ id: 'gpuservice.instance.section.type' }),
         dataIndex: ['spec', 'type'],
         key: 'type',
         sorter: false,
@@ -220,12 +236,9 @@ const useInstancesColumns = ({
           showTitle: false
         },
         render: (_text: string, record: ListItem) => (
-          <AutoTooltip
-            ghost
-            style={{ maxWidth: 360, color: 'var(--ant-color-text) !important' }}
-          >
-            {renderInstanceType(record)}
-          </AutoTooltip>
+          <div style={{ width: 'max-content' }}>
+            <AutoTooltip ghost>{renderInstanceType(record)}</AutoTooltip>
+          </div>
         )
       },
       {
@@ -246,6 +259,9 @@ const useInstancesColumns = ({
         title: intl.formatMessage({ id: 'common.table.operation' }),
         key: 'operation',
         dataIndex: 'operation',
+        ellipsis: {
+          showTitle: false
+        },
         render: (_text, record) => (
           <DropdownButtons
             items={rowActionList}

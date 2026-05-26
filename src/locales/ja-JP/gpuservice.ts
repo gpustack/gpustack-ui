@@ -16,8 +16,8 @@ export default {
   'gpuservice.template.containerDisk': 'コンテナディスク (GB)',
   'gpuservice.template.memory': 'メモリ (GB)',
   'gpuservice.instance.containerDisk.remaining':
-    'コンテナディスク (残り {count} GB)',
-  'gpuservice.instance.memory.remaining': 'メモリ (残り {count} GB)',
+    'コンテナディスク (最大 {count} GB)',
+  'gpuservice.instance.memory.remaining': 'メモリ (最大 {count} GB)',
   'gpuservice.template.displayName': '表示名',
   'gpuservice.template.displayName.max':
     '表示名は 63 文字以内で入力してください。',
@@ -98,6 +98,7 @@ export default {
   'gpuservice.instance.sliced': '分割',
   'gpuservice.instance.memory': 'Memory',
   'gpuservice.instance.ram': 'RAM',
+  'gpuservice.instance.disk': 'ディスク',
   'gpuservice.instance.search.type.placeholder': '名前で検索',
   'gpuservice.instance.search.template.placeholder':
     'テンプレート名、イメージまたはマウントパスで検索',

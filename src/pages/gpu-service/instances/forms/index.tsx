@@ -540,10 +540,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
                 rules={[
                   {
                     required: true,
-                    message: getRuleMessage(
-                      'select',
-                      'gpuservice.instance.ssh.assignKey'
-                    )
+                    message: getRuleMessage('select', 'gpuservice.publicKey')
                   }
                 ]}
               >

@@ -17,8 +17,8 @@ export default {
   'gpuservice.template.containerDisk': 'Диск контейнера (GB)',
   'gpuservice.template.memory': 'Память (GB)',
   'gpuservice.instance.containerDisk.remaining':
-    'Диск контейнера (Остаток {count} GB)',
-  'gpuservice.instance.memory.remaining': 'Память (Остаток {count} GB)',
+    'Диск контейнера (Макс. {count} GB)',
+  'gpuservice.instance.memory.remaining': 'Память (Макс. {count} GB)',
   'gpuservice.template.displayName': 'Отображаемое имя',
   'gpuservice.template.displayName.max':
     'Отображаемое имя не должно превышать 63 символа.',
@@ -99,6 +99,7 @@ export default {
   'gpuservice.instance.sliced': 'Разделено',
   'gpuservice.instance.memory': 'Память',
   'gpuservice.instance.ram': 'RAM',
+  'gpuservice.instance.disk': 'Диск',
   'gpuservice.instance.search.type.placeholder': 'Поиск по имени',
   'gpuservice.instance.search.template.placeholder':
     'Поиск по имени шаблона, образу или пути монтирования',

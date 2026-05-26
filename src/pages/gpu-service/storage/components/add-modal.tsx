@@ -2,6 +2,7 @@ import { PageActionType } from '@/config/types';
 import { ModalFooter } from '@gpustack/core-ui';
 import { useRef } from 'react';
 import FormDrawer from '../../../_components/form-drawer';
+import { FormContext } from '../config/form-context';
 import { FormData, ListItem } from '../config/types';
 import GPUServiceStorageForm from '../forms';
 
@@ -12,6 +13,7 @@ type AddModalProps = {
   onOk: (values: FormData) => void;
   data?: ListItem | null;
   onCancel: () => void;
+  storageClassList: Global.BaseOption<string>[];
 };
 
 const AddModal: React.FC<AddModalProps> = ({
@@ -20,7 +22,8 @@ const AddModal: React.FC<AddModalProps> = ({
   open,
   onOk,
   data,
-  onCancel
+  onCancel,
+  storageClassList
 }) => {
   const form = useRef<any>(null);
 
@@ -58,13 +61,15 @@ const AddModal: React.FC<AddModalProps> = ({
         />
       }
     >
-      <GPUServiceStorageForm
-        ref={form}
-        action={action}
-        currentData={data}
-        onFinish={onFinish}
-        open={open}
-      />
+      <FormContext.Provider value={{ storageClassList }}>
+        <GPUServiceStorageForm
+          ref={form}
+          action={action}
+          currentData={data}
+          onFinish={onFinish}
+          open={open}
+        />
+      </FormContext.Provider>
     </FormDrawer>
   );
 };

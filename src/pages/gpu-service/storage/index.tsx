@@ -6,6 +6,7 @@ import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { ConfigProvider, message, Table } from 'antd';
 import _ from 'lodash';
+import { useEffect } from 'react';
 import PageBox from '../../_components/page-box';
 import {
   deleteGPUServiceStorage,
@@ -17,6 +18,7 @@ import { FormData, ListItem } from './config/types';
 import useCreateStorageModal from './hooks/use-create-storage-modal';
 import useStorageColumns from './hooks/use-storage-columns';
 import useCreateStorage from './services/use-create-storage';
+import useQueryStorageClass from './services/use-query-storage-class';
 import useUpdateStorage from './services/use-update-storage';
 
 const GPUServiceStorage: React.FC = () => {
@@ -40,15 +42,19 @@ const GPUServiceStorage: React.FC = () => {
     fetchAPI: queryGPUServiceStorage,
     deleteAPI: deleteGPUServiceStorage,
     watch: false,
-    polling: true,
     API: GPU_SERVICE_STORAGE_API,
     contentForDelete: intl.formatMessage({ id: 'gpuservice.storage' })
   });
-
+  const { storageClassList, fetchData: fetchStorageClass } =
+    useQueryStorageClass();
   const { fetchData: createStorage } = useCreateStorage();
   const { fetchData: updateStorage } = useUpdateStorage();
   const { openStorageModalStatus, openStorageModal, closeStorageModal } =
     useCreateStorageModal();
+
+  useEffect(() => {
+    fetchStorageClass({ page: -1 });
+  }, []);
 
   const handleAddStorage = () => {
     openStorageModal(
@@ -123,6 +129,7 @@ const GPUServiceStorage: React.FC = () => {
 
   const columns = useStorageColumns({
     handleSelect,
+    storageClassList,
     sortOrder
   });
 
@@ -170,6 +177,7 @@ const GPUServiceStorage: React.FC = () => {
         action={openStorageModalStatus.action}
         title={openStorageModalStatus.title}
         data={openStorageModalStatus.currentData}
+        storageClassList={storageClassList}
         onCancel={closeStorageModal}
         onOk={handleModalOk}
       />

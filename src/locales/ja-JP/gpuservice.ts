@@ -44,7 +44,11 @@ export default {
   'gpuservice.storageType.kind': '種別',
   'gpuservice.storageType.mountOptions': 'マウントオプション',
   'gpuservice.storageType.nfs.server': 'NFS サーバー',
+  'gpuservice.storageType.nfs.server.tips':
+    'すべての Kubernetes クラスターから NFS サーバーアドレスにアクセスできることを確認してください。',
   'gpuservice.storageType.nfs.share': '共有パス',
+  'gpuservice.storageType.nfs.share.tips':
+    'この共有パス配下に、組織名とストレージ名に基づくディレクトリが自動的に作成されます。サブディレクトリが指定されている場合、生成されたディレクトリはそのサブディレクトリ配下に作成されます。',
   'gpuservice.storageType.nfs.subDirectory': 'サブディレクトリ',
   'gpuservice.storageType.nfs.subDirectory.tips':
     '空の場合、永続ボリューム名のサブディレクトリが作成されます。設定されている場合、このサブディレクトリ配下に永続ボリューム名のディレクトリが作成されます。',
@@ -52,12 +56,18 @@ export default {
   'gpuservice.storageType.nfs.mountPermissions.tips':
     'NFS サーバー上のファイル権限を継承します。',
   'gpuservice.storageType.s3.endpoint': 'エンドポイント',
+  'gpuservice.storageType.s3.endpoint.tips':
+    'すべての Kubernetes クラスターから S3 エンドポイントにアクセスできることを確認してください。',
   'gpuservice.storageType.s3.endpoint.rule':
     'http または https で始まる必要があります',
   'gpuservice.storageType.s3.region': 'リージョン',
   'gpuservice.storageType.s3.bucket': 'バケット',
   'gpuservice.storageType.s3.bucket.tips':
     '空の場合、永続ボリューム名で新しいバケットが作成されます。設定されている場合、このバケット配下に永続ボリューム名のサブディレクトリが作成されます。',
+  'gpuservice.storageType.s3.bucket.tips1':
+    'このバケット内に、組織名とストレージ名に基づくプレフィックスディレクトリが自動的に作成されます。',
+  'gpuservice.storageType.s3.bucket.tips2':
+    '例えば、組織名が <span class="desc-block">awesome-group</span>、ストレージ名が <span class="desc-block">storage-1</span> の場合、生成されるプレフィックスは <span class="desc-block">awesome-group/storage-1</span> になります。',
   'gpuservice.storageType.s3.accessKey': 'アクセスキー',
   'gpuservice.storageType.s3.secretKey': 'シークレットキー',
   'gpuservice.storageType.s3.insecure': 'TLS/SSL 証明書の検証をスキップ',

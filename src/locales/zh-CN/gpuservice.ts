@@ -41,7 +41,11 @@ export default {
   'gpuservice.storageType.kind': '类型',
   'gpuservice.storageType.mountOptions': '挂载参数',
   'gpuservice.storageType.nfs.server': 'NFS 服务器',
+  'gpuservice.storageType.nfs.server.tips':
+    '确保所有 Kubernetes 集群都能访问该 NFS 服务地址。',
   'gpuservice.storageType.nfs.share': '共享路径',
+  'gpuservice.storageType.nfs.share.tips':
+    '系统会在该共享路径下自动创建一个基于组织名称和存储名称的目录。如果指定了子目录，则生成的目录会创建在该子目录下。',
   'gpuservice.storageType.nfs.subDirectory': '子目录',
   'gpuservice.storageType.nfs.subDirectory.tips':
     '如果为空，会以持久卷的卷名创建一个子目录；如果不为空，会在同名子目录下，以持久卷的卷名创建一个孙目录。',
@@ -49,11 +53,17 @@ export default {
   'gpuservice.storageType.nfs.mountPermissions.tips':
     '沿用 NFS 服务器文件的权限。',
   'gpuservice.storageType.s3.endpoint': 'Endpoint',
+  'gpuservice.storageType.s3.endpoint.tips':
+    '确保所有 Kubernetes 集群都能访问该 S3 Endpoint。',
   'gpuservice.storageType.s3.endpoint.rule': '必须以 http 或 https 开头',
   'gpuservice.storageType.s3.region': '区域',
   'gpuservice.storageType.s3.bucket': '存储桶',
   'gpuservice.storageType.s3.bucket.tips':
     '如果为空，会以持久卷的卷名创建一个新桶；如果不为空，会在同名桶下，以持久卷的卷名创建一个子目录。',
+  'gpuservice.storageType.s3.bucket.tips1':
+    '系统会在该 Bucket 中自动创建一个基于组织名称和存储名称的前缀目录。',
+  'gpuservice.storageType.s3.bucket.tips2':
+    '例如，若组织名称为 <span class="desc-block">awesome-group</span>，存储名称为 <span class="desc-block">storage-1</span>，则生成的前缀为：<span class="desc-block">awesome-group/storage-1</span>。',
   'gpuservice.storageType.s3.accessKey': 'Access Key',
   'gpuservice.storageType.s3.secretKey': 'Secret Key',
   'gpuservice.storageType.s3.insecure': '跳过 TLS/SSL 证书验证',

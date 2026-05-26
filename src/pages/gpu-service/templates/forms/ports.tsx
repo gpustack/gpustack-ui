@@ -29,9 +29,9 @@ const protocolOptions = [
 ];
 
 const wellKnownTcpPortNames: Record<number, string> = {
-  22: 'ssh',
-  80: 'http',
-  443: 'https'
+  22: 'SSH',
+  80: 'WEB',
+  443: 'HTTPS'
 };
 
 const getAutoFilledName = (

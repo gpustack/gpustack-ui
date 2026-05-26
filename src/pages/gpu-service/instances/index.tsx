@@ -80,7 +80,7 @@ const GPUService: React.FC = () => {
       if (openInstanceModalStatus.realAction === PageAction.CREATE) {
         await deleteGPUServiceInstance(openInstanceModalStatus.currentData!.id);
         await new Promise((resolve) => {
-          setTimeout(resolve, 500);
+          setTimeout(resolve, 300);
         });
         await createInstance({ data });
       } else if (openInstanceModalStatus.action === PageAction.EDIT) {
@@ -233,6 +233,7 @@ const GPUService: React.FC = () => {
         name={openViewEventsModalStatus.name}
         namespace={openViewEventsModalStatus.namespace}
         clusterID={openViewEventsModalStatus.clusterID}
+        hasPersistentVolume={openViewEventsModalStatus.hasPersistentVolume}
         onCancel={closeViewEventsModal}
       />
       <DeleteModal ref={modalRef} />

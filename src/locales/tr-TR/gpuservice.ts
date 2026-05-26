@@ -46,7 +46,11 @@ export default {
   'gpuservice.storageType.kind': 'Tür',
   'gpuservice.storageType.mountOptions': 'Bağlama Seçenekleri',
   'gpuservice.storageType.nfs.server': 'NFS Sunucusu',
+  'gpuservice.storageType.nfs.server.tips':
+    'NFS sunucu adresinin tüm Kubernetes kümelerinden erişilebilir olduğundan emin olun.',
   'gpuservice.storageType.nfs.share': 'Paylaşım Yolu',
+  'gpuservice.storageType.nfs.share.tips':
+    'Bu paylaşım yolu altında organizasyon ve depolama adlarına dayalı bir dizin otomatik olarak oluşturulur. Bir alt dizin belirtilmişse, oluşturulan dizin o alt dizin altında yer alır.',
   'gpuservice.storageType.nfs.subDirectory': 'Alt Dizin',
   'gpuservice.storageType.nfs.subDirectory.tips':
     'Boş bırakılırsa kalıcı hacim adıyla bir alt dizin oluşturulur. Doldurulursa bu alt dizinin altında kalıcı hacim adıyla bir dizin oluşturulur.',
@@ -54,12 +58,17 @@ export default {
   'gpuservice.storageType.nfs.mountPermissions.tips':
     'NFS sunucusundaki dosya izinleri devralınır.',
   'gpuservice.storageType.s3.endpoint': 'Endpoint',
-  'gpuservice.storageType.s3.endpoint.rule':
-    'http veya https ile başlamalıdır',
+  'gpuservice.storageType.s3.endpoint.tips':
+    'S3 endpoint adresinin tüm Kubernetes kümelerinden erişilebilir olduğundan emin olun.',
+  'gpuservice.storageType.s3.endpoint.rule': 'http veya https ile başlamalıdır',
   'gpuservice.storageType.s3.region': 'Bölge',
   'gpuservice.storageType.s3.bucket': 'Kova',
   'gpuservice.storageType.s3.bucket.tips':
     'Boş bırakılırsa kalıcı hacim adıyla yeni bir kova oluşturulur. Doldurulursa bu kova içinde kalıcı hacim adıyla bir alt dizin oluşturulur.',
+  'gpuservice.storageType.s3.bucket.tips1':
+    'Bu kova içinde organizasyon ve depolama adlarına dayalı bir önek dizini otomatik olarak oluşturulur.',
+  'gpuservice.storageType.s3.bucket.tips2':
+    'Örneğin, organizasyon adı <span class="desc-block">awesome-group</span> ve depolama adı <span class="desc-block">storage-1</span> ise, oluşacak önek: <span class="desc-block">awesome-group/storage-1</span>.',
   'gpuservice.storageType.s3.accessKey': 'Access Key',
   'gpuservice.storageType.s3.secretKey': 'Secret Key',
   'gpuservice.storageType.s3.insecure': 'TLS/SSL sertifika doğrulamasını atla',

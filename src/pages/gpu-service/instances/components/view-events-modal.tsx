@@ -19,6 +19,7 @@ type ViewEventsModalProps = {
   name: string;
   namespace: string;
   clusterID?: number;
+  hasPersistentVolume?: boolean;
   onCancel: () => void;
 };
 
@@ -31,7 +32,8 @@ const eventTypeStatus: Record<string, 'success' | 'warning' | 'error'> = {
 
 const ViewEventsModal: React.FC<ViewEventsModalProps> = (props) => {
   const intl = useIntl();
-  const { open, onCancel, name, namespace, clusterID } = props || {};
+  const { open, onCancel, name, namespace, clusterID, hasPersistentVolume } =
+    props || {};
   const [activeKey, setActiveKey] = useState('instance');
 
   const {
@@ -54,7 +56,9 @@ const ViewEventsModal: React.FC<ViewEventsModalProps> = (props) => {
   const refreshAll = () => {
     if (!name || !namespace || !clusterID) return;
     fetchInstanceEvents({ name, namespace, clusterID });
-    fetchVolumeEvents({ name, namespace, clusterID });
+    if (hasPersistentVolume) {
+      fetchVolumeEvents({ name, namespace, clusterID });
+    }
   };
 
   useEffect(() => {
@@ -184,16 +188,20 @@ const ViewEventsModal: React.FC<ViewEventsModalProps> = (props) => {
       }),
       children: renderTable(instanceEvents, instanceLoading)
     },
-    {
-      key: 'volume',
-      label: intl.formatMessage({
-        id: 'gpuservice.instance.event.tab.volume'
-      }),
-      children: renderTable(volumeEvents, volumeLoading)
-    }
+    ...(hasPersistentVolume
+      ? [
+          {
+            key: 'volume',
+            label: intl.formatMessage({
+              id: 'gpuservice.instance.event.tab.volume'
+            }),
+            children: renderTable(volumeEvents, volumeLoading)
+          }
+        ]
+      : [])
   ];
 
-  const isLoading = instanceLoading || volumeLoading;
+  const isLoading = instanceLoading || (hasPersistentVolume && volumeLoading);
 
   return (
     <ScrollerModal

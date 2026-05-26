@@ -24,6 +24,9 @@ const NFSForm = ({ action }: { action: string }) => {
       >
         <CInput.Input
           required
+          description={intl.formatMessage({
+            id: 'gpuservice.storageType.nfs.server.tips'
+          })}
           label={intl.formatMessage({
             id: 'gpuservice.storageType.nfs.server'
           })}
@@ -40,14 +43,14 @@ const NFSForm = ({ action }: { action: string }) => {
       >
         <CInput.Input
           required
+          description={intl.formatMessage({
+            id: 'gpuservice.storageType.nfs.share.tips'
+          })}
           label={intl.formatMessage({ id: 'gpuservice.storageType.nfs.share' })}
         />
       </Form.Item>
       <Form.Item<FormData> name={['spec', 'nfs', 'subDirectory']}>
         <CInput.Input
-          description={intl.formatMessage({
-            id: 'gpuservice.storageType.nfs.subDirectory.tips'
-          })}
           label={intl.formatMessage({
             id: 'gpuservice.storageType.nfs.subDirectory'
           })}

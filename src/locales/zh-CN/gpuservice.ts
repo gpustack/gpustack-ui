@@ -98,6 +98,7 @@ export default {
   'gpuservice.instance.gpuCount.min': '至少选择 {count} 张卡',
   'gpuservice.instance.gpuCount.noAvailable':
     '没有可用的 GPU 资源，请选择其他实例类型。',
+  'gpuservice.instance.gpuCount.zero': '仅使用 CPU，用于环境准备。',
   'gpuservice.instance.stock': '库存',
   'gpuservice.instance.sliced': '切分',
   'gpuservice.instance.memory': '显存',

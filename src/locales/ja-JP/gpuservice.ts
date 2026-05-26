@@ -104,6 +104,7 @@ export default {
     '少なくとも {count} 枚の GPU カードを選択してください',
   'gpuservice.instance.gpuCount.noAvailable':
     '利用可能な GPU リソースがありません。別のインスタンスタイプを選択してください。',
+  'gpuservice.instance.gpuCount.zero': 'CPU のみを使用し、環境準備用です。',
   'gpuservice.instance.stock': '在庫',
   'gpuservice.instance.sliced': '分割',
   'gpuservice.instance.memory': 'Memory',

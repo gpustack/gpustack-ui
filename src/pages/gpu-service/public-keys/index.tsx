@@ -98,7 +98,7 @@ const GPUServicePublicKeys: React.FC = () => {
         loading={dataSource.loading}
         loadend={dataSource.loadend}
         dataSource={dataSource.dataList}
-        image={<IconFont type="icon-storage-outlined" />}
+        image={<IconFont type="icon-ssh-outlined" />}
         filters={_.pick(queryParams, ['search'])}
         noFoundText={intl.formatMessage({
           id: 'noresult.gpuservice.sshkey.nofound'

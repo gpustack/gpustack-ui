@@ -82,11 +82,15 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
   const renderInstanceType = () => {
     const description = JSON.parse(currentData?.description || '{}').spec || {};
     return (
-      <SelectedCard>
+      <SelectedCard
+        style={{
+          background: 'var(--ant-color-bg-container-disabled)',
+          color: 'var(--ant-color-text-disabled)'
+        }}
+      >
         <Flex align="flex-start" orientation="vertical">
           <span
             style={{
-              color: 'var(--ant-color-text)',
               fontWeight: 400
             }}
           >
@@ -123,9 +127,9 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
         <Form.Item<FormData>
           name={['spec', 'resources', 'accelerator']}
           hidden={action === PageAction.EDIT}
-          normalize={(value) => (value ? _.toString(value) : undefined)}
+          normalize={(value) => (value != null ? _.toString(value) : undefined)}
           getValueProps={(value) => ({
-            value: value ? _.toNumber(value) : undefined
+            value: value != null ? _.toNumber(value) : undefined
           })}
           rules={[
             {
@@ -142,12 +146,12 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
                     )
                   );
                 }
-                if (num < 1) {
+                if (num < 0) {
                   return Promise.reject(
                     new Error(
                       intl.formatMessage(
                         { id: 'gpuservice.instance.gpuCount.min' },
-                        { count: 1 }
+                        { count: 0 }
                       )
                     )
                   );
@@ -158,11 +162,14 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
           ]}
         >
           <NumberSelection
-            min={1}
+            min={0}
             onChange={handleOnGPUCountChange}
             max={maxGpuCount}
             step={1}
             required
+            tips={intl.formatMessage({
+              id: 'gpuservice.instance.gpuCount.zero'
+            })}
             disabled={disabled || action === PageAction.EDIT}
             labelExtra={
               !maxGpuCount &&

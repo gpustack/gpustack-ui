@@ -8,6 +8,7 @@ export interface FormData {
   displayName?: string | null;
   description?: string | null;
   enable_ssh?: boolean;
+  storageMode?: string;
   spec: {
     type: string;
     image: string;

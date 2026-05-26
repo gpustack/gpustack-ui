@@ -103,6 +103,7 @@ export default {
   'gpuservice.instance.gpuCount.min': 'En az {count} GPU kartı seçin',
   'gpuservice.instance.gpuCount.noAvailable':
     'Kullanılabilir GPU kaynağı yok, lütfen başka bir örnek türü seçin.',
+  'gpuservice.instance.gpuCount.zero': 'Yalnızca CPU, ortam hazırlığı için.',
   'gpuservice.instance.stock': 'Stok',
   'gpuservice.instance.sliced': 'Bölünmüş',
   'gpuservice.instance.memory': 'Bellek',

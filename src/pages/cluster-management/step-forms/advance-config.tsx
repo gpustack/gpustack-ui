@@ -7,9 +7,13 @@ import { useIntl } from '@umijs/max';
 import { Button, Form } from 'antd';
 import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
 import styled from 'styled-components';
+import K8sPodSpec from '../components/k8s-pod-spec';
 import K8SVolumeMount from '../components/k8s-volume-mount';
 import { ProviderType, ProviderValueMap } from '../config';
-import { ClusterFormData as FormData } from '../config/types';
+import {
+  ClusterFormData as FormData,
+  ClusterListItem as ListItem
+} from '../config/types';
 import schema from '../config/worker-config.json';
 import { dockerConfig, kubernetesConfig } from '../config/yaml-template';
 
@@ -28,8 +32,9 @@ const Title = styled.div`
 const ClusterAdvanceConfig: React.FC<{
   action: PageActionType;
   provider: ProviderType;
+  currentData?: ListItem;
   ref?: any;
-}> = forwardRef(({ action, provider }, ref) => {
+}> = forwardRef(({ action, provider, currentData }, ref) => {
   const [form] = Form.useForm();
   const intl = useIntl();
   const editorRef = React.useRef<any>(null);
@@ -75,7 +80,12 @@ const ClusterAdvanceConfig: React.FC<{
         <CInput.TextArea required={false} trim={false}></CInput.TextArea>
       </Form.Item>
       {provider === ProviderValueMap.Kubernetes && (
-        <K8SVolumeMount action={action}></K8SVolumeMount>
+        <>
+          <K8SVolumeMount action={action}></K8SVolumeMount>
+          <K8sPodSpec
+            initialOverrides={currentData?.k8s_options?.gpuVendorOverrides}
+          ></K8sPodSpec>
+        </>
       )}
       <Title>
         {intl.formatMessage({ id: 'clusters.create.workerConfig' })}

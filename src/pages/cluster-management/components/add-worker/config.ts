@@ -31,6 +31,9 @@ export const K8sStepsFromCluter = [
 
 export interface SummaryDataKeys {
   currentGPU: string;
+  // Multi-vendor selection for K8s register flow — array of GPU driver keys.
+  // Falls back to `[currentGPU]` for the single-select default path.
+  selectedGPUs: string[];
   cluster_id: number;
   clusterName: string;
   workerCommand: {

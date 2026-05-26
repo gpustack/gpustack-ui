@@ -68,7 +68,8 @@ interface ProviderCatalogProps {
   onSelect?: (provider: string, item: any) => void;
   groupIcons?: Record<string, string>;
   cols?: number;
-  current?: ProviderType | string;
+  // Single value (legacy) or array of selected keys for multi-select.
+  current?: ProviderType | string | string[];
   clickable?: boolean;
   height: string | number;
   showTooltip?: boolean;
@@ -149,7 +150,11 @@ const ProviderCatalog: React.FC<ProviderCatalogProps> = ({
                   <TemplateCard
                     height={height}
                     onClick={() => onSelect?.(action.key as string, action)}
-                    active={current === action.key}
+                    active={
+                      Array.isArray(current)
+                        ? current.includes(action.key)
+                        : current === action.key
+                    }
                     disabled={action.disabled}
                     clickable={clickable}
                     header={renderTitle(action)}

@@ -12,6 +12,7 @@ const K8sRunCommand: React.FC<AddWorkerStepProps> = ({ disabled }) => {
 
   const stepIndex = stepList.indexOf(StepNamesMap.RunCommand) + 1;
   const currentGPU = summary.get('currentGPU') || '';
+  const currentGPUs: string[] = summary.get('selectedGPUs') || [];
 
   return (
     <StepCollapse
@@ -36,6 +37,7 @@ const K8sRunCommand: React.FC<AddWorkerStepProps> = ({ disabled }) => {
       <RegisterClusterInner
         registrationInfo={registrationInfo}
         currentGPU={currentGPU}
+        currentGPUs={currentGPUs}
       />
     </StepCollapse>
   );

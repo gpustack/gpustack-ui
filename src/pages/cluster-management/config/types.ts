@@ -68,6 +68,25 @@ export interface VolumeMount {
   };
 }
 
+export interface ImageCredential {
+  registry: string;
+  username: string;
+  password: string;
+}
+
+export interface K8sOptions {
+  // Backend serializes K8sOptions with camelCase aliases (by_alias=True on
+  // the SQL JSON column). The top-level `k8s_options` field on the cluster
+  // stays snake_case, but everything inside follows the backend wire shape.
+  volumeMounts?: VolumeMount[];
+  imageCredentials?: ImageCredential[];
+  nodeSelector?: Record<string, string>;
+  gpuVendorOverrides?: Record<
+    string,
+    { nodeSelector?: Record<string, string> }
+  >;
+}
+
 export interface ClusterListItem {
   name: string;
   display_name: string;
@@ -87,7 +106,7 @@ export interface ClusterListItem {
   state: ClusterStatusType;
   state_message: string;
   worker_pools: NodePoolListItem[];
-  k8s_volume_mounts?: VolumeMount[];
+  k8s_options?: K8sOptions;
   // Backend ClusterPublic carries this; admin-"All" namespace
   // resolution falls back to the cluster's owner Org name.
   owner_principal_id?: number;
@@ -104,7 +123,7 @@ export interface ClusterFormData {
   server_url?: string;
   worker_config?: Record<string, any>;
   worker_pools?: NodePoolFormData[];
-  k8s_volume_mounts?: VolumeMount[];
+  k8s_options?: K8sOptions;
 }
 
 export interface SystemConfig {

@@ -35,7 +35,6 @@ type ConnectEntry =
 const getConnectEntries = (record: ListItem): ConnectEntry[] => {
   const ip = record.status?.hostIPs?.[0]?.ip;
   const ports = record.status?.ports || [];
-  const hasSshKey = !!record.spec?.sshPublicKeys?.length;
   const configPorts = record.spec?.ports || [];
 
   if (!ip) {
@@ -45,7 +44,9 @@ const getConnectEntries = (record: ListItem): ConnectEntry[] => {
   return ports
     .filter((p) => p.nodePort)
     .map<ConnectEntry>((p) => {
-      const isSsh = hasSshKey && p.protocol === 'TCP' && p.port === 22;
+      const isSsh =
+        (p.protocol === 'TCP' && p.port === 22) ||
+        _.includes(_.toLower(p.name), 'ssh');
       return isSsh
         ? {
             type: 'ssh',

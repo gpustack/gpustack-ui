@@ -9,7 +9,6 @@ import {
 import { useIntl } from '@umijs/max';
 import { Button, Flex, Form, Radio } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
-
 import { FormData as StorageFormData } from '../../storage/config/types';
 import useCreateStorage from '../../storage/services/use-create-storage';
 import useQueryStorage from '../../storage/services/use-query-storage';
@@ -18,13 +17,6 @@ import { FormData } from '../config/types';
 import StorageOverlay from './storage-overlay';
 
 const DEFAULT_TEMP_CAPACITY_GB = 50;
-
-const detectMode = (volume?: FormData['spec']['volume']) => {
-  if (volume?.persistent || volume?.persistentTemplate) {
-    return StorageModeValueMap.Persistent;
-  }
-  return StorageModeValueMap.Temporary;
-};
 
 const StorageVolume = ({
   disabled,
@@ -36,16 +28,7 @@ const StorageVolume = ({
   const intl = useIntl();
   const { getRuleMessage } = useAppUtils();
   const form = Form.useFormInstance<FormData>();
-  const currentVolume = Form.useWatch(['spec', 'volume'], form);
-  const [storageMode, setStorageMode] = useState<string>(
-    StorageModeValueMap.Temporary
-  );
-
-  useEffect(() => {
-    if (!currentVolume) return;
-    setStorageMode(detectMode(currentVolume));
-  }, [currentVolume]);
-
+  const storageMode = Form.useWatch('storageMode', form);
   const { fetchData: createStorage } = useCreateStorage();
   const { detailData: storageData, fetchData: fetchStorage } =
     useQueryStorage();
@@ -81,7 +64,6 @@ const StorageVolume = ({
   };
 
   const handleModeChange = (mode: string) => {
-    setStorageMode(mode);
     applyMode(mode);
   };
 
@@ -99,49 +81,55 @@ const StorageVolume = ({
   return (
     <>
       <div data-field="storage"></div>
-      <Flex align="center" justify="space-between" style={{ marginBlock: 16 }}>
-        <Radio.Group
-          disabled={disabled}
-          value={storageMode}
-          style={{ display: 'flex', gap: 12 }}
-          onChange={(e) => handleModeChange(e.target.value)}
-          options={[
-            {
-              label: (
-                <LabelInfo
-                  description={intl.formatMessage({
-                    id: 'gpuservice.storage.temporary.tips'
-                  })}
-                  label={
-                    <span className="text-primary">
-                      {intl.formatMessage({
-                        id: 'gpuservice.storage.temporary'
-                      })}
-                    </span>
-                  }
-                />
-              ),
-              value: StorageModeValueMap.Temporary
-            },
-            {
-              label: (
-                <LabelInfo
-                  description={intl.formatMessage({
-                    id: 'gpuservice.storage.persistentVolume.tips'
-                  })}
-                  label={
-                    <span className="text-primary">
-                      {intl.formatMessage({
-                        id: 'gpuservice.storage.persistentVolume'
-                      })}
-                    </span>
-                  }
-                />
-              ),
-              value: StorageModeValueMap.Persistent
-            }
-          ]}
-        />
+      <Flex
+        align="center"
+        justify="space-between"
+        style={{ marginBottom: 16, paddingTop: 8 }}
+      >
+        <Form.Item name="storageMode" noStyle>
+          <Radio.Group
+            disabled={disabled}
+            value={storageMode}
+            style={{ display: 'flex', gap: 12 }}
+            onChange={(e) => handleModeChange(e.target.value)}
+            options={[
+              {
+                label: (
+                  <LabelInfo
+                    description={intl.formatMessage({
+                      id: 'gpuservice.storage.temporary.tips'
+                    })}
+                    label={
+                      <span className="text-primary">
+                        {intl.formatMessage({
+                          id: 'gpuservice.storage.temporary'
+                        })}
+                      </span>
+                    }
+                  />
+                ),
+                value: StorageModeValueMap.Temporary
+              },
+              {
+                label: (
+                  <LabelInfo
+                    description={intl.formatMessage({
+                      id: 'gpuservice.storage.persistentVolume.tips'
+                    })}
+                    label={
+                      <span className="text-primary">
+                        {intl.formatMessage({
+                          id: 'gpuservice.storage.persistentVolume'
+                        })}
+                      </span>
+                    }
+                  />
+                ),
+                value: StorageModeValueMap.Persistent
+              }
+            ]}
+          />
+        </Form.Item>
         {action === PageAction.CREATE &&
           storageMode === StorageModeValueMap.Persistent && (
             <Button

@@ -1,6 +1,7 @@
+import { QuestionCircleOutlined } from '@ant-design/icons';
 import { LabelInfo } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Flex, InputNumber } from 'antd';
+import { Flex, InputNumber, Tooltip } from 'antd';
 import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
 import styles from './styles.less';
@@ -21,6 +22,7 @@ interface NumberSelectionProps {
   };
   labelExtra?: React.ReactNode;
   maxCount?: number;
+  tips?: string;
   onChange?: (value: number) => void;
 }
 
@@ -36,6 +38,7 @@ const NumberSelection: React.FC<NumberSelectionProps> = ({
   labelExtra,
   className,
   maxCount = 8,
+  tips,
   style,
   onChange
 }) => {
@@ -108,25 +111,38 @@ const NumberSelection: React.FC<NumberSelectionProps> = ({
           {items.map((num) => {
             const itemDisabled = isItemDisabled(num);
             return (
-              <div
-                key={num}
-                role="radio"
-                aria-checked={num === value}
-                aria-disabled={itemDisabled}
-                tabIndex={itemDisabled ? -1 : 0}
-                className={classNames(styles.numberItem, {
-                  [styles.active]: num === value && value != null,
-                  [styles.itemDisabled]: itemDisabled && !disabled
-                })}
-                onClick={() => handleSelect(num)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    handleSelect(num);
-                  }
-                }}
-              >
-                {num}
+              <div key={num} style={{ flex: 1 }}>
+                <Tooltip title={num === 0 ? tips : false}>
+                  <div
+                    key={num}
+                    role="radio"
+                    aria-checked={num === value}
+                    aria-disabled={itemDisabled}
+                    tabIndex={itemDisabled ? -1 : 0}
+                    className={classNames(styles.numberItem, {
+                      [styles.active]: num === value && value != null,
+                      [styles.itemDisabled]: itemDisabled && !disabled
+                    })}
+                    onClick={() => handleSelect(num)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleSelect(num);
+                      }
+                    }}
+                  >
+                    {num}
+                    {num === 0 && (
+                      <QuestionCircleOutlined
+                        style={{
+                          marginLeft: 4,
+                          fontSize: 11,
+                          color: 'var(--ant-color-text-tertiary)'
+                        }}
+                      />
+                    )}
+                  </div>
+                </Tooltip>
               </div>
             );
           })}

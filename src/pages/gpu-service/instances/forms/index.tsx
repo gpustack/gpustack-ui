@@ -31,7 +31,7 @@ import { DefaultImagePullPolicy } from '../../templates/config';
 import TemplateBasicForm, {
   BasicResourceMax
 } from '../../templates/forms/basic';
-import { pickCandidateForAccelerator } from '../config';
+import { pickCandidateForAccelerator, StorageModeValueMap } from '../config';
 import { FormData, InstanceTypeItem, ListItem } from '../config/types';
 import instanceStyles from '../styles/instances.module.less';
 import Basic from './basic';
@@ -142,11 +142,10 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       updateActiveKey
     } = useScrollActiveChange({
       initalActiveKeys: [TABKeysMap.BASIC],
-      initialCollapseKeys: [
-        TABKeysMap.INSTANCE_TYPE,
-        TABKeysMap.TEMPLATE,
-        TABKeysMap.STORAGE
-      ]
+      initialCollapseKeys:
+        action === PageAction.EDIT
+          ? []
+          : [TABKeysMap.INSTANCE_TYPE, TABKeysMap.TEMPLATE, TABKeysMap.STORAGE]
     });
 
     useEffect(() => {
@@ -166,10 +165,14 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
     );
 
     useEffect(() => {
-      if (hasSSHPort && !form.getFieldValue('enable_ssh')) {
+      if (
+        hasSSHPort &&
+        !form.getFieldValue('enable_ssh') &&
+        action === PageAction.CREATE
+      ) {
         form.setFieldValue('enable_ssh', true);
       }
-    }, [hasSSHPort, form]);
+    }, [hasSSHPort, form, action]);
 
     const segmentOptions = useMemo(
       () => [
@@ -272,6 +275,12 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       }));
       rawHandleOnFinishFailed({ ...errorInfo, errorFields });
     };
+    const detectMode = (volume?: FormData['spec']['volume']) => {
+      if (volume?.persistent?.name || volume?.persistentTemplate?.name) {
+        return StorageModeValueMap.Persistent;
+      }
+      return StorageModeValueMap.Temporary;
+    };
 
     useEffect(() => {
       if (!open) {
@@ -286,7 +295,8 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       ) {
         form.setFieldsValue({
           ...currentData,
-          enable_ssh: !!currentData?.spec?.sshPublicKeys?.length
+          enable_ssh: !!currentData?.spec?.sshPublicKeys?.length,
+          storageMode: detectMode(currentData?.spec?.volume)
         });
       }
     }, [action, currentData, form, open, realAction, instanceTypeList]);
@@ -297,14 +307,13 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
         (item: any) => item?.protocol === 'TCP' && item?.port === SSH_PORT
       );
 
-      if (values.enable_ssh && !submittedHasSSHPort) {
+      if (!submittedHasSSHPort) {
         submittedPorts.push({
           protocol: 'TCP',
           port: SSH_PORT,
           name: 'SSH'
         });
       }
-      console.log('submit values', values, submittedPorts);
       await onFinish({
         ..._.omit(values, ['enable_ssh']),
         spec: {
@@ -348,6 +357,14 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       navigate('/gpu-service/public-keys');
     };
 
+    const handleOnEnableSSHChange = (e: any) => {
+      const checked = e.target.checked;
+      console.log('enable ssh change', checked);
+      if (!checked) {
+        form.setFieldValue(['spec', 'sshPublicKeys'], []);
+      }
+    };
+
     return (
       <ScrollSpyTabs
         ref={scrollTabsRef}
@@ -387,7 +404,8 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
                 }
               }
             },
-            enable_ssh: false
+            enable_ssh: false,
+            storageMode: StorageModeValueMap.Temporary
           }}
         >
           <Basic action={formAction} disabled={disabled} />
@@ -451,19 +469,21 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
             style={{ marginBottom: 8 }}
           >
             <CheckboxField
+              onChange={handleOnEnableSSHChange}
               disabled={disabled}
               label={intl.formatMessage({
                 id: 'gpuservice.instance.ssh.enable'
               })}
             ></CheckboxField>
           </Form.Item>
-          {sshEnabled && (
+          {
             <div className={instanceStyles.sshkeySelection}>
               <Form.Item<FormData>
                 name={['spec', 'sshPublicKeys']}
                 style={{
                   marginBottom: 12
                 }}
+                hidden={!sshEnabled}
                 normalize={(value) =>
                   Array.isArray(value)
                     ? value?.map((item) => ({ name: item }))
@@ -476,7 +496,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
                 })}
                 rules={[
                   {
-                    required: true,
+                    required: sshEnabled,
                     message: getRuleMessage('select', 'gpuservice.publicKey')
                   }
                 ]}
@@ -525,7 +545,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
                 ></MultipleSelect>
               </Form.Item>
             </div>
-          )}
+          }
         </Form>
       </ScrollSpyTabs>
     );

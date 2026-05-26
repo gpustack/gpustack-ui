@@ -105,6 +105,8 @@ export default {
     'Please select at least {count} GPU card(s)',
   'gpuservice.instance.gpuCount.noAvailable':
     'No available GPU resources, please choose another instance type.',
+  'gpuservice.instance.gpuCount.zero':
+    'CPU-only setup for environment preparation.',
   'gpuservice.instance.stock': 'Stock',
   'gpuservice.instance.sliced': 'Sliced',
   'gpuservice.instance.memory': 'Memory',

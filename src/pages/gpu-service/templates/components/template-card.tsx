@@ -2,7 +2,7 @@ import ascendLogo from '@/assets/logo/ascend.png';
 import CambriconPNG from '@/assets/logo/cambricon.png';
 import hyponPNG from '@/assets/logo/hygon.png';
 import iluvatarWEBP from '@/assets/logo/Iluvatar.png';
-import jupyterLogo from '@/assets/logo/jupyter.png';
+import jupyterLogo from '@/assets/logo/jupyter_logo.png';
 import metaxLogo from '@/assets/logo/metax.png';
 import mooreLogo from '@/assets/logo/moore-logo.png';
 import nvidiaLogo from '@/assets/logo/nvidia.png';
@@ -11,7 +11,7 @@ import sgLangLogo from '@/assets/logo/sglang.png';
 import theadLogoEN from '@/assets/logo/t-head-en.png';
 import theadLogoZH from '@/assets/logo/t-head-zh.png';
 import tensorflowkLogo from '@/assets/logo/tensorflow.svg';
-import ubuntuLogo from '@/assets/logo/ubuntu.png';
+import ubuntuLogo from '@/assets/logo/ubuntu_logo.png';
 import vllmLogo from '@/assets/logo/vllm.png';
 import {
   GPUsConfigs,
@@ -50,7 +50,9 @@ const manufacturerLabelMap: Record<string, string> = Object.values(
   { cpu: 'CPU' } as Record<string, string>
 );
 
-const matchImageLogo = (image: string | undefined): string | null => {
+const matchImageLogo = (
+  image: string | undefined
+): { logo: string; type: string } | null => {
   if (!image) return null;
   const lower = image.toLowerCase();
   let matched: keyof typeof imageLogoMap | null = null;
@@ -64,7 +66,12 @@ const matchImageLogo = (image: string | undefined): string | null => {
       }
     }
   );
-  return matched ? imageLogoMap[matched] : null;
+  return matched
+    ? {
+        logo: imageLogoMap[matched],
+        type: matched
+      }
+    : null;
 };
 
 const StyledCard = styled(TemplateCard)`
@@ -147,8 +154,13 @@ const TemplateCardItem: React.FC<TemplateCardProps> = ({ data, onSelect }) => {
 
   const renderLogo = () => {
     const imageLogo = matchImageLogo(data.spec?.image);
-    if (imageLogo) {
-      return <LogoImg src={imageLogo} height={22} />;
+    if (imageLogo?.logo) {
+      return (
+        <LogoImg
+          src={imageLogo.logo}
+          height={imageLogo.type === 'ubuntu' ? 26 : 22}
+        />
+      );
     }
     switch (data.manufacturer) {
       case manfacturerValueMap.NVIDIA:

@@ -91,14 +91,13 @@ const AddModal: React.FC<AddModalProps> = ({
   const [loading, setLoading] = useState(false);
 
   const {
-    detailData,
+    detailData: instanceTypeList,
     loading: instanceTypesLoading,
     fetchData
   } = useQueryInstanceTypes();
   const { detailData: templatesData, fetchData: fetchTemplates } =
     useQueryTemplates();
 
-  const instanceTypeList = detailData?.items || [];
   const templateList = templatesData?.items || [];
   // const readonly = action === PageAction.VIEW;
   const readonly = false;
@@ -180,7 +179,7 @@ const AddModal: React.FC<AddModalProps> = ({
     );
   };
 
-  // initial
+  // initial for first
   const applyAutoSelection = (
     instanceTypes: InstanceTypeItem[],
     templates: TemplateItem[]
@@ -230,13 +229,12 @@ const AddModal: React.FC<AddModalProps> = ({
 
     if (action === PageAction.CREATE) {
       const session = ++sessionRef.current;
-      Promise.all([
-        fetchData({ page: 1, perPage: 100 }),
-        fetchTemplates({ page: -1 })
-      ]).then(([instanceRes, templatesRes]) => {
-        if (sessionRef.current !== session) return;
-        applyAutoSelection(instanceRes?.items || [], templatesRes?.items || []);
-      });
+      Promise.all([fetchData({ page: -1 }), fetchTemplates({ page: -1 })]).then(
+        ([instanceResItems, templatesRes]) => {
+          if (sessionRef.current !== session) return;
+          applyAutoSelection(instanceResItems || [], templatesRes?.items || []);
+        }
+      );
     }
   }, [open, shouldAutoSelectResource, action]);
 

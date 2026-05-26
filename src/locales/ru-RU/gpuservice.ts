@@ -106,6 +106,7 @@ export default {
   'gpuservice.instance.gpuCount.min': 'Выберите минимум {count} GPU-карт',
   'gpuservice.instance.gpuCount.noAvailable':
     'Нет доступных ресурсов GPU, выберите другой тип экземпляра.',
+  'gpuservice.instance.gpuCount.zero': 'Только CPU, для подготовки окружения.',
   'gpuservice.instance.stock': 'Остаток',
   'gpuservice.instance.sliced': 'Разделено',
   'gpuservice.instance.memory': 'Память',

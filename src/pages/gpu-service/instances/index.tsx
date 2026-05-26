@@ -1,17 +1,10 @@
 import { PageAction } from '@/config';
 import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import useTableFetch from '@/hooks/use-table-fetch';
-import { PlusOutlined } from '@ant-design/icons';
-import {
-  DeleteModal,
-  DropdownButtons,
-  FilterBar,
-  IconFont,
-  NoResult
-} from '@gpustack/core-ui';
+import { DeleteModal, FilterBar, IconFont, NoResult } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { Button, ConfigProvider, message, Modal, Space, Table } from 'antd';
+import { ConfigProvider, message, Modal, Table } from 'antd';
 import _ from 'lodash';
 import PageBox from '../../_components/page-box';
 import {
@@ -22,7 +15,6 @@ import {
 import AddModal from './components/add-modal';
 import ViewEventsModal from './components/view-events-modal';
 import ViewLogsModal from './components/view-logs-modal';
-import { batchActionList } from './config';
 import { FormData, ListItem } from './config/types';
 import useCreateInstance from './hooks/use-create-instance';
 import useInstancesColumns from './hooks/use-instances-columns';
@@ -164,29 +156,9 @@ const GPUService: React.FC = () => {
           handleInputChange={handleNameChange}
           rowSelection={rowSelection}
           widths={{ input: 300 }}
-          right={
-            <Space size={16}>
-              <Button
-                icon={<PlusOutlined />}
-                type="primary"
-                onClick={openCreateInstanceModal}
-              >
-                {intl.formatMessage({ id: 'gpuservice.instance.add' })}
-              </Button>
-              <DropdownButtons
-                items={batchActionList}
-                extra={
-                  rowSelection.selectedRowKeys.length > 0 && (
-                    <span>({rowSelection.selectedRowKeys.length})</span>
-                  )
-                }
-                size="large"
-                showText={true}
-                disabled={!rowSelection.selectedRowKeys.length}
-                onSelect={handleBatchActionSelect}
-              />
-            </Space>
-          }
+          handleClickPrimary={openCreateInstanceModal}
+          buttonText={intl.formatMessage({ id: 'gpuservice.instance.add' })}
+          handleDeleteByBatch={handleDeleteBatch}
         />
         <ConfigProvider renderEmpty={renderEmpty}>
           <Table

@@ -54,7 +54,7 @@ const GPUServiceStorageForm: React.FC<StorageFormProps> = forwardRef(
         preserve={false}
         initialValues={{}}
       >
-        <Basic open={open} action={action} />
+        <Basic action={action} open={open} />
       </Form>
     );
   }

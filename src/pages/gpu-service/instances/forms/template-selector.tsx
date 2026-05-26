@@ -53,6 +53,12 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
   dataList = []
 }) => {
   const intl = useIntl();
+
+  const handleSelect = (item: TemplateItem) => {
+    if (value === item.id) return;
+    onChange?.(item.id, item);
+  };
+
   return (
     <TemplateGrid>
       {dataList.map((item: TemplateItem) => (
@@ -63,7 +69,7 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
           hoverable
           height={102}
           active={value === item.id}
-          onClick={() => onChange?.(item.id, item)}
+          onClick={() => handleSelect(item)}
         >
           <TemplateContent>
             <div className="name">

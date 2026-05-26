@@ -2,7 +2,6 @@ import { PageAction, validateLabelNameRegxFor63 } from '@/config';
 import {
   Input as CInput,
   Select as SealSelect,
-  Textarea,
   useAppUtils
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
@@ -41,13 +40,6 @@ const Basic = ({ action }: { action: string }) => {
         <CInput.Input
           trim={false}
           label={intl.formatMessage({ id: 'common.table.displayName' })}
-        />
-      </Form.Item>
-      <Form.Item<FormData> name="description">
-        <Textarea
-          scaleSize={true}
-          trim={false}
-          label={intl.formatMessage({ id: 'common.table.description' })}
         />
       </Form.Item>
       <Form.Item<FormData>

@@ -31,13 +31,6 @@ type AddModalProps = {
   onCancel: () => void;
 };
 
-type InstanceTypeSelection = {
-  instanceType?: string;
-  manufacturer?: string;
-};
-
-const EMPTY_INSTANCE_TYPE_SELECTION: InstanceTypeSelection = {};
-
 const matchKeyword = (fields: Array<unknown>, keyword: string) => {
   const trimmed = keyword.trim().toLowerCase();
   if (!trimmed) return true;
@@ -85,11 +78,17 @@ const AddModal: React.FC<AddModalProps> = ({
   const intl = useIntl();
   const form = useRef<any>(null);
   const sessionRef = useRef(0);
-  const [instanceTypeSelection, setInstanceTypeSelection] =
-    useState<InstanceTypeSelection>(EMPTY_INSTANCE_TYPE_SELECTION);
+  const [instanceTypeSelection, setInstanceTypeSelection] = useState<{
+    instanceType?: string;
+    manufacturer?: string;
+  }>({
+    instanceType: undefined,
+    manufacturer: undefined
+  });
   const [templateId, setTemplateId] = useState<number | undefined>();
   const [instanceKeyword, setInstanceKeyword] = useState('');
   const [templateKeyword, setTemplateKeyword] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const {
     detailData,
@@ -116,6 +115,20 @@ const AddModal: React.FC<AddModalProps> = ({
       : undefined;
   };
 
+  const saveInstanceDataInDescription = (instanceType: InstanceTypeItem) => {
+    return JSON.stringify(
+      {
+        name: instanceType.name,
+        spec: {
+          ...instanceType.spec
+        }
+      },
+      null,
+      2
+    );
+  };
+
+  // apply the selection of instance type and template
   const applySelection = (
     instanceType: InstanceTypeItem,
     template: TemplateItem | undefined
@@ -126,37 +139,29 @@ const AddModal: React.FC<AddModalProps> = ({
       instanceType: instanceType.name,
       manufacturer
     });
+
     setTemplateId(template?.id);
 
     if (template) {
-      const currentSpec = form.current?.getFieldsValue()?.spec || {};
+      const formValues = form.current?.getFieldsValue();
       form.current?.setFieldsValue({
-        manufacturer: template.manufacturer,
-        description: JSON.stringify(
-          {
-            name: instanceType.name,
-            spec: {
-              ...instanceType.spec
-            }
-          },
-          null,
-          2
-        ),
+        description: saveInstanceDataInDescription(instanceType),
         spec: {
-          ...currentSpec,
+          ...formValues?.spec,
           ...template.spec,
-          resources: {
-            ...(currentSpec.resources || {}),
-            ...(template.spec?.resources || {})
+          sshPublicKeys: formValues?.spec?.sshPublicKeys,
+          volume: {
+            ...formValues?.spec?.volume
           }
         }
       });
     } else {
       form.current?.setFieldsValue({
-        manufacturer: undefined,
-        description: JSON.stringify(instanceType.spec, null, 2)
+        description: saveInstanceDataInDescription(instanceType)
       });
     }
+
+    // update form
     form.current?.applyInstanceType?.(instanceType);
   };
 
@@ -175,6 +180,7 @@ const AddModal: React.FC<AddModalProps> = ({
     );
   };
 
+  // initial
   const applyAutoSelection = (
     instanceTypes: InstanceTypeItem[],
     templates: TemplateItem[]
@@ -208,7 +214,10 @@ const AddModal: React.FC<AddModalProps> = ({
   useEffect(() => {
     if (!open) {
       sessionRef.current += 1;
-      setInstanceTypeSelection(EMPTY_INSTANCE_TYPE_SELECTION);
+      setInstanceTypeSelection({
+        instanceType: undefined,
+        manufacturer: undefined
+      });
       setTemplateId(undefined);
       setInstanceKeyword('');
       setTemplateKeyword('');
@@ -240,6 +249,7 @@ const AddModal: React.FC<AddModalProps> = ({
     ) {
       return false;
     }
+
     return matchKeyword(
       [item.name, item.spec?.image, item.spec?.volumeMount],
       templateKeyword
@@ -256,9 +266,14 @@ const AddModal: React.FC<AddModalProps> = ({
   };
 
   const onFinish = async (values: FormData) => {
-    onOk({
-      ...values
-    });
+    setLoading(true);
+    try {
+      await onOk({
+        ...values
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleInstanceTypeChange = (item: InstanceTypeItem) => {
@@ -271,10 +286,19 @@ const AddModal: React.FC<AddModalProps> = ({
 
   const handleTemplateChange = (id: number, item: TemplateItem) => {
     setTemplateId(id);
+    const formValues = form.current?.getFieldsValue();
     form.current?.setFieldsValue({
       spec: {
-        ...form.current?.getFieldsValue()?.spec,
-        ...item.spec
+        ...formValues?.spec,
+        ...item.spec,
+        sshPublicKeys: formValues?.spec?.sshPublicKeys,
+        resources: {
+          ...item?.spec?.resources,
+          accelerator: formValues?.spec?.resources?.accelerator
+        },
+        volume: {
+          ...formValues?.spec?.volume
+        }
       }
     });
   };
@@ -400,6 +424,7 @@ const AddModal: React.FC<AddModalProps> = ({
                   onOk={handleSubmit}
                   onCancel={handleCancel}
                   showOkBtn={!readonly}
+                  loading={loading}
                   style={{
                     padding: '16px 24px 8px',
                     display: 'flex',

@@ -66,12 +66,18 @@ const StorageVolume = ({
 
   const applyMode = (mode: string) => {
     if (mode === StorageModeValueMap.Temporary) {
-      form.setFieldValue(['spec', 'volume'], {
-        ephemeral: { capacity: `${DEFAULT_TEMP_CAPACITY_GB}Gi` }
-      });
+      form.setFieldValue(
+        ['spec', 'volume', 'ephemeral', 'capacity'],
+        form.getFieldValue(['spec', 'volume', 'ephemeral', 'capacity']) ||
+          DEFAULT_TEMP_CAPACITY_GB
+      );
       return;
     }
-    form.setFieldValue(['spec', 'volume'], { persistent: { name: '' } });
+    form.setFieldValue(
+      ['spec', 'volume', 'persistent', 'name'],
+      form.getFieldValue(['spec', 'volume', 'persistent', 'name']) ||
+        (storageOptions[0]?.value as string)
+    );
   };
 
   const handleModeChange = (mode: string) => {
@@ -82,10 +88,8 @@ const StorageVolume = ({
   const handleCreateStorage = async (values: StorageFormData) => {
     try {
       await createStorage({ data: values });
-      await fetchStorage({ page: 1, perPage: 100 });
-      form.setFieldValue(['spec', 'volume'], {
-        persistent: { name: values.name }
-      });
+      await fetchStorage({ page: -1 });
+      form.setFieldValue(['spec', 'volume', 'persistent', 'name'], values.name);
       setOverlayOpen(false);
     } catch (error) {
       // ignore

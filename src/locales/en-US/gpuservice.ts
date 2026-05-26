@@ -46,7 +46,11 @@ export default {
   'gpuservice.storageType.kind': 'Type',
   'gpuservice.storageType.mountOptions': 'Mount Options',
   'gpuservice.storageType.nfs.server': 'NFS Server',
+  'gpuservice.storageType.nfs.server.tips':
+    'Ensure the NFS server address is reachable from all Kubernetes clusters.',
   'gpuservice.storageType.nfs.share': 'Share Path',
+  'gpuservice.storageType.nfs.share.tips':
+    'A directory based on the organization and storage names will be automatically created within this share path. If a subdirectory is specified, the generated directory will be created under that subdirectory.',
   'gpuservice.storageType.nfs.subDirectory': 'Sub Directory',
   'gpuservice.storageType.nfs.subDirectory.tips':
     'If empty, a subdirectory named after the persistent volume will be created. If set, a directory with the persistent volume name will be created beneath this subdirectory.',
@@ -54,11 +58,17 @@ export default {
   'gpuservice.storageType.nfs.mountPermissions.tips':
     'Inherit the file permissions from the NFS server.',
   'gpuservice.storageType.s3.endpoint': 'Endpoint',
+  'gpuservice.storageType.s3.endpoint.tips':
+    'Ensure the S3 endpoint is reachable from all Kubernetes clusters.',
   'gpuservice.storageType.s3.endpoint.rule': 'Must start with http or https',
   'gpuservice.storageType.s3.region': 'Region',
   'gpuservice.storageType.s3.bucket': 'Bucket',
   'gpuservice.storageType.s3.bucket.tips':
     'If empty, a new bucket named after the persistent volume will be created. If set, a subdirectory with the persistent volume name will be created inside this bucket.',
+  'gpuservice.storageType.s3.bucket.tips1':
+    'A prefix based on the organization and storage names will be automatically created within this bucket.',
+  'gpuservice.storageType.s3.bucket.tips2':
+    'For example, if the organization is named <span class="desc-block">awesome-group</span> and the storage is named <span class="desc-block">storage-1</span>, the resulting prefix will be <span class="desc-block">awesome-group/storage-1</span>.',
   'gpuservice.storageType.s3.accessKey': 'Access Key',
   'gpuservice.storageType.s3.secretKey': 'Secret Key',
   'gpuservice.storageType.s3.insecure': 'Skip TLS/SSL certificate verification',

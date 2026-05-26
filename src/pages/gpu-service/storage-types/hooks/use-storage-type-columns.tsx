@@ -66,18 +66,18 @@ const useStorageTypeColumns = ({
         sorter: false,
         render: (_text, record) => getKindLabel(record)
       },
-      {
-        title: intl.formatMessage({ id: 'common.table.description' }),
-        dataIndex: 'description',
-        key: 'description',
-        sorter: false,
-        ellipsis: { showTitle: false },
-        render: (text: string) => (
-          <AutoTooltip ghost minWidth={20}>
-            {text || '-'}
-          </AutoTooltip>
-        )
-      },
+      // {
+      //   title: intl.formatMessage({ id: 'common.table.description' }),
+      //   dataIndex: 'description',
+      //   key: 'description',
+      //   sorter: false,
+      //   ellipsis: { showTitle: false },
+      //   render: (text: string) => (
+      //     <AutoTooltip ghost minWidth={20}>
+      //       {text || '-'}
+      //     </AutoTooltip>
+      //   )
+      // },
       {
         title: intl.formatMessage({ id: 'common.table.createTime' }),
         dataIndex: 'created_at',

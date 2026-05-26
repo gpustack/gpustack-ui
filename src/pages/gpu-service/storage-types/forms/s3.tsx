@@ -12,7 +12,22 @@ import { FormData } from '../config/types';
 const S3Form = ({ action }: { action: string }) => {
   console.log('action', action);
   const intl = useIntl();
+  const form = Form.useFormInstance<FormData>();
   const { getRuleMessage } = useAppUtils();
+
+  const handleEndpointBlur = (e: any) => {
+    const value: string = e.target.value;
+    if (!value) return;
+
+    // Auto-fill region based on endpoint if it's an AWS S3 endpoint
+    const awsMatch = value.match(
+      /^https?:\/\/s3[.-]([a-z0-9-]+)\.amazonaws\.com/
+    );
+    if (awsMatch) {
+      const region = awsMatch[1];
+      form.setFieldValue(['spec', 's3', 'region'], region);
+    }
+  };
 
   return (
     <>
@@ -39,7 +54,11 @@ const S3Form = ({ action }: { action: string }) => {
           label={intl.formatMessage({
             id: 'gpuservice.storageType.s3.endpoint'
           })}
-          placeholder="http | https://..."
+          description={intl.formatMessage({
+            id: 'gpuservice.storageType.s3.endpoint.tips'
+          })}
+          onBlur={handleEndpointBlur}
+          placeholder="https://s3.<region>.amazonaws.com"
         />
       </Form.Item>
       <Flex gap={16}>
@@ -53,11 +72,36 @@ const S3Form = ({ action }: { action: string }) => {
           </Form.Item>
         </div>
         <div style={{ flex: 1 }}>
-          <Form.Item<FormData> name={['spec', 's3', 'bucket']}>
+          <Form.Item<FormData>
+            name={['spec', 's3', 'bucket']}
+            rules={[
+              {
+                required: true,
+                message: getRuleMessage(
+                  'input',
+                  'gpuservice.storageType.s3.bucket'
+                )
+              }
+            ]}
+          >
             <CInput.Input
-              description={intl.formatMessage({
-                id: 'gpuservice.storageType.s3.bucket.tips'
-              })}
+              required
+              description={
+                <Flex orientation="vertical" gap={4} align="start">
+                  <span>
+                    {intl.formatMessage({
+                      id: 'gpuservice.storageType.s3.bucket.tips1'
+                    })}
+                  </span>
+                  <span
+                    dangerouslySetInnerHTML={{
+                      __html: intl.formatMessage({
+                        id: 'gpuservice.storageType.s3.bucket.tips2'
+                      })
+                    }}
+                  />
+                </Flex>
+              }
               label={intl.formatMessage({
                 id: 'gpuservice.storageType.s3.bucket'
               })}

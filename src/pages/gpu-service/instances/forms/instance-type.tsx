@@ -79,13 +79,6 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
     return selectedInstanceType?.spec?.acceleratable;
   }, [selectedInstanceType, action]);
 
-  const selectedInstanceData = useMemo(() => {
-    if (action === PageAction.EDIT) {
-      return JSON.parse(currentData?.description || '{}') || {};
-    }
-    return selectedInstanceType;
-  }, [selectedInstanceType, action, currentData]);
-
   const renderInstanceType = () => {
     const description = JSON.parse(currentData?.description || '{}').spec || {};
     return (
@@ -130,6 +123,10 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
         <Form.Item<FormData>
           name={['spec', 'resources', 'accelerator']}
           hidden={action === PageAction.EDIT}
+          normalize={(value) => (value ? _.toString(value) : undefined)}
+          getValueProps={(value) => ({
+            value: value ? _.toNumber(value) : undefined
+          })}
           rules={[
             {
               required: true,

@@ -17,6 +17,7 @@ import {
 import { useIntl, useNavigate } from '@umijs/max';
 import { Button, Empty, Form } from 'antd';
 import { useSetAtom } from 'jotai';
+import _ from 'lodash';
 import {
   forwardRef,
   useEffect,
@@ -229,6 +230,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
         instanceType.status?.acceleratorTiers,
         count
       );
+
       setSelectedInstanceType(instanceType);
       setOnceMaxRequest({
         cpu: parseQuantityToNumber(candidate?.cpu?.onceMaxRequest),
@@ -237,11 +239,11 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       });
 
       form.setFieldsValue({
-        clusterId: candidate?.cluster ? Number(candidate.cluster) : null,
+        clusterId: candidate?.cluster ? _.toNumber(candidate.cluster) : null,
         spec: {
           type: candidate?.name || '',
           ...(options.writeAccelerator
-            ? { resources: { accelerator: count } }
+            ? { resources: { accelerator: _.toString(count) } }
             : {})
         } as any
       });
@@ -278,91 +280,23 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       }
 
       if (
-        currentData &&
-        (action === PageAction.EDIT ||
-          action === PageAction.VIEW ||
-          realAction === PageAction.CREATE)
+        action === PageAction.EDIT ||
+        action === PageAction.VIEW ||
+        realAction === PageAction.CREATE
       ) {
-        // The server returns `accelerator` as a string; coerce to a number
-        // so NumberSelection's strict equality picks up the active item.
-        const persistedAccelerator = currentData.spec?.resources?.accelerator;
-        const acceleratorAsNumber =
-          persistedAccelerator != null && persistedAccelerator !== ''
-            ? Number(persistedAccelerator)
-            : undefined;
         form.setFieldsValue({
-          name: currentData.name,
-          displayName: currentData.displayName,
-          description: currentData.description,
-          clusterId: currentData.clusterId,
-          spec: {
-            ...currentData.spec,
-            imagePullPolicy:
-              currentData.spec?.imagePullPolicy || DefaultImagePullPolicy,
-            resources: {
-              ...currentData.spec?.resources,
-              accelerator: acceleratorAsNumber
-            },
-            sshPublicKeys:
-              currentData.spec?.sshPublicKeys?.map((k) => k.name) ?? []
-          } as any,
-          enable_ssh: !!currentData.spec?.sshPublicKeys?.length
+          ...currentData,
+          enable_ssh: !!currentData?.spec?.sshPublicKeys?.length
         });
-
-        const candidateName = currentData.spec?.type;
-        const clusterId = currentData.clusterId;
-        const aggregate = instanceTypeList.find((item) =>
-          (item.status?.acceleratorTiers ?? []).some((tier) =>
-            (tier.candidates ?? []).some(
-              (c) => c.name === candidateName && Number(c.cluster) === clusterId
-            )
-          )
-        );
-        if (aggregate) {
-          const count =
-            Number(currentData.spec?.resources?.accelerator) ||
-            (aggregate.spec?.acceleratable ? 1 : 0);
-          // No accelerator rewrite — the form already has the persisted value.
-          resolveAndApply(aggregate, count);
-        }
-        return;
       }
     }, [action, currentData, form, open, realAction, instanceTypeList]);
 
     const handleFinish = async (values: InstanceFormValues) => {
-      const selectedKeys = (values.spec as any)?.sshPublicKeys as
-        | string[]
-        | undefined;
-      const volume = values.spec?.volume ?? {};
-      const normalizedVolume = volume.persistentTemplate
-        ? {
-            persistentTemplate: {
-              ...volume.persistentTemplate,
-              name: volume.persistentTemplate.name || values.name || ''
-            }
-          }
-        : volume.persistent
-          ? { persistent: volume.persistent }
-          : volume.ephemeral
-            ? { ephemeral: volume.ephemeral }
-            : {};
-
-      // `spec.type` and `clusterId` are kept in sync with the resolved
-      // candidate via `resolveAndApply`, so submission is a straight pass
-      // -through. The API expects `accelerator` as a string per the schema.
-      const acceleratorValue = values.spec?.resources?.accelerator;
-      const normalizedResources = {
-        ...values.spec?.resources,
-        accelerator:
-          acceleratorValue != null && acceleratorValue !== ''
-            ? String(acceleratorValue)
-            : undefined
-      };
-
       const submittedPorts = [...(values.spec?.ports ?? [])];
       const submittedHasSSHPort = submittedPorts.some(
         (item: any) => item?.protocol === 'TCP' && item?.port === SSH_PORT
       );
+
       if (values.enable_ssh && !submittedHasSSHPort) {
         submittedPorts.push({
           protocol: 'TCP',
@@ -370,17 +304,12 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
           name: 'SSH'
         });
       }
-
+      console.log('submit values', values, submittedPorts);
       await onFinish({
-        ...values,
+        ..._.omit(values, ['enable_ssh']),
         spec: {
           ...values.spec,
-          ports: submittedPorts,
-          resources: normalizedResources,
-          volume: normalizedVolume,
-          sshPublicKeys: values.enable_ssh
-            ? (selectedKeys ?? []).map((name) => ({ name }))
-            : []
+          ports: submittedPorts
         }
       });
     };
@@ -451,7 +380,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
               },
               volume: {
                 ephemeral: {
-                  capacity: '20Gi'
+                  capacity: '50Gi'
                 },
                 persistent: {
                   name: ''
@@ -462,8 +391,6 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
           }}
         >
           <Basic action={formAction} disabled={disabled} />
-          {/* Hidden form field: the candidate.cluster resolved from the
-              selected aggregate + accelerator count. */}
           <Form.Item name="clusterId" hidden>
             <CInput.Input />
           </Form.Item>
@@ -537,6 +464,16 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
                 style={{
                   marginBottom: 12
                 }}
+                normalize={(value) =>
+                  Array.isArray(value)
+                    ? value?.map((item) => ({ name: item }))
+                    : []
+                }
+                getValueProps={(value) => ({
+                  value: Array.isArray(value)
+                    ? value.map((item) => item?.name ?? item)
+                    : []
+                })}
                 rules={[
                   {
                     required: true,

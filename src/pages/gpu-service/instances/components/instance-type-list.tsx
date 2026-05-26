@@ -34,7 +34,7 @@ const InstanceTypeList: React.FC<InstanceTypeListProps> = ({
   loading
 }) => {
   const handleSelect = (item: InstanceTypeItemModel) => {
-    if (!isAvailable(item)) return;
+    if (!isAvailable(item) || value === item.name) return;
     onChange?.(item);
   };
 

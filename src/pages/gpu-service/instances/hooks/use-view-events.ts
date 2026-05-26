@@ -9,19 +9,23 @@ const useViewEvents = () => {
     name: string;
     namespace: string;
     clusterID?: number;
+    hasPersistentVolume: boolean;
   }>({
     open: false,
     name: '',
     namespace: '',
-    clusterID: undefined
+    clusterID: undefined,
+    hasPersistentVolume: false
   });
 
   const openModal = (row?: ListItem) => {
+    const volume = row?.spec?.volume;
     setOpenModalStatus({
       open: true,
       name: row?.name || '',
       namespace: row?.status?.namespace || '',
-      clusterID: row?.clusterId ?? undefined
+      clusterID: row?.clusterId ?? undefined,
+      hasPersistentVolume: !!volume?.persistent?.name
     });
   };
 
@@ -30,7 +34,8 @@ const useViewEvents = () => {
       open: false,
       name: '',
       namespace: '',
-      clusterID: undefined
+      clusterID: undefined,
+      hasPersistentVolume: false
     });
   };
 

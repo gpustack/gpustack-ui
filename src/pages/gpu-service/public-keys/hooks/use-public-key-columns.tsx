@@ -39,27 +39,13 @@ const usePublicKeyColumns = ({
         title: intl.formatMessage({ id: 'common.table.name' }),
         dataIndex: 'name',
         key: 'name',
-        sorter: false,
+        sorter: true,
         ellipsis: {
           showTitle: false
         },
         render: (text: string, record: ListItem) => (
           <AutoTooltip ghost style={{ maxWidth: 360 }}>
             <span className="text-primary">{record.displayName || text}</span>
-          </AutoTooltip>
-        )
-      },
-      {
-        title: intl.formatMessage({ id: 'common.table.description' }),
-        dataIndex: 'description',
-        key: 'description',
-        sorter: false,
-        ellipsis: {
-          showTitle: false
-        },
-        render: (text: string) => (
-          <AutoTooltip ghost style={{ maxWidth: 360 }}>
-            {text || '-'}
           </AutoTooltip>
         )
       },

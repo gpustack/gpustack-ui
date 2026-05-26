@@ -186,7 +186,6 @@ const baseRoutes = [
     name: 'gpuService',
     path: '/gpu-service',
     key: 'gpuService',
-    access: 'canSeeAdmin',
     routes: [
       {
         path: '/gpu-service',
@@ -224,6 +223,7 @@ const baseRoutes = [
         path: '/gpu-service/storage-types',
         key: 'gpuServiceStorageTypes',
         icon: 'icon-storage-outlined',
+        access: 'canSeeAdmin',
         selectedIcon: 'icon-storage-filled',
         defaultIcon: 'icon-storage-outlined',
         component: './gpu-service/storage-types'

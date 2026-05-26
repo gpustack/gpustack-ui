@@ -13,7 +13,8 @@ export const InstanceStatusValueMap = {
   Initialized: 'Initialized',
   Preparing: 'Preparing',
   NotReady: 'NotReady',
-  Ready: 'Ready'
+  Ready: 'Ready',
+  Staring: 'Staring'
 };
 
 export const InstanceStatusLabelMap: Record<string, string> = {
@@ -25,7 +26,8 @@ export const InstanceStatusLabelMap: Record<string, string> = {
   [InstanceStatusValueMap.Initialized]: 'Initialized',
   [InstanceStatusValueMap.Preparing]: 'Preparing',
   [InstanceStatusValueMap.NotReady]: 'NotReady',
-  [InstanceStatusValueMap.Ready]: 'Ready'
+  [InstanceStatusValueMap.Ready]: 'Ready',
+  [InstanceStatusValueMap.Staring]: 'Staring'
 };
 
 export const status: Record<string, StatusType> = {
@@ -37,7 +39,8 @@ export const status: Record<string, StatusType> = {
   [InstanceStatusValueMap.Initialized]: StatusMaps.transitioning,
   [InstanceStatusValueMap.Preparing]: StatusMaps.transitioning,
   [InstanceStatusValueMap.NotReady]: StatusMaps.error,
-  [InstanceStatusValueMap.Ready]: StatusMaps.success
+  [InstanceStatusValueMap.Ready]: StatusMaps.success,
+  [InstanceStatusValueMap.Staring]: StatusMaps.transitioning
 };
 
 // Lifecycle actions (logs/events/start/stop) require K8s proxy endpoints that
@@ -207,6 +210,10 @@ export const pickCandidateForAccelerator = <
   const sorted = [...tiers].sort(
     (a, b) => parseQuantity(a.onceMaxRequest) - parseQuantity(b.onceMaxRequest)
   );
-  const tier = sorted.find((t) => parseQuantity(t.onceMaxRequest) >= count);
+  const tier = sorted.find((t) =>
+    count === 0
+      ? parseQuantity(t.onceMaxRequest) > count
+      : parseQuantity(t.onceMaxRequest) >= count
+  );
   return tier?.candidates?.[0] ?? null;
 };

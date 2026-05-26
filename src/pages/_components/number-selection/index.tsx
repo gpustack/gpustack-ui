@@ -46,9 +46,11 @@ const NumberSelection: React.FC<NumberSelectionProps> = ({
     { length: Math.max(0, maxCount) },
     (_, i) => i + 1
   );
+  if (min <= 0) {
+    presetItems.unshift(0);
+  }
   const items = presetItems;
-  const isItemDisabled = (num: number) =>
-    !!disabled || num > max || num < min;
+  const isItemDisabled = (num: number) => !!disabled || num > max || num < min;
   const [inputValue, setInputValue] = useState<number | null>(() =>
     value !== undefined && value !== null && !presetItems.includes(value)
       ? value
@@ -113,7 +115,7 @@ const NumberSelection: React.FC<NumberSelectionProps> = ({
                 aria-disabled={itemDisabled}
                 tabIndex={itemDisabled ? -1 : 0}
                 className={classNames(styles.numberItem, {
-                  [styles.active]: num === value && !!value,
+                  [styles.active]: num === value && value != null,
                   [styles.itemDisabled]: itemDisabled && !disabled
                 })}
                 onClick={() => handleSelect(num)}
@@ -134,7 +136,7 @@ const NumberSelection: React.FC<NumberSelectionProps> = ({
             <div className={styles.line}></div>
             <div
               className={classNames(styles.inputContainer, {
-                [styles.hasValue]: !!inputValue
+                [styles.hasValue]: inputValue != null
               })}
             >
               <InputNumber
@@ -144,7 +146,7 @@ const NumberSelection: React.FC<NumberSelectionProps> = ({
                 max={max}
                 step={step}
                 disabled={disabled}
-                value={inputValue || undefined}
+                value={inputValue ?? undefined}
                 style={{
                   fontSize: 14,
                   width: 60,
@@ -154,7 +156,7 @@ const NumberSelection: React.FC<NumberSelectionProps> = ({
                 }}
                 styles={{
                   input: {
-                    fontWeight: inputValue ? 500 : 400,
+                    fontWeight: inputValue != null ? 500 : 400,
                     ...(styles?.input as React.CSSProperties)
                   }
                 }}

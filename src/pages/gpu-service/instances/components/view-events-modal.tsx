@@ -18,6 +18,7 @@ type ViewEventsModalProps = {
   open: boolean;
   name: string;
   namespace: string;
+  volumeName?: string;
   clusterID?: number;
   hasPersistentVolume?: boolean;
   onCancel: () => void;
@@ -32,8 +33,15 @@ const eventTypeStatus: Record<string, 'success' | 'warning' | 'error'> = {
 
 const ViewEventsModal: React.FC<ViewEventsModalProps> = (props) => {
   const intl = useIntl();
-  const { open, onCancel, name, namespace, clusterID, hasPersistentVolume } =
-    props || {};
+  const {
+    open,
+    onCancel,
+    name,
+    namespace,
+    clusterID,
+    volumeName,
+    hasPersistentVolume
+  } = props || {};
   const [activeKey, setActiveKey] = useState('instance');
 
   const {
@@ -57,7 +65,7 @@ const ViewEventsModal: React.FC<ViewEventsModalProps> = (props) => {
     if (!name || !namespace || !clusterID) return;
     fetchInstanceEvents({ name, namespace, clusterID });
     if (hasPersistentVolume) {
-      fetchVolumeEvents({ name, namespace, clusterID });
+      fetchVolumeEvents({ name: volumeName || '', namespace, clusterID });
     }
   };
 
@@ -206,7 +214,10 @@ const ViewEventsModal: React.FC<ViewEventsModalProps> = (props) => {
   return (
     <ScrollerModal
       title={
-        <span className="flex flex-center" style={{ gap: 8 }}>
+        <span
+          className="flex flex-center"
+          style={{ gap: 8, paddingInline: 24 }}
+        >
           <span style={{ fontWeight: 'var(--font-weight-bold)' }}>
             {intl.formatMessage({ id: 'common.button.viewevent' })}
           </span>
@@ -232,6 +243,9 @@ const ViewEventsModal: React.FC<ViewEventsModalProps> = (props) => {
       styles={{
         wrapper: {
           borderRadius: 0
+        },
+        container: {
+          paddingInline: 0
         }
       }}
       width="1000px"

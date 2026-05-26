@@ -36,12 +36,6 @@ const Basic = ({ action }: { action: string }) => {
           label={intl.formatMessage({ id: 'common.table.displayName' })}
         />
       </Form.Item>
-      <Form.Item<FormData> name="description">
-        <Textarea
-          scaleSize={true}
-          label={intl.formatMessage({ id: 'common.table.description' })}
-        />
-      </Form.Item>
       <Form.Item<FormData>
         name={['spec', 'data']}
         rules={[

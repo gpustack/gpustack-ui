@@ -199,6 +199,7 @@ const StorageVolume = ({
           >
             <Select
               disabled={disabled}
+              showSearch
               label={intl.formatMessage({
                 id: 'gpuservice.storage.persistentVolume'
               })}

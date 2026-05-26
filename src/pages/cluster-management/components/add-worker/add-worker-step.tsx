@@ -96,6 +96,28 @@ const AddWorkerSteps: React.FC<AddWorkerProps> = (props) => {
     );
   }, [clusterList, stepList, StepNamesMap]);
 
+  // Downstream steps (check env, run command, ...) only make sense after a
+  // GPU vendor has been chosen. If the user toggled off every vendor in
+  // multi-select, gate them shut so the wrong panel can't be opened.
+  const selectedGPUs =
+    (summary.get('selectedGPUs') as string[] | undefined) || [];
+  const currentGPU = (summary.get('currentGPU') as string | undefined) || '';
+  const noVendorSelected = !currentGPU && selectedGPUs.length === 0;
+  const downstreamDisabled = disabled || noVendorSelected;
+
+  React.useEffect(() => {
+    // If the user just deselected everything, collapse any downstream
+    // panel back to the GPU step so they aren't left looking at a stale
+    // disabled-but-open command. Functional updater so we don't have to
+    // depend on `collapseKey` and re-run the effect on every toggle.
+    if (!noVendorSelected) return;
+    setCollapseKey((prev) =>
+      prev.has(StepNamesMap.SelectGPU)
+        ? prev
+        : new Set([StepNamesMap.SelectGPU])
+    );
+  }, [noVendorSelected]);
+
   return (
     <AddWorkerContext.Provider
       value={{
@@ -123,16 +145,20 @@ const AddWorkerSteps: React.FC<AddWorkerProps> = (props) => {
           !stepList.includes(StepNamesMap.SelectCluster)) && (
           <>
             <SelectVendor disabled={disabled}></SelectVendor>
-            <CheckEnvironment disabled={disabled}></CheckEnvironment>
+            <CheckEnvironment disabled={downstreamDisabled}></CheckEnvironment>
 
             {provider === ProviderValueMap.Kubernetes && (
-              <K8sRunCommand disabled={disabled}></K8sRunCommand>
+              <K8sRunCommand disabled={downstreamDisabled}></K8sRunCommand>
             )}
 
             {provider === ProviderValueMap.Docker && (
               <>
-                <SpecifyArguments disabled={disabled}></SpecifyArguments>
-                <DockerRunCommand disabled={disabled}></DockerRunCommand>
+                <SpecifyArguments
+                  disabled={downstreamDisabled}
+                ></SpecifyArguments>
+                <DockerRunCommand
+                  disabled={downstreamDisabled}
+                ></DockerRunCommand>
               </>
             )}
           </>

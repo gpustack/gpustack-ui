@@ -11,6 +11,7 @@ const CheckEnvironment: React.FC<AddWorkerStepProps> = ({ disabled }) => {
   const { stepList, summary, provider } = useAddWorkerContext();
   const intl = useIntl();
   const currentGPU = summary.get('currentGPU');
+  const currentGPUs: string[] = summary.get('selectedGPUs') || [];
   const workerCommand = summary.get('workerCommand') || {
     label: '',
     link: '',
@@ -51,7 +52,11 @@ const CheckEnvironment: React.FC<AddWorkerStepProps> = ({ disabled }) => {
       <Typography.Paragraph style={{ marginBottom: 8 }}>
         {intl.formatMessage({ id: 'cluster.create.checkEnv.tips' })}
       </Typography.Paragraph>
-      <CheckEnvCommand provider={provider} currentGPU={currentGPU} />
+      <CheckEnvCommand
+        provider={provider}
+        currentGPU={currentGPU}
+        currentGPUs={currentGPUs}
+      />
     </StepCollapse>
   );
 };

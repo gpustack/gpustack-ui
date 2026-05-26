@@ -76,14 +76,19 @@ const ProviderImage = ({ src, height }: { src: string; height?: number }) => {
 
 interface SupportedHardwareProps {
   onSelect?: (provider: string, item: any) => void;
-  current?: string;
+  // Single (legacy) or array of selected GPU driver keys (multi-select).
+  current?: string | string[];
   clickable?: boolean;
+  // Set of GPU driver keys that are valid to pick. When provided, items
+  // outside this set render as disabled. Undefined means "no restriction".
+  availableKeys?: Set<string>;
 }
 
 const SupportedHardware: React.FC<SupportedHardwareProps> = ({
   onSelect,
   clickable,
-  current
+  current,
+  availableKeys
 }) => {
   const intl = useIntl();
   const { userSettings } = useUserSettings();
@@ -199,13 +204,20 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
     }
   ];
 
+  const platformsWithDisabled = availableKeys
+    ? supportedHardPlatforms.map((p) => ({
+        ...p,
+        disabled: !availableKeys.has(p.value)
+      }))
+    : supportedHardPlatforms;
+
   return (
     <Box className={userSettings?.theme === 'realDark' ? 'dark-theme' : ''}>
       <ProviderCatalog
         onSelect={onSelect}
         height={60}
         current={current}
-        dataList={supportedHardPlatforms}
+        dataList={platformsWithDisabled}
         clickable={clickable}
         showTooltip={true}
         cols={5}

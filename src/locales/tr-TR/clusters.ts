@@ -67,6 +67,9 @@ export default {
   'clusters.addworker.selectCluster.tips':
     '<span class="bold-text">Docker dışı</span> kümeler için lütfen Kümeler sayfasından küme kaydı oluşturun veya işçi havuzlarını yönetin.',
   'clusters.addworker.selectGPU': 'GPU Üreticisi Seç',
+  'clusters.addworker.selectGPU.multiTag': 'Multi-select',
+  'clusters.addworker.selectGPU.singleOnly':
+    'The selected vendor is not in this cluster’s GPU vendor overrides — single-select only. Pick a vendor configured in the overrides to enable multi-select.',
   'clusters.addworker.checkEnv': 'Ortamı Kontrol Et',
   'clusters.addworker.specifyArgs': 'Argümanları Belirle',
   'clusters.addworker.runCommand': 'Komutu Çalıştır',
@@ -159,5 +162,25 @@ export default {
   'clusters.volume.pvc.readOnly': 'Read Only',
   'clusters.volume.configMap.name': 'ConfigMap Name',
   'clusters.volume.configMap.optional': 'Optional',
-  'clusters.volume.add': 'Add Volume Mount'
+  'clusters.volume.add': 'Add Volume Mount',
+  'clusters.imageCredentials.title': 'Image Credentials',
+  'clusters.imageCredentials.add': 'Add Credential',
+  'clusters.imageCredentials.registry': 'Registry',
+  'clusters.imageCredentials.username': 'Username',
+  'clusters.imageCredentials.password': 'Password',
+  'clusters.nodeSelector.title': 'Node Selector',
+  'clusters.nodeSelector.tip':
+    'Pod nodeSelector applied to every worker DaemonSet — only nodes whose labels match are eligible to run the worker.',
+  'clusters.gpuVendorOverrides.title': 'GPU Vendor Overrides',
+  'clusters.gpuVendorOverrides.validate.emptySelector':
+    'The override for {vendor} needs at least one nodeSelector entry — an empty override would leave the multi-vendor manifest unable to target nodes for this runtime.',
+  'clusters.gpuVendorOverrides.validate.duplicate':
+    'Overrides for {v1} and {v2} use the same nodeSelector. Each vendor must scope to a distinct node set, otherwise their worker DaemonSets would compete for the same nodes.',
+  'clusters.gpuVendorOverrides.validate.keyConflict':
+    'Override for {vendor} reuses key(s) {keys} from the base Node Selector — the CPU worker would simultaneously require and forbid the key and never schedule.',
+  'clusters.gpuVendorOverrides.tip':
+    'Required when running multiple GPU vendors in one cluster. Each entry pins that vendor’s worker DaemonSet to nodes matching its nodeSelector, and the CPU worker is steered away from those nodes via a DoesNotExist node-affinity.',
+  'clusters.gpuVendorOverrides.add': 'Add Override',
+  'clusters.gpuVendorOverrides.vendor': 'GPU Vendor',
+  'clusters.gpuVendorOverrides.nodeSelector': 'Node Selector'
 };

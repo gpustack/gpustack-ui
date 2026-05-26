@@ -44,13 +44,26 @@ export const ProviderLabelMap = {
 };
 
 export const generateK8sRegisterCommand = (params: {
+  // Either a single GPU driver key (legacy single-select) or an array of
+  // keys (multi-vendor mode). Both feed into a list of runtimes for the
+  // ?runtime=... query parameters the backend accepts (repeatable).
   currentGPU?: string;
+  currentGPUs?: string[];
   server: string;
   clusterId: number | null;
   registrationToken: string;
 }) => {
-  const runtime = GPUsConfigs[params.currentGPU || '']?.runtime || '';
-  return `curl -k -L '${params.server}/${GPUSTACK_API_BASE_URL}/clusters/${params.clusterId}/manifests${runtime ? `?runtime=${runtime}` : ''}' \\
+  const keys =
+    params.currentGPUs && params.currentGPUs.length > 0
+      ? params.currentGPUs
+      : params.currentGPU
+        ? [params.currentGPU]
+        : [];
+  const runtimes = keys
+    .map((k) => GPUsConfigs[k]?.runtime)
+    .filter((r): r is string => !!r);
+  const query = runtimes.map((r) => `runtime=${r}`).join('&');
+  return `curl -k -L '${params.server}/${GPUSTACK_API_BASE_URL}/clusters/${params.clusterId}/manifests${query ? `?${query}` : ''}' \\
 --header 'Authorization: Bearer ${params.registrationToken}' | kubectl apply -f -`;
 };
 

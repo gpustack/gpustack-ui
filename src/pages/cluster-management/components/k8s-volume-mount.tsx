@@ -26,7 +26,7 @@ const Title = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: var(--ant-color-bg-container);
+  background-color: transparent;
   font-weight: 500;
   font-size: 14px;
   padding-top: 0px;
@@ -37,7 +37,7 @@ const VolumeMountsForm: React.FC<{ action: PageActionType }> = ({ action }) => {
   const form = Form.useFormInstance();
   const intl = useIntl();
   const { getRuleMessage } = useAppUtils();
-  const k8sVolumeMounts = Form.useWatch('k8s_volume_mounts', form);
+  const k8sVolumeMounts = Form.useWatch(['k8s_options', 'volumeMounts'], form);
 
   const [collapseKey, setCollapseKey] = useState<Set<number | string>>(
     new Set([0])
@@ -60,7 +60,7 @@ const VolumeMountsForm: React.FC<{ action: PageActionType }> = ({ action }) => {
 
   useEffect(() => {
     if (action === PageAction.CREATE) {
-      form.setFieldValue('k8s_volume_mounts', []);
+      form.setFieldValue(['k8s_options', 'volumeMounts'], []);
     }
   }, [action]);
 
@@ -70,33 +70,36 @@ const VolumeMountsForm: React.FC<{ action: PageActionType }> = ({ action }) => {
 
   const handleAdd = async () => {
     try {
-      await form.validateFields(['k8s_volume_mounts'], {
+      await form.validateFields([['k8s_options', 'volumeMounts']], {
         recursive: true
       });
 
-      const list = form.getFieldValue('k8s_volume_mounts') || [];
+      const list = form.getFieldValue(['k8s_options', 'volumeMounts']) || [];
 
-      form.setFieldValue('k8s_volume_mounts', [
-        ...list,
-        {
-          name: `volume-${list.length + 1}`,
-          mountPath: '',
-          readOnly: false,
-          sourceType: 'hostPath',
-          volumeSource: {
-            hostPath: {
-              path: '',
-              type: 'DirectoryOrCreate'
+      form.setFieldValue(
+        ['k8s_options', 'volumeMounts'],
+        [
+          ...list,
+          {
+            name: `volume-${list.length + 1}`,
+            mountPath: '',
+            readOnly: false,
+            sourceType: 'hostPath',
+            volumeSource: {
+              hostPath: {
+                path: '',
+                type: 'DirectoryOrCreate'
+              }
             }
           }
-        }
-      ]);
+        ]
+      );
 
       setTimeout(() => {
         setCollapseKey(new Set([list.length]));
       }, 100);
     } catch (e: any) {
-      const errorIndex = e?.errorFields?.[0]?.name?.[1];
+      const errorIndex = e?.errorFields?.[0]?.name?.[2];
       if (typeof errorIndex === 'number') {
         setCollapseKey(new Set([errorIndex]));
       }
@@ -121,7 +124,7 @@ const VolumeMountsForm: React.FC<{ action: PageActionType }> = ({ action }) => {
     }
 
     form.setFieldValue(
-      ['k8s_volume_mounts', index, 'volumeSource'],
+      ['k8s_options', 'volumeMounts', index, 'volumeSource'],
       volumeSource
     );
   };
@@ -144,9 +147,10 @@ const VolumeMountsForm: React.FC<{ action: PageActionType }> = ({ action }) => {
           marginBottom: '8px'
         }}
       >
-        <Form.List name="k8s_volume_mounts">
+        <Form.List name={['k8s_options', 'volumeMounts']}>
           {(fields, { remove }) => {
-            const list = form.getFieldValue('k8s_volume_mounts') || [];
+            const list =
+              form.getFieldValue(['k8s_options', 'volumeMounts']) || [];
 
             return fields.map(({ name }) => {
               const item = list[name] || {};

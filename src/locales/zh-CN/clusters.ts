@@ -65,6 +65,9 @@ export default {
   'clusters.addworker.selectCluster.tips':
     '<span class="bold-text">非 Docker</span> 集群请前往集群页面注册集群或管理节点池。',
   'clusters.addworker.selectGPU': '选择 GPU 厂商',
+  'clusters.addworker.selectGPU.multiTag': '可多选',
+  'clusters.addworker.selectGPU.singleOnly':
+    '当前所选厂商未在集群的 GPU 厂商覆盖（override node selector）中配置，仅支持单选。如需多选，请先选择 override 中已配置的厂商。',
   'clusters.addworker.checkEnv': '检查环境',
   'clusters.addworker.specifyArgs': '指定参数',
   'clusters.addworker.runCommand': '运行指令',
@@ -151,5 +154,25 @@ export default {
   'clusters.volume.pvc.readOnly': '只读',
   'clusters.volume.configMap.name': '配置名称',
   'clusters.volume.configMap.optional': '可选',
-  'clusters.volume.add': '添加卷挂载'
+  'clusters.volume.add': '添加卷挂载',
+  'clusters.imageCredentials.title': '镜像仓库凭证',
+  'clusters.imageCredentials.add': '添加凭证',
+  'clusters.imageCredentials.registry': '镜像仓库地址',
+  'clusters.imageCredentials.username': '用户名',
+  'clusters.imageCredentials.password': '密码',
+  'clusters.nodeSelector.title': '节点选择器',
+  'clusters.nodeSelector.tip':
+    '应用到每个 worker DaemonSet 的 Pod nodeSelector，只有标签匹配的节点才会被调度运行 worker。',
+  'clusters.gpuVendorOverrides.title': 'GPU 厂商覆盖配置',
+  'clusters.gpuVendorOverrides.validate.emptySelector':
+    '{vendor} 的覆盖配置至少需要一项 nodeSelector —— 空覆盖会让多 vendor manifest 无法定位该 runtime 的节点。',
+  'clusters.gpuVendorOverrides.validate.duplicate':
+    '{v1} 与 {v2} 的覆盖配置使用了完全相同的 nodeSelector。每个 vendor 必须对应不同的节点集，否则它们的 worker DaemonSet 会相互争抢同一批节点。',
+  'clusters.gpuVendorOverrides.validate.keyConflict':
+    '{vendor} 的覆盖配置重用了基础节点选择器中已有的 key（{keys}）—— 这会让 CPU worker 同时"要求"和"禁止"这些 key，永远无法被调度。',
+  'clusters.gpuVendorOverrides.tip':
+    '集群中存在多个 GPU 厂商时必填。每项的 nodeSelector 将该厂商的 worker DaemonSet 固定到匹配的节点，同时 CPU worker 通过 DoesNotExist 节点亲和性避开这些节点。',
+  'clusters.gpuVendorOverrides.add': '添加覆盖配置',
+  'clusters.gpuVendorOverrides.vendor': 'GPU 厂商',
+  'clusters.gpuVendorOverrides.nodeSelector': '节点选择器'
 };

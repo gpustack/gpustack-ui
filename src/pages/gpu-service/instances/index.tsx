@@ -1,11 +1,13 @@
 import { PageAction } from '@/config';
 import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import useTableFetch from '@/hooks/use-table-fetch';
+import { useQueryClusterList } from '@/pages/cluster-management/services/use-query-cluster-list';
 import { DeleteModal, FilterBar, IconFont, NoResult } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { ConfigProvider, message, Modal, Table } from 'antd';
 import _ from 'lodash';
+import { useEffect } from 'react';
 import PageBox from '../../_components/page-box';
 import {
   deleteGPUServiceInstance,
@@ -66,6 +68,15 @@ const GPUService: React.FC = () => {
     closeViewEventsModal,
     openViewEventsModalStatus
   } = useViewEvents();
+  const {
+    fetchClusterList,
+    cancelRequest: cancelClusterRequest,
+    clusterList
+  } = useQueryClusterList();
+
+  useEffect(() => {
+    fetchClusterList({ page: -1 });
+  }, []);
 
   const handleModalOk = async (data: FormData) => {
     try {
@@ -142,6 +153,7 @@ const GPUService: React.FC = () => {
 
   const columns = useInstancesColumns({
     handleSelect,
+    clusterList,
     sortOrder
   });
 

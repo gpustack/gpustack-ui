@@ -33,10 +33,20 @@ const InstanceTypeList: React.FC<InstanceTypeListProps> = ({
   dataList = [],
   loading
 }) => {
-  const handleSelect = (item: InstanceTypeItemModel) => {
-    if (!isAvailable(item) || value === item.name) return;
+  const handleSelect = (
+    item: InstanceTypeItemModel & { disabled?: boolean }
+  ) => {
+    if (item.disabled || value === item.name) return;
     onChange?.(item);
   };
+
+  const filterList = dataList.map((item) => {
+    const available = isAvailable(item);
+    return {
+      ...item,
+      disabled: !available
+    };
+  });
 
   if (!dataList.length) {
     if (loading) {
@@ -55,8 +65,7 @@ const InstanceTypeList: React.FC<InstanceTypeListProps> = ({
 
   return (
     <TypeGrid>
-      {dataList.map((item) => {
-        const disabled = !isAvailable(item);
+      {filterList.map((item) => {
         const name = item.name;
         return (
           <TemplateCard
@@ -66,7 +75,7 @@ const InstanceTypeList: React.FC<InstanceTypeListProps> = ({
             hoverable
             height={106}
             active={value === name}
-            disabled={disabled}
+            disabled={item.disabled}
             onClick={() => handleSelect(item)}
           >
             <InstanceTypeItem item={item} />

@@ -200,9 +200,13 @@ const AddModal: React.FC<AddModalProps> = ({
       }
       return;
     }
-    if (!instanceTypes.length) return;
 
-    const first = instanceTypes[0];
+    const first = instanceTypes.find((item) => !item.disabled);
+
+    if (!first) return;
+
+    // On create, auto-select the first instance type in the list
+
     const template = findTemplateByManufacturer(
       first.spec?.manufacturer,
       templates

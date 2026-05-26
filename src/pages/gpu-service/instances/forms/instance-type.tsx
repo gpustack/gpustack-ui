@@ -97,9 +97,9 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
               fontWeight: 400
             }}
           >
-            {description.manufacturer
+            {description.acceleratable
               ? `${description.product} x ${currentData?.spec?.resources?.accelerator}`
-              : ''}
+              : 'CPU'}
           </span>
         </Flex>
       </SelectedCard>
@@ -185,7 +185,12 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
                 ></Alert>
               )
             }
-            label={intl.formatMessage({ id: 'gpuservice.instance.gpuCount' })}
+            label={`${intl.formatMessage({ id: 'gpuservice.instance.gpuCount' })} (${intl.formatMessage(
+              {
+                id: 'common.max'
+              },
+              { count: maxGpuCount }
+            )})`}
           />
         </Form.Item>
       )}

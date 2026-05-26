@@ -80,7 +80,6 @@ const MetaItem: React.FC<{
 
 const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({ item }) => {
   const intl = useIntl();
-  const name = item.name;
   const specData = item.spec || {};
   const acceleratable = specData.acceleratable;
 
@@ -93,11 +92,9 @@ const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({ item }) => {
   const remainingData = item.status?.remaining || {};
 
   const renderName = () => {
-    const product = specData.product;
-    const cpuCapacity = remainingData.cpu;
-    const displayName =
-      product ||
-      (!acceleratable && cpuCapacity ? `${cpuCapacity} vCPUs` : name);
+    const displayName = specData.acceleratable
+      ? specData.product || item.name
+      : 'CPU';
     return displayName;
   };
 
@@ -162,7 +159,7 @@ const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({ item }) => {
             value={toDisplayUnit(convertKiToGi(remainingData.ram)) ?? '-'}
           ></MetaItem>
           <MetaItem
-            show={acceleratable}
+            show={!!remainingData.cpu}
             showDot={true}
             icon="icon-cpu"
             label="vCPU"

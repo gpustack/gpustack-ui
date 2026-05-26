@@ -16,8 +16,8 @@ export default {
   'gpuservice.template.containerDisk': 'Konteyner Diski (GB)',
   'gpuservice.template.memory': 'Bellek (GB)',
   'gpuservice.instance.containerDisk.remaining':
-    'Konteyner Diski (Kalan {count} GB)',
-  'gpuservice.instance.memory.remaining': 'Bellek (Kalan {count} GB)',
+    'Konteyner Diski (Maks. {count} GB)',
+  'gpuservice.instance.memory.remaining': 'Bellek (Maks. {count} GB)',
   'gpuservice.template.displayName': 'Görünen Ad',
   'gpuservice.template.displayName.max':
     'Görünen ad 63 karakterden uzun olamaz.',
@@ -98,6 +98,7 @@ export default {
   'gpuservice.instance.sliced': 'Bölünmüş',
   'gpuservice.instance.memory': 'Bellek',
   'gpuservice.instance.ram': 'RAM',
+  'gpuservice.instance.disk': 'Disk',
   'gpuservice.instance.search.type.placeholder': 'Ada göre ara',
   'gpuservice.instance.search.template.placeholder':
     'Şablon adına, imaja veya bağlama yoluna göre ara',

@@ -284,7 +284,7 @@ export default {
   'common.image.limit.width': 'Image width must be {width}.',
   'common.image.limit.height': 'Image height must be {height}.',
   'common.remaining': '残り {count}',
-  'common.max': 'Maximum {count}',
+  'common.max': '最大 {count}',
   'common.validate.group': 'Please complete the {group} configuration'
 };
 

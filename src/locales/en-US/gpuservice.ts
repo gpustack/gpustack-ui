@@ -16,8 +16,8 @@ export default {
   'gpuservice.template.containerDisk': 'Container Disk (GB)',
   'gpuservice.template.memory': 'Memory (GB)',
   'gpuservice.instance.containerDisk.remaining':
-    'Container Disk (Remaining {count} GB)',
-  'gpuservice.instance.memory.remaining': 'Memory (Remaining {count} GB)',
+    'Container Disk (Max {count} GB)',
+  'gpuservice.instance.memory.remaining': 'Memory (Max {count} GB)',
   'gpuservice.template.displayName': 'Display Name',
   'gpuservice.template.displayName.max':
     'Display name cannot exceed 63 characters.',
@@ -99,6 +99,7 @@ export default {
   'gpuservice.instance.sliced': 'Sliced',
   'gpuservice.instance.memory': 'Memory',
   'gpuservice.instance.ram': 'RAM',
+  'gpuservice.instance.disk': 'Disk',
   'gpuservice.instance.search.type.placeholder': 'Search by name',
   'gpuservice.instance.search.template.placeholder':
     'Search by template name, image or mount path',

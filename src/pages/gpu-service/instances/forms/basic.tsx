@@ -1,6 +1,6 @@
 import { PageAction, validateLabelNameRegxFor63 } from '@/config';
 import { PageActionType } from '@/config/types';
-import { Input as CInput } from '@gpustack/core-ui';
+import { Input as CInput, useAppUtils } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import OwnerPrincipalIdField from '../../../_components/owner-principal-id-field';
@@ -15,6 +15,7 @@ const Basic = ({
   disabled?: boolean;
 }) => {
   const intl = useIntl();
+  const { getRuleMessage } = useAppUtils();
   return (
     <>
       <OwnerPrincipalIdField name="owner_principal_id" />
@@ -24,9 +25,7 @@ const Basic = ({
         rules={[
           {
             required: true,
-            message: intl.formatMessage({
-              id: 'gpuservice.instance.name.required'
-            })
+            message: getRuleMessage('input', 'common.table.name')
           },
           {
             pattern: validateLabelNameRegxFor63,
@@ -36,7 +35,7 @@ const Basic = ({
       >
         <CInput.Input
           disabled={disabled || action === PageAction.EDIT}
-          label={intl.formatMessage({ id: 'gpuservice.instance.name' })}
+          label={intl.formatMessage({ id: 'common.table.name' })}
           required
         />
       </Form.Item>

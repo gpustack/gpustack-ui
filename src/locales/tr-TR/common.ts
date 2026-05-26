@@ -287,6 +287,6 @@ export default {
   'common.image.limit.width': 'Image width must be {width}.',
   'common.image.limit.height': 'Image height must be {height}.',
   'common.remaining': 'Kalan {count}',
-  'common.max': 'Maksimum {count}',
+  'common.max': 'Maks. {count}',
   'common.validate.group': 'Please complete the {group} configuration'
 };

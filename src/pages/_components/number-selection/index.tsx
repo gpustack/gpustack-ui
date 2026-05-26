@@ -46,13 +46,9 @@ const NumberSelection: React.FC<NumberSelectionProps> = ({
     { length: Math.max(0, maxCount) },
     (_, i) => i + 1
   );
-  const computedItems = showCustomInput
-    ? presetItems.filter((n) => n >= min && n <= max)
-    : Array.from(
-        { length: Math.max(0, Math.floor((max - min) / step) + 1) },
-        (_, i) => min + i * step
-      );
-  const items = computedItems.length === 0 ? [0] : computedItems;
+  const items = presetItems;
+  const isItemDisabled = (num: number) =>
+    !!disabled || num > max || num < min;
   const [inputValue, setInputValue] = useState<number | null>(() =>
     value !== undefined && value !== null && !presetItems.includes(value)
       ? value
@@ -70,7 +66,7 @@ const NumberSelection: React.FC<NumberSelectionProps> = ({
   }, [value]);
 
   const handleSelect = (num: number) => {
-    if (disabled || num === value) {
+    if (isItemDisabled(num) || num === value) {
       return;
     }
     setInputValue(null);
@@ -108,15 +104,17 @@ const NumberSelection: React.FC<NumberSelectionProps> = ({
       <Flex className={styles.contentWrapper} align="center">
         <div className={styles.content}>
           {items.map((num) => {
+            const itemDisabled = isItemDisabled(num);
             return (
               <div
                 key={num}
                 role="radio"
                 aria-checked={num === value}
-                aria-disabled={disabled}
-                tabIndex={disabled ? -1 : 0}
+                aria-disabled={itemDisabled}
+                tabIndex={itemDisabled ? -1 : 0}
                 className={classNames(styles.numberItem, {
-                  [styles.active]: num === value && !!value
+                  [styles.active]: num === value && !!value,
+                  [styles.itemDisabled]: itemDisabled && !disabled
                 })}
                 onClick={() => handleSelect(num)}
                 onKeyDown={(e) => {

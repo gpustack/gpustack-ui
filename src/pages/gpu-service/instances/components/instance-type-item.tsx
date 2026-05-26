@@ -162,7 +162,7 @@ const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({ item }) => {
             show={!!remainingData.cpu}
             showDot={true}
             icon="icon-cpu"
-            label="vCPU"
+            label="CPU"
             value={remainingData.cpu ?? '-'}
           ></MetaItem>
         </span>

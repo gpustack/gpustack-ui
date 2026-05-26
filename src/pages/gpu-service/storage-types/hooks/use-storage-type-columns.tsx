@@ -52,7 +52,7 @@ const useStorageTypeColumns = ({
         title: intl.formatMessage({ id: 'common.table.name' }),
         dataIndex: 'name',
         key: 'name',
-        sorter: false,
+        sorter: true,
         ellipsis: { showTitle: false },
         render: (text: string, record: ListItem) => (
           <AutoTooltip ghost minWidth={20}>

@@ -233,6 +233,7 @@ const GPUService: React.FC = () => {
         name={openViewEventsModalStatus.name}
         namespace={openViewEventsModalStatus.namespace}
         clusterID={openViewEventsModalStatus.clusterID}
+        volumeName={openViewEventsModalStatus.volumeName}
         hasPersistentVolume={openViewEventsModalStatus.hasPersistentVolume}
         onCancel={closeViewEventsModal}
       />

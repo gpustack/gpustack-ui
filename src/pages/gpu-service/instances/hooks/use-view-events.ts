@@ -9,12 +9,14 @@ const useViewEvents = () => {
     name: string;
     namespace: string;
     clusterID?: number;
+    volumeName?: string;
     hasPersistentVolume: boolean;
   }>({
     open: false,
     name: '',
     namespace: '',
     clusterID: undefined,
+    volumeName: undefined,
     hasPersistentVolume: false
   });
 
@@ -25,7 +27,9 @@ const useViewEvents = () => {
       name: row?.name || '',
       namespace: row?.status?.namespace || '',
       clusterID: row?.clusterId ?? undefined,
-      hasPersistentVolume: !!volume?.persistent?.name
+      volumeName: volume?.persistent?.name || volume?.persistentTemplate?.name,
+      hasPersistentVolume:
+        !!volume?.persistent?.name || !!volume?.persistentTemplate?.name
     });
   };
 
@@ -35,6 +39,7 @@ const useViewEvents = () => {
       name: '',
       namespace: '',
       clusterID: undefined,
+      volumeName: undefined,
       hasPersistentVolume: false
     });
   };

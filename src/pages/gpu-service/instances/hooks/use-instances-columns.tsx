@@ -70,11 +70,13 @@ const getConnectEntries = (record: ListItem): ConnectEntry[] => {
 
 interface ColumnsHookProps {
   handleSelect: (val: string, record: ListItem) => void;
+  clusterList: Global.BaseOption<string>[];
   sortOrder: string[];
 }
 
 const useInstancesColumns = ({
   handleSelect,
+  clusterList,
   sortOrder
 }: ColumnsHookProps): ColumnsType<ListItem> => {
   const intl = useIntl();
@@ -243,6 +245,15 @@ const useInstancesColumns = ({
         )
       },
       {
+        title: intl.formatMessage({ id: 'clusters.title' }),
+        dataIndex: 'clusterId',
+        render: (id: number) => (
+          <AutoTooltip ghost maxWidth={240}>
+            {_.find(clusterList, { value: id })?.label || id || '-'}
+          </AutoTooltip>
+        )
+      },
+      {
         title: intl.formatMessage({ id: 'common.table.createTime' }),
         dataIndex: 'created_at',
         key: 'created_at',
@@ -271,7 +282,7 @@ const useInstancesColumns = ({
         )
       }
     ];
-  }, [handleSelect, sortOrder, intl]);
+  }, [handleSelect, sortOrder, clusterList, intl]);
 };
 
 export default useInstancesColumns;

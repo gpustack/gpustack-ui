@@ -186,6 +186,7 @@ const baseRoutes = [
     name: 'gpuService',
     path: '/gpu-service',
     key: 'gpuService',
+    access: 'canSeeGpuService',
     routes: [
       {
         path: '/gpu-service',

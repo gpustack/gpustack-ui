@@ -37,6 +37,8 @@ export default {
   'noresult.catalog.nofound': 'Подходящие модели не найдены.',
   'noresult.resources.cluster':
     'No clusters available. Add a cluster to get started.',
+  'noresult.resources.k8sCluster':
+    'No clusters available. Add a Kubernetes cluster to get started.',
   'noresult.resources.worker':
     'No workers available. Add a worker to get started.',
   'noresult.resources.gotocluster': 'Create Your First Cluster',
@@ -67,8 +69,7 @@ export default {
   'noresult.gpuservice.storage.subTitle': 'Хранилища ещё не добавлены.',
   'noresult.gpuservice.storage.nofound': 'Подходящие хранилища не найдены.',
   'noresult.gpuservice.storageType.title': 'Нет типов хранилищ',
-  'noresult.gpuservice.storageType.subTitle':
-    'Типы хранилищ ещё не добавлены.',
+  'noresult.gpuservice.storageType.subTitle': 'Типы хранилищ ещё не добавлены.',
   'noresult.gpuservice.storageType.nofound':
     'Подходящие типы хранилищ не найдены.',
   'noresult.gpuservice.sshkey.title': 'Нет открытых ключей SSH',

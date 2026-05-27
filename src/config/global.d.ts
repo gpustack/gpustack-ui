@@ -92,6 +92,12 @@ declare namespace Global {
   interface InitialStateType {
     fetchUserInfo: () => Promise<UserInfo>;
     currentUser?: UserInfo;
+    // Captured at app boot so access predicates can gate GPU Service —
+    // the feature is Kubernetes-only, and Org members without a K8s
+    // cluster they can schedule on shouldn't see the menu. Refreshed
+    // by full page reload (e.g. OrgSwitcher) which re-runs
+    // getInitialState.
+    hasKubernetesCluster?: boolean;
   }
 
   type SearchParams = Pagination & { search?: string; [key: string]: any };

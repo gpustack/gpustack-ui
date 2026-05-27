@@ -1,13 +1,14 @@
 import { PageAction } from '@/config';
 import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import useTableFetch from '@/hooks/use-table-fetch';
+import { ProviderValueMap } from '@/pages/cluster-management/config';
 import { useQueryClusterList } from '@/pages/cluster-management/services/use-query-cluster-list';
 import { DeleteModal, FilterBar, IconFont, NoResult } from '@gpustack/core-ui';
-import { useIntl } from '@umijs/max';
+import { useAccess, useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { ConfigProvider, message, Modal, Table } from 'antd';
 import _ from 'lodash';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import PageBox from '../../_components/page-box';
 import {
   deleteGPUServiceInstance,
@@ -27,6 +28,8 @@ import useUpdateInstance from './services/use-update-instance';
 
 const GPUService: React.FC = () => {
   const intl = useIntl();
+  const navigate = useNavigate();
+  const access = useAccess();
   const [, modalContextHolder] = Modal.useModal();
 
   const {
@@ -71,12 +74,23 @@ const GPUService: React.FC = () => {
   const {
     fetchClusterList,
     cancelRequest: cancelClusterRequest,
-    clusterList
+    clusterList,
+    loading: clusterLoading
   } = useQueryClusterList();
 
   useEffect(() => {
     fetchClusterList({ page: -1 });
   }, []);
+
+  // GPU Service today is Kubernetes-only — Docker / cloud clusters
+  // can't host the CRDs. Filter so the page reflects scheduling
+  // reality even when the caller owns non-K8s clusters.
+  const k8sClusterList = useMemo(
+    () =>
+      clusterList.filter((c) => c.provider === ProviderValueMap.Kubernetes),
+    [clusterList]
+  );
+  const hasK8sCluster = k8sClusterList.length > 0;
 
   const handleModalOk = async (data: FormData) => {
     try {
@@ -129,6 +143,35 @@ const GPUService: React.FC = () => {
 
   const renderEmpty = (type?: string) => {
     if (type !== 'Table') return;
+    // No K8s cluster the caller can schedule on — replace the "no
+    // instances" empty state with a cluster-bootstrap prompt. The
+    // "Add cluster" CTA is reserved for callers who can actually
+    // create one (platform admin / Org owner); members see the
+    // explanation without a misleading button.
+    if (!clusterLoading && !hasK8sCluster) {
+      return (
+        <NoResult
+          loading={dataSource.loading || clusterLoading}
+          loadend={dataSource.loadend}
+          dataSource={[]}
+          image={<IconFont type="icon-cloud-outlined" />}
+          title={intl.formatMessage({
+            id: 'noresult.gpuservice.instance.title'
+          })}
+          subTitle={intl.formatMessage({
+            id: 'noresult.resources.k8sCluster'
+          })}
+          {...(access.canSeeOrgAdmin
+            ? {
+                buttonText: intl.formatMessage({
+                  id: 'noresult.resources.gotocluster'
+                }),
+                onClick: () => navigate('/cluster-management/clusters/list')
+              }
+            : {})}
+        />
+      );
+    }
     return (
       <NoResult
         loading={dataSource.loading}
@@ -168,7 +211,9 @@ const GPUService: React.FC = () => {
           handleInputChange={handleNameChange}
           rowSelection={rowSelection}
           widths={{ input: 300 }}
-          handleClickPrimary={openCreateInstanceModal}
+          handleClickPrimary={
+            hasK8sCluster ? openCreateInstanceModal : undefined
+          }
           buttonText={intl.formatMessage({ id: 'gpuservice.instance.add' })}
           handleDeleteByBatch={handleDeleteBatch}
         />

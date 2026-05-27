@@ -70,7 +70,7 @@ const getConnectEntries = (record: ListItem): ConnectEntry[] => {
 
 interface ColumnsHookProps {
   handleSelect: (val: string, record: ListItem) => void;
-  clusterList: Global.BaseOption<string>[];
+  clusterList: Global.BaseOption<number>[];
   sortOrder: string[];
 }
 

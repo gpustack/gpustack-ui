@@ -141,7 +141,7 @@ export default {
   'gpuservice.storage.accessMode': 'Erişim Modu',
   'gpuservice.storage.persistent': 'Kalıcı',
   'gpuservice.storage.temporary': 'Geçici',
-  'gpuservice.storage.persistentVolume': 'Kalıcı Hacim',
+  'gpuservice.storage.persistentVolume': 'Kalıcı',
   'gpuservice.storage.persistentVolume.required':
     'Lütfen bir kalıcı hacim seçin',
   'gpuservice.storage.persistentVolume.capacity': 'Kapasite (GB)',

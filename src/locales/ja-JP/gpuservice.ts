@@ -141,7 +141,7 @@ export default {
   'gpuservice.storage.accessMode': 'アクセスモード',
   'gpuservice.storage.persistent': '永続',
   'gpuservice.storage.temporary': '一時',
-  'gpuservice.storage.persistentVolume': '永続ボリューム',
+  'gpuservice.storage.persistentVolume': '永続',
   'gpuservice.storage.persistentVolume.required':
     '永続ボリュームを選択してください',
   'gpuservice.storage.persistentVolume.capacity': '容量 (GB)',

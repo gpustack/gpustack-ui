@@ -142,8 +142,8 @@ export default {
   'gpuservice.storage.capacity': 'Capacity',
   'gpuservice.storage.accessMode': 'Access Mode',
   'gpuservice.storage.persistent': 'Persistent',
-  'gpuservice.storage.temporary': 'Temporary',
-  'gpuservice.storage.persistentVolume': 'Persistent Volume',
+  'gpuservice.storage.temporary': 'Ephemeral',
+  'gpuservice.storage.persistentVolume': 'Persistent',
   'gpuservice.storage.temporary.tips':
     'Data is cleared when the instance stops.',
   'gpuservice.storage.persistentVolume.tips':

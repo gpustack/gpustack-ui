@@ -25,8 +25,16 @@ export default function useQueryInstanceTypes() {
   const [dataList, setDataList] = React.useState<InstanceType[]>([]);
 
   const isAvailable = (item: InstanceTypeItem) => {
-    if (!item.spec?.acceleratable) return true;
-    return getAcceleratorMax(item.status?.acceleratorTiers) > 0;
+    if (!item.spec?.acceleratable)
+      return {
+        maxAccelerator: 0,
+        available: true
+      };
+    const max = getAcceleratorMax(item.status?.acceleratorTiers);
+    return {
+      maxAccelerator: max || 0,
+      available: (max || 0) > 0
+    };
   };
 
   const queryInstanceTypes = async (
@@ -34,10 +42,14 @@ export default function useQueryInstanceTypes() {
   ) => {
     const res = await fetchData(params);
 
-    const list = (res?.items || []).map((item) => ({
-      ...item,
-      disabled: !isAvailable(item)
-    }));
+    const list = (res?.items || []).map((item) => {
+      const remainingData = isAvailable(item);
+      return {
+        ...item,
+        maxAccelerator: remainingData.maxAccelerator,
+        disabled: !remainingData.available
+      };
+    });
     console.log('queryInstanceTypes', list);
     setDataList(list);
     return list;

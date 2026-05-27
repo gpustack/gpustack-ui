@@ -58,7 +58,7 @@ interface InstanceTypeItemProps {
 
 const MetaItem: React.FC<{
   icon: string;
-  label: string;
+  label?: string;
   value?: string | null;
   showDot?: boolean;
   show?: boolean;
@@ -141,12 +141,18 @@ const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({ item }) => {
                 value={specData?.sliced}
               ></MetaItem>
               <MetaItem
-                show={!!remainingData.accelerator}
+                show={!!item.maxAccelerator}
                 icon="icon-database"
-                label={intl.formatMessage({
-                  id: 'gpuservice.instance.stock'
-                })}
-                value={remainingData.accelerator}
+                value={
+                  item.maxAccelerator! > 0
+                    ? `${intl.formatMessage(
+                        {
+                          id: 'common.max'
+                        },
+                        { count: item.maxAccelerator }
+                      )}`
+                    : '-'
+                }
               ></MetaItem>
             </span>
           )}

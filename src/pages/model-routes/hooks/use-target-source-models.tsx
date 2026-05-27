@@ -71,7 +71,7 @@ const useTargetSourceModels = () => {
                   data: {
                     model_id: model.id,
                     parentId: 'deployments',
-                    lora_module_name: loraName
+                    overridden_model_name: loraName
                   },
                   source: 'deployment',
                   isLora: true

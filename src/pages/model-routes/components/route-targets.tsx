@@ -98,7 +98,7 @@ const RouteItem: React.FC<TargetItemProps> = ({
               }}
             >
               <AutoTooltip ghost>{data.name}</AutoTooltip>
-              {!!data.lora_module_name && (
+              {!!data.overridden_model_name && !!data.model_id && (
                 <FilesTag color="purple" variant="outlined">
                   <span style={{ opacity: 1 }}>LoRA</span>
                 </FilesTag>

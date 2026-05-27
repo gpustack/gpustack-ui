@@ -30,16 +30,13 @@ const isSameTarget = (
   if (!left || !right) {
     return false;
   }
-
-  if (left.model_id != null || right.model_id != null) {
-    return left.model_id != null && left.model_id === right.model_id;
+  if (left.model_id && left.model_id === right.model_id) {
+    return left.lora_module_name === right.lora_module_name;
   }
-
-  return (
-    left.provider_id != null &&
-    left.provider_id === right.provider_id &&
-    left.overridden_model_name === right.overridden_model_name
-  );
+  if (left.provider_id && left.provider_id === right.provider_id) {
+    return left.overridden_model_name === right.overridden_model_name;
+  }
+  return false;
 };
 
 const normalizeTarget = (
@@ -51,6 +48,7 @@ const normalizeTarget = (
     model_id: target?.model_id,
     provider_id: target?.provider_id,
     overridden_model_name: target?.overridden_model_name,
+    lora_module_name: target?.lora_module_name,
     fallback_status_codes: target?.fallback_status_codes
   };
 
@@ -174,7 +172,12 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
         targets?.map((ep) => ({
           weight: ep.weight,
           value: ep.model_id
-            ? ['deployments', ep.model_id]
+            ? [
+                'deployments',
+                ep.lora_module_name
+                  ? `${ep.model_id}_lora_${ep.lora_module_name}`
+                  : ep.model_id
+              ]
             : [ep.provider_id, ep.overridden_model_name]
         })) || []
       );
@@ -197,7 +200,12 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       if (fallbackTarget) {
         targetsRef.current?.initFallbackValues({
           value: fallbackTarget.model_id
-            ? ['deployments', fallbackTarget.model_id]
+            ? [
+                'deployments',
+                fallbackTarget.lora_module_name
+                  ? `${fallbackTarget.model_id}_lora_${fallbackTarget.lora_module_name}`
+                  : fallbackTarget.model_id
+              ]
             : [fallbackTarget.provider_id, fallbackTarget.overridden_model_name]
         });
       }

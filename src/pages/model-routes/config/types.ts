@@ -4,7 +4,7 @@ export interface RouteTargetFormItem {
   weight?: number | null;
   model_id?: number;
   provider_id?: number;
-  lora_module_name?: string;
+  overridden_model_name?: string;
   fallback_status_codes?: string[];
   parentId?: string | number;
 }

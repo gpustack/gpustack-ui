@@ -224,7 +224,12 @@ const baseRoutes = [
         path: '/gpu-service/storage-types',
         key: 'gpuServiceStorageTypes',
         icon: 'icon-storage-outlined',
-        access: 'canSeeAdmin',
+        // Storage types are tenant-scoped on the backend (Org owners
+        // can create/list their own), so the menu shouldn't be
+        // platform-admin-only. ``canSeeOrgAdmin`` keeps the gate at
+        // "admin or current-org owner" — Org members still don't see
+        // it, which matches the read/write model in the route.
+        access: 'canSeeOrgAdmin',
         selectedIcon: 'icon-storage-filled',
         defaultIcon: 'icon-storage-outlined',
         component: './gpu-service/storage-types'

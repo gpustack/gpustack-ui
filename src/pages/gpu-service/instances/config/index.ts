@@ -196,9 +196,16 @@ export const getAcceleratorMax = (
 
 // Picks the candidate (cluster + type name) that should fulfill a requested
 // accelerator count: the first candidate of the smallest tier whose
-// onceMaxRequest is >= the requested count.
+// onceMaxRequest is >= the requested count and whose cpu/ram/localStorage
+// remaining are all > 0.
 export const pickCandidateForAccelerator = <
-  C extends { cluster: string; name: string }
+  C extends {
+    cluster: string;
+    name: string;
+    cpu?: { remaining?: string | null } | null;
+    ram?: { remaining?: string | null } | null;
+    localStorage?: { remaining?: string | null } | null;
+  }
 >(
   tiers:
     | { onceMaxRequest: string; candidates?: C[] | null }[]
@@ -207,13 +214,22 @@ export const pickCandidateForAccelerator = <
   count: number
 ): C | null => {
   if (!tiers?.length) return null;
+
+  const hasResources = (c: C) =>
+    parseQuantity(c.cpu?.remaining) > 0 &&
+    parseQuantity(c.ram?.remaining) > 0 &&
+    parseQuantity(c.localStorage?.remaining) > 0;
+
   const sorted = [...tiers].sort(
     (a, b) => parseQuantity(a.onceMaxRequest) - parseQuantity(b.onceMaxRequest)
   );
-  const tier = sorted.find((t) =>
-    count === 0
-      ? parseQuantity(t.onceMaxRequest) > count
-      : parseQuantity(t.onceMaxRequest) >= count
-  );
-  return tier?.candidates?.[0] ?? null;
+
+  // count === 0 ? parseQuantity(tier.onceMaxRequest) > count; this is CPU-only case.
+  for (const tier of sorted) {
+    const fits = parseQuantity(tier.onceMaxRequest) >= count;
+    if (!fits) continue;
+    const candidate = tier.candidates?.find(hasResources);
+    if (candidate) return candidate;
+  }
+  return null;
 };

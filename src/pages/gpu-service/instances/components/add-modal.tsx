@@ -159,7 +159,6 @@ const AddModal: React.FC<AddModalProps> = ({
         description: saveInstanceDataInDescription(instanceType)
       });
     }
-
     // update form
     form.current?.applyInstanceType?.(instanceType);
   };

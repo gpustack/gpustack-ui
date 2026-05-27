@@ -3,6 +3,15 @@ import { atomWithStorage } from 'jotai/utils';
 
 export const userAtom = atomWithStorage<any>('userInfo', null);
 
+// Backs the `currentOrganizationId` localStorage key. Stays null in
+// builds with no Org context (single-tenant), and is shared with any
+// extension that persists the same key so both sides stay in sync
+// without one side having to import from the other.
+export const currentOrganizationIdAtom = atomWithStorage<number | null>(
+  'currentOrganizationId',
+  null
+);
+
 export const GPUStackVersionAtom = atom<{
   version: string;
   git_commit: string;

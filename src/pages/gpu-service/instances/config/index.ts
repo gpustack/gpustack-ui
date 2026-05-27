@@ -196,7 +196,8 @@ export const getAcceleratorMax = (
 
 // Picks the candidate (cluster + type name) that should fulfill a requested
 // accelerator count: the first candidate of the smallest tier whose
-// onceMaxRequest is >= the requested count.
+// onceMaxRequest is >= the requested count. For CPU types (count === 0)
+// the 0-tier matches and yields the per-cluster candidate.
 export const pickCandidateForAccelerator = <
   C extends { cluster: string; name: string }
 >(
@@ -210,10 +211,11 @@ export const pickCandidateForAccelerator = <
   const sorted = [...tiers].sort(
     (a, b) => parseQuantity(a.onceMaxRequest) - parseQuantity(b.onceMaxRequest)
   );
-  const tier = sorted.find((t) =>
-    count === 0
-      ? parseQuantity(t.onceMaxRequest) > count
-      : parseQuantity(t.onceMaxRequest) >= count
-  );
+  const tier =
+    sorted.find(
+      (t) =>
+        parseQuantity(t.onceMaxRequest) >= count &&
+        (t.candidates?.length ?? 0) > 0
+    ) ?? sorted.find((t) => (t.candidates?.length ?? 0) > 0);
   return tier?.candidates?.[0] ?? null;
 };

@@ -62,7 +62,12 @@ const ClusterSteps: React.FC<{
     .map((step, index) => {
       return {
         ..._.pick(step, ANTD_STEP_KEYS),
-        subTitle: index === 0 ? <span>[{props.selectedProvider}]</span> : ''
+        subTitle:
+          index === 0 && props.selectedProvider ? (
+            <span>[{props.selectedProvider}]</span>
+          ) : (
+            ''
+          )
       };
     });
 

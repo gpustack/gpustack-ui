@@ -115,16 +115,12 @@ const AddModal: React.FC<AddModalProps> = ({
   };
 
   const saveInstanceDataInDescription = (instanceType: InstanceTypeItem) => {
-    return JSON.stringify(
-      {
-        name: instanceType.name,
-        spec: {
-          ...instanceType.spec
-        }
-      },
-      null,
-      2
-    );
+    return JSON.stringify({
+      name: instanceType.name,
+      spec: {
+        ...instanceType.spec
+      }
+    });
   };
 
   // apply the selection of instance type and template

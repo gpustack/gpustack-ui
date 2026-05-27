@@ -310,13 +310,27 @@ const Clusters: React.FC = () => {
     }
   }, [clusterSession, dataSource.loadend, dataSource.dataList]);
 
+  // Provider hint follows the auto-open from one render to the next:
+  // the session atom is cleared right after we open the modal, but
+  // ClusterCreate mounts a tick later and needs the value to skip the
+  // provider-catalog step. Cache it locally and clear on close.
+  const [pendingProviderHint, setPendingProviderHint] = useState<
+    string | undefined
+  >(undefined);
+
   useEffect(() => {
     if (clusterSession?.firstAddCluster && dataSource.loadend) {
+      setPendingProviderHint(clusterSession.providerHint);
       openClusterModal();
       // reset session
       setClusterSession(null);
     }
   }, [clusterSession, dataSource.loadend]);
+
+  const handleClusterModalClose = () => {
+    setPendingProviderHint(undefined);
+    closeClusterModal();
+  };
 
   const renderChildren = (
     list: any,
@@ -443,7 +457,8 @@ const Clusters: React.FC = () => {
           id: 'menu.clusterManagement.clusterCreate'
         })}
         open={clusterModalStatus.open}
-        onClose={closeClusterModal}
+        providerHint={pendingProviderHint}
+        onClose={handleClusterModalClose}
       ></ClusterModal>
       {AddWorkerModal}
     </>

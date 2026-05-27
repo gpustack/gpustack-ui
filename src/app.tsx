@@ -40,14 +40,31 @@ const checkDefaultPage = async (userInfo: any) => {
 // GPU Service (Kubernetes-only). Cheap (one list request) and never
 // blocks login — any failure just falls back to `undefined`, which
 // the predicate treats as "unknown / don't restrict beyond role".
+// The result is also mirrored into sessionStorage so access extensions
+// that run without the initialState argument can read it (e.g. to
+// override the admin shortcut in scopes where the menu shouldn't
+// show even for admins).
+const HAS_K8S_CLUSTER_KEY = 'hasKubernetesCluster';
 const probeHasKubernetesCluster = async (): Promise<boolean | undefined> => {
   try {
     const res = await queryClusterList({ page: -1 });
-    return (res?.items ?? []).some(
+    const value = (res?.items ?? []).some(
       (c) => c?.provider === ProviderValueMap.Kubernetes
     );
+    try {
+      window.sessionStorage.setItem(HAS_K8S_CLUSTER_KEY, JSON.stringify(value));
+    } catch {
+      // sessionStorage may be unavailable (Safari private mode); the
+      // access predicate already handles a missing value as "unknown".
+    }
+    return value;
   } catch (error) {
     console.error('probeHasKubernetesCluster error', error);
+    try {
+      window.sessionStorage.removeItem(HAS_K8S_CLUSTER_KEY);
+    } catch {
+      // ignore
+    }
     return undefined;
   }
 };

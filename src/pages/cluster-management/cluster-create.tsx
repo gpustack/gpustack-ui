@@ -55,10 +55,16 @@ const MainWrapper = styled.div`
 
 const ClusterCreate: React.FC<{
   action: PageActionType;
+  // Preselect a provider and skip the provider-catalog step. Set by
+  // empty-state CTAs that already know which kind of cluster the user
+  // is heading for (e.g. GPU Service's "Add a Kubernetes Cluster").
+  providerHint?: string;
   setCurrentTitle?: (title: string) => void;
   onClose?: () => void;
-}> = ({ onClose, action, setCurrentTitle }) => {
-  const startStep = 0;
+}> = ({ onClose, action, providerHint, setCurrentTitle }) => {
+  // When the caller already picked a provider for us, start one step
+  // in — provider catalog is step 0; configure is step 1.
+  const startStep = providerHint ? 1 : 0;
   const stepList = useStepList();
   const [systemConfigState] = useAtom(systemConfigAtom);
   const intl = useIntl();
@@ -79,7 +85,7 @@ const ClusterCreate: React.FC<{
     cluster_id: 0
   });
   const [extraData, setExtraData] = useState<ClusterFormData>({
-    provider: ProviderValueMap.Docker
+    provider: (providerHint as ProviderType) ?? ProviderValueMap.Docker
   } as ClusterFormData);
   const [formValues, setFormValues] = useState<Record<string, any>>({});
   const [submitLoading, setSubmitLoading] = useState<boolean>(false);

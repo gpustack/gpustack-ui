@@ -1,3 +1,4 @@
+import { clusterSessionAtom } from '@/atoms/clusters';
 import { PageAction } from '@/config';
 import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import useTableFetch from '@/hooks/use-table-fetch';
@@ -7,6 +8,7 @@ import { DeleteModal, FilterBar, IconFont, NoResult } from '@gpustack/core-ui';
 import { useAccess, useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { ConfigProvider, message, Modal, Table } from 'antd';
+import { useSetAtom } from 'jotai';
 import _ from 'lodash';
 import { useEffect, useMemo } from 'react';
 import PageBox from '../../_components/page-box';
@@ -30,7 +32,20 @@ const GPUService: React.FC = () => {
   const intl = useIntl();
   const navigate = useNavigate();
   const access = useAccess();
+  const setClusterSession = useSetAtom(clusterSessionAtom);
   const [, modalContextHolder] = Modal.useModal();
+
+  // Empty-state CTA: send the user to the cluster-create flow with
+  // Kubernetes preselected so the GPU Service feature is reachable
+  // in one step instead of having to pick the provider themselves.
+  const handleAddK8sCluster = () => {
+    setClusterSession({
+      firstAddWorker: false,
+      firstAddCluster: true,
+      providerHint: ProviderValueMap.Kubernetes
+    });
+    navigate('/cluster-management/clusters/list');
+  };
 
   const {
     dataSource,
@@ -86,8 +101,7 @@ const GPUService: React.FC = () => {
   // can't host the CRDs. Filter so the page reflects scheduling
   // reality even when the caller owns non-K8s clusters.
   const k8sClusterList = useMemo(
-    () =>
-      clusterList.filter((c) => c.provider === ProviderValueMap.Kubernetes),
+    () => clusterList.filter((c) => c.provider === ProviderValueMap.Kubernetes),
     [clusterList]
   );
   const hasK8sCluster = k8sClusterList.length > 0;
@@ -164,9 +178,9 @@ const GPUService: React.FC = () => {
           {...(access.canSeeOrgAdmin
             ? {
                 buttonText: intl.formatMessage({
-                  id: 'noresult.resources.gotocluster'
+                  id: 'noresult.resources.addk8scluster'
                 }),
-                onClick: () => navigate('/cluster-management/clusters/list')
+                onClick: handleAddK8sCluster
               }
             : {})}
         />

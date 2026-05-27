@@ -1,37 +1,29 @@
 import { PageAction } from '@/config';
 import FormOverlayView from '@/pages/_components/form-overlay-view';
-import { FormContext } from '@/pages/gpu-service/storage/config/form-context';
-import useQueryStorageClass from '@/pages/gpu-service/storage/services/use-query-storage-class';
 import { ModalFooter } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { useEffect, useRef, useState } from 'react';
-import { FormData as StorageFormData } from '../../storage/config/types';
-import GPUServiceStorageForm from '../../storage/forms';
+import { useRef, useState } from 'react';
+import { FormData as PublicKeyFormData } from '../../public-keys/config/types';
+import GPUServicePublicKeyForm from '../../public-keys/forms';
+import useCreateSshkey from '../../public-keys/services/use-create-sshkey';
 import useOverlayLayout from '../hooks/use-overlay-layout';
 
-interface StorageOverlayProps {
+interface PublicKeyOverlayProps {
   open: boolean;
   onCancel: () => void;
-  onSubmit: (values: StorageFormData) => Promise<void> | void;
+  onSubmit: (values: PublicKeyFormData) => Promise<void> | void;
 }
 
-const StorageOverlay: React.FC<StorageOverlayProps> = ({
+const PublicKeyOverlay: React.FC<PublicKeyOverlayProps> = ({
   open,
   onCancel,
   onSubmit
 }) => {
   const intl = useIntl();
-  const { storageClassList, fetchData: fetchStorageClass } =
-    useQueryStorageClass();
   const [loading, setLoading] = useState(false);
   const formRef = useRef<any>(null);
+  const { fetchData: createSshkey } = useCreateSshkey();
   const { drawerWidth, getOverlayContainer } = useOverlayLayout(open);
-
-  useEffect(() => {
-    if (open) {
-      fetchStorageClass({ page: -1 });
-    }
-  }, [open]);
 
   const handleSubmit = () => {
     formRef.current?.submit();
@@ -42,9 +34,10 @@ const StorageOverlay: React.FC<StorageOverlayProps> = ({
     onCancel();
   };
 
-  const handleFinish = async (values: StorageFormData) => {
+  const handleFinish = async (values: PublicKeyFormData) => {
     setLoading(true);
     try {
+      await createSshkey({ data: values });
       await onSubmit(values);
     } finally {
       setLoading(false);
@@ -53,7 +46,7 @@ const StorageOverlay: React.FC<StorageOverlayProps> = ({
 
   return (
     <FormOverlayView
-      title={intl.formatMessage({ id: 'gpuservice.storage.add' })}
+      title={intl.formatMessage({ id: 'gpuservice.publicKey.add' })}
       open={open}
       width={drawerWidth}
       onCancel={handleCancel}
@@ -71,16 +64,14 @@ const StorageOverlay: React.FC<StorageOverlayProps> = ({
         />
       }
     >
-      <FormContext.Provider value={{ storageClassList }}>
-        <GPUServiceStorageForm
-          ref={formRef}
-          action={PageAction.CREATE}
-          open={open}
-          onFinish={handleFinish}
-        />
-      </FormContext.Provider>
+      <GPUServicePublicKeyForm
+        ref={formRef}
+        action={PageAction.CREATE}
+        open={open}
+        onFinish={handleFinish}
+      />
     </FormOverlayView>
   );
 };
 
-export default StorageOverlay;
+export default PublicKeyOverlay;

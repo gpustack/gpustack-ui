@@ -5,7 +5,7 @@ import {
   DropdownButtons,
   StatusTag
 } from '@gpustack/core-ui';
-import { useIntl } from '@umijs/max';
+import { useAccess, useIntl } from '@umijs/max';
 import { Button, Flex } from 'antd';
 import type { ColumnsType } from 'antd/lib/table';
 import dayjs from 'dayjs';
@@ -80,6 +80,7 @@ const useInstancesColumns = ({
   sortOrder
 }: ColumnsHookProps): ColumnsType<ListItem> => {
   const intl = useIntl();
+  const access = useAccess();
 
   const renderInstanceType = (record: ListItem) => {
     const description = JSON.parse(record?.description || '{}').spec || {};
@@ -122,7 +123,7 @@ const useInstancesColumns = ({
         },
         render: (text: string, record: ListItem) => (
           <AutoTooltip ghost style={{ maxWidth: 360 }}>
-            <span className="text-primary">{text || record.displayName}</span>
+            <span className="text-primary">{record.displayName || text}</span>
           </AutoTooltip>
         )
       },
@@ -247,6 +248,7 @@ const useInstancesColumns = ({
       {
         title: intl.formatMessage({ id: 'clusters.title' }),
         dataIndex: 'clusterId',
+        hidden: !access.canSeeAdmin,
         render: (id: number) => (
           <AutoTooltip ghost maxWidth={240}>
             {_.find(clusterList, { value: id })?.label || id || '-'}

@@ -143,7 +143,7 @@ export default {
   'gpuservice.storage.accessMode': 'Режим доступа',
   'gpuservice.storage.persistent': 'Постоянное',
   'gpuservice.storage.temporary': 'Временное',
-  'gpuservice.storage.persistentVolume': 'Постоянный том',
+  'gpuservice.storage.persistentVolume': 'Постоянное',
   'gpuservice.storage.persistentVolume.required': 'Выберите постоянный том',
   'gpuservice.storage.persistentVolume.capacity': 'Ёмкость (ГБ)',
   'gpuservice.storage.persistentVolume.capacity.required': 'Введите ёмкость',

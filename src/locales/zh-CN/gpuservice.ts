@@ -134,7 +134,7 @@ export default {
   'gpuservice.storage.accessMode': '访问模式',
   'gpuservice.storage.persistent': '持久',
   'gpuservice.storage.temporary': '临时',
-  'gpuservice.storage.persistentVolume': '持久卷',
+  'gpuservice.storage.persistentVolume': '持久',
   'gpuservice.storage.temporary.tips': '实例停止后，数据将被清除。',
   'gpuservice.storage.persistentVolume.tips':
     '数据在实例重启后仍会保留，仅在实例被终止时删除。无法被其它实例共享。',

@@ -142,16 +142,12 @@ const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({ item }) => {
               ></MetaItem>
               <MetaItem
                 icon="icon-database"
-                value={
-                  item.maxAccelerator! > 0
-                    ? `${intl.formatMessage(
-                        {
-                          id: 'common.max'
-                        },
-                        { count: item.maxAccelerator }
-                      )}`
-                    : '-'
-                }
+                value={intl.formatMessage(
+                  {
+                    id: 'common.max'
+                  },
+                  { count: item.maxAccelerator }
+                )}
               ></MetaItem>
             </span>
           )}

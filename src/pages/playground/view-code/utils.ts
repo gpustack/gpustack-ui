@@ -2,12 +2,12 @@ import _ from 'lodash';
 
 function toShellSafeMultilineJson(value: any): string {
   const json = JSON.stringify(value, null, 2);
-  const escaped = json.replace(/'/g, `'\\''`);
+  const escaped = json?.replace(/'/g, `'\\''`);
   return `${escaped}`;
 }
 
 function toShellSafeJson(value: any): string {
-  return JSON.stringify(value, null, 2).replace(/'/g, `'\\''`);
+  return JSON.stringify(value, null, 2)?.replace(/'/g, `'\\''`);
 }
 
 // curl format
@@ -16,6 +16,7 @@ export const formatCurlArgs = (
   isFormdata?: boolean
 ) => {
   if (isFormdata) {
+    console.log('parameters===', parameters);
     return _.keys(parameters).reduce((acc: string, key: string) => {
       const val = parameters[key];
       const value =

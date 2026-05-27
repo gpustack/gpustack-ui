@@ -63,6 +63,12 @@ export const fromClusterCreationAtom = atom(false);
 export const clusterSessionAtom = atom<{
   firstAddWorker: boolean;
   firstAddCluster: boolean;
+  // Provider to preselect when the create flow opens — set by the
+  // empty-state CTA on feature pages that need a specific provider
+  // (e.g. GPU Service can only schedule on Kubernetes, so its
+  // "Add Cluster" button skips provider catalog and lands on the
+  // K8s configure step). Consumed once by ClusterCreate on mount.
+  providerHint?: string;
 } | null>(null);
 
 export const clusterDetailAtom = atom<ClusterListItem | null>(null);

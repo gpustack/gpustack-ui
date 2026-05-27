@@ -43,6 +43,7 @@ export default {
   'noresult.resources.worker':
     'Kullanılabilir işçi düğüm yok. Başlamak için bir işçi düğüm ekleyin.',
   'noresult.resources.gotocluster': 'İlk Kümenizi Oluşturun',
+  'noresult.resources.addk8scluster': 'Kubernetes Kümesi Ekle',
   'noresult.resources.gotoworker': 'İşçi Düğüm Ekle',
   'noresult.benchmark.title': 'Kıyaslama Yok',
   'noresult.benchmark.subTitle': 'Henüz kıyaslama eklenmedi.',

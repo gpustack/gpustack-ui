@@ -39,6 +39,7 @@ export default {
     '暂无可用集群，请添加 Kubernetes 集群以开始使用。',
   'noresult.resources.worker': '暂无可用节点，请添加节点以开始使用。',
   'noresult.resources.gotocluster': '创建您的第一个集群',
+  'noresult.resources.addk8scluster': '添加 Kubernetes 集群',
   'noresult.resources.gotoworker': '添加节点',
   'noresult.benchmark.title': '暂无基准测试',
   'noresult.benchmark.subTitle': '尚未添加任何基准测试。',

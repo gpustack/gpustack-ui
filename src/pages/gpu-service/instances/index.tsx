@@ -97,14 +97,10 @@ const GPUService: React.FC = () => {
     fetchClusterList({ page: -1 });
   }, []);
 
-  // GPU Service today is Kubernetes-only — Docker / cloud clusters
-  // can't host the CRDs. Filter so the page reflects scheduling
-  // reality even when the caller owns non-K8s clusters.
-  const k8sClusterList = useMemo(
-    () => clusterList.filter((c) => c.provider === ProviderValueMap.Kubernetes),
+  const hasK8sCluster = useMemo(
+    () => clusterList.some((c) => c.provider === ProviderValueMap.Kubernetes),
     [clusterList]
   );
-  const hasK8sCluster = k8sClusterList.length > 0;
 
   const handleModalOk = async (data: FormData) => {
     try {
@@ -157,11 +153,6 @@ const GPUService: React.FC = () => {
 
   const renderEmpty = (type?: string) => {
     if (type !== 'Table') return;
-    // No K8s cluster the caller can schedule on — replace the "no
-    // instances" empty state with a cluster-bootstrap prompt. The
-    // "Add cluster" CTA is reserved for callers who can actually
-    // create one (platform admin / Org owner); members see the
-    // explanation without a misleading button.
     if (!clusterLoading && !hasK8sCluster) {
       return (
         <NoResult

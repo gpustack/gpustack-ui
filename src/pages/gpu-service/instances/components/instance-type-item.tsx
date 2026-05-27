@@ -141,7 +141,6 @@ const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({ item }) => {
                 value={specData?.sliced}
               ></MetaItem>
               <MetaItem
-                show={!!item.maxAccelerator}
                 icon="icon-database"
                 value={
                   item.maxAccelerator! > 0

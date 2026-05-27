@@ -62,16 +62,15 @@ const ClusterCreate: React.FC<{
   setCurrentTitle?: (title: string) => void;
   onClose?: () => void;
 }> = ({ onClose, action, providerHint, setCurrentTitle }) => {
-  // When the caller already picked a provider for us, start one step
-  // in — provider catalog is step 0; configure is step 1.
-  const startStep = providerHint ? 1 : 0;
   const stepList = useStepList();
   const [systemConfigState] = useAtom(systemConfigAtom);
   const intl = useIntl();
   const [credentialList, setCredentialList] = useState<
     Global.BaseOption<number, { provider: ProviderType }>[]
   >([]);
-  const [currentStep, setCurrentStep] = useState<number>(startStep);
+  // When the caller already picked a provider for us, start one step
+  // in — provider catalog is step 0; configure is step 1.
+  const [currentStep, setCurrentStep] = useState<number>(providerHint ? 1 : 0);
   const [registrationInfo, setRegistrationInfo] = useState<{
     token: string;
     image: string;
@@ -357,7 +356,12 @@ const ClusterCreate: React.FC<{
         }
       >
         <div style={{ flex: 1 }}>
-          {currentStep === startStep && (
+          {currentStep === 0 && (
+            // Catalog belongs to step 0 only. The previous gate used
+            // ``startStep`` which is 1 when ``providerHint`` skips the
+            // catalog — that wrongly re-rendered it on top of the
+            // configure form for entry points like "Add a Kubernetes
+            // Cluster".
             <ProviderCatalog
               cols={2}
               dataList={providerList}

@@ -14,7 +14,7 @@ export const InstanceStatusValueMap = {
   Preparing: 'Preparing',
   NotReady: 'NotReady',
   Ready: 'Ready',
-  Staring: 'Staring'
+  Starting: 'Starting'
 };
 
 export const InstanceStatusLabelMap: Record<string, string> = {
@@ -27,7 +27,7 @@ export const InstanceStatusLabelMap: Record<string, string> = {
   [InstanceStatusValueMap.Preparing]: 'Preparing',
   [InstanceStatusValueMap.NotReady]: 'NotReady',
   [InstanceStatusValueMap.Ready]: 'Ready',
-  [InstanceStatusValueMap.Staring]: 'Staring'
+  [InstanceStatusValueMap.Starting]: 'Starting'
 };
 
 export const status: Record<string, StatusType> = {
@@ -40,7 +40,7 @@ export const status: Record<string, StatusType> = {
   [InstanceStatusValueMap.Preparing]: StatusMaps.transitioning,
   [InstanceStatusValueMap.NotReady]: StatusMaps.error,
   [InstanceStatusValueMap.Ready]: StatusMaps.success,
-  [InstanceStatusValueMap.Staring]: StatusMaps.transitioning
+  [InstanceStatusValueMap.Starting]: StatusMaps.transitioning
 };
 
 // Lifecycle actions (logs/events/start/stop) require K8s proxy endpoints that

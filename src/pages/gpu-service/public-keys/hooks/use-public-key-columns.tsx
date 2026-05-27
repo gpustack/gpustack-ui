@@ -67,6 +67,7 @@ const usePublicKeyColumns = ({
         title: intl.formatMessage({ id: 'common.table.operation' }),
         key: 'operation',
         dataIndex: 'operation',
+        width: 200,
         render: (_text, record) => (
           <DropdownButtons
             items={rowActionList}

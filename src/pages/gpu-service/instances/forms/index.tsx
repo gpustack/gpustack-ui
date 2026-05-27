@@ -1,4 +1,3 @@
-import { addSSHKeyPageAtom } from '@/atoms/gpuservice';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { PlusOutlined } from '@ant-design/icons';
@@ -14,9 +13,8 @@ import {
   useScrollActiveChange,
   useWrapperContext
 } from '@gpustack/core-ui';
-import { useIntl, useNavigate } from '@umijs/max';
-import { Button, Empty, Form } from 'antd';
-import { useSetAtom } from 'jotai';
+import { useIntl } from '@umijs/max';
+import { Button, Flex, Form } from 'antd';
 import _ from 'lodash';
 import {
   forwardRef,
@@ -26,6 +24,8 @@ import {
   useRef,
   useState
 } from 'react';
+import { FormData as PublicKeyFormData } from '../../public-keys/config/types';
+import useCreateSshkey from '../../public-keys/services/use-create-sshkey';
 import useQuerySshkeys from '../../public-keys/services/use-query-sshkeys';
 import { DefaultImagePullPolicy } from '../../templates/config';
 import TemplateBasicForm, {
@@ -36,6 +36,7 @@ import { FormData, InstanceTypeItem, ListItem } from '../config/types';
 import instanceStyles from '../styles/instances.module.less';
 import Basic from './basic';
 import InstanceTypeFormItem from './instance-type';
+import PublicKeyOverlay from './public-key-overlay';
 import StorageVolume from './storage-volume';
 
 const SSH_PORT = 22;
@@ -124,8 +125,6 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       onFinish
     } = props;
     const intl = useIntl();
-    const navigate = useNavigate();
-    const setAddSSHKeyPage = useSetAtom(addSSHKeyPageAtom);
     const { getRuleMessage } = useAppUtils();
     const [form] = Form.useForm<InstanceFormValues>();
     const scrollTabsRef = useRef<any>(null);
@@ -133,6 +132,8 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       realAction === PageAction.CREATE ? PageAction.CREATE : action;
     const sshEnabled = Form.useWatch('enable_ssh', form);
     const { sshkeyOptions, fetchData: fetchSSHData } = useQuerySshkeys();
+    const { fetchData: createSshkey } = useCreateSshkey();
+    const [sshOverlayOpen, setSshOverlayOpen] = useState(false);
     const { getScrollElementScrollableHeight } = useWrapperContext();
     const {
       activeKey,
@@ -352,9 +353,23 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
     }));
 
     const handleAddSSHKey = () => {
-      setAddSSHKeyPage({ create: true });
-      // to go ssh key page
-      navigate('/gpu-service/public-keys');
+      setSshOverlayOpen(true);
+    };
+
+    const handleCreateSSHKey = async (values: PublicKeyFormData) => {
+      try {
+        await fetchSSHData({ page: -1 });
+        const current: Array<{ name: string } | string> =
+          form.getFieldValue(['spec', 'sshPublicKeys']) || [];
+        form.setFieldValue(
+          ['spec', 'sshPublicKeys'],
+          [...current, { name: values.name }]
+        );
+
+        setSshOverlayOpen(false);
+      } catch (error) {
+        // it's handled in interceptor
+      }
     };
 
     const handleOnEnableSSHChange = (e: any) => {
@@ -463,19 +478,31 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
             ]}
           />
 
-          <Form.Item<FormData>
-            name="enable_ssh"
-            valuePropName="checked"
-            style={{ marginBottom: 8 }}
-          >
-            <CheckboxField
-              onChange={handleOnEnableSSHChange}
-              disabled={disabled}
-              label={intl.formatMessage({
-                id: 'gpuservice.instance.ssh.enable'
+          <Flex align="center" justify="space-between">
+            <Form.Item<FormData>
+              name="enable_ssh"
+              valuePropName="checked"
+              style={{ marginBottom: 8 }}
+            >
+              <CheckboxField
+                onChange={handleOnEnableSSHChange}
+                disabled={disabled}
+                label={intl.formatMessage({
+                  id: 'gpuservice.instance.ssh.enable'
+                })}
+              ></CheckboxField>
+            </Form.Item>
+            <Button
+              size="small"
+              type="link"
+              icon={<PlusOutlined />}
+              onClick={handleAddSSHKey}
+            >
+              {intl.formatMessage({
+                id: 'gpuservice.instance.ssh.addKey'
               })}
-            ></CheckboxField>
-          </Form.Item>
+            </Button>
+          </Flex>
           {
             <div className={instanceStyles.sshkeySelection}>
               <Form.Item<FormData>
@@ -515,38 +542,16 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
                     }
                   }}
                   options={sshkeyOptions}
-                  notFoundContent={
-                    <Empty
-                      image={Empty.PRESENTED_IMAGE_SIMPLE}
-                      description={intl.formatMessage({
-                        id: 'noresult.gpuservice.sshkey.title'
-                      })}
-                      styles={{
-                        image: {
-                          height: 32
-                        },
-                        root: {
-                          margin: 0
-                        }
-                      }}
-                    >
-                      <Button
-                        size="small"
-                        type="link"
-                        icon={<PlusOutlined />}
-                        onClick={handleAddSSHKey}
-                      >
-                        {intl.formatMessage({
-                          id: 'gpuservice.instance.ssh.addKey'
-                        })}
-                      </Button>
-                    </Empty>
-                  }
                 ></MultipleSelect>
               </Form.Item>
             </div>
           }
         </Form>
+        <PublicKeyOverlay
+          open={sshOverlayOpen}
+          onCancel={() => setSshOverlayOpen(false)}
+          onSubmit={handleCreateSSHKey}
+        />
       </ScrollSpyTabs>
     );
   }

@@ -162,7 +162,7 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
           ]}
         >
           <NumberSelection
-            min={0}
+            min={1}
             onChange={handleOnGPUCountChange}
             max={maxGpuCount}
             step={1}

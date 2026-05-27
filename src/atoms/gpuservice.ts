@@ -4,7 +4,3 @@ import { atom } from 'jotai';
 export const currentClusterAtom = atom<
   (Partial<ClusterListItem> & { label?: string; value?: number }) | null
 >(null);
-
-export const addSSHKeyPageAtom = atom<{ create: boolean }>({
-  create: false
-});

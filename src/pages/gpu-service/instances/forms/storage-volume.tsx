@@ -1,4 +1,5 @@
 import { PageAction } from '@/config';
+import { PlusOutlined } from '@ant-design/icons';
 import {
   Input as CInput,
   InputNumber as CInputNumber,
@@ -135,6 +136,7 @@ const StorageVolume = ({
             <Button
               type="link"
               size="small"
+              icon={<PlusOutlined />}
               onClick={() => setOverlayOpen(true)}
             >
               {intl.formatMessage({ id: 'gpuservice.storage.add' })}

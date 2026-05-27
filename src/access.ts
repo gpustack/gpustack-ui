@@ -1,6 +1,9 @@
 import { applyAccessExtensions } from './access.extensions';
 
-export default (initialState: { currentUser?: Global.UserInfo }) => {
+export default (initialState: {
+  currentUser?: Global.UserInfo;
+  hasKubernetesCluster?: boolean;
+}) => {
   const isPlatformAdmin = !!(
     initialState &&
     initialState.currentUser &&
@@ -11,6 +14,12 @@ export default (initialState: { currentUser?: Global.UserInfo }) => {
     initialState.currentUser &&
     !initialState.currentUser.is_admin
   );
+  // GPU Service is Kubernetes-only. We only gate visibility down when
+  // the probe in `getInitialState` came back with a definitive answer;
+  // `undefined` (probe failed / not yet ready) collapses to the
+  // role-based default so a transient network blip can't lock anyone
+  // out of the menu.
+  const hasKubernetesCluster = initialState?.hasKubernetesCluster;
 
   // Predicate roles, top-down by strictness:
   //   * `canSeeAdmin` — strictly platform admin (`users.is_admin`).
@@ -18,6 +27,11 @@ export default (initialState: { currentUser?: Global.UserInfo }) => {
   //   * `canSeeOrgAdmin` — admin-style menus that work cross-org
   //     (Dashboard, Resources, Models, Cluster Management). Defaults
   //     to platform admin; extensions widen to include org admins.
+  //   * `canSeeGpuService` — GPU Service menu. Anyone allowed to
+  //     manage clusters (admins, Org owners) sees it; non-admins fall
+  //     through to "show only if a Kubernetes cluster is actually
+  //     reachable" so Org members without scheduling access don't see
+  //     a dead-end menu item.
   //   * `canManageCurrentOrg` — pages that only make sense inside a
   //     specific org context (member / group management). Defaults to
   //     `false`; extensions widen when both an org is selected AND
@@ -27,6 +41,7 @@ export default (initialState: { currentUser?: Global.UserInfo }) => {
   return applyAccessExtensions({
     canSeeAdmin: isPlatformAdmin,
     canSeeOrgAdmin: isPlatformAdmin,
+    canSeeGpuService: isPlatformAdmin || hasKubernetesCluster !== false,
     canManageCurrentOrg: false,
     canSeeUser,
     canDelete: true,

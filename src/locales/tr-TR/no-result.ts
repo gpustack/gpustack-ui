@@ -38,6 +38,8 @@ export default {
   'noresult.catalog.nofound': 'Eşleşen model bulunamadı.',
   'noresult.resources.cluster':
     'Kullanılabilir küme yok. Başlamak için bir küme ekleyin.',
+  'noresult.resources.k8sCluster':
+    'Kullanılabilir küme yok. Başlamak için bir Kubernetes kümesi ekleyin.',
   'noresult.resources.worker':
     'Kullanılabilir işçi düğüm yok. Başlamak için bir işçi düğüm ekleyin.',
   'noresult.resources.gotocluster': 'İlk Kümenizi Oluşturun',

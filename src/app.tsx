@@ -3,6 +3,8 @@ import { GPUStackVersionAtom, UpdateCheckAtom } from '@/atoms/user';
 import { setAtomStorage } from '@/atoms/utils';
 import { DEFAULT_ENTER_PAGE, GPUSTACK_API_BASE_URL } from '@/config/settings';
 import { COLOR_PRIMARY } from '@/config/theme/constants';
+import { queryClusterList } from '@/pages/cluster-management/apis';
+import { ProviderValueMap } from '@/pages/cluster-management/config';
 import { enterprisePluginReady } from '@/plugins/enterprise-ready';
 import { GPUStackPluginManager } from '@/plugins/manager';
 import { requestConfig } from '@/request-config';
@@ -34,11 +36,28 @@ const checkDefaultPage = async (userInfo: any) => {
   }
 };
 
+// Probes the caller's cluster list once so access predicates can gate
+// GPU Service (Kubernetes-only). Cheap (one list request) and never
+// blocks login — any failure just falls back to `undefined`, which
+// the predicate treats as "unknown / don't restrict beyond role".
+const probeHasKubernetesCluster = async (): Promise<boolean | undefined> => {
+  try {
+    const res = await queryClusterList({ page: -1 });
+    return (res?.items ?? []).some(
+      (c) => c?.provider === ProviderValueMap.Kubernetes
+    );
+  } catch (error) {
+    console.error('probeHasKubernetesCluster error', error);
+    return undefined;
+  }
+};
+
 // runtime configuration
 export async function getInitialState(): Promise<{
   fetchUserInfo: () => Promise<Global.UserInfo>;
   currentUser?: Global.UserInfo;
   pluginData?: Record<string, any>;
+  hasKubernetesCluster?: boolean;
 }> {
   const { location } = history;
 
@@ -122,12 +141,16 @@ export async function getInitialState(): Promise<{
   getAppVersionInfo();
 
   if (![DEFAULT_ENTER_PAGE.login].includes(location.pathname)) {
-    const userInfo = await fetchUserInfo();
+    const [userInfo, hasKubernetesCluster] = await Promise.all([
+      fetchUserInfo(),
+      probeHasKubernetesCluster()
+    ]);
     checkDefaultPage(userInfo);
     return {
       fetchUserInfo,
       currentUser: userInfo,
-      pluginData
+      pluginData,
+      hasKubernetesCluster
     };
   }
   return {

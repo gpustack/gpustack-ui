@@ -4,6 +4,7 @@
 export type AccessPredicates = {
   canSeeAdmin: boolean;
   canSeeOrgAdmin: boolean;
+  canSeeGpuService: boolean;
   canManageCurrentOrg: boolean;
   canSeeUser: boolean;
   canDelete: boolean;

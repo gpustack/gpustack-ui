@@ -107,7 +107,7 @@ export default {
   'gpuservice.instance.gpuCount.zero': 'CPU のみを使用し、環境準備用です。',
   'gpuservice.instance.stock': '在庫',
   'gpuservice.instance.sliced': '分割',
-  'gpuservice.instance.memory': 'Memory',
+  'gpuservice.instance.memory': 'VRAM',
   'gpuservice.instance.ram': 'RAM',
   'gpuservice.instance.disk': 'ディスク',
   'gpuservice.instance.search.type.placeholder': '名前で検索',

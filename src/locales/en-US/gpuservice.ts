@@ -109,7 +109,7 @@ export default {
     'CPU-only setup for environment preparation.',
   'gpuservice.instance.stock': 'Stock',
   'gpuservice.instance.sliced': 'Sliced',
-  'gpuservice.instance.memory': 'Memory',
+  'gpuservice.instance.memory': 'VRAM',
   'gpuservice.instance.ram': 'RAM',
   'gpuservice.instance.disk': 'Disk',
   'gpuservice.instance.search.type.placeholder': 'Search by name',

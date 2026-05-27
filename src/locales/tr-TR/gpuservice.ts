@@ -106,7 +106,7 @@ export default {
   'gpuservice.instance.gpuCount.zero': 'Yalnızca CPU, ortam hazırlığı için.',
   'gpuservice.instance.stock': 'Stok',
   'gpuservice.instance.sliced': 'Bölünmüş',
-  'gpuservice.instance.memory': 'Bellek',
+  'gpuservice.instance.memory': 'VRAM',
   'gpuservice.instance.ram': 'RAM',
   'gpuservice.instance.disk': 'Disk',
   'gpuservice.instance.search.type.placeholder': 'Ada göre ara',

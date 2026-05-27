@@ -109,7 +109,7 @@ export default {
   'gpuservice.instance.gpuCount.zero': 'Только CPU, для подготовки окружения.',
   'gpuservice.instance.stock': 'Остаток',
   'gpuservice.instance.sliced': 'Разделено',
-  'gpuservice.instance.memory': 'Память',
+  'gpuservice.instance.memory': 'VRAM',
   'gpuservice.instance.ram': 'RAM',
   'gpuservice.instance.disk': 'Диск',
   'gpuservice.instance.search.type.placeholder': 'Поиск по имени',

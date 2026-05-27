@@ -133,6 +133,7 @@ export interface InstanceTypeItem {
   name: string;
   spec: InstanceTypeSpec;
   disabled?: boolean;
+  maxAccelerator?: number;
   status: InstanceTypeStatus;
 }
 

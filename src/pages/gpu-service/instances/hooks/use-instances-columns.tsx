@@ -239,6 +239,7 @@ const useInstancesColumns = ({
         ellipsis: {
           showTitle: false
         },
+        width: 220,
         render: (_text: string, record: ListItem) => (
           <div style={{ width: 'max-content' }}>
             <AutoTooltip ghost>{renderInstanceType(record)}</AutoTooltip>

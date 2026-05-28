@@ -14,7 +14,7 @@ import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import { useMemo } from 'react';
 import styled from 'styled-components';
-import { sourceOptions } from '../config';
+import { DeployFormKeyMap, sourceOptions } from '../config';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
 import BackendForm from './backend';
@@ -68,7 +68,6 @@ const ClusterOption = styled.span`
 `;
 
 interface BasicFormProps {
-  fields?: string[];
   sourceDisable?: boolean;
   sourceList?: Global.BaseOption<string>[];
   clusterList: Global.BaseOption<
@@ -88,7 +87,6 @@ interface BasicFormProps {
 
 const BasicForm: React.FC<BasicFormProps> = (props) => {
   const {
-    fields = [],
     sourceList,
     clusterList,
     sourceDisable,
@@ -98,7 +96,7 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
   const intl = useIntl();
   const form = Form.useFormInstance();
   const { getRuleMessage } = useAppUtils();
-  const { onValuesChange, action } = useFormContext();
+  const { onValuesChange, action, formKey } = useFormContext();
 
   const handleOnSourceChange = (val: string) => {
     onSourceChange?.(val);
@@ -183,30 +181,29 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
           required
         ></CInput.Input>
       </Form.Item>
-      {fields.includes('source') && (
-        <Form.Item<FormData>
-          name="source"
-          rules={[
-            {
-              required: true,
-              message: getRuleMessage('select', 'models.form.source')
-            }
-          ]}
-        >
-          {
-            <SealSelect
-              onChange={handleOnSourceChange}
-              disabled={sourceDisable}
-              label={intl.formatMessage({
-                id: 'models.form.source'
-              })}
-              options={sourceList ?? sourceOptions}
-              required
-            ></SealSelect>
-          }
-        </Form.Item>
-      )}
 
+      <Form.Item<FormData>
+        name="source"
+        hidden={formKey === DeployFormKeyMap.CATALOG}
+        rules={[
+          {
+            required: true,
+            message: getRuleMessage('select', 'models.form.source')
+          }
+        ]}
+      >
+        {
+          <SealSelect
+            onChange={handleOnSourceChange}
+            disabled={sourceDisable}
+            label={intl.formatMessage({
+              id: 'models.form.source'
+            })}
+            options={sourceList ?? sourceOptions}
+            required
+          ></SealSelect>
+        }
+      </Form.Item>
       <OnlineSource></OnlineSource>
       <LocalPathSource></LocalPathSource>
       <Form.Item<FormData>

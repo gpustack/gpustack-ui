@@ -28,9 +28,6 @@ export interface FormData {
       cpu?: string;
       ram?: string;
       localStorage?: string;
-      // Stored in the form as a number so NumberSelection's strict
-      // equality picks up the active item. Serialized to a string at the
-      // API boundary in handleFinish.
       accelerator?: number | string;
     };
     volume: {
@@ -101,12 +98,19 @@ export interface InstanceTypeCandidate {
   localStorage: InstanceTypeResource;
 }
 
+export interface InstanceTypeTierOnceMaxRequestResource {
+  accelerator?: string;
+  cpu: string;
+  ram: string;
+  localStorage: string;
+}
+
 export interface InstanceTypeTier {
-  onceMaxRequest: string;
+  onceMaxRequest: InstanceTypeTierOnceMaxRequestResource;
   candidates?: InstanceTypeCandidate[] | null;
 }
 
-export interface InstanceTypeRemainingResource {
+export interface InstanceTypeOnceMaxRequestResource {
   accelerator?: string | null;
   cpu: string;
   ram: string;
@@ -125,7 +129,7 @@ export interface InstanceTypeSpec {
 }
 
 export interface InstanceTypeStatus {
-  remaining: InstanceTypeRemainingResource;
+  onceMaxRequest: InstanceTypeOnceMaxRequestResource;
   acceleratorTiers?: InstanceTypeTier[] | null;
 }
 
@@ -136,11 +140,6 @@ export interface InstanceTypeItem {
   maxAccelerator?: number;
   status: InstanceTypeStatus;
 }
-
-// =========== Events / logs (placeholder) ===========
-// The /v2/gpu-instances API does not yet expose log/event endpoints. These
-// shapes are retained as minimal placeholders so disabled UI continues to
-// compile until backend support lands.
 
 export interface InstanceEventItem {
   type?: string;

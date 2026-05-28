@@ -25,7 +25,6 @@ import {
   useState
 } from 'react';
 import { FormData as PublicKeyFormData } from '../../public-keys/config/types';
-import useCreateSshkey from '../../public-keys/services/use-create-sshkey';
 import useQuerySshkeys from '../../public-keys/services/use-query-sshkeys';
 import { DefaultImagePullPolicy } from '../../templates/config';
 import TemplateBasicForm, {
@@ -109,7 +108,11 @@ const requiredFields = {
   },
   [TABKeysMap.STORAGE]: {
     sort: 4,
-    fields: ['spec.volume.persistent.name', 'spec.volume.ephemeral.capacity']
+    fields: [
+      'spec.volume.persistent.name',
+      'spec.volume.ephemeral.capacity',
+      'spec.sshPublicKeys'
+    ]
   }
 };
 
@@ -132,7 +135,6 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       realAction === PageAction.CREATE ? PageAction.CREATE : action;
     const sshEnabled = Form.useWatch('enable_ssh', form);
     const { sshkeyOptions, fetchData: fetchSSHData } = useQuerySshkeys();
-    const { fetchData: createSshkey } = useCreateSshkey();
     const [sshOverlayOpen, setSshOverlayOpen] = useState(false);
     const { getScrollElementScrollableHeight } = useWrapperContext();
     const {

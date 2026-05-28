@@ -8,7 +8,7 @@ export default {
   'menu.playground.text2images': '图像',
   'menu.playground.video': '视频',
   'menu.compare': '多模型对比',
-  'menu.models': '模型',
+  'menu.models': '模型服务',
   'menu.models.modelList': '部署与管理',
   'menu.models.modelCatalog': '模型库',
   'menu.models.deployment': '部署',

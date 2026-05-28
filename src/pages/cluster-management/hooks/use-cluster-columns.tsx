@@ -86,8 +86,8 @@ const useClusterColumns = (
   // `clusterDetail.linkableName`. Without a plugin we render the
   // name as plain text (matches the pre-restore behaviour); with one
   // we use Typography.Link wired to the parent's `onCellClick`.
-  const nameLinkable: boolean = !!getGPUStackPlugin()?.clusterDetail
-    ?.linkableName;
+  const nameLinkable: boolean =
+    !!getGPUStackPlugin()?.clusterDetail?.linkableName;
 
   const setActionsItems = (row: ClusterListItem) => {
     return clusterActionList.filter((item) => {
@@ -112,9 +112,7 @@ const useClusterColumns = (
           <>
             <AutoTooltip ghost title={text}>
               {nameLinkable ? (
-                <Typography.Link
-                  onClick={() => onCellClick?.(record, 'name')}
-                >
+                <Typography.Link onClick={() => onCellClick?.(record, 'name')}>
                   {record.name}
                 </Typography.Link>
               ) : (

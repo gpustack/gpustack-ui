@@ -8,7 +8,7 @@ export default {
   'menu.playground.text2images': 'Генерация изображений',
   'menu.playground.video': 'Видео',
   'menu.compare': 'Сравнение',
-  'menu.models': 'Модели',
+  'menu.models': 'Сервисы моделей',
   'menu.models.modelList': 'Развертывание и управление',
   'menu.models.modelCatalog': 'Каталог',
   'menu.models.catalog': 'Каталог моделей',

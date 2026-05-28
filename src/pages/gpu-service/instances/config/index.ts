@@ -183,20 +183,20 @@ const parseQuantity = (value?: string | null): number => {
 };
 
 // Returns the slider max for the accelerator count: the largest
-// tier.onceMaxRequest across all acceleratorTiers (not from candidates).
+// tier.onceMaxRequest.accelerator across all acceleratorTiers (not from candidates).
 export const getAcceleratorMax = (
-  tiers?: { onceMaxRequest: string }[] | null
+  tiers?: { onceMaxRequest: { accelerator?: string } }[] | null
 ) => {
   if (!tiers?.length) return 0;
   return tiers.reduce((acc, tier) => {
-    const n = parseQuantity(tier.onceMaxRequest);
+    const n = parseQuantity(tier.onceMaxRequest?.accelerator);
     return n > acc ? n : acc;
   }, 0);
 };
 
 // Picks the candidate (cluster + type name) that should fulfill a requested
 // accelerator count: the first candidate of the smallest tier whose
-// onceMaxRequest is >= the requested count and whose cpu/ram/localStorage
+// onceMaxRequest.accelerator is >= the requested count and whose cpu/ram/localStorage
 // remaining are all > 0.
 export const pickCandidateForAccelerator = <
   C extends {
@@ -208,7 +208,10 @@ export const pickCandidateForAccelerator = <
   }
 >(
   tiers:
-    | { onceMaxRequest: string; candidates?: C[] | null }[]
+    | {
+        onceMaxRequest: { accelerator?: string };
+        candidates?: C[] | null;
+      }[]
     | undefined
     | null,
   count: number
@@ -221,12 +224,14 @@ export const pickCandidateForAccelerator = <
     parseQuantity(c.localStorage?.remaining) > 0;
 
   const sorted = [...tiers].sort(
-    (a, b) => parseQuantity(a.onceMaxRequest) - parseQuantity(b.onceMaxRequest)
+    (a, b) =>
+      parseQuantity(a.onceMaxRequest?.accelerator) -
+      parseQuantity(b.onceMaxRequest?.accelerator)
   );
 
-  // count === 0 ? parseQuantity(tier.onceMaxRequest) > count; this is CPU-only case.
+  // count === 0 ? parseQuantity(tier.onceMaxRequest.accelerator) > count; this is CPU-only case.
   for (const tier of sorted) {
-    const fits = parseQuantity(tier.onceMaxRequest) >= count;
+    const fits = parseQuantity(tier.onceMaxRequest?.accelerator) >= count;
     if (!fits) continue;
     const candidate = tier.candidates?.find(hasResources);
     if (candidate) return candidate;

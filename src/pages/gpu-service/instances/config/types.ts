@@ -63,13 +63,29 @@ export interface InstanceServicePort {
   protocol?: InstanceServicePortProtocol;
 }
 
+export interface InstanceStatusAllocationItem {
+  id: string;
+  manufacturer: string;
+  accelerators: [
+    {
+      id: string;
+      index: number;
+      mode: string;
+      allocated: number;
+    }
+  ];
+}
+
 export interface InstanceStatus {
   namespace?: string;
   phase?: string;
   phaseMessage?: string;
+  nodeName?: string;
+  accessAddresses?: string[];
   hostIPs?: InstanceIP[];
   podIPs?: InstanceIP[];
   ports?: InstanceServicePort[];
+  allocations?: InstanceStatusAllocationItem[];
 }
 
 // instance list item

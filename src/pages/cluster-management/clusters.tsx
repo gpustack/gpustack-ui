@@ -73,7 +73,14 @@ const Clusters: React.FC = () => {
     deleteAPI: deleteCluster,
     watch: true,
     API: CLUSTERS_API,
-    contentForDelete: 'menu.clusterManagement.clusters'
+    contentForDelete: 'menu.clusterManagement.clusters',
+    defaultQueryParams: {
+      // Management view: drop cross-Org cluster_access grants. Org
+      // Owner only sees the clusters they own here. Pickers that
+      // need "everything I can use" (GPU-instance create, etc.)
+      // query without ``mine`` and still see granted clusters.
+      mine: true
+    }
   });
   const navigate = useNavigate();
   const { goToGrafana, ActionButton } = useGranfanaLink({

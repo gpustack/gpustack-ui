@@ -42,7 +42,13 @@ const GPUServiceStorageTypes: React.FC = () => {
     watch: false,
     polling: false,
     API: GPU_SERVICE_STORAGE_TYPE_API,
-    contentForDelete: intl.formatMessage({ id: 'gpuservice.storageType' })
+    contentForDelete: intl.formatMessage({ id: 'gpuservice.storageType' }),
+    defaultQueryParams: {
+      // Management view: drop types reachable only via cross-Org
+      // cluster_access. The PV-create picker queries without ``mine``
+      // and still sees those for use.
+      mine: true
+    }
   });
 
   const { fetchData: createStorageType } = useCreateStorageType();

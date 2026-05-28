@@ -96,6 +96,7 @@ export const templateActions = [
     label: 'common.button.edit',
     key: 'edit',
     locale: true,
+    access: 'canSeeAdmin',
     icon: icons.EditOutlined
   },
   {

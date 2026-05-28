@@ -19,8 +19,7 @@ const HuggingFaceForm: React.FC = () => {
     ![
       modelSourceMap.huggingface_value,
       modelSourceMap.modelscope_value
-    ].includes(source) ||
-    formKey === DeployFormKeyMap.CATALOG
+    ].includes(source)
   ) {
     return null;
   }
@@ -36,6 +35,7 @@ const HuggingFaceForm: React.FC = () => {
           <Form.Item<FormData>
             name="huggingface_repo_id"
             key="huggingface_repo_id"
+            hidden={formKey === DeployFormKeyMap.CATALOG}
             rules={[
               {
                 required: true,
@@ -52,6 +52,7 @@ const HuggingFaceForm: React.FC = () => {
           </Form.Item>
           {isGGUF && (
             <Form.Item<FormData>
+              hidden={formKey === DeployFormKeyMap.CATALOG}
               name="huggingface_filename"
               key="huggingface_filename"
             >
@@ -67,6 +68,7 @@ const HuggingFaceForm: React.FC = () => {
           <Form.Item<FormData>
             name="model_scope_model_id"
             key="model_scope_model_id"
+            hidden={formKey === DeployFormKeyMap.CATALOG}
             rules={[
               {
                 required: true,
@@ -85,6 +87,7 @@ const HuggingFaceForm: React.FC = () => {
             <Form.Item<FormData>
               name="model_scope_file_path"
               key="model_scope_file_path"
+              hidden={formKey === DeployFormKeyMap.CATALOG}
             >
               <CInput.Input
                 label={intl.formatMessage({ id: 'models.form.filename' })}

@@ -17,6 +17,8 @@ const ModelLoraList = () => {
 
   const base = huggingfaceRepoId || modelScopeModelId || localPath || '';
 
+  console.log('fetching lora list with base', base, form.getFieldsValue());
+
   const { dataList: defaultDataList, fetchData } = useQueryModelLoraList();
 
   const [itemList, setItemList] = useState<ItemValue[]>([]);
@@ -49,6 +51,7 @@ const ModelLoraList = () => {
       prevBaseRef.current = '';
       return;
     }
+
     fetchData({ base });
     if (prevBaseRef.current && prevBaseRef.current !== base) {
       form.setFieldValue('lora_list', []);

@@ -103,6 +103,7 @@ export const templateActions = [
     label: 'common.button.delete',
     key: 'delete',
     locale: true,
+    access: 'canSeeAdmin',
     icon: icons.DeleteOutlined,
     danger: true
   }

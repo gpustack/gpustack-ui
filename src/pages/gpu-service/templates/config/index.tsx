@@ -91,19 +91,33 @@ export const stringifyCommand = (tokens?: string[]): string => {
     .join(' ');
 };
 
-export const templateActions = [
+// No ``access`` gates on these menu items: the management page
+// queries the list API with ``mine=true``, so every row already
+// belongs to a scope the caller can manage — no per-item filtering
+// needed here.
+//
+// ``icon`` is narrowed to ``any`` so the inferred declaration type
+// for the array doesn't reach into
+// ``@ant-design/icons/lib/components/AntdIcon`` (the internal path
+// the antd icon component types live at). The other fields keep
+// their precise types.
+export const templateActions: Array<{
+  label: string;
+  key: string;
+  locale: boolean;
+  icon: any;
+  danger?: boolean;
+}> = [
   {
     label: 'common.button.edit',
     key: 'edit',
     locale: true,
-    access: 'canSeeAdmin',
     icon: icons.EditOutlined
   },
   {
     label: 'common.button.delete',
     key: 'delete',
     locale: true,
-    access: 'canSeeAdmin',
     icon: icons.DeleteOutlined,
     danger: true
   }

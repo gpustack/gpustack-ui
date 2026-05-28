@@ -83,13 +83,11 @@ const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({ item }) => {
   const specData = item.spec || {};
   const acceleratable = specData.acceleratable;
 
-  const manufacturerKey = specData.manufacturer || (acceleratable ? '' : 'cpu');
-  const manufacturer = manufacturerKey?.toUpperCase();
-  const manufacturerColor =
-    (manufacturerKey && manufactureColorMap[manufacturerKey]) ?? 'purple';
+  const manufacturer = acceleratable ? specData.manufacturer || '' : 'cpu';
+  const manufacturerColor = manufactureColorMap[manufacturer] ?? 'purple';
 
-  // resource remaining status
-  const remainingData = item.status?.remaining || {};
+  // resource once-max-request status
+  const onceMaxRequestData = item.status?.onceMaxRequest || {};
 
   const renderName = () => {
     const displayName = specData.acceleratable
@@ -113,7 +111,7 @@ const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({ item }) => {
               }}
             >
               <ThemeTag color={manufacturerColor} disabled={false}>
-                {manufacturer}
+                {manufacturer?.toUpperCase()}
               </ThemeTag>
             </span>
           )}
@@ -157,14 +155,14 @@ const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({ item }) => {
             showDot={false}
             icon="icon-ram-02"
             label={intl.formatMessage({ id: 'gpuservice.instance.ram' })}
-            value={toDisplayUnit(convertKiToGi(remainingData.ram)) ?? '-'}
+            value={toDisplayUnit(convertKiToGi(onceMaxRequestData.ram)) ?? '-'}
           ></MetaItem>
           <MetaItem
-            show={!!remainingData.cpu}
+            show={!!onceMaxRequestData.cpu}
             showDot={true}
             icon="icon-cpu"
             label="CPU"
-            value={remainingData.cpu ?? '-'}
+            value={onceMaxRequestData.cpu ?? '-'}
           ></MetaItem>
         </span>
       </Meta>

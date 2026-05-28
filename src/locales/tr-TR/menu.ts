@@ -8,7 +8,7 @@ export default {
   'menu.playground.text2images': 'Görsel',
   'menu.playground.video': 'Video',
   'menu.compare': 'Karşılaştır',
-  'menu.models': 'Modeller',
+  'menu.models': 'Model Hizmetleri',
   'menu.models.modelList': 'Dağıt ve Yönet',
   'menu.models.modelCatalog': 'Katalog',
   'menu.models.catalog': 'Model Kataloğu',

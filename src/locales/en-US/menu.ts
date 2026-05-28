@@ -8,7 +8,7 @@ export default {
   'menu.playground.text2images': 'Image',
   'menu.playground.video': 'Video',
   'menu.compare': 'Compare',
-  'menu.models': 'Models',
+  'menu.models': 'Model Service',
   'menu.models.modelList': 'Deploy & Manage',
   'menu.models.modelCatalog': 'Catalog',
   'menu.models.catalog': 'Model Catalog',

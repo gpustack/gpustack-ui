@@ -8,7 +8,7 @@ export default {
   'menu.playground.text2images': '画像生成',
   'menu.playground.video': '動画',
   'menu.compare': '比較',
-  'menu.models': 'モデル',
+  'menu.models': 'モデルサービス',
   'menu.models.modelList': 'デプロイと管理',
   'menu.models.modelCatalog': 'カタログ',
   'menu.models.catalog': 'モデルカタログ',

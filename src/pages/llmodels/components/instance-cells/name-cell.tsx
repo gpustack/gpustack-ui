@@ -115,7 +115,7 @@ const NameCell: React.FC<NameCellProps> = ({
   styles
 }) => {
   return (
-    <span className="flex-center instance-name">
+    <span className="instance-name flex-center" style={{ gap: 4 }}>
       <AutoTooltip title={record.name} ghost>
         <span className="m-r-5" style={styles?.label}>
           {record.name}

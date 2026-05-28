@@ -86,11 +86,22 @@ const useInstancesColumns = ({
     const description = JSON.parse(record?.description || '{}').spec || {};
     return (
       <Flex align="flex-start" orientation="vertical">
-        <span className="text-primary">
-          {description.acceleratable
-            ? `${description.product} x ${record.spec?.resources?.accelerator}`
-            : 'CPU'}
-        </span>
+        <AutoTooltip
+          ghost
+          title={
+            <span>
+              {description.acceleratable
+                ? `${description.product} x ${record.spec?.resources?.accelerator}`
+                : 'CPU'}
+            </span>
+          }
+        >
+          <span className="text-primary">
+            {description.acceleratable
+              ? `${description.product} x ${record.spec?.resources?.accelerator}`
+              : 'CPU'}
+          </span>
+        </AutoTooltip>
         <Flex
           align="center"
           style={{ fontSize: 13, color: 'var(--ant-color-text-tertiary)' }}
@@ -239,17 +250,16 @@ const useInstancesColumns = ({
         ellipsis: {
           showTitle: false
         },
-        width: 220,
-        render: (_text: string, record: ListItem) => (
-          <div style={{ width: 'max-content' }}>
-            <AutoTooltip ghost>{renderInstanceType(record)}</AutoTooltip>
-          </div>
-        )
+        width: 260,
+        render: (_text: string, record: ListItem) => renderInstanceType(record)
       },
       {
         title: intl.formatMessage({ id: 'clusters.title' }),
         dataIndex: 'clusterId',
         hidden: !access.canSeeAdmin,
+        ellipsis: {
+          showTitle: false
+        },
         render: (id: number) => (
           <AutoTooltip ghost maxWidth={240}>
             {_.find(clusterList, { value: id })?.label || id || '-'}
@@ -264,6 +274,7 @@ const useInstancesColumns = ({
         ellipsis: {
           showTitle: false
         },
+        width: 180,
         render: (text: string) => (
           <AutoTooltip ghost>
             {text ? dayjs(text).format('YYYY-MM-DD HH:mm:ss') : '-'}

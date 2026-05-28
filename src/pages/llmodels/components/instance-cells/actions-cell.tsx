@@ -102,7 +102,7 @@ const ActionsCell: React.FC<ActionsCellProps> = ({
   ) => {
     api.open({
       duration: data.duration,
-      message: renderMessage(data.filename),
+      title: renderMessage(data.filename),
       key: data.filename,
       closeIcon: (
         <span>{intl.formatMessage({ id: 'common.button.cancel' })}</span>

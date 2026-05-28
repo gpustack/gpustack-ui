@@ -4,7 +4,6 @@ import { ListItem as workerListItem } from '@/pages/resources/config/types';
 import { convertFileSize } from '@/utils';
 import { AutoTooltip, IconFont } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Flex } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import dayjs from 'dayjs';
 import _ from 'lodash';
@@ -12,7 +11,6 @@ import { useMemo } from 'react';
 import ActionsCell from '../components/instance-cells/actions-cell';
 import DistributeInfoCell from '../components/instance-cells/distribute-info-cell';
 import DownloadingStatusCell from '../components/instance-cells/downloading-status-cell';
-import InjectedParamsCell from '../components/instance-cells/injected-params-cell';
 import InstanceStatusCell from '../components/instance-cells/instance-status-cell';
 import NameCell, {
   NameCellProps
@@ -29,10 +27,6 @@ const WorkerInfoContent: React.FC<NameCellProps> = ({ record, modelData }) => {
   return (
     <div>
       <div>{record.worker_name}</div>
-      {/* <div className="flex-center">
-        <HddFilled className="m-r-5 text-tertiary" style={{ fontSize: 12 }} />
-        <span className="text-secondary">{workerIp}</span>
-      </div> */}
       <div className="flex-center">
         <IconFont
           type="icon-filled-gpu"
@@ -48,18 +42,6 @@ const WorkerInfoContent: React.FC<NameCellProps> = ({ record, modelData }) => {
           ]
         </span>
       </div>
-      {/* <div className="flex-center">
-        <ThunderboltFilled
-          className="m-r-5 text-tertiary"
-          style={{ fontSize: 12 }}
-        />
-        <span className="text-secondary">
-          {record?.backend || modelData?.backend || ''}
-          {record.backend_version || modelData?.backend_version
-            ? `(${record.backend_version || modelData?.backend_version})`
-            : ''}
-        </span>
-      </div> */}
     </div>
   );
 };
@@ -101,38 +83,20 @@ const useInstancesColumns = (options: {
         title: intl.formatMessage({ id: 'common.table.name' }),
         dataIndex: 'name',
         sorter: tableSorter(1),
-        minWidth: 160,
         render: (value: string, record: ListItem) => (
-          <>
-            <Flex gap={8} wrap="wrap">
-              <NameCell
-                showWorkerInfo={true}
-                record={record}
-                modelData={{
-                  backend: record.backend,
-                  backend_version: record.backend_version
-                }}
-                styles={{
-                  label: {
-                    color: 'var(--ant-color-text)'
-                  }
-                }}
-              ></NameCell>
-              <InjectedParamsCell record={record}></InjectedParamsCell>
-            </Flex>
-            {/* <div className="flex-center">
-              <ThunderboltFilled
-                className="m-r-5 text-quaternary"
-                style={{ fontSize: 12, position: 'relative', top: 2 }}
-              />
-              <span className="text-quaternary">
-                {record?.backend || record?.backend || ''}
-                {record.backend_version || record?.backend_version
-                  ? `(${record.backend_version || record?.backend_version})`
-                  : ''}
-              </span>
-            </div> */}
-          </>
+          <NameCell
+            showWorkerInfo={true}
+            record={record}
+            modelData={{
+              backend: record.backend,
+              backend_version: record.backend_version
+            }}
+            styles={{
+              label: {
+                color: 'var(--ant-color-text)'
+              }
+            }}
+          ></NameCell>
         )
       },
       {

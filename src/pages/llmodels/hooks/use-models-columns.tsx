@@ -12,7 +12,7 @@ import {
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { Tooltip } from 'antd';
+import { Flex, Tooltip } from 'antd';
 import dayjs from 'dayjs';
 import { useAtomValue } from 'jotai';
 import _ from 'lodash';
@@ -158,12 +158,19 @@ const useModelsColumns = ({
         sorter: tableSorter(1),
         span: 5,
         render: (text: string, record: ListItem) => (
-          <span className="flex-center" style={{ maxWidth: '100%' }}>
-            <AutoTooltip ghost>
+          <Flex align="center" gap={4} style={{ maxWidth: '100%' }}>
+            <AutoTooltip
+              ghost
+              title={
+                <span style={{ color: 'var(--ant-color-text-light-solid)' }}>
+                  {text}
+                </span>
+              }
+            >
               <span className="text-primary font-400">{text}</span>
             </AutoTooltip>
             <ModelTag categoryKey={record.categories?.[0] || ''} />
-          </span>
+          </Flex>
         )
       },
       {

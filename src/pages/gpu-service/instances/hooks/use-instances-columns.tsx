@@ -33,7 +33,7 @@ type ConnectEntry =
     };
 
 const getConnectEntries = (record: ListItem): ConnectEntry[] => {
-  const ip = record.status?.hostIPs?.[0]?.ip;
+  const ip = record.status?.accessAddresses?.[0];
   const ports = record.status?.ports || [];
   const configPorts = record.spec?.ports || [];
 

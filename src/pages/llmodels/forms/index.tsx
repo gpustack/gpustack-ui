@@ -86,7 +86,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     sourceDisable = true,
     sourceList,
     clusterList = [],
-    fields = ['source'],
     clearCacheFormValues,
     onBackendChange,
     onSourceChange,
@@ -456,7 +455,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           }}
         >
           <BasicForm
-            fields={fields}
             sourceList={sourceList}
             clusterList={clusterList}
             sourceDisable={sourceDisable}

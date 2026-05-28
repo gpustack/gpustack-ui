@@ -14,7 +14,8 @@ import {
   ClusterFormData as FormData,
   ClusterListItem as ListItem
 } from '../config/types';
-import schema from '../config/worker-config.json';
+import dockerSchema from '../config/worker-config.docker.json';
+import kubernetesSchema from '../config/worker-config.kubernetes.json';
 import { dockerConfig, kubernetesConfig } from '../config/yaml-template';
 
 const Title = styled.div`
@@ -40,6 +41,8 @@ const ClusterAdvanceConfig: React.FC<{
   const editorRef = React.useRef<any>(null);
   const { isDarkTheme } = useUserSettings();
   const [fileContent, setFileContent] = React.useState<string>('');
+  const schema =
+    provider === ProviderValueMap.Kubernetes ? kubernetesSchema : dockerSchema;
 
   useImperativeHandle(ref, () => ({
     getYamlValue: () => {
@@ -62,8 +65,16 @@ const ClusterAdvanceConfig: React.FC<{
           ? kubernetesConfig
           : dockerConfig
       );
+    } else if (action === PageAction.EDIT) {
+      const workerConfig = currentData?.worker_config;
+      const content =
+        workerConfig ||
+        (provider === ProviderValueMap.Kubernetes
+          ? kubernetesConfig
+          : dockerConfig);
+      setFileContent(content as string);
     }
-  }, [provider, action]);
+  }, [provider, action, currentData?.worker_config]);
 
   return (
     <>

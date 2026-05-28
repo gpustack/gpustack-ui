@@ -119,8 +119,8 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
       if (!Array.isArray(creds)) return values;
       const fixed = creds.map((c: any) => ({
         ...c,
-        username: c?.username ? c.username : null,
-        password: c?.password ? c.password : null
+        username: c?.username || null,
+        password: c?.password || null
       }));
       return {
         ...values,

@@ -59,6 +59,7 @@ const GPUServiceTemplateForm: React.FC<TemplateFormProps> = forwardRef(
         form={form}
         onFinish={handleFinish}
         preserve={false}
+        scrollToFirstError
         initialValues={{
           spec: {
             imagePullPolicy: DefaultImagePullPolicy,

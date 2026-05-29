@@ -415,7 +415,8 @@ const Models: React.FC<ModelsProps> = ({
 
         handleOpenPlayGround({
           categories: row.categories || [],
-          name: targetRoute?.route_name || ''
+          name: targetRoute?.route_name || '',
+          owner_principal_id: row.owner_principal_id
         });
       }
       if (val === 'metrics') {

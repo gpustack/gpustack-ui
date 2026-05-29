@@ -28,6 +28,7 @@ export interface ListItem {
     path: string;
     source: string;
   }>;
+  owner_principal_id?: number;
   name: string;
   description: string;
   id: number;

@@ -445,11 +445,18 @@ export async function queryModelAccessUserList(id: number) {
   // The response carries `access_policy` alongside `items` so the
   // Access Settings dialog can refresh both halves from a single
   // GET (the calling list snapshot may be stale after a prior
-  // save).
-  return request<{ items: UserListItem[]; access_policy?: string }>(
-    `${MODEL_ROUTES}/${id}/access`,
-    { method: 'GET' }
-  );
+  // save). `principals` is the full grant set (any kind) used by the
+  // principal-based override; `items` stays the USER-only subset.
+  return request<{
+    items: UserListItem[];
+    access_policy?: string;
+    principals?: {
+      principal_type: string;
+      principal_id: number;
+      principal_name?: string;
+      principal_display_name?: string;
+    }[];
+  }>(`${MODEL_ROUTES}/${id}/access`, { method: 'GET' });
 }
 
 export async function updateModelAccessUser(params: {

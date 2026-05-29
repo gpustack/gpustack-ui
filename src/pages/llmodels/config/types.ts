@@ -379,9 +379,24 @@ export interface BackendOption {
 
 export interface AccessControlFormData {
   // See `RouteItem.access_policy` for why plugin-defined values are
-  // accepted alongside the built-ins.
+  // accepted alongside the built-ins. The OSS "specific users" entry
+  // now writes `allowed_principals` (with a user-only grant list);
+  // `allowed_users` remains accepted as the deprecated released value.
   access_policy: 'public' | 'authed' | 'allowed_users' | (string & {});
-  users: { id: number }[];
+  // Omitted when the caller isn't managing the user list (the
+  // principal-based override, or authed/public) so the server leaves
+  // existing grants untouched; an explicit (possibly empty) list
+  // replaces the route's USER-kind grants.
+  users?: { id: number }[];
+  // Full grant set (any kind) submitted by the principal-based override
+  // on save — replaces the route's entire grant set. OSS leaves it unset
+  // (it manages users via `users`).
+  principals?: {
+    principal_type: string;
+    principal_id: number;
+    principal_name?: string;
+    principal_display_name?: string;
+  }[];
 }
 
 export interface BackendItem {

@@ -34,6 +34,16 @@ import { AccessControlFormData } from '../../config/types';
 
 type TransferKey = string | number | bigint;
 
+// The "specific users" policy is now ALLOWED_PRINCIPALS with a
+// user-only grant list — the same value the principal-based override
+// (when a plugin provides one) uses, so the two interoperate.
+// `allowed_users` is the deprecated value released in v2.1.x; normalize
+// it so legacy routes still select the "specific users" radio (they
+// converge to ALLOWED_PRINCIPALS on save).
+export const ALLOWED_PRINCIPALS_POLICY = 'allowed_principals';
+const normalizeAccessPolicy = (p?: string) =>
+  p === 'allowed_users' ? ALLOWED_PRINCIPALS_POLICY : p;
+
 const buildAccessScopeTips = (
   override?: AllowedUsersOverride,
   prepended: PrependedPolicy[] = []
@@ -216,7 +226,7 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
   const handleOnPolicyChange = async (e: RadioChangeEvent) => {
     console.log('policy changed:', e.target.value);
     const policy = e.target.value;
-    if (policy === 'allowed_users') {
+    if (policy === ALLOWED_PRINCIPALS_POLICY) {
       form.setFieldsValue({ users: formDataCacheRef.current?.users || [] });
     } else {
       formDataCacheRef.current = {
@@ -256,16 +266,31 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
         // server's authoritative value, which is what survives a save
         // when the parent list hasn't been refreshed.
         form.setFieldsValue({
-          access_policy: currentData?.access_policy
+          access_policy: normalizeAccessPolicy(currentData?.access_policy)
         });
         queryModelAccessUserList(currentData.id).then((res) => {
-          const keys = res.items.map((item) => item.id);
-          setTargetKeys(keys);
+          // Fall back to the legacy `items` (USER-only) field when an
+          // older backend doesn't return `principals` yet.
+          const principals =
+            res.principals ??
+            res.items?.map((item) => ({
+              principal_type: 'user',
+              principal_id: item.id
+            })) ??
+            [];
+          // Derive the user picker's selection from the unified
+          // `principals` set (USER-kind subset), not the deprecated
+          // `items` field. `principals` is also kept whole so a save can
+          // preserve any non-user grants it doesn't manage.
+          const userKeys = principals
+            .filter((p) => p.principal_type === 'user')
+            .map((p) => p.principal_id);
+          setTargetKeys(userKeys);
 
           let hasAdmin = false;
           let hasInactive = false;
 
-          for (const key of keys) {
+          for (const key of userKeys) {
             const user = userMap.get(key);
             if (!user) continue;
             if (user.is_admin) hasAdmin = true;
@@ -280,8 +305,14 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
           setFilterInUsers(filterSet);
 
           form.setFieldsValue({
-            access_policy: res.access_policy ?? currentData.access_policy,
-            users: res.items.map((item) => ({ id: item.id }))
+            access_policy: normalizeAccessPolicy(
+              res.access_policy ?? currentData.access_policy
+            ),
+            users: userKeys.map((id) => ({ id })),
+            // Keep the full grant set: read by the principal-based
+            // override Field, and used on save to preserve non-user
+            // grants when the user picker submits `principals`.
+            principals
           });
         });
       } else {
@@ -340,7 +371,11 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
   return (
     <Form
       form={form}
-      onFinish={onFinish}
+      // Submit the full field store (getFieldsValue(true)), not just the
+      // registered fields onFinish would pass: the principal-based
+      // override Field manages `principals` via setFieldsValue without a
+      // registered Form.Item, so it would otherwise be dropped on save.
+      onFinish={() => onFinish(form.getFieldsValue(true))}
       preserve={true}
       clearOnDestroy={true}
       scrollToFirstError={true}
@@ -396,7 +431,7 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
                   label: intl.formatMessage({
                     id: 'models.accessSettings.allowedUsers'
                   }),
-                  value: 'allowed_users'
+                  value: ALLOWED_PRINCIPALS_POLICY
                 },
             {
               label: intl.formatMessage({
@@ -424,15 +459,14 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
           action={action}
         />
       )}
-      {allowedUsersOverride &&
-        accessPolicy === overridePolicyValue && (
-          <allowedUsersOverride.Field
-            form={form}
-            routeId={currentData?.id}
-            action={action}
-          />
-        )}
-      {!allowedUsersOverride && accessPolicy === 'allowed_users' && (
+      {allowedUsersOverride && accessPolicy === overridePolicyValue && (
+        <allowedUsersOverride.Field
+          form={form}
+          routeId={currentData?.id}
+          action={action}
+        />
+      )}
+      {!allowedUsersOverride && accessPolicy === ALLOWED_PRINCIPALS_POLICY && (
         <>
           <Label>
             {intl.formatMessage({ id: 'models.table.userSelection' })}

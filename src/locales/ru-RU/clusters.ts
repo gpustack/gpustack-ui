@@ -70,8 +70,6 @@ export default {
     'Для <span class="bold-text">не-Docker</span> кластеров, пожалуйста, регистрируйте кластеры или управляйте пулами воркеров на странице Кластеры.',
   'clusters.addworker.selectGPU': 'Выбрать производителя GPU',
   'clusters.addworker.selectGPU.multiTag': 'Multi-select',
-  'clusters.addworker.selectGPU.singleOnly':
-    'The selected vendor is not in this cluster’s GPU vendor overrides — single-select only. Pick a vendor configured in the overrides to enable multi-select.',
   'clusters.addworker.checkEnv': 'Проверить окружение',
   'clusters.addworker.specifyArgs': 'Указать аргументы',
   'clusters.addworker.runCommand': 'Выполнить команду',
@@ -165,6 +163,7 @@ export default {
   'clusters.volume.configMap.name': 'ConfigMap Name',
   'clusters.volume.configMap.optional': 'Optional',
   'clusters.volume.add': 'Add Volume Mount',
+  'clusters.k8sOptions.title': 'K8s Deployment Options',
   'clusters.imageCredentials.title': 'Image Credentials',
   'clusters.imageCredentials.add': 'Add Credential',
   'clusters.imageCredentials.registry': 'Registry',
@@ -173,18 +172,17 @@ export default {
   'clusters.nodeSelector.title': 'Node Selector',
   'clusters.nodeSelector.tip':
     'Pod nodeSelector applied to every worker DaemonSet — only nodes whose labels match are eligible to run the worker.',
-  'clusters.gpuVendorOverrides.title': 'GPU Vendor Overrides',
-  'clusters.gpuVendorOverrides.validate.emptySelector':
-    'The override for {vendor} needs at least one nodeSelector entry — an empty override would leave the multi-vendor manifest unable to target nodes for this runtime.',
-  'clusters.gpuVendorOverrides.validate.duplicate':
-    'Overrides for {v1} and {v2} use the same nodeSelector. Each vendor must scope to a distinct node set, otherwise their worker DaemonSets would compete for the same nodes.',
-  'clusters.gpuVendorOverrides.validate.keyConflict':
-    'Override for {vendor} reuses key(s) {keys} from the base Node Selector — the CPU worker would simultaneously require and forbid the key and never schedule.',
-  'clusters.gpuVendorOverrides.tip':
-    'Required when running multiple GPU vendors in one cluster. Each entry pins that vendor’s worker DaemonSet to nodes matching its nodeSelector, and the CPU worker is steered away from those nodes via a DoesNotExist node-affinity.',
-  'clusters.gpuVendorOverrides.add': 'Add Override',
-  'clusters.gpuVendorOverrides.vendor': 'GPU Vendor',
-  'clusters.gpuVendorOverrides.nodeSelector': 'Node Selector'
+  'clusters.operatorImage.title': 'Operator Image',
+  'clusters.operatorImage.tip':
+    'Override for the GPUStack Operator container image. Leave empty to use the server default.',
+  'clusters.namespace.title': 'Namespace',
+  'clusters.namespace.tip':
+    'Kubernetes namespace the cluster’s manifests render into. Leave empty to use gpustack-system.',
+  'clusters.gpuInstances.title': 'GPU Instances',
+  'clusters.gpuInstances.tip': 'Enable GPU instance support for this cluster.',
+  'clusters.gpuInstances.staticAddress': 'Static Access Address',
+  'clusters.gpuInstances.staticAddress.tip':
+    'Static address the operator uses to access GPU instances in this cluster (e.g. a LoadBalancer VIP). Optional.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

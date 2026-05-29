@@ -1,21 +1,16 @@
+import { PageActionType } from '@/config/types';
 import {
   MinusOutlined,
   PlusOutlined,
   QuestionCircleOutlined
 } from '@ant-design/icons';
-import {
-  Input as CInput,
-  CollapseContainer,
-  LabelSelector,
-  Select as SealSelect,
-  useAppUtils
-} from '@gpustack/core-ui';
+import { Input as CInput, LabelSelector, useAppUtils } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Button, Form, Tooltip } from 'antd';
-import _ from 'lodash';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Button, Form, Switch, Tooltip } from 'antd';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { GPUsConfigs } from '../../resources/config/gpu-driver';
+import { GpuInstanceOptions } from '../config/types';
+import K8SVolumeMount from './k8s-volume-mount';
 
 const Title = styled.div`
   display: flex;
@@ -26,13 +21,6 @@ const Title = styled.div`
   font-size: 14px;
   padding-top: 0px;
   padding-bottom: 8px;
-`;
-
-const Label = styled.span`
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  color: var(--ant-color-text-secondary);
 `;
 
 const SectionWrap = styled.div`
@@ -182,106 +170,107 @@ const NodeSelectorForm: React.FC = () => {
   );
 };
 
-const vendorOptions = Object.values(GPUsConfigs)
-  .filter((c) => !!c.gpuVendor)
-  .map((c) => ({ label: c.label, value: c.gpuVendor as string }));
+// Render namespace. Kept as the first field of the section so the most
+// fundamental K8s deployment knob is set before the rest.
+const NamespaceForm: React.FC = () => {
+  const intl = useIntl();
 
-const GpuVendorOverridesForm: React.FC<{
-  initialValue?: Record<string, { nodeSelector?: Record<string, string> }>;
+  return (
+    <SectionWrap>
+      <Form.Item
+        name={['k8s_options', 'namespace']}
+        style={{ marginBottom: 0 }}
+      >
+        <CInput.Input
+          label={intl.formatMessage({ id: 'clusters.namespace.title' })}
+          description={intl.formatMessage({ id: 'clusters.namespace.tip' })}
+          placeholder="gpustack-system"
+        ></CInput.Input>
+      </Form.Item>
+    </SectionWrap>
+  );
+};
+
+// Operator-image override. A plain string knob that used to ride along inside
+// worker_config; it now lives directly on k8s_options.
+const OperatorImageForm: React.FC = () => {
+  const intl = useIntl();
+
+  return (
+    <SectionWrap>
+      <Form.Item
+        name={['k8s_options', 'operatorImage']}
+        style={{ marginBottom: 0 }}
+      >
+        <CInput.Input
+          label={intl.formatMessage({ id: 'clusters.operatorImage.title' })}
+          description={intl.formatMessage({ id: 'clusters.operatorImage.tip' })}
+        ></CInput.Input>
+      </Form.Item>
+    </SectionWrap>
+  );
+};
+
+// GPU-instance support. The backend treats the mere presence of
+// `gpuInstanceOptions` as the enable flag, so the switch toggles the whole
+// object in/out of the form rather than setting a boolean field; the static
+// address (optional even when enabled) is nested underneath.
+//
+// We drive the toggle from local state (not Form.useWatch) because the
+// gpuInstanceOptions path has no registered Form.Item of its own — useWatch
+// doesn't reliably re-render on setFieldValue for such paths, which left the
+// switch unresponsive. Local state owns the visible state and we mirror it
+// into the form via setFieldValue so submit still collects it.
+const GpuInstanceOptionsForm: React.FC<{
+  initialValue?: GpuInstanceOptions;
 }> = ({ initialValue }) => {
   const intl = useIntl();
   const form = Form.useFormInstance();
+  const [enabled, setEnabled] = useState<boolean>(!!initialValue);
+  const [address, setAddress] = useState<string>(
+    initialValue?.gpuInstancesAccessStaticAddress || ''
+  );
+  const initializedRef = useRef<boolean>(!!initialValue);
 
-  // Single source of truth for the cards while the user is editing.
-  // We mirror it into the form via setFieldValue so submit picks it up.
-  // Seed local state directly from the parent's currentData — Form.useWatch
-  // on a non-registered nested path proved unreliable for picking up
-  // initialValues, so we cut out that indirection.
-  const [overrides, setOverrides] = useState<
-    Record<string, { nodeSelector?: Record<string, string> }>
-  >(() => initialValue || {});
-  const [collapseKey, setCollapseKey] = useState<Set<string>>(new Set());
-  const initializedRef = useRef(!!initialValue);
+  const writeForm = (en: boolean, addr: string) => {
+    form.setFieldValue(
+      ['k8s_options', 'gpuInstanceOptions'],
+      en ? { gpuInstancesAccessStaticAddress: addr } : undefined
+    );
+  };
 
-  // On mount: if we seeded with an initialValue, mirror it into the form so
-  // submit collects it. (When seeded, initializedRef is already true.)
+  // Mirror a seeded initial value into the form on mount so submit collects it.
   useEffect(() => {
-    if (initialValue && Object.keys(initialValue).length > 0) {
-      form.setFieldValue(['k8s_options', 'gpuVendorOverrides'], initialValue);
+    if (initialValue) {
+      writeForm(true, initialValue.gpuInstancesAccessStaticAddress || '');
     }
   }, []);
 
-  // If the parent currentData arrives after mount (e.g. async fetch), adopt
-  // it once. After the user has interacted (`initializedRef`), local state
-  // owns the visible list.
+  // Adopt currentData arriving after mount (async edit load), once. After the
+  // user has interacted (`initializedRef`), local state owns the section.
   useEffect(() => {
     if (initializedRef.current) return;
-    if (initialValue && Object.keys(initialValue).length > 0) {
-      setOverrides(initialValue);
-      form.setFieldValue(['k8s_options', 'gpuVendorOverrides'], initialValue);
+    if (initialValue) {
+      setEnabled(true);
+      setAddress(initialValue.gpuInstancesAccessStaticAddress || '');
+      writeForm(true, initialValue.gpuInstancesAccessStaticAddress || '');
       initializedRef.current = true;
     }
-  }, [initialValue, form]);
+  }, [initialValue]);
 
-  // Once the user has touched this section, keep the form mirror in sync
-  // so submit collects what's currently on screen even if the form was
-  // reset externally (e.g., parent re-renders that touch initialValues).
-  useEffect(() => {
-    if (!initializedRef.current) return;
-    form.setFieldValue(
-      ['k8s_options', 'gpuVendorOverrides'],
-      Object.keys(overrides).length > 0 ? overrides : undefined
-    );
-  }, [overrides, form]);
-
-  const vendorKeys = useMemo(() => Object.keys(overrides), [overrides]);
-
-  const availableVendors = useMemo(
-    () => vendorOptions.filter((opt) => !vendorKeys.includes(opt.value)),
-    [vendorKeys]
-  );
-
-  const writeOverrides = (next: Record<string, any>) => {
-    setOverrides(next);
-    form.setFieldValue(
-      ['k8s_options', 'gpuVendorOverrides'],
-      Object.keys(next).length > 0 ? next : undefined
-    );
+  const handleToggle = (checked: boolean) => {
     initializedRef.current = true;
+    setEnabled(checked);
+    if (!checked) {
+      setAddress('');
+    }
+    writeForm(checked, checked ? address : '');
   };
 
-  const handleAdd = () => {
-    if (availableVendors.length === 0) return;
-    const next = availableVendors[0].value;
-    writeOverrides({ ...overrides, [next]: { nodeSelector: {} } });
-    setCollapseKey(new Set([next]));
-  };
-
-  const handleRemove = (vendor: string) => {
-    writeOverrides(_.omit(overrides, vendor));
-  };
-
-  const handleVendorChange = (oldKey: string, newKey: string) => {
-    if (oldKey === newKey) return;
-    const value = overrides[oldKey] ?? { nodeSelector: {} };
-    const next = _.omit(overrides, oldKey);
-    next[newKey] = value;
-    writeOverrides(next);
-    setCollapseKey(new Set([newKey]));
-  };
-
-  const handleNodeSelectorChange = (
-    vendor: string,
-    labels: Record<string, string>
-  ) => {
-    writeOverrides({
-      ...overrides,
-      [vendor]: { ...overrides[vendor], nodeSelector: labels }
-    });
-  };
-
-  const onToggle = (open: boolean, key: string) => {
-    setCollapseKey(open ? new Set([key]) : new Set());
+  const handleAddressChange = (e: any) => {
+    const next = typeof e === 'string' ? e : (e?.target?.value ?? '');
+    setAddress(next);
+    writeForm(true, next);
   };
 
   return (
@@ -290,122 +279,48 @@ const GpuVendorOverridesForm: React.FC<{
         <div className="flex-center gap-8">
           <span className="flex-center gap-4">
             <span>
-              {intl.formatMessage({ id: 'clusters.gpuVendorOverrides.title' })}
+              {intl.formatMessage({ id: 'clusters.gpuInstances.title' })}
             </span>
             <Tooltip
-              title={intl.formatMessage({
-                id: 'clusters.gpuVendorOverrides.tip'
-              })}
+              title={intl.formatMessage({ id: 'clusters.gpuInstances.tip' })}
             >
               <QuestionCircleOutlined
                 style={{ color: 'var(--ant-color-text-secondary)' }}
               />
             </Tooltip>
           </span>
-          <Button
-            type="link"
-            onClick={handleAdd}
-            disabled={availableVendors.length === 0}
-          >
-            <PlusOutlined />{' '}
-            {intl.formatMessage({ id: 'clusters.gpuVendorOverrides.add' })}
-          </Button>
+          <Switch checked={enabled} onChange={handleToggle} />
         </div>
       </Title>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-        {vendorKeys.map((vendor) => {
-          const optionsForThisRow = [
-            ...vendorOptions.filter(
-              (opt) => opt.value === vendor || !vendorKeys.includes(opt.value)
-            )
-          ];
-          const vendorLabel =
-            vendorOptions.find((o) => o.value === vendor)?.label || vendor;
-          return (
-            <div
-              key={vendor}
-              style={{
-                border: '1px solid var(--ant-color-split)',
-                borderRadius: 'var(--ant-border-radius-lg)'
-              }}
-            >
-              <CollapseContainer
-                collapsible={true}
-                showExpandIcon={true}
-                open={collapseKey.has(vendor)}
-                onToggle={(open: boolean) => onToggle(open, vendor)}
-                styles={{
-                  body: collapseKey.has(vendor) ? { padding: 16 } : {},
-                  content: { paddingTop: 0 },
-                  header: { backgroundColor: 'unset' }
-                }}
-                title={
-                  <Label>
-                    <span>
-                      {intl.formatMessage({
-                        id: 'clusters.gpuVendorOverrides.vendor'
-                      })}
-                      :
-                    </span>
-                    <span>{vendorLabel}</span>
-                  </Label>
-                }
-                right={
-                  <Button
-                    size="small"
-                    shape="circle"
-                    onClick={() => handleRemove(vendor)}
-                  >
-                    <MinusOutlined />
-                  </Button>
-                }
-              >
-                <div style={{ marginBottom: 16, width: '100%' }}>
-                  <SealSelect
-                    isInFormItems={false}
-                    required
-                    style={{ width: '100%' }}
-                    label={intl.formatMessage({
-                      id: 'clusters.gpuVendorOverrides.vendor'
-                    })}
-                    value={vendor}
-                    options={optionsForThisRow}
-                    onChange={(value: string) =>
-                      handleVendorChange(vendor, value)
-                    }
-                  ></SealSelect>
-                </div>
-                <LabelSelector
-                  label={intl.formatMessage({
-                    id: 'clusters.gpuVendorOverrides.nodeSelector'
-                  })}
-                  value={overrides[vendor]?.nodeSelector || {}}
-                  onChange={(labels) =>
-                    handleNodeSelectorChange(vendor, labels)
-                  }
-                ></LabelSelector>
-              </CollapseContainer>
-            </div>
-          );
-        })}
-      </div>
+      {enabled && (
+        <CInput.Input
+          isInFormItems={false}
+          value={address}
+          onChange={handleAddressChange}
+          label={intl.formatMessage({
+            id: 'clusters.gpuInstances.staticAddress'
+          })}
+          description={intl.formatMessage({
+            id: 'clusters.gpuInstances.staticAddress.tip'
+          })}
+        ></CInput.Input>
+      )}
     </SectionWrap>
   );
 };
 
-type GpuVendorOverridesValue = Record<
-  string,
-  { nodeSelector?: Record<string, string> }
->;
-
 const K8sPodSpec: React.FC<{
-  initialOverrides?: GpuVendorOverridesValue;
-}> = ({ initialOverrides }) => {
+  action: PageActionType;
+  initialGpuInstanceOptions?: GpuInstanceOptions;
+}> = ({ action, initialGpuInstanceOptions }) => {
   return (
     <>
+      <NamespaceForm />
+      <K8SVolumeMount action={action}></K8SVolumeMount>
       <ImageCredentialsForm />
       <NodeSelectorForm />
-      <GpuVendorOverridesForm initialValue={initialOverrides} />
+      <OperatorImageForm />
+      <GpuInstanceOptionsForm initialValue={initialGpuInstanceOptions} />
     </>
   );
 };

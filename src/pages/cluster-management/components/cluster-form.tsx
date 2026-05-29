@@ -9,9 +9,8 @@ import {
   Textarea as SealTextArea
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Form, message } from 'antd';
+import { Form } from 'antd';
 import { useAtomValue } from 'jotai';
-import _ from 'lodash';
 import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
 import { ProviderType, ProviderValueMap } from '../config';
 import {
@@ -20,6 +19,7 @@ import {
 } from '../config/types';
 import AdvanceConfig from '../step-forms/advance-config';
 import CloudProvider from './cloud-provider-form';
+import K8sPodSpec from './k8s-pod-spec';
 
 type AddModalProps = {
   action: PageActionType;
@@ -34,6 +34,11 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
     const [form] = Form.useForm();
     const intl = useIntl();
     const [activeKey, setActiveKey] = React.useState<string[]>([]);
+    // K8s deployment options is its own top-level section (sibling of Advanced),
+    // open by default so the fields are visible without an extra click.
+    const [k8sActiveKey, setK8sActiveKey] = React.useState<string[]>([
+      'k8sOptions'
+    ]);
     const advanceConfigRef = React.useRef<any>(null);
     const systemConfig = useAtomValue(systemConfigAtom);
 
@@ -54,93 +59,47 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
       }
     }, [activeKey, action]);
 
-    // Mirror the backend's `_validate_multi_vendor_overrides` check so the
-    // user sees the problem at save time instead of as a 400 when they
-    // run the register command. Returns the i18n'd message of the first
-    // problem found, or null when clean.
-    const validateGpuVendorOverrides = (values: any): string | null => {
-      const opts = values?.k8s_options;
-      const overrides = opts?.gpuVendorOverrides;
-      if (!overrides) return null;
-      const entries = Object.entries(overrides) as [string, any][];
-      if (entries.length === 0) return null;
-
-      // 1. Every override entry must declare a non-empty nodeSelector,
-      //    otherwise it can't actually pin its DaemonSet to anything.
-      for (const [vendor, override] of entries) {
-        const sel = override?.nodeSelector;
-        if (!sel || Object.keys(sel).length === 0) {
-          return intl.formatMessage(
-            { id: 'clusters.gpuVendorOverrides.validate.emptySelector' },
-            { vendor }
-          );
-        }
-      }
-
-      // 2. Two vendors with the same selector would fight for the same
-      //    nodes — backend rejects this at manifest render.
-      for (let i = 0; i < entries.length; i++) {
-        for (let j = i + 1; j < entries.length; j++) {
-          const [v1, o1] = entries[i];
-          const [v2, o2] = entries[j];
-          if (_.isEqual(o1?.nodeSelector, o2?.nodeSelector)) {
-            return intl.formatMessage(
-              { id: 'clusters.gpuVendorOverrides.validate.duplicate' },
-              { v1, v2 }
-            );
-          }
-        }
-      }
-
-      // 3. Base nodeSelector keys can't be reused in any override —
-      //    the CPU worker would require AND forbid the same key.
-      const baseKeys = Object.keys(opts?.nodeSelector || {});
-      if (baseKeys.length > 0) {
-        for (const [vendor, override] of entries) {
-          const overrideKeys = Object.keys(override?.nodeSelector || {});
-          const clash = overrideKeys.filter((k) => baseKeys.includes(k));
-          if (clash.length > 0) {
-            return intl.formatMessage(
-              { id: 'clusters.gpuVendorOverrides.validate.keyConflict' },
-              { vendor, keys: clash.join(', ') }
-            );
-          }
-        }
-      }
-
-      return null;
-    };
-
-    // Empty username/password aren't meaningful as credentials — the backend
-    // models them as Optional[str] and treats null as "no auth". Coerce
-    // before sending so a public registry placeholder stays unambiguous.
+    // The backend models the optional k8s_options string knobs as
+    // Optional[str] and treats null/absent as "use the server default" or
+    // "no auth". Coerce empty form values to null before sending so a blank
+    // input is unambiguous rather than an empty string that defeats fallbacks.
     const normalizeOutgoing = (values: any): any => {
-      const creds = values?.k8s_options?.imageCredentials;
-      if (!Array.isArray(creds)) return values;
-      const fixed = creds.map((c: any) => ({
-        ...c,
-        username: c?.username || null,
-        password: c?.password || null
-      }));
-      return {
-        ...values,
-        k8s_options: { ...values.k8s_options, imageCredentials: fixed }
-      };
+      const opts = values?.k8s_options;
+      if (!opts) return values;
+
+      const next: any = { ...opts };
+
+      const creds = opts.imageCredentials;
+      if (Array.isArray(creds)) {
+        next.imageCredentials = creds.map((c: any) => ({
+          ...c,
+          username: c?.username || null,
+          password: c?.password || null
+        }));
+      }
+
+      next.operatorImage = opts.operatorImage || null;
+      next.namespace = opts.namespace || null;
+
+      // Presence of gpuInstanceOptions is the enable flag; keep it only when
+      // the toggle left an object behind, coercing a blank address to null.
+      if (opts.gpuInstanceOptions) {
+        next.gpuInstanceOptions = {
+          gpuInstancesAccessStaticAddress:
+            opts.gpuInstanceOptions.gpuInstancesAccessStaticAddress || null
+        };
+      }
+
+      return { ...values, k8s_options: next };
     };
 
     const handleOnFinish = (_values: FormData) => {
       const workerConfig = yaml2Json(advanceConfigRef.current?.getYamlValue());
       // antd's onFinish only delivers values for registered Form.Items.
       // Spreading those on top of `getFieldsValue(true)` clobbers nested
-      // objects (e.g. `k8s_options` would lose `gpuVendorOverrides`, which is
-      // only set via setFieldValue), so we go straight to the full store.
+      // objects (e.g. `k8s_options` would lose values set via setFieldValue),
+      // so we go straight to the full store.
       const fullValues = form.getFieldsValue(true);
-
-      const overridesErr = validateGpuVendorOverrides(fullValues);
-      if (overridesErr) {
-        message.error(overridesErr);
-        return;
-      }
 
       onFinish(
         normalizeOutgoing({
@@ -236,20 +195,10 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
       validateFields: async () => {
         // Run validation first to display any field errors. Then read the
         // FULL store via `getFieldsValue(true)` so values that were set via
-        // setFieldValue on non-registered paths (e.g. gpuVendorOverrides)
-        // are still included in what we hand to the API.
+        // setFieldValue on non-registered paths are still included in what we
+        // hand to the API.
         await form.validateFields();
         const values = form.getFieldsValue(true);
-
-        // Mirror the backend invariants for gpuVendorOverrides so the user
-        // sees the same constraint before submit instead of at register time.
-        const overridesErr = validateGpuVendorOverrides(values);
-        if (overridesErr) {
-          message.error(overridesErr);
-          // Reject so the step-flow's Promise.allSettled marks this form
-          // as failed and the outer onNext skips the submit callback.
-          throw new Error(overridesErr);
-        }
 
         const workerConfig = yaml2Json(
           advanceConfigRef.current?.getYamlValue()
@@ -313,6 +262,37 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
             label={intl.formatMessage({ id: 'common.table.description' })}
           ></SealTextArea>
         </Form.Item>
+
+        {provider === ProviderValueMap.Kubernetes && (
+          <CollapsePanel
+            accordion={false}
+            activeKey={k8sActiveKey}
+            onChange={(keys) =>
+              setK8sActiveKey(Array.isArray(keys) ? keys : [keys])
+            }
+            items={[
+              {
+                key: 'k8sOptions',
+                label: intl.formatMessage({ id: 'clusters.k8sOptions.title' }),
+                forceRender: true,
+                children: (
+                  // Key by cluster id so the section fully remounts when the
+                  // active cluster changes. GpuInstanceOptionsForm seeds its
+                  // local state from initialValue only once (initializedRef),
+                  // so without a remount a reused form instance could carry a
+                  // previous cluster's GPU instance config into the next one.
+                  <K8sPodSpec
+                    key={currentData?.id ?? 'new'}
+                    action={action}
+                    initialGpuInstanceOptions={
+                      currentData?.k8s_options?.gpuInstanceOptions
+                    }
+                  ></K8sPodSpec>
+                )
+              }
+            ]}
+          ></CollapsePanel>
+        )}
 
         <CollapsePanel
           accordion={false}

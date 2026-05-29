@@ -7,8 +7,6 @@ import { useIntl } from '@umijs/max';
 import { Button, Form } from 'antd';
 import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
 import styled from 'styled-components';
-import K8sPodSpec from '../components/k8s-pod-spec';
-import K8SVolumeMount from '../components/k8s-volume-mount';
 import { ProviderType, ProviderValueMap } from '../config';
 import {
   ClusterFormData as FormData,
@@ -90,14 +88,6 @@ const ClusterAdvanceConfig: React.FC<{
       >
         <CInput.TextArea required={false} trim={false}></CInput.TextArea>
       </Form.Item>
-      {provider === ProviderValueMap.Kubernetes && (
-        <>
-          <K8SVolumeMount action={action}></K8SVolumeMount>
-          <K8sPodSpec
-            initialOverrides={currentData?.k8s_options?.gpuVendorOverrides}
-          ></K8sPodSpec>
-        </>
-      )}
       <Title>
         {intl.formatMessage({ id: 'clusters.create.workerConfig' })}
       </Title>

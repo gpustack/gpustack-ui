@@ -26,15 +26,6 @@
       "type": "string",
       "description": "Container image repository"
     },
-    "operator_image": {
-      "type": "string",
-      "description": "GPUStack operator image, format: <repo>:<tag>",
-      "examples": ["gpustack/gpustack-operator:<related version>"]
-    },
-    "gpu_instances_access_static_address": {
-      "type": "string",
-      "description": "Static address used to access GPU instances"
-    },
     "gateway_mode": {
       "type": "string",
       "description": "Gateway mode",
@@ -52,10 +43,6 @@
     "service_discovery_name": {
       "type": "string",
       "description": "Service discovery name"
-    },
-    "namespace": {
-      "type": "string",
-      "description": "Kubernetes namespace"
     },
     "huggingface_token": {
       "type": "string",

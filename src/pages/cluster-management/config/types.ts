@@ -74,17 +74,31 @@ export interface ImageCredential {
   password: string;
 }
 
+export interface GpuInstanceOptions {
+  // The mere presence of `gpuInstanceOptions` on `k8s_options` signals
+  // "GPU instances enabled" for the cluster — absence opts the cluster out,
+  // so there's no separate boolean flag on the wire.
+  gpuInstancesAccessStaticAddress?: string | null;
+}
+
 export interface K8sOptions {
   // Backend serializes K8sOptions with camelCase aliases (by_alias=True on
   // the SQL JSON column). The top-level `k8s_options` field on the cluster
   // stays snake_case, but everything inside follows the backend wire shape.
   volumeMounts?: VolumeMount[];
   imageCredentials?: ImageCredential[];
+  // Base nodeSelector applied to every worker DaemonSet; each per-runtime
+  // DaemonSet additionally gets a vendor PCI-presence label merged on top at
+  // render time, so per-vendor overrides are no longer configured here.
   nodeSelector?: Record<string, string>;
-  gpuVendorOverrides?: Record<
-    string,
-    { nodeSelector?: Record<string, string> }
-  >;
+  // Override for the gpustack-operator container image. Falls back to the
+  // server's default when unset.
+  operatorImage?: string | null;
+  // GPU-instance support knobs; presence enables GPU instance handling.
+  gpuInstanceOptions?: GpuInstanceOptions;
+  // Kubernetes namespace the cluster's manifests render into. Falls back to
+  // `gpustack-system` at render time when unset.
+  namespace?: string | null;
 }
 
 export interface ClusterListItem {
@@ -93,6 +107,10 @@ export interface ClusterListItem {
   is_default: boolean;
   description: string;
   worker_config: Record<string, any>;
+  // Per-cluster default container registry, promoted out of worker_config to
+  // a top-level column on the backend (image resolution / registration token
+  // read it directly). Falls back to the server default when unset.
+  system_default_container_registry?: string | null;
   provider: ProviderType;
   credential_id: number;
   created_at: string;
@@ -122,6 +140,7 @@ export interface ClusterFormData {
   region: string;
   server_url?: string;
   worker_config?: Record<string, any>;
+  system_default_container_registry?: string | null;
   worker_pools?: NodePoolFormData[];
   k8s_options?: K8sOptions;
 }

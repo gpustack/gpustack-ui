@@ -110,3 +110,18 @@ const lookupOrgNamespace = (id: number | null): string | null => {
   }
   return null;
 };
+
+export const getAllOrganizations = (): Array<{ id: number; name?: string }> => {
+  const allOrganizations = localStorage.getItem('allOrganizations');
+  if (!allOrganizations) return [];
+  try {
+    const list = JSON.parse(allOrganizations) as Array<{
+      id: number;
+      name?: string;
+    }>;
+    if (!Array.isArray(list)) return [];
+    return list;
+  } catch {
+    return [];
+  }
+};

@@ -179,6 +179,25 @@ const baseRoutes = [
         access: 'canSeeOrgAdmin',
         hideInMenu: true,
         component: './benchmark/details'
+      },
+      {
+        name: 'backendsList',
+        path: '/models/backends',
+        key: 'backendsList',
+        icon: 'icon-backend',
+        selectedIcon: 'icon-backend-filled',
+        defaultIcon: 'icon-backend',
+        access: 'canSeeOrgAdmin',
+        component: './backends/index'
+      },
+      {
+        name: 'modelfiles',
+        path: '/models/modelfiles',
+        key: 'modelfiles',
+        icon: 'icon-files',
+        selectedIcon: 'icon-files-filled',
+        defaultIcon: 'icon-files',
+        component: './resources/components/model-files'
       }
     ]
   },
@@ -272,25 +291,6 @@ const baseRoutes = [
         selectedIcon: 'icon-gpu-filled',
         defaultIcon: 'icon-gpu1',
         component: './resources/components/gpus'
-      },
-      {
-        name: 'backendsList',
-        path: '/resources/backends',
-        key: 'backendsList',
-        icon: 'icon-backend',
-        selectedIcon: 'icon-backend-filled',
-        defaultIcon: 'icon-backend',
-        access: 'canSeeOrgAdmin',
-        component: './backends/index'
-      },
-      {
-        name: 'modelfiles',
-        path: '/resources/modelfiles',
-        key: 'modelfiles',
-        icon: 'icon-files',
-        selectedIcon: 'icon-files-filled',
-        defaultIcon: 'icon-files',
-        component: './resources/components/model-files'
       }
     ]
   },

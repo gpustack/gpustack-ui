@@ -245,7 +245,7 @@ const BackendFields: React.FC = () => {
                     },
                     {
                       link: (
-                        <a onClick={() => navigate('/resources/backends')}>
+                        <a onClick={() => navigate('/models/backends')}>
                           {intl.formatMessage({ id: 'backends.title' })}
                         </a>
                       )

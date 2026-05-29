@@ -43,7 +43,6 @@ const useStyles = createStyles(
         cursor: pointer;
         white-space: nowrap;
         padding: var(--ant-padding-xs) var(--ant-padding);
-        padding-left: 0px;
         font-size: 12px;
         padding-bottom: 4px;
         overflow: hidden;
@@ -92,8 +91,6 @@ const useStyles = createStyles(
         height: ${Menu.itemHeight}px;
         line-height: ${Menu.itemHeight}px;
         color: var(--ant-color-text-tertiary);
-        border-radius: ${Menu.itemBorderRadius}px;
-        border: 1px solid transparent;
         &:hover {
           background-color: ${Menu.itemHoverBg};
           color: ${Menu.itemHoverColor};
@@ -101,7 +98,6 @@ const useStyles = createStyles(
         &.menu-item-selected {
           background-color: ${Menu.menuItemSelectedBg};
           color: ${Menu.itemSelectedColor};
-          border: 1px solid var(--ant-color-border-secondary);
 
           .anticon {
             color: ${Menu.itemSelectedColor};
@@ -238,10 +234,10 @@ const SiderMenu: React.FC<SiderMenuProps> = (props) => {
               >
                 {!collapsed ? (
                   <span className="group-title-text">
+                    <span>{item.name}</span>
                     <CaretDownOutlined
                       rotate={collapseKeys.has(item.key) ? -90 : 0}
                     ></CaretDownOutlined>
-                    <span>{item.name}</span>
                   </span>
                 ) : (
                   <span className={styles.line}></span>

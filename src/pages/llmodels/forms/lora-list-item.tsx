@@ -85,7 +85,7 @@ const LoraListItem: React.FC<LoraListItemProps> = ({
           !selectedRepoNames.has(child.value) || child.value === currentRepo
       );
       const labelText = isLocal
-        ? intl.formatMessage({ id: 'menu.resources.modelfiles' })
+        ? intl.formatMessage({ id: 'menu.models.modelfiles' })
         : group.label;
       groups.push({
         label: `${sourcePrefix}: ${labelText}`,
@@ -101,7 +101,7 @@ const LoraListItem: React.FC<LoraListItemProps> = ({
 
     if (!hasLocal) {
       groups.push({
-        label: `${sourcePrefix}: ${intl.formatMessage({ id: 'menu.resources.modelfiles' })}`,
+        label: `${sourcePrefix}: ${intl.formatMessage({ id: 'menu.models.modelfiles' })}`,
         groupValue: modelSourceMap.local_path_value,
         options: []
       });

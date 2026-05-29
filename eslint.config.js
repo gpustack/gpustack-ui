@@ -14,7 +14,8 @@ export default defineConfig([
     'dist',
     'src/.umi/',
     'src/.umi-production/',
-    'src/.umi-test/'
+    'src/.umi-test/',
+    'src/components/iconfont/'
   ]),
   {
     files: ['**/*.{ts,tsx,js,jsx}'],

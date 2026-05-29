@@ -3,5 +3,5 @@ module.exports = {
   rules: {
     'selector-class-pattern': null
   },
-  ignoreFiles: ['public/static/*.css']
+  ignoreFiles: ['public/static/*.css', 'src/components/iconfont/iconfont.css']
 };

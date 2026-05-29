@@ -2,7 +2,7 @@ import { CaretDownOutlined } from '@ant-design/icons';
 import { IconFont } from '@gpustack/core-ui';
 import { Link, useLocation } from '@umijs/max';
 import { Tooltip } from 'antd';
-import { createStyles } from 'antd-style';
+import { createStyles, type FullToken } from 'antd-style';
 import React, { useMemo, useState } from 'react';
 
 interface MenuItem {
@@ -20,117 +20,124 @@ interface SiderMenuProps {
   initialState: Global.InitialStateType;
 }
 
-const useStyles = createStyles(({ css, token }) => {
-  console.log('useStyles', token);
+const useStyles = createStyles(
+  ({ css, token }: { css: any; token: FullToken }) => {
+    console.log('useStyles', token);
 
-  // @ts-ignore
-  const { Menu } = token;
+    // @ts-ignore
+    const { Menu } = token;
 
-  return {
-    siderMenu: css`
-      &.sider-menu-collapsed {
-        .menu-item {
-          justify-content: center;
-          padding: 0;
+    return {
+      siderMenu: css`
+        &.sider-menu-collapsed {
+          .menu-item {
+            justify-content: center;
+            padding: 0;
+          }
         }
-      }
-    `,
-    groupTitle: css`
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-      white-space: nowrap;
-      padding: var(--ant-padding-xs) var(--ant-padding);
-      font-size: 12px;
-      padding-bottom: 4px;
-      overflow: hidden;
-      height: 30px;
-      &:hover {
-        .group-title-text {
-          color: var(--ant-color-text);
-        }
-      }
-      .anticon {
-        transform: scale(0.8);
-      }
-      .group-title-text {
+      `,
+      groupTitle: css`
         display: flex;
         align-items: center;
-        gap: 4px;
+        gap: 8px;
+        cursor: pointer;
+        white-space: nowrap;
+        padding: var(--ant-padding-xs) var(--ant-padding);
+        padding-left: 0px;
         font-size: 12px;
-        color: var(--ant-color-text-tertiary);
-        font-weight: 400;
-      }
-
-      &.menu-item-group-title-collapsed {
-        position: relative;
-        height: 1px;
-        padding-block: 0;
-        padding-inline: 0;
-        justify-content: center;
-      }
-    `,
-    menuItemContent: css`
-      margin: 2px 0;
-      border-radius: 4px;
-      overflow: hidden;
-    `,
-    menuItemWrapper: css`
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      gap: 12px;
-      cursor: pointer;
-      position: relative;
-      padding-inline: calc(var(--ant-font-size) * 2) var(--ant-padding);
-      padding-left: 16px;
-      overflow: hidden;
-      white-space: nowrap;
-      height: ${Menu.itemHeight}px;
-      line-height: ${Menu.itemHeight}px;
-      color: var(--ant-color-text-tertiary);
-      &:hover {
-        background-color: ${Menu.itemHoverBg};
-        color: ${Menu.itemHoverColor};
-      }
-      &.menu-item-selected {
-        background-color: ${Menu.itemSelectedBg};
-        color: ${Menu.itemSelectedColor};
-        .anticon {
-          color: ${Menu.itemSelectedColor};
+        padding-bottom: 4px;
+        overflow: hidden;
+        height: 30px;
+        &:hover {
+          .group-title-text {
+            color: var(--ant-color-text);
+          }
         }
-      }
-      &:active {
-        background-color: ${Menu.itemActiveBg};
-        color: ${Menu.itemActiveColor};
-      }
-      .anticon {
-        font-size: 16px;
-      }
-      .icon-wrapper {
+        .anticon {
+          transform: scale(0.8);
+        }
+        .group-title-text {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          font-size: 12px;
+          color: var(--ant-color-text);
+          font-weight: 400;
+        }
+
+        &.menu-item-group-title-collapsed {
+          position: relative;
+          height: 1px;
+          padding-block: 0;
+          padding-inline: 0;
+          justify-content: center;
+        }
+      `,
+      menuItemContent: css`
+        margin: 2px 0;
+        border-radius: 4px;
+        overflow: hidden;
+      `,
+      menuItemWrapper: css`
         display: flex;
         align-items: center;
-        justify-content: center;
-        width: 100%;
-        height: 100%;
-      }
-    `,
-    menuItemGroup: css`
-      &.menu-item-group-hidden {
-        display: none;
-      }
-    `,
-    line: css`
-      height: 1px;
-      margin-block: 6px;
-      background-color: ${token.colorSplit};
-      position: absolute;
-      left: -2px;
-      right: -2px;
-    `
-  };
-});
+        justify-content: flex-start;
+        gap: 12px;
+        cursor: pointer;
+        position: relative;
+        padding-inline: calc(var(--ant-font-size) * 2) var(--ant-padding);
+        padding-left: 16px;
+        overflow: hidden;
+        white-space: nowrap;
+        height: ${Menu.itemHeight}px;
+        line-height: ${Menu.itemHeight}px;
+        color: var(--ant-color-text-tertiary);
+        border-radius: ${Menu.itemBorderRadius}px;
+        border: 1px solid transparent;
+        &:hover {
+          background-color: ${Menu.itemHoverBg};
+          color: ${Menu.itemHoverColor};
+        }
+        &.menu-item-selected {
+          background-color: ${Menu.menuItemSelectedBg};
+          color: ${Menu.itemSelectedColor};
+          border: 1px solid var(--ant-color-border-secondary);
+
+          .anticon {
+            color: ${Menu.itemSelectedColor};
+          }
+        }
+        &:active {
+          background-color: ${Menu.itemActiveBg};
+          color: ${Menu.itemActiveColor};
+        }
+        .anticon {
+          font-size: 16px;
+        }
+        .icon-wrapper {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+          height: 100%;
+        }
+      `,
+      menuItemGroup: css`
+        &.menu-item-group-hidden {
+          display: none;
+        }
+      `,
+      line: css`
+        height: 1px;
+        margin-block: 6px;
+        background-color: ${token.colorSplit};
+        position: absolute;
+        left: -2px;
+        right: -2px;
+      `
+    };
+  }
+);
 
 const SiderMenu: React.FC<SiderMenuProps> = (props) => {
   const { menuData, collapsed } = props;
@@ -231,10 +238,10 @@ const SiderMenu: React.FC<SiderMenuProps> = (props) => {
               >
                 {!collapsed ? (
                   <span className="group-title-text">
-                    <span>{item.name}</span>
                     <CaretDownOutlined
                       rotate={collapseKeys.has(item.key) ? -90 : 0}
                     ></CaretDownOutlined>
+                    <span>{item.name}</span>
                   </span>
                 ) : (
                   <span className={styles.line}></span>

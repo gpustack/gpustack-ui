@@ -56,7 +56,8 @@ export default {
       itemHoverColor: 'rgba(0,0,0,1)',
       itemColor: 'rgba(0,0,0,1)',
       itemHoverBg: 'rgba(0,0,0,0.04)',
-      itemActiveBg: 'rgba(0,0,0,0.04)'
+      itemActiveBg: 'rgba(0,0,0,0.04)',
+      menuItemSelectedBg: 'rgba(255, 255, 255, 0.9)'
     },
     Progress: {
       lineBorderRadius: 3

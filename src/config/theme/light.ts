@@ -57,7 +57,7 @@ export default {
       itemColor: 'rgba(0,0,0,1)',
       itemHoverBg: 'rgba(0,0,0,0.04)',
       itemActiveBg: 'rgba(0,0,0,0.04)',
-      menuItemSelectedBg: 'rgba(0, 0, 0, 0.06)'
+      menuItemSelectedBg: '#e8eaed'
     },
     Progress: {
       lineBorderRadius: 3

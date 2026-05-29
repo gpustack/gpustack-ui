@@ -1,3 +1,4 @@
+import { ceilMilliToCore } from '@/pages/gpu-service/utils';
 import { AutoTooltip, IconFont, ThemeTag } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Flex } from 'antd';
@@ -21,28 +22,30 @@ const Title = styled.div`
 
 const Meta = styled.div`
   display: grid;
-  gap: 8px;
+  grid-template-columns: repeat(7, auto);
+  justify-content: start;
+  column-gap: 4px;
+  row-gap: 8px;
+  align-items: center;
   color: var(--ant-color-text-secondary);
   font-size: 13px;
 
   .meta-row {
-    display: flex;
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-column: 1 / -1;
     align-items: center;
-    gap: 8px;
+    min-height: 15px;
     color: var(--ant-color-text-tertiary);
   }
+
   .dot {
     width: 3px;
     height: 3px;
     border-radius: 50%;
     background-color: var(--ant-color-text-quaternary);
-    flex: none;
-  }
-
-  .meta-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
+    margin: 0 4px;
+    justify-self: center;
   }
 
   .meta-icon {
@@ -66,14 +69,10 @@ const MetaItem: React.FC<{
   if (!show) return null;
   return (
     <>
-      {showDot && <span className="dot"></span>}
-      <span className="meta-item">
-        <IconFont type={icon} className="meta-icon" />
-        <Flex align="center" gap={4}>
-          <span>{label}</span>
-          <span>{value || '-'}</span>
-        </Flex>
-      </span>
+      {showDot && <span className="dot" />}
+      <IconFont type={icon} className="meta-icon" />
+      <span className="meta-label">{label}</span>
+      <span className="meta-value">{value || '-'}</span>
     </>
   );
 };
@@ -81,6 +80,8 @@ const MetaItem: React.FC<{
 const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({ item }) => {
   const intl = useIntl();
   const specData = item.spec || {};
+
+  // false: CPU; true: GPU
   const acceleratable = specData.acceleratable;
 
   const manufacturer = acceleratable ? specData.manufacturer || '' : 'cpu';
@@ -88,6 +89,18 @@ const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({ item }) => {
 
   // resource once-max-request status
   const onceMaxRequestData = item.status?.onceMaxRequest || {};
+
+  // RAM resource
+  const ramRaw = acceleratable
+    ? specData.unitResources?.ram
+    : onceMaxRequestData.ram;
+
+  console.log('InstanceTypeItem', item.name, 'ramRaw', ramRaw);
+
+  // CPU resource
+  const cpuRaw = acceleratable
+    ? specData.unitResources?.cpu
+    : onceMaxRequestData.cpu;
 
   const renderName = () => {
     const displayName = specData.acceleratable
@@ -118,9 +131,9 @@ const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({ item }) => {
         </Flex>
       </Title>
       <Meta>
-        <span style={{ display: 'flex', height: 15 }}>
+        <span className="meta-row">
           {acceleratable && (
-            <span className="meta-row">
+            <>
               <MetaItem
                 showDot={false}
                 icon="icon-gpu1"
@@ -129,7 +142,7 @@ const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({ item }) => {
                   toDisplayUnit(convertKiToGi(specData?.memory ?? undefined)) ??
                   '-'
                 }
-              ></MetaItem>
+              />
               <MetaItem
                 show={!!specData?.sliced}
                 icon="icon-sliced"
@@ -137,17 +150,18 @@ const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({ item }) => {
                   id: 'gpuservice.instance.sliced'
                 })}
                 value={specData?.sliced}
-              ></MetaItem>
+              />
               <MetaItem
                 icon="icon-database"
-                value={intl.formatMessage(
+                label={intl.formatMessage(
                   {
                     id: 'common.max'
                   },
-                  { count: item.maxAccelerator }
+                  { count: '' }
                 )}
-              ></MetaItem>
-            </span>
+                value={`${item.maxAccelerator || '-'}`}
+              />
+            </>
           )}
         </span>
         <span className="meta-row">
@@ -155,15 +169,15 @@ const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({ item }) => {
             showDot={false}
             icon="icon-ram-02"
             label={intl.formatMessage({ id: 'gpuservice.instance.ram' })}
-            value={toDisplayUnit(convertKiToGi(onceMaxRequestData.ram)) ?? '-'}
-          ></MetaItem>
+            value={toDisplayUnit(convertKiToGi(ramRaw)) ?? '-'}
+          />
           <MetaItem
-            show={!!onceMaxRequestData.cpu}
+            show={!!cpuRaw}
             showDot={true}
             icon="icon-cpu"
             label="CPU"
-            value={onceMaxRequestData.cpu ?? '-'}
-          ></MetaItem>
+            value={ceilMilliToCore(cpuRaw) ?? '-'}
+          />
         </span>
       </Meta>
     </>

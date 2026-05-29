@@ -11,9 +11,22 @@ import type { ColumnsType } from 'antd/lib/table';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import { Fragment, useMemo } from 'react';
+import { ceilMilliToCore, parseQuantityToGi } from '../../utils';
 import { InstanceStatusLabelMap, rowActionList, status } from '../config';
 import { ListItem } from '../config/types';
 import tableSyles from '../styles/table.module.less';
+
+const formatCpu = (cpu?: string | null): string => {
+  if (!cpu) return '-';
+  return /m$/.test(cpu) ? (ceilMilliToCore(cpu) ?? cpu) : cpu;
+};
+
+const formatMemoryGB = (value?: string | null): string => {
+  if (!value) return '-';
+  if (/Gi$/.test(value)) return value.replace('Gi', 'GB');
+  const gi = parseQuantityToGi(value);
+  return gi != null ? `${gi}GB` : value;
+};
 
 type ConnectEntry =
   | {
@@ -106,16 +119,16 @@ const useInstancesColumns = ({
           align="center"
           style={{ fontSize: 13, color: 'var(--ant-color-text-tertiary)' }}
         >
-          <span>{record.spec.resources?.cpu}C</span>
+          <span>{formatCpu(record.spec.resources?.cpu)}C</span>
           <span className={tableSyles.dot} />
           <span>
             {intl.formatMessage({ id: 'gpuservice.instance.ram' })}:{' '}
-            {record.spec.resources?.ram?.replace('Gi', 'GB')}
+            {formatMemoryGB(record.spec.resources?.ram)}
           </span>
           <span className={tableSyles.dot} />
           <span>
             {intl.formatMessage({ id: 'gpuservice.instance.disk' })}:{' '}
-            {record.spec.resources?.localStorage?.replace('Gi', 'GB')}
+            {formatMemoryGB(record.spec.resources?.localStorage)}
           </span>
         </Flex>
       </Flex>

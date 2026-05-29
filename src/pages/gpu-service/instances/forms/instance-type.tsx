@@ -1,11 +1,14 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import NumberSelection from '@/pages/_components/number-selection';
+import { InputNumber } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Alert, Flex, Form } from 'antd';
 import _ from 'lodash';
 import { useMemo } from 'react';
 import styled from 'styled-components';
+import { BasicResourceMax } from '../../templates/forms/basic';
+import { ceilMilliToCore, parseQuantityToGi } from '../../utils';
 import InstanceTypeItem from '../components/instance-type-item';
 import { getAcceleratorMax } from '../config';
 import {
@@ -51,6 +54,7 @@ interface InstanceTypeFormItemProps {
   disabled?: boolean;
   currentData?: ListItem;
   selectedInstanceType?: InstanceTypeItemModel;
+  onceMaxRequest?: BasicResourceMax;
   onGPUCountChange?: (value: number) => void;
 }
 
@@ -59,6 +63,7 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
   disabled,
   currentData,
   selectedInstanceType,
+  onceMaxRequest,
   onGPUCountChange
 }) => {
   const intl = useIntl();
@@ -68,16 +73,44 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
       ? _.toNumber(currentData?.spec?.resources?.accelerator) || 0
       : getAcceleratorMax(selectedInstanceType?.status?.acceleratorTiers);
 
-  const handleOnGPUCountChange = (value: number) => {
-    onGPUCountChange?.(value);
-  };
-
-  const showGPUCount = useMemo(() => {
+  const isGPU = useMemo(() => {
     if (action === PageAction.EDIT) {
       return _.toNumber(currentData?.spec?.resources?.accelerator) > 0;
     }
     return selectedInstanceType?.spec?.acceleratable;
   }, [selectedInstanceType, action]);
+
+  const handleOnGPUCountChange = (value: number) => {
+    onGPUCountChange?.(value);
+  };
+
+  const renderMaxLabel = (
+    label: React.ReactNode,
+    max?: number | null
+  ): React.ReactNode => {
+    if (max == null) return label;
+    return (
+      <Flex gap={4} align="center">
+        {label}
+        {!isGPU && (
+          <span>
+            ({intl.formatMessage({ id: 'common.max' }, { count: max })})
+          </span>
+        )}
+      </Flex>
+    );
+  };
+
+  const renderMemoryLabel = (): React.ReactNode => {
+    if (isGPU) {
+      return intl.formatMessage({ id: 'gpuservice.template.memory' });
+    }
+
+    return intl.formatMessage(
+      { id: 'gpuservice.instance.memory.remaining' },
+      { count: onceMaxRequest?.memory }
+    );
+  };
 
   const renderInstanceType = () => {
     const description = JSON.parse(currentData?.description || '{}').spec || {};
@@ -123,7 +156,7 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
           {action === PageAction.EDIT && renderInstanceType()}
         </Form.Item>
       </FieldBlock>
-      {showGPUCount && (
+      {isGPU && (
         <Form.Item<FormData>
           name={['spec', 'resources', 'accelerator']}
           hidden={action === PageAction.EDIT}
@@ -198,6 +231,48 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
           />
         </Form.Item>
       )}
+      <Flex gap={12}>
+        <div style={{ flex: 1 }}>
+          <Form.Item<FormData>
+            name={['spec', 'resources', 'ram']}
+            normalize={(value) => (value ? `${value}Gi` : undefined)}
+            getValueProps={(value) => {
+              if (!value) return { value: '' };
+              const str = String(value);
+              if (/Gi$/.test(str)) return { value: str.replace(/Gi$/, '') };
+              if (/(Ki|Mi|Ti)$/.test(str)) {
+                return { value: parseQuantityToGi(str) ?? '' };
+              }
+              return { value: str };
+            }}
+          >
+            <InputNumber
+              disabled={isGPU || disabled}
+              label={renderMemoryLabel()}
+              max={onceMaxRequest?.memory ?? undefined}
+            />
+          </Form.Item>
+        </div>
+        <div style={{ flex: 1 }}>
+          <Form.Item<FormData>
+            name={['spec', 'resources', 'cpu']}
+            normalize={(value) => (value ? `${value}` : '')}
+            getValueProps={(value) => {
+              if (!value) return { value: '' };
+              const str = String(value);
+              return {
+                value: /m$/.test(str) ? (ceilMilliToCore(str) ?? '') : str
+              };
+            }}
+          >
+            <InputNumber
+              label={renderMaxLabel('CPU', onceMaxRequest?.cpu)}
+              max={onceMaxRequest?.cpu ?? undefined}
+              disabled={disabled || isGPU}
+            />
+          </Form.Item>
+        </div>
+      </Flex>
     </div>
   );
 };

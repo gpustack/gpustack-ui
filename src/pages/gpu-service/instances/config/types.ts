@@ -1,5 +1,21 @@
 export type ImagePullPolicy = 'Always' | 'IfNotPresent' | 'Never';
 
+type QuanityCPU = `${number}m` | string;
+
+type QuanityMemory =
+  | `${number}Ki`
+  | `${number}Mi`
+  | `${number}Gi`
+  | `${number}Ti`
+  | string;
+
+type QuanityLocalStorage =
+  | `${number}Ki`
+  | `${number}Mi`
+  | `${number}Gi`
+  | `${number}Ti`
+  | string;
+
 // instance form data
 export interface FormData {
   name: string;
@@ -116,9 +132,9 @@ export interface InstanceTypeCandidate {
 
 export interface InstanceTypeTierOnceMaxRequestResource {
   accelerator?: string;
-  cpu: string;
-  ram: string;
-  localStorage: string;
+  cpu: QuanityCPU;
+  ram: QuanityMemory;
+  localStorage: QuanityLocalStorage;
 }
 
 export interface InstanceTypeTier {
@@ -127,10 +143,10 @@ export interface InstanceTypeTier {
 }
 
 export interface InstanceTypeOnceMaxRequestResource {
-  accelerator?: string | null;
-  cpu: string;
-  ram: string;
-  localStorage: string;
+  accelerator?: `${number}` | null;
+  cpu: QuanityCPU;
+  ram: QuanityMemory;
+  localStorage: QuanityLocalStorage;
 }
 
 export interface InstanceTypeSpec {
@@ -142,6 +158,10 @@ export interface InstanceTypeSpec {
   family?: string | null;
   computeCapability?: string | null;
   sliced?: string | null;
+  unitResources?: {
+    cpu: QuanityCPU;
+    ram: QuanityMemory;
+  };
 }
 
 export interface InstanceTypeStatus {

@@ -30,6 +30,7 @@ interface FormContextProps {
   flatBackendOptions: BackendOption[];
   initialValues?: FormData; // for editing model
   modelContextData?: Record<string, any>;
+  submitAttempted?: boolean;
   clearCacheFormValues?: () => void;
   onValuesChange?: (changedValues: any, allValues: any) => void;
   onBackendChange: (backend: string, option: any) => void;

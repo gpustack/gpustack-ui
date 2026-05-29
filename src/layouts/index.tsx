@@ -1,6 +1,7 @@
 import { routeCacheAtom, setRouteCache } from '@/atoms/route-cache';
 import { userAtom } from '@/atoms/user';
 import DarkMask from '@/components/dark-mask';
+import '@/components/iconfont/iconfont.js';
 import PluginExtraFields from '@/components/plugin-extra-fields';
 import routeCachekey from '@/config/route-cachekey';
 import { DEFAULT_ENTER_PAGE, GPUSTACK_API_BASE_URL } from '@/config/settings';
@@ -356,7 +357,7 @@ export default (props: any) => {
         config={{
           apiBaseUrl: GPUSTACK_API_BASE_URL,
           theme: userSettings.theme,
-          iconUrl: '//at.alicdn.com/t/c/font_4613488_jmdepcs90im.js',
+          iconUrl: '',
           isDarkTheme: userSettings.isDarkTheme,
           defaultColorPrimary: COLOR_PRIMARY
         }}

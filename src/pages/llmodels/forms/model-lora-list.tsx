@@ -2,6 +2,7 @@ import { MetadataList } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useFormContext } from '../config/form-context';
 import { FormData, LoraListItem } from '../config/types';
 import useQueryModelLoraList from '../services/use-query-lora-list';
 import LoraItem from './lora-list-item';
@@ -20,9 +21,10 @@ const ModelLoraList = () => {
   console.log('fetching lora list with base', base, form.getFieldsValue());
 
   const { dataList: defaultDataList, fetchData } = useQueryModelLoraList();
+  const { submitAttempted } = useFormContext();
+  const validated = !!submitAttempted;
 
   const [itemList, setItemList] = useState<ItemValue[]>([]);
-  const [validated, setValidated] = useState(false);
   const initializedRef = useRef(false);
   const prevBaseRef = useRef<string>('');
 
@@ -150,9 +152,6 @@ const ModelLoraList = () => {
       rules={[
         {
           validator: async (_, value: LoraListItem[]) => {
-            if (!validated) {
-              setValidated(true);
-            }
             if (!value || value.length === 0) return;
 
             for (const it of value) {

@@ -176,6 +176,7 @@ const Playground: React.FC = () => {
               className="m-l-24 font-600"
               value={activeKey}
               onChange={(key) => setActiveKey(key)}
+              style={{ fontSize: 13 }}
             ></Segmented>
           }
         </div>

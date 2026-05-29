@@ -163,6 +163,9 @@ export default {
   'clusters.volume.configMap.name': 'ConfigMap Name',
   'clusters.volume.configMap.optional': 'Optional',
   'clusters.volume.add': 'Add Volume Mount',
+  'clusters.systemDefaultContainerRegistry.title': 'Default Container Registry',
+  'clusters.systemDefaultContainerRegistry.tip':
+    'Default registry used to resolve GPUStack images for this cluster. Falls back to the server default when unset.',
   'clusters.k8sOptions.title': 'K8s Deployment Options',
   'clusters.imageCredentials.title': 'Image Credentials',
   'clusters.imageCredentials.add': 'Add Credential',

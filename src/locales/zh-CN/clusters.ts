@@ -155,6 +155,9 @@ export default {
   'clusters.volume.configMap.name': '配置名称',
   'clusters.volume.configMap.optional': '可选',
   'clusters.volume.add': '添加卷挂载',
+  'clusters.systemDefaultContainerRegistry.title': '默认容器镜像仓库',
+  'clusters.systemDefaultContainerRegistry.tip':
+    '用于解析该集群 GPUStack 镜像的默认镜像仓库。未设置时回退到服务端默认值。',
   'clusters.k8sOptions.title': 'K8s 部署选项',
   'clusters.imageCredentials.title': '镜像仓库凭证',
   'clusters.imageCredentials.add': '添加凭证',

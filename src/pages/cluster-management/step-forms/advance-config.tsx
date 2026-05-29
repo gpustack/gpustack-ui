@@ -88,6 +88,24 @@ const ClusterAdvanceConfig: React.FC<{
       >
         <CInput.TextArea required={false} trim={false}></CInput.TextArea>
       </Form.Item>
+      {/* Default container registry used to resolve images for this cluster.
+          A top-level cluster field shared by both Docker and Kubernetes
+          providers (the backend hoists any legacy worker_config value onto
+          this column). */}
+      <Form.Item<FormData>
+        name="system_default_container_registry"
+        style={{ marginBottom: 16 }}
+      >
+        <CInput.Input
+          label={intl.formatMessage({
+            id: 'clusters.systemDefaultContainerRegistry.title'
+          })}
+          description={intl.formatMessage({
+            id: 'clusters.systemDefaultContainerRegistry.tip'
+          })}
+          placeholder="docker.io"
+        ></CInput.Input>
+      </Form.Item>
       <Title>
         {intl.formatMessage({ id: 'clusters.create.workerConfig' })}
       </Title>

@@ -122,6 +122,7 @@ const Playground: React.FC = () => {
               className="m-l-24 font-600"
               value={activeKey}
               onChange={(key) => setActiveKey(key)}
+              style={{ fontSize: 13 }}
             ></Segmented>
           }
         </div>
@@ -167,7 +168,8 @@ const Playground: React.FC = () => {
             <Segmented
               shape="round"
               style={{
-                backgroundColor: 'var(--ant-color-fill-secondary)'
+                backgroundColor: 'var(--ant-color-fill-secondary)',
+                fontSize: 13
               }}
               size="middle"
               className="m-l-24 font-400"

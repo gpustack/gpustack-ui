@@ -55,7 +55,8 @@ const LLModels: React.FC = () => {
         <Segmented
           shape="round"
           style={{
-            backgroundColor: 'var(--ant-color-fill-secondary)'
+            backgroundColor: 'var(--ant-color-fill-secondary)',
+            fontSize: 13
           }}
           size="middle"
           className="m-l-24 font-400"

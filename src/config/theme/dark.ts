@@ -54,7 +54,8 @@ export default {
       itemHoverColor: 'rgba(0,0,0,1)',
       itemColor: 'rgba(0,0,0,1)',
       itemHoverBg: 'rgb(24 25 27)',
-      itemActiveBg: 'rgb(24 25 27)'
+      itemActiveBg: 'rgb(24 25 27)',
+      menuItemSelectedBg: '#292929'
     },
     Progress: {
       lineBorderRadius: 4
@@ -108,6 +109,7 @@ export default {
     fontSize: 14,
     motion: true,
     colorFill: '#0A0A0A',
-    colorBgBase: '#0A0A0A'
+    colorBgBase: '#0A0A0A',
+    menuItemSelectedBg: '#292929'
   }
 };

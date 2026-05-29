@@ -1,5 +1,10 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
+import {
+  ceilMilliToCore,
+  parseQuantityToGi,
+  parseQuantityToNumber
+} from '@/pages/gpu-service/utils';
 import { PlusOutlined } from '@ant-design/icons';
 import {
   CheckboxField,
@@ -56,35 +61,6 @@ interface InstanceFormProps {
   disabled?: boolean;
   onFinish: (values: FormData) => Promise<void>;
 }
-
-const parseQuantityToNumber = (value?: string | null): number | null => {
-  if (!value) return null;
-  const match = /^(-?\d+(?:\.\d+)?)/.exec(String(value));
-  if (!match) return null;
-  const num = Number(match[1]);
-  return Number.isFinite(num) && num > 0 ? num : null;
-};
-
-// Converts a K8s-style quantity ("24314504Ki", "2Ti", "10Gi", or a bare
-// number assumed to be Gi) to an integer GiB. memory and localStorage
-// inputs are displayed in GB, so the max bound and the "Remaining {count}
-// GB" label need the converted value.
-const GI_FROM_UNIT: Record<string, number> = {
-  Ki: 1 / (1024 * 1024),
-  Mi: 1 / 1024,
-  Gi: 1,
-  Ti: 1024
-};
-
-const parseQuantityToGi = (value?: string | null): number | null => {
-  if (!value) return null;
-  const match = /^(-?\d+(?:\.\d+)?)(Ki|Mi|Gi|Ti)?$/.exec(String(value));
-  if (!match) return null;
-  const num = Number(match[1]);
-  if (!Number.isFinite(num) || num <= 0) return null;
-  const factor = match[2] ? GI_FROM_UNIT[match[2]] : 1;
-  return Math.floor(num * factor);
-};
 
 const TABKeysMap = {
   BASIC: 'basic',
@@ -238,11 +214,21 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       );
 
       setSelectedInstanceType(instanceType);
+
       setOnceMaxRequest({
-        cpu: parseQuantityToNumber(candidate?.cpu?.onceMaxRequest),
+        cpu: ceilMilliToCore(candidate?.cpu?.onceMaxRequest),
         memory: parseQuantityToGi(candidate?.ram?.onceMaxRequest),
         localStorage: parseQuantityToGi(candidate?.localStorage?.onceMaxRequest)
       });
+
+      const unitResources = instanceType.spec?.unitResources;
+      const unitCpu = parseQuantityToNumber(unitResources?.cpu);
+      const unitRam = parseQuantityToNumber(unitResources?.ram);
+      const acceleratable = instanceType.spec?.acceleratable;
+      const cpuCores =
+        unitCpu != null ? ceilMilliToCore(`${count * unitCpu}m`) : null;
+      const ramGi =
+        unitRam != null ? parseQuantityToGi(`${count * unitRam}Mi`) : null;
 
       form.setFieldsValue({
         clusterId: candidate?.cluster ? _.toNumber(candidate.cluster) : null,
@@ -250,6 +236,17 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
           type: candidate?.name || '',
           ...(options.writeAccelerator
             ? { resources: { accelerator: _.toString(count) } }
+            : {}),
+          ...(acceleratable
+            ? {
+                resources: {
+                  ...(options.writeAccelerator
+                    ? { accelerator: _.toString(count) }
+                    : {}),
+                  ...(cpuCores != null ? { cpu: cpuCores } : {}),
+                  ...(ramGi != null ? { ram: `${ramGi}Gi` } : {})
+                }
+              }
             : {})
         } as any
       });
@@ -304,6 +301,20 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       }
     }, [action, currentData, form, open, realAction, instanceTypeList]);
 
+    const getUnitResources = () => {
+      if (selectedInstanceType?.spec?.unitResources) {
+        return selectedInstanceType.spec.unitResources;
+      }
+      try {
+        return (
+          JSON.parse(currentData?.description || '{}')?.spec?.unitResources ??
+          undefined
+        );
+      } catch {
+        return undefined;
+      }
+    };
+
     const handleFinish = async (values: InstanceFormValues) => {
       const submittedPorts = [...(values.spec?.ports ?? [])];
       const submittedHasSSHPort = submittedPorts.some(
@@ -317,11 +328,27 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
           name: 'SSH'
         });
       }
+
+      const accelerator = _.toNumber(values.spec?.resources?.accelerator);
+      const submittedResources = { ...(values.spec?.resources ?? {}) };
+      if (accelerator > 0) {
+        const unitResources = getUnitResources();
+        const unitCpu = parseQuantityToNumber(unitResources?.cpu);
+        const unitRam = parseQuantityToNumber(unitResources?.ram);
+        if (unitCpu != null) {
+          submittedResources.cpu = `${accelerator * unitCpu}m`;
+        }
+        if (unitRam != null) {
+          submittedResources.ram = `${accelerator * unitRam}Mi`;
+        }
+      }
+
       await onFinish({
         ..._.omit(values, ['enable_ssh']),
         spec: {
           ...values.spec,
-          ports: submittedPorts
+          ports: submittedPorts,
+          resources: submittedResources
         }
       });
     };
@@ -446,6 +473,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
                     disabled={disabled}
                     selectedInstanceType={selectedInstanceType}
                     currentData={currentData as any}
+                    onceMaxRequest={onceMaxRequest}
                     onGPUCountChange={handleAcceleratorChange}
                   />
                 )
@@ -505,49 +533,48 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
               })}
             </Button>
           </Flex>
-          {
-            <div className={instanceStyles.sshkeySelection}>
-              <Form.Item<FormData>
-                name={['spec', 'sshPublicKeys']}
-                style={{
-                  marginBottom: 12
-                }}
-                hidden={!sshEnabled}
-                normalize={(value) =>
-                  Array.isArray(value)
-                    ? value?.map((item) => ({ name: item }))
-                    : []
+
+          <div className={instanceStyles.sshkeySelection}>
+            <Form.Item<FormData>
+              name={['spec', 'sshPublicKeys']}
+              style={{
+                marginBottom: 12
+              }}
+              hidden={!sshEnabled}
+              normalize={(value) =>
+                Array.isArray(value)
+                  ? value?.map((item) => ({ name: item }))
+                  : []
+              }
+              getValueProps={(value) => ({
+                value: Array.isArray(value)
+                  ? value.map((item) => item?.name ?? item)
+                  : []
+              })}
+              rules={[
+                {
+                  required: sshEnabled,
+                  message: getRuleMessage('select', 'gpuservice.publicKey')
                 }
-                getValueProps={(value) => ({
-                  value: Array.isArray(value)
-                    ? value.map((item) => item?.name ?? item)
-                    : []
+              ]}
+            >
+              <MultipleSelect
+                required
+                disabled={disabled}
+                mode="multiple"
+                maxTagCount={1}
+                label={intl.formatMessage({
+                  id: 'gpuservice.instance.ssh.assignKey'
                 })}
-                rules={[
-                  {
-                    required: sshEnabled,
-                    message: getRuleMessage('select', 'gpuservice.publicKey')
+                styles={{
+                  wrapper: {
+                    width: '100%'
                   }
-                ]}
-              >
-                <MultipleSelect
-                  required
-                  disabled={disabled}
-                  mode="multiple"
-                  maxTagCount={1}
-                  label={intl.formatMessage({
-                    id: 'gpuservice.instance.ssh.assignKey'
-                  })}
-                  styles={{
-                    wrapper: {
-                      width: '100%'
-                    }
-                  }}
-                  options={sshkeyOptions}
-                ></MultipleSelect>
-              </Form.Item>
-            </div>
-          }
+                }}
+                options={sshkeyOptions}
+              ></MultipleSelect>
+            </Form.Item>
+          </div>
         </Form>
         <PublicKeyOverlay
           open={sshOverlayOpen}

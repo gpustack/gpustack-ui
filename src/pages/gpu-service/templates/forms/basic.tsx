@@ -49,21 +49,6 @@ const Basic: React.FC<BasicProps> = ({
     []
   );
 
-  const renderMaxLabel = (
-    label: React.ReactNode,
-    max?: number | null
-  ): React.ReactNode => {
-    if (max == null) return label;
-    return (
-      <Flex gap={4} align="center">
-        {label}
-        <span>
-          ({intl.formatMessage({ id: 'common.max' }, { count: max })})
-        </span>
-      </Flex>
-    );
-  };
-
   const renderStorageLabel = (): React.ReactNode => {
     if (page === 'instance' && onceMaxRequest?.localStorage != null) {
       return intl.formatMessage(
@@ -72,16 +57,6 @@ const Basic: React.FC<BasicProps> = ({
       );
     }
     return intl.formatMessage({ id: 'gpuservice.template.containerDisk' });
-  };
-
-  const renderMemoryLabel = (): React.ReactNode => {
-    if (page === 'instance' && onceMaxRequest?.memory != null) {
-      return intl.formatMessage(
-        { id: 'gpuservice.instance.memory.remaining' },
-        { count: onceMaxRequest.memory }
-      );
-    }
-    return intl.formatMessage({ id: 'gpuservice.template.memory' });
   };
 
   return (
@@ -227,37 +202,6 @@ const Basic: React.FC<BasicProps> = ({
           </Form.Item>
         </div>
       </Flex>
-      <Flex gap={12}>
-        <div style={{ flex: 1 }}>
-          <Form.Item<FormData>
-            name={['spec', 'resources', 'cpu']}
-            normalize={(value) => (value ? `${value}` : '')}
-            getValueProps={(value) => ({ value: value ? String(value) : '' })}
-          >
-            <InputNumber
-              label={renderMaxLabel('CPU', onceMaxRequest?.cpu)}
-              max={onceMaxRequest?.cpu ?? undefined}
-              disabled={disabled}
-            />
-          </Form.Item>
-        </div>
-        <div style={{ flex: 1 }}>
-          <Form.Item<FormData>
-            name={['spec', 'resources', 'ram']}
-            normalize={(value) => (value ? `${value}Gi` : undefined)}
-            getValueProps={(value) => ({
-              value: value ? String(value).replace(/Gi$/, '') : ''
-            })}
-          >
-            <InputNumber
-              label={renderMemoryLabel()}
-              max={onceMaxRequest?.memory ?? undefined}
-              disabled={disabled}
-            />
-          </Form.Item>
-        </div>
-      </Flex>
-
       <Ports disabled={disabled} />
       <Env disabled={disabled} />
     </>

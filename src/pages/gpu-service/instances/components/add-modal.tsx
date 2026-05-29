@@ -290,8 +290,8 @@ const AddModal: React.FC<AddModalProps> = ({
         ...item.spec,
         sshPublicKeys: formValues?.spec?.sshPublicKeys,
         resources: {
-          ...item?.spec?.resources,
-          accelerator: formValues?.spec?.resources?.accelerator
+          ...formValues?.spec?.resources,
+          localStorage: item?.spec?.resources?.localStorage
         },
         volume: {
           ...formValues?.spec?.volume

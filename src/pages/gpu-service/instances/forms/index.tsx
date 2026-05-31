@@ -1,6 +1,10 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
-import { ceilMilliToCore, parseQuantityToGi } from '@/pages/gpu-service/utils';
+import {
+  ceilMilliToCore,
+  parseJsonSafe,
+  parseQuantityToGi
+} from '@/pages/gpu-service/utils';
 import { PlusOutlined } from '@ant-design/icons';
 import {
   CheckboxField,
@@ -321,7 +325,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
             resources: {
               ...currentData?.spec?.resources,
               ...buildResourcesData(
-                JSON.parse(currentData?.description || '{}'),
+                parseJsonSafe<any>(currentData?.description || '{}', {}),
                 {
                   count:
                     _.toNumber(currentData?.spec?.resources?.accelerator) || 0
@@ -341,7 +345,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       }
       try {
         return (
-          JSON.parse(currentData?.description || '{}')?.spec
+          parseJsonSafe<any>(currentData?.description || '{}', {})?.spec
             ?.unitResourcesParsed ?? undefined
         );
       } catch {

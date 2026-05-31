@@ -8,6 +8,7 @@ import _ from 'lodash';
 import { useMemo } from 'react';
 import styled from 'styled-components';
 import { BasicResourceMax } from '../../templates/forms/basic';
+import { parseJsonSafe } from '../../utils';
 import InstanceTypeItem from '../components/instance-type-item';
 import { getAcceleratorMax } from '../config';
 import {
@@ -112,7 +113,8 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
   };
 
   const renderInstanceType = () => {
-    const description = JSON.parse(currentData?.description || '{}').spec || {};
+    const description =
+      parseJsonSafe<any>(currentData?.description || '{}', {}).spec || {};
     return (
       <SelectedCard
         style={{

@@ -11,21 +11,66 @@ import type { ColumnsType } from 'antd/lib/table';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import { Fragment, useMemo } from 'react';
-import { ceilMilliToCore, parseQuantityToGi } from '../../utils';
+import { parseJsonSafe } from '../../utils';
 import { InstanceStatusLabelMap, rowActionList, status } from '../config';
-import { ListItem } from '../config/types';
+import { InstanceTypeSpec, ListItem } from '../config/types';
 import tableSyles from '../styles/table.module.less';
 
-const formatCpu = (cpu?: string | null): string => {
-  if (!cpu) return '-';
-  return /m$/.test(cpu) ? (ceilMilliToCore(cpu) ?? cpu) : cpu;
+const buildResourcesData = (
+  instanceType: {
+    spec: InstanceTypeSpec;
+  },
+  options: {
+    count: number;
+  }
+) => {
+  const unitResourcesParsed = instanceType?.spec?.unitResourcesParsed;
+  const acceleratable = instanceType?.spec?.acceleratable;
+  const { count = 0 } = options;
+
+  if (acceleratable) {
+    return {
+      accelerator: _.toString(count),
+      cpu: unitResourcesParsed?.cpu?.cores
+        ? count * unitResourcesParsed?.cpu?.cores
+        : undefined,
+      ram: unitResourcesParsed?.ram?.value
+        ? count * unitResourcesParsed?.ram?.value
+        : undefined
+    };
+  }
+  return {};
 };
 
-const formatMemoryGB = (value?: string | null): string => {
-  if (!value) return '-';
-  if (/Gi$/.test(value)) return value.replace('Gi', 'GB');
-  const gi = parseQuantityToGi(value);
-  return gi != null ? `${gi}GB` : value;
+const formatResources = (
+  instanceTypeSpec: { spec: InstanceTypeSpec },
+  record: ListItem
+) => {
+  const resources = buildResourcesData(instanceTypeSpec, {
+    count: _.toNumber(record.spec?.resources?.accelerator) || 0
+  });
+
+  if (!record.spec?.resources?.accelerator) {
+    return {
+      cpu: record.spec?.resources?.cpu
+        ? `${record.spec?.resources?.cpu}C`
+        : '-',
+      ram: record.spec?.resources?.ram
+        ? `${record.spec?.resources?.ram}`.replace('Gi', 'GB')
+        : '-',
+      localStorage: record.spec?.resources?.localStorage
+        ? `${record.spec?.resources?.localStorage}`.replace('Gi', 'GB')
+        : '-'
+    };
+  }
+
+  return {
+    cpu: resources.cpu ? `${resources.cpu}C` : '-',
+    ram: resources.ram ? `${resources.ram}GB` : '-',
+    localStorage: record.spec?.resources?.localStorage
+      ? `${record.spec?.resources?.localStorage}`.replace('Gi', 'GB')
+      : undefined
+  };
 };
 
 type ConnectEntry =
@@ -96,7 +141,11 @@ const useInstancesColumns = ({
   const access = useAccess();
 
   const renderInstanceType = (record: ListItem) => {
-    const description = JSON.parse(record?.description || '{}').spec || {};
+    const description =
+      parseJsonSafe<any>(record?.description || '{}', {}).spec || {};
+
+    const resources = formatResources({ spec: description }, record);
+
     return (
       <Flex align="flex-start" orientation="vertical">
         <AutoTooltip
@@ -119,16 +168,16 @@ const useInstancesColumns = ({
           align="center"
           style={{ fontSize: 13, color: 'var(--ant-color-text-tertiary)' }}
         >
-          <span>{formatCpu(record.spec.resources?.cpu)}C</span>
+          <span>{resources.cpu}</span>
           <span className={tableSyles.dot} />
           <span>
             {intl.formatMessage({ id: 'gpuservice.instance.ram' })}:{' '}
-            {formatMemoryGB(record.spec.resources?.ram)}
+            {resources.ram}
           </span>
           <span className={tableSyles.dot} />
           <span>
             {intl.formatMessage({ id: 'gpuservice.instance.disk' })}:{' '}
-            {formatMemoryGB(record.spec.resources?.localStorage)}
+            {resources.localStorage}
           </span>
         </Flex>
       </Flex>

@@ -20,34 +20,89 @@ export const parseQuantityToNumber = (value?: string | null): number | null => {
   return Number.isFinite(num) && num > 0 ? num : null;
 };
 
-const GI_FROM_UNIT: Record<string, number> = {
-  Ki: 1 / (1024 * 1024),
-  Mi: 1 / 1024,
-  Gi: 1,
-  Ti: 1024
+const UNIT_FACTOR: Record<string, number> = {
+  '': 1,
+  n: 1e-9,
+  u: 1e-6,
+  m: 1e-3,
+  k: 1e3,
+  M: 1e6,
+  G: 1e9,
+  T: 1e12,
+  P: 1e15,
+  E: 1e18,
+  Ki: 1024,
+  Mi: 1024 ** 2,
+  Gi: 1024 ** 3,
+  Ti: 1024 ** 4,
+  Pi: 1024 ** 5,
+  Ei: 1024 ** 6
 };
 
-// Converts a K8s-style quantity ("24314504Ki", "2Ti", "10Gi", or a bare
-// number assumed to be bytes) to an integer GiB. Unit suffix is
-// case-insensitive.
-export const parseQuantityToGi = (value?: string | null): number | null => {
-  if (!value) return null;
-  const match = /^(-?\d+(?:\.\d+)?)(Ki|Mi|Gi|Ti)?$/i.exec(String(value));
-  if (!match) return null;
-  const num = Number(match[1]);
-  if (!Number.isFinite(num) || num <= 0) return null;
-  const unit = match[2]
-    ? match[2][0].toUpperCase() + match[2].slice(1).toLowerCase()
-    : null;
-  const factor = unit ? GI_FROM_UNIT[unit] : 1 / (1024 * 1024 * 1024);
-  return Math.floor(num * factor);
-};
+export const parseQuantity = (
+  value?: string | null
+): { num: number; unit: string; base: number } | null => {
+  if (value == null) return null;
+  const str = String(value).trim();
+  const len = str.length;
+  if (len === 0) return null;
 
-export const ceilMilliToCore = (value?: string | null): string | null => {
-  if (!value) return null;
-  const match = /^(-?\d+(?:\.\d+)?)m?$/.exec(value);
-  if (!match) return null;
-  const num = Number(match[1]);
+  let unit = '';
+  let numEnd = len;
+  if (len >= 2 && str[len - 1] === 'i') {
+    unit = str.slice(len - 2);
+    if (UNIT_FACTOR[unit] === undefined) return null;
+    numEnd = len - 2;
+  } else {
+    const last = str[len - 1];
+    const code = last.charCodeAt(0);
+    const isDigit = code >= 48 && code <= 57;
+    if (!isDigit && UNIT_FACTOR[last] !== undefined) {
+      unit = last;
+      numEnd = len - 1;
+    }
+  }
+
+  if (numEnd === 0) return null;
+  const num = Number(str.slice(0, numEnd));
   if (!Number.isFinite(num)) return null;
-  return String(Math.ceil(num / 1000));
+  const base = num * UNIT_FACTOR[unit];
+  if (!Number.isFinite(base)) return null;
+
+  return { num, unit, base };
+};
+
+export const parseQuantityToGi = (
+  value?: string | null
+): { value: number; unit: string; num: number } | null => {
+  if (!value) return null;
+  const normalized = String(value).replace(
+    /(ki|mi|gi|ti|pi|ei)$/i,
+    (m) => m[0].toUpperCase() + m[1].toLowerCase()
+  );
+  const parsed = parseQuantity(normalized);
+
+  if (!parsed || parsed.base <= 0) return null;
+
+  return {
+    value: _.floor(parsed.base / UNIT_FACTOR.Gi, 0),
+    unit: parsed.unit,
+    num: parsed.num
+  };
+};
+
+export const ceilMilliToCore = (
+  value?: string | null,
+  unit?: string
+): { cores: number; unit: string; num: number } | null => {
+  const parsed = parseQuantity(value);
+  if (!parsed) return null;
+  const outUnit = unit ?? parsed.unit;
+  const outFactor = UNIT_FACTOR[outUnit];
+  if (outFactor === undefined) return null;
+  return {
+    cores: Math.ceil(parsed.base),
+    unit: outUnit,
+    num: parsed.base / outFactor
+  };
 };

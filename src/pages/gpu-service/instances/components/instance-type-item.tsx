@@ -1,4 +1,3 @@
-import { ceilMilliToCore } from '@/pages/gpu-service/utils';
 import { AutoTooltip, IconFont, ThemeTag } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Flex } from 'antd';
@@ -62,7 +61,7 @@ interface InstanceTypeItemProps {
 const MetaItem: React.FC<{
   icon: string;
   label?: string;
-  value?: string | null;
+  value?: string | null | number;
   showDot?: boolean;
   show?: boolean;
 }> = ({ icon, label, value, showDot = true, show = true }) => {
@@ -91,15 +90,13 @@ const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({ item }) => {
   const onceMaxRequestData = item.status?.onceMaxRequest || {};
 
   // RAM resource
-  const ramRaw = acceleratable
-    ? specData.unitResources?.ram
+  const ramUnit = acceleratable
+    ? specData.unitResourcesParsed?.ram?.value
     : onceMaxRequestData.ram;
 
-  console.log('InstanceTypeItem', item.name, 'ramRaw', ramRaw);
-
   // CPU resource
-  const cpuRaw = acceleratable
-    ? specData.unitResources?.cpu
+  const cpuUnitCores = acceleratable
+    ? specData.unitResourcesParsed?.cpu?.cores
     : onceMaxRequestData.cpu;
 
   const renderName = () => {
@@ -159,7 +156,7 @@ const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({ item }) => {
                   },
                   { count: '' }
                 )}
-                value={`${item.maxAccelerator || '-'}`}
+                value={`${item.maxAccelerator || 0}`}
               />
             </>
           )}
@@ -169,14 +166,14 @@ const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({ item }) => {
             showDot={false}
             icon="icon-ram-02"
             label={intl.formatMessage({ id: 'gpuservice.instance.ram' })}
-            value={toDisplayUnit(convertKiToGi(ramRaw)) ?? '-'}
+            value={ramUnit ? `${ramUnit}GB` : '-'}
           />
           <MetaItem
-            show={!!cpuRaw}
+            show={!!cpuUnitCores}
             showDot={true}
             icon="icon-cpu"
             label="CPU"
-            value={ceilMilliToCore(cpuRaw) ?? '-'}
+            value={cpuUnitCores || '-'}
           />
         </span>
       </Meta>

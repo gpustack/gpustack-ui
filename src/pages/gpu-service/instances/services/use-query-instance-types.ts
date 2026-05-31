@@ -1,5 +1,6 @@
 import { useQueryData } from '@gpustack/core-ui';
 import React from 'react';
+import { ceilMilliToCore, parseQuantityToGi } from '../../utils';
 import { queryGPUServiceInstanceTypes } from '../apis';
 import { getAcceleratorMax } from '../config';
 import { InstanceTypeItem } from '../config/types';
@@ -44,13 +45,33 @@ export default function useQueryInstanceTypes() {
 
     const list = (res?.items || []).map((item) => {
       const remainingData = isAvailable(item);
+      const rawMax = item.status?.onceMaxRequest;
+
       return {
         ...item,
+        spec: {
+          ...item.spec,
+          unitResourcesParsed: {
+            cpu: ceilMilliToCore(item.spec?.unitResources?.cpu ?? null),
+            ram: parseQuantityToGi(item.spec?.unitResources?.ram ?? null)
+          }
+        },
+        status: {
+          ...item.status,
+          onceMaxRequest: {
+            ...rawMax,
+            cpu: rawMax?.cpu ? `${ceilMilliToCore(rawMax.cpu)?.cores}` : '',
+            ram: rawMax?.ram ? `${parseQuantityToGi(rawMax.ram)?.value}` : '',
+            localStorage: rawMax?.localStorage
+              ? `${parseQuantityToGi(rawMax.localStorage)?.value}`
+              : ''
+          }
+        },
         maxAccelerator: remainingData.maxAccelerator,
         disabled: !remainingData.available
       };
     });
-    console.log('queryInstanceTypes', list);
+
     setDataList(list);
     return list;
   };

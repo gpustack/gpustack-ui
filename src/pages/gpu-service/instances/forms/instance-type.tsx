@@ -8,7 +8,6 @@ import _ from 'lodash';
 import { useMemo } from 'react';
 import styled from 'styled-components';
 import { BasicResourceMax } from '../../templates/forms/basic';
-import { ceilMilliToCore, parseQuantityToGi } from '../../utils';
 import InstanceTypeItem from '../components/instance-type-item';
 import { getAcceleratorMax } from '../config';
 import {
@@ -102,7 +101,7 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
   };
 
   const renderMemoryLabel = (): React.ReactNode => {
-    if (isGPU) {
+    if (isGPU || action === PageAction.EDIT || !onceMaxRequest?.memory) {
       return intl.formatMessage({ id: 'gpuservice.template.memory' });
     }
 
@@ -235,40 +234,24 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
         <div style={{ flex: 1 }}>
           <Form.Item<FormData>
             name={['spec', 'resources', 'ram']}
-            normalize={(value) => (value ? `${value}Gi` : undefined)}
-            getValueProps={(value) => {
-              if (!value) return { value: '' };
-              const str = String(value);
-              if (/Gi$/.test(str)) return { value: str.replace(/Gi$/, '') };
-              if (/(Ki|Mi|Ti)$/.test(str)) {
-                return { value: parseQuantityToGi(str) ?? '' };
-              }
-              return { value: str };
-            }}
+            normalize={(value) => (value ? `${value}Gi` : null)}
+            getValueProps={(value) => ({
+              value: _.toString(value).replace(/Gi$/, '')
+            })}
           >
             <InputNumber
-              disabled={isGPU || disabled}
+              disabled={isGPU || disabled || action === PageAction.EDIT}
               label={renderMemoryLabel()}
               max={onceMaxRequest?.memory ?? undefined}
             />
           </Form.Item>
         </div>
         <div style={{ flex: 1 }}>
-          <Form.Item<FormData>
-            name={['spec', 'resources', 'cpu']}
-            normalize={(value) => (value ? `${value}` : '')}
-            getValueProps={(value) => {
-              if (!value) return { value: '' };
-              const str = String(value);
-              return {
-                value: /m$/.test(str) ? (ceilMilliToCore(str) ?? '') : str
-              };
-            }}
-          >
+          <Form.Item<FormData> name={['spec', 'resources', 'cpu']}>
             <InputNumber
               label={renderMaxLabel('CPU', onceMaxRequest?.cpu)}
               max={onceMaxRequest?.cpu ?? undefined}
-              disabled={disabled || isGPU}
+              disabled={disabled || isGPU || action === PageAction.EDIT}
             />
           </Form.Item>
         </div>

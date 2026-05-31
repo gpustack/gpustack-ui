@@ -1,10 +1,6 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
-import {
-  ceilMilliToCore,
-  parseQuantityToGi,
-  parseQuantityToNumber
-} from '@/pages/gpu-service/utils';
+import { ceilMilliToCore, parseQuantityToGi } from '@/pages/gpu-service/utils';
 import { PlusOutlined } from '@ant-design/icons';
 import {
   CheckboxField,
@@ -198,10 +194,52 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       localStorage: null
     });
 
+    const buildResourcesData = (
+      instanceType: InstanceTypeItem | undefined,
+      options: {
+        count: number;
+      }
+    ) => {
+      const unitResourcesParsed = instanceType?.spec?.unitResourcesParsed;
+      const acceleratable = instanceType?.spec?.acceleratable;
+      const { count = 0 } = options;
+
+      if (acceleratable) {
+        return {
+          accelerator: _.toString(count),
+          cpu: unitResourcesParsed?.cpu?.cores
+            ? count * unitResourcesParsed?.cpu?.cores
+            : undefined,
+          ram: unitResourcesParsed?.ram?.value
+            ? count * unitResourcesParsed?.ram?.value
+            : undefined
+        };
+      }
+      return {};
+    };
+
+    const buildResourcesDataForSubmit = (values: FormData) => {
+      const unitResourcesParsed = getUnitResources();
+      const accelerator = _.toNumber(values.spec?.resources?.accelerator) || 0;
+
+      const cpuNum = unitResourcesParsed?.cpu?.num;
+      const ramNum = unitResourcesParsed?.ram?.num;
+
+      return {
+        cpu:
+          accelerator > 0 && cpuNum
+            ? `${accelerator * cpuNum}${unitResourcesParsed?.cpu?.unit || ''}`
+            : `${values.spec?.resources?.cpu}`,
+        ram:
+          accelerator > 0 && ramNum
+            ? `${accelerator * ramNum}${unitResourcesParsed?.ram?.unit || ''}`
+            : values.spec?.resources?.ram
+      };
+    };
+
     const resolveAndApply = (
       instanceType: InstanceTypeItem | undefined,
-      count: number,
-      options: { writeAccelerator?: boolean } = {}
+      count: number
     ) => {
       if (!instanceType) {
         setSelectedInstanceType(undefined);
@@ -214,40 +252,22 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       );
 
       setSelectedInstanceType(instanceType);
-
       setOnceMaxRequest({
-        cpu: ceilMilliToCore(candidate?.cpu?.onceMaxRequest),
-        memory: parseQuantityToGi(candidate?.ram?.onceMaxRequest),
+        cpu: ceilMilliToCore(candidate?.cpu?.onceMaxRequest)?.cores,
+        memory: parseQuantityToGi(candidate?.ram?.onceMaxRequest)?.value,
         localStorage: parseQuantityToGi(candidate?.localStorage?.onceMaxRequest)
+          ?.value
       });
-
-      const unitResources = instanceType.spec?.unitResources;
-      const unitCpu = parseQuantityToNumber(unitResources?.cpu);
-      const unitRam = parseQuantityToNumber(unitResources?.ram);
-      const acceleratable = instanceType.spec?.acceleratable;
-      const cpuCores =
-        unitCpu != null ? ceilMilliToCore(`${count * unitCpu}m`) : null;
-      const ramGi =
-        unitRam != null ? parseQuantityToGi(`${count * unitRam}Mi`) : null;
 
       form.setFieldsValue({
         clusterId: candidate?.cluster ? _.toNumber(candidate.cluster) : null,
         spec: {
           type: candidate?.name || '',
-          ...(options.writeAccelerator
-            ? { resources: { accelerator: _.toString(count) } }
-            : {}),
-          ...(acceleratable
-            ? {
-                resources: {
-                  ...(options.writeAccelerator
-                    ? { accelerator: _.toString(count) }
-                    : {}),
-                  ...(cpuCores != null ? { cpu: cpuCores } : {}),
-                  ...(ramGi != null ? { ram: `${ramGi}Gi` } : {})
-                }
-              }
-            : {})
+          resources: {
+            ...buildResourcesData(instanceType, {
+              count
+            })
+          }
         } as any
       });
     };
@@ -293,8 +313,22 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
         action === PageAction.VIEW ||
         realAction === PageAction.CREATE
       ) {
+        console.log('currentData', currentData);
         form.setFieldsValue({
           ...currentData,
+          spec: {
+            ...currentData?.spec,
+            resources: {
+              ...currentData?.spec?.resources,
+              ...buildResourcesData(
+                JSON.parse(currentData?.description || '{}'),
+                {
+                  count:
+                    _.toNumber(currentData?.spec?.resources?.accelerator) || 0
+                }
+              )
+            }
+          },
           enable_ssh: !!currentData?.spec?.sshPublicKeys?.length,
           storageMode: detectMode(currentData?.spec?.volume)
         });
@@ -302,13 +336,13 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
     }, [action, currentData, form, open, realAction, instanceTypeList]);
 
     const getUnitResources = () => {
-      if (selectedInstanceType?.spec?.unitResources) {
-        return selectedInstanceType.spec.unitResources;
+      if (selectedInstanceType?.spec?.unitResourcesParsed) {
+        return selectedInstanceType.spec.unitResourcesParsed;
       }
       try {
         return (
-          JSON.parse(currentData?.description || '{}')?.spec?.unitResources ??
-          undefined
+          JSON.parse(currentData?.description || '{}')?.spec
+            ?.unitResourcesParsed ?? undefined
         );
       } catch {
         return undefined;
@@ -329,26 +363,15 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
         });
       }
 
-      const accelerator = _.toNumber(values.spec?.resources?.accelerator);
-      const submittedResources = { ...(values.spec?.resources ?? {}) };
-      if (accelerator > 0) {
-        const unitResources = getUnitResources();
-        const unitCpu = parseQuantityToNumber(unitResources?.cpu);
-        const unitRam = parseQuantityToNumber(unitResources?.ram);
-        if (unitCpu != null) {
-          submittedResources.cpu = `${accelerator * unitCpu}m`;
-        }
-        if (unitRam != null) {
-          submittedResources.ram = `${accelerator * unitRam}Mi`;
-        }
-      }
-
       await onFinish({
         ..._.omit(values, ['enable_ssh']),
         spec: {
           ...values.spec,
           ports: submittedPorts,
-          resources: submittedResources
+          resources: {
+            ...values.spec?.resources,
+            ...buildResourcesDataForSubmit(values)
+          }
         }
       });
     };
@@ -377,7 +400,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       getFieldsValue: () => form.getFieldsValue(),
       applyInstanceType: (instanceType: InstanceTypeItem) => {
         const count = instanceType.spec?.acceleratable ? 1 : 0;
-        resolveAndApply(instanceType, count, { writeAccelerator: true });
+        resolveAndApply(instanceType, count);
       }
     }));
 

@@ -101,6 +101,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   const [form] = Form.useForm();
   const intl = useIntl();
   const [activeKey, setActiveKey] = React.useState<string[]>([]);
+  const [submitAttempted, setSubmitAttempted] = React.useState(false);
   const { modelContextData, fetchContextLength } = useQueryContextLength();
   const localPath = Form.useWatch('local_path', form);
   const modelScopeModelId = Form.useWatch('model_scope_model_id', form);
@@ -282,6 +283,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   };
 
   const handleOnFinishFailed = (errorInfo: any) => {
+    setSubmitAttempted(true);
     const { errorFields } = errorInfo;
     if (errorFields && errorFields.length > 0) {
       const collapseKeys: string[] = [];
@@ -398,6 +400,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         workerLabelOptions: workerLabelOptions,
         initialValues: initialValues,
         modelContextData: modelContextData,
+        submitAttempted: submitAttempted,
         clearCacheFormValues: clearCacheFormValues,
         onValuesChange: onValuesChange,
         onBackendChange: handleBackendChange

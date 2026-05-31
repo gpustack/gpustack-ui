@@ -88,7 +88,7 @@ const GPUService: React.FC = () => {
   } = useViewEvents();
   const {
     fetchClusterList,
-    cancelRequest: cancelClusterRequest,
+    cancelRequest,
     clusterList,
     loading: clusterLoading
   } = useQueryClusterList();

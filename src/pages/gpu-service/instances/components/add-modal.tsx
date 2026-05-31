@@ -268,6 +268,7 @@ const AddModal: React.FC<AddModalProps> = ({
       await onOk({
         ...values
       });
+      console.log('submit form values', values);
     } finally {
       setLoading(false);
     }

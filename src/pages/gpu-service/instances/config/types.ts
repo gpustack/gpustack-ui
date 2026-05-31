@@ -41,10 +41,10 @@ export interface FormData {
     }[];
     volumeMount: string;
     resources: {
-      cpu?: string;
-      ram?: string;
-      localStorage?: string;
-      accelerator?: number | string;
+      cpu: string | null | number;
+      ram: string | null | number;
+      localStorage: string | null | number;
+      accelerator: number | string | null;
     };
     volume: {
       ephemeral?: {
@@ -161,6 +161,18 @@ export interface InstanceTypeSpec {
   unitResources?: {
     cpu: QuanityCPU;
     ram: QuanityMemory;
+  };
+  unitResourcesParsed?: {
+    cpu: {
+      cores?: number;
+      unit: string;
+      num: number;
+    } | null;
+    ram: {
+      value: number;
+      unit: string;
+      num: number;
+    } | null;
   };
 }
 

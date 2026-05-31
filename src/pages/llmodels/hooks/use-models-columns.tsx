@@ -161,11 +161,7 @@ const useModelsColumns = ({
           <Flex align="center" gap={4} style={{ maxWidth: '100%' }}>
             <AutoTooltip
               ghost
-              title={
-                <span style={{ color: 'var(--ant-color-text-light-solid)' }}>
-                  {text}
-                </span>
-              }
+              title={text}
             >
               <span className="text-primary font-400">{text}</span>
             </AutoTooltip>

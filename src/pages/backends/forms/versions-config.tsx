@@ -276,7 +276,9 @@ const VersionsForm: React.FC<AddModalProps> = ({
                   key={name}
                   defaultOpen
                   styles={{
-                    body: collapseKey.has(name) ? { padding: 16 } : {},
+                    body: collapseKey.has(name)
+                      ? { paddingInline: 16, paddingBlock: '16px 0' }
+                      : {},
                     content: { paddingTop: 0 },
                     header: {
                       backgroundColor: 'unset'

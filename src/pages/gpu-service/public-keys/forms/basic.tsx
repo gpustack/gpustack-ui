@@ -33,6 +33,7 @@ const Basic = ({ action }: { action: string }) => {
       </Form.Item>
       <Form.Item<FormData> name="displayName">
         <CInput.Input
+          trim={false}
           label={intl.formatMessage({ id: 'common.table.displayName' })}
         />
       </Form.Item>

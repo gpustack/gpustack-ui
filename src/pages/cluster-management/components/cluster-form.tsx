@@ -34,8 +34,6 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
     const [form] = Form.useForm();
     const intl = useIntl();
     const [activeKey, setActiveKey] = React.useState<string[]>([]);
-    // K8s deployment options is its own top-level section (sibling of Advanced),
-    // open by default so the fields are visible without an extra click.
     const [k8sActiveKey, setK8sActiveKey] = React.useState<string[]>([
       'k8sOptions'
     ]);
@@ -59,20 +57,8 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
       }
     }, [activeKey, action]);
 
-    // The backend models the optional k8s_options string knobs as
-    // Optional[str] and treats null/absent as "use the server default" or
-    // "no auth". Coerce empty form values to null before sending so a blank
-    // input is unambiguous rather than an empty string that defeats fallbacks.
     const normalizeOutgoing = (values: any): any => {
       const base: any = { ...values };
-      // Top-level cluster field shared by Docker and K8s. Trim then coerce a
-      // blank input to null so clearing it on edit (or a whitespace-only
-      // value) falls back to the server default rather than persisting an
-      // empty string.
-      if (base.system_default_container_registry !== undefined) {
-        base.system_default_container_registry =
-          base.system_default_container_registry?.trim() || null;
-      }
 
       const opts = base.k8s_options;
       if (!opts) return base;
@@ -88,32 +74,14 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
         }));
       }
 
-      next.operatorImage = opts.operatorImage || null;
-      next.namespace = opts.namespace || null;
-
-      // Presence of gpuInstanceOptions is the enable flag; keep it only when
-      // the toggle left an object behind, coercing a blank address to null.
-      if (opts.gpuInstanceOptions) {
-        next.gpuInstanceOptions = {
-          gpuInstancesAccessStaticAddress:
-            opts.gpuInstanceOptions.gpuInstancesAccessStaticAddress || null
-        };
-      }
-
       return { ...base, k8s_options: next };
     };
 
-    const handleOnFinish = (_values: FormData) => {
+    const handleOnFinish = (values: FormData) => {
       const workerConfig = yaml2Json(advanceConfigRef.current?.getYamlValue());
-      // antd's onFinish only delivers values for registered Form.Items.
-      // Spreading those on top of `getFieldsValue(true)` clobbers nested
-      // objects (e.g. `k8s_options` would lose values set via setFieldValue),
-      // so we go straight to the full store.
-      const fullValues = form.getFieldsValue(true);
-
       onFinish(
         normalizeOutgoing({
-          ...fullValues,
+          ...values,
           worker_config: {
             ...workerConfig
           }
@@ -203,10 +171,6 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
         };
       },
       validateFields: async () => {
-        // Run validation first to display any field errors. Then read the
-        // FULL store via `getFieldsValue(true)` so values that were set via
-        // setFieldValue on non-registered paths are still included in what we
-        // hand to the API.
         await form.validateFields();
         const values = form.getFieldsValue(true);
 
@@ -268,7 +232,7 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
           style={{ marginBottom: 8 }}
         >
           <SealTextArea
-            autoSize={{ minRows: 2, maxRows: 4 }}
+            scaleSize
             label={intl.formatMessage({ id: 'common.table.description' })}
           ></SealTextArea>
         </Form.Item>
@@ -286,11 +250,6 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
                 label: intl.formatMessage({ id: 'clusters.k8sOptions.title' }),
                 forceRender: true,
                 children: (
-                  // Key by cluster id so the section fully remounts when the
-                  // active cluster changes. GpuInstanceOptionsForm seeds its
-                  // local state from initialValue only once (initializedRef),
-                  // so without a remount a reused form instance could carry a
-                  // previous cluster's GPU instance config into the next one.
                   <K8sPodSpec
                     key={currentData?.id ?? 'new'}
                     action={action}

@@ -166,7 +166,7 @@ export default {
   'clusters.systemDefaultContainerRegistry.title': 'Default Container Registry',
   'clusters.systemDefaultContainerRegistry.tip':
     'Default registry used to resolve GPUStack images for this cluster. Falls back to the server default when unset.',
-  'clusters.k8sOptions.title': 'K8s Deployment Options',
+  'clusters.k8sOptions.title': 'Kubernetes Deployment Options',
   'clusters.imageCredentials.title': 'Image Credentials',
   'clusters.imageCredentials.add': 'Add Credential',
   'clusters.imageCredentials.registry': 'Registry',
@@ -181,7 +181,7 @@ export default {
   'clusters.namespace.title': 'Namespace',
   'clusters.namespace.tip':
     'Kubernetes namespace the cluster’s manifests render into. Leave empty to use gpustack-system.',
-  'clusters.gpuInstances.title': 'GPU Instances',
+  'clusters.gpuInstances.title': 'GPU Instance Service',
   'clusters.gpuInstances.tip': 'Enable GPU instance support for this cluster.',
   'clusters.gpuInstances.staticAddress': 'Static Access Address',
   'clusters.gpuInstances.staticAddress.tip':

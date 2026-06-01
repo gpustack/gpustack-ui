@@ -158,7 +158,7 @@ export default {
   'clusters.systemDefaultContainerRegistry.title': '默认容器镜像仓库',
   'clusters.systemDefaultContainerRegistry.tip':
     '用于解析该集群 GPUStack 镜像的默认镜像仓库。未设置时回退到服务端默认值。',
-  'clusters.k8sOptions.title': 'K8s 部署选项',
+  'clusters.k8sOptions.title': 'Kubernetes 部署选项',
   'clusters.imageCredentials.title': '镜像仓库凭证',
   'clusters.imageCredentials.add': '添加凭证',
   'clusters.imageCredentials.registry': '镜像仓库地址',
@@ -173,7 +173,7 @@ export default {
   'clusters.namespace.title': '命名空间',
   'clusters.namespace.tip':
     '集群清单渲染所使用的 Kubernetes 命名空间。留空则使用 gpustack-system。',
-  'clusters.gpuInstances.title': 'GPU 实例',
+  'clusters.gpuInstances.title': 'GPU 实例服务',
   'clusters.gpuInstances.tip': '为该集群启用 GPU 实例支持。',
   'clusters.gpuInstances.staticAddress': '静态访问地址',
   'clusters.gpuInstances.staticAddress.tip':

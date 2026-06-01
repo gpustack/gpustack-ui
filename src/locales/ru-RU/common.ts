@@ -55,6 +55,7 @@ export default {
   'common.button.viewevent': 'Просмотр событий',
   'common.button.recreate': 'Пересоздать',
   'common.table.operation': 'Действия',
+  'common.table.creator': 'Создатель',
   'common.table.createTime': 'Создано',
   'common.table.updateTime': 'Обновлено',
   'common.table.description': 'Описание',

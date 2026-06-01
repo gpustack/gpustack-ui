@@ -55,6 +55,7 @@ export default {
   'common.button.viewevent': 'イベントを表示',
   'common.button.recreate': '再作成',
   'common.table.operation': '操作',
+  'common.table.creator': '作成者',
   'common.table.createTime': '作成日時',
   'common.table.updateTime': '更新日時',
   'common.table.description': '説明',

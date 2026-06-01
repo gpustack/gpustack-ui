@@ -51,7 +51,6 @@ export default {
   'common.button.confirm': '确定',
   'common.button.viewlog': '查看日志',
   'common.button.viewevent': '查看事件',
-  'common.button.recreate': '重新创建',
   'common.table.operation': '操作',
   'common.table.createTime': '创建时间',
   'common.table.updateTime': '更新时间',
@@ -278,5 +277,6 @@ export default {
   'common.image.limit.height': '图片高度须为{height}。',
   'common.remaining': '剩余 {count}',
   'common.max': '最大 {count}',
-  'common.validate.group': '请填写完整的{group}配置'
+  'common.validate.group': '请填写完整的{group}配置',
+  'common.preferences': '偏好设置'
 };

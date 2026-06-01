@@ -212,7 +212,7 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
           <span className="flex flex-center">
             <IconFont type="icon-settings-02" />
             <span className="m-l-8" style={{ marginLeft: 8 }}>
-              {intl?.formatMessage?.({ id: 'common.button.settings' })}
+              {intl?.formatMessage?.({ id: 'common.preferences' })}
             </span>
           </span>
         ),

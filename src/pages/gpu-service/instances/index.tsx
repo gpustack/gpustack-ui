@@ -66,7 +66,7 @@ const GPUService: React.FC = () => {
     deleteAPI: deleteGPUServiceInstance,
     watch: true,
     API: GPU_SERVICE_INSTANCES_API,
-    contentForDelete: intl.formatMessage({ id: 'gpuservice.instance' })
+    contentForDelete: 'gpuservice.instance'
   });
 
   const { fetchData: createInstance } = useCreateInstanceRequest();

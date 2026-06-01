@@ -260,7 +260,7 @@ export default {
   'common.sso.noConfig':
     'Единый вход не настроен в этой системе. Пожалуйста, обратитесь к администратору.',
   'common.button.edit.item': 'Редактировать {name}',
-  'common.button.copy.item': 'Duplicate {name}',
+  'common.button.copy.item': 'Дублировать {name}',
   'common.button.terminal': 'Терминал',
   'common.button.addItem': 'Добавить элемент',
   'common.help.default': 'По умолчанию: {content}',
@@ -284,7 +284,8 @@ export default {
   'common.image.limit.height': 'Image height must be {height}.',
   'common.remaining': 'Остаток {count}',
   'common.max': 'Макс. {count}',
-  'common.validate.group': 'Please complete the {group} configuration'
+  'common.validate.group': 'Please complete the {group} configuration',
+  'common.preferences': 'Preferences'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

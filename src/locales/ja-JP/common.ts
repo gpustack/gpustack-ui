@@ -285,7 +285,8 @@ export default {
   'common.image.limit.height': 'Image height must be {height}.',
   'common.remaining': '残り {count}',
   'common.max': '最大 {count}',
-  'common.validate.group': 'Please complete the {group} configuration'
+  'common.validate.group': 'Please complete the {group} configuration',
+  'common.preferences': 'Preferences'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

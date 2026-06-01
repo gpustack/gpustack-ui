@@ -30,7 +30,7 @@ export default {
   'menu.usage': '使用量',
   'menu.404': '404',
   'menu.resources.workers': '节点',
-  'menu.resources.gpus': 'GPUs',
+  'menu.resources.gpus': 'GPU',
   'menu.models.modelfiles': '模型文件',
   'menu.accessControl': '访问控制',
   'menu.accessControl.apikeys': 'API 密钥',

@@ -169,7 +169,9 @@ const VolumeMountsForm: React.FC<{ action: PageActionType }> = ({ action }) => {
                     open={collapseKey.has(name)}
                     onToggle={(open: boolean) => onToggle(open, name)}
                     styles={{
-                      body: collapseKey.has(name) ? { padding: 16 } : {},
+                      body: collapseKey.has(name)
+                        ? { paddingBlock: '16px 0', paddingInline: 16 }
+                        : {},
                       content: { paddingTop: 0 },
                       header: {
                         backgroundColor: 'unset'

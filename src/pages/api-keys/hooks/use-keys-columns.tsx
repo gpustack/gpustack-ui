@@ -110,17 +110,6 @@ const useModelsColumns = ({
         )
       },
       {
-        title: intl.formatMessage({ id: 'users.table.username' }),
-        dataIndex: 'user_name',
-        key: 'user_name',
-        hidden: !is_admin,
-        render: (text: string, record: ListItem) => (
-          <AutoTooltip ghost style={{ maxWidth: 200 }}>
-            {text || '-'}
-          </AutoTooltip>
-        )
-      },
-      {
         title: intl.formatMessage({ id: 'apikeys.form.expiretime' }),
         dataIndex: 'expires_at',
         key: 'expires_at',
@@ -185,6 +174,17 @@ const useModelsColumns = ({
         },
         render: (text: string, record: ListItem) => (
           <AutoTooltip ghost>{text}</AutoTooltip>
+        )
+      },
+      {
+        title: intl.formatMessage({ id: 'common.table.creator' }),
+        dataIndex: 'user_name',
+        key: 'user_name',
+        hidden: !is_admin,
+        render: (text: string) => (
+          <AutoTooltip ghost style={{ maxWidth: 200 }}>
+            {text || '-'}
+          </AutoTooltip>
         )
       },
       {

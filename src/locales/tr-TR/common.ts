@@ -55,6 +55,7 @@ export default {
   'common.button.viewevent': 'Olayları Görüntüle',
   'common.button.recreate': 'Yeniden Oluştur',
   'common.table.operation': 'İşlemler',
+  'common.table.creator': 'Oluşturan',
   'common.table.createTime': 'Oluşturulma',
   'common.table.updateTime': 'Güncellenme',
   'common.table.description': 'Açıklama',

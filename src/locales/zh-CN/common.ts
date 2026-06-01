@@ -52,6 +52,7 @@ export default {
   'common.button.viewlog': '查看日志',
   'common.button.viewevent': '查看事件',
   'common.table.operation': '操作',
+  'common.table.creator': '创建者',
   'common.table.createTime': '创建时间',
   'common.table.updateTime': '更新时间',
   'common.table.description': '描述',

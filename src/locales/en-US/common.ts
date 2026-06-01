@@ -55,6 +55,7 @@ export default {
   'common.button.viewevent': 'View Events',
   'common.button.recreate': 'Recreate',
   'common.table.operation': 'Operations',
+  'common.table.creator': 'Creator',
   'common.table.createTime': 'Created',
   'common.table.updateTime': 'Updated',
   'common.table.description': 'Description',

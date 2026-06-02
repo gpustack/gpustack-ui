@@ -1,3 +1,4 @@
+import PluginExtraFields from '@/components/plugin-extra-fields';
 import { modelNameReg, PageAction } from '@/config';
 import { OPENAI_COMPATIBLE } from '@/config/settings';
 import {
@@ -12,7 +13,7 @@ import {
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import styled from 'styled-components';
 import { DeployFormKeyMap, sourceOptions } from '../config';
 import { useFormContext } from '../config/form-context';
@@ -76,6 +77,7 @@ interface BasicFormProps {
       provider: string;
       state: string;
       is_default: boolean;
+      owner_principal_id?: number;
       workers: number;
       ready_workers: number;
       gpus: number;
@@ -109,20 +111,65 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
     }
   };
 
+  // `organization_id` is owned by the create-scope picker slot; it only
+  // appears when a platform admin is in the "All" view. When set, scope the
+  // cluster dropdown to that org's own clusters — the backend derives the
+  // deployment's owner from the chosen cluster, so this keeps them aligned.
+  const scopeOrgId = Form.useWatch('organization_id', form);
+  const prevScopeRef = useRef<number | null | undefined>(undefined);
+
   const clusterOptions = useMemo(() => {
-    return clusterList?.map((item) => {
-      return {
-        label:
-          item.state === ClusterStatusValueMap.Ready
-            ? item.label
-            : `${item.label} [${ClusterStatusLabelMap[item.state as string]}]`,
-        value: item.value,
-        workers: item.workers,
-        ready_workers: item.ready_workers,
-        gpus: item.gpus
-      };
-    });
-  }, [clusterList]);
+    return clusterList
+      ?.filter((item) =>
+        scopeOrgId == null ? true : item.owner_principal_id === scopeOrgId
+      )
+      .map((item) => {
+        return {
+          label:
+            item.state === ClusterStatusValueMap.Ready
+              ? item.label
+              : `${item.label} [${ClusterStatusLabelMap[item.state as string]}]`,
+          value: item.value,
+          state: item.state,
+          is_default: item.is_default,
+          workers: item.workers,
+          ready_workers: item.ready_workers,
+          gpus: item.gpus
+        };
+      });
+  }, [clusterList, scopeOrgId]);
+
+  // On a genuine org change (not the initial value — the modal's open
+  // handler seeds the first cluster), drop a now-out-of-scope cluster and
+  // re-pick within the new org so GPU/backend options refetch for it.
+  useEffect(() => {
+    if (prevScopeRef.current === undefined) {
+      prevScopeRef.current = scopeOrgId;
+      return;
+    }
+    if (prevScopeRef.current === scopeOrgId) {
+      return;
+    }
+    prevScopeRef.current = scopeOrgId;
+
+    const current = form.getFieldValue('cluster_id');
+    const stillValid = clusterOptions?.some((c) => c.value === current);
+    if (stillValid) {
+      return;
+    }
+    const next =
+      clusterOptions?.find((c) => c.is_default)?.value ??
+      clusterOptions?.find((c) => c.state === ClusterStatusValueMap.Ready)
+        ?.value ??
+      clusterOptions?.[0]?.value ??
+      null;
+    form.setFieldValue('cluster_id', next ?? null);
+    if (next != null) {
+      handleClusterChange?.(next as number);
+    }
+    // The prevScopeRef guard above makes this a no-op unless scopeOrgId
+    // actually changed, so listing the other deps is safe (no extra runs).
+  }, [scopeOrgId, clusterOptions, form, handleClusterChange]);
 
   const clusterOptionRender = (option: any) => {
     const { data } = option;
@@ -181,6 +228,7 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
           required
         ></CInput.Input>
       </Form.Item>
+      <PluginExtraFields name="CreateOrgScopeField" context={{ action }} />
 
       <Form.Item<FormData>
         name="source"

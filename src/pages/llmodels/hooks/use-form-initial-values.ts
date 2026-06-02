@@ -145,7 +145,10 @@ export const useGenerateWorkerOptions = () => {
     CascaderOption<{ state: string }>[]
   >([]);
   const [clusterList, setClusterList] = useState<
-    Global.BaseOption<number, { provider: string; state: string | number }>[]
+    Global.BaseOption<
+      number,
+      { provider: string; state: string | number; owner_principal_id?: number }
+    >[]
   >([]);
   const [workersList, setWorkersList] = useState<
     Global.BaseOption<
@@ -165,6 +168,11 @@ export const useGenerateWorkerOptions = () => {
         label: cluster.name,
         value: cluster.id,
         parent: true,
+        // Carried so the download form can scope the worker picker to a
+        // chosen org (admin "All" view). A model file's owner is derived
+        // from the target worker's cluster, so filtering by the cluster's
+        // owner keeps them aligned.
+        owner_principal_id: cluster.owner_principal_id,
         children: workerList
           .filter(
             (worker) =>
@@ -219,6 +227,7 @@ export const useGenerateWorkerOptions = () => {
       provider: item.provider as string,
       state: item.state,
       is_default: item.is_default,
+      owner_principal_id: item.owner_principal_id,
       workers: item.workers,
       ready_workers: item.ready_workers,
       gpus: item.gpus
@@ -245,7 +254,12 @@ export default function useFormInitialValues() {
   const [clusterList, setClusterList] = useState<
     Global.BaseOption<
       number,
-      { provider: string; state: string; is_default: boolean }
+      {
+        provider: string;
+        state: string;
+        is_default: boolean;
+        owner_principal_id?: number;
+      }
     >[]
   >([]);
 
@@ -262,6 +276,11 @@ export default function useFormInitialValues() {
         provider: item.provider as string,
         state: item.state,
         is_default: item.is_default,
+        // Carried so the deploy form can scope the cluster dropdown to a
+        // chosen org (admin "All" view). The created deployment's owner is
+        // derived from the picked cluster, so filtering to owned clusters
+        // keeps owner and cluster aligned.
+        owner_principal_id: item.owner_principal_id,
         workers: item.workers,
         ready_workers: item.ready_workers,
         gpus: item.gpus

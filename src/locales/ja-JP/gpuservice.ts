@@ -96,6 +96,8 @@ export default {
   'gpuservice.instance.templates': 'インスタンステンプレート',
   'gpuservice.instance.section.storage': 'ストレージボリューム',
   'gpuservice.instance.type.required': 'インスタンスタイプを選択してください',
+  'gpuservice.instance.type.noAvailable':
+    '利用可能なインスタンスタイプがありません',
   'gpuservice.instance.gpuCount': 'GPU 数',
   'gpuservice.instance.gpuCount.required': 'GPU 数を入力してください',
   'gpuservice.instance.gpuCount.max':

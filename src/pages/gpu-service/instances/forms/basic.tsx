@@ -1,9 +1,9 @@
+import PluginExtraFields from '@/components/plugin-extra-fields';
 import { PageAction, validateLabelNameRegxFor63 } from '@/config';
 import { PageActionType } from '@/config/types';
 import { Input as CInput, useAppUtils } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
-import OwnerPrincipalIdField from '../../../_components/owner-principal-id-field';
 import { FormData } from '../config/types';
 import formStyles from '../styles/instances.module.less';
 
@@ -18,7 +18,6 @@ const Basic = ({
   const { getRuleMessage } = useAppUtils();
   return (
     <>
-      <OwnerPrincipalIdField name="owner_principal_id" />
       <Form.Item<FormData>
         data-field="name"
         name="name"
@@ -46,6 +45,7 @@ const Basic = ({
           label={intl.formatMessage({ id: 'common.table.displayName' })}
         />
       </Form.Item>
+      <PluginExtraFields name="CreateOrgScopeField" context={{ action }} />
       <div className={formStyles.command}>
         <Form.Item<FormData> name="description" hidden>
           <CInput.TextArea

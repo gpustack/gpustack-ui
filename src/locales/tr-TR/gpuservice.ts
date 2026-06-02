@@ -97,6 +97,7 @@ export default {
   'gpuservice.instance.templates': 'Örnek Şablonları',
   'gpuservice.instance.section.storage': 'Depolama Hacmi',
   'gpuservice.instance.type.required': 'Lütfen bir örnek türü seçin',
+  'gpuservice.instance.type.noAvailable': 'Kullanılabilir örnek türü yok',
   'gpuservice.instance.gpuCount': 'GPU Sayısı',
   'gpuservice.instance.gpuCount.required': 'Lütfen GPU sayısını girin',
   'gpuservice.instance.gpuCount.max': 'En fazla {count} GPU kartı seçin',

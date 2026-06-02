@@ -1,5 +1,6 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
+import { useQueryClusterList } from '@/pages/cluster-management/services/use-query-cluster-list';
 import Separator from '@/pages/llmodels/components/separator';
 import { SearchOutlined } from '@ant-design/icons';
 import {
@@ -10,7 +11,7 @@ import {
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Empty, Input, Typography } from 'antd';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ListItem as TemplateItem } from '../../templates/config/types';
 import useQueryTemplates from '../../templates/services/use-query-templates';
 import { FormData, InstanceTypeItem, ListItem } from '../config/types';
@@ -97,8 +98,58 @@ const AddModal: React.FC<AddModalProps> = ({
   } = useQueryInstanceTypes();
   const { detailData: templatesData, fetchData: fetchTemplates } =
     useQueryTemplates();
+  const { clusterList, fetchClusterList } = useQueryClusterList();
+  // Set by the create-scope picker (admin "All" view) via onScopeChange.
+  // undefined = no picker (org context) → no client-side scoping.
+  const [scopeOrgId, setScopeOrgId] = useState<number | null | undefined>(
+    undefined
+  );
 
   const templateList = templatesData?.items || [];
+
+  // A GPU instance is scheduled on the chosen instance type's cluster, and
+  // its owner is that cluster's owner. So when a platform admin targets an
+  // org, restrict each instance type's candidates to clusters that org owns
+  // (dropping tiers/types left with none). Header-independent: filters the
+  // fetched list client-side, so it doesn't rely on the request scope.
+  const filterTypesByOwner = (
+    types: InstanceTypeItem[],
+    clusters: Array<{
+      id?: number;
+      value?: number;
+      owner_principal_id?: number;
+    }>,
+    orgId?: number | null
+  ): InstanceTypeItem[] => {
+    if (orgId == null) return types;
+    const owned = new Set(
+      (clusters || [])
+        .filter((c) => c.owner_principal_id === orgId)
+        .map((c) => c.id ?? c.value)
+    );
+    return types
+      .map((it) => ({
+        ...it,
+        status: {
+          ...it.status,
+          acceleratorTiers: (it.status?.acceleratorTiers ?? [])
+            .map((tier: any) => ({
+              ...tier,
+              candidates: (tier.candidates ?? []).filter((c: any) =>
+                owned.has(Number(c.cluster))
+              )
+            }))
+            .filter((tier: any) => (tier.candidates ?? []).length > 0)
+        }
+      }))
+      .filter((it) => (it.status?.acceleratorTiers ?? []).length > 0);
+  };
+
+  const ownedInstanceTypes = useMemo(
+    () => filterTypesByOwner(instanceTypeList, clusterList as any, scopeOrgId),
+
+    [instanceTypeList, clusterList, scopeOrgId]
+  );
   // const readonly = action === PageAction.VIEW;
   const readonly = false;
   const isRecreate = realAction === PageAction.CREATE;
@@ -177,7 +228,13 @@ const AddModal: React.FC<AddModalProps> = ({
   // initial for first
   const applyAutoSelection = (
     instanceTypes: InstanceTypeItem[],
-    templates: TemplateItem[]
+    templates: TemplateItem[],
+    clusters?: Array<{
+      id?: number;
+      value?: number;
+      owner_principal_id?: number;
+    }>,
+    orgId?: number | null
   ) => {
     // On edit / view, surface the persisted selection in the card list.
     if (!shouldAutoSelectResource) {
@@ -195,9 +252,24 @@ const AddModal: React.FC<AddModalProps> = ({
       return;
     }
 
-    const first = instanceTypes.find((item) => !item.disabled);
+    // Scope to clusters the chosen org owns (admin "All" view).
+    const owned = filterTypesByOwner(instanceTypes, clusters || [], orgId);
+    const first = owned.find((item) => !item.disabled);
 
-    if (!first) return;
+    if (!first) {
+      // The chosen org has no clusters (hence no instance types). Clear any
+      // prior pick so a stale instance type / cross-org cluster isn't left
+      // on the form.
+      setInstanceTypeSelection({
+        instanceType: undefined,
+        manufacturer: undefined
+      });
+      setTemplateId(undefined);
+      form.current?.applyInstanceType?.(undefined);
+      form.current?.setFieldValue?.('clusterId', null);
+      form.current?.setFieldValue?.(['spec', 'type'], undefined);
+      return;
+    }
 
     // On create, auto-select the first instance type in the list
 
@@ -207,6 +279,52 @@ const AddModal: React.FC<AddModalProps> = ({
     );
 
     applySelection(first, template);
+  };
+
+  // Fetch the (tenant-scoped) instance types + templates and auto-select.
+  // The query hook cancels any in-flight request on each new call, so when
+  // this runs twice in quick succession (drawer open, then the scope
+  // picker settling on its default) the latest scope's result wins.
+  const loadCreateResources = (orgId?: number | null) => {
+    const session = ++sessionRef.current;
+    Promise.all([
+      fetchData({ page: -1 }),
+      fetchTemplates({ page: -1 }),
+      fetchClusterList({ page: -1 })
+    ]).then(([instanceResItems, templatesRes, clusters]) => {
+      if (sessionRef.current !== session) return;
+      applyAutoSelection(
+        instanceResItems || [],
+        templatesRes?.items || [],
+        (Array.isArray(clusters) ? clusters : (clusters as any)?.items) || [],
+        orgId
+      );
+    });
+  };
+
+  // Platform admin retargeted the create to another org (or Global). The
+  // instance-type / cluster offerings are tenant-scoped, so drop the
+  // current pick and reload for the new scope. The request interceptor
+  // already carries the new org header by the time this fires.
+  const handleScopeChange = (orgId?: number | null) => {
+    if (!open || action !== PageAction.CREATE) return;
+    setScopeOrgId(orgId);
+    setInstanceTypeSelection({
+      instanceType: undefined,
+      manufacturer: undefined
+    });
+    setTemplateId(undefined);
+    // Also clear the instance-type-derived form state (the selected type
+    // card + its limits, the cluster, and spec.type). The cluster decides
+    // where the instance is scheduled, so a stale pick from the previous
+    // scope must not survive — otherwise an instance owned by the newly
+    // chosen org could land on the old org's cluster. The reload's
+    // owner-scoped auto-selection re-fills them from the new org, or leaves
+    // them empty (blocking submit) when the chosen org has no clusters.
+    form.current?.applyInstanceType?.(undefined);
+    form.current?.setFieldValue?.('clusterId', null);
+    form.current?.setFieldValue?.(['spec', 'type'], undefined);
+    loadCreateResources(orgId);
   };
 
   useEffect(() => {
@@ -219,24 +337,26 @@ const AddModal: React.FC<AddModalProps> = ({
       setTemplateId(undefined);
       setInstanceKeyword('');
       setTemplateKeyword('');
+      setScopeOrgId(undefined);
       return;
     }
 
     if (action === PageAction.CREATE) {
-      const session = ++sessionRef.current;
-      Promise.all([fetchData({ page: -1 }), fetchTemplates({ page: -1 })]).then(
-        ([instanceResItems, templatesRes]) => {
-          if (sessionRef.current !== session) return;
-          applyAutoSelection(instanceResItems || [], templatesRes?.items || []);
-        }
-      );
+      loadCreateResources();
     }
   }, [open, shouldAutoSelectResource, action]);
 
-  // filter instance types
-  const filteredInstanceTypes = instanceTypeList.filter((item) =>
+  // filter instance types (already scoped to the chosen org's clusters)
+  const filteredInstanceTypes = ownedInstanceTypes.filter((item) =>
     matchKeyword([item.name], instanceKeyword)
   );
+
+  // No instance types for the chosen org (e.g. it owns no clusters), and not
+  // mid-fetch — drives the "no available instance type" message in the form.
+  const noAvailableInstanceTypes =
+    action === PageAction.CREATE &&
+    !instanceTypesLoading &&
+    ownedInstanceTypes.length === 0;
 
   // filter templates based on selection and keyword
   const filteredTemplates = templateList.filter((item) => {
@@ -445,8 +565,10 @@ const AddModal: React.FC<AddModalProps> = ({
                 currentData={data}
                 disabled={readonly}
                 onFinish={onFinish}
+                onScopeChange={handleScopeChange}
                 open={open}
-                instanceTypeList={instanceTypeList}
+                instanceTypeList={ownedInstanceTypes}
+                noAvailableInstanceTypes={noAvailableInstanceTypes}
               />
             </>
           </ColumnWrapper>

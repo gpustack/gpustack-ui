@@ -1,3 +1,4 @@
+import PluginExtraFields from '@/components/plugin-extra-fields';
 import { PageAction, validateLabelNameRegxFor63 } from '@/config';
 import {
   Input as CInput,
@@ -8,7 +9,6 @@ import {
 import { useIntl } from '@umijs/max';
 import { Flex, Form } from 'antd';
 import { useContext } from 'react';
-import OwnerPrincipalIdField from '../../../_components/owner-principal-id-field';
 import { FormContext } from '../config/form-context';
 import { FormData } from '../config/types';
 
@@ -19,7 +19,6 @@ const Basic = ({ action, open }: { action: string; open: boolean }) => {
 
   return (
     <>
-      <OwnerPrincipalIdField name="owner_principal_id" />
       <Form.Item<FormData>
         name="name"
         rules={[
@@ -45,6 +44,7 @@ const Basic = ({ action, open }: { action: string; open: boolean }) => {
           label={intl.formatMessage({ id: 'common.table.displayName' })}
         />
       </Form.Item>
+      <PluginExtraFields name="CreateOrgScopeField" context={{ action }} />
       <Flex gap={16}>
         <div style={{ flex: 1 }}>
           <Form.Item<FormData>

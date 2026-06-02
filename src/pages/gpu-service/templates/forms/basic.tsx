@@ -1,4 +1,6 @@
+import PluginExtraFields from '@/components/plugin-extra-fields';
 import { validateLabelNameRegxFor63 } from '@/config';
+import { PageActionType } from '@/config/types';
 import {
   Input as CInput,
   InputNumber,
@@ -28,12 +30,14 @@ export interface BasicResourceMax {
 
 interface BasicProps {
   page?: 'template' | 'instance';
+  action?: PageActionType;
   disabled?: boolean;
   onceMaxRequest?: BasicResourceMax;
 }
 
 const Basic: React.FC<BasicProps> = ({
   page = 'template',
+  action,
   onceMaxRequest,
   disabled
 }) => {
@@ -105,6 +109,10 @@ const Basic: React.FC<BasicProps> = ({
               maxLength={63}
             />
           </Form.Item>
+          <PluginExtraFields
+            name="CreateOrgScopeField"
+            context={{ action, allowGlobal: true }}
+          />
           <Form.Item<FormData>
             name="manufacturer"
             rules={[

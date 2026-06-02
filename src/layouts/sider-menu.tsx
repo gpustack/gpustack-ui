@@ -1,5 +1,5 @@
 import { CaretDownOutlined } from '@ant-design/icons';
-import { IconFont } from '@gpustack/core-ui';
+import { IconFont, OverlayScroller } from '@gpustack/core-ui';
 import { Link, useLocation } from '@umijs/max';
 import { Tooltip } from 'antd';
 import { createStyles, type FullToken } from 'antd-style';
@@ -29,11 +29,16 @@ const useStyles = createStyles(
 
     return {
       siderMenu: css`
+        width: 100%;
         &.sider-menu-collapsed {
           .menu-item {
             justify-content: center;
             padding: 0;
           }
+        }
+        .os-scrollbar-vertical .os-scrollbar-handle {
+          min-width: 4px;
+          max-width: 4px;
         }
       `,
       groupTitle: css`
@@ -222,44 +227,55 @@ const SiderMenu: React.FC<SiderMenuProps> = (props) => {
         'sider-menu-collapsed': collapsed
       })}
     >
-      {menuData.map((item: MenuItem, index: number) => (
-        <div key={item.key}>
-          {item.children && item.children.length > 0 ? (
-            <>
-              <div
-                className={cx(styles.groupTitle, {
-                  'menu-item-group-title-collapsed': collapsed
-                })}
-                onClick={(e) => handleToggleGroup(e, item)}
-              >
-                {!collapsed ? (
-                  <span className="group-title-text">
-                    <span>{item.name}</span>
-                    <CaretDownOutlined
-                      rotate={collapseKeys.has(item.key) ? -90 : 0}
-                    ></CaretDownOutlined>
-                  </span>
-                ) : (
-                  <span className={styles.line}></span>
-                )}
-              </div>
-              <div
-                className={cx(styles.menuItemGroup, {
-                  'menu-item-group-collapsed': collapsed,
-                  'menu-item-group-hidden':
-                    !collapsed && collapseKeys.has(item.key)
-                })}
-              >
-                {item.children?.map((child: MenuItem) =>
-                  menuItemRender(child, child.key)
-                )}
-              </div>
-            </>
-          ) : (
-            menuItemRender(item, item.key)
-          )}
+      <OverlayScroller
+        styles={{
+          wrapper: {
+            paddingInline: 0,
+            maxHeight: '100%'
+          }
+        }}
+      >
+        <div>
+          {menuData.map((item: MenuItem, index: number) => (
+            <div key={item.key}>
+              {item.children && item.children.length > 0 ? (
+                <>
+                  <div
+                    className={cx(styles.groupTitle, {
+                      'menu-item-group-title-collapsed': collapsed
+                    })}
+                    onClick={(e) => handleToggleGroup(e, item)}
+                  >
+                    {!collapsed ? (
+                      <span className="group-title-text">
+                        <span>{item.name}</span>
+                        <CaretDownOutlined
+                          rotate={collapseKeys.has(item.key) ? -90 : 0}
+                        ></CaretDownOutlined>
+                      </span>
+                    ) : (
+                      <span className={styles.line}></span>
+                    )}
+                  </div>
+                  <div
+                    className={cx(styles.menuItemGroup, {
+                      'menu-item-group-collapsed': collapsed,
+                      'menu-item-group-hidden':
+                        !collapsed && collapseKeys.has(item.key)
+                    })}
+                  >
+                    {item.children?.map((child: MenuItem) =>
+                      menuItemRender(child, child.key)
+                    )}
+                  </div>
+                </>
+              ) : (
+                menuItemRender(item, item.key)
+              )}
+            </div>
+          ))}
         </div>
-      ))}
+      </OverlayScroller>
     </div>
   );
 };

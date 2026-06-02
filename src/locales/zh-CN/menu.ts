@@ -25,7 +25,7 @@ export default {
   'menu.resources': '资源',
   'menu.apikeys': 'API 密钥',
   'menu.users': '用户',
-  'menu.profile': '个人信息',
+  'menu.profile': '偏好',
   'menu.login': '登录',
   'menu.usage': '使用量',
   'menu.404': '404',

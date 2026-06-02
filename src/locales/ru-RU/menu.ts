@@ -23,7 +23,7 @@ export default {
   'menu.resources': 'Ресурсы',
   'menu.apikeys': 'API-ключи',
   'menu.users': 'Пользователи',
-  'menu.profile': 'Профиль',
+  'menu.profile': 'Preferences',
   'menu.login': 'Авторизация',
   'menu.usage': 'Использование',
   'menu.404': 'Ошибка 404',

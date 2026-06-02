@@ -380,8 +380,8 @@ const baseRoutes = [
   },
   {
     name: 'profile',
-    path: '/profile',
-    key: 'profile',
+    path: '/preferences',
+    key: 'preferences',
     hideInMenu: true,
     component: './profile',
     icon: 'User'

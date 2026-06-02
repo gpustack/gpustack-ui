@@ -23,7 +23,7 @@ export default {
   'menu.resources': 'リソース',
   'menu.apikeys': 'APIキー',
   'menu.users': 'ユーザー',
-  'menu.profile': 'プロフィール',
+  'menu.profile': 'Preferences',
   'menu.login': 'ログイン',
   'menu.usage': '使用状況',
   'menu.404': '404',

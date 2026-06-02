@@ -29,7 +29,7 @@ export default {
   'menu.accessControl': 'Erişim Kontrolü',
   'menu.accessControl.apikeys': 'API Anahtarları',
   'menu.accessControl.users': 'Kullanıcılar',
-  'menu.profile': 'Profil',
+  'menu.profile': 'Preferences',
   'menu.login': 'Giriş',
   'menu.usage': 'Kullanım',
   'menu.404': '404',

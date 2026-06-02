@@ -210,14 +210,14 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
         key: 'settings',
         label: (
           <span className="flex flex-center">
-            <IconFont type="icon-settings-02" />
+            <IconFont type="icon-preferences" />
             <span className="m-l-8" style={{ marginLeft: 8 }}>
               {intl?.formatMessage?.({ id: 'common.preferences' })}
             </span>
           </span>
         ),
         onClick: () => {
-          history.push('/profile');
+          history.push('/preferences');
         }
       }
     ]

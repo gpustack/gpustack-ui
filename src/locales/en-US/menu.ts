@@ -31,7 +31,7 @@ export default {
   'menu.accessControl': 'Access Control',
   'menu.accessControl.apikeys': 'API Keys',
   'menu.accessControl.users': 'Users',
-  'menu.profile': 'Profile',
+  'menu.profile': 'Preferences',
   'menu.login': 'Login',
   'menu.usage': 'Usage',
   'menu.404': '404',

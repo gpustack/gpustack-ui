@@ -256,7 +256,7 @@ export const getRightRenderContent = (opts: {
               </span>
             ),
             onClick: () => {
-              history.push('/profile');
+              history.push('/preferences');
             }
           },
           {

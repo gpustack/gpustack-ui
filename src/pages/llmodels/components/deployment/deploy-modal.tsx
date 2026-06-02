@@ -78,7 +78,12 @@ type AddModalProps = {
   deploymentType?: 'modelList' | 'modelFiles';
   clusterList: Global.BaseOption<
     number,
-    { provider: string; state: string | number; is_default: boolean }
+    {
+      provider: string;
+      state: string | number;
+      is_default: boolean;
+      owner_principal_id?: number;
+    }
   >[];
   onOk: (values: FormData) => void;
   onCancel: () => void;
@@ -458,15 +463,24 @@ const AddModal: FC<AddModalProps> = (props) => {
     if (initialValues?.cluster_id) {
       return initialValues.cluster_id;
     }
+    // When a platform admin has targeted an org via the create-scope picker,
+    // seed the cluster from that org's own clusters so the initial selection
+    // matches the (org-filtered) dropdown the form renders.
+    const scopeOrgId = form.current?.getFieldValue?.('organization_id');
+    const scopedList =
+      scopeOrgId == null
+        ? clusterList
+        : clusterList?.filter((item) => item.owner_principal_id === scopeOrgId);
+
     // Find default cluster
-    const defaultCluster = clusterList?.find((item) => item.is_default);
+    const defaultCluster = scopedList?.find((item) => item.is_default);
     if (defaultCluster) {
       return defaultCluster.value;
     }
 
     const cluster_id =
-      clusterList?.find((item) => item.state === ClusterStatusValueMap.Ready)
-        ?.value || clusterList?.[0]?.value;
+      scopedList?.find((item) => item.state === ClusterStatusValueMap.Ready)
+        ?.value || scopedList?.[0]?.value;
 
     return cluster_id;
   };

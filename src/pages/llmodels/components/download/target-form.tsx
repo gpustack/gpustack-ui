@@ -1,3 +1,4 @@
+import PluginExtraFields from '@/components/plugin-extra-fields';
 import { ModelFileFormData as FormData } from '@/pages/resources/config/types';
 import {
   Input as CInput,
@@ -14,7 +15,8 @@ import React, {
   forwardRef,
   useEffect,
   useImperativeHandle,
-  useMemo
+  useMemo,
+  useRef
 } from 'react';
 import { localPathTipsList, modelSourceMap, sourceOptions } from '../../config';
 import { useGenerateWorkersModelFileOptions } from '../../hooks';
@@ -55,6 +57,20 @@ const TargetForm: React.FC<TargetFormProps> = forwardRef((props, ref) => {
   const intl = useIntl();
   const [form] = Form.useForm();
   const localPath = Form.useWatch('local_path', form);
+  // Owned by the create-scope picker slot (admin "All" view). When set, scope
+  // the worker picker to clusters owned by that org — a model file's owner is
+  // derived from the target worker's cluster, so this keeps them aligned.
+  const scopeOrgId = Form.useWatch('organization_id', form);
+  const prevScopeRef = useRef<number | null | undefined>(undefined);
+
+  const visibleWorkerOptions = useMemo(() => {
+    if (scopeOrgId == null) {
+      return workerOptions;
+    }
+    return (workerOptions || []).filter(
+      (cluster: any) => cluster.owner_principal_id === scopeOrgId
+    );
+  }, [workerOptions, scopeOrgId]);
 
   useEffect(() => {
     const init = async () => {
@@ -67,6 +83,19 @@ const TargetForm: React.FC<TargetFormProps> = forwardRef((props, ref) => {
     };
     init();
   }, [workersList]);
+
+  // On a genuine org change, drop the now-out-of-scope worker selection.
+  useEffect(() => {
+    if (prevScopeRef.current === undefined) {
+      prevScopeRef.current = scopeOrgId;
+      return;
+    }
+    if (prevScopeRef.current === scopeOrgId) {
+      return;
+    }
+    prevScopeRef.current = scopeOrgId;
+    form.setFieldValue('worker_id', undefined);
+  }, [scopeOrgId]);
 
   useImperativeHandle(ref, () => ({
     form
@@ -183,6 +212,10 @@ const TargetForm: React.FC<TargetFormProps> = forwardRef((props, ref) => {
             ></SealSelect>
           }
         </Form.Item>
+        <PluginExtraFields
+          name="CreateOrgScopeField"
+          context={{ action: 'create' }}
+        />
         {renderFieldsBySource}
         <Form.Item
           name="worker_id"
@@ -212,7 +245,7 @@ const TargetForm: React.FC<TargetFormProps> = forwardRef((props, ref) => {
             }}
             maxTagCount={1}
             label={intl.formatMessage({ id: 'resources.worker' })}
-            options={workerOptions}
+            options={visibleWorkerOptions}
             showCheckedStrategy="SHOW_CHILD"
             optionNode={renderOptionNode}
             getPopupContainer={(triggerNode) => triggerNode.parentNode}

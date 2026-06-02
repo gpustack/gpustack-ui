@@ -248,8 +248,6 @@ const useWorkerColumns = ({
   const systemConfig = useAtomValue(systemConfigAtom);
   const [version] = useAtom(GPUStackVersionAtom);
 
-  console.log('version in useWorkerColumns', version);
-
   const renderIP = (text: string, record: ListItem) => {
     if (record.advertise_address === record.ip) {
       return <span className="text-primary">{record.ip}</span>;
@@ -369,14 +367,16 @@ const useWorkerColumns = ({
           </div>
         }
       >
-        {shouldUpgrade ? (
-          <IconFont
-            type="icon-upgrade"
-            style={{ color: 'var(--ant-color-warning)' }}
-          ></IconFont>
-        ) : (
-          <InfoCircleOutlined style={{ color: 'var(--ant-blue-5)' }} />
-        )}
+        <span>
+          {shouldUpgrade ? (
+            <IconFont
+              type="icon-upgrade"
+              style={{ color: 'var(--ant-color-warning)' }}
+            ></IconFont>
+          ) : (
+            <InfoCircleOutlined style={{ color: 'var(--ant-blue-5)' }} />
+          )}
+        </span>
       </Tooltip>
     );
   };

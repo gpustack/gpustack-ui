@@ -144,7 +144,7 @@ export default {
   'gpuservice.storage.persistent': 'Постоянное',
   'gpuservice.storage.temporary': 'Временное',
   'gpuservice.storage.persistentVolume': 'Постоянное',
-  'gpuservice.storage.persistentVolume.required': 'Выберите постоянный том',
+  'gpuservice.storage.persistentVolume.required': 'Выберите хранилище',
   'gpuservice.storage.persistentVolume.capacity': 'Ёмкость (ГБ)',
   'gpuservice.storage.persistentVolume.capacity.required': 'Введите ёмкость',
   'gpuservice.storage.persistentVolume.releaseWithInstance':
@@ -157,5 +157,6 @@ export default {
   'gpuservice.storage.temporary.tips':
     'Data is cleared when the instance stops.',
   'gpuservice.storage.persistentVolume.tips':
-    'Data persists across restarts and is deleted only when the instance is terminated. Cannot be shared with other instances.'
+    'Data persists across restarts and is deleted only when the instance is terminated. Cannot be shared with other instances.',
+  'gpuservice.form.storage.select': 'Выберите хранилище'
 };

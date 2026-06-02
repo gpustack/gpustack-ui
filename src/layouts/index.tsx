@@ -21,11 +21,7 @@ import {
 import { useAccessMarkedRoutes } from '@@/plugin-access';
 import { useModel } from '@@/plugin-model';
 import { ProLayout } from '@ant-design/pro-components';
-import {
-  CoreUIProvider,
-  IconFont,
-  useOverlayScroller
-} from '@gpustack/core-ui';
+import { CoreUIProvider, IconFont } from '@gpustack/core-ui';
 import {
   Access,
   Outlet,
@@ -135,9 +131,6 @@ const mapRoutes = (routes: IRoute[], role: string) => {
 };
 
 export default (props: any) => {
-  const { initialize: initialize } = useOverlayScroller({
-    defer: false
-  });
   const [, contextHolder] = Modal.useModal();
   const { themeData, setUserSettings, userSettings } = useUserSettings();
   const [userInfo] = useAtom(userAtom);

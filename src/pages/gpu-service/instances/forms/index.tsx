@@ -589,7 +589,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
                 required
                 disabled={disabled}
                 mode="multiple"
-                maxTagCount={1}
+                maxTagCount={'responsive'}
                 label={intl.formatMessage({
                   id: 'gpuservice.instance.ssh.assignKey'
                 })}

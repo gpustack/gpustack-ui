@@ -246,6 +246,7 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
           allowClear
           showSearch
           mode="multiple"
+          maxTagCount={'responsive'}
           options={routeOptions}
           placeholder={intl.formatMessage({ id: 'usage.filter.model' })}
           styles={{
@@ -261,6 +262,7 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
               allowClear
               showSearch
               mode="multiple"
+              maxTagCount={'responsive'}
               options={userOptions}
               placeholder={intl.formatMessage({ id: 'usage.filter.user' })}
               styles={{
@@ -317,8 +319,8 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
             allowClear
             showSearch
             mode="multiple"
+            maxTagCount={'responsive'}
             options={apiKeyOptions?.[0]?.children || []}
-            maxTagCount={0}
             placeholder={intl.formatMessage({ id: 'usage.filter.apikey' })}
             styles={{
               wrapper: { flex: 1, maxWidth: 240, minWidth: 100 }

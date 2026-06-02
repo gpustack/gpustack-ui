@@ -16,6 +16,7 @@ interface StepItemProps {
 const Box = styled.div`
   border: 1px solid var(--ant-color-border);
   border-radius: 4px;
+  overflow: hidden;
   &.step-collapse-open {
     border-color: var(--ant-color-primary);
   }

@@ -240,7 +240,7 @@ export default (props: any) => {
         <div className="collapse-wrap" onClick={handleToggleCollapse}>
           <Button
             style={{
-              marginRight: collapsed ? 0 : -14,
+              marginRight: collapsed ? 0 : -6,
               border: 'none',
               cursor: 'w-resize'
             }}

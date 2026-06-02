@@ -171,8 +171,6 @@ body {
   }
 
   .ant-table .ant-table-container table {
-    // border-spacing: 0 20px;
-
     .ant-table-thead th.ant-table-column-sort {
       background-color: transparent;
 
@@ -286,15 +284,13 @@ body {
     }
   }
 
-  .ant-table-content table {
-    .ant-table-tbody {
-      .ant-table-row {
-        border-radius: var(--table-td-radius);
+  .ant-table .ant-table-tbody {
+    .ant-table-row {
+      border-radius: var(--table-td-radius);
 
-        > td {
-          background-color: unset;
-          border-bottom: 1px solid var(--ant-color-split);
-        }
+      > td {
+        background-color: unset !important;
+        border-bottom: 1px solid var(--ant-color-split);
       }
     }
   }

@@ -1,8 +1,8 @@
+import PluginExtraFields from '@/components/plugin-extra-fields';
 import { PageAction, validateLabelNameRegxFor63 } from '@/config';
 import { Input as CInput, Textarea, useAppUtils } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
-import OwnerPrincipalIdField from '../../../_components/owner-principal-id-field';
 import { FormData } from '../config/types';
 
 const Basic = ({ action }: { action: string }) => {
@@ -11,7 +11,6 @@ const Basic = ({ action }: { action: string }) => {
 
   return (
     <>
-      <OwnerPrincipalIdField name="owner_principal_id" />
       <Form.Item<FormData>
         name="name"
         rules={[
@@ -37,6 +36,7 @@ const Basic = ({ action }: { action: string }) => {
           label={intl.formatMessage({ id: 'common.table.displayName' })}
         />
       </Form.Item>
+      <PluginExtraFields name="CreateOrgScopeField" context={{ action }} />
       <Form.Item<FormData>
         name={['spec', 'data']}
         rules={[

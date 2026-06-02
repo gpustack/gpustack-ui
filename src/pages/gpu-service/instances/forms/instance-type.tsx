@@ -30,10 +30,12 @@ const SelectedCard = styled.div`
 
 interface InstanceTypePickerProps {
   selectedInstanceType?: InstanceTypeItemModel;
+  noAvailable?: boolean;
 }
 
 const InstanceTypePicker: React.FC<InstanceTypePickerProps> = ({
-  selectedInstanceType
+  selectedInstanceType,
+  noAvailable
 }) => {
   const intl = useIntl();
   return (
@@ -42,7 +44,11 @@ const InstanceTypePicker: React.FC<InstanceTypePickerProps> = ({
         <InstanceTypeItem item={selectedInstanceType} showStatus={false} />
       ) : (
         <span style={{ color: 'var(--ant-color-text-tertiary)' }}>
-          {intl.formatMessage({ id: 'gpuservice.instance.type.required' })}
+          {intl.formatMessage({
+            id: noAvailable
+              ? 'gpuservice.instance.type.noAvailable'
+              : 'gpuservice.instance.type.required'
+          })}
         </span>
       )}
     </SelectedCard>
@@ -55,6 +61,10 @@ interface InstanceTypeFormItemProps {
   currentData?: ListItem;
   selectedInstanceType?: InstanceTypeItemModel;
   onceMaxRequest?: BasicResourceMax;
+  // True when the (org-scoped) instance-type list is empty — e.g. the chosen
+  // org owns no clusters. Surface a "no available" message instead of the
+  // "please select" placeholder + empty CPU / memory inputs.
+  noAvailableTypes?: boolean;
   onGPUCountChange?: (value: number) => void;
 }
 
@@ -64,6 +74,7 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
   currentData,
   selectedInstanceType,
   onceMaxRequest,
+  noAvailableTypes,
   onGPUCountChange
 }) => {
   const intl = useIntl();
@@ -152,12 +163,15 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
           ]}
         >
           {action === PageAction.CREATE && (
-            <InstanceTypePicker selectedInstanceType={selectedInstanceType} />
+            <InstanceTypePicker
+              selectedInstanceType={selectedInstanceType}
+              noAvailable={noAvailableTypes}
+            />
           )}
           {action === PageAction.EDIT && renderInstanceType()}
         </Form.Item>
       </FieldBlock>
-      {isGPU && (
+      {!noAvailableTypes && isGPU && (
         <Form.Item<FormData>
           name={['spec', 'resources', 'accelerator']}
           hidden={action === PageAction.EDIT}
@@ -232,32 +246,34 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
           />
         </Form.Item>
       )}
-      <Flex gap={12}>
-        <div style={{ flex: 1 }}>
-          <Form.Item<FormData>
-            name={['spec', 'resources', 'ram']}
-            normalize={(value) => (value ? `${value}Gi` : null)}
-            getValueProps={(value) => ({
-              value: _.toString(value).replace(/Gi$/, '')
-            })}
-          >
-            <InputNumber
-              disabled={isGPU || disabled || action === PageAction.EDIT}
-              label={renderMemoryLabel()}
-              max={onceMaxRequest?.memory ?? undefined}
-            />
-          </Form.Item>
-        </div>
-        <div style={{ flex: 1 }}>
-          <Form.Item<FormData> name={['spec', 'resources', 'cpu']}>
-            <InputNumber
-              label={renderMaxLabel('CPU', onceMaxRequest?.cpu)}
-              max={onceMaxRequest?.cpu ?? undefined}
-              disabled={disabled || isGPU || action === PageAction.EDIT}
-            />
-          </Form.Item>
-        </div>
-      </Flex>
+      {!noAvailableTypes && (
+        <Flex gap={12}>
+          <div style={{ flex: 1 }}>
+            <Form.Item<FormData>
+              name={['spec', 'resources', 'ram']}
+              normalize={(value) => (value ? `${value}Gi` : null)}
+              getValueProps={(value) => ({
+                value: _.toString(value).replace(/Gi$/, '')
+              })}
+            >
+              <InputNumber
+                disabled={isGPU || disabled || action === PageAction.EDIT}
+                label={renderMemoryLabel()}
+                max={onceMaxRequest?.memory ?? undefined}
+              />
+            </Form.Item>
+          </div>
+          <div style={{ flex: 1 }}>
+            <Form.Item<FormData> name={['spec', 'resources', 'cpu']}>
+              <InputNumber
+                label={renderMaxLabel('CPU', onceMaxRequest?.cpu)}
+                max={onceMaxRequest?.cpu ?? undefined}
+                disabled={disabled || isGPU || action === PageAction.EDIT}
+              />
+            </Form.Item>
+          </div>
+        </Flex>
+      )}
     </div>
   );
 };

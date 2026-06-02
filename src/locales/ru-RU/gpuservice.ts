@@ -100,6 +100,7 @@ export default {
   'gpuservice.instance.templates': 'Шаблоны экземпляров',
   'gpuservice.instance.section.storage': 'Том хранилища',
   'gpuservice.instance.type.required': 'Выберите тип экземпляра',
+  'gpuservice.instance.type.noAvailable': 'Нет доступных типов экземпляров',
   'gpuservice.instance.gpuCount': 'Количество GPU',
   'gpuservice.instance.gpuCount.required': 'Введите количество GPU',
   'gpuservice.instance.gpuCount.max': 'Выберите максимум {count} GPU-карт',

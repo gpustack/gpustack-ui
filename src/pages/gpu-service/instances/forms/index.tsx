@@ -58,7 +58,16 @@ interface InstanceFormProps {
   currentData?: ListItem | null;
   namespace?: string;
   instanceTypeList?: InstanceTypeItem[];
+  // True when the (org-scoped) instance-type list is empty and not loading —
+  // surfaces a "no available instance type" message in the scheduling tab.
+  noAvailableInstanceTypes?: boolean;
   disabled?: boolean;
+  // Fired when the create-scope picker retargets the form to another
+  // org (or Global). Only emitted on genuine changes — never on the
+  // initial mount, and never in builds where the picker isn't mounted
+  // (the watched field stays undefined). Lets the parent re-scope the
+  // tenant-scoped instance-type / template offerings.
+  onScopeChange?: (orgId: number | null | undefined) => void;
   onFinish: (values: FormData) => Promise<void>;
 }
 
@@ -101,6 +110,8 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       disabled,
       open,
       instanceTypeList = [],
+      noAvailableInstanceTypes,
+      onScopeChange,
       onFinish
     } = props;
     const intl = useIntl();
@@ -110,6 +121,15 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
     const formAction =
       realAction === PageAction.CREATE ? PageAction.CREATE : action;
     const sshEnabled = Form.useWatch('enable_ssh', form);
+    // `organization_id` is owned by the create-scope picker slot; it only
+    // exists/changes when a platform admin retargets the form. Watch it
+    // so the parent can re-scope offerings (see onScopeChange).
+    const scopeOrgId = Form.useWatch('organization_id', form);
+    const scopeInitRef = useRef(true);
+    // Keep the latest callback in a ref so the scope-change effect can call it
+    // without depending on its identity (parent may pass a new fn each render).
+    const onScopeChangeRef = useRef(onScopeChange);
+    onScopeChangeRef.current = onScopeChange;
     const { sshkeyOptions, fetchData: fetchSSHData } = useQuerySshkeys();
     const [sshOverlayOpen, setSshOverlayOpen] = useState(false);
     const { getScrollElementScrollableHeight } = useWrapperContext();
@@ -132,6 +152,17 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
         fetchSSHData({ page: 1, perPage: 100 });
       }
     }, [open, action]);
+
+    // Skip the first run (initial mount value); thereafter notify the
+    // parent whenever the chosen create scope changes so it can reload
+    // the tenant-scoped instance-type / template lists.
+    useEffect(() => {
+      if (scopeInitRef.current) {
+        scopeInitRef.current = false;
+        return;
+      }
+      onScopeChangeRef.current?.(scopeOrgId);
+    }, [scopeOrgId]);
 
     const ports = Form.useWatch(['spec', 'ports'], form) || [];
 
@@ -248,6 +279,23 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       if (!instanceType) {
         setSelectedInstanceType(undefined);
         setOnceMaxRequest({ cpu: null, memory: null, localStorage: null });
+        // Also reset the instance-type-derived form fields (cluster, type and
+        // the CPU / memory / GPU-count resources) so the previous scope's
+        // numbers don't linger when the new org has no clusters.
+        const spec = form.getFieldValue('spec') || {};
+        form.setFieldsValue({
+          clusterId: null,
+          spec: {
+            ...spec,
+            type: undefined,
+            resources: {
+              ...spec.resources,
+              accelerator: undefined,
+              cpu: undefined,
+              ram: undefined
+            }
+          }
+        } as any);
         return;
       }
       const candidate = pickCandidateForAccelerator(
@@ -402,7 +450,14 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
         form.setFieldsValue(values as any);
       },
       getFieldsValue: () => form.getFieldsValue(),
-      applyInstanceType: (instanceType: InstanceTypeItem) => {
+      applyInstanceType: (instanceType?: InstanceTypeItem) => {
+        if (!instanceType) {
+          // Clear the current instance-type selection (e.g. the create scope
+          // switched to an org with no clusters) so its card/limits don't
+          // linger.
+          resolveAndApply(undefined, 0);
+          return;
+        }
         const count = instanceType.spec?.acceleratable ? 1 : 0;
         resolveAndApply(instanceType, count);
       }
@@ -501,6 +556,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
                     selectedInstanceType={selectedInstanceType}
                     currentData={currentData as any}
                     onceMaxRequest={onceMaxRequest}
+                    noAvailableTypes={noAvailableInstanceTypes}
                     onGPUCountChange={handleAcceleratorChange}
                   />
                 )

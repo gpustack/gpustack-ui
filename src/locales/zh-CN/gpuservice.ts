@@ -92,6 +92,7 @@ export default {
   'gpuservice.instance.templates': '实例模板',
   'gpuservice.instance.section.storage': '存储卷',
   'gpuservice.instance.type.required': '请选择实例类型',
+  'gpuservice.instance.type.noAvailable': '无可用的实例类型',
   'gpuservice.instance.gpuCount': 'GPU 数量',
   'gpuservice.instance.gpuCount.required': '请输入 GPU 数量',
   'gpuservice.instance.gpuCount.max': '最多选择 {count} 张卡',

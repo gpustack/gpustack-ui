@@ -97,6 +97,7 @@ export default {
   'gpuservice.instance.templates': 'Instance Templates',
   'gpuservice.instance.section.storage': 'Storage',
   'gpuservice.instance.type.required': 'Please select an instance type',
+  'gpuservice.instance.type.noAvailable': 'No instance type available',
   'gpuservice.instance.gpuCount': 'GPU Count',
   'gpuservice.instance.gpuCount.required': 'Please enter the GPU count',
   'gpuservice.instance.gpuCount.max':

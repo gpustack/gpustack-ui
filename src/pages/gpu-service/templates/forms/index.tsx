@@ -82,7 +82,7 @@ const GPUServiceTemplateForm: React.FC<TemplateFormProps> = forwardRef(
           }
         }}
       >
-        <Basic />
+        <Basic action={action} />
       </Form>
     );
   }

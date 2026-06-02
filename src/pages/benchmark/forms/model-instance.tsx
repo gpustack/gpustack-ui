@@ -10,7 +10,7 @@ import { useQueryModelList } from '@/pages/llmodels/services/use-query-model-lis
 import { Cascader as SealCascader, useAppUtils } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form, Tooltip } from 'antd';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
 
@@ -45,6 +45,11 @@ const ModelInstanceForm: React.FC = () => {
   const form = Form.useFormInstance();
   const { getRuleMessage } = useAppUtils();
   const { action, open } = useFormContext();
+  // Owned by the create-scope picker slot (admin "All" view). The model list
+  // is tenant-scoped by the request header, so refetch it when the org
+  // changes so only the chosen org's models/instances are offered.
+  const scopeOrgId = Form.useWatch('organization_id', form);
+  const prevScopeRef = useRef<number | null | undefined>(undefined);
   const [modelList, setModelList] = React.useState<any[]>([]);
   const {
     loading: modelLoading,
@@ -158,14 +163,29 @@ const ModelInstanceForm: React.FC = () => {
 
   useEffect(() => {
     if (open && action === PageAction.CREATE) {
+      // On a genuine org change, clear the stale (possibly cross-org) target
+      // so the refetched list re-selects within the new org.
+      if (
+        prevScopeRef.current !== undefined &&
+        prevScopeRef.current !== scopeOrgId
+      ) {
+        form.setFieldsValue({
+          model_name: undefined,
+          model_id: undefined,
+          model_instance_name: undefined,
+          model_instance: undefined
+        });
+      }
+      prevScopeRef.current = scopeOrgId;
       initModelInstance();
     }
     if (!open) {
+      prevScopeRef.current = undefined;
       cancelModelRequest();
       cancelInstanceRequest();
       clearBenchmarkTargetInstance();
     }
-  }, [open, benchmarkTargetInstance, action]);
+  }, [open, benchmarkTargetInstance, action, scopeOrgId]);
 
   return (
     <Form.Item<FormData>

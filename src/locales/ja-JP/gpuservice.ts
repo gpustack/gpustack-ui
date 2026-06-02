@@ -143,7 +143,7 @@ export default {
   'gpuservice.storage.temporary': '一時',
   'gpuservice.storage.persistentVolume': '永続',
   'gpuservice.storage.persistentVolume.required':
-    '永続ボリュームを選択してください',
+    'ストレージを選択してください',
   'gpuservice.storage.persistentVolume.capacity': '容量 (GB)',
   'gpuservice.storage.persistentVolume.capacity.required':
     '容量を入力してください',
@@ -157,5 +157,6 @@ export default {
   'gpuservice.storage.temporary.tips':
     'Data is cleared when the instance stops.',
   'gpuservice.storage.persistentVolume.tips':
-    'Data persists across restarts and is deleted only when the instance is terminated. Cannot be shared with other instances.'
+    'Data persists across restarts and is deleted only when the instance is terminated. Cannot be shared with other instances.',
+  'gpuservice.form.storage.select': 'ストレージを選択'
 };

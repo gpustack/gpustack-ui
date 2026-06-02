@@ -142,8 +142,7 @@ export default {
   'gpuservice.storage.persistent': 'Kalıcı',
   'gpuservice.storage.temporary': 'Geçici',
   'gpuservice.storage.persistentVolume': 'Kalıcı',
-  'gpuservice.storage.persistentVolume.required':
-    'Lütfen bir kalıcı hacim seçin',
+  'gpuservice.storage.persistentVolume.required': 'Lütfen bir depolama seçin',
   'gpuservice.storage.persistentVolume.capacity': 'Kapasite (GB)',
   'gpuservice.storage.persistentVolume.capacity.required':
     'Lütfen kapasiteyi girin',
@@ -157,5 +156,6 @@ export default {
   'gpuservice.storage.temporary.tips':
     'Data is cleared when the instance stops.',
   'gpuservice.storage.persistentVolume.tips':
-    'Data persists across restarts and is deleted only when the instance is terminated. Cannot be shared with other instances.'
+    'Data persists across restarts and is deleted only when the instance is terminated. Cannot be shared with other instances.',
+  'gpuservice.form.storage.select': 'Depolamayı Seç'
 };

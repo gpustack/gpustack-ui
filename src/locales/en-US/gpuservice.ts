@@ -148,8 +148,7 @@ export default {
     'Data is cleared when the instance stops.',
   'gpuservice.storage.persistentVolume.tips':
     'Data persists across restarts and is deleted only when the instance is terminated. Cannot be shared with other instances.',
-  'gpuservice.storage.persistentVolume.required':
-    'Please select a persistent volume',
+  'gpuservice.storage.persistentVolume.required': 'Please select a storage',
   'gpuservice.storage.persistentVolume.capacity': 'Capacity (GB)',
   'gpuservice.storage.persistentVolume.capacity.required':
     'Please enter capacity',
@@ -159,5 +158,6 @@ export default {
   'gpuservice.storage.tempCapacity.required':
     'Please enter the temporary storage capacity',
   'gpuservice.form.rule.name':
-    "Lowercase letters, numbers, and '-'. Start and end with a letter or number, no consecutive '-', max 63 characters."
+    "Lowercase letters, numbers, and '-'. Start and end with a letter or number, no consecutive '-', max 63 characters.",
+  'gpuservice.form.storage.select': 'Select Storage'
 };

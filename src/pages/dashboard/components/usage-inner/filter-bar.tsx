@@ -117,7 +117,7 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
           showSearch
           mode="multiple"
           options={userList}
-          maxTagCount={0}
+          maxTagCount={'responsive'}
           placeholder={intl.formatMessage({
             id: 'dashboard.usage.selectuser'
           })}

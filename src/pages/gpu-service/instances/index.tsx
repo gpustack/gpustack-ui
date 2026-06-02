@@ -35,9 +35,6 @@ const GPUService: React.FC = () => {
   const setClusterSession = useSetAtom(clusterSessionAtom);
   const [, modalContextHolder] = Modal.useModal();
 
-  // Empty-state CTA: send the user to the cluster-create flow with
-  // Kubernetes preselected so the GPU Service feature is reachable
-  // in one step instead of having to pick the provider themselves.
   const handleAddK8sCluster = () => {
     setClusterSession({
       firstAddWorker: false,

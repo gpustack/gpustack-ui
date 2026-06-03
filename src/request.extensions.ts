@@ -21,3 +21,6 @@ export const extraRequestInterceptors: RequestInterceptor[] = [];
 export type ResponseInterceptor = (response: any) => any;
 
 export const extraResponseInterceptors: ResponseInterceptor[] = [];
+export const getTenantHeaders = (
+  _method?: string
+): Record<string, string> => ({});

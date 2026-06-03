@@ -1,9 +1,5 @@
 import { GPUSTACK_API_BASE_URL, OPENAI_COMPATIBLE } from '@/config/settings';
-import {
-  createFormData,
-  errorHandler,
-  tenantHeaders
-} from '@/utils/fetch-chunk-data';
+import { createFormData, errorHandler } from '@/utils/fetch-chunk-data';
 import { request } from '@umijs/max';
 
 export { GPUSTACK_API_BASE_URL, OPENAI_COMPATIBLE };
@@ -96,8 +92,7 @@ export const createImages = async (
     body: JSON.stringify(params),
     signal: options.signal,
     headers: {
-      'Content-Type': 'application/json',
-      ...tenantHeaders()
+      'Content-Type': 'application/json'
     }
   });
   if (!res.ok) {
@@ -117,10 +112,7 @@ export const editImage = async (params: {
   const response = await fetch(EDIT_IMAGE_API, {
     method: 'POST',
     body: createFormData(params.data),
-    signal: params.signal,
-    headers: {
-      ...tenantHeaders()
-    }
+    signal: params.signal
   });
   if (!response.ok) {
     return await errorHandler(response);
@@ -137,8 +129,7 @@ export const createImage = async (params: {
     body: JSON.stringify(params.data),
     signal: params.signal,
     headers: {
-      'Content-Type': 'application/json',
-      ...tenantHeaders()
+      'Content-Type': 'application/json'
     }
   });
 
@@ -165,8 +156,7 @@ export const textToSpeech = async (params: any, options?: any) => {
     method: 'POST',
     body: JSON.stringify(params.data),
     headers: {
-      'Content-Type': 'application/json',
-      ...tenantHeaders()
+      'Content-Type': 'application/json'
     },
     signal: params.signal
   });

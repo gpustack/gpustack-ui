@@ -47,15 +47,21 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     messageList,
     loading
   } = useChatCompletion(scroller);
-  const { handleOnValuesChange, formRef, setParams, paramsConfig, parameters } =
-    useInitLLmMeta(
-      { modelList, isChat: true },
-      {
-        defaultValues: llmInitialValues,
-        defaultParamsConfig: ChatParamsConfig,
-        metaKeys: LLM_METAKEYS
-      }
-    );
+  const {
+    handleOnValuesChange,
+    handleOnModelChange,
+    formRef,
+    setParams,
+    paramsConfig,
+    parameters
+  } = useInitLLmMeta(
+    { modelList, isChat: true },
+    {
+      defaultValues: llmInitialValues,
+      defaultParamsConfig: ChatParamsConfig,
+      metaKeys: LLM_METAKEYS
+    }
+  );
   console.log('parameters', parameters);
   useImperativeHandle(ref, () => {
     return {
@@ -99,13 +105,6 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         : undefined,
       current: currentMessage,
       parameters
-    });
-  };
-
-  const handleOnModelChange = (model: string) => {
-    setParams({
-      ...formRef.current?.getFieldsValue(),
-      model
     });
   };
 

@@ -260,11 +260,16 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       const cpuNum = unitResourcesParsed?.cpu?.num;
       const ramNum = unitResourcesParsed?.ram?.num;
 
+      const fallbackCpu = values.spec?.resources?.cpu;
       return {
         cpu:
           accelerator > 0 && cpuNum
             ? `${accelerator * cpuNum}${unitResourcesParsed?.cpu?.unit || ''}`
-            : `${values.spec?.resources?.cpu}`,
+            : // Don't stringify an unset value — `${undefined}` becomes the
+              // literal "undefined", which fails k8s quantity validation.
+              fallbackCpu != null && fallbackCpu !== ''
+              ? `${fallbackCpu}`
+              : undefined,
         ram:
           accelerator > 0 && ramNum
             ? `${accelerator * ramNum}${unitResourcesParsed?.ram?.unit || ''}`

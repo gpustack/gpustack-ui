@@ -141,15 +141,6 @@ const baseRoutes = [
         component: './model-routes/index'
       },
       {
-        name: 'usage',
-        path: '/models/usage',
-        key: 'usage',
-        icon: 'icon-usage-outlined',
-        selectedIcon: 'icon-usage-filled',
-        defaultIcon: 'icon-usage-outlined',
-        component: './usage/index'
-      },
-      {
         name: 'providers',
         path: '/models/providers',
         key: 'modelProviders',
@@ -261,6 +252,32 @@ const baseRoutes = [
         selectedIcon: 'icon-ssh-filled',
         defaultIcon: 'icon-ssh-outlined',
         component: './gpu-service/public-keys'
+      }
+    ]
+  },
+  {
+    // Cross-resource consumption (tokens + GPU/CPU instances + storage).
+    // A folder so it matches the other top-level groups; more usage views can
+    // graduate in here later.
+    name: 'usage',
+    path: '/usage',
+    key: 'usageGroup',
+    icon: 'icon-usage-outlined',
+    selectedIcon: 'icon-usage-filled',
+    defaultIcon: 'icon-usage-outlined',
+    routes: [
+      {
+        path: '/usage',
+        redirect: '/usage/overview'
+      },
+      {
+        name: 'usage',
+        path: '/usage/overview',
+        key: 'usage',
+        icon: 'icon-usage-outlined',
+        selectedIcon: 'icon-usage-filled',
+        defaultIcon: 'icon-usage-outlined',
+        component: './usage/index'
       }
     ]
   },

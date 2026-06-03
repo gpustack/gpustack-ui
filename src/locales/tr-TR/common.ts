@@ -66,6 +66,7 @@ export default {
   'common.search.name.placeholder': 'ada göre filtrele',
   'common.search.id.placeholder': 'kimliğe göre filtrele',
   'common.filter.byId': 'kimliğe göre filtrele',
+  'common.filter.byCreator': 'Oluşturana göre filtrele',
   'common.table.type': 'Tür',
   'common.table.default': 'Varsayılan Değer',
   'common.copy.success': 'Kopyalama başarılı!',

@@ -66,6 +66,7 @@ export default {
   'common.search.name.placeholder': '名前でフィルタ',
   'common.search.id.placeholder': 'IDでフィルタ',
   'common.filter.byId': 'IDでフィルタ',
+  'common.filter.byCreator': '作成者でフィルタ',
   'common.table.type': 'タイプ',
   'common.table.default': 'デフォルト値',
   'common.copy.success': 'コピー成功！',

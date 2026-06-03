@@ -18,7 +18,10 @@ type RankedAction = APIKeyAction & { priority: number };
 interface ColumnsHookProps {
   handleSelect: (val: string, record: ListItem, item?: APIKeyAction) => void;
   sortOrder: string[];
-  is_admin?: boolean;
+  // Reveal the Creator column to callers who can see other users' keys
+  // (platform admin or current-Org owner). Members only see their own
+  // keys, so the column would be redundant for them.
+  showCreator?: boolean;
   configActions?: APIKeyConfigAction[];
   // Dispatches the click for a plugin-contributed dropdown entry to the
   // controller `useCreate()` returned for that entry.
@@ -28,7 +31,7 @@ interface ColumnsHookProps {
 const useModelsColumns = ({
   handleSelect,
   sortOrder,
-  is_admin,
+  showCreator,
   configActions = [],
   onConfigAction
 }: ColumnsHookProps): ColumnsType<ListItem> => {
@@ -180,7 +183,7 @@ const useModelsColumns = ({
         title: intl.formatMessage({ id: 'common.table.creator' }),
         dataIndex: 'user_name',
         key: 'user_name',
-        hidden: !is_admin,
+        hidden: !showCreator,
         render: (text: string) => (
           <AutoTooltip ghost style={{ maxWidth: 200 }}>
             {text || '-'}
@@ -216,7 +219,7 @@ const useModelsColumns = ({
         )
       }
     ];
-  }, [intl, is_admin, handleSelect, actionList]);
+  }, [intl, showCreator, handleSelect, actionList]);
 };
 
 export default useModelsColumns;

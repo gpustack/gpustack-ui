@@ -16,7 +16,7 @@ export default function useQuerySshkeys() {
   >({
     key: 'sshkeyOptions',
     fetchList,
-    getLabel: (item) => item?.name as string,
+    getLabel: (item) => item.displayName || (item?.name as string),
     getValue: (item) => item?.name as string
   });
 

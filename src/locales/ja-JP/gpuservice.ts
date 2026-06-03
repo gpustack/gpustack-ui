@@ -159,6 +159,6 @@ export default {
   'gpuservice.storage.temporary.tips':
     'Data is cleared when the instance stops.',
   'gpuservice.storage.persistentVolume.tips':
-    'Data persists across restarts and is deleted only when the instance is terminated. Cannot be shared with other instances.',
+    'Data persists across instance restarts. Persistent volumes remain intact after instance termination and can be shared by multiple instances.',
   'gpuservice.form.storage.select': 'ストレージを選択'
 };

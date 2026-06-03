@@ -90,20 +90,33 @@ const getStoredCurrentOrgId = (): number | null => {
 // cluster-owner fallback.
 const ORG_CACHE_KEYS = ['organizationList', 'allOrganizations'] as const;
 
-const lookupOrgNamespace = (id: number | null): string | null => {
+export interface CachedOrg {
+  id: number;
+  name?: string;
+  // The platform Org (single global tenant). Its models are NOT
+  // namespaced in ``/v1/models`` — they appear under their bare name.
+  is_platform?: boolean;
+}
+
+// Resolve the cached Org record for an owner/principal id by scanning both
+// org caches. ``organizationList`` (the caller's member orgs) is checked
+// alongside the admin-only ``allOrganizations`` so member sessions resolve
+// too. Id types vary between localStorage payloads (some writers stringify,
+// others persist as a JSON number), so compare as strings — strict equality
+// would silently miss those cases.
+export const getOrgById = (
+  id: number | string | null | undefined
+): CachedOrg | null => {
   if (id == null) return null;
-  // Normalise both sides to strings — the stored id type varies between
-  // localStorage payloads (some writers stringify, others persist as a
-  // JSON number); strict equality would silently miss those cases.
   const target = String(id);
   for (const key of ORG_CACHE_KEYS) {
     try {
       const raw = localStorage.getItem(key);
       if (!raw) continue;
-      const list = JSON.parse(raw) as Array<{ id: number; name?: string }>;
+      const list = JSON.parse(raw) as CachedOrg[];
       if (!Array.isArray(list)) continue;
       const match = list.find((item) => String(item?.id) === target);
-      if (match?.name) return `gpustack-${match.name}`;
+      if (match) return match;
     } catch {
       // ignore malformed cache; continue checking other keys
     }
@@ -111,17 +124,23 @@ const lookupOrgNamespace = (id: number | null): string | null => {
   return null;
 };
 
-export const getAllOrganizations = (): Array<{ id: number; name?: string }> => {
-  const allOrganizations = localStorage.getItem('allOrganizations');
-  if (!allOrganizations) return [];
-  try {
-    const list = JSON.parse(allOrganizations) as Array<{
-      id: number;
-      name?: string;
-    }>;
-    if (!Array.isArray(list)) return [];
-    return list;
-  } catch {
-    return [];
-  }
+// Bare Org *name* (e.g. ``org1``) for an owner/principal id, or null.
+export const getOrgNameById = (
+  id: number | string | null | undefined
+): string | null => {
+  return getOrgById(id)?.name ?? null;
+};
+
+const lookupOrgNamespace = (id: number | null): string | null => {
+  const name = getOrgNameById(id);
+  return name ? `gpustack-${name}` : null;
+};
+
+// The Org the caller is currently acting under, or null in the admin-"All"
+// context. The org-switcher reloads the page on switch, so the list pages
+// always show this org's resources — which is how ``/v1/models`` namespaces
+// their model ids (``{org}/{name}``). Callers reconstructing that id use this
+// as the fallback owner when a row carries no explicit ``owner_principal_id``.
+export const getCurrentOrg = (): CachedOrg | null => {
+  return getOrgById(getStoredCurrentOrgId());
 };

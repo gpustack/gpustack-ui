@@ -4,7 +4,6 @@ export interface RouteTargetFormItem {
   weight?: number | null;
   model_id?: number;
   provider_id?: number;
-  overridden_model_name?: string;
   fallback_status_codes?: string[];
   parentId?: string | number;
 }
@@ -32,6 +31,9 @@ export interface RouteItem {
   targets: number;
   ready_targets: number;
   access_policy: string;
+  // Org principal that owns this route. Drives the ``{org}/{name}`` model-id
+  // prefix when opening the route in the Playground.
+  owner_principal_id?: number;
 }
 
 export interface RouteTarget extends RouteTargetFormItem {

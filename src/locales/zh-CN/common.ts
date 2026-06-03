@@ -233,6 +233,7 @@ export default {
   'common.text.tips': '提示',
   'settings.system': '系统设置',
   'common.filter.byId': '按 ID 查询',
+  'common.filter.byCreator': '按创建者筛选',
   'common.appearance': '外观',
   'common.appearance.dark': '深色',
   'common.appearance.light': '浅色',

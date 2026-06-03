@@ -66,6 +66,7 @@ export default {
   'common.search.name.placeholder': 'Фильтр по названию',
   'common.search.id.placeholder': 'Фильтр по ID',
   'common.filter.byId': 'Фильтр по ID',
+  'common.filter.byCreator': 'Фильтр по создателю',
   'common.table.type': 'Тип',
   'common.table.default': 'Значение по умолчанию',
   'common.copy.success': 'Скопировано!',

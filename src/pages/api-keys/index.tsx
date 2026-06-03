@@ -3,9 +3,8 @@ import { PaginationKey } from '@/config/settings';
 import type { PageActionType } from '@/config/types';
 import useTableFetch from '@/hooks/use-table-fetch';
 import useQueryUserList from '@/pages/users/services/use-query-user-list';
-import { useModel } from '@@/plugin-model';
 import { DeleteModal, FilterBar, IconFont, NoResult } from '@gpustack/core-ui';
-import { useIntl } from '@umijs/max';
+import { useAccess, useIntl } from '@umijs/max';
 import useMemoizedFn from 'ahooks/lib/useMemoizedFn';
 import { ConfigProvider, Table } from 'antd';
 import _ from 'lodash';
@@ -22,8 +21,12 @@ import {
 } from './plugin';
 
 const APIKeys: React.FC = () => {
-  const { initialState } = useModel('@@initialState');
-  const currentUser = initialState?.currentUser;
+  const access = useAccess();
+  // `canSeeOrgAdmin` widens to Org owners in the enterprise build —
+  // mirrors the BE's "platform admin OR current-Org owner" gate on
+  // listing every key in scope. Personal/member users continue to see
+  // only their own keys (`user_id: undefined`).
+  const canSeeAllKeys = !!access.canSeeOrgAdmin;
   const {
     TABLE_SORT_DIRECTIONS,
     dataSource,
@@ -45,7 +48,7 @@ const APIKeys: React.FC = () => {
     deleteAPI: deleteApisKey,
     contentForDelete: 'apikeys.table.apikeys',
     defaultQueryParams: {
-      user_id: currentUser?.is_admin ? '*' : undefined
+      user_id: canSeeAllKeys ? '*' : undefined
     }
   });
   const {
@@ -198,7 +201,7 @@ const APIKeys: React.FC = () => {
   const columns = useKeysColumns({
     handleSelect: onSelect,
     sortOrder,
-    is_admin: currentUser?.is_admin,
+    showCreator: canSeeAllKeys,
     configActions,
     onConfigAction: handleConfigAction
   });
@@ -209,10 +212,10 @@ const APIKeys: React.FC = () => {
         <FilterBar
           marginBottom={22}
           marginTop={30}
-          showSelect={currentUser?.is_admin}
+          showSelect={canSeeAllKeys}
           selectOptions={userList}
           select={{ showSearch: { optionFilterProp: 'label' } }}
-          selectHolder={intl.formatMessage({ id: 'models.table.filterByName' })}
+          selectHolder={intl.formatMessage({ id: 'common.filter.byCreator' })}
           buttonText={intl.formatMessage({ id: 'apikeys.button.create' })}
           handleSearch={handleSearch}
           handleDeleteByBatch={handleDeleteBatch}

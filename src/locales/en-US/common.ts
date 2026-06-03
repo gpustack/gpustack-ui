@@ -66,6 +66,7 @@ export default {
   'common.search.name.placeholder': 'filter by name',
   'common.search.id.placeholder': 'filter by ID',
   'common.filter.byId': 'filter by ID',
+  'common.filter.byCreator': 'Filter by creator',
   'common.table.type': 'Type',
   'common.table.default': 'Default Value',
   'common.copy.success': 'Copied success!',

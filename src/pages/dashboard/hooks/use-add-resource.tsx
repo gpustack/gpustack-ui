@@ -104,7 +104,7 @@ export default function useAddResource(options?: { onCreated?: () => void }) {
         firstAddCluster: true
       });
 
-      navigate(`/cluster-management/clusters/list`);
+      navigate(`/resources/clusters/list`);
       return;
     }
 
@@ -113,7 +113,7 @@ export default function useAddResource(options?: { onCreated?: () => void }) {
         firstAddWorker: true,
         firstAddCluster: false
       });
-      navigate(`/cluster-management/clusters/list`);
+      navigate(`/resources/clusters/list`);
     }
   };
 

@@ -68,9 +68,9 @@ const NO_CONTAINER_PAGES = [
 
 const CHECK_RESOURCE_PATH = [
   '/resources/workers',
-  '/cluster-management/clusters/list',
-  '/cluster-management/credentials',
-  '/cluster-management/clusters/create'
+  '/resources/clusters/list',
+  '/resources/credentials',
+  '/resources/clusters/create'
 ];
 
 type NewRoute = IRoute & {

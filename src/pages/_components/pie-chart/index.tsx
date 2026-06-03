@@ -19,6 +19,11 @@ interface PieChartProps {
   totalLabel?: string;
 }
 
+// Donut sits on the left; a vertical legend hugs it just to the right and
+// scrolls when there are many entries.
+const CENTER_X = '32%';
+const round2 = (n: number) => Math.round((Number(n) || 0) * 100) / 100;
+
 const PieChart: React.FC<PieChartProps> = ({
   data,
   height = 300,
@@ -51,7 +56,7 @@ const PieChart: React.FC<PieChartProps> = ({
                 <span class="tooltip-item-dot" style="border-radius:50%;background-color:${params.color};"></span>
                 <span class="tooltip-item-title">${params.name}</span>:
               </span>
-              <span class="tooltip-value">${formatLargeNumber(params.value)}</span>
+              <span class="tooltip-value">${formatLargeNumber(round2(params.value))} (${params.percent}%)</span>
             </span>
           </div>`;
         }
@@ -59,18 +64,18 @@ const PieChart: React.FC<PieChartProps> = ({
       legend: {
         type: 'scroll',
         orient: 'vertical',
-        right: 0,
-        top: 18,
-        bottom: 18,
+        left: '56%',
+        top: 'middle',
         itemWidth: 8,
         itemHeight: 8,
-        itemGap: 12,
+        itemGap: 10,
         textStyle: {
           color: token.colorTextTertiary,
           overflow: 'truncate',
-          width: 180
+          width: 120
         },
         pageTextStyle: { color: token.colorTextTertiary },
+        pageIconSize: 10,
         pageIconColor: token.colorTextTertiary,
         pageIconInactiveColor: token.colorTextDisabled,
         data: data.map((item) => item.name),
@@ -79,24 +84,14 @@ const PieChart: React.FC<PieChartProps> = ({
       series: [
         {
           type: 'pie',
-          radius: ['52%', '72%'],
-          center: ['34%', '50%'],
+          radius: ['54%', '78%'],
+          center: [CENTER_X, '50%'],
           avoidLabelOverlap: true,
-          label: {
-            show: false
-          },
-          emphasis: {
-            label: {
-              show: true,
-              formatter: (params: any) => `${params.percent}%`,
-              fontSize: 16,
-              fontWeight: 600,
-              color: token.colorText
-            }
-          },
-          labelLine: {
-            show: false
-          },
+          // No on-arc label — the percentage lives in the tooltip instead, so
+          // hovering shows value + percent in one place.
+          label: { show: false },
+          emphasis: { label: { show: false }, scale: false },
+          labelLine: { show: false },
           data
         }
       ]
@@ -137,7 +132,7 @@ const PieChart: React.FC<PieChartProps> = ({
       <div
         style={{
           position: 'absolute',
-          left: '34%',
+          left: CENTER_X,
           top: '50%',
           transform: 'translate(-50%, -50%)',
           display: 'flex',

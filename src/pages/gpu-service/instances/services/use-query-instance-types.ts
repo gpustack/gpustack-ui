@@ -60,10 +60,14 @@ export default function useQueryInstanceTypes() {
           ...item.status,
           onceMaxRequest: {
             ...rawMax,
-            cpu: rawMax?.cpu ? `${ceilMilliToCore(rawMax.cpu)?.cores}` : '',
-            ram: rawMax?.ram ? `${parseQuantityToGi(rawMax.ram)?.value}` : '',
+            cpu: rawMax?.cpu
+              ? `${ceilMilliToCore(rawMax.cpu)?.cores || 0}`
+              : '',
+            ram: rawMax?.ram
+              ? `${parseQuantityToGi(rawMax.ram)?.value || 0}`
+              : '',
             localStorage: rawMax?.localStorage
-              ? `${parseQuantityToGi(rawMax.localStorage)?.value}`
+              ? `${parseQuantityToGi(rawMax.localStorage)?.value || 0}`
               : ''
           }
         },

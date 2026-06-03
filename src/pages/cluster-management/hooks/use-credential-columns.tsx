@@ -20,7 +20,7 @@ const useCredentialColumns = (
         dataIndex: 'name',
         sorter: tableSorter(1),
         render: (text: string) => (
-          <AutoTooltip ghost minWidth={20}>
+          <AutoTooltip ghost minWidth={20} title={text}>
             <span className="text-primary">{text}</span>
           </AutoTooltip>
         )

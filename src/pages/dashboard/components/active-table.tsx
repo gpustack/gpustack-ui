@@ -30,7 +30,16 @@ const ActiveTable = () => {
       ellipsis: true,
       render: (text: any, record: any) => {
         return (
-          <AutoTooltip ghost>
+          <AutoTooltip
+            ghost
+            title={
+              <span>
+                {record.provider_name
+                  ? `${record.provider_name}/${text}`
+                  : text}
+              </span>
+            }
+          >
             <span className="text-primary">
               {record.provider_name ? `${record.provider_name}/${text}` : text}
             </span>

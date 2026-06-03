@@ -44,7 +44,11 @@ const usePublicKeyColumns = ({
           showTitle: false
         },
         render: (text: string, record: ListItem) => (
-          <AutoTooltip ghost style={{ maxWidth: 360 }}>
+          <AutoTooltip
+            ghost
+            style={{ maxWidth: 360 }}
+            title={<span>{record.displayName || text}</span>}
+          >
             <span className="text-primary">{record.displayName || text}</span>
           </AutoTooltip>
         )

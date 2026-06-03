@@ -27,7 +27,7 @@ const useBenchmarkColumns = (params: {
         dataIndex: 'name',
         sorter: tableSorter(1),
         render: (text: string, record) => (
-          <AutoTooltip ghost minWidth={20}>
+          <AutoTooltip ghost minWidth={20} title={text}>
             <Typography.Link onClick={() => onCellClick?.(record, 'name')}>
               {text}
             </Typography.Link>

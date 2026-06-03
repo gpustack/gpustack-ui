@@ -37,6 +37,7 @@ export default function useTableFetch<T>(
     key?: (typeof PaginationKey)[keyof typeof PaginationKey];
     fetchAPI: (params: any, options?: any) => Promise<Global.PageResponse<T>>;
     deleteAPI?: (id: number, params?: any) => Promise<any>;
+    afterDelete?: (id?: number | number[]) => void;
     contentForDelete?: string;
     defaultData?: any[];
     events?: EventsType[];
@@ -48,6 +49,7 @@ export default function useTableFetch<T>(
   const {
     fetchAPI,
     deleteAPI,
+    afterDelete,
     contentForDelete,
     API,
     polling = false,
@@ -363,7 +365,7 @@ export default function useTableFetch<T>(
 
         // remove the deleted id from selected ids in row selection
         rowSelection.removeSelectedKeys([row.id]);
-
+        afterDelete?.(row.id);
         // ======== to avoid fetch data twice, because of debounceFetchData has been run =======
         if (!updateManually) {
           fetchData();
@@ -390,6 +392,7 @@ export default function useTableFetch<T>(
             successIds.push(id);
           }
         );
+        afterDelete?.(successIds);
         rowSelection.removeSelectedKeys(successIds);
         fetchData();
         return res;

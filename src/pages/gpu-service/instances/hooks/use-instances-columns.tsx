@@ -195,7 +195,11 @@ const useInstancesColumns = ({
           showTitle: false
         },
         render: (text: string, record: ListItem) => (
-          <AutoTooltip ghost style={{ maxWidth: 360 }}>
+          <AutoTooltip
+            ghost
+            title={<span>{record.displayName || text}</span>}
+            maxWidth={300}
+          >
             <span className="text-primary">{record.displayName || text}</span>
           </AutoTooltip>
         )
@@ -312,7 +316,7 @@ const useInstancesColumns = ({
         ellipsis: {
           showTitle: false
         },
-        width: 260,
+        width: 300,
         render: (_text: string, record: ListItem) => renderInstanceType(record)
       },
       {

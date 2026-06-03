@@ -390,7 +390,7 @@ const useWorkerColumns = ({
         sorter: tableSorter(1),
         render: (text: string, record: ListItem) => (
           <div className={workerCss.name}>
-            <AutoTooltip ghost maxWidth={200}>
+            <AutoTooltip ghost maxWidth={200} title={text}>
               <span className="name-text">{text}</span>
             </AutoTooltip>
             {renderVersionInfo(record)}

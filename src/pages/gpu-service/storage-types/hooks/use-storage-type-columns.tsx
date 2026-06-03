@@ -55,7 +55,11 @@ const useStorageTypeColumns = ({
         sorter: true,
         ellipsis: { showTitle: false },
         render: (text: string, record: ListItem) => (
-          <AutoTooltip ghost minWidth={20}>
+          <AutoTooltip
+            ghost
+            minWidth={20}
+            title={<span>{record.displayName || text}</span>}
+          >
             <span className="text-primary">{record.displayName || text}</span>
           </AutoTooltip>
         )

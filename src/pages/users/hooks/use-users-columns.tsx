@@ -138,7 +138,7 @@ const useUsersColumns = ({
         key: 'username',
         sorter: tableSorter(1),
         render: (text: string, record: ListItem) => (
-          <AutoTooltip ghost style={{ maxWidth: 400 }}>
+          <AutoTooltip ghost style={{ maxWidth: 400 }} title={text}>
             <span className="text-primary">{text}</span>
           </AutoTooltip>
         )

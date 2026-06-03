@@ -14,7 +14,11 @@ export default {
   'gpuservice.template.command.placeholder':
     'Разделяйте аргументы пробелами; аргументы с пробелами заключайте в кавычки, например: /bin/bash -c "echo hello world"',
   'gpuservice.template.mountPath': 'Путь монтирования',
+  'gpuservice.template.mountPath.tips':
+    'Путь, по которому том хранилища монтируется по умолчанию при создании экземпляра из этого шаблона. Может использоваться для сохранения данных, которые нужно сохранить во время работы экземпляра.',
   'gpuservice.template.containerDisk': 'Диск контейнера (GB)',
+  'gpuservice.template.containerDisk.tips':
+    'Размер системного диска контейнера.',
   'gpuservice.template.memory': 'Память (GB)',
   'gpuservice.instance.containerDisk.remaining':
     'Диск контейнера (Макс. {count} GB)',

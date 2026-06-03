@@ -13,10 +13,13 @@ export default {
   'gpuservice.template.command.placeholder':
     '使用空格分隔参数；含空格的参数请用引号包裹，例如：/bin/bash -c "echo hello world"',
   'gpuservice.template.mountPath': '挂载路径',
-  'gpuservice.template.containerDisk': '容器磁盘(GB)',
-  'gpuservice.template.memory': '内存(GB)',
-  'gpuservice.instance.containerDisk.remaining': '容器磁盘(最大{count}GB)',
-  'gpuservice.instance.memory.remaining': '内存(最大{count}GB)',
+  'gpuservice.template.mountPath.tips':
+    '在使用该模板创建实例时，存储卷默认挂载的路径，可用于持久化实例运行过程中需要保留的数据。',
+  'gpuservice.template.containerDisk': '容器磁盘（GB）',
+  'gpuservice.template.containerDisk.tips': '容器系统盘大小。',
+  'gpuservice.template.memory': '内存（GB）',
+  'gpuservice.instance.containerDisk.remaining': '容器磁盘（最大 {count} GB）',
+  'gpuservice.instance.memory.remaining': '内存（最大 {count} GB）',
   'gpuservice.template.displayName': '显示名称',
   'gpuservice.template.displayName.max': '显示名称不能超过 63 个字符',
   'gpuservice.template.ports': '端口',

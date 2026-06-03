@@ -13,7 +13,10 @@ export default {
   'gpuservice.template.command.placeholder':
     'Argümanları boşlukla ayırın; boşluk içeren argümanları tırnak içine alın, örn.: /bin/bash -c "echo hello world"',
   'gpuservice.template.mountPath': 'Bağlama Yolu',
+  'gpuservice.template.mountPath.tips':
+    'Bu şablondan bir örnek oluşturulurken depolama biriminin varsayılan olarak bağlanacağı yol. Örnek çalışırken saklanması gereken verileri kalıcı hale getirmek için kullanılabilir.',
   'gpuservice.template.containerDisk': 'Konteyner Diski (GB)',
+  'gpuservice.template.containerDisk.tips': 'Konteyner sistem diskinin boyutu.',
   'gpuservice.template.memory': 'Bellek (GB)',
   'gpuservice.instance.containerDisk.remaining':
     'Konteyner Diski (Maks. {count} GB)',

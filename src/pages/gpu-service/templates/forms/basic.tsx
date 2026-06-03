@@ -9,7 +9,7 @@ import {
   useAppUtils
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Flex, Form } from 'antd';
+import { Form } from 'antd';
 import { useMemo } from 'react';
 import { GPUsConfigs } from '../../../resources/config/gpu-driver';
 import formStyles from '../../instances/styles/instances.module.less';
@@ -179,39 +179,39 @@ const Basic: React.FC<BasicProps> = ({
           />
         </Form.Item>
       </div>
-
-      <Flex gap={12}>
-        {page === 'template' && (
-          <div style={{ flex: 1 }}>
-            <Form.Item<FormData> name={['spec', 'volumeMount']}>
-              <CInput.Input
-                label={intl.formatMessage({
-                  id: 'gpuservice.template.mountPath'
-                })}
-                placeholder={intl.formatMessage({
-                  id: 'clusters.volume.mountPath.format'
-                })}
-                disabled={disabled}
-              />
-            </Form.Item>
-          </div>
-        )}
-        <div style={{ flex: 1 }}>
-          <Form.Item<FormData>
-            name={['spec', 'resources', 'localStorage']}
-            normalize={(value) => (value ? `${value}Gi` : undefined)}
-            getValueProps={(value) => ({
-              value: value ? String(value).replace(/Gi$/, '') : ''
+      <Form.Item<FormData>
+        name={['spec', 'resources', 'localStorage']}
+        normalize={(value) => (value ? `${value}Gi` : undefined)}
+        getValueProps={(value) => ({
+          value: value ? String(value).replace(/Gi$/, '') : ''
+        })}
+      >
+        <InputNumber
+          label={renderStorageLabel()}
+          description={intl.formatMessage({
+            id: 'gpuservice.template.containerDisk.tips'
+          })}
+          min={0}
+          max={onceMaxRequest?.localStorage ?? undefined}
+          disabled={disabled}
+        />
+      </Form.Item>
+      {page === 'template' && (
+        <Form.Item<FormData> name={['spec', 'volumeMount']}>
+          <CInput.Input
+            label={intl.formatMessage({
+              id: 'gpuservice.template.mountPath'
             })}
-          >
-            <InputNumber
-              label={renderStorageLabel()}
-              max={onceMaxRequest?.localStorage ?? undefined}
-              disabled={disabled}
-            />
-          </Form.Item>
-        </div>
-      </Flex>
+            description={intl.formatMessage({
+              id: 'gpuservice.template.mountPath.tips'
+            })}
+            placeholder={intl.formatMessage({
+              id: 'clusters.volume.mountPath.format'
+            })}
+            disabled={disabled}
+          />
+        </Form.Item>
+      )}
       <Ports disabled={disabled} />
       <Env disabled={disabled} />
     </>

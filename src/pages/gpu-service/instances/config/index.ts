@@ -172,8 +172,8 @@ export const convertKiToGi = (value?: string): string | undefined => {
   const match = /^(-?\d+(?:\.\d+)?)(Ki|Mi|Gi|Ti)$/.exec(value);
   if (!match) return value;
   const [, num, unit] = match;
-  if (unit === 'Ti') return `${_.floor(Number(num), 0)}Ti`;
-  return `${_.floor(Number(num) / GI_DIVISOR[unit], 0)}Gi`;
+  if (unit === 'Ti') return `${_.floor(Number(num), 0)} Ti`;
+  return `${_.floor(Number(num) / GI_DIVISOR[unit], 0)} Gi`;
 };
 
 const parseQuantity = (value?: string | null): number => {

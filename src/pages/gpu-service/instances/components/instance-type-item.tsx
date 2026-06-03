@@ -166,7 +166,7 @@ const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({ item }) => {
             showDot={false}
             icon="icon-ram-02"
             label={intl.formatMessage({ id: 'gpuservice.instance.ram' })}
-            value={ramUnit ? `${ramUnit}GB` : '-'}
+            value={ramUnit ? `${ramUnit} GB` : '-'}
           />
           <MetaItem
             show={!!cpuUnitCores}

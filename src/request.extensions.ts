@@ -14,13 +14,6 @@ export type RequestInterceptor = (
 
 export const extraRequestInterceptors: RequestInterceptor[] = [];
 
-// Response-side counterpart. Each interceptor receives the (successful)
-// response and returns it; tooling may overwrite this file to react to
-// responses (e.g. clearing a one-shot request-scoped hint after a write
-// completes). Default is an empty list.
-export type ResponseInterceptor = (response: any) => any;
-
-export const extraResponseInterceptors: ResponseInterceptor[] = [];
 export const getTenantHeaders = (
   _method?: string
 ): Record<string, string> => ({});

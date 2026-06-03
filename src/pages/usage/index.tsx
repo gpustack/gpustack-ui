@@ -1,242 +1,72 @@
-import { baseColorMap } from '@/pages/dashboard/config';
-import { formatLargeNumber } from '@/utils';
-import { SimpleCard } from '@gpustack/core-ui';
-import { useAccess, useIntl } from '@umijs/max';
-import React, { useEffect, useMemo, useState } from 'react';
-import BreakdownTabs from './components/breakdown-tabs';
-import DailyUsage from './components/daily-usage';
-import ExportData from './components/export-data';
-import FilterBar from './components/filter-bar';
-import useExportTable from './hooks/use-export-table';
-import { useUsageFilters } from './hooks/use-usage-filters';
-import useQueryUsageMetaData from './services/use-query-meta-data';
-
-type DateType = 'date' | 'week' | 'month' | 'quarter' | 'year';
+/**
+ * Usage page — top-level tab shell.
+ *
+ * - Summary: cross-resource overview (KPIs + trend + by-type breakdown + donut)
+ * - Tokens: existing per-request token usage page (untouched)
+ * - GPU Instances: per-instance compute usage
+ * - Storage: PV capacity usage
+ * - Resource Events: lifecycle event list (created / metered / deleted / ...)
+ *
+ * Resource Events is kept as a tab (not a separate route) so the page filter
+ * set stays consistent across all views.
+ *
+ * The previous implementation lived in this file; it now lives in
+ * ``components/token-tab.tsx`` so we can host it as a tab pane.
+ */
+import { Tabs, TabsProps } from 'antd';
+import React, { useMemo, useState } from 'react';
+import GpuInstancesTab from './components/gpu-instances-tab';
+import ResourceEvents from './components/resource-events';
+import StorageTab from './components/storage-tab';
+import SummaryTab from './components/summary-tab';
+import TokenTab from './components/token-tab';
 
 const Usage: React.FC = () => {
-  const intl = useIntl();
-  const access = useAccess();
-  const { exportTable } = useExportTable();
-  const [openExportModal, setOpenExportModal] = useState(false);
-  const [breakdownRefreshKey, setBreakdownRefreshKey] = useState(0);
-  const [breakdownPageResetKey, setBreakdownPageResetKey] = useState(0);
+  // Land on the cross-resource Summary by default.
+  const [activeKey, setActiveKey] = useState<string>('summary');
 
-  const summaryColumns = [
-    {
-      title: intl.formatMessage({ id: 'usage.filter.inputTokens' }),
-      dataIndex: 'input_tokens',
-      key: 'input_tokens'
-    },
-    {
-      title: intl.formatMessage({ id: 'usage.filter.outputTokens' }),
-      dataIndex: 'output_tokens',
-      key: 'output_tokens'
-    },
-    {
-      title: intl.formatMessage({ id: 'usage.filter.totalTokens' }),
-      dataIndex: 'total_tokens',
-      key: 'total_tokens'
-    },
-    {
-      title: intl.formatMessage({ id: 'usage.filter.apiRequests' }),
-      dataIndex: 'api_requests',
-      key: 'api_requests'
-    },
-    {
-      title: intl.formatMessage({ id: 'usage.filter.modelsUsed' }),
-      dataIndex: 'models_called',
-      key: 'models_called'
-    }
-  ];
-
-  const [chartFilters, setChartFilters] = useState<{
-    metric: string;
-    group_by: string | null;
-    granularity: string;
-  }>({
-    metric: 'total_tokens',
-    group_by: null,
-    granularity: 'day'
-  });
-
-  const { detailData: metaData, fetchData: fetchMetaData } =
-    useQueryUsageMetaData();
-
-  const { filters, commonFilters, fetchData, timeSeriesData, filterBar } =
-    useUsageFilters({
-      // ``canSeeOrgAdmin`` widens to Org owners of the selected Org in
-      // the enterprise build (Personal Org excluded). Mirrors the BE's
-      // ``_can_use_all_scope`` gate one-to-one.
-      initialScope: access.canSeeOrgAdmin ? 'all' : 'self',
-      metaData,
-      chartFilters,
-      summaryColumns
-    });
-
-  useEffect(() => {
-    fetchMetaData();
-    fetchData(commonFilters, chartFilters);
-  }, []);
-
-  const handleChartFilterChange = (type: string, value: string) => {
-    setChartFilters((prev) => ({ ...prev, [type]: value }));
-    fetchData(commonFilters, { ...chartFilters, [type]: value });
-  };
-
-  const summaryCards = useMemo(() => {
-    const summary = timeSeriesData?.summary || {
-      input_tokens: 0,
-      output_tokens: 0,
-      total_tokens: 0,
-      api_requests: 0,
-      models_called: 0
-    };
-    return [
+  const items: TabsProps['items'] = useMemo(
+    () => [
       {
-        label: formatLargeNumber(summary.input_tokens) as string,
-        value: intl.formatMessage({ id: 'usage.filter.inputTokens' }),
-        color: baseColorMap.baseR3
-        // iconType: 'roundRect'
+        key: 'summary',
+        label: 'Summary',
+        children: <SummaryTab />
       },
       {
-        label: formatLargeNumber(summary.output_tokens) as string,
-        value: intl.formatMessage({ id: 'usage.filter.outputTokens' }),
-        color: baseColorMap.base
-        // iconType: 'roundRect'
+        key: 'tokens',
+        label: 'Tokens',
+        children: <TokenTab />
       },
       {
-        label: formatLargeNumber(summary.total_tokens) as string,
-        value: intl.formatMessage({ id: 'usage.filter.totalTokens' }),
-        color: baseColorMap.baseL1
-        // iconType: 'roundRect'
+        key: 'gpu-instances',
+        label: 'GPU Instances',
+        children: <GpuInstancesTab />
       },
       {
-        label: formatLargeNumber(summary.api_requests) as string,
-        value: intl.formatMessage({ id: 'usage.filter.apiRequests' }),
-        color: baseColorMap.baseR1
-        // iconType: 'circle'
+        key: 'storage',
+        label: 'Storage',
+        children: <StorageTab />
       },
       {
-        label: summary.models_called.toString(),
-        value: intl.formatMessage({ id: 'usage.filter.modelsUsed' }),
-        color: baseColorMap.baseR2
-        // iconType: 'roundRect'
+        key: 'resource-events',
+        label: 'Resource Events',
+        children: <ResourceEvents />
       }
-    ];
-  }, [timeSeriesData.summary]);
-
-  const breakdownDateRange = useMemo(
-    () => ({
-      start_date: commonFilters.start_date,
-      end_date: commonFilters.end_date
-    }),
-    [commonFilters.end_date, commonFilters.start_date]
+    ],
+    []
   );
 
-  const handlePickerChange = (picker: DateType) => {
-    setChartFilters((prev) => ({
-      ...prev,
-      granularity: picker === 'date' ? 'day' : picker
-    }));
-  };
-
-  const handleExportChart = () => {
-    setOpenExportModal(true);
-  };
-
-  const handleSearch = () => {
-    filterBar.handleSearch();
-    setBreakdownRefreshKey((prev) => prev + 1);
-  };
-
-  const handleBreakdownPageReset = () => {
-    setBreakdownPageResetKey((prev) => prev + 1);
-  };
-
   return (
-    <div>
-      <FilterBar
-        {...filterBar}
-        onScopeChange={(value) => {
-          filterBar.onScopeChange(value);
-          handleBreakdownPageReset();
-        }}
-        onDateChange={(dates, dateStrings) => {
-          filterBar.onDateChange(dates, dateStrings);
-          handleBreakdownPageReset();
-        }}
-        onRoutesChange={(value) => {
-          filterBar.onRoutesChange(value);
-          handleBreakdownPageReset();
-        }}
-        onUsersChange={(value) => {
-          filterBar.onUsersChange(value);
-          handleBreakdownPageReset();
-        }}
-        onApiKeysChange={(value) => {
-          filterBar.onApiKeysChange(value);
-          handleBreakdownPageReset();
-        }}
-        handleSearch={handleSearch}
-        handlePickerChange={handlePickerChange}
-        onExportTable={exportTable}
-        onExportChart={handleExportChart}
-      />
-      <div
-        style={{
-          marginBlock: 24
-        }}
-      >
-        <SimpleCard
-          dataList={summaryCards}
-          height={80}
-          styles={{
-            item: {
-              backgroundColor: 'var(--ant-color-fill-quaternary)',
-              borderRadius: '6px'
-            }
-          }}
-        />
-      </div>
-      <DailyUsage
-        timeSeriesData={timeSeriesData}
-        metric={chartFilters.metric}
-        groupBy={chartFilters.group_by}
-        granularity={chartFilters.granularity}
-        startDate={commonFilters.start_date}
-        endDate={commonFilters.end_date}
-        onMetricChange={(value) => handleChartFilterChange('metric', value)}
-        onGroupByChange={(value) =>
-          handleChartFilterChange('group_by', value as string)
-        }
-        onGranularityChange={(value) =>
-          handleChartFilterChange('granularity', value)
-        }
-      />
-      <BreakdownTabs
-        filters={filters}
-        dateRange={breakdownDateRange}
-        scope={commonFilters.scope}
-        pageResetKey={breakdownPageResetKey}
-        refreshKey={breakdownRefreshKey}
-      ></BreakdownTabs>
-      <ExportData
-        metaData={metaData}
-        granularity={chartFilters.granularity}
-        initialScope={commonFilters.scope}
-        commonFilters={commonFilters}
-        open={openExportModal}
-        handlePickerChange={handlePickerChange}
-        onCancel={() => setOpenExportModal(false)}
-        initialState={{
-          activeRoutes: filterBar.selectedRoutes,
-          activeApiKeys: filterBar.activeApiKeys,
-          users: commonFilters.users,
-          start_date: commonFilters.start_date,
-          end_date: commonFilters.end_date
-        }}
-      ></ExportData>
-    </div>
+    <Tabs
+      activeKey={activeKey}
+      onChange={setActiveKey}
+      items={items}
+      destroyOnHidden
+      // The content area adds 24px top padding; on table pages that space is
+      // filled immediately, but here it sits empty above the tab bar and reads
+      // as too tall. Pull the tab bar up to ~flush with the header divider.
+      tabBarStyle={{ marginTop: -20 }}
+    />
   );
 };
 

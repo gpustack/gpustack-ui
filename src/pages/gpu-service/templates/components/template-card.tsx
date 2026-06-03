@@ -41,16 +41,6 @@ const imageLogoMap = {
   ubuntu: ubuntuLogo
 } as const;
 
-const manufacturerLabelMap: Record<string, string> = Object.values(
-  GPUsConfigs
-).reduce(
-  (acc, item) => {
-    if (item.gpuVendor) acc[item.gpuVendor] = item.label;
-    return acc;
-  },
-  { cpu: 'CPU' } as Record<string, string>
-);
-
 const matchImageLogo = (
   image: string | undefined
 ): { logo: string; type: string } | null => {
@@ -144,6 +134,19 @@ interface TemplateCardProps {
 
 const TemplateCardItem: React.FC<TemplateCardProps> = ({ data, onSelect }) => {
   const intl = useIntl();
+
+  const manufacturerLabelMap: Record<string, string> = Object.values(
+    GPUsConfigs
+  ).reduce(
+    (acc, item) => {
+      if (item.gpuVendor)
+        acc[item.gpuVendor] = item.locales.locale
+          ? intl.formatMessage({ id: item.locales.label })
+          : item.locales.label;
+      return acc;
+    },
+    { cpu: 'CPU' } as Record<string, string>
+  );
 
   const handleOnSelect = (item: any) => {
     onSelect?.({ action: item.key, data });

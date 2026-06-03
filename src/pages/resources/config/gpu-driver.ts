@@ -36,6 +36,14 @@ export const manfacturerValueMap = {
   THEAD: 'thead'
 };
 
+// 'vendor.ascend': '昇腾',
+//   'vendor.hygon': '海光',
+//   'vendor.moorthreads': '摩尔线程',
+//   'vendor.iluvatar': '天数智芯',
+//   'vendor.metax': '沐曦',
+//   'vendor.cambricon': '寒武纪',
+//   'vendor.thead': '平头哥 PPU'
+
 export const GPUsConfigs: Record<
   string,
   {
@@ -44,6 +52,10 @@ export const GPUsConfigs: Record<
     runtime: string;
     driver: string;
     gpuVendor?: string;
+    locales: {
+      label: string;
+      locale?: boolean;
+    };
   }
 > = {
   [GPUDriverMap.NVIDIA]: {
@@ -51,63 +63,99 @@ export const GPUsConfigs: Record<
     value: GPUDriverMap.NVIDIA,
     runtime: 'nvidia',
     driver: 'nvidia-smi',
-    gpuVendor: 'nvidia'
+    gpuVendor: 'nvidia',
+    locales: {
+      label: 'NVIDIA',
+      locale: false
+    }
   },
   [GPUDriverMap.AMD]: {
     label: 'AMD',
     value: GPUDriverMap.AMD,
     runtime: 'amd',
     driver: 'amd-smi static',
-    gpuVendor: 'amd'
+    gpuVendor: 'amd',
+    locales: {
+      label: 'AMD',
+      locale: false
+    }
   },
   [GPUDriverMap.ASCEND]: {
     label: 'Ascend',
     value: GPUDriverMap.ASCEND,
     runtime: 'ascend',
     driver: 'npu-smi info',
-    gpuVendor: 'ascend'
+    gpuVendor: 'ascend',
+    locales: {
+      label: 'vendor.ascend',
+      locale: true
+    }
   },
   [GPUDriverMap.HYGON]: {
     label: 'Hygon',
     value: GPUDriverMap.HYGON,
     runtime: 'hygon', // TODO: confirm runtime name
     driver: 'hy-smi',
-    gpuVendor: 'hygon'
+    gpuVendor: 'hygon',
+    locales: {
+      label: 'vendor.hygon',
+      locale: true
+    }
   },
   [GPUDriverMap.MOORE_THREADS]: {
     label: 'Moore Threads',
     value: GPUDriverMap.MOORE_THREADS,
     runtime: 'mthreads',
     driver: 'mthreads-gmi',
-    gpuVendor: 'mthreads'
+    gpuVendor: 'mthreads',
+    locales: {
+      label: 'vendor.moorthreads',
+      locale: true
+    }
   },
   [GPUDriverMap.ILUVATAR]: {
     label: 'Iluvatar',
     value: GPUDriverMap.ILUVATAR,
     runtime: 'iluvatar',
     driver: 'ixsmi',
-    gpuVendor: 'iluvatar'
+    gpuVendor: 'iluvatar',
+    locales: {
+      label: 'vendor.iluvatar',
+      locale: true
+    }
   },
   [GPUDriverMap.CAMBRICON]: {
     label: 'Cambricon',
     value: GPUDriverMap.CAMBRICON,
     runtime: 'cambricon',
     driver: 'cnmon info',
-    gpuVendor: 'cambricon'
+    gpuVendor: 'cambricon',
+    locales: {
+      label: 'vendor.cambricon',
+      locale: true
+    }
   },
   [GPUDriverMap.METAX]: {
     label: 'Metax',
     value: GPUDriverMap.METAX,
     runtime: 'metax',
     driver: 'mx-smi',
-    gpuVendor: 'metax'
+    gpuVendor: 'metax',
+    locales: {
+      label: 'vendor.metax',
+      locale: true
+    }
   },
   [GPUDriverMap.THEAD]: {
     label: 'T-Head PPU',
     value: GPUDriverMap.THEAD,
     runtime: 'thead', // TODO: confirm runtime name
     driver: 'ppu-smi',
-    gpuVendor: 'thead'
+    gpuVendor: 'thead',
+    locales: {
+      label: 'vendor.thead',
+      locale: true
+    }
   }
 };
 

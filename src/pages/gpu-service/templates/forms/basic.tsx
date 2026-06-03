@@ -47,7 +47,9 @@ const Basic: React.FC<BasicProps> = ({
   const manufacturerOptions = useMemo(
     () =>
       Object.values(GPUsConfigs).map((item) => ({
-        label: item.label,
+        label: item.locales.locale
+          ? intl.formatMessage({ id: item.locales.label })
+          : item.locales.label,
         value: item.gpuVendor
       })),
     []

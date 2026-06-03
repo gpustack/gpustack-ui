@@ -60,12 +60,14 @@ const GPUServiceTemplates: React.FC = () => {
   const manufacturerOptions = useMemo(
     () => [
       ...Object.values(GPUsConfigs).map((item) => ({
-        label: item.label,
+        label: item.locales.locale
+          ? intl.formatMessage({ id: item.locales.label })
+          : item.locales.label,
         value: item.gpuVendor as string
       })),
       { label: 'CPU', value: 'cpu' }
     ],
-    []
+    [intl]
   );
 
   const handleFilterByManufacturer = (value: string) => {

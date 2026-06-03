@@ -15,6 +15,7 @@ import {
 } from '@/services/profile/apis';
 import { fetchSystemConfig } from '@/services/system/query-system-config';
 import { isOnline } from '@/utils';
+import { installTenantFetch } from '@/utils/install-fetch';
 import {
   IS_FIRST_LOGIN,
   readState,
@@ -23,6 +24,8 @@ import {
 import '@gpustack/core-ui/style.css';
 import { RequestConfig, history, request as umiRequest } from '@umijs/max';
 import { message } from 'antd';
+
+installTenantFetch();
 
 // only for the first login and access from http://localhost
 

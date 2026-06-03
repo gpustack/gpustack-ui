@@ -138,7 +138,7 @@ export default {
   'gpuservice.storage.persistentVolume': '持久',
   'gpuservice.storage.temporary.tips': '实例停止后，数据将被清除。',
   'gpuservice.storage.persistentVolume.tips':
-    '数据在实例重启后仍会保留，仅在实例被终止时删除。无法被其它实例共享。',
+    '数据在实例重启后仍会保留。持久卷不会随实例终止而删除，并可被多个实例共享。',
   'gpuservice.storage.persistentVolume.required': '请选择存储',
   'gpuservice.storage.persistentVolume.capacity': '容量（GB）',
   'gpuservice.storage.persistentVolume.capacity.required': '请输入容量',

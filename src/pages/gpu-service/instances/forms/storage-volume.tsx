@@ -42,7 +42,7 @@ const StorageVolume = ({
   const storageOptions = useMemo(
     () =>
       (storageData?.items || []).map((item) => ({
-        label: `${item.name} / ${item.spec?.capacity ?? '-'}`,
+        label: `${item.displayName || item.name} / ${item.spec?.capacity ?? '-'}`,
         value: item.name
       })),
     [storageData]

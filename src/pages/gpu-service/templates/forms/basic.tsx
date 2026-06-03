@@ -52,7 +52,7 @@ const Basic: React.FC<BasicProps> = ({
           : item.locales.label,
         value: item.gpuVendor
       })),
-    []
+    [intl]
   );
 
   const renderStorageLabel = (): React.ReactNode => {

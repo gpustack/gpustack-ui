@@ -27,6 +27,7 @@ import {
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Tag } from 'antd';
+import { useMemo } from 'react';
 import styled from 'styled-components';
 import { manufactureColorMap, templateActions } from '../config';
 import { ListItem } from '../config/types';
@@ -135,18 +136,18 @@ interface TemplateCardProps {
 const TemplateCardItem: React.FC<TemplateCardProps> = ({ data, onSelect }) => {
   const intl = useIntl();
 
-  const manufacturerLabelMap: Record<string, string> = Object.values(
-    GPUsConfigs
-  ).reduce(
-    (acc, item) => {
-      if (item.gpuVendor)
-        acc[item.gpuVendor] = item.locales.locale
-          ? intl.formatMessage({ id: item.locales.label })
-          : item.locales.label;
-      return acc;
-    },
-    { cpu: 'CPU' } as Record<string, string>
-  );
+  const manufacturerLabelMap: Record<string, string> = useMemo(() => {
+    return Object.values(GPUsConfigs).reduce(
+      (acc, item) => {
+        if (item.gpuVendor)
+          acc[item.gpuVendor] = item.locales.locale
+            ? intl.formatMessage({ id: item.locales.label })
+            : item.locales.label;
+        return acc;
+      },
+      { cpu: 'CPU' } as Record<string, string>
+    );
+  }, [intl]);
 
   const handleOnSelect = (item: any) => {
     onSelect?.({ action: item.key, data });

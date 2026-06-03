@@ -9,9 +9,10 @@ import {
   type TableColumnProps
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
+import { useMemoizedFn } from 'ahooks';
 import { MenuProps } from 'antd';
 import dayjs from 'dayjs';
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import { RouteItem } from '../config/types';
 import type { ModelRouteConfigAction } from '../plugin';
 
@@ -128,10 +129,8 @@ const useAccessColumns = ({
     });
   }, [configActions, onConfigAction]);
 
-  const filterActions = useCallback(
-    (record: RouteItem) =>
-      sortedActions.filter((a) => (a.show ? a.show(record) : true)),
-    [sortedActions]
+  const filterActions = useMemoizedFn((record: RouteItem) =>
+    sortedActions.filter((a) => (a.show ? a.show(record) : true))
   );
 
   // Plugin entries carry their own `onClick` (wired to `onConfigAction`
@@ -139,15 +138,14 @@ const useAccessColumns = ({
   // when present. Built-ins fall through to the page's `handleSelect`
   // dispatcher keyed by `val`. Mirrors the api-keys page's onSelect
   // path — no key lookup needed.
-  const onSelectAction = useCallback(
+  const onSelectAction = useMemoizedFn(
     (val: string, record: RouteItem, item?: RankedAction) => {
       if (item?.onClick) {
         item.onClick(record);
         return;
       }
       handleSelect(val, record);
-    },
-    [handleSelect]
+    }
   );
 
   return useMemo(() => {

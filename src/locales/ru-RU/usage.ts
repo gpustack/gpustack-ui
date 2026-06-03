@@ -17,6 +17,7 @@ export default {
   'usage.table.user.apiKeysUsed': 'API Keys Used',
   'usage.table.lastActive': 'Last Active',
   'usage.filter.granularity': 'Granularity',
+  'usage.filter.granularity.hour': 'Час',
   'usage.filter.granularity.day': 'Day',
   'usage.filter.granularity.week': 'Week',
   'usage.filter.granularity.month': 'Month',

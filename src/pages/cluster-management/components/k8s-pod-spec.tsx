@@ -81,10 +81,22 @@ const GpuInstanceOptionsForm: React.FC<{
   initialValue?: GpuInstanceOptions;
 }> = ({ initialValue }) => {
   const intl = useIntl();
+  const form = Form.useFormInstance();
   const [enabled, setEnabled] = useState<boolean>(!!initialValue);
 
   const handleToggle = (checked: boolean) => {
     setEnabled(checked);
+    // The presence of `gpuInstanceOptions` on `k8s_options` is what signals
+    // "GPU instances enabled" to the backend. The toggle is the source of
+    // truth for that presence — when on, ensure the object exists (defaulting
+    // to {} so it survives even when the static address is left blank); when
+    // off, remove it entirely.
+    const path = ['k8s_options', 'gpuInstanceOptions'];
+    if (checked) {
+      form.setFieldValue(path, form.getFieldValue(path) ?? {});
+    } else {
+      form.setFieldValue(path, undefined);
+    }
   };
 
   return (

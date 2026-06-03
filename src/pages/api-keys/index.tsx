@@ -126,12 +126,12 @@ const APIKeys: React.FC = () => {
   const handleModalOk = async () => {
     try {
       await fetchData();
-      setOpenAddModal({
-        open: false,
-        title: '',
-        action: PageAction.CREATE,
-        currentData: null
-      });
+      // setOpenAddModal({
+      //   open: false,
+      //   title: '',
+      //   action: PageAction.CREATE,
+      //   currentData: null
+      // });
     } catch (error) {
       // do nothing
     }

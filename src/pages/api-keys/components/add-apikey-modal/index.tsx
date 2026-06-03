@@ -98,10 +98,11 @@ const AddModal: React.FC<AddModalProps> = ({
       expires_in: getExpireValue(data.expires_in)
     };
     const res = await createApisKey({ data: params });
-
+    onOk();
     // if custom value
     if (data.custom) {
-      return onOk();
+      onCancel();
+      return;
     }
 
     setAPIKeyValue(res.value);
@@ -111,6 +112,7 @@ const AddModal: React.FC<AddModalProps> = ({
   const updateAPIKey = async (data: FormData) => {
     await updateApisKey(currentData?.id as number, { data });
     onOk();
+    onCancel();
   };
 
   const handleOnOk = async (formdata: FormData) => {
@@ -142,7 +144,7 @@ const AddModal: React.FC<AddModalProps> = ({
   };
 
   const handleDone = () => {
-    onOk();
+    onCancel();
   };
 
   const handleAfterOpenChange = (isOpen: boolean) => {

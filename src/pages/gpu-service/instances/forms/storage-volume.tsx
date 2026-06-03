@@ -202,6 +202,9 @@ const StorageVolume = ({
 
       <Form.Item<FormData>
         name={['spec', 'volumeMount']}
+        style={{
+          marginBottom: 12
+        }}
         rules={[
           {
             required: true,

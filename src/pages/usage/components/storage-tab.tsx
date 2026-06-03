@@ -168,7 +168,7 @@ const StorageTab: React.FC = () => {
 
   const dataByDate = useMemo(() => {
     const map = new Map<string, number>();
-    chartData?.items.forEach((item) => {
+    chartData?.items?.forEach((item) => {
       if (!item.date) return;
       map.set(bucketKey(item.date, granularity), Number(item[metric] ?? 0));
     });

@@ -271,7 +271,7 @@ const Clusters: React.FC = () => {
   const handleOnCell = useMemoizedFn((record: ClusterListItem, dataIndex) => {
     if (dataIndex === 'name') {
       navigate(
-        `/cluster-management/clusters/detail?id=${record.id}&name=${record.name}&page=clusters`
+        `/resources/clusters/detail?id=${record.id}&name=${record.name}&page=clusters`
       );
     }
   });
@@ -461,7 +461,7 @@ const Clusters: React.FC = () => {
       <DeleteModal ref={modalRef}></DeleteModal>
       <ClusterModal
         title={intl.formatMessage({
-          id: 'menu.clusterManagement.clusterCreate'
+          id: 'menu.resources.clusterCreate'
         })}
         open={clusterModalStatus.open}
         providerHint={pendingProviderHint}

@@ -53,7 +53,7 @@ const NotFoundCredentialContent: React.FC = () => {
   };
 
   return (
-    <Link to={'/cluster-management/credentials'} onClick={handleOnClick}>
+    <Link to={'/resources/credentials'} onClick={handleOnClick}>
       {intl.formatMessage({ id: 'clusters.button.addCredential' })}
     </Link>
   );

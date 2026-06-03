@@ -41,7 +41,7 @@ const GPUService: React.FC = () => {
       firstAddCluster: true,
       providerHint: ProviderValueMap.Kubernetes
     });
-    navigate('/cluster-management/clusters/list');
+    navigate('/resources/clusters/list');
   };
 
   const {

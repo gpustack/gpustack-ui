@@ -292,6 +292,16 @@ const baseRoutes = [
         redirect: '/resources/workers'
       },
       {
+        name: 'clusters',
+        path: '/resources/clusters/list',
+        key: 'clusters',
+        icon: 'icon-cluster2-outline',
+        selectedIcon: 'icon-cluster2-filled',
+        defaultIcon: 'icon-cluster2-outline',
+        component: './cluster-management/clusters',
+        subMenu: ['/resources/clusters/detail', '/resources/clusters/create']
+      },
+      {
         name: 'workers',
         path: '/resources/workers',
         key: 'workers',
@@ -308,50 +318,25 @@ const baseRoutes = [
         selectedIcon: 'icon-gpu-filled',
         defaultIcon: 'icon-gpu1',
         component: './resources/components/gpus'
-      }
-    ]
-  },
-  {
-    name: 'clusterManagement',
-    path: '/cluster-management',
-    key: 'clusterManagement',
-    access: 'canSeeOrgAdmin',
-    routes: [
-      {
-        path: '/cluster-management',
-        redirect: '/cluster-management/clusters/list'
       },
       {
-        name: 'clusters',
-        path: '/cluster-management/clusters/list',
-        key: 'clusters',
-        icon: 'icon-cluster2-outline',
-        selectedIcon: 'icon-cluster2-filled',
-        defaultIcon: 'icon-cluster2-outline',
-        component: './cluster-management/clusters',
-        subMenu: [
-          '/cluster-management/clusters/detail',
-          '/cluster-management/clusters/create'
-        ]
+        name: 'credentials',
+        path: '/resources/credentials',
+        key: 'credentials',
+        icon: 'icon-credential-outline',
+        selectedIcon: 'icon-credential-filled',
+        defaultIcon: 'icon-credential-outline',
+        component: './cluster-management/credentials'
       },
       {
         name: 'clusterDetail',
-        path: '/cluster-management/clusters/detail',
+        path: '/resources/clusters/detail',
         key: 'clusterDetail',
         icon: 'icon-cluster2-outline',
         selectedIcon: 'icon-cluster2-filled',
         defaultIcon: 'icon-cluster2-outline',
         hideInMenu: true,
         component: './cluster-management/cluster-detail'
-      },
-      {
-        name: 'credentials',
-        path: '/cluster-management/credentials',
-        key: 'credentials',
-        icon: 'icon-credential-outline',
-        selectedIcon: 'icon-credential-filled',
-        defaultIcon: 'icon-credential-outline',
-        component: './cluster-management/credentials'
       }
     ]
   },

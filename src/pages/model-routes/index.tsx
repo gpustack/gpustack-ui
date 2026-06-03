@@ -121,7 +121,7 @@ const ModelRoutes: React.FC = () => {
     openAccessControlModalStatus
   } = useAccessControl();
   const { sourceModels, fetchSourceModels } = useTargetSourceModels();
-  const { handleOpenPlayGround } = useOpenPlayground();
+  const { handleOpenPlayGround, generateModelName } = useOpenPlayground();
   const { apiAccessInfo, openViewAPIInfo, closeViewAPIInfo } = useViewApIInfo();
   const [registerRouteConfig, setRegisterRouteConfig] = useAtom(
     registerRouteConfigAtom
@@ -214,7 +214,10 @@ const ModelRoutes: React.FC = () => {
     } else if (val === 'chat') {
       handleOpenPlayGround(row);
     } else if (val === 'api') {
-      openViewAPIInfo(row);
+      openViewAPIInfo({
+        ...row,
+        name: generateModelName(row)
+      });
     }
   });
 
@@ -308,18 +311,8 @@ const ModelRoutes: React.FC = () => {
     }
   }, [registerRouteConfig, dataSource.loadend]);
 
-  // Generic per-row plugin slot. Each enterprise plugin contributes a
-  // `{ key, labelId, icon, priority, form, useCreate }` entry; the host
-  // renders a button per entry in the dropdown and renders one
-  // `ModelRouteConfigActionMount` per entry — those mounts own each
-  // entry's controller and register it back into `controllersRef` so
-  // dropdown clicks can route to the correct `openModal`. See
-  // `./plugin.tsx`.
-  //
-  // The action list is read once. Plugins are registered at boot and
-  // never recompute, so the reference is stable for the lifetime of
-  // the page and `useMemo([])` is safe.
   const configActions = useMemo(() => getModelRouteConfigActions(), []);
+
   const controllersRef = useRef<
     Record<string, ModelRouteConfigActionController>
   >({});
@@ -336,9 +329,6 @@ const ModelRoutes: React.FC = () => {
     }
   );
 
-  // Per-row save closes the drawer and refetches the table. The wrapped
-  // `fetchAPI` above takes care of bumping `pluginContext.refreshToken`
-  // for derived plugin data.
   const handleConfigActionOk = useMemoizedFn(() => {
     fetchData();
   });

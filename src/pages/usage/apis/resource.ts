@@ -269,7 +269,7 @@ function flattenItem(
   // Per-resource rows (instance / volume) carry their sku → surface it as the
   // Instance Type / Type column when not already the group key.
   if (!flat.gpu_type && it.sku) {
-    flat.gpu_type = it.sku;
+    flat.gpu_type = it.sku ?? undefined;
   }
   return flat;
 }

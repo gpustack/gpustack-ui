@@ -17,6 +17,7 @@ export default {
   'usage.table.user.apiKeysUsed': '使用的 API 密钥',
   'usage.table.lastActive': '最后活跃时间',
   'usage.filter.granularity': '粒度',
+  'usage.filter.granularity.hour': '按小时',
   'usage.filter.granularity.day': '按天',
   'usage.filter.granularity.week': '按周',
   'usage.filter.granularity.month': '按月',

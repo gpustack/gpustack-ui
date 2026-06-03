@@ -235,7 +235,7 @@ const SiderMenu: React.FC<SiderMenuProps> = (props) => {
           }
         }}
       >
-        <div>
+        <div style={{ paddingRight: 8 }}>
           {menuData.map((item: MenuItem, index: number) => (
             <div key={item.key}>
               {item.children && item.children.length > 0 ? (

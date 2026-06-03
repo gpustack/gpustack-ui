@@ -100,7 +100,11 @@ const BarChart: React.FC<BarChartProps> = (props) => {
         data: processedData,
         type: 'bar',
         barMaxWidth: 20,
-        barMinWidth: 8,
+        // Keep a small floor only — a large barMinWidth would force wide bars
+        // when there are many categories (e.g. hourly buckets), squeezing out
+        // the category gap so bars look fused. A low floor lets barCategoryGap
+        // win, so even dense hourly views keep visible gaps.
+        barMinWidth: 2,
         barGap: '30%',
         barCategoryGap: '50%',
         ...(stack === false || stack === undefined ? {} : { stack }),

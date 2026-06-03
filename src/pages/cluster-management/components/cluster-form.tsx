@@ -273,9 +273,6 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
                     <K8sPodSpec
                       key={currentData?.id ?? 'new'}
                       action={action}
-                      initialGpuInstanceOptions={
-                        currentData?.k8s_options?.gpuInstanceOptions
-                      }
                     ></K8sPodSpec>
                   )
                 }

@@ -2,9 +2,8 @@ import { PageActionType } from '@/config/types';
 import { Input as CInput, LabelSelector, SwitchCard } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import { GpuInstanceOptions } from '../config/types';
 import ImageCredential from './image-credential';
 import K8SVolumeMount from './k8s-volume-mount';
 
@@ -77,18 +76,23 @@ const OperatorImageForm: React.FC = () => {
   );
 };
 
-const GpuInstanceOptionsForm: React.FC<{
-  initialValue?: GpuInstanceOptions;
-}> = ({ initialValue }) => {
+const GpuInstanceOptionsForm: React.FC = () => {
   const intl = useIntl();
   const form = Form.useFormInstance();
-  const [enabled, setEnabled] = useState<boolean>(!!initialValue);
+  // The presence of `gpuInstanceOptions` on `k8s_options` is the source of
+  // truth for whether GPU instances are enabled. Derive the toggle directly
+  // from the watched form value rather than mirroring it into local state, so
+  // it stays in sync when the form loads async values (EDIT) or resets.
+  const gpuInstanceOptions = Form.useWatch(
+    ['k8s_options', 'gpuInstanceOptions'],
+    form
+  );
+  const enabled = !!gpuInstanceOptions;
 
   const handleToggle = (checked: boolean) => {
-    setEnabled(checked);
-    // The presence of `gpuInstanceOptions` on `k8s_options` is what signals
-    // "GPU instances enabled" to the backend. The toggle is the source of
-    // truth for that presence — when on, ensure the object exists (defaulting
+    if (!form) return;
+    // The presence of `gpuInstanceOptions` is what signals "GPU instances
+    // enabled" to the backend — when on, ensure the object exists (defaulting
     // to {} so it survives even when the static address is left blank); when
     // off, remove it entirely.
     const path = ['k8s_options', 'gpuInstanceOptions'];
@@ -137,11 +141,10 @@ const GpuInstanceOptionsForm: React.FC<{
 
 const K8sPodSpec: React.FC<{
   action: PageActionType;
-  initialGpuInstanceOptions?: GpuInstanceOptions;
-}> = ({ action, initialGpuInstanceOptions }) => {
+}> = ({ action }) => {
   return (
     <>
-      <GpuInstanceOptionsForm initialValue={initialGpuInstanceOptions} />
+      <GpuInstanceOptionsForm />
       <NamespaceForm />
       <K8SVolumeMount action={action}></K8SVolumeMount>
       <ImageCredential />

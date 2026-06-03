@@ -13,7 +13,11 @@ export default {
   'gpuservice.template.command.placeholder':
     '引数はスペースで区切り、スペースを含む引数は引用符で囲んでください。例：/bin/bash -c "echo hello world"',
   'gpuservice.template.mountPath': 'マウントパス',
+  'gpuservice.template.mountPath.tips':
+    'このテンプレートからインスタンスを作成する際に、ストレージボリュームがデフォルトでマウントされるパスです。インスタンスの実行中に保持する必要があるデータの永続化に使用できます。',
   'gpuservice.template.containerDisk': 'コンテナディスク (GB)',
+  'gpuservice.template.containerDisk.tips':
+    'コンテナシステムディスクのサイズです。',
   'gpuservice.template.memory': 'メモリ (GB)',
   'gpuservice.instance.containerDisk.remaining':
     'コンテナディスク (最大 {count} GB)',

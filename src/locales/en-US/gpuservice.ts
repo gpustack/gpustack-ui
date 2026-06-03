@@ -13,7 +13,11 @@ export default {
   'gpuservice.template.command.placeholder':
     'Separate arguments with spaces; wrap arguments containing spaces in quotes, e.g.: /bin/bash -c "echo hello world"',
   'gpuservice.template.mountPath': 'Mount Path',
+  'gpuservice.template.mountPath.tips':
+    'The default mount path for the storage volume when creating an instance from this template. Useful for persisting data that needs to be retained while the instance is running.',
   'gpuservice.template.containerDisk': 'Container Disk (GB)',
+  'gpuservice.template.containerDisk.tips':
+    'The size of the container system disk.',
   'gpuservice.template.memory': 'Memory (GB)',
   'gpuservice.instance.containerDisk.remaining':
     'Container Disk (Max {count} GB)',

@@ -1,4 +1,4 @@
-import { getAllOrganizations } from '@/atoms/user';
+import { getCurrentOrg, getOrgById } from '@/atoms/user';
 import { useNavigate } from '@umijs/max';
 import { modelCategoriesMap } from '../../llmodels/config';
 import { categoryToPathMap } from '../../llmodels/config/button-actions';
@@ -7,11 +7,15 @@ const useOpenPlayground = () => {
   const navigate = useNavigate();
 
   const handleOpenPlayGround = (row: any) => {
-    const allOrganizations = getAllOrganizations();
-    const orgName = allOrganizations.find(
-      (org) => org.id === row.owner_principal_id
-    )?.name;
-    const rawModel = orgName ? `${orgName}/${row.name}` : row.name;
+    // Match the id format the OpenAI ``/v1/models`` endpoint reports: an
+    // org's models are namespaced as ``{org}/{name}``, while the platform
+    // org's carry no prefix (the server strips it). Prefer the row's own
+    // ``owner_principal_id`` (an org principal id); fall back to the Org the
+    // caller is currently acting under for the admin "All" view, where the
+    // row's owner still resolves via the platform-wide org cache.
+    const org = getOrgById(row.owner_principal_id) ?? getCurrentOrg();
+    const rawModel =
+      org?.name && !org.is_platform ? `${org.name}/${row.name}` : row.name;
     const modelName = encodeURIComponent(rawModel);
 
     for (const [category, path] of Object.entries(categoryToPathMap)) {

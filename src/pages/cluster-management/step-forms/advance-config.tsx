@@ -7,6 +7,10 @@ import { useIntl } from '@umijs/max';
 import { Button, Form } from 'antd';
 import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
 import styled from 'styled-components';
+import {
+  GpuInstancesStaticAddressForm,
+  OperatorImageForm
+} from '../components/k8s-pod-spec';
 import { ProviderType, ProviderValueMap } from '../config';
 import {
   ClusterFormData as FormData,
@@ -107,6 +111,12 @@ const ClusterAdvanceConfig: React.FC<{
           placeholder="docker.io"
         ></CInput.Input>
       </Form.Item>
+      {provider === ProviderValueMap.Kubernetes && (
+        <>
+          <OperatorImageForm />
+          <GpuInstancesStaticAddressForm />
+        </>
+      )}
       <Title>
         {intl.formatMessage({ id: 'clusters.create.workerConfig' })}
       </Title>

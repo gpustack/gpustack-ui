@@ -40,7 +40,7 @@ const VolumeMountsForm: React.FC<{ action: PageActionType }> = ({ action }) => {
   const k8sVolumeMounts = Form.useWatch(['k8s_options', 'volumeMounts'], form);
 
   const [collapseKey, setCollapseKey] = useState<Set<number | string>>(
-    new Set([0])
+    new Set()
   );
 
   const volumeList = [

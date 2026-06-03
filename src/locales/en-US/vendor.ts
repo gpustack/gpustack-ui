@@ -4,7 +4,7 @@ export default {
   'vendor.hygon': 'Hygon',
   'vendor.moorthreads': 'Moore Threads',
   'vendor.iluvatar': 'Iluvatar',
-  'vendor.metax': 'Metax',
+  'vendor.metax': 'MetaX',
   'vendor.cambricon': 'Cambricon',
   'vendor.thead': 'T-Head PPU'
 };

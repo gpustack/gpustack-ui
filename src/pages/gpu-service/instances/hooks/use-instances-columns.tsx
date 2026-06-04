@@ -6,15 +6,20 @@ import {
   StatusTag
 } from '@gpustack/core-ui';
 import { useAccess, useIntl } from '@umijs/max';
-import { Button, Flex } from 'antd';
+import { Button } from 'antd';
 import type { ColumnsType } from 'antd/lib/table';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import { Fragment, useMemo } from 'react';
 import { parseJsonSafe } from '../../utils';
-import { InstanceStatusLabelMap, rowActionList, status } from '../config';
+import InstanceTypeCell from '../components/instance-type-cell';
+import {
+  formatMemoryDisplay,
+  InstanceStatusLabelMap,
+  rowActionList,
+  status
+} from '../config';
 import { InstanceTypeSpec, ListItem } from '../config/types';
-import tableSyles from '../styles/table.module.less';
 
 const buildResourcesData = (
   instanceType: {
@@ -64,9 +69,14 @@ const formatResources = (
     };
   }
 
+  // VRAM = per-card GPU memory (a single card's size; not aggregated across
+  // cards — the model's marquee spec).
+  const vram = formatMemoryDisplay((instanceTypeSpec.spec as any)?.memory);
+
   return {
     cpu: resources.cpu ? `${resources.cpu}C` : '-',
     ram: resources.ram ? `${resources.ram}GB` : '-',
+    vram,
     localStorage: record.spec?.resources?.localStorage
       ? `${record.spec?.resources?.localStorage}`.replace('Gi', 'GB')
       : undefined
@@ -130,57 +140,90 @@ interface ColumnsHookProps {
   handleSelect: (val: string, record: ListItem) => void;
   clusterList: Global.BaseOption<number>[];
   sortOrder: string[];
+  // name → capacity (e.g. "20Gi") for referenced persistent volumes, so the
+  // Disk → Persistent row can show the size instead of just the PV name.
+  pvCapacityByName?: Record<string, string>;
 }
 
 const useInstancesColumns = ({
   handleSelect,
   clusterList,
-  sortOrder
+  sortOrder,
+  pvCapacityByName
 }: ColumnsHookProps): ColumnsType<ListItem> => {
   const intl = useIntl();
   const access = useAccess();
 
+  const toGB = (v?: string) =>
+    v ? `${v}`.replace('Gi', 'GB').replace('Mi', 'MB') : undefined;
+
   const renderInstanceType = (record: ListItem) => {
     const description =
       parseJsonSafe<any>(record?.description || '{}', {}).spec || {};
-
     const resources = formatResources({ spec: description }, record);
+    const accelerator = record.spec?.resources?.accelerator;
+    const title = description.acceleratable
+      ? `${description.product} x ${accelerator}`
+      : 'CPU';
+
+    const volume = (record.spec as any)?.volume;
+    // Spec popover grouped by category (GPU / CPU / Memory / Disk), mirroring
+    // the Deployments instance info icon: dark tooltip, per-category icon,
+    // instance name as the title. Rows with no value are dropped.
+    type Section = {
+      icon: string;
+      name: string;
+      rows: [string | null, string | undefined][];
+    };
+    const sections: Section[] = [];
+    if (description.acceleratable) {
+      sections.push({
+        icon: 'icon-gpu',
+        name: 'GPU',
+        rows: [
+          ['Count', accelerator ? `${accelerator}` : undefined],
+          ['Instance Type', description.product],
+          [
+            intl.formatMessage({ id: 'gpuservice.instance.memory' }),
+            resources.vram
+          ]
+        ]
+      });
+    }
+    sections.push({
+      icon: 'icon-cpu',
+      name: 'CPU',
+      rows: [[null, resources.cpu]]
+    });
+    sections.push({
+      icon: 'icon-ram-02',
+      name: 'Memory',
+      rows: [[null, resources.ram]]
+    });
+    sections.push({
+      icon: 'icon-hard-disk',
+      name: intl.formatMessage({ id: 'gpuservice.instance.disk' }),
+      rows: [
+        ['System', resources.localStorage],
+        // Data disk is either ephemeral OR persistent (mutually exclusive at
+        // create time, but each shown if present): ephemeral.capacity for a
+        // temp disk; persistentTemplate.spec.capacity / persistent.name for a
+        // persistent one (a referenced PV carries only a name, no capacity).
+        ['Data', toGB(volume?.ephemeral?.capacity)],
+        [
+          'Persistent',
+          // Inline-created PV carries its own capacity; a referenced PV has only
+          // a name, so resolve its size from the fetched PV map (fall back to
+          // the name if it can't be resolved).
+          toGB(volume?.persistentTemplate?.spec?.capacity) ||
+            toGB(pvCapacityByName?.[volume?.persistent?.name]) ||
+            volume?.persistent?.name
+        ]
+      ]
+    });
 
     return (
-      <Flex align="flex-start" orientation="vertical">
-        <AutoTooltip
-          ghost
-          title={
-            <span>
-              {description.acceleratable
-                ? `${description.product} x ${record.spec?.resources?.accelerator}`
-                : 'CPU'}
-            </span>
-          }
-        >
-          <span className="text-primary">
-            {description.acceleratable
-              ? `${description.product} x ${record.spec?.resources?.accelerator}`
-              : 'CPU'}
-          </span>
-        </AutoTooltip>
-        <Flex
-          align="center"
-          style={{ fontSize: 13, color: 'var(--ant-color-text-tertiary)' }}
-        >
-          <span>{resources.cpu}</span>
-          <span className={tableSyles.dot} />
-          <span>
-            {intl.formatMessage({ id: 'gpuservice.instance.ram' })}:{' '}
-            {resources.ram}
-          </span>
-          <span className={tableSyles.dot} />
-          <span>
-            {intl.formatMessage({ id: 'gpuservice.instance.disk' })}:{' '}
-            {resources.localStorage}
-          </span>
-        </Flex>
-      </Flex>
+      <InstanceTypeCell title={title} name={record.name} sections={sections} />
     );
   };
 
@@ -362,7 +405,7 @@ const useInstancesColumns = ({
         )
       }
     ];
-  }, [handleSelect, sortOrder, clusterList, intl]);
+  }, [handleSelect, sortOrder, clusterList, intl, pvCapacityByName]);
 };
 
 export default useInstancesColumns;

@@ -176,6 +176,21 @@ export const convertKiToGi = (value?: string): string | undefined => {
   return `${_.floor(Number(num) / GI_DIVISOR[unit], 0)} Gi`;
 };
 
+// Memory quantity → display string, flooring to whole Gi. Accepts a k8s
+// quantity string ("16Gi" / "32607Mi") or a raw MiB number (as the Usage
+// breakdown carries it). Centralizes the conversion so the GPU Instances list
+// and the Usage tab render identical sizes (e.g. both "31GB", not 31 vs 32).
+export const formatMemoryDisplay = (
+  value?: string | number
+): string | undefined => {
+  if (!value) return undefined;
+  const quantity = typeof value === 'number' ? `${value}Mi` : value;
+  return (
+    convertKiToGi(quantity)?.replace(/Gi$/, 'GB').replace(/Ti$/, 'TB') ||
+    undefined
+  );
+};
+
 const parseQuantity = (value?: string | null): number => {
   if (!value) return 0;
   const match = /^(-?\d+(?:\.\d+)?)/.exec(String(value));

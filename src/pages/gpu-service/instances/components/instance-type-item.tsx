@@ -3,11 +3,8 @@ import { useIntl } from '@umijs/max';
 import { Flex } from 'antd';
 import styled from 'styled-components';
 import { manufactureColorMap } from '../../templates/config';
-import { convertKiToGi } from '../config';
+import { formatMemoryDisplay } from '../config';
 import { InstanceTypeItem as InstanceTypeItemModel } from '../config/types';
-
-const toDisplayUnit = (value?: string | null) =>
-  value ? value.replace(/Gi$/, 'GB').replace(/Ti$/, 'TB') : value;
 
 const Title = styled.div`
   display: flex;
@@ -136,8 +133,7 @@ const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({ item }) => {
                 icon="icon-gpu1"
                 label={intl.formatMessage({ id: 'gpuservice.instance.memory' })}
                 value={
-                  toDisplayUnit(convertKiToGi(specData?.memory ?? undefined)) ??
-                  '-'
+                  formatMemoryDisplay(specData?.memory ?? undefined) ?? '-'
                 }
               />
               <MetaItem

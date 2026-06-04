@@ -188,6 +188,7 @@ const baseRoutes = [
         icon: 'icon-files',
         selectedIcon: 'icon-files-filled',
         defaultIcon: 'icon-files',
+        access: 'canSeeOrgAdmin',
         component: './resources/components/model-files'
       }
     ]

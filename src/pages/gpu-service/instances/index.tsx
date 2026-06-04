@@ -10,8 +10,9 @@ import { useMemoizedFn } from 'ahooks';
 import { ConfigProvider, message, Modal, Table } from 'antd';
 import { useSetAtom } from 'jotai';
 import _ from 'lodash';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import PageBox from '../../_components/page-box';
+import { queryGPUServiceStorage } from '../storage/apis';
 import {
   deleteGPUServiceInstance,
   GPU_SERVICE_INSTANCES_API,
@@ -90,8 +91,29 @@ const GPUService: React.FC = () => {
     loading: clusterLoading
   } = useQueryClusterList();
 
+  // name → capacity for persistent volumes, so the Instance Type popover can
+  // show the persistent disk size (the instance spec only references it by
+  // name). Best-effort: falls back to the name if a PV can't be resolved.
+  const [pvCapacityByName, setPvCapacityByName] = useState<
+    Record<string, string>
+  >({});
+
   useEffect(() => {
     fetchClusterList({ page: -1 });
+    (async () => {
+      try {
+        const res = await queryGPUServiceStorage({ page: -1 } as any);
+        const map: Record<string, string> = {};
+        (res?.items || []).forEach((pv: any) => {
+          if (pv?.name && pv?.spec?.capacity) {
+            map[pv.name] = pv.spec.capacity;
+          }
+        });
+        setPvCapacityByName(map);
+      } catch {
+        // best-effort; the popover falls back to the PV name
+      }
+    })();
   }, []);
 
   const hasK8sCluster = useMemo(
@@ -199,7 +221,8 @@ const GPUService: React.FC = () => {
   const columns = useInstancesColumns({
     handleSelect,
     clusterList,
-    sortOrder
+    sortOrder,
+    pvCapacityByName
   });
 
   return (

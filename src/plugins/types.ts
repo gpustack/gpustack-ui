@@ -48,6 +48,15 @@ export interface LoginKit {
 export interface LoginPlugin {
   shouldUseCustomLogin?: (enterpriseSettings: any) => boolean;
   CustomLoginComponent?: ComponentType<{ kit: LoginKit }>;
+  /**
+   * Seam for plugins to override the default landing path after login.
+   * Returning a path overrides both the admin and non-admin defaults;
+   * returning null/undefined falls back to the built-in behavior.
+   */
+  resolveDefaultPath?: (
+    userInfo: any,
+    ctx: { request: <T = any>(url: string, options?: any) => Promise<T> }
+  ) => Promise<string | null | undefined> | string | null | undefined;
 }
 
 /**

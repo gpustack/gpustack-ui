@@ -184,6 +184,16 @@ const cleanK8sOptions = (opts: any) => {
       ({ sourceType, ...rest }: any) => rest
     );
   }
+  // The edit form always seeds k8s_options.volumeMounts to [] even when the
+  // saved cluster had no value, so an absent field would otherwise read as a
+  // change the moment the drawer opens. Drop empty top-level arrays on both
+  // sides: "absent" and "empty list" both mean nothing configured. A
+  // non-empty -> empty edit is still detected, since only the empty side drops.
+  Object.keys(cloned).forEach((key) => {
+    if (Array.isArray(cloned[key]) && cloned[key].length === 0) {
+      delete cloned[key];
+    }
+  });
   return JSON.parse(JSON.stringify(cloned));
 };
 

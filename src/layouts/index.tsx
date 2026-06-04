@@ -234,31 +234,7 @@ export default (props: any) => {
   }, [userSettings.collapsed]);
 
   const renderMenuHeader = (logo: React.ReactNode, title: React.ReactNode) => {
-    return (
-      <>
-        {logo}
-        <div onClick={handleToggleCollapse}>
-          <Button
-            className="collapse-btn"
-            style={{
-              marginRight: collapsed ? 0 : -6,
-              border: 'none',
-              cursor: 'w-resize'
-            }}
-            size="small"
-            type={'text'}
-          >
-            <IconFont
-              type={collapsed ? 'icon-expand-left' : 'icon-expand-right'}
-              className="font-size-18"
-              style={{
-                display: 'block'
-              }}
-            />
-          </Button>
-        </div>
-      </>
-    );
+    return <>{logo}</>;
   };
 
   const menuContentRender = (menuProps: any, defaultDom: React.ReactNode) => {
@@ -402,6 +378,22 @@ export default (props: any) => {
           openKeys={false}
           disableMobile={true}
           siderWidth={220}
+          menuFooterRender={() => (
+            <Button
+              style={{
+                border: 'none',
+                cursor: 'w-resize'
+              }}
+              size="small"
+              type={'text'}
+              onClick={handleToggleCollapse}
+            >
+              <IconFont
+                type={collapsed ? 'icon-expand-left' : 'icon-expand-right'}
+                className="font-size-18"
+              />
+            </Button>
+          )}
           onCollapse={onCollapse}
           onMenuHeaderClick={onMenuHeaderClick}
           menuHeaderRender={renderMenuHeader}

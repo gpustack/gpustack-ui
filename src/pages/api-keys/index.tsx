@@ -97,8 +97,15 @@ const APIKeys: React.FC = () => {
   });
 
   useEffect(() => {
+    // `scope=current_org` limits the creator dropdown to members of the
+    // active Org. Without it, an Org owner sees every user in the
+    // system — most of whom can't own a key visible in this list, so
+    // selecting them produces an empty result. The BE drops the
+    // param silently when the request has no Org context, so callers
+    // without an Org keep the full-directory behavior.
     fetchUserData({
-      page: -1
+      page: -1,
+      scope: 'current_org'
     });
     return () => {
       cancelUserRequest();

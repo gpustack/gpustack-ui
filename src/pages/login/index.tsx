@@ -77,12 +77,11 @@ const Box = styled.div`
 const FormWrapper = styled.div`
   margin: 0 auto;
   margin-top: 50vh;
-  max-width: 440px;
+  width: 440px;
   transform: translateY(-50%);
   position: relative;
   z-index: 999;
   border-radius: var(--border-radius-modal);
-  width: max-content;
   height: max-content;
   max-height: 660px;
   padding: 40px;
@@ -206,7 +205,7 @@ const Login = () => {
         config={{
           apiBaseUrl: GPUSTACK_API_BASE_URL,
           theme: userSettings.theme,
-          iconUrl: '',
+          iconUrl: '//at.alicdn.com/t/c/font_4613488_rwchdketjg8.js',
           isDarkTheme: userSettings.isDarkTheme,
           defaultColorPrimary: COLOR_PRIMARY
         }}

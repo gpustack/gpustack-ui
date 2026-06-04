@@ -237,19 +237,20 @@ export default (props: any) => {
     return (
       <>
         {logo}
-        <div className="collapse-wrap" onClick={handleToggleCollapse}>
+        <div onClick={handleToggleCollapse}>
           <Button
+            className="collapse-btn"
             style={{
               marginRight: collapsed ? 0 : -6,
               border: 'none',
               cursor: 'w-resize'
             }}
             size="small"
-            type={collapsed ? 'default' : 'text'}
+            type={'text'}
           >
             <IconFont
               type={collapsed ? 'icon-expand-left' : 'icon-expand-right'}
-              className="font-size-18 text-secondary"
+              className="font-size-18"
               style={{
                 display: 'block'
               }}

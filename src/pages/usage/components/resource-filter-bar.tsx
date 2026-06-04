@@ -26,6 +26,7 @@ const DefaultDateConfig = {
 interface SelectOption {
   value: number;
   label: string;
+  deleted?: boolean;
 }
 
 // Optional per-tab entity filter (GPU instance on the GPU tab / volume on the
@@ -139,6 +140,14 @@ const ResourceFilterBar: React.FC<ResourceFilterBarProps> = (props) => {
   const userOptionRender = (option: any) => (
     <span className="flex-center gap-4">
       <AutoTooltip ghost>{option?.data?.label}</AutoTooltip>
+      {option?.data?.deleted && (
+        <span
+          className="text-tertiary"
+          style={{ fontSize: 12, marginRight: 4 }}
+        >
+          [{intl.formatMessage({ id: 'usage.table.deleted' })}]
+        </span>
+      )}
     </span>
   );
 

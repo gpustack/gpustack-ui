@@ -50,6 +50,14 @@ const ExportData: React.FC<{
   } = props || {};
   const intl = useIntl();
 
+  // Members are forced to self scope, where the backend forbids grouping by
+  // user (privacy) — including it 403s the export request. Drop the user
+  // dimension (and its column) when we can't group by it.
+  const canGroupByUser = initialScope !== 'self';
+  const exportGroupBy = canGroupByUser
+    ? ['date', 'user', 'route', 'api_key']
+    : ['date', 'route', 'api_key'];
+
   const [pageParams, setPageParams] = React.useState<{
     page: number;
     perPage: number;
@@ -84,7 +92,7 @@ const ExportData: React.FC<{
         ...pageParams,
         granularity: 'day',
         sort_by: '-date',
-        group_by: ['date', 'user', 'route', 'api_key'],
+        group_by: exportGroupBy,
         filters: nextFilters,
         scope: initialScope,
         start_date: nextCommonFilters.start_date,
@@ -192,6 +200,14 @@ const ExportData: React.FC<{
     }
   ];
 
+  // Hide the User column when we can't group by user (self scope) — it'd be
+  // empty otherwise.
+  const visibleColumns = canGroupByUser
+    ? exportTableColumns
+    : exportTableColumns.filter(
+        (c) => !(Array.isArray(c.dataIndex) && c.dataIndex[0] === 'user')
+      );
+
   const handleSubmit = () => {
     exportJsonToExcel({
       fileName: `usage_export_${commonFilters.start_date}_${commonFilters.end_date}.xlsx`,
@@ -211,7 +227,7 @@ const ExportData: React.FC<{
           sheetName: 'usage',
           fields: [
             'date',
-            'user',
+            ...(canGroupByUser ? ['user'] : []),
             'route',
             'api_key',
             'input_tokens',
@@ -252,7 +268,7 @@ const ExportData: React.FC<{
       page,
       perPage: pageSize,
       granularity: 'day',
-      group_by: ['date', 'user', 'model', 'api_key'],
+      group_by: exportGroupBy,
       filters,
       sort_by: '-date',
       scope: initialScope,
@@ -271,7 +287,7 @@ const ExportData: React.FC<{
       fetchExportData({
         ...INITIAL_PAGE_PARAMS,
         granularity: 'day',
-        group_by: ['date', 'user', 'route', 'api_key'],
+        group_by: exportGroupBy,
         filters,
         sort_by: '-date',
         scope: initialScope,
@@ -323,7 +339,7 @@ const ExportData: React.FC<{
         ></FilterBar>
       </div>
       <Table
-        columns={exportTableColumns}
+        columns={visibleColumns}
         className={'scroll-table'}
         tableLayout={'auto'}
         style={{ width: '100%', marginTop: '16px', minHeight: 400 }}

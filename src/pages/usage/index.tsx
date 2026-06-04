@@ -13,6 +13,7 @@
  * The previous implementation lived in this file; it now lives in
  * ``components/token-tab.tsx`` so we can host it as a tab pane.
  */
+import { useAccess } from '@umijs/max';
 import { Tabs, TabsProps } from 'antd';
 import React, { useMemo, useState } from 'react';
 import GpuInstancesTab from './components/gpu-instances-tab';
@@ -22,6 +23,7 @@ import SummaryTab from './components/summary-tab';
 import TokenTab from './components/token-tab';
 
 const Usage: React.FC = () => {
+  const access = useAccess();
   // Land on the cross-resource Summary by default.
   const [activeKey, setActiveKey] = useState<string>('summary');
 
@@ -55,6 +57,12 @@ const Usage: React.FC = () => {
     ],
     []
   );
+
+  // Users who can't see GPU Service (MaaS-only: no cluster, no resource usage)
+  // only have token usage — drop the tab shell and show Tokens directly.
+  if (!access.canSeeGpuService) {
+    return <TokenTab />;
+  }
 
   return (
     <Tabs

@@ -31,6 +31,7 @@ import {
   Granularity
 } from '../utils/time-buckets';
 import MetricChartCard from './metric-chart-card';
+import MetricLabel from './metric-label';
 import ResourceExportData from './resource-export-data';
 import ResourceFilterBar from './resource-filter-bar';
 
@@ -78,6 +79,11 @@ const StorageTab: React.FC = () => {
     null
   );
   const [tablePage, setTablePage] = useState(1);
+  // Server-side sort for the bottom tables; default GB-Days, descending.
+  const [tableSort, setTableSort] = useState<{
+    field: Metric;
+    order: 'ascend' | 'descend';
+  }>({ field: 'storage_gb_days', order: 'descend' });
 
   const baseRequest = (): Omit<ResourceBreakdownRequest, 'group_by'> => ({
     start_date: dateRange[0].format('YYYY-MM-DD'),
@@ -107,12 +113,21 @@ const StorageTab: React.FC = () => {
     }
   };
 
+  // The frontend metric keys (storage_gb_days/hours) map to the server's
+  // breakdown metric keys (gb_days/gb_hours) for order_by.
+  const ORDER_BY_KEY: Record<Metric, string> = {
+    storage_gb_days: 'gb_days',
+    storage_gb_hours: 'gb_hours'
+  };
+
   const fetchTable = async () => {
     try {
       const data = await queryStorageBreakdown({
         ...baseRequest(),
         group_by: activeTableTab,
-        page: tablePage
+        page: tablePage,
+        order_by: ORDER_BY_KEY[tableSort.field],
+        descending: tableSort.order === 'descend'
       });
       setTableData(data);
     } catch {
@@ -132,6 +147,7 @@ const StorageTab: React.FC = () => {
     selectedVolumes,
     activeTableTab,
     tablePage,
+    tableSort,
     refreshKey
   ]);
 
@@ -142,14 +158,24 @@ const StorageTab: React.FC = () => {
         label: formatLargeNumber(
           Math.round((summary?.storage_gb_days ?? 0) * 10) / 10
         ) as string,
-        value: 'GB-Days',
+        value: (
+          <MetricLabel
+            text="GB-Days"
+            tooltip="Storage capacity integrated over time, in GB × days: 10 GB kept for 5 days = 50 GB-days. (= GB-Hours ÷ 24)"
+          />
+        ),
         color: coolColors[0]
       },
       {
         label: formatLargeNumber(
           Math.round((summary?.storage_gb_hours ?? 0) * 10) / 10
         ) as string,
-        value: 'GB-Hours',
+        value: (
+          <MetricLabel
+            text="GB-Hours"
+            tooltip="Storage capacity integrated over time, in GB × hours: 10 GB kept for 5 hours = 50 GB-hours."
+          />
+        ),
         color: coolColors[1]
       },
       {
@@ -200,12 +226,18 @@ const StorageTab: React.FC = () => {
         title: 'GB-Days',
         dataIndex: 'storage_gb_days',
         key: 'storage_gb_days',
+        sorter: true,
+        sortOrder:
+          tableSort.field === 'storage_gb_days' ? tableSort.order : null,
         render: (v: number) => (v ?? 0).toFixed(2)
       },
       {
         title: 'GB-Hours',
         dataIndex: 'storage_gb_hours',
         key: 'storage_gb_hours',
+        sorter: true,
+        sortOrder:
+          tableSort.field === 'storage_gb_hours' ? tableSort.order : null,
         render: (v: number) => (v ?? 0).toFixed(2)
       }
     ];
@@ -215,6 +247,19 @@ const StorageTab: React.FC = () => {
           title: 'Storage',
           dataIndex: 'volume_name',
           key: 'volume_name'
+        },
+        {
+          title: 'Type',
+          dataIndex: 'storage_type',
+          key: 'storage_type',
+          render: (_v: string, row: ResourceBreakdownItem) =>
+            row.storage_type || row.gpu_type || '-'
+        },
+        {
+          title: 'Capacity',
+          dataIndex: 'capacity_mib',
+          key: 'capacity_mib',
+          render: (v?: number) => (v ? `${Math.round(v / 1024)}GB` : '-')
         },
         ...valueCols,
         { title: 'Last Active', dataIndex: 'last_active', key: 'last_active' }
@@ -230,7 +275,7 @@ const StorageTab: React.FC = () => {
       },
       { title: 'Last Active', dataIndex: 'last_active', key: 'last_active' }
     ];
-  }, [activeTableTab]);
+  }, [activeTableTab, tableSort]);
 
   const tableRows: ResourceBreakdownItem[] = tableData?.items ?? [];
 
@@ -353,6 +398,27 @@ const StorageTab: React.FC = () => {
               }
               dataSource={tableRows}
               columns={tableColumns as any}
+              onChange={(_pagination, _filters, sorter: any) => {
+                const s = Array.isArray(sorter) ? sorter[0] : sorter;
+                // Sort changed → page 1; cleared (3rd click) → default GB-Days
+                // descending.
+                const next = s?.order
+                  ? {
+                      field: (s.columnKey as Metric) ?? 'storage_gb_days',
+                      order: s.order as 'ascend' | 'descend'
+                    }
+                  : {
+                      field: 'storage_gb_days' as Metric,
+                      order: 'descend' as const
+                    };
+                if (
+                  next.field !== tableSort.field ||
+                  next.order !== tableSort.order
+                ) {
+                  setTableSort(next);
+                  setTablePage(1);
+                }
+              }}
               pagination={{
                 current: tablePage,
                 pageSize: tableData?.pagination.perPage ?? 50,

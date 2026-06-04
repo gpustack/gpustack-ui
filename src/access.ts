@@ -3,6 +3,7 @@ import { applyAccessExtensions } from './access.extensions';
 export default (initialState: {
   currentUser?: Global.UserInfo;
   hasKubernetesCluster?: boolean;
+  hasResourceEvents?: boolean;
 }) => {
   const isPlatformAdmin = !!(
     initialState &&
@@ -20,6 +21,10 @@ export default (initialState: {
   // role-based default so a transient network blip can't lock anyone
   // out of the menu.
   const hasKubernetesCluster = initialState?.hasKubernetesCluster;
+  // Having run GPU/CPU instances or storage (any resource_events) also unlocks
+  // GPU Service / the full Usage page — a user who used it keeps seeing it even
+  // without a current cluster. MaaS-only users (no cluster, no events) don't.
+  const hasResourceEvents = !!initialState?.hasResourceEvents;
 
   // Predicate roles, top-down by strictness:
   //   * `canSeeAdmin` — strictly platform admin (`users.is_admin`).
@@ -41,7 +46,8 @@ export default (initialState: {
   return applyAccessExtensions({
     canSeeAdmin: isPlatformAdmin,
     canSeeOrgAdmin: isPlatformAdmin,
-    canSeeGpuService: isPlatformAdmin || hasKubernetesCluster !== false,
+    canSeeGpuService:
+      isPlatformAdmin || hasKubernetesCluster !== false || hasResourceEvents,
     canManageCurrentOrg: false,
     canSeeUser,
     canDelete: true,

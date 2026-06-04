@@ -47,6 +47,10 @@ const PieChart: React.FC<PieChartProps> = ({
       color: colors,
       tooltip: {
         trigger: 'item',
+        // Keep the tooltip inside the chart box — the donut sits on the left, so
+        // a left-slice tooltip could otherwise spill out and get hidden behind
+        // the side menu.
+        confine: true,
         backgroundColor: token.colorBgElevated,
         borderColor: 'transparent',
         formatter: (params: any) => {
@@ -69,6 +73,9 @@ const PieChart: React.FC<PieChartProps> = ({
         itemWidth: 8,
         itemHeight: 8,
         itemGap: 10,
+        // Long names are truncated in the legend; hovering shows the full name
+        // in a tooltip.
+        tooltip: { show: true },
         textStyle: {
           color: token.colorTextTertiary,
           overflow: 'truncate',

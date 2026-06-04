@@ -25,7 +25,6 @@ const Title = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: var(--ant-color-bg-container);
   font-weight: 500;
   font-size: 14px;
   padding-top: 0px;

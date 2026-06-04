@@ -108,6 +108,10 @@ export default {
     '已将 {count} 个新节点添加到集群中。',
   'clusters.create.serverUrl': 'GPUStack Server 节点地址',
   'clusters.create.workerConfig': '节点配置',
+  'clusters.edit.k8sOptions.changed.tip':
+    '您已修改 Kubernetes 选项，需要在目标集群上重新运行注册命令才会生效。',
+  'clusters.edit.workerConfig.tip':
+    '修改节点配置后，需要重启对应节点才会生效。',
   'clusters.addworker.containerName': '节点容器名称',
   'clusters.addworker.containerName.tips': '为节点容器指定一个名称。',
   'clusters.addworker.dataVolume': 'GPUStack 数据卷',

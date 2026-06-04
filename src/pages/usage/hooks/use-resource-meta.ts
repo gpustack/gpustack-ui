@@ -7,6 +7,7 @@ import {
 export interface SelectOption {
   value: number;
   label: string;
+  deleted?: boolean;
 }
 
 export interface ResourceMetaOptions {
@@ -22,7 +23,7 @@ const EMPTY: ResourceMetaOptions = {
 };
 
 const toOptions = (items: ResourceFilterOption[]): SelectOption[] =>
-  items.map((i) => ({ value: i.id, label: i.label }));
+  items.map((i) => ({ value: i.id, label: i.label, deleted: i.deleted }));
 
 /**
  * Loads the resource tabs' filter dropdown sources in one call:

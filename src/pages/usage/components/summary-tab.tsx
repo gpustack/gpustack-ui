@@ -424,6 +424,10 @@ const SummaryTab: React.FC = () => {
               <>
                 <Stat value={fmt(summary?.gpu_hours)} label="GPU Hours" />
                 <Stat
+                  value={fmt(summary?.instance_hours)}
+                  label="Instance Hours"
+                />
+                <Stat
                   value={computeSum?.active_instances ?? 0}
                   label="Active Instances"
                 />

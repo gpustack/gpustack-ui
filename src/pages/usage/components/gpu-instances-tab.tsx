@@ -10,9 +10,10 @@
  * Talks to the new ``/usage/gpu-instances/{meta,breakdown}`` endpoints.
  */
 import useCoolColors from '@/hooks/use-cool-colors';
+import InstanceTypeCell from '@/pages/gpu-service/instances/components/instance-type-cell';
 import { formatLargeNumber } from '@/utils';
 import { SimpleCard } from '@gpustack/core-ui';
-import { useAccess } from '@umijs/max';
+import { useAccess, useIntl } from '@umijs/max';
 import { Table, Tabs } from 'antd';
 import dayjs from 'dayjs';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -24,11 +25,17 @@ import {
 } from '../apis/resource';
 import useResourceMeta from '../hooks/use-resource-meta';
 import {
+  instanceTypeLabel,
+  instanceTypeSections,
+  instanceTypeTitle
+} from '../utils/format-instance-type';
+import {
   bucketKey,
   generateBucketRange,
   Granularity
 } from '../utils/time-buckets';
 import MetricChartCard from './metric-chart-card';
+import MetricLabel from './metric-label';
 import ResourceExportData from './resource-export-data';
 import ResourceFilterBar from './resource-filter-bar';
 
@@ -49,6 +56,7 @@ const TABLE_TABS: { key: GroupKey; label: string }[] = [
 
 const GpuInstancesTab: React.FC = () => {
   const access = useAccess();
+  const intl = useIntl();
   // ``useCoolColors`` returns a memoized factory; resolve it once into a
   // fixed 5-slot palette here so the rest of the component reads as
   // array access.
@@ -85,6 +93,11 @@ const GpuInstancesTab: React.FC = () => {
     null
   );
   const [tablePage, setTablePage] = useState(1);
+  // Server-side sort for the bottom tables; default GPU Hours, descending.
+  const [tableSort, setTableSort] = useState<{
+    field: Metric;
+    order: 'ascend' | 'descend';
+  }>({ field: 'gpu_hours', order: 'descend' });
 
   const baseRequest = (): Omit<ResourceBreakdownRequest, 'group_by'> => ({
     start_date: dateRange[0].format('YYYY-MM-DD'),
@@ -122,7 +135,9 @@ const GpuInstancesTab: React.FC = () => {
       const data = await queryGpuInstancesBreakdown({
         ...baseRequest(),
         group_by: activeTableTab,
-        page: tablePage
+        page: tablePage,
+        order_by: tableSort.field,
+        descending: tableSort.order === 'descend'
       });
       setTableData(data);
     } catch {
@@ -142,6 +157,7 @@ const GpuInstancesTab: React.FC = () => {
     selectedInstances,
     activeTableTab,
     tablePage,
+    tableSort,
     refreshKey
   ]);
 
@@ -154,14 +170,24 @@ const GpuInstancesTab: React.FC = () => {
         label: formatLargeNumber(
           Math.round((summary?.gpu_hours ?? 0) * 10) / 10
         ) as string,
-        value: 'GPU Hours',
+        value: (
+          <MetricLabel
+            text="GPU Hours"
+            tooltip="Instance running time weighted by GPU count: an instance with N GPUs running for H hours counts as N × H GPU-hours. Equal to Instance Hours when every instance uses a single GPU."
+          />
+        ),
         color: coolColors[0]
       },
       {
         label: formatLargeNumber(
           Math.round((summary?.instance_hours ?? 0) * 10) / 10
         ) as string,
-        value: 'Instance Hours',
+        value: (
+          <MetricLabel
+            text="Instance Hours"
+            tooltip="Total running time summed across all instances, regardless of how many GPUs each uses. One instance running for 2 hours = 2 instance-hours."
+          />
+        ),
         color: coolColors[1]
       },
       {
@@ -215,18 +241,48 @@ const GpuInstancesTab: React.FC = () => {
         title: 'GPU Hours',
         dataIndex: 'gpu_hours',
         key: 'gpu_hours',
+        sorter: true,
+        sortOrder: tableSort.field === 'gpu_hours' ? tableSort.order : null,
         render: (v: number) => (v ?? 0).toFixed(2)
       },
       {
         title: 'Instance Hours',
         dataIndex: 'instance_hours',
         key: 'instance_hours',
+        sorter: true,
+        sortOrder:
+          tableSort.field === 'instance_hours' ? tableSort.order : null,
         render: (v: number) => (v ?? 0).toFixed(2)
       }
     ];
+    // Instance Types breakdown: just the pretty product name (or flavor slug
+    // for older rows) — no spec sub-line.
+    const instanceTypeColType = {
+      title: 'Instance Type',
+      dataIndex: 'gpu_type',
+      key: 'gpu_type',
+      render: (_v: string, row: ResourceBreakdownItem) => instanceTypeLabel(row)
+    };
+    // Instances breakdown: render exactly like the GPU Instances list —
+    // "<product> x <count>" plus the categorized spec popover behind the icon.
+    const instanceTypeColInstance = {
+      title: 'Instance Type',
+      dataIndex: 'gpu_type',
+      key: 'gpu_type',
+      render: (_v: string, row: ResourceBreakdownItem) => (
+        <InstanceTypeCell
+          title={instanceTypeTitle(row)}
+          name={row.instance_name}
+          sections={instanceTypeSections(row, {
+            vram: intl.formatMessage({ id: 'gpuservice.instance.memory' }),
+            disk: intl.formatMessage({ id: 'gpuservice.instance.disk' })
+          })}
+        />
+      )
+    };
     if (activeTableTab === 'gpu_type') {
       return [
-        { title: 'Instance Type', dataIndex: 'gpu_type', key: 'gpu_type' },
+        instanceTypeColType,
         ...baseValueCols,
         {
           title: 'Active Instances',
@@ -239,7 +295,7 @@ const GpuInstancesTab: React.FC = () => {
     if (activeTableTab === 'instance') {
       return [
         { title: 'Instance', dataIndex: 'instance_name', key: 'instance_name' },
-        { title: 'Instance Type', dataIndex: 'gpu_type', key: 'gpu_type' },
+        instanceTypeColInstance,
         ...baseValueCols,
         { title: 'Last Active', dataIndex: 'last_active', key: 'last_active' }
       ];
@@ -250,7 +306,7 @@ const GpuInstancesTab: React.FC = () => {
       ...baseValueCols,
       { title: 'Last Active', dataIndex: 'last_active', key: 'last_active' }
     ];
-  }, [activeTableTab]);
+  }, [activeTableTab, tableSort, intl]);
 
   const tableRows: ResourceBreakdownItem[] = tableData?.items ?? [];
 
@@ -377,6 +433,24 @@ const GpuInstancesTab: React.FC = () => {
               }
               dataSource={tableRows}
               columns={tableColumns as any}
+              onChange={(_pagination, _filters, sorter: any) => {
+                const s = Array.isArray(sorter) ? sorter[0] : sorter;
+                // Sort changed: reset to page 1. Cleared (3rd click) → default
+                // back to GPU Hours descending.
+                const next = s?.order
+                  ? {
+                      field: (s.columnKey as Metric) ?? 'gpu_hours',
+                      order: s.order as 'ascend' | 'descend'
+                    }
+                  : { field: 'gpu_hours' as Metric, order: 'descend' as const };
+                if (
+                  next.field !== tableSort.field ||
+                  next.order !== tableSort.order
+                ) {
+                  setTableSort(next);
+                  setTablePage(1);
+                }
+              }}
               pagination={{
                 current: tablePage,
                 pageSize: tableData?.pagination.perPage ?? 50,

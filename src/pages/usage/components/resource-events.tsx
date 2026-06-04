@@ -20,9 +20,16 @@ import {
 import useResourceMeta from '../hooks/use-resource-meta';
 import ResourceFilterBar from './resource-filter-bar';
 
+// Users only ever see "Storage" in the product — never "Persistent Volume".
+const RESOURCE_TYPE_LABELS: Record<string, string> = {
+  gpu_instance: 'GPU Instance',
+  cpu_instance: 'CPU Instance',
+  persistent_volume: 'Storage'
+};
+
 const RESOURCE_TYPE_OPTIONS = [
-  { value: 'gpu_instance', label: 'GPU Instance' },
-  { value: 'persistent_volume', label: 'Persistent Volume' }
+  { value: 'gpu_instance', label: RESOURCE_TYPE_LABELS.gpu_instance },
+  { value: 'persistent_volume', label: RESOURCE_TYPE_LABELS.persistent_volume }
 ];
 
 const EVENT_TYPE_OPTIONS = [
@@ -52,6 +59,13 @@ const EVENT_COLOR: Record<string, string> = {
 const EVENT_LABEL: Record<string, string> = Object.fromEntries(
   EVENT_TYPE_OPTIONS.map((o) => [o.value, o.label])
 );
+
+// Humanize a failure phase enum for display, e.g. "SSHPublicKeyCreateFailed" →
+// "SSH Public Key Create Failed" (fallback when the backend has no detail).
+const humanizePhase = (phase: string): string =>
+  phase
+    .replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2')
+    .replace(/([a-z\d])([A-Z])/g, '$1 $2');
 
 const ResourceEvents: React.FC = () => {
   const access = useAccess();
@@ -110,8 +124,7 @@ const ResourceEvents: React.FC = () => {
         title: 'Resource',
         dataIndex: 'resource_type',
         key: 'resource_type',
-        render: (v: string) =>
-          v === 'gpu_instance' ? 'GPU Instance' : 'Persistent Volume',
+        render: (v: string) => RESOURCE_TYPE_LABELS[v] || v,
         width: 160
       },
       {
@@ -129,24 +142,21 @@ const ResourceEvents: React.FC = () => {
         width: 180
       },
       {
-        title: 'Phase',
-        dataIndex: 'phase',
-        key: 'phase',
-        width: 140
-      },
-      {
-        title: 'Creator',
-        dataIndex: 'creator_name',
-        key: 'creator_name',
-        render: (v?: string, row?: ResourceEventItem) =>
-          v ?? (row?.creator_id ? `principal:${row.creator_id}` : '-'),
-        width: 160
-      },
-      {
         title: 'Message',
         dataIndex: 'event_message',
         key: 'event_message',
-        render: (v?: string) => v ?? '-'
+        render: (v?: string, row?: ResourceEventItem) => {
+          // A failure phase (…Failed) is the one thing not already shown in the
+          // Event column — surface it (with its detail) as an error message.
+          if (row?.phase && /failed$/i.test(row.phase)) {
+            return (
+              <span style={{ color: 'var(--ant-color-error)' }}>
+                {row.phase_message || humanizePhase(row.phase)}
+              </span>
+            );
+          }
+          return v ?? '-';
+        }
       }
     ],
     []

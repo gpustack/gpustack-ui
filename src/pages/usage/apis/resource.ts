@@ -35,6 +35,10 @@ export interface ResourceBreakdownRequest {
     | 'volume'
     | null;
   granularity?: 'hour' | 'day' | 'week' | 'month';
+  // Server-side sort: a metric key (e.g. gpu_hours / instance_hours) +
+  // direction. Defaults on the server when omitted.
+  order_by?: string;
+  descending?: boolean;
   page?: number;
   perPage?: number;
 }
@@ -66,6 +70,21 @@ export interface ResourceBreakdownItem extends ResourceBreakdownSummary {
   user_id?: number;
   user_name?: string;
   last_active?: string;
+  // Instance-type rows carry the flavor's display fields (pretty product name +
+  // per-card specs) so the UI matches the GPU Instances list.
+  product?: string;
+  unit_cpu_milli?: number;
+  unit_memory_mib?: number;
+  vram_mib?: number;
+  // Per-instance rows also carry the card count + ephemeral disk so the
+  // Instances table can render "<product> x <count>" + the spec popover.
+  gpu_count?: number;
+  ephemeral_mib?: number;
+  local_storage_mib?: number;
+  persistent_mib?: number;
+  // Storage volume rows: provisioned capacity + storage type.
+  storage_type?: string;
+  capacity_mib?: number;
 }
 
 export interface ResourceBreakdownResponse {
@@ -117,6 +136,8 @@ export interface ResourceEventItem {
   event_type: string;
   event_message?: string;
   phase?: string;
+  // status.phaseMessage at event time — the detail behind a failure phase.
+  phase_message?: string;
 }
 
 export interface ResourceEventsResponse {
@@ -179,6 +200,18 @@ interface ServerBreakdownItem {
   date?: string | null;
   sku?: string | null;
   deleted?: boolean | null;
+  dimensions?: {
+    product?: string | null;
+    unit_cpu_milli?: number | null;
+    unit_memory_mib?: number | null;
+    vram_mib?: number | null;
+    gpu_count?: number | null;
+    ephemeral_mib?: number | null;
+    local_storage_mib?: number | null;
+    persistent_mib?: number | null;
+    storage_type?: string | null;
+    capacity_mib?: number | null;
+  } | null;
   metrics: ServerMetrics;
 }
 
@@ -271,6 +304,23 @@ function flattenItem(
   if (!flat.gpu_type && it.sku) {
     flat.gpu_type = it.sku ?? undefined;
   }
+  // Instance-type rows carry flavor display fields (pretty product + per-card
+  // specs) so the UI can render them like the GPU Instances list.
+  const dims = it.dimensions;
+  if (dims) {
+    if (dims.product) flat.product = dims.product;
+    if (dims.unit_cpu_milli != null) flat.unit_cpu_milli = dims.unit_cpu_milli;
+    if (dims.unit_memory_mib != null)
+      flat.unit_memory_mib = dims.unit_memory_mib;
+    if (dims.vram_mib != null) flat.vram_mib = dims.vram_mib;
+    if (dims.gpu_count != null) flat.gpu_count = dims.gpu_count;
+    if (dims.ephemeral_mib != null) flat.ephemeral_mib = dims.ephemeral_mib;
+    if (dims.local_storage_mib != null)
+      flat.local_storage_mib = dims.local_storage_mib;
+    if (dims.persistent_mib != null) flat.persistent_mib = dims.persistent_mib;
+    if (dims.storage_type) flat.storage_type = dims.storage_type;
+    if (dims.capacity_mib != null) flat.capacity_mib = dims.capacity_mib;
+  }
   return flat;
 }
 
@@ -301,6 +351,8 @@ function toServerRequest(data: ResourceBreakdownRequest) {
       ...(creator_ids?.length ? { creator_ids } : {}),
       ...(instance_ids?.length ? { instance_ids } : {}),
       ...(volume_ids?.length ? { volume_ids } : {}),
+      ...(data.order_by ? { order_by: data.order_by } : {}),
+      ...(data.descending !== undefined ? { descending: data.descending } : {}),
       page: data.page ?? 1,
       perPage: data.perPage ?? 20
     },
@@ -341,8 +393,8 @@ export async function queryStorageBreakdown(
 }
 
 export async function queryResourceEvents(data: {
-  start_date: string;
-  end_date: string;
+  start_date?: string;
+  end_date?: string;
   scope?: 'self' | 'all';
   filters?: ResourceUsageFilters;
   resource_types?: string[];
@@ -370,6 +422,7 @@ export async function queryResourceEvents(data: {
 export interface ResourceFilterOption {
   id: number;
   label: string;
+  deleted?: boolean;
 }
 
 export interface ResourceFilterMeta {
@@ -435,7 +488,9 @@ export async function queryUsageSummary(params: {
     distribution = byType.items
       .filter((i) => (i.gpu_hours || 0) > 0)
       .map((i) => ({
-        label: i.gpu_type || 'unknown',
+        // Pretty product name (e.g. "NVIDIA-GeForce-RTX-5090-D") when known,
+        // else the raw flavor slug — matches the GPU Instances list.
+        label: i.product || i.gpu_type || 'unknown',
         value: i.gpu_hours,
         percentage: total > 0 ? (i.gpu_hours / total) * 100 : 0
       }));

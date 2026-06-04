@@ -25,7 +25,10 @@ import {
 } from '../config/types';
 import AdvanceConfig from '../step-forms/advance-config';
 import CloudProvider from './cloud-provider-form';
-import K8sAdvancedOptions, { GpuInstanceServiceSwitch } from './k8s-pod-spec';
+import K8sAdvancedOptions, {
+  GpuInstanceServiceSwitch,
+  K8sOptionsChangeWatcher
+} from './k8s-pod-spec';
 
 type AddModalProps = {
   action: PageActionType;
@@ -33,10 +36,23 @@ type AddModalProps = {
   provider: ProviderType;
   credentialList: Global.BaseOption<number>[];
   onFinish: (values: FormData) => void;
+  // Reports whether the user has changed any k8s_options field, so the parent
+  // can show the "re-run registration" notice in the footer.
+  onK8sOptionsChange?: (changed: boolean) => void;
   ref?: any;
 };
 const ClusterForm: React.FC<AddModalProps> = forwardRef(
-  ({ action, provider, currentData, credentialList, onFinish }, ref) => {
+  (
+    {
+      action,
+      provider,
+      currentData,
+      credentialList,
+      onFinish,
+      onK8sOptionsChange
+    },
+    ref
+  ) => {
     const [form] = Form.useForm();
     const intl = useIntl();
     const [activeKey, setActiveKey] = React.useState<string[]>([]);
@@ -291,6 +307,14 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
               }
             ]}
           ></CollapsePanel>
+
+          {provider === ProviderValueMap.Kubernetes && onK8sOptionsChange && (
+            <K8sOptionsChangeWatcher
+              action={action}
+              currentData={currentData}
+              onChange={onK8sOptionsChange}
+            />
+          )}
         </Form>
       </FormContext.Provider>
     );

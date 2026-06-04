@@ -110,6 +110,10 @@ export default {
     '{count} new workers have been added to the cluster.',
   'clusters.create.serverUrl': 'GPUStack Server URL',
   'clusters.create.workerConfig': 'Worker Configuration',
+  'clusters.edit.k8sOptions.changed.tip':
+    'You have changed the Kubernetes options. Re-run the registration command on the target cluster for the changes to take effect.',
+  'clusters.edit.workerConfig.tip':
+    'Changes to the worker configuration take effect only after restarting the affected workers.',
   'clusters.addworker.containerName': 'Worker Container Name',
   'clusters.addworker.containerName.tips':
     'Specify a name for the worker container.',

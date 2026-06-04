@@ -1,9 +1,12 @@
+import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { Input as CInput, LabelSelector, SwitchCard } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
-import React from 'react';
+import _ from 'lodash';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
+import { ClusterListItem as ListItem } from '../config/types';
 import ImageCredential from './image-credential';
 import K8SVolumeMount from './k8s-volume-mount';
 
@@ -168,6 +171,55 @@ export const GpuInstancesStaticAddressForm: React.FC = () => {
       </Form.Item>
     </SectionWrap>
   );
+};
+
+// Strip UI-only / undefined-valued noise so two k8s_options snapshots compare
+// on real content. `sourceType` is derived from `volumeSource` purely for the
+// volume-mount UI (see cluster-form init), and the JSON round-trip drops
+// undefined-valued keys so a missing key and `key: undefined` compare equal.
+const cleanK8sOptions = (opts: any) => {
+  const cloned = _.cloneDeep(opts || {});
+  if (Array.isArray(cloned.volumeMounts)) {
+    cloned.volumeMounts = cloned.volumeMounts.map(
+      ({ sourceType, ...rest }: any) => rest
+    );
+  }
+  return JSON.parse(JSON.stringify(cloned));
+};
+
+// Headless watcher: in EDIT mode it reports (via onChange) whether the user has
+// changed any k8s_options field from the cluster's saved values. It renders
+// nothing — the notice itself is shown in the form footer, above Save/Cancel
+// (see cluster-create.tsx), mirroring the model edit interaction. Must be
+// mounted inside the cluster <Form> so the watch reads the form store.
+export const K8sOptionsChangeWatcher: React.FC<{
+  action: PageActionType;
+  currentData?: ListItem;
+  onChange: (changed: boolean) => void;
+}> = ({ action, currentData, onChange }) => {
+  // `preserve: true` so the watch tracks the full store, including
+  // gpuInstanceOptions which is toggled via setFieldValue without a mounted
+  // Form.Item (mirrors GpuInstanceServiceSwitch).
+  const k8sOptions = Form.useWatch(['k8s_options'], { preserve: true });
+
+  const changed =
+    action === PageAction.EDIT &&
+    !_.isEqual(
+      cleanK8sOptions(currentData?.k8s_options),
+      cleanK8sOptions(k8sOptions)
+    );
+
+  useEffect(() => {
+    onChange(changed);
+  }, [changed, onChange]);
+
+  // Clear the footer notice when this form unmounts (e.g. switching steps or
+  // provider) so a stale warning never lingers over the buttons.
+  useEffect(() => {
+    return () => onChange(false);
+  }, [onChange]);
+
+  return null;
 };
 
 // Kubernetes-specific options that live inside the cluster's advanced section.

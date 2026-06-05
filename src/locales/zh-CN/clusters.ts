@@ -178,7 +178,8 @@ export default {
   'clusters.namespace.tip':
     '集群清单渲染所使用的 Kubernetes 命名空间。留空则使用 gpustack-system。',
   'clusters.gpuInstances.title': 'GPU 实例服务',
-  'clusters.gpuInstances.tip': '为该集群启用 GPU 实例支持。',
+  'clusters.gpuInstances.tip':
+    '启用后该集群将专用于 GPU 实例服务，不可用于模型服务。',
   'clusters.gpuInstances.staticAddress': 'GPU实例服务静态访问地址',
   'clusters.gpuInstances.staticAddress.tip':
     'Operator 访问该集群 GPU 实例所使用的静态地址（例如 LoadBalancer VIP）。可选。'

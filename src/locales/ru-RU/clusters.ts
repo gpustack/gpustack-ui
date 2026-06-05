@@ -186,7 +186,8 @@ export default {
   'clusters.namespace.tip':
     'Kubernetes namespace the cluster’s manifests render into. Leave empty to use gpustack-system.',
   'clusters.gpuInstances.title': 'GPU Instance Service',
-  'clusters.gpuInstances.tip': 'Enable GPU instance support for this cluster.',
+  'clusters.gpuInstances.tip':
+    'Once enabled, the cluster is dedicated to GPU instance service and cannot be used for model service.',
   'clusters.gpuInstances.staticAddress':
     'GPU Instance Service Static Access Address',
   'clusters.gpuInstances.staticAddress.tip':

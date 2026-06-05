@@ -5,13 +5,14 @@ import { InputNumber } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Flex, Form } from 'antd';
 import _ from 'lodash';
-import { useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 import styled from 'styled-components';
 import { BasicResourceMax } from '../../templates/forms/basic';
 import { parseJsonSafe } from '../../utils';
 import InstanceTypeItem, {
   InstanceMetadataSection
 } from '../components/instance-type-item';
+import { FormContext } from '../config/form-context';
 import {
   FormData,
   InstanceTypeItem as InstanceTypeItemModel,
@@ -79,6 +80,7 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
   onGPUCountChange
 }) => {
   const intl = useIntl();
+  const { isGPUType } = useContext(FormContext);
 
   const maxComputeUnitCount = useMemo(() => {
     if (action === PageAction.EDIT) {
@@ -110,7 +112,7 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
     return (
       <Flex gap={4} align="center">
         {label}
-        {!isGPU && (
+        {!isGPUType && (
           <span>
             ({intl.formatMessage({ id: 'common.max' }, { count: max })})
           </span>
@@ -120,7 +122,7 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
   };
 
   const renderMemoryLabel = (): React.ReactNode => {
-    if (isGPU || action === PageAction.EDIT || !onceMaxRequest?.memory) {
+    if (isGPUType || action === PageAction.EDIT || !onceMaxRequest?.memory) {
       return intl.formatMessage({ id: 'gpuservice.template.memory' });
     }
 
@@ -161,7 +163,7 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
     );
   };
 
-  const numberSelectionLabel = isGPU
+  const numberSelectionLabel = isGPUType
     ? {
         label: 'GPU',
         maxLabel: 'gpuservice.instance.gpuCount.max',
@@ -197,12 +199,13 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
       </FieldBlock>
       {!noAvailableTypes && (
         <Form.Item<FormData>
-          key={isGPU ? 'accelerator' : 'cpu'}
+          key={isGPUType ? 'accelerator' : 'cpu'}
           name={
-            isGPU
+            isGPUType
               ? ['spec', 'resources', 'accelerator']
               : ['spec', 'resources', 'cpu']
           }
+          preserve
           hidden={action === PageAction.EDIT}
           normalize={(value) => (value != null ? _.toString(value) : undefined)}
           getValueProps={(value) => ({
@@ -271,11 +274,12 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
               />
             </Form.Item>
           </div>
-          {isGPU && (
+          {isGPUType && (
             <div style={{ flex: 1 }}>
               <Form.Item<FormData>
                 name={['spec', 'resources', 'cpu']}
                 key="cpu_input"
+                preserve
               >
                 <InputNumber
                   label={'CPU'}

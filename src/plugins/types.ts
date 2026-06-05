@@ -57,6 +57,26 @@ export interface LoginPlugin {
     userInfo: any,
     ctx: { request: <T = any>(url: string, options?: any) => Promise<T> }
   ) => Promise<string | null | undefined> | string | null | undefined;
+  /**
+   * Lifecycle hook fired inside `fetchUserInfo` after the server
+   * confirms identity but before any caller (boot path, LoginForm)
+   * commits that identity to `initialState`.
+   *
+   * The host's access function is memoized on `initialState` and
+   * runs exactly once per commit. Plugins that maintain
+   * identity-scoped caches (e.g. an org context cache the access
+   * predicate reads from) MUST seed those caches synchronously
+   * here — any work that happens after the caller's
+   * `setInitialState` won't influence the access predicate until
+   * the next identity change.
+   *
+   * Errors thrown from the hook are swallowed and logged; they
+   * never block fetchUserInfo.
+   */
+  onUserFetched?: (
+    userInfo: any,
+    ctx: { request: <T = any>(url: string, options?: any) => Promise<T> }
+  ) => Promise<void> | void;
 }
 
 /**

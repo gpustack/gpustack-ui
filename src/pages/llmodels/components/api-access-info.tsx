@@ -108,6 +108,10 @@ const ApiAccessInfo = ({ open, data, onClose }: ApiAccessInfoProps) => {
     return _.includes(data.categories, modelCategoriesMap.reranker);
   }, [data]);
 
+  const isLLM = useMemo(() => {
+    return _.includes(data.categories, modelCategoriesMap.llm);
+  }, [data]);
+
   const handleClose = () => {
     onClose();
   };
@@ -175,11 +179,13 @@ const ApiAccessInfo = ({ open, data, onClose }: ApiAccessInfoProps) => {
                       id: 'models.table.apiAccessInfo.openaiCompatible'
                     })}
               </APITAG>
-              <APITAG color="geekblue">
-                {intl.formatMessage({
-                  id: 'models.table.apiAccessInfo.anthropicCompatible'
-                })}
-              </APITAG>
+              {isLLM && (
+                <APITAG color="geekblue">
+                  {intl.formatMessage({
+                    id: 'models.table.apiAccessInfo.anthropicCompatible'
+                  })}
+                </APITAG>
+              )}
             </>
           )}
         </span>

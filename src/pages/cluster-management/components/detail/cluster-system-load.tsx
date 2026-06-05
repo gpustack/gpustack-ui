@@ -15,7 +15,7 @@ const Container = styled.div`
     align-items: center;
     justify-content: space-between;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 400;
     color: var(--ant-color-text-tertiary);
   }
 

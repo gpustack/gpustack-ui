@@ -22,5 +22,7 @@ export default {
   'apikeys.accessScope.inference': '推理接口',
   'apikeys.access.permissions': '访问权限',
   'apikeys.type.auto': '自动生成',
-  'apikeys.type.custom': '自定义'
+  'apikeys.type.custom': '自定义',
+  'apikeys.button.ipConfig': 'IP 访问控制',
+  'quotaLimits.button.title': '配额限制'
 };

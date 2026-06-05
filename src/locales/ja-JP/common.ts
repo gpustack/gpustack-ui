@@ -46,6 +46,7 @@ export default {
   'common.button.enabled': '有効',
   'common.button.disabled': '無効',
   'common.button.upgrade': 'アップグレード',
+  'common.enterprise.feature': 'Available in GPUStack Enterprise',
   'common.input.holder': '入力してください',
   'common.validate.value': '{name} の値は必須です',
   'common.button.edit': '編集',

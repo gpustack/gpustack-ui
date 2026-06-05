@@ -62,13 +62,15 @@ const ClusterDetailModal = () => {
             key: 'workers',
             label: `Workers`,
             icon: <IconFont type="icon-resources" />,
-            children: <WorkerList clusterId={Number(id)} />
+            children: (
+              <WorkerList clusterId={Number(id)} source="clusterDetail" />
+            )
           },
           {
             key: 'gpus',
             label: `GPUs`,
             icon: <IconFont type="icon-gpu1" />,
-            children: <GPUList clusterId={Number(id)} />
+            children: <GPUList clusterId={Number(id)} source="clusterDetail" />
           },
           ...extraTabs
         ]}

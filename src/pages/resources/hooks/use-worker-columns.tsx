@@ -233,12 +233,14 @@ const useWorkerColumns = ({
   loadend,
   firstLoad,
   sortOrder,
+  source,
   handleSelect
 }: {
   clusterData: {
     list: Global.BaseOption<number>[];
     data: Record<number, string>;
   };
+  source?: string;
   loadend: boolean;
   firstLoad: boolean;
   sortOrder: string[];
@@ -521,6 +523,7 @@ const useWorkerColumns = ({
       {
         title: intl.formatMessage({ id: 'common.table.operation' }),
         key: 'operation',
+        hidden: source === 'clusterDetail',
         render: (_, record) => (
           <DropdownButtons
             items={setActions(record)}
@@ -529,7 +532,7 @@ const useWorkerColumns = ({
         )
       }
     ],
-    [intl, sortOrder, clusterData, loadend, firstLoad, handleSelect]
+    [intl, sortOrder, clusterData, loadend, source, firstLoad, handleSelect]
   );
 };
 

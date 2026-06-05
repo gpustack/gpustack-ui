@@ -32,9 +32,10 @@ import WorkerRightActions from './worker-right-actions';
 // inside.
 interface WorkersProps {
   clusterId?: number;
+  source?: 'clusterDetail';
 }
 
-const Workers: React.FC<WorkersProps> = ({ clusterId }) => {
+const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
   const {
     dataSource,
     rowSelection,
@@ -248,6 +249,7 @@ const Workers: React.FC<WorkersProps> = ({ clusterId }) => {
     loadend: dataSource.loadend,
     firstLoad: extraStatus.firstLoad,
     sortOrder,
+    source,
     handleSelect
   });
 
@@ -260,7 +262,7 @@ const Workers: React.FC<WorkersProps> = ({ clusterId }) => {
     <>
       <PageBox>
         <FilterBar
-          showSelect={!clusterId}
+          showSelect={source !== 'clusterDetail'}
           selectHolder={intl.formatMessage({ id: 'clusters.filterBy.cluster' })}
           marginBottom={22}
           marginTop={30}
@@ -272,13 +274,22 @@ const Workers: React.FC<WorkersProps> = ({ clusterId }) => {
           handleInputChange={handleNameChange}
           rowSelection={rowSelection}
           selectOptions={clusterData.list}
+          widths={
+            source !== 'clusterDetail'
+              ? { select: 230, input: 230 }
+              : { input: 300 }
+          }
           right={
-            <WorkerRightActions
-              handleDeleteByBatch={handleDeleteBatch}
-              handleClickPrimary={handleOnAddWorker}
-              rowSelection={rowSelection}
-              MonitorButton={ActionButton()}
-            ></WorkerRightActions>
+            source === 'clusterDetail' ? (
+              <></>
+            ) : (
+              <WorkerRightActions
+                handleDeleteByBatch={handleDeleteBatch}
+                handleClickPrimary={handleOnAddWorker}
+                rowSelection={rowSelection}
+                MonitorButton={ActionButton()}
+              ></WorkerRightActions>
+            )
           }
         ></FilterBar>
         <ConfigProvider renderEmpty={renderEmpty}>
@@ -296,7 +307,7 @@ const Workers: React.FC<WorkersProps> = ({ clusterId }) => {
             rowKey="id"
             scroll={{ x: 900 }}
             onChange={handleTableChange}
-            rowSelection={rowSelection}
+            rowSelection={source === 'clusterDetail' ? undefined : rowSelection}
             pagination={{
               size: 'middle',
               showSizeChanger: true,

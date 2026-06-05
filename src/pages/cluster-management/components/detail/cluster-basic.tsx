@@ -19,7 +19,7 @@ const Container = styled.div`
   height: 168px;
   .left {
     padding: 16px 24px;
-    width: 160px;
+    width: 124px;
     display: flex;
     flex-direction: column;
     align-items: center;

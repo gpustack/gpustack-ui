@@ -17,9 +17,10 @@ import useGPUColumns from '../hooks/use-gpu-columns';
 // inside.
 interface GPUListProps {
   clusterId?: number;
+  source?: 'clusterDetail';
 }
 
-const GPUList: React.FC<GPUListProps> = ({ clusterId }) => {
+const GPUList: React.FC<GPUListProps> = ({ clusterId, source }) => {
   const {
     dataSource,
     queryParams,
@@ -109,7 +110,12 @@ const GPUList: React.FC<GPUListProps> = ({ clusterId }) => {
           handleInputChange={handleNameChange}
           handleSelectChange={handleClusterChange}
           selectOptions={clusterList}
-          showSelect={!clusterId}
+          showSelect={source !== 'clusterDetail'}
+          widths={
+            source !== 'clusterDetail'
+              ? { select: 230, input: 230 }
+              : { input: 300 }
+          }
         ></FilterBar>
         <ConfigProvider renderEmpty={renderEmpty}>
           <Table

@@ -143,17 +143,23 @@ const ClusterBasic: React.FC<{ clusterId: number }> = ({ clusterId }) => {
               <span className="value">
                 {clusterDetail.ready_workers}/{clusterDetail.workers}
               </span>
-              <span className="label">Workers</span>
+              <span className="label">
+                {intl.formatMessage({ id: 'resources.nodes' })}
+              </span>
             </div>
             <div className="item">
               <IconFont type="icon-rocket-launch-fill"></IconFont>
               <span className="value">{clusterDetail.models}</span>
-              <span className="label">Deployments</span>
+              <span className="label">
+                {intl.formatMessage({ id: 'clusters.table.deployments' })}
+              </span>
             </div>
             <div className="item">
               <IconFont type="icon-gpu"></IconFont>
               <span className="value">{clusterDetail.gpus}</span>
-              <span className="label">GPUs</span>
+              <span className="label">
+                {intl.formatMessage({ id: 'menu.resources.gpus' })}
+              </span>
             </div>
           </Resources>
         </div>

@@ -1,4 +1,5 @@
 import { CardWrapper } from '@gpustack/core-ui';
+import { useIntl } from '@umijs/max';
 import { Col, Progress, Row, Tag } from 'antd';
 import { round } from 'lodash';
 import React, { useEffect } from 'react';
@@ -38,6 +39,7 @@ const Container = styled.div`
 
 const ClusterSystemLoad: React.FC<{ clusterId: number }> = ({ clusterId }) => {
   const { systemLoad, fetchClusterSystemLoad } = useClusterSystemLoad();
+  const intl = useIntl();
 
   useEffect(() => {
     if (clusterId) {
@@ -74,14 +76,15 @@ const ClusterSystemLoad: React.FC<{ clusterId: number }> = ({ clusterId }) => {
   };
 
   console.log('systemLoad', systemLoad);
-
   return (
     <Row gutter={16} style={{ marginTop: 24 }}>
       <Col span={6}>
         <CardWrapper style={{ padding: '16px', height: 120 }}>
           <Container>
             <div className="title">
-              <span>GPU Utilization</span>
+              <span>
+                {intl.formatMessage({ id: 'dashboard.gpuutilization' })}
+              </span>
             </div>
             <div className="value-wrapper">
               <div className="value">
@@ -101,14 +104,16 @@ const ClusterSystemLoad: React.FC<{ clusterId: number }> = ({ clusterId }) => {
         <CardWrapper style={{ padding: '16px', height: 120 }}>
           <Container>
             <div className="title">
-              <span>VRAM Utilization</span>
+              <span>
+                {intl.formatMessage({ id: 'dashboard.vramutilization' })}
+              </span>
             </div>
             <div className="value-wrapper">
               <div className="value">{`${round(systemLoad.current.vram, 1)}%`}</div>
               <div className="chart">
                 {renderStepsProgress(round(systemLoad.current.vram, 1), {
                   color: 'purple',
-                  text: 'VRAM'
+                  text: intl.formatMessage({ id: 'dashboard.vram' })
                 })}
               </div>
             </div>
@@ -119,7 +124,9 @@ const ClusterSystemLoad: React.FC<{ clusterId: number }> = ({ clusterId }) => {
         <CardWrapper style={{ padding: '16px', height: 120 }}>
           <Container>
             <div className="title">
-              <span>CPU Utilization</span>
+              <span>
+                {intl.formatMessage({ id: 'dashboard.cpuutilization' })}
+              </span>
             </div>
             <div className="value-wrapper">
               <div className="value">
@@ -139,7 +146,9 @@ const ClusterSystemLoad: React.FC<{ clusterId: number }> = ({ clusterId }) => {
         <CardWrapper style={{ padding: '16px', height: 120 }}>
           <Container>
             <div className="title">
-              <span>Memo Utilization</span>
+              <span>
+                {intl.formatMessage({ id: 'dashboard.memoryutilization' })}
+              </span>
             </div>
             <div className="value-wrapper">
               <div className="value">
@@ -148,7 +157,7 @@ const ClusterSystemLoad: React.FC<{ clusterId: number }> = ({ clusterId }) => {
               <div className="chart">
                 {renderStepsProgress(round(systemLoad.current.ram, 1), {
                   color: 'green',
-                  text: 'RAM'
+                  text: intl.formatMessage({ id: 'dashboard.memory' })
                 })}
               </div>
             </div>

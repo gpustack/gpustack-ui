@@ -6,7 +6,7 @@ import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { ConfigProvider, Table } from 'antd';
 import _ from 'lodash';
-import { forwardRef, useImperativeHandle } from 'react';
+import { forwardRef, useEffect, useImperativeHandle } from 'react';
 import {
   deleteModelInstance,
   MODEL_INSTANCE_API,
@@ -16,6 +16,7 @@ import ViewLogsModal from '../components/view-logs-modal';
 import { useDeploymentsContext } from '../config/deploments-context';
 import { ModelInstanceListItem as ListItem } from '../config/types';
 import useViewInstanceLogs from '../hooks/use-view-instance-logs';
+import useQueryModelList from '../services/use-query-model-list';
 import LeftFilters from './left-filters';
 import useInstanceColumns from './use-instance-columns';
 
@@ -44,10 +45,15 @@ const InstanceView = forwardRef((props, ref) => {
     contentForDelete: 'menu.models.instances'
   });
   const intl = useIntl();
+  const { dataList: modelList, fetchData: fetchModelList } =
+    useQueryModelList();
   const { clusterList, workerList } = useDeploymentsContext();
   const { openViewLogsModal, openViewLogsModalStatus, closeViewLogsModal } =
     useViewInstanceLogs();
 
+  useEffect(() => {
+    fetchModelList({ page: -1 });
+  }, []);
   const handleSelect = useMemoizedFn((val: any, row: ListItem) => {
     if (val === 'delete') {
       handleDelete(row, {
@@ -119,6 +125,7 @@ const InstanceView = forwardRef((props, ref) => {
   const columns = useInstanceColumns({
     handleSelect,
     clusterList,
+    modelList,
     workerList
   });
 

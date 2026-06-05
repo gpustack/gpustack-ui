@@ -396,7 +396,6 @@ export default (props: any) => {
           )}
           onCollapse={onCollapse}
           onMenuHeaderClick={onMenuHeaderClick}
-          menuHeaderRender={renderMenuHeader}
           collapsed={userSettings.collapsed}
           onPageChange={onPageChange}
           formatMessage={formatMessage}

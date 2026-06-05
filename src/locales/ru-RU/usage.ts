@@ -38,5 +38,69 @@ export default {
   'usage.chart.cached': 'Cached',
   'usage.chart.uncached': 'Uncached',
   'usage.chart.inputTokensCached': 'Input Tokens (Cached/Uncached)',
-  'usage.table.inputTokensCached': 'Input Tokens Cached'
+  'usage.table.inputTokensCached': 'Input Tokens Cached',
+
+  // --- Resource usage: shared metrics & units ---
+  'usage.metric.tokens': 'Токены',
+  'usage.metric.input': 'Вход',
+  'usage.metric.output': 'Выход',
+  'usage.metric.gpuHours': 'GPU-часы',
+  'usage.metric.instanceHours': 'Часы инстансов',
+  'usage.metric.gbDays': 'ГБ-дни',
+  'usage.metric.gbHours': 'ГБ-часы',
+  'usage.metric.activeUsers': 'Активные пользователи',
+  'usage.metric.activeInstances': 'Активные инстансы',
+  'usage.metric.activeStorage': 'Активное хранилище',
+  'usage.metric.activeVolumes': 'Активные тома',
+  'usage.metric.storageTypes': 'Типы хранилищ',
+  'usage.metric.gpuHours.tip':
+    'Время работы инстанса, взвешенное по количеству GPU: инстанс с N GPU, работающий H часов, считается как N × H GPU-часов. Равно часам инстансов, когда каждый инстанс использует один GPU.',
+  'usage.metric.instanceHours.tip':
+    'Суммарное время работы всех инстансов независимо от количества используемых GPU. Один инстанс, работающий 2 часа = 2 часа инстанса.',
+  'usage.metric.gbDays.tip':
+    'Ёмкость хранилища, проинтегрированная по времени, в ГБ × дни: 10 ГБ в течение 5 дней = 50 ГБ-дней. (= ГБ-часы ÷ 24)',
+  'usage.metric.gbHours.tip':
+    'Ёмкость хранилища, проинтегрированная по времени, в ГБ × часы: 10 ГБ в течение 5 часов = 50 ГБ-часов.',
+
+  // --- Resource usage: common table / labels ---
+  'usage.common.noData': 'Нет данных',
+  'usage.common.unknown': 'неизвестно',
+  'usage.table.date': 'Дата',
+  'usage.table.name': 'Имя',
+  'usage.table.user': 'Пользователь',
+  'usage.table.users': 'Пользователи',
+  'usage.table.type': 'Тип',
+  'usage.table.instance': 'Инстанс',
+  'usage.table.instanceType': 'Тип инстанса',
+  'usage.table.instanceTypes': 'Типы инстансов',
+  'usage.table.instances': 'Инстансы',
+  'usage.table.capacity': 'Ёмкость',
+  'usage.export.tableNamed': 'Экспорт данных таблицы — {name}',
+
+  // --- Summary tab ---
+  'usage.summary.compute': 'Вычисления',
+  'usage.summary.tokensOverTime': 'Токены по времени',
+  'usage.summary.gpuHoursOverTime': 'GPU-часы по времени',
+  'usage.summary.gbDaysOverTime': 'ГБ-дни по времени',
+
+  // --- GPU Instances / Storage filters ---
+  'usage.filter.instance': 'Фильтр по инстансу',
+  'usage.filter.storage': 'Фильтр по хранилищу',
+
+  // --- Resource events ---
+  'usage.events.resourceType': 'Тип ресурса',
+  'usage.events.eventType': 'Тип события',
+  'usage.events.col.time': 'Время',
+  'usage.events.col.resource': 'Ресурс',
+  'usage.events.col.event': 'Событие',
+  'usage.events.col.message': 'Сообщение',
+  'usage.events.resource.gpuInstance': 'GPU-инстанс',
+  'usage.events.resource.cpuInstance': 'CPU-инстанс',
+  'usage.events.type.created': 'Создан',
+  'usage.events.type.deleted': 'Удалён',
+  'usage.events.type.started': 'Запущен',
+  'usage.events.type.stopped': 'Остановлен',
+  'usage.events.type.updated': 'Обновлён',
+  'usage.events.type.attached': 'Подключён',
+  'usage.events.type.detached': 'Отключён'
 };

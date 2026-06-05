@@ -38,5 +38,69 @@ export default {
   'usage.chart.cached': 'Cached',
   'usage.chart.uncached': 'Uncached',
   'usage.chart.inputTokensCached': 'Input Tokens (Cached/Uncached)',
-  'usage.table.inputTokensCached': 'Input Tokens Cached'
+  'usage.table.inputTokensCached': 'Input Tokens Cached',
+
+  // --- Resource usage: shared metrics & units ---
+  'usage.metric.tokens': 'Token',
+  'usage.metric.input': 'Girdi',
+  'usage.metric.output': 'Çıktı',
+  'usage.metric.gpuHours': 'GPU Saati',
+  'usage.metric.instanceHours': 'Örnek Saati',
+  'usage.metric.gbDays': 'GB-Gün',
+  'usage.metric.gbHours': 'GB-Saat',
+  'usage.metric.activeUsers': 'Aktif Kullanıcılar',
+  'usage.metric.activeInstances': 'Aktif Örnekler',
+  'usage.metric.activeStorage': 'Aktif Depolama',
+  'usage.metric.activeVolumes': 'Aktif Birimler',
+  'usage.metric.storageTypes': 'Depolama Türleri',
+  'usage.metric.gpuHours.tip':
+    'Örnek çalışma süresinin GPU sayısına göre ağırlıklandırılmış hali: N GPU kullanan bir örnek H saat çalıştığında N × H GPU-saat olarak sayılır. Her örnek tek bir GPU kullandığında Örnek Saati ile eşittir.',
+  'usage.metric.instanceHours.tip':
+    'Her örneğin kullandığı GPU sayısından bağımsız olarak tüm örneklerin toplam çalışma süresi. 2 saat çalışan bir örnek = 2 örnek-saat.',
+  'usage.metric.gbDays.tip':
+    'Depolama kapasitesinin zamana göre integrali, GB × gün cinsinden: 5 gün boyunca tutulan 10 GB = 50 GB-gün. (= GB-Saat ÷ 24)',
+  'usage.metric.gbHours.tip':
+    'Depolama kapasitesinin zamana göre integrali, GB × saat cinsinden: 5 saat boyunca tutulan 10 GB = 50 GB-saat.',
+
+  // --- Resource usage: common table / labels ---
+  'usage.common.noData': 'Veri yok',
+  'usage.common.unknown': 'bilinmiyor',
+  'usage.table.date': 'Tarih',
+  'usage.table.name': 'Ad',
+  'usage.table.user': 'Kullanıcı',
+  'usage.table.users': 'Kullanıcılar',
+  'usage.table.type': 'Tür',
+  'usage.table.instance': 'Örnek',
+  'usage.table.instanceType': 'Örnek Türü',
+  'usage.table.instanceTypes': 'Örnek Türleri',
+  'usage.table.instances': 'Örnekler',
+  'usage.table.capacity': 'Kapasite',
+  'usage.export.tableNamed': 'Tablo Verilerini Dışa Aktar — {name}',
+
+  // --- Summary tab ---
+  'usage.summary.compute': 'Hesaplama',
+  'usage.summary.tokensOverTime': 'Zaman içinde Token',
+  'usage.summary.gpuHoursOverTime': 'Zaman içinde GPU Saati',
+  'usage.summary.gbDaysOverTime': 'Zaman içinde GB-Gün',
+
+  // --- GPU Instances / Storage filters ---
+  'usage.filter.instance': 'Örneğe göre filtrele',
+  'usage.filter.storage': 'Depolamaya göre filtrele',
+
+  // --- Resource events ---
+  'usage.events.resourceType': 'Kaynak türü',
+  'usage.events.eventType': 'Olay türü',
+  'usage.events.col.time': 'Zaman',
+  'usage.events.col.resource': 'Kaynak',
+  'usage.events.col.event': 'Olay',
+  'usage.events.col.message': 'Mesaj',
+  'usage.events.resource.gpuInstance': 'GPU Örneği',
+  'usage.events.resource.cpuInstance': 'CPU Örneği',
+  'usage.events.type.created': 'Oluşturuldu',
+  'usage.events.type.deleted': 'Silindi',
+  'usage.events.type.started': 'Başlatıldı',
+  'usage.events.type.stopped': 'Durduruldu',
+  'usage.events.type.updated': 'Güncellendi',
+  'usage.events.type.attached': 'Eklendi',
+  'usage.events.type.detached': 'Ayrıldı'
 };

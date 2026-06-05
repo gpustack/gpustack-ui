@@ -20,28 +20,6 @@ import {
 import useResourceMeta from '../hooks/use-resource-meta';
 import ResourceFilterBar from './resource-filter-bar';
 
-// Users only ever see "Storage" in the product — never "Persistent Volume".
-const RESOURCE_TYPE_LABELS: Record<string, string> = {
-  gpu_instance: 'GPU Instance',
-  cpu_instance: 'CPU Instance',
-  persistent_volume: 'Storage'
-};
-
-const RESOURCE_TYPE_OPTIONS = [
-  { value: 'gpu_instance', label: RESOURCE_TYPE_LABELS.gpu_instance },
-  { value: 'persistent_volume', label: RESOURCE_TYPE_LABELS.persistent_volume }
-];
-
-const EVENT_TYPE_OPTIONS = [
-  { value: 'created', label: 'Created' },
-  { value: 'deleted', label: 'Deleted' },
-  { value: 'phase_to_metered', label: 'Started' },
-  { value: 'phase_left_metered', label: 'Stopped' },
-  { value: 'updated', label: 'Updated' },
-  { value: 'attached', label: 'Attached' },
-  { value: 'detached', label: 'Detached' }
-];
-
 const EVENT_COLOR: Record<string, string> = {
   created: 'green',
   deleted: 'red',
@@ -51,14 +29,6 @@ const EVENT_COLOR: Record<string, string> = {
   attached: 'purple',
   detached: 'gold'
 };
-
-// Raw event_type → human-readable label (the same wording as the filter).
-// ``phase_to_metered`` / ``phase_left_metered`` bracket the metering window —
-// when the resource starts / stops accruing metered uptime (the OSS build only
-// meters, it doesn't charge). Users shouldn't see the internal enum names.
-const EVENT_LABEL: Record<string, string> = Object.fromEntries(
-  EVENT_TYPE_OPTIONS.map((o) => [o.value, o.label])
-);
 
 // Humanize a failure phase enum for display, e.g. "SSHPublicKeyCreateFailed" →
 // "SSH Public Key Create Failed" (fallback when the backend has no detail).
@@ -72,6 +42,75 @@ const ResourceEvents: React.FC = () => {
   const intl = useIntl();
   const canManageUsers = !!access.canSeeOrgAdmin;
   const scope = canManageUsers ? 'all' : 'self';
+
+  // Users only ever see "Storage" in the product — never "Persistent Volume".
+  const RESOURCE_TYPE_LABELS: Record<string, string> = useMemo(
+    () => ({
+      gpu_instance: intl.formatMessage({
+        id: 'usage.events.resource.gpuInstance'
+      }),
+      cpu_instance: intl.formatMessage({
+        id: 'usage.events.resource.cpuInstance'
+      }),
+      persistent_volume: intl.formatMessage({ id: 'usage.tabs.storage' })
+    }),
+    [intl]
+  );
+
+  const RESOURCE_TYPE_OPTIONS = useMemo(
+    () => [
+      { value: 'gpu_instance', label: RESOURCE_TYPE_LABELS.gpu_instance },
+      {
+        value: 'persistent_volume',
+        label: RESOURCE_TYPE_LABELS.persistent_volume
+      }
+    ],
+    [RESOURCE_TYPE_LABELS]
+  );
+
+  const EVENT_TYPE_OPTIONS = useMemo(
+    () => [
+      {
+        value: 'created',
+        label: intl.formatMessage({ id: 'usage.events.type.created' })
+      },
+      {
+        value: 'deleted',
+        label: intl.formatMessage({ id: 'usage.events.type.deleted' })
+      },
+      {
+        value: 'phase_to_metered',
+        label: intl.formatMessage({ id: 'usage.events.type.started' })
+      },
+      {
+        value: 'phase_left_metered',
+        label: intl.formatMessage({ id: 'usage.events.type.stopped' })
+      },
+      {
+        value: 'updated',
+        label: intl.formatMessage({ id: 'usage.events.type.updated' })
+      },
+      {
+        value: 'attached',
+        label: intl.formatMessage({ id: 'usage.events.type.attached' })
+      },
+      {
+        value: 'detached',
+        label: intl.formatMessage({ id: 'usage.events.type.detached' })
+      }
+    ],
+    [intl]
+  );
+
+  // Raw event_type → human-readable label (the same wording as the filter).
+  // ``phase_to_metered`` / ``phase_left_metered`` bracket the metering window —
+  // when the resource starts / stops accruing metered uptime (the OSS build
+  // only meters, it doesn't charge). Users shouldn't see the internal enum
+  // names.
+  const EVENT_LABEL: Record<string, string> = useMemo(
+    () => Object.fromEntries(EVENT_TYPE_OPTIONS.map((o) => [o.value, o.label])),
+    [EVENT_TYPE_OPTIONS]
+  );
 
   const [dateRange, setDateRange] = useState<[dayjs.Dayjs, dayjs.Dayjs]>([
     dayjs().subtract(29, 'day'),
@@ -113,7 +152,7 @@ const ResourceEvents: React.FC = () => {
   const columns = useMemo(
     () => [
       {
-        title: 'Time',
+        title: intl.formatMessage({ id: 'usage.events.col.time' }),
         dataIndex: 'occurred_at',
         key: 'occurred_at',
         render: (v: string) =>
@@ -121,19 +160,19 @@ const ResourceEvents: React.FC = () => {
         width: 200
       },
       {
-        title: 'Resource',
+        title: intl.formatMessage({ id: 'usage.events.col.resource' }),
         dataIndex: 'resource_type',
         key: 'resource_type',
         render: (v: string) => RESOURCE_TYPE_LABELS[v] || v,
         width: 160
       },
       {
-        title: 'Name',
+        title: intl.formatMessage({ id: 'usage.table.name' }),
         dataIndex: 'resource_name',
         key: 'resource_name'
       },
       {
-        title: 'Event',
+        title: intl.formatMessage({ id: 'usage.events.col.event' }),
         dataIndex: 'event_type',
         key: 'event_type',
         render: (v: string) => (
@@ -142,7 +181,7 @@ const ResourceEvents: React.FC = () => {
         width: 180
       },
       {
-        title: 'Message',
+        title: intl.formatMessage({ id: 'usage.events.col.message' }),
         dataIndex: 'event_message',
         key: 'event_message',
         render: (v?: string, row?: ResourceEventItem) => {
@@ -159,7 +198,7 @@ const ResourceEvents: React.FC = () => {
         }
       }
     ],
-    []
+    [intl, RESOURCE_TYPE_LABELS, EVENT_LABEL]
   );
 
   return (
@@ -184,8 +223,7 @@ const ResourceEvents: React.FC = () => {
               mode="multiple"
               allowClear
               placeholder={intl.formatMessage({
-                id: 'usage.events.resourceType',
-                defaultMessage: 'Resource type'
+                id: 'usage.events.resourceType'
               })}
               value={resourceTypes}
               onChange={(v) => {
@@ -199,8 +237,7 @@ const ResourceEvents: React.FC = () => {
               mode="multiple"
               allowClear
               placeholder={intl.formatMessage({
-                id: 'usage.events.eventType',
-                defaultMessage: 'Event type'
+                id: 'usage.events.eventType'
               })}
               value={eventTypes}
               onChange={(v) => {

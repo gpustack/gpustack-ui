@@ -25,7 +25,7 @@ import useCoolColors from '@/hooks/use-cool-colors';
 import BarChart from '@/pages/_components/bar-chart';
 import PieChart from '@/pages/_components/pie-chart';
 import { formatLargeNumber } from '@/utils';
-import { useAccess } from '@umijs/max';
+import { useAccess, useIntl } from '@umijs/max';
 import { Card, Col, Empty, Row } from 'antd';
 import dayjs from 'dayjs';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -117,12 +117,13 @@ const DomainSection: React.FC<{
   trendColor,
   trendGran
 }) => {
+  const intl = useIntl();
   const donutTotal = round2(donutData.reduce((s, d) => s + (d.value || 0), 0));
   const trendEmpty = trendData.every((v) => !v);
   const empty = (
     <Empty
       image={Empty.PRESENTED_IMAGE_SIMPLE}
-      description="No data"
+      description={intl.formatMessage({ id: 'usage.common.noData' })}
       style={{ margin: '32px 0' }}
     />
   );
@@ -200,6 +201,8 @@ const DomainSection: React.FC<{
 
 const SummaryTab: React.FC = () => {
   const access = useAccess();
+  const intl = useIntl();
+  const t = (id: string) => intl.formatMessage({ id });
   const coolColors = useCoolColors()(8);
 
   // No All/My dropdown (matches the Tokens tab): managers see the org-wide
@@ -302,8 +305,8 @@ const SummaryTab: React.FC = () => {
   // --- derived: donuts ---
   const tokenDonut = useMemo(
     () => [
-      { name: 'Input', value: summary?.input_tokens ?? 0 },
-      { name: 'Output', value: summary?.output_tokens ?? 0 }
+      { name: t('usage.metric.input'), value: summary?.input_tokens ?? 0 },
+      { name: t('usage.metric.output'), value: summary?.output_tokens ?? 0 }
     ],
     [summary]
   );
@@ -320,7 +323,7 @@ const SummaryTab: React.FC = () => {
       (storageByType?.items ?? [])
         .filter((i) => (i.storage_gb_days || 0) > 0)
         .map((i) => ({
-          name: i.gpu_type || 'unknown',
+          name: i.gpu_type || t('usage.common.unknown'),
           value: i.storage_gb_days
         })),
     [storageByType]
@@ -386,23 +389,32 @@ const SummaryTab: React.FC = () => {
       <Row gutter={[0, 12]}>
         <Col span={24}>
           <DomainSection
-            title="Tokens"
+            title={t('usage.metric.tokens')}
             accent={coolColors[0]}
             donutData={tokenDonut}
-            donutTotalLabel="Tokens"
-            trendTitle="Tokens over time"
+            donutTotalLabel={t('usage.metric.tokens')}
+            trendTitle={t('usage.summary.tokensOverTime')}
             trendXAxis={tokenTrend.xAxis}
             trendData={tokenTrend.data}
             trendColor={coolColors[0]}
             trendGran={tokenGran}
             headline={
               <>
-                <Stat value={fmt(summary?.total_tokens)} label="Tokens" />
-                <Stat value={fmt(summary?.input_tokens)} label="Input" />
-                <Stat value={fmt(summary?.output_tokens)} label="Output" />
+                <Stat
+                  value={fmt(summary?.total_tokens)}
+                  label={t('usage.metric.tokens')}
+                />
+                <Stat
+                  value={fmt(summary?.input_tokens)}
+                  label={t('usage.metric.input')}
+                />
+                <Stat
+                  value={fmt(summary?.output_tokens)}
+                  label={t('usage.metric.output')}
+                />
                 <Stat
                   value={summary?.token_active_users ?? 0}
-                  label="Active Users"
+                  label={t('usage.metric.activeUsers')}
                 />
               </>
             }
@@ -411,25 +423,28 @@ const SummaryTab: React.FC = () => {
 
         <Col span={24}>
           <DomainSection
-            title="Compute"
+            title={t('usage.summary.compute')}
             accent={coolColors[1]}
             donutData={computeDonut}
-            donutTotalLabel="GPU Hours"
-            trendTitle="GPU Hours over time"
+            donutTotalLabel={t('usage.metric.gpuHours')}
+            trendTitle={t('usage.summary.gpuHoursOverTime')}
             trendXAxis={computeTrend.xAxis}
             trendData={computeTrend.data}
             trendColor={coolColors[1]}
             trendGran={granularity}
             headline={
               <>
-                <Stat value={fmt(summary?.gpu_hours)} label="GPU Hours" />
+                <Stat
+                  value={fmt(summary?.gpu_hours)}
+                  label={t('usage.metric.gpuHours')}
+                />
                 <Stat
                   value={fmt(summary?.instance_hours)}
-                  label="Instance Hours"
+                  label={t('usage.metric.instanceHours')}
                 />
                 <Stat
                   value={computeSum?.active_instances ?? 0}
-                  label="Active Instances"
+                  label={t('usage.metric.activeInstances')}
                 />
               </>
             }
@@ -438,23 +453,29 @@ const SummaryTab: React.FC = () => {
 
         <Col span={24}>
           <DomainSection
-            title="Storage"
+            title={t('usage.tabs.storage')}
             accent={coolColors[3]}
             donutData={storageDonut}
-            donutTotalLabel="GB-Days"
-            trendTitle="GB-Days over time"
+            donutTotalLabel={t('usage.metric.gbDays')}
+            trendTitle={t('usage.summary.gbDaysOverTime')}
             trendXAxis={storageTrend.xAxis}
             trendData={storageTrend.data}
             trendColor={coolColors[3]}
             trendGran={granularity}
             headline={
               <>
-                <Stat value={fmt(summary?.storage_gb_days)} label="GB-Days" />
+                <Stat
+                  value={fmt(summary?.storage_gb_days)}
+                  label={t('usage.metric.gbDays')}
+                />
                 <Stat
                   value={storageSum?.active_volumes ?? 0}
-                  label="Active Storage"
+                  label={t('usage.metric.activeStorage')}
                 />
-                <Stat value={storageDonut.length} label="Storage Types" />
+                <Stat
+                  value={storageDonut.length}
+                  label={t('usage.metric.storageTypes')}
+                />
               </>
             }
           />

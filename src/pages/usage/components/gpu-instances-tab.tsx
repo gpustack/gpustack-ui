@@ -43,20 +43,38 @@ type Scope = 'self' | 'all';
 type Metric = 'gpu_hours' | 'instance_hours';
 type GroupKey = 'gpu_type' | 'instance' | 'user';
 
-const METRIC_OPTIONS: { value: Metric; label: string }[] = [
-  { value: 'gpu_hours', label: 'GPU Hours' },
-  { value: 'instance_hours', label: 'Instance Hours' }
-];
-
-const TABLE_TABS: { key: GroupKey; label: string }[] = [
-  { key: 'gpu_type', label: 'Instance Types' },
-  { key: 'instance', label: 'Instances' },
-  { key: 'user', label: 'Users' }
-];
-
 const GpuInstancesTab: React.FC = () => {
   const access = useAccess();
   const intl = useIntl();
+
+  const METRIC_OPTIONS: { value: Metric; label: string }[] = useMemo(
+    () => [
+      {
+        value: 'gpu_hours',
+        label: intl.formatMessage({ id: 'usage.metric.gpuHours' })
+      },
+      {
+        value: 'instance_hours',
+        label: intl.formatMessage({ id: 'usage.metric.instanceHours' })
+      }
+    ],
+    [intl]
+  );
+
+  const TABLE_TABS: { key: GroupKey; label: string }[] = useMemo(
+    () => [
+      {
+        key: 'gpu_type',
+        label: intl.formatMessage({ id: 'usage.table.instanceTypes' })
+      },
+      {
+        key: 'instance',
+        label: intl.formatMessage({ id: 'usage.table.instances' })
+      },
+      { key: 'user', label: intl.formatMessage({ id: 'usage.table.users' }) }
+    ],
+    [intl]
+  );
   // ``useCoolColors`` returns a memoized factory; resolve it once into a
   // fixed 5-slot palette here so the rest of the component reads as
   // array access.
@@ -172,8 +190,8 @@ const GpuInstancesTab: React.FC = () => {
         ) as string,
         value: (
           <MetricLabel
-            text="GPU Hours"
-            tooltip="Instance running time weighted by GPU count: an instance with N GPUs running for H hours counts as N × H GPU-hours. Equal to Instance Hours when every instance uses a single GPU."
+            text={intl.formatMessage({ id: 'usage.metric.gpuHours' })}
+            tooltip={intl.formatMessage({ id: 'usage.metric.gpuHours.tip' })}
           />
         ),
         color: coolColors[0]
@@ -184,24 +202,26 @@ const GpuInstancesTab: React.FC = () => {
         ) as string,
         value: (
           <MetricLabel
-            text="Instance Hours"
-            tooltip="Total running time summed across all instances, regardless of how many GPUs each uses. One instance running for 2 hours = 2 instance-hours."
+            text={intl.formatMessage({ id: 'usage.metric.instanceHours' })}
+            tooltip={intl.formatMessage({
+              id: 'usage.metric.instanceHours.tip'
+            })}
           />
         ),
         color: coolColors[1]
       },
       {
         label: (summary?.active_instances ?? 0).toString(),
-        value: 'Active Instances',
+        value: intl.formatMessage({ id: 'usage.metric.activeInstances' }),
         color: coolColors[2]
       },
       {
         label: (summary?.active_users ?? 0).toString(),
-        value: 'Active Users',
+        value: intl.formatMessage({ id: 'usage.metric.activeUsers' }),
         color: coolColors[3]
       }
     ],
-    [summary, coolColors]
+    [summary, coolColors, intl]
   );
 
   // Build chart series — single series of the selected metric, plotted
@@ -238,7 +258,7 @@ const GpuInstancesTab: React.FC = () => {
   const tableColumns = useMemo(() => {
     const baseValueCols = [
       {
-        title: 'GPU Hours',
+        title: intl.formatMessage({ id: 'usage.metric.gpuHours' }),
         dataIndex: 'gpu_hours',
         key: 'gpu_hours',
         sorter: true,
@@ -246,7 +266,7 @@ const GpuInstancesTab: React.FC = () => {
         render: (v: number) => (v ?? 0).toFixed(2)
       },
       {
-        title: 'Instance Hours',
+        title: intl.formatMessage({ id: 'usage.metric.instanceHours' }),
         dataIndex: 'instance_hours',
         key: 'instance_hours',
         sorter: true,
@@ -258,7 +278,7 @@ const GpuInstancesTab: React.FC = () => {
     // Instance Types breakdown: just the pretty product name (or flavor slug
     // for older rows) — no spec sub-line.
     const instanceTypeColType = {
-      title: 'Instance Type',
+      title: intl.formatMessage({ id: 'usage.table.instanceType' }),
       dataIndex: 'gpu_type',
       key: 'gpu_type',
       render: (_v: string, row: ResourceBreakdownItem) => instanceTypeLabel(row)
@@ -266,7 +286,7 @@ const GpuInstancesTab: React.FC = () => {
     // Instances breakdown: render exactly like the GPU Instances list —
     // "<product> x <count>" plus the categorized spec popover behind the icon.
     const instanceTypeColInstance = {
-      title: 'Instance Type',
+      title: intl.formatMessage({ id: 'usage.table.instanceType' }),
       dataIndex: 'gpu_type',
       key: 'gpu_type',
       render: (_v: string, row: ResourceBreakdownItem) => (
@@ -285,26 +305,46 @@ const GpuInstancesTab: React.FC = () => {
         instanceTypeColType,
         ...baseValueCols,
         {
-          title: 'Active Instances',
+          title: intl.formatMessage({ id: 'usage.metric.activeInstances' }),
           dataIndex: 'active_instances',
           key: 'active_instances'
         },
-        { title: 'Last Active', dataIndex: 'last_active', key: 'last_active' }
+        {
+          title: intl.formatMessage({ id: 'usage.table.lastActive' }),
+          dataIndex: 'last_active',
+          key: 'last_active'
+        }
       ];
     }
     if (activeTableTab === 'instance') {
       return [
-        { title: 'Instance', dataIndex: 'instance_name', key: 'instance_name' },
+        {
+          title: intl.formatMessage({ id: 'usage.table.instance' }),
+          dataIndex: 'instance_name',
+          key: 'instance_name'
+        },
         instanceTypeColInstance,
         ...baseValueCols,
-        { title: 'Last Active', dataIndex: 'last_active', key: 'last_active' }
+        {
+          title: intl.formatMessage({ id: 'usage.table.lastActive' }),
+          dataIndex: 'last_active',
+          key: 'last_active'
+        }
       ];
     }
     // user tab
     return [
-      { title: 'User', dataIndex: 'user_name', key: 'user_name' },
+      {
+        title: intl.formatMessage({ id: 'usage.table.user' }),
+        dataIndex: 'user_name',
+        key: 'user_name'
+      },
       ...baseValueCols,
-      { title: 'Last Active', dataIndex: 'last_active', key: 'last_active' }
+      {
+        title: intl.formatMessage({ id: 'usage.table.lastActive' }),
+        dataIndex: 'last_active',
+        key: 'last_active'
+      }
     ];
   }, [activeTableTab, tableSort, intl]);
 
@@ -319,25 +359,33 @@ const GpuInstancesTab: React.FC = () => {
   )}`;
 
   const chartExportColumns = [
-    { title: 'Date', dataIndex: 'date', key: 'date' },
     {
-      title: 'GPU Hours',
+      title: intl.formatMessage({ id: 'usage.table.date' }),
+      dataIndex: 'date',
+      key: 'date'
+    },
+    {
+      title: intl.formatMessage({ id: 'usage.metric.gpuHours' }),
       dataIndex: 'gpu_hours',
       key: 'gpu_hours',
       render: (v: number) => (v ?? 0).toFixed(2)
     },
     {
-      title: 'Instance Hours',
+      title: intl.formatMessage({ id: 'usage.metric.instanceHours' }),
       dataIndex: 'instance_hours',
       key: 'instance_hours',
       render: (v: number) => (v ?? 0).toFixed(2)
     },
     {
-      title: 'Active Instances',
+      title: intl.formatMessage({ id: 'usage.metric.activeInstances' }),
       dataIndex: 'active_instances',
       key: 'active_instances'
     },
-    { title: 'Active Users', dataIndex: 'active_users', key: 'active_users' }
+    {
+      title: intl.formatMessage({ id: 'usage.metric.activeUsers' }),
+      dataIndex: 'active_users',
+      key: 'active_users'
+    }
   ];
 
   const tabLabel = TABLE_TABS.find((t) => t.key === activeTableTab)?.label;
@@ -347,7 +395,7 @@ const GpuInstancesTab: React.FC = () => {
           groupBy: 'date' as const,
           columns: chartExportColumns,
           fileName: `gpu-instances_chart_${dateSuffix}.xlsx`,
-          sheetName: 'GPU Instances'
+          sheetName: intl.formatMessage({ id: 'usage.tabs.gpuInstances' })
         }
       : {
           groupBy: activeTableTab,
@@ -379,7 +427,7 @@ const GpuInstancesTab: React.FC = () => {
             setSelectedInstances(ids);
             setTablePage(1);
           },
-          placeholder: 'Filter by instance'
+          placeholder: intl.formatMessage({ id: 'usage.filter.instance' })
         }}
         onRefresh={() => setRefreshKey((k) => k + 1)}
         onExportChart={() => setExportMode('chart')}
@@ -467,8 +515,11 @@ const GpuInstancesTab: React.FC = () => {
         onCancel={() => setExportMode(null)}
         title={
           exportMode === 'chart'
-            ? 'Export Chart Data'
-            : `Export Table Data — ${tabLabel}`
+            ? intl.formatMessage({ id: 'usage.export.chart' })
+            : intl.formatMessage(
+                { id: 'usage.export.tableNamed' },
+                { name: tabLabel }
+              )
         }
         queryFn={queryGpuInstancesBreakdown}
         groupBy={exportConfig.groupBy}
@@ -480,7 +531,7 @@ const GpuInstancesTab: React.FC = () => {
         userOptions={userOptions}
         resourceFilter={{
           options: instanceOptions,
-          placeholder: 'Filter by instance',
+          placeholder: intl.formatMessage({ id: 'usage.filter.instance' }),
           key: 'instance_ids'
         }}
         initialDateRange={dateRange}

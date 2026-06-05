@@ -14,7 +14,7 @@
 import useCoolColors from '@/hooks/use-cool-colors';
 import { formatLargeNumber } from '@/utils';
 import { SimpleCard } from '@gpustack/core-ui';
-import { useAccess } from '@umijs/max';
+import { useAccess, useIntl } from '@umijs/max';
 import { Table, Tabs } from 'antd';
 import dayjs from 'dayjs';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -39,19 +39,35 @@ type Scope = 'self' | 'all';
 type Metric = 'storage_gb_days' | 'storage_gb_hours';
 type GroupKey = 'volume' | 'user';
 
-const METRIC_OPTIONS: { value: Metric; label: string }[] = [
-  { value: 'storage_gb_days', label: 'GB-Days' },
-  { value: 'storage_gb_hours', label: 'GB-Hours' }
-];
-
-const TABLE_TABS: { key: GroupKey; label: string }[] = [
-  { key: 'volume', label: 'Storage' },
-  { key: 'user', label: 'Users' }
-];
-
 const StorageTab: React.FC = () => {
   const access = useAccess();
+  const intl = useIntl();
   const coolColors = useCoolColors()(4);
+
+  const METRIC_OPTIONS: { value: Metric; label: string }[] = useMemo(
+    () => [
+      {
+        value: 'storage_gb_days',
+        label: intl.formatMessage({ id: 'usage.metric.gbDays' })
+      },
+      {
+        value: 'storage_gb_hours',
+        label: intl.formatMessage({ id: 'usage.metric.gbHours' })
+      }
+    ],
+    [intl]
+  );
+
+  const TABLE_TABS: { key: GroupKey; label: string }[] = useMemo(
+    () => [
+      {
+        key: 'volume',
+        label: intl.formatMessage({ id: 'usage.tabs.storage' })
+      },
+      { key: 'user', label: intl.formatMessage({ id: 'usage.table.users' }) }
+    ],
+    [intl]
+  );
 
   // No All/My dropdown (matches the Tokens tab): managers see the org-wide
   // view and narrow it with the user filter, others only their own rows.
@@ -160,8 +176,8 @@ const StorageTab: React.FC = () => {
         ) as string,
         value: (
           <MetricLabel
-            text="GB-Days"
-            tooltip="Storage capacity integrated over time, in GB × days: 10 GB kept for 5 days = 50 GB-days. (= GB-Hours ÷ 24)"
+            text={intl.formatMessage({ id: 'usage.metric.gbDays' })}
+            tooltip={intl.formatMessage({ id: 'usage.metric.gbDays.tip' })}
           />
         ),
         color: coolColors[0]
@@ -172,24 +188,24 @@ const StorageTab: React.FC = () => {
         ) as string,
         value: (
           <MetricLabel
-            text="GB-Hours"
-            tooltip="Storage capacity integrated over time, in GB × hours: 10 GB kept for 5 hours = 50 GB-hours."
+            text={intl.formatMessage({ id: 'usage.metric.gbHours' })}
+            tooltip={intl.formatMessage({ id: 'usage.metric.gbHours.tip' })}
           />
         ),
         color: coolColors[1]
       },
       {
         label: (summary?.active_volumes ?? 0).toString(),
-        value: 'Storage',
+        value: intl.formatMessage({ id: 'usage.tabs.storage' }),
         color: coolColors[2]
       },
       {
         label: (summary?.active_users ?? 0).toString(),
-        value: 'Active Users',
+        value: intl.formatMessage({ id: 'usage.metric.activeUsers' }),
         color: coolColors[3]
       }
     ],
-    [summary, coolColors]
+    [summary, coolColors, intl]
   );
 
   const dataByDate = useMemo(() => {
@@ -223,7 +239,7 @@ const StorageTab: React.FC = () => {
   const tableColumns = useMemo(() => {
     const valueCols = [
       {
-        title: 'GB-Days',
+        title: intl.formatMessage({ id: 'usage.metric.gbDays' }),
         dataIndex: 'storage_gb_days',
         key: 'storage_gb_days',
         sorter: true,
@@ -232,7 +248,7 @@ const StorageTab: React.FC = () => {
         render: (v: number) => (v ?? 0).toFixed(2)
       },
       {
-        title: 'GB-Hours',
+        title: intl.formatMessage({ id: 'usage.metric.gbHours' }),
         dataIndex: 'storage_gb_hours',
         key: 'storage_gb_hours',
         sorter: true,
@@ -244,38 +260,50 @@ const StorageTab: React.FC = () => {
     if (activeTableTab === 'volume') {
       return [
         {
-          title: 'Storage',
+          title: intl.formatMessage({ id: 'usage.tabs.storage' }),
           dataIndex: 'volume_name',
           key: 'volume_name'
         },
         {
-          title: 'Type',
+          title: intl.formatMessage({ id: 'usage.table.type' }),
           dataIndex: 'storage_type',
           key: 'storage_type',
           render: (_v: string, row: ResourceBreakdownItem) =>
             row.storage_type || row.gpu_type || '-'
         },
         {
-          title: 'Capacity',
+          title: intl.formatMessage({ id: 'usage.table.capacity' }),
           dataIndex: 'capacity_mib',
           key: 'capacity_mib',
           render: (v?: number) => (v ? `${Math.round(v / 1024)}GB` : '-')
         },
         ...valueCols,
-        { title: 'Last Active', dataIndex: 'last_active', key: 'last_active' }
+        {
+          title: intl.formatMessage({ id: 'usage.table.lastActive' }),
+          dataIndex: 'last_active',
+          key: 'last_active'
+        }
       ];
     }
     return [
-      { title: 'User', dataIndex: 'user_name', key: 'user_name' },
+      {
+        title: intl.formatMessage({ id: 'usage.table.user' }),
+        dataIndex: 'user_name',
+        key: 'user_name'
+      },
       ...valueCols,
       {
-        title: 'Active Storage',
+        title: intl.formatMessage({ id: 'usage.metric.activeStorage' }),
         dataIndex: 'active_volumes',
         key: 'active_volumes'
       },
-      { title: 'Last Active', dataIndex: 'last_active', key: 'last_active' }
+      {
+        title: intl.formatMessage({ id: 'usage.table.lastActive' }),
+        dataIndex: 'last_active',
+        key: 'last_active'
+      }
     ];
-  }, [activeTableTab, tableSort]);
+  }, [activeTableTab, tableSort, intl]);
 
   const tableRows: ResourceBreakdownItem[] = tableData?.items ?? [];
 
@@ -288,25 +316,33 @@ const StorageTab: React.FC = () => {
   )}`;
 
   const chartExportColumns = [
-    { title: 'Date', dataIndex: 'date', key: 'date' },
     {
-      title: 'GB-Days',
+      title: intl.formatMessage({ id: 'usage.table.date' }),
+      dataIndex: 'date',
+      key: 'date'
+    },
+    {
+      title: intl.formatMessage({ id: 'usage.metric.gbDays' }),
       dataIndex: 'storage_gb_days',
       key: 'storage_gb_days',
       render: (v: number) => (v ?? 0).toFixed(2)
     },
     {
-      title: 'GB-Hours',
+      title: intl.formatMessage({ id: 'usage.metric.gbHours' }),
       dataIndex: 'storage_gb_hours',
       key: 'storage_gb_hours',
       render: (v: number) => (v ?? 0).toFixed(2)
     },
     {
-      title: 'Active Volumes',
+      title: intl.formatMessage({ id: 'usage.metric.activeVolumes' }),
       dataIndex: 'active_volumes',
       key: 'active_volumes'
     },
-    { title: 'Active Users', dataIndex: 'active_users', key: 'active_users' }
+    {
+      title: intl.formatMessage({ id: 'usage.metric.activeUsers' }),
+      dataIndex: 'active_users',
+      key: 'active_users'
+    }
   ];
 
   const tabLabel = TABLE_TABS.find((t) => t.key === activeTableTab)?.label;
@@ -316,7 +352,7 @@ const StorageTab: React.FC = () => {
           groupBy: 'date' as const,
           columns: chartExportColumns,
           fileName: `storage_chart_${dateSuffix}.xlsx`,
-          sheetName: 'Storage'
+          sheetName: intl.formatMessage({ id: 'usage.tabs.storage' })
         }
       : {
           groupBy: activeTableTab,
@@ -347,7 +383,7 @@ const StorageTab: React.FC = () => {
             setSelectedVolumes(ids);
             setTablePage(1);
           },
-          placeholder: 'Filter by storage'
+          placeholder: intl.formatMessage({ id: 'usage.filter.storage' })
         }}
         onRefresh={() => setRefreshKey((k) => k + 1)}
         onExportChart={() => setExportMode('chart')}
@@ -435,8 +471,11 @@ const StorageTab: React.FC = () => {
         onCancel={() => setExportMode(null)}
         title={
           exportMode === 'chart'
-            ? 'Export Chart Data'
-            : `Export Table Data — ${tabLabel}`
+            ? intl.formatMessage({ id: 'usage.export.chart' })
+            : intl.formatMessage(
+                { id: 'usage.export.tableNamed' },
+                { name: tabLabel }
+              )
         }
         queryFn={queryStorageBreakdown}
         groupBy={exportConfig.groupBy}
@@ -448,7 +487,7 @@ const StorageTab: React.FC = () => {
         userOptions={userOptions}
         resourceFilter={{
           options: volumeOptions,
-          placeholder: 'Filter by storage',
+          placeholder: intl.formatMessage({ id: 'usage.filter.storage' }),
           key: 'volume_ids'
         }}
         initialDateRange={dateRange}

@@ -90,7 +90,7 @@ const GPUServiceStorage: React.FC = () => {
       closeStorageModal();
       message.success(intl.formatMessage({ id: 'common.message.success' }));
     } catch (error) {
-      message.error(intl.formatMessage({ id: 'common.message.fail' }));
+      // it's handled in interceptor
     }
   };
 

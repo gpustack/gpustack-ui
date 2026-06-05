@@ -82,7 +82,12 @@ const HAS_RESOURCE_EVENTS_KEY = 'hasResourceEvents';
 const probeHasResourceEvents = async (): Promise<boolean | undefined> => {
   try {
     // No date range = "ever"; scope is clamped to the caller server-side.
-    const res = await queryResourceEvents({ perPage: 1 });
+    const res = await queryResourceEvents(
+      { perPage: 1 },
+      {
+        skipErrorHandler: true
+      }
+    );
     const value = (res?.pagination?.total ?? 0) > 0;
     try {
       window.sessionStorage.setItem(

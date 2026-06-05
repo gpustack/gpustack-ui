@@ -392,16 +392,19 @@ export async function queryStorageBreakdown(
   return _breakdown(URL.STORAGE_BREAKDOWN, data);
 }
 
-export async function queryResourceEvents(data: {
-  start_date?: string;
-  end_date?: string;
-  scope?: 'self' | 'all';
-  filters?: ResourceUsageFilters;
-  resource_types?: string[];
-  event_types?: string[];
-  page?: number;
-  perPage?: number;
-}): Promise<ResourceEventsResponse> {
+export async function queryResourceEvents(
+  data: {
+    start_date?: string;
+    end_date?: string;
+    scope?: 'self' | 'all';
+    filters?: ResourceUsageFilters;
+    resource_types?: string[];
+    event_types?: string[];
+    page?: number;
+    perPage?: number;
+  },
+  options?: { skipErrorHandler?: boolean }
+): Promise<ResourceEventsResponse> {
   const creatorIds = data.filters?.creator_ids;
   return request<ResourceEventsResponse>(URL.EVENTS, {
     params: {
@@ -415,7 +418,8 @@ export async function queryResourceEvents(data: {
       page: data.page ?? 1,
       perPage: data.perPage ?? 50
     },
-    method: 'GET'
+    method: 'GET',
+    skipErrorHandler: options?.skipErrorHandler
   });
 }
 

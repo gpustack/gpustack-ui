@@ -113,7 +113,8 @@ export async function queryClusterList(
   return request<Global.PageResponse<ClusterListItem>>(`${CLUSTERS_API}`, {
     method: 'GET',
     params,
-    cancelToken: options?.token
+    cancelToken: options?.token,
+    skipErrorHandler: options?.skipErrorHandler
   });
 }
 

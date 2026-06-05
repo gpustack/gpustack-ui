@@ -382,7 +382,7 @@ export default (props: any) => {
             <Button
               style={{
                 border: 'none',
-                cursor: 'w-resize'
+                cursor: collapsed ? 'e-resize' : 'w-resize'
               }}
               size="small"
               type={'text'}

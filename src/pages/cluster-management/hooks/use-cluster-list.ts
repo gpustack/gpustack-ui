@@ -19,7 +19,12 @@ export default function useClusterList() {
 
   const fetchClusterList = async () => {
     try {
-      const res = await queryClusterList({ page: -1 });
+      const res = await queryClusterList(
+        { page: -1 },
+        {
+          skipErrorHandler: true
+        }
+      );
       const list = res?.items?.map((item: any) => ({
         label: item.name,
         value: item.id,
@@ -35,7 +40,12 @@ export default function useClusterList() {
 
   const fetchWorkerList = async () => {
     try {
-      const res = await queryWorkersList({ page: -1 });
+      const res = await queryWorkersList(
+        { page: -1 },
+        {
+          skipErrorHandler: true
+        }
+      );
       const list = res?.items?.map((item: any) => ({
         cluster_id: item.cluster_id,
         state: item.state,

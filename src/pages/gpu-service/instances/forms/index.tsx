@@ -245,7 +245,12 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       const unitResourcesParsed = instanceType?.spec?.unitResourcesParsed;
       const { count = 0 } = options;
 
-      return {
+      console.log('building resources data with', {
+        unitResourcesParsed,
+        count
+      });
+
+      const result = {
         accelerator: _.toString(count),
         cpu: unitResourcesParsed?.cpu?.cores
           ? count * unitResourcesParsed?.cpu?.cores
@@ -254,6 +259,8 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
           ? count * unitResourcesParsed?.ram?.value
           : null
       };
+      console.log('built resources data', result);
+      return result;
     };
 
     const buildResourcesDataForSubmit = (values: FormData) => {
@@ -475,7 +482,6 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       },
       getFieldsValue: () => form.getFieldsValue(),
       applyInstanceType: (instanceType?: InstanceTypeItem) => {
-        console.log('applying instance type', instanceType);
         if (!instanceType) {
           resolveAndApply(undefined, 0);
           return;

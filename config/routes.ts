@@ -319,7 +319,7 @@ const baseRoutes = [
     // Cross-resource consumption (tokens + GPU/CPU instances + storage).
     // A folder so it matches the other top-level groups; more usage views can
     // graduate in here later.
-    name: 'usage',
+    name: 'billingAndUsage',
     path: '/usage',
     key: 'usageGroup',
     icon: 'icon-usage-outlined',

@@ -280,6 +280,7 @@ export default {
   'common.image.limit.height': '图片高度须为{height}。',
   'common.remaining': '剩余 {count}',
   'common.max': '最大 {count}',
+  'common.max.count': '{label} 数量',
   'common.validate.group': '请填写完整的{group}配置',
   'common.preferences': '偏好设置'
 };

@@ -35,7 +35,8 @@ const InstanceTypeCell: React.FC<{
               display: 'flex',
               alignItems: 'flex-start',
               gap: 16,
-              marginBottom: 6
+              paddingBlock: 4,
+              borderBottom: '1px solid rgba(255, 255, 255, 0.2)'
             }}
           >
             <div

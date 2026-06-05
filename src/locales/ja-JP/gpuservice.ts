@@ -108,6 +108,10 @@ export default {
     '最大 {count} 枚の GPU カードを選択してください',
   'gpuservice.instance.gpuCount.min':
     '少なくとも {count} 枚の GPU カードを選択してください',
+  'gpuservice.instance.cpuCount.max':
+    '最大 {count} 個の CPU コアを選択してください',
+  'gpuservice.instance.cpuCount.min':
+    '少なくとも {count} 個の CPU コアを選択してください',
   'gpuservice.instance.gpuCount.noAvailable':
     '利用可能な GPU リソースがありません。別のインスタンスタイプを選択してください。',
   'gpuservice.instance.gpuCount.zero': 'CPU のみを使用し、環境準備用です。',
@@ -116,6 +120,10 @@ export default {
   'gpuservice.instance.memory': 'VRAM',
   'gpuservice.instance.ram': 'RAM',
   'gpuservice.instance.disk': 'ディスク',
+  'gpuservice.table.count': '数量',
+  'gpuservice.instance.disk.system': 'システムディスク',
+  'gpuservice.instance.disk.ephemeral': '一時ストレージ',
+  'gpuservice.instance.disk.persistent': '永続ストレージ',
   'gpuservice.instance.search.type.placeholder': '名前で検索',
   'gpuservice.instance.search.template.placeholder':
     'テンプレート名、イメージまたはマウントパスで検索',

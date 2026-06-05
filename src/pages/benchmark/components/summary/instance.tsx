@@ -85,13 +85,6 @@ const Instance: React.FC = () => {
         children: renderParams(instanceData?.backend_parameters || [])
       },
       {
-        key: '1-1',
-        label: intl.formatMessage({
-          id: 'models.instance.params.autoInjected'
-        }),
-        children: renderParams(instanceData?.injected_backend_parameters || [])
-      },
-      {
         key: '3',
         label: intl.formatMessage({ id: 'benchmark.detail.kvCache' }),
         children: (

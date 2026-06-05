@@ -132,7 +132,7 @@ const AddModal: React.FC<AddModalProps> = ({
         ...it,
         status: {
           ...it.status,
-          acceleratorTiers: (it.status?.acceleratorTiers ?? [])
+          tiers: (it.status?.tiers ?? [])
             .map((tier: any) => ({
               ...tier,
               candidates: (tier.candidates ?? []).filter((c: any) =>
@@ -142,7 +142,7 @@ const AddModal: React.FC<AddModalProps> = ({
             .filter((tier: any) => (tier.candidates ?? []).length > 0)
         }
       }))
-      .filter((it) => (it.status?.acceleratorTiers ?? []).length > 0);
+      .filter((it) => (it.status?.tiers ?? []).length > 0);
   };
 
   const ownedInstanceTypes = useMemo(
@@ -217,7 +217,7 @@ const AddModal: React.FC<AddModalProps> = ({
   ): InstanceTypeItem | undefined => {
     if (!candidateName) return undefined;
     return instanceTypes.find((item) =>
-      (item.status?.acceleratorTiers ?? []).some((tier) =>
+      (item.status?.tiers ?? []).some((tier) =>
         (tier.candidates ?? []).some(
           (c) => c.name === candidateName && Number(c.cluster) === clusterId
         )

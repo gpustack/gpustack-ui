@@ -21,6 +21,23 @@ import {
 } from '../config';
 import { InstanceTypeSpec, ListItem } from '../config/types';
 
+const buildRowActions = (record: ListItem) => {
+  return rowActionList
+    .filter((action) => (action.show ? action.show(record) : true))
+    .map(({ show, disabled, ...action }) => ({
+      ...action,
+      props: {
+        ...action.props,
+        disabled: disabled
+          ? disabled(record)
+          : (action.props?.disabled ?? false)
+      }
+    }));
+};
+
+const toGB = (v?: string | number) =>
+  v ? `${v}`.replace('Gi', ' GB').replace('Mi', ' MB') : '-';
+
 const buildResourcesData = (
   instanceType: {
     spec: InstanceTypeSpec;
@@ -58,13 +75,13 @@ const formatResources = (
   if (!record.spec?.resources?.accelerator) {
     return {
       cpu: record.spec?.resources?.cpu
-        ? `${record.spec?.resources?.cpu}C`
+        ? `${record.spec?.resources?.cpu} C`
         : '-',
       ram: record.spec?.resources?.ram
-        ? `${record.spec?.resources?.ram}`.replace('Gi', 'GB')
+        ? toGB(record.spec?.resources?.ram)
         : '-',
       localStorage: record.spec?.resources?.localStorage
-        ? `${record.spec?.resources?.localStorage}`.replace('Gi', 'GB')
+        ? toGB(record.spec?.resources?.localStorage)
         : '-'
     };
   }
@@ -74,11 +91,11 @@ const formatResources = (
   const vram = formatMemoryDisplay((instanceTypeSpec.spec as any)?.memory);
 
   return {
-    cpu: resources.cpu ? `${resources.cpu}C` : '-',
-    ram: resources.ram ? `${resources.ram}GB` : '-',
+    cpu: resources.cpu ? `${resources.cpu} C` : '-',
+    ram: resources.ram ? `${resources.ram} GB` : '-',
     vram,
     localStorage: record.spec?.resources?.localStorage
-      ? `${record.spec?.resources?.localStorage}`.replace('Gi', 'GB')
+      ? toGB(record.spec?.resources?.localStorage)
       : undefined
   };
 };
@@ -154,9 +171,6 @@ const useInstancesColumns = ({
   const intl = useIntl();
   const access = useAccess();
 
-  const toGB = (v?: string) =>
-    v ? `${v}`.replace('Gi', 'GB').replace('Mi', 'MB') : undefined;
-
   const renderInstanceType = (record: ListItem) => {
     const description =
       parseJsonSafe<any>(record?.description || '{}', {}).spec || {};
@@ -181,8 +195,14 @@ const useInstancesColumns = ({
         icon: 'icon-gpu',
         name: 'GPU',
         rows: [
-          ['Count', accelerator ? `${accelerator}` : undefined],
-          ['Instance Type', description.product],
+          [
+            intl.formatMessage({ id: 'gpuservice.table.count' }),
+            accelerator ? `${accelerator}` : undefined
+          ],
+          [
+            intl.formatMessage({ id: 'gpuservice.instance.section.type' }),
+            description.product
+          ],
           [
             intl.formatMessage({ id: 'gpuservice.instance.memory' }),
             resources.vram
@@ -197,24 +217,23 @@ const useInstancesColumns = ({
     });
     sections.push({
       icon: 'icon-ram-02',
-      name: 'Memory',
+      name: intl.formatMessage({ id: 'gpuservice.instance.ram' }),
       rows: [[null, resources.ram]]
     });
     sections.push({
       icon: 'icon-hard-disk',
       name: intl.formatMessage({ id: 'gpuservice.instance.disk' }),
       rows: [
-        ['System', resources.localStorage],
-        // Data disk is either ephemeral OR persistent (mutually exclusive at
-        // create time, but each shown if present): ephemeral.capacity for a
-        // temp disk; persistentTemplate.spec.capacity / persistent.name for a
-        // persistent one (a referenced PV carries only a name, no capacity).
-        ['Data', toGB(volume?.ephemeral?.capacity)],
         [
-          'Persistent',
-          // Inline-created PV carries its own capacity; a referenced PV has only
-          // a name, so resolve its size from the fetched PV map (fall back to
-          // the name if it can't be resolved).
+          intl.formatMessage({ id: 'gpuservice.instance.disk.system' }),
+          resources.localStorage
+        ],
+        [
+          intl.formatMessage({ id: 'gpuservice.instance.disk.ephemeral' }),
+          toGB(volume?.ephemeral?.capacity)
+        ],
+        [
+          intl.formatMessage({ id: 'gpuservice.instance.disk.persistent' }),
           toGB(volume?.persistentTemplate?.spec?.capacity) ||
             toGB(pvCapacityByName?.[volume?.persistent?.name]) ||
             volume?.persistent?.name
@@ -397,12 +416,14 @@ const useInstancesColumns = ({
         ellipsis: {
           showTitle: false
         },
-        render: (_text, record) => (
-          <DropdownButtons
-            items={rowActionList}
-            onSelect={(val) => handleSelect(val, record)}
-          />
-        )
+        render: (_text, record) => {
+          return (
+            <DropdownButtons
+              items={buildRowActions(record)}
+              onSelect={(val) => handleSelect(val, record)}
+            />
+          );
+        }
       }
     ];
   }, [handleSelect, sortOrder, clusterList, intl, pvCapacityByName]);

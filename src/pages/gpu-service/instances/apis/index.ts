@@ -75,6 +75,18 @@ export async function deleteGPUServiceInstance(id: number) {
   });
 }
 
+export async function stopGPUServiceInstance(id: number) {
+  return request(`${GPU_SERVICE_INSTANCES_API}/${id}/stop`, {
+    method: 'PUT'
+  });
+}
+
+export async function startGPUServiceInstance(id: number) {
+  return request(`${GPU_SERVICE_INSTANCES_API}/${id}/start`, {
+    method: 'PUT'
+  });
+}
+
 // =========== Instance Types ===========
 
 export async function queryGPUServiceInstanceTypes(

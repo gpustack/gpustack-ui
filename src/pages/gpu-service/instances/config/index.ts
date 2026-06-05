@@ -3,6 +3,7 @@ import { StatusType } from '@/config/types';
 import { IconFont, icons } from '@gpustack/core-ui';
 import _ from 'lodash';
 import React from 'react';
+import { ListItem } from '../config/types';
 
 export const InstanceStatusValueMap = {
   Scheduling: 'Scheduling',
@@ -14,20 +15,46 @@ export const InstanceStatusValueMap = {
   Preparing: 'Preparing',
   NotReady: 'NotReady',
   Ready: 'Ready',
-  Starting: 'Starting'
+  Starting: 'Starting',
+  Deleting: 'Deleting',
+  Stopping: 'Stopping',
+  Stopped: 'Stopped',
+  CreateFailed: 'CreateFailed',
+  SSHPublicKeyCreateFailed: 'SSHPublicKeyCreateFailed',
+  PersistentVolumeTypeCreateFailed: 'PersistentVolumeTypeCreateFailed',
+  PersistentVolumeCreateFailed: 'PersistentVolumeCreateFailed'
 };
 
+export const K8SStatuses = [
+  InstanceStatusValueMap.Scheduling,
+  InstanceStatusValueMap.Pending,
+  InstanceStatusValueMap.Scheduled,
+  InstanceStatusValueMap.Initializing,
+  InstanceStatusValueMap.InitializeFailed,
+  InstanceStatusValueMap.Initialized,
+  InstanceStatusValueMap.Preparing,
+  InstanceStatusValueMap.NotReady,
+  InstanceStatusValueMap.Ready
+];
+
+export const GPUStackFailedStatuses = [
+  InstanceStatusValueMap.CreateFailed,
+  InstanceStatusValueMap.SSHPublicKeyCreateFailed,
+  InstanceStatusValueMap.PersistentVolumeTypeCreateFailed,
+  InstanceStatusValueMap.PersistentVolumeCreateFailed
+];
+
 export const InstanceStatusLabelMap: Record<string, string> = {
-  [InstanceStatusValueMap.Scheduling]: 'Scheduling',
-  [InstanceStatusValueMap.Pending]: 'Pending',
-  [InstanceStatusValueMap.Scheduled]: 'Scheduled',
-  [InstanceStatusValueMap.Initializing]: 'Initializing',
-  [InstanceStatusValueMap.InitializeFailed]: 'InitializeFailed',
-  [InstanceStatusValueMap.Initialized]: 'Initialized',
-  [InstanceStatusValueMap.Preparing]: 'Preparing',
-  [InstanceStatusValueMap.NotReady]: 'NotReady',
-  [InstanceStatusValueMap.Ready]: 'Ready',
-  [InstanceStatusValueMap.Starting]: 'Starting'
+  // === K8s Statuses ===
+  ...Object.fromEntries(K8SStatuses.map((status) => [status, status])),
+  // === GPUStack Statuses no logs and events===
+  [InstanceStatusValueMap.Starting]: 'Starting',
+  [InstanceStatusValueMap.Deleting]: 'Deleting',
+  [InstanceStatusValueMap.Stopping]: 'Stopping',
+  [InstanceStatusValueMap.Stopped]: 'Stopped',
+  ...Object.fromEntries(
+    GPUStackFailedStatuses.map((status) => [status, status])
+  )
 };
 
 export const status: Record<string, StatusType> = {
@@ -40,61 +67,82 @@ export const status: Record<string, StatusType> = {
   [InstanceStatusValueMap.Preparing]: StatusMaps.transitioning,
   [InstanceStatusValueMap.NotReady]: StatusMaps.error,
   [InstanceStatusValueMap.Ready]: StatusMaps.success,
-  [InstanceStatusValueMap.Starting]: StatusMaps.transitioning
+  [InstanceStatusValueMap.Starting]: StatusMaps.transitioning,
+  [InstanceStatusValueMap.Deleting]: StatusMaps.error,
+  [InstanceStatusValueMap.Stopping]: StatusMaps.error,
+  [InstanceStatusValueMap.Stopped]: StatusMaps.warning,
+  [InstanceStatusValueMap.CreateFailed]: StatusMaps.error,
+  [InstanceStatusValueMap.SSHPublicKeyCreateFailed]: StatusMaps.error,
+  [InstanceStatusValueMap.PersistentVolumeTypeCreateFailed]: StatusMaps.error,
+  [InstanceStatusValueMap.PersistentVolumeCreateFailed]: StatusMaps.error
 };
 
-// Lifecycle actions (logs/events/start/stop) require K8s proxy endpoints that
-// the new /v2/gpu-instances API does not yet expose; keep them visible but
-// disabled until backend support lands.
-export const rowActionList = [
+export interface InstanceRowAction {
+  label: string;
+  key: string;
+  locale?: boolean;
+  icon?: React.ReactNode;
+  props?: Record<string, any>;
+  show?: (record: ListItem) => boolean;
+  disabled?: (record: ListItem) => boolean;
+}
+
+export const rowActionList: InstanceRowAction[] = [
   {
     label: 'common.button.edit',
     key: 'edit',
     locale: true,
     icon: icons.EditOutlined
   },
-  // {
-  //   label: 'common.button.view',
-  //   key: 'view',
-  //   locale: true,
-  //   icon: icons.DetailInfo
-  // },
   {
     label: 'common.button.viewlog',
     key: 'viewlog',
     locale: true,
-    icon: React.createElement(IconFont, { type: 'icon-logs' })
+    icon: React.createElement(IconFont, { type: 'icon-logs' }),
+    show: (record: ListItem) => {
+      const phase = record.status?.phase;
+      return [InstanceStatusValueMap.Ready].includes(phase as string);
+    }
   },
   {
     label: 'common.button.viewevent',
     key: 'viewevent',
     locale: true,
-    icon: icons.ProfileOutlined
+    icon: icons.ProfileOutlined,
+    show: (record: ListItem) => {
+      const phase = record.status?.phase;
+      return K8SStatuses.includes(phase as string);
+    }
   },
-  // {
-  //   label: 'common.button.start',
-  //   key: 'start',
-  //   locale: true,
-  //   icon: icons.Play,
-  //   props: {
-  //     disabled: true
-  //   }
-  // },
-  // {
-  //   label: 'common.button.stop',
-  //   key: 'stop',
-  //   locale: true,
-  //   icon: icons.Stop,
-  //   props: {
-  //     disabled: true
-  //   }
-  // },
-  // {
-  //   label: 'common.button.recreate',
-  //   key: 'recreate',
-  //   locale: true,
-  //   icon: icons.RetweetOutlined
-  // },
+  {
+    label: 'common.button.start',
+    key: 'start',
+    locale: true,
+    icon: icons.Play,
+    props: {
+      disabled: false
+    },
+    show: (record: ListItem) => {
+      const phase = record.status?.phase;
+      return [
+        ...GPUStackFailedStatuses,
+        InstanceStatusValueMap.Stopped
+      ].includes(phase as string);
+    }
+  },
+  {
+    label: 'common.button.stop',
+    key: 'stop',
+    locale: true,
+    icon: icons.Stop,
+    props: {
+      disabled: false
+    },
+    show: (record: ListItem) => {
+      const phase = record.status?.phase;
+      return K8SStatuses.includes(phase as string);
+    }
+  },
   {
     label: 'common.button.delete',
     key: 'delete',
@@ -110,22 +158,19 @@ export const batchActionList = [
   {
     label: 'common.button.start',
     key: 'start',
-    icon: icons.Play,
-    props: {
-      disabled: true
-    }
+    locale: true,
+    icon: icons.Play
   },
   {
     label: 'common.button.stop',
     key: 'stop',
-    icon: icons.Stop,
-    props: {
-      disabled: true
-    }
+    locale: true,
+    icon: icons.Stop
   },
   {
     label: 'common.button.delete',
     key: 'delete',
+    locale: true,
     icon: icons.DeleteOutlined,
     props: {
       danger: true
@@ -198,7 +243,7 @@ const parseQuantity = (value?: string | null): number => {
 };
 
 // Returns the slider max for the accelerator count: the largest
-// tier.onceMaxRequest.accelerator across all acceleratorTiers (not from candidates).
+// tier.onceMaxRequest.accelerator across all tiers (not from candidates).
 export const getAcceleratorMax = (
   tiers?: { onceMaxRequest: { accelerator?: string } }[] | null
 ) => {
@@ -229,7 +274,7 @@ export const pickCandidateForAccelerator = <
       }[]
     | undefined
     | null,
-  count: number
+  { count, acceleratable }: { count: number; acceleratable?: boolean }
 ): C | null => {
   if (!tiers?.length) return null;
 
@@ -246,7 +291,10 @@ export const pickCandidateForAccelerator = <
 
   // count === 0 ? parseQuantity(tier.onceMaxRequest.accelerator) > count; this is CPU-only case.
   for (const tier of sorted) {
-    const fits = parseQuantity(tier.onceMaxRequest?.accelerator) >= count;
+    const acceleratorCount = parseQuantity(tier.onceMaxRequest?.accelerator);
+    const fits = acceleratable
+      ? acceleratorCount >= count
+      : acceleratorCount === 0;
     if (!fits) continue;
     const candidate = tier.candidates?.find(hasResources);
     if (candidate) return candidate;

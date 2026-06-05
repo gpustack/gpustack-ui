@@ -4,10 +4,18 @@ import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { ProviderValueMap } from '@/pages/cluster-management/config';
 import { useQueryClusterList } from '@/pages/cluster-management/services/use-query-cluster-list';
-import { DeleteModal, FilterBar, IconFont, NoResult } from '@gpustack/core-ui';
+import { handleBatchRequest } from '@/utils';
+import { PlusOutlined } from '@ant-design/icons';
+import {
+  DeleteModal,
+  DropdownButtons,
+  FilterBar,
+  IconFont,
+  NoResult
+} from '@gpustack/core-ui';
 import { useAccess, useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { ConfigProvider, message, Modal, Table } from 'antd';
+import { Button, ConfigProvider, message, Modal, Space, Table } from 'antd';
 import { useSetAtom } from 'jotai';
 import _ from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
@@ -16,11 +24,14 @@ import { queryGPUServiceStorage } from '../storage/apis';
 import {
   deleteGPUServiceInstance,
   GPU_SERVICE_INSTANCES_API,
-  queryGPUServiceInstances
+  queryGPUServiceInstances,
+  startGPUServiceInstance,
+  stopGPUServiceInstance
 } from './apis';
 import AddModal from './components/add-modal';
 import ViewEventsModal from './components/view-events-modal';
 import ViewLogsModal from './components/view-logs-modal';
+import { batchActionList } from './config';
 import { FormData, ListItem } from './config/types';
 import useCreateInstance from './hooks/use-create-instance';
 import useInstancesColumns from './hooks/use-instances-columns';
@@ -146,28 +157,111 @@ const GPUService: React.FC = () => {
     }
   };
 
+  const handleStart = useMemoizedFn((row: ListItem) => {
+    modalRef.current?.show({
+      content: 'gpuservice.instance',
+      title: 'common.title.start.confirm',
+      okText: 'common.button.start',
+      operation: 'common.start.single.confirm',
+      name: row.name,
+      async onOk() {
+        await startGPUServiceInstance(row.id);
+        rowSelection.removeSelectedKeys([row.id]);
+        message.success(intl.formatMessage({ id: 'common.message.success' }));
+        fetchData();
+      }
+    });
+  });
+
+  const handleStop = useMemoizedFn((row: ListItem) => {
+    modalRef.current?.show({
+      content: 'gpuservice.instance',
+      title: 'common.title.stop.confirm',
+      okText: 'common.button.stop',
+      operation: 'common.stop.single.confirm',
+      name: row.name,
+      async onOk() {
+        await stopGPUServiceInstance(row.id);
+        rowSelection.removeSelectedKeys([row.id]);
+        fetchData();
+      }
+    });
+  });
+
+  const handleStartBatch = useMemoizedFn(() => {
+    modalRef.current?.show({
+      content: 'gpuservice.instance',
+      title: 'common.title.start.confirm',
+      okText: 'common.button.start',
+      operation: 'common.start.confirm',
+      selection: true,
+      async onOk() {
+        const successIds: number[] = [];
+        const res = await handleBatchRequest(
+          rowSelection.selectedRowKeys,
+          async (id: number) => {
+            await startGPUServiceInstance(id);
+            successIds.push(id);
+          }
+        );
+        rowSelection.removeSelectedKeys(successIds);
+        fetchData();
+        return res;
+      }
+    });
+  });
+
+  const handleStopBatch = useMemoizedFn(() => {
+    modalRef.current?.show({
+      content: 'gpuservice.instance',
+      title: 'common.title.stop.confirm',
+      okText: 'common.button.stop',
+      operation: 'common.stop.confirm',
+      selection: true,
+      async onOk() {
+        const successIds: number[] = [];
+        const res = await handleBatchRequest(
+          rowSelection.selectedRowKeys,
+          async (id: number) => {
+            await stopGPUServiceInstance(id);
+            successIds.push(id);
+          }
+        );
+        rowSelection.removeSelectedKeys(successIds);
+        fetchData();
+        return res;
+      }
+    });
+  });
+
   const handleSelect = useMemoizedFn((val: string, row: ListItem) => {
     if (val === 'view') {
       openViewInstanceModal(row);
     } else if (val === 'edit') {
       openEditInstanceModal(row);
     } else if (val === 'delete') {
-      handleDelete({ ...row, name: row.name });
+      handleDelete({ ...row });
     } else if (val === 'recreate') {
       openRecreateInstanceModal(row);
     } else if (val === 'viewlog') {
       openViewLogsModal(row);
     } else if (val === 'viewevent') {
       openViewEventsModal(row);
+    } else if (val === 'start') {
+      handleStart(row);
+    } else if (val === 'stop') {
+      handleStop(row);
     }
-    // start / stop are disabled until backend endpoints exist
   });
 
   const handleBatchActionSelect = useMemoizedFn((val: string) => {
     if (val === 'delete') {
       handleDeleteBatch();
+    } else if (val === 'start') {
+      handleStartBatch();
+    } else if (val === 'stop') {
+      handleStopBatch();
     }
-    // start / stop are disabled until backend endpoints exist
   });
 
   const renderEmpty = (type?: string) => {
@@ -236,11 +330,31 @@ const GPUService: React.FC = () => {
           handleInputChange={handleNameChange}
           rowSelection={rowSelection}
           widths={{ input: 300 }}
-          handleClickPrimary={
-            hasK8sCluster ? openCreateInstanceModal : undefined
+          right={
+            <Space size={16}>
+              {hasK8sCluster && (
+                <Button
+                  icon={<PlusOutlined />}
+                  type="primary"
+                  onClick={openCreateInstanceModal}
+                >
+                  {intl.formatMessage({ id: 'gpuservice.instance.add' })}
+                </Button>
+              )}
+              <DropdownButtons
+                items={batchActionList}
+                onSelect={handleBatchActionSelect}
+                disabled={!rowSelection.selectedRowKeys.length}
+                size="large"
+                showText={true}
+                extra={
+                  rowSelection.selectedRowKeys.length > 0 && (
+                    <span>({rowSelection.selectedRowKeys.length})</span>
+                  )
+                }
+              />
+            </Space>
           }
-          buttonText={intl.formatMessage({ id: 'gpuservice.instance.add' })}
-          handleDeleteByBatch={handleDeleteBatch}
         />
         <ConfigProvider renderEmpty={renderEmpty}>
           <Table

@@ -108,6 +108,10 @@ export default {
     'Please select at most {count} GPU card(s)',
   'gpuservice.instance.gpuCount.min':
     'Please select at least {count} GPU card(s)',
+  'gpuservice.instance.cpuCount.max':
+    'Please select at most {count} CPU core(s)',
+  'gpuservice.instance.cpuCount.min':
+    'Please select at least {count} CPU core(s)',
   'gpuservice.instance.gpuCount.noAvailable':
     'No available GPU resources, please choose another instance type.',
   'gpuservice.instance.gpuCount.zero':
@@ -117,6 +121,10 @@ export default {
   'gpuservice.instance.memory': 'VRAM',
   'gpuservice.instance.ram': 'RAM',
   'gpuservice.instance.disk': 'Disk',
+  'gpuservice.table.count': 'Count',
+  'gpuservice.instance.disk.system': 'System Disk',
+  'gpuservice.instance.disk.ephemeral': 'Ephemeral Storage',
+  'gpuservice.instance.disk.persistent': 'Persistent Storage',
   'gpuservice.instance.search.type.placeholder': 'Search by name',
   'gpuservice.instance.search.template.placeholder':
     'Search by template name, image or mount path',

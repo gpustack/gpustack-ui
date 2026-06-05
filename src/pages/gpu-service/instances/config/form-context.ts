@@ -4,6 +4,7 @@ import { createContext } from 'react';
 export interface FormContextValue {
   action: PageActionType;
   currentData: any;
+  isGPUType?: boolean;
 }
 
 export const FormContext = createContext<FormContextValue>({

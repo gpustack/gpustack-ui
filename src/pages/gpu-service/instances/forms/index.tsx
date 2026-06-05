@@ -122,7 +122,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
     const formAction =
       realAction === PageAction.CREATE ? PageAction.CREATE : action;
     const sshEnabled = Form.useWatch('enable_ssh', form);
-    const description = Form.useWatch(['spec', 'description'], form);
+    const description = Form.useWatch(['description'], form);
     // `organization_id` is owned by the create-scope picker slot; it only
     // exists/changes when a platform admin retargets the form. Watch it
     // so the parent can re-scope offerings (see onScopeChange).
@@ -151,6 +151,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
 
     const isGPUType = useMemo(() => {
       const spec = parseJsonSafe(description || '{}', {} as any)?.spec;
+      console.log('derived spec from description', spec);
       return spec?.acceleratable;
     }, [description]);
 

@@ -381,8 +381,7 @@ export default (props: any) => {
           menuFooterRender={() => (
             <Button
               style={{
-                border: 'none',
-                cursor: collapsed ? 'e-resize' : 'w-resize'
+                border: 'none'
               }}
               size="small"
               type={'text'}

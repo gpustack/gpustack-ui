@@ -351,6 +351,20 @@ const baseRoutes = [
         redirect: '/access-control/users'
       },
       {
+        name: 'organizations',
+        path: '/access-control/organizations',
+        key: 'organizations',
+        icon: 'icon-org-outlined',
+        selectedIcon: 'icon-org-filled',
+        defaultIcon: 'icon-org-outlined',
+        // OSS exposes the menu to platform admins as a teaser for the
+        // enterprise multi-tenancy module. The page itself just renders
+        // an upsell notice — the real CRUD UI lives in the enterprise
+        // plugin and shadows this route via `routes.extensions.ts`.
+        access: 'canSeeAdmin',
+        component: './organizations'
+      },
+      {
         name: 'users',
         path: '/access-control/users',
         key: 'users',

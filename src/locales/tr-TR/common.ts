@@ -46,6 +46,7 @@ export default {
   'common.button.enabled': 'Etkin',
   'common.button.disabled': 'Devre dışı',
   'common.button.upgrade': 'Yükselt',
+  'common.enterprise.feature': 'Available in GPUStack Enterprise',
   'common.input.holder': 'Lütfen girin',
   'common.validate.value': '{name} değeri gereklidir',
   'common.button.edit': 'Düzenle',

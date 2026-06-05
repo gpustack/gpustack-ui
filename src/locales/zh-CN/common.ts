@@ -44,6 +44,7 @@ export default {
   'common.button.rollback': '回滚',
   'common.button.new': '新建{ text }',
   'common.button.upgrade': '升级',
+  'common.enterprise.feature': 'GPUStack 企业版可用',
   'common.input.holder': '请输入',
   'common.holder.search': '搜索',
   'common.button.edit': '编辑',

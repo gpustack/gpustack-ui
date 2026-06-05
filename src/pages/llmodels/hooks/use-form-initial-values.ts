@@ -268,7 +268,11 @@ export default function useFormInitialValues() {
   const getClusterList = async (): Promise<Global.BaseOption<number>[]> => {
     try {
       const response = await queryClusterList({
-        page: -1
+        page: -1,
+        // Exclude clusters that opt in to GPU-instance handling
+        // (k8s_options.gpu_instance_options set) — those are for the
+        // GPU-service flow, not model deployment.
+        gpu_instance_enabled: false
       });
       const list = response.items.map((item) => ({
         label: item.name,

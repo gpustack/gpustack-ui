@@ -109,6 +109,8 @@ export default {
   'gpuservice.instance.gpuCount.required': 'Введите количество GPU',
   'gpuservice.instance.gpuCount.max': 'Выберите максимум {count} GPU-карт',
   'gpuservice.instance.gpuCount.min': 'Выберите минимум {count} GPU-карт',
+  'gpuservice.instance.cpuCount.max': 'Выберите максимум {count} ядер CPU',
+  'gpuservice.instance.cpuCount.min': 'Выберите минимум {count} ядер CPU',
   'gpuservice.instance.gpuCount.noAvailable':
     'Нет доступных ресурсов GPU, выберите другой тип экземпляра.',
   'gpuservice.instance.gpuCount.zero': 'Только CPU, для подготовки окружения.',
@@ -117,6 +119,10 @@ export default {
   'gpuservice.instance.memory': 'VRAM',
   'gpuservice.instance.ram': 'RAM',
   'gpuservice.instance.disk': 'Диск',
+  'gpuservice.table.count': 'Количество',
+  'gpuservice.instance.disk.system': 'Системный диск',
+  'gpuservice.instance.disk.ephemeral': 'Временное хранилище',
+  'gpuservice.instance.disk.persistent': 'Постоянное хранилище',
   'gpuservice.instance.search.type.placeholder': 'Поиск по имени',
   'gpuservice.instance.search.template.placeholder':
     'Поиск по имени шаблона, образу или пути монтирования',

@@ -288,6 +288,7 @@ export default {
   'common.image.limit.height': 'Image height must be {height}.',
   'common.remaining': 'Remaining {count}',
   'common.max': 'Max {count}',
+  'common.max.count': '{label} Count',
   'common.validate.group': 'Please complete the {group} configuration',
   'common.preferences': 'Preferences'
 };

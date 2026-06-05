@@ -158,6 +158,7 @@ export interface InstanceTypeSpec {
   family?: string | null;
   computeCapability?: string | null;
   sliced?: string | null;
+  maxComputeUnitCount?: number;
   unitResources?: {
     cpu: QuanityCPU;
     ram: QuanityMemory;
@@ -178,14 +179,13 @@ export interface InstanceTypeSpec {
 
 export interface InstanceTypeStatus {
   onceMaxRequest: InstanceTypeOnceMaxRequestResource;
-  acceleratorTiers?: InstanceTypeTier[] | null;
+  tiers?: InstanceTypeTier[] | null;
 }
 
 export interface InstanceTypeItem {
   name: string;
   spec: InstanceTypeSpec;
   disabled?: boolean;
-  maxAccelerator?: number;
   status: InstanceTypeStatus;
 }
 

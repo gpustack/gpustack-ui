@@ -105,6 +105,8 @@ export default {
   'gpuservice.instance.gpuCount.required': 'Lütfen GPU sayısını girin',
   'gpuservice.instance.gpuCount.max': 'En fazla {count} GPU kartı seçin',
   'gpuservice.instance.gpuCount.min': 'En az {count} GPU kartı seçin',
+  'gpuservice.instance.cpuCount.max': 'En fazla {count} CPU çekirdeği seçin',
+  'gpuservice.instance.cpuCount.min': 'En az {count} CPU çekirdeği seçin',
   'gpuservice.instance.gpuCount.noAvailable':
     'Kullanılabilir GPU kaynağı yok, lütfen başka bir örnek türü seçin.',
   'gpuservice.instance.gpuCount.zero': 'Yalnızca CPU, ortam hazırlığı için.',
@@ -113,6 +115,10 @@ export default {
   'gpuservice.instance.memory': 'VRAM',
   'gpuservice.instance.ram': 'RAM',
   'gpuservice.instance.disk': 'Disk',
+  'gpuservice.table.count': 'Sayı',
+  'gpuservice.instance.disk.system': 'Sistem Diski',
+  'gpuservice.instance.disk.ephemeral': 'Geçici Depolama',
+  'gpuservice.instance.disk.persistent': 'Kalıcı Depolama',
   'gpuservice.instance.search.type.placeholder': 'Ada göre ara',
   'gpuservice.instance.search.template.placeholder':
     'Şablon adına, imaja veya bağlama yoluna göre ara',

@@ -100,6 +100,8 @@ export default {
   'gpuservice.instance.gpuCount.required': '请输入 GPU 数量',
   'gpuservice.instance.gpuCount.max': '最多选择 {count} 张卡',
   'gpuservice.instance.gpuCount.min': '至少选择 {count} 张卡',
+  'gpuservice.instance.cpuCount.max': '最多选择 {count} 核',
+  'gpuservice.instance.cpuCount.min': '至少选择 {count} 核',
   'gpuservice.instance.gpuCount.noAvailable':
     '没有可用的 GPU 资源，请选择其他实例类型。',
   'gpuservice.instance.gpuCount.zero': '仅使用 CPU，用于环境准备。',
@@ -108,6 +110,10 @@ export default {
   'gpuservice.instance.memory': '显存',
   'gpuservice.instance.ram': '内存',
   'gpuservice.instance.disk': '磁盘',
+  'gpuservice.table.count': '数量',
+  'gpuservice.instance.disk.system': '系统盘',
+  'gpuservice.instance.disk.ephemeral': '临时存储',
+  'gpuservice.instance.disk.persistent': '持久存储',
   'gpuservice.instance.search.type.placeholder': '搜索名称',
   'gpuservice.instance.search.template.placeholder':
     '搜索模板名称、镜像或挂载路径',

@@ -1,6 +1,6 @@
 import { useQueryData } from '@gpustack/core-ui';
 import React from 'react';
-import { ceilMilliToCore, parseQuantityToGi } from '../../utils';
+import { ceilMilliToCore, parseQuantity, parseQuantityToGi } from '../../utils';
 import { queryGPUServiceInstanceTypes } from '../apis';
 import { getAcceleratorMax } from '../config';
 import { InstanceTypeItem } from '../config/types';
@@ -28,12 +28,13 @@ export default function useQueryInstanceTypes() {
   const isAvailable = (item: InstanceTypeItem) => {
     if (!item.spec?.acceleratable)
       return {
-        maxAccelerator: 0,
+        maxComputeUnitCount:
+          parseQuantity(item.status?.onceMaxRequest?.cpu || '0')?.num || 0, // CPU resource max request
         available: true
       };
-    const max = getAcceleratorMax(item.status?.acceleratorTiers);
+    const max = getAcceleratorMax(item.status?.tiers);
     return {
-      maxAccelerator: max || 0,
+      maxComputeUnitCount: max || 0,
       available: (max || 0) > 0
     };
   };
@@ -54,7 +55,8 @@ export default function useQueryInstanceTypes() {
           unitResourcesParsed: {
             cpu: ceilMilliToCore(item.spec?.unitResources?.cpu ?? null),
             ram: parseQuantityToGi(item.spec?.unitResources?.ram ?? null)
-          }
+          },
+          maxComputeUnitCount: remainingData.maxComputeUnitCount
         },
         status: {
           ...item.status,
@@ -71,7 +73,7 @@ export default function useQueryInstanceTypes() {
               : ''
           }
         },
-        maxAccelerator: remainingData.maxAccelerator,
+
         disabled: !remainingData.available
       };
     });

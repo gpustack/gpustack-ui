@@ -38,5 +38,69 @@ export default {
   'usage.chart.cached': '缓存',
   'usage.chart.uncached': '非缓存',
   'usage.chart.inputTokensCached': '输入 Token 数（缓存/非缓存）',
-  'usage.table.inputTokensCached': '输入 Token 缓存数'
+  'usage.table.inputTokensCached': '输入 Token 缓存数',
+
+  // --- Resource usage: shared metrics & units ---
+  'usage.metric.tokens': 'Token 数',
+  'usage.metric.input': '输入',
+  'usage.metric.output': '输出',
+  'usage.metric.gpuHours': 'GPU 小时',
+  'usage.metric.instanceHours': '实例小时',
+  'usage.metric.gbDays': 'GB·天',
+  'usage.metric.gbHours': 'GB·小时',
+  'usage.metric.activeUsers': '活跃用户',
+  'usage.metric.activeInstances': '活跃实例',
+  'usage.metric.activeStorage': '活跃存储',
+  'usage.metric.activeVolumes': '活跃存储卷',
+  'usage.metric.storageTypes': '存储类型',
+  'usage.metric.gpuHours.tip':
+    '实例运行时长按 GPU 数量加权：一个使用 N 个 GPU 的实例运行 H 小时记为 N × H GPU 小时。当每个实例仅使用单个 GPU 时，等于实例小时。',
+  'usage.metric.instanceHours.tip':
+    '所有实例运行时长的总和，与每个实例使用的 GPU 数量无关。一个实例运行 2 小时 = 2 实例小时。',
+  'usage.metric.gbDays.tip':
+    '存储容量随时间的积分，单位为 GB × 天：10 GB 保留 5 天 = 50 GB·天。（= GB·小时 ÷ 24）',
+  'usage.metric.gbHours.tip':
+    '存储容量随时间的积分，单位为 GB × 小时：10 GB 保留 5 小时 = 50 GB·小时。',
+
+  // --- Resource usage: common table / labels ---
+  'usage.common.noData': '暂无数据',
+  'usage.common.unknown': '未知',
+  'usage.table.date': '日期',
+  'usage.table.name': '名称',
+  'usage.table.user': '用户',
+  'usage.table.users': '用户',
+  'usage.table.type': '类型',
+  'usage.table.instance': '实例',
+  'usage.table.instanceType': '实例类型',
+  'usage.table.instanceTypes': '实例类型',
+  'usage.table.instances': '实例',
+  'usage.table.capacity': '容量',
+  'usage.export.tableNamed': '导出表格数据 — {name}',
+
+  // --- Summary tab ---
+  'usage.summary.compute': '算力',
+  'usage.summary.tokensOverTime': 'Token 数趋势',
+  'usage.summary.gpuHoursOverTime': 'GPU 小时趋势',
+  'usage.summary.gbDaysOverTime': 'GB·天趋势',
+
+  // --- GPU Instances / Storage filters ---
+  'usage.filter.instance': '按实例查询',
+  'usage.filter.storage': '按存储查询',
+
+  // --- Resource events ---
+  'usage.events.resourceType': '资源类型',
+  'usage.events.eventType': '事件类型',
+  'usage.events.col.time': '时间',
+  'usage.events.col.resource': '资源',
+  'usage.events.col.event': '事件',
+  'usage.events.col.message': '消息',
+  'usage.events.resource.gpuInstance': 'GPU 实例',
+  'usage.events.resource.cpuInstance': 'CPU 实例',
+  'usage.events.type.created': '已创建',
+  'usage.events.type.deleted': '已删除',
+  'usage.events.type.started': '已启动',
+  'usage.events.type.stopped': '已停止',
+  'usage.events.type.updated': '已更新',
+  'usage.events.type.attached': '已挂载',
+  'usage.events.type.detached': '已卸载'
 };

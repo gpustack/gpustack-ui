@@ -38,5 +38,69 @@ export default {
   'usage.chart.cached': 'Cached',
   'usage.chart.uncached': 'Uncached',
   'usage.chart.inputTokensCached': 'Input Tokens (Cached/Uncached)',
-  'usage.table.inputTokensCached': 'Input Tokens Cached'
+  'usage.table.inputTokensCached': 'Input Tokens Cached',
+
+  // --- Resource usage: shared metrics & units ---
+  'usage.metric.tokens': 'Tokens',
+  'usage.metric.input': 'Input',
+  'usage.metric.output': 'Output',
+  'usage.metric.gpuHours': 'GPU Hours',
+  'usage.metric.instanceHours': 'Instance Hours',
+  'usage.metric.gbDays': 'GB-Days',
+  'usage.metric.gbHours': 'GB-Hours',
+  'usage.metric.activeUsers': 'Active Users',
+  'usage.metric.activeInstances': 'Active Instances',
+  'usage.metric.activeStorage': 'Active Storage',
+  'usage.metric.activeVolumes': 'Active Volumes',
+  'usage.metric.storageTypes': 'Storage Types',
+  'usage.metric.gpuHours.tip':
+    'Instance running time weighted by GPU count: an instance with N GPUs running for H hours counts as N × H GPU-hours. Equal to Instance Hours when every instance uses a single GPU.',
+  'usage.metric.instanceHours.tip':
+    'Total running time summed across all instances, regardless of how many GPUs each uses. One instance running for 2 hours = 2 instance-hours.',
+  'usage.metric.gbDays.tip':
+    'Storage capacity integrated over time, in GB × days: 10 GB kept for 5 days = 50 GB-days. (= GB-Hours ÷ 24)',
+  'usage.metric.gbHours.tip':
+    'Storage capacity integrated over time, in GB × hours: 10 GB kept for 5 hours = 50 GB-hours.',
+
+  // --- Resource usage: common table / labels ---
+  'usage.common.noData': 'No data',
+  'usage.common.unknown': 'unknown',
+  'usage.table.date': 'Date',
+  'usage.table.name': 'Name',
+  'usage.table.user': 'User',
+  'usage.table.users': 'Users',
+  'usage.table.type': 'Type',
+  'usage.table.instance': 'Instance',
+  'usage.table.instanceType': 'Instance Type',
+  'usage.table.instanceTypes': 'Instance Types',
+  'usage.table.instances': 'Instances',
+  'usage.table.capacity': 'Capacity',
+  'usage.export.tableNamed': 'Export Table Data — {name}',
+
+  // --- Summary tab ---
+  'usage.summary.compute': 'Compute',
+  'usage.summary.tokensOverTime': 'Tokens over time',
+  'usage.summary.gpuHoursOverTime': 'GPU Hours over time',
+  'usage.summary.gbDaysOverTime': 'GB-Days over time',
+
+  // --- GPU Instances / Storage filters ---
+  'usage.filter.instance': 'Filter by instance',
+  'usage.filter.storage': 'Filter by storage',
+
+  // --- Resource events ---
+  'usage.events.resourceType': 'Resource type',
+  'usage.events.eventType': 'Event type',
+  'usage.events.col.time': 'Time',
+  'usage.events.col.resource': 'Resource',
+  'usage.events.col.event': 'Event',
+  'usage.events.col.message': 'Message',
+  'usage.events.resource.gpuInstance': 'GPU Instance',
+  'usage.events.resource.cpuInstance': 'CPU Instance',
+  'usage.events.type.created': 'Created',
+  'usage.events.type.deleted': 'Deleted',
+  'usage.events.type.started': 'Started',
+  'usage.events.type.stopped': 'Stopped',
+  'usage.events.type.updated': 'Updated',
+  'usage.events.type.attached': 'Attached',
+  'usage.events.type.detached': 'Detached'
 };

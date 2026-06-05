@@ -38,5 +38,69 @@ export default {
   'usage.chart.cached': 'Cached',
   'usage.chart.uncached': 'Uncached',
   'usage.chart.inputTokensCached': 'Input Tokens (Cached/Uncached)',
-  'usage.table.inputTokensCached': 'Input Tokens Cached'
+  'usage.table.inputTokensCached': 'Input Tokens Cached',
+
+  // --- Resource usage: shared metrics & units ---
+  'usage.metric.tokens': 'トークン数',
+  'usage.metric.input': '入力',
+  'usage.metric.output': '出力',
+  'usage.metric.gpuHours': 'GPU 時間',
+  'usage.metric.instanceHours': 'インスタンス時間',
+  'usage.metric.gbDays': 'GB·日',
+  'usage.metric.gbHours': 'GB·時間',
+  'usage.metric.activeUsers': 'アクティブユーザー',
+  'usage.metric.activeInstances': 'アクティブインスタンス',
+  'usage.metric.activeStorage': 'アクティブストレージ',
+  'usage.metric.activeVolumes': 'アクティブボリューム',
+  'usage.metric.storageTypes': 'ストレージタイプ',
+  'usage.metric.gpuHours.tip':
+    'インスタンスの稼働時間を GPU 数で重み付けした値：N 個の GPU を使用するインスタンスが H 時間稼働すると N × H GPU 時間としてカウントされます。すべてのインスタンスが単一の GPU を使用する場合はインスタンス時間と等しくなります。',
+  'usage.metric.instanceHours.tip':
+    'GPU の数に関係なく、すべてのインスタンスの稼働時間を合計した値。1 つのインスタンスが 2 時間稼働 = 2 インスタンス時間。',
+  'usage.metric.gbDays.tip':
+    'ストレージ容量を時間で積分した値（GB × 日）：10 GB を 5 日間保持 = 50 GB·日。（= GB·時間 ÷ 24）',
+  'usage.metric.gbHours.tip':
+    'ストレージ容量を時間で積分した値（GB × 時間）：10 GB を 5 時間保持 = 50 GB·時間。',
+
+  // --- Resource usage: common table / labels ---
+  'usage.common.noData': 'データがありません',
+  'usage.common.unknown': '不明',
+  'usage.table.date': '日付',
+  'usage.table.name': '名前',
+  'usage.table.user': 'ユーザー',
+  'usage.table.users': 'ユーザー',
+  'usage.table.type': 'タイプ',
+  'usage.table.instance': 'インスタンス',
+  'usage.table.instanceType': 'インスタンスタイプ',
+  'usage.table.instanceTypes': 'インスタンスタイプ',
+  'usage.table.instances': 'インスタンス',
+  'usage.table.capacity': '容量',
+  'usage.export.tableNamed': 'テーブルデータをエクスポート — {name}',
+
+  // --- Summary tab ---
+  'usage.summary.compute': 'コンピュート',
+  'usage.summary.tokensOverTime': 'トークン数の推移',
+  'usage.summary.gpuHoursOverTime': 'GPU 時間の推移',
+  'usage.summary.gbDaysOverTime': 'GB·日の推移',
+
+  // --- GPU Instances / Storage filters ---
+  'usage.filter.instance': 'インスタンスで絞り込み',
+  'usage.filter.storage': 'ストレージで絞り込み',
+
+  // --- Resource events ---
+  'usage.events.resourceType': 'リソースタイプ',
+  'usage.events.eventType': 'イベントタイプ',
+  'usage.events.col.time': '時刻',
+  'usage.events.col.resource': 'リソース',
+  'usage.events.col.event': 'イベント',
+  'usage.events.col.message': 'メッセージ',
+  'usage.events.resource.gpuInstance': 'GPU インスタンス',
+  'usage.events.resource.cpuInstance': 'CPU インスタンス',
+  'usage.events.type.created': '作成済み',
+  'usage.events.type.deleted': '削除済み',
+  'usage.events.type.started': '開始',
+  'usage.events.type.stopped': '停止',
+  'usage.events.type.updated': '更新済み',
+  'usage.events.type.attached': 'アタッチ済み',
+  'usage.events.type.detached': 'デタッチ済み'
 };

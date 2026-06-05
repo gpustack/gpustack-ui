@@ -13,7 +13,7 @@
  * The previous implementation lived in this file; it now lives in
  * ``components/token-tab.tsx`` so we can host it as a tab pane.
  */
-import { useAccess } from '@umijs/max';
+import { useAccess, useIntl } from '@umijs/max';
 import { Tabs, TabsProps } from 'antd';
 import React, { useMemo, useState } from 'react';
 import GpuInstancesTab from './components/gpu-instances-tab';
@@ -24,6 +24,7 @@ import TokenTab from './components/token-tab';
 
 const Usage: React.FC = () => {
   const access = useAccess();
+  const intl = useIntl();
   // Land on the cross-resource Summary by default.
   const [activeKey, setActiveKey] = useState<string>('summary');
 
@@ -31,31 +32,31 @@ const Usage: React.FC = () => {
     () => [
       {
         key: 'summary',
-        label: 'Summary',
+        label: intl.formatMessage({ id: 'usage.tabs.summary' }),
         children: <SummaryTab />
       },
       {
         key: 'tokens',
-        label: 'Tokens',
+        label: intl.formatMessage({ id: 'usage.tabs.tokens' }),
         children: <TokenTab />
       },
       {
         key: 'gpu-instances',
-        label: 'GPU Instances',
+        label: intl.formatMessage({ id: 'usage.tabs.gpuInstances' }),
         children: <GpuInstancesTab />
       },
       {
         key: 'storage',
-        label: 'Storage',
+        label: intl.formatMessage({ id: 'usage.tabs.storage' }),
         children: <StorageTab />
       },
       {
         key: 'resource-events',
-        label: 'Resource Events',
+        label: intl.formatMessage({ id: 'usage.tabs.resourceEvents' }),
         children: <ResourceEvents />
       }
     ],
-    []
+    [intl]
   );
 
   // Users who can't see GPU Service (MaaS-only: no cluster, no resource usage)

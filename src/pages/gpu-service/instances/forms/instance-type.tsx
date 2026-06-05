@@ -273,7 +273,10 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
           </div>
           {isGPU && (
             <div style={{ flex: 1 }}>
-              <Form.Item<FormData> name={['spec', 'resources', 'cpu']}>
+              <Form.Item<FormData>
+                name={['spec', 'resources', 'cpu']}
+                key="cpu_input"
+              >
                 <InputNumber
                   label={'CPU'}
                   max={onceMaxRequest?.cpu ?? undefined}

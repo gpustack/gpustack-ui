@@ -51,7 +51,14 @@ const InstanceTypeCell: React.FC<{
               <IconFont type={sec.icon} />
               <span>{sec.name}</span>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 2,
+                width: '100%'
+              }}
+            >
               {rows.map(([label, value], i) => (
                 <div
                   key={i}
@@ -60,7 +67,15 @@ const InstanceTypeCell: React.FC<{
                   <span style={{ opacity: 0.65, minWidth: 96 }}>
                     {label || ''}
                   </span>
-                  <span>{value}</span>
+                  <span
+                    style={{
+                      display: 'flex',
+                      flex: 1,
+                      justifyContent: 'flex-end'
+                    }}
+                  >
+                    {value}
+                  </span>
                 </div>
               ))}
             </div>

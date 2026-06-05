@@ -193,16 +193,24 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     handleCheckFormData();
   };
 
-  const initClusterId = (): number => {
-    const defaultCluster = clusterList?.find((item) => item.is_default);
+  const initClusterId = (): number | undefined => {
+    // When a platform admin has targeted an org via the create-scope picker,
+    // seed the cluster from that org's own clusters so the initial selection
+    // matches the (org-filtered) dropdown the form renders.
+    const scopeOrgId = form.current?.getFieldValue?.('organization_id');
+    const scopedList =
+      scopeOrgId == null
+        ? clusterList
+        : clusterList?.filter((item) => item.owner_principal_id === scopeOrgId);
+
+    const defaultCluster = scopedList?.find((item) => item.is_default);
     if (defaultCluster) {
       return defaultCluster.value;
     }
-    const cluster_id =
-      clusterList?.find((item) => item.state === ClusterStatusValueMap.Ready)
-        ?.value || clusterList?.[0]?.value;
-
-    return cluster_id as number;
+    return (
+      scopedList?.find((item) => item.state === ClusterStatusValueMap.Ready)
+        ?.value || scopedList?.[0]?.value
+    );
   };
 
   const fetchSpecData = async (clusterId: number) => {
@@ -336,6 +344,12 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     if (open) {
       setTimeout(() => {
         const clusterId = initClusterId();
+        // No cluster available for the current scope (zero clusters, or none
+        // owned by the picked org). Leave the form's cluster field empty and
+        // skip downstream fetches — the user resolves it by picking an org
+        // that owns clusters, which triggers the scope-change re-pick in the
+        // basic form.
+        if (!clusterId) return;
         fetchSpecData(clusterId);
         form.current?.getGPUOptionList?.({
           clusterId: clusterId

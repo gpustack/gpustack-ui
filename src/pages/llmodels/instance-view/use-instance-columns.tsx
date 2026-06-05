@@ -15,7 +15,10 @@ import InstanceStatusCell from '../components/instance-cells/instance-status-cel
 import NameCell, {
   NameCellProps
 } from '../components/instance-cells/name-cell';
-import { ModelInstanceListItem as ListItem } from '../config/types';
+import {
+  ModelInstanceListItem as ListItem,
+  ListItem as ModelListItem
+} from '../config/types';
 import { calcTotalVram } from '../utils';
 const WorkerInfoContent: React.FC<NameCellProps> = ({ record, modelData }) => {
   let workerIp = '-';
@@ -48,6 +51,7 @@ const WorkerInfoContent: React.FC<NameCellProps> = ({ record, modelData }) => {
 
 const useInstancesColumns = (options: {
   workerList: workerListItem[];
+  modelList: ModelListItem[];
   clusterList: Global.BaseOption<
     number,
     {
@@ -60,7 +64,8 @@ const useInstancesColumns = (options: {
   onCellClick?: (record: ListItem, dataIndex: string) => void;
 }): ColumnsType<ListItem> => {
   const intl = useIntl();
-  const { workerList, clusterList, handleSelect, onCellClick } = options;
+  const { workerList, clusterList, modelList, handleSelect, onCellClick } =
+    options;
 
   const renderWorkerCell = (text: number, record: ListItem) => {
     if (text) {
@@ -144,7 +149,7 @@ const useInstancesColumns = (options: {
         width: 160,
         render: (text: string, record: ListItem) => (
           <span style={{ gap: 4 }} className="flex-center">
-            <InstanceStatusCell record={record} onSelect={() => {}} />
+            <InstanceStatusCell record={record} onSelect={handleSelect} />
             <DownloadingStatusCell
               backend={record?.backend}
               distributed_servers={record.distributed_servers}
@@ -173,15 +178,17 @@ const useInstancesColumns = (options: {
         render: (value: string, record: ListItem) => (
           <ActionsCell
             record={record}
-            modelData={{
-              categories: record.categories || []
-            }}
+            modelData={
+              modelList.find(
+                (model) => model.id === record.model_id
+              ) as ModelListItem
+            }
             onSelect={handleSelect}
           ></ActionsCell>
         )
       }
     ];
-  }, [handleSelect, onCellClick, workerList, clusterList]);
+  }, [handleSelect, onCellClick, workerList, clusterList, modelList]);
 };
 
 export default useInstancesColumns;

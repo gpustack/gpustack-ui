@@ -75,6 +75,7 @@ const AddWorker: React.FC<AddWorkerProps> = (props) => {
   });
 
   const handleOnClusterChange = async (value: number, row?: any) => {
+    console.log('handleOnClusterChange value, row=========', value, row);
     try {
       createModelsChunkRequest({ cluster_id: value });
       axiosTokenRef.current?.cancel?.();
@@ -120,6 +121,8 @@ const AddWorker: React.FC<AddWorkerProps> = (props) => {
       { count: addedCount }
     );
   };
+
+  console.log('addedCount 1========', addedCount);
 
   return (
     <GSDrawer

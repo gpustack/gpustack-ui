@@ -2,7 +2,7 @@ export default {
   'dashboard.workers': '节点',
   'dashboard.deployments': '部署',
   'dashboard.clusters': '集群',
-  'dashboard.totalgpus': 'GPUs',
+  'dashboard.totalgpus': 'GPU',
   'dashboard.systemload': '系统负载',
   'dashboard.memory': '内存',
   'dashboard.vram': '显存',

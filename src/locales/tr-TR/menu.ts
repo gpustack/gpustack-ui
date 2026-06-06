@@ -34,7 +34,7 @@ export default {
   'menu.login': 'Giriş',
   'menu.usage': 'Kullanım',
   'menu.usage.usage': 'Kullanım',
-  'menu.billingAndUsage': 'Faturalandırma ve Kullanım',
+  'menu.billingAndUsage': 'Kullanım ve Faturalandırma',
   'menu.billingAndUsage.usage': 'Kullanım',
   'menu.404': '404',
   'menu.resources.clusters': 'Kümeler',

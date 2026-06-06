@@ -39,7 +39,7 @@ export default {
   'clusters.workerpool.batchSize.desc':
     'Количество воркеров, создаваемых одновременно в пуле воркеров',
   'clusters.create.addworker.tips':
-    'Пожалуйста, убедитесь, что выполнены <a href={link} target="_blank">предварительные условия</a> для {label} перед выполнением следующей команды.',
+    'Пожалуйста, убедитесь, что выполнены <a href={link} target="_blank">предварительные условия</a> перед выполнением следующей команды.',
   'clusters.create.addCommand.tips':
     'На воркере, который необходимо добавить, выполните следующую команду, чтобы присоединить его к кластеру.',
   'clusters.create.addCommand.k8s.tips':

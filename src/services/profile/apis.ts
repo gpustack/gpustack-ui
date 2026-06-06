@@ -3,6 +3,7 @@ import { request } from '@umijs/max';
 export async function queryCurrentUserState(opts?: Record<string, any>) {
   return request<Global.UserInfo>(`/users/me`, {
     method: 'GET',
+    skipErrorHandler: true,
     ...opts
   });
 }

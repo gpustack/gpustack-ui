@@ -1,6 +1,6 @@
 import { useQueryData } from '@gpustack/core-ui';
 import React from 'react';
-import { ceilMilliToCore, parseQuantity, parseQuantityToGi } from '../../utils';
+import { ceilMilliToCore, parseQuantityToGi } from '../../utils';
 import { queryGPUServiceInstanceTypes } from '../apis';
 import { getAcceleratorMax } from '../config';
 import { InstanceTypeItem } from '../config/types';
@@ -26,12 +26,15 @@ export default function useQueryInstanceTypes() {
   const [dataList, setDataList] = React.useState<InstanceType[]>([]);
 
   const isAvailable = (item: InstanceTypeItem) => {
-    if (!item.spec?.acceleratable)
+    if (!item.spec?.acceleratable) {
+      const max =
+        ceilMilliToCore(item.status?.onceMaxRequest?.cpu || '0')?.cores || 0;
       return {
-        maxComputeUnitCount:
-          parseQuantity(item.status?.onceMaxRequest?.cpu || '0')?.num || 0, // CPU resource max request
-        available: true
+        maxComputeUnitCount: max, // CPU resource max request
+        available: max > 0
       };
+    }
+
     const max = getAcceleratorMax(item.status?.tiers);
     return {
       maxComputeUnitCount: max || 0,

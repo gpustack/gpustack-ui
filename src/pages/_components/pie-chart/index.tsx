@@ -45,12 +45,20 @@ const PieChart: React.FC<PieChartProps> = ({
   const options = useMemo(
     () => ({
       color: colors,
+      grid: {
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+        containLabel: true
+      },
       tooltip: {
         trigger: 'item',
+        position: 'top',
         // Keep the tooltip inside the chart box — the donut sits on the left, so
         // a left-slice tooltip could otherwise spill out and get hidden behind
         // the side menu.
-        confine: true,
+        confine: false,
         backgroundColor: token.colorBgElevated,
         borderColor: 'transparent',
         formatter: (params: any) => {
@@ -97,7 +105,12 @@ const PieChart: React.FC<PieChartProps> = ({
           // No on-arc label — the percentage lives in the tooltip instead, so
           // hovering shows value + percent in one place.
           label: { show: false },
-          emphasis: { label: { show: false }, scale: false },
+          emphasis: {
+            label: {
+              show: false
+            },
+            scale: true
+          },
           labelLine: { show: false },
           data
         }

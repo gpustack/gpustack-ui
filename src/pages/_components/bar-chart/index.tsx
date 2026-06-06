@@ -126,7 +126,7 @@ const BarChart: React.FC<BarChartProps> = (props) => {
         left: 0,
         right: 0,
         top: title ? 30 : 10,
-        bottom: 28,
+        bottom: 0,
         containLabel: true
       },
       tooltip: {

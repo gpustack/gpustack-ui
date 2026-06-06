@@ -25,8 +25,9 @@ import useCoolColors from '@/hooks/use-cool-colors';
 import BarChart from '@/pages/_components/bar-chart';
 import PieChart from '@/pages/_components/pie-chart';
 import { formatLargeNumber } from '@/utils';
+import { CardWrapper } from '@gpustack/core-ui';
 import { useAccess, useIntl } from '@umijs/max';
-import { Card, Col, Empty, Row } from 'antd';
+import { Col, Empty, Row } from 'antd';
 import dayjs from 'dayjs';
 import React, { useEffect, useMemo, useState } from 'react';
 import { queryUsageTimeSeriesData } from '../apis';
@@ -128,7 +129,7 @@ const DomainSection: React.FC<{
     />
   );
   return (
-    <Card variant="borderless" styles={{ body: { padding: 16 } }}>
+    <CardWrapper style={{ paddingBlock: 16 }}>
       <div
         style={{
           display: 'flex',
@@ -185,7 +186,7 @@ const DomainSection: React.FC<{
                 { name: trendTitle, data: trendData, color: trendColor }
               ]}
               xAxisData={trendXAxis}
-              height={170}
+              height={180}
               title={trendTitle}
               labelFormatter={trendLabel(trendGran)}
               tooltipValueFormatter={(v) =>
@@ -195,7 +196,7 @@ const DomainSection: React.FC<{
           )}
         </div>
       </div>
-    </Card>
+    </CardWrapper>
   );
 };
 
@@ -384,9 +385,9 @@ const SummaryTab: React.FC = () => {
         onUsersChange={setSelectedUsers}
         onRefresh={() => setRefreshKey((k) => k + 1)}
       />
-      <div style={{ height: 16 }} />
+      <div style={{ height: 24 }} />
 
-      <Row gutter={[0, 12]}>
+      <Row gutter={[0, 24]}>
         <Col span={24}>
           <DomainSection
             title={t('usage.metric.tokens')}

@@ -101,7 +101,7 @@ export const ceilMilliToCore = (
   const outFactor = UNIT_FACTOR[outUnit];
   if (outFactor === undefined) return null;
   return {
-    cores: Math.ceil(parsed.base),
+    cores: _.floor(parsed.base),
     unit: outUnit,
     num: parsed.base / outFactor
   };

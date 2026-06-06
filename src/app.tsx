@@ -52,7 +52,12 @@ const checkDefaultPage = async (userInfo: any) => {
 const HAS_K8S_CLUSTER_KEY = 'hasKubernetesCluster';
 const probeHasKubernetesCluster = async (): Promise<boolean | undefined> => {
   try {
-    const res = await queryClusterList({ page: -1 });
+    const res = await queryClusterList(
+      { page: -1 },
+      {
+        skipErrorHandler: true
+      }
+    );
     const value = (res?.items ?? []).some(
       (c) => c?.provider === ProviderValueMap.Kubernetes
     );

@@ -38,7 +38,7 @@ export default {
   'clusters.create.noRegions': '无可用的区域',
   'clusters.workerpool.batchSize.desc': '节点池中同时创建的节点数量。',
   'clusters.create.addworker.tips':
-    '在执行以下命令之前，请确保已满足 {label} 的<a href={link} target="_blank">先决条件</a>。',
+    '在执行以下命令之前，请确保已满足<a href={link} target="_blank">先决条件</a>。',
   'clusters.create.addCommand.tips':
     '在需要添加的节点上运行以下命令，将其加入到集群中。',
   'clusters.create.addCommand.k8s.tips':

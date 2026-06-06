@@ -39,7 +39,7 @@ export default {
   'clusters.workerpool.batchSize.desc':
     'İşçi havuzunda eşzamanlı olarak oluşturulan işçi düğüm sayısı',
   'clusters.create.addworker.tips':
-    'Aşağıdaki komutu çalıştırmadan önce lütfen {label} için <a href={link} target="_blank">ön koşulların</a> karşılandığından emin olun.',
+    'Aşağıdaki komutu çalıştırmadan önce lütfen <a href={link} target="_blank">ön koşulların</a> karşılandığından emin olun.',
   'clusters.create.addCommand.tips':
     'Eklenmesi gereken İşçi Düğümde, kümeye katılması için aşağıdaki komutu çalıştırın.',
   'clusters.create.addCommand.k8s.tips':

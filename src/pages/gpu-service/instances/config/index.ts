@@ -22,7 +22,8 @@ export const InstanceStatusValueMap = {
   CreateFailed: 'CreateFailed',
   SSHPublicKeyCreateFailed: 'SSHPublicKeyCreateFailed',
   PersistentVolumeTypeCreateFailed: 'PersistentVolumeTypeCreateFailed',
-  PersistentVolumeCreateFailed: 'PersistentVolumeCreateFailed'
+  PersistentVolumeCreateFailed: 'PersistentVolumeCreateFailed',
+  Unknown: 'Unknown'
 };
 
 export const K8SStatuses = [
@@ -52,6 +53,7 @@ export const InstanceStatusLabelMap: Record<string, string> = {
   [InstanceStatusValueMap.Deleting]: 'Deleting',
   [InstanceStatusValueMap.Stopping]: 'Stopping',
   [InstanceStatusValueMap.Stopped]: 'Stopped',
+  [InstanceStatusValueMap.Unknown]: 'Unknown',
   ...Object.fromEntries(
     GPUStackFailedStatuses.map((status) => [status, status])
   )
@@ -74,7 +76,8 @@ export const status: Record<string, StatusType> = {
   [InstanceStatusValueMap.CreateFailed]: StatusMaps.error,
   [InstanceStatusValueMap.SSHPublicKeyCreateFailed]: StatusMaps.error,
   [InstanceStatusValueMap.PersistentVolumeTypeCreateFailed]: StatusMaps.error,
-  [InstanceStatusValueMap.PersistentVolumeCreateFailed]: StatusMaps.error
+  [InstanceStatusValueMap.PersistentVolumeCreateFailed]: StatusMaps.error,
+  [InstanceStatusValueMap.Unknown]: StatusMaps.error
 };
 
 export interface InstanceRowAction {
@@ -148,6 +151,14 @@ export const rowActionList: InstanceRowAction[] = [
     key: 'delete',
     locale: true,
     icon: icons.DeleteOutlined,
+    show: (record: ListItem) => {
+      const phase = record.status?.phase;
+      return [
+        ...GPUStackFailedStatuses,
+        InstanceStatusValueMap.Ready,
+        InstanceStatusValueMap.Unknown
+      ].includes(phase as string);
+    },
     props: {
       danger: true
     }

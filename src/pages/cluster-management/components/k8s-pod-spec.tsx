@@ -1,10 +1,10 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
-import { Input as CInput, LabelSelector, SwitchCard } from '@gpustack/core-ui';
+import { Input as CInput, LabelSelector } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
-import React, { useEffect } from 'react';
+import React, { useEffect, useId } from 'react';
 import styled from 'styled-components';
 import { ClusterListItem as ListItem } from '../config/types';
 import ImageCredential from './image-credential';
@@ -12,16 +12,6 @@ import K8SVolumeMount from './k8s-volume-mount';
 
 const SectionWrap = styled.div`
   margin-bottom: 16px;
-`;
-
-// SwitchCard always renders a content <div> while the switch is on (it's meant
-// to wrap expandable children). We render no children here, so that div is
-// empty — but the card is a flex column with an 8px gap, so the empty div still
-// adds height and makes the card jump as the switch toggles. Hide it.
-const SwitchCardWrap = styled.div`
-  & > div > div:empty {
-    display: none;
-  }
 `;
 
 const NodeSelectorForm: React.FC = () => {
@@ -79,32 +69,123 @@ export const OperatorImageForm: React.FC = () => {
 };
 
 // The presence of `gpuInstanceOptions` on `k8s_options` is the source of truth
-// for whether GPU instances are enabled. Both the switch (rendered up top) and
-// the static-address field (rendered in the advanced section) watch this same
-// path so they stay in sync without sharing local state.
+// for whether GPU instances are enabled. Both the cluster-type selector
+// (rendered up top) and the static-address field (rendered in the advanced
+// section) watch this same path so they stay in sync without sharing local
+// state.
 const GPU_INSTANCE_OPTIONS_PATH = ['k8s_options', 'gpuInstanceOptions'];
 
-// Standalone switch shown directly under the cluster description. Toggling it
-// only flips the presence of `gpuInstanceOptions` on the form; the related
-// inputs live in the advanced section.
-export const GpuInstanceServiceSwitch: React.FC = () => {
+// Visual parity with @gpustack/core-ui's SwitchCard so the selector blends
+// in with surrounding form fields: same border, radius, padding, and
+// typography. The only differences are the two-column grid layout and an
+// active state (blue border + tinted background) to mark the selection.
+const ClusterTypeWrap = styled.div`
+  margin-bottom: 24px;
+`;
+
+const ClusterTypeLabel = styled.div`
+  color: var(--ant-color-text);
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  .required {
+    color: var(--ant-color-error);
+    margin-left: 4px;
+  }
+`;
+
+const ClusterTypeGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+`;
+
+const ClusterTypeCard = styled.div<{ $active: boolean }>`
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: var(--ant-border-radius-lg);
+  border: 1px solid
+    ${(p) =>
+      p.$active ? 'var(--ant-color-primary)' : 'var(--ant-color-border)'};
+  background: ${(p) =>
+    p.$active ? 'var(--ant-color-primary-bg)' : 'transparent'};
+  cursor: pointer;
+  transition:
+    border-color 0.2s,
+    background-color 0.2s;
+  &:hover,
+  &:focus-visible {
+    border-color: var(--ant-color-primary);
+  }
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--ant-control-outline);
+  }
+  .body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .title {
+    color: var(--ant-color-text);
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .description {
+    color: var(--ant-color-text-secondary);
+  }
+`;
+
+const RadioDot = styled.span<{ $active: boolean }>`
+  position: relative;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  margin-top: 3px;
+  border-radius: 50%;
+  border: 1.5px solid
+    ${(p) =>
+      p.$active ? 'var(--ant-color-primary)' : 'var(--ant-color-border)'};
+  background: ${(p) =>
+    p.$active ? 'var(--ant-color-primary)' : 'transparent'};
+  transition: all 0.2s;
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #fff;
+    opacity: ${(p) => (p.$active ? 1 : 0)};
+    transition: opacity 0.2s;
+  }
+`;
+
+// Card-based selector for cluster type. The two options are mutually exclusive
+// and the choice maps directly to the presence/absence of `gpuInstanceOptions`
+// on the form — "model" clears it, "gpu" seeds it to {} (preserving any
+// already-entered static address). No standalone form field is registered;
+// state is read via useWatch with `preserve: true` so it tracks updates made
+// through setFieldValue.
+export const ClusterTypeSelector: React.FC = () => {
   const intl = useIntl();
   const form = Form.useFormInstance();
-  // `preserve: true` makes useWatch read the full form store rather than only
-  // registered fields — required here because `gpuInstanceOptions` is set via
-  // setFieldValue and has no mounted Form.Item of its own while the switch is
-  // off, so a default watch would never see it flip on.
+  const labelId = useId();
   const gpuInstanceOptions = Form.useWatch(GPU_INSTANCE_OPTIONS_PATH, {
     form,
     preserve: true
   });
-  const enabled = !!gpuInstanceOptions;
+  const value: 'model' | 'gpu' = gpuInstanceOptions ? 'gpu' : 'model';
 
-  const handleToggle = (checked: boolean) => {
-    if (!form) return;
-    // When on, ensure the object exists (defaulting to {} so it survives even
-    // when the static address is left blank); when off, remove it entirely.
-    if (checked) {
+  const handleSelect = (next: 'model' | 'gpu') => {
+    if (!form || next === value) return;
+    if (next === 'gpu') {
       form.setFieldValue(
         GPU_INSTANCE_OPTIONS_PATH,
         form.getFieldValue(GPU_INSTANCE_OPTIONS_PATH) ?? {}
@@ -114,33 +195,68 @@ export const GpuInstanceServiceSwitch: React.FC = () => {
     }
   };
 
+  const options: {
+    key: 'model' | 'gpu';
+    title: string;
+    description: string;
+  }[] = [
+    {
+      key: 'model',
+      title: intl.formatMessage({ id: 'clusters.modelService.title' }),
+      description: intl.formatMessage({ id: 'clusters.modelService.tip' })
+    },
+    {
+      key: 'gpu',
+      title: intl.formatMessage({ id: 'clusters.gpuInstances.title' }),
+      description: intl.formatMessage({ id: 'clusters.gpuInstances.tip' })
+    }
+  ];
+
   return (
-    <SwitchCardWrap>
-      <SwitchCard
-        styles={{
-          wrapper: {
-            borderRadius: 'var(--ant-border-radius-lg)',
-            paddingInline: 14,
-            marginBottom: 24
-          }
-        }}
-        value={enabled}
-        onChange={handleToggle}
-        label={intl.formatMessage({ id: 'clusters.gpuInstances.title' })}
-        description={intl.formatMessage({ id: 'clusters.gpuInstances.tip' })}
-      />
-    </SwitchCardWrap>
+    <ClusterTypeWrap>
+      <ClusterTypeLabel id={labelId}>
+        {intl.formatMessage({ id: 'clusters.clusterType.title' })}
+        <span className="required">*</span>
+      </ClusterTypeLabel>
+      <ClusterTypeGrid role="radiogroup" aria-labelledby={labelId}>
+        {options.map((opt) => {
+          const active = value === opt.key;
+          return (
+            <ClusterTypeCard
+              key={opt.key}
+              $active={active}
+              role="radio"
+              aria-checked={active}
+              tabIndex={0}
+              onClick={() => handleSelect(opt.key)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  handleSelect(opt.key);
+                }
+              }}
+            >
+              <RadioDot $active={active} />
+              <div className="body">
+                <div className="title">{opt.title}</div>
+                <div className="description">{opt.description}</div>
+              </div>
+            </ClusterTypeCard>
+          );
+        })}
+      </ClusterTypeGrid>
+    </ClusterTypeWrap>
   );
 };
 
-// Static access address for GPU instances. Only shown while the GPU instance
-// service switch is on, mirroring the previous in-card behaviour. Rendered in
-// the advanced section, between the default container registry and the worker
-// config (节点配置).
+// Static access address for GPU instances. Only shown when "GPU 服务" is
+// the selected cluster type. Rendered in the advanced section, between the
+// default container registry and the worker config (节点配置).
 export const GpuInstancesStaticAddressForm: React.FC = () => {
   const intl = useIntl();
-  // See note in GpuInstanceServiceSwitch: watch the full store so this field's
-  // visibility tracks the switch even before it has mounted its own Form.Item.
+  // See note in ClusterTypeSelector: watch the full store so this field's
+  // visibility tracks the selector even before it has mounted its own
+  // Form.Item.
   const enabled = !!Form.useWatch(GPU_INSTANCE_OPTIONS_PATH, {
     preserve: true
   });
@@ -209,7 +325,7 @@ export const K8sOptionsChangeWatcher: React.FC<{
 }> = ({ action, currentData, onChange }) => {
   // `preserve: true` so the watch tracks the full store, including
   // gpuInstanceOptions which is toggled via setFieldValue without a mounted
-  // Form.Item (mirrors GpuInstanceServiceSwitch).
+  // Form.Item (mirrors ClusterTypeSelector).
   const k8sOptions = Form.useWatch(['k8s_options'], { preserve: true });
 
   const changed =

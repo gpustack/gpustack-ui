@@ -184,11 +184,14 @@ export default {
   'clusters.namespace.title': 'Namespace',
   'clusters.namespace.tip':
     'Kubernetes namespace the cluster’s manifests render into. Leave empty to use gpustack-system.',
-  'clusters.gpuInstances.title': 'GPU Instance Service',
+  'clusters.clusterType.title': 'Cluster Type',
+  'clusters.modelService.title': 'Model Service',
+  'clusters.modelService.tip':
+    'For LLM inference and API serving — e.g. exposing model APIs and token-based services.',
+  'clusters.gpuInstances.title': 'GPU Service',
   'clusters.gpuInstances.tip':
-    'Once enabled, the cluster is dedicated to GPU instance service and cannot be used for model service.',
-  'clusters.gpuInstances.staticAddress':
-    'GPU Instance Service Static Access Address',
+    'For on-demand GPU compute — e.g. interactive development, training jobs, or custom environments.',
+  'clusters.gpuInstances.staticAddress': 'GPU Service Static Access Address',
   'clusters.gpuInstances.staticAddress.tip':
     'Static address the operator uses to access GPU instances in this cluster (e.g. a LoadBalancer VIP). Optional.'
 };

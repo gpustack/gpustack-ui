@@ -26,7 +26,7 @@ import {
 import AdvanceConfig from '../step-forms/advance-config';
 import CloudProvider from './cloud-provider-form';
 import K8sAdvancedOptions, {
-  GpuInstanceServiceSwitch,
+  ClusterTypeSelector,
   K8sOptionsChangeWatcher
 } from './k8s-pod-spec';
 
@@ -260,8 +260,8 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
           <Form.Item<FormData>
             name="description"
             rules={[{ required: false }]}
-            // For Kubernetes the GPU instance service switch follows directly,
-            // so fall back to the default item margin (matching the name field)
+            // For Kubernetes the cluster type selector follows directly, so
+            // fall back to the default item margin (matching the name field)
             // to keep the description spacing symmetric; other providers keep
             // the tighter gap before the advanced panel.
             style={{
@@ -275,9 +275,7 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
             ></SealTextArea>
           </Form.Item>
 
-          {provider === ProviderValueMap.Kubernetes && (
-            <GpuInstanceServiceSwitch />
-          )}
+          {provider === ProviderValueMap.Kubernetes && <ClusterTypeSelector />}
 
           <CollapsePanel
             accordion={false}

@@ -8,8 +8,15 @@ const useOpenPlayground = () => {
 
   const generateModelName = (row: any) => {
     const org = getOrgById(row.owner_principal_id) ?? getCurrentOrg();
+    // The platform Org is always named ``default`` (backend constant
+    // ``PLATFORM_PRINCIPAL_NAME``); its models are reported by
+    // ``/v1/models`` without a prefix. Match by name too, not just the
+    // ``is_platform`` flag — pre-multi-tenancy OSS caches and any other
+    // path that drops the flag would otherwise emit ``default/<name>``
+    // and 404 against the unprefixed model id.
+    const isPlatformOrg = org?.is_platform || org?.name === 'default';
     const rawModel =
-      org?.name && !org.is_platform ? `${org.name}/${row.name}` : row.name;
+      org?.name && !isPlatformOrg ? `${org.name}/${row.name}` : row.name;
     return rawModel;
   };
 

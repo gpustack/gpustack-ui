@@ -399,6 +399,7 @@ export async function queryResourceEvents(
     scope?: 'self' | 'all';
     filters?: ResourceUsageFilters;
     resource_types?: string[];
+    resource_name?: string;
     event_types?: string[];
     page?: number;
     perPage?: number;
@@ -412,9 +413,13 @@ export async function queryResourceEvents(
       end_date: data.end_date,
       scope: data.scope ?? 'all',
       resource_type: data.resource_types?.[0],
-      // GET endpoints take creator_ids as a CSV string (avoids axios array
-      // serialization quirks); the server splits it back into a list.
+      // GET endpoints take list params as CSV strings (avoids axios array
+      // serialization quirks); the server splits them back into lists.
       ...(creatorIds?.length ? { creator_ids: creatorIds.join(',') } : {}),
+      ...(data.event_types?.length
+        ? { event_types: data.event_types.join(',') }
+        : {}),
+      ...(data.resource_name ? { resource_name: data.resource_name } : {}),
       page: data.page ?? 1,
       perPage: data.perPage ?? 50
     },

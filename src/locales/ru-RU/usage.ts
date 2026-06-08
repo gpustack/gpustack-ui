@@ -90,6 +90,7 @@ export default {
   // --- Resource events ---
   'usage.events.resourceType': 'Тип ресурса',
   'usage.events.eventType': 'Тип события',
+  'usage.events.resourceName': 'Фильтр по имени',
   'usage.events.col.time': 'Время',
   'usage.events.col.resource': 'Ресурс',
   'usage.events.col.event': 'Событие',

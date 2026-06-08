@@ -90,6 +90,7 @@ export default {
   // --- Resource events ---
   'usage.events.resourceType': 'リソースタイプ',
   'usage.events.eventType': 'イベントタイプ',
+  'usage.events.resourceName': '名前で絞り込み',
   'usage.events.col.time': '時刻',
   'usage.events.col.resource': 'リソース',
   'usage.events.col.event': 'イベント',

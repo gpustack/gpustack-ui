@@ -6,6 +6,27 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "47798379",
+      "name": "request_quote_24dp_1F1F1F_FILL0_wght300_GRAD0_opsz",
+      "font_class": "billing-outlined",
+      "unicode": "e70d",
+      "unicode_decimal": 59149
+    },
+    {
+      "icon_id": "47798378",
+      "name": "request_quote_24dp_1F1F1F_FILL1_wght300_GRAD0_opsz",
+      "font_class": "billing-filled",
+      "unicode": "e70e",
+      "unicode_decimal": 59150
+    },
+    {
+      "icon_id": "47761129",
+      "name": "fingerprint",
+      "font_class": "fingerprint",
+      "unicode": "e70c",
+      "unicode_decimal": 59148
+    },
+    {
       "icon_id": "47654402",
       "name": "database_24dp_1F1F1F_FILL0_wght300_GRAD0_opsz24 (1",
       "font_class": "database-outlined",

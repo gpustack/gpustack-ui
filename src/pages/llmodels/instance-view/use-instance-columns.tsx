@@ -2,6 +2,7 @@
 import { tableSorter } from '@/config/settings';
 import { ListItem as workerListItem } from '@/pages/resources/config/types';
 import { convertFileSize } from '@/utils';
+import { ThunderboltFilled } from '@ant-design/icons';
 import { AutoTooltip, IconFont } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { ColumnsType } from 'antd/lib/table';
@@ -88,20 +89,35 @@ const useInstancesColumns = (options: {
         title: intl.formatMessage({ id: 'common.table.name' }),
         dataIndex: 'name',
         sorter: tableSorter(1),
+        minWidth: 160,
         render: (value: string, record: ListItem) => (
-          <NameCell
-            showWorkerInfo={true}
-            record={record}
-            modelData={{
-              backend: record.backend,
-              backend_version: record.backend_version
-            }}
-            styles={{
-              label: {
-                color: 'var(--ant-color-text)'
-              }
-            }}
-          ></NameCell>
+          <>
+            <NameCell
+              showWorkerInfo={false}
+              record={record}
+              modelData={{
+                backend: record.backend,
+                backend_version: record.backend_version
+              }}
+              styles={{
+                label: {
+                  color: 'var(--ant-color-text)'
+                }
+              }}
+            ></NameCell>
+            <div className="flex-center">
+              <ThunderboltFilled
+                className="m-r-5 text-quaternary"
+                style={{ fontSize: 12, position: 'relative', top: 2 }}
+              />
+              <span className="text-quaternary">
+                {record?.backend || record?.backend || ''}
+                {record.backend_version || record?.backend_version
+                  ? `(${record.backend_version || record?.backend_version})`
+                  : ''}
+              </span>
+            </div>
+          </>
         )
       },
       {
@@ -121,7 +137,7 @@ const useInstancesColumns = (options: {
         dataIndex: 'worker_id',
         render: (text, record) => (
           <div className="flex-center gap-8">
-            <AutoTooltip ghost>{record.worker_name}</AutoTooltip>
+            <AutoTooltip ghost>{renderWorkerCell(text, record)}</AutoTooltip>
             <DistributeInfoCell
               record={record}
               workerList={workerList}

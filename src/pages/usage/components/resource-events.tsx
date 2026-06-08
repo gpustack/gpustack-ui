@@ -9,25 +9,31 @@
  * event-type selects ride in the bar's ``extra`` slot.
  */
 import { useAccess, useIntl } from '@umijs/max';
-import { Select, Table, Tag } from 'antd';
+import { Input, Select, Table, Tag } from 'antd';
 import dayjs from 'dayjs';
-import React, { useEffect, useMemo, useState } from 'react';
+import _ from 'lodash';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react';
 import {
   queryResourceEvents,
   ResourceEventItem,
   ResourceEventsResponse
 } from '../apis/resource';
-import useResourceMeta from '../hooks/use-resource-meta';
 import ResourceFilterBar from './resource-filter-bar';
 
+// Only these four are ever emitted (see resource_event_logger): create/delete
+// + the metering-window pair. updated/attached/detached exist as enum values
+// but are intentionally not recorded, so they're not offered as filters.
 const EVENT_COLOR: Record<string, string> = {
   created: 'green',
   deleted: 'red',
   phase_to_metered: 'blue',
-  phase_left_metered: 'orange',
-  updated: 'cyan',
-  attached: 'purple',
-  detached: 'gold'
+  phase_left_metered: 'orange'
 };
 
 // Humanize a failure phase enum for display, e.g. "SSHPublicKeyCreateFailed" →
@@ -85,18 +91,6 @@ const ResourceEvents: React.FC = () => {
       {
         value: 'phase_left_metered',
         label: intl.formatMessage({ id: 'usage.events.type.stopped' })
-      },
-      {
-        value: 'updated',
-        label: intl.formatMessage({ id: 'usage.events.type.updated' })
-      },
-      {
-        value: 'attached',
-        label: intl.formatMessage({ id: 'usage.events.type.attached' })
-      },
-      {
-        value: 'detached',
-        label: intl.formatMessage({ id: 'usage.events.type.detached' })
       }
     ],
     [intl]
@@ -112,42 +106,70 @@ const ResourceEvents: React.FC = () => {
     [EVENT_TYPE_OPTIONS]
   );
 
-  const [dateRange, setDateRange] = useState<[dayjs.Dayjs, dayjs.Dayjs]>([
-    dayjs().subtract(29, 'day'),
-    dayjs()
-  ]);
-  const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
-  const [resourceTypes, setResourceTypes] = useState<string[]>([]);
-  const [eventTypes, setEventTypes] = useState<string[]>([]);
-  const [page, setPage] = useState(1);
-  const [data, setData] = useState<ResourceEventsResponse | null>(null);
-  const [refreshKey, setRefreshKey] = useState(0);
-
-  const { creators: userOptions } = useResourceMeta(scope);
-
-  const fetch = async () => {
-    try {
-      const res = await queryResourceEvents({
-        start_date: dateRange[0].format('YYYY-MM-DD'),
-        end_date: dateRange[1].format('YYYY-MM-DD'),
-        scope,
-        filters: selectedUsers.length
-          ? { creator_ids: selectedUsers }
-          : undefined,
-        resource_types: resourceTypes,
-        event_types: eventTypes,
-        page,
-        perPage: 50
-      });
-      setData(res);
-    } catch {
-      // Keep last response on failure.
-    }
+  // All filters live in one query-params object; ``resourceType`` is single
+  // (the backend filters by one) and ``nameQuery`` is the debounced substring.
+  type QueryParams = {
+    dateRange: [dayjs.Dayjs, dayjs.Dayjs];
+    resourceType?: string;
+    eventTypes: string[];
+    nameQuery: string;
+    page: number;
   };
+  const [queryParams, setQueryParams] = useState<QueryParams>({
+    dateRange: [dayjs().subtract(29, 'day'), dayjs()],
+    resourceType: undefined,
+    eventTypes: [],
+    nameQuery: '',
+    page: 1
+  });
+  const [data, setData] = useState<ResourceEventsResponse | null>(null);
 
+  // Latest params, so the stable debounced name handler reads current values.
+  const queryRef = useRef(queryParams);
+  queryRef.current = queryParams;
+
+  // Single fetch entry point: merge the patch into the current params, persist
+  // them, then request — triggered from each handler rather than from effect
+  // dependencies, so there's exactly one request per user action.
+  const fetchEvents = useCallback(
+    async (patch: Partial<QueryParams>) => {
+      const params = { ...queryRef.current, ...patch };
+      setQueryParams(params);
+      try {
+        const res = await queryResourceEvents({
+          start_date: params.dateRange[0].format('YYYY-MM-DD'),
+          end_date: params.dateRange[1].format('YYYY-MM-DD'),
+          scope,
+          resource_types: params.resourceType
+            ? [params.resourceType]
+            : undefined,
+          resource_name: params.nameQuery || undefined,
+          event_types: params.eventTypes,
+          page: params.page,
+          perPage: 50
+        });
+        setData(res);
+      } catch {
+        // Keep last response on failure.
+      }
+    },
+    [scope]
+  );
+
+  // First load only — subsequent fetches are driven by the handlers below.
   useEffect(() => {
-    fetch();
-  }, [dateRange, selectedUsers, resourceTypes, eventTypes, page, refreshKey]);
+    fetchEvents({});
+  }, []);
+
+  // Debounced name search; a filter change always resets to page 1.
+  const onNameChange = useMemo(
+    () =>
+      _.debounce(
+        (value: string) => fetchEvents({ nameQuery: value.trim(), page: 1 }),
+        400
+      ),
+    [fetchEvents]
+  );
 
   const columns = useMemo(
     () => [
@@ -204,32 +226,32 @@ const ResourceEvents: React.FC = () => {
   return (
     <div>
       <ResourceFilterBar
-        value={dateRange}
-        onChange={(dates) => {
-          setDateRange(dates);
-          setPage(1);
-        }}
-        canManageUsers={canManageUsers}
-        userOptions={userOptions}
-        selectedUsers={selectedUsers}
-        onUsersChange={(ids) => {
-          setSelectedUsers(ids);
-          setPage(1);
-        }}
-        onRefresh={() => setRefreshKey((k) => k + 1)}
+        value={queryParams.dateRange}
+        onChange={(dates) => fetchEvents({ dateRange: dates, page: 1 })}
+        // No user filter here — the events list has no User column. Scope is
+        // still applied to the query (members see only their own events).
+        canManageUsers={false}
+        userOptions={[]}
+        selectedUsers={[]}
+        onUsersChange={() => {}}
+        onRefresh={() => fetchEvents({})}
         extra={
           <>
+            <Input
+              allowClear
+              placeholder={intl.formatMessage({
+                id: 'usage.events.resourceName'
+              })}
+              onChange={(e) => onNameChange(e.target.value)}
+              style={{ width: 200 }}
+            />
             <Select
-              mode="multiple"
               allowClear
               placeholder={intl.formatMessage({
                 id: 'usage.events.resourceType'
               })}
-              value={resourceTypes}
-              onChange={(v) => {
-                setResourceTypes(v);
-                setPage(1);
-              }}
+              value={queryParams.resourceType}
+              onChange={(v) => fetchEvents({ resourceType: v, page: 1 })}
               options={RESOURCE_TYPE_OPTIONS}
               style={{ minWidth: 200 }}
             />
@@ -239,11 +261,8 @@ const ResourceEvents: React.FC = () => {
               placeholder={intl.formatMessage({
                 id: 'usage.events.eventType'
               })}
-              value={eventTypes}
-              onChange={(v) => {
-                setEventTypes(v);
-                setPage(1);
-              }}
+              value={queryParams.eventTypes}
+              onChange={(v) => fetchEvents({ eventTypes: v, page: 1 })}
               options={EVENT_TYPE_OPTIONS}
               style={{ minWidth: 240 }}
             />
@@ -257,10 +276,10 @@ const ResourceEvents: React.FC = () => {
         columns={columns as any}
         style={{ marginTop: 24 }}
         pagination={{
-          current: page,
+          current: queryParams.page,
           pageSize: data?.pagination.perPage ?? 50,
           total: data?.pagination.total ?? 0,
-          onChange: (p) => setPage(p)
+          onChange: (p) => fetchEvents({ page: p })
         }}
       />
     </div>

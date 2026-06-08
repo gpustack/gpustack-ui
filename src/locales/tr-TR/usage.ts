@@ -90,6 +90,7 @@ export default {
   // --- Resource events ---
   'usage.events.resourceType': 'Kaynak türü',
   'usage.events.eventType': 'Olay türü',
+  'usage.events.resourceName': 'Ada göre filtrele',
   'usage.events.col.time': 'Zaman',
   'usage.events.col.resource': 'Kaynak',
   'usage.events.col.event': 'Olay',

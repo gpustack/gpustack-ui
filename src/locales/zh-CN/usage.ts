@@ -90,6 +90,7 @@ export default {
   // --- Resource events ---
   'usage.events.resourceType': '资源类型',
   'usage.events.eventType': '事件类型',
+  'usage.events.resourceName': '按名称筛选',
   'usage.events.col.time': '时间',
   'usage.events.col.resource': '资源',
   'usage.events.col.event': '事件',

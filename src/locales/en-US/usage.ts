@@ -90,6 +90,7 @@ export default {
   // --- Resource events ---
   'usage.events.resourceType': 'Resource type',
   'usage.events.eventType': 'Event type',
+  'usage.events.resourceName': 'Filter by name',
   'usage.events.col.time': 'Time',
   'usage.events.col.resource': 'Resource',
   'usage.events.col.event': 'Event',

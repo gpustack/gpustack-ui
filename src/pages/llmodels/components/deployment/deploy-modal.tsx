@@ -348,6 +348,7 @@ const AddModal: FC<AddModalProps> = (props) => {
       env: {
         ...modelInfo.env
       },
+      backend_parameters: [...modelInfo.backend_parameters],
       name: generateNameValue(item, modelInfo.name, manual),
       categories: getCategory(item)
     });
@@ -405,6 +406,10 @@ const AddModal: FC<AddModalProps> = (props) => {
           ...modelInfo.env,
           ...defaultSpec.env
         },
+        backend_parameters: [
+          ...modelInfo.backend_parameters,
+          ...(defaultSpec.backend_parameters || [])
+        ],
         name: generateNameValue(item, modelInfo.name, manual),
         categories: getCategory(item)
       };

@@ -27,7 +27,7 @@ export default {
   'backend.form.parameterFormat.default': 'Varsayılan',
   'backend.form.parameterFormat.space': 'Boşluk (--key value)',
   'backend.form.parameterFormat.equal': 'Eşittir (--key=value)',
-  'backend.form.commonParameters': 'Yaygın Parametreler',
+  'backend.form.commonParameters': 'Ortak Altyapı Parametreleri',
   'backend.form.commonParameters.tips':
     'Dağıtım sırasında altyapı parametreleri girişinde öneri olarak gösterilir.',
   'backend.form.versionConfig': 'Sürüm Yapılandırması',

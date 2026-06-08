@@ -99,6 +99,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   const selectSpecRef = useRef<CatalogSpec>({} as CatalogSpec);
   const specListRef = useRef<any[]>([]);
   const noCompatibleGPUsRef = useRef<boolean>(false);
+  const backendOptionsCache = useRef<any>([]);
 
   const handleSumit = () => {
     form.current?.submit?.();
@@ -190,6 +191,17 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   };
 
   const handleBackendChange = (backend: string) => {
+    const defaultBackendParameters =
+      backendOptionsCache.current?.find((item: any) => item.value === backend)
+        ?.default_backend_param || [];
+
+    form.current?.setFieldsValue({
+      backend_parameters: [
+        ...defaultBackendParameters,
+        ...(form.current?.getFieldValue('backend_parameters') || [])
+      ]
+    });
+
     handleCheckFormData();
   };
 
@@ -259,10 +271,19 @@ const AddModal: React.FC<AddModalProps> = (props) => {
 
       selectSpecRef.current = defaultSpec;
 
+      const defaultBackendParams =
+        backendOptionsCache.current?.find(
+          (item: any) => item.value === defaultSpec.backend
+        )?.default_backend_param || [];
+
       setModeList(modeDataList);
       setSourceList(sources);
       initFormDataBySource({
         ...defaultSpec,
+        backend_parameters: [
+          ...defaultBackendParams,
+          ...(defaultSpec.backend_parameters || [])
+        ],
         cluster_id: clusterId
       });
 
@@ -331,6 +352,24 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     axiosToken.current?.cancel?.();
   };
 
+  const init = async () => {
+    const clusterId = initClusterId();
+    // No cluster available for the current scope (zero clusters, or none
+    // owned by the picked org). Leave the form's cluster field empty and
+    // skip downstream fetches — the user resolves it by picking an org
+    // that owns clusters, which triggers the scope-change re-pick in the
+    // basic form.
+    if (!clusterId) return;
+
+    backendOptionsCache.current = await form.current?.getBackendOptions?.({
+      cluster_id: clusterId
+    });
+    fetchSpecData(clusterId);
+    form.current?.getGPUOptionList?.({
+      clusterId: clusterId
+    });
+  };
+
   const showExtraButton = useMemo(() => {
     return warningStatus.show && warningStatus.type !== 'success';
   }, [warningStatus.show, warningStatus.type]);
@@ -343,20 +382,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   useEffect(() => {
     if (open) {
       setTimeout(() => {
-        const clusterId = initClusterId();
-        // No cluster available for the current scope (zero clusters, or none
-        // owned by the picked org). Leave the form's cluster field empty and
-        // skip downstream fetches — the user resolves it by picking an org
-        // that owns clusters, which triggers the scope-change re-pick in the
-        // basic form.
-        if (!clusterId) return;
-        fetchSpecData(clusterId);
-        form.current?.getGPUOptionList?.({
-          clusterId: clusterId
-        });
-        form.current?.getBackendOptions?.({
-          cluster_id: clusterId
-        });
+        init();
       }, 100);
     }
     return () => {

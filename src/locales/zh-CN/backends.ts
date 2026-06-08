@@ -27,7 +27,7 @@ export default {
   'backend.form.parameterFormat.default': '后端默认',
   'backend.form.parameterFormat.space': '空格分隔 (--key value)',
   'backend.form.parameterFormat.equal': '等号连接 (--key=value)',
-  'backend.form.commonParameters': '常用参数',
+  'backend.form.commonParameters': '常用后端参数',
   'backend.form.commonParameters.tips': '部署模型时作为后端参数候选项展示。',
   'backend.form.versionConfig': '版本配置',
   'backend.form.addParameter': '添加参数',

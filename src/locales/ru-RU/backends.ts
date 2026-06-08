@@ -27,7 +27,7 @@ export default {
   'backend.form.parameterFormat.default': 'По умолчанию бэкенда',
   'backend.form.parameterFormat.space': 'Пробел (--key value)',
   'backend.form.parameterFormat.equal': 'Знак равенства (--key=value)',
-  'backend.form.commonParameters': 'Часто используемые параметры',
+  'backend.form.commonParameters': 'Общие параметры бэкенда',
   'backend.form.commonParameters.tips':
     'Отображаются как подсказки в поле параметров бэкенда при развёртывании.',
   'backend.form.versionConfig': 'Конфигурация версий',

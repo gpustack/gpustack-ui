@@ -1,5 +1,6 @@
 import { pcmToWav } from '@/utils/pcm-to-wav';
-import { useCallback, useRef, useState } from 'react';
+import { useMemoizedFn } from 'ahooks';
+import { useRef, useState } from 'react';
 import { textToSpeech } from '../../apis';
 import { extractErrorMessage } from '../../config';
 
@@ -51,75 +52,72 @@ export const useNonStreamTTS = (params?: UseNonStreamTTSParams) => {
     );
   };
 
-  const generate = useCallback(
-    async (ttsParams: TTSParams) => {
-      try {
-        setLoading(true);
-        setError(null);
+  const generate = useMemoizedFn(async (ttsParams: TTSParams) => {
+    try {
+      setLoading(true);
+      setError(null);
 
-        // Abort previous request if exists
-        controllerRef.current?.abort();
-        controllerRef.current = new AbortController();
-        const signal = controllerRef.current.signal;
+      // Abort previous request if exists
+      controllerRef.current?.abort();
+      controllerRef.current = new AbortController();
+      const signal = controllerRef.current.signal;
 
-        const res: any = await textToSpeech({
-          data: ttsParams,
-          signal
+      const res: any = await textToSpeech({
+        data: ttsParams,
+        signal
+      });
+      if (!res?.audioBlob || res?.error) {
+        const errorMessage = extractErrorMessage(res);
+        setError({
+          error: true,
+          errorMessage
         });
+        params?.onError?.(errorMessage);
+        return null;
+      }
 
-        if ((res?.status_code && res?.status_code !== 200) || res?.error) {
-          const errorMessage = extractErrorMessage(res);
-          setError({
-            error: true,
-            errorMessage
-          });
-          params?.onError?.(errorMessage);
-          return null;
-        }
+      let result = {
+        url: '',
+        type: ''
+      };
 
-        let result = {
+      if (res.audioBlob?.type?.indexOf('audio') === -1) {
+        result = {
           url: '',
           type: ''
         };
-
-        if (res.audioBlob?.type?.indexOf('audio') === -1) {
-          result = {
-            url: '',
-            type: ''
-          };
-        } else if (
-          ttsParams.response_format === 'pcm' ||
-          isPCMFormat(res.audioBlob)
-        ) {
-          result = await convertPCMToWav(res.audioBlob);
-        } else {
-          result = await generateAudioUrl(res.audioBlob);
-        }
-
-        params?.onSuccess?.(result);
-        return res;
-      } catch (err: any) {
-        const res = err?.response?.data;
-        if (res?.error) {
-          const errorMessage = extractErrorMessage(res);
-          setError({
-            error: true,
-            errorMessage
-          });
-          params?.onError?.(errorMessage);
-        }
-        return null;
-      } finally {
-        setLoading(false);
+      } else if (
+        ttsParams.response_format === 'pcm' ||
+        isPCMFormat(res.audioBlob)
+      ) {
+        result = await convertPCMToWav(res.audioBlob);
+      } else {
+        result = await generateAudioUrl(res.audioBlob);
       }
-    },
-    [params]
-  );
 
-  const abort = useCallback(() => {
+      params?.onSuccess?.(result);
+      return res;
+    } catch (err: any) {
+      console.log('TTS error', err);
+      const res = err?.response?.data;
+      if (res?.error) {
+        const errorMessage = extractErrorMessage(res);
+        setError({
+          error: true,
+          errorMessage
+        });
+        params?.onError?.(errorMessage);
+      }
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  });
+
+  const abort = useMemoizedFn(() => {
     controllerRef.current?.abort();
     setLoading(false);
-  }, []);
+  });
 
   return {
     generate,

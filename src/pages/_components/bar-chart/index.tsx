@@ -21,6 +21,13 @@ export interface BarChartProps {
   labelFormatter?: (val: any, index?: number) => string;
   tooltipValueFormatter?: (val: any) => string;
   title?: string;
+  grid?: {
+    left?: number | string;
+    right?: number | string;
+    top?: number | string;
+    bottom?: number | string;
+    containLabel?: boolean;
+  };
   legendIsolate?: boolean;
 }
 
@@ -34,6 +41,7 @@ const BarChart: React.FC<BarChartProps> = (props) => {
     labelFormatter,
     tooltipValueFormatter,
     title,
+    grid,
     legendIsolate
   } = props;
   const { token } = theme.useToken();
@@ -126,8 +134,9 @@ const BarChart: React.FC<BarChartProps> = (props) => {
         left: 0,
         right: 0,
         top: title ? 30 : 10,
-        bottom: 0,
-        containLabel: true
+        bottom: 8,
+        containLabel: true,
+        ...grid
       },
       tooltip: {
         trigger: 'axis',

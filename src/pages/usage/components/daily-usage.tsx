@@ -314,6 +314,9 @@ const DailyUsage: React.FC<DailyUsageProps> = (props) => {
           seriesData={seriesData}
           xAxisData={xAxisData}
           height={280}
+          grid={{
+            bottom: 28
+          }}
           legendData={legendData}
           labelFormatter={labelFormatter}
           legendIsolate={metric === CACHED_METRIC}

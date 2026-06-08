@@ -47,6 +47,11 @@ interface MetricChartCardProps {
   onGranularityChange: (value: string) => void;
   seriesData: BarSeriesItem[];
   xAxisData: string[];
+  // Optional group-by control (mirrors the Tokens trend). When provided, a
+  // clearable "Group by" select is shown; clearing passes null.
+  groupBy?: string | null;
+  groupByOptions?: MetricOption[];
+  onGroupByChange?: (value: string | null) => void;
 }
 
 const MetricChartCard: React.FC<MetricChartCardProps> = ({
@@ -56,7 +61,10 @@ const MetricChartCard: React.FC<MetricChartCardProps> = ({
   onMetricChange,
   onGranularityChange,
   seriesData,
-  xAxisData
+  xAxisData,
+  groupBy,
+  groupByOptions,
+  onGroupByChange
 }) => {
   const intl = useIntl();
 
@@ -84,6 +92,22 @@ const MetricChartCard: React.FC<MetricChartCardProps> = ({
             onChange={onMetricChange}
             style={{ width: 'max-content' }}
           />
+          {groupByOptions?.length && onGroupByChange ? (
+            <BaseSelect
+              allowClear
+              variant="borderless"
+              prefix={
+                <ControlLabel>
+                  {intl.formatMessage({ id: 'usage.filter.groupBy' })}
+                </ControlLabel>
+              }
+              options={groupByOptions}
+              value={groupBy ?? undefined}
+              popupMatchSelectWidth={false}
+              onChange={(v: string) => onGroupByChange(v || null)}
+              style={{ width: 'max-content', minWidth: 140 }}
+            />
+          ) : null}
         </div>
         <Segmented
           size="small"
@@ -109,6 +133,12 @@ const MetricChartCard: React.FC<MetricChartCardProps> = ({
         xAxisData={xAxisData}
         height={280}
         labelFormatter={labelFormatter}
+        // Auto-show a legend once the trend is split into multiple series.
+        legendData={
+          seriesData.length > 1
+            ? seriesData.map((s) => ({ name: s.name }))
+            : undefined
+        }
       />
     </CardWrapper>
   );

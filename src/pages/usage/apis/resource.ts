@@ -25,15 +25,9 @@ export interface ResourceBreakdownRequest {
   end_date: string;
   scope?: 'self' | 'all';
   filters?: ResourceUsageFilters;
-  group_by?:
-    | 'date'
-    | 'resource_type'
-    | 'gpu_type'
-    | 'type'
-    | 'instance'
-    | 'user'
-    | 'volume'
-    | null;
+  // One or more grouping dimensions, combined left-to-right (mirrors the token
+  // usage API). A trend uses ['date', '<dim>']; a table uses ['<dim>'].
+  group_by?: string[];
   granularity?: 'hour' | 'day' | 'week' | 'month';
   // Server-side sort: a metric key (e.g. gpu_hours / instance_hours) +
   // direction. Defaults on the server when omitted.
@@ -69,6 +63,9 @@ export interface ResourceBreakdownItem extends ResourceBreakdownSummary {
   volume_name?: string;
   user_id?: number;
   user_name?: string;
+  // Grouped-trend rows carry the sub-group label (sku / instance / user / …)
+  // alongside ``date`` so the chart can pivot one series per group.
+  group?: string;
   last_active?: string;
   // Instance-type rows carry the flavor's display fields (pretty product name +
   // per-card specs) so the UI matches the GPU Instances list.
@@ -276,6 +273,9 @@ function flattenItem(
   // Deleted entities get a "(Deleted)" suffix, matching the Token breakdown.
   const rawKey = it.key ?? undefined;
   const key = it.deleted && rawKey != null ? `${rawKey} (Deleted)` : rawKey;
+  // Generic group label — for a compound (date + dim) trend row the key is the
+  // sub-group value (the switch below targets single-dimension table rows).
+  if (rawKey != null) flat.group = key;
   switch (groupBy) {
     case 'resource_type':
       flat.resource_type = key;
@@ -337,14 +337,16 @@ function flattenResponse(
 }
 
 function toServerRequest(data: ResourceBreakdownRequest) {
-  const groupBy = data.group_by ?? 'resource_type';
+  const groupByList = data.group_by?.length ? data.group_by : ['resource_type'];
   const { creator_ids, instance_ids, volume_ids } = data.filters ?? {};
+  // The non-date dimension drives response flattening into the right field.
+  const dim = groupByList.find((g) => g !== 'date');
   return {
     body: {
       start_date: data.start_date,
       end_date: data.end_date,
       scope: data.scope ?? 'all',
-      group_by: GROUP_BY_MAP[groupBy] ?? groupBy,
+      group_by: groupByList.map((g) => GROUP_BY_MAP[g] ?? g),
       granularity: data.granularity ?? 'day',
       // POST endpoints take proper id arrays. "filter by user" + "filter by
       // resource" (instance ids on the GPU tab / volume ids on Storage).
@@ -356,7 +358,7 @@ function toServerRequest(data: ResourceBreakdownRequest) {
       page: data.page ?? 1,
       perPage: data.perPage ?? 20
     },
-    groupBy
+    groupBy: dim
   };
 }
 
@@ -488,7 +490,7 @@ export async function queryUsageSummary(params: {
       start_date: params.start_date,
       end_date: params.end_date,
       scope: params.scope ?? 'all',
-      group_by: 'gpu_type',
+      group_by: ['gpu_type'],
       ...(creator_ids?.length ? { filters: { creator_ids } } : {}),
       page: 1,
       perPage: 100

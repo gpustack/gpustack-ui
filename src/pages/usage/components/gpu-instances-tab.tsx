@@ -34,6 +34,7 @@ import {
   generateBucketRange,
   Granularity
 } from '../utils/time-buckets';
+import { buildTrendSeries } from '../utils/trend-series';
 import MetricChartCard from './metric-chart-card';
 import MetricLabel from './metric-label';
 import ResourceExportData from './resource-export-data';
@@ -75,10 +76,11 @@ const GpuInstancesTab: React.FC = () => {
     ],
     [intl]
   );
-  // ``useCoolColors`` returns a memoized factory; resolve it once into a
-  // fixed 5-slot palette here so the rest of the component reads as
-  // array access.
-  const coolColors = useCoolColors()(5);
+  // ``useCoolColors`` returns a memoized factory; resolve a fixed 5-slot
+  // palette for the KPI cards, and keep the factory for the grouped trend
+  // (sized to the group count).
+  const colorFactory = useCoolColors();
+  const coolColors = colorFactory(5);
 
   // No All/My dropdown (matches the Tokens tab): managers see the org-wide
   // view and narrow it with the user filter, others only their own rows.
@@ -94,6 +96,8 @@ const GpuInstancesTab: React.FC = () => {
   const [refreshKey, setRefreshKey] = useState(0);
   const [metric, setMetric] = useState<Metric>('gpu_hours');
   const [granularity, setGranularity] = useState<Granularity>('day');
+  // Optional trend group-by (split the chart into one series per group).
+  const [chartGroupBy, setChartGroupBy] = useState<GroupKey | null>(null);
   // ``null`` group_by = no row grouping, just the summary KPIs.
   // The chart needs the ``date`` group; tables use the active table tab.
   const [activeTableTab, setActiveTableTab] = useState<GroupKey>('gpu_type');
@@ -139,7 +143,10 @@ const GpuInstancesTab: React.FC = () => {
     try {
       const data = await queryGpuInstancesBreakdown({
         ...baseRequest(),
-        group_by: 'date'
+        // Split each bucket by the chosen dimension when grouping; fetch the
+        // whole range (date × groups can exceed a normal page).
+        group_by: chartGroupBy ? ['date', chartGroupBy] : ['date'],
+        ...(chartGroupBy ? { perPage: 10000 } : {})
       });
       setChartData(data);
     } catch {
@@ -152,7 +159,7 @@ const GpuInstancesTab: React.FC = () => {
     try {
       const data = await queryGpuInstancesBreakdown({
         ...baseRequest(),
-        group_by: activeTableTab,
+        group_by: [activeTableTab],
         page: tablePage,
         order_by: tableSort.field,
         descending: tableSort.order === 'descend'
@@ -165,7 +172,14 @@ const GpuInstancesTab: React.FC = () => {
 
   useEffect(() => {
     fetchChart();
-  }, [dateRange, selectedUsers, selectedInstances, granularity, refreshKey]);
+  }, [
+    dateRange,
+    selectedUsers,
+    selectedInstances,
+    granularity,
+    chartGroupBy,
+    refreshKey
+  ]);
 
   useEffect(() => {
     fetchTable();
@@ -224,16 +238,7 @@ const GpuInstancesTab: React.FC = () => {
     [summary, coolColors, intl]
   );
 
-  // Build chart series — single series of the selected metric, plotted
-  // along the contiguous date range.
-  const dataByDate = useMemo(() => {
-    const map = new Map<string, number>();
-    chartData?.items?.forEach((item) => {
-      if (!item.date) return;
-      map.set(bucketKey(item.date, granularity), Number(item[metric] ?? 0));
-    });
-    return map;
-  }, [chartData, metric, granularity]);
+  // x-axis = the contiguous date range plus any buckets present in the data.
   const xAxis = useMemo(() => {
     const keys = new Set(
       generateBucketRange(
@@ -242,17 +247,40 @@ const GpuInstancesTab: React.FC = () => {
         granularity
       )
     );
-    dataByDate.forEach((_v, k) => keys.add(k));
+    chartData?.items?.forEach((i) => {
+      if (i.date) keys.add(bucketKey(i.date, granularity));
+    });
     return Array.from(keys).sort();
-  }, [dataByDate, dateRange, granularity]);
+  }, [chartData, dateRange, granularity]);
 
-  const seriesData = [
-    {
-      name: METRIC_OPTIONS.find((m) => m.value === metric)?.label || metric,
-      data: xAxis.map((d) => dataByDate.get(d) ?? 0),
-      color: coolColors[0]
-    }
-  ];
+  // Single series, or one stacked series per group when grouping is on.
+  const seriesData = useMemo(
+    () =>
+      buildTrendSeries({
+        items: chartData?.items,
+        metric,
+        granularity,
+        xAxis,
+        groupBy: chartGroupBy,
+        palette: colorFactory,
+        singleName:
+          METRIC_OPTIONS.find((m) => m.value === metric)?.label || metric
+      }),
+    [chartData, metric, granularity, xAxis, chartGroupBy, colorFactory]
+  );
+
+  // Group-by options for the trend = the same dimensions as the bottom tables
+  // (Users only when org-wide, matching the table tabs).
+  const chartGroupByOptions = useMemo(
+    () =>
+      TABLE_TABS.filter((t) => t.key !== 'user' || scope === 'all').map(
+        (t) => ({
+          value: t.key,
+          label: t.label
+        })
+      ),
+    [TABLE_TABS, scope]
+  );
 
   // Table columns adapt to the active tab.
   const tableColumns = useMemo(() => {
@@ -392,13 +420,13 @@ const GpuInstancesTab: React.FC = () => {
   const exportConfig =
     exportMode === 'chart'
       ? {
-          groupBy: 'date' as const,
+          groupBy: ['date'],
           columns: chartExportColumns,
           fileName: `gpu-instances_chart_${dateSuffix}.xlsx`,
           sheetName: intl.formatMessage({ id: 'usage.tabs.gpuInstances' })
         }
       : {
-          groupBy: activeTableTab,
+          groupBy: [activeTableTab],
           columns: tableColumns,
           fileName: `gpu-instances_${activeTableTab}_${dateSuffix}.xlsx`,
           sheetName: tabLabel || 'gpu-instances'
@@ -459,6 +487,9 @@ const GpuInstancesTab: React.FC = () => {
           onGranularityChange={(v) => setGranularity(v as Granularity)}
           seriesData={seriesData}
           xAxisData={xAxis}
+          groupBy={chartGroupBy}
+          groupByOptions={chartGroupByOptions}
+          onGroupByChange={(v) => setChartGroupBy(v as GroupKey | null)}
         />
       </div>
 

@@ -30,6 +30,7 @@ import {
   generateBucketRange,
   Granularity
 } from '../utils/time-buckets';
+import { buildTrendSeries } from '../utils/trend-series';
 import MetricChartCard from './metric-chart-card';
 import MetricLabel from './metric-label';
 import ResourceExportData from './resource-export-data';
@@ -42,7 +43,10 @@ type GroupKey = 'volume' | 'user';
 const StorageTab: React.FC = () => {
   const access = useAccess();
   const intl = useIntl();
-  const coolColors = useCoolColors()(4);
+  // Factory kept for the grouped trend (sized to group count); 4-slot palette
+  // for the KPI cards.
+  const colorFactory = useCoolColors();
+  const coolColors = colorFactory(4);
 
   const METRIC_OPTIONS: { value: Metric; label: string }[] = useMemo(
     () => [
@@ -83,6 +87,8 @@ const StorageTab: React.FC = () => {
   const [refreshKey, setRefreshKey] = useState(0);
   const [metric, setMetric] = useState<Metric>('storage_gb_days');
   const [granularity, setGranularity] = useState<Granularity>('day');
+  // Optional trend group-by (split the chart into one series per group).
+  const [chartGroupBy, setChartGroupBy] = useState<GroupKey | null>(null);
   const [activeTableTab, setActiveTableTab] = useState<GroupKey>('volume');
 
   const { creators: userOptions, volumes: volumeOptions } =
@@ -121,7 +127,10 @@ const StorageTab: React.FC = () => {
     try {
       const data = await queryStorageBreakdown({
         ...baseRequest(),
-        group_by: 'date'
+        // Split each bucket by the chosen dimension when grouping; fetch the
+        // whole range (date × groups can exceed a normal page).
+        group_by: chartGroupBy ? ['date', chartGroupBy] : ['date'],
+        ...(chartGroupBy ? { perPage: 10000 } : {})
       });
       setChartData(data);
     } catch {
@@ -140,7 +149,7 @@ const StorageTab: React.FC = () => {
     try {
       const data = await queryStorageBreakdown({
         ...baseRequest(),
-        group_by: activeTableTab,
+        group_by: [activeTableTab],
         page: tablePage,
         order_by: ORDER_BY_KEY[tableSort.field],
         descending: tableSort.order === 'descend'
@@ -153,7 +162,14 @@ const StorageTab: React.FC = () => {
 
   useEffect(() => {
     fetchChart();
-  }, [dateRange, selectedUsers, selectedVolumes, granularity, refreshKey]);
+  }, [
+    dateRange,
+    selectedUsers,
+    selectedVolumes,
+    granularity,
+    chartGroupBy,
+    refreshKey
+  ]);
 
   useEffect(() => {
     fetchTable();
@@ -208,14 +224,6 @@ const StorageTab: React.FC = () => {
     [summary, coolColors, intl]
   );
 
-  const dataByDate = useMemo(() => {
-    const map = new Map<string, number>();
-    chartData?.items?.forEach((item) => {
-      if (!item.date) return;
-      map.set(bucketKey(item.date, granularity), Number(item[metric] ?? 0));
-    });
-    return map;
-  }, [chartData, metric, granularity]);
   const xAxis = useMemo(() => {
     const keys = new Set(
       generateBucketRange(
@@ -224,17 +232,45 @@ const StorageTab: React.FC = () => {
         granularity
       )
     );
-    dataByDate.forEach((_v, k) => keys.add(k));
+    chartData?.items?.forEach((i) => {
+      if (i.date) keys.add(bucketKey(i.date, granularity));
+    });
     return Array.from(keys).sort();
-  }, [dataByDate, dateRange, granularity]);
+  }, [chartData, dateRange, granularity]);
 
-  const seriesData = [
-    {
-      name: METRIC_OPTIONS.find((m) => m.value === metric)?.label || metric,
-      data: xAxis.map((d) => dataByDate.get(d) ?? 0),
-      color: coolColors[0]
-    }
-  ];
+  const seriesData = useMemo(
+    () =>
+      buildTrendSeries({
+        items: chartData?.items,
+        metric,
+        granularity,
+        xAxis,
+        groupBy: chartGroupBy,
+        palette: colorFactory,
+        singleName:
+          METRIC_OPTIONS.find((m) => m.value === metric)?.label || metric
+      }),
+    [
+      chartData,
+      metric,
+      granularity,
+      xAxis,
+      chartGroupBy,
+      colorFactory,
+      METRIC_OPTIONS
+    ]
+  );
+
+  const chartGroupByOptions = useMemo(
+    () =>
+      TABLE_TABS.filter((t) => t.key !== 'user' || scope === 'all').map(
+        (t) => ({
+          value: t.key,
+          label: t.label
+        })
+      ),
+    [TABLE_TABS, scope]
+  );
 
   const tableColumns = useMemo(() => {
     const valueCols = [
@@ -349,13 +385,13 @@ const StorageTab: React.FC = () => {
   const exportConfig =
     exportMode === 'chart'
       ? {
-          groupBy: 'date' as const,
+          groupBy: ['date'],
           columns: chartExportColumns,
           fileName: `storage_chart_${dateSuffix}.xlsx`,
           sheetName: intl.formatMessage({ id: 'usage.tabs.storage' })
         }
       : {
-          groupBy: activeTableTab,
+          groupBy: [activeTableTab],
           columns: tableColumns,
           fileName: `storage_${activeTableTab}_${dateSuffix}.xlsx`,
           sheetName: tabLabel || 'storage'
@@ -413,6 +449,9 @@ const StorageTab: React.FC = () => {
           onGranularityChange={(v) => setGranularity(v as Granularity)}
           seriesData={seriesData}
           xAxisData={xAxis}
+          groupBy={chartGroupBy}
+          groupByOptions={chartGroupByOptions}
+          onGroupByChange={(v) => setChartGroupBy(v as GroupKey | null)}
         />
       </div>
 

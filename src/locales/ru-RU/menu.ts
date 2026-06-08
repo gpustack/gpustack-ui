@@ -29,6 +29,7 @@ export default {
   'menu.usage.usage': 'Использование',
   'menu.billingAndUsage': 'Использование и биллинг',
   'menu.billingAndUsage.usage': 'Использование',
+  'menu.billingAndUsage.billing': 'Биллинг',
   'menu.404': 'Ошибка 404',
   'menu.resources.workers': 'Воркеры',
   'menu.resources.gpus': 'GPUs',

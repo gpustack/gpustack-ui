@@ -67,7 +67,6 @@ const AddWorkerSteps: React.FC<AddWorkerProps> = (props) => {
   );
   const { update, summary, register } = useSummaryStatus();
   const { addedCount, createModelsChunkRequest } = useAddWorkerMessage();
-  console.log('addedCount=========', addedCount);
 
   const onToggle = (open: boolean, key: string) => {
     setCollapseKey(open ? new Set([key]) : new Set());
@@ -82,7 +81,6 @@ const AddWorkerSteps: React.FC<AddWorkerProps> = (props) => {
     setCollapseKey(new Set([stepList[0]]));
   }, [stepList]);
 
-  console.log('actionSource=========', actionSource, registrationInfo);
   React.useEffect(() => {
     // this effect is only triggered when used in cluster create page inner
     if (actionSource === 'page' && registrationInfo?.cluster_id) {

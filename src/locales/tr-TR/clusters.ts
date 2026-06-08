@@ -72,6 +72,7 @@ export default {
   'clusters.addworker.selectGPU.multiTag': 'Multi-select',
   'clusters.addworker.checkEnv': 'Ortamı Kontrol Et',
   'clusters.addworker.specifyArgs': 'Argümanları Belirle',
+  'clusters.addworker.dtkVersion': 'DTK Sürümü',
   'clusters.addworker.runCommand': 'Komutu Çalıştır',
   'clusters.addworker.specifyWorkerIP': "İşçi Düğüm IP'si",
   'clusters.addworker.detectWorkerIP': "İşçi Düğüm IP'sini Otomatik Algıla",

@@ -72,6 +72,7 @@ export default {
   'clusters.addworker.selectGPU.multiTag': 'Multi-select',
   'clusters.addworker.checkEnv': 'Check Environment',
   'clusters.addworker.specifyArgs': 'Specify Arguments',
+  'clusters.addworker.dtkVersion': 'DTK バージョン',
   'clusters.addworker.runCommand': 'Run Command',
   'clusters.addworker.specifyWorkerIP': 'Worker IP',
   'clusters.addworker.detectWorkerIP': 'Worker IP を自動検出',

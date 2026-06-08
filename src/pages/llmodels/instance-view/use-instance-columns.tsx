@@ -111,10 +111,8 @@ const useInstancesColumns = (options: {
                 style={{ fontSize: 12, position: 'relative', top: 2 }}
               />
               <span className="text-quaternary">
-                {record?.backend || record?.backend || ''}
-                {record.backend_version || record?.backend_version
-                  ? `(${record.backend_version || record?.backend_version})`
-                  : ''}
+                {record?.backend || ''}
+                {record.backend_version ? `(${record.backend_version})` : ''}
               </span>
             </div>
           </>

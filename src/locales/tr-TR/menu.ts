@@ -36,6 +36,7 @@ export default {
   'menu.usage.usage': 'Kullanım',
   'menu.billingAndUsage': 'Kullanım ve Faturalandırma',
   'menu.billingAndUsage.usage': 'Kullanım',
+  'menu.billingAndUsage.billing': 'Faturalandırma',
   'menu.404': '404',
   'menu.resources.clusters': 'Kümeler',
   'menu.resources.credentials': 'Bulut Kimlik Bilgileri',

@@ -29,6 +29,7 @@ export default {
   'menu.usage.usage': '使用状況',
   'menu.billingAndUsage': '使用状況と請求',
   'menu.billingAndUsage.usage': '使用状況',
+  'menu.billingAndUsage.billing': '請求',
   'menu.404': '404',
   'menu.settings': 'Settings',
   'menu.resources.workers': 'Workers',

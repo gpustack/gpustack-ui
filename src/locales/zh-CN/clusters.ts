@@ -70,6 +70,7 @@ export default {
   'clusters.addworker.selectGPU.multiTag': '可多选',
   'clusters.addworker.checkEnv': '检查环境',
   'clusters.addworker.specifyArgs': '指定参数',
+  'clusters.addworker.dtkVersion': 'DTK 版本',
   'clusters.addworker.runCommand': '运行指令',
   'clusters.addworker.specifyWorkerIP': '节点 IP',
   'clusters.addworker.detectWorkerIP': '自动检测节点 IP',

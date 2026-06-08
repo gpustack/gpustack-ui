@@ -36,6 +36,7 @@ export interface SummaryDataKeys {
   selectedGPUs: string[];
   cluster_id: number;
   clusterName: string;
+  dtkVersion: string;
   workerCommand: {
     label: string;
     link: string;

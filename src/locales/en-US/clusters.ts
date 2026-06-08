@@ -72,6 +72,7 @@ export default {
   'clusters.addworker.selectGPU.multiTag': 'Multi-select',
   'clusters.addworker.checkEnv': 'Check Environment',
   'clusters.addworker.specifyArgs': 'Specify Arguments',
+  'clusters.addworker.dtkVersion': 'DTK Version',
   'clusters.addworker.runCommand': 'Run Command',
   'clusters.addworker.specifyWorkerIP': 'Worker IP',
   'clusters.addworker.detectWorkerIP': 'Auto-detect Worker IP',

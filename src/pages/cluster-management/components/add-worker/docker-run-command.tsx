@@ -41,6 +41,8 @@ const DockerRunCommand: React.FC<AddWorkerStepProps> = ({ disabled }) => {
 
   const currentGPU = summary.get('currentGPU') || '';
 
+  const dtkVersion = summary.get('dtkVersion') || '25.04';
+
   const stepIndex = stepList.indexOf(StepNamesMap.RunCommand) + 1;
 
   return (
@@ -80,6 +82,7 @@ const DockerRunCommand: React.FC<AddWorkerStepProps> = ({ disabled }) => {
           gpustackDataVolumeConfig.enable ? gpustackDataVolumeConfig.path : ''
         }
         currentGPU={currentGPU}
+        dtkVersion={dtkVersion}
       />
     </StepCollapse>
   );

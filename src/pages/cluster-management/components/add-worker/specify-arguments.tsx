@@ -1,7 +1,11 @@
+import { GPUDriverMap } from '@/pages/resources/config/gpu-driver';
 import { ExclamationCircleFilled } from '@ant-design/icons';
-import { AlertBlockInfo as AlertInfoBlock } from '@gpustack/core-ui';
+import {
+  AlertBlockInfo as AlertInfoBlock,
+  SwitchCard
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Input, Switch, Typography } from 'antd';
+import { Input, Radio, Switch, Typography } from 'antd';
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { useAddWorkerContext } from './add-worker-context';
@@ -111,6 +115,14 @@ const SpecifyArguments: React.FC<AddWorkerStepProps> = ({ disabled }) => {
     path: 'gpustack-data'
   };
 
+  const selectedGPUs = summary.get('selectedGPUs') || [];
+
+  const dtkVersion = summary.get('dtkVersion') || '25.04';
+
+  // The DTK version selector only applies to Hygon DCUs, so only surface it
+  // when Hygon ('dtk') is among the selected vendors.
+  const showDtkVersion = selectedGPUs.includes(GPUDriverMap.HYGON);
+
   const setWorkerIPConfig = (config: {
     enable: boolean;
     ip?: string;
@@ -166,12 +178,14 @@ const SpecifyArguments: React.FC<AddWorkerStepProps> = ({ disabled }) => {
     const unregisterGpustackDataVolume = registerField(
       'gpustackDataVolumeConfig'
     );
+    const unregisterVersion = registerField('dtkVersion');
     return () => {
       unregisterWorkerIP();
       unregisterModelDir();
       unregisterCacheDir();
       unregisterContainerName();
       unregisterGpustackDataVolume();
+      unregisterVersion();
     };
   }, []);
 
@@ -207,6 +221,7 @@ const SpecifyArguments: React.FC<AddWorkerStepProps> = ({ disabled }) => {
       ip: '',
       required: false
     });
+    updateField('dtkVersion', '25.04');
   }, []);
 
   return (
@@ -229,6 +244,30 @@ const SpecifyArguments: React.FC<AddWorkerStepProps> = ({ disabled }) => {
           marginBottom: 8
         }}
       >
+        {showDtkVersion && (
+          <SwitchCard
+            label={intl.formatMessage({
+              id: 'clusters.addworker.dtkVersion'
+            })}
+            defaultValue={true}
+            showSwitch={false}
+            styles={{
+              wrapper: {
+                borderRadius: 4
+              }
+            }}
+          >
+            <Radio.Group
+              defaultValue={dtkVersion}
+              value={dtkVersion}
+              onChange={(e) => updateField('dtkVersion', e.target.value)}
+              style={{ marginTop: 8, display: 'flex', gap: 12 }}
+            >
+              <Radio value="25.04">25.04</Radio>
+              <Radio value="26.04">26.04</Radio>
+            </Radio.Group>
+          </SwitchCard>
+        )}
         {/* worker IP config */}
         <SwitchSetting
           label={

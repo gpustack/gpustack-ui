@@ -36,14 +36,6 @@ export const manfacturerValueMap = {
   THEAD: 'thead'
 };
 
-// 'vendor.ascend': '昇腾',
-//   'vendor.hygon': '海光',
-//   'vendor.moorthreads': '摩尔线程',
-//   'vendor.iluvatar': '天数智芯',
-//   'vendor.metax': '沐曦',
-//   'vendor.cambricon': '寒武纪',
-//   'vendor.thead': '平头哥 PPU'
-
 export const GPUsConfigs: Record<
   string,
   {
@@ -229,6 +221,7 @@ interface AddWorkerCommandParams {
   containerName?: string;
   gpustackDataVolume?: string;
   cacheDir?: string;
+  dtkVersion?: string;
 }
 
 const generateEnvArgs = (params: any) => {
@@ -361,12 +354,27 @@ const registerTHeadWorker = (params: AddWorkerCommandParams) => {
 
 const registerHygonWorker = (params: AddWorkerCommandParams) => {
   const config = GPUsConfigs[params.gpu];
-  const commonArgs = setNormalArgs(params);
+  // DTK 26.04 relocates the ROCm runtime under /opt/dtk/.hyhal and needs the
+  // mirrored-deployment seam to leave ROCM_PATH untouched; DTK 25.04 keeps the
+  // classic /opt/dtk layout.
+  const isDTK2604 = params.dtkVersion === '26.04';
+  const rocmPath = isDTK2604 ? '/opt/dtk/.hyhal' : '/opt/dtk';
+  const commonArgs = setNormalArgs(
+    isDTK2604
+      ? {
+          ...params,
+          extraEnv: {
+            GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT_IGNORE_ENVIRONMENTS:
+              'ROCM_PATH'
+          }
+        }
+      : params
+  );
   const imageArgs = setImageArgs(params);
   return `${commonArgs}
       --volume /opt/hyhal:/opt/hyhal:ro \\
       --volume /opt/dtk:/opt/dtk:ro \\
-      --env ROCM_PATH=/opt/dtk \\
+      --env ROCM_PATH=${rocmPath} \\
       --env ROCM_SMI_LIB_PATH=/opt/hyhal/lib \\
       ${imageArgs}
       ${setWorkerIPArg(params)}`;

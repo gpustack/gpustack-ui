@@ -224,6 +224,7 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
       }
     } catch (error: any) {
       setPlayingStream(false);
+      console.error('Error generating TTS:', error);
       setTokenResult({
         error: true,
         errorMessage: error?.message || 'Unknown error'

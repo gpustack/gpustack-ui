@@ -35,7 +35,8 @@ export const K8SStatuses = [
   InstanceStatusValueMap.Initialized,
   InstanceStatusValueMap.Preparing,
   InstanceStatusValueMap.NotReady,
-  InstanceStatusValueMap.Ready
+  InstanceStatusValueMap.Ready,
+  InstanceStatusValueMap.Starting
 ];
 
 export const GPUStackFailedStatuses = [
@@ -49,7 +50,6 @@ export const InstanceStatusLabelMap: Record<string, string> = {
   // === K8s Statuses ===
   ...Object.fromEntries(K8SStatuses.map((status) => [status, status])),
   // === GPUStack Statuses no logs and events===
-  [InstanceStatusValueMap.Starting]: 'Starting',
   [InstanceStatusValueMap.Deleting]: 'Deleting',
   [InstanceStatusValueMap.Stopping]: 'Stopping',
   [InstanceStatusValueMap.Stopped]: 'Stopped',

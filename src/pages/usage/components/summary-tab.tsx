@@ -187,6 +187,9 @@ const DomainSection: React.FC<{
               ]}
               xAxisData={trendXAxis}
               height={180}
+              grid={{
+                bottom: 0
+              }}
               title={trendTitle}
               labelFormatter={trendLabel(trendGran)}
               tooltipValueFormatter={(v) =>

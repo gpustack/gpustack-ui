@@ -522,7 +522,6 @@ export const useSelectModel = (data: { gpuOptions: any[] }) => {
       flatBackendOptions?: any[];
     }
   ) => {
-    console.log('options==========', options);
     const { source, defaultBackend, flatBackendOptions } = options;
     let name = _.split(selectModel.name, '/').slice(-1)[0];
     const reg = /(-gguf)$/i;
@@ -540,7 +539,7 @@ export const useSelectModel = (data: { gpuOptions: any[] }) => {
     const selectedBackend = flatBackendOptions?.find(
       (item) => item.value === backend
     );
-
+    console.log('selectedBackend=========', selectedBackend);
     return {
       ...(source === modelSourceMap.huggingface_value
         ? { huggingface_repo_id: selectModel.name }
@@ -552,6 +551,7 @@ export const useSelectModel = (data: { gpuOptions: any[] }) => {
       env: {
         ...(selectedBackend?.default_env || {})
       },
+      backend_parameters: [...(selectedBackend?.default_backend_param || [])],
       name: name,
       source: source,
       backend: backend

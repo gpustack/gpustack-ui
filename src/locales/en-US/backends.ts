@@ -27,7 +27,7 @@ export default {
   'backend.form.parameterFormat.default': 'Backend Default',
   'backend.form.parameterFormat.space': 'Space (--key value)',
   'backend.form.parameterFormat.equal': 'Equal (--key=value)',
-  'backend.form.commonParameters': 'Common Parameters',
+  'backend.form.commonParameters': 'Common Backend Parameters',
   'backend.form.commonParameters.tips':
     'Shown as suggestions in the backend parameters input during deployment.',
   'backend.form.versionConfig': 'Versions Config',

@@ -183,6 +183,9 @@ const BasicForm = () => {
         rules={[{ required: false }]}
       >
         <ListInput
+          description={intl.formatMessage({
+            id: 'backend.form.commonParameters.tips'
+          })}
           btnText={intl.formatMessage({ id: 'backend.form.addParameter' })}
           label={intl.formatMessage({
             id: 'backend.form.commonParameters'

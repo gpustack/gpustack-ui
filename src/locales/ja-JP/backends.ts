@@ -27,7 +27,7 @@ export default {
   'backend.form.parameterFormat.default': 'バックエンドのデフォルト',
   'backend.form.parameterFormat.space': 'スペース区切り (--key value)',
   'backend.form.parameterFormat.equal': 'イコール連結 (--key=value)',
-  'backend.form.commonParameters': 'よく使うパラメータ',
+  'backend.form.commonParameters': 'よく使うバックエンドパラメータ',
   'backend.form.commonParameters.tips':
     'モデルのデプロイ時にバックエンドパラメータ入力欄の候補として表示されます。',
   'backend.form.versionConfig': 'Versions Config',

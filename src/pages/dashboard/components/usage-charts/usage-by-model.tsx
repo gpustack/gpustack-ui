@@ -239,7 +239,7 @@ const UsageByModel: React.FC<UsageByModelProps> = ({
         // items naturally start at the container's left edge, so a short
         // label like `qwen3-0.6b` stays close to the donut instead of
         // floating in a void at the canvas edge.
-        left: '85%',
+        left: '82%',
         right: 0,
         top: 18,
         bottom: 18,
@@ -251,10 +251,19 @@ const UsageByModel: React.FC<UsageByModelProps> = ({
           overflow: 'truncate',
           // 15% of typical xl card canvas (~680-900px) ≈ 102-135px column;
           // marker(8) + gap(5) + 90 = 103 fits even at the narrow end.
-          width: 90
+          width: 200
         },
         data: legendNames,
-        show: legendNames.length > 0
+        show: legendNames.length > 0,
+        // Surface the full route name on hover, but only for labels that are
+        // actually truncated — non-truncated ones return '' so no (empty)
+        // tooltip pops up.
+        tooltip: {
+          show: true,
+          backgroundColor: token.colorBgElevated,
+          borderColor: 'transparent',
+          textStyle: { color: token.colorText, fontSize: 12 }
+        }
       },
       series: [
         {

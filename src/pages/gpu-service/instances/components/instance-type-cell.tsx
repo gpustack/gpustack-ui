@@ -24,7 +24,6 @@ const InstanceTypeCell: React.FC<{
 }> = ({ title, name, sections }) => {
   const specInfo = (
     <div style={{ minWidth: 200 }}>
-      {name && <div style={{ fontWeight: 600, marginBottom: 8 }}>{name}</div>}
       {sections.map((sec) => {
         const rows = sec.rows.filter(([, v]) => v && v !== '-');
         if (!rows.length) return null;

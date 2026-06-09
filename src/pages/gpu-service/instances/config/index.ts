@@ -153,11 +153,7 @@ export const rowActionList: InstanceRowAction[] = [
     icon: icons.DeleteOutlined,
     show: (record: ListItem) => {
       const phase = record.status?.phase;
-      return [
-        ...GPUStackFailedStatuses,
-        InstanceStatusValueMap.Ready,
-        InstanceStatusValueMap.Unknown
-      ].includes(phase as string);
+      return true;
     },
     props: {
       danger: true

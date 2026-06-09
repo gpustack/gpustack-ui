@@ -13,6 +13,7 @@ import ColumnWrapper from '../../../_components/column-wrapper';
 import {
   defaultFormValues,
   DeployFormKeyMap,
+  mergeBackendParameters,
   modelSourceMap
 } from '../../config';
 import { FormData, SourceType } from '../../config/types';
@@ -406,10 +407,10 @@ const AddModal: FC<AddModalProps> = (props) => {
           ...modelInfo.env,
           ...defaultSpec.env
         },
-        backend_parameters: [
-          ...modelInfo.backend_parameters,
-          ...(defaultSpec.backend_parameters || [])
-        ],
+        backend_parameters: mergeBackendParameters(
+          modelInfo.backend_parameters,
+          defaultSpec.backend_parameters
+        ),
         name: generateNameValue(item, modelInfo.name, manual),
         categories: getCategory(item)
       };

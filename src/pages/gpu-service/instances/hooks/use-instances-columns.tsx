@@ -1,3 +1,4 @@
+import { usePluginListColumns } from '@/plugins/list-extra-columns';
 import { ExportOutlined } from '@ant-design/icons';
 import {
   AutoTooltip,
@@ -170,6 +171,7 @@ const useInstancesColumns = ({
 }: ColumnsHookProps): ColumnsType<ListItem> => {
   const intl = useIntl();
   const access = useAccess();
+  const pluginCols = usePluginListColumns('gpuInstances');
 
   const renderInstanceType = (record: ListItem) => {
     const description =
@@ -247,6 +249,12 @@ const useInstancesColumns = ({
   };
 
   return useMemo(() => {
+    const pluginRendered = pluginCols.map((c) => ({
+      title: intl.formatMessage({ id: c.titleId }),
+      key: c.key,
+      ellipsis: { showTitle: false },
+      render: (_text: any, record: ListItem) => c.render(record)
+    }));
     return [
       {
         title: intl.formatMessage({ id: 'common.table.name' }),
@@ -381,6 +389,7 @@ const useInstancesColumns = ({
         width: 300,
         render: (_text: string, record: ListItem) => renderInstanceType(record)
       },
+      ...pluginRendered,
       {
         title: intl.formatMessage({ id: 'clusters.title' }),
         dataIndex: 'clusterId',
@@ -426,7 +435,14 @@ const useInstancesColumns = ({
         }
       }
     ];
-  }, [handleSelect, sortOrder, clusterList, intl, pvCapacityByName]);
+  }, [
+    handleSelect,
+    sortOrder,
+    clusterList,
+    intl,
+    pvCapacityByName,
+    pluginCols
+  ]);
 };
 
 export default useInstancesColumns;

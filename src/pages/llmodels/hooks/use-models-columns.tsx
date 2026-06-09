@@ -2,6 +2,7 @@
 import { systemConfigAtom } from '@/atoms/system';
 import { OPENAI_COMPATIBLE, tableSorter } from '@/config/settings';
 import { TargetStatusValueMap } from '@/pages/model-routes/config';
+import { usePluginListColumns } from '@/plugins/list-extra-columns';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import {
   AutoTooltip,
@@ -105,6 +106,7 @@ const useModelsColumns = ({
 }: ModelsColumnsHookProps & { targetList: any[] }): TableColumnProps[] => {
   const intl = useIntl();
   const systemConfig = useAtomValue(systemConfigAtom);
+  const pluginCols = usePluginListColumns('llmodels');
 
   const setModelActionList = useMemoizedFn((record: any) => {
     return _.filter(ActionList, (action: any) => {
@@ -150,6 +152,30 @@ const useModelsColumns = ({
   };
 
   return useMemo(() => {
+    // Two prebuilt span maps for the 24-unit SealTable grid: one for
+    // the default layout, one for when a plugin contributes an extra
+    // column (currently always the 4-span Organization cell). Width
+    // absorbed comes from the widest non-name columns (`source`,
+    // `replicas`, `created_at`). See the matching map in
+    // `use-cluster-columns.tsx` for rationale.
+    const SPANS_DEFAULT = {
+      source: 5,
+      replicas: 4,
+      createTime: 4
+    };
+    const SPANS_WITH_PLUGIN = {
+      source: 3,
+      replicas: 3,
+      createTime: 3
+    };
+    const spans = pluginCols.length > 0 ? SPANS_WITH_PLUGIN : SPANS_DEFAULT;
+    const pluginRendered = pluginCols.map((c) => ({
+      title: intl.formatMessage({ id: c.titleId }),
+      dataIndex: c.key,
+      key: c.key,
+      span: c.span ?? 4,
+      render: (_text: any, record: ListItem) => c.render(record)
+    }));
     return [
       {
         title: intl.formatMessage({ id: 'common.table.name' }),
@@ -173,6 +199,7 @@ const useModelsColumns = ({
           </Flex>
         )
       },
+      ...pluginRendered,
       {
         title: intl.formatMessage({ id: 'clusters.title' }),
         dataIndex: 'cluster_id',
@@ -193,7 +220,7 @@ const useModelsColumns = ({
         dataIndex: 'source',
         key: 'source',
         sorter: tableSorter(3),
-        span: 5,
+        span: spans.source,
         render: (text: string, record: ListItem) => (
           <span className="flex flex-column" style={{ width: '100%' }}>
             <AutoTooltip ghost>{generateSource(record)}</AutoTooltip>
@@ -216,7 +243,7 @@ const useModelsColumns = ({
         key: 'replicas',
         align: 'left',
         sorter: tableSorter(4),
-        span: 4,
+        span: spans.replicas,
         editable: {
           valueType: 'number',
           title: intl.formatMessage({ id: 'models.table.replicas.edit' })
@@ -241,7 +268,7 @@ const useModelsColumns = ({
         dataIndex: 'created_at',
         key: 'created_at',
         sorter: tableSorter(5),
-        span: 4,
+        span: spans.createTime,
         render: (text: number) => (
           <AutoTooltip ghost>
             {dayjs(text).format('YYYY-MM-DD HH:mm:ss')}
@@ -261,7 +288,14 @@ const useModelsColumns = ({
         )
       }
     ];
-  }, [sortOrder, clusterList, intl, handleSelect, setModelActionList]);
+  }, [
+    sortOrder,
+    clusterList,
+    intl,
+    handleSelect,
+    setModelActionList,
+    pluginCols
+  ]);
 };
 
 export default useModelsColumns;

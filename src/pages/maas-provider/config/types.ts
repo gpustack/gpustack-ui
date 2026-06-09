@@ -22,6 +22,7 @@ export interface FormData {
 export interface MaasProviderItem {
   name: string;
   description: string;
+  owner_principal_id?: number | null;
   proxy_url: string;
   proxy_timeout: number;
   config: {

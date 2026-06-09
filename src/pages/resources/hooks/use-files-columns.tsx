@@ -1,6 +1,7 @@
 import { tableSorter } from '@/config/settings';
 import { modelSourceMap } from '@/pages/llmodels/config';
 import { modelFileActions } from '@/pages/llmodels/config/button-actions';
+import { usePluginListColumns } from '@/plugins/list-extra-columns';
 import { convertFileSize } from '@/utils';
 import {
   CheckCircleFilled,
@@ -270,8 +271,15 @@ const useFilesColumns = (props: {
 }): ColumnsType<ListItem> => {
   const { workersList, sortOrder, handleSelect } = props;
   const intl = useIntl();
+  const pluginCols = usePluginListColumns('modelFiles');
 
   return useMemo(() => {
+    const pluginRendered = pluginCols.map((c) => ({
+      title: intl.formatMessage({ id: c.titleId }),
+      key: c.key,
+      ellipsis: { showTitle: false },
+      render: (_text: any, record: ListItem) => c.render(record)
+    }));
     return [
       {
         title: intl.formatMessage({ id: 'models.form.source' }),
@@ -294,6 +302,7 @@ const useFilesColumns = (props: {
           );
         }
       },
+      ...pluginRendered,
       {
         title: intl.formatMessage({ id: 'resources.worker' }),
         dataIndex: 'worker_id',
@@ -370,7 +379,7 @@ const useFilesColumns = (props: {
         )
       }
     ];
-  }, [intl, workersList, handleSelect]);
+  }, [intl, workersList, handleSelect, pluginCols]);
 };
 
 export default useFilesColumns;

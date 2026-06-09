@@ -18,6 +18,7 @@ export interface CredentialListItem {
   access_key: string;
   secret_key: string;
   description?: string;
+  owner_principal_id?: number | null;
   created_at: string;
   updated_at: string;
 }

@@ -1,5 +1,6 @@
 // columns.ts
 import { tableSorter } from '@/config/settings';
+import { usePluginListColumns } from '@/plugins/list-extra-columns';
 import { AutoTooltip, DropdownButtons } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { ColumnsType } from 'antd/es/table';
@@ -12,8 +13,15 @@ const useCredentialColumns = (
   handleSelect: (val: string, record: ListItem) => void
 ): ColumnsType<ListItem> => {
   const intl = useIntl();
+  const pluginCols = usePluginListColumns('cloudCredentials');
 
   return useMemo(() => {
+    const pluginRendered = pluginCols.map((c) => ({
+      title: intl.formatMessage({ id: c.titleId }),
+      key: c.key,
+      ellipsis: { showTitle: false },
+      render: (_text: any, record: ListItem) => c.render(record)
+    }));
     return [
       {
         title: intl.formatMessage({ id: 'common.table.name' }),
@@ -25,6 +33,7 @@ const useCredentialColumns = (
           </AutoTooltip>
         )
       },
+      ...pluginRendered,
       {
         title: intl.formatMessage({ id: 'clusters.table.provider' }),
         dataIndex: 'provider',
@@ -68,7 +77,7 @@ const useCredentialColumns = (
         )
       }
     ];
-  }, [intl, handleSelect]);
+  }, [intl, handleSelect, pluginCols]);
 };
 
 export default useCredentialColumns;

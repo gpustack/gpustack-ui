@@ -1,4 +1,5 @@
 import { tableSorter } from '@/config/settings';
+import { usePluginListColumns } from '@/plugins/list-extra-columns';
 import { convertFileSize } from '@/utils';
 import { AutoTooltip, InfoColumn, ProgressBar } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
@@ -41,8 +42,15 @@ const useGPUColumns = (props: {
 }): ColumnsType<GPUDeviceItem> => {
   const { clusterList, loadend, firstLoad, sortOrder } = props;
   const intl = useIntl();
+  const pluginCols = usePluginListColumns('gpus');
 
   return useMemo(() => {
+    const pluginRendered = pluginCols.map((c) => ({
+      title: intl.formatMessage({ id: c.titleId }),
+      key: c.key,
+      ellipsis: { showTitle: false },
+      render: (_text: any, record: GPUDeviceItem) => c.render(record)
+    }));
     return [
       {
         title: intl.formatMessage({ id: 'common.table.name' }),
@@ -62,6 +70,7 @@ const useGPUColumns = (props: {
         sorter: tableSorter(2),
         render: (text: string, record: GPUDeviceItem) => <span>{text}</span>
       },
+      ...pluginRendered,
       {
         title: intl.formatMessage({ id: 'clusters.title' }),
         dataIndex: 'cluster_id',
@@ -141,7 +150,7 @@ const useGPUColumns = (props: {
         }
       }
     ];
-  }, [intl, clusterList, loadend, firstLoad]);
+  }, [intl, clusterList, loadend, firstLoad, pluginCols]);
 };
 
 export default useGPUColumns;

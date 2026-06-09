@@ -1,3 +1,4 @@
+import { usePluginListColumns } from '@/plugins/list-extra-columns';
 import { AutoTooltip, DropdownButtons, icons } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import type { ColumnsType } from 'antd/lib/table';
@@ -33,7 +34,14 @@ const usePublicKeyColumns = ({
   sortOrder
 }: ColumnsHookProps): ColumnsType<ListItem> => {
   const intl = useIntl();
+  const pluginCols = usePluginListColumns('gpuPublicKeys');
   return useMemo(() => {
+    const pluginRendered = pluginCols.map((c) => ({
+      title: intl.formatMessage({ id: c.titleId }),
+      key: c.key,
+      ellipsis: { showTitle: false },
+      render: (_text: any, record: ListItem) => c.render(record)
+    }));
     return [
       {
         title: intl.formatMessage({ id: 'common.table.name' }),
@@ -53,6 +61,7 @@ const usePublicKeyColumns = ({
           </AutoTooltip>
         )
       },
+      ...pluginRendered,
       {
         title: intl.formatMessage({ id: 'common.table.createTime' }),
         dataIndex: 'created_at',
@@ -80,7 +89,7 @@ const usePublicKeyColumns = ({
         )
       }
     ];
-  }, [handleSelect, sortOrder, intl]);
+  }, [handleSelect, sortOrder, intl, pluginCols]);
 };
 
 export default usePublicKeyColumns;

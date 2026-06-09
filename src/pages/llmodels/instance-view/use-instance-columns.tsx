@@ -1,6 +1,7 @@
 // columns.ts
 import { tableSorter } from '@/config/settings';
 import { ListItem as workerListItem } from '@/pages/resources/config/types';
+import { usePluginListColumns } from '@/plugins/list-extra-columns';
 import { convertFileSize } from '@/utils';
 import { ThunderboltFilled } from '@ant-design/icons';
 import { AutoTooltip, IconFont } from '@gpustack/core-ui';
@@ -67,6 +68,7 @@ const useInstancesColumns = (options: {
   const intl = useIntl();
   const { workerList, clusterList, modelList, handleSelect, onCellClick } =
     options;
+  const pluginCols = usePluginListColumns('modelInstances');
 
   const renderWorkerCell = (text: number, record: ListItem) => {
     if (text) {
@@ -84,6 +86,12 @@ const useInstancesColumns = (options: {
   };
 
   return useMemo(() => {
+    const pluginRendered = pluginCols.map((c) => ({
+      title: intl.formatMessage({ id: c.titleId }),
+      key: c.key,
+      ellipsis: { showTitle: false },
+      render: (_text: any, record: ListItem) => c.render(record)
+    }));
     return [
       {
         title: intl.formatMessage({ id: 'common.table.name' }),
@@ -118,6 +126,7 @@ const useInstancesColumns = (options: {
           </>
         )
       },
+      ...pluginRendered,
       {
         title: intl.formatMessage({ id: 'clusters.title' }),
         dataIndex: 'cluster_id',
@@ -202,7 +211,15 @@ const useInstancesColumns = (options: {
         )
       }
     ];
-  }, [handleSelect, onCellClick, workerList, clusterList, modelList]);
+  }, [
+    handleSelect,
+    onCellClick,
+    workerList,
+    clusterList,
+    modelList,
+    intl,
+    pluginCols
+  ]);
 };
 
 export default useInstancesColumns;

@@ -293,6 +293,13 @@ const StorageTab: React.FC = () => {
         render: (v: number) => (v ?? 0).toFixed(2)
       }
     ];
+    // Last Active is a UTC instant (max bucket hour) → show formatted local time.
+    const lastActiveCol = {
+      title: intl.formatMessage({ id: 'usage.table.lastActive' }),
+      dataIndex: 'last_active',
+      key: 'last_active',
+      render: (v?: string) => (v ? dayjs(v).format('YYYY-MM-DD HH:mm:ss') : '-')
+    };
     if (activeTableTab === 'volume') {
       return [
         {
@@ -314,11 +321,7 @@ const StorageTab: React.FC = () => {
           render: (v?: number) => (v ? `${Math.round(v / 1024)}GB` : '-')
         },
         ...valueCols,
-        {
-          title: intl.formatMessage({ id: 'usage.table.lastActive' }),
-          dataIndex: 'last_active',
-          key: 'last_active'
-        }
+        lastActiveCol
       ];
     }
     return [
@@ -333,11 +336,7 @@ const StorageTab: React.FC = () => {
         dataIndex: 'active_volumes',
         key: 'active_volumes'
       },
-      {
-        title: intl.formatMessage({ id: 'usage.table.lastActive' }),
-        dataIndex: 'last_active',
-        key: 'last_active'
-      }
+      lastActiveCol
     ];
   }, [activeTableTab, tableSort, intl]);
 

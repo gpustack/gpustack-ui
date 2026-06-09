@@ -35,8 +35,7 @@ export const K8SStatuses = [
   InstanceStatusValueMap.Initialized,
   InstanceStatusValueMap.Preparing,
   InstanceStatusValueMap.NotReady,
-  InstanceStatusValueMap.Ready,
-  InstanceStatusValueMap.Starting
+  InstanceStatusValueMap.Ready
 ];
 
 export const GPUStackFailedStatuses = [
@@ -54,6 +53,7 @@ export const InstanceStatusLabelMap: Record<string, string> = {
   [InstanceStatusValueMap.Stopping]: 'Stopping',
   [InstanceStatusValueMap.Stopped]: 'Stopped',
   [InstanceStatusValueMap.Unknown]: 'Unknown',
+  [InstanceStatusValueMap.Starting]: 'Starting',
   ...Object.fromEntries(
     GPUStackFailedStatuses.map((status) => [status, status])
   )
@@ -114,7 +114,9 @@ export const rowActionList: InstanceRowAction[] = [
     icon: icons.ProfileOutlined,
     show: (record: ListItem) => {
       const phase = record.status?.phase;
-      return K8SStatuses.includes(phase as string);
+      return [...K8SStatuses, InstanceStatusValueMap.Starting].includes(
+        phase as string
+      );
     }
   },
   {
@@ -143,7 +145,7 @@ export const rowActionList: InstanceRowAction[] = [
     },
     show: (record: ListItem) => {
       const phase = record.status?.phase;
-      return K8SStatuses.includes(phase as string);
+      return [InstanceStatusValueMap.Ready].includes(phase as string);
     }
   },
   {

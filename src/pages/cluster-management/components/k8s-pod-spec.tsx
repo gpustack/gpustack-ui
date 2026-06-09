@@ -4,7 +4,7 @@ import { Input as CInput, LabelSelector } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
-import React, { useEffect, useId } from 'react';
+import React, { useEffect, useId, useMemo } from 'react';
 import styled from 'styled-components';
 import { ClusterListItem as ListItem } from '../config/types';
 import ImageCredential from './image-credential';
@@ -289,10 +289,9 @@ export const GpuInstancesStaticAddressForm: React.FC = () => {
   );
 };
 
-// Strip UI-only / undefined-valued noise so two k8s_options snapshots compare
-// on real content. `sourceType` is derived from `volumeSource` purely for the
-// volume-mount UI (see cluster-form init), and the JSON round-trip drops
-// undefined-valued keys so a missing key and `key: undefined` compare equal.
+// Strip UI-only noise so two k8s_options snapshots compare on real content.
+// `sourceType` is derived from `volumeSource` purely for the volume-mount UI
+// (see cluster-form init).
 const cleanK8sOptions = (opts: any) => {
   const cloned = _.cloneDeep(opts || {});
   if (Array.isArray(cloned.volumeMounts)) {
@@ -300,24 +299,32 @@ const cleanK8sOptions = (opts: any) => {
       ({ sourceType, ...rest }: any) => rest
     );
   }
-  // The edit form always seeds k8s_options.volumeMounts to [] even when the
-  // saved cluster had no value, so an absent field would otherwise read as a
-  // change the moment the drawer opens. Drop empty top-level arrays on both
-  // sides: "absent" and "empty list" both mean nothing configured. A
-  // non-empty -> empty edit is still detected, since only the empty side drops.
-  Object.keys(cloned).forEach((key) => {
-    if (Array.isArray(cloned[key]) && cloned[key].length === 0) {
-      delete cloned[key];
-    }
-  });
-  return JSON.parse(JSON.stringify(cloned));
+  return cloned;
+};
+
+// Custom comparator for isEqualWith: treats null, undefined, empty strings,
+// empty arrays, and empty objects as equivalent. Form normalize converts empty
+// inputs to null while the API may omit absent keys (read as undefined when
+// accessed on the object). This lets "user clears field back to original"
+// compare as unchanged without needing to recursively strip nullish values.
+const nullishCustomizer = (val1: any, val2: any) => {
+  if (
+    (val1 == null && val2 === '') ||
+    (val1 === '' && val2 == null) ||
+    (_.isEmpty(val1) && val2 == null) ||
+    (val1 == null && _.isEmpty(val2))
+  ) {
+    return true;
+  }
+  return undefined;
 };
 
 // Headless watcher: in EDIT mode it reports (via onChange) whether the user has
-// changed any k8s_options field from the cluster's saved values. It renders
-// nothing — the notice itself is shown in the form footer, above Save/Cancel
-// (see cluster-create.tsx), mirroring the model edit interaction. Must be
-// mounted inside the cluster <Form> so the watch reads the form store.
+// changed any k8s_options field or the top-level system_default_container_registry
+// from the cluster's saved values. It renders nothing — the notice itself is shown
+// in the form footer, above Save/Cancel (see cluster-create.tsx), mirroring the
+// model edit interaction. Must be mounted inside the cluster <Form> so the watch
+// reads the form store.
 export const K8sOptionsChangeWatcher: React.FC<{
   action: PageActionType;
   currentData?: ListItem;
@@ -327,13 +334,31 @@ export const K8sOptionsChangeWatcher: React.FC<{
   // gpuInstanceOptions which is toggled via setFieldValue without a mounted
   // Form.Item (mirrors ClusterTypeSelector).
   const k8sOptions = Form.useWatch(['k8s_options'], { preserve: true });
+  const containerRegistry = Form.useWatch('system_default_container_registry', {
+    preserve: true
+  });
+
+  // currentData?.k8s_options is static for the form's lifetime — memoize the
+  // cleaned version to avoid redundant deep-clone on every render
+  // (Form.useWatch triggers re-render on each keystroke).
+  const currentK8sOptionsCleaned = useMemo(
+    () => cleanK8sOptions(currentData?.k8s_options),
+    [currentData?.k8s_options]
+  );
+
+  const k8sOptionsChanged = !_.isEqualWith(
+    currentK8sOptionsCleaned,
+    cleanK8sOptions(k8sOptions),
+    nullishCustomizer
+  );
+  const registryChanged = !_.isEqualWith(
+    currentData?.system_default_container_registry,
+    containerRegistry,
+    nullishCustomizer
+  );
 
   const changed =
-    action === PageAction.EDIT &&
-    !_.isEqual(
-      cleanK8sOptions(currentData?.k8s_options),
-      cleanK8sOptions(k8sOptions)
-    );
+    action === PageAction.EDIT && (k8sOptionsChanged || registryChanged);
 
   useEffect(() => {
     onChange(changed);

@@ -354,15 +354,18 @@ export const mergeBackendParameters = (
   baseParams: string[] = [],
   priorityParams: string[] = []
 ): string[] => {
+  const safeBase = baseParams || [];
+  const safePriority = priorityParams || [];
+
   const priorityKeys = new Set(
-    priorityParams.map((param) => getBackendParameterKey(param))
+    safePriority.map((param) => getBackendParameterKey(param))
   );
 
-  const filteredBase = baseParams.filter(
+  const filteredBase = safeBase.filter(
     (param) => !priorityKeys.has(getBackendParameterKey(param))
   );
 
-  return [...filteredBase, ...priorityParams];
+  return [...filteredBase, ...safePriority];
 };
 
 export const modelLabels = [

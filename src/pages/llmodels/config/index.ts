@@ -340,6 +340,31 @@ export const setbackendParameters = (data: any) => {
   return result;
 };
 
+// extract the key of a backend parameter.
+// supported formats: '--key', '--key=value', '--key value'
+export const getBackendParameterKey = (param: string): string => {
+  const trimmed = String(param).trim();
+  const matched = trimmed.match(/^([^=\s]+)/);
+  return matched ? matched[1] : trimmed;
+};
+
+// merge two backend_parameters lists and dedupe by key.
+// params from `priorityParams` (e.g. defaultSpec) win over `baseParams`.
+export const mergeBackendParameters = (
+  baseParams: string[] = [],
+  priorityParams: string[] = []
+): string[] => {
+  const priorityKeys = new Set(
+    priorityParams.map((param) => getBackendParameterKey(param))
+  );
+
+  const filteredBase = baseParams.filter(
+    (param) => !priorityKeys.has(getBackendParameterKey(param))
+  );
+
+  return [...filteredBase, ...priorityParams];
+};
+
 export const modelLabels = [
   { label: 'Image', value: 'image_only' },
   { label: 'Text-to-speech', value: 'text_to_speech' },

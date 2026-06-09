@@ -8,7 +8,11 @@ import _ from 'lodash';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { queryCatalogItemSpec } from '../../apis';
-import { DeployFormKeyMap, sourceOptions } from '../../config';
+import {
+  DeployFormKeyMap,
+  mergeBackendParameters,
+  sourceOptions
+} from '../../config';
 import { CatalogFormContext } from '../../config/form-context';
 import {
   CatalogSpec,
@@ -280,10 +284,10 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       setSourceList(sources);
       initFormDataBySource({
         ...defaultSpec,
-        backend_parameters: [
-          ...defaultBackendParams,
-          ...(defaultSpec.backend_parameters || [])
-        ],
+        backend_parameters: mergeBackendParameters(
+          defaultBackendParams,
+          defaultSpec.backend_parameters || []
+        ),
         cluster_id: clusterId
       });
 

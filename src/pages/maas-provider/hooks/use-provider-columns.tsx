@@ -1,5 +1,6 @@
 // columns.ts
 import { tableSorter } from '@/config/settings';
+import { usePluginListColumns } from '@/plugins/list-extra-columns';
 import { AutoTooltip, DropdownButtons } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Tag } from 'antd';
@@ -16,6 +17,7 @@ const useProviderColumns = (
   onCellClick?: (record: MaasProviderItem, dataIndex: string) => void
 ): ColumnsType<MaasProviderItem> => {
   const intl = useIntl();
+  const pluginCols = usePluginListColumns('maasProviders');
 
   return useMemo(() => {
     const setActionList = (record: MaasProviderItem) => {
@@ -26,6 +28,12 @@ const useProviderColumns = (
         return true;
       });
     };
+    const pluginRendered = pluginCols.map((c) => ({
+      title: intl.formatMessage({ id: c.titleId }),
+      dataIndex: c.key,
+      span: c.span ?? 4,
+      render: (_value: any, record: MaasProviderItem) => c.render(record)
+    }));
     return [
       {
         title: intl.formatMessage({ id: 'common.table.name' }),
@@ -46,6 +54,7 @@ const useProviderColumns = (
           </>
         )
       },
+      ...pluginRendered,
       {
         title: intl.formatMessage({ id: 'providers.table.providerName' }),
         dataIndex: ['config', 'type'],
@@ -96,7 +105,7 @@ const useProviderColumns = (
         )
       }
     ];
-  }, [handleSelect, onCellClick]);
+  }, [handleSelect, onCellClick, intl, pluginCols]);
 };
 
 export default useProviderColumns;

@@ -1,5 +1,6 @@
 // columns.ts
 import { tableSorter } from '@/config/settings';
+import { usePluginListColumns } from '@/plugins/list-extra-columns';
 import { AutoTooltip } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Typography } from 'antd';
@@ -15,8 +16,15 @@ const useBenchmarkColumns = (params: {
 }): ColumnsType<ListItem> => {
   const intl = useIntl();
   const { onCellClick, handleSelect, columns } = params;
+  const pluginCols = usePluginListColumns('benchmarks');
 
   return useMemo(() => {
+    const pluginRendered = pluginCols.map((c) => ({
+      title: intl.formatMessage({ id: c.titleId }),
+      key: c.key,
+      ellipsis: { showTitle: false },
+      render: (_text: any, record: ListItem) => c.render(record)
+    }));
     return [
       {
         title: (
@@ -34,6 +42,7 @@ const useBenchmarkColumns = (params: {
           </AutoTooltip>
         )
       },
+      ...pluginRendered,
       ...columns,
       {
         title: (
@@ -51,7 +60,7 @@ const useBenchmarkColumns = (params: {
         )
       }
     ];
-  }, [intl, onCellClick, handleSelect, columns]);
+  }, [intl, onCellClick, handleSelect, columns, pluginCols]);
 };
 
 export default useBenchmarkColumns;

@@ -2,6 +2,7 @@
 import { tableSorter } from '@/config/settings';
 import ModelTag from '@/pages/_components/model-tag';
 import { getGPUStackPlugin } from '@/plugins';
+import { usePluginListColumns } from '@/plugins/list-extra-columns';
 import {
   AutoTooltip,
   DropdownButtons,
@@ -25,7 +26,7 @@ type PluginColumn = {
   key: string;
   titleId: string;
   span?: number;
-  placement?: 'before-time' | 'before-operation';
+  placement?: 'after-name' | 'before-time' | 'before-operation';
   render: (record: RouteItem) => React.ReactNode;
 };
 
@@ -54,15 +55,16 @@ interface ColumnsHookProps {
 // contributing slack (preferred 10, min 4), there's room for plugin
 // columns up to a combined span of 6 before we have to take from
 // other built-ins. Layout above this threshold is preserved by also
-// shrinking `createTime` (min 3); `name` and `operation` stay fixed
-// so the action dropdown alignment isn't disturbed. Plugins whose
-// combined span would exceed what these reductions can absorb fall
-// back to their declared widths and may visibly wrap — that's a
-// plugin-author concern, not a host one.
+// shrinking `createTime` (min 2 — the date string ellipsizes
+// gracefully); `name` and `operation` stay fixed so the action
+// dropdown alignment isn't disturbed. Plugins whose combined span
+// would exceed what these reductions can absorb fall back to their
+// declared widths and may visibly wrap — that's a plugin-author
+// concern, not a host one.
 const TARGETS_PREFERRED_SPAN = 10;
 const TARGETS_MIN_SPAN = 4;
 const CREATE_TIME_PREFERRED_SPAN = 5;
-const CREATE_TIME_MIN_SPAN = 3;
+const CREATE_TIME_MIN_SPAN = 2;
 
 const useAccessColumns = ({
   handleSelect,
@@ -70,8 +72,20 @@ const useAccessColumns = ({
   onConfigAction
 }: ColumnsHookProps): TableColumnProps[] => {
   const intl = useIntl();
-  const pluginColumns: PluginColumn[] =
-    getGPUStackPlugin()?.modelRoutes?.extraColumns ?? [];
+  // Merge the route-specific `modelRoutes.extraColumns` slot with the
+  // generic per-page `listExtraColumns.modelRoutes` slot — both feed
+  // the same splice point, so plugins can pick whichever slot fits
+  // (page-specific quota cell vs. cross-page Organization-style col).
+  // Memoized on `genericCols` because the route-specific slot is wired
+  // once at boot (stable identity) so only `genericCols` can change.
+  const genericCols = usePluginListColumns('modelRoutes');
+  const pluginColumns = useMemo<PluginColumn[]>(
+    () => [
+      ...(getGPUStackPlugin()?.modelRoutes?.extraColumns ?? []),
+      ...(genericCols as unknown as PluginColumn[])
+    ],
+    [genericCols]
+  );
 
   // Sort-order is row-independent: priority and danger are fixed at
   // registration time. Compute the sorted list once and only do the
@@ -151,8 +165,8 @@ const useAccessColumns = ({
   return useMemo(() => {
     // When plugin columns are present we first steal width from
     // `targets` (down to its 4-unit min), then from `createTime`
-    // (down to 3). Stays within the 24-unit grid as long as the
-    // combined plugin span is ≤ 8.
+    // (down to 2). Stays within the 24-unit grid as long as the
+    // combined plugin span is ≤ 9.
     const pluginSpan = pluginColumns.reduce((sum, c) => sum + (c.span ?? 4), 0);
     const targetsSpan = Math.max(
       TARGETS_MIN_SPAN,
@@ -172,6 +186,15 @@ const useAccessColumns = ({
       span: c.span ?? 4,
       render: (_value: any, record: RouteItem) => c.render(record)
     }));
+    // Default placement for plugin cols on this page predates the
+    // generic seam and stays `before-time` (the existing per-page
+    // `modelRoutes.extraColumns` slot relies on it for the quota
+    // cell). Entries from the generic `listExtraColumns.modelRoutes`
+    // slot pick `after-name` explicitly when they want to read
+    // alongside the row's name.
+    const afterName = pluginColsRendered.filter(
+      (_c, i) => pluginColumns[i].placement === 'after-name'
+    );
     const beforeTime = pluginColsRendered.filter(
       (_c, i) => (pluginColumns[i].placement ?? 'before-time') === 'before-time'
     );
@@ -193,6 +216,7 @@ const useAccessColumns = ({
           </span>
         )
       },
+      ...afterName,
       {
         title: intl.formatMessage({ id: 'routes.table.routeTargets' }),
         dataIndex: 'targets',

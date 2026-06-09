@@ -1,3 +1,4 @@
+import { usePluginListColumns } from '@/plugins/list-extra-columns';
 import { FolderOutlined } from '@ant-design/icons';
 import {
   AutoTooltip,
@@ -46,7 +47,14 @@ const useStorageTypeColumns = ({
   sortOrder
 }: ColumnsHookProps): ColumnsType<ListItem> => {
   const intl = useIntl();
+  const pluginCols = usePluginListColumns('gpuStorageTypes');
   return useMemo(() => {
+    const pluginRendered = pluginCols.map((c) => ({
+      title: intl.formatMessage({ id: c.titleId }),
+      key: c.key,
+      ellipsis: { showTitle: false },
+      render: (_text: any, record: ListItem) => c.render(record)
+    }));
     return [
       {
         title: intl.formatMessage({ id: 'common.table.name' }),
@@ -64,6 +72,7 @@ const useStorageTypeColumns = ({
           </AutoTooltip>
         )
       },
+      ...pluginRendered,
       {
         title: intl.formatMessage({ id: 'common.table.type' }),
         key: 'kind',
@@ -106,7 +115,7 @@ const useStorageTypeColumns = ({
         )
       }
     ];
-  }, [handleSelect, sortOrder, intl]);
+  }, [handleSelect, sortOrder, intl, pluginCols]);
 };
 
 export default useStorageTypeColumns;

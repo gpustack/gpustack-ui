@@ -145,6 +145,9 @@ export interface DistributedServers {
 export interface ModelInstanceListItem {
   backend?: string;
   cluster_id: number;
+  // Inherited from the parent Model's owner_principal_id on the
+  // wire so per-row tenant filtering works without joining.
+  owner_principal_id?: number | null;
   backend_version?: string;
   source: string;
   categories?: string[];

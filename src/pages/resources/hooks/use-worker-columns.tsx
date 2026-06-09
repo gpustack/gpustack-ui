@@ -1,6 +1,7 @@
 import { systemConfigAtom } from '@/atoms/system';
 import { GPUStackVersionAtom } from '@/atoms/user';
 import { tableSorter } from '@/config/settings';
+import { usePluginListColumns } from '@/plugins/list-extra-columns';
 import { convertFileSize } from '@/utils';
 import {
   DeleteOutlined,
@@ -249,6 +250,7 @@ const useWorkerColumns = ({
   const intl = useIntl();
   const systemConfig = useAtomValue(systemConfigAtom);
   const [version] = useAtom(GPUStackVersionAtom);
+  const pluginCols = usePluginListColumns('workers');
 
   const renderIP = (text: string, record: ListItem) => {
     if (record.advertise_address === record.ip) {
@@ -383,6 +385,13 @@ const useWorkerColumns = ({
     );
   };
 
+  const pluginRendered = pluginCols.map((c) => ({
+    title: intl.formatMessage({ id: c.titleId }),
+    key: c.key,
+    ellipsis: { showTitle: false },
+    render: (_text: any, record: ListItem) => c.render(record)
+  }));
+
   return useMemo<ColumnsType<ListItem>>(
     () => [
       {
@@ -405,6 +414,7 @@ const useWorkerColumns = ({
         width: 200,
         render: (_, record) => <LabelCell labels={record.labels} />
       },
+      ...pluginRendered,
       {
         title: intl.formatMessage({ id: 'clusters.title' }),
         dataIndex: 'cluster_id',
@@ -532,7 +542,16 @@ const useWorkerColumns = ({
         )
       }
     ],
-    [intl, sortOrder, clusterData, loadend, source, firstLoad, handleSelect]
+    [
+      intl,
+      sortOrder,
+      clusterData,
+      loadend,
+      source,
+      firstLoad,
+      handleSelect,
+      pluginRendered
+    ]
   );
 };
 

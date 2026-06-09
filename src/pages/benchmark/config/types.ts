@@ -87,6 +87,9 @@ export interface FormData {
 
 export interface BenchmarkListItem extends FormData {
   id: number;
+  // Inherited from the parent cluster's owner_principal_id on the
+  // wire so per-row tenant filtering works without joining.
+  owner_principal_id?: number | null;
   created_at: string;
   updated_at: string;
   state: string;

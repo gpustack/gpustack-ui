@@ -113,8 +113,6 @@ export default {
   'clusters.create.workerConfig': 'İşçi Düğüm Yapılandırması',
   'clusters.edit.k8sOptions.changed.tip':
     'Kubernetes seçeneklerini değiştirdiniz. Değişikliklerin etkili olması için kayıt komutunu hedef kümede yeniden çalıştırın.',
-  'clusters.edit.workerConfig.tip':
-    'İşçi düğüm yapılandırmasındaki değişiklikler yalnızca ilgili işçi düğümleri yeniden başlatıldıktan sonra etkili olur.',
   'clusters.addworker.containerName': 'İşçi Düğüm Konteyner Adı',
   'clusters.addworker.containerName.tips':
     'İşçi düğüm konteyneri için bir ad belirtin.',

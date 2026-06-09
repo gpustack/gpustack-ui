@@ -113,8 +113,6 @@ export default {
   'clusters.create.workerConfig': 'Конфигурация воркера',
   'clusters.edit.k8sOptions.changed.tip':
     'Вы изменили параметры Kubernetes. Чтобы изменения вступили в силу, повторно выполните команду регистрации в целевом кластере.',
-  'clusters.edit.workerConfig.tip':
-    'Изменения конфигурации воркера вступают в силу только после перезапуска соответствующих воркеров.',
   'clusters.addworker.containerName': 'Имя контейнера воркера',
   'clusters.addworker.containerName.tips':
     'Укажите имя для контейнера воркера.',

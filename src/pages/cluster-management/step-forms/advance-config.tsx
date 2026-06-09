@@ -1,8 +1,7 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import useUserSettings from '@/hooks/use-user-settings';
-import { ExclamationCircleFilled } from '@ant-design/icons';
-import { AlertBlockInfo, Input as CInput, IconFont } from '@gpustack/core-ui';
+import { Input as CInput, IconFont } from '@gpustack/core-ui';
 import { YamlEditor } from '@gpustack/core-ui/yaml-editor';
 import { useIntl } from '@umijs/max';
 import { Button, Form } from 'antd';
@@ -120,14 +119,6 @@ const ClusterAdvanceConfig: React.FC<{
       <Title>
         {intl.formatMessage({ id: 'clusters.create.workerConfig' })}
       </Title>
-      {action === PageAction.EDIT && (
-        <AlertBlockInfo
-          type="warning"
-          style={{ marginBottom: 8 }}
-          icon={<ExclamationCircleFilled />}
-          message={intl.formatMessage({ id: 'clusters.edit.workerConfig.tip' })}
-        ></AlertBlockInfo>
-      )}
       <YamlEditor
         ref={editorRef}
         isDarkTheme={isDarkTheme}

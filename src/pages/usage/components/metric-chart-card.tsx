@@ -133,12 +133,14 @@ const MetricChartCard: React.FC<MetricChartCardProps> = ({
         xAxisData={xAxisData}
         height={280}
         labelFormatter={labelFormatter}
-        // Auto-show a legend once the trend is split into multiple series.
+        // Auto-show a legend once the trend is split into multiple series, and
+        // reserve room below the x-axis so it doesn't overlap the date labels.
         legendData={
           seriesData.length > 1
             ? seriesData.map((s) => ({ name: s.name }))
             : undefined
         }
+        grid={seriesData.length > 1 ? { bottom: 28 } : undefined}
       />
     </CardWrapper>
   );

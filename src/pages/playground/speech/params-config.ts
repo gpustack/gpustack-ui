@@ -9,6 +9,11 @@ export const TTSAdvancedParamsConfig: ParamsSchema[] = [
     attrs: {
       allowClear: true
     },
+    initAttrs: (meta: any) => ({
+      // Single-task TTS checkpoints (e.g. Qwen3-TTS) expose a fixed task_type;
+      // lock the field so a mismatched value can't crash the vllm engine.
+      disabled: !!meta?.task_type
+    }),
     label: {
       text: 'playground.params.taskType',
       isLocalized: true

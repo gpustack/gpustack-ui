@@ -169,6 +169,7 @@ export default {
   'common.time.hour': 'hour',
   'common.time.minute': 'minutes',
   'common.issue.report': 'Report an issue',
+  'common.github.star.tooltip': 'Star us on GitHub',
   'common.social.discord': 'Join Our Discord',
   'common.table.mark': 'Comment',
   'common.table.rollback.mark': 'Rollback Comment',

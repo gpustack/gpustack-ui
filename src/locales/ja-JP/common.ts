@@ -170,6 +170,7 @@ export default {
   'common.time.hour': '時間',
   'common.time.minute': '分',
   'common.issue.report': '問題を報告',
+  'common.github.star.tooltip': 'GitHub でスターをつける',
   'common.social.discord': 'Discordに参加',
   'common.table.mark': 'コメント',
   'common.table.rollback.mark': 'ロールバックコメント',

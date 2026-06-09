@@ -167,6 +167,7 @@ export default {
   'common.time.hour': 'Час',
   'common.time.minute': 'Минута',
   'common.issue.report': 'Сообщить о проблеме',
+  'common.github.star.tooltip': 'Поставьте нам звезду на GitHub',
   'common.social.discord': 'Присоединиться к Discord',
   'common.table.mark': 'Комментарий',
   'common.table.rollback.mark': 'Комментарий к откату',

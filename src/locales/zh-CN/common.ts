@@ -161,6 +161,7 @@ export default {
   'common.time.hour': '小时',
   'common.time.minute': '分钟',
   'common.issue.report': '问题反馈',
+  'common.github.star.tooltip': '在 GitHub 上 Star 我们',
   'common.social.discord': '加入我们的Discord',
   'common.table.mark': '备注',
   'common.table.rollback.mark': '回滚备注',

@@ -167,6 +167,7 @@ export default {
   'common.time.hour': 'saat',
   'common.time.minute': 'dakika',
   'common.issue.report': 'Sorun bildir',
+  'common.github.star.tooltip': "GitHub'da bize yıldız verin",
   'common.social.discord': "Discord'umuza Katılın",
   'common.table.mark': 'Yorum',
   'common.table.rollback.mark': 'Geri Alma Yorumu',

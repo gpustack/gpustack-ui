@@ -24,6 +24,7 @@ import {
   ResourceEventItem,
   ResourceEventsResponse
 } from '../apis/resource';
+import { parseRollup } from '../utils/time-buckets';
 import ResourceFilterBar from './resource-filter-bar';
 
 // Only these four are ever emitted (see resource_event_logger): create/delete
@@ -177,8 +178,10 @@ const ResourceEvents: React.FC = () => {
         title: intl.formatMessage({ id: 'usage.events.col.time' }),
         dataIndex: 'occurred_at',
         key: 'occurred_at',
+        // Backend sends the rollup-tz instant with its offset; parseRollup keeps
+        // it (no conversion to the browser tz).
         render: (v: string) =>
-          v ? dayjs(v).format('YYYY-MM-DD HH:mm:ss') : '-',
+          v ? parseRollup(v).format('YYYY-MM-DD HH:mm:ss') : '-',
         width: 200
       },
       {

@@ -89,6 +89,10 @@ export function useUpdateChunkedList(options: {
         ...cacheDataListRef.current
       ].slice(0, limit);
 
+      options.setDataList?.([...cacheDataListRef.current], {
+        createdIds: newDataList.map((item) => item.id)
+      });
+
       options.onCreate?.(latestCreateList);
     }
 

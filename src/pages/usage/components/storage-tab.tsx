@@ -28,7 +28,8 @@ import useResourceMeta from '../hooks/use-resource-meta';
 import {
   bucketKey,
   generateBucketRange,
-  Granularity
+  Granularity,
+  parseRollup
 } from '../utils/time-buckets';
 import { buildTrendSeries } from '../utils/trend-series';
 import MetricChartCard from './metric-chart-card';
@@ -293,12 +294,14 @@ const StorageTab: React.FC = () => {
         render: (v: number) => (v ?? 0).toFixed(2)
       }
     ];
-    // Last Active is a UTC instant (max bucket hour) → show formatted local time.
+    // Last Active = the last active day. The backend sends a rollup-tz instant
+    // with its offset; parseRollup keeps that wall clock (no browser-tz convert),
+    // consistent with the trend chart buckets. Shown date-only.
     const lastActiveCol = {
       title: intl.formatMessage({ id: 'usage.table.lastActive' }),
       dataIndex: 'last_active',
       key: 'last_active',
-      render: (v?: string) => (v ? dayjs(v).format('YYYY-MM-DD HH:mm:ss') : '-')
+      render: (v?: string) => (v ? parseRollup(v).format('YYYY-MM-DD') : '-')
     };
     if (activeTableTab === 'volume') {
       return [

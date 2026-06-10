@@ -55,7 +55,7 @@ export default function useWatchList<T = Record<string, any>>(API: string) {
     cacheWatchDataListRef.current = cacheWatchDataListRef.current.filter(
       (item) => item.id !== id
     );
-    setWatchDataList(() => cacheWatchDataListRef.current);
+    setWatchDataList(cacheWatchDataListRef.current);
   };
 
   const getAllDataList = useMemoizedFn(async () => {

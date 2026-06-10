@@ -90,6 +90,7 @@ const AddModal: React.FC<AddModalProps> = ({
   const [instanceKeyword, setInstanceKeyword] = useState('');
   const [templateKeyword, setTemplateKeyword] = useState('');
   const [loading, setLoading] = useState(false);
+  const initializedRef = useRef(false);
 
   const {
     detailData: instanceTypeList,
@@ -279,6 +280,8 @@ const AddModal: React.FC<AddModalProps> = ({
     );
 
     applySelection(first, template);
+
+    // initially finise
   };
 
   // Fetch the (tenant-scoped) instance types + templates and auto-select.
@@ -287,19 +290,25 @@ const AddModal: React.FC<AddModalProps> = ({
   // picker settling on its default) the latest scope's result wins.
   const loadCreateResources = (orgId?: number | null) => {
     const session = ++sessionRef.current;
-    Promise.all([
-      fetchData({ page: -1 }),
-      fetchTemplates({ page: -1 }),
-      fetchClusterList({ page: -1 })
-    ]).then(([instanceResItems, templatesRes, clusters]) => {
-      if (sessionRef.current !== session) return;
-      applyAutoSelection(
-        instanceResItems || [],
-        templatesRes?.items || [],
-        (Array.isArray(clusters) ? clusters : (clusters as any)?.items) || [],
-        orgId
-      );
-    });
+    try {
+      Promise.all([
+        fetchData({ page: -1 }),
+        fetchTemplates({ page: -1 }),
+        fetchClusterList({ page: -1 })
+      ]).then(([instanceResItems, templatesRes, clusters]) => {
+        if (sessionRef.current !== session) return;
+        applyAutoSelection(
+          instanceResItems || [],
+          templatesRes?.items || [],
+          (Array.isArray(clusters) ? clusters : (clusters as any)?.items) || [],
+          orgId
+        );
+        initializedRef.current = true;
+      });
+    } catch (error) {
+    } finally {
+      initializedRef.current = true;
+    }
   };
 
   // Platform admin retargeted the create to another org (or Global). The
@@ -324,11 +333,13 @@ const AddModal: React.FC<AddModalProps> = ({
     form.current?.applyInstanceType?.(undefined);
     form.current?.setFieldValue?.('clusterId', null);
     form.current?.setFieldValue?.(['spec', 'type'], undefined);
+    initializedRef.current = false;
     loadCreateResources(orgId);
   };
 
   useEffect(() => {
     if (!open) {
+      initializedRef.current = false;
       sessionRef.current += 1;
       setInstanceTypeSelection({
         instanceType: undefined,
@@ -507,7 +518,7 @@ const AddModal: React.FC<AddModalProps> = ({
                       onChange={(e) => setTemplateKeyword(e.target.value)}
                     />
                   </div>
-                  {filteredTemplates.length > 0 ? (
+                  {filteredTemplates.length > 0 && initializedRef.current ? (
                     <TemplateSelector
                       value={templateId}
                       dataList={filteredTemplates}

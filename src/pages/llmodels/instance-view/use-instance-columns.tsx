@@ -18,35 +18,51 @@ import NameCell, {
   NameCellProps
 } from '../components/instance-cells/name-cell';
 import {
+  DistributedServerItem,
   ModelInstanceListItem as ListItem,
   ListItem as ModelListItem
 } from '../config/types';
 import { calcTotalVram } from '../utils';
-const WorkerInfoContent: React.FC<NameCellProps> = ({ record, modelData }) => {
+
+const WorkerInfoContent: React.FC<
+  NameCellProps & { workerList: workerListItem[] }
+> = ({ record, modelData, workerList }) => {
   let workerIp = '-';
+  const distributed_servers = record.distributed_servers;
+  const severList: DistributedServerItem[] =
+    distributed_servers?.subordinate_workers || [];
+
   if (record.worker_ip) {
     workerIp = record.port
       ? `${record.worker_ip}:${record.port}`
       : record.worker_ip;
   }
+
   return (
     <div>
       <div>{record.worker_name}</div>
-      <div className="flex-center">
-        <IconFont
-          type="icon-filled-gpu"
-          className="m-r-5 text-quaternary"
-          style={{ fontSize: 12 }}
-        />
-        <span className="text-quaternary">
-          GPU:[
-          {_.join(
-            record.gpu_indexes?.sort?.((a, b) => a - b),
-            ','
-          )}
-          ]
-        </span>
-      </div>
+      {severList.length > 0 ? (
+        <DistributeInfoCell
+          record={record}
+          workerList={workerList}
+        ></DistributeInfoCell>
+      ) : (
+        <div className="flex-center">
+          <IconFont
+            type="icon-filled-gpu"
+            className="m-r-5 text-quaternary"
+            style={{ fontSize: 12 }}
+          />
+          <span className="text-quaternary">
+            GPU:[
+            {_.join(
+              record.gpu_indexes?.sort?.((a, b) => a - b),
+              ','
+            )}
+            ]
+          </span>
+        </div>
+      )}
     </div>
   );
 };
@@ -74,6 +90,7 @@ const useInstancesColumns = (options: {
     if (text) {
       return (
         <WorkerInfoContent
+          workerList={workerList}
           record={record}
           modelData={{
             backend: record.backend,
@@ -145,10 +162,6 @@ const useInstancesColumns = (options: {
         render: (text, record) => (
           <div className="flex-center gap-8">
             <AutoTooltip ghost>{renderWorkerCell(text, record)}</AutoTooltip>
-            <DistributeInfoCell
-              record={record}
-              workerList={workerList}
-            ></DistributeInfoCell>
           </div>
         )
       },

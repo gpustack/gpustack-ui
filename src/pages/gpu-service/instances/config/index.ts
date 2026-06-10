@@ -129,10 +129,7 @@ export const rowActionList: InstanceRowAction[] = [
     },
     show: (record: ListItem) => {
       const phase = record.status?.phase;
-      return [
-        ...GPUStackFailedStatuses,
-        InstanceStatusValueMap.Stopped
-      ].includes(phase as string);
+      return [InstanceStatusValueMap.Stopped].includes(phase as string);
     }
   },
   {

@@ -99,24 +99,30 @@ const AddWorkerSteps: React.FC<AddWorkerProps> = (props) => {
   // Downstream steps (check env, run command, ...) only make sense after a
   // GPU vendor has been chosen. If the user toggled off every vendor in
   // multi-select, gate them shut so the wrong panel can't be opened.
+  // Exception: for K8s clusters, Run Command is always accessible (CPU-only
+  // workers don't need a GPU vendor).
   const selectedGPUs =
     (summary.get('selectedGPUs') as string[] | undefined) || [];
   const currentGPU = (summary.get('currentGPU') as string | undefined) || '';
   const noVendorSelected = !currentGPU && selectedGPUs.length === 0;
-  const downstreamDisabled = disabled || noVendorSelected;
+  const isK8s = provider === ProviderValueMap.Kubernetes;
+  // For non-K8s providers, all downstream steps are gated by vendor selection.
+  // For K8s, both CheckEnv and RunCommand are always accessible — CheckEnv
+  // shows a ready-nodes check when no vendor is selected (CPU-only workers).
+  const downstreamDisabled = disabled || (noVendorSelected && !isK8s);
 
   React.useEffect(() => {
-    // If the user just deselected everything, collapse any downstream
-    // panel back to the GPU step so they aren't left looking at a stale
-    // disabled-but-open command. Functional updater so we don't have to
-    // depend on `collapseKey` and re-run the effect on every toggle.
-    if (!noVendorSelected) return;
+    // If the user just deselected everything on a non-K8s provider, collapse
+    // any downstream panel back to the GPU step so they aren't left looking at
+    // a stale disabled-but-open command. For K8s, CheckEnv stays open with a
+    // ready-nodes check, so no collapsing needed.
+    if (!noVendorSelected || isK8s) return;
     setCollapseKey((prev) =>
       prev.has(StepNamesMap.SelectGPU)
         ? prev
         : new Set([StepNamesMap.SelectGPU])
     );
-  }, [noVendorSelected]);
+  }, [noVendorSelected, isK8s]);
 
   return (
     <AddWorkerContext.Provider
@@ -145,7 +151,9 @@ const AddWorkerSteps: React.FC<AddWorkerProps> = (props) => {
           !stepList.includes(StepNamesMap.SelectCluster)) && (
           <>
             <SelectVendor disabled={disabled}></SelectVendor>
-            <CheckEnvironment disabled={downstreamDisabled}></CheckEnvironment>
+            {(isK8s || !noVendorSelected) && (
+              <CheckEnvironment disabled={disabled}></CheckEnvironment>
+            )}
 
             {provider === ProviderValueMap.Kubernetes && (
               <K8sRunCommand disabled={downstreamDisabled}></K8sRunCommand>

@@ -70,7 +70,11 @@ export default {
     'Для <span class="bold-text">не-Docker</span> кластеров, пожалуйста, регистрируйте кластеры или управляйте пулами воркеров на странице Кластеры.',
   'clusters.addworker.selectGPU': 'Выбрать производителя GPU',
   'clusters.addworker.selectGPU.multiTag': 'Multi-select',
+  'clusters.addworker.selectGPU.subtitle':
+    'Вы можете выбрать несколько производителей GPU или не выбирать для кластера только с CPU',
   'clusters.addworker.checkEnv': 'Проверить окружение',
+  'clusters.addworker.checkEnv.cpuOnlyTips':
+    'Используйте следующую команду, чтобы убедиться, что в кластере Kubernetes есть хотя бы один готовый узел. Вы регистрируете кластер только с CPU.',
   'clusters.addworker.specifyArgs': 'Указать аргументы',
   'clusters.addworker.dtkVersion': 'Версия DTK',
   'clusters.addworker.runCommand': 'Выполнить команду',

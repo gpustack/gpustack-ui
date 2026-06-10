@@ -70,7 +70,11 @@ export default {
     'For <span class="bold-text">non-Docker</span> clusters, please register clusters or manage worker pools from the Clusters page.',
   'clusters.addworker.selectGPU': 'Select GPU Vendor',
   'clusters.addworker.selectGPU.multiTag': 'Multi-select',
+  'clusters.addworker.selectGPU.subtitle':
+    '複数の GPU ベンダーを選択するか、CPU クラスター専用の場合は選択不要です',
   'clusters.addworker.checkEnv': 'Check Environment',
+  'clusters.addworker.checkEnv.cpuOnlyTips':
+    '以下のコマンドを使用して、Kubernetes クラスターに少なくとも 1 つのレディーノードがあることを確認してください。CPU クラスターを登録しています。',
   'clusters.addworker.specifyArgs': 'Specify Arguments',
   'clusters.addworker.dtkVersion': 'DTK バージョン',
   'clusters.addworker.runCommand': 'Run Command',

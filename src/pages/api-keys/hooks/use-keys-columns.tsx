@@ -1,5 +1,6 @@
 // columns.ts
 import { tableSorter } from '@/config/settings';
+import { usePluginListColumns } from '@/plugins/list-extra-columns';
 import { DashboardOutlined } from '@ant-design/icons';
 import {
   AutoTooltip,
@@ -48,6 +49,7 @@ const useModelsColumns = ({
   onConfigAction
 }: ColumnsHookProps): ColumnsType<ListItem> => {
   const intl = useIntl();
+  const pluginCols = usePluginListColumns('apiKeys');
 
   const actionList = useMemo<APIKeyAction[]>(() => {
     // Built-ins use a step-of-10 priority scale so plugins have room
@@ -124,6 +126,12 @@ const useModelsColumns = ({
   }, [intl, configActions, onConfigAction]);
 
   return useMemo(() => {
+    const pluginRendered = pluginCols.map((c) => ({
+      title: intl.formatMessage({ id: c.titleId }),
+      key: c.key,
+      ellipsis: { showTitle: false },
+      render: (_text: any, record: ListItem) => c.render(record)
+    }));
     return [
       {
         title: intl.formatMessage({ id: 'common.table.name' }),
@@ -152,6 +160,7 @@ const useModelsColumns = ({
           </span>
         )
       },
+      ...pluginRendered,
       {
         title: intl.formatMessage({ id: 'apikeys.table.key' }),
         dataIndex: 'masked_value',
@@ -269,7 +278,7 @@ const useModelsColumns = ({
         )
       }
     ];
-  }, [intl, showCreator, handleSelect, actionList]);
+  }, [intl, showCreator, handleSelect, actionList, pluginCols]);
 };
 
 export default useModelsColumns;

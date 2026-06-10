@@ -163,10 +163,6 @@ const UsageByModel: React.FC<UsageByModelProps> = ({
     [apiData, pickedNames, othersLabel]
   );
 
-  // Build a shared name->color map from the projected data so legend toggles
-  // both donuts together and matching slices read the same color. Others
-  // sticks to the end and uses a muted token so it visually reads as "the
-  // long tail" rather than a real route.
   const { legendNames, colorMap } = useMemo(() => {
     const names: string[] = [];
     const seen = new Set<string>();
@@ -231,15 +227,6 @@ const UsageByModel: React.FC<UsageByModelProps> = ({
       },
       legend: {
         orient: 'vertical',
-        // Anchor the legend column's LEFT edge at 85% of the chart canvas
-        // (right edge fills to canvas right). ECharts' legend.align only
-        // controls intra-item marker/text ordering — not item-in-container
-        // alignment — so a right-anchored + fixed-width legend always
-        // packs items flush right. Anchoring from the left instead makes
-        // items naturally start at the container's left edge, so a short
-        // label like `qwen3-0.6b` stays close to the donut instead of
-        // floating in a void at the canvas edge.
-        left: '82%',
         right: 0,
         top: 18,
         bottom: 18,
@@ -249,15 +236,10 @@ const UsageByModel: React.FC<UsageByModelProps> = ({
         textStyle: {
           color: token.colorTextTertiary,
           overflow: 'truncate',
-          // 15% of typical xl card canvas (~680-900px) ≈ 102-135px column;
-          // marker(8) + gap(5) + 90 = 103 fits even at the narrow end.
-          width: 200
+          width: 180
         },
         data: legendNames,
         show: legendNames.length > 0,
-        // Surface the full route name on hover, but only for labels that are
-        // actually truncated — non-truncated ones return '' so no (empty)
-        // tooltip pops up.
         tooltip: {
           show: true,
           backgroundColor: token.colorBgElevated,
@@ -304,12 +286,6 @@ const UsageByModel: React.FC<UsageByModelProps> = ({
     apiLabel
   ]);
 
-  // Association: hovering a slice in one donut highlights the same route in
-  // the other donut. The Chart wrapper's imperative handle is committed
-  // before its own init effect runs, so chartRef can be { chart: undefined }
-  // on the first useEffect tick — poll via rAF until the instance shows up,
-  // then bind once. ECharts' clear() preserves user listeners, so we don't
-  // need to re-bind on every options change.
   useEffect(() => {
     let raf: number | undefined;
     let detach: (() => void) | undefined;

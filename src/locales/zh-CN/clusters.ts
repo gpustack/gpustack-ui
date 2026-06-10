@@ -68,7 +68,11 @@ export default {
     '<span class="bold-text">非 Docker</span> 集群请前往集群页面注册集群或管理节点池。',
   'clusters.addworker.selectGPU': '选择 GPU 厂商',
   'clusters.addworker.selectGPU.multiTag': '可多选',
+  'clusters.addworker.selectGPU.subtitle':
+    '可选择多个 GPU 厂商，或不选择以用于仅 CPU 的集群',
   'clusters.addworker.checkEnv': '检查环境',
+  'clusters.addworker.checkEnv.cpuOnlyTips':
+    '使用以下命令验证 Kubernetes 集群中至少有一个就绪节点。你正在注册仅 CPU 的集群。',
   'clusters.addworker.specifyArgs': '指定参数',
   'clusters.addworker.dtkVersion': 'DTK 版本',
   'clusters.addworker.runCommand': '运行指令',

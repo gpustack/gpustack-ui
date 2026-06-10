@@ -70,7 +70,11 @@ export default {
     'For <span class="bold-text">non-Docker</span> clusters, please register clusters or manage worker pools from the Clusters page.',
   'clusters.addworker.selectGPU': 'Select GPU Vendor',
   'clusters.addworker.selectGPU.multiTag': 'Multi-select',
+  'clusters.addworker.selectGPU.subtitle':
+    'You can select multiple GPU Vendors or none for CPU-only clusters',
   'clusters.addworker.checkEnv': 'Check Environment',
+  'clusters.addworker.checkEnv.cpuOnlyTips':
+    'Use the following command to verify that the Kubernetes cluster has at least one ready node. You are registering a CPU-only cluster.',
   'clusters.addworker.specifyArgs': 'Specify Arguments',
   'clusters.addworker.dtkVersion': 'DTK Version',
   'clusters.addworker.runCommand': 'Run Command',

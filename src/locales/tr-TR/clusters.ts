@@ -70,7 +70,11 @@ export default {
     '<span class="bold-text">Docker dışı</span> kümeler için lütfen Kümeler sayfasından küme kaydı oluşturun veya işçi havuzlarını yönetin.',
   'clusters.addworker.selectGPU': 'GPU Üreticisi Seç',
   'clusters.addworker.selectGPU.multiTag': 'Multi-select',
+  'clusters.addworker.selectGPU.subtitle':
+    'Birden fazla GPU Üreticisi seçebilir veya yalnızca CPU kümeleri için hiçbirini seçmeyebilirsiniz',
   'clusters.addworker.checkEnv': 'Ortamı Kontrol Et',
+  'clusters.addworker.checkEnv.cpuOnlyTips':
+    'Kubernetes kümesinde en az bir hazır düğüm olduğunu doğrulamak için aşağıdaki komutu kullanın. Yalnızca CPU kümelerini kaydediyorsunuz.',
   'clusters.addworker.specifyArgs': 'Argümanları Belirle',
   'clusters.addworker.dtkVersion': 'DTK Sürümü',
   'clusters.addworker.runCommand': 'Komutu Çalıştır',

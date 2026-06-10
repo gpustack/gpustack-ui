@@ -4,7 +4,6 @@ import {
   GPUsConfigs
 } from '@/pages/resources/config/gpu-driver';
 import { useIntl } from '@umijs/max';
-import { Tag } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
 import { ProviderValueMap } from '../../config';
 import SupportedGPUs from '../support-gpus';
@@ -94,7 +93,9 @@ const SelectVendor: React.FC<AddWorkerStepProps> = ({ disabled }) => {
   };
 
   useEffect(() => {
-    // init a default selection
+    // K8s clusters allow selecting none (CPU-only workers), so skip default
+    // selection. Other providers still default to NVIDIA.
+    if (multiCapable) return;
     handleSelect(GPUDriverMap.NVIDIA, {
       label: 'NVIDIA',
       hiddenTitle: true,
@@ -116,18 +117,18 @@ const SelectVendor: React.FC<AddWorkerStepProps> = ({ disabled }) => {
           {stepIndex}.{' '}
           {intl.formatMessage({ id: 'clusters.addworker.selectGPU' })}
           {multiCapable && (
-            <Tag
-              color="blue"
+            <span
               style={{
                 marginLeft: 8,
                 fontWeight: 400,
-                borderRadius: 4
+                fontSize: 13,
+                color: 'var(--ant-color-text-secondary)'
               }}
             >
               {intl.formatMessage({
-                id: 'clusters.addworker.selectGPU.multiTag'
+                id: 'clusters.addworker.selectGPU.subtitle'
               })}
-            </Tag>
+            </span>
           )}
         </Title>
       }

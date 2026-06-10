@@ -24,6 +24,7 @@ const Box = styled.div`
     background-color: rgba(255, 255, 255, 0.1);
     &.active {
       background-color: var(--ant-color-fill-tertiary);
+      border-color: var(--ant-color-primary);
     }
     .template-card-icon {
       margin-right: 0;
@@ -57,6 +58,7 @@ const Box = styled.div`
       }
       &.active {
         background-color: var(--ant-color-bg-solid);
+        border-color: var(--ant-color-primary);
       }
     }
   }

@@ -37,8 +37,8 @@ export default {
     '长上下文压力测试。评估 KV Cache 行为、内存占用及后端稳定性。',
   'benchmark.form.profile.heavy.tips':
     '以解码为主的生成测试。衡量持续解码速度与输出 Token 吞吐能力。',
-  'benchmark.table.filter.bygpu': '按 GPU 过滤',
-  'benchmark.table.filter.bymodel': '按模型过滤',
+  'benchmark.table.filter.bygpu': 'GPU 查询',
+  'benchmark.table.filter.bymodel': '模型查询',
   'benchmark.table.filter.bydataset': '按数据集过滤',
   'benchmark.table.filter.byProfile': '按模式过滤',
   'benchmark.table.avg': '均值',

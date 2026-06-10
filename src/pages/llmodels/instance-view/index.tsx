@@ -20,6 +20,21 @@ import useQueryModelList from '../services/use-query-model-list';
 import LeftFilters from './left-filters';
 import useInstanceColumns from './use-instance-columns';
 
+const filterOptions = {
+  optionList: [
+    {
+      label: 'Running',
+      value: 'running',
+      color: 'var(--ant-color-success)'
+    },
+    {
+      label: 'Error',
+      value: 'error',
+      color: 'var(--ant-color-error)'
+    }
+  ]
+};
+
 const InstanceView = forwardRef((props, ref) => {
   const {
     dataSource,
@@ -150,6 +165,7 @@ const InstanceView = forwardRef((props, ref) => {
               handleSearch={handleSearch}
               clusterList={clusterList}
               workerList={workerList}
+              filterOptions={filterOptions}
             ></LeftFilters>
           }
         ></FilterBar>

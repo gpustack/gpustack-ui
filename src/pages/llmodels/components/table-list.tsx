@@ -22,7 +22,7 @@ import {
   TableOrder
 } from '@gpustack/core-ui';
 import { useIntl, useNavigate, useSearchParams } from '@umijs/max';
-import { useMemoizedFn, useToggle } from 'ahooks';
+import { useMemoizedFn } from 'ahooks';
 import { Button, Space, message } from 'antd';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
@@ -54,14 +54,13 @@ import {
   ModelInstanceListItem,
   SourceType
 } from '../config/types';
-import Filters from '../filters';
 import useEditDeployment from '../hooks/use-edit-deployment';
 import useModelsColumns from '../hooks/use-models-columns';
 import useViewInstanceLogs from '../hooks/use-view-instance-logs';
+import LeftFilters from '../instance-view/left-filters';
 import DeployModal from './deployment/deploy-modal';
 import UpdateModelModal from './deployment/update-modal';
 import Instances from './instance/instances';
-import LeftFilters from './left-filters';
 import ViewLogsModal from './view-logs-modal';
 interface ModelsProps {
   handleSearch: (params?: any) => void;
@@ -124,15 +123,13 @@ const Models: React.FC<ModelsProps> = ({
   onTableSort,
   onStatusChange,
   onDeleteInstanceFromCache,
-  onFilterChange,
   sortOrder,
   deleteIds,
   dataSource,
   queryParams,
   loading,
   loadend,
-  total,
-  filterValues = {}
+  total
 }) => {
   const { generateFormValues, clusterList, workerList } =
     useDeploymentsContext();
@@ -180,8 +177,6 @@ const Models: React.FC<ModelsProps> = ({
     source: modelSourceMap.huggingface_value as SourceType
   });
   const modalRef = useRef<any>(null);
-  const [filtersVisible, { toggle: toggleFilters }] = useToggle();
-  const filterRef = useRef<any>(null);
 
   useEffect(() => {
     if (deleteIds?.length) {
@@ -550,14 +545,6 @@ const Models: React.FC<ModelsProps> = ({
     }
   });
 
-  const handleOnClearFilters = () => {
-    filterRef.current?.reset();
-  };
-
-  const filtersCount = Object.values(filterValues).filter(
-    (value) => value !== undefined && value !== null && value !== ''
-  );
-
   useEffect(() => {
     if (modelsSession.source && loadend) {
       handleClickDropdown({
@@ -576,29 +563,19 @@ const Models: React.FC<ModelsProps> = ({
         alignItems: 'flex-start'
       }}
     >
-      <Filters
-        ref={filterRef}
-        open={filtersVisible}
-        onValuesChange={onFilterChange}
-        clusterList={clusterList}
-        onClose={toggleFilters}
-        onClear={handleOnClearFilters}
-      ></Filters>
       <div style={{ flex: 1, padding: '24px' }}>
         <PageTools
           marginBottom={22}
           marginTop={0}
           left={
             <LeftFilters
-              count={filtersCount.length}
-              toggleFilters={toggleFilters}
-              onClear={handleOnClearFilters}
+              showCategory
+              showWorker={false}
               handleNameChange={handleNameChange}
               handleClusterChange={handleClusterChange}
               handleCategoryChange={handleCategoryChange}
               handleStatusChange={onStatusChange}
               handleSearch={handleSearch}
-              onFilterChange={onFilterChange}
               clusterList={clusterList}
             ></LeftFilters>
           }

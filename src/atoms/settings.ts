@@ -55,3 +55,10 @@ export const userSettingsHelperAtom = atom(
   }
 );
 export const hideModalTemporarilyAtom = atom<boolean>(false);
+
+export const collapsedMenuGroupsAtom = atomWithStorage<string[]>(
+  'collapsedMenuGroups',
+  [],
+  undefined,
+  { getOnInit: true }
+);

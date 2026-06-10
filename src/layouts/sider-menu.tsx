@@ -1,9 +1,11 @@
+import { collapsedMenuGroupsAtom } from '@/atoms/settings';
 import { CaretDownOutlined } from '@ant-design/icons';
 import { IconFont, OverlayScroller } from '@gpustack/core-ui';
 import { Link, useLocation } from '@umijs/max';
 import { Tooltip } from 'antd';
 import { createStyles, type FullToken } from 'antd-style';
-import React, { useMemo, useState } from 'react';
+import { useAtom } from 'jotai';
+import React, { useMemo } from 'react';
 
 interface MenuItem {
   icon?: string;
@@ -144,8 +146,19 @@ const SiderMenu: React.FC<SiderMenuProps> = (props) => {
   const { menuData, collapsed } = props;
   const { styles, cx } = useStyles();
   const location = useLocation();
-  const [collapseKeys, setCollapseKeys] = useState<Set<string>>(new Set());
-  console.log('SiderMenu', location.pathname);
+  const [storedCollapsedGroups, setCollapsedGroups] = useAtom(
+    collapsedMenuGroupsAtom
+  );
+  // atomWithStorage falls back to the initial value on JSON parse
+  // errors, but not when the stored value is valid JSON of another
+  // shape — normalize so array methods below can't throw.
+  const collapsedGroups = Array.isArray(storedCollapsedGroups)
+    ? storedCollapsedGroups
+    : [];
+  const collapseKeys = useMemo(
+    () => new Set(collapsedGroups),
+    [collapsedGroups]
+  );
 
   const dividerStyles = useMemo(() => {
     if (collapsed) {
@@ -164,14 +177,11 @@ const SiderMenu: React.FC<SiderMenuProps> = (props) => {
   const handleToggleGroup = (e: any, menuGroup: any) => {
     e.stopPropagation();
 
-    console.log('handleToggleGroup', menuGroup.key);
-
-    if (collapseKeys.has(menuGroup.key)) {
-      collapseKeys.delete(menuGroup.key);
-    } else {
-      collapseKeys.add(menuGroup.key);
-    }
-    setCollapseKeys(new Set(collapseKeys));
+    setCollapsedGroups(
+      collapsedGroups.includes(menuGroup.key)
+        ? collapsedGroups.filter((key) => key !== menuGroup.key)
+        : [...collapsedGroups, menuGroup.key]
+    );
   };
 
   const menuItemRender = (menuItem: MenuItem, key: string) => {

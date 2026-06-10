@@ -55,7 +55,7 @@ export default function useWatchList<T = Record<string, any>>(API: string) {
     cacheWatchDataListRef.current = cacheWatchDataListRef.current.filter(
       (item) => item.id !== id
     );
-    setWatchDataList(cacheWatchDataListRef.current);
+    setWatchDataList(() => cacheWatchDataListRef.current);
   };
 
   const getAllDataList = useMemoizedFn(async () => {
@@ -63,8 +63,7 @@ export default function useWatchList<T = Record<string, any>>(API: string) {
       listRequestTokenRef.current?.cancel?.();
       listRequestTokenRef.current = createAxiosToken();
       const params = {
-        page: 1,
-        perPage: 100
+        page: -1
       };
       const res: any = await queryAllDataList(params, {
         token: listRequestTokenRef.current.token
@@ -86,6 +85,7 @@ export default function useWatchList<T = Record<string, any>>(API: string) {
 
   return {
     watchDataList,
+    setWatchDataList,
     deleteItemFromCache: handleDeleteItemFromCache
   };
 }

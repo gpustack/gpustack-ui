@@ -4,15 +4,26 @@ import { BaseSelect } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Input, Space } from 'antd';
 import React from 'react';
+import { categoryOptions } from '../config';
 import useFilterStatus from '../hooks/use-filter-status';
 interface LeftFiltersProps {
   handleNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleClusterChange: (value: number) => void;
   handleStatusChange: (value: string) => void;
-  handleWorkerChange: (value: number) => void;
+  handleWorkerChange?: (value: number) => void;
+  handleCategoryChange?: (value: string) => void;
   handleSearch: () => void;
   clusterList: Global.BaseOption<number>[];
-  workerList: workerListItem[];
+  workerList?: workerListItem[];
+  showWorker?: boolean;
+  showCategory?: boolean;
+  filterOptions?: {
+    optionList: {
+      label: string;
+      value: string;
+      color: string;
+    }[];
+  };
 }
 
 const LeftFilters: React.FC<LeftFiltersProps> = (props) => {
@@ -21,29 +32,16 @@ const LeftFilters: React.FC<LeftFiltersProps> = (props) => {
     handleClusterChange,
     handleStatusChange,
     handleWorkerChange,
+    handleCategoryChange,
     handleSearch,
     clusterList,
-    workerList
+    workerList = [],
+    showWorker = true,
+    showCategory = false,
+    filterOptions
   } = props;
-  const { labelRender, optionRender, statusOptions } = useFilterStatus({
-    optionList: [
-      {
-        label: 'Running',
-        value: 'running',
-        color: 'var(--ant-color-success)'
-      },
-      {
-        label: 'Error',
-        value: 'error',
-        color: 'var(--ant-color-error)'
-      }
-      // {
-      //   label: 'Provisioning',
-      //   value: 'provisioning',
-      //   color: 'var(--ant-blue-5)'
-      // }
-    ]
-  });
+  const { labelRender, optionRender, statusOptions } =
+    useFilterStatus(filterOptions);
   const intl = useIntl();
 
   return (
@@ -72,21 +70,37 @@ const LeftFilters: React.FC<LeftFiltersProps> = (props) => {
         onChange={handleClusterChange}
         options={clusterList}
       ></BaseSelect>
-      <BaseSelect
-        allowClear
-        showSearch={false}
-        placeholder={intl.formatMessage({
-          id: 'resources.filter.worker'
-        })}
-        style={{ width: 160 }}
-        size="large"
-        maxTagCount={1}
-        onChange={handleWorkerChange}
-        options={workerList.map((worker) => ({
-          label: worker.name,
-          value: worker.id
-        }))}
-      ></BaseSelect>
+      {showCategory && (
+        <BaseSelect
+          allowClear
+          showSearch={false}
+          placeholder={intl.formatMessage({
+            id: 'models.filter.category'
+          })}
+          style={{ width: 160 }}
+          size="large"
+          maxTagCount={1}
+          onChange={handleCategoryChange}
+          options={categoryOptions}
+        ></BaseSelect>
+      )}
+      {showWorker && (
+        <BaseSelect
+          allowClear
+          showSearch={false}
+          placeholder={intl.formatMessage({
+            id: 'resources.filter.worker'
+          })}
+          style={{ width: 160 }}
+          size="large"
+          maxTagCount={1}
+          onChange={handleWorkerChange}
+          options={workerList.map((worker) => ({
+            label: worker.name,
+            value: worker.id
+          }))}
+        ></BaseSelect>
+      )}
       <BaseSelect
         allowClear
         showSearch={false}

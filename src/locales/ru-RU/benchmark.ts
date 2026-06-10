@@ -37,8 +37,8 @@ export default {
     'Stress test for long-context handling. Evaluates KV cache behavior, memory usage, and backend stability.',
   'benchmark.form.profile.heavy.tips':
     'Decode-heavy generation benchmark. Measures sustained decoding speed and output token throughput.',
-  'benchmark.table.filter.bygpu': 'Filter by GPU',
-  'benchmark.table.filter.bymodel': 'Filter by Model',
+  'benchmark.table.filter.bygpu': 'Поиск GPU',
+  'benchmark.table.filter.bymodel': 'Поиск модели',
   'benchmark.table.filter.bydataset': 'Filter by Dataset',
   'benchmark.table.filter.byProfile': 'Filter by Profile',
   'benchmark.table.avg': 'Avg',

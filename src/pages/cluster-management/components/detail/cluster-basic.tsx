@@ -16,9 +16,9 @@ import { useClusterDetail } from '../../services/use-cluster-detail';
 
 const Container = styled.div`
   display: flex;
-  height: 168px;
+  height: 146px;
   .left {
-    padding: 16px 24px;
+    padding: 16px 0px;
     width: 124px;
     display: flex;
     flex-direction: column;
@@ -56,7 +56,7 @@ const Resources = styled.div`
   gap: 24px;
   align-items: center;
   line-height: 22px;
-  margin-top: 16px;
+  margin-top: 24px;
   .item {
     display: flex;
     align-items: center;
@@ -134,7 +134,6 @@ const ClusterBasic: React.FC<{ clusterId: number }> = ({ clusterId }) => {
                 )}
               </Title>
             }
-            layout="vertical"
             items={items}
           />
           <Resources>

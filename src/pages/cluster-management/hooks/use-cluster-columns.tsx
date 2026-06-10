@@ -24,15 +24,18 @@ import {
   ProviderValueMap
 } from '../config';
 import { ClusterListItem } from '../config/types';
+
 const clusterActionList = [
   {
     key: 'edit',
     label: 'common.button.edit',
+    order: 0,
     icon: icons.EditOutlined
   },
   {
     label: 'resources.metrics.details',
     key: 'metrics',
+    order: 10,
     icon: (
       <span className="flex-center">
         <GrafanaIcon style={{ width: 14, height: 14 }}></GrafanaIcon>
@@ -44,6 +47,7 @@ const clusterActionList = [
     label: 'resources.button.create',
     provider: ProviderValueMap.Docker,
     locale: true,
+    order: 20,
     icon: icons.DockerOutlined
   },
   {
@@ -51,6 +55,7 @@ const clusterActionList = [
     label: 'clusters.button.register',
     provider: ProviderValueMap.Kubernetes,
     locale: true,
+    order: 30,
     icon: icons.KubernetesOutlined
   },
   {
@@ -58,16 +63,20 @@ const clusterActionList = [
     label: 'clusters.button.addNodePool',
     provider: ProviderValueMap.DigitalOcean,
     locale: true,
+    order: 40,
     icon: icons.Catalog1
   },
   {
     key: 'isDefault',
     label: 'clusters.form.setDefault',
+    locale: true,
+    order: 50,
     icon: icons.StarOutlined
   },
   {
     key: 'delete',
     label: 'common.button.delete',
+    order: 999,
     icon: icons.DeleteOutlined,
     props: {
       danger: true
@@ -88,11 +97,15 @@ const useClusterColumns = (
   // `clusterDetail.linkableName`. Without a plugin we render the
   // name as plain text (matches the pre-restore behaviour); with one
   // we use Typography.Link wired to the parent's `onCellClick`.
-  const nameLinkable: boolean =
-    !!getGPUStackPlugin()?.clusterDetail?.linkableName;
+
+  const { linkableName: nameLinkable, useGenerateActions } =
+    getGPUStackPlugin()?.clusterDetail || {};
+
+  const actionList =
+    useGenerateActions?.({ actions: clusterActionList }) || clusterActionList;
 
   const setActionsItems = (row: ClusterListItem) => {
-    return clusterActionList.filter((item) => {
+    return actionList.filter((item: any) => {
       if (item.provider) {
         return item.provider === row.provider;
       }
@@ -182,7 +195,7 @@ const useClusterColumns = (
         )
       },
       {
-        title: intl.formatMessage({ id: 'menu.resources.gpus' }),
+        title: intl.formatMessage({ id: 'dashboard.totalgpus' }),
         dataIndex: 'gpus',
         span: 2,
         sorter: tableSorter(3),

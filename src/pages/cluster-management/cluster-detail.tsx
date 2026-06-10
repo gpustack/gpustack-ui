@@ -60,7 +60,7 @@ const ClusterDetailModal = () => {
         items={[
           {
             key: 'workers',
-            label: `Workers`,
+            label: intl.formatMessage({ id: 'resources.nodes' }),
             icon: <IconFont type="icon-resources" />,
             children: (
               <WorkerList clusterId={Number(id)} source="clusterDetail" />
@@ -68,7 +68,7 @@ const ClusterDetailModal = () => {
           },
           {
             key: 'gpus',
-            label: `GPUs`,
+            label: intl.formatMessage({ id: 'menu.resources.gpus' }),
             icon: <IconFont type="icon-gpu1" />,
             children: <GPUList clusterId={Number(id)} source="clusterDetail" />
           },

@@ -200,10 +200,10 @@ const AddModal: React.FC<AddModalProps> = (props) => {
         ?.default_backend_param || [];
 
     form.current?.setFieldsValue({
-      backend_parameters: [
-        ...defaultBackendParameters,
-        ...(form.current?.getFieldValue('backend_parameters') || [])
-      ]
+      backend_parameters: mergeBackendParameters(
+        defaultBackendParameters,
+        form.current?.getFieldValue('backend_parameters') || []
+      )
     });
 
     handleCheckFormData();

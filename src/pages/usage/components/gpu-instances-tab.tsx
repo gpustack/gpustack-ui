@@ -144,10 +144,13 @@ const GpuInstancesTab: React.FC = () => {
     try {
       const data = await queryGpuInstancesBreakdown({
         ...baseRequest(),
-        // Split each bucket by the chosen dimension when grouping; fetch the
-        // whole range (date × groups can exceed a normal page).
+        // Split each bucket by the chosen dimension when grouping.
         group_by: chartGroupBy ? ['date', chartGroupBy] : ['date'],
-        ...(chartGroupBy ? { perPage: 10000 } : {})
+        // A trend is a time series, not a paginated table: always fetch the
+        // whole range. The default order is metric-desc, so partial (current/
+        // recent) buckets have smaller values and would be pushed onto later
+        // pages — dropping the newest hours from the chart under a small page.
+        perPage: 10000
       });
       setChartData(data);
     } catch {

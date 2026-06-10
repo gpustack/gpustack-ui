@@ -172,7 +172,7 @@ const InstanceView = forwardRef((props, ref) => {
         <ConfigProvider renderEmpty={renderEmpty}>
           <Table
             rowKey="id"
-            tableLayout="fixed"
+            tableLayout="auto"
             className={'scroll-table'}
             sortDirections={TABLE_SORT_DIRECTIONS}
             showSorterTooltip={false}

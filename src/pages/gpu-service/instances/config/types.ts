@@ -111,6 +111,7 @@ export interface ListItem extends FormData {
   updated_at: string;
   deleted_at?: string | null;
   creator_id?: number | null;
+  clusterId: number;
   status?: InstanceStatus | null;
 }
 

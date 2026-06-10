@@ -47,10 +47,21 @@ const ClusterSystemLoad: React.FC<{ clusterId: number }> = ({ clusterId }) => {
     }
   }, [clusterId]);
 
+  const generateStrokeColor = (percent: number) => {
+    if (percent <= 50) {
+      return 'var(--ant-color-success)';
+    }
+    if (percent <= 80) {
+      return 'var(--ant-color-warning)';
+    }
+    return 'var(--ant-color-error)';
+  };
+
   const renderStepsProgress = (
     percent: number,
     tag: { color: string; text: string }
   ) => {
+    const strokeColor = generateStrokeColor(percent);
     return (
       <Progress
         percent={percent}
@@ -58,6 +69,7 @@ const ClusterSystemLoad: React.FC<{ clusterId: number }> = ({ clusterId }) => {
         size={50}
         strokeWidth={8}
         showInfo={true}
+        strokeColor={strokeColor}
         format={() => (
           <Tag
             color={tag?.color || 'blue'}

@@ -66,6 +66,7 @@ interface DataFormProps {
   onOk: (values: FormData) => void;
   onBackendChange?: (value: string) => void;
   onClusterChange?: (value: number) => void;
+  onFinishFailed?: (errorInfo: any) => void;
 }
 
 const TABKeysMap = {
@@ -91,6 +92,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     onSourceChange,
     onValuesChange,
     onClusterChange,
+    onFinishFailed,
     onOk
   } = props;
   const { getScrollElementScrollableHeight } = useWrapperContext();
@@ -285,6 +287,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
 
   const handleOnFinishFailed = (errorInfo: any) => {
     setSubmitAttempted(true);
+    onFinishFailed?.(errorInfo);
     console.log('Failed:', errorInfo);
     const { errorFields } = errorInfo;
     if (errorFields && errorFields.length > 0) {

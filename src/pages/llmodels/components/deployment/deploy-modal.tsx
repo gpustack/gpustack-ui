@@ -146,6 +146,8 @@ const AddModal: FC<AddModalProps> = (props) => {
   const requestModelIdRef = useRef<number>(0);
   const currentSelectedModel = useRef<any>({});
   const flatBackendOptionsRef = useRef<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const submitloadingRef = useRef<boolean>(false);
 
   const { run: fetchModelFiles } = useDeferredRequest(
     () => modelFileRef.current?.fetchModelFiles?.(),
@@ -422,20 +424,31 @@ const AddModal: FC<AddModalProps> = (props) => {
   };
 
   const handleOnOk = async (allValues: FormData) => {
-    onOk(allValues);
+    setLoading(true);
+    await onOk(allValues);
+    setLoading(false);
+    submitloadingRef.current = false;
+  };
+
+  const handleSumit = () => {
+    if (submitloadingRef.current) {
+      return;
+    }
+    submitloadingRef.current = true;
+    form.current?.submit?.();
   };
 
   const handleSubmitAnyway = async () => {
     submitAnyway.current = true;
-    form.current?.submit?.();
-  };
-
-  const handleSumit = () => {
-    form.current?.submit?.();
+    handleSumit();
   };
 
   const handleSetIsGGUF = async (flag: boolean) => {
     setIsGGUF(flag);
+  };
+
+  const onFinishFailed = () => {
+    submitloadingRef.current = false;
   };
 
   const handleBackendChange = async (backend: string) => {
@@ -660,6 +673,7 @@ const AddModal: FC<AddModalProps> = (props) => {
                 <ModalFooter
                   onCancel={handleCancel}
                   onOk={handleSumit}
+                  loading={loading}
                   showOkBtn={!showExtraButton}
                   extra={
                     showExtraButton && (
@@ -691,6 +705,7 @@ const AddModal: FC<AddModalProps> = (props) => {
                 onOk={handleOnOk}
                 ref={form}
                 isGGUF={isGGUF}
+                onFinishFailed={onFinishFailed}
                 onBackendChange={handleBackendChange}
                 onValuesChange={onValuesChange}
                 clearCacheFormValues={clearCacheFormValues}

@@ -9,8 +9,9 @@ import { useQueryModelInstancesList } from '@/pages/llmodels/services/use-query-
 import { useQueryModelList } from '@/pages/llmodels/services/use-query-model-list';
 import { Cascader as SealCascader, useAppUtils } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
+import { useMemoizedFn } from 'ahooks';
 import { Form, Tooltip } from 'antd';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
 
@@ -45,11 +46,7 @@ const ModelInstanceForm: React.FC = () => {
   const form = Form.useFormInstance();
   const { getRuleMessage } = useAppUtils();
   const { action, open } = useFormContext();
-  // Owned by the create-scope picker slot (admin "All" view). The model list
-  // is tenant-scoped by the request header, so refetch it when the org
-  // changes so only the chosen org's models/instances are offered.
-  const scopeOrgId = Form.useWatch('organization_id', form);
-  const prevScopeRef = useRef<number | null | undefined>(undefined);
+  const clusterId = Form.useWatch('cluster_id', form);
   const [modelList, setModelList] = React.useState<any[]>([]);
   const {
     loading: modelLoading,
@@ -84,6 +81,16 @@ const ModelInstanceForm: React.FC = () => {
     };
   };
 
+  const clearModelInstance = () => {
+    setModelList([]);
+    form.setFieldsValue({
+      model_name: '',
+      model_id: '',
+      model_instance_name: '',
+      model_instance: ''
+    });
+  };
+
   const loadInstances = async (selectedOptions: any[]) => {
     const targetOption = selectedOptions[selectedOptions.length - 1];
     if (targetOption && targetOption.children.length === 0) {
@@ -107,10 +114,12 @@ const ModelInstanceForm: React.FC = () => {
       });
     }
   };
-
-  const initModelInstance = async () => {
+  const initModelInstance = useMemoizedFn(async () => {
+    if (!clusterId) {
+      return;
+    }
     // fetch model list when dropdown is opened
-    const list = await fetchModelList({ page: -1 });
+    const list = await fetchModelList({ page: -1, cluster_id: clusterId });
     const modelOptions = list
       .filter((model: any) => model.replicas > 0)
       .map((model: any) => ({
@@ -124,6 +133,7 @@ const ModelInstanceForm: React.FC = () => {
       }));
 
     if (modelOptions.length === 0) {
+      clearModelInstance();
       return;
     }
 
@@ -133,6 +143,12 @@ const ModelInstanceForm: React.FC = () => {
     );
     if (!selectedllmModel) {
       setModelList(modelOptions);
+      form.setFieldsValue({
+        model_name: '',
+        model_id: '',
+        model_instance_name: '',
+        model_instance: ''
+      });
       return;
     }
     const instanceList = await fetchInstanceList({ id: selectedllmModel.id });
@@ -159,33 +175,18 @@ const ModelInstanceForm: React.FC = () => {
     }
 
     setModelList(modelOptions);
-  };
+  });
 
   useEffect(() => {
     if (open && action === PageAction.CREATE) {
-      // On a genuine org change, clear the stale (possibly cross-org) target
-      // so the refetched list re-selects within the new org.
-      if (
-        prevScopeRef.current !== undefined &&
-        prevScopeRef.current !== scopeOrgId
-      ) {
-        form.setFieldsValue({
-          model_name: undefined,
-          model_id: undefined,
-          model_instance_name: undefined,
-          model_instance: undefined
-        });
-      }
-      prevScopeRef.current = scopeOrgId;
       initModelInstance();
     }
     if (!open) {
-      prevScopeRef.current = undefined;
       cancelModelRequest();
       cancelInstanceRequest();
       clearBenchmarkTargetInstance();
     }
-  }, [open, benchmarkTargetInstance, action, scopeOrgId]);
+  }, [open, action, clusterId]);
 
   return (
     <Form.Item<FormData>

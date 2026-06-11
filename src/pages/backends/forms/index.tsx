@@ -13,10 +13,11 @@ type AddModalProps = {
   action: PageActionType;
   currentData?: ListItem;
   onFinish: (values: FormData) => void;
+  onFinishFailed?: (errorInfo: any) => void;
   ref?: any;
 };
 const BackendForm: React.FC<AddModalProps> = forwardRef(
-  ({ action, currentData, onFinish }, ref) => {
+  ({ action, currentData, onFinish, onFinishFailed }, ref) => {
     const intl = useIntl();
     const [form] = Form.useForm();
     const [activeKey, setActiveKey] = React.useState<string[]>([]);
@@ -26,7 +27,7 @@ const BackendForm: React.FC<AddModalProps> = forwardRef(
       currentData?.backend_source === BackendSourceValueMap.BUILTIN ||
       currentData?.backend_source === BackendSourceValueMap.COMMUNITY;
 
-    const onFinishFailed = (errorInfo: any) => {
+    const handleOnFinishFailed = (errorInfo: any) => {
       const errorFields = errorInfo.errorFields || [];
       if (errorFields.length > 0) {
         const versionError = errorFields.find((field: any) =>
@@ -38,6 +39,7 @@ const BackendForm: React.FC<AddModalProps> = forwardRef(
           setActiveKey([]);
         }
       }
+      onFinishFailed?.(errorInfo);
     };
 
     const handleOnFinish = (values: FormData) => {
@@ -106,7 +108,7 @@ const BackendForm: React.FC<AddModalProps> = forwardRef(
           preserve={false}
           scrollToFirstError={true}
           initialValues={_.omit(currentData, ['version_configs'])}
-          onFinishFailed={onFinishFailed}
+          onFinishFailed={handleOnFinishFailed}
         >
           <BasicForm></BasicForm>
           <VersionsForm

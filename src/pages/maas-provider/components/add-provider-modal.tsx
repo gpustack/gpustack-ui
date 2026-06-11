@@ -1,4 +1,5 @@
 import { PageActionType } from '@/config/types';
+import useSubmitLock from '@/hooks/use-submit-lock';
 import { FormDrawer } from '@gpustack/core-ui';
 import React, { useRef } from 'react';
 import { FormData, MaasProviderItem as ListItem } from '../config/types';
@@ -22,16 +23,19 @@ const AddProvider: React.FC<AddModalProps> = ({
   onCancel
 }) => {
   const form = useRef<any>(null);
+  const { loading, guard, run, release } = useSubmitLock();
 
   const handleSubmit = () => {
-    form.current?.submit();
+    guard(() => form.current?.submit());
   };
 
   const handleOnFinish = async (data: FormData) => {
     console.log('handleOnFinish', data);
-    onOk({
-      ...data
-    });
+    await run(() =>
+      onOk({
+        ...data
+      })
+    );
   };
 
   const handleCancel = () => {
@@ -46,12 +50,14 @@ const AddProvider: React.FC<AddModalProps> = ({
       onCancel={handleCancel}
       onSubmit={handleSubmit}
       width={600}
+      loading={loading}
     >
       <ProviderForm
         ref={form}
         action={action}
         currentData={currentData}
         onFinish={handleOnFinish}
+        onFinishFailed={release}
       />
     </FormDrawer>
   );

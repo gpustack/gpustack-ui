@@ -70,6 +70,7 @@ interface InstanceFormProps {
   // tenant-scoped instance-type / template offerings.
   onScopeChange?: (orgId: number | null | undefined) => void;
   onFinish: (values: FormData) => Promise<void>;
+  onFinishFailed?: (errorInfo: any) => void;
 }
 
 const TABKeysMap = {
@@ -113,7 +114,8 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       instanceTypeList = [],
       noAvailableInstanceTypes,
       onScopeChange,
-      onFinish
+      onFinish,
+      onFinishFailed
     } = props;
     const intl = useIntl();
     const { getRuleMessage } = useAppUtils();
@@ -370,6 +372,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
         ]
       }));
       rawHandleOnFinishFailed({ ...errorInfo, errorFields });
+      onFinishFailed?.(errorInfo);
     };
     const detectMode = (volume?: FormData['spec']['volume']) => {
       if (volume?.persistent?.name || volume?.persistentTemplate?.name) {

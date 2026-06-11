@@ -1,4 +1,5 @@
 import { PageActionType } from '@/config/types';
+import useSubmitLock from '@/hooks/use-submit-lock';
 import { FormDrawer } from '@gpustack/core-ui';
 import React, { useRef } from 'react';
 import { FormData, BenchmarkListItem as ListItem } from '../config/types';
@@ -22,21 +23,24 @@ const AddBenchmark: React.FC<AddModalProps> = ({
   open,
   currentData,
   clusterList,
-  profilesOptions,
-  datasetList,
+  profilesOptions = [],
+  datasetList = [],
   onOk,
   onCancel
 }) => {
   const form = useRef<any>(null);
+  const { loading, guard, run, release } = useSubmitLock();
 
   const handleSubmit = () => {
-    form.current?.submit();
+    guard(() => form.current?.submit());
   };
 
   const handleOk = async (data: FormData) => {
-    onOk({
-      ...data
-    });
+    await run(() =>
+      onOk({
+        ...data
+      })
+    );
   };
 
   const handleCancel = () => {
@@ -51,6 +55,7 @@ const AddBenchmark: React.FC<AddModalProps> = ({
       onCancel={handleCancel}
       onSubmit={handleSubmit}
       width={600}
+      loading={loading}
     >
       <BenchmarkForm
         ref={form}
@@ -61,6 +66,7 @@ const AddBenchmark: React.FC<AddModalProps> = ({
         profilesOptions={profilesOptions}
         datasetList={datasetList}
         onFinish={handleOk}
+        onFinishFailed={release}
       />
     </FormDrawer>
   );

@@ -1,5 +1,6 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
+import useSubmitLock from '@/hooks/use-submit-lock';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { AlertBlockInfo, FormDrawer, ModalFooter } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
@@ -39,20 +40,23 @@ const AddCluster: React.FC<AddModalProps> = ({
 }) => {
   const intl = useIntl();
   const form = useRef<any>(null);
+  const { loading, guard, run, release } = useSubmitLock();
   // Whether the user has changed any k8s_options field. Lifted from ClusterForm
   // so the "re-run registration" notice can sit in the drawer footer, above the
   // Save/Cancel buttons (mirrors the model edit interaction).
   const [k8sOptionsChanged, setK8sOptionsChanged] = useState<boolean>(false);
 
   const handleSubmit = () => {
-    form.current?.submit();
+    guard(() => form.current?.submit());
   };
 
   const handleOk = async (data: FormData) => {
-    onOk({
-      ...data,
-      provider
-    });
+    await run(() =>
+      onOk({
+        ...data,
+        provider
+      })
+    );
   };
 
   const handleCancel = () => {
@@ -84,6 +88,7 @@ const AddCluster: React.FC<AddModalProps> = ({
           <ModalFooter
             onOk={handleSubmit}
             onCancel={handleCancel}
+            loading={loading}
             style={ModalFooterStyle}
           ></ModalFooter>
         </>
@@ -96,6 +101,7 @@ const AddCluster: React.FC<AddModalProps> = ({
         action={action}
         currentData={currentData}
         onFinish={handleOk}
+        onFinishFailed={release}
         onK8sOptionsChange={setK8sOptionsChanged}
       />
     </FormDrawer>

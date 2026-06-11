@@ -11,11 +11,12 @@ interface PublicKeyFormProps {
   action: PageActionType;
   currentData?: ListItem | null;
   onFinish: (values: FormData) => Promise<void>;
+  onFinishFailed?: (errorInfo: any) => void;
 }
 
 const GPUServicePublicKeyForm: React.FC<PublicKeyFormProps> = forwardRef(
   (props, ref) => {
-    const { action, currentData, open, onFinish } = props;
+    const { action, currentData, open, onFinish, onFinishFailed } = props;
     const [form] = Form.useForm<FormData>();
 
     useEffect(() => {
@@ -50,6 +51,7 @@ const GPUServicePublicKeyForm: React.FC<PublicKeyFormProps> = forwardRef(
         name="gpuServicePublicKeyForm"
         form={form}
         onFinish={onFinish}
+        onFinishFailed={onFinishFailed}
         preserve={false}
         initialValues={{}}
       >

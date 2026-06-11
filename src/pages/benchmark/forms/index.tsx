@@ -29,6 +29,7 @@ interface ProviderFormProps {
   datasetList: Global.BaseOption<number | string>[];
   profilesOptions: Global.BaseOption<string>[];
   onFinish: (values: FormData) => Promise<void>;
+  onFinishFailed?: (errorInfo: any) => void;
 }
 
 const TABKeysMap = {
@@ -42,6 +43,7 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
     action,
     currentData,
     onFinish,
+    onFinishFailed,
     open,
     clusterList,
     profilesOptions,
@@ -122,6 +124,7 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
         <Form
           form={form}
           onFinish={onFinish}
+          onFinishFailed={onFinishFailed}
           initialValues={{
             dataset_input_tokens: null,
             dataset_output_tokens: null,

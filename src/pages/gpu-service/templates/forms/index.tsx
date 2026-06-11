@@ -12,11 +12,12 @@ interface TemplateFormProps {
   action: PageActionType;
   currentData?: ListItem | null;
   onFinish: (values: FormData) => Promise<void>;
+  onFinishFailed?: (errorInfo: any) => void;
 }
 
 const GPUServiceTemplateForm: React.FC<TemplateFormProps> = forwardRef(
   (props, ref) => {
-    const { action, currentData, open, onFinish } = props;
+    const { action, currentData, open, onFinish, onFinishFailed } = props;
     const [form] = Form.useForm<FormData>();
 
     useEffect(() => {
@@ -58,6 +59,7 @@ const GPUServiceTemplateForm: React.FC<TemplateFormProps> = forwardRef(
         name="gpuServiceTemplateForm"
         form={form}
         onFinish={handleFinish}
+        onFinishFailed={onFinishFailed}
         preserve={false}
         scrollToFirstError
         initialValues={{

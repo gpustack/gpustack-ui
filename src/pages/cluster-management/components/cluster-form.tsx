@@ -36,6 +36,7 @@ type AddModalProps = {
   provider: ProviderType;
   credentialList: Global.BaseOption<number>[];
   onFinish: (values: FormData) => void;
+  onFinishFailed?: (errorInfo: any) => void;
   // Reports whether the user has changed any k8s_options field, so the parent
   // can show the "re-run registration" notice in the footer.
   onK8sOptionsChange?: (changed: boolean) => void;
@@ -49,6 +50,7 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
       currentData,
       credentialList,
       onFinish,
+      onFinishFailed,
       onK8sOptionsChange
     },
     ref
@@ -212,8 +214,9 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
       }
     }));
 
-    const handleOnFinishFailed = () => {
+    const handleOnFinishFailed = (errorInfo: any) => {
       setSubmitAttempted(true);
+      onFinishFailed?.(errorInfo);
     };
 
     return (

@@ -3,7 +3,7 @@ import { PageActionType } from '@/config/types';
 import { ColumnWrapper, GSDrawer, ModalFooter } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import _ from 'lodash';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   DeployFormKeyMap,
   DO_NOT_NOTIFY_RECREATE,
@@ -29,7 +29,7 @@ type AddModalProps = {
     number,
     { provider: string; state: string | number }
   >[];
-  onOk: (values: FormData) => void;
+  onOk: (values: FormData) => void | Promise<void>;
   onCancel: () => void;
 };
 
@@ -60,6 +60,8 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
   const formRef = useRef<any>(null);
   const submitAnyway = useRef<boolean>(false);
   const originFormData = useRef<any>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const submitloadingRef = useRef<boolean>(false);
 
   const setOriginalFormData = () => {
     if (!originFormData.current) {
@@ -157,12 +159,20 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
   };
 
   const handleSumit = () => {
+    if (submitloadingRef.current) {
+      return;
+    }
+    submitloadingRef.current = true;
     formRef.current?.submit();
   };
 
   const handleSubmitAnyway = async () => {
     submitAnyway.current = true;
-    formRef.current?.submit?.();
+    handleSumit();
+  };
+
+  const onFinishFailed = () => {
+    submitloadingRef.current = false;
   };
 
   const handleOk = async (formdata: FormData) => {
@@ -182,7 +192,13 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
           }
         : {})
     };
-    onOk(submitData);
+    setLoading(true);
+    try {
+      await onOk(submitData);
+    } finally {
+      setLoading(false);
+      submitloadingRef.current = false;
+    }
   };
 
   const handleManulOnValuesChange = (changedValues: any, allValues: any) => {
@@ -266,6 +282,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
               style={ModalFooterStyle}
               onCancel={onCancel}
               onOk={handleSumit}
+              loading={loading}
             ></ModalFooter>
           </>
         }
@@ -278,6 +295,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
           realAction={realAction}
           clusterList={clusterList}
           onOk={handleOk}
+          onFinishFailed={onFinishFailed}
           ref={formRef}
           isGGUF={isGGUF}
           onBackendChange={handleAsyncBackendChange}

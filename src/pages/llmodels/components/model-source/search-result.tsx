@@ -76,15 +76,15 @@ const SearchResult: React.FC<SearchResultProps> = (props) => {
             ></IconFont>
           }
           description={
-            source === modelSourceMap.huggingface_value ? (
-              <div className="flex-column gap-5">
+            <div className="flex-column gap-5">
+              <span>
+                {intl.formatMessage({ id: 'models.search.networkerror' })}
+              </span>
+              <span>
                 <span>
-                  {intl.formatMessage({ id: 'models.search.networkerror' })}
+                  {intl.formatMessage({ id: 'models.search.hfvisit' })}
                 </span>
-                <span>
-                  <span>
-                    {intl.formatMessage({ id: 'models.search.hfvisit' })}
-                  </span>
+                {source === modelSourceMap.huggingface_value ? (
                   <Button
                     type="link"
                     size="small"
@@ -93,9 +93,18 @@ const SearchResult: React.FC<SearchResultProps> = (props) => {
                   >
                     Hugging Face
                   </Button>
-                </span>
-              </div>
-            ) : null
+                ) : (
+                  <Button
+                    type="link"
+                    size="small"
+                    href="https://modelscope.cn/"
+                    target="_blank"
+                  >
+                    ModelScope
+                  </Button>
+                )}
+              </span>
+            </div>
           }
         />
       );

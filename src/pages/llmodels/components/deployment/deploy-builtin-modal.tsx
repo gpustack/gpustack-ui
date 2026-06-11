@@ -59,7 +59,7 @@ type AddModalProps = {
   source: SourceType;
   width?: string | number;
   current?: any;
-  onOk: (values: FormData) => void;
+  onOk: (values: FormData) => void | Promise<void>;
   onCancel: () => void;
 };
 
@@ -104,8 +104,14 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   const specListRef = useRef<any[]>([]);
   const noCompatibleGPUsRef = useRef<boolean>(false);
   const backendOptionsCache = useRef<any>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const submitloadingRef = useRef<boolean>(false);
 
   const handleSumit = () => {
+    if (submitloadingRef.current) {
+      return;
+    }
+    submitloadingRef.current = true;
     form.current?.submit?.();
   };
 
@@ -115,7 +121,11 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       return;
     }
     submitAnyway.current = true;
-    form.current?.submit?.();
+    handleSumit();
+  };
+
+  const onFinishFailed = () => {
+    submitloadingRef.current = false;
   };
 
   const generateSubmitData = (formData: FormData) => {
@@ -348,7 +358,13 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       ..._.omit(selectSpecRef.current, ['name']),
       ...values
     };
-    onOk(data);
+    setLoading(true);
+    try {
+      await onOk(data);
+    } finally {
+      setLoading(false);
+      submitloadingRef.current = false;
+    }
   };
 
   const handleCancel = () => {
@@ -447,6 +463,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
                 <ModalFooter
                   onCancel={handleCancel}
                   onOk={handleSumit}
+                  loading={loading}
                   showOkBtn={!showExtraButton}
                   extra={
                     showExtraButton && (
@@ -472,6 +489,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
                 source={source}
                 action={action}
                 onOk={handleOk}
+                onFinishFailed={onFinishFailed}
                 ref={form}
                 isGGUF={isGGUF}
                 formKey={DeployFormKeyMap.CATALOG}

@@ -48,6 +48,15 @@ const BasicForm: React.FC = () => {
     );
   }, [orgScoped, scopedClusterList, clusterList, scopeOrgId]);
 
+  const handleOnOrgChange = (value: any) => {
+    form.setFieldsValue({
+      model_name: undefined,
+      model_id: undefined,
+      model_instance_name: undefined,
+      model_instance: undefined
+    });
+  };
+
   useEffect(() => {
     if (action === PageAction.CREATE && orgScoped) {
       fetchScopedClusters({ page: -1 });
@@ -108,7 +117,10 @@ const BasicForm: React.FC = () => {
           required
         ></CInput.Input>
       </Form.Item>
-      <PluginExtraFields name="CreateOrgScopeField" context={{ action }} />
+      <PluginExtraFields
+        name="CreateOrgScopeField"
+        context={{ action, onChange: handleOnOrgChange }}
+      />
       <Form.Item<FormData>
         name="cluster_id"
         rules={[

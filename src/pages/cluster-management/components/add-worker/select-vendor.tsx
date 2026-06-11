@@ -93,9 +93,8 @@ const SelectVendor: React.FC<AddWorkerStepProps> = ({ disabled }) => {
   };
 
   useEffect(() => {
-    // K8s clusters allow selecting none (CPU-only workers), so skip default
-    // selection. Other providers still default to NVIDIA.
-    if (multiCapable) return;
+    // Default to NVIDIA for every provider, including K8s. Users can still
+    // deselect it (e.g. for CPU-only workers) or add more vendors on K8s.
     handleSelect(GPUDriverMap.NVIDIA, {
       label: 'NVIDIA',
       hiddenTitle: true,

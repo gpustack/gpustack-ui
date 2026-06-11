@@ -97,7 +97,6 @@ const ClusterAdvanceConfig: React.FC<{
           this column). */}
       <Form.Item<FormData>
         name="system_default_container_registry"
-        style={{ marginBottom: 16 }}
         normalize={(value) => value?.trim?.() || null}
       >
         <CInput.Input

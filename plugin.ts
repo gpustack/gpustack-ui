@@ -5,6 +5,8 @@ export default (api: IApi) => {
     const info = JSON.parse(process.env.VERSION || '{}');
     const env = process.env.NODE_ENV;
 
+    $('html').attr('lang', 'en');
+
     $('html').attr('data-env', env);
 
     $('html').attr(

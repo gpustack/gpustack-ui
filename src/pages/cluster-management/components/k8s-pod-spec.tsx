@@ -56,7 +56,6 @@ export const OperatorImageForm: React.FC = () => {
     <SectionWrap>
       <Form.Item
         name={['k8s_options', 'operatorImage']}
-        style={{ marginBottom: 0 }}
         normalize={(value) => value || null}
       >
         <CInput.Input
@@ -299,7 +298,7 @@ const cleanK8sOptions = (opts: any) => {
       ({ sourceType, ...rest }: any) => rest
     );
   }
-  return cloned;
+  return _.pickBy(cloned, (value: any) => !_.isNil(value));
 };
 
 // Custom comparator for isEqualWith: treats null, undefined, empty strings,
@@ -312,7 +311,8 @@ const nullishCustomizer = (val1: any, val2: any) => {
     (val1 == null && val2 === '') ||
     (val1 === '' && val2 == null) ||
     (_.isEmpty(val1) && val2 == null) ||
-    (val1 == null && _.isEmpty(val2))
+    (val1 == null && _.isEmpty(val2)) ||
+    (_.isNil(val1) && _.isNil(val2))
   ) {
     return true;
   }

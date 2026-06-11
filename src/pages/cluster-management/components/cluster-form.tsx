@@ -263,10 +263,6 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
           <Form.Item<FormData>
             name="description"
             rules={[{ required: false }]}
-            // For Kubernetes the cluster type selector follows directly, so
-            // fall back to the default item margin (matching the name field)
-            // to keep the description spacing symmetric; other providers keep
-            // the tighter gap before the advanced panel.
             style={{
               marginBottom:
                 provider === ProviderValueMap.Kubernetes ? undefined : 8

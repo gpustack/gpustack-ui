@@ -76,7 +76,7 @@ const formatResources = (
   if (!record.spec?.resources?.accelerator) {
     return {
       cpu: record.spec?.resources?.cpu
-        ? `${record.spec?.resources?.cpu} C`
+        ? `${record.spec?.resources?.cpu} vCPU`
         : '-',
       ram: record.spec?.resources?.ram
         ? toGB(record.spec?.resources?.ram)
@@ -92,7 +92,7 @@ const formatResources = (
   const vram = formatMemoryDisplay((instanceTypeSpec.spec as any)?.memory);
 
   return {
-    cpu: resources.cpu ? `${resources.cpu} C` : '-',
+    cpu: resources.cpu ? `${resources.cpu} vCPU` : '-',
     ram: resources.ram ? `${resources.ram} GB` : '-',
     vram,
     localStorage: record.spec?.resources?.localStorage

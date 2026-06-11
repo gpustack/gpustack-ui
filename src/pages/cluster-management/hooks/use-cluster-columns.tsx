@@ -182,7 +182,7 @@ const useClusterColumns = (
         )
       },
       {
-        title: 'GPUs',
+        title: intl.formatMessage({ id: 'menu.resources.gpus' }),
         dataIndex: 'gpus',
         span: 2,
         sorter: tableSorter(3),

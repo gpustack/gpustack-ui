@@ -1,5 +1,6 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
+import useSubmitLock from '@/hooks/use-submit-lock';
 import { useQueryClusterList } from '@/pages/cluster-management/services/use-query-cluster-list';
 import Separator from '@/pages/llmodels/components/separator';
 import { SearchOutlined } from '@ant-design/icons';
@@ -89,7 +90,7 @@ const AddModal: React.FC<AddModalProps> = ({
   const [templateId, setTemplateId] = useState<number | undefined>();
   const [instanceKeyword, setInstanceKeyword] = useState('');
   const [templateKeyword, setTemplateKeyword] = useState('');
-  const [loading, setLoading] = useState(false);
+  const { loading, guard, run, release } = useSubmitLock();
   const initializedRef = useRef(false);
 
   const {
@@ -385,7 +386,7 @@ const AddModal: React.FC<AddModalProps> = ({
   });
 
   const handleSubmit = () => {
-    form.current?.submit();
+    guard(() => form.current?.submit());
   };
 
   const handleCancel = () => {
@@ -394,15 +395,12 @@ const AddModal: React.FC<AddModalProps> = ({
   };
 
   const onFinish = async (values: FormData) => {
-    setLoading(true);
-    try {
+    await run(async () => {
       await onOk({
         ...values
       });
       console.log('submit form values', values);
-    } finally {
-      setLoading(false);
-    }
+    });
   };
 
   const handleInstanceTypeChange = (item: InstanceTypeItem) => {
@@ -576,6 +574,7 @@ const AddModal: React.FC<AddModalProps> = ({
                 currentData={data}
                 disabled={readonly}
                 onFinish={onFinish}
+                onFinishFailed={release}
                 onScopeChange={handleScopeChange}
                 open={open}
                 instanceTypeList={ownedInstanceTypes}

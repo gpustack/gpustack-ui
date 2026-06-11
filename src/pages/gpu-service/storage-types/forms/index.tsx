@@ -18,6 +18,7 @@ interface StorageTypeFormProps {
   action: PageActionType;
   currentData?: ListItem | null;
   onFinish: (values: FormData) => Promise<void>;
+  onFinishFailed?: (errorInfo: any) => void;
 }
 
 const detectKind = (item?: ListItem | null): StorageTypeKind => {
@@ -27,7 +28,7 @@ const detectKind = (item?: ListItem | null): StorageTypeKind => {
 
 const GPUServiceStorageTypeForm: React.FC<StorageTypeFormProps> = forwardRef(
   (props, ref) => {
-    const { action, currentData, open, onFinish } = props;
+    const { action, currentData, open, onFinish, onFinishFailed } = props;
     const [form] = Form.useForm<FormData>();
     const kind = Form.useWatch('type', form);
 
@@ -115,6 +116,7 @@ const GPUServiceStorageTypeForm: React.FC<StorageTypeFormProps> = forwardRef(
         name="gpuServiceStorageTypeForm"
         form={form}
         onFinish={handleFinish}
+        onFinishFailed={onFinishFailed}
         preserve={false}
         initialValues={{}}
       >

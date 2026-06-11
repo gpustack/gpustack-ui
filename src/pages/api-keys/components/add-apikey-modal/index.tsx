@@ -1,5 +1,6 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
+import useSubmitLock from '@/hooks/use-submit-lock';
 import {
   AlertBlockInfo,
   Input as CInput,
@@ -45,7 +46,7 @@ const AddModal: React.FC<AddModalProps> = ({
   const intl = useIntl();
   const [showKey, setShowKey] = useState(false);
   const [apikeyValue, setAPIKeyValue] = useState('');
-  const [loading, setLoading] = useState(false);
+  const { loading, guard, run, release } = useSubmitLock();
   const [isChanged, setIsChanged] = useState(false);
   const cacheFormRef = useRef<{
     allowed_type: string;
@@ -116,31 +117,31 @@ const AddModal: React.FC<AddModalProps> = ({
   };
 
   const handleOnOk = async (formdata: FormData) => {
-    try {
-      setLoading(true);
-      const data = {
-        ..._.omit(formdata, ['allowed_type']),
-        allowed_model_names:
-          formdata.allowed_type === 'all' ||
-          !formdata.scope?.includes('inference')
-            ? []
-            : formdata.allowed_model_names || []
-      };
-      if (action === PageAction.CREATE) {
-        await createAPIKey(data);
-      } else if (action === PageAction.EDIT && currentData?.id) {
-        await updateAPIKey({
-          ..._.omit(data, ['expires_in'])
-        });
+    await run(async () => {
+      try {
+        const data = {
+          ..._.omit(formdata, ['allowed_type']),
+          allowed_model_names:
+            formdata.allowed_type === 'all' ||
+            !formdata.scope?.includes('inference')
+              ? []
+              : formdata.allowed_model_names || []
+        };
+        if (action === PageAction.CREATE) {
+          await createAPIKey(data);
+        } else if (action === PageAction.EDIT && currentData?.id) {
+          await updateAPIKey({
+            ..._.omit(data, ['expires_in'])
+          });
+        }
+      } catch (error) {
+        // handled in interceptor
       }
-      setLoading(false);
-    } catch (error) {
-      setLoading(false);
-    }
+    });
   };
 
   const handleSumit = () => {
-    form.submit();
+    guard(() => form.submit());
   };
 
   const handleDone = () => {
@@ -278,6 +279,7 @@ const AddModal: React.FC<AddModalProps> = ({
           name="addAPIKey"
           form={form}
           onFinish={handleOnOk}
+          onFinishFailed={release}
           preserve={false}
           initialValues={{
             allowed_type: 'all',

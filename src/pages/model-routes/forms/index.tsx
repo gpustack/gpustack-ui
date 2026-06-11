@@ -65,6 +65,7 @@ interface ProviderFormProps {
     routeTargets?: RouteTargetFormItem[];
   }; // Used when action is EDIT
   onFinish: (values: FormData) => Promise<void>;
+  onFinishFailed?: (errorInfo: any) => void;
   onFallbackChange?: (changed: boolean) => void;
 }
 
@@ -86,8 +87,15 @@ const requiredFields = {
 
 const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
   const intl = useIntl();
-  const { action, realAction, currentData, open, onFinish, onFallbackChange } =
-    props;
+  const {
+    action,
+    realAction,
+    currentData,
+    open,
+    onFinish,
+    onFinishFailed,
+    onFallbackChange
+  } = props;
   const { getScrollElementScrollableHeight } = useWrapperContext();
   const [form] = Form.useForm();
   const scrollTabsRef = useRef<any>(null);
@@ -238,6 +246,11 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
     updateActiveKey
   });
 
+  const handleFinishFailed = (errorInfo: any) => {
+    handleOnFinishFailed(errorInfo);
+    onFinishFailed?.(errorInfo);
+  };
+
   useImperativeHandle(ref, () => ({
     submit: () => {
       form.submit();
@@ -266,7 +279,7 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
         <Form
           form={form}
           onFinish={handleOnFinish}
-          onFinishFailed={handleOnFinishFailed}
+          onFinishFailed={handleFinishFailed}
           initialValues={{
             categories: [modelCategoriesMap.llm],
             meta: {}

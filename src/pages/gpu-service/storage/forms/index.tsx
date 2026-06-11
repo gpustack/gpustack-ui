@@ -11,11 +11,12 @@ interface StorageFormProps {
   action: PageActionType;
   currentData?: ListItem | null;
   onFinish: (values: FormData) => Promise<void>;
+  onFinishFailed?: (errorInfo: any) => void;
 }
 
 const GPUServiceStorageForm: React.FC<StorageFormProps> = forwardRef(
   (props, ref) => {
-    const { action, currentData, open, onFinish } = props;
+    const { action, currentData, open, onFinish, onFinishFailed } = props;
     const [form] = Form.useForm<FormData>();
 
     useEffect(() => {
@@ -51,6 +52,7 @@ const GPUServiceStorageForm: React.FC<StorageFormProps> = forwardRef(
         name="gpuServiceStorageForm"
         form={form}
         onFinish={onFinish}
+        onFinishFailed={onFinishFailed}
         preserve={false}
         initialValues={{}}
       >

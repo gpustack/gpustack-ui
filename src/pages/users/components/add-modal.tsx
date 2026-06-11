@@ -1,5 +1,6 @@
 import { PageAction, PasswordReg } from '@/config';
 import { PageActionType } from '@/config/types';
+import useSubmitLock from '@/hooks/use-submit-lock';
 import {
   Input as CInput,
   FormDrawer,
@@ -32,6 +33,7 @@ const AddModal: React.FC<AddModalProps> = ({
   const { initialState } = useModel('@@initialState') || {};
   const [form] = Form.useForm();
   const intl = useIntl();
+  const { loading, guard, run, release } = useSubmitLock();
 
   const initFormValue = () => {
     if (action === PageAction.EDIT && open) {
@@ -49,7 +51,11 @@ const AddModal: React.FC<AddModalProps> = ({
   };
 
   const handleSubmit = () => {
-    form.submit();
+    guard(() => form.submit());
+  };
+
+  const onFinish = async (values: FormData) => {
+    await run(() => onOk(values));
   };
 
   useEffect(() => {
@@ -62,8 +68,15 @@ const AddModal: React.FC<AddModalProps> = ({
       open={open}
       onCancel={onCancel}
       onSubmit={handleSubmit}
+      loading={loading}
     >
-      <Form name="addUserForm" form={form} onFinish={onOk} preserve={false}>
+      <Form
+        name="addUserForm"
+        form={form}
+        onFinish={onFinish}
+        onFinishFailed={release}
+        preserve={false}
+      >
         <Form.Item<FormData>
           name="username"
           rules={[

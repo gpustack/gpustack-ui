@@ -157,8 +157,14 @@ export const renderInstanceType = (
       ],
       [
         intl.formatMessage({ id: 'gpuservice.instance.disk.persistent' }),
-        toGB(volume?.persistentTemplate?.spec?.capacity) ||
-          toGB(pvCapacityByName?.[volume?.persistent?.name]) ||
+        // toGB returns '-' (a truthy string) for falsy input, so only call it
+        // when a value actually exists — otherwise the first branch would
+        // short-circuit the chain and the PV fallbacks would never run.
+        (volume?.persistentTemplate?.spec?.capacity &&
+          toGB(volume.persistentTemplate.spec.capacity)) ||
+          (volume?.persistent?.name &&
+            pvCapacityByName?.[volume.persistent.name] &&
+            toGB(pvCapacityByName[volume.persistent.name])) ||
           volume?.persistent?.name
       ]
     ]

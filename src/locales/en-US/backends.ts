@@ -23,10 +23,11 @@ export default {
   'backend.form.defaultExecuteCommand': 'Default Execution Command',
   'backend.form.defaultExecuteCommand.tips': `'{{'model_path'}}', '{{'port'}}', '{{'worker_ip'}}' and '{{'model_name'}}' are placeholders that will be substituted with the actual values during deployment.`,
   'backend.form.defaultBackendParameters': 'Default Backend Parameters',
-  'backend.form.parameterFormat': 'Parameter Format',
-  'backend.form.parameterFormat.default': 'Backend Default',
-  'backend.form.parameterFormat.space': 'Space (--key value)',
-  'backend.form.parameterFormat.equal': 'Equal (--key=value)',
+  'backend.form.flagFormat': 'Flag Format',
+  'backend.form.flagFormat.tips':
+    'The format applied between an option and its value. Leave empty to keep each parameter as entered, without normalizing it.',
+  'backend.form.flagFormat.space': 'Space Separated (--key value)',
+  'backend.form.flagFormat.equal': 'Equal Sign (--key=value)',
   'backend.form.commonParameters': 'Common Backend Parameters',
   'backend.form.commonParameters.tips':
     'Shown as suggestions in the backend parameters input during deployment.',

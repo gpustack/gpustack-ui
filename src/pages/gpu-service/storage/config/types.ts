@@ -23,6 +23,7 @@ export interface ListItem {
   updated_at: string;
   deleted_at?: string | null;
   owner_principal_id?: number | null;
+  creator_id?: number | null;
   displayName?: string | null;
   description?: string | null;
   name: string;

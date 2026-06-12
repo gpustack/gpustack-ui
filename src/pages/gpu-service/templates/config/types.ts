@@ -40,6 +40,7 @@ export interface ListItem extends FormData {
   // the `OwnerScopeTag` slot on the card so the owner is visible at a
   // glance. Optional on the wire — absent in single-owner builds.
   owner_principal_id?: number | null;
+  creator_id?: number | null;
   created_at?: string;
   updated_at?: string;
 }

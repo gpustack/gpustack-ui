@@ -1,3 +1,4 @@
+import useCreatorColumn from '@/pages/gpu-service/hooks/use-creator-column';
 import { usePluginListColumns } from '@/plugins/list-extra-columns';
 import { ExportOutlined } from '@ant-design/icons';
 import {
@@ -172,6 +173,7 @@ const useInstancesColumns = ({
   const intl = useIntl();
   const access = useAccess();
   const pluginCols = usePluginListColumns('gpuInstances');
+  const creatorCols = useCreatorColumn<ListItem>('gpuInstances');
 
   const renderInstanceType = (record: ListItem) => {
     const description =
@@ -403,6 +405,7 @@ const useInstancesColumns = ({
           </AutoTooltip>
         )
       },
+      ...creatorCols,
       {
         title: intl.formatMessage({ id: 'common.table.createTime' }),
         dataIndex: 'created_at',
@@ -441,7 +444,8 @@ const useInstancesColumns = ({
     clusterList,
     intl,
     pvCapacityByName,
-    pluginCols
+    pluginCols,
+    creatorCols
   ]);
 };
 

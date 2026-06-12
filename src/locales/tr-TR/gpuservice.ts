@@ -114,6 +114,8 @@ export default {
   'gpuservice.instance.sliced': 'Bölünmüş',
   'gpuservice.instance.memory': 'VRAM',
   'gpuservice.instance.ram': 'RAM',
+  'gpuservice.instance.os': 'OS',
+  'gpuservice.instance.arch': 'Mimari',
   'gpuservice.instance.disk': 'Disk',
   'gpuservice.table.count': 'Sayı',
   'gpuservice.instance.disk.system': 'Sistem Diski',

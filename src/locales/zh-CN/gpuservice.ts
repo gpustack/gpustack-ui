@@ -109,6 +109,8 @@ export default {
   'gpuservice.instance.sliced': '切分',
   'gpuservice.instance.memory': '显存',
   'gpuservice.instance.ram': '内存',
+  'gpuservice.instance.os': '系统',
+  'gpuservice.instance.arch': '架构',
   'gpuservice.instance.disk': '磁盘',
   'gpuservice.table.count': '数量',
   'gpuservice.instance.disk.system': '系统盘',

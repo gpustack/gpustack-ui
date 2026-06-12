@@ -118,6 +118,8 @@ export default {
   'gpuservice.instance.sliced': 'Разделено',
   'gpuservice.instance.memory': 'VRAM',
   'gpuservice.instance.ram': 'RAM',
+  'gpuservice.instance.os': 'ОС',
+  'gpuservice.instance.arch': 'Архитектура',
   'gpuservice.instance.disk': 'Диск',
   'gpuservice.table.count': 'Количество',
   'gpuservice.instance.disk.system': 'Системный диск',

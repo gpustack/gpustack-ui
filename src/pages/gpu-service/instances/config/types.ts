@@ -149,6 +149,27 @@ export interface InstanceTypeOnceMaxRequestResource {
   localStorage: QuanityLocalStorage;
 }
 
+export interface CPUCache {
+  l1i: string;
+  l1d: string;
+  l2: string;
+  l3: string;
+}
+
+export interface CPUInfo {
+  physicalCores: string;
+  threadsPerPhysicalCore: string;
+  logicalCores: string;
+  stepping: string | null;
+  clockSpeed: string | null;
+  maxClockSpeed: string | null;
+  cacheLine: string;
+  cache: CPUCache;
+  manufacturer: string;
+  product: string;
+  family: string;
+}
+
 export interface InstanceTypeSpec {
   group: string;
   acceleratable: boolean;
@@ -163,6 +184,10 @@ export interface InstanceTypeSpec {
     cpu: QuanityCPU;
     ram: QuanityMemory;
   };
+  os?: string;
+  arch?: string;
+  cpu?: CPUInfo;
+  cache?: Record<string, string>;
   unitResourcesParsed?: {
     cpu: {
       cores?: number;

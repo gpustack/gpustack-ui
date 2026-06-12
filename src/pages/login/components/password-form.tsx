@@ -7,9 +7,8 @@ import {
   writeState
 } from '@/utils/localstore/index';
 import { LockOutlined } from '@ant-design/icons';
-import { Input as CInput } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Button, Form, message } from 'antd';
+import { Button, Form, Input, message } from 'antd';
 import CryptoJS from 'crypto-js';
 import { useAtom } from 'jotai';
 import { updatePassword } from '../apis';
@@ -56,13 +55,14 @@ const PasswordForm: React.FC = () => {
   return (
     <div>
       <Form
+        layout="vertical"
+        requiredMark={false}
         form={form}
-        style={{ width: '360px', margin: '0 auto' }}
+        style={{ margin: '0 auto' }}
         onFinish={handleSubmit}
       >
         <h2 className="justify-center m-b-20 flex-column flex-center">
           <span>
-            {' '}
             {intl.formatMessage({ id: 'users.password.modify.title' })}
           </span>
           <span
@@ -78,6 +78,8 @@ const PasswordForm: React.FC = () => {
         </h2>
         <Form.Item
           name="new_password"
+          style={{ marginBottom: 20 }}
+          label={intl.formatMessage({ id: 'users.form.newpassword' })}
           rules={[
             {
               required: true,
@@ -88,14 +90,19 @@ const PasswordForm: React.FC = () => {
             }
           ]}
         >
-          <CInput.Password
+          <Input.Password
+            style={{ height: 44 }}
             autoComplete="new-password"
+            placeholder={intl.formatMessage({
+              id: 'common.login.newpassword.holder'
+            })}
             prefix={<LockOutlined />}
-            label={intl.formatMessage({ id: 'users.form.newpassword' })}
           />
         </Form.Item>
         <Form.Item
+          style={{ marginBottom: 20 }}
           name="confirm_password"
+          label={intl.formatMessage({ id: 'users.password.confirm' })}
           dependencies={['new_password']}
           rules={[
             {
@@ -118,10 +125,13 @@ const PasswordForm: React.FC = () => {
             })
           ]}
         >
-          <CInput.Password
+          <Input.Password
+            style={{ height: 44 }}
             autoComplete="new-password"
+            placeholder={intl.formatMessage({
+              id: 'common.login.confirm.holder'
+            })}
             prefix={<LockOutlined />}
-            label={intl.formatMessage({ id: 'users.password.confirm' })}
           />
         </Form.Item>
 
@@ -129,7 +139,7 @@ const PasswordForm: React.FC = () => {
           htmlType="submit"
           type="primary"
           block
-          style={{ height: '48px', fontSize: '14px', marginTop: 10 }}
+          style={{ height: '44px', fontSize: '14px', marginTop: 16 }}
         >
           {intl.formatMessage({ id: 'common.button.submit' })}
         </Button>

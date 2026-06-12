@@ -72,12 +72,18 @@ const Box = styled.div`
   flex-direction: column;
   justify-content: space-between;
   min-height: 100vh;
+  .ant-form-item-label {
+    line-height: 1;
+  }
+  .ant-form-item-label > label {
+    height: auto !important;
+  }
 `;
 
 const FormWrapper = styled.div`
   margin: 0 auto;
   margin-top: 50vh;
-  width: 440px;
+  width: 400px;
   transform: translateY(-50%);
   position: relative;
   z-index: 999;

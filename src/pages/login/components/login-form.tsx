@@ -243,7 +243,7 @@ const LoginForm = () => {
             {renderWelCome()}
             <div className="spin">
               <Spin
-                tip={intl.formatMessage({ id: 'common.login.auth' })}
+                description={intl.formatMessage({ id: 'common.login.auth' })}
                 size="middle"
               >
                 <div style={{ width: 300 }}></div>

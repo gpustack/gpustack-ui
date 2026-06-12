@@ -127,10 +127,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     await run(() =>
       onSubmit({
         ...values,
-        parameter_format:
-          values.parameter_format === 'auto' || !values.parameter_format
-            ? null
-            : values.parameter_format,
+        parameter_format: values.parameter_format || null,
         default_version: defaultVersion?.version_no || '',
         // @ts-ignore
         version_configs: versionConfigs
@@ -168,7 +165,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       return {
         ...values,
         backend_name: values.backend_name.replace(/-custom$/, ''),
-        parameter_format: values.parameter_format ?? 'auto',
+        parameter_format: values.parameter_format,
         version_configs: versionConfigs,
         built_in_version_configs: builtInVersions
       };

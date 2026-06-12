@@ -28,7 +28,7 @@ export interface FormData {
   enabled?: boolean;
   backend_source?: string;
   default_env?: Record<string, any>;
-  parameter_format?: 'space' | 'equal' | 'auto' | null;
+  parameter_format?: 'space' | 'equal' | null;
   common_parameters?: string[];
 }
 

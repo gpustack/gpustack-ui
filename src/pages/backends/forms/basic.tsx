@@ -151,27 +151,24 @@ const BasicForm = () => {
       </Form.Item>
       <Form.Item<FormData>
         name="parameter_format"
-        initialValue="auto"
         rules={[{ required: false }]}
       >
         <SealSelect
-          label={intl.formatMessage({ id: 'backend.form.parameterFormat' })}
+          allowClear
+          label={intl.formatMessage({ id: 'backend.form.flagFormat' })}
+          description={intl.formatMessage({
+            id: 'backend.form.flagFormat.tips'
+          })}
           options={[
             {
               label: intl.formatMessage({
-                id: 'backend.form.parameterFormat.default'
-              }),
-              value: 'auto'
-            },
-            {
-              label: intl.formatMessage({
-                id: 'backend.form.parameterFormat.space'
+                id: 'backend.form.flagFormat.space'
               }),
               value: 'space'
             },
             {
               label: intl.formatMessage({
-                id: 'backend.form.parameterFormat.equal'
+                id: 'backend.form.flagFormat.equal'
               }),
               value: 'equal'
             }

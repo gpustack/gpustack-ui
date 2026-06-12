@@ -31,5 +31,6 @@ export default function createProxyTable(target?: string) {
     },
     {}
   );
+
   return proxyTable;
 }

@@ -8,11 +8,10 @@ import {
   AlertBlockInfo,
   ColumnWrapper,
   GSDrawer,
-  IconFont,
   ModalFooter
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Empty, Flex, Input, Segmented, Typography } from 'antd';
+import { Empty, Input, Typography } from 'antd';
 import _ from 'lodash';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ListItem as TemplateItem } from '../../templates/config/types';
@@ -90,7 +89,6 @@ const AddModal: React.FC<AddModalProps> = ({
     manufacturer: undefined
   });
   const [templateId, setTemplateId] = useState<number | undefined>();
-  const [resourceType, setResourceType] = useState<'gpu' | 'cpu'>('gpu');
   const [instanceKeyword, setInstanceKeyword] = useState('');
   const [templateKeyword, setTemplateKeyword] = useState('');
   const { loading, guard, run, release } = useSubmitLock();
@@ -188,14 +186,6 @@ const AddModal: React.FC<AddModalProps> = ({
   // all map to the single 'cpu' bucket used to match templates.
   const manufacturerOf = (instanceType: InstanceTypeItem) =>
     instanceType.spec.acceleratable ? instanceType.spec?.manufacturer : 'cpu';
-
-  const matchesResourceType = (
-    instanceType: InstanceTypeItem,
-    type: 'gpu' | 'cpu'
-  ) =>
-    type === 'gpu'
-      ? !!instanceType.spec.acceleratable
-      : !instanceType.spec.acceleratable;
 
   // apply the selection of instance type and template
   const applySelection = (
@@ -300,8 +290,6 @@ const AddModal: React.FC<AddModalProps> = ({
           instanceType: aggregate.name,
           manufacturer: manufacturerOf(aggregate)
         });
-        // Surface the persisted pick under the matching segment.
-        setResourceType(aggregate.spec.acceleratable ? 'gpu' : 'cpu');
       }
       return;
     }
@@ -309,23 +297,9 @@ const AddModal: React.FC<AddModalProps> = ({
     // Scope to clusters the chosen org owns (admin "All" view).
     const owned = filterTypesByOwner(instanceTypes, clusters || [], orgId);
 
-    // Prefer the active segment, but fall back to the other kind when it has
-    // no enabled candidate so the drawer never opens on an empty list.
-    const hasEnabled = (type: 'gpu' | 'cpu') =>
-      owned.some((it) => matchesResourceType(it, type) && !it.disabled);
-    const other = resourceType === 'gpu' ? 'cpu' : 'gpu';
-    const nextType = hasEnabled(resourceType)
-      ? resourceType
-      : hasEnabled(other)
-        ? other
-        : resourceType;
-    setResourceType(nextType);
-
-    // On create, auto-select the first instance type of the chosen kind.
-    autoSelectFirst(
-      owned.filter((it) => matchesResourceType(it, nextType)),
-      templates
-    );
+    // On create, auto-select the first available instance type (clears the
+    // selection when the chosen org has none).
+    autoSelectFirst(owned, templates);
   };
 
   // Fetch the (tenant-scoped) instance types + templates and auto-select.
@@ -383,7 +357,6 @@ const AddModal: React.FC<AddModalProps> = ({
         manufacturer: undefined
       });
       setTemplateId(undefined);
-      setResourceType('gpu');
       setInstanceKeyword('');
       setTemplateKeyword('');
       setScopeOrgId(undefined);
@@ -395,20 +368,10 @@ const AddModal: React.FC<AddModalProps> = ({
     }
   }, [open, shouldAutoSelectResource, action]);
 
-  // Which kinds the chosen org actually offers — drives the GPU/CPU segment
-  // availability so a user can't switch to an empty list.
-  const hasGPUTypes = ownedInstanceTypes.some(
-    (item) => item.spec.acceleratable
+  // filter instance types (already scoped to the chosen org's clusters)
+  const filteredInstanceTypes = ownedInstanceTypes.filter((item) =>
+    matchKeyword([item.name], instanceKeyword)
   );
-  const hasCPUTypes = ownedInstanceTypes.some(
-    (item) => !item.spec.acceleratable
-  );
-
-  // filter instance types (already scoped to the chosen org's clusters) by the
-  // active GPU/CPU segment, then by the search keyword.
-  const filteredInstanceTypes = ownedInstanceTypes
-    .filter((item) => matchesResourceType(item, resourceType))
-    .filter((item) => matchKeyword([item.name], instanceKeyword));
 
   // No instance types for the chosen org (e.g. it owns no clusters), and not
   // mid-fetch — drives the "no available instance type" message in the form.
@@ -477,14 +440,6 @@ const AddModal: React.FC<AddModalProps> = ({
     });
   };
 
-  const handleOnTypeChange = (next: 'gpu' | 'cpu') => {
-    setResourceType(next);
-    autoSelectFirst(
-      ownedInstanceTypes.filter((item) => matchesResourceType(item, next)),
-      templateList
-    );
-  };
-
   return (
     <GSDrawer
       title={title}
@@ -520,34 +475,9 @@ const AddModal: React.FC<AddModalProps> = ({
                     }}
                   >
                     <ColTitle style={{ paddingBottom: 0 }}>
-                      <Flex justify="space-between" align="center">
-                        <span>
-                          {intl.formatMessage({
-                            id: 'gpuservice.instance.types'
-                          })}
-                        </span>
-                        <Segmented
-                          size="small"
-                          shape="round"
-                          className={styles.segmented}
-                          value={resourceType}
-                          onChange={handleOnTypeChange}
-                          options={[
-                            {
-                              label: 'GPU',
-                              value: 'gpu',
-                              icon: <IconFont type="icon-gpu1" />,
-                              disabled: !hasGPUTypes
-                            },
-                            {
-                              label: 'CPU',
-                              value: 'cpu',
-                              icon: <IconFont type="icon-cpu" />,
-                              disabled: !hasCPUTypes
-                            }
-                          ]}
-                        ></Segmented>
-                      </Flex>
+                      {intl.formatMessage({
+                        id: 'gpuservice.instance.types'
+                      })}
                     </ColTitle>
                     <Input
                       allowClear

@@ -8,10 +8,12 @@ import {
   AlertBlockInfo,
   ColumnWrapper,
   GSDrawer,
+  IconFont,
   ModalFooter
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Empty, Input, Typography } from 'antd';
+import { Empty, Flex, Input, Segmented, Typography } from 'antd';
+import _ from 'lodash';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ListItem as TemplateItem } from '../../templates/config/types';
 import useQueryTemplates from '../../templates/services/use-query-templates';
@@ -88,6 +90,7 @@ const AddModal: React.FC<AddModalProps> = ({
     manufacturer: undefined
   });
   const [templateId, setTemplateId] = useState<number | undefined>();
+  const [resourceType, setResourceType] = useState<'gpu' | 'cpu'>('gpu');
   const [instanceKeyword, setInstanceKeyword] = useState('');
   const [templateKeyword, setTemplateKeyword] = useState('');
   const { loading, guard, run, release } = useSubmitLock();
@@ -171,17 +174,35 @@ const AddModal: React.FC<AddModalProps> = ({
     return JSON.stringify({
       name: instanceType.name,
       spec: {
-        ...instanceType.spec
+        ..._.omit(instanceType.spec, ['cache', 'cpu']),
+        cpu: _.pick(instanceType.spec?.cpu, [
+          'manufacturer',
+          'product',
+          'family'
+        ])
       }
     });
   };
+
+  // GPU types carry their accelerator vendor; non-acceleratable (CPU) types
+  // all map to the single 'cpu' bucket used to match templates.
+  const manufacturerOf = (instanceType: InstanceTypeItem) =>
+    instanceType.spec.acceleratable ? instanceType.spec?.manufacturer : 'cpu';
+
+  const matchesResourceType = (
+    instanceType: InstanceTypeItem,
+    type: 'gpu' | 'cpu'
+  ) =>
+    type === 'gpu'
+      ? !!instanceType.spec.acceleratable
+      : !instanceType.spec.acceleratable;
 
   // apply the selection of instance type and template
   const applySelection = (
     instanceType: InstanceTypeItem,
     template: TemplateItem | undefined
   ) => {
-    const manufacturer = instanceType.spec?.manufacturer;
+    const manufacturer = manufacturerOf(instanceType);
 
     setInstanceTypeSelection({
       instanceType: instanceType.name,
@@ -210,6 +231,35 @@ const AddModal: React.FC<AddModalProps> = ({
     }
     // update form
     form.current?.applyInstanceType?.(instanceType);
+  };
+
+  // Drop the instance-type-derived selection + form state. Used when no
+  // candidate is available (empty segment / org with no clusters) so a stale
+  // type / cluster never survives a switch or reload.
+  const clearSelection = () => {
+    setInstanceTypeSelection({
+      instanceType: undefined,
+      manufacturer: undefined
+    });
+    setTemplateId(undefined);
+    form.current?.applyInstanceType?.(undefined);
+    form.current?.setFieldValue?.('clusterId', null);
+    form.current?.setFieldValue?.(['spec', 'type'], undefined);
+  };
+
+  const autoSelectFirst = (
+    types: InstanceTypeItem[],
+    templates: TemplateItem[]
+  ) => {
+    const first = types.find((item) => !item.disabled);
+    if (!first) {
+      clearSelection();
+      return;
+    }
+    applySelection(
+      first,
+      findTemplateByManufacturer(manufacturerOf(first), templates)
+    );
   };
 
   const findAggregateOf = (
@@ -248,41 +298,34 @@ const AddModal: React.FC<AddModalProps> = ({
       if (aggregate) {
         setInstanceTypeSelection({
           instanceType: aggregate.name,
-          manufacturer: aggregate.spec?.manufacturer
+          manufacturer: manufacturerOf(aggregate)
         });
+        // Surface the persisted pick under the matching segment.
+        setResourceType(aggregate.spec.acceleratable ? 'gpu' : 'cpu');
       }
       return;
     }
 
     // Scope to clusters the chosen org owns (admin "All" view).
     const owned = filterTypesByOwner(instanceTypes, clusters || [], orgId);
-    const first = owned.find((item) => !item.disabled);
 
-    if (!first) {
-      // The chosen org has no clusters (hence no instance types). Clear any
-      // prior pick so a stale instance type / cross-org cluster isn't left
-      // on the form.
-      setInstanceTypeSelection({
-        instanceType: undefined,
-        manufacturer: undefined
-      });
-      setTemplateId(undefined);
-      form.current?.applyInstanceType?.(undefined);
-      form.current?.setFieldValue?.('clusterId', null);
-      form.current?.setFieldValue?.(['spec', 'type'], undefined);
-      return;
-    }
+    // Prefer the active segment, but fall back to the other kind when it has
+    // no enabled candidate so the drawer never opens on an empty list.
+    const hasEnabled = (type: 'gpu' | 'cpu') =>
+      owned.some((it) => matchesResourceType(it, type) && !it.disabled);
+    const other = resourceType === 'gpu' ? 'cpu' : 'gpu';
+    const nextType = hasEnabled(resourceType)
+      ? resourceType
+      : hasEnabled(other)
+        ? other
+        : resourceType;
+    setResourceType(nextType);
 
-    // On create, auto-select the first instance type in the list
-
-    const template = findTemplateByManufacturer(
-      first.spec?.manufacturer,
+    // On create, auto-select the first instance type of the chosen kind.
+    autoSelectFirst(
+      owned.filter((it) => matchesResourceType(it, nextType)),
       templates
     );
-
-    applySelection(first, template);
-
-    // initially finise
   };
 
   // Fetch the (tenant-scoped) instance types + templates and auto-select.
@@ -319,21 +362,14 @@ const AddModal: React.FC<AddModalProps> = ({
   const handleScopeChange = (orgId?: number | null) => {
     if (!open || action !== PageAction.CREATE) return;
     setScopeOrgId(orgId);
-    setInstanceTypeSelection({
-      instanceType: undefined,
-      manufacturer: undefined
-    });
-    setTemplateId(undefined);
-    // Also clear the instance-type-derived form state (the selected type
+    // Drop the instance-type-derived selection + form state (the selected type
     // card + its limits, the cluster, and spec.type). The cluster decides
     // where the instance is scheduled, so a stale pick from the previous
     // scope must not survive — otherwise an instance owned by the newly
     // chosen org could land on the old org's cluster. The reload's
     // owner-scoped auto-selection re-fills them from the new org, or leaves
     // them empty (blocking submit) when the chosen org has no clusters.
-    form.current?.applyInstanceType?.(undefined);
-    form.current?.setFieldValue?.('clusterId', null);
-    form.current?.setFieldValue?.(['spec', 'type'], undefined);
+    clearSelection();
     initializedRef.current = false;
     loadCreateResources(orgId);
   };
@@ -347,6 +383,7 @@ const AddModal: React.FC<AddModalProps> = ({
         manufacturer: undefined
       });
       setTemplateId(undefined);
+      setResourceType('gpu');
       setInstanceKeyword('');
       setTemplateKeyword('');
       setScopeOrgId(undefined);
@@ -358,10 +395,20 @@ const AddModal: React.FC<AddModalProps> = ({
     }
   }, [open, shouldAutoSelectResource, action]);
 
-  // filter instance types (already scoped to the chosen org's clusters)
-  const filteredInstanceTypes = ownedInstanceTypes.filter((item) =>
-    matchKeyword([item.name], instanceKeyword)
+  // Which kinds the chosen org actually offers — drives the GPU/CPU segment
+  // availability so a user can't switch to an empty list.
+  const hasGPUTypes = ownedInstanceTypes.some(
+    (item) => item.spec.acceleratable
   );
+  const hasCPUTypes = ownedInstanceTypes.some(
+    (item) => !item.spec.acceleratable
+  );
+
+  // filter instance types (already scoped to the chosen org's clusters) by the
+  // active GPU/CPU segment, then by the search keyword.
+  const filteredInstanceTypes = ownedInstanceTypes
+    .filter((item) => matchesResourceType(item, resourceType))
+    .filter((item) => matchKeyword([item.name], instanceKeyword));
 
   // No instance types for the chosen org (e.g. it owns no clusters), and not
   // mid-fetch — drives the "no available instance type" message in the form.
@@ -405,7 +452,7 @@ const AddModal: React.FC<AddModalProps> = ({
 
   const handleInstanceTypeChange = (item: InstanceTypeItem) => {
     const template = findTemplateByManufacturer(
-      item.spec?.manufacturer,
+      manufacturerOf(item),
       templateList
     );
     applySelection(item, template);
@@ -428,6 +475,14 @@ const AddModal: React.FC<AddModalProps> = ({
         }
       }
     });
+  };
+
+  const handleOnTypeChange = (next: 'gpu' | 'cpu') => {
+    setResourceType(next);
+    autoSelectFirst(
+      ownedInstanceTypes.filter((item) => matchesResourceType(item, next)),
+      templateList
+    );
   };
 
   return (
@@ -465,7 +520,34 @@ const AddModal: React.FC<AddModalProps> = ({
                     }}
                   >
                     <ColTitle style={{ paddingBottom: 0 }}>
-                      {intl.formatMessage({ id: 'gpuservice.instance.types' })}
+                      <Flex justify="space-between" align="center">
+                        <span>
+                          {intl.formatMessage({
+                            id: 'gpuservice.instance.types'
+                          })}
+                        </span>
+                        <Segmented
+                          size="small"
+                          shape="round"
+                          className={styles.segmented}
+                          value={resourceType}
+                          onChange={handleOnTypeChange}
+                          options={[
+                            {
+                              label: 'GPU',
+                              value: 'gpu',
+                              icon: <IconFont type="icon-gpu1" />,
+                              disabled: !hasGPUTypes
+                            },
+                            {
+                              label: 'CPU',
+                              value: 'cpu',
+                              icon: <IconFont type="icon-cpu" />,
+                              disabled: !hasCPUTypes
+                            }
+                          ]}
+                        ></Segmented>
+                      </Flex>
                     </ColTitle>
                     <Input
                       allowClear

@@ -87,6 +87,7 @@ export default function useQueryInstanceTypes() {
 
   return {
     detailData: dataList,
+    setDataList,
     loading,
     cancelRequest,
     fetchData: queryInstanceTypes

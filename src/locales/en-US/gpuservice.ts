@@ -120,6 +120,8 @@ export default {
   'gpuservice.instance.sliced': 'Sliced',
   'gpuservice.instance.memory': 'VRAM',
   'gpuservice.instance.ram': 'RAM',
+  'gpuservice.instance.os': 'OS',
+  'gpuservice.instance.arch': 'Arch',
   'gpuservice.instance.disk': 'Disk',
   'gpuservice.table.count': 'Count',
   'gpuservice.instance.disk.system': 'System Disk',

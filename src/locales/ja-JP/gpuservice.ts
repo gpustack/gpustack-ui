@@ -119,6 +119,8 @@ export default {
   'gpuservice.instance.sliced': '分割',
   'gpuservice.instance.memory': 'VRAM',
   'gpuservice.instance.ram': 'RAM',
+  'gpuservice.instance.os': 'OS',
+  'gpuservice.instance.arch': 'アーキテクチャ',
   'gpuservice.instance.disk': 'ディスク',
   'gpuservice.table.count': '数量',
   'gpuservice.instance.disk.system': 'システムディスク',

@@ -10,7 +10,10 @@
  * Talks to the new ``/usage/gpu-instances/{meta,breakdown}`` endpoints.
  */
 import useCoolColors from '@/hooks/use-cool-colors';
-import InstanceTypeCell from '@/pages/gpu-service/instances/components/instance-type-cell';
+import {
+  buildInstanceTypeRecordFromMiB,
+  renderInstanceType
+} from '@/pages/gpu-service/instances/utils/render-instance-type';
 import { formatLargeNumber } from '@/utils';
 import { SimpleCard } from '@gpustack/core-ui';
 import { useAccess, useIntl } from '@umijs/max';
@@ -24,11 +27,7 @@ import {
   ResourceBreakdownResponse
 } from '../apis/resource';
 import useResourceMeta from '../hooks/use-resource-meta';
-import {
-  instanceTypeLabel,
-  instanceTypeSections,
-  instanceTypeTitle
-} from '../utils/format-instance-type';
+import { instanceTypeLabel } from '../utils/format-instance-type';
 import {
   bucketKey,
   generateBucketRange,
@@ -315,22 +314,28 @@ const GpuInstancesTab: React.FC = () => {
       key: 'gpu_type',
       render: (_v: string, row: ResourceBreakdownItem) => instanceTypeLabel(row)
     };
-    // Instances breakdown: render exactly like the GPU Instances list —
-    // "<product> x <count>" plus the categorized spec popover behind the icon.
+    // Instances breakdown: render through the canonical GPU Instances list
+    // renderer so the label + spec popover are identical. The breakdown row
+    // carries flat MiB fields, so adapt it into the ListItem shape first.
     const instanceTypeColInstance = {
       title: intl.formatMessage({ id: 'usage.table.instanceType' }),
       dataIndex: 'gpu_type',
       key: 'gpu_type',
-      render: (_v: string, row: ResourceBreakdownItem) => (
-        <InstanceTypeCell
-          title={instanceTypeTitle(row)}
-          name={row.instance_name}
-          sections={instanceTypeSections(row, {
-            vram: intl.formatMessage({ id: 'gpuservice.instance.memory' }),
-            disk: intl.formatMessage({ id: 'gpuservice.instance.disk' })
-          })}
-        />
-      )
+      render: (_v: string, row: ResourceBreakdownItem) =>
+        renderInstanceType(
+          buildInstanceTypeRecordFromMiB({
+            name: row.instance_name,
+            product: row.product || row.gpu_type,
+            gpuCount: row.gpu_count,
+            unitCpuMilli: row.unit_cpu_milli,
+            unitMemoryMib: row.unit_memory_mib,
+            vramMib: row.vram_mib,
+            localStorageMib: row.local_storage_mib,
+            ephemeralMib: row.ephemeral_mib,
+            persistentMib: row.persistent_mib
+          }),
+          { intl }
+        )
     };
     // Last Active = the last active day. The backend sends a rollup-tz instant
     // with its offset; parseRollup keeps that wall clock (no browser-tz convert),
@@ -511,6 +516,7 @@ const GpuInstancesTab: React.FC = () => {
               rowKey={(row) =>
                 `${row.gpu_type ?? ''}|${row.instance_id ?? ''}|${row.user_id ?? ''}`
               }
+              key={t.key}
               dataSource={tableRows}
               columns={tableColumns as any}
               onChange={(_pagination, _filters, sorter: any) => {
@@ -532,6 +538,7 @@ const GpuInstancesTab: React.FC = () => {
                 }
               }}
               pagination={{
+                size: 'middle',
                 current: tablePage,
                 pageSize: tableData?.pagination.perPage ?? 50,
                 total: tableData?.pagination.total ?? 0,

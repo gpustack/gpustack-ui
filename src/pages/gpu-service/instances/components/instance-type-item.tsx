@@ -112,7 +112,7 @@ function getInstanceDerived(item: InstanceTypeItemModel) {
     acceleratable,
     isGPU: acceleratable,
     manufacturer: acceleratable ? spec.manufacturer || '' : 'cpu', // GPU manufacturer or 'cpu' for non-acceleratable types
-    displayName: spec.product || item.name,
+    displayName: acceleratable ? spec.product || item.name : 'CPU Only',
     ramUnit: spec.unitResourcesParsed?.ram?.value,
     os: _.capitalize(spec.os) || '',
     arch: spec.arch,

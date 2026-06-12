@@ -2,7 +2,9 @@ import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import useSubmitLock from '@/hooks/use-submit-lock';
 import { useQueryClusterList } from '@/pages/cluster-management/services/use-query-cluster-list';
+import useUserDirectory from '@/pages/gpu-service/hooks/use-user-directory';
 import Separator from '@/pages/llmodels/components/separator';
+import { getGPUStackPlugin } from '@/plugins';
 import { SearchOutlined } from '@ant-design/icons';
 import {
   AlertBlockInfo,
@@ -10,7 +12,7 @@ import {
   GSDrawer,
   ModalFooter
 } from '@gpustack/core-ui';
-import { useIntl } from '@umijs/max';
+import { useIntl, useModel } from '@umijs/max';
 import { Empty, Input, Typography } from 'antd';
 import _ from 'lodash';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -18,7 +20,7 @@ import { ListItem as TemplateItem } from '../../templates/config/types';
 import useQueryTemplates from '../../templates/services/use-query-templates';
 import { FormData, InstanceTypeItem, ListItem } from '../config/types';
 import GPUServiceInstanceForm from '../forms';
-import TemplateSelector from '../forms/template-selector';
+import TemplateSelector, { TemplateGroup } from '../forms/template-selector';
 import useQueryInstanceTypes from '../services/use-query-instance-types';
 import styles from '../styles/instances.module.less';
 import InstanceTypeList from './instance-type-list';
@@ -79,6 +81,12 @@ const AddModal: React.FC<AddModalProps> = ({
   realAction
 }) => {
   const intl = useIntl();
+  const { initialState } = useModel('@@initialState') || {};
+  const currentUser = initialState?.currentUser;
+  const pluginActive = !!getGPUStackPlugin();
+  const userDirectory = useUserDirectory(
+    !!currentUser?.is_admin && !pluginActive
+  );
   const form = useRef<any>(null);
   const sessionRef = useRef(0);
   const [instanceTypeSelection, setInstanceTypeSelection] = useState<{
@@ -395,6 +403,89 @@ const AddModal: React.FC<AddModalProps> = ({
     );
   });
 
+  // Group the picker by owning scope so same-name templates stay
+  // distinguishable: the caller's own templates first, then the
+  // admin-curated Global presets, then — platform admin's cross-tenant
+  // view only — other users' templates, one group per owner.
+  //
+  // The default buckets below assume every non-Global owner is a USER
+  // principal. A plugin's principal model may scope templates to other
+  // owner kinds (no user-directory entry, not the caller's user id),
+  // which these buckets would mislabel — so a plugin can take over
+  // grouping via `hooks.useTemplateOwnerGroups`. The registry is wired
+  // at boot, so the conditional hook call is render-stable — same
+  // contract as `usePluginListColumns`' function entries.
+  const usePluginTemplateGroups = getGPUStackPlugin()?.hooks
+    ?.useTemplateOwnerGroups as
+    | ((items: TemplateItem[]) => TemplateGroup[])
+    | undefined;
+  const pluginTemplateGroups = usePluginTemplateGroups?.(filteredTemplates);
+
+  const templateGroups: TemplateGroup[] = useMemo(() => {
+    if (pluginTemplateGroups) {
+      return pluginTemplateGroups;
+    }
+    if (pluginActive) {
+      // Plugin present but without the grouping hook (older plugin
+      // build): keep the flat list rather than mislabeling owners
+      // outside the USER-principal model.
+      return filteredTemplates.length
+        ? [{ key: 'all', label: null, items: filteredTemplates }]
+        : [];
+    }
+    const yours: TemplateItem[] = [];
+    const globals: TemplateItem[] = [];
+    const byOwner = new Map<number, TemplateItem[]>();
+
+    filteredTemplates.forEach((item) => {
+      if (item.owner_principal_id == null) {
+        globals.push(item);
+      } else if (item.owner_principal_id === currentUser?.id) {
+        yours.push(item);
+      } else {
+        const list = byOwner.get(item.owner_principal_id) || [];
+        list.push(item);
+        byOwner.set(item.owner_principal_id, list);
+      }
+    });
+
+    const groups: TemplateGroup[] = [];
+    if (yours.length) {
+      groups.push({
+        key: 'yours',
+        label: intl.formatMessage({ id: 'gpuservice.template.group.yours' }),
+        items: yours
+      });
+    }
+    if (globals.length) {
+      groups.push({
+        key: 'global',
+        label: intl.formatMessage({ id: 'gpuservice.template.group.global' }),
+        items: globals
+      });
+    }
+    groups.push(
+      ...[...byOwner.entries()]
+        .map(([ownerId, items]) => ({
+          key: `owner-${ownerId}`,
+          // `#id` is a placeholder for the moment before the user
+          // directory resolves (the memo recomputes once it lands)
+          // and for the API-only case of a non-USER owner.
+          label: userDirectory.get(ownerId) || `#${ownerId}`,
+          items
+        }))
+        .sort((a, b) => String(a.label).localeCompare(String(b.label)))
+    );
+    return groups;
+  }, [
+    filteredTemplates,
+    currentUser?.id,
+    userDirectory,
+    intl,
+    pluginActive,
+    pluginTemplateGroups
+  ]);
+
   const handleSubmit = () => {
     guard(() => form.current?.submit());
   };
@@ -531,7 +622,7 @@ const AddModal: React.FC<AddModalProps> = ({
                   {filteredTemplates.length > 0 && initializedRef.current ? (
                     <TemplateSelector
                       value={templateId}
-                      dataList={filteredTemplates}
+                      groups={templateGroups}
                       onChange={handleTemplateChange}
                     />
                   ) : (

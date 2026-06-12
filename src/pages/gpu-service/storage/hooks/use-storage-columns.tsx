@@ -1,3 +1,4 @@
+import useCreatorColumn from '@/pages/gpu-service/hooks/use-creator-column';
 import { usePluginListColumns } from '@/plugins/list-extra-columns';
 import { AutoTooltip, DropdownButtons } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
@@ -20,6 +21,7 @@ const useStorageColumns = ({
 }: ColumnsHookProps): ColumnsType<ListItem> => {
   const intl = useIntl();
   const pluginCols = usePluginListColumns('gpuStorage');
+  const creatorCols = useCreatorColumn<ListItem>('gpuStorage');
   return useMemo(() => {
     const pluginRendered = pluginCols.map((c) => ({
       title: intl.formatMessage({ id: c.titleId }),
@@ -68,6 +70,7 @@ const useStorageColumns = ({
         sorter: false,
         render: (value: string) => (value ? value.replace(/Gi$/, 'GB') : '-')
       },
+      ...creatorCols,
       // {
       //   title: intl.formatMessage({ id: 'common.table.status' }),
       //   dataIndex: ['status', 'phase'],
@@ -111,7 +114,14 @@ const useStorageColumns = ({
         )
       }
     ];
-  }, [handleSelect, sortOrder, storageClassList, intl, pluginCols]);
+  }, [
+    handleSelect,
+    sortOrder,
+    storageClassList,
+    intl,
+    pluginCols,
+    creatorCols
+  ]);
 };
 
 export default useStorageColumns;

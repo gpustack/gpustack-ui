@@ -174,5 +174,9 @@ export default {
     'Please enter the temporary storage capacity',
   'gpuservice.form.rule.name':
     "Lowercase letters, numbers, and '-'. Start and end with a letter or number, no consecutive '-', max 63 characters.",
-  'gpuservice.form.storage.select': 'Select Storage'
+  'gpuservice.form.storage.select': 'Select Storage',
+  'gpuservice.creator': 'Creator',
+  'gpuservice.owner.global': 'Global',
+  'gpuservice.template.group.yours': 'Your Templates',
+  'gpuservice.template.group.global': 'Global Templates'
 };

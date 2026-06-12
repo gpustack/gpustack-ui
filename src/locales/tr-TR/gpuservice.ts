@@ -169,5 +169,9 @@ export default {
     'Data is cleared when the instance stops.',
   'gpuservice.storage.persistentVolume.tips':
     'Data persists across instance restarts. Persistent volumes remain intact after instance termination and can be shared by multiple instances.',
-  'gpuservice.form.storage.select': 'Depolamayı Seç'
+  'gpuservice.form.storage.select': 'Depolamayı Seç',
+  'gpuservice.creator': 'Oluşturan',
+  'gpuservice.owner.global': 'Genel',
+  'gpuservice.template.group.yours': 'Şablonlarınız',
+  'gpuservice.template.group.global': 'Genel Şablonlar'
 };

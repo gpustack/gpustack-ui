@@ -158,5 +158,9 @@ export default {
   'gpuservice.storage.tempCapacity.required': '请输入临时存储容量',
   'gpuservice.form.rule.name':
     '由小写字母、数字和 "-" 组成，以字母或数字开头和结尾，不能包含连续的 "-"，最多 63 个字符。',
-  'gpuservice.form.storage.select': '选择存储'
+  'gpuservice.form.storage.select': '选择存储',
+  'gpuservice.creator': '创建者',
+  'gpuservice.owner.global': '全局',
+  'gpuservice.template.group.yours': '我的模板',
+  'gpuservice.template.group.global': '全局模板'
 };

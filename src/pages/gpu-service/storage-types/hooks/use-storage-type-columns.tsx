@@ -1,3 +1,4 @@
+import useCreatorColumn from '@/pages/gpu-service/hooks/use-creator-column';
 import { usePluginListColumns } from '@/plugins/list-extra-columns';
 import { FolderOutlined } from '@ant-design/icons';
 import {
@@ -48,6 +49,7 @@ const useStorageTypeColumns = ({
 }: ColumnsHookProps): ColumnsType<ListItem> => {
   const intl = useIntl();
   const pluginCols = usePluginListColumns('gpuStorageTypes');
+  const creatorCols = useCreatorColumn<ListItem>('gpuStorageTypes');
   return useMemo(() => {
     const pluginRendered = pluginCols.map((c) => ({
       title: intl.formatMessage({ id: c.titleId }),
@@ -79,6 +81,7 @@ const useStorageTypeColumns = ({
         sorter: false,
         render: (_text, record) => getKindLabel(record)
       },
+      ...creatorCols,
       // {
       //   title: intl.formatMessage({ id: 'common.table.description' }),
       //   dataIndex: 'description',
@@ -115,7 +118,7 @@ const useStorageTypeColumns = ({
         )
       }
     ];
-  }, [handleSelect, sortOrder, intl, pluginCols]);
+  }, [handleSelect, sortOrder, intl, pluginCols, creatorCols]);
 };
 
 export default useStorageTypeColumns;

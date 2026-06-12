@@ -14,6 +14,7 @@ import tensorflowkLogo from '@/assets/logo/tensorflow.svg';
 import ubuntuLogo from '@/assets/logo/ubuntu_logo.png';
 import vllmLogo from '@/assets/logo/vllm.png';
 import PluginExtraFields from '@/components/plugin-extra-fields';
+import OwnerTag from '@/pages/gpu-service/components/owner-tag';
 import {
   GPUsConfigs,
   manfacturerValueMap
@@ -266,6 +267,7 @@ const TemplateCardItem: React.FC<TemplateCardProps> = ({ data, onSelect }) => {
             name="OwnerScopeTag"
             context={{ ownerPrincipalId: data.owner_principal_id }}
           />
+          <OwnerTag ownerId={data.owner_principal_id} />
         </CardName>
         <InfoItem>
           <span>

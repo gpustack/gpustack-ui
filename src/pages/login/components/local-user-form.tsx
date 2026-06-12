@@ -120,9 +120,6 @@ const LocalUserForm: React.FC<LocalUserFormProps> = (props) => {
       >
         <Input
           autoComplete="username"
-          placeholder={intl.formatMessage({
-            id: 'common.login.username.holder'
-          })}
           prefix={<UserOutlined />}
           style={{ height: 44 }}
         />
@@ -150,9 +147,6 @@ const LocalUserForm: React.FC<LocalUserFormProps> = (props) => {
           autoComplete="current-password"
           prefix={<LockOutlined />}
           style={{ height: 44 }}
-          placeholder={intl.formatMessage({
-            id: 'common.login.password.holder'
-          })}
           suffix={
             <Flex align="center" gap={0}>
               <Button

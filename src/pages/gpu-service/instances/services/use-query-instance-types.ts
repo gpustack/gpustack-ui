@@ -47,7 +47,7 @@ export default function useQueryInstanceTypes() {
   ) => {
     const res = await fetchData(params);
 
-    const mappedList = (res?.items || []).map((item) => {
+    const list = (res?.items || []).map((item) => {
       const remainingData = isAvailable(item);
       const rawMax = item.status?.onceMaxRequest;
 
@@ -80,28 +80,6 @@ export default function useQueryInstanceTypes() {
         disabled: !remainingData.available
       };
     });
-
-    // Keep all acceleratable instance types directly; for the
-    // non-acceleratable (CPU) ones only keep the entry with the largest
-    // spec.maxComputeUnitCount.
-    let maxCpuItem: (typeof mappedList)[number] | undefined;
-    const list = mappedList.filter((item) => {
-      if (item.spec.acceleratable) {
-        return true;
-      }
-      if (
-        !maxCpuItem ||
-        (item.spec.maxComputeUnitCount || 0) >
-          (maxCpuItem.spec.maxComputeUnitCount || 0)
-      ) {
-        maxCpuItem = item;
-      }
-      return false;
-    });
-
-    if (maxCpuItem) {
-      list.push(maxCpuItem);
-    }
 
     setDataList(list);
     return list;

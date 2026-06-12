@@ -112,7 +112,7 @@ function getInstanceDerived(item: InstanceTypeItemModel) {
     acceleratable,
     isGPU: acceleratable,
     manufacturer: acceleratable ? spec.manufacturer || '' : 'cpu', // GPU manufacturer or 'cpu' for non-acceleratable types
-    displayName: acceleratable ? spec.product || item.name : 'CPU',
+    displayName: spec.product || item.name,
     ramUnit: spec.unitResourcesParsed?.ram?.value,
     os: _.capitalize(spec.os) || '',
     arch: spec.arch,
@@ -231,6 +231,7 @@ const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({ item }) => {
 
   const manufacturerColor = manufactureColorMap[manufacturer] ?? 'purple';
   const showManufacturerTag = acceleratable && !!manufacturer;
+  const showCpuManufacturerTag = !acceleratable && !!cpuManufacturer;
 
   return (
     <Flex
@@ -259,6 +260,15 @@ const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({ item }) => {
               style={{ fontWeight: 400 }}
             >
               {manufacturer?.toUpperCase()}
+            </ThemeTag>
+          )}
+          {showCpuManufacturerTag && (
+            <ThemeTag
+              color={manufacturerColor}
+              disabled={false}
+              style={{ fontWeight: 400 }}
+            >
+              {cpuManufacturer}
             </ThemeTag>
           )}
         </Flex>

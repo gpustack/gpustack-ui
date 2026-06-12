@@ -260,6 +260,10 @@ export default {
   'common.login.auth': 'Аутентификация...',
   'common.login.auth.failed': 'Ошибка аутентификации',
   'common.login.password': 'Войти с паролем',
+  'common.login.username.holder': 'Введите имя пользователя',
+  'common.login.password.holder': 'Введите пароль',
+  'common.login.newpassword.holder': 'Введите новый пароль',
+  'common.login.confirm.holder': 'Введите пароль ещё раз',
   'common.external.login': 'Войти через {type}',
   'common.sso.noConfig':
     'Единый вход не настроен в этой системе. Пожалуйста, обратитесь к администратору.',

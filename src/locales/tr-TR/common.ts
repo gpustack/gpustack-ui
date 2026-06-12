@@ -264,6 +264,10 @@ export default {
   'common.login.auth': 'Kimlik doğrulanıyor...',
   'common.login.auth.failed': 'Kimlik doğrulama başarısız',
   'common.login.password': 'Şifre ile giriş yap',
+  'common.login.username.holder': 'Lütfen kullanıcı adını girin',
+  'common.login.password.holder': 'Lütfen şifreyi girin',
+  'common.login.newpassword.holder': 'Lütfen yeni şifreyi girin',
+  'common.login.confirm.holder': 'Lütfen şifreyi tekrar girin',
   'common.external.login': '{type} ile giriş yap',
   'common.sso.noConfig':
     'Bu sistemde çoklu oturum açma etkinleştirilmemiş. Lütfen yöneticinize başvurun.',

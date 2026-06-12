@@ -6,7 +6,7 @@ import {
 } from '@ant-design/icons';
 import { Input as CInput, HighlightCode, IconFont } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Button, Checkbox, Divider, Form, FormInstance } from 'antd';
+import { Button, Divider, Form, FormInstance } from 'antd';
 import { createStyles } from 'antd-style';
 
 const useStyles = createStyles(({ token, css }) => {
@@ -122,18 +122,12 @@ const LocalUserForm: React.FC<LocalUserFormProps> = (props) => {
         />
       </Form.Item>
       <div
-        className="flex-center flex-between"
+        className="flex-center"
         style={{
-          marginBottom: 24
+          justifyContent: 'flex-end',
+          marginBottom: 20
         }}
       >
-        <Form.Item noStyle name="autoLogin" valuePropName="checked">
-          <Checkbox style={{ marginLeft: 5 }}>
-            <span style={{ color: 'var(--ant-color-text-secondary)' }}>
-              {intl.formatMessage({ id: 'common.login.rember' })}
-            </span>
-          </Checkbox>
-        </Form.Item>
         <Button
           type="link"
           size="small"

@@ -7,18 +7,7 @@ const CRYPT_TEXT = 'seal';
 
 const store = localStore.createInstance({ name: '_xWXJKJ_S1Sna_' });
 
-const rememberMe = (key: string, data: any) => {
-  if (store) {
-    store.setItem(key, data);
-  }
-};
-
-const getRememberMe = (key: string) => {
-  if (store) {
-    return store.getItem(key);
-  }
-};
-
+// Kept to remove credentials saved by the old "remember me" feature.
 const removeRememberMe = (key: string) => {
   if (store) {
     store.removeItem(key);
@@ -49,10 +38,8 @@ export {
   CRYPT_TEXT,
   IS_FIRST_LOGIN,
   REMEMBER_ME_KEY,
-  getRememberMe,
   readColumnSettings,
   readState,
-  rememberMe,
   removeRememberMe,
   writeColumnSettings,
   writeState

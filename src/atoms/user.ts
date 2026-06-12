@@ -32,10 +32,7 @@ export const UpdateCheckAtom = atom<{
   latest_version: ''
 });
 
-export const initialPasswordAtom = atomWithStorage<string>(
-  'initialPassword',
-  ''
-);
+export const initialPasswordAtom = atom<string>('');
 
 // Namespace the server creates for an Org's resources on each Kubernetes
 // cluster. The format must match the backend's ``get_namespace_name``

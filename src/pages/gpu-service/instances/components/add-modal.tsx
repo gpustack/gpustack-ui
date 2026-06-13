@@ -1,7 +1,6 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import useSubmitLock from '@/hooks/use-submit-lock';
-import { useQueryClusterList } from '@/pages/cluster-management/services/use-query-cluster-list';
 import useUserDirectory from '@/pages/gpu-service/hooks/use-user-directory';
 import Separator from '@/pages/llmodels/components/separator';
 import { getGPUStackPlugin } from '@/plugins';
@@ -13,7 +12,7 @@ import {
   ModalFooter
 } from '@gpustack/core-ui';
 import { useIntl, useModel } from '@umijs/max';
-import { Empty, Input, Typography } from 'antd';
+import { Input, Typography } from 'antd';
 import _ from 'lodash';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ListItem as TemplateItem } from '../../templates/config/types';
@@ -31,6 +30,12 @@ type AddModalProps = {
   open: boolean;
   width?: number | string;
   realAction?: string;
+  clusterList?: Array<{
+    label: string;
+    value: number;
+    id: number;
+    owner_principal_id?: number;
+  }>;
   onOk: (values: FormData) => void;
   data?: ListItem | null;
   onCancel: () => void;
@@ -78,6 +83,7 @@ const AddModal: React.FC<AddModalProps> = ({
   data,
   onCancel,
   width,
+  clusterList = [],
   realAction
 }) => {
   const intl = useIntl();
@@ -100,16 +106,18 @@ const AddModal: React.FC<AddModalProps> = ({
   const [instanceKeyword, setInstanceKeyword] = useState('');
   const [templateKeyword, setTemplateKeyword] = useState('');
   const { loading, guard, run, release } = useSubmitLock();
-  const initializedRef = useRef(false);
+  const [initialized, setInitialized] = useState(false);
 
   const {
     detailData: instanceTypeList,
     loading: instanceTypesLoading,
     fetchData
   } = useQueryInstanceTypes();
-  const { detailData: templatesData, fetchData: fetchTemplates } =
-    useQueryTemplates();
-  const { clusterList, fetchClusterList } = useQueryClusterList();
+  const {
+    detailData: templatesData,
+    loading: templateLoading,
+    fetchData: fetchTemplates
+  } = useQueryTemplates();
   // Set by the create-scope picker (admin "All" view) via onScopeChange.
   // undefined = no picker (org context) → no client-side scoping.
   const [scopeOrgId, setScopeOrgId] = useState<number | null | undefined>(
@@ -125,18 +133,13 @@ const AddModal: React.FC<AddModalProps> = ({
   // fetched list client-side, so it doesn't rely on the request scope.
   const filterTypesByOwner = (
     types: InstanceTypeItem[],
-    clusters: Array<{
-      id?: number;
-      value?: number;
-      owner_principal_id?: number;
-    }>,
     orgId?: number | null
   ): InstanceTypeItem[] => {
     if (orgId == null) return types;
     const owned = new Set(
-      (clusters || [])
+      (clusterList || [])
         .filter((c) => c.owner_principal_id === orgId)
-        .map((c) => c.id ?? c.value)
+        .map((c) => c.id || c.value)
     );
     return types
       .map((it) => ({
@@ -157,7 +160,7 @@ const AddModal: React.FC<AddModalProps> = ({
   };
 
   const ownedInstanceTypes = useMemo(
-    () => filterTypesByOwner(instanceTypeList, clusterList as any, scopeOrgId),
+    () => filterTypesByOwner(instanceTypeList, scopeOrgId),
 
     [instanceTypeList, clusterList, scopeOrgId]
   );
@@ -279,11 +282,6 @@ const AddModal: React.FC<AddModalProps> = ({
   const applyAutoSelection = (
     instanceTypes: InstanceTypeItem[],
     templates: TemplateItem[],
-    clusters?: Array<{
-      id?: number;
-      value?: number;
-      owner_principal_id?: number;
-    }>,
     orgId?: number | null
   ) => {
     // On edit / view, surface the persisted selection in the card list.
@@ -303,7 +301,7 @@ const AddModal: React.FC<AddModalProps> = ({
     }
 
     // Scope to clusters the chosen org owns (admin "All" view).
-    const owned = filterTypesByOwner(instanceTypes, clusters || [], orgId);
+    const owned = filterTypesByOwner(instanceTypes, orgId);
 
     // On create, auto-select the first available instance type (clears the
     // selection when the chosen org has none).
@@ -317,23 +315,19 @@ const AddModal: React.FC<AddModalProps> = ({
   const loadCreateResources = (orgId?: number | null) => {
     const session = ++sessionRef.current;
     try {
-      Promise.all([
-        fetchData({ page: -1 }),
-        fetchTemplates({ page: -1 }),
-        fetchClusterList({ page: -1 })
-      ]).then(([instanceResItems, templatesRes, clusters]) => {
-        if (sessionRef.current !== session) return;
-        applyAutoSelection(
-          instanceResItems || [],
-          templatesRes?.items || [],
-          (Array.isArray(clusters) ? clusters : (clusters as any)?.items) || [],
-          orgId
-        );
-        initializedRef.current = true;
-      });
+      Promise.all([fetchData({ page: -1 }), fetchTemplates({ page: -1 })]).then(
+        ([instanceResItems, templatesRes]) => {
+          if (sessionRef.current !== session) return;
+          applyAutoSelection(
+            instanceResItems || [],
+            templatesRes?.items || [],
+            orgId
+          );
+          setInitialized(true);
+        }
+      );
     } catch (error) {
-    } finally {
-      initializedRef.current = true;
+      setInitialized(true);
     }
   };
 
@@ -352,13 +346,13 @@ const AddModal: React.FC<AddModalProps> = ({
     // owner-scoped auto-selection re-fills them from the new org, or leaves
     // them empty (blocking submit) when the chosen org has no clusters.
     clearSelection();
-    initializedRef.current = false;
+    setInitialized(false);
     loadCreateResources(orgId);
   };
 
   useEffect(() => {
     if (!open) {
-      initializedRef.current = false;
+      setInitialized(false);
       sessionRef.current += 1;
       setInstanceTypeSelection({
         instanceType: undefined,
@@ -619,15 +613,12 @@ const AddModal: React.FC<AddModalProps> = ({
                       onChange={(e) => setTemplateKeyword(e.target.value)}
                     />
                   </div>
-                  {filteredTemplates.length > 0 && initializedRef.current ? (
-                    <TemplateSelector
-                      value={templateId}
-                      groups={templateGroups}
-                      onChange={handleTemplateChange}
-                    />
-                  ) : (
-                    <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-                  )}
+                  <TemplateSelector
+                    value={templateId}
+                    loading={templateLoading || !initialized}
+                    groups={templateGroups}
+                    onChange={handleTemplateChange}
+                  />
                 </div>
               </ColumnWrapper>
               <Separator></Separator>

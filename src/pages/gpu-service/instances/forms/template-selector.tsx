@@ -1,14 +1,11 @@
+import { FileSkeletonRows } from '@/pages/llmodels/components/model-source/file-skeleton';
 import { AutoTooltip, IconFont, TemplateCard } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
+import { Empty, Flex, Spin } from 'antd';
+import _ from 'lodash';
 import { Fragment } from 'react';
 import styled from 'styled-components';
 import { ListItem as TemplateItem } from '../../templates/config/types';
-
-const TemplateGrid = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-`;
 
 const GroupTitle = styled.div`
   font-size: 12px;
@@ -49,6 +46,12 @@ const TemplateContent = styled.div`
   }
 `;
 
+const TypeGrid = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+`;
+
 export interface TemplateGroup {
   key: string;
   label: React.ReactNode;
@@ -57,6 +60,7 @@ export interface TemplateGroup {
 
 interface TemplateSelectorProps {
   value?: number;
+  loading?: boolean;
   onChange?: (value: number, item: TemplateItem) => void;
   groups?: TemplateGroup[];
 }
@@ -64,6 +68,7 @@ interface TemplateSelectorProps {
 const TemplateSelector: React.FC<TemplateSelectorProps> = ({
   value,
   onChange,
+  loading,
   groups = []
 }) => {
   const intl = useIntl();
@@ -72,6 +77,22 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
     if (value === item.id) return;
     onChange?.(item.id, item);
   };
+
+  if (loading) {
+    return (
+      <Spin spinning size="middle">
+        <Flex orientation="vertical" gap={16} style={{ minHeight: 200 }}>
+          {_.times(6, (index: number) => (
+            <FileSkeletonRows key={index} counts={2} itemHeight={106} />
+          ))}
+        </Flex>
+      </Spin>
+    );
+  }
+
+  if (!groups.length) {
+    return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />;
+  }
 
   const renderItem = (item: TemplateItem) => (
     <TemplateCard
@@ -120,14 +141,14 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
   const showGroupTitles = groups.length > 1;
 
   return (
-    <TemplateGrid>
+    <Flex orientation="vertical" gap={16}>
       {groups.map((group) => (
         <Fragment key={group.key}>
           {showGroupTitles && <GroupTitle>{group.label}</GroupTitle>}
           {group.items.map(renderItem)}
         </Fragment>
       ))}
-    </TemplateGrid>
+    </Flex>
   );
 };
 

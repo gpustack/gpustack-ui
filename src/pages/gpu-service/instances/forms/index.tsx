@@ -129,6 +129,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
     // exists/changes when a platform admin retargets the form. Watch it
     // so the parent can re-scope offerings (see onScopeChange).
     const scopeOrgId = Form.useWatch('organization_id', form);
+    const ports = Form.useWatch(['spec', 'ports'], form) || [];
     const scopeInitRef = useRef(true);
     // Keep the latest callback in a ref so the scope-change effect can call it
     // without depending on its identity (parent may pass a new fn each render).
@@ -151,17 +152,31 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
           : [TABKeysMap.INSTANCE_TYPE, TABKeysMap.TEMPLATE, TABKeysMap.STORAGE]
     });
 
+    const hasSSHPort = useMemo(
+      () =>
+        ports.some(
+          (item: any) => item?.protocol === 'TCP' && item?.port === SSH_PORT
+        ),
+      [ports]
+    );
+
     const isGPUType = useMemo(() => {
       const spec = parseJsonSafe(description || '{}', {} as any)?.spec;
-      console.log('derived spec from description', spec);
       return spec?.acceleratable;
     }, [description]);
 
     useEffect(() => {
       if (open) {
-        fetchSSHData({ page: 1, perPage: 100 });
+        const initSSHKeys = async () => {
+          // await 200 ms
+          await new Promise((resolve) => {
+            setTimeout(resolve, 200);
+          });
+          fetchSSHData({ page: -1 });
+        };
+        initSSHKeys();
       }
-    }, [open, action]);
+    }, [open]);
 
     // Skip the first run (initial mount value); thereafter notify the
     // parent whenever the chosen create scope changes so it can reload
@@ -173,16 +188,6 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       }
       onScopeChangeRef.current?.(scopeOrgId);
     }, [scopeOrgId]);
-
-    const ports = Form.useWatch(['spec', 'ports'], form) || [];
-
-    const hasSSHPort = useMemo(
-      () =>
-        ports.some(
-          (item: any) => item?.protocol === 'TCP' && item?.port === SSH_PORT
-        ),
-      [ports]
-    );
 
     useEffect(() => {
       if (
@@ -554,7 +559,13 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
                 image: '',
                 imagePullPolicy: DefaultImagePullPolicy,
                 command: [],
-                ports: [],
+                ports: [
+                  {
+                    protocol: 'TCP',
+                    port: SSH_PORT,
+                    name: 'SSH'
+                  }
+                ],
                 env: [],
                 volumeMount: '',
                 resources: {

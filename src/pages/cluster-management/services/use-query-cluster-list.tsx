@@ -14,7 +14,7 @@ export const useQueryClusterList = (options?: { useStateData?: boolean }) => {
   const { useStateData = true } = options || {};
   const axiosTokenRef = useRef<CancelTokenSource | null>(null);
   const [dataList, setDataList] = useState<
-    Array<Partial<ClusterListItem> & { label: string; value: number }>
+    Array<ClusterListItem & { label: string; value: number }>
   >([]);
 
   const {

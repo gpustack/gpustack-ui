@@ -31,4 +31,24 @@ const FileSkeleton: React.FC<{ counts: number; itemHeight?: number }> = ({
   );
 };
 
+export const FileSkeletonRows: React.FC<{
+  counts: number;
+  itemHeight?: number;
+}> = ({ counts = 2, itemHeight }) => {
+  return (
+    <Wrapper orientation="vertical" style={{ height: itemHeight || 'auto' }}>
+      <Skeleton paragraph={{ rows: 1, width: '100%' }} title={false}></Skeleton>
+      <Flex orientation="vertical" gap={12}>
+        <Skeleton
+          paragraph={{
+            rows: counts,
+            width: Array.from({ length: counts }, () => '60%')
+          }}
+          title={false}
+        ></Skeleton>
+      </Flex>
+    </Wrapper>
+  );
+};
+
 export default FileSkeleton;

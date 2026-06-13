@@ -111,7 +111,7 @@ const GPUService: React.FC = () => {
 
   useEffect(() => {
     fetchClusterList({ page: -1 });
-    (async () => {
+    const fetchPVCapacities = async () => {
       try {
         const res = await queryGPUServiceStorage({ page: -1 } as any);
         const map: Record<string, string> = {};
@@ -124,7 +124,8 @@ const GPUService: React.FC = () => {
       } catch {
         // best-effort; the popover falls back to the PV name
       }
-    })();
+    };
+    fetchPVCapacities();
   }, []);
 
   const hasK8sCluster = useMemo(
@@ -387,6 +388,7 @@ const GPUService: React.FC = () => {
         data={openInstanceModalStatus.currentData}
         width={openInstanceModalStatus.width}
         realAction={openInstanceModalStatus.realAction}
+        clusterList={clusterList}
         onCancel={closeInstanceModal}
         onOk={handleModalOk}
       />

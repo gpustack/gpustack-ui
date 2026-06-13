@@ -1,16 +1,9 @@
-import FileSkeleton from '@/pages/llmodels/components/model-source/file-skeleton';
+import { FileSkeletonRows } from '@/pages/llmodels/components/model-source/file-skeleton';
 import { TemplateCard } from '@gpustack/core-ui';
-import { Empty, Spin } from 'antd';
+import { Empty, Flex, Spin } from 'antd';
 import _ from 'lodash';
-import styled from 'styled-components';
 import { InstanceTypeItem as InstanceTypeItemModel } from '../config/types';
 import InstanceTypeItem from './instance-type-item';
-
-const TypeGrid = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-`;
 
 interface InstanceTypeListProps {
   value?: string;
@@ -34,11 +27,11 @@ const InstanceTypeList: React.FC<InstanceTypeListProps> = ({
     if (loading) {
       return (
         <Spin spinning size="middle">
-          <TypeGrid style={{ minHeight: 200 }}>
+          <Flex orientation="vertical" gap={16} style={{ minHeight: 200 }}>
             {_.times(6, (index: number) => (
-              <FileSkeleton key={index} counts={3} itemHeight={106} />
+              <FileSkeletonRows key={index} counts={2} itemHeight={106} />
             ))}
-          </TypeGrid>
+          </Flex>
         </Spin>
       );
     }
@@ -46,7 +39,7 @@ const InstanceTypeList: React.FC<InstanceTypeListProps> = ({
   }
 
   return (
-    <TypeGrid>
+    <Flex orientation="vertical" gap={16}>
       {dataList.map((item) => {
         const name = item.name;
         return (
@@ -64,7 +57,7 @@ const InstanceTypeList: React.FC<InstanceTypeListProps> = ({
           </TemplateCard>
         );
       })}
-    </TypeGrid>
+    </Flex>
   );
 };
 

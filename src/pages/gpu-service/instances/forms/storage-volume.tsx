@@ -36,7 +36,13 @@ const StorageVolume = ({
   const [overlayOpen, setOverlayOpen] = useState(false);
 
   useEffect(() => {
-    fetchStorage({ page: 1, perPage: 100 });
+    const initStorage = async () => {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 200);
+      });
+      fetchStorage({ page: -1 });
+    };
+    initStorage();
   }, []);
 
   const storageOptions = useMemo(

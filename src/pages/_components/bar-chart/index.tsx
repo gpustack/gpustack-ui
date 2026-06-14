@@ -1,7 +1,7 @@
 import useCoolColors from '@/hooks/use-cool-colors';
 import { Chart } from '@gpustack/core-ui';
 import { formatLargeNumber } from '@gpustack/core-ui/utils';
-import { Empty, theme } from 'antd';
+import { Empty, Spin, theme } from 'antd';
 import _ from 'lodash';
 import React, { useEffect, useMemo, useRef } from 'react';
 
@@ -17,6 +17,7 @@ export interface BarChartProps {
   xAxisData: string[];
   height: number | string;
   width?: number | string;
+  loading?: boolean;
   legendData?: { name: string; icon?: string }[];
   labelFormatter?: (val: any, index?: number) => string;
   tooltipValueFormatter?: (val: any) => string;
@@ -38,6 +39,7 @@ const BarChart: React.FC<BarChartProps> = (props) => {
     height,
     width,
     legendData,
+    loading,
     labelFormatter,
     tooltipValueFormatter,
     title,
@@ -277,18 +279,40 @@ const BarChart: React.FC<BarChartProps> = (props) => {
           justifyContent: 'center'
         }}
       >
-        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+        {loading ? (
+          <Spin size="middle" />
+        ) : (
+          <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+        )}
       </div>
     );
   }
 
   return (
-    <Chart
-      ref={chartRef as any}
-      options={options as any}
-      height={height}
-      width={width || '100%'}
-    />
+    <div style={{ width, height, position: 'relative' }}>
+      <Chart
+        ref={chartRef as any}
+        options={options as any}
+        height={height}
+        width={width || '100%'}
+      />
+      {loading && (
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'var(--ant-color-bg-container)',
+            opacity: 0.6,
+            pointerEvents: 'none'
+          }}
+        >
+          <Spin size="middle" />
+        </div>
+      )}
+    </div>
   );
 };
 

@@ -269,6 +269,10 @@ const SummaryTab: React.FC = () => {
       perPage: 100
     };
 
+    if (params) {
+      setQueryParams(currentParams);
+    }
+
     // "filter by user" — restricts every resource fetch to these creator ids.
     const creatorFilter = currentParams.selectedUsers.length
       ? { creator_ids: currentParams.selectedUsers }
@@ -310,7 +314,6 @@ const SummaryTab: React.FC = () => {
         filters: creatorFilter
       })
     ]);
-    setQueryParams(currentParams);
   };
 
   // --- derived: donuts ---

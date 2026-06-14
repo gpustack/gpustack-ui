@@ -366,32 +366,45 @@ function toServerRequest(data: ResourceBreakdownRequest) {
 
 async function _breakdown(
   url: string,
-  data: ResourceBreakdownRequest
+  data: ResourceBreakdownRequest,
+  options?: {
+    token?: any;
+  }
 ): Promise<ResourceBreakdownResponse> {
   const { body, groupBy } = toServerRequest(data);
   const res = await request<ServerBreakdownResponse>(url, {
     data: body,
-    method: 'POST'
+    method: 'POST',
+    cancelToken: options?.token
   });
   return flattenResponse(groupBy, res);
 }
 
 export async function queryResourceBreakdown(
-  data: ResourceBreakdownRequest
+  data: ResourceBreakdownRequest,
+  options?: {
+    token?: any;
+  }
 ): Promise<ResourceBreakdownResponse> {
-  return _breakdown(URL.RESOURCE_BREAKDOWN, data);
+  return _breakdown(URL.RESOURCE_BREAKDOWN, data, options);
 }
 
 export async function queryGpuInstancesBreakdown(
-  data: ResourceBreakdownRequest
+  data: ResourceBreakdownRequest,
+  options?: {
+    token?: any;
+  }
 ): Promise<ResourceBreakdownResponse> {
-  return _breakdown(URL.GPU_BREAKDOWN, data);
+  return _breakdown(URL.GPU_BREAKDOWN, data, options);
 }
 
 export async function queryStorageBreakdown(
-  data: ResourceBreakdownRequest
+  data: ResourceBreakdownRequest,
+  options?: {
+    token?: any;
+  }
 ): Promise<ResourceBreakdownResponse> {
-  return _breakdown(URL.STORAGE_BREAKDOWN, data);
+  return _breakdown(URL.STORAGE_BREAKDOWN, data, options);
 }
 
 export async function queryResourceEvents(
@@ -406,7 +419,7 @@ export async function queryResourceEvents(
     page?: number;
     perPage?: number;
   },
-  options?: { skipErrorHandler?: boolean }
+  options?: { skipErrorHandler?: boolean; token?: any }
 ): Promise<ResourceEventsResponse> {
   const creatorIds = data.filters?.creator_ids;
   return request<ResourceEventsResponse>(URL.EVENTS, {
@@ -426,7 +439,8 @@ export async function queryResourceEvents(
       perPage: data.perPage ?? 50
     },
     method: 'GET',
-    skipErrorHandler: options?.skipErrorHandler
+    skipErrorHandler: options?.skipErrorHandler,
+    cancelToken: options?.token
   });
 }
 
@@ -456,12 +470,15 @@ export async function queryResourceFilterMeta(
   };
 }
 
-export async function queryUsageSummary(params: {
-  start_date: string;
-  end_date: string;
-  scope?: 'self' | 'all';
-  creator_ids?: number[];
-}): Promise<UsageSummaryResponse> {
+export async function queryUsageSummary(
+  params: {
+    start_date: string;
+    end_date: string;
+    scope?: 'self' | 'all';
+    creator_ids?: number[];
+  },
+  options?: { token?: any }
+): Promise<UsageSummaryResponse> {
   const { creator_ids, ...rest } = params;
   const res = await request<{
     total_tokens: number;
@@ -478,7 +495,8 @@ export async function queryUsageSummary(params: {
       scope: params.scope ?? 'all',
       ...(creator_ids?.length ? { creator_ids: creator_ids.join(',') } : {})
     },
-    method: 'GET'
+    method: 'GET',
+    cancelToken: options?.token
   });
 
   // Resource Distribution donut — by GPU type, using GPU-Hours (a single,
@@ -486,15 +504,18 @@ export async function queryUsageSummary(params: {
   // instance type. (A true cross-resource split needs a common unit.)
   let distribution: SummaryResourceDistributionItem[] = [];
   try {
-    const byType = await queryGpuInstancesBreakdown({
-      start_date: params.start_date,
-      end_date: params.end_date,
-      scope: params.scope ?? 'all',
-      group_by: ['gpu_type'],
-      ...(creator_ids?.length ? { filters: { creator_ids } } : {}),
-      page: 1,
-      perPage: 100
-    });
+    const byType = await queryGpuInstancesBreakdown(
+      {
+        start_date: params.start_date,
+        end_date: params.end_date,
+        scope: params.scope ?? 'all',
+        group_by: ['gpu_type'],
+        ...(creator_ids?.length ? { filters: { creator_ids } } : {}),
+        page: 1,
+        perPage: 100
+      },
+      { token: options?.token }
+    );
     const total = byType.items.reduce((s, i) => s + (i.gpu_hours || 0), 0);
     distribution = byType.items
       .filter((i) => (i.gpu_hours || 0) > 0)

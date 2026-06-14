@@ -27,10 +27,9 @@ import PieChart from '@/pages/_components/pie-chart';
 import { formatLargeNumber } from '@/utils';
 import { CardWrapper } from '@gpustack/core-ui';
 import { useAccess, useIntl } from '@umijs/max';
-import { useRequest } from 'ahooks';
 import { Col, Row } from 'antd';
 import dayjs from 'dayjs';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import ResourceFilterBar from '../components/resource-filter-bar';
 import useResourceMeta from '../hooks/use-resource-meta';
 import {
@@ -402,7 +401,9 @@ const SummaryTab: React.FC = () => {
     fetchAll();
   };
 
-  useRequest(fetchAll);
+  useEffect(() => {
+    fetchAll();
+  }, []);
 
   return (
     <div>

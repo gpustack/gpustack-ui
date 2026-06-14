@@ -312,20 +312,20 @@ const AddModal: React.FC<AddModalProps> = ({
   // The query hook cancels any in-flight request on each new call, so when
   // this runs twice in quick succession (drawer open, then the scope
   // picker settling on its default) the latest scope's result wins.
-  const loadCreateResources = (orgId?: number | null) => {
+  const loadCreateResources = async (orgId?: number | null) => {
     const session = ++sessionRef.current;
     try {
-      Promise.all([fetchData({ page: -1 }), fetchTemplates({ page: -1 })]).then(
-        ([instanceResItems, templatesRes]) => {
-          if (sessionRef.current !== session) return;
-          applyAutoSelection(
-            instanceResItems || [],
-            templatesRes?.items || [],
-            orgId
-          );
-          setInitialized(true);
-        }
+      const [instanceResItems, templatesRes] = await Promise.all([
+        fetchData({ page: -1 }),
+        fetchTemplates({ page: -1 })
+      ]);
+      if (sessionRef.current !== session) return;
+      applyAutoSelection(
+        instanceResItems || [],
+        templatesRes?.items || [],
+        orgId
       );
+      setInitialized(true);
     } catch (error) {
       setInitialized(true);
     }

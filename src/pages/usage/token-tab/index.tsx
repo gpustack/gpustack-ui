@@ -3,13 +3,13 @@ import { formatLargeNumber } from '@/utils';
 import { SimpleCard } from '@gpustack/core-ui';
 import { useAccess, useIntl } from '@umijs/max';
 import React, { useEffect, useMemo, useState } from 'react';
+import DailyUsage from '../components/daily-usage';
+import ExportData from '../components/export-data';
+import FilterBar from '../components/filter-bar';
 import useExportTable from '../hooks/use-export-table';
 import { useUsageFilters } from '../hooks/use-usage-filters';
 import useQueryUsageMetaData from '../services/use-query-meta-data';
-import BreakdownTabs from './breakdown-tabs';
-import DailyUsage from './daily-usage';
-import ExportData from './export-data';
-import FilterBar from './filter-bar';
+import BreakdownTabs from './components/breakdown-tabs';
 
 type DateType = 'date' | 'week' | 'month' | 'quarter' | 'year';
 

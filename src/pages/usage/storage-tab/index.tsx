@@ -1,19 +1,17 @@
 /**
- * GPU Instances Tab — per-instance compute usage view.
+ * Storage Tab — per-PV capacity usage view.
  *
- * Layout mirrors the existing Token tab:
+ * Mirrors the GPU Instances Tab structure:
  *   1. Top filter bar (date range + scope)
- *   2. KPI row (GPU-Hours / GPU-Minutes / Instances / GPU Types / Active Users)
- *   3. Daily bar chart with metric + group_by switches
- *   4. Bottom tab table grouped by GPU Type / Instance / User
+ *   2. KPI row (GB-Days / GB-Hours / Active Volumes / Dangling Volumes)
+ *   3. Daily bar chart with metric switch
+ *   4. Bottom tab table grouped by Volume / User
  *
- * Talks to the new ``/usage/gpu-instances/{meta,breakdown}`` endpoints.
+ * Talks to ``/usage/storage/{meta,breakdown}``. PV is lifecycle-gated
+ * (capacity is metered from CREATED to DELETED regardless of attach state),
+ * so there's no phase filter — just date / scope / volume / user.
  */
 import useCoolColors from '@/hooks/use-cool-colors';
-import {
-  buildInstanceTypeRecordFromMiB,
-  renderInstanceType
-} from '@/pages/gpu-service/instances/utils/render-instance-type';
 import { formatLargeNumber } from '@/utils';
 import { SimpleCard } from '@gpustack/core-ui';
 import { useAccess, useIntl } from '@umijs/max';
@@ -21,13 +19,16 @@ import { Table, Tabs } from 'antd';
 import dayjs from 'dayjs';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
-  queryGpuInstancesBreakdown,
+  queryStorageBreakdown,
   ResourceBreakdownItem,
   ResourceBreakdownRequest,
   ResourceBreakdownResponse
 } from '../apis/resource';
+import MetricChartCard from '../components/metric-chart-card';
+import MetricLabel from '../components/metric-label';
+import ResourceExportData from '../components/resource-export-data';
+import ResourceFilterBar from '../components/resource-filter-bar';
 import useResourceMeta from '../hooks/use-resource-meta';
-import { instanceTypeLabel } from '../utils/format-instance-type';
 import {
   bucketKey,
   generateBucketRange,
@@ -35,28 +36,28 @@ import {
   parseRollup
 } from '../utils/time-buckets';
 import { buildTrendSeries } from '../utils/trend-series';
-import MetricChartCard from './metric-chart-card';
-import MetricLabel from './metric-label';
-import ResourceExportData from './resource-export-data';
-import ResourceFilterBar from './resource-filter-bar';
 
 type Scope = 'self' | 'all';
-type Metric = 'gpu_hours' | 'instance_hours';
-type GroupKey = 'gpu_type' | 'instance' | 'user';
+type Metric = 'storage_gb_days' | 'storage_gb_hours';
+type GroupKey = 'volume' | 'user';
 
-const GpuInstancesTab: React.FC = () => {
+const StorageTab: React.FC = () => {
   const access = useAccess();
   const intl = useIntl();
+  // Factory kept for the grouped trend (sized to group count); 4-slot palette
+  // for the KPI cards.
+  const colorFactory = useCoolColors();
+  const coolColors = colorFactory(4);
 
   const METRIC_OPTIONS: { value: Metric; label: string }[] = useMemo(
     () => [
       {
-        value: 'gpu_hours',
-        label: intl.formatMessage({ id: 'usage.metric.gpuHours' })
+        value: 'storage_gb_days',
+        label: intl.formatMessage({ id: 'usage.metric.gbDays' })
       },
       {
-        value: 'instance_hours',
-        label: intl.formatMessage({ id: 'usage.metric.instanceHours' })
+        value: 'storage_gb_hours',
+        label: intl.formatMessage({ id: 'usage.metric.gbHours' })
       }
     ],
     [intl]
@@ -65,22 +66,13 @@ const GpuInstancesTab: React.FC = () => {
   const TABLE_TABS: { key: GroupKey; label: string }[] = useMemo(
     () => [
       {
-        key: 'gpu_type',
-        label: intl.formatMessage({ id: 'usage.table.instanceTypes' })
-      },
-      {
-        key: 'instance',
-        label: intl.formatMessage({ id: 'usage.table.instances' })
+        key: 'volume',
+        label: intl.formatMessage({ id: 'usage.tabs.storage' })
       },
       { key: 'user', label: intl.formatMessage({ id: 'usage.table.users' }) }
     ],
     [intl]
   );
-  // ``useCoolColors`` returns a memoized factory; resolve a fixed 5-slot
-  // palette for the KPI cards, and keep the factory for the grouped trend
-  // (sized to the group count).
-  const colorFactory = useCoolColors();
-  const coolColors = colorFactory(5);
 
   // No All/My dropdown (matches the Tokens tab): managers see the org-wide
   // view and narrow it with the user filter, others only their own rows.
@@ -92,22 +84,17 @@ const GpuInstancesTab: React.FC = () => {
     dayjs()
   ]);
   const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
-  const [selectedInstances, setSelectedInstances] = useState<number[]>([]);
+  const [selectedVolumes, setSelectedVolumes] = useState<number[]>([]);
   const [refreshKey, setRefreshKey] = useState(0);
-  const [metric, setMetric] = useState<Metric>('gpu_hours');
+  const [metric, setMetric] = useState<Metric>('storage_gb_days');
   const [granularity, setGranularity] = useState<Granularity>('day');
   // Optional trend group-by (split the chart into one series per group).
   const [chartGroupBy, setChartGroupBy] = useState<GroupKey | null>(null);
-  // ``null`` group_by = no row grouping, just the summary KPIs.
-  // The chart needs the ``date`` group; tables use the active table tab.
-  const [activeTableTab, setActiveTableTab] = useState<GroupKey>('gpu_type');
+  const [activeTableTab, setActiveTableTab] = useState<GroupKey>('volume');
 
-  const { creators: userOptions, instances: instanceOptions } =
+  const { creators: userOptions, volumes: volumeOptions } =
     useResourceMeta(scope);
 
-  // Two independent fetches: one for the daily chart (group_by=date),
-  // one for the table (group_by=tab key). Both reuse the same date /
-  // scope filters so the views stay in sync.
   const [chartData, setChartData] = useState<ResourceBreakdownResponse | null>(
     null
   );
@@ -115,11 +102,11 @@ const GpuInstancesTab: React.FC = () => {
     null
   );
   const [tablePage, setTablePage] = useState(1);
-  // Server-side sort for the bottom tables; default GPU Hours, descending.
+  // Server-side sort for the bottom tables; default GB-Days, descending.
   const [tableSort, setTableSort] = useState<{
     field: Metric;
     order: 'ascend' | 'descend';
-  }>({ field: 'gpu_hours', order: 'descend' });
+  }>({ field: 'storage_gb_days', order: 'descend' });
 
   const baseRequest = (): Omit<ResourceBreakdownRequest, 'group_by'> => ({
     start_date: dateRange[0].format('YYYY-MM-DD'),
@@ -127,12 +114,10 @@ const GpuInstancesTab: React.FC = () => {
     scope,
     granularity,
     filters:
-      selectedUsers.length || selectedInstances.length
+      selectedUsers.length || selectedVolumes.length
         ? {
             ...(selectedUsers.length ? { creator_ids: selectedUsers } : {}),
-            ...(selectedInstances.length
-              ? { instance_ids: selectedInstances }
-              : {})
+            ...(selectedVolumes.length ? { volume_ids: selectedVolumes } : {})
           }
         : undefined,
     page: 1,
@@ -141,7 +126,7 @@ const GpuInstancesTab: React.FC = () => {
 
   const fetchChart = async () => {
     try {
-      const data = await queryGpuInstancesBreakdown({
+      const data = await queryStorageBreakdown({
         ...baseRequest(),
         // Split each bucket by the chosen dimension when grouping.
         group_by: chartGroupBy ? ['date', chartGroupBy] : ['date'],
@@ -153,23 +138,29 @@ const GpuInstancesTab: React.FC = () => {
       });
       setChartData(data);
     } catch {
-      // Network/auth errors surface via the global request interceptor;
-      // keep the previous chart so the UI doesn't flash empty.
+      // Surfacing handled by global interceptor; keep last data.
     }
+  };
+
+  // The frontend metric keys (storage_gb_days/hours) map to the server's
+  // breakdown metric keys (gb_days/gb_hours) for order_by.
+  const ORDER_BY_KEY: Record<Metric, string> = {
+    storage_gb_days: 'gb_days',
+    storage_gb_hours: 'gb_hours'
   };
 
   const fetchTable = async () => {
     try {
-      const data = await queryGpuInstancesBreakdown({
+      const data = await queryStorageBreakdown({
         ...baseRequest(),
         group_by: [activeTableTab],
         page: tablePage,
-        order_by: tableSort.field,
+        order_by: ORDER_BY_KEY[tableSort.field],
         descending: tableSort.order === 'descend'
       });
       setTableData(data);
     } catch {
-      // Same rationale as fetchChart.
+      // Same rationale.
     }
   };
 
@@ -178,7 +169,7 @@ const GpuInstancesTab: React.FC = () => {
   }, [
     dateRange,
     selectedUsers,
-    selectedInstances,
+    selectedVolumes,
     granularity,
     chartGroupBy,
     refreshKey
@@ -189,47 +180,43 @@ const GpuInstancesTab: React.FC = () => {
   }, [
     dateRange,
     selectedUsers,
-    selectedInstances,
+    selectedVolumes,
     activeTableTab,
     tablePage,
     tableSort,
     refreshKey
   ]);
 
-  // KPI summary cards — pull from the chart summary since both queries
-  // return the same scope-wide totals.
   const summary = chartData?.summary;
   const summaryCards = useMemo(
     () => [
       {
         label: formatLargeNumber(
-          Math.round((summary?.gpu_hours ?? 0) * 10) / 10
+          Math.round((summary?.storage_gb_days ?? 0) * 10) / 10
         ) as string,
         value: (
           <MetricLabel
-            text={intl.formatMessage({ id: 'usage.metric.gpuHours' })}
-            tooltip={intl.formatMessage({ id: 'usage.metric.gpuHours.tip' })}
+            text={intl.formatMessage({ id: 'usage.metric.gbDays' })}
+            tooltip={intl.formatMessage({ id: 'usage.metric.gbDays.tip' })}
           />
         ),
         color: coolColors[0]
       },
       {
         label: formatLargeNumber(
-          Math.round((summary?.instance_hours ?? 0) * 10) / 10
+          Math.round((summary?.storage_gb_hours ?? 0) * 10) / 10
         ) as string,
         value: (
           <MetricLabel
-            text={intl.formatMessage({ id: 'usage.metric.instanceHours' })}
-            tooltip={intl.formatMessage({
-              id: 'usage.metric.instanceHours.tip'
-            })}
+            text={intl.formatMessage({ id: 'usage.metric.gbHours' })}
+            tooltip={intl.formatMessage({ id: 'usage.metric.gbHours.tip' })}
           />
         ),
         color: coolColors[1]
       },
       {
-        label: (summary?.active_instances ?? 0).toString(),
-        value: intl.formatMessage({ id: 'usage.metric.activeInstances' }),
+        label: (summary?.active_volumes ?? 0).toString(),
+        value: intl.formatMessage({ id: 'usage.tabs.storage' }),
         color: coolColors[2]
       },
       {
@@ -241,7 +228,6 @@ const GpuInstancesTab: React.FC = () => {
     [summary, coolColors, intl]
   );
 
-  // x-axis = the contiguous date range plus any buckets present in the data.
   const xAxis = useMemo(() => {
     const keys = new Set(
       generateBucketRange(
@@ -256,7 +242,6 @@ const GpuInstancesTab: React.FC = () => {
     return Array.from(keys).sort();
   }, [chartData, dateRange, granularity]);
 
-  // Single series, or one stacked series per group when grouping is on.
   const seriesData = useMemo(
     () =>
       buildTrendSeries({
@@ -269,11 +254,17 @@ const GpuInstancesTab: React.FC = () => {
         singleName:
           METRIC_OPTIONS.find((m) => m.value === metric)?.label || metric
       }),
-    [chartData, metric, granularity, xAxis, chartGroupBy, colorFactory]
+    [
+      chartData,
+      metric,
+      granularity,
+      xAxis,
+      chartGroupBy,
+      colorFactory,
+      METRIC_OPTIONS
+    ]
   );
 
-  // Group-by options for the trend = the same dimensions as the bottom tables
-  // (Users only when org-wide, matching the table tabs).
   const chartGroupByOptions = useMemo(
     () =>
       TABLE_TABS.filter((t) => t.key !== 'user' || scope === 'all').map(
@@ -285,58 +276,27 @@ const GpuInstancesTab: React.FC = () => {
     [TABLE_TABS, scope]
   );
 
-  // Table columns adapt to the active tab.
   const tableColumns = useMemo(() => {
-    const baseValueCols = [
+    const valueCols = [
       {
-        title: intl.formatMessage({ id: 'usage.metric.gpuHours' }),
-        dataIndex: 'gpu_hours',
-        key: 'gpu_hours',
+        title: intl.formatMessage({ id: 'usage.metric.gbDays' }),
+        dataIndex: 'storage_gb_days',
+        key: 'storage_gb_days',
         sorter: true,
-        sortOrder: tableSort.field === 'gpu_hours' ? tableSort.order : null,
+        sortOrder:
+          tableSort.field === 'storage_gb_days' ? tableSort.order : null,
         render: (v: number) => (v ?? 0).toFixed(2)
       },
       {
-        title: intl.formatMessage({ id: 'usage.metric.instanceHours' }),
-        dataIndex: 'instance_hours',
-        key: 'instance_hours',
+        title: intl.formatMessage({ id: 'usage.metric.gbHours' }),
+        dataIndex: 'storage_gb_hours',
+        key: 'storage_gb_hours',
         sorter: true,
         sortOrder:
-          tableSort.field === 'instance_hours' ? tableSort.order : null,
+          tableSort.field === 'storage_gb_hours' ? tableSort.order : null,
         render: (v: number) => (v ?? 0).toFixed(2)
       }
     ];
-    // Instance Types breakdown: just the pretty product name (or flavor slug
-    // for older rows) — no spec sub-line.
-    const instanceTypeColType = {
-      title: intl.formatMessage({ id: 'usage.table.instanceType' }),
-      dataIndex: 'gpu_type',
-      key: 'gpu_type',
-      render: (_v: string, row: ResourceBreakdownItem) => instanceTypeLabel(row)
-    };
-    // Instances breakdown: render through the canonical GPU Instances list
-    // renderer so the label + spec popover are identical. The breakdown row
-    // carries flat MiB fields, so adapt it into the ListItem shape first.
-    const instanceTypeColInstance = {
-      title: intl.formatMessage({ id: 'usage.table.instanceType' }),
-      dataIndex: 'gpu_type',
-      key: 'gpu_type',
-      render: (_v: string, row: ResourceBreakdownItem) =>
-        renderInstanceType(
-          buildInstanceTypeRecordFromMiB({
-            name: row.instance_name,
-            product: row.product || row.gpu_type,
-            gpuCount: row.gpu_count,
-            unitCpuMilli: row.unit_cpu_milli,
-            unitMemoryMib: row.unit_memory_mib,
-            vramMib: row.vram_mib,
-            localStorageMib: row.local_storage_mib,
-            ephemeralMib: row.ephemeral_mib,
-            persistentMib: row.persistent_mib
-          }),
-          { intl }
-        )
-    };
     // Last Active = the last active day. The backend sends a rollup-tz instant
     // with its offset; parseRollup keeps that wall clock (no browser-tz convert),
     // consistent with the trend chart buckets. Shown date-only.
@@ -346,38 +306,42 @@ const GpuInstancesTab: React.FC = () => {
       key: 'last_active',
       render: (v?: string) => (v ? parseRollup(v).format('YYYY-MM-DD') : '-')
     };
-    if (activeTableTab === 'gpu_type') {
+    if (activeTableTab === 'volume') {
       return [
-        instanceTypeColType,
-        ...baseValueCols,
         {
-          title: intl.formatMessage({ id: 'usage.metric.activeInstances' }),
-          dataIndex: 'active_instances',
-          key: 'active_instances'
+          title: intl.formatMessage({ id: 'usage.tabs.storage' }),
+          dataIndex: 'volume_name',
+          key: 'volume_name'
         },
+        {
+          title: intl.formatMessage({ id: 'usage.table.type' }),
+          dataIndex: 'storage_type',
+          key: 'storage_type',
+          render: (_v: string, row: ResourceBreakdownItem) =>
+            row.storage_type || row.gpu_type || '-'
+        },
+        {
+          title: intl.formatMessage({ id: 'usage.table.capacity' }),
+          dataIndex: 'capacity_mib',
+          key: 'capacity_mib',
+          render: (v?: number) => (v ? `${Math.round(v / 1024)}GB` : '-')
+        },
+        ...valueCols,
         lastActiveCol
       ];
     }
-    if (activeTableTab === 'instance') {
-      return [
-        {
-          title: intl.formatMessage({ id: 'usage.table.instance' }),
-          dataIndex: 'instance_name',
-          key: 'instance_name'
-        },
-        instanceTypeColInstance,
-        ...baseValueCols,
-        lastActiveCol
-      ];
-    }
-    // user tab
     return [
       {
         title: intl.formatMessage({ id: 'usage.table.user' }),
         dataIndex: 'user_name',
         key: 'user_name'
       },
-      ...baseValueCols,
+      ...valueCols,
+      {
+        title: intl.formatMessage({ id: 'usage.metric.activeStorage' }),
+        dataIndex: 'active_volumes',
+        key: 'active_volumes'
+      },
       lastActiveCol
     ];
   }, [activeTableTab, tableSort, intl]);
@@ -399,21 +363,21 @@ const GpuInstancesTab: React.FC = () => {
       key: 'date'
     },
     {
-      title: intl.formatMessage({ id: 'usage.metric.gpuHours' }),
-      dataIndex: 'gpu_hours',
-      key: 'gpu_hours',
+      title: intl.formatMessage({ id: 'usage.metric.gbDays' }),
+      dataIndex: 'storage_gb_days',
+      key: 'storage_gb_days',
       render: (v: number) => (v ?? 0).toFixed(2)
     },
     {
-      title: intl.formatMessage({ id: 'usage.metric.instanceHours' }),
-      dataIndex: 'instance_hours',
-      key: 'instance_hours',
+      title: intl.formatMessage({ id: 'usage.metric.gbHours' }),
+      dataIndex: 'storage_gb_hours',
+      key: 'storage_gb_hours',
       render: (v: number) => (v ?? 0).toFixed(2)
     },
     {
-      title: intl.formatMessage({ id: 'usage.metric.activeInstances' }),
-      dataIndex: 'active_instances',
-      key: 'active_instances'
+      title: intl.formatMessage({ id: 'usage.metric.activeVolumes' }),
+      dataIndex: 'active_volumes',
+      key: 'active_volumes'
     },
     {
       title: intl.formatMessage({ id: 'usage.metric.activeUsers' }),
@@ -428,19 +392,18 @@ const GpuInstancesTab: React.FC = () => {
       ? {
           groupBy: ['date'],
           columns: chartExportColumns,
-          fileName: `gpu-instances_chart_${dateSuffix}.xlsx`,
-          sheetName: intl.formatMessage({ id: 'usage.tabs.gpuInstances' })
+          fileName: `storage_chart_${dateSuffix}.xlsx`,
+          sheetName: intl.formatMessage({ id: 'usage.tabs.storage' })
         }
       : {
           groupBy: [activeTableTab],
           columns: tableColumns,
-          fileName: `gpu-instances_${activeTableTab}_${dateSuffix}.xlsx`,
-          sheetName: tabLabel || 'gpu-instances'
+          fileName: `storage_${activeTableTab}_${dateSuffix}.xlsx`,
+          sheetName: tabLabel || 'storage'
         };
 
   return (
     <div>
-      {/* Top filter row */}
       <ResourceFilterBar
         value={dateRange}
         onChange={(dates) => {
@@ -455,21 +418,20 @@ const GpuInstancesTab: React.FC = () => {
           setTablePage(1);
         }}
         resourceFilter={{
-          options: instanceOptions,
-          value: selectedInstances,
+          options: volumeOptions,
+          value: selectedVolumes,
           onChange: (ids) => {
-            setSelectedInstances(ids);
+            setSelectedVolumes(ids);
             setTablePage(1);
           },
-          placeholder: intl.formatMessage({ id: 'usage.filter.instance' })
+          placeholder: intl.formatMessage({ id: 'usage.filter.storage' })
         }}
         onRefresh={() => setRefreshKey((k) => k + 1)}
         onExportChart={() => setExportMode('chart')}
         onExportTable={() => setExportMode('table')}
       />
-
-      {/* KPI cards */}
       <div style={{ height: 24 }} />
+
       <div style={{ marginBottom: 24 }}>
         <SimpleCard
           dataList={summaryCards}
@@ -483,7 +445,6 @@ const GpuInstancesTab: React.FC = () => {
         />
       </div>
 
-      {/* Daily trend chart */}
       <div style={{ marginBottom: 24 }}>
         <MetricChartCard
           metric={metric}
@@ -499,7 +460,6 @@ const GpuInstancesTab: React.FC = () => {
         />
       </div>
 
-      {/* Bottom tabs + table */}
       <Tabs
         activeKey={activeTableTab}
         onChange={(k) => {
@@ -514,21 +474,23 @@ const GpuInstancesTab: React.FC = () => {
           children: (
             <Table
               rowKey={(row) =>
-                `${row.gpu_type ?? ''}|${row.instance_id ?? ''}|${row.user_id ?? ''}`
+                `${row.volume_id ?? ''}|${row.user_id ?? ''}|${row.volume_name ?? ''}`
               }
-              key={t.key}
               dataSource={tableRows}
               columns={tableColumns as any}
               onChange={(_pagination, _filters, sorter: any) => {
                 const s = Array.isArray(sorter) ? sorter[0] : sorter;
-                // Sort changed: reset to page 1. Cleared (3rd click) → default
-                // back to GPU Hours descending.
+                // Sort changed → page 1; cleared (3rd click) → default GB-Days
+                // descending.
                 const next = s?.order
                   ? {
-                      field: (s.columnKey as Metric) ?? 'gpu_hours',
+                      field: (s.columnKey as Metric) ?? 'storage_gb_days',
                       order: s.order as 'ascend' | 'descend'
                     }
-                  : { field: 'gpu_hours' as Metric, order: 'descend' as const };
+                  : {
+                      field: 'storage_gb_days' as Metric,
+                      order: 'descend' as const
+                    };
                 if (
                   next.field !== tableSort.field ||
                   next.order !== tableSort.order
@@ -560,7 +522,7 @@ const GpuInstancesTab: React.FC = () => {
                 { name: tabLabel }
               )
         }
-        queryFn={queryGpuInstancesBreakdown}
+        queryFn={queryStorageBreakdown}
         groupBy={exportConfig.groupBy}
         columns={exportConfig.columns}
         fileName={exportConfig.fileName}
@@ -569,16 +531,16 @@ const GpuInstancesTab: React.FC = () => {
         canManageUsers={canManageUsers}
         userOptions={userOptions}
         resourceFilter={{
-          options: instanceOptions,
-          placeholder: intl.formatMessage({ id: 'usage.filter.instance' }),
-          key: 'instance_ids'
+          options: volumeOptions,
+          placeholder: intl.formatMessage({ id: 'usage.filter.storage' }),
+          key: 'volume_ids'
         }}
         initialDateRange={dateRange}
         initialSelectedUsers={selectedUsers}
-        initialSelectedResources={selectedInstances}
+        initialSelectedResources={selectedVolumes}
       />
     </div>
   );
 };
 
-export default GpuInstancesTab;
+export default StorageTab;

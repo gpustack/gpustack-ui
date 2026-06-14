@@ -5,10 +5,10 @@ import { useIntl } from '@umijs/max';
 import { Table } from 'antd';
 import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
-import { FilterOptionType } from '../config/types';
-import useAPIKeys from '../hooks/use-apikeys-columns';
-import useQueryBreakdownList from '../services/use-query-breakdown-list';
-import getBreakdownRowKey from '../utils/get-breakdown-row-key';
+import { FilterOptionType } from '../../config/types';
+import useAPIKeys from '../../hooks/use-apikeys-columns';
+import useQueryBreakdownList from '../../services/use-query-breakdown-list';
+import getBreakdownRowKey from '../../utils/get-breakdown-row-key';
 
 const APIKeys: React.FC<{
   apiKeys: FilterOptionType[];

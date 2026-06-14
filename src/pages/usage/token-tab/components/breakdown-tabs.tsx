@@ -1,7 +1,7 @@
 import { useIntl } from '@umijs/max';
 import { Tabs } from 'antd';
 import React, { useMemo } from 'react';
-import { UsageFilterItem } from '../config/types';
+import { UsageFilterItem } from '../../config/types';
 import ApiKeysTable from '../tables/apikeys-table';
 import ModelsTable from '../tables/models-table';
 import UsersTable from '../tables/users-table';

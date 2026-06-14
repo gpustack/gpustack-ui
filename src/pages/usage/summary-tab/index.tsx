@@ -75,9 +75,15 @@ const buildTrend = (
     const k = bucketKey(r.date, gran);
     map.set(k, (map.get(k) ?? 0) + r.value);
   });
-  const keys = new Set(generateBucketRange(start, end, gran));
-  map.forEach((_v, k) => keys.add(k));
-  const xAxis = Array.from(keys).sort();
+  // The x-axis is strictly the selected [start, end] range. We deliberately do
+  // NOT union in the data's own bucket keys: on a date-range change the new
+  // start/end render a frame before the in-flight request resolves, so `map`
+  // still holds the previous range's dates — merging them would briefly show a
+  // union of both ranges (a gap + doubled axis). Dropping out-of-range points is
+  // safe for the `day` granularity used here, since generateBucketRange already
+  // emits every in-range day; revisit this if week/month granularity is added
+  // (their bucket keys can fall outside the stepped range).
+  const xAxis = generateBucketRange(start, end, gran);
   return { xAxis, data: xAxis.map((k) => map.get(k) ?? 0) };
 };
 

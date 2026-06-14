@@ -38,13 +38,13 @@ import {
   ResourceBreakdownResponse,
   UsageSummaryResponse
 } from '../apis/resource';
+import ResourceFilterBar from '../components/resource-filter-bar';
 import useResourceMeta from '../hooks/use-resource-meta';
 import {
   bucketKey,
   generateBucketRange,
   Granularity
 } from '../utils/time-buckets';
-import ResourceFilterBar from './resource-filter-bar';
 
 type Scope = 'self' | 'all';
 

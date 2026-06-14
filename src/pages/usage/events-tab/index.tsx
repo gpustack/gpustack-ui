@@ -24,8 +24,8 @@ import {
   ResourceEventItem,
   ResourceEventsResponse
 } from '../apis/resource';
+import ResourceFilterBar from '../components/resource-filter-bar';
 import { parseRollup } from '../utils/time-buckets';
-import ResourceFilterBar from './resource-filter-bar';
 
 // Only these four are ever emitted (see resource_event_logger): create/delete
 // + the metering-window pair. updated/attached/detached exist as enum values
@@ -279,6 +279,7 @@ const ResourceEvents: React.FC = () => {
         columns={columns as any}
         style={{ marginTop: 24 }}
         pagination={{
+          size: 'middle',
           current: queryParams.page,
           pageSize: data?.pagination.perPage ?? 50,
           total: data?.pagination.total ?? 0,

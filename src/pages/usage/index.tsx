@@ -16,11 +16,11 @@
 import { useAccess, useIntl } from '@umijs/max';
 import { Tabs, TabsProps } from 'antd';
 import React, { useMemo, useState } from 'react';
-import GpuInstancesTab from './components/gpu-instances-tab';
-import ResourceEvents from './components/resource-events';
-import StorageTab from './components/storage-tab';
-import SummaryTab from './components/summary-tab';
-import TokenTab from './components/token-tab';
+import ResourceEvents from './events-tab';
+import GpuInstancesTab from './instances-tab';
+import StorageTab from './storage-tab';
+import SummaryTab from './summary-tab';
+import TokenTab from './token-tab';
 
 const Usage: React.FC = () => {
   const access = useAccess();
@@ -28,11 +28,15 @@ const Usage: React.FC = () => {
   // Land on the cross-resource Summary by default.
   const [activeKey, setActiveKey] = useState<string>('summary');
 
-  const items: TabsProps['items'] = useMemo(
-    () => [
+  const items: TabsProps['items'] = useMemo(() => {
+    type AccessTab = NonNullable<TabsProps['items']>[number] & {
+      access?: string;
+    };
+    const tabs: AccessTab[] = [
       {
         key: 'summary',
         label: intl.formatMessage({ id: 'usage.tabs.summary' }),
+        access: 'canSeeGpuService',
         children: <SummaryTab />
       },
       {
@@ -43,34 +47,33 @@ const Usage: React.FC = () => {
       {
         key: 'gpu-instances',
         label: intl.formatMessage({ id: 'usage.tabs.gpuInstances' }),
+        access: 'canSeeGpuService',
         children: <GpuInstancesTab />
       },
       {
         key: 'storage',
         label: intl.formatMessage({ id: 'usage.tabs.storage' }),
+        access: 'canSeeGpuService',
         children: <StorageTab />
       },
       {
         key: 'resource-events',
         label: intl.formatMessage({ id: 'usage.tabs.resourceEvents' }),
+        access: 'canSeeGpuService',
         children: <ResourceEvents />
       }
-    ],
-    [intl]
-  );
-
-  // Users who can't see GPU Service (MaaS-only: no cluster, no resource usage)
-  // only have token usage — drop the tab shell and show Tokens directly.
-  if (!access.canSeeGpuService) {
-    return <TokenTab />;
-  }
+    ];
+    return tabs.filter((item) => {
+      if (!item.access) return true;
+      return (access as Record<string, boolean>)[item.access];
+    });
+  }, [intl, access]);
 
   return (
     <Tabs
       activeKey={activeKey}
       onChange={setActiveKey}
       items={items}
-      destroyOnHidden
       // The content area adds 24px top padding; on table pages that space is
       // filled immediately, but here it sits empty above the tab bar and reads
       // as too tall. Pull the tab bar up to ~flush with the header divider.

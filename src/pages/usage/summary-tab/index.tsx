@@ -27,17 +27,10 @@ import PieChart from '@/pages/_components/pie-chart';
 import { formatLargeNumber } from '@/utils';
 import { CardWrapper } from '@gpustack/core-ui';
 import { useAccess, useIntl } from '@umijs/max';
-import { Col, Empty, Row } from 'antd';
+import { useRequest } from 'ahooks';
+import { Col, Row } from 'antd';
 import dayjs from 'dayjs';
-import React, { useEffect, useMemo, useState } from 'react';
-import { queryUsageTimeSeriesData } from '../apis';
-import {
-  queryResourceBreakdown,
-  queryStorageBreakdown,
-  queryUsageSummary,
-  ResourceBreakdownResponse,
-  UsageSummaryResponse
-} from '../apis/resource';
+import React, { useMemo, useState } from 'react';
 import ResourceFilterBar from '../components/resource-filter-bar';
 import useResourceMeta from '../hooks/use-resource-meta';
 import {
@@ -45,8 +38,18 @@ import {
   generateBucketRange,
   Granularity
 } from '../utils/time-buckets';
+import useQueryResourceBreakdown from './services/use-query-resource-breakdown';
+import useQueryStorageBreakdown from './services/use-query-storage-breakdown';
+import useQueryTimeSeriesData from './services/use-query-timeseries-data';
+import useQueryUsageSummary from './services/use-query-usage-summary';
 
 type Scope = 'self' | 'all';
+
+type QueryParams = {
+  start: string;
+  end: string;
+  selectedUsers: number[];
+};
 
 // Round to at most 2 decimals everywhere (avoid 1.60999999… in the donut center).
 const round2 = (n?: number) => Math.round((Number(n) || 0) * 100) / 100;
@@ -96,6 +99,8 @@ const Stat: React.FC<{ value: React.ReactNode; label: string }> = ({
 // row, then a donut (left, legend hugging it) beside a trend (right) that
 // carries its own chart title — no wasteful caption rows.
 const DomainSection: React.FC<{
+  pieLoading?: boolean;
+  barLoading?: boolean;
   title: string;
   accent: string;
   headline: React.ReactNode;
@@ -107,6 +112,8 @@ const DomainSection: React.FC<{
   trendColor: string;
   trendGran: Granularity;
 }> = ({
+  pieLoading,
+  barLoading,
   title,
   accent,
   headline,
@@ -118,16 +125,14 @@ const DomainSection: React.FC<{
   trendColor,
   trendGran
 }) => {
-  const intl = useIntl();
   const donutTotal = round2(donutData.reduce((s, d) => s + (d.value || 0), 0));
-  const trendEmpty = trendData.every((v) => !v);
-  const empty = (
-    <Empty
-      image={Empty.PRESENTED_IMAGE_SIMPLE}
-      description={intl.formatMessage({ id: 'usage.common.noData' })}
-      style={{ margin: '32px 0' }}
-    />
-  );
+
+  const seriesData = useMemo(() => {
+    return [{ name: trendTitle, data: trendData, color: trendColor }].filter(
+      (s) => s.data.some((v) => !!v)
+    );
+  }, [trendData, trendColor]);
+
   return (
     <CardWrapper style={{ paddingBlock: 16 }}>
       <div
@@ -166,37 +171,29 @@ const DomainSection: React.FC<{
         }}
       >
         <div style={{ width: 340, maxWidth: '100%', flexShrink: 0 }}>
-          {donutTotal <= 0 ? (
-            empty
-          ) : (
-            <PieChart
-              data={donutData}
-              height={180}
-              total={donutTotal}
-              totalLabel={donutTotalLabel}
-            />
-          )}
+          <PieChart
+            loading={pieLoading}
+            data={donutData}
+            height={180}
+            total={donutTotal}
+            totalLabel={donutTotalLabel}
+          />
         </div>
         <div style={{ flex: 1, minWidth: 260 }}>
-          {trendEmpty ? (
-            empty
-          ) : (
-            <BarChart
-              seriesData={[
-                { name: trendTitle, data: trendData, color: trendColor }
-              ]}
-              xAxisData={trendXAxis}
-              height={180}
-              grid={{
-                bottom: 0
-              }}
-              title={trendTitle}
-              labelFormatter={trendLabel(trendGran)}
-              tooltipValueFormatter={(v) =>
-                formatLargeNumber(round2(Number(v))) as string
-              }
-            />
-          )}
+          <BarChart
+            loading={barLoading}
+            seriesData={seriesData}
+            xAxisData={trendXAxis}
+            height={180}
+            grid={{
+              bottom: 0
+            }}
+            title={trendTitle}
+            labelFormatter={trendLabel(trendGran)}
+            tooltipValueFormatter={(v) =>
+              formatLargeNumber(round2(Number(v))) as string
+            }
+          />
         </div>
       </div>
     </CardWrapper>
@@ -216,95 +213,106 @@ const SummaryTab: React.FC = () => {
   // Summary trends are fixed to a daily granularity (no granularity control).
   const granularity: Granularity = 'day';
 
-  const [dateRange, setDateRange] = useState<[dayjs.Dayjs, dayjs.Dayjs]>([
-    dayjs().subtract(29, 'day'),
-    dayjs()
-  ]);
-  const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
-  const [refreshKey, setRefreshKey] = useState(0);
+  // Date range + user filter live together: every fetch keys off all three, so
+  // a single object keeps them in sync and trims the dependency arrays.
+  const [queryParams, setQueryParams] = useState<{
+    start: string;
+    end: string;
+    selectedUsers: number[];
+  }>({
+    start: dayjs().subtract(29, 'day').format('YYYY-MM-DD'),
+    end: dayjs().format('YYYY-MM-DD'),
+    selectedUsers: []
+  });
+  const { start, end, selectedUsers } = queryParams;
   const { creators: userOptions } = useResourceMeta(scope);
 
-  const [summary, setSummary] = useState<UsageSummaryResponse | null>(null);
-  const [tokenSeries, setTokenSeries] = useState<any[]>([]);
-  const [computeByDate, setComputeByDate] =
-    useState<ResourceBreakdownResponse | null>(null);
-  const [storageByDate, setStorageByDate] =
-    useState<ResourceBreakdownResponse | null>(null);
-  const [storageByType, setStorageByType] =
-    useState<ResourceBreakdownResponse | null>(null);
+  const {
+    detailData: summary,
+    loading: summaryLoading,
+    fetchData: fetchSummary
+  } = useQueryUsageSummary();
+  const {
+    detailData: tokenSeriesData,
+    loading: tokenSeriesLoading,
+    fetchData: fetchTokenSeries
+  } = useQueryTimeSeriesData();
+  const {
+    detailData: computeByDate,
+    loading: computeLoading,
+    fetchData: fetchComputeBreakdown
+  } = useQueryResourceBreakdown();
+  const {
+    detailData: storageByDate,
+    loading: storageByDateLoading,
+    fetchData: fetchStorageByDate
+  } = useQueryStorageBreakdown({ key: 'storageByDate' });
+  const {
+    detailData: storageByType,
+    loading: storageByTypeLoading,
+    fetchData: fetchStorageByType
+  } = useQueryStorageBreakdown({ key: 'storageByType' });
 
-  const start = dateRange[0].format('YYYY-MM-DD');
-  const end = dateRange[1].format('YYYY-MM-DD');
-  // Token usage (model_usages) is a daily rollup; the Summary trends are fixed
-  // to ``day`` anyway, so the token trend shares the same granularity.
-  const tokenGran: Granularity = granularity;
+  const fetchAll = async (params?: Partial<QueryParams>) => {
+    const currentParams = {
+      ...queryParams,
+      ...params
+    };
 
-  // "filter by user" — restricts every resource fetch to these creator ids.
-  const creatorFilter = selectedUsers.length
-    ? { creator_ids: selectedUsers }
-    : undefined;
-
-  // Date+scope scoped fetches (granularity-independent).
-  useEffect(() => {
-    queryUsageSummary({
-      start_date: start,
-      end_date: end,
-      scope,
-      creator_ids: selectedUsers.length ? selectedUsers : undefined
-    })
-      .then(setSummary)
-      .catch(() => {});
-    queryStorageBreakdown({
-      start_date: start,
-      end_date: end,
-      scope,
-      group_by: ['type'],
-      filters: creatorFilter,
+    const commonParams = {
+      start_date: currentParams.start,
+      end_date: currentParams.end,
+      scope
+    };
+    const paginationParams = {
+      ...commonParams,
       page: 1,
       perPage: 100
-    })
-      .then(setStorageByType)
-      .catch(() => {});
-  }, [start, end, scope, selectedUsers, refreshKey]);
+    };
 
-  // Trend fetches (depend on granularity too).
-  useEffect(() => {
-    queryUsageTimeSeriesData({
-      start_date: start,
-      end_date: end,
-      scope,
-      metric: 'total_tokens',
-      group_by: ['date'],
-      granularity: tokenGran,
-      filters: {}
-    })
-      .then((res) => setTokenSeries(res.items || []))
-      .catch(() => {});
-    queryResourceBreakdown({
-      start_date: start,
-      end_date: end,
-      scope,
-      group_by: ['date'],
-      granularity,
-      filters: creatorFilter,
-      page: 1,
-      perPage: 100
-    })
-      .then(setComputeByDate)
-      .catch(() => {});
-    queryStorageBreakdown({
-      start_date: start,
-      end_date: end,
-      scope,
-      group_by: ['date'],
-      granularity,
-      filters: creatorFilter,
-      page: 1,
-      perPage: 100
-    })
-      .then(setStorageByDate)
-      .catch(() => {});
-  }, [start, end, scope, granularity, tokenGran, selectedUsers, refreshKey]);
+    // "filter by user" — restricts every resource fetch to these creator ids.
+    const creatorFilter = currentParams.selectedUsers.length
+      ? { creator_ids: currentParams.selectedUsers }
+      : undefined;
+
+    await Promise.all([
+      fetchSummary({
+        ...commonParams,
+        creator_ids: currentParams.selectedUsers.length
+          ? currentParams.selectedUsers
+          : undefined
+      }),
+
+      fetchStorageByType({
+        ...paginationParams,
+        group_by: ['type'],
+        filters: creatorFilter
+      }),
+
+      fetchTokenSeries({
+        ...commonParams,
+        metric: 'total_tokens',
+        group_by: ['date'],
+        granularity,
+        filters: {}
+      }),
+
+      fetchComputeBreakdown({
+        ...paginationParams,
+        group_by: ['date'],
+        granularity,
+        filters: creatorFilter
+      }),
+
+      fetchStorageByDate({
+        ...paginationParams,
+        group_by: ['date'],
+        granularity,
+        filters: creatorFilter
+      })
+    ]);
+    setQueryParams(currentParams);
+  };
 
   // --- derived: donuts ---
   const tokenDonut = useMemo(
@@ -337,16 +345,17 @@ const SummaryTab: React.FC = () => {
   const tokenTrend = useMemo(
     () =>
       buildTrend(
-        tokenSeries.map((it) => ({
+        (tokenSeriesData?.items || []).map((it: any) => ({
           date: it?.date?.value,
           value: Number(it?.total_tokens ?? 0)
         })),
-        tokenGran,
+        granularity,
         start,
         end
       ),
-    [tokenSeries, tokenGran, start, end]
+    [tokenSeriesData, granularity, start, end]
   );
+
   const computeTrend = useMemo(
     () =>
       buildTrend(
@@ -360,6 +369,7 @@ const SummaryTab: React.FC = () => {
       ),
     [computeByDate, granularity, start, end]
   );
+
   const storageTrend = useMemo(
     () =>
       buildTrend(
@@ -377,16 +387,33 @@ const SummaryTab: React.FC = () => {
   const computeSum = computeByDate?.summary;
   const storageSum = storageByDate?.summary;
 
+  const handleDateRangeChange = (dates: [dayjs.Dayjs, dayjs.Dayjs]) => {
+    fetchAll({
+      start: dates[0].format('YYYY-MM-DD'),
+      end: dates[1].format('YYYY-MM-DD')
+    });
+  };
+
+  const handleUserFilterChange = (users: number[]) => {
+    fetchAll({ selectedUsers: users });
+  };
+
+  const onRefresh = () => {
+    fetchAll();
+  };
+
+  useRequest(fetchAll);
+
   return (
     <div>
       <ResourceFilterBar
-        value={dateRange}
-        onChange={(dates) => setDateRange(dates)}
+        value={[dayjs(start), dayjs(end)]}
+        onChange={handleDateRangeChange}
         canManageUsers={canManageUsers}
         userOptions={userOptions}
         selectedUsers={selectedUsers}
-        onUsersChange={setSelectedUsers}
-        onRefresh={() => setRefreshKey((k) => k + 1)}
+        onUsersChange={handleUserFilterChange}
+        onRefresh={onRefresh}
       />
       <div style={{ height: 24 }} />
 
@@ -400,8 +427,10 @@ const SummaryTab: React.FC = () => {
             trendTitle={t('usage.summary.tokensOverTime')}
             trendXAxis={tokenTrend.xAxis}
             trendData={tokenTrend.data}
+            pieLoading={summaryLoading}
+            barLoading={tokenSeriesLoading}
             trendColor={coolColors[0]}
-            trendGran={tokenGran}
+            trendGran={granularity}
             headline={
               <>
                 <Stat
@@ -436,6 +465,8 @@ const SummaryTab: React.FC = () => {
             trendData={computeTrend.data}
             trendColor={coolColors[1]}
             trendGran={granularity}
+            pieLoading={summaryLoading}
+            barLoading={computeLoading}
             headline={
               <>
                 <Stat
@@ -466,6 +497,8 @@ const SummaryTab: React.FC = () => {
             trendData={storageTrend.data}
             trendColor={coolColors[3]}
             trendGran={granularity}
+            pieLoading={storageByTypeLoading}
+            barLoading={storageByDateLoading}
             headline={
               <>
                 <Stat

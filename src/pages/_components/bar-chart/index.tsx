@@ -3,7 +3,13 @@ import { Chart } from '@gpustack/core-ui';
 import { formatLargeNumber } from '@gpustack/core-ui/utils';
 import { Empty, Spin, theme } from 'antd';
 import _ from 'lodash';
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react';
 
 export interface BarSeriesItem {
   name: string;
@@ -49,6 +55,27 @@ const BarChart: React.FC<BarChartProps> = (props) => {
   const { token } = theme.useToken();
   const chartRef = useRef<{ chart: any } | null>(null);
   const generateCoolColors = useCoolColors();
+
+  // ECharts reads the DOM width at init time; with a "100%" width it can pick
+  // up a stale/tiny value while the flex child's layout is still resolving,
+  // rendering every bar squeezed at the left edge until its internal (throttled)
+  // ResizeObserver corrects it ~100ms later — a visible blue-sliver flash. We
+  // measure the container ourselves via a callback ref (which fires during
+  // commit, before paint) and feed ECharts an explicit pixel width, so the very
+  // first render is already correct. No gating, so the chart mounts with no
+  // extra delay; the ResizeObserver keeps the width in sync afterwards.
+  const resizeObserverRef = useRef<ResizeObserver | null>(null);
+  const [measuredWidth, setMeasuredWidth] = useState(0);
+  const measureRef = useCallback((node: HTMLDivElement | null) => {
+    resizeObserverRef.current?.disconnect();
+    if (!node) return;
+    setMeasuredWidth(node.clientWidth);
+    resizeObserverRef.current = new ResizeObserver(() => {
+      setMeasuredWidth(node.clientWidth);
+    });
+    resizeObserverRef.current.observe(node);
+  }, []);
+  useEffect(() => () => resizeObserverRef.current?.disconnect(), []);
 
   const dynamicColors = useMemo(
     () => generateCoolColors(seriesData.length),
@@ -289,12 +316,15 @@ const BarChart: React.FC<BarChartProps> = (props) => {
   }
 
   return (
-    <div style={{ width, height, position: 'relative' }}>
+    <div
+      ref={measureRef}
+      style={{ width: width || '100%', height, position: 'relative' }}
+    >
       <Chart
         ref={chartRef as any}
         options={options as any}
         height={height}
-        width={width || '100%'}
+        width={measuredWidth || width || '100%'}
       />
       {loading && (
         <div

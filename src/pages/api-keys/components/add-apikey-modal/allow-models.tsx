@@ -1,6 +1,7 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { queryMyModels } from '@/pages/llmodels/apis';
+import useOpenPlayground from '@/pages/model-routes/hooks/use-open-playground';
 import { SelectPanel, useAppUtils } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Checkbox, Divider, Form, Radio } from 'antd';
@@ -22,6 +23,7 @@ const AllowModelsForm: React.FC<{
   onValuesChange?: (changedValues: any, allValues: any) => void;
 }> = ({ currentData, action, onValuesChange }) => {
   const intl = useIntl();
+  const { generateModelName } = useOpenPlayground();
   const { getRuleMessage } = useAppUtils();
   const form = Form.useFormInstance();
   const allowedModelNames = Form.useWatch(
@@ -39,7 +41,7 @@ const AllowModelsForm: React.FC<{
       const res = await queryMyModels({
         page: -1
       });
-      const options = res.items.map((item) => item.name);
+      const options = res.items.map((item) => generateModelName(item));
       if (action === PageAction.EDIT && currentData) {
         const list = new Set([
           ...options,

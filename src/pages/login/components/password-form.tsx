@@ -139,7 +139,7 @@ const PasswordForm: React.FC = () => {
           htmlType="submit"
           type="primary"
           block
-          style={{ height: '44px', fontSize: '14px', marginTop: 16 }}
+          style={{ height: '44px', fontSize: '14px', marginTop: 8 }}
         >
           {intl.formatMessage({ id: 'common.button.submit' })}
         </Button>

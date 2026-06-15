@@ -97,6 +97,12 @@ const LocalUserForm: React.FC<LocalUserFormProps> = (props) => {
       // enterprise cover layout (272px inner).
       layout="vertical"
       requiredMark={false}
+      styles={{
+        label: {
+          width: '100%',
+          lineHeight: '24px'
+        }
+      }}
       style={{ width: '360px', maxWidth: '100%', margin: '0 auto' }}
       onFinish={handleLogin}
     >
@@ -122,6 +128,9 @@ const LocalUserForm: React.FC<LocalUserFormProps> = (props) => {
           autoComplete="username"
           prefix={<UserOutlined />}
           style={{ height: 44 }}
+          placeholder={intl.formatMessage({
+            id: 'common.login.username.holder'
+          })}
         />
       </Form.Item>
       <Form.Item
@@ -129,7 +138,25 @@ const LocalUserForm: React.FC<LocalUserFormProps> = (props) => {
           marginBottom: 20
         }}
         name="password"
-        label={intl.formatMessage({ id: 'common.form.password' })}
+        label={
+          <Flex
+            align="center"
+            justify="space-between"
+            style={{ width: '100%' }}
+          >
+            <span>{intl.formatMessage({ id: 'common.form.password' })}</span>
+            <Button
+              type="link"
+              size="small"
+              className="reset-link"
+              style={{ fontSize: 12, padding: 0 }}
+              href={externalLinks.resetPassword}
+              target="_blank"
+            >
+              {intl.formatMessage({ id: 'common.button.forgotpassword' })}
+            </Button>
+          </Flex>
+        }
         rules={[
           {
             required: true,
@@ -147,20 +174,9 @@ const LocalUserForm: React.FC<LocalUserFormProps> = (props) => {
           autoComplete="current-password"
           prefix={<LockOutlined />}
           style={{ height: 44 }}
-          suffix={
-            <Flex align="center" gap={0}>
-              <Button
-                type="link"
-                size="small"
-                className="reset-link"
-                href={externalLinks.resetPassword}
-                target="_blank"
-              >
-                {intl.formatMessage({ id: 'common.button.forgotpassword' })}
-              </Button>
-              <Divider orientation="vertical" />
-            </Flex>
-          }
+          placeholder={intl.formatMessage({
+            id: 'common.login.password.holder'
+          })}
         />
       </Form.Item>
       <Button
@@ -169,7 +185,7 @@ const LocalUserForm: React.FC<LocalUserFormProps> = (props) => {
         block
         loading={props.loading}
         icon={<IconFont type="icon-login" />}
-        style={{ height: '44px', fontSize: '14px', marginTop: 16 }}
+        style={{ height: '44px', fontSize: '14px', marginTop: 8 }}
       >
         {intl.formatMessage({ id: 'common.button.login' })}
       </Button>

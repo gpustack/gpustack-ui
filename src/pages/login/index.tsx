@@ -74,6 +74,10 @@ const Box = styled.div`
   min-height: 100vh;
   .ant-form-item-label {
     line-height: 1;
+    padding-bottom: 4px;
+  }
+  .ant-form-item-label > label:after {
+    display: none;
   }
   .ant-form-item-label > label {
     height: auto !important;

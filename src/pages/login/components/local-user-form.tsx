@@ -29,21 +29,12 @@ const useStyles = createStyles(({ token, css }) => {
         }
       }
     `,
-    password: css`
-      .ant-input-suffix {
-        display: flex;
-        flex-direction: row-reverse;
-        .reset-link {
-          padding: 0;
-          font-size: 12px;
-          color: ${token.colorTextSecondary};
-        }
-        .ant-divider {
-          margin-left: 2px;
-        }
-        .reset-link:hover {
-          color: var(--ant-color-link-hover);
-        }
+    passwordWrapper: css`
+      position: relative;
+      .forgot-password {
+        position: absolute;
+        right: 0;
+        top: 74px;
       }
     `
   };
@@ -133,59 +124,60 @@ const LocalUserForm: React.FC<LocalUserFormProps> = (props) => {
           })}
         />
       </Form.Item>
-      <Form.Item
-        style={{
-          marginBottom: 20
-        }}
-        name="password"
-        label={
-          <Flex
-            align="center"
-            justify="space-between"
-            style={{ width: '100%' }}
-          >
-            <span>{intl.formatMessage({ id: 'common.form.password' })}</span>
-            <Button
-              type="link"
-              size="small"
-              className="reset-link"
-              style={{ fontSize: 12, padding: 0 }}
-              href={externalLinks.resetPassword}
-              target="_blank"
+      <div className={`${styles.passwordWrapper} password-wrapper`}>
+        <Form.Item
+          style={{
+            marginBottom: 20
+          }}
+          name="password"
+          label={
+            <Flex
+              align="center"
+              justify="space-between"
+              style={{ width: '100%' }}
             >
-              {intl.formatMessage({ id: 'common.button.forgotpassword' })}
-            </Button>
-          </Flex>
-        }
-        rules={[
-          {
-            required: true,
-            message: intl.formatMessage(
-              { id: 'common.form.rule.input' },
-              {
-                name: intl.formatMessage({ id: 'common.form.password' })
-              }
-            )
+              <span>{intl.formatMessage({ id: 'common.form.password' })}</span>
+            </Flex>
           }
-        ]}
-      >
-        <Input.Password
-          className={styles.password}
-          autoComplete="current-password"
-          prefix={<LockOutlined />}
-          style={{ height: 44 }}
-          placeholder={intl.formatMessage({
-            id: 'common.login.password.holder'
-          })}
-        />
-      </Form.Item>
+          rules={[
+            {
+              required: true,
+              message: intl.formatMessage(
+                { id: 'common.form.rule.input' },
+                {
+                  name: intl.formatMessage({ id: 'common.form.password' })
+                }
+              )
+            }
+          ]}
+        >
+          <Input.Password
+            autoComplete="current-password"
+            prefix={<LockOutlined />}
+            style={{ height: 44 }}
+            placeholder={intl.formatMessage({
+              id: 'common.login.password.holder'
+            })}
+          />
+        </Form.Item>
+        <Button
+          type="link"
+          size="small"
+          className="forgot-password"
+          style={{ fontSize: 12, padding: 0 }}
+          href={externalLinks.resetPassword}
+          target="_blank"
+        >
+          {intl.formatMessage({ id: 'common.button.forgotpassword' })}
+        </Button>
+      </div>
       <Button
         htmlType="submit"
         type="primary"
         block
         loading={props.loading}
         icon={<IconFont type="icon-login" />}
-        style={{ height: '44px', fontSize: '14px', marginTop: 8 }}
+        style={{ height: '44px', fontSize: '14px', marginTop: 20 }}
       >
         {intl.formatMessage({ id: 'common.button.login' })}
       </Button>

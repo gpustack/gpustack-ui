@@ -36,7 +36,6 @@ import { ListItem } from '../config/types';
 const imageLogoMap = {
   vllm: vllmLogo,
   sglang: sgLangLogo,
-  cann: ascendLogo,
   jupyter: jupyterLogo,
   pytorch: pytorchBlackLogo,
   tensorflow: tensorflowkLogo,

@@ -29,6 +29,10 @@ import ResourceExportData from '../components/resource-export-data';
 import ResourceFilterBar from '../components/resource-filter-bar';
 import useResourceMeta from '../hooks/use-resource-meta';
 import {
+  exportBreakdownSheets,
+  toExportColumns
+} from '../utils/export-breakdown';
+import {
   bucketKey,
   generateBucketRange,
   Granularity
@@ -238,17 +242,60 @@ const StorageTab: React.FC = () => {
     [TABLE_TABS, scope]
   );
 
-  // Columns for the export preview of the active tab (sort arrows omitted —
-  // the in-tab table owns its own sort state). Same factory the tables use.
-  const exportTableColumns = useStorageColumns(activeTableTab);
+  // Columns for each bottom-table grouping — same factory the tables render
+  // with — used to build the export sheets below.
+  const volumeColumns = useStorageColumns('volume');
+  const userColumns = useStorageColumns('user');
 
-  // Export opens a preview modal (matches the Tokens tab): re-filter + preview
-  // the rows, then download. "Chart" = the by-date trend, "Table" = the active
-  // bottom-table grouping.
-  const [exportMode, setExportMode] = useState<'chart' | 'table' | null>(null);
+  // "Export Table Data" writes every bottom table at once — one sheet per
+  // grouping (Storage / Users) — straight to a workbook, no preview dialog
+  // (mirrors the Tokens tab's `useExportTable`). The User sheet is included
+  // only when the org-wide view is available.
+  const tableExportGroups = useMemo(() => {
+    const groups = [
+      {
+        key: 'volume' as GroupKey,
+        columns: volumeColumns,
+        sheetName: intl.formatMessage({ id: 'usage.tabs.storage' })
+      }
+    ];
+    if (canManageUsers) {
+      groups.push({
+        key: 'user' as GroupKey,
+        columns: userColumns,
+        sheetName: intl.formatMessage({ id: 'usage.table.users' })
+      });
+    }
+    return groups;
+  }, [volumeColumns, userColumns, canManageUsers, intl]);
+
+  // Chart export still opens the preview modal (matches the Tokens tab); the
+  // table export is direct, so this only ever holds 'chart'.
+  const [exportMode, setExportMode] = useState<'chart' | null>(null);
   const dateSuffix = `${dateRange[0].format('YYYY-MM-DD')}_${dateRange[1].format(
     'YYYY-MM-DD'
   )}`;
+
+  const handleExportTable = async () => {
+    const results = await Promise.all(
+      tableExportGroups.map((g) =>
+        queryStorageBreakdown({
+          ...baseRequest(),
+          group_by: [g.key],
+          // A breakdown export is the full filtered set, not a page.
+          perPage: 10000
+        })
+      )
+    );
+    exportBreakdownSheets(
+      tableExportGroups.map((g, i) => ({
+        rows: results[i]?.items ?? [],
+        columns: toExportColumns(g.columns),
+        sheetName: g.sheetName
+      })),
+      `storage_tables_${dateSuffix}.xlsx`
+    );
+  };
 
   const chartExportColumns = [
     {
@@ -280,21 +327,13 @@ const StorageTab: React.FC = () => {
     }
   ];
 
-  const tabLabel = TABLE_TABS.find((t) => t.key === activeTableTab)?.label;
-  const exportConfig =
-    exportMode === 'chart'
-      ? {
-          groupBy: ['date'],
-          columns: chartExportColumns,
-          fileName: `storage_chart_${dateSuffix}.xlsx`,
-          sheetName: intl.formatMessage({ id: 'usage.tabs.storage' })
-        }
-      : {
-          groupBy: [activeTableTab],
-          columns: exportTableColumns,
-          fileName: `storage_${activeTableTab}_${dateSuffix}.xlsx`,
-          sheetName: tabLabel || 'storage'
-        };
+  // The preview modal now only backs the by-date chart export.
+  const exportConfig = {
+    groupBy: ['date'],
+    columns: chartExportColumns,
+    fileName: `storage_chart_${dateSuffix}.xlsx`,
+    sheetName: intl.formatMessage({ id: 'usage.tabs.storage' })
+  };
 
   return (
     <div>
@@ -322,7 +361,7 @@ const StorageTab: React.FC = () => {
         }}
         onRefresh={() => setRefreshKey((k) => k + 1)}
         onExportChart={() => setExportMode('chart')}
-        onExportTable={() => setExportMode('table')}
+        onExportTable={handleExportTable}
       />
       <div style={{ height: 24 }} />
 
@@ -382,14 +421,7 @@ const StorageTab: React.FC = () => {
       <ResourceExportData
         open={exportMode !== null}
         onCancel={() => setExportMode(null)}
-        title={
-          exportMode === 'chart'
-            ? intl.formatMessage({ id: 'usage.export.chart' })
-            : intl.formatMessage(
-                { id: 'usage.export.tableNamed' },
-                { name: tabLabel }
-              )
-        }
+        title={intl.formatMessage({ id: 'usage.export.chart' })}
         queryFn={queryStorageBreakdown}
         groupBy={exportConfig.groupBy}
         columns={exportConfig.columns}

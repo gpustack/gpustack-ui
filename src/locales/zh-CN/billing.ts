@@ -1,6 +1,7 @@
 export default {
   'billing.upsell.title': '计费是企业版功能',
-  'billing.upsell.subtitle': '升级到 GPUStack 企业版即可管理计费。',
+  'billing.upsell.subtitle':
+    '在团队间跟踪花费、生成账单并执行预算。升级到 GPUStack 企业版即可管理计费。',
   'billing.upsell.featuresTitle': '企业版包含的能力',
   'billing.upsell.feature.usage': '按组织、用户与模型查看成本明细',
   'billing.upsell.feature.invoices': '生成账单并导出计费报表',

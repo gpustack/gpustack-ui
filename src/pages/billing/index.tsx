@@ -1,6 +1,6 @@
 import { IconFont } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Button, Result } from 'antd';
+import { Button, Result, Typography } from 'antd';
 import PageBox from '../_components/page-box';
 
 // OSS-only upsell page for the billing module. The real Billing UI ships
@@ -47,7 +47,7 @@ const Billing: React.FC = () => {
                 textAlign: 'left'
               }}
             >
-              {/* <Typography.Title level={5} style={{ marginBottom: 12 }}>
+              <Typography.Title level={5} style={{ marginBottom: 12 }}>
                 {intl.formatMessage({
                   id: 'billing.upsell.featuresTitle'
                 })}
@@ -58,7 +58,7 @@ const Billing: React.FC = () => {
                     {intl.formatMessage({ id })}
                   </li>
                 ))}
-              </ul> */}
+              </ul>
               <div style={{ textAlign: 'center', marginTop: 56 }}>
                 <Button
                   type="primary"

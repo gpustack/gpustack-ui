@@ -145,7 +145,7 @@ export default {
   'clusters.addworker.theadNotes-02':
     'T-Head PPU uses the Container Device Interface (CDI) for device injection and requires the <span class="bold-text">/var/run/cdi</span> directory to be available for CDI generation.',
   'clusters.addworker.nvidiaNotes':
-    'The built-in inference backends in GPUStack v2.1 require <span class="bold-text">CUDA 12.6+</span>. Please ensure your NVIDIA driver version is <span class="bold-text">560</span> or newer.',
+    'The built-in inference backends in GPUStack v2.1 require <span class="bold-text">CUDA 12.8+</span>. Please ensure your NVIDIA driver version is <span class="bold-text">560</span> or newer.',
   'clusters.volume.title': 'Volume Mounts',
   'clusters.volume.name': 'Volume Name',
   'clusters.volume.mountPath': 'Container Path',

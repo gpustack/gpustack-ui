@@ -38,6 +38,7 @@ const Models: React.FC<{
       sorter.order === 'descend' ? `-${sorter.field}` : sorter.field;
     setQueryParams((prev) => ({
       ...prev,
+      page: 1,
       sort_by
     }));
   };

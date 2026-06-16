@@ -10,35 +10,30 @@
  * Talks to the new ``/usage/gpu-instances/{meta,breakdown}`` endpoints.
  */
 import useCoolColors from '@/hooks/use-cool-colors';
-import {
-  buildInstanceTypeRecordFromMiB,
-  renderInstanceType
-} from '@/pages/gpu-service/instances/utils/render-instance-type';
 import { formatLargeNumber } from '@/utils';
 import { SimpleCard } from '@gpustack/core-ui';
 import { useAccess, useIntl } from '@umijs/max';
-import { Table, Tabs } from 'antd';
+import { Tabs } from 'antd';
 import dayjs from 'dayjs';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   queryGpuInstancesBreakdown,
-  ResourceBreakdownItem,
-  ResourceBreakdownRequest,
-  ResourceBreakdownResponse
+  ResourceBreakdownRequest
 } from '../apis/resource';
 import MetricChartCard from '../components/metric-chart-card';
 import MetricLabel from '../components/metric-label';
 import ResourceExportData from '../components/resource-export-data';
 import ResourceFilterBar from '../components/resource-filter-bar';
 import useResourceMeta from '../hooks/use-resource-meta';
-import { instanceTypeLabel } from '../utils/format-instance-type';
 import {
   bucketKey,
   generateBucketRange,
-  Granularity,
-  parseRollup
+  Granularity
 } from '../utils/time-buckets';
 import { buildTrendSeries } from '../utils/trend-series';
+import useQueryGpuInstancesBreakdown from './services/use-query-gpu-instances-breakdown';
+import InstancesBreakdownTable from './tables/instances-breakdown-table';
+import useInstancesColumns from './tables/use-instances-columns';
 
 type Scope = 'self' | 'all';
 type Metric = 'gpu_hours' | 'instance_hours';
@@ -62,20 +57,26 @@ const GpuInstancesTab: React.FC = () => {
     [intl]
   );
 
-  const TABLE_TABS: { key: GroupKey; label: string }[] = useMemo(
-    () => [
+  const TABLE_TABS: { key: GroupKey; label: string }[] = useMemo(() => {
+    const tabs = [
       {
-        key: 'gpu_type',
+        key: 'gpu_type' as GroupKey,
         label: intl.formatMessage({ id: 'usage.table.instanceTypes' })
       },
       {
-        key: 'instance',
+        key: 'instance' as GroupKey,
         label: intl.formatMessage({ id: 'usage.table.instances' })
-      },
-      { key: 'user', label: intl.formatMessage({ id: 'usage.table.users' }) }
-    ],
-    [intl]
-  );
+      }
+    ];
+    // Managers see the org-wide User breakdown; members only their own rows.
+    if (access.canSeeOrgAdmin) {
+      tabs.push({
+        key: 'user' as GroupKey,
+        label: intl.formatMessage({ id: 'usage.table.users' })
+      });
+    }
+    return tabs;
+  }, [intl, access.canSeeOrgAdmin]);
   // ``useCoolColors`` returns a memoized factory; resolve a fixed 5-slot
   // palette for the KPI cards, and keep the factory for the grouped trend
   // (sized to the group count).
@@ -105,21 +106,16 @@ const GpuInstancesTab: React.FC = () => {
   const { creators: userOptions, instances: instanceOptions } =
     useResourceMeta(scope);
 
-  // Two independent fetches: one for the daily chart (group_by=date),
-  // one for the table (group_by=tab key). Both reuse the same date /
-  // scope filters so the views stay in sync.
-  const [chartData, setChartData] = useState<ResourceBreakdownResponse | null>(
-    null
-  );
-  const [tableData, setTableData] = useState<ResourceBreakdownResponse | null>(
-    null
-  );
-  const [tablePage, setTablePage] = useState(1);
-  // Server-side sort for the bottom tables; default GPU Hours, descending.
-  const [tableSort, setTableSort] = useState<{
-    field: Metric;
-    order: 'ascend' | 'descend';
-  }>({ field: 'gpu_hours', order: 'descend' });
+  // The daily chart fetches group_by=date here; each bottom table owns its own
+  // fetch (group_by=tab key) inside InstancesBreakdownTable. Bumped on any
+  // filter change to snap every mounted table back to page 1.
+  const [pageResetKey, setPageResetKey] = useState(0);
+
+  const {
+    detailData: chartData,
+    loading: chartLoading,
+    fetchData: fetchChartData
+  } = useQueryGpuInstancesBreakdown({ key: 'gpuInstancesBreakdownChart' });
 
   const baseRequest = (): Omit<ResourceBreakdownRequest, 'group_by'> => ({
     start_date: dateRange[0].format('YYYY-MM-DD'),
@@ -139,39 +135,17 @@ const GpuInstancesTab: React.FC = () => {
     perPage: 50
   });
 
-  const fetchChart = async () => {
-    try {
-      const data = await queryGpuInstancesBreakdown({
-        ...baseRequest(),
-        // Split each bucket by the chosen dimension when grouping.
-        group_by: chartGroupBy ? ['date', chartGroupBy] : ['date'],
-        // A trend is a time series, not a paginated table: always fetch the
-        // whole range. The default order is metric-desc, so partial (current/
-        // recent) buckets have smaller values and would be pushed onto later
-        // pages — dropping the newest hours from the chart under a small page.
-        perPage: 10000
-      });
-      setChartData(data);
-    } catch {
-      // Network/auth errors surface via the global request interceptor;
-      // keep the previous chart so the UI doesn't flash empty.
-    }
-  };
-
-  const fetchTable = async () => {
-    try {
-      const data = await queryGpuInstancesBreakdown({
-        ...baseRequest(),
-        group_by: [activeTableTab],
-        page: tablePage,
-        order_by: tableSort.field,
-        descending: tableSort.order === 'descend'
-      });
-      setTableData(data);
-    } catch {
-      // Same rationale as fetchChart.
-    }
-  };
+  const fetchChart = () =>
+    fetchChartData({
+      ...baseRequest(),
+      // Split each bucket by the chosen dimension when grouping.
+      group_by: chartGroupBy ? ['date', chartGroupBy] : ['date'],
+      // A trend is a time series, not a paginated table: always fetch the
+      // whole range. The default order is metric-desc, so partial (current/
+      // recent) buckets have smaller values and would be pushed onto later
+      // pages — dropping the newest hours from the chart under a small page.
+      perPage: 10000
+    });
 
   useEffect(() => {
     fetchChart();
@@ -181,18 +155,6 @@ const GpuInstancesTab: React.FC = () => {
     selectedInstances,
     granularity,
     chartGroupBy,
-    refreshKey
-  ]);
-
-  useEffect(() => {
-    fetchTable();
-  }, [
-    dateRange,
-    selectedUsers,
-    selectedInstances,
-    activeTableTab,
-    tablePage,
-    tableSort,
     refreshKey
   ]);
 
@@ -273,116 +235,19 @@ const GpuInstancesTab: React.FC = () => {
   );
 
   // Group-by options for the trend = the same dimensions as the bottom tables
-  // (Users only when org-wide, matching the table tabs).
+  // (TABLE_TABS already gates Users to org admins).
   const chartGroupByOptions = useMemo(
     () =>
-      TABLE_TABS.filter((t) => t.key !== 'user' || scope === 'all').map(
-        (t) => ({
-          value: t.key,
-          label: t.label
-        })
-      ),
-    [TABLE_TABS, scope]
+      TABLE_TABS.map((t) => ({
+        value: t.key,
+        label: t.label
+      })),
+    [TABLE_TABS]
   );
 
-  // Table columns adapt to the active tab.
-  const tableColumns = useMemo(() => {
-    const baseValueCols = [
-      {
-        title: intl.formatMessage({ id: 'usage.metric.gpuHours' }),
-        dataIndex: 'gpu_hours',
-        key: 'gpu_hours',
-        sorter: true,
-        sortOrder: tableSort.field === 'gpu_hours' ? tableSort.order : null,
-        render: (v: number) => (v ?? 0).toFixed(2)
-      },
-      {
-        title: intl.formatMessage({ id: 'usage.metric.instanceHours' }),
-        dataIndex: 'instance_hours',
-        key: 'instance_hours',
-        sorter: true,
-        sortOrder:
-          tableSort.field === 'instance_hours' ? tableSort.order : null,
-        render: (v: number) => (v ?? 0).toFixed(2)
-      }
-    ];
-    // Instance Types breakdown: just the pretty product name (or flavor slug
-    // for older rows) — no spec sub-line.
-    const instanceTypeColType = {
-      title: intl.formatMessage({ id: 'usage.table.instanceType' }),
-      dataIndex: 'gpu_type',
-      key: 'gpu_type',
-      render: (_v: string, row: ResourceBreakdownItem) => instanceTypeLabel(row)
-    };
-    // Instances breakdown: render through the canonical GPU Instances list
-    // renderer so the label + spec popover are identical. The breakdown row
-    // carries flat MiB fields, so adapt it into the ListItem shape first.
-    const instanceTypeColInstance = {
-      title: intl.formatMessage({ id: 'usage.table.instanceType' }),
-      dataIndex: 'gpu_type',
-      key: 'gpu_type',
-      render: (_v: string, row: ResourceBreakdownItem) =>
-        renderInstanceType(
-          buildInstanceTypeRecordFromMiB({
-            name: row.instance_name,
-            product: row.product || row.gpu_type,
-            gpuCount: row.gpu_count,
-            unitCpuMilli: row.unit_cpu_milli,
-            unitMemoryMib: row.unit_memory_mib,
-            vramMib: row.vram_mib,
-            localStorageMib: row.local_storage_mib,
-            ephemeralMib: row.ephemeral_mib,
-            persistentMib: row.persistent_mib
-          }),
-          { intl }
-        )
-    };
-    // Last Active = the last active day. The backend sends a rollup-tz instant
-    // with its offset; parseRollup keeps that wall clock (no browser-tz convert),
-    // consistent with the trend chart buckets. Shown date-only.
-    const lastActiveCol = {
-      title: intl.formatMessage({ id: 'usage.table.lastActive' }),
-      dataIndex: 'last_active',
-      key: 'last_active',
-      render: (v?: string) => (v ? parseRollup(v).format('YYYY-MM-DD') : '-')
-    };
-    if (activeTableTab === 'gpu_type') {
-      return [
-        instanceTypeColType,
-        ...baseValueCols,
-        {
-          title: intl.formatMessage({ id: 'usage.metric.activeInstances' }),
-          dataIndex: 'active_instances',
-          key: 'active_instances'
-        },
-        lastActiveCol
-      ];
-    }
-    if (activeTableTab === 'instance') {
-      return [
-        {
-          title: intl.formatMessage({ id: 'usage.table.instance' }),
-          dataIndex: 'instance_name',
-          key: 'instance_name'
-        },
-        instanceTypeColInstance,
-        ...baseValueCols,
-        lastActiveCol
-      ];
-    }
-    // user tab
-    return [
-      {
-        title: intl.formatMessage({ id: 'usage.table.user' }),
-        dataIndex: 'user_name',
-        key: 'user_name'
-      },
-      ...baseValueCols,
-      lastActiveCol
-    ];
-  }, [activeTableTab, tableSort, intl]);
-
-  const tableRows: ResourceBreakdownItem[] = tableData?.items ?? [];
+  // Columns for the export preview of the active tab (sort arrows omitted —
+  // the in-tab table owns its own sort state). Same factory the tables use.
+  const exportTableColumns = useInstancesColumns(activeTableTab);
 
   // Export opens a preview modal (matches the Tokens tab): re-filter + preview
   // the rows, then download. "Chart" = the by-date trend, "Table" = the active
@@ -433,7 +298,7 @@ const GpuInstancesTab: React.FC = () => {
         }
       : {
           groupBy: [activeTableTab],
-          columns: tableColumns,
+          columns: exportTableColumns,
           fileName: `gpu-instances_${activeTableTab}_${dateSuffix}.xlsx`,
           sheetName: tabLabel || 'gpu-instances'
         };
@@ -445,21 +310,21 @@ const GpuInstancesTab: React.FC = () => {
         value={dateRange}
         onChange={(dates) => {
           setDateRange(dates);
-          setTablePage(1);
+          setPageResetKey((k) => k + 1);
         }}
         canManageUsers={canManageUsers}
         userOptions={userOptions}
         selectedUsers={selectedUsers}
         onUsersChange={(ids) => {
           setSelectedUsers(ids);
-          setTablePage(1);
+          setPageResetKey((k) => k + 1);
         }}
         resourceFilter={{
           options: instanceOptions,
           value: selectedInstances,
           onChange: (ids) => {
             setSelectedInstances(ids);
-            setTablePage(1);
+            setPageResetKey((k) => k + 1);
           },
           placeholder: intl.formatMessage({ id: 'usage.filter.instance' })
         }}
@@ -496,54 +361,30 @@ const GpuInstancesTab: React.FC = () => {
           groupBy={chartGroupBy}
           groupByOptions={chartGroupByOptions}
           onGroupByChange={(v) => setChartGroupBy(v as GroupKey | null)}
+          loading={chartLoading}
         />
       </div>
 
       {/* Bottom tabs + table */}
       <Tabs
         activeKey={activeTableTab}
-        onChange={(k) => {
-          setActiveTableTab(k as GroupKey);
-          setTablePage(1);
-        }}
-        items={TABLE_TABS.filter(
-          (t) => t.key !== 'user' || scope === 'all'
-        ).map((t) => ({
+        onChange={(k) => setActiveTableTab(k as GroupKey)}
+        items={TABLE_TABS.map((t) => ({
           key: t.key,
           label: t.label,
+          // Keep every pane mounted so each table holds its own page/sort and
+          // switching tabs neither refetches nor resets the others.
+          forceRender: true,
           children: (
-            <Table
-              rowKey={(row) =>
-                `${row.gpu_type ?? ''}|${row.instance_id ?? ''}|${row.user_id ?? ''}`
-              }
+            <InstancesBreakdownTable
               key={t.key}
-              dataSource={tableRows}
-              columns={tableColumns as any}
-              onChange={(_pagination, _filters, sorter: any) => {
-                const s = Array.isArray(sorter) ? sorter[0] : sorter;
-                // Sort changed: reset to page 1. Cleared (3rd click) → default
-                // back to GPU Hours descending.
-                const next = s?.order
-                  ? {
-                      field: (s.columnKey as Metric) ?? 'gpu_hours',
-                      order: s.order as 'ascend' | 'descend'
-                    }
-                  : { field: 'gpu_hours' as Metric, order: 'descend' as const };
-                if (
-                  next.field !== tableSort.field ||
-                  next.order !== tableSort.order
-                ) {
-                  setTableSort(next);
-                  setTablePage(1);
-                }
-              }}
-              pagination={{
-                size: 'middle',
-                current: tablePage,
-                pageSize: tableData?.pagination.perPage ?? 50,
-                total: tableData?.pagination.total ?? 0,
-                onChange: (p) => setTablePage(p)
-              }}
+              groupKey={t.key}
+              dateRange={dateRange}
+              scope={scope}
+              selectedUsers={selectedUsers}
+              selectedInstances={selectedInstances}
+              pageResetKey={pageResetKey}
+              refreshKey={refreshKey}
             />
           )
         }))}

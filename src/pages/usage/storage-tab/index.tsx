@@ -65,23 +65,19 @@ const StorageTab: React.FC = () => {
   );
 
   const TABLE_TABS: { key: GroupKey; label: string }[] = useMemo(() => {
-    return access.canSeeOrgAdmin
-      ? [
-          {
-            key: 'volume',
-            label: intl.formatMessage({ id: 'usage.tabs.storage' })
-          },
-          {
-            key: 'user',
-            label: intl.formatMessage({ id: 'usage.table.users' })
-          }
-        ]
-      : [
-          {
-            key: 'volume',
-            label: intl.formatMessage({ id: 'usage.tabs.storage' })
-          }
-        ];
+    const tabs = [
+      {
+        key: 'volume' as GroupKey,
+        label: intl.formatMessage({ id: 'usage.tabs.storage' })
+      }
+    ];
+    if (access.canSeeOrgAdmin) {
+      tabs.push({
+        key: 'user' as GroupKey,
+        label: intl.formatMessage({ id: 'usage.table.users' })
+      });
+    }
+    return tabs;
   }, [intl, access.canSeeOrgAdmin]);
 
   // No All/My dropdown (matches the Tokens tab): managers see the org-wide

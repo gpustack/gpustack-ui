@@ -1,9 +1,7 @@
 import { TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import PageBox from '@/pages/_components/page-box';
-import { IconFont, NoResult } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Table } from 'antd';
-import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
 import { FilterOptionType } from '../../config/types';
 import useUsersColumns from '../../hooks/use-users-columns';
@@ -51,24 +49,6 @@ const Users: React.FC<{
   };
 
   const columns = useUsersColumns();
-
-  const renderEmpty = (type?: string) => {
-    if (type !== 'Table') return;
-    return (
-      <NoResult
-        loading={loading}
-        loadend={dataSource.loadend}
-        dataSource={dataSource.dataList}
-        image={<IconFont type="icon-users" />}
-        filters={_.omit(queryParams, ['sort_by'])}
-        noFoundText={intl.formatMessage({
-          id: 'noresult.users.nofound'
-        })}
-        title={intl.formatMessage({ id: 'noresult.users.title' })}
-        subTitle={intl.formatMessage({ id: 'noresult.users.subTitle' })}
-      ></NoResult>
-    );
-  };
 
   useEffect(() => {
     if (queryParams.page !== 1) {

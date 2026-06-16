@@ -1,10 +1,8 @@
 import PluginExtraFields from '@/components/plugin-extra-fields';
 import { TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import PageBox from '@/pages/_components/page-box';
-import { IconFont, NoResult } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Table } from 'antd';
-import _ from 'lodash';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { BreakdownItem, FilterOptionType } from '../../config/types';
 import useModelsColumns from '../../hooks/use-models-columns';
@@ -63,24 +61,6 @@ const Models: React.FC<{
       }));
     }
   }, [pageResetKey]);
-
-  const renderEmpty = (type?: string) => {
-    if (type !== 'Table') return;
-    return (
-      <NoResult
-        loading={loading}
-        loadend={dataSource.loadend}
-        dataSource={dataSource.dataList}
-        image={<IconFont type="icon-resources" />}
-        filters={_.omit(queryParams, ['sort_by'])}
-        noFoundText={intl.formatMessage({
-          id: 'noresult.mymodels.nofound'
-        })}
-        title={intl.formatMessage({ id: 'noresult.deployments.title' })}
-        subTitle={intl.formatMessage({ id: 'noresult.deployments.subTitle' })}
-      ></NoResult>
-    );
-  };
 
   useEffect(() => {
     if (pendingPageResetRef.current && queryParams.page !== 1) {

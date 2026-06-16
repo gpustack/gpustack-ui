@@ -40,6 +40,7 @@ interface MetricOption {
 }
 
 interface MetricChartCardProps {
+  loading?: boolean;
   metric: string;
   metricOptions: MetricOption[];
   granularity: string;
@@ -55,6 +56,7 @@ interface MetricChartCardProps {
 }
 
 const MetricChartCard: React.FC<MetricChartCardProps> = ({
+  loading,
   metric,
   metricOptions,
   granularity,
@@ -129,6 +131,7 @@ const MetricChartCard: React.FC<MetricChartCardProps> = ({
         />
       </ControlsWrapper>
       <BarChart
+        loading={loading}
         seriesData={seriesData}
         xAxisData={xAxisData}
         height={280}

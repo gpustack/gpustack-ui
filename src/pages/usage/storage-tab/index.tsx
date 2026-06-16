@@ -15,12 +15,11 @@ import useCoolColors from '@/hooks/use-cool-colors';
 import { formatLargeNumber } from '@/utils';
 import { SimpleCard } from '@gpustack/core-ui';
 import { useAccess, useIntl } from '@umijs/max';
-import { Table, Tabs } from 'antd';
+import { Tabs } from 'antd';
 import dayjs from 'dayjs';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   queryStorageBreakdown,
-  ResourceBreakdownItem,
   ResourceBreakdownRequest,
   ResourceBreakdownResponse
 } from '../apis/resource';
@@ -32,10 +31,11 @@ import useResourceMeta from '../hooks/use-resource-meta';
 import {
   bucketKey,
   generateBucketRange,
-  Granularity,
-  parseRollup
+  Granularity
 } from '../utils/time-buckets';
 import { buildTrendSeries } from '../utils/trend-series';
+import StorageBreakdownTable from './tables/storage-breakdown-table';
+import useStorageColumns from './tables/use-storage-columns';
 
 type Scope = 'self' | 'all';
 type Metric = 'storage_gb_days' | 'storage_gb_hours';
@@ -63,16 +63,25 @@ const StorageTab: React.FC = () => {
     [intl]
   );
 
-  const TABLE_TABS: { key: GroupKey; label: string }[] = useMemo(
-    () => [
-      {
-        key: 'volume',
-        label: intl.formatMessage({ id: 'usage.tabs.storage' })
-      },
-      { key: 'user', label: intl.formatMessage({ id: 'usage.table.users' }) }
-    ],
-    [intl]
-  );
+  const TABLE_TABS: { key: GroupKey; label: string }[] = useMemo(() => {
+    return access.canSeeOrgAdmin
+      ? [
+          {
+            key: 'volume',
+            label: intl.formatMessage({ id: 'usage.tabs.storage' })
+          },
+          {
+            key: 'user',
+            label: intl.formatMessage({ id: 'usage.table.users' })
+          }
+        ]
+      : [
+          {
+            key: 'volume',
+            label: intl.formatMessage({ id: 'usage.tabs.storage' })
+          }
+        ];
+  }, [intl, access.canSeeOrgAdmin]);
 
   // No All/My dropdown (matches the Tokens tab): managers see the org-wide
   // view and narrow it with the user filter, others only their own rows.
@@ -98,15 +107,9 @@ const StorageTab: React.FC = () => {
   const [chartData, setChartData] = useState<ResourceBreakdownResponse | null>(
     null
   );
-  const [tableData, setTableData] = useState<ResourceBreakdownResponse | null>(
-    null
-  );
-  const [tablePage, setTablePage] = useState(1);
-  // Server-side sort for the bottom tables; default GB-Days, descending.
-  const [tableSort, setTableSort] = useState<{
-    field: Metric;
-    order: 'ascend' | 'descend';
-  }>({ field: 'storage_gb_days', order: 'descend' });
+  // Bumped on any filter change to snap every mounted table back to page 1;
+  // each table owns its own page/sort state otherwise.
+  const [pageResetKey, setPageResetKey] = useState(0);
 
   const baseRequest = (): Omit<ResourceBreakdownRequest, 'group_by'> => ({
     start_date: dateRange[0].format('YYYY-MM-DD'),
@@ -142,28 +145,6 @@ const StorageTab: React.FC = () => {
     }
   };
 
-  // The frontend metric keys (storage_gb_days/hours) map to the server's
-  // breakdown metric keys (gb_days/gb_hours) for order_by.
-  const ORDER_BY_KEY: Record<Metric, string> = {
-    storage_gb_days: 'gb_days',
-    storage_gb_hours: 'gb_hours'
-  };
-
-  const fetchTable = async () => {
-    try {
-      const data = await queryStorageBreakdown({
-        ...baseRequest(),
-        group_by: [activeTableTab],
-        page: tablePage,
-        order_by: ORDER_BY_KEY[tableSort.field],
-        descending: tableSort.order === 'descend'
-      });
-      setTableData(data);
-    } catch {
-      // Same rationale.
-    }
-  };
-
   useEffect(() => {
     fetchChart();
   }, [
@@ -172,18 +153,6 @@ const StorageTab: React.FC = () => {
     selectedVolumes,
     granularity,
     chartGroupBy,
-    refreshKey
-  ]);
-
-  useEffect(() => {
-    fetchTable();
-  }, [
-    dateRange,
-    selectedUsers,
-    selectedVolumes,
-    activeTableTab,
-    tablePage,
-    tableSort,
     refreshKey
   ]);
 
@@ -267,86 +236,16 @@ const StorageTab: React.FC = () => {
 
   const chartGroupByOptions = useMemo(
     () =>
-      TABLE_TABS.filter((t) => t.key !== 'user' || scope === 'all').map(
-        (t) => ({
-          value: t.key,
-          label: t.label
-        })
-      ),
+      TABLE_TABS.map((t) => ({
+        value: t.key,
+        label: t.label
+      })),
     [TABLE_TABS, scope]
   );
 
-  const tableColumns = useMemo(() => {
-    const valueCols = [
-      {
-        title: intl.formatMessage({ id: 'usage.metric.gbDays' }),
-        dataIndex: 'storage_gb_days',
-        key: 'storage_gb_days',
-        sorter: true,
-        sortOrder:
-          tableSort.field === 'storage_gb_days' ? tableSort.order : null,
-        render: (v: number) => (v ?? 0).toFixed(2)
-      },
-      {
-        title: intl.formatMessage({ id: 'usage.metric.gbHours' }),
-        dataIndex: 'storage_gb_hours',
-        key: 'storage_gb_hours',
-        sorter: true,
-        sortOrder:
-          tableSort.field === 'storage_gb_hours' ? tableSort.order : null,
-        render: (v: number) => (v ?? 0).toFixed(2)
-      }
-    ];
-    // Last Active = the last active day. The backend sends a rollup-tz instant
-    // with its offset; parseRollup keeps that wall clock (no browser-tz convert),
-    // consistent with the trend chart buckets. Shown date-only.
-    const lastActiveCol = {
-      title: intl.formatMessage({ id: 'usage.table.lastActive' }),
-      dataIndex: 'last_active',
-      key: 'last_active',
-      render: (v?: string) => (v ? parseRollup(v).format('YYYY-MM-DD') : '-')
-    };
-    if (activeTableTab === 'volume') {
-      return [
-        {
-          title: intl.formatMessage({ id: 'usage.tabs.storage' }),
-          dataIndex: 'volume_name',
-          key: 'volume_name'
-        },
-        {
-          title: intl.formatMessage({ id: 'usage.table.type' }),
-          dataIndex: 'storage_type',
-          key: 'storage_type',
-          render: (_v: string, row: ResourceBreakdownItem) =>
-            row.storage_type || row.gpu_type || '-'
-        },
-        {
-          title: intl.formatMessage({ id: 'usage.table.capacity' }),
-          dataIndex: 'capacity_mib',
-          key: 'capacity_mib',
-          render: (v?: number) => (v ? `${Math.round(v / 1024)}GB` : '-')
-        },
-        ...valueCols,
-        lastActiveCol
-      ];
-    }
-    return [
-      {
-        title: intl.formatMessage({ id: 'usage.table.user' }),
-        dataIndex: 'user_name',
-        key: 'user_name'
-      },
-      ...valueCols,
-      {
-        title: intl.formatMessage({ id: 'usage.metric.activeStorage' }),
-        dataIndex: 'active_volumes',
-        key: 'active_volumes'
-      },
-      lastActiveCol
-    ];
-  }, [activeTableTab, tableSort, intl]);
-
-  const tableRows: ResourceBreakdownItem[] = tableData?.items ?? [];
+  // Columns for the export preview of the active tab (sort arrows omitted —
+  // the in-tab table owns its own sort state). Same factory the tables use.
+  const exportTableColumns = useStorageColumns(activeTableTab);
 
   // Export opens a preview modal (matches the Tokens tab): re-filter + preview
   // the rows, then download. "Chart" = the by-date trend, "Table" = the active
@@ -397,7 +296,7 @@ const StorageTab: React.FC = () => {
         }
       : {
           groupBy: [activeTableTab],
-          columns: tableColumns,
+          columns: exportTableColumns,
           fileName: `storage_${activeTableTab}_${dateSuffix}.xlsx`,
           sheetName: tabLabel || 'storage'
         };
@@ -408,21 +307,21 @@ const StorageTab: React.FC = () => {
         value={dateRange}
         onChange={(dates) => {
           setDateRange(dates);
-          setTablePage(1);
+          setPageResetKey((k) => k + 1);
         }}
         canManageUsers={canManageUsers}
         userOptions={userOptions}
         selectedUsers={selectedUsers}
         onUsersChange={(ids) => {
           setSelectedUsers(ids);
-          setTablePage(1);
+          setPageResetKey((k) => k + 1);
         }}
         resourceFilter={{
           options: volumeOptions,
           value: selectedVolumes,
           onChange: (ids) => {
             setSelectedVolumes(ids);
-            setTablePage(1);
+            setPageResetKey((k) => k + 1);
           },
           placeholder: intl.formatMessage({ id: 'usage.filter.storage' })
         }}
@@ -462,50 +361,23 @@ const StorageTab: React.FC = () => {
 
       <Tabs
         activeKey={activeTableTab}
-        onChange={(k) => {
-          setActiveTableTab(k as GroupKey);
-          setTablePage(1);
-        }}
-        items={TABLE_TABS.filter(
-          (t) => t.key !== 'user' || scope === 'all'
-        ).map((t) => ({
+        onChange={(k) => setActiveTableTab(k as GroupKey)}
+        items={TABLE_TABS.map((t) => ({
           key: t.key,
           label: t.label,
+          // Keep every pane mounted so each table holds its own page/sort and
+          // switching tabs neither refetches nor resets the other.
+          forceRender: true,
           children: (
-            <Table
-              rowKey={(row) =>
-                `${row.volume_id ?? ''}|${row.user_id ?? ''}|${row.volume_name ?? ''}`
-              }
-              dataSource={tableRows}
-              columns={tableColumns as any}
-              onChange={(_pagination, _filters, sorter: any) => {
-                const s = Array.isArray(sorter) ? sorter[0] : sorter;
-                // Sort changed → page 1; cleared (3rd click) → default GB-Days
-                // descending.
-                const next = s?.order
-                  ? {
-                      field: (s.columnKey as Metric) ?? 'storage_gb_days',
-                      order: s.order as 'ascend' | 'descend'
-                    }
-                  : {
-                      field: 'storage_gb_days' as Metric,
-                      order: 'descend' as const
-                    };
-                if (
-                  next.field !== tableSort.field ||
-                  next.order !== tableSort.order
-                ) {
-                  setTableSort(next);
-                  setTablePage(1);
-                }
-              }}
-              pagination={{
-                size: 'middle',
-                current: tablePage,
-                pageSize: tableData?.pagination.perPage ?? 50,
-                total: tableData?.pagination.total ?? 0,
-                onChange: (p) => setTablePage(p)
-              }}
+            <StorageBreakdownTable
+              key={t.key}
+              groupKey={t.key}
+              dateRange={dateRange}
+              scope={scope}
+              selectedUsers={selectedUsers}
+              selectedVolumes={selectedVolumes}
+              pageResetKey={pageResetKey}
+              refreshKey={refreshKey}
             />
           )
         }))}

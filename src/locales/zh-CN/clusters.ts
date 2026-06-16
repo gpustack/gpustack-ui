@@ -138,7 +138,7 @@ export default {
   'clusters.addworker.theadNotes-02':
     '平头哥（T-Head）PPU 使用容器设备接口（CDI）进行设备注入，因此需要确保 <span class="bold-text">/var/run/cdi</span> 目录可用以生成 CDI。',
   'clusters.addworker.nvidiaNotes':
-    'GPUStack v2.1 内置推理后端依赖 <span class="bold-text">CUDA 12.6</span> 及以上版本，请确保 NVIDIA 驱动版本为 <span class="bold-text">560</span> 或以上。',
+    'GPUStack v2.1 内置推理后端依赖 <span class="bold-text">CUDA 12.8</span> 及以上版本，请确保 NVIDIA 驱动版本为 <span class="bold-text">560</span> 或以上。',
   'clusters.volume.title': '卷挂载',
   'clusters.volume.name': '卷名称',
   'clusters.volume.mountPath': '容器内路径',

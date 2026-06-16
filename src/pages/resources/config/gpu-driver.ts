@@ -437,8 +437,5 @@ export const AddWorkerDockerNotes: Record<string, string[]> = {
   [GPUDriverMap.ILUVATAR]: ['clusters.addworker.corexNotes'],
   [GPUDriverMap.CAMBRICON]: ['clusters.addworker.cambriconNotes'],
   [GPUDriverMap.METAX]: ['clusters.addworker.metaxNotes'],
-  [GPUDriverMap.THEAD]: [
-    'clusters.addworker.theadNotes',
-    'clusters.addworker.theadNotes-02'
-  ]
+  [GPUDriverMap.THEAD]: ['clusters.addworker.theadNotes-02']
 };

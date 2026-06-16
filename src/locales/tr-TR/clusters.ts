@@ -145,7 +145,7 @@ export default {
   'clusters.addworker.theadNotes-02':
     'T-Head PPU, cihaz enjeksiyonu için Container Device Interface (CDI) kullanır ve CDI oluşturma için <span class="bold-text">/var/run/cdi</span> dizininin kullanılabilir olmasını gerektirir.',
   'clusters.addworker.nvidiaNotes':
-    'GPUStack v2.1\'deki yerleşik çıkarım altyapıları <span class="bold-text">CUDA 12.6+</span> gerektirir. Lütfen NVIDIA sürücü sürümünüzün <span class="bold-text">560</span> veya daha yeni olduğundan emin olun.',
+    'GPUStack v2.1\'deki yerleşik çıkarım altyapıları <span class="bold-text">CUDA 12.8+</span> gerektirir. Lütfen NVIDIA sürücü sürümünüzün <span class="bold-text">560</span> veya daha yeni olduğundan emin olun.',
   'clusters.volume.title': 'Volume Mounts',
   'clusters.volume.name': 'Volume Name',
   'clusters.volume.mountPath': 'Container Path',

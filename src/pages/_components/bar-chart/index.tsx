@@ -330,7 +330,7 @@ const BarChart: React.FC<BarChartProps> = (props) => {
         <div
           style={{
             position: 'absolute',
-            inset: 0,
+            inset: 20,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',

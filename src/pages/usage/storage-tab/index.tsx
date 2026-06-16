@@ -15,13 +15,13 @@ import useCoolColors from '@/hooks/use-cool-colors';
 import { formatLargeNumber } from '@/utils';
 import { SimpleCard } from '@gpustack/core-ui';
 import { useAccess, useIntl } from '@umijs/max';
+import { useMemoizedFn } from 'ahooks';
 import { Tabs } from 'antd';
 import dayjs from 'dayjs';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   queryStorageBreakdown,
-  ResourceBreakdownRequest,
-  ResourceBreakdownResponse
+  ResourceBreakdownRequest
 } from '../apis/resource';
 import MetricChartCard from '../components/metric-chart-card';
 import MetricLabel from '../components/metric-label';
@@ -34,6 +34,7 @@ import {
   Granularity
 } from '../utils/time-buckets';
 import { buildTrendSeries } from '../utils/trend-series';
+import useQueryStorageBreakdown from './services/use-query-storage-breakdown';
 import StorageBreakdownTable from './tables/storage-breakdown-table';
 import useStorageColumns from './tables/use-storage-columns';
 
@@ -104,12 +105,15 @@ const StorageTab: React.FC = () => {
   const { creators: userOptions, volumes: volumeOptions } =
     useResourceMeta(scope);
 
-  const [chartData, setChartData] = useState<ResourceBreakdownResponse | null>(
-    null
-  );
   // Bumped on any filter change to snap every mounted table back to page 1;
   // each table owns its own page/sort state otherwise.
   const [pageResetKey, setPageResetKey] = useState(0);
+
+  const {
+    detailData: chartData,
+    loading: chartLoading,
+    fetchData: fetchChartData
+  } = useQueryStorageBreakdown({ key: 'storageBreakdownChart' });
 
   const baseRequest = (): Omit<ResourceBreakdownRequest, 'group_by'> => ({
     start_date: dateRange[0].format('YYYY-MM-DD'),
@@ -127,23 +131,18 @@ const StorageTab: React.FC = () => {
     perPage: 50
   });
 
-  const fetchChart = async () => {
-    try {
-      const data = await queryStorageBreakdown({
-        ...baseRequest(),
-        // Split each bucket by the chosen dimension when grouping.
-        group_by: chartGroupBy ? ['date', chartGroupBy] : ['date'],
-        // A trend is a time series, not a paginated table: always fetch the
-        // whole range. The default order is metric-desc, so partial (current/
-        // recent) buckets have smaller values and would be pushed onto later
-        // pages — dropping the newest hours from the chart under a small page.
-        perPage: 10000
-      });
-      setChartData(data);
-    } catch {
-      // Surfacing handled by global interceptor; keep last data.
-    }
-  };
+  const fetchChart = useMemoizedFn(() =>
+    fetchChartData({
+      ...baseRequest(),
+      // Split each bucket by the chosen dimension when grouping.
+      group_by: chartGroupBy ? ['date', chartGroupBy] : ['date'],
+      // A trend is a time series, not a paginated table: always fetch the
+      // whole range. The default order is metric-desc, so partial (current/
+      // recent) buckets have smaller values and would be pushed onto later
+      // pages — dropping the newest hours from the chart under a small page.
+      perPage: 10000
+    })
+  );
 
   useEffect(() => {
     fetchChart();
@@ -356,6 +355,7 @@ const StorageTab: React.FC = () => {
           groupBy={chartGroupBy}
           groupByOptions={chartGroupByOptions}
           onGroupByChange={(v) => setChartGroupBy(v as GroupKey | null)}
+          loading={chartLoading}
         />
       </div>
 

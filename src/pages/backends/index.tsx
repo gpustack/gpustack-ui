@@ -251,7 +251,7 @@ const BackendList = () => {
         selectHolder={intl.formatMessage({ id: 'backend.filter.source' })}
         buttonText={intl.formatMessage({ id: 'backend.button.add' })}
         handleClickPrimary={handleAddBackend}
-        handleSearch={handleSearch}
+        handleSearch={() => loadMore(1)}
         handleSelectChange={handleFilterBySource}
         handleInputChange={handleNameChange}
         rowSelection={rowSelection}

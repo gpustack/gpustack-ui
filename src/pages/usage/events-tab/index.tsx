@@ -9,23 +9,15 @@
  * event-type selects ride in the bar's ``extra`` slot.
  */
 import { useAccess, useIntl } from '@umijs/max';
+import { useMemoizedFn } from 'ahooks';
 import { Input, Select, Table, Tag } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react';
-import {
-  queryResourceEvents,
-  ResourceEventItem,
-  ResourceEventsResponse
-} from '../apis/resource';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { ResourceEventItem } from '../apis/resource';
 import ResourceFilterBar from '../components/resource-filter-bar';
 import { parseRollup } from '../utils/time-buckets';
+import useQueryResourceEvents from './services/use-query-resource-events';
 
 // Only these four are ever emitted (see resource_event_logger): create/delete
 // + the metering-window pair. updated/attached/detached exist as enum values
@@ -115,15 +107,17 @@ const ResourceEvents: React.FC = () => {
     eventTypes: string[];
     nameQuery: string;
     page: number;
+    perPage: number;
   };
   const [queryParams, setQueryParams] = useState<QueryParams>({
     dateRange: [dayjs().subtract(29, 'day'), dayjs()],
     resourceType: undefined,
     eventTypes: [],
     nameQuery: '',
+    perPage: 50,
     page: 1
   });
-  const [data, setData] = useState<ResourceEventsResponse | null>(null);
+  const { detailData: data, loading, fetchData } = useQueryResourceEvents();
 
   // Latest params, so the stable debounced name handler reads current values.
   const queryRef = useRef(queryParams);
@@ -132,30 +126,20 @@ const ResourceEvents: React.FC = () => {
   // Single fetch entry point: merge the patch into the current params, persist
   // them, then request — triggered from each handler rather than from effect
   // dependencies, so there's exactly one request per user action.
-  const fetchEvents = useCallback(
-    async (patch: Partial<QueryParams>) => {
-      const params = { ...queryRef.current, ...patch };
-      setQueryParams(params);
-      try {
-        const res = await queryResourceEvents({
-          start_date: params.dateRange[0].format('YYYY-MM-DD'),
-          end_date: params.dateRange[1].format('YYYY-MM-DD'),
-          scope,
-          resource_types: params.resourceType
-            ? [params.resourceType]
-            : undefined,
-          resource_name: params.nameQuery || undefined,
-          event_types: params.eventTypes,
-          page: params.page,
-          perPage: 50
-        });
-        setData(res);
-      } catch {
-        // Keep last response on failure.
-      }
-    },
-    [scope]
-  );
+  const fetchEvents = useMemoizedFn((patch: Partial<QueryParams>) => {
+    const params = { ...queryRef.current, ...patch };
+    setQueryParams(params);
+    return fetchData({
+      start_date: params.dateRange[0].format('YYYY-MM-DD'),
+      end_date: params.dateRange[1].format('YYYY-MM-DD'),
+      scope,
+      resource_types: params.resourceType ? [params.resourceType] : undefined,
+      resource_name: params.nameQuery || undefined,
+      event_types: params.eventTypes,
+      page: params.page,
+      perPage: 50
+    });
+  });
 
   // First load only — subsequent fetches are driven by the handlers below.
   useEffect(() => {
@@ -278,11 +262,17 @@ const ResourceEvents: React.FC = () => {
         dataSource={data?.items ?? []}
         columns={columns as any}
         style={{ marginTop: 24 }}
+        loading={{
+          spinning: loading,
+          size: 'middle'
+        }}
         pagination={{
           size: 'middle',
           current: queryParams.page,
-          pageSize: data?.pagination.perPage ?? 50,
-          total: data?.pagination.total ?? 0,
+          pageSize: data?.pagination?.perPage ?? 50,
+          total: data?.pagination?.total ?? 0,
+          showSizeChanger: false,
+          hideOnSinglePage: queryParams.perPage === 50,
           onChange: (p) => fetchEvents({ page: p })
         }}
       />

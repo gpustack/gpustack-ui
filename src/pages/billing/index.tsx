@@ -38,6 +38,7 @@ const Billing: React.FC = () => {
             />
           }
           title={intl.formatMessage({ id: 'billing.upsell.title' })}
+          subTitle={intl.formatMessage({ id: 'billing.upsell.subtitle' })}
           extra={
             <div
               style={{

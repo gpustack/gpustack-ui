@@ -28,6 +28,7 @@ const Catalog: React.FC = () => {
     dataSource,
     queryParams,
     handleSearch,
+    fetchData,
     handleQueryChange,
     loadMore,
     handleNameChange
@@ -137,7 +138,7 @@ const Catalog: React.FC = () => {
         marginBottom={22}
         marginTop={0}
         buttonText={intl.formatMessage({ id: 'models.catalog.button.explore' })}
-        handleSearch={handleSearch}
+        handleSearch={() => loadMore(1)}
         handleSelectChange={handleCategoryChange}
         handleClickPrimary={handleDeployFromOtherHubs}
         handleInputChange={handleNameChange}

@@ -26,6 +26,10 @@ import ResourceExportData from '../components/resource-export-data';
 import ResourceFilterBar from '../components/resource-filter-bar';
 import useResourceMeta from '../hooks/use-resource-meta';
 import {
+  exportBreakdownSheets,
+  toExportColumns
+} from '../utils/export-breakdown';
+import {
   bucketKey,
   generateBucketRange,
   Granularity
@@ -245,17 +249,66 @@ const GpuInstancesTab: React.FC = () => {
     [TABLE_TABS]
   );
 
-  // Columns for the export preview of the active tab (sort arrows omitted —
-  // the in-tab table owns its own sort state). Same factory the tables use.
-  const exportTableColumns = useInstancesColumns(activeTableTab);
+  // Columns for each bottom-table grouping — same factory the tables render
+  // with — used to build the export sheets below.
+  const gpuTypeColumns = useInstancesColumns('gpu_type');
+  const instanceColumns = useInstancesColumns('instance');
+  const userColumns = useInstancesColumns('user');
 
-  // Export opens a preview modal (matches the Tokens tab): re-filter + preview
-  // the rows, then download. "Chart" = the by-date trend, "Table" = the active
-  // bottom-table grouping.
-  const [exportMode, setExportMode] = useState<'chart' | 'table' | null>(null);
+  // "Export Table Data" writes every bottom table at once — one sheet per
+  // grouping (Instance Types / Instances / Users) — straight to a workbook,
+  // no preview dialog (mirrors the Tokens tab's `useExportTable`). The User
+  // sheet is included only when the org-wide view is available.
+  const tableExportGroups = useMemo(() => {
+    const groups = [
+      {
+        key: 'gpu_type' as GroupKey,
+        columns: gpuTypeColumns,
+        sheetName: intl.formatMessage({ id: 'usage.table.instanceTypes' })
+      },
+      {
+        key: 'instance' as GroupKey,
+        columns: instanceColumns,
+        sheetName: intl.formatMessage({ id: 'usage.table.instances' })
+      }
+    ];
+    if (canManageUsers) {
+      groups.push({
+        key: 'user' as GroupKey,
+        columns: userColumns,
+        sheetName: intl.formatMessage({ id: 'usage.table.users' })
+      });
+    }
+    return groups;
+  }, [gpuTypeColumns, instanceColumns, userColumns, canManageUsers, intl]);
+
+  // Chart export still opens the preview modal (matches the Tokens tab); the
+  // table export is direct, so this only ever holds 'chart'.
+  const [exportMode, setExportMode] = useState<'chart' | null>(null);
   const dateSuffix = `${dateRange[0].format('YYYY-MM-DD')}_${dateRange[1].format(
     'YYYY-MM-DD'
   )}`;
+
+  const handleExportTable = async () => {
+    const results = await Promise.all(
+      tableExportGroups.map((g) =>
+        queryGpuInstancesBreakdown({
+          ...baseRequest(),
+          group_by: [g.key],
+          // A breakdown export is the full filtered set, not a page.
+          perPage: 10000
+        })
+      )
+    );
+    exportBreakdownSheets(
+      tableExportGroups.map((g, i) => ({
+        rows: results[i]?.items ?? [],
+        columns: toExportColumns(g.columns),
+        sheetName: g.sheetName
+      })),
+      `gpu-instances_tables_${dateSuffix}.xlsx`
+    );
+  };
 
   const chartExportColumns = [
     {
@@ -287,21 +340,13 @@ const GpuInstancesTab: React.FC = () => {
     }
   ];
 
-  const tabLabel = TABLE_TABS.find((t) => t.key === activeTableTab)?.label;
-  const exportConfig =
-    exportMode === 'chart'
-      ? {
-          groupBy: ['date'],
-          columns: chartExportColumns,
-          fileName: `gpu-instances_chart_${dateSuffix}.xlsx`,
-          sheetName: intl.formatMessage({ id: 'usage.tabs.gpuInstances' })
-        }
-      : {
-          groupBy: [activeTableTab],
-          columns: exportTableColumns,
-          fileName: `gpu-instances_${activeTableTab}_${dateSuffix}.xlsx`,
-          sheetName: tabLabel || 'gpu-instances'
-        };
+  // The preview modal now only backs the by-date chart export.
+  const exportConfig = {
+    groupBy: ['date'],
+    columns: chartExportColumns,
+    fileName: `gpu-instances_chart_${dateSuffix}.xlsx`,
+    sheetName: intl.formatMessage({ id: 'usage.tabs.gpuInstances' })
+  };
 
   return (
     <div>
@@ -330,7 +375,7 @@ const GpuInstancesTab: React.FC = () => {
         }}
         onRefresh={() => setRefreshKey((k) => k + 1)}
         onExportChart={() => setExportMode('chart')}
-        onExportTable={() => setExportMode('table')}
+        onExportTable={handleExportTable}
       />
 
       {/* KPI cards */}
@@ -349,7 +394,7 @@ const GpuInstancesTab: React.FC = () => {
       </div>
 
       {/* Daily trend chart */}
-      <div style={{ marginBottom: 24 }}>
+      <div style={{ marginBottom: 16 }}>
         <MetricChartCard
           metric={metric}
           metricOptions={METRIC_OPTIONS}
@@ -393,14 +438,7 @@ const GpuInstancesTab: React.FC = () => {
       <ResourceExportData
         open={exportMode !== null}
         onCancel={() => setExportMode(null)}
-        title={
-          exportMode === 'chart'
-            ? intl.formatMessage({ id: 'usage.export.chart' })
-            : intl.formatMessage(
-                { id: 'usage.export.tableNamed' },
-                { name: tabLabel }
-              )
-        }
+        title={intl.formatMessage({ id: 'usage.export.chart' })}
         queryFn={queryGpuInstancesBreakdown}
         groupBy={exportConfig.groupBy}
         columns={exportConfig.columns}

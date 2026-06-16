@@ -123,7 +123,8 @@ const InstancesBreakdownTable: React.FC<Props> = ({
     queryParams.page,
     queryParams.perPage,
     queryParams.sort_by,
-    refreshKey
+    refreshKey,
+    fetchData
   ]);
 
   const rows: ResourceBreakdownItem[] = detailData?.items ?? [];

@@ -26,12 +26,13 @@ export const toExportColumns = (columns: any[]): ExportColumn[] =>
       dataIndex: c.dataIndex as string
     }));
 
-export const exportBreakdownRows = (
-  rows: any[],
-  columns: ExportColumn[],
-  fileName: string,
-  sheetName = 'usage'
-): void => {
+export interface ExportSheet {
+  rows: any[];
+  columns: ExportColumn[];
+  sheetName: string;
+}
+
+const buildSheet = ({ rows, columns, sheetName }: ExportSheet) => {
   const fields = columns.map((c) => c.dataIndex);
   const fieldLabels = Object.fromEntries(
     columns.map((c) => [c.dataIndex, c.title])
@@ -43,8 +44,22 @@ export const exportBreakdownRows = (
     });
     return o;
   });
-  exportJsonToExcel({
-    fileName,
-    sheets: [{ jsonData, sheetName, fields, fieldLabels, formatMap: {} }]
-  });
+  return { jsonData, sheetName, fields, fieldLabels, formatMap: {} };
+};
+
+// Write one or more breakdown result sets to a single workbook, one sheet each.
+export const exportBreakdownSheets = (
+  sheets: ExportSheet[],
+  fileName: string
+): void => {
+  exportJsonToExcel({ fileName, sheets: sheets.map(buildSheet) });
+};
+
+export const exportBreakdownRows = (
+  rows: any[],
+  columns: ExportColumn[],
+  fileName: string,
+  sheetName = 'usage'
+): void => {
+  exportBreakdownSheets([{ rows, columns, sheetName }], fileName);
 };

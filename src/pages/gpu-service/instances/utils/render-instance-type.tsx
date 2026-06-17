@@ -85,6 +85,9 @@ const formatResources = (
   };
 };
 
+// Spec popover categories, in render order.
+type SpecCategory = 'gpu' | 'cpu' | 'ram' | 'disk';
+
 export const renderInstanceType = (
   record: ListItem,
   options: {
@@ -92,22 +95,31 @@ export const renderInstanceType = (
     // name → capacity (e.g. "20Gi") for referenced persistent volumes, so the
     // Disk → Persistent row can show the size instead of just the PV name.
     pvCapacityByName?: Record<string, string>;
+    // Limit the spec popover to these categories (default: all). The Instance
+    // Types breakdown only wants CPU + RAM, for example.
+    categories?: SpecCategory[];
+    // Override the primary label (default: derived "<product> x <count>" /
+    // "CPU Only"). The Instance Types breakdown keeps its plain product name.
+    title?: string;
   }
 ) => {
-  const { intl, pvCapacityByName } = options;
+  const { intl, pvCapacityByName, categories } = options;
   const description =
     parseJsonSafe<any>(record?.description || '{}', {}).spec || {};
   const resources = formatResources({ spec: description }, record);
   const accelerator = record.spec?.resources?.accelerator;
-  const title = description.acceleratable
-    ? `${description.product} x ${accelerator}`
-    : 'CPU Only';
+  const title =
+    options.title ??
+    (description.acceleratable
+      ? `${description.product} x ${accelerator}`
+      : 'CPU Only');
 
   const volume = (record.spec as any)?.volume;
   // Spec popover grouped by category (GPU / CPU / Memory / Disk), mirroring
   // the Deployments instance info icon: dark tooltip, per-category icon,
   // instance name as the title. Rows with no value are dropped.
   type Section = {
+    key: SpecCategory;
     icon: string;
     name: string;
     rows: [string | null, string | undefined][];
@@ -115,6 +127,7 @@ export const renderInstanceType = (
   const sections: Section[] = [];
   if (description.acceleratable) {
     sections.push({
+      key: 'gpu',
       icon: 'icon-gpu',
       name: 'GPU',
       rows: [
@@ -134,16 +147,19 @@ export const renderInstanceType = (
     });
   }
   sections.push({
+    key: 'cpu',
     icon: 'icon-cpu',
     name: 'CPU',
     rows: [[null, resources.cpu]]
   });
   sections.push({
+    key: 'ram',
     icon: 'icon-ram-02',
     name: intl.formatMessage({ id: 'gpuservice.instance.ram' }),
     rows: [[null, resources.ram]]
   });
   sections.push({
+    key: 'disk',
     icon: 'icon-hard-disk',
     name: intl.formatMessage({ id: 'gpuservice.instance.disk' }),
     rows: [
@@ -170,8 +186,16 @@ export const renderInstanceType = (
     ]
   });
 
+  const visibleSections = categories
+    ? sections.filter((s) => categories.includes(s.key))
+    : sections;
+
   return (
-    <InstanceTypeCell title={title} name={record.name} sections={sections} />
+    <InstanceTypeCell
+      title={title}
+      name={record.name}
+      sections={visibleSections}
+    />
   );
 };
 

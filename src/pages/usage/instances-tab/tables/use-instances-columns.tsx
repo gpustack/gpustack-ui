@@ -36,18 +36,30 @@ const useInstancesColumns = (groupKey: GroupKey) => {
         render: (v: number) => (v ?? 0).toFixed(2)
       }
     ];
-    // Instance Types breakdown: just the pretty product name (or flavor slug
-    // for older rows) — no spec sub-line. CPU-only flavors (no GPU cards) show
-    // "CPU Only", matching the canonical GPU Instances renderer.
+    // Instance Types breakdown: the pretty product name (or flavor slug for
+    // older rows; "CPU Only" when no GPU cards) plus a CPU + RAM spec popover —
+    // rendered through the canonical renderer so the formatting matches the GPU
+    // Instances list, but limited to the CPU/RAM categories.
     const instanceTypeColType = {
       title: intl.formatMessage({ id: 'usage.table.instanceType' }),
       dataIndex: 'gpu_type',
       key: 'gpu_type',
       render: (_v: string, row: ResourceBreakdownItem) =>
-        (row.gpu_count ?? 0) > 0 ? (
-          instanceTypeLabel(row)
-        ) : (
-          <span className="text-primary">CPU Only</span>
+        renderInstanceType(
+          buildInstanceTypeRecordFromMiB({
+            name: row.instance_name,
+            product: row.product || row.gpu_type,
+            gpuCount: row.gpu_count,
+            unitCpuMilli: row.unit_cpu_milli,
+            unitMemoryMib: row.unit_memory_mib,
+            vramMib: row.vram_mib
+          }),
+          {
+            intl,
+            categories: ['cpu', 'ram'],
+            title:
+              (row.gpu_count ?? 0) > 0 ? instanceTypeLabel(row) : 'CPU Only'
+          }
         )
     };
     // Instances breakdown: render through the canonical GPU Instances list

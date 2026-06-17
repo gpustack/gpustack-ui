@@ -264,11 +264,15 @@ const useWorkerColumns = ({
     ) {
       return (
         <span className={workerCss.ipWrapper}>
-          <span className="item">
+          <span className={workerCss.item}>
             <span className="text-primary">{record.ip}</span>
-            <span className="label">{`(${intl.formatMessage({ id: 'clusters.table.ip.internal' })})`}</span>
+            <span
+              className={workerCss.label}
+            >{`(${intl.formatMessage({ id: 'clusters.table.ip.internal' })})`}</span>
             <span className="text-primary">{record.advertise_address}</span>
-            <span className="label">{`(${intl.formatMessage({ id: 'clusters.table.ip.external' })})`}</span>
+            <span
+              className={workerCss.label}
+            >{`(${intl.formatMessage({ id: 'clusters.table.ip.external' })})`}</span>
           </span>
         </span>
       );

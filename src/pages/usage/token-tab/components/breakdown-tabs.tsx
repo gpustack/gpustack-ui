@@ -47,7 +47,7 @@ const BreakdownTabs: React.FC<{
       },
       {
         key: 'users',
-        label: intl.formatMessage({ id: 'usage.tabs.users' }),
+        label: intl.formatMessage({ id: 'usage.table.users' }),
         forceRender: true,
         children: (
           <UsersTable

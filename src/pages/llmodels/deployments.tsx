@@ -278,6 +278,21 @@ const Models = forwardRef((props, ref) => {
     fetchData({
       loadingVal: false
     });
+    // re-align the instance cache with the backend as a backstop, in case a
+    // DELETE watch event for terminated instances was missed
+    getAllModelInstances();
+  });
+
+  // proactively drop a model's instances from the cache when it is stopped, so
+  // a stale (terminating) instance can't linger and show up alongside the new
+  // one after an immediate restart
+  const handleStop = useMemoizedFn(async (modelIds: number[]) => {
+    const idSet = new Set(modelIds);
+    cacheInsDataListRef.current = cacheInsDataListRef.current.filter(
+      (item) => !idSet.has(item.model_id)
+    );
+    setModelInstances(cacheInsDataListRef.current);
+    handleSearchBySilent();
   });
 
   const handleSearch = useMemoizedFn(async (params?: any) => {
@@ -456,7 +471,7 @@ const Models = forwardRef((props, ref) => {
         handleOnToggleExpandAll={createModelsInstanceChunkRequest}
         onViewLogs={cancelRequestsOnPageInactive}
         onCancelViewLogs={handleOnCancelViewLogs}
-        onStop={handleSearchBySilent}
+        onStop={handleStop}
         onStart={handleSearchBySilent}
         onTableSort={handleOnSortChange}
         onFilterChange={handleOnFilterChange}

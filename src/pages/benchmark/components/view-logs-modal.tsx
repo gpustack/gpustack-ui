@@ -17,6 +17,9 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
   const logsViewerRef = React.useRef<any>(null);
   const requestRef = React.useRef<any>(null);
   const contentRef = React.useRef<any>(null);
+  const [params, setParams] = React.useState<any>({
+    follow: true
+  });
 
   const handleCancel = useCallback(() => {
     logsViewerRef.current?.abort();
@@ -94,9 +97,7 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
           tail={undefined}
           enableScorllLoad={true}
           isDownloading={false}
-          params={{
-            follow: true
-          }}
+          params={params}
         ></LogsViewer>
       </div>
     </Modal>

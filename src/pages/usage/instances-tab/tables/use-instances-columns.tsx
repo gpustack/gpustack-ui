@@ -37,12 +37,18 @@ const useInstancesColumns = (groupKey: GroupKey) => {
       }
     ];
     // Instance Types breakdown: just the pretty product name (or flavor slug
-    // for older rows) — no spec sub-line.
+    // for older rows) — no spec sub-line. CPU-only flavors (no GPU cards) show
+    // "CPU Only", matching the canonical GPU Instances renderer.
     const instanceTypeColType = {
       title: intl.formatMessage({ id: 'usage.table.instanceType' }),
       dataIndex: 'gpu_type',
       key: 'gpu_type',
-      render: (_v: string, row: ResourceBreakdownItem) => instanceTypeLabel(row)
+      render: (_v: string, row: ResourceBreakdownItem) =>
+        (row.gpu_count ?? 0) > 0 ? (
+          instanceTypeLabel(row)
+        ) : (
+          <span className="text-primary">CPU Only</span>
+        )
     };
     // Instances breakdown: render through the canonical GPU Instances list
     // renderer so the label + spec popover are identical. The breakdown row

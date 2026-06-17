@@ -325,7 +325,7 @@ const Clusters: React.FC = () => {
     providerHint?: string;
     presetClusterType?: 'model' | 'gpu';
   }>({
-    providerHint: '',
+    providerHint: undefined,
     presetClusterType: undefined
   });
 
@@ -343,7 +343,7 @@ const Clusters: React.FC = () => {
 
   const handleClusterModalClose = () => {
     setPendingProviderHint({
-      providerHint: '',
+      providerHint: undefined,
       presetClusterType: undefined
     });
     closeClusterModal();

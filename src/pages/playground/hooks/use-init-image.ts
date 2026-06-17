@@ -75,10 +75,32 @@ export const useInitImageMeta = (
     ...advancedFieldsDefaultValus
   });
 
+  const ensureSizeOption = (
+    options: SizeOption[],
+    width?: number,
+    height?: number
+  ) => {
+    if (
+      width &&
+      height &&
+      !options.find((item) => item.width === width && item.height === height)
+    ) {
+      options.push({
+        width,
+        height,
+        label: `${width}x${height}`,
+        value: `${width}x${height}`
+      });
+    }
+  };
+
   const getNewImageSizeOptions = (metaData: any) => {
-    const { max_height, max_width } = metaData || {};
+    const { max_height, max_width, default_width, default_height } =
+      metaData || {};
     if (!max_height || !max_width) {
-      return imageSizeList;
+      const newImageSizeOptions = [...imageSizeList];
+      ensureSizeOption(newImageSizeOptions, default_width, default_height);
+      return newImageSizeOptions;
     }
     const newImageSizeOptions = imageSizeList.filter((item) => {
       return (
@@ -86,18 +108,8 @@ export const useInitImageMeta = (
         item.value === 'custom'
       );
     });
-    if (
-      !newImageSizeOptions.find(
-        (item) => item.width === max_width && item.height === max_height
-      )
-    ) {
-      newImageSizeOptions.push({
-        width: max_width,
-        height: max_height,
-        label: `${max_width}x${max_height}`,
-        value: `${max_width}x${max_height}`
-      });
-    }
+    ensureSizeOption(newImageSizeOptions, max_width, max_height);
+    ensureSizeOption(newImageSizeOptions, default_width, default_height);
     return newImageSizeOptions;
   };
 

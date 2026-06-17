@@ -7,6 +7,7 @@ import { FormData } from '../config/types';
 const NFSForm = ({ action }: { action: string }) => {
   const intl = useIntl();
   const { getRuleMessage } = useAppUtils();
+  const disabled = action === PageAction.EDIT;
 
   return (
     <>
@@ -24,6 +25,7 @@ const NFSForm = ({ action }: { action: string }) => {
       >
         <CInput.Input
           required
+          disabled={disabled}
           description={intl.formatMessage({
             id: 'gpuservice.storageType.nfs.server.tips'
           })}
@@ -43,6 +45,7 @@ const NFSForm = ({ action }: { action: string }) => {
       >
         <CInput.Input
           required
+          disabled={disabled}
           description={intl.formatMessage({
             id: 'gpuservice.storageType.nfs.share.tips'
           })}
@@ -51,6 +54,7 @@ const NFSForm = ({ action }: { action: string }) => {
       </Form.Item>
       <Form.Item<FormData> name={['spec', 'nfs', 'subDirectory']}>
         <CInput.Input
+          disabled={disabled}
           label={intl.formatMessage({
             id: 'gpuservice.storageType.nfs.subDirectory'
           })}
@@ -58,6 +62,7 @@ const NFSForm = ({ action }: { action: string }) => {
       </Form.Item>
       <Form.Item<FormData> name={['spec', 'nfs', 'mountPermissions']}>
         <CInput.Input
+          disabled={disabled}
           placeholder="0755,0777,..."
           description={intl.formatMessage({
             id: 'gpuservice.storageType.nfs.mountPermissions.tips'
@@ -69,7 +74,7 @@ const NFSForm = ({ action }: { action: string }) => {
       </Form.Item>
       <Form.Item<FormData> name={['spec', 'nfs', 'mountOptions']}>
         <ListInput
-          disabled={action === PageAction.EDIT}
+          disabled={disabled}
           label={intl.formatMessage({
             id: 'gpuservice.storageType.mountOptions'
           })}

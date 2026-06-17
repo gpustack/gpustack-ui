@@ -14,6 +14,7 @@ const S3Form = ({ action }: { action: string }) => {
   const intl = useIntl();
   const form = Form.useFormInstance<FormData>();
   const { getRuleMessage } = useAppUtils();
+  const disabled = action === PageAction.EDIT;
 
   const handleEndpointBlur = (e: any) => {
     const value: string = e.target.value;
@@ -51,6 +52,7 @@ const S3Form = ({ action }: { action: string }) => {
       >
         <CInput.Input
           required
+          disabled={disabled}
           label={intl.formatMessage({
             id: 'gpuservice.storageType.s3.endpoint'
           })}
@@ -65,6 +67,7 @@ const S3Form = ({ action }: { action: string }) => {
         <div style={{ flex: 1 }}>
           <Form.Item<FormData> name={['spec', 's3', 'region']}>
             <CInput.Input
+              disabled={disabled}
               label={intl.formatMessage({
                 id: 'gpuservice.storageType.s3.region'
               })}
@@ -86,6 +89,7 @@ const S3Form = ({ action }: { action: string }) => {
           >
             <CInput.Input
               required
+              disabled={disabled}
               description={
                 <Flex orientation="vertical" gap={4} align="start">
                   <span>
@@ -111,6 +115,7 @@ const S3Form = ({ action }: { action: string }) => {
       </Flex>
       <Form.Item<FormData> name={['spec', 's3', 'accessKey']}>
         <CInput.Input
+          disabled={disabled}
           label={intl.formatMessage({
             id: 'gpuservice.storageType.s3.accessKey'
           })}
@@ -118,6 +123,7 @@ const S3Form = ({ action }: { action: string }) => {
       </Form.Item>
       <Form.Item<FormData> name={['spec', 's3', 'secretKey']}>
         <CInput.Password
+          disabled={disabled}
           label={intl.formatMessage({
             id: 'gpuservice.storageType.s3.secretKey'
           })}
@@ -129,6 +135,7 @@ const S3Form = ({ action }: { action: string }) => {
         style={{ marginBottom: 12 }}
       >
         <CheckboxField
+          disabled={disabled}
           description={intl.formatMessage({
             id: 'gpuservice.storageType.s3.insecure.tips'
           })}
@@ -139,7 +146,7 @@ const S3Form = ({ action }: { action: string }) => {
       </Form.Item>
       <Form.Item<FormData> name={['spec', 's3', 'mountOptions']}>
         <ListInput
-          disabled={action === PageAction.EDIT}
+          disabled={disabled}
           label={intl.formatMessage({
             id: 'gpuservice.storageType.mountOptions'
           })}

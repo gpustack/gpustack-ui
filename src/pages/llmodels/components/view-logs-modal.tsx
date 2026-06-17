@@ -114,7 +114,7 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
         watch: !option.previous,
         previous: option.previous,
         worker_id: option.worker_id,
-        container: option.container
+        container_name: option.container
       });
     }
     setSelectedContainer(option?.parentValue || null);

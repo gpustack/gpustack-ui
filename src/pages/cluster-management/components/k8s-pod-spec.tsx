@@ -6,6 +6,7 @@ import { Form } from 'antd';
 import _ from 'lodash';
 import React, { useEffect, useId, useMemo } from 'react';
 import styled from 'styled-components';
+import { useStepsContext } from '../config/steps-context';
 import { ClusterListItem as ListItem } from '../config/types';
 import ImageCredential from './image-credential';
 import K8SVolumeMount from './k8s-volume-mount';
@@ -175,6 +176,7 @@ const RadioDot = styled.span<{ $active: boolean }>`
 export const ClusterTypeSelector: React.FC = () => {
   const intl = useIntl();
   const form = Form.useFormInstance();
+  const { presetClusterType } = useStepsContext();
   const labelId = useId();
   const gpuInstanceOptions = Form.useWatch(GPU_INSTANCE_OPTIONS_PATH, {
     form,
@@ -210,6 +212,12 @@ export const ClusterTypeSelector: React.FC = () => {
       description: intl.formatMessage({ id: 'clusters.gpuInstances.tip' })
     }
   ];
+
+  useEffect(() => {
+    if (presetClusterType) {
+      handleSelect(presetClusterType);
+    }
+  }, [presetClusterType]);
 
   return (
     <ClusterTypeWrap>

@@ -6,10 +6,10 @@ import ClusterCreate from './cluster-create';
 interface ClusterModalProps {
   open: boolean;
   title: string;
-  // When set, ClusterCreate preselects this provider and skips the
-  // provider-catalog step. Used by feature pages (e.g. GPU Service)
-  // whose empty state already implies which kind of cluster is needed.
-  providerHint?: string;
+  pendingProviderHint?: {
+    providerHint?: string;
+    presetClusterType?: 'model' | 'gpu';
+  };
   onClose: () => void;
 }
 
@@ -17,7 +17,7 @@ const ClusterModal: React.FC<ClusterModalProps> = ({
   open,
   onClose,
   title,
-  providerHint
+  pendingProviderHint
 }) => {
   const [currentTitle, setCurrentTitle] = React.useState<string>(title);
   const handleCancel = () => {
@@ -46,7 +46,8 @@ const ClusterModal: React.FC<ClusterModalProps> = ({
       <ClusterCreate
         onClose={handleCancel}
         action={PageAction.CREATE}
-        providerHint={providerHint}
+        providerHint={pendingProviderHint?.providerHint}
+        presetClusterType={pendingProviderHint?.presetClusterType}
         setCurrentTitle={setCurrentTitle}
       ></ClusterCreate>
     </GSDrawer>

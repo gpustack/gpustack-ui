@@ -51,6 +51,7 @@ const GPUService: React.FC = () => {
     setClusterSession({
       firstAddWorker: false,
       firstAddCluster: true,
+      presetClusterType: 'gpu',
       providerHint: ProviderValueMap.Kubernetes
     });
     navigate('/resources/clusters/list');

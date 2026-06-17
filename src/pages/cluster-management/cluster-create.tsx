@@ -59,9 +59,16 @@ const ClusterCreate: React.FC<{
   // empty-state CTAs that already know which kind of cluster the user
   // is heading for (e.g. GPU Service's "Add a Kubernetes Cluster").
   providerHint?: string;
+  presetClusterType?: 'model' | 'gpu';
   setCurrentTitle?: (title: string) => void;
   onClose?: () => void;
-}> = ({ onClose, action, providerHint, setCurrentTitle }) => {
+}> = ({
+  onClose,
+  action,
+  providerHint,
+  presetClusterType,
+  setCurrentTitle
+}) => {
   const stepList = useStepList();
   const [systemConfigState] = useAtom(systemConfigAtom);
   const intl = useIntl();
@@ -377,6 +384,7 @@ const ClusterCreate: React.FC<{
           )}
           <StepsContext.Provider
             value={{
+              presetClusterType: presetClusterType,
               formValues: formValues,
               systemConfig: systemConfigState
             }}

@@ -25,7 +25,7 @@ export default {
   'ai.provider.ollama': 'Ollama',
   'ai.provider.openai': 'OpenAI',
   'ai.provider.openrouter': 'OpenRouter',
-  'ai.provider.qwen': 'Qwen',
+  'ai.provider.qwen': 'Alibaba Cloud Model Studio',
   'ai.provider.spark': 'Spark',
   'ai.provider.stepfun': 'StepFun',
   'ai.provider.together-ai': 'TogetherAI',

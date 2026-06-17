@@ -25,7 +25,7 @@ export default {
   'ai.provider.ollama': 'Ollama',
   'ai.provider.openai': 'OpenAI',
   'ai.provider.openrouter': 'OpenRouter',
-  'ai.provider.qwen': '通义千问',
+  'ai.provider.qwen': '阿里云百炼',
   'ai.provider.spark': '讯飞星火',
   'ai.provider.stepfun': '阶跃星辰',
   'ai.provider.together-ai': 'Together AI',

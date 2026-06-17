@@ -12,7 +12,9 @@ import ProviderLogo from '../components/provider-logo';
 import { useFormContext } from '../config/form-context';
 import { maasProviderOptions } from '../config/providers';
 import { FormData } from '../config/types';
+import providerTypeStyles from '../styles/provider-type.less';
 import ProviderConfigs from './provider-configs';
+
 const Basic: React.FC<{
   onAPIKeyBlur?: (e: any) => void;
 }> = ({ onAPIKeyBlur }) => {
@@ -36,6 +38,20 @@ const Basic: React.FC<{
       option?.label?.toLowerCase().includes(input.toLowerCase()) ||
       option?.value?.toLowerCase().includes(input.toLowerCase())
     );
+  };
+
+  const renderLogoPrefix = () => {
+    const hasProvider = maasProviderOptions.some(
+      (option) => option.value === providerType
+    );
+    if (hasProvider) {
+      return (
+        <div style={{ display: 'flex', alignItems: 'end', height: '100%' }}>
+          <ProviderLogo provider={providerType as string} />
+        </div>
+      );
+    }
+    return null;
   };
 
   return (
@@ -73,9 +89,10 @@ const Basic: React.FC<{
             filterOption: filterOption
           }}
           required
+          className={providerTypeStyles.providerType}
+          prefix={renderLogoPrefix()}
           options={maasProviderOptions}
           optionRender={optionRender}
-          labelRender={optionRender}
           label={intl.formatMessage({
             id: 'common.table.type'
           })}

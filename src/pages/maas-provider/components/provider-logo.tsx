@@ -1,5 +1,6 @@
 import GPUStackLogo from '@/assets/images/small-logo-200x200.png';
 import ai360 from '@/assets/providers-logo/ai360.svg';
+import qwen from '@/assets/providers-logo/alibabacloud.svg';
 import azure from '@/assets/providers-logo/azureai.svg';
 import baichuan from '@/assets/providers-logo/baichuan.svg';
 import baiduCloud from '@/assets/providers-logo/baiducloud.svg';
@@ -26,7 +27,6 @@ import triton from '@/assets/providers-logo/nvidia.svg';
 import ollama from '@/assets/providers-logo/ollama.svg';
 import openai from '@/assets/providers-logo/openai.svg';
 import openrouter from '@/assets/providers-logo/openrouter.svg';
-import qwen from '@/assets/providers-logo/qwen.svg';
 import spark from '@/assets/providers-logo/spark.svg';
 import stepfun from '@/assets/providers-logo/stepfun.svg';
 import togetherai from '@/assets/providers-logo/together.svg';

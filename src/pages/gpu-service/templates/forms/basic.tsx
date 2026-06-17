@@ -1,5 +1,5 @@
 import PluginExtraFields from '@/components/plugin-extra-fields';
-import { validateLabelNameRegxFor63 } from '@/config';
+import { PageAction, validateLabelNameRegxFor63 } from '@/config';
 import { PageActionType } from '@/config/types';
 import {
   Input as CInput,
@@ -86,7 +86,7 @@ const Basic: React.FC<BasicProps> = ({
             ]}
           >
             <CInput.Input
-              disabled={disabled}
+              disabled={disabled || action === PageAction.EDIT}
               label={intl.formatMessage({ id: 'common.table.name' })}
               required
             />

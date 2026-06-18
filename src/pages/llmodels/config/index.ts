@@ -455,7 +455,7 @@ export const getBackendParamsTips = (backend: string) => {
     return {
       backend: 'SGLang',
       releases: '',
-      link: 'https://docs.sglang.ai/advanced_features/server_arguments.html',
+      link: 'https://docs.sglang.io/docs/advanced_features/server_arguments',
       version: 'v0.5.4'
     };
   }

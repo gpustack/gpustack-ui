@@ -1,5 +1,12 @@
 import { BackendParameter } from './index';
 
+// Generated from the SGLang `launch_server` server arguments reference:
+// https://docs.sglang.io/docs/advanced_features/server_arguments
+// Grouped by the doc's sections. `options` lists the fixed choice values
+// when the flag accepts a restricted set (sourced from the doc's Options column).
+// Internal/experimental sections (Ktransformers, Diffusion LLM, Forward hooks,
+// msProbe dump) and deprecated arguments are omitted.
+
 const options: BackendParameter[] = [
   // Model and tokenizer
   {
@@ -45,8 +52,12 @@ const options: BackendParameter[] = [
       'gguf',
       'bitsandbytes',
       'layered',
+      'flash_rl',
       'remote',
-      'remote_instance'
+      'remote_instance',
+      'fastsafetensors',
+      'private',
+      'runai_streamer'
     ]
   },
   {
@@ -86,8 +97,23 @@ const options: BackendParameter[] = [
   },
   // HTTP server
   {
+    label: '--host',
+    value: '--host',
+    options: []
+  },
+  {
     label: '--port',
     value: '--port',
+    options: []
+  },
+  {
+    label: '--fastapi-root-path',
+    value: '--fastapi-root-path',
+    options: []
+  },
+  {
+    label: '--grpc-mode',
+    value: '--grpc-mode',
     options: []
   },
   {
@@ -103,6 +129,11 @@ const options: BackendParameter[] = [
   {
     label: '--nccl-port',
     value: '--nccl-port',
+    options: []
+  },
+  {
+    label: '--checkpoint-engine-wait-weights-before-ready',
+    value: '--checkpoint-engine-wait-weights-before-ready',
     options: []
   },
   // Quantization and data type
@@ -124,6 +155,7 @@ const options: BackendParameter[] = [
       'bitsandbytes',
       'gguf',
       'modelopt',
+      'modelopt_fp8',
       'modelopt_fp4',
       'petit_nvfp4',
       'w8a8_int8',
@@ -131,12 +163,27 @@ const options: BackendParameter[] = [
       'moe_wna16',
       'qoq',
       'w4afp8',
-      'mxfp4'
+      'mxfp4',
+      'mxfp8',
+      'auto-round',
+      'compressed-tensors',
+      'modelslim',
+      'quark_int4fp8_moe'
     ]
   },
   {
     label: '--quantization-param-path',
     value: '--quantization-param-path',
+    options: []
+  },
+  {
+    label: '--kv-cache-dtype',
+    value: '--kv-cache-dtype',
+    options: ['auto', 'fp8_e5m2', 'fp8_e4m3', 'bf16', 'bfloat16', 'fp4_e2m1']
+  },
+  {
+    label: '--enable-fp32-lm-head',
+    value: '--enable-fp32-lm-head',
     options: []
   },
   {
@@ -155,13 +202,23 @@ const options: BackendParameter[] = [
     options: []
   },
   {
-    label: '--kv-cache-dtype',
-    value: '--kv-cache-dtype',
-    options: ['auto', 'fp8_e5m2', 'fp8_e4m3']
+    label: '--modelopt-export-path',
+    value: '--modelopt-export-path',
+    options: []
   },
   {
-    label: '--enable-fp32-lm-head',
-    value: '--enable-fp32-lm-head',
+    label: '--quantize-and-serve',
+    value: '--quantize-and-serve',
+    options: []
+  },
+  {
+    label: '--rl-quant-profile',
+    value: '--rl-quant-profile',
+    options: []
+  },
+  {
+    label: '--enable-quant-communications',
+    value: '--enable-quant-communications',
     options: []
   },
   // Memory and scheduling
@@ -191,6 +248,16 @@ const options: BackendParameter[] = [
     options: []
   },
   {
+    label: '--prefill-max-requests',
+    value: '--prefill-max-requests',
+    options: []
+  },
+  {
+    label: '--enable-dynamic-chunking',
+    value: '--enable-dynamic-chunking',
+    options: []
+  },
+  {
     label: '--max-prefill-tokens',
     value: '--max-prefill-tokens',
     options: []
@@ -198,11 +265,24 @@ const options: BackendParameter[] = [
   {
     label: '--schedule-policy',
     value: '--schedule-policy',
-    options: ['lpm', 'random', 'fcfs', 'dfs-weight', 'lof', 'priority']
+    options: [
+      'lpm',
+      'random',
+      'fcfs',
+      'dfs-weight',
+      'lof',
+      'priority',
+      'routing-key'
+    ]
   },
   {
     label: '--enable-priority-scheduling',
     value: '--enable-priority-scheduling',
+    options: []
+  },
+  {
+    label: '--abort-on-priority-when-disabled',
+    value: '--abort-on-priority-when-disabled',
     options: []
   },
   {
@@ -226,11 +306,6 @@ const options: BackendParameter[] = [
     options: []
   },
   {
-    label: '--hybrid-kvcache-ratio',
-    value: '--hybrid-kvcache-ratio',
-    options: []
-  },
-  {
     label: '--swa-full-tokens-ratio',
     value: '--swa-full-tokens-ratio',
     options: []
@@ -240,20 +315,50 @@ const options: BackendParameter[] = [
     value: '--disable-hybrid-swa-memory',
     options: []
   },
+  {
+    label: '--radix-eviction-policy',
+    value: '--radix-eviction-policy',
+    options: ['lru', 'lfu']
+  },
+  {
+    label: '--enable-prefill-delayer',
+    value: '--enable-prefill-delayer',
+    options: []
+  },
+  {
+    label: '--prefill-delayer-max-delay-passes',
+    value: '--prefill-delayer-max-delay-passes',
+    options: []
+  },
+  {
+    label: '--prefill-delayer-token-usage-low-watermark',
+    value: '--prefill-delayer-token-usage-low-watermark',
+    options: []
+  },
+  {
+    label: '--prefill-delayer-queue-min-ratio',
+    value: '--prefill-delayer-queue-min-ratio',
+    options: []
+  },
+  {
+    label: '--prefill-delayer-max-delay-ms',
+    value: '--prefill-delayer-max-delay-ms',
+    options: []
+  },
+  {
+    label: '--prefill-delayer-forward-passes-buckets',
+    value: '--prefill-delayer-forward-passes-buckets',
+    options: []
+  },
+  {
+    label: '--prefill-delayer-wait-seconds-buckets',
+    value: '--prefill-delayer-wait-seconds-buckets',
+    options: []
+  },
   // Runtime options
   {
     label: '--device',
     value: '--device',
-    options: []
-  },
-  {
-    label: '--elastic-ep-backend',
-    value: '--elastic-ep-backend',
-    options: []
-  },
-  {
-    label: '--mooncake-ib-device',
-    value: '--mooncake-ib-device',
     options: []
   },
   {
@@ -277,8 +382,33 @@ const options: BackendParameter[] = [
     options: []
   },
   {
+    label: '--attention-context-parallel-size',
+    value: '--attention-context-parallel-size',
+    options: []
+  },
+  {
+    label: '--attn-cp-size',
+    value: '--attn-cp-size',
+    options: []
+  },
+  {
+    label: '--moe-data-parallel-size',
+    value: '--moe-data-parallel-size',
+    options: []
+  },
+  {
+    label: '--moe-dp-size',
+    value: '--moe-dp-size',
+    options: []
+  },
+  {
     label: '--pp-max-micro-batch-size',
     value: '--pp-max-micro-batch-size',
+    options: []
+  },
+  {
+    label: '--pp-async-batch-depth',
+    value: '--pp-async-batch-depth',
     options: []
   },
   {
@@ -287,8 +417,8 @@ const options: BackendParameter[] = [
     options: []
   },
   {
-    label: '--stream-output',
-    value: '--stream-output',
+    label: '--incremental-streaming-output',
+    value: '--incremental-streaming-output',
     options: []
   },
   {
@@ -312,6 +442,11 @@ const options: BackendParameter[] = [
     options: []
   },
   {
+    label: '--soft-watchdog-timeout',
+    value: '--soft-watchdog-timeout',
+    options: []
+  },
+  {
     label: '--dist-timeout',
     value: '--dist-timeout',
     options: []
@@ -319,6 +454,11 @@ const options: BackendParameter[] = [
   {
     label: '--download-dir',
     value: '--download-dir',
+    options: []
+  },
+  {
+    label: '--model-checksum',
+    value: '--model-checksum',
     options: []
   },
   {
@@ -334,6 +474,11 @@ const options: BackendParameter[] = [
   {
     label: '--sleep-on-idle',
     value: '--sleep-on-idle',
+    options: []
+  },
+  {
+    label: '--custom-sigquit-handler',
+    value: '--custom-sigquit-handler',
     options: []
   },
   // Logging
@@ -358,13 +503,23 @@ const options: BackendParameter[] = [
     options: ['0', '1', '2', '3']
   },
   {
-    label: '--crash-dump-folder',
-    value: '--crash-dump-folder',
+    label: '--log-requests-format',
+    value: '--log-requests-format',
+    options: ['text', 'json']
+  },
+  {
+    label: '--log-requests-target',
+    value: '--log-requests-target',
     options: []
   },
   {
-    label: '--crash-on-nan',
-    value: '--crash-on-nan',
+    label: '--uvicorn-access-log-exclude-prefixes',
+    value: '--uvicorn-access-log-exclude-prefixes',
+    options: []
+  },
+  {
+    label: '--crash-dump-folder',
+    value: '--crash-dump-folder',
     options: []
   },
   {
@@ -375,6 +530,11 @@ const options: BackendParameter[] = [
   {
     label: '--enable-metrics',
     value: '--enable-metrics',
+    options: []
+  },
+  {
+    label: '--enable-mfu-metrics',
+    value: '--enable-mfu-metrics',
     options: []
   },
   {
@@ -448,14 +608,30 @@ const options: BackendParameter[] = [
     options: []
   },
   {
-    label: '--oltp-traces-endpoint',
-    value: '--oltp-traces-endpoint',
+    label: '--otlp-traces-endpoint',
+    value: '--otlp-traces-endpoint',
+    options: []
+  },
+  // RequestMetricsExporter configuration
+  {
+    label: '--export-metrics-to-file',
+    value: '--export-metrics-to-file',
+    options: []
+  },
+  {
+    label: '--export-metrics-to-file-dir',
+    value: '--export-metrics-to-file-dir',
     options: []
   },
   // API related
   {
     label: '--api-key',
     value: '--api-key',
+    options: []
+  },
+  {
+    label: '--admin-api-key',
+    value: '--admin-api-key',
     options: []
   },
   {
@@ -471,6 +647,11 @@ const options: BackendParameter[] = [
   {
     label: '--chat-template',
     value: '--chat-template',
+    options: []
+  },
+  {
+    label: '--hf-chat-template-name',
+    value: '--hf-chat-template-name',
     options: []
   },
   {
@@ -510,6 +691,7 @@ const options: BackendParameter[] = [
       'deepseekv31',
       'glm',
       'glm45',
+      'glm47',
       'gpt-oss',
       'kimi_k2',
       'llama3',
@@ -518,13 +700,9 @@ const options: BackendParameter[] = [
       'qwen',
       'qwen25',
       'qwen3_coder',
-      'step3'
+      'step3',
+      'gigachat3'
     ]
-  },
-  {
-    label: '--sampling-defaults',
-    value: '--sampling-defaults',
-    options: ['openai', 'model']
   },
   {
     label: '--tool-server',
@@ -532,11 +710,16 @@ const options: BackendParameter[] = [
     options: []
   },
   {
+    label: '--sampling-defaults',
+    value: '--sampling-defaults',
+    options: ['openai', 'model']
+  },
+  // Data parallelism
+  {
     label: '--data-parallel-size',
     value: '--data-parallel-size',
     options: []
   },
-  // Data parallelism
   {
     label: '--dp-size',
     value: '--dp-size',
@@ -545,17 +728,13 @@ const options: BackendParameter[] = [
   {
     label: '--load-balance-method',
     value: '--load-balance-method',
-    options: ['round_robin', 'shortest_queue', 'minimum_tokens']
-  },
-  {
-    label: '--load-watch-interval',
-    value: '--load-watch-interval',
-    options: []
-  },
-  {
-    label: '--prefill-round-robin-balance',
-    value: '--prefill-round-robin-balance',
-    options: []
+    options: [
+      'auto',
+      'round_robin',
+      'follow_bootstrap_room',
+      'total_requests',
+      'total_tokens'
+    ]
   },
   // Multi-node distributed serving
   {
@@ -596,6 +775,11 @@ const options: BackendParameter[] = [
     options: []
   },
   {
+    label: '--enable-lora-overlap-loading',
+    value: '--enable-lora-overlap-loading',
+    options: []
+  },
+  {
     label: '--max-lora-rank',
     value: '--max-lora-rank',
     options: []
@@ -619,7 +803,7 @@ const options: BackendParameter[] = [
   {
     label: '--lora-paths',
     value: '--lora-paths',
-    options: ['{"lora_name": str, "lora_path": str, "pinned": bool}']
+    options: []
   },
   {
     label: '--max-loras-per-batch',
@@ -639,14 +823,19 @@ const options: BackendParameter[] = [
   {
     label: '--lora-backend',
     value: '--lora-backend',
-    options: ['triton', 'csgmv']
+    options: ['triton', 'csgmv', 'ascend', 'torch_native']
   },
   {
     label: '--max-lora-chunk-size',
     value: '--max-lora-chunk-size',
     options: ['16', '32', '64', '128']
   },
-  // Kernel backend
+  {
+    label: '--lora-drain-wait-threshold',
+    value: '--lora-drain-wait-threshold',
+    options: []
+  },
+  // Kernel Backends (Attention, Sampling, Grammar, GEMM)
   {
     label: '--attention-backend',
     value: '--attention-backend',
@@ -654,6 +843,7 @@ const options: BackendParameter[] = [
       'triton',
       'torch_native',
       'flex_attention',
+      'dsa',
       'nsa',
       'cutlass_mla',
       'fa3',
@@ -676,6 +866,7 @@ const options: BackendParameter[] = [
       'triton',
       'torch_native',
       'flex_attention',
+      'dsa',
       'nsa',
       'cutlass_mla',
       'fa3',
@@ -698,6 +889,7 @@ const options: BackendParameter[] = [
       'triton',
       'torch_native',
       'flex_attention',
+      'dsa',
       'nsa',
       'cutlass_mla',
       'fa3',
@@ -716,7 +908,7 @@ const options: BackendParameter[] = [
   {
     label: '--sampling-backend',
     value: '--sampling-backend',
-    options: ['flashinfer', 'pytorch']
+    options: ['flashinfer', 'pytorch', 'ascend']
   },
   {
     label: '--grammar-backend',
@@ -726,17 +918,66 @@ const options: BackendParameter[] = [
   {
     label: '--mm-attention-backend',
     value: '--mm-attention-backend',
-    options: ['sdpa', 'fa3', 'triton_attn', 'ascend_attn']
+    options: ['sdpa', 'fa3', 'fa4', 'triton_attn', 'ascend_attn', 'aiter_attn']
   },
   {
-    label: '--nsa-prefill',
-    value: '--nsa-prefill',
-    options: ['flashmla_sparse', 'flashmla_decode', 'fa3', 'tilelang', 'aiter']
+    label: '--dsa-prefill-backend',
+    value: '--dsa-prefill-backend',
+    options: [
+      'flashmla_sparse',
+      'flashmla_kv',
+      'flashmla_auto',
+      'fa3',
+      'tilelang',
+      'aiter',
+      'trtllm'
+    ]
   },
   {
-    label: '--nsa-decode',
-    value: '--nsa-decode',
-    options: ['flashmla_prefill', 'flashmla_kv', 'fa3', 'tilelang', 'aiter']
+    label: '--dsa-decode-backend',
+    value: '--dsa-decode-backend',
+    options: [
+      'flashmla_sparse',
+      'flashmla_kv',
+      'fa3',
+      'tilelang',
+      'aiter',
+      'trtllm'
+    ]
+  },
+  {
+    label: '--dsa-topk-backend',
+    value: '--dsa-topk-backend',
+    options: ['sgl-kernel', 'torch', 'flashinfer']
+  },
+  {
+    label: '--fp8-gemm-backend',
+    value: '--fp8-gemm-backend',
+    options: [
+      'auto',
+      'deep_gemm',
+      'flashinfer_trtllm',
+      'flashinfer_cutlass',
+      'flashinfer_deepgemm',
+      'cutlass',
+      'triton',
+      'aiter'
+    ]
+  },
+  {
+    label: '--fp4-gemm-backend',
+    value: '--fp4-gemm-backend',
+    options: [
+      'auto',
+      'flashinfer_cudnn',
+      'flashinfer_cutlass',
+      'flashinfer_trtllm'
+    ]
+  },
+  {
+    label: '--disable-flashinfer-autotune',
+    value: '--disable-flashinfer-autotune',
+    options: []
   },
   // Speculative decoding
   {
@@ -757,6 +998,11 @@ const options: BackendParameter[] = [
   {
     label: '--speculative-draft-model-revision',
     value: '--speculative-draft-model-revision',
+    options: []
+  },
+  {
+    label: '--speculative-draft-load-format',
+    value: '--speculative-draft-load-format',
     options: []
   },
   {
@@ -794,17 +1040,27 @@ const options: BackendParameter[] = [
     value: '--speculative-attention-mode',
     options: ['prefill', 'decode']
   },
+  {
+    label: '--speculative-draft-attention-backend',
+    value: '--speculative-draft-attention-backend',
+    options: []
+  },
+  {
+    label: '--speculative-moe-runner-backend',
+    value: '--speculative-moe-runner-backend',
+    options: []
+  },
+  {
+    label: '--speculative-moe-a2a-backend',
+    value: '--speculative-moe-a2a-backend',
+    options: []
+  },
+  {
+    label: '--speculative-draft-model-quantization',
+    value: '--speculative-draft-model-quantization',
+    options: []
+  },
   // Ngram speculative decoding
-  {
-    label: '--speculative-ngram-min-match-window-size',
-    value: '--speculative-ngram-min-match-window-size',
-    options: []
-  },
-  {
-    label: '--speculative-ngram-max-match-window-size',
-    value: '--speculative-ngram-max-match-window-size',
-    options: []
-  },
   {
     label: '--speculative-ngram-min-bfs-breadth',
     value: '--speculative-ngram-min-bfs-breadth',
@@ -821,8 +1077,8 @@ const options: BackendParameter[] = [
     options: ['BFS', 'PROB']
   },
   {
-    label: '--speculative-ngram-branch-length',
-    value: '--speculative-ngram-branch-length',
+    label: '--speculative-ngram-max-trie-depth',
+    value: '--speculative-ngram-max-trie-depth',
     options: []
   },
   {
@@ -830,7 +1086,13 @@ const options: BackendParameter[] = [
     value: '--speculative-ngram-capacity',
     options: []
   },
-  // Expert parallelism
+  // Multi-layer Eagle speculative decoding
+  {
+    label: '--enable-multi-layer-eagle',
+    value: '--enable-multi-layer-eagle',
+    options: []
+  },
+  // MoE
   {
     label: '--expert-parallel-size',
     value: '--expert-parallel-size',
@@ -849,7 +1111,7 @@ const options: BackendParameter[] = [
   {
     label: '--moe-a2a-backend',
     value: '--moe-a2a-backend',
-    options: ['none', 'deepep']
+    options: ['none', 'deepep', 'mooncake', 'mori', 'nixl', 'ascend_fuseep']
   },
   {
     label: '--moe-runner-backend',
@@ -860,9 +1122,11 @@ const options: BackendParameter[] = [
       'triton',
       'triton_kernel',
       'flashinfer_trtllm',
+      'flashinfer_trtllm_routed',
       'flashinfer_cutlass',
       'flashinfer_mxfp4',
-      'flashinfer_cutedsl'
+      'flashinfer_cutedsl',
+      'cutlass'
     ]
   },
   {
@@ -876,9 +1140,19 @@ const options: BackendParameter[] = [
     options: []
   },
   {
+    label: '--enable-aiter-allreduce-fusion',
+    value: '--enable-aiter-allreduce-fusion',
+    options: []
+  },
+  {
     label: '--deepep-mode',
     value: '--deepep-mode',
     options: ['normal', 'low_latency', 'auto']
+  },
+  {
+    label: '--deepep-dispatcher-output-dtype',
+    value: '--deepep-dispatcher-output-dtype',
+    options: ['bf16', 'fp8', 'int8', 'nvfp4', 'auto']
   },
   {
     label: '--ep-num-redundant-experts',
@@ -945,6 +1219,31 @@ const options: BackendParameter[] = [
     value: '--moe-dense-tp-size',
     options: []
   },
+  {
+    label: '--elastic-ep-backend',
+    value: '--elastic-ep-backend',
+    options: ['none', 'mooncake']
+  },
+  {
+    label: '--enable-elastic-expert-backup',
+    value: '--enable-elastic-expert-backup',
+    options: []
+  },
+  {
+    label: '--mooncake-ib-device',
+    value: '--mooncake-ib-device',
+    options: []
+  },
+  {
+    label: '--enable-deepep-waterfill',
+    value: '--enable-deepep-waterfill',
+    options: []
+  },
+  {
+    label: '--elastic-ep-rejoin',
+    value: '--elastic-ep-rejoin',
+    options: []
+  },
   // Mamba Cache
   {
     label: '--max-mamba-cache-size',
@@ -954,17 +1253,21 @@ const options: BackendParameter[] = [
   {
     label: '--mamba-ssm-dtype',
     value: '--mamba-ssm-dtype',
-    options: ['float32', 'bfloat16']
+    options: ['float32', 'bfloat16', 'float16']
   },
   {
     label: '--mamba-full-memory-ratio',
     value: '--mamba-full-memory-ratio',
     options: []
   },
-  // Args for multi-item scoring
   {
-    label: '--multi-item-scoring-delimiter',
-    value: '--multi-item-scoring-delimiter',
+    label: '--mamba-scheduler-strategy',
+    value: '--mamba-scheduler-strategy',
+    options: ['auto', 'no_buffer', 'extra_buffer']
+  },
+  {
+    label: '--mamba-track-interval',
+    value: '--mamba-track-interval',
     options: []
   },
   // Hierarchical cache
@@ -989,19 +1292,20 @@ const options: BackendParameter[] = [
     options: ['write_back', 'write_through', 'write_through_selective']
   },
   {
-    label: '--radix-eviction-policy',
-    value: '--radix-eviction-policy',
-    options: ['lru', 'lfu']
-  },
-  {
     label: '--hicache-io-backend',
     value: '--hicache-io-backend',
-    options: ['direct', 'kernel']
+    options: ['direct', 'kernel', 'kernel_ascend']
   },
   {
     label: '--hicache-mem-layout',
     value: '--hicache-mem-layout',
-    options: ['layer_first', 'page_first', 'page_first_direct']
+    options: [
+      'layer_first',
+      'page_first',
+      'page_first_direct',
+      'page_first_kv_split',
+      'page_head'
+    ]
   },
   {
     label: '--hicache-storage-backend',
@@ -1018,41 +1322,16 @@ const options: BackendParameter[] = [
     value: '--hicache-storage-backend-extra-config',
     options: []
   },
+  // Hierarchical sparse attention
+  {
+    label: '--hierarchical-sparse-attention-extra-config',
+    value: '--hierarchical-sparse-attention-extra-config',
+    options: []
+  },
   // LMCache
   {
     label: '--enable-lmcache',
     value: '--enable-lmcache',
-    options: []
-  },
-  // Double Sparsity
-  {
-    label: '--enable-double-sparsity',
-    value: '--enable-double-sparsity',
-    options: []
-  },
-  {
-    label: '--ds-channel-config-path',
-    value: '--ds-channel-config-path',
-    options: []
-  },
-  {
-    label: '--ds-heavy-channel-num',
-    value: '--ds-heavy-channel-num',
-    options: []
-  },
-  {
-    label: '--ds-heavy-token-num',
-    value: '--ds-heavy-token-num',
-    options: []
-  },
-  {
-    label: '--ds-heavy-channel-type',
-    value: '--ds-heavy-channel-type',
-    options: []
-  },
-  {
-    label: '--ds-sparse-decode-threshold',
-    value: '--ds-sparse-decode-threshold',
     options: []
   },
   // Offloading
@@ -1079,6 +1358,12 @@ const options: BackendParameter[] = [
   {
     label: '--offload-mode',
     value: '--offload-mode',
+    options: []
+  },
+  // Args for multi-item scoring
+  {
+    label: '--multi-item-scoring-delimiter',
+    value: '--multi-item-scoring-delimiter',
     options: []
   },
   // Optimization/debug options
@@ -1118,6 +1403,11 @@ const options: BackendParameter[] = [
     options: []
   },
   {
+    label: '--enable-layerwise-nvtx-marker',
+    value: '--enable-layerwise-nvtx-marker',
+    options: []
+  },
+  {
     label: '--enable-nccl-nvls',
     value: '--enable-nccl-nvls',
     options: []
@@ -1135,6 +1425,11 @@ const options: BackendParameter[] = [
   {
     label: '--enable-tokenizer-batch-encode',
     value: '--enable-tokenizer-batch-encode',
+    options: []
+  },
+  {
+    label: '--disable-tokenizer-batch-decode',
+    value: '--disable-tokenizer-batch-decode',
     options: []
   },
   {
@@ -1198,14 +1493,29 @@ const options: BackendParameter[] = [
     options: []
   },
   {
-    label: '--enable-piecewise-cuda-graph',
-    value: '--enable-piecewise-cuda-graph',
+    label: '--enable-torch-compile-debug-mode',
+    value: '--enable-torch-compile-debug-mode',
+    options: []
+  },
+  {
+    label: '--disable-piecewise-cuda-graph',
+    value: '--disable-piecewise-cuda-graph',
+    options: []
+  },
+  {
+    label: '--enforce-piecewise-cuda-graph',
+    value: '--enforce-piecewise-cuda-graph',
     options: []
   },
   {
     label: '--piecewise-cuda-graph-tokens',
     value: '--piecewise-cuda-graph-tokens',
     options: []
+  },
+  {
+    label: '--piecewise-cuda-graph-compiler',
+    value: '--piecewise-cuda-graph-compiler',
+    options: ['eager', 'inductor']
   },
   {
     label: '--torch-compile-max-bs',
@@ -1268,6 +1578,11 @@ const options: BackendParameter[] = [
     options: []
   },
   {
+    label: '--enable-draft-weights-cpu-backup',
+    value: '--enable-draft-weights-cpu-backup',
+    options: []
+  },
+  {
     label: '--allow-auto-truncate',
     value: '--allow-auto-truncate',
     options: []
@@ -1308,6 +1623,11 @@ const options: BackendParameter[] = [
     options: []
   },
   {
+    label: '--enable-return-routed-experts',
+    value: '--enable-return-routed-experts',
+    options: []
+  },
+  {
     label: '--scheduler-recv-interval',
     value: '--scheduler-recv-interval',
     options: []
@@ -1317,22 +1637,42 @@ const options: BackendParameter[] = [
     value: '--numa-node',
     options: []
   },
-  // Debug tensor dumps
   {
-    label: '--debug-tensor-dump-output-folder',
-    value: '--debug-tensor-dump-output-folder',
+    label: '--enable-deterministic-inference',
+    value: '--enable-deterministic-inference',
     options: []
   },
   {
-    label: '--debug-tensor-dump-input-file',
-    value: '--debug-tensor-dump-input-file',
+    label: '--rl-on-policy-target',
+    value: '--rl-on-policy-target',
+    options: ['fsdp']
+  },
+  {
+    label: '--enable-attn-tp-input-scattered',
+    value: '--enable-attn-tp-input-scattered',
     options: []
   },
   {
-    label: '--debug-tensor-dump-inject',
-    value: '--debug-tensor-dump-inject',
+    label: '--enable-dsa-prefill-context-parallel',
+    value: '--enable-dsa-prefill-context-parallel',
     options: []
   },
+  {
+    label: '--dsa-prefill-cp-mode',
+    value: '--dsa-prefill-cp-mode',
+    options: ['in-seq-split', 'round-robin-split']
+  },
+  {
+    label: '--enable-fused-qk-norm-rope',
+    value: '--enable-fused-qk-norm-rope',
+    options: []
+  },
+  {
+    label: '--enable-precise-embedding-interpolation',
+    value: '--enable-precise-embedding-interpolation',
+    options: []
+  },
+  // Dynamic batch tokenizer
   {
     label: '--enable-dynamic-batch-tokenizer',
     value: '--enable-dynamic-batch-tokenizer',
@@ -1346,6 +1686,27 @@ const options: BackendParameter[] = [
   {
     label: '--dynamic-batch-tokenizer-batch-timeout',
     value: '--dynamic-batch-tokenizer-batch-timeout',
+    options: []
+  },
+  // Debug tensor dumps
+  {
+    label: '--debug-tensor-dump-output-folder',
+    value: '--debug-tensor-dump-output-folder',
+    options: []
+  },
+  {
+    label: '--debug-tensor-dump-layers',
+    value: '--debug-tensor-dump-layers',
+    options: []
+  },
+  {
+    label: '--debug-tensor-dump-input-file',
+    value: '--debug-tensor-dump-input-file',
+    options: []
+  },
+  {
+    label: '--debug-tensor-dump-inject',
+    value: '--debug-tensor-dump-inject',
     options: []
   },
   // PD disaggregation
@@ -1362,21 +1723,6 @@ const options: BackendParameter[] = [
   {
     label: '--disaggregation-bootstrap-port',
     value: '--disaggregation-bootstrap-port',
-    options: []
-  },
-  {
-    label: '--disaggregation-decode-tp',
-    value: '--disaggregation-decode-tp',
-    options: []
-  },
-  {
-    label: '--disaggregation-decode-dp',
-    value: '--disaggregation-decode-dp',
-    options: []
-  },
-  {
-    label: '--disaggregation-prefill-pp',
-    value: '--disaggregation-prefill-pp',
     options: []
   },
   {
@@ -1399,6 +1745,27 @@ const options: BackendParameter[] = [
     value: '--disaggregation-decode-polling-interval',
     options: []
   },
+  // Encode prefill disaggregation
+  {
+    label: '--encoder-only',
+    value: '--encoder-only',
+    options: []
+  },
+  {
+    label: '--language-only',
+    value: '--language-only',
+    options: []
+  },
+  {
+    label: '--encoder-transfer-backend',
+    value: '--encoder-transfer-backend',
+    options: ['zmq_to_scheduler', 'zmq_to_tokenizer', 'mooncake']
+  },
+  {
+    label: '--encoder-urls',
+    value: '--encoder-urls',
+    options: []
+  },
   // Custom weight loader
   {
     label: '--custom-weight-loader',
@@ -1408,6 +1775,16 @@ const options: BackendParameter[] = [
   {
     label: '--weight-loader-disable-mmap',
     value: '--weight-loader-disable-mmap',
+    options: []
+  },
+  {
+    label: '--weight-loader-prefetch-checkpoints',
+    value: '--weight-loader-prefetch-checkpoints',
+    options: []
+  },
+  {
+    label: '--weight-loader-prefetch-num-threads',
+    value: '--weight-loader-prefetch-num-threads',
     options: []
   },
   {
@@ -1423,6 +1800,16 @@ const options: BackendParameter[] = [
   {
     label: '--remote-instance-weight-loader-send-weights-group-ports',
     value: '--remote-instance-weight-loader-send-weights-group-ports',
+    options: []
+  },
+  {
+    label: '--remote-instance-weight-loader-backend',
+    value: '--remote-instance-weight-loader-backend',
+    options: ['transfer_engine', 'nccl']
+  },
+  {
+    label: '--remote-instance-weight-loader-start-seed-via-transfer-engine',
+    value: '--remote-instance-weight-loader-start-seed-via-transfer-engine',
     options: []
   },
   // For PD-Multiplexing
@@ -1441,16 +1828,62 @@ const options: BackendParameter[] = [
     value: '--sm-group-num',
     options: []
   },
-  // For deterministic inference
-  {
-    label: '--enable-deterministic-inference',
-    value: '--enable-deterministic-inference',
-    options: []
-  },
   // Configuration file support
   {
     label: '--config',
     value: '--config',
+    options: []
+  },
+  // For Multi-Modal
+  {
+    label: '--mm-max-concurrent-calls',
+    value: '--mm-max-concurrent-calls',
+    options: []
+  },
+  {
+    label: '--mm-per-request-timeout',
+    value: '--mm-per-request-timeout',
+    options: []
+  },
+  {
+    label: '--enable-broadcast-mm-inputs-process',
+    value: '--enable-broadcast-mm-inputs-process',
+    options: []
+  },
+  {
+    label: '--mm-process-config',
+    value: '--mm-process-config',
+    options: []
+  },
+  {
+    label: '--mm-enable-dp-encoder',
+    value: '--mm-enable-dp-encoder',
+    options: []
+  },
+  {
+    label: '--limit-mm-data-per-request',
+    value: '--limit-mm-data-per-request',
+    options: []
+  },
+  {
+    label: '--enable-mm-global-cache',
+    value: '--enable-mm-global-cache',
+    options: []
+  },
+  // For checkpoint decryption
+  {
+    label: '--decrypted-config-file',
+    value: '--decrypted-config-file',
+    options: []
+  },
+  {
+    label: '--decrypted-draft-config-file',
+    value: '--decrypted-draft-config-file',
+    options: []
+  },
+  {
+    label: '--enable-prefix-mm-cache',
+    value: '--enable-prefix-mm-cache',
     options: []
   }
 ];

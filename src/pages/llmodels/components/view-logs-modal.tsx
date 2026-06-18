@@ -55,6 +55,12 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
     );
   }, [countOptions, showPrevious]);
 
+  const hasPreviousContainer = useMemo(() => {
+    return countOptions?.some((option) =>
+      option.children?.some((child) => child.previous)
+    );
+  }, [countOptions]);
+
   const handleCancel = useCallback(() => {
     logsViewerRef.current?.abort();
     onCancel();
@@ -186,15 +192,15 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
           {intl.formatMessage({ id: 'common.button.viewlog' })}
         </span>
         <span className="flex-center gap-8" style={{ height: 32 }}>
-          {showCascader && (
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 16,
-                marginRight: 8
-              }}
-            >
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 16,
+              marginRight: 8
+            }}
+          >
+            {hasPreviousContainer && (
               <Checkbox onChange={handleOnChecked} checked={showPrevious}>
                 <Tooltip
                   title={
@@ -219,6 +225,9 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
                   <QuestionCircleOutlined style={{ marginLeft: 4 }} />
                 </Tooltip>
               </Checkbox>
+            )}
+
+            {showCascader && (
               <BaseSelect
                 prefix={
                   <span
@@ -240,9 +249,8 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
                 onChange={handleContainerChange}
                 style={{ width: 360 }}
               ></BaseSelect>
-            </div>
-          )}
-
+            )}
+          </div>
           <Button
             type="text"
             color="default"

@@ -34,9 +34,11 @@ const Basic: React.FC<{
   };
 
   const filterOption = (input: string, option?: any) => {
+    console.log('filterOption input, option: ', input, option);
     return (
       option?.label?.toLowerCase().includes(input.toLowerCase()) ||
-      option?.value?.toLowerCase().includes(input.toLowerCase())
+      option?.value?.toLowerCase().includes(input.toLowerCase()) ||
+      option?.description?.toLowerCase().includes(input.toLowerCase())
     );
   };
 

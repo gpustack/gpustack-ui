@@ -70,12 +70,17 @@ export const ProviderI18nKeyMap: Record<ProviderEnum, string> = {
   [ProviderEnum.ZHIPUAI]: 'ai.provider.zhipuai'
 };
 
+export const ProviderDescriptionMap: Record<ProviderEnum, string> = {
+  [ProviderEnum.QWEN]: 'qwen, bailian, ali,alicloud,百炼, 阿里, 阿里云百炼'
+} as Record<ProviderEnum, string>;
+
 // generate provider list: {label: string;value:string}[]
 export const maasProviderOptions = Object.entries(ProviderEnum).map(
   ([key, value]) => ({
     locale: true,
     label: ProviderI18nKeyMap[value],
     value: value,
+    description: ProviderDescriptionMap[value] || '',
     key: value
   })
 );

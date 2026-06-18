@@ -1,13 +1,16 @@
 import { getCurrentOrg, getOrgById } from '@/atoms/user';
+import { getGPUStackPlugin } from '@/plugins';
 import { useNavigate } from '@umijs/max';
 import { modelCategoriesMap } from '../../llmodels/config';
 import { categoryToPathMap } from '../../llmodels/config/button-actions';
 
 const useOpenPlayground = () => {
   const navigate = useNavigate();
+  const plugin = getGPUStackPlugin();
 
   const generateModelName = (row: any) => {
     const org = getOrgById(row.owner_principal_id) ?? getCurrentOrg();
+
     // The platform Org is always named ``default`` (backend constant
     // ``PLATFORM_PRINCIPAL_NAME``); its models are reported by
     // ``/v1/models`` without a prefix. Match by name too, not just the
@@ -27,7 +30,8 @@ const useOpenPlayground = () => {
     // ``owner_principal_id`` (an org principal id); fall back to the Org the
     // caller is currently acting under for the admin "All" view, where the
     // row's owner still resolves via the platform-wide org cache.
-    const rawModel = generateModelName(row);
+    // if has plugin, it means is enterpise edition, we need to generate the model name with org name prefix, otherwise, we just use the model name
+    const rawModel = plugin ? generateModelName(row) : row.name;
     const modelName = encodeURIComponent(rawModel);
 
     for (const [category, path] of Object.entries(categoryToPathMap)) {

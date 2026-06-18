@@ -392,7 +392,7 @@ export const CustomSizeConfig: ParamsSchema[] = [
       max: 1024,
       step: 64,
       labelWidth: 314,
-      inputnumber: false
+      inputnumber: true
     },
     rules: [
       {
@@ -413,7 +413,7 @@ export const CustomSizeConfig: ParamsSchema[] = [
       max: 1024,
       step: 64,
       labelWidth: 314,
-      inputnumber: false
+      inputnumber: true
     },
     rules: [
       {

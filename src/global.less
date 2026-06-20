@@ -638,10 +638,15 @@ body {
   inset: 53px auto auto 0 !important;
   border-radius: 0 0 var(--border-radius-base) var(--border-radius-base);
   border-top: none;
-  max-height: 240px;
-  min-height: 100px;
+  .ant-cascader-menus {
+    align-items: stretch;
+  }
 
   &.gpu-selector {
+    .ant-cascader-menu {
+      max-height: 400px;
+      height: unset;
+    }
     .ant-cascader-menu:last-child {
       flex: auto;
 

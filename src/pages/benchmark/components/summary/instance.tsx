@@ -125,6 +125,23 @@ const Instance: React.FC = () => {
         )
       },
       {
+        key: '2',
+        label: intl.formatMessage({ id: 'models.form.env' }),
+        children: (
+          <Flex gap={8} wrap="wrap">
+            {instanceData?.env
+              ? Object.entries(instanceData?.env || {}).map(
+                  ([key, value], index: number) => (
+                    <Tag key={index} style={{ margin: 0 }}>
+                      {`${key}=${value}`}
+                    </Tag>
+                  )
+                )
+              : '-'}
+          </Flex>
+        )
+      },
+      {
         key: '4',
         label: intl.formatMessage({
           id: 'benchmark.detail.speculativeDecoding'
@@ -157,23 +174,6 @@ const Instance: React.FC = () => {
             ) : (
               '-'
             )}
-          </Flex>
-        )
-      },
-      {
-        key: '2',
-        label: intl.formatMessage({ id: 'models.form.env' }),
-        children: (
-          <Flex gap={8} wrap="wrap">
-            {instanceData?.env
-              ? Object.entries(instanceData?.env || {}).map(
-                  ([key, value], index: number) => (
-                    <Tag key={index} style={{ margin: 0 }}>
-                      {`${key}=${value}`}
-                    </Tag>
-                  )
-                )
-              : '-'}
           </Flex>
         )
       }

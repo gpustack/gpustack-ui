@@ -59,7 +59,7 @@ const Organizations: React.FC = () => {
                   </li>
                 ))}
               </ul>
-              <div style={{ textAlign: 'center' }}>
+              <div style={{ textAlign: 'center', marginTop: 56 }}>
                 <Button
                   type="primary"
                   href="https://gpustack.ai/enterprise"

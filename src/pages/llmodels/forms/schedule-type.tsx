@@ -175,13 +175,20 @@ const ScheduleTypeForm: React.FC = () => {
               <SealCascader
                 required
                 showSearch
-                expandTrigger="hover"
+                expandTrigger="click"
                 multiple={
                   form.getFieldValue('backend') !== backendOptionsMap.voxBox
                 }
                 classNames={{
                   popup: {
                     root: 'cascader-popup-wrapper gpu-selector'
+                  }
+                }}
+                styles={{
+                  popup: {
+                    listItem: {
+                      maxWidth: 'unset'
+                    }
                   }
                 }}
                 maxTagCount={1}

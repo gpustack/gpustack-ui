@@ -1,7 +1,6 @@
 import { convertFileSize } from '@/utils';
 import { AutoTooltip } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import _ from 'lodash';
 import React from 'react';
 import styled from 'styled-components';
 import '../style/gpu-card.less';
@@ -24,6 +23,7 @@ const ItemInfo = styled.div`
   display: flex;
   flex-wrap: wrap;
   white-space: break-spaces;
+  font-size: 13px;
 `;
 
 const Description = styled.div`
@@ -76,7 +76,7 @@ const GPUCard: React.FC<{
                 / {convertFileSize(data?.memory?.total || 0)}
               </span>
             </ItemInfo>
-            <ItemInfo>
+            {/* <ItemInfo>
               <span>
                 {intl.formatMessage({ id: 'resources.table.gpuutilization' })}
                 :{' '}
@@ -85,7 +85,7 @@ const GPUCard: React.FC<{
                 ? _.round(data?.memory?.utilization_rate || 0, 2)
                 : _.round(data.memory?.allocated / data.memory?.total, 2) * 100}
               %
-            </ItemInfo>
+            </ItemInfo> */}
           </>
         )
       }

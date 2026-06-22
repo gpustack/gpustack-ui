@@ -58,7 +58,9 @@ const useInstancesColumns = (groupKey: GroupKey) => {
             intl,
             categories: ['cpu', 'ram'],
             title:
-              (row.gpu_count ?? 0) > 0 ? instanceTypeLabel(row) : 'CPU Only'
+              !!row.gpu_count || !!row.vram_mib
+                ? instanceTypeLabel(row)
+                : 'CPU Only'
           }
         )
     };

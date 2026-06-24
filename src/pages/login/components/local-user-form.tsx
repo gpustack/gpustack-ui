@@ -45,8 +45,6 @@ interface LocalUserFormProps {
   form: FormInstance;
   loading?: boolean;
   loginOption: {
-    saml: boolean;
-    oidc: boolean;
     first_time_setup: boolean;
     get_initial_password_command: string;
   };

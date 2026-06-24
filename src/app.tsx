@@ -3,9 +3,6 @@ import { GPUStackVersionAtom, UpdateCheckAtom, userAtom } from '@/atoms/user';
 import { setAtomStorage } from '@/atoms/utils';
 import { DEFAULT_ENTER_PAGE, GPUSTACK_API_BASE_URL } from '@/config/settings';
 import { COLOR_PRIMARY } from '@/config/theme/constants';
-import { queryClusterList } from '@/pages/cluster-management/apis';
-import { ProviderValueMap } from '@/pages/cluster-management/config';
-import { queryResourceEvents } from '@/pages/usage/apis/resource';
 import { getGPUStackPlugin } from '@/plugins';
 import { enterprisePluginReady } from '@/plugins/enterprise-ready';
 import { GPUStackPluginManager } from '@/plugins/manager';
@@ -17,6 +14,10 @@ import {
 } from '@/services/profile/apis';
 import { fetchSystemConfig } from '@/services/system/query-system-config';
 import { isOnline } from '@/utils';
+import {
+  markInitialStateProbed,
+  probeAccessFlags
+} from '@/utils/access-probes';
 import { installTenantFetch } from '@/utils/install-fetch';
 import {
   IS_FIRST_LOGIN,
@@ -38,80 +39,6 @@ const checkDefaultPage = async (userInfo: any) => {
     if (userInfo && userInfo?.is_admin) {
       history.push(DEFAULT_ENTER_PAGE.adminForFirst);
     }
-  }
-};
-
-// Probes the caller's cluster list once so access predicates can gate
-// GPU Service (Kubernetes-only). Cheap (one list request) and never
-// blocks login — any failure just falls back to `undefined`, which
-// the predicate treats as "unknown / don't restrict beyond role".
-// The result is also mirrored into sessionStorage so access extensions
-// that run without the initialState argument can read it (e.g. to
-// override the admin shortcut in scopes where the menu shouldn't
-// show even for admins).
-const HAS_K8S_CLUSTER_KEY = 'hasKubernetesCluster';
-const probeHasKubernetesCluster = async (): Promise<boolean | undefined> => {
-  try {
-    const res = await queryClusterList(
-      { page: -1 },
-      {
-        skipErrorHandler: true
-      }
-    );
-    const value = (res?.items ?? []).some(
-      (c) => c?.provider === ProviderValueMap.Kubernetes
-    );
-    try {
-      window.sessionStorage.setItem(HAS_K8S_CLUSTER_KEY, JSON.stringify(value));
-    } catch {
-      // sessionStorage may be unavailable (Safari private mode); the
-      // access predicate already handles a missing value as "unknown".
-    }
-    return value;
-  } catch (error) {
-    console.error('probeHasKubernetesCluster error', error);
-    try {
-      window.sessionStorage.removeItem(HAS_K8S_CLUSTER_KEY);
-    } catch {
-      // ignore
-    }
-    return undefined;
-  }
-};
-
-// Probes whether the caller has ANY resource-usage events (GPU/CPU instance or
-// storage lifecycle). Used alongside the cluster probe so a user who has run
-// GPU instances still sees GPU Service / the full Usage page even if they
-// currently have no Kubernetes cluster. Mirrored into sessionStorage for the
-// access extensions; any failure → undefined ("unknown — don't restrict").
-const HAS_RESOURCE_EVENTS_KEY = 'hasResourceEvents';
-const probeHasResourceEvents = async (): Promise<boolean | undefined> => {
-  try {
-    // No date range = "ever"; scope is clamped to the caller server-side.
-    const res = await queryResourceEvents(
-      { perPage: 1 },
-      {
-        skipErrorHandler: true
-      }
-    );
-    const value = (res?.pagination?.total ?? 0) > 0;
-    try {
-      window.sessionStorage.setItem(
-        HAS_RESOURCE_EVENTS_KEY,
-        JSON.stringify(value)
-      );
-    } catch {
-      // sessionStorage may be unavailable; predicate treats missing as unknown.
-    }
-    return value;
-  } catch (error) {
-    console.error('probeHasResourceEvents error', error);
-    try {
-      window.sessionStorage.removeItem(HAS_RESOURCE_EVENTS_KEY);
-    } catch {
-      // ignore
-    }
-    return undefined;
   }
 };
 
@@ -235,19 +162,24 @@ export async function getInitialState(): Promise<{
   getAppVersionInfo();
 
   if (![DEFAULT_ENTER_PAGE.login].includes(location.pathname)) {
-    const [userInfo, hasKubernetesCluster, hasResourceEvents] =
-      await Promise.all([
-        fetchUserInfo(),
-        probeHasKubernetesCluster(),
-        probeHasResourceEvents()
-      ]);
+    const [userInfo, accessFlags] = await Promise.all([
+      fetchUserInfo(),
+      probeAccessFlags()
+    ]);
+    // Record that the probes ran for an authenticated user this page load
+    // (the refresh path) so the layout doesn't re-probe. A failed
+    // fetch (empty user — e.g. unauthenticated deep link that bounces to
+    // login) is NOT marked: the user will log in via SPA afterwards and
+    // the layout becomes responsible for probing.
+    if (userInfo?.username) {
+      markInitialStateProbed();
+    }
     checkDefaultPage(userInfo);
     return {
       fetchUserInfo,
       currentUser: userInfo,
       pluginData,
-      hasKubernetesCluster,
-      hasResourceEvents
+      ...accessFlags
     };
   }
   return {

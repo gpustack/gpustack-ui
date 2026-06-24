@@ -174,6 +174,7 @@ const ResourceFilterBar: React.FC<ResourceFilterBarProps> = (props) => {
             allowClear
             showSearch
             mode="multiple"
+            maxTagCount={'responsive'}
             options={userOptions}
             placeholder={intl.formatMessage({ id: 'usage.filter.user' })}
             styles={{
@@ -189,6 +190,7 @@ const ResourceFilterBar: React.FC<ResourceFilterBarProps> = (props) => {
             allowClear
             showSearch
             mode="multiple"
+            maxTagCount={'responsive'}
             options={resourceFilter.options}
             placeholder={resourceFilter.placeholder}
             styles={{

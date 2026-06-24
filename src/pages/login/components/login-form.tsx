@@ -182,18 +182,12 @@ const LoginForm = () => {
   };
 
   const handleLoginWithThirdParty = () => {
-    if (SSOAuth.options.oidc) {
-      SSOAuth.loginWithOIDC();
-    } else if (SSOAuth.options.saml) {
-      SSOAuth.loginWithSAML();
-    }
+    SSOAuth.loginWithExternalAuth();
     setLoading(true);
     setAuthError(null);
   };
 
-  const hasThirdPartyLogin = useMemo(() => {
-    return SSOAuth.options.oidc || SSOAuth.options.saml;
-  }, [SSOAuth.options]);
+  const hasThirdPartyLogin = !!SSOAuth.options.external_auth;
 
   const isThirdPartyAuthHandling = useMemo(() => {
     return loading && !authError;
@@ -205,18 +199,8 @@ const LoginForm = () => {
 
     return (
       <Buttons>
-        {SSOAuth.options.oidc && (
-          <ButtonWrapper onClick={SSOAuth.loginWithOIDC}>
-            <ButtonText>
-              {intl.formatMessage(
-                { id: 'common.external.login' },
-                { type: 'SSO' }
-              )}
-            </ButtonText>
-          </ButtonWrapper>
-        )}
-        {SSOAuth.options.saml && (
-          <ButtonWrapper onClick={SSOAuth.loginWithSAML}>
+        {SSOAuth.options.external_auth && (
+          <ButtonWrapper onClick={SSOAuth.loginWithExternalAuth}>
             <ButtonText>
               {intl.formatMessage(
                 { id: 'common.external.login' },

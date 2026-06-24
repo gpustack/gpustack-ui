@@ -1,15 +1,13 @@
 // hooks/useSSOAuth.ts
 import { history, useIntl } from '@umijs/max';
 import { useEffect, useState } from 'react';
-import {
-  AUTH_OIDC_LOGIN_API,
-  AUTH_SAML_LOGIN_API,
-  fetchAuthConfig
-} from '../apis';
+import { ExternalAuth, fetchAuthConfig } from '../apis';
 
 type LoginOption = {
-  saml: boolean;
-  oidc: boolean;
+  // Active external auth provider, or ``null`` when only local login is
+  // configured. Drives the SSO button: when set, render a button that
+  // navigates to ``external_auth.login_url``.
+  external_auth: ExternalAuth | null;
   first_time_setup: boolean;
   get_initial_password_command: string;
 };
@@ -26,8 +24,7 @@ export function useSSOAuth({
   onLoading?: (loading: boolean) => void;
 }) {
   const [loginOption, setLoginOption] = useState<LoginOption>({
-    saml: false,
-    oidc: false,
+    external_auth: null,
     first_time_setup: false,
     get_initial_password_command: ''
   });
@@ -38,29 +35,28 @@ export function useSSOAuth({
   const params = new URLSearchParams(location.search);
   const sso = params.get('sso');
 
-  const oidcLogin = () => {
-    window.location.href = AUTH_OIDC_LOGIN_API;
-  };
-
-  const samlLogin = () => {
-    window.location.href = AUTH_SAML_LOGIN_API;
+  const loginWithExternalAuth = (auth: ExternalAuth | null) => {
+    if (auth) {
+      window.location.href = auth.login_url;
+    }
   };
 
   const init = async () => {
     try {
-      const { is_oidc, is_saml, ...rest } = await fetchAuthConfig();
+      const { external_auth, ...rest } = await fetchAuthConfig();
       setLoginOption({
         ...rest,
-        oidc: !!is_oidc,
-        saml: !!is_saml
+        external_auth: external_auth ?? null
       });
       if (sso) {
         onLoading?.(true);
-        if (is_oidc) {
-          oidcLogin();
-        } else if (is_saml) {
-          samlLogin();
+        if (external_auth) {
+          loginWithExternalAuth(external_auth);
         } else {
+          // ``?sso`` deep-link landed on a server with no external auth
+          // configured. Surface the error AND release the loading
+          // state — otherwise the form is stuck on the spinner.
+          onLoading?.(false);
           onError?.(
             new Error(intl.formatMessage({ id: 'common.sso.noConfig' }))
           );
@@ -68,12 +64,15 @@ export function useSSOAuth({
       }
     } catch (error: any) {
       setLoginOption({
-        oidc: false,
-        saml: false,
+        external_auth: null,
         first_time_setup: false,
         get_initial_password_command: ''
       });
       onLoading?.(false);
+      // ``fetchAuthConfig`` failed (network, server 5xx, …). Without
+      // propagating, the login UI silently falls back to local-only —
+      // which can mask a real ``?sso`` redirect failure.
+      onError?.(error);
     }
   };
 
@@ -84,7 +83,7 @@ export function useSSOAuth({
   return {
     isSSOLogin: !!sso,
     options: loginOption,
-    loginWithOIDC: oidcLogin,
-    loginWithSAML: samlLogin
+    loginWithExternalAuth: () =>
+      loginWithExternalAuth(loginOption.external_auth)
   };
 }

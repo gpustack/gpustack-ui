@@ -9,9 +9,6 @@ export const AUTH_API = '/auth';
 
 export const AUTH_CONFIG_API = '/auth/config';
 
-export const AUTH_OIDC_LOGIN_API = '/auth/oidc/login';
-export const AUTH_SAML_LOGIN_API = '/auth/saml/login';
-
 export const login = async (
   params: { username: string; password: string },
   options?: any
@@ -53,10 +50,18 @@ export const updatePassword = async (params: any) => {
   });
 };
 
+export type ExternalAuth = {
+  // Provider kind (``OIDC`` / ``SAML`` / ``CAS`` / …). Stays a free-form
+  // string so adding a new provider on the backend doesn't require a
+  // TypeScript change here.
+  type: string;
+  // Browser-facing login URL the SSO button should navigate to.
+  login_url: string;
+};
+
 export const fetchAuthConfig = async () => {
   return request<{
-    is_saml: boolean;
-    is_oidc: boolean;
+    external_auth: ExternalAuth | null;
     first_time_setup: boolean;
     get_initial_password_command: string;
   }>(AUTH_CONFIG_API);

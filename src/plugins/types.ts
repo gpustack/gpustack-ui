@@ -20,13 +20,15 @@ export interface LoginKit {
   };
   useSSOAuth: (opts: any) => {
     options: {
-      saml: boolean;
-      oidc: boolean;
+      // Active external auth provider (e.g. ``{type: "CAS", login_url:
+      // "/auth/cas/login"}``) or ``null`` when only local login is
+      // configured. The login UI renders an SSO button only when this
+      // is non-null and navigates to ``login_url``.
+      external_auth: { type: string; login_url: string } | null;
       first_time_setup: boolean;
       get_initial_password_command: string;
     };
-    loginWithOIDC: () => void;
-    loginWithSAML: () => void;
+    loginWithExternalAuth: () => void;
   };
   userInfo: any;
   setUserInfo: (info: any) => void;

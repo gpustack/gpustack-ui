@@ -81,6 +81,8 @@ export default {
   'gpuservice.publicKey': 'SSH Public Key',
   'gpuservice.publicKey.add': 'Add SSH Public Key',
   'gpuservice.publicKey.edit': 'Edit SSH Public Key',
+  'gpuservice.publicKey.delete.tips':
+    'Deleting an SSH Public Key will not revoke access for existing attached Instances. To remove access, edit those Instances separately.',
   'gpuservice.publicKey.filter.name': 'Search by name',
   'gpuservice.publicKey.label': 'SSH Public Key',
   'gpuservice.instance.ssh.enable': 'Enable SSH Access',

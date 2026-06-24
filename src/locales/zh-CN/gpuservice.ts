@@ -75,6 +75,8 @@ export default {
   'gpuservice.publicKey': 'SSH 公钥',
   'gpuservice.publicKey.add': '添加 SSH 公钥',
   'gpuservice.publicKey.edit': '编辑 SSH 公钥',
+  'gpuservice.publicKey.delete.tips':
+    '删除 SSH Public Key 不会撤销已挂载 GPU 实例的访问权限。如需移除访问权限，请分别编辑对应的 GPU 实例。',
   'gpuservice.publicKey.filter.name': '按名称搜索',
   'gpuservice.publicKey.label': 'SSH 公钥',
   'gpuservice.instance.ssh.enable': '启用 SSH 访问',

@@ -3,6 +3,7 @@ import { PageActionType } from '@/config/types';
 import useSubmitLock from '@/hooks/use-submit-lock';
 import {
   AlertBlockInfo,
+  ColumnWrapper,
   GSDrawer,
   IconFont,
   ModalFooter,
@@ -13,7 +14,6 @@ import { Tabs } from 'antd';
 import _ from 'lodash';
 import React, { useEffect, useId, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
-import ColumnWrapper from '../../_components/column-wrapper';
 import {
   BackendSourceValueMap,
   builtInBackendFields,

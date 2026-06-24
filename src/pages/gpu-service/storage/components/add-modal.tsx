@@ -1,8 +1,7 @@
 import { PageActionType } from '@/config/types';
 import useSubmitLock from '@/hooks/use-submit-lock';
-import { ModalFooter } from '@gpustack/core-ui';
+import { FormDrawer, ModalFooter } from '@gpustack/core-ui';
 import { useRef } from 'react';
-import FormDrawer from '../../../_components/form-drawer';
 import { FormContext } from '../config/form-context';
 import { FormData, ListItem } from '../config/types';
 import GPUServiceStorageForm from '../forms';

@@ -1,10 +1,9 @@
 import { ProviderValueMap } from '@/pages/cluster-management/config';
-import { GSDrawer, ModalFooter } from '@gpustack/core-ui';
+import { ColumnWrapper, GSDrawer, ModalFooter } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { debounce } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import ColumnWrapper from '../../../_components/column-wrapper';
 import { modelSourceMap } from '../../config';
 import { FormData } from '../../config/types';
 import HFModelFile from '../model-source/hf-model-file';

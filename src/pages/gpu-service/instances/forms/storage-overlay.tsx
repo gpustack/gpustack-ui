@@ -1,8 +1,7 @@
 import { PageAction } from '@/config';
-import FormOverlayView from '@/pages/_components/form-overlay-view';
 import { FormContext } from '@/pages/gpu-service/storage/config/form-context';
 import useQueryStorageClass from '@/pages/gpu-service/storage/services/use-query-storage-class';
-import { ModalFooter } from '@gpustack/core-ui';
+import { ModalFooter, SubDrawer } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useEffect, useRef, useState } from 'react';
 import { FormData as StorageFormData } from '../../storage/config/types';
@@ -52,7 +51,7 @@ const StorageOverlay: React.FC<StorageOverlayProps> = ({
   };
 
   return (
-    <FormOverlayView
+    <SubDrawer
       title={intl.formatMessage({ id: 'gpuservice.storage.add' })}
       open={open}
       width={drawerWidth}
@@ -79,7 +78,7 @@ const StorageOverlay: React.FC<StorageOverlayProps> = ({
           onFinish={handleFinish}
         />
       </FormContext.Provider>
-    </FormOverlayView>
+    </SubDrawer>
   );
 };
 

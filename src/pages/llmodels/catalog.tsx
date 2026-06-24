@@ -27,7 +27,6 @@ const Catalog: React.FC = () => {
   const {
     dataSource,
     queryParams,
-    handleSearch,
     fetchData,
     handleQueryChange,
     loadMore,
@@ -112,6 +111,10 @@ const Catalog: React.FC = () => {
     navigate('/models/deployments');
   };
 
+  const handleSearch = () => {
+    fetchData({ query: { ...queryParams, page: 1 } });
+  };
+
   useEffect(() => {
     if (dataSource.loadend) {
       const getCatalogSource = async () => {
@@ -138,7 +141,7 @@ const Catalog: React.FC = () => {
         marginBottom={22}
         marginTop={0}
         buttonText={intl.formatMessage({ id: 'models.catalog.button.explore' })}
-        handleSearch={() => loadMore(1)}
+        handleSearch={handleSearch}
         handleSelectChange={handleCategoryChange}
         handleClickPrimary={handleDeployFromOtherHubs}
         handleInputChange={handleNameChange}

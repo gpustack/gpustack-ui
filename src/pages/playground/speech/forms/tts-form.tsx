@@ -110,6 +110,8 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
       const newList = updateVoiceOptions(model!);
       setModelMeta(model?.meta || {});
 
+      form.resetFields();
+
       const values = {
         ..._.pick(model?.meta || {}, MetaFields),
         task_type: model?.meta?.task_type,

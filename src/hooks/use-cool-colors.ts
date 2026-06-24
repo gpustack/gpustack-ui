@@ -3,11 +3,13 @@ import { converter, modeHsl, modeRgb, useMode } from 'culori/fn';
 
 const toHsl = converter('hsl');
 
-const DEFAULT_BRAND_HUE = 211; // brand color
-const COOL_HUE_START = 180;
-const COOL_HUE_END = 280;
+const DEFAULT_BRAND_HUE = 211; // brand color (HSL hue)
+
+// Cool palette spans blue -> violet. The range starts just above the brand hue
+// so generated colors never sit right next to the brand color.
+const COOL_HUE_START = 215;
+const COOL_HUE_END = 310;
 const COOL_HUE_RANGE = COOL_HUE_END - COOL_HUE_START;
-const GOLDEN_RATIO_CONJUGATE = 0.618033988749895;
 
 function colorStringToHue(input?: string): number | undefined {
   if (!input) return undefined;
@@ -29,26 +31,25 @@ export default function useCoolColors() {
   return useMemoizedFn((count: number): string[] => {
     if (count <= 0) return [];
 
-    const colors: string[] = [];
+    // First series keeps the brand color.
+    const colors: string[] = [`hsl(${brandHue}, 100%, 50%)`];
 
-    for (let i = 0; i < count; i++) {
-      let hue: number;
+    const rest = count - 1;
+    for (let i = 0; i < rest; i++) {
+      // Evenly divide the hue range. Because `count` is known up front, even
+      // spacing guarantees the largest possible minimum gap between any two
+      // hues — golden-ratio sampling can land two values close together after
+      // wrapping into this narrow cool band.
+      const t = rest <= 1 ? 0.5 : (i + 0.5) / rest;
+      const hue = COOL_HUE_START + t * COOL_HUE_RANGE;
 
-      if (i === 0) {
-        hue = brandHue - 5;
-      } else {
-        const offset = (i * GOLDEN_RATIO_CONJUGATE) % 1;
-        hue = COOL_HUE_START + offset * COOL_HUE_RANGE;
+      // Zig-zag saturation/lightness on a second axis. HSL is not perceptually
+      // uniform (blues/purples look alike at equal hue steps), so alternating
+      // lightness is what keeps adjacent series clearly distinct.
+      const saturation = 72 + (i % 3) * 9; // 72 / 81 / 90
+      const lightness = i % 2 ? 46 : 62; // alternate darker / lighter
 
-        if (Math.abs(hue - brandHue) < 5) {
-          hue = (hue + 10) % COOL_HUE_END;
-        }
-      }
-
-      const s = i === 0 ? 100 : 75 + (i % 3) * 5;
-      const l = i === 0 ? 50 : 55 + (i % 2) * 5;
-
-      colors.push(`hsl(${Math.round(hue)}, ${s}%, ${l}%)`);
+      colors.push(`hsl(${Math.round(hue)}, ${saturation}%, ${lightness}%)`);
     }
 
     return colors;

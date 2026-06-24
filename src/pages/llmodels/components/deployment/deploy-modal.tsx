@@ -2,14 +2,13 @@ import { getRequestId } from '@/atoms/models';
 import { PageActionType } from '@/config/types';
 import useDeferredRequest from '@/hooks/use-deferred-request';
 import { ClusterStatusValueMap } from '@/pages/cluster-management/config';
-import { GSDrawer, ModalFooter } from '@gpustack/core-ui';
+import { ColumnWrapper, GSDrawer, ModalFooter } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { Button } from 'antd';
 import _ from 'lodash';
 import { FC, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
-import ColumnWrapper from '../../../_components/column-wrapper';
 import {
   defaultFormValues,
   DeployFormKeyMap,

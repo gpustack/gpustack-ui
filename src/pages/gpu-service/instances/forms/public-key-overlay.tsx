@@ -1,6 +1,5 @@
 import { PageAction } from '@/config';
-import FormOverlayView from '@/pages/_components/form-overlay-view';
-import { ModalFooter } from '@gpustack/core-ui';
+import { ModalFooter, SubDrawer } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useRef, useState } from 'react';
 import { FormData as PublicKeyFormData } from '../../public-keys/config/types';
@@ -45,7 +44,7 @@ const PublicKeyOverlay: React.FC<PublicKeyOverlayProps> = ({
   };
 
   return (
-    <FormOverlayView
+    <SubDrawer
       title={intl.formatMessage({ id: 'gpuservice.publicKey.add' })}
       open={open}
       width={drawerWidth}
@@ -70,7 +69,7 @@ const PublicKeyOverlay: React.FC<PublicKeyOverlayProps> = ({
         open={open}
         onFinish={handleFinish}
       />
-    </FormOverlayView>
+    </SubDrawer>
   );
 };
 

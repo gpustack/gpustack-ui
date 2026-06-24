@@ -103,7 +103,7 @@ export const probeAccessFlags = async (): Promise<{
     probeHasKubernetesCluster(),
     probeHasResourceEvents()
   ]);
-  return { hasKubernetesCluster: false, hasResourceEvents: false };
+  return { hasKubernetesCluster, hasResourceEvents };
 };
 
 // Module-scoped marker for "did `getInitialState` actually run the access

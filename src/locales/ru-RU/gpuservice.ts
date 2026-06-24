@@ -84,6 +84,8 @@ export default {
   'gpuservice.publicKey': 'Открытый ключ SSH',
   'gpuservice.publicKey.add': 'Добавить открытый ключ SSH',
   'gpuservice.publicKey.edit': 'Изменить открытый ключ SSH',
+  'gpuservice.publicKey.delete.tips':
+    'Удаление открытого ключа SSH не отзывает доступ для уже подключённых экземпляров. Чтобы удалить доступ, отредактируйте эти экземпляры отдельно.',
   'gpuservice.publicKey.filter.name': 'Поиск по имени',
   'gpuservice.publicKey.label': 'Открытый ключ SSH',
   'gpuservice.instance.ssh.enable': 'Включить SSH-доступ',

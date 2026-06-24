@@ -80,6 +80,8 @@ export default {
   'gpuservice.publicKey': 'SSH Açık Anahtarı',
   'gpuservice.publicKey.add': 'SSH Açık Anahtarı Ekle',
   'gpuservice.publicKey.edit': 'SSH Açık Anahtarını Düzenle',
+  'gpuservice.publicKey.delete.tips':
+    'Bir SSH Açık Anahtarını silmek, mevcut bağlı Örneklerin erişimini iptal etmez. Erişimi kaldırmak için ilgili Örnekleri ayrı ayrı düzenleyin.',
   'gpuservice.publicKey.filter.name': 'Ada göre ara',
   'gpuservice.publicKey.label': 'SSH Açık Anahtarı',
   'gpuservice.instance.ssh.enable': 'SSH Erişimini Etkinleştir',

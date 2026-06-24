@@ -80,6 +80,8 @@ export default {
   'gpuservice.publicKey': 'SSH 公開鍵',
   'gpuservice.publicKey.add': 'SSH 公開鍵を追加',
   'gpuservice.publicKey.edit': 'SSH 公開鍵を編集',
+  'gpuservice.publicKey.delete.tips':
+    'SSH 公開鍵を削除しても、既にアタッチされているインスタンスのアクセス権は取り消されません。アクセス権を削除するには、対象のインスタンスを個別に編集してください。',
   'gpuservice.publicKey.filter.name': '名前で検索',
   'gpuservice.publicKey.label': 'SSH 公開鍵',
   'gpuservice.instance.ssh.enable': 'SSH アクセスを有効化',

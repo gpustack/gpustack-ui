@@ -87,9 +87,24 @@ const GPUServicePublicKeys: React.FC = () => {
     if (val === 'edit') {
       handleEdit(row);
     } else if (val === 'delete') {
-      handleDelete({ ...row, name: row.name as string });
+      handleDelete(
+        { ...row, name: row.name as string },
+        {
+          tips: intl.formatMessage({
+            id: 'gpuservice.publicKey.delete.tips'
+          })
+        }
+      );
     }
   });
+
+  const handleDeleteByBatch = () => {
+    handleDeleteBatch({
+      tips: intl.formatMessage({
+        id: 'gpuservice.publicKey.delete.tips'
+      })
+    });
+  };
 
   const renderEmpty = (type?: string) => {
     if (type !== 'Table') return;
@@ -130,7 +145,7 @@ const GPUServicePublicKeys: React.FC = () => {
           })}
           buttonText={intl.formatMessage({ id: 'gpuservice.publicKey.add' })}
           handleSearch={handleSearch}
-          handleDeleteByBatch={handleDeleteBatch}
+          handleDeleteByBatch={handleDeleteByBatch}
           handleClickPrimary={handleAdd}
           handleInputChange={handleNameChange}
           rowSelection={rowSelection}

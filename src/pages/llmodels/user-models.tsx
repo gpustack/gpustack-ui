@@ -145,6 +145,12 @@ const UserModels: React.FC = () => {
     return result;
   }, [dataSource.dataList]);
 
+  const handleRefresh = () => {
+    fetchData({
+      query: { ...queryParams, page: 1 }
+    });
+  };
+
   return (
     <PageBox>
       <PageTools
@@ -192,7 +198,7 @@ const UserModels: React.FC = () => {
               type="text"
               style={{ color: 'var(--ant-color-text-tertiary)' }}
               icon={<SyncOutlined></SyncOutlined>}
-              onClick={handleSearch}
+              onClick={handleRefresh}
             ></Button>
           </Space>
         }

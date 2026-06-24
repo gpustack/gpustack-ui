@@ -237,6 +237,10 @@ const BackendList = () => {
     });
   });
 
+  const handleRefresh = () => {
+    fetchData({ query: { ...queryParams, page: 1 } });
+  };
+
   return (
     <PageBox>
       <FilterBar
@@ -251,7 +255,7 @@ const BackendList = () => {
         selectHolder={intl.formatMessage({ id: 'backend.filter.source' })}
         buttonText={intl.formatMessage({ id: 'backend.button.add' })}
         handleClickPrimary={handleAddBackend}
-        handleSearch={() => loadMore(1)}
+        handleSearch={handleRefresh}
         handleSelectChange={handleFilterBySource}
         handleInputChange={handleNameChange}
         rowSelection={rowSelection}

@@ -129,6 +129,10 @@ const GPUServiceTemplates: React.FC = () => {
     });
   });
 
+  const handleRefresh = () => {
+    fetchData({ query: { ...queryParams, page: 1 } });
+  };
+
   return (
     <PageBox>
       <FilterBar
@@ -145,7 +149,7 @@ const GPUServiceTemplates: React.FC = () => {
         })}
         buttonText={intl.formatMessage({ id: 'gpuservice.template.add' })}
         handleClickPrimary={handleAddTemplate}
-        handleSearch={handleSearch}
+        handleSearch={handleRefresh}
         handleSelectChange={handleFilterByManufacturer}
         handleInputChange={handleNameChange}
         rowSelection={rowSelection}

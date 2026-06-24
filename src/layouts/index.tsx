@@ -12,6 +12,7 @@ import useUserSettings from '@/hooks/use-user-settings';
 import useUserSettingsStorage from '@/hooks/use-user-settings-storage';
 import useAddResource from '@/pages/dashboard/hooks/use-add-resource';
 import { logout } from '@/pages/login/apis';
+import { didInitialStateProbe, probeAccessFlags } from '@/utils/access-probes';
 import {
   readColumnSettings,
   readState,
@@ -41,7 +42,7 @@ import {
 import { Button, ConfigProvider, Modal, theme } from 'antd';
 import { useAtom } from 'jotai';
 import 'overlayscrollbars/overlayscrollbars.css';
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { PageContainerInner } from '../pages/_components/page-box';
 import Exception from './Exception';
 import './Layout.css';
@@ -155,6 +156,50 @@ export default (props: any) => {
 
   const { initialState, loading, setInitialState } = initialInfo;
   const access = useAccess();
+  const probedForUserRef = useRef<string | null>(null);
+
+  // Backfill the access probes (cluster / resource-events) once we're in
+  // the authenticated shell. `getInitialState` runs only once at app
+  // boot and can't probe on the login page (no session => 401), so after
+  // a first login the flags arrive here as `undefined` — which the
+  // access predicate treats as "don't restrict", flashing GPU Service /
+  // the full Usage page on until a manual refresh. This layout mounts
+  // only post-auth (login is `layout:false`) and on every entry, so it's
+  // the reliable place to resolve them.
+  //
+  // The effect is keyed on the user IDENTITY, not on the flag values —
+  // gating on the flags is what made this fragile (on a refresh
+  // `getInitialState` commits `currentUser` and the flags in the same
+  // update, so a flag-gated effect sees them already-known and never
+  // fires). Whether to actually hit the network is decided by the
+  // module-scoped `didInitialStateProbe()` marker, which is true only
+  // when `getInitialState` already probed for an authenticated user this
+  // page load (the refresh path) — so we skip the duplicate request there
+  // but still probe on the SPA-login path. Keying on identity also
+  // re-probes correctly if the signed-in user changes.
+  const currentUser = initialState?.currentUser;
+  const username = currentUser?.username;
+
+  useEffect(() => {
+    if (!username || !setInitialState) {
+      return;
+    }
+    if (probedForUserRef.current === username) {
+      return;
+    }
+    probedForUserRef.current = username;
+    // The refresh path already resolved the flags inside `getInitialState`
+    // for this user — don't issue a duplicate probe.
+    if (didInitialStateProbe()) {
+      return;
+    }
+    probeAccessFlags().then((accessFlags) => {
+      setInitialState((prev: any) => ({
+        ...prev,
+        ...accessFlags
+      }));
+    });
+  }, [username, setInitialState]);
 
   const userConfig = {
     title: '',

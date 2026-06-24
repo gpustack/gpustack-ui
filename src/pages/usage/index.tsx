@@ -67,7 +67,7 @@ const Usage: React.FC = () => {
       if (!item.access) return true;
       return (access as Record<string, boolean>)[item.access];
     });
-  }, [intl, access]);
+  }, [intl, access.canSeeGpuService]);
 
   return (
     <Tabs

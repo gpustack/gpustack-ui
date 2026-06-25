@@ -117,7 +117,8 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
         task_type: model?.meta?.task_type,
         model: value,
         language: model?.meta?.languages?.[0] || '',
-        voice: newList[0]?.value
+        voice: newList[0]?.value,
+        x_vector_only_mode: model?.meta?.x_vector_only_mode || null
       };
       updatateParams(values);
       form.setFieldsValue(values);

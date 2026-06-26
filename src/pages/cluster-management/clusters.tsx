@@ -194,7 +194,11 @@ const Clusters: React.FC = () => {
     });
   };
 
-  const handleSelect = useMemoizedFn((val: any, row: ListItem) => {
+  const handleSelect = useMemoizedFn((val: any, row: ListItem, item?: any) => {
+    if (item?.onClick) {
+      item.onClick(row);
+      return;
+    }
     if (val === 'edit') {
       handleEditCluster(row);
     } else if (val === 'delete') {

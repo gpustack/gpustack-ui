@@ -85,7 +85,7 @@ const clusterActionList = [
 ];
 
 const useClusterColumns = (
-  handleSelect: (val: string, record: ClusterListItem) => void,
+  handleSelect: (val: string, record: ClusterListItem, item?: any) => void,
   onCellClick?: (record: ClusterListItem, dataIndex: string) => void
 ): SealColumnProps[] => {
   const intl = useIntl();
@@ -251,7 +251,9 @@ const useClusterColumns = (
         render: (value: string, record: ClusterListItem) => (
           <DropdownButtons
             items={setActionsItems(record)}
-            onSelect={(val) => handleSelect(val, record)}
+            onSelect={(val: string, item: any) =>
+              handleSelect(val, record, item)
+            }
           ></DropdownButtons>
         )
       }

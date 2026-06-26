@@ -321,11 +321,13 @@ function flattenItem(
     if (dims.storage_type) flat.storage_type = dims.storage_type;
     if (dims.capacity_mib != null) flat.capacity_mib = dims.capacity_mib;
   }
-  // For an instance_type grouped trend the series label (``group``) defaults to
+  // For an instance-type grouped trend the series label (``group``) defaults to
   // the raw flavor slug; prefer the pretty product name so the chart legend
-  // matches the GPU Instances list (#5700). Falls back to the slug for legacy
-  // rows that predate dimension enrichment.
-  if (groupBy === 'instance_type' && flat.product) {
+  // matches the GPU Instances list (#5700). ``groupBy`` here is the unmapped
+  // frontend dimension — ``gpu_type`` maps to the backend's ``instance_type``
+  // (see GROUP_BY_MAP). Falls back to the slug for legacy rows that predate
+  // dimension enrichment.
+  if (groupBy === 'gpu_type' && flat.product) {
     flat.group = flat.product;
   }
   return flat;

@@ -163,11 +163,12 @@ const ResourceExportData: React.FC<ResourceExportDataProps> = (props) => {
     setPageParams({ page, perPage });
   };
 
-  // Export the full filtered set, not just the visible page.
+  // Export the full filtered set, not just the visible page. ``page: -1`` is
+  // the backend's no-pagination sentinel (perPage is then ignored).
   const handleSubmit = async () => {
     setExporting(true);
     try {
-      const res = await queryFn(buildRequest(1, 10000));
+      const res = await queryFn(buildRequest(-1, INITIAL_PAGE.perPage));
       exportBreakdownRows(
         res.items ?? [],
         toExportColumns(columns),

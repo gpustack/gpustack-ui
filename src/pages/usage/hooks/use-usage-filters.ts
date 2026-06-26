@@ -208,6 +208,11 @@ export const useUsageFilters = ({
     fetchTimeSeriesData({
       ...currentChartFilters,
       group_by: groupByArray,
+      // The trend chart needs the complete date series. ``page: -1`` is the
+      // backend's no-pagination sentinel — without it the default page (20
+      // buckets, sorted by total tokens) drops low-traffic dates, leaving
+      // gaps in the chart for ranges spanning more than a handful of buckets.
+      page: -1,
       // Without ``scope`` the backend defaults to ``all``, while the
       // breakdown tables pass ``scope`` explicitly. The mismatch makes
       // the chart and the tables run different filters on the same

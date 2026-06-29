@@ -93,3 +93,11 @@ Avoid `styled-components` for complex or large-scale styling. Prefer:
 - **Permission-gated visibility**: `Access` / `useAccess`.
 - **Request hooks**: `useRequest` / `useQueryData` / `useQueryDataList` from `@gpustack/core-ui`.
 - **Table data fetching**: `useTableFetch` from `@gpustack/core-ui`.
+
+# Dynamic add-item form fields
+
+When building a form, select the add-item component from the **shape of the field's data** (its schema). Match the schema, don't hand-roll a list UI:
+
+- **Plain object** (key→value map) → `LabelSelector`.
+- **String array** → `ListInput`. Ref `src/pages/llmodels/forms/backend-parameters-list.tsx`.
+- **Object array** → `MetadataList` with a custom item renderer per entry. Ref `src/pages/llmodels/forms/model-lora-list.tsx`.

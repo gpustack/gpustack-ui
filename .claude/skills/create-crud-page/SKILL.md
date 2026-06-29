@@ -95,6 +95,49 @@ Main form component goes in `forms/index.tsx`.
 ## Common UI conventions
 
 - **Drawer/Modal open/close**: use `useBodyScroll` from `@gpustack/core-ui`. Ref: `src/pages/model-routes/hooks/use-create-route.ts`.
-- **Status display** (success/failed/processing/warning): use `StatusTag`. Ref: `src/pages/llmodels/components/table-list.tsx`.
+- **Status display** (success/failed/processing/warning): use `StatusTag`, never `Tag` from `antd` directly. See **Status display** below. Ref: `src/pages/llmodels/components/table-list.tsx`.
 - **Permission-gated visibility**: use `Access` / `useAccess`. Ref: `src/pages/access/index.tsx`.
 - **Styles**: avoid `styled-components` for complex/large styling. Prefer `createStyles` for component-scoped dynamic styles, CSS Modules (`xxx.module.less`) for static structured styles.
+
+## Status display
+
+Use `StatusTag` from `@gpustack/core-ui` for status display. Do not use `Tag` from `antd` directly.
+
+1. Define the mapping from business status values to UI status values in the module's `config/index.ts`:
+
+```ts
+import { StatusMaps } from '@/config';
+import { StatusType } from '@/config/types';
+
+export const XxxStatusValueMap = {
+  Running: 'running',
+  Pending: 'pending',
+  Failed: 'failed'
+};
+
+export const XxxStatusLabelMap: Record<string, string> = {
+  [XxxStatusValueMap.Running]: 'Running',
+  [XxxStatusValueMap.Pending]: 'Pending',
+  [XxxStatusValueMap.Failed]: 'Failed'
+};
+
+export const status: Record<string, StatusType> = {
+  [XxxStatusValueMap.Running]: StatusMaps.success,
+  [XxxStatusValueMap.Pending]: StatusMaps.transitioning,
+  [XxxStatusValueMap.Failed]: StatusMaps.error
+};
+```
+
+2. In table columns, pass only the UI status value and display text required by `StatusTag`:
+
+```tsx
+<StatusTag
+  statusValue={{
+    status: status[value],
+    text: XxxStatusLabelMap[value] || value,
+    message: record.state_message
+  }}
+/>
+```
+
+`statusValue.status` must be a value mapped from `StatusMaps` (`success`, `transitioning`, `warning`, `error`, `inactive`). Do not pass business status values such as `running` or `pending` directly.

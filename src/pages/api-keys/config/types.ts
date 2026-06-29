@@ -6,10 +6,10 @@ export interface ListItem {
   masked_value?: string;
   user_id?: number;
   user_name?: string;
-  // The owning principal — an Org, or a USER principal when the key
-  // was created in someone's Personal Org. Read by the enterprise
-  // plugin's Organization column in the admin All-org view.
-  owner_principal_id?: number;
+  // The owning principal — an Org, or a USER principal for a
+  // personal-scope key, or NULL for an admin "All" mode key (no
+  // tenant pinning).
+  owner_principal_id?: number | null;
   created_at: string;
   updated_at: string;
   expires_at: string;

@@ -47,7 +47,12 @@ const APIKeyForm: React.FC<{
 
       <PluginExtraFields
         name="CreateOrgScopeField"
-        context={{ action, allowPersonal: true }}
+        context={{
+          action,
+          allowPersonal: true,
+          allowGlobal: true,
+          globalLabelId: 'scope.global'
+        }}
       />
 
       <Form.Item<FormData>

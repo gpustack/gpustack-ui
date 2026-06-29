@@ -29,6 +29,8 @@ export default {
   'users.password.modify.title': 'Смена пароля',
   'users.password.modify.description':
     'В целях безопасности измените первоначальный пароль.',
+  'users.password.modify.tips':
+    'Регулярное обновление пароля помогает защитить вашу учётную запись.',
   'users.password.confirm': 'Подтвердите новый пароль',
   'users.password.confirm.empty': 'Подтвердите новый пароль',
   'users.password.confirm.error': 'Пароли не совпадают',

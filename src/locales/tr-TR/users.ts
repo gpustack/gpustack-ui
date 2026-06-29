@@ -29,6 +29,8 @@ export default {
   'users.password.modify.title': 'Şifreyi Değiştir',
   'users.password.modify.description':
     'Hesabınızın güvenliği için lütfen başlangıç şifrenizi değiştirin.',
+  'users.password.modify.tips':
+    'Parolanızı düzenli olarak güncellemek hesabınızın güvenliğini korumaya yardımcı olur.',
   'users.password.confirm': 'Yeni Şifreyi Onayla',
   'users.password.confirm.empty': 'Lütfen yeni şifreyi tekrar girin.',
   'users.password.confirm.error': 'Girilen iki şifre eşleşmiyor.',

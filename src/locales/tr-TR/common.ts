@@ -199,6 +199,7 @@ export default {
   'common.table.user': 'Kullanıcı',
   'common.settings.instructions': 'Talimatlar',
   'common.settings.language': 'Dil',
+  'common.settings.language.tips': 'Arayüzün görüntüleme dilini ayarlayın.',
   'common.delete.confirm':
     'Seçili {type} öğesini silmek istediğinizden emin misiniz?',
   'common.delete.single.confirm':
@@ -254,6 +255,11 @@ export default {
   'common.appearance.tips': 'Varsayılan olarak sistem tercihini takip eder.',
   'common.button.forgotpassword': 'Şifrenizi mi unuttunuz?',
   'common.appearance.theme': 'Tema',
+  'common.appearance.description':
+    'Arayüzün cihazınızdaki görünümünü özelleştirin.',
+  'common.security': 'Güvenlik',
+  'common.security.description':
+    'Hesabınıza giriş yapmak için kullanılan parolayı yönetin.',
   'common.page.wentwrong': 'Bir şeyler ters gitti.',
   'common.page.refresh.tips':
     'Sayfanın güncellenmesi gerekebilir. Yenilemeyi deneyin!',

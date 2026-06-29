@@ -29,6 +29,8 @@ export default {
   'users.password.modify.title': 'パスワードを変更',
   'users.password.modify.description':
     'アカウントのセキュリティのため、初期パスワードを変更してください。',
+  'users.password.modify.tips':
+    'パスワードを定期的に更新すると、アカウントの安全を保てます。',
   'users.password.confirm': '新しいパスワードを確認',
   'users.password.confirm.empty': '新しいパスワードを確認してください。',
   'users.password.confirm.error': '入力された2つのパスワードが一致しません。',

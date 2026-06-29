@@ -198,6 +198,8 @@ export default {
   'common.table.user': 'User',
   'common.settings.instructions': 'Instructions',
   'common.settings.language': 'Language',
+  'common.settings.language.tips':
+    'Set the display language for the interface.',
   'common.delete.confirm':
     'Are you sure you want to delete the selected {type}?',
   'common.delete.single.confirm':
@@ -251,6 +253,11 @@ export default {
   'common.appearance.tips': 'Default follows system preference.',
   'common.button.forgotpassword': 'Forgot password?',
   'common.appearance.theme': 'Theme',
+  'common.appearance.description':
+    'Customize how the interface looks on your device.',
+  'common.security': 'Security',
+  'common.security.description':
+    'Manage the password used to sign in to your account.',
   'common.page.wentwrong': 'Something went wrong.',
   'common.page.refresh.tips':
     'The page may need to be updated. Try refreshing it!',

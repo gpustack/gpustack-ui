@@ -199,6 +199,7 @@ export default {
   'common.table.user': 'ユーザー',
   'common.settings.instructions': '手順',
   'common.settings.language': '言語',
+  'common.settings.language.tips': 'インターフェースの表示言語を設定します。',
   'common.delete.confirm': '選択した {type} を削除してもよろしいですか？',
   'common.delete.single.confirm':
     '<span style="font-size: 13px;font-weight: 700">{name}</span> を削除してもよろしいですか？',
@@ -251,6 +252,11 @@ export default {
   'common.appearance.tips': 'Default follows system preference.',
   'common.button.forgotpassword': 'Forgot password?',
   'common.appearance.theme': 'Theme',
+  'common.appearance.description':
+    'デバイス上でのインターフェースの表示をカスタマイズします。',
+  'common.security': 'セキュリティ',
+  'common.security.description':
+    'アカウントへのログインに使用するパスワードを管理します。',
   'common.page.wentwrong': 'Something went wrong.',
   'common.page.refresh.tips':
     'The page may need to be updated. Try refreshing it!',

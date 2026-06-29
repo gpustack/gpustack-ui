@@ -1,43 +1,95 @@
-<!-- gitnexus:start -->
-# GitNexus — Code Intelligence
+# Repo
 
-This project is indexed by GitNexus as **gpustack-ui** (7110 symbols, 13431 relationships, 235 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This is the **open source UI** (`gpustack-ui`). Common `components`, `hooks`, and `utils` are published as `@gpustack/core-ui` and consumed throughout `src`.
 
-> Index stale? Run `node .gitnexus/run.cjs analyze` from the project root — it auto-selects an available runner. No `.gitnexus/run.cjs` yet? `npx gitnexus analyze` (npm 11 crash → `npm i -g gitnexus`; #1939).
+**Always prioritize reusing common `components`, `hooks`, and `utils` from `@gpustack/core-ui`.**
 
-## Always Do
+Task-specific conventions live in skills: use **create-crud-page** when building a page module, **form-patterns** when building cascading/dependent forms.
 
-- **MUST run impact analysis before editing any symbol.** Before modifying a function, class, or method, run `impact({target: "symbolName", direction: "upstream"})` and report the blast radius (direct callers, affected processes, risk level) to the user.
-- **MUST run `detect_changes()` before committing** to verify your changes only affect expected symbols and execution flows. For regression review, compare against the default branch: `detect_changes({scope: "compare", base_ref: "main"})`.
-- **MUST warn the user** if impact analysis returns HIGH or CRITICAL risk before proceeding with edits.
-- When exploring unfamiliar code, use `query({query: "concept"})` to find execution flows instead of grepping. It returns process-grouped results ranked by relevance.
-- When you need full context on a specific symbol — callers, callees, which execution flows it participates in — use `context({name: "symbolName"})`.
+# React State and Request Patterns
 
-## Never Do
+Keep data flow explicit, predictable, and performant. The triggering **action** is the source of truth for UI updates — not effect-driven synchronization.
 
-- NEVER edit a function, class, or method without first running `impact` on it.
-- NEVER ignore HIGH or CRITICAL risk warnings from impact analysis.
-- NEVER rename symbols with find-and-replace — use `rename` which understands the call graph.
-- NEVER commit changes without running `detect_changes()` to check affected scope.
+## 1. Avoid effect-driven requests
 
-## Resources
+Do not use request functions as `useEffect` dependencies. Trigger requests explicitly from user actions or lifecycle entry points.
 
-| Resource | Use for |
-|----------|---------|
-| `gitnexus://repo/gpustack-ui/context` | Codebase overview, check index freshness |
-| `gitnexus://repo/gpustack-ui/clusters` | All functional areas |
-| `gitnexus://repo/gpustack-ui/processes` | All execution flows |
-| `gitnexus://repo/gpustack-ui/process/{name}` | Step-by-step execution trace |
+```ts
+// Avoid
+useEffect(() => {
+  fetchData();
+}, [fetchData]);
+```
 
-## CLI
+## 2. Form requests should be action-driven
 
-| Task | Read this skill file |
-|------|---------------------|
-| Understand architecture / "How does X work?" | `.claude/skills/gitnexus/gitnexus-exploring/SKILL.md` |
-| Blast radius / "What breaks if I change X?" | `.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md` |
-| Trace bugs / "Why is X failing?" | `.claude/skills/gitnexus/gitnexus-debugging/SKILL.md` |
-| Rename / extract / split / refactor | `.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md` |
-| Tools, resources, schema reference | `.claude/skills/gitnexus/gitnexus-guide/SKILL.md` |
-| Index, status, clean, wiki CLI commands | `.claude/skills/gitnexus/gitnexus-cli/SKILL.md` |
+- Fetch form data (e.g. `Select` options) when the form first opens.
+- If later requests depend on interactions, trigger them inside the interaction handler.
+- Do not rely on `useEffect` dependency changes.
 
-<!-- gitnexus:end -->
+```ts
+// Recommended
+const handleOnChange = (value) => {
+  fetchData(value);
+};
+```
+
+## 3. Update related states together
+
+When one action updates multiple related states, update them all directly in the handler. Do not sync via `useEffect` or derive indirectly via `useMemo`.
+
+```ts
+const handleOnChange = (value) => {
+  setState1(...);
+  setState2(...);
+  buildState(...);
+};
+```
+
+## 4. Group strongly related state
+
+If multiple states always update together, use a single state object instead of multiple `useState` calls — fewer rerenders, more predictable transitions.
+
+```ts
+const [state, setState] = useState({ state1: ..., state2: ..., state3: ... });
+```
+
+## 5. Prefer explicit state flow
+
+Keep request execution, state updates, and derived calculations close to the triggering action. Avoid chaining business logic through multiple `useEffect` hooks.
+
+```ts
+// Prefer
+const handleAction = () => {
+  fetchData();
+  setTableData(...);
+  setSelectedRow(...);
+};
+```
+
+## 6. Avoid premature memoization
+
+Do not use `useMemo` / `useCallback` unless there is a confirmed bottleneck. Overuse adds complexity, obscures state flow, and risks stale dependencies. Optimize only when necessary.
+
+## 7. Keep request logic predictable
+
+A user interaction should clearly show: what request fires, which states update, how the UI changes. Avoid indirect update chains from dependency-driven effects.
+
+## 8. Prefer action-driven architecture
+
+Prefer action-driven updates, explicit handlers, and localized state transitions over effect-driven synchronization, cross-hook implicit updates, and reactive chains between states.
+
+# Styles
+
+Avoid `styled-components` for complex or large-scale styling. Prefer:
+
+1. `createStyles` for component-scoped dynamic styles
+2. CSS Modules (`xxx.module.less`) for structured static styles
+
+# Common components
+
+- **Drawer/Modal open/close**: `useBodyScroll` from `@gpustack/core-ui`.
+- **Status display** (success/failed/processing/warning): `StatusTag`.
+- **Permission-gated visibility**: `Access` / `useAccess`.
+- **Request hooks**: `useRequest` / `useQueryData` / `useQueryDataList` from `@gpustack/core-ui`.
+- **Table data fetching**: `useTableFetch` from `@gpustack/core-ui`.

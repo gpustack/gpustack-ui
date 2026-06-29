@@ -1,65 +1,49 @@
-import useTabActive from '@/hooks/use-tab-active';
 import { useIntl, useModel } from '@umijs/max';
-import { Tabs, TabsProps } from 'antd';
-import React, { useCallback, useMemo, useState } from 'react';
-import styled from 'styled-components';
+import { createStyles } from 'antd-style';
+import React from 'react';
 import PageBox from '../_components/page-box';
 import Appearance from './components/appearance';
-import ModifyPasswordn from './components/modify-password';
+import Security from './components/security';
+import SettingsSection from './components/settings-section';
 
-const Wrapper = styled.div`
-  .ant-page-header-heading {
-    padding-inline: 8px;
-  }
-`;
+const useStyles = createStyles(({ css }) => ({
+  wrapper: css`
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 8px 0 40px;
+  `
+}));
 
 const Profile: React.FC = () => {
   const intl = useIntl();
-  const { initialState, setInitialState } = useModel('@@initialState') || {};
-  const { setTabActive, getTabActive, tabsMap } = useTabActive();
-  const [activeKey, setActiveKey] = useState(
-    initialState?.currentUser?.source === 'Local'
-      ? 'modify-password'
-      : 'appearance'
-  );
-
-  const items: TabsProps['items'] = useMemo(() => {
-    if (initialState?.currentUser?.source !== 'Local') {
-      return [
-        {
-          key: 'appearance',
-          label: intl.formatMessage({ id: 'common.appearance' }),
-          children: <Appearance />
-        }
-      ];
-    }
-    return [
-      {
-        key: 'modify-password',
-        label: intl.formatMessage({ id: 'users.form.updatepassword' }),
-        children: <ModifyPasswordn />
-      },
-      {
-        key: 'appearance',
-        label: intl.formatMessage({ id: 'common.appearance' }),
-        children: <Appearance />
-      }
-    ];
-  }, [intl, initialState?.currentUser?.source]);
-
-  const handleChangeTab = useCallback((key: string) => {
-    setActiveKey(key);
-    setTabActive(tabsMap.userSettings, key);
-  }, []);
+  const { styles } = useStyles();
+  const { initialState } = useModel('@@initialState') || {};
+  const isLocalUser = initialState?.currentUser?.source === 'Local';
 
   return (
     <PageBox>
-      <Tabs
-        activeKey={activeKey}
-        onChange={handleChangeTab}
-        items={items}
-        type="card"
-      />
+      <div className={styles.wrapper}>
+        <SettingsSection
+          title={intl.formatMessage({ id: 'common.appearance' })}
+          description={intl.formatMessage({
+            id: 'common.appearance.description'
+          })}
+        >
+          <Appearance />
+        </SettingsSection>
+
+        {isLocalUser && (
+          <SettingsSection
+            title={intl.formatMessage({ id: 'common.security' })}
+            description={intl.formatMessage({
+              id: 'common.security.description'
+            })}
+          >
+            <Security />
+          </SettingsSection>
+        )}
+      </div>
     </PageBox>
   );
 };

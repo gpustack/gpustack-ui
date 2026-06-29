@@ -197,6 +197,7 @@ export default {
   'common.table.user': 'Пользователь',
   'common.settings.instructions': 'Инструкции',
   'common.settings.language': 'Язык',
+  'common.settings.language.tips': 'Задайте язык отображения интерфейса.',
   'common.delete.confirm': 'Вы уверены, что хотите удалить выбранный {type}?',
   'common.delete.single.confirm':
     'Вы уверены, что хотите удалить <span style="font-size: 13px;font-weight: 700">{name}</span>?',
@@ -250,6 +251,11 @@ export default {
   'common.appearance.tips': 'По умолчанию соответствует системным настройкам.',
   'common.button.forgotpassword': 'Забыли пароль?',
   'common.appearance.theme': 'Тема',
+  'common.appearance.description':
+    'Настройте внешний вид интерфейса на вашем устройстве.',
+  'common.security': 'Безопасность',
+  'common.security.description':
+    'Управляйте паролем для входа в учётную запись.',
   'common.page.wentwrong': 'Что-то пошло не так.',
   'common.page.refresh.tips':
     'Страница может нуждаться в обновлении. Попробуйте обновить её!',

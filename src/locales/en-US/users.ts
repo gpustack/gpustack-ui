@@ -28,6 +28,8 @@ export default {
   'users.password.modify.title': 'Modify Password',
   'users.password.modify.description':
     "For your account's security, please change your initial password.",
+  'users.password.modify.tips':
+    'Regularly updating your password helps keep your account secure.',
   'users.password.confirm': 'Confirm New Password',
   'users.password.confirm.empty': 'Please confirm the new password.',
   'users.password.confirm.error': 'The two passwords entered do not match.',

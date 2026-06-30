@@ -1,10 +1,10 @@
 import LogoIcon from '@/assets/images/gpustack-logo.png';
 import { userAtom } from '@/atoms/user';
-import { useIntl, useModel } from '@umijs/max';
+import { history, useIntl, useModel } from '@umijs/max';
 import { Button, Divider, Form, Spin, message } from 'antd';
 import { createStyles } from 'antd-style';
 import { useAtom } from 'jotai';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { flushSync } from 'react-dom';
 import styled from 'styled-components';
 import { useLocalAuth } from '../hooks/use-local-auth';
@@ -147,6 +147,40 @@ const LoginForm = () => {
       )
     });
   };
+
+  // SSO callbacks (CAS / OIDC / SAML) are full-page IdP redirects, so
+  // a JSON exception raised in the callback lands the browser on a
+  // raw error page rather than this form. The backend instead
+  // redirects to ``/login?error=<code>`` on the failure modes that
+  // deserve user-facing copy — read the code on mount, route it
+  // through the existing toast, and clear the param from the URL so
+  // a refresh doesn't re-fire the toast.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const errorCode = params.get('error');
+    if (!errorCode) return;
+    // Codes recognised by the backend's SSO callback wrapper. Map to
+    // an i18n key per code; an unknown code is silently ignored so a
+    // future server release adding a code doesn't render a bare key.
+    const messageIdByCode: Record<string, string> = {
+      source_conflict: 'common.login.error.source_conflict',
+      auth_failed: 'common.login.error.auth_failed'
+    };
+    const messageId = messageIdByCode[errorCode];
+    if (messageId) {
+      handleOnError(new Error(intl.formatMessage({ id: messageId })));
+    }
+    params.delete('error');
+    const newQuery = params.toString();
+    // Route through ``@umijs/max``'s ``history`` rather than
+    // ``window.history.replaceState`` so the router's internal
+    // location stays in sync with the address bar — any other code
+    // that reads it (route guards, ``useLocation``, …) sees the
+    // cleaned URL on the same render.
+    history.replace(
+      window.location.pathname + (newQuery ? `?${newQuery}` : '')
+    );
+  }, []);
 
   // local user authentication
   const { handleLogin, submitLoading } = useLocalAuth({

@@ -225,29 +225,77 @@ export const toUsagePieData = (
   return aggregateUsageByGroup(data, groupBy, metric);
 };
 
-export const toUsageRankData = (
+export type UsageTokenMetric = 'input_tokens' | 'output_tokens';
+
+export interface UsageTokenSeriesDef {
+  name: string;
+  key: UsageTokenMetric;
+  color: string;
+}
+
+// Aggregates each group's input/output tokens into a stacked HBarChart shape,
+// so a single bar shows prompt (input) and completion (output) tokens side by
+// side. Rows sharing a group (e.g. the same user across dates) are summed, then
+// ranked by combined tokens and capped at the top 10.
+export const toUsageTokenBreakdownData = (
   data: UsageBreakdownResponse | null | undefined,
   groupBy: UsageGroupBy,
-  seriesName: string,
-  color: string
+  seriesDefs: UsageTokenSeriesDef[]
 ) => {
-  const items = aggregateUsageByGroup(data, groupBy, 'total_tokens');
-  const names = items.map((item) => item.name);
+  const itemMap = new Map<string, { total: number; values: number[] }>();
+  const items = getUsageResponseItems(data);
+
+  items.forEach((item: BreakdownItem) => {
+    const name = buildUsageLabel(item, groupBy);
+    const entry = itemMap.get(name) || {
+      total: 0,
+      values: seriesDefs.map(() => 0)
+    };
+
+    seriesDefs.forEach((def, index) => {
+      const value = Number((item as any)?.[def.key] ?? 0);
+      entry.values[index] += value;
+      entry.total += value;
+    });
+
+    itemMap.set(name, entry);
+  });
+
+  const ranked = Array.from(itemMap.entries())
+    .filter(([, entry]) => entry.total > 0)
+    .sort((a, b) => b[1].total - a[1].total)
+    .slice(0, 10);
+
+  const names = ranked.map(([name]) => name);
+
+  // Round only the outer ends of the stacked bar; the seam where the input and
+  // output segments meet stays square ([topLeft, topRight, bottomRight, bottomLeft]).
+  const radius = 2;
+  const getBorderRadius = (index: number, count: number) => {
+    if (count <= 1) {
+      return [radius, radius, radius, radius];
+    }
+    if (index === 0) {
+      return [radius, 0, 0, radius];
+    }
+    if (index === count - 1) {
+      return [0, radius, radius, 0];
+    }
+    return [0, 0, 0, 0];
+  };
 
   return {
     names,
-    series: [
-      {
-        name: seriesName,
-        color,
-        data: items.map((item) => ({
-          name: item.name,
-          value: item.value,
-          itemStyle: {
-            borderRadius: [2, 2, 2, 2]
-          }
-        }))
-      }
-    ]
+    series: seriesDefs.map((def, index) => ({
+      name: def.name,
+      color: def.color,
+      data: ranked.map(([name, entry]) => ({
+        name,
+        value: entry.values[index],
+        itemStyle: {
+          borderRadius: getBorderRadius(index, seriesDefs.length)
+        }
+      }))
+    }))
   };
 };

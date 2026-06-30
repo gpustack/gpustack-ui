@@ -265,6 +265,10 @@ export default {
   'common.select.count': '{count} Выбрано',
   'common.login.auth': 'Аутентификация...',
   'common.login.auth.failed': 'Ошибка аутентификации',
+  'common.login.error.source_conflict':
+    'Учётная запись с таким именем уже существует, но с другим источником аутентификации. Обратитесь к администратору для связывания или преобразования.',
+  'common.login.error.auth_failed':
+    'Не удалось пройти аутентификацию через провайдера идентификации. Попробуйте ещё раз или обратитесь к администратору.',
   'common.login.password': 'Войти с паролем',
   'common.login.username.holder': 'Введите имя пользователя',
   'common.login.password.holder': 'Введите пароль',

@@ -266,6 +266,10 @@ export default {
   'common.select.count': '{count} selected',
   'common.login.auth': 'Authenticating...',
   'common.login.auth.failed': 'Authentication failed',
+  'common.login.error.source_conflict':
+    'このユーザー名のアカウントは別の認証ソースで既に存在します。管理者にリンクまたは変換を依頼してください。',
+  'common.login.error.auth_failed':
+    'ID プロバイダーでの認証に失敗しました。再試行するか、管理者にお問い合わせください。',
   'common.login.password': 'Log in with Password',
   'common.login.username.holder': 'Please enter username',
   'common.login.password.holder': 'Please enter password',

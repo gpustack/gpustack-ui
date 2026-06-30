@@ -267,6 +267,10 @@ export default {
   'common.select.count': '{count} selected',
   'common.login.auth': 'Authenticating...',
   'common.login.auth.failed': 'Authentication failed',
+  'common.login.error.source_conflict':
+    'An account with this username already exists from a different authentication source. Please contact an administrator to link or convert it.',
+  'common.login.error.auth_failed':
+    'Authentication with the identity provider failed. Please try again or contact your administrator.',
   'common.login.password': 'Log in with Password',
   'common.login.username.holder': 'Please enter username',
   'common.login.password.holder': 'Please enter password',

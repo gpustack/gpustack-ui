@@ -269,6 +269,10 @@ export default {
   'common.select.count': '{count} seçildi',
   'common.login.auth': 'Kimlik doğrulanıyor...',
   'common.login.auth.failed': 'Kimlik doğrulama başarısız',
+  'common.login.error.source_conflict':
+    'Bu kullanıcı adıyla farklı bir kimlik doğrulama kaynağından bir hesap zaten mevcut. Bağlamak veya dönüştürmek için lütfen yöneticinize başvurun.',
+  'common.login.error.auth_failed':
+    'Kimlik sağlayıcısı ile kimlik doğrulama başarısız oldu. Lütfen tekrar deneyin veya yöneticinize başvurun.',
   'common.login.password': 'Şifre ile giriş yap',
   'common.login.username.holder': 'Lütfen kullanıcı adını girin',
   'common.login.password.holder': 'Lütfen şifreyi girin',

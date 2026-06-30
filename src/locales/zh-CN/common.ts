@@ -257,6 +257,9 @@ export default {
   'common.select.count': '已选 {count} 项',
   'common.login.auth': '认证中...',
   'common.login.auth.failed': '认证失败',
+  'common.login.error.source_conflict':
+    '已存在同名账号但来源不同。请联系管理员关联或转换该账号。',
+  'common.login.error.auth_failed': '身份提供商认证失败。请重试或联系管理员。',
   'common.login.password': '使用密码登录',
   'common.login.username.holder': '请输入用户名',
   'common.login.password.holder': '请输入密码',

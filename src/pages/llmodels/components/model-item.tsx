@@ -1,5 +1,4 @@
 import {
-  IconFont,
   StatusTag,
   TagsWrapper,
   TemplateCard,
@@ -20,6 +19,7 @@ import {
   MyModelsStatusValueMap
 } from '../config';
 import { categoryToPathMap } from '../config/button-actions';
+import { getModelLogo } from '../utils/model-logo';
 
 const CardWrapper = styled.div`
   &:hover {
@@ -82,6 +82,14 @@ const ModelItemContent = styled.div`
       opacity: 0.7;
     }
   }
+`;
+
+const ModelLogo = styled.img`
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  object-fit: contain;
+  flex: none;
 `;
 
 const Header = styled.div`
@@ -176,10 +184,11 @@ const ModelItem: React.FC<{
         header={
           <Header>
             <span className="text gap-8">
-              <IconFont
+              {/* <IconFont
                 type={sourceIconMap[model.source]}
                 style={{ fontSize: 24 }}
-              />
+              /> */}
+              <ModelLogo src={getModelLogo(model.name)} alt="" />
               <span>{model.name}</span>
             </span>
             <StatusTag

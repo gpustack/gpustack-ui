@@ -5,10 +5,7 @@ import {
 import { useIntl } from '@umijs/max';
 import { useMemo } from 'react';
 import { ResourceBreakdownItem } from '../../apis/resource';
-import {
-  cpuOnlyLabel,
-  instanceTypeSeriesLabel
-} from '../../utils/format-instance-type';
+import { instanceTypeSeriesLabel } from '../../utils/format-instance-type';
 import { parseRollup } from '../../utils/time-buckets';
 
 type GroupKey = 'gpu_type' | 'instance' | 'user';
@@ -95,7 +92,10 @@ const useInstancesColumns = (groupKey: GroupKey) => {
             ephemeralMib: row.ephemeral_mib,
             persistentMib: row.persistent_mib
           }),
-          { intl, title: isCpu ? cpuOnlyLabel(row) : undefined }
+          // Label by shape directly (consistent with the Instance Types
+          // column); avoids renderInstanceType's "CPU Only" fallback when a
+          // GPU row has vram but a missing/zero gpu_count.
+          { intl, title: instanceTypeSeriesLabel(row) }
         );
       }
     };

@@ -96,3 +96,12 @@ export interface UsageMeta {
 }
 
 export type FilterOptionType = Omit<UsageFilterItem, 'label' | 'deleted'>;
+
+// The full breakdown filter set (route / user / api_key). Every breakdown
+// table sends all active dimensions — matching the trend chart — so e.g. a
+// user filter narrows the Models table too, not only the Users table.
+export type BreakdownFilters = {
+  routes?: FilterOptionType[];
+  users?: FilterOptionType[];
+  api_keys?: FilterOptionType[];
+};

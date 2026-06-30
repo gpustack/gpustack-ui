@@ -1,6 +1,7 @@
 import { exportJsonToExcel } from '@gpustack/core-ui/excel';
 import dayjs from 'dayjs';
-import { useEffect, useMemo, useState } from 'react';
+import _ from 'lodash';
+import { useEffect, useRef, useState } from 'react';
 import { GroupOption } from '../config';
 import { BreakdownItem, UsageFilterItem } from '../config/types';
 import useQueryTimeSeriesData from '../services/use-query-timeseries-data';
@@ -181,10 +182,17 @@ export const useUsageFilters = ({
     return filters;
   };
 
-  const filters = useMemo(
-    () => buildFilters(commonFilters),
-    [commonFilters, routeOptions, userOptions, apiKeyOptions]
-  );
+  // Keep a stable reference while the content is unchanged. ``buildFilters``
+  // returns a fresh object every render — and again when the meta options
+  // resolve after mount — which would otherwise retrigger every breakdown
+  // table's fetch effect a second time on first load. Only a real selection
+  // change (or options resolving a previously-selected id) should swap it.
+  const filtersRef = useRef<ReturnType<typeof buildFilters>>({});
+  const nextFilters = buildFilters(commonFilters);
+  if (!_.isEqual(nextFilters, filtersRef.current)) {
+    filtersRef.current = nextFilters;
+  }
+  const filters = filtersRef.current;
 
   const fetchData = (
     currentSelectedFilters = commonFilters,

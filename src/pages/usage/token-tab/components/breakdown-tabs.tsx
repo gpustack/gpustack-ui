@@ -1,13 +1,10 @@
 import { useIntl } from '@umijs/max';
 import { Tabs } from 'antd';
 import React, { useMemo } from 'react';
-import { UsageFilterItem } from '../../config/types';
+import { BreakdownFilters } from '../../config/types';
 import ApiKeysTable from '../tables/apikeys-table';
 import ModelsTable from '../tables/models-table';
 import UsersTable from '../tables/users-table';
-
-type FilterOptionType = Omit<UsageFilterItem, 'label' | 'deleted'>;
-const EMPTY_FILTERS: FilterOptionType[] = [];
 
 const BreakdownTabs: React.FC<{
   dateRange: {
@@ -17,16 +14,9 @@ const BreakdownTabs: React.FC<{
   scope: string;
   pageResetKey?: number;
   refreshKey?: number;
-  filters: {
-    routes?: FilterOptionType[];
-    users?: FilterOptionType[];
-    api_keys?: FilterOptionType[];
-  };
+  filters: BreakdownFilters;
 }> = ({ filters, dateRange, scope, pageResetKey = 0, refreshKey = 0 }) => {
   const intl = useIntl();
-  const routes = filters.routes || EMPTY_FILTERS;
-  const users = filters.users || EMPTY_FILTERS;
-  const apiKeys = filters.api_keys || EMPTY_FILTERS;
 
   const items = useMemo(() => {
     return [
@@ -37,7 +27,7 @@ const BreakdownTabs: React.FC<{
         children: (
           <ModelsTable
             key="models"
-            routes={routes}
+            filters={filters}
             dateRange={dateRange}
             scope={scope}
             pageResetKey={pageResetKey}
@@ -52,7 +42,7 @@ const BreakdownTabs: React.FC<{
         children: (
           <UsersTable
             key="users"
-            users={users}
+            filters={filters}
             dateRange={dateRange}
             scope={scope}
             pageResetKey={pageResetKey}
@@ -67,7 +57,7 @@ const BreakdownTabs: React.FC<{
         children: (
           <ApiKeysTable
             key="api_keys"
-            apiKeys={apiKeys}
+            filters={filters}
             dateRange={dateRange}
             scope={scope}
             pageResetKey={pageResetKey}
@@ -81,7 +71,7 @@ const BreakdownTabs: React.FC<{
       }
       return true;
     });
-  }, [apiKeys, dateRange, routes, pageResetKey, refreshKey, scope, users]);
+  }, [filters, dateRange, pageResetKey, refreshKey, scope]);
 
   return (
     <div style={{ marginTop: 16 }}>

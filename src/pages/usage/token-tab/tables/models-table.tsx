@@ -4,18 +4,18 @@ import PageBox from '@/pages/_components/page-box';
 import { useIntl } from '@umijs/max';
 import { Table } from 'antd';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { BreakdownItem, FilterOptionType } from '../../config/types';
+import { BreakdownFilters, BreakdownItem } from '../../config/types';
 import useModelsColumns from '../../hooks/use-models-columns';
 import useQueryBreakdownList from '../../services/use-query-breakdown-list';
 import getBreakdownRowKey from '../../utils/get-breakdown-row-key';
 
 const Models: React.FC<{
-  routes: FilterOptionType[];
+  filters: BreakdownFilters;
   dateRange: { start_date: string; end_date: string };
   scope: string;
   pageResetKey?: number;
   refreshKey?: number;
-}> = ({ routes, dateRange, scope, pageResetKey = 0, refreshKey = 0 }) => {
+}> = ({ filters, dateRange, scope, pageResetKey = 0, refreshKey = 0 }) => {
   const intl = useIntl();
 
   const { loading, dataSource, fetchData } = useQueryBreakdownList({
@@ -33,7 +33,6 @@ const Models: React.FC<{
   const pendingPageResetRef = useRef(false);
 
   const handleTableChange = (pagination: any, filters: any, sorter: any) => {
-    console.log('pagination, filters, sorter: ', pagination, filters, sorter);
     const sort_by =
       sorter.order === 'descend' ? `-${sorter.field}` : sorter.field;
     setQueryParams((prev) => ({
@@ -72,16 +71,16 @@ const Models: React.FC<{
     fetchData({
       ...queryParams,
       group_by: ['route'],
-      filters: {
-        routes
-      },
+      // Send the full filter set (route / user / api_key), not just the
+      // table's own dimension, so the breakdown matches the trend chart.
+      filters,
       scope: scope,
       ...dateRange
     });
   }, [
     dateRange.end_date,
     dateRange.start_date,
-    routes,
+    filters,
     queryParams.page,
     queryParams.perPage,
     queryParams.sort_by,

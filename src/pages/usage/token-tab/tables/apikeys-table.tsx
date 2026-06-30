@@ -3,18 +3,18 @@ import PageBox from '@/pages/_components/page-box';
 import { useIntl } from '@umijs/max';
 import { Table } from 'antd';
 import { useEffect, useRef, useState } from 'react';
-import { FilterOptionType } from '../../config/types';
+import { BreakdownFilters } from '../../config/types';
 import useAPIKeys from '../../hooks/use-apikeys-columns';
 import useQueryBreakdownList from '../../services/use-query-breakdown-list';
 import getBreakdownRowKey from '../../utils/get-breakdown-row-key';
 
 const APIKeys: React.FC<{
-  apiKeys: FilterOptionType[];
+  filters: BreakdownFilters;
   dateRange: { start_date: string; end_date: string };
   scope: string;
   pageResetKey?: number;
   refreshKey?: number;
-}> = ({ apiKeys, dateRange, scope, pageResetKey = 0, refreshKey = 0 }) => {
+}> = ({ filters, dateRange, scope, pageResetKey = 0, refreshKey = 0 }) => {
   const intl = useIntl();
 
   const { loading, dataSource, fetchData } = useQueryBreakdownList({
@@ -69,16 +69,16 @@ const APIKeys: React.FC<{
     fetchData({
       ...queryParams,
       group_by: ['api_key'],
-      filters: {
-        api_keys: apiKeys
-      },
+      // Send the full filter set (route / user / api_key), not just the
+      // table's own dimension, so the breakdown matches the trend chart.
+      filters,
       scope: scope,
       ...dateRange
     });
   }, [
-    apiKeys,
     dateRange.end_date,
     dateRange.start_date,
+    filters,
     queryParams.page,
     queryParams.perPage,
     queryParams.sort_by,

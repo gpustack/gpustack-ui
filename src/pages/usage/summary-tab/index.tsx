@@ -31,7 +31,9 @@ import { Col, Row } from 'antd';
 import dayjs from 'dayjs';
 import React, { useEffect, useMemo, useState } from 'react';
 import ResourceFilterBar from '../components/resource-filter-bar';
-import useResourceMeta from '../hooks/use-resource-meta';
+import { FilterOptionType } from '../config/types';
+import useResourceMeta, { SelectOption } from '../hooks/use-resource-meta';
+import useQueryUsageMetaData from '../services/use-query-meta-data';
 import {
   bucketKey,
   generateBucketRange,
@@ -231,7 +233,38 @@ const SummaryTab: React.FC = () => {
     selectedUsers: []
   });
   const { start, end, selectedUsers } = queryParams;
-  const { creators: userOptions } = useResourceMeta(scope);
+  const { creators: resourceUsers } = useResourceMeta(scope);
+  const { detailData: tokenMeta, fetchData: fetchTokenMeta } =
+    useQueryUsageMetaData();
+
+  // The user filter unions two sources: resource creators (GPU / storage
+  // usage) and the token-usage users (/usage/meta) — a user may appear in only
+  // one. Deduped by user id. The token meta also carries the per-user identity
+  // the token-series endpoint filters on (see ``tokenUserById``).
+  const userOptions = useMemo<SelectOption[]>(() => {
+    const map = new Map<number, SelectOption>();
+    resourceUsers.forEach((u) =>
+      map.set(u.value, { value: u.value, label: u.label, deleted: u.deleted })
+    );
+    (tokenMeta?.users || []).forEach((u) => {
+      const id = u.identity.current?.user_id;
+      if (id != null && !map.has(id)) {
+        map.set(id, { value: id, label: u.label });
+      }
+    });
+    return Array.from(map.values());
+  }, [resourceUsers, tokenMeta]);
+
+  // user id → the identity object the token series filters by. Built from the
+  // token meta so the trend's ``users`` filter carries the real identity.
+  const tokenUserById = useMemo(() => {
+    const map = new Map<number, FilterOptionType>();
+    (tokenMeta?.users || []).forEach((u) => {
+      const id = u.identity.current?.user_id;
+      if (id != null) map.set(id, { identity: u.identity });
+    });
+    return map;
+  }, [tokenMeta]);
 
   const {
     detailData: summary,
@@ -285,6 +318,24 @@ const SummaryTab: React.FC = () => {
       ? { creator_ids: currentParams.selectedUsers }
       : undefined;
 
+    // The token series hits /usage/breakdown, which filters users by identity
+    // rather than the creator_ids the resource endpoints take — so the token
+    // trend honors the user filter like the totals do. Resolve each id to its
+    // token-meta identity, falling back to a minimal current.user_id object for
+    // users present only in the resource meta.
+    const tokenUserFilter: { users?: FilterOptionType[] } = currentParams
+      .selectedUsers.length
+      ? {
+          users: currentParams.selectedUsers.map(
+            (id) =>
+              tokenUserById.get(id) ??
+              ({
+                identity: { current: { user_id: id } }
+              } as unknown as FilterOptionType)
+          )
+        }
+      : {};
+
     await Promise.all([
       fetchSummary({
         ...commonParams,
@@ -308,7 +359,7 @@ const SummaryTab: React.FC = () => {
         group_by: ['date'],
         granularity,
         page: -1,
-        filters: {}
+        filters: tokenUserFilter
       }),
 
       fetchComputeBreakdown({
@@ -418,6 +469,7 @@ const SummaryTab: React.FC = () => {
   };
 
   useEffect(() => {
+    fetchTokenMeta();
     fetchAll();
   }, []);
 

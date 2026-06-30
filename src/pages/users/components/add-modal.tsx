@@ -169,6 +169,7 @@ const AddModal: React.FC<AddModalProps> = ({
             autoComplete={'new-password'}
             label={intl.formatMessage({ id: 'common.form.password' })}
             required={action === PageAction.CREATE}
+            onPressEnter={handleSubmit}
           ></CInput.Password>
         </Form.Item>
       </Form>

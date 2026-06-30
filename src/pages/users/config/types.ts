@@ -5,6 +5,7 @@ export interface FormData {
   full_name: string;
   password: string;
   is_active?: boolean;
+  source?: string;
 }
 
 export interface ListItem extends FormData {

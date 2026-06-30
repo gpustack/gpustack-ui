@@ -12,6 +12,11 @@ export default {
   'users.form.active.description': '启用或禁用此用户账户',
   'users.form.fullname': '全名',
   'users.form.source': '来源',
+  'users.form.source.local': '本地',
+  'users.form.source.tip.switchToLocal':
+    '切换到本地需要设置新密码,之后用户将通过标准登录表单登录。',
+  'users.form.source.tip.switchToExternal':
+    '切换到外部来源会清除该用户的本地密码,之后用户将通过所配置的身份提供商登录。',
   'users.table.user': '用户',
   'users.form.admin': '管理员',
   'users.form.user': '普通用户',

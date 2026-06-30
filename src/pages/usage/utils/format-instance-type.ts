@@ -16,3 +16,39 @@ import { ResourceBreakdownItem } from '../apis/resource';
 export const instanceTypeLabel = (
   row?: Partial<ResourceBreakdownItem>
 ): string => row?.product || row?.gpu_type || '-';
+
+const _trim = (n: number): string =>
+  Number.isInteger(n) ? `${n}` : n.toFixed(1);
+
+// Compact CPU/RAM spec, e.g. "2 vCPU · 4 GB", from the instance totals
+// (millicores / MiB). Empty string when neither is known.
+export const formatCpuSpec = (
+  cpuMilli?: number | null,
+  memMib?: number | null
+): string => {
+  const parts: string[] = [];
+  if (cpuMilli) parts.push(`${_trim(cpuMilli / 1000)} vCPU`);
+  if (memMib) parts.push(`${_trim(memMib / 1024)} GB`);
+  return parts.join(' · ');
+};
+
+// CPU instance-type label: "CPU Only" plus its real size when known, e.g.
+// "CPU Only · 2 vCPU · 4 GB". Used by both the table column and the trend
+// legend so they read identically.
+export const cpuOnlyLabel = (row?: Partial<ResourceBreakdownItem>): string => {
+  const spec = formatCpuSpec(row?.cpu_milli, row?.memory_mib);
+  return spec ? `CPU Only · ${spec}` : 'CPU Only';
+};
+
+// Instance Types are grouped by actual shape, so each row is one concrete
+// type: a GPU shows "<product> x <cards>", a CPU shows "CPU Only · <spec>".
+// One label for the table column and the trend legend so they read the same
+// and each shape is a distinct series. (" x " matches the GPU Instances list.)
+export const instanceTypeSeriesLabel = (
+  row?: Partial<ResourceBreakdownItem>
+): string => {
+  const isCpu = !row?.gpu_count && !row?.vram_mib;
+  if (isCpu) return cpuOnlyLabel(row);
+  const product = row?.product || row?.gpu_type || '-';
+  return row?.gpu_count ? `${product} x ${row.gpu_count}` : product;
+};

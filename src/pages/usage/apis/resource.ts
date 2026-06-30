@@ -11,6 +11,7 @@
  * whole-machine SKU model meters runtime, not decomposed components.
  */
 import { request } from '@umijs/max';
+import { instanceTypeSeriesLabel } from '../utils/format-instance-type';
 
 export interface ResourceUsageFilters {
   creator_ids?: number[];
@@ -73,6 +74,10 @@ export interface ResourceBreakdownItem extends ResourceBreakdownSummary {
   unit_cpu_milli?: number;
   unit_memory_mib?: number;
   vram_mib?: number;
+  // Instance totals (requested cpu/ram) — the real size, so CPU instance types
+  // show "CPU Only · 2 vCPU · 4 GB" instead of just the per-unit spec.
+  cpu_milli?: number;
+  memory_mib?: number;
   // Per-instance rows also carry the card count + ephemeral disk so the
   // Instances table can render "<product> x <count>" + the spec popover.
   gpu_count?: number;
@@ -202,6 +207,8 @@ interface ServerBreakdownItem {
     unit_cpu_milli?: number | null;
     unit_memory_mib?: number | null;
     vram_mib?: number | null;
+    cpu_milli?: number | null;
+    memory_mib?: number | null;
     gpu_count?: number | null;
     ephemeral_mib?: number | null;
     local_storage_mib?: number | null;
@@ -313,6 +320,8 @@ function flattenItem(
     if (dims.unit_memory_mib != null)
       flat.unit_memory_mib = dims.unit_memory_mib;
     if (dims.vram_mib != null) flat.vram_mib = dims.vram_mib;
+    if (dims.cpu_milli != null) flat.cpu_milli = dims.cpu_milli;
+    if (dims.memory_mib != null) flat.memory_mib = dims.memory_mib;
     if (dims.gpu_count != null) flat.gpu_count = dims.gpu_count;
     if (dims.ephemeral_mib != null) flat.ephemeral_mib = dims.ephemeral_mib;
     if (dims.local_storage_mib != null)
@@ -321,14 +330,14 @@ function flattenItem(
     if (dims.storage_type) flat.storage_type = dims.storage_type;
     if (dims.capacity_mib != null) flat.capacity_mib = dims.capacity_mib;
   }
-  // For an instance-type grouped trend the series label (``group``) defaults to
-  // the raw flavor slug; prefer the pretty product name so the chart legend
-  // matches the GPU Instances list (#5700). ``groupBy`` here is the unmapped
-  // frontend dimension — ``gpu_type`` maps to the backend's ``instance_type``
-  // (see GROUP_BY_MAP). Falls back to the slug for legacy rows that predate
-  // dimension enrichment.
-  if (groupBy === 'gpu_type' && flat.product) {
-    flat.group = flat.product;
+  // Instance-type grouped trend: the series label (``group``) defaults to the
+  // raw flavor slug. Instance Types are grouped by actual shape, so label each
+  // series by that shape — "<product> x <cards>" / "CPU Only · 3 vCPU · 6 GB" —
+  // matching the table and keeping every shape a distinct series (#5700).
+  // ``groupBy`` is the unmapped frontend dimension; the instance-type axis is
+  // ``gpu_type`` (→ backend ``instance_type`` via GROUP_BY_MAP).
+  if (groupBy === 'gpu_type') {
+    flat.group = instanceTypeSeriesLabel(flat);
   }
   return flat;
 }

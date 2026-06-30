@@ -13,6 +13,11 @@ export default {
     'このユーザーアカウントを有効または無効にする',
   'users.form.fullname': 'フルネーム',
   'users.form.source': 'ソース',
+  'users.form.source.local': 'ローカル',
+  'users.form.source.tip.switchToLocal':
+    'ローカルに切り替えるには新しいパスワードが必要です。以後、ユーザーは標準のログインフォームからサインインします。',
+  'users.form.source.tip.switchToExternal':
+    '外部ソースに切り替えるとユーザーのローカルパスワードが削除され、設定済みの ID プロバイダーからサインインするようになります。',
   'users.table.user': 'ユーザー',
   'users.form.admin': '管理者',
   'users.form.user': '一般ユーザー',

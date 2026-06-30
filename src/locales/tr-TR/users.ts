@@ -13,6 +13,11 @@ export default {
     'Bu kullanıcı hesabını etkinleştir veya devre dışı bırak',
   'users.form.fullname': 'Tam Ad',
   'users.form.source': 'Kaynak',
+  'users.form.source.local': 'Yerel',
+  'users.form.source.tip.switchToLocal':
+    'Yerel kaynağa geçmek yeni bir parola gerektirir. Kullanıcı bundan sonra standart oturum açma formunu kullanır.',
+  'users.form.source.tip.switchToExternal':
+    'Harici bir kaynağa geçmek kullanıcının yerel parolasını siler. Kullanıcı bundan sonra yapılandırılmış kimlik sağlayıcı üzerinden oturum açar.',
   'users.table.user': 'kullanıcılar',
   'users.form.admin': 'Yönetici',
   'users.form.user': 'Kullanıcı',

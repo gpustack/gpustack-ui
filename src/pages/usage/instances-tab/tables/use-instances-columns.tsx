@@ -5,7 +5,10 @@ import {
 import { useIntl } from '@umijs/max';
 import { useMemo } from 'react';
 import { ResourceBreakdownItem } from '../../apis/resource';
-import { instanceTypeLabel } from '../../utils/format-instance-type';
+import {
+  cpuOnlyLabel,
+  instanceTypeSeriesLabel
+} from '../../utils/format-instance-type';
 import { parseRollup } from '../../utils/time-buckets';
 
 type GroupKey = 'gpu_type' | 'instance' | 'user';
@@ -44,25 +47,29 @@ const useInstancesColumns = (groupKey: GroupKey) => {
       title: intl.formatMessage({ id: 'usage.table.instanceType' }),
       dataIndex: 'gpu_type',
       key: 'gpu_type',
-      render: (_v: string, row: ResourceBreakdownItem) =>
-        renderInstanceType(
+      render: (_v: string, row: ResourceBreakdownItem) => {
+        const isCpu = !row.gpu_count && !row.vram_mib;
+        return renderInstanceType(
           buildInstanceTypeRecordFromMiB({
             name: row.instance_name,
             product: row.product || row.gpu_type,
             gpuCount: row.gpu_count,
-            unitCpuMilli: row.unit_cpu_milli,
-            unitMemoryMib: row.unit_memory_mib,
+            // CPU instance types show their real total size (cpu/mem totals);
+            // GPU keeps per-card specs since the renderer multiplies by the
+            // card count.
+            unitCpuMilli: isCpu ? row.cpu_milli : row.unit_cpu_milli,
+            unitMemoryMib: isCpu ? row.memory_mib : row.unit_memory_mib,
             vramMib: row.vram_mib
           }),
           {
             intl,
             categories: ['cpu', 'ram'],
-            title:
-              !!row.gpu_count || !!row.vram_mib
-                ? instanceTypeLabel(row)
-                : 'CPU Only'
+            // Each row is one shape: GPU "<product> x <cards>", CPU
+            // "CPU Only · <spec>".
+            title: instanceTypeSeriesLabel(row)
           }
-        )
+        );
+      }
     };
     // Instances breakdown: render through the canonical GPU Instances list
     // renderer so the label + spec popover are identical. The breakdown row
@@ -71,21 +78,26 @@ const useInstancesColumns = (groupKey: GroupKey) => {
       title: intl.formatMessage({ id: 'usage.table.instanceType' }),
       dataIndex: 'gpu_type',
       key: 'gpu_type',
-      render: (_v: string, row: ResourceBreakdownItem) =>
-        renderInstanceType(
+      render: (_v: string, row: ResourceBreakdownItem) => {
+        const isCpu = !row.gpu_count && !row.vram_mib;
+        return renderInstanceType(
           buildInstanceTypeRecordFromMiB({
             name: row.instance_name,
             product: row.product || row.gpu_type,
             gpuCount: row.gpu_count,
-            unitCpuMilli: row.unit_cpu_milli,
-            unitMemoryMib: row.unit_memory_mib,
+            // A per-instance row is one concrete instance, so CPU shows its
+            // real requested size (cpu/mem totals), not the per-unit flavor
+            // spec — e.g. a 3c6g instance of a 1c2g flavor reads "3 vCPU · 6 GB".
+            unitCpuMilli: isCpu ? row.cpu_milli : row.unit_cpu_milli,
+            unitMemoryMib: isCpu ? row.memory_mib : row.unit_memory_mib,
             vramMib: row.vram_mib,
             localStorageMib: row.local_storage_mib,
             ephemeralMib: row.ephemeral_mib,
             persistentMib: row.persistent_mib
           }),
-          { intl }
-        )
+          { intl, title: isCpu ? cpuOnlyLabel(row) : undefined }
+        );
+      }
     };
     // Last Active = the last active day. The backend sends a rollup-tz instant
     // with its offset; parseRollup keeps that wall clock (no browser-tz convert),

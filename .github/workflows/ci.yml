@@ -1,6 +1,7 @@
 name: CI
 
 on:
+  workflow_dispatch: {}
   push:
     branches:
       - 'main'
@@ -117,3 +118,20 @@ jobs:
           remote_path: releases/${{ steps.version.outputs.version }}.tar.gz
           accelerate: true
           clean: false
+
+  trigger-backend:
+    needs: build-publish
+    if: (github.event_name == 'push' && !startsWith(github.ref, 'refs/tags/')) || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Dispatch backend build
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.DISPATCH_PAT }}
+          repository: gpustack/gpustack
+          event-type: ui-built
+          client-payload: |
+            {
+              "ref": "${{ github.ref }}",
+              "sha": "${{ github.sha }}"
+            }

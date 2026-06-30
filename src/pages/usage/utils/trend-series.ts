@@ -53,7 +53,12 @@ export const buildTrendSeries = (opts: {
       byGroup.set(label, new Map());
       order.push(label);
     }
-    byGroup.get(label)!.set(bucketKey(i.date, granularity), valueOf(i, metric));
+    // Sum rather than overwrite: should two backend groups ever map to the same
+    // display label, several rows can share a (label, bucket), so accumulate
+    // instead of letting the last write win.
+    const bucket = byGroup.get(label)!;
+    const key = bucketKey(i.date, granularity);
+    bucket.set(key, (bucket.get(key) ?? 0) + valueOf(i, metric));
   });
 
   const colors = palette(Math.max(order.length, 1));

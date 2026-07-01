@@ -70,14 +70,44 @@
     height: 56px;
     border-bottom: 1px solid var(--ant-color-split);
 
+    // `.left` claims all the space between the title's left edge and `.right`.
+    // Because the container width is fixed regardless of inner content, the
+    // right side never shifts during route transitions and the content inside
+    // .left is anchored to the left edge — no horizontal jitter.
     .left {
       display: flex;
       align-items: center;
+      flex: 1 1 auto;
+      min-width: 0;
     }
 
     .right {
       display: flex;
       align-items: center;
+      flex-shrink: 0;
+    }
+
+    .leftSlot,
+    .rightSlot {
+      display: contents;
+    }
+
+    .defaultTitle {
+      display: inline-flex;
+      align-items: center;
+    }
+
+    // Portal-driven visibility: when a page's HeaderLeft / HeaderRight
+    // portal target has children, hide the default title / show the divider.
+    // Using `:empty` (rather than React state) keeps visibility synchronous
+    // with the DOM mutation, so there is no inter-frame flicker on route
+    // transitions.
+    .leftSlot:not(:empty) ~ .defaultTitle {
+      display: none;
+    }
+
+    .rightSlot:empty ~ .divider {
+      display: none;
     }
   }
 }

@@ -1,12 +1,13 @@
 import HotKeys from '@/config/hotkeys';
 import { modelCategoriesMap } from '@/pages/llmodels/config';
-import { useIntl } from '@umijs/max';
 import useMemoizedFn from 'ahooks/lib/useMemoizedFn';
-import classNames from 'classnames';
 import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { PageContainerInner } from '../../_components/page-box';
+import {
+  HeaderRight,
+  usePageContentStyle
+} from '../../_components/page-box';
 import { queryModelsList } from '../apis';
 import ViewCodeButtons from '../components/view-code-buttons';
 import useCollapseLayout from '../hooks/use-collapse-layout';
@@ -14,7 +15,6 @@ import '../style/play-ground.less';
 import GroundReranker from './page';
 
 const PlaygroundRerank: React.FC = () => {
-  const intl = useIntl();
   const groundRerankerRef = useRef<any>(null);
   const [rerankerModelList, setRerankerModelList] = useState<
     Global.BaseOption<string>[]
@@ -80,23 +80,18 @@ const PlaygroundRerank: React.FC = () => {
     }
   );
 
+  usePageContentStyle({ padding: 0 });
+
   return (
-    <PageContainerInner
-      className={classNames('playground-container chat')}
-      styles={{
-        containerWrapper: {
-          padding: 0
-        }
-      }}
-      rightContent={
+    <>
+      <HeaderRight>
         <ViewCodeButtons
           activeKey=""
           handleViewCode={handleViewCode}
           handleToggleCollapse={handleToggleCollapse}
           key="view-code-buttons"
         ></ViewCodeButtons>
-      }
-    >
+      </HeaderRight>
       <div className="play-ground">
         <div className="chat">
           <GroundReranker
@@ -106,7 +101,7 @@ const PlaygroundRerank: React.FC = () => {
           ></GroundReranker>
         </div>
       </div>
-    </PageContainerInner>
+    </>
   );
 };
 

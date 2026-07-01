@@ -6,7 +6,7 @@ import { IconFont } from '@gpustack/core-ui';
 import { useIntl, useNavigate, useSearchParams } from '@umijs/max';
 import { Tabs, type TabsProps } from 'antd';
 import { useAtomValue } from 'jotai';
-import { PageContainerInner } from '../_components/page-box';
+import { HeaderLeft } from '../_components/page-box';
 import PageBreadcrumb from '../_components/page-breadcrumb';
 import ClusterBasic from './components/detail/cluster-basic';
 import ClusterSystemLoad from './components/detail/cluster-system-load';
@@ -46,11 +46,10 @@ const ClusterDetailModal = () => {
   ) ?? []) as TabItem[];
 
   return (
-    <PageContainerInner
-      header={{
-        title: <PageBreadcrumb items={breadcrumbItems} />
-      }}
-    >
+    <>
+      <HeaderLeft>
+        <PageBreadcrumb items={breadcrumbItems} />
+      </HeaderLeft>
       <ClusterBasic clusterId={Number(id)}></ClusterBasic>
       <ClusterSystemLoad clusterId={Number(id)}></ClusterSystemLoad>
       <Tabs
@@ -75,7 +74,7 @@ const ClusterDetailModal = () => {
           ...extraTabs
         ]}
       />
-    </PageContainerInner>
+    </>
   );
 };
 

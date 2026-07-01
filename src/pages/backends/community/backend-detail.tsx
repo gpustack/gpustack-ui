@@ -1,6 +1,6 @@
+import FullMarkdown from '@/components/full-markdown';
 import { BulbOutlined } from '@ant-design/icons';
 import { AutoTooltip } from '@gpustack/core-ui';
-import { FullMarkdown } from '@gpustack/core-ui/markdown';
 import { useIntl } from '@umijs/max';
 import { Button, Tag } from 'antd';
 import _ from 'lodash';

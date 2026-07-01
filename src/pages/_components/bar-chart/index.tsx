@@ -1,5 +1,5 @@
 import useCoolColors from '@/hooks/use-cool-colors';
-import { Chart } from '@gpustack/core-ui';
+import { Chart } from '@gpustack/core-ui/charts';
 import { formatLargeNumber } from '@gpustack/core-ui/utils';
 import { Empty, Spin, theme } from 'antd';
 import _ from 'lodash';

@@ -1,4 +1,4 @@
-import { HBarChart } from '@gpustack/core-ui';
+import { HBarChart } from '@gpustack/core-ui/charts';
 import { useIntl } from '@umijs/max';
 import { usageChartHeight, usageRankMaxItems } from '../../config';
 import type useTopTokenUsageByUser from '../../hooks/use-top-token-usage-by-user';

@@ -1,4 +1,5 @@
-import { GaugeChart, TemplateCard } from '@gpustack/core-ui';
+import { TemplateCard } from '@gpustack/core-ui';
+import { GaugeChart } from '@gpustack/core-ui/charts';
 import { useSearchParams } from '@umijs/max';
 import { Col, Row } from 'antd';
 import _ from 'lodash';

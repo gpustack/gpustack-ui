@@ -4,63 +4,35 @@ import {
   RouteContext,
   type PageContainerProps
 } from '@ant-design/pro-components';
-import { useOverlayScroller } from '@gpustack/core-ui';
+import {
+  HeaderSlotContext,
+  useOverlayScroller,
+  type HeaderSlotContextValue
+} from '@gpustack/core-ui';
 import { Divider } from 'antd';
 import classNames from 'classnames';
 import {
-  createContext,
   useCallback,
   useContext,
   useEffect,
-  useLayoutEffect,
   useMemo,
   useRef,
   useState
 } from 'react';
-import { createPortal } from 'react-dom';
 import pageBoxCss from './styles/page-box.less';
 
+// The header-slot bridge (HeaderSlotContext, HeaderLeft, HeaderRight,
+// usePageContentStyle) lives in @gpustack/core-ui so the host and the
+// enterprise plugin share the SAME context instance and can portal into this
+// layout-owned header bar. Re-exported here so existing host import sites
+// keep working.
+export {
+  HeaderLeft,
+  HeaderRight,
+  usePageContentStyle
+} from '@gpustack/core-ui';
+
 const paddingInlinePageContainerContent = 24;
-
-type HeaderSlotContextValue = {
-  leftEl: HTMLElement | null;
-  rightEl: HTMLElement | null;
-  setContentStyle: (style: React.CSSProperties | undefined) => () => void;
-};
-
-const HeaderSlotContext = createContext<HeaderSlotContextValue | null>(null);
-
-// Pages render <HeaderLeft> / <HeaderRight> as part of their JSX; the children
-// are portaled into the layout-owned PageContainerInner header bar so the
-// shell never unmounts between routes. Visibility of the default title /
-// right divider is driven by CSS (`:empty` / `:not(:empty)`) on the portal
-// target, so they react synchronously to DOM mutations — no React state, no
-// re-renders, no inter-frame flicker.
-export const HeaderLeft: React.FC<{ children: React.ReactNode }> = ({
-  children
-}) => {
-  const ctx = useContext(HeaderSlotContext);
-  return ctx?.leftEl ? createPortal(children, ctx.leftEl) : null;
-};
-
-export const HeaderRight: React.FC<{ children: React.ReactNode }> = ({
-  children
-}) => {
-  const ctx = useContext(HeaderSlotContext);
-  return ctx?.rightEl ? createPortal(children, ctx.rightEl) : null;
-};
-
-// Pages that need to override the layout-owned content wrapper style
-// (e.g. playground pages that want zero padding) call this hook in render.
-// Applied synchronously via useLayoutEffect to avoid first-paint flicker.
-export const usePageContentStyle = (style?: React.CSSProperties): void => {
-  const ctx = useContext(HeaderSlotContext);
-  const stable = JSON.stringify(style ?? null);
-  useLayoutEffect(() => {
-    if (!ctx) return;
-    return ctx.setContentStyle(style);
-  }, [stable, ctx?.setContentStyle]);
-};
 
 export const PageContainerInner: React.FC<
   PageContainerProps & {
@@ -97,13 +69,33 @@ export const PageContainerInner: React.FC<
     []
   );
 
+  const slotOwnersRef = useRef<{ left: number; right: number }>({
+    left: 0,
+    right: 0
+  });
+
+  const registerSlot = useCallback((slot: 'left' | 'right') => {
+    const owners = slotOwnersRef.current;
+    owners[slot] += 1;
+    if (process.env.NODE_ENV !== 'production' && owners[slot] > 1) {
+      const name = slot === 'left' ? 'HeaderLeft' : 'HeaderRight';
+      console.warn(
+        `[PageContainerInner] ${owners[slot]} <${name}> are mounted at once; their content stacks in the same header slot. Only one page/component should own each slot at a time.`
+      );
+    }
+    return () => {
+      owners[slot] -= 1;
+    };
+  }, []);
+
   const slotValue = useMemo<HeaderSlotContextValue>(
     () => ({
       leftEl,
       rightEl,
-      setContentStyle
+      setContentStyle,
+      registerSlot
     }),
-    [leftEl, rightEl, setContentStyle]
+    [leftEl, rightEl, setContentStyle, registerSlot]
   );
 
   return (

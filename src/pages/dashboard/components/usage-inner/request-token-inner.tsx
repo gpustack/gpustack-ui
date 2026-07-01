@@ -1,5 +1,6 @@
 import { formatLargeNumber } from '@/utils';
-import { CardWrapper, MixLineBarChart, SimpleCard } from '@gpustack/core-ui';
+import { CardWrapper, SimpleCard } from '@gpustack/core-ui';
+import { MixLineBarChart } from '@gpustack/core-ui/charts';
 import { Button } from 'antd';
 import dayjs from 'dayjs';
 import React, { useMemo } from 'react';

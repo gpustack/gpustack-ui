@@ -11,9 +11,9 @@ import {
   HighlightCode,
   IconFont,
   ResizePanel,
-  ScatterChart,
   useOverlayScroller
 } from '@gpustack/core-ui';
+import { ScatterChart } from '@gpustack/core-ui/charts';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { Button, Checkbox, Form, Segmented, Spin, Tabs, Tooltip } from 'antd';

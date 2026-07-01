@@ -1,6 +1,6 @@
 import useCoolColors from '@/hooks/use-cool-colors';
 import useQueryTimeSeriesData from '@/pages/usage/services/use-query-timeseries-data';
-import { Chart } from '@gpustack/core-ui';
+import { Chart } from '@gpustack/core-ui/charts';
 import { formatLargeNumber } from '@gpustack/core-ui/utils';
 import { useIntl } from '@umijs/max';
 import type { GlobalToken } from 'antd';

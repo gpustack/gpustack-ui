@@ -1,10 +1,6 @@
 import { queryClusterList } from '@/pages/cluster-management/apis';
-import {
-  BaseSelect,
-  CardWrapper,
-  GaugeChart,
-  PageTools
-} from '@gpustack/core-ui';
+import { BaseSelect, CardWrapper, PageTools } from '@gpustack/core-ui';
+import { GaugeChart } from '@gpustack/core-ui/charts';
 import { useIntl } from '@umijs/max';
 import { Col, Row } from 'antd';
 import _ from 'lodash';

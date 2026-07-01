@@ -1,4 +1,5 @@
-import { CardWrapper, HBarChart } from '@gpustack/core-ui';
+import { CardWrapper } from '@gpustack/core-ui';
+import { HBarChart } from '@gpustack/core-ui/charts';
 import React from 'react';
 
 interface TopUserProps {

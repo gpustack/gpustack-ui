@@ -28,6 +28,7 @@ export default {
       rowSelectedBg: 'transparent',
       headerSortActiveBg: 'transparent',
       headerSortHoverBg: 'transparent',
+      bodySortBg: 'transparent',
       headerBg: 'none'
     },
     Button: {

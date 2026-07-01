@@ -36,13 +36,11 @@ const paddingInlinePageContainerContent = 24;
 
 export const PageContainerInner: React.FC<
   PageContainerProps & {
-    leftContent?: React.ReactNode;
-    rightContent?: React.ReactNode;
     styles?: {
       containerWrapper?: React.CSSProperties;
     };
   }
-> = ({ children, styles, title, leftContent, rightContent, ...rest }) => {
+> = ({ children, styles, title, ...rest }) => {
   const { initialize: initialize } = useOverlayScroller({
     defer: false
   });
@@ -116,14 +114,12 @@ export const PageContainerInner: React.FC<
           <div className={pageBoxCss.title}>
             <div className={pageBoxCss.left}>
               <div ref={setLeftEl} className={pageBoxCss.leftSlot} />
-              {leftContent}
               <span className={pageBoxCss.defaultTitle}>
                 {pageContext.title}
               </span>
             </div>
             <div className={pageBoxCss.right}>
               <div ref={setRightEl} className={pageBoxCss.rightSlot} />
-              {rightContent}
               <Divider
                 className={pageBoxCss.divider}
                 orientation="vertical"

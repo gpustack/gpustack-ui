@@ -170,6 +170,7 @@ const MaasProvider: React.FC = () => {
             rowSelection={rowSelection}
             columns={columns}
             scroll={{ x: 900 }}
+            onChange={handleTableChange}
             pagination={{
               size: 'middle',
               showSizeChanger: true,

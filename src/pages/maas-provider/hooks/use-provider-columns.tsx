@@ -58,7 +58,7 @@ const useProviderColumns = (
       {
         title: intl.formatMessage({ id: 'providers.table.providerName' }),
         dataIndex: ['config', 'type'],
-        sorter: tableSorter(2),
+        sorter: false,
         span: 4,
         minWidth: 160,
         render: (value: string) => (

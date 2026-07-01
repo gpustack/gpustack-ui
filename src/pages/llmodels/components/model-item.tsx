@@ -184,10 +184,6 @@ const ModelItem: React.FC<{
         header={
           <Header>
             <span className="text gap-8">
-              {/* <IconFont
-                type={sourceIconMap[model.source]}
-                style={{ fontSize: 24 }}
-              /> */}
               <ModelLogo src={getModelLogo(model.name)} alt="" />
               <span>{model.name}</span>
             </span>

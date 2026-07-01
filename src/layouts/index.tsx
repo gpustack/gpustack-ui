@@ -52,21 +52,6 @@ import { ExtraContent } from './extraRender';
 import { patchRoutes } from './runtime';
 import SiderMenu from './sider-menu';
 
-// Pages that use the page container in the page
-const NO_CONTAINER_PAGES = [
-  'chat',
-  'rerank',
-  'embedding',
-  'speech',
-  'image',
-  'text2images',
-  'clusterDetail',
-  'clusterCreate',
-  'benchmarkDetail',
-  'deployment',
-  'video'
-];
-
 const CHECK_RESOURCE_PATH = [
   '/resources/workers',
   '/resources/clusters/list',
@@ -269,11 +254,6 @@ export default (props: any) => {
     [location.pathname]
   );
 
-  const isNoContainerPage = useMemo(() => {
-    // @ts-ignore
-    return NO_CONTAINER_PAGES.includes(matchedRoute?.name as string);
-  }, [matchedRoute]);
-
   const collapsed = useMemo(() => {
     return userSettings.collapsed || false;
   }, [userSettings.collapsed]);
@@ -469,15 +449,11 @@ export default (props: any) => {
               unAccessible={runtimeConfig?.unAccessible}
               noAccessible={runtimeConfig?.noAccessible}
             >
-              {isNoContainerPage ? (
-                <Outlet />
-              ) : (
-                <PageContainerInner>
-                  <div>
-                    <Outlet />
-                  </div>
-                </PageContainerInner>
-              )}
+              <PageContainerInner>
+                <div>
+                  <Outlet />
+                </div>
+              </PageContainerInner>
             </Exception>
           </div>
           {NoResourceModal}

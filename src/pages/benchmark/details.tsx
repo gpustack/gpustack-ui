@@ -2,7 +2,7 @@ import { BaseSelect, DeleteModal } from '@gpustack/core-ui';
 import { useIntl, useNavigate, useSearchParams } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import React, { useEffect, useRef } from 'react';
-import { PageContainerInner } from '../_components/page-box';
+import { HeaderLeft } from '../_components/page-box';
 import PageBreadcrumb from '../_components/page-breadcrumb';
 import { deleteBenchmark } from './apis';
 import DetailContent from './components/detail-content';
@@ -122,9 +122,10 @@ const Details: React.FC = () => {
   }, [id]);
 
   return (
-    <PageContainerInner
-      leftContent={<PageBreadcrumb items={breadcrumbItems} />}
-    >
+    <>
+      <HeaderLeft>
+        <PageBreadcrumb items={breadcrumbItems} />
+      </HeaderLeft>
       <DetailContext.Provider
         value={{
           detailData: detailData || {},
@@ -164,7 +165,7 @@ const Details: React.FC = () => {
         onCancel={closeViewLogsModal}
       ></ViewLogsModal>
       <DeleteModal ref={modalRef}></DeleteModal>
-    </PageContainerInner>
+    </>
   );
 };
 

@@ -6,11 +6,14 @@ import { DiffOutlined, HighlightOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { Segmented, Tabs, TabsProps } from 'antd';
-import classNames from 'classnames';
 import _ from 'lodash';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { PageContainerInner } from '../../_components/page-box';
+import {
+  HeaderLeft,
+  HeaderRight,
+  usePageContentStyle
+} from '../../_components/page-box';
 import { queryModelsList } from '../apis';
 import ViewCodeButtons from '../components/view-code-buttons';
 import '../style/play-ground.less';
@@ -154,9 +157,11 @@ const TextToImages: React.FC = () => {
     }
   );
 
+  usePageContentStyle({ padding: 0 });
+
   return (
-    <PageContainerInner
-      leftContent={
+    <>
+      <HeaderLeft>
         <div className="flex items-center">
           <span className="font-600 flex-center">
             {intl.formatMessage({ id: 'menu.playground.text2images' })}
@@ -173,24 +178,21 @@ const TextToImages: React.FC = () => {
             onChange={(key) => setActiveKey(key)}
           ></Segmented>
         </div>
-      }
-      rightContent={
+      </HeaderLeft>
+      <HeaderRight>
         <ViewCodeButtons
           handleViewCode={handleViewCode}
           handleToggleCollapse={handleToggleCollapse}
           activeKey={activeKey}
           key="view-code-buttons"
         ></ViewCodeButtons>
-      }
-      styles={{ containerWrapper: { padding: 0 } }}
-      className={classNames('playground-container chat')}
-    >
+      </HeaderRight>
       <div className="play-ground">
         <div className="chat">
           <Tabs items={items} activeKey={activeKey}></Tabs>
         </div>
       </div>
-    </PageContainerInner>
+    </>
   );
 };
 

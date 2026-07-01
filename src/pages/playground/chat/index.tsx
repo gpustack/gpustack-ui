@@ -6,11 +6,14 @@ import { MessageOutlined, OneToOneOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { Segmented, Tabs, TabsProps } from 'antd';
-import classNames from 'classnames';
 import _ from 'lodash';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { PageContainerInner } from '../../_components/page-box';
+import {
+  HeaderLeft,
+  HeaderRight,
+  usePageContentStyle
+} from '../../_components/page-box';
 import { queryModelsList } from '../apis';
 import MultipleChat from '../components/multiple-chat';
 import ViewCodeButtons from '../components/view-code-buttons';
@@ -148,53 +151,43 @@ const Playground: React.FC = () => {
     }
   );
 
+  usePageContentStyle({ padding: 0 });
+
   return (
-    <PageContainerInner
-      className={classNames('playground-container', {
-        compare: activeKey === 'compare',
-        chat: activeKey !== 'compare'
-      })}
-      styles={{
-        containerWrapper: {
-          padding: 0
-        }
-      }}
-      leftContent={
+    <>
+      <HeaderLeft>
         <div className="flex items-center">
           <span className="font-600 flex-center">
             {intl.formatMessage({ id: 'menu.playground.chat' })}
           </span>
-          {
-            <Segmented
-              shape="round"
-              style={{
-                backgroundColor: 'var(--ant-color-fill-secondary)',
-                fontSize: 13
-              }}
-              size="middle"
-              className="m-l-24 font-400"
-              options={optionsList}
-              value={activeKey}
-              onChange={(key) => setActiveKey(key)}
-            ></Segmented>
-          }
+          <Segmented
+            shape="round"
+            style={{
+              backgroundColor: 'var(--ant-color-fill-secondary)',
+              fontSize: 13
+            }}
+            size="middle"
+            className="m-l-24 font-400"
+            options={optionsList}
+            value={activeKey}
+            onChange={(key) => setActiveKey(key)}
+          ></Segmented>
         </div>
-      }
-      rightContent={
+      </HeaderLeft>
+      <HeaderRight>
         <ViewCodeButtons
           handleViewCode={handleViewCode}
           handleToggleCollapse={handleToggleCollapse}
           activeKey={activeKey}
           key="view-code-buttons"
         />
-      }
-    >
+      </HeaderRight>
       <div className="play-ground">
         <div className="chat">
           <Tabs items={items} activeKey={activeKey}></Tabs>
         </div>
       </div>
-    </PageContainerInner>
+    </>
   );
 };
 

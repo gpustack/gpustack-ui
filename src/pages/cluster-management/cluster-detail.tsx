@@ -1,15 +1,15 @@
-import { clusterDetailAtom } from '@/atoms/clusters';
 import GPUList from '@/pages/resources/components/gpus';
 import WorkerList from '@/pages/resources/components/workers';
 import { getGPUStackPlugin } from '@/plugins';
-import { IconFont } from '@gpustack/core-ui';
+import { BaseSelect, IconFont } from '@gpustack/core-ui';
 import { useIntl, useNavigate, useSearchParams } from '@umijs/max';
 import { Tabs, type TabsProps } from 'antd';
-import { useAtomValue } from 'jotai';
+import { useEffect } from 'react';
 import { HeaderLeft } from '../_components/page-box';
 import PageBreadcrumb from '../_components/page-breadcrumb';
 import ClusterBasic from './components/detail/cluster-basic';
 import ClusterSystemLoad from './components/detail/cluster-system-load';
+import { useQueryClusterList } from './services/use-query-cluster-list';
 
 const ClusterDetailModal = () => {
   const navigate = useNavigate();
@@ -17,7 +17,18 @@ const ClusterDetailModal = () => {
   const [searchParams] = useSearchParams();
   const id = searchParams.get('id');
   const clusterName = searchParams.get('name');
-  const clusterDetailData = useAtomValue(clusterDetailAtom);
+  const { clusterList, fetchClusterList, cancelRequest } =
+    useQueryClusterList();
+
+  // Switch to another cluster's detail from the breadcrumb. Navigating with a
+  // new ``id`` re-renders this page in place; the detail children refetch on
+  // their ``clusterId`` prop change, so the whole view updates.
+  const handleOnChange = (value: number, option: any) => {
+    navigate(
+      `/resources/clusters/detail?id=${option.value}&name=${option.label}&page=clusters`,
+      { replace: true }
+    );
+  };
 
   const breadcrumbItems = [
     {
@@ -25,9 +36,26 @@ const ClusterDetailModal = () => {
       onClick: () => navigate(-1)
     },
     {
-      title: clusterName
+      title: (
+        <BaseSelect
+          size="small"
+          variant="borderless"
+          options={clusterList}
+          value={clusterName}
+          style={{ minWidth: 100 }}
+          popupMatchSelectWidth={false}
+          onChange={handleOnChange}
+        ></BaseSelect>
+      )
     }
   ];
+
+  useEffect(() => {
+    fetchClusterList({ page: -1 });
+    return () => {
+      cancelRequest();
+    };
+  }, []);
 
   // Extension slot: a registered plugin may inject additional tab
   // items (e.g. per-cluster access / quota panels) by exporting
@@ -62,14 +90,20 @@ const ClusterDetailModal = () => {
             label: intl.formatMessage({ id: 'resources.nodes' }),
             icon: <IconFont type="icon-resources" />,
             children: (
-              <WorkerList clusterId={Number(id)} source="clusterDetail" />
+              <WorkerList
+                key={id}
+                clusterId={Number(id)}
+                source="clusterDetail"
+              />
             )
           },
           {
             key: 'gpus',
             label: intl.formatMessage({ id: 'menu.resources.gpus' }),
             icon: <IconFont type="icon-gpu1" />,
-            children: <GPUList clusterId={Number(id)} source="clusterDetail" />
+            children: (
+              <GPUList key={id} clusterId={Number(id)} source="clusterDetail" />
+            )
           },
           ...extraTabs
         ]}

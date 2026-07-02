@@ -1,5 +1,5 @@
 import { IconFont } from '@gpustack/core-ui';
-import { useIntl, useSearchParams } from '@umijs/max';
+import { useIntl } from '@umijs/max';
 import { Tabs, TabsProps } from 'antd';
 import React, { useState } from 'react';
 import Environment from './environment';
@@ -12,7 +12,6 @@ const Details: React.FC<{
 }> = ({ tabBarExtraContent }) => {
   const intl = useIntl();
   const [activeKey, setActiveKey] = useState('summary');
-  const [searchParams] = useSearchParams();
 
   const items: TabsProps['items'] = [
     {

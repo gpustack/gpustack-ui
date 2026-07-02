@@ -18,7 +18,7 @@ export default function useTopTokenUsageByUser(
       .fetchData({
         ...commonParams,
         metric: 'total_tokens',
-        group_by: ['date', 'user'],
+        group_by: ['user'],
         page: 1,
         perPage: 10,
         sort_by: '-total_tokens'

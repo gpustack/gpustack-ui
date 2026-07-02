@@ -88,6 +88,16 @@ Prefer action-driven updates, explicit handlers, and localized state transitions
 
 Existing `styled-components` usage is legacy tech debt — do not migrate it wholesale, but do not add new `styled-components` either. Theme tokens (`var(--ant-color-*)`) work in all three approaches.
 
+## Layout
+
+Compose layout with Ant components, not hand-written `display: flex`.
+
+- **1D flex** (row/column with `gap`, `align`, `justify`) → `Flex`. Do not write raw `display: flex` in new code.
+- **Inline sequence** of a few elements with uniform spacing → `Space`.
+- **Page/grid columns** → `Row` / `Col`.
+
+Drive spacing with the theme scale (`Flex`/`Space` `gap`, or `var(--ant-*)` spacing tokens), not scattered `px` literals.
+
 # Naming conventions
 
 A page module lives under `src/pages/{module}` with this sub-structure: `components/`, `config/`, `forms/`, `hooks/`, `services/`, `index.tsx`. File naming:
@@ -101,6 +111,7 @@ A page module lives under `src/pages/{module}` with this sub-structure: `compone
 
 - `config/types.ts` — TypeScript types. Form shape → `FormData`; table/list row → `ListItem`.
 - `config/index.ts` — static constants, enums, and value/label maps (e.g. `XxxStatusValueMap`, `XxxStatusLabelMap`). Keep constants out of `types.ts`.
+- **`Select` options that need i18n**: set `label` to the message key and add `locale: true` on the option — the field translates it at render. Omit `locale` for options whose label is already final text. Ref `src/pages/benchmark/config/index.ts`.
 
 # Common components
 

@@ -39,7 +39,6 @@
     "culori": "^4.0.2",
     "dayjs": "^1.11.11",
     "dompurify": "^3.2.6",
-    "driver.js": "^1.3.1",
     "echarts": "^5.5.1",
     "file-saver": "^2.0.5",
     "has-ansi": "^5.0.1",

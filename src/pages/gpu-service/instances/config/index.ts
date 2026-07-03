@@ -262,15 +262,15 @@ export const getAcceleratorMax = (
 
 // Picks the candidate (cluster + type name) that should fulfill a requested
 // accelerator count: the first candidate of the smallest tier whose
-// onceMaxRequest.accelerator is >= the requested count and whose cpu/ram/localStorage
-// remaining are all > 0.
+// onceMaxRequest.accelerator is >= the requested count. Accelerated types are
+// not gated on CPU remaining (only CPU-only types are); in sliced mode the
+// candidate's acceleratorSliced remaining must also be > 0.
 export const pickCandidateForAccelerator = <
   C extends {
     cluster: string;
     name: string;
     cpu?: { remaining?: string | null } | null;
-    ram?: { remaining?: string | null } | null;
-    localStorage?: { remaining?: string | null } | null;
+    acceleratorSliced?: { remaining?: string | null } | null;
   }
 >(
   tiers:
@@ -280,14 +280,21 @@ export const pickCandidateForAccelerator = <
       }[]
     | undefined
     | null,
-  { count, acceleratable }: { count: number; acceleratable?: boolean }
+  {
+    count,
+    acceleratable,
+    sliced
+  }: { count: number; acceleratable?: boolean; sliced?: boolean }
 ): C | null => {
   if (!tiers?.length) return null;
 
-  const hasResources = (c: C) =>
-    parseQuantity(c.cpu?.remaining) > 0 &&
-    parseQuantity(c.ram?.remaining) > 0 &&
-    parseQuantity(c.localStorage?.remaining) > 0;
+  const hasResources = (c: C) => {
+    // Accelerated types are not gated on CPU remaining; CPU-only types are.
+    if (!acceleratable && parseQuantity(c.cpu?.remaining) <= 0) return false;
+    if (sliced && parseQuantity(c.acceleratorSliced?.remaining) <= 0)
+      return false;
+    return true;
+  };
 
   const sorted = [...tiers].sort(
     (a, b) =>

@@ -97,6 +97,38 @@ const handleBChange = (b) => {
 };
 ```
 
+## 4. Controlled input with derived fields
+
+When a controlled field's value comes from **both** user input and a programmatic default (e.g. a percentage picked on a slider, and a default seeded on select / mode-switch), funnel both through **one commit function** — don't duplicate "write field + recompute derived" per call site.
+
+- The `Form.Item`-bound input's `onChange(value)` forwards the value to the commit fn (the field is antd-bound, but pass the value explicitly so the default path can reuse the same fn instead of reading the store).
+- Seed defaults by calling the **same** commit fn with the computed value.
+- Separate the **commit action** (write field + recompute dependents) from the **render-derive** (read the field → recompute dependents). Keeping the derive standalone lets it re-run on reload/edit where there's no user event.
+
+```ts
+// commit action — slider onChange AND default both call this
+const commitRatio = (value: number) => {
+  form.setFieldsValue({ spec: { resources: { ratio: value, cores: 100 } } });
+  rescaleDerived(); // reads ratio from the form, sets the disabled cpu/ram
+};
+
+// render-derive — also called from the edit/reload effect
+const rescaleDerived = () => {
+  const ratio = form.getFieldValue(['spec', 'resources', 'ratio']);
+  form.setFieldsValue({
+    spec: {
+      resources: {
+        cpu: floorScale(unit.cpu, ratio),
+        ram: floorScale(unit.ram, ratio)
+      }
+    }
+  });
+};
+
+// default seeding reuses the commit fn — one path, not a second copy
+const applyDefaults = (item) => commitRatio(Math.min(10, item.maxRatio) || 10);
+```
+
 ## Related
 
 - Module/file structure for forms lives in the **create-crud-page** skill (section 3).

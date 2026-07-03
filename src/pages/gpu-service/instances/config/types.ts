@@ -45,6 +45,11 @@ export interface FormData {
       ram: string | null | number;
       localStorage: string | null | number;
       accelerator: number | string | null;
+      // Sliced (percentage) mode only. Memory (VRAM) percentage bound to the
+      // 10-100 selector + free input; cores (compute) percentage bound to the
+      // "100% compute" checkbox (100 when checked, mirrors memory otherwise).
+      acceleratorSlicedMemoryPercentage?: number;
+      acceleratorSlicedCoresPercentage?: number;
     };
     volume: {
       ephemeral?: {
@@ -128,8 +133,10 @@ export interface InstanceTypeCandidate {
   name: string;
   accelerator: InstanceTypeResource;
   cpu: InstanceTypeResource;
-  ram: InstanceTypeResource;
-  localStorage: InstanceTypeResource;
+  // Shared-mode available resource (not shown in the GPU Instance form).
+  acceleratorShared: InstanceTypeResource;
+  // Sliced-mode available resource.
+  acceleratorSliced: InstanceTypeResource;
 }
 
 export interface InstanceTypeTierOnceMaxRequestResource {
@@ -149,6 +156,8 @@ export interface InstanceTypeOnceMaxRequestResource {
   cpu: QuanityCPU;
   ram: QuanityMemory;
   localStorage: QuanityLocalStorage;
+  acceleratorShared: `${number}` | null;
+  acceleratorSliced: `${number}` | null;
 }
 
 export interface CPUCache {
@@ -181,6 +190,8 @@ export interface InstanceTypeSpec {
   family?: string | null;
   computeCapability?: string | null;
   sliced?: string | null;
+  sliceable?: boolean;
+  localStorage?: QuanityLocalStorage;
   maxComputeUnitCount?: number;
   unitResources?: {
     cpu: QuanityCPU;

@@ -23,6 +23,11 @@ interface NumberSelectionProps {
   labelExtra?: React.ReactNode;
   maxCount?: number;
   tips?: string;
+  // Explicit preset tick values (e.g. [10,20,...,100] for percentage slicing).
+  // Overrides the default 1..maxCount sequence.
+  presetValues?: number[];
+  // Force the free-input box to show regardless of max/maxCount.
+  alwaysShowInput?: boolean;
   onChange?: (value: number) => void;
 }
 
@@ -39,17 +44,18 @@ const NumberSelection: React.FC<NumberSelectionProps> = ({
   className,
   maxCount = 8,
   tips,
+  presetValues,
+  alwaysShowInput,
   style,
   onChange
 }) => {
   const intl = useIntl();
 
-  const showCustomInput = max > maxCount;
-  const presetItems = Array.from(
-    { length: Math.max(0, maxCount) },
-    (_, i) => i + 1
-  );
-  if (min <= 0) {
+  const showCustomInput = alwaysShowInput || max > maxCount;
+  const presetItems =
+    presetValues ??
+    Array.from({ length: Math.max(0, maxCount) }, (_, i) => i + 1);
+  if (!presetValues && min <= 0) {
     presetItems.unshift(0);
   }
   const items = presetItems;

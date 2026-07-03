@@ -119,8 +119,17 @@ export default {
     'No available GPU resources, please choose another instance type.',
   'gpuservice.instance.gpuCount.zero':
     'CPU-only setup for environment preparation.',
+  'gpuservice.instance.mode.whole': 'Full GPU',
+  'gpuservice.instance.mode.sliced': 'By Ratio',
+  'gpuservice.instance.slice.memoryPercentage': 'VRAM Percentage (%)',
+  'gpuservice.instance.slice.fullCores': '100% Compute',
+  'gpuservice.instance.slice.percentage.required':
+    'Please select or enter a percentage',
+  'gpuservice.instance.slice.percentage.max':
+    'The ratio must be between 1% and {count}%',
   'gpuservice.instance.stock': 'Stock',
   'gpuservice.instance.sliced': 'Sliced',
+  'gpuservice.instance.sliceable': 'Sliceable',
   'gpuservice.instance.memory': 'VRAM',
   'gpuservice.instance.ram': 'RAM',
   'gpuservice.instance.os': 'OS',

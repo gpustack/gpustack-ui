@@ -59,6 +59,9 @@ interface InstanceTypeItemProps {
 
 interface MetadataSectionProps {
   spec: InstanceTypeItemModel['spec'];
+  // status.onceMaxRequest.acceleratorSliced (max sliceable percentage). Shown
+  // next to Max for sliceable types.
+  slicedMaxPercentage?: number;
 }
 
 const MetaItem: React.FC<{
@@ -125,13 +128,22 @@ function getInstanceDerived(item: InstanceTypeItemModel) {
 }
 
 export const InstanceMetadataSection: React.FC<MetadataSectionProps> = ({
-  spec
+  spec,
+  slicedMaxPercentage
 }) => {
   const intl = useIntl();
 
   const { ramUnit, cpuUnitCores, isGPU, os, arch } = getInstanceDerived({
     spec
   } as InstanceTypeItemModel);
+
+  // Sliceable types show "Max {n} · Sliceable {m}%" instead of just the count.
+  const showSliceable = !!spec.sliceable && (slicedMaxPercentage ?? 0) > 0;
+  const maxValue = showSliceable
+    ? `${spec.maxComputeUnitCount || 0} · ${intl.formatMessage({
+        id: 'gpuservice.instance.sliceable'
+      })} ${slicedMaxPercentage}%`
+    : `${spec.maxComputeUnitCount || 0}`;
 
   return (
     <Meta $columns={isGPU ? 11 : 7}>
@@ -159,7 +171,7 @@ export const InstanceMetadataSection: React.FC<MetadataSectionProps> = ({
               },
               { count: '' }
             )}
-            value={`${spec.maxComputeUnitCount || 0}`}
+            value={maxValue}
           />
           {/* row 2: OS | Arch | CPU */}
           <MetaItem
@@ -278,7 +290,12 @@ const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({ item }) => {
           />
         </Flex>
       </Title>
-      <InstanceMetadataSection spec={specData}></InstanceMetadataSection>
+      <InstanceMetadataSection
+        spec={specData}
+        slicedMaxPercentage={
+          Number(item.status?.onceMaxRequest?.acceleratorSliced) || 0
+        }
+      ></InstanceMetadataSection>
     </Flex>
   );
 };

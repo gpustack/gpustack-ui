@@ -273,33 +273,94 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
 
     const buildResourcesDataForSubmit = (values: FormData) => {
       const unitResourcesParsed = getUnitResources();
-      const accelerator = _.toNumber(values.spec?.resources?.accelerator) || 0;
-      const cpuCount = _.toNumber(values.spec?.resources?.cpu) || 0;
+      const resources = values.spec?.resources ?? ({} as any);
+      const accelerator = _.toNumber(resources.accelerator) || 0;
+      const cpuCount = _.toNumber(resources.cpu) || 0;
 
       const cpuNum = unitResourcesParsed?.cpu?.num;
       const ramNum = unitResourcesParsed?.ram?.num;
 
-      const fallbackCpu = values.spec?.resources?.cpu;
+      const fallbackCpu = resources.cpu;
 
-      const factor = isGPUType ? accelerator : cpuCount;
+      // Sliced mode: scale a single card's unit resources by the chosen
+      // percentage (floored) — both CPU and RAM. Whole/CPU mode: multiply the
+      // unit by the count.
+      const percentage = _.toNumber(
+        resources.acceleratorSlicedMemoryPercentage
+      );
+      const sliced = isGPUType && percentage > 0;
+      const wholeFactor = isGPUType ? accelerator : cpuCount;
+
+      const scale = (num: number, unit: string) =>
+        sliced
+          ? `${Math.max(1, _.floor((num * percentage) / 100))}${unit}`
+          : `${wholeFactor * num}${unit}`;
 
       return {
         cpu: cpuNum
-          ? `${factor * cpuNum}${unitResourcesParsed?.cpu?.unit || ''}`
+          ? scale(cpuNum, unitResourcesParsed?.cpu?.unit || '')
           : // Don't stringify an unset value — `${undefined}` becomes the
             // literal "undefined", which fails k8s quantity validation.
             fallbackCpu
             ? `${fallbackCpu}`
             : undefined,
         ram: ramNum
-          ? `${factor * ramNum}${unitResourcesParsed?.ram?.unit || ''}`
-          : values.spec?.resources?.ram
+          ? scale(ramNum, unitResourcesParsed?.ram?.unit || '')
+          : resources.ram
       };
+    };
+
+    // Sliced display: set the (disabled) CPU / RAM inputs to a single card's
+    // unit resources scaled by the chosen percentage, floored. Reads the
+    // percentage straight from the form so it can be re-run after any slider
+    // change without threading values through.
+    const applySlicedResourceScaling = () => {
+      const unitResourcesParsed = getUnitResources();
+      const cpuCores = unitResourcesParsed?.cpu?.cores;
+      const ramValue = unitResourcesParsed?.ram?.value;
+      const percentage = _.toNumber(
+        form.getFieldValue([
+          'spec',
+          'resources',
+          'acceleratorSlicedMemoryPercentage'
+        ])
+      );
+
+      form.setFieldsValue({
+        spec: {
+          resources: {
+            cpu:
+              cpuCores != null && percentage > 0
+                ? Math.max(1, _.floor((cpuCores * percentage) / 100))
+                : null,
+            ram:
+              ramValue != null && percentage > 0
+                ? Math.max(1, _.floor((ramValue * percentage) / 100))
+                : null
+          }
+        }
+      } as any);
+    };
+
+    // Single entry point for the sliced memory ratio: write the ratio (compute
+    // stays pinned at 100%) and rescale CPU / RAM off it. Reused by the slider
+    // onChange and by the sliced-mode defaults so both share one path.
+    const applySliceMemoryPercentage = (value: number) => {
+      form.setFieldsValue({
+        spec: {
+          resources: {
+            acceleratorSlicedMemoryPercentage: value,
+            acceleratorSlicedCoresPercentage: 100
+          }
+        }
+      } as any);
+      applySlicedResourceScaling();
     };
 
     const resolveAndApply = (
       instanceType: InstanceTypeItem | undefined,
-      count: number
+      count: number,
+      sliced?: boolean
     ) => {
       if (!instanceType) {
         setSelectedInstanceType(undefined);
@@ -328,7 +389,8 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
         instanceType.status?.tiers,
         {
           count,
-          acceleratable: instanceType.spec?.acceleratable
+          acceleratable: instanceType.spec?.acceleratable,
+          sliced
         }
       );
 
@@ -336,9 +398,12 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
 
       setOnceMaxRequest({
         cpu: ceilMilliToCore(candidate?.cpu?.onceMaxRequest)?.cores,
-        memory: parseQuantityToGi(candidate?.ram?.onceMaxRequest)?.value,
-        localStorage: parseQuantityToGi(candidate?.localStorage?.onceMaxRequest)
-          ?.value
+        // candidate no longer carries ram/localStorage: memory max comes from
+        // the type-level onceMaxRequest.ram (already parsed to a Gi number by
+        // the query hook), disk max from spec.localStorage (UI-only cap).
+        memory: _.toNumber(instanceType.status?.onceMaxRequest?.ram) || null,
+        localStorage:
+          parseQuantityToGi(instanceType.spec?.localStorage)?.value ?? null
       });
 
       form.setFieldsValue({
@@ -354,8 +419,44 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       });
     };
 
+    // Whole-card (exclusive) vs sliced (percentage) mode. Only meaningful for
+    // sliceable accelerator types; derived (no persisted field) — on edit/
+    // recreate it is inferred from acceleratorSlicedMemoryPercentage > 0.
+    const [sliceMode, setSliceMode] = useState<'whole' | 'sliced'>('whole');
+
     const handleAcceleratorChange = (count: number) => {
-      resolveAndApply(selectedInstanceType, count);
+      resolveAndApply(selectedInstanceType, count, false);
+    };
+
+    // Seed the sliced-mode default ratio for an instance type: 10% but never
+    // above the type's max sliceable ratio (status.onceMaxRequest
+    // .acceleratorSliced). Shares applySliceMemoryPercentage with the slider.
+    const applySlicedDefaults = (instanceType?: InstanceTypeItem) => {
+      const slicedMax =
+        _.toNumber(instanceType?.status?.onceMaxRequest?.acceleratorSliced) ||
+        0;
+      applySliceMemoryPercentage(slicedMax ? Math.min(10, slicedMax) : 10);
+    };
+
+    // Toggle between whole-card and sliced mode. Sliced fixes the accelerator
+    // count to 1 (a single card is partitioned by percentage) and clears the
+    // slice-percentage fields when leaving sliced mode.
+    const handleSliceModeChange = (mode: 'whole' | 'sliced') => {
+      setSliceMode(mode);
+      if (mode === 'sliced') {
+        resolveAndApply(selectedInstanceType, 1, true);
+        applySlicedDefaults(selectedInstanceType);
+      } else {
+        form.setFieldsValue({
+          spec: {
+            resources: {
+              acceleratorSlicedMemoryPercentage: undefined,
+              acceleratorSlicedCoresPercentage: undefined
+            }
+          }
+        } as any);
+        resolveAndApply(selectedInstanceType, 1, false);
+      }
     };
 
     const onTargetChange = (key: string) => {
@@ -407,6 +508,14 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
           ? _.toNumber(currentData?.spec?.resources?.accelerator)
           : _.toNumber(currentData?.spec?.resources?.cpu) || 0;
 
+        // Infer the mode from the persisted slice percentage (recreate keeps
+        // the section editable; edit/view render a readonly card).
+        const persistedSliced =
+          _.toNumber(
+            currentData?.spec?.resources?.acceleratorSlicedMemoryPercentage
+          ) > 0;
+        setSliceMode(persistedSliced ? 'sliced' : 'whole');
+
         form.setFieldsValue({
           ...currentData,
           spec: {
@@ -424,6 +533,12 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
           enable_ssh: !!currentData?.spec?.sshPublicKeys?.length,
           storageMode: detectMode(currentData?.spec?.volume)
         });
+
+        // buildResourcesData above filled CPU / RAM for the whole card; rescale
+        // them off the persisted percentages when recreating a sliced instance.
+        if (persistedSliced) {
+          applySlicedResourceScaling();
+        }
       }
     }, [action, currentData, form, open, realAction, instanceTypeList]);
 
@@ -492,11 +607,30 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       getFieldsValue: () => form.getFieldsValue(),
       applyInstanceType: (instanceType?: InstanceTypeItem) => {
         if (!instanceType) {
+          setSliceMode('whole');
           resolveAndApply(undefined, 0);
           return;
         }
 
-        // set default  to 1, for all instance types: GPU or non-GPU
+        // A sliceable type with no whole-card capacity (Max < 1) defaults to
+        // sliced mode — whole mode would have nothing selectable.
+        const wholeMax = instanceType.spec?.maxComputeUnitCount ?? 0;
+        const slicedMax =
+          _.toNumber(instanceType.status?.onceMaxRequest?.acceleratorSliced) ||
+          0;
+        const defaultSliced =
+          !!instanceType.spec?.sliceable && wholeMax < 1 && slicedMax > 0;
+
+        if (defaultSliced) {
+          setSliceMode('sliced');
+          resolveAndApply(instanceType, 1, true);
+          applySlicedDefaults(instanceType);
+          return;
+        }
+
+        // Otherwise default to whole-card mode (a new type may not be
+        // sliceable); set count to 1 for all instance types: GPU or non-GPU.
+        setSliceMode('whole');
         resolveAndApply(instanceType, 1);
       }
     }));
@@ -607,6 +741,9 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
                       currentData={currentData as any}
                       onceMaxRequest={onceMaxRequest}
                       noAvailableTypes={noAvailableInstanceTypes}
+                      sliceMode={sliceMode}
+                      onSliceModeChange={handleSliceModeChange}
+                      onSliceMemoryPercentageChange={applySliceMemoryPercentage}
                       onGPUCountChange={handleAcceleratorChange}
                     />
                   )

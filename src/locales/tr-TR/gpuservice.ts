@@ -113,8 +113,17 @@ export default {
   'gpuservice.instance.gpuCount.noAvailable':
     'Kullanılabilir GPU kaynağı yok, lütfen başka bir örnek türü seçin.',
   'gpuservice.instance.gpuCount.zero': 'Yalnızca CPU, ortam hazırlığı için.',
+  'gpuservice.instance.mode.whole': 'Tam GPU',
+  'gpuservice.instance.mode.sliced': 'Orana Göre',
+  'gpuservice.instance.slice.memoryPercentage': 'VRAM Yüzdesi (%)',
+  'gpuservice.instance.slice.fullCores': '%100 İşlem Gücü',
+  'gpuservice.instance.slice.percentage.required':
+    'Lütfen bir yüzde seçin veya girin',
+  'gpuservice.instance.slice.percentage.max':
+    'Oran %1 ile %{count} arasında olmalıdır',
   'gpuservice.instance.stock': 'Stok',
   'gpuservice.instance.sliced': 'Bölünmüş',
+  'gpuservice.instance.sliceable': 'Bölünebilir',
   'gpuservice.instance.memory': 'VRAM',
   'gpuservice.instance.ram': 'RAM',
   'gpuservice.instance.os': 'OS',

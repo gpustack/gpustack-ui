@@ -117,8 +117,17 @@ export default {
   'gpuservice.instance.gpuCount.noAvailable':
     'Нет доступных ресурсов GPU, выберите другой тип экземпляра.',
   'gpuservice.instance.gpuCount.zero': 'Только CPU, для подготовки окружения.',
+  'gpuservice.instance.mode.whole': 'Весь GPU',
+  'gpuservice.instance.mode.sliced': 'По доле',
+  'gpuservice.instance.slice.memoryPercentage': 'Доля VRAM (%)',
+  'gpuservice.instance.slice.fullCores': '100% вычислений',
+  'gpuservice.instance.slice.percentage.required':
+    'Выберите или введите процент',
+  'gpuservice.instance.slice.percentage.max':
+    'Доля должна быть от 1% до {count}%',
   'gpuservice.instance.stock': 'Остаток',
   'gpuservice.instance.sliced': 'Разделено',
+  'gpuservice.instance.sliceable': 'Делимый',
   'gpuservice.instance.memory': 'VRAM',
   'gpuservice.instance.ram': 'RAM',
   'gpuservice.instance.os': 'ОС',

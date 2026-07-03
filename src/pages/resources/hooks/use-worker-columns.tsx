@@ -311,7 +311,7 @@ const useWorkerColumns = ({
         <span>
           {intl.formatMessage(
             { id: 'resources.worker.version' },
-            { version: version.version }
+            { version: record.worker_version }
           )}
         </span>
       </span>

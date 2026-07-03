@@ -118,8 +118,17 @@ export default {
   'gpuservice.instance.gpuCount.noAvailable':
     '利用可能な GPU リソースがありません。別のインスタンスタイプを選択してください。',
   'gpuservice.instance.gpuCount.zero': 'CPU のみを使用し、環境準備用です。',
+  'gpuservice.instance.mode.whole': 'GPU 全体',
+  'gpuservice.instance.mode.sliced': '比率で',
+  'gpuservice.instance.slice.memoryPercentage': 'VRAM の割合（%）',
+  'gpuservice.instance.slice.fullCores': '100% コンピュート',
+  'gpuservice.instance.slice.percentage.required':
+    'パーセンテージを選択または入力してください',
+  'gpuservice.instance.slice.percentage.max':
+    '比率は 1% から {count}% の間で指定してください',
   'gpuservice.instance.stock': '在庫',
   'gpuservice.instance.sliced': '分割',
+  'gpuservice.instance.sliceable': '分割可能',
   'gpuservice.instance.memory': 'VRAM',
   'gpuservice.instance.ram': 'RAM',
   'gpuservice.instance.os': 'OS',

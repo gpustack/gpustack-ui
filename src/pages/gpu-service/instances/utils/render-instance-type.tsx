@@ -11,7 +11,7 @@
  * with ``buildInstanceTypeRecordFromMiB`` and feed it here.
  */
 import _ from 'lodash';
-import { parseJsonSafe } from '../../utils';
+import { parseJsonSafe, parseQuantityToGi } from '../../utils';
 import InstanceTypeCell from '../components/instance-type-cell';
 import { formatMemoryDisplay } from '../config';
 import { InstanceTypeSpec, ListItem } from '../config/types';
@@ -49,6 +49,10 @@ const buildResourcesData = (
   return {};
 };
 
+// Memory (VRAM) percentage for a sliced instance; 0 when not sliced.
+const getSliceMemoryPercentage = (record: ListItem) =>
+  _.toNumber(record.spec?.resources?.acceleratorSlicedMemoryPercentage) || 0;
+
 const formatResources = (
   instanceTypeSpec: { spec: InstanceTypeSpec },
   record: ListItem
@@ -68,6 +72,34 @@ const formatResources = (
       localStorage: record.spec?.resources?.localStorage
         ? toGB(record.spec?.resources?.localStorage)
         : '-'
+    };
+  }
+
+  const sliceMemoryPercentage = getSliceMemoryPercentage(record);
+
+  // Sliced: CPU / RAM carry the already-scaled values on spec.resources, and
+  // VRAM is the per-card memory scaled by the memory percentage (floored,
+  // min 1) — not the whole card's size.
+  if (sliceMemoryPercentage > 0) {
+    const vramGi = parseQuantityToGi(
+      (instanceTypeSpec.spec as any)?.memory
+    )?.value;
+    const vram =
+      vramGi != null
+        ? `${Math.max(1, _.floor((vramGi * sliceMemoryPercentage) / 100))} GB`
+        : undefined;
+
+    return {
+      cpu: record.spec?.resources?.cpu
+        ? `${record.spec?.resources?.cpu} vCPU`
+        : '-',
+      ram: record.spec?.resources?.ram
+        ? toGB(record.spec?.resources?.ram)
+        : '-',
+      vram,
+      localStorage: record.spec?.resources?.localStorage
+        ? toGB(record.spec?.resources?.localStorage)
+        : undefined
     };
   }
 
@@ -108,10 +140,14 @@ export const renderInstanceType = (
     parseJsonSafe<any>(record?.description || '{}', {}).spec || {};
   const resources = formatResources({ spec: description }, record);
   const accelerator = record.spec?.resources?.accelerator;
+  const sliceMemoryPercentage = getSliceMemoryPercentage(record);
+  const isSliced = description.acceleratable && sliceMemoryPercentage > 0;
   const title =
     options.title ??
     (description.acceleratable
-      ? `${description.product} x ${accelerator}`
+      ? isSliced
+        ? `${description.product} (${sliceMemoryPercentage}%)`
+        : `${description.product} x ${accelerator}`
       : 'CPU Only');
 
   const volume = (record.spec as any)?.volume;
@@ -131,10 +167,16 @@ export const renderInstanceType = (
       icon: 'icon-gpu',
       name: 'GPU',
       rows: [
-        [
-          intl.formatMessage({ id: 'gpuservice.table.count' }),
-          accelerator ? `${accelerator}` : undefined
-        ],
+        // Sliced instances show the ratio instead of a card count (always 1).
+        isSliced
+          ? [
+              intl.formatMessage({ id: 'gpuservice.instance.sliced' }),
+              `${sliceMemoryPercentage}%`
+            ]
+          : [
+              intl.formatMessage({ id: 'gpuservice.table.count' }),
+              accelerator ? `${accelerator}` : undefined
+            ],
         [
           intl.formatMessage({ id: 'gpuservice.instance.section.type' }),
           description.product

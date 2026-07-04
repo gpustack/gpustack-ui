@@ -137,13 +137,9 @@ export const InstanceMetadataSection: React.FC<MetadataSectionProps> = ({
     spec
   } as InstanceTypeItemModel);
 
-  // Sliceable types show "Max {n} · Sliceable {m}%" instead of just the count.
+  // Sliceable types get a dedicated "Sliceable {n}%" row (on its own grid row)
+  // rather than crowding it into the Max cell.
   const showSliceable = !!spec.sliceable && (slicedMaxPercentage ?? 0) > 0;
-  const maxValue = showSliceable
-    ? `${spec.maxComputeUnitCount || 0} · ${intl.formatMessage({
-        id: 'gpuservice.instance.sliceable'
-      })} ${slicedMaxPercentage}%`
-    : `${spec.maxComputeUnitCount || 0}`;
 
   return (
     <Meta $columns={isGPU ? 11 : 7}>
@@ -171,7 +167,7 @@ export const InstanceMetadataSection: React.FC<MetadataSectionProps> = ({
               },
               { count: '' }
             )}
-            value={maxValue}
+            value={`${spec.maxComputeUnitCount || 0}`}
           />
           {/* row 2: OS | Arch | CPU */}
           <MetaItem
@@ -195,6 +191,14 @@ export const InstanceMetadataSection: React.FC<MetadataSectionProps> = ({
                 <span>{cpuUnitCores || '-'}</span>
               </Flex>
             }
+          />
+          {/* row 3 (sliceable types only): Sliceable {n}% on its own row */}
+          <MetaItem
+            show={showSliceable}
+            showDot={false}
+            icon="icon-sliced"
+            label={intl.formatMessage({ id: 'gpuservice.instance.sliceable' })}
+            value={`${slicedMaxPercentage}%`}
           />
         </>
       )}

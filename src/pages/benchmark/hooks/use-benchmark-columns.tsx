@@ -33,6 +33,8 @@ const useBenchmarkColumns = (params: {
           </AutoTooltip>
         ),
         dataIndex: 'name',
+        key: 'name',
+        mobileCard: 'primary',
         sorter: tableSorter(1),
         render: (text: string, record) => (
           <AutoTooltip ghost minWidth={20} title={text}>
@@ -54,6 +56,8 @@ const useBenchmarkColumns = (params: {
           </Typography.Text>
         ),
         dataIndex: 'operations',
+        key: 'operations',
+        mobileCard: 'action',
         width: 140,
         render: (value: string, record: ListItem) => (
           <RowActions record={record} handleSelect={handleSelect}></RowActions>

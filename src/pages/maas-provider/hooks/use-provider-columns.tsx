@@ -41,6 +41,7 @@ const useProviderColumns = (
         sorter: tableSorter(1),
         minWidth: 160,
         span: 5,
+        mobileCard: 'primary',
         render: (text: string, record: MaasProviderItem) => (
           <>
             <AutoTooltip ghost title={text}>
@@ -61,24 +62,45 @@ const useProviderColumns = (
         sorter: false,
         span: 4,
         minWidth: 160,
-        render: (value: string) => (
-          <div className="flex-center gap-8">
-            <ProviderLogo provider={value} />
-            <AutoTooltip ghost minWidth={20}>
-              {maasProviderLabelMap[value]
-                ? intl.formatMessage({ id: maasProviderLabelMap[value] })
-                : value}
-            </AutoTooltip>
-          </div>
-        )
+        responsive: { hideBelow: 'md' },
+        render: (value: string, record: MaasProviderItem) => {
+          const providerType = value || record.config?.type;
+          return (
+            <div
+              className="flex-center gap-8"
+              style={{
+                minWidth: 0,
+                maxWidth: '100%',
+                width: '100%',
+                justifyContent: 'flex-end'
+              }}
+            >
+              <ProviderLogo provider={providerType} />
+              <AutoTooltip
+                ghost
+                minWidth={20}
+                style={{ minWidth: 0, maxWidth: '100%' }}
+              >
+                {maasProviderLabelMap[providerType]
+                  ? intl.formatMessage({
+                      id: maasProviderLabelMap[providerType]
+                    })
+                  : providerType}
+              </AutoTooltip>
+            </div>
+          );
+        }
       },
       {
         title: intl.formatMessage({ id: 'providers.table.models' }),
         dataIndex: 'models',
         span: 3,
         minWidth: 200,
+        responsive: { hideBelow: 'md' },
         render: (value: ProviderModel[]) => (
-          <ProviderModels dataList={value || []}></ProviderModels>
+          <div style={{ minWidth: 0, maxWidth: '100%', width: '100%' }}>
+            <ProviderModels dataList={value || []}></ProviderModels>
+          </div>
         )
       },
       {
@@ -86,8 +108,13 @@ const useProviderColumns = (
         dataIndex: 'created_at',
         sorter: tableSorter(6),
         span: 3,
+        responsive: { hideBelow: 'md' },
         render: (value: string) => (
-          <AutoTooltip ghost minWidth={20}>
+          <AutoTooltip
+            ghost
+            minWidth={20}
+            style={{ minWidth: 0, maxWidth: '100%', width: '100%' }}
+          >
             {dayjs(value).format('YYYY-MM-DD HH:mm:ss')}
           </AutoTooltip>
         )

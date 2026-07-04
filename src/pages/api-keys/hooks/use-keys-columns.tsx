@@ -1,5 +1,6 @@
 // columns.ts
 import { tableSorter } from '@/config/settings';
+import useWindowResize from '@/hooks/use-window-resize';
 import { usePluginListColumns } from '@/plugins/list-extra-columns';
 import { DashboardOutlined } from '@ant-design/icons';
 import {
@@ -49,6 +50,7 @@ const useModelsColumns = ({
   onConfigAction
 }: ColumnsHookProps): ColumnsType<ListItem> => {
   const intl = useIntl();
+  const { isMobile } = useWindowResize();
   const pluginCols = usePluginListColumns('apiKeys');
 
   const actionList = useMemo<APIKeyAction[]>(() => {
@@ -138,6 +140,7 @@ const useModelsColumns = ({
         dataIndex: 'name',
         key: 'name',
         sorter: tableSorter(1),
+        mobileCard: 'primary',
         render: (text: string, record: ListItem) => (
           <span className="flex items-center">
             <AutoTooltip ghost style={{ maxWidth: 400 }} title={text}>
@@ -165,6 +168,7 @@ const useModelsColumns = ({
         title: intl.formatMessage({ id: 'apikeys.table.key' }),
         dataIndex: 'masked_value',
         key: 'masked_value',
+        responsive: { hideBelow: 'md' },
         render: (text: string, record: ListItem) => (
           <AutoTooltip ghost style={{ maxWidth: 200 }}>
             {text || '-'}
@@ -175,6 +179,7 @@ const useModelsColumns = ({
         title: intl.formatMessage({ id: 'apikeys.form.expiretime' }),
         dataIndex: 'expires_at',
         key: 'expires_at',
+        responsive: { hideBelow: 'md' },
         sorter: tableSorter(2),
         render: (text: string, record: ListItem) => (
           <AutoTooltip ghost>
@@ -190,11 +195,18 @@ const useModelsColumns = ({
         title: intl.formatMessage({ id: 'apikeys.access.permissions' }),
         dataIndex: 'allowed_model_names',
         key: 'allowed_model_names',
+        responsive: { hideBelow: 'md' },
         ellipsis: {
           showTitle: false
         },
         render: (text: string[], record: ListItem) => (
-          <div className="flex-column gap-4">
+          <div
+            className={
+              isMobile
+                ? 'cell-intrinsic flex items-center justify-end gap-4 flex-wrap'
+                : 'flex-column gap-4'
+            }
+          >
             {(record.scope?.includes('management') ||
               record.scope?.includes('*')) && (
               <AutoTooltip ghost>
@@ -231,6 +243,7 @@ const useModelsColumns = ({
         title: intl.formatMessage({ id: 'common.table.description' }),
         dataIndex: 'description',
         key: 'description',
+        responsive: { hideBelow: 'md' },
         ellipsis: {
           showTitle: false
         },
@@ -242,6 +255,7 @@ const useModelsColumns = ({
         title: intl.formatMessage({ id: 'common.table.creator' }),
         dataIndex: 'user_name',
         key: 'user_name',
+        responsive: { hideBelow: 'md' },
         hidden: !showCreator,
         render: (text: string) => (
           <AutoTooltip ghost style={{ maxWidth: 200 }}>
@@ -253,6 +267,7 @@ const useModelsColumns = ({
         title: intl.formatMessage({ id: 'common.table.createTime' }),
         dataIndex: 'created_at',
         key: 'created_at',
+        responsive: { hideBelow: 'md' },
         sorter: tableSorter(3),
         ellipsis: {
           showTitle: false
@@ -278,7 +293,7 @@ const useModelsColumns = ({
         )
       }
     ];
-  }, [intl, showCreator, handleSelect, actionList, pluginCols]);
+  }, [intl, showCreator, handleSelect, actionList, pluginCols, isMobile]);
 };
 
 export default useModelsColumns;

@@ -7,10 +7,14 @@
     "dev": "max dev",
     "format": "prettier --cache --write .",
     "postinstall": "max setup",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "prepare": "husky",
     "preview": "max preview",
     "setup": "max setup",
-    "start": "npm run dev"
+    "start": "npm run dev",
+    "typecheck": "tsc --noEmit",
+    "validate": "scripts/validate"
   },
   "dependencies": {
     "@ant-design/icons": "^6.1.0",

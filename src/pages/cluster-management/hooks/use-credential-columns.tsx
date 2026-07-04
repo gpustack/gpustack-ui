@@ -27,6 +27,7 @@ const useCredentialColumns = (
         title: intl.formatMessage({ id: 'common.table.name' }),
         dataIndex: 'name',
         sorter: tableSorter(1),
+        mobileCard: 'primary',
         render: (text: string) => (
           <AutoTooltip ghost minWidth={20} title={text}>
             <span className="text-primary">{text}</span>
@@ -38,12 +39,14 @@ const useCredentialColumns = (
         title: intl.formatMessage({ id: 'clusters.table.provider' }),
         dataIndex: 'provider',
         sorter: false,
+        responsive: { hideBelow: 'md' },
         render: (value: string) => <span>{ProviderLabelMap[value]}</span>
       },
       {
         title: intl.formatMessage({ id: 'common.table.createTime' }),
         dataIndex: 'created_at',
         sorter: tableSorter(3),
+        responsive: { hideBelow: 'md' },
         ellipsis: {
           showTitle: false
         },
@@ -54,6 +57,7 @@ const useCredentialColumns = (
       {
         title: intl.formatMessage({ id: 'common.table.description' }),
         dataIndex: 'description',
+        responsive: { hideBelow: 'md' },
         ellipsis: {
           showTitle: false
         },

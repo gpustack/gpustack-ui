@@ -13,13 +13,19 @@ import {
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { Flex, Tooltip } from 'antd';
+import { Flex, Tooltip, Typography } from 'antd';
 import dayjs from 'dayjs';
 import { useAtomValue } from 'jotai';
 import _ from 'lodash';
 import { useMemo } from 'react';
 import ModelTag from '../../_components/model-tag';
-import { generateSource } from '../config/button-actions';
+import {
+  generateSource,
+  getModelSourceIcon,
+  getModelSourceLabel,
+  getModelSourcePath,
+  getModelSourceUrl
+} from '../config/button-actions';
 import { ListItem } from '../config/types';
 interface ActionItem {
   label: string;
@@ -156,16 +162,16 @@ const useModelsColumns = ({
     // the default layout, one for when a plugin contributes an extra
     // column (currently always the 4-span Organization cell). Width
     // absorbed comes from the widest non-name columns (`source`,
-    // `replicas`, `created_at`). See the matching map in
-    // `use-cluster-columns.tsx` for rationale.
+    // `replicas`, `created_at`). `replicas` is a short `n / m` pair;
+    // shrink it before `created_at` so the date stays fully visible.
     const SPANS_DEFAULT = {
-      source: 5,
-      replicas: 4,
+      source: 6,
+      replicas: 3,
       createTime: 4
     };
     const SPANS_WITH_PLUGIN = {
-      source: 3,
-      replicas: 3,
+      source: 4,
+      replicas: 2,
       createTime: 3
     };
     const spans = pluginCols.length > 0 ? SPANS_WITH_PLUGIN : SPANS_DEFAULT;
@@ -184,9 +190,14 @@ const useModelsColumns = ({
         sorter: tableSorter(1),
         span: 5,
         render: (text: string, record: ListItem) => (
-          <Flex align="center" gap={4} style={{ maxWidth: '100%' }}>
+          <Flex
+            align="center"
+            gap={4}
+            style={{ minWidth: 0, maxWidth: '100%', width: '100%' }}
+          >
             <AutoTooltip
               ghost
+              style={{ minWidth: 0, flex: 1, overflow: 'hidden' }}
               title={
                 <span style={{ color: 'var(--ant-color-text-light-solid)' }}>
                   {text}
@@ -195,7 +206,9 @@ const useModelsColumns = ({
             >
               <span className="text-primary font-400">{text}</span>
             </AutoTooltip>
-            <ModelTag categoryKey={record.categories?.[0] || ''} />
+            <span style={{ flexShrink: 0 }}>
+              <ModelTag categoryKey={record.categories?.[0] || ''} />
+            </span>
           </Flex>
         )
       },
@@ -206,8 +219,12 @@ const useModelsColumns = ({
         key: 'cluster_id',
         sorter: tableSorter(2),
         span: 3,
+        responsive: { hideBelow: 'md' },
         render: (text: string, record: ListItem) => (
-          <span className="flex flex-column" style={{ width: '100%' }}>
+          <span
+            className="flex flex-column"
+            style={{ minWidth: 0, maxWidth: '100%' }}
+          >
             {
               clusterList.find((item) => item.value === record.cluster_id)
                 ?.label
@@ -221,11 +238,58 @@ const useModelsColumns = ({
         key: 'source',
         sorter: tableSorter(3),
         span: spans.source,
-        render: (text: string, record: ListItem) => (
-          <span className="flex flex-column" style={{ width: '100%' }}>
-            <AutoTooltip ghost>{generateSource(record)}</AutoTooltip>
-          </span>
-        )
+        responsive: { hideBelow: 'md' },
+        render: (_text: string, record: ListItem) => {
+          const icon = getModelSourceIcon(record.source);
+          const path = getModelSourcePath(record);
+
+          if (icon && path) {
+            const url = getModelSourceUrl(record);
+            const content = (
+              <>
+                <Tooltip title={getModelSourceLabel(record.source)}>
+                  <span className="flex align-center shrink-0">{icon}</span>
+                </Tooltip>
+                <AutoTooltip
+                  ghost
+                  title={path}
+                  style={{ minWidth: 0, flex: 1 }}
+                >
+                  {path}
+                </AutoTooltip>
+              </>
+            );
+
+            if (url) {
+              return (
+                <Typography.Link
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex align-center"
+                  style={{ width: '100%', minWidth: 0, gap: 6 }}
+                >
+                  {content}
+                </Typography.Link>
+              );
+            }
+
+            return (
+              <span
+                className="flex align-center"
+                style={{ width: '100%', minWidth: 0, gap: 6 }}
+              >
+                {content}
+              </span>
+            );
+          }
+
+          return (
+            <span className="flex flex-column" style={{ width: '100%' }}>
+              <AutoTooltip ghost>{generateSource(record)}</AutoTooltip>
+            </span>
+          );
+        }
       },
       {
         title: (
@@ -244,6 +308,7 @@ const useModelsColumns = ({
         align: 'left',
         sorter: tableSorter(4),
         span: spans.replicas,
+        responsive: { hideBelow: 'md' },
         editable: {
           valueType: 'number',
           title: intl.formatMessage({ id: 'models.table.replicas.edit' })
@@ -269,10 +334,13 @@ const useModelsColumns = ({
         key: 'created_at',
         sorter: tableSorter(5),
         span: spans.createTime,
+        responsive: { hideBelow: 'md' },
         render: (text: number) => (
-          <AutoTooltip ghost>
-            {dayjs(text).format('YYYY-MM-DD HH:mm:ss')}
-          </AutoTooltip>
+          <span style={{ whiteSpace: 'nowrap' }}>
+            <AutoTooltip ghost>
+              {dayjs(text).format('YYYY-MM-DD HH:mm:ss')}
+            </AutoTooltip>
+          </span>
         )
       },
       {

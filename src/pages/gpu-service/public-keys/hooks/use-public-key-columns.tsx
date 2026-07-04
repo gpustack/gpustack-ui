@@ -50,6 +50,7 @@ const usePublicKeyColumns = ({
         dataIndex: 'name',
         key: 'name',
         sorter: true,
+        mobileCard: 'primary',
         ellipsis: {
           showTitle: false
         },
@@ -70,6 +71,7 @@ const usePublicKeyColumns = ({
         dataIndex: 'created_at',
         key: 'created_at',
         sorter: false,
+        responsive: { hideBelow: 'md' },
         ellipsis: {
           showTitle: false
         },

@@ -69,6 +69,7 @@ const useStorageTypeColumns = ({
         dataIndex: 'name',
         key: 'name',
         sorter: true,
+        mobileCard: 'primary',
         ellipsis: { showTitle: false },
         render: (text: string, record: ListItem) => (
           <AutoTooltip
@@ -85,6 +86,7 @@ const useStorageTypeColumns = ({
         title: intl.formatMessage({ id: 'common.table.type' }),
         key: 'kind',
         sorter: false,
+        responsive: { hideBelow: 'md' },
         render: (_text, record) => getKindLabel(record)
       },
       {
@@ -123,6 +125,7 @@ const useStorageTypeColumns = ({
         dataIndex: 'created_at',
         key: 'created_at',
         sorter: false,
+        responsive: { hideBelow: 'md' },
         ellipsis: { showTitle: false },
         render: (text: string) => (
           <AutoTooltip ghost>

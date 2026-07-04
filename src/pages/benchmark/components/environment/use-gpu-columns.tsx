@@ -1,14 +1,7 @@
 import { convertFileSize } from '@/utils';
-import { AutoTooltip } from '@gpustack/core-ui';
+import { AutoTooltip, type TableColumnProps } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-export default function useGPUColumns(): {
-  title: string;
-  dataIndex: string;
-  key: string;
-  span: number;
-  colStyle?: React.CSSProperties;
-  render?: (value: any, record: any) => React.ReactNode;
-}[] {
+export default function useGPUColumns(): TableColumnProps[] {
   const intl = useIntl();
 
   return [
@@ -17,6 +10,7 @@ export default function useGPUColumns(): {
       dataIndex: 'name',
       key: 'name',
       span: 6,
+      mobileCard: 'primary',
       colStyle: { paddingLeft: 16 },
       render: (value: string, record: any) => (
         <AutoTooltip ghost>{value}</AutoTooltip>
@@ -27,6 +21,7 @@ export default function useGPUColumns(): {
       dataIndex: 'index',
       key: 'index',
       span: 4,
+      mobileTitle: intl.formatMessage({ id: 'benchmark.env.index' }),
       colStyle: { paddingLeft: 48 }
     },
     {
@@ -34,6 +29,7 @@ export default function useGPUColumns(): {
       dataIndex: 'vendor',
       key: 'vendor',
       span: 4,
+      mobileTitle: intl.formatMessage({ id: 'resources.table.vendor' }),
       colStyle: { paddingLeft: 110 }
     },
     {
@@ -42,6 +38,7 @@ export default function useGPUColumns(): {
       key: 'memory_total',
       colStyle: { paddingLeft: 40 },
       span: 6,
+      mobileTitle: intl.formatMessage({ id: 'resources.table.vram' }),
       render: (value: number, record: any) => convertFileSize(value)
     },
     {
@@ -49,6 +46,7 @@ export default function useGPUColumns(): {
       dataIndex: 'core_total',
       key: 'core_total',
       span: 4,
+      mobileTitle: intl.formatMessage({ id: 'resources.table.core' }),
       colStyle: { paddingLeft: 36 }
     }
   ];

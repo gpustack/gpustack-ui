@@ -35,6 +35,7 @@ const useStorageColumns = ({
         dataIndex: 'name',
         key: 'name',
         sorter: true,
+        mobileCard: 'primary',
         ellipsis: {
           showTitle: false
         },
@@ -54,6 +55,7 @@ const useStorageColumns = ({
         dataIndex: ['spec', 'type'],
         key: 'type',
         sorter: false,
+        responsive: { hideBelow: 'md' },
         render: (value: string) => {
           return (
             <AutoTooltip ghost>
@@ -68,6 +70,7 @@ const useStorageColumns = ({
         dataIndex: ['spec', 'capacity'],
         key: 'capacity',
         sorter: false,
+        responsive: { hideBelow: 'md' },
         render: (value: string) => (value ? value.replace(/Gi$/, 'GB') : '-')
       },
       {
@@ -94,6 +97,7 @@ const useStorageColumns = ({
         dataIndex: 'created_at',
         key: 'created_at',
         sorter: false,
+        responsive: { hideBelow: 'md' },
         ellipsis: {
           showTitle: false
         },

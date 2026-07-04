@@ -157,6 +157,7 @@ const useClusterColumns = (
         dataIndex: 'name',
         sorter: tableSorter(1),
         span: 3,
+        mobileCard: 'primary',
         render: (text: string, record: ClusterListItem) => (
           <>
             <AutoTooltip ghost title={text}>
@@ -188,6 +189,7 @@ const useClusterColumns = (
         dataIndex: 'provider',
         sorter: tableSorter(2),
         span: spans.provider,
+        responsive: { hideBelow: 'md' },
         render: (value: string) => (
           <AutoTooltip ghost minWidth={20}>
             {ProviderLabelMap[value]}
@@ -199,6 +201,7 @@ const useClusterColumns = (
         dataIndex: 'gpus',
         span: 2,
         sorter: tableSorter(3),
+        responsive: { hideBelow: 'md' },
         render: (value: number) => <span>{value}</span>
       },
       {
@@ -206,6 +209,7 @@ const useClusterColumns = (
         dataIndex: 'models',
         sorter: tableSorter(4),
         span: spans.deployments,
+        responsive: { hideBelow: 'md' },
         render: (value: number) => <span>{value}</span>
       },
       {
@@ -213,6 +217,7 @@ const useClusterColumns = (
         dataIndex: 'workers',
         sorter: tableSorter(5),
         span: spans.workers,
+        responsive: { hideBelow: 'md' },
         render: (value: number, record: ClusterListItem) => (
           <span>
             {record.ready_workers} / {record.workers}
@@ -223,6 +228,7 @@ const useClusterColumns = (
         title: intl.formatMessage({ id: 'common.table.status' }),
         dataIndex: 'state',
         span: spans.status,
+        responsive: { hideBelow: 'md' },
         render: (value: number, record: ClusterListItem) => (
           <StatusTag
             statusValue={{
@@ -238,6 +244,7 @@ const useClusterColumns = (
         dataIndex: 'created_at',
         sorter: tableSorter(6),
         span: spans.createTime,
+        responsive: { hideBelow: 'md' },
         render: (value: string) => (
           <AutoTooltip ghost minWidth={20}>
             {dayjs(value).format('YYYY-MM-DD HH:mm:ss')}

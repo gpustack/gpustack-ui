@@ -134,6 +134,13 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
     onSliceMemoryPercentageChange?.(value);
   };
 
+  // Max selectable ratio in sliced mode: status.onceMaxRequest.acceleratorSliced
+  // (a percentage). Ticks above it stay visible but disabled.
+  const slicedMaxPercentage =
+    _.toNumber(
+      selectedInstanceType?.status?.onceMaxRequest?.acceleratorSliced
+    ) || 0;
+
   const modeSegmented = showModeSwitch ? (
     <Segmented
       size="small"
@@ -149,20 +156,15 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
         },
         {
           label: intl.formatMessage({ id: 'gpuservice.instance.mode.sliced' }),
-          value: 'sliced'
+          value: 'sliced',
+          // No sliced capacity → keep the option visible but unselectable.
+          disabled: slicedMaxPercentage <= 0
         }
       ]}
     />
   ) : null;
 
   const isSliced = showModeSwitch && sliceMode === 'sliced';
-
-  // Max selectable ratio in sliced mode: status.onceMaxRequest.acceleratorSliced
-  // (a percentage). Ticks above it stay visible but disabled.
-  const slicedMaxPercentage =
-    _.toNumber(
-      selectedInstanceType?.status?.onceMaxRequest?.acceleratorSliced
-    ) || 0;
 
   // When the max ratio is below 10%, switch the ticks to a finer 1..10 scale
   // so small slices are still selectable; otherwise use the 10..100 scale.

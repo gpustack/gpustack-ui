@@ -1,5 +1,11 @@
 import { UsageFilterItem } from './types';
 
+/** Large page fetch when the full filtered set is needed (replaces legacy page: -1). */
+export const USAGE_FULL_DATA_PAGINATION = {
+  page: 1,
+  perPage: 10000
+} as const;
+
 export const groupByOptions = [
   // {
   //   value: null,

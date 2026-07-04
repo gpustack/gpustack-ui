@@ -2,31 +2,42 @@ import { BaseSelect, FilterForm, FilterFormField } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import { forwardRef, useImperativeHandle, useRef } from 'react';
-import { modelCategories } from '../config';
-import useFilterStatus from '../hooks/use-filter-status';
+import useFilterStatus from '../../hooks/use-filter-status';
 
-interface FilterFormContentProps {
+interface InstanceFilterFormProps {
   clusterList: Global.BaseOption<number>[];
-  initialValues?: any;
+  workerList: { id: number; name: string }[];
+  initialValues?: Record<string, any>;
   open?: boolean;
-  ref?: any;
   onClose?: () => void;
   onClear: () => void;
-  onValuesChange: (values: any) => void;
+  onValuesChange: (values: Record<string, any>) => void;
+  filterOptions?: {
+    optionList: { label: string; value: string; color: string }[];
+  };
 }
 
-const FilterFormContent: React.FC<FilterFormContentProps> = forwardRef(
+const InstanceFilterForm = forwardRef<
+  { reset: () => void },
+  InstanceFilterFormProps
+>(
   (
-    { clusterList, initialValues, onClose, onClear, onValuesChange, open },
+    {
+      clusterList,
+      workerList,
+      initialValues,
+      onClose,
+      onClear,
+      onValuesChange,
+      open,
+      filterOptions
+    },
     ref
   ) => {
     const intl = useIntl();
-    const { labelRender, optionRender, statusOptions } = useFilterStatus();
+    const { labelRender, optionRender, statusOptions } =
+      useFilterStatus(filterOptions);
     const filterRef = useRef<any>(null);
-
-    const handleOnValuesChange = (changedValues: any, allValues: any) => {
-      onValuesChange?.(allValues);
-    };
 
     useImperativeHandle(ref, () => ({
       reset: () => {
@@ -42,27 +53,15 @@ const FilterFormContent: React.FC<FilterFormContentProps> = forwardRef(
         open={open}
         onClose={onClose}
         onClear={onClear}
-        onValuesChange={handleOnValuesChange}
+        onValuesChange={(_changed, allValues) => onValuesChange(allValues)}
         initialValues={initialValues}
-        styles={{
-          wrapper: {
-            marginTop: 0
-          }
-        }}
+        styles={{ wrapper: { marginTop: 0 } }}
       >
         <FilterFormField
           first
-          label={intl.formatMessage({
-            id: 'clusters.title'
-          })}
+          label={intl.formatMessage({ id: 'clusters.title' })}
         >
-          <Form.Item
-            noStyle
-            name="cluster_id"
-            label={intl.formatMessage({
-              id: 'clusters.filterBy.cluster'
-            })}
-          >
+          <Form.Item noStyle name="cluster_id">
             <BaseSelect
               allowClear
               showSearch={false}
@@ -70,55 +69,41 @@ const FilterFormContent: React.FC<FilterFormContentProps> = forwardRef(
                 id: 'clusters.filterBy.cluster'
               })}
               size="large"
-              maxTagCount={1}
               options={clusterList}
-            ></BaseSelect>
+            />
           </Form.Item>
         </FilterFormField>
         <FilterFormField
-          label={intl.formatMessage({ id: 'models.table.category' })}
+          label={intl.formatMessage({ id: 'resources.filter.worker' })}
         >
-          <Form.Item
-            noStyle
-            name="categories"
-            label={intl.formatMessage({
-              id: 'models.filter.category'
-            })}
-          >
+          <Form.Item noStyle name="worker_id">
             <BaseSelect
               allowClear
               showSearch={false}
               placeholder={intl.formatMessage({
-                id: 'models.filter.category'
+                id: 'resources.filter.worker'
               })}
               size="large"
-              maxTagCount={1}
-              options={modelCategories.filter((item) => item.value)}
-            ></BaseSelect>
+              options={workerList.map((w) => ({
+                label: w.name,
+                value: w.id
+              }))}
+            />
           </Form.Item>
         </FilterFormField>
         <FilterFormField
-          label={intl.formatMessage({
-            id: 'models.table.status'
-          })}
+          label={intl.formatMessage({ id: 'models.table.status' })}
         >
-          <Form.Item
-            noStyle
-            name="state"
-            label={intl.formatMessage({
-              id: 'models.table.status'
-            })}
-          >
+          <Form.Item noStyle name="state">
             <BaseSelect
               allowClear
               showSearch={false}
               placeholder={intl.formatMessage({ id: 'common.filter.status' })}
               size="large"
-              maxTagCount={1}
               optionRender={optionRender}
               labelRender={labelRender}
               options={statusOptions}
-            ></BaseSelect>
+            />
           </Form.Item>
         </FilterFormField>
       </FilterForm>
@@ -126,4 +111,4 @@ const FilterFormContent: React.FC<FilterFormContentProps> = forwardRef(
   }
 );
 
-export default FilterFormContent;
+export default InstanceFilterForm;

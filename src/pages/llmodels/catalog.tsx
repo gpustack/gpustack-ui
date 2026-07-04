@@ -5,10 +5,12 @@ import useTableFetch from '@/hooks/use-table-fetch';
 import { IS_FIRST_LOGIN, writeState } from '@/utils/localstore/index';
 import { SearchOutlined } from '@ant-design/icons';
 import {
+  BaseSelect,
   FilterBar,
   IconFont,
   InfiniteScrollerProvider,
-  NoResult
+  NoResult,
+  useFilterDrawer
 } from '@gpustack/core-ui';
 import { useIntl, useNavigate } from '@umijs/max';
 import { message } from 'antd';
@@ -21,6 +23,7 @@ import CatalogList from './components/catalog/catalog-list';
 import DelopyBuiltInModal from './components/deployment/deploy-builtin-modal';
 import { modelCategories, modelSourceMap } from './config';
 import { CatalogItem as CatalogItemType, FormData } from './config/types';
+import CategoryFilterForm from './filters/category-filter-form';
 
 const Catalog: React.FC = () => {
   const intl = useIntl();
@@ -55,6 +58,24 @@ const Catalog: React.FC = () => {
   const categoryOptions = [
     ...modelCategories.filter((item) => item.value)
   ] as Global.BaseOption<string>[];
+
+  const {
+    filtersVisible,
+    toggleFilters,
+    filterRef,
+    filterValues,
+    filtersCount,
+    handleOnFilterChange,
+    handleOnClearFilters
+  } = useFilterDrawer({
+    onFilterChange: (filters) => {
+      handleQueryChange({
+        page: 1,
+        ...filters
+      });
+    },
+    clearKeys: ['categories']
+  });
 
   const handleDeployModalCancel = () => {
     setOpenDeployModal({
@@ -134,61 +155,101 @@ const Catalog: React.FC = () => {
   }, [dataSource.loadend]);
 
   return (
-    <PageBox>
-      <FilterBar
-        showSelect={true}
-        selectHolder={intl.formatMessage({ id: 'models.filter.category' })}
-        marginBottom={22}
-        marginTop={0}
-        buttonText={intl.formatMessage({ id: 'models.catalog.button.explore' })}
-        handleSearch={handleSearch}
-        handleSelectChange={handleCategoryChange}
-        handleClickPrimary={handleDeployFromOtherHubs}
-        handleInputChange={handleNameChange}
-        selectOptions={categoryOptions}
-        buttonIcon={<SearchOutlined />}
-        widths={{ input: 230, select: 200 }}
-      ></FilterBar>
-      <InfiniteScrollerProvider
-        value={{
-          total: dataSource.totalPage,
-          current: queryParams.page,
-          loading: dataSource.loading,
-          refresh: loadMore,
-          throttleDelay: 300
-        }}
-      >
-        <CatalogList
-          dataList={dataSource.dataList}
-          loading={dataSource.loading}
-          onDeploy={handleOnDeploy}
-          activeId={-1}
-          isFirst={!dataSource.loadend}
-        ></CatalogList>
-        <NoResult
-          loading={dataSource.loading}
-          loadend={dataSource.loadend}
-          dataSource={dataSource.dataList}
-          image={<IconFont type="icon-layers" />}
-          filters={_.omit(queryParams, ['sort_by'])}
-          noFoundText={intl.formatMessage({
-            id: 'noresult.catalog.nofound'
-          })}
-          title={intl.formatMessage({ id: 'noresult.catalog.title' })}
-          subTitle={intl.formatMessage({ id: 'noresult.catalog.subTitle' })}
-        ></NoResult>
-      </InfiniteScrollerProvider>
-      <DelopyBuiltInModal
-        open={openDeployModal.show}
-        action={PageAction.CREATE}
-        title={intl.formatMessage({ id: 'models.button.deploy' })}
-        source={openDeployModal.source}
-        width={openDeployModal.width}
-        current={openDeployModal.current}
-        onCancel={handleDeployModalCancel}
-        onOk={handleCreateModel}
-      ></DelopyBuiltInModal>
-    </PageBox>
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'flex-start',
+        minWidth: 0,
+        maxWidth: '100%'
+      }}
+    >
+      <CategoryFilterForm
+        ref={filterRef}
+        open={filtersVisible}
+        categoryOptions={categoryOptions}
+        initialValues={filterValues}
+        onValuesChange={handleOnFilterChange}
+        onClose={toggleFilters}
+        onClear={handleOnClearFilters}
+      />
+      <div style={{ flex: 1, minWidth: 0, maxWidth: '100%' }}>
+        <PageBox>
+          <FilterBar
+            showSelect={false}
+            marginBottom={22}
+            marginTop={0}
+            buttonText={intl.formatMessage({
+              id: 'models.catalog.button.explore'
+            })}
+            handleSearch={handleSearch}
+            handleClickPrimary={handleDeployFromOtherHubs}
+            handleInputChange={handleNameChange}
+            buttonIcon={<SearchOutlined />}
+            widths={{ input: 230, select: 200 }}
+            collapseInlineFilters
+            filtersButtonProps={{
+              show: true,
+              count: filtersCount,
+              onClick: toggleFilters,
+              onClear: handleOnClearFilters
+            }}
+            inlineFilters={
+              <BaseSelect
+                allowClear
+                showSearch={false}
+                placeholder={intl.formatMessage({
+                  id: 'models.filter.category'
+                })}
+                style={{ width: 160 }}
+                size="large"
+                maxTagCount={1}
+                onChange={handleCategoryChange}
+                options={categoryOptions}
+              />
+            }
+          ></FilterBar>
+          <InfiniteScrollerProvider
+            value={{
+              total: dataSource.totalPage,
+              current: queryParams.page,
+              loading: dataSource.loading,
+              refresh: loadMore,
+              throttleDelay: 300
+            }}
+          >
+            <CatalogList
+              dataList={dataSource.dataList}
+              loading={dataSource.loading}
+              onDeploy={handleOnDeploy}
+              activeId={-1}
+              isFirst={!dataSource.loadend}
+            ></CatalogList>
+            <NoResult
+              loading={dataSource.loading}
+              loadend={dataSource.loadend}
+              dataSource={dataSource.dataList}
+              image={<IconFont type="icon-layers" />}
+              filters={_.omit(queryParams, ['sort_by'])}
+              noFoundText={intl.formatMessage({
+                id: 'noresult.catalog.nofound'
+              })}
+              title={intl.formatMessage({ id: 'noresult.catalog.title' })}
+              subTitle={intl.formatMessage({ id: 'noresult.catalog.subTitle' })}
+            ></NoResult>
+          </InfiniteScrollerProvider>
+          <DelopyBuiltInModal
+            open={openDeployModal.show}
+            action={PageAction.CREATE}
+            title={intl.formatMessage({ id: 'models.button.deploy' })}
+            source={openDeployModal.source}
+            width={openDeployModal.width}
+            current={openDeployModal.current}
+            onCancel={handleDeployModalCancel}
+            onOk={handleCreateModel}
+          ></DelopyBuiltInModal>
+        </PageBox>
+      </div>
+    </div>
   );
 };
 

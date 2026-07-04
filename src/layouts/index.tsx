@@ -10,6 +10,7 @@ import useCurrentUser from '@/hooks/use-current-user';
 import useTableFetch from '@/hooks/use-table-fetch';
 import useUserSettings from '@/hooks/use-user-settings';
 import useUserSettingsStorage from '@/hooks/use-user-settings-storage';
+import useWindowResize from '@/hooks/use-window-resize';
 import useAddResource from '@/pages/dashboard/hooks/use-add-resource';
 import { logout } from '@/pages/login/apis';
 import { didInitialStateProbe, probeAccessFlags } from '@/utils/access-probes';
@@ -42,13 +43,15 @@ import {
 import { Button, ConfigProvider, Modal, theme } from 'antd';
 import { useAtom } from 'jotai';
 import 'overlayscrollbars/overlayscrollbars.css';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { PageContainerInner } from '../pages/_components/page-box';
 import Exception from './Exception';
 import './Layout.css';
 import { LogoIcon, SLogoIcon } from './Logo';
 import ErrorBoundary from './error-boundary';
 import { ExtraContent } from './extraRender';
+import { MobileMenuContext } from './mobile-menu-context';
+import MobileNavDrawer from './mobile-nav-drawer';
 import { patchRoutes } from './runtime';
 import SiderMenu from './sider-menu';
 
@@ -126,6 +129,10 @@ export default (props: any) => {
   const intl = useIntl();
   const { clientRoutes } = useAppData();
   const requestResourceRef = useRef<boolean>(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileMenuCloseWithoutMotion, setMobileMenuCloseWithoutMotion] =
+    useState(false);
+  const { isMobile } = useWindowResize();
 
   const { fetchResourceData, NoResourceModal } = useAddResource({
     onCreated() {
@@ -223,8 +230,22 @@ export default (props: any) => {
 
   const coreUISlots = useMemo(() => ({ ExtraContent }), []);
 
+  const onCollapse = (value: boolean) => {
+    if (isMobile) {
+      return;
+    }
+    setUserSettings({
+      ...userSettings,
+      collapsed: value
+    });
+  };
+
   const handleToggleCollapse = (e: any) => {
     e.stopPropagation();
+    if (isMobile) {
+      setMobileMenuOpen(true);
+      return;
+    }
     setUserSettings({
       ...userSettings,
       collapsed: !userSettings.collapsed
@@ -255,18 +276,48 @@ export default (props: any) => {
   );
 
   const collapsed = useMemo(() => {
+    if (isMobile) {
+      return true;
+    }
     return userSettings.collapsed || false;
-  }, [userSettings.collapsed]);
+  }, [userSettings.collapsed, isMobile]);
 
-  const renderMenuHeader = (logo: React.ReactNode, title: React.ReactNode) => {
-    return <>{logo}</>;
-  };
+  const mobileMenuContextValue = useMemo(
+    () => ({
+      open: mobileMenuOpen,
+      setOpen: (open: boolean) => {
+        if (open) {
+          setMobileMenuCloseWithoutMotion(false);
+        }
+        setMobileMenuOpen(open);
+      },
+      toggle: () =>
+        setMobileMenuOpen((prev) => {
+          if (!prev) {
+            setMobileMenuCloseWithoutMotion(false);
+          }
+          return !prev;
+        }),
+      closeWithoutMotion: () => {
+        setMobileMenuCloseWithoutMotion(true);
+        setMobileMenuOpen(false);
+      },
+      disableCloseMotion: mobileMenuCloseWithoutMotion,
+      resetCloseMotion: () => setMobileMenuCloseWithoutMotion(false)
+    }),
+    [mobileMenuOpen, mobileMenuCloseWithoutMotion]
+  );
 
   const menuContentRender = (menuProps: any, defaultDom: React.ReactNode) => {
+    if (isMobile) {
+      return null;
+    }
     return <SiderMenu {...menuProps}></SiderMenu>;
   };
 
   const onPageChange = async (route: any) => {
+    setMobileMenuCloseWithoutMotion(true);
+    setMobileMenuOpen(false);
     const { location } = history;
     const { pathname } = location;
 
@@ -315,17 +366,6 @@ export default (props: any) => {
       : DEFAULT_ENTER_PAGE.user;
 
     navigate(pagepath);
-  };
-
-  const onCollapse = (value: boolean) => {
-    // only trigger by window resize
-    if (!value) {
-      return;
-    }
-    setUserSettings({
-      ...userSettings,
-      collapsed: value
-    });
   };
 
   return (
@@ -386,79 +426,84 @@ export default (props: any) => {
         access={{ Access, useAccess }}
       >
         <DarkMask></DarkMask>
-        <ProLayout
-          fixSiderbar
-          fixedHeader={false}
-          headerRender={false}
-          breadcrumbRender={false}
-          route={route}
-          location={location}
-          title={userConfig.title}
-          navTheme={userSettings.theme}
-          layout="side"
-          contentStyle={{
-            paddingBlock: 0,
-            paddingInline: 0
-          }}
-          openKeys={false}
-          disableMobile={true}
-          siderWidth={220}
-          menuFooterRender={() => (
-            <Button
-              style={{
-                border: 'none'
-              }}
-              size="small"
-              type={'text'}
-              onClick={handleToggleCollapse}
-            >
-              <IconFont
-                type={collapsed ? 'icon-expand-left' : 'icon-expand-right'}
-                className="font-size-18"
-              />
-            </Button>
-          )}
-          onCollapse={onCollapse}
-          onMenuHeaderClick={onMenuHeaderClick}
-          collapsed={userSettings.collapsed}
-          onPageChange={onPageChange}
-          formatMessage={formatMessage}
-          menu={{
-            locale: true,
-            type: 'group'
-          }}
-          splitMenus={true}
-          logo={userSettings.collapsed ? <SLogoIcon /> : <LogoIcon />}
-          menuContentRender={menuContentRender}
-          {...runtimeConfig}
-          ErrorBoundary={ErrorBoundary}
-        >
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              height: '100vh',
-              overflow: 'hidden'
+        <MobileMenuContext.Provider value={mobileMenuContextValue}>
+          <ProLayout
+            fixSiderbar={!isMobile}
+            fixedHeader={false}
+            headerRender={false}
+            breadcrumbRender={false}
+            route={route}
+            location={location}
+            title={userConfig.title}
+            navTheme={userSettings.theme}
+            layout="side"
+            contentStyle={{
+              paddingBlock: 0,
+              paddingInline: 0
             }}
+            openKeys={false}
+            disableMobile={true}
+            breakpoint="md"
+            siderWidth={isMobile ? 0 : 220}
+            collapsedWidth={isMobile ? 0 : 48}
+            menuFooterRender={() => (
+              <Button
+                style={{
+                  border: 'none'
+                }}
+                size="small"
+                type={'text'}
+                onClick={handleToggleCollapse}
+              >
+                <IconFont
+                  type={collapsed ? 'icon-expand-left' : 'icon-expand-right'}
+                  className="font-size-18"
+                />
+              </Button>
+            )}
+            onCollapse={onCollapse}
+            onMenuHeaderClick={onMenuHeaderClick}
+            collapsed={collapsed}
+            onPageChange={onPageChange}
+            formatMessage={formatMessage}
+            menu={{
+              locale: true,
+              type: 'group'
+            }}
+            splitMenus={true}
+            logo={userSettings.collapsed ? <SLogoIcon /> : <LogoIcon />}
+            menuContentRender={menuContentRender}
+            {...runtimeConfig}
+            ErrorBoundary={ErrorBoundary}
           >
-            <PluginExtraFields name="GlobalLicenseBanner" />
-            <Exception
-              route={matchedRoute}
-              notFound={runtimeConfig?.notFound}
-              noFound={runtimeConfig?.noFound}
-              unAccessible={runtimeConfig?.unAccessible}
-              noAccessible={runtimeConfig?.noAccessible}
+            <MobileNavDrawer />
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                height: '100vh',
+                overflow: 'hidden'
+              }}
             >
-              <PageContainerInner>
-                <div>
-                  <Outlet />
-                </div>
-              </PageContainerInner>
-            </Exception>
-          </div>
-          {NoResourceModal}
-          {contextHolder}
-        </ProLayout>
+              <PluginExtraFields name="GlobalLicenseBanner" />
+              <Exception
+                route={matchedRoute}
+                notFound={runtimeConfig?.notFound}
+                noFound={runtimeConfig?.noFound}
+                unAccessible={runtimeConfig?.unAccessible}
+                noAccessible={runtimeConfig?.noAccessible}
+              >
+                <PageContainerInner>
+                  <div>
+                    <Outlet />
+                  </div>
+                </PageContainerInner>
+              </Exception>
+            </div>
+            {NoResourceModal}
+            {contextHolder}
+          </ProLayout>
+        </MobileMenuContext.Provider>
       </CoreUIProvider>
     </ConfigProvider>
   );

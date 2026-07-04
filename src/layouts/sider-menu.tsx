@@ -20,12 +20,11 @@ interface SiderMenuProps {
   menuData: MenuItem[];
   collapsed?: boolean;
   initialState: Global.InitialStateType;
+  onMenuItemClick?: () => void;
 }
 
 const useStyles = createStyles(
   ({ css, token }: { css: any; token: FullToken }) => {
-    console.log('useStyles', token);
-
     // @ts-ignore
     const { Menu } = token;
 
@@ -143,7 +142,7 @@ const useStyles = createStyles(
 );
 
 const SiderMenu: React.FC<SiderMenuProps> = (props) => {
-  const { menuData, collapsed } = props;
+  const { menuData, collapsed, onMenuItemClick } = props;
   const { styles, cx } = useStyles();
   const location = useLocation();
   const [storedCollapsedGroups, setCollapsedGroups] = useAtom(
@@ -194,6 +193,7 @@ const SiderMenu: React.FC<SiderMenuProps> = (props) => {
           prefetch="intent"
           to={menuItem.path.replace('/*', '')}
           target={menuItem.target}
+          onClick={() => onMenuItemClick?.()}
           className={cx(styles.menuItemWrapper, 'menu-item', {
             'menu-item-selected':
               location.pathname === menuItem.path ||

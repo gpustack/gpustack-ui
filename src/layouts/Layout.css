@@ -8,6 +8,83 @@
   }
 }
 
+@media screen and (min-width: 768px) {
+  .mobile-menu-button.ant-btn {
+    display: none !important;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .ant-pro-sider.ant-layout-sider {
+    display: none !important;
+  }
+
+  /* ProLayout keeps a 256px flex spacer when disableMobile=true; remove it. */
+  .ant-design-pro.ant-pro-layout-side > .ant-layout > div:first-child {
+    display: none !important;
+    flex: 0 0 0 !important;
+    width: 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+  }
+
+  .ant-pro-layout-container {
+    flex: 1 1 100% !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  .gpu-instances-empty .ant-empty-footer {
+    width: 100%;
+    padding-inline: 16px;
+  }
+
+  .gpu-instances-empty .ant-empty-footer .ant-btn {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .mobile-menu-button.ant-btn {
+    flex-shrink: 0;
+    margin-right: 8px;
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .mobile-nav-drawer {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .mobile-nav-drawer-logo {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    height: 56px;
+    padding: 0 16px;
+    cursor: pointer;
+  }
+
+  .mobile-nav-drawer .sider-menu {
+    flex: 1;
+    min-height: 0;
+  }
+
+  .ant-pro-layout .ant-layout-sider,
+  .ant-design-pro.ant-pro-layout-side > .ant-layout > div:first-child,
+  .ant-pro-layout-container {
+    transition: none !important;
+  }
+
+  .mobile-nav-drawer-root.mobile-nav-drawer-root--instant .ant-drawer-mask,
+  .mobile-nav-drawer-root.mobile-nav-drawer-root--instant
+    .ant-drawer-content-wrapper {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
 .umi-plugin-layout-menu .anticon {
   margin-right: 8px;
 }

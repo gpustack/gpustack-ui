@@ -1,4 +1,5 @@
 import { getRequestId } from '@/atoms/models';
+import useWindowResize from '@/hooks/use-window-resize';
 import { BaseSelect, SimpleOverlay } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Empty, Spin } from 'antd';
@@ -53,6 +54,7 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
   const { collapsed, modelSource, isDownload, onSelectFileAfterEvaluate } =
     props;
   const intl = useIntl();
+  const { isMobile } = useWindowResize();
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [dataSource, setDataSource] = useState<any>({
     fileList: [],
@@ -324,8 +326,16 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
           ></Spin>
         </div>
       )}
-      <SimpleOverlay height={collapsed ? 'max-content' : 'calc(100vh - 300px)'}>
-        <div style={{ padding: '16px 24px' }}>
+      <SimpleOverlay
+        height={
+          collapsed
+            ? 'max-content'
+            : isMobile
+              ? 'max-content'
+              : 'calc(100vh - 300px)'
+        }
+      >
+        <div style={{ padding: isMobile ? '16px' : '16px 24px' }}>
           {dataSource.loading ? (
             <ItemFileWrapper>
               {_.times(5, (index: number) => {

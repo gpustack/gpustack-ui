@@ -1,4 +1,5 @@
 import { HEADER_HEIGHT } from '@/config/settings';
+import useWindowResize from '@/hooks/use-window-resize';
 import { useOverlayScroller } from '@gpustack/core-ui';
 import _ from 'lodash';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -22,6 +23,7 @@ interface MultiCompareProps {
 
 const MultiCompare: React.FC<MultiCompareProps> = ({ modelList, loaded }) => {
   const { initialize } = useOverlayScroller();
+  const { isMobile } = useWindowResize();
   const [loadingStatus, setLoadingStatus] = useState<Record<symbol, boolean>>(
     {}
   );
@@ -299,10 +301,9 @@ const MultiCompare: React.FC<MultiCompareProps> = ({ modelList, loaded }) => {
           setModelSelections={handleUpdateModelSelections}
           actions={['clear', 'layout', 'role', 'upload', 'add', 'paste']}
           defaultChecked={false}
-          defaultSize={{
-            minRows: 5,
-            maxRows: 5
-          }}
+          defaultSize={
+            isMobile ? { minRows: 3, maxRows: 10 } : { minRows: 5, maxRows: 5 }
+          }
         />
       </div>
     </div>

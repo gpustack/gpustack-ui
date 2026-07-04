@@ -1,4 +1,4 @@
-import { IconFont } from '@gpustack/core-ui';
+import { IconFont, ResponsiveTabsExtra } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Tabs, TabsProps } from 'antd';
 import React, { useState } from 'react';
@@ -33,14 +33,15 @@ const Details: React.FC<{
   };
 
   return (
-    <Tabs
-      size="small"
-      activeKey={activeKey}
-      onChange={handleChangeTab}
-      items={items}
-      type="card"
-      tabBarExtraContent={tabBarExtraContent}
-    />
+    <ResponsiveTabsExtra right={tabBarExtraContent.right}>
+      <Tabs
+        size="small"
+        activeKey={activeKey}
+        onChange={handleChangeTab}
+        items={items}
+        type="card"
+      />
+    </ResponsiveTabsExtra>
   );
 };
 

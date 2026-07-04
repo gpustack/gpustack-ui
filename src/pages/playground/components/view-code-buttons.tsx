@@ -1,4 +1,4 @@
-import { IconFont } from '@gpustack/core-ui';
+import { IconFont, IconTextButton } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Space } from 'antd';
 import React from 'react';
@@ -16,13 +16,12 @@ const ViewCodeButtons: React.FC<{
 
   return (
     <Space key="buttons">
-      <Button
+      <IconTextButton
         size="middle"
         onClick={handleViewCode}
         icon={<IconFont type="icon-code" className="font-size-16"></IconFont>}
-      >
-        {intl.formatMessage({ id: 'playground.viewcode' })}
-      </Button>
+        text={intl.formatMessage({ id: 'playground.viewcode' })}
+      />
       <Button
         size="middle"
         onClick={handleToggleCollapse}

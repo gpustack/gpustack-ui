@@ -1,3 +1,4 @@
+import useWindowResize from '@/hooks/use-window-resize';
 import { PageTools } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Col, Row } from 'antd';
@@ -7,7 +8,8 @@ import styled from 'styled-components';
 import {
   DashboardUsageCommonParams,
   getUsageRankHeight,
-  getUsageRankSlotCount
+  getUsageRankSlotCount,
+  usageRankMinHeight
 } from '../config';
 import useTopTokenUsageByUser from '../hooks/use-top-token-usage-by-user';
 import TopTokenUsageByUser from './usage-charts/top-token-usage-by-user';
@@ -24,6 +26,7 @@ const USAGE_LOOKBACK_DAYS = 30;
 
 const NewUsage = () => {
   const intl = useIntl();
+  const { isMobile } = useWindowResize();
 
   const dateRange = useMemo(
     () => ({
@@ -48,13 +51,19 @@ const NewUsage = () => {
   const userUsage = useTopTokenUsageByUser(commonParams);
 
   const userCount = userUsage.rankData.names.length;
-  const rankHeight = getUsageRankHeight(userCount);
+  const rankHeight = useMemo(() => {
+    const base = getUsageRankHeight(userCount);
+    if (isMobile) {
+      return Math.max(usageRankMinHeight, Math.min(base, 320));
+    }
+    return base;
+  }, [userCount, isMobile]);
   const rankMaxItems = Math.max(getUsageRankSlotCount(rankHeight), userCount);
 
   return (
     <>
       <PageTools
-        style={{ margin: '24px 0 0' }}
+        style={{ margin: isMobile ? '16px 0 0' : '24px 0 0' }}
         left={
           <span className="font-700">
             {intl.formatMessage(
@@ -65,7 +74,7 @@ const NewUsage = () => {
         }
       />
       <Section>
-        <Row gutter={[20, 20]}>
+        <Row gutter={isMobile ? [12, 12] : [20, 20]}>
           <Col xs={24} sm={24} md={24} lg={24} xl={16}>
             <UsageByModel commonParams={commonParams} height={rankHeight} />
           </Col>

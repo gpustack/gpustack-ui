@@ -89,6 +89,56 @@ export const sourceOptions = [
   ...onLineSourceOptions
 ];
 
+const modelSourceIconMap: Record<string, React.ReactNode> = {
+  [modelSourceMap.huggingface_value]: icons.HF,
+  [modelSourceMap.modelscope_value]: icons.ModelScope
+};
+
+export const getModelSourcePath = (record: any) => {
+  if (record.source === modelSourceMap.modelscope_value) {
+    return record.model_scope_model_id;
+  }
+  if (record.source === modelSourceMap.huggingface_value) {
+    return record.huggingface_repo_id;
+  }
+  if (record.source === modelSourceMap.local_path_value) {
+    return record.local_path;
+  }
+  if (record.source === modelSourceMap.ollama_library_value) {
+    return record.ollama_library_model_name;
+  }
+  return '';
+};
+
+export const getModelSourceIcon = (source: string) =>
+  modelSourceIconMap[source] ?? null;
+
+export const getModelSourceLabel = (source: string) => {
+  if (source === modelSourceMap.huggingface_value) {
+    return modelSourceMap.huggingface;
+  }
+  if (source === modelSourceMap.modelscope_value) {
+    return modelSourceMap.modelScope;
+  }
+  return '';
+};
+
+export const getModelSourceUrl = (record: any) => {
+  if (
+    record.source === modelSourceMap.huggingface_value &&
+    record.huggingface_repo_id
+  ) {
+    return `https://huggingface.co/${record.huggingface_repo_id}`;
+  }
+  if (
+    record.source === modelSourceMap.modelscope_value &&
+    record.model_scope_model_id
+  ) {
+    return `https://modelscope.cn/models/${record.model_scope_model_id}`;
+  }
+  return null;
+};
+
 export const generateSource = (record: any) => {
   if (record.source === modelSourceMap.modelscope_value) {
     return `${modelSourceMap.modelScope}/${record.model_scope_model_id}`;

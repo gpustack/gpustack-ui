@@ -5,7 +5,7 @@ import { formatLargeNumber } from '@gpustack/core-ui/utils';
 import { useIntl } from '@umijs/max';
 import type { GlobalToken } from 'antd';
 import { Empty, Spin, theme } from 'antd';
-import { useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   DashboardUsageCommonParams,
   getUsageSummary,
@@ -14,6 +14,7 @@ import {
   usageChartHeight
 } from '../../config';
 import UsageChartCard from './shared';
+import { getUsageByModelChartLayout } from './usage-chart-layout';
 
 const HTML_ESCAPES: Record<string, string> = {
   '&': '&amp;',
@@ -46,6 +47,24 @@ const UsageByModel: React.FC<UsageByModelProps> = ({
 }) => {
   const intl = useIntl();
   const { token } = theme.useToken();
+  const resizeObserverRef = useRef<ResizeObserver | null>(null);
+  const [containerWidth, setContainerWidth] = useState(0);
+  const measureRef = useCallback((node: HTMLDivElement | null) => {
+    resizeObserverRef.current?.disconnect();
+    if (!node) return;
+    setContainerWidth(node.clientWidth);
+    resizeObserverRef.current = new ResizeObserver(() => {
+      setContainerWidth(node.clientWidth);
+    });
+    resizeObserverRef.current.observe(node);
+  }, []);
+  useEffect(() => () => resizeObserverRef.current?.disconnect(), []);
+
+  const chartLayout = useMemo(
+    () => getUsageByModelChartLayout(containerWidth, height),
+    [containerWidth, height]
+  );
+  const chartHeight = height + chartLayout.chartHeightExtra;
   const generateCoolColors = useCoolColors();
   const chartRef = useRef<{ chart: any } | null>(null);
 
@@ -226,17 +245,10 @@ const UsageByModel: React.FC<UsageByModelProps> = ({
         }
       },
       legend: {
-        orient: 'vertical',
-        right: 0,
-        top: 18,
-        bottom: 18,
-        itemWidth: 8,
-        itemHeight: 8,
-        itemGap: 12,
+        ...chartLayout.legend,
         textStyle: {
           color: token.colorTextTertiary,
-          overflow: 'truncate',
-          width: 180
+          ...(chartLayout.legend.textStyle as object)
         },
         data: legendNames,
         show: legendNames.length > 0,
@@ -251,8 +263,8 @@ const UsageByModel: React.FC<UsageByModelProps> = ({
         {
           name: tokenLabel,
           type: 'pie',
-          radius: ['50%', '70%'],
-          center: ['20%', '50%'],
+          radius: chartLayout.radius,
+          center: chartLayout.tokenCenter,
           avoidLabelOverlap: true,
           label: { show: false },
           labelLine: { show: false },
@@ -264,8 +276,8 @@ const UsageByModel: React.FC<UsageByModelProps> = ({
         {
           name: apiLabel,
           type: 'pie',
-          radius: ['50%', '70%'],
-          center: ['60%', '50%'],
+          radius: chartLayout.radius,
+          center: chartLayout.apiCenter,
           avoidLabelOverlap: true,
           label: { show: false },
           labelLine: { show: false },
@@ -283,7 +295,8 @@ const UsageByModel: React.FC<UsageByModelProps> = ({
     legendNames,
     token,
     tokenLabel,
-    apiLabel
+    apiLabel,
+    chartLayout
   ]);
 
   useEffect(() => {
@@ -334,13 +347,16 @@ const UsageByModel: React.FC<UsageByModelProps> = ({
   return (
     <UsageChartCard
       title={intl.formatMessage({ id: 'dashboard.usageByModel' })}
-      height={height + 52}
+      height={chartHeight + 52}
     >
-      <div style={{ position: 'relative', width: '100%', height }}>
+      <div
+        ref={measureRef}
+        style={{ position: 'relative', width: '100%', height: chartHeight }}
+      >
         {isEmpty && !isLoading ? (
           <div
             style={{
-              height,
+              height: chartHeight,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center'
@@ -353,22 +369,24 @@ const UsageByModel: React.FC<UsageByModelProps> = ({
             <Chart
               ref={chartRef as any}
               options={options as any}
-              height={height}
-              width="100%"
+              height={chartHeight}
+              width={containerWidth || '100%'}
             />
             <DonutCenter
-              left="20%"
-              top="50%"
+              left={chartLayout.tokenCenter[0]}
+              top={chartLayout.tokenCenter[1]}
               total={tokenTotal}
               label={tokenLabel}
               token={token}
+              valueFontSize={chartLayout.centerLabelFontSize}
             />
             <DonutCenter
-              left="60%"
-              top="50%"
+              left={chartLayout.apiCenter[0]}
+              top={chartLayout.apiCenter[1]}
               total={apiTotal}
               label={apiLabel}
               token={token}
+              valueFontSize={chartLayout.centerLabelFontSize}
             />
             {isLoading && (
               <div
@@ -399,7 +417,8 @@ const DonutCenter: React.FC<{
   total: number;
   label: string;
   token: GlobalToken;
-}> = ({ left, top, total, label, token }) => (
+  valueFontSize?: number;
+}> = ({ left, top, total, label, token, valueFontSize = 18 }) => (
   <div
     style={{
       position: 'absolute',
@@ -415,7 +434,7 @@ const DonutCenter: React.FC<{
   >
     <span
       style={{
-        fontSize: 18,
+        fontSize: valueFontSize,
         fontWeight: 600,
         color: token.colorText,
         lineHeight: 1.2

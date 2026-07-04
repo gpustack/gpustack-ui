@@ -1,3 +1,4 @@
+import useWindowResize from '@/hooks/use-window-resize';
 import { useIntl } from '@umijs/max';
 import { Card, Col, Row } from 'antd';
 import _ from 'lodash';
@@ -24,11 +25,15 @@ const renderCardItem = (data: {
 };
 const Overview: React.FC = () => {
   const intl = useIntl();
+  const { isMobile } = useWindowResize();
   const data = useContext(DashboardContext).resource_counts || {};
 
   return (
     <div>
-      <Row gutter={[20, 20]} className={styles.row}>
+      <Row
+        gutter={[isMobile ? 12 : 20, isMobile ? 12 : 20]}
+        className={styles.row}
+      >
         {overviewConfigs.map((config, index) => (
           <Col
             xs={{ flex: '100%' }}

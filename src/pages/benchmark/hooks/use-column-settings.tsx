@@ -96,32 +96,44 @@ const useColumnSettings = (options: {
   const [selectedColumns, setSelectedColumns] =
     React.useState<string[]>(defaultColumns);
 
-  const renderTitle = (
+  const buildColumnTitle = (
     title: React.ReactNode,
     options?: { subTitle?: React.ReactNode }
-  ): React.ReactNode => {
-    return (
-      <span>
-        <AutoTooltip
-          ghost
-          minWidth={20}
-          title={`${title} ${options?.subTitle || ''}`}
-        >
-          {title}
-        </AutoTooltip>
-        {options?.subTitle && (
-          <span className="sub-title">
-            <AutoTooltip
-              ghost
-              minWidth={20}
-              title={`${title} ${options?.subTitle || ''}`}
-            >
-              {options.subTitle}
-            </AutoTooltip>
-          </span>
-        )}
-      </span>
+  ) => {
+    const mobileTitle = options?.subTitle ? (
+      <>
+        <span>{title}</span>
+        <span className="sub-title">{options.subTitle}</span>
+      </>
+    ) : (
+      title
     );
+
+    return {
+      title: (
+        <span>
+          <AutoTooltip
+            ghost
+            minWidth={20}
+            title={`${title} ${options?.subTitle || ''}`}
+          >
+            {title}
+          </AutoTooltip>
+          {options?.subTitle && (
+            <span className="sub-title">
+              <AutoTooltip
+                ghost
+                minWidth={20}
+                title={`${title} ${options?.subTitle || ''}`}
+              >
+                {options.subTitle}
+              </AutoTooltip>
+            </span>
+          )}
+        </span>
+      ),
+      mobileTitle
+    };
   };
 
   const fieldList = [
@@ -141,7 +153,7 @@ const useColumnSettings = (options: {
 
   const resultColumns = [
     {
-      title: renderTitle(
+      ...buildColumnTitle(
         `${intl.formatMessage({ id: 'benchmark.detail.summary.latency' })}`,
         {
           subTitle: `${intl.formatMessage({ id: 'benchmark.table.avg' })} (s)`
@@ -158,7 +170,7 @@ const useColumnSettings = (options: {
       )
     },
     {
-      title: renderTitle('TTFT', {
+      ...buildColumnTitle('TTFT', {
         subTitle: `${intl.formatMessage({ id: 'benchmark.table.avg' })} (ms)`
       }),
       sorter: tableSorter(1),
@@ -172,7 +184,7 @@ const useColumnSettings = (options: {
       )
     },
     {
-      title: renderTitle('TPOT', {
+      ...buildColumnTitle('TPOT', {
         subTitle: `${intl.formatMessage({ id: 'benchmark.table.avg' })} (ms)`
       }),
       sorter: tableSorter(1),
@@ -186,7 +198,7 @@ const useColumnSettings = (options: {
       )
     },
     {
-      title: renderTitle('ITL', {
+      ...buildColumnTitle('ITL', {
         subTitle: `${intl.formatMessage({ id: 'benchmark.table.avg' })} (ms)`
       }),
       sorter: tableSorter(1),
@@ -201,6 +213,7 @@ const useColumnSettings = (options: {
     },
     {
       title: 'RPS',
+      mobileTitle: 'RPS',
       dataIndex: 'requests_per_second_mean',
       sorter: tableSorter(1),
       render: (text: string) => (
@@ -210,7 +223,7 @@ const useColumnSettings = (options: {
       )
     },
     {
-      title: renderTitle(
+      ...buildColumnTitle(
         `${intl.formatMessage({ id: 'benchmark.detail.throughput.totalToken' })}`,
         {
           subTitle: '(Tokens/s)'
@@ -233,7 +246,7 @@ const useColumnSettings = (options: {
       )
     },
     {
-      title: renderTitle(
+      ...buildColumnTitle(
         `${intl.formatMessage({
           id: 'benchmark.detail.throughput.inputToken'
         })}`,
@@ -251,7 +264,7 @@ const useColumnSettings = (options: {
       )
     },
     {
-      title: renderTitle(
+      ...buildColumnTitle(
         `${intl.formatMessage({
           id: 'benchmark.detail.throughput.outputToken'
         })}`,
@@ -269,7 +282,7 @@ const useColumnSettings = (options: {
       )
     },
     {
-      title: renderTitle(
+      ...buildColumnTitle(
         intl.formatMessage({ id: 'benchmark.detail.requests.total' })
       ),
       dataIndex: 'total_requests',
@@ -283,7 +296,7 @@ const useColumnSettings = (options: {
       unit: ''
     },
     {
-      title: renderTitle(
+      ...buildColumnTitle(
         intl.formatMessage({ id: 'benchmark.detail.requests.success' })
       ),
       dataIndex: 'request_successful',
@@ -297,7 +310,7 @@ const useColumnSettings = (options: {
       unit: ''
     },
     {
-      title: renderTitle(
+      ...buildColumnTitle(
         intl.formatMessage({ id: 'benchmark.detail.requests.failed' })
       ),
       dataIndex: 'request_errored',
@@ -311,7 +324,7 @@ const useColumnSettings = (options: {
       unit: ''
     },
     {
-      title: renderTitle(
+      ...buildColumnTitle(
         intl.formatMessage({ id: 'benchmark.detail.requests.incomplete' })
       ),
       dataIndex: 'request_incomplete',
@@ -325,7 +338,7 @@ const useColumnSettings = (options: {
       unit: ''
     },
     {
-      title: renderTitle(
+      ...buildColumnTitle(
         intl.formatMessage({
           id: 'benchmark.detail.requests.concurrency'
         })
@@ -340,7 +353,7 @@ const useColumnSettings = (options: {
       unit: ''
     },
     {
-      title: renderTitle(
+      ...buildColumnTitle(
         intl.formatMessage({
           id: 'benchmark.detail.requests.concurrency.max'
         })
@@ -366,6 +379,7 @@ const useColumnSettings = (options: {
           {intl.formatMessage({ id: 'clusters.title' })}
         </Typography.Text>
       ),
+      mobileTitle: intl.formatMessage({ id: 'clusters.title' }),
       dataIndex: 'cluster_id',
       render: (text: number) => (
         <AutoTooltip ghost minWidth={20}>
@@ -382,6 +396,7 @@ const useColumnSettings = (options: {
           {intl.formatMessage({ id: 'benchmark.detail.modelName' })}
         </Typography.Text>
       ),
+      mobileTitle: intl.formatMessage({ id: 'benchmark.detail.modelName' }),
       dataIndex: 'model_name',
       sorter: tableSorter(1),
       render: (text: string) => (
@@ -399,6 +414,7 @@ const useColumnSettings = (options: {
           {intl.formatMessage({ id: 'benchmark.form.profile' })}
         </Typography.Text>
       ),
+      mobileTitle: intl.formatMessage({ id: 'benchmark.form.profile' }),
       dataIndex: 'profile',
       render: (text: string) => (
         <AutoTooltip ghost minWidth={20}>
@@ -408,7 +424,9 @@ const useColumnSettings = (options: {
       )
     },
     {
-      title: renderTitle(intl.formatMessage({ id: 'benchmark.table.dataset' })),
+      ...buildColumnTitle(
+        intl.formatMessage({ id: 'benchmark.table.dataset' })
+      ),
       dataIndex: 'dataset_name',
       render: (text: string) => (
         <AutoTooltip ghost minWidth={20}>
@@ -417,7 +435,7 @@ const useColumnSettings = (options: {
       )
     },
     {
-      title: renderTitle(intl.formatMessage({ id: 'benchmark.table.gpu' })),
+      ...buildColumnTitle(intl.formatMessage({ id: 'benchmark.table.gpu' })),
       dataIndex: 'gpu_summary',
       render: (text: string) => (
         <AutoTooltip ghost minWidth={20}>
@@ -426,7 +444,7 @@ const useColumnSettings = (options: {
       )
     },
     {
-      title: renderTitle(intl.formatMessage({ id: 'common.table.status' })),
+      ...buildColumnTitle(intl.formatMessage({ id: 'common.table.status' })),
       width: 120,
       dataIndex: 'state',
       render: (value: number, record: ListItem) => (
@@ -434,7 +452,7 @@ const useColumnSettings = (options: {
       )
     },
     {
-      title: renderTitle(
+      ...buildColumnTitle(
         intl.formatMessage({ id: 'benchmark.table.requestRate' })
       ),
       dataIndex: 'request_rate',
@@ -445,7 +463,9 @@ const useColumnSettings = (options: {
       )
     },
     {
-      title: renderTitle(intl.formatMessage({ id: 'common.table.createTime' })),
+      ...buildColumnTitle(
+        intl.formatMessage({ id: 'common.table.createTime' })
+      ),
       dataIndex: 'created_at',
       sorter: tableSorter(6),
       render: (value: string) => (
@@ -458,7 +478,6 @@ const useColumnSettings = (options: {
 
   const handleOnChange = (columns: string[]) => {
     setSelectedColumns(columns);
-    console.log('selected columns:', columns);
   };
 
   const handleOnReset = () => {

@@ -1,3 +1,5 @@
+import useWindowResize from '@/hooks/use-window-resize';
+import { useInitialCollapsed } from '@gpustack/core-ui';
 import { Spin } from 'antd';
 import React, {
   forwardRef,
@@ -32,9 +34,10 @@ interface MessageProps {
 
 const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   const { modelList } = props;
+  const { isMobile } = useWindowResize();
   const [systemMessage, setSystemMessage] = useState('');
   const [show, setShow] = useState(false);
-  const [collapse, setCollapse] = useState(false);
+  const [collapse, setCollapse] = useInitialCollapsed();
   const scroller = useRef<any>(null);
 
   const {
@@ -155,10 +158,11 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         )}
         <div className="ground-left-footer">
           <MessageInput
-            defaultSize={{
-              minRows: 5,
-              maxRows: 5
-            }}
+            defaultSize={
+              isMobile
+                ? { minRows: 3, maxRows: 10 }
+                : { minRows: 5, maxRows: 5 }
+            }
             actions={['clear', 'layout', 'role', 'upload', 'add', 'paste']}
             defaultChecked={false}
             loading={loading}
@@ -171,7 +175,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
           />
         </div>
       </div>
-      <RightContainer collapsed={collapse}>
+      <RightContainer collapsed={collapse} onDismiss={() => setCollapse(true)}>
         <DataForm
           ref={formRef}
           onValuesChange={handleOnValuesChange}

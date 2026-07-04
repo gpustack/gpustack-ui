@@ -1,8 +1,10 @@
 import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import {
+  MobileCardList,
   RowChildren,
   Table as SealTable,
-  TableProvider
+  TableProvider,
+  useWindowResize
 } from '@gpustack/core-ui';
 import useMemoizedFn from 'ahooks/lib/useMemoizedFn';
 import { Col, Row } from 'antd';
@@ -35,6 +37,7 @@ const GPURowWrapper = styled.div`
 const Environment: React.FC = () => {
   const GPUColumns = useGPUColumns();
   const workerColumns = useWorkerColumns();
+  const { isMobile } = useWindowResize();
   const { detailData } = useDetailContext();
   const { snapshot } = detailData;
 
@@ -140,6 +143,14 @@ const Environment: React.FC = () => {
   });
 
   const renderChildren = useMemoizedFn((list: any[]) => {
+    if (isMobile) {
+      return (
+        <div style={{ padding: '8px 0' }}>
+          <MobileCardList columns={GPUColumns} records={list} rowKey="id" />
+        </div>
+      );
+    }
+
     return (
       <div style={{ borderRadius: 'var(--ant-table-header-border-radius)' }}>
         <GPUHeader columns={GPUColumns}></GPUHeader>

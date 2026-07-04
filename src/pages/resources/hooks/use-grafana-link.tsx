@@ -2,15 +2,17 @@ import { systemConfigAtom } from '@/atoms/system';
 import { GPUSTACK_API_BASE_URL } from '@/config/settings';
 import { GrafanaIcon } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Button } from 'antd';
+import { Button, Tooltip } from 'antd';
 import { useAtomValue } from 'jotai';
 
 const useGranfanaLink = (options: {
   type: 'model' | 'worker' | 'instance' | 'cluster';
+  iconOnly?: boolean;
 }) => {
   const intl = useIntl();
   const systemConfig = useAtomValue(systemConfigAtom);
   const grafanaUrl = systemConfig?.grafana_url || 'grafana';
+  const { iconOnly = false } = options;
 
   // for worker/model/instance/cluster item entry
   const goToModelGrafana = (row: { id: number }) => {
@@ -74,14 +76,26 @@ const useGranfanaLink = (options: {
 
   const ActionButton = () => {
     if (systemConfig?.showMonitoring) {
-      return (
+      const label = intl.formatMessage({ id: 'resources.metrics.details' });
+      const button = iconOnly ? (
+        <Button
+          onClick={handleClick}
+          icon={<GrafanaIcon style={{ width: 16, height: 16 }}></GrafanaIcon>}
+        />
+      ) : (
         <Button
           onClick={handleClick}
           icon={<GrafanaIcon style={{ width: 16, height: 16 }}></GrafanaIcon>}
         >
-          {intl.formatMessage({ id: 'resources.metrics.details' })}
+          {label}
         </Button>
       );
+
+      if (iconOnly) {
+        return <Tooltip title={label}>{button}</Tooltip>;
+      }
+
+      return button;
     }
     return null;
   };

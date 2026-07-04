@@ -8,6 +8,16 @@ import { defineConfig, globalIgnores } from 'eslint/config';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
+const formModalFiles = [
+  'src/pages/**/forms/**/*.{ts,tsx}',
+  'src/pages/**/*-modal/**/*.{ts,tsx}',
+  'src/pages/**/*-modal.tsx',
+  'src/pages/**/components/*modal*.tsx',
+  'src/pages/**/components/add-*.tsx',
+  'src/pages/**/components/deploy-*.tsx',
+  'src/pages/**/components/update-*.tsx'
+];
+
 export default defineConfig([
   globalIgnores([
     'public/static/',
@@ -69,11 +79,25 @@ export default defineConfig([
       'react-hooks/refs': 'off',
       'react-hooks/use-memo': 'off',
       'react-hooks/immutability': 'off',
-      'no-unsafe-optional-chaining': 'off',
+      'no-unsafe-optional-chaining': 'warn',
       'no-empty': 'off',
       'no-constant-condition': 'off',
       'no-prototype-builtins': 'off',
       'no-multiple-empty-lines': ['error', { max: 1, maxEOF: 0, maxBOF: 0 }]
+    }
+  },
+  {
+    files: ['config/**/*.{ts,js}'],
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off'
+    }
+  },
+  {
+    files: formModalFiles,
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'warn',
+      'react-hooks/refs': 'warn',
+      'no-unsafe-optional-chaining': 'warn'
     }
   }
 ]);

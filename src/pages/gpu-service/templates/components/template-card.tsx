@@ -56,7 +56,7 @@ const matchImageLogo = (
   isDark: boolean
 ): { logo: string; type: string } | null => {
   if (!image) return null;
-  const logoMap = imageLogoLightMap;
+  const logoMap = isDark ? imageLogoDarkMap : imageLogoLightMap;
   const lower = image.toLowerCase();
   let matched: keyof typeof logoMap | null = null;
   let earliest = Infinity;

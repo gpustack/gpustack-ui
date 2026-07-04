@@ -282,30 +282,36 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
 
       const fallbackCpu = resources.cpu;
 
-      // Sliced mode: scale a single card's unit resources by the chosen
-      // percentage (floored) — both CPU and RAM. Whole/CPU mode: multiply the
-      // unit by the count.
       const percentage = _.toNumber(
         resources.acceleratorSlicedMemoryPercentage
       );
       const sliced = isGPUType && percentage > 0;
       const wholeFactor = isGPUType ? accelerator : cpuCount;
 
-      const scale = (num: number, unit: string) =>
-        sliced
-          ? `${Math.max(1, _.floor((num * percentage) / 100))}${unit}`
-          : `${wholeFactor * num}${unit}`;
+      // Sliced mode: scale a single card's unit resources by the chosen
+      // percentage. Scale CPU in millicores and RAM in MiB so fractional
+      // slices stay precise and k8s-valid (integers) — e.g. 10% of a 4-core /
+      // 16Gi card → 400m / 1638Mi, not a rounded-up 1 core / 1Gi.
+      if (sliced && unitResourcesParsed) {
+        const cpuCores = unitResourcesParsed.cpu?.cores ?? 0;
+        const ramValue = unitResourcesParsed.ram?.value ?? 0;
+        return {
+          cpu: `${Math.max(1, _.floor((cpuCores * 1000 * percentage) / 100))}m`,
+          ram: `${Math.max(1, _.floor((ramValue * 1024 * percentage) / 100))}Mi`
+        };
+      }
 
+      // Whole / CPU mode: multiply the unit by the count.
       return {
         cpu: cpuNum
-          ? scale(cpuNum, unitResourcesParsed?.cpu?.unit || '')
+          ? `${wholeFactor * cpuNum}${unitResourcesParsed?.cpu?.unit || ''}`
           : // Don't stringify an unset value — `${undefined}` becomes the
             // literal "undefined", which fails k8s quantity validation.
             fallbackCpu
             ? `${fallbackCpu}`
             : undefined,
         ram: ramNum
-          ? scale(ramNum, unitResourcesParsed?.ram?.unit || '')
+          ? `${wholeFactor * ramNum}${unitResourcesParsed?.ram?.unit || ''}`
           : resources.ram
       };
     };
@@ -329,13 +335,16 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       form.setFieldsValue({
         spec: {
           resources: {
+            // Display the precise (rounded) fractional values — the inputs are
+            // disabled, so decimals are fine and match the submitted
+            // millicore / MiB allocation better than a floored integer.
             cpu:
               cpuCores != null && percentage > 0
-                ? Math.max(1, _.floor((cpuCores * percentage) / 100))
+                ? _.round((cpuCores * percentage) / 100, 2)
                 : null,
             ram:
               ramValue != null && percentage > 0
-                ? Math.max(1, _.floor((ramValue * percentage) / 100))
+                ? _.round((ramValue * percentage) / 100, 2)
                 : null
           }
         }

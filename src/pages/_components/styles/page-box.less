@@ -87,14 +87,39 @@
       flex-shrink: 0;
     }
 
+    .menuButton {
+      display: none;
+      flex-shrink: 0;
+      align-items: center;
+    }
+
     .leftSlot,
     .rightSlot {
-      display: contents;
+      display: flex;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .leftSlot {
+      flex: 0 0 auto;
+
+      &:not(:empty) {
+        flex: 1 1 auto;
+        overflow: hidden;
+      }
+    }
+
+    .rightSlot {
+      flex-shrink: 0;
     }
 
     .defaultTitle {
       display: inline-flex;
       align-items: center;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     // Portal-driven visibility: when a page's HeaderLeft / HeaderRight
@@ -108,6 +133,76 @@
 
     .rightSlot:empty ~ .divider {
       display: none;
+    }
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .containerWrapper {
+    --layout-content-inlinepadding: 16px;
+
+    .contentWrapper:has(.play-ground-root--mobile) {
+      flex: 1;
+      min-height: 0;
+      overflow: hidden !important;
+
+      :global(
+        [data-overlayscrollbars-viewport]:has(.play-ground-root--mobile)
+      ) {
+        display: flex !important;
+        flex-direction: column;
+        height: 100% !important;
+        min-height: 100%;
+
+        > div {
+          flex: 1;
+          min-height: 0;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+
+          > div {
+            flex: 1;
+            min-height: 0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+          }
+        }
+      }
+    }
+
+    .title {
+      flex-wrap: wrap;
+      height: auto;
+      min-height: 56px;
+      row-gap: 8px;
+      padding-block: 8px;
+
+      .menuButton {
+        display: flex;
+      }
+
+      .left {
+        flex-wrap: nowrap;
+        overflow: visible;
+      }
+
+      .leftSlot:not(:empty) {
+        flex: 1 1 auto;
+        min-width: 0;
+        overflow: hidden;
+      }
+
+      .right {
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        max-width: 100%;
+      }
+
+      .divider {
+        display: none !important;
+      }
     }
   }
 }

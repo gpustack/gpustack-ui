@@ -3,12 +3,14 @@ import PluginExtraField from '@/components/plugin-extra-fields';
 import VersionInfo, { modalConfig } from '@/components/version-info';
 import externalLinks from '@/constants/external-links';
 import useBodyScroll from '@/hooks/use-body-scroll';
+import useWindowResize from '@/hooks/use-window-resize';
 import { logout } from '@/pages/login/apis';
 import { useModel } from '@@/plugin-model';
 import {
   DiscordOutlined,
   GithubOutlined,
   HomeOutlined,
+  InfoCircleOutlined,
   ReadOutlined
 } from '@ant-design/icons';
 import { DropdownActions, IconFont } from '@gpustack/core-ui';
@@ -98,6 +100,7 @@ const CustomItem = styled.div`
 
 export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
   const { isDarkTheme } = props;
+  const { isMobile } = useWindowResize();
   const { saveScrollHeight, restoreScrollHeight } = useBodyScroll();
   const [modal, contextHolder] = Modal.useModal();
   const [version] = useAtom(GPUStackVersionAtom);
@@ -189,20 +192,50 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
   ];
 
   const helpMenu = {
-    items: helpList.map((item) => ({
-      key: item.key,
-      label: (
-        <a
-          className="flex flex-center gap-8"
-          href={item.url}
-          target="_blank"
-          rel="noreferrer"
-        >
-          {item.icon}
-          {item.label}
-        </a>
-      )
-    }))
+    items: [
+      ...helpList.map((item) => ({
+        key: item.key,
+        label: (
+          <a
+            className="flex flex-center gap-8"
+            href={item.url}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {item.icon}
+            {item.label}
+          </a>
+        )
+      })),
+      ...(isMobile
+        ? [
+            {
+              key: 'version',
+              label: (
+                <span className="flex flex-center gap-8">
+                  <InfoCircleOutlined />
+                  <span>{version.version}</span>
+                  {showUpgrade && (
+                    <span
+                      style={{
+                        padding: '2px 6px',
+                        fontSize: 10,
+                        lineHeight: 1.2,
+                        color: '#fff',
+                        backgroundColor: 'var(--ant-orange-5)',
+                        borderRadius: '6px 6px 6px 0'
+                      }}
+                    >
+                      {intl.formatMessage({ id: 'common.text.new' })}
+                    </span>
+                  )}
+                </span>
+              ),
+              onClick: showVersion
+            }
+          ]
+        : [])
+    ]
   };
 
   const userMenu = {
@@ -258,41 +291,56 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
   };
 
   return (
-    <Wrapper>
+    <Wrapper style={isMobile ? { gap: 12 } : undefined}>
       {contextHolder}
       <PluginExtraField name="OrgSwitcher" isDarkTheme={isDarkTheme} />
-      {process.env.ENABLE_ENTERPRISE !== 'true' && <GithubStar />}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center'
-        }}
-      >
-        <Button
-          type="text"
-          size="small"
-          onClick={showVersion}
+      {process.env.ENABLE_ENTERPRISE !== 'true' && !isMobile && <GithubStar />}
+      {!isMobile && (
+        <div
           style={{
-            color: 'var(--ant-color-text-tertiary)'
+            display: 'flex',
+            alignItems: 'center'
           }}
         >
-          {version.version}
-        </Button>
-        {showUpgrade && (
-          <NewLabel>
-            <span className="text">
-              {intl.formatMessage({ id: 'common.text.new' })}
-            </span>
-          </NewLabel>
-        )}
-      </div>
+          <Button
+            type="text"
+            size="small"
+            onClick={showVersion}
+            style={{
+              color: 'var(--ant-color-text-tertiary)'
+            }}
+          >
+            {version.version}
+          </Button>
+          {showUpgrade && (
+            <NewLabel>
+              <span className="text">
+                {intl.formatMessage({ id: 'common.text.new' })}
+              </span>
+            </NewLabel>
+          )}
+        </div>
+      )}
       <DropdownActions menu={{ ...helpMenu }} popupRender={helpPopupRender}>
-        <IconWrapper>
+        <IconWrapper style={{ position: 'relative' }}>
           <IconFont
             type="icon-help"
             className="font-size-20"
             style={{ color: 'var(--ant-color-text-tertiary)' }}
           />
+          {isMobile && showUpgrade && (
+            <span
+              style={{
+                position: 'absolute',
+                top: 0,
+                right: 0,
+                width: 8,
+                height: 8,
+                borderRadius: 4,
+                backgroundColor: 'var(--ant-orange-5)'
+              }}
+            />
+          )}
         </IconWrapper>
       </DropdownActions>
       <PluginExtraField name="GlobalSettings" />

@@ -1,10 +1,16 @@
 import { PageAction } from '@/config';
 import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import useTableFetch from '@/hooks/use-table-fetch';
-import { DeleteModal, FilterBar, IconFont, NoResult } from '@gpustack/core-ui';
+import {
+  DeleteModal,
+  FilterBar,
+  IconFont,
+  NoResult,
+  AntdResponsiveTable as Table
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { ConfigProvider, message, Table } from 'antd';
+import { ConfigProvider, message } from 'antd';
 import _ from 'lodash';
 import PageBox from '../_components/page-box';
 import {
@@ -169,7 +175,7 @@ const MaasProvider: React.FC = () => {
             }}
             rowSelection={rowSelection}
             columns={columns}
-            scroll={{ x: 900 }}
+            scroll={{ x: 'max-content' }}
             onChange={handleTableChange}
             pagination={{
               size: 'middle',

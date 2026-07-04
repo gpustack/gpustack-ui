@@ -5,7 +5,11 @@ import {
   QuestionCircleOutlined,
   SendOutlined
 } from '@ant-design/icons';
-import { AlertInfo, useOverlayScroller } from '@gpustack/core-ui';
+import {
+  AlertInfo,
+  useInitialCollapsed,
+  useOverlayScroller
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Checkbox, Input, Spin, Tag, Tooltip, Typography } from 'antd';
 import _ from 'lodash';
@@ -63,7 +67,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
   const [tokenResult, setTokenResult] = useState<any>(null);
-  const [collapse, setCollapse] = useState(false);
+  const [collapse, setCollapse] = useInitialCollapsed();
   const scroller = useRef<any>(null);
   const inputListRef = useRef<any>(null);
   const messageListLengthCache = useRef<number>(0);
@@ -602,7 +606,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
           </div>
         </div>
       </div>
-      <RightContainer collapsed={collapse}>
+      <RightContainer collapsed={collapse} onDismiss={() => setCollapse(true)}>
         <DataForm
           ref={formRef}
           onValuesChange={onValuesChange}

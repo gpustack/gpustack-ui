@@ -1,11 +1,11 @@
-import breakpoints from '@/config/breakpoints';
 import HotKeys from '@/config/hotkeys';
 import useWindowResize from '@/hooks/use-window-resize';
 import { modelCategoriesMap } from '@/pages/llmodels/config';
 import { DiffOutlined, HighlightOutlined } from '@ant-design/icons';
+import { PageHeaderTitle, ResponsiveSegmented } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { Segmented, Tabs, TabsProps } from 'antd';
+import { Tabs, TabsProps } from 'antd';
 import _ from 'lodash';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -27,7 +27,7 @@ const TabsValueMap = {
 
 const TextToImages: React.FC = () => {
   const intl = useIntl();
-  const { size } = useWindowResize();
+  const { isMobile } = useWindowResize();
   const [activeKey, setActiveKey] = useState(TabsValueMap.Tab1);
   const groundTabRef1 = useRef<any>(null);
   const groundTabRef2 = useRef<any>(null);
@@ -82,17 +82,6 @@ const TextToImages: React.FC = () => {
   }, [modelList]);
 
   useEffect(() => {
-    if (size.width < breakpoints.lg) {
-      if (!groundTabRef1.current?.collapse) {
-        groundTabRef1.current?.setCollapse?.();
-      }
-      if (!groundTabRef2.current?.collapse) {
-        groundTabRef2.current?.setCollapse?.();
-      }
-    }
-  }, [size.width]);
-
-  useEffect(() => {
     const getModelList = async () => {
       try {
         const params = {
@@ -125,28 +114,6 @@ const TextToImages: React.FC = () => {
     fetchData();
   }, []);
 
-  const header = useMemo(() => {
-    return {
-      title: (
-        <div className="flex items-center">
-          <span className="font-600">
-            {intl.formatMessage({ id: 'menu.playground.text2images' })}
-          </span>
-          {
-            <Segmented
-              options={optionsList}
-              size="middle"
-              className="m-l-24 font-600"
-              value={activeKey}
-              onChange={(key) => setActiveKey(key)}
-              style={{ fontSize: 13 }}
-            ></Segmented>
-          }
-        </div>
-      )
-    };
-  }, [activeKey, optionsList, intl]);
-
   useHotkeys(
     HotKeys.RIGHT.join(','),
     () => {
@@ -157,27 +124,31 @@ const TextToImages: React.FC = () => {
     }
   );
 
-  usePageContentStyle({ padding: 0 });
+  usePageContentStyle(
+    isMobile
+      ? {
+          padding: 0,
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          flex: 1,
+          minHeight: 0
+        }
+      : { padding: 0 }
+  );
 
   return (
     <>
       <HeaderLeft>
-        <div className="flex items-center">
-          <span className="font-600 flex-center">
-            {intl.formatMessage({ id: 'menu.playground.text2images' })}
-          </span>
-          <Segmented
-            shape="round"
-            style={{
-              backgroundColor: 'var(--ant-color-fill-secondary)'
-            }}
-            size="middle"
-            className="m-l-24 font-400"
+        <PageHeaderTitle
+          title={intl.formatMessage({ id: 'menu.playground.text2images' })}
+        >
+          <ResponsiveSegmented
             options={optionsList}
             value={activeKey}
             onChange={(key) => setActiveKey(key)}
-          ></Segmented>
-        </div>
+          />
+        </PageHeaderTitle>
       </HeaderLeft>
       <HeaderRight>
         <ViewCodeButtons
@@ -187,9 +158,17 @@ const TextToImages: React.FC = () => {
           key="view-code-buttons"
         ></ViewCodeButtons>
       </HeaderRight>
-      <div className="play-ground">
-        <div className="chat">
-          <Tabs items={items} activeKey={activeKey}></Tabs>
+      <div
+        className={
+          isMobile
+            ? 'play-ground-root play-ground-root--mobile'
+            : 'play-ground-root'
+        }
+      >
+        <div className="play-ground">
+          <div className="chat">
+            <Tabs items={items} activeKey={activeKey}></Tabs>
+          </div>
         </div>
       </div>
     </>

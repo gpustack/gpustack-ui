@@ -1,5 +1,7 @@
+import useWindowResize from '@/hooks/use-window-resize';
 import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
 import { AutoTooltip, RowChildren } from '@gpustack/core-ui';
+import { useIntl } from '@umijs/max';
 import { Col, Row } from 'antd';
 import dayjs from 'dayjs';
 import React from 'react';
@@ -11,6 +13,7 @@ import DistributeInfoCell from '../instance-cells/distribute-info-cell';
 import DownloadingStatusCell from '../instance-cells/downloading-status-cell';
 import InstanceStatusCell from '../instance-cells/instance-status-cell';
 import NameCell from '../instance-cells/name-cell';
+
 interface InstanceItemProps {
   instanceData: ModelInstanceListItem;
   workerList: WorkerListItem[];
@@ -19,13 +22,91 @@ interface InstanceItemProps {
   handleChildSelect: (val: string, item: ModelInstanceListItem) => void;
 }
 
-const InstanceItem: React.FC<InstanceItemProps> = ({
+const InstanceItemMobile: React.FC<InstanceItemProps> = ({
   instanceData,
   workerList,
   modelData,
   defaultOpenId,
   handleChildSelect
 }) => {
+  const intl = useIntl();
+
+  return (
+    <RowChildren>
+      <div className="instance-item-mobile-card">
+        <div className="instance-item-mobile-header">
+          <NameCell
+            record={instanceData}
+            modelData={modelData}
+            defaultOpenId={defaultOpenId}
+          ></NameCell>
+          <ActionsCell
+            record={instanceData}
+            modelData={modelData}
+            onSelect={handleChildSelect}
+          ></ActionsCell>
+        </div>
+        <div className="instance-item-mobile-body">
+          <div className="instance-item-mobile-field">
+            <span className="instance-item-mobile-label">
+              {intl.formatMessage({ id: 'common.table.status' })}
+            </span>
+            <span className="instance-item-mobile-value">
+              <InstanceStatusCell
+                record={instanceData}
+                onSelect={handleChildSelect}
+              />
+              <DownloadingStatusCell
+                backend={modelData?.backend}
+                distributed_servers={instanceData.distributed_servers}
+                workerList={workerList}
+                record={instanceData}
+              ></DownloadingStatusCell>
+            </span>
+          </div>
+          <div className="instance-item-mobile-field">
+            <span className="instance-item-mobile-label">
+              {intl.formatMessage({ id: 'resources.worker' })}
+            </span>
+            <span className="instance-item-mobile-value instance-item-mobile-value-stack">
+              <CPUOffloadingCell record={instanceData}></CPUOffloadingCell>
+              <DistributeInfoCell
+                record={instanceData}
+                workerList={workerList}
+              ></DistributeInfoCell>
+            </span>
+          </div>
+          <div className="instance-item-mobile-field">
+            <span className="instance-item-mobile-label">
+              {intl.formatMessage({ id: 'common.table.createTime' })}
+            </span>
+            <span className="instance-item-mobile-value">
+              <AutoTooltip ghost>
+                {dayjs(instanceData.created_at).format('YYYY-MM-DD HH:mm:ss')}
+              </AutoTooltip>
+            </span>
+          </div>
+        </div>
+      </div>
+    </RowChildren>
+  );
+};
+
+const InstanceItem: React.FC<InstanceItemProps> = (props) => {
+  const { isMobile } = useWindowResize();
+
+  if (isMobile) {
+    return <InstanceItemMobile {...props} />;
+  }
+
+  const {
+    instanceData,
+    workerList,
+    modelData,
+    defaultOpenId,
+    handleChildSelect
+  } = props;
+
   return (
     <div style={{ borderRadius: 'var(--ant-table-header-border-radius)' }}>
       <RowChildren>

@@ -1,3 +1,4 @@
+import { useWindowResize } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Divider } from 'antd';
 import React from 'react';
@@ -16,11 +17,12 @@ const Container = styled.div`
 
 const Summary: React.FC = () => {
   const intl = useIntl();
+  const { isMobile } = useWindowResize();
   return (
     <Container>
       <Section
         title={intl.formatMessage({ id: 'benchmark.detail.summary.results' })}
-        minHeight={450}
+        minHeight={isMobile ? 200 : 450}
       >
         <MetricsResult />
         <Divider />

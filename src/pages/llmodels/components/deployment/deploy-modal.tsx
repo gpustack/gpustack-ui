@@ -1,14 +1,15 @@
 import { getRequestId } from '@/atoms/models';
 import { PageActionType } from '@/config/types';
 import useDeferredRequest from '@/hooks/use-deferred-request';
+import useWindowResize from '@/hooks/use-window-resize';
 import { ClusterStatusValueMap } from '@/pages/cluster-management/config';
-import { ColumnWrapper, GSDrawer, ModalFooter } from '@gpustack/core-ui';
+import { getDrawerWidth } from '@/utils/drawer-width';
+import { ColumnWrapper, GSDrawer } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { Button } from 'antd';
 import _ from 'lodash';
 import { FC, useEffect, useMemo, useRef, useState } from 'react';
-import styled from 'styled-components';
 import {
   defaultFormValues,
   DeployFormKeyMap,
@@ -28,8 +29,9 @@ import useCheckBackend from '../../hooks/use-check-backend';
 import CompatibilityAlert from '../compatible-alert';
 import HFModelFile from '../model-source/hf-model-file';
 import ModelCard from '../model-source/model-card';
+import OnlineModelLayout from '../model-source/online-model-layout';
+import OnlineModelModalFooter from '../model-source/online-model-modal-footer';
 import SearchModel from '../model-source/search-model';
-import Separator from '../separator';
 import TitleWrapper from '../title-wrapper';
 
 const pickFieldsFromSpec = ['backend_version', 'backend_parameters', 'env'];
@@ -42,29 +44,6 @@ const dropFieldsFromForm = [
   'backend'
 ];
 const resetFields = ['worker_selector', 'env'];
-
-const ModalFooterStyle = {
-  padding: '16px 24px 8px',
-  display: 'flex',
-  justifyContent: 'flex-end'
-};
-
-const Container = styled.div`
-  display: flex;
-  height: 100%;
-`;
-
-const ColWrapper = styled.div`
-  display: flex;
-  flex: 1;
-  max-width: 33.33%;
-`;
-
-const FormWrapper = styled.div`
-  display: flex;
-  flex: 1;
-  maxwidth: 100%;
-`;
 
 type AddModalProps = {
   title: string;
@@ -129,9 +108,11 @@ const AddModal: FC<AddModalProps> = (props) => {
     submitAnyway
   } = useCheckCompatibility();
   const { onSelectModel } = useSelectModel({ gpuOptions: [] });
-  const form = useRef<any>({});
+  const form = useRef<any>(null);
   const intl = useIntl();
+  const { size } = useWindowResize();
   const [selectedModel, setSelectedModel] = useState<any>({});
+  const [selectedFileName, setSelectedFileName] = useState<string>('');
   const [collapsed, setCollapsed] = useState<boolean>(false);
   const [isGGUF, setIsGGUF] = useState<boolean>(false);
   const modelFileRef = useRef<any>(null);
@@ -275,6 +256,8 @@ const AddModal: FC<AddModalProps> = (props) => {
       flatBackendOptions: flatBackendOptionsRef.current
     });
 
+    setSelectedFileName(item.fakeName || '');
+
     form.current?.setFieldsValue?.({
       ..._.omit(modelInfo, ['name']),
       huggingface_filename: item.fakeName,
@@ -331,6 +314,7 @@ const AddModal: FC<AddModalProps> = (props) => {
       return;
     }
     setIsGGUF(item.isGGUF);
+    setSelectedFileName('');
     clearCacheFormValues();
     unlockWarningStatus();
     setEvaluteState({
@@ -339,7 +323,7 @@ const AddModal: FC<AddModalProps> = (props) => {
     });
 
     // TODO
-    form.current?.resetFields(resetFields);
+    form.current?.resetFields?.(resetFields);
     const modelInfo = onSelectModel(item, {
       source: props.source,
       flatBackendOptions: flatBackendOptionsRef.current
@@ -376,7 +360,7 @@ const AddModal: FC<AddModalProps> = (props) => {
     }
 
     if (manual) {
-      form.current?.resetFields(resetFields);
+      form.current?.resetFields?.(resetFields);
     }
     // If the item is empty
     setIsGGUF(item.isGGUF);
@@ -451,7 +435,7 @@ const AddModal: FC<AddModalProps> = (props) => {
   };
 
   const handleBackendChange = async (backend: string) => {
-    const data = form.current.form.getFieldsValue?.();
+    const data = form.current?.form?.getFieldsValue?.();
     const res = handleBackendChangeBefore(data);
     if (res.show) {
       return;
@@ -558,6 +542,16 @@ const AddModal: FC<AddModalProps> = (props) => {
     return warningStatus.show && warningStatus.type !== 'success';
   }, [warningStatus.show, warningStatus.type]);
 
+  const showOnlinePanels =
+    SEARCH_SOURCE.includes(props.source) && deploymentType === 'modelList';
+
+  const drawerWidth = getDrawerWidth(size.width, width);
+
+  const hasSelectedModel = !!selectedModel?.name;
+
+  const canProceedFromDetail =
+    hasSelectedModel && (!isGGUF || !!selectedFileName);
+
   // This is only a placeholder for querying the model or file during the transition period.
   const displayEvaluateStatus = (
     params: MessageStatus,
@@ -584,6 +578,7 @@ const AddModal: FC<AddModalProps> = (props) => {
     }
     return () => {
       setSelectedModel({});
+      setSelectedFileName('');
       setWarningStatus({
         show: false,
         title: '',
@@ -604,54 +599,50 @@ const AddModal: FC<AddModalProps> = (props) => {
       }}
       keyboard={false}
       styles={{
-        wrapper: { width: width }
+        wrapper: { width: drawerWidth }
       }}
       footer={false}
     >
-      <Container>
-        {SEARCH_SOURCE.includes(props.source) &&
-          deploymentType === 'modelList' && (
-            <>
-              <ColWrapper>
-                <SearchModel
-                  hasLinuxWorker={hasLinuxWorker}
-                  modelSource={props.source}
-                  onSelectModel={handleOnSelectModel}
-                  onSelectModelAfterEvaluate={handleOnSelectModelAfterEvaluate}
-                  clusterId={
-                    form.current?.getFieldValue?.('cluster_id') ||
-                    initClusterId()
-                  }
-                  displayEvaluateStatus={displayEvaluateStatus}
-                  gpuOptions={[]}
-                ></SearchModel>
-                <Separator></Separator>
-              </ColWrapper>
-              <ColWrapper>
-                <ColumnWrapper styles={{ container: { padding: 0 } }}>
-                  <ModelCard
-                    selectedModel={selectedModel}
-                    onCollapse={setCollapsed}
-                    collapsed={collapsed}
-                    modelSource={props.source}
-                    isGGUF={isGGUF}
-                    setIsGGUF={handleSetIsGGUF}
-                  ></ModelCard>
-                  {isGGUF && (
-                    <HFModelFile
-                      ref={modelFileRef}
-                      selectedModel={selectedModel}
-                      modelSource={props.source}
-                      onSelectFile={handleSelectModelFile}
-                      collapsed={collapsed}
-                    ></HFModelFile>
-                  )}
-                </ColumnWrapper>
-                <Separator></Separator>
-              </ColWrapper>
-            </>
-          )}
-        <FormWrapper>
+      <OnlineModelLayout
+        open={open}
+        showOnlinePanels={showOnlinePanels}
+        hasSelectedModel={hasSelectedModel}
+        canProceedFromDetail={canProceedFromDetail}
+        searchPanel={
+          <SearchModel
+            hasLinuxWorker={hasLinuxWorker}
+            modelSource={props.source}
+            onSelectModel={handleOnSelectModel}
+            onSelectModelAfterEvaluate={handleOnSelectModelAfterEvaluate}
+            clusterId={
+              form.current?.getFieldValue?.('cluster_id') || initClusterId()
+            }
+            displayEvaluateStatus={displayEvaluateStatus}
+            gpuOptions={[]}
+          />
+        }
+        detailPanel={
+          <ColumnWrapper styles={{ container: { padding: 0 } }}>
+            <ModelCard
+              selectedModel={selectedModel}
+              onCollapse={setCollapsed}
+              collapsed={collapsed}
+              modelSource={props.source}
+              isGGUF={isGGUF}
+              setIsGGUF={handleSetIsGGUF}
+            />
+            {isGGUF && (
+              <HFModelFile
+                ref={modelFileRef}
+                selectedModel={selectedModel}
+                modelSource={props.source}
+                onSelectFile={handleSelectModelFile}
+                collapsed={collapsed}
+              />
+            )}
+          </ColumnWrapper>
+        }
+        formPanel={
           <ColumnWrapper
             styles={{
               container: { paddingBlock: 0 }
@@ -668,8 +659,8 @@ const AddModal: FC<AddModalProps> = (props) => {
                   }}
                   warningStatus={warningStatus}
                   contentStyle={{ paddingInline: '0 6px' }}
-                ></CompatibilityAlert>
-                <ModalFooter
+                />
+                <OnlineModelModalFooter
                   onCancel={handleCancel}
                   onOk={handleSumit}
                   loading={loading}
@@ -683,18 +674,16 @@ const AddModal: FC<AddModalProps> = (props) => {
                       </Button>
                     )
                   }
-                  style={ModalFooterStyle}
-                ></ModalFooter>
+                />
               </>
             }
           >
             <>
-              {SEARCH_SOURCE.includes(source) &&
-                deploymentType === 'modelList' && (
-                  <TitleWrapper>
-                    {intl.formatMessage({ id: 'models.form.configurations' })}
-                  </TitleWrapper>
-                )}
+              {showOnlinePanels && (
+                <TitleWrapper>
+                  {intl.formatMessage({ id: 'models.form.configurations' })}
+                </TitleWrapper>
+              )}
               <DataForm
                 formKey={DeployFormKeyMap.DEPLOYMENT}
                 initialValues={initialValues}
@@ -708,11 +697,11 @@ const AddModal: FC<AddModalProps> = (props) => {
                 onBackendChange={handleBackendChange}
                 onValuesChange={onValuesChange}
                 clearCacheFormValues={clearCacheFormValues}
-              ></DataForm>
+              />
             </>
           </ColumnWrapper>
-        </FormWrapper>
-      </Container>
+        }
+      />
     </GSDrawer>
   );
 };

@@ -1,15 +1,17 @@
+import useWindowResize from '@/hooks/use-window-resize';
 import { ProviderValueMap } from '@/pages/cluster-management/config';
-import { ColumnWrapper, GSDrawer, ModalFooter } from '@gpustack/core-ui';
+import { getDrawerWidth } from '@/utils/drawer-width';
+import { ColumnWrapper, GSDrawer } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { debounce } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
 import { modelSourceMap } from '../../config';
 import { FormData } from '../../config/types';
 import HFModelFile from '../model-source/hf-model-file';
 import ModelCard from '../model-source/model-card';
+import OnlineModelLayout from '../model-source/online-model-layout';
+import OnlineModelModalFooter from '../model-source/online-model-modal-footer';
 import SearchModel from '../model-source/search-model';
-import Separator from '../separator';
 import TitleWrapper from '../title-wrapper';
 import TargetForm from './target-form';
 
@@ -24,18 +26,6 @@ type AddModalProps = {
   onOk: (values: FormData) => void;
   onCancel: () => void;
 };
-
-const ColWrapper = styled.div`
-  display: flex;
-  flex: 1;
-  max-width: 33.33%;
-`;
-
-const FormWrapper = styled.div`
-  display: flex;
-  flex: 1;
-  maxwidth: 100%;
-`;
 
 const DownloadModel: React.FC<AddModalProps> = (props) => {
   const {
@@ -54,8 +44,9 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
     modelSourceMap.modelscope_value
   ];
 
-  const form = useRef<any>({});
+  const form = useRef<any>(null);
   const intl = useIntl();
+  const { size } = useWindowResize();
   const [selectedModel, setSelectedModel] = useState<any>({});
   const [collapsed, setCollapsed] = useState<boolean>(false);
   const [isGGUF, setIsGGUF] = useState<boolean>(false);
@@ -150,8 +141,14 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
 
     return () => {
       setSelectedModel({});
+      setFileName('');
     };
   }, [open, source]);
+
+  const showOnlinePanels = SEARCH_SOURCE.includes(props.source);
+  const drawerWidth = getDrawerWidth(size.width, width);
+  const hasSelectedModel = !!selectedModel?.name;
+  const canProceedFromDetail = hasSelectedModel && (!isGGUF || !!fileName);
 
   return (
     <GSDrawer
@@ -166,76 +163,65 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
       keyboard={false}
       zIndex={2000}
       styles={{
-        wrapper: { width: width }
+        wrapper: { width: drawerWidth }
       }}
       footer={false}
     >
-      <div style={{ display: 'flex', height: '100%' }}>
-        {SEARCH_SOURCE.includes(props.source) && (
-          <>
-            <ColWrapper>
-              <SearchModel
-                hasLinuxWorker={hasLinuxWorker}
+      <OnlineModelLayout
+        open={open}
+        showOnlinePanels={showOnlinePanels}
+        hasSelectedModel={hasSelectedModel}
+        canProceedFromDetail={canProceedFromDetail}
+        searchPanel={
+          <SearchModel
+            hasLinuxWorker={hasLinuxWorker}
+            modelSource={props.source}
+            onSelectModel={handleOnSelectModel}
+            isDownload={true}
+          />
+        }
+        detailPanel={
+          <ColumnWrapper styles={{ container: { padding: 0 } }}>
+            <ModelCard
+              selectedModel={selectedModel}
+              onCollapse={setCollapsed}
+              collapsed={collapsed}
+              modelSource={props.source}
+              isGGUF={isGGUF}
+              setIsGGUF={handleSetIsGGUF}
+            />
+            {isGGUF && (
+              <HFModelFile
+                ref={modelFileRef}
+                selectedModel={selectedModel}
                 modelSource={props.source}
-                onSelectModel={handleOnSelectModel}
+                onSelectFile={handleSelectModelFile}
+                collapsed={collapsed}
                 isDownload={true}
-              ></SearchModel>
-              <Separator></Separator>
-            </ColWrapper>
-            <ColWrapper>
-              <ColumnWrapper styles={{ container: { padding: 0 } }}>
-                <ModelCard
-                  selectedModel={selectedModel}
-                  onCollapse={setCollapsed}
-                  collapsed={collapsed}
-                  modelSource={props.source}
-                  isGGUF={isGGUF}
-                  setIsGGUF={handleSetIsGGUF}
-                ></ModelCard>
-                {isGGUF && (
-                  <HFModelFile
-                    ref={modelFileRef}
-                    selectedModel={selectedModel}
-                    modelSource={props.source}
-                    onSelectFile={handleSelectModelFile}
-                    collapsed={collapsed}
-                    isDownload={true}
-                  ></HFModelFile>
-                )}
-              </ColumnWrapper>
-              <Separator></Separator>
-            </ColWrapper>
-          </>
-        )}
-        <FormWrapper>
+              />
+            )}
+          </ColumnWrapper>
+        }
+        formPanel={
           <ColumnWrapper
             styles={{
               container: { paddingBlock: 0 }
             }}
             footer={
-              <>
-                <ModalFooter
-                  onCancel={handleCancel}
-                  onOk={handleSumit}
-                  okBtnProps={{
-                    loading: loading
-                  }}
-                  style={{
-                    padding: '16px 24px 8px',
-                    display: 'flex',
-                    justifyContent: 'flex-end'
-                  }}
-                ></ModalFooter>
-              </>
+              <OnlineModelModalFooter
+                onCancel={handleCancel}
+                onOk={handleSumit}
+                loading={loading}
+              />
             }
           >
             <>
-              {SEARCH_SOURCE.includes(source) && (
+              {showOnlinePanels && (
                 <TitleWrapper>
                   {intl.formatMessage({
                     id: 'resources.modelfiles.selecttarget'
                   })}
-                  <span style={{ display: 'flex', height: 24 }}></span>
+                  <span style={{ display: 'flex', height: 24 }} />
                 </TitleWrapper>
               )}
               <TargetForm
@@ -246,11 +232,11 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
                 fileName={fileName}
                 workersList={workersList}
                 workerOptions={workerOptions}
-              ></TargetForm>
+              />
             </>
           </ColumnWrapper>
-        </FormWrapper>
-      </div>
+        }
+      />
     </GSDrawer>
   );
 };

@@ -9,6 +9,7 @@ import React, { useCallback, useMemo } from 'react';
 import { modelCategories } from '../../config';
 import { CatalogItem as CatalogItemType } from '../../config/types';
 import '../../style/catalog-item.less';
+import { getModelLogo } from '../../utils/model-logo';
 interface CatalogItemProps {
   activeId: number;
   data: CatalogItemType;
@@ -22,9 +23,26 @@ const CatalogItem: React.FC<CatalogItemProps> = (props) => {
     onClick(data);
   }, [data, onClick]);
 
-  const handleOnError = (e: any) => {
-    e.target.src = fallbackImg;
-  };
+  const modelLogo = getModelLogo(data.name);
+
+  const handleOnError = useCallback(
+    (e: React.SyntheticEvent<HTMLImageElement>) => {
+      const img = e.currentTarget;
+      const step = Number(img.dataset.fallbackStep || 0);
+
+      if (step === 0 && data.icon) {
+        img.dataset.fallbackStep = '1';
+        img.src = modelLogo;
+        return;
+      }
+
+      if (step < 2) {
+        img.dataset.fallbackStep = '2';
+        img.src = fallbackImg;
+      }
+    },
+    [data.icon, modelLogo]
+  );
 
   const description = useMemo(() => {
     return (
@@ -61,11 +79,7 @@ const CatalogItem: React.FC<CatalogItemProps> = (props) => {
       <div className="content">
         <div className="title">
           <div className="img">
-            <img
-              src={data.icon || fallbackImg}
-              alt=""
-              onError={handleOnError}
-            />
+            <img src={data.icon || modelLogo} alt="" onError={handleOnError} />
           </div>
           <AutoTooltip ghost>{data.name}</AutoTooltip>
         </div>

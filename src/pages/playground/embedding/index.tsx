@@ -4,10 +4,7 @@ import { useMemoizedFn } from 'ahooks';
 import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
-import {
-  HeaderRight,
-  usePageContentStyle
-} from '../../_components/page-box';
+import { HeaderRight, usePageContentStyle } from '../../_components/page-box';
 import { queryModelsList } from '../apis';
 import ViewCodeButtons from '../components/view-code-buttons';
 import useCollapseLayout from '../hooks/use-collapse-layout';
@@ -19,12 +16,9 @@ const PlaygroundEmbedding: React.FC = () => {
   const [modelList, setModelList] = useState<Global.BaseOption<string>[]>([]);
   const [loaded, setLoaded] = useState(false);
 
-  useCollapseLayout({
-    handler: () => {
-      groundLeftRef.current?.setCollapse?.();
-      groundLeftRef.current?.calculateNewMaxFromBoundary?.(500, 300);
-    },
-    triggeredRef: groundLeftRef.current
+  useCollapseLayout(() => {
+    groundLeftRef.current?.setCollapse?.();
+    groundLeftRef.current?.calculateNewMaxFromBoundary?.(500, 300);
   });
 
   const handleViewCode = useMemoizedFn(() => {

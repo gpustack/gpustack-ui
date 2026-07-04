@@ -3,7 +3,8 @@ import {
   DropdownButtons,
   IconFont,
   icons,
-  useDownloadLogs
+  useDownloadLogs,
+  useWindowResize
 } from '@gpustack/core-ui';
 import { BENCHMARKS_API } from '../apis';
 import { BenchmarkStatusValueMap } from '../config';
@@ -70,6 +71,7 @@ interface RowActionsProps {
 const RowActions: React.FC<RowActionsProps> = (props) => {
   const { record, handleSelect, page = 'list' } = props;
   const { onDownloadLog, contextHolder } = useDownloadLogs();
+  const { isIconOnlyToolbar } = useWindowResize();
 
   const actions = actionList.filter((action) => {
     if (page === 'detail' && action.key === 'edit') {
@@ -97,10 +99,14 @@ const RowActions: React.FC<RowActionsProps> = (props) => {
   };
 
   return (
-    <>
+    <span>
       {contextHolder}
-      <DropdownButtons items={actions} onSelect={onSelect}></DropdownButtons>
-    </>
+      <DropdownButtons
+        items={actions}
+        onSelect={onSelect}
+        showText={page === 'detail' ? !isIconOnlyToolbar : false}
+      ></DropdownButtons>
+    </span>
   );
 };
 

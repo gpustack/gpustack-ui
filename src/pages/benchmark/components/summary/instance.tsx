@@ -1,3 +1,4 @@
+import useWindowResize from '@/hooks/use-window-resize';
 import { AutoTooltip } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Descriptions, Flex, Tag } from 'antd';
@@ -5,6 +6,7 @@ import React, { useMemo } from 'react';
 import { useDetailContext } from '../../config/detail-context';
 const Instance: React.FC = () => {
   const intl = useIntl();
+  const { isMobile } = useWindowResize();
   const { detailData } = useDetailContext();
   const [, instanceData] =
     Object.entries(detailData?.snapshot?.instances || {})[0] || [];
@@ -185,7 +187,7 @@ const Instance: React.FC = () => {
       <Descriptions
         items={items}
         colon={false}
-        column={4}
+        column={isMobile ? 1 : 4}
         layout="vertical"
         styles={{
           content: {
@@ -197,7 +199,7 @@ const Instance: React.FC = () => {
         style={{ marginTop: '12px' }}
         items={paramsItems}
         colon={false}
-        column={2}
+        column={isMobile ? 1 : 2}
         layout="vertical"
         styles={{
           content: {

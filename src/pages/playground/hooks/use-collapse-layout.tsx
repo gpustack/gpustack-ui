@@ -1,20 +1,14 @@
-import breakpoints from '@/config/breakpoints';
 import useWindowResize from '@/hooks/use-window-resize';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
-export default function useCollapseLayout(options: {
-  handler: () => void;
-  triggeredRef: {
-    collapse: boolean;
-  };
-}) {
-  const { size } = useWindowResize();
+export default function useCollapseLayout(handler: () => void) {
+  const { isMobile } = useWindowResize();
+  const wasMobileRef = useRef(isMobile);
 
   useEffect(() => {
-    if (size.width < breakpoints.lg) {
-      if (!options.triggeredRef?.collapse) {
-        options.handler();
-      }
+    if (isMobile && !wasMobileRef.current) {
+      handler();
     }
-  }, [size.width]);
+    wasMobileRef.current = isMobile;
+  }, [isMobile, handler]);
 }

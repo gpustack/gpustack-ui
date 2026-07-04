@@ -11,6 +11,7 @@ import {
   HighlightCode,
   IconFont,
   ResizePanel,
+  useInitialCollapsed,
   useOverlayScroller
 } from '@gpustack/core-ui';
 import { ScatterChart } from '@gpustack/core-ui/charts';
@@ -58,7 +59,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
   const [tokenResult, setTokenResult] = useState<any>(null);
-  const [collapse, setCollapse] = useState(false);
+  const [collapse, setCollapse] = useInitialCollapsed();
   const contentRef = useRef<any>('');
   const scroller = useRef<any>(null);
   const inputListRef = useRef<any>(null);
@@ -718,7 +719,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
           </div>
         </div>
       </div>
-      <RightContainer collapsed={collapse}>
+      <RightContainer collapsed={collapse} onDismiss={() => setCollapse(true)}>
         <DataForm
           ref={formRef}
           onValuesChange={onValuesChange}

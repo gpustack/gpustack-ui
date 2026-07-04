@@ -1,6 +1,7 @@
+import useWindowResize from '@/hooks/use-window-resize';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
-import { DropdownButtons, IconFont } from '@gpustack/core-ui';
-import { Button, Space } from 'antd';
+import { DropdownButtons, IconFont, IconTextButton } from '@gpustack/core-ui';
+import { Space } from 'antd';
 import React from 'react';
 
 export interface RightActionsProps {
@@ -22,6 +23,8 @@ const RightActions: React.FC<RightActionsProps> = ({
   buttonText,
   rowSelection
 }) => {
+  const { isIconOnlyToolbar } = useWindowResize();
+
   const ButtonList = [
     {
       label: 'benchmark.table.export.results',
@@ -49,28 +52,29 @@ const RightActions: React.FC<RightActionsProps> = ({
   };
 
   return (
-    <Space size={16}>
-      {settingButton}
-      <Button
-        icon={<PlusOutlined></PlusOutlined>}
-        type="primary"
-        onClick={handleClickPrimary}
-      >
-        {buttonText}
-      </Button>
-      <DropdownButtons
-        items={ButtonList}
-        extra={
-          rowSelection.selectedRowKeys.length > 0 && (
-            <span>({rowSelection.selectedRowKeys.length})</span>
-          )
-        }
-        size="large"
-        showText={true}
-        disabled={!rowSelection.selectedRowKeys.length}
-        onSelect={handleActionSelect}
-      />
-    </Space>
+    <div className="compactActions">
+      <Space size={16}>
+        {settingButton}
+        <IconTextButton
+          icon={<PlusOutlined></PlusOutlined>}
+          type="primary"
+          onClick={handleClickPrimary}
+          text={buttonText}
+        />
+        <DropdownButtons
+          items={ButtonList}
+          extra={
+            rowSelection.selectedRowKeys.length > 0 && (
+              <span>({rowSelection.selectedRowKeys.length})</span>
+            )
+          }
+          size="large"
+          showText={!isIconOnlyToolbar}
+          disabled={!rowSelection.selectedRowKeys.length}
+          onSelect={handleActionSelect}
+        />
+      </Space>
+    </div>
   );
 };
 

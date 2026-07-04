@@ -1,5 +1,6 @@
 import { setRouteCache } from '@/atoms/route-cache';
 import routeCachekey from '@/config/route-cachekey';
+import useWindowResize from '@/hooks/use-window-resize';
 import UploadImg from '@/pages/playground/components/upload-img';
 import { base64ToFile, generateRandomNumber } from '@/utils';
 import {
@@ -7,7 +8,8 @@ import {
   ImageEditor as CanvasImageEditor,
   IconFont,
   processImage,
-  SingleImage
+  SingleImage,
+  useInitialCollapsed
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Divider } from 'antd';
@@ -43,8 +45,9 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   const { modelList } = props;
 
   const intl = useIntl();
+  const { isMobile } = useWindowResize();
   const [show, setShow] = useState(false);
-  const [collapse, setCollapse] = useState(false);
+  const [collapse, setCollapse] = useInitialCollapsed();
   const scroller = useRef<any>(null);
   const inputRef = useRef<any>(null);
   const [image, setImage] = useState<string>('');
@@ -418,6 +421,32 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     );
   }, [maskUpload, intl]);
 
+  const promptInput = (
+    <MessageInput
+      actions={[]}
+      defaultSize={
+        isMobile ? { minRows: 3, maxRows: 10 } : { minRows: 5, maxRows: 5 }
+      }
+      ref={inputRef}
+      placeholer={intl.formatMessage({
+        id: 'playground.input.prompt.holder'
+      })}
+      title={
+        <span className="font-600">
+          {intl.formatMessage({ id: 'playground.image.prompt' })}
+        </span>
+      }
+      loading={loading}
+      disabled={!parameters.model}
+      isEmpty={!imageList.length}
+      handleSubmit={handleSendMessage}
+      handleAbortFetch={handleStopConversation}
+      onInputChange={handleInputChange}
+      shouldResetMessage={false}
+      clearAll={handleClear}
+    />
+  );
+
   return (
     <div className="ground-left-wrapper">
       <div className="ground-left">
@@ -496,37 +525,14 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
               </>
             )}
           </div>
+          {isMobile && promptInput}
         </div>
       </div>
       <RightContainer
         collapsed={collapse}
+        onDismiss={() => setCollapse(true)}
         footer={
-          <div style={{ width: 389 }}>
-            <MessageInput
-              actions={[]}
-              defaultSize={{
-                minRows: 5,
-                maxRows: 5
-              }}
-              ref={inputRef}
-              placeholer={intl.formatMessage({
-                id: 'playground.input.prompt.holder'
-              })}
-              title={
-                <span className="font-600">
-                  {intl.formatMessage({ id: 'playground.image.prompt' })}
-                </span>
-              }
-              loading={loading}
-              disabled={!parameters.model}
-              isEmpty={!imageList.length}
-              handleSubmit={handleSendMessage}
-              handleAbortFetch={handleStopConversation}
-              onInputChange={handleInputChange}
-              shouldResetMessage={false}
-              clearAll={handleClear}
-            />
-          </div>
+          isMobile ? undefined : <div style={{ width: 389 }}>{promptInput}</div>
         }
       >
         <DataForm

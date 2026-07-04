@@ -1,5 +1,39 @@
 @HEADER_HEIGHT: 0px;
 
+.mobileDrawer {
+  :global(.ant-drawer-body) {
+    height: 100%;
+  }
+}
+
+.mobileBox {
+  flex: 1;
+  padding-inline: 24px;
+  padding-top: 0;
+  overflow-y: auto;
+
+  :global(form > h3:first-of-type) {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .wrapper {
+    width: 100%;
+    border-left: none;
+    transition: none;
+
+    &.collapsed {
+      transition: none;
+    }
+  }
+
+  .box {
+    width: 100%;
+    padding-inline: 16px;
+  }
+}
+
 .wrapper {
   position: relative;
   width: 390px;

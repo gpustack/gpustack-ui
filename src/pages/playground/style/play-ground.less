@@ -100,3 +100,123 @@
     }
   }
 }
+
+@media screen and (max-width: 767px) {
+  .ant-pro-page-container-children-container:has(.play-ground-root--mobile) {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
+
+  [data-overlayscrollbars-viewport]:has(.play-ground-root--mobile) {
+    display: flex !important;
+    flex-direction: column;
+    height: 100% !important;
+    min-height: 100%;
+
+    > div {
+      flex: 1;
+      min-height: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+
+      > div {
+        flex: 1;
+        min-height: 0;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+    }
+  }
+
+  .play-ground-root--mobile {
+    flex: 1;
+    min-height: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .play-ground {
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    height: 100%;
+    overflow: hidden;
+
+    .chat {
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+
+      .ant-tabs {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+
+        .ant-tabs-content-holder {
+          flex: 1;
+          min-height: 0;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .ant-tabs-content {
+          flex: 1;
+          min-height: 0;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .ant-tabs-tabpane {
+          flex: 1;
+          min-height: 0;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+        }
+      }
+    }
+
+    .left {
+      width: 100% !important;
+      max-width: 100%;
+      transition: none;
+    }
+
+    .left.collapse {
+      transition: none;
+    }
+
+    .divider-line.collapse {
+      transition: none;
+    }
+
+    .params-box {
+      width: 100% !important;
+      max-width: 100%;
+      border-left: none;
+      border-top: 1px solid var(--ant-color-split);
+    }
+
+    .params {
+      height: auto;
+      max-height: 50vh;
+    }
+  }
+
+  .playground-container {
+    .ant-segmented {
+      max-width: 100%;
+      overflow-x: auto;
+    }
+  }
+}

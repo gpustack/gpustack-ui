@@ -1,15 +1,9 @@
+import { ResponsiveColGrid } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Descriptions } from 'antd';
 import _, { round } from 'lodash';
 import React from 'react';
-import styled from 'styled-components';
 import { useDetailContext } from '../../config/detail-context';
-
-const Box = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 16px;
-`;
 
 const throughputColumns = [
   {
@@ -198,7 +192,7 @@ const PercentileResult: React.FC = () => {
 
   return (
     <div>
-      <Box>
+      <ResponsiveColGrid cols={{ xs: 1, md: 2, lg: 3 }}>
         <Descriptions
           styles={descriptionStyles}
           title={intl.formatMessage({ id: 'benchmark.detail.result.basic' })}
@@ -222,7 +216,7 @@ const PercentileResult: React.FC = () => {
           colon={false}
           column={1}
         ></Descriptions>
-      </Box>
+      </ResponsiveColGrid>
     </div>
   );
 };

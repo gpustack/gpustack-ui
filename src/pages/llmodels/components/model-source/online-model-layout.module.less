@@ -1,0 +1,57 @@
+.container {
+  display: flex;
+  height: 100%;
+}
+
+.col {
+  display: flex;
+  flex: 1;
+  max-width: 33.33%;
+  min-width: 0;
+}
+
+.formCol {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.mobileStep {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+}
+
+.mobileStepContent {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.mobilePanel {
+  display: none;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.mobilePanelActive {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.mobileStepFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--ant-color-split);
+  background: var(--ant-color-bg-elevated);
+}

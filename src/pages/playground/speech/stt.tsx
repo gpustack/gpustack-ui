@@ -1,6 +1,5 @@
 import { setRouteCache } from '@/atoms/route-cache';
 import routeCachekey from '@/config/route-cachekey';
-import { HEADER_HEIGHT } from '@/config/settings';
 import { useCancelToken } from '@/hooks/use-request-token';
 import { readAudioFile } from '@/utils/load-audio-file';
 import { SendOutlined } from '@ant-design/icons';
@@ -11,6 +10,7 @@ import {
   CopyButton,
   IconFont,
   UploadAudio,
+  useInitialCollapsed,
   useOverlayScroller
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
@@ -56,7 +56,7 @@ const GroundSTT: React.FC<MessageProps> = forwardRef((props, ref) => {
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
   const [tokenResult, setTokenResult] = useState<any>(null);
-  const [collapse, setCollapse] = useState(false);
+  const [collapse, setCollapse] = useInitialCollapsed();
   const scroller = useRef<any>(null);
   const [audioPermissionOn, setAudioPermissionOn] = useState(true);
   const [audioData, setAudioData] = useState<any>(null);
@@ -297,90 +297,9 @@ const GroundSTT: React.FC<MessageProps> = forwardRef((props, ref) => {
   }, [messageList, loading]);
 
   return (
-    <div
-      className="ground-left-wrapper"
-      style={{
-        height: `calc(100vh - var(--app-banner-height, 0px) - ${HEADER_HEIGHT}px)`
-      }}
-    >
+    <div className="ground-left-wrapper stt-playground">
       <div className="ground-left">
-        <div className="ground-left-footer" style={{ flex: 1 }}>
-          <div className="speech-to-text">
-            <div className="speech-box">
-              {!isRecording && (
-                <UploadAudio
-                  type="default"
-                  accept={SpeechToTextFormat.join(', ')}
-                  onChange={handleUploadChange}
-                ></UploadAudio>
-              )}
-              <AudioInput
-                type="default"
-                voiceActivity={true}
-                onAudioData={handleOnAudioData}
-                onAudioPermission={handleOnAudioPermission}
-                onAnalyse={handleOnAnalyse}
-                onRecord={handleOnRecord}
-              ></AudioInput>
-            </div>
-
-            {audioData ? (
-              <div className="flex-between flex-center justify-center relative">
-                <div style={{ width: 600 }}>
-                  <AudioPlayer
-                    url={audioData.url}
-                    name={audioData.name}
-                    duration={audioData.duration}
-                    extra={
-                      <Tooltip
-                        title={
-                          loading
-                            ? intl.formatMessage({
-                                id: 'common.button.stop'
-                              })
-                            : intl.formatMessage({
-                                id: 'playground.audio.button.generate'
-                              })
-                        }
-                      >
-                        {
-                          <Button
-                            disabled={!audioData}
-                            type="primary"
-                            size="middle"
-                            shape="circle"
-                            onClick={handleOnGenerate}
-                            icon={
-                              loading ? (
-                                <IconFont
-                                  type="icon-stop1"
-                                  className="font-size-14"
-                                ></IconFont>
-                              ) : (
-                                <SendOutlined></SendOutlined>
-                              )
-                            }
-                          ></Button>
-                        }
-                      </Tooltip>
-                    }
-                  ></AudioPlayer>
-                </div>
-              </div>
-            ) : (
-              renderAniamtion()
-            )}
-          </div>
-        </div>
-        <div
-          style={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            overflow: 'auto'
-          }}
-        >
+        <div className="stt-results">
           <div
             className="message-list-wrap"
             style={{
@@ -449,8 +368,76 @@ const GroundSTT: React.FC<MessageProps> = forwardRef((props, ref) => {
             )}
           </div>
         </div>
+        <div className="ground-left-footer stt-controls">
+          <div className="speech-to-text">
+            <div className="speech-box">
+              {!isRecording && (
+                <UploadAudio
+                  type="default"
+                  accept={SpeechToTextFormat.join(', ')}
+                  onChange={handleUploadChange}
+                ></UploadAudio>
+              )}
+              <AudioInput
+                type="default"
+                voiceActivity={true}
+                onAudioData={handleOnAudioData}
+                onAudioPermission={handleOnAudioPermission}
+                onAnalyse={handleOnAnalyse}
+                onRecord={handleOnRecord}
+              ></AudioInput>
+            </div>
+
+            {audioData ? (
+              <div className="flex-between flex-center justify-center relative stt-audio-player">
+                <div className="stt-audio-player-inner">
+                  <AudioPlayer
+                    url={audioData.url}
+                    name={audioData.name}
+                    duration={audioData.duration}
+                    extra={
+                      <Tooltip
+                        title={
+                          loading
+                            ? intl.formatMessage({
+                                id: 'common.button.stop'
+                              })
+                            : intl.formatMessage({
+                                id: 'playground.audio.button.generate'
+                              })
+                        }
+                      >
+                        {
+                          <Button
+                            disabled={!audioData}
+                            type="primary"
+                            size="middle"
+                            shape="circle"
+                            onClick={handleOnGenerate}
+                            icon={
+                              loading ? (
+                                <IconFont
+                                  type="icon-stop1"
+                                  className="font-size-14"
+                                ></IconFont>
+                              ) : (
+                                <SendOutlined></SendOutlined>
+                              )
+                            }
+                          ></Button>
+                        }
+                      </Tooltip>
+                    }
+                  ></AudioPlayer>
+                </div>
+              </div>
+            ) : (
+              renderAniamtion()
+            )}
+          </div>
+        </div>
       </div>
-      <RightContainer collapsed={collapse}>
+      <RightContainer collapsed={collapse} onDismiss={() => setCollapse(true)}>
         <STTForm
           ref={formRef}
           updateParams={updateParams}

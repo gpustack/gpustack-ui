@@ -6,24 +6,27 @@ import useBodyScroll from '@/hooks/use-body-scroll';
 import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useWatchList from '@/hooks/use-watch-list';
+import useWindowResize from '@/hooks/use-window-resize';
 import useNoResourceResult from '@/pages/llmodels/hooks/use-no-resource-result';
 import { MODEL_ROUTE_TARGETS } from '@/pages/model-routes/apis';
 import { TargetStatusValueMap } from '@/pages/model-routes/config';
 import useOpenPlayground from '@/pages/model-routes/hooks/use-open-playground';
 import useGranfanaLink from '@/pages/resources/hooks/use-grafana-link';
 import { handleBatchRequest } from '@/utils';
-import { DownOutlined } from '@ant-design/icons';
+import { DownOutlined, PlusOutlined } from '@ant-design/icons';
 import {
+  BaseSelect,
   DeleteModal,
   DropdownActions,
   DropdownButtons,
-  PageTools,
+  FilterBar,
   Table as SealTable,
-  TableOrder
+  TableOrder,
+  useFilterDrawer
 } from '@gpustack/core-ui';
 import { useIntl, useNavigate, useSearchParams } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { Button, Space, message } from 'antd';
+import { Button, Tooltip, message } from 'antd';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
 import React, {
@@ -41,7 +44,7 @@ import {
   queryModelInstancesList,
   updateModel
 } from '../apis';
-import { modelSourceMap } from '../config';
+import { categoryOptions, modelSourceMap } from '../config';
 import {
   ButtonList,
   modalConfig,
@@ -54,10 +57,11 @@ import {
   ModelInstanceListItem,
   SourceType
 } from '../config/types';
+import FilterFormContent from '../filters';
 import useEditDeployment from '../hooks/use-edit-deployment';
+import useFilterStatus from '../hooks/use-filter-status';
 import useModelsColumns from '../hooks/use-models-columns';
 import useViewInstanceLogs from '../hooks/use-view-instance-logs';
-import LeftFilters from '../instance-view/left-filters';
 import DeployModal from './deployment/deploy-modal';
 import UpdateModelModal from './deployment/update-modal';
 import Instances from './instance/instances';
@@ -123,16 +127,29 @@ const Models: React.FC<ModelsProps> = ({
   onTableSort,
   onStatusChange,
   onDeleteInstanceFromCache,
+  onFilterChange,
   sortOrder,
   deleteIds,
   dataSource,
   queryParams,
   loading,
   loadend,
-  total
+  total,
+  filterValues
 }) => {
   const { generateFormValues, clusterList, workerList } =
     useDeploymentsContext();
+  const { isMobile, isIconOnlyToolbar } = useWindowResize();
+  const iconOnly = isIconOnlyToolbar;
+  const { labelRender, optionRender, statusOptions } = useFilterStatus();
+  const { filtersVisible, toggleFilters, filterRef, handleOnClearFilters } =
+    useFilterDrawer({
+      onFilterChange,
+      clearKeys: ['cluster_id', 'categories', 'state']
+    });
+  const filtersCount = Object.values(filterValues ?? {}).filter(
+    (value) => value !== undefined && value !== null && value !== ''
+  ).length;
   const [searchParams] = useSearchParams();
   const page = searchParams.get('page');
   const { saveScrollHeight, restoreScrollHeight } = useBodyScroll();
@@ -160,7 +177,8 @@ const Models: React.FC<ModelsProps> = ({
     useViewInstanceLogs();
 
   const { goToGrafana, ActionButton } = useGranfanaLink({
-    type: 'model'
+    type: 'model',
+    iconOnly
   });
 
   const [openDeployModal, setOpenDeployModal] = useState<{
@@ -556,47 +574,118 @@ const Models: React.FC<ModelsProps> = ({
     };
   }, [loadend]);
 
+  const handleOnClearFiltersWithQuery = () => {
+    handleOnClearFilters();
+  };
+
+  const deployLabel = intl.formatMessage({ id: 'models.button.deploy' });
+
+  const deployButton = (
+    <DropdownActions
+      menu={{
+        items: sourceOptions,
+        onClick: handleClickDropdown
+      }}
+      placement="bottomRight"
+    >
+      <Button
+        icon={iconOnly ? <PlusOutlined /> : <DownOutlined />}
+        type="primary"
+        iconPlacement={iconOnly ? undefined : 'end'}
+      >
+        {!iconOnly && deployLabel}
+      </Button>
+    </DropdownActions>
+  );
+
   return (
     <div
       style={{
         display: 'flex',
-        alignItems: 'flex-start'
+        alignItems: 'flex-start',
+        minWidth: 0,
+        maxWidth: '100%'
       }}
     >
-      <div style={{ flex: 1, padding: '24px' }}>
-        <PageTools
+      <FilterFormContent
+        ref={filterRef}
+        open={filtersVisible}
+        clusterList={clusterList}
+        initialValues={filterValues}
+        onValuesChange={onFilterChange}
+        onClose={toggleFilters}
+        onClear={handleOnClearFiltersWithQuery}
+      ></FilterFormContent>
+      <div
+        style={{
+          flex: 1,
+          minWidth: 0,
+          maxWidth: '100%',
+          overflow: 'hidden',
+          padding: isMobile ? 16 : 24
+        }}
+      >
+        <FilterBar
           marginBottom={22}
           marginTop={0}
-          left={
-            <LeftFilters
-              showCategory
-              showWorker={false}
-              handleNameChange={handleNameChange}
-              handleClusterChange={handleClusterChange}
-              handleCategoryChange={handleCategoryChange}
-              handleStatusChange={onStatusChange}
-              handleSearch={handleSearch}
-              clusterList={clusterList}
-            ></LeftFilters>
+          showSelect={false}
+          handleInputChange={handleNameChange}
+          handleSearch={handleSearch}
+          collapseInlineFilters
+          filtersButtonProps={{
+            show: true,
+            count: filtersCount,
+            onClick: toggleFilters,
+            onClear: handleOnClearFiltersWithQuery
+          }}
+          inlineFilters={
+            <>
+              <BaseSelect
+                allowClear
+                showSearch={false}
+                placeholder={intl.formatMessage({
+                  id: 'models.filter.category'
+                })}
+                style={{ width: 160 }}
+                size="large"
+                maxTagCount={1}
+                onChange={handleCategoryChange}
+                options={categoryOptions.filter((item) => item.value)}
+              />
+              <BaseSelect
+                allowClear
+                showSearch={false}
+                placeholder={intl.formatMessage({
+                  id: 'clusters.filterBy.cluster'
+                })}
+                style={{ width: 160 }}
+                size="large"
+                maxTagCount={1}
+                onChange={handleClusterChange}
+                options={clusterList}
+              />
+              <BaseSelect
+                allowClear
+                showSearch={false}
+                placeholder={intl.formatMessage({ id: 'common.filter.status' })}
+                style={{ width: 180 }}
+                size="large"
+                maxTagCount={1}
+                optionRender={optionRender}
+                labelRender={labelRender}
+                options={statusOptions}
+                onChange={onStatusChange}
+              />
+            </>
           }
           right={
-            <Space size={16}>
+            <div className="compactActions">
               {ActionButton()}
-              <DropdownActions
-                menu={{
-                  items: sourceOptions,
-                  onClick: handleClickDropdown
-                }}
-                placement="bottomRight"
-              >
-                <Button
-                  icon={<DownOutlined></DownOutlined>}
-                  type="primary"
-                  iconPlacement="end"
-                >
-                  {intl?.formatMessage?.({ id: 'models.button.deploy' })}
-                </Button>
-              </DropdownActions>
+              {iconOnly ? (
+                <Tooltip title={deployLabel}>{deployButton}</Tooltip>
+              ) : (
+                deployButton
+              )}
               <DropdownButtons
                 items={ButtonList}
                 extra={
@@ -605,13 +694,13 @@ const Models: React.FC<ModelsProps> = ({
                   )
                 }
                 size="large"
-                showText={true}
+                showText={!iconOnly}
                 disabled={!rowSelection.selectedRowKeys.length}
                 onSelect={handleActionSelect}
               />
-            </Space>
+            </div>
           }
-        ></PageTools>
+        />
         <SealTable
           columns={columns}
           sortDirections={TABLE_SORT_DIRECTIONS}

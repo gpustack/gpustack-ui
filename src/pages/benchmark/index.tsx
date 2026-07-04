@@ -3,12 +3,19 @@ import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { useBenchmarkTargetInstance } from '@/pages/llmodels/hooks/use-run-benchmark';
 import { useQueryModelList } from '@/pages/llmodels/services/use-query-model-list';
-import { DeleteModal, FilterBar, IconFont, NoResult } from '@gpustack/core-ui';
+import {
+  DeleteModal,
+  FilterBar,
+  IconFont,
+  NoResult,
+  AntdResponsiveTable as Table,
+  useFilterDrawer
+} from '@gpustack/core-ui';
 import { useIntl, useNavigate } from '@umijs/max';
-import { useMemoizedFn, useToggle } from 'ahooks';
-import { ConfigProvider, Table, message } from 'antd';
+import { useMemoizedFn } from 'ahooks';
+import { ConfigProvider, message } from 'antd';
 import _ from 'lodash';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect } from 'react';
 import PageBox from '../_components/page-box';
 import { useQueryClusterList } from '../cluster-management/services/use-query-cluster-list';
 import {
@@ -19,7 +26,6 @@ import {
   updateBenchmark
 } from './apis';
 import AddBenchmarkModal from './components/add-benchmark-modal';
-import LeftActions from './components/left-actions';
 import RightActions from './components/right-actions';
 import ViewLogsModal from './components/view-logs-modal';
 import { FormData, BenchmarkListItem as ListItem } from './config/types';
@@ -84,9 +90,19 @@ const Benchmark: React.FC = () => {
     clusterList,
     profileOptions: profilesOptions
   });
-  const [filtersVisible, { toggle: toggleFilters }] = useToggle();
-  const filterRef = useRef<any>(null);
-  const [filterValues, setFilterValues] = useState<any>({});
+  const {
+    filtersVisible,
+    toggleFilters,
+    filterRef,
+    filterValues,
+    filtersCount,
+    handleOnFilterChange,
+    handleOnClearFilters
+  } = useFilterDrawer({
+    onFilterChange: (filters) => {
+      handleQueryChange({ page: 1, ...filters });
+    }
+  });
 
   useEffect(() => {
     fetchModelList({ page: -1 });
@@ -206,28 +222,13 @@ const Benchmark: React.FC = () => {
     exportData(rowSelection.selectedRowKeys);
   };
 
-  const handleOnFilterChange = (filters: any) => {
-    handleQueryChange({
-      page: 1,
-      ...filters
-    });
-
-    setFilterValues(filters);
-  };
-
-  const handleOnClearFilters = () => {
-    filterRef.current?.reset();
-  };
-
-  const filtersCount = Object.values(filterValues).filter(
-    (value) => value !== undefined && value !== null && value !== ''
-  );
-
   return (
     <div
       style={{
         display: 'flex',
-        alignItems: 'flex-start'
+        alignItems: 'flex-start',
+        minWidth: 0,
+        width: '100%'
       }}
     >
       <Filters
@@ -245,19 +246,14 @@ const Benchmark: React.FC = () => {
           handleSearch={handleSearch}
           handleInputChange={handleNameChange}
           rowSelection={rowSelection}
-          widths={{ input: 300 }}
-          left={
-            <LeftActions
-              modelList={modelList}
-              datasetList={datasetList}
-              handleSearch={handleSearch}
-              handleQueryChange={handleQueryChange}
-              handleInputChange={handleNameChange}
-              count={filtersCount.length}
-              toggleFilters={toggleFilters}
-              onClear={handleOnClearFilters}
-            ></LeftActions>
-          }
+          widths={{ input: 230 }}
+          collapseInlineFilters
+          filtersButtonProps={{
+            show: true,
+            count: filtersCount,
+            onClick: toggleFilters,
+            onClear: handleOnClearFilters
+          }}
           right={
             <RightActions
               settingButton={SettingsButton}
@@ -272,31 +268,40 @@ const Benchmark: React.FC = () => {
           }
         ></FilterBar>
         <ConfigProvider renderEmpty={renderEmpty}>
-          <Table
-            tableLayout="fixed"
-            columns={columns}
-            className={'scroll-table'}
-            dataSource={dataSource.dataList}
-            rowSelection={rowSelection}
-            loading={{
-              spinning: dataSource.loading,
-              size: 'middle'
+          <div
+            style={{
+              width: '100%',
+              maxWidth: '100%',
+              minWidth: 0,
+              overflowX: 'hidden'
             }}
-            sortDirections={TABLE_SORT_DIRECTIONS}
-            showSorterTooltip={false}
-            rowKey="id"
-            scroll={{ x: 1200 }}
-            onChange={handleTableChange}
-            pagination={{
-              size: 'middle',
-              showSizeChanger: true,
-              pageSize: queryParams.perPage,
-              current: queryParams.page,
-              total: dataSource.total,
-              hideOnSinglePage: queryParams.perPage === 10,
-              onChange: handlePageChange
-            }}
-          ></Table>
+          >
+            <Table
+              tableLayout="fixed"
+              columns={columns}
+              className={'scroll-table'}
+              dataSource={dataSource.dataList}
+              rowSelection={rowSelection}
+              loading={{
+                spinning: dataSource.loading,
+                size: 'middle'
+              }}
+              sortDirections={TABLE_SORT_DIRECTIONS}
+              showSorterTooltip={false}
+              rowKey="id"
+              scroll={{ x: 1200 }}
+              onChange={handleTableChange}
+              pagination={{
+                size: 'middle',
+                showSizeChanger: true,
+                pageSize: queryParams.perPage,
+                current: queryParams.page,
+                total: dataSource.total,
+                hideOnSinglePage: queryParams.perPage === 10,
+                onChange: handlePageChange
+              }}
+            ></Table>
+          </div>
         </ConfigProvider>
       </PageBox>
       <AddBenchmarkModal

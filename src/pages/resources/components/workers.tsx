@@ -1,5 +1,6 @@
 import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import useTableFetch from '@/hooks/use-table-fetch';
+import useWindowResize from '@/hooks/use-window-resize';
 import PageBox from '@/pages/_components/page-box';
 import { DockerStepsFromWorker } from '@/pages/cluster-management/components/add-worker/config';
 import { ClusterListItem } from '@/pages/cluster-management/config/types';
@@ -7,10 +8,16 @@ import useAddWorker from '@/pages/cluster-management/hooks/use-add-worker';
 import { useQueryClusterList } from '@/pages/cluster-management/services/use-query-cluster-list';
 import useNoResourceResult from '@/pages/llmodels/hooks/use-no-resource-result';
 import useGranfanaLink from '@/pages/resources/hooks/use-grafana-link';
-import { DeleteModal, FilterBar } from '@gpustack/core-ui';
+import {
+  BaseSelect,
+  DeleteModal,
+  FilterBar,
+  AntdResponsiveTable as Table,
+  useFilterDrawer
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { ConfigProvider, Table, message } from 'antd';
+import { ConfigProvider, message } from 'antd';
 import { useEffect, useState } from 'react';
 import {
   WORKERS_API,
@@ -20,6 +27,7 @@ import {
   updateWorker
 } from '../apis';
 import { ListItem } from '../config/types';
+import ClusterFilterForm from '../filters/cluster-filter-form';
 import useWorkerColumns from '../hooks/use-worker-columns';
 import useWorkerMaintenance from '../hooks/use-worker-maintenance';
 import UpdateLabels from './update-labels';
@@ -62,8 +70,11 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
     updateManually: true,
     defaultQueryParams: clusterId ? { cluster_id: clusterId } : undefined
   });
+  const intl = useIntl();
+  const { isMobile, isIconOnlyToolbar } = useWindowResize();
   const { goToGrafana, ActionButton } = useGranfanaLink({
-    type: 'worker'
+    type: 'worker',
+    iconOnly: isIconOnlyToolbar
   });
   const { MaintenanceModal, handleStopMaintenance, setOpenStatus } =
     useWorkerMaintenance({ fetchData: handleSearch });
@@ -71,7 +82,20 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
     useStateData: false
   });
 
-  const intl = useIntl();
+  const {
+    filtersVisible,
+    toggleFilters,
+    filterRef,
+    filterValues,
+    filtersCount,
+    handleOnFilterChange,
+    handleOnClearFilters
+  } = useFilterDrawer({
+    onFilterChange: (filters) => {
+      handleQueryChange({ page: 1, ...filters });
+    },
+    clearKeys: ['cluster_id']
+  });
   const [updateLabelsData, setUpdateLabelsData] = useState<{
     open: boolean;
     data: ListItem;
@@ -265,87 +289,127 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
   }, []);
 
   return (
-    <>
-      <PageBox>
-        <FilterBar
-          showSelect={source !== 'clusterDetail'}
-          selectHolder={intl.formatMessage({ id: 'clusters.filterBy.cluster' })}
-          marginBottom={22}
-          marginTop={30}
-          buttonText={intl.formatMessage({ id: 'resources.button.create' })}
-          handleDeleteByBatch={handleDeleteBatch}
-          handleSearch={handleSearch}
-          handleSelectChange={handleClusterChange}
-          handleClickPrimary={handleOnAddWorker}
-          handleInputChange={handleNameChange}
-          rowSelection={rowSelection}
-          selectOptions={clusterData.list}
-          widths={
-            source !== 'clusterDetail'
-              ? { select: 230, input: 230 }
-              : { input: 300 }
-          }
-          right={
-            source === 'clusterDetail' ? (
-              <></>
-            ) : (
-              <WorkerRightActions
-                handleDeleteByBatch={handleDeleteBatch}
-                handleClickPrimary={handleOnAddWorker}
-                rowSelection={rowSelection}
-                MonitorButton={ActionButton()}
-              ></WorkerRightActions>
-            )
-          }
-        ></FilterBar>
-        <ConfigProvider renderEmpty={renderEmpty}>
-          <Table
-            columns={columns}
-            sortDirections={TABLE_SORT_DIRECTIONS}
-            showSorterTooltip={false}
-            tableLayout={'auto'}
-            className={'scroll-table'}
-            dataSource={dataSource.dataList}
-            loading={{
-              spinning: dataSource.loading,
-              size: 'middle'
-            }}
-            rowKey="id"
-            scroll={{ x: 900 }}
-            onChange={handleTableChange}
-            rowSelection={source === 'clusterDetail' ? undefined : rowSelection}
-            pagination={{
-              size: 'middle',
-              showSizeChanger: true,
-              pageSize: queryParams.perPage,
-              current: queryParams.page,
-              total: dataSource.total,
-              hideOnSinglePage: queryParams.perPage === 10,
-              onChange: handlePageChange
-            }}
-          ></Table>
-        </ConfigProvider>
-        <DeleteModal ref={modalRef}></DeleteModal>
-        <UpdateLabels
-          open={updateLabelsData.open}
-          onOk={handleUpdateLabelsOk}
-          onCancel={handleCancelUpdateLabels}
-          data={{
-            name: updateLabelsData.data.name,
-            labels: updateLabelsData.data.labels
-          }}
-        ></UpdateLabels>
-        <WorkerDetailModal
-          open={workerDetailStatus.open}
-          currentData={workerDetailStatus.currentData}
-          onClose={() =>
-            setWorkerDetailStatus({ currentData: null, open: false })
-          }
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'flex-start',
+        minWidth: 0,
+        maxWidth: '100%'
+      }}
+    >
+      {source !== 'clusterDetail' && (
+        <ClusterFilterForm
+          ref={filterRef}
+          open={filtersVisible}
+          clusterList={clusterData.list}
+          initialValues={filterValues}
+          onValuesChange={handleOnFilterChange}
+          onClose={toggleFilters}
+          onClear={handleOnClearFilters}
         />
-        {MaintenanceModal}
-        {AddWorkerModal}
-      </PageBox>
-    </>
+      )}
+      <div style={{ flex: 1, minWidth: 0, maxWidth: '100%' }}>
+        <PageBox>
+          <FilterBar
+            showSelect={false}
+            marginBottom={22}
+            marginTop={30}
+            handleDeleteByBatch={
+              source === 'clusterDetail' ? undefined : handleDeleteBatch
+            }
+            handleSearch={handleSearch}
+            handleInputChange={handleNameChange}
+            rowSelection={rowSelection}
+            widths={{ input: 300 }}
+            collapseInlineFilters={source !== 'clusterDetail'}
+            filtersButtonProps={
+              source !== 'clusterDetail'
+                ? {
+                    show: true,
+                    count: filtersCount,
+                    onClick: toggleFilters,
+                    onClear: handleOnClearFilters
+                  }
+                : undefined
+            }
+            inlineFilters={
+              source !== 'clusterDetail' ? (
+                <BaseSelect
+                  allowClear
+                  showSearch={false}
+                  placeholder={intl.formatMessage({
+                    id: 'clusters.filterBy.cluster'
+                  })}
+                  style={{ width: 160 }}
+                  size="large"
+                  maxTagCount={1}
+                  onChange={handleClusterChange}
+                  options={clusterData.list}
+                />
+              ) : null
+            }
+            right={
+              source === 'clusterDetail' ? undefined : (
+                <WorkerRightActions
+                  handleDeleteByBatch={handleDeleteBatch}
+                  handleClickPrimary={handleOnAddWorker}
+                  rowSelection={rowSelection}
+                  MonitorButton={ActionButton()}
+                />
+              )
+            }
+          ></FilterBar>
+          <ConfigProvider renderEmpty={renderEmpty}>
+            <Table
+              columns={columns}
+              sortDirections={TABLE_SORT_DIRECTIONS}
+              showSorterTooltip={false}
+              tableLayout={'auto'}
+              className={'scroll-table'}
+              dataSource={dataSource.dataList}
+              loading={{
+                spinning: dataSource.loading,
+                size: 'middle'
+              }}
+              rowKey="id"
+              scroll={{ x: 'max-content' }}
+              onChange={handleTableChange}
+              rowSelection={
+                source === 'clusterDetail' ? undefined : rowSelection
+              }
+              pagination={{
+                size: isMobile ? 'small' : 'middle',
+                showSizeChanger: true,
+                pageSize: queryParams.perPage,
+                current: queryParams.page,
+                total: dataSource.total,
+                hideOnSinglePage: queryParams.perPage === 10,
+                onChange: handlePageChange
+              }}
+            ></Table>
+          </ConfigProvider>
+          <DeleteModal ref={modalRef}></DeleteModal>
+          <UpdateLabels
+            open={updateLabelsData.open}
+            onOk={handleUpdateLabelsOk}
+            onCancel={handleCancelUpdateLabels}
+            data={{
+              name: updateLabelsData.data.name,
+              labels: updateLabelsData.data.labels
+            }}
+          ></UpdateLabels>
+          <WorkerDetailModal
+            open={workerDetailStatus.open}
+            currentData={workerDetailStatus.currentData}
+            onClose={() =>
+              setWorkerDetailStatus({ currentData: null, open: false })
+            }
+          />
+          {MaintenanceModal}
+          {AddWorkerModal}
+        </PageBox>
+      </div>
+    </div>
   );
 };
 

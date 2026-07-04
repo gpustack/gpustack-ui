@@ -22,6 +22,7 @@ import {
   ResourceBreakdownResponse
 } from '../apis/resource';
 import { withDeletedMark } from '../utils/deleted-label';
+import { USAGE_FULL_DATA_PAGINATION } from '../config';
 import {
   exportBreakdownRows,
   toExportColumns
@@ -203,12 +204,16 @@ const ResourceExportData: React.FC<ResourceExportDataProps> = (props) => {
     setPageParams({ page, perPage });
   };
 
-  // Export the full filtered set, not just the visible page. ``page: -1`` is
-  // the backend's no-pagination sentinel (perPage is then ignored).
+  // Export the full filtered set, not just the visible page.
   const handleSubmit = async () => {
     setExporting(true);
     try {
-      const res = await queryFn(buildRequest(-1, INITIAL_PAGE.perPage));
+      const res = await queryFn(
+        buildRequest(
+          USAGE_FULL_DATA_PAGINATION.page,
+          USAGE_FULL_DATA_PAGINATION.perPage
+        )
+      );
       exportBreakdownRows(
         markRows(res.items ?? []),
         toExportColumns(columns),

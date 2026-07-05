@@ -13,7 +13,7 @@ import OnlineModelLayout from '../model-source/online-model-layout';
 import OnlineModelModalFooter from '../model-source/online-model-modal-footer';
 import SearchModel from '../model-source/search-model';
 import TitleWrapper from '../title-wrapper';
-import TargetForm from './target-form';
+import TargetForm, { type DownloadDataFormHandle } from './target-form';
 
 type AddModalProps = {
   title: string;
@@ -44,7 +44,7 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
     modelSourceMap.modelscope_value
   ];
 
-  const form = useRef<any>(null);
+  const form = useRef<DownloadDataFormHandle>(null);
   const intl = useIntl();
   const { size } = useWindowResize();
   const [selectedModel, setSelectedModel] = useState<any>({});

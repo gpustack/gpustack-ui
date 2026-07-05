@@ -9,6 +9,7 @@ import {
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
+import type { FormInstance } from 'antd/es/form';
 import _ from 'lodash';
 import minimatch from 'minimatch';
 import React, {
@@ -31,6 +32,15 @@ type CascaderOption<T extends object = EmptyObject> = {
   index?: number;
   children?: CascaderOption<T>[];
 } & Partial<T>;
+
+type DownloadFormData = FormData & {
+  worker_id?: unknown;
+  organization_id?: number | null;
+};
+
+export type DownloadDataFormHandle = {
+  form: FormInstance<DownloadFormData>;
+};
 
 interface TargetFormProps {
   ref?: any;

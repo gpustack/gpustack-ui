@@ -8,6 +8,7 @@ import {
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
+import type { FormInstance } from 'antd/es/form';
 import _ from 'lodash';
 import React, {
   forwardRef,
@@ -47,6 +48,18 @@ const advancedRequiredFields = ['backend', 'image_name', 'run_command'];
 const scheduleRequiredFields = ['gpu_selector'];
 
 const performanceRequiredFields = ['speculative_config'];
+
+export type DeployDataFormHandle = {
+  form: FormInstance<FormData>;
+  submit: () => void;
+  resetFields: (fields?: string[]) => void;
+  setFieldsValue: (values: Record<string, unknown>) => void;
+  setFieldValue: (name: string, value: unknown) => void;
+  getFieldValue: (name: string) => any;
+  getFieldsValue: (nameList?: string[]) => any;
+  getGPUOptionList: (params: { clusterId: number }) => Promise<any>;
+  getBackendOptions: (params?: { cluster_id: number }) => Promise<any>;
+};
 
 interface DataFormProps {
   initialValues?: FormData;

@@ -18,7 +18,7 @@ import {
 } from '../../config';
 import { FormData, SourceType } from '../../config/types';
 import { backendOptionsMap } from '../../constants/backend-parameters';
-import DataForm from '../../forms';
+import DataForm, { type DeployDataFormHandle } from '../../forms';
 import {
   MessageStatus,
   useCheckCompatibility,
@@ -108,7 +108,7 @@ const AddModal: FC<AddModalProps> = (props) => {
     submitAnyway
   } = useCheckCompatibility();
   const { onSelectModel } = useSelectModel({ gpuOptions: [] });
-  const form = useRef<any>(null);
+  const form = useRef<DeployDataFormHandle>(null);
   const intl = useIntl();
   const { size } = useWindowResize();
   const [selectedModel, setSelectedModel] = useState<any>({});

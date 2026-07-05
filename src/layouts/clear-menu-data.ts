@@ -15,7 +15,6 @@ type MenuDataItem = {
 export function clearMenuData(menusData: MenuDataItem[] = []): MenuDataItem[] {
   return menusData
     .map((item) => {
-      const children = item.children || [];
       const finalItem = { ...item };
 
       if (!finalItem.children && finalItem.routes) {
@@ -26,13 +25,16 @@ export function clearMenuData(menusData: MenuDataItem[] = []): MenuDataItem[] {
         return null;
       }
 
+      const children = finalItem.children || [];
+
       if (finalItem.children) {
         if (
           !finalItem.hideChildrenInMenu &&
           children.some((child) => child && child.name && !child.hideInMenu)
         ) {
+          delete finalItem.routes;
           return {
-            ...item,
+            ...finalItem,
             children: clearMenuData(children)
           };
         }

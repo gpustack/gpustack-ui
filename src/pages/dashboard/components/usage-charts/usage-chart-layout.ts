@@ -66,7 +66,13 @@ const pxToRadiusPct = (
   px: number,
   containerWidth: number,
   chartHeight: number
-) => `${Math.round((px / (Math.min(containerWidth, chartHeight) / 2)) * 100)}%`;
+) => {
+  const minDim = Math.min(containerWidth, chartHeight);
+  if (minDim <= 0) {
+    return '0%';
+  }
+  return `${Math.round((px / (minDim / 2)) * 100)}%`;
+};
 
 function buildStackedLayout(
   containerWidth: number,

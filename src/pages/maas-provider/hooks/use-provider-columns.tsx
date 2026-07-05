@@ -64,7 +64,7 @@ const useProviderColumns = (
         minWidth: 160,
         responsive: { hideBelow: 'md' },
         render: (value: string, record: MaasProviderItem) => {
-          const providerType = value || record.config?.type;
+          const providerType = String(value || record.config?.type || '');
           return (
             <div
               className="flex-center gap-8"

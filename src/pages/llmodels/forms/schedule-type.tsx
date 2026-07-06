@@ -20,6 +20,7 @@ import {
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
 import { backendOptionsMap } from '../constants/backend-parameters';
+import '../style/gpu-selector.less';
 
 const InputWrapper = styled.div`
   padding: 8px 4px;

@@ -1,6 +1,7 @@
 import { convertFileSize } from '@/utils';
 import { AutoTooltip } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
+import { Flex } from 'antd';
 import React from 'react';
 import styled from 'styled-components';
 import '../style/gpu-card.less';
@@ -19,12 +20,17 @@ const Header = styled.div`
   width: 100%;
 `;
 
-const ItemInfo = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  white-space: break-spaces;
-  font-size: 13px;
-`;
+const Metric: React.FC<{ label: React.ReactNode; value: React.ReactNode }> = ({
+  label,
+  value
+}) => (
+  <span style={{ lineHeight: 1.2 }}>
+    {label}:{' '}
+    <span className="font-500" style={{ color: 'var(--ant-color-text)' }}>
+      {value}
+    </span>
+  </span>
+);
 
 const Description = styled.div`
   display: flex;
@@ -64,29 +70,20 @@ const GPUCard: React.FC<{
       }
       description={
         info || (
-          <>
-            <ItemInfo>
-              {intl.formatMessage({ id: 'resources.table.vram' })}(
-              {intl.formatMessage({ id: 'resources.table.used' })}/
-              {intl.formatMessage({ id: 'resources.table.total' })}):{' '}
-              <span>
-                {convertFileSize(
-                  data?.memory?.used || data?.memory?.allocated || 0
-                )}{' '}
-                / {convertFileSize(data?.memory?.total || 0)}
-              </span>
-            </ItemInfo>
-            {/* <ItemInfo>
-              <span>
-                {intl.formatMessage({ id: 'resources.table.gpuutilization' })}
-                :{' '}
-              </span>
-              {data?.memory?.used
-                ? _.round(data?.memory?.utilization_rate || 0, 2)
-                : _.round(data.memory?.allocated / data.memory?.total, 2) * 100}
-              %
-            </ItemInfo> */}
-          </>
+          <Flex wrap gap={8} style={{ fontSize: 13 }}>
+            <Metric
+              label={intl.formatMessage({ id: 'resources.table.total' })}
+              value={convertFileSize(data?.memory?.total || 0)}
+            />
+            <Metric
+              label={intl.formatMessage({ id: 'resources.table.used' })}
+              value={convertFileSize(data?.memory?.used || 0)}
+            />
+            <Metric
+              label={intl.formatMessage({ id: 'resources.table.allocated' })}
+              value={convertFileSize(data?.memory?.allocated || 0)}
+            />
+          </Flex>
         )
       }
     ></CardContainer>

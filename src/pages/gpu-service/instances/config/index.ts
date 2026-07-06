@@ -275,7 +275,7 @@ export const pickCandidateForAccelerator = <
 >(
   tiers:
     | {
-        onceMaxRequest: { accelerator?: string };
+        onceMaxRequest: { accelerator?: string; acceleratorSliced?: string };
         candidates?: C[] | null;
       }[]
     | undefined
@@ -305,9 +305,14 @@ export const pickCandidateForAccelerator = <
   // count === 0 ? parseQuantity(tier.onceMaxRequest.accelerator) > count; this is CPU-only case.
   for (const tier of sorted) {
     const acceleratorCount = parseQuantity(tier.onceMaxRequest?.accelerator);
-    const fits = acceleratable
-      ? acceleratorCount >= count
-      : acceleratorCount === 0;
+    // Sliced mode requests a fraction of a single card, so the tier's
+    // whole-card accelerator count (0 for a slice-only type) can't gate it;
+    // fit on the tier's sliced capacity instead.
+    const fits = sliced
+      ? parseQuantity(tier.onceMaxRequest?.acceleratorSliced) > 0
+      : acceleratable
+        ? acceleratorCount >= count
+        : acceleratorCount === 0;
     if (!fits) continue;
     const candidate = tier.candidates?.find(hasResources);
     if (candidate) return candidate;

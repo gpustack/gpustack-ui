@@ -167,8 +167,8 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
       return;
     }
     form.setFieldValue('cluster_id', next);
-    handleClusterChange?.(next as number);
-  }, [scopeOrgId, clusterOptions, form, handleClusterChange]);
+    handleClusterChange?.(next);
+  }, [clusterOptions, form, handleClusterChange]);
 
   const clusterOptionRender = (option: any) => {
     const { data } = option;

@@ -1,9 +1,11 @@
+import { nsLocalJSONStorage } from '@gpustack/core-ui/utils';
 import { getDefaultStore } from 'jotai';
 import { atomWithStorage } from 'jotai/utils';
 
 export const tabActiveAtom = atomWithStorage<Map<string, any>>(
   'tabActiveStatus',
-  new Map()
+  new Map(),
+  nsLocalJSONStorage
 );
 
 export const setActiveStatus = (key: string, value: any) => {

@@ -1,5 +1,6 @@
 import externalLinks from '@/constants/external-links';
 import { GithubFilled } from '@ant-design/icons';
+import { nsLocal } from '@gpustack/core-ui/utils';
 import { useIntl } from '@umijs/max';
 import { Tooltip } from 'antd';
 import { useEffect, useState } from 'react';
@@ -66,7 +67,7 @@ type CacheEntry = { value: number; time: number };
 
 const readCache = (): CacheEntry | null => {
   try {
-    const raw = localStorage.getItem(CACHE_KEY);
+    const raw = nsLocal.get(CACHE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw);
     if (typeof parsed?.value !== 'number' || typeof parsed?.time !== 'number') {
@@ -80,10 +81,7 @@ const readCache = (): CacheEntry | null => {
 
 const writeCache = (value: number) => {
   try {
-    localStorage.setItem(
-      CACHE_KEY,
-      JSON.stringify({ value, time: Date.now() })
-    );
+    nsLocal.set(CACHE_KEY, JSON.stringify({ value, time: Date.now() }));
   } catch {
     // ignore quota errors
   }

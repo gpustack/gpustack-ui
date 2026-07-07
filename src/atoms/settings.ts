@@ -1,4 +1,5 @@
 import { COLOR_PRIMARY } from '@/config/theme';
+import { nsLocal, nsLocalJSONStorage } from '@gpustack/core-ui/utils';
 import { atom } from 'jotai';
 import { atomWithStorage } from 'jotai/utils';
 
@@ -23,9 +24,7 @@ export const defaultSettings: UserSettings = {
 export const getStorageUserSettings = () => {
   if (typeof window === 'undefined') return defaultSettings;
   try {
-    const savedSettings = JSON.parse(
-      localStorage.getItem('userSettings') || '{}'
-    );
+    const savedSettings = JSON.parse(nsLocal.get('userSettings') || '{}');
     return {
       ...defaultSettings,
       ...savedSettings
@@ -35,9 +34,13 @@ export const getStorageUserSettings = () => {
   }
 };
 
-export const userSettingsAtom = atomWithStorage<UserSettings>('userSettings', {
-  ...getStorageUserSettings()
-});
+export const userSettingsAtom = atomWithStorage<UserSettings>(
+  'userSettings',
+  {
+    ...getStorageUserSettings()
+  },
+  nsLocalJSONStorage
+);
 
 export const userSettingsHelperAtom = atom(
   (get) => get(userSettingsAtom),
@@ -59,6 +62,6 @@ export const hideModalTemporarilyAtom = atom<boolean>(false);
 export const collapsedMenuGroupsAtom = atomWithStorage<string[]>(
   'collapsedMenuGroups',
   [],
-  undefined,
+  nsLocalJSONStorage,
   { getOnInit: true }
 );

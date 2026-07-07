@@ -1,3 +1,4 @@
+import { NS_STORE_NAME } from '@gpustack/core-ui/utils';
 import localStore from './store';
 
 const IS_FIRST_LOGIN = 'is_first_login';
@@ -5,7 +6,7 @@ const IS_FIRST_LOGIN = 'is_first_login';
 const REMEMBER_ME_KEY = 'r_m';
 const CRYPT_TEXT = 'seal';
 
-const store = localStore.createInstance({ name: '_xWXJKJ_S1Sna_' });
+const store = localStore.createInstance({ name: NS_STORE_NAME });
 
 // Kept to remove credentials saved by the old "remember me" feature.
 const removeRememberMe = (key: string) => {
@@ -37,9 +38,9 @@ const writeColumnSettings = (key: string, data: any) => {
 export {
   CRYPT_TEXT,
   IS_FIRST_LOGIN,
-  REMEMBER_ME_KEY,
   readColumnSettings,
   readState,
+  REMEMBER_ME_KEY,
   removeRememberMe,
   writeColumnSettings,
   writeState

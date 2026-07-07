@@ -1,7 +1,12 @@
+import { nsLocal, nsLocalJSONStorage } from '@gpustack/core-ui/utils';
 import { atom } from 'jotai';
 import { atomWithStorage } from 'jotai/utils';
 
-export const userAtom = atomWithStorage<any>('userInfo', null);
+export const userAtom = atomWithStorage<any>(
+  'userInfo',
+  null,
+  nsLocalJSONStorage
+);
 
 // Backs the `currentOrganizationId` localStorage key. Stays null in
 // builds with no Org context (single-tenant), and is shared with any
@@ -9,7 +14,8 @@ export const userAtom = atomWithStorage<any>('userInfo', null);
 // without one side having to import from the other.
 export const currentOrganizationIdAtom = atomWithStorage<number | null>(
   'currentOrganizationId',
-  null
+  null,
+  nsLocalJSONStorage
 );
 
 export const GPUStackVersionAtom = atom<{
@@ -70,7 +76,7 @@ export const getCurrentOrgNamespace = (
 
 const getStoredCurrentOrgId = (): number | null => {
   try {
-    const raw = localStorage.getItem('currentOrganizationId');
+    const raw = nsLocal.get('currentOrganizationId');
     if (!raw) return null;
     const value = JSON.parse(raw);
     return typeof value === 'number' ? value : null;
@@ -108,7 +114,7 @@ export const getOrgById = (
   const target = String(id);
   for (const key of ORG_CACHE_KEYS) {
     try {
-      const raw = localStorage.getItem(key);
+      const raw = nsLocal.get(key);
       if (!raw) continue;
       const list = JSON.parse(raw) as CachedOrg[];
       if (!Array.isArray(list)) continue;

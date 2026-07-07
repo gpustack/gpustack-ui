@@ -13,7 +13,7 @@ import {
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import { DeployFormKeyMap, sourceOptions } from '../config';
 import { useFormContext } from '../config/form-context';
@@ -24,6 +24,7 @@ import CustomBackend from './custom-backend';
 import LocalPathSource from './local-path-source';
 import ModeField from './mode-field';
 import OnlineSource from './online-source';
+
 const ClusterOption = styled.span`
   display: flex;
   padding: 8px 0;
@@ -116,7 +117,6 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
   // cluster dropdown to that org's own clusters — the backend derives the
   // deployment's owner from the chosen cluster, so this keeps them aligned.
   const scopeOrgId = Form.useWatch('organization_id', form);
-  const prevScopeRef = useRef<number | null | undefined>(undefined);
 
   const clusterOptions = useMemo(() => {
     return clusterList
@@ -139,36 +139,35 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
       });
   }, [clusterList, scopeOrgId]);
 
-  // On a genuine org change (not the initial value — the modal's open
-  // handler seeds the first cluster), drop a now-out-of-scope cluster and
-  // re-pick within the new org so GPU/backend options refetch for it.
+  // Keep the cluster selection consistent with the available (scoped)
+  // options. The modal's open handler seeds a cluster, but that seed can be
+  // empty (options not loaded yet) or point outside the current scope (the
+  // scope id and the option list both settle after mount, and an org switch
+  // re-scopes the list) — leaving the field blank even though a valid option
+  // exists. Whenever the scope or the options change, drop an invalid/empty
+  // selection and fall back to the scope's default cluster (then a Ready one,
+  // then the first) so GPU/backend options refetch for it. A selection that's
+  // still valid is left untouched, so a user's (or edit's) choice is kept.
   useEffect(() => {
-    if (prevScopeRef.current === undefined) {
-      prevScopeRef.current = scopeOrgId;
+    if (!clusterOptions?.length) {
       return;
     }
-    if (prevScopeRef.current === scopeOrgId) {
-      return;
-    }
-    prevScopeRef.current = scopeOrgId;
-
     const current = form.getFieldValue('cluster_id');
-    const stillValid = clusterOptions?.some((c) => c.value === current);
-    if (stillValid) {
+    const stillValid = clusterOptions.some((c) => c.value === current);
+    if (current != null && stillValid) {
       return;
     }
     const next =
-      clusterOptions?.find((c) => c.is_default)?.value ??
-      clusterOptions?.find((c) => c.state === ClusterStatusValueMap.Ready)
+      clusterOptions.find((c) => c.is_default)?.value ??
+      clusterOptions.find((c) => c.state === ClusterStatusValueMap.Ready)
         ?.value ??
-      clusterOptions?.[0]?.value ??
+      clusterOptions[0]?.value ??
       null;
-    form.setFieldValue('cluster_id', next ?? null);
-    if (next != null) {
-      handleClusterChange?.(next as number);
+    if (next == null || next === current) {
+      return;
     }
-    // The prevScopeRef guard above makes this a no-op unless scopeOrgId
-    // actually changed, so listing the other deps is safe (no extra runs).
+    form.setFieldValue('cluster_id', next);
+    handleClusterChange?.(next as number);
   }, [scopeOrgId, clusterOptions, form, handleClusterChange]);
 
   const clusterOptionRender = (option: any) => {

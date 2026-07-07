@@ -131,8 +131,6 @@ const Login = () => {
     [shouldUseCustomLogin, userSettings]
   );
 
-  console.log('useCustomLogin', useCustomLogin, userSettings);
-
   const gotoDefaultPage = async (info: any) => {
     if (!info || info?.require_password_change) {
       return;

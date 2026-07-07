@@ -1,3 +1,4 @@
+import { nsLocalJSONStorage } from '@gpustack/core-ui/utils';
 import { getDefaultStore } from 'jotai';
 import { atomWithStorage } from 'jotai/utils';
 
@@ -8,7 +9,7 @@ export interface PaginationState {
 export const paginationAtom = atomWithStorage<Record<string, any>>(
   'paginationStatus',
   {},
-  undefined,
+  nsLocalJSONStorage,
   { getOnInit: true }
 );
 

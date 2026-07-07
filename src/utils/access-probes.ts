@@ -10,6 +10,7 @@
 import { queryClusterList } from '@/pages/cluster-management/apis';
 import { ProviderValueMap } from '@/pages/cluster-management/config';
 import { queryResourceEvents } from '@/pages/usage/apis/resource';
+import { nsSession } from '@gpustack/core-ui/utils';
 
 // Probes the caller's cluster list once so access predicates can gate
 // GPU Service (Kubernetes-only). Cheap (one list request) and never
@@ -33,20 +34,13 @@ export const probeHasKubernetesCluster = async (): Promise<
     const value = (res?.items ?? []).some(
       (c) => c?.provider === ProviderValueMap.Kubernetes
     );
-    try {
-      window.sessionStorage.setItem(HAS_K8S_CLUSTER_KEY, JSON.stringify(value));
-    } catch {
-      // sessionStorage may be unavailable (Safari private mode); the
-      // access predicate already handles a missing value as "unknown".
-    }
+    // nsSession swallows write errors (Safari private mode); the access
+    // predicate already handles a missing value as "unknown".
+    nsSession.set(HAS_K8S_CLUSTER_KEY, JSON.stringify(value));
     return value;
   } catch (error) {
     console.error('probeHasKubernetesCluster error', error);
-    try {
-      window.sessionStorage.removeItem(HAS_K8S_CLUSTER_KEY);
-    } catch {
-      // ignore
-    }
+    nsSession.remove(HAS_K8S_CLUSTER_KEY);
     return undefined;
   }
 };
@@ -69,22 +63,12 @@ export const probeHasResourceEvents = async (): Promise<
       }
     );
     const value = (res?.pagination?.total ?? 0) > 0;
-    try {
-      window.sessionStorage.setItem(
-        HAS_RESOURCE_EVENTS_KEY,
-        JSON.stringify(value)
-      );
-    } catch {
-      // sessionStorage may be unavailable; predicate treats missing as unknown.
-    }
+    // nsSession swallows write errors; predicate treats missing as unknown.
+    nsSession.set(HAS_RESOURCE_EVENTS_KEY, JSON.stringify(value));
     return value;
   } catch (error) {
     console.error('probeHasResourceEvents error', error);
-    try {
-      window.sessionStorage.removeItem(HAS_RESOURCE_EVENTS_KEY);
-    } catch {
-      // ignore
-    }
+    nsSession.remove(HAS_RESOURCE_EVENTS_KEY);
     return undefined;
   }
 };

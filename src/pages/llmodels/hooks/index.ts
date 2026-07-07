@@ -508,7 +508,7 @@ export const useCheckCompatibility = () => {
 };
 
 export const useSelectModel = (data: { gpuOptions: any[] }) => {
-  const { checkCurrentbackend } = useCheckBackend();
+  const { checkCurrentbackend, checkIsImageModel } = useCheckBackend();
   const { recognizeAudioModel } = useRecognizeAudio();
 
   // just for setting the model name or repo_id, and the backend, Since the model type is fixed.
@@ -532,8 +532,10 @@ export const useSelectModel = (data: { gpuOptions: any[] }) => {
     const backend = checkCurrentbackend({
       defaultBackend: defaultBackend || backendOptionsMap.vllm,
       isAudio: modelTaskData.type === modelTaskMap.audio,
+      isImage: checkIsImageModel(selectModel, source),
       isGGUF: selectModel.isGGUF,
-      gpuOptions: gpuOptions
+      gpuOptions: gpuOptions,
+      flatBackendOptions
     });
 
     const selectedBackend = flatBackendOptions?.find(

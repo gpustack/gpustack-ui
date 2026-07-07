@@ -201,6 +201,15 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     return {};
   };
 
+  const updateDistributedInferenceConfig = (backend: string) => {
+    if (backend === backendOptionsMap.diffSynth) {
+      return {
+        distributed_inference_across_workers: false
+      };
+    }
+    return {};
+  };
+
   const handleBackendChange = async (val: string, option: BackendOption) => {
     await new Promise((resolve) => {
       setTimeout(resolve, 100);
@@ -209,6 +218,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       backend_version: null, // don't set default version here, let the user select it
       backend_parameters: option.default_backend_param || [],
       ...updateKVCacheConfig(val, option),
+      ...updateDistributedInferenceConfig(val),
       ...updateGPUSelector(val)
     });
 
@@ -230,6 +240,9 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     const gpuSelector = generateGPUIds(data);
     const allValues = {
       ..._.omit(data, ['scheduleType']),
+      ...(data.backend === backendOptionsMap.diffSynth
+        ? { distributed_inference_across_workers: false }
+        : {}),
       ...gpuSelector
     };
     console.log('submit form data:', allValues);

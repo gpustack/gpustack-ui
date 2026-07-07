@@ -4,7 +4,7 @@ import externalLinks from '@/constants/external-links';
 import { useIntl } from '@umijs/max';
 import { Button, Divider, Modal, Typography } from 'antd';
 import { createStyles } from 'antd-style';
-import { useAtom } from 'jotai';
+import { useAtomValue } from 'jotai';
 import styled from 'styled-components';
 
 const CompanyWrapper = styled.div`
@@ -35,7 +35,7 @@ const Footer: React.FC = () => {
   const intl = useIntl();
   const [modal, contextHolder] = Modal.useModal();
   const { styles } = useStyles();
-  const [version] = useAtom(GPUStackVersionAtom);
+  const version = useAtomValue(GPUStackVersionAtom);
 
   const showVersion = () => {
     modal.info({

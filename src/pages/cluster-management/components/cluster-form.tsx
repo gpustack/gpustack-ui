@@ -59,6 +59,12 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
     const intl = useIntl();
     const [activeKey, setActiveKey] = React.useState<string[]>([]);
     const [submitAttempted, setSubmitAttempted] = useState(false);
+    // Single source of truth for the K8s cluster type, seeded from the cluster
+    // being edited. Shared via FormContext so the type selector and the
+    // GPU-only fields stay in sync deterministically (no cross-component watch).
+    const [clusterType, setClusterType] = useState<'model' | 'gpu'>(() =>
+      currentData?.k8s_options?.gpuInstanceOptions ? 'gpu' : 'model'
+    );
     const advanceConfigRef = React.useRef<any>(null);
     const systemConfig = useAtomValue(systemConfigAtom);
 
@@ -86,6 +92,13 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
       if (!opts) return base;
 
       const next: any = { ...opts };
+
+      // "model" clusters must not carry GPU-instance config. The field's UI is
+      // unmounted when model is selected, but strip it here too so the payload
+      // never keeps a stale gpuInstanceOptions shape from a prior "gpu" choice.
+      if (clusterType === 'model') {
+        delete next.gpuInstanceOptions;
+      }
 
       const creds = opts.imageCredentials;
       if (Array.isArray(creds)) {
@@ -220,7 +233,9 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
     };
 
     return (
-      <FormContext.Provider value={{ submitAttempted }}>
+      <FormContext.Provider
+        value={{ submitAttempted, clusterType, setClusterType }}
+      >
         <Form
           name="clusterForm"
           form={form}

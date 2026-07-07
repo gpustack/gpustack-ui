@@ -25,10 +25,7 @@ const Metric: React.FC<{ label: React.ReactNode; value: React.ReactNode }> = ({
   value
 }) => (
   <span style={{ lineHeight: 1.2 }}>
-    {label}:{' '}
-    <span className="font-500" style={{ color: 'var(--ant-color-text)' }}>
-      {value}
-    </span>
+    {label}: <span>{value}</span>
   </span>
 );
 
@@ -70,7 +67,7 @@ const GPUCard: React.FC<{
       }
       description={
         info || (
-          <Flex wrap gap={8} style={{ fontSize: 13 }}>
+          <Flex wrap gap={8} style={{ fontSize: 11 }}>
             <Metric
               label={intl.formatMessage({ id: 'resources.table.total' })}
               value={convertFileSize(data?.memory?.total || 0)}

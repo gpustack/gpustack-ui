@@ -51,6 +51,11 @@ export async function queryStorageClass(
   return request<Global.PageResponse<StorageClassItem>>(STORAGE_CLASS_API, {
     method: 'GET',
     params,
+    // `headers` lets the create form pin the request to a specific org so
+    // the picker only offers storage types that org can reference. GETs
+    // otherwise inherit the ambient org context, which is empty in the
+    // platform-admin "All" view and would list every org's types.
+    headers: options?.headers,
     cancelToken: options?.token
   });
 }

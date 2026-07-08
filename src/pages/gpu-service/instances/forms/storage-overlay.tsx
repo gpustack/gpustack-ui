@@ -10,12 +10,18 @@ import useOverlayLayout from '../hooks/use-overlay-layout';
 
 interface StorageOverlayProps {
   open: boolean;
+  // Org the surrounding instance create form targets (platform admin "All"
+  // view). The storage inherits this scope, so the type list is pinned to
+  // it — the picker only offers types that org can reference. Undefined
+  // when there's no create-scope picker (the ambient org context applies).
+  scopeOrgId?: number | null;
   onCancel: () => void;
   onSubmit: (values: StorageFormData) => Promise<void> | void;
 }
 
 const StorageOverlay: React.FC<StorageOverlayProps> = ({
   open,
+  scopeOrgId,
   onCancel,
   onSubmit
 }) => {
@@ -28,9 +34,14 @@ const StorageOverlay: React.FC<StorageOverlayProps> = ({
 
   useEffect(() => {
     if (open) {
-      fetchStorageClass({ page: -1 });
+      fetchStorageClass(
+        { page: -1 },
+        scopeOrgId != null
+          ? { headers: { 'X-Organization-Id': String(scopeOrgId) } }
+          : undefined
+      );
     }
-  }, [open]);
+  }, [open, scopeOrgId]);
 
   const handleSubmit = () => {
     formRef.current?.submit();
@@ -75,6 +86,7 @@ const StorageOverlay: React.FC<StorageOverlayProps> = ({
           ref={formRef}
           action={PageAction.CREATE}
           open={open}
+          showOrgScope={false}
           onFinish={handleFinish}
         />
       </FormContext.Provider>

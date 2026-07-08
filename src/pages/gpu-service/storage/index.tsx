@@ -177,7 +177,6 @@ const GPUServiceStorage: React.FC = () => {
         action={openStorageModalStatus.action}
         title={openStorageModalStatus.title}
         data={openStorageModalStatus.currentData}
-        storageClassList={storageClassList}
         onCancel={closeStorageModal}
         onOk={handleModalOk}
       />

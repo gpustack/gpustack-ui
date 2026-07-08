@@ -3,21 +3,18 @@ import { StatusType } from '@/config/types';
 import { icons } from '@gpustack/core-ui';
 
 export const StoragePhaseValueMap = {
-  Available: 'Available',
-  Unavailable: 'Unavailable',
-  Pending: 'Pending'
+  Ready: 'Ready',
+  Deleting: 'Deleting'
 };
 
 export const StoragePhaseLabelMap: Record<string, string> = {
-  [StoragePhaseValueMap.Available]: 'Available',
-  [StoragePhaseValueMap.Unavailable]: 'Unavailable',
-  [StoragePhaseValueMap.Pending]: 'Pending'
+  [StoragePhaseValueMap.Ready]: 'Ready',
+  [StoragePhaseValueMap.Deleting]: 'Deleting'
 };
 
 export const status: Record<string, StatusType> = {
-  [StoragePhaseValueMap.Available]: StatusMaps.success,
-  [StoragePhaseValueMap.Unavailable]: StatusMaps.error,
-  [StoragePhaseValueMap.Pending]: StatusMaps.transitioning
+  [StoragePhaseValueMap.Ready]: StatusMaps.success,
+  [StoragePhaseValueMap.Deleting]: StatusMaps.warning
 };
 
 export const rowActionList = [

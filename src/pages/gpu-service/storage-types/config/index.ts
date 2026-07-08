@@ -1,5 +1,22 @@
+import { StatusMaps } from '@/config';
+import { StatusType } from '@/config/types';
 import { icons } from '@gpustack/core-ui';
 import { StorageTypeKind } from './types';
+
+export const StorageTypePhaseValueMap = {
+  Ready: 'Ready',
+  Deleting: 'Deleting'
+};
+
+export const StorageTypePhaseLabelMap: Record<string, string> = {
+  [StorageTypePhaseValueMap.Ready]: 'Ready',
+  [StorageTypePhaseValueMap.Deleting]: 'Deleting'
+};
+
+export const status: Record<string, StatusType> = {
+  [StorageTypePhaseValueMap.Ready]: StatusMaps.success,
+  [StorageTypePhaseValueMap.Deleting]: StatusMaps.warning
+};
 
 export const StorageTypeKindValueMap: Record<string, StorageTypeKind> = {
   NFS: 'nfs',

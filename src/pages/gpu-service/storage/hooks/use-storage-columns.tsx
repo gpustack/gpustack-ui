@@ -1,11 +1,11 @@
 import useCreatorColumn from '@/pages/gpu-service/hooks/use-creator-column';
 import { usePluginListColumns } from '@/plugins/list-extra-columns';
-import { AutoTooltip, DropdownButtons } from '@gpustack/core-ui';
+import { AutoTooltip, DropdownButtons, StatusTag } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import type { ColumnsType } from 'antd/lib/table';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
-import { rowActionList } from '../config';
+import { rowActionList, status, StoragePhaseLabelMap } from '../config';
 import { ListItem } from '../config/types';
 
 interface ColumnsHookProps {
@@ -70,24 +70,25 @@ const useStorageColumns = ({
         sorter: false,
         render: (value: string) => (value ? value.replace(/Gi$/, 'GB') : '-')
       },
+      {
+        title: intl.formatMessage({ id: 'common.table.status' }),
+        dataIndex: ['status', 'phase'],
+        key: 'status',
+        sorter: false,
+        render: (value: string, record: ListItem) =>
+          value ? (
+            <StatusTag
+              statusValue={{
+                status: status[value],
+                text: StoragePhaseLabelMap[value] || value,
+                message: record?.status?.phaseMessage || ''
+              }}
+            ></StatusTag>
+          ) : (
+            '-'
+          )
+      },
       ...creatorCols,
-      // {
-      //   title: intl.formatMessage({ id: 'common.table.status' }),
-      //   dataIndex: ['status', 'phase'],
-      //   key: 'status',
-      //   sorter: false,
-      //   render: (value: string) =>
-      //     value ? (
-      //       <StatusTag
-      //         statusValue={{
-      //           status: status[value],
-      //           text: StoragePhaseLabelMap[value] || value
-      //         }}
-      //       ></StatusTag>
-      //     ) : (
-      //       '-'
-      //     )
-      // },
       {
         title: intl.formatMessage({ id: 'common.table.createTime' }),
         dataIndex: 'created_at',

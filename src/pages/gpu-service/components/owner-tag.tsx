@@ -6,8 +6,8 @@ import useUserDirectory from '../hooks/use-user-directory';
 /**
  * Owner tag for template cards, disambiguating same-name templates in
  * the admin's cross-tenant view. Renders nothing for non-admin callers
- * (the management page is `mine`-scoped for them) and when a plugin
- * provides its own `OwnerScopeTag` slot.
+ * (gated on `canSeeAdmin`) and when a plugin provides its own
+ * `OwnerScopeTag` slot.
  */
 const OwnerTag: React.FC<{ ownerId?: number | null }> = ({ ownerId }) => {
   const intl = useIntl();

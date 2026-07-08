@@ -28,7 +28,7 @@ import {
   TemplateCard,
   ThemeTag
 } from '@gpustack/core-ui';
-import { useIntl } from '@umijs/max';
+import { useAccess, useIntl } from '@umijs/max';
 import { Button, Tag } from 'antd';
 import { useMemo } from 'react';
 import styled from 'styled-components';
@@ -144,7 +144,14 @@ interface TemplateCardProps {
 
 const TemplateCardItem: React.FC<TemplateCardProps> = ({ data, onSelect }) => {
   const intl = useIntl();
+  const access = useAccess();
   const { isDarkTheme } = useUserSettings();
+
+  // Global templates (owner_principal_id NULL) are admin-curated and
+  // only editable by an admin. Principal-owned rows only reach a
+  // non-admin's list when they own them, so those are always
+  // manageable by the caller.
+  const canManage = !!access.canSeeAdmin || data.owner_principal_id != null;
 
   const manufacturerLabelMap: Record<string, string> = useMemo(() => {
     return Object.values(GPUsConfigs).reduce(
@@ -234,6 +241,9 @@ const TemplateCardItem: React.FC<TemplateCardProps> = ({ data, onSelect }) => {
   };
 
   const renderActions = () => {
+    if (!canManage) {
+      return null;
+    }
     return (
       <span onClick={handleonClickAction} className="operations">
         <DropdownActions

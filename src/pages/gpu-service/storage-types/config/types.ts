@@ -44,4 +44,8 @@ export interface ListItem {
     nfs?: StorageTypeNFS | null;
     s3?: Omit<StorageTypeS3, 'secretKey'> | null;
   };
+  status?: {
+    phase?: string | null;
+    phaseMessage?: string | null;
+  } | null;
 }

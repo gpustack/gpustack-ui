@@ -33,6 +33,7 @@ export interface ListItem {
   };
   status?: {
     phase?: string | null;
+    phaseMessage?: string | null;
   } | null;
 }
 

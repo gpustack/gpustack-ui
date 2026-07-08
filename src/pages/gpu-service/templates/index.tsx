@@ -90,6 +90,42 @@ const GPUServiceTemplates: React.FC = () => {
     );
   };
 
+  const handleCloneTemplate = (row: ListItem) => {
+    // Clone reuses the create flow: drop the source's identity and
+    // ownership so the backend assigns a fresh id and scopes the copy
+    // to the caller's own principal. The prefilled name is editable —
+    // the create endpoint enforces per-owner name uniqueness.
+    const source = _.omit(row, [
+      'id',
+      'owner_principal_id',
+      'creator_id',
+      'created_at',
+      'updated_at',
+      'status'
+    ]) as ListItem;
+    // Default to a ``-clone`` suffix so cloning within the same scope
+    // (e.g. a Global preset kept Global) doesn't immediately collide on
+    // the unique name. Keep within the 63-char name limit by trimming
+    // the base first.
+    const suffix = '-clone';
+    const base = (row.name ?? '').slice(0, 63 - suffix.length);
+    source.name = `${base}${suffix}`;
+    // The card renders ``displayName || name``, so a copied displayName
+    // would make the clone indistinguishable from its source. Append a
+    // localized clone label, trimmed to the same 63-char field limit.
+    if (row.displayName) {
+      const cloneLabel = intl.formatMessage({ id: 'common.button.clone' });
+      const displaySuffix = ` (${cloneLabel})`;
+      const displayBase = row.displayName.slice(0, 63 - displaySuffix.length);
+      source.displayName = `${displayBase}${displaySuffix}`;
+    }
+    openTemplateModal(
+      PageAction.CREATE,
+      intl.formatMessage({ id: 'gpuservice.template.clone' }),
+      source
+    );
+  };
+
   const handleModalOk = async (data: FormData) => {
     try {
       if (openTemplateModalStatus.action === PageAction.EDIT) {
@@ -110,6 +146,10 @@ const GPUServiceTemplates: React.FC = () => {
   const handleOnSelect = (item: { action: string; data: ListItem }) => {
     if (item.action === 'edit') {
       handleEditTemplate(item.data);
+      return;
+    }
+    if (item.action === 'clone') {
+      handleCloneTemplate(item.data);
       return;
     }
     if (item.action === 'delete') {

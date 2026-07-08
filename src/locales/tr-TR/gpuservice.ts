@@ -2,6 +2,7 @@ export default {
   'gpuservice.template': 'GPU Örnek Şablonu',
   'gpuservice.template.add': 'Örnek Şablonu Ekle',
   'gpuservice.template.edit': 'Örnek Şablonunu Düzenle',
+  'gpuservice.template.clone': 'Örnek Şablonunu Klonla',
   'gpuservice.template.filter.name': 'Ada göre filtrele',
   'gpuservice.template.filter.vendor': 'Tedarikçiye göre filtrele',
   'gpuservice.template.image': 'İmaj',

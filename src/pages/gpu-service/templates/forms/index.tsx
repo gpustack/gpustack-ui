@@ -1,4 +1,3 @@
-import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { Form } from 'antd';
 import { forwardRef, useEffect, useImperativeHandle } from 'react';
@@ -26,11 +25,13 @@ const GPUServiceTemplateForm: React.FC<TemplateFormProps> = forwardRef(
         return;
       }
 
-      if (action === PageAction.EDIT && currentData) {
+      // Prefill on Edit and on Clone (Create carrying a source row).
+      // A plain Create opens with no ``currentData`` and keeps the
+      // blank ``initialValues``.
+      if (currentData) {
         form.setFieldsValue({
           ...currentData
         });
-        return;
       }
     }, [action, currentData, form, open]);
 

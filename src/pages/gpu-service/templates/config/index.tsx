@@ -115,6 +115,12 @@ export const templateActions: Array<{
     icon: icons.EditOutlined
   },
   {
+    label: 'common.button.clone',
+    key: 'clone',
+    locale: true,
+    icon: icons.CopyOutlined
+  },
+  {
     label: 'common.button.delete',
     key: 'delete',
     locale: true,

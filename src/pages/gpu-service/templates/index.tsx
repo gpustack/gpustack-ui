@@ -45,13 +45,11 @@ const GPUServiceTemplates: React.FC = () => {
     isInfiniteScroll: true,
     contentForDelete: intl.formatMessage({ id: 'gpuservice.template' }),
     defaultQueryParams: {
-      perPage: 24,
-      // Management view: drop Global rows for non-admin callers — the
-      // page is a CRUD surface, and admin-curated Global templates
-      // they can't edit only add visual noise. The instance-create
-      // picker (uses ``useQueryTemplates`` separately) doesn't set
-      // this and so still sees Global presets.
-      mine: true
+      // Default (non-``mine``) scope: Global rows plus rows owned by the
+      // caller's current principal, matching the Inference Backend page.
+      // Global rows a non-admin can't edit render read-only — the card
+      // gates Edit/Delete on ownership.
+      perPage: 24
     }
   });
   const { openTemplateModalStatus, openTemplateModal, closeTemplateModal } =

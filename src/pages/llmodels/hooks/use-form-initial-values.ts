@@ -199,7 +199,13 @@ export const useGenerateWorkerOptions = () => {
         page: -1
       }),
       queryClusterList({
-        page: -1
+        page: -1,
+        // Own-org clusters only. Feeds the deploy-from-model-file cluster
+        // picker, which must not offer another org's cluster (e.g. the
+        // Default org's "shared with everyone" clusters). The worker
+        // cascader on this page is already own-org via the owner-scoped
+        // worker list.
+        mine: true
       })
     ]);
     const workerList = workerRes.items || ([] as WorkerListItem[]);
@@ -272,7 +278,13 @@ export default function useFormInitialValues() {
         // Exclude clusters that opt in to GPU-instance handling
         // (k8s_options.gpu_instance_options set) — those are for the
         // GPU-service flow, not model deployment.
-        gpu_instance_enabled: false
+        gpu_instance_enabled: false,
+        // Only clusters owned by the current org. Drops cross-org grants
+        // (e.g. the Default org's "shared with everyone" clusters) so a
+        // tenant can't deploy onto another org's infrastructure. Platform
+        // admin in the "All" view bypasses this and is scoped instead by
+        // the org picker (see basic.tsx).
+        mine: true
       });
       const list = response.items.map((item) => ({
         label: item.name,

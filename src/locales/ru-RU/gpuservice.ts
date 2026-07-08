@@ -2,6 +2,7 @@ export default {
   'gpuservice.template': 'Шаблон экземпляра GPU',
   'gpuservice.template.add': 'Добавить шаблон экземпляра',
   'gpuservice.template.edit': 'Редактировать шаблон экземпляра',
+  'gpuservice.template.clone': 'Клонировать шаблон экземпляра',
   'gpuservice.template.filter.name': 'Фильтр по имени',
   'gpuservice.template.filter.vendor': 'Фильтр по производителю',
   'gpuservice.template.image': 'Образ',

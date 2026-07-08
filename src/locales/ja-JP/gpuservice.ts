@@ -2,6 +2,7 @@ export default {
   'gpuservice.template': 'GPU インスタンステンプレート',
   'gpuservice.template.add': 'インスタンステンプレートを追加',
   'gpuservice.template.edit': 'インスタンステンプレートを編集',
+  'gpuservice.template.clone': 'インスタンステンプレートを複製',
   'gpuservice.template.filter.name': '名前でフィルター',
   'gpuservice.template.filter.vendor': 'ベンダーでフィルター',
   'gpuservice.template.image': 'コンテナイメージ',

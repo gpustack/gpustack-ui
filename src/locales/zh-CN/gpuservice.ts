@@ -2,6 +2,7 @@ export default {
   'gpuservice.template': 'GPU 实例模板',
   'gpuservice.template.add': '添加实例模板',
   'gpuservice.template.edit': '编辑实例模板',
+  'gpuservice.template.clone': '克隆实例模板',
   'gpuservice.template.filter.name': '按名称过滤',
   'gpuservice.template.filter.vendor': '按厂商过滤',
   'gpuservice.template.image': '镜像',

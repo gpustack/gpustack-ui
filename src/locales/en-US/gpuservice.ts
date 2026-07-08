@@ -2,6 +2,7 @@ export default {
   'gpuservice.template': 'GPU Instance Template',
   'gpuservice.template.add': 'Add Instance Template',
   'gpuservice.template.edit': 'Edit Instance Template',
+  'gpuservice.template.clone': 'Clone Instance Template',
   'gpuservice.template.filter.name': 'Filter by name',
   'gpuservice.template.filter.vendor': 'Filter by vendor',
   'gpuservice.template.image': 'Image',

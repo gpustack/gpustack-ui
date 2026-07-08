@@ -147,11 +147,22 @@ const TemplateCardItem: React.FC<TemplateCardProps> = ({ data, onSelect }) => {
   const access = useAccess();
   const { isDarkTheme } = useUserSettings();
 
-  // Global templates (owner_principal_id NULL) are admin-curated and
-  // only editable by an admin. Principal-owned rows only reach a
-  // non-admin's list when they own them, so those are always
-  // manageable by the caller.
-  const canManage = !!access.canSeeAdmin || data.owner_principal_id != null;
+  // Only an explicit NULL owner (Global, admin-curated) is admin-only.
+  // A principal-owned row reaches a non-admin's list only when they own
+  // it, and an absent id (single-owner builds omit it on the wire) has
+  // no tenancy to restrict — both are manageable, so the check is strict
+  // ``!== null``. Clone stays available regardless — it reads the source
+  // and creates a fresh copy in the caller's own scope — so a non-admin
+  // can fork a Global preset into their org.
+  const canManage = !!access.canSeeAdmin || data.owner_principal_id !== null;
+
+  const actions = useMemo(
+    () =>
+      canManage
+        ? templateActions
+        : templateActions.filter((action) => action.key === 'clone'),
+    [canManage]
+  );
 
   const manufacturerLabelMap: Record<string, string> = useMemo(() => {
     return Object.values(GPUsConfigs).reduce(
@@ -241,14 +252,11 @@ const TemplateCardItem: React.FC<TemplateCardProps> = ({ data, onSelect }) => {
   };
 
   const renderActions = () => {
-    if (!canManage) {
-      return null;
-    }
     return (
       <span onClick={handleonClickAction} className="operations">
         <DropdownActions
           menu={{
-            items: templateActions,
+            items: actions,
             onClick: handleOnSelect
           }}
         >

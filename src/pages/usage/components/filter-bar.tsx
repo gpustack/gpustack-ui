@@ -217,6 +217,8 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
         <AutoTooltip ghost>{data.label}</AutoTooltip>
         {data.isCurrent &&
           renderTag(intl.formatMessage({ id: 'usage.user.currentAccount' }))}
+        {data.deleted &&
+          renderTag(intl.formatMessage({ id: 'usage.table.deleted' }))}
       </span>
     );
   };
@@ -251,6 +253,7 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
             wrapper: { flex: 1, maxWidth: 400, minWidth: 200 }
           }}
           value={selectedRoutes}
+          optionLabelRender={singleOptionRender}
           onChange={onRoutesChange}
         />
         {canManageUsers && (

@@ -103,8 +103,14 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
 
   const getClusterList = async () => {
     try {
+      // Own-org clusters only (mine=true). A worker can only join a cluster
+      // its org owns, so another org's cluster (e.g. the Default org's
+      // "shared with everyone" clusters) must not be offered in the picker.
+      // The worker list is owner-scoped too, so this list also covers every
+      // cluster the table's name column can reference.
       const params = {
-        page: -1
+        page: -1,
+        mine: true
       };
       const items = await fetchClusterList(params);
       const clusterMap = items?.reduce(

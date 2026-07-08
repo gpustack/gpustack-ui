@@ -27,6 +27,7 @@ interface SelectOption {
   value: number;
   label: string;
   deleted?: boolean;
+  isCurrent?: boolean;
 }
 
 // Optional per-tab entity filter (GPU instance on the GPU tab / volume on the
@@ -137,19 +138,24 @@ const ResourceFilterBar: React.FC<ResourceFilterBarProps> = (props) => {
         )
       : [dayjs().add(-DefaultDateConfig.defaultRange, 'd'), dayjs()];
 
-  const userOptionRender = (option: any) => (
-    <span className="flex-center gap-4">
-      <AutoTooltip ghost>{option?.data?.label}</AutoTooltip>
-      {option?.data?.deleted && (
-        <span
-          className="text-tertiary"
-          style={{ fontSize: 12, marginRight: 4 }}
-        >
-          [{intl.formatMessage({ id: 'usage.table.deleted' })}]
-        </span>
-      )}
+  const renderTag = (tag: string) => (
+    <span className="text-tertiary" style={{ fontSize: 12, marginRight: 4 }}>
+      [{tag}]
     </span>
   );
+
+  const userOptionRender = (option: any) => {
+    const { data } = option;
+    return (
+      <span className="flex-center gap-4">
+        <AutoTooltip ghost>{data?.label}</AutoTooltip>
+        {data?.isCurrent &&
+          renderTag(intl.formatMessage({ id: 'usage.user.currentAccount' }))}
+        {data?.deleted &&
+          renderTag(intl.formatMessage({ id: 'usage.table.deleted' }))}
+      </span>
+    );
+  };
 
   return (
     <div className={FilterBarCss.wrapper}>

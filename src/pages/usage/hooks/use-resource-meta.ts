@@ -1,3 +1,4 @@
+import { useModel } from '@@/plugin-model';
 import { useEffect, useState } from 'react';
 import {
   queryResourceFilterMeta,
@@ -8,6 +9,9 @@ export interface SelectOption {
   value: number;
   label: string;
   deleted?: boolean;
+  // The signed-in user's own entry, sorted first and tagged "[Current Account]"
+  // in the filter dropdown (matches the Tokens tab).
+  isCurrent?: boolean;
 }
 
 export interface ResourceMetaOptions {
@@ -25,6 +29,26 @@ const EMPTY: ResourceMetaOptions = {
 const toOptions = (items: ResourceFilterOption[]): SelectOption[] =>
   items.map((i) => ({ value: i.id, label: i.label, deleted: i.deleted }));
 
+// Tag the signed-in user's own entry and sort it first, matching the Tokens
+// tab's "[Current Account]" treatment.
+const toUserOptions = (
+  items: ResourceFilterOption[],
+  currentUserId?: number
+): SelectOption[] => {
+  const options = items.map((i) => ({
+    value: i.id,
+    label: i.label,
+    deleted: i.deleted,
+    isCurrent: currentUserId != null && i.id === currentUserId
+  }));
+  if (currentUserId == null) return options;
+  return options.sort((a, b) => {
+    if (a.isCurrent) return -1;
+    if (b.isCurrent) return 1;
+    return 0;
+  });
+};
+
 /**
  * Loads the resource tabs' filter dropdown sources in one call:
  *   - ``creators``  — "filter by user" (Tokens-tab equivalent of /usage/meta
@@ -39,12 +63,14 @@ export default function useResourceMeta(
   scope: 'self' | 'all' = 'all'
 ): ResourceMetaOptions {
   const [meta, setMeta] = useState<ResourceMetaOptions>(EMPTY);
+  const { initialState } = useModel('@@initialState');
+  const currentUserId = initialState?.currentUser?.id;
 
   useEffect(() => {
     queryResourceFilterMeta(scope)
       .then((res) =>
         setMeta({
-          creators: toOptions(res.creators),
+          creators: toUserOptions(res.creators, currentUserId),
           instances: toOptions(res.instances),
           volumes: toOptions(res.volumes)
         })
@@ -53,7 +79,7 @@ export default function useResourceMeta(
         // Network/auth errors surface via the global interceptor; leave the
         // dropdowns empty rather than crashing the tab.
       });
-  }, [scope]);
+  }, [scope, currentUserId]);
 
   return meta;
 }

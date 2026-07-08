@@ -25,6 +25,7 @@ import { useCoolAccents } from '@/hooks/use-cool-colors';
 import BarChart from '@/pages/_components/bar-chart';
 import PieChart from '@/pages/_components/pie-chart';
 import { formatLargeNumber } from '@/utils';
+import { useModel } from '@@/plugin-model';
 import { CardWrapper } from '@gpustack/core-ui';
 import { useAccess, useIntl } from '@umijs/max';
 import { Col, Row } from 'antd';
@@ -210,6 +211,8 @@ const DomainSection: React.FC<{
 const SummaryTab: React.FC = () => {
   const access = useAccess();
   const intl = useIntl();
+  const { initialState } = useModel('@@initialState');
+  const currentUserId = initialState?.currentUser?.id;
   const t = (id: string) => intl.formatMessage({ id });
   // One vivid primary per summary card (Tokens / Compute / Storage).
   const coolColors = useCoolAccents()(3);
@@ -244,16 +247,31 @@ const SummaryTab: React.FC = () => {
   const userOptions = useMemo<SelectOption[]>(() => {
     const map = new Map<number, SelectOption>();
     resourceUsers.forEach((u) =>
-      map.set(u.value, { value: u.value, label: u.label, deleted: u.deleted })
+      map.set(u.value, {
+        value: u.value,
+        label: u.label,
+        deleted: u.deleted,
+        isCurrent: u.isCurrent
+      })
     );
     (tokenMeta?.users || []).forEach((u) => {
       const id = u.identity.current?.user_id;
       if (id != null && !map.has(id)) {
-        map.set(id, { value: id, label: u.label });
+        map.set(id, {
+          value: id,
+          label: u.label,
+          isCurrent: currentUserId != null && id === currentUserId
+        });
       }
     });
-    return Array.from(map.values());
-  }, [resourceUsers, tokenMeta]);
+    // Sort the signed-in user first, tagged "[Current Account]" (matches the
+    // Tokens tab), regardless of which source it came from.
+    return Array.from(map.values()).sort((a, b) => {
+      if (a.isCurrent) return -1;
+      if (b.isCurrent) return 1;
+      return 0;
+    });
+  }, [resourceUsers, tokenMeta, currentUserId]);
 
   // user id → the identity object the token series filters by. Built from the
   // token meta so the trend's ``users`` filter carries the real identity.

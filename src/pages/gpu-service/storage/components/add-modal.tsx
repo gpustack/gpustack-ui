@@ -1,10 +1,11 @@
 import { PageActionType } from '@/config/types';
 import useSubmitLock from '@/hooks/use-submit-lock';
 import { FormDrawer, ModalFooter } from '@gpustack/core-ui';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { FormContext } from '../config/form-context';
 import { FormData, ListItem } from '../config/types';
 import GPUServiceStorageForm from '../forms';
+import useQueryStorageClass from '../services/use-query-storage-class';
 
 type AddModalProps = {
   title: string;
@@ -13,7 +14,6 @@ type AddModalProps = {
   onOk: (values: FormData) => void;
   data?: ListItem | null;
   onCancel: () => void;
-  storageClassList: Global.BaseOption<string>[];
 };
 
 const AddModal: React.FC<AddModalProps> = ({
@@ -22,11 +22,33 @@ const AddModal: React.FC<AddModalProps> = ({
   open,
   onOk,
   data,
-  onCancel,
-  storageClassList
+  onCancel
 }) => {
   const form = useRef<any>(null);
   const { loading, guard, run, release } = useSubmitLock();
+  // The dropdown gets its own storage-type list, scoped to the org the
+  // create-scope picker targets — distinct from the page-level list, which
+  // stays unscoped so the table can label every org's rows.
+  const { storageClassList, fetchData: fetchStorageClass } =
+    useQueryStorageClass();
+
+  useEffect(() => {
+    if (open) {
+      fetchStorageClass({ page: -1 });
+    }
+  }, [open]);
+
+  // Platform admin picked a target org in the create-scope slot: reload the
+  // storage-type list pinned to that org so the dropdown only offers types
+  // the org can reference (its own plus any reachable via cluster access).
+  const handleScopeChange = (orgId?: number | null) => {
+    fetchStorageClass(
+      { page: -1 },
+      orgId != null
+        ? { headers: { 'X-Organization-Id': String(orgId) } }
+        : undefined
+    );
+  };
 
   const handleSubmit = () => {
     guard(() => form.current?.submit());
@@ -70,6 +92,7 @@ const AddModal: React.FC<AddModalProps> = ({
           ref={form}
           action={action}
           currentData={data}
+          onScopeChange={handleScopeChange}
           onFinish={onFinish}
           onFinishFailed={release}
           open={open}

@@ -30,6 +30,10 @@ const StorageVolume = ({
   const { getRuleMessage } = useAppUtils();
   const form = Form.useFormInstance<FormData>();
   const storageMode = Form.useWatch('storageMode', form);
+  // Owned by the instance create-scope picker (platform admin "All" view).
+  // A storage added inline belongs to the same org as the instance, so pass
+  // it to the overlay to scope the storage-type list to that org.
+  const scopeOrgId = Form.useWatch('organization_id', form);
   const { fetchData: createStorage } = useCreateStorage();
   const { detailData: storageData, fetchData: fetchStorage } =
     useQueryStorage();
@@ -232,6 +236,7 @@ const StorageVolume = ({
 
       <StorageOverlay
         open={overlayOpen}
+        scopeOrgId={scopeOrgId}
         onCancel={() => setOverlayOpen(false)}
         onSubmit={handleCreateStorage}
       />

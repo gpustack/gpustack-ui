@@ -12,7 +12,23 @@ import { useContext } from 'react';
 import { FormContext } from '../config/form-context';
 import { FormData } from '../config/types';
 
-const Basic = ({ action, open }: { action: string; open: boolean }) => {
+const Basic = ({
+  action,
+  open,
+  showOrgScope = true,
+  onOrgScopeChange
+}: {
+  action: string;
+  open: boolean;
+  // Hosts that already fix the tenant scope elsewhere (e.g. the instance
+  // create form, which owns the org picker) hide this slot so the storage
+  // is created in the surrounding scope rather than a second, conflicting
+  // one.
+  showOrgScope?: boolean;
+  // Fired on a user selection in the create-scope picker so the host can
+  // reload the org-scoped storage-type list.
+  onOrgScopeChange?: (orgId: number | null | undefined) => void;
+}) => {
   const intl = useIntl();
   const { getRuleMessage } = useAppUtils();
   const { storageClassList } = useContext(FormContext);
@@ -44,7 +60,12 @@ const Basic = ({ action, open }: { action: string; open: boolean }) => {
           label={intl.formatMessage({ id: 'common.table.displayName' })}
         />
       </Form.Item>
-      <PluginExtraFields name="CreateOrgScopeField" context={{ action }} />
+      {showOrgScope && (
+        <PluginExtraFields
+          name="CreateOrgScopeField"
+          context={{ action, onChange: onOrgScopeChange }}
+        />
+      )}
       <Flex gap={16}>
         <div style={{ flex: 1 }}>
           <Form.Item<FormData>

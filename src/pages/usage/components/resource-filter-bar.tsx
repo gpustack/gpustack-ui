@@ -17,6 +17,7 @@ import { Button, DatePicker, Dropdown, MenuProps } from 'antd';
 import dayjs from 'dayjs';
 import React from 'react';
 import FilterBarCss from '../styles/filter-bar.less';
+import DeletedTag from './deleted-tag';
 
 const DefaultDateConfig = {
   maxRange: 90,
@@ -144,15 +145,22 @@ const ResourceFilterBar: React.FC<ResourceFilterBarProps> = (props) => {
     </span>
   );
 
+  const deletedLabelStyle = (deleted?: boolean) =>
+    deleted ? { color: 'var(--ant-color-text-tertiary)' } : undefined;
+
+  // The user / instance / volume filters mirror the Tokens tab: the option
+  // ``value`` is the entity id, so a deleted entry stays distinguishable via the
+  // "Deleted·#{id}" tag.
   const userOptionRender = (option: any) => {
     const { data } = option;
     return (
       <span className="flex-center gap-4">
-        <AutoTooltip ghost>{data?.label}</AutoTooltip>
+        <AutoTooltip ghost style={deletedLabelStyle(data?.deleted)}>
+          {data?.label}
+        </AutoTooltip>
         {data?.isCurrent &&
           renderTag(intl.formatMessage({ id: 'usage.user.currentAccount' }))}
-        {data?.deleted &&
-          renderTag(intl.formatMessage({ id: 'usage.table.deleted' }))}
+        {data?.deleted && <DeletedTag id={data?.value} />}
       </span>
     );
   };

@@ -137,12 +137,14 @@ export function groupToOptions<T, TChild>(
   options: {
     getGroupKey: (item: T) => string;
     getGroupType: (item: T) => string;
-    getChild: (item: T) => TChild;
+    // ``index`` is a stable per-row token so ``getChild`` can mint a unique
+    // option value for id-less (deleted) entries that share a display name.
+    getChild: (item: T, index: number) => TChild;
   }
 ): GroupOption<TChild>[] {
   const groupedMap = new Map<string, GroupOption<TChild>>();
 
-  data.forEach((item) => {
+  data.forEach((item, index) => {
     const groupKey = options.getGroupKey(item);
     const groupType = options.getGroupType(item);
 
@@ -156,7 +158,7 @@ export function groupToOptions<T, TChild>(
       });
     }
 
-    const child = options.getChild(item) as TChild & { value: string };
+    const child = options.getChild(item, index) as TChild & { value: string };
     groupedMap.get(groupKey)!.children.push(child);
   });
 

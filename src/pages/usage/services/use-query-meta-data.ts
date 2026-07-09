@@ -13,6 +13,16 @@ type RouteOptionType = UsageFilterItem & {
   value: string;
 };
 
+// The multi-select keys options by ``value``; two entries sharing a display
+// name (e.g. an active model and a deleted one with the same name) must get
+// DIFFERENT values or selecting one selects the other. Prefer the real id;
+// id-less (deleted) entries fall back to a per-row token so they stay
+// independently selectable.
+const optionValue = (
+  id: string | number | null | undefined,
+  index: number
+): string => (id != null ? `id:${id}` : `row:${index}`);
+
 export default function useQueryUsageMetaData() {
   const { detailData, loading, cancelRequest, fetchData } =
     useQueryData<UsageMeta>({
@@ -21,12 +31,10 @@ export default function useQueryUsageMetaData() {
     });
   const { initialState } = useModel('@@initialState');
   const [result, setResult] = useState<{
-    models: GroupOption<UsageFilterItem>[];
     users: UserOptionType[];
     api_keys: GroupOption<UsageFilterItem>[];
     routes: RouteOptionType[];
   }>({
-    models: [],
     users: [],
     api_keys: [],
     routes: []
@@ -50,19 +58,9 @@ export default function useQueryUsageMetaData() {
     const res = await fetchData({});
     const sortedUsers = sortUsers(res?.filters?.users || []);
     const data = {
-      models: groupToOptions(res?.filters?.models || [], {
-        getGroupKey: (item) => item.identity.value.provider_name || 'gpustack',
-        getGroupType: (item) =>
-          item.identity.value.provider_type || 'deployments',
-        getChild: (item) => ({
-          ...item,
-          value: item.label,
-          label: item.identity.value.model_name || ''
-        })
-      }),
       users:
-        sortedUsers.map((item) => ({
-          value: item.label,
+        sortedUsers.map((item, index) => ({
+          value: optionValue(item.identity.current?.user_id, index),
           isCurrent:
             item.identity.current?.user_id === initialState?.currentUser?.id,
           ...item
@@ -71,16 +69,16 @@ export default function useQueryUsageMetaData() {
         getGroupKey: (item) => item.identity.value.user_name || 'unknown_user',
         getGroupType: (item) =>
           item.identity.value.api_key_is_custom ? 'custom' : 'default',
-        getChild: (item) => ({
+        getChild: (item, index) => ({
           ...item,
-          value: item.label,
+          value: optionValue(item.identity.current?.api_key_id, index),
           label: item.identity.value.api_key_name || ''
         })
       }),
       routes:
-        (res?.filters?.routes || []).map((item) => ({
+        (res?.filters?.routes || []).map((item, index) => ({
           ...item,
-          value: item.label
+          value: optionValue(item.identity.current?.route_id, index)
         })) || []
     };
     setResult(data);

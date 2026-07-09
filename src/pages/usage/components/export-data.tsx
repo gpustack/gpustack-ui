@@ -5,6 +5,7 @@ import { Table, TableColumnType } from 'antd';
 import React, { useEffect } from 'react';
 import { useUsageFilters } from '../hooks/use-usage-filters';
 import useQueryBreakdownList from '../services/use-query-breakdown-list';
+import { withDeletedMark } from '../utils/deleted-label';
 import getBreakdownRowKey from '../utils/get-breakdown-row-key';
 import FilterBar from './filter-bar';
 
@@ -49,6 +50,7 @@ const ExportData: React.FC<{
     initialState
   } = props || {};
   const intl = useIntl();
+  const deletedWord = intl.formatMessage({ id: 'usage.table.deleted' });
 
   // Members are forced to self scope, where the backend forbids grouping by
   // user (privacy) — including it 403s the export request. Drop the user
@@ -123,22 +125,49 @@ const ExportData: React.FC<{
     {
       title: intl.formatMessage({ id: 'usage.filter.group.model' }),
       dataIndex: ['route', 'label'],
-      render: (text: string) => {
-        return <AutoTooltip ghost>{text}</AutoTooltip>;
+      render: (text: string, record: any) => {
+        return (
+          <AutoTooltip ghost>
+            {withDeletedMark(
+              text,
+              record?.route?.deleted,
+              deletedWord,
+              record?.route?.identity?.current?.route_id
+            )}
+          </AutoTooltip>
+        );
       }
     },
     {
       title: intl.formatMessage({ id: 'dashboard.usage.export.user' }),
       dataIndex: ['user', 'label'],
-      render: (text: string) => {
-        return <AutoTooltip ghost>{text}</AutoTooltip>;
+      render: (text: string, record: any) => {
+        return (
+          <AutoTooltip ghost>
+            {withDeletedMark(
+              text,
+              record?.user?.deleted,
+              deletedWord,
+              record?.user?.identity?.current?.user_id
+            )}
+          </AutoTooltip>
+        );
       }
     },
     {
       title: intl.formatMessage({ id: 'usage.filter.group.apikey' }),
       dataIndex: ['api_key', 'label'],
       render: (text: string, record: any) => {
-        return <AutoTooltip ghost>{text}</AutoTooltip>;
+        return (
+          <AutoTooltip ghost>
+            {withDeletedMark(
+              text,
+              record?.api_key?.deleted,
+              deletedWord,
+              record?.api_key?.identity?.current?.api_key_id
+            )}
+          </AutoTooltip>
+        );
       }
     },
     {
@@ -215,9 +244,24 @@ const ExportData: React.FC<{
         {
           jsonData: (dataSource.dataList || []).map((item: any) => ({
             date: item?.date?.label,
-            user: item?.user?.label,
-            route: item?.route?.label,
-            api_key: item?.api_key?.label,
+            user: withDeletedMark(
+              item?.user?.label ?? '',
+              item?.user?.deleted,
+              deletedWord,
+              item?.user?.identity?.current?.user_id
+            ),
+            route: withDeletedMark(
+              item?.route?.label ?? '',
+              item?.route?.deleted,
+              deletedWord,
+              item?.route?.identity?.current?.route_id
+            ),
+            api_key: withDeletedMark(
+              item?.api_key?.label ?? '',
+              item?.api_key?.deleted,
+              deletedWord,
+              item?.api_key?.identity?.current?.api_key_id
+            ),
             input_tokens: item?.input_tokens,
             input_cached_tokens: item?.input_cached_tokens,
             output_tokens: item?.output_tokens,
@@ -240,7 +284,7 @@ const ExportData: React.FC<{
             date: intl.formatMessage({ id: 'dashboard.usage.export.date' }),
             user: intl.formatMessage({ id: 'dashboard.usage.export.user' }),
             route: intl.formatMessage({ id: 'usage.filter.group.model' }),
-            api_key: intl.formatMessage({ id: 'usage.table.provider' }),
+            api_key: intl.formatMessage({ id: 'usage.filter.group.apikey' }),
             input_tokens: intl.formatMessage({
               id: 'usage.filter.inputTokens'
             }),

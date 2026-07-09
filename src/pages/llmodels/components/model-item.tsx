@@ -1,4 +1,5 @@
 import {
+  IconFont,
   StatusTag,
   TagsWrapper,
   TemplateCard,
@@ -85,8 +86,8 @@ const ModelItemContent = styled.div`
 `;
 
 const ModelLogo = styled.img`
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
   border-radius: 4px;
   object-fit: contain;
   flex: none;
@@ -192,7 +193,7 @@ const ModelItem: React.FC<{
         onClick={handleCardClick}
         header={
           <Header>
-            <span className="text gap-8">
+            <span className="text gap-16">
               <ModelLogo src={getModelLogo(model.name)} alt="" />
               <span>{model.name}</span>
             </span>
@@ -251,11 +252,20 @@ const ModelItem: React.FC<{
               {[MyModelsStatusValueMap.Active].includes(model.status) && (
                 <Button
                   size="middle"
+                  type="default"
                   className="btn"
-                  type="primary"
+                  style={{
+                    borderRadius: 6,
+                    paddingInline: 12
+                  }}
                   onClick={handleOpenPlayGroundClick}
                 >
                   {intl.formatMessage({ id: 'models.openinplayground' })}
+                  <IconFont
+                    type="icon-down2"
+                    rotate={-90}
+                    style={{ marginLeft: 4 }}
+                  ></IconFont>
                 </Button>
               )}
             </div>

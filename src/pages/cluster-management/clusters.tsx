@@ -73,7 +73,7 @@ const Clusters: React.FC = () => {
     deleteAPI: deleteCluster,
     watch: true,
     API: CLUSTERS_API,
-    contentForDelete: 'menu.clusterManagement.clusters',
+    contentForDelete: 'menu.resources.clusters',
     defaultQueryParams: {
       // Management view: drop cross-Org cluster_access grants. Org
       // Owner only sees the clusters they own here. Pickers that
@@ -420,7 +420,7 @@ const Clusters: React.FC = () => {
                 loadend={dataSource.loadend}
                 dataSource={dataSource.dataList}
                 image={<IconFont type="icon-cluster-outline" />}
-                filters={_.omit(queryParams, ['sort_by'])}
+                filters={_.omit(queryParams, ['sort_by', 'mine'])}
                 noFoundText={intl.formatMessage({
                   id: 'noresult.cluster.nofound'
                 })}

@@ -187,7 +187,10 @@ const APIKeys: React.FC = () => {
         loadend={dataSource.loadend}
         dataSource={dataSource.dataList}
         image={<IconFont type="icon-key" />}
-        filters={_.omit(queryParams, ['sort_by'])}
+        filters={{
+          ..._.omit(queryParams, ['sort_by']),
+          user_id: queryParams.user_id === '*' ? undefined : queryParams.user_id
+        }}
         noFoundText={intl.formatMessage({
           id: 'noresult.keys.nofound'
         })}

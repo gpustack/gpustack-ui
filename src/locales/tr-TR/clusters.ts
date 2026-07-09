@@ -44,6 +44,8 @@ export default {
     'Eklenmesi gereken İşçi Düğümde, kümeye katılması için aşağıdaki komutu çalıştırın.',
   'clusters.create.addCommand.k8s.tips':
     'Kaydedilmesi gereken Kubernetes kümesinde, Kubernetes kaynaklarını oluşturmak ve kümeyi kaydetmek için aşağıdaki komutu çalıştırın.',
+  'clusters.create.addCommand.k8s.version.warning':
+    'Desteklenen minimum Kubernetes sürümü 1.23’tür. GPU Service özelliğini kullanmak için desteklenen minimum Kubernetes sürümü 1.27’dir.',
   'clusters.create.register.tips':
     'Eklenmesi gereken Kubernetes kümesinde, düğümlerini kümeye katılması için aşağıdaki komutu çalıştırın.',
   'cluster.create.checkEnv.tips':

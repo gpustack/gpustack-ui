@@ -44,6 +44,8 @@ export default {
     'On the Worker that needs to be added, run the following command to join it to the cluster.',
   'clusters.create.addCommand.k8s.tips':
     'On the Kubernetes cluster that needs to be registered, run the following command to create the Kubernetes resources and register the cluster.',
+  'clusters.create.addCommand.k8s.version.warning':
+    'The minimum supported Kubernetes version is 1.23. To use the GPU Service feature, the minimum supported Kubernetes version is 1.27.',
   'clusters.create.register.tips':
     'On the Kubernetes cluster that needs to be added, run the following command to join its nodes to the cluster.',
   'cluster.create.checkEnv.tips':

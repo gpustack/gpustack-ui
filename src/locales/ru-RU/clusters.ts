@@ -44,6 +44,8 @@ export default {
     'На воркере, который необходимо добавить, выполните следующую команду, чтобы присоединить его к кластеру.',
   'clusters.create.addCommand.k8s.tips':
     'На Kubernetes-кластере, который необходимо зарегистрировать, выполните следующую команду, чтобы создать ресурсы Kubernetes и зарегистрировать этот кластер.',
+  'clusters.create.addCommand.k8s.version.warning':
+    'Минимальная поддерживаемая версия Kubernetes — 1.23. Для использования функции GPU Service минимальная поддерживаемая версия Kubernetes — 1.27.',
   'cluster.create.checkEnv.tips':
     'Используйте следующую команду для проверки готовности окружения',
   'clusters.create.register.tips':

@@ -44,6 +44,8 @@ export default {
     'On the Worker that needs to be added, run the following command to join it to the cluster.',
   'clusters.create.addCommand.k8s.tips':
     '登録する Kubernetes クラスターで以下のコマンドを実行し、Kubernetes リソースを作成してクラスターを登録します。',
+  'clusters.create.addCommand.k8s.version.warning':
+    'サポートされる Kubernetes の最小バージョンは 1.23 です。GPU Service 機能を使用する場合、サポートされる Kubernetes の最小バージョンは 1.27 です。',
   'cluster.create.checkEnv.tips':
     'Use the following command to check if the environment is ready.',
   'clusters.create.register.tips':

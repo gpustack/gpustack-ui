@@ -58,7 +58,7 @@ const Credentials: React.FC = () => {
     key: PaginationKey.Credentials,
     fetchAPI: queryCredentialList,
     deleteAPI: deleteCredential,
-    contentForDelete: 'menu.clusterManagement.credentials'
+    contentForDelete: 'menu.resources.credentials'
   });
   const [, setClusterSession] = useAtom(clusterSessionAtom);
   const [isFromCluster, setIsFromCluster] = useAtom(fromClusterCreationAtom);

@@ -297,15 +297,9 @@ function flattenItem(
   // The chart series legend can't render a tag, so it carries the deleted
   // marker as text ("<name> [Deleted.<id>]"); the tables render a DeletedTag off
   // ``flat.deleted`` + the id and so keep the clean name.
+  const deletedWord = getIntl().formatMessage({ id: 'usage.table.deleted' });
   const key =
-    rawKey != null
-      ? withDeletedMark(
-          rawKey,
-          deleted,
-          deleted ? getIntl().formatMessage({ id: 'usage.table.deleted' }) : '',
-          id
-        )
-      : rawKey;
+    rawKey != null ? withDeletedMark(rawKey, deleted, deletedWord, id) : rawKey;
   // Generic group label — for a compound (date + dim) trend row the key is the
   // sub-group value (the switch below targets single-dimension table rows).
   if (rawKey != null) flat.group = key;

@@ -2,7 +2,6 @@ export interface UsageFilterItem {
   identity: {
     value: {
       cluster_name: string;
-      model_name: string | null;
       user_name: string;
       api_key_name: string | null;
       access_key: string | null;
@@ -12,7 +11,6 @@ export interface UsageFilterItem {
       route_name: string | null;
     };
     current: {
-      model_id: string | null;
       user_id: number | null;
       api_key_id: string | null;
       route_id: number | null;
@@ -49,7 +47,6 @@ export interface TimeSeriesData {
 
 export type BreakdownItem = {
   cluster_name: string;
-  model_name: string;
   user_name: string;
   api_key_name: string;
   input_tokens: number;
@@ -88,7 +85,6 @@ export interface UsageBreakdownResponse {
 
 export interface UsageMeta {
   filters: {
-    models: UsageFilterItem[];
     users: UsageFilterItem[];
     api_keys: UsageFilterItem[];
     routes: UsageFilterItem[];

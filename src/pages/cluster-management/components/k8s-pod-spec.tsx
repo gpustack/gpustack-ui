@@ -70,14 +70,6 @@ export const OperatorImageForm: React.FC = () => {
   );
 };
 
-// `gpuInstanceOptions` on `k8s_options` is the submitted representation of a
-// "gpu" cluster. Its presence is driven by the shared `clusterType` state (see
-// FormContext) — the selector writes it, the static-address field mounts under
-// it, and submit strips it for "model". Kept out of any Form.useWatch because
-// this path has no always-mounted Form.Item and watching it re-rendered
-// unreliably.
-const GPU_INSTANCE_OPTIONS_PATH = ['k8s_options', 'gpuInstanceOptions'];
-
 // Visual parity with @gpustack/core-ui's SwitchCard so the selector blends
 // in with surrounding form fields: same border, radius, padding, and
 // typography. The only differences are the two-column grid layout and an
@@ -172,32 +164,22 @@ const RadioDot = styled.span<{ $active: boolean }>`
 
 // Card-based selector for cluster type. The two options are mutually exclusive
 // and the choice maps directly to the presence/absence of `gpuInstanceOptions`
-// on the form — "model" clears it, "gpu" seeds it to {} (preserving any
-// already-entered static address). No standalone form field is registered; the
-// selected card is tracked in local state (seeded from the form's initial
-// value) and written back to the form on each click.
+// on the submitted payload. No standalone form field is registered; the click
+// only updates the shared `clusterType` state (see FormContext) — the payload's
+// `gpuInstanceOptions` shape is derived from it at submit (see cluster-form's
+// normalizeOutgoing), and the static-address field mounts/unmounts off it.
 export const ClusterTypeSelector: React.FC = () => {
   const intl = useIntl();
-  const form = Form.useFormInstance();
   const { presetClusterType } = useStepsContext();
   const labelId = useId();
   // Cluster type is shared, explicit state (see FormContext): the click is the
-  // source of truth. We update that state and mirror the choice onto the form
-  // for submission. This replaced a Form.useWatch on an unregistered path that
+  // source of truth. This replaced a Form.useWatch on an unregistered path that
   // did not re-render reliably when cleared to undefined.
   const { clusterType, setClusterType } = useFormContext();
   const value: 'model' | 'gpu' = clusterType ?? 'model';
 
   const handleSelect = useMemoizedFn((next: 'model' | 'gpu') => {
-    if (!form || next === value) return;
-    if (next === 'gpu') {
-      form.setFieldValue(
-        GPU_INSTANCE_OPTIONS_PATH,
-        form.getFieldValue(GPU_INSTANCE_OPTIONS_PATH) ?? {}
-      );
-    } else {
-      form.setFieldValue(GPU_INSTANCE_OPTIONS_PATH, undefined);
-    }
+    if (next === value) return;
     setClusterType?.(next);
   });
 

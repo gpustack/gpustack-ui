@@ -18,10 +18,17 @@ const BasicForm = forwardRef((props: BasicFormProps, ref) => {
     console.log(values);
   };
 
+  // Forward through to the live ClusterForm ref on each call instead of
+  // snapshotting its methods. ClusterForm rebuilds these closures whenever its
+  // internal state (e.g. clusterType) changes, but BasicForm does not re-render
+  // with it — a frozen snapshot would keep calling stale closures (reading the
+  // initial clusterType) and be null on the first render before the ref attaches.
   useImperativeHandle(ref, () => ({
-    validateFields: formRef.current?.validateFields,
-    getFieldsValue: formRef.current?.getFieldsValue,
-    submit: formRef.current?.submit
+    validateFields: (...args: any[]) =>
+      formRef.current?.validateFields(...args),
+    getFieldsValue: (...args: any[]) =>
+      formRef.current?.getFieldsValue(...args),
+    submit: (...args: any[]) => formRef.current?.submit(...args)
   }));
 
   return (

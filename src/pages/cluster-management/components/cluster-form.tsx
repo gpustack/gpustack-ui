@@ -97,7 +97,14 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
       // unmounted when model is selected, but strip it here too so the payload
       // never keeps a stale gpuInstanceOptions shape from a prior "gpu" choice.
       if (clusterType === 'model') {
-        delete next.gpuInstanceOptions;
+        next.gpuInstanceOptions = null;
+      } else if (clusterType === 'gpu' && !next.gpuInstanceOptions) {
+        // gpuInstanceOptions has no always-mounted Form.Item (its only child,
+        // the optional static address, may be unmounted or empty), so with
+        // preserve={false} onFinish's `values` can omit it. Read it straight
+        // from the store so a "gpu" cluster always carries the field.
+        next.gpuInstanceOptions =
+          form.getFieldValue(['k8s_options', 'gpuInstanceOptions']) ?? {};
       }
 
       const creds = opts.imageCredentials;

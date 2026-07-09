@@ -18,6 +18,7 @@ import ModelItem from './components/model-item';
 import { categoryOptions, MyModelsStatusValueMap } from './config';
 import useViewApIInfo from './hooks/use-view-api-info';
 import UserModelsFilterForm from './filters/user-models-filter-form';
+import useViewApIInfo from './hooks/use-view-api-info';
 const Dot = ({ color }: { color: string }) => {
   return (
     <span

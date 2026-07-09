@@ -9,9 +9,13 @@
  * strings.
  */
 export const withDeletedMark = (
-  label: string,
+  label: string | undefined | null,
   deleted: boolean | undefined | null,
   deletedWord: string,
   id?: string | number | null
-): string =>
-  deleted ? `${label} [${deletedWord}${id != null ? `.#${id}` : ''}]` : label;
+): string => {
+  const safeLabel = label || '';
+  if (!deleted) return safeLabel;
+  const suffix = `[${deletedWord}${id != null ? `.#${id}` : ''}]`;
+  return safeLabel ? `${safeLabel} ${suffix}` : suffix;
+};

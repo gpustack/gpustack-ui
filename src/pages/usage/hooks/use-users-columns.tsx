@@ -9,7 +9,7 @@ interface ColumnsHookProps {
   sortOrder: string[];
 }
 
-const useModelsColumns = () => {
+const useUsersColumns = () => {
   const intl = useIntl();
 
   return useMemo(() => {
@@ -123,4 +123,4 @@ const useModelsColumns = () => {
   }, [intl]);
 };
 
-export default useModelsColumns;
+export default useUsersColumns;

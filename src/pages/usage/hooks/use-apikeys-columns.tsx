@@ -5,7 +5,7 @@ import { useMemo } from 'react';
 import DeletedTag from '../components/deleted-tag';
 import { BreakdownItem as ListItem } from '../config/types';
 
-const useModelsColumns = () => {
+const useAPIKeysColumns = () => {
   const intl = useIntl();
 
   return useMemo(() => {
@@ -113,4 +113,4 @@ const useModelsColumns = () => {
   }, [intl]);
 };
 
-export default useModelsColumns;
+export default useAPIKeysColumns;

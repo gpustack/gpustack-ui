@@ -32,7 +32,7 @@ const DeletedTag: React.FC<DeletedTagProps> = ({ id }) => {
       }}
     >
       {label}
-      {id != null && (
+      {!!id && (
         <span className="text-tertiary">
           <span style={{ margin: '0 2px' }}>·</span>#{id}
         </span>

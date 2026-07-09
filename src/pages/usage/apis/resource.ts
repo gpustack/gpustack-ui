@@ -10,7 +10,8 @@
  * (cpu/memory/ephemeral hours, dangling volumes) are left at 0 — the
  * whole-machine SKU model meters runtime, not decomposed components.
  */
-import { request } from '@umijs/max';
+import { getIntl, request } from '@umijs/max';
+import { withDeletedMark } from '../utils/deleted-label';
 import { instanceTypeSeriesLabel } from '../utils/format-instance-type';
 
 export interface ResourceUsageFilters {
@@ -283,10 +284,12 @@ function flattenItem(
   const id = it.id ?? undefined;
   const deleted = !!it.deleted;
   const rawKey = it.key ?? undefined;
-  // The chart series legend keeps the "(Deleted)" suffix (a legend can't render
-  // a tag); the tables show a DeletedTag off ``flat.deleted`` + the id and so
-  // use the clean name.
-  const key = deleted && rawKey != null ? `${rawKey} (Deleted)` : rawKey;
+  // The chart series legend can't render a tag, so it carries the deleted
+  // marker as text ("<name> [Deleted.<id>]"); the tables render a DeletedTag off
+  // ``flat.deleted`` + the id and so keep the clean name.
+  const deletedWord = getIntl().formatMessage({ id: 'usage.table.deleted' });
+  const key =
+    rawKey != null ? withDeletedMark(rawKey, deleted, deletedWord, id) : rawKey;
   // Generic group label — for a compound (date + dim) trend row the key is the
   // sub-group value (the switch below targets single-dimension table rows).
   if (rawKey != null) flat.group = key;

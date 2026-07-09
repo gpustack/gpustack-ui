@@ -27,6 +27,7 @@ import ResourceFilterBar from '../components/resource-filter-bar';
 import useResourceMeta from '../hooks/use-resource-meta';
 import {
   exportBreakdownSheets,
+  markDeletedNames,
   toExportColumns
 } from '../utils/export-breakdown';
 import {
@@ -302,9 +303,13 @@ const GpuInstancesTab: React.FC = () => {
         })
       )
     );
+    const deletedWord = intl.formatMessage({ id: 'usage.table.deleted' });
     exportBreakdownSheets(
       tableExportGroups.map((g, i) => ({
-        rows: results[i]?.items ?? [],
+        // The Instance Types sheet's name (``gpu_type``) is already marked by
+        // the adapter; the instance / user sheets keep the clean name (the
+        // table renders a tag) so mark it here for the export only.
+        rows: markDeletedNames(results[i]?.items ?? [], g.key, deletedWord),
         columns: toExportColumns(g.columns),
         sheetName: g.sheetName
       })),

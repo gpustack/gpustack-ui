@@ -2,6 +2,20 @@ import {
   BreakdownItem,
   UsageBreakdownResponse
 } from '@/pages/usage/config/types';
+import { withDeletedMark } from '@/pages/usage/utils/deleted-label';
+import { getIntl } from '@umijs/max';
+
+// group dimension → the id field inside ``identity.current`` (the backend nulls
+// it for deleted entities, so the marker degrades to just "[Deleted]").
+const GROUP_ID_KEY: Record<
+  UsageGroupBy,
+  'model_id' | 'route_id' | 'user_id' | 'api_key_id'
+> = {
+  model: 'model_id',
+  route: 'route_id',
+  user: 'user_id',
+  api_key: 'api_key_id'
+};
 
 export const overviewConfigs = [
   {
@@ -88,6 +102,7 @@ export const buildUsageLabel = (item: BreakdownItem, groupBy: UsageGroupBy) => {
     return groupItem;
   }
 
+  let baseLabel: string;
   if (groupBy === 'model') {
     const providerName =
       identityValue?.provider_name || groupValue?.provider_name;
@@ -97,36 +112,38 @@ export const buildUsageLabel = (item: BreakdownItem, groupBy: UsageGroupBy) => {
       rawItem.model_name ||
       rawItem.model;
 
-    if (providerName && modelName) {
-      return `${providerName}/${modelName}`;
-    }
-
-    return groupItem?.label || modelName || '-';
-  }
-
-  if (groupBy === 'route') {
-    return (
+    baseLabel =
+      providerName && modelName
+        ? `${providerName}/${modelName}`
+        : groupItem?.label || modelName || '-';
+  } else if (groupBy === 'route') {
+    baseLabel =
       groupItem?.label ||
       identityValue?.route_name ||
       groupValue?.route_name ||
-      '-'
-    );
+      '-';
+  } else {
+    baseLabel =
+      groupItem?.label ||
+      identityValue?.user_name ||
+      identityValue?.api_key_name ||
+      identityValue?.access_key ||
+      groupValue?.user_name ||
+      groupValue?.api_key_name ||
+      groupValue?.access_key ||
+      rawItem.user_name ||
+      rawItem.api_key_name ||
+      rawItem.access_key ||
+      rawItem[groupBy] ||
+      '-';
   }
 
-  return (
-    groupItem?.label ||
-    identityValue?.user_name ||
-    identityValue?.api_key_name ||
-    identityValue?.access_key ||
-    groupValue?.user_name ||
-    groupValue?.api_key_name ||
-    groupValue?.access_key ||
-    rawItem.user_name ||
-    rawItem.api_key_name ||
-    rawItem.access_key ||
-    rawItem[groupBy] ||
-    '-'
-  );
+  // Mark deleted entities in the chart legend / tooltip as text (a legend can't
+  // render a tag), matching the usage tabs. The id degrades to just "[Deleted]"
+  // when the backend nulls ``identity.current`` for a deleted entity.
+  const deletedWord = getIntl().formatMessage({ id: 'usage.table.deleted' });
+  const id = groupItem?.identity?.current?.[GROUP_ID_KEY[groupBy]];
+  return withDeletedMark(baseLabel, groupItem?.deleted, deletedWord, id);
 };
 
 export const getUsageResponseItems = (

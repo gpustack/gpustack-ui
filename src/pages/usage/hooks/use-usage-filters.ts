@@ -1,10 +1,20 @@
 import { exportJsonToExcel } from '@gpustack/core-ui/excel';
+import { useIntl } from '@umijs/max';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
 import { GroupOption } from '../config';
 import { BreakdownItem, UsageFilterItem } from '../config/types';
 import useQueryTimeSeriesData from '../services/use-query-timeseries-data';
+import { withDeletedMark } from '../utils/deleted-label';
+
+// group dimension → the id field inside ``identity.current`` (null for deleted
+// entities on the Tokens tab, so the marker degrades to just "[Deleted]").
+const GROUP_ID_KEY: Record<string, 'route_id' | 'user_id' | 'api_key_id'> = {
+  route: 'route_id',
+  user: 'user_id',
+  api_key: 'api_key_id'
+};
 
 const DefaultDateConfig = {
   defaultRange: 29
@@ -74,6 +84,7 @@ export const useUsageFilters = ({
   autoFetchOnFilterChange = true,
   onFetchData
 }: UseUsageFiltersParams) => {
+  const intl = useIntl();
   const {
     activeRoutes: initialActiveRoutes = [],
     activeApiKeys: initialActiveApiKeys = [],
@@ -288,12 +299,21 @@ export const useUsageFilters = ({
 
     const dateMap: Record<string, Record<string, any>> = {};
     const groupLabels = new Set<string>();
+    const deletedWord = intl.formatMessage({ id: 'usage.table.deleted' });
 
     items.forEach((item) => {
       const date = item.date?.value;
       if (!date) return;
+      const groupEntity = groupDim
+        ? (item[groupDim] as UsageFilterItem)
+        : undefined;
       const groupLabel = groupDim
-        ? ((item[groupDim] as UsageFilterItem)?.label ?? '-')
+        ? withDeletedMark(
+            groupEntity?.label ?? '-',
+            groupEntity?.deleted,
+            deletedWord,
+            groupEntity?.identity?.current?.[GROUP_ID_KEY[groupDim]]
+          )
         : metric;
       groupLabels.add(groupLabel);
       if (!dateMap[date]) dateMap[date] = { date };

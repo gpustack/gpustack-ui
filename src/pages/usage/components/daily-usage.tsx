@@ -12,6 +12,15 @@ import {
   UsageBreakdownResponse,
   UsageFilterItem
 } from '../config/types';
+import { withDeletedMark } from '../utils/deleted-label';
+
+// group dimension → the id field inside ``identity.current`` (the backend nulls
+// it for deleted entities, so the marker falls back to just "[Deleted]").
+const GROUP_ID_KEY: Record<string, 'route_id' | 'user_id' | 'api_key_id'> = {
+  route: 'route_id',
+  user: 'user_id',
+  api_key: 'api_key_id'
+};
 
 const ControlsWrapper = styled.div`
   display: flex;
@@ -124,12 +133,22 @@ const DailyUsage: React.FC<DailyUsageProps> = (props) => {
       (a, b) => dayjs(a).valueOf() - dayjs(b).valueOf()
     );
 
+    const deletedWord = intl.formatMessage({ id: 'usage.table.deleted' });
+
     const groupOrder: string[] = [];
     const groupItemsMap = new Map<string, Map<string, BreakdownItem>>();
 
     items.forEach((item) => {
+      const groupEntity = groupDim
+        ? (item[groupDim] as UsageFilterItem)
+        : undefined;
       const groupLabel = groupDim
-        ? ((item[groupDim] as UsageFilterItem)?.label ?? '-')
+        ? withDeletedMark(
+            groupEntity?.label ?? '-',
+            groupEntity?.deleted,
+            deletedWord,
+            groupEntity?.identity?.current?.[GROUP_ID_KEY[groupDim]]
+          )
         : '__total__';
 
       if (!groupItemsMap.has(groupLabel)) {

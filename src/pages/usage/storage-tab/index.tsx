@@ -30,6 +30,7 @@ import ResourceFilterBar from '../components/resource-filter-bar';
 import useResourceMeta from '../hooks/use-resource-meta';
 import {
   exportBreakdownSheets,
+  markDeletedNames,
   toExportColumns
 } from '../utils/export-breakdown';
 import {
@@ -289,9 +290,10 @@ const StorageTab: React.FC = () => {
         })
       )
     );
+    const deletedWord = intl.formatMessage({ id: 'usage.table.deleted' });
     exportBreakdownSheets(
       tableExportGroups.map((g, i) => ({
-        rows: results[i]?.items ?? [],
+        rows: markDeletedNames(results[i]?.items ?? [], g.key, deletedWord),
         columns: toExportColumns(g.columns),
         sheetName: g.sheetName
       })),

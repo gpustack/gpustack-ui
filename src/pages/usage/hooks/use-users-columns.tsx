@@ -1,19 +1,15 @@
 // columns.ts
 import { AutoTooltip } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Tag } from 'antd';
 import { useMemo } from 'react';
+import DeletedTag from '../components/deleted-tag';
 import { BreakdownItem as ListItem } from '../config/types';
 
 interface ColumnsHookProps {
   sortOrder: string[];
 }
 
-const useModelsColumns = (): Array<{
-  title: string;
-  dataIndex: string | string[];
-  key: string;
-}> => {
+const useModelsColumns = () => {
   const intl = useIntl();
 
   return useMemo(() => {
@@ -23,27 +19,22 @@ const useModelsColumns = (): Array<{
         dataIndex: ['user', 'identity', 'value', 'user_name'],
         key: 'user_name',
         render: (text: string, record: ListItem) => (
-          <span className="flex items-center">
+          <span className="flex items-center gap-8">
             <AutoTooltip
               ghost
               style={{ maxWidth: 400 }}
               title={<span>{text}</span>}
             >
-              <span className="text-primary">{text}</span>
+              <span
+                className={
+                  record.user?.deleted ? 'text-tertiary' : 'text-primary'
+                }
+              >
+                {text}
+              </span>
             </AutoTooltip>
             {record.user?.deleted && (
-              <Tag
-                style={{
-                  marginLeft: 8,
-                  borderRadius: 12,
-                  color: 'var(--ant-color-text-tertiary)',
-                  borderColor: 'var(--ant-color-split)',
-                  backgroundColor: 'transparent'
-                }}
-                variant="outlined"
-              >
-                {intl.formatMessage({ id: 'usage.table.deleted' })}
-              </Tag>
+              <DeletedTag id={record.user?.identity?.current?.user_id} />
             )}
           </span>
         )

@@ -2,9 +2,11 @@ import {
   buildInstanceTypeRecordFromMiB,
   renderInstanceType
 } from '@/pages/gpu-service/instances/utils/render-instance-type';
+import { AutoTooltip } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useMemo } from 'react';
 import { ResourceBreakdownItem } from '../../apis/resource';
+import DeletedTag from '../../components/deleted-tag';
 import { instanceTypeSeriesLabel } from '../../utils/format-instance-type';
 import { parseRollup } from '../../utils/time-buckets';
 
@@ -108,6 +110,22 @@ const useInstancesColumns = (groupKey: GroupKey) => {
       key: 'last_active',
       render: (v?: string) => (v ? parseRollup(v).format('YYYY-MM-DD') : '-')
     };
+    // Name cell with a DeletedTag when the entity no longer exists — mirrors the
+    // Tokens tab. The id keeps two deleted rows sharing a stale name distinct.
+    const renderName = (text: string, id?: number, deleted?: boolean) => (
+      <span className="flex items-center gap-8">
+        <AutoTooltip
+          ghost
+          style={{
+            maxWidth: 400,
+            ...(deleted ? { color: 'var(--ant-color-text-tertiary)' } : null)
+          }}
+        >
+          {text || '-'}
+        </AutoTooltip>
+        {deleted && <DeletedTag id={id ?? null} />}
+      </span>
+    );
     if (groupKey === 'gpu_type') {
       return [
         instanceTypeColType,
@@ -123,9 +141,11 @@ const useInstancesColumns = (groupKey: GroupKey) => {
     if (groupKey === 'instance') {
       return [
         {
-          title: intl.formatMessage({ id: 'usage.table.instance' }),
+          title: intl.formatMessage({ id: 'common.table.name' }),
           dataIndex: 'instance_name',
-          key: 'instance_name'
+          key: 'instance_name',
+          render: (text: string, row: ResourceBreakdownItem) =>
+            renderName(text, row.instance_id, row.deleted)
         },
         instanceTypeColInstance,
         ...baseValueCols,
@@ -135,9 +155,11 @@ const useInstancesColumns = (groupKey: GroupKey) => {
     // user tab
     return [
       {
-        title: intl.formatMessage({ id: 'usage.table.user' }),
+        title: intl.formatMessage({ id: 'common.table.name' }),
         dataIndex: 'user_name',
-        key: 'user_name'
+        key: 'user_name',
+        render: (text: string, row: ResourceBreakdownItem) =>
+          renderName(text, row.user_id, row.deleted)
       },
       ...baseValueCols,
       lastActiveCol

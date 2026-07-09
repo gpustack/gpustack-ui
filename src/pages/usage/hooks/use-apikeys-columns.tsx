@@ -1,15 +1,11 @@
 // columns.ts
 import { AutoTooltip } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Tag } from 'antd';
 import { useMemo } from 'react';
+import DeletedTag from '../components/deleted-tag';
 import { BreakdownItem as ListItem } from '../config/types';
 
-const useModelsColumns = (): Array<{
-  title: string;
-  dataIndex: string | string[];
-  key: string;
-}> => {
+const useModelsColumns = () => {
   const intl = useIntl();
 
   return useMemo(() => {
@@ -19,23 +15,18 @@ const useModelsColumns = (): Array<{
         dataIndex: ['api_key', 'identity', 'value', 'api_key_name'],
         key: 'api_key_name',
         render: (text: string, record: ListItem) => (
-          <span className="flex items-center">
+          <span className="flex items-center gap-8">
             <AutoTooltip ghost title={<span>{text}</span>}>
-              <span className="text-primary">{text}</span>
+              <span
+                className={
+                  record.api_key?.deleted ? 'text-tertiary' : 'text-primary'
+                }
+              >
+                {text}
+              </span>
             </AutoTooltip>
             {record.api_key?.deleted && (
-              <Tag
-                style={{
-                  marginLeft: 8,
-                  borderRadius: 12,
-                  color: 'var(--ant-color-text-tertiary)',
-                  borderColor: 'var(--ant-color-split)',
-                  backgroundColor: 'transparent'
-                }}
-                variant="outlined"
-              >
-                {intl.formatMessage({ id: 'usage.table.deleted' })}
-              </Tag>
+              <DeletedTag id={record.api_key?.identity?.current?.api_key_id} />
             )}
           </span>
         )

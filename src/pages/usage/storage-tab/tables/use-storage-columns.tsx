@@ -1,6 +1,8 @@
+import { AutoTooltip } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useMemo } from 'react';
 import { ResourceBreakdownItem } from '../../apis/resource';
+import DeletedTag from '../../components/deleted-tag';
 import { parseRollup } from '../../utils/time-buckets';
 
 type GroupKey = 'volume' | 'user';
@@ -39,12 +41,30 @@ const useStorageColumns = (groupKey: GroupKey) => {
       key: 'last_active',
       render: (v?: string) => (v ? parseRollup(v).format('YYYY-MM-DD') : '-')
     };
+    // Name cell with a DeletedTag when the entity no longer exists — mirrors the
+    // Tokens tab. The id keeps two deleted rows sharing a stale name distinct.
+    const renderName = (text: string, id?: number, deleted?: boolean) => (
+      <span className="flex items-center gap-8">
+        <AutoTooltip
+          ghost
+          style={{
+            maxWidth: 400,
+            ...(deleted ? { color: 'var(--ant-color-text-tertiary)' } : null)
+          }}
+        >
+          {text || '-'}
+        </AutoTooltip>
+        {deleted && <DeletedTag id={id ?? null} />}
+      </span>
+    );
     if (groupKey === 'volume') {
       return [
         {
-          title: intl.formatMessage({ id: 'usage.tabs.storage' }),
+          title: intl.formatMessage({ id: 'common.table.name' }),
           dataIndex: 'volume_name',
-          key: 'volume_name'
+          key: 'volume_name',
+          render: (text: string, row: ResourceBreakdownItem) =>
+            renderName(text, row.volume_id, row.deleted)
         },
         {
           title: intl.formatMessage({ id: 'usage.table.type' }),
@@ -65,9 +85,11 @@ const useStorageColumns = (groupKey: GroupKey) => {
     }
     return [
       {
-        title: intl.formatMessage({ id: 'usage.table.user' }),
+        title: intl.formatMessage({ id: 'common.table.name' }),
         dataIndex: 'user_name',
-        key: 'user_name'
+        key: 'user_name',
+        render: (text: string, row: ResourceBreakdownItem) =>
+          renderName(text, row.user_id, row.deleted)
       },
       ...valueCols,
       {

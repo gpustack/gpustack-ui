@@ -64,6 +64,10 @@ export interface ResourceBreakdownItem extends ResourceBreakdownSummary {
   volume_name?: string;
   user_id?: number;
   user_name?: string;
+  // The grouped entity (instance / volume / user) no longer exists. The name
+  // fields keep the clean (stale) name; the tables show a DeletedTag off this
+  // flag plus the id, matching the Tokens tab.
+  deleted?: boolean;
   // Grouped-trend rows carry the sub-group label (sku / instance / user / …)
   // alongside ``date`` so the chart can pivot one series per group.
   group?: string;
@@ -277,12 +281,16 @@ function flattenItem(
   };
   if (it.date) flat.date = it.date;
   const id = it.id ?? undefined;
-  // Deleted entities get a "(Deleted)" suffix, matching the Token breakdown.
+  const deleted = !!it.deleted;
   const rawKey = it.key ?? undefined;
-  const key = it.deleted && rawKey != null ? `${rawKey} (Deleted)` : rawKey;
+  // The chart series legend keeps the "(Deleted)" suffix (a legend can't render
+  // a tag); the tables show a DeletedTag off ``flat.deleted`` + the id and so
+  // use the clean name.
+  const key = deleted && rawKey != null ? `${rawKey} (Deleted)` : rawKey;
   // Generic group label — for a compound (date + dim) trend row the key is the
   // sub-group value (the switch below targets single-dimension table rows).
   if (rawKey != null) flat.group = key;
+  flat.deleted = deleted;
   switch (groupBy) {
     case 'resource_type':
       flat.resource_type = key;
@@ -292,15 +300,15 @@ function flattenItem(
       flat.gpu_type = key;
       break;
     case 'instance':
-      flat.instance_name = key;
+      flat.instance_name = rawKey;
       flat.instance_id = id;
       break;
     case 'volume':
-      flat.volume_name = key;
+      flat.volume_name = rawKey;
       flat.volume_id = id;
       break;
     case 'user':
-      flat.user_name = key;
+      flat.user_name = rawKey;
       flat.user_id = id;
       break;
     default:

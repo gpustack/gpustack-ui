@@ -101,16 +101,6 @@ const baseRoutes = [
         redirect: '/models/deployments'
       },
       {
-        name: 'modelCatalog',
-        path: '/models/catalog',
-        key: 'modelsCatalog',
-        icon: 'icon-layers',
-        selectedIcon: 'icon-layers-filled',
-        defaultIcon: 'icon-layers',
-        access: 'canSeeOrgAdmin',
-        component: './llmodels/catalog'
-      },
-      {
         name: 'userModels',
         path: '/models/user-models',
         key: 'userModels',
@@ -119,6 +109,16 @@ const baseRoutes = [
         defaultIcon: 'icon-models',
         access: 'canSeeUser',
         component: './llmodels/user-models'
+      },
+      {
+        name: 'modelCatalog',
+        path: '/models/catalog',
+        key: 'modelsCatalog',
+        icon: 'icon-layers',
+        selectedIcon: 'icon-layers-filled',
+        defaultIcon: 'icon-layers',
+        access: 'canSeeOrgAdmin',
+        component: './llmodels/catalog'
       },
       {
         name: 'deployment',

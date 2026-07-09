@@ -256,13 +256,20 @@ const SummaryTab: React.FC = () => {
     );
     (tokenMeta?.users || []).forEach((u) => {
       const id = u.identity.current?.user_id;
-      if (id != null && !map.has(id)) {
-        map.set(id, {
-          value: id,
-          label: u.label,
-          isCurrent: currentUserId != null && id === currentUserId
-        });
+      if (id == null) return;
+      const existing = map.get(id);
+      if (existing) {
+        // A user in both sources is deleted if either marks it so, so the
+        // dropdown still shows the DeletedTag.
+        if (u.deleted) existing.deleted = true;
+        return;
       }
+      map.set(id, {
+        value: id,
+        label: u.label,
+        deleted: u.deleted,
+        isCurrent: currentUserId != null && id === currentUserId
+      });
     });
     // Sort the signed-in user first, tagged "[Current Account]" (matches the
     // Tokens tab), regardless of which source it came from.

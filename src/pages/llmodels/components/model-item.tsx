@@ -44,7 +44,7 @@ const ModelItemContent = styled.div`
   flex-direction: column;
   height: 100%;
   width: 100%;
-  cursor: default;
+  cursor: pointer;
   .content {
     display: flex;
     justify-content: space-between;
@@ -127,15 +127,23 @@ const renderTag = (item: any, index = 0) => {
 
 const ModelItem: React.FC<{
   model: Record<string, any>;
+  onClick?: (model: Record<string, any>) => void;
 }> = (props) => {
-  const { model } = props;
+  const { model, onClick } = props;
   const intl = useIntl();
   const navigate = useNavigate();
+
+  const handleCardClick = () => {
+    onClick?.(model);
+  };
 
   // ``model.name`` from ``/v2/my-models`` is the OpenAI-style id
   // (org-prefixed for non-platform routes, bare for platform). Use it
   // verbatim — the playground / dispatcher both key off that exact id.
-  const handleOpenPlayGroundClick = () => {
+  const handleOpenPlayGroundClick = (e: React.MouseEvent) => {
+    // Card is clickable (opens API access info); keep the playground
+    // action isolated so it doesn't also trigger the card click.
+    e.stopPropagation();
     const modelName = encodeURIComponent(model.name);
     for (const [category, path] of Object.entries(categoryToPathMap)) {
       if (
@@ -178,9 +186,10 @@ const ModelItem: React.FC<{
     <CardWrapper>
       <TemplateCard
         height={140}
-        clickable={false}
+        clickable={true}
         hoverable={true}
         ghost
+        onClick={handleCardClick}
         header={
           <Header>
             <span className="text gap-8">

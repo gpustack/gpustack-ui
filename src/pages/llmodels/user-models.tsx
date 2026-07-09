@@ -14,8 +14,10 @@ import { Button, Input, Space } from 'antd';
 import React, { useCallback, useMemo } from 'react';
 import PageBox from '../_components/page-box';
 import { MY_MODELS_API, queryMyModels } from './apis';
+import APIAccessInfoModal from './components/api-access-info';
 import ModelItem from './components/model-item';
 import { categoryOptions, MyModelsStatusValueMap } from './config';
+import useViewApIInfo from './hooks/use-view-api-info';
 const Dot = ({ color }: { color: string }) => {
   return (
     <span
@@ -57,6 +59,7 @@ const UserModels: React.FC = () => {
     }
   });
   const intl = useIntl();
+  const { apiAccessInfo, openViewAPIInfo, closeViewAPIInfo } = useViewApIInfo();
 
   const statusOptions = useMemo(() => {
     return [
@@ -91,7 +94,7 @@ const UserModels: React.FC = () => {
   };
 
   const renderCard = (data: any) => {
-    return <ModelItem model={data} />;
+    return <ModelItem model={data} onClick={openViewAPIInfo} />;
   };
 
   const loadMore = useMemoizedFn((nextPage: number) => {
@@ -152,86 +155,95 @@ const UserModels: React.FC = () => {
   };
 
   return (
-    <PageBox>
-      <PageTools
-        marginBottom={22}
-        marginTop={0}
-        left={
-          <Space>
-            <Input
-              placeholder={intl.formatMessage({ id: 'common.filter.name' })}
-              style={{ width: 230 }}
-              size="large"
-              allowClear
-              onClear={() =>
-                handleNameChange({
-                  target: {
-                    value: ''
-                  }
-                })
-              }
-              onChange={handleNameChange}
-            ></Input>
-            <BaseSelect
-              allowClear
-              showSearch={false}
-              placeholder={intl.formatMessage({ id: 'models.filter.category' })}
-              style={{ width: 180 }}
-              size="large"
-              maxTagCount={1}
-              options={categoryOptions}
-              onChange={handleCategoryChange}
-            ></BaseSelect>
-            <BaseSelect
-              allowClear
-              showSearch={false}
-              placeholder={intl.formatMessage({ id: 'common.filter.status' })}
-              style={{ width: 180 }}
-              size="large"
-              maxTagCount={1}
-              optionRender={optionRender}
-              labelRender={labelRender}
-              options={statusOptions}
-              onChange={handleStatusChange}
-            ></BaseSelect>
-            <Button
-              type="text"
-              style={{ color: 'var(--ant-color-text-tertiary)' }}
-              icon={<SyncOutlined></SyncOutlined>}
-              onClick={handleRefresh}
-            ></Button>
-          </Space>
-        }
-      ></PageTools>
-      <InfiniteScrollerProvider
-        value={{
-          total: dataSource.totalPage,
-          current: queryParams.page,
-          loading: dataSource.loading,
-          refresh: loadMore
-        }}
-      >
-        <TemplateCardList
-          dataList={dataList}
-          loading={dataSource.loading}
-          activeId={false}
-          isFirst={!dataSource.loadend}
-          renderItem={renderCard}
-        ></TemplateCardList>
-        <NoResult
-          loading={dataSource.loading}
-          loadend={dataSource.loadend}
-          dataSource={dataList}
-          image={<IconFont type="icon-models" />}
-          filters={{ ...queryParams }}
-          noFoundText={intl.formatMessage({
-            id: 'noresult.mymodels.nofound'
-          })}
-          title={intl.formatMessage({ id: 'noresult.mymodels.title' })}
-          subTitle={intl.formatMessage({ id: 'noresult.mymodels.subTitle' })}
-        ></NoResult>
-      </InfiniteScrollerProvider>
-    </PageBox>
+    <>
+      <PageBox>
+        <PageTools
+          marginBottom={22}
+          marginTop={0}
+          left={
+            <Space>
+              <Input
+                placeholder={intl.formatMessage({ id: 'common.filter.name' })}
+                style={{ width: 230 }}
+                size="large"
+                allowClear
+                onClear={() =>
+                  handleNameChange({
+                    target: {
+                      value: ''
+                    }
+                  })
+                }
+                onChange={handleNameChange}
+              ></Input>
+              <BaseSelect
+                allowClear
+                showSearch={false}
+                placeholder={intl.formatMessage({
+                  id: 'models.filter.category'
+                })}
+                style={{ width: 180 }}
+                size="large"
+                maxTagCount={1}
+                options={categoryOptions}
+                onChange={handleCategoryChange}
+              ></BaseSelect>
+              <BaseSelect
+                allowClear
+                showSearch={false}
+                placeholder={intl.formatMessage({ id: 'common.filter.status' })}
+                style={{ width: 180 }}
+                size="large"
+                maxTagCount={1}
+                optionRender={optionRender}
+                labelRender={labelRender}
+                options={statusOptions}
+                onChange={handleStatusChange}
+              ></BaseSelect>
+              <Button
+                type="text"
+                style={{ color: 'var(--ant-color-text-tertiary)' }}
+                icon={<SyncOutlined></SyncOutlined>}
+                onClick={handleRefresh}
+              ></Button>
+            </Space>
+          }
+        ></PageTools>
+        <InfiniteScrollerProvider
+          value={{
+            total: dataSource.totalPage,
+            current: queryParams.page,
+            loading: dataSource.loading,
+            refresh: loadMore
+          }}
+        >
+          <TemplateCardList
+            dataList={dataList}
+            loading={dataSource.loading}
+            activeId={false}
+            isFirst={!dataSource.loadend}
+            renderItem={renderCard}
+          ></TemplateCardList>
+          <NoResult
+            loading={dataSource.loading}
+            loadend={dataSource.loadend}
+            dataSource={dataList}
+            image={<IconFont type="icon-models" />}
+            filters={{ ...queryParams }}
+            noFoundText={intl.formatMessage({
+              id: 'noresult.mymodels.nofound'
+            })}
+            title={intl.formatMessage({ id: 'noresult.mymodels.title' })}
+            subTitle={intl.formatMessage({ id: 'noresult.mymodels.subTitle' })}
+          ></NoResult>
+        </InfiniteScrollerProvider>
+      </PageBox>
+      <APIAccessInfoModal
+        open={apiAccessInfo.show}
+        data={apiAccessInfo.data}
+        onClose={closeViewAPIInfo}
+      ></APIAccessInfoModal>
+    </>
   );
 };
 

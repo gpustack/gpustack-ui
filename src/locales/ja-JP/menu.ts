@@ -41,7 +41,7 @@ export default {
   'menu.accessControl.organizations': 'Organizations',
   'menu.resources.clusters': 'Clusters',
   'menu.resources.credentials': 'Cloud Credentials',
-  'menu.models.userModels': 'My Models',
+  'menu.models.userModels': 'Models',
   'menu.resources.clusterDetail': 'Cluster Detail',
   'menu.resources.clusterCreate': 'Create Cluster',
   'menu.models.backendsList': 'Inference Backends',
@@ -64,7 +64,7 @@ export default {
 // 8. 'menu.clusterManagement': 'Cluster Management',
 // 9. 'menu.resources.clusters': 'Clusters',
 // 10. 'menu.resources.credentials': 'Cloud Credentials',
-// 11. 'menu.models.userModels': 'My Models'
+// 11. 'menu.models.userModels': 'Models'
 // 12. 'menu.resources.clusterDetail': 'Cluster Detail',
 // 13. 'menu.resources.clusterCreate': 'Create Cluster',
 // 14. 'menu.models.backendsList': 'Inference Backends',

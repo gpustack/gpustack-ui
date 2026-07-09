@@ -30,7 +30,7 @@ const MODEL_ICON_RULES: [string, string][] = [
   ['gemma', 'google'],
   ['command-r', 'cohere'],
   ['cohere', 'cohere'],
-  ['glm', 'thudm'],
+  ['glm', 'zai'],
   ['yi-', '01ai'],
   ['ernie', 'ernie'],
   ['hunyuan', 'hunyuan'],

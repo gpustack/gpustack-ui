@@ -12,7 +12,7 @@ export default {
   'menu.models.modelList': '部署与管理',
   'menu.models.modelCatalog': '模型库',
   'menu.models.deployment': '部署',
-  'menu.models.userModels': '我的模型',
+  'menu.models.userModels': '模型广场',
   'menu.models.benchmark': '基准测试',
   'menu.models.benchmarkDetail': '基准测试详情',
   'menu.models.providers': '提供商',

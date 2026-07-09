@@ -13,7 +13,7 @@ export default {
   'menu.models.modelCatalog': 'Catalog',
   'menu.models.catalog': 'Model Catalog',
   'menu.models.deployment': 'Deployments',
-  'menu.models.userModels': 'My Models',
+  'menu.models.userModels': 'Models',
   'menu.models.benchmark': 'Benchmarks',
   'menu.models.benchmarkDetail': 'Benchmark Details',
   'menu.models.providers': 'Providers',

@@ -40,7 +40,7 @@ export default {
   'menu.accessControl.organizations': 'Организации',
   'menu.resources.clusters': 'Кластеры',
   'menu.resources.credentials': 'Облачные аккаунты',
-  'menu.models.userModels': 'Мои модели',
+  'menu.models.userModels': 'Модели',
   'menu.resources.clusterDetail': 'Детали кластера',
   'menu.resources.clusterCreate': 'Создать кластер',
   'menu.models.backendsList': 'Бэкенды запуска',

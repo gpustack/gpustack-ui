@@ -308,6 +308,21 @@ const StorageTab: React.FC = () => {
       key: 'date'
     },
     {
+      title: intl.formatMessage({ id: 'usage.tabs.storage' }),
+      dataIndex: 'volume_name',
+      key: 'volume_name'
+    },
+    // Owner User column — org admins only (members see just their own rows).
+    ...(canManageUsers
+      ? [
+          {
+            title: intl.formatMessage({ id: 'usage.table.users' }),
+            dataIndex: 'user_name',
+            key: 'user_name'
+          }
+        ]
+      : []),
+    {
       title: intl.formatMessage({ id: 'usage.metric.gbDays' }),
       dataIndex: 'storage_gb_days',
       key: 'storage_gb_days',
@@ -333,7 +348,7 @@ const StorageTab: React.FC = () => {
 
   // The preview modal now only backs the by-date chart export.
   const exportConfig = {
-    groupBy: ['date'],
+    groupBy: ['date', 'volume'],
     columns: chartExportColumns,
     fileName: `storage_chart_${dateSuffix}.xlsx`,
     sheetName: intl.formatMessage({ id: 'usage.tabs.storage' })
@@ -442,6 +457,20 @@ const StorageTab: React.FC = () => {
         initialDateRange={dateRange}
         initialSelectedUsers={selectedUsers}
         initialSelectedResources={selectedVolumes}
+        deletedNameFields={[
+          // The row's ``deleted`` is the grouped volume; the owner user
+          // carries its own ``user_deleted``.
+          { name: 'volume_name', id: 'volume_id', deletedFlag: 'deleted' },
+          ...(canManageUsers
+            ? [
+                {
+                  name: 'user_name',
+                  id: 'user_id',
+                  deletedFlag: 'user_deleted'
+                }
+              ]
+            : [])
+        ]}
       />
     </div>
   );

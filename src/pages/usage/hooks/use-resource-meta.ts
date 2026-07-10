@@ -26,11 +26,16 @@ const EMPTY: ResourceMetaOptions = {
   volumes: []
 };
 
+// Deleted entries sink to the bottom of the dropdown; live ones keep their
+// incoming order (sort is stable).
 const toOptions = (items: ResourceFilterOption[]): SelectOption[] =>
-  items.map((i) => ({ value: i.id, label: i.label, deleted: i.deleted }));
+  items
+    .map((i) => ({ value: i.id, label: i.label, deleted: i.deleted }))
+    .sort((a, b) => Number(!!a.deleted) - Number(!!b.deleted));
 
-// Tag the signed-in user's own entry and sort it first, matching the Tokens
-// tab's "[Current Account]" treatment.
+// Tag the signed-in user's own entry. Ordering: current account first, deleted
+// entries last, everything else keeps its incoming order — matching the Tokens
+// tab's "[Current Account]" treatment while pushing stale rows out of the way.
 const toUserOptions = (
   items: ResourceFilterOption[],
   currentUserId?: number
@@ -41,12 +46,8 @@ const toUserOptions = (
     deleted: i.deleted,
     isCurrent: currentUserId != null && i.id === currentUserId
   }));
-  if (currentUserId == null) return options;
-  return options.sort((a, b) => {
-    if (a.isCurrent) return -1;
-    if (b.isCurrent) return 1;
-    return 0;
-  });
+  const rank = (o: SelectOption) => (o.isCurrent ? 0 : o.deleted ? 2 : 1);
+  return options.sort((a, b) => rank(a) - rank(b));
 };
 
 /**

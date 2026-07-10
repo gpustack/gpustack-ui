@@ -40,18 +40,17 @@ export default function useQueryUsageMetaData() {
     routes: []
   });
 
-  // the current user sort in the first place
+  // Current account first, deleted entries last, everything else keeps its
+  // incoming order (sort is stable).
   const sortUsers = (users: UsageFilterItem[]) => {
     const currentUserId = initialState?.currentUser?.id;
-    if (!currentUserId) return users;
-
-    const sortedUsers = [...users].sort((a, b) => {
-      if (a.identity.current?.user_id === currentUserId) return -1;
-      if (b.identity.current?.user_id === currentUserId) return 1;
-      return 0;
-    });
-
-    return sortedUsers;
+    const rank = (u: UsageFilterItem) =>
+      currentUserId && u.identity.current?.user_id === currentUserId
+        ? 0
+        : u.deleted
+          ? 2
+          : 1;
+    return [...users].sort((a, b) => rank(a) - rank(b));
   };
 
   const queryMetaData = async () => {
@@ -74,12 +73,21 @@ export default function useQueryUsageMetaData() {
           value: optionValue(item.identity.current?.api_key_id, index),
           label: item.identity.value.api_key_name || ''
         })
-      }),
+        // Deleted keys sink to the bottom within each user group.
+      }).map((group) => ({
+        ...group,
+        children: [...group.children].sort(
+          (a, b) => Number(!!(a as any).deleted) - Number(!!(b as any).deleted)
+        )
+      })),
+      // Deleted models sink to the bottom of the dropdown.
       routes:
-        (res?.filters?.routes || []).map((item, index) => ({
-          ...item,
-          value: optionValue(item.identity.current?.route_id, index)
-        })) || []
+        (res?.filters?.routes || [])
+          .map((item, index) => ({
+            ...item,
+            value: optionValue(item.identity.current?.route_id, index)
+          }))
+          .sort((a, b) => Number(!!a.deleted) - Number(!!b.deleted)) || []
     };
     setResult(data);
   };

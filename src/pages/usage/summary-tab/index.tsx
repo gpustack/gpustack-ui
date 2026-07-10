@@ -271,13 +271,11 @@ const SummaryTab: React.FC = () => {
         isCurrent: currentUserId != null && id === currentUserId
       });
     });
-    // Sort the signed-in user first, tagged "[Current Account]" (matches the
-    // Tokens tab), regardless of which source it came from.
-    return Array.from(map.values()).sort((a, b) => {
-      if (a.isCurrent) return -1;
-      if (b.isCurrent) return 1;
-      return 0;
-    });
+    // Signed-in user first (tagged "[Current Account]", matches the Tokens
+    // tab), deleted entries last, everything else keeps its order — regardless
+    // of which source it came from.
+    const rank = (o: SelectOption) => (o.isCurrent ? 0 : o.deleted ? 2 : 1);
+    return Array.from(map.values()).sort((a, b) => rank(a) - rank(b));
   }, [resourceUsers, tokenMeta, currentUserId]);
 
   // user id → the identity object the token series filters by. Built from the

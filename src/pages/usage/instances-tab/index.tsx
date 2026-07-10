@@ -65,12 +65,12 @@ const GpuInstancesTab: React.FC = () => {
   const TABLE_TABS: { key: GroupKey; label: string }[] = useMemo(() => {
     const tabs = [
       {
-        key: 'gpu_type' as GroupKey,
-        label: intl.formatMessage({ id: 'usage.table.instanceTypes' })
-      },
-      {
         key: 'instance' as GroupKey,
         label: intl.formatMessage({ id: 'usage.table.instances' })
+      },
+      {
+        key: 'gpu_type' as GroupKey,
+        label: intl.formatMessage({ id: 'usage.table.instanceTypes' })
       }
     ];
     // Managers see the org-wide User breakdown; members only their own rows.
@@ -106,7 +106,7 @@ const GpuInstancesTab: React.FC = () => {
   const [chartGroupBy, setChartGroupBy] = useState<GroupKey | null>(null);
   // ``null`` group_by = no row grouping, just the summary KPIs.
   // The chart needs the ``date`` group; tables use the active table tab.
-  const [activeTableTab, setActiveTableTab] = useState<GroupKey>('gpu_type');
+  const [activeTableTab, setActiveTableTab] = useState<GroupKey>('instance');
 
   const { creators: userOptions, instances: instanceOptions } =
     useResourceMeta(scope);
@@ -324,6 +324,21 @@ const GpuInstancesTab: React.FC = () => {
       key: 'date'
     },
     {
+      title: intl.formatMessage({ id: 'usage.table.instance' }),
+      dataIndex: 'instance_name',
+      key: 'instance_name'
+    },
+    // Owner User column — org admins only (members see just their own rows).
+    ...(canManageUsers
+      ? [
+          {
+            title: intl.formatMessage({ id: 'usage.table.users' }),
+            dataIndex: 'user_name',
+            key: 'user_name'
+          }
+        ]
+      : []),
+    {
       title: intl.formatMessage({ id: 'usage.metric.gpuHours' }),
       dataIndex: 'gpu_hours',
       key: 'gpu_hours',
@@ -349,7 +364,7 @@ const GpuInstancesTab: React.FC = () => {
 
   // The preview modal now only backs the by-date chart export.
   const exportConfig = {
-    groupBy: ['date'],
+    groupBy: ['date', 'instance'],
     columns: chartExportColumns,
     fileName: `gpu-instances_chart_${dateSuffix}.xlsx`,
     sheetName: intl.formatMessage({ id: 'usage.tabs.gpuInstances' })
@@ -462,6 +477,20 @@ const GpuInstancesTab: React.FC = () => {
         initialDateRange={dateRange}
         initialSelectedUsers={selectedUsers}
         initialSelectedResources={selectedInstances}
+        deletedNameFields={[
+          // The row's ``deleted`` is the grouped instance; the owner user
+          // carries its own ``user_deleted``.
+          { name: 'instance_name', id: 'instance_id', deletedFlag: 'deleted' },
+          ...(canManageUsers
+            ? [
+                {
+                  name: 'user_name',
+                  id: 'user_id',
+                  deletedFlag: 'user_deleted'
+                }
+              ]
+            : [])
+        ]}
       />
     </div>
   );

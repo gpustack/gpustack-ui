@@ -69,6 +69,11 @@ export interface ResourceBreakdownItem extends ResourceBreakdownSummary {
   // fields keep the clean (stale) name; the tables show a DeletedTag off this
   // flag plus the id, matching the Tokens tab.
   deleted?: boolean;
+  // Owner user of a per-instance / per-volume row (compound date+dim grouping),
+  // with its own deletion state — independent of the row's ``deleted`` (which
+  // refers to the grouped instance/volume). Lets the export mark the User
+  // column separately, matching the Tokens tab.
+  user_deleted?: boolean;
   // Grouped-trend rows carry the sub-group label (sku / instance / user / …)
   // alongside ``date`` so the chart can pivot one series per group.
   group?: string;
@@ -220,6 +225,11 @@ interface ServerBreakdownItem {
     persistent_mib?: number | null;
     storage_type?: string | null;
     capacity_mib?: number | null;
+    // Owner user of the instance/volume row (compound date+dim grouping),
+    // carried alongside the grouped entity so the export can show a User column.
+    user_id?: number | null;
+    user_name?: string | null;
+    user_deleted?: boolean | null;
   } | null;
   metrics: ServerMetrics;
 }
@@ -346,6 +356,12 @@ function flattenItem(
     if (dims.persistent_mib != null) flat.persistent_mib = dims.persistent_mib;
     if (dims.storage_type) flat.storage_type = dims.storage_type;
     if (dims.capacity_mib != null) flat.capacity_mib = dims.capacity_mib;
+    // Owner user of a per-instance / per-volume row — the grouped entity is the
+    // instance/volume (``key``/``deleted``), so the owner rides in dimensions
+    // with its own deleted flag for the export's User column.
+    if (dims.user_name != null) flat.user_name = dims.user_name;
+    if (dims.user_id != null) flat.user_id = dims.user_id;
+    if (dims.user_deleted != null) flat.user_deleted = !!dims.user_deleted;
   }
   // Instance-type grouped trend: the series label (``group``) defaults to the
   // raw flavor slug. Instance Types are grouped by actual shape, so label each

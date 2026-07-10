@@ -21,6 +21,7 @@ import {
   ResourceBreakdownRequest,
   ResourceBreakdownResponse
 } from '../apis/resource';
+import { withDeletedMark } from '../utils/deleted-label';
 import {
   exportBreakdownRows,
   toExportColumns
@@ -61,6 +62,15 @@ interface ResourceExportDataProps {
   initialDateRange: [dayjs.Dayjs, dayjs.Dayjs];
   initialSelectedUsers: number[];
   initialSelectedResources: number[];
+  // Name columns that carry a "[Deleted.#id]" marker when their entity is gone.
+  // Each maps a clean-name field to its id + own deleted flag, so a compound
+  // (date + instance/volume) row can mark the instance/volume and its owner
+  // User independently — mirroring the Tokens tab's chart export.
+  deletedNameFields?: {
+    name: string;
+    id: string;
+    deletedFlag: string;
+  }[];
 }
 
 const INITIAL_PAGE = { page: 1, perPage: 100 };
@@ -81,7 +91,8 @@ const ResourceExportData: React.FC<ResourceExportDataProps> = (props) => {
     resourceFilter,
     initialDateRange,
     initialSelectedUsers,
-    initialSelectedResources
+    initialSelectedResources,
+    deletedNameFields
   } = props;
   const intl = useIntl();
 
@@ -157,7 +168,36 @@ const ResourceExportData: React.FC<ResourceExportDataProps> = (props) => {
     [columns, pageParams.page, pageParams.perPage, intl]
   );
 
-  const rows: ResourceBreakdownItem[] = data?.items ?? [];
+  // Append the "[Deleted.#id]" text marker to each configured name field of
+  // deleted rows — used for both the preview cells and the exported sheet, so
+  // the two always agree. Rows are export/preview-only copies. Each field marks
+  // off its own deleted flag (instance/volume vs. its owner User) so a compound
+  // row can flag the two entities independently.
+  const markRows = (
+    items: ResourceBreakdownItem[]
+  ): ResourceBreakdownItem[] => {
+    if (!deletedNameFields?.length) return items;
+    const deletedWord = intl.formatMessage({ id: 'usage.table.deleted' });
+    return items.map((item) => {
+      let next = item;
+      deletedNameFields.forEach((f) => {
+        if ((item as any)[f.deletedFlag]) {
+          next = {
+            ...next,
+            [f.name]: withDeletedMark(
+              (item as any)[f.name] ?? '',
+              true,
+              deletedWord,
+              (item as any)[f.id]
+            )
+          };
+        }
+      });
+      return next;
+    });
+  };
+
+  const rows: ResourceBreakdownItem[] = markRows(data?.items ?? []);
 
   const handlePageChange = (page: number, perPage: number) => {
     setPageParams({ page, perPage });
@@ -170,7 +210,7 @@ const ResourceExportData: React.FC<ResourceExportDataProps> = (props) => {
     try {
       const res = await queryFn(buildRequest(-1, INITIAL_PAGE.perPage));
       exportBreakdownRows(
-        res.items ?? [],
+        markRows(res.items ?? []),
         toExportColumns(columns),
         fileName,
         sheetName

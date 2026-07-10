@@ -8,6 +8,7 @@
  * tab (date range + "filter by user" for managers); the resource-type /
  * event-type selects ride in the bar's ``extra`` slot.
  */
+import { SimpleSelect } from '@gpustack/core-ui';
 import { useAccess, useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { Input, Select, Table, Tag } from 'antd';
@@ -242,16 +243,18 @@ const ResourceEvents: React.FC = () => {
               options={RESOURCE_TYPE_OPTIONS}
               style={{ minWidth: 200 }}
             />
-            <Select
+            <SimpleSelect
               mode="multiple"
               allowClear
+              showSearch
+              maxTagCount={'responsive'}
               placeholder={intl.formatMessage({
                 id: 'usage.events.eventType'
               })}
               value={queryParams.eventTypes}
               onChange={(v) => fetchEvents({ eventTypes: v, page: 1 })}
               options={EVENT_TYPE_OPTIONS}
-              style={{ minWidth: 240 }}
+              style={{ width: 240 }}
             />
           </>
         }

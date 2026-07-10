@@ -18,15 +18,18 @@ import useCheckBackend from '@/pages/llmodels/hooks/use-check-backend';
 import { useGenerateWorkerOptions } from '@/pages/llmodels/hooks/use-form-initial-values';
 import useRecognizeAudio from '@/pages/llmodels/hooks/use-recognize-audio';
 import {
+  BaseSelect,
   DeleteModal,
   FilterBar,
   IconFont,
   NoResult,
-  useAppUtils
+  AntdResponsiveTable as Table,
+  useAppUtils,
+  useFilterDrawer
 } from '@gpustack/core-ui';
 import { useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { ConfigProvider, Table, message } from 'antd';
+import { ConfigProvider, message } from 'antd';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
@@ -39,6 +42,7 @@ import {
 } from '../apis';
 import { WorkerStatusMap } from '../config';
 import { ModelFile as ListItem } from '../config/types';
+import WorkerFilterForm from '../filters/worker-filter-form';
 import useFilesColumns from '../hooks/use-files-columns';
 
 const filterPattern = /^(.*?)(?:-\d+-of-\d+)?(\.gguf)?$/;
@@ -74,6 +78,20 @@ const ModelFiles = () => {
     contentForDelete: 'resources.modelfiles.modelfile'
   });
   const intl = useIntl();
+  const {
+    filtersVisible,
+    toggleFilters,
+    filterRef,
+    filterValues,
+    filtersCount,
+    handleOnFilterChange,
+    handleOnClearFilters
+  } = useFilterDrawer({
+    onFilterChange: (filters) => {
+      handleQueryChange({ page: 1, ...filters });
+    },
+    clearKeys: ['worker_id']
+  });
   const { showSuccess } = useAppUtils();
   const [downloadModalStatus, setDownlaodMoalStatus] = useState<{
     show: boolean;
@@ -316,82 +334,123 @@ const ModelFiles = () => {
   }, [workerOptions]);
 
   return (
-    <>
-      <PageBox>
-        <FilterBar
-          marginBottom={22}
-          marginTop={30}
-          actionType="dropdown"
-          selectHolder={intl.formatMessage({ id: 'resources.filter.worker' })}
-          inputHolder={intl.formatMessage({ id: 'resources.filter.path' })}
-          buttonText={intl.formatMessage({
-            id: 'resources.modelfiles.download'
-          })}
-          handleSelectChange={handleWorkerChange}
-          handleDeleteByBatch={handleDeleteByBatch}
-          handleClickPrimary={handleClickDropdown}
-          handleSearch={handleSearch}
-          selectOptions={workersList}
-          handleInputChange={handleNameChange}
-          rowSelection={rowSelection}
-          actionItems={onLineSourceOptions}
-          showSelect={true}
-        ></FilterBar>
-        <ConfigProvider renderEmpty={renderEmpty}>
-          <Table
-            rowKey="id"
-            tableLayout="fixed"
-            sortDirections={TABLE_SORT_DIRECTIONS}
-            showSorterTooltip={false}
-            scroll={{
-              x: 900
-            }}
-            onChange={handleTableChange}
-            dataSource={dataSource.dataList}
-            loading={{
-              spinning: dataSource.loading,
-              size: 'middle'
-            }}
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'flex-start',
+        minWidth: 0,
+        maxWidth: '100%'
+      }}
+    >
+      <WorkerFilterForm
+        ref={filterRef}
+        open={filtersVisible}
+        workerList={workersList}
+        initialValues={filterValues}
+        onValuesChange={handleOnFilterChange}
+        onClose={toggleFilters}
+        onClear={handleOnClearFilters}
+      />
+      <div style={{ flex: 1, minWidth: 0, maxWidth: '100%' }}>
+        <PageBox>
+          <FilterBar
+            marginBottom={22}
+            marginTop={30}
+            actionType="dropdown"
+            buttonText={intl.formatMessage({
+              id: 'resources.modelfiles.download'
+            })}
+            handleDeleteByBatch={handleDeleteByBatch}
+            handleClickPrimary={handleClickDropdown}
+            handleSearch={handleSearch}
+            handleInputChange={handleNameChange}
             rowSelection={rowSelection}
-            columns={columns}
-            pagination={{
-              showSizeChanger: true,
-              pageSize: queryParams.perPage,
-              current: queryParams.page,
-              total: dataSource.total,
-              hideOnSinglePage: queryParams.perPage === 10,
-              onChange: handlePageChange,
-              size: 'middle'
+            actionItems={onLineSourceOptions}
+            showSelect={false}
+            collapseInlineFilters
+            inputHolder={intl.formatMessage({
+              id: 'resources.filter.path'
+            })}
+            filtersButtonProps={{
+              show: true,
+              count: filtersCount,
+              onClick: toggleFilters,
+              onClear: handleOnClearFilters
             }}
-          ></Table>
-        </ConfigProvider>
-        <DeleteModal ref={modalRef}></DeleteModal>
-        <DownloadModal
-          onCancel={handleDownloadCancel}
-          onOk={handleDownload}
-          title={intl.formatMessage({ id: 'resources.modelfiles.download' })}
-          open={downloadModalStatus.show}
-          source={downloadModalStatus.source}
-          width={downloadModalStatus.width}
-          hasLinuxWorker={downloadModalStatus.hasLinuxWorker}
-          workerOptions={readyWorkers}
-          workersList={workersList}
-        ></DownloadModal>
-        <DeployModal
-          deploymentType="modelFiles"
-          title={intl.formatMessage({ id: 'models.button.deploy' })}
-          onCancel={handleDeployModalCancel}
-          onOk={handleCreateModel}
-          open={openDeployModal.show}
-          action={PageAction.CREATE}
-          source={openDeployModal.source}
-          width={openDeployModal.width}
-          initialValues={openDeployModal.initialValues}
-          isGGUF={openDeployModal.isGGUF}
-          clusterList={clusterList}
-        ></DeployModal>
-      </PageBox>
-    </>
+            inlineFilters={
+              <BaseSelect
+                allowClear
+                showSearch={false}
+                placeholder={intl.formatMessage({
+                  id: 'resources.filter.worker'
+                })}
+                style={{ width: 160 }}
+                size="large"
+                maxTagCount={1}
+                onChange={handleWorkerChange}
+                options={workersList.map((worker) => ({
+                  label: worker.label,
+                  value: worker.value
+                }))}
+              />
+            }
+          ></FilterBar>
+          <ConfigProvider renderEmpty={renderEmpty}>
+            <Table
+              rowKey="id"
+              tableLayout="fixed"
+              sortDirections={TABLE_SORT_DIRECTIONS}
+              showSorterTooltip={false}
+              scroll={{
+                x: 'max-content'
+              }}
+              onChange={handleTableChange}
+              dataSource={dataSource.dataList}
+              loading={{
+                spinning: dataSource.loading,
+                size: 'middle'
+              }}
+              rowSelection={rowSelection}
+              columns={columns}
+              pagination={{
+                showSizeChanger: true,
+                pageSize: queryParams.perPage,
+                current: queryParams.page,
+                total: dataSource.total,
+                hideOnSinglePage: queryParams.perPage === 10,
+                onChange: handlePageChange,
+                size: 'middle'
+              }}
+            ></Table>
+          </ConfigProvider>
+          <DeleteModal ref={modalRef}></DeleteModal>
+          <DownloadModal
+            onCancel={handleDownloadCancel}
+            onOk={handleDownload}
+            title={intl.formatMessage({ id: 'resources.modelfiles.download' })}
+            open={downloadModalStatus.show}
+            source={downloadModalStatus.source}
+            width={downloadModalStatus.width}
+            hasLinuxWorker={downloadModalStatus.hasLinuxWorker}
+            workerOptions={readyWorkers}
+            workersList={workersList}
+          ></DownloadModal>
+          <DeployModal
+            deploymentType="modelFiles"
+            title={intl.formatMessage({ id: 'models.button.deploy' })}
+            onCancel={handleDeployModalCancel}
+            onOk={handleCreateModel}
+            open={openDeployModal.show}
+            action={PageAction.CREATE}
+            source={openDeployModal.source}
+            width={openDeployModal.width}
+            initialValues={openDeployModal.initialValues}
+            isGGUF={openDeployModal.isGGUF}
+            clusterList={clusterList}
+          ></DeployModal>
+        </PageBox>
+      </div>
+    </div>
   );
 };
 

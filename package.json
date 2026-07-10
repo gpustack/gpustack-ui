@@ -7,10 +7,15 @@
     "dev": "max dev",
     "format": "prettier --cache --write .",
     "postinstall": "max setup",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "prepare": "husky",
     "preview": "max preview",
     "setup": "max setup",
-    "start": "npm run dev"
+    "start": "npm run dev",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "validate": "scripts/validate"
   },
   "dependencies": {
     "@ant-design/icons": "^6.1.0",
@@ -116,6 +121,7 @@
     "typescript": "^5.4.5",
     "typescript-eslint": "^8.58.0",
     "url-loader": "^4.1.1",
+    "vitest": "^1.6.1",
     "webpack-bundle-analyzer": "^4.10.2",
     "worker-loader": "^3.0.8"
   },

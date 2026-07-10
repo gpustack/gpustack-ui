@@ -6,6 +6,57 @@ This is the **open source UI** (`gpustack-ui`). Common `components`, `hooks`, an
 
 Task-specific conventions live in skills: use **create-crud-page** when building a page module, **form-patterns** when building cascading/dependent forms.
 
+# Build validation
+
+Before finishing work on forms, modals, or shared types, run the full validation pipeline:
+
+```bash
+pnpm run validate
+```
+
+This runs `scripts/lint` (ESLint) and `scripts/build` (production build). CI runs the same steps on every pull request.
+
+For type-level regressions, also run:
+
+```bash
+pnpm run typecheck
+```
+
+The repo still has legacy TypeScript debt, so `typecheck` is **not** a CI gate yet — use it locally when you touch types, refs, or form/modal code.
+
+Fix all lint errors and build failures before considering the task done.
+
+# Form refs & modals
+
+Runtime errors like `resetFields is not a function` come from calling an imperative form ref before the child mounts, or from an untyped `useRef<any>` that hides a broken API contract. These are not caught by `pnpm run build` alone.
+
+## Typed imperative handles
+
+- Define a handle interface next to the form component (e.g. `DeployDataFormHandle`).
+- Parent modals must use `useRef<DeployDataFormHandle>(null)` — **never** `useRef<any>(null)` for form refs in new or touched code.
+- Expose one consistent API from `useImperativeHandle`: either wrapper methods (`resetFields`, `setFieldsValue`, `submit`) **or** the inner Ant Design `FormInstance` via `.form` — do not mix both styles in the same parent.
+
+```ts
+export type DeployDataFormHandle = {
+  submit: () => void;
+  resetFields: (fields?: string[]) => void;
+  setFieldsValue: (values: Partial<FormData>) => void;
+  getFieldValue: (name: string) => unknown;
+};
+
+const formRef = useRef<DeployDataFormHandle>(null);
+```
+
+## Lifecycle guards
+
+- Do not call `formRef.current?.method()` from async fetch/effect paths until the drawer is open **and** the form child is rendered.
+- Child components that auto-select defaults after fetch (e.g. search → pick first model) must not invoke parent form mutations until the parent confirms the form ref is ready, or guard with `typeof formRef.current?.resetFields === 'function'`.
+- Prefer optional chaining on the **method** too: `formRef.current?.resetFields?.(fields)`, not only on `current`.
+
+## Manual smoke-test
+
+After changing modal/drawer forms, manually verify: open → wait for data load / auto-select → change selection → submit. Watch the dev overlay for unhandled rejections.
+
 # React State and Request Patterns
 
 Keep data flow explicit, predictable, and performant. The triggering **action** is the source of truth for UI updates — not effect-driven synchronization.

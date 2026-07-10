@@ -1,21 +1,9 @@
-import { BaseSelect, FilterForm } from '@gpustack/core-ui';
+import { BaseSelect, FilterForm, FilterFormField } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import { forwardRef, useImperativeHandle, useRef } from 'react';
-import styled from 'styled-components';
 import { modelCategories } from '../config';
 import useFilterStatus from '../hooks/use-filter-status';
-const Content = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-const Label = styled.span`
-  display: inline-flex;
-  align-items: center;
-  font-size: 13px;
-  margin-block: 12px 8px;
-  color: var(--ant-color-text-tertiary);
-`;
 
 interface FilterFormContentProps {
   clusterList: Global.BaseOption<number>[];
@@ -62,12 +50,12 @@ const FilterFormContent: React.FC<FilterFormContentProps> = forwardRef(
           }
         }}
       >
-        <Content>
-          <Label style={{ marginTop: 0 }}>
-            {intl.formatMessage({
-              id: 'clusters.title'
-            })}
-          </Label>
+        <FilterFormField
+          first
+          label={intl.formatMessage({
+            id: 'clusters.title'
+          })}
+        >
           <Form.Item
             noStyle
             name="cluster_id"
@@ -86,7 +74,10 @@ const FilterFormContent: React.FC<FilterFormContentProps> = forwardRef(
               options={clusterList}
             ></BaseSelect>
           </Form.Item>
-          <Label>{intl.formatMessage({ id: 'models.table.category' })}</Label>
+        </FilterFormField>
+        <FilterFormField
+          label={intl.formatMessage({ id: 'models.table.category' })}
+        >
           <Form.Item
             noStyle
             name="categories"
@@ -94,9 +85,6 @@ const FilterFormContent: React.FC<FilterFormContentProps> = forwardRef(
               id: 'models.filter.category'
             })}
           >
-            {/* <PillButtonGroup
-            options={modelCategories.filter((item) => item.value)}
-          ></PillButtonGroup> */}
             <BaseSelect
               allowClear
               showSearch={false}
@@ -105,16 +93,15 @@ const FilterFormContent: React.FC<FilterFormContentProps> = forwardRef(
               })}
               size="large"
               maxTagCount={1}
-              // onChange={handleCategoryChange}
               options={modelCategories.filter((item) => item.value)}
             ></BaseSelect>
           </Form.Item>
-
-          <Label>
-            {intl.formatMessage({
-              id: 'models.table.status'
-            })}
-          </Label>
+        </FilterFormField>
+        <FilterFormField
+          label={intl.formatMessage({
+            id: 'models.table.status'
+          })}
+        >
           <Form.Item
             noStyle
             name="state"
@@ -122,7 +109,6 @@ const FilterFormContent: React.FC<FilterFormContentProps> = forwardRef(
               id: 'models.table.status'
             })}
           >
-            {/* <PillButtonGroup options={statusOptions}></PillButtonGroup> */}
             <BaseSelect
               allowClear
               showSearch={false}
@@ -134,7 +120,7 @@ const FilterFormContent: React.FC<FilterFormContentProps> = forwardRef(
               options={statusOptions}
             ></BaseSelect>
           </Form.Item>
-        </Content>
+        </FilterFormField>
       </FilterForm>
     );
   }

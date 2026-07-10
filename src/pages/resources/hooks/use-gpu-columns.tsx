@@ -57,6 +57,7 @@ const useGPUColumns = (props: {
         dataIndex: 'name',
         width: 240,
         minWidth: 32,
+        mobileCard: 'primary',
         sorter: tableSorter(1),
         render: (text: string, record: GPUDeviceItem) => (
           <AutoTooltip ghost maxWidth={240} title={text}>

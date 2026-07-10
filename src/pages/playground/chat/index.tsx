@@ -1,11 +1,11 @@
-import breakpoints from '@/config/breakpoints';
 import HotKeys from '@/config/hotkeys';
 import useWindowResize from '@/hooks/use-window-resize';
 import { modelCategoriesMap } from '@/pages/llmodels/config';
 import { MessageOutlined, OneToOneOutlined } from '@ant-design/icons';
+import { PageHeaderTitle, ResponsiveSegmented } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { Segmented, Tabs, TabsProps } from 'antd';
+import { Tabs, TabsProps } from 'antd';
 import _ from 'lodash';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -22,7 +22,7 @@ import SingleChat from './single-chat';
 
 const Playground: React.FC = () => {
   const intl = useIntl();
-  const { size } = useWindowResize();
+  const { isMobile } = useWindowResize();
   const [activeKey, setActiveKey] = useState('chat');
   const groundLeftRef = useRef<any>(null);
   const groundRerankerRef = useRef<any>(null);
@@ -80,12 +80,6 @@ const Playground: React.FC = () => {
   }, [modelList, loaded]);
 
   useEffect(() => {
-    if (size.width < breakpoints.lg && !groundLeftRef.current?.collapse) {
-      groundLeftRef.current?.setCollapse?.();
-    }
-  }, [size.width]);
-
-  useEffect(() => {
     const fetchData = async () => {
       try {
         const params = {
@@ -111,34 +105,6 @@ const Playground: React.FC = () => {
     fetchData();
   }, []);
 
-  const title = useMemo(() => {
-    return (
-      <div className="flex justify-between items-center">
-        <div className="flex items-center">
-          <span className="font-600 flex-center">
-            {intl.formatMessage({ id: 'menu.playground.chat' })}
-          </span>
-          {
-            <Segmented
-              options={optionsList}
-              size="middle"
-              className="m-l-24 font-600"
-              value={activeKey}
-              onChange={(key) => setActiveKey(key)}
-              style={{ fontSize: 13 }}
-            ></Segmented>
-          }
-        </div>
-        <ViewCodeButtons
-          handleViewCode={handleViewCode}
-          handleToggleCollapse={handleToggleCollapse}
-          activeKey={activeKey}
-          key="view-code-buttons"
-        />
-      </div>
-    );
-  }, [activeKey, optionsList, intl]);
-
   useHotkeys(
     HotKeys.RIGHT.join(','),
     () => {
@@ -151,28 +117,31 @@ const Playground: React.FC = () => {
     }
   );
 
-  usePageContentStyle({ padding: 0 });
+  usePageContentStyle(
+    isMobile
+      ? {
+          padding: 0,
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          flex: 1,
+          minHeight: 0
+        }
+      : { padding: 0 }
+  );
 
   return (
     <>
       <HeaderLeft>
-        <div className="flex items-center">
-          <span className="font-600 flex-center">
-            {intl.formatMessage({ id: 'menu.playground.chat' })}
-          </span>
-          <Segmented
-            shape="round"
-            style={{
-              backgroundColor: 'var(--ant-color-fill-secondary)',
-              fontSize: 13
-            }}
-            size="middle"
-            className="m-l-24 font-400"
+        <PageHeaderTitle
+          title={intl.formatMessage({ id: 'menu.playground.chat' })}
+        >
+          <ResponsiveSegmented
             options={optionsList}
             value={activeKey}
             onChange={(key) => setActiveKey(key)}
-          ></Segmented>
-        </div>
+          />
+        </PageHeaderTitle>
       </HeaderLeft>
       <HeaderRight>
         <ViewCodeButtons
@@ -182,9 +151,17 @@ const Playground: React.FC = () => {
           key="view-code-buttons"
         />
       </HeaderRight>
-      <div className="play-ground">
-        <div className="chat">
-          <Tabs items={items} activeKey={activeKey}></Tabs>
+      <div
+        className={
+          isMobile
+            ? 'play-ground-root play-ground-root--mobile'
+            : 'play-ground-root'
+        }
+      >
+        <div className="play-ground">
+          <div className="chat">
+            <Tabs items={items} activeKey={activeKey}></Tabs>
+          </div>
         </div>
       </div>
     </>

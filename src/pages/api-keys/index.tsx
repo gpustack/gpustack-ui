@@ -2,17 +2,27 @@ import { PageAction } from '@/config';
 import { PaginationKey } from '@/config/settings';
 import type { PageActionType } from '@/config/types';
 import useTableFetch from '@/hooks/use-table-fetch';
-import useQueryUserList from '@/pages/users/services/use-query-user-list';
-import { DeleteModal, FilterBar, IconFont, NoResult } from '@gpustack/core-ui';
+import useWindowResize from '@/hooks/use-window-resize';
+import {
+  BaseSelect,
+  DeleteModal,
+  FilterBar,
+  IconFont,
+  NoResult,
+  AntdResponsiveTable as Table,
+  useFilterDrawer
+} from '@gpustack/core-ui';
 import { useAccess, useIntl } from '@umijs/max';
 import useMemoizedFn from 'ahooks/lib/useMemoizedFn';
-import { ConfigProvider, Table } from 'antd';
+import { ConfigProvider } from 'antd';
 import _ from 'lodash';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import PageBox from '../_components/page-box';
+import useQueryUserList from '../users/services/use-query-user-list';
 import { deleteApisKey, queryApisKeysList } from './apis';
 import AddAPIKeyModal from './components/add-apikey-modal';
 import { ListItem } from './config/types';
+import CreatorFilterForm from './filters/creator-filter-form';
 import useKeysColumns from './hooks/use-keys-columns';
 import {
   APIKeyConfigActionMount,
@@ -61,6 +71,25 @@ const APIKeys: React.FC = () => {
   });
 
   const intl = useIntl();
+  const { isMobile } = useWindowResize();
+
+  const {
+    filtersVisible,
+    toggleFilters,
+    filterRef,
+    filterValues,
+    filtersCount,
+    handleOnFilterChange,
+    handleOnClearFilters
+  } = useFilterDrawer({
+    onFilterChange: (filters) => {
+      handleQueryChange({
+        page: 1,
+        user_id: filters.user_id || '*'
+      });
+    },
+    clearKeys: ['user_id']
+  });
 
   // Generic per-row plugin slot. Each enterprise plugin contributes a
   // `{ key, labelId, icon, priority, form, useCreate }` entry; the
@@ -173,8 +202,9 @@ const APIKeys: React.FC = () => {
     }
   );
 
-  const handleUserChange = (val: string) => {
+  const handleUserChange = (val: number) => {
     handleQueryChange({
+      page: 1,
       user_id: val || '*'
     });
   };
@@ -211,72 +241,116 @@ const APIKeys: React.FC = () => {
   });
 
   return (
-    <>
-      <PageBox>
-        <FilterBar
-          marginBottom={22}
-          marginTop={30}
-          showSelect={canSeeAllKeys}
-          selectOptions={userList}
-          select={{ showSearch: { optionFilterProp: 'label' } }}
-          selectHolder={intl.formatMessage({ id: 'common.filter.byCreator' })}
-          buttonText={intl.formatMessage({ id: 'apikeys.button.create' })}
-          handleSearch={handleSearch}
-          handleDeleteByBatch={handleDeleteBatch}
-          handleClickPrimary={handleAddKey}
-          handleSelectChange={handleUserChange}
-          handleInputChange={handleNameChange}
-          rowSelection={rowSelection}
-          widths={{ input: 300 }}
-        ></FilterBar>
-        <ConfigProvider renderEmpty={renderEmpty}>
-          <Table
-            columns={columns}
-            dataSource={dataSource.dataList}
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'flex-start',
+        minWidth: 0,
+        maxWidth: '100%'
+      }}
+    >
+      {canSeeAllKeys && (
+        <CreatorFilterForm
+          ref={filterRef}
+          open={filtersVisible}
+          userList={userList}
+          initialValues={filterValues}
+          onValuesChange={handleOnFilterChange}
+          onClose={toggleFilters}
+          onClear={handleOnClearFilters}
+        />
+      )}
+      <div style={{ flex: 1, minWidth: 0, maxWidth: '100%' }}>
+        <PageBox>
+          <FilterBar
+            marginBottom={22}
+            marginTop={30}
+            showSelect={false}
+            collapseInlineFilters
+            filtersButtonProps={
+              canSeeAllKeys
+                ? {
+                    show: true,
+                    count: filtersCount,
+                    onClick: toggleFilters,
+                    onClear: handleOnClearFilters
+                  }
+                : undefined
+            }
+            buttonText={intl.formatMessage({ id: 'apikeys.button.create' })}
+            handleSearch={handleSearch}
+            handleDeleteByBatch={handleDeleteBatch}
+            handleClickPrimary={handleAddKey}
+            handleInputChange={handleNameChange}
             rowSelection={rowSelection}
-            loading={{
-              spinning: dataSource.loading,
-              size: 'middle'
-            }}
-            sortDirections={TABLE_SORT_DIRECTIONS}
-            showSorterTooltip={false}
-            rowKey="id"
-            onChange={handleTableChange}
-            pagination={{
-              size: 'middle',
-              showSizeChanger: true,
-              pageSize: queryParams.perPage,
-              current: queryParams.page,
-              total: dataSource.total,
-              hideOnSinglePage: queryParams.perPage === 10,
-              onChange: handlePageChange
-            }}
-          ></Table>
-        </ConfigProvider>
-      </PageBox>
-      <AddAPIKeyModal
-        open={openAddModal.open}
-        action={openAddModal.action}
-        title={openAddModal.title}
-        currentData={openAddModal.currentData}
-        onCancel={handleModalCancel}
-        onOk={handleModalOk}
-      ></AddAPIKeyModal>
-      <DeleteModal ref={modalRef}></DeleteModal>
-      {/* One mount per registered action. Each mount calls its
+            widths={{ input: 300 }}
+            inlineFilters={
+              canSeeAllKeys ? (
+                <BaseSelect
+                  allowClear
+                  showSearch={{ optionFilterProp: 'label' }}
+                  placeholder={intl.formatMessage({
+                    id: 'common.filter.byCreator'
+                  })}
+                  style={{ width: 160 }}
+                  size="large"
+                  maxTagCount={1}
+                  onChange={handleUserChange}
+                  options={userList}
+                />
+              ) : null
+            }
+          ></FilterBar>
+          <ConfigProvider renderEmpty={renderEmpty}>
+            <Table
+              columns={columns}
+              dataSource={dataSource.dataList}
+              rowSelection={rowSelection}
+              scroll={{ x: 'max-content' }}
+              loading={{
+                spinning: dataSource.loading,
+                size: 'middle'
+              }}
+              sortDirections={TABLE_SORT_DIRECTIONS}
+              showSorterTooltip={false}
+              rowKey="id"
+              onChange={handleTableChange}
+              pagination={{
+                size: isMobile ? 'small' : 'middle',
+                showSizeChanger: true,
+                pageSize: queryParams.perPage,
+                current: queryParams.page,
+                total: dataSource.total,
+                hideOnSinglePage: queryParams.perPage === 10,
+                onChange: handlePageChange
+              }}
+            ></Table>
+          </ConfigProvider>
+        </PageBox>
+        <AddAPIKeyModal
+          open={openAddModal.open}
+          action={openAddModal.action}
+          title={openAddModal.title}
+          currentData={openAddModal.currentData}
+          onCancel={handleModalCancel}
+          onOk={handleModalOk}
+        ></AddAPIKeyModal>
+        <DeleteModal ref={modalRef}></DeleteModal>
+        {/* One mount per registered action. Each mount calls its
           entry's `useCreate` (single hook per component, so iterating
           the plugin list doesn't violate the Rules of Hooks),
           renders the form, and registers its controller so dropdown
           clicks can dispatch to it. */}
-      {configActions.map((action) => (
-        <APIKeyConfigActionMount
-          key={action.key}
-          action={action}
-          registerController={registerController}
-          onOk={fetchData}
-        />
-      ))}
-    </>
+        {configActions.map((action) => (
+          <APIKeyConfigActionMount
+            key={action.key}
+            action={action}
+            registerController={registerController}
+            onOk={fetchData}
+          />
+        ))}
+      </div>
+    </div>
   );
 };
 

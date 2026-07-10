@@ -117,6 +117,7 @@ const useInstancesColumns = ({
         dataIndex: 'name',
         key: 'name',
         sorter: true,
+        mobileCard: 'primary',
         ellipsis: {
           showTitle: false
         },
@@ -133,6 +134,7 @@ const useInstancesColumns = ({
       {
         title: intl.formatMessage({ id: 'gpuservice.instance.connect' }),
         key: 'connect',
+        responsive: { hideBelow: 'md' },
         ellipsis: {
           showTitle: false
         },
@@ -218,6 +220,7 @@ const useInstancesColumns = ({
         title: intl.formatMessage({ id: 'common.table.status' }),
         dataIndex: ['status', 'phase'],
         key: 'status',
+        responsive: { hideBelow: 'md' },
         sorter: false,
         ellipsis: {
           showTitle: false
@@ -238,6 +241,7 @@ const useInstancesColumns = ({
         title: intl.formatMessage({ id: 'gpuservice.instance.section.type' }),
         dataIndex: ['spec', 'type'],
         key: 'type',
+        responsive: { hideBelow: 'md' },
         sorter: false,
         ellipsis: {
           showTitle: false
@@ -251,6 +255,7 @@ const useInstancesColumns = ({
         title: intl.formatMessage({ id: 'clusters.title' }),
         dataIndex: 'clusterId',
         hidden: !access.canSeeAdmin,
+        responsive: { hideBelow: 'md' },
         ellipsis: {
           showTitle: false
         },
@@ -265,6 +270,7 @@ const useInstancesColumns = ({
         title: intl.formatMessage({ id: 'common.table.createTime' }),
         dataIndex: 'created_at',
         key: 'created_at',
+        responsive: { hideBelow: 'md' },
         sorter: false,
         ellipsis: {
           showTitle: false

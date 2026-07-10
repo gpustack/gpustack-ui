@@ -1,10 +1,16 @@
 import { PageAction } from '@/config';
 import { TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import useTableFetch from '@/hooks/use-table-fetch';
-import { DeleteModal, FilterBar, IconFont, NoResult } from '@gpustack/core-ui';
+import {
+  DeleteModal,
+  FilterBar,
+  IconFont,
+  NoResult,
+  AntdResponsiveTable as Table
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { ConfigProvider, message, Table } from 'antd';
+import { ConfigProvider, message } from 'antd';
 import _ from 'lodash';
 import PageBox from '../../_components/page-box';
 import {
@@ -163,6 +169,7 @@ const GPUServicePublicKeys: React.FC = () => {
             sortDirections={TABLE_SORT_DIRECTIONS}
             showSorterTooltip={false}
             rowKey={(record) => record.id}
+            scroll={{ x: 'max-content' }}
             onChange={handleTableChange}
             pagination={{
               showSizeChanger: true,

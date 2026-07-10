@@ -1,9 +1,13 @@
 import { PageAction } from '@/config';
 import useTableFetch from '@/hooks/use-table-fetch';
-import { DeleteModal, FilterBar } from '@gpustack/core-ui';
+import {
+  DeleteModal,
+  FilterBar,
+  AntdResponsiveTable as Table
+} from '@gpustack/core-ui';
 import { useIntl, useSearchParams } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { message, Table } from 'antd';
+import { message } from 'antd';
 import { useState } from 'react';
 import styled from 'styled-components';
 import {
@@ -154,6 +158,7 @@ const WorkerPools = () => {
         loading={dataSource.loading}
         rowSelection={rowSelection}
         columns={columns}
+        scroll={{ x: 'max-content' }}
         pagination={{
           size: 'middle',
           showSizeChanger: true,

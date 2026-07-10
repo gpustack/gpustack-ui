@@ -1,9 +1,10 @@
 import { setRouteCache } from '@/atoms/route-cache';
 import routeCachekey from '@/config/route-cachekey';
+import useWindowResize from '@/hooks/use-window-resize';
 import ThumbImg from '@/pages/playground/components/thumb-img';
 import { generateRandomNumber } from '@/utils';
 import { FileImageOutlined } from '@ant-design/icons';
-import { AlertInfo, IconFont } from '@gpustack/core-ui';
+import { AlertInfo, IconFont, useInitialCollapsed } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Tooltip } from 'antd';
 import _ from 'lodash';
@@ -35,8 +36,9 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   const { modelList } = props;
 
   const intl = useIntl();
+  const { isMobile } = useWindowResize();
   const [show, setShow] = useState(false);
-  const [collapse, setCollapse] = useState(false);
+  const [collapse, setCollapse] = useInitialCollapsed();
   const scroller = useRef<any>(null);
   const inputRef = useRef<any>(null);
 
@@ -227,10 +229,11 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
               id: 'playground.input.prompt.holder'
             })}
             actions={[]}
-            defaultSize={{
-              minRows: 5,
-              maxRows: 5
-            }}
+            defaultSize={
+              isMobile
+                ? { minRows: 3, maxRows: 10 }
+                : { minRows: 5, maxRows: 5 }
+            }
             title={intl.formatMessage({ id: 'playground.image.prompt' })}
             loading={loading}
             disabled={!parameters.model}
@@ -259,7 +262,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
           />
         </div>
       </div>
-      <RightContainer collapsed={collapse}>
+      <RightContainer collapsed={collapse} onDismiss={() => setCollapse(true)}>
         <DataForm
           ref={form}
           onValuesChange={handleOnValuesChange}

@@ -46,8 +46,11 @@ const ProviderModels: React.FC<ProviderModelProps> = ({ dataList }) => {
               model.accessible === true ? 'var(--ant-color-success)' : 'default'
             }
           >
-            <span className="flex-center">
-              <AutoTooltip ghost maxWidth={'120px'}>
+            <span
+              className="flex-center"
+              style={{ minWidth: 0, maxWidth: '100%' }}
+            >
+              <AutoTooltip ghost style={{ minWidth: 0, maxWidth: '100%' }}>
                 {model.name}
               </AutoTooltip>
               <span style={{ marginLeft: 8 }}>
@@ -60,8 +63,8 @@ const ProviderModels: React.FC<ProviderModelProps> = ({ dataList }) => {
     );
   };
   return (
-    <div>
-      <Flex gap="8px" wrap="wrap">
+    <div style={{ minWidth: 0, maxWidth: '100%', width: '100%' }}>
+      <Flex gap="8px" wrap="wrap" justify="flex-end">
         {renderModels(head12Items)}
         {restItems.length > 0 && (
           <Popover

@@ -2,6 +2,7 @@ import { clusterSessionAtom } from '@/atoms/clusters';
 import { PageAction } from '@/config';
 import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import useTableFetch from '@/hooks/use-table-fetch';
+import useWindowResize from '@/hooks/use-window-resize';
 import { ProviderValueMap } from '@/pages/cluster-management/config';
 import { useQueryClusterList } from '@/pages/cluster-management/services/use-query-cluster-list';
 import { handleBatchRequest } from '@/utils';
@@ -11,11 +12,12 @@ import {
   DropdownButtons,
   FilterBar,
   IconFont,
-  NoResult
+  NoResult,
+  AntdResponsiveTable as Table
 } from '@gpustack/core-ui';
 import { useAccess, useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { Button, ConfigProvider, message, Modal, Space, Table } from 'antd';
+import { Button, ConfigProvider, message, Modal, Space, Tooltip } from 'antd';
 import { useSetAtom } from 'jotai';
 import _ from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
@@ -42,6 +44,7 @@ import useUpdateInstance from './services/use-update-instance';
 
 const GPUService: React.FC = () => {
   const intl = useIntl();
+  const { isMobile, isIconOnlyToolbar } = useWindowResize();
   const navigate = useNavigate();
   const access = useAccess();
   const setClusterSession = useSetAtom(clusterSessionAtom);
@@ -270,47 +273,51 @@ const GPUService: React.FC = () => {
     if (type !== 'Table') return;
     if (!clusterLoading && !hasK8sCluster) {
       return (
+        <div className={isMobile ? 'gpu-instances-empty' : undefined}>
+          <NoResult
+            loading={dataSource.loading || clusterLoading}
+            loadend={dataSource.loadend}
+            dataSource={[]}
+            image={<IconFont type="icon-cloud-outlined" />}
+            title={intl.formatMessage({
+              id: 'noresult.gpuservice.instance.title'
+            })}
+            subTitle={intl.formatMessage({
+              id: 'noresult.resources.k8sCluster'
+            })}
+            {...(access.canSeeOrgAdmin
+              ? {
+                  buttonText: intl.formatMessage({
+                    id: 'noresult.resources.addk8scluster'
+                  }),
+                  onClick: handleAddK8sCluster
+                }
+              : {})}
+          />
+        </div>
+      );
+    }
+    return (
+      <div className={isMobile ? 'gpu-instances-empty' : undefined}>
         <NoResult
-          loading={dataSource.loading || clusterLoading}
+          loading={dataSource.loading}
           loadend={dataSource.loadend}
-          dataSource={[]}
+          dataSource={dataSource.dataList}
           image={<IconFont type="icon-cloud-outlined" />}
+          filters={_.pick(queryParams, ['search'])}
+          noFoundText={intl.formatMessage({
+            id: 'noresult.gpuservice.instance.nofound'
+          })}
           title={intl.formatMessage({
             id: 'noresult.gpuservice.instance.title'
           })}
           subTitle={intl.formatMessage({
-            id: 'noresult.resources.k8sCluster'
+            id: 'noresult.gpuservice.instance.subTitle'
           })}
-          {...(access.canSeeOrgAdmin
-            ? {
-                buttonText: intl.formatMessage({
-                  id: 'noresult.resources.addk8scluster'
-                }),
-                onClick: handleAddK8sCluster
-              }
-            : {})}
+          onClick={openCreateInstanceModal}
+          buttonText={intl.formatMessage({ id: 'noresult.button.add' })}
         />
-      );
-    }
-    return (
-      <NoResult
-        loading={dataSource.loading}
-        loadend={dataSource.loadend}
-        dataSource={dataSource.dataList}
-        image={<IconFont type="icon-cloud-outlined" />}
-        filters={_.pick(queryParams, ['search'])}
-        noFoundText={intl.formatMessage({
-          id: 'noresult.gpuservice.instance.nofound'
-        })}
-        title={intl.formatMessage({
-          id: 'noresult.gpuservice.instance.title'
-        })}
-        subTitle={intl.formatMessage({
-          id: 'noresult.gpuservice.instance.subTitle'
-        })}
-        onClick={openCreateInstanceModal}
-        buttonText={intl.formatMessage({ id: 'noresult.button.add' })}
-      />
+      </div>
     );
   };
 
@@ -331,24 +338,37 @@ const GPUService: React.FC = () => {
           handleSearch={handleSearch}
           handleInputChange={handleNameChange}
           rowSelection={rowSelection}
-          widths={{ input: 300 }}
+          widths={isMobile ? undefined : { input: 300 }}
           right={
-            <Space size={16}>
-              {hasK8sCluster && (
-                <Button
-                  icon={<PlusOutlined />}
-                  type="primary"
-                  onClick={openCreateInstanceModal}
-                >
-                  {intl.formatMessage({ id: 'gpuservice.instance.add' })}
-                </Button>
-              )}
+            <Space size={16} className="compactActions">
+              {hasK8sCluster &&
+                (isIconOnlyToolbar ? (
+                  <Tooltip
+                    title={intl.formatMessage({
+                      id: 'gpuservice.instance.add'
+                    })}
+                  >
+                    <Button
+                      icon={<PlusOutlined />}
+                      type="primary"
+                      onClick={openCreateInstanceModal}
+                    />
+                  </Tooltip>
+                ) : (
+                  <Button
+                    icon={<PlusOutlined />}
+                    type="primary"
+                    onClick={openCreateInstanceModal}
+                  >
+                    {intl.formatMessage({ id: 'gpuservice.instance.add' })}
+                  </Button>
+                ))}
               <DropdownButtons
                 items={batchActionList}
                 onSelect={handleBatchActionSelect}
                 disabled={!rowSelection.selectedRowKeys.length}
                 size="large"
-                showText={true}
+                showText={!isIconOnlyToolbar}
                 extra={
                   rowSelection.selectedRowKeys.length > 0 && (
                     <span>({rowSelection.selectedRowKeys.length})</span>
@@ -370,8 +390,10 @@ const GPUService: React.FC = () => {
             sortDirections={TABLE_SORT_DIRECTIONS}
             showSorterTooltip={false}
             rowKey={(record) => record.id}
+            scroll={{ x: 'max-content' }}
             onChange={handleTableChange}
             pagination={{
+              size: isMobile ? 'small' : 'middle',
               showSizeChanger: true,
               pageSize: queryParams.perPage,
               current: queryParams.page,

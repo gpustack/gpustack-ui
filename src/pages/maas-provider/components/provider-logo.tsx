@@ -76,6 +76,9 @@ const ProviderLogo: React.FC<{
   style?: React.CSSProperties;
 }> = ({ provider, style }) => {
   const logoSrc = ProviderLogoMap[provider] || '';
+  if (!logoSrc) {
+    return null;
+  }
   return (
     <img
       src={logoSrc}

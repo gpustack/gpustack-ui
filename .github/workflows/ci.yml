@@ -66,6 +66,8 @@ jobs:
           key: node-modules-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
           path: |
             ${{ github.workspace }}/node_modules
+      - name: Lint
+        run: scripts/lint
       - name: Build
         run: scripts/build
 
@@ -88,6 +90,8 @@ jobs:
           key: node-modules-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
           path: |
             ${{ github.workspace }}/node_modules
+      - name: Lint
+        run: scripts/lint
       - name: Build
         run: scripts/build
       - name: Determine Version

@@ -1,4 +1,4 @@
-import { BaseSelect, DeleteModal } from '@gpustack/core-ui';
+import { BaseSelect, DeleteModal, useWindowResize } from '@gpustack/core-ui';
 import { useIntl, useNavigate, useSearchParams } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import React, { useEffect, useRef } from 'react';
@@ -37,6 +37,7 @@ const Details: React.FC = () => {
   const { handleStopBenchmark } = useStopBenchmark();
   const { exportData } = useExportBenchmark();
   const [searchParams] = useSearchParams();
+  const { isMobile } = useWindowResize();
   const name = searchParams.get('name');
   const id = searchParams.get('id');
 
@@ -59,7 +60,10 @@ const Details: React.FC = () => {
           variant="borderless"
           options={benchmarkList}
           value={name}
-          style={{ minWidth: 100 }}
+          style={{
+            minWidth: 100,
+            maxWidth: isMobile ? 'calc(100vw - 120px)' : undefined
+          }}
           popupMatchSelectWidth={false}
           onChange={handleOnChange}
         ></BaseSelect>

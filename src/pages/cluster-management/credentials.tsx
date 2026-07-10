@@ -3,10 +3,16 @@ import { PageAction } from '@/config';
 import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import type { PageActionType } from '@/config/types';
 import useTableFetch from '@/hooks/use-table-fetch';
-import { DeleteModal, FilterBar, IconFont, NoResult } from '@gpustack/core-ui';
+import {
+  DeleteModal,
+  FilterBar,
+  IconFont,
+  NoResult,
+  AntdResponsiveTable as Table
+} from '@gpustack/core-ui';
 import { useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { ConfigProvider, Table, message } from 'antd';
+import { ConfigProvider, message } from 'antd';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
 import { useState } from 'react';
@@ -210,6 +216,7 @@ const Credentials: React.FC = () => {
             sortDirections={TABLE_SORT_DIRECTIONS}
             showSorterTooltip={false}
             rowKey="id"
+            scroll={{ x: 'max-content' }}
             onChange={handleTableChange}
             pagination={{
               size: 'middle',

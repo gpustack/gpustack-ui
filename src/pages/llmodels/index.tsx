@@ -1,12 +1,13 @@
+import { HeaderLeft, usePageContentStyle } from '@/pages/_components/page-box';
 import {
-  HeaderLeft,
-  usePageContentStyle
-} from '@/pages/_components/page-box';
-import { IconFont } from '@gpustack/core-ui';
+  IconFont,
+  PageHeaderTitle,
+  ResponsiveSegmented
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { Segmented, Tabs } from 'antd';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { Tabs } from 'antd';
+import { useEffect, useRef, useState } from 'react';
 import { DeploymentsContext } from './config/deploments-context';
 import ModelView from './deployments';
 import useFormInitialValues from './hooks/use-form-initial-values';
@@ -49,38 +50,18 @@ const LLModels: React.FC = () => {
     setActiveKey(key);
   });
 
-  const title = useMemo(() => {
-    return (
-      <div className="flex items-center">
-        <span className="font-600 flex-center">
-          {intl.formatMessage({ id: 'menu.models.deployment' })}
-        </span>
-        <Segmented
-          shape="round"
-          style={{
-            backgroundColor: 'var(--ant-color-fill-secondary)',
-            fontSize: 13
-          }}
-          size="middle"
-          className="m-l-24 font-400"
-          options={[
-            {
-              label: intl.formatMessage({ id: 'models.table.modelView' }),
-              value: TabsValueMap.ModelView,
-              icon: <IconFont type={'icon-models'}></IconFont>
-            },
-            {
-              label: intl.formatMessage({ id: 'models.table.instanceView' }),
-              value: TabsValueMap.InstanceView,
-              icon: <IconFont type={'icon-instance-outline'}></IconFont>
-            }
-          ]}
-          value={activeKey}
-          onChange={handleTabChange}
-        ></Segmented>
-      </div>
-    );
-  }, [activeKey, intl]);
+  const segmentedOptions = [
+    {
+      label: intl.formatMessage({ id: 'models.table.modelView' }),
+      value: TabsValueMap.ModelView,
+      icon: <IconFont type={'icon-models'} />
+    },
+    {
+      label: intl.formatMessage({ id: 'models.table.instanceView' }),
+      value: TabsValueMap.InstanceView,
+      icon: <IconFont type={'icon-instance-outline'} />
+    }
+  ];
 
   useEffect(() => {
     const handleVisibilityChange = async () => {
@@ -112,7 +93,17 @@ const LLModels: React.FC = () => {
 
   return (
     <>
-      <HeaderLeft>{title}</HeaderLeft>
+      <HeaderLeft>
+        <PageHeaderTitle
+          title={intl.formatMessage({ id: 'menu.models.deployment' })}
+        >
+          <ResponsiveSegmented
+            options={segmentedOptions}
+            value={activeKey}
+            onChange={handleTabChange}
+          />
+        </PageHeaderTitle>
+      </HeaderLeft>
       <DeploymentsContext.Provider
         value={{
           generateFormValues,

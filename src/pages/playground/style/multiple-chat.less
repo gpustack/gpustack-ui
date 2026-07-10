@@ -10,3 +10,44 @@
     padding-top: 16px;
   }
 }
+
+@media screen and (max-width: 767px) {
+  .multiple-chat {
+    flex: 1;
+    min-height: 0;
+    height: 100% !important;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+
+    .chat-list {
+      flex: 1 1 0;
+      min-height: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    > div:last-child {
+      flex: 0 0 auto;
+      min-height: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      background-color: var(--ant-color-bg-container);
+      padding-bottom: env(safe-area-inset-bottom, 0);
+
+      .messageInput {
+        flex: 0 0 auto;
+        overflow: hidden;
+        justify-content: flex-start;
+        gap: 4px;
+        padding-bottom: 6px;
+
+        .input-box {
+          flex: 0 0 auto;
+          overflow: hidden;
+        }
+      }
+    }
+  }
+}

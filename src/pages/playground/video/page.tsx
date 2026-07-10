@@ -2,7 +2,7 @@ import VideoPoster from '@/assets/images/video-poster.png';
 import { setRouteCache } from '@/atoms/route-cache';
 import routeCachekey from '@/config/route-cachekey';
 import { VideoCameraOutlined } from '@ant-design/icons';
-import { AlertInfo, IconFont } from '@gpustack/core-ui';
+import { AlertInfo, IconFont, useInitialCollapsed } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Spin, Tooltip } from 'antd';
 import _ from 'lodash';
@@ -37,7 +37,7 @@ const GroundVideo: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   const intl = useIntl();
   const [show, setShow] = useState(false);
-  const [collapse, setCollapse] = useState(false);
+  const [collapse, setCollapse] = useInitialCollapsed();
   const scroller = useRef<any>(null);
   const inputRef = useRef<any>(null);
 
@@ -265,7 +265,7 @@ const GroundVideo: React.FC<MessageProps> = forwardRef((props, ref) => {
           />
         </div>
       </div>
-      <RightContainer collapsed={collapse}>
+      <RightContainer collapsed={collapse} onDismiss={() => setCollapse(true)}>
         <DataForm
           ref={form}
           onValuesChange={handleOnValuesChange}

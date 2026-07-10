@@ -402,6 +402,7 @@ const useWorkerColumns = ({
         title: intl.formatMessage({ id: 'common.table.name' }),
         dataIndex: 'name',
         width: 140,
+        mobileCard: 'primary',
         sorter: tableSorter(1),
         render: (text: string, record: ListItem) => (
           <div className={workerCss.name}>
@@ -416,12 +417,14 @@ const useWorkerColumns = ({
         title: intl.formatMessage({ id: 'resources.table.labels' }),
         dataIndex: 'labels',
         width: 200,
+        responsive: { hideBelow: 'md' },
         render: (_, record) => <LabelCell labels={record.labels} />
       },
       ...pluginRendered,
       {
         title: intl.formatMessage({ id: 'clusters.title' }),
         dataIndex: 'cluster_id',
+        responsive: { hideBelow: 'md' },
         render: (id: number) => (
           <AutoTooltip ghost maxWidth={240}>
             {_.get(clusterData.data, id, '')}
@@ -459,7 +462,7 @@ const useWorkerColumns = ({
         dataIndex: 'status.cpu.utilization_rate',
         sorter: tableSorter(4),
         render: (text: string, record) => (
-          <span className="flex-center flex-full">
+          <span className="flex-center">
             {statusAvailable(record) ? (
               <ProgressBar
                 percent={_.round(record?.status?.cpu?.utilization_rate, 0)}
@@ -475,7 +478,7 @@ const useWorkerColumns = ({
         dataIndex: 'status.memory.utilization_rate',
         sorter: tableSorter(5),
         render: (_, record) => (
-          <span className="flex-center flex-full">
+          <span className="flex-center">
             {statusAvailable(record) ? (
               <ProgressBar
                 percent={formateUtilization(
@@ -525,7 +528,7 @@ const useWorkerColumns = ({
         title: intl.formatMessage({ id: 'resources.table.disk' }),
         dataIndex: 'storage',
         render: (_, record) => (
-          <span className="flex-center flex-full">
+          <span className="flex-center">
             {statusAvailable(record) ? (
               <StorageCell files={record.status?.filesystem} />
             ) : (
@@ -537,6 +540,7 @@ const useWorkerColumns = ({
       {
         title: intl.formatMessage({ id: 'common.table.operation' }),
         key: 'operation',
+        dataIndex: 'operation',
         hidden: source === 'clusterDetail',
         render: (_, record) => (
           <DropdownButtons

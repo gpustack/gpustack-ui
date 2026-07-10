@@ -1,3 +1,4 @@
+import useWindowResize from '@/hooks/use-window-resize';
 import { queryClusterList } from '@/pages/cluster-management/apis';
 import { BaseSelect, CardWrapper, PageTools } from '@gpustack/core-ui';
 import { GaugeChart } from '@gpustack/core-ui/charts';
@@ -13,6 +14,7 @@ const resourceChartHeight = 400;
 
 const SystemLoad = () => {
   const intl = useIntl();
+  const { isMobile } = useWindowResize();
   const { system_load, fetchData } = useContext(DashboardContext);
   const [systemLoadData, setSystemLoadData] = useState<any>(system_load || {});
   const [clusterList, setClusterList] = useState<Global.BaseOption<number>[]>(
@@ -53,7 +55,7 @@ const SystemLoad = () => {
   useEffect(() => {
     const fetchClusters = async () => {
       try {
-        const res = await queryClusterList({ page: -1 });
+        const res = await queryClusterList({ page: 1, perPage: 500 });
         const options = res.items.map((cluster: any) => ({
           label: cluster.name,
           value: cluster.id
@@ -70,7 +72,12 @@ const SystemLoad = () => {
     <div>
       <div className="system-load">
         <PageTools
-          style={{ margin: '26px 0px' }}
+          style={{
+            margin: '26px 0px',
+            ...(isMobile
+              ? { flexDirection: 'column', alignItems: 'stretch', gap: 12 }
+              : {})
+          }}
           left={
             <span className="font-700">
               {intl.formatMessage({ id: 'dashboard.systemload' })}
@@ -80,7 +87,7 @@ const SystemLoad = () => {
             <BaseSelect
               allowClear
               onChange={handleClusterChange}
-              style={{ width: 360 }}
+              style={{ width: isMobile ? '100%' : 360 }}
               options={clusterList}
               placeholder={intl.formatMessage({
                 id: 'clusters.filterBy.cluster'

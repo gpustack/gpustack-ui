@@ -4,10 +4,7 @@ import useMemoizedFn from 'ahooks/lib/useMemoizedFn';
 import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
-import {
-  HeaderRight,
-  usePageContentStyle
-} from '../../_components/page-box';
+import { HeaderRight, usePageContentStyle } from '../../_components/page-box';
 import { queryModelsList } from '../apis';
 import ViewCodeButtons from '../components/view-code-buttons';
 import useCollapseLayout from '../hooks/use-collapse-layout';
@@ -21,11 +18,8 @@ const PlaygroundRerank: React.FC = () => {
   >([]);
   const [loaded, setLoaded] = useState(false);
 
-  useCollapseLayout({
-    handler: () => {
-      groundRerankerRef.current?.setCollapse?.();
-    },
-    triggeredRef: groundRerankerRef.current
+  useCollapseLayout(() => {
+    groundRerankerRef.current?.setCollapse?.();
   });
 
   const handleViewCode = useMemoizedFn(() => {

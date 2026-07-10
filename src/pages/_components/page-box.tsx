@@ -1,4 +1,5 @@
 import { ExtraContent } from '@/layouts/extraRender';
+import MobileMenuButton from '@/layouts/mobile-menu-button';
 import {
   PageContainer,
   RouteContext,
@@ -113,6 +114,9 @@ export const PageContainerInner: React.FC<
         >
           <div className={pageBoxCss.title}>
             <div className={pageBoxCss.left}>
+              <div className={pageBoxCss.menuButton}>
+                <MobileMenuButton />
+              </div>
               <div ref={setLeftEl} className={pageBoxCss.leftSlot} />
               <span className={pageBoxCss.defaultTitle}>
                 {pageContext.title}
@@ -145,7 +149,7 @@ const PageBox: React.FC<{
   children: React.ReactNode;
   style?: React.CSSProperties;
 }> = ({ children, style }) => {
-  return <div style={style}>{children}</div>;
+  return <div style={{ minWidth: 0, ...style }}>{children}</div>;
 };
 
 export default PageBox;

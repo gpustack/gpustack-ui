@@ -2,13 +2,21 @@ import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import useTableFetch from '@/hooks/use-table-fetch';
 import PageBox from '@/pages/_components/page-box';
 import { useQueryClusterList } from '@/pages/cluster-management/services/use-query-cluster-list';
-import { FilterBar, IconFont, NoResult } from '@gpustack/core-ui';
+import {
+  BaseSelect,
+  FilterBar,
+  IconFont,
+  NoResult,
+  AntdResponsiveTable as Table,
+  useFilterDrawer
+} from '@gpustack/core-ui';
 import { useIntl, useSearchParams } from '@umijs/max';
-import { ConfigProvider, Table } from 'antd';
+import { ConfigProvider } from 'antd';
 import _ from 'lodash';
 import { useEffect, useState } from 'react';
 import { GPU_DEVICES_API, queryGpuDevicesList } from '../apis';
 import { GPUDeviceItem } from '../config/types';
+import ClusterFilterForm from '../filters/cluster-filter-form';
 import useGPUColumns from '../hooks/use-gpu-columns';
 
 // Optional ``clusterId`` pins the list to a single cluster (used by
@@ -41,6 +49,20 @@ const GPUList: React.FC<GPUListProps> = ({ clusterId, source }) => {
   const [searchParams] = useSearchParams();
   const page = searchParams.get('page');
   const intl = useIntl();
+  const {
+    filtersVisible,
+    toggleFilters,
+    filterRef,
+    filterValues,
+    filtersCount,
+    handleOnFilterChange,
+    handleOnClearFilters
+  } = useFilterDrawer({
+    onFilterChange: (filters) => {
+      handleQueryChange({ page: 1, ...filters });
+    },
+    clearKeys: ['cluster_id']
+  });
   const [clusterList, setClusterList] = useState<Global.BaseOption<number>[]>(
     []
   );
@@ -100,49 +122,88 @@ const GPUList: React.FC<GPUListProps> = ({ clusterId, source }) => {
   }, []);
 
   return (
-    <>
-      <PageBox>
-        <FilterBar
-          marginBottom={22}
-          buttonText={intl.formatMessage({ id: 'resources.button.create' })}
-          selectHolder={intl.formatMessage({ id: 'clusters.filterBy.cluster' })}
-          handleSearch={handleSearch}
-          handleInputChange={handleNameChange}
-          handleSelectChange={handleClusterChange}
-          selectOptions={clusterList}
-          showSelect={source !== 'clusterDetail'}
-          widths={
-            source !== 'clusterDetail'
-              ? { select: 230, input: 230 }
-              : { input: 300 }
-          }
-        ></FilterBar>
-        <ConfigProvider renderEmpty={renderEmpty}>
-          <Table
-            columns={columns}
-            sortDirections={TABLE_SORT_DIRECTIONS}
-            showSorterTooltip={false}
-            tableLayout={'auto'}
-            dataSource={dataSource.dataList}
-            loading={{
-              spinning: dataSource.loading,
-              size: 'middle'
-            }}
-            rowKey="id"
-            scroll={{ x: 900 }}
-            onChange={handleTableChange}
-            pagination={{
-              showSizeChanger: true,
-              pageSize: queryParams.perPage,
-              current: queryParams.page,
-              total: dataSource.total,
-              hideOnSinglePage: queryParams.perPage === 10,
-              onChange: handlePageChange
-            }}
-          ></Table>
-        </ConfigProvider>
-      </PageBox>
-    </>
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'flex-start',
+        minWidth: 0,
+        maxWidth: '100%'
+      }}
+    >
+      {source !== 'clusterDetail' && (
+        <ClusterFilterForm
+          ref={filterRef}
+          open={filtersVisible}
+          clusterList={clusterList}
+          initialValues={filterValues}
+          onValuesChange={handleOnFilterChange}
+          onClose={toggleFilters}
+          onClear={handleOnClearFilters}
+        />
+      )}
+      <div style={{ flex: 1, minWidth: 0, maxWidth: '100%' }}>
+        <PageBox>
+          <FilterBar
+            marginBottom={22}
+            showSelect={false}
+            handleSearch={handleSearch}
+            handleInputChange={handleNameChange}
+            widths={{ input: 300 }}
+            collapseInlineFilters={source !== 'clusterDetail'}
+            filtersButtonProps={
+              source !== 'clusterDetail'
+                ? {
+                    show: true,
+                    count: filtersCount,
+                    onClick: toggleFilters,
+                    onClear: handleOnClearFilters
+                  }
+                : undefined
+            }
+            inlineFilters={
+              source !== 'clusterDetail' ? (
+                <BaseSelect
+                  allowClear
+                  showSearch={false}
+                  placeholder={intl.formatMessage({
+                    id: 'clusters.filterBy.cluster'
+                  })}
+                  style={{ width: 160 }}
+                  size="large"
+                  maxTagCount={1}
+                  onChange={handleClusterChange}
+                  options={clusterList}
+                />
+              ) : null
+            }
+          ></FilterBar>
+          <ConfigProvider renderEmpty={renderEmpty}>
+            <Table
+              columns={columns}
+              sortDirections={TABLE_SORT_DIRECTIONS}
+              showSorterTooltip={false}
+              tableLayout={'auto'}
+              dataSource={dataSource.dataList}
+              loading={{
+                spinning: dataSource.loading,
+                size: 'middle'
+              }}
+              rowKey="id"
+              scroll={{ x: 'max-content' }}
+              onChange={handleTableChange}
+              pagination={{
+                showSizeChanger: true,
+                pageSize: queryParams.perPage,
+                current: queryParams.page,
+                total: dataSource.total,
+                hideOnSinglePage: queryParams.perPage === 10,
+                onChange: handlePageChange
+              }}
+            ></Table>
+          </ConfigProvider>
+        </PageBox>
+      </div>
+    </div>
   );
 };
 

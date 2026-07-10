@@ -1,6 +1,12 @@
 import { setRouteCache } from '@/atoms/route-cache';
 import routeCachekey from '@/config/route-cachekey';
-import { AlertInfo, IconFont, SpeechContent } from '@gpustack/core-ui';
+import useWindowResize from '@/hooks/use-window-resize';
+import {
+  AlertInfo,
+  IconFont,
+  SpeechContent,
+  useInitialCollapsed
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Spin } from 'antd';
 import _ from 'lodash';
@@ -30,6 +36,7 @@ interface MessageProps {
 
 const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
   const { modelList } = props;
+  const { isMobile } = useWindowResize();
   const messageId = useRef<number>(0);
   const [messageList, setMessageList] = useState<
     {
@@ -51,7 +58,7 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
   const [tokenResult, setTokenResult] = useState<any>(null);
-  const [collapse, setCollapse] = useState(false);
+  const [collapse, setCollapse] = useInitialCollapsed();
   const checkvalueRef = useRef<any>(true);
   const [currentPrompt, setCurrentPrompt] = useState<string>('');
   const formRef = useRef<any>(null);
@@ -325,10 +332,11 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
             placeholer={intl.formatMessage({
               id: 'playground.input.text.holder'
             })}
-            defaultSize={{
-              minRows: 5,
-              maxRows: 5
-            }}
+            defaultSize={
+              isMobile
+                ? { minRows: 3, maxRows: 10 }
+                : { minRows: 5, maxRows: 5 }
+            }
             title={intl.formatMessage({ id: 'playground.audio.textinput' })}
             onCheck={handleOnCheckChange}
             loading={loading}
@@ -342,7 +350,7 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
           />
         </div>
       </div>
-      <RightContainer collapsed={collapse}>
+      <RightContainer collapsed={collapse} onDismiss={() => setCollapse(true)}>
         <TTSDataForm
           ref={formRef}
           modelList={modelList}

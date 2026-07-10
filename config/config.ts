@@ -78,6 +78,12 @@ export default defineConfig({
     style: 'less'
   },
   title: 'GPUStack',
+  metas: [
+    {
+      name: 'viewport',
+      content: 'width=device-width, initial-scale=1'
+    }
+  ],
   hash: true,
   access: {},
   model: {},

@@ -1,11 +1,13 @@
 import { PageAction } from '@/config';
 import useTableFetch from '@/hooks/use-table-fetch';
 import {
+  BaseSelect,
   DeleteModal,
   FilterBar,
   IconFont,
   InfiniteScrollerProvider,
-  NoResult
+  NoResult,
+  useFilterDrawer
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
@@ -23,6 +25,7 @@ import {
 import AddModal from './components/add-modal';
 import TemplateCardList from './components/template-list';
 import { FormData, ListItem } from './config/types';
+import VendorFilterForm from './filters/vendor-filter-form';
 import useCreateTemplate from './hooks/use-create-template';
 
 const GPUServiceTemplates: React.FC = () => {
@@ -54,6 +57,24 @@ const GPUServiceTemplates: React.FC = () => {
   });
   const { openTemplateModalStatus, openTemplateModal, closeTemplateModal } =
     useCreateTemplate();
+
+  const {
+    filtersVisible,
+    toggleFilters,
+    filterRef,
+    filterValues,
+    filtersCount,
+    handleOnFilterChange,
+    handleOnClearFilters
+  } = useFilterDrawer({
+    onFilterChange: (filters) => {
+      handleQueryChange({
+        page: 1,
+        ...filters
+      });
+    },
+    clearKeys: ['manufacturer']
+  });
 
   const manufacturerOptions = useMemo(
     () => [
@@ -172,72 +193,108 @@ const GPUServiceTemplates: React.FC = () => {
   };
 
   return (
-    <PageBox>
-      <FilterBar
-        marginBottom={22}
-        marginTop={30}
-        widths={{
-          input: 230
-        }}
-        inputHolder={intl.formatMessage({
-          id: 'gpuservice.template.filter.name'
-        })}
-        selectHolder={intl.formatMessage({
-          id: 'gpuservice.template.filter.vendor'
-        })}
-        buttonText={intl.formatMessage({ id: 'gpuservice.template.add' })}
-        handleClickPrimary={handleAddTemplate}
-        handleSearch={handleRefresh}
-        handleSelectChange={handleFilterByManufacturer}
-        handleInputChange={handleNameChange}
-        rowSelection={rowSelection}
-        showSelect={true}
-        selectOptions={manufacturerOptions}
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'flex-start',
+        minWidth: 0,
+        maxWidth: '100%'
+      }}
+    >
+      <VendorFilterForm
+        ref={filterRef}
+        open={filtersVisible}
+        manufacturerOptions={manufacturerOptions}
+        initialValues={filterValues}
+        onValuesChange={handleOnFilterChange}
+        onClose={toggleFilters}
+        onClear={handleOnClearFilters}
       />
-      <InfiniteScrollerProvider
-        value={{
-          total: dataSource.totalPage,
-          current: queryParams.page!,
-          loading: dataSource.loading,
-          refresh: loadMore,
-          throttleDelay: 300
-        }}
-      >
-        <TemplateCardList
-          dataList={dataSource.dataList}
-          loading={dataSource.loading}
-          isFirst={!dataSource.loadend}
-          onSelect={handleOnSelect}
-        />
-        <NoResult
-          loading={dataSource.loading}
-          loadend={dataSource.loadend}
-          dataSource={dataSource.dataList}
-          image={<IconFont type="icon-instance-template-filled" />}
-          filters={_.omit(queryParams, ['sort_by'])}
-          noFoundText={intl.formatMessage({
-            id: 'noresult.gpuservice.template.nofound'
-          })}
-          title={intl.formatMessage({
-            id: 'noresult.gpuservice.template.title'
-          })}
-          subTitle={intl.formatMessage({
-            id: 'noresult.gpuservice.template.subTitle'
-          })}
-          onClick={handleAddTemplate}
-          buttonText={intl.formatMessage({ id: 'noresult.button.add' })}
-        />
-      </InfiniteScrollerProvider>
-      <AddModal
-        action={openTemplateModalStatus.action}
-        open={openTemplateModalStatus.open}
-        title={openTemplateModalStatus.title}
-        currentData={openTemplateModalStatus.currentData}
-        onCancel={closeTemplateModal}
-        onOk={handleModalOk}
-      />
-      <DeleteModal ref={modalRef} />
-    </PageBox>
+      <div style={{ flex: 1, minWidth: 0, maxWidth: '100%' }}>
+        <PageBox>
+          <FilterBar
+            marginBottom={22}
+            marginTop={30}
+            widths={{
+              input: 230
+            }}
+            inputHolder={intl.formatMessage({
+              id: 'gpuservice.template.filter.name'
+            })}
+            buttonText={intl.formatMessage({ id: 'gpuservice.template.add' })}
+            handleClickPrimary={handleAddTemplate}
+            handleSearch={handleRefresh}
+            handleInputChange={handleNameChange}
+            rowSelection={rowSelection}
+            showSelect={false}
+            collapseInlineFilters
+            filtersButtonProps={{
+              show: true,
+              count: filtersCount,
+              onClick: toggleFilters,
+              onClear: handleOnClearFilters
+            }}
+            inlineFilters={
+              <BaseSelect
+                allowClear
+                showSearch={false}
+                placeholder={intl.formatMessage({
+                  id: 'gpuservice.template.filter.vendor'
+                })}
+                style={{ width: 160 }}
+                size="large"
+                maxTagCount={1}
+                onChange={handleFilterByManufacturer}
+                options={manufacturerOptions}
+              />
+            }
+          />
+          <InfiniteScrollerProvider
+            value={{
+              total: dataSource.totalPage,
+              current: queryParams.page!,
+              loading: dataSource.loading,
+              refresh: loadMore,
+              throttleDelay: 300
+            }}
+          >
+            <TemplateCardList
+              dataList={dataSource.dataList}
+              loading={dataSource.loading}
+              isFirst={!dataSource.loadend}
+              onSelect={handleOnSelect}
+            />
+            <NoResult
+              loading={dataSource.loading}
+              loadend={dataSource.loadend}
+              dataSource={dataSource.dataList}
+              image={<IconFont type="icon-instance-template-filled" />}
+              filters={_.omit(queryParams, ['sort_by'])}
+              noFoundText={intl.formatMessage({
+                id: 'noresult.gpuservice.template.nofound'
+              })}
+              title={intl.formatMessage({
+                id: 'noresult.gpuservice.template.title'
+              })}
+              subTitle={intl.formatMessage({
+                id: 'noresult.gpuservice.template.subTitle'
+              })}
+              onClick={handleAddTemplate}
+              buttonText={intl.formatMessage({ id: 'noresult.button.add' })}
+            />
+          </InfiniteScrollerProvider>
+          <AddModal
+            action={openTemplateModalStatus.action}
+            open={openTemplateModalStatus.open}
+            title={openTemplateModalStatus.title}
+            currentData={openTemplateModalStatus.currentData}
+            onCancel={closeTemplateModal}
+            onOk={handleModalOk}
+          />
+          <DeleteModal ref={modalRef} />
+        </PageBox>
+      </div>
+    </div>
   );
 };
 

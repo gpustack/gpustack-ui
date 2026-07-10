@@ -52,6 +52,11 @@ const PathWrapper = styled.div`
     right: 0;
     z-index: 1;
   }
+  :global(.mobile-table-card) & {
+    &::after {
+      display: none;
+    }
+  }
   .btn-wrapper {
     display: flex;
     opacity: 0;
@@ -306,6 +311,8 @@ const useFilesColumns = (props: {
       {
         title: intl.formatMessage({ id: 'resources.worker' }),
         dataIndex: 'worker_id',
+        key: 'worker_id',
+        mobileCard: 'primary',
         sorter: tableSorter(2),
         minWidth: 32,
         render: (text: string, record: ListItem) => {
@@ -356,6 +363,7 @@ const useFilesColumns = (props: {
         title: intl.formatMessage({ id: 'common.table.createTime' }),
         dataIndex: 'created_at',
         key: 'created_at',
+        responsive: ['md'],
         sorter: tableSorter(4),
         width: 180,
         ellipsis: {
@@ -369,6 +377,7 @@ const useFilesColumns = (props: {
       },
       {
         title: intl.formatMessage({ id: 'common.table.operation' }),
+        key: 'operation',
         dataIndex: 'operation',
         width: 120,
         render: (text: string, record: ListItem) => (

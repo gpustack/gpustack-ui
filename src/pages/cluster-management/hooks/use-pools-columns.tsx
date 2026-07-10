@@ -43,6 +43,7 @@ const usePoolsColumns = (
           showTitle: false
         },
         span: 3,
+        mobileCard: 'primary',
         style: {
           paddingInline: 'var(--ant-table-cell-padding-inline)'
         },
@@ -60,6 +61,7 @@ const usePoolsColumns = (
           showTitle: false
         },
         span: 4,
+        responsive: { hideBelow: 'md' },
         style: {
           paddingLeft: 62
         },
@@ -95,6 +97,7 @@ const usePoolsColumns = (
         dataIndex: 'image_name',
         key: 'image_name',
         span: 4,
+        responsive: { hideBelow: 'md' },
         ellipsis: {
           showTitle: false
         },
@@ -125,6 +128,7 @@ const usePoolsColumns = (
         dataIndex: 'replicas',
         span: 6,
         key: 'replicas',
+        responsive: { hideBelow: 'md' },
         style: {
           paddingLeft: 50
         },
@@ -160,6 +164,7 @@ const usePoolsColumns = (
         dataIndex: 'created_at',
         key: 'created_at',
         span: 4,
+        responsive: { hideBelow: 'md' },
         showSorterTootip: false,
         sorter: false,
         ellipsis: {

@@ -1,11 +1,13 @@
 import { PageAction } from '@/config';
 import useTableFetch from '@/hooks/use-table-fetch';
 import {
+  BaseSelect,
   DeleteModal,
   FilterBar,
   IconFont,
   InfiniteScrollerProvider,
-  NoResult
+  NoResult,
+  useFilterDrawer
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import useMemoizedFn from 'ahooks/lib/useMemoizedFn';
@@ -32,13 +34,13 @@ import {
   yaml2Json
 } from './config';
 import { FormData, ListItem } from './config/types';
+import SourceFilterForm from './filters/source-filter-form';
 import useCreateBackend from './hooks/use-create-backend';
 import useExportYAML from './hooks/use-export-yaml';
 import useEnableBackend from './services/use-enable-backend';
 
 const BackendList = () => {
   const intl = useIntl();
-
   const {
     dataSource,
     rowSelection,
@@ -60,6 +62,25 @@ const BackendList = () => {
       perPage: 24
     }
   });
+
+  const {
+    filtersVisible,
+    toggleFilters,
+    filterRef,
+    filterValues,
+    filtersCount,
+    handleOnFilterChange,
+    handleOnClearFilters
+  } = useFilterDrawer({
+    onFilterChange: (filters) => {
+      handleQueryChange({
+        page: 1,
+        ...filters
+      });
+    },
+    clearKeys: ['backend_source']
+  });
+
   const { exportYAML } = useExportYAML();
   const [openVersionInfoModal, setOpenVersionInfoModal] = useState<{
     open: boolean;
@@ -241,92 +262,132 @@ const BackendList = () => {
     fetchData({ query: { ...queryParams, page: 1 } });
   };
 
+  const sourceSelectOptions = backendSourceOptions.map((item) => ({
+    label: intl.formatMessage({ id: item.label }),
+    value: item.value
+  }));
+
   return (
-    <PageBox>
-      <FilterBar
-        marginBottom={22}
-        marginTop={30}
-        widths={{
-          input: 230
-        }}
-        actionItems={addActions}
-        actionType="dropdown"
-        inputHolder={intl.formatMessage({ id: 'common.filter.name' })}
-        selectHolder={intl.formatMessage({ id: 'backend.filter.source' })}
-        buttonText={intl.formatMessage({ id: 'backend.button.add' })}
-        handleClickPrimary={handleAddBackend}
-        handleSearch={handleRefresh}
-        handleSelectChange={handleFilterBySource}
-        handleInputChange={handleNameChange}
-        rowSelection={rowSelection}
-        showSelect={true}
-        selectOptions={backendSourceOptions.map((item) => ({
-          label: intl.formatMessage({ id: item.label }),
-          value: item.value
-        }))}
-      ></FilterBar>
-      <InfiniteScrollerProvider
-        value={{
-          total: dataSource.totalPage,
-          current: queryParams.page!,
-          loading: dataSource.loading,
-          refresh: loadMore,
-          throttleDelay: 300
-        }}
-      >
-        <BackendCardList
-          dataList={dataSource.dataList}
-          loading={dataSource.loading}
-          activeId={false}
-          isFirst={!dataSource.loadend}
-          onSelect={handleOnSelect}
-        ></BackendCardList>
-        <NoResult
-          loading={dataSource.loading}
-          loadend={dataSource.loadend}
-          dataSource={dataSource.dataList}
-          image={<IconFont type="icon-models" />}
-          filters={_.omit(queryParams, ['sort_by'])}
-          noFoundText={intl.formatMessage({
-            id: 'noresult.backend.nofound'
-          })}
-          title={intl.formatMessage({ id: 'noresult.backend.title' })}
-          subTitle={intl.formatMessage({ id: 'noresult.backend.subTitle' })}
-          onClick={() => handleAddBackend({ key: 'community' })}
-          buttonText={intl.formatMessage({ id: 'noresult.button.add' })}
-        ></NoResult>
-      </InfiniteScrollerProvider>
-      <AddModal
-        action={openBackendModalStatus.action}
-        onClose={() => closeBackendModal('custom')}
-        onSubmit={handleOnSubmit}
-        onSubmitYaml={handleOnSubmitYaml}
-        currentData={openBackendModalStatus.currentData as ListItem}
-        open={openBackendModalStatus.open}
-        title={
-          openBackendModalStatus.action === PageAction.CREATE
-            ? intl.formatMessage({ id: 'backend.button.add' })
-            : intl.formatMessage({ id: 'backend.button.edit' })
-        }
-      ></AddModal>
-      <AddCommunityModal
-        open={openCommunityModalStatus.open}
-        onRefresh={handleSearch}
-        onClose={() => closeBackendModal('community')}
-      ></AddCommunityModal>
-      <VersionInfoModal
-        addVersion={handleAddVersion}
-        open={openVersionInfoModal.open}
-        currentData={openVersionInfoModal.currentData as ListItem}
-        onClose={() =>
-          setOpenVersionInfoModal({
-            open: false,
-            currentData: undefined
-          })
-        }
-      ></VersionInfoModal>
-      <DeleteModal ref={modalRef}></DeleteModal>
-    </PageBox>
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'flex-start',
+        minWidth: 0,
+        maxWidth: '100%'
+      }}
+    >
+      <SourceFilterForm
+        ref={filterRef}
+        open={filtersVisible}
+        sourceOptions={sourceSelectOptions}
+        initialValues={filterValues}
+        onValuesChange={handleOnFilterChange}
+        onClose={toggleFilters}
+        onClear={handleOnClearFilters}
+      />
+      <div style={{ flex: 1, minWidth: 0, maxWidth: '100%' }}>
+        <PageBox>
+          <FilterBar
+            marginBottom={22}
+            marginTop={30}
+            widths={{
+              input: 230
+            }}
+            actionItems={addActions}
+            actionType="dropdown"
+            inputHolder={intl.formatMessage({ id: 'common.filter.name' })}
+            buttonText={intl.formatMessage({ id: 'backend.button.add' })}
+            handleClickPrimary={handleAddBackend}
+            handleSearch={handleRefresh}
+            handleInputChange={handleNameChange}
+            rowSelection={rowSelection}
+            showSelect={false}
+            collapseInlineFilters
+            filtersButtonProps={{
+              show: true,
+              count: filtersCount,
+              onClick: toggleFilters,
+              onClear: handleOnClearFilters
+            }}
+            inlineFilters={
+              <BaseSelect
+                allowClear
+                showSearch={false}
+                placeholder={intl.formatMessage({
+                  id: 'backend.filter.source'
+                })}
+                style={{ width: 160 }}
+                size="large"
+                maxTagCount={1}
+                onChange={handleFilterBySource}
+                options={sourceSelectOptions}
+              />
+            }
+          ></FilterBar>
+          <InfiniteScrollerProvider
+            value={{
+              total: dataSource.totalPage,
+              current: queryParams.page!,
+              loading: dataSource.loading,
+              refresh: loadMore,
+              throttleDelay: 300
+            }}
+          >
+            <BackendCardList
+              dataList={dataSource.dataList}
+              loading={dataSource.loading}
+              activeId={false}
+              isFirst={!dataSource.loadend}
+              onSelect={handleOnSelect}
+            ></BackendCardList>
+            <NoResult
+              loading={dataSource.loading}
+              loadend={dataSource.loadend}
+              dataSource={dataSource.dataList}
+              image={<IconFont type="icon-models" />}
+              filters={_.omit(queryParams, ['sort_by'])}
+              noFoundText={intl.formatMessage({
+                id: 'noresult.backend.nofound'
+              })}
+              title={intl.formatMessage({ id: 'noresult.backend.title' })}
+              subTitle={intl.formatMessage({ id: 'noresult.backend.subTitle' })}
+              onClick={() => handleAddBackend({ key: 'community' })}
+              buttonText={intl.formatMessage({ id: 'noresult.button.add' })}
+            ></NoResult>
+          </InfiniteScrollerProvider>
+          <AddModal
+            action={openBackendModalStatus.action}
+            onClose={() => closeBackendModal('custom')}
+            onSubmit={handleOnSubmit}
+            onSubmitYaml={handleOnSubmitYaml}
+            currentData={openBackendModalStatus.currentData as ListItem}
+            open={openBackendModalStatus.open}
+            title={
+              openBackendModalStatus.action === PageAction.CREATE
+                ? intl.formatMessage({ id: 'backend.button.add' })
+                : intl.formatMessage({ id: 'backend.button.edit' })
+            }
+          ></AddModal>
+          <AddCommunityModal
+            open={openCommunityModalStatus.open}
+            onRefresh={handleSearch}
+            onClose={() => closeBackendModal('community')}
+          ></AddCommunityModal>
+          <VersionInfoModal
+            addVersion={handleAddVersion}
+            open={openVersionInfoModal.open}
+            currentData={openVersionInfoModal.currentData as ListItem}
+            onClose={() =>
+              setOpenVersionInfoModal({
+                open: false,
+                currentData: undefined
+              })
+            }
+          ></VersionInfoModal>
+          <DeleteModal ref={modalRef}></DeleteModal>
+        </PageBox>
+      </div>
+    </div>
   );
 };
 

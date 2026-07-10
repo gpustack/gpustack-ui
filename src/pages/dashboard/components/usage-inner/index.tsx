@@ -1,4 +1,4 @@
-import breakpoints from '@/config/breakpoints';
+import { config } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Col, Row } from 'antd';
 import { FC, useContext, useEffect, useMemo } from 'react';
@@ -87,7 +87,7 @@ const UsageInner: FC<{ maxWidth: number }> = ({ maxWidth }) => {
 
   return (
     <div>
-      <Row gutter={maxWidth < breakpoints.xl ? [0, 0] : [20, 20]}>
+      <Row gutter={maxWidth < config.breakpoints.xl ? [0, 0] : [20, 20]}>
         <Col xs={24} sm={24} md={24} lg={24} xl={16}>
           <div className={FilterBarCss.usageTitle}>
             <div className={FilterBarCss.usageTitleText}>
@@ -114,7 +114,9 @@ const UsageInner: FC<{ maxWidth: number }> = ({ maxWidth }) => {
         </Col>
         <Col xs={24} sm={24} md={24} lg={24} xl={8} style={{ margin: 0 }}>
           <div
-            style={{ margin: maxWidth < breakpoints.xl ? '26px 0' : '29px 0' }}
+            style={{
+              margin: maxWidth < config.breakpoints.xl ? '26px 0' : '29px 0'
+            }}
           >
             <div className={FilterBarCss.usageTitleText}>
               {intl.formatMessage({ id: 'dashboard.topusers' })}

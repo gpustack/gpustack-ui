@@ -1,3 +1,4 @@
+import useWindowResize from '@/hooks/use-window-resize';
 import { useIntl } from '@umijs/max';
 import { Descriptions } from 'antd';
 import { DescriptionsItemType } from 'antd/es/descriptions';
@@ -7,6 +8,7 @@ import { useDetailContext } from '../../config/detail-context';
 
 const Benchmark: React.FC = () => {
   const intl = useIntl();
+  const { isMobile } = useWindowResize();
   const { detailData, profilesOptions } = useDetailContext();
 
   type ItemTyp = DescriptionsItemType & { hidden?: boolean };
@@ -61,7 +63,13 @@ const Benchmark: React.FC = () => {
       <Descriptions
         items={items.filter((item) => !item.hidden)}
         colon={false}
-        column={detailData?.dataset_name === DatasetValueMap.ShareGPT ? 2 : 3}
+        column={
+          isMobile
+            ? 1
+            : detailData?.dataset_name === DatasetValueMap.ShareGPT
+              ? 2
+              : 3
+        }
         styles={{
           content: {
             justifyContent: 'flex-start'

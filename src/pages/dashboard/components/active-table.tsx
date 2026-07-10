@@ -52,6 +52,7 @@ const ActiveTable = () => {
       dataIndex: 'resource_claim.memory',
       key: 'vram',
       ellipsis: true,
+      responsive: ['md'] as const,
       render: (text: any, record: any) => {
         return (
           <>
@@ -71,6 +72,7 @@ const ActiveTable = () => {
       title: intl.formatMessage({ id: 'models.form.replicas' }),
       dataIndex: 'instance_count',
       key: 'instance_count',
+      responsive: ['md'] as const,
       render(text: any, record: any) {
         if (record.provider_name) {
           return <span>N/A</span>;
@@ -125,6 +127,7 @@ const ActiveTable = () => {
             columns={modelColumns}
             dataSource={data}
             pagination={false}
+            scroll={{ x: 'max-content' }}
             rowKey={generateRowKey}
           />
         </div>

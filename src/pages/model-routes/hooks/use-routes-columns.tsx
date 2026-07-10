@@ -207,6 +207,7 @@ const useAccessColumns = ({
         dataIndex: 'name',
         sorter: tableSorter(1),
         span: 5,
+        mobileCard: 'primary',
         render: (text: string, record: RouteItem) => (
           <span className="flex-center" style={{ maxWidth: '100%' }}>
             <AutoTooltip ghost title={text}>
@@ -221,6 +222,7 @@ const useAccessColumns = ({
         title: intl.formatMessage({ id: 'routes.table.routeTargets' }),
         dataIndex: 'targets',
         span: targetsSpan,
+        responsive: { hideBelow: 'md' },
         render: (value: number, record: RouteItem) => (
           <span>
             {record.ready_targets} / {value}
@@ -232,6 +234,7 @@ const useAccessColumns = ({
         title: intl.formatMessage({ id: 'common.table.createTime' }),
         dataIndex: 'created_at',
         sorter: tableSorter(6),
+        responsive: { hideBelow: 'md' },
         span: createTimeSpan,
         render: (value: string) => (
           <AutoTooltip ghost minWidth={20}>

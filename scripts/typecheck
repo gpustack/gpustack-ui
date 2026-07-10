@@ -1,0 +1,6 @@
+#!/bin/bash
+set -euo pipefail
+
+# Full-project typecheck. The repo still has legacy TS debt; CI gates on lint + build.
+# Use after touching types or form/modal code to catch regressions early.
+pnpm exec tsc --noEmit "$@"

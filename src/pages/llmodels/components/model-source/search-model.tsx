@@ -1,5 +1,6 @@
 import { getRequestId, setRquestId } from '@/atoms/models';
 import { createAxiosToken } from '@/hooks/use-chunk-request';
+import useWindowResize from '@/hooks/use-window-resize';
 import { BaseSelect, ColumnWrapper } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Pagination } from 'antd';
@@ -51,6 +52,7 @@ interface SearchInputProps {
 
 const SearchModel: React.FC<SearchInputProps> = (props) => {
   const intl = useIntl();
+  const { isMobile } = useWindowResize();
   const {
     modelSource,
     isDownload,
@@ -540,7 +542,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
               }
               options={modelFilesSortOptions}
               size="middle"
-              style={{ width: '150px' }}
+              style={isMobile ? { minWidth: 130, flex: 1 } : { width: '150px' }}
             ></BaseSelect>
             <BaseSelect
               allowClear
@@ -551,7 +553,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
               placeholder={intl.formatMessage({
                 id: 'models.form.quantization'
               })}
-              style={{ width: 130 }}
+              style={isMobile ? { minWidth: 130, flex: 1 } : { width: 130 }}
             ></BaseSelect>
           </span>
           <PaginationMain
@@ -587,7 +589,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     <div style={{ width: '100%' }}>
       <div className={SearchStyle['search-bar']}>{renderHFSearch()}</div>
       <ColumnWrapper
-        maxHeight={'calc(100vh - 210px)'}
+        maxHeight={isMobile ? 'calc(100vh - 280px)' : 'calc(100vh - 210px)'}
         styles={{
           container: {
             paddingTop: 0

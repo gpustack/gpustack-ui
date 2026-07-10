@@ -137,8 +137,9 @@ const useUsersColumns = ({
         dataIndex: 'name',
         key: 'name',
         sorter: tableSorter(1),
+        mobileCard: 'primary',
         render: (text: string, record: ListItem) => (
-          <AutoTooltip ghost style={{ maxWidth: 400 }} title={record.username}>
+          <AutoTooltip ghost title={record.username}>
             <span className="text-primary">{record.username}</span>
           </AutoTooltip>
         )
@@ -173,6 +174,7 @@ const useUsersColumns = ({
         title: intl.formatMessage({ id: 'users.form.fullname' }),
         dataIndex: 'full_name',
         key: 'full_name',
+        responsive: { hideBelow: 'md' },
         ellipsis: {
           showTitle: false
         },
@@ -186,6 +188,7 @@ const useUsersColumns = ({
         title: intl.formatMessage({ id: 'users.form.source' }),
         dataIndex: 'source',
         key: 'source',
+        responsive: { hideBelow: 'md' },
         sorter: tableSorter(3),
         ellipsis: {
           showTitle: false
@@ -205,41 +208,41 @@ const useUsersColumns = ({
           showTitle: false
         },
         render: (text: string, record: ListItem) => {
-          return (
-            <>
-              {record.is_active ? (
-                <Tag
-                  style={{
-                    marginRight: 0,
-                    paddingInline: 12,
-                    borderRadius: 12,
-                    background: 'unset',
-                    borderColor: 'var(--ant-color-success)'
-                  }}
-                  color="success"
-                >
-                  {intl.formatMessage({
-                    id: 'users.status.active'
-                  })}
-                </Tag>
-              ) : (
-                <Tag
-                  style={{
-                    marginRight: 0,
-                    paddingInline: 12,
-                    borderRadius: 12,
-                    background: 'unset',
-                    color: 'var(--ant-color-text-description)'
-                  }}
-                  variant="outlined"
-                  color="default"
-                >
-                  {intl.formatMessage({
-                    id: 'users.status.inactive'
-                  })}
-                </Tag>
-              )}
-            </>
+          const tagStyle = {
+            marginRight: 0,
+            paddingInline: 12,
+            borderRadius: 12,
+            width: 'max-content' as const
+          };
+
+          return record.is_active ? (
+            <Tag
+              className="cell-intrinsic"
+              style={{
+                ...tagStyle,
+                background: 'unset',
+                borderColor: 'var(--ant-color-success)'
+              }}
+              color="success"
+            >
+              {intl.formatMessage({
+                id: 'users.status.active'
+              })}
+            </Tag>
+          ) : (
+            <Tag
+              className="cell-intrinsic"
+              style={{
+                ...tagStyle,
+                color: 'var(--ant-color-text-description)'
+              }}
+              variant="outlined"
+              color="default"
+            >
+              {intl.formatMessage({
+                id: 'users.status.inactive'
+              })}
+            </Tag>
           );
         }
       },
@@ -247,6 +250,7 @@ const useUsersColumns = ({
         title: intl.formatMessage({ id: 'common.table.createTime' }),
         dataIndex: 'created_at',
         key: 'created_at',
+        responsive: { hideBelow: 'md' },
         sorter: tableSorter(5),
         ellipsis: {
           showTitle: false

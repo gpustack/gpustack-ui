@@ -55,7 +55,8 @@ const UserModels: React.FC = () => {
     watch: false,
     isInfiniteScroll: true,
     defaultQueryParams: {
-      perPage: 24
+      perPage: 24,
+      state: MyModelsStatusValueMap.Ready
     }
   });
   const intl = useIntl();
@@ -64,21 +65,21 @@ const UserModels: React.FC = () => {
   const statusOptions = useMemo(() => {
     return [
       {
-        value: MyModelsStatusValueMap.Active,
+        value: MyModelsStatusValueMap.Ready,
         color: 'var(--ant-color-success)',
         label: intl.formatMessage({
           id: 'models.mymodels.status.active'
         })
       },
       {
-        value: MyModelsStatusValueMap.Inactive,
+        value: MyModelsStatusValueMap.Stopped,
         color: 'var(--ant-color-fill)',
         label: intl.formatMessage({
           id: 'models.mymodels.status.inactive'
         })
       },
       {
-        value: MyModelsStatusValueMap.Degrade,
+        value: MyModelsStatusValueMap.NotReady,
         color: 'var(--ant-color-warning)',
         label: intl.formatMessage({
           id: 'models.mymodels.status.degrade'
@@ -125,17 +126,17 @@ const UserModels: React.FC = () => {
 
   const getStatus = useCallback((model: any) => {
     if (!model.targets && !model.ready_targets) {
-      return MyModelsStatusValueMap.Inactive;
+      return MyModelsStatusValueMap.Stopped;
     }
 
     if (model.targets > 0 && !model.ready_targets) {
-      return MyModelsStatusValueMap.Degrade;
+      return MyModelsStatusValueMap.NotReady;
     }
 
     if (model.ready_targets > 0 && model.targets > 0) {
-      return MyModelsStatusValueMap.Active;
+      return MyModelsStatusValueMap.Ready;
     }
-    return MyModelsStatusValueMap.Degrade;
+    return MyModelsStatusValueMap.NotReady;
   }, []);
 
   const dataList = useMemo(() => {
@@ -198,6 +199,7 @@ const UserModels: React.FC = () => {
                 optionRender={optionRender}
                 labelRender={labelRender}
                 options={statusOptions}
+                value={queryParams.state}
                 onChange={handleStatusChange}
               ></BaseSelect>
               <Button

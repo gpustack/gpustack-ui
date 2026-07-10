@@ -249,7 +249,7 @@ const ModelItem: React.FC<{
                   </>
                 )}
               </div>
-              {[MyModelsStatusValueMap.Active].includes(model.status) && (
+              {[MyModelsStatusValueMap.Ready].includes(model.status) && (
                 <Button
                   size="middle"
                   type="default"

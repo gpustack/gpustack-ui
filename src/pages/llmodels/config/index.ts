@@ -196,21 +196,21 @@ export const status: any = {
 };
 
 export const MyModelsStatusValueMap = {
-  Inactive: 'stopped',
-  Degrade: 'not_ready',
-  Active: 'ready'
+  Stopped: 'stopped',
+  NotReady: 'not_ready',
+  Ready: 'ready'
 };
 
 export const MyModelsStatusMap = {
-  [MyModelsStatusValueMap.Inactive]: StatusMaps.inactive,
-  [MyModelsStatusValueMap.Degrade]: StatusMaps.error,
-  [MyModelsStatusValueMap.Active]: StatusMaps.success
+  [MyModelsStatusValueMap.Stopped]: StatusMaps.inactive,
+  [MyModelsStatusValueMap.NotReady]: StatusMaps.error,
+  [MyModelsStatusValueMap.Ready]: StatusMaps.success
 };
 
 export const MyModelsStatusLabelMap = {
-  [MyModelsStatusValueMap.Inactive]: 'models.mymodels.status.inactive',
-  [MyModelsStatusValueMap.Degrade]: 'models.mymodels.status.degrade',
-  [MyModelsStatusValueMap.Active]: 'models.mymodels.status.active'
+  [MyModelsStatusValueMap.Stopped]: 'models.mymodels.status.inactive',
+  [MyModelsStatusValueMap.NotReady]: 'models.mymodels.status.degrade',
+  [MyModelsStatusValueMap.Ready]: 'models.mymodels.status.active'
 };
 
 export const ScheduleValueMap = {

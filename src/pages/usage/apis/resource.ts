@@ -207,11 +207,20 @@ interface ServerMetrics {
 // gpu_type / type both mean the sku (Type) on the server.
 
 interface ServerBreakdownItem {
+  date?: string | null;
+  // Grouped entity: ``key`` is its display name, ``id`` its id, ``deleted`` its
+  // own lifecycle state (instance / volume / user / sku, per group_by).
   key?: string | null;
   id?: number | null;
-  date?: string | null;
   sku?: string | null;
   deleted?: boolean | null;
+  // Owner (creator) of the instance/volume row (compound date+dim grouping),
+  // at the item root alongside the grouped entity, with its OWN deletion state
+  // — independent of ``deleted`` — so the export can show a User column that
+  // marks a deleted owner separately from a deleted instance/volume.
+  creator_id?: number | null;
+  creator_name?: string | null;
+  creator_deleted?: boolean | null;
   dimensions?: {
     product?: string | null;
     unit_cpu_milli?: number | null;
@@ -225,11 +234,6 @@ interface ServerBreakdownItem {
     persistent_mib?: number | null;
     storage_type?: string | null;
     capacity_mib?: number | null;
-    // Owner user of the instance/volume row (compound date+dim grouping),
-    // carried alongside the grouped entity so the export can show a User column.
-    user_id?: number | null;
-    user_name?: string | null;
-    user_deleted?: boolean | null;
   } | null;
   metrics: ServerMetrics;
 }
@@ -356,13 +360,13 @@ function flattenItem(
     if (dims.persistent_mib != null) flat.persistent_mib = dims.persistent_mib;
     if (dims.storage_type) flat.storage_type = dims.storage_type;
     if (dims.capacity_mib != null) flat.capacity_mib = dims.capacity_mib;
-    // Owner user of a per-instance / per-volume row — the grouped entity is the
-    // instance/volume (``key``/``deleted``), so the owner rides in dimensions
-    // with its own deleted flag for the export's User column.
-    if (dims.user_name != null) flat.user_name = dims.user_name;
-    if (dims.user_id != null) flat.user_id = dims.user_id;
-    if (dims.user_deleted != null) flat.user_deleted = !!dims.user_deleted;
   }
+  // Owner (creator) of a per-instance / per-volume row — the grouped entity is
+  // the instance/volume (``key``/``deleted``), so the owner sits at the item
+  // root with its own deleted flag for the export's User column.
+  if (it.creator_name != null) flat.user_name = it.creator_name;
+  if (it.creator_id != null) flat.user_id = it.creator_id;
+  if (it.creator_deleted != null) flat.user_deleted = !!it.creator_deleted;
   // Instance-type grouped trend: the series label (``group``) defaults to the
   // raw flavor slug. Instance Types are grouped by actual shape, so label each
   // series by that shape — "<product> x <cards>" / "CPU Only · 3 vCPU · 6 GB" —

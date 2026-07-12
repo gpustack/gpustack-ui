@@ -98,6 +98,10 @@ Compose layout with Ant components, not hand-written `display: flex`.
 
 Drive spacing with the theme scale (`Flex`/`Space` `gap`, or `var(--ant-*)` spacing tokens), not scattered `px` literals.
 
+## Tables
+
+- **Horizontally scrollable table**: set `scroll={{ x: 'max-content' }}` **and** add `className="scroll-table"` on the `Table`. The class styles the horizontal scroll to match the design; without it the scroll works but looks off.
+
 # Naming conventions
 
 A page module lives under `src/pages/{module}` with this sub-structure: `components/`, `config/`, `forms/`, `hooks/`, `services/`, `index.tsx`. File naming:

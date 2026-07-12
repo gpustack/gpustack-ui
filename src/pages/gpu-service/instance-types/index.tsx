@@ -207,6 +207,8 @@ const GPUServiceInstanceTypes: React.FC = () => {
           <Table
             columns={columns}
             dataSource={filteredList}
+            scroll={{ x: 'max-content' }}
+            className={'scroll-table'}
             loading={{
               spinning: instanceTypesLoading || clusterLoading,
               size: 'middle'

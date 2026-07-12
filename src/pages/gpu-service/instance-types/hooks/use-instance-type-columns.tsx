@@ -7,7 +7,7 @@ import {
   ThemeTag
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Space, Tooltip } from 'antd';
+import { Flex, Space, Tooltip } from 'antd';
 import type { ColumnsType } from 'antd/lib/table';
 import _ from 'lodash';
 import { useMemo } from 'react';
@@ -65,7 +65,7 @@ const useInstanceTypeColumns = ({
         key: 'name',
         ellipsis: { showTitle: false },
         render: (text: string) => (
-          <AutoTooltip ghost maxWidth={240} title={text}>
+          <AutoTooltip ghost minWidth={20} maxWidth={200} title={text}>
             <span className="text-primary">{text || '-'}</span>
           </AutoTooltip>
         )
@@ -75,10 +75,24 @@ const useInstanceTypeColumns = ({
         dataIndex: ['spec', 'product'],
         key: 'product',
         ellipsis: { showTitle: false },
-        render: (text: string) => (
-          <AutoTooltip ghost maxWidth={200}>
-            {text || '-'}
-          </AutoTooltip>
+        render: (text: string, record: ListItem) => (
+          <Flex
+            gap={4}
+            align="center"
+            style={{ maxWidth: '100%', minWidth: 0 }}
+          >
+            <AutoTooltip ghost minWidth={20} maxWidth={200}>
+              {text || '-'}
+            </AutoTooltip>
+            {record.spec?.sliceable && (
+              <ThemeTag
+                color="geekblue"
+                style={{ fontWeight: 400, flexShrink: 0 }}
+              >
+                {intl.formatMessage({ id: 'gpuservice.instance.sliceable' })}
+              </ThemeTag>
+            )}
+          </Flex>
         )
       },
       {
@@ -184,7 +198,15 @@ const useInstanceTypeColumns = ({
           const os = _.capitalize(record.spec?.os || '');
           const arch = _.toUpper(record.spec?.arch || '');
           if (!os) return '-';
-          return arch ? `${os} (${arch})` : os;
+          return (
+            <AutoTooltip
+              ghost
+              maxWidth={240}
+              title={arch ? `${os} (${arch})` : os}
+            >
+              {arch ? `${os} (${arch})` : os}
+            </AutoTooltip>
+          );
         }
       },
       {

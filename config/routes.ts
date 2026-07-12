@@ -212,6 +212,16 @@ const baseRoutes = [
         component: './gpu-service/instances'
       },
       {
+        name: 'instanceTypes',
+        path: '/gpu-service/instance-types',
+        key: 'gpuServiceInstanceTypes',
+        icon: 'icon-outline-gpu',
+        access: 'canSeeOrgAdmin',
+        selectedIcon: 'icon-filled-gpu',
+        defaultIcon: 'icon-outline-gpu',
+        component: './gpu-service/instance-types'
+      },
+      {
         name: 'templates',
         path: '/gpu-service/templates',
         key: 'gpuServiceTemplates',

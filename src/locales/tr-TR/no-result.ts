@@ -67,6 +67,10 @@ export default {
   'noresult.gpuservice.storage.title': 'Depolama Yok',
   'noresult.gpuservice.storage.subTitle': 'Henüz depolama eklenmedi.',
   'noresult.gpuservice.storage.nofound': 'Eşleşen depolama bulunamadı.',
+  'noresult.gpuservice.instanceType.title': 'No Instance Types',
+  'noresult.gpuservice.instanceType.subTitle':
+    'Create an instance type to get started',
+  'noresult.gpuservice.instanceType.nofound': 'No instance types found',
   'noresult.gpuservice.storageType.title': 'Depolama Türü Yok',
   'noresult.gpuservice.storageType.subTitle': 'Henüz depolama türü eklenmedi.',
   'noresult.gpuservice.storageType.nofound':

@@ -137,6 +137,8 @@ export default {
   'gpuservice.instanceType.add': 'Add Instance Type',
   'gpuservice.instanceType.flavor': 'Flavor',
   'gpuservice.instanceType.flavor.required': 'Please select an instance type flavor',
+  'gpuservice.instanceType.flavor.gpuGroup': 'GPU Compute',
+  'gpuservice.instanceType.flavor.cpuGroup': 'CPU Compute',
   'gpuservice.instanceType.product': 'Product',
   'gpuservice.instanceType.unitCpu': 'Unit CPU',
   'gpuservice.instanceType.unitCpu.tip': 'CPU allocated per GPU',

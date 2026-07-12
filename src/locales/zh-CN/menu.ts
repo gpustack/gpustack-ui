@@ -47,6 +47,7 @@ export default {
   'menu.models.backendsList': '推理后端',
   'menu.gpuService': 'GPU 服务',
   'menu.gpuService.instances': 'GPU 实例',
+  'menu.gpuService.instanceTypes': '实例类型',
   'menu.gpuService.templates': '实例模板',
   'menu.gpuService.storage': '存储',
   'menu.gpuService.storageTypes': '存储类型',

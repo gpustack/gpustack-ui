@@ -1,0 +1,150 @@
+// ============ create drawer (two-column: flavors | form) ============
+.container {
+  display: flex;
+  height: 100%;
+  min-height: 0;
+}
+
+.colWrapper {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+
+.formWrapper {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+
+.panelBody {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: 100%;
+  min-height: 0;
+}
+
+.stickyHead {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: var(--ant-color-bg-elevated);
+}
+
+.flavorCard {
+  height: auto !important;
+  min-height: 96px;
+}
+
+// ============ list card (Linear-style, minimal) ============
+.listCard {
+  height: auto !important;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+// --- level 1: identity + status + actions ---
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+  width: 100%;
+}
+
+.name {
+  min-width: 0;
+  font-size: 13px;
+  color: var(--ant-color-text-tertiary);
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+// --- level 2: hero (model + memory) ---
+.hero {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.product {
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--ant-color-text);
+}
+
+.memory {
+  flex-shrink: 0;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--ant-color-text);
+}
+
+.subline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  min-height: 22px;
+  font-size: 13px;
+  color: var(--ant-color-text-tertiary);
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: var(--ant-border-radius-sm);
+  font-size: 12px;
+  line-height: 1;
+}
+
+.tagSliceable {
+  color: var(--ant-color-primary);
+  background-color: var(--ant-color-primary-bg);
+}
+
+.tagPlain {
+  color: var(--ant-color-text-tertiary);
+  background-color: var(--ant-color-fill-tertiary);
+}
+
+// --- level 3: base resources ---
+.divider {
+  height: 1px;
+  margin: 16px 0;
+  background-color: var(--ant-color-border-secondary);
+  opacity: 0.6;
+}
+
+.footer {
+  font-size: 14px;
+  color: var(--ant-color-text-tertiary);
+}
+
+.dotSep {
+  margin: 0 8px;
+  color: var(--ant-color-text-quaternary);
+}

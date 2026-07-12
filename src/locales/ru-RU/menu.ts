@@ -47,6 +47,7 @@ export default {
   'menu.settings': 'Settings',
   'menu.gpuService': 'GPU Service',
   'menu.gpuService.instances': 'GPU Instances',
+  'menu.gpuService.instanceTypes': 'Instance Types',
   'menu.gpuService.templates': 'Instance Templates',
   'menu.gpuService.storage': 'Storage',
   'menu.gpuService.storageTypes': 'Типы хранилищ',

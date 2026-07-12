@@ -68,6 +68,10 @@ export default {
   'noresult.gpuservice.storage.title': 'No Storage',
   'noresult.gpuservice.storage.subTitle': 'No storage has been added yet.',
   'noresult.gpuservice.storage.nofound': 'No matching storage found.',
+  'noresult.gpuservice.instanceType.title': 'No Instance Types',
+  'noresult.gpuservice.instanceType.subTitle':
+    'Create an instance type to get started',
+  'noresult.gpuservice.instanceType.nofound': 'No instance types found',
   'noresult.gpuservice.storageType.title': 'No Storage Types',
   'noresult.gpuservice.storageType.subTitle':
     'No storage types have been added yet.',

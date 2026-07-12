@@ -12,7 +12,7 @@ import {
 
 export const GPU_SERVICE_INSTANCES_API = '/gpu-instances';
 
-export const GPU_SERVICE_INSTANCES_TYPE_API = '/gpu-instance-types';
+export const GPU_SERVICE_INSTANCES_TYPE_API = '/gpu-instance-types/aggregated';
 
 // View logs / events still go through the K8s proxy until the /v2
 // /gpu-instances API exposes equivalents. clusterID and namespace come

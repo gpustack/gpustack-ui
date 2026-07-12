@@ -5,10 +5,9 @@ import { Flex, Tag } from 'antd';
 import _ from 'lodash';
 import styled from 'styled-components';
 import { manufactureColorMap } from '../../templates/config';
+import { formatManufacturer } from '../../utils';
 import { formatMemoryDisplay } from '../config';
 import { InstanceTypeItem as InstanceTypeItemModel } from '../config/types';
-
-const Vendors = ['intel'] as const;
 
 const Title = styled.div`
   display: flex;
@@ -120,12 +119,38 @@ function getInstanceDerived(item: InstanceTypeItemModel) {
     ramUnit: spec.unitResourcesParsed?.ram?.value,
     os: _.capitalize(spec.os) || '',
     arch: spec.arch,
-    cpuManufacturer: Vendors.includes(cpuManufacturer as any)
-      ? _.capitalize(cpuManufacturer)
-      : _.toUpper(cpuManufacturer),
+    cpuManufacturer: formatManufacturer(cpuManufacturer),
     cpuUnitCores: spec.unitResourcesParsed?.cpu?.cores
   };
 }
+
+type MetaEntry = { icon: string; label?: string; value: React.ReactNode };
+
+// All rows share a single grid so columns — and therefore icons — line up
+// vertically. Each item is 3 cells (icon/label/value); every item past the
+// first adds a leading dot cell, so a row of k items spans 4k-1 cells. A short
+// row is padded with a spanning spacer so the next row restarts at column 1.
+const renderMetaRow = (items: MetaEntry[], columns: number, rowKey: string) => {
+  const cells = items.map((item, index) => (
+    <MetaItem
+      key={`${rowKey}-${item.icon}`}
+      showDot={index > 0}
+      icon={item.icon}
+      label={item.label}
+      value={item.value}
+    />
+  ));
+  const remaining = columns - (4 * items.length - 1);
+  if (remaining > 0) {
+    cells.push(
+      <span
+        key={`${rowKey}-spacer`}
+        style={{ gridColumn: `span ${remaining}` }}
+      />
+    );
+  }
+  return cells;
+};
 
 export const InstanceMetadataSection: React.FC<MetadataSectionProps> = ({
   spec,
@@ -133,109 +158,56 @@ export const InstanceMetadataSection: React.FC<MetadataSectionProps> = ({
 }) => {
   const intl = useIntl();
 
-  const { ramUnit, cpuUnitCores, isGPU, os, arch } = getInstanceDerived({
+  const { ramUnit, cpuUnitCores, isGPU, arch } = getInstanceDerived({
     spec
   } as InstanceTypeItemModel);
 
-  // Sliceable types get a dedicated "Sliceable {n}%" row (on its own grid row)
-  // rather than crowding it into the Max cell.
+  // Sliceable types append a "Sliceable {n}%" cell to the second row.
   const showSliceable = !!spec.sliceable && (slicedMaxPercentage ?? 0) > 0;
 
-  return (
-    <Meta $columns={isGPU ? 11 : 7}>
-      {isGPU && (
-        <>
-          {/* row 1: Memory | Max | RAM */}
-          <MetaItem
-            show={isGPU}
-            showDot={false}
-            icon="icon-gpu1"
-            label={intl.formatMessage({ id: 'gpuservice.instance.memory' })}
-            value={formatMemoryDisplay(spec?.memory ?? undefined) ?? '-'}
-          />
-          <MetaItem
-            showDot={true}
-            icon="icon-ram-02"
-            label={intl.formatMessage({ id: 'gpuservice.instance.ram' })}
-            value={ramUnit ? `${ramUnit} GB` : '-'}
-          />
-          <MetaItem
-            icon="icon-database"
-            label={intl.formatMessage(
-              {
-                id: 'common.max'
-              },
-              { count: '' }
-            )}
-            value={`${spec.maxComputeUnitCount || 0}`}
-          />
-          {/* row 2: OS | Arch | CPU */}
-          <MetaItem
-            showDot={false}
-            icon="icon-server02"
-            label={intl.formatMessage({ id: 'gpuservice.instance.os' })}
-            value={os || '-'}
-          />
-          <MetaItem
-            icon="icon-cube"
-            label={intl.formatMessage({ id: 'gpuservice.instance.arch' })}
-            value={_.toUpper(arch) || '-'}
-          />
-          <MetaItem
-            show={isGPU}
-            showDot={true}
-            icon="icon-cpu"
-            label="CPU"
-            value={
-              <Flex gap={4} align="center">
-                <span>{cpuUnitCores || '-'}</span>
-              </Flex>
-            }
-          />
-          {/* row 3 (sliceable types only): Sliceable {n}% on its own row */}
-          <MetaItem
-            show={showSliceable}
-            showDot={false}
-            icon="icon-sliced"
-            label={intl.formatMessage({ id: 'gpuservice.instance.sliceable' })}
-            value={`${slicedMaxPercentage}%`}
-          />
-        </>
-      )}
+  const cpuItem: MetaEntry = {
+    icon: 'icon-cpu',
+    label: 'CPU',
+    value: cpuUnitCores || '-'
+  };
+  const ramItem: MetaEntry = {
+    icon: 'icon-ram-02',
+    label: intl.formatMessage({ id: 'gpuservice.instance.ram' }),
+    value: ramUnit ? `${ramUnit} GB` : '-'
+  };
+  const memoryItem: MetaEntry = {
+    icon: 'icon-gpu1',
+    label: intl.formatMessage({ id: 'gpuservice.instance.memory' }),
+    value: formatMemoryDisplay(spec?.memory ?? undefined) ?? '-'
+  };
+  const archItem: MetaEntry = {
+    icon: 'icon-cube',
+    label: intl.formatMessage({ id: 'gpuservice.instance.arch' }),
+    value: _.toUpper(arch) || '-'
+  };
+  const maxItem: MetaEntry = {
+    icon: 'icon-database',
+    label: intl.formatMessage({ id: 'common.max' }, { count: '' }),
+    value: `${spec.maxComputeUnitCount || 0}`
+  };
+  const slicedItem: MetaEntry = {
+    icon: 'icon-sliced',
+    label: intl.formatMessage({ id: 'gpuservice.instance.sliceable' }),
+    value: `${slicedMaxPercentage}%`
+  };
 
-      {!isGPU && (
-        <>
-          {/* row 1: RAM | Max */}
-          <MetaItem
-            showDot={false}
-            icon="icon-ram-02"
-            label={intl.formatMessage({ id: 'gpuservice.instance.ram' })}
-            value={ramUnit ? `${ramUnit} GB` : '-'}
-          />
-          <MetaItem
-            icon="icon-database"
-            label={intl.formatMessage(
-              {
-                id: 'common.max'
-              },
-              { count: '' }
-            )}
-            value={`${spec.maxComputeUnitCount || 0}`}
-          />
-          {/* row 2: OS | Arch */}
-          <MetaItem
-            showDot={false}
-            icon="icon-server02"
-            label={intl.formatMessage({ id: 'gpuservice.instance.os' })}
-            value={os || '-'}
-          />
-          <MetaItem
-            icon="icon-cube"
-            label={intl.formatMessage({ id: 'gpuservice.instance.arch' })}
-            value={_.toUpper(arch) || '-'}
-          />
-        </>
-      )}
+  // GPU: 3 items/row → 11 cols. CPU: 2 items/row → 7 cols.
+  const columns = isGPU ? 11 : 7;
+  const rows: MetaEntry[][] = isGPU
+    ? [
+        [ramItem, memoryItem, cpuItem],
+        showSliceable ? [archItem, maxItem, slicedItem] : [archItem, maxItem]
+      ]
+    : [[ramItem], [archItem, maxItem]];
+
+  return (
+    <Meta $columns={columns}>
+      {rows.map((row, index) => renderMetaRow(row, columns, `row-${index}`))}
     </Meta>
   );
 };
@@ -276,7 +248,7 @@ const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({ item }) => {
               disabled={false}
               style={{ fontWeight: 400 }}
             >
-              {manufacturer?.toUpperCase()}
+              {formatManufacturer(manufacturer)}
             </ThemeTag>
           )}
           {showCpuManufacturerTag && (

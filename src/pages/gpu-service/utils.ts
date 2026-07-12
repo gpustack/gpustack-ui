@@ -1,5 +1,17 @@
 import _ from 'lodash';
 
+// Manufacturer display: most vendors read best all-caps (NVIDIA, AMD), but a
+// few read better capitalized (Intel). Shared by the instance-type list and the
+// create-instance drawer so both render the vendor identically.
+const CapitalizedVendors = ['intel'];
+
+export const formatManufacturer = (manufacturer?: string | null): string => {
+  if (!manufacturer) return '';
+  return CapitalizedVendors.includes(manufacturer.toLowerCase())
+    ? _.capitalize(manufacturer)
+    : _.toUpper(manufacturer);
+};
+
 export const omitPathParams = <T extends Record<string, any>>(
   params: T
 ): Omit<T, 'namespace' | 'clusterID'> => {

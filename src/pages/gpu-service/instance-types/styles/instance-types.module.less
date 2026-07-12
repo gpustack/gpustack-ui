@@ -42,6 +42,24 @@
   min-height: 96px;
 }
 
+// ============ flavor select dropdown ============
+.flavorDropdown {
+  :global {
+    // tighten the indent of grouped options
+    .ant-select-item-option-grouped {
+      padding-inline-start: 12px;
+    }
+    // divider between options
+    .ant-select-item-option {
+      border-block-end: 1px solid var(--ant-color-border-secondary);
+
+      &:last-child {
+        border-block-end: none;
+      }
+    }
+  }
+}
+
 // ============ list card (Linear-style, minimal) ============
 .listCard {
   height: auto !important;

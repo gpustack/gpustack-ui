@@ -125,6 +125,8 @@ export default {
   'gpuservice.instanceType.add': '添加实例类型',
   'gpuservice.instanceType.flavor': '规格',
   'gpuservice.instanceType.flavor.required': '请选择实例类型规格',
+  'gpuservice.instanceType.flavor.gpuGroup': 'GPU 算力',
+  'gpuservice.instanceType.flavor.cpuGroup': 'CPU 算力',
   'gpuservice.instanceType.product': '商品',
   'gpuservice.instanceType.unitCpu': '单位 CPU',
   'gpuservice.instanceType.unitCpu.tip': '每 GPU 对应多少 CPU',

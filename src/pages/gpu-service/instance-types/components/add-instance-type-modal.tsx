@@ -1,14 +1,11 @@
 import useSubmitLock from '@/hooks/use-submit-lock';
-import Separator from '@/pages/llmodels/components/separator';
 import { ColumnWrapper, GSDrawer, ModalFooter } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Typography, message } from 'antd';
+import { message } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 import { FlavorItem, FormData } from '../config/types';
 import GPUServiceInstanceTypeForm from '../forms';
 import useQueryFlavors from '../services/use-query-flavors';
-import styles from '../styles/instance-types.module.less';
-import FlavorList from './flavor-list';
 
 type AddInstanceTypeModalProps = {
   title: string;
@@ -17,28 +14,6 @@ type AddInstanceTypeModalProps = {
   onOk: (values: FormData) => void;
   onCancel: () => void;
 };
-
-const ColTitle: React.FC<{
-  children: React.ReactNode;
-  style?: React.CSSProperties;
-}> = ({ children, style }) => (
-  <Typography.Title
-    level={3}
-    style={{
-      fontSize: 14,
-      paddingTop: 10,
-      paddingBottom: 16,
-      margin: 0,
-      position: 'sticky',
-      top: 0,
-      zIndex: 100,
-      backgroundColor: 'var(--ant-color-bg-elevated)',
-      ...style
-    }}
-  >
-    {children}
-  </Typography.Title>
-);
 
 const AddInstanceTypeModal: React.FC<AddInstanceTypeModalProps> = ({
   title,
@@ -101,63 +76,37 @@ const AddInstanceTypeModal: React.FC<AddInstanceTypeModalProps> = ({
       mask={{ closable: false }}
       keyboard={false}
       styles={{
-        wrapper: { width: 'min(900px, calc(100vw - 220px))' },
+        wrapper: { width: 'min(600px, calc(100vw - 220px))' },
         body: { overflowY: 'hidden' }
       }}
       footer={false}
     >
-      <div className={styles.container}>
-        <div className={styles.colWrapper}>
-          <ColumnWrapper styles={{ container: { paddingBlock: 0 } }}>
-            <div className={styles.panelBody}>
-              <div className={styles.stickyHead}>
-                <ColTitle
-                  style={{
-                    paddingBottom: 0
-                  }}
-                >
-                  {intl.formatMessage({ id: 'gpuservice.instanceType.flavor' })}
-                </ColTitle>
-              </div>
-              <FlavorList
-                value={selectedFlavor?.name}
-                dataList={flavorList}
-                loading={flavorLoading}
-                onChange={setSelectedFlavor}
-              />
-            </div>
-          </ColumnWrapper>
-          <Separator />
-        </div>
-        <div className={styles.formWrapper}>
-          <ColumnWrapper
-            styles={{ container: { paddingBlock: 0 } }}
-            footer={
-              <ModalFooter
-                onOk={handleSubmit}
-                onCancel={handleCancel}
-                loading={loading}
-                style={{
-                  padding: '16px 24px 8px',
-                  display: 'flex',
-                  justifyContent: 'flex-end'
-                }}
-              />
-            }
-          >
-            <ColTitle>
-              {intl.formatMessage({ id: 'common.title.config' })}
-            </ColTitle>
-            <GPUServiceInstanceTypeForm
-              ref={form}
-              open={open}
-              selectedFlavor={selectedFlavor}
-              onFinish={onFinish}
-              onFinishFailed={release}
-            />
-          </ColumnWrapper>
-        </div>
-      </div>
+      <ColumnWrapper
+        styles={{ container: { paddingBlock: 0 } }}
+        footer={
+          <ModalFooter
+            onOk={handleSubmit}
+            onCancel={handleCancel}
+            loading={loading}
+            style={{
+              padding: '16px 24px 8px',
+              display: 'flex',
+              justifyContent: 'flex-end'
+            }}
+          />
+        }
+      >
+        <GPUServiceInstanceTypeForm
+          ref={form}
+          open={open}
+          selectedFlavor={selectedFlavor}
+          flavorList={flavorList}
+          flavorLoading={flavorLoading}
+          onFlavorChange={setSelectedFlavor}
+          onFinish={onFinish}
+          onFinishFailed={release}
+        />
+      </ColumnWrapper>
     </GSDrawer>
   );
 };

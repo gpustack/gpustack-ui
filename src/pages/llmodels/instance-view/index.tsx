@@ -31,6 +31,16 @@ const filterOptions = {
       label: 'Error',
       value: 'error',
       color: 'var(--ant-color-error)'
+    },
+    {
+      label: 'Pending',
+      value: 'pending',
+      color: 'var(--ant-color-info)'
+    },
+    {
+      label: 'Starting',
+      value: 'starting',
+      color: 'var(--ant-color-info)'
     }
   ]
 };

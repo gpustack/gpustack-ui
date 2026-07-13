@@ -3,6 +3,7 @@ import type { PageActionType } from '@/config/types';
 import useBodyScroll from '@/hooks/use-body-scroll';
 import { useIntl } from '@umijs/max';
 import { useState } from 'react';
+import { InstanceStatusValueMap } from '../config';
 import type { ListItem } from '../config/types';
 
 const useCreateInstance = () => {
@@ -52,11 +53,14 @@ const useCreateInstance = () => {
   };
 
   const openEditInstanceModal = (row: ListItem) => {
+    // A stopped instance can be re-typed, so it needs the two-column layout
+    // (instance-type list + form); other statuses edit in a single column.
+    const isStopped = row.status?.phase === InstanceStatusValueMap.Stopped;
     openModal(
       PageAction.EDIT,
       intl.formatMessage({ id: 'gpuservice.instance.edit' }),
       row,
-      600
+      isStopped ? 'min(1040px, calc(100vw - 220px))' : 600
     );
   };
 

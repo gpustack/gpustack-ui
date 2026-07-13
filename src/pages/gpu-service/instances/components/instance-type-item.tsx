@@ -54,6 +54,7 @@ const Meta = styled.div<{ $columns?: number }>`
 
 interface InstanceTypeItemProps {
   item: InstanceTypeItemModel;
+  action?: React.ReactNode;
 }
 
 interface MetadataSectionProps {
@@ -212,7 +213,10 @@ export const InstanceMetadataSection: React.FC<MetadataSectionProps> = ({
   );
 };
 
-const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({ item }) => {
+const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({
+  item,
+  action
+}) => {
   const specData = item.spec || {};
 
   const { acceleratable, manufacturer, displayName, cpuManufacturer } =
@@ -264,6 +268,7 @@ const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({ item }) => {
             name="InstanceTypeBillingBadge"
             context={{ instanceType: item }}
           />
+          {action && <div style={{ marginLeft: 8 }}>{action}</div>}
         </Flex>
       </Title>
       <InstanceMetadataSection

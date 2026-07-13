@@ -237,12 +237,14 @@ const ResourceExportData: React.FC<ResourceExportDataProps> = (props) => {
 
   // Normalize the date bucket to a plain calendar day (drop the ``T00:00:00``
   // the hourly ``metered_usage`` carries) so the export matches the Tokens
-  // tab's date-only format. The export always requests day granularity.
+  // tab's date-only format. Slice the ISO string rather than re-parsing with
+  // dayjs — a tz-offset timestamp would shift the calendar day on format.
+  // The export always requests day granularity.
   const formatRowDates = (
     items: ResourceBreakdownItem[]
   ): ResourceBreakdownItem[] =>
     items.map((i) =>
-      i.date ? { ...i, date: dayjs(i.date).format('YYYY-MM-DD') } : i
+      i.date ? { ...i, date: String(i.date).slice(0, 10) } : i
     );
 
   const rows: ResourceBreakdownItem[] = formatRowDates(

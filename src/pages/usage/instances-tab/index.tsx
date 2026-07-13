@@ -51,7 +51,9 @@ type GroupKey = 'gpu_type' | 'instance' | 'user';
 interface ResourceBreakdownExtraTab {
   key: string;
   labelId: string;
-  useVisible?: () => boolean;
+  // Plain function (not a hook) — called during render to gate the tab; the
+  // plugin reads any runtime state non-reactively (Rules of Hooks).
+  isVisible?: (ctx: { scope: Scope }) => boolean;
   Component: React.ComponentType<{
     tab: 'gpu-instances' | 'storage';
     dateRange: [dayjs.Dayjs, dayjs.Dayjs];
@@ -145,15 +147,11 @@ const GpuInstancesTab: React.FC = () => {
     user_groups: userGroups
   } = useResourceMeta(scope);
 
-  // Enterprise-provided extra bottom sub-tabs (empty in the OSS build). Call
-  // each descriptor's ``useVisible`` in a stable order — the descriptor list is
-  // registered once at plugin init, so its length never changes (rules of
-  // hooks).
+  // Enterprise-provided extra bottom sub-tabs (empty in the OSS build).
+  // Visibility is a plain ``isVisible(ctx)`` function, evaluated at render —
+  // no hooks in a loop.
   const extraBreakdownTabs: ResourceBreakdownExtraTab[] =
     getGPUStackPlugin()?.usage?.resourceBreakdownExtraTabs ?? [];
-  const extraTabVisible = extraBreakdownTabs.map(
-    (t) => t.useVisible?.() ?? true
-  );
 
   // The daily chart fetches group_by=date here; each bottom table owns its own
   // fetch (group_by=tab key) inside InstancesBreakdownTable. Bumped on any
@@ -528,7 +526,7 @@ const GpuInstancesTab: React.FC = () => {
           // Enterprise Organization breakdown sub-tab(s) — appended after the
           // built-in tabs; nothing here in the OSS build.
           ...extraBreakdownTabs
-            .filter((_, i) => extraTabVisible[i])
+            .filter((t) => (t.isVisible ? t.isVisible({ scope }) : true))
             .map((t) => ({
               key: t.key,
               label: intl.formatMessage({ id: t.labelId }),

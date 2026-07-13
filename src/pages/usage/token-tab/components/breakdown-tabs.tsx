@@ -8,14 +8,14 @@ import ModelsTable from '../tables/models-table';
 import UsersTable from '../tables/users-table';
 
 // A breakdown sub-tab contributed by a plugin (e.g. the enterprise
-// Organization tab). ``useVisible`` is a React hook the host calls
-// unconditionally per descriptor (stable array length → hook-safe) so the
-// plugin can gate visibility on its own runtime state (e.g. platform-wide
-// "All" context).
+// Organization tab). ``isVisible`` is a PLAIN function (not a hook) called
+// during render to gate the tab on the current context — the plugin reads any
+// runtime state it needs non-reactively (e.g. the selected-org from storage),
+// so the host never calls a hook in a loop (Rules of Hooks).
 export interface BreakdownExtraTab {
   key: string;
   labelId: string;
-  useVisible?: () => boolean;
+  isVisible?: (ctx: { scope: string }) => boolean;
   Component: React.ComponentType<{
     filters: BreakdownFilters;
     dateRange: { start_date: string; end_date: string };
@@ -39,17 +39,11 @@ const BreakdownTabs: React.FC<{
 
   const extraTabs: BreakdownExtraTab[] =
     getGPUStackPlugin()?.usage?.breakdownExtraTabs ?? [];
-  // Call each descriptor's visibility hook here (outside useMemo) so React's
-  // rules of hooks hold; the plugin's array is stable, so call order is too.
-  const extraVisible = extraTabs.map((tab) =>
-    tab.useVisible ? tab.useVisible() : true
-  );
 
   const items = useMemo(() => {
     const extraItems = extraTabs
-      .map((tab, index) => ({ tab, visible: extraVisible[index] }))
-      .filter(({ visible }) => visible)
-      .map(({ tab }) => {
+      .filter((tab) => (tab.isVisible ? tab.isVisible({ scope }) : true))
+      .map((tab) => {
         const Component = tab.Component;
         return {
           key: tab.key,
@@ -122,16 +116,7 @@ const BreakdownTabs: React.FC<{
         return true;
       })
       .concat(extraItems);
-  }, [
-    filters,
-    dateRange,
-    pageResetKey,
-    refreshKey,
-    scope,
-    extraTabs,
-    extraVisible,
-    intl
-  ]);
+  }, [filters, dateRange, pageResetKey, refreshKey, scope, extraTabs, intl]);
 
   return (
     <div style={{ marginTop: 16 }}>

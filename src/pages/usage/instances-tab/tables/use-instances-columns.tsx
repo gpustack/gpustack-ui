@@ -39,7 +39,7 @@ const useInstancesColumns = (groupKey: GroupKey) => {
       }
     ];
     // Instance Types breakdown: the pretty product name (or flavor slug for
-    // older rows; "CPU Only" when no GPU cards) plus a CPU + RAM spec popover —
+    // older rows; "CPU-only" when no GPU cards) plus a CPU + RAM spec popover —
     // rendered through the canonical renderer so the formatting matches the GPU
     // Instances list, but limited to the CPU/RAM categories.
     const instanceTypeColType = {
@@ -64,7 +64,7 @@ const useInstancesColumns = (groupKey: GroupKey) => {
             intl,
             categories: ['cpu', 'ram'],
             // Each row is one shape: GPU "<product> x <cards>", CPU
-            // "CPU Only · <spec>".
+            // "CPU-only · <spec>".
             title: instanceTypeSeriesLabel(row)
           }
         );
@@ -95,7 +95,7 @@ const useInstancesColumns = (groupKey: GroupKey) => {
             persistentMib: row.persistent_mib
           }),
           // Label by shape directly (consistent with the Instance Types
-          // column); avoids renderInstanceType's "CPU Only" fallback when a
+          // column); avoids renderInstanceType's "CPU-only" fallback when a
           // GPU row has vram but a missing/zero gpu_count.
           { intl, title: instanceTypeSeriesLabel(row) }
         );

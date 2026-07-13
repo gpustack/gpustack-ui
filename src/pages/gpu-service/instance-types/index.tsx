@@ -12,7 +12,11 @@ import { useMemoizedFn } from 'ahooks';
 import { ConfigProvider, Divider, Flex, Table, message } from 'antd';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import PageBox, { HeaderLeft } from '../../_components/page-box';
-import { deleteGPUInstanceType } from './apis';
+import {
+  activateGPUInstanceType,
+  deactivateGPUInstanceType,
+  deleteGPUInstanceType
+} from './apis';
 import AddInstanceTypeModal from './components/add-instance-type-modal';
 import { FormData, ListItem } from './config/types';
 import useCreateInstanceTypeModal from './hooks/use-create-instance-type-modal';
@@ -120,9 +124,29 @@ const GPUServiceInstanceTypes: React.FC = () => {
     });
   });
 
+  const handleToggleActive = useMemoizedFn(
+    async (record: ListItem, activate: boolean) => {
+      if (clusterId == null) return;
+      try {
+        const action = activate
+          ? activateGPUInstanceType
+          : deactivateGPUInstanceType;
+        await action({ name: record.name, cluster_id: clusterId });
+        message.success(intl.formatMessage({ id: 'common.message.success' }));
+        fetchInstanceTypes(clusterId);
+      } catch (error) {
+        // handled by the request interceptor
+      }
+    }
+  );
+
   const handleSelect = useMemoizedFn((val: string, record: ListItem) => {
     if (val === 'delete') {
       handleDelete(record);
+    } else if (val === 'activate') {
+      handleToggleActive(record, true);
+    } else if (val === 'deactivate') {
+      handleToggleActive(record, false);
     }
   });
 

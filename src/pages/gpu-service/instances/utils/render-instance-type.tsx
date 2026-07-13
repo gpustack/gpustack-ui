@@ -131,7 +131,7 @@ export const renderInstanceType = (
     // Types breakdown only wants CPU + RAM, for example.
     categories?: SpecCategory[];
     // Override the primary label (default: derived "<product> x <count>" /
-    // "CPU Only"). The Instance Types breakdown keeps its plain product name.
+    // "CPU-only"). The Instance Types breakdown keeps its plain product name.
     title?: string;
   }
 ) => {
@@ -148,7 +148,7 @@ export const renderInstanceType = (
       ? isSliced
         ? `${description.product} (${sliceMemoryPercentage}%)`
         : `${description.product} x ${accelerator}`
-      : 'CPU Only');
+      : 'CPU-only');
 
   const volume = (record.spec as any)?.volume;
   // Spec popover grouped by category (GPU / CPU / Memory / Disk), mirroring
@@ -251,7 +251,7 @@ const mibToGiQuantity = (mib?: number): string | undefined =>
 export interface InstanceTypeMiB {
   name?: string;
   product?: string;
-  // accelerator (GPU card) count; 0/undefined → CPU-only ("CPU Only").
+  // accelerator (GPU card) count; 0/undefined → CPU-only.
   gpuCount?: number;
   // Per-card values.
   unitCpuMilli?: number;

@@ -4,6 +4,7 @@ export interface UnitResources {
 }
 
 export interface InstanceTypeSpec {
+  displayName?: string | null;
   manufacturer?: string | null;
   product?: string | null;
   family?: string | null;
@@ -54,6 +55,7 @@ export interface FlavorItem {
 export interface FormData {
   name: string;
   spec: {
+    displayName?: string | null;
     acceleratorGroup?: string | null;
     generalGroup?: string | null;
     acceleratable?: boolean;

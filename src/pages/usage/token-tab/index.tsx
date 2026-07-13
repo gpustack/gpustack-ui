@@ -178,6 +178,14 @@ const TokenTab: React.FC = () => {
           filterBar.onApiKeysChange(value);
           handleBreakdownPageReset();
         }}
+        onOrganizationsChange={(value) => {
+          filterBar.onOrganizationsChange(value);
+          handleBreakdownPageReset();
+        }}
+        onUserGroupsChange={(value) => {
+          filterBar.onUserGroupsChange(value);
+          handleBreakdownPageReset();
+        }}
         handleSearch={handleSearch}
         handlePickerChange={handlePickerChange}
         onExportTable={exportTable}

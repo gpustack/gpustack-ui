@@ -20,6 +20,10 @@ export interface ResourceUsageFilters {
   instance_ids?: number[];
   gpu_types?: string[];
   volume_ids?: number[];
+  // Platform-wide "All" view only (backend-gated): consumer-Org ids and
+  // user-group ids (expanded server-side to the groups' direct members).
+  organization_ids?: number[];
+  user_group_ids?: number[];
 }
 
 export interface ResourceBreakdownRequest {
@@ -65,6 +69,10 @@ export interface ResourceBreakdownItem extends ResourceBreakdownSummary {
   volume_name?: string;
   user_id?: number;
   user_name?: string;
+  // Organization grouping (platform-wide "All" view). ``organization_name``
+  // is resolved live server-side; a gone Org sets ``deleted``.
+  organization_id?: number;
+  organization_name?: string;
   // The grouped entity (instance / volume / user) no longer exists. The name
   // fields keep the clean (stale) name; the tables show a DeletedTag off this
   // flag plus the id, matching the Tokens tab.
@@ -261,6 +269,7 @@ const GROUP_BY_MAP: Record<string, string> = {
   instance: 'instance',
   volume: 'volume',
   user: 'user',
+  organization: 'organization',
   date: 'date'
 };
 
@@ -334,6 +343,10 @@ function flattenItem(
       flat.user_name = rawKey;
       flat.user_id = id;
       break;
+    case 'organization':
+      flat.organization_name = rawKey;
+      flat.organization_id = id;
+      break;
     default:
       break;
   }
@@ -393,7 +406,13 @@ function flattenResponse(
 
 function toServerRequest(data: ResourceBreakdownRequest) {
   const groupByList = data.group_by?.length ? data.group_by : ['resource_type'];
-  const { creator_ids, instance_ids, volume_ids } = data.filters ?? {};
+  const {
+    creator_ids,
+    instance_ids,
+    volume_ids,
+    organization_ids,
+    user_group_ids
+  } = data.filters ?? {};
   // The non-date dimension drives response flattening into the right field.
   const dim = groupByList.find((g) => g !== 'date');
   return {
@@ -408,6 +427,8 @@ function toServerRequest(data: ResourceBreakdownRequest) {
       ...(creator_ids?.length ? { creator_ids } : {}),
       ...(instance_ids?.length ? { instance_ids } : {}),
       ...(volume_ids?.length ? { volume_ids } : {}),
+      ...(organization_ids?.length ? { organization_ids } : {}),
+      ...(user_group_ids?.length ? { user_group_ids } : {}),
       ...(data.order_by ? { order_by: data.order_by } : {}),
       ...(data.descending !== undefined ? { descending: data.descending } : {}),
       page: data.page ?? 1,
@@ -477,6 +498,8 @@ export async function queryResourceEvents(
   options?: { skipErrorHandler?: boolean; token?: any }
 ): Promise<ResourceEventsResponse> {
   const creatorIds = data.filters?.creator_ids;
+  const organizationIds = data.filters?.organization_ids;
+  const userGroupIds = data.filters?.user_group_ids;
   return request<ResourceEventsResponse>(URL.EVENTS, {
     params: {
       start_date: data.start_date,
@@ -486,6 +509,12 @@ export async function queryResourceEvents(
       // GET endpoints take list params as CSV strings (avoids axios array
       // serialization quirks); the server splits them back into lists.
       ...(creatorIds?.length ? { creator_ids: creatorIds.join(',') } : {}),
+      ...(organizationIds?.length
+        ? { organization_ids: organizationIds.join(',') }
+        : {}),
+      ...(userGroupIds?.length
+        ? { user_group_ids: userGroupIds.join(',') }
+        : {}),
       ...(data.event_types?.length
         ? { event_types: data.event_types.join(',') }
         : {}),
@@ -503,12 +532,18 @@ export interface ResourceFilterOption {
   id: number;
   label: string;
   deleted?: boolean;
+  // ``org`` / ``user`` / ``group`` — only set on organization options so the
+  // filter dropdown can tag a personal (USER) consumer.
+  kind?: string;
 }
 
 export interface ResourceFilterMeta {
   creators: ResourceFilterOption[];
   instances: ResourceFilterOption[];
   volumes: ResourceFilterOption[];
+  // Platform-wide "All" view only (backend returns them empty otherwise).
+  organizations: ResourceFilterOption[];
+  user_groups: ResourceFilterOption[];
 }
 
 export async function queryResourceFilterMeta(
@@ -521,7 +556,9 @@ export async function queryResourceFilterMeta(
   return {
     creators: res.creators || [],
     instances: res.instances || [],
-    volumes: res.volumes || []
+    volumes: res.volumes || [],
+    organizations: res.organizations || [],
+    user_groups: res.user_groups || []
   };
 }
 
@@ -531,10 +568,12 @@ export async function queryUsageSummary(
     end_date: string;
     scope?: 'self' | 'all';
     creator_ids?: number[];
+    organization_ids?: number[];
+    user_group_ids?: number[];
   },
   options?: { token?: any }
 ): Promise<UsageSummaryResponse> {
-  const { creator_ids, ...rest } = params;
+  const { creator_ids, organization_ids, user_group_ids, ...rest } = params;
   const res = await request<{
     total_tokens: number;
     input_tokens: number;
@@ -548,7 +587,13 @@ export async function queryUsageSummary(
     params: {
       ...rest,
       scope: params.scope ?? 'all',
-      ...(creator_ids?.length ? { creator_ids: creator_ids.join(',') } : {})
+      ...(creator_ids?.length ? { creator_ids: creator_ids.join(',') } : {}),
+      ...(organization_ids?.length
+        ? { organization_ids: organization_ids.join(',') }
+        : {}),
+      ...(user_group_ids?.length
+        ? { user_group_ids: user_group_ids.join(',') }
+        : {})
     },
     method: 'GET',
     cancelToken: options?.token
@@ -565,7 +610,17 @@ export async function queryUsageSummary(
         end_date: params.end_date,
         scope: params.scope ?? 'all',
         group_by: ['gpu_type'],
-        ...(creator_ids?.length ? { filters: { creator_ids } } : {}),
+        ...(creator_ids?.length ||
+        organization_ids?.length ||
+        user_group_ids?.length
+          ? {
+              filters: {
+                ...(creator_ids?.length ? { creator_ids } : {}),
+                ...(organization_ids?.length ? { organization_ids } : {}),
+                ...(user_group_ids?.length ? { user_group_ids } : {})
+              }
+            }
+          : {}),
         page: 1,
         perPage: 100
       },

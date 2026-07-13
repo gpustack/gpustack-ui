@@ -9,11 +9,16 @@ export interface UsageFilterItem {
       provider_type: string | null;
       provider_name: string | null;
       route_name: string | null;
+      // Resolved live from principals (platform-wide "All" view only).
+      organization_name?: string | null;
+      group_name?: string | null;
     };
     current: {
       user_id: number | null;
       api_key_id: string | null;
       route_id: number | null;
+      organization_id?: number | null;
+      group_id?: number | null;
     };
   };
   label: string;
@@ -64,6 +69,7 @@ export type BreakdownItem = {
   model: UsageFilterItem;
   route: UsageFilterItem;
   api_key: UsageFilterItem;
+  organization: UsageFilterItem;
   date: {
     value: string;
     label: string;
@@ -88,16 +94,23 @@ export interface UsageMeta {
     users: UsageFilterItem[];
     api_keys: UsageFilterItem[];
     routes: UsageFilterItem[];
+    // Platform-wide "All" view only; empty otherwise (backend-gated).
+    organizations?: UsageFilterItem[];
+    user_groups?: UsageFilterItem[];
   };
 }
 
 export type FilterOptionType = Omit<UsageFilterItem, 'label' | 'deleted'>;
 
-// The full breakdown filter set (route / user / api_key). Every breakdown
-// table sends all active dimensions — matching the trend chart — so e.g. a
-// user filter narrows the Models table too, not only the Users table.
+// The full breakdown filter set (route / user / api_key + org / user_group).
+// Every breakdown table sends all active dimensions — matching the trend
+// chart — so e.g. a user filter narrows the Models table too, not only the
+// Users table. ``organizations`` / ``user_groups`` are only ever populated in
+// the platform-wide "All" view (their filter options are backend-gated).
 export type BreakdownFilters = {
   routes?: FilterOptionType[];
   users?: FilterOptionType[];
   api_keys?: FilterOptionType[];
+  organizations?: FilterOptionType[];
+  user_groups?: FilterOptionType[];
 };

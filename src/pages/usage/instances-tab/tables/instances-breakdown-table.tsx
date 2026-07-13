@@ -24,6 +24,9 @@ interface Props {
   scope: Scope;
   selectedUsers: number[];
   selectedInstances: number[];
+  // Platform-wide "All" view only (enterprise-gated); empty otherwise.
+  selectedOrganizations?: number[];
+  selectedUserGroups?: number[];
   // Bumped by the parent when a filter changes, so each mounted table snaps
   // back to page 1 independently.
   pageResetKey?: number;
@@ -42,6 +45,8 @@ const InstancesBreakdownTable: React.FC<Props> = ({
   scope,
   selectedUsers,
   selectedInstances,
+  selectedOrganizations = [],
+  selectedUserGroups = [],
   pageResetKey = 0,
   refreshKey = 0
 }) => {
@@ -101,11 +106,20 @@ const InstancesBreakdownTable: React.FC<Props> = ({
       end_date: dateRange[1].format('YYYY-MM-DD'),
       scope,
       filters:
-        selectedUsers.length || selectedInstances.length
+        selectedUsers.length ||
+        selectedInstances.length ||
+        selectedOrganizations.length ||
+        selectedUserGroups.length
           ? {
               ...(selectedUsers.length ? { creator_ids: selectedUsers } : {}),
               ...(selectedInstances.length
                 ? { instance_ids: selectedInstances }
+                : {}),
+              ...(selectedOrganizations.length
+                ? { organization_ids: selectedOrganizations }
+                : {}),
+              ...(selectedUserGroups.length
+                ? { user_group_ids: selectedUserGroups }
                 : {})
             }
           : undefined,
@@ -120,6 +134,8 @@ const InstancesBreakdownTable: React.FC<Props> = ({
     scope,
     selectedUsers,
     selectedInstances,
+    selectedOrganizations,
+    selectedUserGroups,
     queryParams.page,
     queryParams.perPage,
     queryParams.sort_by,

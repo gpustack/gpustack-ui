@@ -1,3 +1,4 @@
+import PluginExtraFields from '@/components/plugin-extra-fields';
 import useRangePickerPreset from '@/pages/dashboard/hooks/use-rangepicker-preset';
 import { DownloadOutlined, SyncOutlined } from '@ant-design/icons';
 import {
@@ -37,6 +38,14 @@ interface FilterBarProps {
   routeOptions: OptionType[];
   userOptions: OptionType[];
   apiKeyOptions: GroupOption<UsageFilterItem>[];
+  // Platform-wide "All" view only; empty otherwise (backend-gated). Rendered
+  // by the enterprise ``UsageFilterBar`` slot.
+  organizationOptions?: OptionType[];
+  userGroupOptions?: OptionType[];
+  selectedOrganizations?: string[];
+  selectedUserGroups?: string[];
+  onOrganizationsChange?: (value: string[]) => void;
+  onUserGroupsChange?: (value: string[]) => void;
   activeApiKeys: valueType[][];
   handlePickerChange: (picker: DateType) => void;
   onScopeChange: (value: string) => void;
@@ -77,6 +86,12 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
     onRoutesChange,
     onUsersChange,
     onApiKeysChange,
+    organizationOptions,
+    userGroupOptions,
+    selectedOrganizations,
+    selectedUserGroups,
+    onOrganizationsChange,
+    onUserGroupsChange,
     onExportChart,
     onExportTable,
     handleSearch
@@ -345,6 +360,21 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
             onChange={onApiKeysChange}
           />
         )}
+        {/* Enterprise-only Organization / User Group filters (platform-wide
+            "All" view). Renders nothing when no plugin is registered or the
+            backend returned no options. */}
+        <PluginExtraFields
+          name="UsageFilterBar"
+          context={{
+            organizationOptions: organizationOptions || [],
+            userGroupOptions: userGroupOptions || [],
+            selectedOrganizations: selectedOrganizations || [],
+            selectedUserGroups: selectedUserGroups || [],
+            onOrganizationsChange,
+            onUserGroupsChange,
+            optionLabelRender: singleOptionRender
+          }}
+        />
         <Button
           type="text"
           style={{ color: 'var(--ant-color-text-tertiary)' }}

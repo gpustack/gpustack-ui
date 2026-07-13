@@ -34,10 +34,14 @@ export default function useQueryUsageMetaData() {
     users: UserOptionType[];
     api_keys: GroupOption<UsageFilterItem>[];
     routes: RouteOptionType[];
+    organizations: RouteOptionType[];
+    user_groups: RouteOptionType[];
   }>({
     users: [],
     api_keys: [],
-    routes: []
+    routes: [],
+    organizations: [],
+    user_groups: []
   });
 
   // Current account first, deleted entries last, everything else keeps its
@@ -87,7 +91,21 @@ export default function useQueryUsageMetaData() {
             ...item,
             value: optionValue(item.identity.current?.route_id, index)
           }))
-          .sort((a, b) => Number(!!a.deleted) - Number(!!b.deleted)) || []
+          .sort((a, b) => Number(!!a.deleted) - Number(!!b.deleted)) || [],
+      // Platform-wide "All" view only (backend returns these empty otherwise).
+      // Deleted orgs sink to the bottom; groups are never flagged deleted.
+      organizations:
+        (res?.filters?.organizations || [])
+          .map((item, index) => ({
+            ...item,
+            value: optionValue(item.identity.current?.organization_id, index)
+          }))
+          .sort((a, b) => Number(!!a.deleted) - Number(!!b.deleted)) || [],
+      user_groups:
+        (res?.filters?.user_groups || []).map((item, index) => ({
+          ...item,
+          value: optionValue(item.identity.current?.group_id, index)
+        })) || []
     };
     setResult(data);
   };

@@ -33,6 +33,9 @@ type Scope = 'self' | 'all';
 interface SelectOption {
   value: number;
   label: string;
+  deleted?: boolean;
+  // ``org`` / ``user`` / ``group`` — set on organization options for the tag.
+  kind?: string;
 }
 
 interface ResourceExportDataProps {
@@ -62,6 +65,12 @@ interface ResourceExportDataProps {
   initialDateRange: [dayjs.Dayjs, dayjs.Dayjs];
   initialSelectedUsers: number[];
   initialSelectedResources: number[];
+  // Platform-wide "All" view only; empty otherwise. Mirrors the tab's
+  // Organization / User Group filters so the export can re-narrow by them.
+  organizationOptions?: SelectOption[];
+  userGroupOptions?: SelectOption[];
+  initialSelectedOrganizations?: number[];
+  initialSelectedUserGroups?: number[];
   // Name columns that carry a "[Deleted.#id]" marker when their entity is gone.
   // Each maps a clean-name field to its id + own deleted flag, so a compound
   // (date + instance/volume) row can mark the instance/volume and its owner
@@ -92,6 +101,10 @@ const ResourceExportData: React.FC<ResourceExportDataProps> = (props) => {
     initialDateRange,
     initialSelectedUsers,
     initialSelectedResources,
+    organizationOptions = [],
+    userGroupOptions = [],
+    initialSelectedOrganizations = [],
+    initialSelectedUserGroups = [],
     deletedNameFields
   } = props;
   const intl = useIntl();
@@ -102,6 +115,12 @@ const ResourceExportData: React.FC<ResourceExportDataProps> = (props) => {
     useState<number[]>(initialSelectedUsers);
   const [selectedResources, setSelectedResources] = useState<number[]>(
     initialSelectedResources
+  );
+  const [selectedOrganizations, setSelectedOrganizations] = useState<number[]>(
+    initialSelectedOrganizations
+  );
+  const [selectedUserGroups, setSelectedUserGroups] = useState<number[]>(
+    initialSelectedUserGroups
   );
   const [pageParams, setPageParams] = useState(INITIAL_PAGE);
   const [data, setData] = useState<ResourceBreakdownResponse | null>(null);
@@ -118,11 +137,20 @@ const ResourceExportData: React.FC<ResourceExportDataProps> = (props) => {
     group_by: groupBy,
     granularity: 'day',
     filters:
-      selectedUsers.length || selectedResources.length
+      selectedUsers.length ||
+      selectedResources.length ||
+      selectedOrganizations.length ||
+      selectedUserGroups.length
         ? {
             ...(selectedUsers.length ? { creator_ids: selectedUsers } : {}),
             ...(selectedResources.length
               ? { [resourceFilter.key]: selectedResources }
+              : {}),
+            ...(selectedOrganizations.length
+              ? { organization_ids: selectedOrganizations }
+              : {}),
+            ...(selectedUserGroups.length
+              ? { user_group_ids: selectedUserGroups }
               : {})
           }
         : undefined,
@@ -146,6 +174,8 @@ const ResourceExportData: React.FC<ResourceExportDataProps> = (props) => {
     setDateRange(initialDateRange);
     setSelectedUsers(initialSelectedUsers);
     setSelectedResources(initialSelectedResources);
+    setSelectedOrganizations(initialSelectedOrganizations);
+    setSelectedUserGroups(initialSelectedUserGroups);
     setPageParams(INITIAL_PAGE);
   }, [open]);
 
@@ -153,7 +183,15 @@ const ResourceExportData: React.FC<ResourceExportDataProps> = (props) => {
   useEffect(() => {
     if (!open) return;
     fetchPreview(pageParams.page, pageParams.perPage);
-  }, [open, dateRange, selectedUsers, selectedResources, pageParams]);
+  }, [
+    open,
+    dateRange,
+    selectedUsers,
+    selectedResources,
+    selectedOrganizations,
+    selectedUserGroups,
+    pageParams
+  ]);
 
   const previewColumns = useMemo(
     () => [
@@ -197,7 +235,19 @@ const ResourceExportData: React.FC<ResourceExportDataProps> = (props) => {
     });
   };
 
-  const rows: ResourceBreakdownItem[] = markRows(data?.items ?? []);
+  // Normalize the date bucket to a plain calendar day (drop the ``T00:00:00``
+  // the hourly ``metered_usage`` carries) so the export matches the Tokens
+  // tab's date-only format. The export always requests day granularity.
+  const formatRowDates = (
+    items: ResourceBreakdownItem[]
+  ): ResourceBreakdownItem[] =>
+    items.map((i) =>
+      i.date ? { ...i, date: dayjs(i.date).format('YYYY-MM-DD') } : i
+    );
+
+  const rows: ResourceBreakdownItem[] = formatRowDates(
+    markRows(data?.items ?? [])
+  );
 
   const handlePageChange = (page: number, perPage: number) => {
     setPageParams({ page, perPage });
@@ -210,7 +260,7 @@ const ResourceExportData: React.FC<ResourceExportDataProps> = (props) => {
     try {
       const res = await queryFn(buildRequest(-1, INITIAL_PAGE.perPage));
       exportBreakdownRows(
-        markRows(res.items ?? []),
+        formatRowDates(markRows(res.items ?? [])),
         toExportColumns(columns),
         fileName,
         sheetName
@@ -271,6 +321,18 @@ const ResourceExportData: React.FC<ResourceExportDataProps> = (props) => {
               setPageParams(INITIAL_PAGE);
             },
             placeholder: resourceFilter.placeholder
+          }}
+          organizationOptions={organizationOptions}
+          userGroupOptions={userGroupOptions}
+          selectedOrganizations={selectedOrganizations}
+          selectedUserGroups={selectedUserGroups}
+          onOrganizationsChange={(ids) => {
+            setSelectedOrganizations(ids);
+            setPageParams(INITIAL_PAGE);
+          }}
+          onUserGroupsChange={(ids) => {
+            setSelectedUserGroups(ids);
+            setPageParams(INITIAL_PAGE);
           }}
         />
       </div>

@@ -9,6 +9,7 @@
  * ``extra`` lets a tab append its own filters (e.g. Resource Events' resource
  * type / event type) inline, keeping one consistent bar.
  */
+import PluginExtraFields from '@/components/plugin-extra-fields';
 import useRangePickerPreset from '@/pages/dashboard/hooks/use-rangepicker-preset';
 import { DownloadOutlined, SyncOutlined } from '@ant-design/icons';
 import { AutoTooltip, IconFont, SimpleSelect } from '@gpustack/core-ui';
@@ -54,6 +55,14 @@ interface ResourceFilterBarProps {
   onExportChart?: () => void;
   onExportTable?: () => void;
   extra?: React.ReactNode;
+  // Platform-wide "All" view only; empty otherwise (backend-gated). Rendered
+  // by the enterprise ``ResourceUsageFilterBar`` slot.
+  organizationOptions?: SelectOption[];
+  userGroupOptions?: SelectOption[];
+  selectedOrganizations?: number[];
+  selectedUserGroups?: number[];
+  onOrganizationsChange?: (ids: number[]) => void;
+  onUserGroupsChange?: (ids: number[]) => void;
 }
 
 const ResourceFilterBar: React.FC<ResourceFilterBarProps> = (props) => {
@@ -68,7 +77,13 @@ const ResourceFilterBar: React.FC<ResourceFilterBarProps> = (props) => {
     onRefresh,
     onExportChart,
     onExportTable,
-    extra
+    extra,
+    organizationOptions,
+    userGroupOptions,
+    selectedOrganizations,
+    selectedUserGroups,
+    onOrganizationsChange,
+    onUserGroupsChange
   } = props;
   const intl = useIntl();
 
@@ -216,6 +231,21 @@ const ResourceFilterBar: React.FC<ResourceFilterBarProps> = (props) => {
           />
         )}
         {extra}
+        {/* Enterprise-only Organization / User Group filters (platform-wide
+            "All" view). Renders nothing when no plugin is registered or the
+            backend returned no options. */}
+        <PluginExtraFields
+          name="ResourceUsageFilterBar"
+          context={{
+            organizationOptions: organizationOptions || [],
+            userGroupOptions: userGroupOptions || [],
+            selectedOrganizations: selectedOrganizations || [],
+            selectedUserGroups: selectedUserGroups || [],
+            onOrganizationsChange,
+            onUserGroupsChange,
+            optionLabelRender: userOptionRender
+          }}
+        />
         {onRefresh && (
           <Button
             type="text"

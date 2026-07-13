@@ -12,18 +12,26 @@ export interface SelectOption {
   // The signed-in user's own entry, sorted first and tagged "[Current Account]"
   // in the filter dropdown (matches the Tokens tab).
   isCurrent?: boolean;
+  // ``org`` / ``user`` / ``group`` — set on organization options so the filter
+  // can tag a personal (USER) consumer.
+  kind?: string;
 }
 
 export interface ResourceMetaOptions {
   creators: SelectOption[];
   instances: SelectOption[];
   volumes: SelectOption[];
+  // Platform-wide "All" view only (empty otherwise, backend-gated).
+  organizations: SelectOption[];
+  user_groups: SelectOption[];
 }
 
 const EMPTY: ResourceMetaOptions = {
   creators: [],
   instances: [],
-  volumes: []
+  volumes: [],
+  organizations: [],
+  user_groups: []
 };
 
 // Deleted entries sink to the bottom of the dropdown; live ones keep their
@@ -73,7 +81,22 @@ export default function useResourceMeta(
         setMeta({
           creators: toUserOptions(res.creators, currentUserId),
           instances: toOptions(res.instances),
-          volumes: toOptions(res.volumes)
+          volumes: toOptions(res.volumes),
+          // Keep ``kind`` on org options so the filter can tag personal (USER)
+          // consumers; deleted ones still sink to the bottom.
+          organizations: res.organizations
+            .map((i) => ({
+              value: i.id,
+              label: i.label,
+              deleted: i.deleted,
+              kind: i.kind
+            }))
+            .sort((a, b) => Number(!!a.deleted) - Number(!!b.deleted)),
+          // Groups are never flagged deleted; keep incoming order.
+          user_groups: res.user_groups.map((i) => ({
+            value: i.id,
+            label: i.label
+          }))
         })
       )
       .catch(() => {

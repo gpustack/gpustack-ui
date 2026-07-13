@@ -28,6 +28,9 @@ interface Props {
   scope: Scope;
   selectedUsers: number[];
   selectedVolumes: number[];
+  // Platform-wide "All" view only (enterprise-gated); empty otherwise.
+  selectedOrganizations?: number[];
+  selectedUserGroups?: number[];
   // Bumped by the parent when a filter changes, so each mounted table snaps
   // back to page 1 independently.
   pageResetKey?: number;
@@ -46,6 +49,8 @@ const StorageBreakdownTable: React.FC<Props> = ({
   scope,
   selectedUsers,
   selectedVolumes,
+  selectedOrganizations = [],
+  selectedUserGroups = [],
   pageResetKey = 0,
   refreshKey = 0
 }) => {
@@ -105,10 +110,21 @@ const StorageBreakdownTable: React.FC<Props> = ({
       end_date: dateRange[1].format('YYYY-MM-DD'),
       scope,
       filters:
-        selectedUsers.length || selectedVolumes.length
+        selectedUsers.length ||
+        selectedVolumes.length ||
+        selectedOrganizations.length ||
+        selectedUserGroups.length
           ? {
               ...(selectedUsers.length ? { creator_ids: selectedUsers } : {}),
-              ...(selectedVolumes.length ? { volume_ids: selectedVolumes } : {})
+              ...(selectedVolumes.length
+                ? { volume_ids: selectedVolumes }
+                : {}),
+              ...(selectedOrganizations.length
+                ? { organization_ids: selectedOrganizations }
+                : {}),
+              ...(selectedUserGroups.length
+                ? { user_group_ids: selectedUserGroups }
+                : {})
             }
           : undefined,
       group_by: [groupKey],
@@ -122,6 +138,8 @@ const StorageBreakdownTable: React.FC<Props> = ({
     scope,
     selectedUsers,
     selectedVolumes,
+    selectedOrganizations,
+    selectedUserGroups,
     queryParams.page,
     queryParams.perPage,
     queryParams.sort_by,

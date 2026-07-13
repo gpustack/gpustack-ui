@@ -51,6 +51,9 @@ type QueryParams = {
   start: string;
   end: string;
   selectedUsers: number[];
+  // Platform-wide "All" view only (enterprise-gated); empty otherwise.
+  selectedOrganizations: number[];
+  selectedUserGroups: number[];
 };
 
 // Round to at most 2 decimals everywhere (avoid 1.60999999… in the donut center).
@@ -226,17 +229,25 @@ const SummaryTab: React.FC = () => {
 
   // Date range + user filter live together: every fetch keys off all three, so
   // a single object keeps them in sync and trims the dependency arrays.
-  const [queryParams, setQueryParams] = useState<{
-    start: string;
-    end: string;
-    selectedUsers: number[];
-  }>({
+  const [queryParams, setQueryParams] = useState<QueryParams>({
     start: dayjs().subtract(29, 'day').format('YYYY-MM-DD'),
     end: dayjs().format('YYYY-MM-DD'),
-    selectedUsers: []
+    selectedUsers: [],
+    selectedOrganizations: [],
+    selectedUserGroups: []
   });
-  const { start, end, selectedUsers } = queryParams;
-  const { creators: resourceUsers } = useResourceMeta(scope);
+  const {
+    start,
+    end,
+    selectedUsers,
+    selectedOrganizations,
+    selectedUserGroups
+  } = queryParams;
+  const {
+    creators: resourceUsers,
+    organizations,
+    user_groups: userGroups
+  } = useResourceMeta(scope);
   const { detailData: tokenMeta, fetchData: fetchTokenMeta } =
     useQueryUsageMetaData();
 
@@ -336,10 +347,24 @@ const SummaryTab: React.FC = () => {
       setQueryParams(currentParams);
     }
 
-    // "filter by user" — restricts every resource fetch to these creator ids.
-    const creatorFilter = currentParams.selectedUsers.length
-      ? { creator_ids: currentParams.selectedUsers }
-      : undefined;
+    // "filter by user" (+ enterprise org / user-group) — restricts every
+    // resource fetch to these creator / org / group ids.
+    const creatorFilter =
+      currentParams.selectedUsers.length ||
+      currentParams.selectedOrganizations.length ||
+      currentParams.selectedUserGroups.length
+        ? {
+            ...(currentParams.selectedUsers.length
+              ? { creator_ids: currentParams.selectedUsers }
+              : {}),
+            ...(currentParams.selectedOrganizations.length
+              ? { organization_ids: currentParams.selectedOrganizations }
+              : {}),
+            ...(currentParams.selectedUserGroups.length
+              ? { user_group_ids: currentParams.selectedUserGroups }
+              : {})
+          }
+        : undefined;
 
     // The token series hits /usage/breakdown, which filters users by identity
     // rather than the creator_ids the resource endpoints take — so the token
@@ -364,6 +389,12 @@ const SummaryTab: React.FC = () => {
         ...commonParams,
         creator_ids: currentParams.selectedUsers.length
           ? currentParams.selectedUsers
+          : undefined,
+        organization_ids: currentParams.selectedOrganizations.length
+          ? currentParams.selectedOrganizations
+          : undefined,
+        user_group_ids: currentParams.selectedUserGroups.length
+          ? currentParams.selectedUserGroups
           : undefined
       }),
 
@@ -487,6 +518,14 @@ const SummaryTab: React.FC = () => {
     fetchAll({ selectedUsers: users });
   };
 
+  const handleOrganizationsChange = (ids: number[]) => {
+    fetchAll({ selectedOrganizations: ids });
+  };
+
+  const handleUserGroupsChange = (ids: number[]) => {
+    fetchAll({ selectedUserGroups: ids });
+  };
+
   const onRefresh = () => {
     fetchAll();
   };
@@ -505,6 +544,12 @@ const SummaryTab: React.FC = () => {
         userOptions={userOptions}
         selectedUsers={selectedUsers}
         onUsersChange={handleUserFilterChange}
+        organizationOptions={organizations}
+        userGroupOptions={userGroups}
+        selectedOrganizations={selectedOrganizations}
+        selectedUserGroups={selectedUserGroups}
+        onOrganizationsChange={handleOrganizationsChange}
+        onUserGroupsChange={handleUserGroupsChange}
         onRefresh={onRefresh}
       />
       <div style={{ height: 24 }} />

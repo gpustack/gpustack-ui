@@ -262,13 +262,15 @@ export const getAcceleratorMax = (
 
 // Picks the candidate (cluster + type name) that should fulfill a requested
 // accelerator count: the first candidate of the smallest tier whose
-// onceMaxRequest.accelerator is >= the requested count. Accelerated types are
-// not gated on CPU remaining (only CPU-only types are); in sliced mode the
-// candidate's acceleratorSliced remaining must also be > 0.
+// onceMaxRequest.accelerator is >= the requested count. Only Active candidates
+// are eligible. Accelerated types are not gated on CPU remaining (only CPU-only
+// types are); in sliced mode the candidate's acceleratorSliced remaining must
+// also be > 0.
 export const pickCandidateForAccelerator = <
   C extends {
     cluster: string;
     name: string;
+    phase?: string | null;
     cpu?: { remaining?: string | null } | null;
     acceleratorSliced?: { remaining?: string | null } | null;
   }
@@ -289,6 +291,8 @@ export const pickCandidateForAccelerator = <
   if (!tiers?.length) return null;
 
   const hasResources = (c: C) => {
+    // Only Active candidates can serve new instances.
+    if (c.phase !== InstanceTypePhaseValueMap.Active) return false;
     // Accelerated types are not gated on CPU remaining; CPU-only types are.
     if (!acceleratable && parseQuantity(c.cpu?.remaining) <= 0) return false;
     if (sliced && parseQuantity(c.acceleratorSliced?.remaining) <= 0)

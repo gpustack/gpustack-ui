@@ -137,6 +137,7 @@ export interface InstanceTypeCandidate {
   acceleratorShared: InstanceTypeResource;
   // Sliced-mode available resource.
   acceleratorSliced: InstanceTypeResource;
+  phase: 'Active' | 'Inactive' | 'Draining';
 }
 
 export interface InstanceTypeTierOnceMaxRequestResource {

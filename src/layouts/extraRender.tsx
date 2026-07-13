@@ -4,6 +4,7 @@ import VersionInfo, { modalConfig } from '@/components/version-info';
 import externalLinks from '@/constants/external-links';
 import useBodyScroll from '@/hooks/use-body-scroll';
 import { logout } from '@/pages/login/apis';
+import { getGPUStackPlugin } from '@/plugins';
 import { useModel } from '@@/plugin-model';
 import {
   DiscordOutlined,
@@ -98,6 +99,7 @@ const CustomItem = styled.div`
 
 export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
   const { isDarkTheme } = props;
+  const plugin = getGPUStackPlugin();
   const { saveScrollHeight, restoreScrollHeight } = useBodyScroll();
   const [modal, contextHolder] = Modal.useModal();
   const [version] = useAtom(GPUStackVersionAtom);
@@ -286,15 +288,17 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
           </NewLabel>
         )}
       </div>
-      <DropdownActions menu={{ ...helpMenu }} popupRender={helpPopupRender}>
-        <IconWrapper>
-          <IconFont
-            type="icon-help"
-            className="font-size-20"
-            style={{ color: 'var(--ant-color-text-tertiary)' }}
-          />
-        </IconWrapper>
-      </DropdownActions>
+      {!plugin && (
+        <DropdownActions menu={{ ...helpMenu }} popupRender={helpPopupRender}>
+          <IconWrapper>
+            <IconFont
+              type="icon-help"
+              className="font-size-20"
+              style={{ color: 'var(--ant-color-text-tertiary)' }}
+            />
+          </IconWrapper>
+        </DropdownActions>
+      )}
       <PluginExtraField name="GlobalSettings" />
       <DropdownActions menu={{ ...userMenu }} popupRender={userPopupRender}>
         <IconWrapper>

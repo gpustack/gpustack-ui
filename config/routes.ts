@@ -107,7 +107,6 @@ const baseRoutes = [
         icon: 'icon-models',
         selectedIcon: 'icon-models-filled',
         defaultIcon: 'icon-models',
-        access: 'canSeeUser',
         component: './llmodels/user-models'
       },
       {

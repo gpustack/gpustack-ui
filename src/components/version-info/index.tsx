@@ -1,6 +1,7 @@
 import Logo from '@/assets/images/gpustack-logo.png';
 import { GPUStackVersionAtom, UpdateCheckAtom, userAtom } from '@/atoms/user';
 import externalLinks from '@/constants/external-links';
+import { useLogo } from '@/hooks/use-logo';
 import { Button } from 'antd';
 import { useAtom } from 'jotai';
 import React from 'react';
@@ -18,7 +19,7 @@ const VersionInfo: React.FC<{ intl: any }> = ({ intl }) => {
     isProd,
     isDev
   } = gpuStackVersionAtom;
-
+  const { sidebarLogo } = useLogo();
   // user info
   const { is_admin } = userDataAtom || {};
 
@@ -30,7 +31,7 @@ const VersionInfo: React.FC<{ intl: any }> = ({ intl }) => {
   return (
     <div className="version-box">
       <div className="img">
-        <img src={Logo} alt="logo" />
+        <img src={sidebarLogo || Logo} alt="logo" />
       </div>
 
       <div className="ver">

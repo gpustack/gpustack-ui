@@ -236,18 +236,33 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     onOk(allValues);
   };
 
-  const handleClusterChange = async (value: number) => {
-    await onClusterChange?.(value);
+  // Shared work when the target cluster changes: refetch the GPU/backend
+  // options for the new cluster and reset schedule/gpu selection.
+  const applyClusterScopedOptions = (value: number) => {
     getGPUOptionList({ clusterId: value });
     getBackendOptions({ cluster_id: value });
     form.setFieldsValue({
       scheduleType: ScheduleValueMap.Auto,
       gpu_selector: null
     });
+  };
+
+  // User explicitly picked a cluster: refresh scoped options and re-evaluate.
+  const handleClusterChange = async (value: number) => {
+    await onClusterChange?.(value);
+    applyClusterScopedOptions(value);
     await new Promise((resolve) => {
       setTimeout(resolve, 150);
     });
     onValuesChange?.({}, form.getFieldsValue());
+  };
+
+  // The basic form seeds a default cluster on open, before a model is picked.
+  // Refresh scoped options for it but don't fire the evaluate request — there
+  // is no model to evaluate yet.
+  const handleClusterSeed = async (value: number) => {
+    await onClusterChange?.(value);
+    applyClusterScopedOptions(value);
   };
 
   const getFieldPaths = (obj: Record<string, any>, prefix = ''): string => {
@@ -467,6 +482,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
             clusterList={clusterList}
             sourceDisable={sourceDisable}
             handleClusterChange={handleClusterChange}
+            onClusterSeed={handleClusterSeed}
             onSourceChange={onSourceChange}
           ></BasicForm>
           <CollapsePanel

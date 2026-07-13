@@ -85,6 +85,7 @@ interface BasicFormProps {
     }
   >[];
   handleClusterChange: (value: number) => void;
+  onClusterSeed: (value: number) => void;
   onSourceChange?: (value: string) => void;
 }
 
@@ -94,6 +95,7 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
     clusterList,
     sourceDisable,
     handleClusterChange,
+    onClusterSeed,
     onSourceChange
   } = props;
   const intl = useIntl();
@@ -148,6 +150,8 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
   // selection and fall back to the scope's default cluster (then a Ready one,
   // then the first) so GPU/backend options refetch for it. A selection that's
   // still valid is left untouched, so a user's (or edit's) choice is kept.
+  // Use the seed callback (not handleClusterChange) so this auto-pick refreshes
+  // options without firing an evaluate request before a model is selected.
   useEffect(() => {
     if (!clusterOptions?.length) {
       return;
@@ -167,8 +171,8 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
       return;
     }
     form.setFieldValue('cluster_id', next);
-    handleClusterChange?.(next);
-  }, [clusterOptions, form, handleClusterChange]);
+    onClusterSeed?.(next);
+  }, [clusterOptions, form, onClusterSeed]);
 
   const clusterOptionRender = (option: any) => {
     const { data } = option;

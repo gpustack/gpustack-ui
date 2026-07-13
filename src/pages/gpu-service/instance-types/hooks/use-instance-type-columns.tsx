@@ -3,22 +3,20 @@ import {
   AutoTooltip,
   DropdownButtons,
   icons,
-  StatusTag,
-  ThemeTag
+  StatusTag
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Flex, Space, Tooltip } from 'antd';
+import { Space, Tooltip } from 'antd';
 import type { ColumnsType } from 'antd/lib/table';
 import _ from 'lodash';
 import { useMemo } from 'react';
-import { formatMemoryDisplay } from '../../instances/config';
-import { manufactureColorMap } from '../../templates/config';
+import { ceilMilliToCore, parseQuantityToGi } from '../../utils';
+import { FlavorOption } from '../components/flavor-display';
 import {
-  ceilMilliToCore,
-  formatManufacturer,
-  parseQuantityToGi
-} from '../../utils';
-import { InstanceTypePhaseLabelMap, status as phaseStatusMap } from '../config';
+  InstanceTypePhaseLabelMap,
+  InstanceTypePhaseValueMap,
+  status as phaseStatusMap
+} from '../config';
 import { ListItem } from '../config/types';
 
 interface ColumnsHookProps {
@@ -26,16 +24,36 @@ interface ColumnsHookProps {
 }
 
 // DropdownButtons reads `locale` / `props` at runtime; its `items` prop is
-// typed as antd's MenuProps['items'], so cast the config to satisfy it.
-const rowActions = [
-  {
+// typed as antd's MenuProps['items'], so cast the config to satisfy it. The
+// activate / deactivate action is chosen from the row's current phase: Active
+// types can be deactivated, Inactive ones activated (none while Preparing).
+const buildRowActions = (record: ListItem) => {
+  const phase = record.status?.phase;
+  const actions: any[] = [];
+  if (phase === InstanceTypePhaseValueMap.Active) {
+    actions.push({
+      label: 'gpuservice.instanceType.deactivate',
+      key: 'deactivate',
+      locale: true,
+      icon: icons.Disabled
+    });
+  } else if (phase === InstanceTypePhaseValueMap.Inactive) {
+    actions.push({
+      label: 'gpuservice.instanceType.activate',
+      key: 'activate',
+      locale: true,
+      icon: icons.Charger
+    });
+  }
+  actions.push({
     label: 'common.button.delete',
     key: 'delete',
     locale: true,
     icon: icons.DeleteOutlined,
     props: { danger: true }
-  }
-] as any;
+  });
+  return actions;
+};
 
 // Column header with an info tooltip (used for the per-GPU resource columns).
 const TitleWithTip: React.FC<{ title: string; tip: string }> = ({
@@ -64,75 +82,31 @@ const useInstanceTypeColumns = ({
         dataIndex: 'name',
         key: 'name',
         ellipsis: { showTitle: false },
-        render: (text: string) => (
-          <AutoTooltip ghost minWidth={20} maxWidth={200} title={text}>
-            <span className="text-primary">{text || '-'}</span>
-          </AutoTooltip>
-        )
+        // Prefer the friendly display name, fall back to the resource name.
+        render: (text: string, record: ListItem) => {
+          const label = record.spec?.displayName || text;
+          return (
+            <AutoTooltip ghost minWidth={20} maxWidth={200} title={label}>
+              <span className="text-primary">{label || '-'}</span>
+            </AutoTooltip>
+          );
+        }
       },
       {
-        title: intl.formatMessage({ id: 'gpuservice.instanceType.product' }),
+        // Flavor cell mirrors the create drawer's dropdown: product name on
+        // top, manufacturer · memory · sliceable on the meta line below.
+        title: intl.formatMessage({ id: 'gpuservice.instanceType.flavor' }),
         dataIndex: ['spec', 'product'],
         key: 'product',
         ellipsis: { showTitle: false },
-        render: (text: string, record: ListItem) => (
-          <Flex
-            gap={4}
-            align="center"
-            style={{ maxWidth: '100%', minWidth: 0 }}
-          >
-            <AutoTooltip ghost minWidth={20} maxWidth={200}>
-              {text || '-'}
-            </AutoTooltip>
-            {record.spec?.sliceable && (
-              <ThemeTag
-                color="geekblue"
-                style={{ fontWeight: 400, flexShrink: 0 }}
-              >
-                {intl.formatMessage({ id: 'gpuservice.instance.sliceable' })}
-              </ThemeTag>
-            )}
-          </Flex>
+        render: (_text: string, record: ListItem) => (
+          <FlavorOption
+            spec={record.spec}
+            fallbackName={record.name}
+            maxWidth={200}
+          />
         )
       },
-      {
-        title: intl.formatMessage({ id: 'resources.table.vendor' }),
-        dataIndex: ['spec', 'manufacturer'],
-        key: 'manufacturer',
-        ellipsis: { showTitle: false },
-        render: (value: string) =>
-          value ? (
-            <ThemeTag
-              color={manufactureColorMap[value] ?? 'purple'}
-              style={{ fontWeight: 400, width: 'fit-content' }}
-            >
-              {formatManufacturer(value)}
-            </ThemeTag>
-          ) : (
-            '-'
-          )
-      },
-      {
-        title: intl.formatMessage({ id: 'gpuservice.instance.memory' }),
-        dataIndex: ['spec', 'memory'],
-        key: 'memory',
-        ellipsis: { showTitle: false },
-        // Non-acceleratable (generic) types have no VRAM concept → N/A.
-        render: (value: string, record: ListItem) =>
-          record.spec?.acceleratable
-            ? formatMemoryDisplay(value ?? undefined) || '-'
-            : 'N/A'
-      },
-      // {
-      //   title: intl.formatMessage({ id: 'gpuservice.instance.sliceable' }),
-      //   dataIndex: ['spec', 'sliceable'],
-      //   key: 'sliceable',
-      //   ellipsis: { showTitle: false },
-      //   render: (value: boolean) =>
-      //     value
-      //       ? intl.formatMessage({ id: 'common.table.yes' })
-      //       : intl.formatMessage({ id: 'common.table.no' })
-      // },
       {
         title: (
           <TitleWithTip
@@ -191,7 +165,7 @@ const useInstanceTypeColumns = ({
         }
       },
       {
-        title: intl.formatMessage({ id: 'gpuservice.instance.os' }),
+        title: intl.formatMessage({ id: 'gpuservice.instanceType.platform' }),
         key: 'os',
         ellipsis: { showTitle: false },
         render: (_text, record: ListItem) => {
@@ -202,9 +176,9 @@ const useInstanceTypeColumns = ({
             <AutoTooltip
               ghost
               maxWidth={240}
-              title={arch ? `${os} (${arch})` : os}
+              title={arch ? `${os}/${arch}` : os}
             >
-              {arch ? `${os} (${arch})` : os}
+              {arch ? `${os}/${arch}` : os}
             </AutoTooltip>
           );
         }
@@ -234,7 +208,7 @@ const useInstanceTypeColumns = ({
         ellipsis: { showTitle: false },
         render: (_text, record: ListItem) => (
           <DropdownButtons
-            items={rowActions}
+            items={buildRowActions(record)}
             onSelect={(val: string) => handleSelect(val, record)}
           />
         )

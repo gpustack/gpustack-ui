@@ -8,24 +8,24 @@ export const GPU_INSTANCE_TYPE_OS = 'linux';
 export const InstanceTypePhaseValueMap = {
   Active: 'Active',
   Inactive: 'Inactive',
-  Preparing: 'Preparing'
+  Draining: 'Draining'
 };
 
 export const InstanceTypePhaseLabelMap: Record<string, string> = {
   [InstanceTypePhaseValueMap.Active]: 'Active',
   [InstanceTypePhaseValueMap.Inactive]: 'Inactive',
-  [InstanceTypePhaseValueMap.Preparing]: 'Preparing'
+  [InstanceTypePhaseValueMap.Draining]: 'Draining'
 };
 
 export const status: Record<string, StatusType> = {
   [InstanceTypePhaseValueMap.Active]: StatusMaps.success,
   [InstanceTypePhaseValueMap.Inactive]: StatusMaps.inactive,
-  [InstanceTypePhaseValueMap.Preparing]: StatusMaps.transitioning
+  [InstanceTypePhaseValueMap.Draining]: StatusMaps.transitioning
 };
 
 export const ArchOptions = [
-  { label: 'amd64', value: 'amd64' },
-  { label: 'arm64', value: 'arm64' }
+  { label: 'AMD64', value: 'amd64' },
+  { label: 'ARM64', value: 'arm64' }
 ];
 
 // ``icon`` is narrowed to ``any`` so the inferred type doesn't reach into

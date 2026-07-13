@@ -93,7 +93,7 @@ export interface ResourceBreakdownItem extends ResourceBreakdownSummary {
   unit_memory_mib?: number;
   vram_mib?: number;
   // Instance totals (requested cpu/ram) — the real size, so CPU instance types
-  // show "CPU Only · 2 vCPU · 4 GB" instead of just the per-unit spec.
+  // show "CPU-only · 2 vCPU · 4 GB" instead of just the per-unit spec.
   cpu_milli?: number;
   memory_mib?: number;
   // Per-instance rows also carry the card count + ephemeral disk so the
@@ -382,7 +382,7 @@ function flattenItem(
   if (it.creator_deleted != null) flat.user_deleted = !!it.creator_deleted;
   // Instance-type grouped trend: the series label (``group``) defaults to the
   // raw flavor slug. Instance Types are grouped by actual shape, so label each
-  // series by that shape — "<product> x <cards>" / "CPU Only · 3 vCPU · 6 GB" —
+  // series by that shape — "<product> x <cards>" / "CPU-only · 3 vCPU · 6 GB" —
   // matching the table and keeping every shape a distinct series (#5700).
   // ``groupBy`` is the unmapped frontend dimension; the instance-type axis is
   // ``gpu_type`` (→ backend ``instance_type`` via GROUP_BY_MAP).

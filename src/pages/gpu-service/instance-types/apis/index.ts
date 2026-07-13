@@ -52,3 +52,25 @@ export async function deleteGPUInstanceType(params: {
     params: { cluster_id: params.cluster_id }
   });
 }
+
+// PUT /gpu-instance-types/{name}/enactive?cluster_id — activate an instance type.
+export async function activateGPUInstanceType(params: {
+  name: string;
+  cluster_id: number;
+}) {
+  return request(`${GPU_INSTANCE_TYPES_API}/${params.name}/activate`, {
+    method: 'PUT',
+    params: { cluster_id: params.cluster_id }
+  });
+}
+
+// PUT /gpu-instance-types/{name}/deactive?cluster_id — deactivate an instance type.
+export async function deactivateGPUInstanceType(params: {
+  name: string;
+  cluster_id: number;
+}) {
+  return request(`${GPU_INSTANCE_TYPES_API}/${params.name}/deactivate`, {
+    method: 'PUT',
+    params: { cluster_id: params.cluster_id }
+  });
+}

@@ -1,18 +1,18 @@
 import { validateLabelNameRegxFor63 } from '@/config';
 import {
-  AutoTooltip,
   Input as CInput,
   InputNumber,
   Select as SealSelect,
-  ThemeTag,
   useAppUtils
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Flex, Form } from 'antd';
+import { Form } from 'antd';
 import { forwardRef, useEffect, useImperativeHandle } from 'react';
-import { formatMemoryDisplay } from '../../instances/config';
-import { manufactureColorMap } from '../../templates/config';
-import { formatManufacturer } from '../../utils';
+import {
+  FlavorOption,
+  FlavorSelected,
+  getFlavorTitle
+} from '../components/flavor-display';
 import { ArchOptions, GPU_INSTANCE_TYPE_OS } from '../config';
 import { FlavorItem, FormData } from '../config/types';
 import styles from '../styles/instance-types.module.less';
@@ -38,18 +38,6 @@ interface InstanceTypeFormProps {
   onFinish: (values: FormData) => Promise<void>;
   onFinishFailed?: (errorInfo: any) => void;
 }
-
-// A flavor's title mirrors the flavor card: a generic (no product, no/`generic`
-// manufacturer, non-acceleratable) flavor reads as "CPU-only".
-const getFlavorTitle = (flavor: FlavorItem) => {
-  const spec = flavor.spec || {};
-  const manufacturer = spec.manufacturer || '';
-  const isCpuOnly =
-    !spec.acceleratable &&
-    !spec.product &&
-    (!manufacturer || manufacturer.toLowerCase() === 'generic');
-  return isCpuOnly ? 'CPU-only' : spec.product || flavor.name || '-';
-};
 
 const GPUServiceInstanceTypeForm: React.FC<InstanceTypeFormProps> = forwardRef(
   (props, ref) => {
@@ -97,102 +85,19 @@ const GPUServiceInstanceTypeForm: React.FC<InstanceTypeFormProps> = forwardRef(
       }
     }));
 
-    // A flavor's dropdown / selected label shows the same info as the flavor
-    // Secondary line, dot-separated: manufacturer · memory · sliceable. memory
-    // and sliceable apply to accelerator (GPU) flavors only; sliceable stays a
-    // tag. Returns null when a (generic) flavor has nothing to show.
-    const renderFlavorMeta = (flavor: FlavorItem) => {
-      const spec = flavor.spec || {};
-      const manufacturer = spec.manufacturer || '';
-      const color = manufactureColorMap[manufacturer] ?? 'purple';
-      const memory = spec.acceleratable
-        ? formatMemoryDisplay(spec.memory ?? undefined)
-        : '';
-
-      const pieces: React.ReactNode[] = [];
-      if (manufacturer) {
-        pieces.push(
-          <ThemeTag
-            key="vendor"
-            color={color}
-            style={{ fontWeight: 400, marginInlineEnd: 0 }}
-          >
-            {formatManufacturer(manufacturer)}
-          </ThemeTag>
-        );
-      }
-      if (memory) {
-        pieces.push(<span key="memory">{memory}</span>);
-      }
-      if (spec.acceleratable && spec.sliceable) {
-        pieces.push(
-          <ThemeTag
-            key="sliceable"
-            color="geekblue"
-            style={{ fontWeight: 400, marginInlineEnd: 0 }}
-          >
-            {intl.formatMessage({ id: 'gpuservice.instance.sliceable' })}
-          </ThemeTag>
-        );
-      }
-      if (!pieces.length) return null;
-
-      return (
-        <Flex
-          align="center"
-          gap={8}
-          style={{
-            minWidth: 0,
-            color: 'var(--ant-color-text-tertiary)',
-            fontSize: 12
-          }}
-        >
-          {pieces.flatMap((piece, index) =>
-            index === 0
-              ? [piece]
-              : [
-                  <span
-                    key={`dot-${index}`}
-                    style={{ color: 'var(--ant-color-text-quaternary)' }}
-                  >
-                    ·
-                  </span>,
-                  piece
-                ]
-          )}
-        </Flex>
-      );
-    };
-
-    // Dropdown item: two lines — name on top, meta row below.
-    const renderFlavorOption = (flavor: FlavorItem) => (
-      <Flex vertical gap={4} style={{ minWidth: 0, padding: '2px 0' }}>
-        <AutoTooltip ghost minWidth={20} maxWidth={'100%'}>
-          {getFlavorTitle(flavor)}
-        </AutoTooltip>
-        {renderFlavorMeta(flavor)}
-      </Flex>
-    );
-
-    // Collapsed selected value: single line — name then meta inline.
-    const renderFlavorSelected = (flavor: FlavorItem) => (
-      <Flex align="center" gap={8} style={{ minWidth: 0 }}>
-        <AutoTooltip ghost minWidth={20} maxWidth={200}>
-          {getFlavorTitle(flavor)}
-        </AutoTooltip>
-        {renderFlavorMeta(flavor)}
-      </Flex>
-    );
-
     // Split flavors into two groups: CPU compute (generic) and GPU compute
     // (accelerator). Groups render as labeled sections in the dropdown.
     const toFlavorOption = (flavor: FlavorItem) => ({
       value: flavor.name,
-      label: getFlavorTitle(flavor),
+      label: getFlavorTitle(flavor.spec, flavor.name),
       flavor
     });
-    const cpuFlavors = flavorList.filter((flavor) => !flavor.spec?.acceleratable);
-    const gpuFlavors = flavorList.filter((flavor) => flavor.spec?.acceleratable);
+    const cpuFlavors = flavorList.filter(
+      (flavor) => !flavor.spec?.acceleratable
+    );
+    const gpuFlavors = flavorList.filter(
+      (flavor) => flavor.spec?.acceleratable
+    );
     const flavorOptions = [
       cpuFlavors.length && {
         label: intl.formatMessage({
@@ -218,6 +123,7 @@ const GPUServiceInstanceTypeForm: React.FC<InstanceTypeFormProps> = forwardRef(
       await onFinish({
         name: values.name,
         spec: {
+          displayName: values.spec?.displayName?.trim() || null,
           acceleratorGroup: selectedFlavor?.spec?.acceleratorGroup ?? null,
           generalGroup: selectedFlavor?.spec?.generalGroup ?? null,
           acceleratable: selectedFlavor?.spec?.acceleratable ?? false,
@@ -259,6 +165,25 @@ const GPUServiceInstanceTypeForm: React.FC<InstanceTypeFormProps> = forwardRef(
           />
         </Form.Item>
 
+        <Form.Item<FormData>
+          name={['spec', 'displayName']}
+          rules={[
+            {
+              max: 63,
+              message: intl.formatMessage({
+                id: 'gpuservice.template.displayName.max'
+              })
+            }
+          ]}
+        >
+          <CInput.Input
+            trim={false}
+            label={intl.formatMessage({
+              id: 'gpuservice.template.displayName'
+            })}
+          />
+        </Form.Item>
+
         <Form.Item>
           <SealSelect
             label={intl.formatMessage({ id: 'gpuservice.instanceType.flavor' })}
@@ -274,14 +199,19 @@ const GPUServiceInstanceTypeForm: React.FC<InstanceTypeFormProps> = forwardRef(
                 flavorList.find((flavor) => flavor.name === val) ?? null
               )
             }
-            optionRender={(option: any) =>
-              renderFlavorOption(option.data.flavor)
-            }
+            optionRender={(option: any) => {
+              const flavor: FlavorItem = option.data.flavor;
+              return (
+                <FlavorOption spec={flavor.spec} fallbackName={flavor.name} />
+              );
+            }}
             labelRender={({ value }) => {
               const flavor = flavorList.find((item) => item.name === value);
-              return flavor
-                ? renderFlavorSelected(flavor)
-                : ((value ?? '') as React.ReactNode);
+              return flavor ? (
+                <FlavorSelected spec={flavor.spec} fallbackName={flavor.name} />
+              ) : (
+                ((value ?? '') as React.ReactNode)
+              );
             }}
           />
         </Form.Item>

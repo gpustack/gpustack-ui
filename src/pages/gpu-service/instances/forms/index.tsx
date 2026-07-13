@@ -335,16 +335,15 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       form.setFieldsValue({
         spec: {
           resources: {
-            // Display the precise (rounded) fractional values — the inputs are
-            // disabled, so decimals are fine and match the submitted
-            // millicore / MiB allocation better than a floored integer.
+            // Floor the scaled unit resources to whole units; CPU never drops
+            // below 1 core so a small slice still gets a usable vCPU.
             cpu:
               cpuCores != null && percentage > 0
-                ? _.round((cpuCores * percentage) / 100, 2)
+                ? Math.max(1, _.floor((cpuCores * percentage) / 100))
                 : null,
             ram:
               ramValue != null && percentage > 0
-                ? _.round((ramValue * percentage) / 100, 2)
+                ? _.floor((ramValue * percentage) / 100)
                 : null
           }
         }
@@ -466,6 +465,38 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
         } as any);
         resolveAndApply(selectedInstanceType, 1, false);
       }
+    };
+
+    // Apply a chosen instance type to the form: default to sliced mode for a
+    // sliceable type with no whole-card capacity, otherwise whole-card with a
+    // count of 1. Shared by the create card selection (imperative handle) and
+    // the edit change-type overlay.
+    const applyInstanceType = (instanceType?: InstanceTypeItem) => {
+      if (!instanceType) {
+        setSliceMode('whole');
+        resolveAndApply(undefined, 0);
+        return;
+      }
+
+      // A sliceable type with no whole-card capacity (Max < 1) defaults to
+      // sliced mode — whole mode would have nothing selectable.
+      const wholeMax = instanceType.spec?.maxComputeUnitCount ?? 0;
+      const slicedMax =
+        _.toNumber(instanceType.status?.onceMaxRequest?.acceleratorSliced) || 0;
+      const defaultSliced =
+        !!instanceType.spec?.sliceable && wholeMax < 1 && slicedMax > 0;
+
+      if (defaultSliced) {
+        setSliceMode('sliced');
+        resolveAndApply(instanceType, 1, true);
+        applySlicedDefaults(instanceType);
+        return;
+      }
+
+      // Otherwise default to whole-card mode (a new type may not be
+      // sliceable); set count to 1 for all instance types: GPU or non-GPU.
+      setSliceMode('whole');
+      resolveAndApply(instanceType, 1);
     };
 
     const onTargetChange = (key: string) => {
@@ -614,34 +645,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
         form.setFieldsValue(values as any);
       },
       getFieldsValue: () => form.getFieldsValue(),
-      applyInstanceType: (instanceType?: InstanceTypeItem) => {
-        if (!instanceType) {
-          setSliceMode('whole');
-          resolveAndApply(undefined, 0);
-          return;
-        }
-
-        // A sliceable type with no whole-card capacity (Max < 1) defaults to
-        // sliced mode — whole mode would have nothing selectable.
-        const wholeMax = instanceType.spec?.maxComputeUnitCount ?? 0;
-        const slicedMax =
-          _.toNumber(instanceType.status?.onceMaxRequest?.acceleratorSliced) ||
-          0;
-        const defaultSliced =
-          !!instanceType.spec?.sliceable && wholeMax < 1 && slicedMax > 0;
-
-        if (defaultSliced) {
-          setSliceMode('sliced');
-          resolveAndApply(instanceType, 1, true);
-          applySlicedDefaults(instanceType);
-          return;
-        }
-
-        // Otherwise default to whole-card mode (a new type may not be
-        // sliceable); set count to 1 for all instance types: GPU or non-GPU.
-        setSliceMode('whole');
-        resolveAndApply(instanceType, 1);
-      }
+      applyInstanceType
     }));
 
     const handleAddSSHKey = () => {
@@ -766,7 +770,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
                   children: (
                     <TemplateBasicForm
                       page="instance"
-                      disabled={disabled || formAction === PageAction.EDIT}
+                      disabled={disabled}
                       onceMaxRequest={onceMaxRequest}
                     />
                   )
@@ -778,10 +782,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
                   }),
                   forceRender: true,
                   children: (
-                    <StorageVolume
-                      disabled={disabled || formAction === PageAction.EDIT}
-                      action={formAction}
-                    />
+                    <StorageVolume disabled={disabled} action={formAction} />
                   )
                 }
               ]}

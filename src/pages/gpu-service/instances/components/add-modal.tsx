@@ -13,15 +13,16 @@ import {
 } from '@gpustack/core-ui';
 import { useIntl, useModel } from '@umijs/max';
 import { Input, Typography } from 'antd';
-import _ from 'lodash';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ListItem as TemplateItem } from '../../templates/config/types';
 import useQueryTemplates from '../../templates/services/use-query-templates';
+import { InstanceStatusValueMap } from '../config';
 import { FormData, InstanceTypeItem, ListItem } from '../config/types';
 import GPUServiceInstanceForm from '../forms';
 import TemplateSelector, { TemplateGroup } from '../forms/template-selector';
 import useQueryInstanceTypes from '../services/use-query-instance-types';
 import styles from '../styles/instances.module.less';
+import { saveInstanceDataInDescription } from '../utils/instance-description';
 import InstanceTypeList from './instance-type-list';
 
 type AddModalProps = {
@@ -103,6 +104,12 @@ const AddModal: React.FC<AddModalProps> = ({
     manufacturer: undefined
   });
   const [templateId, setTemplateId] = useState<number | undefined>();
+  // Re-selected instance type on a stopped-instance edit. Kept separate from
+  // `instanceTypeSelection` (the create card selection) so the two flows don't
+  // couple; starts empty each open (no default highlight).
+  const [editSelectedType, setEditSelectedType] = useState<string | undefined>(
+    undefined
+  );
   const [instanceKeyword, setInstanceKeyword] = useState('');
   const [templateKeyword, setTemplateKeyword] = useState('');
   const { loading, guard, run, release } = useSubmitLock();
@@ -169,6 +176,13 @@ const AddModal: React.FC<AddModalProps> = ({
   const isRecreate = realAction === PageAction.CREATE;
   const showResourceSelectors = action === PageAction.CREATE || isRecreate;
   const shouldAutoSelectResource = action === PageAction.CREATE && !isRecreate;
+  // Only a stopped instance can be re-typed on edit. It shows the instance-type
+  // column (but not the template column) beside the form; the create card
+  // columns render for CREATE / recreate.
+  const isStoppedEdit =
+    action === PageAction.EDIT &&
+    data?.status?.phase === InstanceStatusValueMap.Stopped;
+  const showInstanceTypeColumn = showResourceSelectors || isStoppedEdit;
 
   const findTemplateByManufacturer = (
     manufacturer: string | undefined,
@@ -177,20 +191,6 @@ const AddModal: React.FC<AddModalProps> = ({
     return manufacturer
       ? templates.find((t) => t.manufacturer === manufacturer)
       : undefined;
-  };
-
-  const saveInstanceDataInDescription = (instanceType: InstanceTypeItem) => {
-    return JSON.stringify({
-      name: instanceType.name,
-      spec: {
-        ..._.omit(instanceType.spec, ['cache', 'cpu']),
-        cpu: _.pick(instanceType.spec?.cpu, [
-          'manufacturer',
-          'product',
-          'family'
-        ])
-      }
-    });
   };
 
   // GPU types carry their accelerator vendor; non-acceleratable (CPU) types
@@ -359,6 +359,7 @@ const AddModal: React.FC<AddModalProps> = ({
         manufacturer: undefined
       });
       setTemplateId(undefined);
+      setEditSelectedType(undefined);
       setInstanceKeyword('');
       setTemplateKeyword('');
       setScopeOrgId(undefined);
@@ -367,6 +368,10 @@ const AddModal: React.FC<AddModalProps> = ({
 
     if (action === PageAction.CREATE) {
       loadCreateResources();
+    } else if (action === PageAction.EDIT) {
+      // Edit has no card columns, but the change-type overlay still needs the
+      // full instance-type list to re-type a stopped instance.
+      fetchData({ page: -1 });
     }
   }, [open, shouldAutoSelectResource, action]);
 
@@ -506,6 +511,17 @@ const AddModal: React.FC<AddModalProps> = ({
     applySelection(item, template);
   };
 
+  // Stopped-edit re-type. Decoupled from applySelection (the create flow): it
+  // only snapshots the type into `description` and applies it to the form — no
+  // template selection or filtering.
+  const handleEditInstanceTypeChange = (item: InstanceTypeItem) => {
+    setEditSelectedType(item.name);
+    form.current?.setFieldsValue({
+      description: saveInstanceDataInDescription(item)
+    });
+    form.current?.applyInstanceType?.(item);
+  };
+
   const handleTemplateChange = (id: number, item: TemplateItem) => {
     setTemplateId(id);
     const formValues = form.current?.getFieldsValue();
@@ -543,87 +559,102 @@ const AddModal: React.FC<AddModalProps> = ({
       footer={false}
     >
       <div className={styles.container}>
+        {showInstanceTypeColumn && (
+          <div
+            className={styles.colWrapper}
+            // The 33% cap suits the 3-column create layout; in the 2-column
+            // stopped-edit layout, split the space evenly with the form column.
+            style={isStoppedEdit ? { flex: 1, maxWidth: 'none' } : undefined}
+          >
+            <ColumnWrapper styles={{ container: { paddingBlock: 0 } }}>
+              <div className={styles.panelBody}>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 16,
+                    position: 'sticky',
+                    top: 0,
+                    zIndex: 10,
+                    backgroundColor: 'var(--ant-color-bg-elevated)'
+                  }}
+                >
+                  <ColTitle style={{ paddingBottom: 0 }}>
+                    {intl.formatMessage({
+                      id: 'gpuservice.instance.types'
+                    })}
+                  </ColTitle>
+                  <Input
+                    allowClear
+                    prefix={<SearchOutlined className="text-tertiary" />}
+                    placeholder={intl.formatMessage({
+                      id: 'gpuservice.instance.search.type.placeholder'
+                    })}
+                    value={instanceKeyword}
+                    onChange={(e) => setInstanceKeyword(e.target.value)}
+                  />
+                </div>
+                <InstanceTypeList
+                  // Edit (stopped) re-selection is decoupled from create's
+                  // card selection: separate highlight state + apply handler.
+                  value={
+                    isStoppedEdit
+                      ? editSelectedType
+                      : instanceTypeSelection.instanceType
+                  }
+                  dataList={filteredInstanceTypes}
+                  loading={instanceTypesLoading}
+                  onChange={
+                    isStoppedEdit
+                      ? handleEditInstanceTypeChange
+                      : handleInstanceTypeChange
+                  }
+                />
+              </div>
+            </ColumnWrapper>
+            <Separator></Separator>
+          </div>
+        )}
         {showResourceSelectors && (
-          <>
-            <div className={styles.colWrapper}>
-              <ColumnWrapper styles={{ container: { paddingBlock: 0 } }}>
-                <div className={styles.panelBody}>
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: 16,
-                      position: 'sticky',
-                      top: 0,
-                      zIndex: 10,
-                      backgroundColor: 'var(--ant-color-bg-elevated)'
-                    }}
-                  >
-                    <ColTitle style={{ paddingBottom: 0 }}>
-                      {intl.formatMessage({
-                        id: 'gpuservice.instance.types'
-                      })}
-                    </ColTitle>
-                    <Input
-                      allowClear
-                      prefix={<SearchOutlined className="text-tertiary" />}
-                      placeholder={intl.formatMessage({
-                        id: 'gpuservice.instance.search.type.placeholder'
-                      })}
-                      value={instanceKeyword}
-                      onChange={(e) => setInstanceKeyword(e.target.value)}
-                    />
-                  </div>
-                  <InstanceTypeList
-                    value={instanceTypeSelection.instanceType}
-                    dataList={filteredInstanceTypes}
-                    loading={instanceTypesLoading}
-                    onChange={handleInstanceTypeChange}
+          <div className={styles.colWrapper}>
+            <ColumnWrapper styles={{ container: { paddingBlock: 0 } }}>
+              <div className={styles.panelBody}>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 16,
+                    position: 'sticky',
+                    top: 0,
+                    zIndex: 10,
+                    backgroundColor: 'var(--ant-color-bg-elevated)'
+                  }}
+                >
+                  <ColTitle style={{ paddingBottom: 0 }}>
+                    {intl.formatMessage({
+                      id: 'gpuservice.instance.templates'
+                    })}
+                  </ColTitle>
+                  <Input
+                    allowClear
+                    prefix={<SearchOutlined className="text-tertiary" />}
+                    placeholder={intl.formatMessage({
+                      id: 'gpuservice.instance.search.template.placeholder'
+                    })}
+                    value={templateKeyword}
+                    onChange={(e) => setTemplateKeyword(e.target.value)}
                   />
                 </div>
-              </ColumnWrapper>
-              <Separator></Separator>
-            </div>
-            <div className={styles.colWrapper}>
-              <ColumnWrapper styles={{ container: { paddingBlock: 0 } }}>
-                <div className={styles.panelBody}>
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: 16,
-                      position: 'sticky',
-                      top: 0,
-                      zIndex: 10,
-                      backgroundColor: 'var(--ant-color-bg-elevated)'
-                    }}
-                  >
-                    <ColTitle style={{ paddingBottom: 0 }}>
-                      {intl.formatMessage({
-                        id: 'gpuservice.instance.templates'
-                      })}
-                    </ColTitle>
-                    <Input
-                      allowClear
-                      prefix={<SearchOutlined className="text-tertiary" />}
-                      placeholder={intl.formatMessage({
-                        id: 'gpuservice.instance.search.template.placeholder'
-                      })}
-                      value={templateKeyword}
-                      onChange={(e) => setTemplateKeyword(e.target.value)}
-                    />
-                  </div>
-                  <TemplateSelector
-                    value={templateId}
-                    loading={templateLoading || !initialized}
-                    groups={templateGroups}
-                    onChange={handleTemplateChange}
-                  />
-                </div>
-              </ColumnWrapper>
-              <Separator></Separator>
-            </div>
-          </>
+                <TemplateSelector
+                  value={templateId}
+                  loading={templateLoading || !initialized}
+                  groups={templateGroups}
+                  onChange={handleTemplateChange}
+                />
+              </div>
+            </ColumnWrapper>
+            <Separator></Separator>
+          </div>
         )}
         <div className={styles.formWrapper}>
           <ColumnWrapper

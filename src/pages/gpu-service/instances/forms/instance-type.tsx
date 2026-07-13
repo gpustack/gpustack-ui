@@ -95,8 +95,14 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
   const form = Form.useFormInstance();
   const { isGPUType } = useContext(FormContext);
 
+  // In edit mode the type card is read-only until a type is re-picked from the
+  // instance-type column (stopped instances only); once selected the section
+  // behaves like create (editable count / slice controls, live capacity
+  // labels).
+  const readonlyType = action === PageAction.EDIT && !selectedInstanceType;
+
   const maxComputeUnitCount = useMemo(() => {
-    if (action === PageAction.EDIT) {
+    if (readonlyType) {
       const description = parseJsonSafe(
         currentData?.description || '{}',
         {} as any
@@ -104,25 +110,24 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
       return description.spec?.maxComputeUnitCount || 0;
     }
     return selectedInstanceType?.spec?.maxComputeUnitCount || 0;
-  }, [action, currentData, selectedInstanceType]);
+  }, [readonlyType, currentData, selectedInstanceType]);
 
   const isGPU = useMemo(() => {
-    if (action === PageAction.EDIT) {
+    if (readonlyType) {
       return _.toNumber(currentData?.spec?.resources?.accelerator) > 0;
     }
     return selectedInstanceType?.spec?.acceleratable;
-  }, [selectedInstanceType, action]);
+  }, [selectedInstanceType, readonlyType, currentData]);
 
   const handleOnGPUCountChange = (value: number) => {
     onGPUCountChange?.(value);
   };
 
   // Sliced mode is only offered for sliceable accelerator types, and only when
-  // the section is editable (create / recreate; edit renders a readonly card).
+  // the section is editable (create / recreate, or edit after re-picking a
+  // type; a not-yet-re-typed edit renders a readonly card).
   const showModeSwitch =
-    action !== PageAction.EDIT &&
-    isGPUType &&
-    !!selectedInstanceType?.spec?.sliceable;
+    !readonlyType && isGPUType && !!selectedInstanceType?.spec?.sliceable;
 
   const handleModeChange = (value: string) => {
     onSliceModeChange?.(value as 'whole' | 'sliced');
@@ -191,7 +196,7 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
   };
 
   const renderMemoryLabel = (): React.ReactNode => {
-    if (isGPUType || action === PageAction.EDIT || !onceMaxRequest?.memory) {
+    if (isGPUType || readonlyType || !onceMaxRequest?.memory) {
       return intl.formatMessage({ id: 'gpuservice.template.memory' });
     }
 
@@ -257,13 +262,14 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
             }
           ]}
         >
-          {action === PageAction.CREATE && (
+          {readonlyType ? (
+            renderInstanceType()
+          ) : (
             <InstanceTypePicker
               selectedInstanceType={selectedInstanceType}
               noAvailable={noAvailableTypes}
             />
           )}
-          {action === PageAction.EDIT && renderInstanceType()}
         </Form.Item>
       </FieldBlock>
       {!noAvailableTypes && (
@@ -275,7 +281,7 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
               : ['spec', 'resources', 'cpu']
           }
           preserve
-          hidden={action === PageAction.EDIT || isSliced}
+          hidden={readonlyType || isSliced}
           normalize={(value) => (value != null ? _.toString(value) : undefined)}
           getValueProps={(value) => ({
             value: value != null ? _.toNumber(value) : undefined
@@ -317,7 +323,7 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
             step={1}
             required
             labelExtra={sliceMode === 'whole' ? modeSegmented : undefined}
-            disabled={disabled || action === PageAction.EDIT}
+            disabled={disabled || readonlyType}
             label={`${intl.formatMessage({ id: 'common.max.count' }, { label: numberSelectionLabel.label })} (${intl.formatMessage(
               {
                 id: 'common.max'
@@ -391,10 +397,10 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
           </Form.Item>
         </FieldBlock>
       )}
-      {/* Edit renders a readonly card (no sliced UI), so register the slice
-          percentages as hidden fields — otherwise their persisted values are
-          dropped from the submit payload. */}
-      {action === PageAction.EDIT && (
+      {/* A not-yet-re-typed edit renders a readonly card (no sliced UI), so
+          register the slice percentages as hidden fields — otherwise their
+          persisted values are dropped from the submit payload. */}
+      {readonlyType && (
         <>
           <Form.Item<FormData>
             name={['spec', 'resources', 'acceleratorSlicedMemoryPercentage']}

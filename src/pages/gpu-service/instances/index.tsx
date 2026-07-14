@@ -271,6 +271,7 @@ const GPUService: React.FC = () => {
     if (!clusterLoading && !hasK8sCluster) {
       return (
         <NoResult
+          minHeight="calc(100vh - 300px)"
           loading={dataSource.loading || clusterLoading}
           loadend={dataSource.loadend}
           dataSource={[]}
@@ -294,6 +295,7 @@ const GPUService: React.FC = () => {
     }
     return (
       <NoResult
+        minHeight="calc(100vh - 300px)"
         loading={dataSource.loading}
         loadend={dataSource.loadend}
         dataSource={dataSource.dataList}

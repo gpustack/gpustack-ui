@@ -96,6 +96,7 @@ const ClusterTypeGrid = styled.div`
 `;
 
 const ClusterTypeCard = styled.div<{ $active: boolean }>`
+  position: relative;
   display: flex;
   align-items: flex-start;
   gap: 10px;
@@ -133,6 +134,17 @@ const ClusterTypeCard = styled.div<{ $active: boolean }>`
   .description {
     color: var(--ant-color-text-secondary);
   }
+`;
+
+const ExperimentalTag = styled.span`
+  position: absolute;
+  right: 2px;
+  top: 2px;
+  padding: 2px;
+  border-radius: 2px;
+  font-size: 10px;
+  font-weight: 400;
+  background-color: var(--ant-blue-1);
 `;
 
 const RadioDot = styled.span<{ $active: boolean }>`
@@ -187,6 +199,7 @@ export const ClusterTypeSelector: React.FC = () => {
     key: 'model' | 'gpu';
     title: string;
     description: string;
+    experimental?: boolean;
   }[] = [
     {
       key: 'model',
@@ -196,7 +209,8 @@ export const ClusterTypeSelector: React.FC = () => {
     {
       key: 'gpu',
       title: intl.formatMessage({ id: 'clusters.gpuInstances.title' }),
-      description: intl.formatMessage({ id: 'clusters.gpuInstances.tip' })
+      description: intl.formatMessage({ id: 'clusters.gpuInstances.tip' }),
+      experimental: true
     }
   ];
 
@@ -231,6 +245,11 @@ export const ClusterTypeSelector: React.FC = () => {
               }}
             >
               <RadioDot $active={active} />
+              {opt.experimental && (
+                <ExperimentalTag>
+                  {intl.formatMessage({ id: 'common.tag.experimental' })}
+                </ExperimentalTag>
+              )}
               <div className="body">
                 <div className="title">{opt.title}</div>
                 <div className="description">{opt.description}</div>

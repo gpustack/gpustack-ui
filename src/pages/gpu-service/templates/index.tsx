@@ -210,6 +210,7 @@ const GPUServiceTemplates: React.FC = () => {
           onSelect={handleOnSelect}
         />
         <NoResult
+          minHeight="calc(100vh - 300px)"
           loading={dataSource.loading}
           loadend={dataSource.loadend}
           dataSource={dataSource.dataList}

@@ -177,6 +177,7 @@ const Benchmark: React.FC = () => {
     if (type !== 'Table') return;
     return (
       <NoResult
+        minHeight="calc(100vh - 300px)"
         loading={dataSource.loading}
         loadend={dataSource.loadend}
         dataSource={[]}

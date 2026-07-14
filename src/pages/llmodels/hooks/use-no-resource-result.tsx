@@ -95,6 +95,7 @@ const useNoResourceResult = (props: {
 
   const noResourceResult = (
     <NoResult
+      minHeight="calc(100vh - 300px)"
       loading={loading}
       loadend={loadend}
       dataSource={dataSource}

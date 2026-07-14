@@ -3,6 +3,8 @@ import useSetChunkRequest from '@/hooks/use-chunk-request';
 import { usePaginationStatus } from '@/hooks/use-pagination-status';
 import { useTableMultiSort } from '@/hooks/use-table-sort';
 import useUpdateChunkedList from '@/hooks/use-update-chunk-list';
+import useWatchList from '@/hooks/use-watch-list';
+import { MODEL_ROUTE_TARGETS } from '@/pages/model-routes/apis';
 import { TableOrder, TableProvider } from '@gpustack/core-ui';
 import { useMemoizedFn } from 'ahooks';
 import _ from 'lodash';
@@ -31,6 +33,11 @@ const Models = forwardRef((props, ref) => {
   const { setChunkRequest, createAxiosToken } = useSetChunkRequest();
   const { setChunkRequest: setModelInstanceChunkRequest } =
     useSetChunkRequest();
+  const {
+    watchDataList: targetList,
+    startWatch: startTargetsWatch,
+    cancelWatch: cancelTargetsWatch
+  } = useWatchList(MODEL_ROUTE_TARGETS);
   const [modelInstances, setModelInstances] = useState<any[]>([]);
   const [dataSource, setDataSource] = useState<{
     dataList: ListItem[];
@@ -255,6 +262,7 @@ const Models = forwardRef((props, ref) => {
     cacheInsDataListRef.current = [];
     chunkInstanceRequedtRef.current?.current?.cancel?.();
     instancesToken.current?.cancel?.();
+    cancelTargetsWatch();
   });
 
   const resumeRequestsOnPageActive = useMemoizedFn(async () => {
@@ -265,6 +273,7 @@ const Models = forwardRef((props, ref) => {
     await getAllModelInstances();
     await createModelsInstanceChunkRequest();
     await createModelsChunkRequest();
+    await startTargetsWatch();
   });
 
   const handleOnCancelViewLogs = useMemoizedFn(async () => {
@@ -483,6 +492,7 @@ const Models = forwardRef((props, ref) => {
         total={dataSource.total}
         deleteIds={dataSource.deletedIds}
         filterValues={filterValues}
+        targetList={targetList}
       ></TableList>
     </TableProvider>
   );

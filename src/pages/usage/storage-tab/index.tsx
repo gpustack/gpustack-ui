@@ -158,27 +158,32 @@ const StorageTab: React.FC = () => {
     fetchData: fetchChartData
   } = useQueryStorageBreakdown({ key: 'storageBreakdownChart' });
 
+  // Single source of truth for the active filter set — memoized so its
+  // reference only changes when a selection changes (an inline object would
+  // refire the extra tab's fetch effect on every render), and shared by both
+  // the chart request and the enterprise extra tab (no duplicated spread).
+  const breakdownFilters = useMemo(
+    () => ({
+      ...(selectedUsers.length ? { creator_ids: selectedUsers } : {}),
+      ...(selectedVolumes.length ? { volume_ids: selectedVolumes } : {}),
+      ...(selectedOrganizations.length
+        ? { organization_ids: selectedOrganizations }
+        : {}),
+      ...(selectedUserGroups.length
+        ? { user_group_ids: selectedUserGroups }
+        : {})
+    }),
+    [selectedUsers, selectedVolumes, selectedOrganizations, selectedUserGroups]
+  );
+
   const baseRequest = (): Omit<ResourceBreakdownRequest, 'group_by'> => ({
     start_date: dateRange[0].format('YYYY-MM-DD'),
     end_date: dateRange[1].format('YYYY-MM-DD'),
     scope,
     granularity,
-    filters:
-      selectedUsers.length ||
-      selectedVolumes.length ||
-      selectedOrganizations.length ||
-      selectedUserGroups.length
-        ? {
-            ...(selectedUsers.length ? { creator_ids: selectedUsers } : {}),
-            ...(selectedVolumes.length ? { volume_ids: selectedVolumes } : {}),
-            ...(selectedOrganizations.length
-              ? { organization_ids: selectedOrganizations }
-              : {}),
-            ...(selectedUserGroups.length
-              ? { user_group_ids: selectedUserGroups }
-              : {})
-          }
-        : undefined,
+    filters: Object.keys(breakdownFilters).length
+      ? breakdownFilters
+      : undefined,
     page: 1,
     perPage: 50
   });
@@ -516,20 +521,7 @@ const StorageTab: React.FC = () => {
                   tab="storage"
                   dateRange={dateRange}
                   scope={scope}
-                  filters={{
-                    ...(selectedUsers.length
-                      ? { creator_ids: selectedUsers }
-                      : {}),
-                    ...(selectedVolumes.length
-                      ? { volume_ids: selectedVolumes }
-                      : {}),
-                    ...(selectedOrganizations.length
-                      ? { organization_ids: selectedOrganizations }
-                      : {}),
-                    ...(selectedUserGroups.length
-                      ? { user_group_ids: selectedUserGroups }
-                      : {})
-                  }}
+                  filters={breakdownFilters}
                   pageResetKey={pageResetKey}
                   refreshKey={refreshKey}
                 />

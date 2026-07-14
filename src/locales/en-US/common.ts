@@ -222,6 +222,12 @@ export default {
   'common.title.delete.confirm': 'Confirm deletion',
   'common.title.stop.confirm': 'Confirm stop',
   'common.title.start.confirm': 'Confirm start',
+  'common.title.activate.confirm': 'Confirm activate',
+  'common.title.deactivate.confirm': 'Confirm deactivate',
+  'common.activate.single.confirm':
+    'Are you sure you want to activate? \n <span style="font-size: 13px;font-weight: 700">{name}</span>',
+  'common.deactivate.single.confirm':
+    'Are you sure you want to deactivate? \n <span style="font-size: 13px;font-weight: 700">{name}</span>',
   'common.title.recreate.confirm': 'Confirm recreate',
   'common.button.addLabel': 'Add Label',
   'common.button.addSelector': 'Add Selector',

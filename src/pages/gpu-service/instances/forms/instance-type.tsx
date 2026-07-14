@@ -1,9 +1,9 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import NumberSelection from '@/pages/_components/number-selection';
-import { InputNumber } from '@gpustack/core-ui';
+import { InputNumber, LabelInfo } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Flex, Form, Segmented } from 'antd';
+import { Divider, Flex, Form, Segmented } from 'antd';
 import _ from 'lodash';
 import { useContext, useMemo } from 'react';
 import styled from 'styled-components';
@@ -76,6 +76,8 @@ interface InstanceTypeFormItemProps {
   onSliceModeChange?: (mode: 'whole' | 'sliced') => void;
   // Commit a new sliced memory ratio (writes the field + rescales CPU / RAM).
   onSliceMemoryPercentageChange?: (value: number) => void;
+  // Commit a new sliced compute (cores) ratio (writes the field only).
+  onSliceCoresPercentageChange?: (value: number) => void;
   onGPUCountChange?: (value: number) => void;
 }
 
@@ -89,6 +91,7 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
   sliceMode = 'whole',
   onSliceModeChange,
   onSliceMemoryPercentageChange,
+  onSliceCoresPercentageChange,
   onGPUCountChange
 }) => {
   const intl = useIntl();
@@ -138,6 +141,21 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
   const handleMemoryPercentageChange = (value: number) => {
     onSliceMemoryPercentageChange?.(value);
   };
+
+  // Compute (cores) percentage changed — forward the new value.
+  const handleCoresPercentageChange = (value: number) => {
+    onSliceCoresPercentageChange?.(value);
+  };
+
+  // The cores ratio must be >= the memory ratio, so ticks below the current
+  // memory percentage are disabled (min). Cores range is a fixed 10..100.
+  const slicedMemoryPercentage =
+    _.toNumber(
+      Form.useWatch(
+        ['spec', 'resources', 'acceleratorSlicedMemoryPercentage'],
+        form
+      )
+    ) || 1;
 
   // Max selectable ratio in sliced mode: status.onceMaxRequest.acceleratorSliced
   // (a percentage). Ticks above it stay visible but disabled.
@@ -272,6 +290,13 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
           )}
         </Form.Item>
       </FieldBlock>
+      {showModeSwitch && (
+        <div>
+          <LabelInfo label={intl.formatMessage({ id: 'models.form.mode' })} />
+          <div style={{ marginTop: 8 }}>{modeSegmented}</div>
+          <Divider />
+        </div>
+      )}
       {!noAvailableTypes && (
         <Form.Item<FormData>
           key={isGPUType ? 'accelerator' : 'cpu'}
@@ -322,7 +347,6 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
             max={maxComputeUnitCount}
             step={1}
             required
-            labelExtra={sliceMode === 'whole' ? modeSegmented : undefined}
             disabled={disabled || readonlyType}
             label={`${intl.formatMessage({ id: 'common.max.count' }, { label: numberSelectionLabel.label })} (${intl.formatMessage(
               {
@@ -335,66 +359,113 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
       )}
       {!noAvailableTypes && isSliced && (
         <FieldBlock>
-          <Form.Item<FormData>
-            name={['spec', 'resources', 'acceleratorSlicedMemoryPercentage']}
-            getValueProps={(value) => ({
-              value: value != null ? _.toNumber(value) : undefined
-            })}
-            rules={[
-              {
-                required: true,
-                validator: (_, value) => {
-                  const num = Number(value);
-                  if (value == null || value === '' || Number.isNaN(num)) {
-                    return Promise.reject(
-                      new Error(
-                        intl.formatMessage({
-                          id: 'gpuservice.instance.slice.percentage.required'
-                        })
-                      )
-                    );
-                  }
-                  if (num > slicedMaxPercentage || num <= 0) {
-                    return Promise.reject(
-                      new Error(
-                        intl.formatMessage(
-                          {
-                            id: 'gpuservice.instance.slice.percentage.max'
-                          },
-                          { count: slicedMaxPercentage }
-                        )
-                      )
-                    );
-                  }
-                  return Promise.resolve();
-                }
-              }
-            ]}
-          >
-            <NumberSelection
-              min={1}
-              max={slicedMaxPercentage}
-              step={1}
-              maxCount={sliceTicks.length}
-              presetValues={sliceTicks}
-              alwaysShowInput
-              required
-              disabled={disabled}
-              onChange={handleMemoryPercentageChange}
-              labelExtra={modeSegmented}
-              label={intl.formatMessage({
-                id: 'gpuservice.instance.slice.memoryPercentage'
+          <SelectedCard>
+            <Form.Item<FormData>
+              name={['spec', 'resources', 'acceleratorSlicedMemoryPercentage']}
+              getValueProps={(value) => ({
+                value: value != null ? _.toNumber(value) : undefined
               })}
-            />
-          </Form.Item>
-          {/* Compute (cores) percentage is fixed at 100. Kept in the form via a
-              hidden item so it rides along on submit. */}
-          <Form.Item<FormData>
-            name={['spec', 'resources', 'acceleratorSlicedCoresPercentage']}
-            hidden
-          >
-            <InputNumber />
-          </Form.Item>
+              rules={[
+                {
+                  required: true,
+                  validator: (_, value) => {
+                    const num = Number(value);
+                    if (value == null || value === '' || Number.isNaN(num)) {
+                      return Promise.reject(
+                        new Error(
+                          intl.formatMessage({
+                            id: 'gpuservice.instance.slice.percentage.required'
+                          })
+                        )
+                      );
+                    }
+                    if (num > slicedMaxPercentage || num <= 0) {
+                      return Promise.reject(
+                        new Error(
+                          intl.formatMessage(
+                            {
+                              id: 'gpuservice.instance.slice.percentage.max'
+                            },
+                            { count: slicedMaxPercentage }
+                          )
+                        )
+                      );
+                    }
+                    return Promise.resolve();
+                  }
+                }
+              ]}
+            >
+              <NumberSelection
+                min={1}
+                max={slicedMaxPercentage}
+                step={1}
+                maxCount={sliceTicks.length}
+                presetValues={sliceTicks}
+                alwaysShowInput
+                required
+                disabled={disabled}
+                style={{ border: 'none' }}
+                onChange={handleMemoryPercentageChange}
+                label={intl.formatMessage({
+                  id: 'gpuservice.instance.slice.memoryPercentage'
+                })}
+              />
+            </Form.Item>
+            {/* Compute (cores) percentage. Fixed 10..100 ticks; ticks below the
+              chosen memory ratio are disabled (cores must be >= memory). */}
+            <Form.Item<FormData>
+              name={['spec', 'resources', 'acceleratorSlicedCoresPercentage']}
+              style={{ marginBottom: 0 }}
+              getValueProps={(value) => ({
+                value: value != null ? _.toNumber(value) : undefined
+              })}
+              rules={[
+                {
+                  required: true,
+                  validator: (_, value) => {
+                    const num = Number(value);
+                    if (value == null || value === '' || Number.isNaN(num)) {
+                      return Promise.reject(
+                        new Error(
+                          intl.formatMessage({
+                            id: 'gpuservice.instance.slice.percentage.required'
+                          })
+                        )
+                      );
+                    }
+                    if (num < slicedMemoryPercentage || num > 100) {
+                      return Promise.reject(
+                        new Error(
+                          intl.formatMessage(
+                            { id: 'gpuservice.instance.slice.cores.min' },
+                            { count: slicedMemoryPercentage }
+                          )
+                        )
+                      );
+                    }
+                    return Promise.resolve();
+                  }
+                }
+              ]}
+            >
+              <NumberSelection
+                min={slicedMemoryPercentage}
+                max={100}
+                step={10}
+                maxCount={SLICE_PERCENT_TICKS.length}
+                presetValues={SLICE_PERCENT_TICKS}
+                alwaysShowInput
+                required
+                disabled={disabled}
+                onChange={handleCoresPercentageChange}
+                style={{ border: 'none' }}
+                label={intl.formatMessage({
+                  id: 'gpuservice.instance.slice.coresPercentage'
+                })}
+              />
+            </Form.Item>
+          </SelectedCard>
         </FieldBlock>
       )}
       {/* A not-yet-re-typed edit renders a readonly card (no sliced UI), so

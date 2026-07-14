@@ -39,7 +39,8 @@ const GPUServiceInstanceTypes: React.FC = () => {
   const {
     dataList,
     loading: instanceTypesLoading,
-    fetchInstanceTypes
+    fetchInstanceTypes,
+    startWatch
   } = useQueryInstanceTypes();
   const { fetchData: createInstanceType } = useCreateInstanceType();
   const {
@@ -66,16 +67,18 @@ const GPUServiceInstanceTypes: React.FC = () => {
       if (firstK8s?.id != null) {
         setClusterId(firstK8s.id);
         await fetchInstanceTypes(firstK8s.id);
+        startWatch(firstK8s.id);
       }
       setLoaded(true);
     };
     init();
   }, []);
 
-  const handleClusterChange = useMemoizedFn((value: number) => {
+  const handleClusterChange = useMemoizedFn(async (value: number) => {
     setClusterId(value);
     setKeyword('');
-    fetchInstanceTypes(value);
+    await fetchInstanceTypes(value);
+    startWatch(value);
   });
 
   const handleRefresh = useMemoizedFn(() => {
@@ -125,18 +128,29 @@ const GPUServiceInstanceTypes: React.FC = () => {
   });
 
   const handleToggleActive = useMemoizedFn(
-    async (record: ListItem, activate: boolean) => {
+    (record: ListItem, activate: boolean) => {
       if (clusterId == null) return;
-      try {
-        const action = activate
-          ? activateGPUInstanceType
-          : deactivateGPUInstanceType;
-        await action({ name: record.name, cluster_id: clusterId });
-        message.success(intl.formatMessage({ id: 'common.message.success' }));
-        fetchInstanceTypes(clusterId);
-      } catch (error) {
-        // handled by the request interceptor
-      }
+      const action = activate
+        ? activateGPUInstanceType
+        : deactivateGPUInstanceType;
+      deleteModalRef.current?.show({
+        content: intl.formatMessage({ id: 'gpuservice.instanceType' }),
+        title: activate
+          ? 'common.title.activate.confirm'
+          : 'common.title.deactivate.confirm',
+        okText: activate
+          ? 'gpuservice.instanceType.activate'
+          : 'gpuservice.instanceType.deactivate',
+        operation: activate
+          ? 'common.activate.single.confirm'
+          : 'common.deactivate.single.confirm',
+        name: record.spec?.displayName || record.name,
+        async onOk() {
+          await action({ name: record.name, cluster_id: clusterId });
+          message.success(intl.formatMessage({ id: 'common.message.success' }));
+          fetchInstanceTypes(clusterId);
+        }
+      });
     }
   );
 

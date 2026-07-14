@@ -121,6 +121,9 @@ export default {
   'gpuservice.instance.mode.whole': 'GPU 全体',
   'gpuservice.instance.mode.sliced': '比率で',
   'gpuservice.instance.slice.memoryPercentage': 'VRAM の割合（%）',
+  'gpuservice.instance.slice.coresPercentage': '演算能力の割合（%）',
+  'gpuservice.instance.slice.cores.min':
+    '演算能力の割合は VRAM の割合（{count}%）以上である必要があります',
   'gpuservice.instance.slice.fullCores': '100% コンピュート',
   'gpuservice.instance.slice.percentage.required':
     'パーセンテージを選択または入力してください',

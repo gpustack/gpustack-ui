@@ -221,6 +221,12 @@ export default {
   'common.title.delete.confirm': '削除を確認',
   'common.title.stop.confirm': '停止を確認',
   'common.title.start.confirm': '開始を確認',
+  'common.title.activate.confirm': '有効化を確認',
+  'common.title.deactivate.confirm': '無効化を確認',
+  'common.activate.single.confirm':
+    '<span style="font-size: 13px;font-weight: 700">{name}</span> を有効化してもよろしいですか？',
+  'common.deactivate.single.confirm':
+    '<span style="font-size: 13px;font-weight: 700">{name}</span> を無効化してもよろしいですか？',
   'common.title.recreate.confirm': '再作成を確認',
   'common.button.addLabel': 'ラベルを追加',
   'common.button.addSelector': 'セレクターを追加',

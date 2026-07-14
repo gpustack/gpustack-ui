@@ -212,6 +212,12 @@ export default {
   'common.title.delete.confirm': '确认删除',
   'common.title.stop.confirm': '确认停止',
   'common.title.start.confirm': '确认启动',
+  'common.title.activate.confirm': '确认启用',
+  'common.title.deactivate.confirm': '确认停用',
+  'common.activate.single.confirm':
+    '确定启用 <span style="font-size: 13px;font-weight: 700">{name}？</span>',
+  'common.deactivate.single.confirm':
+    '确定停用 <span style="font-size: 13px;font-weight: 700">{name}？</span>',
   'common.title.recreate.confirm': '确认重新创建',
   'common.button.addLabel': '添加标签',
   'common.button.addSelector': '添加选择器',

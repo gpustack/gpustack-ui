@@ -350,19 +350,37 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       } as any);
     };
 
-    // Single entry point for the sliced memory ratio: write the ratio (compute
-    // stays pinned at 100%) and rescale CPU / RAM off it. Reused by the slider
-    // onChange and by the sliced-mode defaults so both share one path.
+    // Single entry point for the sliced memory ratio: write the ratio and
+    // rescale CPU / RAM off it. The compute (cores) ratio must stay >= memory,
+    // so bump it up when memory overtakes it. Reused by the slider onChange.
     const applySliceMemoryPercentage = (value: number) => {
+      const currentCores = _.toNumber(
+        form.getFieldValue([
+          'spec',
+          'resources',
+          'acceleratorSlicedCoresPercentage'
+        ])
+      );
+      const coresPercentage = currentCores >= value ? currentCores : value;
       form.setFieldsValue({
         spec: {
           resources: {
             acceleratorSlicedMemoryPercentage: value,
-            acceleratorSlicedCoresPercentage: 100
+            acceleratorSlicedCoresPercentage: coresPercentage
           }
         }
       } as any);
       applySlicedResourceScaling();
+    };
+
+    // Compute (cores) ratio — a GPU-slice-only parameter that rides along on
+    // submit. It does not scale CPU / RAM (those track the memory ratio), so
+    // just write the field.
+    const applySliceCoresPercentage = (value: number) => {
+      form.setFieldValue(
+        ['spec', 'resources', 'acceleratorSlicedCoresPercentage'],
+        value
+      );
     };
 
     const resolveAndApply = (
@@ -436,14 +454,25 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       resolveAndApply(selectedInstanceType, count, false);
     };
 
-    // Seed the sliced-mode default ratio for an instance type: 10% but never
-    // above the type's max sliceable ratio (status.onceMaxRequest
-    // .acceleratorSliced). Shares applySliceMemoryPercentage with the slider.
+    // Seed the sliced-mode defaults for an instance type: memory ratio at 10%
+    // (never above the type's max sliceable ratio, status.onceMaxRequest
+    // .acceleratorSliced), and the cores ratio defaulting to the same value
+    // (cores >= memory). Set both together so a fresh selection doesn't carry a
+    // stale cores value from a previous type.
     const applySlicedDefaults = (instanceType?: InstanceTypeItem) => {
       const slicedMax =
         _.toNumber(instanceType?.status?.onceMaxRequest?.acceleratorSliced) ||
         0;
-      applySliceMemoryPercentage(slicedMax ? Math.min(10, slicedMax) : 10);
+      const memoryPercentage = slicedMax ? Math.min(10, slicedMax) : 10;
+      form.setFieldsValue({
+        spec: {
+          resources: {
+            acceleratorSlicedMemoryPercentage: memoryPercentage,
+            acceleratorSlicedCoresPercentage: memoryPercentage
+          }
+        }
+      } as any);
+      applySlicedResourceScaling();
     };
 
     // Toggle between whole-card and sliced mode. Sliced fixes the accelerator
@@ -757,6 +786,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
                       sliceMode={sliceMode}
                       onSliceModeChange={handleSliceModeChange}
                       onSliceMemoryPercentageChange={applySliceMemoryPercentage}
+                      onSliceCoresPercentageChange={applySliceCoresPercentage}
                       onGPUCountChange={handleAcceleratorChange}
                     />
                   )

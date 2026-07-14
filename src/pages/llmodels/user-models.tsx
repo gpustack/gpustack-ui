@@ -9,7 +9,7 @@ import {
 import { useAccess, useIntl, useNavigate } from '@umijs/max';
 import useMemoizedFn from 'ahooks/lib/useMemoizedFn';
 import { Button, Input, Space } from 'antd';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PageBox from '../_components/page-box';
 import { MY_MODELS_API, queryMyModels } from './apis';
 import APIAccessInfoModal from './components/api-access-info';
@@ -72,10 +72,18 @@ const UserModels: React.FC = () => {
   const { getClusterList, getWorkerList, clusterList, workerList } =
     useFormInitialValues();
 
+  // Managers start in a loading state so the empty state waits for the
+  // infra queries to resolve — otherwise the initially-empty
+  // cluster/worker lists briefly flash the "no clusters" / "no workers"
+  // guidance before the real data lands.
+  const [infraLoading, setInfraLoading] = useState(!!canManageResources);
+
   useEffect(() => {
     if (canManageResources) {
-      getClusterList();
-      getWorkerList();
+      setInfraLoading(true);
+      Promise.all([getClusterList(), getWorkerList()]).finally(() => {
+        setInfraLoading(false);
+      });
     }
   }, [canManageResources]);
 
@@ -173,7 +181,9 @@ const UserModels: React.FC = () => {
   };
 
   const { noResourceResult } = useNoResourceResult({
-    loading: dataSource.loading,
+    // Hold the empty state until infra queries resolve so managers don't
+    // see a "no clusters/workers" flash before the real data arrives.
+    loading: dataSource.loading || infraLoading,
     loadend: dataSource.loadend,
     dataSource: dataList,
     // Preserve the original filters heuristic: only treat the current

@@ -5,6 +5,7 @@ import type { PageActionType } from '@/config/types';
 import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import useTableFetch from '@/hooks/use-table-fetch';
 import useWatchList from '@/hooks/use-watch-list';
+import { getGPUStackPlugin } from '@/plugins';
 import {
   DeleteModal,
   FilterBar,
@@ -14,7 +15,7 @@ import {
   TableOrder,
   TableProvider
 } from '@gpustack/core-ui';
-import { useIntl, useNavigate } from '@umijs/max';
+import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { message } from 'antd';
 import { useAtom } from 'jotai';
@@ -82,10 +83,13 @@ const Clusters: React.FC = () => {
       mine: true
     }
   });
-  const navigate = useNavigate();
   const { goToGrafana, ActionButton } = useGranfanaLink({
     type: 'cluster'
   });
+  // Cluster Access lives in the enterprise plugin: it contributes the
+  // row action and this self-controlled drawer, owning its own
+  // open/close state. OSS just mounts it (nothing without a plugin).
+  const AccessDrawer = getGPUStackPlugin()?.clusterDetail?.AccessDrawer;
   const { watchDataList: allWorkerPoolList } = useWatchList(WORKER_POOLS_API);
   const [expandAtom] = useAtom(expandKeysAtom);
   const [clusterSession, setClusterSession] = useAtom(clusterSessionAtom);
@@ -272,14 +276,6 @@ const Clusters: React.FC = () => {
     );
   };
 
-  const handleOnCell = useMemoizedFn((record: ClusterListItem, dataIndex) => {
-    if (dataIndex === 'name') {
-      navigate(
-        `/resources/clusters/detail?id=${record.id}&name=${record.name}&page=clusters`
-      );
-    }
-  });
-
   useEffect(() => {
     const fetchCredentialList = async () => {
       const data = await queryCredentialList({ page: -1 });
@@ -366,7 +362,7 @@ const Clusters: React.FC = () => {
     );
   };
 
-  const columns = useClusterColumns(handleSelect, handleOnCell);
+  const columns = useClusterColumns(handleSelect);
 
   return (
     <>
@@ -482,6 +478,7 @@ const Clusters: React.FC = () => {
         onClose={handleClusterModalClose}
       ></ClusterModal>
       {AddWorkerModal}
+      {AccessDrawer && <AccessDrawer />}
     </>
   );
 };

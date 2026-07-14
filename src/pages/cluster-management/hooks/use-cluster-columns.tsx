@@ -13,7 +13,7 @@ import {
   type TableColumnProps as SealColumnProps
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Tooltip, Typography } from 'antd';
+import { Tooltip } from 'antd';
 import dayjs from 'dayjs';
 import { useAtomValue } from 'jotai';
 import { useMemo } from 'react';
@@ -85,21 +85,15 @@ const clusterActionList = [
 ];
 
 const useClusterColumns = (
-  handleSelect: (val: string, record: ClusterListItem, item?: any) => void,
-  onCellClick?: (record: ClusterListItem, dataIndex: string) => void
+  handleSelect: (val: string, record: ClusterListItem, item?: any) => void
 ): SealColumnProps[] => {
   const intl = useIntl();
   const systemConfig = useAtomValue(systemConfigAtom);
   const pluginCols = usePluginListColumns('clusters');
-  // The cluster-detail page is shipped in OSS source, but OSS keeps
-  // it unreachable from the cluster list — the link is only
-  // surfaced when a plugin opts in via
-  // `clusterDetail.linkableName`. Without a plugin we render the
-  // name as plain text (matches the pre-restore behaviour); with one
-  // we use Typography.Link wired to the parent's `onCellClick`.
-
-  const { linkableName: nameLinkable, useGenerateActions } =
-    getGPUStackPlugin()?.clusterDetail || {};
+  // The cluster name is plain text: there is no cluster-detail page
+  // to route into. A plugin may still contribute extra row actions
+  // (topology, Cluster Access) via `clusterDetail.useGenerateActions`.
+  const { useGenerateActions } = getGPUStackPlugin()?.clusterDetail || {};
 
   const actionList =
     useGenerateActions?.({ actions: clusterActionList }) || clusterActionList;
@@ -160,13 +154,7 @@ const useClusterColumns = (
         render: (text: string, record: ClusterListItem) => (
           <>
             <AutoTooltip ghost title={text}>
-              {nameLinkable ? (
-                <Typography.Link onClick={() => onCellClick?.(record, 'name')}>
-                  {record.name}
-                </Typography.Link>
-              ) : (
-                <span className="text-primary">{record.name}</span>
-              )}
+              <span className="text-primary">{record.name}</span>
             </AutoTooltip>
             {record.is_default && (
               <Tooltip
@@ -258,7 +246,7 @@ const useClusterColumns = (
         )
       }
     ];
-  }, [handleSelect, onCellClick, intl, pluginCols]);
+  }, [handleSelect, intl, pluginCols]);
 };
 
 export default useClusterColumns;

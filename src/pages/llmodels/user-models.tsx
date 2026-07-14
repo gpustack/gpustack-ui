@@ -2,21 +2,21 @@ import useTableFetch from '@/hooks/use-table-fetch';
 import { SyncOutlined } from '@ant-design/icons';
 import {
   BaseSelect,
-  IconFont,
   InfiniteScrollerProvider,
-  NoResult,
   PageTools,
   TemplateCardList
 } from '@gpustack/core-ui';
-import { useIntl } from '@umijs/max';
+import { useAccess, useIntl, useNavigate } from '@umijs/max';
 import useMemoizedFn from 'ahooks/lib/useMemoizedFn';
 import { Button, Input, Space } from 'antd';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import PageBox from '../_components/page-box';
 import { MY_MODELS_API, queryMyModels } from './apis';
 import APIAccessInfoModal from './components/api-access-info';
 import ModelItem from './components/model-item';
 import { categoryOptions, MyModelsStatusValueMap } from './config';
+import useFormInitialValues from './hooks/use-form-initial-values';
+import useNoResourceResult from './hooks/use-no-resource-result';
 import useViewApIInfo from './hooks/use-view-api-info';
 const Dot = ({ color }: { color: string }) => {
   return (
@@ -60,7 +60,24 @@ const UserModels: React.FC = () => {
     }
   });
   const intl = useIntl();
+  const access = useAccess();
+  const navigate = useNavigate();
   const { apiAccessInfo, openViewAPIInfo, closeViewAPIInfo } = useViewApIInfo();
+
+  // Only managers (platform admin or org owner) can see / manage
+  // clusters and workers, so only they hit those endpoints. A plain
+  // user falls straight through to the default "no models" empty state
+  // without the infra-guidance queries firing.
+  const canManageResources = access?.canSeeAdmin || access?.canSeeOrgAdmin;
+  const { getClusterList, getWorkerList, clusterList, workerList } =
+    useFormInitialValues();
+
+  useEffect(() => {
+    if (canManageResources) {
+      getClusterList();
+      getWorkerList();
+    }
+  }, [canManageResources]);
 
   const statusOptions = useMemo(() => {
     return [
@@ -155,6 +172,36 @@ const UserModels: React.FC = () => {
     });
   };
 
+  const { noResourceResult } = useNoResourceResult({
+    loading: dataSource.loading,
+    loadend: dataSource.loadend,
+    dataSource: dataList,
+    // Preserve the original filters heuristic: only treat the current
+    // query as an active filter when there is data across pages, so a
+    // truly empty account still shows the full empty state (CTA).
+    queryParams: dataSource.totalPage > 0 ? queryParams : {},
+    iconType: 'icon-models',
+    title: intl.formatMessage({ id: 'noresult.mymodels.title' }),
+    noClusters: !!canManageResources && !clusterList.length,
+    noWorkers:
+      !!canManageResources && workerList.length === 0 && clusterList.length > 0,
+    defaultContent: {
+      // Infra is in place but no models yet: guide managers to deploy
+      // one, reusing the deployments-page copy so the two empty states
+      // read consistently. Plain users can't deploy (and skip the infra
+      // queries), so they keep the consumer-facing "ask an admin" copy
+      // and a button-less empty state.
+      subTitle: canManageResources
+        ? intl.formatMessage({ id: 'noresult.deployments.subTitle' })
+        : intl.formatMessage({ id: 'noresult.mymodels.subTitle' }),
+      noFoundText: intl.formatMessage({ id: 'noresult.mymodels.nofound' }),
+      buttonText: canManageResources
+        ? intl.formatMessage({ id: 'models.table.button.deploy' })
+        : '',
+      onClick: canManageResources ? () => navigate('/models/catalog') : () => {}
+    }
+  });
+
   return (
     <>
       <PageBox>
@@ -226,18 +273,7 @@ const UserModels: React.FC = () => {
             isFirst={!dataSource.loadend}
             renderItem={renderCard}
           ></TemplateCardList>
-          <NoResult
-            loading={dataSource.loading}
-            loadend={dataSource.loadend}
-            dataSource={dataList}
-            image={<IconFont type="icon-models" />}
-            filters={{ ...queryParams }}
-            noFoundText={intl.formatMessage({
-              id: 'noresult.mymodels.nofound'
-            })}
-            title={intl.formatMessage({ id: 'noresult.mymodels.title' })}
-            subTitle={intl.formatMessage({ id: 'noresult.mymodels.subTitle' })}
-          ></NoResult>
+          {noResourceResult}
         </InfiniteScrollerProvider>
       </PageBox>
       <APIAccessInfoModal

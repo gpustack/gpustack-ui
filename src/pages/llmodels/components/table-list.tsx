@@ -5,9 +5,7 @@ import { PageActionType } from '@/config/types';
 import useBodyScroll from '@/hooks/use-body-scroll';
 import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
-import useWatchList from '@/hooks/use-watch-list';
 import useNoResourceResult from '@/pages/llmodels/hooks/use-no-resource-result';
-import { MODEL_ROUTE_TARGETS } from '@/pages/model-routes/apis';
 import { TargetStatusValueMap } from '@/pages/model-routes/config';
 import useOpenPlayground from '@/pages/model-routes/hooks/use-open-playground';
 import useGranfanaLink from '@/pages/resources/hooks/use-grafana-link';
@@ -92,6 +90,7 @@ interface ModelsProps {
   loadend: boolean;
   total: number;
   filterValues?: Record<string, any>;
+  targetList?: any[];
 }
 
 const getFormattedData = (record: any, extraData = {}) => ({
@@ -129,7 +128,8 @@ const Models: React.FC<ModelsProps> = ({
   queryParams,
   loading,
   loadend,
-  total
+  total,
+  targetList = []
 }) => {
   const { generateFormValues, clusterList, workerList } =
     useDeploymentsContext();
@@ -155,7 +155,6 @@ const Models: React.FC<ModelsProps> = ({
     expandedRowKeys
   } = useExpandedRowKeys(expandAtom);
   const { handleOpenPlayGround } = useOpenPlayground();
-  const { watchDataList: targetList } = useWatchList(MODEL_ROUTE_TARGETS);
   const { openViewLogsModal, openViewLogsModalStatus, closeViewLogsModal } =
     useViewInstanceLogs();
 

@@ -40,6 +40,11 @@ export default function useWatchList<T = Record<string, any>>(API: string) {
     }
   });
 
+  const cancelWatch = useMemoizedFn(() => {
+    chunkRequestRef.current?.current?.cancel?.();
+    listRequestTokenRef.current?.cancel?.();
+  });
+
   const queryAllDataList = async (
     params: Global.SearchParams,
     options?: any
@@ -78,14 +83,15 @@ export default function useWatchList<T = Record<string, any>>(API: string) {
   useEffect(() => {
     createWatchChunkRequest();
     return () => {
-      chunkRequestRef.current?.cancel?.();
-      listRequestTokenRef.current?.cancel?.();
+      cancelWatch();
     };
   }, []);
 
   return {
     watchDataList,
     setWatchDataList,
+    startWatch: createWatchChunkRequest,
+    cancelWatch,
     deleteItemFromCache: handleDeleteItemFromCache
   };
 }

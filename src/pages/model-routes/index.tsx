@@ -364,6 +364,7 @@ const ModelRoutes: React.FC = () => {
         >
           <SealTable
             rowKey="id"
+            emptyMinHeight="calc(100vh - 300px)"
             loadChildren={loadChildrenData}
             sortDirections={TABLE_SORT_DIRECTIONS}
             expandedRowKeys={expandedRowKeys}

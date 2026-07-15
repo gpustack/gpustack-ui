@@ -200,6 +200,7 @@ const Credentials: React.FC = () => {
 
         <ConfigProvider renderEmpty={renderEmpty}>
           <Table
+            className={'scroll-table'}
             tableLayout="fixed"
             columns={columns}
             dataSource={dataSource.dataList}

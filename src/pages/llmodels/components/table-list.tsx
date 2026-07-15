@@ -613,6 +613,7 @@ const Models: React.FC<ModelsProps> = ({
         ></PageTools>
         <SealTable
           columns={columns}
+          emptyMinHeight="calc(100vh - 300px)"
           sortDirections={TABLE_SORT_DIRECTIONS}
           dataSource={dataSource}
           rowSelection={rowSelection}

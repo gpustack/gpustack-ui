@@ -186,6 +186,7 @@ const Users: React.FC = () => {
         ></FilterBar>
         <ConfigProvider renderEmpty={renderEmpty}>
           <Table
+            className={'scroll-table'}
             columns={columns}
             dataSource={dataList}
             rowSelection={rowSelection}

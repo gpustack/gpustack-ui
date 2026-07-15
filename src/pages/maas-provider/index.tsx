@@ -159,6 +159,7 @@ const MaasProvider: React.FC = () => {
         ></FilterBar>
         <ConfigProvider renderEmpty={renderEmpty}>
           <Table
+            className={'scroll-table'}
             rowKey="id"
             tableLayout="fixed"
             sortDirections={TABLE_SORT_DIRECTIONS}

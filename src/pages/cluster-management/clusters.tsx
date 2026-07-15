@@ -395,6 +395,7 @@ const Clusters: React.FC = () => {
         >
           <SealTable
             rowKey="id"
+            emptyMinHeight="calc(100vh - 300px)"
             loadChildren={getWorkerPoolList}
             sortDirections={TABLE_SORT_DIRECTIONS}
             expandedRowKeys={expandedRowKeys}

@@ -232,6 +232,7 @@ const APIKeys: React.FC = () => {
         ></FilterBar>
         <ConfigProvider renderEmpty={renderEmpty}>
           <Table
+            className={'scroll-table'}
             columns={columns}
             dataSource={dataSource.dataList}
             rowSelection={rowSelection}

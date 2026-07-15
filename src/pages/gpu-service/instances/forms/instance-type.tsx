@@ -58,7 +58,7 @@ const InstanceTypePicker: React.FC<InstanceTypePickerProps> = ({
 };
 
 // Fixed 10-tick percentage scale (10..100) for the sliced (percentage) mode.
-const SLICE_PERCENT_TICKS = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+const SLICE_PERCENT_TICKS = [10, 20, 30, 50];
 
 interface InstanceTypeFormItemProps {
   action: PageActionType;

@@ -1,8 +1,8 @@
 import { useQueryData } from '@gpustack/core-ui';
 import React from 'react';
 import { ceilMilliToCore, parseQuantityToGi } from '../../utils';
-import { queryGPUServiceInstanceTypes } from '../apis';
 import { getAcceleratorMax } from '../config';
+import mockInstanceTypes from '../config/mock-data';
 import { InstanceTypeItem } from '../config/types';
 
 type InstanceType = InstanceTypeItem & {
@@ -13,7 +13,7 @@ export default function useQueryInstanceTypes() {
   const fetchDetail = (
     params: Global.SearchParams = { page: 1, perPage: 100 },
     options?: any
-  ) => queryGPUServiceInstanceTypes(params, options);
+  ) => Promise.resolve(mockInstanceTypes); // queryGPUServiceInstanceTypes(params, options);
 
   const { detailData, loading, cancelRequest, fetchData } = useQueryData<
     Global.PageResponse<InstanceTypeItem>,

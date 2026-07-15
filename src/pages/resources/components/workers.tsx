@@ -303,7 +303,7 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
             columns={columns}
             sortDirections={TABLE_SORT_DIRECTIONS}
             showSorterTooltip={false}
-            tableLayout={'auto'}
+            scroll={{ x: 'max-content' }}
             className={'scroll-table'}
             dataSource={dataSource.dataList}
             loading={{
@@ -311,7 +311,6 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
               size: 'middle'
             }}
             rowKey="id"
-            scroll={{ x: 900 }}
             onChange={handleTableChange}
             rowSelection={source === 'clusterDetail' ? undefined : rowSelection}
             pagination={{

@@ -154,6 +154,7 @@ const GPUServicePublicKeys: React.FC = () => {
         />
         <ConfigProvider renderEmpty={renderEmpty}>
           <Table
+            className={'scroll-table'}
             columns={columns}
             dataSource={dataSource.dataList}
             rowSelection={rowSelection}

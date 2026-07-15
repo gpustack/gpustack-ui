@@ -123,14 +123,14 @@ const GPUList: React.FC<GPUListProps> = ({ clusterId, source }) => {
             columns={columns}
             sortDirections={TABLE_SORT_DIRECTIONS}
             showSorterTooltip={false}
-            tableLayout={'auto'}
+            scroll={{ x: 'max-content' }}
+            className={'scroll-table'}
             dataSource={dataSource.dataList}
             loading={{
               spinning: dataSource.loading,
               size: 'middle'
             }}
             rowKey="id"
-            scroll={{ x: 900 }}
             onChange={handleTableChange}
             pagination={{
               showSizeChanger: true,

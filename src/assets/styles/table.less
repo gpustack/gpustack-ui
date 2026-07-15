@@ -9,6 +9,15 @@
   }
 }
 
+@keyframes tableEmptyFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 .scroll-table {
   .ant-table {
     .ant-table-container {
@@ -16,6 +25,28 @@
       .ant-table-content {
         scrollbar-width: thin;
         scrollbar-color: var(--color-scrollbar-thumb) transparent;
+      }
+    }
+
+    // Reserve a stable block for the empty/loading state so the first-load
+    // spinner and the empty result occupy the same height as eventual data —
+    // this removes the layout jump when entering the page. Scoped to
+    // `.ant-table-content` so it only targets x-scroll tables (whose empty
+    // row lives here) and leaves fixed-height `scroll.y` tables untouched.
+    // Height must match the `minHeight` passed to <NoResult> in
+    // use-no-resource-result.
+    .ant-table-content {
+      .ant-table-placeholder {
+        > .ant-table-cell {
+          height: calc(100vh - 300px);
+        }
+
+        // NoResult renders nothing while loading and mounts an <Empty> only
+        // once the request settles, so this fires exactly when the empty
+        // state appears — a seamless fade-in instead of a hard pop.
+        .ant-empty {
+          animation: tableEmptyFadeIn 0.3s ease-in-out;
+        }
       }
     }
   }

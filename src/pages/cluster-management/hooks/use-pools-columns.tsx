@@ -43,9 +43,6 @@ const usePoolsColumns = (
           showTitle: false
         },
         span: 3,
-        style: {
-          paddingInline: 'var(--ant-table-cell-padding-inline)'
-        },
         render: (text: string) => (
           <AutoTooltip title={text} ghost minWidth={20}>
             {text}
@@ -60,9 +57,6 @@ const usePoolsColumns = (
           showTitle: false
         },
         span: 4,
-        style: {
-          paddingLeft: 62
-        },
         render: (text: string, record: ListItem) => (
           <AutoTooltip
             title={
@@ -98,9 +92,6 @@ const usePoolsColumns = (
         ellipsis: {
           showTitle: false
         },
-        style: {
-          paddingLeft: 56
-        },
         render: (text: string) => (
           <AutoTooltip
             title={
@@ -125,9 +116,6 @@ const usePoolsColumns = (
         dataIndex: 'replicas',
         span: 6,
         key: 'replicas',
-        style: {
-          paddingLeft: 50
-        },
         editable: {
           valueType: 'number',
           title: intl.formatMessage({ id: 'models.table.replicas.edit' })
@@ -165,9 +153,6 @@ const usePoolsColumns = (
         ellipsis: {
           showTitle: false
         },
-        style: {
-          paddingLeft: 42
-        },
         render: (text: string) => (
           <AutoTooltip ghost minWidth={20}>
             {dayjs(text).format('YYYY-MM-DD HH:mm:ss')}
@@ -179,9 +164,6 @@ const usePoolsColumns = (
         key: 'operations',
         dataIndex: 'operations',
         span: 3,
-        style: {
-          paddingLeft: 36
-        },
         render: (text: string, record: ListItem) => (
           <DropdownButtons
             items={actionItems}

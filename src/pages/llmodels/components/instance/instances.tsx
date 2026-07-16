@@ -17,6 +17,9 @@ interface InstanceItemProps {
   workerList: WorkerListItem[];
   modelData?: any;
   currentExpanded?: string;
+  gridTemplate?: string;
+  prefixWidth?: number;
+  columns?: any[];
   handleChildSelect: (val: string, item: ModelInstanceListItem) => void;
 }
 
@@ -25,6 +28,9 @@ const Instances: React.FC<InstanceItemProps> = ({
   workerList,
   modelData,
   currentExpanded,
+  gridTemplate,
+  prefixWidth,
+  columns,
   handleChildSelect
 }) => {
   const [firstLoad, setFirstLoad] = React.useState(true);
@@ -55,6 +61,9 @@ const Instances: React.FC<InstanceItemProps> = ({
             instanceData={item}
             defaultOpenId={firstLoad ? defaultOpenId : ''}
             handleChildSelect={handleChildSelect}
+            gridTemplate={gridTemplate}
+            prefixWidth={prefixWidth}
+            columns={columns}
           ></InstanceItem>
         );
       })}

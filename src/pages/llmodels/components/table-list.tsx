@@ -441,6 +441,9 @@ const Models: React.FC<ModelsProps> = ({
           modelData={options.parent}
           workerList={workerList}
           handleChildSelect={handleChildSelect}
+          gridTemplate={options.gridTemplate}
+          prefixWidth={options.prefixWidth}
+          columns={options.columns}
         ></Instances>
       );
     },

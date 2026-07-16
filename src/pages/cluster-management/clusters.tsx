@@ -358,6 +358,9 @@ const Clusters: React.FC = () => {
         dataList={list}
         provider={options.parent?.provider}
         clusterId={options.parent?.id}
+        gridTemplate={options.gridTemplate}
+        prefixWidth={options.prefixWidth}
+        columns={options.columns}
       />
     );
   };

@@ -232,7 +232,7 @@ const useAccessColumns = ({
         title: intl.formatMessage({ id: 'common.table.createTime' }),
         dataIndex: 'created_at',
         sorter: tableSorter(6),
-        span: createTimeSpan,
+        width: 180,
         render: (value: string) => (
           <AutoTooltip ghost minWidth={20}>
             {dayjs(value).format('YYYY-MM-DD HH:mm:ss')}

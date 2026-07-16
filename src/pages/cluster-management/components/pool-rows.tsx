@@ -2,13 +2,14 @@ import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import {
   CellContent,
+  type ChildGridOptions,
   DeleteModal,
-  RowChildren,
+  ExpandedRowGrid,
   TableRowProvider
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { Col, message, Row } from 'antd';
+import { message } from 'antd';
 import _ from 'lodash';
 import React, { useRef, useState } from 'react';
 import { deleteWorkerPool, updateWorkerPool } from '../apis';
@@ -16,7 +17,10 @@ import { ProviderType } from '../config';
 import { NodePoolFormData, NodePoolListItem } from '../config/types';
 import usePoolsColumns from '../hooks/use-pools-columns';
 import AddPool from './add-pool';
-interface PoolRowsProps {
+interface PoolRowsProps extends Pick<
+  ChildGridOptions,
+  'gridTemplate' | 'prefixWidth' | 'columns'
+> {
   dataList: NodePoolListItem[];
   provider: ProviderType;
   clusterId: number | string;
@@ -25,9 +29,35 @@ interface PoolRowsProps {
 const PoolRows: React.FC<PoolRowsProps> = ({
   dataList,
   provider,
-  clusterId
+  clusterId,
+  gridTemplate,
+  prefixWidth = 0,
+  columns: parentColumns
 }) => {
   const intl = useIntl();
+
+  // The child row shares the parent's column grid; cells flow left-to-right and
+  // only declare a span, keyed on the pool column's OWN dataIndex — never on a
+  // parent cluster column key. Parent layout: name (1) | provider…state middle
+  // region | created_at (1) | operations (1). The three middle pool columns
+  // cover that region: `replicas`→state (last, 1 track), `image_name`→
+  // models+workers (2 tracks), `instance_type` absorbs the rest (plugins +
+  // provider + gpus).
+  const columnCount = parentColumns?.length ?? 0;
+  const middleSpan = Math.max(columnCount - 3, 1);
+  const spanFor = (dataIndex: string): number => {
+    switch (dataIndex) {
+      case 'instance_type':
+        return Math.max(middleSpan - 3, 1);
+      case 'image_name':
+        return 2;
+      case 'replicas':
+        return 1;
+      default:
+        // name / created_at / operations align 1:1 with their parent column.
+        return 1;
+    }
+  };
   const modalRef = useRef<any>(null);
   const [addPoolStatus, setAddPoolStatus] = useState<{
     open: boolean;
@@ -62,8 +92,10 @@ const PoolRows: React.FC<PoolRowsProps> = ({
     }
   };
 
-  const handleOnCell = async (row: NodePoolListItem, dataIndex: string) => {
-    console.log('handleOncell===', row, dataIndex);
+  const handleOnCell = async (
+    row: NodePoolListItem,
+    _data: { dataIndex: string; newValue: any; oldValue: any }
+  ) => {
     try {
       await updateWorkerPool({
         data: row,
@@ -118,31 +150,26 @@ const PoolRows: React.FC<PoolRowsProps> = ({
     <>
       {dataList?.map((data: NodePoolListItem) => {
         return (
-          <div
+          <TableRowProvider
             key={data.id}
-            style={{ borderRadius: 'var(--ant-table-header-border-radius)' }}
+            value={{ row: data, onCell: handleOnCell }}
           >
-            <TableRowProvider value={{ row: data, onCell: handleOnCell }}>
-              <RowChildren>
-                <Row style={{ width: '100%' }} align="middle">
-                  {columns.map((col: Record<string, any>) => {
-                    return (
-                      <Col
-                        key={col.dataIndex || col.key}
-                        span={col.span}
-                        style={{
-                          paddingInline: 0,
-                          ...(col.style || {})
-                        }}
-                      >
-                        <CellContent {..._.omit(col, ['key'])}></CellContent>
-                      </Col>
-                    );
-                  })}
-                </Row>
-              </RowChildren>
-            </TableRowProvider>
-          </div>
+            <ExpandedRowGrid
+              gridTemplate={gridTemplate}
+              prefixWidth={prefixWidth}
+            >
+              {columns.map((col: Record<string, any>) => (
+                <ExpandedRowGrid.Cell
+                  key={col.dataIndex || col.key}
+                  span={spanFor(col.dataIndex)}
+                >
+                  <CellContent
+                    {..._.omit(col, ['key', 'style', 'span'])}
+                  ></CellContent>
+                </ExpandedRowGrid.Cell>
+              ))}
+            </ExpandedRowGrid>
+          </TableRowProvider>
         );
       })}
       <AddPool

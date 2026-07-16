@@ -291,6 +291,9 @@ const ModelRoutes: React.FC = () => {
         dataList={list}
         onSelect={onChildSelect}
         sourceModels={sourceModels}
+        gridTemplate={options.gridTemplate}
+        prefixWidth={options.prefixWidth}
+        columns={options.columns}
       />
     );
   };

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+  <defs>
+    <linearGradient id="chat-fill-grad" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#389e0d" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#389e0d" stop-opacity="0.02"/>
+    </linearGradient>
+    <linearGradient id="chat-stroke-grad" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#73d13d"/>
+      <stop offset="100%" stop-color="#389e0d"/>
+    </linearGradient>
+  </defs>
+  <!-- 主现代对话框体（全部改为圆润R角，精装填充） -->
+  <path d="M18 4H6a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3h7.5l3.5 3.5a1 1 0 0 0 1.5-.5V17a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3z" fill="url(#chat-fill-grad)" stroke="url(#chat-stroke-grad)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- 内部通透对话线条（细化为圆角代码采样块感） -->
+  <rect x="7" y="8" width="8" height="1.5" rx="0.75" fill="#73d13d" fill-opacity="0.3"/>
+  <rect x="7" y="11.5" width="10" height="1.5" rx="0.75" fill="#73d13d" fill-opacity="0.2"/>
+</svg>

@@ -44,6 +44,7 @@ const MODEL_ICON_RULES: [string, string][] = [
   // 其余厂商/系列 → 对应 logo（按子串命中）
   ['gemini', 'google'],
   ['gpt', 'openai'],
+  ['hy', 'hunyuan'],
   ['openai', 'openai'],
   ['internvl', 'opengvlab'],
   ['minicpm', 'openbmb'],
@@ -71,13 +72,40 @@ const MODEL_ICON_RULES: [string, string][] = [
   ['alibaba', 'alibaba']
 ];
 
+// Default llm logo, used as the ultimate fallback when neither a brand
+// logo nor a model-category icon can be resolved.
+export const defaultModelLogo = iconMap[DEFAULT_ICON];
+
+// 模型类别 → model_icons 下的类别图标文件名。
+const CATEGORY_ICON_MAP: Record<string, string> = {
+  llm: 'llm',
+  embedding: 'embedding',
+  reranker: 'reranker',
+  image: 'image',
+  text_to_speech: 'tts',
+  speech_to_text: 'stt'
+};
+
 /**
- * Resolve a model logo from its name.
+ * Resolve a category icon (from model_icons) for a model's categories.
+ * Returns the first matching category icon url, or null when none match.
+ */
+export const getCategoryLogo = (categories?: string[]): string | null => {
+  const iconName = categories
+    ?.map((category) => CATEGORY_ICON_MAP[category])
+    .find((name) => name && iconMap[name]);
+
+  return iconName ? iconMap[iconName] : null;
+};
+
+/**
+ * Resolve a brand logo from a model name.
  * 1. Match against the keyword rules in order (first substring hit wins).
  * 2. Fall back to a direct match where the name contains an icon filename.
- * 3. Fall back to the default llm icon.
+ * 3. Return null when nothing matches — the caller then falls back to a
+ *    category-based icon (see `categoryConfig`) rather than a default image.
  */
-export const getModelLogo = (modelName?: string): string => {
+export const getModelLogo = (modelName?: string): string | null => {
   const name = (modelName || '').toLowerCase();
 
   const rule = MODEL_ICON_RULES.find(([keyword]) => name.includes(keyword));
@@ -90,5 +118,5 @@ export const getModelLogo = (modelName?: string): string => {
     .sort((a, b) => b.length - a.length)
     .find((iconName) => name.includes(iconName));
 
-  return iconMap[directHit || DEFAULT_ICON] || iconMap[DEFAULT_ICON];
+  return directHit ? iconMap[directHit] : null;
 };

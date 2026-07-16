@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+  <defs>
+    <!-- 顶面填充（亮面，高透明度） -->
+    <linearGradient id="cube-top-grad" x1="12" y1="2" x2="12" y2="12" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#f759ab" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#c41d7f" stop-opacity="0.1"/>
+    </linearGradient>
+    <!-- 左侧面填充（暗面，低透明度） -->
+    <linearGradient id="cube-left-grad" x1="2" y1="7" x2="12" y2="17" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#c41d7f" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#c41d7f" stop-opacity="0.04"/>
+    </linearGradient>
+    <linearGradient id="cube-stroke-grad" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#f759ab"/>
+      <stop offset="100%" stop-color="#c41d7f"/>
+    </linearGradient>
+  </defs>
+  <!-- 顶面填充 -->
+  <polygon points="12,2 21.5,6.7 12,11.5 2.5,6.7" fill="url(#cube-top-grad)" />
+  <!-- 左侧面填充 -->
+  <polygon points="2.5,6.7 12,11.5 12,21.3 2.5,16.5" fill="url(#cube-left-grad)" />
+  <!-- 立方体全纯线外骨架（细化为圆角衔接） -->
+  <path d="M12 2L2.5 6.7M12 2l9.5 4.7M21.5 6.7L12 11.5M2.5 6.7L12 11.5M2.5 6.7v9.8l9.5 4.8M21.5 6.7v9.8l-9.5 4.8M12 11.5v9.8" stroke="url(#cube-stroke-grad)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

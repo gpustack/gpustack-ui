@@ -20,7 +20,11 @@ import {
   MyModelsStatusValueMap
 } from '../config';
 import { categoryToPathMap } from '../config/button-actions';
-import { getModelLogo } from '../utils/model-logo';
+import {
+  defaultModelLogo,
+  getCategoryLogo,
+  getModelLogo
+} from '../utils/model-logo';
 
 const CardWrapper = styled.div`
   &:hover {
@@ -165,6 +169,11 @@ const ModelItem: React.FC<{
     navigate(`/playground/chat?model=${modelName}`);
   };
 
+  // Logo priority: brand logo matched from the name → tinted category
+  // icon (from model_icons) → generic default image.
+  const brandLogo = getModelLogo(model.name);
+  const categoryLogo = brandLogo ? null : getCategoryLogo(model.categories);
+
   // context length
   const maxToken = useMemo(() => {
     const meta = model.meta || {};
@@ -194,7 +203,13 @@ const ModelItem: React.FC<{
         header={
           <Header>
             <span className="text gap-16">
-              <ModelLogo src={getModelLogo(model.name)} alt="" />
+              {brandLogo ? (
+                <ModelLogo src={brandLogo} alt="" />
+              ) : categoryLogo ? (
+                <ModelLogo src={categoryLogo} alt="" />
+              ) : (
+                <ModelLogo src={defaultModelLogo} alt="" />
+              )}
               <span>{model.name}</span>
             </span>
             <StatusTag

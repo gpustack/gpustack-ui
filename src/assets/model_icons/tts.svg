@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+  <defs>
+    <!-- 1. 核心高通透深蓝渐变充填 -->
+    <linearGradient id="tts-v2-fill" x1="12" y1="2" x2="12" y2="22" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#2f54eb" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#1d39c4" stop-opacity="0.03"/>
+    </linearGradient>
+    <!-- 2. 精准调校的专属蓝色渐变边框 -->
+    <linearGradient id="tts-v2-stroke" x1="4" y1="4" x2="20" y2="20" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#2f54eb"/>
+      <stop offset="100%" stop-color="#1d39c4"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- 左侧：低频辅助声波（大间距，带现代圆角） -->
+  <rect x="4" y="8" width="2.2" height="8" rx="1.1" stroke="url(#tts-v2-stroke)" stroke-width="1.8" stroke-linecap="round"/>
+  
+  <!-- 中央：核心高频声波主体（拉大宽度，注入通透水晶质感） -->
+  <rect x="10.4" y="2" width="3.2" height="20" rx="1.6" fill="url(#tts-v2-fill)" stroke="url(#tts-v2-stroke)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- 右侧：高频衰减声波（保持几何对称与呼吸感） -->
+  <rect x="17.8" y="5" width="2.2" height="14" rx="1.1" stroke="url(#tts-v2-stroke)" stroke-width="1.8" stroke-linecap="round"/>
+</svg>

@@ -45,7 +45,7 @@ const usePoolsColumns = (
         span: 3,
         render: (text: string) => (
           <AutoTooltip title={text} ghost minWidth={20}>
-            {text}
+            <span className="text-primary">{text}</span>
           </AutoTooltip>
         )
       },

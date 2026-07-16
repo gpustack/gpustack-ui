@@ -162,6 +162,9 @@ const PoolRows: React.FC<PoolRowsProps> = ({
                 <ExpandedRowGrid.Cell
                   key={col.dataIndex || col.key}
                   span={spanFor(col.dataIndex)}
+                  style={{
+                    color: 'var(--ant-color-text-secondary)'
+                  }}
                 >
                   <CellContent
                     {..._.omit(col, ['key', 'style', 'span'])}

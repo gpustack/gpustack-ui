@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+  <defs>
+    <linearGradient id="rank-fill-grad" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#08979c" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#08979c" stop-opacity="0.01"/>
+    </linearGradient>
+    <linearGradient id="rank-stroke-grad" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#36cfc9"/>
+      <stop offset="100%" stop-color="#08979c"/>
+    </linearGradient>
+  </defs>
+  <!-- 数据权重条（全部改为高级圆角） -->
+  <rect x="11" y="4" width="10" height="2.5" rx="1.25" fill="#36cfc9" fill-opacity="0.1" stroke="url(#rank-stroke-grad)" stroke-width="1.5"/>
+  <rect x="11" y="9" width="7.5" height="2.5" rx="1.25" fill="#36cfc9" fill-opacity="0.05" stroke="url(#rank-stroke-grad)" stroke-width="1.5"/>
+  <rect x="11" y="14" width="5" height="2.5" rx="1.25" stroke="url(#rank-stroke-grad)" stroke-width="1.5"/>
+  <!-- 基准线与立体双向指引箭头（优化为圆角） -->
+  <path d="M3 17l3 3 3-3M6 4v16" stroke="url(#rank-stroke-grad)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M4.5 5.5L6 4l1.5 1.5" stroke="url(#rank-stroke-grad)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

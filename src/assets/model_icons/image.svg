@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+  <defs>
+    <!-- 1. 定义专属微通透渐变填充 -->
+    <linearGradient id="img-fill-grad" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#d46b08" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#d46b08" stop-opacity="0.04"/>
+    </linearGradient>
+    <!-- 2. 定义边框高精度渐变（亮橙到深橙，拉开层次） -->
+    <linearGradient id="img-stroke-grad" x1="4" y1="4" x2="20" y2="20" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#fa8c16"/>
+      <stop offset="100%" stop-color="#d46b08"/>
+    </linearGradient>
+  </defs>
+  <!-- 3. 精装底色充填层 -->
+  <rect x="3" y="3" width="18" height="18" rx="4" fill="url(#img-fill-grad)" />
+  <!-- 4. 高级柔和微圆角边框层 -->
+  <rect x="3" y="3" width="18" height="18" rx="4" stroke="url(#img-stroke-grad)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- 内部几何现代山脉线条 -->
+  <path d="M3 16l4-4a2 2 0 0 1 2.8 0l5.2 5.2M13 15l2.5-2.5a2 2 0 0 1 2.8 0l2.7 2.7" stroke="url(#img-stroke-grad)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- 标志性通透小钻石 -->
+  <rect x="14" y="6" width="4" height="4" rx="1.5" transform="rotate(45 16 8)" fill="#fa8c16" fill-opacity="0.3" stroke="url(#img-stroke-grad)" stroke-width="1"/>
+</svg>

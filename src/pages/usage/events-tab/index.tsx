@@ -8,10 +8,11 @@
  * tab (date range + "filter by user" for managers); the resource-type /
  * event-type selects ride in the bar's ``extra`` slot.
  */
-import { SimpleSelect } from '@gpustack/core-ui';
+import { type StatusType } from '@/config/types';
+import { SimpleSelect, StatusDot } from '@gpustack/core-ui';
 import { useAccess, useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { Input, Select, Table, Tag } from 'antd';
+import { Input, Select, Table } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -23,11 +24,11 @@ import useQueryResourceEvents from './services/use-query-resource-events';
 // Only these four are ever emitted (see resource_event_logger): create/delete
 // + the metering-window pair. updated/attached/detached exist as enum values
 // but are intentionally not recorded, so they're not offered as filters.
-const EVENT_COLOR: Record<string, string> = {
-  created: 'green',
-  deleted: 'red',
-  phase_to_metered: 'blue',
-  phase_left_metered: 'orange'
+const EVENT_STATUS: Record<string, StatusType> = {
+  created: 'success',
+  deleted: 'error',
+  phase_to_metered: 'transitioning',
+  phase_left_metered: 'warning'
 };
 
 // Humanize a failure phase enum for display, e.g. "SSHPublicKeyCreateFailed" →
@@ -186,7 +187,12 @@ const ResourceEvents: React.FC = () => {
         dataIndex: 'event_type',
         key: 'event_type',
         render: (v: string) => (
-          <Tag color={EVENT_COLOR[v] ?? 'default'}>{EVENT_LABEL[v] ?? v}</Tag>
+          <StatusDot
+            statusValue={{
+              status: EVENT_STATUS[v] ?? 'inactive',
+              text: EVENT_LABEL[v] ?? v
+            }}
+          />
         ),
         width: 180
       },

@@ -6,10 +6,12 @@ import {
   AutoTooltip,
   DropdownButtons,
   IconFont,
-  icons
+  icons,
+  TextAttribute,
+  ThemeTag
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { MenuProps, Tag, Tooltip } from 'antd';
+import { MenuProps, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
@@ -139,23 +141,14 @@ const useModelsColumns = ({
         key: 'name',
         sorter: tableSorter(1),
         render: (text: string, record: ListItem) => (
-          <span className="flex items-center">
+          <span className="flex items-center gap-8">
             <AutoTooltip ghost style={{ maxWidth: 400 }} title={text}>
               <span className="text-primary">{text}</span>
             </AutoTooltip>
             {record.is_custom && (
-              <Tag
-                style={{
-                  marginLeft: 8,
-                  borderRadius: 12,
-                  color: 'var(--ant-color-text-tertiary)',
-                  borderColor: 'var(--ant-color-split)',
-                  backgroundColor: 'transparent'
-                }}
-                variant="outlined"
-              >
+              <TextAttribute>
                 {intl.formatMessage({ id: 'playground.params.custom' })}
-              </Tag>
+              </TextAttribute>
             )}
           </span>
         )
@@ -203,26 +196,13 @@ const useModelsColumns = ({
             )}
             {(record.scope?.includes('inference') ||
               record.scope?.includes('*')) && (
-              <div
-                style={{
-                  border: '1px solid var(--ant-color-split)',
-                  color: 'var(--ant-color-text-tertiary)',
-                  backgroundColor: 'var(--ant-color-fill-quaternary)',
-                  borderRadius: 4,
-                  fontSize: 13,
-                  paddingInline: 8,
-                  flexGrow: 0,
-                  maxWidth: '100%',
-                  width: 'max-content',
-                  display: 'flex'
-                }}
-              >
+              <ThemeTag>
                 <AutoTooltip ghost>
                   {record.allowed_model_names?.length
                     ? record.allowed_model_names.join(', ')
                     : intl.formatMessage({ id: 'apikeys.models.all' })}
                 </AutoTooltip>
-              </div>
+              </ThemeTag>
             )}
           </div>
         )

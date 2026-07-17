@@ -124,12 +124,23 @@ Always check `@gpustack/core-ui` first. Frequently reused:
 - **Form fields**: `BaseSelect`, `Input` (labeled).
 - **Text overflow**: `AutoTooltip`.
 - **Icons**: `IconFont`.
-- **Status display** (success/failed/processing/warning): `StatusTag`.
+- **Tags & status** (4 variants): see the section below.
 - **Permission-gated visibility**: `Access` / `useAccess`.
 - **Request hooks**: `useRequest` / `useQueryData` / `useQueryDataList`.
 - **Table data fetching**: `useTableFetch`.
 - **Submit guard** (prevent double-submit): `useSubmitLock`.
 - **Tabbed forms**: `ScrollSpyTabs`.
+
+# Tags & status indicators
+
+Four core-ui components cover tag/status display in tables and lists. Pick by **what the value means**, not by how it looks — don't reach for a generic antd `Tag`:
+
+- **`StatusTag`** — semantic status with a **dynamic message/detail** (tooltip, download, extra content). Use when a row's status carries variable text, e.g. a failed job with an error message. Colors come from `StatusColorMap` (error/warning/transitioning/success/inactive).
+- **`StatusDot`** — colored dot + short label, **no message**. Use for a plain status/type cell where the value is a fixed enum (e.g. an event-type or log column). Same `StatusColorMap` palette; `inactive` dot is quaternary. If the status needs dynamic text, use `StatusTag` instead.
+- **`ThemeTag`** — a **standalone category label** (independent content, e.g. a permission scope or a model name). Default neutral; wraps antd `Tag`.
+- **`TextAttribute`** — a small neutral pill that is a **subordinate annotation following a primary text** (e.g. `key-name [custom]`), not a standalone tag. Manages its own leading margin. Two variants: `filled` (default) and `outlined`. Ref the name column in `src/pages/api-keys/hooks/use-keys-columns.tsx`.
+
+Rule of thumb: semantic + dynamic text → `StatusTag`; semantic + fixed enum → `StatusDot`; independent category → `ThemeTag`; annotation of nearby text → `TextAttribute`.
 
 # Dynamic add-item form fields
 

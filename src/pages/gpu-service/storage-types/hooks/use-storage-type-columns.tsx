@@ -28,21 +28,13 @@ interface ColumnsHookProps {
 const getKindLabel = (record: ListItem) => {
   if (record.spec?.nfs)
     return (
-      <ThemeTag
-        style={{ width: 'fit-content' }}
-        color="cyan"
-        icon={<FolderOutlined />}
-      >
+      <ThemeTag color="cyan" icon={<FolderOutlined />}>
         {StorageTypeKindLabelMap.nfs}
       </ThemeTag>
     );
   if (record.spec?.s3)
     return (
-      <ThemeTag
-        style={{ width: 'fit-content' }}
-        color="green"
-        icon={<IconFont type="icon-database" />}
-      >
+      <ThemeTag color="green" icon={<IconFont type="icon-database" />}>
         {StorageTypeKindLabelMap.s3}
       </ThemeTag>
     );

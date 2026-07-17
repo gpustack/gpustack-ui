@@ -60,7 +60,8 @@ const ModelTag: React.FC<ModelTagProps> = ({ categoryKey, size }) => {
         opacity: 1,
         paddingInline: 8,
         borderRadius: 12,
-        transform: 'scale(0.9)'
+        transform: 'scale(0.9)',
+        backgroundColor: 'transparent'
       }}
       color={config.color}
     >

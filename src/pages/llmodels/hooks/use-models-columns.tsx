@@ -268,7 +268,7 @@ const useModelsColumns = ({
         dataIndex: 'created_at',
         key: 'created_at',
         sorter: tableSorter(5),
-        span: spans.createTime,
+        width: 180,
         render: (text: number) => (
           <AutoTooltip ghost>
             {dayjs(text).format('YYYY-MM-DD HH:mm:ss')}

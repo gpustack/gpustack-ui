@@ -212,6 +212,7 @@ export default {
   'common.filter.name': '名前でフィルタ',
   'common.form.password': 'パスワード',
   'common.form.username': 'ユーザー名',
+  'common.form.captcha': '認証コード',
   'common.login.rember': 'ログイン状態を保持',
   'settings.company': 'GPUStack.ai',
   'common.button.help': 'ヘルプ',
@@ -273,6 +274,15 @@ export default {
   'common.login.password': 'Log in with Password',
   'common.login.username.holder': 'Please enter username',
   'common.login.password.holder': 'Please enter password',
+  'common.login.captcha.holder': '表示されている文字を入力してください',
+  'common.login.captcha.tip':
+    '認証コードは大文字と小文字を区別しません。画像をクリックすると更新されます。',
+  'common.login.captcha.error':
+    '認証コードを読み込めません。更新して再試行してください。',
+  'common.login.captcha.audio.listen': '認証コードを音声で聞く',
+  'common.login.captcha.audio.label': '音声認証コード',
+  'common.login.captcha.audio.error':
+    '音声認証コードを読み込めません。再試行してください。',
   'common.login.newpassword.holder': 'Please enter new password',
   'common.login.confirm.holder': 'Please enter password again',
   'common.external.login': 'Log in with {type}',

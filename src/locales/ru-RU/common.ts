@@ -210,6 +210,7 @@ export default {
   'common.filter.name': 'Фильтр по имени',
   'common.form.password': 'Пароль',
   'common.form.username': 'Имя пользователя',
+  'common.form.captcha': 'Капча',
   'common.login.rember': 'Запомнить меня',
   'settings.company': 'GPUStack.ai',
   'common.button.help': 'Помощь',
@@ -272,6 +273,15 @@ export default {
   'common.login.password': 'Войти с паролем',
   'common.login.username.holder': 'Введите имя пользователя',
   'common.login.password.holder': 'Введите пароль',
+  'common.login.captcha.holder': 'Введите символы с изображения',
+  'common.login.captcha.tip':
+    'Капча не зависит от регистра. Нажмите на изображение, чтобы обновить.',
+  'common.login.captcha.error':
+    'Не удалось загрузить капчу. Нажмите «Обновить», чтобы повторить попытку.',
+  'common.login.captcha.audio.listen': 'Прослушать капчу',
+  'common.login.captcha.audio.label': 'Аудиокапча',
+  'common.login.captcha.audio.error':
+    'Не удалось загрузить аудиокапчу. Повторите попытку.',
   'common.login.newpassword.holder': 'Введите новый пароль',
   'common.login.confirm.holder': 'Введите пароль ещё раз',
   'common.external.login': 'Войти через {type}',

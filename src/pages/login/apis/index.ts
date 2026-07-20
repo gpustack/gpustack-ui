@@ -9,13 +9,43 @@ export const AUTH_API = '/auth';
 
 export const AUTH_CONFIG_API = '/auth/config';
 
+export const CAPTCHA_API = '/auth/captcha';
+export const CAPTCHA_AUDIO_API = '/auth/captcha/audio';
+
 export const login = async (
-  params: { username: string; password: string },
+  params: {
+    username: string;
+    password: string;
+    // Present only when the server has ``captcha_enabled``. ``captcha_id`` is
+    // the opaque token issued alongside the challenge image; ``captcha`` is
+    // the user-typed answer. Sent as extra form fields the backend validates
+    // before checking the password.
+    captcha_id?: string;
+    captcha?: string;
+  },
   options?: any
 ) => {
   return request(`${AUTH_API}/login`, {
     method: 'POST',
     data: qs.stringify(params),
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+  });
+};
+
+// Fetch a fresh CAPTCHA challenge. ``image`` is a ready-to-use PNG data URI;
+// ``captcha_id`` is the opaque token to send back with the login request.
+export const fetchCaptcha = async () => {
+  return request<{ captcha_id: string; image: string }>(CAPTCHA_API, {
+    method: 'GET'
+  });
+};
+
+export const fetchCaptchaAudio = async (captchaId: string) => {
+  return request<{ audio: string }>(CAPTCHA_AUDIO_API, {
+    method: 'POST',
+    data: qs.stringify({ captcha_id: captchaId }),
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
     }
@@ -64,5 +94,8 @@ export const fetchAuthConfig = async () => {
     external_auth: ExternalAuth | null;
     first_time_setup: boolean;
     get_initial_password_command: string;
+    // When true, the local login form shows a CAPTCHA row and fetches a
+    // challenge. The backend enforces it regardless; this only drives the UI.
+    captcha_enabled: boolean;
   }>(AUTH_CONFIG_API);
 };

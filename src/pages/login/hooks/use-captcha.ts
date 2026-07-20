@@ -29,9 +29,13 @@ const EMPTY: CaptchaState = {
 export const useCaptcha = () => {
   const [captcha, setCaptcha] = useState<CaptchaState>(EMPTY);
   const requestSequence = useRef(0);
+  const audioRequestSequence = useRef(0);
+  const activeCaptchaId = useRef('');
 
   const refresh = async () => {
     const sequence = ++requestSequence.current;
+    activeCaptchaId.current = '';
+    ++audioRequestSequence.current;
     // A challenge is single-use. Never leave an old token available while a
     // replacement is loading or after that replacement fails.
     setCaptcha({ ...EMPTY, loading: true });
@@ -40,6 +44,7 @@ export const useCaptcha = () => {
       if (sequence !== requestSequence.current) {
         return false;
       }
+      activeCaptchaId.current = captcha_id;
       setCaptcha({
         captchaId: captcha_id,
         image,
@@ -59,36 +64,54 @@ export const useCaptcha = () => {
   };
 
   const loadAudio = async () => {
-    const sequence = requestSequence.current;
-    const captchaId = captcha.captchaId;
+    const captchaId = activeCaptchaId.current;
     if (!captchaId) {
       return false;
     }
-    setCaptcha((current) => ({
-      ...current,
-      audioLoading: true,
-      audioError: false
-    }));
+    const sequence = ++audioRequestSequence.current;
+    setCaptcha((current) =>
+      current.captchaId === captchaId
+        ? {
+            ...current,
+            audioLoading: true,
+            audioError: false
+          }
+        : current
+    );
     try {
       const { audio } = await fetchCaptchaAudio(captchaId);
-      if (sequence !== requestSequence.current) {
+      if (
+        sequence !== audioRequestSequence.current ||
+        activeCaptchaId.current !== captchaId
+      ) {
         return false;
       }
-      setCaptcha((current) => ({
-        ...current,
-        audio,
-        audioLoading: false,
-        audioError: false
-      }));
+      setCaptcha((current) =>
+        current.captchaId === captchaId
+          ? {
+              ...current,
+              audio,
+              audioLoading: false,
+              audioError: false
+            }
+          : current
+      );
       return true;
     } catch {
-      if (sequence === requestSequence.current) {
-        setCaptcha((current) => ({
-          ...current,
-          audio: '',
-          audioLoading: false,
-          audioError: true
-        }));
+      if (
+        sequence === audioRequestSequence.current &&
+        activeCaptchaId.current === captchaId
+      ) {
+        setCaptcha((current) =>
+          current.captchaId === captchaId
+            ? {
+                ...current,
+                audio: '',
+                audioLoading: false,
+                audioError: true
+              }
+            : current
+        );
       }
       return false;
     }

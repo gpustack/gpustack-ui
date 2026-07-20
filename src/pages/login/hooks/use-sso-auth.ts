@@ -10,23 +10,28 @@ type LoginOption = {
   external_auth: ExternalAuth | null;
   first_time_setup: boolean;
   get_initial_password_command: string;
+  // When true, the local login form renders a CAPTCHA row.
+  captcha_enabled: boolean;
 };
 
 export function useSSOAuth({
   fetchUserInfo,
   onSuccess,
   onLoading,
-  onError
+  onError,
+  onConfigLoaded
 }: {
   fetchUserInfo: () => Promise<any>;
   onSuccess?: (userInfo: any) => void;
   onError?: (err: Error) => void;
   onLoading?: (loading: boolean) => void;
+  onConfigLoaded?: (options: LoginOption) => void;
 }) {
   const [loginOption, setLoginOption] = useState<LoginOption>({
     external_auth: null,
     first_time_setup: false,
-    get_initial_password_command: ''
+    get_initial_password_command: '',
+    captcha_enabled: false
   });
 
   const intl = useIntl();
@@ -44,10 +49,12 @@ export function useSSOAuth({
   const init = async () => {
     try {
       const { external_auth, ...rest } = await fetchAuthConfig();
-      setLoginOption({
+      const nextLoginOption = {
         ...rest,
         external_auth: external_auth ?? null
-      });
+      };
+      setLoginOption(nextLoginOption);
+      onConfigLoaded?.(nextLoginOption);
       if (sso) {
         onLoading?.(true);
         if (external_auth) {
@@ -66,7 +73,8 @@ export function useSSOAuth({
       setLoginOption({
         external_auth: null,
         first_time_setup: false,
-        get_initial_password_command: ''
+        get_initial_password_command: '',
+        captcha_enabled: false
       });
       onLoading?.(false);
       // ``fetchAuthConfig`` failed (network, server 5xx, …). Without

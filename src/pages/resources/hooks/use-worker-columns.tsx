@@ -26,7 +26,7 @@ import { Tooltip } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { useAtom, useAtomValue } from 'jotai';
 import _ from 'lodash';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import semverCoerce from 'semver/functions/coerce';
 import semverGt from 'semver/functions/gt';
 import { status, WorkerStatusMap, WorkerStatusMapValue } from '../config';
@@ -143,15 +143,57 @@ const GPUCell = ({ devices }: { devices: GPUDeviceItem[] }) => (
   </span>
 );
 
+// index + ProgressBar
+const VRAMItem = ({
+  item,
+  autoOpen
+}: {
+  item: GPUDeviceItem;
+  autoOpen: boolean;
+}) => {
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    setOpen(autoOpen);
+  }, [autoOpen]);
+
+  const percent = item.memory?.used
+    ? _.round(item.memory?.utilization_rate, 0)
+    : _.round((item.memory?.allocated / item.memory?.total) * 100, 0);
+
+  return (
+    <Tooltip
+      title={<InfoColumn fieldList={fieldList} data={item.memory} />}
+      open={open}
+      onOpenChange={setOpen}
+    >
+      <span className="flex-center" style={{ cursor: 'pointer' }}>
+        <span
+          className="m-r-5"
+          style={{ display: 'flex', width: 25, lineHeight: 1.2 }}
+        >
+          <span
+            style={{
+              paddingBottom: 2,
+              borderBottom: '1px dashed var(--ant-blue-6)'
+            }}
+          >
+            [{item.index}]
+          </span>
+        </span>
+        <ProgressBar percent={percent} />
+      </span>
+    </Tooltip>
+  );
+};
+
 const VRAMCell = ({
   devices,
-  intl,
   rIndex,
   loadend,
   firstLoad
 }: {
   devices: GPUDeviceItem[];
-  intl: any;
   rIndex: number;
   loadend: boolean;
   firstLoad: boolean;
@@ -160,36 +202,11 @@ const VRAMCell = ({
     {_.map(
       _.sortBy(devices || [], ['index']),
       (item: GPUDeviceItem, index: number) => (
-        <span key={index} className="flex-center">
-          <span
-            className="m-r-5"
-            style={{ display: 'flex', width: 25, lineHeight: 1 }}
-          >
-            [{item.index}]
-          </span>
-          <ProgressBar
-            defaultOpen={rIndex === 0 && index === 0 && loadend && firstLoad}
-            percent={
-              item.memory?.used
-                ? _.round(item.memory?.utilization_rate, 0)
-                : _.round(
-                    (item.memory?.allocated / item.memory?.total) * 100,
-                    0
-                  )
-            }
-            label={<InfoColumn fieldList={fieldList} data={item.memory} />}
-          />
-          {item.memory.is_unified_memory && (
-            <Tooltip
-              title={intl.formatMessage({ id: 'resources.table.unified' })}
-            >
-              <InfoCircleOutlined
-                className="m-l-5"
-                style={{ color: 'var(--ant-blue-5)' }}
-              />
-            </Tooltip>
-          )}
-        </span>
+        <VRAMItem
+          key={index}
+          item={item}
+          autoOpen={rIndex === 0 && index === 0 && loadend && firstLoad}
+        />
       )
     )}
   </span>
@@ -498,6 +515,7 @@ const useWorkerColumns = ({
       {
         title: 'GPU',
         dataIndex: 'gpu',
+        minWidth: 100,
         render: (_, record) =>
           statusAvailable(record) ? (
             <GPUCell devices={record?.status?.gpu_devices} />
@@ -508,11 +526,11 @@ const useWorkerColumns = ({
       {
         title: intl.formatMessage({ id: 'resources.table.vram' }),
         dataIndex: 'vram',
+        minWidth: 100,
         render: (_, record, rIndex) =>
           statusAvailable(record) ? (
             <VRAMCell
               devices={record?.status?.gpu_devices}
-              intl={intl}
               rIndex={rIndex}
               loadend={loadend}
               firstLoad={firstLoad}
@@ -524,6 +542,7 @@ const useWorkerColumns = ({
       {
         title: intl.formatMessage({ id: 'resources.table.disk' }),
         dataIndex: 'storage',
+        minWidth: 100,
         render: (_, record) => (
           <span className="flex-center flex-full">
             {statusAvailable(record) ? (

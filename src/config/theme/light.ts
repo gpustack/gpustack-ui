@@ -47,6 +47,10 @@ export default {
     DatePicker: {
       fontSizeLG: 14
     },
+    Alert: {
+      withDescriptionPadding: '12px 16px',
+      withDescriptionIconSize: 18
+    },
     Menu: {
       iconSize: 16,
       iconMarginInlineEnd: 12,

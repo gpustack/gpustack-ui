@@ -300,6 +300,7 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
         ></FilterBar>
         <ConfigProvider renderEmpty={renderEmpty}>
           <Table
+            tableLayout="auto"
             columns={columns}
             sortDirections={TABLE_SORT_DIRECTIONS}
             showSorterTooltip={false}

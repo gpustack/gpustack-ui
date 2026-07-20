@@ -177,6 +177,7 @@ const ModelItem: React.FC<ModelItemProps> = ({
         <span>
           <AutoComplete
             loading={loading}
+            allowClear
             showSearch={{
               filterOption: (inputValue, option: any) => {
                 return (

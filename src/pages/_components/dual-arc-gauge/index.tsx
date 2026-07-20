@@ -5,20 +5,18 @@ import { createStyles } from 'antd-style';
 import type { GlobalToken } from 'antd/es/theme';
 import React from 'react';
 
-export interface GpuMemory {
-  total: number; // bytes
-  used: number; // bytes — Used
-  allocated: number; // bytes — Allocated
-}
-
-export interface GpuUsageItem {
+export interface DualArcGaugeItem {
   index: number;
   label?: string;
-  memory: GpuMemory;
+  memory: {
+    total: number; // bytes
+    used: number; // bytes — outer arc (semantic color)
+    allocated: number; // bytes — inner arc (blue)
+  };
 }
 
-interface GpuUsageCellProps {
-  data: GpuUsageItem[];
+interface DualArcGaugeProps {
+  data: DualArcGaugeItem[];
 }
 
 // guage external radius: 20, internal radius: 16, stroke width: 2
@@ -26,7 +24,7 @@ const CX = 25;
 const CY = 24;
 const R_OUT = 20;
 const R_IN = 16;
-const SW = 2;
+const SW = 2.5;
 const L_OUT = Math.PI * R_OUT;
 const L_IN = Math.PI * R_IN;
 const arcPath = (r: number) =>
@@ -56,12 +54,15 @@ const useStyles = createStyles(({ css, token }) => ({
   `,
   index: css`
     font-size: 12px;
-    font-weight: 600;
+    font-weight: 500;
     color: ${token.colorTextSecondary};
+    border-bottom: 1px dashed var(--ant-blue-6);
+    padding-bottom: 3px;
+    line-height: 1.2;
   `,
   popTitle: css`
     font-size: 12px;
-    font-weight: 600;
+    font-weight: 500;
     color: ${token.colorText};
     margin-bottom: 6px;
   `,
@@ -89,13 +90,13 @@ const useStyles = createStyles(({ css, token }) => ({
   `
 }));
 
-const GpuUsageCell: React.FC<GpuUsageCellProps> = ({ data }) => {
+const DualArcGauge: React.FC<DualArcGaugeProps> = ({ data }) => {
   const intl = useIntl();
   const { styles } = useStyles();
   const { token } = theme.useToken();
 
   const trackColor = token.colorFillSecondary;
-  const allocColor = token.colorInfo;
+  const allocColor = 'var(--ant-blue-6)';
 
   return (
     <Flex vertical gap={2} style={{ width: 'fit-content' }}>
@@ -105,6 +106,9 @@ const GpuUsageCell: React.FC<GpuUsageCellProps> = ({ data }) => {
         const allocR = total > 0 ? clamp01(allocated / total) : 0;
         const pct = Math.round(usedR * 100);
         const uc = usedColor(usedR, token);
+        // set dim color for allocated if used is 0, otherwise use the same color as used
+        const allocDotColor =
+          allocated > 0 ? allocColor : token.colorTextQuaternary;
 
         const content = (
           <div>
@@ -123,7 +127,7 @@ const GpuUsageCell: React.FC<GpuUsageCellProps> = ({ data }) => {
               <Flex align="center" gap={6} className={styles.metric}>
                 <span
                   className={styles.dot}
-                  style={{ background: allocColor }}
+                  style={{ background: allocDotColor }}
                 />
                 <span className={styles.value}>
                   {convertFileSize(allocated)}
@@ -176,7 +180,7 @@ const GpuUsageCell: React.FC<GpuUsageCellProps> = ({ data }) => {
                     d={P_IN}
                     fill="none"
                     strokeWidth={SW}
-                    stroke={allocColor}
+                    style={{ stroke: allocColor }}
                     strokeDasharray={`${(allocR * L_IN).toFixed(1)} ${L_IN.toFixed(1)}`}
                   />
                 )}
@@ -192,7 +196,7 @@ const GpuUsageCell: React.FC<GpuUsageCellProps> = ({ data }) => {
                   {pct}%
                 </text>
               </svg>
-              <span className={styles.index}>[{item.index}]</span>
+              {<span className={styles.index}>[{item.index}]</span>}
             </Flex>
           </Popover>
         );
@@ -201,4 +205,4 @@ const GpuUsageCell: React.FC<GpuUsageCellProps> = ({ data }) => {
   );
 };
 
-export default GpuUsageCell;
+export default DualArcGauge;

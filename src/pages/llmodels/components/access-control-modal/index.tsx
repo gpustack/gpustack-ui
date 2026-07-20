@@ -130,7 +130,9 @@ const AccessControlModal: React.FC<
             <AlertBlockInfo
               type="warning"
               style={{ marginBottom: 16 }}
-              contentStyle={{ paddingInline: 0 }}
+              contentStyle={{
+                paddingInline: 0
+              }}
               message={intl.formatMessage({
                 id: 'models.button.accessSettings.tips'
               })}

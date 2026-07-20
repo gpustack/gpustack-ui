@@ -15,6 +15,7 @@ import {
   Dropdown,
   DropdownProps,
   Empty,
+  Flex,
   Form,
   Radio,
   RadioChangeEvent,
@@ -80,9 +81,8 @@ const Label = styled.div`
   align-items: center;
   gap: 4px;
   font-weight: 500;
-  margin-block: 8px 12px;
+  margin-bottom: 16px;
   font-size: 14px;
-  color: var(--ant-color-text-tertiary);
 `;
 
 interface AccessControlFormProps {
@@ -103,6 +103,14 @@ type AllowedUsersOverride = {
   labelId: string;
   tipsId?: string;
   Field: React.ComponentType<{
+    form: any;
+    routeId?: number;
+    action: PageActionType;
+  }>;
+  // Optional trigger (e.g. an "Add" button) rendered by the host in its
+  // own layout slot while `Field` renders the body. Same props as Field
+  // so the plugin can gate visibility on action/routeId.
+  Action?: React.ComponentType<{
     form: any;
     routeId?: number;
     action: PageActionType;
@@ -407,41 +415,56 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
         </Tooltip>
       </Label>
 
-      <Form.Item<AccessControlFormData> name="access_policy" noStyle>
-        <Radio.Group
-          onChange={handleOnPolicyChange}
-          style={{ marginBottom: 12 }}
-          options={[
-            ...prependedPolicies.map((p) => ({
-              label: intl.formatMessage({ id: p.labelId }),
-              value: p.policyValue
-            })),
-            {
-              label: intl.formatMessage({ id: 'models.accessSettings.authed' }),
-              value: 'authed'
-            },
-            allowedUsersOverride
-              ? {
-                  label: intl.formatMessage({
-                    id: allowedUsersOverride.labelId
-                  }),
-                  value: allowedUsersOverride.policyValue
-                }
-              : {
-                  label: intl.formatMessage({
-                    id: 'models.accessSettings.allowedUsers'
-                  }),
-                  value: ALLOWED_PRINCIPALS_POLICY
-                },
-            {
-              label: intl.formatMessage({
-                id: 'models.accessSettings.public'
-              }),
-              value: 'public'
-            }
-          ]}
-        ></Radio.Group>
-      </Form.Item>
+      <Flex
+        align="center"
+        justify="space-between"
+        style={{ marginBottom: 16, height: 40 }}
+      >
+        <Form.Item<AccessControlFormData> name="access_policy" noStyle>
+          <Radio.Group
+            onChange={handleOnPolicyChange}
+            options={[
+              ...prependedPolicies.map((p) => ({
+                label: intl.formatMessage({ id: p.labelId }),
+                value: p.policyValue
+              })),
+              {
+                label: intl.formatMessage({
+                  id: 'models.accessSettings.authed'
+                }),
+                value: 'authed'
+              },
+              allowedUsersOverride
+                ? {
+                    label: intl.formatMessage({
+                      id: allowedUsersOverride.labelId
+                    }),
+                    value: allowedUsersOverride.policyValue
+                  }
+                : {
+                    label: intl.formatMessage({
+                      id: 'models.accessSettings.allowedUsers'
+                    }),
+                    value: ALLOWED_PRINCIPALS_POLICY
+                  },
+              {
+                label: intl.formatMessage({
+                  id: 'models.accessSettings.public'
+                }),
+                value: 'public'
+              }
+            ]}
+          ></Radio.Group>
+        </Form.Item>
+        {allowedUsersOverride?.Action &&
+          accessPolicy === overridePolicyValue && (
+            <allowedUsersOverride.Action
+              form={form}
+              routeId={currentData?.id}
+              action={action}
+            />
+          )}
+      </Flex>
       {accessPolicy === 'public' && (
         <div style={{ marginBlock: '16px 12px' }}>
           <AlertBlockInfo
@@ -449,6 +472,13 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
             message={intl.formatMessage({
               id: 'models.accessSettings.public.tips'
             })}
+            overlayScrollerProps={{
+              styles: {
+                wrapper: {
+                  paddingLeft: 0
+                }
+              }
+            }}
           ></AlertBlockInfo>
         </div>
       )}

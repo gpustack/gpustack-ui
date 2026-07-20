@@ -215,6 +215,7 @@ export default {
   'common.filter.name': 'Ada göre filtrele',
   'common.form.password': 'Şifre',
   'common.form.username': 'Kullanıcı adı',
+  'common.form.captcha': 'Doğrulama kodu',
   'common.login.rember': 'Beni hatırla',
   'settings.company': 'GPUStack.ai',
   'common.button.help': 'Yardım',
@@ -276,6 +277,15 @@ export default {
   'common.login.password': 'Şifre ile giriş yap',
   'common.login.username.holder': 'Lütfen kullanıcı adını girin',
   'common.login.password.holder': 'Lütfen şifreyi girin',
+  'common.login.captcha.holder': 'Görseldeki karakterleri girin',
+  'common.login.captcha.tip':
+    'Doğrulama kodu büyük/küçük harfe duyarlı değildir. Yenilemek için görsele tıklayın.',
+  'common.login.captcha.error':
+    'Doğrulama kodu yüklenemedi. Yeniden denemek için yenile düğmesine tıklayın.',
+  'common.login.captcha.audio.listen': 'Doğrulama kodunu dinle',
+  'common.login.captcha.audio.label': 'Sesli doğrulama kodu',
+  'common.login.captcha.audio.error':
+    'Sesli doğrulama kodu yüklenemedi. Lütfen tekrar deneyin.',
   'common.login.newpassword.holder': 'Lütfen yeni şifreyi girin',
   'common.login.confirm.holder': 'Lütfen şifreyi tekrar girin',
   'common.external.login': '{type} ile giriş yap',

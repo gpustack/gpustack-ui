@@ -16,12 +16,16 @@ interface UseLocalAuthOptions {
   onSuccess?: (userInfo: any) => void;
   onError?: (error: Error) => void;
   form: FormInstance;
+  // Returns the current CAPTCHA token, or '' when CAPTCHA is disabled. Read at
+  // submit time so the latest challenge is sent.
+  getCaptchaId?: () => string;
 }
 
 export const useLocalAuth = ({
   fetchUserInfo,
   onSuccess,
-  onError
+  onError,
+  getCaptchaId
 }: UseLocalAuthOptions) => {
   const [initialPassword, setInitialPassword] = useAtom(initialPasswordAtom);
   const [submitLoading, setSubmitLoading] = useState<boolean>(false);
@@ -40,9 +44,13 @@ export const useLocalAuth = ({
   const handleLogin = async (values: any) => {
     setSubmitLoading(true);
     try {
+      const captchaId = getCaptchaId?.();
       await login({
         username: values.username,
-        password: values.password
+        password: values.password,
+        // Only sent when CAPTCHA is enabled; query-string omits undefined so
+        // the fields simply don't appear otherwise.
+        ...(captchaId ? { captcha_id: captchaId, captcha: values.captcha } : {})
       });
 
       const userInfo = await fetchUserInfo();

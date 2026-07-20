@@ -213,6 +213,7 @@ export default {
   'common.filter.name': 'Filter by name',
   'common.form.password': 'Password',
   'common.form.username': 'Username',
+  'common.form.captcha': 'CAPTCHA',
   'common.login.rember': 'Remember me',
   'settings.company': 'GPUStack.ai',
   'common.button.help': 'Help',
@@ -274,6 +275,15 @@ export default {
   'common.login.password': 'Log in with Password',
   'common.login.username.holder': 'Please enter username',
   'common.login.password.holder': 'Please enter password',
+  'common.login.captcha.holder': 'Enter the characters shown',
+  'common.login.captcha.tip':
+    'The CAPTCHA is case-insensitive. Click the image to refresh.',
+  'common.login.captcha.error':
+    'Unable to load the CAPTCHA. Click refresh to try again.',
+  'common.login.captcha.audio.listen': 'Listen to CAPTCHA',
+  'common.login.captcha.audio.label': 'Audio CAPTCHA',
+  'common.login.captcha.audio.error':
+    'Unable to load the audio CAPTCHA. Please try again.',
   'common.login.newpassword.holder': 'Please enter new password',
   'common.login.confirm.holder': 'Please enter password again',
   'common.external.login': 'Log in with {type}',

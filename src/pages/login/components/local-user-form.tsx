@@ -2,11 +2,22 @@ import externalLinks from '@/constants/external-links';
 import {
   InfoCircleOutlined,
   LockOutlined,
+  ReloadOutlined,
+  SafetyCertificateOutlined,
+  SoundOutlined,
   UserOutlined
 } from '@ant-design/icons';
 import { HighlightCode, IconFont } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Button, Divider, Flex, Form, FormInstance, Input } from 'antd';
+import {
+  Button,
+  Divider,
+  Flex,
+  Form,
+  FormInstance,
+  Input,
+  Tooltip
+} from 'antd';
 import { createStyles } from 'antd-style';
 
 const useStyles = createStyles(({ token, css }) => {
@@ -36,6 +47,48 @@ const useStyles = createStyles(({ token, css }) => {
         right: 0;
         top: 74px;
       }
+    `,
+    captchaButton: css`
+      height: 44px;
+      width: 130px;
+      flex-shrink: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: ${token.colorFillQuaternary};
+    `,
+    captchaAudioButton: css`
+      width: 44px;
+      height: 44px;
+      flex: 0 0 44px;
+    `,
+    captchaInput: css`
+      flex: 1;
+      min-width: 0;
+      margin-bottom: 0;
+    `,
+    captchaImage: css`
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    `,
+    captchaTip: css`
+      margin-top: 6px;
+      color: ${token.colorTextTertiary};
+      font-size: 12px;
+      line-height: 1.5;
+    `,
+    captchaError: css`
+      margin-top: 6px;
+      color: ${token.colorError};
+      font-size: 12px;
+      line-height: 1.5;
+    `,
+    captchaAudio: css`
+      display: block;
+      width: 100%;
+      height: 40px;
+      margin-top: 8px;
     `
   };
 });
@@ -48,10 +101,33 @@ interface LocalUserFormProps {
     first_time_setup: boolean;
     get_initial_password_command: string;
   };
+  // CAPTCHA is optional: rendered only when the server enables it.
+  captchaEnabled: boolean;
+  captchaImage: string;
+  captchaAudio: string;
+  captchaLoading: boolean;
+  captchaAudioLoading: boolean;
+  captchaError: boolean;
+  captchaAudioError: boolean;
+  onRefreshCaptcha: () => void | Promise<boolean>;
+  onLoadCaptchaAudio: () => void | Promise<boolean>;
 }
 
 const LocalUserForm: React.FC<LocalUserFormProps> = (props) => {
-  const { handleLogin, form, loginOption } = props;
+  const {
+    handleLogin,
+    form,
+    loginOption,
+    captchaEnabled,
+    captchaImage,
+    captchaAudio,
+    captchaLoading,
+    captchaAudioLoading,
+    captchaError,
+    captchaAudioError,
+    onRefreshCaptcha,
+    onLoadCaptchaAudio
+  } = props;
   const intl = useIntl();
   const { styles } = useStyles();
 
@@ -75,6 +151,117 @@ const LocalUserForm: React.FC<LocalUserFormProps> = (props) => {
           lang="bash"
         ></HighlightCode>
       </div>
+    );
+  };
+
+  const renderCaptcha = () => {
+    if (!captchaEnabled) {
+      return null;
+    }
+    return (
+      <Form.Item
+        label={intl.formatMessage({ id: 'common.form.captcha' })}
+        style={{ marginBottom: 20 }}
+        extra={
+          <span
+            className={captchaError ? styles.captchaError : styles.captchaTip}
+          >
+            {intl.formatMessage({
+              id: captchaError
+                ? 'common.login.captcha.error'
+                : 'common.login.captcha.tip'
+            })}
+          </span>
+        }
+      >
+        <Flex gap={8} vertical>
+          <Form.Item
+            className={styles.captchaInput}
+            name="captcha"
+            rules={[
+              {
+                required: true,
+                message: intl.formatMessage(
+                  { id: 'common.form.rule.input' },
+                  {
+                    name: intl.formatMessage({ id: 'common.form.captcha' })
+                  }
+                )
+              }
+            ]}
+          >
+            <Input
+              autoComplete="off"
+              autoCapitalize="characters"
+              disabled={!captchaImage}
+              maxLength={6}
+              prefix={<SafetyCertificateOutlined />}
+              spellCheck={false}
+              style={{ height: 44 }}
+              placeholder={intl.formatMessage({
+                id: 'common.login.captcha.holder'
+              })}
+            />
+          </Form.Item>
+          <Flex gap={8}>
+            <Tooltip
+              title={intl.formatMessage({ id: 'common.button.refresh' })}
+            >
+              <Button
+                aria-label={intl.formatMessage({ id: 'common.button.refresh' })}
+                className={styles.captchaButton}
+                htmlType="button"
+                icon={captchaImage ? undefined : <ReloadOutlined />}
+                loading={captchaLoading}
+                onClick={onRefreshCaptcha}
+              >
+                {captchaImage && (
+                  <img
+                    className={styles.captchaImage}
+                    src={captchaImage}
+                    alt=""
+                  />
+                )}
+              </Button>
+            </Tooltip>
+            <Tooltip
+              title={intl.formatMessage({
+                id: 'common.login.captcha.audio.listen'
+              })}
+            >
+              <Button
+                aria-label={intl.formatMessage({
+                  id: 'common.login.captcha.audio.listen'
+                })}
+                className={styles.captchaAudioButton}
+                disabled={!captchaImage}
+                htmlType="button"
+                icon={<SoundOutlined />}
+                loading={captchaAudioLoading}
+                onClick={onLoadCaptchaAudio}
+              />
+            </Tooltip>
+          </Flex>
+        </Flex>
+        {captchaAudio && (
+          <audio
+            aria-label={intl.formatMessage({
+              id: 'common.login.captcha.audio.label'
+            })}
+            autoPlay
+            className={styles.captchaAudio}
+            controls
+            src={captchaAudio}
+          />
+        )}
+        {captchaAudioError && (
+          <div aria-live="polite" className={styles.captchaError} role="alert">
+            {intl.formatMessage({
+              id: 'common.login.captcha.audio.error'
+            })}
+          </div>
+        )}
+      </Form.Item>
     );
   };
 
@@ -169,10 +356,12 @@ const LocalUserForm: React.FC<LocalUserFormProps> = (props) => {
           {intl.formatMessage({ id: 'common.button.forgotpassword' })}
         </Button>
       </div>
+      {renderCaptcha()}
       <Button
         htmlType="submit"
         type="primary"
         block
+        disabled={captchaEnabled && !captchaImage}
         loading={props.loading}
         icon={<IconFont type="icon-login" />}
         style={{ height: '44px', fontSize: '14px', marginTop: 20 }}

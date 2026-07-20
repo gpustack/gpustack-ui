@@ -102,15 +102,15 @@ interface LocalUserFormProps {
     get_initial_password_command: string;
   };
   // CAPTCHA is optional: rendered only when the server enables it.
-  captchaEnabled?: boolean;
-  captchaImage?: string;
-  captchaAudio?: string;
-  captchaLoading?: boolean;
-  captchaAudioLoading?: boolean;
-  captchaError?: boolean;
-  captchaAudioError?: boolean;
-  onRefreshCaptcha?: () => void | Promise<boolean>;
-  onLoadCaptchaAudio?: () => void | Promise<boolean>;
+  captchaEnabled: boolean;
+  captchaImage: string;
+  captchaAudio: string;
+  captchaLoading: boolean;
+  captchaAudioLoading: boolean;
+  captchaError: boolean;
+  captchaAudioError: boolean;
+  onRefreshCaptcha: () => void | Promise<boolean>;
+  onLoadCaptchaAudio: () => void | Promise<boolean>;
 }
 
 const LocalUserForm: React.FC<LocalUserFormProps> = (props) => {

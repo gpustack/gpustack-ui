@@ -24,8 +24,8 @@ importers:
         specifier: ^7.1.1
         version: 7.1.2
       '@gpustack/core-ui':
-        specifier: ^1.0.39
-        version: 1.0.39(czdvzceysqw7iv6pct2ucnb23e)
+        specifier: ^1.0.40
+        version: 1.0.40(czdvzceysqw7iv6pct2ucnb23e)
       '@huggingface/gguf':
         specifier: ^0.1.7
         version: 0.1.18
@@ -281,7 +281,7 @@ importers:
         version: 9.1.7
       less-loader:
         specifier: ^12.2.0
-        version: 12.3.2(less@4.1.3)(webpack@5.106.2(lightningcss@1.22.1)(postcss@8.5.14))
+        version: 12.3.2(less@4.6.4)(webpack@5.106.2(lightningcss@1.22.1)(postcss@8.5.14))
       lint-staged:
         specifier: ^15.2.2
         version: 15.5.2
@@ -1481,8 +1481,8 @@ packages:
     resolution: {integrity: sha512-KWk80UPIzPmUg+P0rKh6TqspRw0G6eux1PuJr+zz47ftMaZ9QDwbGzHZbtzWkl5hgayM/qrKRutllRC7D/vVXQ==, tarball: https://registry.npmjs.org/@formatjs/intl-utils/-/intl-utils-2.3.0.tgz}
     deprecated: the package is rather renamed to @formatjs/ecma-abstract with some changes in functionality (primarily selectUnit is removed and we don't plan to make any further changes to this package
 
-  '@gpustack/core-ui@1.0.39':
-    resolution: {integrity: sha512-6NS0TDkBFHK6RipfvLwvDnLZlAoa/yFbHV+xeERAnUb+4t0mDyIQFqvYAeDgrUW/JIZ6WScrm31FDZe2sKiuaw==, tarball: https://registry.npmjs.org/@gpustack/core-ui/-/core-ui-1.0.39.tgz}
+  '@gpustack/core-ui@1.0.40':
+    resolution: {integrity: sha512-Ahd5GcKOulaU32gX//jIZJOWEgr2W1s6jS8UtRTsxZ53UPzBoKkfUnwyWkB2WBUSjvk4lntxvoC4kDefKXbd9w==, tarball: https://registry.npmjs.org/@gpustack/core-ui/-/core-ui-1.0.40.tgz}
     peerDependencies:
       '@ant-design/icons': ^6.1.0
       '@ant-design/pro-components': 3.1.0-0
@@ -10802,7 +10802,7 @@ snapshots:
 
   '@formatjs/intl-utils@2.3.0': {}
 
-  '@gpustack/core-ui@1.0.39(czdvzceysqw7iv6pct2ucnb23e)':
+  '@gpustack/core-ui@1.0.40(czdvzceysqw7iv6pct2ucnb23e)':
     dependencies:
       '@ant-design/icons': 6.2.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@ant-design/pro-components': 3.1.0-0(antd@6.3.7(date-fns@2.30.0)(moment@2.30.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -16494,12 +16494,6 @@ snapshots:
     dependencies:
       klona: 2.0.6
       less: 4.1.3
-      webpack: 5.106.2(lightningcss@1.22.1)(postcss@8.5.14)
-
-  less-loader@12.3.2(less@4.1.3)(webpack@5.106.2(lightningcss@1.22.1)(postcss@8.5.14)):
-    dependencies:
-      less: 4.1.3
-    optionalDependencies:
       webpack: 5.106.2(lightningcss@1.22.1)(postcss@8.5.14)
 
   less-loader@12.3.2(less@4.6.4)(webpack@5.106.2(lightningcss@1.22.1)(postcss@8.5.14)):

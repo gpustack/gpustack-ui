@@ -51,6 +51,9 @@ export default {
       withDescriptionPadding: '12px 16px',
       withDescriptionIconSize: 18
     },
+    Card: {
+      headerHeight: 50
+    },
     Menu: {
       iconSize: 16,
       iconMarginInlineEnd: 12,

@@ -1,3 +1,4 @@
+import PluginExtraFields from '@/components/plugin-extra-fields';
 import { FileSkeletonRows } from '@/pages/llmodels/components/model-source/file-skeleton';
 import { TemplateCard } from '@gpustack/core-ui';
 import { Empty, Flex, Spin } from 'antd';
@@ -40,6 +41,10 @@ const InstanceTypeList: React.FC<InstanceTypeListProps> = ({
 
   return (
     <Flex orientation="vertical" gap={16}>
+      <PluginExtraFields
+        name="InstanceTypeBillingProvider"
+        context={{ instanceTypes: dataList }}
+      />
       {dataList.map((item) => {
         const name = item.name;
         return (

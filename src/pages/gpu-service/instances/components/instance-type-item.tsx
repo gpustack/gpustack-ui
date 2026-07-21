@@ -1,3 +1,4 @@
+import PluginExtraFields from '@/components/plugin-extra-fields';
 import { AutoTooltip, IconFont, ThemeTag } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Flex, Tag } from 'antd';
@@ -271,6 +272,10 @@ const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({ item }) => {
               {cpuManufacturer}
             </ThemeTag>
           )}
+          <PluginExtraFields
+            name="InstanceTypeBillingBadge"
+            context={{ instanceType: item }}
+          />
         </Flex>
       </Title>
       <InstanceMetadataSection spec={specData}></InstanceMetadataSection>

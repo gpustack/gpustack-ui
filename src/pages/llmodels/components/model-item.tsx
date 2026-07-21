@@ -1,12 +1,13 @@
+import PluginExtraFields from '@/components/plugin-extra-fields';
 import {
   IconFont,
-  StatusTag,
+  StatusDot,
   TagsWrapper,
   TemplateCard,
   ThemeTag
 } from '@gpustack/core-ui';
 import { useIntl, useNavigate } from '@umijs/max';
-import { Button } from 'antd';
+import { Button, Tooltip } from 'antd';
 import _ from 'lodash';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
@@ -192,6 +193,23 @@ const ModelItem: React.FC<{
     return _.round(max_tokens / 1024);
   }, [model]);
 
+  // Ready is the normal state — show just the dot (no label); other states
+  // (Not Ready / Stopped) keep their label so the problem is legible.
+  const statusNode = (
+    <StatusDot
+      statusValue={{
+        status: MyModelsStatusMap[model.status],
+        text:
+          model.status === MyModelsStatusValueMap.Ready ||
+          !MyModelsStatusLabelMap[model.status]
+            ? ''
+            : intl.formatMessage({
+                id: MyModelsStatusLabelMap[model.status]
+              })
+      }}
+    />
+  );
+
   return (
     <CardWrapper>
       <TemplateCard
@@ -210,18 +228,32 @@ const ModelItem: React.FC<{
               ) : (
                 <ModelLogo src={defaultModelLogo} alt="" />
               )}
-              <span>{model.name}</span>
+              <span className="flex-center" style={{ gap: 8, minWidth: 0 }}>
+                <span>{model.name}</span>
+                {/* Status moved to a compact dot right after the name, freeing
+                    the header's right side for the price summary. The dot keeps
+                    the state message on hover (StatusDot has no built-in one). */}
+                <span
+                  style={{
+                    fontWeight: 400,
+                    fontSize: 'var(--font-size-small)'
+                  }}
+                >
+                  {model.state_message ? (
+                    <Tooltip title={model.state_message}>
+                      <span style={{ display: 'inline-flex' }}>
+                        {statusNode}
+                      </span>
+                    </Tooltip>
+                  ) : (
+                    statusNode
+                  )}
+                </span>
+              </span>
             </span>
-            <StatusTag
-              maxTooltipWidth={400}
-              statusValue={{
-                status: MyModelsStatusMap[model.status],
-                text: intl.formatMessage({
-                  id: MyModelsStatusLabelMap[model.status] || ''
-                }),
-                message: model.state_message
-              }}
-            ></StatusTag>
+            <span className="flex-center gap-8">
+              <PluginExtraFields name="ModelPriceSummary" context={{ model }} />
+            </span>
           </Header>
         }
       >

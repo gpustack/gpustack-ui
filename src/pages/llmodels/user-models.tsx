@@ -1,3 +1,4 @@
+import PluginExtraFields from '@/components/plugin-extra-fields';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { SyncOutlined } from '@ant-design/icons';
 import {
@@ -268,6 +269,10 @@ const UserModels: React.FC = () => {
             </Space>
           }
         ></PageTools>
+        <PluginExtraFields
+          name="ModelBillingProvider"
+          context={{ models: dataList }}
+        />
         <InfiniteScrollerProvider
           value={{
             total: dataSource.totalPage,

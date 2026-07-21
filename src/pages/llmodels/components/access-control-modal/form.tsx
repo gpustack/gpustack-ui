@@ -6,7 +6,7 @@ import { getGPUStackPlugin } from '@/plugins';
 import { DownOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import {
   AlertBlockInfo,
-  TooltipList,
+  CardRadioGroup,
   Transfer as TransferInner
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
@@ -17,8 +17,6 @@ import {
   Empty,
   Flex,
   Form,
-  Radio,
-  RadioChangeEvent,
   Tooltip
 } from 'antd';
 import {
@@ -82,7 +80,8 @@ const Label = styled.div`
   gap: 4px;
   font-weight: 500;
   margin-bottom: 16px;
-  font-size: 14px;
+  font-size: 13px;
+  color: var(--ant-color-text-secondary);
 `;
 
 interface AccessControlFormProps {
@@ -231,9 +230,7 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
     }
   };
 
-  const handleOnPolicyChange = async (e: RadioChangeEvent) => {
-    console.log('policy changed:', e.target.value);
-    const policy = e.target.value;
+  const handleOnPolicyChange = async (policy: string) => {
     if (policy === ALLOWED_PRINCIPALS_POLICY) {
       form.setFieldsValue({ users: formDataCacheRef.current?.users || [] });
     } else {
@@ -399,72 +396,82 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
             : undefined
       }}
     >
-      <Label>
-        {intl.formatMessage({ id: 'models.table.accessScope' })}
-        <Tooltip
-          title={
-            <TooltipList
-              list={buildAccessScopeTips(
-                allowedUsersOverride,
-                prependedPolicies
-              )}
-            ></TooltipList>
-          }
-        >
-          <QuestionCircleOutlined />
-        </Tooltip>
-      </Label>
+      <Label>{intl.formatMessage({ id: 'models.table.accessScope' })}</Label>
 
-      <Flex
-        align="center"
-        justify="space-between"
-        style={{ marginBottom: 16, height: 40 }}
+      <Form.Item<AccessControlFormData>
+        name="access_policy"
+        style={{
+          marginBottom: 16
+        }}
       >
-        <Form.Item<AccessControlFormData> name="access_policy" noStyle>
-          <Radio.Group
-            onChange={handleOnPolicyChange}
-            options={[
-              ...prependedPolicies.map((p) => ({
-                label: intl.formatMessage({ id: p.labelId }),
-                value: p.policyValue
-              })),
-              {
-                label: intl.formatMessage({
-                  id: 'models.accessSettings.authed'
-                }),
-                value: 'authed'
-              },
-              allowedUsersOverride
-                ? {
-                    label: intl.formatMessage({
-                      id: allowedUsersOverride.labelId
-                    }),
-                    value: allowedUsersOverride.policyValue
-                  }
-                : {
-                    label: intl.formatMessage({
-                      id: 'models.accessSettings.allowedUsers'
-                    }),
-                    value: ALLOWED_PRINCIPALS_POLICY
-                  },
-              {
-                label: intl.formatMessage({
-                  id: 'models.accessSettings.public'
-                }),
-                value: 'public'
-              }
-            ]}
-          ></Radio.Group>
-        </Form.Item>
-        {allowedUsersOverride?.Action &&
-          accessPolicy === overridePolicyValue && (
-            <allowedUsersOverride.Action
-              form={form}
-              routeId={currentData?.id}
-              action={action}
-            />
-          )}
-      </Flex>
+        <CardRadioGroup
+          onChange={handleOnPolicyChange}
+          options={[
+            ...prependedPolicies.map((p) => ({
+              label: intl.formatMessage({ id: p.labelId }),
+              description: intl.formatMessage({ id: p.tipsId ?? p.labelId }),
+              value: p.policyValue
+            })),
+            {
+              label: intl.formatMessage({
+                id: 'models.accessSettings.authed'
+              }),
+              description: intl.formatMessage({
+                id: 'models.accessSettings.authed.tips'
+              }),
+              value: 'authed'
+            },
+            allowedUsersOverride
+              ? {
+                  label: intl.formatMessage({
+                    id: allowedUsersOverride.labelId
+                  }),
+                  description: intl.formatMessage({
+                    id:
+                      allowedUsersOverride.tipsId ??
+                      'models.accessSettings.allowedUsers.tips'
+                  }),
+                  value: allowedUsersOverride.policyValue
+                }
+              : {
+                  label: intl.formatMessage({
+                    id: 'models.accessSettings.allowedUsers'
+                  }),
+                  description: intl.formatMessage({
+                    id: 'models.accessSettings.allowedUsers.tips'
+                  }),
+                  value: ALLOWED_PRINCIPALS_POLICY
+                },
+            {
+              label: intl.formatMessage({
+                id: 'models.accessSettings.public'
+              }),
+              description: intl.formatMessage({
+                id: 'models.accessSettings.public.desc'
+              }),
+              value: 'public'
+            }
+          ]}
+        />
+      </Form.Item>
+      {allowedUsersOverride?.Action && accessPolicy === overridePolicyValue && (
+        <Flex
+          justify="space-between"
+          align="center"
+          style={{ marginBottom: 8 }}
+        >
+          <Label style={{ marginBottom: 0 }}>
+            {intl.formatMessage({
+              id: 'models.accessSettings.grantedPrincipals'
+            })}
+          </Label>
+          <allowedUsersOverride.Action
+            form={form}
+            routeId={currentData?.id}
+            action={action}
+          />
+        </Flex>
+      )}
       {accessPolicy === 'public' && (
         <div style={{ marginBlock: '16px 12px' }}>
           <AlertBlockInfo

@@ -153,7 +153,7 @@ const useClusterColumns = (
         span: 3,
         render: (text: string, record: ClusterListItem) => (
           <>
-            <AutoTooltip ghost title={text}>
+            <AutoTooltip ghost title={text} minWidth={20}>
               <span className="text-primary">{record.name}</span>
             </AutoTooltip>
             {record.is_default && (
@@ -186,23 +186,24 @@ const useClusterColumns = (
       {
         title: intl.formatMessage({ id: 'dashboard.totalgpus' }),
         dataIndex: 'gpus',
-        span: 2,
-        sorter: tableSorter(3),
         width: 100,
+        sorter: tableSorter(3),
         render: (value: number) => <span>{value}</span>
       },
       {
         title: intl.formatMessage({ id: 'clusters.table.deployments' }),
         dataIndex: 'models',
         sorter: tableSorter(4),
-        width: 100,
+        span: spans.deployments,
+        maxWidth: 150,
         render: (value: number) => <span>{value}</span>
       },
       {
         title: intl.formatMessage({ id: 'resources.nodes' }),
         dataIndex: 'workers',
+        minWidth: 100,
+        maxWidth: 120,
         sorter: tableSorter(5),
-        width: 100,
         render: (value: number, record: ClusterListItem) => (
           <span>
             {record.ready_workers} / {record.workers}
@@ -213,6 +214,7 @@ const useClusterColumns = (
         title: intl.formatMessage({ id: 'common.table.status' }),
         dataIndex: 'state',
         span: spans.status,
+        minWidth: 80,
         align: 'center',
         render: (value: number, record: ClusterListItem) => (
           <StatusTag

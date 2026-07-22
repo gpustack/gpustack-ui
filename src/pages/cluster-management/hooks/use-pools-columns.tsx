@@ -116,6 +116,7 @@ const usePoolsColumns = (
         dataIndex: 'replicas',
         span: 6,
         key: 'replicas',
+        align: 'center',
         editable: {
           valueType: 'number',
           title: intl.formatMessage({ id: 'models.table.replicas.edit' })

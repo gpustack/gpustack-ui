@@ -35,7 +35,11 @@ import { DefaultImagePullPolicy } from '../../templates/config';
 import TemplateBasicForm, {
   BasicResourceMax
 } from '../../templates/forms/basic';
-import { pickCandidateForAccelerator, StorageModeValueMap } from '../config';
+import {
+  isSliceableDetail,
+  pickCandidateForAccelerator,
+  StorageModeValueMap
+} from '../config';
 import { FormContext } from '../config/form-context';
 import { FormData, InstanceTypeItem, ListItem } from '../config/types';
 import instanceStyles from '../styles/instances.module.less';
@@ -289,15 +293,15 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       const wholeFactor = isGPUType ? accelerator : cpuCount;
 
       // Sliced mode: scale a single card's unit resources by the chosen
-      // percentage. Scale CPU in millicores and RAM in MiB so fractional
-      // slices stay precise and k8s-valid (integers) — e.g. 10% of a 4-core /
-      // 16Gi card → 400m / 1638Mi, not a rounded-up 1 core / 1Gi.
+      // percentage, submitted as whole cores / whole Gi (floored, min 1) so
+      // the payload matches what the disabled CPU / RAM inputs display —
+      // e.g. 10% of a 4-core / 16Gi card → "1" / "1Gi".
       if (sliced && unitResourcesParsed) {
         const cpuCores = unitResourcesParsed.cpu?.cores ?? 0;
         const ramValue = unitResourcesParsed.ram?.value ?? 0;
         return {
-          cpu: `${Math.max(1, _.floor((cpuCores * 1000 * percentage) / 100))}m`,
-          ram: `${Math.max(1, _.floor((ramValue * 1024 * percentage) / 100))}Mi`
+          cpu: `${Math.max(1, _.floor((cpuCores * percentage) / 100))}`,
+          ram: `${Math.max(1, _.floor((ramValue * percentage) / 100))}Gi`
         };
       }
 
@@ -335,24 +339,34 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       form.setFieldsValue({
         spec: {
           resources: {
-            // Floor the scaled unit resources to whole units; CPU never drops
-            // below 1 core so a small slice still gets a usable vCPU.
+            // Floor the scaled unit resources to whole units, never below 1 —
+            // a small slice (e.g. 8 GB × 10%) still shows a usable 1 vCPU /
+            // 1 GB instead of 0. Display-only: the submit path recomputes
+            // both precisely in millicores / Mi.
             cpu:
               cpuCores != null && percentage > 0
                 ? Math.max(1, _.floor((cpuCores * percentage) / 100))
                 : null,
             ram:
               ramValue != null && percentage > 0
-                ? _.floor((ramValue * percentage) / 100)
+                ? Math.max(1, _.floor((ramValue * percentage) / 100))
                 : null
           }
         }
       } as any);
     };
 
+    // Whether the selected type allows the compute (cores) ratio to exceed
+    // the memory ratio. Without overcommit there is no cores selector and the
+    // cores ratio is locked to (mirrors) the memory ratio.
+    const coresOvercommit =
+      !!selectedInstanceType?.status?.detail?.slicedDetail?.logical
+        ?.coresPercentageOvercommit;
+
     // Single entry point for the sliced memory ratio: write the ratio and
-    // rescale CPU / RAM off it. The compute (cores) ratio must stay >= memory,
-    // so bump it up when memory overtakes it. Reused by the slider onChange.
+    // rescale CPU / RAM off it. With cores overcommit the compute ratio must
+    // stay >= memory (bump it up when memory overtakes it); without it the
+    // compute ratio always mirrors memory. Reused by the slider onChange.
     const applySliceMemoryPercentage = (value: number) => {
       const currentCores = _.toNumber(
         form.getFieldValue([
@@ -361,7 +375,9 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
           'acceleratorSlicedCoresPercentage'
         ])
       );
-      const coresPercentage = currentCores >= value ? currentCores : value;
+      const coresPercentage = coresOvercommit
+        ? Math.max(currentCores, value)
+        : value;
       form.setFieldsValue({
         spec: {
           resources: {
@@ -422,12 +438,14 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
 
       console.log('picked candidate', candidate, instanceType, count);
 
+      // The API carries no RAM max on onceMaxRequest — derive it from the
+      // per-unit RAM × the max requestable unit count (RAM always scales with
+      // the unit count). Disk max comes from spec.localStorage (UI-only cap).
+      const unitRamGi = instanceType.spec?.unitResourcesParsed?.ram?.value;
+      const maxUnits = instanceType.spec?.maxComputeUnitCount || 0;
       setOnceMaxRequest({
         cpu: ceilMilliToCore(candidate?.cpu?.onceMaxRequest)?.cores,
-        // candidate no longer carries ram/localStorage: memory max comes from
-        // the type-level onceMaxRequest.ram (already parsed to a Gi number by
-        // the query hook), disk max from spec.localStorage (UI-only cap).
-        memory: _.toNumber(instanceType.status?.onceMaxRequest?.ram) || null,
+        memory: unitRamGi && maxUnits ? unitRamGi * maxUnits : null,
         localStorage:
           parseQuantityToGi(instanceType.spec?.localStorage)?.value ?? null
       });
@@ -513,7 +531,9 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       const slicedMax =
         _.toNumber(instanceType.status?.onceMaxRequest?.acceleratorSliced) || 0;
       const defaultSliced =
-        !!instanceType.spec?.sliceable && wholeMax < 1 && slicedMax > 0;
+        isSliceableDetail(instanceType.status?.detail?.slicedDetail) &&
+        wholeMax < 1 &&
+        slicedMax > 0;
 
       if (defaultSliced) {
         setSliceMode('sliced');

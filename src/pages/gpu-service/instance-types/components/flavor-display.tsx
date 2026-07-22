@@ -5,9 +5,10 @@ import { formatMemoryDisplay } from '../../instances/config';
 import { manufactureColorMap } from '../../templates/config';
 import { formatManufacturer } from '../../utils';
 
-// The subset of a flavor / instance-type spec the flavor display reads. Both
-// FlavorItem.spec and InstanceTypeSpec structurally satisfy it, so the create
-// drawer's dropdown and the management list share the same renderers.
+// The subset of a flavor / instance-type display shape the flavor renderers
+// read. Flavor specs satisfy it directly (minus sliceable, which the API
+// removed from flavors); the management list builds it from spec.acceleratable
+// + status.detail, deriving sliceable from slicedDetail.
 interface FlavorSpecLike {
   manufacturer?: string | null;
   product?: string | null;
@@ -57,17 +58,6 @@ export const FlavorMeta: React.FC<{ spec?: FlavorSpecLike }> = ({
   }
   if (memory) {
     pieces.push(<span key="memory">{memory}</span>);
-  }
-  if (spec.acceleratable && spec.sliceable) {
-    pieces.push(
-      <ThemeTag
-        key="sliceable"
-        color="geekblue"
-        style={{ fontWeight: 400, marginInlineEnd: 0 }}
-      >
-        {intl.formatMessage({ id: 'gpuservice.instance.sliceable' })}
-      </ThemeTag>
-    );
   }
   if (!pieces.length) return null;
 

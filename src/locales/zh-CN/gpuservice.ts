@@ -111,6 +111,7 @@ export default {
   'gpuservice.instance.mode.whole': '整卡',
   'gpuservice.instance.mode.sliced': '按比例',
   'gpuservice.instance.slice.memoryPercentage': '显存占比（%）',
+  'gpuservice.instance.slice.percentage': '占比（%）',
   'gpuservice.instance.slice.coresPercentage': '算力占比（%）',
   'gpuservice.instance.slice.cores.min': '算力占比需不小于显存占比 {count}%',
   'gpuservice.instance.slice.fullCores': '100% 算力',

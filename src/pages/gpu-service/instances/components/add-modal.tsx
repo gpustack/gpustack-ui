@@ -193,10 +193,13 @@ const AddModal: React.FC<AddModalProps> = ({
       : undefined;
   };
 
-  // GPU types carry their accelerator vendor; non-acceleratable (CPU) types
-  // all map to the single 'cpu' bucket used to match templates.
+  // GPU types carry their accelerator vendor on status.detail (observed — may
+  // be absent until the operator backfills status); non-acceleratable (CPU)
+  // types all map to the single 'cpu' bucket used to match templates.
   const manufacturerOf = (instanceType: InstanceTypeItem) =>
-    instanceType.spec.acceleratable ? instanceType.spec?.manufacturer : 'cpu';
+    instanceType.spec.acceleratable
+      ? (instanceType.status?.detail?.manufacturer ?? undefined)
+      : 'cpu';
 
   // apply the selection of instance type and template
   const applySelection = (

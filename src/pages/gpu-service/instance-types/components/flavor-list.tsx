@@ -94,8 +94,10 @@ const FlavorList: React.FC<FlavorListProps> = ({
                   </ThemeTag>
                 )}
               </Flex>
-              {/* Memory / sliceable only apply to accelerator (GPU) flavors;
-                  a non-acceleratable (generic) flavor has neither. */}
+              {/* Memory only applies to accelerator (GPU) flavors; a
+                  non-acceleratable (generic) flavor has none. (Sliceable is no
+                  longer a flavor field — it is observed per instance type on
+                  status.detail.slicedDetail.) */}
               {spec.acceleratable && (
                 <Flex wrap gap={16}>
                   <MetaItem
@@ -104,17 +106,6 @@ const FlavorList: React.FC<FlavorListProps> = ({
                       id: 'gpuservice.instance.memory'
                     })}
                     value={formatMemoryDisplay(spec.memory ?? undefined) ?? '-'}
-                  />
-                  <MetaItem
-                    icon="icon-sliced"
-                    label={intl.formatMessage({
-                      id: 'gpuservice.instance.sliceable'
-                    })}
-                    value={
-                      spec.sliceable
-                        ? intl.formatMessage({ id: 'common.table.yes' })
-                        : intl.formatMessage({ id: 'common.table.no' })
-                    }
                   />
                 </Flex>
               )}

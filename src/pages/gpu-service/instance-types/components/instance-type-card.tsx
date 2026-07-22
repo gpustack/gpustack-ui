@@ -9,7 +9,7 @@ import {
 import { useIntl } from '@umijs/max';
 import { Button } from 'antd';
 import _ from 'lodash';
-import { formatMemoryDisplay } from '../../instances/config';
+import { formatMemoryDisplay, isSliceableDetail } from '../../instances/config';
 import { manufactureColorMap } from '../../templates/config';
 import { ceilMilliToCore, parseQuantityToGi } from '../../utils';
 import {
@@ -31,12 +31,16 @@ const InstanceTypeCard: React.FC<InstanceTypeCardProps> = ({
 }) => {
   const intl = useIntl();
   const spec = data.spec || {};
+  // Observed hardware (manufacturer / memory / sliced capability, …) comes
+  // from status.detail and may be absent until the operator backfills status.
+  const detail = data.status?.detail || {};
   const unit = spec.unitResources || {};
   const phase = data.status?.phase || '';
-  const manufacturer = spec.manufacturer || '';
+  const manufacturer = detail.manufacturer || '';
   const manufacturerColor = manufactureColorMap[manufacturer] ?? 'purple';
+  const sliceable = isSliceableDetail(detail.slicedDetail);
 
-  const memoryText = formatMemoryDisplay(spec.memory ?? undefined);
+  const memoryText = formatMemoryDisplay(detail.memory ?? undefined);
 
   // Base resources, formatted into a single "·"-separated line. Falsy parts
   // (e.g. a CPU-only type without VRAM) drop out rather than showing "-".
@@ -71,7 +75,7 @@ const InstanceTypeCard: React.FC<InstanceTypeCardProps> = ({
         <div className={styles.header}>
           <span className={styles.product}>
             <AutoTooltip ghost minWidth={20}>
-              {spec.product || data.name || '-'}
+              {detail.product || data.name || '-'}
             </AutoTooltip>
           </span>
           <span className={styles.headerRight}>
@@ -115,13 +119,13 @@ const InstanceTypeCard: React.FC<InstanceTypeCardProps> = ({
               }}
             />
           ) : null}
-          {spec.clockSpeed ? <span>{spec.clockSpeed}</span> : null}
+          {detail.clockSpeed ? <span>{detail.clockSpeed}</span> : null}
           <span
             className={`${styles.tag} ${
-              spec.sliceable ? styles.tagSliceable : styles.tagPlain
+              sliceable ? styles.tagSliceable : styles.tagPlain
             }`}
           >
-            {spec.sliceable
+            {sliceable
               ? intl.formatMessage({ id: 'gpuservice.instance.sliceable' })
               : intl.formatMessage({
                   id: 'gpuservice.instanceType.notSliceable'

@@ -176,6 +176,7 @@ const useClusterColumns = (
         dataIndex: 'provider',
         sorter: tableSorter(2),
         span: spans.provider,
+        minWidth: 110,
         render: (value: string) => (
           <AutoTooltip ghost minWidth={20}>
             {ProviderLabelMap[value]}
@@ -187,20 +188,21 @@ const useClusterColumns = (
         dataIndex: 'gpus',
         span: 2,
         sorter: tableSorter(3),
+        width: 100,
         render: (value: number) => <span>{value}</span>
       },
       {
         title: intl.formatMessage({ id: 'clusters.table.deployments' }),
         dataIndex: 'models',
         sorter: tableSorter(4),
-        span: spans.deployments,
+        width: 100,
         render: (value: number) => <span>{value}</span>
       },
       {
         title: intl.formatMessage({ id: 'resources.nodes' }),
         dataIndex: 'workers',
         sorter: tableSorter(5),
-        span: spans.workers,
+        width: 100,
         render: (value: number, record: ClusterListItem) => (
           <span>
             {record.ready_workers} / {record.workers}
@@ -211,6 +213,7 @@ const useClusterColumns = (
         title: intl.formatMessage({ id: 'common.table.status' }),
         dataIndex: 'state',
         span: spans.status,
+        align: 'center',
         render: (value: number, record: ClusterListItem) => (
           <StatusTag
             statusValue={{

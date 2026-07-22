@@ -163,7 +163,11 @@ const PoolRows: React.FC<PoolRowsProps> = ({
                   key={col.dataIndex || col.key}
                   span={spanFor(col.dataIndex)}
                   style={{
-                    color: 'var(--ant-color-text-secondary)'
+                    color: 'var(--ant-color-text-secondary)',
+                    // CellContent shrinks to its content inside the flex
+                    // cell, so its own align class can't center it —
+                    // center at the cell level instead.
+                    justifyContent: col.align
                   }}
                 >
                   <CellContent

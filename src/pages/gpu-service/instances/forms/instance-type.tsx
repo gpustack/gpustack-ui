@@ -1,9 +1,9 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import NumberSelection from '@/pages/_components/number-selection';
-import { InputNumber, LabelInfo } from '@gpustack/core-ui';
+import { InputNumber } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Divider, Flex, Form, Segmented } from 'antd';
+import { Flex, Form, Segmented } from 'antd';
 import _ from 'lodash';
 import { useContext, useMemo } from 'react';
 import styled from 'styled-components';
@@ -12,6 +12,7 @@ import { parseJsonSafe } from '../../utils';
 import InstanceTypeItem, {
   InstanceMetadataSection
 } from '../components/instance-type-item';
+import { isSliceableDetail } from '../config';
 import { FormContext } from '../config/form-context';
 import {
   FormData,
@@ -59,6 +60,21 @@ const InstanceTypePicker: React.FC<InstanceTypePickerProps> = ({
 
 // Fixed 10-tick percentage scale (10..100) for the sliced (percentage) mode.
 const SLICE_PERCENT_TICKS = [10, 20, 30, 50];
+
+// The paired VRAM + Compute selectors (cores overcommit) are grouped in a
+// bordered card; a lone "Percentage" selector (no overcommit) renders bare so
+// it matches the whole-card GPU Count block's styling.
+const SliceFieldWrapper: React.FC<{
+  withCard: boolean;
+  children: React.ReactNode;
+}> = ({ withCard, children }) =>
+  withCard ? (
+    <FieldBlock>
+      <SelectedCard style={{ padding: 0 }}>{children}</SelectedCard>
+    </FieldBlock>
+  ) : (
+    <>{children}</>
+  );
 
 interface InstanceTypeFormItemProps {
   action: PageActionType;
@@ -115,13 +131,6 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
     return selectedInstanceType?.spec?.maxComputeUnitCount || 0;
   }, [readonlyType, currentData, selectedInstanceType]);
 
-  const isGPU = useMemo(() => {
-    if (readonlyType) {
-      return _.toNumber(currentData?.spec?.resources?.accelerator) > 0;
-    }
-    return selectedInstanceType?.spec?.acceleratable;
-  }, [selectedInstanceType, readonlyType, currentData]);
-
   const handleOnGPUCountChange = (value: number) => {
     onGPUCountChange?.(value);
   };
@@ -130,7 +139,9 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
   // the section is editable (create / recreate, or edit after re-picking a
   // type; a not-yet-re-typed edit renders a readonly card).
   const showModeSwitch =
-    !readonlyType && isGPUType && !!selectedInstanceType?.spec?.sliceable;
+    !readonlyType &&
+    isGPUType &&
+    isSliceableDetail(selectedInstanceType?.status?.detail?.slicedDetail);
 
   const handleModeChange = (value: string) => {
     onSliceModeChange?.(value as 'whole' | 'sliced');
@@ -164,10 +175,17 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
       selectedInstanceType?.status?.onceMaxRequest?.acceleratorSliced
     ) || 0;
 
+  // Whether the compute (cores) ratio may exceed the memory ratio. When the
+  // type doesn't support overcommit, cores are locked to the memory ratio —
+  // no cores selector, and the memory selector reads as a plain "Percentage".
+  const coresOvercommit =
+    !!selectedInstanceType?.status?.detail?.slicedDetail?.logical
+      ?.coresPercentageOvercommit;
+
   const modeSegmented = showModeSwitch ? (
     <Segmented
-      size="small"
-      shape="round"
+      size="middle"
+      type="rounded"
       style={{ fontSize: 12 }}
       value={sliceMode}
       disabled={disabled}
@@ -191,7 +209,7 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
 
   // When the max ratio is below 10%, switch the ticks to a finer 1..10 scale
   // so small slices are still selectable; otherwise use the 10..100 scale.
-  const sliceTicks =
+  const sliceTicks: number[] =
     slicedMaxPercentage < 10
       ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
       : SLICE_PERCENT_TICKS;
@@ -246,8 +264,8 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
             }}
           >
             {description.acceleratable
-              ? `${description.product} x ${currentData?.spec?.resources?.accelerator}`
-              : 'CPU'}
+              ? `${description.displayName || description.product} x ${currentData?.spec?.resources?.accelerator}`
+              : description.displayName || 'CPU'}
           </span>
           <InstanceMetadataSection spec={description}></InstanceMetadataSection>
         </Flex>
@@ -292,9 +310,7 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
       </FieldBlock>
       {showModeSwitch && (
         <div>
-          <LabelInfo label={intl.formatMessage({ id: 'models.form.mode' })} />
-          <div style={{ marginTop: 8 }}>{modeSegmented}</div>
-          <Divider />
+          <div style={{ marginBlock: 8 }}>{modeSegmented}</div>
         </div>
       )}
       {!noAvailableTypes && (
@@ -358,10 +374,13 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
         </Form.Item>
       )}
       {!noAvailableTypes && isSliced && (
-        <FieldBlock>
-          <SelectedCard>
+        <SliceFieldWrapper withCard={coresOvercommit}>
+          <>
             <Form.Item<FormData>
               name={['spec', 'resources', 'acceleratorSlicedMemoryPercentage']}
+              // Grouped with the compute selector inside one card — tighten
+              // the default 24px gap between the pair.
+              style={coresOvercommit ? { marginBottom: 0 } : undefined}
               getValueProps={(value) => ({
                 value: value != null ? _.toNumber(value) : undefined
               })}
@@ -405,68 +424,87 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
                 alwaysShowInput
                 required
                 disabled={disabled}
-                style={{ border: 'none' }}
+                // Inside the card the selector drops its own border; the bare
+                // (no-overcommit) variant keeps it, like the GPU Count block.
+                style={coresOvercommit ? { border: 'none' } : undefined}
                 onChange={handleMemoryPercentageChange}
                 label={intl.formatMessage({
-                  id: 'gpuservice.instance.slice.memoryPercentage'
+                  // Without cores overcommit this single ratio drives both
+                  // VRAM and compute, so drop the "VRAM" qualifier.
+                  id: coresOvercommit
+                    ? 'gpuservice.instance.slice.memoryPercentage'
+                    : 'gpuservice.instance.slice.percentage'
                 })}
               />
             </Form.Item>
             {/* Compute (cores) percentage. Fixed 10..100 ticks; ticks below the
-              chosen memory ratio are disabled (cores must be >= memory). */}
-            <Form.Item<FormData>
-              name={['spec', 'resources', 'acceleratorSlicedCoresPercentage']}
-              style={{ marginBottom: 0 }}
-              getValueProps={(value) => ({
-                value: value != null ? _.toNumber(value) : undefined
-              })}
-              rules={[
-                {
-                  required: true,
-                  validator: (_, value) => {
-                    const num = Number(value);
-                    if (value == null || value === '' || Number.isNaN(num)) {
-                      return Promise.reject(
-                        new Error(
-                          intl.formatMessage({
-                            id: 'gpuservice.instance.slice.percentage.required'
-                          })
-                        )
-                      );
-                    }
-                    if (num < slicedMemoryPercentage || num > 100) {
-                      return Promise.reject(
-                        new Error(
-                          intl.formatMessage(
-                            { id: 'gpuservice.instance.slice.cores.min' },
-                            { count: slicedMemoryPercentage }
-                          )
-                        )
-                      );
-                    }
-                    return Promise.resolve();
-                  }
-                }
-              ]}
-            >
-              <NumberSelection
-                min={slicedMemoryPercentage}
-                max={100}
-                step={10}
-                maxCount={SLICE_PERCENT_TICKS.length}
-                presetValues={SLICE_PERCENT_TICKS}
-                alwaysShowInput
-                required
-                disabled={disabled}
-                onChange={handleCoresPercentageChange}
-                style={{ border: 'none' }}
-                label={intl.formatMessage({
-                  id: 'gpuservice.instance.slice.coresPercentage'
+              chosen memory ratio are disabled (cores must be >= memory). Only
+              types with cores overcommit get the selector — without it the
+              ratio is locked to the memory percentage (the parent mirrors it),
+              carried by a hidden field so it still rides the submit. */}
+            {coresOvercommit ? (
+              <Form.Item<FormData>
+                name={['spec', 'resources', 'acceleratorSlicedCoresPercentage']}
+                style={{ marginBottom: 0 }}
+                getValueProps={(value) => ({
+                  value: value != null ? _.toNumber(value) : undefined
                 })}
-              />
-            </Form.Item>
-          </SelectedCard>
-        </FieldBlock>
+                rules={[
+                  {
+                    required: true,
+                    validator: (_, value) => {
+                      const num = Number(value);
+                      if (value == null || value === '' || Number.isNaN(num)) {
+                        return Promise.reject(
+                          new Error(
+                            intl.formatMessage({
+                              id: 'gpuservice.instance.slice.percentage.required'
+                            })
+                          )
+                        );
+                      }
+                      if (num < slicedMemoryPercentage || num > 100) {
+                        return Promise.reject(
+                          new Error(
+                            intl.formatMessage(
+                              { id: 'gpuservice.instance.slice.cores.min' },
+                              { count: slicedMemoryPercentage }
+                            )
+                          )
+                        );
+                      }
+                      return Promise.resolve();
+                    }
+                  }
+                ]}
+              >
+                <NumberSelection
+                  min={slicedMemoryPercentage}
+                  max={100}
+                  step={10}
+                  maxCount={SLICE_PERCENT_TICKS.length}
+                  presetValues={SLICE_PERCENT_TICKS}
+                  alwaysShowInput
+                  required
+                  disabled={disabled}
+                  onChange={handleCoresPercentageChange}
+                  style={{ border: 'none' }}
+                  label={intl.formatMessage({
+                    id: 'gpuservice.instance.slice.coresPercentage'
+                  })}
+                />
+              </Form.Item>
+            ) : (
+              <Form.Item<FormData>
+                name={['spec', 'resources', 'acceleratorSlicedCoresPercentage']}
+                style={{ marginBottom: 0 }}
+                hidden
+              >
+                <InputNumber />
+              </Form.Item>
+            )}
+          </>
+        </SliceFieldWrapper>
       )}
       {/* A not-yet-re-typed edit renders a readonly card (no sliced UI), so
           register the slice percentages as hidden fields — otherwise their

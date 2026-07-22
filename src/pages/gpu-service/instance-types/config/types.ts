@@ -1,17 +1,17 @@
+import {
+  InstanceTypeDetail,
+  InstanceTypeResource
+} from '../../instances/config/types';
+
 export interface UnitResources {
   cpu?: string | null;
   ram?: string | null;
 }
 
+// spec carries user-defined fields only; observed hardware (manufacturer,
+// memory, sliced capability, …) lives on status.detail.
 export interface InstanceTypeSpec {
   displayName?: string | null;
-  manufacturer?: string | null;
-  product?: string | null;
-  family?: string | null;
-  memory?: string | null;
-  cores?: string | null;
-  clockSpeed?: string | null;
-  sliceable?: boolean;
   os?: string | null;
   arch?: string | null;
   acceleratable?: boolean;
@@ -22,8 +22,15 @@ export interface InstanceTypeSpec {
 }
 
 export interface InstanceTypeStatus {
+  // Observed hardware descriptor; absent until the operator backfills status.
+  detail?: InstanceTypeDetail | null;
   phase?: string | null;
   phaseMessage?: string | null;
+  // Per-mode resource accounting ({onceMaxRequest, remaining, capacity}).
+  accelerator?: InstanceTypeResource | null;
+  acceleratorShared?: InstanceTypeResource | null;
+  acceleratorSliced?: InstanceTypeResource | null;
+  cpu?: InstanceTypeResource | null;
 }
 
 // Row shape for the management list (GET /gpu-instance-types).
@@ -44,7 +51,6 @@ export interface FlavorItem {
     family?: string | null;
     memory?: string | null;
     cores?: string | null;
-    sliceable?: boolean;
     acceleratable?: boolean;
     acceleratorGroup?: string | null;
     generalGroup?: string | null;

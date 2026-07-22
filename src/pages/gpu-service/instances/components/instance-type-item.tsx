@@ -7,7 +7,11 @@ import styled from 'styled-components';
 import { manufactureColorMap } from '../../templates/config';
 import { formatManufacturer } from '../../utils';
 import { formatMemoryDisplay } from '../config';
-import { InstanceTypeItem as InstanceTypeItemModel } from '../config/types';
+import {
+  InstanceTypeItem as InstanceTypeItemModel,
+  InstanceTypeSnapshotSpec
+} from '../config/types';
+import { buildInstanceTypeSnapshotSpec } from '../utils/instance-description';
 
 const Title = styled.div`
   display: flex;
@@ -58,7 +62,10 @@ interface InstanceTypeItemProps {
 }
 
 interface MetadataSectionProps {
-  spec: InstanceTypeItemModel['spec'];
+  // The flat snapshot / display model — built from a live item with
+  // buildInstanceTypeSnapshotSpec, or parsed back from a persisted
+  // `description` snapshot (readonly edit card).
+  spec: InstanceTypeSnapshotSpec;
   // status.onceMaxRequest.acceleratorSliced (max sliceable percentage). Shown
   // next to Max for sliceable types.
   slicedMaxPercentage?: number;
@@ -104,8 +111,14 @@ const CPUManufacturerTag: React.FC<{ manufacturer?: string }> = ({
   );
 };
 
-function getInstanceDerived(item: InstanceTypeItemModel) {
-  const spec = item.spec || {};
+// Derives the display fields from the flat snapshot spec (the UI document
+// format — built from a live item with buildInstanceTypeSnapshotSpec, or
+// parsed back from a persisted `description` snapshot). Observed hardware
+// (manufacturer / product / memory / cpu) originates from status.detail.
+function getInstanceDerived(
+  spec: InstanceTypeSnapshotSpec = {},
+  fallbackName?: string
+) {
   const acceleratable = spec.acceleratable;
 
   const cpuManufacturer = acceleratable
@@ -116,7 +129,9 @@ function getInstanceDerived(item: InstanceTypeItemModel) {
     acceleratable,
     isGPU: acceleratable,
     manufacturer: acceleratable ? spec.manufacturer || '' : 'cpu', // GPU manufacturer or 'cpu' for non-acceleratable types
-    displayName: acceleratable ? spec.product || item.name : 'CPU-only',
+    displayName: acceleratable
+      ? spec.displayName || spec.product || fallbackName
+      : spec.displayName || 'CPU-only',
     ramUnit: spec.unitResourcesParsed?.ram?.value,
     os: _.capitalize(spec.os) || '',
     arch: spec.arch,
@@ -159,9 +174,7 @@ export const InstanceMetadataSection: React.FC<MetadataSectionProps> = ({
 }) => {
   const intl = useIntl();
 
-  const { ramUnit, cpuUnitCores, isGPU, arch } = getInstanceDerived({
-    spec
-  } as InstanceTypeItemModel);
+  const { ramUnit, cpuUnitCores, isGPU, arch } = getInstanceDerived(spec);
 
   // Sliceable types append a "Sliceable {n}%" cell to the second row.
   const showSliceable = !!spec.sliceable && (slicedMaxPercentage ?? 0) > 0;
@@ -217,10 +230,12 @@ const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({
   item,
   action
 }) => {
-  const specData = item.spec || {};
+  // Fold the live (API-shaped) item into the flat display model: definition
+  // fields from spec, observed hardware from status.detail.
+  const specData = buildInstanceTypeSnapshotSpec(item);
 
   const { acceleratable, manufacturer, displayName, cpuManufacturer } =
-    getInstanceDerived(item);
+    getInstanceDerived(specData, item.name);
 
   const manufacturerColor = manufactureColorMap[manufacturer] ?? 'purple';
   const showManufacturerTag = acceleratable && !!manufacturer;

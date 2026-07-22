@@ -10,6 +10,7 @@ import { Space, Tooltip } from 'antd';
 import type { ColumnsType } from 'antd/lib/table';
 import _ from 'lodash';
 import { useMemo } from 'react';
+import { isSliceableDetail } from '../../instances/config';
 import { ceilMilliToCore, parseQuantityToGi } from '../../utils';
 import { FlavorOption } from '../components/flavor-display';
 import {
@@ -95,17 +96,28 @@ const useInstanceTypeColumns = ({
       {
         // Flavor cell mirrors the create drawer's dropdown: product name on
         // top, manufacturer · memory · sliceable on the meta line below.
+        // Observed hardware comes from status.detail (absent until the
+        // operator backfills status); sliceable is derived from slicedDetail.
         title: intl.formatMessage({ id: 'gpuservice.instanceType.flavor' }),
-        dataIndex: ['spec', 'product'],
+        dataIndex: ['status', 'detail', 'product'],
         key: 'product',
         ellipsis: { showTitle: false },
-        render: (_text: string, record: ListItem) => (
-          <FlavorOption
-            spec={record.spec}
-            fallbackName={record.name}
-            maxWidth={200}
-          />
-        )
+        render: (_text: string, record: ListItem) => {
+          const detail = record.status?.detail;
+          return (
+            <FlavorOption
+              spec={{
+                acceleratable: record.spec?.acceleratable,
+                manufacturer: detail?.manufacturer,
+                product: detail?.product,
+                memory: detail?.memory,
+                sliceable: isSliceableDetail(detail?.slicedDetail)
+              }}
+              fallbackName={record.name}
+              maxWidth={200}
+            />
+          );
+        }
       },
       {
         title: (

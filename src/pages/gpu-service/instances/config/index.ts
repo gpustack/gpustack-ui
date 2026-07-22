@@ -3,7 +3,15 @@ import { StatusType } from '@/config/types';
 import { IconFont, icons } from '@gpustack/core-ui';
 import _ from 'lodash';
 import React from 'react';
-import { ListItem } from '../config/types';
+import { AcceleratorSlicedDetail, ListItem } from '../config/types';
+
+// Whether a type can be sliced, per the API contract (replaces the removed
+// `spec.sliceable` boolean): logical (soft) slicing reports per-card capacity
+// or physical (e.g. MIG) profiles exist. Every level of slicedDetail may be
+// absent (exclude_none responses).
+export const isSliceableDetail = (detail?: AcceleratorSlicedDetail | null) =>
+  (detail?.logical?.count ?? 0) > 0 ||
+  (detail?.physical?.profiles?.length ?? 0) > 0;
 
 export const InstanceStatusValueMap = {
   Scheduling: 'Scheduling',
@@ -251,7 +259,7 @@ const parseQuantity = (value?: string | null): number => {
 // Returns the slider max for the accelerator count: the largest
 // tier.onceMaxRequest.accelerator across all tiers (not from candidates).
 export const getAcceleratorMax = (
-  tiers?: { onceMaxRequest: { accelerator?: string } }[] | null
+  tiers?: { onceMaxRequest: { accelerator?: string | null } }[] | null
 ) => {
   if (!tiers?.length) return 0;
   return tiers.reduce((acc, tier) => {
@@ -277,7 +285,10 @@ export const pickCandidateForAccelerator = <
 >(
   tiers:
     | {
-        onceMaxRequest: { accelerator?: string; acceleratorSliced?: string };
+        onceMaxRequest: {
+          accelerator?: string | null;
+          acceleratorSliced?: string | null;
+        };
         candidates?: C[] | null;
       }[]
     | undefined

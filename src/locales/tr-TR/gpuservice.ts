@@ -116,6 +116,7 @@ export default {
   'gpuservice.instance.mode.whole': 'Tam GPU',
   'gpuservice.instance.mode.sliced': 'Orana Göre',
   'gpuservice.instance.slice.memoryPercentage': 'VRAM Yüzdesi (%)',
+  'gpuservice.instance.slice.percentage': 'Yüzde (%)',
   'gpuservice.instance.slice.coresPercentage': 'İşlem Gücü Yüzdesi (%)',
   'gpuservice.instance.slice.cores.min':
     'İşlem gücü oranı VRAM oranından ({count}%) küçük olamaz',

@@ -120,6 +120,7 @@ export default {
   'gpuservice.instance.mode.whole': 'Весь GPU',
   'gpuservice.instance.mode.sliced': 'По доле',
   'gpuservice.instance.slice.memoryPercentage': 'Доля VRAM (%)',
+  'gpuservice.instance.slice.percentage': 'Доля (%)',
   'gpuservice.instance.slice.coresPercentage': 'Доля вычислений (%)',
   'gpuservice.instance.slice.cores.min':
     'Доля вычислений должна быть не меньше доли VRAM ({count}%)',

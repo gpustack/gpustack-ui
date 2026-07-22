@@ -122,6 +122,7 @@ export default {
   'gpuservice.instance.mode.whole': 'Full GPU',
   'gpuservice.instance.mode.sliced': 'By Ratio',
   'gpuservice.instance.slice.memoryPercentage': 'VRAM Percentage (%)',
+  'gpuservice.instance.slice.percentage': 'Percentage (%)',
   'gpuservice.instance.slice.coresPercentage': 'Compute Percentage (%)',
   'gpuservice.instance.slice.cores.min':
     'The compute ratio must be no less than the VRAM ratio ({count}%)',

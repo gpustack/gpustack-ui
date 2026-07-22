@@ -11,10 +11,10 @@
  * with ``buildInstanceTypeRecordFromMiB`` and feed it here.
  */
 import _ from 'lodash';
-import { parseJsonSafe, parseQuantityToGi } from '../../utils';
+import { ceilMilliToCore, parseJsonSafe, parseQuantityToGi } from '../../utils';
 import InstanceTypeCell from '../components/instance-type-cell';
 import { formatMemoryDisplay } from '../config';
-import { InstanceTypeSpec, ListItem } from '../config/types';
+import { InstanceTypeSnapshotSpec, ListItem } from '../config/types';
 
 // Minimal shape of the ``useIntl()`` result we depend on — keeps this module
 // free of an intl package import.
@@ -25,7 +25,7 @@ const toGB = (v?: string | number) =>
 
 const buildResourcesData = (
   instanceType: {
-    spec: InstanceTypeSpec;
+    spec: InstanceTypeSnapshotSpec;
   },
   options: {
     count: number;
@@ -54,7 +54,7 @@ const getSliceMemoryPercentage = (record: ListItem) =>
   _.toNumber(record.spec?.resources?.acceleratorSlicedMemoryPercentage) || 0;
 
 const formatResources = (
-  instanceTypeSpec: { spec: InstanceTypeSpec },
+  instanceTypeSpec: { spec: InstanceTypeSnapshotSpec },
   record: ListItem
 ) => {
   const resources = buildResourcesData(instanceTypeSpec, {
@@ -77,25 +77,28 @@ const formatResources = (
 
   const sliceMemoryPercentage = getSliceMemoryPercentage(record);
 
-  // Sliced: CPU / RAM carry the already-scaled values on spec.resources, and
-  // VRAM is the per-card memory scaled by the memory percentage (floored,
-  // min 1) — not the whole card's size.
+  // Sliced: CPU / RAM carry the already-scaled values on spec.resources —
+  // whole cores / whole Gi for instances created by the current form; parse
+  // (instead of echoing the raw quantity) so legacy instances persisted as
+  // millicores / Mi (e.g. "400m" / "1638Mi") render as whole units too. VRAM
+  // is the per-card memory scaled by the memory percentage (floored, min 1) —
+  // not the whole card's size.
   if (sliceMemoryPercentage > 0) {
-    const vramGi = parseQuantityToGi(
-      (instanceTypeSpec.spec as any)?.memory
-    )?.value;
+    const vramGi = parseQuantityToGi(instanceTypeSpec.spec?.memory)?.value;
     const vram =
       vramGi != null
         ? `${Math.max(1, _.floor((vramGi * sliceMemoryPercentage) / 100))} GB`
         : undefined;
+    const cpuCores = ceilMilliToCore(
+      _.toString(record.spec?.resources?.cpu) || null
+    )?.cores;
+    const ramGi = parseQuantityToGi(
+      _.toString(record.spec?.resources?.ram) || null
+    )?.value;
 
     return {
-      cpu: record.spec?.resources?.cpu
-        ? `${record.spec?.resources?.cpu} vCPU`
-        : '-',
-      ram: record.spec?.resources?.ram
-        ? toGB(record.spec?.resources?.ram)
-        : '-',
+      cpu: cpuCores != null ? `${Math.max(1, cpuCores)} vCPU` : '-',
+      ram: ramGi != null ? `${Math.max(1, ramGi)} GB` : '-',
       vram,
       localStorage: record.spec?.resources?.localStorage
         ? toGB(record.spec?.resources?.localStorage)
@@ -105,7 +108,7 @@ const formatResources = (
 
   // VRAM = per-card GPU memory (a single card's size; not aggregated across
   // cards — the model's marquee spec).
-  const vram = formatMemoryDisplay((instanceTypeSpec.spec as any)?.memory);
+  const vram = formatMemoryDisplay(instanceTypeSpec.spec?.memory ?? undefined);
 
   return {
     cpu: resources.cpu ? `${resources.cpu} vCPU` : '-',
@@ -142,13 +145,17 @@ export const renderInstanceType = (
   const accelerator = record.spec?.resources?.accelerator;
   const sliceMemoryPercentage = getSliceMemoryPercentage(record);
   const isSliced = description.acceleratable && sliceMemoryPercentage > 0;
+  // Type label (primary cell label and the popover's "Type" row) prefers the
+  // user-defined displayName persisted in the description snapshot, falling
+  // back to the hardware product.
+  const typeLabel = description.displayName || description.product;
   const title =
     options.title ??
     (description.acceleratable
       ? isSliced
-        ? `${description.product} (${sliceMemoryPercentage}%)`
-        : `${description.product} x ${accelerator}`
-      : 'CPU-only');
+        ? `${typeLabel} (${sliceMemoryPercentage}%)`
+        : `${typeLabel} x ${accelerator}`
+      : description.displayName || 'CPU-only');
 
   const volume = (record.spec as any)?.volume;
   // Spec popover grouped by category (GPU / CPU / Memory / Disk), mirroring
@@ -179,7 +186,7 @@ export const renderInstanceType = (
             ],
         [
           intl.formatMessage({ id: 'gpuservice.instance.section.type' }),
-          description.product
+          typeLabel
         ],
         [
           intl.formatMessage({ id: 'gpuservice.instance.memory' }),

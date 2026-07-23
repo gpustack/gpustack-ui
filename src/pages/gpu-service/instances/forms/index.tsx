@@ -59,7 +59,7 @@ interface InstanceFormProps {
   ref?: any;
   open: boolean;
   action: PageActionType;
-  realAction?: PageActionType | string;
+  // Present on edit / view.
   currentData?: ListItem | null;
   namespace?: string;
   instanceTypeList?: InstanceTypeItem[];
@@ -67,6 +67,9 @@ interface InstanceFormProps {
   // surfaces a "no available instance type" message in the scheduling tab.
   noAvailableInstanceTypes?: boolean;
   disabled?: boolean;
+  // Editing a non-stopped instance: only displayName and the SSH public keys
+  // stay editable; the type / template / storage sections render disabled.
+  restrictedEdit?: boolean;
   // Fired when the create-scope picker retargets the form to another
   // org (or Global). Only emitted on genuine changes — never on the
   // initial mount, and never in builds where the picker isn't mounted
@@ -111,9 +114,9 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
   (props, ref) => {
     const {
       action,
-      realAction,
       currentData,
       disabled,
+      restrictedEdit,
       open,
       instanceTypeList = [],
       noAvailableInstanceTypes,
@@ -125,8 +128,9 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
     const { getRuleMessage } = useAppUtils();
     const [form] = Form.useForm<InstanceFormValues>();
     const scrollTabsRef = useRef<any>(null);
-    const formAction =
-      realAction === PageAction.CREATE ? PageAction.CREATE : action;
+    // Restricted (non-stopped) edit disables the type / template / storage
+    // sections; displayName and the SSH public keys keep following `disabled`.
+    const sectionDisabled = disabled || restrictedEdit;
     const sshEnabled = Form.useWatch('enable_ssh', form);
     const description = Form.useWatch(['description'], form);
     // `organization_id` is owned by the create-scope picker slot; it only
@@ -464,8 +468,8 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
     };
 
     // Whole-card (exclusive) vs sliced (percentage) mode. Only meaningful for
-    // sliceable accelerator types; derived (no persisted field) — on edit/
-    // recreate it is inferred from acceleratorSlicedMemoryPercentage > 0.
+    // sliceable accelerator types; derived (no persisted field) — on edit it
+    // is inferred from acceleratorSlicedMemoryPercentage > 0.
     const [sliceMode, setSliceMode] = useState<'whole' | 'sliced'>('whole');
 
     const handleAcceleratorChange = (count: number) => {
@@ -582,11 +586,8 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
         return;
       }
 
-      if (
-        action === PageAction.EDIT ||
-        action === PageAction.VIEW ||
-        realAction === PageAction.CREATE
-      ) {
+      // Prefill from the source row on edit / view.
+      if (currentData) {
         console.log('currentData', currentData);
         const currentSpec = parseJsonSafe(
           currentData?.description || '{}',
@@ -597,8 +598,8 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
           ? _.toNumber(currentData?.spec?.resources?.accelerator)
           : _.toNumber(currentData?.spec?.resources?.cpu) || 0;
 
-        // Infer the mode from the persisted slice percentage (recreate keeps
-        // the section editable; edit/view render a readonly card).
+        // Infer the mode from the persisted slice percentage (edit/view
+        // render a readonly card).
         const persistedSliced =
           _.toNumber(
             currentData?.spec?.resources?.acceleratorSlicedMemoryPercentage
@@ -624,12 +625,12 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
         });
 
         // buildResourcesData above filled CPU / RAM for the whole card; rescale
-        // them off the persisted percentages when recreating a sliced instance.
+        // them off the persisted percentages for a sliced instance.
         if (persistedSliced) {
           applySlicedResourceScaling();
         }
       }
-    }, [action, currentData, form, open, realAction, instanceTypeList]);
+    }, [action, currentData, form, open, instanceTypeList]);
 
     const getUnitResources = () => {
       if (selectedInstanceType?.spec?.unitResourcesParsed) {
@@ -736,7 +737,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       >
         <FormContext.Provider
           value={{
-            action: formAction,
+            action: action,
             currentData: currentData,
             isGPUType: isGPUType
           }}
@@ -780,7 +781,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
               storageMode: StorageModeValueMap.Temporary
             }}
           >
-            <Basic action={formAction} disabled={disabled} />
+            <Basic action={action} disabled={disabled} />
             <Form.Item name="clusterId" hidden>
               <CInput.Input />
             </Form.Item>
@@ -797,8 +798,8 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
                   forceRender: true,
                   children: (
                     <InstanceTypeFormItem
-                      action={formAction}
-                      disabled={disabled}
+                      action={action}
+                      disabled={sectionDisabled}
                       selectedInstanceType={selectedInstanceType}
                       currentData={currentData as any}
                       onceMaxRequest={onceMaxRequest}
@@ -820,7 +821,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
                   children: (
                     <TemplateBasicForm
                       page="instance"
-                      disabled={disabled}
+                      disabled={sectionDisabled}
                       onceMaxRequest={onceMaxRequest}
                     />
                   )
@@ -832,7 +833,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
                   }),
                   forceRender: true,
                   children: (
-                    <StorageVolume disabled={disabled} action={formAction} />
+                    <StorageVolume disabled={sectionDisabled} action={action} />
                   )
                 }
               ]}

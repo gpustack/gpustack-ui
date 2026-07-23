@@ -136,8 +136,8 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
   };
 
   // Sliced mode is only offered for sliceable accelerator types, and only when
-  // the section is editable (create / recreate, or edit after re-picking a
-  // type; a not-yet-re-typed edit renders a readonly card).
+  // the section is editable (create, or edit after re-picking a type; a
+  // not-yet-re-typed edit renders a readonly card).
   const showModeSwitch =
     !readonlyType &&
     isGPUType &&

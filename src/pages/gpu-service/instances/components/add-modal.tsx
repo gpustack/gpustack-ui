@@ -5,12 +5,7 @@ import useUserDirectory from '@/pages/gpu-service/hooks/use-user-directory';
 import Separator from '@/pages/llmodels/components/separator';
 import { getGPUStackPlugin } from '@/plugins';
 import { SearchOutlined } from '@ant-design/icons';
-import {
-  AlertBlockInfo,
-  ColumnWrapper,
-  GSDrawer,
-  ModalFooter
-} from '@gpustack/core-ui';
+import { ColumnWrapper, GSDrawer, ModalFooter } from '@gpustack/core-ui';
 import { useIntl, useModel } from '@umijs/max';
 import { Input, Typography } from 'antd';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -30,7 +25,6 @@ type AddModalProps = {
   action: PageActionType;
   open: boolean;
   width?: number | string;
-  realAction?: string;
   clusterList?: Array<{
     label: string;
     value: number;
@@ -84,8 +78,7 @@ const AddModal: React.FC<AddModalProps> = ({
   data,
   onCancel,
   width,
-  clusterList = [],
-  realAction
+  clusterList = []
 }) => {
   const intl = useIntl();
   const { initialState } = useModel('@@initialState') || {};
@@ -173,16 +166,18 @@ const AddModal: React.FC<AddModalProps> = ({
   );
   // const readonly = action === PageAction.VIEW;
   const readonly = false;
-  const isRecreate = realAction === PageAction.CREATE;
-  const showResourceSelectors = action === PageAction.CREATE || isRecreate;
-  const shouldAutoSelectResource = action === PageAction.CREATE && !isRecreate;
+  const showResourceSelectors = action === PageAction.CREATE;
   // Only a stopped instance can be re-typed on edit. It shows the instance-type
   // column (but not the template column) beside the form; the create card
-  // columns render for CREATE / recreate.
+  // columns render for CREATE.
   const isStoppedEdit =
     action === PageAction.EDIT &&
     data?.status?.phase === InstanceStatusValueMap.Stopped;
   const showInstanceTypeColumn = showResourceSelectors || isStoppedEdit;
+  // Editing a non-stopped instance is restricted: only displayName and the
+  // SSH public keys stay editable; the type / template / storage sections
+  // render disabled. A stopped instance edits everything.
+  const isRestrictedEdit = action === PageAction.EDIT && !isStoppedEdit;
 
   const findTemplateByManufacturer = (
     manufacturer: string | undefined,
@@ -266,43 +261,12 @@ const AddModal: React.FC<AddModalProps> = ({
     );
   };
 
-  const findAggregateOf = (
-    candidateName: string | undefined,
-    clusterId: number | null | undefined,
-    instanceTypes: InstanceTypeItem[]
-  ): InstanceTypeItem | undefined => {
-    if (!candidateName) return undefined;
-    return instanceTypes.find((item) =>
-      (item.status?.tiers ?? []).some((tier) =>
-        (tier.candidates ?? []).some(
-          (c) => c.name === candidateName && Number(c.cluster) === clusterId
-        )
-      )
-    );
-  };
-
   // initial for first
   const applyAutoSelection = (
     instanceTypes: InstanceTypeItem[],
     templates: TemplateItem[],
     orgId?: number | null
   ) => {
-    // On edit / view, surface the persisted selection in the card list.
-    if (!shouldAutoSelectResource) {
-      const aggregate = findAggregateOf(
-        data?.spec?.type,
-        data?.clusterId,
-        instanceTypes
-      );
-      if (aggregate) {
-        setInstanceTypeSelection({
-          instanceType: aggregate.name,
-          manufacturer: manufacturerOf(aggregate)
-        });
-      }
-      return;
-    }
-
     // Scope to clusters the chosen org owns (admin "All" view).
     const owned = filterTypesByOwner(instanceTypes, orgId);
 
@@ -376,7 +340,7 @@ const AddModal: React.FC<AddModalProps> = ({
       // full instance-type list to re-type a stopped instance.
       fetchData({ page: -1 });
     }
-  }, [open, shouldAutoSelectResource, action]);
+  }, [open, action]);
 
   // filter instance types (already scoped to the chosen org's clusters)
   const filteredInstanceTypes = ownedInstanceTypes.filter((item) =>
@@ -664,17 +628,6 @@ const AddModal: React.FC<AddModalProps> = ({
             styles={{ container: { paddingBlock: 0 } }}
             footer={
               <>
-                {isRecreate && open && (
-                  <div style={{ marginInline: 24, paddingTop: 8 }}>
-                    <AlertBlockInfo
-                      type="warning"
-                      contentStyle={{ paddingInline: 0 }}
-                      message={intl.formatMessage({
-                        id: 'gpuservice.instance.recreate.confirm.content'
-                      })}
-                    />
-                  </div>
-                )}
                 <ModalFooter
                   onOk={handleSubmit}
                   onCancel={handleCancel}
@@ -698,9 +651,9 @@ const AddModal: React.FC<AddModalProps> = ({
               <GPUServiceInstanceForm
                 ref={form}
                 action={action}
-                realAction={realAction}
                 currentData={data}
                 disabled={readonly}
+                restrictedEdit={isRestrictedEdit}
                 onFinish={onFinish}
                 onFinishFailed={release}
                 onScopeChange={handleScopeChange}

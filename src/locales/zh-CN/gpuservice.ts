@@ -162,9 +162,6 @@ export default {
   'gpuservice.instance.event.recentHourTip': '仅显示最近一小时的事件。',
   'gpuservice.instance.event.tab.instance': '实例事件',
   'gpuservice.instance.event.tab.volume': '存储卷事件',
-  'gpuservice.instance.recreate.confirm.title': '确认重新创建',
-  'gpuservice.instance.recreate.confirm.content':
-    '系统将先删除当前实例，然后使用当前配置重新创建。\n <span style="font-size: 13px;font-weight: 700">{name}</span>',
   'gpuservice.storage': '存储',
   'gpuservice.storage.add': '添加存储',
   'gpuservice.storage.edit': '编辑存储',

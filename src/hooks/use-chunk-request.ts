@@ -43,8 +43,11 @@ export const createAxiosToken = (): CancelTokenSource => {
 };
 
 export const sliceData = (data: string, loaded: number, loadedSize: any) => {
+  // `loaded` is a byte count while `data` is a UTF-16 string; with any
+  // non-ASCII payload the two drift apart, so track consumed characters by
+  // string length only
   const result = data.slice(loadedSize.current);
-  loadedSize.current = loaded;
+  loadedSize.current = data.length;
   return result;
 };
 

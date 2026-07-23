@@ -153,26 +153,50 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
   // Use the seed callback (not handleClusterChange) so this auto-pick refreshes
   // options without firing an evaluate request before a model is selected.
   useEffect(() => {
-    if (!clusterOptions?.length) {
+    // Options derive from clusterList: an empty source list means clusters
+    // are still loading — leave the field alone until they arrive.
+    if (!clusterList?.length) {
       return;
     }
+    // Scope off the live form value, not the `useWatch` snapshot: the scope
+    // field's default lands in a child effect that flushes before this one,
+    // while the watch still reports the previous render's null — scoping off
+    // the watch would seed a cluster from the unscoped list here and only
+    // re-scope a render later.
+    const liveScopeOrgId = form.getFieldValue('organization_id') ?? null;
+    const scoped = clusterList.filter(
+      (item) =>
+        liveScopeOrgId == null || item.owner_principal_id === liveScopeOrgId
+    );
     const current = form.getFieldValue('cluster_id');
-    const stillValid = clusterOptions.some((c) => c.value === current);
+    if (!scoped.length) {
+      // Clusters are loaded but the picked org owns none. Any leftover
+      // selection points at another org's cluster (seeded before the scope
+      // settled) and would make requests fail with "Cluster not found" —
+      // clear it so the required rule surfaces instead. Create only: an
+      // edit's cluster is existing data, not a seed.
+      if (action === PageAction.CREATE && current != null) {
+        form.setFieldValue('cluster_id', undefined);
+      }
+      return;
+    }
+    const stillValid = scoped.some((c) => c.value === current);
     if (current != null && stillValid) {
       return;
     }
     const next =
-      clusterOptions.find((c) => c.is_default)?.value ??
-      clusterOptions.find((c) => c.state === ClusterStatusValueMap.Ready)
-        ?.value ??
-      clusterOptions[0]?.value ??
+      scoped.find((c) => c.is_default)?.value ??
+      scoped.find((c) => c.state === ClusterStatusValueMap.Ready)?.value ??
+      scoped[0]?.value ??
       null;
     if (next == null || next === current) {
       return;
     }
     form.setFieldValue('cluster_id', next);
     onClusterSeed?.(next);
-  }, [clusterOptions, form, onClusterSeed]);
+    // `clusterOptions` is the re-run trigger for scope changes: it recomputes
+    // whenever the watched org scope or the cluster list settles.
+  }, [clusterOptions, clusterList, action, form, onClusterSeed]);
 
   const clusterOptionRender = (option: any) => {
     const { data } = option;

@@ -45,6 +45,11 @@ export interface FormData {
       ram: string | null | number;
       localStorage: string | null | number;
       accelerator: number | string | null;
+      // Sliced (percentage) mode only. Memory (VRAM) percentage bound to the
+      // 10-100 selector + free input; cores (compute) percentage bound to the
+      // "100% compute" checkbox (100 when checked, mirrors memory otherwise).
+      acceleratorSlicedMemoryPercentage?: number;
+      acceleratorSlicedCoresPercentage?: number;
     };
     volume: {
       ephemeral?: {
@@ -126,70 +131,129 @@ export interface InstanceTypeResource {
 export interface InstanceTypeCandidate {
   cluster: string;
   name: string;
-  accelerator: InstanceTypeResource;
-  cpu: InstanceTypeResource;
-  ram: InstanceTypeResource;
-  localStorage: InstanceTypeResource;
+  accelerator?: InstanceTypeResource | null;
+  cpu?: InstanceTypeResource | null;
+  // Shared-mode available resource (not shown in the GPU Instance form).
+  acceleratorShared?: InstanceTypeResource | null;
+  // Sliced-mode available resource.
+  acceleratorSliced?: InstanceTypeResource | null;
+  // This candidate's sliced (partitioning) capability.
+  acceleratorSlicedDetail?: AcceleratorSlicedDetail | null;
+  phase?: 'Active' | 'Inactive' | 'Draining' | null;
 }
 
-export interface InstanceTypeTierOnceMaxRequestResource {
-  accelerator?: string;
-  cpu: QuanityCPU;
-  ram: QuanityMemory;
-  localStorage: QuanityLocalStorage;
+// Per-mode maxima as plain number strings — the shape of the aggregated
+// status.onceMaxRequest / status.remaining AND of tier onceMaxRequest /
+// remaining (they are identical in the API). accelerator counts whole cards,
+// acceleratorShared / acceleratorSliced are percentages, cpu is cores. The
+// API carries no ram / localStorage here — RAM caps derive from
+// spec.unitResources, disk from spec.localStorage.
+export interface InstanceTypeOverviewResource {
+  accelerator?: `${number}` | null;
+  acceleratorShared?: `${number}` | null;
+  acceleratorSliced?: `${number}` | null;
+  cpu?: QuanityCPU | null;
 }
 
 export interface InstanceTypeTier {
-  onceMaxRequest: InstanceTypeTierOnceMaxRequestResource;
+  onceMaxRequest: InstanceTypeOverviewResource;
+  remaining?: InstanceTypeOverviewResource | null;
+  // The tier's aggregated sliced (partitioning) capability.
+  acceleratorSlicedDetail?: AcceleratorSlicedDetail | null;
   candidates?: InstanceTypeCandidate[] | null;
 }
 
-export interface InstanceTypeOnceMaxRequestResource {
-  accelerator?: `${number}` | null;
-  cpu: QuanityCPU;
-  ram: QuanityMemory;
-  localStorage: QuanityLocalStorage;
-}
-
 export interface CPUCache {
-  l1i: string;
-  l1d: string;
-  l2: string;
-  l3: string;
+  l1i?: string | null;
+  l1d?: string | null;
+  l2?: string | null;
+  l3?: string | null;
 }
 
 export interface CPUInfo {
-  physicalCores: string;
-  threadsPerPhysicalCore: string;
-  logicalCores: string;
-  stepping: string | null;
-  clockSpeed: string | null;
-  maxClockSpeed: string | null;
-  cacheLine: string;
-  cache: CPUCache;
-  manufacturer: string;
-  product: string;
-  family: string;
+  physicalCores?: string | null;
+  threadsPerPhysicalCore?: string | null;
+  logicalCores?: string | null;
+  stepping?: string | null;
+  clockSpeed?: string | null;
+  maxClockSpeed?: string | null;
+  cacheLine?: string | null;
+  cache?: CPUCache | null;
+  manufacturer?: string | null;
+  product?: string | null;
+  family?: string | null;
 }
 
-export interface InstanceTypeSpec {
-  group: string;
-  acceleratable: boolean;
-  manufacturer: string;
+// Sliced (partitioning) capability descriptor. Replaces the removed
+// `spec.sliceable` boolean: a type is sliceable when logical (soft) slicing
+// reports capacity or physical (e.g. MIG) profiles exist — see
+// isSliceableDetail in ./index. Appears as status.detail.slicedDetail and as
+// tier / candidate `acceleratorSlicedDetail` in the aggregated view.
+export interface AcceleratorSlicedLogicalDetail {
+  coresPercentageOvercommit?: boolean;
+  // Max soft slices per card; 0 → soft slicing unsupported.
+  count?: number | null;
+}
+
+export interface AcceleratorSlicedPhysicalDetailProfile {
+  name?: string | null;
+  count?: number | null;
+}
+
+export interface AcceleratorSlicedPhysicalDetail {
+  profiles?: AcceleratorSlicedPhysicalDetailProfile[] | null;
+  count?: number | null;
+}
+
+export interface AcceleratorSlicedDetail {
+  logical?: AcceleratorSlicedLogicalDetail | null;
+  physical?: AcceleratorSlicedPhysicalDetail | null;
+}
+
+// status.detail — the observed hardware descriptor. The API moved these off
+// spec (spec keeps user-defined fields only). The whole object is absent until
+// the operator backfills status, and every response is exclude_none — treat
+// every key as possibly missing.
+export interface InstanceTypeDetail {
+  // Device identity.
+  manufacturer?: string | null;
   product?: string | null;
-  memory?: string | null;
   family?: string | null;
+  // Host node CPU (flat fields, as opposed to the nested `cpu` below).
+  physicalCores?: string | null;
+  threadsPerPhysicalCore?: string | null;
+  logicalCores?: string | null;
+  stepping?: string | null;
+  clockSpeed?: string | null;
+  maxClockSpeed?: string | null;
+  cacheLine?: string | null;
+  cache?: CPUCache | null;
+  // Accelerator hardware.
+  memory?: string | null;
+  cores?: string | null;
   computeCapability?: string | null;
-  sliced?: string | null;
-  maxComputeUnitCount?: number;
+  slicedDetail?: AcceleratorSlicedDetail | null;
+  // The accelerator's own CPU (distinct from the flat host CPU fields above).
+  cpu?: CPUInfo | null;
+}
+
+// Mirrors the API spec object exactly (user-defined fields only — observed
+// hardware lives on status.detail), plus two UI-computed enrichments filled by
+// use-query-instance-types whose names exist nowhere in the API.
+export interface InstanceTypeSpec {
+  displayName?: string | null;
+  acceleratorGroup?: string | null;
+  generalGroup?: string | null;
+  acceleratable?: boolean;
+  os?: string;
+  arch?: string;
+  localStorage?: QuanityLocalStorage;
   unitResources?: {
     cpu: QuanityCPU;
     ram: QuanityMemory;
   };
-  os?: string;
-  arch?: string;
-  cpu?: CPUInfo;
-  cache?: Record<string, string>;
+  // ---- UI-computed (not part of the API contract) ----
+  // spec.unitResources parsed to numbers.
   unitResourcesParsed?: {
     cpu: {
       cores?: number;
@@ -202,10 +266,31 @@ export interface InstanceTypeSpec {
       num: number;
     } | null;
   };
+  // Max requestable unit (card / core) count, derived from status.
+  maxComputeUnitCount?: number;
+}
+
+// Flat spec snapshot persisted in a GPU instance's `description` field at
+// create time (see utils/instance-description.ts) and reused as the display
+// model of the type card / metadata section. It merges the definition spec
+// with the observed hardware from status.detail and the derived `sliceable`.
+// The flat shape is a UI document format — do NOT confuse it with the API
+// InstanceTypeSpec; it stays flat for compatibility with snapshots persisted
+// by older instances.
+export interface InstanceTypeSnapshotSpec extends InstanceTypeSpec {
+  manufacturer?: string | null;
+  product?: string | null;
+  family?: string | null;
+  memory?: string | null;
+  sliceable?: boolean;
+  // Accelerator CPU identity only (from status.detail.cpu).
+  cpu?: Pick<CPUInfo, 'manufacturer' | 'product' | 'family'> | null;
 }
 
 export interface InstanceTypeStatus {
-  onceMaxRequest: InstanceTypeOnceMaxRequestResource;
+  detail?: InstanceTypeDetail | null;
+  onceMaxRequest: InstanceTypeOverviewResource;
+  remaining?: InstanceTypeOverviewResource | null;
   tiers?: InstanceTypeTier[] | null;
 }
 

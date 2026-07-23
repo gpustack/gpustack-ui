@@ -86,7 +86,6 @@ const GPUService: React.FC = () => {
     openCreateInstanceModal,
     openEditInstanceModal,
     openViewInstanceModal,
-    openRecreateInstanceModal,
     closeInstanceModal
   } = useCreateInstance();
   const { openViewLogsModal, closeViewLogsModal, openViewLogsModalStatus } =
@@ -136,13 +135,7 @@ const GPUService: React.FC = () => {
 
   const handleModalOk = async (data: FormData) => {
     try {
-      if (openInstanceModalStatus.realAction === PageAction.CREATE) {
-        await deleteGPUServiceInstance(openInstanceModalStatus.currentData!.id);
-        await new Promise((resolve) => {
-          setTimeout(resolve, 300);
-        });
-        await createInstance({ data });
-      } else if (openInstanceModalStatus.action === PageAction.EDIT) {
+      if (openInstanceModalStatus.action === PageAction.EDIT) {
         await updateInstance({
           id: openInstanceModalStatus.currentData!.id,
           data
@@ -243,8 +236,6 @@ const GPUService: React.FC = () => {
       openEditInstanceModal(row);
     } else if (val === 'delete') {
       handleDelete({ ...row });
-    } else if (val === 'recreate') {
-      openRecreateInstanceModal(row);
     } else if (val === 'viewlog') {
       openViewLogsModal(row);
     } else if (val === 'viewevent') {
@@ -391,7 +382,6 @@ const GPUService: React.FC = () => {
         title={openInstanceModalStatus.title}
         data={openInstanceModalStatus.currentData}
         width={openInstanceModalStatus.width}
-        realAction={openInstanceModalStatus.realAction}
         clusterList={clusterList}
         onCancel={closeInstanceModal}
         onOk={handleModalOk}

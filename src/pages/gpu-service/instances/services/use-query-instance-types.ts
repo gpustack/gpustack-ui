@@ -2,7 +2,7 @@ import { useQueryData } from '@gpustack/core-ui';
 import React from 'react';
 import { ceilMilliToCore, parseQuantityToGi } from '../../utils';
 import { queryGPUServiceInstanceTypes } from '../apis';
-import { getAcceleratorMax } from '../config';
+import { getAcceleratorMax, isSliceableDetail } from '../config';
 import { InstanceTypeItem } from '../config/types';
 
 type InstanceType = InstanceTypeItem & {
@@ -36,6 +36,20 @@ export default function useQueryInstanceTypes() {
     }
 
     const max = getAcceleratorMax(item.status?.tiers);
+
+    // Sliceable types stay selectable as long as either whole-card or sliced
+    // capacity remains; unavailable only when both status.onceMaxRequest
+    // .accelerator and .acceleratorSliced are 0.
+    if (isSliceableDetail(item.status?.detail?.slicedDetail)) {
+      const wholeMax = Number(item.status?.onceMaxRequest?.accelerator) || 0;
+      const slicedMax =
+        Number(item.status?.onceMaxRequest?.acceleratorSliced) || 0;
+      return {
+        maxComputeUnitCount: max || 0,
+        available: wholeMax > 0 || slicedMax > 0
+      };
+    }
+
     return {
       maxComputeUnitCount: max || 0,
       available: (max || 0) > 0
@@ -63,17 +77,11 @@ export default function useQueryInstanceTypes() {
         },
         status: {
           ...item.status,
+          // Normalize cpu (possibly millicores) to a whole-core count string;
+          // the other onceMaxRequest fields are plain number strings already.
           onceMaxRequest: {
             ...rawMax,
-            cpu: rawMax?.cpu
-              ? `${ceilMilliToCore(rawMax.cpu)?.cores || 0}`
-              : '',
-            ram: rawMax?.ram
-              ? `${parseQuantityToGi(rawMax.ram)?.value || 0}`
-              : '',
-            localStorage: rawMax?.localStorage
-              ? `${parseQuantityToGi(rawMax.localStorage)?.value || 0}`
-              : ''
+            cpu: rawMax?.cpu ? `${ceilMilliToCore(rawMax.cpu)?.cores || 0}` : ''
           }
         },
 

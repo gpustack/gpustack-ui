@@ -45,3 +45,10 @@
   font-weight: 400;
   font-size: 12px;
 }
+
+// TemplateCard applies a fixed inline height; override to let sliceable cards
+// (with the extra Sliceable row) grow while keeping a 106px floor.
+.instanceTypeCard {
+  height: auto !important;
+  min-height: 106px;
+}

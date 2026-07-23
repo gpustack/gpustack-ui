@@ -3,7 +3,15 @@ import { StatusType } from '@/config/types';
 import { IconFont, icons } from '@gpustack/core-ui';
 import _ from 'lodash';
 import React from 'react';
-import { ListItem } from '../config/types';
+import { AcceleratorSlicedDetail, ListItem } from '../config/types';
+
+// Whether a type can be sliced, per the API contract (replaces the removed
+// `spec.sliceable` boolean): logical (soft) slicing reports per-card capacity
+// or physical (e.g. MIG) profiles exist. Every level of slicedDetail may be
+// absent (exclude_none responses).
+export const isSliceableDetail = (detail?: AcceleratorSlicedDetail | null) =>
+  (detail?.logical?.count ?? 0) > 0 ||
+  (detail?.physical?.profiles?.length ?? 0) > 0;
 
 export const InstanceStatusValueMap = {
   Scheduling: 'Scheduling',
@@ -251,7 +259,7 @@ const parseQuantity = (value?: string | null): number => {
 // Returns the slider max for the accelerator count: the largest
 // tier.onceMaxRequest.accelerator across all tiers (not from candidates).
 export const getAcceleratorMax = (
-  tiers?: { onceMaxRequest: { accelerator?: string } }[] | null
+  tiers?: { onceMaxRequest: { accelerator?: string | null } }[] | null
 ) => {
   if (!tiers?.length) return 0;
   return tiers.reduce((acc, tier) => {
@@ -262,32 +270,46 @@ export const getAcceleratorMax = (
 
 // Picks the candidate (cluster + type name) that should fulfill a requested
 // accelerator count: the first candidate of the smallest tier whose
-// onceMaxRequest.accelerator is >= the requested count and whose cpu/ram/localStorage
-// remaining are all > 0.
+// onceMaxRequest.accelerator is >= the requested count. Only Active candidates
+// are eligible. Accelerated types are not gated on CPU remaining (only CPU-only
+// types are); in sliced mode the candidate's acceleratorSliced remaining must
+// also be > 0.
 export const pickCandidateForAccelerator = <
   C extends {
     cluster: string;
     name: string;
+    phase?: string | null;
     cpu?: { remaining?: string | null } | null;
-    ram?: { remaining?: string | null } | null;
-    localStorage?: { remaining?: string | null } | null;
+    acceleratorSliced?: { remaining?: string | null } | null;
   }
 >(
   tiers:
     | {
-        onceMaxRequest: { accelerator?: string };
+        onceMaxRequest: {
+          accelerator?: string | null;
+          acceleratorSliced?: string | null;
+        };
         candidates?: C[] | null;
       }[]
     | undefined
     | null,
-  { count, acceleratable }: { count: number; acceleratable?: boolean }
+  {
+    count,
+    acceleratable,
+    sliced
+  }: { count: number; acceleratable?: boolean; sliced?: boolean }
 ): C | null => {
   if (!tiers?.length) return null;
 
-  const hasResources = (c: C) =>
-    parseQuantity(c.cpu?.remaining) > 0 &&
-    parseQuantity(c.ram?.remaining) > 0 &&
-    parseQuantity(c.localStorage?.remaining) > 0;
+  const hasResources = (c: C) => {
+    // Only Active candidates can serve new instances.
+    if (c.phase !== InstanceTypePhaseValueMap.Active) return false;
+    // Accelerated types are not gated on CPU remaining; CPU-only types are.
+    if (!acceleratable && parseQuantity(c.cpu?.remaining) <= 0) return false;
+    if (sliced && parseQuantity(c.acceleratorSliced?.remaining) <= 0)
+      return false;
+    return true;
+  };
 
   const sorted = [...tiers].sort(
     (a, b) =>
@@ -298,9 +320,14 @@ export const pickCandidateForAccelerator = <
   // count === 0 ? parseQuantity(tier.onceMaxRequest.accelerator) > count; this is CPU-only case.
   for (const tier of sorted) {
     const acceleratorCount = parseQuantity(tier.onceMaxRequest?.accelerator);
-    const fits = acceleratable
-      ? acceleratorCount >= count
-      : acceleratorCount === 0;
+    // Sliced mode requests a fraction of a single card, so the tier's
+    // whole-card accelerator count (0 for a slice-only type) can't gate it;
+    // fit on the tier's sliced capacity instead.
+    const fits = sliced
+      ? parseQuantity(tier.onceMaxRequest?.acceleratorSliced) > 0
+      : acceleratable
+        ? acceleratorCount >= count
+        : acceleratorCount === 0;
     if (!fits) continue;
     const candidate = tier.candidates?.find(hasResources);
     if (candidate) return candidate;

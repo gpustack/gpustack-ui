@@ -70,6 +70,10 @@ export default {
   'noresult.gpuservice.storage.subTitle':
     'ストレージはまだ追加されていません。',
   'noresult.gpuservice.storage.nofound': '一致するストレージが見つかりません。',
+  'noresult.gpuservice.instanceType.title': 'No Instance Types',
+  'noresult.gpuservice.instanceType.subTitle':
+    'Create an instance type to get started',
+  'noresult.gpuservice.instanceType.nofound': 'No instance types found',
   'noresult.gpuservice.storageType.title': 'ストレージタイプなし',
   'noresult.gpuservice.storageType.subTitle':
     'ストレージタイプはまだ追加されていません。',

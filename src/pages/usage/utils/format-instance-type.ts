@@ -32,16 +32,16 @@ export const formatCpuSpec = (
   return parts.join(' · ');
 };
 
-// CPU instance-type label: "CPU Only" plus its real size when known, e.g.
-// "CPU Only · 2 vCPU · 4 GB". Used by both the table column and the trend
+// CPU instance-type label: "CPU-only" plus its real size when known, e.g.
+// "CPU-only · 2 vCPU · 4 GB". Used by both the table column and the trend
 // legend so they read identically.
 export const cpuOnlyLabel = (row?: Partial<ResourceBreakdownItem>): string => {
   const spec = formatCpuSpec(row?.cpu_milli, row?.memory_mib);
-  return spec ? `CPU Only · ${spec}` : 'CPU Only';
+  return spec ? `CPU-only · ${spec}` : 'CPU-only';
 };
 
 // Instance Types are grouped by actual shape, so each row is one concrete
-// type: a GPU shows "<product> x <cards>", a CPU shows "CPU Only · <spec>".
+// type: a GPU shows "<product> x <cards>", a CPU shows "CPU-only · <spec>".
 // One label for the table column and the trend legend so they read the same
 // and each shape is a distinct series. (" x " matches the GPU Instances list.)
 export const instanceTypeSeriesLabel = (

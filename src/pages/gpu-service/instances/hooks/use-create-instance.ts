@@ -3,6 +3,7 @@ import type { PageActionType } from '@/config/types';
 import useBodyScroll from '@/hooks/use-body-scroll';
 import { useIntl } from '@umijs/max';
 import { useState } from 'react';
+import { InstanceStatusValueMap } from '../config';
 import type { ListItem } from '../config/types';
 
 const useCreateInstance = () => {
@@ -14,30 +15,26 @@ const useCreateInstance = () => {
     title: string;
     currentData?: ListItem | null;
     width?: number | string;
-    realAction?: string;
   }>({
     action: PageAction.CREATE,
     title: '',
     open: false,
     width: undefined,
-    currentData: null,
-    realAction: undefined
+    currentData: null
   });
 
   const openModal = (
     action: PageActionType,
     title: string,
     currentData?: ListItem | null,
-    width?: number | string,
-    realAction?: string
+    width?: number | string
   ) => {
     setOpenModalStatus({
       action,
       title,
       open: true,
       currentData,
-      width,
-      realAction
+      width
     });
     saveScrollHeight();
   };
@@ -52,11 +49,14 @@ const useCreateInstance = () => {
   };
 
   const openEditInstanceModal = (row: ListItem) => {
+    // A stopped instance can be re-typed, so it needs the two-column layout
+    // (instance-type list + form); other statuses edit in a single column.
+    const isStopped = row.status?.phase === InstanceStatusValueMap.Stopped;
     openModal(
       PageAction.EDIT,
       intl.formatMessage({ id: 'gpuservice.instance.edit' }),
       row,
-      600
+      isStopped ? 'min(1040px, calc(100vw - 220px))' : 600
     );
   };
 
@@ -69,23 +69,12 @@ const useCreateInstance = () => {
     );
   };
 
-  const openRecreateInstanceModal = (row: ListItem) => {
-    openModal(
-      PageAction.EDIT,
-      intl.formatMessage({ id: 'common.button.recreate' }),
-      row,
-      'calc(100vw - 220px)',
-      PageAction.CREATE
-    );
-  };
-
   const closeModal = () => {
     setOpenModalStatus({
       ...openModalStatus,
       title: '',
       open: false,
-      currentData: null,
-      realAction: undefined
+      currentData: null
     });
     restoreScrollHeight();
   };
@@ -97,7 +86,6 @@ const useCreateInstance = () => {
     openCreateInstanceModal,
     openEditInstanceModal,
     openViewInstanceModal,
-    openRecreateInstanceModal,
     closeInstanceModal: closeModal
   };
 };

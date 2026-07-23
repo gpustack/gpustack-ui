@@ -8,24 +8,38 @@ const findValidJSONStrings = (inputStr: string) => {
     const openingBraceIndex = inputStr.indexOf('{', startIndex);
     if (openingBraceIndex === -1) break; // No more opening braces
 
-    let closingBraceIndex = openingBraceIndex;
+    // find the matching closing brace, ignoring braces inside string
+    // literals (e.g. a state_message containing `{`/`}`)
+    let closingBraceIndex = -1;
     let braceCount = 0;
+    let inString = false;
+    let escaped = false;
 
-    // find  couple of braces
-    while (closingBraceIndex < inputStr.length) {
-      if (inputStr[closingBraceIndex] === '{') {
+    for (let i = openingBraceIndex; i < inputStr.length; i++) {
+      const char = inputStr[i];
+      if (inString) {
+        if (escaped) {
+          escaped = false;
+        } else if (char === '\\') {
+          escaped = true;
+        } else if (char === '"') {
+          inString = false;
+        }
+      } else if (char === '"') {
+        inString = true;
+      } else if (char === '{') {
         braceCount++;
-      } else if (inputStr[closingBraceIndex] === '}') {
+      } else if (char === '}') {
         braceCount--;
+        if (braceCount === 0) {
+          closingBraceIndex = i;
+          break;
+        }
       }
-      if (braceCount === 0) {
-        break;
-      }
-      closingBraceIndex++;
     }
 
-    if (braceCount !== 0) {
-      //  no matching closing brace
+    if (closingBraceIndex === -1) {
+      //  no matching closing brace yet, wait for more data
       break;
     }
 
@@ -37,11 +51,11 @@ const findValidJSONStrings = (inputStr: string) => {
     try {
       const parsedData = JSON.parse(jsonString);
       validJSONStrings.push(parsedData);
-      startIndex = closingBraceIndex + 1;
     } catch (error) {
-      // mabye invalid JSON
-      break;
+      // skip the malformed segment instead of breaking, otherwise it jams
+      // the buffer and every later event on this stream is lost
     }
+    startIndex = closingBraceIndex + 1;
   }
 
   return {

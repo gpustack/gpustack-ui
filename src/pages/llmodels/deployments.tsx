@@ -248,7 +248,13 @@ const Models = forwardRef((props, ref) => {
       chunkInstanceRequedtRef.current = setModelInstanceChunkRequest({
         url: `${MODEL_INSTANCE_API}`,
         params: {},
-        handler: updateInstanceHandler
+        handler: updateInstanceHandler,
+        beforeReconnect() {
+          // treat the reconnect snapshot as the new baseline, otherwise
+          // instances deleted while the stream was down linger in the cache
+          // (their DELETE events are never re-sent)
+          cacheInsDataListRef.current = [];
+        }
       });
     } catch (error) {
       // ignore
@@ -449,6 +455,20 @@ const Models = forwardRef((props, ref) => {
       clearTimeout(timer);
       axiosToken?.cancel?.();
       cancelRequestsOnPageInactive();
+    };
+  }, []);
+
+  // watch events can still be lost (stream hiccup, reconnect gap); a low
+  // frequency relist keeps the instance cache eventually consistent, so a
+  // missed DELETE event can't leave a stale instance behind for good
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (!isPageHidden.current) {
+        getAllModelInstances();
+      }
+    }, 60 * 1000);
+    return () => {
+      clearInterval(timer);
     };
   }, []);
 

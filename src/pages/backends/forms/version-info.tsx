@@ -5,7 +5,7 @@ import {
   ThemeTag
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Empty, Typography } from 'antd';
+import { Empty, Switch, Tooltip, Typography } from 'antd';
 import { useState } from 'react';
 import styled from 'styled-components';
 import {
@@ -81,9 +81,15 @@ const FilterBox = styled.div`
 
 interface VersionItemProps {
   data: VersionListItem;
+  hidden?: boolean;
+  onToggleVisibility?: (versionNo: string, hidden: boolean) => void;
 }
 
-export const VersionItem: React.FC<VersionItemProps> = ({ data }) => {
+export const VersionItem: React.FC<VersionItemProps> = ({
+  data,
+  hidden,
+  onToggleVisibility
+}) => {
   const intl = useIntl();
 
   const renderSource = () => {
@@ -120,16 +126,36 @@ export const VersionItem: React.FC<VersionItemProps> = ({ data }) => {
   return (
     <ItemWrapper>
       <div className="title">
-        <span>{data.version_no}</span>
-        {renderSource()}
-        {!data.is_built_in && data.is_default && (
-          <ThemeTag
-            color="geekblue"
-            className="font-400"
-            style={{ marginRight: 0 }}
+        <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span>{data.version_no}</span>
+          {renderSource()}
+          {!data.is_built_in && data.is_default && (
+            <ThemeTag
+              color="geekblue"
+              className="font-400"
+              style={{ marginRight: 0 }}
+            >
+              {intl.formatMessage({ id: 'backend.isDefault' })}
+            </ThemeTag>
+          )}
+        </span>
+        {onToggleVisibility && (
+          <Tooltip
+            title={intl.formatMessage({ id: 'backend.version.hideTip' })}
           >
-            {intl.formatMessage({ id: 'backend.isDefault' })}
-          </ThemeTag>
+            <Switch
+              checked={!hidden}
+              checkedChildren={intl.formatMessage({
+                id: 'backend.version.visible'
+              })}
+              unCheckedChildren={intl.formatMessage({
+                id: 'backend.version.hidden'
+              })}
+              onChange={(checked) =>
+                onToggleVisibility(data.version_no as string, !checked)
+              }
+            />
+          </Tooltip>
         )}
       </div>
       <RowWrapper>
@@ -188,9 +214,11 @@ export const VersionItem: React.FC<VersionItemProps> = ({ data }) => {
   );
 };
 
-const VersionList: React.FC<{ versionConfigs: VersionListItem[] }> = ({
-  versionConfigs
-}) => {
+const VersionList: React.FC<{
+  versionConfigs: VersionListItem[];
+  disabledVersions?: string[];
+  onToggleVisibility?: (versionNo: string, hidden: boolean) => void;
+}> = ({ versionConfigs, disabledVersions = [], onToggleVisibility }) => {
   const intl = useIntl();
   const [dataList, setDataList] = useState<VersionListItem[]>(versionConfigs);
 
@@ -236,7 +264,14 @@ const VersionList: React.FC<{ versionConfigs: VersionListItem[] }> = ({
       <ListWrapper>
         {dataList.length ? (
           dataList.map((version: VersionListItem, index: number) => {
-            return <VersionItem key={index} data={version} />;
+            return (
+              <VersionItem
+                key={index}
+                data={version}
+                hidden={disabledVersions.includes(version.version_no as string)}
+                onToggleVisibility={onToggleVisibility}
+              />
+            );
           })
         ) : (
           <Empty

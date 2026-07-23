@@ -26,6 +26,8 @@ export interface FormData {
   allowed_proxy_uris?: string[];
   content?: string;
   enabled?: boolean;
+  // Version keys hidden from the deploy dropdown (mirrors the backend field).
+  disabled_versions?: string[];
   backend_source?: string;
   default_env?: Record<string, any>;
   parameter_format?: 'space' | 'equal' | null;

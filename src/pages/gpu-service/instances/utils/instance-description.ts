@@ -23,8 +23,8 @@ export const buildInstanceTypeSnapshotSpec = (
 
 // Serialize the chosen instance type into the instance's `description` field —
 // a persisted spec snapshot the form reads back to render the type card and
-// derive unit resources. Shared by the create/recreate flow (card selection)
-// and the edit flow (change-type overlay).
+// derive unit resources. Shared by the create flow (card selection) and the
+// edit flow (change-type overlay).
 export const saveInstanceDataInDescription = (
   instanceType: InstanceTypeItem
 ): string => {

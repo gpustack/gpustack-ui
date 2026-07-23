@@ -172,10 +172,6 @@ export default {
     'Yalnızca son bir saatteki olaylar gösterilir',
   'gpuservice.instance.event.tab.instance': 'Örnek Olayları',
   'gpuservice.instance.event.tab.volume': 'Birim Olayları',
-  'gpuservice.instance.recreate.confirm.title':
-    'Yeniden oluşturma onaylansın mı',
-  'gpuservice.instance.recreate.confirm.content':
-    'Mevcut örnek önce silinecek, ardından mevcut yapılandırmayla yeniden oluşturulacaktır.\n <span style="font-size: 13px;font-weight: 700">{name}</span>',
   'gpuservice.storage': 'Depolama',
   'gpuservice.storage.add': 'Depolama Ekle',
   'gpuservice.storage.edit': 'Depolamayı Düzenle',

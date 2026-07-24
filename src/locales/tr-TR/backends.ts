@@ -54,5 +54,9 @@ export default {
   'backend.add.community': 'Topluluk',
   'backend.community.title': 'Topluluk Altyapı Pazaryeri',
   'backend.form.add.hint':
-    'Yerleşik bir altyapının (örn., vLLM, SGLang, MindIE) farklı sürümünü kullanmak için özel altyapı eklemek yerine mevcut altyapıya yeni sürüm ekleyin.'
+    'Yerleşik bir altyapının (örn., vLLM, SGLang, MindIE) farklı sürümünü kullanmak için özel altyapı eklemek yerine mevcut altyapıya yeni sürüm ekleyin.',
+  'backend.version.visible': 'Visible',
+  'backend.version.hidden': 'Hidden',
+  'backend.version.hideTip':
+    'Hidden versions are removed from the deployment version dropdown.'
 };

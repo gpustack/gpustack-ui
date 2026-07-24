@@ -76,6 +76,8 @@ export default {
     '例如，--max-model-len=8192（参数名和值用 = 号或空格分隔）',
   'models.form.backend_parameters.sglang.placeholder':
     '例如，--context-length=8192（参数名和值用 = 号或空格分隔）',
+  'models.form.backend_parameters.diffsynth.placeholder':
+    '例如，--pipeline=wan-video（参数名和值用 = 号或空格分隔）',
   'models.form.backend_parameters.vllm.tips':
     '更多 {backend} 参数说明查看<a href={link} target="_blank">这里</a>。',
   'models.logs.pagination.prev': '上一 {lines} 行',
@@ -94,6 +96,7 @@ export default {
     '内置支持 NVIDIA、AMD、昇腾、海光、摩尔线程、天数智芯、沐曦和平头哥 PPU 设备。',
   'models.form.backend.voxbox': '仅支持 NVIDIA GPU 和 CPU。',
   'models.form.backend.mindie': '仅支持昇腾 NPU。',
+  'models.form.backend.diffsynth': '基于 DiffSynth 的内置图像和视频生成后端。',
   'models.form.backend.sglang':
     '内置支持 NVIDIA、AMD、昇腾、摩尔线程、沐曦和平头哥 PPU 设备。',
   'models.form.search.gguftips':

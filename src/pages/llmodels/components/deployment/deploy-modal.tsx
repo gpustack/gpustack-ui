@@ -145,6 +145,7 @@ const AddModal: FC<AddModalProps> = (props) => {
   const requestModelIdRef = useRef<number>(0);
   const currentSelectedModel = useRef<any>({});
   const flatBackendOptionsRef = useRef<any[]>([]);
+  const [flatBackendOptions, setFlatBackendOptions] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const submitloadingRef = useRef<boolean>(false);
 
@@ -517,6 +518,7 @@ const AddModal: FC<AddModalProps> = (props) => {
     ]);
 
     flatBackendOptionsRef.current = backendOptions;
+    setFlatBackendOptions(backendOptions || []);
 
     if (props.deploymentType === 'modelFiles') {
       form.current?.form?.setFieldsValue({
@@ -624,6 +626,7 @@ const AddModal: FC<AddModalProps> = (props) => {
                   }
                   displayEvaluateStatus={displayEvaluateStatus}
                   gpuOptions={[]}
+                  flatBackendOptions={flatBackendOptions}
                 ></SearchModel>
                 <Separator></Separator>
               </ColWrapper>

@@ -1,4 +1,5 @@
 // preset backend parameters for built-in backends
+import diffsynthParameters from './diffsynth';
 import llamaParameters from './llama';
 import mindieParameters from './mindie';
 import sglangParameters from './sglang';
@@ -12,6 +13,7 @@ export const backendOptionsMap = {
   vllm: 'vLLM',
   voxBox: 'VoxBox',
   ascendMindie: 'MindIE',
+  diffSynth: 'DiffSynth',
   custom: 'Custom',
   SGLang: 'SGLang'
 };
@@ -21,6 +23,7 @@ export const BuiltInBackendOptions = [
   backendOptionsMap.vllm,
   backendOptionsMap.ascendMindie,
   backendOptionsMap.SGLang,
+  backendOptionsMap.diffSynth,
   backendOptionsMap.voxBox
 ];
 
@@ -49,6 +52,7 @@ export default {
   [backendOptionsMap.llamaBox]: generateBackendParameters(llamaParameters),
   [backendOptionsMap.vllm]: generateBackendParameters(vllmParameters),
   [backendOptionsMap.ascendMindie]: generateBackendParameters(mindieParameters),
+  [backendOptionsMap.diffSynth]: generateBackendParameters(diffsynthParameters),
   [backendOptionsMap.voxBox]: [],
   [backendOptionsMap.custom]: [],
   [backendOptionsMap.SGLang]: generateBackendParameters(sglangParameters)

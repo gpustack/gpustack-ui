@@ -107,22 +107,23 @@ const AdvanceConfig = () => {
           ></CheckboxField>
         </Form.Item>
       )}
-      {currentBackendOptions?.isBuiltIn && (
-        <Form.Item<FormData>
-          name="distributed_inference_across_workers"
-          valuePropName="checked"
-          style={{ marginBottom: 8 }}
-        >
-          <CheckboxField
-            description={intl.formatMessage({
-              id: 'models.form.distribution.tips'
-            })}
-            label={intl.formatMessage({
-              id: 'resources.form.enableDistributedInferenceAcrossWorkers'
-            })}
-          ></CheckboxField>
-        </Form.Item>
-      )}
+      {currentBackendOptions?.isBuiltIn &&
+        backend !== backendOptionsMap.diffSynth && (
+          <Form.Item<FormData>
+            name="distributed_inference_across_workers"
+            valuePropName="checked"
+            style={{ marginBottom: 8 }}
+          >
+            <CheckboxField
+              description={intl.formatMessage({
+                id: 'models.form.distribution.tips'
+              })}
+              label={intl.formatMessage({
+                id: 'resources.form.enableDistributedInferenceAcrossWorkers'
+              })}
+            ></CheckboxField>
+          </Form.Item>
+        )}
       <Form.Item<FormData>
         name="restart_on_error"
         valuePropName="checked"

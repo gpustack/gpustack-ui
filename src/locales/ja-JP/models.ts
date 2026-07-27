@@ -78,6 +78,8 @@ export default {
     '例: --max-model-len=8192（=または空白で名前と値を分ける）',
   'models.form.backend_parameters.sglang.placeholder':
     '例: --context-length=8192（=または空白で名前と値を分ける）',
+  'models.form.backend_parameters.diffsynth.placeholder':
+    '例: --pipeline=wan-video（=または空白で名前と値を分ける）',
   'models.form.backend_parameters.vllm.tips':
     'For more details about {backend} parameters, see <a href={link} target="_blank">here</a>.',
   'models.logs.pagination.prev': '前の{lines}行',
@@ -96,6 +98,8 @@ export default {
     'Built-in support for NVIDIA, AMD, Ascend, Hygon, Moore Threads, Iluvatar, MetaX, T-Head PPU devices.',
   'models.form.backend.voxbox': 'Only supports NVIDIA GPUs and CPUs.',
   'models.form.backend.mindie': 'Only supports Ascend NPUs.',
+  'models.form.backend.diffsynth':
+    'Built-in image and video generation backend powered by DiffSynth.',
   'models.form.backend.sglang':
     'Built-in support for NVIDIA, AMD, Ascend, Moore Threads, MetaX, T-Head PPU devices.',
   'models.form.search.gguftips':

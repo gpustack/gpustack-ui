@@ -77,6 +77,8 @@ export default {
     'örn., --max-model-len=8192 (ad ve değeri ayırmak için = veya boşluk kullanın)',
   'models.form.backend_parameters.sglang.placeholder':
     'örn., --context-length=8192 (ad ve değeri ayırmak için = veya boşluk kullanın)',
+  'models.form.backend_parameters.diffsynth.placeholder':
+    'örn., --pipeline=wan-video (ad ve değeri ayırmak için = veya boşluk kullanın)',
   'models.form.backend_parameters.vllm.tips':
     '{backend} parametreleri hakkında daha fazla bilgi için <a href={link} target="_blank">buraya tıklayın</a>.',
   'models.logs.pagination.prev': 'Önceki {lines} Satır',
@@ -96,6 +98,8 @@ export default {
   'models.form.backend.voxbox':
     "Yalnızca NVIDIA GPU'ları ve CPU'ları destekler.",
   'models.form.backend.mindie': "Yalnızca Ascend NPU'ları destekler.",
+  'models.form.backend.diffsynth':
+    'DiffSynth destekli yerleşik görüntü ve video üretim altyapısı.',
   'models.form.backend.sglang':
     'NVIDIA, AMD, Ascend, Moore Threads, MetaX, T-Head PPU cihazları için yerleşik destek.',
   'models.form.search.gguftips':

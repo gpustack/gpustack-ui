@@ -79,6 +79,8 @@ export default {
     'например: --max-model-len=8192（параметр и значение разделены знаком = или пробелом）',
   'models.form.backend_parameters.sglang.placeholder':
     'например: --context-length=8192（параметр и значение разделены знаком = или пробелом）',
+  'models.form.backend_parameters.diffsynth.placeholder':
+    'например: --pipeline=wan-video（параметр и значение разделены знаком = или пробелом）',
   'models.form.backend_parameters.vllm.tips':
     'Для получения подробной информации о параметрах {backend} см. <a href={link} target="_blank">здесь</a>.',
   'models.logs.pagination.prev': 'Предыдущие {lines} строк',
@@ -97,6 +99,8 @@ export default {
     'Built-in support for NVIDIA, AMD, Ascend, Hygon, Moore Threads, Iluvatar, MetaX, T-Head PPU devices.',
   'models.form.backend.voxbox': 'Поддерживает только GPU NVIDIA и CPU.',
   'models.form.backend.mindie': 'Поддерживает только Ascend NPU.',
+  'models.form.backend.diffsynth':
+    'Встроенный бэкенд генерации изображений и видео на базе DiffSynth.',
   'models.form.backend.sglang':
     'Built-in support for NVIDIA, AMD, Ascend, Moore Threads, MetaX, T-Head PPU devices.',
   'models.form.search.gguftips':

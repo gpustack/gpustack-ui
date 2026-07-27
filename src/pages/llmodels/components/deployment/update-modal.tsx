@@ -178,6 +178,9 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
   const handleOk = async (formdata: FormData) => {
     let submitData = {} as FormData;
     const isVoxBox = [backendOptionsMap.voxBox].includes(formdata.backend);
+    const isDiffSynth = [backendOptionsMap.diffSynth].includes(
+      formdata.backend
+    );
 
     submitData = {
       ..._.omit(formdata, ['scheduleType']),
@@ -189,6 +192,11 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
         ? {
             distributed_inference_across_workers: false,
             cpu_offloading: false
+          }
+        : {}),
+      ...(isDiffSynth
+        ? {
+            distributed_inference_across_workers: false
           }
         : {})
     };

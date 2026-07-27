@@ -47,6 +47,7 @@ interface SearchInputProps {
     data: MessageStatus,
     options?: WarningStausOptions
   ) => void;
+  flatBackendOptions?: Array<{ value: string; enabled?: boolean }>;
 }
 
 const SearchModel: React.FC<SearchInputProps> = (props) => {
@@ -59,11 +60,12 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     setLoadingModel,
     onSelectModel,
     onSelectModelAfterEvaluate,
-    displayEvaluateStatus
+    displayEvaluateStatus,
+    flatBackendOptions
   } = props;
 
   const { recognizeAudioModel } = useRecognizeAudio();
-  const { checkCurrentbackend } = useCheckBackend();
+  const { checkCurrentbackend, checkIsImageModel } = useCheckBackend();
   const [dataSource, setDataSource] = useState<{
     dataList: any[];
     loading: boolean;
@@ -282,7 +284,9 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
         const backend = checkCurrentbackend({
           isGGUF: item.isGGUF,
           isAudio: res.isAudio,
-          gpuOptions: gpuOptions || []
+          isImage: checkIsImageModel(item, modelSource),
+          gpuOptions: gpuOptions || [],
+          flatBackendOptions
         });
 
         if (backend) {

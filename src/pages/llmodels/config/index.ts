@@ -16,6 +16,10 @@ export const backendTipsList = [
     tips: 'models.form.backend.mindie'
   },
   {
+    title: backendOptionsMap.diffSynth,
+    tips: 'models.form.backend.diffsynth'
+  },
+  {
     title: backendOptionsMap.voxBox,
     tips: 'models.form.backend.voxbox'
   }
@@ -50,6 +54,8 @@ export const backendLabelMap = {
   [backendOptionsMap.vllm]: 'vLLM',
   [backendOptionsMap.voxBox]: 'vox-box',
   [backendOptionsMap.ascendMindie]: 'Ascend MindIE',
+  [backendOptionsMap.diffSynth]: 'DiffSynth',
+  [backendOptionsMap.SGLang]: 'SGLang',
   [backendOptionsMap.custom]: 'Custom'
 };
 
@@ -65,6 +71,10 @@ export const backendParamsHolderTips = {
   [backendOptionsMap.SGLang]: {
     holder: 'models.form.backend_parameters.sglang.placeholder',
     tooltip: ''
+  },
+  [backendOptionsMap.diffSynth]: {
+    holder: 'models.form.backend_parameters.diffsynth.placeholder',
+    tooltip: 'models.form.backend_parameters.vllm.tips'
   },
   [backendOptionsMap.voxBox]: null
 };
@@ -457,6 +467,15 @@ export const getBackendParamsTips = (backend: string) => {
       releases: '',
       link: 'https://docs.sglang.io/docs/advanced_features/server_arguments',
       version: 'v0.5.4'
+    };
+  }
+
+  if (backend === backendOptionsMap.diffSynth) {
+    return {
+      backend: 'DiffSynth',
+      releases: '',
+      link: 'https://docs.gpustack.ai/latest/user-guide/built-in-inference-backends/#diffsynth',
+      version: ''
     };
   }
 

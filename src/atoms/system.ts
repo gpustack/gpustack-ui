@@ -9,6 +9,10 @@ export interface SystemConfig {
   system_default_container_registry: string | null;
   server_external_url: string | null;
   showMonitoring?: boolean;
+  // Platform-wide business timezone (IANA name) resolved by the server from
+  // GPUSTACK_TIMEZONE; used to render schedule/usage times in the server's
+  // calendar. May be absent on older servers.
+  timezone?: string;
 }
 
 export const systemConfigAtom = atom<SystemConfig>({} as SystemConfig);

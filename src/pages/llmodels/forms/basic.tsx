@@ -315,9 +315,11 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
       >
         <CInput.Number
           style={{ width: '100%' }}
-          label={intl.formatMessage({
-            id: 'models.form.replicas'
-          })}
+          // The Replicas field keeps its label/description unchanged even when
+          // scheduled scaling is on. While scheduling is on this value doubles
+          // as the baseline (idle) replica count — that's explained by a note in
+          // the Scheduled Scaling section rather than by relabeling this field.
+          label={intl.formatMessage({ id: 'models.form.replicas' })}
           required
           description={intl.formatMessage(
             { id: 'models.form.replicas.tips' },

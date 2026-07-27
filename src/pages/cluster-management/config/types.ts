@@ -153,4 +153,6 @@ export interface SystemConfig {
   server_external_url: string | null;
   system_default_container_registry: string | null;
   showMonitoring?: boolean;
+  // Platform-wide business timezone (IANA name) resolved from GPUSTACK_TIMEZONE.
+  timezone?: string;
 }

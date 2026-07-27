@@ -122,7 +122,21 @@ export interface FormData {
     ngram_min_match_length: number;
     ngram_max_match_length: number;
   };
+  scaling_schedule?: ScalingSchedule | null;
   max_context_len: number;
+}
+
+export interface ScalingScheduleRule {
+  start_cron: string;
+  duration_seconds?: number | null;
+  replicas: number;
+  name?: string;
+}
+
+export interface ScalingSchedule {
+  enabled: boolean;
+  baseline_replicas?: number | null;
+  rules: ScalingScheduleRule[];
 }
 
 interface ComputedResourceClaim {

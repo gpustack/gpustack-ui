@@ -121,6 +121,7 @@ export default {
     'CPU-only setup for environment preparation.',
   'gpuservice.instance.mode.whole': 'Full GPU',
   'gpuservice.instance.mode.sliced': 'By Ratio',
+  'gpuservice.instance.mode.partitioned': 'By Profile',
   'gpuservice.instance.slice.memoryPercentage': 'VRAM Percentage (%)',
   'gpuservice.instance.slice.percentage': 'Percentage (%)',
   'gpuservice.instance.slice.coresPercentage': 'Compute Percentage (%)',
@@ -134,6 +135,12 @@ export default {
   'gpuservice.instance.stock': 'Stock',
   'gpuservice.instance.sliced': 'Sliced',
   'gpuservice.instance.sliceable': 'Sliceable',
+  'gpuservice.instance.partitioned': 'Partition',
+  'gpuservice.instance.partition.profile': 'Partition Profile',
+  'gpuservice.instance.partition.profile.required':
+    'Please select a partition profile',
+  'gpuservice.instance.partition.profile.unavailable':
+    'This profile is no longer available in the pool, please pick another',
   'gpuservice.instance.memory': 'VRAM',
   'gpuservice.instance.ram': 'RAM',
   'gpuservice.instance.os': 'OS',

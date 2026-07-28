@@ -13,7 +13,7 @@
 import _ from 'lodash';
 import { ceilMilliToCore, parseJsonSafe, parseQuantityToGi } from '../../utils';
 import InstanceTypeCell from '../components/instance-type-cell';
-import { formatMemoryDisplay } from '../config';
+import { formatMemoryDisplay, parseProfileMemoryGB } from '../config';
 import { InstanceTypeSnapshotSpec, ListItem } from '../config/types';
 
 // Minimal shape of the ``useIntl()`` result we depend on — keeps this module
@@ -53,6 +53,10 @@ const buildResourcesData = (
 const getSliceMemoryPercentage = (record: ListItem) =>
   _.toNumber(record.spec?.resources?.acceleratorSlicedMemoryPercentage) || 0;
 
+// Hardware partition profile (e.g. "1g.10gb"); empty when not partitioned.
+const getPartitionProfile = (record: ListItem) =>
+  record.spec?.resources?.acceleratorPartitionedProfile || '';
+
 const formatResources = (
   instanceTypeSpec: { spec: InstanceTypeSnapshotSpec },
   record: ListItem
@@ -76,17 +80,21 @@ const formatResources = (
   }
 
   const sliceMemoryPercentage = getSliceMemoryPercentage(record);
+  const partitionProfile = getPartitionProfile(record);
 
-  // Sliced: CPU / RAM carry the already-scaled values on spec.resources —
-  // whole cores / whole Gi for instances created by the current form; parse
-  // (instead of echoing the raw quantity) so legacy instances persisted as
-  // millicores / Mi (e.g. "400m" / "1638Mi") render as whole units too. VRAM
-  // is the per-card memory scaled by the memory percentage (floored, min 1) —
-  // not the whole card's size.
-  if (sliceMemoryPercentage > 0) {
+  // Divided card (soft slice or hardware partition): CPU / RAM carry the
+  // already-scaled values on spec.resources — whole cores / whole Gi for
+  // instances created by the current form; parse (instead of echoing the raw
+  // quantity) so legacy instances persisted as millicores / Mi (e.g. "400m" /
+  // "1638Mi") render as whole units too. VRAM is the slice's own size — the
+  // profile's VRAM for a partition, the per-card memory scaled by the memory
+  // percentage (floored, min 1) for a soft slice — not the whole card's size.
+  if (sliceMemoryPercentage > 0 || partitionProfile) {
     const vramGi = parseQuantityToGi(instanceTypeSpec.spec?.memory)?.value;
-    const vram =
-      vramGi != null
+    const profileGB = parseProfileMemoryGB(partitionProfile);
+    const vram = profileGB
+      ? `${profileGB} GB`
+      : vramGi != null && sliceMemoryPercentage > 0
         ? `${Math.max(1, _.floor((vramGi * sliceMemoryPercentage) / 100))} GB`
         : undefined;
     const cpuCores = ceilMilliToCore(
@@ -144,7 +152,9 @@ export const renderInstanceType = (
   const resources = formatResources({ spec: description }, record);
   const accelerator = record.spec?.resources?.accelerator;
   const sliceMemoryPercentage = getSliceMemoryPercentage(record);
+  const partitionProfile = getPartitionProfile(record);
   const isSliced = description.acceleratable && sliceMemoryPercentage > 0;
+  const isPartitioned = !!description.acceleratable && !!partitionProfile;
   // Type label (primary cell label and the popover's "Type" row) prefers the
   // user-defined displayName persisted in the description snapshot, falling
   // back to the hardware product.
@@ -152,9 +162,11 @@ export const renderInstanceType = (
   const title =
     options.title ??
     (description.acceleratable
-      ? isSliced
-        ? `${typeLabel} (${sliceMemoryPercentage}%)`
-        : `${typeLabel} x ${accelerator}`
+      ? isPartitioned
+        ? `${typeLabel} (${partitionProfile})`
+        : isSliced
+          ? `${typeLabel} (${sliceMemoryPercentage}%)`
+          : `${typeLabel} x ${accelerator}`
       : description.displayName || 'CPU-only');
 
   const volume = (record.spec as any)?.volume;
@@ -174,16 +186,22 @@ export const renderInstanceType = (
       icon: 'icon-gpu',
       name: 'GPU',
       rows: [
-        // Sliced instances show the ratio instead of a card count (always 1).
-        isSliced
+        // A divided card shows its slice (ratio / profile) instead of a card
+        // count (always 1).
+        isPartitioned
           ? [
-              intl.formatMessage({ id: 'gpuservice.instance.sliced' }),
-              `${sliceMemoryPercentage}%`
+              intl.formatMessage({ id: 'gpuservice.instance.partitioned' }),
+              partitionProfile
             ]
-          : [
-              intl.formatMessage({ id: 'gpuservice.table.count' }),
-              accelerator ? `${accelerator}` : undefined
-            ],
+          : isSliced
+            ? [
+                intl.formatMessage({ id: 'gpuservice.instance.sliced' }),
+                `${sliceMemoryPercentage}%`
+              ]
+            : [
+                intl.formatMessage({ id: 'gpuservice.table.count' }),
+                accelerator ? `${accelerator}` : undefined
+              ],
         [
           intl.formatMessage({ id: 'gpuservice.instance.section.type' }),
           typeLabel

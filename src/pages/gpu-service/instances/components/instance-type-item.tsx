@@ -69,6 +69,10 @@ interface MetadataSectionProps {
   // status.onceMaxRequest.acceleratorSliced (max sliceable percentage). Shown
   // next to Max for sliceable types.
   slicedMaxPercentage?: number;
+  // status.onceMaxRequest.acceleratorPartitioned — how many hardware
+  // partitions the pool can still admit. A cross-node aggregate: it says the
+  // pool has room, not that any single node fits a given profile.
+  partitionedMax?: number;
 }
 
 const MetaItem: React.FC<{
@@ -170,14 +174,21 @@ const renderMetaRow = (items: MetaEntry[], columns: number, rowKey: string) => {
 
 export const InstanceMetadataSection: React.FC<MetadataSectionProps> = ({
   spec,
-  slicedMaxPercentage
+  slicedMaxPercentage,
+  partitionedMax
 }) => {
   const intl = useIntl();
 
   const { ramUnit, cpuUnitCores, isGPU, arch } = getInstanceDerived(spec);
 
-  // Sliceable types append a "Sliceable {n}%" cell to the second row.
-  const showSliceable = !!spec.sliceable && (slicedMaxPercentage ?? 0) > 0;
+  // One "Sliceable" cell covers both ways a card can be divided — the card
+  // doesn't distinguish soft from hardware slicing. Its value carries the soft
+  // ratio ceiling and/or the pool-level partition count, whichever apply.
+  const slicedCapabilities = [
+    (slicedMaxPercentage ?? 0) > 0 ? `${slicedMaxPercentage}%` : null,
+    (partitionedMax ?? 0) > 0 ? `x ${partitionedMax}` : null
+  ].filter(Boolean);
+  const showSliceable = !!spec.sliceable && slicedCapabilities.length > 0;
 
   const cpuItem: MetaEntry = {
     icon: 'icon-cpu',
@@ -207,7 +218,7 @@ export const InstanceMetadataSection: React.FC<MetadataSectionProps> = ({
   const slicedItem: MetaEntry = {
     icon: 'icon-sliced',
     label: intl.formatMessage({ id: 'gpuservice.instance.sliceable' }),
-    value: `${slicedMaxPercentage}%`
+    value: ' '
   };
 
   // GPU: 3 items/row → 11 cols. CPU: 2 items/row → 7 cols.
@@ -290,6 +301,9 @@ const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({
         spec={specData}
         slicedMaxPercentage={
           Number(item.status?.onceMaxRequest?.acceleratorSliced) || 0
+        }
+        partitionedMax={
+          Number(item.status?.onceMaxRequest?.acceleratorPartitioned) || 0
         }
       ></InstanceMetadataSection>
     </Flex>

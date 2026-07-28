@@ -1,7 +1,7 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import NumberSelection from '@/pages/_components/number-selection';
-import { InputNumber } from '@gpustack/core-ui';
+import { Input as CInput, InputNumber, Select } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Flex, Form, Segmented } from 'antd';
 import _ from 'lodash';
@@ -12,7 +12,11 @@ import { parseJsonSafe } from '../../utils';
 import InstanceTypeItem, {
   InstanceMetadataSection
 } from '../components/instance-type-item';
-import { isSliceableDetail } from '../config';
+import {
+  getPartitionProfiles,
+  isLogicalSliceable,
+  isPhysicalSliceable
+} from '../config';
 import { FormContext } from '../config/form-context';
 import {
   FormData,
@@ -76,6 +80,8 @@ const SliceFieldWrapper: React.FC<{
     <>{children}</>
   );
 
+type SliceMode = 'whole' | 'sliced' | 'partitioned';
+
 interface InstanceTypeFormItemProps {
   action: PageActionType;
   disabled?: boolean;
@@ -86,14 +92,18 @@ interface InstanceTypeFormItemProps {
   // org owns no clusters. Surface a "no available" message instead of the
   // "please select" placeholder + empty CPU / memory inputs.
   noAvailableTypes?: boolean;
-  // Whole-card (exclusive) vs sliced (percentage) mode. Owned by the parent
-  // form (it drives candidate picking + the fixed accelerator=1 for sliced).
-  sliceMode?: 'whole' | 'sliced';
-  onSliceModeChange?: (mode: 'whole' | 'sliced') => void;
+  // Whole-card (exclusive) vs sliced (soft, percentage) vs partitioned
+  // (hardware profile) mode. Owned by the parent form (it drives candidate
+  // picking + the fixed accelerator=1 for both divided modes).
+  sliceMode?: SliceMode;
+  onSliceModeChange?: (mode: SliceMode) => void;
   // Commit a new sliced memory ratio (writes the field + rescales CPU / RAM).
   onSliceMemoryPercentageChange?: (value: number) => void;
   // Commit a new sliced compute (cores) ratio (writes the field only).
   onSliceCoresPercentageChange?: (value: number) => void;
+  // Commit a new hardware partition profile (writes the field, re-picks the
+  // candidate offering it + rescales CPU / RAM).
+  onPartitionProfileChange?: (value: string) => void;
   onGPUCountChange?: (value: number) => void;
 }
 
@@ -108,6 +118,7 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
   onSliceModeChange,
   onSliceMemoryPercentageChange,
   onSliceCoresPercentageChange,
+  onPartitionProfileChange,
   onGPUCountChange
 }) => {
   const intl = useIntl();
@@ -135,16 +146,26 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
     onGPUCountChange?.(value);
   };
 
-  // Sliced mode is only offered for sliceable accelerator types, and only when
+  const slicedDetail = selectedInstanceType?.status?.detail?.slicedDetail;
+
+  // A type may support soft slicing (logical.count > 0), hardware
+  // partitioning (physical.count > 0), both, or neither — each capability
+  // contributes its own Segmented option, so unsupported modes never show.
+  const supportsSliced = isLogicalSliceable(slicedDetail);
+  const supportsPartitioned = isPhysicalSliceable(slicedDetail);
+
+  // The divided modes are only offered for accelerator types, and only when
   // the section is editable (create, or edit after re-picking a type; a
   // not-yet-re-typed edit renders a readonly card).
   const showModeSwitch =
-    !readonlyType &&
-    isGPUType &&
-    isSliceableDetail(selectedInstanceType?.status?.detail?.slicedDetail);
+    !readonlyType && isGPUType && (supportsSliced || supportsPartitioned);
 
   const handleModeChange = (value: string) => {
-    onSliceModeChange?.(value as 'whole' | 'sliced');
+    onSliceModeChange?.(value as SliceMode);
+  };
+
+  const handlePartitionProfileChange = (value: string) => {
+    onPartitionProfileChange?.(value);
   };
 
   // Memory (VRAM) percentage changed via the slider/input — forward the new
@@ -178,9 +199,27 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
   // Whether the compute (cores) ratio may exceed the memory ratio. When the
   // type doesn't support overcommit, cores are locked to the memory ratio —
   // no cores selector, and the memory selector reads as a plain "Percentage".
-  const coresOvercommit =
-    !!selectedInstanceType?.status?.detail?.slicedDetail?.logical
-      ?.coresPercentageOvercommit;
+  const coresOvercommit = !!slicedDetail?.logical?.coresPercentageOvercommit;
+
+  // Hard-slice profiles the pool can still provide. Pool-level counts (summed
+  // across nodes) — a hint about what's on offer, not a placement guarantee.
+  const partitionProfiles = getPartitionProfiles(slicedDetail);
+
+  // Whether some candidate of the selected type still offers this profile —
+  // the pool-level list can outlive the last candidate that can serve it.
+  const profileHasCandidate = (name: string) =>
+    (selectedInstanceType?.status?.tiers ?? []).some((tier) =>
+      (tier.candidates ?? []).some((candidate) =>
+        getPartitionProfiles(candidate.acceleratorSlicedDetail).some(
+          (profile) => profile.name === name
+        )
+      )
+    );
+
+  const partitionOptions = partitionProfiles.map((profile) => ({
+    label: profile.name as string,
+    value: profile.name as string
+  }));
 
   const modeSegmented = showModeSwitch ? (
     <Segmented
@@ -195,17 +234,37 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
           label: intl.formatMessage({ id: 'gpuservice.instance.mode.whole' }),
           value: 'whole'
         },
-        {
-          label: intl.formatMessage({ id: 'gpuservice.instance.mode.sliced' }),
-          value: 'sliced',
-          // No sliced capacity → keep the option visible but unselectable.
-          disabled: slicedMaxPercentage <= 0
-        }
+        ...(supportsSliced
+          ? [
+              {
+                label: intl.formatMessage({
+                  id: 'gpuservice.instance.mode.sliced'
+                }),
+                value: 'sliced',
+                // No sliced capacity → keep the option visible but
+                // unselectable.
+                disabled: slicedMaxPercentage <= 0
+              }
+            ]
+          : []),
+        ...(supportsPartitioned
+          ? [
+              {
+                label: intl.formatMessage({
+                  id: 'gpuservice.instance.mode.partitioned'
+                }),
+                value: 'partitioned',
+                // Every profile exhausted → nothing to request.
+                disabled: partitionOptions.length === 0
+              }
+            ]
+          : [])
       ]}
     />
   ) : null;
 
   const isSliced = showModeSwitch && sliceMode === 'sliced';
+  const isPartitioned = showModeSwitch && sliceMode === 'partitioned';
 
   // When the max ratio is below 10%, switch the ticks to a finer 1..10 scale
   // so small slices are still selectable; otherwise use the 10..100 scale.
@@ -322,7 +381,7 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
               : ['spec', 'resources', 'cpu']
           }
           preserve
-          hidden={readonlyType || isSliced}
+          hidden={readonlyType || isSliced || isPartitioned}
           normalize={(value) => (value != null ? _.toString(value) : undefined)}
           getValueProps={(value) => ({
             value: value != null ? _.toNumber(value) : undefined
@@ -332,6 +391,12 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
               required: true,
               validator: (_, value) => {
                 const num = Number(value);
+                // Both divided modes pin the count to a single card and hide
+                // this field; a slice-only type reports a whole-card max of 0,
+                // so keep the ceiling check out of their way.
+                if (isSliced || isPartitioned) {
+                  return Promise.resolve();
+                }
                 if (num > maxComputeUnitCount) {
                   return Promise.reject(
                     new Error(
@@ -506,9 +571,57 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
           </>
         </SliceFieldWrapper>
       )}
-      {/* A not-yet-re-typed edit renders a readonly card (no sliced UI), so
-          register the slice percentages as hidden fields — otherwise their
-          persisted values are dropped from the submit payload. */}
+      {!noAvailableTypes && isPartitioned && (
+        <FieldBlock>
+          <Form.Item<FormData>
+            name={['spec', 'resources', 'acceleratorPartitionedProfile']}
+            style={{ marginBottom: 0 }}
+            rules={[
+              {
+                required: true,
+                validator: (_rule, value) => {
+                  if (!value) {
+                    return Promise.reject(
+                      new Error(
+                        intl.formatMessage({
+                          id: 'gpuservice.instance.partition.profile.required'
+                        })
+                      )
+                    );
+                  }
+                  // The offered list is the type-level union across candidates,
+                  // so a profile can be exhausted everywhere it actually runs.
+                  // Say so here instead of letting the blanked-out candidate
+                  // surface as a bare "select an instance type".
+                  if (!profileHasCandidate(value)) {
+                    return Promise.reject(
+                      new Error(
+                        intl.formatMessage({
+                          id: 'gpuservice.instance.partition.profile.unavailable'
+                        })
+                      )
+                    );
+                  }
+                  return Promise.resolve();
+                }
+              }
+            ]}
+          >
+            <Select
+              required
+              disabled={disabled}
+              options={partitionOptions}
+              onChange={handlePartitionProfileChange}
+              label={intl.formatMessage({
+                id: 'gpuservice.instance.partition.profile'
+              })}
+            />
+          </Form.Item>
+        </FieldBlock>
+      )}
+      {/* A not-yet-re-typed edit renders a readonly card (no slice UI), so
+          register the slice fields as hidden — otherwise their persisted
+          values are dropped from the submit payload. */}
       {readonlyType && (
         <>
           <Form.Item<FormData>
@@ -522,6 +635,12 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
             hidden
           >
             <InputNumber />
+          </Form.Item>
+          <Form.Item<FormData>
+            name={['spec', 'resources', 'acceleratorPartitionedProfile']}
+            hidden
+          >
+            <CInput.Input />
           </Form.Item>
         </>
       )}

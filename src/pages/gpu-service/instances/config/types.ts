@@ -50,6 +50,11 @@ export interface FormData {
       // "100% compute" checkbox (100 when checked, mirrors memory otherwise).
       acceleratorSlicedMemoryPercentage?: number;
       acceleratorSlicedCoresPercentage?: number;
+      // Partitioned (hardware slicing, e.g. MIG) mode only — the requested
+      // profile name from status.detail.slicedDetail.physical.profiles[].name
+      // (e.g. "1g.10gb"). Mutually exclusive with the two sliced percentages
+      // above: hardware and soft slices can't land on the same card.
+      acceleratorPartitionedProfile?: string | null;
     };
     volume: {
       ephemeral?: {
@@ -137,6 +142,10 @@ export interface InstanceTypeCandidate {
   acceleratorShared?: InstanceTypeResource | null;
   // Sliced-mode available resource.
   acceleratorSliced?: InstanceTypeResource | null;
+  // Partitioned-mode (hardware slicing) available resource. Pool-level: the
+  // values sum every partition-mode card behind this type across nodes, so
+  // they are a capacity hint only — never a per-node placement assertion.
+  acceleratorPartitioned?: InstanceTypeResource | null;
   // This candidate's sliced (partitioning) capability.
   acceleratorSlicedDetail?: AcceleratorSlicedDetail | null;
   phase?: 'Active' | 'Inactive' | 'Draining' | null;
@@ -152,6 +161,9 @@ export interface InstanceTypeOverviewResource {
   accelerator?: `${number}` | null;
   acceleratorShared?: `${number}` | null;
   acceleratorSliced?: `${number}` | null;
+  // Partition (hardware slice) count the pool can still admit — a cross-node
+  // aggregate, not a per-node figure.
+  acceleratorPartitioned?: `${number}` | null;
   cpu?: QuanityCPU | null;
 }
 
@@ -196,12 +208,19 @@ export interface AcceleratorSlicedLogicalDetail {
 }
 
 export interface AcceleratorSlicedPhysicalDetailProfile {
+  // Profile identifier (e.g. "1g.10gb") — the value submitted as
+  // spec.resources.acceleratorPartitionedProfile.
   name?: string | null;
+  // Partition instances this profile can still provide across the whole pool
+  // (summed by name over every card), not a single card's count.
   count?: number | null;
+  // The profile's VRAM in MiB.
+  memoryMib?: number | null;
 }
 
 export interface AcceleratorSlicedPhysicalDetail {
   profiles?: AcceleratorSlicedPhysicalDetailProfile[] | null;
+  // Pool-wide physical slice ceiling; 0 → hardware partitioning unsupported.
   count?: number | null;
 }
 

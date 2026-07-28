@@ -79,7 +79,7 @@ Ranked list, most-severe first:
 
 End with a one-line verdict (e.g. "3 findings: 1 color, 2 a11y; layout & feedback are clean").
 
-## Self-sedimentation (evolve this skill as you use it)
+## Self-improvement (evolve this skill as you use it)
 
 After each review, before finishing, ask: **did I rely on a rule, core-ui primitive, or violation class that isn't already in the checks above?**
 

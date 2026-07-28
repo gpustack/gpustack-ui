@@ -120,6 +120,7 @@ export default {
   'gpuservice.instance.gpuCount.zero': 'CPU のみを使用し、環境準備用です。',
   'gpuservice.instance.mode.whole': 'GPU 全体',
   'gpuservice.instance.mode.sliced': '比率で',
+  'gpuservice.instance.mode.partitioned': 'プロファイルで',
   'gpuservice.instance.slice.memoryPercentage': 'VRAM の割合（%）',
   'gpuservice.instance.slice.percentage': '割合（%）',
   'gpuservice.instance.slice.coresPercentage': '演算能力の割合（%）',
@@ -133,6 +134,12 @@ export default {
   'gpuservice.instance.stock': '在庫',
   'gpuservice.instance.sliced': '分割',
   'gpuservice.instance.sliceable': '分割可能',
+  'gpuservice.instance.partitioned': 'ハード分割',
+  'gpuservice.instance.partition.profile': '分割プロファイル',
+  'gpuservice.instance.partition.profile.required':
+    '分割プロファイルを選択してください',
+  'gpuservice.instance.partition.profile.unavailable':
+    'このプロファイルはプールに残っていません。別のものを選択してください',
   'gpuservice.instance.memory': 'VRAM',
   'gpuservice.instance.ram': 'RAM',
   'gpuservice.instance.os': 'OS',

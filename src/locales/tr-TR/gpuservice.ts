@@ -115,6 +115,7 @@ export default {
   'gpuservice.instance.gpuCount.zero': 'Yalnızca CPU, ortam hazırlığı için.',
   'gpuservice.instance.mode.whole': 'Tam GPU',
   'gpuservice.instance.mode.sliced': 'Orana Göre',
+  'gpuservice.instance.mode.partitioned': 'Profile Göre',
   'gpuservice.instance.slice.memoryPercentage': 'VRAM Yüzdesi (%)',
   'gpuservice.instance.slice.percentage': 'Yüzde (%)',
   'gpuservice.instance.slice.coresPercentage': 'İşlem Gücü Yüzdesi (%)',
@@ -128,6 +129,12 @@ export default {
   'gpuservice.instance.stock': 'Stok',
   'gpuservice.instance.sliced': 'Bölünmüş',
   'gpuservice.instance.sliceable': 'Bölünebilir',
+  'gpuservice.instance.partitioned': 'Bölüm',
+  'gpuservice.instance.partition.profile': 'Bölüm Profili',
+  'gpuservice.instance.partition.profile.required':
+    'Lütfen bir bölüm profili seçin',
+  'gpuservice.instance.partition.profile.unavailable':
+    'Bu profil havuzda kalmadı, lütfen başka birini seçin',
   'gpuservice.instance.memory': 'VRAM',
   'gpuservice.instance.ram': 'RAM',
   'gpuservice.instance.os': 'OS',

@@ -37,16 +37,19 @@ export default function useQueryInstanceTypes() {
 
     const max = getAcceleratorMax(item.status?.tiers);
 
-    // Sliceable types stay selectable as long as either whole-card or sliced
-    // capacity remains; unavailable only when both status.onceMaxRequest
-    // .accelerator and .acceleratorSliced are 0.
+    // Sliceable types stay selectable as long as whole-card, sliced (soft) or
+    // partitioned (hard) capacity remains; unavailable only when all three of
+    // status.onceMaxRequest .accelerator / .acceleratorSliced /
+    // .acceleratorPartitioned are 0.
     if (isSliceableDetail(item.status?.detail?.slicedDetail)) {
       const wholeMax = Number(item.status?.onceMaxRequest?.accelerator) || 0;
       const slicedMax =
         Number(item.status?.onceMaxRequest?.acceleratorSliced) || 0;
+      const partitionedMax =
+        Number(item.status?.onceMaxRequest?.acceleratorPartitioned) || 0;
       return {
         maxComputeUnitCount: max || 0,
-        available: wholeMax > 0 || slicedMax > 0
+        available: wholeMax > 0 || slicedMax > 0 || partitionedMax > 0
       };
     }
 

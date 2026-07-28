@@ -36,7 +36,10 @@ import TemplateBasicForm, {
   BasicResourceMax
 } from '../../templates/forms/basic';
 import {
-  isSliceableDetail,
+  getPartitionPercentage,
+  getPartitionProfiles,
+  isLogicalSliceable,
+  isPhysicalSliceable,
   pickCandidateForAccelerator,
   StorageModeValueMap
 } from '../config';
@@ -49,6 +52,9 @@ import PublicKeyOverlay from './public-key-overlay';
 import StorageVolume from './storage-volume';
 
 const SSH_PORT = 22;
+
+// Whole card / soft slice (percentage) / hardware partition (profile).
+type SliceMode = 'whole' | 'sliced' | 'partitioned';
 
 type InstanceFormValues = FormData & {
   // ssh holder
@@ -296,6 +302,24 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       const sliced = isGPUType && percentage > 0;
       const wholeFactor = isGPUType ? accelerator : cpuCount;
 
+      // Partitioned mode: the instance gets the share of the card its profile
+      // occupies, so scale the unit resources by that same ratio — identical
+      // rounding to the sliced branch below.
+      const partitionPercentage = isGPUType
+        ? getPartitionPercentage(
+            resources.acceleratorPartitionedProfile,
+            getCardMemory()
+          )
+        : null;
+      if (partitionPercentage != null && unitResourcesParsed) {
+        const cpuCores = unitResourcesParsed.cpu?.cores ?? 0;
+        const ramValue = unitResourcesParsed.ram?.value ?? 0;
+        return {
+          cpu: `${Math.max(1, _.floor((cpuCores * partitionPercentage) / 100))}`,
+          ram: `${Math.max(1, _.floor((ramValue * partitionPercentage) / 100))}Gi`
+        };
+      }
+
       // Sliced mode: scale a single card's unit resources by the chosen
       // percentage, submitted as whole cores / whole Gi (floored, min 1) so
       // the payload matches what the disabled CPU / RAM inputs display —
@@ -328,8 +352,8 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
     // unit resources scaled by the chosen percentage, floored. Reads the
     // percentage straight from the form so it can be re-run after any slider
     // change without threading values through.
-    const applySlicedResourceScaling = () => {
-      const unitResourcesParsed = getUnitResources();
+    const applySlicedResourceScaling = (instanceType?: InstanceTypeItem) => {
+      const unitResourcesParsed = getUnitResources(instanceType);
       const cpuCores = unitResourcesParsed?.cpu?.cores;
       const ramValue = unitResourcesParsed?.ram?.value;
       const percentage = _.toNumber(
@@ -403,11 +427,57 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       );
     };
 
+    // Partitioned display: a hardware partition gets the share of the card its
+    // profile occupies (profile VRAM / card VRAM), so scale the (disabled)
+    // CPU / RAM inputs by that ratio with the same floor / min-1 rule as the
+    // soft slice. Unknown ratio → keep a single card's unit resources.
+    const applyPartitionResourceScaling = (
+      profileName?: string | null,
+      instanceType?: InstanceTypeItem
+    ) => {
+      const unitResourcesParsed = getUnitResources(instanceType);
+      const cpuCores = unitResourcesParsed?.cpu?.cores;
+      const ramValue = unitResourcesParsed?.ram?.value;
+      const percentage = getPartitionPercentage(
+        profileName,
+        getCardMemory(instanceType)
+      );
+
+      const scale = (value?: number | null) => {
+        if (value == null) return null;
+        if (percentage == null) return value;
+        return Math.max(1, _.floor((value * percentage) / 100));
+      };
+
+      form.setFieldsValue({
+        spec: {
+          resources: {
+            cpu: scale(cpuCores),
+            ram: scale(ramValue)
+          }
+        }
+      } as any);
+    };
+
+    // Single entry point for the partition profile: write the field, re-pick
+    // the candidate that still offers this profile, and rescale CPU / RAM.
+    const applyPartitionProfile = (profileName: string) => {
+      form.setFieldValue(
+        ['spec', 'resources', 'acceleratorPartitionedProfile'],
+        profileName
+      );
+      resolveAndApply(selectedInstanceType, 1, {
+        partitionedProfile: profileName
+      });
+      applyPartitionResourceScaling(profileName);
+    };
+
     const resolveAndApply = (
       instanceType: InstanceTypeItem | undefined,
       count: number,
-      sliced?: boolean
+      options?: { sliced?: boolean; partitionedProfile?: string | null }
     ) => {
+      const { sliced, partitionedProfile } = options ?? {};
       if (!instanceType) {
         setSelectedInstanceType(undefined);
         setOnceMaxRequest({ cpu: null, memory: null, localStorage: null });
@@ -436,7 +506,8 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
         {
           count,
           acceleratable: instanceType.spec?.acceleratable,
-          sliced
+          sliced,
+          partitionedProfile
         }
       );
 
@@ -467,13 +538,14 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       });
     };
 
-    // Whole-card (exclusive) vs sliced (percentage) mode. Only meaningful for
-    // sliceable accelerator types; derived (no persisted field) — on edit it
-    // is inferred from acceleratorSlicedMemoryPercentage > 0.
-    const [sliceMode, setSliceMode] = useState<'whole' | 'sliced'>('whole');
+    // Whole-card (exclusive) vs sliced (soft, percentage) vs partitioned
+    // (hardware profile) mode. Only meaningful for sliceable accelerator
+    // types; derived (no persisted field) — on edit it is inferred from
+    // acceleratorSlicedMemoryPercentage > 0 / acceleratorPartitionedProfile.
+    const [sliceMode, setSliceMode] = useState<SliceMode>('whole');
 
     const handleAcceleratorChange = (count: number) => {
-      resolveAndApply(selectedInstanceType, count, false);
+      resolveAndApply(selectedInstanceType, count);
     };
 
     // Seed the sliced-mode defaults for an instance type: memory ratio at 10%
@@ -494,31 +566,65 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
           }
         }
       } as any);
-      applySlicedResourceScaling();
+      applySlicedResourceScaling(instanceType);
     };
 
-    // Toggle between whole-card and sliced mode. Sliced fixes the accelerator
-    // count to 1 (a single card is partitioned by percentage) and clears the
-    // slice-percentage fields when leaving sliced mode.
-    const handleSliceModeChange = (mode: 'whole' | 'sliced') => {
+    // Seed the partitioned default: the first profile the pool can still
+    // provide. Returns the chosen profile (null when the type offers none).
+    const applyPartitionedDefaults = (instanceType?: InstanceTypeItem) => {
+      const profile = getPartitionProfiles(
+        instanceType?.status?.detail?.slicedDetail
+      )[0]?.name;
+      form.setFieldValue(
+        ['spec', 'resources', 'acceleratorPartitionedProfile'],
+        profile ?? undefined
+      );
+      return profile ?? null;
+    };
+
+    // Switch between whole-card, sliced (soft) and partitioned (hardware)
+    // mode. Both slice modes fix the accelerator count to 1 (a single card is
+    // divided) and are mutually exclusive on the payload, so entering one
+    // clears the other's fields.
+    const handleSliceModeChange = (mode: SliceMode) => {
       setSliceMode(mode);
       if (mode === 'sliced') {
-        resolveAndApply(selectedInstanceType, 1, true);
+        form.setFieldValue(
+          ['spec', 'resources', 'acceleratorPartitionedProfile'],
+          undefined
+        );
+        resolveAndApply(selectedInstanceType, 1, { sliced: true });
         applySlicedDefaults(selectedInstanceType);
-      } else {
-        form.setFieldsValue({
-          spec: {
-            resources: {
-              acceleratorSlicedMemoryPercentage: undefined,
-              acceleratorSlicedCoresPercentage: undefined
-            }
-          }
-        } as any);
-        resolveAndApply(selectedInstanceType, 1, false);
+        return;
       }
+
+      form.setFieldsValue({
+        spec: {
+          resources: {
+            acceleratorSlicedMemoryPercentage: undefined,
+            acceleratorSlicedCoresPercentage: undefined
+          }
+        }
+      } as any);
+
+      if (mode === 'partitioned') {
+        const profile = applyPartitionedDefaults(selectedInstanceType);
+        resolveAndApply(selectedInstanceType, 1, {
+          partitionedProfile: profile
+        });
+        // resolveAndApply refills CPU / RAM for a whole card — rescale after.
+        applyPartitionResourceScaling(profile);
+        return;
+      }
+
+      form.setFieldValue(
+        ['spec', 'resources', 'acceleratorPartitionedProfile'],
+        undefined
+      );
+      resolveAndApply(selectedInstanceType, 1);
     };
 
-    // Apply a chosen instance type to the form: default to sliced mode for a
+    // Apply a chosen instance type to the form: default to a slice mode for a
     // sliceable type with no whole-card capacity, otherwise whole-card with a
     // count of 1. Shared by the create card selection (imperative handle) and
     // the edit change-type overlay.
@@ -529,26 +635,52 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
         return;
       }
 
-      // A sliceable type with no whole-card capacity (Max < 1) defaults to
-      // sliced mode — whole mode would have nothing selectable.
+      const slicedDetail = instanceType.status?.detail?.slicedDetail;
+      // A sliceable type with no whole-card capacity (Max < 1) defaults to a
+      // slice mode — whole mode would have nothing selectable. Soft slicing
+      // wins when both are on offer (the finer-grained request).
       const wholeMax = instanceType.spec?.maxComputeUnitCount ?? 0;
       const slicedMax =
         _.toNumber(instanceType.status?.onceMaxRequest?.acceleratorSliced) || 0;
-      const defaultSliced =
-        isSliceableDetail(instanceType.status?.detail?.slicedDetail) &&
-        wholeMax < 1 &&
-        slicedMax > 0;
+      const partitionProfiles = getPartitionProfiles(slicedDetail);
 
-      if (defaultSliced) {
+      if (wholeMax < 1 && isLogicalSliceable(slicedDetail) && slicedMax > 0) {
         setSliceMode('sliced');
-        resolveAndApply(instanceType, 1, true);
+        resolveAndApply(instanceType, 1, { sliced: true });
         applySlicedDefaults(instanceType);
+        return;
+      }
+
+      if (
+        wholeMax < 1 &&
+        isPhysicalSliceable(slicedDetail) &&
+        partitionProfiles.length > 0
+      ) {
+        const profile = partitionProfiles[0].name!;
+        setSliceMode('partitioned');
+        form.setFieldValue(
+          ['spec', 'resources', 'acceleratorPartitionedProfile'],
+          profile
+        );
+        resolveAndApply(instanceType, 1, { partitionedProfile: profile });
+        applyPartitionResourceScaling(profile, instanceType);
         return;
       }
 
       // Otherwise default to whole-card mode (a new type may not be
       // sliceable); set count to 1 for all instance types: GPU or non-GPU.
+      // Drop any slice fields the previously selected type left behind — they
+      // would otherwise ride the submit and read as a slice request.
       setSliceMode('whole');
+      form.setFieldsValue({
+        spec: {
+          resources: {
+            acceleratorSlicedMemoryPercentage: undefined,
+            acceleratorSlicedCoresPercentage: undefined,
+            acceleratorPartitionedProfile: undefined
+          }
+        }
+      } as any);
       resolveAndApply(instanceType, 1);
     };
 
@@ -598,13 +730,21 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
           ? _.toNumber(currentData?.spec?.resources?.accelerator)
           : _.toNumber(currentData?.spec?.resources?.cpu) || 0;
 
-        // Infer the mode from the persisted slice percentage (edit/view
-        // render a readonly card).
+        // Infer the mode from the persisted slice fields (edit/view render a
+        // readonly card).
         const persistedSliced =
           _.toNumber(
             currentData?.spec?.resources?.acceleratorSlicedMemoryPercentage
           ) > 0;
-        setSliceMode(persistedSliced ? 'sliced' : 'whole');
+        const persistedProfile =
+          currentData?.spec?.resources?.acceleratorPartitionedProfile;
+        setSliceMode(
+          persistedProfile
+            ? 'partitioned'
+            : persistedSliced
+              ? 'sliced'
+              : 'whole'
+        );
 
         form.setFieldsValue({
           ...currentData,
@@ -625,16 +765,24 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
         });
 
         // buildResourcesData above filled CPU / RAM for the whole card; rescale
-        // them off the persisted percentages for a sliced instance.
-        if (persistedSliced) {
+        // them off the persisted percentage / profile for a divided instance.
+        if (persistedProfile) {
+          applyPartitionResourceScaling(persistedProfile);
+        } else if (persistedSliced) {
           applySlicedResourceScaling();
         }
       }
     }, [action, currentData, form, open, instanceTypeList]);
 
-    const getUnitResources = () => {
-      if (selectedInstanceType?.spec?.unitResourcesParsed) {
-        return selectedInstanceType.spec.unitResourcesParsed;
+    // `instanceType` overrides the selected-type state: setSelectedInstanceType
+    // only lands on the next render, so a handler that picks a type and scales
+    // in the same tick must pass the type it just picked — reading the state
+    // there yields the previously selected card.
+    const getUnitResources = (instanceType?: InstanceTypeItem) => {
+      const parsed = (instanceType ?? selectedInstanceType)?.spec
+        ?.unitResourcesParsed;
+      if (parsed) {
+        return parsed;
       }
       try {
         return (
@@ -644,6 +792,20 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       } catch {
         return undefined;
       }
+    };
+
+    // Whole-card VRAM (status.detail.memory, e.g. "80Gi") — the denominator of
+    // the partition ratio. Falls back to the persisted description snapshot so
+    // a not-yet-re-typed edit can still scale.
+    const getCardMemory = (
+      instanceType?: InstanceTypeItem
+    ): string | undefined => {
+      return (
+        (instanceType ?? selectedInstanceType)?.status?.detail?.memory ??
+        parseJsonSafe<any>(currentData?.description || '{}', {})?.spec
+          ?.memory ??
+        undefined
+      );
     };
 
     const handleFinish = async (values: InstanceFormValues) => {
@@ -660,15 +822,25 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
         });
       }
 
+      // Hardware and soft slices can't land on the same card, so only one set
+      // of slice fields may ride the payload.
+      const resources = {
+        ...values.spec?.resources,
+        ...buildResourcesDataForSubmit(values)
+      };
+      const exclusiveResources = resources.acceleratorPartitionedProfile
+        ? _.omit(resources, [
+            'acceleratorSlicedMemoryPercentage',
+            'acceleratorSlicedCoresPercentage'
+          ])
+        : _.omit(resources, ['acceleratorPartitionedProfile']);
+
       await onFinish({
         ..._.omit(values, ['enable_ssh']),
         spec: {
           ...values.spec,
           ports: submittedPorts,
-          resources: {
-            ...values.spec?.resources,
-            ...buildResourcesDataForSubmit(values)
-          }
+          resources: exclusiveResources as FormData['spec']['resources']
         }
       });
     };
@@ -808,6 +980,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
                       onSliceModeChange={handleSliceModeChange}
                       onSliceMemoryPercentageChange={applySliceMemoryPercentage}
                       onSliceCoresPercentageChange={applySliceCoresPercentage}
+                      onPartitionProfileChange={applyPartitionProfile}
                       onGPUCountChange={handleAcceleratorChange}
                     />
                   )

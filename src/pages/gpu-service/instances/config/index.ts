@@ -3,15 +3,61 @@ import { StatusType } from '@/config/types';
 import { IconFont, icons } from '@gpustack/core-ui';
 import _ from 'lodash';
 import React from 'react';
-import { AcceleratorSlicedDetail, ListItem } from '../config/types';
+import { parseQuantityToGi } from '../../utils';
+import {
+  AcceleratorSlicedDetail,
+  AcceleratorSlicedPhysicalDetailProfile,
+  ListItem
+} from '../config/types';
 
-// Whether a type can be sliced, per the API contract (replaces the removed
-// `spec.sliceable` boolean): logical (soft) slicing reports per-card capacity
-// or physical (e.g. MIG) profiles exist. Every level of slicedDetail may be
-// absent (exclude_none responses).
+// Soft (logical) slicing — a card is split by percentage. Supported when the
+// logical slice count is positive.
+export const isLogicalSliceable = (detail?: AcceleratorSlicedDetail | null) =>
+  (detail?.logical?.count ?? 0) > 0;
+
+// Hard (physical) slicing — a card is partitioned into fixed-shape profiles
+// (e.g. MIG). Supported when the physical slice count is positive.
+export const isPhysicalSliceable = (detail?: AcceleratorSlicedDetail | null) =>
+  (detail?.physical?.count ?? 0) > 0;
+
+// Whether a type can be sliced at all, per the API contract (replaces the
+// removed `spec.sliceable` boolean). Every level of slicedDetail may be absent
+// (exclude_none responses).
 export const isSliceableDetail = (detail?: AcceleratorSlicedDetail | null) =>
-  (detail?.logical?.count ?? 0) > 0 ||
-  (detail?.physical?.profiles?.length ?? 0) > 0;
+  isLogicalSliceable(detail) || isPhysicalSliceable(detail);
+
+// Selectable hard-slice profiles: those the pool can still provide (count > 0).
+// The counts are cross-node totals, so a positive count only means the pool has
+// room somewhere — the operator still decides placement.
+export const getPartitionProfiles = (
+  detail?: AcceleratorSlicedDetail | null
+): AcceleratorSlicedPhysicalDetailProfile[] =>
+  (detail?.physical?.profiles ?? []).filter(
+    (profile) => !!profile?.name && (profile?.count ?? 0) > 0
+  );
+
+// A profile name encodes its VRAM after the dot — "1g.10gb" → 10 (GB).
+export const parseProfileMemoryGB = (name?: string | null): number | null => {
+  const match = /\.(\d+(?:\.\d+)?)gb$/i.exec(String(name ?? ''));
+  if (!match) return null;
+  const value = Number(match[1]);
+  return Number.isFinite(value) && value > 0 ? value : null;
+};
+
+// Share of the whole card a partition profile takes, as a percentage — the
+// profile's VRAM over the card's VRAM (status.detail.memory, e.g. "80Gi").
+// CPU / RAM are handed out in that proportion, so the form scales the unit
+// resources by it exactly like the soft-slice percentage. Null when either
+// side is unknown (then CPU / RAM fall back to the whole-card unit values).
+export const getPartitionPercentage = (
+  profileName?: string | null,
+  cardMemory?: string | null
+): number | null => {
+  const profileGB = parseProfileMemoryGB(profileName);
+  const cardGB = parseQuantityToGi(cardMemory ?? null)?.value;
+  if (!profileGB || !cardGB) return null;
+  return (profileGB / cardGB) * 100;
+};
 
 export const InstanceStatusValueMap = {
   Scheduling: 'Scheduling',
@@ -273,7 +319,8 @@ export const getAcceleratorMax = (
 // onceMaxRequest.accelerator is >= the requested count. Only Active candidates
 // are eligible. Accelerated types are not gated on CPU remaining (only CPU-only
 // types are); in sliced mode the candidate's acceleratorSliced remaining must
-// also be > 0.
+// also be > 0, and in partitioned mode the candidate must still offer the
+// requested profile (its acceleratorSlicedDetail lists it with count > 0).
 export const pickCandidateForAccelerator = <
   C extends {
     cluster: string;
@@ -281,6 +328,7 @@ export const pickCandidateForAccelerator = <
     phase?: string | null;
     cpu?: { remaining?: string | null } | null;
     acceleratorSliced?: { remaining?: string | null } | null;
+    acceleratorSlicedDetail?: AcceleratorSlicedDetail | null;
   }
 >(
   tiers:
@@ -288,6 +336,7 @@ export const pickCandidateForAccelerator = <
         onceMaxRequest: {
           accelerator?: string | null;
           acceleratorSliced?: string | null;
+          acceleratorPartitioned?: string | null;
         };
         candidates?: C[] | null;
       }[]
@@ -296,8 +345,14 @@ export const pickCandidateForAccelerator = <
   {
     count,
     acceleratable,
-    sliced
-  }: { count: number; acceleratable?: boolean; sliced?: boolean }
+    sliced,
+    partitionedProfile
+  }: {
+    count: number;
+    acceleratable?: boolean;
+    sliced?: boolean;
+    partitionedProfile?: string | null;
+  }
 ): C | null => {
   if (!tiers?.length) return null;
 
@@ -307,6 +362,16 @@ export const pickCandidateForAccelerator = <
     // Accelerated types are not gated on CPU remaining; CPU-only types are.
     if (!acceleratable && parseQuantity(c.cpu?.remaining) <= 0) return false;
     if (sliced && parseQuantity(c.acceleratorSliced?.remaining) <= 0)
+      return false;
+    // Match the requested profile by name against this candidate's own
+    // profile list — the type-level list is a union across candidates, so a
+    // profile offered by the type may be exhausted (count 0) or absent here.
+    if (
+      partitionedProfile &&
+      !getPartitionProfiles(c.acceleratorSlicedDetail).some(
+        (profile) => profile.name === partitionedProfile
+      )
+    )
       return false;
     return true;
   };
@@ -320,14 +385,16 @@ export const pickCandidateForAccelerator = <
   // count === 0 ? parseQuantity(tier.onceMaxRequest.accelerator) > count; this is CPU-only case.
   for (const tier of sorted) {
     const acceleratorCount = parseQuantity(tier.onceMaxRequest?.accelerator);
-    // Sliced mode requests a fraction of a single card, so the tier's
-    // whole-card accelerator count (0 for a slice-only type) can't gate it;
-    // fit on the tier's sliced capacity instead.
-    const fits = sliced
-      ? parseQuantity(tier.onceMaxRequest?.acceleratorSliced) > 0
-      : acceleratable
-        ? acceleratorCount >= count
-        : acceleratorCount === 0;
+    // Sliced / partitioned modes request a fraction of a single card, so the
+    // tier's whole-card accelerator count (0 for a slice-only type) can't gate
+    // them; fit on the tier's sliced / partitioned capacity instead.
+    const fits = partitionedProfile
+      ? parseQuantity(tier.onceMaxRequest?.acceleratorPartitioned) > 0
+      : sliced
+        ? parseQuantity(tier.onceMaxRequest?.acceleratorSliced) > 0
+        : acceleratable
+          ? acceleratorCount >= count
+          : acceleratorCount === 0;
     if (!fits) continue;
     const candidate = tier.candidates?.find(hasResources);
     if (candidate) return candidate;

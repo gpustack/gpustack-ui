@@ -25,7 +25,7 @@ export default {
   'users.form.currentpassword': 'Mevcut Şifre',
   'users.form.updatepassword': 'Şifreyi Değiştir',
   'users.form.rule.password':
-    'Büyük ve küçük harf, rakam ve özel karakter(!@#$%^&*_+) içermelidir, 6 ile 64 karakter arasında olmalıdır, boşluk kullanılamaz.',
+    'Büyük ve küçük harf, rakam ve özel karakter(!@#$%^&*_+.) içermelidir, 6 ile 64 karakter arasında olmalıdır, boşluk kullanılamaz.',
   'users.password.uppcase': 'En az bir büyük harf',
   'users.password.lowercase': 'En az bir küçük harf',
   'users.password.number': 'En az bir rakam',

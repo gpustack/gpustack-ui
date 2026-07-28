@@ -25,7 +25,7 @@ export default {
   'users.form.currentpassword': '現在のパスワード',
   'users.form.updatepassword': 'パスワードを変更',
   'users.form.rule.password':
-    '大文字と小文字、数字、特殊文字(!@#$%^&*_+)を含む6〜64文字で、スペースは使用できません。',
+    '大文字と小文字、数字、特殊文字(!@#$%^&*_+.)を含む6〜64文字で、スペースは使用できません。',
   'users.password.uppcase': '少なくとも1つの大文字を含む',
   'users.password.lowercase': '少なくとも1つの小文字を含む',
   'users.password.number': '少なくとも1つの数字を含む',

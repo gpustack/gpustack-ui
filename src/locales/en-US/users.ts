@@ -24,7 +24,7 @@ export default {
   'users.form.currentpassword': 'Current Password',
   'users.form.updatepassword': 'Modify Password',
   'users.form.rule.password':
-    'Contains uppercase and lowercase letters, numbers, and special characters(!@#$%^&*_+), 6 to 64 characters in length, no spaces allowed.',
+    'Contains uppercase and lowercase letters, numbers, and special characters(!@#$%^&*_+.), 6 to 64 characters in length, no spaces allowed.',
   'users.password.uppcase': 'At least one uppercase letter',
   'users.password.lowercase': 'At least one lowercase letter',
   'users.password.number': 'At least one number',

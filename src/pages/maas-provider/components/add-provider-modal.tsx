@@ -1,6 +1,5 @@
 import { PageActionType } from '@/config/types';
-import useSubmitLock from '@/hooks/use-submit-lock';
-import { FormDrawer } from '@gpustack/core-ui';
+import { FormDrawer, useSubmitLock } from '@gpustack/core-ui';
 import React, { useRef } from 'react';
 import { FormData, MaasProviderItem as ListItem } from '../config/types';
 

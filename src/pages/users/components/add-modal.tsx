@@ -1,12 +1,12 @@
 import { PageAction, PasswordReg } from '@/config';
 import { PageActionType } from '@/config/types';
-import useSubmitLock from '@/hooks/use-submit-lock';
 import {
   Input as CInput,
   FormDrawer,
   IconFont,
   Select as SealSelect,
-  Switch as SealSwitch
+  Switch as SealSwitch,
+  useSubmitLock
 } from '@gpustack/core-ui';
 import { useIntl, useModel } from '@umijs/max';
 import { Form, Select } from 'antd';

@@ -2,7 +2,6 @@ import { GPUStackVersionAtom, UpdateCheckAtom } from '@/atoms/user';
 import PluginExtraField from '@/components/plugin-extra-fields';
 import VersionInfo, { modalConfig } from '@/components/version-info';
 import externalLinks from '@/constants/external-links';
-import useBodyScroll from '@/hooks/use-body-scroll';
 import { logout } from '@/pages/login/apis';
 import { getGPUStackPlugin } from '@/plugins';
 import { useModel } from '@@/plugin-model';
@@ -12,7 +11,7 @@ import {
   HomeOutlined,
   ReadOutlined
 } from '@ant-design/icons';
-import { DropdownActions, IconFont } from '@gpustack/core-ui';
+import { DropdownActions, IconFont, useBodyScroll } from '@gpustack/core-ui';
 import { history, useIntl, useNavigate } from '@umijs/max';
 import { Avatar, Button, Divider, Modal } from 'antd';
 import { useAtom } from 'jotai';

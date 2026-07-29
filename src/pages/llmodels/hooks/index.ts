@@ -1,8 +1,8 @@
 import { clusterListAtom, workerListAtom } from '@/atoms/models';
-import { createAxiosToken } from '@/hooks/use-chunk-request';
 import { queryModelFilesList } from '@/pages/resources/apis';
 import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
 import { convertFileSize } from '@/utils';
+import { createAxiosToken } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useAtomValue } from 'jotai';
 import _ from 'lodash';

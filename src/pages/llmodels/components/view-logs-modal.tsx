@@ -1,6 +1,5 @@
-import useSetChunkRequest from '@/hooks/use-chunk-request';
 import { CloseOutlined, QuestionCircleOutlined } from '@ant-design/icons';
-import { BaseSelect, LogsViewer } from '@gpustack/core-ui';
+import { BaseSelect, LogsViewer, useChunkRequest } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Checkbox, Flex, Modal, Tooltip } from 'antd';
 import dayjs from 'dayjs';
@@ -22,7 +21,7 @@ type ViewModalProps = {
 
 const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
   const intl = useIntl();
-  const { setChunkRequest } = useSetChunkRequest();
+  const { setChunkRequest } = useChunkRequest();
   const { open, url, onCancel, tail, status } = props || {};
   const [enableScorllLoad, setEnableScorllLoad] = useState(true);
   const [isDownloading, setIsDownloading] = useState<boolean>(

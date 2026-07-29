@@ -1,8 +1,7 @@
 import { PasswordReg } from '@/config';
 import { INPUT_WIDTH } from '@/constants';
-import useSubmitLock from '@/hooks/use-submit-lock';
 import { updatePassword } from '@/pages/login/apis';
-import { Input as CInput, FormButtons } from '@gpustack/core-ui';
+import { Input as CInput, FormButtons, useSubmitLock } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form, message } from 'antd';
 import React from 'react';

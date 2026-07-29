@@ -1,7 +1,11 @@
 import { PageActionType } from '@/config/types';
-import { createAxiosToken } from '@/hooks/use-chunk-request';
 import { ClusterStatusValueMap } from '@/pages/cluster-management/config';
-import { ColumnWrapper, GSDrawer, ModalFooter } from '@gpustack/core-ui';
+import {
+  ColumnWrapper,
+  createAxiosToken,
+  GSDrawer,
+  ModalFooter
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, message } from 'antd';
 import _ from 'lodash';

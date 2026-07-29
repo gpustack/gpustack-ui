@@ -1,5 +1,5 @@
 import { clusterDetailAtom } from '@/atoms/clusters';
-import { createAxiosToken } from '@/hooks/use-chunk-request';
+import { createAxiosToken } from '@gpustack/core-ui';
 import { useRequest } from 'ahooks';
 import { CancelTokenSource } from 'axios';
 import { useAtom } from 'jotai';

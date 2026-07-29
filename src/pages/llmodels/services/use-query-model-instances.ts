@@ -1,4 +1,4 @@
-import { createAxiosToken } from '@/hooks/use-chunk-request';
+import { createAxiosToken } from '@gpustack/core-ui';
 import { useRequest } from 'ahooks';
 import { message } from 'antd';
 import { CancelTokenSource } from 'axios';

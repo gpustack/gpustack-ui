@@ -1,5 +1,5 @@
 import breakpoints from '@/config/breakpoints';
-import useWindowResize from '@/hooks/use-window-resize';
+import { useWindowResize } from '@gpustack/core-ui';
 import { useEffect } from 'react';
 
 export default function useCollapseLayout(options: {

@@ -1,5 +1,4 @@
-import useBodyScroll from '@/hooks/use-body-scroll';
-import { PageSize } from '@gpustack/core-ui';
+import { PageSize, useBodyScroll } from '@gpustack/core-ui';
 import { useState } from 'react';
 import { MODEL_INSTANCE_API } from '../apis';
 import { InstanceRealtimeLogStatus } from '../config';

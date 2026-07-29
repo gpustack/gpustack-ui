@@ -1,8 +1,8 @@
 import breakpoints from '@/config/breakpoints';
 import HotKeys from '@/config/hotkeys';
-import useWindowResize from '@/hooks/use-window-resize';
 import { modelCategoriesMap } from '@/pages/llmodels/config';
 import { DiffOutlined, HighlightOutlined } from '@ant-design/icons';
+import { useWindowResize } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { Segmented, Tabs, TabsProps } from 'antd';

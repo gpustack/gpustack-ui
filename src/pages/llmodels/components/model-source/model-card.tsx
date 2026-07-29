@@ -1,11 +1,15 @@
 import { GPUSTACK_API_BASE_URL } from '@/config/settings';
-import useRequestToken from '@/hooks/use-request-token';
 import {
   DownOutlined,
   FileMarkdownOutlined,
   RightOutlined
 } from '@ant-design/icons';
-import { IconFont, SimpleOverlay, ThemeTag } from '@gpustack/core-ui';
+import {
+  IconFont,
+  SimpleOverlay,
+  ThemeTag,
+  useRequestToken
+} from '@gpustack/core-ui';
 import { MarkdownViewer } from '@gpustack/core-ui/markdown';
 import { useIntl } from '@umijs/max';
 import { Button, Empty, Spin, Tooltip } from 'antd';

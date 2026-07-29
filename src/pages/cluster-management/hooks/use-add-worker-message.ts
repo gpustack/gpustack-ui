@@ -1,7 +1,10 @@
 import { workerAddedCountAtom } from '@/atoms/clusters';
-import useSetChunkRequest from '@/hooks/use-chunk-request';
-import useUpdateChunkedList from '@/hooks/use-update-chunk-list';
 import useQueryWorkerList from '@/pages/resources/services/use-query-worker-list';
+import {
+  useChunkRequest,
+  usePageVisibility,
+  useUpdateChunkedList
+} from '@gpustack/core-ui';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
 import qs from 'query-string';
@@ -14,6 +17,8 @@ export default function useAddWorkerMessage() {
   const [addedCount, setAddedCount] = useState(0);
   const timerRef = useRef<any>(null);
   const triggerAtRef = useRef<number>(0);
+  // last params the watch was started with, so it can be re-issued on resume
+  const watchParamsRef = useRef<Record<string, any> | null>(null);
   const existingIdsRef = useRef<Set<string | number>>(new Set());
   const snapshotReceivedRef = useRef<boolean>(false);
   const [, setWorkerAddedCount] = useAtom(workerAddedCountAtom);
@@ -23,12 +28,6 @@ export default function useAddWorkerMessage() {
     useQueryWorkerList();
 
   const isNewWorker = (item: any) => {
-    console.log(
-      'isNewWorker item:',
-      item,
-      existingIdsRef.current,
-      snapshotReceivedRef.current
-    );
     if (item?.id == null) {
       return false;
     }
@@ -51,13 +50,12 @@ export default function useAddWorkerMessage() {
     }
   };
 
-  const { setChunkRequest } = useSetChunkRequest();
+  const { setChunkRequest } = useChunkRequest();
   const { updateChunkedList } = useUpdateChunkedList({
     events: ['CREATE', 'INSERT'],
     dataList: [],
     isNewItem: isNewWorker,
     onCreate: (newItems: any) => {
-      console.log('onCreate newItems:', newItems, triggerAtRef.current);
       if (triggerAtRef.current) {
         newItemsRef.current = newItemsRef.current.concat(newItems);
         showAddWorkerMessage();
@@ -101,6 +99,7 @@ export default function useAddWorkerMessage() {
   const resetAddedCount = () => {
     updateAddedCount(0);
     chunkRequestRef.current?.current?.cancel?.();
+    watchParamsRef.current = null;
     newItemsRef.current = [];
     triggerAtRef.current = 0;
     existingIdsRef.current = new Set();
@@ -110,21 +109,44 @@ export default function useAddWorkerMessage() {
     clearTimeout(timerRef.current);
   };
 
-  const createModelsChunkRequest = async (params = {}) => {
-    resetAddedCount();
-    // seed the baseline before watching so new workers are detected even when
-    // the cluster currently has zero workers
-    await seedExistingWorkers(params);
+  const startWatch = (params: Record<string, any>) => {
     try {
       chunkRequestRef.current = setChunkRequest({
         url: `${WORKERS_API}?${qs.stringify(_.pickBy(params, (val: any) => !!val))}`,
         handler: updateHandler
       });
-      triggerAtRef.current = Date.now();
     } catch (error) {
       // ignore
     }
   };
+
+  const createModelsChunkRequest = async (params = {}) => {
+    resetAddedCount();
+    // seed the baseline before watching so new workers are detected even when
+    // the cluster currently has zero workers
+    await seedExistingWorkers(params);
+    watchParamsRef.current = params;
+    startWatch(params);
+    triggerAtRef.current = Date.now();
+  };
+
+  // This drawer is typically left open while the user runs the install command
+  // elsewhere, so the tab can stay hidden for minutes. Release the connection
+  // meanwhile and re-watch on return — a bare re-watch, NOT
+  // createModelsChunkRequest, which would reset the count the user is waiting
+  // for. The count survives because the reconnect snapshot is deduped against
+  // existingIdsRef: already-counted workers are skipped, and ones that appeared
+  // while hidden are still reported as new.
+  usePageVisibility({
+    onHidden: () => {
+      chunkRequestRef.current?.current?.cancel?.();
+    },
+    onVisible: () => {
+      if (watchParamsRef.current) {
+        startWatch(watchParamsRef.current);
+      }
+    }
+  });
 
   useEffect(() => {
     return () => {

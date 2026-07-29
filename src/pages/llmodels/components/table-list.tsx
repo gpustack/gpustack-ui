@@ -2,9 +2,6 @@ import { modelsExpandKeysAtom, modelsSessionAtom } from '@/atoms/models';
 import { PageAction } from '@/config';
 import { TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import { PageActionType } from '@/config/types';
-import useBodyScroll from '@/hooks/use-body-scroll';
-import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
-import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useNoResourceResult from '@/pages/llmodels/hooks/use-no-resource-result';
 import { TargetStatusValueMap } from '@/pages/model-routes/config';
 import useOpenPlayground from '@/pages/model-routes/hooks/use-open-playground';
@@ -17,7 +14,10 @@ import {
   DropdownButtons,
   PageTools,
   Table as SealTable,
-  TableOrder
+  TableOrder,
+  useBodyScroll,
+  useExpandedRowKeys,
+  useTableRowSelection
 } from '@gpustack/core-ui';
 import { useIntl, useNavigate, useSearchParams } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';

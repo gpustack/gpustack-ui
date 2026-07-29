@@ -1,6 +1,6 @@
 import { PageAction } from '@/config';
 import type { PageActionType } from '@/config/types';
-import useBodyScroll from '@/hooks/use-body-scroll';
+import { useBodyScroll } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useState } from 'react';
 import { InstanceStatusValueMap } from '../config';

@@ -1,6 +1,5 @@
 import { modelsExpandKeysAtom, modelsSessionAtom } from '@/atoms/models';
 import { PageAction } from '@/config';
-import useBodyScroll from '@/hooks/use-body-scroll';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { IS_FIRST_LOGIN, writeState } from '@/utils/localstore/index';
 import { SearchOutlined } from '@ant-design/icons';
@@ -8,7 +7,8 @@ import {
   FilterBar,
   IconFont,
   InfiniteScrollerProvider,
-  NoResult
+  NoResult,
+  useBodyScroll
 } from '@gpustack/core-ui';
 import { useIntl, useNavigate } from '@umijs/max';
 import { message } from 'antd';

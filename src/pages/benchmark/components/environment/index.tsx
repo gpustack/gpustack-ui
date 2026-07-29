@@ -1,8 +1,8 @@
-import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import {
   RowChildren,
   Table as SealTable,
-  TableProvider
+  TableProvider,
+  useExpandedRowKeys
 } from '@gpustack/core-ui';
 import useMemoizedFn from 'ahooks/lib/useMemoizedFn';
 import { Col, Row } from 'antd';

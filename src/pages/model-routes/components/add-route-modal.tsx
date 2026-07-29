@@ -1,6 +1,10 @@
 import { PageActionType } from '@/config/types';
-import useSubmitLock from '@/hooks/use-submit-lock';
-import { AlertBlockInfo, FormDrawer, ModalFooter } from '@gpustack/core-ui';
+import {
+  AlertBlockInfo,
+  FormDrawer,
+  ModalFooter,
+  useSubmitLock
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import React, { useRef } from 'react';
 import { FormData, RouteItem as ListItem } from '../config/types';

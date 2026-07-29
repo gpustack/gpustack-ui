@@ -3,9 +3,7 @@ import { registerRouteConfigAtom } from '@/atoms/routes';
 import PluginExtraFields from '@/components/plugin-extra-fields';
 import { PageAction } from '@/config';
 import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
-import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import useTableFetch from '@/hooks/use-table-fetch';
-import useWatchList from '@/hooks/use-watch-list';
 import APIAccessInfoModal from '@/pages/llmodels/components/api-access-info';
 import {
   DeleteModal,
@@ -14,7 +12,9 @@ import {
   NoResult,
   Table as SealTable,
   TableOrder,
-  TableProvider
+  TableProvider,
+  useExpandedRowKeys,
+  useWatchList
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';

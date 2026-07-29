@@ -1,13 +1,13 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
-import useSubmitLock from '@/hooks/use-submit-lock';
 import {
   AlertBlockInfo,
   ColumnWrapper,
   GSDrawer,
   IconFont,
   ModalFooter,
-  SegmentLine
+  SegmentLine,
+  useSubmitLock
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Tabs } from 'antd';

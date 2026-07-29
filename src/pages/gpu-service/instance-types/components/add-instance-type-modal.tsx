@@ -1,5 +1,9 @@
-import useSubmitLock from '@/hooks/use-submit-lock';
-import { ColumnWrapper, GSDrawer, ModalFooter } from '@gpustack/core-ui';
+import {
+  ColumnWrapper,
+  GSDrawer,
+  ModalFooter,
+  useSubmitLock
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { message } from 'antd';
 import { useEffect, useRef, useState } from 'react';

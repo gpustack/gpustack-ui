@@ -1,4 +1,4 @@
-import useBodyScroll from '@/hooks/use-body-scroll';
+import { useBodyScroll } from '@gpustack/core-ui';
 import { useState } from 'react';
 
 const useCreateInstanceTypeModal = () => {

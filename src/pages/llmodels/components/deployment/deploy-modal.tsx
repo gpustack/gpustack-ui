@@ -1,8 +1,12 @@
 import { getRequestId } from '@/atoms/models';
 import { PageActionType } from '@/config/types';
-import useDeferredRequest from '@/hooks/use-deferred-request';
 import { ClusterStatusValueMap } from '@/pages/cluster-management/config';
-import { ColumnWrapper, GSDrawer, ModalFooter } from '@gpustack/core-ui';
+import {
+  ColumnWrapper,
+  GSDrawer,
+  ModalFooter,
+  useDeferredRequest
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { Button } from 'antd';

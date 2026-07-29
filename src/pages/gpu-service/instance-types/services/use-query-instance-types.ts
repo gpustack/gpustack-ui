@@ -1,7 +1,5 @@
 import { WatchEventType } from '@/config';
-import useSetChunkRequest, {
-  createAxiosToken
-} from '@/hooks/use-chunk-request';
+import { createAxiosToken, useChunkRequest } from '@gpustack/core-ui';
 import { useRequest } from 'ahooks';
 import { CancelTokenSource } from 'axios';
 import qs from 'query-string';
@@ -43,7 +41,7 @@ const mergeWatchEvents = (current: ListItem[], events: any[]) => {
 export default function useQueryInstanceTypes() {
   const tokenRef = useRef<CancelTokenSource | null>(null);
   const chunkRequestRef = useRef<any>(null);
-  const { setChunkRequest } = useSetChunkRequest();
+  const { setChunkRequest } = useChunkRequest();
   const [dataList, setDataList] = useState<ListItem[]>([]);
 
   const {

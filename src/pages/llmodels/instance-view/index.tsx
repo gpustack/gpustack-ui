@@ -52,8 +52,8 @@ const InstanceView = forwardRef((props, ref) => {
     queryParams,
     modalRef,
     handleTableChange,
-    cancelChunkRequest,
-    createTableListChunkRequest,
+    cancelRequestsOnPageInactive,
+    resumeRequestsOnPageActive,
     handleDelete,
     handleDeleteBatch,
     fetchData,
@@ -67,7 +67,9 @@ const InstanceView = forwardRef((props, ref) => {
     deleteAPI: deleteModelInstance,
     watch: true,
     API: MODEL_INSTANCE_API,
-    contentForDelete: 'menu.models.instances'
+    contentForDelete: 'menu.models.instances',
+    // the models page routes pause/resume by which view tab is active
+    pauseOnHidden: false
   });
   const intl = useIntl();
   const { dataList: modelList, fetchData: fetchModelList } =
@@ -89,15 +91,6 @@ const InstanceView = forwardRef((props, ref) => {
     if (val === 'viewlog') {
       openViewLogsModal(row);
     }
-  });
-
-  const cancelRequestsOnPageInactive = useMemoizedFn(() => {
-    cancelChunkRequest();
-  });
-
-  const resumeRequestsOnPageActive = useMemoizedFn(() => {
-    fetchData({} as any, true);
-    createTableListChunkRequest();
   });
 
   useImperativeHandle(ref, () => ({

@@ -5,7 +5,6 @@ import styled from 'styled-components';
 import { ProviderType, ProviderValueMap } from '../../config';
 import { ClusterListItem } from '../../config/types';
 import { AddWorkerContext } from './add-worker-context';
-import AddedMessage from './added-message';
 import CheckEnvironment from './check-environment';
 import { StepName, StepNamesMap } from './config';
 import DockerRunCommand from './docker-run-command';
@@ -66,7 +65,7 @@ const AddWorkerSteps: React.FC<AddWorkerProps> = (props) => {
     new Set([stepList[0]])
   );
   const { update, summary, register } = useSummaryStatus();
-  const { addedCount, createModelsChunkRequest } = useAddWorkerMessage();
+  const { createModelsChunkRequest } = useAddWorkerMessage();
 
   const onToggle = (open: boolean, key: string) => {
     setCollapseKey(open ? new Set([key]) : new Set());
@@ -171,10 +170,11 @@ const AddWorkerSteps: React.FC<AddWorkerProps> = (props) => {
             )}
           </>
         )}
-        {actionSource === 'modal' && (
-          //  show in cluster create page inner
-          <AddedMessage addedCount={addedCount}></AddedMessage>
-        )}
+        {/*
+          No "workers added" alert here: the page flow renders it in
+          FooterButtons, which reads workerAddedCountAtom — written by the watch
+          started above. The modal flow renders its own in the drawer footer.
+        */}
       </Container>
     </AddWorkerContext.Provider>
   );

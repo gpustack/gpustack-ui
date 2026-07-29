@@ -1,11 +1,15 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
-import useSubmitLock from '@/hooks/use-submit-lock';
 import useUserDirectory from '@/pages/gpu-service/hooks/use-user-directory';
 import Separator from '@/pages/llmodels/components/separator';
 import { getGPUStackPlugin } from '@/plugins';
 import { SearchOutlined } from '@ant-design/icons';
-import { ColumnWrapper, GSDrawer, ModalFooter } from '@gpustack/core-ui';
+import {
+  ColumnWrapper,
+  GSDrawer,
+  ModalFooter,
+  useSubmitLock
+} from '@gpustack/core-ui';
 import { useIntl, useModel } from '@umijs/max';
 import { Input, Typography } from 'antd';
 import { useEffect, useMemo, useRef, useState } from 'react';

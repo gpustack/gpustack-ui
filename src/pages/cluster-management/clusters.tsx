@@ -2,9 +2,7 @@ import { clusterSessionAtom, expandKeysAtom } from '@/atoms/clusters';
 import { PageAction } from '@/config';
 import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import type { PageActionType } from '@/config/types';
-import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import useTableFetch from '@/hooks/use-table-fetch';
-import useWatchList from '@/hooks/use-watch-list';
 import { getGPUStackPlugin } from '@/plugins';
 import {
   DeleteModal,
@@ -13,7 +11,9 @@ import {
   NoResult,
   Table as SealTable,
   TableOrder,
-  TableProvider
+  TableProvider,
+  useExpandedRowKeys,
+  useWatchList
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';

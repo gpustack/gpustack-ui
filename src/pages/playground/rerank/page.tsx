@@ -1,11 +1,14 @@
-import useRequestToken from '@/hooks/use-request-token';
 import {
   ClearOutlined,
   PlusOutlined,
   QuestionCircleOutlined,
   SendOutlined
 } from '@ant-design/icons';
-import { AlertInfo, useOverlayScroller } from '@gpustack/core-ui';
+import {
+  AlertInfo,
+  useOverlayScroller,
+  useRequestToken
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Checkbox, Input, Spin, Tag, Tooltip, Typography } from 'antd';
 import _ from 'lodash';

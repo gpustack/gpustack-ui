@@ -1,6 +1,5 @@
 import { getRequestId, setRquestId } from '@/atoms/models';
-import { createAxiosToken } from '@/hooks/use-chunk-request';
-import { BaseSelect, ColumnWrapper } from '@gpustack/core-ui';
+import { BaseSelect, ColumnWrapper, createAxiosToken } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Pagination } from 'antd';
 import _ from 'lodash';

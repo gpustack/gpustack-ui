@@ -54,8 +54,17 @@ export default {
     '現在のリソース状況に基づいて、モデルインスタンスを適切なGPUに自動的にデプロイします。',
   'models.form.scheduletype.manual.tips':
     'モデルインスタンスをデプロイするGPUを手動で指定できます。',
+  'models.form.gpuallocation': 'GPU 割り当て',
+  'models.form.gpumode.full': '全体',
+  'models.form.gpumode.slicing': '分割',
+  'models.form.gpuType.noSlicedCapacity':
+    'この GPU タイプに分割可能な容量がありません。別の GPU タイプを選択してください。',
+  'models.form.gpuType.noPartitionProfile':
+    'この GPU タイプに利用可能な分割プロファイルがありません。別の GPU タイプを選択してください。',
   'models.form.manual.schedule': '手動スケジュール',
   'models.table.gpuindex': 'GPUインデックス',
+  'models.table.vgpu': 'vGPU',
+  'models.table.vgpu.slice': '{memory}% VRAM / {cores}% 演算',
   'models.table.backend': 'バックエンド',
   'models.table.acrossworker': 'ワーカー間で分散',
   'models.table.cpuoffload': 'CPUオフロード',

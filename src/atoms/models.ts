@@ -28,6 +28,7 @@ export const clusterListAtom = atom<
     provider: string;
     state: string;
     is_default: boolean;
+    gpu_instance_enabled?: boolean;
     workers: number;
     ready_workers: number;
     gpus: number;

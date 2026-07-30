@@ -14,8 +14,11 @@ import styled from 'styled-components';
 import {
   DistributedServerItem,
   DistributedServers,
+  GPUTypeSelector,
   ModelInstanceListItem
 } from '../../config/types';
+import { useGPUTypeDisplayName } from '../../hooks/use-gpu-type-display-name';
+import { formatGPUTypeAllocation } from './vgpu-info';
 
 const GPUIndexWrapper = styled.span`
   display: flex;
@@ -26,6 +29,10 @@ const GPUIndexWrapper = styled.span`
 interface DistributeInfoCellProps {
   record: ModelInstanceListItem;
   workerList: WorkerListItem[];
+  // The parent model's gpu_type_selector; when set (vGPU deployment) the
+  // tooltip table gains a vGPU column. Same for every worker — each holds
+  // one slice of the same InstanceType.
+  gpuTypeSelector?: GPUTypeSelector | null;
 }
 
 const renderGpuIndexs = (gpuIndexes: number[]) => {
@@ -85,12 +92,42 @@ const calcTotalVram = (vram: Record<string, number>) => {
 
 const DistributedServerList: React.FC<DistributeInfoCellProps> = ({
   record,
-  workerList
+  workerList,
+  gpuTypeSelector
 }) => {
-  const severList: DistributedServerItem[] =
+  const intl = useIntl();
+  const serverList: DistributedServerItem[] =
     record?.distributed_servers?.subordinate_workers || [];
 
-  const list = _.map(severList, (item: any) => {
+  // vGPU allocation label (e.g. "A10 (1g.2gb)"); empty for non-vGPU models,
+  // in which case the table renders exactly as before (no extra column).
+  const gpuTypeDisplayName = useGPUTypeDisplayName(
+    record?.cluster_id,
+    gpuTypeSelector?.type
+  );
+  const vgpuAllocation = formatGPUTypeAllocation(
+    intl,
+    gpuTypeSelector,
+    gpuTypeDisplayName
+  );
+
+  const columns = React.useMemo(() => {
+    if (!vgpuAllocation) {
+      return distributeCols;
+    }
+    const vgpuCol: ColumnProps = {
+      title: 'models.table.vgpu',
+      locale: true,
+      key: 'vgpu',
+      style: {
+        wordBreak: 'break-word'
+      }
+    };
+    // Insert after the GPU index column, before allocated VRAM.
+    return [...distributeCols.slice(0, 3), vgpuCol, ...distributeCols.slice(3)];
+  }, [vgpuAllocation]);
+
+  const list = _.map(serverList, (item: DistributedServerItem) => {
     const data = _.find(workerList, { id: item.worker_id });
     return {
       worker_name: data?.name,
@@ -100,7 +137,8 @@ const DistributedServerList: React.FC<DistributeInfoCellProps> = ({
       vram: calcTotalVram(item.computed_resource_claim?.vram || {}),
       gpu_index: _.keys(item.computed_resource_claim?.vram)
         .map((i: string) => Number(i))
-        .sort((a: number, b: number) => a - b)
+        .sort((a: number, b: number) => a - b),
+      vgpu: vgpuAllocation
     };
   });
 
@@ -111,7 +149,8 @@ const DistributedServerList: React.FC<DistributeInfoCellProps> = ({
       port: '',
       vram: calcTotalVram(record.computed_resource_claim?.vram || {}),
       is_main: true,
-      gpu_index: record.gpu_indexes?.sort((a: number, b: number) => a - b)
+      gpu_index: record.gpu_indexes?.sort((a: number, b: number) => a - b),
+      vgpu: vgpuAllocation
     }
   ];
 
@@ -119,7 +158,7 @@ const DistributedServerList: React.FC<DistributeInfoCellProps> = ({
     <div>
       <SimpleTable
         rowKey="worker_name"
-        columns={distributeCols}
+        columns={columns}
         dataSource={[...mainWorker, ...list]}
       ></SimpleTable>
     </div>
@@ -129,15 +168,16 @@ const DistributedServerList: React.FC<DistributeInfoCellProps> = ({
 const DistributeInfoCell: React.FC<{
   record: ModelInstanceListItem;
   workerList: WorkerListItem[];
-}> = ({ record, workerList }) => {
+  gpuTypeSelector?: GPUTypeSelector | null;
+}> = ({ record, workerList, gpuTypeSelector }) => {
   const intl = useIntl();
   const distributed_servers: DistributedServers | undefined =
     record?.distributed_servers;
 
-  const severList: DistributedServerItem[] =
+  const serverList: DistributedServerItem[] =
     distributed_servers?.subordinate_workers || [];
 
-  if (!severList.length) {
+  if (!serverList.length) {
     return null;
   }
   return (
@@ -155,6 +195,7 @@ const DistributeInfoCell: React.FC<{
         <DistributedServerList
           record={record}
           workerList={workerList}
+          gpuTypeSelector={gpuTypeSelector}
         ></DistributedServerList>
       }
     >

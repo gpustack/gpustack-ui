@@ -3,7 +3,7 @@ import { tableSorter } from '@/config/settings';
 import { ListItem as workerListItem } from '@/pages/resources/config/types';
 import { usePluginListColumns } from '@/plugins/list-extra-columns';
 import { convertFileSize } from '@/utils';
-import { ThunderboltFilled } from '@ant-design/icons';
+import { PartitionOutlined, ThunderboltFilled } from '@ant-design/icons';
 import { AutoTooltip, IconFont } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { ColumnsType } from 'antd/lib/table';
@@ -18,19 +18,39 @@ import NameCell, {
   NameCellProps
 } from '../components/instance-cells/name-cell';
 import {
+  formatGPUTypeAllocation,
+  getGPUTypeClusterId,
+  getGPUTypeSelector
+} from '../components/instance-cells/vgpu-info';
+import {
   DistributedServerItem,
   ModelInstanceListItem as ListItem,
   ListItem as ModelListItem
 } from '../config/types';
+import { useGPUTypeDisplayName } from '../hooks/use-gpu-type-display-name';
 import { calcTotalVram } from '../utils';
 
 const WorkerInfoContent: React.FC<
   NameCellProps & { workerList: workerListItem[] }
 > = ({ record, modelData, workerList }) => {
+  const intl = useIntl();
   let workerIp = '-';
   const distributed_servers = record.distributed_servers;
   const severList: DistributedServerItem[] =
     distributed_servers?.subordinate_workers || [];
+
+  // vGPU (InstanceType) allocation, e.g. "A10 (50% VRAM / 50% Compute)";
+  // empty for non-vGPU instances, which render exactly as before.
+  const gpuTypeSelector = getGPUTypeSelector(record, modelData);
+  const gpuTypeDisplayName = useGPUTypeDisplayName(
+    getGPUTypeClusterId(record, modelData),
+    gpuTypeSelector?.type
+  );
+  const vgpuAllocation = formatGPUTypeAllocation(
+    intl,
+    gpuTypeSelector,
+    gpuTypeDisplayName
+  );
 
   if (record.worker_ip) {
     workerIp = record.port
@@ -45,23 +65,38 @@ const WorkerInfoContent: React.FC<
         <DistributeInfoCell
           record={record}
           workerList={workerList}
+          gpuTypeSelector={getGPUTypeSelector(record, modelData)}
         ></DistributeInfoCell>
       ) : (
-        <div className="flex-center">
-          <IconFont
-            type="icon-filled-gpu"
-            className="m-r-5 text-quaternary"
-            style={{ fontSize: 12 }}
-          />
-          <span className="text-quaternary">
-            GPU:[
-            {_.join(
-              record.gpu_indexes?.sort?.((a, b) => a - b),
-              ','
-            )}
-            ]
-          </span>
-        </div>
+        <>
+          <div className="flex-center">
+            <IconFont
+              type="icon-filled-gpu"
+              className="m-r-5 text-quaternary"
+              style={{ fontSize: 12 }}
+            />
+            <span className="text-quaternary">
+              GPU:[
+              {_.join(
+                record.gpu_indexes?.sort?.((a, b) => a - b),
+                ','
+              )}
+              ]
+            </span>
+          </div>
+          {vgpuAllocation && (
+            <div className="flex-center">
+              <PartitionOutlined
+                className="m-r-5 text-quaternary"
+                style={{ fontSize: 12 }}
+              />
+              <span className="text-quaternary">
+                {intl.formatMessage({ id: 'models.table.vgpu' })}:{' '}
+                {vgpuAllocation}
+              </span>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
@@ -86,15 +121,26 @@ const useInstancesColumns = (options: {
     options;
   const pluginCols = usePluginListColumns('modelInstances');
 
+  // Key the parent-model lookup once per render instead of a linear find
+  // per row (O(instances x models) on large lists).
+  const modelById = useMemo(
+    () => new Map(modelList.map((model) => [model.id, model])),
+    [modelList]
+  );
+
   const renderWorkerCell = (text: number, record: ListItem) => {
     if (text) {
+      // The instance payload does not echo gpu_type_selector; it lives on
+      // the parent model, already fetched into modelList.
+      const modelData = modelById.get(record.model_id);
       return (
         <WorkerInfoContent
           workerList={workerList}
           record={record}
           modelData={{
             backend: record.backend,
-            backend_version: record.backend_version
+            backend_version: record.backend_version,
+            gpu_type_selector: modelData?.gpu_type_selector
           }}
         ></WorkerInfoContent>
       );
@@ -214,11 +260,7 @@ const useInstancesColumns = (options: {
         render: (value: string, record: ListItem) => (
           <ActionsCell
             record={record}
-            modelData={
-              modelList.find(
-                (model) => model.id === record.model_id
-              ) as ModelListItem
-            }
+            modelData={modelById.get(record.model_id) as ModelListItem}
             onSelect={handleSelect}
           ></ActionsCell>
         )
@@ -229,7 +271,7 @@ const useInstancesColumns = (options: {
     onCellClick,
     workerList,
     clusterList,
-    modelList,
+    modelById,
     intl,
     pluginCols
   ]);

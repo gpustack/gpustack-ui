@@ -30,6 +30,7 @@ export interface InstanceTypeStatus {
   accelerator?: InstanceTypeResource | null;
   acceleratorShared?: InstanceTypeResource | null;
   acceleratorSliced?: InstanceTypeResource | null;
+  acceleratorPartitioned?: InstanceTypeResource | null;
   cpu?: InstanceTypeResource | null;
 }
 

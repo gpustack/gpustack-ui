@@ -55,8 +55,17 @@ export default {
     'Автоматическое развертывание инстансов модели на подходящие GPU в зависимости от текущих ресурсов.',
   'models.form.scheduletype.manual.tips':
     'Позволяет вручную указать GPU для развертывания инстансов модели.',
+  'models.form.gpuallocation': 'Распределение GPU',
+  'models.form.gpumode.full': 'Целиком',
+  'models.form.gpumode.slicing': 'Нарезка',
+  'models.form.gpuType.noSlicedCapacity':
+    'Нет доступной ёмкости для нарезки у этого типа GPU, выберите другой тип GPU.',
+  'models.form.gpuType.noPartitionProfile':
+    'Нет доступного профиля раздела у этого типа GPU, выберите другой тип GPU.',
   'models.form.manual.schedule': 'Ручное распределение',
   'models.table.gpuindex': 'Индекс GPU',
+  'models.table.vgpu': 'vGPU',
+  'models.table.vgpu.slice': '{memory}% VRAM / {cores}% вычислений',
   'models.table.backend': 'Бэкенды',
   'models.table.acrossworker': 'Распределение по воркерам',
   'models.table.cpuoffload': 'CPU оффлоуд',

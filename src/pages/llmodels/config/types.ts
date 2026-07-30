@@ -48,7 +48,20 @@ export interface ListItem {
     gpu_ids: string[];
     gpus_per_replica?: number;
   };
+  gpu_type_selector?: GPUTypeSelector | null;
   worker_selector?: object;
+}
+
+// vGPU scheduling (issue #5192): deploy onto a GPU provided by a
+// gpustack-operator InstanceType. Mutually exclusive with `gpu_selector`.
+// Percentages 1-100 request a soft slice; both 0 request a whole card from
+// the type pool; `accelerator_partitioned_profile` requests a hardware
+// partition (e.g. MIG) and is mutually exclusive with the percentages.
+export interface GPUTypeSelector {
+  type?: string | null;
+  accelerator_sliced_memory_percentage?: number | null;
+  accelerator_sliced_cores_percentage?: number | null;
+  accelerator_partitioned_profile?: string | null;
 }
 
 export type DeployFormKey = 'deployment' | 'catalog';
@@ -98,10 +111,14 @@ export interface FormData {
     gpu_count?: number;
     gpus_per_replica?: number;
   };
+  gpu_type_selector?: GPUTypeSelector | null;
   placement_strategy?: string;
   cpu_offloading?: boolean;
   worker_selector?: object;
   scheduleType?: string;
+  // Which GPU source the manual mode picks from (ManualGPUModeMap): whole
+  // cards or an InstanceType pool. UI-only, stripped before submit.
+  manualGpuMode?: string;
   name: string;
   replicas: number;
   description: string;
@@ -149,7 +166,9 @@ interface ComputedResourceClaim {
 export interface DistributedServerItem {
   pid: number;
   port: number;
-  worker_id: string;
+  // Numeric on the wire (ModelInstanceSubordinateWorker.worker_id), so it
+  // matches a worker's `id` by identity in the worker-list lookup.
+  worker_id: number;
   computed_resource_claim: ComputedResourceClaim;
 }
 
@@ -176,6 +195,9 @@ export interface ModelInstanceListItem {
   gpu_indexes?: number[];
   worker_ip: string;
   gpu_index: number;
+  // Echoed from the parent Model when it was deployed via an InstanceType
+  // (vGPU); drives the slice/partition display on the instance row.
+  gpu_type_selector?: GPUTypeSelector | null;
   pid: number;
   port: number;
   name: string;

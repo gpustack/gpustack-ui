@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { ManualGPUModeMap, ScheduleValueMap } from '../config';
 import { FormData } from '../config/types';
 import { backendOptionsMap } from '../constants/backend-parameters';
 
@@ -35,16 +36,62 @@ export const generateGPUSelector = (data: any, gpuOptions: any[]) => {
 };
 
 /**
+ * build the gpu_type_selector payload field from the form values. Normalizes
+ * the four API keys: a partition profile zeroes the percentages, anything
+ * else nulls the profile, missing percentages become 0 (whole card).
+ * @param data
+ * @returns
+ */
+export const generateGPUTypeSelector = (data: FormData) => {
+  const selector = data.gpu_type_selector;
+
+  if (!selector?.type) {
+    return {
+      gpu_type_selector: null
+    };
+  }
+
+  const partitionedProfile = selector.accelerator_partitioned_profile || null;
+
+  return {
+    gpu_type_selector: {
+      type: selector.type,
+      accelerator_sliced_memory_percentage: partitionedProfile
+        ? 0
+        : _.toNumber(selector.accelerator_sliced_memory_percentage) || 0,
+      accelerator_sliced_cores_percentage: partitionedProfile
+        ? 0
+        : _.toNumber(selector.accelerator_sliced_cores_percentage) || 0,
+      accelerator_partitioned_profile: partitionedProfile
+    }
+  };
+};
+
+/**
  * before submit the form, generate the gpu_selector field, and clear worker_selector if needed
  * @param data
  * @returns
  */
 export const generateGPUIds = (data: FormData) => {
+  // The manual mode's vGPU tab: mutually exclusive with the whole-card
+  // gpu_selector — null it and emit gpu_type_selector instead.
+  if (
+    data.scheduleType === ScheduleValueMap.Manual &&
+    data.manualGpuMode === ManualGPUModeMap.VGPU
+  ) {
+    return {
+      gpu_selector: null,
+      worker_selector: null,
+      ...generateGPUTypeSelector(data)
+    };
+  }
+
   const gpu_ids = _.get(data, 'gpu_selector.gpu_ids', []);
 
   if (!gpu_ids.length) {
     return {
-      gpu_selector: null
+      gpu_selector: null,
+      gpu_type_selector: null
     };
   }
 
@@ -66,7 +113,8 @@ export const generateGPUIds = (data: FormData) => {
       gpu_ids: result || [],
       gpus_per_replica: data.gpu_selector?.gpus_per_replica || null
     },
-    worker_selector: null
+    worker_selector: null,
+    gpu_type_selector: null
   };
 };
 

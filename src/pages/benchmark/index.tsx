@@ -22,6 +22,12 @@ import AddBenchmarkModal from './components/add-benchmark-modal';
 import LeftActions from './components/left-actions';
 import RightActions from './components/right-actions';
 import ViewLogsModal from './components/view-logs-modal';
+import {
+  datasetList,
+  genBenchmarkName,
+  slaFieldsFromTargets,
+  type SlaTarget
+} from './config';
 import { FormData, BenchmarkListItem as ListItem } from './config/types';
 import Filters from './filters';
 import useBenchmarkColumns from './hooks/use-benchmark-columns';
@@ -29,7 +35,6 @@ import useColumnSettings from './hooks/use-column-settings';
 import useCreateBenchmark from './hooks/use-create-benchmark';
 import useViewLogs from './hooks/use-view-logs';
 import { useExportBenchmark } from './services/use-export-benchmark';
-import useQueryDataset from './services/use-query-dataset';
 import useQueryProfiles from './services/use-query-profiles';
 import useStopBenchmark from './services/use-stop-benchmark';
 
@@ -66,7 +71,6 @@ const Benchmark: React.FC = () => {
   const { openViewLogsModal, closeViewLogsModal, openViewLogsModalStatus } =
     useViewLogs();
   const { handleStopBenchmark } = useStopBenchmark();
-  const { datasetList, fetchDatasetData } = useQueryDataset();
   const { exportData } = useExportBenchmark();
   const {
     fetchClusterList,
@@ -90,7 +94,6 @@ const Benchmark: React.FC = () => {
 
   useEffect(() => {
     fetchModelList({ page: -1 });
-    fetchDatasetData();
     fetchProfilesData();
     fetchClusterList({ page: -1 }).then(() => {
       if (benchmarkTargetInstance.model_name) {
@@ -114,8 +117,29 @@ const Benchmark: React.FC = () => {
   };
 
   const handleModalOk = async (data: FormData) => {
+    // `sla_targets` is the form's editable view of the 9 flat sla_*_ms
+    // thresholds. It is not an API field, so it is EXPANDED here rather than just
+    // dropped: none of the 9 flat fields is mounted by a Form.Item any more (the
+    // SLA section renders the list instead), and antd's onFinish only carries
+    // REGISTERED fields — getFieldsValue(namePathList) walks the field entities,
+    // not the store. Writing them with setFieldsValue therefore never reached the
+    // request, and every UI-created or cloned benchmark silently lost all 9
+    // thresholds while showing them in the drawer.
+    const { sla_targets: slaTargets, ...formValues } = data as FormData & {
+      sla_targets?: SlaTarget[];
+    };
+    // `dataset_worker_*` are UI-only too, but unlike sla_targets they carry
+    // nothing the API wants: model-instance records the selected instance's
+    // worker so the dataset picker can filter to it. Dropped, not expanded.
+    const rest = _.omit(formValues, [
+      'dataset_worker_id',
+      'dataset_worker_name'
+    ]);
     const params = {
-      ...data
+      ...rest,
+      // Absent (the SLA section is not rendered for a fixed-rate load) => leave
+      // the fields out entirely rather than nulling them.
+      ...(slaTargets === undefined ? {} : slaFieldsFromTargets(slaTargets))
     };
     try {
       if (openBenchmarkModalStatus.action === PageAction.EDIT) {
@@ -148,9 +172,21 @@ const Benchmark: React.FC = () => {
     );
   };
 
+  // Clone = open the create form pre-filled with this row's config but a fresh
+  // auto-generated name (CREATE mode → fully editable, submits as a new record).
+  const handleClone = (row: ListItem) => {
+    openBenchmarkModal(
+      PageAction.CREATE,
+      intl.formatMessage({ id: 'benchmark.button.clone' }),
+      { ...row, name: genBenchmarkName(row.model_name, row.profile) }
+    );
+  };
+
   const handleSelect = useMemoizedFn((val: any, row: ListItem) => {
     if (val === 'edit') {
       handleEdit(row);
+    } else if (val === 'clone') {
+      handleClone(row);
     } else if (val === 'delete') {
       handleDelete({ ...row, name: row.name });
     } else if (val === 'viewlog') {
@@ -234,6 +270,7 @@ const Benchmark: React.FC = () => {
       <Filters
         ref={filterRef}
         open={filtersVisible}
+        profilesOptions={profilesOptions}
         onValuesChange={handleOnFilterChange}
         onClose={toggleFilters}
         onClear={handleOnClearFilters}
@@ -250,7 +287,6 @@ const Benchmark: React.FC = () => {
           left={
             <LeftActions
               modelList={modelList}
-              datasetList={datasetList}
               handleSearch={handleSearch}
               handleQueryChange={handleQueryChange}
               handleInputChange={handleNameChange}

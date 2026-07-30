@@ -4,14 +4,13 @@ import { useIntl } from '@umijs/max';
 import { Button, Input, Space } from 'antd';
 import _ from 'lodash';
 import React from 'react';
-import { profileOptions } from '../config';
+import { loadTypeOptions } from '../config';
 
 export interface RightActionsProps {
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSearch: () => void;
   handleQueryChange: (value: any, option?: any) => void;
   modelList?: Global.BaseOption<number, { categories: string[] }>[];
-  datasetList?: Global.BaseOption<string | number>[];
   toggleFilters: () => void;
   count?: number;
   onClear: () => void;
@@ -24,8 +23,7 @@ const RightActions: React.FC<RightActionsProps> = ({
   toggleFilters,
   count,
   onClear,
-  modelList,
-  datasetList
+  modelList
 }) => {
   const intl = useIntl();
 
@@ -38,10 +36,17 @@ const RightActions: React.FC<RightActionsProps> = ({
 
   const handleGPUChange = debounceUpdateFilter;
 
-  const handleSearchByModelDebounce = _.debounce((value: any) => {
+  const handleSearchByModelDebounce = _.debounce((e: any) => {
     handleQueryChange({
       page: 1,
-      model_name: value
+      model_name: e.target.value
+    });
+  }, 350);
+
+  const handleSearchByProfileDebounce = _.debounce((e: any) => {
+    handleQueryChange({
+      page: 1,
+      profile: e.target.value
     });
   }, 350);
 
@@ -84,28 +89,32 @@ const RightActions: React.FC<RightActionsProps> = ({
         allowClear
         onChange={handleGPUChange}
       ></Input>
-      <BaseSelect
-        allowClear
+      <Input
+        prefix={
+          <SearchOutlined
+            style={{ color: 'var(--ant-color-text-placeholder)' }}
+          ></SearchOutlined>
+        }
         placeholder={intl.formatMessage({
           id: 'benchmark.table.filter.byProfile'
         })}
         style={{ width: 160 }}
-        options={[
-          ...profileOptions,
-          {
-            label: 'backend.custom',
-            locale: true,
-            value: 'Custom'
-          }
-        ].map((item) => ({
-          label: item.locale
-            ? intl.formatMessage({ id: item.label })
-            : item.label,
+        allowClear
+        onChange={handleSearchByProfileDebounce}
+      ></Input>
+      <BaseSelect
+        allowClear
+        placeholder={intl.formatMessage({
+          id: 'benchmark.table.filter.byLoadType'
+        })}
+        style={{ width: 160 }}
+        options={loadTypeOptions.map((item) => ({
+          label: intl.formatMessage({ id: item.label }),
           value: item.value
         }))}
         onChange={(value, option) =>
           handleQueryChange({
-            profile: value,
+            load_type: value,
             page: 1
           })
         }

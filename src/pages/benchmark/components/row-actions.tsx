@@ -27,6 +27,11 @@ const actionList = [
     icon: icons.EditOutlined
   },
   {
+    key: 'clone',
+    label: 'common.button.clone',
+    icon: icons.CopyOutlined
+  },
+  {
     label: 'common.button.stop',
     key: 'stop',
     icon: icons.Stop,

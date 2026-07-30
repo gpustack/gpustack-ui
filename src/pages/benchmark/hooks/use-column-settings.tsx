@@ -1,29 +1,29 @@
 import { tableSorter } from '@/config/settings';
-import {
-  AutoTooltip,
-  ColumnSettings,
-  InfoColumn,
-  StatusTag
-} from '@gpustack/core-ui';
+import { AutoTooltip, ColumnSettings, InfoColumn } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Typography } from 'antd';
+import { Tag, Tooltip, Typography } from 'antd';
 import dayjs from 'dayjs';
 import _, { round } from 'lodash';
 import React from 'react';
+import BenchmarkStateTag from '../components/benchmark-state-tag';
 import {
-  BenchmarkStatus,
-  BenchmarkStatusLabelMap,
-  BenchmarkStatusValueMap
+  LoadTypeValueMap,
+  VALIDITY_MESSAGE_KEY,
+  loadTypeOptions,
+  loadValueDecimals
 } from '../config';
 import { BenchmarkListItem as ListItem } from '../config/types';
 // sort by this order
 const allFields = [
   'cluster_id',
   'model_name',
+  'load_type',
   'profile',
   'dataset_name',
   'gpu_summary',
   'state',
+  'recommended_rate',
+  'validity',
   'request_rate',
   'request_latency_mean',
   'tokens_per_second_mean',
@@ -49,42 +49,16 @@ const fieldSortPos: Record<string, number> = Object.fromEntries(
 const defaultColumns: string[] = [
   'model_name',
   'profile',
-  'state',
+  'load_type',
   'gpu_summary',
+  'state',
   'tokens_per_second_mean',
   'time_to_first_token_mean',
-  'time_per_output_token_mean'
+  'time_per_output_token_mean',
+  'recommended_rate',
+  'validity'
 ];
 const fixedColumns: string[] = [];
-
-const BenchmarkStateTag = (props: { data: ListItem }) => {
-  const { data } = props;
-  if (!data.state) {
-    return null;
-  }
-  return (
-    <StatusTag
-      download={
-        data.state === BenchmarkStatusValueMap.Running
-          ? { percent: data.progress || 0 }
-          : undefined
-      }
-      statusValue={{
-        status:
-          data.state === BenchmarkStatusValueMap.Running &&
-          data.progress === 100
-            ? BenchmarkStatus[BenchmarkStatusValueMap.Completed]
-            : BenchmarkStatus[data.state],
-        text: BenchmarkStatusLabelMap[data.state],
-        message:
-          data.state === BenchmarkStatusValueMap.Running &&
-          data.progress === 100
-            ? ''
-            : data.state_message
-      }}
-    />
-  );
-};
 
 const useColumnSettings = (options: {
   contentHeight: number;
@@ -93,6 +67,7 @@ const useColumnSettings = (options: {
 }) => {
   const intl = useIntl();
   const { contentHeight, clusterList, profileOptions } = options;
+
   const [selectedColumns, setSelectedColumns] =
     React.useState<string[]>(defaultColumns);
 
@@ -210,12 +185,11 @@ const useColumnSettings = (options: {
       )
     },
     {
-      title: renderTitle(
-        `${intl.formatMessage({ id: 'benchmark.detail.throughput.totalToken' })}`,
-        {
-          subTitle: '(Tokens/s)'
-        }
-      ),
+      // Total token throughput. Abbreviated to "TPS" (tokens/s) to match the
+      // sibling acronym columns (TTFT / TPOT / ITL / RPS) and fit the header.
+      title: renderTitle('TPS', {
+        subTitle: '(Tokens/s)'
+      }),
       dataIndex: 'tokens_per_second_mean',
       path: 'tokens_per_second_mean',
       unit: 'Tokens/s',
@@ -233,14 +207,10 @@ const useColumnSettings = (options: {
       )
     },
     {
-      title: renderTitle(
-        `${intl.formatMessage({
-          id: 'benchmark.detail.throughput.inputToken'
-        })}`,
-        {
-          subTitle: '(Tokens/s)'
-        }
-      ),
+      // Input token throughput, abbreviated to "In TPS" to match TPS / RPS.
+      title: renderTitle('In TPS', {
+        subTitle: '(Tokens/s)'
+      }),
       dataIndex: 'input_tokens_per_second_mean',
       path: 'input_tokens_per_second_mean',
       unit: 'Tokens/s',
@@ -251,14 +221,10 @@ const useColumnSettings = (options: {
       )
     },
     {
-      title: renderTitle(
-        `${intl.formatMessage({
-          id: 'benchmark.detail.throughput.outputToken'
-        })}`,
-        {
-          subTitle: '(Tokens/s)'
-        }
-      ),
+      // Output token throughput, abbreviated to "Out TPS" to match TPS / RPS.
+      title: renderTitle('Out TPS', {
+        subTitle: '(Tokens/s)'
+      }),
       dataIndex: 'output_tokens_per_second_mean',
       path: 'output_tokens_per_second_mean',
       unit: 'Tokens/s',
@@ -396,6 +362,27 @@ const useColumnSettings = (options: {
           ellipsis={{ tooltip: true }}
           style={{ color: 'var(--color-text-table-header)' }}
         >
+          {intl.formatMessage({ id: 'benchmark.form.loadType' })}
+        </Typography.Text>
+      ),
+      dataIndex: 'load_type',
+      // Load Type (traffic shape) is the single load axis (there is no Mode).
+      render: (_text: string, record: ListItem) => {
+        const value = record.load_type;
+        const option = loadTypeOptions.find((item) => item.value === value);
+        return (
+          <AutoTooltip ghost minWidth={20}>
+            {option ? intl.formatMessage({ id: option.label }) : value || '-'}
+          </AutoTooltip>
+        );
+      }
+    },
+    {
+      title: (
+        <Typography.Text
+          ellipsis={{ tooltip: true }}
+          style={{ color: 'var(--color-text-table-header)' }}
+        >
           {intl.formatMessage({ id: 'benchmark.form.profile' })}
         </Typography.Text>
       ),
@@ -408,11 +395,89 @@ const useColumnSettings = (options: {
       )
     },
     {
+      // Best @ — the recommended operating point (peak / max-within-SLA). The
+      // value lives on the load axis, so we spell out its unit (concurrency vs
+      // request rate) instead of a bare number.
+      title: renderTitle(intl.formatMessage({ id: 'benchmark.table.best' })),
+      dataIndex: 'recommended_rate',
+      render: (_text: number, record: ListItem) => {
+        const rate = record.recommended_rate ?? record.peak_rate;
+        if (rate == null) {
+          return (
+            <AutoTooltip ghost minWidth={20}>
+              -
+            </AutoTooltip>
+          );
+        }
+        const unit = intl.formatMessage({
+          id:
+            record.load_type === LoadTypeValueMap.Concurrency
+              ? 'benchmark.table.best.unit.concurrency'
+              : 'benchmark.table.best.unit.rate'
+        });
+        return (
+          <AutoTooltip ghost minWidth={20}>
+            {`${round(rate, loadValueDecimals(record))} ${unit}`}
+          </AutoTooltip>
+        );
+      }
+    },
+    {
+      // Test coverage: green OK when the sweep explored enough; amber
+      // "Insufficient" text with a tooltip listing the specific warnings
+      // otherwise; "-" when not yet computed.
+      title: renderTitle(
+        intl.formatMessage({ id: 'benchmark.table.coverage' })
+      ),
+      dataIndex: 'validity',
+      width: 140,
+      render: (v: ListItem['validity']) => {
+        // "-" both when nothing is computed yet and while the sweep is still
+        // running: green "OK" and amber "Insufficient" are both VERDICTS, and
+        // mid-climb neither is earned. (The worker also withholds the coverage
+        // codes from partial syncs, so an empty list here does not mean clean.)
+        if (!v || v.in_progress) {
+          return (
+            <span style={{ color: 'var(--ant-color-text-tertiary)' }}>-</span>
+          );
+        }
+        const warnings = v.warnings || [];
+        if (warnings.length === 0) {
+          return (
+            <Tag color="success" bordered={false}>
+              {intl.formatMessage({ id: 'benchmark.detail.validity.ok' })}
+            </Tag>
+          );
+        }
+        const msgs = warnings.map((w) =>
+          intl.formatMessage(
+            { id: VALIDITY_MESSAGE_KEY[w.code] || w.code },
+            (w.params || {}) as Record<string, string | number>
+          )
+        );
+        return (
+          <Tooltip
+            title={
+              <ul style={{ margin: 0, paddingLeft: 16 }}>
+                {msgs.map((m, i) => (
+                  <li key={i}>{m}</li>
+                ))}
+              </ul>
+            }
+          >
+            <Tag color="warning" bordered={false}>
+              {`⚠ ${intl.formatMessage({ id: 'benchmark.table.coverage.insufficient' })}`}
+            </Tag>
+          </Tooltip>
+        );
+      }
+    },
+    {
       title: renderTitle(intl.formatMessage({ id: 'benchmark.table.dataset' })),
       dataIndex: 'dataset_name',
-      render: (text: string) => (
+      render: (text: string, record: ListItem) => (
         <AutoTooltip ghost minWidth={20}>
-          {text}
+          {record.dataset_name}
         </AutoTooltip>
       )
     },

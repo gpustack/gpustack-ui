@@ -4,7 +4,7 @@ import { useIntl } from '@umijs/max';
 import { Form, Input } from 'antd';
 import { forwardRef, useImperativeHandle, useRef } from 'react';
 import styled from 'styled-components';
-import { profileOptions } from '../config';
+import { loadTypeOptions } from '../config';
 const Content = styled.div`
   display: flex;
   flex-direction: column;
@@ -19,6 +19,7 @@ const Label = styled.span`
 
 interface FilterFormContentProps {
   clusterList?: Global.BaseOption<number>[];
+  profilesOptions?: Global.BaseOption<string>[];
   initialValues?: any;
   open?: boolean;
   ref?: any;
@@ -28,7 +29,10 @@ interface FilterFormContentProps {
 }
 
 const FilterFormContent: React.FC<FilterFormContentProps> = forwardRef(
-  ({ initialValues, onClose, onClear, onValuesChange, open }, ref) => {
+  (
+    { initialValues, onClose, onClear, onValuesChange, open, profilesOptions },
+    ref
+  ) => {
     const intl = useIntl();
     const filterRef = useRef<any>(null);
 
@@ -85,17 +89,21 @@ const FilterFormContent: React.FC<FilterFormContentProps> = forwardRef(
               placeholder={intl.formatMessage({
                 id: 'benchmark.table.filter.byProfile'
               })}
-              options={[
-                ...profileOptions,
-                {
-                  label: 'backend.custom',
-                  locale: true,
-                  value: 'Custom'
-                }
-              ].map((item) => ({
-                label: item.locale
-                  ? intl.formatMessage({ id: item.label })
-                  : item.label,
+              options={(profilesOptions || []).map((item) => ({
+                label: item.label,
+                value: item.value
+              }))}
+            ></BaseSelect>
+          </Form.Item>
+          <Label>{intl.formatMessage({ id: 'benchmark.form.loadType' })}</Label>
+          <Form.Item noStyle name="load_type">
+            <BaseSelect
+              allowClear
+              placeholder={intl.formatMessage({
+                id: 'benchmark.table.filter.byLoadType'
+              })}
+              options={loadTypeOptions.map((item) => ({
+                label: intl.formatMessage({ id: item.label }),
                 value: item.value
               }))}
             ></BaseSelect>

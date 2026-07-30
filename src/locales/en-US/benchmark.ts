@@ -10,7 +10,6 @@ export default {
   'benchmark.table.requestRate': 'Request Rate',
   'benchmark.table.gpu': 'GPU ',
   'benchmark.table.tpot': 'TPOT',
-  'benchmark.table.itl': 'ITL',
   'benchmark.table.ttft': 'TTFT',
   'benchmark.table.rps': 'Requests/s',
   'benchmark.table.tps': 'Tokens/s',
@@ -55,6 +54,12 @@ export default {
   'benchmark.detail.running.finalizing':
     'Benchmark finished running — computing and uploading the final results. This page updates automatically.',
   'benchmark.detail.stage.saturationProbe': 'Saturation Probe',
+  'benchmark.detail.aux.measured': '{requests} requests / {seconds}s',
+  'benchmark.detail.aux.ceiling': 'ceiling {rate} req/s',
+  'benchmark.detail.aux.cap': 'soft upper bound {cap}',
+  'benchmark.detail.aux.capClamped': 'clamped the overshoot point',
+  'benchmark.detail.aux.capRelaxed': 'gave way — the probe read low',
+  'benchmark.detail.aux.capUnused': 'never bound anything',
   'benchmark.form.inputTokensList': 'Input Token Lengths (sweep)',
   'benchmark.form.inputTokensList.placeholder': 'e.g. 128, 4096, 32768',
   'benchmark.form.turns': 'Turns (multi-turn)',
@@ -263,6 +268,8 @@ export default {
     'A load above this was measured breaching the SLA, so this is where it actually breaks.',
   'benchmark.detail.sla.capacity.floorHint':
     'Nothing above this was ever measured — the search ended first — so read it as "at least this much". The real breaking point is somewhere above and was not measured.',
+  'benchmark.detail.tpot.tip':
+    "TPOT: decode-only time per output token = (last token − first token) / (output tokens − 1), first-token latency excluded. This is guidellm's inter_token_latency_ms and the TPOT that vLLM and similar tools report. When the server does not stream incrementally (the whole output in one chunk, common at low load) there is no gap to measure, and this falls back to the per-token time including the first token.",
   'benchmark.detail.chart.slaBreached': 'SLA breached',
   'benchmark.detail.chart.success': 'Success rate',
   'benchmark.detail.reason.peakTradeoff':
@@ -270,7 +277,7 @@ export default {
   'benchmark.detail.unit.avg': 'avg',
   'benchmark.detail.p99.ttft': 'TTFT p99',
   'benchmark.detail.lowSample':
-    'Only {count} samples in this stage — p99 lands on the maximum, so read the tail as indicative, not as an SLA conclusion.',
+    'This stage has {count} samples, so only {tail} sit above p99 — the tail is decided by a handful of requests. Read it as indicative, not as an SLA conclusion (p99 needs ~1000 samples to behave like an estimate).',
   'benchmark.detail.successPill': '{pct}% success · {ok} / {total} requests',
   'benchmark.detail.summary.stagesHint': 'Click any row to see its detail',
   'benchmark.detail.chart.operatingCurve': 'Operating curve',
@@ -307,7 +314,7 @@ export default {
     'End-to-end per request: queueing, first token and the whole generation',
   'benchmark.detail.chart.tpotPercentiles': 'TPOT percentiles',
   'benchmark.detail.chart.tpotPercentiles.note':
-    'Inter-token pacing · p99 far above p50 means visible stutter',
+    'Decode time per token, first token excluded · one value per request, so this shows decode slowing under load, not individual stalls',
   'benchmark.detail.chart.success.note':
     'Shown because some requests did not succeed',
   'benchmark.detail.chart.legend.shortfall': 'Shortfall',

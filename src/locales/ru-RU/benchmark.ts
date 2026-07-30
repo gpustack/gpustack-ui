@@ -10,7 +10,6 @@ export default {
   'benchmark.table.requestRate': 'Request Rate',
   'benchmark.table.gpu': 'GPU ',
   'benchmark.table.tpot': 'TPOT',
-  'benchmark.table.itl': 'ITL',
   'benchmark.table.ttft': 'TTFT',
   'benchmark.table.rps': 'Requests/s',
   'benchmark.table.tps': 'Tokens/s',
@@ -57,6 +56,12 @@ export default {
   'benchmark.detail.running.finalizing':
     'Бенчмарк завершил прогон — идёт подсчёт и загрузка итоговых результатов. Страница обновляется автоматически.',
   'benchmark.detail.stage.saturationProbe': 'Проба насыщения',
+  'benchmark.detail.aux.measured': '{requests} запросов / {seconds}s',
+  'benchmark.detail.aux.ceiling': 'предел {rate} req/s',
+  'benchmark.detail.aux.cap': 'мягкая верхняя граница {cap}',
+  'benchmark.detail.aux.capClamped': 'ограничила точку перелёта',
+  'benchmark.detail.aux.capRelaxed': 'уступила — зонд занизил оценку',
+  'benchmark.detail.aux.capUnused': 'ни на что не повлияла',
   'benchmark.form.inputTokensList': 'Input Token Lengths (sweep)',
   'benchmark.form.inputTokensList.placeholder': 'e.g. 128, 4096, 32768',
   'benchmark.form.turns': 'Turns (multi-turn)',
@@ -266,6 +271,8 @@ export default {
     'Выше этого значения измерена нагрузка, нарушающая SLA, — значит это и есть реальная граница.',
   'benchmark.detail.sla.capacity.floorHint':
     'Выше этого значения ничего не измерялось — поиск закончился раньше, — поэтому читайте его как «не менее этого». Реальная точка нарушения находится выше и не была измерена.',
+  'benchmark.detail.tpot.tip':
+    'TPOT: время на выходной токен только для декодирования = (последний токен − первый токен) / (выходные токены − 1), без задержки первого токена. Это inter_token_latency_ms в guidellm и тот же TPOT, который сообщают vLLM и подобные инструменты. Если сервер не отдаёт поток по частям (весь вывод одним фрагментом, обычное дело при низкой нагрузке), измерять нечего, и здесь используется время на токен с учётом первого токена.',
   'benchmark.detail.chart.slaBreached': 'Нарушение SLA',
   'benchmark.detail.chart.success': 'Доля успешных',
   'benchmark.detail.reason.peakTradeoff':
@@ -273,7 +280,7 @@ export default {
   'benchmark.detail.unit.avg': 'сред.',
   'benchmark.detail.p99.ttft': 'TTFT p99',
   'benchmark.detail.lowSample':
-    'На этом этапе всего {count} измерений — p99 совпадает с максимумом, поэтому хвост стоит считать ориентиром, а не выводом по SLA.',
+    'На этом этапе {count} измерений, выше p99 находится всего {tail} — хвост определяют единичные запросы. Читайте как ориентир, а не как вывод по SLA (для p99 нужно ~1000 измерений).',
   'benchmark.detail.successPill': 'Успешно {pct}% · {ok} / {total} запросов',
   'benchmark.detail.summary.stagesHint':
     'Нажмите на любую строку, чтобы увидеть детали',
@@ -312,7 +319,7 @@ export default {
     'Сквозное время одного запроса: ожидание, первый токен и вся генерация',
   'benchmark.detail.chart.tpotPercentiles': 'Перцентили TPOT',
   'benchmark.detail.chart.tpotPercentiles.note':
-    'Ритм между токенами · p99 намного выше p50 — заметные рывки вывода',
+    'Время декодирования на токен без первого токена · одно значение на запрос, поэтому график показывает замедление декодирования под нагрузкой, а не отдельные подвисания',
   'benchmark.detail.chart.success.note':
     'Показано, потому что часть запросов не удалась',
   'benchmark.detail.chart.legend.shortfall': 'Дефицит',

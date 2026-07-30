@@ -10,7 +10,6 @@ export default {
   'benchmark.table.requestRate': '请求率',
   'benchmark.table.gpu': 'GPU ',
   'benchmark.table.tpot': 'TPOT',
-  'benchmark.table.itl': 'ITL',
   'benchmark.table.ttft': 'TTFT',
   'benchmark.table.rps': '请求数/秒',
   'benchmark.table.tps': 'Tokens/秒',
@@ -56,6 +55,12 @@ export default {
   'benchmark.detail.running.finalizing':
     '基准测试已跑完 — 正在计算并上传最终结果。本页会自动刷新。',
   'benchmark.detail.stage.saturationProbe': '饱和探测',
+  'benchmark.detail.aux.measured': '{requests} 请求 / {seconds}s',
+  'benchmark.detail.aux.ceiling': '上限 {rate} req/s',
+  'benchmark.detail.aux.cap': '软上界 {cap}',
+  'benchmark.detail.aux.capClamped': '夹住了过冲点',
+  'benchmark.detail.aux.capRelaxed': '已放宽 —— 探测估低了',
+  'benchmark.detail.aux.capUnused': '从未生效',
   'benchmark.form.inputTokensList': '输入长度扫描（多值）',
   'benchmark.form.inputTokensList.placeholder': '例如 128, 4096, 32768',
   'benchmark.form.turns': '对话轮数（多轮）',
@@ -261,6 +266,8 @@ export default {
     '在它之上有实测点破了 SLA,所以这就是真正的边界。',
   'benchmark.detail.sla.capacity.floorHint':
     '它之上没有任何实测点(搜索先结束了),所以只能读作「至少这么多」。真正的破线位置在更高处,本次没有测到。',
+  'benchmark.detail.tpot.tip':
+    'TPOT：仅解码阶段的每 token 耗时 =（末 token 时刻 − 首 token 时刻）/（输出 token 数 − 1），不含首字延迟。对应 guidellm 的 inter_token_latency_ms，也是 vLLM 等工具口径下的 TPOT。若服务端未增量流式返回（整段输出一次给出，低负载下常见），该口径无从测量，此处回落为含首字的每 token 耗时。',
   'benchmark.detail.chart.slaBreached': 'SLA 不达标',
   'benchmark.detail.chart.success': '成功率',
   'benchmark.detail.reason.peakTradeoff':
@@ -268,7 +275,7 @@ export default {
   'benchmark.detail.unit.avg': '均值',
   'benchmark.detail.p99.ttft': 'TTFT p99',
   'benchmark.detail.lowSample':
-    '该档仅 {count} 个样本 —— p99 实际等于最大值，尾部分位仅供参考，不能作为 SLA 结论。',
+    '该档 {count} 个样本,p99 之上只有 {tail} 个 —— 尾部由极少数请求决定。只能当参考,不能作为 SLA 结论(p99 要约 1000 个样本才像一个估计)。',
   'benchmark.detail.successPill': '成功率 {pct}% · {ok} / {total} 请求',
   'benchmark.detail.summary.stagesHint': '点击任意行查看明细',
   'benchmark.detail.chart.operatingCurve': '运行曲线',
@@ -303,7 +310,7 @@ export default {
     '单个请求的端到端耗时：排队 + 首字 + 全部生成',
   'benchmark.detail.chart.tpotPercentiles': 'TPOT 分位',
   'benchmark.detail.chart.tpotPercentiles.note':
-    '每 token 生成间隔 · p99 远高于 p50 说明输出会明显卡顿',
+    '解码阶段每 token 耗时（不含首字）· 每个请求一个取值，看的是负载升高后解码变慢，不是单次卡顿',
   'benchmark.detail.chart.success.note': '因存在失败请求才显示',
   'benchmark.detail.chart.legend.shortfall': '缺口',
   'benchmark.detail.chart.legend.attainment': '达成率',

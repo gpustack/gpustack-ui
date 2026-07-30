@@ -38,6 +38,7 @@ export default {
   'common.button.create.now': 'Şimdi oluştur',
   'common.button.add.now': 'Şimdi ekle',
   'common.button.refresh': 'Yenile',
+  'common.button.reload': 'Yeniden yükle',
   'common.button.delete': 'Sil',
   'common.button.create': 'Oluştur',
   'common.button.clone': 'Klonla',

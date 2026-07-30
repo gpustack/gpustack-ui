@@ -128,4 +128,18 @@ declare namespace Global {
 
 interface Window {
   __GPUSTACK_BODY_SCROLLER__?: any;
+  /**
+   * Installed by the inline snippet in `config/asset-recovery.ts`, which runs before the
+   * bundle loads — so it is always optional here: in development it is never injected, and
+   * in production a document old enough to lack it is exactly the case it would recover
+   * from. Every caller must tolerate its absence rather than assume it.
+   */
+  __assetRecovery__?: {
+    /** One cache-busting reload per tab. Returns whether one was started. */
+    recover: (detail: string) => boolean;
+    /** Unconditional cache-busting reload — the error page's Reload button. */
+    reload: () => void;
+    /** Close the pre-mount detection window and strip `?_r=`. Idempotent. */
+    disarm: () => void;
+  };
 }

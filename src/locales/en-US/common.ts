@@ -38,6 +38,7 @@ export default {
   'common.button.create.now': 'Create now',
   'common.button.add.now': 'Add now',
   'common.button.refresh': 'Refresh',
+  'common.button.reload': 'Reload',
   'common.button.delete': 'Delete',
   'common.button.create': 'Create',
   'common.button.clone': 'Clone',

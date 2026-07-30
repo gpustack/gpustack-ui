@@ -7,6 +7,9 @@ interface DetailContextProps {
   id: number;
   loading?: boolean;
   profilesOptions: Global.BaseOption<string>[];
+  // Bumped on every live (watch-driven) refresh so child views can re-pull
+  // sub-resources (e.g. per-point results) that don't ride the row's stream.
+  refreshToken?: number;
 }
 
 const DetailContext = createContext<DetailContextProps>(

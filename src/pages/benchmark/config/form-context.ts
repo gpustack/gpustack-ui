@@ -1,5 +1,6 @@
 import { PageActionType } from '@/config/types';
 import { createContext, useContext } from 'react';
+import { BenchmarkListItem } from './types';
 
 interface FormContextProps {
   action: PageActionType;
@@ -8,6 +9,13 @@ interface FormContextProps {
   modelList?: Global.BaseOption<number>[];
   profilesOptions: Global.BaseOption<string>[];
   datasetList: Global.BaseOption<number | string>[];
+  // Source row for EDIT / CLONE prefill; used to initialize disclosure toggles
+  // (data distribution / shared prefix) from the config being cloned.
+  currentData?: BenchmarkListItem;
+  // Regenerate the auto default name from the current model + profile, unless the
+  // user has manually edited it. Called from the model-instance / profile
+  // onChange handlers.
+  applyAutoName?: () => void;
 }
 
 const FormContext = createContext<FormContextProps>({} as FormContextProps);

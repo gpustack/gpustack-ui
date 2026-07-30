@@ -49,9 +49,11 @@ export default function useQueryProfiles() {
         tips: '',
         value: 'Custom',
         config: {
-          dataset_name: '',
-          dataset_input_tokens: null,
-          dataset_output_tokens: null,
+          // Custom defaults to the Random dataset (with the standard token
+          // lengths) so the form is valid out of the box.
+          dataset_name: 'Random',
+          dataset_input_tokens: 1024,
+          dataset_output_tokens: 128,
           request_rate: null,
           total_requests: null
         }

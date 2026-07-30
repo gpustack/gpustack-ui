@@ -45,7 +45,7 @@ const ModelInstanceForm: React.FC = () => {
   const intl = useIntl();
   const form = Form.useFormInstance();
   const { getRuleMessage } = useAppUtils();
-  const { action, open } = useFormContext();
+  const { action, open, applyAutoName } = useFormContext();
   const clusterId = Form.useWatch('cluster_id', form);
   const [modelList, setModelList] = React.useState<any[]>([]);
   const {
@@ -62,12 +62,22 @@ const ModelInstanceForm: React.FC = () => {
     useBenchmarkTargetInstance();
 
   const handleOnChange = async (value: any, selectedOptions: any) => {
+    // Clearing the Cascader fires this with both arguments undefined, so nothing
+    // here may index blind — the whole selection has to null out together.
+    const options = selectedOptions || [];
+    const instanceOption = options[options.length - 1];
     form.setFieldsValue({
-      model_name: value[0],
-      model_id: selectedOptions[0]?.id,
-      model_instance_name: value[1],
-      model_instance: value
+      model_name: value?.[0],
+      model_id: options[0]?.id,
+      model_instance_name: value?.[1],
+      model_instance: value,
+      // The selected instance's worker — used to co-locate the custom benchmark
+      // dataset (the picker filters datasets to this worker). Not part of the
+      // benchmark payload; stripped before submit.
+      dataset_worker_id: instanceOption?.worker_id,
+      dataset_worker_name: instanceOption?.worker_name
     });
+    applyAutoName?.();
   };
 
   const renderInstance = (instance: any) => {
@@ -75,6 +85,8 @@ const ModelInstanceForm: React.FC = () => {
       label: instance.name,
       value: instance.name,
       id: instance.id,
+      worker_id: instance.worker_id,
+      worker_name: instance.worker_name,
       isLeaf: true,
       disabled: instance.state !== InstanceStatusMap.Running,
       state: InstanceStatusMapValue[instance.state]

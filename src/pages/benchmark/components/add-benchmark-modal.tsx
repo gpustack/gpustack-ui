@@ -35,11 +35,7 @@ const AddBenchmark: React.FC<AddModalProps> = ({
   };
 
   const handleOk = async (data: FormData) => {
-    await run(() =>
-      onOk({
-        ...data
-      })
-    );
+    await run(() => onOk(data));
   };
 
   const handleCancel = () => {

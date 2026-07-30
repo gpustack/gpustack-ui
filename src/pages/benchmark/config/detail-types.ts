@@ -119,6 +119,13 @@ export interface BenchmarkDetail {
     // Whether `sla_met_rate` is a measured boundary ("257 breaks it") or only a
     // floor (">= 256, the search ended first"). Absent when no SLA was set.
     sla_boundary_located?: boolean;
+    // The saturation probe's reading, the soft cap it produced, and how many times
+    // that cap gave way. Together they say whether the probe earned its cost:
+    // relaxed > 0 = it read low; stopped_at == bound = it clamped the overshoot
+    // point; stopped_at < bound = it never bound anything.
+    probe_ceiling?: number;
+    probe_bound?: number;
+    probe_relaxed?: number;
     // Worker's partial syncs set this; the terminal sync drops it. While set,
     // nothing in here may be rendered as a conclusion.
     in_progress?: boolean;

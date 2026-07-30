@@ -10,7 +10,6 @@ export default {
   'benchmark.table.requestRate': 'İstek Oranı',
   'benchmark.table.gpu': 'GPU ',
   'benchmark.table.tpot': 'TPOT',
-  'benchmark.table.itl': 'ITL',
   'benchmark.table.ttft': 'TTFT',
   'benchmark.table.rps': 'İstek/s',
   'benchmark.table.tps': 'Token/s',
@@ -55,6 +54,12 @@ export default {
   'benchmark.detail.running.finalizing':
     'Kıyaslama çalışması bitti — nihai sonuçlar hesaplanıp yükleniyor. Bu sayfa otomatik güncellenir.',
   'benchmark.detail.stage.saturationProbe': 'Doygunluk Probu',
+  'benchmark.detail.aux.measured': '{requests} istek / {seconds}s',
+  'benchmark.detail.aux.ceiling': 'üst sınır {rate} req/s',
+  'benchmark.detail.aux.cap': 'esnek üst sınır {cap}',
+  'benchmark.detail.aux.capClamped': 'aşım noktasını sınırladı',
+  'benchmark.detail.aux.capRelaxed': 'gevşetildi — sonda düşük okudu',
+  'benchmark.detail.aux.capUnused': 'hiç bağlayıcı olmadı',
   'benchmark.form.inputTokensList': 'Input Token Lengths (sweep)',
   'benchmark.form.inputTokensList.placeholder': 'e.g. 128, 4096, 32768',
   'benchmark.form.turns': 'Turns (multi-turn)',
@@ -263,6 +268,8 @@ export default {
     'Bunun üzerindeki bir yükte SLA ihlali ölçüldü; dolayısıyla gerçek sınır burasıdır.',
   'benchmark.detail.sla.capacity.floorHint':
     'Bunun üzerinde hiçbir ölçüm yapılmadı — arama daha önce sona erdi — bu yüzden "en az bu kadar" olarak okuyun. Gerçek kırılma noktası daha yukarıdadır ve ölçülmedi.',
+  'benchmark.detail.tpot.tip':
+    "TPOT: yalnızca çözme aşamasında token başına süre = (son token − ilk token) / (çıktı token sayısı − 1), ilk token gecikmesi hariç. guidellm'de inter_token_latency_ms alanına karşılık gelir ve vLLM gibi araçların bildirdiği TPOT ile aynıdır. Sunucu artımlı akış yapmıyorsa (tüm çıktı tek parçada, düşük yükte yaygın) ölçülecek bir aralık yoktur ve burada ilk token dahil token başına süreye geri düşülür.",
   'benchmark.detail.chart.slaBreached': 'SLA ihlali',
   'benchmark.detail.chart.success': 'Başarı oranı',
   'benchmark.detail.reason.peakTradeoff':
@@ -270,7 +277,7 @@ export default {
   'benchmark.detail.unit.avg': 'ort.',
   'benchmark.detail.p99.ttft': 'TTFT p99',
   'benchmark.detail.lowSample':
-    'Bu aşamada yalnızca {count} örnek var — p99 maksimuma denk düşüyor, bu yüzden kuyruğu SLA sonucu değil gösterge olarak okuyun.',
+    'Bu aşamada {count} örnek var, p99 üzerinde yalnızca {tail} tanesi bulunuyor — kuyruk bir avuç isteğe bağlı. Gösterge olarak okuyun, SLA sonucu olarak değil (p99 tahmin gibi davranması için ~1000 örnek gerekir).',
   'benchmark.detail.successPill': '%{pct} başarılı · {ok} / {total} istek',
   'benchmark.detail.summary.stagesHint':
     'Ayrıntı için herhangi bir satıra tıklayın',
@@ -309,7 +316,7 @@ export default {
     'İstek başına uçtan uca: bekleme, ilk token ve üretimin tamamı',
   'benchmark.detail.chart.tpotPercentiles': 'TPOT yüzdelikleri',
   'benchmark.detail.chart.tpotPercentiles.note':
-    "Token arası ritim · p99, p50'nin çok üzerindeyse çıktı gözle görülür şekilde takılır",
+    'Token başına çözme süresi, ilk token hariç · istek başına tek değer, yani yük altında çözmenin yavaşlamasını gösterir, tek tek takılmaları değil',
   'benchmark.detail.chart.success.note':
     'Bazı istekler başarısız olduğu için gösteriliyor',
   'benchmark.detail.chart.legend.shortfall': 'Eksik',

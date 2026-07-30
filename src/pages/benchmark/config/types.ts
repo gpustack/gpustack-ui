@@ -148,6 +148,13 @@ export interface FormData {
     // Whether `sla_met_rate` is a measured boundary ("257 breaks it") or only a
     // floor (">= 256, the search ended first"). Absent when no SLA was set.
     sla_boundary_located?: boolean;
+    // The saturation probe's reading, the soft cap it produced, and how many times
+    // that cap gave way. Together they say whether the probe earned its cost:
+    // relaxed > 0 = it read low; stopped_at == bound = it clamped the overshoot
+    // point; stopped_at < bound = it never bound anything.
+    probe_ceiling?: number;
+    probe_bound?: number;
+    probe_relaxed?: number;
     // Set by the worker's partial syncs, dropped by the terminal one. While it is
     // set the analysis is still firming up, so nothing here may be rendered as a
     // conclusion.
@@ -184,10 +191,17 @@ export interface BenchmarkResultItem {
   time_to_first_token_mean: number | null;
   // Tail percentiles of the SLA-relevant latency metrics. TTFT / TPOT are ms,
   // request latency is seconds (same units as their *_mean counterparts).
+  //
+  // TPOT means `inter_token_latency_*` — decode only, the industry definition,
+  // and what the sla_*_tpot_ms thresholds are judged on. The
+  // `time_per_output_token_*` pair is guidellm's includes-TTFT variant: still
+  // returned by the API, not displayed and not judged on.
   time_to_first_token_p95: number | null;
+  inter_token_latency_p95: number | null;
   time_per_output_token_p95: number | null;
   request_latency_p95: number | null;
   time_to_first_token_p99: number | null;
+  inter_token_latency_p99: number | null;
   time_per_output_token_p99: number | null;
   request_latency_p99: number | null;
   tokens_per_second_mean: number | null;

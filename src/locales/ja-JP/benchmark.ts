@@ -10,7 +10,6 @@ export default {
   'benchmark.table.requestRate': 'Request Rate',
   'benchmark.table.gpu': 'GPU ',
   'benchmark.table.tpot': 'TPOT',
-  'benchmark.table.itl': 'ITL',
   'benchmark.table.ttft': 'TTFT',
   'benchmark.table.rps': 'Requests/s',
   'benchmark.table.tps': 'Tokens/s',
@@ -55,6 +54,12 @@ export default {
   'benchmark.detail.running.finalizing':
     'ベンチマークの実行が完了 — 最終結果を集計・アップロード中です。このページは自動更新されます。',
   'benchmark.detail.stage.saturationProbe': '飽和プローブ',
+  'benchmark.detail.aux.measured': '{requests} リクエスト / {seconds}s',
+  'benchmark.detail.aux.ceiling': '上限 {rate} req/s',
+  'benchmark.detail.aux.cap': 'ソフト上限 {cap}',
+  'benchmark.detail.aux.capClamped': 'オーバーシュート点を抑えた',
+  'benchmark.detail.aux.capRelaxed': '緩和済み — 探測が低く出た',
+  'benchmark.detail.aux.capUnused': '一度も効かなかった',
   'benchmark.form.inputTokensList': 'Input Token Lengths (sweep)',
   'benchmark.form.inputTokensList.placeholder': 'e.g. 128, 4096, 32768',
   'benchmark.form.turns': 'Turns (multi-turn)',
@@ -263,6 +268,8 @@ export default {
     'これより上の負荷で SLA 違反が実測されているため、ここが実際の限界です。',
   'benchmark.detail.sla.capacity.floorHint':
     'これより上は一度も測定されていません(探索が先に終了しました)ので、「少なくともこの値」と読んでください。実際に破綻する点はさらに上にあり、今回は測定されていません。',
+  'benchmark.detail.tpot.tip':
+    'TPOT: デコードのみのトークンあたり時間 =(最後のトークン − 最初のトークン)/(出力トークン数 − 1)。初回トークン遅延は含みません。guidellm の inter_token_latency_ms に対応し、vLLM などが報告する TPOT と同じ量です。サーバーが逐次ストリーミングしない場合(出力全体を 1 チャンクで返す、低負荷でよくある)は測定できないため、初回トークンを含むトークンあたり時間にフォールバックします。',
   'benchmark.detail.chart.slaBreached': 'SLA 違反',
   'benchmark.detail.chart.success': '成功率',
   'benchmark.detail.reason.peakTradeoff':
@@ -270,7 +277,7 @@ export default {
   'benchmark.detail.unit.avg': '平均',
   'benchmark.detail.p99.ttft': 'TTFT p99',
   'benchmark.detail.lowSample':
-    'このステージのサンプルは {count} 件のみ — p99 が最大値と一致するため、テールは参考値として読み、SLA の結論には使わないでください。',
+    'このステージのサンプルは {count} 件で、p99 より上はわずか {tail} 件 —— テールはごく少数のリクエストで決まります。参考値として読み、SLA の結論には使わないでください（p99 が推定として機能するには約 1000 件必要）。',
   'benchmark.detail.successPill': '成功率 {pct}% · {ok} / {total} リクエスト',
   'benchmark.detail.summary.stagesHint':
     '任意の行をクリックすると詳細を表示します',
@@ -307,7 +314,7 @@ export default {
     'リクエスト単位のエンドツーエンド: 待ち時間 + 初回トークン + 生成全体',
   'benchmark.detail.chart.tpotPercentiles': 'TPOT パーセンタイル',
   'benchmark.detail.chart.tpotPercentiles.note':
-    'トークン間隔 · p99 が p50 を大きく上回ると出力が目に見えて途切れる',
+    'デコード段のトークンあたり時間(初回トークンを除く) · リクエストごとに 1 値なので、負荷増加によるデコードの低下を示し、単発の詰まりは示さない',
   'benchmark.detail.chart.success.note':
     '失敗したリクエストがあるため表示しています',
   'benchmark.detail.chart.legend.shortfall': '不足',

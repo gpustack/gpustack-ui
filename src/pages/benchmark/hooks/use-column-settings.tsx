@@ -28,7 +28,6 @@ const allFields = [
   'request_latency_mean',
   'tokens_per_second_mean',
   'time_to_first_token_mean',
-  'time_per_output_token_mean',
   'inter_token_latency_mean',
   'requests_per_second_mean',
   'input_tokens_per_second_mean',
@@ -54,7 +53,7 @@ const defaultColumns: string[] = [
   'state',
   'tokens_per_second_mean',
   'time_to_first_token_mean',
-  'time_per_output_token_mean',
+  'inter_token_latency_mean',
   'recommended_rate',
   'validity'
 ];
@@ -147,21 +146,12 @@ const useColumnSettings = (options: {
       )
     },
     {
+      // TPOT reads `inter_token_latency_mean`, which is guidellm's name for the
+      // decode-only per-token time that the rest of the field calls TPOT. There
+      // used to be a second column ("ITL") for exactly this field next to a
+      // "TPOT" column fed by `time_per_output_token_mean` — that one includes
+      // TTFT, so the pair was one metric shown twice under swapped names.
       title: renderTitle('TPOT', {
-        subTitle: `${intl.formatMessage({ id: 'benchmark.table.avg' })} (ms)`
-      }),
-      sorter: tableSorter(1),
-      dataIndex: 'time_per_output_token_mean',
-      path: 'time_per_output_token_mean',
-      unit: 'ms',
-      render: (text: number) => (
-        <AutoTooltip ghost minWidth={20}>
-          {_.round(text, 2) || '-'}
-        </AutoTooltip>
-      )
-    },
-    {
-      title: renderTitle('ITL', {
         subTitle: `${intl.formatMessage({ id: 'benchmark.table.avg' })} (ms)`
       }),
       sorter: tableSorter(1),

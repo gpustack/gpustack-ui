@@ -1,10 +1,12 @@
 import { BaseSelect, DeleteModal } from '@gpustack/core-ui';
 import { useIntl, useNavigate, useSearchParams } from '@umijs/max';
-import { useMemoizedFn } from 'ahooks';
-import React, { useEffect, useRef } from 'react';
+import { useMemoizedFn, useThrottleFn } from 'ahooks';
+import { Flex } from 'antd';
+import React, { useEffect, useRef, useState } from 'react';
 import { HeaderLeft } from '../_components/page-box';
 import PageBreadcrumb from '../_components/page-breadcrumb';
 import { deleteBenchmark } from './apis';
+import BenchmarkStateTag from './components/benchmark-state-tag';
 import DetailContent from './components/detail-content';
 import FadeIn from './components/fade-in';
 import RowActions from './components/row-actions';
@@ -17,6 +19,7 @@ import useQueryBenchmarkList from './services/use-query-benchmarks';
 import useQueryDetail from './services/use-query-detail';
 import useQueryProfiles from './services/use-query-profiles';
 import useStopBenchmark from './services/use-stop-benchmark';
+import useWatchBenchmarkDetail from './services/use-watch-detail';
 const Details: React.FC = () => {
   const modalRef = useRef<any>(null);
   const navigate = useNavigate();
@@ -39,6 +42,28 @@ const Details: React.FC = () => {
   const [searchParams] = useSearchParams();
   const name = searchParams.get('name');
   const id = searchParams.get('id');
+
+  // Bumped on each live refresh so the Summary tab re-pulls the per-point
+  // results (which don't ride the row's stream).
+  const [refreshToken, setRefreshToken] = useState(0);
+
+  // The watch stream fires on every row write — progress ticks ~1s while the
+  // partial sync only lands new points ~10s — so throttle the authoritative
+  // re-pull. `trailing` guarantees the final (terminal) state still lands.
+  const { run: handleLiveRefresh } = useThrottleFn(
+    () => {
+      if (id) {
+        fetchData(id);
+      }
+      setRefreshToken((token) => token + 1);
+    },
+    { wait: 3000, leading: true, trailing: true }
+  );
+
+  useWatchBenchmarkDetail({
+    id: id ? Number(id) : null,
+    onChange: handleLiveRefresh
+  });
 
   const handleOnChange = (value: number, option: any) => {
     navigate(
@@ -124,7 +149,12 @@ const Details: React.FC = () => {
   return (
     <>
       <HeaderLeft>
-        <PageBreadcrumb items={breadcrumbItems} />
+        {/* Run status sits next to the name so it's visible on every tab; it
+            updates live via the watch-driven detailData refresh. */}
+        <Flex align="center" gap={12}>
+          <PageBreadcrumb items={breadcrumbItems} />
+          <BenchmarkStateTag data={detailData as any} />
+        </Flex>
       </HeaderLeft>
       <DetailContext.Provider
         value={{
@@ -132,7 +162,8 @@ const Details: React.FC = () => {
           clusterList: [],
           loading: loading,
           id: Number(id),
-          profilesOptions: profilesOptions
+          profilesOptions: profilesOptions,
+          refreshToken: refreshToken
         }}
       >
         <DetailContent

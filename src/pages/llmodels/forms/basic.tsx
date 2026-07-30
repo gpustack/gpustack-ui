@@ -78,6 +78,7 @@ interface BasicFormProps {
       provider: string;
       state: string;
       is_default: boolean;
+      gpu_instance_enabled?: boolean;
       owner_principal_id?: number;
       workers: number;
       ready_workers: number;

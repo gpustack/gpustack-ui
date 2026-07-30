@@ -10,7 +10,7 @@ import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
 import { useAtom } from 'jotai';
 import { useState } from 'react';
 import { queryGPUList } from '../apis';
-import { ScheduleValueMap } from '../config';
+import { ManualGPUModeMap, ScheduleValueMap } from '../config';
 import { GPUListItem, ListItem } from '../config/types';
 
 type EmptyObject = Record<never, never>;
@@ -264,6 +264,7 @@ export default function useFormInitialValues() {
         provider: string;
         state: string;
         is_default: boolean;
+        gpu_instance_enabled?: boolean;
         owner_principal_id?: number;
       }
     >[]
@@ -277,7 +278,9 @@ export default function useFormInitialValues() {
         page: -1,
         // Exclude clusters that opt in to GPU-instance handling
         // (k8s_options.gpu_instance_options set) — those are for the
-        // GPU-service flow, not model deployment.
+        // GPU-service flow, not model deployment. A model-service cluster
+        // is the deploy target for both GPU sources: whole cards and the
+        // sliced GPUs its operator publishes as InstanceTypes.
         gpu_instance_enabled: false,
         // Only clusters owned by the current org. Drops cross-org grants
         // (e.g. the Default org's "shared with everyone" clusters) so a
@@ -286,7 +289,7 @@ export default function useFormInitialValues() {
         // the org picker (see basic.tsx).
         mine: true
       });
-      const list = response.items.map((item) => ({
+      const list = (response.items || []).map((item) => ({
         label: item.name,
         value: item.id,
         provider: item.provider as string,
@@ -344,12 +347,17 @@ export default function useFormInitialValues() {
    * @returns
    */
   const generateFormValues = (data: ListItem, gpuOptions: any[]) => {
+    // Either selector means the GPUs were picked by hand, so both hydrate the
+    // manual mode; which one was used selects its tab.
+    const isVGPU = !!data?.gpu_type_selector?.type;
     const formData = {
       ...data,
       categories: data?.categories?.length ? data.categories[0] : null,
-      scheduleType: data?.gpu_selector
-        ? ScheduleValueMap.Manual
-        : ScheduleValueMap.Auto
+      scheduleType:
+        isVGPU || data?.gpu_selector
+          ? ScheduleValueMap.Manual
+          : ScheduleValueMap.Auto,
+      manualGpuMode: isVGPU ? ManualGPUModeMap.VGPU : ManualGPUModeMap.FullGPU
     };
     return formData;
   };

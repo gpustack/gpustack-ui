@@ -2,6 +2,7 @@ import { convertFileSize } from '@/utils';
 import {
   HddFilled,
   InfoCircleOutlined,
+  PartitionOutlined,
   PieChartFilled,
   ThunderboltFilled
 } from '@ant-design/icons';
@@ -11,7 +12,13 @@ import { Tooltip } from 'antd';
 import _ from 'lodash';
 import React, { useEffect } from 'react';
 import { ModelInstanceListItem } from '../../config/types';
+import { useGPUTypeDisplayName } from '../../hooks/use-gpu-type-display-name';
 import '../../style/instance-item.less';
+import {
+  formatGPUTypeAllocation,
+  getGPUTypeClusterId,
+  getGPUTypeSelector
+} from './vgpu-info';
 export interface NameCellProps {
   record: ModelInstanceListItem;
   modelData: any;
@@ -34,6 +41,17 @@ const WorkerInfoContent: React.FC<NameCellProps> = ({ record, modelData }) => {
       ? `${record.worker_ip}:${record.port}`
       : record.worker_ip;
   }
+  // vGPU (InstanceType) allocation; empty for non-vGPU instances.
+  const gpuTypeSelector = getGPUTypeSelector(record, modelData);
+  const gpuTypeDisplayName = useGPUTypeDisplayName(
+    getGPUTypeClusterId(record, modelData),
+    gpuTypeSelector?.type
+  );
+  const vgpuAllocation = formatGPUTypeAllocation(
+    intl,
+    gpuTypeSelector,
+    gpuTypeDisplayName
+  );
   return (
     <div>
       <div>{record.worker_name}</div>
@@ -50,6 +68,12 @@ const WorkerInfoContent: React.FC<NameCellProps> = ({ record, modelData }) => {
         )}
         ]
       </div>
+      {vgpuAllocation && (
+        <div className="flex-center">
+          <PartitionOutlined className="m-r-5" />
+          {intl.formatMessage({ id: 'models.table.vgpu' })}: {vgpuAllocation}
+        </div>
+      )}
       <div className="flex-center">
         <ThunderboltFilled className="m-r-5" />
         {intl.formatMessage({ id: 'models.form.backend' })}:{' '}

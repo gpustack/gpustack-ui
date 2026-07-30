@@ -204,7 +204,11 @@ export const useCheckCompatibility = () => {
               // scaling_schedule has no bearing on resource/compatibility
               // evaluation; drop it so in-progress (possibly incomplete) rules
               // never fail the evaluate request.
-              ..._.omit(data, ['scheduleType', 'scaling_schedule']),
+              ..._.omit(data, [
+                'scheduleType',
+                'manualGpuMode',
+                'scaling_schedule'
+              ]),
               categories: Array.isArray(data.categories)
                 ? data.categories
                 : data.categories

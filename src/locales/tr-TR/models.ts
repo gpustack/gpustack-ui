@@ -53,8 +53,17 @@ export default {
     "Mevcut kaynak koşullarına göre model örneklerini uygun GPU'lara otomatik olarak dağıtır.",
   'models.form.scheduletype.manual.tips':
     "Model örneklerinin dağıtılacağı GPU'ları manuel olarak belirlemenize olanak tanır.",
+  'models.form.gpuallocation': 'GPU Tahsisi',
+  'models.form.gpumode.full': 'Tam',
+  'models.form.gpumode.slicing': 'Dilimleme',
+  'models.form.gpuType.noSlicedCapacity':
+    'Bu GPU türünde dilimlenebilir kapasite yok, lütfen başka bir GPU türü seçin.',
+  'models.form.gpuType.noPartitionProfile':
+    'Bu GPU türünde kullanılabilir bölüm profili yok, lütfen başka bir GPU türü seçin.',
   'models.form.manual.schedule': 'Manuel Zamanlama',
   'models.table.gpuindex': 'GPU İndeksi',
+  'models.table.vgpu': 'vGPU',
+  'models.table.vgpu.slice': '{memory}% VRAM / {cores}% İşlem',
   'models.table.backend': 'Altyapılar',
   'models.table.acrossworker': 'İşçi Düğümler Arası Dağıtık',
   'models.table.cpuoffload': 'CPU Aktarımı',

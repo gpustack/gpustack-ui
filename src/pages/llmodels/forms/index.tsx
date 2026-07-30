@@ -19,6 +19,7 @@ import {
   DeployFormKeyMap,
   DO_NOT_NOTIFY_RECREATE,
   DO_NOT_TRIGGER_CHECK_COMPATIBILITY,
+  ManualGPUModeMap,
   modelSourceMap,
   ScheduleValueMap
 } from '../config';
@@ -45,7 +46,11 @@ const baseRequiredFields = ['name', 'source'];
 
 const advancedRequiredFields = ['backend', 'image_name', 'run_command'];
 
-const scheduleRequiredFields = ['gpu_selector', 'scaling_schedule'];
+const scheduleRequiredFields = [
+  'gpu_selector',
+  'gpu_type_selector',
+  'scaling_schedule'
+];
 
 const performanceRequiredFields = ['speculative_config'];
 
@@ -230,7 +235,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     }
     const gpuSelector = generateGPUIds(data);
     const allValues = {
-      ..._.omit(data, ['scheduleType']),
+      ..._.omit(data, ['scheduleType', 'manualGpuMode']),
       ...gpuSelector
     };
     // Don't persist a disabled schedule — send null so the model carries no
@@ -248,13 +253,15 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   };
 
   // Shared work when the target cluster changes: refetch the GPU/backend
-  // options for the new cluster and reset schedule/gpu selection.
+  // options for the new cluster and reset the per-cluster GPU selections.
+  // The schedule mode itself is kept: switching cluster must not kick a
+  // vGPU-mode form back to Auto (the auto-seed fires exactly on that path).
   const applyClusterScopedOptions = (value: number) => {
     getGPUOptionList({ clusterId: value });
     getBackendOptions({ cluster_id: value });
     form.setFieldsValue({
-      scheduleType: ScheduleValueMap.Auto,
-      gpu_selector: null
+      gpu_selector: null,
+      gpu_type_selector: null
     });
   };
 
@@ -462,6 +469,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
             source: props.source,
             placement_strategy: 'spread',
             scheduleType: ScheduleValueMap.Auto,
+            manualGpuMode: ManualGPUModeMap.FullGPU,
             categories: null,
             restart_on_error: true,
             distributed_inference_across_workers: true,

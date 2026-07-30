@@ -53,8 +53,17 @@ export default {
     'Automatically deploys model instances to appropriate GPUs based on current resource conditions.',
   'models.form.scheduletype.manual.tips':
     'Allows you to manually specify the GPUs to deploy the model instances to.',
+  'models.form.gpuallocation': 'GPU Allocation',
+  'models.form.gpumode.full': 'Full',
+  'models.form.gpumode.slicing': 'Slicing',
+  'models.form.gpuType.noSlicedCapacity':
+    'No sliceable capacity available on this GPU type, please choose another GPU type.',
+  'models.form.gpuType.noPartitionProfile':
+    'No partition profile available on this GPU type, please choose another GPU type.',
   'models.form.manual.schedule': 'Manual Schedule',
   'models.table.gpuindex': 'GPU Index',
+  'models.table.vgpu': 'vGPU',
+  'models.table.vgpu.slice': '{memory}% VRAM / {cores}% Compute',
   'models.table.backend': 'Backends',
   'models.table.acrossworker': 'Distributed Across Workers',
   'models.table.cpuoffload': 'CPU Offload',

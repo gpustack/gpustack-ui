@@ -53,8 +53,17 @@ export default {
   'models.form.scheduletype.auto.tips':
     '自动根据当前资源情况部署模型实例到合适的 GPU 上。',
   'models.form.scheduletype.manual.tips': '可指定模型实例部署的 GPU。',
+  'models.form.gpuallocation': 'GPU 分配',
+  'models.form.gpumode.full': '整卡',
+  'models.form.gpumode.slicing': '切分',
+  'models.form.gpuType.noSlicedCapacity':
+    '该 GPU 类型没有可切分的容量，请选择其他 GPU 类型。',
+  'models.form.gpuType.noPartitionProfile':
+    '该 GPU 类型没有可用的切分规格，请选择其他 GPU 类型。',
   'models.form.manual.schedule': '手动调度',
   'models.table.gpuindex': 'GPU 序号',
+  'models.table.vgpu': 'vGPU',
+  'models.table.vgpu.slice': '{memory}% 显存 / {cores}% 算力',
   'models.table.backend': '后端',
   'models.table.acrossworker': '跨节点推理',
   'models.table.cpuoffload': 'CPU 卸载',

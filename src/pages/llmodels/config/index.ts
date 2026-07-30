@@ -219,6 +219,15 @@ export const ScheduleValueMap = {
   SpecificGPUType: 'specific_gpu_type'
 };
 
+// Manual scheduling picks the GPUs one of two ways, chosen by a tab: whole
+// cards out of the cluster's inventory (gpu_selector), or a whole / sliced /
+// partitioned GPU out of an InstanceType pool (gpu_type_selector, "vGPU").
+// UI-only field — the payload it maps to is one selector or the other.
+export const ManualGPUModeMap = {
+  FullGPU: 'full_gpu',
+  VGPU: 'vgpu'
+};
+
 export const scheduleList = [
   {
     label: 'models.form.scheduletype.auto',
@@ -396,6 +405,7 @@ export const DO_NOT_TRIGGER_CHECK_COMPATIBILITY = [
   'backend_version',
   'ollama_library_model_name',
   'scheduleType',
+  'manualGpuMode',
   'placement_strategy',
   'backend',
   'gpu_selector.gpu_ids',
@@ -417,6 +427,7 @@ export const defaultFormValues = {
   categories: null,
   env: {},
   scheduleType: ScheduleValueMap.Auto,
+  manualGpuMode: ManualGPUModeMap.FullGPU,
   placement_strategy: 'spread',
   gpu_ids: null,
   gpu_selector: {},

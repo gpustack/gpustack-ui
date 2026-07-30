@@ -2,6 +2,7 @@ export default {
   'benchmark.title': 'Benchmarks',
   'benchmark.button.add': 'Add Benchmark',
   'benchmark.button.edit': 'Edit Benchmark',
+  'benchmark.button.clone': 'Clone Benchmark',
   'benchmark.button.compare': 'Compare',
   'benchmark.table.model': 'Model',
   'benchmark.table.instance': 'Model Instance',
@@ -17,11 +18,146 @@ export default {
   'benchmark.table.outputLen': 'Output Length',
   'benchmark.form.profile': 'Profile',
   'benchmark.form.totalRequests': 'Total Requests',
-  'benchmark.form.profile.latency': 'Latency',
-  'benchmark.form.profile.throughput': 'Throughput',
-  'benchmark.form.profile.longContext': 'Long Context',
-  'benchmark.form.profile.heavy': 'Generation Heavy',
+  'benchmark.form.concurrencyList': 'Concurrency Levels',
+  'benchmark.form.loadType': 'Load Type',
+  'benchmark.form.loadType.fixedRate': 'Fixed Rate',
+  'benchmark.form.loadType.concurrency': '並行',
+  'benchmark.form.loadType.sweep': 'Auto Sweep',
+  'benchmark.form.autoTune': '自動チューニング',
+  'benchmark.form.autoTune.rate.tip':
+    'この実行で測定する負荷ポイントです（1 ステージ = 1 測定点）。自動チューニングでは、出力スループットが伸びなくなる（ピーク）までリクエストレートを自動的に引き上げるため、ポイントを手入力する必要はありません。「手動」に切り替えると、指定したレートを順に実行します。',
+  'benchmark.form.autoTune.concurrency.tip':
+    'この実行で測定する負荷ポイントです（1 ステージ = 1 測定点）。自動チューニングでは、レイテンシ目標を満たせなくなる（SLA 境界）まで並行数を自動的に増やすため、ポイントを手入力する必要はありません。「手動」に切り替えると、指定した並行数を順に実行します。',
+  'benchmark.form.autoTune.rangeRate': '探索範囲 · リクエストレート (req/s)',
+  'benchmark.form.autoTune.rangeFrom': 'From',
+  'benchmark.form.autoTune.rateFrom': '開始レート (req/s)',
+  'benchmark.form.autoTune.rateTo': '終了レート (req/s)',
+  'benchmark.form.autoTune.concFrom': '開始並行数',
+  'benchmark.form.autoTune.concTo': '終了並行数',
+  'benchmark.form.autoTune.rangeTo': 'To',
+  'benchmark.form.autoTune.rangeConcurrency': '探索範囲 · 並行数',
+  'benchmark.form.autoTune.rangeMin': '最小',
+  'benchmark.form.autoTune.rangeMax': '最大',
+  'benchmark.form.autoTune.range.rate.tip':
+    'アダプティブランプの探索範囲（厳密な範囲）:範囲外の負荷は一切測定しません。最小値から倍々に探索し最大値まで。最小値で既に飽和している場合は、実測した持続可能レートを報告し範囲を下げるよう促します（範囲より下は探索しません）。既定 4–1024。',
+  'benchmark.form.autoTune.range.concurrency.tip':
+    'アダプティブランプの探索範囲（厳密な範囲）:範囲外の負荷は一切測定しません。最小値から倍々に探索し最大値まで。最小値で既に飽和している場合は、実測した持続可能レートを報告し範囲を下げるよう促します（範囲より下は探索しません）。既定 4–1024。',
+  'benchmark.form.autoTune.maxRate': '最大リクエストレート',
+  'benchmark.form.autoTune.maxConcurrency': '最大並行数',
+  'benchmark.form.load.managedByProfile': 'プロファイル管理',
+  'benchmark.form.load.searchLimit': '探索上限',
+  'benchmark.form.autoTune.maxPoints': '最大テストポイント数',
+  'benchmark.form.autoTune.maxTotalSeconds': '最大合計時間（秒）',
+  'benchmark.form.rateList': 'Request Rates (req/s)',
+  'benchmark.detail.overview.rate': 'Rate / Concurrency',
+  'benchmark.detail.running.hint':
+    'ベンチマーク実行中 — {progress}% 完了、これまでに {points} 点測定。各点の完了ごとにこのページは自動更新されます。',
+  'benchmark.detail.running.finalizing':
+    'ベンチマークの実行が完了 — 最終結果を集計・アップロード中です。このページは自動更新されます。',
+  'benchmark.detail.stage.saturationProbe': '飽和プローブ',
+  'benchmark.form.inputTokensList': 'Input Token Lengths (sweep)',
+  'benchmark.form.inputTokensList.placeholder': 'e.g. 128, 4096, 32768',
+  'benchmark.form.turns': 'Turns (multi-turn)',
+  'benchmark.form.turns.unit': 'turns',
+  'benchmark.form.multiTurn': 'Multi-turn',
+  'benchmark.form.multiTurn.tips':
+    'Send each sample as a multi-turn conversation — every turn is one request carrying the accumulated chat history. Synthetic (Random) dataset only; requires a chat endpoint.',
+  'benchmark.form.stopOnSaturation.tips':
+    'Stop the run once throughput plateaus (guidellm over-saturation constraint) instead of pushing further past saturation.',
+  'benchmark.form.warmup': 'Warmup (%)',
+  'benchmark.form.cooldown': 'Cooldown (%)',
+  'benchmark.form.maxErrors': 'Max Errors',
+  'benchmark.form.maxErrorRate': '最大エラー率 (0–1)',
+  'benchmark.form.stopOnSaturation': 'Stop on Saturation',
+  'benchmark.form.datasetSeed.tips':
+    '合成データ生成のシード。多段実行では初期シードとなり、各段は 初期 + 段インデックス を使用します(「詳細設定」の「段ごとに異なるシード」をオフにすると固定)。',
+  'benchmark.form.randomSeed': 'ランダムシード',
+  'benchmark.form.randomSeed.tips':
+    'オン(デフォルト):ベンチマーク作成ごとに新しいシードを使い、各ステージも異なるシードを使うため、同じ設定を再実行しても最初の実行のプレフィックスキャッシュに当たらず別データを送ります。オフ:シードを固定して実行を再現し、ステージごとに変えるか選べます。Random データセットのみ有効。',
+  'benchmark.form.seedIncrement': '段ごとに異なるシード',
+  'benchmark.form.seedIncrement.tips':
+    'オン(既定):各段のシード = 初期 + 段インデックス。段ごとにデータが異なり、段間のキャッシュ再利用を抑制します。オフ:全段で同じシード。Random データセットのみ有効。',
+  'benchmark.form.sla.ttft': 'Avg TTFT ≤ (ms)',
+  'benchmark.form.sla.p95Ttft': 'P95 TTFT ≤ (ms)',
+  'benchmark.form.sla.p99Ttft': 'P99 TTFT ≤ (ms)',
+  'benchmark.form.sla.tpot': 'Avg TPOT ≤ (ms)',
+  'benchmark.form.sla.p95Tpot': 'P95 TPOT ≤ (ms)',
+  'benchmark.form.sla.p99Tpot': 'P99 TPOT ≤ (ms)',
+  'benchmark.form.sla.avgLatency': 'Avg Latency ≤ (ms)',
+  'benchmark.form.sla.p95Latency': 'P95 Latency ≤ (ms)',
+  'benchmark.form.sla.p99Latency': 'P99 Latency ≤ (ms)',
+  'benchmark.form.sla.metric': 'メトリクス',
+  'benchmark.form.sla.aggregation': '集計',
+  'benchmark.form.sla.threshold': 'しきい値 (ms)',
+  'benchmark.form.sla.add': 'SLA ターゲットを追加',
+  'benchmark.form.sla.metric.ttft': 'TTFT',
+  'benchmark.form.sla.metric.tpot': 'TPOT',
+  'benchmark.form.sla.metric.latency': 'レイテンシ',
+  'benchmark.form.sla.agg.avg': '平均',
+  'benchmark.form.sla.agg.p95': 'P95',
+  'benchmark.form.sla.agg.p99': 'P99',
+  'benchmark.form.sla.col.metric': 'メトリクス',
+  'benchmark.form.sla.col.threshold': 'しきい値',
+  'benchmark.form.preset': 'プリセット',
+  'benchmark.form.rate': 'リクエストレート (req/s)',
+  'benchmark.form.concurrency': '並行数',
+  'benchmark.form.stages': 'ステージ',
+  'benchmark.form.stages.mode.manual': '手動',
+  'benchmark.form.addStage': 'ステージを追加',
+  'benchmark.form.maxRequests': '最大リクエスト数',
+  'benchmark.form.maxSeconds': '最大秒数',
+  'benchmark.form.maxSecondsCap': '最大秒数 (レートごと)',
+  'benchmark.form.requestsOrSeconds':
+    'リクエスト数か最大秒数を少なくとも1つ指定してください。',
+  'benchmark.form.sweepSize': 'スイープ回数',
+  'benchmark.form.sweepSize.tip':
+    'スループットのピークを見つけるために自動スイープするレート数。',
+  'benchmark.form.requests': 'リクエスト数',
+  'benchmark.form.requestsPerRate': 'レートあたりのリクエスト数',
+  'benchmark.form.requestsPerRate.tip':
+    '複数のレートを自動スイープし、各レートでこの数のリクエストを送信します。',
+  'benchmark.form.template': 'クイック入力テンプレート',
+  'benchmark.form.group.dataset': 'ワークロード',
+  'benchmark.form.group.load': '負荷',
+  'benchmark.form.group.distribution': 'データ分布',
+  'benchmark.form.group.distribution.input': '入力長の分布',
+  'benchmark.form.group.distribution.output': '出力長の分布',
+  'benchmark.form.dist.spread': 'ばらつき (±)',
+  'benchmark.form.dist.spread.tip':
+    '平均値まわりの長さの標準偏差 (±)。大きいほど長さのばらつきが増えます。',
+  'benchmark.form.dist.min': '最小',
+  'benchmark.form.dist.max': '最大',
+  'benchmark.form.distribution.intro':
+    'リクエスト長を上記の平均値の周りで変動させます(固定長ではなく)。空欄ならデフォルト。ばらつき = 長さの散らばり(標準偏差);Min/Max は範囲を制限します。',
+  'benchmark.form.group.constraints': '制約',
+  'benchmark.form.group.sla': 'レイテンシ SLA',
+  'benchmark.form.group.execution': '停止条件',
+  'benchmark.form.group.advanced': '詳細設定',
+  'benchmark.form.inputStdev': '入力長のばらつき (±)',
+  'benchmark.form.inputMin': '入力最小値',
+  'benchmark.form.inputMax': '入力最大値',
+  'benchmark.form.outputStdev': '出力長のばらつき (±)',
+  'benchmark.form.outputMin': '出力最小値',
+  'benchmark.form.outputMax': '出力最大値',
+  'benchmark.form.sharedPrefix': '共有プレフィックス',
+  'benchmark.form.prefix.tip':
+    'リクエスト間で共有する共通プロンプト接頭辞(システムプロンプト / RAG コンテキスト)。prefix-cache の再利用を検証します。バケットごと — Prefix Length: 接頭辞トークン数、Count: 異なる接頭辞の数、Weight: それを使うリクエストの相対比率。',
+  'benchmark.form.prefix.intro':
+    '複数のリクエストで共有される共通のプロンプトプレフィックス(システムプロンプト / RAG コンテキスト)。プレフィックスキャッシュの再利用を検証します。複数のバケットを追加すると、重み付けで複数のプレフィックス長を混在できます。',
+  'benchmark.form.prefix.length': 'プレフィックス長',
+  'benchmark.form.prefix.count': '数',
+  'benchmark.form.prefix.weight': '重み',
+  'benchmark.form.prefix.add': 'プレフィックスを追加',
+  'benchmark.form.concurrencyList.tips':
+    'Run one benchmark per concurrency level (e.g. 40, 60, 80). Leave empty to use the single Request Rate above.',
+  'benchmark.form.concurrencyList.placeholder': 'e.g. 40, 60, 80',
+  'benchmark.form.profile.maxThroughput.tips':
+    'スループットのピークを特定します。GPU やモデルを比較する際の標準的な基準です。',
+  'benchmark.form.profile.latencySla.tips':
+    'TTFT/TPOT 目標を満たしたまま処理できる最大負荷を特定します。キャパシティプランニング向け。',
   'benchmark.form.profile.custom': 'Custom',
+  'benchmark.form.profile.custom.tips':
+    'Set the auto-tune search range or a manual stage list yourself — every field is editable.',
   'benchmark.table.inputTokenLength': 'Input Token Length',
   'benchmark.table.outputTokenLength': 'Output Token Length',
   'benchmark.detail.summary.title': 'Summary',
@@ -29,21 +165,66 @@ export default {
   'benchmark.detail.environment.title': 'Environment',
   'benchmark.detail.logs.title': 'Logs',
   'benchmark.form.totalRequests.tips': 'Total Requests',
-  'benchmark.form.profile.latency.tips':
-    'Single-request latency benchmark focusing on TTFT and tail latency. Suitable for API serving and chat scenarios.',
-  'benchmark.form.profile.throughput.tips':
-    'Max throughput with realistic prompt length. The most commonly used baseline for GPU and model comparison.',
-  'benchmark.form.profile.longContext.tips':
-    'Stress test for long-context handling. Evaluates KV cache behavior, memory usage, and backend stability.',
-  'benchmark.form.profile.heavy.tips':
-    'Decode-heavy generation benchmark. Measures sustained decoding speed and output token throughput.',
   'benchmark.table.filter.bygpu': 'GPU 検索',
   'benchmark.table.filter.bymodel': 'モデル検索',
   'benchmark.table.filter.bydataset': 'Filter by Dataset',
-  'benchmark.table.filter.byProfile': 'Filter by Profile',
+  'benchmark.table.filter.byLoadType': '負荷タイプで絞り込み',
+  'benchmark.table.filter.byProfile': 'プロファイルで絞り込み',
+  'benchmark.table.best': '最適点',
+  'benchmark.table.best.unit.concurrency': '同時実行数',
+  'benchmark.table.best.unit.rate': 'req/s',
+  'benchmark.table.coverage': 'カバレッジ',
+  'benchmark.table.coverage.insufficient': 'カバレッジ不足',
   'benchmark.table.avg': 'Avg',
   'benchmark.table.columnSettings': 'Column Settings',
   'benchmark.detail.summary.results': 'Test Results',
+  'benchmark.detail.summary.recommendation': '最適動作点',
+  'benchmark.detail.summary.supporting': '詳細メトリクス',
+  'benchmark.detail.summary.stages': 'ステージ別の結果',
+  'benchmark.detail.summary.totalStages': 'ステージ',
+  'benchmark.detail.summary.totalRequests': 'リクエスト',
+  'benchmark.detail.summary.totalDuration': '所要時間',
+  'benchmark.detail.termination.requestsExhausted':
+    '早期終了:データセットを使い切りました。{processed}/{requested} 件のみ実行。より大きなデータセットを使用してください。',
+  'benchmark.detail.termination.maxSeconds':
+    '早期終了:ステージの時間上限に達しました。{processed}/{requested} 件を実行。',
+  'benchmark.detail.termination.maxErrors':
+    '早期終了:エラーが多すぎます。{processed}/{requested} 件を実行。',
+  'benchmark.detail.termination.default':
+    '早期終了({reason}):{processed}/{requested} 件を実行。',
+  'benchmark.detail.summary.stageDetail': 'ステージ詳細',
+  'benchmark.detail.summary.performance': 'パフォーマンス',
+  'benchmark.detail.reason.throughputVsPrev':
+    '{prevRate} よりスループットが {up}% 高い',
+  'benchmark.detail.reason.withinSla': 'SLA を満たす',
+  'benchmark.detail.reason.peakExceedsSla':
+    'スループットのピークは {rate} {unit} でより高くなりますが、そこで実行すると SLA を超えるため、推奨は SLA 境界です。',
+  'benchmark.detail.reason.matchesPeak': '持続可能な最大スループット',
+  'benchmark.detail.validity.title': 'テストカバレッジ',
+  'benchmark.detail.validity.ok': 'OK',
+  'benchmark.detail.validity.overload':
+    'Throughput プローブはレート制限なしで可能な限り速くリクエストを送り、サーバーを過負荷にしました(成功率 {rate}%)—— ピークスループットは信頼できず、サーバーの飽和限界を反映しています。',
+  'benchmark.detail.validity.underRange':
+    '最適動作点が最大サンプリング点です —— 真の最適値はさらに高い可能性があります。範囲を広げて(並行数/レートを上げて)再実行してください。',
+  'benchmark.detail.validity.fewPoints':
+    '測定点が少なすぎて曲線を信頼できません —— 上限 / 予算を確認してください。',
+  'benchmark.detail.validity.slaNeverMet':
+    'レイテンシ目標を満たす測定点がありません —— サーバーがこの SLA には遅すぎます。目標を緩めるかデプロイを変更してください。',
+  'benchmark.detail.validity.slaNotBinding':
+    'レイテンシのしきい値は結果に影響していません——測定した最大負荷でも最も厳しい予算の {used}% しか使っておらず、スループットは {rate} で既に頭打ちでした。この実行を制限したのは容量であり、レイテンシ予算ではありません:{rate} はスループットの上限で、SLA の境界ではないため、そこが最適動作点です(それ以上の負荷はキューに積まれるだけで、スループットは増えずレイテンシだけが悪化します)。本当の SLA 境界を求めるには、しきい値を厳しくして再測定してください。',
+  'benchmark.detail.validity.notSaturated':
+    '最適動作点が最大の測定点で、過負荷も起きていません —— 真の最適値はさらに高い可能性があります。探索範囲(上限)を上げて再実行してください。',
+  'benchmark.detail.validity.budgetExhausted':
+    'スループットが頭打ちになる前に測定予算を使い切ったため、最適点は単に最後に測定した点です。{which, select, seconds{最大総時間} other{最大テストポイント数}}を増やして再測定してください。',
+  'benchmark.detail.validity.saturatedAtLowerBound':
+    '探索範囲の下限がこのデプロイの処理能力（約 {ceiling} req/s）を超えているため、範囲内のどの負荷も最適値になりません。探索範囲を下げて再実行してください。',
+  'benchmark.detail.validity.peakAtFloor':
+    '最適動作点が最小の測定点です —— 真の最適値は探索範囲より下にある可能性があります。探索範囲(下限)を下げて再実行してください。',
+  'benchmark.detail.validity.pointHighError':
+    'ある測定点の成功率が低い（{rate}% 成功）—— サーバーを過負荷にしており信頼できません。',
+  'benchmark.detail.reason.confidence': '信頼度',
+  'benchmark.detail.confidence.high': '高',
+  'benchmark.detail.confidence.medium': '中',
   'benchmark.detail.summary.metadata': 'Metadata',
   'benchmark.detail.summary.metrics': 'Test Metrics',
   'benchmark.detail.summary.latency': 'Latency',
@@ -52,7 +233,6 @@ export default {
   'benchmark.detail.avg.reqLatency': 'Request Latency Avg',
   'benchmark.detail.avg.ttft': 'TTFT Avg',
   'benchmark.detail.avg.tpot': 'TPOT Avg',
-  'benchmark.detail.avg.itl': 'ITL Avg',
   'benchmark.detail.throughput.totalToken': 'Total Throughput',
   'benchmark.detail.throughput.inputToken': 'Input Throughput',
   'benchmark.detail.throughput.outputToken': 'Output Throughput',
@@ -73,6 +253,101 @@ export default {
   'benchmark.detail.modelName': 'Model Name',
   'benchmark.detail.instanceName': 'Instance Name',
   'benchmark.detail.configure': 'Configuration',
+  'benchmark.detail.config.deployment': 'デプロイメント',
+  'benchmark.detail.config.benchmark': 'ベンチマーク',
+  'benchmark.detail.best.peak': 'ピークスループット',
+  'benchmark.detail.best.sla': 'SLA 内最大',
+  'benchmark.detail.sla.target': 'SLA 目標',
+  'benchmark.detail.sla.capacity': 'SLA 容量',
+  'benchmark.detail.sla.capacity.locatedHint':
+    'これより上の負荷で SLA 違反が実測されているため、ここが実際の限界です。',
+  'benchmark.detail.sla.capacity.floorHint':
+    'これより上は一度も測定されていません(探索が先に終了しました)ので、「少なくともこの値」と読んでください。実際に破綻する点はさらに上にあり、今回は測定されていません。',
+  'benchmark.detail.chart.slaBreached': 'SLA 違反',
+  'benchmark.detail.chart.success': '成功率',
+  'benchmark.detail.reason.peakTradeoff':
+    'ピークの {rate} {unit} まで上げてもスループットは {gain}% 増にとどまり、レイテンシは {cost} 増えます',
+  'benchmark.detail.unit.avg': '平均',
+  'benchmark.detail.p99.ttft': 'TTFT p99',
+  'benchmark.detail.lowSample':
+    'このステージのサンプルは {count} 件のみ — p99 が最大値と一致するため、テールは参考値として読み、SLA の結論には使わないでください。',
+  'benchmark.detail.successPill': '成功率 {pct}% · {ok} / {total} リクエスト',
+  'benchmark.detail.summary.stagesHint':
+    '任意の行をクリックすると詳細を表示します',
+  'benchmark.detail.chart.operatingCurve': '動作曲線',
+  'benchmark.detail.chart.operatingCurve.note':
+    '負荷に対するスループットと P99 TTFT の変化',
+  'benchmark.detail.chart.dualAxisHint':
+    '左軸（スループット）は等間隔で、1 目盛りごとに同じ値が加算されます。右軸（TTFT p99）は 1 目盛りごとに 10 倍 — レイテンシは千倍規模で変動するため、等間隔目盛りでは変曲点以降の急増が見えなくなります。',
+  'benchmark.detail.chart.logHint':
+    'この軸は 1 目盛りごとに 10 倍で、同じ比率が同じ間隔として読めます。等間隔目盛りでは低負荷のステージが 0 付近に押し潰されます。',
+  'benchmark.detail.chart.ttftDist': 'TTFT 分布',
+  'benchmark.detail.chart.ttftDist.note':
+    'p25–p75 の帯 + p50 実線 + p99 破線 · 帯が広がる = 分布が発散し始めた',
+  'benchmark.detail.chart.rateShortfall': 'リクエストレート: 設定値 vs 実測',
+  'benchmark.detail.chart.rateShortfall.note':
+    '2 本の線が離れる最初のステージが実際の上限',
+  'benchmark.detail.chart.latencyComposition': 'レイテンシの内訳',
+  'benchmark.detail.chart.latencyComposition.note':
+    '2 本の線の間 = 初回トークン以降のすべて（デコード・スケジューリング待ち・バッチ待ちを含む）',
+  'benchmark.detail.chart.frontier': 'レイテンシ–スループット フロンティア',
+  'benchmark.detail.chart.frontier.note':
+    'スループットを 1 tok/s 増やす代償としてのテールレイテンシ · 1 点が 1 ステージ',
+  'benchmark.detail.chart.throughputSplit': 'スループットの構成',
+  'benchmark.detail.chart.throughputSplit.note':
+    '入力と出力の比率 — prefill 主体か decode 主体か',
+  'benchmark.detail.chart.concShortfall': '同時実行数: 設定値 vs 実測',
+  'benchmark.detail.chart.concShortfall.note':
+    '2 本の線はほぼ重なるため、差分は右側の赤い目盛りで別に示しています',
+  'benchmark.detail.chart.efficiency': '効率曲線',
+  'benchmark.detail.chart.efficiency.note':
+    '実行中リクエスト 1 件あたりの tok/s · 収穫逓減が始まる点',
+  'benchmark.detail.chart.latencyDist': 'リクエストレイテンシ分布',
+  'benchmark.detail.chart.latencyDist.note':
+    'リクエスト単位のエンドツーエンド: 待ち時間 + 初回トークン + 生成全体',
+  'benchmark.detail.chart.tpotPercentiles': 'TPOT パーセンタイル',
+  'benchmark.detail.chart.tpotPercentiles.note':
+    'トークン間隔 · p99 が p50 を大きく上回ると出力が目に見えて途切れる',
+  'benchmark.detail.chart.success.note':
+    '失敗したリクエストがあるため表示しています',
+  'benchmark.detail.chart.legend.shortfall': '不足',
+  'benchmark.detail.chart.legend.attainment': '達成率',
+  'benchmark.detail.chart.legend.configured': '設定値',
+  'benchmark.detail.chart.legend.achieved': '実測',
+  'benchmark.detail.chart.legend.actual': '実測（平均）',
+  'benchmark.detail.chart.legend.generation': '生成',
+  'benchmark.detail.chart.legend.perRequest': 'リクエストあたり tok/s',
+  'benchmark.detail.chart.axis.latencyMs': 'レイテンシ (ms)',
+  'benchmark.detail.chart.axis.latencySec': 'リクエストレイテンシ (s)',
+  'benchmark.detail.chart.axis.inFlight': '実行中リクエスト数',
+  'benchmark.detail.chart.axis.shortfall': '不足（リクエスト数）',
+  'benchmark.detail.chart.axis.successRate': '成功率 (%)',
+  'benchmark.detail.reason.peakTradeoffPlain':
+    'ピークの {rate} {unit} まで上げてもスループットは {gain}% 増にとどまります',
+  'benchmark.detail.summary.showMore': '他 {n} 件を表示',
+  'benchmark.detail.summary.showLess': '折りたたむ',
+  'benchmark.detail.selectedStage': '選択したステージ',
+  'benchmark.detail.showPercentiles': 'パーセンタイルを表示',
+  'benchmark.detail.hidePercentiles': 'パーセンタイルを非表示',
+  'benchmark.detail.status': 'ステータス',
+  'benchmark.detail.status.recommended': '最適',
+  'benchmark.detail.status.peak': 'ピーク',
+  'benchmark.detail.status.overloaded': '過負荷',
+  'benchmark.detail.status.healthy': '正常',
+  'benchmark.state.stoppedAt': '{percent}% で停止',
+  'benchmark.detail.stopReason.label': '探索の終了理由',
+  'benchmark.detail.stopReason.capacityPlateau': 'スループットの頭打ち',
+  'benchmark.detail.stopReason.upperBound': '範囲の上限',
+  'benchmark.detail.stopReason.budgetPoints': 'ポイント予算の消費',
+  'benchmark.detail.stopReason.budgetSeconds': '時間予算の消費',
+  'benchmark.detail.stopReason.slaFailed': 'レイテンシしきい値の超過',
+  'benchmark.detail.stopReason.converged': '収束',
+  'benchmark.detail.stopReason.overloaded': 'サーバー過負荷',
+  'benchmark.detail.stopReason.pointFailed': '結果が得られなかったポイント',
+  'benchmark.detail.recommend.text':
+    '最適:並行 {rate} —— ピークスループットの {pct}%({tps} tok/s)、TTFT {ttft} ms{sla, select, yes{(SLA 内)} other{}}。',
+  'benchmark.detail.analysis.text':
+    '並行 {rate} は {tps} tok/s を安定して出力します{prev, select, yes{。{prevRate} よりスループット +{prevUp}%} other{}}{next, select, yes{。{nextRate} まで上げてもスループットは +{nextUp}% のみ、TTFT は +{nextTtftUp}%} other{}}。したがって {rate} が最適な動作点です{sla, select, yes{(SLA 内)} other{}}。',
   'benchmark.detail.modelFile': 'Model File',
   'benchmark.detail.kvCache': 'Extended KV Cache',
   'benchmark.detail.speculativeDecoding': 'Speculative Decoding',
@@ -88,8 +363,5 @@ export default {
   'benchmark.form.nonLlmModel.tips':
     'Benchmarking currently only supports LLM models',
   'benchmark.detail.result.duration': 'Duration',
-  'benchmark.detail.result.basic': 'Basic',
-  'benchmark.form.profile.ShareGPT': 'ShareGPT',
-  'benchmark.form.profile.ShareGPT.tips':
-    'Measures maximum throughput using real conversational data. Suitable for GPU and model performance benchmarking.'
+  'benchmark.detail.result.basic': 'Basic'
 };

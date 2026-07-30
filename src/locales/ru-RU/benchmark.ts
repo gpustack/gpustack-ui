@@ -2,6 +2,7 @@ export default {
   'benchmark.title': 'Benchmarks',
   'benchmark.button.add': 'Add Benchmark',
   'benchmark.button.edit': 'Edit Benchmark',
+  'benchmark.button.clone': 'Clone Benchmark',
   'benchmark.button.compare': 'Compare',
   'benchmark.table.model': 'Model',
   'benchmark.table.instance': 'Model Instance',
@@ -17,11 +18,148 @@ export default {
   'benchmark.table.outputLen': 'Output Length',
   'benchmark.form.profile': 'Profile',
   'benchmark.form.totalRequests': 'Total Requests',
-  'benchmark.form.profile.latency': 'Latency',
-  'benchmark.form.profile.throughput': 'Throughput',
-  'benchmark.form.profile.longContext': 'Long Context',
-  'benchmark.form.profile.heavy': 'Generation Heavy',
+  'benchmark.form.concurrencyList': 'Concurrency Levels',
+  'benchmark.form.loadType': 'Load Type',
+  'benchmark.form.loadType.fixedRate': 'Fixed Rate',
+  'benchmark.form.loadType.concurrency': 'Параллелизм',
+  'benchmark.form.loadType.sweep': 'Auto Sweep',
+  'benchmark.form.autoTune': 'Автонастройка',
+  'benchmark.form.autoTune.rate.tip':
+    'Точки нагрузки, измеряемые в этом запуске: один этап = одна измеренная точка. При автонастройке частота запросов повышается автоматически, пока выходная пропускная способность не перестанет расти (пик), поэтому перечислять точки вручную не нужно. Переключитесь на «Вручную», чтобы прогнать заданный список частот.',
+  'benchmark.form.autoTune.concurrency.tip':
+    'Точки нагрузки, измеряемые в этом запуске: один этап = одна измеренная точка. При автонастройке параллелизм увеличивается автоматически, пока цели по задержке ещё достижимы (граница SLA), поэтому перечислять точки вручную не нужно. Переключитесь на «Вручную», чтобы прогнать заданный список уровней параллелизма.',
+  'benchmark.form.autoTune.rangeRate':
+    'Диапазон поиска · Частота запросов (req/s)',
+  'benchmark.form.autoTune.rangeFrom': 'From',
+  'benchmark.form.autoTune.rateFrom': 'Начальная скорость (req/s)',
+  'benchmark.form.autoTune.rateTo': 'Конечная скорость (req/s)',
+  'benchmark.form.autoTune.concFrom': 'Начальная параллельность',
+  'benchmark.form.autoTune.concTo': 'Конечная параллельность',
+  'benchmark.form.autoTune.rangeTo': 'To',
+  'benchmark.form.autoTune.rangeConcurrency':
+    'Диапазон поиска · Параллельность',
+  'benchmark.form.autoTune.rangeMin': 'мин',
+  'benchmark.form.autoTune.rangeMax': 'макс',
+  'benchmark.form.autoTune.range.rate.tip':
+    'Диапазон поиска адаптивного разгона — жёсткий: нагрузка вне него не измеряется. Разгон начинается с минимума и удваивается до максимума. Если сервер уже перегружен на минимуме, запуск сообщит измеренную устойчивую скорость и предложит понизить диапазон, а не искать ниже него. По умолчанию 4–1024.',
+  'benchmark.form.autoTune.range.concurrency.tip':
+    'Диапазон поиска адаптивного разгона — жёсткий: нагрузка вне него не измеряется. Разгон начинается с минимума и удваивается до максимума. Если сервер уже перегружен на минимуме, запуск сообщит измеренную устойчивую скорость и предложит понизить диапазон, а не искать ниже него. По умолчанию 4–1024.',
+  'benchmark.form.autoTune.maxRate': 'Максимальная частота запросов',
+  'benchmark.form.autoTune.maxConcurrency': 'Максимальная параллельность',
+  'benchmark.form.load.managedByProfile': 'управляется профилем',
+  'benchmark.form.load.searchLimit': 'Предел поиска',
+  'benchmark.form.autoTune.maxPoints': 'Макс. число точек',
+  'benchmark.form.autoTune.maxTotalSeconds': 'Макс. общее время (с)',
+  'benchmark.form.rateList': 'Request Rates (req/s)',
+  'benchmark.detail.overview.rate': 'Rate / Concurrency',
+  'benchmark.detail.running.hint':
+    'Бенчмарк выполняется — завершено {progress}%, измерено точек: {points}. Страница обновляется автоматически по мере готовности точек.',
+  'benchmark.detail.running.finalizing':
+    'Бенчмарк завершил прогон — идёт подсчёт и загрузка итоговых результатов. Страница обновляется автоматически.',
+  'benchmark.detail.stage.saturationProbe': 'Проба насыщения',
+  'benchmark.form.inputTokensList': 'Input Token Lengths (sweep)',
+  'benchmark.form.inputTokensList.placeholder': 'e.g. 128, 4096, 32768',
+  'benchmark.form.turns': 'Turns (multi-turn)',
+  'benchmark.form.turns.unit': 'turns',
+  'benchmark.form.multiTurn': 'Multi-turn',
+  'benchmark.form.multiTurn.tips':
+    'Send each sample as a multi-turn conversation — every turn is one request carrying the accumulated chat history. Synthetic (Random) dataset only; requires a chat endpoint.',
+  'benchmark.form.stopOnSaturation.tips':
+    'Stop the run once throughput plateaus (guidellm over-saturation constraint) instead of pushing further past saturation.',
+  'benchmark.form.warmup': 'Warmup (%)',
+  'benchmark.form.cooldown': 'Cooldown (%)',
+  'benchmark.form.maxErrors': 'Max Errors',
+  'benchmark.form.maxErrorRate': 'Макс. доля ошибок (0–1)',
+  'benchmark.form.stopOnSaturation': 'Stop on Saturation',
+  'benchmark.form.datasetSeed.tips':
+    'Сид для генерации синтетических данных. В многоэтапном запуске это начальный сид; каждый этап использует начальный + индекс этапа (выключите «Разный сид на этап» в разделе «Дополнительно», чтобы зафиксировать).',
+  'benchmark.form.randomSeed': 'Случайный сид',
+  'benchmark.form.randomSeed.tips':
+    'Включено (по умолчанию): новый seed при каждом создании бенчмарка, и каждый этап использует свой, поэтому повтор того же конфига отправляет другие данные, а не попадает в префикс-кэш первого прогона. Выключено: закрепите seed для воспроизведения прогона и выберите, различаются ли этапы. Влияет только на набор Random.',
+  'benchmark.form.seedIncrement': 'Разный сид на этап',
+  'benchmark.form.seedIncrement.tips':
+    'Вкл (по умолчанию): сид этапа = начальный + индекс этапа, этапы различаются, снижается повторное использование кэша между этапами. Выкл: все этапы используют один сид. Влияет только на датасет Random.',
+  'benchmark.form.sla.ttft': 'Avg TTFT ≤ (ms)',
+  'benchmark.form.sla.p95Ttft': 'P95 TTFT ≤ (ms)',
+  'benchmark.form.sla.p99Ttft': 'P99 TTFT ≤ (ms)',
+  'benchmark.form.sla.tpot': 'Avg TPOT ≤ (ms)',
+  'benchmark.form.sla.p95Tpot': 'P95 TPOT ≤ (ms)',
+  'benchmark.form.sla.p99Tpot': 'P99 TPOT ≤ (ms)',
+  'benchmark.form.sla.avgLatency': 'Avg Latency ≤ (ms)',
+  'benchmark.form.sla.p95Latency': 'P95 Latency ≤ (ms)',
+  'benchmark.form.sla.p99Latency': 'P99 Latency ≤ (ms)',
+  'benchmark.form.sla.metric': 'Метрика',
+  'benchmark.form.sla.aggregation': 'Агрегация',
+  'benchmark.form.sla.threshold': 'Порог (мс)',
+  'benchmark.form.sla.add': 'Добавить цель SLA',
+  'benchmark.form.sla.metric.ttft': 'TTFT',
+  'benchmark.form.sla.metric.tpot': 'TPOT',
+  'benchmark.form.sla.metric.latency': 'Задержка',
+  'benchmark.form.sla.agg.avg': 'Сред.',
+  'benchmark.form.sla.agg.p95': 'P95',
+  'benchmark.form.sla.agg.p99': 'P99',
+  'benchmark.form.sla.col.metric': 'Метрика',
+  'benchmark.form.sla.col.threshold': 'Порог',
+  'benchmark.form.preset': 'Пресет',
+  'benchmark.form.rate': 'Частота запросов (req/s)',
+  'benchmark.form.concurrency': 'Параллелизм',
+  'benchmark.form.stages': 'Этапы',
+  'benchmark.form.stages.mode.manual': 'Вручную',
+  'benchmark.form.addStage': 'Добавить этап',
+  'benchmark.form.maxRequests': 'Макс. запросов',
+  'benchmark.form.maxSeconds': 'Макс. секунд',
+  'benchmark.form.maxSecondsCap': 'Макс. секунд (на скорость)',
+  'benchmark.form.requestsOrSeconds':
+    'Укажите хотя бы одно: Запросы или Макс. секунд.',
+  'benchmark.form.sweepSize': 'Число прогонов',
+  'benchmark.form.sweepSize.tip':
+    'Сколько скоростей автоматически перебирается для поиска пика пропускной способности.',
+  'benchmark.form.requests': 'Запросы',
+  'benchmark.form.requestsPerRate': 'Запросов на скорость',
+  'benchmark.form.requestsPerRate.tip':
+    'Автоматически перебирает несколько скоростей; на каждой отправляется столько запросов.',
+  'benchmark.form.template': 'Шаблон быстрого заполнения',
+  'benchmark.form.group.dataset': 'Рабочая нагрузка',
+  'benchmark.form.group.load': 'Нагрузка',
+  'benchmark.form.group.distribution': 'Распределение данных',
+  'benchmark.form.group.distribution.input': 'Распределение длины входа',
+  'benchmark.form.group.distribution.output': 'Распределение длины выхода',
+  'benchmark.form.dist.spread': 'Разброс (±)',
+  'benchmark.form.dist.spread.tip':
+    'Стандартное отклонение (±) длины вокруг среднего — чем больше, тем сильнее разброс длин.',
+  'benchmark.form.dist.min': 'Мин',
+  'benchmark.form.dist.max': 'Макс',
+  'benchmark.form.distribution.intro':
+    'Варьировать длины запросов вокруг среднего, заданного выше (вместо фиксированной длины). Пусто = по умолчанию. Разброс = насколько различаются длины (стандартное отклонение); Min/Max ограничивают диапазон.',
+  'benchmark.form.group.constraints': 'Ограничения',
+  'benchmark.form.group.sla': 'SLA задержки',
+  'benchmark.form.group.execution': 'Условия остановки',
+  'benchmark.form.group.advanced': 'Дополнительно',
+  'benchmark.form.inputStdev': 'Разброс входа (±)',
+  'benchmark.form.inputMin': 'Мин. вход',
+  'benchmark.form.inputMax': 'Макс. вход',
+  'benchmark.form.outputStdev': 'Разброс выхода (±)',
+  'benchmark.form.outputMin': 'Мин. выход',
+  'benchmark.form.outputMax': 'Макс. выход',
+  'benchmark.form.sharedPrefix': 'Общий префикс',
+  'benchmark.form.prefix.tip':
+    'Общий префикс промпта (системный промпт / RAG-контекст), разделяемый между запросами для проверки повторного использования prefix-cache. По бакету — Prefix Length: токены префикса; Count: число различных префиксов; Weight: относительная доля запросов с ним.',
+  'benchmark.form.prefix.intro':
+    'Общий префикс промпта (системный промпт / контекст RAG), разделяемый запросами для проверки повторного использования кэша префиксов. Добавьте несколько корзин, чтобы смешать длины префиксов по весу.',
+  'benchmark.form.prefix.length': 'Длина префикса',
+  'benchmark.form.prefix.count': 'Количество',
+  'benchmark.form.prefix.weight': 'Вес',
+  'benchmark.form.prefix.add': 'Добавить префикс',
+  'benchmark.form.concurrencyList.tips':
+    'Run one benchmark per concurrency level (e.g. 40, 60, 80). Leave empty to use the single Request Rate above.',
+  'benchmark.form.concurrencyList.placeholder': 'e.g. 40, 60, 80',
+  'benchmark.form.profile.maxThroughput.tips':
+    'Находит пик пропускной способности. Обычная база для сравнения GPU и моделей.',
+  'benchmark.form.profile.latencySla.tips':
+    'Находит максимальную нагрузку, которая ещё укладывается в ваши цели TTFT/TPOT. Для планирования ёмкости.',
   'benchmark.form.profile.custom': 'Custom',
+  'benchmark.form.profile.custom.tips':
+    'Set the auto-tune search range or a manual stage list yourself — every field is editable.',
   'benchmark.table.inputTokenLength': 'Input Token Length',
   'benchmark.table.outputTokenLength': 'Output Token Length',
   'benchmark.detail.summary.title': 'Summary',
@@ -29,21 +167,67 @@ export default {
   'benchmark.detail.environment.title': 'Environment',
   'benchmark.detail.logs.title': 'Logs',
   'benchmark.form.totalRequests.tips': 'Total Requests',
-  'benchmark.form.profile.latency.tips':
-    'Single-request latency benchmark focusing on TTFT and tail latency. Suitable for API serving and chat scenarios.',
-  'benchmark.form.profile.throughput.tips':
-    'Max throughput with realistic prompt length. The most commonly used baseline for GPU and model comparison.',
-  'benchmark.form.profile.longContext.tips':
-    'Stress test for long-context handling. Evaluates KV cache behavior, memory usage, and backend stability.',
-  'benchmark.form.profile.heavy.tips':
-    'Decode-heavy generation benchmark. Measures sustained decoding speed and output token throughput.',
   'benchmark.table.filter.bygpu': 'Поиск GPU',
   'benchmark.table.filter.bymodel': 'Поиск модели',
   'benchmark.table.filter.bydataset': 'Filter by Dataset',
-  'benchmark.table.filter.byProfile': 'Filter by Profile',
+  'benchmark.table.filter.byLoadType': 'Фильтр по типу нагрузки',
+  'benchmark.table.filter.byProfile': 'Фильтр по профилю',
+  'benchmark.table.best': 'Лучшая @',
+  'benchmark.table.best.unit.concurrency': 'парал.',
+  'benchmark.table.best.unit.rate': 'зап/с',
+  'benchmark.table.coverage': 'Покрытие',
+  'benchmark.table.coverage.insufficient': 'Недостаточно',
   'benchmark.table.avg': 'Avg',
   'benchmark.table.columnSettings': 'Column Settings',
   'benchmark.detail.summary.results': 'Test Results',
+  'benchmark.detail.summary.recommendation': 'Оптимальная рабочая точка',
+  'benchmark.detail.summary.supporting': 'Подробные метрики',
+  'benchmark.detail.summary.stages': 'Результаты по этапам',
+  'benchmark.detail.summary.totalStages': 'этапов',
+  'benchmark.detail.summary.totalRequests': 'запросов',
+  'benchmark.detail.summary.totalDuration': 'время',
+  'benchmark.detail.termination.requestsExhausted':
+    'Остановлено досрочно: датасет исчерпан — выполнено только {processed}/{requested} запросов. Используйте больший датасет.',
+  'benchmark.detail.termination.maxSeconds':
+    'Остановлено досрочно: достигнут лимит времени этапа — выполнено {processed}/{requested} запросов.',
+  'benchmark.detail.termination.maxErrors':
+    'Остановлено досрочно: слишком много ошибок — выполнено {processed}/{requested} запросов.',
+  'benchmark.detail.termination.default':
+    'Остановлено досрочно ({reason}): выполнено {processed}/{requested} запросов.',
+  'benchmark.detail.summary.stageDetail': 'Детали этапа',
+  'benchmark.detail.summary.performance': 'Производительность',
+  'benchmark.detail.reason.throughputVsPrev':
+    'На {up}% выше пропускной способности, чем {prevRate}',
+  'benchmark.detail.reason.withinSla': 'В рамках SLA',
+  'benchmark.detail.reason.peakExceedsSla':
+    'Пиковая пропускная способность выше при {rate} {unit}, но работа там нарушит SLA — поэтому рекомендуется граница SLA.',
+  'benchmark.detail.reason.matchesPeak':
+    'Наибольшая устойчивая пропускная способность',
+  'benchmark.detail.validity.title': 'Покрытие теста',
+  'benchmark.detail.validity.ok': 'OK',
+  'benchmark.detail.validity.overload':
+    'Проба Throughput отправляет запросы максимально быстро (без ограничения скорости) и перегрузила сервер (успешно лишь {rate}%) — пиковая пропускная способность ненадёжна и отражает предел насыщения сервера.',
+  'benchmark.detail.validity.underRange':
+    'Оптимальная рабочая точка — это самая высокая измеренная точка; истинный оптимум может быть выше. Расширьте диапазон (выше параллелизм/частота) и перезапустите.',
+  'benchmark.detail.validity.fewPoints':
+    'Слишком мало измеренных точек, чтобы доверять кривой — проверьте границы / бюджет.',
+  'benchmark.detail.validity.slaNeverMet':
+    'Ни одна измеренная точка не соответствует целевым задержкам — сервер слишком медленный для этого SLA; снизьте цели или смените развёртывание.',
+  'benchmark.detail.validity.slaNotBinding':
+    'Пороги задержки ни на что не повлияли — на самой высокой измеренной нагрузке самый строгий бюджет был израсходован лишь на {used}%, а пропускная способность уже достигла максимума при {rate}. Этот запуск ограничила ёмкость, а не бюджет задержки: {rate} — это потолок пропускной способности, а не граница SLA, поэтому именно он и есть лучшая рабочая точка (выше него дополнительная нагрузка только встаёт в очередь: пропускная способность не растёт, задержка неуклонно ухудшается). Чтобы найти реальную границу SLA, ужесточите пороги и повторите тест.',
+  'benchmark.detail.validity.notSaturated':
+    'Оптимальная рабочая точка — самая высокая измеренная, и перегрузки не было — истинный оптимум может быть выше. Повысьте верхнюю границу диапазона поиска и перезапустите.',
+  'benchmark.detail.validity.budgetExhausted':
+    'Бюджет измерений закончился до того, как пропускная способность пошла на спад, поэтому лучшая точка — это просто последняя измеренная. Увеличьте {which, select, seconds{максимальную общую длительность} other{максимальное число точек}} и повторите тест.',
+  'benchmark.detail.validity.saturatedAtLowerBound':
+    'Нижняя граница диапазона поиска выше того, что выдерживает это развёртывание (~{ceiling} зап/с), поэтому оптимум не может лежать внутри диапазона. Понизьте диапазон и перезапустите.',
+  'benchmark.detail.validity.peakAtFloor':
+    'Оптимальная рабочая точка — самая НИЗКАЯ измеренная: истинный оптимум может быть ниже диапазона поиска. Понизьте нижнюю границу и перезапустите.',
+  'benchmark.detail.validity.pointHighError':
+    'У измеренной точки низкая доля успеха (успешно {rate}%) — она перегрузила сервер и ненадёжна.',
+  'benchmark.detail.reason.confidence': 'Уверенность',
+  'benchmark.detail.confidence.high': 'Высокая',
+  'benchmark.detail.confidence.medium': 'Средняя',
   'benchmark.detail.summary.metadata': 'Metadata',
   'benchmark.detail.summary.metrics': 'Test Metrics',
   'benchmark.detail.summary.latency': 'Latency',
@@ -52,7 +236,6 @@ export default {
   'benchmark.detail.avg.reqLatency': 'Request Latency Avg',
   'benchmark.detail.avg.ttft': 'TTFT Avg',
   'benchmark.detail.avg.tpot': 'TPOT Avg',
-  'benchmark.detail.avg.itl': 'ITL Avg',
   'benchmark.detail.throughput.totalToken': 'Total Throughput',
   'benchmark.detail.throughput.inputToken': 'Input Throughput',
   'benchmark.detail.throughput.outputToken': 'Output Throughput',
@@ -73,6 +256,103 @@ export default {
   'benchmark.detail.modelName': 'Model Name',
   'benchmark.detail.instanceName': 'Instance Name',
   'benchmark.detail.configure': 'Configuration',
+  'benchmark.detail.config.deployment': 'Развёртывание',
+  'benchmark.detail.config.benchmark': 'Бенчмарк',
+  'benchmark.detail.best.peak': 'Пиковая пропускная способность',
+  'benchmark.detail.best.sla': 'Макс. в рамках SLA',
+  'benchmark.detail.sla.target': 'Цель SLA',
+  'benchmark.detail.sla.capacity': 'Ёмкость по SLA',
+  'benchmark.detail.sla.capacity.locatedHint':
+    'Выше этого значения измерена нагрузка, нарушающая SLA, — значит это и есть реальная граница.',
+  'benchmark.detail.sla.capacity.floorHint':
+    'Выше этого значения ничего не измерялось — поиск закончился раньше, — поэтому читайте его как «не менее этого». Реальная точка нарушения находится выше и не была измерена.',
+  'benchmark.detail.chart.slaBreached': 'Нарушение SLA',
+  'benchmark.detail.chart.success': 'Доля успешных',
+  'benchmark.detail.reason.peakTradeoff':
+    'Рост до пика {rate} {unit} даёт всего {gain}% пропускной способности при росте задержки на {cost}',
+  'benchmark.detail.unit.avg': 'сред.',
+  'benchmark.detail.p99.ttft': 'TTFT p99',
+  'benchmark.detail.lowSample':
+    'На этом этапе всего {count} измерений — p99 совпадает с максимумом, поэтому хвост стоит считать ориентиром, а не выводом по SLA.',
+  'benchmark.detail.successPill': 'Успешно {pct}% · {ok} / {total} запросов',
+  'benchmark.detail.summary.stagesHint':
+    'Нажмите на любую строку, чтобы увидеть детали',
+  'benchmark.detail.chart.operatingCurve': 'Рабочая кривая',
+  'benchmark.detail.chart.operatingCurve.note':
+    'Пропускная способность и p99 TTFT при росте нагрузки',
+  'benchmark.detail.chart.dualAxisHint':
+    'Левая ось (пропускная способность) линейная — каждая линия сетки добавляет одинаковую величину. Правая ось (TTFT p99) логарифмическая — каждая линия в 10 раз больше предыдущей: задержка меняется в тысячи раз, и линейная шкала скрыла бы рост после перелома.',
+  'benchmark.detail.chart.logHint':
+    'Каждая линия сетки по этой оси в 10 раз больше предыдущей, поэтому равные отношения дают равные расстояния. На линейной шкале этапы с низкой нагрузкой прижались бы к нулю.',
+  'benchmark.detail.chart.ttftDist': 'Распределение TTFT',
+  'benchmark.detail.chart.ttftDist.note':
+    'Полоса p25–p75 + линия p50 + пунктир p99 · расширение полосы означает расхождение основной массы',
+  'benchmark.detail.chart.rateShortfall':
+    'Частота запросов: заданная и достигнутая',
+  'benchmark.detail.chart.rateShortfall.note':
+    'Первый этап, где линии расходятся, — реальный предел',
+  'benchmark.detail.chart.latencyComposition': 'Состав задержки',
+  'benchmark.detail.chart.latencyComposition.note':
+    'Между линиями — всё после первого токена (декодирование, вытеснение планировщиком, ожидание батча)',
+  'benchmark.detail.chart.frontier': 'Граница задержка–пропускная способность',
+  'benchmark.detail.chart.frontier.note':
+    'Во сколько хвостовой задержки обходится каждый дополнительный tok/s · одна точка — один этап',
+  'benchmark.detail.chart.throughputSplit': 'Состав пропускной способности',
+  'benchmark.detail.chart.throughputSplit.note':
+    'Доля входа и выхода — преобладает prefill или decode',
+  'benchmark.detail.chart.concShortfall':
+    'Параллельность: заданная и фактическая',
+  'benchmark.detail.chart.concShortfall.note':
+    'Линии практически совпадают, поэтому разрыв показан на отдельной красной шкале справа',
+  'benchmark.detail.chart.efficiency': 'Кривая эффективности',
+  'benchmark.detail.chart.efficiency.note':
+    'tok/s на один активный запрос · начало убывающей отдачи',
+  'benchmark.detail.chart.latencyDist': 'Распределение задержки запроса',
+  'benchmark.detail.chart.latencyDist.note':
+    'Сквозное время одного запроса: ожидание, первый токен и вся генерация',
+  'benchmark.detail.chart.tpotPercentiles': 'Перцентили TPOT',
+  'benchmark.detail.chart.tpotPercentiles.note':
+    'Ритм между токенами · p99 намного выше p50 — заметные рывки вывода',
+  'benchmark.detail.chart.success.note':
+    'Показано, потому что часть запросов не удалась',
+  'benchmark.detail.chart.legend.shortfall': 'Дефицит',
+  'benchmark.detail.chart.legend.attainment': 'Достигнуто',
+  'benchmark.detail.chart.legend.configured': 'Задано',
+  'benchmark.detail.chart.legend.achieved': 'Достигнуто',
+  'benchmark.detail.chart.legend.actual': 'Факт (сред.)',
+  'benchmark.detail.chart.legend.generation': 'Генерация',
+  'benchmark.detail.chart.legend.perRequest': 'tok/s на запрос',
+  'benchmark.detail.chart.axis.latencyMs': 'Задержка (мс)',
+  'benchmark.detail.chart.axis.latencySec': 'Задержка запроса (с)',
+  'benchmark.detail.chart.axis.inFlight': 'Активные запросы',
+  'benchmark.detail.chart.axis.shortfall': 'Дефицит (запросы)',
+  'benchmark.detail.chart.axis.successRate': 'Успешность (%)',
+  'benchmark.detail.reason.peakTradeoffPlain':
+    'Рост до пика {rate} {unit} даёт всего {gain}% пропускной способности',
+  'benchmark.detail.summary.showMore': 'Показать ещё {n}',
+  'benchmark.detail.summary.showLess': 'Свернуть',
+  'benchmark.detail.selectedStage': 'Выбранный этап',
+  'benchmark.detail.showPercentiles': 'Показать перцентили',
+  'benchmark.detail.hidePercentiles': 'Скрыть перцентили',
+  'benchmark.detail.status': 'Статус',
+  'benchmark.detail.status.recommended': 'Оптимум',
+  'benchmark.detail.status.peak': 'Пик',
+  'benchmark.detail.status.overloaded': 'Перегрузка',
+  'benchmark.detail.status.healthy': 'Норма',
+  'benchmark.state.stoppedAt': 'Остановлено на {percent}%',
+  'benchmark.detail.stopReason.label': 'Поиск остановлен на',
+  'benchmark.detail.stopReason.capacityPlateau': 'плато пропускной способности',
+  'benchmark.detail.stopReason.upperBound': 'верхней границе диапазона',
+  'benchmark.detail.stopReason.budgetPoints': 'исчерпании бюджета точек',
+  'benchmark.detail.stopReason.budgetSeconds': 'исчерпании бюджета времени',
+  'benchmark.detail.stopReason.slaFailed': 'превышении порога задержки',
+  'benchmark.detail.stopReason.converged': 'сходимости',
+  'benchmark.detail.stopReason.overloaded': 'перегрузке сервера',
+  'benchmark.detail.stopReason.pointFailed': 'точке без результата',
+  'benchmark.detail.recommend.text':
+    'Оптимум: параллелизм {rate} — {pct}% пиковой пропускной способности ({tps} tok/s) при TTFT {ttft} мс{sla, select, yes{, в рамках SLA} other{}}.',
+  'benchmark.detail.analysis.text':
+    'Параллелизм {rate} обеспечивает {tps} tok/s{prev, select, yes{ — на {prevUp}% больше, чем {prevRate}} other{}}{next, select, yes{; переход к {nextRate} добавляет лишь {nextUp}% пропускной способности, но {nextTtftUp}% к TTFT} other{}}. Поэтому {rate} — оптимальная рабочая точка{sla, select, yes{, в рамках SLA} other{}}.',
   'benchmark.detail.modelFile': 'Model File',
   'benchmark.detail.kvCache': 'Extended KV Cache',
   'benchmark.detail.speculativeDecoding': 'Speculative Decoding',
@@ -88,8 +368,5 @@ export default {
   'benchmark.form.nonLlmModel.tips':
     'Benchmarking currently only supports LLM models',
   'benchmark.detail.result.duration': 'Duration',
-  'benchmark.detail.result.basic': 'Basic',
-  'benchmark.form.profile.ShareGPT': 'ShareGPT',
-  'benchmark.form.profile.ShareGPT.tips':
-    'Measures maximum throughput using real conversational data. Suitable for GPU and model performance benchmarking.'
+  'benchmark.detail.result.basic': 'Basic'
 };

@@ -34,6 +34,7 @@ export default {
   'common.button.create.now': '立即创建',
   'common.button.add.now': '立即添加',
   'common.button.refresh': '刷新',
+  'common.button.reload': '重新加载',
   'common.button.enabled': '启用',
   'common.button.disabled': '禁用',
   'common.button.view': '查看明细',

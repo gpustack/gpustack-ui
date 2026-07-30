@@ -12,9 +12,15 @@
  * absolute URL — so this needs no awareness of `base` or `publicPath`.
  *
  * `window.__assetRecovery__` is the seam the bundled app uses:
- *   - `recover(detail)` — `ErrorBoundary`'s chunk-error path (the only post-mount trigger)
+ *   - `recover(detail)` — `ErrorBoundary`'s chunk-error path (the only post-mount trigger);
+ *                         honours the one-attempt-per-tab guard
+ *   - `reload()`        — the error page's Reload button; unconditional, still cache-busted
  *   - `disarm()`        — called once the app mounts; closes the pre-mount window and
  *                         cleans `?_r=` out of the address bar
+ *
+ * All three go through one URL builder on purpose. The guard and the cache-bust must not
+ * exist in two places — two counters drift, and a second URL builder is how `_r` quietly
+ * stops being appended on one of the paths.
  */
 export const ASSET_RECOVERY_SCRIPT = `<script>
 (function () {
@@ -35,20 +41,29 @@ export const ASSET_RECOVERY_SCRIPT = `<script>
     }
   }
 
+  // _r is always appended last, so a trailing match strips exactly it and leaves every
+  // other param in place.
+  function withoutBust(search) {
+    return search.replace(/[?&]_r=[^&]*$/, '');
+  }
+
+  // Vary the URL. A bare reload can be answered by an intermediary cache (a CDN keyed on
+  // the full URL) with the very document that named the missing files; a busted URL misses
+  // that cache by construction. The hash route carries over so the user lands where they
+  // were, and existing document params are kept — the backend's SSO callback redirects to
+  // /?error=<code>, which the login page reads off window.location.search, and dropping it
+  // would swallow the failure message the user is owed.
+  function bustedUrl() {
+    var query = withoutBust(loc.search);
+    return loc.pathname + (query ? query + '&' : '?') + '_r=' + Date.now() + loc.hash;
+  }
+
   function recover(detail) {
     // Logged before the guard is consulted: this is the only trace of a destructive
     // action, and the sole diagnostic left once the attempt is spent.
     console.error('[asset-recovery] ' + detail + ' — stale assets, reloading once');
     if (!claimAttempt()) return false;
-    // Vary the URL. A bare reload can be answered by an intermediary cache (a CDN keyed
-    // on the full URL) with the very document that named the missing files; a busted URL
-    // misses that cache by construction. replace() adds no history entry, and the hash
-    // route carries over so the user lands where they were.
-    // Existing document params are kept: the backend's SSO callback redirects to
-    // /?error=<code>, which the login page reads off window.location.search — dropping
-    // it would swallow the failure message the user is owed.
-    var query = loc.search ? loc.search + '&' : '?';
-    loc.replace(loc.pathname + query + '_r=' + Date.now() + loc.hash);
+    loc.replace(bustedUrl()); // replace(), so recovery adds no history entry
     return true;
   }
 
@@ -68,6 +83,13 @@ export const ASSET_RECOVERY_SCRIPT = `<script>
 
   window.__assetRecovery__ = {
     recover: recover,
+    // The user pressed Reload on the error page, which only appears once the automatic
+    // attempt is spent. Unconditional by design: F4's guard exists to stop *automatic*
+    // loops, and a person pressing a button is not a loop. Still cache-busted — a bare
+    // reload would hand them the same stale document they just failed on.
+    reload: function () {
+      loc.replace(bustedUrl());
+    },
     disarm: function () {
       // After mount, a failed injected <script> is indistinguishable from a route
       // prefetch fired by a hover, and reloading on a hover is indefensible — so this
@@ -77,10 +99,11 @@ export const ASSET_RECOVERY_SCRIPT = `<script>
       // on every call after the first.
       window.removeEventListener('error', onError, true);
       if (loc.search.indexOf('_r=') > -1) {
-        // recover() always appends _r last, so a trailing match strips exactly it and
-        // leaves every other param (the SSO callback's error=<code>) in place.
-        var rest = loc.search.replace(/[?&]_r=[^&]*$/, '');
-        history.replaceState(null, '', loc.pathname + rest + loc.hash);
+        history.replaceState(
+          null,
+          '',
+          loc.pathname + withoutBust(loc.search) + loc.hash
+        );
       }
     }
   };

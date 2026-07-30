@@ -38,6 +38,7 @@ export default {
   'common.button.create.now': 'Создать сейчас',
   'common.button.add.now': 'Добавить сейчас',
   'common.button.refresh': 'Обновить',
+  'common.button.reload': 'Перезагрузить',
   'common.button.delete': 'Удалить',
   'common.button.create': 'Создать',
   'common.button.clone': 'Клонировать',

@@ -3,6 +3,7 @@ import { GPUStackVersionAtom, UpdateCheckAtom, userAtom } from '@/atoms/user';
 import { setAtomStorage } from '@/atoms/utils';
 import { DEFAULT_ENTER_PAGE, GPUSTACK_API_BASE_URL } from '@/config/settings';
 import { COLOR_PRIMARY } from '@/config/theme/constants';
+import ErrorBoundary from '@/layouts/error-boundary';
 import { getGPUStackPlugin } from '@/plugins';
 import { enterprisePluginReady } from '@/plugins/enterprise-ready';
 import { GPUStackPluginManager } from '@/plugins/manager';
@@ -192,3 +193,15 @@ export const request: RequestConfig = {
   baseURL: `/${GPUSTACK_API_BASE_URL}`,
   ...requestConfig
 };
+
+export function rootContainer(container: React.ReactNode) {
+  // `ErrorBoundary` is also handed to ProLayout (src/layouts/index.tsx), but that only
+  // mounts it around the authenticated content area — the login page renders no ProLayout
+  // at all, as `.ant-pro-layout` being absent there confirms. The inner one stays: it keeps
+  // the sider and menu on screen when a page inside the layout throws. This outer one is
+  // what makes the boundary *universal*, which two things now depend on — it is the only
+  // post-mount reload trigger (the pre-mount listener stands down so a hover prefetch can
+  // never reload the page), and its mount is the signal that stands that listener down.
+  // Both have to hold on every route, signed in or not.
+  return <ErrorBoundary>{container}</ErrorBoundary>;
+}

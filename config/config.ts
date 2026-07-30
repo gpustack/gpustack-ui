@@ -12,7 +12,6 @@ process.env.VERSION = JSON.stringify(versionInfo);
 const env = process.env.NODE_ENV;
 const isProduction = env === 'production';
 
-const t = Date.now();
 export default defineConfig({
   proxy: {
     ...proxy(process.env.PROXY_HOST)
@@ -44,22 +43,20 @@ export default defineConfig({
             drop_debugger: true
           }
         },
-        scripts: [
-          {
-            src: `/js/umi.${t}.js`
-          }
-        ],
         chainWebpack(config: any) {
+          // Keep the js/ and css/ output directories, but name files by content
+          // hash instead of the build clock: a release then only invalidates the
+          // assets it actually changed.
           config.plugin('mini-css-extract-plugin').tap((args: any) => [
             {
               ...args[0],
-              filename: `css/[name].${t}.css`,
-              chunkFilename: `css/[name].${t}.chunk.css`
+              filename: 'css/[name].[contenthash:8].css',
+              chunkFilename: 'css/[name].[contenthash:8].chunk.css'
             }
           ]);
           config.output
-            .filename(`js/[name].${t}.js`)
-            .chunkFilename(`js/[name].${t}.chunk.js`);
+            .filename('js/[name].[contenthash:8].js')
+            .chunkFilename('js/[name].[contenthash:8].chunk.js');
           compressionPluginConfig(config);
           monacoPluginConfig(config);
         }

@@ -14,7 +14,20 @@ export default (api: IApi) => {
       env === 'production' ? info.version || info.commitId : `${info.commitId}`
     );
     if (env === 'production') {
-      $('script[src^="/js/umi"]').first?.().remove?.();
+      // Umi injects the entry bundle through addHTMLHeadScripts, so it lands in
+      // <head> — before <div id="root"> exists, leaving the app nothing to mount
+      // into. Move it to the end of <body>. `append` relocates the existing node,
+      // so the content-hashed src is never restated here, and re-appending a node
+      // that is already last is a no-op.
+      const entry = $('script[src*="js/umi."]');
+      if (entry.length !== 1) {
+        throw new Error(
+          `modifyHTML: expected exactly 1 entry script, found ${entry.length}. ` +
+            'Moving it after #root is what keeps the app mountable, so a silent ' +
+            'miss here would ship a blank page.'
+        );
+      }
+      $('body').append(entry);
     }
     return $;
   });

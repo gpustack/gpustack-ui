@@ -2,13 +2,12 @@ import { request } from '@umijs/max';
 import { CancelToken } from 'axios';
 import {
   BenchmarkListItem,
-  DatasetListItem,
+  BenchmarkResultItem,
   FormData,
   ProfileOption
 } from '../config/types';
 
 export const BENCHMARKS_API = '/benchmarks';
-export const DATASETS_API = '/datasets';
 export const PROFILES_CONFIG_API = '/benchmark-profiles/default-config';
 export const EXPORT_BENCHMARK_LIST = '/benchmarks/export';
 
@@ -76,15 +75,16 @@ export async function createBenchmarkResult(params: { id: number; data: any }) {
   });
 }
 
-export async function queryDatasetList(
-  params: Global.SearchParams,
+// Per-point results (one row per (input_tokens, rate) grid cell) for the
+// multi-rate detail view (curve + summary table).
+export async function queryBenchmarkResults(
+  id: number,
   options?: {
     token?: CancelToken;
   }
 ) {
-  return request<Global.PageResponse<DatasetListItem>>(`${DATASETS_API}`, {
+  return request<BenchmarkResultItem[]>(`${BENCHMARKS_API}/${id}/results`, {
     method: 'GET',
-    params,
     cancelToken: options?.token
   });
 }

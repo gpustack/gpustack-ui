@@ -48,6 +48,29 @@ export default (api: IApi) => {
         );
       }
 
+      // The snippet only treats *same-origin* asset failures as staleness — anything else
+      // is a third-party script or an ad blocker, not our deploy. That test is correct only
+      // while webpack emits root-relative URLs, which it does because `publicPath` is unset.
+      // Point `publicPath` at a CDN origin and the test stops matching: recovery would go on
+      // running and silently never fire again. Catch it here, at the moment someone makes
+      // that change. Scoped to the build's own two assets, so adding a third-party <script>
+      // to the HTML later cannot trip it.
+      const ownAssets = [
+        ...$('script[src*="js/umi."]').toArray(),
+        ...$('link[rel="stylesheet"][href*="css/umi."]').toArray()
+      ].map((node) => $(node).attr('src') || $(node).attr('href') || '');
+      const crossOrigin = ownAssets.filter(
+        (url) => !url.startsWith('/') || url.startsWith('//')
+      );
+      if (crossOrigin.length) {
+        throw new Error(
+          `modifyHTML: build assets must be root-relative for asset-recovery's same-origin ` +
+            `test to match, but found ${JSON.stringify(crossOrigin)}. A cross-origin ` +
+            'publicPath needs that test widened first, or stale-asset recovery silently ' +
+            'stops firing.'
+        );
+      }
+
       // Umi injects the entry bundle through addHTMLHeadScripts, so it lands in
       // <head> — before <div id="root"> exists, leaving the app nothing to mount
       // into. Move it to the end of <body>. `append` relocates the existing node,

@@ -1,7 +1,6 @@
 import { readBlob } from '@/utils';
 import { PaperClipOutlined } from '@ant-design/icons';
 import {
-  readEpubContent,
   readExcelContent,
   readHtmlContent,
   readPDFContent,
@@ -36,7 +35,6 @@ const UploadImg: React.FC<UploadImgProps> = ({
   const wordReg = /\.(doc|docx)$/;
   const pptReg = /\.(ppt|pptx)$/;
   const pdfReg = /\.(pdf)$/;
-  const epubReg = /\.(epub)$/;
   const excelReg = /\.(xls|xlsx)$/;
   const htmlReg = /\.(html)$/;
 
@@ -61,8 +59,6 @@ const UploadImg: React.FC<UploadImgProps> = ({
               item.url = await readWordContent(item.originFileObj as RcFile);
             } else if (excelReg.test(item.name)) {
               item.url = await readExcelContent(item.originFileObj as RcFile);
-            } else if (epubReg.test(item.name)) {
-              item.url = await readEpubContent(item.originFileObj as RcFile);
             } else if (pdfReg.test(item.name)) {
               item.url = await readPDFContent(item.originFileObj as RcFile);
             } else if (pptReg.test(item.name)) {

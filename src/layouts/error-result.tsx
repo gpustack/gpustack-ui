@@ -44,6 +44,13 @@ const ErrorResult: React.FC<ErrorResultProps> = ({ extra }) => {
         id: staleAssets ? 'common.page.refresh.tips' : 'common.page.wentwrong'
       })}
       subTitle={staleAssets ? extra : undefined}
+      style={{
+        minHeight: 'calc(100vh - 300px)',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }}
       extra={
         staleAssets ? (
           <Button

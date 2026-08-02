@@ -1,7 +1,7 @@
 import PluginExtraFields from '@/components/plugin-extra-fields';
 import { AutoTooltip, IconFont, ThemeTag } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Flex, Tag } from 'antd';
+import { Flex, Tag, Tooltip } from 'antd';
 import _ from 'lodash';
 import styled from 'styled-components';
 import { manufactureColorMap } from '../../templates/config';
@@ -25,6 +25,17 @@ const maxObtainablePartitionCount = (
   Array.isArray(counts)
     ? counts.reduce((max, entry) => Math.max(max, entry?.count ?? 0), 0)
     : Number(counts) || 0;
+
+// The breakdown behind that figure. Since it is a max, the number belongs to
+// exactly one profile and is unattributable on its own — the tooltip is what
+// says which. Entries at zero are dropped: those are profiles the pool offers
+// but currently has no room for, and a missing count is zero, not unknown.
+const obtainablePartitionCounts = (
+  counts?: AcceleratorProfileCount[] | null
+): AcceleratorProfileCount[] =>
+  Array.isArray(counts)
+    ? counts.filter((entry) => !!entry?.name && (entry?.count ?? 0) > 0)
+    : [];
 
 const Title = styled.div`
   display: flex;
@@ -90,6 +101,10 @@ interface MetadataSectionProps {
   // carries no magnitude at all. A cross-node aggregate either way: it says the
   // fleet has room somewhere, not that any single node fits a given profile.
   partitionedMax?: number;
+  // The same ledger the figure above is reduced from, kept whole so the cell can
+  // attribute it per profile in its tooltip. Absent on the readonly edit card,
+  // which renders a persisted snapshot and has no live ledger to show.
+  partitionProfileCounts?: AcceleratorProfileCount[] | null;
 }
 
 const MetaItem: React.FC<{
@@ -192,7 +207,8 @@ const renderMetaRow = (items: MetaEntry[], columns: number, rowKey: string) => {
 export const InstanceMetadataSection: React.FC<MetadataSectionProps> = ({
   spec,
   slicedMaxPercentage,
-  partitionedMax
+  partitionedMax,
+  partitionProfileCounts
 }) => {
   const intl = useIntl();
 
@@ -232,10 +248,37 @@ export const InstanceMetadataSection: React.FC<MetadataSectionProps> = ({
     label: intl.formatMessage({ id: 'common.max' }, { count: '' }),
     value: `${spec.maxComputeUnitCount || 0}`
   };
+  // The capabilities computed above have to reach the value, not merely decide
+  // whether the cell renders: `x 6` IS the figure this cell exists to show, and
+  // the ratio ceiling beside it likewise. The tooltip attributes the count to the
+  // profile it belongs to, which a max cannot say on its own. The dashed underline
+  // is the affordance that says a tooltip is there at all — same treatment as the
+  // device-index cell in resources/hooks/use-worker-columns.
+  const partitionBreakdown = obtainablePartitionCounts(partitionProfileCounts);
+  const slicedValue = slicedCapabilities.join(' ');
   const slicedItem: MetaEntry = {
     icon: 'icon-sliced',
     label: intl.formatMessage({ id: 'gpuservice.instance.sliceable' }),
-    value: ' '
+    value:
+      partitionBreakdown.length > 0 ? (
+        <Tooltip
+          title={partitionBreakdown
+            .map((entry) => `${entry.name} × ${entry.count}`)
+            .join(', ')}
+        >
+          <span
+            style={{
+              cursor: 'pointer',
+              paddingBottom: 2,
+              borderBottom: '1px dashed var(--ant-blue-6)'
+            }}
+          >
+            {slicedValue}
+          </span>
+        </Tooltip>
+      ) : (
+        slicedValue
+      )
   };
 
   // GPU: 3 items/row → 11 cols. CPU: 2 items/row → 7 cols.
@@ -322,6 +365,7 @@ const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({
         partitionedMax={maxObtainablePartitionCount(
           item.status?.remaining?.acceleratorPartitioned
         )}
+        partitionProfileCounts={item.status?.remaining?.acceleratorPartitioned}
       ></InstanceMetadataSection>
     </Flex>
   );

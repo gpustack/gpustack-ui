@@ -244,7 +244,15 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
       options={[
         {
           label: intl.formatMessage({ id: 'gpuservice.instance.mode.whole' }),
-          value: 'whole'
+          value: 'whole',
+          // No free whole card left → same treatment as the two divided modes.
+          // Without this the mode stays selectable and lands the user on
+          // "GPU Count (Max 0)" with every count disabled, while the count
+          // control still renders 1 as checked — a selected value that cannot
+          // be requested. maxComputeUnitCount is the live figure the adapter
+          // derives from the tiers, not a static ceiling, so it reaches 0
+          // exactly when the fleet has no whole card to give.
+          disabled: maxComputeUnitCount <= 0
         },
         ...(supportsSliced
           ? [

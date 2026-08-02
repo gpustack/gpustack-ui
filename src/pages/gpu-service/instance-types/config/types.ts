@@ -1,5 +1,6 @@
 import {
   InstanceTypeDetail,
+  InstanceTypePartitionedResource,
   InstanceTypeResource
 } from '../../instances/config/types';
 
@@ -30,7 +31,10 @@ export interface InstanceTypeStatus {
   accelerator?: InstanceTypeResource | null;
   acceleratorShared?: InstanceTypeResource | null;
   acceleratorSliced?: InstanceTypeResource | null;
-  acceleratorPartitioned?: InstanceTypeResource | null;
+  // Carries this cluster's per-profile partition ledger beside the scalars. The
+  // vGPU form reads remainingProfiles from here — this per-cluster shape, not the
+  // aggregated list-typed acceleratorPartitioned dimension.
+  acceleratorPartitioned?: InstanceTypePartitionedResource | null;
   cpu?: InstanceTypeResource | null;
 }
 

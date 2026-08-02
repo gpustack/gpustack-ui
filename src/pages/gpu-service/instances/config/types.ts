@@ -133,6 +133,28 @@ export interface InstanceTypeResource {
   capacity: string;
 }
 
+// One entry of a partition ledger: a profile name and a count of instances —
+// allocated (bound) or remaining (still buildable), per the field carrying it.
+// Deliberately not AcceleratorSlicedPhysicalDetailProfile, which belongs to the
+// static capability catalog and carries memoryMib a ledger entry never has.
+//
+// An absent count means zero, not unknown: the API omits it at zero, so an entry
+// naming only a profile is that profile at zero. Only the whole list being
+// absent means unknown — see obtainablePartitionProfiles.
+export interface AcceleratorProfileCount {
+  name?: string | null;
+  count?: number | null;
+}
+
+// Partitioned-mode resource: the scalars every mode shares, plus the pool's
+// per-profile ledger. remainingProfiles lists every profile the pool offers,
+// including at zero, so "offered but currently full" stays distinguishable from
+// "not offered at all"; allocatedProfiles omits a profile holding nothing.
+export interface InstanceTypePartitionedResource extends InstanceTypeResource {
+  allocatedProfiles?: AcceleratorProfileCount[] | null;
+  remainingProfiles?: AcceleratorProfileCount[] | null;
+}
+
 export interface InstanceTypeCandidate {
   cluster: string;
   name: string;
@@ -142,10 +164,12 @@ export interface InstanceTypeCandidate {
   acceleratorShared?: InstanceTypeResource | null;
   // Sliced-mode available resource.
   acceleratorSliced?: InstanceTypeResource | null;
-  // Partitioned-mode (hardware slicing) available resource. Pool-level: the
-  // values sum every partition-mode card behind this type across nodes, so
-  // they are a capacity hint only — never a per-node placement assertion.
-  acceleratorPartitioned?: InstanceTypeResource | null;
+  // Partitioned-mode (hardware slicing) available resource, plus this
+  // candidate's per-profile ledger. Pool-level: the values sum every
+  // partition-mode card behind this type across nodes, so they are a capacity
+  // hint only — never a per-node placement assertion. remainingProfiles is what
+  // answers "can this cluster still build profile X".
+  acceleratorPartitioned?: InstanceTypePartitionedResource | null;
   // This candidate's sliced (partitioning) capability.
   acceleratorSlicedDetail?: AcceleratorSlicedDetail | null;
   phase?: 'Active' | 'Inactive' | 'Draining' | null;
@@ -161,9 +185,16 @@ export interface InstanceTypeOverviewResource {
   accelerator?: `${number}` | null;
   acceleratorShared?: `${number}` | null;
   acceleratorSliced?: `${number}` | null;
-  // Partition (hardware slice) count the pool can still admit — a cross-node
-  // aggregate, not a per-node figure.
-  acceleratorPartitioned?: `${number}` | null;
+  // The one dimension that is a list rather than a number, because it has no
+  // honest scalar: the profiles of a single card compete for the same physical
+  // slices, so a total over them is not a capacity and a best case over them is
+  // not a total. Read per profile:
+  //   - in onceMaxRequest every entry is capped at 1 (a partition request is
+  //     always one instance on one card), so it answers "can one more be built",
+  //     never "how many";
+  //   - in remaining it is the Σ over Active members, i.e. the inventory.
+  // A profile the pool offers but cannot currently build stays listed at zero.
+  acceleratorPartitioned?: AcceleratorProfileCount[] | null;
   cpu?: QuanityCPU | null;
 }
 
@@ -211,10 +242,16 @@ export interface AcceleratorSlicedPhysicalDetailProfile {
   // Profile identifier (e.g. "1g.10gb") — the value submitted as
   // spec.resources.acceleratorPartitionedProfile.
   name?: string | null;
-  // Partition instances this profile can still provide across the whole pool
-  // (summed by name over every card), not a single card's count.
+  // The pool's STATIC capability ceiling for this profile: how many instances
+  // its cards could hold if nothing else were carved (summed by name over every
+  // card), not a single card's count and NOT an availability figure — by design
+  // it does not move as instances are carved and released. For "how many can I
+  // still get", read the partition ledger
+  // (acceleratorPartitioned.remainingProfiles, or the aggregated
+  // acceleratorPartitioned dimension).
   count?: number | null;
-  // The profile's VRAM in MiB.
+  // The profile's VRAM in MiB. Only the capability catalog carries this; a
+  // ledger entry never does, which is why the two types stay separate.
   memoryMib?: number | null;
 }
 

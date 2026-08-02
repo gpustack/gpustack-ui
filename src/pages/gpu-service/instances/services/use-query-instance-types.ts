@@ -2,7 +2,11 @@ import { useQueryData } from '@gpustack/core-ui';
 import React from 'react';
 import { ceilMilliToCore, parseQuantityToGi } from '../../utils';
 import { queryGPUServiceInstanceTypes } from '../apis';
-import { getAcceleratorMax, isSliceableDetail } from '../config';
+import {
+  getAcceleratorMax,
+  isSliceableDetail,
+  obtainablePartitionProfiles
+} from '../config';
 import { InstanceTypeItem } from '../config/types';
 
 type InstanceType = InstanceTypeItem & {
@@ -45,8 +49,21 @@ export default function useQueryInstanceTypes() {
       const wholeMax = Number(item.status?.onceMaxRequest?.accelerator) || 0;
       const slicedMax =
         Number(item.status?.onceMaxRequest?.acceleratorSliced) || 0;
+      // The partition dimension is a per-profile list, not a number — one entry
+      // per profile the pool offers, its count capped at 1 by the API. So the
+      // count of obtainable profiles is what stands in for a magnitude here.
+      // Reading it as a number instead yields NaN → 0, which would take a
+      // MIG-only pool (whole-card 0, and sliced 0 because a MIG-mode card
+      // reports logical: {}) out of service entirely: the type would vanish from
+      // the form even though every profile is available. A server older than the
+      // ledger sends a scalar here, hence the null branch.
+      const partitionedProfiles = obtainablePartitionProfiles(
+        item.status?.onceMaxRequest?.acceleratorPartitioned
+      );
       const partitionedMax =
-        Number(item.status?.onceMaxRequest?.acceleratorPartitioned) || 0;
+        partitionedProfiles === null
+          ? Number(item.status?.onceMaxRequest?.acceleratorPartitioned) || 0
+          : partitionedProfiles.length;
       return {
         maxComputeUnitCount: max || 0,
         available: wholeMax > 0 || slicedMax > 0 || partitionedMax > 0

@@ -5,8 +5,11 @@ import _ from 'lodash';
 import React from 'react';
 import { parseQuantityToGi } from '../../utils';
 import {
+  AcceleratorProfileCount,
   AcceleratorSlicedDetail,
   AcceleratorSlicedPhysicalDetailProfile,
+  InstanceTypeOverviewResource,
+  InstanceTypePartitionedResource,
   ListItem
 } from '../config/types';
 
@@ -26,15 +29,61 @@ export const isPhysicalSliceable = (detail?: AcceleratorSlicedDetail | null) =>
 export const isSliceableDetail = (detail?: AcceleratorSlicedDetail | null) =>
   isLogicalSliceable(detail) || isPhysicalSliceable(detail);
 
-// Selectable hard-slice profiles: those the pool can still provide (count > 0).
-// The counts are cross-node totals, so a positive count only means the pool has
-// room somewhere — the operator still decides placement.
+// Hard-slice profiles this pool OFFERS, per the static capability catalog. The
+// counts are the catalog's ceiling, and by design they do not move as partitions
+// are carved and released — so this cannot answer "which profiles can I still
+// get". That is the ledger's job (obtainablePartitionProfiles below); this stays
+// as the fallback for a server that predates the ledger, and as the answer to
+// "does this pool offer hardware partitioning at all".
 export const getPartitionProfiles = (
   detail?: AcceleratorSlicedDetail | null
 ): AcceleratorSlicedPhysicalDetailProfile[] =>
   (detail?.physical?.profiles ?? []).filter(
     (profile) => !!profile?.name && (profile?.count ?? 0) > 0
   );
+
+// Obtainable profile names from a partition ledger, or null for "cannot tell".
+//
+// null is not []: an empty or all-zero list means the pool offers partitioning
+// but has nothing left right now, while null means no ledger was sent at all —
+// and the caller must then fall back rather than render an empty dropdown, which
+// would turn version skew into a partition-mode regression instead of a graceful
+// degrade.
+//
+// The Array.isArray guard is what makes that safe: a server older than the
+// ledger sends this dimension as a scalar quantity string, not as a missing
+// field, so `counts` can arrive as "1" despite the type. Treat anything that is
+// not a list as "cannot tell".
+//
+// A missing count is zero, not unknown: the API omits it at zero, so an entry
+// naming only a profile is that profile at zero.
+export const obtainablePartitionProfiles = (
+  counts?: AcceleratorProfileCount[] | null
+): string[] | null =>
+  Array.isArray(counts)
+    ? counts
+        .filter((entry) => !!entry?.name && (entry?.count ?? 0) > 0)
+        .map((entry) => entry.name as string)
+    : null;
+
+// Aggregated shape (GET /gpu-instance-types/aggregated): the ledger is the
+// list-typed acceleratorPartitioned dimension of an overview resource. Pass
+// status.remaining for the fleet inventory, or a tier's onceMaxRequest to ask
+// whether one more can be built.
+export const getObtainablePartitionProfilesFromOverview = (
+  overview?: InstanceTypeOverviewResource | null
+): string[] | null =>
+  obtainablePartitionProfiles(overview?.acceleratorPartitioned);
+
+// Per-cluster shape (GET /gpu-instance-types?cluster_id): the same ledger, but
+// nested on the partitioned resource. The two envelopes share the key name
+// `acceleratorPartitioned`, so reading the wrong one yields undefined and
+// silently falls back to the capability catalog — i.e. the bug these helpers
+// exist to remove. Pick the adapter that matches the endpoint.
+export const getObtainablePartitionProfilesFromResource = (
+  partitioned?: InstanceTypePartitionedResource | null
+): string[] | null =>
+  obtainablePartitionProfiles(partitioned?.remainingProfiles);
 
 // A profile name encodes its VRAM after the dot — "1g.10gb" → 10 (GB).
 export const parseProfileMemoryGB = (name?: string | null): number | null => {
@@ -328,6 +377,7 @@ export const pickCandidateForAccelerator = <
     phase?: string | null;
     cpu?: { remaining?: string | null } | null;
     acceleratorSliced?: { remaining?: string | null } | null;
+    acceleratorPartitioned?: InstanceTypePartitionedResource | null;
     acceleratorSlicedDetail?: AcceleratorSlicedDetail | null;
   }
 >(
@@ -336,7 +386,7 @@ export const pickCandidateForAccelerator = <
         onceMaxRequest: {
           accelerator?: string | null;
           acceleratorSliced?: string | null;
-          acceleratorPartitioned?: string | null;
+          acceleratorPartitioned?: AcceleratorProfileCount[] | null;
         };
         candidates?: C[] | null;
       }[]
@@ -363,16 +413,20 @@ export const pickCandidateForAccelerator = <
     if (!acceleratable && parseQuantity(c.cpu?.remaining) <= 0) return false;
     if (sliced && parseQuantity(c.acceleratorSliced?.remaining) <= 0)
       return false;
-    // Match the requested profile by name against this candidate's own
-    // profile list — the type-level list is a union across candidates, so a
-    // profile offered by the type may be exhausted (count 0) or absent here.
-    if (
-      partitionedProfile &&
-      !getPartitionProfiles(c.acceleratorSlicedDetail).some(
-        (profile) => profile.name === partitionedProfile
-      )
-    )
-      return false;
+    // Match the requested profile by name against this candidate's own ledger —
+    // the type-level view is a Σ across candidates, so a profile the type offers
+    // may have nothing left in this particular cluster. Falls back to the
+    // capability catalog only when the candidate published no ledger at all.
+    if (partitionedProfile) {
+      const obtainable =
+        obtainablePartitionProfiles(
+          c.acceleratorPartitioned?.remainingProfiles
+        ) ??
+        getPartitionProfiles(c.acceleratorSlicedDetail).map(
+          (profile) => profile.name as string
+        );
+      if (!obtainable.includes(partitionedProfile)) return false;
+    }
     return true;
   };
 
@@ -388,8 +442,19 @@ export const pickCandidateForAccelerator = <
     // Sliced / partitioned modes request a fraction of a single card, so the
     // tier's whole-card accelerator count (0 for a slice-only type) can't gate
     // them; fit on the tier's sliced / partitioned capacity instead.
+    // A partition request is one instance on one card, and the API already caps
+    // the tier's onceMaxRequest ledger at 1 per profile — so a listed profile is
+    // exactly "one more of this can be built". Absent ledger (an older server)
+    // means we cannot tell at tier level, so we do not gate here and let the
+    // candidate check decide.
+    const partitionedFits = () => {
+      const obtainable = obtainablePartitionProfiles(
+        tier.onceMaxRequest?.acceleratorPartitioned
+      );
+      return obtainable === null || obtainable.includes(partitionedProfile!);
+    };
     const fits = partitionedProfile
-      ? parseQuantity(tier.onceMaxRequest?.acceleratorPartitioned) > 0
+      ? partitionedFits()
       : sliced
         ? parseQuantity(tier.onceMaxRequest?.acceleratorSliced) > 0
         : acceleratable

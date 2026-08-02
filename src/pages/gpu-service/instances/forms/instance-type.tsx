@@ -13,7 +13,8 @@ import InstanceTypeItem, {
   InstanceMetadataSection
 } from '../components/instance-type-item';
 import {
-  getPartitionProfiles,
+  getSelectablePartitionProfilesFromOverview,
+  getSelectablePartitionProfilesFromResource,
   isLogicalSliceable,
   isPhysicalSliceable
 } from '../config';
@@ -201,24 +202,35 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
   // no cores selector, and the memory selector reads as a plain "Percentage".
   const coresOvercommit = !!slicedDetail?.logical?.coresPercentageOvercommit;
 
-  // Hard-slice profiles the pool can still provide. Pool-level counts (summed
-  // across nodes) — a hint about what's on offer, not a placement guarantee.
-  const partitionProfiles = getPartitionProfiles(slicedDetail);
+  // Hard-slice profiles the fleet can still BUILD, from the live ledger the
+  // aggregated status.remaining carries — not from status.detail.slicedDetail,
+  // which is the static capability catalog and by design does not move as
+  // partitions are carved, so it keeps offering profiles that can no longer be
+  // built. Falls back to the catalog only when no ledger was sent (an older
+  // server): there, an empty list would read as "nothing available" rather than
+  // "unknown". Still pool-level counts summed across nodes — a hint about what
+  // is on offer, not a placement guarantee.
+  const partitionProfileNames = getSelectablePartitionProfilesFromOverview(
+    selectedInstanceType?.status?.remaining,
+    slicedDetail
+  );
 
-  // Whether some candidate of the selected type still offers this profile —
-  // the pool-level list can outlive the last candidate that can serve it.
+  // Whether some candidate of the selected type can still build this profile —
+  // the fleet-wide list is a Σ across candidates, so it can outlive the last
+  // candidate able to serve it.
   const profileHasCandidate = (name: string) =>
     (selectedInstanceType?.status?.tiers ?? []).some((tier) =>
       (tier.candidates ?? []).some((candidate) =>
-        getPartitionProfiles(candidate.acceleratorSlicedDetail).some(
-          (profile) => profile.name === name
-        )
+        getSelectablePartitionProfilesFromResource(
+          candidate.acceleratorPartitioned,
+          candidate.acceleratorSlicedDetail
+        ).includes(name)
       )
     );
 
-  const partitionOptions = partitionProfiles.map((profile) => ({
-    label: profile.name as string,
-    value: profile.name as string
+  const partitionOptions = partitionProfileNames.map((name) => ({
+    label: name,
+    value: name
   }));
 
   const modeSegmented = showModeSwitch ? (

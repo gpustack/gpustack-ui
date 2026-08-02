@@ -37,7 +37,7 @@ import TemplateBasicForm, {
 } from '../../templates/forms/basic';
 import {
   getPartitionPercentage,
-  getPartitionProfiles,
+  getSelectablePartitionProfilesFromOverview,
   isLogicalSliceable,
   isPhysicalSliceable,
   pickCandidateForAccelerator,
@@ -569,12 +569,16 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       applySlicedResourceScaling(instanceType);
     };
 
-    // Seed the partitioned default: the first profile the pool can still
-    // provide. Returns the chosen profile (null when the type offers none).
+    // Seed the partitioned default: the first profile the fleet can still BUILD,
+    // from the live ledger. Reading the capability catalog here would pre-fill a
+    // profile the pool can no longer build — one the ledger-backed dropdown does
+    // not even list, so the form would open on a value the user cannot re-pick.
+    // Returns the chosen profile (null when nothing is obtainable).
     const applyPartitionedDefaults = (instanceType?: InstanceTypeItem) => {
-      const profile = getPartitionProfiles(
+      const profile = getSelectablePartitionProfilesFromOverview(
+        instanceType?.status?.remaining,
         instanceType?.status?.detail?.slicedDetail
-      )[0]?.name;
+      )[0];
       form.setFieldValue(
         ['spec', 'resources', 'acceleratorPartitionedProfile'],
         profile ?? undefined
@@ -642,7 +646,13 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       const wholeMax = instanceType.spec?.maxComputeUnitCount ?? 0;
       const slicedMax =
         _.toNumber(instanceType.status?.onceMaxRequest?.acceleratorSliced) || 0;
-      const partitionProfiles = getPartitionProfiles(slicedDetail);
+      // Obtainable, not merely offered: this decides whether to auto-enter
+      // partitioned mode and which profile to seed, so the capability catalog
+      // would switch the form into a mode that has nothing to hand out.
+      const partitionProfiles = getSelectablePartitionProfilesFromOverview(
+        instanceType.status?.remaining,
+        slicedDetail
+      );
 
       if (wholeMax < 1 && isLogicalSliceable(slicedDetail) && slicedMax > 0) {
         setSliceMode('sliced');
@@ -656,7 +666,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
         isPhysicalSliceable(slicedDetail) &&
         partitionProfiles.length > 0
       ) {
-        const profile = partitionProfiles[0].name!;
+        const profile = partitionProfiles[0];
         setSliceMode('partitioned');
         form.setFieldValue(
           ['spec', 'resources', 'acceleratorPartitionedProfile'],

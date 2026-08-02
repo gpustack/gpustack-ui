@@ -66,24 +66,37 @@ export const obtainablePartitionProfiles = (
         .map((entry) => entry.name as string)
     : null;
 
+// Profile names a form may offer: the live ledger when there is one, else the
+// capability catalog. The fallback is deliberately at LIST level, never per
+// element — an empty ledger means "offered, nothing left" and must stay empty,
+// while a missing ledger means "unknown" and falls back. Collapsing the two
+// (e.g. `ledger?.[0] ?? catalog[0]`) silently resurrects unbuildable profiles.
+const selectablePartitionProfiles = (
+  ledger: AcceleratorProfileCount[] | null | undefined,
+  capability: AcceleratorSlicedDetail | null | undefined
+): string[] =>
+  obtainablePartitionProfiles(ledger) ??
+  getPartitionProfiles(capability).map((profile) => profile.name as string);
+
 // Aggregated shape (GET /gpu-instance-types/aggregated): the ledger is the
 // list-typed acceleratorPartitioned dimension of an overview resource. Pass
-// status.remaining for the fleet inventory, or a tier's onceMaxRequest to ask
-// whether one more can be built.
-export const getObtainablePartitionProfilesFromOverview = (
-  overview?: InstanceTypeOverviewResource | null
-): string[] | null =>
-  obtainablePartitionProfiles(overview?.acceleratorPartitioned);
+// status.remaining for the fleet inventory.
+export const getSelectablePartitionProfilesFromOverview = (
+  overview?: InstanceTypeOverviewResource | null,
+  capability?: AcceleratorSlicedDetail | null
+): string[] =>
+  selectablePartitionProfiles(overview?.acceleratorPartitioned, capability);
 
 // Per-cluster shape (GET /gpu-instance-types?cluster_id): the same ledger, but
 // nested on the partitioned resource. The two envelopes share the key name
 // `acceleratorPartitioned`, so reading the wrong one yields undefined and
 // silently falls back to the capability catalog — i.e. the bug these helpers
 // exist to remove. Pick the adapter that matches the endpoint.
-export const getObtainablePartitionProfilesFromResource = (
-  partitioned?: InstanceTypePartitionedResource | null
-): string[] | null =>
-  obtainablePartitionProfiles(partitioned?.remainingProfiles);
+export const getSelectablePartitionProfilesFromResource = (
+  partitioned?: InstanceTypePartitionedResource | null,
+  capability?: AcceleratorSlicedDetail | null
+): string[] =>
+  selectablePartitionProfiles(partitioned?.remainingProfiles, capability);
 
 // A profile name encodes its VRAM after the dot — "1g.10gb" → 10 (GB).
 export const parseProfileMemoryGB = (name?: string | null): number | null => {
@@ -417,16 +430,14 @@ export const pickCandidateForAccelerator = <
     // the type-level view is a Σ across candidates, so a profile the type offers
     // may have nothing left in this particular cluster. Falls back to the
     // capability catalog only when the candidate published no ledger at all.
-    if (partitionedProfile) {
-      const obtainable =
-        obtainablePartitionProfiles(
-          c.acceleratorPartitioned?.remainingProfiles
-        ) ??
-        getPartitionProfiles(c.acceleratorSlicedDetail).map(
-          (profile) => profile.name as string
-        );
-      if (!obtainable.includes(partitionedProfile)) return false;
-    }
+    if (
+      partitionedProfile &&
+      !getSelectablePartitionProfilesFromResource(
+        c.acceleratorPartitioned,
+        c.acceleratorSlicedDetail
+      ).includes(partitionedProfile)
+    )
+      return false;
     return true;
   };
 

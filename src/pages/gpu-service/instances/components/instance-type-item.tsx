@@ -8,10 +8,23 @@ import { manufactureColorMap } from '../../templates/config';
 import { formatManufacturer } from '../../utils';
 import { formatMemoryDisplay } from '../config';
 import {
+  AcceleratorProfileCount,
   InstanceTypeItem as InstanceTypeItemModel,
   InstanceTypeSnapshotSpec
 } from '../config/types';
 import { buildInstanceTypeSnapshotSpec } from '../utils/instance-description';
+
+// The card's partition figure: the largest number of instances of a single
+// profile the fleet can still build. max, not Σ — the profiles of one card
+// compete for the same physical slices, so summing them multiply-counts the same
+// hardware. A server older than the ledger sends this dimension as a scalar
+// quantity string rather than a list, so fall back to reading it as one.
+const maxObtainablePartitionCount = (
+  counts?: AcceleratorProfileCount[] | null
+): number =>
+  Array.isArray(counts)
+    ? counts.reduce((max, entry) => Math.max(max, entry?.count ?? 0), 0)
+    : Number(counts) || 0;
 
 const Title = styled.div`
   display: flex;
@@ -69,9 +82,13 @@ interface MetadataSectionProps {
   // status.onceMaxRequest.acceleratorSliced (max sliceable percentage). Shown
   // next to Max for sliceable types.
   slicedMaxPercentage?: number;
-  // status.onceMaxRequest.acceleratorPartitioned — how many hardware
-  // partitions the pool can still admit. A cross-node aggregate: it says the
-  // pool has room, not that any single node fits a given profile.
+  // The largest number of instances of a single partition profile the fleet can
+  // still build — max(count) over status.remaining.acceleratorPartitioned.
+  //
+  // Not from onceMaxRequest: on this dimension the API caps every entry at 1,
+  // because a partition request is always one instance on one card, so it
+  // carries no magnitude at all. A cross-node aggregate either way: it says the
+  // fleet has room somewhere, not that any single node fits a given profile.
   partitionedMax?: number;
 }
 
@@ -302,9 +319,9 @@ const InstanceTypeItem: React.FC<InstanceTypeItemProps> = ({
         slicedMaxPercentage={
           Number(item.status?.onceMaxRequest?.acceleratorSliced) || 0
         }
-        partitionedMax={
-          Number(item.status?.onceMaxRequest?.acceleratorPartitioned) || 0
-        }
+        partitionedMax={maxObtainablePartitionCount(
+          item.status?.remaining?.acceleratorPartitioned
+        )}
       ></InstanceMetadataSection>
     </Flex>
   );

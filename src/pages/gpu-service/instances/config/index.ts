@@ -32,10 +32,15 @@ export const isSliceableDetail = (detail?: AcceleratorSlicedDetail | null) =>
 // Hard-slice profiles this pool OFFERS, per the static capability catalog. The
 // counts are the catalog's ceiling, and by design they do not move as partitions
 // are carved and released — so this cannot answer "which profiles can I still
-// get". That is the ledger's job (obtainablePartitionProfiles below); this stays
-// as the fallback for a server that predates the ledger, and as the answer to
-// "does this pool offer hardware partitioning at all".
-export const getPartitionProfiles = (
+// get". That is the ledger's job (obtainablePartitionProfiles below).
+//
+// Deliberately NOT exported: its only remaining use is as the version-skew
+// fallback inside getSelectablePartitionProfiles*, and every form that used to
+// call it was offering profiles the pool could no longer build. Keeping it
+// module-private is what stops that from creeping back under an
+// availability-sounding name. For "does this pool offer hardware partitioning at
+// all", use isPhysicalSliceable.
+const getOfferedPartitionProfiles = (
   detail?: AcceleratorSlicedDetail | null
 ): AcceleratorSlicedPhysicalDetailProfile[] =>
   (detail?.physical?.profiles ?? []).filter(
@@ -76,7 +81,9 @@ const selectablePartitionProfiles = (
   capability: AcceleratorSlicedDetail | null | undefined
 ): string[] =>
   obtainablePartitionProfiles(ledger) ??
-  getPartitionProfiles(capability).map((profile) => profile.name as string);
+  getOfferedPartitionProfiles(capability).map(
+    (profile) => profile.name as string
+  );
 
 // Aggregated shape (GET /gpu-instance-types/aggregated): the ledger is the
 // list-typed acceleratorPartitioned dimension of an overview resource. Pass

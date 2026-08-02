@@ -406,8 +406,10 @@ export const pickCandidateForAccelerator = <
         onceMaxRequest: {
           accelerator?: string | null;
           acceleratorSliced?: string | null;
-          acceleratorPartitioned?: AcceleratorProfileCount[] | null;
         };
+        remaining?: {
+          acceleratorPartitioned?: AcceleratorProfileCount[] | null;
+        } | null;
         candidates?: C[] | null;
       }[]
     | undefined
@@ -460,14 +462,24 @@ export const pickCandidateForAccelerator = <
     // Sliced / partitioned modes request a fraction of a single card, so the
     // tier's whole-card accelerator count (0 for a slice-only type) can't gate
     // them; fit on the tier's sliced / partitioned capacity instead.
-    // A partition request is one instance on one card, and the API already caps
-    // the tier's onceMaxRequest ledger at 1 per profile — so a listed profile is
-    // exactly "one more of this can be built". Absent ledger (an older server)
-    // means we cannot tell at tier level, so we do not gate here and let the
-    // candidate check decide.
+    // A partition request is one instance on one card, so "can one more of this
+    // profile be built in this tier" is exactly "the tier's remaining ledger
+    // counts it above zero" — that ledger is the Σ over the tier's Active
+    // candidates, so a listed profile means some candidate here can serve it.
+    //
+    // NOT the tier's onceMaxRequest: that bundle is winner-takes-all, and because
+    // the tier key IS Accelerator.OnceMaxRequest every candidate in a tier ties on
+    // it, so the winner is simply the FIRST Active candidate. Its capped ledger
+    // describes one cluster, not the tier — and since a MIG-mode card is never a
+    // free whole card, every MIG pool in the fleet collapses into the
+    // accelerator-0 tier. Gating on it lets one fully-carved cluster veto profiles
+    // the fleet can still build, which the dropdown (reading the Σ) still offers.
+    //
+    // Absent ledger (an older server) means we cannot tell at tier level, so we do
+    // not gate here and let the candidate check decide.
     const partitionedFits = () => {
       const obtainable = obtainablePartitionProfiles(
-        tier.onceMaxRequest?.acceleratorPartitioned
+        tier.remaining?.acceleratorPartitioned
       );
       return obtainable === null || obtainable.includes(partitionedProfile!);
     };

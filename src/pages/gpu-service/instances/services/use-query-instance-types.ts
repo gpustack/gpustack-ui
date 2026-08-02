@@ -43,26 +43,32 @@ export default function useQueryInstanceTypes() {
 
     // Sliceable types stay selectable as long as whole-card, sliced (soft) or
     // partitioned (hard) capacity remains; unavailable only when all three of
-    // status.onceMaxRequest .accelerator / .acceleratorSliced /
-    // .acceleratorPartitioned are 0.
+    // onceMaxRequest.accelerator / onceMaxRequest.acceleratorSliced /
+    // remaining.acceleratorPartitioned are 0.
     if (isSliceableDetail(item.status?.detail?.slicedDetail)) {
       const wholeMax = Number(item.status?.onceMaxRequest?.accelerator) || 0;
       const slicedMax =
         Number(item.status?.onceMaxRequest?.acceleratorSliced) || 0;
       // The partition dimension is a per-profile list, not a number — one entry
-      // per profile the pool offers, its count capped at 1 by the API. So the
-      // count of obtainable profiles is what stands in for a magnitude here.
-      // Reading it as a number instead yields NaN → 0, which would take a
-      // MIG-only pool (whole-card 0, and sliced 0 because a MIG-mode card
-      // reports logical: {}) out of service entirely: the type would vanish from
-      // the form even though every profile is available. A server older than the
-      // ledger sends a scalar here, hence the null branch.
+      // per profile the pool offers. So the count of obtainable profiles is what
+      // stands in for a magnitude here. Reading it as a number instead yields
+      // NaN → 0, which would take a MIG-only pool (whole-card 0, and sliced 0
+      // because a MIG-mode card reports logical: {}) out of service entirely: the
+      // type would vanish from the form even though every profile is available.
+      // A server older than the ledger sends a scalar here, hence the null branch.
+      //
+      // Read from remaining, not onceMaxRequest: the latter is the winner-takes-all
+      // bundle of one tier — itself one candidate's capped ledger — so a single
+      // fully-carved cluster would grey the type out while the rest of the fleet
+      // has room. remaining is the true Σ across Active candidates, and since a
+      // partition request is always one instance on one card, "Σ > 0 for some
+      // profile" is exactly "something here can still be requested".
       const partitionedProfiles = obtainablePartitionProfiles(
-        item.status?.onceMaxRequest?.acceleratorPartitioned
+        item.status?.remaining?.acceleratorPartitioned
       );
       const partitionedMax =
         partitionedProfiles === null
-          ? Number(item.status?.onceMaxRequest?.acceleratorPartitioned) || 0
+          ? Number(item.status?.remaining?.acceleratorPartitioned) || 0
           : partitionedProfiles.length;
       return {
         maxComputeUnitCount: max || 0,

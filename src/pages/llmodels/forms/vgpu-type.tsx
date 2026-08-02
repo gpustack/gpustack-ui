@@ -3,7 +3,7 @@ import { queryGPUInstanceTypes } from '@/pages/gpu-service/instance-types/apis';
 import { ListItem as InstanceTypeListItem } from '@/pages/gpu-service/instance-types/config/types';
 import {
   formatMemoryDisplay,
-  getPartitionProfiles,
+  getSelectablePartitionProfilesFromResource,
   isLogicalSliceable,
   isPhysicalSliceable
 } from '@/pages/gpu-service/instances/config';
@@ -158,13 +158,26 @@ const VGPUTypeForm: React.FC = () => {
   // selector is hidden (a hidden field mirrors the memory value).
   const coresOvercommit = !!slicedDetail?.logical?.coresPercentageOvercommit;
 
+  // Profiles this cluster can still BUILD, from its own per-profile ledger.
+  //
+  // The shape matters: this form queries /gpu-instance-types?cluster_id, so the
+  // ledger arrives nested on status.acceleratorPartitioned.remainingProfiles —
+  // not as the list-typed acceleratorPartitioned dimension the GPU Instance form
+  // gets from the aggregated endpoint. Both envelopes use that same key name, so
+  // reading the wrong one yields undefined and silently falls back below.
+  //
+  // slicedDetail is the static capability catalog: it keeps offering profiles the
+  // pool can no longer build, because by design it does not move as partitions
+  // are carved and released. It stays the fallback for a server older than the
+  // ledger, where an empty list would read as "nothing available" instead of
+  // "unknown".
   const partitionOptions = useMemo(
     () =>
-      getPartitionProfiles(slicedDetail).map((profile) => ({
-        label: profile.name as string,
-        value: profile.name as string
-      })),
-    [slicedDetail]
+      getSelectablePartitionProfilesFromResource(
+        selectedInstanceType?.status?.acceleratorPartitioned,
+        slicedDetail
+      ).map((name) => ({ label: name, value: name })),
+    [selectedInstanceType, slicedDetail]
   );
 
   const supportsSliced = isLogicalSliceable(slicedDetail);

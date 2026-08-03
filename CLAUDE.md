@@ -111,6 +111,38 @@ A page module lives under `src/pages/{module}` with this sub-structure: `compone
 - **Open/close & request hooks**: `use-{verb}-{noun}.ts` (e.g. `use-create-user.ts`, `use-query-user-list.ts`).
 - **Complex table cell**: extract into `{feature}-cell.tsx`.
 
+# Module structure & file size
+
+## Split by feature, not by line count
+
+Once a component file passes **~600 lines**, stop and consider splitting it by feature area — extract sub-components into `components/`, and pull state / request / derivation logic into `hooks/`.
+
+This is a **prompt to evaluate, not a hard rule**. Some modules are genuinely one cohesive piece of complex logic; slicing them into artificial fragments makes the flow harder to follow and adds prop-drilling and indirection for no gain. Split when the file contains **separable concerns**; leave it alone when the length comes from one concern that is simply large. Never split just to get under the number.
+
+## One directory per tab
+
+If a page is composed of multiple tabs, **each tab gets its own directory** under the page directory, with the same internal structure as a page (`components/`, `config/`, `forms/`, `hooks/`, `services/`, `index.tsx` — only the parts it needs). Do not flatten every tab's components into the page-level `components/`.
+
+The page-level `components/`, `hooks/`, `config/`, and `services/` are reserved for things **shared across tabs**; anything used by a single tab belongs to that tab's directory.
+
+```
+src/pages/usage/
+  components/        # shared across tabs only
+  config/
+  hooks/
+  services/
+  index.tsx          # tab host
+  events-tab/
+    services/
+    index.tsx
+  summary-tab/
+    components/
+    hooks/
+    index.tsx
+```
+
+Name the directory after the tab. Both `{tab}-tab/` (e.g. `src/pages/usage/events-tab`) and plain `{tab}/` (e.g. `src/pages/gpu-service/instances`) exist today — stay consistent with whatever the page already uses.
+
 # Config & types
 
 - `config/types.ts` — TypeScript types. Form shape → `FormData`; table/list row → `ListItem`.

@@ -23,24 +23,37 @@ export default (api: IApi) => {
       // declaration past the first 1024 bytes, where browsers stop honouring it. Insert
       // right after the charset instead — still ahead of the stylesheet, which is all
       // the ordering requirement actually asks for.
+      // Hold on to the node just inserted rather than looking it back up: the guard
+      // below has to be about *this* script, and "the first inline script in <head>"
+      // stops meaning that the moment anything else inline lands there (analytics, a
+      // theme-flash snippet, a runtime shim from a umi upgrade) — the guard would then
+      // vouch for a stranger's position and miss the very reshuffle it exists to catch.
+      // Node identity cannot drift that way.
       const charset = $('head meta[charset]');
+      let recovery;
       if (charset.length) {
         charset.after(ASSET_RECOVERY_SCRIPT);
+        recovery = charset.next();
       } else {
         $('head').prepend(ASSET_RECOVERY_SCRIPT);
+        recovery = $('head').children().first();
       }
 
       // Guard the ordering that the paragraph above is entirely about: if a future head
       // reshuffle puts the stylesheet first, recovery silently stops covering the
       // carrier it exists for, and nothing else in the build would notice.
       const headNodes = $('head').children().toArray();
-      const scriptAt = headNodes.findIndex(
-        (node) => $(node).is('script') && !$(node).attr('src')
-      );
+      const scriptAt = headNodes.indexOf(recovery[0]);
       const styleAt = headNodes.findIndex((node) =>
         $(node).is('link[rel="stylesheet"]')
       );
-      if (scriptAt < 0 || (styleAt >= 0 && scriptAt > styleAt)) {
+      if (scriptAt < 0) {
+        throw new Error(
+          'modifyHTML: the asset-recovery script is not a direct child of <head> after ' +
+            'insertion, so its position relative to the stylesheet cannot be verified.'
+        );
+      }
+      if (styleAt >= 0 && scriptAt > styleAt) {
         throw new Error(
           `modifyHTML: asset-recovery script must precede the stylesheet link ` +
             `(script at ${scriptAt}, stylesheet at ${styleAt}). A listener registered ` +

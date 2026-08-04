@@ -7,6 +7,7 @@ import { useAtom } from 'jotai';
 import { useEffect, useMemo, useState } from 'react';
 import { flushSync } from 'react-dom';
 import styled from 'styled-components';
+import { useCaptcha } from '../hooks/use-captcha';
 import { useLocalAuth } from '../hooks/use-local-auth';
 import { useSSOAuth } from '../hooks/use-sso-auth';
 import { checkDefaultPage } from '../utils';
@@ -182,21 +183,14 @@ const LoginForm = () => {
     );
   }, []);
 
-  // local user authentication
-  const { handleLogin, submitLoading } = useLocalAuth({
-    fetchUserInfo,
-    form,
-    onSuccess: async (userInfo) => {
-      setUserInfo(userInfo);
-      if (!userInfo?.require_password_change) {
-        gotoDefaultPage(userInfo);
-      }
-    },
+  // Graphic CAPTCHA (only when the server enables it). ``captchaId`` is read
+  // lazily at submit time so the latest challenge is always sent.
+  const captcha = useCaptcha();
 
-    onError: (error) => {
-      // gpustack handle in the interceptor
-    }
-  });
+  const refreshCaptcha = () => {
+    form.setFieldValue('captcha', '');
+    return captcha.refresh();
+  };
 
   // SSO hook
   const SSOAuth = useSSOAuth({
@@ -208,11 +202,43 @@ const LoginForm = () => {
     onLoading: (loading) => {
       setLoading(loading);
     },
-    onError: handleOnError
+    onError: handleOnError,
+    onConfigLoaded: (options) => {
+      if (options.captcha_enabled && !options.external_auth) {
+        void refreshCaptcha();
+      }
+    }
+  });
+
+  const hasThirdPartyLogin = !!SSOAuth.options.external_auth;
+  const captchaEnabled = SSOAuth.options.captcha_enabled;
+
+  // local user authentication
+  const { handleLogin, submitLoading } = useLocalAuth({
+    fetchUserInfo,
+    form,
+    getCaptchaId: () => captcha.captchaId,
+    onSuccess: async (userInfo) => {
+      setUserInfo(userInfo);
+      if (!userInfo?.require_password_change) {
+        gotoDefaultPage(userInfo);
+      }
+    },
+
+    onError: () => {
+      // Login errors are surfaced by the global interceptor. Refresh the
+      // CAPTCHA so a one-time challenge isn't reused after a failed attempt.
+      if (captchaEnabled) {
+        void refreshCaptcha();
+      }
+    }
   });
 
   const handleLoginWithPassword = () => {
     setIsPassword(true);
+    if (captchaEnabled) {
+      void refreshCaptcha();
+    }
   };
 
   const handleLoginWithThirdParty = () => {
@@ -220,8 +246,6 @@ const LoginForm = () => {
     setLoading(true);
     setAuthError(null);
   };
-
-  const hasThirdPartyLogin = !!SSOAuth.options.external_auth;
 
   const isThirdPartyAuthHandling = useMemo(() => {
     return loading && !authError;
@@ -278,6 +302,15 @@ const LoginForm = () => {
                 form={form}
                 loading={submitLoading}
                 loginOption={SSOAuth.options}
+                captchaEnabled={captchaEnabled}
+                captchaImage={captcha.image}
+                captchaAudio={captcha.audio}
+                captchaLoading={captcha.loading}
+                captchaAudioLoading={captcha.audioLoading}
+                captchaError={captcha.error}
+                captchaAudioError={captcha.audioError}
+                onRefreshCaptcha={refreshCaptcha}
+                onLoadCaptchaAudio={captcha.loadAudio}
               />
             )}
             {hasThirdPartyLogin && isPassword && (

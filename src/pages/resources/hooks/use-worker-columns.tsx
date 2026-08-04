@@ -121,7 +121,7 @@ const calcStorage = (files: Filesystem[]) => {
 };
 
 const GPUCell = ({ devices }: { devices: GPUDeviceItem[] }) => (
-  <span className="flex-column flex-gap-2" style={{ width: '100%' }}>
+  <span className="flex-column gap-5" style={{ width: '100%' }}>
     {_.map(
       _.sortBy(devices || [], ['index']),
       (item: GPUDeviceItem, index: number) => (

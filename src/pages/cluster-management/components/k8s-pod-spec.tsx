@@ -1,6 +1,11 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
-import { Input as CInput, LabelSelector } from '@gpustack/core-ui';
+import {
+  CardRadioGroup,
+  Input as CInput,
+  LabelSelector,
+  type CardRadioOption
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { Form } from 'antd';
@@ -70,10 +75,6 @@ export const OperatorImageForm: React.FC = () => {
   );
 };
 
-// Visual parity with @gpustack/core-ui's SwitchCard so the selector blends
-// in with surrounding form fields: same border, radius, padding, and
-// typography. The only differences are the two-column grid layout and an
-// active state (blue border + tinted background) to mark the selection.
 const ClusterTypeWrap = styled.div`
   margin-bottom: 24px;
 `;
@@ -89,90 +90,16 @@ const ClusterTypeLabel = styled.div`
   }
 `;
 
-const ClusterTypeGrid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-`;
-
-const ClusterTypeCard = styled.div<{ $active: boolean }>`
-  position: relative;
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 12px 14px;
-  border-radius: var(--ant-border-radius-lg);
-  border: 1px solid
-    ${(p) =>
-      p.$active ? 'var(--ant-color-primary)' : 'var(--ant-color-border)'};
-  background: ${(p) =>
-    p.$active ? 'var(--ant-color-primary-bg)' : 'transparent'};
-  cursor: pointer;
-  transition:
-    border-color 0.2s,
-    background-color 0.2s;
-  &:hover,
-  &:focus-visible {
-    border-color: var(--ant-color-primary);
-  }
-  &:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 2px var(--ant-control-outline);
-  }
-  .body {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-  .title {
-    color: var(--ant-color-text);
-    font-size: 14px;
-    font-weight: 500;
-  }
-  .description {
-    color: var(--ant-color-text-secondary);
-  }
-`;
-
-const ExperimentalTag = styled.span`
-  position: absolute;
-  right: 2px;
-  top: 2px;
-  padding: 2px;
-  border-radius: 2px;
-  font-size: 10px;
-  font-weight: 400;
-  background-color: var(--ant-blue-1);
-`;
-
-const RadioDot = styled.span<{ $active: boolean }>`
-  position: relative;
-  flex-shrink: 0;
-  width: 16px;
-  height: 16px;
-  margin-top: 3px;
-  border-radius: 50%;
-  border: 1.5px solid
-    ${(p) =>
-      p.$active ? 'var(--ant-color-primary)' : 'var(--ant-color-border)'};
-  background: ${(p) =>
-    p.$active ? 'var(--ant-color-primary)' : 'transparent'};
-  transition: all 0.2s;
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    margin: auto;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: #fff;
-    opacity: ${(p) => (p.$active ? 1 : 0)};
-    transition: opacity 0.2s;
-  }
-`;
+// The badge's own look; its corner placement comes from CardRadioGroup's
+// `badge` slot (see the styles override below).
+const experimentalBadgeStyle: React.CSSProperties = {
+  padding: '2px 4px',
+  borderRadius: 2,
+  fontSize: 10,
+  fontWeight: 400,
+  lineHeight: 1,
+  backgroundColor: 'var(--ant-blue-1)'
+};
 
 // Card-based selector for cluster type. The two options are mutually exclusive
 // and the choice maps directly to the presence/absence of `gpuInstanceOptions`
@@ -195,22 +122,21 @@ export const ClusterTypeSelector: React.FC = () => {
     setClusterType?.(next);
   });
 
-  const options: {
-    key: 'model' | 'gpu';
-    title: string;
-    description: string;
-    experimental?: boolean;
-  }[] = [
+  const options: CardRadioOption<'model' | 'gpu'>[] = [
     {
-      key: 'model',
-      title: intl.formatMessage({ id: 'clusters.modelService.title' }),
+      value: 'model',
+      label: intl.formatMessage({ id: 'clusters.modelService.title' }),
       description: intl.formatMessage({ id: 'clusters.modelService.tip' })
     },
     {
-      key: 'gpu',
-      title: intl.formatMessage({ id: 'clusters.gpuInstances.title' }),
+      value: 'gpu',
+      label: intl.formatMessage({ id: 'clusters.gpuInstances.title' }),
       description: intl.formatMessage({ id: 'clusters.gpuInstances.tip' }),
-      experimental: true
+      badge: (
+        <span style={experimentalBadgeStyle}>
+          {intl.formatMessage({ id: 'common.tag.experimental' })}
+        </span>
+      )
     }
   ];
 
@@ -221,43 +147,21 @@ export const ClusterTypeSelector: React.FC = () => {
   }, [presetClusterType]);
 
   return (
-    <ClusterTypeWrap>
+    // CardRadioGroup renders the radiogroup role itself but takes no aria
+    // props, so the visible label is associated from this wrapper.
+    <ClusterTypeWrap role="group" aria-labelledby={labelId}>
       <ClusterTypeLabel id={labelId}>
         {intl.formatMessage({ id: 'clusters.clusterType.title' })}
         <span className="required">*</span>
       </ClusterTypeLabel>
-      <ClusterTypeGrid role="radiogroup" aria-labelledby={labelId}>
-        {options.map((opt) => {
-          const active = value === opt.key;
-          return (
-            <ClusterTypeCard
-              key={opt.key}
-              $active={active}
-              role="radio"
-              aria-checked={active}
-              tabIndex={0}
-              onClick={() => handleSelect(opt.key)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  handleSelect(opt.key);
-                }
-              }}
-            >
-              <RadioDot $active={active} />
-              {opt.experimental && (
-                <ExperimentalTag>
-                  {intl.formatMessage({ id: 'common.tag.experimental' })}
-                </ExperimentalTag>
-              )}
-              <div className="body">
-                <div className="title">{opt.title}</div>
-                <div className="description">{opt.description}</div>
-              </div>
-            </ClusterTypeCard>
-          );
-        })}
-      </ClusterTypeGrid>
+      <CardRadioGroup<'model' | 'gpu'>
+        value={value}
+        onChange={handleSelect}
+        options={options}
+        columns={2}
+        ghost
+        styles={{ badge: { top: 2, right: 2 } }}
+      />
     </ClusterTypeWrap>
   );
 };

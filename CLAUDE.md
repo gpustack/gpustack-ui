@@ -113,11 +113,21 @@ A page module lives under `src/pages/{module}` with this sub-structure: `compone
 
 # Module structure & file size
 
-## Split by feature, not by line count
+## Split by reason-to-change, not by line count
 
-Once a component file passes **~600 lines**, stop and consider splitting it by feature area — extract sub-components into `components/`, and pull state / request / derivation logic into `hooks/`.
+Line count is a smoke alarm, not the criterion. A 300-line file with two unrelated concerns should be split; a 700-line controlled form whose fields all interlock should not. Decide with these three questions, in order:
 
-This is a **prompt to evaluate, not a hard rule**. Some modules are genuinely one cohesive piece of complex logic; slicing them into artificial fragments makes the flow harder to follow and adds prop-drilling and indirection for no gain. Split when the file contains **separable concerns**; leave it alone when the length comes from one concern that is simply large. Never split just to get under the number.
+**1. How many independent reasons-to-change does the file hold?** Two or more that don't share state → split, extracting sub-components into `components/` and state / request / derivation logic into `hooks/`. One concern that is simply large → leave it. A list tab that fetches, filters, defines columns and lays out sections holds four; a cascading form whose every field feeds the next holds one, however long it gets.
+
+Watch for the near-miss: a column definition and the cell it renders look like two things but are **one** reason-to-change — adding a column means adding its cell, and changing a cell means finding its column. Splitting them yields a file that only forwards `record` to the other. Same trap for a form and its field renderers, or a request hook and its response mapper.
+
+**2. Can the extracted piece take a domain name?** `use-keys-columns`, `instance-status-cell`, `use-query-benchmarks` → the seam is real. If the only name you can find is `-utils`, `-helpers`, `-part2`, or the parent's name with a suffix, you are cutting mid-concern — don't.
+
+**3. How many props would the split need?** More than 2–3, or having to pass a `form` instance / a `setState` down, means the seam is in the wrong place. That prop list is the coupling you failed to cut.
+
+Line count only decides **when to run this checklist**, not its outcome: past **~600 lines**, stop and walk the three questions. Never split just to get under the number — every extra file costs real navigation time, so only pay it where the seam is genuine.
+
+A naming convention can outrank all of the above: `use-{feature}-columns` is extracted even from a 300-line tab, because table columns change for their own reasons (design tweaks) independently of the tab's business logic. Ref `src/pages/api-keys/hooks/use-keys-columns.tsx`.
 
 ## One directory per tab
 
@@ -143,11 +153,20 @@ src/pages/usage/
 
 Name the directory after the tab. Both `{tab}-tab/` (e.g. `src/pages/usage/events-tab`) and plain `{tab}/` (e.g. `src/pages/gpu-service/instances`) exist today — stay consistent with whatever the page already uses.
 
+Two rules of thumb for deciding where a file lives:
+
+- A component used by **two or more** tabs goes to the page-level `components/` — even when one of them "owns" it conceptually. Putting it in the owner's directory would force the other tab into a `../{sibling-tab}/components/...` import, and a cross-tab-directory import is the signal that the file belongs one level up.
+- Keep a shared child's **whole dependency chain** at page level. Moving the parent up but leaving its children in a tab directory just relocates the same cross-directory import.
+
+The converse also holds: a file sitting in the page-level `components/` with only **one** consumer tab belongs in that tab's directory.
+
 # Config & types
 
 - `config/types.ts` — TypeScript types. Form shape → `FormData`; table/list row → `ListItem`.
 - `config/index.ts` — static constants, enums, and value/label maps (e.g. `XxxStatusValueMap`, `XxxStatusLabelMap`). Keep constants out of `types.ts`.
 - **`Select` options that need i18n**: set `label` to the message key and add `locale: true` on the option — the field translates it at render. Omit `locale` for options whose label is already final text. Ref `src/pages/benchmark/config/index.ts`.
+
+When `types.ts` grows past a few hundred lines and covers several backend domains, promote it to a `config/types/` directory: one file per domain (`instance.ts`, `template.ts`, `storage.ts`, …), shared primitives in `common.ts`, and an `index.ts` barrel that `export type *` re-exports all of them. The barrel keeps `from '../config/types'` resolving unchanged, so no import site has to move. Always import from the barrel, not from a domain file directly. No page uses the directory form yet — `src/pages/llmodels/config/types.ts` is the first candidate if it keeps growing.
 
 # Common components
 

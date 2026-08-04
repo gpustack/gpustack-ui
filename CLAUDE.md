@@ -100,7 +100,12 @@ Drive spacing with the theme scale (`Flex`/`Space` `gap`, or `var(--ant-*)` spac
 
 ## Tables
 
-- **Horizontally scrollable table**: set `scroll={{ x: 'max-content' }}` **and** add `className="scroll-table"` on the `Table`. The class styles the horizontal scroll to match the design; without it the scroll works but looks off.
+Two implementations coexist. Reach for core-ui's `Table` (conventionally imported as `SealTable`) in new and migrated pages; antd `Table` survives only where a page hasn't been migrated yet. They are not interchangeable — core-ui's is a CSS-grid table, not an antd wrapper, so `scroll` behaves differently on each. Ref `src/pages/resources/components/workers.tsx`.
+
+- **core-ui `Table` columns**: `span` is a column's proportional share of the leftover width, as an `fr` track — **leave it off to divide the width evenly**, since every column defaults to `1fr`. Only set it where a column genuinely needs more or less room than its neighbours, and then keep the spans summing to a round grid. What every column _should_ carry is a `minWidth` floor: spans share only the width left over **once every floor is satisfied**, so the floors are what decide when the table starts scrolling.
+- **Horizontal scroll, core-ui `Table`**: `scroll={{ x: true }}` widens the row out to the columns' own floors (sum of `minWidth` + the prefix gutter) and scrolls past that. An explicit px value works too. Do **not** pass `'max-content'`: on a grid of `fr` tracks the greediest cell sets the `fr` unit for _every_ track, so one wrap-happy cell (a `LabelCell` full of tags) inflates the whole table — measured at 4694px against the 1370px the columns actually needed. No extra class: the scrollbar styling ships with the component.
+- **Vertical scroll, core-ui `Table`**: `scroll={{ y }}` caps the **body** (antd's semantics) and sticks the header to the top of the same scroll viewport. Note that CSS forces `overflow-x` to `auto` alongside `overflow-y: auto`, so a `y`-only table whose columns are wider than the viewport will still show a horizontal scrollbar.
+- **Horizontally scrollable antd `Table`**: set `scroll={{ x: 'max-content' }}` **and** add `className="scroll-table"` on the `Table`. The class styles the horizontal scroll to match the design; without it the scroll works but looks off. `'max-content'` is right here — antd sizes real table columns by content, so it has no `fr`-unit amplification to worry about.
 
 # Naming conventions
 

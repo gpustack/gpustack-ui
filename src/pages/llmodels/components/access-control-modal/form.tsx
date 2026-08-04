@@ -405,6 +405,7 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
         }}
       >
         <CardRadioGroup
+          ghost
           onChange={handleOnPolicyChange}
           options={[
             ...prependedPolicies.map((p) => ({

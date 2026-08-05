@@ -249,9 +249,55 @@ const buildOption = ({
   const bestIdx = points.findIndex((p) => p.isBest);
   const peakIdx = points.findIndex((p) => p.isPeak);
 
+  // Where the recommended operating point sits — on EVERY chart. Each one is read
+  // as "what does this look like at the load we recommend", and that question has
+  // no answer if the reader has to hold the number in their head and find it.
+  //
+  // Two forms, picked by what the x-axis already tells you:
+  //   * categorical (the load axis) — a vertical guide. The position is already ON
+  //     the axis, so a label on the point would only add clutter; a plain line
+  //     also lets the eye run across a row of charts at the same x.
+  //   * value axis (throughput / concurrency) — the marker on the point (below).
+  //     The load is not on the axis at all, so nothing else can locate it.
+  const bestGuide =
+    !isValueX && bestIdx >= 0
+      ? {
+          silent: true,
+          symbol: 'none' as const,
+          lineStyle: {
+            color: '#f5a623',
+            type: 'dashed' as const,
+            width: 1.5
+          },
+          label: {
+            show: true,
+            position: 'end' as const,
+            formatter: '★ Best',
+            color: '#b8860b',
+            fontSize: 11,
+            fontWeight: 'bold' as const
+          },
+          data: [
+            {
+              xAxis: String(Number(points[bestIdx].load.toFixed(loadDecimals)))
+            }
+          ]
+        }
+      : undefined;
+
+  // Horizontal extent of a value x-axis, for keeping an edge marker's label
+  // inside the canvas. On the frontier the Best point is by definition at the
+  // maximum throughput — i.e. always against the right edge — so a centered label
+  // there is always half clipped ("★ Bes").
+  const xValues = isValueX ? points.map((p) => spec.x!.value(p) ?? 0) : [];
+  const xMin = xValues.length ? Math.min(...xValues) : 0;
+  const xSpan = (xValues.length ? Math.max(...xValues) : 0) - xMin || 1;
+
   const lineSeries = spec.series.map((s, si) => ({
     name: s.name,
     type: 'line' as const,
+    // One guide per chart, not one per line.
+    markLine: si === 0 ? bestGuide : undefined,
     symbolSize: 5,
     // Dashed = a reference line (configured target, p99 tail). Drawn ABOVE the
     // solid measured lines: on a closed-loop run the actual value tracks its
@@ -274,12 +320,26 @@ const buildOption = ({
       const marked = spec.marks && si === 0 && (i === bestIdx || i === peakIdx);
       if (!marked) return value;
       const isBest = i === bestIdx;
+      // On a categorical x-axis the Best guide line already carries the "★ Best"
+      // text at its end, on the same x as this point — printing it here too put
+      // two overlapping labels on the throughput-split chart. Keep the marker
+      // (the highlighted symbol is what ties the guide line to the curve) and let
+      // the line do the talking. Peak has no guide line, so it keeps its label,
+      // and on a value x-axis there is no guide line at all.
+      const labelled = isValueX || !isBest;
+      // Anchor away from whichever edge the point is against, instead of letting
+      // the label overhang the canvas.
+      const frac = isValueX
+        ? ((spec.x!.value(p) ?? 0) - xMin) / xSpan
+        : i / Math.max(points.length - 1, 1);
+      const atRight = frac > 0.85;
+      const atLeft = frac < 0.15;
       return {
         value,
         symbolSize: 8,
         itemStyle: { color: isBest ? '#f5a623' : C.green },
         label: {
-          show: true,
+          show: labelled,
           formatter: isBest ? '★ Best' : 'Peak',
           color: isBest ? '#b8860b' : C.green,
           fontSize: 11,
@@ -287,7 +347,12 @@ const buildOption = ({
           // Stagger vertically and align away from each other: on a value x-axis
           // Best and Peak can sit a dozen pixels apart.
           position: (isBest ? 'top' : 'bottom') as 'top' | 'bottom',
-          distance: 8
+          distance: 8,
+          align: (atRight ? 'right' : atLeft ? 'left' : 'center') as
+            | 'right'
+            | 'left'
+            | 'center',
+          offset: [atRight ? -6 : atLeft ? 6 : 0, 0] as [number, number]
         }
       };
     })
@@ -398,10 +463,27 @@ const buildOption = ({
           : params?.dataIndex;
         const p = points[idx];
         if (!p) return '';
-        const header = isValueX
-          ? `${spec.x!.name} ${spec.x!.fmt(spec.x!.value(p) ?? 0)}`
-          : `${loadAxisName} ${Number(p.load.toFixed(loadDecimals))}`;
+        // The load stage IS the point's identity, so it heads every tooltip —
+        // including the value-x charts, where the axis is throughput or
+        // concurrency and the reader otherwise has no way back to "which stage is
+        // this?". Naming only the x metric there left the frontier unreadable: a
+        // dot at 34.95k tok/s could be any rate in the sweep.
+        const tag =
+          spec.marks && p.isBest
+            ? '  ★ Best'
+            : spec.marks && p.isPeak
+              ? '  Peak'
+              : '';
+        const header = `${loadAxisName} ${Number(p.load.toFixed(loadDecimals))}${tag}`;
         const rows: Array<{ color: string; label: string }> = [];
+        if (isValueX) {
+          // Moved out of the header rather than dropped: it is still the position
+          // on screen, just no longer the label that identifies the point.
+          rows.push({
+            color: C.gray,
+            label: `${spec.x!.name}  ${spec.x!.fmt(spec.x!.value(p) ?? 0)}`
+          });
+        }
         bands.forEach((b) => {
           if (b.tooltip === false) return;
           const lo = b.lo(p);

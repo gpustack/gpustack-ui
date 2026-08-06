@@ -13,6 +13,7 @@ import RowActions from './components/row-actions';
 import ViewLogsModal from './components/view-logs-modal';
 import DetailContext from './config/detail-context';
 import { BenchmarkListItem } from './config/types';
+import useCloneBenchmark from './hooks/use-clone-benchmark';
 import useViewLogs from './hooks/use-view-logs';
 import { useExportBenchmark } from './services/use-export-benchmark';
 import useQueryBenchmarkList from './services/use-query-benchmarks';
@@ -39,6 +40,7 @@ const Details: React.FC = () => {
     useViewLogs();
   const { handleStopBenchmark } = useStopBenchmark();
   const { exportData } = useExportBenchmark();
+  const { cloneBenchmarkOnList } = useCloneBenchmark();
   const [searchParams] = useSearchParams();
   const name = searchParams.get('name');
   const id = searchParams.get('id');
@@ -116,6 +118,10 @@ const Details: React.FC = () => {
   const handleSelect = useMemoizedFn((val: any, row: BenchmarkListItem) => {
     if (val === 'delete') {
       handleDelete({ ...row, name: row.name });
+    } else if (val === 'clone') {
+      // The create drawer lives on the list page; hand this run over and let it
+      // open pre-filled there.
+      cloneBenchmarkOnList(row);
     } else if (val === 'viewlog') {
       openViewLogsModal(row);
     } else if (val === 'stop') {

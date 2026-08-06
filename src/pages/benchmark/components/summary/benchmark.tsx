@@ -30,195 +30,312 @@ const Wrapper = styled.div`
   }
 `;
 
+/**
+ * One row of a group, declared rather than pushed.
+ *
+ * `value` doubles as the row's gate: a row that declares one is dropped when it
+ * is empty, so a group shrinks to what the run actually configured. `children`
+ * only overrides how that value renders — keeping the gate on the raw field is
+ * what stops a formatted row (a joined stage list, a rendered pair) from
+ * surviving the field it was built from being absent. Rows with no `value` are
+ * unconditional; their `children` is already the finished text.
+ */
+interface Row {
+  key: string;
+  labelId: string;
+  value?: unknown;
+  children?: React.ReactNode;
+}
+
+const isEmpty = (value: unknown) =>
+  value === undefined ||
+  value === null ||
+  value === '' ||
+  (Array.isArray(value) && value.length === 0);
+
 const Benchmark: React.FC = () => {
   const intl = useIntl();
   const { detailData, profilesOptions } = useDetailContext();
   const t = (id?: string) => (id ? intl.formatMessage({ id }) : '');
 
-  const d = detailData as any;
-  const isShareGPT = d?.dataset_name === DatasetValueMap.ShareGPT;
-  const resolvedDatasetLabel = d?.dataset_name || '-';
-  const dec = loadValueDecimals(d);
-  const has = (v: any) =>
-    v !== undefined &&
-    v !== null &&
-    v !== '' &&
-    !(Array.isArray(v) && v.length === 0);
+  const toItems = (rows: Row[]): DescriptionsItemType[] =>
+    rows
+      .filter((row) => !('value' in row) || !isEmpty(row.value))
+      .map((row) => ({
+        key: row.key,
+        label: t(row.labelId),
+        children: row.children ?? (row.value as React.ReactNode)
+      }));
 
-  const mk = () => {
-    const arr: DescriptionsItemType[] = [];
-    const add = (key: string, labelId: string, value: React.ReactNode) =>
-      arr.push({ key, label: t(labelId), children: value });
-    const addIf = (
-      key: string,
-      labelId: string,
-      raw: any,
-      value?: React.ReactNode
-    ) => {
-      if (has(raw)) add(key, labelId, value ?? raw);
-    };
-    return { arr, add, addIf };
-  };
-
-  // ── Dataset ──────────────────────────────────────────────────────────────
-  const data = mk();
-  data.add('dataset', 'benchmark.table.dataset', resolvedDatasetLabel);
-  if (!isShareGPT) {
-    data.add(
-      'tokenLen',
-      'benchmark.detail.inputOutputTokenLength',
-      <span>
-        {d?.dataset_input_tokens || '-'} / {d?.dataset_output_tokens || '-'}
-      </span>
-    );
-  }
-  data.addIf('inStdev', 'benchmark.form.inputStdev', d?.dataset_input_stdev);
-  data.addIf('inMin', 'benchmark.form.inputMin', d?.dataset_input_min);
-  data.addIf('inMax', 'benchmark.form.inputMax', d?.dataset_input_max);
-  data.addIf('outStdev', 'benchmark.form.outputStdev', d?.dataset_output_stdev);
-  data.addIf('outMin', 'benchmark.form.outputMin', d?.dataset_output_min);
-  data.addIf('outMax', 'benchmark.form.outputMax', d?.dataset_output_max);
-  data.addIf(
-    'prefix',
-    'benchmark.form.sharedPrefix',
-    d?.prefix_buckets?.length ? d.prefix_buckets : null,
-    (d?.prefix_buckets || [])
-      .map(
-        (b: any) =>
-          `${b.prefix_tokens} tok${b.prefix_count ? ` ×${b.prefix_count}` : ''}`
-      )
-      .join(', ')
-  );
-  if (!isShareGPT) {
-    data.addIf('seed', 'playground.image.params.seed', d?.dataset_seed);
-  }
-
-  // ── Latency SLA ──────────────────────────────────────────────────────────
-  const sla = mk();
-  sla.addIf('slaTtft', 'benchmark.form.sla.ttft', d?.sla_avg_ttft_ms);
-  sla.addIf('slaP95Ttft', 'benchmark.form.sla.p95Ttft', d?.sla_p95_ttft_ms);
-  sla.addIf('slaP99Ttft', 'benchmark.form.sla.p99Ttft', d?.sla_p99_ttft_ms);
-  sla.addIf('slaTpot', 'benchmark.form.sla.tpot', d?.sla_avg_tpot_ms);
-  sla.addIf('slaP95Tpot', 'benchmark.form.sla.p95Tpot', d?.sla_p95_tpot_ms);
-  sla.addIf('slaP99Tpot', 'benchmark.form.sla.p99Tpot', d?.sla_p99_tpot_ms);
-  sla.addIf(
-    'slaAvgLat',
-    'benchmark.form.sla.avgLatency',
-    d?.sla_avg_latency_ms
-  );
-  sla.addIf(
-    'slaP95Lat',
-    'benchmark.form.sla.p95Latency',
-    d?.sla_p95_latency_ms
-  );
-  sla.addIf(
-    'slaP99Lat',
-    'benchmark.form.sla.p99Latency',
-    d?.sla_p99_latency_ms
-  );
-
-  // ── Load ───────────────────────────────────────────────────────────────
-  const load = mk();
-  load.add(
-    'profile',
-    'benchmark.form.profile',
-    profilesOptions.find((o) => o.value === d?.profile)?.label ||
-      d?.profile ||
-      '-'
-  );
-  const ltLabel = loadTypeOptions.find((o) => o.value === d?.load_type)?.label;
-  load.addIf(
-    'load_type',
-    'benchmark.form.loadType',
-    d?.load_type,
-    ltLabel ? t(ltLabel) : d?.load_type
-  );
+  const isShareGPT = detailData?.dataset_name === DatasetValueMap.ShareGPT;
+  const loadDecimals = loadValueDecimals(detailData);
   // Stages = the measured load points, mirroring the config form's "Stages" card:
   // the mode first, then either the auto-tune search range + budget or the manual
   // list. Legacy rows (no auto_tune, no stages — a single fixed rate) predate the
   // stage model, so they skip the mode row and keep the plain Request Rate below.
-  const isAutoTune = !!d?.auto_tune;
-  const hasStages = (d?.stages?.length ?? 0) > 0;
-  if (isAutoTune || hasStages) {
-    load.add(
-      'stages',
-      'benchmark.form.stages',
-      t(
-        isAutoTune
-          ? 'benchmark.form.autoTune'
-          : 'benchmark.form.stages.mode.manual'
-      )
-    );
-  }
-  if (isAutoTune) {
-    load.addIf(
-      'range',
-      d?.load_type === 'concurrency'
-        ? 'benchmark.form.autoTune.rangeConcurrency'
-        : 'benchmark.form.autoTune.rangeRate',
-      d?.upper_bound,
-      `${d?.lower_bound ?? 1} ~ ${d?.upper_bound}`
-    );
-    load.addIf('maxPoints', 'benchmark.form.autoTune.maxPoints', d?.max_points);
-    load.addIf(
-      'maxTotal',
-      'benchmark.form.autoTune.maxTotalSeconds',
-      d?.max_total_seconds
-    );
-  } else {
-    load.addIf(
-      'stageList',
-      loadAxisLabelId(d),
-      hasStages ? d?.stages : null,
-      (d?.stages || []).map((s: any) => round(s.rate ?? 0, dec)).join(', ')
-    );
-    load.addIf(
-      'rate',
-      'benchmark.table.requestRate',
-      hasStages ? null : d?.request_rate,
-      d?.request_rate
-    );
-  }
+  const isAutoTune = !!detailData?.auto_tune;
+  const hasStages = (detailData?.stages?.length ?? 0) > 0;
+  const loadTypeLabel = loadTypeOptions.find(
+    (option) => option.value === detailData?.load_type
+  )?.label;
 
-  // ── Execution Limits (when the run stops) ────────────────────────────────
+  const datasetRows: Row[] = [
+    {
+      key: 'dataset',
+      labelId: 'benchmark.table.dataset',
+      children: detailData?.dataset_name || '-'
+    },
+    ...(isShareGPT
+      ? []
+      : [
+          {
+            key: 'tokenLen',
+            labelId: 'benchmark.detail.inputOutputTokenLength',
+            children: (
+              <span>
+                {detailData?.dataset_input_tokens || '-'} /{' '}
+                {detailData?.dataset_output_tokens || '-'}
+              </span>
+            )
+          }
+        ]),
+    {
+      key: 'inStdev',
+      labelId: 'benchmark.form.inputStdev',
+      value: detailData?.dataset_input_stdev
+    },
+    {
+      key: 'inMin',
+      labelId: 'benchmark.form.inputMin',
+      value: detailData?.dataset_input_min
+    },
+    {
+      key: 'inMax',
+      labelId: 'benchmark.form.inputMax',
+      value: detailData?.dataset_input_max
+    },
+    {
+      key: 'outStdev',
+      labelId: 'benchmark.form.outputStdev',
+      value: detailData?.dataset_output_stdev
+    },
+    {
+      key: 'outMin',
+      labelId: 'benchmark.form.outputMin',
+      value: detailData?.dataset_output_min
+    },
+    {
+      key: 'outMax',
+      labelId: 'benchmark.form.outputMax',
+      value: detailData?.dataset_output_max
+    },
+    {
+      key: 'prefix',
+      labelId: 'benchmark.form.sharedPrefix',
+      value: detailData?.prefix_buckets,
+      children: (detailData?.prefix_buckets || [])
+        .map(
+          (bucket) =>
+            `${bucket.prefix_tokens} tok${
+              bucket.prefix_count ? ` ×${bucket.prefix_count}` : ''
+            }`
+        )
+        .join(', ')
+    },
+    ...(isShareGPT
+      ? []
+      : [
+          {
+            key: 'seed',
+            labelId: 'playground.image.params.seed',
+            value: detailData?.dataset_seed
+          }
+        ])
+  ];
+
+  const slaRows: Row[] = [
+    {
+      key: 'slaTtft',
+      labelId: 'benchmark.form.sla.ttft',
+      value: detailData?.sla_avg_ttft_ms
+    },
+    {
+      key: 'slaP95Ttft',
+      labelId: 'benchmark.form.sla.p95Ttft',
+      value: detailData?.sla_p95_ttft_ms
+    },
+    {
+      key: 'slaP99Ttft',
+      labelId: 'benchmark.form.sla.p99Ttft',
+      value: detailData?.sla_p99_ttft_ms
+    },
+    {
+      key: 'slaTpot',
+      labelId: 'benchmark.form.sla.tpot',
+      value: detailData?.sla_avg_tpot_ms
+    },
+    {
+      key: 'slaP95Tpot',
+      labelId: 'benchmark.form.sla.p95Tpot',
+      value: detailData?.sla_p95_tpot_ms
+    },
+    {
+      key: 'slaP99Tpot',
+      labelId: 'benchmark.form.sla.p99Tpot',
+      value: detailData?.sla_p99_tpot_ms
+    },
+    {
+      key: 'slaAvgLat',
+      labelId: 'benchmark.form.sla.avgLatency',
+      value: detailData?.sla_avg_latency_ms
+    },
+    {
+      key: 'slaP95Lat',
+      labelId: 'benchmark.form.sla.p95Latency',
+      value: detailData?.sla_p95_latency_ms
+    },
+    {
+      key: 'slaP99Lat',
+      labelId: 'benchmark.form.sla.p99Latency',
+      value: detailData?.sla_p99_latency_ms
+    }
+  ];
+
+  const loadRows: Row[] = [
+    {
+      key: 'profile',
+      labelId: 'benchmark.form.profile',
+      children:
+        profilesOptions.find((option) => option.value === detailData?.profile)
+          ?.label ||
+        detailData?.profile ||
+        '-'
+    },
+    {
+      key: 'load_type',
+      labelId: 'benchmark.form.loadType',
+      value: detailData?.load_type,
+      children: loadTypeLabel ? t(loadTypeLabel) : detailData?.load_type
+    },
+    ...(isAutoTune || hasStages
+      ? [
+          {
+            key: 'stages',
+            labelId: 'benchmark.form.stages',
+            children: t(
+              isAutoTune
+                ? 'benchmark.form.autoTune'
+                : 'benchmark.form.stages.mode.manual'
+            )
+          }
+        ]
+      : []),
+    ...(isAutoTune
+      ? [
+          {
+            key: 'range',
+            labelId:
+              detailData?.load_type === 'concurrency'
+                ? 'benchmark.form.autoTune.rangeConcurrency'
+                : 'benchmark.form.autoTune.rangeRate',
+            value: detailData?.upper_bound,
+            children: `${detailData?.lower_bound ?? 1} ~ ${detailData?.upper_bound}`
+          },
+          {
+            key: 'maxPoints',
+            labelId: 'benchmark.form.autoTune.maxPoints',
+            value: detailData?.max_points
+          },
+          {
+            key: 'maxTotal',
+            labelId: 'benchmark.form.autoTune.maxTotalSeconds',
+            value: detailData?.max_total_seconds
+          }
+        ]
+      : [
+          {
+            key: 'stageList',
+            labelId: loadAxisLabelId(detailData),
+            value: hasStages ? detailData?.stages : null,
+            children: (detailData?.stages || [])
+              .map((stage) => round(stage.rate ?? 0, loadDecimals))
+              .join(', ')
+          },
+          {
+            key: 'rate',
+            labelId: 'benchmark.table.requestRate',
+            value: hasStages ? null : detailData?.request_rate
+          }
+        ])
+  ];
+
   // The auto-tune budget (max points / max total duration) sits with Stages above,
   // the same place the config form puts it; this group keeps the caps that apply in
   // any mode.
-  const exec = mk();
-  exec.addIf('total', 'benchmark.form.totalRequests', d?.total_requests);
-  exec.addIf(
-    'maxSeconds',
-    'benchmark.form.maxSeconds',
-    d?.max_seconds,
-    `${d?.max_seconds} s`
-  );
-  exec.addIf('maxErrors', 'benchmark.form.maxErrors', d?.max_errors);
-  exec.addIf('maxErrorRate', 'benchmark.form.maxErrorRate', d?.max_error_rate);
-  if (d?.stop_on_saturation) {
-    exec.add('stopSat', 'benchmark.form.stopOnSaturation', '✓');
-  }
+  const executionRows: Row[] = [
+    {
+      key: 'total',
+      labelId: 'benchmark.form.totalRequests',
+      value: detailData?.total_requests
+    },
+    {
+      key: 'maxSeconds',
+      labelId: 'benchmark.form.maxSeconds',
+      value: detailData?.max_seconds,
+      children: `${detailData?.max_seconds} s`
+    },
+    {
+      key: 'maxErrors',
+      labelId: 'benchmark.form.maxErrors',
+      value: detailData?.max_errors
+    },
+    {
+      key: 'maxErrorRate',
+      labelId: 'benchmark.form.maxErrorRate',
+      value: detailData?.max_error_rate
+    },
+    ...(detailData?.stop_on_saturation
+      ? [
+          {
+            key: 'stopSat',
+            labelId: 'benchmark.form.stopOnSaturation',
+            children: '✓'
+          }
+        ]
+      : [])
+  ];
 
-  // ── Advanced ─────────────────────────────────────────────────────────────
-  const adv = mk();
-  adv.addIf('turns', 'benchmark.form.turns', d?.turns);
-  adv.addIf('warmup', 'benchmark.form.warmup', d?.warmup);
-  adv.addIf('cooldown', 'benchmark.form.cooldown', d?.cooldown);
+  const advancedRows: Row[] = [
+    { key: 'turns', labelId: 'benchmark.form.turns', value: detailData?.turns },
+    {
+      key: 'warmup',
+      labelId: 'benchmark.form.warmup',
+      value: detailData?.warmup
+    },
+    {
+      key: 'cooldown',
+      labelId: 'benchmark.form.cooldown',
+      value: detailData?.cooldown
+    }
+  ];
 
   const groups = [
-    { labelId: 'benchmark.form.group.dataset', items: data.arr },
-    { labelId: 'benchmark.form.group.sla', items: sla.arr },
-    { labelId: 'benchmark.form.group.load', items: load.arr },
-    { labelId: 'benchmark.form.group.execution', items: exec.arr },
-    { labelId: 'benchmark.form.group.advanced', items: adv.arr }
-  ].filter((g) => g.items.length > 0);
+    { labelId: 'benchmark.form.group.dataset', rows: datasetRows },
+    { labelId: 'benchmark.form.group.sla', rows: slaRows },
+    { labelId: 'benchmark.form.group.load', rows: loadRows },
+    { labelId: 'benchmark.form.group.execution', rows: executionRows },
+    { labelId: 'benchmark.form.group.advanced', rows: advancedRows }
+  ]
+    .map((group) => ({ labelId: group.labelId, items: toItems(group.rows) }))
+    .filter((group) => group.items.length > 0);
 
   return (
     <Wrapper>
-      {groups.map((g) => (
-        <div className="group" key={g.labelId}>
-          <div className="group-label">{t(g.labelId)}</div>
+      {groups.map((group) => (
+        <div className="group" key={group.labelId}>
+          <div className="group-label">{t(group.labelId)}</div>
           <Descriptions
-            items={g.items}
+            items={group.items}
             colon={false}
             column={3}
             styles={{ content: { justifyContent: 'flex-start' } }}

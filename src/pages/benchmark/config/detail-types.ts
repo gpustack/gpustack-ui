@@ -1,3 +1,5 @@
+import { PrefixBucket, StageRow } from './types';
+
 export interface ComputedResourceClaim {
   is_unified_memory: boolean;
   offload_layers: any;
@@ -71,6 +73,25 @@ export interface Snapshot {
   gpus: Record<string, GPUData>;
 }
 export interface BenchmarkDetail {
+  // Dataset shape, stages, execution caps and the advanced knobs: the detail
+  // endpoint returns the same row the form wrote, so the config side of the
+  // record is declared here rather than reached through a cast. The Configuration
+  // tab renders every one of these.
+  dataset_input_stdev?: number;
+  dataset_input_min?: number;
+  dataset_input_max?: number;
+  dataset_output_stdev?: number;
+  dataset_output_min?: number;
+  dataset_output_max?: number;
+  prefix_buckets?: PrefixBucket[];
+  stages?: StageRow[];
+  max_seconds?: number;
+  max_errors?: number;
+  max_error_rate?: number;
+  stop_on_saturation?: boolean;
+  turns?: number;
+  warmup?: number;
+  cooldown?: number;
   profile: string;
   dataset_seed: number;
   raw_metrics: {

@@ -1,5 +1,5 @@
-import * as echarts from 'echarts';
 import React, { useEffect, useRef } from 'react';
+import echarts, { ECharts } from './echarts';
 
 interface DistributionChartProps {
   mean?: number | null; // distribution center (Input/Output Token Length)
@@ -23,7 +23,7 @@ const DistributionChart: React.FC<DistributionChartProps> = ({
   max
 }) => {
   const ref = useRef<HTMLDivElement>(null);
-  const inst = useRef<echarts.ECharts | null>(null);
+  const inst = useRef<ECharts | null>(null);
 
   useEffect(() => {
     const m = num(mean);

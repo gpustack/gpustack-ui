@@ -1,8 +1,8 @@
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { Tooltip } from 'antd';
-import * as echarts from 'echarts';
 import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
+import echarts, { ECharts, EChartsCoreOption } from '../echarts';
 import { StagePoint, logDomain } from './metrics';
 
 // Echarts can't read CSS variables, so the chart palette lives here as hex.
@@ -202,7 +202,7 @@ const buildOption = ({
   points,
   loadAxisName,
   loadDecimals
-}: Props): echarts.EChartsCoreOption => {
+}: Props): EChartsCoreOption => {
   const isValueX = !!spec.x;
   const num = (v: number | null) => (v == null ? null : v);
 
@@ -525,7 +525,7 @@ const buildOption = ({
 const StageChart: React.FC<Props> = (props) => {
   const { spec, points, logHint, height = 200 } = props;
   const ref = useRef<HTMLDivElement>(null);
-  const inst = useRef<echarts.ECharts | null>(null);
+  const inst = useRef<ECharts | null>(null);
 
   useEffect(() => {
     if (!ref.current) return;

@@ -31,6 +31,7 @@ import {
 import { FormData, BenchmarkListItem as ListItem } from './config/types';
 import Filters from './filters';
 import useBenchmarkColumns from './hooks/use-benchmark-columns';
+import useCloneBenchmark from './hooks/use-clone-benchmark';
 import useColumnSettings from './hooks/use-column-settings';
 import useCreateBenchmark from './hooks/use-create-benchmark';
 import useViewLogs from './hooks/use-view-logs';
@@ -78,6 +79,7 @@ const Benchmark: React.FC = () => {
     clusterList
   } = useQueryClusterList();
   const { benchmarkTargetInstance } = useBenchmarkTargetInstance();
+  const { cloneSource, clearCloneSource } = useCloneBenchmark();
   const {
     profilesOptions,
     fetchProfilesData,
@@ -96,7 +98,13 @@ const Benchmark: React.FC = () => {
     fetchModelList({ page: -1 });
     fetchProfilesData();
     fetchClusterList({ page: -1 }).then(() => {
-      if (benchmarkTargetInstance.model_name) {
+      // Clone raised from the detail page, which has no drawer of its own: the
+      // row travelled here in an atom. Cleared on open so coming back to the
+      // list later doesn't re-open the drawer.
+      if (cloneSource) {
+        handleClone(cloneSource);
+        clearCloneSource();
+      } else if (benchmarkTargetInstance.model_name) {
         openBenchmarkModal(
           PageAction.CREATE,
           intl.formatMessage({ id: 'benchmark.button.add' })

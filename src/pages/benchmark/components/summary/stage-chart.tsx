@@ -1,5 +1,5 @@
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import { Tooltip } from 'antd';
+import { Tooltip, theme } from 'antd';
 import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import echarts, { ECharts, EChartsCoreOption } from '../echarts';
@@ -35,8 +35,9 @@ export const C = {
   // Text: the stroke greys are unreadable as type (1.6–2.2:1 on white), so
   // secondary text gets its own value and the right axis its own amber.
   text: '#8b939e',
-  axis: '#e5e8ec',
-  split: '#f1f4f8'
+  axis: '#e5e8ec'
+  // No gridline value here: it is the one colour that has to recede into the
+  // background behind it, so it comes from the theme token at render time.
 };
 
 type Getter = (p: StagePoint) => number | null;
@@ -197,12 +198,15 @@ interface Props {
   height?: number;
 }
 
-const buildOption = ({
-  spec,
-  points,
-  loadAxisName,
-  loadDecimals
-}: Props): EChartsCoreOption => {
+const buildOption = (
+  { spec, points, loadAxisName, loadDecimals }: Props,
+  // Gridlines are the one part of the palette that cannot be a hex literal like
+  // the rest of `C`: they have to recede into whichever background is behind
+  // them, and a light-theme value reads as a set of bright solid rules in dark
+  // mode. Taken from the antd token so it tracks the theme, and dashed to match
+  // core-ui's charts.
+  splitLineColor: string
+): EChartsCoreOption => {
   const isValueX = !!spec.x;
   const num = (v: number | null) => (v == null ? null : v);
 
@@ -367,7 +371,10 @@ const buildOption = ({
     axisLine: { show: false },
     axisTick: { show: false },
     axisLabel: { color: C.text, formatter: (v: number) => spec.fmt(v) },
-    splitLine: { lineStyle: { color: C.split } }
+    splitLine: {
+      show: true,
+      lineStyle: { type: 'dashed', color: splitLineColor }
+    }
   };
   if (spec.log) {
     const d = logDomain(
@@ -526,13 +533,14 @@ const StageChart: React.FC<Props> = (props) => {
   const { spec, points, logHint, height = 200 } = props;
   const ref = useRef<HTMLDivElement>(null);
   const inst = useRef<ECharts | null>(null);
+  const { token } = theme.useToken();
 
   useEffect(() => {
     if (!ref.current) return;
     if (!inst.current) inst.current = echarts.init(ref.current);
-    inst.current.setOption(buildOption(props), true);
+    inst.current.setOption(buildOption(props, token.colorBorder), true);
     inst.current.resize();
-  }, [props]);
+  }, [props, token.colorBorder]);
 
   useEffect(() => {
     if (!ref.current) return;

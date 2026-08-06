@@ -1,3 +1,4 @@
+import { theme } from 'antd';
 import React, { useEffect, useRef } from 'react';
 import echarts, { ECharts, EChartsCoreOption } from '../echarts';
 import {
@@ -43,12 +44,12 @@ interface Props {
  * NOT shaded — they would need a "where does the knee begin" call the backend
  * does not compute, and a band drawn from a guess is worse than no band.
  */
-const buildOption = ({
-  points,
-  loadAxisName,
-  loadDecimals,
-  labels
-}: Props): EChartsCoreOption => {
+const buildOption = (
+  { points, loadAxisName, loadDecimals, labels }: Props,
+  // See stage-chart: the gridline colour is the one part of the palette that has
+  // to come from the theme token rather than a hex literal.
+  splitLineColor: string
+): EChartsCoreOption => {
   const cats = points.map((p) => String(Number(p.load.toFixed(loadDecimals))));
   const ttftDomain = logDomain(points.map((p) => p.ttftP99));
   const firstOver = points.findIndex((p) => p.isOverloaded);
@@ -138,7 +139,10 @@ const buildOption = ({
         axisLine: { show: false },
         axisTick: { show: false },
         axisLabel: { color: C.text, formatter: (v: number) => fmtTps(v) },
-        splitLine: { lineStyle: { color: C.split } }
+        splitLine: {
+          show: true,
+          lineStyle: { type: 'dashed', color: splitLineColor }
+        }
       },
       {
         type: 'log',
@@ -273,13 +277,14 @@ const buildOption = ({
 const OperatingCurve: React.FC<Props> = (props) => {
   const ref = useRef<HTMLDivElement>(null);
   const inst = useRef<ECharts | null>(null);
+  const { token } = theme.useToken();
 
   useEffect(() => {
     if (!ref.current) return;
     if (!inst.current) inst.current = echarts.init(ref.current);
-    inst.current.setOption(buildOption(props), true);
+    inst.current.setOption(buildOption(props, token.colorBorder), true);
     inst.current.resize();
-  }, [props]);
+  }, [props, token.colorBorder]);
 
   useEffect(() => {
     if (!ref.current) return;

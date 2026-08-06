@@ -390,7 +390,7 @@ const Overview: React.FC<OverviewProps> = ({
       )
     },
     {
-      title: unitTitle('Total TPS', 'tok/s'),
+      title: unitTitle(t('benchmark.detail.throughput.totalToken'), 'tok/s'),
       key: 'tps',
       // Value + 220px track + the gutter that keeps the bar's end off In TPS.
       width: 310,
@@ -425,13 +425,13 @@ const Overview: React.FC<OverviewProps> = ({
       }
     },
     {
-      title: unitTitle('In TPS', 'tok/s'),
+      title: unitTitle(t('benchmark.detail.throughput.inputToken'), 'tok/s'),
       key: 'in',
       width: 110,
       render: (_v: unknown, p: StagePoint) => num(p.inTps, 0)
     },
     {
-      title: unitTitle('Out TPS', 'tok/s'),
+      title: unitTitle(t('benchmark.detail.throughput.outputToken'), 'tok/s'),
       key: 'out',
       width: 110,
       render: (_v: unknown, p: StagePoint) => num(p.outTps, 0)

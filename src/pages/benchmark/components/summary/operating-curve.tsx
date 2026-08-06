@@ -1,5 +1,5 @@
-import * as echarts from 'echarts';
 import React, { useEffect, useRef } from 'react';
+import echarts, { ECharts, EChartsCoreOption } from '../echarts';
 import {
   StagePoint,
   fmtMs,
@@ -48,7 +48,7 @@ const buildOption = ({
   loadAxisName,
   loadDecimals,
   labels
-}: Props): echarts.EChartsCoreOption => {
+}: Props): EChartsCoreOption => {
   const cats = points.map((p) => String(Number(p.load.toFixed(loadDecimals))));
   const ttftDomain = logDomain(points.map((p) => p.ttftP99));
   const firstOver = points.findIndex((p) => p.isOverloaded);
@@ -272,7 +272,7 @@ const buildOption = ({
 
 const OperatingCurve: React.FC<Props> = (props) => {
   const ref = useRef<HTMLDivElement>(null);
-  const inst = useRef<echarts.ECharts | null>(null);
+  const inst = useRef<ECharts | null>(null);
 
   useEffect(() => {
     if (!ref.current) return;

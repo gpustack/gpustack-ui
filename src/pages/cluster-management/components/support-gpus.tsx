@@ -86,16 +86,15 @@ interface SupportedHardwareProps {
   availableKeys?: Set<string>;
 }
 
-const SupportedHardware: React.FC<SupportedHardwareProps> = ({
-  onSelect,
-  clickable,
-  current,
-  availableKeys
-}) => {
+/**
+ * The vendor catalog rendered by the cards. Exported because a vendor can also
+ * be selected without a click — the register flow preselects the cluster's
+ * already-registered vendors — and that path needs the same label/link.
+ */
+export const useSupportedGPUList = () => {
   const intl = useIntl();
-  const { userSettings } = useUserSettings();
 
-  const supportedHardPlatforms = [
+  return [
     {
       label: 'NVIDIA',
       hiddenTitle: true,
@@ -205,6 +204,16 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
       )
     }
   ];
+};
+
+const SupportedHardware: React.FC<SupportedHardwareProps> = ({
+  onSelect,
+  clickable,
+  current,
+  availableKeys
+}) => {
+  const { userSettings } = useUserSettings();
+  const supportedHardPlatforms = useSupportedGPUList();
 
   const platformsWithDisabled = availableKeys
     ? supportedHardPlatforms.map((p) => ({

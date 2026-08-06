@@ -19,6 +19,10 @@ interface AddWorkerContextProps {
     server_url: string;
     cluster_id: number | null;
   };
+  // GPU driver keys already in use by the selected cluster's workers, derived
+  // from `status.gpu_devices[].vendor`. Empty when the cluster has no GPU
+  // worker yet, or when the flow doesn't preselect vendors.
+  registeredGPUs?: string[];
   registerField: (key: SummaryDataKey) => () => void;
   updateField: (key: SummaryDataKey, value: any) => void;
   summary: Map<string, any>;

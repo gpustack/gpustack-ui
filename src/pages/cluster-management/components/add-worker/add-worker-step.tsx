@@ -41,6 +41,7 @@ type AddWorkerProps = {
     cluster_id: number | null;
     [key: string]: any;
   };
+  registeredGPUs?: string[];
 };
 
 /**
@@ -57,7 +58,8 @@ const AddWorkerSteps: React.FC<AddWorkerProps> = (props) => {
     clusterLoading,
     stepList = [],
     onCancel,
-    onClusterChange
+    onClusterChange,
+    registeredGPUs
   } = props || {};
   const intl = useIntl();
 
@@ -136,6 +138,7 @@ const AddWorkerSteps: React.FC<AddWorkerProps> = (props) => {
         onCancel,
         onClusterChange: handleOnClusterChange,
         registrationInfo,
+        registeredGPUs,
         summary,
         registerField: register,
         updateField: update

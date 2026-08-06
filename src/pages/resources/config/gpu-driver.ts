@@ -36,6 +36,30 @@ export const manfacturerValueMap = {
   THEAD: 'thead'
 };
 
+// A GPU device reports its manufacturer in `status.gpu_devices[].vendor` using
+// the slugs above. Map them back to the driver key the vendor cards are keyed
+// by, so a cluster's already-registered vendors can be resolved from its
+// workers.
+export const VendorDriverKeyMap: Record<string, string> = {
+  [manfacturerValueMap.NVIDIA]: GPUDriverMap.NVIDIA,
+  [manfacturerValueMap.AMD]: GPUDriverMap.AMD,
+  [manfacturerValueMap.ASCEND]: GPUDriverMap.ASCEND,
+  [manfacturerValueMap.HYGON]: GPUDriverMap.HYGON,
+  [manfacturerValueMap.MOORE_THREADS]: GPUDriverMap.MOORE_THREADS,
+  [manfacturerValueMap.ILUVATAR]: GPUDriverMap.ILUVATAR,
+  [manfacturerValueMap.CAMBRICON]: GPUDriverMap.CAMBRICON,
+  [manfacturerValueMap.METAX]: GPUDriverMap.METAX,
+  [manfacturerValueMap.THEAD]: GPUDriverMap.THEAD
+};
+
+export const getDriverKeysByVendors = (vendors: (string | undefined)[]) => {
+  return _.uniq(
+    vendors
+      .map((vendor) => VendorDriverKeyMap[_.toLower(vendor || '')])
+      .filter(Boolean)
+  );
+};
+
 export const GPUsConfigs: Record<
   string,
   {

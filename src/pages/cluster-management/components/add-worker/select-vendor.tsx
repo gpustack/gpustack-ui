@@ -4,9 +4,9 @@ import {
   GPUsConfigs
 } from '@/pages/resources/config/gpu-driver';
 import { useIntl } from '@umijs/max';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ProviderValueMap } from '../../config';
-import SupportedGPUs from '../support-gpus';
+import SupportedGPUs, { useSupportedGPUList } from '../support-gpus';
 import { useAddWorkerContext } from './add-worker-context';
 import { AddWorkerStepProps, StepNamesMap } from './config';
 import { Title } from './constainers';
@@ -22,9 +22,10 @@ const buildWorkerCommand = (
 });
 
 const SelectVendor: React.FC<AddWorkerStepProps> = ({ disabled }) => {
-  const { stepList, registerField, updateField, provider } =
+  const { stepList, registerField, updateField, provider, registeredGPUs } =
     useAddWorkerContext();
   const intl = useIntl();
+  const supportedGPUList = useSupportedGPUList();
 
   const stepIndex = stepList.indexOf(StepNamesMap.SelectGPU) + 1;
 
@@ -40,11 +41,15 @@ const SelectVendor: React.FC<AddWorkerStepProps> = ({ disabled }) => {
   // No vendor is gated anymore — every card stays selectable.
   const availableKeys = undefined;
 
-  // Cache vendor metadata (label/link from SupportedGPUs items) so we can
-  // rebuild workerCommand on toggle without re-clicking the card.
-  const itemMetaRef = useRef<Record<string, { label: string; link: string }>>(
-    {}
-  );
+  // Vendor metadata keyed by driver key, so a selection made without a click —
+  // the cluster's already-registered vendors — resolves the same label and docs
+  // link that clicking the card would.
+  const vendorMeta = supportedGPUList.reduce<
+    Record<string, { label: string; link: string }>
+  >((acc, item) => {
+    acc[item.value] = { label: item.label, link: item.link };
+    return acc;
+  }, {});
 
   useEffect(() => {
     const unregister1 = registerField('currentGPU');
@@ -70,42 +75,36 @@ const SelectVendor: React.FC<AddWorkerStepProps> = ({ disabled }) => {
     return [key];
   };
 
-  const updateFieldsOnSelect = (keys: string[]) => {
+  const applySelection = (keys: string[]) => {
     const primary = keys[0] || '';
     updateField('currentGPU', primary);
     updateField('selectedGPUs', keys);
     updateField(
       'workerCommand',
-      primary ? buildWorkerCommand(primary, itemMetaRef.current[primary]) : null
+      primary ? buildWorkerCommand(primary, vendorMeta[primary]) : null
     );
-  };
-
-  const handleSelect = (key: string, item: any) => {
-    if (item) {
-      itemMetaRef.current[key] = {
-        label: item.label,
-        link: item.link
-      };
-    }
-    const keys = buildSelectedKeys(key);
-    updateFieldsOnSelect(keys);
     setSelectedKeys(keys);
   };
 
+  const handleSelect = (key: string) => {
+    applySelection(buildSelectedKeys(key));
+  };
+
   useEffect(() => {
-    // Default to NVIDIA for every provider, including K8s. Users can still
-    // deselect it (e.g. for CPU-only workers) or add more vendors on K8s.
-    handleSelect(GPUDriverMap.NVIDIA, {
-      label: 'NVIDIA',
-      hiddenTitle: true,
-      value: GPUDriverMap.NVIDIA,
-      description: '',
-      key: GPUDriverMap.NVIDIA,
-      locale: false,
-      notes: AddWorkerDockerNotes[GPUDriverMap.NVIDIA],
-      link: 'https://docs.gpustack.ai/latest/installation/requirements/#nvidia-gpu'
-    });
-  }, []);
+    // A cluster registered with a non-NVIDIA vendor has to come back with that
+    // vendor selected — re-registering against the NVIDIA default produces a
+    // command the node can't register with. Single-select providers take the
+    // first vendor found, which is the only one on a homogeneous cluster.
+    // Clusters whose workers report no GPU (and the create-cluster flow, which
+    // has no workers yet) keep the NVIDIA default; users can still deselect it
+    // for CPU-only workers, or add more vendors on K8s.
+    const registered = registeredGPUs?.length
+      ? multiCapable
+        ? registeredGPUs
+        : registeredGPUs.slice(0, 1)
+      : [GPUDriverMap.NVIDIA];
+    applySelection(registered);
+  }, [registeredGPUs]);
 
   return (
     <StepCollapse

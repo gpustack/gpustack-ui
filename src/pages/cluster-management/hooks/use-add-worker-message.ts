@@ -91,8 +91,10 @@ export default function useAddWorkerMessage() {
         }
       });
       snapshotReceivedRef.current = true;
+      return items || [];
     } catch (error) {
       // ignore: fall back to the first watch chunk (see updateHandler)
+      return [];
     }
   };
 
@@ -124,10 +126,14 @@ export default function useAddWorkerMessage() {
     resetAddedCount();
     // seed the baseline before watching so new workers are detected even when
     // the cluster currently has zero workers
-    await seedExistingWorkers(params);
+    const workers = await seedExistingWorkers(params);
     watchParamsRef.current = params;
     startWatch(params);
     triggerAtRef.current = Date.now();
+    // The seed carries each worker's full `status`, so callers that need the
+    // cluster's registered GPU vendors can read them off this list instead of
+    // issuing the same worker query again.
+    return workers;
   };
 
   // This drawer is typically left open while the user runs the install command

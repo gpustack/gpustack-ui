@@ -2,20 +2,23 @@ import { SearchOutlined } from '@ant-design/icons';
 import { BaseSelect, FilterForm } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form, Input } from 'antd';
+import { createStyles } from 'antd-style';
 import { forwardRef, useImperativeHandle, useRef } from 'react';
-import styled from 'styled-components';
 import { loadTypeOptions } from '../config';
-const Content = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-const Label = styled.span`
-  display: inline-flex;
-  align-items: center;
-  font-size: 13px;
-  margin-block: 12px 8px;
-  color: var(--ant-color-text-tertiary);
-`;
+
+const useStyles = createStyles(({ css }) => ({
+  content: css`
+    display: flex;
+    flex-direction: column;
+  `,
+  label: css`
+    display: inline-flex;
+    align-items: center;
+    font-size: 13px;
+    margin-block: 12px 8px;
+    color: var(--ant-color-text-tertiary);
+  `
+}));
 
 interface FilterFormContentProps {
   clusterList?: Global.BaseOption<number>[];
@@ -34,6 +37,7 @@ const FilterFormContent: React.FC<FilterFormContentProps> = forwardRef(
     ref
   ) => {
     const intl = useIntl();
+    const { styles } = useStyles();
     const filterRef = useRef<any>(null);
 
     const handleOnValuesChange = (changedValues: any, allValues: any) => {
@@ -67,8 +71,10 @@ const FilterFormContent: React.FC<FilterFormContentProps> = forwardRef(
           }
         }}
       >
-        <Content>
-          <Label style={{ marginTop: 0 }}>GPU</Label>
+        <div className={styles.content}>
+          <span className={styles.label} style={{ marginTop: 0 }}>
+            GPU
+          </span>
           <Form.Item name="gpu_summary" noStyle>
             <Input
               prefix={
@@ -82,7 +88,9 @@ const FilterFormContent: React.FC<FilterFormContentProps> = forwardRef(
               allowClear
             ></Input>
           </Form.Item>
-          <Label>{intl.formatMessage({ id: 'benchmark.form.profile' })}</Label>
+          <span className={styles.label}>
+            {intl.formatMessage({ id: 'benchmark.form.profile' })}
+          </span>
           <Form.Item noStyle name="profile">
             <BaseSelect
               allowClear
@@ -95,7 +103,9 @@ const FilterFormContent: React.FC<FilterFormContentProps> = forwardRef(
               }))}
             ></BaseSelect>
           </Form.Item>
-          <Label>{intl.formatMessage({ id: 'benchmark.form.loadType' })}</Label>
+          <span className={styles.label}>
+            {intl.formatMessage({ id: 'benchmark.form.loadType' })}
+          </span>
           <Form.Item noStyle name="load_type">
             <BaseSelect
               allowClear
@@ -108,7 +118,9 @@ const FilterFormContent: React.FC<FilterFormContentProps> = forwardRef(
               }))}
             ></BaseSelect>
           </Form.Item>
-          <Label>{intl.formatMessage({ id: 'benchmark.table.model' })}</Label>
+          <span className={styles.label}>
+            {intl.formatMessage({ id: 'benchmark.table.model' })}
+          </span>
           <Form.Item noStyle name="model_name">
             <Input
               prefix={
@@ -122,7 +134,7 @@ const FilterFormContent: React.FC<FilterFormContentProps> = forwardRef(
               allowClear
             ></Input>
           </Form.Item>
-        </Content>
+        </div>
       </FilterForm>
     );
   }

@@ -1,9 +1,9 @@
 import { useIntl } from '@umijs/max';
 import { Descriptions } from 'antd';
+import { createStyles } from 'antd-style';
 import { DescriptionsItemType } from 'antd/es/descriptions';
 import { round } from 'lodash';
 import React from 'react';
-import styled from 'styled-components';
 import {
   DatasetValueMap,
   loadAxisLabelId,
@@ -12,23 +12,25 @@ import {
 } from '../../config';
 import { useDetailContext } from '../../config/detail-context';
 
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  .group + .group {
-    border-top: 1px solid var(--ant-color-border-secondary);
-    padding-top: 18px;
-  }
-  .group-label {
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-    color: var(--ant-color-text-tertiary);
-    margin-bottom: 14px;
-  }
-`;
+const useStyles = createStyles(({ css }) => ({
+  wrapper: css`
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    .group + .group {
+      border-top: 1px solid var(--ant-color-border-secondary);
+      padding-top: 18px;
+    }
+    .group-label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: var(--ant-color-text-tertiary);
+      margin-bottom: 14px;
+    }
+  `
+}));
 
 /**
  * One row of a group, declared rather than pushed.
@@ -54,6 +56,7 @@ const isEmpty = (value: unknown) =>
   (Array.isArray(value) && value.length === 0);
 
 const Benchmark: React.FC = () => {
+  const { styles } = useStyles();
   const intl = useIntl();
   const { detailData, profilesOptions } = useDetailContext();
   const t = (id?: string) => (id ? intl.formatMessage({ id }) : '');
@@ -330,7 +333,7 @@ const Benchmark: React.FC = () => {
     .filter((group) => group.items.length > 0);
 
   return (
-    <Wrapper>
+    <div className={styles.wrapper}>
       {groups.map((group) => (
         <div className="group" key={group.labelId}>
           <div className="group-label">{t(group.labelId)}</div>
@@ -342,7 +345,7 @@ const Benchmark: React.FC = () => {
           />
         </div>
       ))}
-    </Wrapper>
+    </div>
   );
 };
 

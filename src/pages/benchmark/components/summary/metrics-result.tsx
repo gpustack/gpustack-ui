@@ -1,7 +1,7 @@
 import { useIntl } from '@umijs/max';
+import { createStyles } from 'antd-style';
 import _, { round } from 'lodash';
 import React from 'react';
-import styled from 'styled-components';
 import { loadAxisLabelId, loadValueDecimals } from '../../config';
 import { useDetailContext } from '../../config/detail-context';
 
@@ -9,53 +9,55 @@ import { useDetailContext } from '../../config/detail-context';
 // Three columns separated by hairlines — a card inside a card reads as two
 // levels of nesting for one level of meaning. Values are right-aligned against a
 // fixed unit column so the numbers form a readable stack.
-const Box = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  .group {
-    padding: 0 26px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  .group:first-child {
-    padding-left: 0;
-  }
-  .group + .group {
-    border-left: 1px solid var(--ant-color-border-secondary);
-  }
-  .group .g-title {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-    color: var(--ant-color-text-tertiary);
-  }
-  .metric {
-    display: flex;
-    align-items: baseline;
-    gap: 12px;
-    font-size: 13px;
-  }
-  .metric .m-label {
-    flex: 1;
-    min-width: 0;
-    color: var(--ant-color-text-secondary);
-  }
-  .metric .m-value {
-    font-variant-numeric: tabular-nums;
-    text-align: right;
-    white-space: nowrap;
-  }
-  .metric .m-unit {
-    width: 42px;
-    font-size: 11px;
-    color: var(--ant-color-text-tertiary);
-  }
-  .metric .m-value .sub {
-    font-size: 12px;
-  }
-`;
+const useStyles = createStyles(({ css }) => ({
+  box: css`
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    .group {
+      padding: 0 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .group:first-child {
+      padding-left: 0;
+    }
+    .group + .group {
+      border-left: 1px solid var(--ant-color-border-secondary);
+    }
+    .group .g-title {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--ant-color-text-tertiary);
+    }
+    .metric {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      font-size: 13px;
+    }
+    .metric .m-label {
+      flex: 1;
+      min-width: 0;
+      color: var(--ant-color-text-secondary);
+    }
+    .metric .m-value {
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+      white-space: nowrap;
+    }
+    .metric .m-unit {
+      width: 42px;
+      font-size: 11px;
+      color: var(--ant-color-text-tertiary);
+    }
+    .metric .m-value .sub {
+      font-size: 12px;
+    }
+  `
+}));
 
 interface MetricDef {
   title: string;
@@ -122,6 +124,7 @@ const latencyColumns: MetricDef[] = [
 ];
 
 const MetricsResult: React.FC<{ data?: any }> = (props) => {
+  const { styles } = useStyles();
   const { detailData } = useDetailContext();
   const data = props.data ?? detailData;
   const intl = useIntl();
@@ -226,14 +229,14 @@ const MetricsResult: React.FC<{ data?: any }> = (props) => {
   );
 
   return (
-    <Box>
+    <div className={styles.box}>
       <div className="group">
         <div className="g-title">{t('benchmark.detail.result.basic')}</div>
         {basicRows}
       </div>
       {renderGroup('benchmark.detail.summary.throughput', throughputColumns)}
       {renderGroup('benchmark.detail.summary.latency', latencyColumns)}
-    </Box>
+    </div>
   );
 };
 

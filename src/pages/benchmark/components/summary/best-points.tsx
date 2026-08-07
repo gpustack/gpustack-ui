@@ -1,8 +1,8 @@
 import { useIntl } from '@umijs/max';
 import { Tooltip } from 'antd';
+import { createStyles } from 'antd-style';
 import { round } from 'lodash';
 import React from 'react';
-import styled from 'styled-components';
 import { loadAxisLabelId, loadValueDecimals } from '../../config';
 import { useDetailContext } from '../../config/detail-context';
 import { StagePoint, pctDelta } from './metrics';
@@ -11,146 +11,148 @@ import { StagePoint, pctDelta } from './metrics';
 // defining metrics in a single row, and the "why this one" reasoning on the right.
 // Success rate is deliberately NOT here — it belongs on the Detailed metrics
 // header as a pill, since a 100% run has nothing to say.
-const Wrapper = styled.div`
-  display: flex;
-  align-items: stretch;
-  gap: 24px;
-  flex-wrap: wrap;
-  border: 1px solid var(--ant-color-border-secondary);
-  border-radius: var(--ant-border-radius);
-  padding: 16px 20px;
-  .col-hero {
-    flex: none;
-    min-width: 240px;
-    padding-right: 24px;
-    border-right: 1px solid var(--ant-color-border-secondary);
+const useStyles = createStyles(({ css }) => ({
+  wrapper: css`
     display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  .caption {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--ant-color-text);
-  }
-  .hero {
-    display: flex;
-    align-items: baseline;
-    gap: 7px;
-  }
-  .hero .v {
-    font-size: 40px;
-    font-weight: 500;
-    line-height: 1;
-    letter-spacing: -0.02em;
-    color: var(--ant-color-primary);
-    font-variant-numeric: tabular-nums;
-  }
-  .hero .u {
-    font-size: 15px;
-    color: var(--ant-color-text-tertiary);
-  }
-  .col-stats {
-    flex: 1 1 560px;
-    min-width: 0;
-    display: grid;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-    gap: 8px;
-    align-items: center;
-  }
-  @media (max-width: 1100px) {
-    .col-stats {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      row-gap: 14px;
-    }
-  }
-  .stat .k {
-    font-size: 12px;
-    color: var(--ant-color-text-tertiary);
-    white-space: nowrap;
-  }
-  .stat .b {
-    display: flex;
-    align-items: baseline;
-    gap: 3px;
-    white-space: nowrap;
-  }
-  .stat .b .n {
-    font-size: 20px;
-    color: var(--ant-color-text);
-    font-variant-numeric: tabular-nums;
-    letter-spacing: -0.015em;
-  }
-  .stat .b .u {
-    font-size: 11px;
-    color: var(--ant-color-text-tertiary);
-  }
-  .col-why {
-    flex: 0 1 300px;
-    min-width: 220px;
-    padding-left: 20px;
-    border-left: 1px solid var(--ant-color-border-secondary);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 8px;
-  }
-  .why {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    font-size: 12px;
-    line-height: 1.55;
-    color: var(--ant-color-text-secondary);
-  }
-  .why .badge {
-    flex: none;
-    font-size: 11px;
-    font-weight: 600;
-    border-radius: 5px;
-    padding: 1px 6px;
-    font-variant-numeric: tabular-nums;
-  }
-  .why .badge.up {
-    color: var(--ant-color-success);
-    background: var(--ant-color-success-bg);
-  }
-  .why .badge.flat {
-    color: var(--ant-color-text-tertiary);
-    background: var(--ant-color-fill-quaternary);
-  }
-  .why .cost {
-    color: var(--ant-color-error);
-  }
-  .why .capacity {
-    cursor: help;
-  }
-  .why .capacity b {
-    font-weight: 600;
-    color: var(--ant-color-text);
-    font-variant-numeric: tabular-nums;
-    margin-left: 5px;
-  }
-  /* SLA budget: pills, so an SLA run makes its thresholds explicit next to the
-     point that was chosen to satisfy them. */
-  .sla {
-    display: flex;
+    align-items: stretch;
+    gap: 24px;
     flex-wrap: wrap;
-    gap: 6px;
-  }
-  .sla .pill {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--ant-color-primary);
-    border: 1px solid var(--ant-color-primary-border);
-    border-radius: 10px;
-    padding: 0 8px;
-    white-space: nowrap;
-  }
-`;
+    border: 1px solid var(--ant-color-border-secondary);
+    border-radius: var(--ant-border-radius);
+    padding: 16px 20px;
+    .col-hero {
+      flex: none;
+      min-width: 240px;
+      padding-right: 24px;
+      border-right: 1px solid var(--ant-color-border-secondary);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .caption {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ant-color-text);
+    }
+    .hero {
+      display: flex;
+      align-items: baseline;
+      gap: 7px;
+    }
+    .hero .v {
+      font-size: 40px;
+      font-weight: 500;
+      line-height: 1;
+      letter-spacing: -0.02em;
+      color: var(--ant-color-primary);
+      font-variant-numeric: tabular-nums;
+    }
+    .hero .u {
+      font-size: 15px;
+      color: var(--ant-color-text-tertiary);
+    }
+    .col-stats {
+      flex: 1 1 560px;
+      min-width: 0;
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 8px;
+      align-items: center;
+    }
+    @media (max-width: 1100px) {
+      .col-stats {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        row-gap: 14px;
+      }
+    }
+    .stat .k {
+      font-size: 12px;
+      color: var(--ant-color-text-tertiary);
+      white-space: nowrap;
+    }
+    .stat .b {
+      display: flex;
+      align-items: baseline;
+      gap: 3px;
+      white-space: nowrap;
+    }
+    .stat .b .n {
+      font-size: 20px;
+      color: var(--ant-color-text);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.015em;
+    }
+    .stat .b .u {
+      font-size: 11px;
+      color: var(--ant-color-text-tertiary);
+    }
+    .col-why {
+      flex: 0 1 300px;
+      min-width: 220px;
+      padding-left: 20px;
+      border-left: 1px solid var(--ant-color-border-secondary);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 8px;
+    }
+    .why {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 12px;
+      line-height: 1.55;
+      color: var(--ant-color-text-secondary);
+    }
+    .why .badge {
+      flex: none;
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 5px;
+      padding: 1px 6px;
+      font-variant-numeric: tabular-nums;
+    }
+    .why .badge.up {
+      color: var(--ant-color-success);
+      background: var(--ant-color-success-bg);
+    }
+    .why .badge.flat {
+      color: var(--ant-color-text-tertiary);
+      background: var(--ant-color-fill-quaternary);
+    }
+    .why .cost {
+      color: var(--ant-color-error);
+    }
+    .why .capacity {
+      cursor: help;
+    }
+    .why .capacity b {
+      font-weight: 600;
+      color: var(--ant-color-text);
+      font-variant-numeric: tabular-nums;
+      margin-left: 5px;
+    }
+    /* SLA budget: pills, so an SLA run makes its thresholds explicit next to the
+       point that was chosen to satisfy them. */
+    .sla {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .sla .pill {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--ant-color-primary);
+      border: 1px solid var(--ant-color-primary-border);
+      border-radius: 10px;
+      padding: 0 8px;
+      white-space: nowrap;
+    }
+  `
+}));
 
 interface BestPointsProps {
   points: StagePoint[];
@@ -158,6 +160,7 @@ interface BestPointsProps {
 }
 
 const BestPoints: React.FC<BestPointsProps> = ({ points, onSelect }) => {
+  const { styles } = useStyles();
   const intl = useIntl();
   const { detailData } = useDetailContext();
   const t = (id: string, values?: Record<string, string | number>) =>
@@ -251,7 +254,7 @@ const BestPoints: React.FC<BestPointsProps> = ({ points, onSelect }) => {
   ];
 
   return (
-    <Wrapper onClick={() => onSelect(best)}>
+    <div className={styles.wrapper} onClick={() => onSelect(best)}>
       <div className="col-hero">
         <div className="caption">
           <span>⭐</span>
@@ -360,7 +363,7 @@ const BestPoints: React.FC<BestPointsProps> = ({ points, onSelect }) => {
           </div>
         )}
       </div>
-    </Wrapper>
+    </div>
   );
 };
 

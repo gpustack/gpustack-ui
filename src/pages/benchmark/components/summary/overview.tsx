@@ -7,9 +7,9 @@ import {
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Table, Tooltip } from 'antd';
+import { createStyles } from 'antd-style';
 import _ from 'lodash';
 import React, { useMemo, useState } from 'react';
-import styled from 'styled-components';
 import {
   STOP_REASON_LABEL,
   loadAxisLabelId,
@@ -22,178 +22,180 @@ import OperatingCurve from './operating-curve';
 import StageChart, { C } from './stage-chart';
 import { Panel, SectionTitle, StatusTag, statusLabelId } from './ui';
 
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  .hint {
-    color: var(--ant-color-text-quaternary);
-    cursor: help;
-  }
-  /* Success rate is a header pill, not a chart. */
-  .pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 12px;
-    border-radius: 999px;
-    padding: 1px 9px;
-    white-space: nowrap;
-  }
-  .pill.ok {
-    color: var(--ant-color-success);
-    background: var(--ant-color-success-bg);
-  }
-  .pill.bad {
-    color: var(--ant-color-error);
-    background: var(--ant-color-error-bg);
-  }
-  .charts-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 14px;
-  }
-  @media (max-width: 1200px) {
-    .charts-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
-  @media (max-width: 760px) {
-    .charts-grid {
-      grid-template-columns: minmax(0, 1fr);
-    }
-  }
-  .totals {
-    display: flex;
-    gap: 22px;
-    align-items: baseline;
-  }
-  .aux {
+const useStyles = createStyles(({ css }) => ({
+  wrapper: css`
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    padding: 10px 20px 14px;
-    border-top: 1px solid var(--ant-color-border-secondary);
-  }
-  .aux-line {
-    display: flex;
-    align-items: baseline;
-    gap: 10px;
-    flex-wrap: wrap;
-    font-size: 12px;
-    color: var(--ant-color-text-tertiary);
-    font-variant-numeric: tabular-nums;
-  }
-  .aux-line b {
-    font-weight: 600;
-    color: var(--ant-color-text-secondary);
-  }
-  .stop-reason {
-    font-size: 12px;
-    color: var(--ant-color-text-tertiary);
-  }
-  .stop-reason b {
-    font-weight: 600;
-    color: var(--ant-color-text-secondary);
-    margin-left: 4px;
-  }
-  .totals .n {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--ant-color-text);
-    font-variant-numeric: tabular-nums;
-  }
-  .totals .l {
-    font-size: 12px;
-    color: var(--ant-color-text-tertiary);
-    margin-left: 5px;
-  }
-  .rate-cell {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .rate-cell .n {
-    font-weight: 600;
-    font-variant-numeric: tabular-nums;
-  }
-  /* Inline throughput bar: proportional columns, bar flexes toward its cap.
-     The right gutter is load-bearing — a flexing track runs to the cell edge
-     and the bar's end then touches the In TPS figures, reading as one row of
-     bar-plus-number rather than two columns. */
-  .tps-cell {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding-right: 20px;
-  }
-  .tps-cell .v {
-    font-variant-numeric: tabular-nums;
-    text-align: right;
-    min-width: 58px;
-  }
-  .tps-cell .track {
-    flex: 1;
-    min-width: 40px;
-    /* Capped, because past a couple hundred pixels a longer track adds no
-       resolution — the eye is comparing bar ENDS across rows, and those are
-       already separable. Left uncapped it just tracks the viewport and turns
-       one column into half the table. */
-    max-width: 220px;
-    height: 5px;
-    border-radius: 3px;
-    background: var(--ant-color-fill-quaternary);
-    overflow: hidden;
-  }
-  .tps-cell .track i {
-    display: block;
-    height: 100%;
-    border-radius: 3px;
-  }
-  /* Table runs to the card edges: a tinted header band, no border of its own
-     (the Panel provides it), and rows tall enough for the inline bar. */
-  .stage-table .ant-table-thead > tr > th {
-    background: var(--ant-color-fill-quaternary) !important;
-    border-bottom: 1px solid var(--ant-color-border-secondary);
-    color: var(--ant-color-text-secondary);
-    font-weight: 600;
-    font-size: 12px;
-  }
-  .stage-table .ant-table-thead > tr > th::before {
-    display: none !important;
-  }
-  .stage-table .ant-table-thead > tr > th:first-child,
-  .stage-table .ant-table-tbody > tr > td:first-child {
-    padding-left: 20px;
-  }
-  .stage-table .ant-table-thead > tr > th:last-child,
-  .stage-table .ant-table-tbody > tr > td:last-child {
-    padding-right: 20px;
-  }
-  .stage-table .ant-table-tbody > tr > td {
-    height: 48px;
-    border-bottom: 1px solid var(--ant-color-fill-quaternary);
-  }
-  .stage-table .ant-table-tbody > tr:last-child > td {
-    border-bottom: none;
-  }
-  .stage-table .col-title {
-    display: flex;
-    flex-direction: column;
-    line-height: 1.2;
-  }
-  .stage-table .col-title .col-unit {
-    font-size: 12px;
-    font-weight: 400;
-    color: var(--ant-color-text-quaternary);
-  }
-  .selected-row td {
-    background-color: var(--ant-color-primary-bg) !important;
-  }
-  .clickable-row {
-    cursor: pointer;
-  }
-`;
+    gap: 16px;
+    .hint {
+      color: var(--ant-color-text-quaternary);
+      cursor: help;
+    }
+    /* Success rate is a header pill, not a chart. */
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      border-radius: 999px;
+      padding: 1px 9px;
+      white-space: nowrap;
+    }
+    .pill.ok {
+      color: var(--ant-color-success);
+      background: var(--ant-color-success-bg);
+    }
+    .pill.bad {
+      color: var(--ant-color-error);
+      background: var(--ant-color-error-bg);
+    }
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+    @media (max-width: 1200px) {
+      .charts-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+    @media (max-width: 760px) {
+      .charts-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+    .totals {
+      display: flex;
+      gap: 22px;
+      align-items: baseline;
+    }
+    .aux {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 10px 20px 14px;
+      border-top: 1px solid var(--ant-color-border-secondary);
+    }
+    .aux-line {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      flex-wrap: wrap;
+      font-size: 12px;
+      color: var(--ant-color-text-tertiary);
+      font-variant-numeric: tabular-nums;
+    }
+    .aux-line b {
+      font-weight: 600;
+      color: var(--ant-color-text-secondary);
+    }
+    .stop-reason {
+      font-size: 12px;
+      color: var(--ant-color-text-tertiary);
+    }
+    .stop-reason b {
+      font-weight: 600;
+      color: var(--ant-color-text-secondary);
+      margin-left: 4px;
+    }
+    .totals .n {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--ant-color-text);
+      font-variant-numeric: tabular-nums;
+    }
+    .totals .l {
+      font-size: 12px;
+      color: var(--ant-color-text-tertiary);
+      margin-left: 5px;
+    }
+    .rate-cell {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .rate-cell .n {
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+    /* Inline throughput bar: proportional columns, bar flexes toward its cap.
+       The right gutter is load-bearing — a flexing track runs to the cell edge
+       and the bar's end then touches the In TPS figures, reading as one row of
+       bar-plus-number rather than two columns. */
+    .tps-cell {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-right: 20px;
+    }
+    .tps-cell .v {
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+      min-width: 58px;
+    }
+    .tps-cell .track {
+      flex: 1;
+      min-width: 40px;
+      /* Capped, because past a couple hundred pixels a longer track adds no
+         resolution — the eye is comparing bar ENDS across rows, and those are
+         already separable. Left uncapped it just tracks the viewport and turns
+         one column into half the table. */
+      max-width: 220px;
+      height: 5px;
+      border-radius: 3px;
+      background: var(--ant-color-fill-quaternary);
+      overflow: hidden;
+    }
+    .tps-cell .track i {
+      display: block;
+      height: 100%;
+      border-radius: 3px;
+    }
+    /* Table runs to the card edges: a tinted header band, no border of its own
+       (the Panel provides it), and rows tall enough for the inline bar. */
+    .stage-table .ant-table-thead > tr > th {
+      background: var(--ant-color-fill-quaternary) !important;
+      border-bottom: 1px solid var(--ant-color-border-secondary);
+      color: var(--ant-color-text-secondary);
+      font-weight: 600;
+      font-size: 12px;
+    }
+    .stage-table .ant-table-thead > tr > th::before {
+      display: none !important;
+    }
+    .stage-table .ant-table-thead > tr > th:first-child,
+    .stage-table .ant-table-tbody > tr > td:first-child {
+      padding-left: 20px;
+    }
+    .stage-table .ant-table-thead > tr > th:last-child,
+    .stage-table .ant-table-tbody > tr > td:last-child {
+      padding-right: 20px;
+    }
+    .stage-table .ant-table-tbody > tr > td {
+      height: 48px;
+      border-bottom: 1px solid var(--ant-color-fill-quaternary);
+    }
+    .stage-table .ant-table-tbody > tr:last-child > td {
+      border-bottom: none;
+    }
+    .stage-table .col-title {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.2;
+    }
+    .stage-table .col-title .col-unit {
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--ant-color-text-quaternary);
+    }
+    .selected-row td {
+      background-color: var(--ant-color-primary-bg) !important;
+    }
+    .clickable-row {
+      cursor: pointer;
+    }
+  `
+}));
 
 interface OverviewProps {
   points: StagePoint[];
@@ -213,6 +215,7 @@ const Overview: React.FC<OverviewProps> = ({
   bestPoints
 }) => {
   const intl = useIntl();
+  const { styles } = useStyles();
   const { detailData } = useDetailContext();
   const [showMore, setShowMore] = useState(false);
   const t = (id: string, values?: Record<string, string | number>) =>
@@ -485,7 +488,7 @@ const Overview: React.FC<OverviewProps> = ({
       : Math.round(totals.successRate * 1000) / 10;
 
   return (
-    <Wrapper>
+    <div className={styles.wrapper}>
       {bestPoints}
 
       <Panel>
@@ -662,7 +665,7 @@ const Overview: React.FC<OverviewProps> = ({
           </div>
         )}
       </Panel>
-    </Wrapper>
+    </div>
   );
 };
 

@@ -1,38 +1,40 @@
 import { useIntl } from '@umijs/max';
 import { Table, Tooltip } from 'antd';
+import { createStyles } from 'antd-style';
 import { round } from 'lodash';
 import React from 'react';
-import styled from 'styled-components';
 import { useDetailContext } from '../../config/detail-context';
 import { LOW_SAMPLE_THRESHOLD, tailSamples } from './metrics';
 
 // The table sits in its own bordered box inside the Stage detail card: it is a
 // secondary read, and a tinted header keeps it from competing with the metric
 // columns above.
-const Box = styled.div`
-  border: 1px solid var(--ant-color-border-secondary);
-  border-radius: var(--ant-border-radius);
-  overflow: hidden;
-  .ant-table-thead > tr > th {
-    background: var(--ant-color-fill-quaternary) !important;
-    border-bottom: 1px solid var(--ant-color-border-secondary);
-    color: var(--ant-color-text-secondary);
-    font-weight: 600;
-    font-size: 12px;
-    height: 40px;
-  }
-  .ant-table-thead > tr > th::before {
-    display: none !important;
-  }
-  .ant-table-tbody > tr > td {
-    height: 42px;
-    font-variant-numeric: tabular-nums;
-    border-bottom: 1px solid var(--ant-color-fill-quaternary);
-  }
-  .ant-table-tbody > tr:last-child > td {
-    border-bottom: none;
-  }
-`;
+const useStyles = createStyles(({ css }) => ({
+  box: css`
+    border: 1px solid var(--ant-color-border-secondary);
+    border-radius: var(--ant-border-radius);
+    overflow: hidden;
+    .ant-table-thead > tr > th {
+      background: var(--ant-color-fill-quaternary) !important;
+      border-bottom: 1px solid var(--ant-color-border-secondary);
+      color: var(--ant-color-text-secondary);
+      font-weight: 600;
+      font-size: 12px;
+      height: 40px;
+    }
+    .ant-table-thead > tr > th::before {
+      display: none !important;
+    }
+    .ant-table-tbody > tr > td {
+      height: 42px;
+      font-variant-numeric: tabular-nums;
+      border-bottom: 1px solid var(--ant-color-fill-quaternary);
+    }
+    .ant-table-tbody > tr:last-child > td {
+      border-bottom: none;
+    }
+  `
+}));
 
 const PERCENTILES = [
   { key: 'p50', label: '50%' },
@@ -41,6 +43,7 @@ const PERCENTILES = [
 ] as const;
 
 const PercentileResult: React.FC<{ data?: any }> = (props) => {
+  const { styles } = useStyles();
   const intl = useIntl();
   const { detailData } = useDetailContext();
   // Feed the selected stage's data when provided (Overview drill-down).
@@ -132,7 +135,7 @@ const PercentileResult: React.FC<{ data?: any }> = (props) => {
 
   return (
     <div>
-      <Box>
+      <div className={styles.box}>
         <Table
           size="small"
           columns={[
@@ -155,7 +158,7 @@ const PercentileResult: React.FC<{ data?: any }> = (props) => {
           rowKey="percentile"
           pagination={false}
         ></Table>
-      </Box>
+      </div>
       {lowSample && (
         <div
           style={{

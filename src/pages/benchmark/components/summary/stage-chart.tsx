@@ -255,6 +255,12 @@ const buildOption = (
   const bestIdx = points.findIndex((p) => p.isBest);
   const peakIdx = points.findIndex((p) => p.isPeak);
 
+  // A label centred on a mark that sits against an edge hangs half of itself off
+  // the canvas, so anchor it inward instead. Shared by the guide line and the
+  // point markers — they clip for the same reason and used to answer it twice.
+  const edgeAlign = (frac: number): 'right' | 'left' | 'center' =>
+    frac > 0.85 ? 'right' : frac < 0.15 ? 'left' : 'center';
+
   // Where the recommended operating point sits — on EVERY chart. Each one is read
   // as "what does this look like at the load we recommend", and that question has
   // no answer if the reader has to hold the number in their head and find it.
@@ -281,7 +287,14 @@ const buildOption = (
             formatter: '★ Best',
             color: '#b8860b',
             fontSize: 11,
-            fontWeight: 'bold' as const
+            fontWeight: 'bold' as const,
+            // Anchor away from the edge the guide sits against, exactly as the
+            // point markers below do. The label is centred on the line by
+            // default, and the guide is at its most useful precisely where that
+            // clips: an auto-tune run that never breaks its SLA recommends the
+            // highest load it measured, so the line lands on the LAST category
+            // and half the text falls off the canvas ("★ Bes").
+            align: edgeAlign(bestIdx / Math.max(points.length - 1, 1))
           },
           data: [
             {
@@ -338,8 +351,9 @@ const buildOption = (
       const frac = isValueX
         ? ((spec.x!.value(p) ?? 0) - xMin) / xSpan
         : i / Math.max(points.length - 1, 1);
-      const atRight = frac > 0.85;
-      const atLeft = frac < 0.15;
+      const align = edgeAlign(frac);
+      const atRight = align === 'right';
+      const atLeft = align === 'left';
       return {
         value,
         symbolSize: 8,
@@ -354,10 +368,7 @@ const buildOption = (
           // Best and Peak can sit a dozen pixels apart.
           position: (isBest ? 'top' : 'bottom') as 'top' | 'bottom',
           distance: 8,
-          align: (atRight ? 'right' : atLeft ? 'left' : 'center') as
-            | 'right'
-            | 'left'
-            | 'center',
+          align,
           offset: [atRight ? -6 : atLeft ? 6 : 0, 0] as [number, number]
         }
       };

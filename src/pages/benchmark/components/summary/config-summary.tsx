@@ -1,41 +1,44 @@
 import { useIntl } from '@umijs/max';
+import { createStyles } from 'antd-style';
 import React from 'react';
-import styled from 'styled-components';
 import { loadTypeOptions } from '../../config';
 import { useDetailContext } from '../../config/detail-context';
 
-const Bar = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px 16px;
-  font-size: 13px;
-  /* GitHub-style meta row: muted label + strong value, separated by thin rules
-     instead of a cloud of grey tags. */
-  .item {
-    display: inline-flex;
-    align-items: baseline;
-    gap: 6px;
-    padding-right: 16px;
-    border-right: 1px solid var(--ant-color-border-secondary);
-  }
-  .item:last-child {
-    padding-right: 0;
-    border-right: none;
-  }
-  .label {
-    color: var(--ant-color-text-tertiary);
-    font-size: 12px;
-  }
-  .value {
-    color: var(--ant-color-text);
-    font-weight: 600;
-  }
-`;
+const useStyles = createStyles(({ css }) => ({
+  bar: css`
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 16px;
+    font-size: 13px;
+    /* GitHub-style meta row: muted label + strong value, separated by thin rules
+       instead of a cloud of grey tags. */
+    .item {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 6px;
+      padding-right: 16px;
+      border-right: 1px solid var(--ant-color-border-secondary);
+    }
+    .item:last-child {
+      padding-right: 0;
+      border-right: none;
+    }
+    .label {
+      color: var(--ant-color-text-tertiary);
+      font-size: 12px;
+    }
+    .value {
+      color: var(--ant-color-text);
+      font-weight: 600;
+    }
+  `
+}));
 
 // A compact one-line config summary at the top of Summary. Full config
 // lives in the Configuration tab.
 const ConfigSummary: React.FC = () => {
+  const { styles } = useStyles();
   const intl = useIntl();
   const { detailData, profilesOptions } = useDetailContext();
   const [, instanceData] =
@@ -95,14 +98,14 @@ const ConfigSummary: React.FC = () => {
   ];
 
   return (
-    <Bar>
+    <div className={styles.bar}>
       {items.map((it, idx) => (
         <span className="item" key={idx}>
           <span className="label">{it.label}:</span>
           <span className="value">{it.value || '-'}</span>
         </span>
       ))}
-    </Bar>
+    </div>
   );
 };
 

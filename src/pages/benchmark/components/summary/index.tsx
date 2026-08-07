@@ -1,6 +1,6 @@
 import { Divider } from 'antd';
+import { createStyles } from 'antd-style';
 import React, { useEffect, useMemo, useState } from 'react';
-import styled from 'styled-components';
 import { queryBenchmarkResults } from '../../apis';
 import { loadAxisLabelId } from '../../config';
 import { useDetailContext } from '../../config/detail-context';
@@ -15,13 +15,16 @@ import RunningHint from './running-hint';
 import SelectedStage from './selected-stage';
 import ValidityAlert from './validity-alert';
 
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-`;
+const useStyles = createStyles(({ css }) => ({
+  container: css`
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  `
+}));
 
 const Summary: React.FC = () => {
+  const { styles } = useStyles();
   const { id, detailData, refreshToken } = useDetailContext();
   const [results, setResults] = useState<BenchmarkResultItem[]>([]);
   const [selected, setSelected] = useState<BenchmarkResultItem | null>(null);
@@ -129,14 +132,14 @@ const Summary: React.FC = () => {
   }, [isMulti, points, probes, selected]);
 
   return (
-    <Container>
+    <div className={styles.container}>
       <RunningHint points={measuredPoints} />
       <ConfigSummary />
       {/* Coverage warnings apply to the run as a whole, so they sit above both
           the multi-point overview and the single-point view. */}
       <ValidityAlert />
       {resultsView}
-    </Container>
+    </div>
   );
 };
 

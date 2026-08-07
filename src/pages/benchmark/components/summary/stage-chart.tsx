@@ -1,7 +1,7 @@
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { Tooltip, theme } from 'antd';
+import { createStyles } from 'antd-style';
 import React, { useEffect, useRef } from 'react';
-import styled from 'styled-components';
 import echarts, { ECharts, EChartsCoreOption } from '../echarts';
 import { StagePoint, logDomain } from './metrics';
 
@@ -108,70 +108,72 @@ export interface ChartSpec {
   tooltipExtra?: (p: StagePoint) => Array<{ color: string; label: string }>;
 }
 
-const Card = styled.div`
-  background: var(--ant-color-bg-container);
-  border: 1px solid var(--ant-color-border-secondary);
-  border-radius: var(--ant-border-radius);
-  padding: 12px 14px 6px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  .head {
+const useStyles = createStyles(({ css }) => ({
+  card: css`
+    background: var(--ant-color-bg-container);
+    border: 1px solid var(--ant-color-border-secondary);
+    border-radius: var(--ant-border-radius);
+    padding: 12px 14px 6px;
     display: flex;
-    align-items: baseline;
-    gap: 10px;
-  }
-  .head .meta {
-    flex: 1;
-    min-width: 0;
-  }
-  .head .t {
-    display: flex;
-    align-items: center;
+    flex-direction: column;
     gap: 6px;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--ant-color-text);
-  }
-  .head .n {
-    font-size: 12px;
-    color: var(--ant-color-text-tertiary);
-    line-height: 1.45;
-  }
-  .head .hint {
-    color: var(--ant-color-text-quaternary);
-    font-size: 12px;
-    cursor: help;
-  }
-  .legend {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex: none;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-  }
-  .legend .li {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 12px;
-    color: var(--ant-color-text-tertiary);
-    white-space: nowrap;
-  }
-  .legend .dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    flex: none;
-  }
-  .legend .swatch {
-    width: 14px;
-    height: 9px;
-    border-radius: 2px;
-    flex: none;
-  }
-`;
+    .head {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+    .head .meta {
+      flex: 1;
+      min-width: 0;
+    }
+    .head .t {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ant-color-text);
+    }
+    .head .n {
+      font-size: 12px;
+      color: var(--ant-color-text-tertiary);
+      line-height: 1.45;
+    }
+    .head .hint {
+      color: var(--ant-color-text-quaternary);
+      font-size: 12px;
+      cursor: help;
+    }
+    .legend {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: none;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .legend .li {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      color: var(--ant-color-text-tertiary);
+      white-space: nowrap;
+    }
+    .legend .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex: none;
+    }
+    .legend .swatch {
+      width: 14px;
+      height: 9px;
+      border-radius: 2px;
+      flex: none;
+    }
+  `
+}));
 
 export const tooltipRows = (
   rows: Array<{ color: string; label: string }>,
@@ -530,6 +532,7 @@ const buildOption = (
  * lines by index offset silently drops the last line.
  */
 const StageChart: React.FC<Props> = (props) => {
+  const { styles } = useStyles();
   const { spec, points, logHint, height = 200 } = props;
   const ref = useRef<HTMLDivElement>(null);
   const inst = useRef<ECharts | null>(null);
@@ -576,7 +579,7 @@ const StageChart: React.FC<Props> = (props) => {
   ];
 
   return (
-    <Card>
+    <div className={styles.card}>
       <div className="head">
         <div className="meta">
           <div className="t">
@@ -599,7 +602,7 @@ const StageChart: React.FC<Props> = (props) => {
         </div>
       </div>
       <div ref={ref} style={{ width: '100%', height }} />
-    </Card>
+    </div>
   );
 };
 

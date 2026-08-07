@@ -1,5 +1,5 @@
+import { createStyles } from 'antd-style';
 import React from 'react';
-import styled from 'styled-components';
 import { BenchmarkResultItem } from '../../config/types';
 
 // ── Unified design language for the Summary tab ────────────────────────────
@@ -65,54 +65,132 @@ const statusGlyph: Record<StageStatusKind, string> = {
   ok: '•'
 };
 
-const TagEl = styled.span<{ $kind: StageStatusKind }>`
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 12px;
-  font-weight: 600;
-  padding: 1px 9px;
-  border-radius: 10px;
-  ${({ $kind }) => {
-    const map: Record<StageStatusKind, [string, string]> = {
-      recommended: ['--ant-color-primary', '--ant-color-primary-bg'],
-      peak: ['--ant-color-success', '--ant-color-success-bg'],
-      overloaded: ['--ant-color-error', '--ant-color-error-bg'],
-      ok: ['--ant-color-text-tertiary', '--ant-color-fill-quaternary']
-    };
-    const [fg, bg] = map[$kind];
-    return `color: var(${fg}); background: var(${bg});`;
-  }}
-  .glyph {
-    font-size: 11px;
-    line-height: 1;
-  }
-`;
+// One class per verdict rather than a colour pair interpolated into the
+// template: the palette stays declarative and `cx` picks the one that applies.
+const tagKindClass = {
+  recommended: 'tagRecommended',
+  peak: 'tagPeak',
+  overloaded: 'tagOverloaded',
+  ok: 'tagOk'
+} as const;
+
+const useStyles = createStyles(({ css }) => ({
+  tag: css`
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 1px 9px;
+    border-radius: 10px;
+    .glyph {
+      font-size: 11px;
+      line-height: 1;
+    }
+  `,
+  tagRecommended: css`
+    color: var(--ant-color-primary);
+    background: var(--ant-color-primary-bg);
+  `,
+  tagPeak: css`
+    color: var(--ant-color-success);
+    background: var(--ant-color-success-bg);
+  `,
+  tagOverloaded: css`
+    color: var(--ant-color-error);
+    background: var(--ant-color-error-bg);
+  `,
+  tagOk: css`
+    color: var(--ant-color-text-tertiary);
+    background: var(--ant-color-fill-quaternary);
+  `,
+  // Type scale — the page uses exactly four sizes: 40 (hero) · 16 (section) ·
+  // 14 (metric) · 12 (label). sectionTitle is the 16.
+  sectionTitle: css`
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ant-color-text);
+    margin-bottom: 12px;
+  `,
+  // Hairline separator between major sections (flat layout, no boxes).
+  sectionRule: css`
+    border-top: 1px solid var(--ant-color-border-secondary);
+  `,
+  panel: css`
+    background: var(--ant-color-bg-container);
+    border: 1px solid var(--ant-color-border-secondary);
+    border-radius: var(--ant-border-radius);
+    overflow: hidden;
+    .panel-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      padding: 14px 20px;
+    }
+    .panel-head.divided {
+      border-bottom: 1px solid var(--ant-color-border-secondary);
+    }
+    .panel-head .sub {
+      font-size: 12px;
+      color: var(--ant-color-text-tertiary);
+    }
+    .panel-head .spacer {
+      flex: 1;
+    }
+    .panel-body {
+      padding: 4px 16px 14px;
+    }
+    .panel-body.flush {
+      padding: 0;
+    }
+  `,
+  // Monospace pill carrying the selected stage's load value.
+  loadChip: css`
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ant-color-primary);
+    background: var(--ant-color-primary-bg);
+    border: 1px solid var(--ant-color-primary-border);
+    border-radius: 6px;
+    padding: 1px 8px;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  `
+}));
 
 // The single status badge used across the page.
 export const StatusTag: React.FC<{
   kind: StageStatusKind;
   label: string;
-}> = ({ kind, label }) => (
-  <TagEl $kind={kind}>
-    <span className="glyph">{statusGlyph[kind]}</span>
-    {label}
-  </TagEl>
-);
+}> = ({ kind, label }) => {
+  const { styles, cx } = useStyles();
+  return (
+    <span className={cx(styles.tag, styles[tagKindClass[kind]])}>
+      <span className="glyph">{statusGlyph[kind]}</span>
+      {label}
+    </span>
+  );
+};
 
-// Type scale — the page uses exactly four sizes: 40 (hero) · 16 (section) ·
-// 14 (metric) · 12 (label). SectionTitle is the 16.
-export const SectionTitle = styled.div`
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--ant-color-text);
-  margin-bottom: 12px;
-`;
+// The four layout primitives keep their component API — they are consumed as
+// elements across the tab, so wrapping the class in a component leaves every
+// call site (and its `style` / `className` passthrough) untouched.
+export const SectionTitle: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
+  className,
+  ...rest
+}) => {
+  const { styles, cx } = useStyles();
+  return <div className={cx(styles.sectionTitle, className)} {...rest} />;
+};
 
-// Hairline separator between major sections (flat layout, no boxes).
-export const SectionRule = styled.div`
-  border-top: 1px solid var(--ant-color-border-secondary);
-`;
+export const SectionRule: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
+  className,
+  ...rest
+}) => {
+  const { styles, cx } = useStyles();
+  return <div className={cx(styles.sectionRule, className)} {...rest} />;
+};
 
 /**
  * One report section = one card. Every block on the page (hero band, operating
@@ -126,45 +204,18 @@ export const SectionRule = styled.div`
  *   .panel-head .spacer  pushes the trailing controls right
  *   .panel-body          padded content; add `flush` for edge-to-edge tables
  */
-export const Panel = styled.div`
-  background: var(--ant-color-bg-container);
-  border: 1px solid var(--ant-color-border-secondary);
-  border-radius: var(--ant-border-radius);
-  overflow: hidden;
-  .panel-head {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-    padding: 14px 20px;
-  }
-  .panel-head.divided {
-    border-bottom: 1px solid var(--ant-color-border-secondary);
-  }
-  .panel-head .sub {
-    font-size: 12px;
-    color: var(--ant-color-text-tertiary);
-  }
-  .panel-head .spacer {
-    flex: 1;
-  }
-  .panel-body {
-    padding: 4px 16px 14px;
-  }
-  .panel-body.flush {
-    padding: 0;
-  }
-`;
+export const Panel: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
+  className,
+  ...rest
+}) => {
+  const { styles, cx } = useStyles();
+  return <div className={cx(styles.panel, className)} {...rest} />;
+};
 
-// Monospace pill carrying the selected stage's load value.
-export const LoadChip = styled.span`
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--ant-color-primary);
-  background: var(--ant-color-primary-bg);
-  border: 1px solid var(--ant-color-primary-border);
-  border-radius: 6px;
-  padding: 1px 8px;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-`;
+export const LoadChip: React.FC<React.HTMLAttributes<HTMLSpanElement>> = ({
+  className,
+  ...rest
+}) => {
+  const { styles, cx } = useStyles();
+  return <span className={cx(styles.loadChip, className)} {...rest} />;
+};

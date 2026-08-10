@@ -11,7 +11,6 @@ interface UseStreamTTSParams {
   onComplete?: (audioUrl: string) => void; // Return complete audio URL when done
   onError?: (error: any) => void;
   onUrlReady?: (url: string) => void; // Called when the stream URL is ready
-  autoPlay?: boolean;
   playerRef?: React.RefObject<any>; // Reference to the player for controlling playback
 }
 
@@ -44,7 +43,6 @@ const supportsMediaSource = (format: string): boolean => {
 export const useStreamTTS = (params?: UseStreamTTSParams) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<any>(null);
-  const [progress, setProgress] = useState(0);
   const [streamUrl, setStreamUrl] = useState<string>('');
   const controllerRef = useRef<AbortController | null>(null);
   const mediaSourceRef = useRef<MediaSource | null>(null);
@@ -53,7 +51,11 @@ export const useStreamTTS = (params?: UseStreamTTSParams) => {
   const isAppendingRef = useRef(false);
   const allChunksRef = useRef<Uint8Array[]>([]);
   const [isPCM, setIsPCM] = useState(false);
-  const completeAudioUrlRef = useRef<string>('');
+  const formatRef = useRef<string>('mp3');
+  const completeUrlRef = useRef<string>('');
+  const pcmCacheRef = useRef<Uint8Array<ArrayBuffer> | null>(null);
+  const deliveredRef = useRef(false);
+  const [downloadUrl, setDownloadUrl] = useState('');
 
   // PCM stream player instance
   const pcmPlayer = usePCMStreamPlayer({
@@ -62,27 +64,64 @@ export const useStreamTTS = (params?: UseStreamTTSParams) => {
       params?.onError?.(error);
     },
     onPlaybackComplete: () => {
-      console.log('PCM playback complete');
-      // Create complete audio URL from all chunks when playback finishes
-      if (allChunksRef.current.length > 0) {
-        const totalLength = allChunksRef.current.reduce(
-          (acc, chunk) => acc + chunk.length,
-          0
-        );
-        const pcmData = new Uint8Array(totalLength);
-        let offset = 0;
-        for (const chunk of allChunksRef.current) {
-          pcmData.set(chunk, offset);
-          offset += chunk.length;
-        }
+      finalizeAudio();
+    }
+  });
 
-        // Convert combined PCM data to WAV and create URL
-        const wavBlob = pcmToWav(pcmData.buffer);
-        const completeUrl = URL.createObjectURL(wavBlob);
-        params?.onComplete?.(completeUrl);
-        // when the stream ends, should clear the audio analyer data, because the the audio elment will play the complete audio, and the analyser will generate new.
-        pcmPlayer.setAudioChunks(null);
-      }
+  // Cached because seeking asks for it repeatedly. Safe: it is only ever needed
+  // once the chunk list has stopped growing, and it is dropped on the next run.
+  const concatChunks = () => {
+    if (pcmCacheRef.current) return pcmCacheRef.current;
+
+    const totalLength = allChunksRef.current.reduce(
+      (acc, chunk) => acc + chunk.length,
+      0
+    );
+    const data = new Uint8Array(totalLength);
+    let offset = 0;
+    for (const chunk of allChunksRef.current) {
+      data.set(chunk, offset);
+      offset += chunk.length;
+    }
+
+    pcmCacheRef.current = data;
+    return data;
+  };
+
+  // The chunks received so far as one playable audio URL, built once per run.
+  const buildCompleteAudioUrl = useMemoizedFn(() => {
+    if (completeUrlRef.current) return completeUrlRef.current;
+    if (!allChunksRef.current.length) return '';
+
+    completeUrlRef.current =
+      formatRef.current === 'pcm'
+        ? URL.createObjectURL(pcmToWav(concatChunks().buffer))
+        : URL.createObjectURL(
+            new Blob(allChunksRef.current as any, {
+              type: `audio/${formatRef.current}`
+            })
+          );
+
+    return completeUrlRef.current;
+  });
+
+  // Hand the complete audio to the caller as the item's own audio, so it stops
+  // being a stream and becomes a normal, seekable, downloadable player. Called
+  // when playback drains and when the user stops the request, so a stopped
+  // generation still leaves behind whatever it had produced.
+  const finalizeAudio = useMemoizedFn(() => {
+    if (deliveredRef.current) return;
+
+    const completeUrl = buildCompleteAudioUrl();
+    if (!completeUrl) return;
+
+    deliveredRef.current = true;
+    params?.onComplete?.(completeUrl);
+
+    if (formatRef.current === 'pcm') {
+      // clear the streaming analyser data: the audio element now plays the
+      // complete audio and generates its own.
+      pcmPlayer.setAudioChunks(null);
     }
   });
 
@@ -110,9 +149,16 @@ export const useStreamTTS = (params?: UseStreamTTSParams) => {
     try {
       setLoading(true);
       setError(null);
-      setProgress(0);
       setIsPCM(ttsParams.response_format === 'pcm');
       allChunksRef.current = [];
+      pcmCacheRef.current = null;
+      deliveredRef.current = false;
+      setDownloadUrl('');
+      // the previous run's audio has just left the list with it
+      if (completeUrlRef.current) {
+        URL.revokeObjectURL(completeUrlRef.current);
+        completeUrlRef.current = '';
+      }
 
       // Abort previous request if exists
       controllerRef.current?.abort();
@@ -141,18 +187,11 @@ export const useStreamTTS = (params?: UseStreamTTSParams) => {
       const signal = controllerRef.current.signal;
 
       const format = ttsParams.response_format || 'mp3';
+      formatRef.current = format;
       const isPCM = format === 'pcm';
       const useMediaSource = !isPCM && supportsMediaSource(format);
 
       let url = '';
-      console.log(
-        'format:',
-        format,
-        'isPCM:',
-        isPCM,
-        'useMediaSource:',
-        useMediaSource
-      );
 
       if (isPCM) {
         // PCM format: use Web Audio API for playback
@@ -166,10 +205,8 @@ export const useStreamTTS = (params?: UseStreamTTSParams) => {
         const mediaSource = new MediaSource();
         mediaSourceRef.current = mediaSource;
         url = URL.createObjectURL(mediaSource);
-        console.log('Created MediaSource URL:', url);
         setStreamUrl(url);
         params?.onUrlReady?.(url); // Notify that URL is ready
-        console.log('Called onUrlReady with URL:', url);
 
         // Wait for MediaSource to be ready
         await new Promise<void>((resolve, reject) => {
@@ -263,17 +300,17 @@ export const useStreamTTS = (params?: UseStreamTTSParams) => {
           }
 
           // Handle completion based on format
-          if (allChunksRef.current.length > 0) {
-            if (isPCM) {
-              // PCM format: notify the player that streaming has ended
-              // onComplete will be called by the player when playback finishes
-              pcmPlayer.endStream();
-            } else {
-              const completeBlob = new Blob(allChunksRef.current as any, {
-                type: `audio/${format}`
-              });
-              const completeUrl = URL.createObjectURL(completeBlob);
-            }
+          if (isPCM) {
+            // The scheduled buffers are still playing, so the player calls back
+            // through onPlaybackComplete when it drains. Every byte is in hand
+            // though, so seeking and downloading can already be offered.
+            pcmPlayer.endStream();
+            setDownloadUrl(buildCompleteAudioUrl());
+          } else if (!useMediaSource) {
+            // No incremental playback happened: hand over the complete audio.
+            // (MediaSource keeps playing its own URL, which endOfStream just
+            // turned into a complete, seekable stream — don't swap it out.)
+            finalizeAudio();
           }
           break;
         }
@@ -289,7 +326,6 @@ export const useStreamTTS = (params?: UseStreamTTSParams) => {
           }
 
           params?.onChunk?.(value.buffer);
-          setProgress((prev) => prev + 1);
         }
       }
     } catch (err: any) {
@@ -309,12 +345,15 @@ export const useStreamTTS = (params?: UseStreamTTSParams) => {
     }
   });
 
-  const abort = useCallback(() => {
+  // SpeechItem exposes the underlying audio element handle as `playerRef`.
+  const audioElement = () => params?.playerRef?.current?.playerRef;
+
+  const abort = useMemoizedFn(() => {
     controllerRef.current?.abort();
+    // Stop what is currently audible: the PCM buffers scheduled ahead of the
+    // network stream, and the audio element fed by MediaSource.
     pcmPlayer.stop();
-    if (streamUrl) {
-      URL.revokeObjectURL(streamUrl);
-    }
+    audioElement()?.pause?.();
     if (mediaSourceRef.current?.readyState === 'open') {
       try {
         mediaSourceRef.current.endOfStream();
@@ -322,28 +361,46 @@ export const useStreamTTS = (params?: UseStreamTTSParams) => {
         console.error('Failed to end stream on abort:', error);
       }
     }
+    if (streamUrl) {
+      URL.revokeObjectURL(streamUrl);
+      setStreamUrl('');
+    }
+    // keep the part that was already generated playable
+    finalizeAudio();
     setLoading(false);
-  }, [streamUrl, pcmPlayer]);
+  });
 
-  const play = useCallback(() => {
-    params?.playerRef?.current?.play();
-  }, [params?.playerRef]);
+  // Playback controls for a stream that is still being played by our own PCM
+  // player. For every other format the audio element inside the player
+  // component drives itself, and these calls are no-ops.
+  const pause = useMemoizedFn(() => {
+    pcmPlayer.pause();
+  });
 
-  const pause = useCallback(() => {
-    params?.playerRef?.current?.pause();
-  }, [params?.playerRef]);
+  const resume = useMemoizedFn(() => {
+    pcmPlayer.resume();
+  });
+
+  const seek = useMemoizedFn((position: number) => {
+    if (formatRef.current !== 'pcm' || !allChunksRef.current.length) return;
+    pcmPlayer.playFrom(position, concatChunks());
+  });
 
   return {
     generate,
     abort,
     loading,
     error,
-    progress,
     streamUrl,
     audioChunks: isPCM ? pcmPlayer.audioChunks : undefined,
     isPlaying: pcmPlayer.isPlaying,
-    pcmPlayer,
-    play,
-    pause
+    // length and download become available as soon as generation ends, without
+    // waiting for playback to drain
+    duration: pcmPlayer.duration,
+    currentTime: pcmPlayer.currentTime,
+    downloadUrl,
+    pause,
+    resume,
+    seek
   };
 };

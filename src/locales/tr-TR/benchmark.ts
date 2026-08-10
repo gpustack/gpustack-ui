@@ -353,6 +353,7 @@ export default {
   'benchmark.detail.stopReason.converged': 'yakınsama',
   'benchmark.detail.stopReason.overloaded': 'sunucu aşırı yüklenmesi',
   'benchmark.detail.stopReason.pointFailed': 'sonuç vermeyen bir nokta',
+  'benchmark.detail.stopReason.probeBound': 'doygunluk sondasının sınırı',
   'benchmark.detail.recommend.text':
     'En İyi: eşzamanlılık {rate} — pik verimin %{pct} ({tps} tok/s), TTFT {ttft} ms{sla, select, yes{, SLA içinde} other{}}.',
   'benchmark.detail.analysis.text':

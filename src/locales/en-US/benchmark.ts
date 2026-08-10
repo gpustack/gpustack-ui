@@ -351,6 +351,7 @@ export default {
   'benchmark.detail.stopReason.converged': 'convergence',
   'benchmark.detail.stopReason.overloaded': 'server overload',
   'benchmark.detail.stopReason.pointFailed': 'a point with no result',
+  'benchmark.detail.stopReason.probeBound': `the saturation probe's cap`,
   'benchmark.detail.recommend.text':
     'Best: concurrency {rate} — {pct}% of peak throughput ({tps} tok/s) at TTFT {ttft} ms{sla, select, yes{, within the SLA} other{}}.',
   'benchmark.detail.analysis.text':

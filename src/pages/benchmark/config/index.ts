@@ -184,7 +184,11 @@ export const STOP_REASON_LABEL: Record<string, string> = {
   sla_failed: 'benchmark.detail.stopReason.slaFailed',
   converged: 'benchmark.detail.stopReason.converged',
   overloaded: 'benchmark.detail.stopReason.overloaded',
-  point_failed: 'benchmark.detail.stopReason.pointFailed'
+  point_failed: 'benchmark.detail.stopReason.pointFailed',
+  // Not the user's range: the saturation probe's own cap, which it
+  // re-derives every run. Only reachable when lower_bound already sits
+  // above it — hence its own label instead of "the range ceiling".
+  probe_bound: 'benchmark.detail.stopReason.probeBound'
 };
 
 export const DatasetValueMap = {

@@ -356,6 +356,7 @@ export default {
   'benchmark.detail.stopReason.converged': 'сходимости',
   'benchmark.detail.stopReason.overloaded': 'перегрузке сервера',
   'benchmark.detail.stopReason.pointFailed': 'точке без результата',
+  'benchmark.detail.stopReason.probeBound': 'пределе зондирования насыщения',
   'benchmark.detail.recommend.text':
     'Оптимум: параллелизм {rate} — {pct}% пиковой пропускной способности ({tps} tok/s) при TTFT {ttft} мс{sla, select, yes{, в рамках SLA} other{}}.',
   'benchmark.detail.analysis.text':

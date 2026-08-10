@@ -346,6 +346,7 @@ export default {
   'benchmark.detail.stopReason.converged': '搜索收敛',
   'benchmark.detail.stopReason.overloaded': '服务过载',
   'benchmark.detail.stopReason.pointFailed': '某个点未产出结果',
+  'benchmark.detail.stopReason.probeBound': '饱和探测上限',
   'benchmark.detail.recommend.text':
     '最佳:并发 {rate} —— 吞吐达峰值的 {pct}%({tps} tok/s),TTFT {ttft} ms{sla, select, yes{,在 SLA 内} other{}}。',
   'benchmark.detail.analysis.text':

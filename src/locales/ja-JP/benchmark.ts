@@ -351,6 +351,7 @@ export default {
   'benchmark.detail.stopReason.converged': '収束',
   'benchmark.detail.stopReason.overloaded': 'サーバー過負荷',
   'benchmark.detail.stopReason.pointFailed': '結果が得られなかったポイント',
+  'benchmark.detail.stopReason.probeBound': '飽和プローブの上限',
   'benchmark.detail.recommend.text':
     '最適:並行 {rate} —— ピークスループットの {pct}%({tps} tok/s)、TTFT {ttft} ms{sla, select, yes{(SLA 内)} other{}}。',
   'benchmark.detail.analysis.text':

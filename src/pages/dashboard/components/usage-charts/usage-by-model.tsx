@@ -3,6 +3,7 @@ import useQueryTimeSeriesData from '@/pages/usage/services/use-query-timeseries-
 import { Chart } from '@gpustack/core-ui/charts';
 import { formatLargeNumber } from '@gpustack/core-ui/utils';
 import { useIntl } from '@umijs/max';
+import { useSize, useThrottle } from 'ahooks';
 import type { GlobalToken } from 'antd';
 import { Empty, Spin, theme } from 'antd';
 import { useEffect, useMemo, useRef } from 'react';
@@ -35,6 +36,28 @@ const escapeHtml = (value: unknown): string =>
 // metrics get fair representation even when leaders heavily overlap.
 const MAX_LEGEND_NAMED_ITEMS = 10;
 
+// The two donuts and the HTML overlays sitting in their holes are laid out in
+// pixels measured off the card, not in percentages of it. A percentage centre
+// moves the two rings closer together as the card narrows while their radius
+// keeps following the card *height*, so on a smaller screen the rings — and
+// the value/label overlays inside them — end up colliding. Measuring gives
+// each donut its own half of the plotting area (legend excluded) and sizes the
+// radius so it can never outgrow that half.
+const LEGEND_WIDTH_RATIO = 0.26;
+const LEGEND_MIN_WIDTH = 120;
+const LEGEND_MAX_WIDTH = 200;
+// Breathing room between the two rings, and between a ring and the card edge.
+const DONUT_GAP = 12;
+// The rings only *shrink* with the card. On a wide screen filling half the
+// plotting area each would blow them up well past the size the section is
+// designed around, so the fitted radius is capped.
+const DONUT_MAX_RADIUS = 105;
+// Preserves the original ['50%', '70%'] inner/outer ratio.
+const DONUT_INNER_RATIO = 5 / 7;
+
+// Legend label truncation, minus the marker and its gap.
+const legendTextWidth = (legendWidth: number) => Math.max(legendWidth - 24, 60);
+
 interface UsageByModelProps {
   commonParams: DashboardUsageCommonParams;
   height?: number;
@@ -48,6 +71,15 @@ const UsageByModel: React.FC<UsageByModelProps> = ({
   const { token } = theme.useToken();
   const generateCoolColors = useCoolColors();
   const chartRef = useRef<{ chart: any } | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  // core-ui's Chart already throttles its own resize at 100ms; measure on the
+  // same beat (rounded to whole px) so a drag doesn't re-render and re-patch
+  // the chart on every observer frame. Throttle leads, so the first
+  // measurement is still instant.
+  const containerWidth = useThrottle(
+    Math.round(useSize(containerRef)?.width ?? 0),
+    { wait: 100 }
+  );
 
   const tokenQuery = useQueryTimeSeriesData({ key: 'tokenUsageByModelData' });
   const apiQuery = useQueryTimeSeriesData({ key: 'apiRequestsByModelData' });
@@ -197,6 +229,59 @@ const UsageByModel: React.FC<UsageByModelProps> = ({
     projectedTokenData.length === 0 && projectedApiData.length === 0;
   const isLoading = tokenQuery.loading || apiQuery.loading;
 
+  // Legend keeps a capped share on the right; the rest is split into two equal
+  // slots, one donut centred in each.
+  const layout = useMemo(() => {
+    const legendWidth = Math.min(
+      Math.max(containerWidth * LEGEND_WIDTH_RATIO, LEGEND_MIN_WIDTH),
+      LEGEND_MAX_WIDTH
+    );
+    const slotWidth = Math.max(containerWidth - legendWidth, 0) / 2;
+    const outerRadius = Math.max(
+      Math.min(slotWidth / 2, height / 2, DONUT_MAX_RADIUS + DONUT_GAP) -
+        DONUT_GAP,
+      0
+    );
+    return {
+      legendWidth,
+      outerRadius,
+      innerRadius: outerRadius * DONUT_INNER_RATIO,
+      centerX: [slotWidth / 2, slotWidth * 1.5]
+    };
+  }, [containerWidth, height]);
+
+  // Geometry is pushed to the instance as a *merge* patch instead of riding in
+  // `options`: the Chart wrapper rebuilds with clear() + setOption(notMerge),
+  // which blanks the canvas and replays the pie animation — visible flicker on
+  // every throttled tick of a window drag. A merged patch just transitions.
+  // `options` therefore reads `layout` without depending on it; whichever
+  // layout was current when it last rebuilt is then corrected by this effect.
+  useEffect(() => {
+    const inst = chartRef.current?.chart;
+    if (!inst) return;
+    // Pull the canvas to the measured size here too: the wrapper's own
+    // throttle runs on a separate 100ms phase, so leaving it to that can clip
+    // a donut against a not-yet-widened canvas for a tick.
+    inst.resize();
+    inst.setOption({
+      // Geometry has to land in the same frame as the HTML overlays, which
+      // move instantly — an animated transition would leave the rings
+      // trailing their own value/label while the window is being dragged.
+      animationDurationUpdate: 0,
+      legend: { textStyle: { width: legendTextWidth(layout.legendWidth) } },
+      series: [
+        {
+          radius: [layout.innerRadius, layout.outerRadius],
+          center: [layout.centerX[0], '50%']
+        },
+        {
+          radius: [layout.innerRadius, layout.outerRadius],
+          center: [layout.centerX[1], '50%']
+        }
+      ]
+    });
+  }, [layout]);
+
   const options = useMemo(() => {
     const paintData = (rows: UsageChartDatum[]) =>
       rows.map((row) => ({
@@ -236,7 +321,7 @@ const UsageByModel: React.FC<UsageByModelProps> = ({
         textStyle: {
           color: token.colorTextTertiary,
           overflow: 'truncate',
-          width: 180
+          width: legendTextWidth(layout.legendWidth)
         },
         data: legendNames,
         show: legendNames.length > 0,
@@ -251,8 +336,8 @@ const UsageByModel: React.FC<UsageByModelProps> = ({
         {
           name: tokenLabel,
           type: 'pie',
-          radius: ['50%', '70%'],
-          center: ['20%', '50%'],
+          radius: [layout.innerRadius, layout.outerRadius],
+          center: [layout.centerX[0], '50%'],
           avoidLabelOverlap: true,
           label: { show: false },
           labelLine: { show: false },
@@ -264,8 +349,8 @@ const UsageByModel: React.FC<UsageByModelProps> = ({
         {
           name: apiLabel,
           type: 'pie',
-          radius: ['50%', '70%'],
-          center: ['60%', '50%'],
+          radius: [layout.innerRadius, layout.outerRadius],
+          center: [layout.centerX[1], '50%'],
           avoidLabelOverlap: true,
           label: { show: false },
           labelLine: { show: false },
@@ -281,6 +366,7 @@ const UsageByModel: React.FC<UsageByModelProps> = ({
     projectedApiData,
     colorMap,
     legendNames,
+    // `layout` is deliberately not a dep — see the merge-patch effect above.
     token,
     tokenLabel,
     apiLabel
@@ -336,7 +422,10 @@ const UsageByModel: React.FC<UsageByModelProps> = ({
       title={intl.formatMessage({ id: 'dashboard.usageByModel' })}
       height={height + 52}
     >
-      <div style={{ position: 'relative', width: '100%', height }}>
+      <div
+        ref={containerRef}
+        style={{ position: 'relative', width: '100%', height }}
+      >
         {isEmpty && !isLoading ? (
           <div
             style={{
@@ -350,26 +439,32 @@ const UsageByModel: React.FC<UsageByModelProps> = ({
           </div>
         ) : (
           <>
-            <Chart
-              ref={chartRef as any}
-              options={options as any}
-              height={height}
-              width="100%"
-            />
-            <DonutCenter
-              left="20%"
-              top="50%"
-              total={tokenTotal}
-              label={tokenLabel}
-              token={token}
-            />
-            <DonutCenter
-              left="60%"
-              top="50%"
-              total={apiTotal}
-              label={apiLabel}
-              token={token}
-            />
+            {/* Held back until the card is measured: a 0-width layout would
+                paint both donuts at radius 0 for a frame. */}
+            {containerWidth > 0 && (
+              <>
+                <Chart
+                  ref={chartRef as any}
+                  options={options as any}
+                  height={height}
+                  width="100%"
+                />
+                <DonutCenter
+                  left={layout.centerX[0]}
+                  maxWidth={layout.innerRadius * 2 - 8}
+                  total={tokenTotal}
+                  label={tokenLabel}
+                  token={token}
+                />
+                <DonutCenter
+                  left={layout.centerX[1]}
+                  maxWidth={layout.innerRadius * 2 - 8}
+                  total={apiTotal}
+                  label={apiLabel}
+                  token={token}
+                />
+              </>
+            )}
             {isLoading && (
               <div
                 style={{
@@ -393,46 +488,61 @@ const UsageByModel: React.FC<UsageByModelProps> = ({
   );
 };
 
+// `left` is the pie centre in px and `maxWidth` the donut hole's diameter, so
+// the overlay can never spill over its own ring and into its neighbour.
 const DonutCenter: React.FC<{
-  left: string;
-  top: string;
+  left: number;
+  maxWidth: number;
   total: number;
   label: string;
   token: GlobalToken;
-}> = ({ left, top, total, label, token }) => (
-  <div
-    style={{
-      position: 'absolute',
-      left,
-      top,
-      transform: 'translate(-50%, -50%)',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      pointerEvents: 'none',
-      textAlign: 'center'
-    }}
-  >
-    <span
+}> = ({ left, maxWidth, total, label, token }) => {
+  const compact = maxWidth < 110;
+  const ellipsis = {
+    maxWidth: '100%',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap'
+  } as const;
+
+  return (
+    <div
       style={{
-        fontSize: 18,
-        fontWeight: 600,
-        color: token.colorText,
-        lineHeight: 1.2
+        position: 'absolute',
+        left,
+        top: '50%',
+        maxWidth: Math.max(maxWidth, 0),
+        transform: 'translate(-50%, -50%)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        pointerEvents: 'none',
+        textAlign: 'center'
       }}
     >
-      {formatLargeNumber(total)}
-    </span>
-    <span
-      style={{
-        fontSize: 12,
-        color: token.colorTextTertiary,
-        marginTop: 4
-      }}
-    >
-      {label}
-    </span>
-  </div>
-);
+      <span
+        style={{
+          ...ellipsis,
+          fontSize: compact ? 15 : 18,
+          fontWeight: 600,
+          color: token.colorText,
+          lineHeight: 1.2
+        }}
+      >
+        {formatLargeNumber(total)}
+      </span>
+      <span
+        style={{
+          ...ellipsis,
+          fontSize: compact ? 11 : 12,
+          color: token.colorTextTertiary,
+          marginTop: 4
+        }}
+      >
+        {label}
+      </span>
+    </div>
+  );
+};
 
 export default UsageByModel;

@@ -55,17 +55,6 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
   const checkvalueRef = useRef<any>(true);
   const [currentPrompt, setCurrentPrompt] = useState<string>('');
   const formRef = useRef<any>(null);
-  const [playingStream, setPlayingStream] = useState(false);
-
-  const handleOnPlay = () => {
-    // TODO
-    console.log('Play audio');
-  };
-
-  const handleOnPause = () => {
-    // TODO
-    console.log('Pause audio');
-  };
 
   const nonStreamTTS = useNonStreamTTS({
     onSuccess: (result) => {
@@ -93,10 +82,8 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
   const playerRef = useRef<any>(null);
 
   const streamTTS = useStreamTTS({
-    autoPlay: checkvalueRef.current,
     playerRef: playerRef,
     onUrlReady: (url) => {
-      console.log('onUrlReady called with URL:', url);
       // Update messageList with stream URL when it's ready
       setMessageList((prev) => {
         if (prev.length > 0) {
@@ -108,7 +95,6 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
       });
     },
     onComplete: (audioUrl) => {
-      console.log('onComplete called with audioUrl:', audioUrl);
       setMessageList((prev) => {
         if (prev.length > 0) {
           const updated = [...prev];
@@ -117,7 +103,6 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
         }
         return prev;
       });
-      setPlayingStream(false);
     },
     onError: (error) => {
       setTokenResult({
@@ -125,11 +110,18 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
         errorMessage: error.message || _.toString(error)
       });
       setMessageList([]);
-      setPlayingStream(false);
     }
   });
 
-  console.log('isPlaying:', streamTTS.isPlaying);
+  // Playback of a PCM stream is owned by the stream player, not by an audio
+  // element, so the player component reports its pause / resume back here.
+  const handleOnPlay = () => {
+    streamTTS.resume();
+  };
+
+  const handleOnPause = () => {
+    streamTTS.pause();
+  };
 
   useImperativeHandle(ref, () => {
     return {
@@ -204,7 +196,6 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
 
       // Choose stream or non-stream based on parameters
       if (parameters.stream) {
-        setPlayingStream(true);
         // Stream mode: create initial message entry, URL will be set via onUrlReady callback
         setMessageList([
           {
@@ -223,7 +214,6 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
         await nonStreamTTS.generate(params);
       }
     } catch (error: any) {
-      setPlayingStream(false);
       console.error('Error generating TTS:', error);
       setTokenResult({
         error: true,
@@ -281,8 +271,13 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
                   onPlay={handleOnPlay}
                   onPause={handleOnPause}
                   playerRef={playerRef}
-                  isPlaying={playingStream}
-                  isStream={parameters.stream}
+                  streamPlayer={{
+                    isPlaying: streamTTS.isPlaying,
+                    currentTime: streamTTS.currentTime,
+                    duration: streamTTS.duration,
+                    downloadUrl: streamTTS.downloadUrl,
+                    onSeek: streamTTS.seek
+                  }}
                   analyserData={streamTTS.audioChunks}
                 />
               ) : (

@@ -281,7 +281,7 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
         </Button>
         {showUpgrade && (
           <NewLabel>
-            <span className="text">
+            <span className="text font-400">
               {intl.formatMessage({ id: 'common.text.new' })}
             </span>
           </NewLabel>

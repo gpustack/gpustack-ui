@@ -1,7 +1,7 @@
 import { fetchChunkedData } from '@/utils/fetch-chunk-data';
 import { pcmToWav } from '@/utils/pcm-to-wav';
 import { useMemoizedFn } from 'ahooks';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { AUDIO_TEXT_TO_SPEECH_API } from '../../apis';
 import { extractErrorMessage } from '../../config';
 import { usePCMStreamPlayer } from './use-pcm-stream-player';
@@ -348,10 +348,11 @@ export const useStreamTTS = (params?: UseStreamTTSParams) => {
   // SpeechItem exposes the underlying audio element handle as `playerRef`.
   const audioElement = () => params?.playerRef?.current?.playerRef;
 
-  const abort = useMemoizedFn(() => {
+  // Stop the request and everything it is currently driving: the PCM buffers
+  // scheduled ahead of the network stream, and the audio element fed by
+  // MediaSource. Says nothing about what to do with the audio produced so far.
+  const releaseStream = useMemoizedFn(() => {
     controllerRef.current?.abort();
-    // Stop what is currently audible: the PCM buffers scheduled ahead of the
-    // network stream, and the audio element fed by MediaSource.
     pcmPlayer.stop();
     audioElement()?.pause?.();
     if (mediaSourceRef.current?.readyState === 'open') {
@@ -365,10 +366,27 @@ export const useStreamTTS = (params?: UseStreamTTSParams) => {
       URL.revokeObjectURL(streamUrl);
       setStreamUrl('');
     }
+  });
+
+  const abort = useMemoizedFn(() => {
+    releaseStream();
     // keep the part that was already generated playable
     finalizeAudio();
     setLoading(false);
   });
+
+  // On unmount nobody is left to listen to or keep the audio, so the stream is
+  // released without handing anything over, and the complete audio built for
+  // download goes with it.
+  useEffect(() => {
+    return () => {
+      releaseStream();
+      if (completeUrlRef.current) {
+        URL.revokeObjectURL(completeUrlRef.current);
+        completeUrlRef.current = '';
+      }
+    };
+  }, [releaseStream]);
 
   // Playback controls for a stream that is still being played by our own PCM
   // player. For every other format the audio element inside the player

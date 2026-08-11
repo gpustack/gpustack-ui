@@ -1,5 +1,5 @@
 import { useMemoizedFn } from 'ahooks';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface Params {
   sampleRate?: number;
@@ -336,6 +336,14 @@ export const usePCMStreamPlayer = (params?: Params) => {
     setDuration(totalFramesRef.current / sampleRate);
     scheduleCompletion();
   });
+
+  // Leaving the page has to take the audio with it: nothing else ever closes
+  // the context, so it would go on playing, with its timers still running.
+  useEffect(() => {
+    return () => {
+      stop();
+    };
+  }, [stop]);
 
   return {
     initialize,

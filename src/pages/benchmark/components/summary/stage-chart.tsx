@@ -79,7 +79,17 @@ export interface ChartSpec {
   bands?: ChartBand[];
   /** Value x-axis (throughput / concurrency); omitted = categorical load axis. */
   x?: {
+    /** Tooltip row label. */
     name: string;
+    /**
+     * Axis title, defaulting to `name` — the same split as
+     * `loadAxisName`/`loadAxisTitle`, for the same reason: the axis ticks are
+     * bare numbers and need the unit, while the tooltip prints the value right
+     * next to the label, where a unit reads as "Concurrency avg (requests)  256".
+     * Set it only when the two forms genuinely differ; the frontier's throughput
+     * label carries its unit in both, because `fmtTps` renders "34.9k".
+     */
+    title?: string;
     value: Getter;
     fmt: (v: number) => string;
     log?: boolean;
@@ -193,15 +203,18 @@ export const tooltipRows = (
 interface Props {
   spec: ChartSpec;
   points: StagePoint[];
-  /** Load-axis label for the categorical x-axis and the tooltip header. */
+  /** Tooltip header, e.g. "Concurrency 256" — no unit, the value carries it. */
   loadAxisName: string;
+  /** Categorical x-axis title, e.g. "Concurrency (requests)" — needs the unit,
+   *  because the ticks are bare numbers. */
+  loadAxisTitle: string;
   loadDecimals: number;
   logHint?: string;
   height?: number;
 }
 
 const buildOption = (
-  { spec, points, loadAxisName, loadDecimals }: Props,
+  { spec, points, loadAxisName, loadAxisTitle, loadDecimals }: Props,
   // Gridlines are the one part of the palette that cannot be a hex literal like
   // the rest of `C`: they have to recede into whichever background is behind
   // them, and a light-theme value reads as a set of bright solid rules in dark
@@ -436,7 +449,7 @@ const buildOption = (
   const xAxis: Record<string, unknown> = isValueX
     ? {
         type: spec.x!.log ? 'log' : 'value',
-        name: spec.x!.name,
+        name: spec.x!.title ?? spec.x!.name,
         nameLocation: 'middle',
         nameGap: 28,
         nameTextStyle: { color: C.text, fontSize: 12 },
@@ -451,7 +464,7 @@ const buildOption = (
     : {
         type: 'category',
         data: points.map((p) => String(Number(p.load.toFixed(loadDecimals)))),
-        name: loadAxisName,
+        name: loadAxisTitle,
         nameLocation: 'middle',
         nameGap: 26,
         nameTextStyle: { color: C.text, fontSize: 12 },

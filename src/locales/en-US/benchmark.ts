@@ -199,8 +199,8 @@ export default {
     'Stopped early ({reason}): {processed}/{requested} requests ran.',
   'benchmark.detail.summary.stageDetail': 'Stage detail',
   'benchmark.detail.summary.performance': 'Performance',
-  'benchmark.detail.reason.throughputVsPrev':
-    '{up}% higher throughput than {prevRate}',
+  'benchmark.detail.reason.requestsSucceeded':
+    '{ok} of {total} requests succeeded',
   'benchmark.detail.reason.withinSla': 'Within the SLA',
   'benchmark.detail.reason.peakExceedsSla':
     'Throughput peaks higher at {rate} {unit}, but running there would breach the SLA — so the recommendation is the SLA boundary.',
@@ -280,8 +280,8 @@ export default {
     'This stage has {count} samples, so only {tail} sit above p99 — the tail is decided by a handful of requests. Read it as indicative, not as an SLA conclusion (p99 needs ~1000 samples to behave like an estimate).',
   'benchmark.detail.successPill': '{pct}% success · {ok} / {total} requests',
   'benchmark.detail.summary.stagesHint': 'Click any row to see its detail',
-  'benchmark.detail.chart.operatingCurve': 'Operating curve',
-  'benchmark.detail.chart.operatingCurve.note':
+  'benchmark.detail.chart.loadSweep': 'Load sweep',
+  'benchmark.detail.chart.loadSweep.note':
     'Throughput and p99 TTFT as the load rises',
   'benchmark.detail.chart.dualAxisHint':
     'The left axis (throughput) is linear — every gridline adds the same amount. The right axis (TTFT p99) is logarithmic — every gridline is 10x the one below it, because latency spans a thousandfold and a linear scale would hide the blow-up past the knee.',

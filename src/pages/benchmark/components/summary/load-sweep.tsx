@@ -277,7 +277,7 @@ const buildOption = (
   };
 };
 
-const OperatingCurve: React.FC<Props> = (props) => {
+const LoadSweep: React.FC<Props> = (props) => {
   const ref = useRef<HTMLDivElement>(null);
   const inst = useRef<ECharts | null>(null);
   const { token } = theme.useToken();
@@ -309,4 +309,4 @@ const OperatingCurve: React.FC<Props> = (props) => {
   );
 };
 
-export default OperatingCurve;
+export default LoadSweep;

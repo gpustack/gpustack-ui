@@ -199,8 +199,7 @@ export default {
     '早期終了({reason}):{processed}/{requested} 件を実行。',
   'benchmark.detail.summary.stageDetail': 'ステージ詳細',
   'benchmark.detail.summary.performance': 'パフォーマンス',
-  'benchmark.detail.reason.throughputVsPrev':
-    '{prevRate} よりスループットが {up}% 高い',
+  'benchmark.detail.reason.requestsSucceeded': '{total} 件のうち {ok} 件が成功',
   'benchmark.detail.reason.withinSla': 'SLA を満たす',
   'benchmark.detail.reason.peakExceedsSla':
     'スループットのピークは {rate} {unit} でより高くなりますが、そこで実行すると SLA を超えるため、推奨は SLA 境界です。',
@@ -281,8 +280,8 @@ export default {
   'benchmark.detail.successPill': '成功率 {pct}% · {ok} / {total} リクエスト',
   'benchmark.detail.summary.stagesHint':
     '任意の行をクリックすると詳細を表示します',
-  'benchmark.detail.chart.operatingCurve': '動作曲線',
-  'benchmark.detail.chart.operatingCurve.note':
+  'benchmark.detail.chart.loadSweep': '負荷スイープ',
+  'benchmark.detail.chart.loadSweep.note':
     '負荷に対するスループットと P99 TTFT の変化',
   'benchmark.detail.chart.dualAxisHint':
     '左軸（スループット）は等間隔で、1 目盛りごとに同じ値が加算されます。右軸（TTFT p99）は 1 目盛りごとに 10 倍 — レイテンシは千倍規模で変動するため、等間隔目盛りでは変曲点以降の急増が見えなくなります。',

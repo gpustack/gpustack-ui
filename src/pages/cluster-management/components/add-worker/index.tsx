@@ -110,18 +110,22 @@ const AddWorker: React.FC<AddWorkerProps> = (props) => {
     const workers =
       workersResult.status === 'fulfilled' ? workersResult.value || [] : [];
 
-    setClusterState((prev) => ({
+    setClusterState({
+      // Keeping the previous cluster's info on failure would hand out a command
+      // carrying another cluster's registration token, against a cluster the
+      // rest of the step has already switched away from. Empty is the honest
+      // failure: there is nothing to copy.
       registrationInfo:
         tokenResult.status === 'fulfilled'
           ? { ...tokenResult.value, cluster_id: value }
-          : prev.registrationInfo,
+          : emptyRegistrationInfo,
       registeredGPUs: getDriverKeysByVendors(
         workers.flatMap(
           (worker) =>
             worker.status?.gpu_devices?.map((device) => device.vendor) || []
         )
       )
-    }));
+    });
   };
 
   useEffect(() => {

@@ -329,6 +329,10 @@ export default {
   'benchmark.detail.chart.axis.inFlight': '実行中リクエスト数',
   'benchmark.detail.chart.axis.shortfall': '不足（リクエスト数）',
   'benchmark.detail.chart.axis.successRate': '成功率 (%)',
+  'benchmark.detail.chart.axis.load.rate': 'リクエストレート (req/s)',
+  'benchmark.detail.chart.axis.load.concurrency': '同時実行数 (リクエスト)',
+  'benchmark.detail.chart.axis.throughput': '総スループット (tok/s)',
+  'benchmark.detail.chart.axis.concurrencyAvg': '平均同時実行数 (リクエスト)',
   'benchmark.detail.reason.peakTradeoffPlain':
     'ピークの {rate} {unit} まで上げてもスループットは {gain}% 増にとどまります',
   'benchmark.detail.summary.showMore': '他 {n} 件を表示',

@@ -126,6 +126,20 @@ export const loadAxisLabelId = (d?: {
     ? 'benchmark.form.concurrency'
     : 'benchmark.table.requestRate';
 
+// The same label for a CHART AXIS, which has to carry the unit: axis ticks are
+// bare numbers (4, 8, 16, 29), so without it the reader has nothing telling them
+// whether 29 means requests per second or requests in flight. Kept apart from
+// `loadAxisLabelId` because that one also names a table column and a tooltip row,
+// where the value already sits next to its unit and repeating it in the label
+// reads as "Request Rate (req/s) 29 req/s".
+export const loadAxisTitleId = (d?: {
+  load_type?: string;
+  stages?: unknown[] | null;
+}): string =>
+  loadAxisLabelId(d) === 'benchmark.form.concurrency'
+    ? 'benchmark.detail.chart.axis.load.concurrency'
+    : 'benchmark.detail.chart.axis.load.rate';
+
 // Concurrency is an integer (# of concurrent requests); request rate is a
 // continuous req/s frequency, so show it with one decimal.
 export const loadValueDecimals = (d?: {

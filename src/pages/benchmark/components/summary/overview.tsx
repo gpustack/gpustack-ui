@@ -13,6 +13,7 @@ import React, { useMemo, useState } from 'react';
 import {
   STOP_REASON_LABEL,
   loadAxisLabelId,
+  loadAxisTitleId,
   loadValueDecimals
 } from '../../config';
 import { useDetailContext } from '../../config/detail-context';
@@ -222,7 +223,15 @@ const Overview: React.FC<OverviewProps> = ({
     intl.formatMessage({ id }, values);
 
   const dec = loadValueDecimals(detailData);
+  // Two forms of the same label, and the difference is not cosmetic:
+  //   * `loadAxisName` — no unit. Goes where the value is printed right next to
+  //     it: the stage table's column header and the charts' tooltip headers
+  //     ("Request Rate 29"). Adding the unit there reads as "Request rate
+  //     (req/s) 29".
+  //   * `loadAxisTitle` — unit included. Goes on the chart AXIS, whose ticks are
+  //     bare numbers with nothing else to say what 29 counts.
   const loadAxisName = t(loadAxisLabelId(detailData));
+  const loadAxisTitle = t(loadAxisTitleId(detailData));
   const isConcurrency =
     loadAxisLabelId(detailData) === 'benchmark.form.concurrency';
 
@@ -511,11 +520,12 @@ const Overview: React.FC<OverviewProps> = ({
           <OperatingCurve
             points={points}
             loadAxisName={loadAxisName}
+            loadAxisTitle={loadAxisTitle}
             loadDecimals={dec}
             labels={{
               concurrency: t('benchmark.detail.requests.concurrency'),
               throughput: t('benchmark.detail.throughput.totalToken'),
-              throughputAxis: 'Total Tokens/s',
+              throughputAxis: t('benchmark.detail.chart.axis.throughput'),
               ttftP99: 'TTFT p99',
               overloaded: t('benchmark.detail.status.overloaded'),
               slaBreached: t('benchmark.detail.chart.slaBreached')
@@ -562,6 +572,7 @@ const Overview: React.FC<OverviewProps> = ({
                 spec={spec}
                 points={points}
                 loadAxisName={loadAxisName}
+                loadAxisTitle={loadAxisTitle}
                 loadDecimals={dec}
                 logHint={t('benchmark.detail.chart.logHint')}
               />

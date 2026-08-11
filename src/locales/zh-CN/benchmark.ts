@@ -324,6 +324,10 @@ export default {
   'benchmark.detail.chart.axis.inFlight': '并发请求数',
   'benchmark.detail.chart.axis.shortfall': '缺口（请求数）',
   'benchmark.detail.chart.axis.successRate': '成功率 (%)',
+  'benchmark.detail.chart.axis.load.rate': '请求速率 (req/s)',
+  'benchmark.detail.chart.axis.load.concurrency': '并发数 (请求)',
+  'benchmark.detail.chart.axis.throughput': '总吞吐 (tok/s)',
+  'benchmark.detail.chart.axis.concurrencyAvg': '平均并发 (请求)',
   'benchmark.detail.reason.peakTradeoffPlain':
     '压到峰值 {rate} {unit} 只多 {gain}% 吞吐',
   'benchmark.detail.summary.showMore': '展开其余 {n} 张',

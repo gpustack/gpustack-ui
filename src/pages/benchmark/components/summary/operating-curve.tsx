@@ -14,13 +14,16 @@ import { C, tooltipRows } from './stage-chart';
 
 interface Props {
   points: StagePoint[];
+  /** Tooltip header, e.g. "Request Rate 29" — no unit, the value carries it. */
   loadAxisName: string;
+  /** x-axis title, e.g. "Request rate (req/s)" — bare ticks, so it needs one. */
+  loadAxisTitle: string;
   loadDecimals: number;
   labels: {
     concurrency: string;
     /** Tooltip label for the throughput series. */
     throughput: string;
-    /** Left axis title (a unit, so not translated). */
+    /** Left axis title, unit included. */
     throughputAxis: string;
     ttftP99: string;
     overloaded: string;
@@ -45,7 +48,7 @@ interface Props {
  * does not compute, and a band drawn from a guess is worse than no band.
  */
 const buildOption = (
-  { points, loadAxisName, loadDecimals, labels }: Props,
+  { points, loadAxisName, loadAxisTitle, loadDecimals, labels }: Props,
   // See stage-chart: the gridline colour is the one part of the palette that has
   // to come from the theme token rather than a hex literal.
   splitLineColor: string
@@ -118,7 +121,7 @@ const buildOption = (
     xAxis: {
       type: 'category',
       data: cats,
-      name: loadAxisName,
+      name: loadAxisTitle,
       nameLocation: 'middle',
       nameGap: 30,
       nameTextStyle: { color: C.text, fontSize: 12 },

@@ -329,6 +329,10 @@ export default {
   'benchmark.detail.chart.axis.inFlight': 'In-flight requests',
   'benchmark.detail.chart.axis.shortfall': 'Shortfall (requests)',
   'benchmark.detail.chart.axis.successRate': 'Success rate (%)',
+  'benchmark.detail.chart.axis.load.rate': 'Request rate (req/s)',
+  'benchmark.detail.chart.axis.load.concurrency': 'Concurrency (requests)',
+  'benchmark.detail.chart.axis.throughput': 'Total throughput (tok/s)',
+  'benchmark.detail.chart.axis.concurrencyAvg': 'Concurrency avg (requests)',
   'benchmark.detail.reason.peakTradeoffPlain':
     'Pushing to the peak {rate} {unit} adds only {gain}% throughput',
   'benchmark.detail.summary.showMore': 'Show {n} more',

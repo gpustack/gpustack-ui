@@ -334,6 +334,12 @@ export default {
   'benchmark.detail.chart.axis.inFlight': 'Активные запросы',
   'benchmark.detail.chart.axis.shortfall': 'Дефицит (запросы)',
   'benchmark.detail.chart.axis.successRate': 'Успешность (%)',
+  'benchmark.detail.chart.axis.load.rate': 'Частота запросов (req/s)',
+  'benchmark.detail.chart.axis.load.concurrency': 'Параллельность (запросы)',
+  'benchmark.detail.chart.axis.throughput':
+    'Общая пропускная способность (tok/s)',
+  'benchmark.detail.chart.axis.concurrencyAvg':
+    'Средняя параллельность (запросы)',
   'benchmark.detail.reason.peakTradeoffPlain':
     'Рост до пика {rate} {unit} даёт всего {gain}% пропускной способности',
   'benchmark.detail.summary.showMore': 'Показать ещё {n}',

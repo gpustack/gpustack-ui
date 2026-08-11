@@ -331,6 +331,10 @@ export default {
   'benchmark.detail.chart.axis.inFlight': 'Uçuştaki istekler',
   'benchmark.detail.chart.axis.shortfall': 'Eksik (istek)',
   'benchmark.detail.chart.axis.successRate': 'Başarı oranı (%)',
+  'benchmark.detail.chart.axis.load.rate': 'İstek hızı (req/s)',
+  'benchmark.detail.chart.axis.load.concurrency': 'Eşzamanlılık (istek)',
+  'benchmark.detail.chart.axis.throughput': 'Toplam verim (tok/s)',
+  'benchmark.detail.chart.axis.concurrencyAvg': 'Ortalama eşzamanlılık (istek)',
   'benchmark.detail.reason.peakTradeoffPlain':
     'Zirveye ({rate} {unit}) çıkmak verime yalnızca %{gain} ekler',
   'benchmark.detail.summary.showMore': '{n} tane daha göster',

@@ -215,7 +215,7 @@ export const buildChartSpecs = (
       marks: true,
       series: [{ name: 'TTFT p99', value: (p) => p.ttftP99, color: C.blue }],
       x: {
-        name: 'Total Tokens/s',
+        name: t('benchmark.detail.chart.axis.throughput'),
         value: (p) => p.tps,
         fmt: fmtTps
       }
@@ -264,7 +264,10 @@ export const buildChartSpecs = (
         }
       ],
       x: {
+        // Bare in the tooltip, unit-bearing on the axis: the tooltip prints the
+        // value beside the label ("Concurrency  256"), the axis has only ticks.
         name: t('benchmark.detail.requests.concurrency'),
+        title: t('benchmark.detail.chart.axis.concurrencyAvg'),
         value: (p) => p.conc,
         fmt: fmtInt,
         log: true

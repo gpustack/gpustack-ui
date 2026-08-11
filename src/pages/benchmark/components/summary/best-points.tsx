@@ -5,12 +5,13 @@ import { round } from 'lodash';
 import React from 'react';
 import { loadAxisLabelId, loadValueDecimals } from '../../config';
 import { useDetailContext } from '../../config/detail-context';
-import { StagePoint, pctDelta } from './metrics';
+import { SLA_SUCCESS_FLOOR, StagePoint, pctDelta } from './metrics';
 
 // One horizontal band: the payoff number on the left, the operating point's six
 // defining metrics in a single row, and the "why this one" reasoning on the right.
-// Success rate is deliberately NOT here — it belongs on the Detailed metrics
-// header as a pill, since a 100% run has nothing to say.
+// The success rate on the right is THIS POINT's, standing as a credential on the
+// headline throughput; the RUN-wide rate is a separate pill on the Detailed
+// metrics header, where a 100% run has nothing to say.
 const useStyles = createStyles(({ css }) => ({
   wrapper: css`
     display: flex;
@@ -123,6 +124,10 @@ const useStyles = createStyles(({ css }) => ({
       color: var(--ant-color-text-tertiary);
       background: var(--ant-color-fill-quaternary);
     }
+    .why .badge.warn {
+      color: var(--ant-color-warning);
+      background: var(--ant-color-warning-bg);
+    }
     .why .cost {
       color: var(--ant-color-error);
     }
@@ -179,15 +184,25 @@ const BestPoints: React.FC<BestPointsProps> = ({ points, onSelect }) => {
       : 'benchmark.table.best.unit.rate'
   );
 
-  const idx = points.findIndex((p) => p.isBest);
-  const prev = idx > 0 ? points[idx - 1] : null;
   const peak = points.find((p) => p.isPeak);
 
-  // Reason 1 — what the extra load bought over the previous stage.
-  const gainOverPrev =
-    prev && prev.tps != null && best.tps != null
-      ? pctDelta(prev.tps, best.tps)
-      : null;
+  // Reason 1 — the credential on the headline number: was this throughput
+  // delivered, or reached by dropping requests? A peak measured while 20% of
+  // requests failed is not a peak anyone can run at.
+  //
+  // This is THIS POINT's success rate, not the run's. Every other figure in the
+  // card belongs to the best point, and the run-wide rate already has its own
+  // capsule in the section header (with the probe excluded from its denominator).
+  //
+  // It replaced "+N% throughput over {previous stage}", which got less meaningful
+  // the better the search became: Phase 2 converges AROUND the peak, so once it
+  // works the previous stage is one req/s away and the reader is told the best
+  // point beats a neighbour that exists only because the algorithm bisected there.
+  const okRate = best.total > 0 ? best.ok / best.total : null;
+  // Rounded ONCE, and the threshold is then read off the displayed figure: judging
+  // the raw ratio makes 0.9496 render "95%" while colouring it as a breach, so the
+  // badge would contradict its own number on exactly the boundary it exists for.
+  const okPct = okRate == null ? null : round(okRate * 100, 1);
   // Reason 2 — what pushing on to the throughput peak would cost. Latency is
   // compared on p99, the metric an SLA is actually written against.
   const peakGain =
@@ -318,13 +333,27 @@ const BestPoints: React.FC<BestPointsProps> = ({ points, onSelect }) => {
             </Tooltip>
           </div>
         )}
-        {gainOverPrev != null && gainOverPrev > 0 && prev && (
+        {okPct != null && (
           <div className="why">
-            <span className="badge up">+{gainOverPrev}%</span>
+            {/* SLA_SUCCESS_FLOOR is the floor the engine itself judges a point on
+                (below it a stage counts as overloaded and fails the SLA whatever
+                its latencies say), so the badge switches colour there rather than
+                at a number chosen for the display.
+                Below it the badge is a WARNING, not neutral: the stage table marks
+                the same fact in red, and grey would say nothing happened. Warning
+                rather than error because the recommendation still stands — it is a
+                caveat on the headline number, not a failed run. */}
+            <span
+              className={
+                okPct >= SLA_SUCCESS_FLOOR * 100 ? 'badge up' : 'badge warn'
+              }
+            >
+              {okPct}%
+            </span>
             <span>
-              {t('benchmark.detail.reason.throughputVsPrev', {
-                up: gainOverPrev,
-                prevRate: round(prev.load, dec)
+              {t('benchmark.detail.reason.requestsSucceeded', {
+                ok: best.ok,
+                total: best.total
               })}
             </span>
           </div>

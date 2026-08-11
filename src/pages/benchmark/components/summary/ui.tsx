@@ -193,8 +193,8 @@ export const SectionRule: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
 };
 
 /**
- * One report section = one card. Every block on the page (hero band, operating
- * curve, detailed metrics, stage table, stage detail) is a Panel, so the page
+ * One report section = one card. Every block on the page (hero band, load sweep,
+ * detailed metrics, stage table, stage detail) is a Panel, so the page
  * reads as a stack of sections instead of a run-on column separated by hairlines.
  *
  * Slots:

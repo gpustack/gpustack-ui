@@ -14,7 +14,7 @@ import { echarts } from '@gpustack/core-ui/charts';
  *
  * These charts still call `echarts.init` themselves rather than rendering through
  * core-ui's `Chart` component, and that part is deliberate. Two of them are
- * dual-axis — the operating curve pairs linear tok/s with a LOG TTFT axis, and
+ * dual-axis — the load sweep pairs linear tok/s with a LOG TTFT axis, and
  * the concurrency chart puts its shortfall on a right axis scaled to itself,
  * because a 9-request gap out of 384 is under a pixel tall on the axis the two
  * absolute lines share. `Chart` aligns a dual-axis grid by rewriting `max` on

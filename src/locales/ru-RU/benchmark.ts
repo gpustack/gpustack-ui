@@ -201,8 +201,8 @@ export default {
     'Остановлено досрочно ({reason}): выполнено {processed}/{requested} запросов.',
   'benchmark.detail.summary.stageDetail': 'Детали этапа',
   'benchmark.detail.summary.performance': 'Производительность',
-  'benchmark.detail.reason.throughputVsPrev':
-    'На {up}% выше пропускной способности, чем {prevRate}',
+  'benchmark.detail.reason.requestsSucceeded':
+    'Успешно {ok} из {total} запросов',
   'benchmark.detail.reason.withinSla': 'В рамках SLA',
   'benchmark.detail.reason.peakExceedsSla':
     'Пиковая пропускная способность выше при {rate} {unit}, но работа там нарушит SLA — поэтому рекомендуется граница SLA.',
@@ -284,8 +284,8 @@ export default {
   'benchmark.detail.successPill': 'Успешно {pct}% · {ok} / {total} запросов',
   'benchmark.detail.summary.stagesHint':
     'Нажмите на любую строку, чтобы увидеть детали',
-  'benchmark.detail.chart.operatingCurve': 'Рабочая кривая',
-  'benchmark.detail.chart.operatingCurve.note':
+  'benchmark.detail.chart.loadSweep': 'Развёртка нагрузки',
+  'benchmark.detail.chart.loadSweep.note':
     'Пропускная способность и p99 TTFT при росте нагрузки',
   'benchmark.detail.chart.dualAxisHint':
     'Левая ось (пропускная способность) линейная — каждая линия сетки добавляет одинаковую величину. Правая ось (TTFT p99) логарифмическая — каждая линия в 10 раз больше предыдущей: задержка меняется в тысячи раз, и линейная шкала скрыла бы рост после перелома.',

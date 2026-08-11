@@ -198,7 +198,7 @@ export default {
     '提前停止({reason}):仅完成 {processed}/{requested} 个请求。',
   'benchmark.detail.summary.stageDetail': '阶段详情',
   'benchmark.detail.summary.performance': '性能',
-  'benchmark.detail.reason.throughputVsPrev': '比 {prevRate} 吞吐高 {up}%',
+  'benchmark.detail.reason.requestsSucceeded': '{total} 个请求中 {ok} 个成功',
   'benchmark.detail.reason.withinSla': '满足 SLA',
   'benchmark.detail.reason.peakExceedsSla':
     '更高吞吐峰值在 {rate} {unit},但在此运行会突破 SLA,故推荐停在 SLA 边界。',
@@ -278,8 +278,8 @@ export default {
     '该档 {count} 个样本,p99 之上只有 {tail} 个 —— 尾部由极少数请求决定。只能当参考,不能作为 SLA 结论(p99 要约 1000 个样本才像一个估计)。',
   'benchmark.detail.successPill': '成功率 {pct}% · {ok} / {total} 请求',
   'benchmark.detail.summary.stagesHint': '点击任意行查看明细',
-  'benchmark.detail.chart.operatingCurve': '运行曲线',
-  'benchmark.detail.chart.operatingCurve.note': '吞吐与 P99 TTFT 随负载的变化',
+  'benchmark.detail.chart.loadSweep': '负载扫描',
+  'benchmark.detail.chart.loadSweep.note': '吞吐与 P99 TTFT 随负载的变化',
   'benchmark.detail.chart.dualAxisHint':
     '左轴（吞吐）是等距刻度，每格加固定值；右轴（TTFT p99）每格是上一格的 10 倍 —— 延迟跨度上千倍，等距刻度看不出拐点后的爆发。',
   'benchmark.detail.chart.logHint':

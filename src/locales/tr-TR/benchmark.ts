@@ -199,8 +199,8 @@ export default {
     'Erken durduruldu ({reason}): {processed}/{requested} istek çalıştı.',
   'benchmark.detail.summary.stageDetail': 'Aşama ayrıntısı',
   'benchmark.detail.summary.performance': 'Performans',
-  'benchmark.detail.reason.throughputVsPrev':
-    '{prevRate} değerinden %{up} daha yüksek verim',
+  'benchmark.detail.reason.requestsSucceeded':
+    '{total} istekten {ok} tanesi başarılı',
   'benchmark.detail.reason.withinSla': 'SLA içinde',
   'benchmark.detail.reason.peakExceedsSla':
     "Verim {rate} {unit} değerinde daha yüksek zirve yapar, ancak orada çalışmak SLA'yı ihlal eder — bu yüzden öneri SLA sınırıdır.",
@@ -281,9 +281,8 @@ export default {
   'benchmark.detail.successPill': '%{pct} başarılı · {ok} / {total} istek',
   'benchmark.detail.summary.stagesHint':
     'Ayrıntı için herhangi bir satıra tıklayın',
-  'benchmark.detail.chart.operatingCurve': 'Çalışma eğrisi',
-  'benchmark.detail.chart.operatingCurve.note':
-    'Yük arttıkça verim ve p99 TTFT',
+  'benchmark.detail.chart.loadSweep': 'Yük taraması',
+  'benchmark.detail.chart.loadSweep.note': 'Yük arttıkça verim ve p99 TTFT',
   'benchmark.detail.chart.dualAxisHint':
     'Sol eksen (verim) doğrusaldır — her kılavuz çizgisi aynı miktarı ekler. Sağ eksen (TTFT p99) logaritmiktir — her çizgi altındakinin 10 katıdır; gecikme binlerce kat değiştiği için doğrusal ölçek dirsek sonrasındaki patlamayı gizler.',
   'benchmark.detail.chart.logHint':

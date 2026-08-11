@@ -3,7 +3,7 @@ import { BenchmarkResultItem } from '../../config/types';
 import { StageStatusKind, getStageStatus } from './ui';
 
 // ── The report's single data source ────────────────────────────────────────────
-// Every number the Summary tab renders (hero bar, operating curve, the nine
+// Every number the Summary tab renders (hero bar, load sweep, the nine
 // detail charts, the stage table, the stage detail) is derived HERE, once. Two
 // call sites computing the same metric two ways is how a p99 ends up reading
 // 62.82 in one panel and 71.03 in another.

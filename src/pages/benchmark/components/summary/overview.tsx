@@ -18,8 +18,14 @@ import {
 } from '../../config';
 import { useDetailContext } from '../../config/detail-context';
 import { RESIDENT_CHARTS, buildChartSpecs } from './chart-specs';
-import { StagePoint, fmtDuration, stageTotals, tailSamples } from './metrics';
-import OperatingCurve from './operating-curve';
+import LoadSweep from './load-sweep';
+import {
+  SLA_SUCCESS_FLOOR,
+  StagePoint,
+  fmtDuration,
+  stageTotals,
+  tailSamples
+} from './metrics';
 import StageChart, { C } from './stage-chart';
 import { Panel, SectionTitle, StatusTag, statusLabelId } from './ui';
 
@@ -455,7 +461,7 @@ const Overview: React.FC<OverviewProps> = ({
       render: (_v: unknown, p: StagePoint) => {
         const total = p.total;
         const ok = p.ok;
-        const low = total > 0 && ok / total < 0.95;
+        const low = total > 0 && ok / total < SLA_SUCCESS_FLOOR;
         const term = (p.raw.raw_metrics as any)?.termination;
         const early = term?.reason && term.reason !== 'max_requests';
         return (
@@ -503,10 +509,10 @@ const Overview: React.FC<OverviewProps> = ({
       <Panel>
         <div className="panel-head">
           <SectionTitle style={{ marginBottom: 0 }}>
-            {t('benchmark.detail.chart.operatingCurve')}
+            {t('benchmark.detail.chart.loadSweep')}
           </SectionTitle>
           <span className="sub">
-            {t('benchmark.detail.chart.operatingCurve.note')}
+            {t('benchmark.detail.chart.loadSweep.note')}
           </span>
           <span className="spacer" />
           {/* The two y-axes follow different rules while sharing one grid, which
@@ -517,7 +523,7 @@ const Overview: React.FC<OverviewProps> = ({
           </Tooltip>
         </div>
         <div className="panel-body">
-          <OperatingCurve
+          <LoadSweep
             points={points}
             loadAxisName={loadAxisName}
             loadAxisTitle={loadAxisTitle}

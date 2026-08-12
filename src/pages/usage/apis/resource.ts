@@ -69,10 +69,17 @@ export interface ResourceBreakdownItem extends ResourceBreakdownSummary {
   volume_name?: string;
   user_id?: number;
   user_name?: string;
-  // Organization grouping (platform-wide "All" view). ``organization_name``
-  // is resolved live server-side; a gone Org sets ``deleted``.
+  // The organization, in either of its two roles: the GROUPED entity (an
+  // Organization table), or an ATTRIBUTE of a per-instance / per-volume row in
+  // the platform-wide "All" view, naming which tenant owns it. ``*_name`` is
+  // resolved live server-side.
   organization_id?: number;
   organization_name?: string;
+  // ``org`` / ``user`` / ``group`` — which kind of principal the consumer is.
+  organization_kind?: string;
+  // Only meaningful in the attribute role: the ORGANIZATION is gone, which is
+  // a different fact from the row's own ``deleted`` (the instance/volume).
+  organization_deleted?: boolean;
   // The grouped entity (instance / volume / user) no longer exists. The name
   // fields keep the clean (stale) name; the tables show a DeletedTag off this
   // flag plus the id, matching the Tokens tab.
@@ -195,6 +202,11 @@ const URL = {
   RESOURCE_BREAKDOWN: '/usage/resource/breakdown',
   GPU_BREAKDOWN: '/usage/gpu-instances/breakdown',
   STORAGE_BREAKDOWN: '/usage/storage/breakdown',
+  GPU_BREAKDOWN_EXPORT: '/usage/gpu-instances/breakdown/export',
+  GPU_BREAKDOWN_EXPORT_ESTIMATE:
+    '/usage/gpu-instances/breakdown/export/estimate',
+  STORAGE_BREAKDOWN_EXPORT: '/usage/storage/breakdown/export',
+  STORAGE_BREAKDOWN_EXPORT_ESTIMATE: '/usage/storage/breakdown/export/estimate',
   EVENTS: '/usage/resource-events',
   SUMMARY: '/usage/summary',
   RESOURCE_META: '/usage/resource/meta'
@@ -229,6 +241,14 @@ interface ServerBreakdownItem {
   creator_id?: number | null;
   creator_name?: string | null;
   creator_deleted?: boolean | null;
+  // The consumer principal, sent in two situations: as the grouped entity's
+  // kind when grouping BY organization, and as the full id/name/kind/deleted
+  // set on a per-instance / per-volume row in the platform-wide view, where it
+  // names the tenant the resource belongs to.
+  organization_id?: number | null;
+  organization_name?: string | null;
+  organization_kind?: string | null;
+  organization_deleted?: boolean | null;
   dimensions?: {
     product?: string | null;
     unit_cpu_milli?: number | null;
@@ -346,6 +366,11 @@ function flattenItem(
     case 'organization':
       flat.organization_name = rawKey;
       flat.organization_id = id;
+      // Carried through for the export preview's Organization Type column —
+      // the exported file has one, so the preview must be able to fill it.
+      if (it.organization_kind != null) {
+        flat.organization_kind = it.organization_kind;
+      }
       break;
     default:
       break;
@@ -373,6 +398,16 @@ function flattenItem(
     if (dims.persistent_mib != null) flat.persistent_mib = dims.persistent_mib;
     if (dims.storage_type) flat.storage_type = dims.storage_type;
     if (dims.capacity_mib != null) flat.capacity_mib = dims.capacity_mib;
+  }
+  // The tenant a per-instance / per-volume row belongs to, sent only in the
+  // platform-wide view. Copied through rather than derived: when organization
+  // is the GROUPING these came from ``key``/``id`` above, and this branch must
+  // not overwrite that with an absent attribute.
+  if (groupBy !== 'organization' && it.organization_name != null) {
+    flat.organization_id = it.organization_id ?? undefined;
+    flat.organization_name = it.organization_name;
+    flat.organization_kind = it.organization_kind ?? undefined;
+    flat.organization_deleted = !!it.organization_deleted;
   }
   // Owner (creator) of a per-instance / per-volume row — the grouped entity is
   // the instance/volume (``key``/``deleted``), so the owner sits at the item
@@ -676,4 +711,70 @@ export async function queryGpuInstancesMeta(): Promise<ResourceUsageMetaResponse
 }
 export async function queryStorageMeta(): Promise<ResourceUsageMetaResponse> {
   return STATIC_META;
+}
+
+// --- Export -----------------------------------------------------------------
+
+/**
+ * Build the export payload from a breakdown request.
+ *
+ * Reuses ``toServerRequest`` so the exported set is narrowed by exactly the
+ * predicate the table was showing, then drops pagination (an export is the
+ * whole set) and swaps in the export-only knobs. ``sheets`` group_by values go
+ * through the same ``GROUP_BY_MAP`` as the single-table form — the UI's
+ * ``gpu_type`` is the backend's ``instance_type``.
+ */
+export function toResourceExportRequest(
+  data: ResourceBreakdownRequest,
+  options: {
+    sheets?: { key: string; group_by: string[]; name?: string }[];
+    format?: 'csv' | 'xlsx';
+  } = {}
+) {
+  const { body } = toServerRequest(data);
+  const { page, perPage, group_by, ...shared } = body as Record<string, any>;
+  return {
+    ...shared,
+    ...(options.sheets
+      ? {
+          sheets: options.sheets.map((sheet) => ({
+            ...sheet,
+            // Map the KEY as well as group_by. The key names the CSV member
+            // (`by_<key>.csv`) that customer scripts match on, so it has to be
+            // the backend's vocabulary everywhere — the Tokens tab already
+            // emits `by_route.csv`, and this tab must not emit the UI's
+            // `by_gpu_type.csv` for the same kind of thing.
+            key: GROUP_BY_MAP[sheet.key] ?? sheet.key,
+            group_by: sheet.group_by.map((g) => GROUP_BY_MAP[g] ?? g)
+          }))
+        }
+      : { group_by }),
+    ...(options.format ? { format: options.format } : {})
+  };
+}
+
+export async function downloadResourceExport(
+  url: string,
+  data: Record<string, any>,
+  options?: { token?: any }
+): Promise<{ data: Blob; headers: Record<string, any> }> {
+  return request(url, {
+    data,
+    method: 'POST',
+    responseType: 'blob',
+    getResponse: true,
+    cancelToken: options?.token
+  });
+}
+
+export async function queryResourceExportEstimate(
+  url: string,
+  data: Record<string, any>,
+  options?: { token?: any }
+) {
+  return request(url, {
+    data,
+    method: 'POST',
+    cancelToken: options?.token
+  });
 }

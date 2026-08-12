@@ -1,5 +1,10 @@
 import { UsageFilterItem } from './types';
 
+// Excel's hard cap per worksheet — a property of the xlsx format, not a
+// policy of ours. Past it the export falls back to CSV, and the dialog says
+// so before the click.
+export const XLSX_MAX_ROWS_PER_SHEET = 1048576;
+
 export const groupByOptions = [
   // {
   //   value: null,

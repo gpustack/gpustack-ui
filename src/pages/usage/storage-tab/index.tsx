@@ -22,18 +22,15 @@ import dayjs from 'dayjs';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   queryStorageBreakdown,
-  ResourceBreakdownRequest
+  ResourceBreakdownRequest,
+  toResourceExportRequest
 } from '../apis/resource';
 import MetricChartCard from '../components/metric-chart-card';
 import MetricLabel from '../components/metric-label';
 import ResourceExportData from '../components/resource-export-data';
 import ResourceFilterBar from '../components/resource-filter-bar';
 import useResourceMeta from '../hooks/use-resource-meta';
-import {
-  exportBreakdownSheets,
-  markDeletedNames,
-  toExportColumns
-} from '../utils/export-breakdown';
+import useExportUsage from '../services/use-export-usage';
 import {
   bucketKey,
   generateBucketRange,
@@ -42,7 +39,11 @@ import {
 import { buildTrendSeries } from '../utils/trend-series';
 import useQueryStorageBreakdown from './services/use-query-storage-breakdown';
 import StorageBreakdownTable from './tables/storage-breakdown-table';
-import useStorageColumns from './tables/use-storage-columns';
+
+const RESOURCE_EXPORT_ENDPOINTS = {
+  exportUrl: '/usage/storage/breakdown/export',
+  estimateUrl: '/usage/storage/breakdown/export/estimate'
+};
 
 type Scope = 'self' | 'all';
 type Metric = 'storage_gb_days' | 'storage_gb_hours';
@@ -302,11 +303,6 @@ const StorageTab: React.FC = () => {
     [TABLE_TABS, scope]
   );
 
-  // Columns for each bottom-table grouping — same factory the tables render
-  // with — used to build the export sheets below.
-  const volumeColumns = useStorageColumns('volume');
-  const userColumns = useStorageColumns('user');
-
   // "Export Table Data" writes every bottom table at once — one sheet per
   // grouping (Storage / Users) — straight to a workbook, no preview dialog
   // (mirrors the Tokens tab's `useExportTable`). The User sheet is included
@@ -315,99 +311,55 @@ const StorageTab: React.FC = () => {
     const groups = [
       {
         key: 'volume' as GroupKey,
-        columns: volumeColumns,
         sheetName: intl.formatMessage({ id: 'usage.tabs.storage' })
       }
     ];
     if (canManageUsers) {
       groups.push({
         key: 'user' as GroupKey,
-        columns: userColumns,
         sheetName: intl.formatMessage({ id: 'usage.table.users' })
       });
     }
+    // Plugin sub-tabs (the enterprise Organizations breakdown) export too —
+    // same descriptor and visibility gate the tab strip uses, so the file
+    // always holds exactly the tables the user can see.
+    extraBreakdownTabs
+      .filter((tab) => (tab.isVisible ? tab.isVisible({ scope }) : true))
+      .forEach((tab) => {
+        groups.push({
+          key: tab.key as GroupKey,
+          sheetName: intl.formatMessage({ id: tab.labelId })
+        });
+      });
     return groups;
-  }, [volumeColumns, userColumns, canManageUsers, intl]);
+  }, [extraBreakdownTabs, scope, canManageUsers, intl]);
 
   // Chart export still opens the preview modal (matches the Tokens tab); the
   // table export is direct, so this only ever holds 'chart'.
+  const { exportWithPreflight } = useExportUsage(RESOURCE_EXPORT_ENDPOINTS);
   const [exportMode, setExportMode] = useState<'chart' | null>(null);
   const dateSuffix = `${dateRange[0].format('YYYY-MM-DD')}_${dateRange[1].format(
     'YYYY-MM-DD'
   )}`;
 
   const handleExportTable = async () => {
-    const results = await Promise.all(
-      tableExportGroups.map((g) =>
-        queryStorageBreakdown({
-          ...baseRequest(),
-          group_by: [g.key],
-          // A breakdown export is the full filtered set, not a page.
-          // ``page: -1`` is the backend's no-pagination sentinel.
-          page: -1
-        })
-      )
-    );
-    const deletedWord = intl.formatMessage({ id: 'usage.table.deleted' });
-    exportBreakdownSheets(
-      tableExportGroups.map((g, i) => ({
-        rows: markDeletedNames(results[i]?.items ?? [], g.key, deletedWord),
-        columns: toExportColumns(g.columns),
-        sheetName: g.sheetName
-      })),
-      `storage_tables_${dateSuffix}.xlsx`
+    // One request, one file: each bottom table becomes a sheet over the SAME
+    // filters. Previously this fired a request per grouping and stitched the
+    // workbook in the browser, so the tables could in principle disagree.
+    await exportWithPreflight(
+      toResourceExportRequest(baseRequest(), {
+        sheets: tableExportGroups.map((group) => ({
+          key: group.key,
+          group_by: [group.key],
+          name: group.sheetName
+        }))
+      })
     );
   };
-
-  const chartExportColumns = [
-    {
-      title: intl.formatMessage({ id: 'usage.table.date' }),
-      dataIndex: 'date',
-      key: 'date'
-    },
-    {
-      title: intl.formatMessage({ id: 'usage.tabs.storage' }),
-      dataIndex: 'volume_name',
-      key: 'volume_name'
-    },
-    // Owner User column — org admins only (members see just their own rows).
-    ...(canManageUsers
-      ? [
-          {
-            title: intl.formatMessage({ id: 'usage.table.users' }),
-            dataIndex: 'user_name',
-            key: 'user_name'
-          }
-        ]
-      : []),
-    {
-      title: intl.formatMessage({ id: 'usage.metric.gbDays' }),
-      dataIndex: 'storage_gb_days',
-      key: 'storage_gb_days',
-      render: (v: number) => (v ?? 0).toFixed(2)
-    },
-    {
-      title: intl.formatMessage({ id: 'usage.metric.gbHours' }),
-      dataIndex: 'storage_gb_hours',
-      key: 'storage_gb_hours',
-      render: (v: number) => (v ?? 0).toFixed(2)
-    },
-    {
-      title: intl.formatMessage({ id: 'usage.metric.activeVolumes' }),
-      dataIndex: 'active_volumes',
-      key: 'active_volumes'
-    },
-    {
-      title: intl.formatMessage({ id: 'usage.metric.activeUsers' }),
-      dataIndex: 'active_users',
-      key: 'active_users'
-    }
-  ];
 
   // The preview modal now only backs the by-date chart export.
   const exportConfig = {
     groupBy: ['date', 'volume'],
-    columns: chartExportColumns,
     fileName: `storage_chart_${dateSuffix}.xlsx`,
     sheetName: intl.formatMessage({ id: 'usage.tabs.storage' })
   };
@@ -535,8 +487,8 @@ const StorageTab: React.FC = () => {
         onCancel={() => setExportMode(null)}
         title={intl.formatMessage({ id: 'usage.export.chart' })}
         queryFn={queryStorageBreakdown}
+        exportEndpoints={RESOURCE_EXPORT_ENDPOINTS}
         groupBy={exportConfig.groupBy}
-        columns={exportConfig.columns}
         fileName={exportConfig.fileName}
         sheetName={exportConfig.sheetName}
         scope={scope}
@@ -554,20 +506,6 @@ const StorageTab: React.FC = () => {
         userGroupOptions={userGroups}
         initialSelectedOrganizations={selectedOrganizations}
         initialSelectedUserGroups={selectedUserGroups}
-        deletedNameFields={[
-          // The row's ``deleted`` is the grouped volume; the owner user
-          // carries its own ``user_deleted``.
-          { name: 'volume_name', id: 'volume_id', deletedFlag: 'deleted' },
-          ...(canManageUsers
-            ? [
-                {
-                  name: 'user_name',
-                  id: 'user_id',
-                  deletedFlag: 'user_deleted'
-                }
-              ]
-            : [])
-        ]}
       />
     </div>
   );

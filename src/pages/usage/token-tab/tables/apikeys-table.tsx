@@ -8,6 +8,10 @@ import useAPIKeys from '../../hooks/use-apikeys-columns';
 import useQueryBreakdownList from '../../services/use-query-breakdown-list';
 import getBreakdownRowKey from '../../utils/get-breakdown-row-key';
 
+// Falls back here whenever the sorter is cleared or absent, so a page click
+// can never send ``sort_by: undefined`` and reshuffle the rows.
+const DEFAULT_SORT = '-total_tokens';
+
 const APIKeys: React.FC<{
   filters: BreakdownFilters;
   dateRange: { start_date: string; end_date: string };
@@ -27,18 +31,27 @@ const APIKeys: React.FC<{
   }>({
     page: 1,
     perPage: 10,
-    sort_by: '-total_tokens'
+    sort_by: DEFAULT_SORT
   });
   const pendingPageResetRef = useRef(false);
 
-  const handleTableChange = (pagination: any, filters: any, sorter: any) => {
-    const sort_by =
-      sorter.order === 'descend' ? `-${sorter.field}` : sorter.field;
-    setQueryParams((prev) => ({
-      ...prev,
-      page: 1,
-      sort_by
-    }));
+  const handleTableChange = (_pagination: any, _filters: any, sorter: any) => {
+    const s = Array.isArray(sorter) ? sorter[0] : sorter;
+    // antd fires Table.onChange for paging too, with an empty ``sorter``.
+    // This handler used to reset to page 1 unconditionally, so it undid the
+    // page the pagination handler had just set and the table could never
+    // leave page 1; it also read ``field`` off that empty sorter and sent
+    // ``sort_by: undefined``, dropping the order.
+    const sort_by = !s?.order
+      ? DEFAULT_SORT
+      : s.order === 'ascend'
+        ? s.field
+        : `-${s.field}`;
+    // Only a real sort change snaps back to page 1; otherwise this is a no-op
+    // and the two handlers compose (matches the resource tabs' tables).
+    setQueryParams((prev) =>
+      prev.sort_by === sort_by ? prev : { ...prev, sort_by, page: 1 }
+    );
   };
 
   const handlePageChange = (page: number, pageSize: number) => {

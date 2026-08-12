@@ -63,24 +63,31 @@ const getConnectEntries = (record: ListItem): ConnectEntry[] => {
       const isSsh =
         (p.protocol === 'TCP' && p.port === 22) ||
         _.includes(_.toLower(p.name), 'ssh');
-      return isSsh
-        ? {
-            type: 'ssh',
-            name: 'SSH',
-            key: `ssh-${p.nodePort}`,
-            protocol: _.toUpper(p.protocol),
-            command: `ssh root@${ip} -p ${p.nodePort}`
-          }
-        : {
-            type: 'http',
-            name:
-              configPorts.find((port) => port.port === p.port)?.name ||
-              _.toUpper(p.protocol),
-            key: `http-${p.nodePort}`,
-            port: p.port,
-            protocol: _.toUpper(p.protocol),
-            url: `http://${ip}:${p.nodePort}`
-          };
+      if (isSsh) {
+        return {
+          type: 'ssh',
+          name: 'SSH',
+          key: `ssh-${p.nodePort}`,
+          protocol: _.toUpper(p.protocol),
+          command: `ssh root@${ip} -p ${p.nodePort}`
+        };
+      }
+      const configPort = configPorts.find((port) => port.port === p.port);
+      // accessParams is generic query-param metadata from the spec (e.g. a
+      // Jupyter token): serialize whatever keys it carries onto the URL.
+      const accessParams = configPort?.accessParams;
+      const query =
+        _.isPlainObject(accessParams) && !_.isEmpty(accessParams)
+          ? `?${new URLSearchParams(accessParams).toString()}`
+          : '';
+      return {
+        type: 'http',
+        name: configPort?.name || _.toUpper(p.protocol),
+        key: `http-${p.nodePort}`,
+        port: p.port,
+        protocol: _.toUpper(p.protocol),
+        url: `http://${ip}:${p.nodePort}${query}`
+      };
     });
 };
 

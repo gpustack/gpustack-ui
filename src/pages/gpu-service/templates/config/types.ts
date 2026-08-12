@@ -2,6 +2,7 @@ export interface PortItem {
   protocol: 'UDP' | 'TCP';
   port: number;
   name?: string;
+  accessParams?: Record<string, string>;
 }
 
 export type ImagePullPolicy = 'Always' | 'IfNotPresent' | 'Never';

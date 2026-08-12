@@ -10,7 +10,7 @@ import {
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import _ from 'lodash';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import PageBox from '../../_components/page-box';
 import { GPUsConfigs } from '../../resources/config/gpu-driver';
 import {
@@ -21,6 +21,7 @@ import {
   updateGPUServiceTemplate
 } from './apis';
 import AddModal from './components/add-modal';
+import EditYamlModal from './components/edit-yaml-modal';
 import TemplateCardList from './components/template-list';
 import { FormData, ListItem } from './config/types';
 import useCreateTemplate from './hooks/use-create-template';
@@ -54,6 +55,10 @@ const GPUServiceTemplates: React.FC = () => {
   });
   const { openTemplateModalStatus, openTemplateModal, closeTemplateModal } =
     useCreateTemplate();
+  const [yamlEdit, setYamlEdit] = useState<{
+    open: boolean;
+    data: ListItem | null;
+  }>({ open: false, data: null });
 
   const manufacturerOptions = useMemo(
     () => [
@@ -148,6 +153,10 @@ const GPUServiceTemplates: React.FC = () => {
       handleEditTemplate(item.data);
       return;
     }
+    if (item.action === 'editYaml') {
+      setYamlEdit({ open: true, data: item.data });
+      return;
+    }
     if (item.action === 'clone') {
       handleCloneTemplate(item.data);
       return;
@@ -155,6 +164,17 @@ const GPUServiceTemplates: React.FC = () => {
     if (item.action === 'delete') {
       handleDelete({ ...item.data, name: item.data.name });
     }
+  };
+
+  const closeYamlEdit = () => setYamlEdit({ open: false, data: null });
+
+  const handleYamlOk = async (id: number, data: FormData) => {
+    await updateGPUServiceTemplate({
+      id,
+      data
+    });
+    closeYamlEdit();
+    handleSearch();
   };
 
   const loadMore = useMemoizedFn((nextPage: number) => {
@@ -237,6 +257,14 @@ const GPUServiceTemplates: React.FC = () => {
         onCancel={closeTemplateModal}
         onOk={handleModalOk}
       />
+      {yamlEdit.open && yamlEdit.data && (
+        <EditYamlModal
+          open={yamlEdit.open}
+          currentData={yamlEdit.data}
+          onOk={handleYamlOk}
+          onCancel={closeYamlEdit}
+        />
+      )}
       <DeleteModal ref={modalRef} />
     </PageBox>
   );

@@ -3,6 +3,10 @@ export default {
   'gpuservice.template.add': 'Örnek Şablonu Ekle',
   'gpuservice.template.edit': 'Örnek Şablonunu Düzenle',
   'gpuservice.template.clone': 'Örnek Şablonunu Klonla',
+  'gpuservice.template.editYaml': 'YAML Düzenle',
+  'gpuservice.template.editYaml.title': 'Şablon YAML Düzenle',
+  'gpuservice.template.editYaml.invalidSpec':
+    'Geçersiz YAML: üst düzey bir "spec" nesnesi gerekli.',
   'gpuservice.template.filter.name': 'Ada göre filtrele',
   'gpuservice.template.filter.vendor': 'Tedarikçiye göre filtrele',
   'gpuservice.template.image': 'İmaj',

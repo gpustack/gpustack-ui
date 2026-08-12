@@ -3,6 +3,10 @@ export default {
   'gpuservice.template.add': 'インスタンステンプレートを追加',
   'gpuservice.template.edit': 'インスタンステンプレートを編集',
   'gpuservice.template.clone': 'インスタンステンプレートを複製',
+  'gpuservice.template.editYaml': 'YAML を編集',
+  'gpuservice.template.editYaml.title': 'テンプレート YAML を編集',
+  'gpuservice.template.editYaml.invalidSpec':
+    'YAML が無効です：トップレベルの "spec" オブジェクトが必要です。',
   'gpuservice.template.filter.name': '名前でフィルター',
   'gpuservice.template.filter.vendor': 'ベンダーでフィルター',
   'gpuservice.template.image': 'コンテナイメージ',

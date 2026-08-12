@@ -115,6 +115,12 @@ export const templateActions: Array<{
     icon: icons.EditOutlined
   },
   {
+    label: 'gpuservice.template.editYaml',
+    key: 'editYaml',
+    locale: true,
+    icon: icons.FileTextOutlined
+  },
+  {
     label: 'common.button.clone',
     key: 'clone',
     locale: true,

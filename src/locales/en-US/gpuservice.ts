@@ -3,6 +3,10 @@ export default {
   'gpuservice.template.add': 'Add Instance Template',
   'gpuservice.template.edit': 'Edit Instance Template',
   'gpuservice.template.clone': 'Clone Instance Template',
+  'gpuservice.template.editYaml': 'Edit YAML',
+  'gpuservice.template.editYaml.title': 'Edit Template YAML',
+  'gpuservice.template.editYaml.invalidSpec':
+    'Invalid YAML: a top-level "spec" object is required.',
   'gpuservice.template.filter.name': 'Filter by name',
   'gpuservice.template.filter.vendor': 'Filter by vendor',
   'gpuservice.template.image': 'Image',

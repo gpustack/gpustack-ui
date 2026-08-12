@@ -3,6 +3,10 @@ export default {
   'gpuservice.template.add': 'Добавить шаблон экземпляра',
   'gpuservice.template.edit': 'Редактировать шаблон экземпляра',
   'gpuservice.template.clone': 'Клонировать шаблон экземпляра',
+  'gpuservice.template.editYaml': 'Редактировать YAML',
+  'gpuservice.template.editYaml.title': 'Редактировать YAML шаблона',
+  'gpuservice.template.editYaml.invalidSpec':
+    'Недопустимый YAML: требуется объект "spec" верхнего уровня.',
   'gpuservice.template.filter.name': 'Фильтр по имени',
   'gpuservice.template.filter.vendor': 'Фильтр по производителю',
   'gpuservice.template.image': 'Образ',

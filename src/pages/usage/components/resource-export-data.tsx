@@ -15,17 +15,21 @@ import { ModalFooter, ScrollerModal } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Table } from 'antd';
 import dayjs from 'dayjs';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ResourceBreakdownItem,
   ResourceBreakdownRequest,
-  ResourceBreakdownResponse
+  ResourceBreakdownResponse,
+  toResourceExportRequest
 } from '../apis/resource';
-import { withDeletedMark } from '../utils/deleted-label';
+import { XLSX_MAX_ROWS_PER_SHEET } from '../config';
+import useExportUsage from '../services/use-export-usage';
 import {
-  exportBreakdownRows,
-  toExportColumns
-} from '../utils/export-breakdown';
+  resourcePreviewValue,
+  useExportPreviewColumns,
+  useExportPreviewLayout
+} from '../utils/export-preview-columns';
+import ExportSuggestions from './export-suggestions';
 import ResourceFilterBar from './resource-filter-bar';
 
 type Scope = 'self' | 'all';
@@ -47,9 +51,8 @@ interface ResourceExportDataProps {
     req: ResourceBreakdownRequest
   ) => Promise<ResourceBreakdownResponse>;
   groupBy: NonNullable<ResourceBreakdownRequest['group_by']>;
-  // antd column specs — drive both the preview table and (via dataIndex/title)
-  // the exported sheet.
-  columns: any[];
+  // Which export endpoints back this tab (GPU instances vs storage).
+  exportEndpoints: { exportUrl: string; estimateUrl: string };
   fileName: string;
   sheetName?: string;
   // Filter-bar wiring, seeded from the tab's current filters.
@@ -71,15 +74,6 @@ interface ResourceExportDataProps {
   userGroupOptions?: SelectOption[];
   initialSelectedOrganizations?: number[];
   initialSelectedUserGroups?: number[];
-  // Name columns that carry a "[Deleted.#id]" marker when their entity is gone.
-  // Each maps a clean-name field to its id + own deleted flag, so a compound
-  // (date + instance/volume) row can mark the instance/volume and its owner
-  // User independently — mirroring the Tokens tab's chart export.
-  deletedNameFields?: {
-    name: string;
-    id: string;
-    deletedFlag: string;
-  }[];
 }
 
 const INITIAL_PAGE = { page: 1, perPage: 100 };
@@ -91,7 +85,7 @@ const ResourceExportData: React.FC<ResourceExportDataProps> = (props) => {
     title,
     queryFn,
     groupBy,
-    columns,
+    exportEndpoints,
     fileName,
     sheetName = 'usage',
     scope,
@@ -104,8 +98,7 @@ const ResourceExportData: React.FC<ResourceExportDataProps> = (props) => {
     organizationOptions = [],
     userGroupOptions = [],
     initialSelectedOrganizations = [],
-    initialSelectedUserGroups = [],
-    deletedNameFields
+    initialSelectedUserGroups = []
   } = props;
   const intl = useIntl();
 
@@ -123,9 +116,24 @@ const ResourceExportData: React.FC<ResourceExportDataProps> = (props) => {
     initialSelectedUserGroups
   );
   const [pageParams, setPageParams] = useState(INITIAL_PAGE);
+  // Exported bucket size. Fixed at day: the remedies for an over-large export
+  // narrow the range or split the file — both lossless — and never re-bucket.
+  const exportGranularity: NonNullable<
+    ResourceBreakdownRequest['granularity']
+  > = 'day';
   const [data, setData] = useState<ResourceBreakdownResponse | null>(null);
   const [loading, setLoading] = useState(false);
-  const [exporting, setExporting] = useState(false);
+  const {
+    estimate,
+    estimating,
+    exporting,
+    fetchEstimate,
+    resetEstimate,
+    exportData
+  } = useExportUsage({
+    exportUrl: exportEndpoints.exportUrl,
+    estimateUrl: exportEndpoints.estimateUrl
+  });
 
   const buildRequest = (
     page: number,
@@ -135,7 +143,7 @@ const ResourceExportData: React.FC<ResourceExportDataProps> = (props) => {
     end_date: dateRange[1].format('YYYY-MM-DD'),
     scope,
     group_by: groupBy,
-    granularity: 'day',
+    granularity: exportGranularity,
     filters:
       selectedUsers.length ||
       selectedResources.length ||
@@ -166,6 +174,11 @@ const ResourceExportData: React.FC<ResourceExportDataProps> = (props) => {
     } finally {
       setLoading(false);
     }
+    // Size the export with the same filters the preview just used, so the row
+    // count under the button never describes a stale predicate.
+    fetchEstimate(
+      toResourceExportRequest(buildRequest(-1, INITIAL_PAGE.perPage))
+    );
   };
 
   // Reset to the tab's filters every time the dialog opens, then fetch.
@@ -181,7 +194,10 @@ const ResourceExportData: React.FC<ResourceExportDataProps> = (props) => {
 
   // Refetch the preview whenever the in-dialog filters or page change.
   useEffect(() => {
-    if (!open) return;
+    if (!open) {
+      resetEstimate();
+      return;
+    }
     fetchPreview(pageParams.page, pageParams.perPage);
   }, [
     open,
@@ -193,47 +209,14 @@ const ResourceExportData: React.FC<ResourceExportDataProps> = (props) => {
     pageParams
   ]);
 
-  const previewColumns = useMemo(
-    () => [
-      {
-        title: intl.formatMessage({ id: 'resources.table.index' }),
-        width: 60,
-        render: (_t: any, _r: any, index: number) =>
-          (pageParams.page - 1) * pageParams.perPage + index + 1
-      },
-      ...columns
-    ],
-    [columns, pageParams.page, pageParams.perPage, intl]
+  // Mirror the file: the column set comes from the estimate, which is also
+  // what defines the exported schema, so the preview and the download cannot
+  // show different things.
+  const { columns: previewColumns, scrollX } = useExportPreviewColumns(
+    estimate?.sheets?.[0]?.columns,
+    resourcePreviewValue,
+    pageParams
   );
-
-  // Append the "[Deleted.#id]" text marker to each configured name field of
-  // deleted rows — used for both the preview cells and the exported sheet, so
-  // the two always agree. Rows are export/preview-only copies. Each field marks
-  // off its own deleted flag (instance/volume vs. its owner User) so a compound
-  // row can flag the two entities independently.
-  const markRows = (
-    items: ResourceBreakdownItem[]
-  ): ResourceBreakdownItem[] => {
-    if (!deletedNameFields?.length) return items;
-    const deletedWord = intl.formatMessage({ id: 'usage.table.deleted' });
-    return items.map((item) => {
-      let next = item;
-      deletedNameFields.forEach((f) => {
-        if ((item as any)[f.deletedFlag]) {
-          next = {
-            ...next,
-            [f.name]: withDeletedMark(
-              (item as any)[f.name] ?? '',
-              true,
-              deletedWord,
-              (item as any)[f.id]
-            )
-          };
-        }
-      });
-      return next;
-    });
-  };
 
   // Normalize the date bucket to a plain calendar day (drop the ``T00:00:00``
   // the hourly ``metered_usage`` carries) so the export matches the Tokens
@@ -247,28 +230,85 @@ const ResourceExportData: React.FC<ResourceExportDataProps> = (props) => {
       i.date ? { ...i, date: String(i.date).slice(0, 10) } : i
     );
 
-  const rows: ResourceBreakdownItem[] = formatRowDates(
-    markRows(data?.items ?? [])
-  );
+  const rows: ResourceBreakdownItem[] = formatRowDates(data?.items ?? []);
 
   const handlePageChange = (page: number, perPage: number) => {
     setPageParams({ page, perPage });
   };
 
-  // Export the full filtered set, not just the visible page. ``page: -1`` is
-  // the backend's no-pagination sentinel (perPage is then ignored).
+  // Thresholds come from the server so the dialog can't disagree with what the
+  // export endpoint will accept.
+  const exportTotal = estimate?.total ?? 0;
+  const exceedsHardLimit = !!estimate?.exceeds_hard_limit;
+  const { contentHeight, bodyHeight } =
+    useExportPreviewLayout(exceedsHardLimit);
+  // The dialog always asks for xlsx; the server switches to CSV when the
+  // result cannot fit a worksheet. Say so BEFORE the click — a .csv landing
+  // in the downloads folder where a .xlsx was expected is the kind of
+  // surprise that breaks someone's import script.
+  // Two different reasons the file won't be xlsx, and the user should be told
+  // which one applies: splitting (the remedy on offer, which only CSV can
+  // stream) or a result too big for a worksheet at all.
+  const formatNote =
+    !estimate || estimate.effective_format === 'xlsx'
+      ? ''
+      : estimate.split_parts
+        ? intl.formatMessage(
+            { id: 'usage.export.splitAsCsv' },
+            { parts: estimate.split_parts }
+          )
+        : intl.formatMessage(
+            { id: 'usage.export.csvFallback' },
+            { limit: XLSX_MAX_ROWS_PER_SHEET }
+          );
+  const rowsHint = !estimate
+    ? null
+    : exceedsHardLimit
+      ? intl.formatMessage(
+          { id: 'usage.export.rowsExceeded' },
+          {
+            total: exportTotal,
+            limit: estimate.hard_limit,
+            days: estimate.suggested_max_days ?? 0
+          }
+        )
+      : estimate.exceeds_soft_limit
+        ? intl.formatMessage(
+            { id: 'usage.export.rowsSlow' },
+            { total: exportTotal }
+          )
+        : intl.formatMessage(
+            { id: 'usage.export.rows' },
+            { total: exportTotal }
+          );
+  const exportHint = [rowsHint, formatNote].filter(Boolean).join(' ');
+
+  // The server computed each remedy's numbers; clicking one applies it rather
+  // than leaving the user to work out how far to narrow.
+  const suggestionHandlers = {
+    onShortenRange: (maxDays: number) => {
+      const end = dateRange[1];
+      setDateRange([end.subtract(Math.max(0, maxDays - 1), 'day'), end]);
+    },
+    onSplitExport: async (_parts: number) => {
+      const ok = await exportData({
+        ...toResourceExportRequest(buildRequest(-1, INITIAL_PAGE.perPage)),
+        split: 'auto'
+      });
+      if (ok) {
+        onCancel?.();
+      }
+    }
+  };
+
   const handleSubmit = async () => {
-    setExporting(true);
-    try {
-      const res = await queryFn(buildRequest(-1, INITIAL_PAGE.perPage));
-      exportBreakdownRows(
-        formatRowDates(markRows(res.items ?? [])),
-        toExportColumns(columns),
-        fileName,
-        sheetName
-      );
-    } finally {
-      setExporting(false);
+    // Send the filters, not the rows: the server streams the whole filtered
+    // set, so the file can't disagree with the preview above it.
+    const ok = await exportData(
+      toResourceExportRequest(buildRequest(-1, INITIAL_PAGE.perPage))
+    );
+    if (ok) {
+      onCancel?.();
     }
   };
 
@@ -279,6 +319,7 @@ const ResourceExportData: React.FC<ResourceExportDataProps> = (props) => {
       centered={false}
       onCancel={onCancel}
       destroyOnHidden={true}
+      maxContentHeight={contentHeight}
       closeIcon={true}
       mask={{ closable: false }}
       keyboard={false}
@@ -289,6 +330,8 @@ const ResourceExportData: React.FC<ResourceExportDataProps> = (props) => {
           onOk={handleSubmit}
           onCancel={onCancel}
           loading={exporting}
+          okBtnProps={{ disabled: exceedsHardLimit }}
+          description={exportHint}
           okText={intl.formatMessage({ id: 'common.button.export' })}
         ></ModalFooter>
       }
@@ -297,11 +340,26 @@ const ResourceExportData: React.FC<ResourceExportDataProps> = (props) => {
         style={{
           position: 'sticky',
           top: 0,
-          zIndex: 1,
+          // Above antd's sticky table header and fixed columns (z-index 2-3),
+          // which otherwise scroll up over the filter bar.
+          zIndex: 10,
           backgroundColor: 'var(--ant-color-bg-elevated)',
-          paddingBottom: 8
+          paddingBottom: 8,
+          // Gap rather than a margin on either child: the suggestion banner
+          // renders nothing when the export fits, and a flex gap simply does
+          // not apply to an absent child — so there is no stray space to undo
+          // in the common case, and it holds whichever order the two are in.
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 12
         }}
       >
+        <ExportSuggestions
+          estimate={estimate}
+          exporting={exporting}
+          estimating={estimating}
+          {...suggestionHandlers}
+        />
         <ResourceFilterBar
           value={dateRange}
           onChange={(dates) => {
@@ -341,13 +399,12 @@ const ResourceExportData: React.FC<ResourceExportDataProps> = (props) => {
       <Table
         columns={previewColumns as any}
         className={'scroll-table'}
-        tableLayout={'auto'}
-        style={{ width: '100%', marginTop: 16, minHeight: 400 }}
+        style={{ width: '100%', marginTop: 16 }}
         dataSource={rows}
         rowKey={(_r, index) => `${index}`}
         loading={{ spinning: loading, size: 'middle' }}
         virtual
-        scroll={{ y: 400 }}
+        scroll={{ x: scrollX, y: bodyHeight }}
         pagination={{
           size: 'small',
           pageSize: pageParams.perPage,

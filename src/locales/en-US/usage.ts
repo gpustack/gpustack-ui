@@ -31,6 +31,22 @@ export default {
   'usage.tabs.users': 'User',
   'usage.export.chart': 'Export Chart Data',
   'usage.export.table': 'Export Table Data',
+  'usage.export.rows': 'About {total} rows will be exported.',
+  'usage.export.rowsSlow':
+    'About {total} rows will be exported. This may take a while — please keep this page open.',
+  'usage.export.rowsExceeded':
+    'About {total} rows, over the {limit}-row limit for a single export. Shorten the date range to {days} days or fewer, or add filters.',
+  'usage.export.error.tooLarge':
+    'This query returns about {total} rows, over the {limit}-row limit for a single export. Shorten the date range to {days} days or fewer, or add filters.',
+  'usage.export.splitAsCsv':
+    'The result is too large for one file, so it will be delivered as {parts} CSV files in a zip.',
+  'usage.export.csvFallback':
+    "The result exceeds Excel's {limit}-row limit per sheet, so it will be exported as CSV instead of xlsx.",
+  'usage.export.error.splitTooManyParts':
+    'Splitting would produce {total} files, over the {limit} limit. Narrow the date range or export fewer tables at once.',
+  'usage.export.error.failed': 'Export failed.',
+  'usage.export.suggest.shortenRange': 'Shorten to {days} days',
+  'usage.export.suggest.split': 'Export in {parts} CSV files',
   'usage.user.currentAccount': 'Current Account',
   'usage.table.cluster': 'Cluster',
   'usage.table.provider': 'Provider',

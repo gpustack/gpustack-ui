@@ -19,18 +19,15 @@ import dayjs from 'dayjs';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   queryGpuInstancesBreakdown,
-  ResourceBreakdownRequest
+  ResourceBreakdownRequest,
+  toResourceExportRequest
 } from '../apis/resource';
 import MetricChartCard from '../components/metric-chart-card';
 import MetricLabel from '../components/metric-label';
 import ResourceExportData from '../components/resource-export-data';
 import ResourceFilterBar from '../components/resource-filter-bar';
 import useResourceMeta from '../hooks/use-resource-meta';
-import {
-  exportBreakdownSheets,
-  markDeletedNames,
-  toExportColumns
-} from '../utils/export-breakdown';
+import useExportUsage from '../services/use-export-usage';
 import {
   bucketKey,
   generateBucketRange,
@@ -39,7 +36,11 @@ import {
 import { buildTrendSeries } from '../utils/trend-series';
 import useQueryGpuInstancesBreakdown from './services/use-query-gpu-instances-breakdown';
 import InstancesBreakdownTable from './tables/instances-breakdown-table';
-import useInstancesColumns from './tables/use-instances-columns';
+
+const RESOURCE_EXPORT_ENDPOINTS = {
+  exportUrl: '/usage/gpu-instances/breakdown/export',
+  estimateUrl: '/usage/gpu-instances/breakdown/export/estimate'
+};
 
 type Scope = 'self' | 'all';
 type Metric = 'gpu_hours' | 'instance_hours';
@@ -312,121 +313,69 @@ const GpuInstancesTab: React.FC = () => {
     [TABLE_TABS]
   );
 
-  // Columns for each bottom-table grouping — same factory the tables render
-  // with — used to build the export sheets below.
-  const gpuTypeColumns = useInstancesColumns('gpu_type');
-  const instanceColumns = useInstancesColumns('instance');
-  const userColumns = useInstancesColumns('user');
-
-  // "Export Table Data" writes every bottom table at once — one sheet per
-  // grouping (Instance Types / Instances / Users) — straight to a workbook,
-  // no preview dialog (mirrors the Tokens tab's `useExportTable`). The User
-  // sheet is included only when the org-wide view is available.
+  // "Export Table Data" sends every bottom table as one request — one sheet
+  // per grouping (Instance Types / Instances / Users). Only the grouping and
+  // its display name are needed: the exported COLUMNS are defined server-side
+  // (an export file is read by reconciliation scripts, so its schema must not
+  // track the UI's column list). The User sheet appears only in the org-wide
+  // view.
   const tableExportGroups = useMemo(() => {
     const groups = [
       {
         key: 'gpu_type' as GroupKey,
-        columns: gpuTypeColumns,
         sheetName: intl.formatMessage({ id: 'usage.table.instanceTypes' })
       },
       {
         key: 'instance' as GroupKey,
-        columns: instanceColumns,
         sheetName: intl.formatMessage({ id: 'usage.table.instances' })
       }
     ];
     if (canManageUsers) {
       groups.push({
         key: 'user' as GroupKey,
-        columns: userColumns,
         sheetName: intl.formatMessage({ id: 'usage.table.users' })
       });
     }
+    // Plugin sub-tabs (the enterprise Organizations breakdown) export too —
+    // same descriptor and visibility gate the tab strip uses, so the file
+    // always holds exactly the tables the user can see.
+    extraBreakdownTabs
+      .filter((tab) => (tab.isVisible ? tab.isVisible({ scope }) : true))
+      .forEach((tab) => {
+        groups.push({
+          key: tab.key as GroupKey,
+          sheetName: intl.formatMessage({ id: tab.labelId })
+        });
+      });
     return groups;
-  }, [gpuTypeColumns, instanceColumns, userColumns, canManageUsers, intl]);
+  }, [extraBreakdownTabs, scope, canManageUsers, intl]);
 
   // Chart export still opens the preview modal (matches the Tokens tab); the
   // table export is direct, so this only ever holds 'chart'.
+  const { exportWithPreflight } = useExportUsage(RESOURCE_EXPORT_ENDPOINTS);
   const [exportMode, setExportMode] = useState<'chart' | null>(null);
   const dateSuffix = `${dateRange[0].format('YYYY-MM-DD')}_${dateRange[1].format(
     'YYYY-MM-DD'
   )}`;
 
   const handleExportTable = async () => {
-    const results = await Promise.all(
-      tableExportGroups.map((g) =>
-        queryGpuInstancesBreakdown({
-          ...baseRequest(),
-          group_by: [g.key],
-          // A breakdown export is the full filtered set, not a page.
-          // ``page: -1`` is the backend's no-pagination sentinel.
-          page: -1
-        })
-      )
-    );
-    const deletedWord = intl.formatMessage({ id: 'usage.table.deleted' });
-    exportBreakdownSheets(
-      tableExportGroups.map((g, i) => ({
-        // The Instance Types sheet's name (``gpu_type``) is already marked by
-        // the adapter; the instance / user sheets keep the clean name (the
-        // table renders a tag) so mark it here for the export only.
-        rows: markDeletedNames(results[i]?.items ?? [], g.key, deletedWord),
-        columns: toExportColumns(g.columns),
-        sheetName: g.sheetName
-      })),
-      `gpu-instances_tables_${dateSuffix}.xlsx`
+    // One request, one file: each bottom table becomes a sheet over the SAME
+    // filters. Previously this fired a request per grouping and stitched the
+    // workbook in the browser, so the tables could in principle disagree.
+    await exportWithPreflight(
+      toResourceExportRequest(baseRequest(), {
+        sheets: tableExportGroups.map((group) => ({
+          key: group.key,
+          group_by: [group.key],
+          name: group.sheetName
+        }))
+      })
     );
   };
-
-  const chartExportColumns = [
-    {
-      title: intl.formatMessage({ id: 'usage.table.date' }),
-      dataIndex: 'date',
-      key: 'date'
-    },
-    {
-      title: intl.formatMessage({ id: 'usage.table.instance' }),
-      dataIndex: 'instance_name',
-      key: 'instance_name'
-    },
-    // Owner User column — org admins only (members see just their own rows).
-    ...(canManageUsers
-      ? [
-          {
-            title: intl.formatMessage({ id: 'usage.table.users' }),
-            dataIndex: 'user_name',
-            key: 'user_name'
-          }
-        ]
-      : []),
-    {
-      title: intl.formatMessage({ id: 'usage.metric.gpuHours' }),
-      dataIndex: 'gpu_hours',
-      key: 'gpu_hours',
-      render: (v: number) => (v ?? 0).toFixed(2)
-    },
-    {
-      title: intl.formatMessage({ id: 'usage.metric.instanceHours' }),
-      dataIndex: 'instance_hours',
-      key: 'instance_hours',
-      render: (v: number) => (v ?? 0).toFixed(2)
-    },
-    {
-      title: intl.formatMessage({ id: 'usage.metric.activeInstances' }),
-      dataIndex: 'active_instances',
-      key: 'active_instances'
-    },
-    {
-      title: intl.formatMessage({ id: 'usage.metric.activeUsers' }),
-      dataIndex: 'active_users',
-      key: 'active_users'
-    }
-  ];
 
   // The preview modal now only backs the by-date chart export.
   const exportConfig = {
     groupBy: ['date', 'instance'],
-    columns: chartExportColumns,
     fileName: `gpu-instances_chart_${dateSuffix}.xlsx`,
     sheetName: intl.formatMessage({ id: 'usage.tabs.gpuInstances' })
   };
@@ -558,8 +507,8 @@ const GpuInstancesTab: React.FC = () => {
         onCancel={() => setExportMode(null)}
         title={intl.formatMessage({ id: 'usage.export.chart' })}
         queryFn={queryGpuInstancesBreakdown}
+        exportEndpoints={RESOURCE_EXPORT_ENDPOINTS}
         groupBy={exportConfig.groupBy}
-        columns={exportConfig.columns}
         fileName={exportConfig.fileName}
         sheetName={exportConfig.sheetName}
         scope={scope}
@@ -577,20 +526,6 @@ const GpuInstancesTab: React.FC = () => {
         userGroupOptions={userGroups}
         initialSelectedOrganizations={selectedOrganizations}
         initialSelectedUserGroups={selectedUserGroups}
-        deletedNameFields={[
-          // The row's ``deleted`` is the grouped instance; the owner user
-          // carries its own ``user_deleted``.
-          { name: 'instance_name', id: 'instance_id', deletedFlag: 'deleted' },
-          ...(canManageUsers
-            ? [
-                {
-                  name: 'user_name',
-                  id: 'user_id',
-                  deletedFlag: 'user_deleted'
-                }
-              ]
-            : [])
-        ]}
       />
     </div>
   );

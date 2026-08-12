@@ -31,6 +31,22 @@ export default {
   'usage.tabs.users': '用户',
   'usage.export.chart': '导出图表数据',
   'usage.export.table': '导出表格数据',
+  'usage.export.rows': '本次将导出约 {total} 行。',
+  'usage.export.rowsSlow':
+    '本次将导出约 {total} 行，可能需要一些时间，请勿关闭页面。',
+  'usage.export.rowsExceeded':
+    '本次约 {total} 行，超出单次导出上限 {limit} 行。请把时间范围缩短到 {days} 天以内，或增加过滤条件。',
+  'usage.export.error.tooLarge':
+    '本次结果约 {total} 行，超出单次导出上限 {limit} 行。请把时间范围缩短到 {days} 天以内，或增加过滤条件。',
+  'usage.export.splitAsCsv':
+    '结果过大，无法放进单个文件，将拆成 {parts} 个 CSV 文件打包下载。',
+  'usage.export.csvFallback':
+    '结果超出 Excel 单表 {limit} 行的上限，将改为 CSV 格式导出（不是 xlsx）。',
+  'usage.export.error.splitTooManyParts':
+    '拆分会产生 {total} 个文件，超出 {limit} 个的上限。请缩小时间范围，或一次少导几张表。',
+  'usage.export.error.failed': '导出失败。',
+  'usage.export.suggest.shortenRange': '缩短到 {days} 天',
+  'usage.export.suggest.split': '分片导出（{parts} 个 CSV 文件）',
   'usage.user.currentAccount': '当前账户',
   'usage.table.cluster': '集群',
   'usage.table.provider': '提供商',

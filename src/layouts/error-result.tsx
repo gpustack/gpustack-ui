@@ -1,3 +1,4 @@
+import { reloadWithBust } from '@/utils/asset-recovery';
 import { ReloadOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Result } from 'antd';
@@ -27,14 +28,9 @@ const ErrorResult: React.FC<ErrorResultProps> = ({ extra }) => {
 
   const handleReload = () => {
     // Deliberately bypasses the one-attempt guard: that guard exists to stop automatic
-    // loops, and a person pressing a button is not one. Goes through the recovery seam so
-    // the reload is cache-busted; the snippet is production-only, so in development fall
-    // back to a plain reload — there is no intermediary cache in front of `max dev` to bust.
-    if (window.__assetRecovery__) {
-      window.__assetRecovery__.reload();
-    } else {
-      window.location.reload();
-    }
+    // loops, and a person pressing a button is not one. Still goes through the recovery
+    // seam so the reload is cache-busted.
+    reloadWithBust();
   };
 
   return (

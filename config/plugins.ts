@@ -1,11 +1,12 @@
+import CompressionWebpackPlugin from 'compression-webpack-plugin';
 import MonacoWebpackPlugin from 'monaco-editor-webpack-plugin';
-const CompressionWebpackPlugin = require('compression-webpack-plugin');
 
 export function monacoPluginConfig(config: any) {
   return config
     .plugin('monaco-editor-webpack-plugin')
     .use(MonacoWebpackPlugin, [
       {
+        filename: 'js/[name].[contenthash:8].worker.js',
         languages: ['yaml'],
         customLanguages: [
           {

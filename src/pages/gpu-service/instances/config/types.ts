@@ -34,6 +34,7 @@ export interface FormData {
       port: number;
       protocol?: string;
       name?: string;
+      accessParams?: Record<string, string>;
     }[];
     env: {
       name: string;

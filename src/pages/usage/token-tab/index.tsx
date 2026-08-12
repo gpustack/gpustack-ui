@@ -188,7 +188,13 @@ const TokenTab: React.FC = () => {
         }}
         handleSearch={handleSearch}
         handlePickerChange={handlePickerChange}
-        onExportTable={exportTable}
+        onExportTable={() =>
+          exportTable({
+            filters,
+            dateRange: breakdownDateRange,
+            scope: commonFilters.scope
+          })
+        }
         onExportChart={handleExportChart}
       />
       <div

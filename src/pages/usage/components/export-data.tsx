@@ -1,12 +1,19 @@
-import { AutoTooltip, ModalFooter, ScrollerModal } from '@gpustack/core-ui';
-import { exportJsonToExcel } from '@gpustack/core-ui/excel';
+import { ModalFooter, ScrollerModal } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Table, TableColumnType } from 'antd';
+import { Table } from 'antd';
+import dayjs from 'dayjs';
 import React, { useEffect } from 'react';
+import { XLSX_MAX_ROWS_PER_SHEET } from '../config';
 import { useUsageFilters } from '../hooks/use-usage-filters';
+import useExportUsage from '../services/use-export-usage';
 import useQueryBreakdownList from '../services/use-query-breakdown-list';
-import { withDeletedMark } from '../utils/deleted-label';
+import {
+  tokenPreviewValue,
+  useExportPreviewColumns,
+  useExportPreviewLayout
+} from '../utils/export-preview-columns';
 import getBreakdownRowKey from '../utils/get-breakdown-row-key';
+import ExportSuggestions from './export-suggestions';
 import FilterBar from './filter-bar';
 
 type DateType = 'date' | 'week' | 'month' | 'quarter' | 'year';
@@ -50,7 +57,6 @@ const ExportData: React.FC<{
     initialState
   } = props || {};
   const intl = useIntl();
-  const deletedWord = intl.formatMessage({ id: 'usage.table.deleted' });
 
   // Members are forced to self scope, where the backend forbids grouping by
   // user (privacy) — including it 403s the export request. Drop the user
@@ -64,6 +70,10 @@ const ExportData: React.FC<{
     page: number;
     perPage: number;
   }>(INITIAL_PAGE_PARAMS);
+  // The exported bucket size. Fixed at day: a date-grouped export means one
+  // row per calendar day, and the remedies for an over-large export never
+  // change that (they narrow the range or split the file, both lossless).
+  const exportGranularity = 'day';
 
   const {
     fetchData: fetchExportData,
@@ -73,6 +83,32 @@ const ExportData: React.FC<{
   } = useQueryBreakdownList({
     key: 'exportTableData'
   });
+
+  // The export payload mirrors what the preview is showing, minus pagination:
+  // the server streams the whole filtered set. Sending the filters rather than
+  // the rows is the point — the file can no longer disagree with the query
+  // that produced the preview.
+  const buildExportRequest = (
+    nextFilters: any,
+    nextCommonFilters: { start_date: string; end_date: string }
+  ) => ({
+    start_date: nextCommonFilters.start_date,
+    end_date: nextCommonFilters.end_date,
+    scope: initialScope,
+    filters: nextFilters,
+    granularity: exportGranularity,
+    sort_by: '-date',
+    group_by: exportGroupBy
+  });
+
+  const {
+    estimate,
+    estimating,
+    exporting,
+    fetchEstimate,
+    resetEstimate,
+    exportData
+  } = useExportUsage();
 
   const { filters, commonFilters, filterBar } = useUsageFilters({
     initialScope: initialScope,
@@ -92,7 +128,7 @@ const ExportData: React.FC<{
     }) => {
       fetchExportData({
         ...pageParams,
-        granularity: 'day',
+        granularity: exportGranularity,
         sort_by: '-date',
         group_by: exportGroupBy,
         filters: nextFilters,
@@ -100,209 +136,100 @@ const ExportData: React.FC<{
         start_date: nextCommonFilters.start_date,
         end_date: nextCommonFilters.end_date
       });
+      // Re-size the export with the same predicate the preview just used, so
+      // the row count under the button never describes stale filters.
+      fetchEstimate(buildExportRequest(nextFilters, nextCommonFilters));
     }
   });
 
-  const exportTableColumns: TableColumnType<any>[] = [
-    {
-      title: intl.formatMessage({ id: 'resources.table.index' }),
-      width: 80,
-      render(text: any, row: any, index: number) {
-        return index + 1;
-      }
+  // The preview renders the columns the FILE will have, taken from the
+  // estimate — the dialog is called Export Data, so showing a different set
+  // than the download would be a small lie. The estimate is also what defines
+  // the set, so the two cannot drift apart.
+  const { columns: previewColumns, scrollX } = useExportPreviewColumns(
+    estimate?.sheets?.[0]?.columns,
+    tokenPreviewValue,
+    pageParams
+  );
+
+  // Thresholds come from the server so the dialog can't drift from what the
+  // export endpoint will actually accept.
+  const exportTotal = estimate?.total ?? 0;
+  const exceedsHardLimit = !!estimate?.exceeds_hard_limit;
+  const { contentHeight, bodyHeight } =
+    useExportPreviewLayout(exceedsHardLimit);
+  // The dialog always asks for xlsx; the server switches to CSV when the
+  // result cannot fit a worksheet. Say so BEFORE the click — a .csv landing
+  // in the downloads folder where a .xlsx was expected is the kind of
+  // surprise that breaks someone's import script.
+  // Two different reasons the file won't be xlsx, and the user should be told
+  // which one applies: splitting (the remedy on offer, which only CSV can
+  // stream) or a result too big for a worksheet at all.
+  const formatNote =
+    !estimate || estimate.effective_format === 'xlsx'
+      ? ''
+      : estimate.split_parts
+        ? intl.formatMessage(
+            { id: 'usage.export.splitAsCsv' },
+            { parts: estimate.split_parts }
+          )
+        : intl.formatMessage(
+            { id: 'usage.export.csvFallback' },
+            { limit: XLSX_MAX_ROWS_PER_SHEET }
+          );
+  const rowsHint = !estimate
+    ? null
+    : exceedsHardLimit
+      ? intl.formatMessage(
+          { id: 'usage.export.rowsExceeded' },
+          {
+            total: exportTotal,
+            limit: estimate.hard_limit,
+            days: estimate.suggested_max_days ?? 0
+          }
+        )
+      : estimate.exceeds_soft_limit
+        ? intl.formatMessage(
+            { id: 'usage.export.rowsSlow' },
+            { total: exportTotal }
+          )
+        : intl.formatMessage(
+            { id: 'usage.export.rows' },
+            { total: exportTotal }
+          );
+  const exportHint = [rowsHint, formatNote].filter(Boolean).join(' ');
+
+  // Every remedy the server proposed is one click. The numbers are its, not
+  // ours: recomputing "how many days fit" in the client is how the advice
+  // before the click starts disagreeing with the error after it.
+  const suggestionHandlers = {
+    onShortenRange: (maxDays: number) => {
+      // Keep the end date and pull the start forward: the most recent window
+      // is what a user narrowing an export almost always wants.
+      const end = dayjs(commonFilters.end_date);
+      const start = end.subtract(Math.max(0, maxDays - 1), 'day');
+      // antd's RangePicker signature — the handler reads the string pair.
+      filterBar.onDateChange?.(null, [
+        start.format('YYYY-MM-DD'),
+        end.format('YYYY-MM-DD')
+      ]);
     },
-    {
-      title: intl.formatMessage({ id: 'dashboard.usage.export.date' }),
-      dataIndex: ['date', 'label'],
-      render: (text: string) => {
-        return (
-          <AutoTooltip ghost>
-            <span className="text-primary">{text}</span>
-          </AutoTooltip>
-        );
-      }
-    },
-    {
-      title: intl.formatMessage({ id: 'usage.filter.group.model' }),
-      dataIndex: ['route', 'label'],
-      render: (text: string, record: any) => {
-        return (
-          <AutoTooltip ghost>
-            {withDeletedMark(
-              text,
-              record?.route?.deleted,
-              deletedWord,
-              record?.route?.identity?.current?.route_id
-            )}
-          </AutoTooltip>
-        );
-      }
-    },
-    {
-      title: intl.formatMessage({ id: 'dashboard.usage.export.user' }),
-      dataIndex: ['user', 'label'],
-      render: (text: string, record: any) => {
-        return (
-          <AutoTooltip ghost>
-            {withDeletedMark(
-              text,
-              record?.user?.deleted,
-              deletedWord,
-              record?.user?.identity?.current?.user_id
-            )}
-          </AutoTooltip>
-        );
-      }
-    },
-    {
-      title: intl.formatMessage({ id: 'usage.filter.group.apikey' }),
-      dataIndex: ['api_key', 'label'],
-      render: (text: string, record: any) => {
-        return (
-          <AutoTooltip ghost>
-            {withDeletedMark(
-              text,
-              record?.api_key?.deleted,
-              deletedWord,
-              record?.api_key?.identity?.current?.api_key_id
-            )}
-          </AutoTooltip>
-        );
-      }
-    },
-    {
-      title: (
-        <AutoTooltip ghost>
-          {intl.formatMessage({ id: 'usage.filter.inputTokens' })}
-        </AutoTooltip>
-      ),
-      width: 130,
-      dataIndex: 'input_tokens',
-      render: (text: string, record: any) => {
-        return <AutoTooltip ghost>{text}</AutoTooltip>;
-      }
-    },
-    {
-      title: (
-        <AutoTooltip ghost>
-          {intl.formatMessage({ id: 'usage.table.inputTokensCached' })}
-        </AutoTooltip>
-      ),
-      width: 150,
-      dataIndex: 'input_cached_tokens',
-      render: (text: string, record: any) => {
-        return <AutoTooltip ghost>{text}</AutoTooltip>;
-      }
-    },
-    {
-      title: (
-        <AutoTooltip ghost>
-          {intl.formatMessage({ id: 'usage.filter.outputTokens' })}
-        </AutoTooltip>
-      ),
-      dataIndex: 'output_tokens',
-      render: (text: string, record: any) => {
-        return <AutoTooltip ghost>{text}</AutoTooltip>;
-      }
-    },
-    {
-      title: (
-        <AutoTooltip ghost>
-          {intl.formatMessage({ id: 'usage.filter.totalTokens' })}
-        </AutoTooltip>
-      ),
-      dataIndex: 'total_tokens',
-      render: (text: string, record: any) => {
-        return <AutoTooltip ghost>{text}</AutoTooltip>;
-      }
-    },
-    {
-      title: (
-        <AutoTooltip ghost>
-          {intl.formatMessage({ id: 'usage.filter.apiRequests' })}
-        </AutoTooltip>
-      ),
-      dataIndex: 'api_requests',
-      render: (text: string, record: any) => {
-        return <AutoTooltip ghost>{text}</AutoTooltip>;
+    onSplitExport: async (_parts: number) => {
+      const ok = await exportData({
+        ...buildExportRequest(filters, commonFilters),
+        split: 'auto'
+      });
+      if (ok) {
+        handleOnCancel();
       }
     }
-  ];
+  };
 
-  // Hide the User column when we can't group by user (self scope) — it'd be
-  // empty otherwise.
-  const visibleColumns = canGroupByUser
-    ? exportTableColumns
-    : exportTableColumns.filter(
-        (c) => !(Array.isArray(c.dataIndex) && c.dataIndex[0] === 'user')
-      );
-
-  const handleSubmit = () => {
-    exportJsonToExcel({
-      fileName: `usage_export_${commonFilters.start_date}_${commonFilters.end_date}.xlsx`,
-      sheets: [
-        {
-          jsonData: (dataSource.dataList || []).map((item: any) => ({
-            date: item?.date?.label,
-            user: withDeletedMark(
-              item?.user?.label ?? '',
-              item?.user?.deleted,
-              deletedWord,
-              item?.user?.identity?.current?.user_id
-            ),
-            route: withDeletedMark(
-              item?.route?.label ?? '',
-              item?.route?.deleted,
-              deletedWord,
-              item?.route?.identity?.current?.route_id
-            ),
-            api_key: withDeletedMark(
-              item?.api_key?.label ?? '',
-              item?.api_key?.deleted,
-              deletedWord,
-              item?.api_key?.identity?.current?.api_key_id
-            ),
-            input_tokens: item?.input_tokens,
-            input_cached_tokens: item?.input_cached_tokens,
-            output_tokens: item?.output_tokens,
-            total_tokens: item?.total_tokens,
-            api_requests: item?.api_requests
-          })),
-          sheetName: 'usage',
-          fields: [
-            'date',
-            ...(canGroupByUser ? ['user'] : []),
-            'route',
-            'api_key',
-            'input_tokens',
-            'input_cached_tokens',
-            'output_tokens',
-            'total_tokens',
-            'api_requests'
-          ],
-          fieldLabels: {
-            date: intl.formatMessage({ id: 'dashboard.usage.export.date' }),
-            user: intl.formatMessage({ id: 'dashboard.usage.export.user' }),
-            route: intl.formatMessage({ id: 'usage.filter.group.model' }),
-            api_key: intl.formatMessage({ id: 'usage.filter.group.apikey' }),
-            input_tokens: intl.formatMessage({
-              id: 'usage.filter.inputTokens'
-            }),
-            input_cached_tokens: intl.formatMessage({
-              id: 'usage.table.inputTokensCached'
-            }),
-            output_tokens: intl.formatMessage({
-              id: 'usage.filter.outputTokens'
-            }),
-            total_tokens: intl.formatMessage({
-              id: 'usage.filter.totalTokens'
-            }),
-            api_requests: intl.formatMessage({ id: 'usage.filter.apiRequests' })
-          },
-          formatMap: {}
-        }
-      ]
-    });
+  const handleSubmit = async () => {
+    const ok = await exportData(buildExportRequest(filters, commonFilters));
+    if (ok) {
+      handleOnCancel();
+    }
   };
 
   const handlePageChange = (page: number, pageSize: number) => {
@@ -311,7 +238,7 @@ const ExportData: React.FC<{
       ...pageParams,
       page,
       perPage: pageSize,
-      granularity: 'day',
+      granularity: exportGranularity,
       group_by: exportGroupBy,
       filters,
       sort_by: '-date',
@@ -330,7 +257,7 @@ const ExportData: React.FC<{
       setPageParams(INITIAL_PAGE_PARAMS);
       fetchExportData({
         ...INITIAL_PAGE_PARAMS,
-        granularity: 'day',
+        granularity: exportGranularity,
         group_by: exportGroupBy,
         filters,
         sort_by: '-date',
@@ -338,8 +265,10 @@ const ExportData: React.FC<{
         start_date: commonFilters.start_date,
         end_date: commonFilters.end_date
       });
+      fetchEstimate(buildExportRequest(filters, commonFilters));
     } else {
       cancelRequest();
+      resetEstimate();
     }
   }, [open]);
 
@@ -350,6 +279,7 @@ const ExportData: React.FC<{
       centered={false}
       onCancel={handleOnCancel}
       destroyOnHidden={true}
+      maxContentHeight={contentHeight}
       closeIcon={true}
       mask={{
         closable: false
@@ -363,6 +293,9 @@ const ExportData: React.FC<{
         <ModalFooter
           onOk={handleSubmit}
           onCancel={handleOnCancel}
+          loading={exporting}
+          okBtnProps={{ disabled: exceedsHardLimit }}
+          description={exportHint}
           okText={intl.formatMessage({ id: 'common.button.export' })}
         ></ModalFooter>
       }
@@ -371,9 +304,16 @@ const ExportData: React.FC<{
         style={{
           position: 'sticky',
           top: 0,
-          zIndex: 1,
+          // Above antd's sticky table header and fixed columns (z-index 2-3),
+          // which otherwise scroll up over the filter bar.
+          zIndex: 10,
           backgroundColor: 'var(--ant-color-bg-elevated)',
-          paddingBottom: 8
+          paddingBottom: 8,
+          // See resource-export-data: a flex gap contributes nothing when the
+          // suggestion banner is absent, which is the usual case.
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 12
         }}
       >
         <FilterBar
@@ -381,12 +321,17 @@ const ExportData: React.FC<{
           pageType="modal"
           handlePickerChange={handlePickerChange}
         ></FilterBar>
+        <ExportSuggestions
+          estimate={estimate}
+          exporting={exporting}
+          estimating={estimating}
+          {...suggestionHandlers}
+        />
       </div>
       <Table
-        columns={visibleColumns}
+        columns={previewColumns}
         className={'scroll-table'}
-        tableLayout={'auto'}
-        style={{ width: '100%', marginTop: '16px', minHeight: 400 }}
+        style={{ width: '100%', marginTop: 16 }}
         dataSource={dataSource.dataList || []}
         rowKey={(record) => getBreakdownRowKey(record, 'export')}
         loading={{
@@ -394,7 +339,7 @@ const ExportData: React.FC<{
           size: 'middle'
         }}
         virtual
-        scroll={{ y: 400 }}
+        scroll={{ x: scrollX, y: bodyHeight }}
         pagination={{
           size: 'small',
           pageSize: pageParams.perPage,

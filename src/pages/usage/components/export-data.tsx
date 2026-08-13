@@ -208,11 +208,13 @@ const ExportData: React.FC<{
       // is what a user narrowing an export almost always wants.
       const end = dayjs(commonFilters.end_date);
       const start = end.subtract(Math.max(0, maxDays - 1), 'day');
-      // antd's RangePicker signature — the handler reads the string pair.
-      filterBar.onDateChange?.(null, [
-        start.format('YYYY-MM-DD'),
-        end.format('YYYY-MM-DD')
-      ]);
+      // antd's RangePicker signature. Today's handler reads only the string
+      // pair, but the objects are already in hand, so send them rather than
+      // leave a `null` for a future reader of `dates[0]` to trip over.
+      filterBar.onDateChange?.(
+        [start, end],
+        [start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD')]
+      );
     },
     onSplitExport: async (_parts: number) => {
       const ok = await exportData({

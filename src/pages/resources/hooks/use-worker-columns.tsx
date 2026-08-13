@@ -23,7 +23,7 @@ import {
   type TableColumnProps
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Tooltip } from 'antd';
+import { Flex, Tooltip } from 'antd';
 import { useAtom, useAtomValue } from 'jotai';
 import _ from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
@@ -121,11 +121,11 @@ const calcStorage = (files: Filesystem[]) => {
 };
 
 const GPUCell = ({ devices }: { devices: GPUDeviceItem[] }) => (
-  <span className="flex-column gap-5" style={{ width: '100%' }}>
+  <Flex orientation="vertical" gap={4} style={{ width: '100%' }}>
     {_.map(
       _.sortBy(devices || [], ['index']),
       (item: GPUDeviceItem, index: number) => (
-        <span className="flex-center" key={index}>
+        <span className="flex-center" key={index} style={{ height: 18 }}>
           <span
             className="m-r-5"
             style={{ display: 'flex', width: 25, lineHeight: 1 }}
@@ -140,7 +140,7 @@ const GPUCell = ({ devices }: { devices: GPUDeviceItem[] }) => (
         </span>
       )
     )}
-  </span>
+  </Flex>
 );
 
 // index + ProgressBar
@@ -170,11 +170,11 @@ const VRAMItem = ({
       <span className="flex-center" style={{ cursor: 'pointer' }}>
         <span
           className="m-r-5"
-          style={{ display: 'flex', width: 25, lineHeight: 1.2 }}
+          style={{ display: 'flex', width: 25, lineHeight: 1 }}
         >
           <span
             style={{
-              paddingBottom: 2,
+              paddingBottom: 3,
               borderBottom: '1px dashed var(--ant-blue-6)'
             }}
           >
@@ -202,7 +202,7 @@ const VRAMCell = ({
   loadend: boolean;
   firstLoad: boolean;
 }) => (
-  <span className="flex-column flex-gap-2" style={{ width: '100%' }}>
+  <Flex orientation="vertical" gap={4} style={{ width: '100%' }}>
     {_.map(
       _.sortBy(devices || [], ['index']),
       (item: GPUDeviceItem, index: number) => (
@@ -213,7 +213,7 @@ const VRAMCell = ({
         />
       )
     )}
-  </span>
+  </Flex>
 );
 
 const StorageCell = ({ files }: { files: Filesystem[] }) => {

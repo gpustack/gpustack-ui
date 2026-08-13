@@ -11,6 +11,10 @@ export interface UsageFilterItem {
       route_name: string | null;
       // Resolved live from principals (platform-wide "All" view only).
       organization_name?: string | null;
+      // ``org`` / ``user`` / ``group`` — the consumer may be a person, not an
+      // Org, which is what the export's Organization Type column reports. The
+      // server sends it; the preview reads it through this field.
+      organization_kind?: string | null;
       group_name?: string | null;
     };
     current: {
@@ -139,6 +143,10 @@ export type UsageExportRequest = {
   // Exactly one of these: `group_by` for a single table, `sheets` for several.
   group_by?: string[];
   sheets?: UsageExportSheet[];
+  // ``'auto'`` asks the server to cut an over-large result into row slices
+  // inside one archive. Declared because two call sites send it; it type-checked
+  // only because those payloads were typed ``any``.
+  split?: 'auto';
 };
 
 // One exported column: `key` is what the preview reads a value by, `title` is
@@ -155,8 +163,13 @@ export type UsageExportSheetEstimate = {
   total: number;
   columns?: UsageExportColumn[];
   // False when the caller may not run this sheet (e.g. the Organization
-  // breakdown outside the platform-wide view) — reported per sheet so the UI
-  // can grey out one table instead of blocking the whole dialog.
+  // breakdown outside the platform-wide view). The server reports it per sheet
+  // and refuses the export outright if an unavailable sheet is requested, so
+  // nothing in the UI consumes these yet — the multi-sheet entries build their
+  // sheet list from the same visibility gate the tab strip uses, so an
+  // unavailable one is never asked for. Kept because the alternative to
+  // per-sheet reporting is a whole-dialog failure with no way to say which
+  // table caused it.
   available: boolean;
   reason?: string;
 };

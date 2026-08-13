@@ -44,6 +44,8 @@ export default {
     "The result exceeds Excel's {limit}-row limit per sheet, so it will be exported as CSV instead of xlsx.",
   'usage.export.error.splitTooManyParts':
     'Splitting would produce {total} files, over the {limit} limit. Narrow the date range or export fewer tables at once.',
+  'usage.export.estimateFailed':
+    'Could not size this export, so the preview has no columns to show. The download still works; the server enforces the limits either way.',
   'usage.export.error.failed': 'Export failed.',
   'usage.export.suggest.shortenRange': 'Shorten to {days} days',
   'usage.export.suggest.split': 'Export in {parts} CSV files',

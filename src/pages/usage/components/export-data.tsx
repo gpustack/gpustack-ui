@@ -1,17 +1,15 @@
 import { ModalFooter, ScrollerModal } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Table } from 'antd';
+import { Alert, Flex, Table } from 'antd';
 import dayjs from 'dayjs';
 import React, { useEffect } from 'react';
 import { XLSX_MAX_ROWS_PER_SHEET } from '../config';
+import { useExportPreviewColumns } from '../hooks/use-export-preview-columns';
+import { useExportPreviewLayout } from '../hooks/use-export-preview-layout';
 import { useUsageFilters } from '../hooks/use-usage-filters';
 import useExportUsage from '../services/use-export-usage';
 import useQueryBreakdownList from '../services/use-query-breakdown-list';
-import {
-  tokenPreviewValue,
-  useExportPreviewColumns,
-  useExportPreviewLayout
-} from '../utils/export-preview-columns';
+import { tokenPreviewValue } from '../utils/export-preview-values';
 import getBreakdownRowKey from '../utils/get-breakdown-row-key';
 import ExportSuggestions from './export-suggestions';
 import FilterBar from './filter-bar';
@@ -104,6 +102,7 @@ const ExportData: React.FC<{
   const {
     estimate,
     estimating,
+    estimateFailed,
     exporting,
     fetchEstimate,
     resetEstimate,
@@ -310,25 +309,33 @@ const ExportData: React.FC<{
           // which otherwise scroll up over the filter bar.
           zIndex: 10,
           backgroundColor: 'var(--ant-color-bg-elevated)',
-          paddingBottom: 8,
-          // See resource-export-data: a flex gap contributes nothing when the
-          // suggestion banner is absent, which is the usual case.
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 12
+          paddingBottom: 8
         }}
       >
-        <FilterBar
-          {...filterBar}
-          pageType="modal"
-          handlePickerChange={handlePickerChange}
-        ></FilterBar>
-        <ExportSuggestions
-          estimate={estimate}
-          exporting={exporting}
-          estimating={estimating}
-          {...suggestionHandlers}
-        />
+        {/* See resource-export-data: a flex gap contributes nothing when the
+            suggestion banner is absent, which is the usual case. */}
+        <Flex vertical gap={12}>
+          <FilterBar
+            {...filterBar}
+            pageType="modal"
+            handlePickerChange={handlePickerChange}
+          ></FilterBar>
+          <ExportSuggestions
+            estimate={estimate}
+            exporting={exporting}
+            estimating={estimating}
+            {...suggestionHandlers}
+          />
+          {estimateFailed && (
+            <Alert
+              type="warning"
+              showIcon
+              message={intl.formatMessage({
+                id: 'usage.export.estimateFailed'
+              })}
+            />
+          )}
+        </Flex>
       </div>
       <Table
         columns={previewColumns}
@@ -337,7 +344,9 @@ const ExportData: React.FC<{
         dataSource={dataSource.dataList || []}
         rowKey={(record) => getBreakdownRowKey(record, 'export')}
         loading={{
-          spinning: loading,
+          // ``estimating`` too — the columns come from the estimate, so an
+          // idle empty table would read as "no data" rather than "working".
+          spinning: loading || estimating,
           size: 'middle'
         }}
         virtual

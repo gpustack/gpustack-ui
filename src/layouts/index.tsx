@@ -39,7 +39,7 @@ import {
   useNavigate,
   type IRoute
 } from '@umijs/max';
-import { Button, ConfigProvider, Modal, theme } from 'antd';
+import { App, Button, ConfigProvider, Modal, theme } from 'antd';
 import { useAtom } from 'jotai';
 import 'overlayscrollbars/overlayscrollbars.css';
 import { useEffect, useMemo, useRef } from 'react';
@@ -348,118 +348,125 @@ export default (props: any) => {
         }
       }}
     >
-      <CoreUIProvider
-        config={{
-          apiBaseUrl: GPUSTACK_API_BASE_URL,
-          theme: userSettings.theme,
-          iconUrl: '',
-          isDarkTheme: userSettings.isDarkTheme,
-          defaultColorPrimary: COLOR_PRIMARY
-        }}
-        hooks={{
-          useUserSettings,
-          useUserSettingsStorage,
-          useIntl,
-          useCurrentUser,
-          useTableFetch
-        }}
-        i18n={intl}
-        locale={{
-          getAllLocales: getAllLocales,
-          setLocale: setLocale
-        }}
-        services={{
-          request: request,
-          router: {
-            push: (path: string) => navigate(path),
-            replace: (path: string) => navigate(path, { replace: true }),
-            goBack: () => navigate(-1)
-          }
-        }}
-        localStore={{
-          readColumnSettings,
-          writeColumnSettings,
-          readState,
-          writeState
-        }}
-        slots={coreUISlots}
-        access={{ Access, useAccess }}
-      >
-        <DarkMask></DarkMask>
-        <ProLayout
-          fixSiderbar
-          fixedHeader={false}
-          headerRender={false}
-          breadcrumbRender={false}
-          route={route}
-          location={location}
-          title={userConfig.title}
-          navTheme={userSettings.theme}
-          layout="side"
-          contentStyle={{
-            paddingBlock: 0,
-            paddingInline: 0
+      {/* Bridges antd's static-looking APIs (modal.confirm, message) into this
+          ConfigProvider. Without it a Modal.confirm renders with the default
+          algorithm and locale -- a light dialog with an untranslated "Cancel"
+          while the app is in dark mode. ``component={false}`` keeps it from
+          adding a DOM node that would change the layout. */}
+      <App component={false}>
+        <CoreUIProvider
+          config={{
+            apiBaseUrl: GPUSTACK_API_BASE_URL,
+            theme: userSettings.theme,
+            iconUrl: '',
+            isDarkTheme: userSettings.isDarkTheme,
+            defaultColorPrimary: COLOR_PRIMARY
           }}
-          openKeys={false}
-          disableMobile={true}
-          siderWidth={220}
-          menuFooterRender={() => (
-            <Button
-              style={{
-                border: 'none'
-              }}
-              size="small"
-              type={'text'}
-              onClick={handleToggleCollapse}
-            >
-              <IconFont
-                type={collapsed ? 'icon-expand-left' : 'icon-expand-right'}
-                className="font-size-18"
-              />
-            </Button>
-          )}
-          onCollapse={onCollapse}
-          onMenuHeaderClick={onMenuHeaderClick}
-          collapsed={userSettings.collapsed}
-          onPageChange={onPageChange}
-          formatMessage={formatMessage}
-          menu={{
-            locale: true,
-            type: 'group'
+          hooks={{
+            useUserSettings,
+            useUserSettingsStorage,
+            useIntl,
+            useCurrentUser,
+            useTableFetch
           }}
-          splitMenus={true}
-          logo={userSettings.collapsed ? <SLogoIcon /> : <LogoIcon />}
-          menuContentRender={menuContentRender}
-          {...runtimeConfig}
-          ErrorBoundary={ErrorBoundary}
+          i18n={intl}
+          locale={{
+            getAllLocales: getAllLocales,
+            setLocale: setLocale
+          }}
+          services={{
+            request: request,
+            router: {
+              push: (path: string) => navigate(path),
+              replace: (path: string) => navigate(path, { replace: true }),
+              goBack: () => navigate(-1)
+            }
+          }}
+          localStore={{
+            readColumnSettings,
+            writeColumnSettings,
+            readState,
+            writeState
+          }}
+          slots={coreUISlots}
+          access={{ Access, useAccess }}
         >
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              height: '100vh',
-              overflow: 'hidden'
+          <DarkMask></DarkMask>
+          <ProLayout
+            fixSiderbar
+            fixedHeader={false}
+            headerRender={false}
+            breadcrumbRender={false}
+            route={route}
+            location={location}
+            title={userConfig.title}
+            navTheme={userSettings.theme}
+            layout="side"
+            contentStyle={{
+              paddingBlock: 0,
+              paddingInline: 0
             }}
+            openKeys={false}
+            disableMobile={true}
+            siderWidth={220}
+            menuFooterRender={() => (
+              <Button
+                style={{
+                  border: 'none'
+                }}
+                size="small"
+                type={'text'}
+                onClick={handleToggleCollapse}
+              >
+                <IconFont
+                  type={collapsed ? 'icon-expand-left' : 'icon-expand-right'}
+                  className="font-size-18"
+                />
+              </Button>
+            )}
+            onCollapse={onCollapse}
+            onMenuHeaderClick={onMenuHeaderClick}
+            collapsed={userSettings.collapsed}
+            onPageChange={onPageChange}
+            formatMessage={formatMessage}
+            menu={{
+              locale: true,
+              type: 'group'
+            }}
+            splitMenus={true}
+            logo={userSettings.collapsed ? <SLogoIcon /> : <LogoIcon />}
+            menuContentRender={menuContentRender}
+            {...runtimeConfig}
+            ErrorBoundary={ErrorBoundary}
           >
-            <PluginExtraFields name="GlobalLicenseBanner" />
-            <Exception
-              route={matchedRoute}
-              notFound={runtimeConfig?.notFound}
-              noFound={runtimeConfig?.noFound}
-              unAccessible={runtimeConfig?.unAccessible}
-              noAccessible={runtimeConfig?.noAccessible}
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                height: '100vh',
+                overflow: 'hidden'
+              }}
             >
-              <PageContainerInner>
-                <div>
-                  <Outlet />
-                </div>
-              </PageContainerInner>
-            </Exception>
-          </div>
-          {NoResourceModal}
-          {contextHolder}
-        </ProLayout>
-      </CoreUIProvider>
+              <PluginExtraFields name="GlobalLicenseBanner" />
+              <Exception
+                route={matchedRoute}
+                notFound={runtimeConfig?.notFound}
+                noFound={runtimeConfig?.noFound}
+                unAccessible={runtimeConfig?.unAccessible}
+                noAccessible={runtimeConfig?.noAccessible}
+              >
+                <PageContainerInner>
+                  <div>
+                    <Outlet />
+                  </div>
+                </PageContainerInner>
+              </Exception>
+            </div>
+            {NoResourceModal}
+            {contextHolder}
+          </ProLayout>
+        </CoreUIProvider>
+      </App>
     </ConfigProvider>
   );
 };

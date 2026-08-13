@@ -44,6 +44,8 @@ export default {
     '结果超出 Excel 单表 {limit} 行的上限，将改为 CSV 格式导出（不是 xlsx）。',
   'usage.export.error.splitTooManyParts':
     '拆分会产生 {total} 个文件，超出 {limit} 个的上限。请缩小时间范围，或一次少导几张表。',
+  'usage.export.estimateFailed':
+    '无法预估本次导出的规模，因此预览没有可显示的列。仍可直接下载，上限由服务端强制执行。',
   'usage.export.error.failed': '导出失败。',
   'usage.export.suggest.shortenRange': '缩短到 {days} 天',
   'usage.export.suggest.split': '分片导出（{parts} 个 CSV 文件）',

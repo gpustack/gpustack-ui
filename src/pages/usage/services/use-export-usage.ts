@@ -1,6 +1,6 @@
 import { downloadFile } from '@/utils/download-stream';
 import { useIntl } from '@umijs/max';
-import { Modal, message } from 'antd';
+import { App, message } from 'antd';
 import React from 'react';
 import {
   USAGE_BREAKDOWN_EXPORT,
@@ -8,10 +8,6 @@ import {
   downloadUsageExport,
   queryUsageExportEstimate
 } from '../apis';
-import {
-  downloadResourceExport,
-  queryResourceExportEstimate
-} from '../apis/resource';
 import { XLSX_MAX_ROWS_PER_SHEET } from '../config';
 import type {
   UsageExportErrorDetails,
@@ -29,9 +25,10 @@ const filenameFromDisposition = (disposition?: string | null): string => {
 /**
  * Pull the error payload off a failed export.
  *
- * A blob-typed request makes the error body a Blob too, so the GLOBAL
- * INTERCEPTOR NEVER SEES IT — an export error is invisible unless this
- * function reads it. Both halves are returned: ``details`` drives the
+ * A blob-typed request makes the error body a Blob, which the global handler
+ * cannot read — it would fall back to axios's own "Request failed with status
+ * code 422". So the export endpoints set ``skipErrorHandler`` and this reads
+ * the body instead. Both halves are returned: ``details`` drives the
  * localized, actionable message, and ``message`` is the server's own sentence,
  * used as the last resort so a kind we don't recognize still reaches the user
  * instead of failing silently.
@@ -103,13 +100,23 @@ export default function useExportUsage(endpoints?: {
   estimateUrl: string;
 }) {
   const intl = useIntl();
+  // Not the static ``Modal`` import: that renders outside the app's
+  // ConfigProvider, so the dialog ignores the dark algorithm and the locale
+  // (an untranslated "Cancel" on a light dialog). ``App.useApp`` reads them
+  // from context -- see the <App> bridge in layouts/index.tsx.
+  const { modal } = App.useApp();
   const exportUrl = endpoints?.exportUrl ?? USAGE_BREAKDOWN_EXPORT;
   const estimateUrl = endpoints?.estimateUrl ?? USAGE_BREAKDOWN_EXPORT_ESTIMATE;
-  const isTokenEndpoint = exportUrl === USAGE_BREAKDOWN_EXPORT;
   const [estimate, setEstimate] = React.useState<UsageExportEstimate | null>(
     null
   );
   const [estimating, setEstimating] = React.useState(false);
+  // The estimate defines the preview's columns, so its failure is not a
+  // cosmetic gap: the table has nothing to render and would sit there showing
+  // a lone row-number column. Silence was tolerable only while the global
+  // handler still popped something; now that these endpoints skip it, the
+  // dialog has to say so itself.
+  const [estimateFailed, setEstimateFailed] = React.useState(false);
   const [exporting, setExporting] = React.useState(false);
   // Which estimate request is the current one. The dialogs fire this from two
   // places at once — the open effect and the filter-change callback — with
@@ -128,12 +135,12 @@ export default function useExportUsage(endpoints?: {
   const fetchEstimate = async (payload: UsageExportRequest | any) => {
     const seq = ++requestSeq.current;
     setEstimating(true);
+    setEstimateFailed(false);
     try {
-      const result = (
-        isTokenEndpoint
-          ? await queryUsageExportEstimate(payload)
-          : await queryResourceExportEstimate(estimateUrl, payload)
-      ) as UsageExportEstimate;
+      const result = (await queryUsageExportEstimate(
+        estimateUrl,
+        payload
+      )) as UsageExportEstimate;
       // A superseded response still gets returned to its own caller (the
       // preflight path awaits the value it asked for), but must not become
       // the state the dialog renders.
@@ -144,6 +151,7 @@ export default function useExportUsage(endpoints?: {
     } catch {
       if (seq === requestSeq.current) {
         setEstimate(null);
+        setEstimateFailed(true);
       }
       return null;
     } finally {
@@ -157,6 +165,7 @@ export default function useExportUsage(endpoints?: {
     // Bump too, so an in-flight response can't repopulate a closed dialog.
     requestSeq.current += 1;
     setEstimate(null);
+    setEstimateFailed(false);
     // ...and clear the spinner the same way. That bump is exactly what stops
     // the in-flight request's own ``finally`` from clearing it (the sequence
     // no longer matches), so closing the dialog mid-estimate used to leave
@@ -181,14 +190,19 @@ export default function useExportUsage(endpoints?: {
       // No locale is sent: the exported header row is the machine contract,
       // identical in every language, so a consumer script never depends on
       // which language the operator happens to be using.
-      const { data, headers } = isTokenEndpoint
-        ? await downloadUsageExport(payload)
-        : await downloadResourceExport(exportUrl, payload);
+      const { data, headers } = await downloadUsageExport(exportUrl, payload);
       // The server owns the filename — and therefore the extension, which
       // varies with format and sheet count (.csv / .xlsx / .zip).
+      // Only reached if Content-Disposition is unreadable. Derive the
+      // extension from what the server said it would send: the request asks
+      // for xlsx by default, so a hardcoded .csv handed the user an xlsx (or a
+      // zip) under a name that opens as neither.
+      const fallbackExt = payload.split
+        ? 'zip'
+        : estimate?.effective_format || payload.format || 'xlsx';
       const filename =
         filenameFromDisposition(headers?.['content-disposition']) ||
-        `usage_${payload.start_date}_${payload.end_date}.csv`;
+        `usage_${payload.start_date}_${payload.end_date}.${fallbackExt}`;
       downloadFile(data, filename);
       return true;
     } catch (error: any) {
@@ -236,7 +250,7 @@ export default function useExportUsage(endpoints?: {
       // not a certainty. Offering it then would only earn a 422.
       if (sized.split_parts) {
         const splitConfirmed = await new Promise<boolean>((resolve) => {
-          Modal.confirm({
+          modal.confirm({
             title: intl.formatMessage({ id: 'common.button.export' }),
             content: intl.formatMessage(
               { id: 'usage.export.rowsExceeded' },
@@ -273,7 +287,7 @@ export default function useExportUsage(endpoints?: {
     }
     if (sized.exceeds_soft_limit) {
       const confirmed = await new Promise<boolean>((resolve) => {
-        Modal.confirm({
+        modal.confirm({
           title: intl.formatMessage({ id: 'common.button.export' }),
           content: intl.formatMessage(
             { id: 'usage.export.rowsSlow' },
@@ -293,6 +307,7 @@ export default function useExportUsage(endpoints?: {
   return {
     estimate,
     estimating,
+    estimateFailed,
     exporting,
     fetchEstimate,
     resetEstimate,

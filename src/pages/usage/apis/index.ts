@@ -73,14 +73,24 @@ export async function queryUsageBreakdownList(
 // How many rows an export would produce, per sheet. Called before the user
 // commits so the dialog can state the size (and refuse) up front instead of
 // failing thirty seconds into a download.
+// Takes the url so ONE pair of functions serves every Usage tab. They used to
+// differ only in whether the endpoint was baked in, which forced the caller to
+// dispatch on a string comparison against this module's constant.
 export async function queryUsageExportEstimate(
-  params: UsageExportRequest,
+  url: string,
+  params: UsageExportRequest | Record<string, any>,
   options?: any
 ): Promise<UsageExportEstimate> {
-  return request<UsageExportEstimate>(USAGE_BREAKDOWN_EXPORT_ESTIMATE, {
+  return request<UsageExportEstimate>(url, {
     data: params,
     method: 'POST',
-    cancelToken: options?.token
+    cancelToken: options?.token,
+    // The estimate's own failure is handled by the caller, which deliberately
+    // stays quiet: a sizing call that didn't come back should leave the button
+    // usable, not raise an alarm. Without this the global handler pops
+    // "Request failed with status code 500" anyway, turning a designed silence
+    // into noise the user can do nothing about.
+    skipErrorHandler: true
   });
 }
 
@@ -88,14 +98,21 @@ export async function queryUsageExportEstimate(
 // stays in charge of the filename (and therefore of the extension, which
 // varies with format and sheet count: .csv, .xlsx or .zip).
 export async function downloadUsageExport(
-  params: UsageExportRequest,
+  url: string,
+  params: UsageExportRequest | Record<string, any>,
   options?: any
 ): Promise<{ data: Blob; headers: Record<string, any> }> {
-  return request(USAGE_BREAKDOWN_EXPORT, {
+  return request(url, {
     data: params,
     method: 'POST',
     responseType: 'blob',
     getResponse: true,
-    cancelToken: options?.token
+    cancelToken: options?.token,
+    // The caller reads the error body itself to produce an actionable message
+    // (how far to narrow the range, how many files a split needs). Leaving the
+    // global handler on adds a second toast beside it — and a useless one:
+    // ``response.data`` is a Blob here, so it degrades to axios's own
+    // "Request failed with status code 422".
+    skipErrorHandler: true
   });
 }

@@ -54,6 +54,9 @@ interface ResourceFilterBarProps {
   // "Export Chart Data" / "Export Table Data" entries.
   onExportChart?: () => void;
   onExportTable?: () => void;
+  // A table export is two server round trips (size, then stream) with no
+  // dialog in between, so the trigger is the only place feedback can go.
+  exportingTable?: boolean;
   extra?: React.ReactNode;
   // Platform-wide "All" view only; empty otherwise (backend-gated). Rendered
   // by the enterprise ``ResourceUsageFilterBar`` slot.
@@ -77,6 +80,7 @@ const ResourceFilterBar: React.FC<ResourceFilterBarProps> = (props) => {
     onRefresh,
     onExportChart,
     onExportTable,
+    exportingTable,
     extra,
     organizationOptions,
     userGroupOptions,
@@ -257,7 +261,7 @@ const ResourceFilterBar: React.FC<ResourceFilterBarProps> = (props) => {
       </div>
       {(onExportChart || onExportTable) && (
         <Dropdown menu={{ items: exportMenuItems }}>
-          <Button icon={<DownloadOutlined />} />
+          <Button icon={<DownloadOutlined />} loading={exportingTable} />
         </Dropdown>
       )}
     </div>

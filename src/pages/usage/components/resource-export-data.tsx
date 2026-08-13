@@ -13,7 +13,7 @@
  */
 import { ModalFooter, ScrollerModal } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Table } from 'antd';
+import { Alert, Flex, Table } from 'antd';
 import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
 import {
@@ -23,12 +23,10 @@ import {
   toResourceExportRequest
 } from '../apis/resource';
 import { XLSX_MAX_ROWS_PER_SHEET } from '../config';
+import { useExportPreviewColumns } from '../hooks/use-export-preview-columns';
+import { useExportPreviewLayout } from '../hooks/use-export-preview-layout';
 import useExportUsage from '../services/use-export-usage';
-import {
-  resourcePreviewValue,
-  useExportPreviewColumns,
-  useExportPreviewLayout
-} from '../utils/export-preview-columns';
+import { resourcePreviewValue } from '../utils/export-preview-values';
 import ExportSuggestions from './export-suggestions';
 import ResourceFilterBar from './resource-filter-bar';
 
@@ -53,8 +51,6 @@ interface ResourceExportDataProps {
   groupBy: NonNullable<ResourceBreakdownRequest['group_by']>;
   // Which export endpoints back this tab (GPU instances vs storage).
   exportEndpoints: { exportUrl: string; estimateUrl: string };
-  fileName: string;
-  sheetName?: string;
   // Filter-bar wiring, seeded from the tab's current filters.
   scope: Scope;
   canManageUsers: boolean;
@@ -86,8 +82,6 @@ const ResourceExportData: React.FC<ResourceExportDataProps> = (props) => {
     queryFn,
     groupBy,
     exportEndpoints,
-    fileName,
-    sheetName = 'usage',
     scope,
     canManageUsers,
     userOptions,
@@ -126,6 +120,7 @@ const ResourceExportData: React.FC<ResourceExportDataProps> = (props) => {
   const {
     estimate,
     estimating,
+    estimateFailed,
     exporting,
     fetchEstimate,
     resetEstimate,
@@ -174,11 +169,6 @@ const ResourceExportData: React.FC<ResourceExportDataProps> = (props) => {
     } finally {
       setLoading(false);
     }
-    // Size the export with the same filters the preview just used, so the row
-    // count under the button never describes a stale predicate.
-    fetchEstimate(
-      toResourceExportRequest(buildRequest(-1, INITIAL_PAGE.perPage))
-    );
   };
 
   // Reset to the tab's filters every time the dialog opens, then fetch.
@@ -194,10 +184,7 @@ const ResourceExportData: React.FC<ResourceExportDataProps> = (props) => {
 
   // Refetch the preview whenever the in-dialog filters or page change.
   useEffect(() => {
-    if (!open) {
-      resetEstimate();
-      return;
-    }
+    if (!open) return;
     fetchPreview(pageParams.page, pageParams.perPage);
   }, [
     open,
@@ -207,6 +194,27 @@ const ResourceExportData: React.FC<ResourceExportDataProps> = (props) => {
     selectedOrganizations,
     selectedUserGroups,
     pageParams
+  ]);
+
+  // Size the export when the FILTERS change — deliberately NOT on page change.
+  // The estimate covers the whole filtered range, so paging cannot alter it,
+  // and it is a full-range COUNT: riding along with the preview turned every
+  // click through the pager into another aggregate query over the same rows.
+  useEffect(() => {
+    if (!open) {
+      resetEstimate();
+      return;
+    }
+    fetchEstimate(
+      toResourceExportRequest(buildRequest(-1, INITIAL_PAGE.perPage))
+    );
+  }, [
+    open,
+    dateRange,
+    selectedUsers,
+    selectedResources,
+    selectedOrganizations,
+    selectedUserGroups
   ]);
 
   // Mirror the file: the column set comes from the estimate, which is also
@@ -344,57 +352,65 @@ const ResourceExportData: React.FC<ResourceExportDataProps> = (props) => {
           // which otherwise scroll up over the filter bar.
           zIndex: 10,
           backgroundColor: 'var(--ant-color-bg-elevated)',
-          paddingBottom: 8,
-          // Gap rather than a margin on either child: the suggestion banner
-          // renders nothing when the export fits, and a flex gap simply does
-          // not apply to an absent child — so there is no stray space to undo
-          // in the common case, and it holds whichever order the two are in.
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 12
+          paddingBottom: 8
         }}
       >
-        <ExportSuggestions
-          estimate={estimate}
-          exporting={exporting}
-          estimating={estimating}
-          {...suggestionHandlers}
-        />
-        <ResourceFilterBar
-          value={dateRange}
-          onChange={(dates) => {
-            setDateRange(dates);
-            setPageParams(INITIAL_PAGE);
-          }}
-          canManageUsers={canManageUsers}
-          userOptions={userOptions}
-          selectedUsers={selectedUsers}
-          onUsersChange={(ids) => {
-            setSelectedUsers(ids);
-            setPageParams(INITIAL_PAGE);
-          }}
-          resourceFilter={{
-            options: resourceFilter.options,
-            value: selectedResources,
-            onChange: (ids) => {
-              setSelectedResources(ids);
+        {/* Gap rather than a margin on either child: the suggestion banner
+            renders nothing when the export fits, and a flex gap does not apply
+            to an absent child — so there is no stray space to undo in the
+            common case. */}
+        <Flex vertical gap={12}>
+          {estimateFailed && (
+            <Alert
+              type="warning"
+              showIcon
+              message={intl.formatMessage({
+                id: 'usage.export.estimateFailed'
+              })}
+            />
+          )}
+          <ExportSuggestions
+            estimate={estimate}
+            exporting={exporting}
+            estimating={estimating}
+            {...suggestionHandlers}
+          />
+          <ResourceFilterBar
+            value={dateRange}
+            onChange={(dates) => {
+              setDateRange(dates);
               setPageParams(INITIAL_PAGE);
-            },
-            placeholder: resourceFilter.placeholder
-          }}
-          organizationOptions={organizationOptions}
-          userGroupOptions={userGroupOptions}
-          selectedOrganizations={selectedOrganizations}
-          selectedUserGroups={selectedUserGroups}
-          onOrganizationsChange={(ids) => {
-            setSelectedOrganizations(ids);
-            setPageParams(INITIAL_PAGE);
-          }}
-          onUserGroupsChange={(ids) => {
-            setSelectedUserGroups(ids);
-            setPageParams(INITIAL_PAGE);
-          }}
-        />
+            }}
+            canManageUsers={canManageUsers}
+            userOptions={userOptions}
+            selectedUsers={selectedUsers}
+            onUsersChange={(ids) => {
+              setSelectedUsers(ids);
+              setPageParams(INITIAL_PAGE);
+            }}
+            resourceFilter={{
+              options: resourceFilter.options,
+              value: selectedResources,
+              onChange: (ids) => {
+                setSelectedResources(ids);
+                setPageParams(INITIAL_PAGE);
+              },
+              placeholder: resourceFilter.placeholder
+            }}
+            organizationOptions={organizationOptions}
+            userGroupOptions={userGroupOptions}
+            selectedOrganizations={selectedOrganizations}
+            selectedUserGroups={selectedUserGroups}
+            onOrganizationsChange={(ids) => {
+              setSelectedOrganizations(ids);
+              setPageParams(INITIAL_PAGE);
+            }}
+            onUserGroupsChange={(ids) => {
+              setSelectedUserGroups(ids);
+              setPageParams(INITIAL_PAGE);
+            }}
+          />
+        </Flex>
       </div>
       <Table
         columns={previewColumns as any}
@@ -402,7 +418,10 @@ const ResourceExportData: React.FC<ResourceExportDataProps> = (props) => {
         style={{ width: '100%', marginTop: 16 }}
         dataSource={rows}
         rowKey={(_r, index) => `${index}`}
-        loading={{ spinning: loading, size: 'middle' }}
+        // ``estimating`` too: the columns come from the estimate, so until it
+        // lands there is nothing to render and an idle empty table reads as
+        // "no data" rather than "still working".
+        loading={{ spinning: loading || estimating, size: 'middle' }}
         virtual
         scroll={{ x: scrollX, y: bodyHeight }}
         pagination={{

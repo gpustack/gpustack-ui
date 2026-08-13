@@ -18,6 +18,7 @@ import { Tabs } from 'antd';
 import dayjs from 'dayjs';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
+  GPU_INSTANCES_EXPORT_ENDPOINTS,
   queryGpuInstancesBreakdown,
   ResourceBreakdownRequest,
   toResourceExportRequest
@@ -36,11 +37,6 @@ import {
 import { buildTrendSeries } from '../utils/trend-series';
 import useQueryGpuInstancesBreakdown from './services/use-query-gpu-instances-breakdown';
 import InstancesBreakdownTable from './tables/instances-breakdown-table';
-
-const RESOURCE_EXPORT_ENDPOINTS = {
-  exportUrl: '/usage/gpu-instances/breakdown/export',
-  estimateUrl: '/usage/gpu-instances/breakdown/export/estimate'
-};
 
 type Scope = 'self' | 'all';
 type Metric = 'gpu_hours' | 'instance_hours';
@@ -352,12 +348,10 @@ const GpuInstancesTab: React.FC = () => {
 
   // Chart export still opens the preview modal (matches the Tokens tab); the
   // table export is direct, so this only ever holds 'chart'.
-  const { exportWithPreflight } = useExportUsage(RESOURCE_EXPORT_ENDPOINTS);
+  const { exportWithPreflight, exporting: exportingTable } = useExportUsage(
+    GPU_INSTANCES_EXPORT_ENDPOINTS
+  );
   const [exportMode, setExportMode] = useState<'chart' | null>(null);
-  const dateSuffix = `${dateRange[0].format('YYYY-MM-DD')}_${dateRange[1].format(
-    'YYYY-MM-DD'
-  )}`;
-
   const handleExportTable = async () => {
     // One request, one file: each bottom table becomes a sheet over the SAME
     // filters. Previously this fired a request per grouping and stitched the
@@ -375,9 +369,7 @@ const GpuInstancesTab: React.FC = () => {
 
   // The preview modal now only backs the by-date chart export.
   const exportConfig = {
-    groupBy: ['date', 'instance'],
-    fileName: `gpu-instances_chart_${dateSuffix}.xlsx`,
-    sheetName: intl.formatMessage({ id: 'usage.tabs.gpuInstances' })
+    groupBy: ['date', 'instance']
   };
 
   return (
@@ -419,6 +411,7 @@ const GpuInstancesTab: React.FC = () => {
         }}
         onRefresh={() => setRefreshKey((k) => k + 1)}
         onExportChart={() => setExportMode('chart')}
+        exportingTable={exportingTable}
         onExportTable={handleExportTable}
       />
 
@@ -507,10 +500,8 @@ const GpuInstancesTab: React.FC = () => {
         onCancel={() => setExportMode(null)}
         title={intl.formatMessage({ id: 'usage.export.chart' })}
         queryFn={queryGpuInstancesBreakdown}
-        exportEndpoints={RESOURCE_EXPORT_ENDPOINTS}
+        exportEndpoints={GPU_INSTANCES_EXPORT_ENDPOINTS}
         groupBy={exportConfig.groupBy}
-        fileName={exportConfig.fileName}
-        sheetName={exportConfig.sheetName}
         scope={scope}
         canManageUsers={canManageUsers}
         userOptions={userOptions}

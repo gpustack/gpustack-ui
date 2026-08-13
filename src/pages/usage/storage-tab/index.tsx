@@ -23,6 +23,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import {
   queryStorageBreakdown,
   ResourceBreakdownRequest,
+  STORAGE_EXPORT_ENDPOINTS,
   toResourceExportRequest
 } from '../apis/resource';
 import MetricChartCard from '../components/metric-chart-card';
@@ -39,11 +40,6 @@ import {
 import { buildTrendSeries } from '../utils/trend-series';
 import useQueryStorageBreakdown from './services/use-query-storage-breakdown';
 import StorageBreakdownTable from './tables/storage-breakdown-table';
-
-const RESOURCE_EXPORT_ENDPOINTS = {
-  exportUrl: '/usage/storage/breakdown/export',
-  estimateUrl: '/usage/storage/breakdown/export/estimate'
-};
 
 type Scope = 'self' | 'all';
 type Metric = 'storage_gb_days' | 'storage_gb_hours';
@@ -336,12 +332,10 @@ const StorageTab: React.FC = () => {
 
   // Chart export still opens the preview modal (matches the Tokens tab); the
   // table export is direct, so this only ever holds 'chart'.
-  const { exportWithPreflight } = useExportUsage(RESOURCE_EXPORT_ENDPOINTS);
+  const { exportWithPreflight, exporting: exportingTable } = useExportUsage(
+    STORAGE_EXPORT_ENDPOINTS
+  );
   const [exportMode, setExportMode] = useState<'chart' | null>(null);
-  const dateSuffix = `${dateRange[0].format('YYYY-MM-DD')}_${dateRange[1].format(
-    'YYYY-MM-DD'
-  )}`;
-
   const handleExportTable = async () => {
     // One request, one file: each bottom table becomes a sheet over the SAME
     // filters. Previously this fired a request per grouping and stitched the
@@ -359,9 +353,7 @@ const StorageTab: React.FC = () => {
 
   // The preview modal now only backs the by-date chart export.
   const exportConfig = {
-    groupBy: ['date', 'volume'],
-    fileName: `storage_chart_${dateSuffix}.xlsx`,
-    sheetName: intl.formatMessage({ id: 'usage.tabs.storage' })
+    groupBy: ['date', 'volume']
   };
 
   return (
@@ -402,6 +394,7 @@ const StorageTab: React.FC = () => {
         }}
         onRefresh={() => setRefreshKey((k) => k + 1)}
         onExportChart={() => setExportMode('chart')}
+        exportingTable={exportingTable}
         onExportTable={handleExportTable}
       />
       <div style={{ height: 24 }} />
@@ -487,10 +480,8 @@ const StorageTab: React.FC = () => {
         onCancel={() => setExportMode(null)}
         title={intl.formatMessage({ id: 'usage.export.chart' })}
         queryFn={queryStorageBreakdown}
-        exportEndpoints={RESOURCE_EXPORT_ENDPOINTS}
+        exportEndpoints={STORAGE_EXPORT_ENDPOINTS}
         groupBy={exportConfig.groupBy}
-        fileName={exportConfig.fileName}
-        sheetName={exportConfig.sheetName}
         scope={scope}
         canManageUsers={canManageUsers}
         userOptions={userOptions}

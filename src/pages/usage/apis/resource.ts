@@ -491,6 +491,19 @@ async function _breakdown(
   return flattenResponse(groupBy, res);
 }
 
+// Export endpoints per resource tab. Exported so the tabs reference URL's
+// entries instead of re-typing the same paths in a local constant, which is
+// how one of two copies gets missed when a path changes.
+export const GPU_INSTANCES_EXPORT_ENDPOINTS = {
+  exportUrl: URL.GPU_BREAKDOWN_EXPORT,
+  estimateUrl: URL.GPU_BREAKDOWN_EXPORT_ESTIMATE
+};
+
+export const STORAGE_EXPORT_ENDPOINTS = {
+  exportUrl: URL.STORAGE_BREAKDOWN_EXPORT,
+  estimateUrl: URL.STORAGE_BREAKDOWN_EXPORT_ESTIMATE
+};
+
 export async function queryResourceBreakdown(
   data: ResourceBreakdownRequest,
   options?: {
@@ -753,28 +766,6 @@ export function toResourceExportRequest(
   };
 }
 
-export async function downloadResourceExport(
-  url: string,
-  data: Record<string, any>,
-  options?: { token?: any }
-): Promise<{ data: Blob; headers: Record<string, any> }> {
-  return request(url, {
-    data,
-    method: 'POST',
-    responseType: 'blob',
-    getResponse: true,
-    cancelToken: options?.token
-  });
-}
-
-export async function queryResourceExportEstimate(
-  url: string,
-  data: Record<string, any>,
-  options?: { token?: any }
-) {
-  return request(url, {
-    data,
-    method: 'POST',
-    cancelToken: options?.token
-  });
-}
+// The resource tabs share the token tabs' export helpers now
+// (``downloadUsageExport`` / ``queryUsageExportEstimate`` in ./index), which
+// take the url and so need no per-tab duplicate.

@@ -58,6 +58,9 @@ interface FilterBarProps {
   handleSearch?: () => void;
   onExportChart?: () => void;
   onExportTable?: () => void;
+  // A table export is two server round trips (size, then stream) with no
+  // dialog in between, so the trigger is the only place feedback can go.
+  exportingTable?: boolean;
   commonFilters?: {
     scope: string;
     start_date: string;
@@ -94,6 +97,7 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
     onUserGroupsChange,
     onExportChart,
     onExportTable,
+    exportingTable,
     handleSearch
   } = props;
   const intl = useIntl();
@@ -384,7 +388,7 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
       </div>
       {pageType === 'page' && (
         <Dropdown menu={{ items: exportMenuItems }}>
-          <Button icon={<DownloadOutlined />} />
+          <Button icon={<DownloadOutlined />} loading={exportingTable} />
         </Dropdown>
       )}
     </div>

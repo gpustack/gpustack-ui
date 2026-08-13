@@ -157,6 +157,12 @@ export default function useExportUsage(endpoints?: {
     // Bump too, so an in-flight response can't repopulate a closed dialog.
     requestSeq.current += 1;
     setEstimate(null);
+    // ...and clear the spinner the same way. That bump is exactly what stops
+    // the in-flight request's own ``finally`` from clearing it (the sequence
+    // no longer matches), so closing the dialog mid-estimate used to leave
+    // ``estimating`` stuck true — and the remedy buttons disabled as "busy"
+    // the next time it opened.
+    setEstimating(false);
   };
 
   // ``exporting`` drives the button's disabled state, but state updates are

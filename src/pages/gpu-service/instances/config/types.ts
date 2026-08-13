@@ -396,3 +396,55 @@ export interface InstanceLogQueryParams {
   timestamps?: boolean;
   pretty?: string;
 }
+
+// =========== Instance Metrics (K8s proxy) ===========
+// Mirrors the worker.gpustack.ai/v1 InstanceMetrics subresource
+// (api/worker/v1/instance.metrics.go in the operator). Field names match the
+// JSON tags exactly.
+
+// Metrics of one accelerator device allocated to the instance. Every figure
+// comes from the manufacturer's device libraries and is optional: a field is
+// absent when the library could not read it at sampling time (a present zero
+// can mean "idle" or "unreadable" — the operator makes no distinction, so
+// absent is the only reliable no-data signal). Only `id` is always present.
+export interface InstanceAcceleratorMetrics {
+  id: string;
+  memoryTotalMiB?: number;
+  memoryUsedMiB?: number;
+  // Memory utilization in [0, 100].
+  memoryUtilizationPercent?: number;
+  // Cores (compute) utilization in [0, 100].
+  coresUtilizationPercent?: number;
+  temperatureCelsius?: number;
+  powerUsageWatts?: number;
+  unhealthy?: boolean;
+}
+
+// A single utilization sampling point of an instance. Every figure is one
+// half of a Total/Used pair reported in one unit (CPU in milli-cores, memory
+// and storage in MiB). A Total comes from the instance's own declaration and
+// is always populated; a Used figure is a measurement and is ABSENT when its
+// source is unavailable.
+export interface InstanceMetricsSample {
+  // RFC3339 time the CPU/memory/storage figures were measured by the kubelet.
+  timestamp: string;
+  cpuTotalMilliCores: number;
+  cpuUsedMilliCores?: number;
+  memoryTotalMiB: number;
+  memoryUsedMiB?: number;
+  storageTotalMiB: number;
+  // Absent when the figures came from the metrics.k8s.io fallback, which
+  // carries no storage metrics.
+  storageUsedMiB?: number;
+  // Absent when the instance has no allocated accelerator or the device
+  // manager is unreachable. Each element carries its device `id`.
+  accelerators?: InstanceAcceleratorMetrics[];
+}
+
+// The Instance metrics subresource payload: one up-to-date sample of the
+// underlying Pod's CPU/memory/storage usage and the allocated accelerators'
+// metrics. (The Kubernetes TypeMeta/ObjectMeta envelope is omitted, matching
+// how InstanceEvents drops everything but `items`.)
+export interface InstanceMetrics {
+  sample: InstanceMetricsSample;
+}

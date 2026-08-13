@@ -6,6 +6,7 @@ import {
   InstanceEvents,
   InstanceLog,
   InstanceLogQueryParams,
+  InstanceMetrics,
   InstanceTypeItem,
   ListItem
 } from '../config/types';
@@ -14,8 +15,8 @@ export const GPU_SERVICE_INSTANCES_API = '/gpu-instances';
 
 export const GPU_SERVICE_INSTANCES_TYPE_API = '/gpu-instance-types/aggregated';
 
-// View logs / events still go through the K8s proxy until the /v2
-// /gpu-instances API exposes equivalents. clusterID and namespace come
+// View logs / events / metrics still go through the K8s proxy until the
+// /v2 /gpu-instances API exposes equivalents. clusterID and namespace come
 // per-row from `row.clusterId` and `row.status.namespace`.
 
 export const GPU_SERVICE_INSTANCES_LOG_API = (params: {
@@ -38,6 +39,13 @@ export const GPU_SERVICE_INSTANCE_PV_EVENTS_API = (params: {
   clusterID?: number;
 }) =>
   `/clusters/${params.clusterID}/proxy/apis/worker.gpustack.ai/v1/namespaces/${params.namespace}/instancepersistentvolumes/${params.name}/events`;
+
+export const GPU_SERVICE_INSTANCES_METRICS_API = (params: {
+  namespace: string;
+  name: string;
+  clusterID?: number;
+}) =>
+  `/clusters/${params.clusterID}/proxy/apis/worker.gpustack.ai/v1/namespaces/${params.namespace}/instances/${params.name}/metrics`;
 
 // =========== Instances ===========
 
@@ -177,6 +185,37 @@ export async function queryGPUServiceInstanceLog(
       method: 'GET',
       params: omitPathParams(_.omit(params, ['name'])),
       cancelToken: options?.token
+    }
+  );
+}
+
+// =========== Metrics (K8s proxy) ===========
+
+export async function queryGPUServiceInstanceMetrics(
+  params: {
+    namespace: string;
+    name: string;
+    clusterID?: number;
+  },
+  options?: any
+) {
+  if (!params.clusterID) {
+    return;
+  }
+  return request<InstanceMetrics>(
+    GPU_SERVICE_INSTANCES_METRICS_API({
+      namespace: params.namespace,
+      clusterID: params.clusterID,
+      name: params.name
+    }),
+    {
+      method: 'GET',
+      params: omitPathParams(_.omit(params, ['name'])),
+      cancelToken: options?.token,
+      // Utilization degrades silently (the cell keeps the last good values):
+      // a 404 from a pre-v0.8.2 operator or a 503 from an unreachable cluster
+      // must not pop the global error toast on every 15s poll of every row.
+      skipErrorHandler: true
     }
   );
 }

@@ -13,6 +13,7 @@ import type { ColumnsType } from 'antd/lib/table';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import { Fragment, useMemo } from 'react';
+import UtilizationCell from '../components/utilization-cell';
 import { InstanceStatusLabelMap, rowActionList, status } from '../config';
 import { ListItem } from '../config/types';
 import { renderInstanceType } from '../utils/render-instance-type';
@@ -252,6 +253,18 @@ const useInstancesColumns = ({
         width: 300,
         render: (_text: string, record: ListItem) =>
           renderInstanceType(record, { intl, pvCapacityByName })
+      },
+      {
+        title: intl.formatMessage({ id: 'gpuservice.instance.utilization' }),
+        key: 'utilization',
+        ellipsis: {
+          showTitle: false
+        },
+        // Five 50px gauges + spacing, matching the cluster system-load card.
+        width: 380,
+        render: (_text: string, record: ListItem) => (
+          <UtilizationCell record={record} />
+        )
       },
       ...pluginRendered,
       {

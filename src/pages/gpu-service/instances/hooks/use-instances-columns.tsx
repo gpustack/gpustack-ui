@@ -13,10 +13,24 @@ import type { ColumnsType } from 'antd/lib/table';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import { Fragment, useMemo } from 'react';
+import { parseJsonSafe } from '../../utils';
 import UtilizationCell from '../components/utilization-cell';
 import { InstanceStatusLabelMap, rowActionList, status } from '../config';
-import { ListItem } from '../config/types';
+import {
+  InstanceMetricsMap,
+  InstanceTypeSnapshotSpec,
+  ListItem
+} from '../config/types';
 import { renderInstanceType } from '../utils/render-instance-type';
+
+// GPU / VRAM gauges belong to accelerated instance types only. The flag lives
+// in the type snapshot persisted in the row's description — the same source the
+// Instance Type column renders from.
+const isAcceleratable = (record: ListItem) =>
+  !!parseJsonSafe<{ spec?: InstanceTypeSnapshotSpec }>(
+    record?.description || '{}',
+    {}
+  ).spec?.acceleratable;
 
 const buildRowActions = (record: ListItem) => {
   return rowActionList
@@ -99,13 +113,17 @@ interface ColumnsHookProps {
   // name → capacity (e.g. "20Gi") for referenced persistent volumes, so the
   // Disk → Persistent row can show the size instead of just the PV name.
   pvCapacityByName?: Record<string, string>;
+  // instance id → utilization gauges, polled page-wide by
+  // use-query-instance-metrics. Rows with no entry render "--".
+  metrics: InstanceMetricsMap;
 }
 
 const useInstancesColumns = ({
   handleSelect,
   clusterList,
   sortOrder,
-  pvCapacityByName
+  pvCapacityByName,
+  metrics
 }: ColumnsHookProps): ColumnsType<ListItem> => {
   const intl = useIntl();
   const access = useAccess();
@@ -263,7 +281,10 @@ const useInstancesColumns = ({
         // Five 50px gauges + spacing, matching the cluster system-load card.
         width: 380,
         render: (_text: string, record: ListItem) => (
-          <UtilizationCell record={record} />
+          <UtilizationCell
+            values={metrics[record.id]}
+            hasAccelerators={isAcceleratable(record)}
+          />
         )
       },
       ...pluginRendered,
@@ -319,6 +340,7 @@ const useInstancesColumns = ({
     clusterList,
     intl,
     pvCapacityByName,
+    metrics,
     pluginCols,
     creatorCols
   ]);

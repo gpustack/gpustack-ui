@@ -212,6 +212,10 @@ export async function queryGPUServiceInstanceMetrics(
       method: 'GET',
       params: omitPathParams(_.omit(params, ['name'])),
       cancelToken: options?.token,
+      // The poller caps how long a sample may take: one stalled proxy request
+      // would otherwise hold a slot in its concurrency gate indefinitely and
+      // starve the rest of the page.
+      timeout: options?.timeout,
       // Utilization degrades silently (the cell keeps the last good values):
       // a 404 from a pre-v0.8.2 operator or a 503 from an unreachable cluster
       // must not pop the global error toast on every 15s poll of every row.

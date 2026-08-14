@@ -38,6 +38,7 @@ import useInstancesColumns from './hooks/use-instances-columns';
 import useViewEvents from './hooks/use-view-events';
 import useViewLogs from './hooks/use-view-logs';
 import useCreateInstanceRequest from './services/use-create-instance';
+import useQueryInstanceMetrics from './services/use-query-instance-metrics';
 import useUpdateInstance from './services/use-update-instance';
 
 const GPUService: React.FC = () => {
@@ -56,6 +57,12 @@ const GPUService: React.FC = () => {
     });
     navigate('/resources/clusters/list');
   };
+
+  // A bulk action fires one request per selected row at once, so the metrics
+  // sweep steps aside for it — from the moment the confirmation opens until the
+  // action settles. The connection pool is shared, and the table is masked
+  // behind the confirmation anyway.
+  const [bulkPending, setBulkPending] = useState(false);
 
   const {
     dataSource,
@@ -76,7 +83,11 @@ const GPUService: React.FC = () => {
     deleteAPI: deleteGPUServiceInstance,
     watch: true,
     API: GPU_SERVICE_INSTANCES_API,
-    contentForDelete: 'gpuservice.instance'
+    contentForDelete: 'gpuservice.instance',
+    // Batch delete runs its requests through handleBatchRequest, which always
+    // settles — so this is the reliable "the bulk delete is over" signal, on
+    // both the all-succeeded and the some-failed path.
+    afterDelete: () => setBulkPending(false)
   });
 
   const { fetchData: createInstance } = useCreateInstanceRequest();
@@ -184,47 +195,59 @@ const GPUService: React.FC = () => {
   });
 
   const handleStartBatch = useMemoizedFn(() => {
+    setBulkPending(true);
     modalRef.current?.show({
       content: 'gpuservice.instance',
       title: 'common.title.start.confirm',
       okText: 'common.button.start',
       operation: 'common.start.confirm',
       selection: true,
+      onCancel: () => setBulkPending(false),
       async onOk() {
-        const successIds: number[] = [];
-        const res = await handleBatchRequest(
-          rowSelection.selectedRowKeys,
-          async (id: number) => {
-            await startGPUServiceInstance(id);
-            successIds.push(id);
-          }
-        );
-        rowSelection.removeSelectedKeys(successIds);
-        fetchData();
-        return res;
+        try {
+          const successIds: number[] = [];
+          const res = await handleBatchRequest(
+            rowSelection.selectedRowKeys,
+            async (id: number) => {
+              await startGPUServiceInstance(id);
+              successIds.push(id);
+            }
+          );
+          rowSelection.removeSelectedKeys(successIds);
+          fetchData();
+          return res;
+        } finally {
+          setBulkPending(false);
+        }
       }
     });
   });
 
   const handleStopBatch = useMemoizedFn(() => {
+    setBulkPending(true);
     modalRef.current?.show({
       content: 'gpuservice.instance',
       title: 'common.title.stop.confirm',
       okText: 'common.button.stop',
       operation: 'common.stop.confirm',
       selection: true,
+      onCancel: () => setBulkPending(false),
       async onOk() {
-        const successIds: number[] = [];
-        const res = await handleBatchRequest(
-          rowSelection.selectedRowKeys,
-          async (id: number) => {
-            await stopGPUServiceInstance(id);
-            successIds.push(id);
-          }
-        );
-        rowSelection.removeSelectedKeys(successIds);
-        fetchData();
-        return res;
+        try {
+          const successIds: number[] = [];
+          const res = await handleBatchRequest(
+            rowSelection.selectedRowKeys,
+            async (id: number) => {
+              await stopGPUServiceInstance(id);
+              successIds.push(id);
+            }
+          );
+          rowSelection.removeSelectedKeys(successIds);
+          fetchData();
+          return res;
+        } finally {
+          setBulkPending(false);
+        }
       }
     });
   });
@@ -249,7 +272,11 @@ const GPUService: React.FC = () => {
 
   const handleBatchActionSelect = useMemoizedFn((val: string) => {
     if (val === 'delete') {
-      handleDeleteBatch();
+      setBulkPending(true);
+      // The confirmation's only exits are OK and Cancel (its mask, Esc and
+      // close icon are all disabled), and OK always reaches afterDelete — so
+      // the pause cannot be left hanging.
+      handleDeleteBatch({ onCancel: () => setBulkPending(false) });
     } else if (val === 'start') {
       handleStartBatch();
     } else if (val === 'stop') {
@@ -307,11 +334,24 @@ const GPUService: React.FC = () => {
     );
   };
 
+  // Utilization gauges for the rows on screen. The sweep yields the connection
+  // pool whenever something else needs it — an open overlay (which has its own
+  // requests to make, and hides the table behind a mask) or a bulk action.
+  const { metrics } = useQueryInstanceMetrics({
+    list: dataSource.dataList,
+    enabled:
+      !openInstanceModalStatus.open &&
+      !openViewLogsModalStatus.open &&
+      !openViewEventsModalStatus.open &&
+      !bulkPending
+  });
+
   const columns = useInstancesColumns({
     handleSelect,
     clusterList,
     sortOrder,
-    pvCapacityByName
+    pvCapacityByName,
+    metrics
   });
 
   return (
@@ -319,7 +359,6 @@ const GPUService: React.FC = () => {
       <PageBox>
         <FilterBar
           marginBottom={22}
-          marginTop={30}
           showSelect={false}
           handleSearch={handleSearch}
           handleInputChange={handleNameChange}
@@ -363,6 +402,7 @@ const GPUService: React.FC = () => {
             }}
             sortDirections={TABLE_SORT_DIRECTIONS}
             showSorterTooltip={false}
+            scroll={{ x: 'max-content' }}
             rowKey={(record) => record.id}
             onChange={handleTableChange}
             pagination={{

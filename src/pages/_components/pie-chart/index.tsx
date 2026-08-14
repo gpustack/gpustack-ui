@@ -23,6 +23,11 @@ interface PieChartProps {
   colorOffset?: number;
   total?: number;
   totalLabel?: string;
+  // Unit for the centre figure, appended to it (e.g. "h"). The label under it
+  // names the QUANTITY ("Usage"), which for a weighted number is not enough to
+  // say what it counts — and a headline stat carrying the unit next to a donut
+  // without it reads as two different numbers.
+  totalUnit?: string;
 }
 
 // Donut sits on the left; a vertical legend hugs it just to the right and
@@ -37,7 +42,8 @@ const PieChart: React.FC<PieChartProps> = ({
   loading = false,
   colorOffset = 0,
   total,
-  totalLabel
+  totalLabel,
+  totalUnit
 }) => {
   const { token } = theme.useToken();
   const chartRef = useRef<{ chart: any } | null>(null);
@@ -198,6 +204,7 @@ const PieChart: React.FC<PieChartProps> = ({
           }}
         >
           {formatLargeNumber(displayTotal)}
+          {totalUnit ? ` ${totalUnit}` : ''}
         </span>
         {totalLabel && (
           <span

@@ -69,11 +69,6 @@ const RESOURCE_FIELD_BY_KEY: Record<string, string> = {
   // they need no entry here); an older server still sends the generic
   // ``resources``, which holds the same number under either tab.
   resources: 'active_instances',
-  // Non-entity buckets: the adapter parks the group label on its own field.
-  // Only instance_type is reachable today — the Storage tab groups by
-  // volume / user only, and no tab exports resource_type — so mapping those
-  // would be guessing at a shape no response has.
-  instance_type_name: 'gpu_type',
   // A per-resource row's owner rides at the item root as ``user_*``.
   owner_id: 'user_id',
   owner_name: 'user_name',
@@ -93,6 +88,15 @@ export const resourcePreviewValue = (item: any, key: string): any => {
   }
   const mapped = RESOURCE_FIELD_BY_KEY[key];
   if (mapped) return item?.[mapped];
+  // The instance type's readable name. Read the real field FIRST: it is the name
+  // snapshotted into the usage row, so it survives the type being deleted —
+  // whereas the group label falls back to the raw ``sku``, an opaque
+  // "sha1:<40hex>" that must never reach a cell. The label is still the fallback
+  // for a server that predates the field (which is also where it came from
+  // originally, back when the item carried no ``instance_type_name`` at all).
+  if (key === 'instance_type_name') {
+    return item?.instance_type_name ?? item?.gpu_type;
+  }
   // ``organization_deleted`` is the one ambiguous key: on an Organization
   // table it IS the row's own entity, but on an instance/volume row in the
   // "All" view it is the TENANT that owns the row — "this volume is gone" and

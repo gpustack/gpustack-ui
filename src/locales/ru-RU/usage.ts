@@ -63,7 +63,8 @@ export default {
   'usage.metric.input': 'Вход',
   'usage.metric.output': 'Выход',
   'usage.metric.gpuHours': 'GPU-часы',
-  'usage.metric.instanceHours': 'Часы инстансов',
+  'usage.metric.runningTime': 'Время работы',
+  'usage.metric.usage': 'Потребление',
   'usage.metric.gbDays': 'ГБ-дни',
   'usage.metric.gbHours': 'ГБ-часы',
   'usage.metric.activeUsers': 'Активные пользователи',
@@ -73,8 +74,10 @@ export default {
   'usage.metric.storageTypes': 'Типы хранилищ',
   'usage.metric.gpuHours.tip':
     'Время работы инстанса, взвешенное по количеству GPU: инстанс с N GPU, работающий H часов, считается как N × H GPU-часов. Равно часам инстансов, когда каждый инстанс использует один GPU.',
-  'usage.metric.instanceHours.tip':
-    'Суммарное время работы всех инстансов независимо от количества используемых GPU. Один инстанс, работающий 2 часа = 2 часа инстанса.',
+  'usage.metric.runningTime.tip':
+    'Фактическое время работы экземпляра, независимо от числа занятых единиц: два часа работы — это 2 ч, держал он 1 карту или 8. Потребление — это же значение, взвешенное по числу единиц.',
+  'usage.metric.usage.tip':
+    'Время работы, взвешенное по числу тарифных единиц, которые занимал экземпляр: количество GPU для ускоренного экземпляра, число базовых единиц флейвора для CPU. В ячейке под числом показан его состав, а для экземпляра, у которого за период менялась конфигурация, — по строке на каждую конфигурацию.',
   'usage.metric.gbDays.tip':
     'Ёмкость хранилища, проинтегрированная по времени, в ГБ × дни: 10 ГБ в течение 5 дней = 50 ГБ-дней. (= ГБ-часы ÷ 24)',
   'usage.metric.gbHours.tip':
@@ -89,6 +92,9 @@ export default {
   'usage.table.users': 'Пользователи',
   'usage.table.type': 'Тип',
   'usage.table.instance': 'Инстанс',
+  'usage.table.resized': 'Конфигурация менялась',
+  'usage.table.currentShape': 'Текущая',
+  'usage.table.shapeAndMore': '{shape} и ещё {count}',
   'usage.table.instanceType': 'Тип инстанса',
   'usage.table.instanceTypes': 'Типы инстансов',
   'usage.table.instances': 'Инстансы',
@@ -98,7 +104,7 @@ export default {
   // --- Summary tab ---
   'usage.summary.compute': 'Вычисления',
   'usage.summary.tokensOverTime': 'Токены по времени',
-  'usage.summary.gpuHoursOverTime': 'GPU-часы по времени',
+  'usage.summary.usageOverTime': 'Потребление во времени',
   'usage.summary.gbDaysOverTime': 'ГБ-дни по времени',
 
   // --- GPU Instances / Storage filters ---

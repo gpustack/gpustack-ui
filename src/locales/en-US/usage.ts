@@ -63,7 +63,8 @@ export default {
   'usage.metric.input': 'Input',
   'usage.metric.output': 'Output',
   'usage.metric.gpuHours': 'GPU Hours',
-  'usage.metric.instanceHours': 'Instance Hours',
+  'usage.metric.runningTime': 'Running Time',
+  'usage.metric.usage': 'Usage',
   'usage.metric.gbDays': 'GB-Days',
   'usage.metric.gbHours': 'GB-Hours',
   'usage.metric.activeUsers': 'Active Users',
@@ -73,8 +74,10 @@ export default {
   'usage.metric.storageTypes': 'Storage Types',
   'usage.metric.gpuHours.tip':
     'Instance running time weighted by GPU count: an instance with N GPUs running for H hours counts as N × H GPU-hours. Equal to Instance Hours when every instance uses a single GPU.',
-  'usage.metric.instanceHours.tip':
-    'Total running time summed across all instances, regardless of how many GPUs each uses. One instance running for 2 hours = 2 instance-hours.',
+  'usage.metric.runningTime.tip':
+    'Wall-clock time the instance ran, regardless of how many units it held — one instance running for 2 hours is 2 h whether it holds 1 card or 8. Usage is this weighted by the unit count.',
+  'usage.metric.usage.tip':
+    'Running time weighted by how many billing units the instance held: GPU cards for an accelerated instance, base-flavor units for a CPU one. The cell shows the composition under the number, and one line per size for an instance that was resized during the period.',
   'usage.metric.gbDays.tip':
     'Storage capacity integrated over time, in GB × days: 10 GB kept for 5 days = 50 GB-days. (= GB-Hours ÷ 24)',
   'usage.metric.gbHours.tip':
@@ -89,6 +92,9 @@ export default {
   'usage.table.users': 'Users',
   'usage.table.type': 'Type',
   'usage.table.instance': 'Instance',
+  'usage.table.resized': 'Resized',
+  'usage.table.currentShape': 'Current',
+  'usage.table.shapeAndMore': '{shape} and {count} more',
   'usage.table.instanceType': 'Instance Type',
   'usage.table.instanceTypes': 'Instance Types',
   'usage.table.instances': 'Instances',
@@ -98,7 +104,7 @@ export default {
   // --- Summary tab ---
   'usage.summary.compute': 'Compute',
   'usage.summary.tokensOverTime': 'Tokens over time',
-  'usage.summary.gpuHoursOverTime': 'GPU Hours over time',
+  'usage.summary.usageOverTime': 'Usage over time',
   'usage.summary.gbDaysOverTime': 'GB-Days over time',
 
   // --- GPU Instances / Storage filters ---

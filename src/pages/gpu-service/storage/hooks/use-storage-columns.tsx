@@ -71,6 +71,47 @@ const useStorageColumns = ({
         render: (value: string) => (value ? value.replace(/Gi$/, 'GB') : '-')
       },
       {
+        // A volume is created independently and keeps being metered while
+        // nothing is attached. That is intended, but without this column an
+        // idle-but-billed volume is indistinguishable from one in use, and the
+        // user cannot tell whether deleting it is safe. Every holder is listed,
+        // whatever its phase — a Stopped instance holds the volume just as a
+        // running one does, and blocks its reclaim. The phase itself is not
+        // rendered; see the cell below for why.
+        title: intl.formatMessage({
+          id: 'gpuservice.storage.attachedInstances'
+        }),
+        dataIndex: 'attachedInstances',
+        key: 'attachedInstances',
+        sorter: false,
+        ellipsis: { showTitle: false },
+        render: (_value: unknown, record: ListItem) => {
+          const attached = record.attachedInstances;
+          // Nothing attached reads as an empty cell, the same dash every other
+          // column uses. This drops the distinction from "not resolved" (a
+          // server too old to send the field), which was defensive: the pair is
+          // released together, and if it ever happened the finalizer still
+          // blocks the delete with a reason naming the holder.
+          if (!attached?.length) return <span>-</span>;
+          // Names only. The phase is load-bearing in exactly one case — a
+          // Stopped instance holds the volume just as a running one does — and
+          // that is where it appears: the blocked-delete message names the
+          // holder AND its phase. Here it would be "(Ready)" on nearly every
+          // row, which pushed the real content past the column's width.
+          // Drop nameless entries rather than joining a blank into the list:
+          // the name is the whole point of the column, and an unnamed holder
+          // would render as a stray comma.
+          const names = attached.map((item) => item.name).filter(Boolean);
+          if (!names.length) return <span>-</span>;
+          const label = names.join(', ');
+          return (
+            <AutoTooltip ghost style={{ maxWidth: 260 }} title={label}>
+              {label}
+            </AutoTooltip>
+          );
+        }
+      },
+      {
         title: intl.formatMessage({ id: 'common.table.status' }),
         dataIndex: ['status', 'phase'],
         key: 'status',

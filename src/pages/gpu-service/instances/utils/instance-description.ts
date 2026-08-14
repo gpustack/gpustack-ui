@@ -21,6 +21,21 @@ export const buildInstanceTypeSnapshotSpec = (
   };
 };
 
+// NOTE: the pool's partition profiles are deliberately NOT persisted here.
+//
+// They would let the list rows show a partition's real VRAM (its reported
+// `memoryMib`) instead of the rounded size in its name, but this whole object is
+// serialized into `GPUInstance.description`, which is capped at 1024 chars — and
+// a full A100 MIG pool's 11 profiles push the payload to ~1034, i.e. creating a
+// partitioned instance would start failing outright on exactly the pools that
+// need it. The channel is also already slated for removal (it is a user-writable
+// free-text field, not a data channel), so growing it is the wrong direction.
+//
+// Consequence: the GPU Instances list shows a partition's VRAM parsed from its
+// name, ~5% above the real figure. Usage / billing are unaffected — they read
+// `memoryMib` server-side. The fix is to stop reading this blob at all (expose a
+// resolved read-only field on GPUInstancePublic), not to add another key here.
+
 // Serialize the chosen instance type into the instance's `description` field —
 // a persisted spec snapshot the form reads back to render the type card and
 // derive unit resources. Shared by the create flow (card selection) and the

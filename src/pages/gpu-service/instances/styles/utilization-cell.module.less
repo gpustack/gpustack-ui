@@ -1,11 +1,20 @@
 // Utilization column: a row of small half-ring gauges, plus the per-card
 // breakdown a multi-card gauge shows on hover.
 
-// "This row has no accelerator" — a single dash, in the same muted tone the
-// rest of the table uses for an empty value. Deliberately one dash where a
-// gauge with no sample yet shows two.
+// "This row has no accelerator" — the weakest of the three empty states, since
+// it is a statement about the instance type rather than about the reading.
 .notApplicable {
+  font-size: 12px;
   color: var(--ant-color-text-tertiary);
+}
+
+// "No sample is coming" (stopped, stopping, initializing). Carries the weight
+// and tone of the gauge's own text, so a column of stopped and running rows
+// reads as one column — it just has no ring around it.
+.noData {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ant-color-text-secondary);
 }
 
 // Hover target for the gauge's tooltip / popover, and the reason the svg is

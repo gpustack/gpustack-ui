@@ -254,6 +254,8 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     }
   }, [open, formData]);
 
+  console.log('realAction===', realAction, action);
+
   return (
     <GSDrawer
       title={title}
@@ -311,6 +313,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
           onFinishFailed={onFinishFailed}
           ref={formRef}
           isGGUF={isGGUF}
+          sourceDisable={realAction !== PageAction.COPY}
           onBackendChange={handleAsyncBackendChange}
           onValuesChange={handleManulOnValuesChange}
         ></DataForm>

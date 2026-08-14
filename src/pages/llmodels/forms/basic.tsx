@@ -222,7 +222,7 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
             </span>
             <span className="s-dot"></span>
             <span className="flex-center gap-4 text-tertiary">
-              <span>GPUs:</span>
+              <span>{intl.formatMessage({ id: 'menu.resources.gpus' })}:</span>
               <span>{data.gpus}</span>
             </span>
           </span>

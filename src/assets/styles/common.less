@@ -385,3 +385,12 @@ textarea:hover {
 .align-center {
   text-align: center;
 }
+
+// "There is more behind this" — a hairline dashed underline in the link colour,
+// marking text whose hover opens a popover with the detail. Carries its own
+// padding so the line clears the descenders. Previously hand-rolled inline in
+// the worker GPU cells, the instance type card and the dual arc gauge.
+.dashed-underline {
+  padding-bottom: 3px;
+  border-bottom: 1px dashed var(--ant-blue-6);
+}

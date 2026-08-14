@@ -1,0 +1,51 @@
+// One option in the cluster picker: the cluster name on the first line, its
+// readiness dot plus node/GPU counts on the second.
+.clusterOption {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--ant-color-split);
+}
+
+.label {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Readiness of the cluster: warning until at least one worker is ready.
+.dot {
+  display: flex;
+  width: 6px;
+  height: 6px;
+  background-color: var(--ant-color-warning);
+  border-radius: 50%;
+
+  &.ready {
+    background-color: var(--ant-color-success);
+  }
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: max-content;
+  padding: 2px 0;
+  font-weight: 400;
+}
+
+// Divider between the node and GPU counts.
+.metaDivider {
+  width: 4px;
+  height: 4px;
+  margin: 0 4px;
+  background-color: var(--ant-color-text-quaternary);
+  border-radius: 50%;
+}

@@ -195,6 +195,7 @@ export default {
   'gpuservice.instance.event.tab.instance': 'インスタンスイベント',
   'gpuservice.instance.event.tab.volume': 'ボリュームイベント',
   'gpuservice.storage': 'ストレージ',
+  'gpuservice.storage.attachedInstances': 'マウント中のインスタンス',
   'gpuservice.storage.add': 'ストレージを追加',
   'gpuservice.storage.edit': 'ストレージを編集',
   'gpuservice.storage.filter.cluster': 'クラスターでフィルター',

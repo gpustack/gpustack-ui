@@ -190,6 +190,7 @@ export default {
   'gpuservice.instance.event.tab.instance': 'Örnek Olayları',
   'gpuservice.instance.event.tab.volume': 'Birim Olayları',
   'gpuservice.storage': 'Depolama',
+  'gpuservice.storage.attachedInstances': 'Bağlı Örnekler',
   'gpuservice.storage.add': 'Depolama Ekle',
   'gpuservice.storage.edit': 'Depolamayı Düzenle',
   'gpuservice.storage.filter.cluster': 'Kümeye göre filtrele',

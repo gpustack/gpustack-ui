@@ -134,8 +134,6 @@ export default {
   'gpuservice.instance.ram': '内存',
   'gpuservice.instance.os': '系统',
   'gpuservice.instance.arch': '架构',
-  'gpuservice.instance.utilization.accelerator': '加速器利用率',
-  'gpuservice.instance.utilization.basic': '基础资源利用率',
   'gpuservice.instance.utilization.gpu': 'GPU',
   'gpuservice.instance.utilization.vram': '显存',
   'gpuservice.instance.utilization.cpu': 'CPU',

@@ -8,6 +8,7 @@ import {
   AcceleratorProfileCount,
   AcceleratorSlicedDetail,
   AcceleratorSlicedPhysicalDetailProfile,
+  GaugeKey,
   InstanceTypeOverviewResource,
   InstanceTypePartitionedResource,
   ListItem
@@ -169,6 +170,31 @@ export const MetricsPollablePhases = [
   InstanceStatusValueMap.Ready,
   InstanceStatusValueMap.NotReady
 ];
+
+// One Utilization column per gauge, in scan order: what the workload computes
+// on, then what it runs on. The column header names the resource, which is why
+// the cell carries no label of its own.
+export const GaugeColumnOrder: GaugeKey[] = [
+  'gpu',
+  'vram',
+  'cpu',
+  'memory',
+  'storage'
+];
+
+// The gauges that exist only on an accelerated instance type — their column
+// shows a dash on every other row. The rest apply to every instance.
+export const AcceleratorGaugeKeys: GaugeKey[] = ['gpu', 'vram'];
+
+// Column header, and the name the cell's hover tooltip puts in front of the
+// exact figures.
+export const GaugeLabelIdMap: Record<GaugeKey, string> = {
+  gpu: 'gpuservice.instance.utilization.gpu',
+  vram: 'gpuservice.instance.utilization.vram',
+  cpu: 'gpuservice.instance.utilization.cpu',
+  memory: 'gpuservice.instance.utilization.memory',
+  storage: 'gpuservice.instance.utilization.storage'
+};
 
 export const GPUStackFailedStatuses = [
   InstanceStatusValueMap.CreateFailed,

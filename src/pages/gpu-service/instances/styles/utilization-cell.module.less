@@ -8,10 +8,11 @@
   color: var(--ant-color-text-tertiary);
 }
 
-.label {
-  font-size: 12px;
-  line-height: 1.2;
-  color: var(--ant-color-text-tertiary);
+// Hover target for the gauge's tooltip / popover, and the reason the svg is
+// wrapped at all — HalfArcGauge forwards no ref. Sized to the svg exactly, so
+// the hover area is the gauge and not the whole cell.
+.gauge {
+  display: inline-flex;
 }
 
 // One row per accelerator. A CSS grid rather than Row/Col: the tracks size to

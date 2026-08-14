@@ -458,11 +458,6 @@ export interface InstanceMetrics {
 
 export type GaugeKey = 'gpu' | 'vram' | 'cpu' | 'memory' | 'storage';
 
-// The two Utilization columns: what the workload computes on, and what it runs
-// on. `accelerator` renders nothing but a dash on a row whose instance type has
-// no accelerator.
-export type GaugeGroup = 'accelerator' | 'basic';
-
 // One accelerator's own figures behind a multi-card gpu/vram gauge. `index` is
 // the card's position in the instance's accelerator list, kept explicitly so a
 // card dropped for unreadable figures doesn't renumber the cards after it.

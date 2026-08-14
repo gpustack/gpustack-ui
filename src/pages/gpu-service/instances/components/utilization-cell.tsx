@@ -1,9 +1,11 @@
+import HalfArcGauge from '@/pages/_components/half-arc-gauge';
 import { useIntl } from '@umijs/max';
 import { Flex, Popover, Progress, Space, Tooltip } from 'antd';
 import _ from 'lodash';
 import React from 'react';
 import {
   AcceleratorGaugeItem,
+  GaugeGroup,
   GaugeKey,
   GaugeState,
   GaugeValues
@@ -11,32 +13,32 @@ import {
 import styles from '../styles/utilization-cell.module.less';
 
 const GAUGE_SIZE = 50;
+const GAUGE_STROKE = 2;
+const GAUGE_GAP = 16;
 
 // A gauge with no entry in the map has never had data, or was reset when the
 // instance stopped being polled.
 const NO_DATA: GaugeState = { percent: null };
 
-// Every gauge the cell can render, in display order. acceleratorOnly gauges
-// render only for rows whose instance type is acceleratable.
-const GAUGE_DEFINITIONS: {
-  key: GaugeKey;
-  labelId: string;
-  acceleratorOnly?: boolean;
-}[] = [
-  {
-    key: 'gpu',
-    labelId: 'gpuservice.instance.utilization.gpu',
-    acceleratorOnly: true
-  },
-  {
-    key: 'vram',
-    labelId: 'gpuservice.instance.utilization.vram',
-    acceleratorOnly: true
-  },
-  { key: 'cpu', labelId: 'gpuservice.instance.utilization.cpu' },
-  { key: 'memory', labelId: 'gpuservice.instance.utilization.memory' },
-  { key: 'storage', labelId: 'gpuservice.instance.utilization.storage' }
-];
+// The gauges live in two columns — what the workload computes on, and what it
+// runs on — so a scan can land on "is the GPU busy" without parsing five
+// labels, and every row's CPU gauge sits at the same x as every other row's.
+// The accelerator group has no gauges at all on a row whose instance type
+// carries no accelerator.
+export const GAUGE_GROUPS: Record<
+  GaugeGroup,
+  { key: GaugeKey; labelId: string }[]
+> = {
+  accelerator: [
+    { key: 'gpu', labelId: 'gpuservice.instance.utilization.gpu' },
+    { key: 'vram', labelId: 'gpuservice.instance.utilization.vram' }
+  ],
+  basic: [
+    { key: 'cpu', labelId: 'gpuservice.instance.utilization.cpu' },
+    { key: 'memory', labelId: 'gpuservice.instance.utilization.memory' },
+    { key: 'storage', labelId: 'gpuservice.instance.utilization.storage' }
+  ]
+};
 
 // Threshold stroke colors, same cutoffs as the cluster system-load card.
 const getStrokeColor = (percent: number) => {
@@ -69,22 +71,6 @@ const gaugeTooltip = (key: GaugeKey, label: string, state: GaugeState) => {
   }
   return `${label}: ${formatMiB(state.used)} / ${formatMiB(state.total)}`;
 };
-
-// One circular gauge with its percent (or "--") at the center.
-const GaugeRing: React.FC<{ percent: number | null }> = ({ percent }) => (
-  <Progress
-    type="circle"
-    size={GAUGE_SIZE}
-    strokeWidth={8}
-    percent={percent ?? 0}
-    strokeColor={percent === null ? undefined : getStrokeColor(percent)}
-    format={() => (
-      <span className={styles.percent}>
-        {percent === null ? '--' : `${percent}%`}
-      </span>
-    )}
-  />
-);
 
 // Multi-card hover content: one short bar per accelerator — the card's index in
 // the instance's accelerator list tags the row, the bar and its figures sit
@@ -122,72 +108,85 @@ const PerCardBars: React.FC<{
 );
 
 /**
- * Utilization cell for the GPU Instances list: small circular gauges for GPU /
- * VRAM / CPU / RAM / Storage. Pure presentation — the figures are polled for
- * the whole page by use-query-instance-metrics, so this renders whatever the
- * map currently holds for the row and nothing more: a gauge with no data shows
- * "--", which is also what a stopped row falls back to once it drops out of the
- * poll set. Rows whose instance type has no accelerator render only the CPU /
- * RAM / Storage gauges; on multi-card rows the GPU / VRAM gauge aggregates the
- * cards and its hover popover breaks out one bar per card.
+ * One Utilization cell — half-ring gauges for the group it is given. Pure
+ * presentation: the figures are polled for the whole page by
+ * use-query-instance-metrics, so this renders whatever the map currently holds
+ * for the row and nothing more. A gauge with no data shows "--", which is also
+ * where a stopped row lands once it drops out of the poll set; on multi-card
+ * rows the GPU / VRAM gauge aggregates the cards and its hover popover breaks
+ * out one bar per card.
+ *
+ * The accelerator group renders a single "-" for a row whose instance type has
+ * no accelerator — "not applicable", as distinct from the gauges' "--" for "no
+ * sample yet".
  *
  * Memoized on purpose: a page-wide commit hands every row a new `values`
  * reference only for the instances that actually changed, so the rest of the
  * table's gauges skip re-rendering.
  */
 const UtilizationCell: React.FC<{
+  group: GaugeGroup;
   values?: GaugeValues;
   hasAccelerators: boolean;
-}> = ({ values, hasAccelerators }) => {
+}> = ({ group, values, hasAccelerators }) => {
   const intl = useIntl();
-  const gauges = GAUGE_DEFINITIONS.filter(
-    (definition) => !definition.acceleratorOnly || hasAccelerators
-  );
 
-  return (
-    <Space size="middle">
-      {gauges.map(({ key, labelId }) => {
-        const label = intl.formatMessage({ id: labelId });
-        const state = values?.[key] ?? NO_DATA;
-        // Displayed percent is clamped to [0, 100] — the source may exceed 100.
-        const percent =
-          state.percent === null
-            ? null
-            : _.clamp(_.round(state.percent), 0, 100);
-        const gauge = (
-          <Flex vertical align="center" gap={2}>
-            <GaugeRing percent={percent} />
-            <span className={styles.label}>{label}</span>
-          </Flex>
-        );
-        // Multi-card row: the merged gauge's hover breaks out one bar per card
-        // instead of the single exact-value tooltip.
-        if (
-          (key === 'gpu' || key === 'vram') &&
-          (state.items?.length ?? 0) > 1
-        ) {
-          return (
-            <Popover
-              key={key}
-              content={
-                <PerCardBars
-                  gaugeKey={key}
-                  items={state.items as AcceleratorGaugeItem[]}
-                />
-              }
-            >
-              {gauge}
-            </Popover>
-          );
-        }
-        return (
-          <Tooltip key={key} title={gaugeTooltip(key, label, state)}>
-            {gauge}
-          </Tooltip>
-        );
-      })}
-    </Space>
-  );
+  const renderGauge = ({
+    key,
+    labelId
+  }: {
+    key: GaugeKey;
+    labelId: string;
+  }) => {
+    const label = intl.formatMessage({ id: labelId });
+    const state = values?.[key] ?? NO_DATA;
+    // Displayed percent is clamped to [0, 100] — the source may exceed 100.
+    const percent =
+      state.percent === null ? null : _.clamp(_.round(state.percent), 0, 100);
+    // Multi-card row: the merged gauge's hover breaks out one bar per card
+    // instead of the single exact-value tooltip, and its percent gets the dashed
+    // underline that marks "there is more behind this" across the app.
+    const hasBreakdown =
+      (key === 'gpu' || key === 'vram') && (state.items?.length ?? 0) > 1;
+    const gauge = (
+      <Flex vertical align="center" gap={4}>
+        <span className={styles.label}>{label}</span>
+        <HalfArcGauge
+          percent={percent}
+          color={percent === null ? undefined : getStrokeColor(percent)}
+          size={GAUGE_SIZE}
+          strokeWidth={GAUGE_STROKE}
+          dashedUnderline={hasBreakdown}
+        />
+      </Flex>
+    );
+    if (hasBreakdown) {
+      return (
+        <Popover
+          key={key}
+          content={
+            <PerCardBars
+              gaugeKey={key}
+              items={state.items as AcceleratorGaugeItem[]}
+            />
+          }
+        >
+          {gauge}
+        </Popover>
+      );
+    }
+    return (
+      <Tooltip key={key} title={gaugeTooltip(key, label, state)}>
+        {gauge}
+      </Tooltip>
+    );
+  };
+
+  if (group === 'accelerator' && !hasAccelerators) {
+    return <span className={styles.notApplicable}>-</span>;
+  }
+
+  return <Space size={GAUGE_GAP}>{GAUGE_GROUPS[group].map(renderGauge)}</Space>;
 };
 
 export default React.memo(UtilizationCell);

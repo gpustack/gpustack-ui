@@ -406,6 +406,7 @@ const GPUService: React.FC = () => {
             rowKey={(record) => record.id}
             onChange={handleTableChange}
             pagination={{
+              size: 'middle',
               showSizeChanger: true,
               pageSize: queryParams.perPage,
               current: queryParams.page,

@@ -44,7 +44,12 @@ import {
   StorageModeValueMap
 } from '../config';
 import { FormContext } from '../config/form-context';
-import { FormData, InstanceTypeItem, ListItem } from '../config/types';
+import {
+  AcceleratorSlicedPhysicalDetailProfile,
+  FormData,
+  InstanceTypeItem,
+  ListItem
+} from '../config/types';
 import instanceStyles from '../styles/instances.module.less';
 import Basic from './basic';
 import InstanceTypeFormItem from './instance-type';
@@ -308,7 +313,8 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       const partitionPercentage = isGPUType
         ? getPartitionPercentage(
             resources.acceleratorPartitionedProfile,
-            getCardMemory()
+            getCardMemory(),
+            getCardProfiles()
           )
         : null;
       if (partitionPercentage != null && unitResourcesParsed) {
@@ -440,7 +446,8 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       const ramValue = unitResourcesParsed?.ram?.value;
       const percentage = getPartitionPercentage(
         profileName,
-        getCardMemory(instanceType)
+        getCardMemory(instanceType),
+        getCardProfiles(instanceType)
       );
 
       const scale = (value?: number | null) => {
@@ -817,6 +824,22 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
         undefined
       );
     };
+
+    // The pool's partition profiles — the numerator of the partition ratio comes
+    // from a profile's reported `memoryMib`, not from parsing its name (which is
+    // the rounded marketing size and would disagree with what metering bills).
+    //
+    // Live type only, unlike getCardMemory: the profile list is NOT persisted in
+    // the description snapshot (it would overflow its 1024-char cap — see
+    // buildInstanceTypeSnapshotSpec). When it is unavailable, getPartitionPercentage
+    // falls back to the name, so the scaled CPU / RAM land a few percent high.
+    // That is a resource-sizing rounding, not a billing one: the server bills the
+    // reported memoryMib regardless of what the form submitted.
+    const getCardProfiles = (
+      instanceType?: InstanceTypeItem
+    ): AcceleratorSlicedPhysicalDetailProfile[] | undefined =>
+      (instanceType ?? selectedInstanceType)?.status?.detail?.slicedDetail
+        ?.physical?.profiles ?? undefined;
 
     const handleFinish = async (values: InstanceFormValues) => {
       const submittedPorts = [...(values.spec?.ports ?? [])];

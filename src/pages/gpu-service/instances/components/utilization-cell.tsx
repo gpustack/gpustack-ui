@@ -99,9 +99,14 @@ const PerCardBars: React.FC<{
  * GPU / VRAM gauge aggregates the cards and its hover popover breaks out one
  * bar per card.
  *
- * A GPU / VRAM cell renders a single "-" for a row whose instance type has no
- * accelerator — "not applicable", as distinct from the gauge's "--" for "no
- * sample yet".
+ * Three ways a cell says "no figure", and they mean different things:
+ *   - "N/A": the instance type has no accelerator, so a GPU / VRAM reading does
+ *     not apply to this row at all — the same wording the workers table uses for
+ *     a resource a row cannot report;
+ *   - a single "-": the row's phase has no Pod behind it (stopped, stopping,
+ *     still initializing), so no sample is coming — an empty ring would frame a
+ *     reading that will never arrive;
+ *   - "--" inside a ring: the row IS being polled and has not answered yet.
  *
  * Memoized on purpose: a page-wide commit hands every row a new `values`
  * reference only for the instances that actually changed, so the rest of the
@@ -111,13 +116,20 @@ const UtilizationCell: React.FC<{
   gaugeKey: GaugeKey;
   values?: GaugeValues;
   hasAccelerators: boolean;
-}> = ({ gaugeKey, values, hasAccelerators }) => {
+  // Whether the row's phase can produce a sample at all. A boolean rather than
+  // the record itself, so the memo holds.
+  measurable: boolean;
+}> = ({ gaugeKey, values, hasAccelerators, measurable }) => {
   const intl = useIntl();
 
   const isAcceleratorGauge = _.includes(AcceleratorGaugeKeys, gaugeKey);
 
   if (isAcceleratorGauge && !hasAccelerators) {
-    return <span className={styles.notApplicable}>-</span>;
+    return <span className={styles.notApplicable}>N/A</span>;
+  }
+
+  if (!measurable) {
+    return <span className={styles.noData}>-</span>;
   }
 
   const label = intl.formatMessage({ id: GaugeLabelIdMap[gaugeKey] });

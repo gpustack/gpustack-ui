@@ -11,11 +11,13 @@ import {
   DropdownButtons,
   FilterBar,
   IconFont,
-  NoResult
+  NoResult,
+  Table as SealTable,
+  type TableOrder
 } from '@gpustack/core-ui';
 import { useAccess, useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { Button, ConfigProvider, message, Modal, Space, Table } from 'antd';
+import { Button, message, Modal, Space } from 'antd';
 import { useSetAtom } from 'jotai';
 import _ from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
@@ -284,8 +286,12 @@ const GPUService: React.FC = () => {
     }
   });
 
-  const renderEmpty = (type?: string) => {
-    if (type !== 'Table') return;
+  // SealTable takes the empty state as a node (`empty`) rather than through
+  // antd's `ConfigProvider renderEmpty`, so this is built eagerly instead of on
+  // demand. "No cluster to run on" and "no instances yet" are different dead
+  // ends and get different copy: the first sends an admin to add a Kubernetes
+  // cluster, the second offers the create button.
+  const renderEmpty = () => {
     if (!clusterLoading && !hasK8sCluster) {
       return (
         <NoResult
@@ -354,6 +360,13 @@ const GPUService: React.FC = () => {
     metrics
   });
 
+  // SealTable reports a sort as a `TableOrder` (or a list of them) instead of
+  // antd's `(pagination, filters, sorter, extra)`, so feed `handleTableChange`
+  // the shape it expects — the sorter slot plus an explicit `sort` action.
+  const handleTableSort = (order: TableOrder | Array<TableOrder>) => {
+    handleTableChange({}, {}, order, { action: 'sort' });
+  };
+
   return (
     <>
       <PageBox>
@@ -390,32 +403,37 @@ const GPUService: React.FC = () => {
             </Space>
           }
         />
-        <ConfigProvider renderEmpty={renderEmpty}>
-          <Table
-            className={'scroll-table'}
-            columns={columns}
-            dataSource={dataSource.dataList}
-            rowSelection={rowSelection}
-            loading={{
-              spinning: dataSource.loading,
-              size: 'middle'
-            }}
-            sortDirections={TABLE_SORT_DIRECTIONS}
-            showSorterTooltip={false}
-            scroll={{ x: 'max-content' }}
-            rowKey={(record) => record.id}
-            onChange={handleTableChange}
-            pagination={{
-              size: 'middle',
-              showSizeChanger: true,
-              pageSize: queryParams.perPage,
-              current: queryParams.page,
-              total: dataSource.total,
-              hideOnSinglePage: queryParams.perPage === 10,
-              onChange: handlePageChange
-            }}
-          />
-        </ConfigProvider>
+        <SealTable
+          rowKey="id"
+          columns={columns}
+          dataSource={dataSource.dataList}
+          rowSelection={rowSelection}
+          loading={dataSource.loading}
+          loadend={dataSource.loadend}
+          sortDirections={TABLE_SORT_DIRECTIONS}
+          showSorterTooltip={false}
+          onTableSort={handleTableSort}
+          // `true` widens the row out to the columns' own floors (sum of their
+          // `width` / `minWidth` + the prefix gutter) and scrolls past that. Not
+          // `'max-content'`: the columns are `fr` tracks, and under a
+          // content-driven constraint the greediest cell sets the `fr` unit for
+          // every track, which blows the table far past the width it needs.
+          scroll={{ x: true }}
+          empty={renderEmpty()}
+          // Matches the `<NoResult minHeight>` inside the empty state, so the
+          // first-load spinner, the empty state and the eventual rows occupy one
+          // stable block instead of jumping on entry.
+          emptyMinHeight="calc(100vh - 300px)"
+          pagination={{
+            size: 'middle',
+            showSizeChanger: true,
+            pageSize: queryParams.perPage,
+            current: queryParams.page,
+            total: dataSource.total,
+            hideOnSinglePage: queryParams.perPage === 10,
+            onChange: handlePageChange
+          }}
+        />
       </PageBox>
       <AddModal
         open={openInstanceModalStatus.open}

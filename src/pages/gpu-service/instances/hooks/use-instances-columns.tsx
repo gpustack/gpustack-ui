@@ -5,11 +5,11 @@ import {
   AutoTooltip,
   CopyButton,
   DropdownButtons,
-  StatusTag
+  StatusTag,
+  type TableColumnProps
 } from '@gpustack/core-ui';
 import { useAccess, useIntl } from '@umijs/max';
 import { Button } from 'antd';
-import type { ColumnsType } from 'antd/lib/table';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import { Fragment, useMemo } from 'react';
@@ -19,6 +19,7 @@ import {
   GaugeColumnOrder,
   GaugeLabelIdMap,
   InstanceStatusLabelMap,
+  MetricsPollablePhases,
   rowActionList,
   status
 } from '../config';
@@ -37,6 +38,12 @@ const isAcceleratable = (record: ListItem) =>
     record?.description || '{}',
     {}
   ).spec?.acceleratable;
+
+// Whether a sample can exist for this row at all — the poller's own rule, so a
+// row it skips (stopped, stopping, still initializing) renders a bare "--"
+// rather than an empty ring waiting for a figure that is never coming.
+const isMeasurable = (record: ListItem) =>
+  _.includes(MetricsPollablePhases, record?.status?.phase || '');
 
 const buildRowActions = (record: ListItem) => {
   return rowActionList
@@ -130,17 +137,30 @@ const useInstancesColumns = ({
   sortOrder,
   pvCapacityByName,
   metrics
-}: ColumnsHookProps): ColumnsType<ListItem> => {
+}: ColumnsHookProps): TableColumnProps[] => {
   const intl = useIntl();
   const access = useAccess();
   const pluginCols = usePluginListColumns('gpuInstances');
   const creatorCols = useCreatorColumn<ListItem>('gpuInstances');
 
-  return useMemo(() => {
+  // No column sets a `span`, so SealTable gives every one `1fr` and they divide
+  // whatever width is left once the floors below are satisfied. What each
+  // column carries instead is a `minWidth` floor — the table scrolls
+  // horizontally (`scroll={{ x: true }}` widens the row to the sum of the
+  // floors), so the floors are what decide when scrolling starts. A column
+  // whose content is a fixed size takes `width` instead and stays pinned.
+  //
+  // Every column also needs a unique `dataIndex`: SealTable keys each cell by
+  // it and hands `render` the row's value at that key. It is a flat property
+  // lookup, not a path — a dotted `dataIndex` resolves to `undefined`, so those
+  // columns read what they need off `record` and the value only serves as the
+  // sort field the backend receives.
+  return useMemo<TableColumnProps[]>(() => {
     const pluginRendered = pluginCols.map((c) => ({
       title: intl.formatMessage({ id: c.titleId }),
+      dataIndex: c.key,
       key: c.key,
-      ellipsis: { showTitle: false },
+      minWidth: 120,
       render: (_text: any, record: ListItem) => c.render(record)
     }));
     return [
@@ -149,9 +169,7 @@ const useInstancesColumns = ({
         dataIndex: 'name',
         key: 'name',
         sorter: true,
-        ellipsis: {
-          showTitle: false
-        },
+        minWidth: 180,
         render: (text: string, record: ListItem) => (
           <AutoTooltip
             ghost
@@ -164,11 +182,10 @@ const useInstancesColumns = ({
       },
       {
         title: intl.formatMessage({ id: 'gpuservice.instance.connect' }),
+        dataIndex: 'connect',
         key: 'connect',
-        ellipsis: {
-          showTitle: false
-        },
-        render: (_text, record: ListItem) => {
+        minWidth: 120,
+        render: (_text: any, record: ListItem) => {
           const entries = getConnectEntries(record);
 
           if (entries.length === 0) {
@@ -248,13 +265,11 @@ const useInstancesColumns = ({
       },
       {
         title: intl.formatMessage({ id: 'common.table.status' }),
-        dataIndex: ['status', 'phase'],
+        dataIndex: 'status.phase',
         key: 'status',
-        sorter: false,
-        ellipsis: {
-          showTitle: false
-        },
-        render: (value: string, record: ListItem) => {
+        minWidth: 140,
+        render: (_text: any, record: ListItem) => {
+          const value = record?.status?.phase || '';
           return (
             <StatusTag
               statusValue={{
@@ -268,14 +283,14 @@ const useInstancesColumns = ({
       },
       {
         title: intl.formatMessage({ id: 'gpuservice.instance.section.type' }),
-        dataIndex: ['spec', 'type'],
+        dataIndex: 'spec.type',
         key: 'type',
-        sorter: false,
-        ellipsis: {
-          showTitle: false
-        },
-        width: 300,
-        render: (_text: string, record: ListItem) =>
+        // The widest cell in the table — a resource summary plus its tags — so
+        // it gets a floor rather than a fixed width and keeps its share of any
+        // leftover room.
+        maxWidth: 300,
+        minWidth: 150,
+        render: (_text: any, record: ListItem) =>
           renderInstanceType(record, { intl, pvCapacityByName })
       },
       // One column per gauge rather than one cell holding all five: the header
@@ -289,49 +304,54 @@ const useInstancesColumns = ({
       // which is a lot of table to restructure for these five. The gauge's
       // percent is what says "utilization" here, and the Instance Type column
       // is where the requested resources are read.
-      //
-      // No `ellipsis`, unlike the text columns around them: it would apply to
-      // the header too, and truncating a one-word header that names what the
-      // column measures (with no title attribute to hover, given
-      // showTitle: false) loses more than it saves. The cells need it even less
-      // — a gauge is fixed-width and never overflows.
       ...GaugeColumnOrder.map((gaugeKey) => ({
         title: intl.formatMessage({ id: GaugeLabelIdMap[gaugeKey] }),
+        dataIndex: `utilization-${gaugeKey}`,
         key: `utilization-${gaugeKey}`,
-        // A 50px gauge takes 82px once cell padding is counted; the rest is
-        // header room, since "Storage" runs to 9 characters in some locales.
-        width: 100,
-        render: (_text: string, record: ListItem) => (
+        // `width`, not `minWidth`: the content is a fixed GAUGE_SIZE gauge, so
+        // the column has nothing to gain from extra room and stays pinned. The
+        // cell's own inline padding eats 32 of this, and a header that outgrows
+        // what is left truncates through AutoTooltip.
+        width: 80,
+        render: (_text: any, record: ListItem) => (
           <UtilizationCell
             gaugeKey={gaugeKey}
             values={metrics[record.id]}
             hasAccelerators={isAcceleratable(record)}
+            measurable={isMeasurable(record)}
           />
         )
       })),
       ...pluginRendered,
-      {
-        title: intl.formatMessage({ id: 'clusters.title' }),
-        dataIndex: 'clusterId',
-        hidden: !access.canSeeAdmin,
-        ellipsis: {
-          showTitle: false
-        },
-        render: (id: number) => (
-          <AutoTooltip ghost maxWidth={240}>
-            {_.find(clusterList, { value: id })?.label || id || '-'}
-          </AutoTooltip>
-        )
-      },
-      ...creatorCols,
+      // SealTable has no `hidden` column flag (antd's `Table` does), so a column
+      // the viewer may not see drops out of the array instead.
+      ...(access.canSeeAdmin
+        ? [
+            {
+              title: intl.formatMessage({ id: 'clusters.title' }),
+              dataIndex: 'clusterId',
+              key: 'clusterId',
+              minWidth: 140,
+              render: (id: number) => (
+                <AutoTooltip ghost maxWidth={240}>
+                  {_.find(clusterList, { value: id })?.label || id || '-'}
+                </AutoTooltip>
+              )
+            }
+          ]
+        : []),
+      // The shared creator column is written for antd `Table` and carries no
+      // `dataIndex`; give it one here rather than pushing SealTable's
+      // requirement onto the three sibling pages that still use antd.
+      ...creatorCols.map((c) => ({
+        ...c,
+        dataIndex: 'creator',
+        minWidth: 140
+      })),
       {
         title: intl.formatMessage({ id: 'common.table.createTime' }),
         dataIndex: 'created_at',
         key: 'created_at',
-        sorter: false,
-        ellipsis: {
-          showTitle: false
-        },
         width: 180,
         render: (text: string) => (
           <AutoTooltip ghost>
@@ -343,10 +363,8 @@ const useInstancesColumns = ({
         title: intl.formatMessage({ id: 'common.table.operation' }),
         key: 'operation',
         dataIndex: 'operation',
-        ellipsis: {
-          showTitle: false
-        },
-        render: (_text, record) => {
+        width: 110,
+        render: (_text: any, record: ListItem) => {
           return (
             <DropdownButtons
               items={buildRowActions(record)}

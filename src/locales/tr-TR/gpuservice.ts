@@ -143,8 +143,6 @@ export default {
   'gpuservice.instance.ram': 'RAM',
   'gpuservice.instance.os': 'OS',
   'gpuservice.instance.arch': 'Mimari',
-  'gpuservice.instance.utilization.accelerator': 'Hızlandırıcı Kullanımı',
-  'gpuservice.instance.utilization.basic': 'Kaynak Kullanımı',
   'gpuservice.instance.utilization.gpu': 'GPU',
   'gpuservice.instance.utilization.vram': 'VRAM',
   'gpuservice.instance.utilization.cpu': 'CPU',

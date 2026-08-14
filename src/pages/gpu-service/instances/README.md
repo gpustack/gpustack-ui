@@ -4,18 +4,18 @@
 
 Live GPU / VRAM / CPU / RAM / Storage gauges, fed by the operator's Instance `metrics` subresource through the cluster proxy. The figures are **not** part of the list payload and are not carried by the list's watch stream — they are polled separately.
 
-Two columns, not one: the cell border groups the accelerator pair away from the resources every instance has, and every row's CPU gauge lands at the same x, so a busy instance can be found by scanning down. A row whose instance type has no accelerator shows a single `-` in the accelerator column — "not applicable", as distinct from the gauges' `--` for "no sample yet".
+One column per gauge, not one cell holding all five: the header names the resource, so the cell is nothing but the ring — no label repeated down every row — and every row's reading for a given resource lands at the same x, so a busy instance is found by scanning a column. A row whose instance type has no accelerator shows a single `-` in the GPU and VRAM columns — "not applicable", as distinct from a gauge's `--` for "no sample yet".
 
 ### Where the pieces are
 
 | File | Role |
 | --- | --- |
 | `services/use-query-instance-metrics.ts` | The poller: one loop for the whole page, concurrency gate, batched commit |
-| `components/utilization-cell.tsx` | Pure presentation, memoized — one cell per group, holds no state and issues no request |
+| `components/utilization-cell.tsx` | Pure presentation, memoized — one cell per gauge, holds no state and issues no request |
 | `apis/index.ts` | `queryGPUServiceInstanceMetrics`: proxy URL, `skipErrorHandler`, timeout |
 | `config/types.ts` | `Gauge*` / `InstanceMetricsMap` view model |
-| `config/index.ts` | `MetricsPollablePhases` — which phases have a Pod worth sampling |
-| `hooks/use-instances-columns.tsx` | The two column definitions; feed each row its `values` + `hasAccelerators` |
+| `config/index.ts` | `MetricsPollablePhases` (which phases have a Pod worth sampling), `GaugeColumnOrder`, `GaugeLabelIdMap`, `AcceleratorGaugeKeys` |
+| `hooks/use-instances-columns.tsx` | Maps `GaugeColumnOrder` to columns; feeds each row its `values` + `hasAccelerators` |
 | `index.tsx` | Owns the `enabled` flag (see "What pauses it") |
 
 **One loop per page, not one per row.** A per-row timer would fire N requests in the same tick — at 100 rows that saturates the browser's connection pool every 15s. Refreshing only a subset per interval was rejected too: at one row per tick a 100-row page takes 25 minutes to come back to the first row, so the column would quietly show minutes-old load. The gate solves the burst without costing freshness.
@@ -48,10 +48,10 @@ Two columns, not one: the cell border groups the accelerator pair away from the 
 
 | Symptom | Look at |
 | --- | --- |
-| Whole column shows `--` | Row phase is in `MetricsPollablePhases`? `clusterId` / `status.namespace` populated? Subresource 404 (operator < v0.8.2)? |
+| Every gauge shows `--` | Row phase is in `MetricsPollablePhases`? `clusterId` / `status.namespace` populated? Subresource 404 (operator < v0.8.2)? |
 | Only some rows show `--` | Those rows' phase / namespace, or their request hitting the 5s timeout |
 | Values frozen | An overlay or bulk confirmation is open, or the tab is in the background — i.e. `enabled` is false |
-| GPU / VRAM gauges missing | `acceleratable` in the row's persisted type snapshot (`description`) |
+| GPU / VRAM show `-` (not `--`) | `acceleratable` in the row's persisted type snapshot (`description`) |
 | Multi-card value looks wrong | Some card missing `used`/`total` — the aggregate then falls back to a per-card mean rather than mixing card sets |
 | Too many requests | `CONCURRENCY` / `POLL_INTERVAL`, and whether the page size was raised to 100 |
 | Table feels janky | Commit frequency (`COMMIT_WINDOW`), and whether something broke `UtilizationCell`'s memo by passing an unstable prop |

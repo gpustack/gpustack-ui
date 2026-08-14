@@ -148,8 +148,6 @@ export default {
   'gpuservice.instance.ram': 'RAM',
   'gpuservice.instance.os': 'OS',
   'gpuservice.instance.arch': 'アーキテクチャ',
-  'gpuservice.instance.utilization.accelerator': 'アクセラレータ使用率',
-  'gpuservice.instance.utilization.basic': 'リソース使用率',
   'gpuservice.instance.utilization.gpu': 'GPU',
   'gpuservice.instance.utilization.vram': 'VRAM',
   'gpuservice.instance.utilization.cpu': 'CPU',

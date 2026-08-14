@@ -7,16 +7,24 @@ import useQueryGpuInstancesBreakdown from '../services/use-query-gpu-instances-b
 import useInstancesColumns from './use-instances-columns';
 
 type Scope = 'self' | 'all';
-type Metric = 'gpu_hours' | 'instance_hours';
+type Metric = 'unit_hours' | 'instance_hours';
 type GroupKey = 'gpu_type' | 'instance' | 'user';
 
-const SORTABLE: Metric[] = ['gpu_hours', 'instance_hours'];
+// Must list every column that declares ``sorter: true``, and nothing else. A
+// column the handler does not recognize falls through to DEFAULT_SORT, so the
+// header shows an arrow while the rows are ordered by something else entirely —
+// worse than not being sortable at all. ``unit_hours`` was missing, which is
+// exactly what happened to the Usage column; ``gpu_hours`` stayed listed after
+// its column was dropped, which is the same mistake read from the other end.
+const SORTABLE: Metric[] = ['unit_hours', 'instance_hours'];
 
 const PER_PAGE = 50;
 // sort_by encodes order as a string (`-` prefix = descending), so the fetch
 // effect dedupes naturally on the primitive. The breakdown order_by takes the
-// metric key directly. Default: GPU Hours descending.
-const DEFAULT_SORT = '-gpu_hours';
+// metric key directly. Default: Usage descending — it is the primary column and
+// the only metric defined for every instance kind, whereas ordering by GPU Hours
+// leaves every row of a CPU-only fleet tied at zero and therefore arbitrary.
+const DEFAULT_SORT = '-unit_hours';
 
 interface Props {
   groupKey: GroupKey;
@@ -68,7 +76,7 @@ const InstancesBreakdownTable: React.FC<Props> = ({
   const handleTableChange = (_pagination: any, _filters: any, sorter: any) => {
     const s = Array.isArray(sorter) ? sorter[0] : sorter;
     const field = s?.field as Metric;
-    // Cleared (3rd click) or an unsortable column → default GPU Hours desc.
+    // Cleared (3rd click) or an unsortable column → back to DEFAULT_SORT.
     const sort_by =
       !s?.order || !SORTABLE.includes(field)
         ? DEFAULT_SORT
@@ -147,8 +155,14 @@ const InstancesBreakdownTable: React.FC<Props> = ({
 
   return (
     <Table
+      // Instance-type rows are grouped by ``(sku, sku_count)`` and the label
+      // (``gpu_type``) is NOT unique across them: the same type name appears
+      // once per cluster (sku embeds the cluster), and a whole-card row sits
+      // next to a sliced row of the same type. Keying on the label alone yields
+      // duplicate React keys, so rows reuse each other's state. Key on the real
+      // identity, falling back to the label for rows that carry no sku.
       rowKey={(row) =>
-        `${row.gpu_type ?? ''}|${row.instance_id ?? ''}|${row.user_id ?? ''}`
+        `${row.sku ?? row.gpu_type ?? ''}|${row.sku_count ?? ''}|${row.instance_id ?? ''}|${row.user_id ?? ''}`
       }
       dataSource={rows}
       columns={columns as any}

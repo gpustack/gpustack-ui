@@ -39,7 +39,7 @@ import useQueryGpuInstancesBreakdown from './services/use-query-gpu-instances-br
 import InstancesBreakdownTable from './tables/instances-breakdown-table';
 
 type Scope = 'self' | 'all';
-type Metric = 'gpu_hours' | 'instance_hours';
+type Metric = 'unit_hours' | 'gpu_hours' | 'instance_hours';
 type GroupKey = 'gpu_type' | 'instance' | 'user';
 
 // Enterprise-provided extra bottom sub-tab (e.g. the Organization breakdown).
@@ -71,15 +71,23 @@ const GpuInstancesTab: React.FC = () => {
   const access = useAccess();
   const intl = useIntl();
 
+  // The pickable metrics mirror the numeric KPI cards one-for-one, so a card
+  // the user wants a trend for is always in this list. ``Usage`` leads because
+  // it is what the tables sort by — the chart and the table below it should not
+  // rank the fleet differently by default.
   const METRIC_OPTIONS: { value: Metric; label: string }[] = useMemo(
     () => [
+      {
+        value: 'unit_hours',
+        label: intl.formatMessage({ id: 'usage.metric.usage' })
+      },
       {
         value: 'gpu_hours',
         label: intl.formatMessage({ id: 'usage.metric.gpuHours' })
       },
       {
         value: 'instance_hours',
-        label: intl.formatMessage({ id: 'usage.metric.instanceHours' })
+        label: intl.formatMessage({ id: 'usage.metric.runningTime' })
       }
     ],
     [intl]
@@ -128,7 +136,7 @@ const GpuInstancesTab: React.FC = () => {
   );
   const [selectedUserGroups, setSelectedUserGroups] = useState<number[]>([]);
   const [refreshKey, setRefreshKey] = useState(0);
-  const [metric, setMetric] = useState<Metric>('gpu_hours');
+  const [metric, setMetric] = useState<Metric>('unit_hours');
   const [granularity, setGranularity] = useState<Granularity>('day');
   // Optional trend group-by (split the chart into one series per group).
   const [chartGroupBy, setChartGroupBy] = useState<GroupKey | null>(null);
@@ -225,8 +233,27 @@ const GpuInstancesTab: React.FC = () => {
   // KPI summary cards — pull from the chart summary since both queries
   // return the same scope-wide totals.
   const summary = chartData?.summary;
+  // The unit appears exactly once per card: on the value when the label does not
+  // already carry it (``Usage`` / ``Running Time``), and inside the label when it
+  // does (``GPU Hours``). Saying "hours" twice on one card reads as a mistake.
+  const hours = (v?: number) =>
+    `${formatLargeNumber(Math.round((v ?? 0) * 10) / 10)} h`;
   const summaryCards = useMemo(
     () => [
+      {
+        // Leads the row: it is the billed quantity and the only figure here
+        // that counts CPU instances, which a fleet is mostly made of. With GPU
+        // Hours as the headline a CPU-only deployment read ~0 against a table
+        // whose own column summed to hundreds.
+        label: hours(summary?.unit_hours),
+        value: (
+          <MetricLabel
+            text={intl.formatMessage({ id: 'usage.metric.usage' })}
+            tooltip={intl.formatMessage({ id: 'usage.metric.usage.tip' })}
+          />
+        ),
+        color: coolColors[0]
+      },
       {
         label: formatLargeNumber(
           Math.round((summary?.gpu_hours ?? 0) * 10) / 10
@@ -237,31 +264,29 @@ const GpuInstancesTab: React.FC = () => {
             tooltip={intl.formatMessage({ id: 'usage.metric.gpuHours.tip' })}
           />
         ),
-        color: coolColors[0]
+        color: coolColors[1]
       },
       {
-        label: formatLargeNumber(
-          Math.round((summary?.instance_hours ?? 0) * 10) / 10
-        ) as string,
+        label: hours(summary?.instance_hours),
         value: (
           <MetricLabel
-            text={intl.formatMessage({ id: 'usage.metric.instanceHours' })}
+            text={intl.formatMessage({ id: 'usage.metric.runningTime' })}
             tooltip={intl.formatMessage({
-              id: 'usage.metric.instanceHours.tip'
+              id: 'usage.metric.runningTime.tip'
             })}
           />
         ),
-        color: coolColors[1]
+        color: coolColors[2]
       },
       {
         label: (summary?.active_instances ?? 0).toString(),
         value: intl.formatMessage({ id: 'usage.metric.activeInstances' }),
-        color: coolColors[2]
+        color: coolColors[3]
       },
       {
         label: (summary?.active_users ?? 0).toString(),
         value: intl.formatMessage({ id: 'usage.metric.activeUsers' }),
-        color: coolColors[3]
+        color: coolColors[4]
       }
     ],
     [summary, coolColors, intl]

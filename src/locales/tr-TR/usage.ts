@@ -63,7 +63,8 @@ export default {
   'usage.metric.input': 'Girdi',
   'usage.metric.output': 'Çıktı',
   'usage.metric.gpuHours': 'GPU Saati',
-  'usage.metric.instanceHours': 'Örnek Saati',
+  'usage.metric.runningTime': 'Çalışma Süresi',
+  'usage.metric.usage': 'Kullanım',
   'usage.metric.gbDays': 'GB-Gün',
   'usage.metric.gbHours': 'GB-Saat',
   'usage.metric.activeUsers': 'Aktif Kullanıcılar',
@@ -73,8 +74,10 @@ export default {
   'usage.metric.storageTypes': 'Depolama Türleri',
   'usage.metric.gpuHours.tip':
     'Örnek çalışma süresinin GPU sayısına göre ağırlıklandırılmış hali: N GPU kullanan bir örnek H saat çalıştığında N × H GPU-saat olarak sayılır. Her örnek tek bir GPU kullandığında Örnek Saati ile eşittir.',
-  'usage.metric.instanceHours.tip':
-    'Her örneğin kullandığı GPU sayısından bağımsız olarak tüm örneklerin toplam çalışma süresi. 2 saat çalışan bir örnek = 2 örnek-saat.',
+  'usage.metric.runningTime.tip':
+    'Örneğin gerçekte çalıştığı süre; tuttuğu birim sayısından bağımsızdır — iki saat çalışan bir örnek, 1 kart da tutsa 8 kart da tutsa 2 saattir. Kullanım ise bunun birim sayısıyla ağırlıklandırılmış hâlidir.',
+  'usage.metric.usage.tip':
+    'Çalışma süresinin, örneğin tuttuğu faturalama birimi sayısıyla ağırlıklandırılmış hâli: hızlandırılmış örneklerde GPU kartı sayısı, CPU örneklerinde temel flavor birimi sayısı. Hücrede sayının altında bileşimi gösterilir; dönem içinde yeniden boyutlandırılan bir örnek için her boyut ayrı satırda yer alır.',
   'usage.metric.gbDays.tip':
     'Depolama kapasitesinin zamana göre integrali, GB × gün cinsinden: 5 gün boyunca tutulan 10 GB = 50 GB-gün. (= GB-Saat ÷ 24)',
   'usage.metric.gbHours.tip':
@@ -89,6 +92,9 @@ export default {
   'usage.table.users': 'Kullanıcılar',
   'usage.table.type': 'Tür',
   'usage.table.instance': 'Örnek',
+  'usage.table.resized': 'Yeniden boyutlandırıldı',
+  'usage.table.currentShape': 'Geçerli',
+  'usage.table.shapeAndMore': '{shape} ve {count} diğer',
   'usage.table.instanceType': 'Örnek Türü',
   'usage.table.instanceTypes': 'Örnek Türleri',
   'usage.table.instances': 'Örnekler',
@@ -98,7 +104,7 @@ export default {
   // --- Summary tab ---
   'usage.summary.compute': 'Hesaplama',
   'usage.summary.tokensOverTime': 'Zaman içinde Token',
-  'usage.summary.gpuHoursOverTime': 'Zaman içinde GPU Saati',
+  'usage.summary.usageOverTime': 'Zaman içinde kullanım',
   'usage.summary.gbDaysOverTime': 'Zaman içinde GB-Gün',
 
   // --- GPU Instances / Storage filters ---

@@ -1,0 +1,50 @@
+// Utilization column: a row of small circular gauges, plus the per-card
+// breakdown a multi-card gauge shows on hover.
+
+.label {
+  font-size: 12px;
+  line-height: 1.2;
+  color: var(--ant-color-text-tertiary);
+}
+
+.percent {
+  font-size: 12px;
+  color: var(--ant-color-text-secondary);
+}
+
+// One row per accelerator. A CSS grid rather than Row/Col: the tracks size to
+// their content so the bars and the used/total figures line up across rows,
+// which percentage columns cannot do.
+.cardGrid {
+  display: inline-grid;
+  grid-template-columns: auto;
+  column-gap: var(--ant-margin-lg);
+  row-gap: var(--ant-margin-xs);
+}
+
+// Up to 2 cards read fine in one column; beyond that a second column keeps the
+// popover from outgrowing the viewport (4 cards → 2×2, 8 cards → 4×2).
+.cardGridSplit {
+  grid-template-columns: repeat(2, auto);
+}
+
+.cardIndex {
+  min-width: 12px;
+  font-size: 12px;
+  text-align: right;
+  color: var(--ant-color-text-tertiary);
+}
+
+.cardPercent {
+  display: inline-block;
+  min-width: 34px;
+  font-size: 12px;
+  text-align: left;
+  color: var(--ant-color-text-secondary);
+}
+
+.cardFigures {
+  font-size: 11px;
+  white-space: nowrap;
+  color: var(--ant-color-text-tertiary);
+}

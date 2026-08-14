@@ -161,6 +161,15 @@ export const K8SStatuses = [
   InstanceStatusValueMap.Ready
 ];
 
+// Phases whose Pod is running, so the metrics subresource has something to
+// sample. NotReady counts: a container that is thrashing or OOM-looping still
+// burns CPU and RAM, and that is exactly when a user goes looking for the
+// figures — dropping it would blank the gauges at the worst moment.
+export const MetricsPollablePhases = [
+  InstanceStatusValueMap.Ready,
+  InstanceStatusValueMap.NotReady
+];
+
 export const GPUStackFailedStatuses = [
   InstanceStatusValueMap.CreateFailed,
   InstanceStatusValueMap.SSHPublicKeyCreateFailed,

@@ -448,3 +448,41 @@ export interface InstanceMetricsSample {
 export interface InstanceMetrics {
   sample: InstanceMetricsSample;
 }
+
+// =========== Utilization gauges (view model) ===========
+// What the Utilization column renders, derived from a sample by
+// use-query-instance-metrics. Deliberately one step removed from the payload:
+// the gauges are display-shaped (a percent plus the figures behind it), and a
+// key the current sample says nothing about is simply absent, which is what
+// lets the poller keep the previous value.
+
+export type GaugeKey = 'gpu' | 'vram' | 'cpu' | 'memory' | 'storage';
+
+// One accelerator's own figures behind a multi-card gpu/vram gauge. `index` is
+// the card's position in the instance's accelerator list, kept explicitly so a
+// card dropped for unreadable figures doesn't renumber the cards after it.
+export interface AcceleratorGaugeItem {
+  index: number;
+  percent: number;
+  used?: number;
+  total?: number;
+}
+
+// percent: null = no data → the gauge renders "--". used/total carry the exact
+// figures behind it for the hover tooltip, and are absent when the sample
+// cannot account for the whole instance. items holds the per-card breakdown
+// for gpu/vram when the instance holds multiple accelerators.
+export interface GaugeState {
+  percent: number | null;
+  used?: number;
+  total?: number;
+  items?: AcceleratorGaugeItem[];
+}
+
+// Partial by design: a gauge with no entry has never had data (or was reset),
+// and the cell renders it as "--".
+export type GaugeValues = Partial<Record<GaugeKey, GaugeState>>;
+
+// instance id → its gauges. Instances that are no longer polled (stopped,
+// filtered out, on another page) drop out of the map entirely.
+export type InstanceMetricsMap = Record<number, GaugeValues>;

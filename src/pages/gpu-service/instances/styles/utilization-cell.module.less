@@ -1,15 +1,17 @@
-// Utilization column: a row of small circular gauges, plus the per-card
+// Utilization column: a row of small half-ring gauges, plus the per-card
 // breakdown a multi-card gauge shows on hover.
+
+// "This row has no accelerator" — a single dash, in the same muted tone the
+// rest of the table uses for an empty value. Deliberately one dash where a
+// gauge with no sample yet shows two.
+.notApplicable {
+  color: var(--ant-color-text-tertiary);
+}
 
 .label {
   font-size: 12px;
   line-height: 1.2;
   color: var(--ant-color-text-tertiary);
-}
-
-.percent {
-  font-size: 12px;
-  color: var(--ant-color-text-secondary);
 }
 
 // One row per accelerator. A CSS grid rather than Row/Col: the tracks size to

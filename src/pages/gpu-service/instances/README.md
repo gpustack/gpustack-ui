@@ -1,19 +1,21 @@
 # GPU Instances
 
-## Utilization column
+## Utilization columns
 
 Live GPU / VRAM / CPU / RAM / Storage gauges, fed by the operator's Instance `metrics` subresource through the cluster proxy. The figures are **not** part of the list payload and are not carried by the list's watch stream — they are polled separately.
+
+Two columns, not one: the cell border groups the accelerator pair away from the resources every instance has, and every row's CPU gauge lands at the same x, so a busy instance can be found by scanning down. A row whose instance type has no accelerator shows a single `-` in the accelerator column — "not applicable", as distinct from the gauges' `--` for "no sample yet".
 
 ### Where the pieces are
 
 | File | Role |
 | --- | --- |
 | `services/use-query-instance-metrics.ts` | The poller: one loop for the whole page, concurrency gate, batched commit |
-| `components/utilization-cell.tsx` | Pure presentation, memoized — holds no state and issues no request |
+| `components/utilization-cell.tsx` | Pure presentation, memoized — one cell per group, holds no state and issues no request |
 | `apis/index.ts` | `queryGPUServiceInstanceMetrics`: proxy URL, `skipErrorHandler`, timeout |
 | `config/types.ts` | `Gauge*` / `InstanceMetricsMap` view model |
 | `config/index.ts` | `MetricsPollablePhases` — which phases have a Pod worth sampling |
-| `hooks/use-instances-columns.tsx` | Column definition; feeds each row its `values` + `hasAccelerators` |
+| `hooks/use-instances-columns.tsx` | The two column definitions; feed each row its `values` + `hasAccelerators` |
 | `index.tsx` | Owns the `enabled` flag (see "What pauses it") |
 
 **One loop per page, not one per row.** A per-row timer would fire N requests in the same tick — at 100 rows that saturates the browser's connection pool every 15s. Refreshing only a subset per interval was rejected too: at one row per tick a 100-row page takes 25 minutes to come back to the first row, so the column would quietly show minutes-old load. The gate solves the burst without costing freshness.

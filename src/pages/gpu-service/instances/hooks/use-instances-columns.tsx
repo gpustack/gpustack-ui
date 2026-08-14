@@ -272,16 +272,49 @@ const useInstancesColumns = ({
         render: (_text: string, record: ListItem) =>
           renderInstanceType(record, { intl, pvCapacityByName })
       },
+      // Utilization in two columns rather than one: the cell border does the
+      // grouping (accelerator vs the resources every instance has), and every
+      // row's CPU gauge lands at the same x, so a busy instance can be found by
+      // scanning down instead of reading five labels per row.
+      //
+      // Two flat columns, each with its own full title, rather than a grouped
+      // header sharing one "Utilization" across both: a group turns the whole
+      // table's header into two rows (every other column rowSpan=2), which is a
+      // lot of table to restructure — and to unpick — for two columns' benefit.
+      // Each title therefore names its resources, which it has to anyway: "CPU
+      // / RAM / Storage" alone would read as the instance's spec, and the
+      // Instance Type column already shows that.
+      //
+      // No `ellipsis` on either column, unlike the text columns around them: it
+      // would apply to the header too, and truncating a header that names what
+      // it measures (with no title attribute to hover, given showTitle: false)
+      // loses more than it saves. The cells need it even less — the gauges are
+      // fixed-width and the Space holding them does not wrap.
       {
-        title: intl.formatMessage({ id: 'gpuservice.instance.utilization' }),
-        key: 'utilization',
-        ellipsis: {
-          showTitle: false
-        },
-        // Five 50px gauges + spacing, matching the cluster system-load card.
-        width: 380,
+        title: intl.formatMessage({
+          id: 'gpuservice.instance.utilization.accelerator'
+        }),
+        key: 'utilizationAccelerator',
+        // Two 50px gauges + the gap between them, plus cell padding.
+        width: 160,
         render: (_text: string, record: ListItem) => (
           <UtilizationCell
+            group="accelerator"
+            values={metrics[record.id]}
+            hasAccelerators={isAcceleratable(record)}
+          />
+        )
+      },
+      {
+        title: intl.formatMessage({
+          id: 'gpuservice.instance.utilization.basic'
+        }),
+        key: 'utilizationBasic',
+        // Three 50px gauges + two gaps, plus cell padding.
+        width: 230,
+        render: (_text: string, record: ListItem) => (
+          <UtilizationCell
+            group="basic"
             values={metrics[record.id]}
             hasAccelerators={isAcceleratable(record)}
           />

@@ -57,19 +57,10 @@ const EditYamlModal: React.FC<EditYamlModalProps> = ({
 
   // The core-ui YamlEditor creates its monaco model under a fixed path, so a
   // remount reuses the previous model instead of the new `value` prop — push
-  // the intended content imperatively once the editor is up (it initializes
-  // asynchronously, hence the short retry loop).
+  // the intended content imperatively. YamlEditor buffers the call until the
+  // editor is up, so this needs no wait of its own.
   useEffect(() => {
-    let retries = 0;
-    const timer = setInterval(() => {
-      if (editorRef.current?.setValue) {
-        editorRef.current.setValue(content);
-        clearInterval(timer);
-      } else if (++retries >= 40) {
-        clearInterval(timer);
-      }
-    }, 50);
-    return () => clearInterval(timer);
+    editorRef.current?.setValue(content);
   }, []);
 
   const handleOk = () =>

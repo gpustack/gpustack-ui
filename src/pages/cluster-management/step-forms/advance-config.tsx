@@ -1,6 +1,7 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import useUserSettings from '@/hooks/use-user-settings';
+import { json2Yaml } from '@/pages/backends/config';
 import { Input as CInput, IconFont } from '@gpustack/core-ui';
 import { YamlEditor } from '@gpustack/core-ui/yaml-editor';
 import { useIntl } from '@umijs/max';
@@ -60,20 +61,22 @@ const ClusterAdvanceConfig: React.FC<{
   }));
 
   useEffect(() => {
+    const template =
+      provider === ProviderValueMap.Kubernetes
+        ? kubernetesConfig
+        : dockerConfig;
     if (action === PageAction.CREATE) {
-      setFileContent(
-        provider === ProviderValueMap.Kubernetes
-          ? kubernetesConfig
-          : dockerConfig
-      );
+      setFileContent(template);
     } else if (action === PageAction.EDIT) {
+      // `worker_config` is an object on the wire — monaco's `createModel`
+      // only accepts a string, so serialize it the same way ClusterForm does
+      // before it reaches the editor.
       const workerConfig = currentData?.worker_config;
-      const content =
-        workerConfig ||
-        (provider === ProviderValueMap.Kubernetes
-          ? kubernetesConfig
-          : dockerConfig);
-      setFileContent(content as string);
+      setFileContent(
+        workerConfig && Object.keys(workerConfig).length > 0
+          ? json2Yaml(workerConfig)
+          : template
+      );
     }
   }, [provider, action, currentData?.worker_config]);
 

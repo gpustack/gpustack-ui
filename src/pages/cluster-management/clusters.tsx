@@ -90,7 +90,16 @@ const Clusters: React.FC = () => {
   // row action and this self-controlled drawer, owning its own
   // open/close state. OSS just mounts it (nothing without a plugin).
   const AccessDrawer = getGPUStackPlugin()?.clusterDetail?.AccessDrawer;
-  const { watchDataList: allWorkerPoolList } = useWatchList(WORKER_POOLS_API);
+  // Node pools only exist under DigitalOcean — they are what makes a row
+  // expandable (see `setDisableExpand`). On a page of Docker / K8s clusters
+  // the stream would be held open for rows that can never use it, so gate it
+  // on the rows actually on screen.
+  const hasNodePoolCluster = dataSource.dataList?.some(
+    (item) => item.provider === ProviderValueMap.DigitalOcean
+  );
+  const { watchDataList: allWorkerPoolList } = useWatchList(WORKER_POOLS_API, {
+    enabled: hasNodePoolCluster
+  });
   const [expandAtom] = useAtom(expandKeysAtom);
   const [clusterSession, setClusterSession] = useAtom(clusterSessionAtom);
   const { handleExpandChange, handleExpandAll, expandedRowKeys } =
@@ -185,6 +194,20 @@ const Clusters: React.FC = () => {
     });
   };
 
+  // Credentials are the DigitalOcean provider's field only (ClusterForm
+  // renders `CloudProvider` for no other provider), and this modal is the
+  // edit flow — creation runs through ClusterModal, which fetches its own.
+  // So load them when a DigitalOcean row opens the drawer, not on mount.
+  const fetchCredentialList = async () => {
+    const data = await queryCredentialList({ page: -1 });
+    setCredentialList(
+      data?.items?.map((item: CredentialListItem) => ({
+        label: item.name,
+        value: item.id
+      })) || []
+    );
+  };
+
   const handleEditCluster = (row: ListItem) => {
     setOpenAddModal({
       open: true,
@@ -196,6 +219,9 @@ const Clusters: React.FC = () => {
       ),
       provider: row.provider
     });
+    if (row.provider === ProviderValueMap.DigitalOcean) {
+      fetchCredentialList();
+    }
   };
 
   const handleSelect = useMemoizedFn((val: any, row: ListItem, item?: any) => {
@@ -275,18 +301,6 @@ const Clusters: React.FC = () => {
       !allWorkerPoolList.some((item) => item.cluster_id === row.id)
     );
   };
-
-  useEffect(() => {
-    const fetchCredentialList = async () => {
-      const data = await queryCredentialList({ page: -1 });
-      const list = data?.items?.map((item: CredentialListItem) => ({
-        label: item.name,
-        value: item.id
-      }));
-      setCredentialList(list);
-    };
-    fetchCredentialList();
-  }, []);
 
   useEffect(() => {
     if (
@@ -373,7 +387,6 @@ const Clusters: React.FC = () => {
         <FilterBar
           showSelect={false}
           marginBottom={22}
-          marginTop={30}
           widths={{ input: 300 }}
           buttonText={intl.formatMessage({ id: 'clusters.button.add' })}
           rowSelection={rowSelection}

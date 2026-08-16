@@ -123,7 +123,11 @@ const GPUService: React.FC = () => {
   >({});
 
   useEffect(() => {
-    fetchClusterList({ page: -1 });
+    // Only clusters registered for GPU Service (k8s_options.gpu_instance_options
+    // set) are eligible here — a Model Service cluster's capacity is committed
+    // to model deployment, not GPU Instances, so it must never appear in this
+    // picker.
+    fetchClusterList({ page: -1, gpu_instance_enabled: true });
     const fetchPVCapacities = async () => {
       try {
         const res = await queryGPUServiceStorage({ page: -1 } as any);
@@ -141,10 +145,9 @@ const GPUService: React.FC = () => {
     fetchPVCapacities();
   }, []);
 
-  const hasK8sCluster = useMemo(
-    () => clusterList.some((c) => c.provider === ProviderValueMap.Kubernetes),
-    [clusterList]
-  );
+  // gpu_instance_enabled: true already scopes clusterList to GPU Service
+  // clusters, so any cluster present is one this page can use.
+  const hasK8sCluster = useMemo(() => clusterList.length > 0, [clusterList]);
 
   const handleModalOk = async (data: FormData) => {
     try {

@@ -79,7 +79,21 @@ export interface GpuInstanceOptions {
   // The mere presence of `gpuInstanceOptions` on `k8s_options` signals
   // "GPU instances enabled" for the cluster — absence opts the cluster out,
   // so there's no separate boolean flag on the wire.
+  //
+  // Every knob mirrors a GPUStack Operator setting of the same name and is
+  // tri-state: absent (or `null`) means GPUStack does not manage that setting
+  // and the cluster keeps its own value — a different instruction from an
+  // explicit `false`. The backend drops nulls when persisting, so `null` is
+  // how the form says "not managed".
+  //
+  // Keeps its legacy name — renaming it to the operator's
+  // `instance-access-static-address` would break the payload for every
+  // existing client, so the mismatch stays confined to this one field.
   gpuInstancesAccessStaticAddress?: string | null;
+  // Operator `instance-type-derived-from-node` (operator default: true).
+  gpuInstanceTypeDerivedFromNode?: boolean | null;
+  // Operator `instance-type-mixed-on-node` (operator default: true).
+  gpuInstanceTypeMixedOnNode?: boolean | null;
 }
 
 export interface K8sOptions {

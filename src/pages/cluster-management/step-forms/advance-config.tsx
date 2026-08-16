@@ -9,7 +9,7 @@ import { Button, Form } from 'antd';
 import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
 import styled from 'styled-components';
 import {
-  GpuInstancesStaticAddressForm,
+  GpuServiceSettingsForm,
   OperatorImageForm
 } from '../components/k8s-pod-spec';
 import { ProviderType, ProviderValueMap } from '../config';
@@ -115,7 +115,7 @@ const ClusterAdvanceConfig: React.FC<{
       {provider === ProviderValueMap.Kubernetes && (
         <>
           <OperatorImageForm />
-          <GpuInstancesStaticAddressForm />
+          <GpuServiceSettingsForm />
         </>
       )}
       <Title>

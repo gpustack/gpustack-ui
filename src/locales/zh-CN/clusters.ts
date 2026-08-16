@@ -191,5 +191,14 @@ export default {
     '适用于按需分配 GPU 计算资源的场景，例如交互式开发、训练任务或自定义运行环境。',
   'clusters.gpuInstances.staticAddress': 'GPU 服务静态访问地址',
   'clusters.gpuInstances.staticAddress.tip':
-    'Operator 访问该集群 GPU 实例所使用的静态地址（例如 LoadBalancer VIP）。可选。'
+    'Operator 访问该集群 GPU 实例所使用的静态地址（例如 LoadBalancer VIP）。Operator 默认值：留空，此时访问地址由主机 IP 生成。修改后不会改写已部署实例的访问地址，仅对新建的实例生效。',
+  'clusters.gpuInstances.derivedFromNode': '从节点自动推导实例类型',
+  'clusters.gpuInstances.derivedFromNode.tip':
+    'Operator 是否根据节点硬件自动推导实例类型（及其对应的队列）。启用：Operator 为每种节点规格自动创建实例类型。禁用：Operator 仅对齐资源规格，实例类型全部由管理员自行定义。Operator 默认值：启用。',
+  'clusters.gpuInstances.mixedOnNode': '允许节点混合实例类型',
+  'clusters.gpuInstances.mixedOnNode.tip':
+    '同一个节点是否可以同时提供加速型和纯 CPU 实例类型。启用：节点会被归入其所能承载的每一种类型。禁用：带加速卡的节点只产生加速型实例类型，纯 CPU 节点只产生通用实例类型。Operator 默认值：启用。',
+  'clusters.gpuInstances.setting.enabled': '启用',
+  'clusters.gpuInstances.setting.disabled': '禁用',
+  'clusters.gpuInstances.setting.unmanaged': '未托管（沿用集群自身的设置）'
 };

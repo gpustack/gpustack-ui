@@ -241,7 +241,16 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
 
     return (
       <FormContext.Provider
-        value={{ submitAttempted, clusterType, setClusterType }}
+        // `action` is what tells a nested field whether it is registering or
+        // editing; `currentData` only says whether values are present, which in
+        // the wizard is also true for a step the user has merely revisited.
+        value={{
+          action,
+          currentData,
+          submitAttempted,
+          clusterType,
+          setClusterType
+        }}
       >
         <Form
           name="clusterForm"

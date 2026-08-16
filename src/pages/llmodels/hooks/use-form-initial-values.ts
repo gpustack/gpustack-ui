@@ -200,6 +200,12 @@ export const useGenerateWorkerOptions = () => {
       }),
       queryClusterList({
         page: -1,
+        // Exclude clusters that opt in to GPU-instance handling
+        // (k8s_options.gpu_instance_options set) — those are for the
+        // GPU-service flow, not model deployment. This feeds the
+        // deploy-from-model-file cluster picker, so a GPU Service cluster
+        // must not appear here either.
+        gpu_instance_enabled: false,
         // Own-org clusters only. Feeds the deploy-from-model-file cluster
         // picker, which must not offer another org's cluster (e.g. the
         // Default org's "shared with everyone" clusters). The worker

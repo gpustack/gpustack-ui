@@ -39,7 +39,7 @@ export default {
   'noresult.resources.cluster':
     'Kullanılabilir küme yok. Başlamak için bir küme ekleyin.',
   'noresult.resources.k8sCluster':
-    'Kullanılabilir küme yok. Başlamak için bir Kubernetes kümesi ekleyin.',
+    'Kullanılabilir küme yok. Başlamak için GPU Hizmeti için bir Kubernetes kümesi kaydedin.',
   'noresult.resources.worker':
     'Kullanılabilir işçi düğüm yok. Başlamak için bir işçi düğüm ekleyin.',
   'noresult.resources.gotocluster': 'İlk Kümenizi Oluşturun',

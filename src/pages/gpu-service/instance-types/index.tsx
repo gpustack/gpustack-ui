@@ -1,4 +1,3 @@
-import { ProviderValueMap } from '@/pages/cluster-management/config';
 import { useQueryClusterList } from '@/pages/cluster-management/services/use-query-cluster-list';
 import {
   BaseSelect,
@@ -49,25 +48,23 @@ const GPUServiceInstanceTypes: React.FC = () => {
     closeInstanceTypeModal
   } = useCreateInstanceTypeModal();
 
-  // Only Kubernetes clusters own GPU instance types.
-  const k8sClusters = useMemo(
-    () => clusterList.filter((c) => c.provider === ProviderValueMap.Kubernetes),
-    [clusterList]
-  );
-
-  // Fetch the visible clusters, default to the first Kubernetes one, then load
-  // its instance types. Action-driven: subsequent loads fire from the cluster
+  // Fetch the visible clusters, default to the first one, then load its
+  // instance types. Action-driven: subsequent loads fire from the cluster
   // picker / refresh, never from an effect dependency.
   useEffect(() => {
     const init = async () => {
-      const items = await fetchClusterList({ page: -1 });
-      const firstK8s = (items || []).find(
-        (c: any) => c.provider === ProviderValueMap.Kubernetes
-      );
-      if (firstK8s?.id != null) {
-        setClusterId(firstK8s.id);
-        await fetchInstanceTypes(firstK8s.id);
-        startWatch(firstK8s.id);
+      // Only clusters registered for GPU Service (k8s_options.gpu_instance_options
+      // set) are eligible here — a Model Service cluster must never appear in
+      // this picker.
+      const items = await fetchClusterList({
+        page: -1,
+        gpu_instance_enabled: true
+      });
+      const first = (items || [])[0];
+      if (first?.id != null) {
+        setClusterId(first.id);
+        await fetchInstanceTypes(first.id);
+        startWatch(first.id);
       }
       setLoaded(true);
     };
@@ -172,7 +169,7 @@ const GPUServiceInstanceTypes: React.FC = () => {
     return dataList.filter((item) => item.name.toLowerCase().includes(trimmed));
   }, [dataList, keyword]);
 
-  const hasK8sCluster = k8sClusters.length > 0;
+  const hasK8sCluster = clusterList.length > 0;
 
   const renderEmpty = (type?: string) => {
     if (type !== 'Table') return;
@@ -219,7 +216,7 @@ const GPUServiceInstanceTypes: React.FC = () => {
             variant="borderless"
             style={{ minWidth: 160 }}
             popupMatchSelectWidth={false}
-            options={k8sClusters}
+            options={clusterList}
             value={clusterId}
             onChange={handleClusterChange}
           />

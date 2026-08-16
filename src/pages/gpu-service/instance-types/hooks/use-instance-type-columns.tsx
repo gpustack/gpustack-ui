@@ -56,6 +56,42 @@ const buildRowActions = (record: ListItem) => {
   return actions;
 };
 
+// Flavor identity for the column's sort (AC5.2): the same five fields the
+// operator resolves a cluster's Kueue pool by — acceleratable together with
+// acceleratorGroup/generalGroup, os, arch — not the observed status.detail
+// the cell renders below, so rows sharing a flavor sort adjacent even before
+// the operator backfills status.
+//
+// Compared field by field rather than through one JSON.stringify'd string: that
+// spelling sorted the JSON *text*, where `false` lands ahead of `true`
+// (`f` < `t`) and sank every accelerated row below the CPU-only ones. Nor can
+// the fields be joined into a single key — an acceleratorGroup or a product
+// name may contain whichever separator we picked, letting one field's value
+// bleed into the next field's comparison.
+const getFlavorSortFields = (record: ListItem) => [
+  // Accelerated first: this page exists for those rows.
+  record.spec?.acceleratable ? '0' : '1',
+  record.spec?.acceleratorGroup || '',
+  record.spec?.generalGroup || '',
+  record.spec?.os || '',
+  record.spec?.arch || '',
+  // Tiebreak within one flavor, so its rows keep an explicable order rather
+  // than the server's. The cell renders `product`, so that is what it sorts by.
+  record.status?.detail?.product || record.name
+];
+
+const compareByFlavor = (a: ListItem, b: ListItem) => {
+  const left = getFlavorSortFields(a);
+  const right = getFlavorSortFields(b);
+  for (let i = 0; i < left.length; i += 1) {
+    const diff = left[i].localeCompare(right[i]);
+    if (diff !== 0) {
+      return diff;
+    }
+  }
+  return 0;
+};
+
 // Column header with an info tooltip (used for the per-GPU resource columns).
 const TitleWithTip: React.FC<{ title: string; tip: string }> = ({
   title,
@@ -102,6 +138,8 @@ const useInstanceTypeColumns = ({
         dataIndex: ['status', 'detail', 'product'],
         key: 'product',
         ellipsis: { showTitle: false },
+        sorter: compareByFlavor,
+        defaultSortOrder: 'ascend',
         render: (_text: string, record: ListItem) => {
           const detail = record.status?.detail;
           return (

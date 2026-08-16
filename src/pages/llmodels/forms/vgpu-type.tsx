@@ -72,10 +72,43 @@ const getSliceModeFromValues = (selector: any): SliceMode => {
   return 'whole';
 };
 
-// Dropdown option for a GPU type: its display name, over the hardware that
-// tells two types apart at a glance — vendor, VRAM and architecture. The
-// vendor and memory are observed (status.detail), the arch is definitional
-// (spec); any of them can be absent on a type the operator has not backfilled.
+// Flavor identity for GPU Type deduplication (F6): several InstanceTypes can
+// share a flavor (same acceleratable/acceleratorGroup/generalGroup/os/arch)
+// and differ only in unit resources. Deduplication on this key is safe
+// because the model deploy path never reads an instance type's unit
+// resources — gpu_type_selector is translated into the accelerator resource
+// base plus slicing keys only (worker/backends/base.py:605-650), and
+// validation resolves the type by name to read its hardware detail and
+// slicing capability (routes/models.py:493), both properties of the flavor
+// rather than the unit spec. Do not "fix" this back to one option per type.
+const getFlavorKey = (item: InstanceTypeListItem) => {
+  // Every type here is accelerated (the fetch above filters on it), so
+  // acceleratorGroup is what identifies the flavor. Until the operator has
+  // resolved one, grouping on it would collapse every unresolved type into a
+  // single option — unrelated GPUs merged behind one label, with the losers
+  // unselectable and no error anywhere to say why. A type without a group
+  // therefore groups with nothing: a redundant option is recoverable, a GPU
+  // the user cannot deploy to and cannot see is not.
+  if (!item.spec?.acceleratorGroup) {
+    return `name:${item.name}`;
+  }
+  return JSON.stringify([
+    item.spec?.acceleratable,
+    item.spec?.acceleratorGroup,
+    item.spec?.generalGroup,
+    item.spec?.os,
+    item.spec?.arch
+  ]);
+};
+
+// Dropdown option for a GPU type: after dedup (getFlavorKey below) each
+// option represents a flavor, so its headline is the observed hardware
+// product rather than spec.displayName — displayName is free-form
+// per-instance-type text an administrator sets to tell several same-flavor
+// types apart (e.g. by unit size), so it cannot label the flavor once they
+// are collapsed into one option. The vendor and VRAM (observed, status.detail)
+// plus arch (definitional, spec) sit on the line below; any of them can be
+// absent on a type the operator has not backfilled.
 const GPUTypeOption: React.FC<{ item: InstanceTypeListItem }> = ({ item }) => {
   const detail = item.status?.detail;
   const manufacturer = detail?.manufacturer || '';
@@ -87,7 +120,7 @@ const GPUTypeOption: React.FC<{ item: InstanceTypeListItem }> = ({ item }) => {
   return (
     <Flex vertical gap={4} style={{ minWidth: 0, padding: '2px 0' }}>
       <AutoTooltip ghost minWidth={20}>
-        {item.spec?.displayName || item.name}
+        {detail?.product || item.name}
       </AutoTooltip>
       <Flex
         align="center"
@@ -244,16 +277,67 @@ const VGPUTypeForm: React.FC = () => {
   // directly, and neither means a whole card with no controls.
   const showModeSwitch = supportsSliced && supportsPartitioned;
 
-  const typeOptions = useMemo(
-    () =>
-      typeList.map((item) => ({
-        label: item.spec?.displayName || item.name,
-        value: item.name,
-        instanceType: item,
-        disabled: !isTypeRequestable(item)
-      })),
-    [typeList]
-  );
+  // One option per flavor (F6/AC6.1, AC6.3): several instance types sharing a
+  // flavor are indistinguishable for this decision (see getFlavorKey), so
+  // only their representative — the lowest name, chosen deterministically so
+  // the list does not reorder between renders (AC6.2) — becomes an option.
+  // typeList itself stays undeduplicated so a previously-submitted selection
+  // still resolves to its own record above.
+  //
+  // The representative's record is what the mode gating below reads, and two
+  // of those reads are live ledgers rather than flavor properties:
+  // `status.acceleratorSliced.onceMaxRequest` and
+  // `status.acceleratorPartitioned.remainingProfiles`. That is only safe
+  // because the operator computes them per flavor pool, not per type —
+  // measured on a two-card RTX 4090 node carrying two types over one flavor,
+  // both reported onceMaxRequest=100 remaining=200 with one card already
+  // taken by each. It is the operator's behaviour rather than a contract, so
+  // if a type ever reports a ledger of its own, the representative would start
+  // gating its siblings and this dedup would need the max across the group.
+  const typeOptions = useMemo(() => {
+    const byFlavor = new Map<string, InstanceTypeListItem>();
+    typeList.forEach((item) => {
+      const key = getFlavorKey(item);
+      const representative = byFlavor.get(key);
+      if (!representative || item.name < representative.name) {
+        byFlavor.set(key, item);
+      }
+    });
+    const entries = Array.from(byFlavor.values()).map((item) => ({
+      label: item.status?.detail?.product || item.name,
+      value: item.name,
+      instanceType: item,
+      disabled: !isTypeRequestable(item)
+    }));
+
+    // A stored selection is whatever was submitted, which may be a type this
+    // dedup did not pick as its flavor's representative — nothing ever rewrote
+    // those names. Antd falls back to the raw value when no option carries it,
+    // so without this the field of an edit form nobody touched reads as a bare
+    // resource name. Its label leads with displayName, unlike a
+    // representative's: this option sits beside one that already shows the
+    // product name, and displayName is precisely the text an administrator set
+    // to tell same-flavor types apart.
+    if (
+      selectedInstanceType &&
+      !entries.some((entry) => entry.value === selectedInstanceType.name)
+    ) {
+      entries.push({
+        label:
+          selectedInstanceType.spec?.displayName ||
+          selectedInstanceType.status?.detail?.product ||
+          selectedInstanceType.name,
+        value: selectedInstanceType.name,
+        instanceType: selectedInstanceType,
+        disabled: !isTypeRequestable(selectedInstanceType)
+      });
+    }
+
+    // Sorted, not left in Map insertion order: that order is the server's,
+    // so a reordered list would reorder the dropdown even though the
+    // representatives themselves did not change.
+    return entries.sort((a, b) => a.value.localeCompare(b.value));
+  }, [typeList, selectedInstanceType]);
 
   // Single commit path for mode switches (form-patterns): write every
   // mode-specific field together so no stale value from the previous mode

@@ -10,7 +10,7 @@ Three ways a cell says "no figure", and they mean different things:
 
 | Rendering | Meaning |
 | --- | --- |
-| `N/A` | The instance type has no accelerator, so a GPU / VRAM reading does not apply to this row at all |
+| blank | The instance type has no accelerator, so a GPU / VRAM reading does not apply to this row at all — absence rather than a placeholder, because a column of `N/A` reads louder than the gauges beside it |
 | `-` | The row's phase is outside `MetricsPollablePhases` (stopped, stopping, initializing) — nothing is being sampled, so a ring would frame a figure that is never coming |
 | `--` inside a ring | The row IS being polled and has not answered yet |
 
@@ -59,7 +59,7 @@ Three ways a cell says "no figure", and they mean different things:
 | Every gauge shows `--` inside a ring | Row phase is in `MetricsPollablePhases`? `clusterId` / `status.namespace` populated? Subresource 404 (operator < v0.8.2)? |
 | Only some rows show `--` | Those rows' phase / namespace, or their request hitting the 5s timeout |
 | Values frozen | An overlay or bulk confirmation is open, or the tab is in the background — i.e. `enabled` is false |
-| GPU / VRAM show `N/A` | `acceleratable` in the row's persisted type snapshot (`description`) |
+| GPU / VRAM cells are blank | `acceleratable` in the row's persisted type snapshot (`description`) |
 | Multi-card value looks wrong | Some card missing `used`/`total` — the aggregate then falls back to a per-card mean rather than mixing card sets |
 | Too many requests | `CONCURRENCY` / `POLL_INTERVAL`, and whether the page size was raised to 100 |
 | Table feels janky | Commit frequency (`COMMIT_WINDOW`), and whether something broke `UtilizationCell`'s memo by passing an unstable prop |

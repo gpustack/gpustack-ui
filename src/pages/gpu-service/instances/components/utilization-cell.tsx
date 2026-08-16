@@ -100,9 +100,10 @@ const PerCardBars: React.FC<{
  * bar per card.
  *
  * Three ways a cell says "no figure", and they mean different things:
- *   - "N/A": the instance type has no accelerator, so a GPU / VRAM reading does
- *     not apply to this row at all — the same wording the workers table uses for
- *     a resource a row cannot report;
+ *   - blank: the instance type has no accelerator, so a GPU / VRAM reading does
+ *     not apply to this row at all. It reads as absence rather than as a
+ *     placeholder on purpose — a column of "N/A" is louder than the readings
+ *     beside it, and a CPU-only row has nothing to say here;
  *   - a single "-": the row's phase has no Pod behind it (stopped, stopping,
  *     still initializing), so no sample is coming — an empty ring would frame a
  *     reading that will never arrive;
@@ -125,7 +126,7 @@ const UtilizationCell: React.FC<{
   const isAcceleratorGauge = _.includes(AcceleratorGaugeKeys, gaugeKey);
 
   if (isAcceleratorGauge && !hasAccelerators) {
-    return <span className={styles.notApplicable}>N/A</span>;
+    return null;
   }
 
   if (!measurable) {

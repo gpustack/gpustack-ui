@@ -27,6 +27,38 @@ const SLICE_PERCENT_TICKS = [10, 20, 30, 50];
 
 type SliceMode = 'whole' | 'sliced' | 'partitioned';
 
+// Whether a GPU type can still take a request under GPU Allocation = Slicing.
+//
+// Only a type that OFFERS a mode can run out of it. A type offering neither
+// mode is not exhausted, it is simply whole-card: the form forces mode 'whole'
+// for it and submits a 0/0 selector, which is a valid request — so it stays
+// selectable. What gets disabled is the type that offers slicing or
+// partitioning and has nothing left to hand out, where picking it could only
+// end in the "choose another GPU type" notice.
+//
+// The capacity halves read the live per-flavor ledgers, the same ones the
+// selected type's mode gating below reads — capability alone is not enough, a
+// type whose pool is full still declares itself sliceable.
+const isTypeRequestable = (item: InstanceTypeListItem) => {
+  const detail = item.status?.detail?.slicedDetail;
+  const offersSliced = isLogicalSliceable(detail);
+  const offersPartitioned = isPhysicalSliceable(detail);
+  if (!offersSliced && !offersPartitioned) {
+    return true;
+  }
+
+  const slicedLeft =
+    _.toNumber(item.status?.acceleratorSliced?.onceMaxRequest) || 0;
+  const canSlice = offersSliced && slicedLeft > 0;
+  const canPartition =
+    offersPartitioned &&
+    getSelectablePartitionProfilesFromResource(
+      item.status?.acceleratorPartitioned,
+      detail
+    ).length > 0;
+  return canSlice || canPartition;
+};
+
 // Derive the mode from the persisted selector values (edit hydration): a
 // partition profile means partitioned, positive percentages mean sliced,
 // anything else is a whole card.
@@ -217,7 +249,8 @@ const VGPUTypeForm: React.FC = () => {
       typeList.map((item) => ({
         label: item.spec?.displayName || item.name,
         value: item.name,
-        instanceType: item
+        instanceType: item,
+        disabled: !isTypeRequestable(item)
       })),
     [typeList]
   );

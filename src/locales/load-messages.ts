@@ -1,3 +1,4 @@
+import { ensurePluginLocale } from '@/plugins/locale-merger';
 import { getLocale } from '@umijs/max';
 import defaultMessages from './en-US';
 import { registerMessages } from './registry';
@@ -29,13 +30,12 @@ const contexts: Record<string, () => any> = {
 const loaded = new Set<string>(EAGER_LOCALES);
 
 /**
- * Registers `locale`'s messages, fetching its chunk the first time it is asked
- * for. Resolves to whether the language is usable, so a caller can hold off the
- * switch and leave the user on a language they can still read. An unknown locale
- * — `getLocale()` falls back to `navigator.language`, which need not be one we
- * ship — is a no-op, same as before.
+ * Registers the host's own messages for `locale`, fetching its chunk the first
+ * time it is asked for. An unknown locale — `getLocale()` falls back to
+ * `navigator.language`, which need not be one we ship — is a no-op, same as
+ * before.
  */
-export const ensureLocaleMessages = async (locale: string) => {
+const ensureHostMessages = async (locale: string) => {
   if (loaded.has(locale) || !contexts[locale]) {
     return true;
   }
@@ -63,6 +63,26 @@ export const ensureLocaleMessages = async (locale: string) => {
     registerMessages('host', locale, defaultMessages);
     return false;
   }
+};
+
+/**
+ * Both layers of `locale` — the host's pack and, in enterprise builds, the
+ * plugin's — resolved together. Resolves to whether the language is usable, so a
+ * caller can hold off the switch and leave the user on a language they can still
+ * read; either layer failing is enough to hold it back, since a half-translated
+ * screen is what the gate exists to prevent. Concurrently, because the two are
+ * independent chunks.
+ *
+ * At boot the plugin half is still a no-op — the plugin registers after the
+ * render() gate in src/app.tsx — and `mergeEnterpriseLocales` picks it up from
+ * there. By the time a user switches languages, both halves are live.
+ */
+export const ensureLocaleMessages = async (locale: string) => {
+  const [host, plugin] = await Promise.all([
+    ensureHostMessages(locale),
+    ensurePluginLocale(locale)
+  ]);
+  return host && plugin;
 };
 
 export const ensureCurrentLocaleMessages = () =>

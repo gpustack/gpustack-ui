@@ -172,6 +172,34 @@ export const useCheckCompatibility = () => {
     });
   };
 
+  // A slice request is only valid as a pair, and the API is specific about
+  // which halves it accepts (GPUTypeSelector.normalize_slice_percentages):
+  // memory must be 1-100, while cores may be absent — it defaults to 100 —
+  // but not an explicit 0. Anything else is not a smaller request, it is an
+  // unparseable one. So leave a request the API would accept (or a partition
+  // profile) untouched, and reduce the rest to the whole-card pair it
+  // normalizes an all-zero selector to, which costs a half-typed selector
+  // nothing. Leaving an absent cores percentage absent matters: forcing it to
+  // a pair here would evaluate a whole card for a request the API reads as
+  // memory% / 100%.
+  const normalizeSelectorForEvaluate = (selector: any) => {
+    if (selector.accelerator_partitioned_profile) {
+      return selector;
+    }
+    const cores = selector.accelerator_sliced_cores_percentage;
+    const coresSet = cores !== null && cores !== undefined && cores !== '';
+    const memorySliced =
+      _.toNumber(selector.accelerator_sliced_memory_percentage) > 0;
+    if (memorySliced && (!coresSet || _.toNumber(cores) > 0)) {
+      return selector;
+    }
+    return {
+      ...selector,
+      accelerator_sliced_memory_percentage: 0,
+      accelerator_sliced_cores_percentage: 0
+    };
+  };
+
   const handleEvaluate = async (data: any) => {
     try {
       // when no cluster selected, show warning and prompt user to add cluster first
@@ -209,6 +237,22 @@ export const useCheckCompatibility = () => {
                 'manualGpuMode',
                 'scaling_schedule'
               ]),
+              // Same reasoning for the vGPU selector, which the form walks
+              // through an incomplete state on every GPU-type switch: the new
+              // type's capacity may not admit the percentage the previous one
+              // carried, leaving a cores percentage without a memory one,
+              // which the API rejects outright (GpuTypeSelector rejects a
+              // sliced request whose memory percentage is not 1-100). The
+              // whole evaluation would 422 on a half-typed request and surface
+              // as an error toast, so evaluate the equivalent whole-card
+              // request instead.
+              ...(data.gpu_type_selector
+                ? {
+                    gpu_type_selector: normalizeSelectorForEvaluate(
+                      data.gpu_type_selector
+                    )
+                  }
+                : {}),
               categories: Array.isArray(data.categories)
                 ? data.categories
                 : data.categories

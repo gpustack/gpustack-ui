@@ -25,6 +25,7 @@ import {
 } from '../config';
 import {
   InstanceMetricsMap,
+  InstanceServicePort,
   InstanceTypeSnapshotSpec,
   ListItem
 } from '../config/types';
@@ -76,10 +77,20 @@ type ConnectEntry =
       protocol: string;
     };
 
+const isSshPort = (p: InstanceServicePort) =>
+  (p.protocol === 'TCP' && p.port === 22) ||
+  _.includes(_.toLower(p.name), 'ssh');
+
 const getConnectEntries = (record: ListItem): ConnectEntry[] => {
   const ip = record.status?.accessAddresses?.[0];
   const ports = record.status?.ports || [];
   const configPorts = record.spec?.ports || [];
+  // Every instance is created with a tcp/22 port, whether or not SSH was
+  // enabled — that is deliberate, so a public key can be attached later by
+  // updating the instance instead of recreating its Pod. The open port is
+  // therefore not a way in on its own: with no key there is nothing to
+  // authenticate with, so SSH is offered only once a key is actually attached.
+  const hasSshKey = !!record.spec?.sshPublicKeys?.length;
 
   if (!ip) {
     return [];
@@ -87,11 +98,9 @@ const getConnectEntries = (record: ListItem): ConnectEntry[] => {
 
   return ports
     .filter((p) => p.nodePort)
+    .filter((p) => hasSshKey || !isSshPort(p))
     .map<ConnectEntry>((p) => {
-      const isSsh =
-        (p.protocol === 'TCP' && p.port === 22) ||
-        _.includes(_.toLower(p.name), 'ssh');
-      if (isSsh) {
+      if (isSshPort(p)) {
         return {
           type: 'ssh',
           name: 'SSH',

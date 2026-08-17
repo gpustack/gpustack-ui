@@ -1,4 +1,5 @@
 import langConfigMap from '@/locales/lang-config-map';
+import { ensureLocaleMessages } from '@/locales/load-messages';
 import { GlobalOutlined } from '@ant-design/icons';
 import { getAllLocales, setLocale } from '@umijs/max';
 import { Dropdown } from 'antd';
@@ -35,8 +36,14 @@ const LangSelect = () => {
           <span>{get(langConfigMap, [key, 'label'])}</span>
         </span>
       ),
-      onClick: () => {
-        setLocale(key, false);
+      onClick: async () => {
+        // setLocale(..., false) re-renders in place rather than reloading, so the
+        // messages have to be registered before the switch, not after it. Hold the
+        // switch back if the pack could not be fetched — the user then stays on a
+        // language they can read instead of landing on English under a new label.
+        if (await ensureLocaleMessages(key)) {
+          setLocale(key, false);
+        }
       }
     };
   });

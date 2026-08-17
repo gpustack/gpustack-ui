@@ -75,5 +75,32 @@ export default defineConfig([
       'no-prototype-builtins': 'off',
       'no-multiple-empty-lines': ['error', { max: 1, maxEOF: 0, maxBOF: 0 }]
     }
+  },
+  {
+    // `addLocale` is last-write-wins, so two writers racing to register the same
+    // locale silently drop whichever overrides landed first — the failure mode is
+    // a handful of strings reading slightly wrong in one language, which no test
+    // catches. src/locales/registry.ts is the one place allowed to call it; it
+    // recomposes every layer in a fixed precedence so arrival order stops
+    // mattering. Keep it that way.
+    files: ['src/**/*.{ts,tsx}'],
+    ignores: ['src/locales/registry.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: '@umijs/max',
+              importNames: ['addLocale'],
+              message:
+                'Register messages through src/locales/registry.ts instead. ' +
+                'Calling addLocale directly reintroduces the ordering bug where a ' +
+                'late host language pack overwrites the enterprise plugin overrides.'
+            }
+          ]
+        }
+      ]
+    }
   }
 ]);

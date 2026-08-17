@@ -161,7 +161,22 @@ const GPUServiceInstanceTypes: React.FC = () => {
     }
   });
 
-  const columns = useInstanceTypeColumns({ handleSelect });
+  // The operator owns the instance types it derived from a node only while the
+  // cluster's `instance-type-derived-from-node` setting is on. An unset knob
+  // means GPUStack does not manage the setting and the operator keeps its own
+  // default, which is on — so only an explicit `false` releases those types.
+  const derivedFromNodeEnabled = useMemo(() => {
+    const cluster = clusterList.find((item) => item.id === clusterId);
+    return (
+      cluster?.k8s_options?.gpuInstanceOptions
+        ?.gpuInstanceTypeDerivedFromNode !== false
+    );
+  }, [clusterList, clusterId]);
+
+  const columns = useInstanceTypeColumns({
+    handleSelect,
+    derivedFromNodeEnabled
+  });
 
   const filteredList = useMemo(() => {
     const trimmed = keyword.trim().toLowerCase();

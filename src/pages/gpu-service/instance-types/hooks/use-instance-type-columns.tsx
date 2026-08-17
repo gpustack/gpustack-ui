@@ -22,13 +22,18 @@ import { ListItem } from '../config/types';
 
 interface ColumnsHookProps {
   handleSelect: (val: string, record: ListItem) => void;
+  // Whether the cluster still derives instance types from its nodes. While it
+  // does, the operator re-creates a derived type as soon as it is deleted, so
+  // those rows offer no delete rather than one that cannot stick. Turning the
+  // setting off hands them back to the admin, delete included.
+  derivedFromNodeEnabled: boolean;
 }
 
 // DropdownButtons reads `locale` / `props` at runtime; its `items` prop is
 // typed as antd's MenuProps['items'], so cast the config to satisfy it. The
 // activate / deactivate action is chosen from the row's current phase: Active
 // types can be deactivated, Inactive ones activated (none while Preparing).
-const buildRowActions = (record: ListItem) => {
+const buildRowActions = (record: ListItem, derivedFromNodeEnabled: boolean) => {
   const phase = record.status?.phase;
   const actions: any[] = [];
   if (phase === InstanceTypePhaseValueMap.Active) {
@@ -51,6 +56,7 @@ const buildRowActions = (record: ListItem) => {
     key: 'delete',
     locale: true,
     icon: icons.DeleteOutlined,
+    disabled: derivedFromNodeEnabled && !!record.derivedFromNode,
     props: { danger: true }
   });
   return actions;
@@ -108,7 +114,8 @@ const TitleWithTip: React.FC<{ title: string; tip: string }> = ({
 );
 
 const useInstanceTypeColumns = ({
-  handleSelect
+  handleSelect,
+  derivedFromNodeEnabled
 }: ColumnsHookProps): ColumnsType<ListItem> => {
   const intl = useIntl();
 
@@ -258,13 +265,13 @@ const useInstanceTypeColumns = ({
         ellipsis: { showTitle: false },
         render: (_text, record: ListItem) => (
           <DropdownButtons
-            items={buildRowActions(record)}
+            items={buildRowActions(record, derivedFromNodeEnabled)}
             onSelect={(val: string) => handleSelect(val, record)}
           />
         )
       }
     ];
-  }, [handleSelect, intl]);
+  }, [handleSelect, derivedFromNodeEnabled, intl]);
 };
 
 export default useInstanceTypeColumns;

@@ -41,6 +41,11 @@ export interface InstanceTypeStatus {
 // Row shape for the management list (GET /gpu-instance-types).
 export interface ListItem {
   name: string;
+  // Hoisted by the backend out of the CR's `schedule.gpustack.ai/derived-from-node`
+  // label: the operator derived this type from a node instead of an admin
+  // creating it, so while the cluster derives types from nodes the operator
+  // owns its existence and re-creates it the moment it is deleted.
+  derivedFromNode?: boolean;
   spec: InstanceTypeSpec;
   status?: InstanceTypeStatus;
 }

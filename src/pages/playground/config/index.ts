@@ -19,9 +19,6 @@ export const playGroundRoles = [
   }
 ];
 
-export const acceptType =
-  '.txt, .doc, .docx, .xls, .xlsx, .csv, .md, .pdf, .eml, .msg, .ppt, .pptx, .xml, .html';
-
 export const formatMessageParams = (messageList: any[]) => {
   const result: any[] = [];
 

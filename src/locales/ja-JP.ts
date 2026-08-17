@@ -1,19 +1,12 @@
 /**
- * @description The directory name used in require.context must match the language configuration names defined in lang-config-map.ts.
- * @example Directories like 'en-US' or 'zh-CN' should correspond exactly to the configuration names in lang-config-map.ts.
+ * Deliberately empty. Umi's locale plugin statically imports this barrel into the
+ * entry chunk, so the require.context merge that used to live here is what put
+ * every language's translations on the first paint. The messages are registered
+ * at runtime instead — see ./load-messages.ts.
+ *
+ * The file still has to exist, and still has to default-export an object: Umi
+ * needs it to register the locale (so it keeps appearing in `getAllLocales()`,
+ * and keeps its antd locale and momentLocale), and `pnpm check:locales` requires
+ * a `{lang}.ts` beside every `{lang}/`.
  */
-
-// @ts-ignore
-const requireContext = require.context(`./ja-JP`, false, /\.ts$/);
-
-let languageConfig: Record<string, string> = {};
-
-requireContext.keys().forEach((fileName: any) => {
-  const moduleConfig = requireContext(fileName).default;
-  languageConfig = {
-    ...languageConfig,
-    ...moduleConfig
-  };
-});
-
-export default languageConfig;
+export default {};

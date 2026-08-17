@@ -1,5 +1,6 @@
 import useUserSettings from '@/hooks/use-user-settings';
 import langConfigMap from '@/locales/lang-config-map';
+import { ensureLocaleMessages } from '@/locales/load-messages';
 import { CheckCircleFilled } from '@ant-design/icons';
 import { BaseSelect } from '@gpustack/core-ui';
 import { getAllLocales, setLocale, useIntl } from '@umijs/max';
@@ -137,8 +138,13 @@ const Appearance: React.FC = () => {
           <BaseSelect
             value={intl.locale}
             options={languageOptions}
-            onChange={(value: string) => {
-              setLocale(value, false);
+            onChange={async (value: string) => {
+              // Same as the header's language menu: the messages have to be
+              // registered before setLocale re-renders in place, and a pack that
+              // failed to fetch leaves the current language alone.
+              if (await ensureLocaleMessages(value)) {
+                setLocale(value, false);
+              }
             }}
             style={{ width: 200 }}
           />

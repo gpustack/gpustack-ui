@@ -4,6 +4,7 @@ import { setAtomStorage } from '@/atoms/utils';
 import { DEFAULT_ENTER_PAGE, GPUSTACK_API_BASE_URL } from '@/config/settings';
 import { COLOR_PRIMARY } from '@/config/theme/constants';
 import ErrorBoundary from '@/layouts/error-boundary';
+import { ensureCurrentLocaleMessages } from '@/locales/load-messages';
 import { getGPUStackPlugin } from '@/plugins';
 import { enterprisePluginReady } from '@/plugins/enterprise-ready';
 import { GPUStackPluginManager } from '@/plugins/manager';
@@ -193,6 +194,17 @@ export const request: RequestConfig = {
   baseURL: `/${GPUSTACK_API_BASE_URL}`,
   ...requestConfig
 };
+
+export function render(oldRender: () => void) {
+  // ja-JP / ru-RU / tr-TR messages live in async chunks (src/locales/load-messages.ts),
+  // so the active one has to be registered before the tree mounts — otherwise the
+  // first paint renders raw message keys and then swaps them out. en-US and zh-CN
+  // are still bundled, so those two resolve without touching the network and mount
+  // as immediately as they did before. finally(), not then(): ensureCurrentLocaleMessages
+  // already falls back to the bundled English copy on a failed fetch, and the app
+  // has to start regardless.
+  ensureCurrentLocaleMessages().finally(oldRender);
+}
 
 export function rootContainer(container: React.ReactNode) {
   // `ErrorBoundary` is also handed to ProLayout (src/layouts/index.tsx), but that only

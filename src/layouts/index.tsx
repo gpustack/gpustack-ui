@@ -352,7 +352,17 @@ export default (props: any) => {
           ConfigProvider. Without it a Modal.confirm renders with the default
           algorithm and locale -- a light dialog with an untranslated "Cancel"
           while the app is in dark mode. ``component={false}`` keeps it from
-          adding a DOM node that would change the layout. */}
+          adding a DOM node that would change the layout.
+
+          antd 6 turns cssVar on by default, and App warns whenever cssVar meets
+          ``component={false}``: with no DOM node, its cssVar class has nothing to
+          attach to. Known and harmless here -- the class would only have carried
+          App's own base style (color / fontSize / lineHeight / fontFamily, all of
+          which body already provides), while message / modal / notification each
+          attach their own. The warning is dev-only; devUseWarning is a noop in
+          production builds. Left as is deliberately: switching to the default
+          "div" would reintroduce the layout-changing node this prop exists to
+          avoid, and would need the height chain rebuilt for ProLayout. */}
       <App component={false}>
         <CoreUIProvider
           config={{

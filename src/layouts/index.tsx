@@ -49,7 +49,6 @@ import './Layout.css';
 import { LogoIcon, SLogoIcon } from './Logo';
 import ErrorBoundary from './error-boundary';
 import { ExtraContent } from './extraRender';
-import { patchRoutes } from './runtime';
 import SiderMenu from './sider-menu';
 
 const CHECK_RESOURCE_PATH = [
@@ -244,10 +243,6 @@ export default (props: any) => {
   const role = initialState?.currentUser?.is_admin ? 'admin' : 'user';
   const [route] = useAccessMarkedRoutes(mapRoutes(newRoutes, role));
   console.log('route++++++++', route, clientRoutes);
-  patchRoutes({
-    routes: route.children,
-    initialState: initialInfo.initialState
-  });
 
   const matchedRoute = useMemo(
     () => matchRoutes(route?.children || [], location.pathname)?.pop?.()?.route,

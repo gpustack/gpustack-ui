@@ -313,5 +313,48 @@ export default {
   'common.max': 'Max {count}',
   'common.max.count': '{label} Count',
   'common.validate.group': 'Please complete the {group} configuration',
-  'common.preferences': 'Preferences'
+  'common.preferences': 'Preferences',
+  // Shared by the source config drawer (src/pages/_components/source-config)
+  'common.source.manage': 'Manage Sources',
+  'common.source.type.builtin': 'Embedded',
+  'common.source.type.builtin.desc':
+    'Serves only what this release was packaged with, with no network access.',
+  'common.source.type.url': 'URL',
+  'common.source.type.url.desc': 'Fetched by the server, can auto-update.',
+  'common.source.type.file': 'Yaml File',
+  'common.source.type.file.desc':
+    'Paste the content directly; never auto-updates.',
+  'common.source.url': 'Source URL',
+  'common.source.url.scheme': 'The URL must start with http:// or https://',
+  'common.source.url.credentials': 'The URL must not embed credentials',
+  'common.source.url.host': 'The URL must include a host',
+  'common.source.content': 'Content',
+  'common.source.content.hint':
+    'Paste the YAML here, or import a file to load it into the editor. Only this text is sent — the server keeps no file.',
+  'common.source.save': 'Save',
+  'common.source.sync.unchanged': 'The remote content has not changed.',
+  'common.source.lastSync': 'Content taken at {time}',
+  'common.source.tag.custom': 'Custom',
+  'common.source.tag.official': 'Official',
+  'common.source.empty.hint':
+    'Your own URL replaces the official source entirely.',
+  'common.source.empty.hint.file':
+    'Leave the content empty to follow the official source — {description}',
+  'common.source.reset': 'Reset to Official Source',
+  'common.source.reset.tip':
+    'Follow the official source again, applied when you save — {description}',
+  'common.source.autoUpdate': 'Auto-update',
+  'common.source.autoUpdate.interval': 'Update Interval (hours)',
+  'common.source.autoUpdate.official.tip':
+    'How often to check the official OTA server for new content. Off leaves the stored content in place until you sync it yourself.',
+  'common.source.autoUpdate.custom.tip':
+    'How often to re-fetch your URL. Off leaves your source untouched until you save or reload it.',
+  'common.source.lastUpdated': 'Last updated {time}',
+  'common.source.official.link': 'Official File',
+  'common.source.sync.official': 'Update Now',
+  'common.source.sync.custom': 'Update Now',
+  'common.source.sync.hint.dirty':
+    'Save first — Save writes the new URL and fetches it. Update Now only re-pulls the URL already saved.',
+  'common.source.load.failed':
+    'Could not read the stored configuration, so there is nothing here to save. Close and reopen to try again.'
 };

@@ -301,5 +301,43 @@ export default {
   'common.max': '最大 {count}',
   'common.max.count': '{label} 数量',
   'common.validate.group': '请填写完整的{group}配置',
-  'common.preferences': '偏好设置'
+  'common.preferences': '偏好设置',
+  // Shared by the source config drawer (src/pages/_components/source-config)
+  'common.source.manage': '管理来源',
+  'common.source.type.builtin': '内嵌',
+  'common.source.type.builtin.desc': '只用随本版本打包的内容，不访问网络。',
+  'common.source.type.url': 'URL',
+  'common.source.type.url.desc': '由服务端定期拉取，可自动更新。',
+  'common.source.type.file': 'Yaml 文件',
+  'common.source.type.file.desc': '直接粘贴内容，不会自动更新。',
+  'common.source.url': '来源 URL',
+  'common.source.url.scheme': 'URL 必须以 http:// 或 https:// 开头',
+  'common.source.url.credentials': 'URL 中不能包含凭据',
+  'common.source.url.host': 'URL 必须包含主机名',
+  'common.source.content': '内容',
+  'common.source.content.hint':
+    '在此粘贴 YAML，或导入文件将其载入编辑器。只有这段文本会被提交，服务端不保存文件。',
+  'common.source.save': '保存',
+  'common.source.sync.unchanged': '远端内容没有变化。',
+  'common.source.lastSync': '内容取自 {time}',
+  'common.source.tag.custom': '自定义',
+  'common.source.tag.official': '官方',
+  'common.source.empty.hint': '填入你自己的 URL 会完整替换官方来源。',
+  'common.source.empty.hint.file': '内容留空则使用官方来源——{description}',
+  'common.source.reset': '重置为官方来源',
+  'common.source.reset.tip': '改回官方来源（保存后生效）——{description}',
+  'common.source.autoUpdate': '自动更新',
+  'common.source.autoUpdate.interval': '更新间隔（小时）',
+  'common.source.autoUpdate.official.tip':
+    '多久检查一次官方 OTA 服务器是否有新内容。关闭后已存内容保持不变，直到你手动同步。',
+  'common.source.autoUpdate.custom.tip':
+    '多久重新拉取一次你的 URL。关闭后你的来源保持不变，直到你保存或重新拉取。',
+  'common.source.lastUpdated': '上次更新 {time}',
+  'common.source.official.link': '官方文件',
+  'common.source.sync.official': '立即更新',
+  'common.source.sync.custom': '立即更新',
+  'common.source.sync.hint.dirty':
+    '请先保存——保存会写入新 URL 并拉取它。立即更新只会重新拉取已保存的 URL。',
+  'common.source.load.failed':
+    '无法读取已保存的配置，因此这里没有可保存的内容。请关闭后重新打开重试。'
 };

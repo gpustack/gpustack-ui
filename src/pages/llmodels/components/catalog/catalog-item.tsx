@@ -1,5 +1,6 @@
 import fallbackImg from '@/assets/images/img.png';
 import { categoryConfig } from '@/pages/_components/model-tag';
+import { isCustomSourceType } from '@/pages/_components/source-config/config';
 import { AutoTooltip, IconFont, ThemeTag } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Typography } from 'antd';
@@ -68,6 +69,16 @@ const CatalogItem: React.FC<CatalogItemProps> = (props) => {
             />
           </div>
           <AutoTooltip ghost>{data.name}</AutoTooltip>
+          {/* platform-owned entries (builtin / official) carry no badge */}
+          {isCustomSourceType(data.source_type) && (
+            <ThemeTag
+              color="purple"
+              opacity={0.7}
+              style={{ flex: 'none', marginInline: 'auto 0' }}
+            >
+              {intl.formatMessage({ id: 'common.source.tag.custom' })}
+            </ThemeTag>
+          )}
         </div>
       </div>
       <div className="item-footer">

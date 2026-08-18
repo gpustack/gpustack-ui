@@ -285,6 +285,10 @@ export interface CatalogItem {
   activated_size: number;
   licenses: string[];
   release_date: string;
+  // Which source materialized this entry. Absent / builtin / official all mean
+  // platform-owned content, which carries no badge.
+  source_name?: string;
+  source_type?: string;
 }
 
 export interface CatalogSpec {
@@ -425,6 +429,10 @@ export interface BackendOption {
   enabled: boolean;
   common_parameters?: string[];
   parameter_format?: 'space' | 'equal' | null;
+  // Which managed source produced the entry — null for the packaged content and
+  // for anything a user added by hand, neither of which carries a badge.
+  source_name?: string;
+  source_type?: string;
   versions: {
     label: string;
     value: string;
@@ -466,6 +474,8 @@ export interface BackendItem {
   enabled: boolean;
   common_parameters?: string[];
   parameter_format?: 'space' | 'equal' | null;
+  source_name?: string;
+  source_type?: string;
   versions: {
     version: string;
     env?: Record<string, any>;

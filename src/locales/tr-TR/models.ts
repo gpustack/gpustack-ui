@@ -363,7 +363,11 @@ export default {
   'models.form.lora.select': 'Select LoRA',
   'models.form.lora.name': 'LoRA name',
   'models.form.lora.rule.empty': 'Input cannot be empty',
-  'models.form.lora.rule.duplicate': 'LoRA name cannot be duplicated'
+  'models.form.lora.rule.duplicate': 'LoRA name cannot be duplicated',
+  // Model catalog source configuration
+  'models.catalog.source.title': 'Katalog Kaynağı',
+  'models.catalog.source.official':
+    'Follows the catalog GPUStack publishes, on top of the one packaged with this release.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

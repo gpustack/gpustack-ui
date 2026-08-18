@@ -317,3 +317,30 @@ version_configs:
     custom_framework: rocm
     env:
   `;
+
+// Schema hint seeded into the community backend source editor. Mirrors the
+// packaged community-inference-backends.yaml: a list of backend configs, each
+// keyed by backend_name with at least one version_configs entry carrying an
+// image_name. Comments only, so it cannot be saved unedited.
+export const backendSourceTemplate = `# A YAML list of community backend configs.
+#
+# Required per entry:
+#   backend_name     unique name of the backend
+#   version_configs  map of version name -> config, each with an image_name
+#
+# Example:
+#
+# - backend_name: Kokoro-FastAPI
+#   description: Inference backend serving the Kokoro TTS model.
+#   # icon must be an absolute URL, a '/'-rooted path, or a raster data: URI
+#   icon: https://example.com/icons/kokoro.png
+#   health_check_path: /health
+#   default_version: latest-gpu
+#   version_configs:
+#     latest-gpu:
+#       image_name: ghcr.io/remsky/kokoro-fastapi-gpu:latest
+#       custom_framework: cuda
+#     latest-cpu:
+#       image_name: ghcr.io/remsky/kokoro-fastapi-cpu:latest
+#       custom_framework: cpu
+`;

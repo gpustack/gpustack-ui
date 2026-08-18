@@ -501,3 +501,37 @@ export enum DeployFormKeyMap {
   DEPLOYMENT = 'deployment',
   CATALOG = 'catalog'
 }
+
+// Schema hint seeded into the catalog source editor. Mirrors the packaged
+// model-catalog.yaml: a mapping with model_sets (and optionally draft_models),
+// each model set carrying at least one spec. Comments only, so it cannot be
+// saved unedited.
+export const catalogSourceTemplate = `# A YAML mapping with model_sets (and optionally draft_models).
+#
+# Example:
+#
+# model_sets:
+#   - name: Qwen3-0.6B
+#     description: Dense causal language model with a 128K context.
+#     home: https://qwenlm.github.io
+#     # icon must be an absolute URL, a '/'-rooted path, or a raster data: URI
+#     icon: https://example.com/icons/qwen.png
+#     size: 0.6
+#     categories:
+#       - llm
+#     capabilities:
+#       - context/128K
+#       - tools
+#     licenses:
+#       - apache-2.0
+#     release_date: "2025-04-19"
+#     specs:
+#       - mode: standard
+#         quantization: BF16
+#         source: huggingface
+#         huggingface_repo_id: Qwen/Qwen3-0.6B
+#         backend: vLLM
+#         backend_parameters:
+#           - --max-model-len=8192
+# draft_models: []
+`;

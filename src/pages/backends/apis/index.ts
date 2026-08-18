@@ -52,3 +52,6 @@ export async function updateBackendFromYAML(
     data: params.data
   });
 }
+
+// Both kinds of backend content are configured through the shared OTA source
+// endpoints — see `@/pages/_components/source-config/apis`.

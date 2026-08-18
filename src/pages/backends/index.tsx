@@ -24,6 +24,7 @@ import {
 import AddCommunityModal from './community/add-community-modal';
 import AddModal from './components/add-modal';
 import BackendCardList from './components/backend-list';
+import RightActions from './components/right-actions';
 import VersionInfoModal from './components/version-info-modal';
 import {
   backendSourceOptions,
@@ -41,7 +42,6 @@ const BackendList = () => {
 
   const {
     dataSource,
-    rowSelection,
     queryParams,
     modalRef,
     handleQueryChange,
@@ -249,21 +249,27 @@ const BackendList = () => {
         widths={{
           input: 230
         }}
-        actionItems={addActions}
-        actionType="dropdown"
         inputHolder={intl.formatMessage({ id: 'common.filter.name' })}
         selectHolder={intl.formatMessage({ id: 'backend.filter.source' })}
-        buttonText={intl.formatMessage({ id: 'backend.button.add' })}
-        handleClickPrimary={handleAddBackend}
         handleSearch={handleRefresh}
         handleSelectChange={handleFilterBySource}
         handleInputChange={handleNameChange}
-        rowSelection={rowSelection}
         showSelect={true}
         selectOptions={backendSourceOptions.map((item) => ({
           label: intl.formatMessage({ id: item.label }),
           value: item.value
         }))}
+        // Replaces the default right side wholesale, so the props that would
+        // have built it (`actionItems` / `actionType` / `buttonText` /
+        // `handleClickPrimary`, and `rowSelection`, which only drove its batch
+        // delete) have no effect and are not passed.
+        right={
+          <RightActions
+            actionItems={addActions}
+            handleClickPrimary={handleAddBackend}
+            onSourceSaved={handleSearch}
+          ></RightActions>
+        }
       ></FilterBar>
       <InfiniteScrollerProvider
         value={{

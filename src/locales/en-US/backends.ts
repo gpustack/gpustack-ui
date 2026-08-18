@@ -55,5 +55,13 @@ export default {
   'backend.add.community': 'Community',
   'backend.community.title': 'Community Backend Marketplace',
   'backend.form.add.hint':
-    'To use a different version of a built-in backend (e.g., vLLM, SGLang, MindIE), please add a new version to the existing backend instead of adding a custom backend.'
+    'To use a different version of a built-in backend (e.g., vLLM, SGLang, MindIE), please add a new version to the existing backend instead of adding a custom backend.',
+  // Backend source configuration (built-in backend versions + community library)
+  'backend.source.title': 'Backend Source',
+  'backend.source.builtin.title': 'Built-in backend source',
+  'backend.source.builtin.official':
+    'Follows the image versions GPUStack publishes for the built-in backends (vLLM, SGLang, MindIE, VoxBox).',
+  'backend.source.community.title': 'Community backend source',
+  'backend.source.community.official':
+    'Follows the community backend list GPUStack publishes, on top of the one packaged with this release.'
 };

@@ -312,7 +312,51 @@ export default {
   'common.max': '最大 {count}',
   'common.max.count': '{label} 数',
   'common.validate.group': 'Please complete the {group} configuration',
-  'common.preferences': 'Preferences'
+  'common.preferences': 'Preferences',
+  // Shared by the single-slot source config drawer (src/pages/_components/source-config)
+  'common.source.manage': 'ソースの管理',
+  'common.source.type.builtin': 'Embedded',
+  'common.source.type.builtin.desc':
+    'Serves only what this release was packaged with, with no network access.',
+  'common.source.type.url': 'URL',
+  'common.source.type.url.desc': 'Fetched by the server, can auto-update.',
+  'common.source.type.file': 'Yaml ファイル',
+  'common.source.type.file.desc':
+    'Paste the content directly; never auto-updates.',
+  'common.source.url': 'ソース URL',
+  'common.source.url.scheme':
+    'URL は http:// または https:// で始まる必要があります',
+  'common.source.url.credentials': 'URL に認証情報を含めることはできません',
+  'common.source.url.host': 'URL にホスト名を含める必要があります',
+  'common.source.content': '内容',
+  'common.source.content.hint':
+    'ここに YAML を貼り付けるか、ファイルをインポートしてエディターに読み込んでください。送信されるのはこのテキストのみで、サーバーはファイルを保持しません。',
+  'common.source.save': '保存して同期',
+  'common.source.sync.unchanged': 'リモートの内容に変更はありません。',
+  'common.source.lastSync': '内容の取得時刻: {time}',
+  'common.source.tag.custom': 'カスタム',
+  'common.source.tag.official': 'Official',
+  'common.source.empty.hint':
+    'Your own URL replaces the official source entirely.',
+  'common.source.empty.hint.file':
+    'Leave the content empty to follow the official source — {description}',
+  'common.source.reset': 'Reset to Official Source',
+  'common.source.reset.tip':
+    'Follow the official source again, applied when you save — {description}',
+  'common.source.autoUpdate': 'Auto-update',
+  'common.source.autoUpdate.interval': 'Update Interval (hours)',
+  'common.source.autoUpdate.official.tip':
+    'How often to check the official OTA server for new content. Off leaves the stored content in place until you sync it yourself.',
+  'common.source.autoUpdate.custom.tip':
+    'How often to re-fetch your URL. Off leaves your source untouched until you save or reload it.',
+  'common.source.lastUpdated': 'Last updated {time}',
+  'common.source.official.link': 'Official File',
+  'common.source.sync.official': 'Update Now',
+  'common.source.sync.custom': 'Update Now',
+  'common.source.sync.hint.dirty':
+    'Save first — Save writes the new URL and fetches it. Update Now only re-pulls the URL already saved.',
+  'common.source.load.failed':
+    'Could not read the stored configuration, so there is nothing here to save. Close and reopen to try again.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

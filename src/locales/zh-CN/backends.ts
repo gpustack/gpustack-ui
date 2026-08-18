@@ -51,5 +51,13 @@ export default {
   'backend.add.community': '社区',
   'backend.community.title': '社区后端市场',
   'backend.form.add.hint':
-    '如果需要使用内置后端（如 vLLM、SGLang、MindIE）的其他版本，请在对应后端中添加新版本，而不是添加自定义后端。'
+    '如果需要使用内置后端（如 vLLM、SGLang、MindIE）的其他版本，请在对应后端中添加新版本，而不是添加自定义后端。',
+  // Backend source configuration (built-in backend versions + community library)
+  'backend.source.title': '后端来源',
+  'backend.source.builtin.title': '内置后端来源',
+  'backend.source.builtin.official':
+    '跟随 GPUStack 发布的内置后端（vLLM、SGLang、MindIE、VoxBox）镜像版本。',
+  'backend.source.community.title': '社区后端来源',
+  'backend.source.community.official':
+    '在随本版本打包的社区后端清单之上，跟随 GPUStack 发布的官方清单。'
 };

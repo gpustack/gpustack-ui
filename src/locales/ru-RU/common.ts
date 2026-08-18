@@ -311,7 +311,51 @@ export default {
   'common.max': 'Макс. {count}',
   'common.max.count': 'Количество {label}',
   'common.validate.group': 'Please complete the {group} configuration',
-  'common.preferences': 'Preferences'
+  'common.preferences': 'Preferences',
+  // Shared by the single-slot source config drawer (src/pages/_components/source-config)
+  'common.source.manage': 'Управление источниками',
+  'common.source.type.builtin': 'Embedded',
+  'common.source.type.builtin.desc':
+    'Serves only what this release was packaged with, with no network access.',
+  'common.source.type.url': 'URL',
+  'common.source.type.url.desc': 'Fetched by the server, can auto-update.',
+  'common.source.type.file': 'Файл Yaml',
+  'common.source.type.file.desc':
+    'Paste the content directly; never auto-updates.',
+  'common.source.url': 'URL источника',
+  'common.source.url.scheme': 'URL должен начинаться с http:// или https://',
+  'common.source.url.credentials': 'URL не должен содержать учётные данные',
+  'common.source.url.host': 'URL должен содержать имя хоста',
+  'common.source.content': 'Содержимое',
+  'common.source.content.hint':
+    'Вставьте YAML здесь или импортируйте файл, чтобы загрузить его в редактор. Отправляется только этот текст — сервер не хранит файл.',
+  'common.source.save': 'Сохранить и синхронизировать',
+  'common.source.sync.unchanged':
+    'Содержимое на удалённой стороне не изменилось.',
+  'common.source.lastSync': 'Содержимое получено: {time}',
+  'common.source.tag.custom': 'Пользовательский',
+  'common.source.tag.official': 'Official',
+  'common.source.empty.hint':
+    'Your own URL replaces the official source entirely.',
+  'common.source.empty.hint.file':
+    'Leave the content empty to follow the official source — {description}',
+  'common.source.reset': 'Reset to Official Source',
+  'common.source.reset.tip':
+    'Follow the official source again, applied when you save — {description}',
+  'common.source.autoUpdate': 'Auto-update',
+  'common.source.autoUpdate.interval': 'Update Interval (hours)',
+  'common.source.autoUpdate.official.tip':
+    'How often to check the official OTA server for new content. Off leaves the stored content in place until you sync it yourself.',
+  'common.source.autoUpdate.custom.tip':
+    'How often to re-fetch your URL. Off leaves your source untouched until you save or reload it.',
+  'common.source.lastUpdated': 'Last updated {time}',
+  'common.source.official.link': 'Official File',
+  'common.source.sync.official': 'Update Now',
+  'common.source.sync.custom': 'Update Now',
+  'common.source.sync.hint.dirty':
+    'Save first — Save writes the new URL and fetches it. Update Now only re-pulls the URL already saved.',
+  'common.source.load.failed':
+    'Could not read the stored configuration, so there is nothing here to save. Close and reopen to try again.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

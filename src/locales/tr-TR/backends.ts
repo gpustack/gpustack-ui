@@ -54,5 +54,13 @@ export default {
   'backend.add.community': 'Topluluk',
   'backend.community.title': 'Topluluk Altyapı Pazaryeri',
   'backend.form.add.hint':
-    'Yerleşik bir altyapının (örn., vLLM, SGLang, MindIE) farklı sürümünü kullanmak için özel altyapı eklemek yerine mevcut altyapıya yeni sürüm ekleyin.'
+    'Yerleşik bir altyapının (örn., vLLM, SGLang, MindIE) farklı sürümünü kullanmak için özel altyapı eklemek yerine mevcut altyapıya yeni sürüm ekleyin.',
+  // Backend source configuration (built-in backend versions + community library)
+  'backend.source.title': 'Altyapı Kaynağı',
+  'backend.source.builtin.title': 'Built-in backend source',
+  'backend.source.builtin.official':
+    'Follows the image versions GPUStack publishes for the built-in backends (vLLM, SGLang, MindIE, VoxBox).',
+  'backend.source.community.title': 'Community backend source',
+  'backend.source.community.official':
+    'Follows the community backend list GPUStack publishes, on top of the one packaged with this release.'
 };

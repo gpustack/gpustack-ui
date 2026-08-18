@@ -24,8 +24,8 @@ importers:
         specifier: ^7.1.1
         version: 7.1.2
       '@gpustack/core-ui':
-        specifier: ^1.1.11
-        version: 1.1.11(k4n3tv37j5dipz4shs57farbhu)
+        specifier: ^1.1.12
+        version: 1.1.12(k4n3tv37j5dipz4shs57farbhu)
       '@huggingface/gguf':
         specifier: ^0.1.7
         version: 0.1.18
@@ -1433,8 +1433,8 @@ packages:
     resolution: {integrity: sha512-KWk80UPIzPmUg+P0rKh6TqspRw0G6eux1PuJr+zz47ftMaZ9QDwbGzHZbtzWkl5hgayM/qrKRutllRC7D/vVXQ==, tarball: https://registry.npmjs.org/@formatjs/intl-utils/-/intl-utils-2.3.0.tgz}
     deprecated: the package is rather renamed to @formatjs/ecma-abstract with some changes in functionality (primarily selectUnit is removed and we don't plan to make any further changes to this package
 
-  '@gpustack/core-ui@1.1.11':
-    resolution: {integrity: sha512-adsjFFG8G1+jvxwZz0N/9tbhZJHZ9yT5gljRvxjDJqykIhoxRh1NhMgl+RZ36Zee8C/qT3GevEILCQhKQ+SNMQ==, tarball: https://registry.npmjs.org/@gpustack/core-ui/-/core-ui-1.1.11.tgz}
+  '@gpustack/core-ui@1.1.12':
+    resolution: {integrity: sha512-V02yDST21iMIN22MQZX7Aprx4p2/3gXeHJ13ml6iksi0mkBX2tdFEa8muV16E+/fmbHeGBDqX2mLNiZFi0jHjA==, tarball: https://registry.npmjs.org/@gpustack/core-ui/-/core-ui-1.1.12.tgz}
     peerDependencies:
       '@ant-design/icons': ^6.1.0
       '@ant-design/pro-components': 3.1.0-0
@@ -10320,7 +10320,7 @@ snapshots:
 
   '@formatjs/intl-utils@2.3.0': {}
 
-  '@gpustack/core-ui@1.1.11(k4n3tv37j5dipz4shs57farbhu)':
+  '@gpustack/core-ui@1.1.12(k4n3tv37j5dipz4shs57farbhu)':
     dependencies:
       '@ant-design/icons': 6.2.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@ant-design/pro-components': 3.1.0-0(antd@6.3.7(date-fns@2.30.0)(luxon@3.7.2)(moment@2.30.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)

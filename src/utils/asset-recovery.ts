@@ -78,6 +78,14 @@ function parseAttempts(raw: string | null): Attempt[] {
  * ever match. Only a hard cap stops that. Genuine releases are minutes apart and never
  * come near it.
  */
+// Deliberately talks to `sessionStorage` directly rather than core-ui's
+// `nsSession`. Those helpers fold "storage threw" into the same `null` as
+// "key absent", which here would read as "no attempts yet" and hand back
+// `true` — and since the write silently no-ops too, every reload would
+// re-arm the guard and spin an infinite reload loop. The distinction is the
+// whole point of this function, so it keeps its own try/catch. The key is
+// already brand-scoped (`gpustack.asset-recovery`), so it gains nothing
+// from the namespace prefix either.
 function claimAttempt(detail: string): boolean {
   try {
     const version = currentVersion();

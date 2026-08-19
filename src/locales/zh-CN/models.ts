@@ -128,6 +128,7 @@ export default {
   'models.form.releases': '版本',
   'models.form.moreparameters': '参数说明',
   'models.table.vram.allocated': '分配显存',
+  'models.table.vram.workers': '{n} 节点',
   'models.form.backend.warning':
     '当前后端不支持 GGUF 格式模型。请在“推理后端”中添加一个支持 GGUF 的后端。',
   'models.form.backend.warning.gguf':

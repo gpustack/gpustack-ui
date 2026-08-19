@@ -131,6 +131,7 @@ export default {
   'models.form.releases': 'リリース',
   'models.form.moreparameters': 'パラメータ説明',
   'models.table.vram.allocated': '割り当て済みVRAM',
+  'models.table.vram.workers': '{n} ワーカー',
   'models.form.backend.warning':
     'The selected backend does not support GGUF models. Please add a backend with GGUF support in the Inference Backend.',
   'models.form.backend.warning.gguf':

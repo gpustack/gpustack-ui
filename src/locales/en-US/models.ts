@@ -130,6 +130,7 @@ export default {
   'models.form.releases': 'Releases',
   'models.form.moreparameters': 'Parameter Description',
   'models.table.vram.allocated': 'Allocated VRAM',
+  'models.table.vram.workers': '{n} workers',
   'models.form.backend.warning':
     'The selected backend does not support GGUF models. Please add a backend with GGUF support in the Inference Backend.',
   'models.form.backend.warning.gguf':

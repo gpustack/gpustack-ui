@@ -14,6 +14,7 @@ import React, { useEffect } from 'react';
 import { ModelInstanceListItem } from '../../config/types';
 import { useGPUTypeDisplayName } from '../../hooks/use-gpu-type-display-name';
 import '../../style/instance-item.less';
+import { calcTotalVram } from '../../utils';
 import {
   formatGPUTypeAllocation,
   getGPUTypeClusterId,
@@ -28,10 +29,6 @@ export interface NameCellProps {
     label?: React.CSSProperties;
   };
 }
-
-const calcTotalVram = (vram: Record<string, number>) => {
-  return _.sum(_.values(vram));
-};
 
 const WorkerInfoContent: React.FC<NameCellProps> = ({ record, modelData }) => {
   const intl = useIntl();
@@ -52,6 +49,11 @@ const WorkerInfoContent: React.FC<NameCellProps> = ({ record, modelData }) => {
     gpuTypeSelector,
     gpuTypeDisplayName
   );
+  // A cross-worker instance spreads its claim over the main worker plus every
+  // subordinate, so the allocated VRAM here is the whole instance's total and
+  // carries the worker count. Single-worker instances show the size alone.
+  const workerCount =
+    (record.distributed_servers?.subordinate_workers?.length || 0) + 1;
   return (
     <div>
       <div>{record.worker_name}</div>
@@ -85,12 +87,12 @@ const WorkerInfoContent: React.FC<NameCellProps> = ({ record, modelData }) => {
       <div className="flex-center">
         <PieChartFilled className="m-r-5" />
         {intl.formatMessage({ id: 'models.table.vram.allocated' })}:{' '}
-        {convertFileSize(
-          record.computed_resource_claim?.vram
-            ? calcTotalVram(record.computed_resource_claim?.vram)
-            : 0,
-          1
-        )}
+        {convertFileSize(calcTotalVram(record), 1)}
+        {workerCount > 1 &&
+          ` (${intl.formatMessage(
+            { id: 'models.table.vram.workers' },
+            { n: workerCount }
+          )})`}
       </div>
     </div>
   );

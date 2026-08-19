@@ -1,4 +1,5 @@
 import { ListItem as UserListItem } from '@/pages/users/config/types';
+import { withBasePath } from '@/utils/with-base-path';
 import { downloadFile, listFiles, listModels } from '@huggingface/hub';
 import { PipelineType } from '@huggingface/tasks';
 import { request } from '@umijs/max';
@@ -37,7 +38,8 @@ export const CATALOG_LIST_API = '/model-sets';
 export const MODEL_LORA_ADAPTER_API = '/models/adapters';
 
 const setProxyUrl = (url: string) => {
-  return `/proxy?url=${encodeURIComponent(url)}`;
+  // Consumed by raw `fetch` below, which gets no `baseURL` treatment.
+  return withBasePath(`/proxy?url=${encodeURIComponent(url)}`);
 };
 
 // ===================== Models =====================

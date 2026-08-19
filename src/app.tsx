@@ -1,7 +1,11 @@
 import { userSettingsHelperAtom } from '@/atoms/settings';
 import { GPUStackVersionAtom, UpdateCheckAtom, userAtom } from '@/atoms/user';
 import { setAtomStorage } from '@/atoms/utils';
-import { DEFAULT_ENTER_PAGE, GPUSTACK_API_BASE_URL } from '@/config/settings';
+import {
+  BASE_PATH,
+  DEFAULT_ENTER_PAGE,
+  GPUSTACK_API_BASE_URL
+} from '@/config/settings';
 import { COLOR_PRIMARY } from '@/config/theme/constants';
 import ErrorBoundary from '@/layouts/error-boundary';
 import { ensureCurrentLocaleMessages } from '@/locales/load-messages';
@@ -191,7 +195,7 @@ export async function getInitialState(): Promise<{
 }
 
 export const request: RequestConfig = {
-  baseURL: `/${GPUSTACK_API_BASE_URL}`,
+  baseURL: `${BASE_PATH}/${GPUSTACK_API_BASE_URL}`,
   ...requestConfig
 };
 

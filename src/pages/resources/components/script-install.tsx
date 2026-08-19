@@ -1,3 +1,4 @@
+import { EXTERNAL_BASE_URL } from '@/config/settings';
 import { HighlightCode } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import React, { useMemo } from 'react';
@@ -8,7 +9,11 @@ type ViewModalProps = { token: string };
 const AddWorker: React.FC<ViewModalProps> = (props) => {
   const intl = useIntl();
 
-  const origin = window.location.origin;
+  // The address the worker will dial, so it has to be one that actually reaches
+  // the server: under a subpath mount that includes the prefix. Note this puts
+  // worker traffic through the same reverse proxy as the UI, which therefore has
+  // to forward the WebSocket upgrade the browser itself never needs.
+  const serverUrl = EXTERNAL_BASE_URL;
 
   const labels = useMemo(
     () => ({
@@ -49,7 +54,7 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
       <h4 className="font-size-13">{labels.linuxOrMac}</h4>
       <HighlightCode
         code={addWorkerGuide.mac.registerWorker({
-          server: origin,
+          server: serverUrl,
           token: '${token}'
         })}
         theme="dark"
@@ -58,7 +63,7 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
       <HighlightCode
         theme="dark"
         code={addWorkerGuide.win.registerWorker({
-          server: origin,
+          server: serverUrl,
           token: '${token}'
         })}
       ></HighlightCode>

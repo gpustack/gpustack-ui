@@ -1,3 +1,4 @@
+import { EXTERNAL_BASE_URL } from '@/config/settings';
 import { HighlightCode } from '@gpustack/core-ui';
 import React, { useMemo } from 'react';
 import { generateK8sRegisterCommand } from '../config';
@@ -19,7 +20,9 @@ const AddCluster: React.FC<AddModalProps> = ({
 }) => {
   const code = useMemo(() => {
     return generateK8sRegisterCommand({
-      server: registrationInfo?.server_url || window.location.origin,
+      // Falls back to the browser's view of the server, prefix included, when the
+      // server has no `server_external_url` configured to hand us.
+      server: registrationInfo?.server_url || EXTERNAL_BASE_URL,
       clusterId: registrationInfo?.cluster_id,
       registrationToken: registrationInfo?.token,
       currentGPU,

@@ -17,11 +17,18 @@ export default {
   'providers.form.target.placeholder': 'provider/models',
   'providers.form.fallback.token': 'Fallback API Keys',
   'providers.form.custombeckendUrl': 'Custom Base URL',
+  'providers.form.claudeCustomUrl': 'Custom API URL',
+  'providers.form.claudeCustomUrl.tips':
+    'When set, this provider serves the Anthropic protocol (/v1/messages) only, and OpenAI-style requests are not converted. Leave it empty to use api.anthropic.com through the OpenAI protocol.',
   'providers.form.more': '+{count} more',
   'providers.form.addAll': 'Add All',
   'providers.form.rules.models': 'Please select at least one model',
   'providers.form.rules.tokens': 'Please enter a valid API Key',
   'providers.form.rules.model': 'Please select a model',
+  'providers.form.rules.absoluteHttpUrl':
+    'Please enter an absolute http(s) URL, including the port if there is one, e.g. https://gateway.example.com:8080',
+  'providers.form.rules.openaiCustomUrl':
+    'Please enter an absolute http(s) URL with a path, e.g. https://gateway.example.com:8080/v1',
   'providers.form.model.duplicate': 'Duplicate model exists',
   'providers.table.registerRoute': 'Register Route',
   'providers.form.azureServiceUrl': 'Azure OpenAI Service URL',

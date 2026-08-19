@@ -22,6 +22,14 @@ const ProviderConfigs = () => {
       : undefined;
   };
 
+  const renderHint = (item: any) => {
+    return item.hint
+      ? item.hint.locale
+        ? intl.formatMessage({ id: item.hint.text })
+        : item.hint.text
+      : undefined;
+  };
+
   return (
     <>
       {providerFields && providerFields.length > 0
@@ -30,6 +38,7 @@ const ProviderConfigs = () => {
               <Form.Item
                 name={['config', item.name]}
                 rules={item.rules}
+                extra={renderHint(item)}
                 key={item.name}
               >
                 {item.type === 'Input' && (

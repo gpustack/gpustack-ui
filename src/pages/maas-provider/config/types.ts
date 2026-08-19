@@ -15,7 +15,8 @@ export interface FormData {
   proxy_enabled?: boolean;
   config: {
     type: maasProviderType;
-    openaiCustomUrl?: string;
+    openaiCustomUrl?: string | null;
+    claudeCustomUrl?: string | null;
     [key: string]: any;
   };
 }
@@ -27,7 +28,8 @@ export interface MaasProviderItem {
   proxy_timeout: number;
   config: {
     type: maasProviderType;
-    openaiCustomUrl?: string;
+    openaiCustomUrl?: string | null;
+    claudeCustomUrl?: string | null;
     [key: string]: any;
   };
   id: number;
@@ -51,7 +53,13 @@ export interface RequiredFields {
   };
   required?: boolean;
   placeholder?: string;
+  // tooltip on the label
   description?: {
+    text: string;
+    locale?: boolean;
+  };
+  // hint line rendered below the field
+  hint?: {
     text: string;
     locale?: boolean;
   };

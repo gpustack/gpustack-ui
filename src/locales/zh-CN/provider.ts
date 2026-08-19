@@ -17,11 +17,18 @@ export default {
   'providers.form.target.placeholder': '提供商/模型',
   'providers.form.fallback.token': '备用 API Key',
   'providers.form.custombeckendUrl': '自定义 Base URL',
+  'providers.form.claudeCustomUrl': '自定义 API 地址',
+  'providers.form.claudeCustomUrl.tips':
+    '填写后该提供商仅提供 Anthropic 协议（/v1/messages），OpenAI 协议的请求不会被转换。留空则使用 api.anthropic.com 并通过 OpenAI 协议访问。',
   'providers.form.more': '+{count} 更多',
   'providers.form.addAll': '添加全部',
   'providers.form.rules.models': '请选择至少一个模型',
   'providers.form.rules.tokens': '请输入有效的 API Key',
   'providers.form.rules.model': '请选择模型',
+  'providers.form.rules.absoluteHttpUrl':
+    '请输入带协议的完整地址（如有端口需一并写明），例如 https://gateway.example.com:8080',
+  'providers.form.rules.openaiCustomUrl':
+    '请输入带协议和路径的完整地址，例如 https://gateway.example.com:8080/v1',
   'providers.form.model.duplicate': '存在相同的模型',
   'providers.table.registerRoute': '注册路由',
   'providers.form.azureServiceUrl': 'Azure OpenAI 服务 URL',

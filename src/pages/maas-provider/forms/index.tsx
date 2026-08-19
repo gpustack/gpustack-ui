@@ -114,13 +114,30 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
     );
   };
 
+  // a cleared optional field means "unset" — the backend treats '' as an
+  // explicitly configured empty value, so send null instead
+  const normalizeConfig = (config: FormData['config']) => {
+    return _.mapValues(config, (value: any) => (value === '' ? null : value));
+  };
+
+  // the whole config, provider-specific fields included, so that get-models /
+  // test-model hit the upstream the user actually typed in the form
   const getCustomConfig = () => {
     const customConfig = yaml2Json(advanceRef.current?.getYamlValue() || '');
     const config = form.getFieldValue('config') || {};
     return {
-      ...config,
+      ...normalizeConfig(config),
       ...customConfig
     };
+  };
+
+  // in edit mode this YAML is generated, not hand-written: it holds whatever
+  // config keys the previous provider had beyond its own form fields. Those get
+  // spread back into config on submit, so switching provider type has to drop
+  // them along with the fields themselves.
+  const resetCustomConfig = () => {
+    form.setFieldValue('custom_config', '');
+    advanceRef.current?.setYamlValue?.('');
   };
 
   const handleOnFinish = (values: FormData) => {
@@ -128,7 +145,7 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       ..._.omit(values, ['api_key']),
       api_tokens: formatAPIKeys(values),
       config: {
-        ...values.config,
+        ...normalizeConfig(values.config),
         ...yaml2Json(advanceRef.current?.getYamlValue() || '')
       },
       models: _.uniqBy(values.models, 'name'),
@@ -217,7 +234,8 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
           id: currentData?.id,
           currentData,
           providerFields,
-          getCustomConfig: getCustomConfig
+          getCustomConfig: getCustomConfig,
+          resetCustomConfig: resetCustomConfig
         }}
       >
         <Form

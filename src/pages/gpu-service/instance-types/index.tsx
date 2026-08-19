@@ -144,7 +144,6 @@ const GPUServiceInstanceTypes: React.FC = () => {
         name: record.spec?.displayName || record.name,
         async onOk() {
           await action({ name: record.name, cluster_id: clusterId });
-          message.success(intl.formatMessage({ id: 'common.message.success' }));
           fetchInstanceTypes(clusterId);
         }
       });
@@ -240,7 +239,6 @@ const GPUServiceInstanceTypes: React.FC = () => {
       <PageBox>
         <FilterBar
           marginBottom={22}
-          marginTop={30}
           showSelect={false}
           inputHolder={intl.formatMessage({
             id: 'gpuservice.instanceType.filter.name'

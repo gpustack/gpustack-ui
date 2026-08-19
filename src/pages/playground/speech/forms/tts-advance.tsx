@@ -46,6 +46,14 @@ const TTSAdvanceConfig: React.FC = () => {
   const intl = useIntl();
   const [fileName, setFileName] = React.useState<string>('');
   const taskType = Form.useWatch('task_type', form);
+  const refAudio = Form.useWatch('ref_audio', form);
+
+  // Three-state flag: only an explicit false means the checkpoint is missing the
+  // audio encoder that voice cloning needs, and a ref_audio request would take
+  // the whole engine down. An absent flag claims nothing — the models that do
+  // support cloning (CosyVoice, Qwen3-TTS) never carry it, and neither does an
+  // instance that has not reported its meta yet — so ref_audio stays available.
+  const voiceCloningUnsupported = meta?.voice_cloning === false;
 
   // handle upload audio file, transfer to a base64 url
   const handleUploadChange = async (data: { file: any; fileList: any }) => {
@@ -81,6 +89,10 @@ const TTSAdvanceConfig: React.FC = () => {
       const relateFieldValue = form.getFieldValue(relateField);
       if (type !== 'Base') return Promise.resolve();
 
+      // Both fields that satisfy this rule are disabled without an audio
+      // encoder, so demanding one would leave the form unsubmittable.
+      if (voiceCloningUnsupported) return Promise.resolve();
+
       if (value || relateFieldValue) return Promise.resolve();
 
       return Promise.reject(
@@ -102,6 +114,17 @@ const TTSAdvanceConfig: React.FC = () => {
       );
     }
   }, [taskType]);
+
+  // fileName only stands in for ref_audio in the input's display, so follow the
+  // form value rather than the model's capability: every path that empties
+  // ref_audio — a model switch resetting the form, whether or not the next model
+  // supports cloning — has to drop the name too, or the input keeps showing (and
+  // stays readOnly for) a file that is no longer part of the request.
+  useEffect(() => {
+    if (!refAudio) {
+      setFileName('');
+    }
+  }, [refAudio]);
 
   return (
     <>
@@ -141,7 +164,10 @@ const TTSAdvanceConfig: React.FC = () => {
           dependencies={['task_type']}
           rules={[
             {
-              required: taskType === 'Base',
+              // A disabled field can still fail validation, and this one cannot
+              // be filled in, so a model reporting both task_type Base and no
+              // audio encoder would otherwise never submit.
+              required: taskType === 'Base' && !voiceCloningUnsupported,
               whitespace: true,
               message: getRuleMessage('input', 'playground.params.refAudio')
             }
@@ -149,25 +175,30 @@ const TTSAdvanceConfig: React.FC = () => {
         >
           <CInput.Input
             allowClear
-            required={taskType === 'Base'}
+            disabled={voiceCloningUnsupported}
+            required={taskType === 'Base' && !voiceCloningUnsupported}
             readOnly={!!fileName}
             suffix={
-              <SuffixWrapper>
-                {fileName ? (
-                  <span onClick={handleClear}>
-                    <CloseCircleFilled className="icon" />
-                  </span>
-                ) : null}
-                <UploadAudio
-                  size="small"
-                  type="text"
-                  accept={['.mp3', '.mp4', '.wav', '.m4a'].join(', ')}
-                  onChange={handleUploadChange}
-                ></UploadAudio>
-              </SuffixWrapper>
+              voiceCloningUnsupported ? null : (
+                <SuffixWrapper>
+                  {fileName ? (
+                    <span onClick={handleClear}>
+                      <CloseCircleFilled className="icon" />
+                    </span>
+                  ) : null}
+                  <UploadAudio
+                    size="small"
+                    type="text"
+                    accept={['.mp3', '.mp4', '.wav', '.m4a'].join(', ')}
+                    onChange={handleUploadChange}
+                  ></UploadAudio>
+                </SuffixWrapper>
+              )
             }
             description={intl.formatMessage({
-              id: 'playground.params.refAudio.tips'
+              id: voiceCloningUnsupported
+                ? 'playground.params.refAudio.unsupported'
+                : 'playground.params.refAudio.tips'
             })}
             label={intl.formatMessage({ id: 'playground.params.refAudio' })}
           ></CInput.Input>
@@ -176,6 +207,7 @@ const TTSAdvanceConfig: React.FC = () => {
       <Form.Item name="ref_text" style={{ marginBottom: 12 }}>
         <CInput.TextArea
           allowClear
+          disabled={voiceCloningUnsupported}
           scaleSize={true}
           label={intl.formatMessage({ id: 'playground.params.refAudio.text' })}
         ></CInput.TextArea>
@@ -188,6 +220,7 @@ const TTSAdvanceConfig: React.FC = () => {
         rules={[atLeastOneValidator('ref_text')]}
       >
         <CheckboxField
+          disabled={voiceCloningUnsupported}
           label={intl.formatMessage({
             id: 'playground.params.refAudio.vectorMode'
           })}

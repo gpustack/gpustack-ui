@@ -157,6 +157,8 @@ export default {
   'gpuservice.instanceType.localStorage.tip': '最大可用磁盘',
   'gpuservice.instanceType.notSliceable': '不可切分',
   'gpuservice.instanceType.filter.name': '按名称搜索',
+  'gpuservice.instanceType.clusterUnavailable':
+    '集群未响应，通常是因为没有就绪的节点。请检查集群后重试。',
   'gpuservice.instance.disk': '磁盘',
   'gpuservice.table.count': '数量',
   'gpuservice.instance.disk.system': '系统盘',

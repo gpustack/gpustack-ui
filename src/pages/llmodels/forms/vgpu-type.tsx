@@ -187,7 +187,14 @@ const VGPUTypeForm: React.FC = () => {
       return;
     }
     let cancelled = false;
-    queryGPUInstanceTypes({ cluster_id: clusterId })
+    // `source: 'live'` proxies the cluster's own catalog. The default record
+    // read serves the Instance Types page's fleet-wide list and deliberately
+    // drops the volatile resource ledger, which is exactly what this form sizes
+    // its inputs from — without it the sliced percentage input renders disabled
+    // and rejects every value, and the partition profile dropdown renders
+    // empty. No `purpose` either: it narrows nothing when omitted, and this
+    // picker targets Model Service clusters by definition.
+    queryGPUInstanceTypes({ cluster_id: clusterId, source: 'live' })
       .then((res) => {
         if (cancelled) return;
         // Only accelerator (GPU) types can back a vGPU deployment.

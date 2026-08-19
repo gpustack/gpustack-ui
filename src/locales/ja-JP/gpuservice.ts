@@ -172,6 +172,8 @@ export default {
   'gpuservice.instanceType.localStorage.tip': 'Maximum available disk',
   'gpuservice.instanceType.notSliceable': 'Not Sliceable',
   'gpuservice.instanceType.filter.name': 'Search by name',
+  'gpuservice.instanceType.clusterUnavailable':
+    'クラスターが応答しませんでした。準備完了の Worker がない可能性があります。クラスターを確認して再試行してください。',
   'gpuservice.instance.disk': 'ディスク',
   'gpuservice.table.count': '数量',
   'gpuservice.instance.disk.system': 'システムディスク',

@@ -14,7 +14,7 @@ import {
   getFlavorTitle
 } from '../components/flavor-display';
 import { ArchOptions, GPU_INSTANCE_TYPE_OS } from '../config';
-import { FlavorItem, FormData } from '../config/types';
+import { CreateFormData, FlavorItem, FormData } from '../config/types';
 import styles from '../styles/instance-types.module.less';
 
 // RAM / storage are entered as a plain number in GB but stored/submitted as a
@@ -29,13 +29,18 @@ const giValueProps = (value?: string | null) => ({
 interface InstanceTypeFormProps {
   ref?: any;
   open: boolean;
+  // The GPU Service clusters the type can be created on. The page is
+  // fleet-wide, so the target cluster is picked here and it drives the flavor
+  // list below.
+  clusterList: Global.BaseOption<number>[];
   // The flavor picked from the flavor Select. Its acceleratorGroup /
   // generalGroup / acceleratable are copied into the created instance type.
   selectedFlavor?: FlavorItem | null;
   flavorList: FlavorItem[];
   flavorLoading?: boolean;
+  onClusterChange: (clusterId: number) => void;
   onFlavorChange: (flavor: FlavorItem | null) => void;
-  onFinish: (values: FormData) => Promise<void>;
+  onFinish: (clusterId: number, values: FormData) => Promise<void>;
   onFinishFailed?: (errorInfo: any) => void;
 }
 
@@ -43,16 +48,18 @@ const GPUServiceInstanceTypeForm: React.FC<InstanceTypeFormProps> = forwardRef(
   (props, ref) => {
     const {
       open,
+      clusterList,
       selectedFlavor,
       flavorList,
       flavorLoading,
+      onClusterChange,
       onFlavorChange,
       onFinish,
       onFinishFailed
     } = props;
     const intl = useIntl();
     const { getRuleMessage } = useAppUtils();
-    const [form] = Form.useForm<FormData>();
+    const [form] = Form.useForm<CreateFormData>();
 
     // A non-acceleratable (generic) flavor has no per-GPU concept, so unit CPU
     // is fixed to 1 and the field is disabled.
@@ -115,12 +122,14 @@ const GPUServiceInstanceTypeForm: React.FC<InstanceTypeFormProps> = forwardRef(
       }
     ].filter(Boolean) as any;
 
-    const handleFinish = async (values: FormData) => {
+    const handleFinish = async (values: CreateFormData) => {
       // The hardware group / acceleratable flags are not user-editable; they
       // come from the chosen flavor. os is fixed to lowercase "linux". ram /
       // localStorage already carry the "Gi" suffix from the FormItem normalize.
+      // cluster_id is handed back separately: it is a query param, not part of
+      // the create body.
       const cpu = values.spec?.unitResources?.cpu;
-      await onFinish({
+      await onFinish(values.cluster_id, {
         name: values.name,
         spec: {
           displayName: values.spec?.displayName?.trim() || null,
@@ -146,6 +155,28 @@ const GPUServiceInstanceTypeForm: React.FC<InstanceTypeFormProps> = forwardRef(
         onFinishFailed={onFinishFailed}
         preserve={false}
       >
+        {/* First, because the flavors below are the chosen cluster's. Left
+          empty rather than defaulted to the first cluster: guessing one would
+          reinstate the ambient cluster this page just dropped. */}
+        <Form.Item<CreateFormData>
+          name="cluster_id"
+          rules={[
+            {
+              required: true,
+              message: getRuleMessage('select', 'clusters.title')
+            }
+          ]}
+        >
+          <SealSelect
+            label={intl.formatMessage({ id: 'clusters.title' })}
+            required
+            showSearch
+            optionFilterProp="label"
+            options={clusterList}
+            onChange={onClusterChange}
+          />
+        </Form.Item>
+
         <Form.Item<FormData>
           name="name"
           rules={[

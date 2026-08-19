@@ -40,6 +40,15 @@ export interface InstanceTypeStatus {
 
 // Row shape for the management list (GET /gpu-instance-types).
 export interface ListItem {
+  // Identity of the record-table row. Absent on the write routes' responses,
+  // which return the cluster's live CR rather than a row, and on a
+  // `source=live` read for the same reason.
+  id?: number;
+  // The cluster this type belongs to. The fleet-wide list's only cluster
+  // reference — the payload carries no cluster name, so the list resolves it
+  // against the cluster list. camelCase on the wire, unlike the Worker page's
+  // `cluster_id`: this schema runs an alias generator, `WorkerPublic` does not.
+  clusterId?: number;
   name: string;
   // Hoisted by the backend out of the CR's `schedule.gpustack.ai/derived-from-node`
   // label: the operator derived this type from a node instead of an admin
@@ -80,4 +89,11 @@ export interface FormData {
     unitResources?: UnitResources;
     localStorage?: string | null;
   };
+}
+
+// The create drawer's form values: the POST body plus the cluster it targets.
+// The cluster travels as a query param rather than in the body, and the page
+// no longer has an ambient one to supply, so the form asks for it.
+export interface CreateFormData extends FormData {
+  cluster_id: number;
 }

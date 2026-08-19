@@ -37,6 +37,7 @@ import { updatePassword as updatePasswordApi } from './apis';
 import Background from './components/background';
 import LoginForm from './components/login-form';
 import PasswordForm from './components/password-form';
+import { useInitialPasswordGuard } from './hooks/use-initial-password-guard';
 import { useLocalAuth } from './hooks/use-local-auth';
 import { useSSOAuth } from './hooks/use-sso-auth';
 import { checkDefaultPage } from './utils';
@@ -120,6 +121,11 @@ const Login = () => {
   const [userInfo, setUserInfo] = useAtom(userAtom);
   const [initialPassword, setInitialPassword] = useAtom(initialPasswordAtom);
   const { initialState, setInitialState } = useModel('@@initialState') || {};
+
+  // Runs ahead of the render branch below so the custom-login path gets
+  // the same recovery — its component reads `userInfo` off `kit`, which
+  // the logout clears.
+  const credentialLost = useInitialPasswordGuard();
 
   const plugin = getGPUStackPlugin();
 
@@ -255,7 +261,7 @@ const Login = () => {
           <Box>
             <div className={styles.formContainer}>
               <FormWrapper>
-                {userInfo?.require_password_change ? (
+                {userInfo?.require_password_change && !credentialLost ? (
                   <PasswordForm />
                 ) : (
                   <LoginForm />

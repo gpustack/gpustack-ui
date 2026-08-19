@@ -1,7 +1,11 @@
 import { hideModalTemporarilyAtom } from '@/atoms/settings';
 import { systemConfigAtom } from '@/atoms/system';
-import { userAtom } from '@/atoms/user';
-import { clearAtomStorage, clearStorageUserSettings } from '@/atoms/utils';
+import { initialPasswordAtom, userAtom } from '@/atoms/user';
+import {
+  clearAtomStorage,
+  clearStorageUserSettings,
+  setAtomStorage
+} from '@/atoms/utils';
 import { request } from '@umijs/max';
 import qs from 'query-string';
 
@@ -30,6 +34,9 @@ export const logout = async (userInfo?: any) => {
   clearAtomStorage(userAtom);
   clearAtomStorage(hideModalTemporarilyAtom);
   clearAtomStorage(systemConfigAtom);
+  // Not `clearAtomStorage` — that writes `null`, and the atom is typed
+  // `string` because `decryptPassword` is handed it directly.
+  setAtomStorage(initialPasswordAtom, '');
 
   if (res?.logout_url) {
     window.location.href = res.logout_url;

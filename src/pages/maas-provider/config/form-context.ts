@@ -10,6 +10,7 @@ interface FormContextProps {
   id?: number;
   providerFields?: RequiredFields[];
   getCustomConfig?: () => Record<string, any>;
+  resetCustomConfig?: () => void;
 }
 
 const FormContext = createContext<FormContextProps>({} as FormContextProps);

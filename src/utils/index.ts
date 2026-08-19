@@ -14,6 +14,24 @@ export const isNotEmptyValueAllowNull = (value: any) => {
   return !!value || value === 0 || value === false || value === null;
 };
 
+/**
+ * An absolute http(s) URL with a host — the shape backends want for a custom
+ * upstream address. The scheme prefix is matched separately because `URL`
+ * accepts things this has to reject: `ftp://host` and `ws://host` both parse
+ * with a perfectly good hostname, and `http:/foo` is normalized into one.
+ * `host:8080` needs no help — `URL` reads it as a scheme and leaves no host.
+ */
+export const isAbsoluteHttpUrl = (value: string) => {
+  if (!/^https?:\/\//i.test(value)) {
+    return false;
+  }
+  try {
+    return !!new URL(value).hostname;
+  } catch {
+    return false;
+  }
+};
+
 export const handleBatchRequest = async (
   list: any[],
   fn: (args: any) => void

@@ -17,11 +17,18 @@ export default {
   'providers.form.target.placeholder': 'sağlayıcı/modeller',
   'providers.form.fallback.token': 'Yedek API Anahtarları',
   'providers.form.custombeckendUrl': 'Özel Temel URL',
+  'providers.form.claudeCustomUrl': "Özel API URL'si",
+  'providers.form.claudeCustomUrl.tips':
+    'Ayarlandığında bu sağlayıcı yalnızca Anthropic protokolünü (/v1/messages) sunar ve OpenAI biçimindeki istekler dönüştürülmez. Boş bırakılırsa api.anthropic.com adresi OpenAI protokolü üzerinden kullanılır.',
   'providers.form.more': '+{count} daha fazla',
   'providers.form.addAll': 'Tümünü Ekle',
   'providers.form.rules.models': 'Lütfen en az bir model seçin',
   'providers.form.rules.tokens': 'Lütfen geçerli bir API Anahtarı girin',
   'providers.form.rules.model': 'Lütfen bir model seçin',
+  'providers.form.rules.absoluteHttpUrl':
+    'Lütfen şema içeren tam bir http(s) adresi girin (varsa portu da ekleyin), örneğin https://gateway.example.com:8080',
+  'providers.form.rules.openaiCustomUrl':
+    'Lütfen şema ve yol içeren tam bir http(s) adresi girin, örneğin https://gateway.example.com:8080/v1',
   'providers.form.model.duplicate': 'Yinelenen model mevcut',
   'providers.table.registerRoute': 'Yönlendirme Kaydet',
   'providers.form.azureServiceUrl': "Azure OpenAI Hizmet URL'si",

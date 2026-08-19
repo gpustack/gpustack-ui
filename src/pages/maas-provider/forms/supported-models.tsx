@@ -11,8 +11,12 @@ import ModelItem from './model-item';
 
 const SupportedModels = () => {
   const intl = useIntl();
-  const { providerModelList, loading, fetchProviderModels } =
-    useQueryProviderModels();
+  const {
+    providerModelList,
+    loading,
+    fetchProviderModels,
+    resetProviderModels
+  } = useQueryProviderModels();
   const form = Form.useFormInstance<FormData>();
   const modelList = Form.useWatch('models', form) || [];
   const prevConfigRef = useRef<{
@@ -72,6 +76,8 @@ const SupportedModels = () => {
           ...currentConfig
         };
 
+        // the options on screen still belong to the previous config
+        resetProviderModels();
         fetchProviderModels({
           id: generateID(),
           data: {
@@ -92,6 +98,7 @@ const SupportedModels = () => {
         api_key: ''
       };
       // If validation fails, reset the provider model list to avoid confusion
+      resetProviderModels();
     }
   };
 

@@ -1,3 +1,4 @@
+import { isAbsoluteHttpUrl } from '@/utils';
 import { useAppUtils } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { ProviderEnum } from '../config/providers';
@@ -6,6 +7,36 @@ import { RequiredFields } from '../config/types';
 const useProviderRequiredFields = () => {
   const intl = useIntl();
   const { getRuleMessage } = useAppUtils();
+
+  const validateCustomUrl = async (_: any, value: string) => {
+    if (!value || isAbsoluteHttpUrl(value)) {
+      return Promise.resolve();
+    }
+    return Promise.reject(
+      new Error(
+        intl.formatMessage({ id: 'providers.form.rules.absoluteHttpUrl' })
+      )
+    );
+  };
+
+  // openaiCustomUrl carries the extra requirement that claudeCustomUrl does not:
+  // the backend appends `/models` and `/chat/completions` to its path, so an
+  // address without one (`http://my-openai.com`) is rejected as invalid.
+  // Both conditions share one message, so that fixing what the example shows
+  // cannot land the user on a second example with different requirements.
+  const validateBaseUrl = async (_: any, value: string) => {
+    if (
+      !value ||
+      (isAbsoluteHttpUrl(value) && new URL(value).pathname.replace(/\/+$/, ''))
+    ) {
+      return Promise.resolve();
+    }
+    return Promise.reject(
+      new Error(
+        intl.formatMessage({ id: 'providers.form.rules.openaiCustomUrl' })
+      )
+    );
+  };
 
   const providerRequiredFieldsMap: Record<string, RequiredFields[]> = {
     [ProviderEnum.OPENAI]: [
@@ -17,7 +48,33 @@ const useProviderRequiredFields = () => {
         label: {
           text: 'providers.form.custombeckendUrl',
           locale: true
-        }
+        },
+        rules: [
+          {
+            validator: validateBaseUrl
+          }
+        ]
+      }
+    ],
+    [ProviderEnum.CLAUDE]: [
+      {
+        type: 'Input',
+        name: 'claudeCustomUrl',
+        placeholder: 'https://<your-anthropic-gateway>',
+        required: false,
+        label: {
+          text: 'providers.form.claudeCustomUrl',
+          locale: true
+        },
+        hint: {
+          text: 'providers.form.claudeCustomUrl.tips',
+          locale: true
+        },
+        rules: [
+          {
+            validator: validateCustomUrl
+          }
+        ]
       }
     ],
     [ProviderEnum.AZURE]: [

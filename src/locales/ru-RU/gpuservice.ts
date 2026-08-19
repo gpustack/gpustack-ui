@@ -170,6 +170,8 @@ export default {
   'gpuservice.instanceType.localStorage.tip': 'Maximum available disk',
   'gpuservice.instanceType.notSliceable': 'Not Sliceable',
   'gpuservice.instanceType.filter.name': 'Search by name',
+  'gpuservice.instanceType.clusterUnavailable':
+    'Кластер не ответил, скорее всего потому, что в нём нет готового рабочего узла. Проверьте кластер и повторите попытку.',
   'gpuservice.instance.disk': 'Диск',
   'gpuservice.table.count': 'Количество',
   'gpuservice.instance.disk.system': 'Системный диск',

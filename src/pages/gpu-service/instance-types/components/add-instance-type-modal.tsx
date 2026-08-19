@@ -14,15 +14,18 @@ import useQueryFlavors from '../services/use-query-flavors';
 type AddInstanceTypeModalProps = {
   title: string;
   open: boolean;
-  clusterId?: number;
-  onOk: (values: FormData) => void;
+  clusterList: Global.BaseOption<number>[];
+  // Returns a promise because ``useSubmitLock``'s ``run`` awaits it to decide
+  // when to release the lock; typing it ``void`` would let a caller pass a
+  // synchronous handler and release the lock before the write finished.
+  onOk: (clusterId: number, values: FormData) => Promise<void>;
   onCancel: () => void;
 };
 
 const AddInstanceTypeModal: React.FC<AddInstanceTypeModalProps> = ({
   title,
   open,
-  clusterId,
+  clusterList,
   onOk,
   onCancel
 }) => {
@@ -33,23 +36,49 @@ const AddInstanceTypeModal: React.FC<AddInstanceTypeModalProps> = ({
   const {
     dataList: flavorList,
     loading: flavorLoading,
-    fetchFlavors
+    fetchFlavors,
+    cancelRequest,
+    setDataList: setFlavorList
   } = useQueryFlavors();
 
-  // Fetch flavors when the drawer opens and auto-select the first one, so the
-  // form's flavor-derived fields (group / acceleratable) are always set.
+  // Flavors are the chosen cluster's, and the drawer now opens without one, so
+  // they load from the cluster select's handler instead of on open. Closing
+  // clears them, otherwise the next open would flash the previous cluster's.
+  //
+  // Cancel before clearing: a request still in flight would resolve after this
+  // and repopulate exactly what was just cleared, which is the stale flash this
+  // effect exists to prevent. The hook rejects it as CANCEL_PREVIOUS_REQUEST,
+  // which its own onError ignores and handleClusterChange's catch turns into a
+  // cleared selection.
   useEffect(() => {
     if (!open) {
+      cancelRequest();
       setSelectedFlavor(null);
-      return;
+      setFlavorList([]);
     }
-    if (!clusterId) return;
-    const load = async () => {
+  }, [open]);
+
+  // Auto-select the first flavor of the picked cluster, so the form's
+  // flavor-derived fields (group / acceleratable) are always set.
+  //
+  // Drop the previous cluster's flavor *before* awaiting the new list. Save
+  // stays clickable while the flavors load — the footer's spinner is the submit
+  // lock's, not this fetch's — and handleSubmit only checks that some flavor is
+  // selected, so a click inside that window would submit the new cluster_id
+  // carrying the old cluster's acceleratorGroup / acceleratable. Clearing on
+  // failure too: a rejected fetch must not leave a stale selection behind, and
+  // the rejection is caught because this is an event handler, where it would
+  // otherwise surface as an unhandled rejection.
+  const handleClusterChange = async (clusterId: number) => {
+    setSelectedFlavor(null);
+    setFlavorList([]);
+    try {
       const list = await fetchFlavors(clusterId);
       setSelectedFlavor(list?.[0] ?? null);
-    };
-    load();
-  }, [open, clusterId]);
+    } catch {
+      setSelectedFlavor(null);
+    }
+  };
 
   const handleSubmit = () => {
     if (!selectedFlavor) {
@@ -66,8 +95,8 @@ const AddInstanceTypeModal: React.FC<AddInstanceTypeModalProps> = ({
     onCancel();
   };
 
-  const onFinish = async (values: FormData) => {
-    await run(() => onOk({ ...values }));
+  const onFinish = async (clusterId: number, values: FormData) => {
+    await run(() => onOk(clusterId, { ...values }));
   };
 
   return (
@@ -103,9 +132,11 @@ const AddInstanceTypeModal: React.FC<AddInstanceTypeModalProps> = ({
         <GPUServiceInstanceTypeForm
           ref={form}
           open={open}
+          clusterList={clusterList}
           selectedFlavor={selectedFlavor}
           flavorList={flavorList}
           flavorLoading={flavorLoading}
+          onClusterChange={handleClusterChange}
           onFlavorChange={setSelectedFlavor}
           onFinish={onFinish}
           onFinishFailed={release}

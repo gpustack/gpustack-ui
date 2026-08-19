@@ -173,6 +173,8 @@ export default {
   'gpuservice.instanceType.localStorage.tip': 'Maximum available disk',
   'gpuservice.instanceType.notSliceable': 'Not Sliceable',
   'gpuservice.instanceType.filter.name': 'Search by name',
+  'gpuservice.instanceType.clusterUnavailable':
+    'The cluster did not respond, most likely because it has no ready worker. Check the cluster and try again.',
   'gpuservice.instance.disk': 'Disk',
   'gpuservice.table.count': 'Count',
   'gpuservice.instance.disk.system': 'System Disk',

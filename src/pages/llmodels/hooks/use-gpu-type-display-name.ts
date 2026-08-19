@@ -25,7 +25,18 @@ const fetchClusterTypes = async (clusterId: number) => {
   requested.add(clusterId);
   const store = getDefaultStore();
   try {
-    const res = await queryGPUInstanceTypes({ cluster_id: clusterId });
+    // Stays on the default record read, unlike the deploy form's GPU type
+    // picker: only `spec.displayName` is read here, never the resource ledger
+    // the record table drops. That also spares a proxy round-trip into the
+    // cluster, and cannot fail because the cluster has no ready worker.
+    //
+    // `page: -1` because that read is paginated (100 per page by default) while
+    // the cluster proxy it replaced returned the catalog whole: this map has to
+    // answer for every type a deployment may reference, not the newest 100.
+    const res = await queryGPUInstanceTypes({
+      cluster_id: clusterId,
+      page: -1
+    });
     const names = (res?.items || []).reduce(
       (acc: Record<string, string>, item) => {
         if (item.spec?.displayName) {

@@ -45,6 +45,8 @@ export default {
   'menu.resources.clusterDetail': 'Cluster Detail',
   'menu.resources.clusterCreate': 'Create Cluster',
   'menu.models.backendsList': 'Inference Backends',
+  'menu.models.kvCache': 'KV Cache',
+  'menu.models.kvCacheDetail': 'KV Cache Details',
   'menu.gpuService': 'GPU Service',
   'menu.gpuService.instances': 'GPU Instances',
   'menu.gpuService.instanceTypes': 'Instance Types',

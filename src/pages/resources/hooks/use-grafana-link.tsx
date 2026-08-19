@@ -6,7 +6,7 @@ import { Button } from 'antd';
 import { useAtomValue } from 'jotai';
 
 const useGranfanaLink = (options: {
-  type: 'model' | 'worker' | 'instance' | 'cluster';
+  type: 'model' | 'worker' | 'instance' | 'cluster' | 'cache-service';
 }) => {
   const intl = useIntl();
   const systemConfig = useAtomValue(systemConfigAtom);
@@ -41,6 +41,13 @@ const useGranfanaLink = (options: {
     );
   };
 
+  const goToCacheServiceGrafana = (row: { id: number }) => {
+    window.open(
+      `/${GPUSTACK_API_BASE_URL}/cache-services/${row.id}/dashboard`,
+      '_blank'
+    );
+  };
+
   const goToGrafana = (row: { id: number }) => {
     if (options.type === 'model') {
       goToModelGrafana(row);
@@ -50,6 +57,8 @@ const useGranfanaLink = (options: {
       goToInstanceGrafana(row);
     } else if (options.type === 'cluster') {
       goToClusterGrafana(row);
+    } else if (options.type === 'cache-service') {
+      goToCacheServiceGrafana(row);
     }
   };
 
@@ -64,11 +73,21 @@ const useGranfanaLink = (options: {
     window.open(`${grafanaUrl}/d/${workerURL}/gpustack-worker`, '_blank');
   };
 
+  const cacheServiceEntry = () => {
+    const dashboardUid = systemConfig?.grafana_cache_service_dashboard_uid;
+    window.open(
+      `${grafanaUrl}/d/${dashboardUid}/gpustack-cache-service`,
+      '_blank'
+    );
+  };
+
   const handleClick = () => {
     if (options.type === 'model') {
       modelEntry();
     } else if (options.type === 'worker' || options.type === 'cluster') {
       workerEntry();
+    } else if (options.type === 'cache-service') {
+      cacheServiceEntry();
     }
   };
 

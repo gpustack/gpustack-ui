@@ -21,6 +21,8 @@ export interface GPUDeviceItem {
   uuid: string;
   name: string;
   vendor: string;
+  // device runtime backend, e.g. cuda / rocm / cann
+  type?: string;
   index: number;
   core: {
     total: number;

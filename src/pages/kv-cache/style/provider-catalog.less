@@ -1,0 +1,132 @@
+.provider-catalog {
+  // single column: the cards live in the service drawer (600px wide,
+  // ~552px of content), too narrow for two readable columns
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  // the drawer's scroll container carries no block padding of its own
+  padding-bottom: 16px;
+
+  // follows the model catalog card look: bordered card, tinted hover,
+  // title row with a 32px brand image, tinted footer tags
+  .provider-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    padding: 16px;
+    overflow: hidden;
+    border: 1px solid var(--ant-color-border);
+    border-radius: var(--ant-border-radius-lg);
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--ant-color-fill-tertiary);
+    }
+
+    // the provider the flow already holds, marked when stepping back
+    &.active {
+      border-color: var(--ant-color-primary);
+    }
+
+    .title {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 12px;
+      width: 100%;
+      font-size: var(--font-size-middle);
+      font-weight: var(--font-weight-500);
+
+      .tag-item {
+        flex: none;
+      }
+    }
+
+    .frameworks {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+
+      .label {
+        margin-right: 4px;
+        color: var(--ant-color-text-tertiary);
+        font-size: var(--font-size-small);
+      }
+
+      .tag-item {
+        flex: none;
+      }
+    }
+
+    .img {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex: none;
+      width: 32px;
+      height: 32px;
+      border-radius: var(--ant-border-radius);
+      overflow: hidden;
+
+      img {
+        height: 32px;
+        object-fit: contain;
+      }
+
+      .fallback-icon {
+        font-size: 24px;
+        color: var(--ant-color-text-tertiary);
+      }
+    }
+
+    .desc {
+      width: 100%;
+      // two ellipsis lines; reserved even when empty so footers align
+      min-height: 40px;
+      margin-bottom: 0;
+      overflow: hidden;
+      font-size: var(--font-size-small);
+      color: var(--ant-color-text-tertiary);
+    }
+
+    .item-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .tags {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tag-item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 22px;
+      padding: 2px 6px;
+      font-size: 12px;
+      border-radius: 4px;
+    }
+
+    .links {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: var(--font-size-small);
+      white-space: nowrap;
+
+      a {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+    }
+  }
+}

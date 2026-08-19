@@ -44,6 +44,8 @@ export default {
   'menu.resources.clusterDetail': 'Детали кластера',
   'menu.resources.clusterCreate': 'Создать кластер',
   'menu.models.backendsList': 'Бэкенды запуска',
+  'menu.models.kvCache': 'KV Cache',
+  'menu.models.kvCacheDetail': 'KV Cache Details',
   'menu.settings': 'Settings',
   'menu.gpuService': 'GPU Service',
   'menu.gpuService.instances': 'GPU Instances',

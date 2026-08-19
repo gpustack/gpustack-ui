@@ -127,6 +127,9 @@ export interface FormData {
   cluster_id: number;
   extended_kv_cache: {
     enabled: boolean;
+    // absent mode means 'local' (legacy deployments)
+    mode?: 'local' | 'shared';
+    cache_service_id?: number | null;
     chunk_size: number;
     ram_ratio: number;
     ram_size: number;
@@ -190,6 +193,14 @@ export interface ModelInstanceListItem {
   distributed_servers?: DistributedServers;
   computed_resource_claim?: ComputedResourceClaim;
   injected_backend_parameters?: string[];
+  // Present only for shared-KV-cache deployments; injected=false means the
+  // instance started without the shared cache and fell back to local mode.
+  cache_config?: {
+    injected: boolean;
+    reason?: string;
+    cache_service_name?: string;
+    cache_service_id?: number;
+  };
   s3_address: string;
   worker_id: number;
   gpu_indexes?: number[];
@@ -294,6 +305,9 @@ export interface CatalogSpec {
   };
   extended_kv_cache: {
     enabled: boolean;
+    // absent mode means 'local' (legacy deployments)
+    mode?: 'local' | 'shared';
+    cache_service_id?: number | null;
     chunk_size: number;
     max_local_cpu_size: number;
     remote_url: string;

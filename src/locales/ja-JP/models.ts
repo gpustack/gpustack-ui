@@ -236,6 +236,14 @@ export default {
     'Extended KV cache and speculative decoding are only available with built-in backends (vLLM / SGLang), Please switch the backend to enable them.',
   'models.form.kvCache.tips2':
     'Only supported when using built-in inference backends (vLLM or SGLang).',
+  'models.form.kvCache.backend': 'Cache Backend',
+  'models.form.kvCache.local': 'In-Process Cache',
+  'models.form.kvCache.service.tips':
+    'Only cache services in the same cluster and compatible with the selected backend are listed.',
+  'models.form.kvCache.shared.builtinBackends':
+    'Cache Service is only supported with the built-in vLLM and SGLang backends.',
+  'models.kvCache.degraded.tips':
+    'Shared KV cache is not active for this instance',
   'models.form.scheduling': 'Scheduling',
   'models.form.scaling': 'スケジュールスケーリング',
   'models.form.scaling.enable': 'スケジュールスケーリングを有効化',

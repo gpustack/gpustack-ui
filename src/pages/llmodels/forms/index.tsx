@@ -204,6 +204,9 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         }
       };
     }
+    // both vLLM and SGLang attach to shared cache services; a saved
+    // shared selection survives switching between them (availability is
+    // re-checked by the KV cache form's own options sync)
     return {};
   };
 
@@ -478,6 +481,8 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
             generic_proxy: false,
             extended_kv_cache: {
               enabled: false,
+              mode: 'local',
+              cache_service_id: null,
               chunk_size: null,
               ram_ratio: 1.2,
               ram_size: null

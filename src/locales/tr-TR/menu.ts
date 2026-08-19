@@ -43,6 +43,8 @@ export default {
   'menu.resources.clusterDetail': 'Küme Detayı',
   'menu.resources.clusterCreate': 'Küme Oluştur',
   'menu.models.backendsList': 'Çıkarım Altyapıları',
+  'menu.models.kvCache': 'KV Cache',
+  'menu.models.kvCacheDetail': 'KV Cache Details',
   'menu.models.instances': 'Instances',
   'menu.settings': 'Settings',
   'menu.gpuService': 'GPU Service',

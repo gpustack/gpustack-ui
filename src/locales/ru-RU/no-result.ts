@@ -80,7 +80,11 @@ export default {
   'noresult.gpuservice.sshkey.title': 'Нет открытых ключей SSH',
   'noresult.gpuservice.sshkey.subTitle': 'Открытые ключи SSH ещё не добавлены.',
   'noresult.gpuservice.sshkey.nofound':
-    'Подходящие открытые ключи SSH не найдены.'
+    'Подходящие открытые ключи SSH не найдены.',
+  'noresult.kvCache.title': 'No cache services yet',
+  'noresult.kvCache.subTitle':
+    'Create a managed cache service or register an external one to accelerate KV cache.',
+  'noresult.kvCache.nofound': 'No matching cache services found.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

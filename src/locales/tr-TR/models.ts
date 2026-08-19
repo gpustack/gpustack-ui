@@ -235,6 +235,16 @@ export default {
     'Genişletilmiş KV önbellek ve spekülatif çözümleme yalnızca yerleşik altyapılarda (vLLM / SGLang) kullanılabilir. Etkinleştirmek için lütfen altyapıyı değiştirin.',
   'models.form.kvCache.tips2':
     'Yalnızca yerleşik çıkarım altyapıları (vLLM veya SGLang) kullanılırken desteklenir.',
+  'models.form.kvCache.backend': 'Cache Backend',
+  'models.form.kvCache.local': 'In-Process Cache',
+  'models.form.kvCache.service.tips':
+    'Only cache services in the same cluster and compatible with the selected backend are listed.',
+  'models.form.kvCache.shared.builtinBackends':
+    'Cache Service yalnızca yerleşik vLLM ve SGLang arka uçlarıyla desteklenir.',
+  'models.kvCache.degraded.tips':
+    'Shared KV cache is not active for this instance',
+  'models.kvCache.endpointDead.tips':
+    'The shared cache this instance attached to is no longer available; restart the instance to recover',
   'models.form.scheduling': 'Zamanlama',
   'models.form.scaling': 'Zamanlanmış Ölçekleme',
   'models.form.scaling.enable': 'Zamanlanmış ölçeklemeyi etkinleştir',

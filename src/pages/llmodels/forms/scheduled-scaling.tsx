@@ -351,7 +351,7 @@ const useStyles = createStyles(({ css }) => ({
   `,
   sectionCard: css`
     border: 1px solid var(--ant-color-border);
-    border-radius: 8px;
+    border-radius: 6px;
     padding: 16px 12px 12px;
     margin-bottom: 8px;
     .section-title {

@@ -4,7 +4,11 @@ import DarkMask from '@/components/dark-mask';
 import '@/components/iconfont/iconfont.js';
 import PluginExtraFields from '@/components/plugin-extra-fields';
 import routeCachekey from '@/config/route-cachekey';
-import { DEFAULT_ENTER_PAGE, GPUSTACK_API_BASE_URL } from '@/config/settings';
+import {
+  BASE_PATH,
+  DEFAULT_ENTER_PAGE,
+  GPUSTACK_API_BASE_URL
+} from '@/config/settings';
 import { COLOR_PRIMARY } from '@/config/theme';
 import useCurrentUser from '@/hooks/use-current-user';
 import useTableFetch from '@/hooks/use-table-fetch';
@@ -361,7 +365,12 @@ export default (props: any) => {
       <App component={false}>
         <CoreUIProvider
           config={{
-            apiBaseUrl: GPUSTACK_API_BASE_URL,
+            // core-ui's raw-`fetch` hooks (LogsViewer, useDownloadStream) build
+            // their URL as `${apiBaseUrl}${url}` outside axios, so the mount
+            // prefix has to arrive here or log streaming reaches the origin root.
+            // Rooted rather than bare `v2`, which resolved against the document
+            // and so depended on the page URL keeping its trailing slash.
+            apiBaseUrl: `${BASE_PATH}/${GPUSTACK_API_BASE_URL}`,
             theme: userSettings.theme,
             iconUrl: '',
             isDarkTheme: userSettings.isDarkTheme,

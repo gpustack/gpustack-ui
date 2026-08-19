@@ -1,4 +1,5 @@
 import { ListItem as UserListItem } from '@/pages/users/config/types';
+import { withBasePath } from '@/utils/with-base-path';
 import { downloadFile, listFiles, listModels } from '@huggingface/hub';
 import { PipelineType } from '@huggingface/tasks';
 import { request } from '@umijs/max';
@@ -36,9 +37,16 @@ export const CATALOG_LIST_API = '/model-sets';
 
 export const MODEL_LORA_ADAPTER_API = '/models/adapters';
 
-const setProxyUrl = (url: string) => {
-  return `/proxy?url=${encodeURIComponent(url)}`;
-};
+// Two spellings of the same endpoint, because the two clients used below
+// disagree about who owns the mount prefix. Picking the wrong one is invisible
+// at the root — where the prefix is empty — and 404s under a subpath, so the
+// names carry the distinction instead of a comment at each call site.
+
+/** For `request`: the axios layer prepends the mount prefix via `baseURL`. */
+const proxyPath = (url: string) => `/proxy?url=${encodeURIComponent(url)}`;
+
+/** For raw `fetch`, which gets no `baseURL` treatment and needs the prefix. */
+const proxyFetchUrl = (url: string) => withBasePath(proxyPath(url));
 
 // ===================== Models =====================
 
@@ -189,7 +197,7 @@ export async function queryHuggingfaceModelDetail(
   options?: any
 ) {
   const url = `https://huggingface.co/api/models/${params.repo}`;
-  return request(setProxyUrl(url), {
+  return request(proxyPath(url), {
     method: 'GET',
     cancelToken: options?.token
   });
@@ -222,7 +230,7 @@ export async function queryModelScopeModels(
         }
       : {};
 
-  const res = await fetch(setProxyUrl(`${MODEL_SCOPE_LIST_MODEL_API}`), {
+  const res = await fetch(proxyFetchUrl(`${MODEL_SCOPE_LIST_MODEL_API}`), {
     method: 'PUT',
     signal: config?.signal,
     headers: {
@@ -246,7 +254,7 @@ export async function queryModelScopeModelDetail(
   params: { name: string },
   options?: any
 ) {
-  return request(setProxyUrl(`${MODE_SCOPE_MODEL_FIELS_API}${params.name}`), {
+  return request(proxyPath(`${MODE_SCOPE_MODEL_FIELS_API}${params.name}`), {
     method: 'GET',
     cancelToken: options?.token
   });
@@ -263,7 +271,7 @@ export async function queryModelScopeModelFiles(
       Root: ''
     }
   )}`;
-  const res = await fetch(setProxyUrl(url), {
+  const res = await fetch(proxyFetchUrl(url), {
     method: 'GET',
     signal: options?.signal,
     body: null
@@ -301,7 +309,7 @@ export async function queryHuggingfaceModels(
         ? `${_url}&sort=${params.search.sort}`
         : _url;
       try {
-        return fetch(setProxyUrl(url), {
+        return fetch(proxyFetchUrl(url), {
           ...config,
           signal: options.signal
         });
@@ -327,7 +335,7 @@ export async function queryHuggingfaceModelFiles(
     recursive: true,
     fetch(url: string, config: any) {
       try {
-        return fetch(setProxyUrl(url), {
+        return fetch(proxyFetchUrl(url), {
           ...config,
           signal: options?.signal
         });
@@ -353,7 +361,7 @@ export async function downloadModelFile(
       revision: revision,
       path: path,
       fetch(url: string, config: any) {
-        return fetch(setProxyUrl(url), {
+        return fetch(proxyFetchUrl(url), {
           ...config,
           signal: options?.signal
         });
@@ -367,7 +375,7 @@ export async function downloadModelScopeModelfile(
   options?: any
 ) {
   const url = `${MODE_SCOPE_MODEL_FIELS_API}${params.name}/resolve/master/config.json`;
-  const res = await fetch(setProxyUrl(url), {
+  const res = await fetch(proxyFetchUrl(url), {
     method: 'GET',
     signal: options?.signal
   });

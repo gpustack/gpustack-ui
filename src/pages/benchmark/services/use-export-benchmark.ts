@@ -1,5 +1,6 @@
 import { GPUSTACK_API_BASE_URL } from '@/config/settings';
 import { downloadFile } from '@/utils/download-stream';
+import { withBasePath } from '@/utils/with-base-path';
 import { message } from 'antd';
 import dayjs from 'dayjs';
 import { EXPORT_BENCHMARK_LIST } from '../apis';
@@ -18,7 +19,7 @@ export function useExportBenchmark() {
     const fileName = `${name || 'benchmark'}_${date}`;
     try {
       const res = await fetch(
-        `${GPUSTACK_API_BASE_URL}${EXPORT_BENCHMARK_LIST}`,
+        withBasePath(`/${GPUSTACK_API_BASE_URL}${EXPORT_BENCHMARK_LIST}`),
         {
           method: 'POST',
           headers: {

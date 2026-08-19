@@ -1,6 +1,6 @@
 import PluginExtraFields from '@/components/plugin-extra-fields';
 import { modelNameReg, PageAction } from '@/config';
-import { OPENAI_COMPATIBLE } from '@/config/settings';
+import { EXTERNAL_BASE_URL, OPENAI_COMPATIBLE } from '@/config/settings';
 import {
   ClusterStatusLabelMap,
   ClusterStatusValueMap
@@ -280,7 +280,7 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
           required
           description={intl.formatMessage(
             { id: 'models.form.replicas.tips' },
-            { api: `${window.location.origin}/${OPENAI_COMPATIBLE}` }
+            { api: `${EXTERNAL_BASE_URL}/${OPENAI_COMPATIBLE}` }
           )}
           min={0}
         ></CInput.Number>

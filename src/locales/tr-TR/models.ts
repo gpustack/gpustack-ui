@@ -131,6 +131,7 @@ export default {
   'models.form.releases': 'Sürümler',
   'models.form.moreparameters': 'Parametre Açıklaması',
   'models.table.vram.allocated': 'Ayrılan VRAM',
+  'models.table.vram.workers': '{n} işçi düğüm',
   'models.form.backend.warning':
     'Seçilen altyapı GGUF modellerini desteklemiyor. Lütfen Çıkarım Altyapısına GGUF desteği olan bir altyapı ekleyin.',
   'models.form.backend.warning.gguf':

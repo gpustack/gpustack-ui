@@ -133,6 +133,7 @@ export default {
   'models.form.releases': 'Релизы',
   'models.form.moreparameters': 'Описание параметров',
   'models.table.vram.allocated': 'Выделенная VRAM',
+  'models.table.vram.workers': '{n} рабочих узлов',
   'models.form.backend.warning':
     'Выбранный бэкенд не поддерживает модели GGUF. Пожалуйста, добавьте бэкенд с поддержкой GGUF в разделе Бэкенды вывода.',
   'models.form.backend.warning.gguf':

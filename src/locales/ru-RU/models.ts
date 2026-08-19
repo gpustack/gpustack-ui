@@ -240,6 +240,16 @@ export default {
     'Расширенный KV-кэш и спекулятивное декодирование доступны только для встроенных бэкендов (vLLM / SGLang). Пожалуйста, переключите бэкенд, чтобы включить их.',
   'models.form.kvCache.tips2':
     'Поддерживается только при использовании встроенных бэкендов вывода (vLLM или SGLang).',
+  'models.form.kvCache.backend': 'Cache Backend',
+  'models.form.kvCache.local': 'In-Process Cache',
+  'models.form.kvCache.service.tips':
+    'Only cache services in the same cluster and compatible with the selected backend are listed.',
+  'models.form.kvCache.shared.builtinBackends':
+    'Cache Service поддерживается только для встроенных бэкендов vLLM и SGLang.',
+  'models.kvCache.degraded.tips':
+    'Shared KV cache is not active for this instance',
+  'models.kvCache.endpointDead.tips':
+    'The shared cache this instance attached to is no longer available; restart the instance to recover',
   'models.form.scheduling': 'Планирование',
   'models.form.scaling': 'Плановое масштабирование',
   'models.form.scaling.enable': 'Включить плановое масштабирование',

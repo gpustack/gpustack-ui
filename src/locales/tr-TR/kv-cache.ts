@@ -1,0 +1,66 @@
+export default {
+  'kvCache.title': 'Cache Service',
+  'kvCache.button.add': 'Add Cache Service',
+  'kvCache.providerSelect.title': 'Select Provider',
+  'kvCache.provider.source.builtin': 'Built-in',
+  'kvCache.provider.source.community': 'Community',
+  'kvCache.provider.source.partner': 'GPUStack Certified Partner',
+  'kvCache.button.testConnection': 'Test Connection',
+  'kvCache.button.viewLogs': 'View Logs',
+  'kvCache.edit.recreate.tips':
+    'Changes take effect after the instances are deleted and recreated.',
+  'kvCache.test.success': 'Connection successful',
+  'kvCache.test.fail': 'Connection failed',
+  'kvCache.mode.managed': 'Managed',
+  'kvCache.mode.external': 'External',
+  'kvCache.table.provider': 'Provider',
+  'kvCache.table.mode': 'Mode',
+  'kvCache.table.worker': 'Worker',
+  'kvCache.table.endpoint': 'Endpoint',
+  'kvCache.table.capacity': 'Capacity (GiB)',
+  'kvCache.form.provider': 'Provider',
+  'kvCache.form.version': 'Version',
+  'kvCache.form.version.custom': 'Custom',
+  'kvCache.form.image': 'Container Image',
+  'kvCache.form.host': 'Host',
+  'kvCache.form.port': 'Port',
+  'kvCache.form.ramSize': 'RAM Size (GiB)',
+  'kvCache.check.ok.perNode':
+    'Resources are sufficient; one instance will run on each of {count} workers.',
+  'kvCache.check.ok.singleton':
+    'Resources are sufficient; the instance will run on worker {worker}.',
+  'kvCache.check.noWorkers': 'No workers match the selector.',
+  'kvCache.check.unsupportedAccel':
+    '{count} of {total} target workers use accelerators ({backends}) this version has no image for; instances there will fail to start',
+  'kvCache.form.ramSize.exceedsTotal':
+    'Exceeds the memory capacity of worker {worker} ({total} GiB).',
+  'kvCache.form.ramSize.exceedsFree':
+    'Exceeds the free memory on worker {worker} ({free} GiB free); the cache server may be OOM-killed.',
+  'kvCache.form.ramSize.perInstance': 'Applied per instance on each worker.',
+  'kvCache.form.workerSelector': 'Worker Label Selector',
+  'kvCache.form.workerSelector.tips':
+    'Runs one instance on each worker matching all labels; leave empty to cover every worker.',
+  'kvCache.form.chunkSize': 'Chunk Size',
+  'kvCache.form.chunkSize.tips':
+    'Tokens per KV cache chunk. Smaller chunks enable finer-grained reuse at higher overhead. Leave empty to use the engine default.',
+  'kvCache.form.advanced': 'Advanced',
+  'kvCache.form.parameters': 'Parameters',
+  'kvCache.form.env': 'Environment Variables',
+  'kvCache.form.l2Backend': 'L2 Storage Backend',
+  'kvCache.form.l2Backend.add': 'Add Backend',
+  'kvCache.form.l2Backend.backend': 'Backend',
+  'kvCache.form.l2Backend.type': 'Type',
+  'kvCache.form.l2Backend.tips':
+    'Spill KV cache to larger secondary storage tiers. Entries are prioritized in order: reads prefer the first; writes go to all.',
+  'kvCache.form.metricsPort': 'Metrics Port (Prometheus)',
+  'kvCache.form.metricsPort.tips':
+    'Prometheus metrics port of the external cache service, used to collect monitoring data.',
+  'kvCache.endpoint.everyNode': 'All workers',
+  'kvCache.detail.overview': 'Overview',
+  'kvCache.detail.capacity': 'Capacity',
+  'kvCache.detail.instances': 'Instances',
+  'kvCache.edit.title': '{name} düzenle',
+  'kvCache.instances.loadFailed': 'Örnekler yüklenemedi; yeniden deneniyor',
+  'kvCache.instances.empty': 'No instances yet',
+  'kvCache.detail.deployments': 'Deployments'
+};

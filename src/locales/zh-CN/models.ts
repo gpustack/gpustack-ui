@@ -225,6 +225,15 @@ export default {
   'models.form.kvCache.tips':
     '扩展 KV 缓存和推测解码仅在内置后端（vLLM / SGLang）可用，请切换后端以启用。',
   'models.form.kvCache.tips2': '仅在使用内置推理后端（vLLM 或 SGLang）时支持。',
+  'models.form.kvCache.backend': '缓存后端',
+  'models.form.kvCache.local': '进程内缓存',
+  'models.form.kvCache.service.tips':
+    '仅列出与部署位于同一集群且与所选后端兼容的缓存服务。',
+  'models.form.kvCache.shared.builtinBackends':
+    '缓存服务仅支持内置 vLLM 与 SGLang 后端。',
+  'models.kvCache.degraded.tips': '该实例的共享缓存未生效',
+  'models.kvCache.endpointDead.tips':
+    '该实例启动时接入的共享缓存当前不可用，重启实例以恢复',
   'models.form.scheduling': '调度',
   'models.form.scaling': '定时伸缩',
   'models.form.scaling.enable': '启用定时伸缩',

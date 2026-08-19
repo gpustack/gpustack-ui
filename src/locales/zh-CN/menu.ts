@@ -45,6 +45,8 @@ export default {
   'menu.resources.clusterDetail': '集群详情',
   'menu.resources.clusterCreate': '创建集群',
   'menu.models.backendsList': '推理后端',
+  'menu.models.kvCache': '缓存加速',
+  'menu.models.kvCacheDetail': '缓存加速详情',
   'menu.gpuService': 'GPU 服务',
   'menu.gpuService.instances': 'GPU 实例',
   'menu.gpuService.instanceTypes': '实例类型',

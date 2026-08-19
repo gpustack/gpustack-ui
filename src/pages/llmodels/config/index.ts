@@ -412,6 +412,8 @@ export const DO_NOT_TRIGGER_CHECK_COMPATIBILITY = [
   'run_command',
   'image_name',
   'extended_kv_cache.enabled',
+  'extended_kv_cache.mode',
+  'extended_kv_cache.cache_service_id',
   'extended_kv_cache.ram_size',
   'speculative_config.enabled',
   'speculative_config.draft_model',

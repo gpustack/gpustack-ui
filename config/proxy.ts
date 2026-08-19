@@ -7,7 +7,10 @@ const proxyTableList = [
   'version',
   'proxy',
   'update',
-  'grafana'
+  'grafana',
+  // backend-served static assets (e.g. cache-provider catalog icons under
+  // /static/catalog_icons); without this the dev server 404s them
+  'static'
 ];
 
 // @ts-ingore

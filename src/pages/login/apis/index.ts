@@ -27,9 +27,18 @@ export const login = async (
 };
 
 export const logout = async (userInfo?: any) => {
-  const res = await request(`${AUTH_API}/logout`, {
-    method: 'POST'
-  });
+  let res: any;
+  try {
+    res = await request(`${AUTH_API}/logout`, {
+      method: 'POST'
+    });
+  } catch {
+    // Offline, 5xx, session already gone — swallow it. The caller asked to
+    // leave, and a half-done logout is worse than a stale server session:
+    // rejecting here skips the caller's `navigate(loginPath)` and strands
+    // the user on a page whose identity was just cleared. The request layer
+    // has already surfaced whatever the server said.
+  }
   clearStorageUserSettings();
   clearAtomStorage(userAtom);
   clearAtomStorage(hideModalTemporarilyAtom);

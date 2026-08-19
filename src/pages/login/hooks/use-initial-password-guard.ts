@@ -1,5 +1,5 @@
-import { INITIAL_PASSWORD_KEY, USER_INFO_KEY, userAtom } from '@/atoms/user';
-import { clearAtomStorage, nsSessionJSONStorage } from '@/atoms/utils';
+import { INITIAL_PASSWORD_KEY, USER_INFO_KEY } from '@/atoms/user';
+import { nsSessionJSONStorage } from '@/atoms/utils';
 import { nsLocalJSONStorage } from '@gpustack/core-ui/utils';
 import { useEffect, useState } from 'react';
 import { logout } from '../apis';
@@ -48,19 +48,15 @@ export const useInitialPasswordGuard = (): boolean => {
       return;
     }
     // `logout` clears `userAtom`, and that is what releases the layout
-    // redirect and swaps this page back to the login form.
-    logout()
-      .catch(() => {
-        // Server-side logout failed (offline, 5xx). Drop the local
-        // identity anyway — keeping it just re-renders the dead form.
-        clearAtomStorage(userAtom);
-      })
-      .finally(() => {
-        // Hand the render branch back to `userInfo`: the identity is
-        // gone, so it resolves to the login form on its own, and a login
-        // in this same page load must not be second-guessed.
-        setCredentialLost(false);
-      });
+    // redirect and swaps this page back to the login form. It clears
+    // locally even when the server call fails, so there is nothing to
+    // fall back to here.
+    logout().finally(() => {
+      // Hand the render branch back to `userInfo`: the identity is gone,
+      // so it resolves to the login form on its own, and a login in this
+      // same page load must not be second-guessed.
+      setCredentialLost(false);
+    });
     // Boot check — runs once, never re-armed for this page load.
   }, []);
 

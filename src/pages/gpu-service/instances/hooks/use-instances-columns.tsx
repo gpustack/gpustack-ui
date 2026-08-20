@@ -297,7 +297,8 @@ const useInstancesColumns = ({
         // The widest cell in the table — a resource summary plus its tags — so
         // it gets a floor rather than a fixed width and keeps its share of any
         // leftover room.
-        minWidth: 150,
+        minWidth: 160,
+        maxWidth: 200,
         render: (_text: any, record: ListItem) =>
           renderInstanceType(record, { intl, pvCapacityByName })
       },

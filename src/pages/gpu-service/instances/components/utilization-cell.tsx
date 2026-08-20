@@ -1,6 +1,6 @@
 import HalfArcGauge from '@/pages/_components/half-arc-gauge';
 import { useIntl } from '@umijs/max';
-import { Flex, Popover, Progress, Tooltip } from 'antd';
+import { Flex, Progress, Tooltip } from 'antd';
 import _ from 'lodash';
 import React from 'react';
 import { AcceleratorGaugeKeys, GaugeLabelIdMap } from '../config';
@@ -158,8 +158,16 @@ const UtilizationCell: React.FC<{
 
   if (hasBreakdown) {
     return (
-      <Popover
-        content={
+      <Tooltip
+        styles={{
+          container: {
+            backgroundColor: 'var(--color-spotlight-bg)'
+          }
+        }}
+        classNames={{
+          root: 'light-downloading-tooltip'
+        }}
+        title={
           <PerCardBars
             gaugeKey={gaugeKey}
             items={state.items as AcceleratorGaugeItem[]}
@@ -167,7 +175,7 @@ const UtilizationCell: React.FC<{
         }
       >
         {gauge}
-      </Popover>
+      </Tooltip>
     );
   }
 

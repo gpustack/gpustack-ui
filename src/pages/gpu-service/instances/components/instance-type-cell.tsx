@@ -85,7 +85,7 @@ const InstanceTypeCell: React.FC<{
   );
 
   return (
-    <Flex align="center" style={{ gap: 6 }}>
+    <Flex align="center" style={{ gap: 6, width: '100%' }}>
       <AutoTooltip ghost title={<span>{title}</span>}>
         <span className="text-primary">{title}</span>
       </AutoTooltip>

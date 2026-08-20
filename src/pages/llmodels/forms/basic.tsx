@@ -16,7 +16,7 @@ import { Form } from 'antd';
 import { useEffect, useMemo } from 'react';
 import { DeployFormKeyMap, sourceOptions } from '../config';
 import { useFormContext } from '../config/form-context';
-import { FormData } from '../config/types';
+import { ClusterOption, FormData } from '../config/types';
 import styles from '../style/cluster-option.module.less';
 import BackendForm from './backend';
 import CatalogFrom from './catalog';
@@ -28,19 +28,7 @@ import OnlineSource from './online-source';
 interface BasicFormProps {
   sourceDisable?: boolean;
   sourceList?: Global.BaseOption<string>[];
-  clusterList: Global.BaseOption<
-    number,
-    {
-      provider: string;
-      state: string;
-      is_default: boolean;
-      gpu_instance_enabled?: boolean;
-      owner_principal_id?: number;
-      workers: number;
-      ready_workers: number;
-      gpus: number;
-    }
-  >[];
+  clusterList: ClusterOption[];
   handleClusterChange: (value: number) => void;
   onClusterSeed: (value: number) => void;
   onSourceChange?: (value: string) => void;

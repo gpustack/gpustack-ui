@@ -1,5 +1,6 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
+import { ProviderValueMap } from '@/pages/cluster-management/config';
 import {
   CollapsePanel,
   IconFont,
@@ -26,6 +27,7 @@ import {
 import { FormContext } from '../config/form-context';
 import {
   BackendOption,
+  ClusterOption,
   DeployFormKey,
   FormData,
   LoraListItem,
@@ -64,7 +66,7 @@ interface DataFormProps {
   formKey: DeployFormKey;
   sourceDisable?: boolean;
   sourceList?: Global.BaseOption<string>[];
-  clusterList: Global.BaseOption<number>[];
+  clusterList: ClusterOption[];
   fields?: string[]; // control some fields to show in the form
   clearCacheFormValues?: () => void;
   onValuesChange?: (changedValues: any, allValues: any) => void;
@@ -256,12 +258,19 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   // options for the new cluster and reset the per-cluster GPU selections.
   // The schedule mode itself is kept: switching cluster must not kick a
   // vGPU-mode form back to Auto (the auto-seed fires exactly on that path).
+  // The manual mode's GPU source is the exception — a Docker cluster publishes
+  // no InstanceTypes, so vGPU slicing has nothing to select there and the
+  // source falls back to whole cards (schedule-type hides the switch to match).
   const applyClusterScopedOptions = (value: number) => {
     getGPUOptionList({ clusterId: value });
     getBackendOptions({ cluster_id: value });
+    const isDocker =
+      clusterList.find((item) => item.value === value)?.provider ===
+      ProviderValueMap.Docker;
     form.setFieldsValue({
       gpu_selector: null,
-      gpu_type_selector: null
+      gpu_type_selector: null,
+      ...(isDocker ? { manualGpuMode: ManualGPUModeMap.FullGPU } : {})
     });
   };
 
@@ -433,6 +442,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         action: action,
         realAction: realAction,
         gpuOptions: gpuOptions,
+        clusterList: clusterList,
         backendOptions: backendOptions,
         flatBackendOptions: flatBackendOptions,
         workerLabelOptions: workerLabelOptions,

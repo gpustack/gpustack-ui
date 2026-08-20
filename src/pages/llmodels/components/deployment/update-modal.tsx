@@ -9,7 +9,7 @@ import {
   DO_NOT_NOTIFY_RECREATE,
   ScheduleValueMap
 } from '../../config';
-import { FormData } from '../../config/types';
+import { ClusterOption, FormData } from '../../config/types';
 import { backendOptionsMap } from '../../constants/backend-parameters';
 import DataForm from '../../forms';
 import { useCheckCompatibility } from '../../hooks';
@@ -25,10 +25,7 @@ type AddModalProps = {
     isGGUF: boolean;
     realAction?: PageActionType;
   };
-  clusterList: Global.BaseOption<
-    number,
-    { provider: string; state: string | number }
-  >[];
+  clusterList: ClusterOption[];
   onOk: (values: FormData) => void | Promise<void>;
   onCancel: () => void;
 };

@@ -9,6 +9,7 @@ import {
 import {
   Input as CInput,
   InputNumber as CInputNumber,
+  LabelInfo,
   MultipleSelect,
   Select as SealSelect,
   TimePicker
@@ -1051,16 +1052,12 @@ const ScheduledScalingForm: React.FC = () => {
   return (
     <div className={styles.sectionCard}>
       <div className="section-title" style={{ marginBottom: enabled ? 12 : 0 }}>
-        <span>
-          {intl.formatMessage({ id: 'models.form.scaling' })}
-          <Tooltip
-            title={intl.formatMessage({
-              id: 'models.form.scaling.enable.tips'
-            })}
-          >
-            <QuestionCircleOutlined className="title-help" />
-          </Tooltip>
-        </span>
+        <LabelInfo
+          label={intl.formatMessage({ id: 'models.form.scaling' })}
+          description={intl.formatMessage({
+            id: 'models.form.scaling.enable.tips'
+          })}
+        ></LabelInfo>
         <Form.Item
           noStyle
           name={['scaling_schedule', 'enabled']}

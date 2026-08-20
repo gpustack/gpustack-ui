@@ -468,6 +468,9 @@ const VGPUTypeForm: React.FC = () => {
     <div data-field="gpuTypeSelector">
       <Form.Item<FormData>
         name={['gpu_type_selector', 'type']}
+        style={{
+          marginBottom: 12
+        }}
         rules={[
           {
             required: true,

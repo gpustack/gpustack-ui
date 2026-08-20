@@ -66,6 +66,24 @@ export interface GPUTypeSelector {
 
 export type DeployFormKey = 'deployment' | 'catalog';
 
+/**
+ * An entry of the deploy form's cluster dropdown. `provider` is what tells the
+ * form which GPU sources the target supports (ProviderValueMap).
+ */
+export type ClusterOption = Global.BaseOption<
+  number,
+  {
+    provider: string;
+    state: string;
+    is_default: boolean;
+    gpu_instance_enabled?: boolean;
+    owner_principal_id?: number;
+    workers: number;
+    ready_workers: number;
+    gpus: number;
+  }
+>;
+
 export type SourceType =
   | 'huggingface'
   | 'model_scope'

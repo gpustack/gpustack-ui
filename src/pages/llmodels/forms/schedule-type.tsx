@@ -1,4 +1,6 @@
+import { ProviderValueMap } from '@/pages/cluster-management/config';
 import {
+  LabelInfo,
   LabelSelector,
   LabelSelectorProvider,
   Cascader as SealCascader,
@@ -34,9 +36,9 @@ const InputWrapper = styled.div`
 const useStyles = createStyles(({ css }) => ({
   sectionCard: css`
     border: 1px solid var(--ant-color-border);
-    border-radius: 8px;
-    padding: 16px 12px 4px;
-    margin-bottom: 8px;
+    border-radius: 6px;
+    padding: 12px 12px 0px;
+    margin-bottom: 12px;
     .section-title {
       margin-bottom: 12px;
       font-size: 14px;
@@ -92,16 +94,29 @@ const ScheduleTypeForm: React.FC = () => {
     gpuOptions,
     workerLabelOptions,
     clearCacheFormValues,
-    initialValues
+    initialValues,
+    clusterList
   } = useFormContext();
   const { getRuleMessage } = useAppUtils();
   const form = Form.useFormInstance();
   const scheduleType = Form.useWatch('scheduleType', form);
   const manualGpuMode = Form.useWatch('manualGpuMode', form);
+  const clusterId = Form.useWatch('cluster_id', form);
   const GPUsPerReplicas = Form.useWatch(
     ['gpu_selector', 'gpus_per_replica'],
     form
   );
+
+  // vGPU slicing requests an InstanceType out of the cluster's own catalog,
+  // and a Docker cluster publishes none — so whole cards are the only GPU
+  // source there: hide the switch and read the mode as Full GPU whatever the
+  // field carries. Committing the field itself belongs to the cluster handler
+  // (applyClusterScopedOptions); this keeps the section in step even for a
+  // stored selection that never went through it.
+  const isDockerCluster =
+    clusterList?.find((item) => item.value === clusterId)?.provider ===
+    ProviderValueMap.Docker;
+  const gpuMode = isDockerCluster ? ManualGPUModeMap.FullGPU : manualGpuMode;
 
   // Single commit path for the Full GPU / vGPU tab: the two GPU sources are
   // mutually exclusive, so seed the one the tab owns and null the other —
@@ -135,9 +150,12 @@ const ScheduleTypeForm: React.FC = () => {
       form.setFieldValue('gpu_type_selector', null);
       onValuesChange?.({}, form.getFieldsValue());
     } else if (value === ScheduleValueMap.Manual) {
-      // Entering manual seeds whichever source its tab currently points at.
+      // Entering manual seeds whichever source its tab currently points at —
+      // on Docker there is no tab, so it is always whole cards.
       commitManualGpuMode(
-        form.getFieldValue('manualGpuMode') || ManualGPUModeMap.FullGPU
+        isDockerCluster
+          ? ManualGPUModeMap.FullGPU
+          : form.getFieldValue('manualGpuMode') || ManualGPUModeMap.FullGPU
       );
     }
   };
@@ -216,10 +234,15 @@ const ScheduleTypeForm: React.FC = () => {
               align="center"
               justify="space-between"
             >
-              <span>
-                {intl.formatMessage({ id: 'models.form.gpuallocation' })}
-              </span>
-              <Form.Item name="manualGpuMode" noStyle>
+              <LabelInfo
+                label={intl.formatMessage({ id: 'models.form.gpuallocation' })}
+              ></LabelInfo>
+              {/* Hidden rather than unmounted on Docker: under preserve={false}
+                unmounting a field resets it to the form's initialValue, which
+                on an edit of a vGPU deployment is VGPU — the submit would then
+                take the vGPU path (dropping the whole cards the user picked)
+                for a cluster that cannot serve it. */}
+              <Form.Item name="manualGpuMode" noStyle hidden={isDockerCluster}>
                 <Segmented
                   size="middle"
                   type="rounded"
@@ -242,13 +265,16 @@ const ScheduleTypeForm: React.FC = () => {
                 />
               </Form.Item>
             </Flex>
-            {manualGpuMode === ManualGPUModeMap.VGPU ? (
+            {gpuMode === ManualGPUModeMap.VGPU ? (
               <VGPUTypeForm />
             ) : (
               <>
                 <Form.Item
                   data-field="gpu_selector.gpu_ids"
                   name={['gpu_selector', 'gpu_ids']}
+                  style={{
+                    marginBottom: 16
+                  }}
                   rules={[
                     {
                       required: true,
@@ -293,7 +319,10 @@ const ScheduleTypeForm: React.FC = () => {
                     onChange={handleGpuSelectorChange}
                   ></SealCascader>
                 </Form.Item>
-                <Form.Item name={['gpu_selector', 'gpus_per_replica']}>
+                <Form.Item
+                  name={['gpu_selector', 'gpus_per_replica']}
+                  style={{ marginBottom: 12 }}
+                >
                   <SealSelect
                     label={intl.formatMessage({
                       id: 'models.form.gpusperreplica'

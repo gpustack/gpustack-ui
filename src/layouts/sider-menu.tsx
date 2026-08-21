@@ -1,11 +1,13 @@
 import { collapsedMenuGroupsAtom } from '@/atoms/settings';
 import { CaretDownOutlined } from '@ant-design/icons';
 import { IconFont, OverlayScroller } from '@gpustack/core-ui';
-import { Link, useLocation } from '@umijs/max';
+import { Link, useAppData, useLocation } from '@umijs/max';
+import { useMemoizedFn } from 'ahooks';
 import { Tooltip } from 'antd';
 import { createStyles, type FullToken } from 'antd-style';
 import { useAtom } from 'jotai';
-import React, { useMemo } from 'react';
+import { debounce } from 'lodash';
+import React, { useEffect, useMemo } from 'react';
 
 interface MenuItem {
   icon?: string;
@@ -200,6 +202,44 @@ const SiderMenu: React.FC<SiderMenuProps> = (props) => {
     [collapsedGroups]
   );
 
+  const { preloadRoute } = useAppData();
+
+  // Pinned because `preloadRoute` is a useCallback over umi's own
+  // clientLoaderData, so its identity is not ours to rely on. Without this the
+  // debounce below would be rebuilt whenever that changed, and a re-render
+  // landing inside the wait would swap the instance — the cleanup cancels the
+  // pending call, the new instance never schedules one, and preloading quietly
+  // stops. Nothing surfaces when that happens.
+  const preload = useMemoizedFn((path: string) => preloadRoute?.(path));
+
+  // Half a second is long for a hover intent, and deliberately so: this is a
+  // bet that cannot be called off. Once `preloadRoute` fires the chunks go out
+  // through webpack's script injection, which has no abort path, and a request
+  // already in flight is never preempted by a later one of the same priority —
+  // route chunks are all Low. Over HTTP/1.1, which is how GPUStack is usually
+  // reached, a route's several chunks then hold most of the six-connection
+  // budget until they land, so guessing wrong delays whichever page the user
+  // did pick by however long the wrong one takes. The upside is capped at the
+  // pause-to-click interval; the downside is not. Waiting for a real decision
+  // is the only hedge available, and it disposes of a pointer sweeping the rail
+  // for free.
+  //
+  // The one published figure nearby is Windows' SPI_GETMOUSEHOVERTIME, 400ms —
+  // the OS-level idea of a hover that means something, and what tooltips appear
+  // on, so users carry an internalised sense of the interval. We sit above it
+  // rather than on it: a tooltip surfacing on a wrong guess costs nothing,
+  // where this does. The prefetch libraries all sit far below (instant.page at
+  // 65ms, umi's own default at 50ms) and none of their numbers transfer — every
+  // one assumes a cheap prefetch, meaning rel=prefetch at Lowest priority or h2
+  // with no connection to contend for.
+  //
+  // One instance for the whole menu, so the trailing call carries whichever row
+  // the pointer came to rest on and arriving somewhere new supersedes the last
+  // without needing an explicit cancel.
+  const schedulePreload = useMemo(() => debounce(preload, 500), [preload]);
+
+  useEffect(() => () => schedulePreload.cancel(), [schedulePreload]);
+
   const handleToggleGroup = (e: any, menuGroup: any) => {
     e.stopPropagation();
 
@@ -214,11 +254,20 @@ const SiderMenu: React.FC<SiderMenuProps> = (props) => {
     const selected =
       location.pathname === menuItem.path ||
       menuItem.subMenu?.includes(location.pathname);
+    const to = menuItem.path.replace('/*', '');
 
     // Keep this subtree identical in both states — the icon and the label
     // always render, and only their styles change. Branching the DOM on
     // `collapsed` would remount every row on each toggle, and would remount
     // the Link on a different parent depending on whether Tooltip wraps it.
+    //
+    // Preloading is wired by hand instead of through Link's `prefetch` prop.
+    // Tooltip clones the Link and assigns its own onMouseEnter, which lands
+    // after the one LinkWithPrefetch installs and wins — so the built-in never
+    // fires as long as Tooltip is the parent. A handler declared on the
+    // element does still run: rc-trigger calls back into the original
+    // element's props from fireEvents. `preloadRoute` is the very function the
+    // prop would have reached, so the work performed is unchanged.
     return (
       <div
         className={cx(styles.menuItemContent, 'menu-item-content')}
@@ -226,12 +275,13 @@ const SiderMenu: React.FC<SiderMenuProps> = (props) => {
       >
         <Tooltip title={collapsed ? menuItem.name : ''} placement="right">
           <Link
-            prefetch="intent"
-            to={menuItem.path.replace('/*', '')}
+            to={to}
             target={menuItem.target}
             className={cx(styles.menuItemWrapper, 'menu-item', {
               'menu-item-selected': selected
             })}
+            onMouseEnter={() => schedulePreload(to)}
+            onMouseLeave={() => schedulePreload.cancel()}
           >
             <IconFont
               type={

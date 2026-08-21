@@ -82,26 +82,32 @@ export const backendActions = [
     locale: true,
     icon: icons.Yaml
   },
-  // {
-  //   label: 'common.button.enable',
-  //   value: 'enable',
-  //   key: 'enable',
-  //   locale: true,
-  //   icon: icons.Charger,
-  //   show: (record: any) =>
-  //     !record.enabled &&
-  //     record.backend_source === BackendSourceValueMap.COMMUNITY
-  // },
-  // {
-  //   label: 'common.button.disable',
-  //   value: 'disable',
-  //   key: 'disable',
-  //   locale: true,
-  //   icon: icons.Disabled,
-  //   show: (record: any) =>
-  //     record.enabled &&
-  //     record.backend_source === BackendSourceValueMap.COMMUNITY
-  // },
+  {
+    label: 'common.button.enable',
+    value: 'enable',
+    key: 'enable',
+    locale: true,
+    icon: icons.Charger,
+    // Re-show a hidden built-in or custom backend in the deploy dropdown.
+    // Community keeps its own enable flow via the community drawer.
+    show: (record: any) =>
+      record.enabled === false &&
+      (record.is_built_in ||
+        record.backend_source === BackendSourceValueMap.CUSTOM)
+  },
+  {
+    label: 'common.button.disable',
+    value: 'disable',
+    key: 'disable',
+    locale: true,
+    icon: icons.Disabled,
+    // Hide the whole backend from the deploy dropdown without deleting it —
+    // the only way to hide an undeletable built-in. null enabled = enabled.
+    show: (record: any) =>
+      record.enabled !== false &&
+      (record.is_built_in ||
+        record.backend_source === BackendSourceValueMap.CUSTOM)
+  },
   {
     label: 'common.button.delete',
     value: 'delete',

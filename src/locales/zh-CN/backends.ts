@@ -51,5 +51,8 @@ export default {
   'backend.add.community': '社区',
   'backend.community.title': '社区后端市场',
   'backend.form.add.hint':
-    '如果需要使用内置后端（如 vLLM、SGLang、MindIE）的其他版本，请在对应后端中添加新版本，而不是添加自定义后端。'
+    '如果需要使用内置后端（如 vLLM、SGLang、MindIE）的其他版本，请在对应后端中添加新版本，而不是添加自定义后端。',
+  'backend.version.visible': '显示',
+  'backend.version.hidden': '隐藏',
+  'backend.version.hideTip': '隐藏的版本不会出现在部署版本下拉列表中。'
 };

@@ -158,10 +158,32 @@ const BackendList = () => {
     handleSearch();
   };
 
+  const handleToggleEnabled = async (item: any) => {
+    // Hide/show a built-in or custom backend from the deploy dropdown by
+    // flipping `enabled`; the backend stays listed here for re-enabling.
+    await handleEnableBackend({
+      id: item.data.id,
+      data: {
+        ...item.data,
+        enabled: item.action === 'enable'
+      },
+      showMessage: true
+    });
+    await new Promise((resolve) => {
+      setTimeout(resolve, 300);
+    });
+    handleSearch();
+  };
+
   const handleOnSelect = async (item: any) => {
     // ================ Edit ================
     if (item.action === 'edit') {
       editBackend(PageAction.EDIT, '', item.data);
+      return;
+    }
+    // ================ Enable / Disable ================
+    if (item.action === 'enable' || item.action === 'disable') {
+      handleToggleEnabled(item);
       return;
     }
     // ================ Delete ================
@@ -319,6 +341,7 @@ const BackendList = () => {
         addVersion={handleAddVersion}
         open={openVersionInfoModal.open}
         currentData={openVersionInfoModal.currentData as ListItem}
+        onChanged={handleSearch}
         onClose={() =>
           setOpenVersionInfoModal({
             open: false,

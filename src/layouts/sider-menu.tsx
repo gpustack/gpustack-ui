@@ -2,12 +2,11 @@ import { collapsedMenuGroupsAtom } from '@/atoms/settings';
 import { CaretDownOutlined } from '@ant-design/icons';
 import { IconFont, OverlayScroller } from '@gpustack/core-ui';
 import { Link, useAppData, useLocation } from '@umijs/max';
-import { useMemoizedFn } from 'ahooks';
+import { useDebounceFn } from 'ahooks';
 import { Tooltip } from 'antd';
 import { createStyles, type FullToken } from 'antd-style';
 import { useAtom } from 'jotai';
-import { debounce } from 'lodash';
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 
 interface MenuItem {
   icon?: string;
@@ -204,14 +203,6 @@ const SiderMenu: React.FC<SiderMenuProps> = (props) => {
 
   const { preloadRoute } = useAppData();
 
-  // Pinned because `preloadRoute` is a useCallback over umi's own
-  // clientLoaderData, so its identity is not ours to rely on. Without this the
-  // debounce below would be rebuilt whenever that changed, and a re-render
-  // landing inside the wait would swap the instance — the cleanup cancels the
-  // pending call, the new instance never schedules one, and preloading quietly
-  // stops. Nothing surfaces when that happens.
-  const preload = useMemoizedFn((path: string) => preloadRoute?.(path));
-
   // Half a second is long for a hover intent, and deliberately so: this is a
   // bet that cannot be called off. Once `preloadRoute` fires the chunks go out
   // through webpack's script injection, which has no abort path, and a request
@@ -236,9 +227,10 @@ const SiderMenu: React.FC<SiderMenuProps> = (props) => {
   // One instance for the whole menu, so the trailing call carries whichever row
   // the pointer came to rest on and arriving somewhere new supersedes the last
   // without needing an explicit cancel.
-  const schedulePreload = useMemo(() => debounce(preload, 500), [preload]);
-
-  useEffect(() => () => schedulePreload.cancel(), [schedulePreload]);
+  const { run: schedulePreload, cancel: cancelPreload } = useDebounceFn(
+    (path: string) => preloadRoute?.(path),
+    { wait: 500 }
+  );
 
   const handleToggleGroup = (e: any, menuGroup: any) => {
     e.stopPropagation();
@@ -281,7 +273,7 @@ const SiderMenu: React.FC<SiderMenuProps> = (props) => {
               'menu-item-selected': selected
             })}
             onMouseEnter={() => schedulePreload(to)}
-            onMouseLeave={() => schedulePreload.cancel()}
+            onMouseLeave={cancelPreload}
           >
             <IconFont
               type={

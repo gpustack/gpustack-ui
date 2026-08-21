@@ -241,6 +241,7 @@ const ResourceFilterBar: React.FC<ResourceFilterBarProps> = (props) => {
         <PluginExtraFields
           name="ResourceUsageFilterBar"
           context={{
+            style: { width: 'max-content' },
             organizationOptions: organizationOptions || [],
             userGroupOptions: userGroupOptions || [],
             selectedOrganizations: selectedOrganizations || [],

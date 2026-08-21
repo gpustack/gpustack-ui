@@ -11,19 +11,24 @@ import {
   useBodyScroll
 } from '@gpustack/core-ui';
 import { useIntl, useNavigate } from '@umijs/max';
-import { message } from 'antd';
+import { Button, Space, message } from 'antd';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import PageBox from '../_components/page-box';
+import { useSourceConfigVisible } from '../_components/source-config';
 import { createModel, queryCatalogItemSpec, queryCatalogList } from './apis';
 import CatalogList from './components/catalog/catalog-list';
+import CatalogSourceEntry from './components/catalog/catalog-source-entry';
 import DelopyBuiltInModal from './components/deployment/deploy-builtin-modal';
 import { modelCategories, modelSourceMap } from './config';
 import { CatalogItem as CatalogItemType, FormData } from './config/types';
 
 const Catalog: React.FC = () => {
   const intl = useIntl();
+  // Gated here rather than inside the entry: a `Space` item that renders
+  // nothing still takes its gap.
+  const showSourceEntry = useSourceConfigVisible();
   const {
     dataSource,
     queryParams,
@@ -140,14 +145,28 @@ const Catalog: React.FC = () => {
         selectHolder={intl.formatMessage({ id: 'models.filter.category' })}
         marginBottom={22}
         marginTop={0}
-        buttonText={intl.formatMessage({ id: 'models.catalog.button.explore' })}
         handleSearch={handleSearch}
         handleSelectChange={handleCategoryChange}
-        handleClickPrimary={handleDeployFromOtherHubs}
         handleInputChange={handleNameChange}
         selectOptions={categoryOptions}
-        buttonIcon={<SearchOutlined />}
         widths={{ input: 230, select: 200 }}
+        // Replaces the default right side wholesale, so the props that would
+        // have built it (`buttonText` / `buttonIcon` / `handleClickPrimary`)
+        // have no effect and are not passed.
+        right={
+          <Space size={16}>
+            {showSourceEntry && (
+              <CatalogSourceEntry onSaved={handleSearch}></CatalogSourceEntry>
+            )}
+            <Button
+              icon={<SearchOutlined />}
+              type="primary"
+              onClick={handleDeployFromOtherHubs}
+            >
+              {intl.formatMessage({ id: 'models.catalog.button.explore' })}
+            </Button>
+          </Space>
+        }
       ></FilterBar>
       <InfiniteScrollerProvider
         value={{

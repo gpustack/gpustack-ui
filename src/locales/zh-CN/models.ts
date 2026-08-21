@@ -345,5 +345,9 @@ export default {
   'models.form.lora.select': '选择 LoRA',
   'models.form.lora.name': 'LoRA 名称',
   'models.form.lora.rule.empty': '输入不能为空',
-  'models.form.lora.rule.duplicate': 'LoRA name 不能重复'
+  'models.form.lora.rule.duplicate': 'LoRA name 不能重复',
+  // Model catalog source configuration
+  'models.catalog.source.title': '模型库来源',
+  'models.catalog.source.official':
+    '在随本版本打包的内置模型库之上，跟随 GPUStack 发布的官方模型库。'
 };

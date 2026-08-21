@@ -65,7 +65,9 @@ export default function useQueryBackends() {
             'default_backend_param',
             'default_env',
             'common_parameters',
-            'parameter_format'
+            'parameter_format',
+            'source_name',
+            'source_type'
           ]),
           backend_source: item.backend_source || BackendSourceValueMap.CUSTOM,
           value: item.backend_name,

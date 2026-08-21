@@ -315,5 +315,48 @@ export default {
   'common.max': 'Maks. {count}',
   'common.max.count': '{label} Sayısı',
   'common.validate.group': 'Please complete the {group} configuration',
-  'common.preferences': 'Tercihler'
+  'common.preferences': 'Tercihler',
+  // Shared by the single-slot source config drawer (src/pages/_components/source-config)
+  'common.source.manage': 'Kaynakları Yönet',
+  'common.source.type.builtin': 'Embedded',
+  'common.source.type.builtin.desc':
+    'Serves only what this release was packaged with, with no network access.',
+  'common.source.type.url': 'URL',
+  'common.source.type.url.desc': 'Fetched by the server, can auto-update.',
+  'common.source.type.file': 'Yaml Dosyası',
+  'common.source.type.file.desc':
+    'Paste the content directly; never auto-updates.',
+  'common.source.url': 'Kaynak URL',
+  'common.source.url.scheme': 'URL http:// veya https:// ile başlamalıdır',
+  'common.source.url.credentials': 'URL kimlik bilgileri içermemelidir',
+  'common.source.url.host': 'URL bir ana bilgisayar adı içermelidir',
+  'common.source.content': 'İçerik',
+  'common.source.content.hint':
+    'YAML içeriğini buraya yapıştırın veya bir dosya içe aktararak düzenleyiciye yükleyin. Yalnızca bu metin gönderilir — sunucu hiçbir dosya saklamaz.',
+  'common.source.save': 'Kaydet ve Eşitle',
+  'common.source.sync.unchanged': 'Uzak içerik değişmedi.',
+  'common.source.lastSync': 'İçerik {time} tarihinde alındı',
+  'common.source.tag.custom': 'Özel',
+  'common.source.tag.official': 'Official',
+  'common.source.empty.hint':
+    'Your own URL replaces the official source entirely.',
+  'common.source.empty.hint.file':
+    'Leave the content empty to follow the official source — {description}',
+  'common.source.reset': 'Reset to Official Source',
+  'common.source.reset.tip':
+    'Follow the official source again, applied when you save — {description}',
+  'common.source.autoUpdate': 'Auto-update',
+  'common.source.autoUpdate.interval': 'Update Interval (hours)',
+  'common.source.autoUpdate.official.tip':
+    'How often to check the official OTA server for new content. Off leaves the stored content in place until you sync it yourself.',
+  'common.source.autoUpdate.custom.tip':
+    'How often to re-fetch your URL. Off leaves your source untouched until you save or reload it.',
+  'common.source.lastUpdated': 'Last updated {time}',
+  'common.source.official.link': 'Official File',
+  'common.source.sync.official': 'Update Now',
+  'common.source.sync.custom': 'Update Now',
+  'common.source.sync.hint.dirty':
+    'Save first — Save writes the new URL and fetches it. Update Now only re-pulls the URL already saved.',
+  'common.source.load.failed':
+    'Could not read the stored configuration, so there is nothing here to save. Close and reopen to try again.'
 };

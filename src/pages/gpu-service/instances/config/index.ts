@@ -3,7 +3,12 @@ import { StatusType } from '@/config/types';
 import { IconFont, icons } from '@gpustack/core-ui';
 import _ from 'lodash';
 import React from 'react';
-import { parseQuantityToGi } from '../../utils';
+// Aliased: this module has its own module-private `parseQuantity` (a lenient
+// number coercion for availability counts) that would otherwise shadow it.
+import {
+  canonicalQuantityUnit,
+  parseQuantity as parseK8sQuantity
+} from '../../utils';
 import {
   AcceleratorProfileCount,
   AcceleratorSlicedDetail,
@@ -107,6 +112,14 @@ export const getSelectablePartitionProfilesFromResource = (
   selectablePartitionProfiles(partitioned?.remainingProfiles, capability);
 
 // A profile name encodes its VRAM after the dot — "1g.10gb" → 10 (GB).
+//
+// LAST-RESORT ONLY. The name's "<n>gb" is derived from the partition geometry
+// and rounds to the marketing size: an A100-80GB "1g.10gb" really holds
+// 9728 MiB, so the name over-states it by ~5%. The authoritative figure is the
+// profile's reported `memoryMib` (see profileMemoryMib) — and that is what
+// metering bills on, so parsing the name puts the page and the invoice on two
+// different numbers. Reachable only against a server that does not report
+// `memoryMib` at all.
 export const parseProfileMemoryGB = (name?: string | null): number | null => {
   const match = /\.(\d+(?:\.\d+)?)gb$/i.exec(String(name ?? ''));
   if (!match) return null;
@@ -114,19 +127,84 @@ export const parseProfileMemoryGB = (name?: string | null): number | null => {
   return Number.isFinite(value) && value > 0 ? value : null;
 };
 
-// Share of the whole card a partition profile takes, as a percentage — the
-// profile's VRAM over the card's VRAM (status.detail.memory, e.g. "80Gi").
-// CPU / RAM are handed out in that proportion, so the form scales the unit
-// resources by it exactly like the soft-slice percentage. Null when either
+// A partition profile's real VRAM in MiB, looked up by name in the pool's
+// aggregated profile list (status.detail.slicedDetail.physical.profiles). This
+// is the same value the operator's Pod webhook folds into the Kueue credit
+// request, so it keeps quota, display and bill on one number.
+//
+// Null when the list or the named profile is absent, or its memoryMib is
+// missing / non-positive — callers then fall back to the name (see above).
+export const profileMemoryMib = (
+  profiles?: AcceleratorSlicedPhysicalDetailProfile[] | null,
+  name?: string | null
+): number | null => {
+  if (!name || !profiles?.length) return null;
+  const mib = profiles.find((profile) => profile?.name === name)?.memoryMib;
+  return typeof mib === 'number' && Number.isFinite(mib) && mib > 0
+    ? mib
+    : null;
+};
+
+// A whole card, in thousandths. Mirrors WHOLE_CARD_MILLI in
+// gpustack/utils/resource_usage.py.
+export const WHOLE_CARD_MILLI = 1000;
+
+// Share of the whole card a partition profile takes, in thousandths (1000 = a
+// whole card). This MUST stay identical to the server's `slice_share_milli`
+// (gpustack/utils/resource_usage.py): it is the multiplier metering bills on, so
+// any divergence means the page and the invoice disagree about how much of a
+// card the instance holds.
+//
+// Three rules carried over verbatim from the server:
+//   * `ceil`, not round / floor — billing leans toward not under-charging;
+//   * ONE division: going through the operator's credit conversion and then
+//     dividing by 1600 truncates twice and loses an extra step;
+//   * clamp to a whole card, so a detect-time skew that reports a partition at
+//     least as large as the card cannot price a slice above a whole card.
+//
+// Null when the profile's VRAM or the card's VRAM is unknown.
+export const getPartitionShareMilli = (
+  profileName?: string | null,
+  cardMemory?: string | null,
+  profiles?: AcceleratorSlicedPhysicalDetailProfile[] | null
+): number | null => {
+  if (!profileName) return null;
+  // Parse the card's VRAM to exact MiB rather than via parseQuantityToGi, which
+  // floors to whole Gi: a 65535Mi card would become 63Gi and skew the share by
+  // ~1.5%. This number has to match the server's, so it cannot be rounded here.
+  //
+  // Two guards, because a wrong answer here is silently billed. The unit is
+  // canonicalized first — parseK8sQuantity is case-sensitive, so a lowercased
+  // "80gi" would parse to null and drop the share, which falls CPU/RAM back to
+  // the whole-card values (over-requesting, with nothing on screen saying so).
+  // A unitless value is then rejected rather than read as bytes: if it is really
+  // a MiB count, 81920 bytes is 0.078 MiB and every profile clamps to a whole
+  // card. Absent is a state the callers handle; wrong is not.
+  const parsedCard = parseK8sQuantity(canonicalQuantityUnit(cardMemory ?? ''));
+  if (!parsedCard?.unit) return null;
+  const cardBytes = parsedCard.base;
+  if (!cardBytes || cardBytes <= 0) return null;
+  const cardMib = cardBytes / 1024 ** 2;
+  const profileMib =
+    profileMemoryMib(profiles, profileName) ??
+    (parseProfileMemoryGB(profileName) ?? 0) * 1024;
+  if (!profileMib) return null;
+  const share = Math.ceil((profileMib * WHOLE_CARD_MILLI) / cardMib);
+  return Math.min(WHOLE_CARD_MILLI, Math.max(1, share));
+};
+
+// Share of the whole card a partition profile takes, as a percentage. CPU / RAM
+// are handed out in that proportion, so the form scales the unit resources by it
+// exactly like the soft-slice percentage. Derived from the billed share above
+// (never computed independently) so the two cannot drift apart. Null when either
 // side is unknown (then CPU / RAM fall back to the whole-card unit values).
 export const getPartitionPercentage = (
   profileName?: string | null,
-  cardMemory?: string | null
+  cardMemory?: string | null,
+  profiles?: AcceleratorSlicedPhysicalDetailProfile[] | null
 ): number | null => {
-  const profileGB = parseProfileMemoryGB(profileName);
-  const cardGB = parseQuantityToGi(cardMemory ?? null)?.value;
-  if (!profileGB || !cardGB) return null;
-  return (profileGB / cardGB) * 100;
+  const shareMilli = getPartitionShareMilli(profileName, cardMemory, profiles);
+  return shareMilli == null ? null : shareMilli / 10;
 };
 
 export const InstanceStatusValueMap = {

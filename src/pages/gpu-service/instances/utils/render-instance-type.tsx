@@ -91,6 +91,13 @@ const formatResources = (
   // percentage (floored, min 1) for a soft slice — not the whole card's size.
   if (sliceMemoryPercentage > 0 || partitionProfile) {
     const vramGi = parseQuantityToGi(instanceTypeSpec.spec?.memory)?.value;
+    // A partition's VRAM is parsed from its NAME here, which reads ~5% above the
+    // real figure (an A100 "1g.10gb" actually holds 9.5 GB, not 10). Known and
+    // accepted: this renderer only has the `description` snapshot to work from —
+    // the list page does not fetch instance types — and the reported `memoryMib`
+    // cannot be added to that snapshot without overflowing its 1024-char cap
+    // (see buildInstanceTypeSnapshotSpec). Metering is unaffected: it reads
+    // `memoryMib` server-side, so the bill is exact even while this cell is not.
     const profileGB = parseProfileMemoryGB(partitionProfile);
     const vram = profileGB
       ? `${profileGB} GB`

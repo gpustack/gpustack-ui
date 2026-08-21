@@ -180,6 +180,7 @@ export default {
   'gpuservice.instance.event.tab.instance': '实例事件',
   'gpuservice.instance.event.tab.volume': '存储卷事件',
   'gpuservice.storage': '存储',
+  'gpuservice.storage.attachedInstances': '挂载实例',
   'gpuservice.storage.add': '添加存储',
   'gpuservice.storage.edit': '编辑存储',
   'gpuservice.storage.filter.cluster': '按集群过滤',

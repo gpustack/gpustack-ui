@@ -342,6 +342,9 @@ export interface InstanceTypeSnapshotSpec extends InstanceTypeSpec {
   sliceable?: boolean;
   // Accelerator CPU identity only (from status.detail.cpu).
   cpu?: Pick<CPUInfo, 'manufacturer' | 'product' | 'family'> | null;
+  // NOTE: the pool's partition profiles are NOT here on purpose — this object is
+  // serialized into the 1024-char `description` field and a full MIG pool's
+  // profile list overflows it. See buildInstanceTypeSnapshotSpec.
 }
 
 export interface InstanceTypeStatus {

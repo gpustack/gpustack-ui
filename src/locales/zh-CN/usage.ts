@@ -63,7 +63,8 @@ export default {
   'usage.metric.input': '输入',
   'usage.metric.output': '输出',
   'usage.metric.gpuHours': 'GPU 小时',
-  'usage.metric.instanceHours': '实例小时',
+  'usage.metric.runningTime': '运行时长',
+  'usage.metric.usage': '用量',
   'usage.metric.gbDays': 'GB·天',
   'usage.metric.gbHours': 'GB·小时',
   'usage.metric.activeUsers': '活跃用户',
@@ -73,8 +74,10 @@ export default {
   'usage.metric.storageTypes': '存储类型',
   'usage.metric.gpuHours.tip':
     '实例运行时长按 GPU 数量加权：一个使用 N 个 GPU 的实例运行 H 小时记为 N × H GPU 小时。当每个实例仅使用单个 GPU 时，等于实例小时。',
-  'usage.metric.instanceHours.tip':
-    '所有实例运行时长的总和，与每个实例使用的 GPU 数量无关。一个实例运行 2 小时 = 2 实例小时。',
+  'usage.metric.runningTime.tip':
+    '实例实际运行的墙钟时长，与它占了几份无关 —— 一台实例跑 2 小时就是 2 h，无论占 1 张卡还是 8 张。用量则是它按份数加权后的结果。',
+  'usage.metric.usage.tip':
+    '运行时长按实例占用的计费单位数加权：加速实例按 GPU 卡数，CPU 实例按基础规格份数。格子里在数字下面写出它的构成；期间变配过的实例按每种规格分行显示。',
   'usage.metric.gbDays.tip':
     '存储容量随时间的积分，单位为 GB × 天：10 GB 保留 5 天 = 50 GB·天。（= GB·小时 ÷ 24）',
   'usage.metric.gbHours.tip':
@@ -89,6 +92,9 @@ export default {
   'usage.table.users': '用户',
   'usage.table.type': '类型',
   'usage.table.instance': '实例',
+  'usage.table.resized': '已变配',
+  'usage.table.currentShape': '当前',
+  'usage.table.shapeAndMore': '{shape}，另 {count} 种',
   'usage.table.instanceType': '实例类型',
   'usage.table.instanceTypes': '实例类型',
   'usage.table.instances': '实例',
@@ -98,7 +104,7 @@ export default {
   // --- Summary tab ---
   'usage.summary.compute': '算力',
   'usage.summary.tokensOverTime': 'Token 数趋势',
-  'usage.summary.gpuHoursOverTime': 'GPU 小时趋势',
+  'usage.summary.usageOverTime': '用量趋势',
   'usage.summary.gbDaysOverTime': 'GB·天趋势',
 
   // --- GPU Instances / Storage filters ---

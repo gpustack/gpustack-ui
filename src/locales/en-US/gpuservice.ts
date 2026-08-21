@@ -197,6 +197,7 @@ export default {
   'gpuservice.instance.event.tab.instance': 'Instance Events',
   'gpuservice.instance.event.tab.volume': 'Volume Events',
   'gpuservice.storage': 'Storage',
+  'gpuservice.storage.attachedInstances': 'Attached Instances',
   'gpuservice.storage.add': 'Add Storage',
   'gpuservice.storage.edit': 'Edit Storage',
   'gpuservice.storage.filter.cluster': 'Filter by cluster',

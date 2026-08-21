@@ -194,6 +194,7 @@ export default {
   'gpuservice.instance.event.tab.instance': 'События экземпляра',
   'gpuservice.instance.event.tab.volume': 'События тома',
   'gpuservice.storage': 'Хранилище',
+  'gpuservice.storage.attachedInstances': 'Подключённые экземпляры',
   'gpuservice.storage.add': 'Добавить хранилище',
   'gpuservice.storage.edit': 'Редактировать хранилище',
   'gpuservice.storage.filter.cluster': 'Фильтр по кластеру',

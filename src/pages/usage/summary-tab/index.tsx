@@ -8,18 +8,19 @@
  * top is shared by all three trends.
  *
  *   ● Tokens   headline · Input/Output donut · Tokens-over-time
- *   ● Compute  headline · GPU-type donut    · GPU-Hours-over-time
+ *   ● Compute  headline · instance-type donut · Usage-over-time
  *   ● Storage  headline · storage-type donut · GB-Days-over-time
  *
  * Data sources (all share date + scope):
- *   - /usage/summary             → token totals (Input/Output) + GPU-type donut
+ *   - /usage/summary             → token totals (Input/Output) + type donut
  *   - /usage/breakdown (tokens)  → Tokens trend (token series is daily-only)
  *   - /usage/resource/breakdown  → Compute trend + active instances
  *   - /usage/storage/breakdown   → Storage trend, volumes, type donut
  *
- * Shows quantity metrics only (no cost). Donuts use
- * each domain's natural unit (tokens / GPU-Hours / GB-Days); a true
- * cross-resource split needs a common unit.
+ * Shows quantity metrics only (no cost). Donuts use each domain's natural unit
+ * (tokens / Usage hours / GB-Days); a true cross-resource split needs a common
+ * unit. Compute uses Usage rather than GPU-Hours because the latter is 0 on
+ * every CPU-only shape, which dropped those slices out of the ring entirely.
  */
 import { useCoolAccents } from '@/hooks/use-cool-colors';
 import BarChart from '@/pages/_components/bar-chart';
@@ -117,6 +118,10 @@ const DomainSection: React.FC<{
   headline: React.ReactNode;
   donutData: { name: string; value: number }[];
   donutTotalLabel: string;
+  // Unit for the donut centre, when the section's quantity has one. Matches the
+  // headline stat beside it — Compute prints "5.83 h" there, so a bare 5.83 in
+  // the donut reads as a different figure.
+  donutTotalUnit?: string;
   trendTitle: string;
   trendXAxis: string[];
   trendData: number[];
@@ -130,6 +135,7 @@ const DomainSection: React.FC<{
   headline,
   donutData,
   donutTotalLabel,
+  donutTotalUnit,
   trendTitle,
   trendXAxis,
   trendData,
@@ -188,6 +194,7 @@ const DomainSection: React.FC<{
             height={180}
             total={donutTotal}
             totalLabel={donutTotalLabel}
+            totalUnit={donutTotalUnit}
           />
         </div>
         <div style={{ flex: 1, minWidth: 260 }}>
@@ -481,7 +488,9 @@ const SummaryTab: React.FC = () => {
       buildTrend(
         (computeByDate?.items ?? []).map((it) => ({
           date: it.date,
-          value: Number(it.gpu_hours ?? 0)
+          // Usage, not gpu_hours: the latter is 0 on every CPU-only row, so a
+          // fleet of CPU instances drew a flat zero line.
+          value: Number(it.unit_hours ?? 0)
         })),
         granularity,
         start,
@@ -596,8 +605,9 @@ const SummaryTab: React.FC = () => {
             title={t('usage.summary.compute')}
             accent={coolColors[1]}
             donutData={computeDonut}
-            donutTotalLabel={t('usage.metric.gpuHours')}
-            trendTitle={t('usage.summary.gpuHoursOverTime')}
+            donutTotalLabel={t('usage.metric.usage')}
+            donutTotalUnit="h"
+            trendTitle={t('usage.summary.usageOverTime')}
             trendXAxis={computeTrend.xAxis}
             trendData={computeTrend.data}
             trendColor={coolColors[1]}
@@ -605,14 +615,18 @@ const SummaryTab: React.FC = () => {
             pieLoading={summaryLoading}
             barLoading={computeLoading}
             headline={
+              // No GPU Hours here: it is Usage restricted to GPU rows, and the
+              // donut beside this line already splits Usage by instance type —
+              // the GPU share is on screen, one slice over. The GPU Instances
+              // tab keeps the figure because that screen has no such split.
               <>
                 <Stat
-                  value={fmt(summary?.gpu_hours)}
-                  label={t('usage.metric.gpuHours')}
+                  value={`${fmt(summary?.unit_hours)} h`}
+                  label={t('usage.metric.usage')}
                 />
                 <Stat
-                  value={fmt(summary?.instance_hours)}
-                  label={t('usage.metric.instanceHours')}
+                  value={`${fmt(summary?.instance_hours)} h`}
+                  label={t('usage.metric.runningTime')}
                 />
                 <Stat
                   value={computeSum?.active_instances ?? 0}

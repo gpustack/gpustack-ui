@@ -261,6 +261,11 @@ const ResourceEvents: React.FC = () => {
               onChange={(v) => fetchEvents({ eventTypes: v, page: 1 })}
               options={EVENT_TYPE_OPTIONS}
               style={{ width: 240 }}
+              styles={{
+                wrapper: {
+                  flex: 'unset'
+                }
+              }}
             />
           </>
         }

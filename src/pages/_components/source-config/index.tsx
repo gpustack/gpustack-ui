@@ -1,6 +1,7 @@
-import { IconFont, useBodyScroll } from '@gpustack/core-ui';
+import { SettingOutlined } from '@ant-design/icons';
+import { useBodyScroll } from '@gpustack/core-ui';
 import { useAccess, useIntl } from '@umijs/max';
-import { Button } from 'antd';
+import { Button, Tooltip } from 'antd';
 import React, { useState } from 'react';
 import SourceConfigDrawer from './drawer';
 import type { SourceScopeConfig } from './types';
@@ -45,9 +46,12 @@ const SourceConfigEntry: React.FC<SourceConfigEntryProps> = ({
 
   return (
     <>
-      <Button icon={<IconFont type="icon-settings" />} onClick={handleOpen}>
-        {intl.formatMessage({ id: 'common.source.manage' })}
-      </Button>
+      {/* Icon only, with the label as its tooltip: a secondary action sitting
+          beside the toolbar's primary button. Default styling, so it keeps the
+          border that tells it apart from the page behind it. */}
+      <Tooltip title={intl.formatMessage({ id: 'common.source.manage' })}>
+        <Button icon={<SettingOutlined />} onClick={handleOpen}></Button>
+      </Tooltip>
       <SourceConfigDrawer
         open={open}
         onCancel={handleCancel}

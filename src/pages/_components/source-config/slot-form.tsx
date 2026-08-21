@@ -10,15 +10,17 @@ import {
   CheckboxField,
   Input as CInput,
   InputNumber as CInputNumber,
+  ModalFooter,
   TextAttribute,
   useSubmitLock
 } from '@gpustack/core-ui';
 import { YamlEditor } from '@gpustack/core-ui/yaml-editor';
 import { useIntl } from '@umijs/max';
-import { Button, Flex, Form, message, Tooltip } from 'antd';
+import { Alert, Button, Flex, Form, message, Tooltip } from 'antd';
 import { createStyles } from 'antd-style';
 import dayjs from 'dayjs';
 import React, { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { SourceTypeValueMap } from './config';
 import type {
   CustomSourceUpsert,
@@ -131,6 +133,12 @@ interface SourceSlotFormProps {
   otaServerUrl: string;
   // A write landed, so the probe and the list behind the drawer are stale.
   onSaved: () => void;
+  // Closes the drawer, for the Cancel this form's footer carries.
+  onCancel: () => void;
+  // The drawer's fixed bottom bar, to render this form's buttons into. Null
+  // while another tab has it: every tab stays mounted, so the bar is handed to
+  // one of them at a time.
+  footerContainer: HTMLElement | null;
 }
 
 /**
@@ -159,7 +167,9 @@ const SourceSlotForm: React.FC<SourceSlotFormProps> = ({
   slot,
   status,
   otaServerUrl,
-  onSaved
+  onSaved,
+  onCancel,
+  footerContainer
 }) => {
   const intl = useIntl();
   const { styles, cx } = useStyles();
@@ -522,236 +532,269 @@ const SourceSlotForm: React.FC<SourceSlotFormProps> = ({
     }
   };
 
+  // Acts on what is *stored*, so it is blocked while the form is dirty — Save is
+  // what applies an edit, and Save fetches on its own.
+  const refetchButton = (
+    <Tooltip
+      title={
+        dirty
+          ? intl.formatMessage({ id: 'common.source.sync.hint.dirty' })
+          : undefined
+      }
+    >
+      <span style={{ display: 'inline-flex' }}>
+        {/* Default styling, like Cancel beside it: re-reading a source the form
+            already points at is not the action this drawer is here for. */}
+        <Button
+          icon={<SyncOutlined />}
+          disabled={!canRefetch}
+          loading={reloading}
+          onClick={handleRefetch}
+        >
+          {/* One wording, two keys: the branches reach different endpoints (see
+              `handleRefetch`) and stay separately translatable. */}
+          {intl.formatMessage({
+            id: config.custom
+              ? 'common.source.sync.custom'
+              : 'common.source.sync.official'
+          })}
+        </Button>
+      </span>
+    </Tooltip>
+  );
+
   return (
-    <Flex vertical gap={16}>
-      {/* A write that did not land wins over a read that did not: `alert` only
+    <>
+      <Flex vertical gap={16}>
+        {/* A write that did not land wins over a read that did not: `alert` only
           appears after an action just taken, while a failed read is the standing
           condition underneath it. */}
-      {(alert || loadFailed) && (
-        <AlertBlockInfo
-          type="danger"
-          message={
-            alert || intl.formatMessage({ id: 'common.source.load.failed' })
-          }
-          ellipsis={false}
-          maxHeight={120}
-        ></AlertBlockInfo>
-      )}
-
-      {/* One row for the whole question of where the content comes from, and
-          everything below it describes the card that is selected. */}
-      <CardRadioGroup<SlotMode>
-        columns={slot.allowFile ? 3 : 2}
-        value={mode}
-        onChange={handleModeChange}
-        options={[
-          {
-            label: intl.formatMessage({ id: 'common.source.type.url' }),
-            description: intl.formatMessage({
-              id: 'common.source.type.url.desc'
-            }),
-            value: SourceTypeValueMap.URL
-          },
-          ...(slot.allowFile
-            ? [
-                {
-                  label: intl.formatMessage({ id: 'common.source.type.file' }),
-                  description: intl.formatMessage({
-                    id: 'common.source.type.file.desc'
-                  }),
-                  value: SourceTypeValueMap.FILE
-                }
-              ]
-            : []),
-          {
-            label: intl.formatMessage({ id: 'common.source.type.builtin' }),
-            description: intl.formatMessage({
-              id: 'common.source.type.builtin.desc'
-            }),
-            value: SourceTypeValueMap.BUILTIN
-          }
-        ]}
-      />
-
-      {/* kept mounted while another branch shows so a typed URL survives */}
-      <Form
-        form={form}
-        layout="vertical"
-        onValuesChange={() => setAlert('')}
-        style={{ display: remoteEnabled && isUrlMode ? 'block' : 'none' }}
-      >
-        <Form.Item
-          name="url"
-          style={{ marginBottom: 0 }}
-          rules={[{ validator: validateSourceUrl }]}
-        >
-          <CInput.Input
-            label={intl.formatMessage({ id: 'common.source.url' })}
-            description={intl.formatMessage({ id: 'common.source.empty.hint' })}
-            // Beside the label rather than after the box: it says what the
-            // address *is*, which belongs with the field's name and not with
-            // the value. Editing it into a URL of your own drops the badge
-            // with the same keystroke that drops the official source. Same
-            // component the drawer tags its panels with.
-            labelExtra={
-              urlIsOfficial ? (
-                <TextAttribute className={cx('m-l-4', styles.officialTag)}>
-                  {intl.formatMessage({ id: 'common.source.tag.official' })}
-                </TextAttribute>
-              ) : null
+        {(alert || loadFailed) && (
+          <AlertBlockInfo
+            type="danger"
+            message={
+              alert || intl.formatMessage({ id: 'common.source.load.failed' })
             }
-          ></CInput.Input>
-        </Form.Item>
-      </Form>
+            ellipsis={false}
+            maxHeight={120}
+          ></AlertBlockInfo>
+        )}
 
-      {remoteEnabled && isFileMode && (
-        <YamlEditor
-          ref={editorRef}
-          // The editor's header already holds a label and the Import button, so
-          // the guidance rides there as a tooltip instead of adding one more
-          // line of grey text under a 320px box.
-          title={
-            <>
-              {intl.formatMessage({ id: 'common.source.content' })}
-              <Tooltip
-                title={
-                  <Flex vertical gap={4}>
-                    <span>
-                      {intl.formatMessage({ id: 'common.source.content.hint' })}
-                    </span>
-                    <span>
-                      {intl.formatMessage(
-                        { id: 'common.source.empty.hint.file' },
-                        { description: officialDescription }
-                      )}
-                    </span>
-                  </Flex>
-                }
-              >
-                <QuestionCircleOutlined
-                  className={cx('m-l-4', styles.hintIcon)}
-                />
-              </Tooltip>
-              {officialFileLink}
-            </>
-          }
-          height={320}
-          value={formState.content}
-          isDarkTheme={isDarkTheme}
-          onChange={(text) =>
-            setFileHasContent(hasMeaningfulContent(text || ''))
-          }
-        ></YamlEditor>
-      )}
+        {/* One row for the whole question of where the content comes from, and
+          everything below it describes the card that is selected. */}
+        <CardRadioGroup<SlotMode>
+          // Three columns whatever this slot offers, so a card is always a third
+          // of the row: the two a URL-only slot shows would otherwise stretch
+          // over half the width each and come out long and flat.
+          columns={3}
+          value={mode}
+          onChange={handleModeChange}
+          // Selection reads off the radio and the border; a tinted fill on top of
+          // both is a third signal for the same fact.
+          ghost
+          // A card holds one line of text, so its title is body text rather than
+          // the heading the component sizes it as.
+          styles={{ title: { fontSize: 'var(--font-size-base)' } }}
+          options={[
+            {
+              label: intl.formatMessage({ id: 'common.source.type.url' }),
+              value: SourceTypeValueMap.URL
+            },
+            ...(slot.allowFile
+              ? [
+                  {
+                    label: intl.formatMessage({
+                      id: 'common.source.type.file'
+                    }),
+                    value: SourceTypeValueMap.FILE
+                  }
+                ]
+              : []),
+            {
+              label: intl.formatMessage({ id: 'common.source.type.builtin' }),
+              value: SourceTypeValueMap.BUILTIN
+            }
+          ]}
+        />
 
-      {/* The way back to the default, as something to press: the same rule the
+        {/* The factory card hides every input, so it is the one card whose
+          consequence has nowhere else to show. antd's own Alert rather than
+          `AlertBlockInfo`, whose palette starts at warning — an informational
+          banner there comes out uncoloured. */}
+        {!remoteEnabled && (
+          <Alert
+            type="info"
+            showIcon
+            message={intl.formatMessage({
+              id: 'common.source.type.builtin.desc'
+            })}
+          ></Alert>
+        )}
+
+        {/* kept mounted while another branch shows so a typed URL survives */}
+        <Form
+          form={form}
+          layout="vertical"
+          onValuesChange={() => setAlert('')}
+          style={{ display: remoteEnabled && isUrlMode ? 'block' : 'none' }}
+        >
+          <Form.Item
+            name="url"
+            style={{ marginBottom: 0 }}
+            rules={[{ validator: validateSourceUrl }]}
+          >
+            <CInput.Input
+              label={intl.formatMessage({ id: 'common.source.url' })}
+              description={intl.formatMessage({
+                id: 'common.source.empty.hint'
+              })}
+              // Beside the label rather than after the box: it says what the
+              // address *is*, which belongs with the field's name and not with
+              // the value. Editing it into a URL of your own drops the badge
+              // with the same keystroke that drops the official source. Same
+              // component the drawer tags its panels with.
+              labelExtra={
+                urlIsOfficial ? (
+                  <TextAttribute className={cx('m-l-4', styles.officialTag)}>
+                    {intl.formatMessage({ id: 'common.source.tag.official' })}
+                  </TextAttribute>
+                ) : null
+              }
+            ></CInput.Input>
+          </Form.Item>
+        </Form>
+
+        {remoteEnabled && isFileMode && (
+          <YamlEditor
+            ref={editorRef}
+            // The editor's header already holds a label and the Import button, so
+            // the guidance rides there as a tooltip instead of adding one more
+            // line of grey text under a 320px box.
+            title={
+              <>
+                {intl.formatMessage({ id: 'common.source.content' })}
+                <Tooltip
+                  title={
+                    <Flex vertical gap={4}>
+                      <span>
+                        {intl.formatMessage({
+                          id: 'common.source.content.hint'
+                        })}
+                      </span>
+                      <span>
+                        {intl.formatMessage(
+                          { id: 'common.source.empty.hint.file' },
+                          { description: officialDescription }
+                        )}
+                      </span>
+                    </Flex>
+                  }
+                >
+                  <QuestionCircleOutlined
+                    className={cx('m-l-4', styles.hintIcon)}
+                  />
+                </Tooltip>
+                {officialFileLink}
+              </>
+            }
+            height={320}
+            value={formState.content}
+            isDarkTheme={isDarkTheme}
+            onChange={(text) =>
+              setFileHasContent(hasMeaningfulContent(text || ''))
+            }
+          ></YamlEditor>
+        )}
+
+        {/* The way back to the default, as something to press: the same rule the
           input's tooltip states, but it only makes sense once there is
           something to undo. */}
-      {remoteEnabled && customConfigured && (
-        <Flex className={styles.linkRow}>
-          <Tooltip
-            title={intl.formatMessage(
-              { id: 'common.source.reset.tip' },
-              { description: officialDescription }
-            )}
-          >
-            <Button
-              type="link"
-              size="small"
-              icon={<UndoOutlined />}
-              onClick={handleReset}
+        {remoteEnabled && customConfigured && (
+          <Flex className={styles.linkRow}>
+            <Tooltip
+              title={intl.formatMessage(
+                { id: 'common.source.reset.tip' },
+                { description: officialDescription }
+              )}
             >
-              {intl.formatMessage({ id: 'common.source.reset' })}
-            </Button>
-          </Tooltip>
-        </Flex>
-      )}
-
-      {showAutoUpdate && (
-        <AutoUpdateField
-          description={intl.formatMessage({
-            id: customConfigured
-              ? 'common.source.autoUpdate.custom.tip'
-              : 'common.source.autoUpdate.official.tip'
-          })}
-          hours={
-            customConfigured ? formState.customHours : formState.officialHours
-          }
-          onChange={(hours) =>
-            setFormState(
-              customConfigured
-                ? { ...formState, customHours: hours }
-                : { ...formState, officialHours: hours }
-            )
-          }
-        ></AutoUpdateField>
-      )}
-
-      {status?.updated_at && remoteEnabled && (
-        <span className={styles.metaLine}>
-          {intl.formatMessage(
-            { id: 'common.source.lastUpdated' },
-            { time: dayjs(status.updated_at).format('YYYY-MM-DD HH:mm:ss') }
-          )}
-        </span>
-      )}
-
-      {remoteEnabled && status?.error && (
-        <AlertBlockInfo
-          type="warning"
-          message={status.error}
-          ellipsis={false}
-          maxHeight={120}
-        ></AlertBlockInfo>
-      )}
-
-      <Flex align="center" gap={8}>
-        {showRefetch && (
-          <Tooltip
-            title={
-              dirty
-                ? intl.formatMessage({ id: 'common.source.sync.hint.dirty' })
-                : undefined
-            }
-          >
-            <span style={{ display: 'inline-flex' }}>
               <Button
-                color="primary"
-                variant="filled"
-                icon={<SyncOutlined />}
-                disabled={!canRefetch}
-                loading={reloading}
-                onClick={handleRefetch}
+                type="link"
+                size="small"
+                icon={<UndoOutlined />}
+                onClick={handleReset}
               >
-                {/* One wording, two keys: the branches reach different
-                    endpoints (see `handleRefetch`) and stay separately
-                    translatable. */}
-                {intl.formatMessage({
-                  id: config.custom
-                    ? 'common.source.sync.custom'
-                    : 'common.source.sync.official'
-                })}
+                {intl.formatMessage({ id: 'common.source.reset' })}
               </Button>
-            </span>
-          </Tooltip>
+            </Tooltip>
+          </Flex>
         )}
-        {/* Pushed to the far end by its own margin rather than by
-            `space-between`, which needs a sibling to push against: antd
-            collapses an empty Flex (`&:empty { display: none }`), so a wrapper
-            standing in for the absent refetch button would not hold the space. */}
-        {/* Nothing on screen came from the server when the read failed, so
-            there is no configuration here to write. */}
-        <Button
-          type="primary"
-          loading={submitting}
-          disabled={loadFailed}
-          style={{ marginInlineStart: 'auto' }}
-          onClick={handleSave}
-        >
-          {intl.formatMessage({ id: 'common.source.save' })}
-        </Button>
+
+        {showAutoUpdate && (
+          <AutoUpdateField
+            description={intl.formatMessage({
+              id: customConfigured
+                ? 'common.source.autoUpdate.custom.tip'
+                : 'common.source.autoUpdate.official.tip'
+            })}
+            hours={
+              customConfigured ? formState.customHours : formState.officialHours
+            }
+            onChange={(hours) =>
+              setFormState(
+                customConfigured
+                  ? { ...formState, customHours: hours }
+                  : { ...formState, officialHours: hours }
+              )
+            }
+          ></AutoUpdateField>
+        )}
+
+        {status?.updated_at && remoteEnabled && (
+          <span className={styles.metaLine}>
+            {intl.formatMessage(
+              { id: 'common.source.lastUpdated' },
+              { time: dayjs(status.updated_at).format('YYYY-MM-DD HH:mm:ss') }
+            )}
+          </span>
+        )}
+
+        {remoteEnabled && status?.error && (
+          <AlertBlockInfo
+            type="warning"
+            message={status.error}
+            ellipsis={false}
+            maxHeight={120}
+          ></AlertBlockInfo>
+        )}
       </Flex>
-    </Flex>
+
+      {/* The buttons belong to this form — only their place is the drawer's, so
+          they land in the fixed bar rather than at the end of the scrolling
+          content. Rendered from here so every state they read (dirty, the
+          in-flight write, a failed load) stays where it is produced, and the
+          bar holds the active tab's buttons alone. */}
+      {footerContainer &&
+        createPortal(
+          <ModalFooter
+            onCancel={onCancel}
+            onOk={handleSave}
+            loading={submitting}
+            // Nothing on screen came from the server when the read failed, so
+            // there is no configuration here to write.
+            okBtnProps={{ disabled: loadFailed }}
+            // The far end of the bar: `description` is the slot on the other
+            // side of the footer's `space-between`, which keeps this away from
+            // the two buttons that close the drawer.
+            description={showRefetch ? refetchButton : undefined}
+            // On the bar itself rather than on the buttons, so the padding is
+            // there for both ends. Same figures as the footer FormDrawer builds
+            // when it is left to its own (`core-ui/form-drawer`), so this
+            // drawer's bar lines up with every other one.
+            styles={{ wrapper: { padding: '16px 24px 8px' } }}
+          ></ModalFooter>,
+          footerContainer
+        )}
+    </>
   );
 };
 

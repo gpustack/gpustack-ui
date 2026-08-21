@@ -11,8 +11,8 @@ export type SourceType = 'file' | 'url';
 // stable id a scope's slot binds its probe status to.
 export type SourceProbeKind =
   | 'catalog'
-  | 'community_backend'
-  | 'built_in_backend';
+  | 'community-backend'
+  | 'built-in-backend';
 
 // The admin's own source. Setting one *replaces* both the packaged baseline
 // and the official slot — the layers never stack — so this is the whole content
@@ -122,9 +122,12 @@ export interface SourceSlotConfig {
   // Probe kind, panel key, and the path segment its own endpoints sit under —
   // which is why a slot needs no API wiring of its own.
   kind: SourceProbeKind;
-  // Panel header. Only a multi-slot scope needs one — a single-slot scope is
+  // Tab label. Only a multi-slot scope needs one — a single-slot scope is
   // already named by the drawer title.
   titleKey?: string;
+  // IconFont name beside that label, for the same reason: it only shows where
+  // there is another tab to tell this one apart from.
+  iconType?: string;
   // Whether this slot accepts an inline FILE (catalog only) — the third card in
   // its row; URL-only slots show two.
   allowFile: boolean;

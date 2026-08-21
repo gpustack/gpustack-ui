@@ -171,6 +171,8 @@ export default {
   'playground.params.refAudio': 'Referans Ses',
   'playground.params.refAudio.tips':
     "Referans ses URL'si girin veya bir ses dosyası yükleyin.",
+  'playground.params.refAudio.unsupported':
+    'This model does not support voice cloning; use a preset speaker (voice) instead. Its weights do not include the audio encoder voice cloning requires.',
   'playground.params.refAudio.text': 'Referans Ses Transkripti (ICL modu için)',
   'playground.params.refAudio.vectorMode':
     'Yalnızca Konuşmacı Gömme Kullan (ICL yok)',
@@ -181,4 +183,5 @@ export default {
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
 // 1. 'playground.speech.rules.refAudio': 'Either the reference audio transcript or speaker embedding must be set.'
+// 2. 'playground.params.refAudio.unsupported': 'This model does not support voice cloning; use a preset speaker (voice) instead. Its weights do not include the audio encoder voice cloning requires.'
 // ========== End of To-Do List ==========

@@ -164,6 +164,8 @@ export default {
   'playground.params.refAudio': '参考音频',
   'playground.params.refAudio.tips':
     '输入一个参考音频的 URL，或上传一个音频文件。',
+  'playground.params.refAudio.unsupported':
+    '该模型不支持声音克隆，请使用预置音色（voice）。该模型的权重不包含声音克隆所需的音频编码器。',
   'playground.params.refAudio.text': '参考音频文本（用于上下文学习模式）',
   'playground.params.refAudio.vectorMode':
     '仅使用说话人嵌入（不使用上下文学习）',

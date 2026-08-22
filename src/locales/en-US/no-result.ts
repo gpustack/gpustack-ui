@@ -79,5 +79,9 @@ export default {
   'noresult.gpuservice.sshkey.title': 'No SSH Public Keys',
   'noresult.gpuservice.sshkey.subTitle':
     'No SSH public keys have been added yet.',
-  'noresult.gpuservice.sshkey.nofound': 'No matching SSH public keys found.'
+  'noresult.gpuservice.sshkey.nofound': 'No matching SSH public keys found.',
+  'noresult.kvCache.title': 'No cache services yet',
+  'noresult.kvCache.subTitle':
+    'Create a managed cache service or register an external one to accelerate KV cache.',
+  'noresult.kvCache.nofound': 'No matching cache services found.'
 };

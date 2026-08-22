@@ -77,7 +77,11 @@ export default {
     'Eşleşen depolama türü bulunamadı.',
   'noresult.gpuservice.sshkey.title': 'SSH Açık Anahtarı Yok',
   'noresult.gpuservice.sshkey.subTitle': 'Henüz SSH açık anahtarı eklenmedi.',
-  'noresult.gpuservice.sshkey.nofound': 'Eşleşen SSH açık anahtarı bulunamadı.'
+  'noresult.gpuservice.sshkey.nofound': 'Eşleşen SSH açık anahtarı bulunamadı.',
+  'noresult.kvCache.title': 'No cache services yet',
+  'noresult.kvCache.subTitle':
+    'Create a managed cache service or register an external one to accelerate KV cache.',
+  'noresult.kvCache.nofound': 'No matching cache services found.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

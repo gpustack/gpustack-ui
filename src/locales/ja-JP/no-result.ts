@@ -81,5 +81,9 @@ export default {
     '一致するストレージタイプが見つかりません。',
   'noresult.gpuservice.sshkey.title': 'SSH 公開鍵なし',
   'noresult.gpuservice.sshkey.subTitle': 'SSH 公開鍵はまだ追加されていません。',
-  'noresult.gpuservice.sshkey.nofound': '一致する SSH 公開鍵が見つかりません。'
+  'noresult.gpuservice.sshkey.nofound': '一致する SSH 公開鍵が見つかりません。',
+  'noresult.kvCache.title': 'No cache services yet',
+  'noresult.kvCache.subTitle':
+    'Create a managed cache service or register an external one to accelerate KV cache.',
+  'noresult.kvCache.nofound': 'No matching cache services found.'
 };

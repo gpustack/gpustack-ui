@@ -9,6 +9,7 @@ import CPUOffloadingCell from '../instance-cells/cpu-offloading-cell';
 import DistributeInfoCell from '../instance-cells/distribute-info-cell';
 import DownloadingStatusCell from '../instance-cells/downloading-status-cell';
 import InstanceStatusCell from '../instance-cells/instance-status-cell';
+import KVCacheDegradedCell from '../instance-cells/kv-cache-degraded-cell';
 import NameCell from '../instance-cells/name-cell';
 
 interface InstanceItemProps {
@@ -70,6 +71,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
           record={instanceData}
           onSelect={handleChildSelect}
         />
+        <KVCacheDegradedCell record={instanceData}></KVCacheDegradedCell>
         <DownloadingStatusCell
           backend={modelData?.backend}
           distributed_servers={instanceData.distributed_servers}

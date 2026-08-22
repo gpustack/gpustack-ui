@@ -6,6 +6,7 @@ export interface SystemConfig {
   debug: boolean;
   grafana_model_dashboard_uid: string;
   grafana_worker_dashboard_uid: string;
+  grafana_cache_service_dashboard_uid: string;
   system_default_container_registry: string | null;
   server_external_url: string | null;
   showMonitoring?: boolean;

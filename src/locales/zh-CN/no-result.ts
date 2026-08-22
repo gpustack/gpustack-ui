@@ -71,5 +71,9 @@ export default {
   'noresult.gpuservice.storageType.nofound': '未找到匹配的存储类型',
   'noresult.gpuservice.sshkey.title': '暂无 SSH 公钥',
   'noresult.gpuservice.sshkey.subTitle': '尚未添加任何 SSH 公钥。',
-  'noresult.gpuservice.sshkey.nofound': '未找到匹配的 SSH 公钥'
+  'noresult.gpuservice.sshkey.nofound': '未找到匹配的 SSH 公钥',
+  'noresult.kvCache.title': '暂无缓存服务',
+  'noresult.kvCache.subTitle':
+    '创建受管缓存服务或登记外部缓存服务以加速 KV 缓存。',
+  'noresult.kvCache.nofound': '未找到匹配的缓存服务'
 };

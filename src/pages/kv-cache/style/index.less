@@ -1,0 +1,26 @@
+.cache-services-table {
+  // Expanded instance rows follow the deployments look: flat 54px
+  // `.row-children` rows on the page background, not antd's tinted
+  // expanded-row panel.
+  .ant-table-expanded-row > .ant-table-cell {
+    background: transparent;
+    padding-block: 8px;
+
+    &.ant-table-cell-row-hover {
+      background: transparent;
+    }
+  }
+
+  // info trigger next to the worker name in the expanded instance rows,
+  // same look as the deployments instance rows
+  .instance-name {
+    .server-info {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      color: var(--ant-blue-5);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+  }
+}

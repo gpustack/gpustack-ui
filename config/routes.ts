@@ -181,6 +181,27 @@ const baseRoutes = [
         component: './backends/index'
       },
       {
+        name: 'kvCache',
+        path: '/models/kv-cache',
+        key: 'kvCache',
+        icon: 'icon-storage-outlined',
+        selectedIcon: 'icon-storage-filled',
+        defaultIcon: 'icon-storage-outlined',
+        access: 'canSeeOrgAdmin',
+        component: './kv-cache/index'
+      },
+      {
+        name: 'kvCacheDetail',
+        path: '/models/kv-cache/detail',
+        key: 'kvCacheDetail',
+        icon: 'icon-storage-outlined',
+        selectedIcon: 'icon-storage-filled',
+        defaultIcon: 'icon-storage-outlined',
+        access: 'canSeeOrgAdmin',
+        hideInMenu: true,
+        component: './kv-cache/detail'
+      },
+      {
         name: 'modelfiles',
         path: '/models/modelfiles',
         key: 'modelfiles',

@@ -17,7 +17,7 @@ import React, {
   useImperativeHandle,
   useState
 } from 'react';
-import { ProviderType, ProviderValueMap } from '../config';
+import { isCloudProvider, ProviderType, ProviderValueMap } from '../config';
 import { FormContext } from '../config/form-context';
 import {
   ClusterFormData as FormData,
@@ -25,6 +25,7 @@ import {
 } from '../config/types';
 import AdvanceConfig from '../step-forms/advance-config';
 import CloudProvider from './cloud-provider-form';
+import DefaultRegistryField from './default-registry-field';
 import K8sAdvancedOptions, {
   ClusterTypeSelector,
   K8sOptionsChangeWatcher
@@ -234,6 +235,10 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
       }
     }));
 
+    const descriptionIsLastField =
+      provider !== ProviderValueMap.Kubernetes &&
+      provider !== ProviderValueMap.Shuihua;
+
     const handleOnFinishFailed = (errorInfo: any) => {
       setSubmitAttempted(true);
       onFinishFailed?.(errorInfo);
@@ -282,7 +287,7 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
             ></CInput.Input>
           </Form.Item>
           <PluginExtraFields name="CreateOrgScopeField" context={{ action }} />
-          {provider === ProviderValueMap.DigitalOcean && (
+          {isCloudProvider(provider) && (
             <CloudProvider
               provider={provider}
               action={action}
@@ -295,8 +300,11 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
             name="description"
             rules={[{ required: false }]}
             style={{
-              marginBottom:
-                provider === ProviderValueMap.Kubernetes ? undefined : 8
+              // The tight gap is only right when the description is the last
+              // field before the "Advanced" collapse. Kubernetes (cluster
+              // type) and Shuihua (default registry) both render a field after
+              // it, which has to keep the normal 24px field rhythm.
+              marginBottom: descriptionIsLastField ? 8 : undefined
             }}
           >
             <SealTextArea
@@ -304,6 +312,11 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
               label={intl.formatMessage({ id: 'common.table.description' })}
             ></SealTextArea>
           </Form.Item>
+
+          {/* Shuihua pulls the registry out of "Advanced" and requires it. */}
+          {provider === ProviderValueMap.Shuihua && (
+            <DefaultRegistryField provider={provider} />
+          )}
 
           {provider === ProviderValueMap.Kubernetes && <ClusterTypeSelector />}
 

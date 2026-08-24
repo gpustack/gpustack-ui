@@ -18,6 +18,7 @@ import dayjs from 'dayjs';
 import { useAtomValue } from 'jotai';
 import { useMemo } from 'react';
 import {
+  CloudProviderList,
   ClusterStatus,
   ClusterStatusLabelMap,
   ProviderLabelMap,
@@ -61,7 +62,10 @@ const clusterActionList = [
   {
     key: 'addPool',
     label: 'clusters.button.addNodePool',
-    provider: ProviderValueMap.DigitalOcean,
+    // Node pools are the cloud providers' way to add workers, so this action
+    // is shared by all of them — `providers` (plural) is the multi-provider
+    // form of the single-provider `provider` gate above.
+    providers: CloudProviderList,
     locale: true,
     order: 40,
     icon: icons.Catalog1
@@ -100,6 +104,9 @@ const useClusterColumns = (
 
   const setActionsItems = (row: ClusterListItem) => {
     return actionList.filter((item: any) => {
+      if (item.providers?.length) {
+        return item.providers.includes(row.provider);
+      }
       if (item.provider) {
         return item.provider === row.provider;
       }

@@ -28,6 +28,9 @@ export const ClusterStatus: Record<string, StatusType> = {
 export const ProviderValueMap = {
   Kubernetes: 'Kubernetes',
   DigitalOcean: 'DigitalOcean',
+  // Matches the backend's `ClusterProvider` enum, which is what
+  // `cluster.provider` / `cloud_credential.provider` store.
+  Shuihua: 'Shuihua',
   Docker: 'Docker',
   HuaweiCloud: 'HuaweiCloud',
   AliCloud: 'AlibabaCloud',
@@ -40,8 +43,88 @@ export type ProviderType = keyof typeof ProviderValueMap | null | undefined;
 export const ProviderLabelMap = {
   [ProviderValueMap.Kubernetes]: 'Kubernetes',
   [ProviderValueMap.DigitalOcean]: 'DigitalOcean',
+  // Display-only brand name; the API identity is the bare `Shuihua` above.
+  [ProviderValueMap.Shuihua]: 'SHUIHUA FUTURE',
   [ProviderValueMap.Docker]: 'Docker'
 };
+
+/**
+ * Mirrors the backend's `DOCKER_HUB_REGISTRY_HOSTS` (`routes/clusters.py`).
+ * Shuihua instances cannot reach Docker Hub, so a registry resolving to one of
+ * these hosts is rejected on submit — we check it in the form to fail fast.
+ */
+export const DOCKER_HUB_REGISTRY_HOSTS = [
+  'docker.io',
+  'index.docker.io',
+  'registry-1.docker.io',
+  'registry.hub.docker.com'
+];
+
+/**
+ * The registry host, as the backend's `is_docker_hub_registry` compares it:
+ * scheme, port and path dropped. `https://docker.io/library` and
+ * `docker.io:443` are the same unreachable host as a bare `docker.io`, and the
+ * point of checking here is to say so before the submit does.
+ */
+const registryHost = (registry: string) =>
+  registry
+    .trim()
+    .replace(/^[a-z][a-z\d+.-]*:\/\//i, '')
+    .replace(/^\/+/, '')
+    .split('/')[0]
+    .split(':')[0]
+    .toLowerCase();
+
+export const isDockerHubRegistry = (registry: string) =>
+  DOCKER_HUB_REGISTRY_HOSTS.includes(registryHost(registry));
+
+/**
+ * Registries a Shuihua instance can actually pull GPUStack images from.
+ *
+ * Suggestions, *not* a whitelist: the backend only denies Docker Hub hosts, so
+ * a company's own Harbor / mirror has to stay typeable — which is why the
+ * field is an AutoComplete rather than a Select.
+ */
+export const SHUIHUA_REGISTRY_SUGGESTIONS = [
+  'quay.io',
+  'swr.cn-south-1.myhuaweicloud.com'
+];
+
+/**
+ * Compact display name for tight slots — currently only the create wizard's
+ * step-0 subtitle, which sits inline right after the step title. Falls back to
+ * the full brand name, so a provider only needs an entry here when that name
+ * is too long for the slot.
+ */
+export const ProviderShortLabelMap: Record<string, string> = {
+  [ProviderValueMap.Shuihua]: 'SHUIHUA'
+};
+
+export const getProviderShortLabel = (
+  provider?: ProviderType | string | null
+) =>
+  (provider &&
+    (ProviderShortLabelMap[provider] || ProviderLabelMap[provider])) ||
+  provider ||
+  '';
+
+/**
+ * Providers whose clusters GPUStack provisions through a cloud API: they are
+ * created against a cloud credential + region and get their workers from node
+ * pools, instead of a worker registration command (Docker / Kubernetes).
+ *
+ * Everything that used to be hardcoded as `provider === DigitalOcean` — the
+ * credential/region form block, the node-pool wizard step, the expandable
+ * pool rows, the "Add Node Pool" row action — is keyed off this list, so a new
+ * cloud provider only has to be added here plus in `cloudProviderAdapters`.
+ */
+export const CloudProviderList = [
+  ProviderValueMap.DigitalOcean,
+  ProviderValueMap.Shuihua
+];
+
+export const isCloudProvider = (provider?: ProviderType | string | null) =>
+  !!provider && CloudProviderList.includes(provider as string);
 
 export const generateK8sRegisterCommand = (params: {
   // Either a single GPU driver key (legacy single-select) or an array of
@@ -67,6 +150,8 @@ export const generateK8sRegisterCommand = (params: {
 --header 'Authorization: Bearer ${params.registrationToken}' | kubectl apply -f -`;
 };
 
+// Labels for the keys a provider may report in an instance type's `specInfo`
+// (see `cloudProviderAdapters`); an unmapped key falls back to the key itself.
 export const instanceTypeFieldMap = {
   vram: 'VRAM',
   vcpus: 'vCPUs',
@@ -74,7 +159,12 @@ export const instanceTypeFieldMap = {
   bootDisk: 'Boot Disk',
   scratchDisk: 'Scratch Disk',
   minDiskSize: 'Min Disk Size',
-  size: 'Size'
+  size: 'Size',
+  // Shuihua reports a spec template's model, price and stock instead of a
+  // hardware breakdown.
+  gpuModel: 'GPU Model',
+  pricePerHour: 'Price',
+  remaining: 'Remaining'
 };
 
 export const vendorIconMap = {

@@ -18,6 +18,7 @@ import {
   updateCredential
 } from './apis';
 import AddModal from './components/add-credential';
+import ShuihuaIcon from './components/shuihua-icon';
 import { ProviderLabelMap, ProviderType, ProviderValueMap } from './config';
 import {
   CredentialFormData as FormData,
@@ -27,7 +28,7 @@ import useCredentialColumns from './hooks/use-credential-columns';
 
 const addActions = [
   {
-    label: 'DigitalOcean',
+    label: ProviderLabelMap[ProviderValueMap.DigitalOcean],
     locale: false,
     key: ProviderValueMap.DigitalOcean,
     value: ProviderValueMap.DigitalOcean,
@@ -37,6 +38,14 @@ const addActions = [
         style={{ color: 'var(--ant-blue-6)' }}
       />
     )
+  },
+  {
+    label: ProviderLabelMap[ProviderValueMap.Shuihua],
+    locale: false,
+    key: ProviderValueMap.Shuihua,
+    value: ProviderValueMap.Shuihua,
+    // No tint: this mark carries its own brand fill, unlike the glyph above.
+    icon: <ShuihuaIcon />
   }
 ];
 
@@ -95,7 +104,13 @@ const Credentials: React.FC = () => {
 
   const handleModalOk = async (data: FormData) => {
     const params = {
-      ...data
+      ...data,
+      // The provider comes from the dropdown item / edited row, not from a
+      // form field. It has to travel with the payload: the backend's
+      // CloudCredentialCreate defaults `provider` to DigitalOcean, so a
+      // Shuihua credential created without it lands as a DigitalOcean one and
+      // never shows up in a Shuihua cluster's credential picker.
+      provider: openModalStatus.provider as string
     };
     try {
       if (openModalStatus.action === PageAction.EDIT) {

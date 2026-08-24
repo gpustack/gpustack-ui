@@ -8,6 +8,7 @@ import { useIntl } from '@umijs/max';
 import { Button, Form } from 'antd';
 import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
 import styled from 'styled-components';
+import DefaultRegistryField from '../components/default-registry-field';
 import {
   GpuServiceSettingsForm,
   OperatorImageForm
@@ -94,24 +95,11 @@ const ClusterAdvanceConfig: React.FC<{
       >
         <CInput.TextArea required={false} trim={false}></CInput.TextArea>
       </Form.Item>
-      {/* Default container registry used to resolve images for this cluster.
-          A top-level cluster field shared by both Docker and Kubernetes
-          providers (the backend hoists any legacy worker_config value onto
-          this column). */}
-      <Form.Item<FormData>
-        name="system_default_container_registry"
-        normalize={(value) => value?.trim?.() || null}
-      >
-        <CInput.Input
-          label={intl.formatMessage({
-            id: 'clusters.systemDefaultContainerRegistry.title'
-          })}
-          description={intl.formatMessage({
-            id: 'clusters.systemDefaultContainerRegistry.tip'
-          })}
-          placeholder="docker.io"
-        ></CInput.Input>
-      </Form.Item>
+      {/* Shuihua renders this field in the basic form instead, where it is
+          mandatory — see `components/default-registry-field`. */}
+      {provider !== ProviderValueMap.Shuihua && (
+        <DefaultRegistryField provider={provider} />
+      )}
       {provider === ProviderValueMap.Kubernetes && (
         <>
           <OperatorImageForm />

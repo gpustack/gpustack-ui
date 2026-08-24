@@ -43,7 +43,7 @@ import {
 } from './components/add-worker/config';
 import PoolRows from './components/pool-rows';
 import RightActions from './components/right-actions';
-import { ProviderType, ProviderValueMap } from './config';
+import { isCloudProvider, ProviderType, ProviderValueMap } from './config';
 import {
   ClusterListItem,
   CredentialListItem,
@@ -90,12 +90,12 @@ const Clusters: React.FC = () => {
   // row action and this self-controlled drawer, owning its own
   // open/close state. OSS just mounts it (nothing without a plugin).
   const AccessDrawer = getGPUStackPlugin()?.clusterDetail?.AccessDrawer;
-  // Node pools only exist under DigitalOcean — they are what makes a row
+  // Node pools only exist under cloud providers — they are what makes a row
   // expandable (see `setDisableExpand`). On a page of Docker / K8s clusters
   // the stream would be held open for rows that can never use it, so gate it
   // on the rows actually on screen.
-  const hasNodePoolCluster = dataSource.dataList?.some(
-    (item) => item.provider === ProviderValueMap.DigitalOcean
+  const hasNodePoolCluster = dataSource.dataList?.some((item) =>
+    isCloudProvider(item.provider)
   );
   const { watchDataList: allWorkerPoolList } = useWatchList(WORKER_POOLS_API, {
     enabled: hasNodePoolCluster
@@ -194,10 +194,10 @@ const Clusters: React.FC = () => {
     });
   };
 
-  // Credentials are the DigitalOcean provider's field only (ClusterForm
-  // renders `CloudProvider` for no other provider), and this modal is the
-  // edit flow — creation runs through ClusterModal, which fetches its own.
-  // So load them when a DigitalOcean row opens the drawer, not on mount.
+  // Credentials are a cloud provider's field only (ClusterForm renders
+  // `CloudProvider` for no other provider), and this modal is the edit
+  // flow — creation runs through ClusterModal, which fetches its own.
+  // So load them when a cloud row opens the drawer, not on mount.
   const fetchCredentialList = async () => {
     const data = await queryCredentialList({ page: -1 });
     setCredentialList(
@@ -219,7 +219,7 @@ const Clusters: React.FC = () => {
       ),
       provider: row.provider
     });
-    if (row.provider === ProviderValueMap.DigitalOcean) {
+    if (isCloudProvider(row.provider)) {
       fetchCredentialList();
     }
   };
@@ -297,7 +297,7 @@ const Clusters: React.FC = () => {
 
   const setDisableExpand = (row: ClusterListItem) => {
     return (
-      row.provider !== ProviderValueMap.DigitalOcean ||
+      !isCloudProvider(row.provider) ||
       !allWorkerPoolList.some((item) => item.cluster_id === row.id)
     );
   };
@@ -319,7 +319,8 @@ const Clusters: React.FC = () => {
         const actionMap = {
           [ProviderValueMap.Docker]: 'add_worker',
           [ProviderValueMap.Kubernetes]: 'register_cluster',
-          [ProviderValueMap.DigitalOcean]: 'addPool'
+          [ProviderValueMap.DigitalOcean]: 'addPool',
+          [ProviderValueMap.Shuihua]: 'addPool'
         };
         handleSelect(
           actionMap[targetCluster.provider as string],

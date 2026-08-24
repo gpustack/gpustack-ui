@@ -21,7 +21,7 @@ import {
 import ClusterSteps from './components/cluster-steps';
 import FooterButtons from './components/footer-buttons';
 import ProviderCatalog from './components/provider-catalog';
-import { ProviderType, ProviderValueMap } from './config';
+import { isCloudProvider, ProviderType, ProviderValueMap } from './config';
 import providerList from './config/providers';
 import { StepsContext } from './config/steps-context';
 import { ClusterFormData } from './config/types';
@@ -320,7 +320,9 @@ const ClusterCreate: React.FC<{
       cluster_id: res.id
     });
     checkDefaultCluster();
-    if (extraData.provider === ProviderValueMap.DigitalOcean) {
+    // Cloud providers provision their own workers, so there is no
+    // registration step left to show — close the wizard.
+    if (isCloudProvider(extraData.provider)) {
       onClose?.();
     }
     return true;

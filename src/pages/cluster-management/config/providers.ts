@@ -1,6 +1,7 @@
 import { icons } from '@gpustack/core-ui';
 import React from 'react';
-import { ProviderValueMap } from '.';
+import { ProviderLabelMap, ProviderValueMap } from '.';
+import ShuihuaIcon from '../components/shuihua-icon';
 
 export default [
   {
@@ -33,6 +34,16 @@ export default [
         color: 'var(--ant-blue-6)'
       }
     }),
+    group: 'clusters.create.provider.cloud'
+  },
+  {
+    label: ProviderLabelMap[ProviderValueMap.Shuihua],
+    locale: false,
+    value: ProviderValueMap.Shuihua,
+    key: ProviderValueMap.Shuihua,
+    // No `color` here: unlike its siblings this mark carries its own brand
+    // fill. See the icon note in `config/index.ts`.
+    icon: React.createElement(ShuihuaIcon),
     group: 'clusters.create.provider.cloud'
   },
   {

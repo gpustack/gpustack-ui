@@ -2,7 +2,7 @@ import { Steps, Typography } from 'antd';
 import _ from 'lodash';
 import React from 'react';
 import styled from 'styled-components';
-import { ProviderType } from '../config';
+import { getProviderShortLabel, ProviderType } from '../config';
 
 const { Text } = Typography;
 
@@ -62,9 +62,12 @@ const ClusterSteps: React.FC<{
     .map((step, index) => {
       return {
         ..._.pick(step, ANTD_STEP_KEYS),
+        // The raw provider value happens to read like a brand name for every
+        // provider but Shuihua, whose brand is SHUIHUA FUTURE — so show the
+        // display name instead.
         subTitle:
           index === 0 && props.selectedProvider ? (
-            <span>[{props.selectedProvider}]</span>
+            <span>[{getProviderShortLabel(props.selectedProvider)}]</span>
           ) : (
             ''
           )

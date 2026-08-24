@@ -167,6 +167,8 @@ export default {
   'clusters.systemDefaultContainerRegistry.title': '默认容器镜像仓库',
   'clusters.systemDefaultContainerRegistry.tip':
     '用于解析该集群 GPUStack 镜像的默认镜像仓库。未设置时回退到服务端默认值。',
+  'clusters.systemDefaultContainerRegistry.dockerHubUnreachable':
+    '{provider} 的实例无法访问 Docker Hub，请填写镜像加速地址或私有仓库。',
   'clusters.k8sOptions.title': 'Kubernetes 部署选项',
   'clusters.imageCredentials.title': '镜像仓库凭证',
   'clusters.imageCredentials.add': '添加凭证',

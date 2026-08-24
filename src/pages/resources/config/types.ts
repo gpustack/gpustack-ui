@@ -76,6 +76,17 @@ export interface ListItem {
   owner_principal_id?: number | null;
   state_message: string;
   ssh_key_id: string;
+  // Provider-recorded facts about the backing cloud instance. `ssh_endpoint`
+  // is only present when SSH does not answer on `advertise_address:22` — see
+  // `resolveSSHAccess` in `utils/ssh-access.ts`.
+  provider_config?: {
+    ssh_endpoint?: {
+      host: string;
+      port: number;
+      user?: string;
+    };
+    [key: string]: any;
+  } | null;
   advertise_address: string;
   provision_progress: string;
   worker_version: string;

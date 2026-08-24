@@ -5,7 +5,6 @@ import { usePluginListColumns } from '@/plugins/list-extra-columns';
 import { convertFileSize } from '@/utils';
 import {
   DeleteOutlined,
-  DownloadOutlined,
   EditOutlined,
   InfoCircleOutlined,
   SafetyOutlined,
@@ -49,9 +48,13 @@ const ActionList = [
   //   icon: <FileTextOutlined></FileTextOutlined>
   // },
   {
-    label: 'resources.worker.download.privatekey',
-    key: 'download_ssh_key',
-    icon: <DownloadOutlined />
+    // Opens a dialog holding both the connection details and the private key
+    // download: for Shuihua the reachable endpoint is a mapped port on a
+    // shared address that only `provider_config` knows, so the key alone does
+    // not get the user in.
+    label: 'resources.worker.ssh.view',
+    key: 'view_ssh',
+    icon: <IconFont type="icon-ssh-outlined" />
   },
   {
     label: 'resources.worker.maintenance.enable',
@@ -307,7 +310,13 @@ const useWorkerColumns = ({
 
   const setActions = (row: ListItem) => {
     return ActionList.filter((action) => {
-      if (action.key === 'download_ssh_key') {
+      // `ssh_key_id` marks a cloud-provisioned worker: the provisioning
+      // controller generates the keypair for every cloud provider, so this
+      // gates both DigitalOcean and Shuihua. The key exists from that moment,
+      // well before the instance has an address, and the dialog handles the
+      // gap — gating on a resolvable endpoint too would hide a key the user
+      // can already download.
+      if (action.key === 'view_ssh') {
         return !!row.ssh_key_id;
       }
       if (action.key === 'star_maintenance') {

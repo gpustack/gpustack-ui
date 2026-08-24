@@ -20,7 +20,6 @@ import { useEffect, useState } from 'react';
 import {
   WORKERS_API,
   deleteWorker,
-  downloadWorkerPrivateKey,
   queryWorkersList,
   updateWorker
 } from '../apis';
@@ -30,6 +29,7 @@ import useWorkerMaintenance from '../hooks/use-worker-maintenance';
 import UpdateLabels from './update-labels';
 import WorkerDetailModal from './worker-detail-modal';
 import WorkerRightActions from './worker-right-actions';
+import WorkerSSHModal from './worker-ssh-modal';
 
 // Optional ``clusterId`` pins the list to a single cluster (used by
 // the cluster-detail page) and hides the cluster-filter dropdown so
@@ -94,6 +94,13 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
     data: {}
   });
   const [workerDetailStatus, setWorkerDetailStatus] = useState<{
+    open: boolean;
+    currentData: ListItem | null;
+  }>({
+    open: false,
+    currentData: null
+  });
+  const [workerSSHStatus, setWorkerSSHStatus] = useState<{
     open: boolean;
     currentData: ListItem | null;
   }>({
@@ -195,10 +202,10 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
     if (val === 'details') {
       handleViewDetail(record);
     }
-    if (val === 'download_ssh_key') {
-      downloadWorkerPrivateKey({
-        id: record.id,
-        name: record.name
+    if (val === 'view_ssh') {
+      setWorkerSSHStatus({
+        open: true,
+        currentData: record
       });
     }
 
@@ -352,6 +359,11 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
           onClose={() =>
             setWorkerDetailStatus({ currentData: null, open: false })
           }
+        />
+        <WorkerSSHModal
+          open={workerSSHStatus.open}
+          currentData={workerSSHStatus.currentData}
+          onClose={() => setWorkerSSHStatus({ currentData: null, open: false })}
         />
         {MaintenanceModal}
         {AddWorkerModal}

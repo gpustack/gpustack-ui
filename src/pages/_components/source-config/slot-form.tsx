@@ -566,20 +566,6 @@ const SourceSlotForm: React.FC<SourceSlotFormProps> = ({
   return (
     <>
       <Flex vertical gap={16}>
-        {/* A write that did not land wins over a read that did not: `alert` only
-          appears after an action just taken, while a failed read is the standing
-          condition underneath it. */}
-        {(alert || loadFailed) && (
-          <AlertBlockInfo
-            type="danger"
-            message={
-              alert || intl.formatMessage({ id: 'common.source.load.failed' })
-            }
-            ellipsis={false}
-            maxHeight={120}
-          ></AlertBlockInfo>
-        )}
-
         {/* One row for the whole question of where the content comes from, and
           everything below it describes the card that is selected. */}
         <CardRadioGroup<SlotMode>
@@ -775,23 +761,48 @@ const SourceSlotForm: React.FC<SourceSlotFormProps> = ({
           bar holds the active tab's buttons alone. */}
       {footerContainer &&
         createPortal(
-          <ModalFooter
-            onCancel={onCancel}
-            onOk={handleSave}
-            loading={submitting}
-            // Nothing on screen came from the server when the read failed, so
-            // there is no configuration here to write.
-            okBtnProps={{ disabled: loadFailed }}
-            // The far end of the bar: `description` is the slot on the other
-            // side of the footer's `space-between`, which keeps this away from
-            // the two buttons that close the drawer.
-            description={showRefetch ? refetchButton : undefined}
-            // On the bar itself rather than on the buttons, so the padding is
-            // there for both ends. Same figures as the footer FormDrawer builds
-            // when it is left to its own (`core-ui/form-drawer`), so this
-            // drawer's bar lines up with every other one.
-            styles={{ wrapper: { padding: '16px 24px 8px' } }}
-          ></ModalFooter>,
+          <>
+            {/* Directly above Save, because it is why Save did not take: the
+                message reads as the continuation of the button that produced
+                it, and it is in the fixed bar rather than at the top of a
+                scrolling form that may have carried it out of view. Same place
+                the add-backend drawer puts its own footer notice
+                (`src/pages/backends/components/add-modal.tsx`). A write that
+                did not land wins over a read that did not: `alert` only appears
+                after an action just taken, while a failed read is the standing
+                condition underneath it. */}
+            {(alert || loadFailed) && (
+              <div style={{ marginInline: 24, paddingTop: 8 }}>
+                <AlertBlockInfo
+                  type="danger"
+                  contentStyle={{ paddingInline: 0 }}
+                  message={
+                    alert ||
+                    intl.formatMessage({ id: 'common.source.load.failed' })
+                  }
+                  ellipsis={false}
+                  maxHeight={120}
+                ></AlertBlockInfo>
+              </div>
+            )}
+            <ModalFooter
+              onCancel={onCancel}
+              onOk={handleSave}
+              loading={submitting}
+              // Nothing on screen came from the server when the read failed, so
+              // there is no configuration here to write.
+              okBtnProps={{ disabled: loadFailed }}
+              // The far end of the bar: `description` is the slot on the other
+              // side of the footer's `space-between`, which keeps this away from
+              // the two buttons that close the drawer.
+              description={showRefetch ? refetchButton : undefined}
+              // On the bar itself rather than on the buttons, so the padding is
+              // there for both ends. Same figures as the footer FormDrawer
+              // builds when it is left to its own (`core-ui/form-drawer`), so
+              // this drawer's bar lines up with every other one.
+              styles={{ wrapper: { padding: '16px 24px 8px' } }}
+            ></ModalFooter>
+          </>,
           footerContainer
         )}
     </>

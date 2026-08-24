@@ -174,6 +174,8 @@ export default {
   'clusters.systemDefaultContainerRegistry.title': 'Default Container Registry',
   'clusters.systemDefaultContainerRegistry.tip':
     'Default registry used to resolve GPUStack images for this cluster. Falls back to the server default when unset.',
+  'clusters.systemDefaultContainerRegistry.dockerHubUnreachable':
+    '{provider} instances cannot reach Docker Hub. Use a mirror or a private registry.',
   'clusters.k8sOptions.title': 'Kubernetes Deployment Options',
   'clusters.imageCredentials.title': 'Image Credentials',
   'clusters.imageCredentials.add': 'Add Credential',

@@ -31,6 +31,7 @@ import React, {
 } from 'react';
 import styled from 'styled-components';
 import { ProviderType, instanceTypeFieldMap, vendorIconMap } from '../config';
+import { getCloudProviderAdapter } from '../config/cloud-providers';
 import { NodePoolFormData as FormData } from '../config/types';
 import VolumesConfig from './volumes-config';
 
@@ -167,12 +168,14 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
   const {
     action,
     name = 'workerPoolForm',
+    provider,
     onFinish,
     onDelete,
     showDelete,
     currentData,
     collapseProps
   } = props;
+  const adapter = getCloudProviderAdapter(provider);
   const [instanceTypeList] = useAtom(regionInstanceTypeListAtom);
   const [osImageList] = useAtom(regionOSImageListAtom);
   const { collapsible, onToggle, ...restCollapseProps } = collapseProps || {};
@@ -215,21 +218,11 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
     }
   }, [currentData, instanceTypeList, osImageList, action]);
 
-  const updateImageList = useMemoizedFn((instanceSpec: Record<string, any>) => {
-    if (instanceSpec.count === 8) {
-      return osImageList.filter((item) => item.os_image === 'gpu-h100x8-base');
-    }
-
-    if (instanceSpec.count === 1 && instanceSpec.vendor === 'amd') {
-      return osImageList.filter((item) => item.os_image === 'gpu-amd-base');
-    }
-
-    if (instanceSpec.count === 1 && instanceSpec.vendor === 'nvidia') {
-      return osImageList.filter((item) => item.os_image === 'gpu-h100x1-base');
-    }
-
-    return osImageList;
-  });
+  // Which images the picked instance type can boot is the cloud provider's
+  // rule, so it lives in its adapter (`config/cloud-providers.ts`).
+  const updateImageList = useMemoizedFn((instanceSpec: Record<string, any>) =>
+    adapter.matchOSImages(osImageList, instanceSpec)
+  );
 
   const imageList = useMemo(() => {
     return updateImageList(instanceSpec);
@@ -262,7 +255,10 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
 
   const handleInstanceTypeChange = (value: string, option: any) => {
     const newInstanceSpec = {
-      ...option.specInfo,
+      // Stock and live pricing describe the moment the pool was created, not
+      // the spec, and the pool row renders `instance_spec` verbatim — so a
+      // "Remaining: 3" captured here would read forever as current stock.
+      ..._.omit(option.specInfo, adapter.volatileSpecKeys || []),
       label: option.label,
       vendor: option.vendor,
       description: option.description,
@@ -483,7 +479,13 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
               btnText={intl.formatMessage({ id: 'common.button.addLabel' })}
             ></LabelSelector>
           </Form.Item>
-          <VolumesConfig disabled={action === PageAction.EDIT}></VolumesConfig>
+          {/* Shuihua has no block-storage API — the backend rejects a pool
+              that carries volumes, so don't offer them. */}
+          {adapter.supportsVolumes && (
+            <VolumesConfig
+              disabled={action === PageAction.EDIT}
+            ></VolumesConfig>
+          )}
           <Form.Item<FormData> name="os_image" hidden>
             <CInput.Input></CInput.Input>
           </Form.Item>

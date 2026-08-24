@@ -31,7 +31,7 @@ const AddPool: React.FC<AddModalProps> = ({
   onCancel
 }) => {
   const { getInstanceTypes, getOSImages, updateInstanceTypes, updateOSImages } =
-    useProviderRegions();
+    useProviderRegions(provider);
   const formRef = useRef<any>(null);
 
   const handleSubmit = async () => {

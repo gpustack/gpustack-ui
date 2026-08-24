@@ -5,7 +5,8 @@ import { Input as CInput, FormDrawer, useAppUtils } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import React, { useEffect } from 'react';
-import { ProviderType, ProviderValueMap } from '../config';
+import { isCloudProvider, ProviderType } from '../config';
+import { getCloudProviderAdapter } from '../config/cloud-providers';
 import {
   CredentialFormData as FormData,
   CredentialListItem as ListItem
@@ -32,6 +33,8 @@ const AddModal: React.FC<AddModalProps> = ({
   const [form] = Form.useForm();
   const intl = useIntl();
   const { getRuleMessage } = useAppUtils();
+  // Shuihua calls its secret an API key, DigitalOcean an access token.
+  const { tokenDocUrl, secretLabelId } = getCloudProviderAdapter(provider);
 
   const handleSumit = () => {
     form.submit();
@@ -79,23 +82,25 @@ const AddModal: React.FC<AddModalProps> = ({
           ></CInput.Input>
         </Form.Item>
         <PluginExtraFields name="CreateOrgScopeField" context={{ action }} />
-        {provider === ProviderValueMap.DigitalOcean && (
-          <>
-            <Form.Item<FormData>
-              name="secret"
-              rules={[
-                {
-                  required: action === PageAction.CREATE,
-                  message: getRuleMessage('input', 'clusters.credential.token')
-                }
-              ]}
-            >
-              <CInput.Password
-                label={intl.formatMessage({
-                  id: 'clusters.credential.token'
-                })}
-                required={action === PageAction.CREATE}
-                description={
+        {isCloudProvider(provider) && (
+          <Form.Item<FormData>
+            name="secret"
+            rules={[
+              {
+                required: action === PageAction.CREATE,
+                message: getRuleMessage('input', secretLabelId)
+              }
+            ]}
+          >
+            <CInput.Password
+              label={intl.formatMessage({
+                id: secretLabelId
+              })}
+              required={action === PageAction.CREATE}
+              // Providers without a documented token page (Shuihua, for now)
+              // just drop the hint rather than link nowhere.
+              description={
+                tokenDocUrl ? (
                   <span
                     dangerouslySetInnerHTML={{
                       __html: intl.formatMessage(
@@ -103,15 +108,15 @@ const AddModal: React.FC<AddModalProps> = ({
                           id: 'clusters.button.genToken'
                         },
                         {
-                          link: 'https://cloud.digitalocean.com/account/api/tokens'
+                          link: tokenDocUrl
                         }
                       )
                     }}
                   ></span>
-                }
-              ></CInput.Password>
-            </Form.Item>
-          </>
+                ) : undefined
+              }
+            ></CInput.Password>
+          </Form.Item>
         )}
         <Form.Item<FormData> name="description" rules={[{ required: false }]}>
           <CInput.TextArea

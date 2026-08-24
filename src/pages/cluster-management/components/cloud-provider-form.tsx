@@ -12,6 +12,8 @@ import { useAtom } from 'jotai';
 import _ from 'lodash';
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
+import { ProviderType } from '../config';
+import { providerHasRegions } from '../config/cloud-providers';
 import { useStepsContext } from '../config/steps-context';
 import { ClusterFormData as FormData } from '../config/types';
 import { useProviderRegions } from '../hooks/use-provider-regions';
@@ -39,7 +41,9 @@ const OptionItem = styled.div`
 `;
 
 interface CloudProviderProps {
-  provider: string; // 'kubernetes' | 'digitalocean';
+  // A cloud provider from `CloudProviderList` (DigitalOcean / Shuihua) — it
+  // selects the adapter that resolves regions and instance types.
+  provider: ProviderType;
   credentialList: Global.BaseOption<number>[];
   action: PageActionType;
   credentialID?: number;
@@ -75,7 +79,8 @@ const optionRender = (option: any): React.ReactNode => {
 };
 
 const CloudProvider: React.FC<CloudProviderProps> = (props) => {
-  const { credentialList, action, credentialID } = props;
+  const { credentialList, action, credentialID, provider } = props;
+  const hasRegions = providerHasRegions(provider);
   const intl = useIntl();
   const { systemConfig } = useStepsContext();
   const form = Form.useFormInstance<FormData>();
@@ -89,13 +94,24 @@ const CloudProvider: React.FC<CloudProviderProps> = (props) => {
     setLoading,
     loading,
     regions
-  } = useProviderRegions();
+  } = useProviderRegions(provider);
 
   const { getRuleMessage } = useAppUtils();
 
   const handleCredentialChange = async (value: number) => {
     setLoading(true);
-    await Promise.all([getOSImages(value), getInstanceTypes(value)]);
+    const [images, instanceTypes] = await Promise.all([
+      getOSImages(value),
+      getInstanceTypes(value)
+    ]);
+    if (!hasRegions) {
+      // No region step to narrow them down: what the credential returns is
+      // what the node-pool form offers.
+      updateInstanceTypes('', instanceTypes);
+      updateOSImages('', images);
+      setLoading(false);
+      return;
+    }
     await getRegions(value);
   };
 
@@ -105,7 +121,7 @@ const CloudProvider: React.FC<CloudProviderProps> = (props) => {
   };
 
   useEffect(() => {
-    if (credentialID && action !== PageAction.CREATE) {
+    if (credentialID && action !== PageAction.CREATE && hasRegions) {
       getRegions(credentialID);
     }
   }, [credentialID]);
@@ -160,32 +176,34 @@ const CloudProvider: React.FC<CloudProviderProps> = (props) => {
           onChange={handleCredentialChange}
         ></SealSelect>
       </Form.Item>
-      <Form.Item<FormData>
-        name="region"
-        rules={[
-          {
-            required: true,
-            message: getRuleMessage('input', 'clusters.workerpool.region')
-          }
-        ]}
-      >
-        <SealSelect
-          showSearch={{
-            filterOption: filterRegionOption
-          }}
-          disabled={action === PageAction.EDIT}
-          label={intl.formatMessage({ id: 'clusters.workerpool.region' })}
-          required
-          options={regions}
-          loading={loading}
-          labelRender={labelRender}
-          optionRender={optionRender}
-          onChange={handleRegionChange}
-          notFoundContent={intl.formatMessage({
-            id: 'clusters.create.noRegions'
-          })}
-        ></SealSelect>
-      </Form.Item>
+      {hasRegions && (
+        <Form.Item<FormData>
+          name="region"
+          rules={[
+            {
+              required: true,
+              message: getRuleMessage('input', 'clusters.workerpool.region')
+            }
+          ]}
+        >
+          <SealSelect
+            showSearch={{
+              filterOption: filterRegionOption
+            }}
+            disabled={action === PageAction.EDIT}
+            label={intl.formatMessage({ id: 'clusters.workerpool.region' })}
+            required
+            options={regions}
+            loading={loading}
+            labelRender={labelRender}
+            optionRender={optionRender}
+            onChange={handleRegionChange}
+            notFoundContent={intl.formatMessage({
+              id: 'clusters.create.noRegions'
+            })}
+          ></SealSelect>
+        </Form.Item>
+      )}
       <Form.Item<FormData>
         name="server_url"
         rules={[

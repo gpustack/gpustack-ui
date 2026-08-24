@@ -1,5 +1,7 @@
 import { DASHBOARD_API } from '@/pages/dashboard/apis';
 import { request } from '@umijs/max';
+import { ProviderType } from '../config';
+import { getCloudProviderAdapter } from '../config/cloud-providers';
 import {
   ClusterFormData,
   ClusterListItem,
@@ -22,54 +24,49 @@ export const PROVIDER_PROXY_API = '/provider-proxy';
 
 export const SYSTEM_CONFIG_API = '/config';
 
-// ============= DigitalOcean start =====================
+// ============= Cloud provider proxy =====================
 
-export const REGIONS_API = '/v2/regions';
+// The path + query params of each list differ per provider, so they live in
+// `config/cloud-providers.ts` (`cloudProviderAdapters`) next to the parsers
+// for their payloads. These helpers only take care of the proxy call itself.
 
-export const INSTANCE_TYPE = '/v2/sizes';
+type CloudQueryParams = { id: number; provider?: ProviderType | string | null };
 
-export const OS_IMAGE = '/v2/images';
+const requestProviderProxy = (
+  credentialId: number,
+  // Absent when the provider has no such list (Shuihua has no regions), which
+  // is not an error: the caller gets an empty payload rather than a request to
+  // a path that does not exist.
+  endpoint?: { path: string; params?: Record<string, any> }
+) => {
+  if (!endpoint) {
+    return Promise.resolve(undefined);
+  }
+  return request(
+    `${CREDENTIALS_API}/${credentialId}${PROVIDER_PROXY_API}${endpoint.path}`,
+    {
+      method: 'GET',
+      params: endpoint.params
+    }
+  );
+};
 
-// ============= DigitalOcean end =======================
+export async function queryCloudRegions(params: CloudQueryParams) {
+  const { proxy } = getCloudProviderAdapter(params.provider);
+  return requestProviderProxy(params.id, proxy.regions);
+}
+
+export async function queryCloudInstanceTypes(params: CloudQueryParams) {
+  const { proxy } = getCloudProviderAdapter(params.provider);
+  return requestProviderProxy(params.id, proxy.instanceTypes);
+}
+
+export async function queryCloudOSImages(params: CloudQueryParams) {
+  const { proxy } = getCloudProviderAdapter(params.provider);
+  return requestProviderProxy(params.id, proxy.osImages);
+}
 
 // ===================== Credentials =====================
-
-export async function queryDigitalOceanRegions(params: { id: number }) {
-  return request(
-    `${CREDENTIALS_API}/${params.id}${PROVIDER_PROXY_API}${REGIONS_API}`,
-    {
-      method: 'GET',
-      params: {
-        per_page: 200
-      }
-    }
-  );
-}
-
-export async function queryDigitalOceanInstanceTypes(params: { id: number }) {
-  return request(
-    `${CREDENTIALS_API}/${params.id}${PROVIDER_PROXY_API}${INSTANCE_TYPE}`,
-    {
-      method: 'GET',
-      params: {
-        per_page: 200
-      }
-    }
-  );
-}
-
-export async function queryDigitalOceanOSImages(params: { id: number }) {
-  return request(
-    `${CREDENTIALS_API}/${params.id}${PROVIDER_PROXY_API}${OS_IMAGE}`,
-    {
-      method: 'GET',
-      params: {
-        per_page: 200,
-        type: 'distribution'
-      }
-    }
-  );
-}
 
 export async function queryCredentialList(params: Global.SearchParams) {
   return request<Global.PageResponse<CredentialListItem>>(

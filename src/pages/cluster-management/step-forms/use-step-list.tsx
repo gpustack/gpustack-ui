@@ -1,6 +1,11 @@
 import { useIntl } from '@umijs/max';
 import { useMemo } from 'react';
-import { ProviderType, ProviderValueMap } from '../config';
+import {
+  CloudProviderList,
+  isCloudProvider,
+  ProviderType,
+  ProviderValueMap
+} from '../config';
 import { moduleMap } from './module-registry';
 
 export default function useStepList() {
@@ -38,8 +43,10 @@ export default function useStepList() {
         showButtons: (provider?: ProviderType) => {
           return {
             previous: true,
-            next: provider === ProviderValueMap.DigitalOcean,
-            save: provider !== ProviderValueMap.DigitalOcean,
+            // Cloud providers continue to the node-pool step; self-hosted
+            // ones have nothing left to configure and save here.
+            next: isCloudProvider(provider),
+            save: !isCloudProvider(provider),
             skip: false,
             done: false
           };
@@ -64,7 +71,7 @@ export default function useStepList() {
         defaultShow: false,
         showForms: [moduleMap.WorkerPoolForm],
         showModules: [],
-        providers: [ProviderValueMap.DigitalOcean]
+        providers: CloudProviderList
       },
       {
         title: intl.formatMessage({ id: 'clusters.create.steps.complete' }),

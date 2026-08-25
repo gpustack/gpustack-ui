@@ -44,7 +44,7 @@ export const buildChartSpecs = (
   const TPS = 'Tokens/s';
 
   const specs: ChartSpec[] = [
-    // 1. Where does my SLA still hold. The IQR band is the robust spread signal
+    // 1. Where does my SLO still hold. The IQR band is the robust spread signal
     //    (p25/p75 shrug off outliers), the p99 dashed line owns the tail — two
     //    signals with separate jobs, so "the band widens" means the bulk of the
     //    distribution is diverging, not that one request was slow.

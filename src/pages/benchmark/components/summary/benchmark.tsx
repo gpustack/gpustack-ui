@@ -156,51 +156,51 @@ const Benchmark: React.FC = () => {
         ])
   ];
 
-  const slaRows: Row[] = [
+  const sloRows: Row[] = [
     {
-      key: 'slaTtft',
-      labelId: 'benchmark.form.sla.ttft',
-      value: detailData?.sla_avg_ttft_ms
+      key: 'sloTtft',
+      labelId: 'benchmark.form.slo.ttft',
+      value: detailData?.slo_avg_ttft_ms
     },
     {
-      key: 'slaP95Ttft',
-      labelId: 'benchmark.form.sla.p95Ttft',
-      value: detailData?.sla_p95_ttft_ms
+      key: 'sloP95Ttft',
+      labelId: 'benchmark.form.slo.p95Ttft',
+      value: detailData?.slo_p95_ttft_ms
     },
     {
-      key: 'slaP99Ttft',
-      labelId: 'benchmark.form.sla.p99Ttft',
-      value: detailData?.sla_p99_ttft_ms
+      key: 'sloP99Ttft',
+      labelId: 'benchmark.form.slo.p99Ttft',
+      value: detailData?.slo_p99_ttft_ms
     },
     {
-      key: 'slaTpot',
-      labelId: 'benchmark.form.sla.tpot',
-      value: detailData?.sla_avg_tpot_ms
+      key: 'sloTpot',
+      labelId: 'benchmark.form.slo.tpot',
+      value: detailData?.slo_avg_tpot_ms
     },
     {
-      key: 'slaP95Tpot',
-      labelId: 'benchmark.form.sla.p95Tpot',
-      value: detailData?.sla_p95_tpot_ms
+      key: 'sloP95Tpot',
+      labelId: 'benchmark.form.slo.p95Tpot',
+      value: detailData?.slo_p95_tpot_ms
     },
     {
-      key: 'slaP99Tpot',
-      labelId: 'benchmark.form.sla.p99Tpot',
-      value: detailData?.sla_p99_tpot_ms
+      key: 'sloP99Tpot',
+      labelId: 'benchmark.form.slo.p99Tpot',
+      value: detailData?.slo_p99_tpot_ms
     },
     {
-      key: 'slaAvgLat',
-      labelId: 'benchmark.form.sla.avgLatency',
-      value: detailData?.sla_avg_latency_ms
+      key: 'sloAvgLat',
+      labelId: 'benchmark.form.slo.avgLatency',
+      value: detailData?.slo_avg_latency_ms
     },
     {
-      key: 'slaP95Lat',
-      labelId: 'benchmark.form.sla.p95Latency',
-      value: detailData?.sla_p95_latency_ms
+      key: 'sloP95Lat',
+      labelId: 'benchmark.form.slo.p95Latency',
+      value: detailData?.slo_p95_latency_ms
     },
     {
-      key: 'slaP99Lat',
-      labelId: 'benchmark.form.sla.p99Latency',
-      value: detailData?.sla_p99_latency_ms
+      key: 'sloP99Lat',
+      labelId: 'benchmark.form.slo.p99Latency',
+      value: detailData?.slo_p99_latency_ms
     }
   ];
 
@@ -324,7 +324,7 @@ const Benchmark: React.FC = () => {
 
   const groups = [
     { labelId: 'benchmark.form.group.dataset', rows: datasetRows },
-    { labelId: 'benchmark.form.group.sla', rows: slaRows },
+    { labelId: 'benchmark.form.group.slo', rows: sloRows },
     { labelId: 'benchmark.form.group.load', rows: loadRows },
     { labelId: 'benchmark.form.group.execution', rows: executionRows },
     { labelId: 'benchmark.form.group.advanced', rows: advancedRows }

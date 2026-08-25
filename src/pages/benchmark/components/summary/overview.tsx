@@ -20,7 +20,7 @@ import { useDetailContext } from '../../config/detail-context';
 import { RESIDENT_CHARTS, buildChartSpecs } from './chart-specs';
 import LoadSweep from './load-sweep';
 import {
-  SLA_SUCCESS_FLOOR,
+  SLO_SUCCESS_FLOOR,
   StagePoint,
   fmtDuration,
   stageTotals,
@@ -284,9 +284,9 @@ const Overview: React.FC<OverviewProps> = ({
   );
 
   // The verdict itself is derived once in buildStagePoints, alongside every other
-  // number on this page — the column only decides how to draw it. `slaPass` is
+  // number on this page — the column only decides how to draw it. `sloPass` is
   // null on a run with no thresholds, which is what hides the column entirely.
-  const hasSlaTargets = points.some((p) => p.slaPass != null);
+  const hasSloTargets = points.some((p) => p.sloPass != null);
 
   // Early-stop reason. A stage normally ends at max_requests; anything else means
   // it under-ran, so the shortfall isn't mistaken for lost data.
@@ -351,15 +351,15 @@ const Overview: React.FC<OverviewProps> = ({
       width: 130,
       render: (_v: unknown, p: StagePoint) => num(p.conc, 0)
     },
-    ...(hasSlaTargets
+    ...(hasSloTargets
       ? [
           {
-            title: 'SLA',
-            key: 'sla',
+            title: 'SLO',
+            key: 'slo',
             width: 70,
             align: 'center' as const,
             render: (_v: unknown, p: StagePoint) =>
-              p.slaPass ? (
+              p.sloPass ? (
                 <span style={{ color: 'var(--ant-color-success)' }}>✓</span>
               ) : (
                 <span style={{ color: 'var(--ant-color-error)' }}>✗</span>
@@ -461,7 +461,7 @@ const Overview: React.FC<OverviewProps> = ({
       render: (_v: unknown, p: StagePoint) => {
         const total = p.total;
         const ok = p.ok;
-        const low = total > 0 && ok / total < SLA_SUCCESS_FLOOR;
+        const low = total > 0 && ok / total < SLO_SUCCESS_FLOOR;
         const term = (p.raw.raw_metrics as any)?.termination;
         const early = term?.reason && term.reason !== 'max_requests';
         return (
@@ -534,7 +534,7 @@ const Overview: React.FC<OverviewProps> = ({
               throughputAxis: t('benchmark.detail.chart.axis.throughput'),
               ttftP99: 'TTFT p99',
               overloaded: t('benchmark.detail.status.overloaded'),
-              slaBreached: t('benchmark.detail.chart.slaBreached')
+              sloBreached: t('benchmark.detail.chart.sloBreached')
             }}
           />
         </div>

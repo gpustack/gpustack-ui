@@ -66,8 +66,8 @@ const Summary: React.FC = () => {
         peakRate: detailData?.peak_rate,
         isConcurrency:
           loadAxisLabelId(detailData) === 'benchmark.form.concurrency',
-        // The record carries the nine sla_* thresholds as flat fields.
-        slaTargets: detailData as unknown as Record<string, unknown> | undefined
+        // The record carries the nine slo_* thresholds as flat fields.
+        sloTargets: detailData as unknown as Record<string, unknown> | undefined
       }),
     [results, detailData]
   );

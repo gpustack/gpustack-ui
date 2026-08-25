@@ -108,23 +108,23 @@ export interface BenchmarkDetail {
   tokens_per_second_mean: number;
   output_tokens_per_second_mean: number;
   input_tokens_per_second_mean: number;
-  // load / auto-tune / SLA / best operating points
+  // load / auto-tune / SLO / best operating points
   load_type?: string;
   auto_tune?: boolean;
   lower_bound?: number;
   upper_bound?: number;
   max_points?: number;
   max_total_seconds?: number;
-  sla_avg_ttft_ms?: number;
-  sla_avg_tpot_ms?: number;
-  sla_p95_ttft_ms?: number;
-  sla_p95_tpot_ms?: number;
-  sla_p99_ttft_ms?: number;
-  sla_p99_tpot_ms?: number;
-  sla_avg_latency_ms?: number;
-  sla_p95_latency_ms?: number;
-  sla_p99_latency_ms?: number;
-  sla_met_rate?: number;
+  slo_avg_ttft_ms?: number;
+  slo_avg_tpot_ms?: number;
+  slo_p95_ttft_ms?: number;
+  slo_p95_tpot_ms?: number;
+  slo_p99_ttft_ms?: number;
+  slo_p99_tpot_ms?: number;
+  slo_avg_latency_ms?: number;
+  slo_p95_latency_ms?: number;
+  slo_p99_latency_ms?: number;
+  slo_met_rate?: number;
   peak_rate?: number;
   recommended_rate?: number;
   // Test-coverage validity, computed on the backend (language-neutral codes +
@@ -137,9 +137,9 @@ export interface BenchmarkDetail {
     // stage / legacy runs and for rows written before the runner reported it).
     stop_reason?: string;
     stopped_at?: number;
-    // Whether `sla_met_rate` is a measured boundary ("257 breaks it") or only a
-    // floor (">= 256, the search ended first"). Absent when no SLA was set.
-    sla_boundary_located?: boolean;
+    // Whether `slo_met_rate` is a measured boundary ("257 breaks it") or only a
+    // floor (">= 256, the search ended first"). Absent when no SLO was set.
+    slo_boundary_located?: boolean;
     // The saturation probe's reading, the soft cap it produced, and how many times
     // that cap gave way. Together they say whether the probe earned its cost:
     // relaxed > 0 = it read low; stopped_at == bound = it clamped the overshoot

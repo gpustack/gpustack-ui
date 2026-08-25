@@ -28,10 +28,10 @@ export const C = {
   // Resting fill of an overloaded row's bar; C.red is its emphasized form.
   redSoft: '#f0a8aa',
   overloadArea: 'rgba(229,72,77,0.05)',
-  // Same red, same weight: an SLA breach and an overload are both "past here the
+  // Same red, same weight: an SLO breach and an overload are both "past here the
   // numbers are not an answer". Where they overlap the two tints compound, and
   // the labels say which is which.
-  slaArea: 'rgba(229,72,77,0.05)',
+  sloArea: 'rgba(229,72,77,0.05)',
   // Text: the stroke greys are unreadable as type (1.6–2.2:1 on white), so
   // secondary text gets its own value and the right axis its own amber.
   text: '#8b939e',
@@ -304,7 +304,7 @@ const buildOption = (
             // Anchor away from the edge the guide sits against, exactly as the
             // point markers below do. The label is centred on the line by
             // default, and the guide is at its most useful precisely where that
-            // clips: an auto-tune run that never breaks its SLA recommends the
+            // clips: an auto-tune run that never breaks its SLO recommends the
             // highest load it measured, so the line lands on the LAST category
             // and half the text falls off the canvas ("★ Bes").
             align: edgeAlign(bestIdx / Math.max(points.length - 1, 1))

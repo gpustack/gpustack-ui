@@ -385,7 +385,7 @@ const useColumnSettings = (options: {
       )
     },
     {
-      // Best @ — the recommended operating point (peak / max-within-SLA). The
+      // Best @ — the recommended operating point (peak / max-within-SLO). The
       // value lives on the load axis, so we spell out its unit (concurrency vs
       // request rate) instead of a bare number.
       title: renderTitle(intl.formatMessage({ id: 'benchmark.table.best' })),

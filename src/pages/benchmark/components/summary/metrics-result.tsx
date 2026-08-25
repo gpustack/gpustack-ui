@@ -89,7 +89,7 @@ const throughputColumns: MetricDef[] = [
 
 const latencyColumns: MetricDef[] = [
   {
-    // request_latency is SECONDS everywhere (the schema, the backend's SLA
+    // request_latency is SECONDS everywhere (the schema, the backend's SLO
     // scale x1000, the percentile table's "Latency (s)" header, the list
     // column's "Avg (s)" subtitle) — only this card used to label it ms, which
     // read as a 1000x faster response than measured.

@@ -39,9 +39,9 @@ export default {
   'benchmark.form.autoTune.rangeMin': '最小',
   'benchmark.form.autoTune.rangeMax': '最大',
   'benchmark.form.autoTune.range.rate.tip':
-    '自适应爬坡的搜索范围——硬范围:范围外的负载一律不测。从最小值起按倍增探测直到最大上限。若服务器在最小值处已经饱和,本次会报出实测到的可承载速率并提示你调小范围,而不会自行往下探。默认 4–1024。',
+    '自适应爬坡的搜索范围——硬范围:范围外的负载一律不测。从最小值起按倍增探测直到最大上限。若服务器在最小值处已经饱和,本次会报出实测到的可承载速率并提示你调小范围,而不会自行往下探。',
   'benchmark.form.autoTune.range.concurrency.tip':
-    '自适应爬坡的搜索范围——硬范围:范围外的负载一律不测。从最小值起按倍增探测直到最大上限。若服务器在最小值处已经饱和,本次会报出实测到的可承载速率并提示你调小范围,而不会自行往下探。默认 4–1024。',
+    '自适应爬坡的搜索范围——硬范围:范围外的负载一律不测。从最小值起按倍增探测直到最大上限。若服务器在最小值处已经饱和,本次会报出实测到的可承载速率并提示你调小范围,而不会自行往下探。',
   'benchmark.form.autoTune.maxRate': '最大请求速率',
   'benchmark.form.autoTune.maxConcurrency': '最大并发',
   'benchmark.form.load.managedByProfile': '由预设管理',

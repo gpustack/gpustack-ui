@@ -6,15 +6,15 @@ import React from 'react';
 import {
   AUTO_TUNE_DEFAULTS,
   genDatasetSeed,
-  slaFieldsFromTargets,
-  slaTargetsFromFields
+  sloFieldsFromTargets,
+  sloTargetsFromFields
 } from '../config';
 import { useFormContext } from '../config/form-context';
 import { FormData, ProfileOption, StageRow } from '../config/types';
 import RandomSettingsForm from './random-settings';
 
 // The Preset (profile) is the single top-level selector. Picking one auto-fills
-// the form from its builtin config (load_type / sla / dataset defaults); the
+// the form from its builtin config (load_type / slo / dataset defaults); the
 // "Custom" preset starts blank for fully manual config. `load_type` (not a
 // "mode") is the traffic-shape axis; field visibility derives from it.
 const DatasetForm: React.FC = () => {
@@ -79,11 +79,11 @@ const DatasetForm: React.FC = () => {
       max_seconds: config.max_seconds ?? null,
       request_rate: config.request_rate ?? -1,
       stages: stages,
-      // The 9 flat thresholds are what the API takes; `sla_targets` is the form's
+      // The 9 flat thresholds are what the API takes; `slo_targets` is the form's
       // editable view of them and must be re-derived whenever the preset rewrites
       // them, or the list would still show the previous preset's rows.
-      ...slaFieldsFromTargets(slaTargetsFromFields(config)),
-      sla_targets: slaTargetsFromFields(config)
+      ...sloFieldsFromTargets(sloTargetsFromFields(config)),
+      slo_targets: sloTargetsFromFields(config)
     });
     applyAutoName?.();
   };

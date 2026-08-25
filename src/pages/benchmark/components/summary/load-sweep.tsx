@@ -8,7 +8,7 @@ import {
   fmtTpsFull,
   linearMax,
   logDomain,
-  slaBreachOnset
+  sloBreachOnset
 } from './metrics';
 import { C, tooltipRows } from './stage-chart';
 
@@ -27,7 +27,7 @@ interface Props {
     throughputAxis: string;
     ttftP99: string;
     overloaded: string;
-    slaBreached: string;
+    sloBreached: string;
   };
   height?: number;
 }
@@ -42,7 +42,7 @@ interface Props {
  * the panel carries a (?) explaining it: read the amber line as linear and you
  * underestimate the post-knee blow-up by an order of magnitude.
  *
- * Two regions are shaded, both of them measured verdicts: where the SLA stops
+ * Two regions are shaded, both of them measured verdicts: where the SLO stops
  * being met, and where throughput itself collapses. Scaling and Saturated are
  * NOT shaded — they would need a "where does the knee begin" call the backend
  * does not compute, and a band drawn from a guess is worse than no band.
@@ -56,14 +56,14 @@ const buildOption = (
   const cats = points.map((p) => String(Number(p.load.toFixed(loadDecimals))));
   const ttftDomain = logDomain(points.map((p) => p.ttftP99));
   const firstOver = points.findIndex((p) => p.isOverloaded);
-  const firstBreach = slaBreachOnset(points);
+  const firstBreach = sloBreachOnset(points);
 
-  // Two red regions, both running to the right edge: where the SLA stops holding
+  // Two red regions, both running to the right edge: where the SLO stops holding
   // and where throughput itself collapses. They answer different questions and
-  // are NOT the same boundary — an SLA can break long before the server is
+  // are NOT the same boundary — an SLO can break long before the server is
   // overloaded, which is the whole reason a latency target is worth setting.
   //
-  // The SLA region is drawn first so the overload region layers on top of it:
+  // The SLO region is drawn first so the overload region layers on top of it:
   // the shared stretch reads darker, which is the right ordering of bad news.
   // Their labels anchor to opposite ends so they stay legible when the two
   // regions coincide.
@@ -94,8 +94,8 @@ const buildOption = (
       ? [
           shadeFrom(
             firstBreach,
-            C.slaArea,
-            labels.slaBreached,
+            C.sloArea,
+            labels.sloBreached,
             'insideBottomLeft'
           )
         ]
@@ -184,8 +184,8 @@ const buildOption = (
                 // overloaded: the server is still healthy here, it just is not
                 // meeting the target, which is precisely the case the shaded
                 // region exists to name.
-                p.slaPass === false
-                ? `  ${labels.slaBreached}`
+                p.sloPass === false
+                ? `  ${labels.sloBreached}`
                 : '';
         return tooltipRows(
           [

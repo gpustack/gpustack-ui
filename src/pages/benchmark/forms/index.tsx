@@ -15,8 +15,8 @@ import {
   DatasetValueMap,
   genBenchmarkName,
   genDatasetSeed,
-  profileAllowsSla,
-  slaTargetsFromFields
+  profileAllowsSlo,
+  sloTargetsFromFields
 } from '../config';
 import FormContext from '../config/form-context';
 import { FormData, BenchmarkListItem as ListItem } from '../config/types';
@@ -54,14 +54,14 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
   const scrollTabsRef = useRef<any>(null);
 
   // The nav jumps to each real section instead of a single "Configuration": Basic
-  // + Workload / SLA / Load / Stop Conditions. Each `field` matches the section
+  // + Workload / SLO / Load / Stop Conditions. Each `field` matches the section
   // header's data-field anchor (see random-settings).
   //
-  // SLA is shown per TARGET, not per axis: it is available on both load axes and
+  // SLO is shown per TARGET, not per axis: it is available on both load axes and
   // hidden only for a preset whose answer IS the throughput peak (see
-  // profileAllowsSla). Must stay in sync with random-settings' own gate, or the nav
+  // profileAllowsSlo). Must stay in sync with random-settings' own gate, or the nav
   // grows an anchor that scrolls to nothing.
-  const showSLA = profileAllowsSla(profile, profilesOptions as any[]);
+  const showSLO = profileAllowsSlo(profile, profilesOptions as any[]);
   const segmentOptions = [
     {
       value: 'name',
@@ -75,13 +75,13 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       icon: <IconFont type="icon-settings" />,
       field: 'dataset'
     },
-    ...(showSLA
+    ...(showSLO
       ? [
           {
-            value: 'sla',
-            label: intl.formatMessage({ id: 'benchmark.form.group.sla' }),
+            value: 'slo',
+            label: intl.formatMessage({ id: 'benchmark.form.group.slo' }),
             icon: <IconFont type="icon-settings" />,
-            field: 'sla'
+            field: 'slo'
           }
         ]
       : []),
@@ -159,8 +159,8 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
     form.setFieldsValue({
       ...currentData,
       dataset_name: datasetName,
-      // Editable view of the 9 flat sla_*_ms thresholds (see config/index.ts).
-      sla_targets: slaTargetsFromFields(currentData),
+      // Editable view of the 9 flat slo_*_ms thresholds (see config/index.ts).
+      slo_targets: sloTargetsFromFields(currentData),
       model_instance: [currentData.model_name, currentData.model_instance_name],
       // A clone of a random-seeded benchmark re-rolls: running the same config
       // twice is exactly the case that must not reuse the first run's prompts.
@@ -270,7 +270,7 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
         >
           <Basic />
           {/* Configuration is the section (labeled by the top segment nav); its
-              fields — Profile + Dataset/SLA/Load/… groups — render directly, with
+              fields — Profile + Dataset/SLO/Load/… groups — render directly, with
               no redundant outer "Configuration" collapse wrapping them. */}
           <DatasetForm />
         </Form>

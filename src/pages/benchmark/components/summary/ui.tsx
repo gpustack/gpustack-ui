@@ -5,8 +5,8 @@ import { BenchmarkResultItem } from '../../config/types';
 // ── Unified design language for the Summary tab ────────────────────────────
 // One semantic palette, applied everywhere (badge, chart markers, row
 // highlight) so the page reads with a single visual grammar:
-//   blue = recommended / selected   green = peak / SLA met
-//   red  = overloaded / SLA broken   gray = secondary
+//   blue = recommended / selected   green = peak / SLO met
+//   red  = overloaded / SLO broken   gray = secondary
 
 export type StageStatusKind = 'recommended' | 'peak' | 'overloaded' | 'ok';
 

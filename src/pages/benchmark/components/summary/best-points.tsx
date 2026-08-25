@@ -5,7 +5,7 @@ import { round } from 'lodash';
 import React from 'react';
 import { loadAxisLabelId, loadValueDecimals } from '../../config';
 import { useDetailContext } from '../../config/detail-context';
-import { SLA_SUCCESS_FLOOR, StagePoint, pctDelta } from './metrics';
+import { SLO_SUCCESS_FLOOR, StagePoint, pctDelta } from './metrics';
 
 // One horizontal band: the payoff number on the left, the operating point's six
 // defining metrics in a single row, and the "why this one" reasoning on the right.
@@ -140,14 +140,14 @@ const useStyles = createStyles(({ css }) => ({
       font-variant-numeric: tabular-nums;
       margin-left: 5px;
     }
-    /* SLA budget: pills, so an SLA run makes its thresholds explicit next to the
+    /* SLO budget: pills, so an SLO run makes its thresholds explicit next to the
        point that was chosen to satisfy them. */
-    .sla {
+    .slo {
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
     }
-    .sla .pill {
+    .slo .pill {
       font-size: 11px;
       font-weight: 600;
       color: var(--ant-color-primary);
@@ -204,7 +204,7 @@ const BestPoints: React.FC<BestPointsProps> = ({ points, onSelect }) => {
   // badge would contradict its own number on exactly the boundary it exists for.
   const okPct = okRate == null ? null : round(okRate * 100, 1);
   // Reason 2 — what pushing on to the throughput peak would cost. Latency is
-  // compared on p99, the metric an SLA is actually written against.
+  // compared on p99, the metric an SLO is actually written against.
   const peakGain =
     peak && peak.tps != null && best.tps != null
       ? pctDelta(best.tps, peak.tps)
@@ -214,23 +214,23 @@ const BestPoints: React.FC<BestPointsProps> = ({ points, onSelect }) => {
       ? pctDelta(best.ttftP99, peak.ttftP99)
       : null;
 
-  // Only meaningful for an SLA run; `sla_boundary_located` is absent for the rest.
-  const slaCapacity = detailData?.sla_met_rate ?? null;
-  const boundaryLocated = detailData?.validity?.sla_boundary_located === true;
+  // Only meaningful for an SLO run; `slo_boundary_located` is absent for the rest.
+  const sloCapacity = detailData?.slo_met_rate ?? null;
+  const boundaryLocated = detailData?.validity?.slo_boundary_located === true;
 
   // TPOT here is the decode-only metric the table shows: the thresholds, the
-  // stage verdicts and the server's sla_met_rate all sit on that one basis.
-  const slaTargets: string[] = (
+  // stage verdicts and the server's slo_met_rate all sit on that one basis.
+  const sloTargets: string[] = (
     [
-      [detailData?.sla_avg_ttft_ms, 'TTFT Avg'],
-      [detailData?.sla_p95_ttft_ms, 'TTFT p95'],
-      [detailData?.sla_p99_ttft_ms, 'TTFT p99'],
-      [detailData?.sla_avg_tpot_ms, 'TPOT Avg'],
-      [detailData?.sla_p95_tpot_ms, 'TPOT p95'],
-      [detailData?.sla_p99_tpot_ms, 'TPOT p99'],
-      [detailData?.sla_avg_latency_ms, 'Latency Avg'],
-      [detailData?.sla_p95_latency_ms, 'Latency p95'],
-      [detailData?.sla_p99_latency_ms, 'Latency p99']
+      [detailData?.slo_avg_ttft_ms, 'TTFT Avg'],
+      [detailData?.slo_p95_ttft_ms, 'TTFT p95'],
+      [detailData?.slo_p99_ttft_ms, 'TTFT p99'],
+      [detailData?.slo_avg_tpot_ms, 'TPOT Avg'],
+      [detailData?.slo_p95_tpot_ms, 'TPOT p95'],
+      [detailData?.slo_p99_tpot_ms, 'TPOT p99'],
+      [detailData?.slo_avg_latency_ms, 'Latency Avg'],
+      [detailData?.slo_p95_latency_ms, 'Latency p95'],
+      [detailData?.slo_p99_latency_ms, 'Latency p99']
     ] as Array<[number | undefined, string]>
   )
     .filter(([v]) => v != null)
@@ -301,33 +301,33 @@ const BestPoints: React.FC<BestPointsProps> = ({ points, onSelect }) => {
       </div>
 
       <div className="col-why">
-        {slaTargets.length > 0 && (
-          <div className="sla">
-            {slaTargets.map((s) => (
+        {sloTargets.length > 0 && (
+          <div className="slo">
+            {sloTargets.map((s) => (
               <span className="pill" key={s}>
                 {s}
               </span>
             ))}
           </div>
         )}
-        {/* The SLA capacity, stated as what it actually is. Without a measured
+        {/* The SLO capacity, stated as what it actually is. Without a measured
             breach above it the number is a FLOOR, not the boundary — rendering
             "256" flat would invent a ceiling nobody measured, and capacity
             planning would then be done against it. */}
-        {slaCapacity != null && (
+        {sloCapacity != null && (
           <div className="why">
             <Tooltip
               title={t(
                 boundaryLocated
-                  ? 'benchmark.detail.sla.capacity.locatedHint'
-                  : 'benchmark.detail.sla.capacity.floorHint'
+                  ? 'benchmark.detail.slo.capacity.locatedHint'
+                  : 'benchmark.detail.slo.capacity.floorHint'
               )}
             >
               <span className="capacity">
-                {t('benchmark.detail.sla.capacity')}
+                {t('benchmark.detail.slo.capacity')}
                 <b>
                   {boundaryLocated ? '' : '≥ '}
-                  {round(slaCapacity, dec)} {loadUnit}
+                  {round(sloCapacity, dec)} {loadUnit}
                 </b>
               </span>
             </Tooltip>
@@ -335,8 +335,8 @@ const BestPoints: React.FC<BestPointsProps> = ({ points, onSelect }) => {
         )}
         {okPct != null && (
           <div className="why">
-            {/* SLA_SUCCESS_FLOOR is the floor the engine itself judges a point on
-                (below it a stage counts as overloaded and fails the SLA whatever
+            {/* SLO_SUCCESS_FLOOR is the floor the engine itself judges a point on
+                (below it a stage counts as overloaded and fails the SLO whatever
                 its latencies say), so the badge switches colour there rather than
                 at a number chosen for the display.
                 Below it the badge is a WARNING, not neutral: the stage table marks
@@ -345,7 +345,7 @@ const BestPoints: React.FC<BestPointsProps> = ({ points, onSelect }) => {
                 caveat on the headline number, not a failed run. */}
             <span
               className={
-                okPct >= SLA_SUCCESS_FLOOR * 100 ? 'badge up' : 'badge warn'
+                okPct >= SLO_SUCCESS_FLOOR * 100 ? 'badge up' : 'badge warn'
               }
             >
               {okPct}%

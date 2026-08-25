@@ -36,16 +36,16 @@ import {
   DATASET_SEED_MIN,
   DatasetValueMap,
   LoadTypeValueMap,
-  SLA_AGGS,
-  SLA_METRICS,
-  type SlaAgg,
-  type SlaMetric,
-  type SlaTarget,
+  SLO_AGGS,
+  SLO_METRICS,
+  type SloAgg,
+  type SloMetric,
+  type SloTarget,
   genDatasetSeed,
   loadTypeOptions,
-  profileAllowsSla,
-  slaFieldsFromTargets,
-  slaTargetKey
+  profileAllowsSlo,
+  sloFieldsFromTargets,
+  sloTargetKey
 } from '../config';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
@@ -171,7 +171,7 @@ const useStyles = createStyles(({ token, css }) => ({
   `
 }));
 
-// SLA target rows live in config/index.ts (SLA_METRICS / SLA_AGGS + the
+// SLO target rows live in config/index.ts (SLO_METRICS / SLO_AGGS + the
 // list <-> flat-field mapping), since the detail page and the preset prefill
 // need the same mapping.
 
@@ -202,12 +202,12 @@ const RandomSettingsForm: React.FC<{
   // can switch to manual stages. Derive from that so the section renders correctly
   // even if the auto_tune field value lags/is missing.
   const effectiveAutoTune = isCustom ? !!autoTune : true;
-  // SLA is gated by TARGET, not by axis: setting a threshold switches the delivered
-  // answer from "peak throughput" to "max load meeting the SLA", so it is available
+  // SLO is gated by TARGET, not by axis: setting a threshold switches the delivered
+  // answer from "peak throughput" to "max load meeting the SLO", so it is available
   // on BOTH axes (asking for req/s under a TTFT budget is the more common capacity
   // question) and hidden only for a preset whose answer IS the peak. See
-  // profileAllowsSla; keep in sync with the nav's copy in forms/index.tsx.
-  const showSLA = profileAllowsSla(profile, profilesOptions as any[]);
+  // profileAllowsSlo; keep in sync with the nav's copy in forms/index.tsx.
+  const showSLO = profileAllowsSlo(profile, profilesOptions as any[]);
   const isRandom = datasetName === DatasetValueMap.Random;
   // Random seed is the default; only an explicit false means the user pinned one.
   const randomSeed = Form.useWatch('dataset_seed_random', form) !== false;
@@ -391,71 +391,71 @@ const RandomSettingsForm: React.FC<{
     }
   };
 
-  // SLA targets: same controlled MetadataList pattern as the bucket / stage
-  // lists. `sla_targets` is form-only — every mutation writes through to the 9
-  // flat `sla_*_ms` fields the API actually takes (unused ones nulled), and the
-  // page strips `sla_targets` before the request.
-  const slaTargets: SlaTarget[] = Form.useWatch('sla_targets', form) || [];
-  const [slaValidated, setSlaValidated] = useState(false);
-  const revalidateSla = () => {
-    if (slaValidated) form.validateFields(['sla_targets']).catch(() => {});
+  // SLO targets: same controlled MetadataList pattern as the bucket / stage
+  // lists. `slo_targets` is form-only — every mutation writes through to the 9
+  // flat `slo_*_ms` fields the API actually takes (unused ones nulled), and the
+  // page strips `slo_targets` before the request.
+  const sloTargets: SloTarget[] = Form.useWatch('slo_targets', form) || [];
+  const [sloValidated, setSloValidated] = useState(false);
+  const revalidateSlo = () => {
+    if (sloValidated) form.validateFields(['slo_targets']).catch(() => {});
   };
-  const writeSlaTargets = (next: SlaTarget[]) => {
+  const writeSloTargets = (next: SloTarget[]) => {
     form.setFieldsValue({
-      sla_targets: next,
-      ...slaFieldsFromTargets(next)
+      slo_targets: next,
+      ...sloFieldsFromTargets(next)
     } as any);
   };
   // (metric, agg) pairs claimed by the OTHER rows. Used to disable them in this
   // row's selectors, so a duplicate threshold is impossible to build rather than
   // something the user has to be told about after submitting.
-  const slaTakenByOthers = (index: number) =>
+  const sloTakenByOthers = (index: number) =>
     new Set(
-      slaTargets
+      sloTargets
         .filter((_, i) => i !== index)
-        .map((t) => slaTargetKey(t.metric, t.agg))
+        .map((t) => sloTargetKey(t.metric, t.agg))
     );
-  const handleSlaAdd = () => {
+  const handleSloAdd = () => {
     // Default the new row to the first (metric, agg) pair still free.
-    const taken = new Set(slaTargets.map((t) => slaTargetKey(t.metric, t.agg)));
-    const free = SLA_METRICS.flatMap((m) =>
-      SLA_AGGS.map((a) => ({ metric: m.value, agg: a.value }))
-    ).find((c) => !taken.has(slaTargetKey(c.metric, c.agg)));
-    writeSlaTargets([...slaTargets, { ...(free || {}), value: null }]);
+    const taken = new Set(sloTargets.map((t) => sloTargetKey(t.metric, t.agg)));
+    const free = SLO_METRICS.flatMap((m) =>
+      SLO_AGGS.map((a) => ({ metric: m.value, agg: a.value }))
+    ).find((c) => !taken.has(sloTargetKey(c.metric, c.agg)));
+    writeSloTargets([...sloTargets, { ...(free || {}), value: null }]);
   };
-  const handleSlaDelete = (index: number) => {
-    const next = [...slaTargets];
+  const handleSloDelete = (index: number) => {
+    const next = [...sloTargets];
     next.splice(index, 1);
-    writeSlaTargets(next);
-    revalidateSla();
+    writeSloTargets(next);
+    revalidateSlo();
   };
-  const handleSlaChange = (index: number, partial: Partial<SlaTarget>) => {
-    const next = [...slaTargets];
+  const handleSloChange = (index: number, partial: Partial<SloTarget>) => {
+    const next = [...sloTargets];
     let row = { ...next[index], ...partial };
     // Switching metric can collide with another row that already holds this
     // aggregation; move to the first free one for the new metric instead of
     // leaving a duplicate the validator would then have to reject.
     if (partial.metric) {
-      const taken = slaTakenByOthers(index);
-      if (taken.has(slaTargetKey(row.metric, row.agg))) {
-        const freeAgg = SLA_AGGS.find(
-          (a) => !taken.has(slaTargetKey(row.metric, a.value))
+      const taken = sloTakenByOthers(index);
+      if (taken.has(sloTargetKey(row.metric, row.agg))) {
+        const freeAgg = SLO_AGGS.find(
+          (a) => !taken.has(sloTargetKey(row.metric, a.value))
         );
         row = { ...row, agg: freeAgg?.value };
       }
     }
     next[index] = row;
-    writeSlaTargets(next);
-    revalidateSla();
+    writeSloTargets(next);
+    revalidateSlo();
   };
 
-  // Collapsible field groups, all open by default: Workload / SLA / Load / Stop
+  // Collapsible field groups, all open by default: Workload / SLO / Load / Stop
   // Conditions. Every field now has a real home (no "Advanced" catch-all), so
   // there is nothing left to hide behind a collapsed section. Uses the app's
   // CollapsePanel for a style consistent with the model form & Configuration.
   const [groupKeys, setGroupKeys] = useState<string[]>([
     'dataset',
-    'sla',
+    'slo',
     'load',
     'execution'
   ]);
@@ -1305,26 +1305,26 @@ const RandomSettingsForm: React.FC<{
     </>
   );
 
-  // ---- Group: Latency SLA (concurrency axis only) ----
+  // ---- Group: Latency SLO (concurrency axis only) ----
   // Optional "<= (ms)" targets — the benchmark's GOAL (auto-tune finds the max
-  // concurrency that stays within them). A point meets the SLA when every SET
+  // concurrency that stays within them). A point meets the SLO when every SET
   // threshold holds (AND) + success >= 95%.
   //
   // A LIST rather than one row per metric, so a metric can carry several
   // aggregations ("TTFT avg <= 500 AND TTFT p99 <= 2000"). Same MetadataList UX
-  // as Shared Prefix / manual stages. Empty list = no SLA, which is what makes
-  // the whole latency-SLA analysis opt-in.
-  const slaContent = (
+  // as Shared Prefix / manual stages. Empty list = no SLO, which is what makes
+  // the whole latency-SLO analysis opt-in.
+  const sloContent = (
     <Form.Item
-      name="sla_targets"
+      name="slo_targets"
       rules={[
         {
-          validator: async (_r, value: SlaTarget[]) => {
+          validator: async (_r, value: SloTarget[]) => {
             if (!value?.length) return;
             if (value.some((t) => !t?.metric || !t?.agg || t?.value == null)) {
-              setSlaValidated(true);
+              setSloValidated(true);
               throw new Error(
-                getRuleMessage('input', 'benchmark.form.sla.threshold')
+                getRuleMessage('input', 'benchmark.form.slo.threshold')
               );
             }
           }
@@ -1333,23 +1333,23 @@ const RandomSettingsForm: React.FC<{
     >
       <MetadataList
         label={null}
-        dataList={slaTargets}
+        dataList={sloTargets}
         disabled={disabled}
-        btnText={intl.formatMessage({ id: 'benchmark.form.sla.add' })}
-        onAdd={handleSlaAdd}
-        onDelete={handleSlaDelete}
+        btnText={intl.formatMessage({ id: 'benchmark.form.slo.add' })}
+        onAdd={handleSloAdd}
+        onDelete={handleSloDelete}
         styles={{
           // Keep MetadataList's own border (unlike the Shared Prefix list, which
           // strips it because its sectionCard already draws one). Without a box
-          // the full-width grey "Add SLA Target" button butts straight up against
+          // the full-width grey "Add SLO Target" button butts straight up against
           // the equally grey "Load" group header below it and the two read as one
           // control. Only the top padding is overridden: the component reserves
           // 34px there for an absolutely-positioned label we don't render.
           wrapper: { paddingTop: 14 }
         }}
       >
-        {(item: SlaTarget, index: number) => {
-          const taken = slaTakenByOthers(index);
+        {(item: SloTarget, index: number) => {
+          const taken = sloTakenByOthers(index);
           return (
             <div style={{ flex: 1, minWidth: 0 }}>
               {index !== 0 && <div style={{ height: 12 }} />}
@@ -1358,19 +1358,19 @@ const RandomSettingsForm: React.FC<{
                   <CSelect
                     disabled={disabled}
                     value={item.metric}
-                    onChange={(v: SlaMetric) =>
-                      handleSlaChange(index, { metric: v })
+                    onChange={(v: SloMetric) =>
+                      handleSloChange(index, { metric: v })
                     }
                     label={intl.formatMessage({
-                      id: 'benchmark.form.sla.metric'
+                      id: 'benchmark.form.slo.metric'
                     })}
-                    options={SLA_METRICS.map((m) => ({
+                    options={SLO_METRICS.map((m) => ({
                       label: intl.formatMessage({ id: m.label }),
                       value: m.value,
                       // A metric whose every aggregation is already claimed has
                       // nothing left to offer this row.
-                      disabled: SLA_AGGS.every((a) =>
-                        taken.has(slaTargetKey(m.value, a.value))
+                      disabled: SLO_AGGS.every((a) =>
+                        taken.has(sloTargetKey(m.value, a.value))
                       )
                     }))}
                   />
@@ -1379,14 +1379,14 @@ const RandomSettingsForm: React.FC<{
                   <CSelect
                     disabled={disabled}
                     value={item.agg}
-                    onChange={(v: SlaAgg) => handleSlaChange(index, { agg: v })}
+                    onChange={(v: SloAgg) => handleSloChange(index, { agg: v })}
                     label={intl.formatMessage({
-                      id: 'benchmark.form.sla.aggregation'
+                      id: 'benchmark.form.slo.aggregation'
                     })}
-                    options={SLA_AGGS.map((a) => ({
+                    options={SLO_AGGS.map((a) => ({
                       label: intl.formatMessage({ id: a.label }),
                       value: a.value,
-                      disabled: taken.has(slaTargetKey(item.metric, a.value))
+                      disabled: taken.has(sloTargetKey(item.metric, a.value))
                     }))}
                   />
                 </div>
@@ -1397,15 +1397,15 @@ const RandomSettingsForm: React.FC<{
                     disabled={disabled}
                     value={item.value}
                     onChange={(v) =>
-                      handleSlaChange(index, {
+                      handleSloChange(index, {
                         value: v == null || v === '' ? null : Number(v)
                       })
                     }
                     checkStatus={
-                      slaValidated && item.value == null ? 'error' : 'success'
+                      sloValidated && item.value == null ? 'error' : 'success'
                     }
                     label={intl.formatMessage({
-                      id: 'benchmark.form.sla.threshold'
+                      id: 'benchmark.form.slo.threshold'
                     })}
                     style={{ width: '100%' }}
                   ></CInputNumber>
@@ -1491,7 +1491,7 @@ const RandomSettingsForm: React.FC<{
   );
 
   // Top-level collapsible groups (order = the user's flow: what data → the goal
-  // → how to drive → when to stop). SLA is the goal, so it sits right after
+  // → how to drive → when to stop). SLO is the goal, so it sits right after
   // Workload and before Load. The header carries a data-field anchor so the top
   // scroll-spy nav can jump to each section (see segmentOptions in ./index).
   const groupLabel = (field: string, id: string) => (
@@ -1511,13 +1511,13 @@ const RandomSettingsForm: React.FC<{
           forceRender: true,
           children: datasetContent
         },
-        ...(showSLA
+        ...(showSLO
           ? [
               {
-                key: 'sla',
-                label: groupLabel('sla', 'benchmark.form.group.sla'),
+                key: 'slo',
+                label: groupLabel('slo', 'benchmark.form.group.slo'),
                 forceRender: true,
-                children: slaContent
+                children: sloContent
               }
             ]
           : []),

@@ -50,7 +50,7 @@ const PercentileResult: React.FC<{ data?: any }> = (props) => {
   const data = props.data ?? detailData;
   const metrics = data?.raw_metrics?.benchmarks?.[0]?.metrics || {};
   // Below ~100 samples the tail percentiles collapse onto max (p999 == p99 ==
-  // max), so a single outlier would be read as an SLA conclusion. Say so instead
+  // max), so a single outlier would be read as an SLO conclusion. Say so instead
   // of presenting the number bare.
   const sampleCount: number =
     metrics?.time_to_first_token_ms?.successful?.count ??
@@ -68,7 +68,7 @@ const PercentileResult: React.FC<{ data?: any }> = (props) => {
       // Decode-only TPOT, which guidellm files under `inter_token_latency_ms`.
       // `fallbackIndex` is its includes-TTFT metric, used only when the response
       // was not streamed incrementally and the decode-only reading collapsed to 0
-      // — the same rule as metrics.ts `decodeMs` and the server's SLA fallback.
+      // — the same rule as metrics.ts `decodeMs` and the server's SLO fallback.
       title: (
         <Tooltip
           title={intl.formatMessage({ id: 'benchmark.detail.tpot.tip' })}

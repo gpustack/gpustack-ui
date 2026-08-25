@@ -26,7 +26,7 @@ export default {
   'benchmark.form.autoTune.rate.tip':
     'この実行で測定する負荷ポイントです（1 ステージ = 1 測定点）。自動チューニングでは、出力スループットが伸びなくなる（ピーク）までリクエストレートを自動的に引き上げるため、ポイントを手入力する必要はありません。「手動」に切り替えると、指定したレートを順に実行します。',
   'benchmark.form.autoTune.concurrency.tip':
-    'この実行で測定する負荷ポイントです（1 ステージ = 1 測定点）。自動チューニングでは、レイテンシ目標を満たせなくなる（SLA 境界）まで並行数を自動的に増やすため、ポイントを手入力する必要はありません。「手動」に切り替えると、指定した並行数を順に実行します。',
+    'この実行で測定する負荷ポイントです（1 ステージ = 1 測定点）。自動チューニングでは、レイテンシ目標を満たせなくなる（SLO 境界）まで並行数を自動的に増やすため、ポイントを手入力する必要はありません。「手動」に切り替えると、指定した並行数を順に実行します。',
   'benchmark.form.autoTune.rangeRate': '探索範囲 · リクエストレート (req/s)',
   'benchmark.form.autoTune.rangeFrom': 'From',
   'benchmark.form.autoTune.rateFrom': '開始レート (req/s)',
@@ -82,27 +82,27 @@ export default {
   'benchmark.form.seedIncrement': '段ごとに異なるシード',
   'benchmark.form.seedIncrement.tips':
     'オン(既定):各段のシード = 初期 + 段インデックス。段ごとにデータが異なり、段間のキャッシュ再利用を抑制します。オフ:全段で同じシード。Random データセットのみ有効。',
-  'benchmark.form.sla.ttft': 'Avg TTFT ≤ (ms)',
-  'benchmark.form.sla.p95Ttft': 'P95 TTFT ≤ (ms)',
-  'benchmark.form.sla.p99Ttft': 'P99 TTFT ≤ (ms)',
-  'benchmark.form.sla.tpot': 'Avg TPOT ≤ (ms)',
-  'benchmark.form.sla.p95Tpot': 'P95 TPOT ≤ (ms)',
-  'benchmark.form.sla.p99Tpot': 'P99 TPOT ≤ (ms)',
-  'benchmark.form.sla.avgLatency': 'Avg Latency ≤ (ms)',
-  'benchmark.form.sla.p95Latency': 'P95 Latency ≤ (ms)',
-  'benchmark.form.sla.p99Latency': 'P99 Latency ≤ (ms)',
-  'benchmark.form.sla.metric': 'メトリクス',
-  'benchmark.form.sla.aggregation': '集計',
-  'benchmark.form.sla.threshold': 'しきい値 (ms)',
-  'benchmark.form.sla.add': 'SLA ターゲットを追加',
-  'benchmark.form.sla.metric.ttft': 'TTFT',
-  'benchmark.form.sla.metric.tpot': 'TPOT',
-  'benchmark.form.sla.metric.latency': 'レイテンシ',
-  'benchmark.form.sla.agg.avg': '平均',
-  'benchmark.form.sla.agg.p95': 'P95',
-  'benchmark.form.sla.agg.p99': 'P99',
-  'benchmark.form.sla.col.metric': 'メトリクス',
-  'benchmark.form.sla.col.threshold': 'しきい値',
+  'benchmark.form.slo.ttft': 'Avg TTFT ≤ (ms)',
+  'benchmark.form.slo.p95Ttft': 'P95 TTFT ≤ (ms)',
+  'benchmark.form.slo.p99Ttft': 'P99 TTFT ≤ (ms)',
+  'benchmark.form.slo.tpot': 'Avg TPOT ≤ (ms)',
+  'benchmark.form.slo.p95Tpot': 'P95 TPOT ≤ (ms)',
+  'benchmark.form.slo.p99Tpot': 'P99 TPOT ≤ (ms)',
+  'benchmark.form.slo.avgLatency': 'Avg Latency ≤ (ms)',
+  'benchmark.form.slo.p95Latency': 'P95 Latency ≤ (ms)',
+  'benchmark.form.slo.p99Latency': 'P99 Latency ≤ (ms)',
+  'benchmark.form.slo.metric': 'メトリクス',
+  'benchmark.form.slo.aggregation': '集計',
+  'benchmark.form.slo.threshold': 'しきい値 (ms)',
+  'benchmark.form.slo.add': 'SLO ターゲットを追加',
+  'benchmark.form.slo.metric.ttft': 'TTFT',
+  'benchmark.form.slo.metric.tpot': 'TPOT',
+  'benchmark.form.slo.metric.latency': 'レイテンシ',
+  'benchmark.form.slo.agg.avg': '平均',
+  'benchmark.form.slo.agg.p95': 'P95',
+  'benchmark.form.slo.agg.p99': 'P99',
+  'benchmark.form.slo.col.metric': 'メトリクス',
+  'benchmark.form.slo.col.threshold': 'しきい値',
   'benchmark.form.preset': 'プリセット',
   'benchmark.form.rate': 'リクエストレート (req/s)',
   'benchmark.form.concurrency': '並行数',
@@ -135,7 +135,7 @@ export default {
   'benchmark.form.distribution.intro':
     'リクエスト長を上記の平均値の周りで変動させます(固定長ではなく)。空欄ならデフォルト。ばらつき = 長さの散らばり(標準偏差);Min/Max は範囲を制限します。',
   'benchmark.form.group.constraints': '制約',
-  'benchmark.form.group.sla': 'レイテンシ SLA',
+  'benchmark.form.group.slo': 'レイテンシ SLO',
   'benchmark.form.group.execution': '停止条件',
   'benchmark.form.group.advanced': '詳細設定',
   'benchmark.form.inputStdev': '入力長のばらつき (±)',
@@ -158,7 +158,7 @@ export default {
   'benchmark.form.concurrencyList.placeholder': 'e.g. 40, 60, 80',
   'benchmark.form.profile.maxThroughput.tips':
     'スループットのピークを特定します。GPU やモデルを比較する際の標準的な基準です。',
-  'benchmark.form.profile.latencySla.tips':
+  'benchmark.form.profile.latencySlo.tips':
     'TTFT/TPOT 目標を満たしたまま処理できる最大負荷を特定します。キャパシティプランニング向け。',
   'benchmark.form.profile.custom': 'Custom',
   'benchmark.form.profile.custom.tips':
@@ -200,9 +200,9 @@ export default {
   'benchmark.detail.summary.stageDetail': 'ステージ詳細',
   'benchmark.detail.summary.performance': 'パフォーマンス',
   'benchmark.detail.reason.requestsSucceeded': '{total} 件のうち {ok} 件が成功',
-  'benchmark.detail.reason.withinSla': 'SLA を満たす',
-  'benchmark.detail.reason.peakExceedsSla':
-    'スループットのピークは {rate} {unit} でより高くなりますが、そこで実行すると SLA を超えるため、推奨は SLA 境界です。',
+  'benchmark.detail.reason.withinSlo': 'SLO を満たす',
+  'benchmark.detail.reason.peakExceedsSlo':
+    'スループットのピークは {rate} {unit} でより高くなりますが、そこで実行すると SLO を超えるため、推奨は SLO 境界です。',
   'benchmark.detail.reason.matchesPeak': '持続可能な最大スループット',
   'benchmark.detail.validity.title': 'テストカバレッジ',
   'benchmark.detail.validity.ok': 'OK',
@@ -212,10 +212,10 @@ export default {
     '最適動作点が最大サンプリング点です —— 真の最適値はさらに高い可能性があります。範囲を広げて(並行数/レートを上げて)再実行してください。',
   'benchmark.detail.validity.fewPoints':
     '測定点が少なすぎて曲線を信頼できません —— 上限 / 予算を確認してください。',
-  'benchmark.detail.validity.slaNeverMet':
-    'レイテンシ目標を満たす測定点がありません —— サーバーがこの SLA には遅すぎます。目標を緩めるかデプロイを変更してください。',
-  'benchmark.detail.validity.slaNotBinding':
-    'レイテンシのしきい値は結果に影響していません——測定した最大負荷でも最も厳しい予算の {used}% しか使っておらず、スループットは {rate} で既に頭打ちでした。この実行を制限したのは容量であり、レイテンシ予算ではありません:{rate} はスループットの上限で、SLA の境界ではないため、そこが最適動作点です(それ以上の負荷はキューに積まれるだけで、スループットは増えずレイテンシだけが悪化します)。本当の SLA 境界を求めるには、しきい値を厳しくして再測定してください。',
+  'benchmark.detail.validity.sloNeverMet':
+    'レイテンシ目標を満たす測定点がありません —— サーバーがこの SLO には遅すぎます。目標を緩めるかデプロイを変更してください。',
+  'benchmark.detail.validity.sloNotBinding':
+    'レイテンシのしきい値は結果に影響していません——測定した最大負荷でも最も厳しい予算の {used}% しか使っておらず、スループットは {rate} で既に頭打ちでした。この実行を制限したのは容量であり、レイテンシ予算ではありません:{rate} はスループットの上限で、SLO の境界ではないため、そこが最適動作点です(それ以上の負荷はキューに積まれるだけで、スループットは増えずレイテンシだけが悪化します)。本当の SLO 境界を求めるには、しきい値を厳しくして再測定してください。',
   'benchmark.detail.validity.notSaturated':
     '最適動作点が最大の測定点で、過負荷も起きていません —— 真の最適値はさらに高い可能性があります。探索範囲(上限)を上げて再実行してください。',
   'benchmark.detail.validity.budgetExhausted':
@@ -260,23 +260,23 @@ export default {
   'benchmark.detail.config.deployment': 'デプロイメント',
   'benchmark.detail.config.benchmark': 'ベンチマーク',
   'benchmark.detail.best.peak': 'ピークスループット',
-  'benchmark.detail.best.sla': 'SLA 内最大',
-  'benchmark.detail.sla.target': 'SLA 目標',
-  'benchmark.detail.sla.capacity': 'SLA 容量',
-  'benchmark.detail.sla.capacity.locatedHint':
-    'これより上の負荷で SLA 違反が実測されているため、ここが実際の限界です。',
-  'benchmark.detail.sla.capacity.floorHint':
+  'benchmark.detail.best.slo': 'SLO 内最大',
+  'benchmark.detail.slo.target': 'SLO 目標',
+  'benchmark.detail.slo.capacity': 'SLO 容量',
+  'benchmark.detail.slo.capacity.locatedHint':
+    'これより上の負荷で SLO 違反が実測されているため、ここが実際の限界です。',
+  'benchmark.detail.slo.capacity.floorHint':
     'これより上は一度も測定されていません(探索が先に終了しました)ので、「少なくともこの値」と読んでください。実際に破綻する点はさらに上にあり、今回は測定されていません。',
   'benchmark.detail.tpot.tip':
     'TPOT: デコードのみのトークンあたり時間 =(最後のトークン − 最初のトークン)/(出力トークン数 − 1)。初回トークン遅延は含みません。guidellm の inter_token_latency_ms に対応し、vLLM などが報告する TPOT と同じ量です。サーバーが逐次ストリーミングしない場合(出力全体を 1 チャンクで返す、低負荷でよくある)は測定できないため、初回トークンを含むトークンあたり時間にフォールバックします。',
-  'benchmark.detail.chart.slaBreached': 'SLA 違反',
+  'benchmark.detail.chart.sloBreached': 'SLO 違反',
   'benchmark.detail.chart.success': '成功率',
   'benchmark.detail.reason.peakTradeoff':
     'ピークの {rate} {unit} まで上げてもスループットは {gain}% 増にとどまり、レイテンシは {cost} 増えます',
   'benchmark.detail.unit.avg': '平均',
   'benchmark.detail.p99.ttft': 'TTFT p99',
   'benchmark.detail.lowSample':
-    'このステージのサンプルは {count} 件で、p99 より上はわずか {tail} 件 —— テールはごく少数のリクエストで決まります。参考値として読み、SLA の結論には使わないでください（p99 が推定として機能するには約 1000 件必要）。',
+    'このステージのサンプルは {count} 件で、p99 より上はわずか {tail} 件 —— テールはごく少数のリクエストで決まります。参考値として読み、SLO の結論には使わないでください（p99 が推定として機能するには約 1000 件必要）。',
   'benchmark.detail.successPill': '成功率 {pct}% · {ok} / {total} リクエスト',
   'benchmark.detail.summary.stagesHint':
     '任意の行をクリックすると詳細を表示します',
@@ -350,15 +350,15 @@ export default {
   'benchmark.detail.stopReason.upperBound': '範囲の上限',
   'benchmark.detail.stopReason.budgetPoints': 'ポイント予算の消費',
   'benchmark.detail.stopReason.budgetSeconds': '時間予算の消費',
-  'benchmark.detail.stopReason.slaFailed': 'レイテンシしきい値の超過',
+  'benchmark.detail.stopReason.sloFailed': 'レイテンシしきい値の超過',
   'benchmark.detail.stopReason.converged': '収束',
   'benchmark.detail.stopReason.overloaded': 'サーバー過負荷',
   'benchmark.detail.stopReason.pointFailed': '結果が得られなかったポイント',
   'benchmark.detail.stopReason.probeBound': '飽和プローブの上限',
   'benchmark.detail.recommend.text':
-    '最適:並行 {rate} —— ピークスループットの {pct}%({tps} tok/s)、TTFT {ttft} ms{sla, select, yes{(SLA 内)} other{}}。',
+    '最適:並行 {rate} —— ピークスループットの {pct}%({tps} tok/s)、TTFT {ttft} ms{slo, select, yes{(SLO 内)} other{}}。',
   'benchmark.detail.analysis.text':
-    '並行 {rate} は {tps} tok/s を安定して出力します{prev, select, yes{。{prevRate} よりスループット +{prevUp}%} other{}}{next, select, yes{。{nextRate} まで上げてもスループットは +{nextUp}% のみ、TTFT は +{nextTtftUp}%} other{}}。したがって {rate} が最適な動作点です{sla, select, yes{(SLA 内)} other{}}。',
+    '並行 {rate} は {tps} tok/s を安定して出力します{prev, select, yes{。{prevRate} よりスループット +{prevUp}%} other{}}{next, select, yes{。{nextRate} まで上げてもスループットは +{nextUp}% のみ、TTFT は +{nextTtftUp}%} other{}}。したがって {rate} が最適な動作点です{slo, select, yes{(SLO 内)} other{}}。',
   'benchmark.detail.modelFile': 'Model File',
   'benchmark.detail.kvCache': 'Extended KV Cache',
   'benchmark.detail.speculativeDecoding': 'Speculative Decoding',

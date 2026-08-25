@@ -103,18 +103,18 @@ export interface FormData {
   stages?: StageRow[];
   // Global duration cap (guidellm --max-seconds) for non-stage runs
   max_seconds?: number;
-  // Latency SLA targets — optional "<= (ms)"; a point meets the SLA when every
+  // Latency SLO targets — optional "<= (ms)"; a point meets the SLO when every
   // set threshold holds (AND) + success >= 95%. avg + p95 + p99 of TTFT / TPOT /
   // e2e latency.
-  sla_avg_ttft_ms?: number; // avg TTFT
-  sla_avg_tpot_ms?: number; // avg TPOT
-  sla_p95_ttft_ms?: number;
-  sla_p95_tpot_ms?: number;
-  sla_p99_ttft_ms?: number;
-  sla_p99_tpot_ms?: number;
-  sla_avg_latency_ms?: number;
-  sla_p95_latency_ms?: number;
-  sla_p99_latency_ms?: number;
+  slo_avg_ttft_ms?: number; // avg TTFT
+  slo_avg_tpot_ms?: number; // avg TPOT
+  slo_p95_ttft_ms?: number;
+  slo_p95_tpot_ms?: number;
+  slo_p99_ttft_ms?: number;
+  slo_p99_tpot_ms?: number;
+  slo_avg_latency_ms?: number;
+  slo_p95_latency_ms?: number;
+  slo_p99_latency_ms?: number;
   output_tokens?: number;
   // Data distribution (spread token lengths around the mean)
   dataset_input_stdev?: number;
@@ -134,7 +134,7 @@ export interface FormData {
   stop_on_saturation?: boolean;
   // Best operating points (server-computed, persisted on the parent row).
   peak_rate?: number;
-  sla_met_rate?: number;
+  slo_met_rate?: number;
   recommended_rate?: number;
   // Test-coverage validity (server-computed; language-neutral codes).
   validity?: {
@@ -145,9 +145,9 @@ export interface FormData {
     // stage / legacy runs and for rows written before the runner reported it).
     stop_reason?: string;
     stopped_at?: number;
-    // Whether `sla_met_rate` is a measured boundary ("257 breaks it") or only a
-    // floor (">= 256, the search ended first"). Absent when no SLA was set.
-    sla_boundary_located?: boolean;
+    // Whether `slo_met_rate` is a measured boundary ("257 breaks it") or only a
+    // floor (">= 256, the search ended first"). Absent when no SLO was set.
+    slo_boundary_located?: boolean;
     // The saturation probe's reading, the soft cap it produced, and how many times
     // that cap gave way. Together they say whether the probe earned its cost:
     // relaxed > 0 = it read low; stopped_at == bound = it clamped the overshoot
@@ -189,11 +189,11 @@ export interface BenchmarkResultItem {
   time_per_output_token_mean: number | null;
   inter_token_latency_mean: number | null;
   time_to_first_token_mean: number | null;
-  // Tail percentiles of the SLA-relevant latency metrics. TTFT / TPOT are ms,
+  // Tail percentiles of the SLO-relevant latency metrics. TTFT / TPOT are ms,
   // request latency is seconds (same units as their *_mean counterparts).
   //
   // TPOT means `inter_token_latency_*` — decode only, the industry definition,
-  // and what the sla_*_tpot_ms thresholds are judged on. The
+  // and what the slo_*_tpot_ms thresholds are judged on. The
   // `time_per_output_token_*` pair is guidellm's includes-TTFT variant: still
   // returned by the API, not displayed and not judged on.
   time_to_first_token_p95: number | null;
@@ -251,14 +251,14 @@ export interface ProfileOption {
   max_total_seconds?: number;
   max_seconds?: number;
   stages?: StageRow[];
-  sla_avg_ttft_ms?: number;
-  sla_avg_tpot_ms?: number;
-  sla_p95_ttft_ms?: number;
-  sla_p95_tpot_ms?: number;
-  sla_p99_ttft_ms?: number;
-  sla_p99_tpot_ms?: number;
-  sla_avg_latency_ms?: number;
-  sla_p95_latency_ms?: number;
-  sla_p99_latency_ms?: number;
+  slo_avg_ttft_ms?: number;
+  slo_avg_tpot_ms?: number;
+  slo_p95_ttft_ms?: number;
+  slo_p95_tpot_ms?: number;
+  slo_p99_ttft_ms?: number;
+  slo_p99_tpot_ms?: number;
+  slo_avg_latency_ms?: number;
+  slo_p95_latency_ms?: number;
+  slo_p99_latency_ms?: number;
   dataset_seed?: number;
 }

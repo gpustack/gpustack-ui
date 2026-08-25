@@ -26,7 +26,7 @@ export default {
   'benchmark.form.autoTune.rate.tip':
     'Точки нагрузки, измеряемые в этом запуске: один этап = одна измеренная точка. При автонастройке частота запросов повышается автоматически, пока выходная пропускная способность не перестанет расти (пик), поэтому перечислять точки вручную не нужно. Переключитесь на «Вручную», чтобы прогнать заданный список частот.',
   'benchmark.form.autoTune.concurrency.tip':
-    'Точки нагрузки, измеряемые в этом запуске: один этап = одна измеренная точка. При автонастройке параллелизм увеличивается автоматически, пока цели по задержке ещё достижимы (граница SLA), поэтому перечислять точки вручную не нужно. Переключитесь на «Вручную», чтобы прогнать заданный список уровней параллелизма.',
+    'Точки нагрузки, измеряемые в этом запуске: один этап = одна измеренная точка. При автонастройке параллелизм увеличивается автоматически, пока цели по задержке ещё достижимы (граница SLO), поэтому перечислять точки вручную не нужно. Переключитесь на «Вручную», чтобы прогнать заданный список уровней параллелизма.',
   'benchmark.form.autoTune.rangeRate':
     'Диапазон поиска · Частота запросов (req/s)',
   'benchmark.form.autoTune.rangeFrom': 'From',
@@ -84,27 +84,27 @@ export default {
   'benchmark.form.seedIncrement': 'Разный сид на этап',
   'benchmark.form.seedIncrement.tips':
     'Вкл (по умолчанию): сид этапа = начальный + индекс этапа, этапы различаются, снижается повторное использование кэша между этапами. Выкл: все этапы используют один сид. Влияет только на датасет Random.',
-  'benchmark.form.sla.ttft': 'Avg TTFT ≤ (ms)',
-  'benchmark.form.sla.p95Ttft': 'P95 TTFT ≤ (ms)',
-  'benchmark.form.sla.p99Ttft': 'P99 TTFT ≤ (ms)',
-  'benchmark.form.sla.tpot': 'Avg TPOT ≤ (ms)',
-  'benchmark.form.sla.p95Tpot': 'P95 TPOT ≤ (ms)',
-  'benchmark.form.sla.p99Tpot': 'P99 TPOT ≤ (ms)',
-  'benchmark.form.sla.avgLatency': 'Avg Latency ≤ (ms)',
-  'benchmark.form.sla.p95Latency': 'P95 Latency ≤ (ms)',
-  'benchmark.form.sla.p99Latency': 'P99 Latency ≤ (ms)',
-  'benchmark.form.sla.metric': 'Метрика',
-  'benchmark.form.sla.aggregation': 'Агрегация',
-  'benchmark.form.sla.threshold': 'Порог (мс)',
-  'benchmark.form.sla.add': 'Добавить цель SLA',
-  'benchmark.form.sla.metric.ttft': 'TTFT',
-  'benchmark.form.sla.metric.tpot': 'TPOT',
-  'benchmark.form.sla.metric.latency': 'Задержка',
-  'benchmark.form.sla.agg.avg': 'Сред.',
-  'benchmark.form.sla.agg.p95': 'P95',
-  'benchmark.form.sla.agg.p99': 'P99',
-  'benchmark.form.sla.col.metric': 'Метрика',
-  'benchmark.form.sla.col.threshold': 'Порог',
+  'benchmark.form.slo.ttft': 'Avg TTFT ≤ (ms)',
+  'benchmark.form.slo.p95Ttft': 'P95 TTFT ≤ (ms)',
+  'benchmark.form.slo.p99Ttft': 'P99 TTFT ≤ (ms)',
+  'benchmark.form.slo.tpot': 'Avg TPOT ≤ (ms)',
+  'benchmark.form.slo.p95Tpot': 'P95 TPOT ≤ (ms)',
+  'benchmark.form.slo.p99Tpot': 'P99 TPOT ≤ (ms)',
+  'benchmark.form.slo.avgLatency': 'Avg Latency ≤ (ms)',
+  'benchmark.form.slo.p95Latency': 'P95 Latency ≤ (ms)',
+  'benchmark.form.slo.p99Latency': 'P99 Latency ≤ (ms)',
+  'benchmark.form.slo.metric': 'Метрика',
+  'benchmark.form.slo.aggregation': 'Агрегация',
+  'benchmark.form.slo.threshold': 'Порог (мс)',
+  'benchmark.form.slo.add': 'Добавить цель SLO',
+  'benchmark.form.slo.metric.ttft': 'TTFT',
+  'benchmark.form.slo.metric.tpot': 'TPOT',
+  'benchmark.form.slo.metric.latency': 'Задержка',
+  'benchmark.form.slo.agg.avg': 'Сред.',
+  'benchmark.form.slo.agg.p95': 'P95',
+  'benchmark.form.slo.agg.p99': 'P99',
+  'benchmark.form.slo.col.metric': 'Метрика',
+  'benchmark.form.slo.col.threshold': 'Порог',
   'benchmark.form.preset': 'Пресет',
   'benchmark.form.rate': 'Частота запросов (req/s)',
   'benchmark.form.concurrency': 'Параллелизм',
@@ -137,7 +137,7 @@ export default {
   'benchmark.form.distribution.intro':
     'Варьировать длины запросов вокруг среднего, заданного выше (вместо фиксированной длины). Пусто = по умолчанию. Разброс = насколько различаются длины (стандартное отклонение); Min/Max ограничивают диапазон.',
   'benchmark.form.group.constraints': 'Ограничения',
-  'benchmark.form.group.sla': 'SLA задержки',
+  'benchmark.form.group.slo': 'SLO задержки',
   'benchmark.form.group.execution': 'Условия остановки',
   'benchmark.form.group.advanced': 'Дополнительно',
   'benchmark.form.inputStdev': 'Разброс входа (±)',
@@ -160,7 +160,7 @@ export default {
   'benchmark.form.concurrencyList.placeholder': 'e.g. 40, 60, 80',
   'benchmark.form.profile.maxThroughput.tips':
     'Находит пик пропускной способности. Обычная база для сравнения GPU и моделей.',
-  'benchmark.form.profile.latencySla.tips':
+  'benchmark.form.profile.latencySlo.tips':
     'Находит максимальную нагрузку, которая ещё укладывается в ваши цели TTFT/TPOT. Для планирования ёмкости.',
   'benchmark.form.profile.custom': 'Custom',
   'benchmark.form.profile.custom.tips':
@@ -203,9 +203,9 @@ export default {
   'benchmark.detail.summary.performance': 'Производительность',
   'benchmark.detail.reason.requestsSucceeded':
     'Успешно {ok} из {total} запросов',
-  'benchmark.detail.reason.withinSla': 'В рамках SLA',
-  'benchmark.detail.reason.peakExceedsSla':
-    'Пиковая пропускная способность выше при {rate} {unit}, но работа там нарушит SLA — поэтому рекомендуется граница SLA.',
+  'benchmark.detail.reason.withinSlo': 'В рамках SLO',
+  'benchmark.detail.reason.peakExceedsSlo':
+    'Пиковая пропускная способность выше при {rate} {unit}, но работа там нарушит SLO — поэтому рекомендуется граница SLO.',
   'benchmark.detail.reason.matchesPeak':
     'Наибольшая устойчивая пропускная способность',
   'benchmark.detail.validity.title': 'Покрытие теста',
@@ -216,10 +216,10 @@ export default {
     'Оптимальная рабочая точка — это самая высокая измеренная точка; истинный оптимум может быть выше. Расширьте диапазон (выше параллелизм/частота) и перезапустите.',
   'benchmark.detail.validity.fewPoints':
     'Слишком мало измеренных точек, чтобы доверять кривой — проверьте границы / бюджет.',
-  'benchmark.detail.validity.slaNeverMet':
-    'Ни одна измеренная точка не соответствует целевым задержкам — сервер слишком медленный для этого SLA; снизьте цели или смените развёртывание.',
-  'benchmark.detail.validity.slaNotBinding':
-    'Пороги задержки ни на что не повлияли — на самой высокой измеренной нагрузке самый строгий бюджет был израсходован лишь на {used}%, а пропускная способность уже достигла максимума при {rate}. Этот запуск ограничила ёмкость, а не бюджет задержки: {rate} — это потолок пропускной способности, а не граница SLA, поэтому именно он и есть лучшая рабочая точка (выше него дополнительная нагрузка только встаёт в очередь: пропускная способность не растёт, задержка неуклонно ухудшается). Чтобы найти реальную границу SLA, ужесточите пороги и повторите тест.',
+  'benchmark.detail.validity.sloNeverMet':
+    'Ни одна измеренная точка не соответствует целевым задержкам — сервер слишком медленный для этого SLO; снизьте цели или смените развёртывание.',
+  'benchmark.detail.validity.sloNotBinding':
+    'Пороги задержки ни на что не повлияли — на самой высокой измеренной нагрузке самый строгий бюджет был израсходован лишь на {used}%, а пропускная способность уже достигла максимума при {rate}. Этот запуск ограничила ёмкость, а не бюджет задержки: {rate} — это потолок пропускной способности, а не граница SLO, поэтому именно он и есть лучшая рабочая точка (выше него дополнительная нагрузка только встаёт в очередь: пропускная способность не растёт, задержка неуклонно ухудшается). Чтобы найти реальную границу SLO, ужесточите пороги и повторите тест.',
   'benchmark.detail.validity.notSaturated':
     'Оптимальная рабочая точка — самая высокая измеренная, и перегрузки не было — истинный оптимум может быть выше. Повысьте верхнюю границу диапазона поиска и перезапустите.',
   'benchmark.detail.validity.budgetExhausted':
@@ -264,23 +264,23 @@ export default {
   'benchmark.detail.config.deployment': 'Развёртывание',
   'benchmark.detail.config.benchmark': 'Бенчмарк',
   'benchmark.detail.best.peak': 'Пиковая пропускная способность',
-  'benchmark.detail.best.sla': 'Макс. в рамках SLA',
-  'benchmark.detail.sla.target': 'Цель SLA',
-  'benchmark.detail.sla.capacity': 'Ёмкость по SLA',
-  'benchmark.detail.sla.capacity.locatedHint':
-    'Выше этого значения измерена нагрузка, нарушающая SLA, — значит это и есть реальная граница.',
-  'benchmark.detail.sla.capacity.floorHint':
+  'benchmark.detail.best.slo': 'Макс. в рамках SLO',
+  'benchmark.detail.slo.target': 'Цель SLO',
+  'benchmark.detail.slo.capacity': 'Ёмкость по SLO',
+  'benchmark.detail.slo.capacity.locatedHint':
+    'Выше этого значения измерена нагрузка, нарушающая SLO, — значит это и есть реальная граница.',
+  'benchmark.detail.slo.capacity.floorHint':
     'Выше этого значения ничего не измерялось — поиск закончился раньше, — поэтому читайте его как «не менее этого». Реальная точка нарушения находится выше и не была измерена.',
   'benchmark.detail.tpot.tip':
     'TPOT: время на выходной токен только для декодирования = (последний токен − первый токен) / (выходные токены − 1), без задержки первого токена. Это inter_token_latency_ms в guidellm и тот же TPOT, который сообщают vLLM и подобные инструменты. Если сервер не отдаёт поток по частям (весь вывод одним фрагментом, обычное дело при низкой нагрузке), измерять нечего, и здесь используется время на токен с учётом первого токена.',
-  'benchmark.detail.chart.slaBreached': 'Нарушение SLA',
+  'benchmark.detail.chart.sloBreached': 'Нарушение SLO',
   'benchmark.detail.chart.success': 'Доля успешных',
   'benchmark.detail.reason.peakTradeoff':
     'Рост до пика {rate} {unit} даёт всего {gain}% пропускной способности при росте задержки на {cost}',
   'benchmark.detail.unit.avg': 'сред.',
   'benchmark.detail.p99.ttft': 'TTFT p99',
   'benchmark.detail.lowSample':
-    'На этом этапе {count} измерений, выше p99 находится всего {tail} — хвост определяют единичные запросы. Читайте как ориентир, а не как вывод по SLA (для p99 нужно ~1000 измерений).',
+    'На этом этапе {count} измерений, выше p99 находится всего {tail} — хвост определяют единичные запросы. Читайте как ориентир, а не как вывод по SLO (для p99 нужно ~1000 измерений).',
   'benchmark.detail.successPill': 'Успешно {pct}% · {ok} / {total} запросов',
   'benchmark.detail.summary.stagesHint':
     'Нажмите на любую строку, чтобы увидеть детали',
@@ -358,15 +358,15 @@ export default {
   'benchmark.detail.stopReason.upperBound': 'верхней границе диапазона',
   'benchmark.detail.stopReason.budgetPoints': 'исчерпании бюджета точек',
   'benchmark.detail.stopReason.budgetSeconds': 'исчерпании бюджета времени',
-  'benchmark.detail.stopReason.slaFailed': 'превышении порога задержки',
+  'benchmark.detail.stopReason.sloFailed': 'превышении порога задержки',
   'benchmark.detail.stopReason.converged': 'сходимости',
   'benchmark.detail.stopReason.overloaded': 'перегрузке сервера',
   'benchmark.detail.stopReason.pointFailed': 'точке без результата',
   'benchmark.detail.stopReason.probeBound': 'пределе зондирования насыщения',
   'benchmark.detail.recommend.text':
-    'Оптимум: параллелизм {rate} — {pct}% пиковой пропускной способности ({tps} tok/s) при TTFT {ttft} мс{sla, select, yes{, в рамках SLA} other{}}.',
+    'Оптимум: параллелизм {rate} — {pct}% пиковой пропускной способности ({tps} tok/s) при TTFT {ttft} мс{slo, select, yes{, в рамках SLO} other{}}.',
   'benchmark.detail.analysis.text':
-    'Параллелизм {rate} обеспечивает {tps} tok/s{prev, select, yes{ — на {prevUp}% больше, чем {prevRate}} other{}}{next, select, yes{; переход к {nextRate} добавляет лишь {nextUp}% пропускной способности, но {nextTtftUp}% к TTFT} other{}}. Поэтому {rate} — оптимальная рабочая точка{sla, select, yes{, в рамках SLA} other{}}.',
+    'Параллелизм {rate} обеспечивает {tps} tok/s{prev, select, yes{ — на {prevUp}% больше, чем {prevRate}} other{}}{next, select, yes{; переход к {nextRate} добавляет лишь {nextUp}% пропускной способности, но {nextTtftUp}% к TTFT} other{}}. Поэтому {rate} — оптимальная рабочая точка{slo, select, yes{, в рамках SLO} other{}}.',
   'benchmark.detail.modelFile': 'Model File',
   'benchmark.detail.kvCache': 'Extended KV Cache',
   'benchmark.detail.speculativeDecoding': 'Speculative Decoding',

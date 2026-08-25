@@ -26,7 +26,7 @@ export default {
   'benchmark.form.autoTune.rate.tip':
     'Bu çalıştırmada ölçülen yük noktaları — bir aşama = bir ölçüm noktası. Otomatik ayar, çıkış verimi artmayı bırakana (zirve) kadar istek hızını kendiliğinden yükseltir; noktaları elle girmeniz gerekmez. Sabit bir hız listesi çalıştırmak için "Elle" seçeneğine geçin.',
   'benchmark.form.autoTune.concurrency.tip':
-    'Bu çalıştırmada ölçülen yük noktaları — bir aşama = bir ölçüm noktası. Otomatik ayar, gecikme hedefleri karşılanamayana (SLA sınırı) kadar eşzamanlılığı kendiliğinden artırır; noktaları elle girmeniz gerekmez. Sabit bir eşzamanlılık listesi çalıştırmak için "Elle" seçeneğine geçin.',
+    'Bu çalıştırmada ölçülen yük noktaları — bir aşama = bir ölçüm noktası. Otomatik ayar, gecikme hedefleri karşılanamayana (SLO sınırı) kadar eşzamanlılığı kendiliğinden artırır; noktaları elle girmeniz gerekmez. Sabit bir eşzamanlılık listesi çalıştırmak için "Elle" seçeneğine geçin.',
   'benchmark.form.autoTune.rangeRate': 'Arama Aralığı · İstek Hızı (req/s)',
   'benchmark.form.autoTune.rangeFrom': 'From',
   'benchmark.form.autoTune.rateFrom': 'Başlangıç Hızı (req/s)',
@@ -82,27 +82,27 @@ export default {
   'benchmark.form.seedIncrement': 'Aşama başına farklı tohum',
   'benchmark.form.seedIncrement.tips':
     'Açık (varsayılan): aşama tohumu = başlangıç + aşama dizini, aşamalar farklılaşır ve aşamalar arası önbellek yeniden kullanımı azalır. Kapalı: tüm aşamalar aynı tohumu kullanır. Yalnızca Random veri kümesini etkiler.',
-  'benchmark.form.sla.ttft': 'Avg TTFT ≤ (ms)',
-  'benchmark.form.sla.p95Ttft': 'P95 TTFT ≤ (ms)',
-  'benchmark.form.sla.p99Ttft': 'P99 TTFT ≤ (ms)',
-  'benchmark.form.sla.tpot': 'Avg TPOT ≤ (ms)',
-  'benchmark.form.sla.p95Tpot': 'P95 TPOT ≤ (ms)',
-  'benchmark.form.sla.p99Tpot': 'P99 TPOT ≤ (ms)',
-  'benchmark.form.sla.avgLatency': 'Avg Latency ≤ (ms)',
-  'benchmark.form.sla.p95Latency': 'P95 Latency ≤ (ms)',
-  'benchmark.form.sla.p99Latency': 'P99 Latency ≤ (ms)',
-  'benchmark.form.sla.metric': 'Metrik',
-  'benchmark.form.sla.aggregation': 'Toplama',
-  'benchmark.form.sla.threshold': 'Eşik (ms)',
-  'benchmark.form.sla.add': 'SLA Hedefi Ekle',
-  'benchmark.form.sla.metric.ttft': 'TTFT',
-  'benchmark.form.sla.metric.tpot': 'TPOT',
-  'benchmark.form.sla.metric.latency': 'Gecikme',
-  'benchmark.form.sla.agg.avg': 'Ort',
-  'benchmark.form.sla.agg.p95': 'P95',
-  'benchmark.form.sla.agg.p99': 'P99',
-  'benchmark.form.sla.col.metric': 'Metrik',
-  'benchmark.form.sla.col.threshold': 'Eşik',
+  'benchmark.form.slo.ttft': 'Avg TTFT ≤ (ms)',
+  'benchmark.form.slo.p95Ttft': 'P95 TTFT ≤ (ms)',
+  'benchmark.form.slo.p99Ttft': 'P99 TTFT ≤ (ms)',
+  'benchmark.form.slo.tpot': 'Avg TPOT ≤ (ms)',
+  'benchmark.form.slo.p95Tpot': 'P95 TPOT ≤ (ms)',
+  'benchmark.form.slo.p99Tpot': 'P99 TPOT ≤ (ms)',
+  'benchmark.form.slo.avgLatency': 'Avg Latency ≤ (ms)',
+  'benchmark.form.slo.p95Latency': 'P95 Latency ≤ (ms)',
+  'benchmark.form.slo.p99Latency': 'P99 Latency ≤ (ms)',
+  'benchmark.form.slo.metric': 'Metrik',
+  'benchmark.form.slo.aggregation': 'Toplama',
+  'benchmark.form.slo.threshold': 'Eşik (ms)',
+  'benchmark.form.slo.add': 'SLO Hedefi Ekle',
+  'benchmark.form.slo.metric.ttft': 'TTFT',
+  'benchmark.form.slo.metric.tpot': 'TPOT',
+  'benchmark.form.slo.metric.latency': 'Gecikme',
+  'benchmark.form.slo.agg.avg': 'Ort',
+  'benchmark.form.slo.agg.p95': 'P95',
+  'benchmark.form.slo.agg.p99': 'P99',
+  'benchmark.form.slo.col.metric': 'Metrik',
+  'benchmark.form.slo.col.threshold': 'Eşik',
   'benchmark.form.preset': 'Ön Ayar',
   'benchmark.form.rate': 'İstek Hızı (req/s)',
   'benchmark.form.concurrency': 'Eşzamanlılık',
@@ -135,7 +135,7 @@ export default {
   'benchmark.form.distribution.intro':
     'İstek uzunluklarını yukarıdaki ortalama etrafında değiştir (sabit uzunluk yerine). Boş = varsayılan. Yayılım = uzunlukların ne kadar değiştiği (standart sapma); Min/Max aralığı sınırlar.',
   'benchmark.form.group.constraints': 'Kısıtlamalar',
-  'benchmark.form.group.sla': 'Gecikme SLA',
+  'benchmark.form.group.slo': 'Gecikme SLO',
   'benchmark.form.group.execution': 'Durdurma Koşulları',
   'benchmark.form.group.advanced': 'Gelişmiş',
   'benchmark.form.inputStdev': 'Girdi Yayılımı (±)',
@@ -158,7 +158,7 @@ export default {
   'benchmark.form.concurrencyList.placeholder': 'e.g. 40, 60, 80',
   'benchmark.form.profile.maxThroughput.tips':
     'Zirve verimi bulur. GPU ve model karşılaştırması için alışılmış temel ölçüm.',
-  'benchmark.form.profile.latencySla.tips':
+  'benchmark.form.profile.latencySlo.tips':
     'TTFT/TPOT hedeflerinizi hâlâ karşılayan en yüksek yükü bulur. Kapasite planlaması için.',
   'benchmark.form.profile.custom': 'Özel',
   'benchmark.form.profile.custom.tips':
@@ -201,9 +201,9 @@ export default {
   'benchmark.detail.summary.performance': 'Performans',
   'benchmark.detail.reason.requestsSucceeded':
     '{total} istekten {ok} tanesi başarılı',
-  'benchmark.detail.reason.withinSla': 'SLA içinde',
-  'benchmark.detail.reason.peakExceedsSla':
-    "Verim {rate} {unit} değerinde daha yüksek zirve yapar, ancak orada çalışmak SLA'yı ihlal eder — bu yüzden öneri SLA sınırıdır.",
+  'benchmark.detail.reason.withinSlo': 'SLO içinde',
+  'benchmark.detail.reason.peakExceedsSlo':
+    "Verim {rate} {unit} değerinde daha yüksek zirve yapar, ancak orada çalışmak SLO'yı ihlal eder — bu yüzden öneri SLO sınırıdır.",
   'benchmark.detail.reason.matchesPeak': 'Sürdürülebilir en yüksek verim',
   'benchmark.detail.validity.title': 'Test kapsamı',
   'benchmark.detail.validity.ok': 'OK',
@@ -213,10 +213,10 @@ export default {
     'En iyi çalışma noktası en yüksek örneklenen noktadır — gerçek optimum daha yüksek olabilir. Aralığı genişletin (daha yüksek eşzamanlılık/hız) ve yeniden çalıştırın.',
   'benchmark.detail.validity.fewPoints':
     'Eğriye güvenmek için çok az ölçülen nokta var — sınırları / bütçeyi kontrol edin.',
-  'benchmark.detail.validity.slaNeverMet':
-    'Gecikme hedeflerini karşılayan hiçbir ölçüm noktası yok — sunucu bu SLA için çok yavaş; hedefleri düşürün veya dağıtımı değiştirin.',
-  'benchmark.detail.validity.slaNotBinding':
-    'Gecikme eşikleri sonucu hiç belirlemedi — ölçülen en yüksek yükte bile en sıkı bütçenin yalnızca %{used} kadarı kullanıldı — ve verim {rate} değerinde zaten zirveye ulaşmıştı. Bu koşuyu sınırlayan şey kapasiteydi, gecikme bütçesi değil: {rate} bir verim üst sınırıdır, SLA sınırı değil; dolayısıyla en iyi çalışma noktası orasıdır (ötesinde fazladan yük yalnızca kuyruğa girer: verim artmaz, gecikme sürekli kötüleşir). Gerçek bir SLA sınırı bulmak için eşikleri sıkılaştırıp yeniden ölçün.',
+  'benchmark.detail.validity.sloNeverMet':
+    'Gecikme hedeflerini karşılayan hiçbir ölçüm noktası yok — sunucu bu SLO için çok yavaş; hedefleri düşürün veya dağıtımı değiştirin.',
+  'benchmark.detail.validity.sloNotBinding':
+    'Gecikme eşikleri sonucu hiç belirlemedi — ölçülen en yüksek yükte bile en sıkı bütçenin yalnızca %{used} kadarı kullanıldı — ve verim {rate} değerinde zaten zirveye ulaşmıştı. Bu koşuyu sınırlayan şey kapasiteydi, gecikme bütçesi değil: {rate} bir verim üst sınırıdır, SLO sınırı değil; dolayısıyla en iyi çalışma noktası orasıdır (ötesinde fazladan yük yalnızca kuyruğa girer: verim artmaz, gecikme sürekli kötüleşir). Gerçek bir SLO sınırı bulmak için eşikleri sıkılaştırıp yeniden ölçün.',
   'benchmark.detail.validity.notSaturated':
     'En iyi çalışma noktası en yüksek ölçülen noktadır ve hiçbir şey aşırı yüklenmedi — gerçek optimum daha yüksek olabilir. Arama aralığının üst sınırını artırıp yeniden çalıştırın.',
   'benchmark.detail.validity.budgetExhausted':
@@ -261,23 +261,23 @@ export default {
   'benchmark.detail.config.deployment': 'Dağıtım',
   'benchmark.detail.config.benchmark': 'Kıyaslama',
   'benchmark.detail.best.peak': 'Pik Verim',
-  'benchmark.detail.best.sla': 'SLA içinde Maks.',
-  'benchmark.detail.sla.target': 'SLA Hedefi',
-  'benchmark.detail.sla.capacity': 'SLA kapasitesi',
-  'benchmark.detail.sla.capacity.locatedHint':
-    'Bunun üzerindeki bir yükte SLA ihlali ölçüldü; dolayısıyla gerçek sınır burasıdır.',
-  'benchmark.detail.sla.capacity.floorHint':
+  'benchmark.detail.best.slo': 'SLO içinde Maks.',
+  'benchmark.detail.slo.target': 'SLO Hedefi',
+  'benchmark.detail.slo.capacity': 'SLO kapasitesi',
+  'benchmark.detail.slo.capacity.locatedHint':
+    'Bunun üzerindeki bir yükte SLO ihlali ölçüldü; dolayısıyla gerçek sınır burasıdır.',
+  'benchmark.detail.slo.capacity.floorHint':
     'Bunun üzerinde hiçbir ölçüm yapılmadı — arama daha önce sona erdi — bu yüzden "en az bu kadar" olarak okuyun. Gerçek kırılma noktası daha yukarıdadır ve ölçülmedi.',
   'benchmark.detail.tpot.tip':
     "TPOT: yalnızca çözme aşamasında token başına süre = (son token − ilk token) / (çıktı token sayısı − 1), ilk token gecikmesi hariç. guidellm'de inter_token_latency_ms alanına karşılık gelir ve vLLM gibi araçların bildirdiği TPOT ile aynıdır. Sunucu artımlı akış yapmıyorsa (tüm çıktı tek parçada, düşük yükte yaygın) ölçülecek bir aralık yoktur ve burada ilk token dahil token başına süreye geri düşülür.",
-  'benchmark.detail.chart.slaBreached': 'SLA ihlali',
+  'benchmark.detail.chart.sloBreached': 'SLO ihlali',
   'benchmark.detail.chart.success': 'Başarı oranı',
   'benchmark.detail.reason.peakTradeoff':
     'Zirveye ({rate} {unit}) çıkmak verime yalnızca %{gain} ekler, gecikme ise {cost} artar',
   'benchmark.detail.unit.avg': 'ort.',
   'benchmark.detail.p99.ttft': 'TTFT p99',
   'benchmark.detail.lowSample':
-    'Bu aşamada {count} örnek var, p99 üzerinde yalnızca {tail} tanesi bulunuyor — kuyruk bir avuç isteğe bağlı. Gösterge olarak okuyun, SLA sonucu olarak değil (p99 tahmin gibi davranması için ~1000 örnek gerekir).',
+    'Bu aşamada {count} örnek var, p99 üzerinde yalnızca {tail} tanesi bulunuyor — kuyruk bir avuç isteğe bağlı. Gösterge olarak okuyun, SLO sonucu olarak değil (p99 tahmin gibi davranması için ~1000 örnek gerekir).',
   'benchmark.detail.successPill': '%{pct} başarılı · {ok} / {total} istek',
   'benchmark.detail.summary.stagesHint':
     'Ayrıntı için herhangi bir satıra tıklayın',
@@ -352,15 +352,15 @@ export default {
   'benchmark.detail.stopReason.upperBound': 'aralık üst sınırı',
   'benchmark.detail.stopReason.budgetPoints': 'nokta bütçesi',
   'benchmark.detail.stopReason.budgetSeconds': 'süre bütçesi',
-  'benchmark.detail.stopReason.slaFailed': 'bir gecikme eşiği',
+  'benchmark.detail.stopReason.sloFailed': 'bir gecikme eşiği',
   'benchmark.detail.stopReason.converged': 'yakınsama',
   'benchmark.detail.stopReason.overloaded': 'sunucu aşırı yüklenmesi',
   'benchmark.detail.stopReason.pointFailed': 'sonuç vermeyen bir nokta',
   'benchmark.detail.stopReason.probeBound': 'doygunluk sondasının sınırı',
   'benchmark.detail.recommend.text':
-    'En İyi: eşzamanlılık {rate} — pik verimin %{pct} ({tps} tok/s), TTFT {ttft} ms{sla, select, yes{, SLA içinde} other{}}.',
+    'En İyi: eşzamanlılık {rate} — pik verimin %{pct} ({tps} tok/s), TTFT {ttft} ms{slo, select, yes{, SLO içinde} other{}}.',
   'benchmark.detail.analysis.text':
-    'Eşzamanlılık {rate}, {tps} tok/s sağlar{prev, select, yes{ — {prevRate} değerine göre %{prevUp} daha fazla verim} other{}}{next, select, yes{; {nextRate} değerine çıkmak verime yalnızca %{nextUp} eklerken TTFT %{nextTtftUp} artar} other{}}. Bu nedenle {rate} en iyi çalışma noktasıdır{sla, select, yes{, SLA içinde} other{}}.',
+    'Eşzamanlılık {rate}, {tps} tok/s sağlar{prev, select, yes{ — {prevRate} değerine göre %{prevUp} daha fazla verim} other{}}{next, select, yes{; {nextRate} değerine çıkmak verime yalnızca %{nextUp} eklerken TTFT %{nextTtftUp} artar} other{}}. Bu nedenle {rate} en iyi çalışma noktasıdır{slo, select, yes{, SLO içinde} other{}}.',
   'benchmark.detail.modelFile': 'Model Dosyası',
   'benchmark.detail.kvCache': 'Genişletilmiş KV Önbellek',
   'benchmark.detail.speculativeDecoding': 'Spekülatif Çözümleme',

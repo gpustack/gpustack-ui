@@ -8,8 +8,8 @@ import { useDetailContext } from '../../config/detail-context';
 // source of truth); here we only localize the codes + params.
 //
 // Rendered by Summary rather than by Overview so it shows in the single-point
-// view as well. `sla_never_met` in particular can ONLY occur with one measured
-// point — its trigger is "the very first point already breached the SLA, stop" —
+// view as well. `slo_never_met` in particular can ONLY occur with one measured
+// point — its trigger is "the very first point already breached the SLO, stop" —
 // so hanging the banner off the multi-point view hid the one conclusion that run
 // had to report.
 const ValidityAlert: React.FC = () => {

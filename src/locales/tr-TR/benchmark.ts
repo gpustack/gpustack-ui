@@ -38,9 +38,9 @@ export default {
   'benchmark.form.autoTune.rangeMin': 'min',
   'benchmark.form.autoTune.rangeMax': 'maks',
   'benchmark.form.autoTune.range.rate.tip':
-    'Uyarlanabilir ramp arama aralığı — katı bir aralık: dışındaki hiçbir yük ölçülmez. Ramp minimumdan başlar ve maksimuma kadar ikiye katlanır. Sunucu minimumda zaten doyduysa, ölçülen sürdürülebilir hızı bildirir ve aralığı düşürmenizi ister; aralığın altını taramaz. Varsayılan 4–1024.',
+    'Uyarlanabilir ramp arama aralığı — katı bir aralık: dışındaki hiçbir yük ölçülmez. Ramp minimumdan başlar ve maksimuma kadar ikiye katlanır. Sunucu minimumda zaten doyduysa, ölçülen sürdürülebilir hızı bildirir ve aralığı düşürmenizi ister; aralığın altını taramaz.',
   'benchmark.form.autoTune.range.concurrency.tip':
-    'Uyarlanabilir ramp arama aralığı — katı bir aralık: dışındaki hiçbir yük ölçülmez. Ramp minimumdan başlar ve maksimuma kadar ikiye katlanır. Sunucu minimumda zaten doyduysa, ölçülen sürdürülebilir hızı bildirir ve aralığı düşürmenizi ister; aralığın altını taramaz. Varsayılan 4–1024.',
+    'Uyarlanabilir ramp arama aralığı — katı bir aralık: dışındaki hiçbir yük ölçülmez. Ramp minimumdan başlar ve maksimuma kadar ikiye katlanır. Sunucu minimumda zaten doyduysa, ölçülen sürdürülebilir hızı bildirir ve aralığı düşürmenizi ister; aralığın altını taramaz.',
   'benchmark.form.autoTune.maxRate': 'Maksimum İstek Hızı',
   'benchmark.form.autoTune.maxConcurrency': 'Maksimum Eşzamanlılık',
   'benchmark.form.load.managedByProfile': 'profil tarafından yönetilir',

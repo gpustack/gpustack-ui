@@ -71,17 +71,29 @@ export const LoadTypeValueMap = {
   Concurrency: 'concurrency'
 };
 
-// Auto-tune budget defaults, kept in sync with the benchmark-runner ramp engine
-// (AutoTuneConfig / the CLI defaults) AND with the shipped presets in
-// profiles_config.yaml — all three now agree on 3600s, so a Custom run and a
-// preset get the same budget instead of Custom silently stopping at half of it.
-// Prefilled into the form so the effective values are visible/editable rather
-// than applied at runtime. multiplier/min_requests stay internal (not surfaced).
+// Auto-tune budget defaults for a Custom run, and the fallback when a preset
+// leaves a field out. Prefilled into the form so the effective values are
+// visible/editable rather than applied at runtime. multiplier/min_requests stay
+// internal (not surfaced).
+//
+// These mirror benchmark-runner's AutoTuneConfig, which is sized for the
+// EXPENSIVE case — an SLO bisection on a large deployment, where the interval is
+// the answer and each point halves it. The named presets carry their own budgets
+// (see profiles_config.yaml) because a goal whose answer is an argmax needs far
+// fewer points; Custom cannot know which goal the user is after, so it takes the
+// budget that covers both.
+//
+// Every one of these is a CEILING, not a quota: a converged search stops early,
+// so a small deployment finishes in a handful of points however high the cap is.
+// Sizing them for the large case therefore costs the small case nothing.
 export const AUTO_TUNE_DEFAULTS = {
   lower_bound: 4,
-  upper_bound: 1024,
-  max_points: 12,
-  max_total_seconds: 3600
+  // Deliberately far above any deployment we expect. Too high is free (Phase 1
+  // ends on saturation or the SLO breach first); too low makes the range end the
+  // reported answer — a number nothing measured.
+  upper_bound: 8192,
+  max_points: 18,
+  max_total_seconds: 5400
 };
 
 // Random-dataset seed range. The ceiling stays below 2**32 (the seed limit on the

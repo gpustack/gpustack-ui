@@ -38,9 +38,9 @@ export default {
   'benchmark.form.autoTune.rangeMin': 'min',
   'benchmark.form.autoTune.rangeMax': 'max',
   'benchmark.form.autoTune.range.rate.tip':
-    'Adaptive ramp search range — a HARD range: no load outside it is ever measured. The ramp starts at the min and doubles up to the max. If the server is already saturated at the min, the run reports the sustained rate it measured and asks you to lower the range rather than probing below it. Default 4–1024.',
+    'Adaptive ramp search range — a HARD range: no load outside it is ever measured. The ramp starts at the min and doubles up to the max. If the server is already saturated at the min, the run reports the sustained rate it measured and asks you to lower the range rather than probing below it.',
   'benchmark.form.autoTune.range.concurrency.tip':
-    'Adaptive ramp search range — a HARD range: no load outside it is ever measured. The ramp starts at the min and doubles up to the max. If the server is already saturated at the min, the run reports the sustained rate it measured and asks you to lower the range rather than probing below it. Default 4–1024.',
+    'Adaptive ramp search range — a HARD range: no load outside it is ever measured. The ramp starts at the min and doubles up to the max. If the server is already saturated at the min, the run reports the sustained rate it measured and asks you to lower the range rather than probing below it.',
   'benchmark.form.autoTune.maxRate': 'Maximum Request Rate',
   'benchmark.form.autoTune.maxConcurrency': 'Maximum Concurrency',
   'benchmark.form.load.managedByProfile': 'managed by profile',

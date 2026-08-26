@@ -17,7 +17,6 @@ export default {
   'kvCache.table.mode': 'Mode',
   'kvCache.table.worker': 'Worker',
   'kvCache.table.endpoint': 'Endpoint',
-  'kvCache.table.capacity': 'Capacity (GiB)',
   'kvCache.form.provider': 'Provider',
   'kvCache.form.version': 'Version',
   'kvCache.form.version.custom': 'Custom',
@@ -55,12 +54,32 @@ export default {
   'kvCache.form.metricsPort': 'Metrics Port (Prometheus)',
   'kvCache.form.metricsPort.tips':
     'Prometheus metrics port of the external cache service, used to collect monitoring data.',
-  'kvCache.endpoint.everyNode': 'All workers',
   'kvCache.detail.overview': 'Overview',
+  'kvCache.detail.perWorker': 'per worker',
   'kvCache.detail.capacity': 'Capacity',
   'kvCache.detail.instances': 'Instances',
   'kvCache.edit.title': 'Edit {name}',
   'kvCache.instances.loadFailed': 'Failed to load instances; retrying',
   'kvCache.instances.empty': 'No instances yet',
-  'kvCache.detail.deployments': 'Deployments'
+  'kvCache.detail.monitoring': 'Monitoring',
+  'kvCache.detail.hitRate': 'Hit Rate',
+  'kvCache.detail.usage': 'L1 Cache Usage',
+  'kvCache.detail.l2Usage': 'L2 Cache Usage',
+  'kvCache.detail.lookupTraffic': 'Lookup Traffic',
+  'kvCache.detail.usageRatio': 'L1 Usage Ratio',
+  'kvCache.detail.throughput': 'Throughput',
+  'kvCache.detail.noMetrics': 'No metrics data',
+  'kvCache.detail.metricsUnavailable': 'Metrics are unavailable',
+  'kvCache.detail.aggregated': 'Aggregated',
+  'kvCache.detail.perInstance': 'Per Instance',
+  'kvCache.detail.hitTokens': 'Hit Tokens',
+  'kvCache.detail.hitTokens.tips':
+    'Tokens served from the shared cache within the selected window, as reported by the inference engine',
+  'kvCache.detail.queriedTokens': 'Queried Tokens',
+  'kvCache.detail.queriedTokens.tips':
+    'Tokens looked up in the shared cache within the selected window, as reported by the inference engine',
+  'kvCache.detail.hitRate.engineTips':
+    "From the inference engine's own external-cache hit counters, over the selected window. Currently vLLM only; other backends show -",
+  'kvCache.detail.view': 'View',
+  'kvCache.detail.modelInstances': 'Attached Model Instances'
 };

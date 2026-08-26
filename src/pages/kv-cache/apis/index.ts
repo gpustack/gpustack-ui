@@ -2,6 +2,7 @@ import { request } from '@umijs/max';
 import {
   CacheProviderItem,
   CacheServiceInstanceItem,
+  CacheServiceMetricsData,
   CacheServiceModelItem,
   FormData,
   ListItem
@@ -109,6 +110,23 @@ export async function testCacheServiceConnection(params: {
     {
       method: 'POST',
       data: params.data
+    }
+  );
+}
+
+export async function queryCacheServiceMetrics(
+  id: number,
+  params: { window: string; workers?: string }
+) {
+  return request<CacheServiceMetricsData>(
+    `${CACHE_SERVICES_API}/${id}/metrics`,
+    {
+      params,
+      method: 'GET',
+      // metrics are Org-owner-level while the page itself is
+      // member-visible: a 403 (or a transient failure) hides the
+      // section instead of toasting
+      skipErrorHandler: true
     }
   );
 }

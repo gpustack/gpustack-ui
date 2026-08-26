@@ -16,7 +16,6 @@ export default {
   'kvCache.table.mode': '模式',
   'kvCache.table.worker': '节点',
   'kvCache.table.endpoint': '端点',
-  'kvCache.table.capacity': '容量 (GiB)',
   'kvCache.form.provider': '提供方',
   'kvCache.form.version': '版本',
   'kvCache.form.version.custom': '自定义',
@@ -52,12 +51,32 @@ export default {
   'kvCache.form.metricsPort': '监控端口 (Prometheus)',
   'kvCache.form.metricsPort.tips':
     '外部缓存服务的 Prometheus 指标端口,用于采集监控数据。',
-  'kvCache.endpoint.everyNode': '全部节点',
   'kvCache.detail.overview': '概览',
+  'kvCache.detail.perWorker': '每节点',
   'kvCache.detail.capacity': '容量',
   'kvCache.detail.instances': '实例',
   'kvCache.edit.title': '编辑 {name}',
   'kvCache.instances.loadFailed': '实例加载失败,将自动重试',
   'kvCache.instances.empty': '暂无实例',
-  'kvCache.detail.deployments': '关联部署'
+  'kvCache.detail.monitoring': '监控',
+  'kvCache.detail.hitRate': '命中率',
+  'kvCache.detail.usage': 'L1 缓存用量',
+  'kvCache.detail.l2Usage': 'L2 缓存用量',
+  'kvCache.detail.lookupTraffic': '查询流量',
+  'kvCache.detail.usageRatio': 'L1 使用率',
+  'kvCache.detail.throughput': '吞吐',
+  'kvCache.detail.noMetrics': '暂无监控数据',
+  'kvCache.detail.metricsUnavailable': '监控数据不可用',
+  'kvCache.detail.aggregated': '汇总',
+  'kvCache.detail.perInstance': '按实例',
+  'kvCache.detail.hitTokens': '命中 Token',
+  'kvCache.detail.hitTokens.tips':
+    '所选时间窗口内命中共享缓存的 token 数(由推理引擎上报)',
+  'kvCache.detail.queriedTokens': '查询 Token',
+  'kvCache.detail.queriedTokens.tips':
+    '所选时间窗口内向共享缓存查询的 token 数(由推理引擎上报)',
+  'kvCache.detail.hitRate.engineTips':
+    '来自推理引擎自身的外部缓存命中计数(按所选时间窗口统计);暂仅 vLLM 提供该计数,其它后端显示 -',
+  'kvCache.detail.view': '视图',
+  'kvCache.detail.modelInstances': '关联模型实例'
 };

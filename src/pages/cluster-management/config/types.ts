@@ -126,6 +126,9 @@ export interface ClusterListItem {
   // a top-level column on the backend (image resolution / registration token
   // read it directly). Falls back to the server default when unset.
   system_default_container_registry?: string | null;
+  // Externally reachable GPUStack Server URL the workers register against.
+  // Unset means the platform's `server_external_url` is used instead.
+  server_url?: string | null;
   provider: ProviderType;
   credential_id: number;
   created_at: string;
@@ -153,7 +156,9 @@ export interface ClusterFormData {
   credential_id: number;
   zone: string;
   region: string;
-  server_url?: string;
+  // Empty means "follow the platform's external URL" — the field normalizes a
+  // cleared input to null so an edit can drop a previously set override.
+  server_url?: string | null;
   worker_config?: Record<string, any>;
   system_default_container_registry?: string | null;
   worker_pools?: NodePoolFormData[];

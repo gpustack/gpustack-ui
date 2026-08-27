@@ -45,9 +45,10 @@ const AddCluster: React.FC<AddModalProps> = ({
   const intl = useIntl();
   const form = useRef<any>(null);
   const { loading, guard, run, release } = useSubmitLock();
-  // Whether the user has changed any k8s_options field. Lifted from ClusterForm
-  // so the "re-run registration" notice can sit in the drawer footer, above the
-  // Save/Cancel buttons (mirrors the model edit interaction).
+  // Whether the user has changed any field that is only applied while a worker
+  // registers. Lifted from ClusterForm so the "re-run registration" notice can
+  // sit in the drawer footer, above the Save/Cancel buttons (mirrors the model
+  // edit interaction).
   const [k8sOptionsChanged, setK8sOptionsChanged] = useState<boolean>(false);
 
   const handleSubmit = () => {
@@ -85,7 +86,7 @@ const AddCluster: React.FC<AddModalProps> = ({
                 style={{ margin: '8px 24px 0' }}
                 icon={<ExclamationCircleFilled />}
                 message={intl.formatMessage({
-                  id: 'clusters.edit.k8sOptions.changed.tip'
+                  id: 'clusters.edit.registration.changed.tip'
                 })}
               ></AlertBlockInfo>
             )}

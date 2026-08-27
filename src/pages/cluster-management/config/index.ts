@@ -126,6 +126,18 @@ export const CloudProviderList = [
 export const isCloudProvider = (provider?: ProviderType | string | null) =>
   !!provider && CloudProviderList.includes(provider as string);
 
+/**
+ * Example shown in the "GPUStack Server URL" field's tip, per provider. A
+ * Kubernetes worker reaches the server through an in-cluster Service, so its
+ * example is a Service DNS name; every other provider's workers are plain
+ * hosts on the network — a Docker daemon or a cloud instance — and dial an
+ * `ip:port` instead.
+ */
+export const getServerUrlExample = (provider?: ProviderType | string | null) =>
+  provider === ProviderValueMap.Kubernetes
+    ? 'http://gpustack-server-cluster-ip.gpustack-system.svc:30080'
+    : 'http://192.168.1.100:80';
+
 export const generateK8sRegisterCommand = (params: {
   // Either a single GPU driver key (legacy single-select) or an array of
   // keys (multi-vendor mode). Both feed into a list of runtimes for the

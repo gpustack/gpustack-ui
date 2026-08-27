@@ -1,11 +1,7 @@
 import { fromClusterCreationAtom } from '@/atoms/clusters';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
-import {
-  Input as CInput,
-  Select as SealSelect,
-  useAppUtils
-} from '@gpustack/core-ui';
+import { Select as SealSelect, useAppUtils } from '@gpustack/core-ui';
 import { Link, useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import { useAtom } from 'jotai';
@@ -17,6 +13,7 @@ import { providerHasRegions } from '../config/cloud-providers';
 import { useStepsContext } from '../config/steps-context';
 import { ClusterFormData as FormData } from '../config/types';
 import { useProviderRegions } from '../hooks/use-provider-regions';
+import ServerUrlField from './server-url-field';
 
 const OptionItem = styled.div`
   display: flex;
@@ -204,24 +201,7 @@ const CloudProvider: React.FC<CloudProviderProps> = (props) => {
           ></SealSelect>
         </Form.Item>
       )}
-      <Form.Item<FormData>
-        name="server_url"
-        rules={[
-          {
-            required: true,
-            message: getRuleMessage('input', 'clusters.create.serverUrl')
-          }
-        ]}
-      >
-        <CInput.Input
-          description={intl.formatMessage({
-            id: 'clusters.form.serverUrl.tips'
-          })}
-          label={intl.formatMessage({ id: 'clusters.create.serverUrl' })}
-          required={true}
-          trim={true}
-        ></CInput.Input>
-      </Form.Item>
+      <ServerUrlField provider={provider} required />
     </>
   );
 };

@@ -30,6 +30,7 @@ import K8sAdvancedOptions, {
   ClusterTypeSelector,
   K8sOptionsChangeWatcher
 } from './k8s-pod-spec';
+import ServerUrlField from './server-url-field';
 
 type AddModalProps = {
   action: PageActionType;
@@ -331,6 +332,12 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
                 forceRender: true,
                 children: (
                   <>
+                    {/* Docker and Kubernetes register their own workers, so the
+                        server URL is an optional override here. Cloud providers
+                        get a required copy in the basic form instead. */}
+                    {!isCloudProvider(provider) && (
+                      <ServerUrlField provider={provider} />
+                    )}
                     {provider === ProviderValueMap.Kubernetes && (
                       <K8sAdvancedOptions
                         key={currentData?.id ?? 'new'}

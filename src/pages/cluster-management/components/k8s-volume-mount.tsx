@@ -1,5 +1,3 @@
-import { PageAction } from '@/config';
-import { PageActionType } from '@/config/types';
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import {
   Input as CInput,
@@ -11,7 +9,7 @@ import {
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Flex, Form } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { hostTypeOptions, sourceTypeOptions } from '../config';
 
@@ -33,7 +31,7 @@ const Title = styled.div`
   padding-bottom: 8px;
 `;
 
-const VolumeMountsForm: React.FC<{ action: PageActionType }> = ({ action }) => {
+const VolumeMountsForm: React.FC = () => {
   const form = Form.useFormInstance();
   const intl = useIntl();
   const { getRuleMessage } = useAppUtils();
@@ -42,27 +40,6 @@ const VolumeMountsForm: React.FC<{ action: PageActionType }> = ({ action }) => {
   const [collapseKey, setCollapseKey] = useState<Set<number | string>>(
     new Set()
   );
-
-  const volumeList = [
-    {
-      name: 'volume-1',
-      mountPath: '',
-      readOnly: false,
-      sourceType: 'hostPath',
-      volumeSource: {
-        hostPath: {
-          path: '',
-          type: 'DirectoryOrCreate'
-        }
-      }
-    }
-  ];
-
-  useEffect(() => {
-    if (action === PageAction.CREATE) {
-      form.setFieldValue(['k8s_options', 'volumeMounts'], []);
-    }
-  }, [action]);
 
   const onToggle = (open: boolean, key: number) => {
     setCollapseKey(open ? new Set([key]) : new Set());

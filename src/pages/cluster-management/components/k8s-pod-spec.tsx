@@ -407,13 +407,11 @@ export const K8sOptionsChangeWatcher: React.FC<{
 };
 
 // Kubernetes-specific options that live inside the cluster's advanced section.
-const K8sAdvancedOptions: React.FC<{
-  action: PageActionType;
-}> = ({ action }) => {
+const K8sAdvancedOptions: React.FC = () => {
   return (
     <>
       <NamespaceForm />
-      <K8SVolumeMount action={action}></K8SVolumeMount>
+      <K8SVolumeMount />
       <ImageCredential />
       <NodeSelectorForm />
     </>

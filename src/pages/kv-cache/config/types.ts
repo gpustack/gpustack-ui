@@ -106,10 +106,11 @@ export interface CacheProviderItem {
   // structured configuration fields shown on the managed form, wired
   // into the runtime config via their {{name}} template placeholders
   managed_fields?: CacheProviderField[];
-  // where the service's Prometheus exposition is scraped; default_port
-  // seeds the registration form's metrics-port field for external
-  // providers
-  metrics?: {
+  // the all-version default of where the service's Prometheus
+  // exposition is scraped (a version may override it server-side);
+  // default_port seeds the registration form's metrics-port field for
+  // external providers
+  default_metrics?: {
     path?: string;
     default_port?: number;
     [key: string]: any;

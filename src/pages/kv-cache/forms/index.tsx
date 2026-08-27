@@ -504,7 +504,7 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
       // master's 9003) seeds the field; the user overrides as needed
       form.setFieldValue(
         ['endpoint', 'metrics_port'],
-        provider?.metrics?.default_port
+        provider?.default_metrics?.default_port
       );
     }
   };

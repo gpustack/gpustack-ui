@@ -14,7 +14,7 @@ import {
   backendOptionsMap,
   BuiltInBackendOptions
 } from '../constants/backend-parameters';
-import { generateGPUIds } from '../utils';
+import { derivesNativeAnthropicApi, generateGPUIds } from '../utils';
 import useCheckBackend from './use-check-backend';
 import useRecognizeAudio from './use-recognize-audio';
 
@@ -622,6 +622,11 @@ export const useSelectModel = (data: { gpuOptions: any[] }) => {
         ...(selectedBackend?.default_env || {})
       },
       backend_parameters: [...(selectedBackend?.default_backend_param || [])],
+      // Derived here as well as in the backend dropdown's handler: this path
+      // writes `backend` straight into the form, so without it the same
+      // deployment would answer differently depending on whether the user
+      // happened to touch the dropdown.
+      native_anthropic_api: derivesNativeAnthropicApi(backend, selectedBackend),
       name: name,
       source: source,
       backend: backend

@@ -129,3 +129,24 @@ export const calcTotalVram = (record: any) => {
   );
   return vramInMain + vramInDistributed;
 };
+
+// Whether a backend's default image implements the Anthropic Messages API
+// itself, which is what `native_anthropic_api` declares to the gateway.
+//
+// Shared by the two paths that settle a backend without the user typing it:
+// the backend dropdown (forms/index.tsx) and picking a model from a search
+// list, which resolves one from the model's own shape (hooks/index.ts). They
+// have to agree — otherwise the same deployment answers differently depending
+// on whether the dropdown was ever touched.
+//
+// Only the built-in vLLM image qualifies, and only at its default version:
+// this reads `backend`, and no version is pinned at the moment either caller
+// runs. A user who pins an older vLLM afterwards is on their own — the box
+// stays theirs to untick, which is the point of declaring it rather than
+// deriving it server-side.
+export const derivesNativeAnthropicApi = (
+  backend?: string,
+  option?: { isBuiltIn?: boolean }
+) => {
+  return Boolean(option?.isBuiltIn && backend === backendOptionsMap.vllm);
+};

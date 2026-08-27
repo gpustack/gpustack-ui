@@ -417,11 +417,19 @@ export const DO_NOT_TRIGGER_CHECK_COMPATIBILITY = [
   'extended_kv_cache.ram_size',
   'speculative_config.enabled',
   'speculative_config.draft_model',
-  'max_context_len'
+  'max_context_len',
+  'native_anthropic_api'
 ];
 
 // ignore to compare old and new data when these fields change in updating model
-export const DO_NOT_NOTIFY_RECREATE = ['categories', 'replicas', 'description'];
+// `native_anthropic_api` only reconfigures the gateway's ai-proxy provider, so
+// the running instances stay as they are.
+export const DO_NOT_NOTIFY_RECREATE = [
+  'categories',
+  'replicas',
+  'description',
+  'native_anthropic_api'
+];
 
 export const defaultFormValues = {
   replicas: 1,
@@ -435,7 +443,8 @@ export const defaultFormValues = {
   gpu_selector: {},
   worker_selector: {},
   backend_parameters: [],
-  backend_version: null
+  backend_version: null,
+  native_anthropic_api: false
 };
 
 export const getBackendParamsTips = (backend: string) => {

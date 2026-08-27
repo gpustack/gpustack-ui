@@ -143,6 +143,9 @@ export default {
   'models.form.submit.anyway': '仍然提交',
   'models.form.evaluating': '评估模型兼容性中...',
   'models.form.incompatible': '检测到不兼容',
+  'models.form.nativeAnthropicApi': '原生 Anthropic API',
+  'models.form.nativeAnthropicApi.tips':
+    '当推理服务自身实现了 Anthropic Messages API（如较新版本的 vLLM）时开启，/v1/messages 请求将被原样转发。保持关闭时 /v1/messages 仍然可用，但会先转换为 /v1/chat/completions。',
   'models.form.restart.onerror': '错误时重启',
   'models.form.restart.onerror.tips': '当发生错误时，将自动尝试恢复。',
   'models.form.check.params': '正在校验配置...',

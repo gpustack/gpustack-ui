@@ -37,7 +37,7 @@ import { backendOptionsMap } from '../constants/backend-parameters';
 import { useGenerateGPUOptions } from '../hooks/use-form-initial-values';
 import useQueryBackends from '../hooks/use-query-backends';
 import { useQueryContextLength } from '../services/use-query-context-length';
-import { generateGPUIds } from '../utils';
+import { derivesNativeAnthropicApi, generateGPUIds } from '../utils';
 import AdvanceConfig from './advance-config';
 import BasicForm from './basic';
 import Performance from './performance';
@@ -192,9 +192,14 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     };
   };
 
-  const updateKVCacheConfig = (backend: string, option: BackendOption) => {
+  // `option` is absent when the backend was picked for the user rather than
+  // from the dropdown: local-path-source forces one on a .gguf path and looks
+  // it up in the loaded options, which come up empty for a cluster that does
+  // not offer it. Absent reads as not-built-in throughout, which is the safe
+  // answer for every switch below.
+  const updateKVCacheConfig = (backend: string, option?: BackendOption) => {
     if (
-      !option.isBuiltIn ||
+      !option?.isBuiltIn ||
       ![backendOptionsMap.SGLang, backendOptionsMap.vllm].includes(backend)
     ) {
       return {
@@ -212,13 +217,17 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     return {};
   };
 
-  const handleBackendChange = async (val: string, option: BackendOption) => {
+  const handleBackendChange = async (val: string, option?: BackendOption) => {
     await new Promise((resolve) => {
       setTimeout(resolve, 100);
     });
     form.setFieldsValue({
       backend_version: null, // don't set default version here, let the user select it
-      backend_parameters: option.default_backend_param || [],
+      backend_parameters: option?.default_backend_param || [],
+      // Switching away from vLLM clears it: carrying the declaration to, say,
+      // SGLang would have the gateway forward a request the new image cannot
+      // answer, where translating it would have worked.
+      native_anthropic_api: derivesNativeAnthropicApi(val, option),
       ...updateKVCacheConfig(val, option),
       ...updateGPUSelector(val)
     });
@@ -484,6 +493,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
             scheduleType: ScheduleValueMap.Auto,
             manualGpuMode: ManualGPUModeMap.FullGPU,
             categories: null,
+            native_anthropic_api: false,
             restart_on_error: true,
             distributed_inference_across_workers: true,
             mode: 'throughput',

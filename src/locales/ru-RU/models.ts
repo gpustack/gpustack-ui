@@ -149,6 +149,9 @@ export default {
   'models.form.submit.anyway': 'Отправить в любом случае',
   'models.form.evaluating': 'Анализ совместимости модели',
   'models.form.incompatible': 'Обнаружена несовместимость',
+  'models.form.nativeAnthropicApi': 'Нативный Anthropic API',
+  'models.form.nativeAnthropicApi.tips':
+    'Включите, если сервер инференса сам реализует Anthropic Messages API (например, свежие версии vLLM): тогда запросы к /v1/messages доходят до него как есть. Если выключено, /v1/messages по-прежнему работает, но сначала преобразуется в /v1/chat/completions.',
   'models.form.restart.onerror': 'Автоперезапуск при ошибке',
   'models.form.restart.onerror.tips':
     'При возникновении ошибки система автоматически попытается перезапуститься.',

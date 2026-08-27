@@ -147,6 +147,9 @@ export default {
   'models.form.submit.anyway': 'Yine de Gönder',
   'models.form.evaluating': 'Model Uyumluluğu Değerlendiriliyor',
   'models.form.incompatible': 'Uyumsuzluk Tespit Edildi',
+  'models.form.nativeAnthropicApi': 'Yerel Anthropic API',
+  'models.form.nativeAnthropicApi.tips':
+    'Çıkarım sunucusu Anthropic Messages API’sini kendisi uyguluyorsa (örneğin yeni vLLM sürümleri) etkinleştirin; /v1/messages istekleri olduğu gibi iletilir. Kapalıyken de /v1/messages çalışır, ancak önce /v1/chat/completions biçimine dönüştürülür.',
   'models.form.restart.onerror': 'Hata Durumunda Otomatik Yeniden Başlat',
   'models.form.restart.onerror.tips':
     'Hata oluştuğunda otomatik olarak yeniden başlatmayı dener.',

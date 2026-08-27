@@ -43,6 +43,7 @@ export interface ListItem {
   // The `(string & {})` tail keeps literal autocomplete for the
   // built-ins while still accepting plugin-defined values.
   access_policy: 'public' | 'authed' | 'allowed_users' | (string & {});
+  native_anthropic_api?: boolean;
   generic_proxy?: boolean;
   gpu_selector?: {
     gpu_ids: string[];
@@ -105,6 +106,7 @@ export interface FormData {
   run_command?: string;
   enable_model_route?: boolean;
   backend: string;
+  native_anthropic_api?: boolean;
   restart_on_error?: boolean;
   env?: Record<string, any>;
   size?: number;

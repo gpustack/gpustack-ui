@@ -38,6 +38,17 @@ const AdvanceConfig = () => {
 
   console.log('currentBackendOptions', currentBackendOptions);
 
+  // Anthropic Messages is a chat surface, so the declaration only means
+  // something on a backend that has one. vox-box serves /v1/audio/* and nothing
+  // else, which is a fact about what it is rather than about which build is
+  // running — the one exclusion that cannot go stale.
+  //
+  // Everything else stays, llama-box included: upstream llama.cpp serves
+  // /v1/messages as of ggml-org/llama.cpp#17570, so whether a given build
+  // answers it is a property of the image. That is the whole reason this is
+  // declared by whoever deploys instead of derived here.
+  const servesChatCompletions = backend !== backendOptionsMap.voxBox;
+
   const onSelectorChange = (field: string, allowEmpty?: boolean) => {
     const workerSelector = form.getFieldValue(field);
     // check if all keys have values
@@ -119,6 +130,22 @@ const AdvanceConfig = () => {
             })}
             label={intl.formatMessage({
               id: 'resources.form.enableDistributedInferenceAcrossWorkers'
+            })}
+          ></CheckboxField>
+        </Form.Item>
+      )}
+      {servesChatCompletions && (
+        <Form.Item<FormData>
+          name="native_anthropic_api"
+          valuePropName="checked"
+          style={{ marginBottom: 8 }}
+        >
+          <CheckboxField
+            description={intl.formatMessage({
+              id: 'models.form.nativeAnthropicApi.tips'
+            })}
+            label={intl.formatMessage({
+              id: 'models.form.nativeAnthropicApi'
             })}
           ></CheckboxField>
         </Form.Item>

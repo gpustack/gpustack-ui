@@ -146,6 +146,9 @@ export default {
   'models.form.submit.anyway': 'Submit Anyway',
   'models.form.evaluating': 'Evaluating Model Compatibliity',
   'models.form.incompatible': 'Incompatibility Detected',
+  'models.form.nativeAnthropicApi': 'Native Anthropic API',
+  'models.form.nativeAnthropicApi.tips':
+    'Enable when the inference server implements the Anthropic Messages API itself (e.g. recent vLLM), so requests to /v1/messages reach it as they are. Left off, /v1/messages still works — it is converted to /v1/chat/completions first.',
   'models.form.restart.onerror': 'Auto-Restart On Error',
   'models.form.restart.onerror.tips':
     'When an error occurs, it will automatically attempt to restart.',

@@ -147,6 +147,9 @@ export default {
   'models.form.submit.anyway': 'このまま送信',
   'models.form.evaluating': 'モデルの互換性を評価中',
   'models.form.incompatible': '互換性の問題が検出されました',
+  'models.form.nativeAnthropicApi': 'ネイティブ Anthropic API',
+  'models.form.nativeAnthropicApi.tips':
+    '推論サーバー自体が Anthropic Messages API を実装している場合（新しめの vLLM など）に有効にします。/v1/messages へのリクエストがそのまま転送されます。無効のままでも /v1/messages は利用できますが、先に /v1/chat/completions へ変換されます。',
   'models.form.restart.onerror': 'エラー時に自動再起動',
   'models.form.restart.onerror.tips':
     'エラーが発生した場合、自動的に再起動を試みます。',

@@ -106,10 +106,11 @@ export interface CacheProviderItem {
   // structured configuration fields shown on the managed form, wired
   // into the runtime config via their {{name}} template placeholders
   managed_fields?: CacheProviderField[];
-  // where the service's Prometheus exposition is scraped; default_port
-  // seeds the registration form's metrics-port field for external
-  // providers
-  metrics?: {
+  // the all-version default of where the service's Prometheus
+  // exposition is scraped (a version may override it server-side);
+  // default_port seeds the registration form's metrics-port field for
+  // external providers
+  default_metrics?: {
     path?: string;
     default_port?: number;
     [key: string]: any;
@@ -223,6 +224,50 @@ export interface CacheServiceInstanceItem {
   last_restart_time?: string;
   created_at: string;
   updated_at: string;
+}
+
+export interface MetricPoint {
+  timestamp: number;
+  // null marks a non-finite sample (e.g. an idle 0/0 ratio) — a chart gap
+  value: number | null;
+}
+
+// one chartable series of a semantic metric; labels identify the
+// instance (worker) the series belongs to
+export interface CacheServiceMetricSeries {
+  labels: Record<string, string>;
+  points: [number, number | null][];
+}
+
+// one semantic metric at two granularities: the service-level
+// aggregate (traffic-weighted, readable at any fleet size) and the
+// per-instance breakdown behind a toggle
+export interface CacheServiceMetricChart {
+  aggregate: CacheServiceMetricSeries[];
+  instances: CacheServiceMetricSeries[];
+}
+
+// external-cache hit accounting of one attached engine instance over
+// the requested window; the row set is database-backed, so an engine
+// without the counters keeps its row with null accounting fields
+export interface CacheServiceAttachedMetrics {
+  model_id?: number | null;
+  model_name?: string | null;
+  model_instance_name?: string | null;
+  worker_name?: string | null;
+  hit_tokens?: number | null;
+  queried_tokens?: number | null;
+  hit_rate?: number | null;
+}
+
+// semantic series translated server-side from the provider's declared
+// metric mappings; available=false carries why charts cannot render
+export interface CacheServiceMetricsData {
+  available: boolean;
+  reason?: string;
+  mappings: Record<string, CacheServiceMetricChart>;
+  throughput: Record<string, CacheServiceMetricChart>;
+  attached: CacheServiceAttachedMetrics[];
 }
 
 export interface CacheServiceModelItem {

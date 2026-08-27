@@ -1,7 +1,7 @@
 import { BaseSelect, DeleteModal, useQueryDataList } from '@gpustack/core-ui';
 import { useIntl, useNavigate, useSearchParams } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { HeaderLeft } from '../_components/page-box';
 import PageBreadcrumb from '../_components/page-breadcrumb';
 import {
@@ -10,15 +10,14 @@ import {
   queryCacheServices
 } from './apis';
 import ServiceDeployments from './components/service-deployments';
-import ServiceInstances from './components/service-instances';
+import ServiceMonitor from './components/service-monitor';
 import ServiceOverview from './components/service-overview';
 import SubTitle from './components/sub-title';
 import ViewLogsModal from './components/view-logs-modal';
-import { ServiceModeValueMap, formatServiceVersion } from './config';
+import { ServiceModeValueMap } from './config';
 import { CacheServiceInstanceItem, ListItem } from './config/types';
 import useCacheProviders from './hooks/use-cache-providers';
 import useClusterWorkerNames from './hooks/use-cluster-worker-names';
-import useRecreateInstance from './hooks/use-recreate-instance';
 import useViewLogs from './hooks/use-view-logs';
 
 // refresh cadence for the service state shown in the overview card
@@ -36,14 +35,9 @@ const CacheServiceDetail: React.FC = () => {
   const [detailData, setDetailData] = useState<ListItem | null>(null);
   const [instances, setInstances] = useState<CacheServiceInstanceItem[]>([]);
   const { getProvider } = useCacheProviders();
-  const { clusterNameMap, workerNameMap, workerIpMap } =
-    useClusterWorkerNames();
-  const {
-    openViewLogsModalStatus,
-    openViewLogsModal,
-    openInstanceLogsModal,
-    closeViewLogsModal
-  } = useViewLogs();
+  const { clusterNameMap, workerNameMap } = useClusterWorkerNames();
+  const { openViewLogsModalStatus, openViewLogsModal, closeViewLogsModal } =
+    useViewLogs();
   const {
     dataList: serviceList,
     fetchData: fetchServiceList,
@@ -52,6 +46,36 @@ const CacheServiceDetail: React.FC = () => {
     key: 'cacheServiceList',
     fetchList: queryCacheServices
   });
+
+  // configured L2 backend key -> catalog display name, for the
+  // monitor's L2 card suffix and series legends
+  const l2BackendNames = useMemo(() => {
+    const provider = detailData
+      ? getProvider(detailData.provider_name)
+      : undefined;
+    const names: Record<string, string> = {};
+    (detailData?.config?.l2_storages || []).forEach((storage) => {
+      names[storage.backend] =
+        provider?.l2_backends?.[storage.backend]?.display_name ||
+        storage.backend;
+    });
+    return names;
+  }, [detailData, getProvider]);
+
+  // deduplicated: several instances can share a worker, and the filter
+  // options must not repeat
+  const workerOptions = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          instances.map(
+            (instance) =>
+              workerNameMap[instance.worker_id] || `#${instance.worker_id}`
+          )
+        )
+      ).filter(Boolean),
+    [instances, workerNameMap]
+  );
 
   const fetchDetail = useMemoizedFn(async () => {
     if (!serviceId) {
@@ -76,36 +100,6 @@ const CacheServiceDetail: React.FC = () => {
       setInstances([]);
     }
   });
-
-  const { handleRecreateInstance } = useRecreateInstance({
-    modalRef,
-    onSuccess: fetchDetail
-  });
-
-  const getInstanceWorkerName = (instance: CacheServiceInstanceItem) =>
-    workerNameMap[instance.worker_id] || `#${instance.worker_id}`;
-
-  const handleRecreateInstanceClick = useMemoizedFn(
-    (instance: CacheServiceInstanceItem) => {
-      if (!detailData) {
-        return;
-      }
-      handleRecreateInstance(
-        detailData,
-        instance,
-        getInstanceWorkerName(instance)
-      );
-    }
-  );
-
-  const handleViewInstanceLogs = useMemoizedFn(
-    (instance: CacheServiceInstanceItem) => {
-      if (!detailData) {
-        return;
-      }
-      openInstanceLogsModal(detailData, instance);
-    }
-  );
 
   // switch to another service's detail from the breadcrumb; a new id
   // re-renders the page in place and the children refetch on prop change
@@ -175,21 +169,22 @@ const CacheServiceDetail: React.FC = () => {
         workerNameMap={workerNameMap}
         onViewLogs={openViewLogsModal}
       ></ServiceOverview>
-      {detailData?.mode === ServiceModeValueMap.Managed && (
-        <ServiceInstances
-          instances={instances}
-          workerNameMap={workerNameMap}
-          workerIpMap={workerIpMap}
-          version={formatServiceVersion(
-            detailData.provider_version,
-            detailData.config?.image
-          )}
-          ramSize={detailData.config?.ram_size}
-          onRecreate={handleRecreateInstanceClick}
-          onViewLogs={handleViewInstanceLogs}
-        ></ServiceInstances>
-      )}
-      <ServiceDeployments serviceId={serviceId}></ServiceDeployments>
+      {/* monitoring sits above the instance list: per_node services can
+          have one instance per worker, and a long list would push the
+          charts below the fold */}
+      {/* keyed by service: the breadcrumb reuses this route, and the
+          monitor/table state (filters, last data) must not leak across
+          services */}
+      <ServiceMonitor
+        key={serviceId}
+        serviceId={serviceId}
+        l2BackendNames={l2BackendNames}
+        workerOptions={workerOptions}
+      ></ServiceMonitor>
+      <ServiceDeployments
+        key={serviceId}
+        serviceId={serviceId}
+      ></ServiceDeployments>
       <ViewLogsModal
         open={openViewLogsModalStatus.open}
         url={openViewLogsModalStatus.url}

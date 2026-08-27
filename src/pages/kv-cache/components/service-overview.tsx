@@ -95,26 +95,34 @@ const ServiceOverview: React.FC<ServiceOverviewProps> = ({
     data.mode === ServiceModeValueMap.Managed &&
     provider?.topology === 'per_node';
 
-  const workerName = isPerNode
-    ? intl.formatMessage({ id: 'kvCache.endpoint.everyNode' })
-    : data.worker_id
-      ? workerNameMap[data.worker_id] || '-'
-      : '-';
+  // a concrete worker exists only for singleton managed services;
+  // per_node spans workers and external services have none, so those
+  // render no Worker row at all
+  const workerName = data.worker_id
+    ? workerNameMap[data.worker_id] || '-'
+    : null;
 
-  const renderEndpoint = () => {
+  // per_node services have no endpoint to state: engines are wired to
+  // their own node's instance automatically and each instance owns its
+  // port (the instance rows on the list page carry them), so the row
+  // renders only where a single address exists
+  const renderEndpoint = (): string | null => {
     if (data.mode === ServiceModeValueMap.Managed) {
       if (isPerNode) {
-        return intl.formatMessage({ id: 'kvCache.endpoint.everyNode' });
+        return null;
       }
       // singleton topology has exactly one instance carrying the port
       const instance = instances?.[0];
-      return instance?.port ? `${workerName}:${instance.port}` : '-';
+      return instance?.port && workerName
+        ? `${workerName}:${instance.port}`
+        : '-';
     }
     if (data.endpoint?.host) {
       return `${data.endpoint.host}:${data.endpoint.port}`;
     }
     return data.endpoint?.url || '-';
   };
+  const endpoint = renderEndpoint();
 
   const items: DescriptionsProps['items'] = [
     {
@@ -132,11 +140,15 @@ const ServiceOverview: React.FC<ServiceOverviewProps> = ({
       label: intl.formatMessage({ id: 'clusters.title' }),
       children: clusterNameMap[data.cluster_id] || '-'
     },
-    {
-      key: 'worker',
-      label: intl.formatMessage({ id: 'kvCache.table.worker' }),
-      children: workerName
-    },
+    ...(workerName
+      ? [
+          {
+            key: 'worker',
+            label: intl.formatMessage({ id: 'kvCache.table.worker' }),
+            children: workerName
+          }
+        ]
+      : []),
     // per_node placement constraint; instances only run on workers
     // matching all of these labels
     ...(Object.keys(data.worker_selector || {}).length
@@ -154,21 +166,30 @@ const ServiceOverview: React.FC<ServiceOverviewProps> = ({
           }
         ]
       : []),
-    {
-      key: 'endpoint',
-      label: intl.formatMessage({ id: 'kvCache.table.endpoint' }),
-      children: renderEndpoint()
-    },
-    {
-      key: 'capacity',
-      label: intl.formatMessage({ id: 'kvCache.table.capacity' }),
-      children: data.config?.ram_size ?? '-'
-    },
-    {
-      key: 'chunk_size',
-      label: intl.formatMessage({ id: 'kvCache.form.chunkSize' }),
-      children: data.config?.chunk_size ?? '-'
-    },
+    ...(endpoint != null
+      ? [
+          {
+            key: 'endpoint',
+            label: intl.formatMessage({ id: 'kvCache.table.endpoint' }),
+            children: endpoint
+          }
+        ]
+      : []),
+    // the configured L1 RAM size; external services manage their own
+    // capacity and show no row
+    ...(data.config?.ram_size != null
+      ? [
+          {
+            key: 'ram_size',
+            label: intl.formatMessage({ id: 'kvCache.form.ramSize' }),
+            children: isPerNode
+              ? `${data.config.ram_size} (${intl.formatMessage({
+                  id: 'kvCache.detail.perWorker'
+                })})`
+              : data.config.ram_size
+          }
+        ]
+      : []),
     {
       key: 'created_at',
       label: intl.formatMessage({ id: 'common.table.createTime' }),
@@ -201,6 +222,7 @@ const ServiceOverview: React.FC<ServiceOverviewProps> = ({
         </div>
         <div className="right">
           <Descriptions
+            column={2}
             title={
               <Title>
                 <span>{data.name}</span>

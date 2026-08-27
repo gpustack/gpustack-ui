@@ -117,8 +117,8 @@ export default {
     '{count} new workers have been added to the cluster.',
   'clusters.create.serverUrl': 'GPUStack Server URL',
   'clusters.create.workerConfig': 'Worker Configuration',
-  'clusters.edit.k8sOptions.changed.tip':
-    'You have changed the Kubernetes options. Re-run the registration command on the target cluster for the changes to take effect.',
+  'clusters.edit.registration.changed.tip':
+    'You have changed settings that are applied when a worker registers. Re-run the registration command on the target cluster for the changes to take effect.',
   'clusters.addworker.containerName': 'Worker Container Name',
   'clusters.addworker.containerName.tips':
     'Specify a name for the worker container.',
@@ -128,7 +128,7 @@ export default {
   'clusters.table.ip.internal': 'Internal',
   'clusters.table.ip.external': 'External',
   'clusters.form.serverUrl.tips':
-    'Specify an externally accessible GPUStack service URL if the worker cannot access GPUStack Server directly.',
+    'Specify an externally accessible GPUStack service URL if the worker cannot access GPUStack Server directly. For example: {example}',
   'clusters.form.setDefault': 'Set as Default',
   'clusters.form.setDefault.tips': 'Default for deployment.',
   'clusters.addworker.noClusters': 'No available Docker clusters found',

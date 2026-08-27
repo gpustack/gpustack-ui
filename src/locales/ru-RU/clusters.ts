@@ -115,10 +115,10 @@ export default {
     '{count} новый воркер был добавлен в кластер.',
   'clusters.addworker.message.success_multiple':
     '{count} новых воркеров были добавлены в кластер.',
-  'clusters.create.serverUrl': 'URL сервера GPUStack',
+  'clusters.create.serverUrl': 'GPUStack Server URL',
   'clusters.create.workerConfig': 'Конфигурация воркера',
-  'clusters.edit.k8sOptions.changed.tip':
-    'Вы изменили параметры Kubernetes. Чтобы изменения вступили в силу, повторно выполните команду регистрации в целевом кластере.',
+  'clusters.edit.registration.changed.tip':
+    'Вы изменили параметры, которые применяются при регистрации воркера. Чтобы изменения вступили в силу, повторно выполните команду регистрации в целевом кластере.',
   'clusters.addworker.containerName': 'Имя контейнера воркера',
   'clusters.addworker.containerName.tips':
     'Укажите имя для контейнера воркера.',
@@ -128,7 +128,7 @@ export default {
   'clusters.table.ip.internal': 'Внутренний',
   'clusters.table.ip.external': 'Внешний',
   'clusters.form.serverUrl.tips':
-    'Если рабочий узел не может напрямую получить доступ к GPUStack Server, укажите внешний URL службы GPUStack Server.',
+    'Если рабочий узел не может напрямую получить доступ к GPUStack Server, укажите внешний URL службы GPUStack Server. Например: {example}',
   'clusters.form.setDefault': 'Установить по умолчанию',
   'clusters.form.setDefault.tips':
     'Использовать по умолчанию для развертывания.',

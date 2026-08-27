@@ -115,10 +115,10 @@ export default {
     '{count} yeni işçi düğüm kümeye eklendi.',
   'clusters.addworker.message.success_multiple':
     '{count} yeni işçi düğüm kümeye eklendi.',
-  'clusters.create.serverUrl': "GPUStack Sunucu URL'si",
+  'clusters.create.serverUrl': 'GPUStack Server URL',
   'clusters.create.workerConfig': 'İşçi Düğüm Yapılandırması',
-  'clusters.edit.k8sOptions.changed.tip':
-    'Kubernetes seçeneklerini değiştirdiniz. Değişikliklerin etkili olması için kayıt komutunu hedef kümede yeniden çalıştırın.',
+  'clusters.edit.registration.changed.tip':
+    'Bir işçi düğüm kaydolurken uygulanan ayarları değiştirdiniz. Değişikliklerin etkili olması için kayıt komutunu hedef kümede yeniden çalıştırın.',
   'clusters.addworker.containerName': 'İşçi Düğüm Konteyner Adı',
   'clusters.addworker.containerName.tips':
     'İşçi düğüm konteyneri için bir ad belirtin.',
@@ -128,7 +128,7 @@ export default {
   'clusters.table.ip.internal': 'Dahili',
   'clusters.table.ip.external': 'Harici',
   'clusters.form.serverUrl.tips':
-    "İşçi düğüm GPUStack Sunucusuna doğrudan erişemiyorsa, harici olarak erişilebilir bir GPUStack hizmet URL'si belirtin.",
+    "İşçi düğüm GPUStack Sunucusuna doğrudan erişemiyorsa, harici olarak erişilebilir bir GPUStack hizmet URL'si belirtin. Örneğin: {example}",
   'clusters.form.setDefault': 'Varsayılan Olarak Ayarla',
   'clusters.form.setDefault.tips': 'Dağıtım için varsayılan.',
   'clusters.addworker.noClusters': 'Kullanılabilir Docker kümesi bulunamadı',

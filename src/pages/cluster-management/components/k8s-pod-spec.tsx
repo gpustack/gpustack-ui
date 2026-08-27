@@ -353,8 +353,9 @@ const nullishCustomizer = (val1: any, val2: any) => {
 };
 
 // Headless watcher: in EDIT mode it reports (via onChange) whether the user has
-// changed any k8s_options field or the top-level system_default_container_registry
-// from the cluster's saved values. It renders nothing — the notice itself is shown
+// changed any k8s_options field or one of the top-level fields the registration
+// command bakes in (system_default_container_registry, server_url) from the
+// cluster's saved values. It renders nothing — the notice itself is shown
 // in the form footer, above Save/Cancel (see cluster-create.tsx), mirroring the
 // model edit interaction. Must be mounted inside the cluster <Form> so the watch
 // reads the form store.
@@ -370,6 +371,7 @@ export const K8sOptionsChangeWatcher: React.FC<{
   const containerRegistry = Form.useWatch('system_default_container_registry', {
     preserve: true
   });
+  const serverUrl = Form.useWatch('server_url', { preserve: true });
 
   // currentData?.k8s_options is static for the form's lifetime — memoize the
   // cleaned version to avoid redundant deep-clone on every render
@@ -389,9 +391,17 @@ export const K8sOptionsChangeWatcher: React.FC<{
     containerRegistry,
     nullishCustomizer
   );
+  // The registration command prints `--server-url` from this value, so a change
+  // only reaches the workers once the command is re-run.
+  const serverUrlChanged = !_.isEqualWith(
+    currentData?.server_url,
+    serverUrl,
+    nullishCustomizer
+  );
 
   const changed =
-    action === PageAction.EDIT && (k8sOptionsChanged || registryChanged);
+    action === PageAction.EDIT &&
+    (k8sOptionsChanged || registryChanged || serverUrlChanged);
 
   useEffect(() => {
     onChange(changed);

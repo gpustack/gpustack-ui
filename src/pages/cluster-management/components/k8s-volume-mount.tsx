@@ -1,3 +1,4 @@
+import { PageActionType } from '@/config/types';
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import {
   Input as CInput,
@@ -31,7 +32,7 @@ const Title = styled.div`
   padding-bottom: 8px;
 `;
 
-const VolumeMountsForm: React.FC = () => {
+const VolumeMountsForm: React.FC<{ action: PageActionType }> = () => {
   const form = Form.useFormInstance();
   const intl = useIntl();
   const { getRuleMessage } = useAppUtils();

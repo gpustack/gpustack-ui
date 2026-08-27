@@ -31,19 +31,6 @@ import K8sAdvancedOptions, {
   K8sOptionsChangeWatcher
 } from './k8s-pod-spec';
 
-const DEFAULT_DATA_DIR_VOLUME = {
-  name: 'gpustack-data-dir',
-  mountPath: '/var/lib/gpustack',
-  readOnly: false,
-  sourceType: 'hostPath',
-  volumeSource: {
-    hostPath: {
-      path: '/var/lib/gpustack',
-      type: 'DirectoryOrCreate'
-    }
-  }
-};
-
 type AddModalProps = {
   action: PageActionType;
   currentData?: ListItem; // Used when action is EDIT
@@ -148,13 +135,12 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
     useEffect(() => {
       if (currentData) {
         const volumeMounts = currentData?.k8s_options?.volumeMounts || [];
-        const sourceList = volumeMounts.length
-          ? volumeMounts
-          : [DEFAULT_DATA_DIR_VOLUME];
-        const realVolumeList = sourceList.map((item: any) => ({
-          ...item,
-          sourceType: Object.keys(item.volumeSource || {})[0] || 'hostPath'
-        }));
+        const realVolumeList = (volumeMounts || []).map(
+          (item: any, index: number) => ({
+            ...item,
+            sourceType: Object.keys(item.volumeSource || {})[0] || 'hostPath'
+          })
+        );
         form.setFieldsValue({
           ...currentData,
           k8s_options: {
@@ -166,7 +152,20 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
         const defaultRegistry = systemConfig?.system_default_container_registry;
         form.setFieldsValue({
           k8s_options: {
-            volumeMounts: [DEFAULT_DATA_DIR_VOLUME],
+            volumeMounts: [
+              {
+                name: 'gpustack-data-dir',
+                mountPath: '/var/lib/gpustack',
+                readOnly: false,
+                sourceType: 'hostPath',
+                volumeSource: {
+                  hostPath: {
+                    path: '/var/lib/gpustack',
+                    type: 'DirectoryOrCreate'
+                  }
+                }
+              }
+            ],
             ...(defaultRegistry
               ? {
                   imageCredentials: [
@@ -335,6 +334,7 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
                     {provider === ProviderValueMap.Kubernetes && (
                       <K8sAdvancedOptions
                         key={currentData?.id ?? 'new'}
+                        action={action}
                       ></K8sAdvancedOptions>
                     )}
                     <AdvanceConfig

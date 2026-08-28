@@ -480,6 +480,11 @@ const VGPUTypeForm: React.FC = () => {
       >
         <SealSelect
           showSearch
+          // Without this the search filters on `value` (the type's resource
+          // name) while the option renders its `label`, which leads with
+          // `status.detail.product`. Typing the product name shown in the
+          // dropdown would match nothing.
+          optionFilterProp="label"
           label={intl.formatMessage({ id: 'models.form.gpuType' })}
           options={typeOptions}
           optionRender={typeOptionRender}

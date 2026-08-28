@@ -166,7 +166,7 @@ export default {
   'gpuservice.instanceType.localStorage': 'Storage',
   'gpuservice.instanceType.localStorage.tip': 'Maximum available disk',
   'gpuservice.instanceType.notSliceable': 'Not Sliceable',
-  'gpuservice.instanceType.filter.name': 'Search by name',
+  'gpuservice.instanceType.filter.name': 'Ada göre ara',
   'gpuservice.instanceType.clusterUnavailable':
     'Küme yanıt vermedi; büyük olasılıkla hazır bir işçi düğümü yok. Kümeyi kontrol edip yeniden deneyin.',
   'gpuservice.instance.disk': 'Disk',

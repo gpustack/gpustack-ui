@@ -33,6 +33,9 @@ export interface InstancesData {
   run_command: any;
   env: any;
   extended_kv_cache: any;
+  // snapshot-stored name of the attached shared cache service; kept so
+  // the benchmark keeps naming it after the service is deleted
+  cache_service_name?: string;
   speculative_config: any;
   subordinate_workers: any[];
 }

@@ -362,6 +362,7 @@ export default {
     'Concurrency {rate} sustains {tps} tok/s{prev, select, yes{ — {prevUp}% more throughput than {prevRate}} other{}}{next, select, yes{; pushing to {nextRate} adds only {nextUp}% throughput but {nextTtftUp}% TTFT} other{}}. That makes {rate} the best operating point{slo, select, yes{, within the SLO} other{}}.',
   'benchmark.detail.modelFile': 'Model File',
   'benchmark.detail.kvCache': 'Extended KV Cache',
+  'benchmark.detail.cacheService': 'Cache Service',
   'benchmark.detail.speculativeDecoding': 'Speculative Decoding',
   'benchmark.detail.inputOutputTokenLength': 'Token Length (Input/Output)',
   'benchmark.env.gpuName': 'GPU Name',

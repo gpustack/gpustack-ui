@@ -21,6 +21,7 @@ const allFields = [
   'profile',
   'dataset_name',
   'gpu_summary',
+  'cache_service',
   'state',
   'recommended_rate',
   'validity',
@@ -479,6 +480,29 @@ const useColumnSettings = (options: {
           {text}
         </AutoTooltip>
       )
+    },
+    {
+      title: renderTitle(
+        intl.formatMessage({ id: 'benchmark.detail.cacheService' })
+      ),
+      dataIndex: 'cache_service',
+      width: 140,
+      render: (_text: unknown, record: ListItem) => {
+        // the snapshot keeps naming the service after it is deleted;
+        // older snapshots without the name fall back to #id
+        const instance: any = Object.values(
+          (record as any).snapshot?.instances || {}
+        )[0];
+        const kv = instance?.extended_kv_cache;
+        if (!kv?.enabled || kv?.mode !== 'shared') {
+          return '-';
+        }
+        return (
+          <AutoTooltip ghost minWidth={20}>
+            {instance?.cache_service_name || `#${kv?.cache_service_id}`}
+          </AutoTooltip>
+        );
+      }
     },
     {
       title: renderTitle(intl.formatMessage({ id: 'common.table.status' })),

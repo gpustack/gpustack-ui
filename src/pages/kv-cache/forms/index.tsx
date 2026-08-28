@@ -1,7 +1,8 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
-import { useQueryWorkerList } from '@/pages/resources/services/use-query-worker-list';
+import { useQueryClusterList } from '@/pages/cluster-management/services/use-query-cluster-list';
 import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
+import { useQueryWorkerList } from '@/pages/resources/services/use-query-worker-list';
 import {
   ArrowDownOutlined,
   ArrowUpOutlined,
@@ -46,7 +47,6 @@ import {
   ServiceMode
 } from '../config/types';
 import useCacheProviders from '../hooks/use-cache-providers';
-import { useQueryClusterList } from '@/pages/cluster-management/services/use-query-cluster-list';
 
 const GroupTitle = styled.div`
   font-size: 14px;
@@ -747,6 +747,7 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
         currentData.config?.parameters?.length ||
         Object.keys(currentData.config?.env || {}).length ||
         currentData.config?.chunk_size != null ||
+        currentData.config?.management_url ||
         currentData.restart_on_error === false
       ) {
         setAdvancedKeys(['advanced']);
@@ -1224,6 +1225,29 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
                 label: intl.formatMessage({ id: 'kvCache.form.advanced' }),
                 children: (
                   <>
+                    {(getProvider(providerName)?.management_url ||
+                      currentData?.config?.management_url) && (
+                      <Form.Item<FormData>
+                        name={['config', 'management_url']}
+                        rules={[
+                          {
+                            pattern: /^https?:\/\/\S+$/i,
+                            message: intl.formatMessage({
+                              id: 'kvCache.form.managementUrl.invalid'
+                            })
+                          }
+                        ]}
+                      >
+                        <CInput.Input
+                          label={intl.formatMessage({
+                            id: 'kvCache.form.managementUrl'
+                          })}
+                          description={intl.formatMessage({
+                            id: 'kvCache.form.managementUrl.tips'
+                          })}
+                        />
+                      </Form.Item>
+                    )}
                     <Form.Item<FormData> name={['config', 'chunk_size']}>
                       <InputNumber
                         min={1}

@@ -79,6 +79,8 @@ export interface CacheProviderItem {
   icon?: string;
   links?: CacheProviderLink[];
   supported_modes: ServiceMode[];
+  // the engine ships its own management UI: the form offers management_url
+  management_url?: boolean;
   // managed-mode instance layout: "singleton" runs one instance on the
   // worker picked at creation; "per_node" runs one on every worker
   topology?: 'singleton' | 'per_node';
@@ -147,6 +149,8 @@ export interface ServiceConfig {
   // managed only; ordered by priority (reads prefer the first entry,
   // writes go to all); null or empty clears the L2 storage backends
   l2_storages?: L2StorageConfig[] | null;
+  // link to the cache engine's own management console (display-only)
+  management_url?: string;
 }
 
 export interface FormData {
@@ -170,6 +174,8 @@ export interface FormData {
     env?: Record<string, string>;
     fields?: Record<string, any>;
     l2_storages?: L2StorageConfig[] | null;
+    // link to the cache engine's own management console (display-only)
+    management_url?: string;
   };
   endpoint?: {
     host?: string;

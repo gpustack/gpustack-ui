@@ -361,6 +361,7 @@ export default {
     '並行 {rate} は {tps} tok/s を安定して出力します{prev, select, yes{。{prevRate} よりスループット +{prevUp}%} other{}}{next, select, yes{。{nextRate} まで上げてもスループットは +{nextUp}% のみ、TTFT は +{nextTtftUp}%} other{}}。したがって {rate} が最適な動作点です{slo, select, yes{(SLO 内)} other{}}。',
   'benchmark.detail.modelFile': 'Model File',
   'benchmark.detail.kvCache': 'Extended KV Cache',
+  'benchmark.detail.cacheService': 'Cache Service',
   'benchmark.detail.speculativeDecoding': 'Speculative Decoding',
   'benchmark.detail.inputOutputTokenLength': 'Token Length (Input/Output)',
   'benchmark.env.gpuName': 'GPU Name',

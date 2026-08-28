@@ -40,6 +40,11 @@ export default {
   'kvCache.form.workerSelector.tips':
     'Runs one instance on each worker matching all labels; leave empty to cover every worker.',
   'kvCache.form.chunkSize': 'Chunk Size',
+  'kvCache.form.managementUrl': 'Management URL',
+  'kvCache.form.managementUrl.tips':
+    'Link to the engine-provided management UI; shown as a link beside the service name',
+  'kvCache.form.managementUrl.invalid': 'Enter a valid http(s) URL',
+  'kvCache.button.management': 'Management URL',
   'kvCache.form.chunkSize.tips':
     'Tokens per KV cache chunk. Smaller chunks enable finer-grained reuse at higher overhead. Leave empty to use the engine default.',
   'kvCache.form.advanced': 'Advanced',

@@ -6,8 +6,6 @@ import { useDetailContext } from '../../config/detail-context';
 const Instance: React.FC = () => {
   const intl = useIntl();
   const { detailData } = useDetailContext();
-  const [, instanceData] =
-    Object.entries(detailData?.snapshot?.instances || {})[0] || [];
 
   const items = useMemo(() => {
     const { snapshot } = detailData;
@@ -91,6 +89,20 @@ const Instance: React.FC = () => {
           <Flex gap={8} wrap="wrap">
             {instanceData?.extended_kv_cache?.enabled ? (
               <>
+                {instanceData?.extended_kv_cache?.mode === 'shared' && (
+                  <span className="flex-center">
+                    <span>
+                      {intl.formatMessage({
+                        id: 'benchmark.detail.cacheService'
+                      })}
+                      :
+                    </span>
+                    <span>
+                      {instanceData?.cache_service_name ||
+                        `#${instanceData?.extended_kv_cache?.cache_service_id}`}
+                    </span>
+                  </span>
+                )}
                 {instanceData?.extended_kv_cache?.ram_ratio && (
                   <span className="flex-center">
                     <span>

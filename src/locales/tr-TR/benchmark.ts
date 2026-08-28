@@ -363,6 +363,7 @@ export default {
     'Eşzamanlılık {rate}, {tps} tok/s sağlar{prev, select, yes{ — {prevRate} değerine göre %{prevUp} daha fazla verim} other{}}{next, select, yes{; {nextRate} değerine çıkmak verime yalnızca %{nextUp} eklerken TTFT %{nextTtftUp} artar} other{}}. Bu nedenle {rate} en iyi çalışma noktasıdır{slo, select, yes{, SLO içinde} other{}}.',
   'benchmark.detail.modelFile': 'Model Dosyası',
   'benchmark.detail.kvCache': 'Genişletilmiş KV Önbellek',
+  'benchmark.detail.cacheService': 'Cache Service',
   'benchmark.detail.speculativeDecoding': 'Spekülatif Çözümleme',
   'benchmark.detail.inputOutputTokenLength': 'Token Uzunluğu (Giriş/Çıkış)',
   'benchmark.env.gpuName': 'GPU Adı',

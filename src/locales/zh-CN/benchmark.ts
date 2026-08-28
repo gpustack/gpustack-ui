@@ -357,6 +357,7 @@ export default {
     '并发 {rate} 可稳定输出 {tps} tok/s{prev, select, yes{,相比 {prevRate} 吞吐 +{prevUp}%} other{}}{next, select, yes{;继续加到 {nextRate} 吞吐仅 +{nextUp}% 而 TTFT +{nextTtftUp}%} other{}}。因此 {rate} 是最佳运行点{slo, select, yes{,且满足 SLO} other{}}。',
   'benchmark.detail.modelFile': '模型文件',
   'benchmark.detail.kvCache': '扩展 KV 缓存',
+  'benchmark.detail.cacheService': '缓存服务',
   'benchmark.detail.speculativeDecoding': '推测解码',
   'benchmark.detail.inputOutputTokenLength': 'Token 长度 (输入/输出)',
   'benchmark.env.gpuName': 'GPU 名称',

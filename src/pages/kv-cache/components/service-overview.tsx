@@ -1,24 +1,23 @@
+import { ExportOutlined } from '@ant-design/icons';
 import {
   AutoTooltip,
   CardWrapper,
   IconFont,
-  StatusTag,
-  ThemeTag
+  StatusTag
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import type { DescriptionsProps } from 'antd';
-import { Button, Descriptions, Space } from 'antd';
+import { Button, Descriptions, Space, Tooltip, Typography } from 'antd';
 import dayjs from 'dayjs';
 import React from 'react';
 import styled from 'styled-components';
 import {
-  ServiceModeColorMap,
-  ServiceModeMap,
   ServiceModeValueMap,
   ServiceStateLabelMap,
   ServiceStatus,
   canViewServiceLogs,
-  formatServiceVersion
+  formatServiceVersion,
+  isHttpUrl
 } from '../config';
 import {
   CacheProviderItem,
@@ -226,12 +225,24 @@ const ServiceOverview: React.FC<ServiceOverviewProps> = ({
             title={
               <Title>
                 <span>{data.name}</span>
-                <ThemeTag
-                  color={ServiceModeColorMap[data.mode] || 'blue'}
-                  opacity={0.7}
-                >
-                  {intl.formatMessage({ id: ServiceModeMap[data.mode] })}
-                </ThemeTag>
+                {isHttpUrl(data.config?.management_url) && (
+                  <Tooltip
+                    title={intl.formatMessage({
+                      id: 'kvCache.button.management'
+                    })}
+                  >
+                    <Typography.Link
+                      href={data.config?.management_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={intl.formatMessage({
+                        id: 'kvCache.button.management'
+                      })}
+                    >
+                      <ExportOutlined style={{ fontSize: 13 }} />
+                    </Typography.Link>
+                  </Tooltip>
+                )}
               </Title>
             }
             extra={

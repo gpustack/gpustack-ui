@@ -1,3 +1,4 @@
+import { ExportOutlined } from '@ant-design/icons';
 // columns.ts
 import { systemConfigAtom } from '@/atoms/system';
 import { tableSorter } from '@/config/settings';
@@ -9,12 +10,13 @@ import {
   ThemeTag
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Typography } from 'antd';
+import { Tooltip, Typography } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import dayjs from 'dayjs';
 import { useAtomValue } from 'jotai';
 import { useMemo } from 'react';
 import {
+  isHttpUrl,
   rowActionList,
   ServiceModeColorMap,
   ServiceModeMap,
@@ -77,11 +79,30 @@ const useServiceColumns = (
         sorter: tableSorter(1),
         minWidth: serviceColumnMinWidths.name,
         render: (text: string, record: ListItem) => (
-          <AutoTooltip ghost title={text}>
-            <Typography.Link onClick={() => onCellClick?.(record)}>
-              {text}
-            </Typography.Link>
-          </AutoTooltip>
+          <span className="flex-center" style={{ gap: 8 }}>
+            <AutoTooltip ghost title={text}>
+              <Typography.Link onClick={() => onCellClick?.(record)}>
+                {text}
+              </Typography.Link>
+            </AutoTooltip>
+            {isHttpUrl(record.config?.management_url) && (
+              <Tooltip
+                title={intl.formatMessage({ id: 'kvCache.button.management' })}
+              >
+                <Typography.Link
+                  href={record.config?.management_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={intl.formatMessage({
+                    id: 'kvCache.button.management'
+                  })}
+                  onClick={(event) => event.stopPropagation()}
+                >
+                  <ExportOutlined style={{ fontSize: 12 }} />
+                </Typography.Link>
+              </Tooltip>
+            )}
+          </span>
         )
       },
       {

@@ -369,6 +369,7 @@ export default {
     'Параллелизм {rate} обеспечивает {tps} tok/s{prev, select, yes{ — на {prevUp}% больше, чем {prevRate}} other{}}{next, select, yes{; переход к {nextRate} добавляет лишь {nextUp}% пропускной способности, но {nextTtftUp}% к TTFT} other{}}. Поэтому {rate} — оптимальная рабочая точка{slo, select, yes{, в рамках SLO} other{}}.',
   'benchmark.detail.modelFile': 'Model File',
   'benchmark.detail.kvCache': 'Extended KV Cache',
+  'benchmark.detail.cacheService': 'Cache Service',
   'benchmark.detail.speculativeDecoding': 'Speculative Decoding',
   'benchmark.detail.inputOutputTokenLength': 'Token Length (Input/Output)',
   'benchmark.env.gpuName': 'GPU Name',

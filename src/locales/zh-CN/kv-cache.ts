@@ -37,6 +37,11 @@ export default {
   'kvCache.form.workerSelector.tips':
     '在匹配全部标签的每个节点上各运行一个实例;留空则覆盖所有节点。',
   'kvCache.form.chunkSize': '块大小',
+  'kvCache.form.managementUrl': '管理地址',
+  'kvCache.form.managementUrl.tips':
+    '缓存引擎自带管理界面的链接，将显示为服务名称旁的跳转链接',
+  'kvCache.form.managementUrl.invalid': '请输入合法的 http(s) 地址',
+  'kvCache.button.management': '管理地址',
   'kvCache.form.chunkSize.tips':
     '每个 KV 缓存块的 token 数。块越小复用粒度越细，但开销越高。留空使用引擎默认值。',
   'kvCache.form.advanced': '高级配置',

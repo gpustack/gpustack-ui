@@ -79,6 +79,10 @@ export const canViewServiceLogs = (
 export const canViewInstanceLogs = (instance: CacheServiceInstanceItem) =>
   logViewableStates.includes(instance.state);
 
+// hrefs built from stored config must never carry a javascript: scheme
+export const isHttpUrl = (url?: string | null): boolean =>
+  !!url && /^https?:\/\//i.test(url);
+
 // The reserved "custom" version says nothing by itself, so it is shown with
 // the image the service actually runs.
 export const formatServiceVersion = (

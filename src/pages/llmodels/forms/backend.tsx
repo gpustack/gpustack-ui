@@ -218,6 +218,11 @@ const BackendFields: React.FC = () => {
         <SealSelect
           required
           showSearch
+          // Without this the search filters on `value` (the backend name),
+          // which is not what the option shows for the built-in "custom"
+          // backend: its label is the translated "Custom", so typing that
+          // matched nothing in any locale but English.
+          optionFilterProp="label"
           onChange={handleOnBackendChange}
           label={intl.formatMessage({ id: 'models.form.backend' })}
           description={<TooltipList list={backendTipsList}></TooltipList>}
@@ -242,6 +247,10 @@ const BackendFields: React.FC = () => {
             allowClear
             showSearch
             allowNull
+            // The version options label themselves with their own value, but
+            // the leading "Auto" entry carries a null value, so the default
+            // filter (on `value`) can never match the word the option shows.
+            optionFilterProp="label"
             labelRender={backendVersionLabelRender}
             placeholder={intl.formatMessage({
               id: 'models.form.backendVersion.holder'

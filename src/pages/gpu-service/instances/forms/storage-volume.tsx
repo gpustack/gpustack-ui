@@ -200,6 +200,10 @@ const StorageVolume = ({
             <Select
               disabled={disabled}
               showSearch
+              // Without this the search filters on `value` (the storage's
+              // `name`) while the option renders `displayName || name`, so
+              // typing the label shown in the dropdown matches nothing.
+              optionFilterProp="label"
               label={intl.formatMessage({
                 id: 'gpuservice.form.storage.select'
               })}

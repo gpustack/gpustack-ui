@@ -54,10 +54,10 @@ export default {
   'noresult.routes.title': 'Yönlendirme Yok',
   'noresult.routes.subTitle': 'Henüz yönlendirme eklenmedi.',
   'noresult.routes.nofound': 'Eşleşen yönlendirme bulunamadı.',
-  'noresult.instances.title': 'No instances',
+  'noresult.instances.title': 'Örnek yok',
   'noresult.instances.subTitle':
-    'There are no running model instances. Deploy a model to create one automatically.',
-  'noresult.instances.nofound': 'No matching instances found.',
+    'Çalışan model örneği yok. Otomatik olarak bir tane oluşturmak için bir model dağıtın.',
+  'noresult.instances.nofound': 'Eşleşen örnek bulunamadı.',
   'noresult.gpuservice.template.title': 'Örnek Şablonu Yok',
   'noresult.gpuservice.template.subTitle': 'Henüz örnek şablonu eklenmedi.',
   'noresult.gpuservice.template.nofound': 'Eşleşen örnek şablonu bulunamadı.',
@@ -67,10 +67,10 @@ export default {
   'noresult.gpuservice.storage.title': 'Depolama Yok',
   'noresult.gpuservice.storage.subTitle': 'Henüz depolama eklenmedi.',
   'noresult.gpuservice.storage.nofound': 'Eşleşen depolama bulunamadı.',
-  'noresult.gpuservice.instanceType.title': 'No Instance Types',
+  'noresult.gpuservice.instanceType.title': 'Örnek Türü Yok',
   'noresult.gpuservice.instanceType.subTitle':
-    'Create an instance type to get started',
-  'noresult.gpuservice.instanceType.nofound': 'No instance types found',
+    'Başlamak için bir örnek türü oluşturun',
+  'noresult.gpuservice.instanceType.nofound': 'Örnek türü bulunamadı',
   'noresult.gpuservice.storageType.title': 'Depolama Türü Yok',
   'noresult.gpuservice.storageType.subTitle': 'Henüz depolama türü eklenmedi.',
   'noresult.gpuservice.storageType.nofound':
@@ -78,10 +78,10 @@ export default {
   'noresult.gpuservice.sshkey.title': 'SSH Açık Anahtarı Yok',
   'noresult.gpuservice.sshkey.subTitle': 'Henüz SSH açık anahtarı eklenmedi.',
   'noresult.gpuservice.sshkey.nofound': 'Eşleşen SSH açık anahtarı bulunamadı.',
-  'noresult.kvCache.title': 'No cache services yet',
+  'noresult.kvCache.title': 'Henüz önbellek hizmeti yok',
   'noresult.kvCache.subTitle':
-    'Create a managed cache service or register an external one to accelerate KV cache.',
-  'noresult.kvCache.nofound': 'No matching cache services found.'
+    'KV önbelleğini hızlandırmak için yönetilen bir önbellek hizmeti oluşturun veya harici bir tane kaydedin.',
+  'noresult.kvCache.nofound': 'Eşleşen önbellek hizmeti bulunamadı.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

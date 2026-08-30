@@ -1,15 +1,15 @@
 export default {
-  'organizations.upsell.title': 'Organizations are an Enterprise feature',
+  'organizations.upsell.title': 'Kuruluşlar bir Enterprise özelliğidir',
   'organizations.upsell.subtitle':
-    'Multi-tenancy lets you isolate users, resources, and quotas across teams. Upgrade to GPUStack Enterprise to manage organizations.',
-  'organizations.upsell.featuresTitle': 'What you get in Enterprise',
+    "Çok kiracılılık, kullanıcıları, kaynakları ve kotaları ekipler arasında yalıtmanızı sağlar. Kuruluşları yönetmek için GPUStack Enterprise'a yükseltin.",
+  'organizations.upsell.featuresTitle': 'Enterprise ile elde ettikleriniz',
   'organizations.upsell.feature.orgs':
-    'Create organizations to group users and isolate workloads',
+    'Kullanıcıları gruplamak ve iş yüklerini yalıtmak için kuruluşlar oluşturun',
   'organizations.upsell.feature.members':
-    'Manage members and roles per organization',
+    'Her kuruluş için üyeleri ve rolleri yönetin',
   'organizations.upsell.feature.quotas':
-    'Set resource and token quotas per organization',
+    'Her kuruluş için kaynak ve token kotaları belirleyin',
   'organizations.upsell.feature.isolation':
-    'Scope API keys, model deployments, and resources per organization',
-  'organizations.upsell.cta': 'Learn about Enterprise'
+    'API anahtarlarını, model dağıtımlarını ve kaynakları kuruluş bazında sınırlandırın',
+  'organizations.upsell.cta': 'Enterprise hakkında bilgi alın'
 };

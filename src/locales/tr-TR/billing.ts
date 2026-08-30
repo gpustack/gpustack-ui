@@ -1,15 +1,15 @@
 export default {
-  'billing.upsell.title': 'Billing is an Enterprise feature',
+  'billing.upsell.title': 'Faturalandırma bir Enterprise özelliğidir',
   'billing.upsell.subtitle':
-    'Track spend, generate invoices, and enforce budgets across teams. Upgrade to GPUStack Enterprise to manage billing.',
-  'billing.upsell.featuresTitle': 'What you get in Enterprise',
+    "Harcamaları izleyin, fatura oluşturun ve ekipler genelinde bütçe uygulayın. Faturalandırmayı yönetmek için GPUStack Enterprise'a yükseltin.",
+  'billing.upsell.featuresTitle': 'Enterprise ile elde ettikleriniz',
   'billing.upsell.feature.usage':
-    'See cost breakdowns by organization, user, and model',
+    'Kuruluş, kullanıcı ve model bazında maliyet dökümlerini görün',
   'billing.upsell.feature.invoices':
-    'Generate invoices and export billing reports',
+    'Fatura oluşturun ve faturalandırma raporlarını dışa aktarın',
   'billing.upsell.feature.budgets':
-    'Set budgets and spending limits with alerts',
+    'Uyarılarla birlikte bütçe ve harcama sınırları belirleyin',
   'billing.upsell.feature.chargeback':
-    'Attribute and charge back usage to teams and projects',
-  'billing.upsell.cta': 'Learn about Enterprise'
+    'Kullanımı ekiplere ve projelere yansıtıp geri faturalandırın',
+  'billing.upsell.cta': 'Enterprise hakkında bilgi alın'
 };

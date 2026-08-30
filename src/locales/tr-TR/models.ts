@@ -70,7 +70,7 @@ export default {
   'models.table.layers': 'Katmanlar',
   'models.form.backend': 'Altyapı',
   'models.form.backend_parameters': 'Altyapı Parametreleri',
-  'models.instance.params.configured': 'User Configured',
+  'models.instance.params.configured': 'Kullanıcı Tarafından Yapılandırıldı',
   'models.instance.params.autoInjected': 'Otomatik Enjekte Edilen Parametreler',
   'models.search.gguf.tips':
     'GGUF modelleri llama-box kullanır (Linux, macOS ve Windows destekler).',
@@ -238,16 +238,16 @@ export default {
     'Genişletilmiş KV önbellek ve spekülatif çözümleme yalnızca yerleşik altyapılarda (vLLM / SGLang) kullanılabilir. Etkinleştirmek için lütfen altyapıyı değiştirin.',
   'models.form.kvCache.tips2':
     'Yalnızca yerleşik çıkarım altyapıları (vLLM veya SGLang) kullanılırken desteklenir.',
-  'models.form.kvCache.backend': 'Cache Backend',
-  'models.form.kvCache.local': 'In-Process Cache',
+  'models.form.kvCache.backend': 'Önbellek Altyapısı',
+  'models.form.kvCache.local': 'Süreç İçi Önbellek',
   'models.form.kvCache.service.tips':
-    'Only cache services in the same cluster and compatible with the selected backend are listed.',
+    'Yalnızca aynı kümede bulunan ve seçilen altyapıyla uyumlu önbellek hizmetleri listelenir.',
   'models.form.kvCache.shared.builtinBackends':
     'Cache Service yalnızca yerleşik vLLM ve SGLang arka uçlarıyla desteklenir.',
   'models.kvCache.degraded.tips':
-    'Shared KV cache is not active for this instance',
+    'Bu örnek için paylaşılan KV önbelleği etkin değil',
   'models.kvCache.endpointDead.tips':
-    'The shared cache this instance attached to is no longer available; restart the instance to recover',
+    'Bu örneğin bağlandığı paylaşılan önbellek artık kullanılamıyor; kurtarmak için örneği yeniden başlatın',
   'models.form.scheduling': 'Zamanlama',
   'models.form.scaling': 'Zamanlanmış Ölçekleme',
   'models.form.scaling.enable': 'Zamanlanmış ölçeklemeyi etkinleştir',
@@ -363,24 +363,24 @@ export default {
   'models.form.backend.helperText':
     'Henüz etkinleştirilmedi. Dağıtımdan sonra etkinleştirilecektir. ',
   'models.table.instance.benchmark': 'Kıyaslama Çalıştır',
-  'models.table.modelView': 'Model List',
-  'models.table.instanceView': 'Instance List',
+  'models.table.modelView': 'Model Listesi',
+  'models.table.instanceView': 'Örnek Listesi',
   'models.table.category': 'Category',
-  'models.instance.currentRun': 'Current Run',
-  'models.instance.previousRun': 'Previous Run',
-  'models.instance.startHistory': 'Run History',
+  'models.instance.currentRun': 'Geçerli Çalıştırma',
+  'models.instance.previousRun': 'Önceki Çalıştırma',
+  'models.instance.startHistory': 'Çalıştırma Geçmişi',
   'models.instance.startHistory.tips':
-    'Shows logs from the run before the last error-triggered restart.',
-  'models.form.lora.label': 'LoRA Adapters',
-  'models.form.lora.add': 'Add LoRA Adapter',
-  'models.form.lora.select': 'Select LoRA',
-  'models.form.lora.name': 'LoRA name',
-  'models.form.lora.rule.empty': 'Input cannot be empty',
-  'models.form.lora.rule.duplicate': 'LoRA name cannot be duplicated',
+    'Hata kaynaklı son yeniden başlatmadan önceki çalıştırmanın günlüklerini gösterir.',
+  'models.form.lora.label': 'LoRA Adaptörleri',
+  'models.form.lora.add': 'LoRA Adaptörü Ekle',
+  'models.form.lora.select': 'LoRA Seç',
+  'models.form.lora.name': 'LoRA adı',
+  'models.form.lora.rule.empty': 'Girdi boş olamaz',
+  'models.form.lora.rule.duplicate': 'LoRA adı yinelenemez',
   // Model catalog source configuration
   'models.catalog.source.title': 'Katalog Kaynağı',
   'models.catalog.source.official':
-    'Follows the catalog GPUStack publishes, on top of the one packaged with this release.'
+    "Bu sürümle paketlenenin yanı sıra GPUStack'in yayınladığı kataloğu izler."
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

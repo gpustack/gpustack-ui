@@ -176,7 +176,7 @@ export default {
     'Yalnızca Konuşmacı Gömme Kullan (ICL yok)',
   'playground.params.streamMode': 'Akışı Etkinleştir',
   'playground.speech.rules.refAudio':
-    'Either the reference audio transcript or speaker embedding must be set.'
+    'Referans ses metni veya konuşmacı gömmesinden biri mutlaka ayarlanmalıdır.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

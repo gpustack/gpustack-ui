@@ -47,7 +47,7 @@ export default {
   'common.button.enabled': 'Etkin',
   'common.button.disabled': 'Devre dışı',
   'common.button.upgrade': 'Yükselt',
-  'common.enterprise.feature': 'Available in GPUStack Enterprise',
+  'common.enterprise.feature': "GPUStack Enterprise'da kullanılabilir",
   'common.input.holder': 'Lütfen girin',
   'common.validate.value': '{name} değeri gereklidir',
   'common.button.edit': 'Düzenle',
@@ -307,25 +307,27 @@ export default {
   'common.status.disabled': 'Devre dışı',
   'common.button.duplicate': 'Çoğalt',
   'common.option.other': 'Diğer',
-  'common.file.size.limit': 'File size must not exceed {size}.',
-  'common.file.format.limit': 'Invalid file format. Allowed: {formats}.',
-  'common.image.limit.width': 'Image width must be {width}.',
-  'common.image.limit.height': 'Image height must be {height}.',
+  'common.file.size.limit': 'Dosya boyutu {size} değerini aşmamalıdır.',
+  'common.file.format.limit':
+    'Geçersiz dosya biçimi. İzin verilenler: {formats}.',
+  'common.image.limit.width': 'Görsel genişliği {width} olmalıdır.',
+  'common.image.limit.height': 'Görsel yüksekliği {height} olmalıdır.',
   'common.remaining': 'Kalan {count}',
   'common.max': 'Maks. {count}',
   'common.max.count': '{label} Sayısı',
-  'common.validate.group': 'Please complete the {group} configuration',
+  'common.validate.group': 'Lütfen {group} yapılandırmasını tamamlayın',
   'common.preferences': 'Tercihler',
   // Shared by the single-slot source config drawer (src/pages/_components/source-config)
   'common.source.manage': 'Kaynakları Yönet',
   'common.source.type.builtin': 'Embedded',
   'common.source.type.builtin.desc':
-    'Serves only what this release was packaged with, with no network access.',
+    'Yalnızca bu sürümle paketleneni sunar, ağ erişimi yoktur.',
   'common.source.type.url': 'URL',
-  'common.source.type.url.desc': 'Fetched by the server, can auto-update.',
+  'common.source.type.url.desc':
+    'Sunucu tarafından çekilir, kendini güncelleyebilir.',
   'common.source.type.file': 'Yaml Dosyası',
   'common.source.type.file.desc':
-    'Paste the content directly; never auto-updates.',
+    'İçeriği doğrudan yapıştırın; hiçbir zaman kendini güncellemez.',
   'common.source.url': 'Kaynak URL',
   'common.source.url.scheme': 'URL http:// veya https:// ile başlamalıdır',
   'common.source.url.credentials': 'URL kimlik bilgileri içermemelidir',
@@ -339,24 +341,24 @@ export default {
   'common.source.tag.custom': 'Özel',
   'common.source.tag.official': 'Official',
   'common.source.empty.hint':
-    'Your own URL replaces the official source entirely.',
+    "Kendi URL'niz resmi kaynağın tamamen yerine geçer.",
   'common.source.empty.hint.file':
-    'Leave the content empty to follow the official source — {description}',
-  'common.source.reset': 'Reset to Official Source',
+    'Resmi kaynağı izlemek için içeriği boş bırakın — {description}',
+  'common.source.reset': 'Resmi Kaynağa Sıfırla',
   'common.source.reset.tip':
-    'Follow the official source again, applied when you save — {description}',
+    'Yeniden resmi kaynağı izler, kaydettiğinizde uygulanır — {description}',
   'common.source.autoUpdate': 'Auto-update',
-  'common.source.autoUpdate.interval': 'Update Interval (hours)',
+  'common.source.autoUpdate.interval': 'Güncelleme Aralığı (saat)',
   'common.source.autoUpdate.official.tip':
-    'How often to check the official OTA server for new content. Off leaves the stored content in place until you sync it yourself.',
+    'Resmi OTA sunucusunda yeni içerik olup olmadığının hangi sıklıkta denetleneceği. Kapalıyken, siz kendiniz eşitleyene kadar kayıtlı içerik olduğu gibi kalır.',
   'common.source.autoUpdate.custom.tip':
-    'How often to re-fetch your URL. Off leaves your source untouched until you save or reload it.',
-  'common.source.lastUpdated': 'Last updated {time}',
-  'common.source.official.link': 'Official File',
-  'common.source.sync.official': 'Update Now',
-  'common.source.sync.custom': 'Update Now',
+    "URL'nizin hangi sıklıkta yeniden çekileceği. Kapalıyken, siz kaydedene veya yeniden yükleyene kadar kaynağınıza dokunulmaz.",
+  'common.source.lastUpdated': 'Son güncelleme {time}',
+  'common.source.official.link': 'Resmi Dosya',
+  'common.source.sync.official': 'Şimdi Güncelle',
+  'common.source.sync.custom': 'Şimdi Güncelle',
   'common.source.sync.hint.dirty':
-    'Save first — Save writes the new URL and fetches it. Update Now only re-pulls the URL already saved.',
+    "Önce kaydedin — Kaydet, yeni URL'yi yazar ve onu çeker. Şimdi Güncelle yalnızca zaten kayıtlı olan URL'yi yeniden çeker.",
   'common.source.load.failed':
-    'Could not read the stored configuration, so there is nothing here to save. Close and reopen to try again.'
+    'Kayıtlı yapılandırma okunamadı, bu nedenle burada kaydedilecek bir şey yok. Yeniden denemek için kapatıp tekrar açın.'
 };

@@ -107,7 +107,7 @@ export default {
     'Kimlik doğrulama bu düğümün özel anahtarını kullanır. Anahtarı indirin, dosyaya chmod 600 uygulayın ve bağlanın.',
   'resources.modelfiles.form.exsting': 'İndirilmiş',
   'resources.modelfiles.form.added': 'Eklenmiş',
-  'resources.modelfiles.form.isLora': 'Is LoRA',
+  'resources.modelfiles.form.isLora': 'LoRA mı',
   'resources.worker.maintenance.title': 'Sistem Bakımı',
   'resources.worker.maintenance.enable': 'Bakım Moduna Gir',
   'resources.worker.maintenance.disable': 'Bakım Modundan Çık',
@@ -119,12 +119,12 @@ export default {
     'Kullanılabilir küme yok. Lütfen düğüm eklemeden önce bir küme oluşturun.',
   'resources.metrics.details': 'İzleme',
   'resoureces.worker.upgrade.tips':
-    'Please upgrade to match the GPUStack Server version.',
-  'resources.worker.version': 'Worker Version: {version}',
-  'resources.server.version': 'Server Version: {version}',
-  'resources.worker.currentVersion': 'Current Version: {version}',
-  'resources.worker.targetVersion': 'Target Version: {version}',
-  'resources.driver.version': 'Driver Version: {version}'
+    'Lütfen GPUStack Sunucu sürümüyle eşleşecek şekilde yükseltin.',
+  'resources.worker.version': 'İşçi Düğüm Sürümü: {version}',
+  'resources.server.version': 'Sunucu Sürümü: {version}',
+  'resources.worker.currentVersion': 'Geçerli Sürüm: {version}',
+  'resources.worker.targetVersion': 'Hedef Sürüm: {version}',
+  'resources.driver.version': 'Sürücü Sürümü: {version}'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

@@ -15,7 +15,7 @@ export default {
   'dashboard.usage.others': 'Diğer',
   'dashboard.tokens': 'Token Kullanımı',
   'dashboard.topusers': 'En Aktif Kullanıcılar',
-  'dashboard.activeDeployments': 'Active Deployments',
+  'dashboard.activeDeployments': 'Etkin Dağıtımlar',
   'dashboard.usageByModel': 'Modele Göre Kullanım',
   'dashboard.topTokenUsageByUser': 'Kullanıcıya Göre İlk 10 Token Kullanımı',
   'dashboard.allocatevram': 'Ayrılan VRAM / RAM',

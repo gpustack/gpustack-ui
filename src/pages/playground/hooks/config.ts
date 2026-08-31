@@ -49,7 +49,9 @@ export const llmInitialValues = {
   top_p: 1,
   max_tokens: 1024,
   frequency_penalty: 0,
-  presence_penalty: 0
+  presence_penalty: 0,
+  // no default reasoning effort, but the key must be here so switching model resets the field
+  reasoning_effort: undefined
 };
 
 export const advancedFieldsDefaultValus = {

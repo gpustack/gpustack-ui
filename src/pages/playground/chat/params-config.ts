@@ -124,6 +124,37 @@ export const ChatParamsConfig: ParamsSchema[] = [
     ]
   },
   {
+    type: 'Select',
+    name: 'reasoning_effort',
+    options: [
+      { label: 'None', value: 'none' },
+      { label: 'Minimal', value: 'minimal' },
+      { label: 'Low', value: 'low' },
+      { label: 'Medium', value: 'medium' },
+      { label: 'High', value: 'high' },
+      { label: 'XHigh', value: 'xhigh' },
+      { label: 'Max', value: 'max' }
+    ],
+    label: {
+      text: 'Reasoning Effort',
+      isLocalized: false
+    },
+    attrs: {
+      allowClear: true
+    },
+    formItemAttrs: {
+      // clearing the field must drop it from the request, not send an empty value
+      normalize(value: string) {
+        return value || undefined;
+      }
+    },
+    rules: [
+      {
+        required: false
+      }
+    ]
+  },
+  {
     type: 'InputNumber',
     name: 'seed',
     label: {

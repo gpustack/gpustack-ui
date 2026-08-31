@@ -13,6 +13,8 @@ export default {
   'clusters.button.addNodePool': 'İşçi Havuzu Ekle',
   'clusters.button.add.credential': '{provider} Kimlik Bilgisi Ekle',
   'clusters.credential.title': 'Bulut Kimlik Bilgisi',
+  'clusters.credential.signinToCreate':
+    'Henüz {name} yok mu? Oluşturmak için <a href="{link}" target="_blank">giriş yapın veya kaydolun</a>.',
   'clusters.credential.token': 'Erişim Anahtarı',
   'clusters.workerpool.region': 'Bölge',
   'clusters.workerpool.zone': 'Alan',
@@ -108,8 +110,6 @@ export default {
   'clusters.addworker.cacheVolume.holder':
     'örn. /data/cache (yol / ile başlamalıdır)',
   'clusters.addworker.vendorNotes.title': '{vendor} Cihaz Notları',
-  'clusters.button.genToken':
-    'Yeni token oluşturmanız mı gerekiyor? <a href="{link}" target="_blank">Buraya tıklayın</a>.',
   'clusters.addworker.amdNotes-01': `<span class="bold-text">/opt/rocm</span> dizini mevcut değilse, lütfen ROCm kurulum yoluna işaret eden sembolik bağlantı oluşturun: <span class="bold-text">ln -s /path/to/rocm /opt/rocm</span>.`,
   'clusters.addworker.message.success_single':
     '{count} yeni işçi düğüm kümeye eklendi.',

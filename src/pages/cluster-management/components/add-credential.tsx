@@ -33,7 +33,9 @@ const AddModal: React.FC<AddModalProps> = ({
   const [form] = Form.useForm();
   const intl = useIntl();
   const { getRuleMessage } = useAppUtils();
-  // Shuihua calls its secret an API key, DigitalOcean an access token.
+  // Shuihua calls its secret an API key, DigitalOcean an access token, and
+  // they hand it out on different kinds of page — so both the field label and
+  // the hint below it come from the adapter.
   const { tokenDocUrl, secretLabelId } = getCloudProviderAdapter(provider);
 
   const handleSumit = () => {
@@ -91,30 +93,33 @@ const AddModal: React.FC<AddModalProps> = ({
                 message: getRuleMessage('input', secretLabelId)
               }
             ]}
+            // Where to get the secret, visible rather than behind the label's
+            // `?` tooltip: for a first-time user this link is the first step,
+            // and a hint that has to be discovered by hovering an icon is not
+            // one. A provider with no documented page shows nothing rather
+            // than linking nowhere.
+            extra={
+              tokenDocUrl ? (
+                <span
+                  className="font-size-12"
+                  dangerouslySetInnerHTML={{
+                    __html: intl.formatMessage(
+                      { id: 'clusters.credential.signinToCreate' },
+                      {
+                        link: tokenDocUrl,
+                        name: intl.formatMessage({ id: secretLabelId })
+                      }
+                    )
+                  }}
+                ></span>
+              ) : undefined
+            }
           >
             <CInput.Password
               label={intl.formatMessage({
                 id: secretLabelId
               })}
               required={action === PageAction.CREATE}
-              // Providers without a documented token page (Shuihua, for now)
-              // just drop the hint rather than link nowhere.
-              description={
-                tokenDocUrl ? (
-                  <span
-                    dangerouslySetInnerHTML={{
-                      __html: intl.formatMessage(
-                        {
-                          id: 'clusters.button.genToken'
-                        },
-                        {
-                          link: tokenDocUrl
-                        }
-                      )
-                    }}
-                  ></span>
-                ) : undefined
-              }
             ></CInput.Password>
           </Form.Item>
         )}

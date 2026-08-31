@@ -74,6 +74,7 @@ export default {
   'common.edit.fail': '编辑失败',
   'common.message.fail': '失败!',
   'common.message.success': '成功!',
+  'common.message.downloadFailed': '下载失败',
   'common.delete.tips': '是否确定删除？',
   'common.button.close': '关闭',
   'common.button.done': '完成',

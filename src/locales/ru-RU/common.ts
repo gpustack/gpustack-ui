@@ -80,6 +80,7 @@ export default {
   'common.title.config': 'Конфигурация',
   'common.message.fail': 'Ошибка!',
   'common.message.success': 'Успешно!',
+  'common.message.downloadFailed': 'Не удалось скачать',
   'common.delete.tips': 'Вы уверены, что хотите удалить?',
   'common.button.close': 'Закрыть',
   'common.button.done': 'Готово',

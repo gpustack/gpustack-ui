@@ -1,15 +1,7 @@
+import useDownloadInstanceLogs from '@/pages/llmodels/hooks/use-download-instance-logs';
 import { useBenchmarkTargetInstance } from '@/pages/llmodels/hooks/use-run-benchmark';
 import { DeleteOutlined, DownloadOutlined } from '@ant-design/icons';
-import {
-  DropdownButtons,
-  type HandlerOptions,
-  IconFont,
-  useDownloadStream
-} from '@gpustack/core-ui';
-import { useIntl } from '@umijs/max';
-import { Progress, notification } from 'antd';
-import dayjs from 'dayjs';
-import { MODEL_INSTANCE_API } from '../../apis';
+import { DropdownButtons, IconFont } from '@gpustack/core-ui';
 import { InstanceStatusMap, modelCategoriesMap } from '../../config';
 import { ListItem, ModelInstanceListItem } from '../../config/types';
 
@@ -66,64 +58,13 @@ const ActionsCell: React.FC<ActionsCellProps> = ({
   onSelect
 }) => {
   const { runBenchmarkOnInstance } = useBenchmarkTargetInstance();
-  const [api, contextHolder] = notification.useNotification({
-    stack: { threshold: 1 }
-  });
-  const { downloadStream } = useDownloadStream();
-  const intl = useIntl();
-
-  const createFileName = (name: string) => {
-    const timestamp = dayjs().format('YYYY-MM-DD_HH-mm-ss');
-    const fileName = `${name}_${timestamp}.txt`;
-    return fileName;
-  };
-
-  const renderMessage = (title: string) => {
-    return (
-      <div
-        style={{
-          width: 280,
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-          overflow: 'hidden'
-        }}
-      >
-        {title}
-      </div>
-    );
-  };
-
-  const downloadNotification = (
-    data: HandlerOptions & {
-      filename: string;
-      duration?: number;
-      chunkRequestRef: any;
-    }
-  ) => {
-    api.open({
-      duration: data.duration,
-      title: renderMessage(data.filename),
-      key: data.filename,
-      closeIcon: (
-        <span>{intl.formatMessage({ id: 'common.button.cancel' })}</span>
-      ),
-      description: <Progress percent={data.percent} size="small"></Progress>,
-      onClose() {
-        data.chunkRequestRef?.current?.abort();
-        notification.destroy?.(data.filename);
-      }
-    });
-  };
+  const { downloadLogs } = useDownloadInstanceLogs();
 
   const handleOnSelect = (val: string) => {
     if (val === 'benchmark') {
       runBenchmarkOnInstance(record);
     } else if (val === 'download') {
-      downloadStream({
-        url: `${MODEL_INSTANCE_API}/${record.id}/logs`,
-        filename: createFileName(record.name),
-        downloadNotification
-      });
+      downloadLogs(record);
     } else {
       onSelect(val, record);
     }
@@ -143,13 +84,10 @@ const ActionsCell: React.FC<ActionsCellProps> = ({
   });
 
   return (
-    <>
-      {contextHolder}
-      <DropdownButtons
-        items={actionItems}
-        onSelect={handleOnSelect}
-      ></DropdownButtons>
-    </>
+    <DropdownButtons
+      items={actionItems}
+      onSelect={handleOnSelect}
+    ></DropdownButtons>
   );
 };
 

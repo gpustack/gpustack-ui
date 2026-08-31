@@ -352,6 +352,7 @@ export default {
   'models.instance.startHistory': '运行记录',
   'models.instance.startHistory.tips':
     '显示上一次因错误自动重启之前的那次运行的日志。',
+  'models.instance.logs.downloading': '正在下载… {size}',
   'models.form.lora.label': 'LoRA 适配器',
   'models.form.lora.add': '添加 LoRA 适配器',
   'models.form.lora.select': '选择 LoRA',

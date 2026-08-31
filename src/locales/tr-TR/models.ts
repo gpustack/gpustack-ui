@@ -371,6 +371,7 @@ export default {
   'models.instance.startHistory': 'Çalıştırma Geçmişi',
   'models.instance.startHistory.tips':
     'Hata kaynaklı son yeniden başlatmadan önceki çalıştırmanın günlüklerini gösterir.',
+  'models.instance.logs.downloading': 'İndiriliyor… {size}',
   'models.form.lora.label': 'LoRA Adaptörleri',
   'models.form.lora.add': 'LoRA Adaptörü Ekle',
   'models.form.lora.select': 'LoRA Seç',

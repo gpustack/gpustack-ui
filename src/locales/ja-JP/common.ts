@@ -80,6 +80,7 @@ export default {
   'common.title.config': '設定',
   'common.message.fail': '失敗！',
   'common.message.success': '成功！',
+  'common.message.downloadFailed': 'ダウンロードに失敗しました',
   'common.delete.tips': '本当に削除しますか？',
   'common.button.close': '閉じる',
   'common.button.done': '完了',

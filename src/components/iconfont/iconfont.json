@@ -6,6 +6,62 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "48424709",
+      "name": "home_storage_24dp_1F1F1F_FILL0_wght300_GRAD0_opsz2",
+      "font_class": "kvcache-outlined",
+      "unicode": "e717",
+      "unicode_decimal": 59159
+    },
+    {
+      "icon_id": "48424708",
+      "name": "home_storage_24dp_1F1F1F_FILL1_wght300_GRAD0_opsz2",
+      "font_class": "kvcache-filled",
+      "unicode": "e718",
+      "unicode_decimal": 59160
+    },
+    {
+      "icon_id": "48424517",
+      "name": "instance type filled",
+      "font_class": "instance-type-filled",
+      "unicode": "e714",
+      "unicode_decimal": 59156
+    },
+    {
+      "icon_id": "48424515",
+      "name": "instance type outlined",
+      "font_class": "instance-type-outlined",
+      "unicode": "e715",
+      "unicode_decimal": 59157
+    },
+    {
+      "icon_id": "47801141",
+      "name": "receipt_24dp_1F1F1F_FILL1_wght300_GRAD0_opsz24",
+      "font_class": "receipt_filled",
+      "unicode": "e711",
+      "unicode_decimal": 59153
+    },
+    {
+      "icon_id": "47801140",
+      "name": "receipt_24dp_1F1F1F_FILL0_wght300_GRAD0_opsz24",
+      "font_class": "receipt_outlined",
+      "unicode": "e712",
+      "unicode_decimal": 59154
+    },
+    {
+      "icon_id": "47801136",
+      "name": "confirmation_number_24dp_1F1F1F_FILL0_wght300_GRAD",
+      "font_class": "cost-outlined",
+      "unicode": "e70f",
+      "unicode_decimal": 59151
+    },
+    {
+      "icon_id": "47801135",
+      "name": "confirmation_number_24dp_1F1F1F_FILL1_wght300_GRAD",
+      "font_class": "cost-filled",
+      "unicode": "e710",
+      "unicode_decimal": 59152
+    },
+    {
       "icon_id": "47798379",
       "name": "request_quote_24dp_1F1F1F_FILL0_wght300_GRAD0_opsz",
       "font_class": "billing-outlined",

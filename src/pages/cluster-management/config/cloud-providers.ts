@@ -108,7 +108,12 @@ export interface CloudProviderAdapter {
     list: OSImageOption[],
     instanceSpec: Record<string, any>
   ) => OSImageOption[];
-  /** Console page where the user generates the API token, if any. */
+  /**
+   * Where the user goes to create the secret, if the provider documents such
+   * a page — the console page itself when it survives an anonymous visit,
+   * otherwise sign-in. The hint linking to it names the secret from
+   * `secretLabelId`.
+   */
   tokenDocUrl?: string;
 }
 
@@ -243,6 +248,8 @@ const digitalOceanAdapter: CloudProviderAdapter = {
 
     return list;
   },
+  // Deep link: an authenticated user lands on the token page itself, and an
+  // anonymous one is bounced through login back to it.
   tokenDocUrl: 'https://cloud.digitalocean.com/account/api/tokens'
 };
 
@@ -322,7 +329,8 @@ const shuihuaAdapter: CloudProviderAdapter = {
       }),
   // Region-less, and no image is tied to a particular spec template, so the
   // full lists are already the node pool's options.
-  matchOSImages: (list) => list
+  matchOSImages: (list) => list,
+  tokenDocUrl: 'https://hub.do.top/cn/signin'
 };
 
 export const cloudProviderAdapters: Record<string, CloudProviderAdapter> = {

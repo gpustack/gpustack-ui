@@ -13,6 +13,8 @@ export default {
   'clusters.button.addNodePool': 'Добавить пул воркеров',
   'clusters.button.add.credential': 'Добавить аккаунт {provider}',
   'clusters.credential.title': 'Учетные данные',
+  'clusters.credential.signinToCreate':
+    '{name}: <a href="{link}" target="_blank">войдите или зарегистрируйтесь</a>, чтобы создать.',
   'clusters.credential.token': 'Токен доступа',
   'clusters.workerpool.region': 'Регион',
   'clusters.workerpool.zone': 'Зона',
@@ -108,8 +110,6 @@ export default {
   'clusters.addworker.cacheVolume.holder':
     'e.g. /data/cache (path must start with /)',
   'clusters.addworker.vendorNotes.title': 'Примечания для устройств {vendor}',
-  'clusters.button.genToken':
-    'Нужен новый токен? Нажмите <a href="{link}" target="_blank">здесь</a>.',
   'clusters.addworker.amdNotes-01': `Если директория <span class="bold-text">/opt/rocm</span> не существует, создайте символическую ссылку на путь установки ROCm: <span class="bold-text">ln -s /путь/к/rocm /opt/rocm</span>.`,
   'clusters.addworker.message.success_single':
     '{count} новый воркер был добавлен в кластер.',

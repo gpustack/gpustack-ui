@@ -341,6 +341,7 @@ const registerAMDWorker = (params: AddWorkerCommandParams) => {
   // remove empty enter lines and trailing backslash
   return `${commonArgs}
       --volume /opt/rocm:/opt/rocm:ro \\
+      --volume /opt/rocm/lib:/opt/rocm/lib:ro \\
       --runtime ${config.runtime} \\
       ${imageArgs}
       ${setWorkerIPArg(params)}`;
@@ -451,7 +452,10 @@ export const registerAddWokerCommandMap = {
 
 export const AddWorkerDockerNotes: Record<string, string[]> = {
   [GPUDriverMap.NVIDIA]: ['clusters.addworker.nvidiaNotes'],
-  [GPUDriverMap.AMD]: ['clusters.addworker.amdNotes-01'],
+  [GPUDriverMap.AMD]: [
+    'clusters.addworker.amdNotes-01',
+    'clusters.addworker.amdNotes-02'
+  ],
   [GPUDriverMap.MOORE_THREADS]: [],
   [GPUDriverMap.ASCEND]: [],
   [GPUDriverMap.HYGON]: [

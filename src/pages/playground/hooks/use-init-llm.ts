@@ -135,7 +135,9 @@ export const useInitLLmMeta = (
       if (changeValues.model) {
         return;
       }
-      setParams(allValues);
+
+      // a cleared optional param (e.g. reasoning_effort) is left out of the request
+      setParams(_.omitBy(allValues, _.isUndefined));
       setFormValues(allValues);
     }
   );

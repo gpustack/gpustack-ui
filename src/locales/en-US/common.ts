@@ -80,6 +80,7 @@ export default {
   'common.title.config': 'Configuration',
   'common.message.fail': 'Failed!',
   'common.message.success': 'Succeed!',
+  'common.message.downloadFailed': 'Download failed',
   'common.delete.tips': 'Are you sure you want to delete?',
   'common.button.close': 'Close',
   'common.button.done': 'Done',

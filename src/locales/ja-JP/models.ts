@@ -372,6 +372,7 @@ export default {
   'models.instance.startHistory': 'Run History',
   'models.instance.startHistory.tips':
     'Shows logs from the run before the last error-triggered restart.',
+  'models.instance.logs.downloading': 'ダウンロード中… {size}',
   'models.form.lora.label': 'LoRA Adapters',
   'models.form.lora.add': 'Add LoRA Adapter',
   'models.form.lora.select': 'Select LoRA',

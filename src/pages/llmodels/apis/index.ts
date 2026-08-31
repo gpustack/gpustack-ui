@@ -176,6 +176,40 @@ export async function queryModelInstanceRestartCount(id: number) {
   });
 }
 
+/**
+ * Download an instance's complete logs across every worker and container.
+ *
+ * `responseType: 'blob'` keeps the bytes intact: one log stream comes back as
+ * text/plain, but several come back zipped, and decoding a zip as text destroys
+ * it. `getResponse` keeps the headers reachable, because the server owns the
+ * filename — and therefore the extension — via Content-Disposition.
+ *
+ * `skipErrorHandler`: on failure `response.data` is a Blob the global handler
+ * cannot read, so it would only ever show axios's own "Request failed with
+ * status code 502"; the caller reads the body itself instead. The 401 -> login
+ * redirect sits outside that guard in `request-config.tsx`, so session expiry is
+ * still handled.
+ *
+ * The response streams without a Content-Length, so `onDownloadProgress` gets a
+ * ProgressEvent whose `total` is meaningless — only `loaded` is usable.
+ */
+export async function downloadModelInstanceLogs(
+  id: number | string,
+  options?: {
+    signal?: AbortSignal;
+    onDownloadProgress?: (event: ProgressEvent) => void;
+  }
+): Promise<{ data: Blob; headers: Record<string, any> }> {
+  return request(`${MODEL_INSTANCE_API}/${id}/logs/download`, {
+    method: 'GET',
+    responseType: 'blob',
+    getResponse: true,
+    skipErrorHandler: true,
+    signal: options?.signal,
+    onDownloadProgress: options?.onDownloadProgress
+  });
+}
+
 // ===================== Model Instances end =====================
 
 // ===================== call huggingface quicksearch api =====================

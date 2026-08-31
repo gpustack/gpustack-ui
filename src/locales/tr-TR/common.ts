@@ -80,6 +80,7 @@ export default {
   'common.title.config': 'Yapılandırma',
   'common.message.fail': 'Başarısız!',
   'common.message.success': 'Başarılı!',
+  'common.message.downloadFailed': 'İndirme başarısız',
   'common.delete.tips': 'Silmek istediğinizden emin misiniz?',
   'common.button.close': 'Kapat',
   'common.button.done': 'Tamam',

@@ -54,6 +54,7 @@ export default {
   'kvCache.form.l2Backend.add': 'Add Backend',
   'kvCache.form.l2Backend.backend': 'Backend',
   'kvCache.form.l2Backend.type': 'Type',
+  'kvCache.form.l2Backend.customOptions': 'Custom Options',
   'kvCache.form.l2Backend.tips':
     'Spill KV cache to larger secondary storage tiers. Entries are prioritized in order: reads prefer the first; writes go to all.',
   'kvCache.form.metricsPort': 'Metrics Port (Prometheus)',

@@ -51,6 +51,7 @@ export default {
   'kvCache.form.l2Backend.add': '添加后端',
   'kvCache.form.l2Backend.backend': '后端',
   'kvCache.form.l2Backend.type': '类型',
+  'kvCache.form.l2Backend.customOptions': '自定义配置',
   'kvCache.form.l2Backend.tips':
     '将 KV 缓存下沉到容量更大的二级存储。条目按顺序生效:读取优先第一个,写入落所有后端。',
   'kvCache.form.metricsPort': '监控端口 (Prometheus)',

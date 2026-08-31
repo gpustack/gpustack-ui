@@ -40,6 +40,7 @@ import { ServiceModeValueMap } from '../config';
 import {
   CacheProviderExternalField,
   CacheProviderField,
+  CacheProviderL2Backend,
   CacheProviderL2Field,
   FormData,
   L2StorageConfig,
@@ -423,6 +424,15 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
     return options;
   }, [providers, providerName, isManaged, intl]);
 
+  // a provider whose image is not published declares no release line at
+  // all: there is no version to pick, and the service names its image
+  // under the reserved "custom" version instead
+  const hasDeclaredVersions = useMemo(() => {
+    return Boolean(
+      Object.keys(getProvider(providerName)?.versions || {}).length
+    );
+  }, [getProvider, providerName]);
+
   // the provider's pinned default image doubles as a format hint for
   // the custom image input
   const defaultImage = useMemo(() => {
@@ -464,7 +474,13 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
   // provider set either way carries its default version and a clean L2 config
   const applyProviderSelection = (value: string) => {
     const provider = getProvider(value);
-    form.setFieldValue('provider_version', provider?.default_version);
+    // with no declared version to fall back to, the service runs its own
+    // image under the reserved "custom" version
+    form.setFieldValue(
+      'provider_version',
+      provider?.default_version ??
+        (provider?.custom_version ? 'custom' : undefined)
+    );
     // config.image only accompanies the reserved "custom" version, and
     // the version just reset to the provider default
     form.setFieldValue(['config', 'image'], undefined);
@@ -525,16 +541,44 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
     setL2CollapseKeys(open ? new Set([key]) : new Set());
   };
 
+  // the switch position a backend starts on, and the one the cache server
+  // runs with while an entry leaves the state unset (saved by the API, or
+  // before the backend declared the switch)
+  const l2ConfigDefault = (spec?: CacheProviderL2Backend) =>
+    spec?.adapter_flag_default !== false;
+
+  // a backend's declared starting state: its field defaults, plus the
+  // initial position of the switch when configuring it is optional
+  const seedL2Entry = (backend: string) => {
+    const spec = l2Backends[backend];
+    const params: Record<string, any> = {};
+    spec?.fields?.forEach((field) => {
+      if (field.default !== undefined) {
+        params[field.name] = field.default;
+      }
+    });
+    return {
+      params,
+      adapter_flag_enabled: spec?.adapter_flag_optional
+        ? l2ConfigDefault(spec)
+        : undefined
+    };
+  };
+
   const handleAddL2Storage = async () => {
     try {
       await form.validateFields([['config', 'l2_storages']], {
         recursive: true
       });
       const list = form.getFieldValue(['config', 'l2_storages']) || [];
-      form.setFieldValue(
-        ['config', 'l2_storages'],
-        [...list, { backend: undefined, params: {} }]
-      );
+      // a provider declaring a single backend leaves nothing to choose:
+      // the new entry opens on it, seeded as a manual pick would be
+      const backendKeys = Object.keys(l2Backends);
+      const entry =
+        backendKeys.length === 1
+          ? { backend: backendKeys[0], ...seedL2Entry(backendKeys[0]) }
+          : { backend: undefined, params: {} };
+      form.setFieldValue(['config', 'l2_storages'], [...list, entry]);
       setTimeout(() => {
         setL2CollapseKeys(new Set([list.length]));
       }, 100);
@@ -582,15 +626,14 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
   };
 
   const handleL2BackendChange = (index: number, value: string) => {
-    // params are backend-specific; reseed this entry from the newly
-    // selected backend's declared defaults
-    const params: Record<string, any> = {};
-    l2Backends[value]?.fields?.forEach((field) => {
-      if (field.default !== undefined) {
-        params[field.name] = field.default;
-      }
-    });
+    // params and the switch are backend-specific; reseed this entry from
+    // the newly selected backend's declared defaults
+    const { params, adapter_flag_enabled } = seedL2Entry(value);
     form.setFieldValue(['config', 'l2_storages', index, 'params'], params);
+    form.setFieldValue(
+      ['config', 'l2_storages', index, 'adapter_flag_enabled'],
+      adapter_flag_enabled
+    );
   };
 
   // provider-declared configuration knobs promoted to structured advanced
@@ -773,6 +816,28 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
     applyProviderSelection(preset);
   }, [providerOptions, action, provider]);
 
+  // a provider with no declared release line only ever runs the custom
+  // version, so any other value the form holds — an existing service
+  // pinned to a version the catalog has since dropped, or a creation that
+  // never reached the provider defaults — leaves it with neither a
+  // version to pick nor the image field that replaces it
+  useEffect(() => {
+    if (!isManaged || hasDeclaredVersions || providerVersion === 'custom') {
+      return;
+    }
+    if (!getProvider(providerName)?.custom_version) {
+      return;
+    }
+    form.setFieldValue('provider_version', 'custom');
+  }, [
+    form,
+    isManaged,
+    hasDeclaredVersions,
+    providerVersion,
+    providerName,
+    getProvider
+  ]);
+
   // with a single cluster there is nothing to choose; preselect it
   // re-runs on a provider switch too: stepping back and picking a
   // different card resets the form, which empties cluster_id
@@ -891,7 +956,14 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
         />
       </Form.Item>
       {isManaged && (
-        <Form.Item<FormData> name="provider_version">
+        // A provider with no declared release line has no version to pick,
+        // but the field stays registered: an unmounted one is absent from
+        // both the watched values and the submit payload, and the image
+        // field below keys on it.
+        <Form.Item<FormData>
+          name="provider_version"
+          hidden={!hasDeclaredVersions}
+        >
           <SealSelect
             options={versionOptions}
             onChange={handleVersionChange}
@@ -1173,37 +1245,65 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
                                 description={entryBackend?.description}
                               />
                             </Form.Item>
-                            {entryBackend?.fields?.map((field) => {
-                              const label =
-                                field.label || humanizeFieldName(field.name);
-                              const isBoolean = field.type === 'boolean';
-                              return (
-                                <Form.Item
-                                  // remount per backend so same-named params never leak across backends
-                                  key={`${entryBackendName}-${field.name}`}
-                                  name={[name, 'params', field.name]}
-                                  valuePropName={
-                                    isBoolean ? 'checked' : 'value'
+                            {entryBackend?.adapter_flag_optional && (
+                              <Form.Item
+                                // remount per backend: the switch belongs
+                                // to the backend that declared it
+                                key={`${entryBackendName}-adapter-flag`}
+                                name={[name, 'adapter_flag_enabled']}
+                                valuePropName="checked"
+                                getValueProps={(value) => ({
+                                  checked:
+                                    value ?? l2ConfigDefault(entryBackend)
+                                })}
+                              >
+                                <CheckboxField
+                                  label={
+                                    entryBackend.adapter_flag_label ||
+                                    intl.formatMessage({
+                                      id: 'kvCache.form.l2Backend.customOptions'
+                                    })
                                   }
-                                  rules={
-                                    field.required && !isBoolean
-                                      ? [
-                                          {
-                                            required: true,
-                                            message: getRuleMessage(
-                                              'input',
-                                              label,
-                                              false
-                                            )
-                                          }
-                                        ]
-                                      : []
-                                  }
-                                >
-                                  {renderL2FieldControl(field, label)}
-                                </Form.Item>
-                              );
-                            })}
+                                />
+                              </Form.Item>
+                            )}
+                            {/* the backend carries a working configuration
+                                of its own while the switch is off, and the
+                                fields have nothing to apply to */}
+                            {(!entryBackend?.adapter_flag_optional ||
+                              (l2Storages?.[name]?.adapter_flag_enabled ??
+                                l2ConfigDefault(entryBackend))) &&
+                              entryBackend?.fields?.map((field) => {
+                                const label =
+                                  field.label || humanizeFieldName(field.name);
+                                const isBoolean = field.type === 'boolean';
+                                return (
+                                  <Form.Item
+                                    // remount per backend so same-named params never leak across backends
+                                    key={`${entryBackendName}-${field.name}`}
+                                    name={[name, 'params', field.name]}
+                                    valuePropName={
+                                      isBoolean ? 'checked' : 'value'
+                                    }
+                                    rules={
+                                      field.required && !isBoolean
+                                        ? [
+                                            {
+                                              required: true,
+                                              message: getRuleMessage(
+                                                'input',
+                                                label,
+                                                false
+                                              )
+                                            }
+                                          ]
+                                        : []
+                                    }
+                                  >
+                                    {renderL2FieldControl(field, label)}
+                                  </Form.Item>
+                                );
+                              })}
                           </CollapseContainer>
                         </div>
                       );

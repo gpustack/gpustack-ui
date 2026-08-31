@@ -55,6 +55,7 @@ export default {
   'kvCache.form.l2Backend.add': 'Altyapı Ekle',
   'kvCache.form.l2Backend.backend': 'Backend',
   'kvCache.form.l2Backend.type': 'Type',
+  'kvCache.form.l2Backend.customOptions': 'Custom Options',
   'kvCache.form.l2Backend.tips':
     'KV önbelleğini daha büyük ikincil depolama katmanlarına taşırır. Girdiler sırayla önceliklendirilir: okumalar ilkini tercih eder, yazmalar hepsine gider.',
   'kvCache.form.metricsPort': 'Metrik Bağlantı Noktası (Prometheus)',

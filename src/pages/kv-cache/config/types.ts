@@ -31,6 +31,11 @@ export interface CacheProviderL2Backend {
   display_name?: string;
   description?: string;
   icon?: string;
+  // when set, configuring this backend is optional: the form offers a
+  // switch, and the declared fields only apply while it is on
+  adapter_flag_optional?: boolean;
+  adapter_flag_default?: boolean;
+  adapter_flag_label?: string;
   fields: CacheProviderL2Field[];
 }
 
@@ -122,6 +127,9 @@ export interface CacheProviderItem {
 export interface L2StorageConfig {
   backend: string;
   params: Record<string, any>;
+  // state of the backend's optional-configuration switch; absent for
+  // backends that declare none
+  adapter_flag_enabled?: boolean;
 }
 
 export interface ServiceEndpoint {

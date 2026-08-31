@@ -184,9 +184,9 @@ const baseRoutes = [
         name: 'kvCache',
         path: '/models/kv-cache',
         key: 'kvCache',
-        icon: 'icon-storage-outlined',
-        selectedIcon: 'icon-storage-filled',
-        defaultIcon: 'icon-storage-outlined',
+        icon: 'icon-kvcache-outlined',
+        selectedIcon: 'icon-kvcache-filled',
+        defaultIcon: 'icon-kvcache-outlined',
         access: 'canSeeOrgAdmin',
         component: './kv-cache/index'
       },
@@ -236,10 +236,10 @@ const baseRoutes = [
         name: 'instanceTypes',
         path: '/gpu-service/instance-types',
         key: 'gpuServiceInstanceTypes',
-        icon: 'icon-outline-gpu',
+        icon: 'icon-instance-type-outlined',
         access: 'canSeeOrgAdmin',
-        selectedIcon: 'icon-filled-gpu',
-        defaultIcon: 'icon-outline-gpu',
+        selectedIcon: 'icon-instance-type-filled',
+        defaultIcon: 'icon-instance-type-outlined',
         component: './gpu-service/instance-types'
       },
       {

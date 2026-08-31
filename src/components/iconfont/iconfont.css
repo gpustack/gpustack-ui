@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 4613488 */
-  src: url('iconfont.woff2?t=1780907696624') format('woff2'),
-       url('iconfont.woff?t=1780907696624') format('woff'),
-       url('iconfont.ttf?t=1780907696624') format('truetype');
+  src: url('iconfont.woff2?t=1788160709608') format('woff2'),
+       url('iconfont.woff?t=1788160709608') format('woff'),
+       url('iconfont.ttf?t=1788160709608') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,38 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-kvcache-outlined:before {
+  content: "\e717";
+}
+
+.icon-kvcache-filled:before {
+  content: "\e718";
+}
+
+.icon-instance-type-filled:before {
+  content: "\e714";
+}
+
+.icon-instance-type-outlined:before {
+  content: "\e715";
+}
+
+.icon-receipt_filled:before {
+  content: "\e711";
+}
+
+.icon-receipt_outlined:before {
+  content: "\e712";
+}
+
+.icon-cost-outlined:before {
+  content: "\e70f";
+}
+
+.icon-cost-filled:before {
+  content: "\e710";
 }
 
 .icon-billing-outlined:before {

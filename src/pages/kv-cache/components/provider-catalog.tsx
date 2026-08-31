@@ -46,10 +46,12 @@ const ProviderCard: React.FC<{
   const intl = useIntl();
 
   // accelerator families the provider declares dedicated builds for
-  // (runtime_images doubles as the support matrix). Managed only: an
+  // (runtime_images doubles as the support matrix). A provider that
+  // publishes no image declares no matrix, so the claim falls back to
+  // the accelerators its engine integrations are scoped to — the gate
+  // that decides whether an engine can attach at all. Managed only: an
   // external provider runs no platform container, so the claim would be
-  // meaningless; a managed provider without runtime_images makes no
-  // accelerator-specific claim and shows nothing.
+  // meaningless; a provider declaring neither shows nothing.
   const frameworks = useMemo(() => {
     if (!data.supported_modes?.includes('managed')) {
       return [];
@@ -60,6 +62,11 @@ const ProviderCard: React.FC<{
         names.add(name)
       );
     });
+    if (!names.size) {
+      (data.inference_backend_integrations || []).forEach((integration) =>
+        (integration.frameworks || []).forEach((name) => names.add(name))
+      );
+    }
     return Array.from(names);
   }, [data]);
 

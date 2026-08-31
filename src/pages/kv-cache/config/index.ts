@@ -83,8 +83,8 @@ export const canViewInstanceLogs = (instance: CacheServiceInstanceItem) =>
 export const isHttpUrl = (url?: string | null): boolean =>
   !!url && /^https?:\/\//i.test(url);
 
-// The reserved "custom" version says nothing by itself, so it is shown with
-// the image the service actually runs.
+// The reserved "custom" version names no release, so the image the
+// service actually runs stands in for it.
 export const formatServiceVersion = (
   providerVersion?: string,
   image?: string
@@ -92,9 +92,7 @@ export const formatServiceVersion = (
   if (!providerVersion) {
     return '';
   }
-  return providerVersion === 'custom' && image
-    ? `${providerVersion} (${image})`
-    : providerVersion;
+  return providerVersion === 'custom' && image ? image : providerVersion;
 };
 
 // actions for an instance row: logs when the state can have any, and

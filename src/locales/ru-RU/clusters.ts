@@ -111,6 +111,7 @@ export default {
     'e.g. /data/cache (path must start with /)',
   'clusters.addworker.vendorNotes.title': 'Примечания для устройств {vendor}',
   'clusters.addworker.amdNotes-01': `Если директория <span class="bold-text">/opt/rocm</span> не существует, создайте символическую ссылку на путь установки ROCm: <span class="bold-text">ln -s /путь/к/rocm /opt/rocm</span>.`,
+  'clusters.addworker.amdNotes-02': `Если на хосте управляется несколько версий ROCm, необходимо смонтировать <span class="bold-text">/opt/rocm/lib</span>, чтобы избежать сбоев обнаружения устройств.`,
   'clusters.addworker.message.success_single':
     '{count} новый воркер был добавлен в кластер.',
   'clusters.addworker.message.success_multiple':

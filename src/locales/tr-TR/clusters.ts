@@ -111,6 +111,7 @@ export default {
     'örn. /data/cache (yol / ile başlamalıdır)',
   'clusters.addworker.vendorNotes.title': '{vendor} Cihaz Notları',
   'clusters.addworker.amdNotes-01': `<span class="bold-text">/opt/rocm</span> dizini mevcut değilse, lütfen ROCm kurulum yoluna işaret eden sembolik bağlantı oluşturun: <span class="bold-text">ln -s /path/to/rocm /opt/rocm</span>.`,
+  'clusters.addworker.amdNotes-02': `Ana makinede birden fazla ROCm sürümü yönetiliyorsa, algılama hatalarını önlemek için <span class="bold-text">/opt/rocm/lib</span> dizinini bağlamanız gerekir.`,
   'clusters.addworker.message.success_single':
     '{count} yeni işçi düğüm kümeye eklendi.',
   'clusters.addworker.message.success_multiple':

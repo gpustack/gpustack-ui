@@ -111,6 +111,7 @@ export default {
     'e.g. /data/cache (path must start with /)',
   'clusters.addworker.vendorNotes.title': 'Notes for {vendor} Device',
   'clusters.addworker.amdNotes-01': `If the <span class="bold-text">/opt/rocm</span> directory does not exist, please create a symbolic link pointing to the ROCm installed path: <span class="bold-text">ln -s /path/to/rocm /opt/rocm</span>.`,
+  'clusters.addworker.amdNotes-02': `ホスト上で複数の ROCm バージョンを管理している場合、検出の失敗を避けるために <span class="bold-text">/opt/rocm/lib</span> をマウントする必要があります。`,
   'clusters.addworker.message.success_single':
     '{count} new worker has been added to the cluster.',
   'clusters.addworker.message.success_multiple':

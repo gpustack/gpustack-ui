@@ -1,7 +1,7 @@
 import { getGpuColor } from '@/pages/backends/config';
 import { AutoTooltip, IconFont, ThemeTag } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Typography } from 'antd';
+import { Flex, Typography } from 'antd';
 import classNames from 'classnames';
 import React, { useMemo } from 'react';
 import {
@@ -121,9 +121,10 @@ const ProviderCard: React.FC<{
       </Typography.Paragraph>
       {frameworks.length > 0 && (
         <div className="frameworks">
-          <span className="label">
+          <Flex gap={4} className="label">
+            <IconFont type="icon-gpu1" />
             {intl.formatMessage({ id: 'backend.availableFrameworks' })}:
-          </span>
+          </Flex>
           {frameworks.map((framework) => (
             <ThemeTag
               key={framework}

@@ -14,6 +14,9 @@ import qs from 'query-string';
 import { useEffect, useRef, useState } from 'react';
 import { usePaginationStatus } from './use-pagination-status';
 
+// polling cycel
+const POLLING_CYCLE = 5000;
+
 type EventsType = 'CREATE' | 'UPDATE' | 'DELETE' | 'INSERT';
 
 type WatchConfig =

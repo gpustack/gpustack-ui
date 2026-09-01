@@ -64,6 +64,8 @@ const CardBox = styled.div`
   display: flex;
   overflow: hidden;
   position: relative;
+  background-color: var(--ant-color-bg-container);
+  border-radius: var(--ant-border-radius-lg);
 `;
 
 const ActiveBadge = styled.div`

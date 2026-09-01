@@ -134,9 +134,9 @@ const useGPUColumns = (props: {
                   record.memory?.used
                     ? _.round(record.memory?.utilization_rate, 0)
                     : _.round(
-                        record.memory?.allocated / record.memory?.total,
+                        (record.memory?.allocated / record.memory?.total) * 100,
                         0
-                      ) * 100
+                      )
                 }
                 label={
                   <InfoColumn

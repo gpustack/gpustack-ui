@@ -1,4 +1,5 @@
 import { getGpuColor } from '@/pages/backends/config';
+import { localize } from '@/utils/localize';
 import { AutoTooltip, IconFont, ThemeTag } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Flex, Typography } from 'antd';
@@ -83,7 +84,9 @@ const ProviderCard: React.FC<{
             <IconFont type="icon-storage-outlined" className="fallback-icon" />
           )}
         </span>
-        <AutoTooltip ghost>{data.display_name || data.name}</AutoTooltip>
+        <AutoTooltip ghost>
+          {localize(data.display_name) || data.name}
+        </AutoTooltip>
         {ProviderSourceLabelMap[data.source] && (
           <ThemeTag
             className="tag-item"
@@ -112,12 +115,12 @@ const ProviderCard: React.FC<{
                 overflow: 'auto'
               }}
             >
-              {data.description}
+              {localize(data.description)}
             </div>
           )
         }}
       >
-        {data.description}
+        {localize(data.description)}
       </Typography.Paragraph>
       {frameworks.length > 0 && (
         <div className="frameworks">
@@ -162,7 +165,7 @@ const ProviderCard: React.FC<{
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
             >
-              {link.label}
+              {localize(link.label)}
               <IconFont type="icon-external-link"></IconFont>
             </a>
           ))}

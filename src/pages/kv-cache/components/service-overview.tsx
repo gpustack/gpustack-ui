@@ -1,3 +1,4 @@
+import { localize } from '@/utils/localize';
 import { ExportOutlined } from '@ant-design/icons';
 import {
   AutoTooltip,
@@ -128,7 +129,7 @@ const ServiceOverview: React.FC<ServiceOverviewProps> = ({
       key: 'provider',
       label: intl.formatMessage({ id: 'kvCache.table.provider' }),
       children: [
-        provider?.display_name || data.provider_name,
+        localize(provider?.display_name) || data.provider_name,
         formatServiceVersion(data.provider_version, data.config?.image)
       ]
         .filter(Boolean)

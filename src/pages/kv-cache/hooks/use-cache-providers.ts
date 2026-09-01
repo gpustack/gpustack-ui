@@ -1,11 +1,14 @@
+import { localize } from '@/utils/localize';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { queryCacheProviders } from '../apis';
 import { ServiceModeValueMap } from '../config';
 import { CacheProviderItem, ServiceMode } from '../config/types';
 
+// The option label is display text only; value stays the catalog name,
+// so what a form submits does not move with the user's locale.
 const toOption = (item: CacheProviderItem) => ({
   ...item,
-  label: item.display_name || item.name,
+  label: localize(item.display_name) || item.name,
   value: item.name
 });
 

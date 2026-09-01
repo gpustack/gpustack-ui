@@ -3,6 +3,7 @@ import { PageActionType } from '@/config/types';
 import { useQueryClusterList } from '@/pages/cluster-management/services/use-query-cluster-list';
 import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
 import { useQueryWorkerList } from '@/pages/resources/services/use-query-worker-list';
+import { localize } from '@/utils/localize';
 import {
   ArrowDownOutlined,
   ArrowUpOutlined,
@@ -464,7 +465,7 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
 
   const l2BackendOptions = useMemo(() => {
     return Object.entries(l2Backends).map(([key, backend]) => ({
-      label: backend.display_name || key,
+      label: localize(backend.display_name) || key,
       value: key,
       icon: backend.icon
     }));
@@ -646,7 +647,7 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
     field: CacheProviderField,
     label: string
   ) => {
-    const description = field.description;
+    const description = localize(field.description);
     if (field.options?.length) {
       return (
         <SealSelect
@@ -697,7 +698,7 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
     field: CacheProviderExternalField,
     label: string
   ) => {
-    const description = field.description;
+    const description = localize(field.description);
     if (field.options?.length) {
       return (
         <SealSelect
@@ -1097,7 +1098,7 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
             >
               {renderProviderFieldControl(
                 field,
-                field.label || humanizeFieldName(field.name)
+                localize(field.label) || humanizeFieldName(field.name)
               )}
             </Form.Item>
           ))}
@@ -1159,7 +1160,7 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
                             title={
                               <EntryTitle>
                                 <span>
-                                  {entryBackend?.display_name ||
+                                  {localize(entryBackend?.display_name) ||
                                     entryBackendName ||
                                     intl.formatMessage({
                                       id: 'kvCache.form.l2Backend.backend'
@@ -1242,7 +1243,9 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
                                 label={intl.formatMessage({
                                   id: 'kvCache.form.l2Backend.type'
                                 })}
-                                description={entryBackend?.description}
+                                description={localize(
+                                  entryBackend?.description
+                                )}
                               />
                             </Form.Item>
                             {entryBackend?.adapter_flag_optional && (
@@ -1259,7 +1262,7 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
                               >
                                 <CheckboxField
                                   label={
-                                    entryBackend.adapter_flag_label ||
+                                    localize(entryBackend.adapter_flag_label) ||
                                     intl.formatMessage({
                                       id: 'kvCache.form.l2Backend.customOptions'
                                     })
@@ -1275,7 +1278,8 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
                                 l2ConfigDefault(entryBackend))) &&
                               entryBackend?.fields?.map((field) => {
                                 const label =
-                                  field.label || humanizeFieldName(field.name);
+                                  localize(field.label) ||
+                                  humanizeFieldName(field.name);
                                 const isBoolean = field.type === 'boolean';
                                 return (
                                   <Form.Item
@@ -1460,7 +1464,8 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
             />
           </Form.Item>
           {externalFields.map((field) => {
-            const label = field.label || humanizeFieldName(field.name);
+            const label =
+              localize(field.label) || humanizeFieldName(field.name);
             const isBoolean = field.type === 'boolean';
             return (
               <Form.Item

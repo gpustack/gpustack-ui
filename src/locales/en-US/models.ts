@@ -131,6 +131,10 @@ export default {
   'models.form.moreparameters': 'Parameter Description',
   'models.table.vram.allocated': 'Allocated VRAM',
   'models.table.vram.workers': '{n} workers',
+  'models.instance.workergpu': '{n} workers / {m} GPUs',
+  'models.instance.mainworker': 'Main Worker',
+  'models.instance.worker': 'Worker',
+  'models.instance.workerip': 'Worker IP',
   'models.form.backend.warning':
     'The selected backend does not support GGUF models. Please add a backend with GGUF support in the Inference Backend.',
   'models.form.backend.warning.gguf':

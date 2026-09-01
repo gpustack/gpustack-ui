@@ -134,6 +134,10 @@ export default {
   'models.form.moreparameters': 'Описание параметров',
   'models.table.vram.allocated': 'Выделенная VRAM',
   'models.table.vram.workers': '{n} рабочих узлов',
+  'models.instance.workergpu': '{n} воркеров / {m} GPU',
+  'models.instance.mainworker': 'Главный воркер (Main)',
+  'models.instance.worker': 'Воркер',
+  'models.instance.workerip': 'IP воркера',
   'models.form.backend.warning':
     'Выбранный бэкенд не поддерживает модели GGUF. Пожалуйста, добавьте бэкенд с поддержкой GGUF в разделе Бэкенды вывода.',
   'models.form.backend.warning.gguf':

@@ -8,6 +8,7 @@ import {
   type ColumnProps
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
+import { createStyles } from 'antd-style';
 import _ from 'lodash';
 import React from 'react';
 import styled from 'styled-components';
@@ -25,6 +26,22 @@ const GPUIndexWrapper = styled.span`
   flex-direction: column;
   gap: 2px;
 `;
+
+// SimpleTable's dark defaults put the emphasis on the column headers (solid
+// white, 600) and leave the data at 50% white — backwards for a data table,
+// and 50% on the tooltip's background is under 4.5:1. Flip the two so the
+// values lead, matching the label/value pair in the name-cell tooltip.
+const useStyles = createStyles(({ css }) => ({
+  table: css`
+    .simple-table .cell-header {
+      font-weight: 400;
+      color: var(--color-white-quaternary);
+    }
+    .simple-table td {
+      color: var(--color-white-secondary);
+    }
+  `
+}));
 
 interface DistributeInfoCellProps {
   record: ModelInstanceListItem;
@@ -96,6 +113,7 @@ const DistributedServerList: React.FC<DistributeInfoCellProps> = ({
   gpuTypeSelector
 }) => {
   const intl = useIntl();
+  const { styles } = useStyles();
   const serverList: DistributedServerItem[] =
     record?.distributed_servers?.subordinate_workers || [];
 
@@ -155,7 +173,7 @@ const DistributedServerList: React.FC<DistributeInfoCellProps> = ({
   ];
 
   return (
-    <div>
+    <div className={styles.table}>
       <SimpleTable
         rowKey="worker_name"
         columns={columns}

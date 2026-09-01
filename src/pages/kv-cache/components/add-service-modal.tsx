@@ -30,7 +30,7 @@ const StepWrapper = styled.div`
   position: sticky;
   top: 0;
   z-index: 10;
-  padding-block: 16px;
+  padding-block: 0 24px;
   background: var(--ant-color-bg-elevated);
 
   .ant-steps {

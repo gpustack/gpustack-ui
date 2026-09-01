@@ -132,6 +132,10 @@ export default {
   'models.form.moreparameters': 'パラメータ説明',
   'models.table.vram.allocated': '割り当て済みVRAM',
   'models.table.vram.workers': '{n} ワーカー',
+  'models.instance.workergpu': '{n} ワーカー / {m} GPU',
+  'models.instance.mainworker': 'メインワーカー（Main）',
+  'models.instance.worker': '実行ワーカー',
+  'models.instance.workerip': 'ワーカー IP',
   'models.form.backend.warning':
     'The selected backend does not support GGUF models. Please add a backend with GGUF support in the Inference Backend.',
   'models.form.backend.warning.gguf':

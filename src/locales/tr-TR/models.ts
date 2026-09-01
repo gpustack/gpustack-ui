@@ -132,6 +132,10 @@ export default {
   'models.form.moreparameters': 'Parametre Açıklaması',
   'models.table.vram.allocated': 'Ayrılan VRAM',
   'models.table.vram.workers': '{n} işçi düğüm',
+  'models.instance.workergpu': '{n} düğüm / {m} GPU',
+  'models.instance.mainworker': 'Ana İşçi Düğüm (Main)',
+  'models.instance.worker': 'İşçi Düğüm',
+  'models.instance.workerip': 'İşçi Düğüm IP',
   'models.form.backend.warning':
     'Seçilen altyapı GGUF modellerini desteklemiyor. Lütfen Çıkarım Altyapısına GGUF desteği olan bir altyapı ekleyin.',
   'models.form.backend.warning.gguf':

@@ -1,3 +1,5 @@
+import type { LocalizedText } from '@/utils/localize';
+
 export type ServiceMode = 'managed' | 'external';
 
 export type ServiceState =
@@ -20,7 +22,7 @@ export interface CacheProviderVersionConfig {
 export interface CacheProviderL2Field {
   // provider-defined technical key; humanized as the label fallback
   name: string;
-  label?: string;
+  label?: LocalizedText;
   type?: 'string' | 'number' | 'boolean' | 'password';
   required?: boolean;
   default?: any;
@@ -28,14 +30,14 @@ export interface CacheProviderL2Field {
 }
 
 export interface CacheProviderL2Backend {
-  display_name?: string;
-  description?: string;
+  display_name?: LocalizedText;
+  description?: LocalizedText;
   icon?: string;
   // when set, configuring this backend is optional: the form offers a
   // switch, and the declared fields only apply while it is on
   adapter_flag_optional?: boolean;
   adapter_flag_default?: boolean;
-  adapter_flag_label?: string;
+  adapter_flag_label?: LocalizedText;
   fields: CacheProviderL2Field[];
 }
 
@@ -44,18 +46,20 @@ export interface CacheProviderL2Backend {
 // connector injection server-side
 export interface CacheProviderExternalField {
   name: string;
-  label?: string;
-  description?: string;
+  label?: LocalizedText;
+  description?: LocalizedText;
   type?: 'string' | 'number' | 'boolean' | 'password';
   required?: boolean;
   default?: any;
-  // when set, the field is a fixed choice (e.g. protocol tcp/rdma)
+  // when set, the field is a fixed choice (e.g. protocol tcp/rdma); the
+  // values are the engine's own enum and reach it verbatim, so they are
+  // never localized — their meaning belongs in the field description
   options?: string[];
 }
 
 // brand link (docs, homepage) shown on the provider card
 export interface CacheProviderLink {
-  label: string;
+  label: LocalizedText;
   url: string;
 }
 
@@ -65,8 +69,8 @@ export interface CacheProviderLink {
 // parameters still override any flag they produce)
 export interface CacheProviderField {
   name: string;
-  label?: string;
-  description?: string;
+  label?: LocalizedText;
+  description?: LocalizedText;
   type?: 'string' | 'number' | 'boolean';
   default?: any;
   options?: string[];
@@ -78,9 +82,9 @@ export interface CacheProviderField {
 
 export interface CacheProviderItem {
   name: string;
-  display_name: string;
+  display_name: LocalizedText;
   source: 'built_in' | 'community' | 'partner';
-  description?: string;
+  description?: LocalizedText;
   icon?: string;
   links?: CacheProviderLink[];
   supported_modes: ServiceMode[];

@@ -2,6 +2,7 @@ import { ExportOutlined } from '@ant-design/icons';
 // columns.ts
 import { systemConfigAtom } from '@/atoms/system';
 import { tableSorter } from '@/config/settings';
+import { localize } from '@/utils/localize';
 import {
   AutoTooltip,
   DropdownButtons,
@@ -66,7 +67,7 @@ const useServiceColumns = (
             <IconFont type="icon-storage-outlined" />
           )}
           <AutoTooltip ghost minWidth={20}>
-            {provider?.display_name || value}
+            {localize(provider?.display_name) || value}
           </AutoTooltip>
         </div>
       );

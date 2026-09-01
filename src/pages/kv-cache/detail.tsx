@@ -1,3 +1,4 @@
+import { localize } from '@/utils/localize';
 import { BaseSelect, DeleteModal, useQueryDataList } from '@gpustack/core-ui';
 import { useIntl, useNavigate, useSearchParams } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
@@ -56,7 +57,7 @@ const CacheServiceDetail: React.FC = () => {
     const names: Record<string, string> = {};
     (detailData?.config?.l2_storages || []).forEach((storage) => {
       names[storage.backend] =
-        provider?.l2_backends?.[storage.backend]?.display_name ||
+        localize(provider?.l2_backends?.[storage.backend]?.display_name) ||
         storage.backend;
     });
     return names;

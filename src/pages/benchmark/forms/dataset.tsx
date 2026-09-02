@@ -137,8 +137,8 @@ const DatasetForm: React.FC = () => {
         >
           <Tag
             color={isCustomProfile ? 'green' : 'blue'}
-            bordered={false}
-            style={{ marginInlineEnd: 0, fontWeight: 600, borderRadius: 6 }}
+            variant="filled"
+            style={{ marginInlineEnd: 0, borderRadius: 4 }}
           >
             {isCustomProfile
               ? intl.formatMessage({ id: 'backend.custom' })

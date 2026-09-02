@@ -1,7 +1,6 @@
 import { PageAction } from '@/config';
 import {
   ControlOutlined,
-  LockOutlined,
   MinusOutlined,
   PlusOutlined,
   QuestionCircleOutlined,
@@ -25,6 +24,7 @@ import {
   InputNumber,
   Segmented,
   Switch,
+  Tag,
   Tooltip
 } from 'antd';
 import { createStyles } from 'antd-style';
@@ -71,6 +71,7 @@ const useStyles = createStyles(({ token, css }) => ({
       display: inline-flex;
       align-items: center;
       gap: 6px;
+      color: ${token.colorTextTertiary};
     }
     .title-help {
       color: ${token.colorTextTertiary};
@@ -667,7 +668,8 @@ const RandomSettingsForm: React.FC<{
                       matches the design (fields never crowd the chart). */}
                   <div
                     style={{
-                      fontWeight: 600,
+                      fontWeight: 500,
+                      fontSize: 14,
                       color: 'var(--ant-color-text-secondary)',
                       margin: '4px 0 8px'
                     }}
@@ -730,7 +732,8 @@ const RandomSettingsForm: React.FC<{
                   </div>
                   <div
                     style={{
-                      fontWeight: 600,
+                      fontWeight: 500,
+                      fontSize: 14,
                       color: 'var(--ant-color-text-secondary)',
                       margin: '4px 0 8px'
                     }}
@@ -1076,13 +1079,17 @@ const RandomSettingsForm: React.FC<{
               so show a locked "Auto-tune" pill instead of a disabled Segmented.
               Custom keeps the auto/manual toggle. */}
           {presetLocked ? (
-            <span className={styles.autoTunePill}>
-              <LockOutlined />
+            <Tag
+              icon={<ThunderboltOutlined />}
+              color="geekblue"
+              variant="outlined"
+            >
               {intl.formatMessage({ id: 'benchmark.form.autoTune' })}
-            </span>
+            </Tag>
           ) : (
             <Segmented
-              className={styles.modeSwitch}
+              style={{ fontSize: 13 }}
+              size="middle"
               value={stagesMode}
               disabled={disabled}
               options={stagesModeOptions}
@@ -1447,18 +1454,7 @@ const RandomSettingsForm: React.FC<{
             max={0.99}
             step={0.01}
             disabled={disabled}
-            label={
-              <>
-                {intl.formatMessage({ id: 'benchmark.form.maxErrorRate' })}
-                <Tooltip
-                  title={intl.formatMessage({
-                    id: 'benchmark.form.maxErrorRate.tips'
-                  })}
-                >
-                  <QuestionCircleOutlined className="title-help" />
-                </Tooltip>
-              </>
-            }
+            label={intl.formatMessage({ id: 'benchmark.form.maxErrorRate' })}
             style={{ width: '100%' }}
           ></CInputNumber>
         </Form.Item>

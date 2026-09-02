@@ -43,7 +43,7 @@ const ValidityAlert: React.FC = () => {
     <Alert
       type="warning"
       showIcon
-      message={intl.formatMessage({ id: 'benchmark.detail.validity.title' })}
+      title={intl.formatMessage({ id: 'benchmark.detail.validity.title' })}
       description={
         <ul style={{ margin: 0, paddingLeft: 18 }}>
           {warnings.map((w, i) => (

@@ -1,5 +1,5 @@
 import { useIntl } from '@umijs/max';
-import { Tooltip } from 'antd';
+import { Flex, Tooltip } from 'antd';
 import { createStyles } from 'antd-style';
 import { round } from 'lodash';
 import React from 'react';
@@ -73,6 +73,7 @@ const useStyles = createStyles(({ css }) => ({
       font-size: 12px;
       color: var(--ant-color-text-tertiary);
       white-space: nowrap;
+      margin-bottom: 8px;
     }
     .stat .b {
       display: flex;
@@ -81,10 +82,11 @@ const useStyles = createStyles(({ css }) => ({
       white-space: nowrap;
     }
     .stat .b .n {
-      font-size: 20px;
+      font-size: 16px;
       color: var(--ant-color-text);
       font-variant-numeric: tabular-nums;
       letter-spacing: -0.015em;
+      font-weight: 500;
     }
     .stat .b .u {
       font-size: 11px;
@@ -243,7 +245,7 @@ const BestPoints: React.FC<BestPointsProps> = ({ points, onSelect }) => {
       ? '-'
       : round(v, digits ?? (Math.abs(v) < 10 ? 2 : 0)).toLocaleString();
 
-  const stats: Array<{ k: string; v: string; u: string }> = [
+  const stats: Array<{ k: string; v: string; u?: string }> = [
     {
       k: t(loadAxisLabelId(detailData)),
       v: String(round(best.load, dec)),
@@ -251,8 +253,8 @@ const BestPoints: React.FC<BestPointsProps> = ({ points, onSelect }) => {
     },
     {
       k: t('benchmark.detail.requests.concurrency'),
-      v: fmt(best.conc, 0),
-      u: t('benchmark.detail.unit.avg')
+      v: fmt(best.conc, 0)
+      // u: t('benchmark.detail.unit.avg')
     },
     {
       k: t('benchmark.detail.percentile.input'),
@@ -291,10 +293,12 @@ const BestPoints: React.FC<BestPointsProps> = ({ points, onSelect }) => {
       <div className="col-stats">
         {stats.map((s) => (
           <div className="stat" key={s.k}>
-            <div className="k">{s.k}</div>
+            <Flex gap={4} align="center" className="k">
+              <div>{s.k}</div>
+              {s.u && <div>({s.u})</div>}
+            </Flex>
             <div className="b">
               <span className="n">{s.v}</span>
-              <span className="u">{s.u}</span>
             </div>
           </div>
         ))}

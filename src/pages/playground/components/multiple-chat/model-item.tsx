@@ -64,7 +64,8 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef((props, ref) => {
     setParams,
     formRef,
     paramsConfig,
-    parameters
+    parameters,
+    modelMeta
   } = useInitLLmMeta(
     {
       ...restProps,
@@ -309,6 +310,7 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef((props, ref) => {
               >
                 <DataForm
                   ref={formRef}
+                  meta={modelMeta}
                   onValuesChange={OnValuesChange}
                   paramsConfig={paramsConfig}
                   initialValues={parameters}

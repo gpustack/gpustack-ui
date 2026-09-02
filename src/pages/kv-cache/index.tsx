@@ -173,7 +173,7 @@ const KVCache: React.FC = () => {
         loading={dataSource.loading}
         loadend={dataSource.loadend}
         dataSource={dataSource.dataList}
-        image={<IconFont type="icon-storage-outlined" />}
+        image={<IconFont type="icon-kvcache-outlined" />}
         filters={_.omit(queryParams, ['sort_by'])}
         noFoundText={intl.formatMessage({
           id: 'noresult.kvCache.nofound'

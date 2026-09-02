@@ -53,7 +53,8 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     formRef,
     setParams,
     paramsConfig,
-    parameters
+    parameters,
+    modelMeta
   } = useInitLLmMeta(
     { modelList, isChat: true },
     {
@@ -174,6 +175,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       <RightContainer collapsed={collapse}>
         <DataForm
           ref={formRef}
+          meta={modelMeta}
           onValuesChange={handleOnValuesChange}
           onModelChange={handleOnModelChange}
           paramsConfig={paramsConfig}

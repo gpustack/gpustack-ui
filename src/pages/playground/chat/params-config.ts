@@ -38,10 +38,14 @@ export const ChatParamsConfig: ParamsSchema[] = [
       isLocalized: true
     },
     attrs: {
-      max: 1024,
       step: 1,
       labelWidth: 314,
       inputnumber: true
+    },
+    initAttrs: (meta: any) => {
+      return {
+        max: meta?.max_tokens || 16 * 1024
+      };
     },
     rules: [
       {

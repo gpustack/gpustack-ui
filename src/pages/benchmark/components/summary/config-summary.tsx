@@ -30,7 +30,7 @@ const useStyles = createStyles(({ css }) => ({
     }
     .value {
       color: var(--ant-color-text);
-      font-weight: 600;
+      font-weight: 500;
     }
   `
 }));

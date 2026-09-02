@@ -435,7 +435,7 @@ const useColumnSettings = (options: {
         const warnings = v.warnings || [];
         if (warnings.length === 0) {
           return (
-            <Tag color="success" bordered={false}>
+            <Tag color="success" variant="filled">
               {intl.formatMessage({ id: 'benchmark.detail.validity.ok' })}
             </Tag>
           );
@@ -456,7 +456,7 @@ const useColumnSettings = (options: {
               </ul>
             }
           >
-            <Tag color="warning" bordered={false}>
+            <Tag color="warning" variant="filled">
               {`⚠ ${intl.formatMessage({ id: 'benchmark.table.coverage.insufficient' })}`}
             </Tag>
           </Tooltip>

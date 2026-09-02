@@ -215,10 +215,10 @@ const buildOption = (
         // Heavier than a detail chart's 2px: this canvas is 330px tall against
         // their 200, so an identical stroke reads THINNER here, and this is the
         // one curve the page is built around.
-        lineStyle: { color: C.blue, width: 3 },
+        lineStyle: { color: C.blue, width: 2 },
         itemStyle: { color: C.blue },
         areaStyle: { color: C.blue, opacity: 0.06 },
-        symbolSize: 8,
+        symbolSize: 6,
         markArea: markAreas,
         data: points.map((p, i) => {
           if (!p.isBest && !p.isPeak && !p.isOverloaded) return p.tps;
@@ -232,7 +232,7 @@ const buildOption = (
             value: p.tps,
             // The Best marker is the page's single answer, so it outsizes both
             // the curve's own symbols and the small charts' 8px echo of it.
-            symbolSize: p.isBest ? 15 : 10,
+            symbolSize: p.isBest ? 10 : 8,
             itemStyle: {
               color: p.isBest ? '#f5a623' : '#fff',
               borderColor: color,

@@ -107,8 +107,8 @@ const useStyles = createStyles(({ css }) => ({
   // Type scale — the page uses exactly four sizes: 40 (hero) · 16 (section) ·
   // 14 (metric) · 12 (label). sectionTitle is the 16.
   sectionTitle: css`
-    font-size: 16px;
-    font-weight: 600;
+    font-size: 14px;
+    font-weight: 500;
     color: var(--ant-color-text);
     margin-bottom: 12px;
   `,

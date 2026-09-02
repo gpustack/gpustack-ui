@@ -1,3 +1,4 @@
+import { theme } from 'antd';
 import React, { useEffect, useRef } from 'react';
 import echarts, { ECharts } from './echarts';
 
@@ -22,6 +23,7 @@ const DistributionChart: React.FC<DistributionChartProps> = ({
   min,
   max
 }) => {
+  const { token } = theme.useToken();
   const ref = useRef<HTMLDivElement>(null);
   const inst = useRef<ECharts | null>(null);
 
@@ -73,7 +75,15 @@ const DistributionChart: React.FC<DistributionChartProps> = ({
     }
 
     const markData: any[] = [
-      { xAxis: m, label: { formatter: 'μ', position: 'insideEndTop' } }
+      {
+        xAxis: m,
+        label: {
+          formatter: 'μ',
+          position: 'insideEndTop',
+          rotate: 360,
+          offset: [0, 10]
+        }
+      }
     ];
     if (mn != null) {
       markData.push({ xAxis: mn, label: { formatter: 'min' } });
@@ -89,7 +99,18 @@ const DistributionChart: React.FC<DistributionChartProps> = ({
           trigger: 'axis',
           formatter: (p: any) => `~${p[0].data[0]} tokens`
         },
-        xAxis: { type: 'value', min: lo, max: hi, axisLabel: { fontSize: 10 } },
+        xAxis: {
+          type: 'value',
+          min: lo,
+          max: hi,
+          axisLabel: { fontSize: 10 },
+          splitLine: {
+            lineStyle: {
+              color: token.colorBorderSecondary
+            }
+          },
+          axisTick: { show: false }
+        },
         yAxis: { type: 'value', show: false, min: 0, max: 1.1 },
         series: [
           {
@@ -97,13 +118,13 @@ const DistributionChart: React.FC<DistributionChartProps> = ({
             smooth: s > 0,
             step: !s && mn != null && mx != null ? 'middle' : false,
             symbol: 'none',
-            areaStyle: { opacity: 0.25 },
-            lineStyle: { width: 2 },
+            areaStyle: { opacity: 0.15, color: token.blue5 },
+            lineStyle: { width: 1.2, color: token.blue5 },
             data,
             markLine: {
               silent: true,
               symbol: 'none',
-              lineStyle: { type: 'dashed' },
+              lineStyle: { type: 'dashed', color: token.blue6 },
               data: markData
             }
           }

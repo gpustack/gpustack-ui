@@ -35,6 +35,27 @@ export default defineConfig({
     exclude: ['lodash', 'ml-pca', ...extraMfsuExclude]
   },
   base: process.env.npm_config_base || '/',
+  // `auto` makes every emitted asset URL resolve against the script that loads
+  // it instead of the origin root, which is what lets one build serve from any
+  // mount path — the UI ships as a prebuilt artifact, so a per-deployment
+  // rebuild is not an option. It covers the async chunks and both web workers
+  // (Monaco's, and the `new URL(..., import.meta.url)` embedding worker) for the
+  // same reason: all three go through the webpack runtime.
+  //
+  // Production only. The dev server always serves from the root, and `auto`
+  // there would put HMR and mfsu on a path they do not expect.
+  publicPath: isProduction ? 'auto' : '/',
+  // Assets referenced from CSS resolve against the *stylesheet's* URL, not the
+  // document's, and the production build puts every stylesheet one level down
+  // in `css/`. Umi's default of `./` therefore asks the browser for
+  // `/css/static/<font>` and gets a 404 — which is why Monaco's codicon icons
+  // and the whole KaTeX font set have been silently falling back. `../` climbs
+  // back out of `css/`, and stays correct under a subpath mount because it is
+  // still relative.
+  //
+  // Production only: the `css/` layout comes from the production chainWebpack
+  // below, so dev keeps umi's default.
+  cssPublicPath: isProduction ? '../' : './',
   ...(isProduction
     ? {
         jsMinifierOptions: {
@@ -66,7 +87,10 @@ export default defineConfig({
           monacoPluginConfig(config);
         }
       }),
-  favicons: ['/static/favicon.png'],
+  // Relative for the same reason as `publicPath`: a leading slash would send the
+  // browser to the origin root, which is the customer's own app when GPUStack is
+  // mounted under a subpath.
+  favicons: ['static/favicon.png'],
   jsMinifier: 'terser',
   cssMinifier: 'cssnano',
   presets: ['umi-presets-pro'],

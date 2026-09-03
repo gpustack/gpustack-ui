@@ -1,6 +1,10 @@
 // columns.ts
 import { systemConfigAtom } from '@/atoms/system';
-import { OPENAI_COMPATIBLE, tableSorter } from '@/config/settings';
+import {
+  EXTERNAL_BASE_URL,
+  OPENAI_COMPATIBLE,
+  tableSorter
+} from '@/config/settings';
 import { TargetStatusValueMap } from '@/pages/model-routes/config';
 import { usePluginListColumns } from '@/plugins/list-extra-columns';
 import { QuestionCircleOutlined } from '@ant-design/icons';
@@ -232,7 +236,7 @@ const useModelsColumns = ({
           <Tooltip
             title={intl.formatMessage(
               { id: 'models.form.replicas.tips' },
-              { api: `${window.location.origin}/${OPENAI_COMPATIBLE}` }
+              { api: `${EXTERNAL_BASE_URL}/${OPENAI_COMPATIBLE}` }
             )}
           >
             <span>{intl.formatMessage({ id: 'models.form.replicas' })}</span>

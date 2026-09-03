@@ -1,5 +1,6 @@
 import { GPUSTACK_API_BASE_URL, OPENAI_COMPATIBLE } from '@/config/settings';
 import { createFormData, errorHandler } from '@/utils/fetch-chunk-data';
+import { withBasePath } from '@/utils/with-base-path';
 import { request } from '@umijs/max';
 
 export { GPUSTACK_API_BASE_URL, OPENAI_COMPATIBLE };
@@ -87,7 +88,7 @@ export const createImages = async (
   },
   options?: any
 ) => {
-  const res = await fetch(`${CREAT_IMAGE_API}`, {
+  const res = await fetch(withBasePath(CREAT_IMAGE_API), {
     method: 'POST',
     body: JSON.stringify(params),
     signal: options.signal,
@@ -109,7 +110,7 @@ export const editImage = async (params: {
   data?: any;
   signal?: AbortSignal;
 }) => {
-  const response = await fetch(EDIT_IMAGE_API, {
+  const response = await fetch(withBasePath(EDIT_IMAGE_API), {
     method: 'POST',
     body: createFormData(params.data),
     signal: params.signal
@@ -124,7 +125,7 @@ export const createImage = async (params: {
   data?: any;
   signal?: AbortSignal;
 }) => {
-  const response = await fetch(CREAT_IMAGE_API, {
+  const response = await fetch(withBasePath(CREAT_IMAGE_API), {
     method: 'POST',
     body: JSON.stringify(params.data),
     signal: params.signal,
@@ -152,7 +153,7 @@ export const createVideo = async (params: { data?: any; token?: any }) => {
 
 // ============ audio ============
 export const textToSpeech = async (params: any, options?: any) => {
-  const res = await fetch(AUDIO_TEXT_TO_SPEECH_API, {
+  const res = await fetch(withBasePath(AUDIO_TEXT_TO_SPEECH_API), {
     method: 'POST',
     body: JSON.stringify(params.data),
     headers: {

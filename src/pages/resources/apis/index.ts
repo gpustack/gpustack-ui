@@ -1,5 +1,6 @@
 import { GPUSTACK_API_BASE_URL } from '@/config/settings';
 import { downloadFile } from '@/utils/download-stream';
+import { withBasePath } from '@/utils/with-base-path';
 import { request } from '@umijs/max';
 import { message } from 'antd';
 import { GPUDeviceItem, ListItem, ModelFile } from '../config/types';
@@ -25,7 +26,7 @@ export async function downloadWorkerPrivateKey({
 }) {
   try {
     const res = await fetch(
-      `/${GPUSTACK_API_BASE_URL}${WORKERS_API}/${id}/privatekey`
+      withBasePath(`/${GPUSTACK_API_BASE_URL}${WORKERS_API}/${id}/privatekey`)
     );
     // header
     const contentDispostion = res.headers.get('content-Disposition');

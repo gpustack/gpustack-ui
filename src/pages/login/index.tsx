@@ -6,7 +6,7 @@ import Footer from '@/components/footer';
 import LangSelect from '@/components/lang-select';
 import ThemeDropActions from '@/components/theme-toggle/theme-drop-actions';
 import { PasswordReg } from '@/config';
-import { GPUSTACK_API_BASE_URL } from '@/config/settings';
+import { BASE_PATH, GPUSTACK_API_BASE_URL } from '@/config/settings';
 import { COLOR_PRIMARY } from '@/config/theme/constants';
 import externalLinks from '@/constants/external-links';
 import useUserSettings from '@/hooks/use-user-settings';
@@ -217,7 +217,7 @@ const Login = () => {
     >
       <CoreUIProvider
         config={{
-          apiBaseUrl: GPUSTACK_API_BASE_URL,
+          apiBaseUrl: `${BASE_PATH}/${GPUSTACK_API_BASE_URL}`,
           theme: userSettings.theme,
           iconUrl: '',
           isDarkTheme: userSettings.isDarkTheme,

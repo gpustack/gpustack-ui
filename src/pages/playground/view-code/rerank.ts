@@ -1,3 +1,4 @@
+import { EXTERNAL_BASE_URL } from '@/config/settings';
 import { MODEL_PROXY } from '../apis';
 import { formatCurlArgs } from './utils';
 
@@ -7,7 +8,7 @@ export const generateRerankCurlCode = ({
   routeID,
   parameters
 }: Record<string, any>) => {
-  const host = window.location.origin;
+  const host = EXTERNAL_BASE_URL;
   const apiUrl = modelProxy
     ? `${MODEL_PROXY}/${routeID}/\${YOUR_API_PATH}`
     : api;
@@ -26,7 +27,7 @@ export const generateRerankCode = ({
   api,
   parameters
 }: Record<string, any>) => {
-  const host = window.location.origin;
+  const host = EXTERNAL_BASE_URL;
 
   // ========================= Curl =========================
   const curlCode = generateRerankCurlCode({ api, parameters });

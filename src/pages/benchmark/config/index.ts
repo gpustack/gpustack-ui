@@ -243,9 +243,11 @@ export const datasetList = [
 // The form edits them as a LIST instead of one row per metric, so a single
 // metric can carry more than one aggregation — "TTFT avg <= 500 AND TTFT p99 <=
 // 2000" is a normal thing to ask for and a per-metric selector cannot express
-// it. `slo_targets` is a form-only field: every mutation writes through to the 9
-// flat fields, and it is stripped before the request (see the benchmark page's
-// handleModalOk).
+// it. `slo_targets` is a form-only field and the ONLY one the SLO section
+// registers; the benchmark page's handleModalOk EXPANDS it back into the 9 flat
+// fields at submit time. It is not written through to them in the form — antd's
+// onFinish only carries registered fields, so a value sitting in the store with
+// no Form.Item would never reach the request.
 export const SLO_METRICS = [
   { value: 'ttft', label: 'benchmark.form.slo.metric.ttft' },
   { value: 'tpot', label: 'benchmark.form.slo.metric.tpot' },

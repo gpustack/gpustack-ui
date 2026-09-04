@@ -1,12 +1,12 @@
 import { PageAction } from '@/config';
 import { AutoTooltip, Select as SealSelect } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Form, Select, Tag } from 'antd';
+import { Flex, Form, Select, Tag } from 'antd';
 import React from 'react';
 import {
   AUTO_TUNE_DEFAULTS,
+  ProfileValueMap,
   genDatasetSeed,
-  sloFieldsFromTargets,
   sloTargetsFromFields
 } from '../config';
 import { useFormContext } from '../config/form-context';
@@ -20,8 +20,7 @@ import RandomSettingsForm from './random-settings';
 const DatasetForm: React.FC = () => {
   const intl = useIntl();
   const form = Form.useFormInstance();
-  const { action, datasetList, profilesOptions, applyAutoName } =
-    useFormContext();
+  const { action, profilesOptions, applyAutoName } = useFormContext();
   const disabled = action === PageAction.EDIT;
 
   // The blurb under the selector: a strategy tag (Auto-tune for named presets,
@@ -31,7 +30,7 @@ const DatasetForm: React.FC = () => {
   const selectedOption = (profilesOptions as any[])?.find(
     (o) => o.value === selectedProfile
   );
-  const isCustomProfile = selectedProfile === 'Custom';
+  const isCustomProfile = selectedProfile === ProfileValueMap.Custom;
   const profileDesc = !selectedOption
     ? ''
     : isCustomProfile
@@ -44,11 +43,16 @@ const DatasetForm: React.FC = () => {
     const config: Partial<ProfileOption> =
       (profilesOptions as any[])?.find((o) => o.value === profile)?.config ||
       {};
-    // Default to auto-tune when the profile config doesn't say otherwise (named
-    // presets set it explicitly; Custom omits it → default on, so it aligns with
-    // the presets — same Load/Execution Limits fields — and can be toggled off
-    // for manual stages).
-    const autoTune = config.auto_tune ?? true;
+    // Named presets are ALWAYS auto-tune (the ramp is the whole point) — the
+    // same premise load-settings renders from. Derive it here the SAME way, so
+    // the submitted `auto_tune` cannot diverge from what the form shows: a
+    // preset arriving with auto_tune=false would otherwise submit a manual run
+    // while displaying the auto-tune fields, and its `stages` sit in an
+    // unmounted Form.Item, so the run would have no load points at all.
+    // Custom omits auto_tune → default on, aligning it with the presets (same
+    // Load / Stop Conditions fields) while still being toggleable to manual.
+    const autoTune =
+      profile === ProfileValueMap.Custom ? (config.auto_tune ?? true) : true;
     // Auto-tune presets have no manual stages; the ramp discovers points itself.
     const stages: StageRow[] = autoTune ? [] : (config.stages ?? []);
     // Switching preset never changes where the seed comes from: a random one is
@@ -79,10 +83,15 @@ const DatasetForm: React.FC = () => {
       max_seconds: config.max_seconds ?? null,
       request_rate: config.request_rate ?? -1,
       stages: stages,
-      // The 9 flat thresholds are what the API takes; `slo_targets` is the form's
-      // editable view of them and must be re-derived whenever the preset rewrites
-      // them, or the list would still show the previous preset's rows.
-      ...sloFieldsFromTargets(sloTargetsFromFields(config)),
+      // `slo_targets` must be re-derived whenever the preset changes, or the list
+      // would still show the previous preset's rows. Only this field is written:
+      // the 9 flat `slo_*_ms` thresholds the API takes have no Form.Item, so
+      // they could never reach the request (onFinish carries REGISTERED fields
+      // only) — handleModalOk derives them from `slo_targets` instead (see
+      // ../index). Note this is not because store writes are unreachable in
+      // general: getFieldValue, getFieldsValue(true) and a `preserve: true`
+      // useWatch all read the raw store. Nothing here uses any of those on the 9
+      // names, which is what makes the write dead rather than merely unsubmitted.
       slo_targets: sloTargetsFromFields(config)
     });
     applyAutoName?.();
@@ -127,14 +136,7 @@ const DatasetForm: React.FC = () => {
       {/* Strategy tag + description for the picked profile — mirrors the design's
           blurb under the selector so the user knows what the preset does. */}
       {selectedOption && (
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'flex-start',
-            gap: 8,
-            marginBottom: 20
-          }}
-        >
+        <Flex align="flex-start" gap={8} style={{ marginBottom: 20 }}>
           <Tag
             color={isCustomProfile ? 'green' : 'blue'}
             variant="filled"
@@ -150,16 +152,16 @@ const DatasetForm: React.FC = () => {
                 flex: 1,
                 fontSize: 12,
                 lineHeight: 1.6,
-                color: 'var(--ant-color-text-secondary)'
+                color: 'var(--ant-color-text-tertiary)'
               }}
             >
               {profileDesc}
             </div>
           )}
-        </div>
+        </Flex>
       )}
 
-      <RandomSettingsForm datasetList={datasetList} />
+      <RandomSettingsForm />
     </>
   );
 };

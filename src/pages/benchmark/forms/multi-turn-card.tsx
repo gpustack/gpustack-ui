@@ -4,6 +4,7 @@ import { useIntl } from '@umijs/max';
 import { Button, Flex, Form, InputNumber, Switch } from 'antd';
 import React from 'react';
 import SectionCard from '../components/section-card';
+import { TURNS_MAX, TURNS_MIN } from '../config';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
 
@@ -21,14 +22,13 @@ const MultiTurnCard: React.FC = () => {
   const turns = Form.useWatch('turns', form);
   const multiTurnOn = !!turns && turns > 1;
   const handleMultiTurnToggle = (checked: boolean) => {
-    form.setFieldValue('turns', checked ? 2 : null);
+    form.setFieldValue('turns', checked ? TURNS_MIN : null);
   };
-  // The −/+ stepper only runs while multi-turn is on; the switch owns on/off
-  // (clamping the floor to 2, since 1 turn == single-turn == off).
+  // The −/+ stepper only runs while multi-turn is on; the switch owns on/off.
   const handleTurnUp = () =>
-    form.setFieldValue('turns', Math.min(64, (Number(turns) || 1) + 1));
+    form.setFieldValue('turns', Math.min(TURNS_MAX, (Number(turns) || 1) + 1));
   const handleTurnDown = () =>
-    form.setFieldValue('turns', Math.max(2, (Number(turns) || 2) - 1));
+    form.setFieldValue('turns', Math.max(TURNS_MIN, (Number(turns) || 2) - 1));
 
   return (
     <SectionCard
@@ -70,9 +70,12 @@ const MultiTurnCard: React.FC = () => {
             >
               <InputNumber
                 // When off the field shows a disabled "1"; keep min at 1 then so
-                // antd doesn't flag it out-of-range (red). On => floor is 2
-                // (1 turn == single-turn == off).
-                min={multiTurnOn ? 2 : 1}
+                // antd doesn't flag it out-of-range (red). On => floor is
+                // TURNS_MIN (1 turn == single-turn == off). `max` matters as much
+                // as the stepper's clamp: without it, typing straight into the
+                // box submits any number.
+                min={multiTurnOn ? TURNS_MIN : 1}
+                max={TURNS_MAX}
                 size="small"
                 controls={false}
                 variant="borderless"

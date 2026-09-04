@@ -111,6 +111,12 @@ export const genDatasetSeed = () =>
   DATASET_SEED_MIN +
   Math.floor(Math.random() * (DATASET_SEED_MAX - DATASET_SEED_MIN + 1));
 
+// Multi-turn bounds. The floor is 2 because 1 turn IS single-turn, i.e. the
+// feature switched off. Both the −/+ stepper and the input's own max must use
+// these: clamping only in the stepper leaves direct keyboard entry unbounded.
+export const TURNS_MIN = 2;
+export const TURNS_MAX = 64;
+
 export const loadTypeOptions = [
   {
     label: 'benchmark.form.loadType.fixedRate',

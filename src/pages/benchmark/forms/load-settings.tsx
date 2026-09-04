@@ -13,6 +13,7 @@ import SectionCard from '../components/section-card';
 import {
   AUTO_TUNE_DEFAULTS,
   LoadTypeValueMap,
+  ProfileValueMap,
   loadTypeOptions
 } from '../config';
 import { useFormContext } from '../config/form-context';
@@ -44,7 +45,7 @@ const LoadSettingsForm: React.FC = () => {
   const profile = Form.useWatch('profile', form);
   const loadType = Form.useWatch('load_type', form);
   const autoTune = Form.useWatch('auto_tune', form);
-  const isCustom = profile === 'Custom';
+  const isCustom = profile === ProfileValueMap.Custom;
   const presetLocked = !isCustom;
   const isFixedRate = loadType === LoadTypeValueMap.FixedRate;
   // Named presets are ALWAYS auto-tune (the ramp is the whole point); only Custom
@@ -64,20 +65,26 @@ const LoadSettingsForm: React.FC = () => {
   const revalidateStages = () => {
     if (stagesValidated) form.validateFields(['stages']).catch(() => {});
   };
+  // setFieldValue resolves to setFields([{ …, errors: [], warnings: [] }]), so
+  // it WIPES the field's error. Every write goes through here so a list that is
+  // still invalid can't silently lose its message — adding a row in particular
+  // appends one with no rate, which is exactly what the validator rejects.
+  const writeStages = (next: Record<string, any>[]) => {
+    form.setFieldValue('stages', next);
+    revalidateStages();
+  };
   const handleStageAdd = () => {
-    form.setFieldValue('stages', [...(stages || []), { rate: undefined }]);
+    writeStages([...(stages || []), { rate: undefined }]);
   };
   const handleStageDelete = (index: number) => {
     const next = [...(stages || [])];
     next.splice(index, 1);
-    form.setFieldValue('stages', next);
-    revalidateStages();
+    writeStages(next);
   };
   const handleStageChange = (index: number, partial: Record<string, any>) => {
     const next = [...(stages || [])];
     next[index] = { ...next[index], ...partial };
-    form.setFieldValue('stages', next);
-    revalidateStages();
+    writeStages(next);
   };
 
   // Auto <-> Manual are two ways of producing the same thing (the stages), and the

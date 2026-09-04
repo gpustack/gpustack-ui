@@ -42,24 +42,30 @@ const SharedPrefixCard: React.FC = () => {
   const [prefixToggle, setPrefixToggle] = useState<boolean | null>(null);
   const showPrefix =
     prefixToggle ?? (Array.isArray(prefixBuckets) && prefixBuckets.length > 0);
-  const handlePrefixToggle = (checked: boolean) => {
-    setPrefixToggle(checked);
-    if (!checked) {
-      form.setFieldValue('prefix_buckets', []);
-    } else if (!prefixBuckets?.length) {
-      form.setFieldValue('prefix_buckets', [
-        { prefix_count: 1, bucket_weight: 100 }
-      ]);
-    }
-  };
-
   const [prefixValidated, setPrefixValidated] = useState(false);
   const revalidatePrefix = () => {
     if (prefixValidated)
       form.validateFields(['prefix_buckets']).catch(() => {});
   };
+  // setFieldValue resolves to setFields([{ …, errors: [], warnings: [] }]), so
+  // it WIPES the field's error. Every write goes through here so a list that is
+  // still invalid can't silently lose its message — adding a row in particular
+  // seeds a bucket with no prefix_tokens, which is exactly what the validator
+  // rejects.
+  const writeBuckets = (next: Record<string, any>[]) => {
+    form.setFieldValue('prefix_buckets', next);
+    revalidatePrefix();
+  };
+  const handlePrefixToggle = (checked: boolean) => {
+    setPrefixToggle(checked);
+    if (!checked) {
+      writeBuckets([]);
+    } else if (!prefixBuckets?.length) {
+      writeBuckets([{ prefix_count: 1, bucket_weight: 100 }]);
+    }
+  };
   const handlePrefixAdd = () => {
-    form.setFieldValue('prefix_buckets', [
+    writeBuckets([
       ...(prefixBuckets || []),
       { prefix_count: 1, bucket_weight: 100 }
     ]);
@@ -67,8 +73,7 @@ const SharedPrefixCard: React.FC = () => {
   const handlePrefixDelete = (index: number) => {
     const next = [...(prefixBuckets || [])];
     next.splice(index, 1);
-    form.setFieldValue('prefix_buckets', next);
-    revalidatePrefix();
+    writeBuckets(next);
   };
   const handlePrefixItemChange = (
     index: number,
@@ -76,8 +81,7 @@ const SharedPrefixCard: React.FC = () => {
   ) => {
     const next = [...(prefixBuckets || [])];
     next[index] = { ...next[index], ...partial };
-    form.setFieldValue('prefix_buckets', next);
-    revalidatePrefix();
+    writeBuckets(next);
   };
 
   return (

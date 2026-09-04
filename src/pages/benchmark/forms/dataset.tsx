@@ -5,6 +5,7 @@ import { Flex, Form, Select, Tag } from 'antd';
 import React from 'react';
 import {
   AUTO_TUNE_DEFAULTS,
+  ProfileValueMap,
   genDatasetSeed,
   sloTargetsFromFields
 } from '../config';
@@ -29,7 +30,7 @@ const DatasetForm: React.FC = () => {
   const selectedOption = (profilesOptions as any[])?.find(
     (o) => o.value === selectedProfile
   );
-  const isCustomProfile = selectedProfile === 'Custom';
+  const isCustomProfile = selectedProfile === ProfileValueMap.Custom;
   const profileDesc = !selectedOption
     ? ''
     : isCustomProfile
@@ -42,11 +43,16 @@ const DatasetForm: React.FC = () => {
     const config: Partial<ProfileOption> =
       (profilesOptions as any[])?.find((o) => o.value === profile)?.config ||
       {};
-    // Default to auto-tune when the profile config doesn't say otherwise (named
-    // presets set it explicitly; Custom omits it → default on, so it aligns with
-    // the presets — same Load/Execution Limits fields — and can be toggled off
-    // for manual stages).
-    const autoTune = config.auto_tune ?? true;
+    // Named presets are ALWAYS auto-tune (the ramp is the whole point) — the
+    // same premise load-settings renders from. Derive it here the SAME way, so
+    // the submitted `auto_tune` cannot diverge from what the form shows: a
+    // preset arriving with auto_tune=false would otherwise submit a manual run
+    // while displaying the auto-tune fields, and its `stages` sit in an
+    // unmounted Form.Item, so the run would have no load points at all.
+    // Custom omits auto_tune → default on, aligning it with the presets (same
+    // Load / Stop Conditions fields) while still being toggleable to manual.
+    const autoTune =
+      profile === ProfileValueMap.Custom ? (config.auto_tune ?? true) : true;
     // Auto-tune presets have no manual stages; the ramp discovers points itself.
     const stages: StageRow[] = autoTune ? [] : (config.stages ?? []);
     // Switching preset never changes where the seed comes from: a random one is

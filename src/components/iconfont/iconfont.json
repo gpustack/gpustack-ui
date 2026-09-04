@@ -6,6 +6,13 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "48450861",
+      "name": "local_pizza_24dp_1F1F1F_FILL1_wght300_GRAD0_opsz24",
+      "font_class": "sliced-filled",
+      "unicode": "e719",
+      "unicode_decimal": 59161
+    },
+    {
       "icon_id": "48424709",
       "name": "home_storage_24dp_1F1F1F_FILL0_wght300_GRAD0_opsz2",
       "font_class": "kvcache-outlined",

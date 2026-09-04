@@ -2,7 +2,6 @@ import { convertFileSize } from '@/utils';
 import {
   HddFilled,
   InfoCircleOutlined,
-  PartitionOutlined,
   PieChartFilled,
   ThunderboltFilled
 } from '@ant-design/icons';
@@ -177,7 +176,7 @@ const WorkerInfoContent: React.FC<NameCellProps> = ({ record, modelData }) => {
       ? [
           {
             label: 'models.table.vgpu',
-            icon: <PartitionOutlined />,
+            icon: <IconFont type="icon-sliced-filled" />,
             value: vgpuAllocation
           }
         ]

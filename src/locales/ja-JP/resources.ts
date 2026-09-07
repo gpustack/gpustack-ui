@@ -121,7 +121,7 @@ export default {
     'No available clusters. Please create a cluster before adding a node.',
   'resources.metrics.details': 'Monitoring',
   'resoureces.worker.upgrade.tips':
-    'Please upgrade to match the GPUStack Server version.',
+    'The Worker version does not match the GPUStack Server version. Please keep them consistent.',
   'resources.worker.version': 'Worker Version: {version}',
   'resources.server.version': 'Server Version: {version}',
   'resources.worker.currentVersion': 'Current Version: {version}',
@@ -154,5 +154,5 @@ export default {
 // 22. 'resources.worker.maintenance.remark.rules': 'Please enter maintenance remarks',
 // 23. 'resources.worker.maintenance.tips': 'When maintenance mode is enabled, the node will stop scheduling new model deployment tasks. Running instances will not be affected.',
 // 24. 'resources.worker.noCluster.tips': 'No available clusters. Please create a cluster before adding a node.'
-// 25. 'resoureces.worker.upgrade.tips': 'Please upgrade to match the GPUStack Server version.'
+// 25. 'resoureces.worker.upgrade.tips': 'The Worker version does not match the GPUStack Server version. Please keep them consistent.'
 // ========== End of To-Do List ==========

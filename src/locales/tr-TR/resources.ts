@@ -119,7 +119,7 @@ export default {
     'Kullanılabilir küme yok. Lütfen düğüm eklemeden önce bir küme oluşturun.',
   'resources.metrics.details': 'İzleme',
   'resoureces.worker.upgrade.tips':
-    'Lütfen GPUStack Sunucu sürümüyle eşleşecek şekilde yükseltin.',
+    'İşçi düğüm sürümü, GPUStack Sunucu sürümüyle eşleşmiyor. Lütfen sürümleri aynı tutun.',
   'resources.worker.version': 'İşçi Düğüm Sürümü: {version}',
   'resources.server.version': 'Sunucu Sürümü: {version}',
   'resources.worker.currentVersion': 'Geçerli Sürüm: {version}',
@@ -128,5 +128,5 @@ export default {
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'resoureces.worker.upgrade.tips': 'Please upgrade to match the GPUStack Server version.'
+// 1. 'resoureces.worker.upgrade.tips': 'The Worker version does not match the GPUStack Server version. Please keep them consistent.'
 // ========== End of To-Do List ==========

@@ -26,8 +26,6 @@ import { Flex, Tooltip } from 'antd';
 import { useAtom, useAtomValue } from 'jotai';
 import _ from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
-import semverCoerce from 'semver/functions/coerce';
-import semverGt from 'semver/functions/gt';
 import { status, WorkerStatusMap, WorkerStatusMapValue } from '../config';
 import { Filesystem, GPUDeviceItem, ListItem } from '../config/types';
 import workerCss from '../styles/worker.less';
@@ -106,10 +104,9 @@ const showUpgrade = (
   workerVersion: string,
   currentVersion: string
 ): boolean => {
-  const w_ver = semverCoerce(workerVersion);
-  const c_ver = semverCoerce(currentVersion);
-
-  return !!w_ver && !!c_ver && semverGt(c_ver, w_ver);
+  return (
+    !!workerVersion && !!currentVersion && workerVersion !== currentVersion
+  );
 };
 
 const formateUtilization = (val1: number, val2: number): number =>

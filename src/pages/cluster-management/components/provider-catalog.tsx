@@ -107,6 +107,12 @@ interface ProviderCatalogProps {
     icon?: React.ReactNode;
     description?: string;
     group?: string;
+    // Overrides the `showTooltip` label for an item that needs to explain
+    // itself rather than just name itself (the CPU Node card).
+    tooltip?: React.ReactNode;
+    // Draws a vertical rule in the grid gap to the item's left, splitting it
+    // off from the ones before it.
+    dividerBefore?: boolean;
   }[];
 }
 
@@ -169,10 +175,12 @@ const ProviderCatalog: React.FC<ProviderCatalogProps> = ({
           <Wrapper $cols={cols}>
             {items?.map((action) => (
               <Tooltip
-                title={showTooltip ? action.label : false}
+                title={action.tooltip ?? (showTooltip ? action.label : false)}
                 key={action.key}
               >
-                <CardBox>
+                <CardBox
+                  className={action.dividerBefore ? 'has-divider' : undefined}
+                >
                   <TemplateCard
                     height={height}
                     onClick={() => onSelect?.(action.key as string, action)}

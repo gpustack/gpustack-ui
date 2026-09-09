@@ -74,8 +74,13 @@ export default {
     'For <span class="bold-text">non-Docker</span> clusters, please register clusters or manage worker pools from the Clusters page.',
   'clusters.addworker.selectGPU': 'Select GPU Vendor',
   'clusters.addworker.selectGPU.multiTag': 'Multi-select',
-  'clusters.addworker.selectGPU.subtitle':
-    'You can select multiple GPU Vendors or none for CPU-only clusters',
+  'clusters.addworker.selectHardware': 'Select Hardware Type',
+  'clusters.addworker.selectHardware.subtitle':
+    'Select every hardware type this cluster should run workers on',
+  'clusters.addworker.cpuNode.tips':
+    'Deploys a worker on every node without a GPU. Leave it unselected when your control plane shares the cluster with the GPU nodes and you do not want workers running on the CPU nodes.',
+  'clusters.addworker.noWorkerSelected.error':
+    'Select at least one hardware type — with neither CPU Node nor a GPU vendor selected, no worker would be deployed at all.',
   'clusters.addworker.checkEnv': 'Check Environment',
   'clusters.addworker.checkEnv.cpuOnlyTips':
     'Use the following command to verify that the Kubernetes cluster has at least one ready node. You are registering a CPU-only cluster.',

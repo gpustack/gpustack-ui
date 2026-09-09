@@ -2,6 +2,7 @@ import { ExclamationCircleFilled } from '@ant-design/icons';
 import { AlertBlockInfo } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Typography } from 'antd';
+import { isNoWorkerSelection } from '../../config';
 import RegisterClusterInner from '../register-cluster-inner';
 import { useAddWorkerContext } from './add-worker-context';
 import { AddWorkerStepProps, StepNamesMap } from './config';
@@ -15,6 +16,19 @@ const K8sRunCommand: React.FC<AddWorkerStepProps> = ({ disabled }) => {
   const stepIndex = stepList.indexOf(StepNamesMap.RunCommand) + 1;
   const currentGPU = summary.get('currentGPU') || '';
   const currentGPUs: string[] = summary.get('selectedGPUs') || [];
+  // Set by the CPU Node card in the hardware step; `true` means the card was
+  // left unselected.
+  const disableCpuWorker = summary.get('disableCpuWorker') === true;
+  // Dropping the CPU worker with no GPU runtime selected would install a
+  // release with no worker at all — the backend answers 422. Block the copy
+  // here rather than letting the user find out from a failed curl; the reason
+  // is stated in the hardware step, next to the cards that decide it.
+  const selectedGPUs =
+    currentGPUs.length > 0 ? currentGPUs : currentGPU ? [currentGPU] : [];
+  const noWorkerSelected = isNoWorkerSelection({
+    disableCpuWorker,
+    selectedGPUs
+  });
 
   return (
     <StepCollapse
@@ -48,6 +62,8 @@ const K8sRunCommand: React.FC<AddWorkerStepProps> = ({ disabled }) => {
         registrationInfo={registrationInfo}
         currentGPU={currentGPU}
         currentGPUs={currentGPUs}
+        disableCpuWorker={disableCpuWorker}
+        copyable={!noWorkerSelected}
       />
     </StepCollapse>
   );

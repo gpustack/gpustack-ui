@@ -5,6 +5,12 @@ import { generateK8sRegisterCommand } from '../config';
 type AddModalProps = {
   currentGPU?: string;
   currentGPUs?: string[];
+  // Adds `disable_cpu_worker=true`, dropping the CPU worker DaemonSet from the
+  // rendered manifest.
+  disableCpuWorker?: boolean;
+  // Off while the selection would deploy no worker at all, so the command
+  // can be read but not taken away.
+  copyable?: boolean;
   registrationInfo: {
     token: string;
     image: string;
@@ -15,7 +21,9 @@ type AddModalProps = {
 const AddCluster: React.FC<AddModalProps> = ({
   registrationInfo,
   currentGPU,
-  currentGPUs
+  currentGPUs,
+  disableCpuWorker,
+  copyable = true
 }) => {
   const code = useMemo(() => {
     return generateK8sRegisterCommand({
@@ -23,9 +31,10 @@ const AddCluster: React.FC<AddModalProps> = ({
       clusterId: registrationInfo?.cluster_id,
       registrationToken: registrationInfo?.token,
       currentGPU,
-      currentGPUs
+      currentGPUs,
+      disableCpuWorker
     });
-  }, [registrationInfo, currentGPU, currentGPUs]);
+  }, [registrationInfo, currentGPU, currentGPUs, disableCpuWorker]);
 
   return (
     <div>
@@ -33,6 +42,7 @@ const AddCluster: React.FC<AddModalProps> = ({
         theme="dark"
         code={code.replace(/\\/g, '')}
         copyValue={code}
+        copyable={copyable}
         lang="bash"
       ></HighlightCode>
     </div>

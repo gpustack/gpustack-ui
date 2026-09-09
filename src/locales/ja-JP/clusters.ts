@@ -74,8 +74,13 @@ export default {
     'For <span class="bold-text">non-Docker</span> clusters, please register clusters or manage worker pools from the Clusters page.',
   'clusters.addworker.selectGPU': 'Select GPU Vendor',
   'clusters.addworker.selectGPU.multiTag': 'Multi-select',
-  'clusters.addworker.selectGPU.subtitle':
-    '複数の GPU ベンダーを選択するか、CPU クラスター専用の場合は選択不要です',
+  'clusters.addworker.selectHardware': 'ハードウェアタイプを選択',
+  'clusters.addworker.selectHardware.subtitle':
+    'このクラスターでワーカーを実行するハードウェアタイプをすべて選択してください',
+  'clusters.addworker.cpuNode.tips':
+    'GPU を持たないすべてのノードにワーカーをデプロイします。コントロールプレーンが GPU ノードと同じクラスターにあり、CPU ノードでワーカーを実行したくない場合は選択しないでください。',
+  'clusters.addworker.noWorkerSelected.error':
+    'ハードウェアタイプを少なくとも 1 つ選択してください。CPU Node と GPU ベンダーのどちらも選択しない場合、ワーカーが 1 つもデプロイされません。',
   'clusters.addworker.checkEnv': 'Check Environment',
   'clusters.addworker.checkEnv.cpuOnlyTips':
     '以下のコマンドを使用して、Kubernetes クラスターに少なくとも 1 つのレディーノードがあることを確認してください。CPU クラスターを登録しています。',

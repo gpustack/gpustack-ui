@@ -10,6 +10,11 @@ interface StepItemProps {
   children?: React.ReactNode;
   name: string;
   disabled?: boolean;
+  // Greys out "Next" without touching the panel itself. Separate from
+  // `disabled`, which also reaches `CollapseContainer` and would stop the step
+  // from expanding — no use for a step whose own content is what the user has
+  // to fix before moving on.
+  nextDisabled?: boolean;
   beforeNext?: () => Promise<boolean> | void;
 }
 
@@ -42,6 +47,7 @@ const StepCollapse: React.FC<StepItemProps> = ({
   children,
   name = '',
   disabled = false,
+  nextDisabled = false,
   beforeNext = async () => true,
   ...rest
 }) => {
@@ -99,7 +105,11 @@ const StepCollapse: React.FC<StepItemProps> = ({
           )}
 
           {!isLastStep && (
-            <Button type="primary" onClick={handleOnNext} disabled={disabled}>
+            <Button
+              type="primary"
+              onClick={handleOnNext}
+              disabled={disabled || nextDisabled}
+            >
               {intl.formatMessage({ id: 'common.button.next' })}
             </Button>
           )}

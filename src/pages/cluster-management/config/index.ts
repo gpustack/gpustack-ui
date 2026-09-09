@@ -138,12 +138,42 @@ export const getServerUrlExample = (provider?: ProviderType | string | null) =>
     ? 'http://gpustack-server-cluster-ip.gpustack-system.svc:30080'
     : 'http://192.168.1.100:80';
 
+/**
+ * A manifest with neither the CPU worker DaemonSet nor a GPU runtime would
+ * deploy no worker at all — the backend answers 422 and the chart refuses to
+ * render. Caught here so the command is never handed out in that state.
+ *
+ * Reads the hardware selection, not the effective chart values, so it is a
+ * pre-check and not the authority. The server merges the cluster's stored
+ * `helmValues` over the values it derives from `runtime` and
+ * `disable_cpu_worker`, and `worker.gpuVendors` / `worker.cpuEnabled` are
+ * deliberately *not* among the paths it reserves — an overlay may supply the
+ * runtime this request left out, or take away the CPU worker this request
+ * kept. Both directions are the server's own test cases, so reserving the two
+ * paths to make this function authoritative would remove supported behaviour.
+ *
+ * The gap therefore only opens for a cluster whose `helmValues` already sets
+ * one of those two, which the Chart Values field steers away from (they have
+ * a control of their own above it). The server still decides: it validates on
+ * the merged values, and its 422 lands under the Chart Values editor.
+ */
+export const isNoWorkerSelection = (params: {
+  disableCpuWorker: boolean;
+  selectedGPUs: string[];
+}) =>
+  params.disableCpuWorker &&
+  !params.selectedGPUs.some((key) => !!GPUsConfigs[key]?.runtime);
+
 export const generateK8sRegisterCommand = (params: {
   // Either a single GPU driver key (legacy single-select) or an array of
   // keys (multi-vendor mode). Both feed into a list of runtimes for the
   // ?runtime=... query parameters the backend accepts (repeatable).
   currentGPU?: string;
   currentGPUs?: string[];
+  // Drops the CPU worker DaemonSet — which otherwise covers *every* node
+  // without a GPU — from the rendered manifest. Only sent when true; `false`
+  // is the backend default.
+  disableCpuWorker?: boolean;
   server: string;
   clusterId: number | null;
   registrationToken: string;
@@ -157,7 +187,10 @@ export const generateK8sRegisterCommand = (params: {
   const runtimes = keys
     .map((k) => GPUsConfigs[k]?.runtime)
     .filter((r): r is string => !!r);
-  const query = runtimes.map((r) => `runtime=${r}`).join('&');
+  const query = [
+    ...runtimes.map((r) => `runtime=${r}`),
+    ...(params.disableCpuWorker ? ['disable_cpu_worker=true'] : [])
+  ].join('&');
   return `curl -k -L '${params.server}/${GPUSTACK_API_BASE_URL}/clusters/${params.clusterId}/manifests${query ? `?${query}` : ''}' \\
 --header 'Authorization: Bearer ${params.registrationToken}' | kubectl apply -f -`;
 };

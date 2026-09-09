@@ -72,8 +72,13 @@ export default {
     '<span class="bold-text">非 Docker</span> 集群请前往集群页面注册集群或管理节点池。',
   'clusters.addworker.selectGPU': '选择 GPU 厂商',
   'clusters.addworker.selectGPU.multiTag': '可多选',
-  'clusters.addworker.selectGPU.subtitle':
-    '可选择多个 GPU 厂商，或不选择以用于仅 CPU 的集群',
+  'clusters.addworker.selectHardware': '选择硬件类型',
+  'clusters.addworker.selectHardware.subtitle':
+    '选择该集群需要部署 Worker 的所有硬件类型',
+  'clusters.addworker.cpuNode.tips':
+    '在所有没有 GPU 的节点上部署 Worker。若控制平面与 GPU 节点在同一集群，且不希望 CPU 节点上运行 Worker，请不要选中。',
+  'clusters.addworker.noWorkerSelected.error':
+    '请至少选择一种硬件类型 —— CPU Node 和 GPU 厂商都不选时，不会部署任何 Worker。',
   'clusters.addworker.checkEnv': '检查环境',
   'clusters.addworker.checkEnv.cpuOnlyTips':
     '使用以下命令验证 Kubernetes 集群中至少有一个就绪节点。你正在注册仅 CPU 的集群。',

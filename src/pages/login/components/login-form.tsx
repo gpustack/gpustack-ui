@@ -238,7 +238,7 @@ const LoginForm = () => {
             <ButtonText>
               {intl.formatMessage(
                 { id: 'common.external.login' },
-                { type: 'SSO' }
+                { type: SSOAuth.options.external_auth?.type || 'SSO' }
               )}
             </ButtonText>
           </ButtonWrapper>
@@ -284,7 +284,7 @@ const LoginForm = () => {
               <BackButton onClick={handleLoginWithThirdParty}>
                 {intl.formatMessage(
                   { id: 'common.external.login' },
-                  { type: 'SSO' }
+                  { type: SSOAuth.options.external_auth?.type || 'SSO' }
                 )}
               </BackButton>
             )}

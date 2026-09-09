@@ -2,7 +2,11 @@ import useAddWorkerMessage from '@/pages/cluster-management/hooks/use-add-worker
 import { useIntl } from '@umijs/max';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
-import { ProviderType, ProviderValueMap } from '../../config';
+import {
+  isNoWorkerSelection,
+  ProviderType,
+  ProviderValueMap
+} from '../../config';
 import { ClusterListItem } from '../../config/types';
 import { AddWorkerContext } from './add-worker-context';
 import CheckEnvironment from './check-environment';
@@ -100,30 +104,40 @@ const AddWorkerSteps: React.FC<AddWorkerProps> = (props) => {
   // Downstream steps (check env, run command, ...) only make sense after a
   // GPU vendor has been chosen. If the user toggled off every vendor in
   // multi-select, gate them shut so the wrong panel can't be opened.
-  // Exception: for K8s clusters, Run Command is always accessible (CPU-only
-  // workers don't need a GPU vendor).
+  // Exception: K8s, where no vendor selected is a legitimate CPU-only
+  // registration — there it is `noWorkerSelected` below that gates instead.
   const selectedGPUs =
     (summary.get('selectedGPUs') as string[] | undefined) || [];
   const currentGPU = (summary.get('currentGPU') as string | undefined) || '';
   const noVendorSelected = !currentGPU && selectedGPUs.length === 0;
   const isK8s = provider === ProviderValueMap.Kubernetes;
-  // For non-K8s providers, all downstream steps are gated by vendor selection.
-  // For K8s, both CheckEnv and RunCommand are always accessible — CheckEnv
-  // shows a ready-nodes check when no vendor is selected (CPU-only workers).
-  const downstreamDisabled = disabled || (noVendorSelected && !isK8s);
+
+  // K8s only: neither the CPU Node card nor any GPU vendor, which would render
+  // a release with no worker in it at all. The hardware step says so and greys
+  // out its own Next; the downstream steps have to close with it, or jumping
+  // straight to a panel header would walk right past both.
+  const noWorkerSelected =
+    isK8s &&
+    isNoWorkerSelection({
+      disableCpuWorker: summary.get('disableCpuWorker') === true,
+      selectedGPUs:
+        selectedGPUs.length > 0 ? selectedGPUs : currentGPU ? [currentGPU] : []
+    });
+
+  const blocked = noWorkerSelected || (noVendorSelected && !isK8s);
+  const downstreamDisabled = disabled || blocked;
 
   React.useEffect(() => {
-    // If the user just deselected everything on a non-K8s provider, collapse
-    // any downstream panel back to the GPU step so they aren't left looking at
-    // a stale disabled-but-open command. For K8s, CheckEnv stays open with a
-    // ready-nodes check, so no collapsing needed.
-    if (!noVendorSelected || isK8s) return;
+    // Collapse back to the hardware step when the selection stops being
+    // installable, so the user is never left looking at a stale
+    // disabled-but-open command panel.
+    if (!blocked) return;
     setCollapseKey((prev) =>
       prev.has(StepNamesMap.SelectGPU)
         ? prev
         : new Set([StepNamesMap.SelectGPU])
     );
-  }, [noVendorSelected, isK8s]);
+  }, [blocked]);
 
   return (
     <AddWorkerContext.Provider
@@ -154,7 +168,9 @@ const AddWorkerSteps: React.FC<AddWorkerProps> = (props) => {
           <>
             <SelectVendor disabled={disabled}></SelectVendor>
             {(isK8s || !noVendorSelected) && (
-              <CheckEnvironment disabled={disabled}></CheckEnvironment>
+              <CheckEnvironment
+                disabled={downstreamDisabled}
+              ></CheckEnvironment>
             )}
 
             {provider === ProviderValueMap.Kubernetes && (

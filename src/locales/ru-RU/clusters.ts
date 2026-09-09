@@ -74,8 +74,13 @@ export default {
     'Для <span class="bold-text">не-Docker</span> кластеров, пожалуйста, регистрируйте кластеры или управляйте пулами воркеров на странице Кластеры.',
   'clusters.addworker.selectGPU': 'Выбрать производителя GPU',
   'clusters.addworker.selectGPU.multiTag': 'Multi-select',
-  'clusters.addworker.selectGPU.subtitle':
-    'Вы можете выбрать несколько производителей GPU или не выбирать для кластера только с CPU',
+  'clusters.addworker.selectHardware': 'Выбрать тип оборудования',
+  'clusters.addworker.selectHardware.subtitle':
+    'Выберите все типы оборудования, на которых этот кластер должен запускать worker’ы',
+  'clusters.addworker.cpuNode.tips':
+    'Разворачивает worker на всех узлах без GPU. Не выбирайте, если ваша control plane находится в том же кластере, что и узлы с GPU, и вы не хотите запускать worker на узлах с CPU.',
+  'clusters.addworker.noWorkerSelected.error':
+    'Выберите хотя бы один тип оборудования — если не выбраны ни CPU Node, ни производитель GPU, не будет развёрнут ни один worker.',
   'clusters.addworker.checkEnv': 'Проверить окружение',
   'clusters.addworker.checkEnv.cpuOnlyTips':
     'Используйте следующую команду, чтобы убедиться, что в кластере Kubernetes есть хотя бы один готовый узел. Вы регистрируете кластер только с CPU.',

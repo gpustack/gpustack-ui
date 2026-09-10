@@ -1,5 +1,6 @@
 import PluginExtraFields from '@/components/plugin-extra-fields';
 import useTableFetch from '@/hooks/use-table-fetch';
+import { getGPUStackPlugin } from '@/plugins';
 import { SyncOutlined } from '@ant-design/icons';
 import {
   BaseSelect,
@@ -64,6 +65,11 @@ const UserModels: React.FC = () => {
   const access = useAccess();
   const navigate = useNavigate();
   const { apiAccessInfo, openViewAPIInfo, closeViewAPIInfo } = useViewApIInfo();
+  // A card action contributed by the plugin opens an overlay the plugin
+  // owns (enterprise: the pricing-detail drawer). Mount it once here —
+  // the action's `onClick` drives its open state, so the host never
+  // learns what the overlay is. OSS renders nothing.
+  const CardActionOverlay = getGPUStackPlugin()?.myModels?.CardActionOverlay;
 
   // Only managers (platform admin or org owner) can see / manage
   // clusters and workers, so only they hit those endpoints. A plain
@@ -296,6 +302,7 @@ const UserModels: React.FC = () => {
         data={apiAccessInfo.data}
         onClose={closeViewAPIInfo}
       ></APIAccessInfoModal>
+      {CardActionOverlay && <CardActionOverlay />}
     </>
   );
 };

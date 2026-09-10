@@ -1,5 +1,7 @@
 import PluginExtraFields from '@/components/plugin-extra-fields';
+import { getGPUStackPlugin } from '@/plugins';
 import {
+  DropdownActions,
   IconFont,
   StatusDot,
   TagsWrapper,
@@ -15,12 +17,15 @@ import { categoryConfig } from '../../_components/model-tag';
 import {
   modelCategories,
   modelCategoriesMap,
-  modelSourceMap,
   MyModelsStatusLabelMap,
   MyModelsStatusMap,
   MyModelsStatusValueMap
 } from '../config';
-import { categoryToPathMap } from '../config/button-actions';
+import {
+  categoryToPathMap,
+  myModelActions,
+  type MyModelAction
+} from '../config/button-actions';
 import {
   defaultModelLogo,
   getCategoryLogo,
@@ -29,11 +34,14 @@ import {
 
 const CardWrapper = styled.div`
   &:hover {
-    .content {
-      .btn {
-        display: block;
-      }
+    .operations {
+      background-color: var(--ant-color-fill-tertiary);
+      border-radius: var(--ant-border-radius-lg);
     }
+  }
+  height: 100%;
+  .template-card-wrapper {
+    min-height: 140px;
   }
 `;
 
@@ -53,17 +61,20 @@ const ModelItemContent = styled.div`
   cursor: pointer;
   .content {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    justify-content: flex-end;
     flex: 1;
+    /* With a plugin block below the tags the group grows from the top
+       instead of hugging the card's bottom edge. */
+    &.has-extra {
+      justify-content: flex-start;
+    }
   }
   .footer {
     width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    .btn {
-      display: none;
-    }
   }
 
   .time {
@@ -104,6 +115,8 @@ const Header = styled.div`
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  // padding-bottom: 16px;
+  // border-bottom: 1px solid var(--ant-color-border-secondary);
   .anticon {
     font-size: 16px;
     color: var(--ant-color-text-secondary);
@@ -116,12 +129,6 @@ const Header = styled.div`
     color: var(--ant-color-text);
   }
 `;
-
-const sourceIconMap = {
-  [modelSourceMap.local_path_value]: 'icon-hard-disk',
-  [modelSourceMap.huggingface_value]: 'icon-huggingface',
-  [modelSourceMap.modelscope_value]: 'icon-tu2'
-};
 
 const renderTag = (item: any, index = 0) => {
   return (
@@ -138,6 +145,23 @@ const ModelItem: React.FC<{
   const { model, onClick } = props;
   const intl = useIntl();
   const navigate = useNavigate();
+  // A plugin may contribute extra card actions (enterprise adds
+  // "Pricing", which opens a drawer it owns) via
+  // `myModels.useGenerateActions` — same seam as the cluster list's
+  // row actions. Without the plugin the menu holds just the built-ins.
+  const { useGenerateActions, useExtraVisible } =
+    getGPUStackPlugin()?.myModels || {};
+  // Whether the plugin's block below the tags actually renders content.
+  // Only the plugin can answer (its own context decides), and the host
+  // needs it because the layout around the slot changes: with content
+  // the group grows from the top, without it the tags hug the card's
+  // bottom edge. No plugin, or no answer → nothing there.
+  const hasExtra = useExtraVisible?.() ?? false;
+  const actionList: MyModelAction[] =
+    useGenerateActions?.({ actions: myModelActions }) || myModelActions;
+  const actions = actionList.filter((item) =>
+    item.show ? item.show(model) : true
+  );
 
   const handleCardClick = () => {
     onClick?.(model);
@@ -146,10 +170,7 @@ const ModelItem: React.FC<{
   // ``model.name`` from ``/v2/my-models`` is the OpenAI-style id
   // (org-prefixed for non-platform routes, bare for platform). Use it
   // verbatim — the playground / dispatcher both key off that exact id.
-  const handleOpenPlayGroundClick = (e: React.MouseEvent) => {
-    // Card is clickable (opens API access info); keep the playground
-    // action isolated so it doesn't also trigger the card click.
-    e.stopPropagation();
+  const openPlayground = () => {
     const modelName = encodeURIComponent(model.name);
     for (const [category, path] of Object.entries(categoryToPathMap)) {
       if (
@@ -168,6 +189,25 @@ const ModelItem: React.FC<{
       }
     }
     navigate(`/playground/chat?model=${modelName}`);
+  };
+
+  const handleSelectAction = ({ key }: { key: string }) => {
+    const action = actions.find((item) => item.key === key);
+    // A plugin action is self-contained (it opens the overlay the
+    // plugin owns); built-ins are dispatched by key here.
+    if (action?.onClick) {
+      action.onClick(model);
+      return;
+    }
+    if (key === 'playground') {
+      openPlayground();
+    }
+  };
+
+  // The card itself is clickable (opens API access info); keep the
+  // menu isolated so opening it doesn't also trigger the card click.
+  const handleActionsClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
   };
 
   // Logo priority: brand logo matched from the name → tinted category
@@ -213,7 +253,7 @@ const ModelItem: React.FC<{
   return (
     <CardWrapper>
       <TemplateCard
-        height={140}
+        height={'100%'}
         clickable={true}
         hoverable={true}
         ghost
@@ -230,8 +270,8 @@ const ModelItem: React.FC<{
               )}
               <span className="flex-center" style={{ gap: 8, minWidth: 0 }}>
                 <span>{model.name}</span>
-                {/* Status moved to a compact dot right after the name, freeing
-                    the header's right side for the price summary. The dot keeps
+                {/* Status moved to a compact dot right after the name, leaving
+                    the header's right side to the actions menu. The dot keeps
                     the state message on hover (StatusDot has no built-in one). */}
                 <span
                   style={{
@@ -251,14 +291,33 @@ const ModelItem: React.FC<{
                 </span>
               </span>
             </span>
-            <span className="flex-center gap-8">
-              <PluginExtraFields name="ModelPriceSummary" context={{ model }} />
-            </span>
+            {actions.length > 0 && (
+              <span className="operations" onClick={handleActionsClick}>
+                <DropdownActions
+                  menu={{
+                    // Strip the card-side fields before antd sees them:
+                    // it treats a menu item's own `onClick` as a click
+                    // callback and would fire a plugin action a second
+                    // time, with a menu-info arg instead of the model.
+                    items: actions.map((item) =>
+                      _.omit(item, ['show', 'order', 'onClick'])
+                    ),
+                    onClick: handleSelectAction
+                  }}
+                >
+                  <Button
+                    icon={<IconFont type="icon-more"></IconFont>}
+                    size="small"
+                    type="text"
+                  ></Button>
+                </DropdownActions>
+              </span>
+            )}
           </Header>
         }
       >
         <ModelItemContent>
-          <div className="content">
+          <div className={hasExtra ? 'content has-extra' : 'content'}>
             <div className="footer">
               <div className="extra-info">
                 {model.categories?.length > 0 &&
@@ -296,26 +355,20 @@ const ModelItem: React.FC<{
                   </>
                 )}
               </div>
-              {[MyModelsStatusValueMap.Ready].includes(model.status) && (
-                <Button
-                  size="middle"
-                  type="default"
-                  className="btn"
-                  style={{
-                    borderRadius: 6,
-                    paddingInline: 12
-                  }}
-                  onClick={handleOpenPlayGroundClick}
-                >
-                  {intl.formatMessage({ id: 'models.openinplayground' })}
-                  <IconFont
-                    type="icon-down2"
-                    rotate={-90}
-                    style={{ marginLeft: 4 }}
-                  ></IconFont>
-                </Button>
-              )}
             </div>
+            <PluginExtraFields
+              name="ModelPriceSummary"
+              context={{
+                model,
+                styles: {
+                  wrapper: {
+                    marginTop: 12,
+                    paddingTop: 12,
+                    borderTop: '1px solid var(--ant-color-border-secondary)'
+                  }
+                }
+              }}
+            />
           </div>
         </ModelItemContent>
       </TemplateCard>

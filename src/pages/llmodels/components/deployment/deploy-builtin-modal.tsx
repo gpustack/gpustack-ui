@@ -55,6 +55,7 @@ const pickFieldsFromSpec = [
   'source',
   'quantization',
   'backend_version',
+  'image_name',
   'backend_parameters',
   'backend',
   'extended_kv_cache',

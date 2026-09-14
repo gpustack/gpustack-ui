@@ -1,7 +1,14 @@
 import { isCustomSourceType } from '@/pages/_components/source-config/config';
-import { CaretDownOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import {
+  CaretDownOutlined,
+  InfoCircleOutlined,
+  ProfileOutlined
+} from '@ant-design/icons';
+import {
+  Input as CInput,
   Select as SealSelect,
+  Textarea as SealTextArea,
+  TextAttribute,
   ThemeTag,
   TooltipList,
   useAppUtils
@@ -12,6 +19,7 @@ import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import { backendTipsList } from '../config';
 import { useFormContext } from '../config/form-context';
+import { FormData } from '../config/types';
 import { backendOptionsMap } from '../constants/backend-parameters';
 import useCompareEnvs from '../hooks/use-compare-envs';
 import EnvsOverridePopover from './envs-override-popover';
@@ -28,6 +36,36 @@ const CaretDownWrapper = styled.span`
   }
 `;
 
+// A built-in backend can pin a container image instead of a version from the
+// runner catalog, for a runtime the version list does not carry yet. The
+// backend stays vLLM/SGLang, so scheduling and distributed inference are
+// unaffected — unlike the Custom backend, which cannot be scheduled across
+// workers.
+const imageOverrideBackends = [
+  backendOptionsMap.vllm,
+  backendOptionsMap.SGLang
+];
+
+const CustomImageEntry = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: -4px -8px 0;
+  padding: 5px 8px;
+  border-radius: var(--ant-border-radius-sm);
+  color: var(--ant-color-primary);
+  cursor: pointer;
+  &:hover {
+    background-color: var(--ant-color-fill-tertiary);
+  }
+`;
+
+// Full-bleed against the footer's own horizontal padding.
+const FooterDivider = styled.div`
+  margin: 8px -12px;
+  border-top: 1px solid var(--ant-color-split);
+`;
+
 const BackendFields: React.FC = () => {
   const intl = useIntl();
   const navigate = useNavigate();
@@ -42,9 +80,34 @@ const BackendFields: React.FC = () => {
     onBackendChange
   } = useFormContext();
   const backend = Form.useWatch('backend', form);
+  const imageName = Form.useWatch('image_name', form);
   const [showDeprecated, setShowDeprecated] = React.useState<boolean>(false);
+  const [imageModePicked, setImageModePicked] = React.useState<boolean>(false);
+  const [versionOpen, setVersionOpen] = React.useState<boolean>(false);
   const { openTips, diffEnvs, handleCloseTips, handleCompareEnvs } =
     useCompareEnvs();
+
+  const supportsImageOverride = imageOverrideBackends.includes(backend);
+  // Picking the dropdown entry has to hold the mode while the field is still
+  // empty; past that the value itself implies it, which is how a catalog spec
+  // or an edited deployment opens straight into the image.
+  const isImageMode = supportsImageOverride && (imageModePicked || !!imageName);
+
+  // Switching the backend drops the image along with the other backend-scoped
+  // fields, so the way this deployment pins its runtime resets with them. The
+  // deploy modal also sets the backend without going through the field's own
+  // handler, which is why this watches the value rather than the event.
+  React.useEffect(() => {
+    setImageModePicked(false);
+  }, [backend]);
+
+  // The select is only hidden from here on and still submits its value, so a
+  // version picked before this has to be cleared.
+  const handleUseCustomImage = () => {
+    form.setFieldValue('backend_version', null);
+    setImageModePicked(true);
+    setVersionOpen(false);
+  };
 
   const handleBackendVersionOnChange = (value: any, option: any) => {
     if (Object.keys(option.data?.env || {}).length > 0) {
@@ -52,6 +115,27 @@ const BackendFields: React.FC = () => {
     }
 
     onValuesChange?.({}, form.getFieldsValue());
+  };
+
+  const handleBackToVersion = (e: React.MouseEvent) => {
+    // The label wrapper focuses its control on click.
+    e.stopPropagation();
+    setImageModePicked(false);
+    form.setFieldsValue({ image_name: null, run_command: null });
+    onValuesChange?.({}, form.getFieldsValue());
+  };
+
+  // Emptying the field must not fold the form back to the version select: the
+  // link beside the label is the only way out of the image.
+  const handleImageNameOnChange = () => {
+    setImageModePicked(true);
+  };
+
+  // The runner catalog image applies again once the field is cleared, and with
+  // it the architecture checks that a pinned image skips, so either direction
+  // is worth re-evaluating.
+  const handleImageNameOnBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    onValuesChange?.({ image_name: e.target.value }, form.getFieldsValue());
   };
 
   const backendVersions = useMemo((): {
@@ -231,9 +315,78 @@ const BackendFields: React.FC = () => {
           labelRender={labelRender}
         ></SealSelect>
       </Form.Item>
+      {backendOptionsMap.custom !== backend && supportsImageOverride && (
+        <>
+          <Form.Item<FormData>
+            name="image_name"
+            // Hidden rather than unmounted: an unregistered field is left out of
+            // the submitted values, and unmounting one under `preserve={false}`
+            // restores the value the form was opened with — so clearing the
+            // image while editing would never reach the server.
+            hidden={!isImageMode}
+            rules={
+              isImageMode
+                ? [
+                    {
+                      required: true,
+                      message: getRuleMessage(
+                        'input',
+                        'models.form.customImage'
+                      )
+                    }
+                  ]
+                : undefined
+            }
+          >
+            <CInput.Input
+              required
+              allowClear
+              onChange={handleImageNameOnChange}
+              onBlur={handleImageNameOnBlur}
+              label={intl.formatMessage({ id: 'models.form.customImage' })}
+              labelExtra={
+                <a className="m-l-8 font-size-12" onClick={handleBackToVersion}>
+                  {intl.formatMessage({
+                    id: 'models.form.customImage.backToVersion'
+                  })}
+                </a>
+              }
+              description={intl.formatMessage(
+                { id: 'models.form.customImage.tips' },
+                { backend }
+              )}
+            ></CInput.Input>
+          </Form.Item>
+          <Form.Item<FormData> name="run_command" hidden={!isImageMode}>
+            <SealTextArea
+              allowClear
+              scaleSize={false}
+              alwaysFocus={true}
+              autoSize={{ minRows: 2, maxRows: 5 }}
+              label={intl.formatMessage({ id: 'backend.runCommand' })}
+              labelExtra={
+                <TextAttribute className="m-l-4">
+                  {intl.formatMessage({ id: 'common.form.field.optional' })}
+                </TextAttribute>
+              }
+              description={intl.formatMessage({
+                id: 'models.form.customRunCommand.tips'
+              })}
+              placeholder={intl.formatMessage(
+                { id: 'common.help.eg' },
+                {
+                  content:
+                    '{{model_path}} --port {{port}} --host {{worker_ip}} --served-model-name {{model_name}}'
+                }
+              )}
+            ></SealTextArea>
+          </Form.Item>
+        </>
+      )}
       {backendOptionsMap.custom !== backend && (
         <Form.Item
           name="backend_version"
+          hidden={isImageMode}
           help={
             openTips && (
               <EnvsOverridePopover
@@ -256,28 +409,49 @@ const BackendFields: React.FC = () => {
               id: 'models.form.backendVersion.holder'
             })}
             description={<TooltipList list={backendTipsList}></TooltipList>}
+            open={versionOpen}
+            onOpenChange={setVersionOpen}
             onChange={handleBackendVersionOnChange}
             label={intl.formatMessage({ id: 'models.form.backendVersion' })}
+            // The footer sits outside the scrolling option list, so the entry
+            // stays reachable however many versions a backend carries.
             footer={
-              <dl className="flex" style={{ marginBottom: 0 }}>
-                <dt>
-                  <InfoCircleOutlined />
-                </dt>
-                <dd style={{ marginLeft: 8, marginBottom: 0 }}>
-                  {intl.formatMessage(
-                    {
-                      id: 'models.form.backendVersions.tips'
-                    },
-                    {
-                      link: (
-                        <a onClick={() => navigate('/models/backends')}>
-                          {intl.formatMessage({ id: 'backends.title' })}
-                        </a>
-                      )
-                    }
-                  )}
-                </dd>
-              </dl>
+              <>
+                {supportsImageOverride && (
+                  <>
+                    <CustomImageEntry
+                      // Keep the click from blurring the select before it lands.
+                      onMouseDown={(e: React.MouseEvent) => e.preventDefault()}
+                      onClick={handleUseCustomImage}
+                    >
+                      <ProfileOutlined />
+                      {intl.formatMessage({
+                        id: 'models.form.customImage.entry'
+                      })}
+                    </CustomImageEntry>
+                    <FooterDivider />
+                  </>
+                )}
+                <dl className="flex" style={{ marginBottom: 0 }}>
+                  <dt>
+                    <InfoCircleOutlined />
+                  </dt>
+                  <dd style={{ marginLeft: 8, marginBottom: 0 }}>
+                    {intl.formatMessage(
+                      {
+                        id: 'models.form.backendVersions.tips'
+                      },
+                      {
+                        link: (
+                          <a onClick={() => navigate('/models/backends')}>
+                            {intl.formatMessage({ id: 'backends.title' })}
+                          </a>
+                        )
+                      }
+                    )}
+                  </dd>
+                </dl>
+              </>
             }
           >
             {(backendVersions.builtIn.length > 0 ||

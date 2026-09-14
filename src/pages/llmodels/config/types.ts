@@ -349,6 +349,8 @@ export interface CatalogSpec {
   };
   backend: string;
   backend_version: string;
+  // A spec pins either a backend version or an image, never both.
+  image_name?: string;
   backend_parameters: any[];
   quantization: string;
   size: number;
@@ -379,6 +381,7 @@ export interface EvaluateSpec {
   };
   backend?: string;
   backend_version?: string;
+  image_name?: string;
   backend_parameters?: any[];
   env?: Record<string, any>;
   distributable?: boolean;

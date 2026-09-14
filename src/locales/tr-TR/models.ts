@@ -97,6 +97,13 @@ export default {
   'models.form.backendVersion': 'Altyapı Sürümü',
   'models.form.backendVersion.tips':
     '{backend}{version} sürümünü kullanmak için sistem, ilgili sürümü yüklemek üzere çevrimiçi ortamda otomatik olarak sanal ortam oluşturur. GPUStack yükseltmesinden sonra altyapı sürümü sabit kalır. {link}',
+  'models.form.customImage': 'Custom Image',
+  'models.form.customImage.entry': 'Use a custom image…',
+  'models.form.customImage.backToVersion': 'Select a version instead',
+  'models.form.customImage.tips':
+    'The backend stays {backend}, so scheduling and distributed inference are unchanged — only the container image is replaced. The image carries its own version, so the backend version and the model architecture are no longer checked.',
+  'models.form.customRunCommand.tips':
+    'Leave it empty to let GPUStack inject the startup arguments. Once set, GPUStack no longer injects the ones needed for distributed inference, so supply them yourself.',
   'models.form.gpuselector': 'GPU Seçici',
   'models.form.backend.llamabox':
     'GGUF format modeller için, Linux, macOS ve Windows destekler.',

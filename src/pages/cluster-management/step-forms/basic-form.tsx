@@ -28,7 +28,12 @@ const BasicForm = forwardRef((props: BasicFormProps, ref) => {
       formRef.current?.validateFields(...args),
     getFieldsValue: (...args: any[]) =>
       formRef.current?.getFieldsValue(...args),
-    submit: (...args: any[]) => formRef.current?.submit(...args)
+    submit: (...args: any[]) => formRef.current?.submit(...args),
+    // The wizard calls this after a 422 to put the server's message under the
+    // Chart Values editor. Missing here, `?.` would only have guarded `current`
+    // — the call itself would throw a TypeError and swallow the original error.
+    setChartValuesError: (...args: any[]) =>
+      formRef.current?.setChartValuesError(...args)
   }));
 
   return (

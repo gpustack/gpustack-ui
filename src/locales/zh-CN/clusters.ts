@@ -121,6 +121,20 @@ export default {
     '已将 {count} 个新节点添加到集群中。',
   'clusters.create.serverUrl': 'GPUStack Server URL',
   'clusters.create.workerConfig': '节点配置',
+  'clusters.chartValues.title': 'Chart Values（YAML）',
+  'clusters.chartValues.tip':
+    'GPUStack Helm chart 的 values，key 就是 chart 自己的 key，原样合并到服务端派生的值之上。上面没有对应字段、但 chart 及其子 chart 提供的能力都可以在这里配置 —— 例如关掉集群已自备的组件。与 Helm 一致，list 是整体替换而非追加。',
+  'clusters.chartValues.reapply.tip':
+    '保存集群不会改动 Kubernetes 里的任何东西。改完需要重新走「注册集群」拿到 manifest 并再次 apply —— 集群内的 Job 会比较 manifest 要求的配置与 release 实际安装的配置，只在不同时才升级。',
+  'clusters.chartValues.doc.chart': 'Chart values',
+  'clusters.chartValues.doc.operator': 'Operator chart',
+  'clusters.chartValues.error.invalidYaml': 'YAML 格式错误：{reason}',
+  'clusters.chartValues.error.notJson':
+    '{path} 的值不是字符串、数字、布尔、列表或映射 —— YAML 把它解析成了日期或二进制值，无法原样传递。加引号可以让它保持为文本。',
+  'clusters.chartValues.error.unsafeInteger':
+    '{path} 的整数超出了可精确表示的范围 —— 解析 YAML 时已经发生舍入，发送出去的会是另一个值。加引号可以保住原始数字。',
+  'clusters.chartValues.error.notMapping':
+    'Chart values 必须是 YAML 键值映射，不能是单个值或数组。',
   'clusters.edit.registration.changed.tip':
     '您已修改注册节点时生效的配置，需要在目标集群上重新运行注册命令才会生效。',
   'clusters.addworker.containerName': '节点容器名称',

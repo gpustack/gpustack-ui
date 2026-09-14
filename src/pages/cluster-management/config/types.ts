@@ -114,6 +114,13 @@ export interface K8sOptions {
   // Kubernetes namespace the cluster's manifests render into. Falls back to
   // `gpustack-system` at render time when unset.
   namespace?: string | null;
+  // Raw GPUStack Helm chart values, keyed exactly as the chart keys them and
+  // passed through untranslated — the escape hatch for anything the chart and
+  // its subcharts expose that has no dedicated option here. Merged key-by-key
+  // over the values the server derives, so the other options still apply
+  // underneath. Arbitrarily nested; `null` means "not set" (never send `{}`,
+  // which persists as an empty object).
+  helmValues?: Record<string, any> | null;
 }
 
 export interface ClusterListItem {

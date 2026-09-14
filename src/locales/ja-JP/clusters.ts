@@ -123,6 +123,20 @@ export default {
     '{count} new workers have been added to the cluster.',
   'clusters.create.serverUrl': 'GPUStack Server URL',
   'clusters.create.workerConfig': 'Worker Configuration',
+  'clusters.chartValues.title': 'Chart Values (YAML)',
+  'clusters.chartValues.tip':
+    'GPUStack Helm chart の values です。キーは chart 自身のキーそのままで、サーバーが導出した値の上にマージされます。上に専用の項目がなく chart やそのサブ chart が提供する機能は、ここで設定できます（例：クラスターが既に備えているコンポーネントを無効化する）。Helm と同様、リストは追加ではなく置き換えになります。',
+  'clusters.chartValues.reapply.tip':
+    'クラスターを保存しても Kubernetes 側は何も変わりません。変更後は「クラスターを登録」をやり直して manifest を取得し、再度適用してください。クラスター内の Job が manifest の要求と release の実際の構成を比較し、差分があるときだけアップグレードします。',
+  'clusters.chartValues.doc.chart': 'Chart values',
+  'clusters.chartValues.doc.operator': 'Operator chart',
+  'clusters.chartValues.error.invalidYaml': 'YAML の形式が不正です: {reason}',
+  'clusters.chartValues.error.notJson':
+    '{path} の値が文字列・数値・真偽値・リスト・マッピングのいずれでもありません。YAML が日付またはバイナリ値として解釈しており、そのままでは渡せません。引用符で囲むとテキストとして保持されます。',
+  'clusters.chartValues.error.unsafeInteger':
+    '{path} の整数は正確に扱える範囲を超えています。YAML の解析時点で丸められているため、別の値が送信されます。引用符で囲むと桁がそのまま保たれます。',
+  'clusters.chartValues.error.notMapping':
+    'Chart values は YAML のキーマッピングである必要があります。単一の値やリストは指定できません。',
   'clusters.edit.registration.changed.tip':
     'ワーカーの登録時に適用される設定を変更しました。変更を有効にするには、対象クラスターで登録コマンドを再実行してください。',
   'clusters.addworker.containerName': 'Worker Container Name',

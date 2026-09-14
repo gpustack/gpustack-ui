@@ -123,6 +123,20 @@ export default {
     '{count} новых воркеров были добавлены в кластер.',
   'clusters.create.serverUrl': 'GPUStack Server URL',
   'clusters.create.workerConfig': 'Конфигурация воркера',
+  'clusters.chartValues.title': 'Chart Values (YAML)',
+  'clusters.chartValues.tip':
+    'Values для Helm chart GPUStack: ключи те же, что и в самом chart, значения накладываются поверх выведенных сервером. Здесь доступно всё, что предоставляют chart и его subcharts и для чего нет поля выше — например отключение компонента, который уже есть в кластере. Как и в Helm, списки заменяются целиком, а не дополняются.',
+  'clusters.chartValues.reapply.tip':
+    'Сохранение кластера ничего не меняет в Kubernetes. После изменений заново выполните «Зарегистрировать кластер», получите manifest и примените его снова — Job внутри кластера сравнивает требуемую manifest конфигурацию с фактически установленной и обновляет release только при различии.',
+  'clusters.chartValues.doc.chart': 'Chart values',
+  'clusters.chartValues.doc.operator': 'Operator chart',
+  'clusters.chartValues.error.invalidYaml': 'Некорректный YAML: {reason}',
+  'clusters.chartValues.error.notJson':
+    'Значение в {path} не является строкой, числом, логическим значением, списком или отображением — YAML прочитал его как дату или двоичное значение, которое нельзя передать без изменений. Возьмите его в кавычки, чтобы оставить текстом.',
+  'clusters.chartValues.error.unsafeInteger':
+    'Целое число в {path} больше, чем можно передать точно — оно уже округлилось при разборе YAML, поэтому было бы отправлено другое значение. Возьмите его в кавычки, чтобы сохранить цифры.',
+  'clusters.chartValues.error.notMapping':
+    'Chart values должны быть YAML-отображением ключей, а не отдельным значением или списком.',
   'clusters.edit.registration.changed.tip':
     'Вы изменили параметры, которые применяются при регистрации воркера. Чтобы изменения вступили в силу, повторно выполните команду регистрации в целевом кластере.',
   'clusters.addworker.containerName': 'Имя контейнера воркера',

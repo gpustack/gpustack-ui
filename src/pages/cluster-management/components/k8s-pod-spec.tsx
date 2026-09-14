@@ -362,8 +362,15 @@ const nullishCustomizer = (val1: any, val2: any) => {
 export const K8sOptionsChangeWatcher: React.FC<{
   action: PageActionType;
   currentData?: ListItem;
+  // A change the watch cannot see for itself. `helmValues` lives in a monaco
+  // editor rather than the form store, so its own edits arrive here instead of
+  // through `Form.useWatch`. Deliberately a dirty flag and not a diff: the
+  // stored value is an object, so comparing it against a re-serialization of
+  // the editor's text would report a change for a difference in key order or a
+  // dropped comment alone.
+  extraChanged?: boolean;
   onChange: (changed: boolean) => void;
-}> = ({ action, currentData, onChange }) => {
+}> = ({ action, currentData, extraChanged, onChange }) => {
   // `preserve: true` so the watch tracks the full store, including
   // gpuInstanceOptions which is toggled via setFieldValue without a mounted
   // Form.Item (mirrors ClusterTypeSelector).
@@ -401,7 +408,10 @@ export const K8sOptionsChangeWatcher: React.FC<{
 
   const changed =
     action === PageAction.EDIT &&
-    (k8sOptionsChanged || registryChanged || serverUrlChanged);
+    (k8sOptionsChanged ||
+      registryChanged ||
+      serverUrlChanged ||
+      !!extraChanged);
 
   useEffect(() => {
     onChange(changed);

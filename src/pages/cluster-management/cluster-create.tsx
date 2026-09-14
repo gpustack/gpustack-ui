@@ -27,6 +27,7 @@ import { StepsContext } from './config/steps-context';
 import { ClusterFormData } from './config/types';
 import { moduleMap, moduleRegistry } from './step-forms/module-registry';
 import useStepList from './step-forms/use-step-list';
+import { extractHelmValuesError, isHelmValuesError } from './utils/helm-values';
 
 const Container = styled.div`
   width: 100%;
@@ -96,6 +97,9 @@ const ClusterCreate: React.FC<{
   const [formValues, setFormValues] = useState<Record<string, any>>({});
   const [submitLoading, setSubmitLoading] = useState<boolean>(false);
   const [isAddWorkerStep, setIsAddWorkerStep] = useState<boolean>(false);
+
+  // Survives BasicForm unmounting between steps; see StepsContext.
+  const chartValuesDraft = useRef<string | null>(null);
 
   const formRefs: Record<string, any> = {
     [moduleMap.BasicForm]: useRef<any>(null),
@@ -194,6 +198,7 @@ const ClusterCreate: React.FC<{
 
   const resetForm = () => {
     setFormValues({});
+    chartValuesDraft.current = null;
     for (const [formKey, formRef] of Object.entries(formRefs)) {
       formRefs[formKey] = React.createRef();
     }
@@ -312,7 +317,20 @@ const ClusterCreate: React.FC<{
       ...(typeof values === 'object' ? values : {})
     };
     setSubmitLoading(true);
-    const res = await createCluster({ data });
+    let res;
+    try {
+      res = await createCluster({ data });
+    } catch (error) {
+      // The global handler toasts the message; also park it under the Chart
+      // Values editor when that is the field the server blamed, since the form
+      // is still mounted (onNext only advances once this resolves).
+      if (isHelmValuesError(error)) {
+        formRefs[moduleMap.BasicForm].current?.setChartValuesError(
+          extractHelmValuesError(error)
+        );
+      }
+      throw error;
+    }
     const info = await queryClusterToken({ id: res.id });
     setSubmitLoading(false);
     setRegistrationInfo({
@@ -388,7 +406,8 @@ const ClusterCreate: React.FC<{
             value={{
               presetClusterType: presetClusterType,
               formValues: formValues,
-              systemConfig: systemConfigState
+              systemConfig: systemConfigState,
+              chartValuesDraft: chartValuesDraft
             }}
           >
             {renderModules()}

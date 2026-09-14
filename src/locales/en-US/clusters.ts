@@ -123,6 +123,20 @@ export default {
     '{count} new workers have been added to the cluster.',
   'clusters.create.serverUrl': 'GPUStack Server URL',
   'clusters.create.workerConfig': 'Worker Configuration',
+  'clusters.chartValues.title': 'Chart Values (YAML)',
+  'clusters.chartValues.tip':
+    'Values for the GPUStack Helm chart, keyed exactly as the chart keys them and merged over the values the server derives. Use it to reach anything the chart and its subcharts offer that has no field above — for example turning off a component the cluster already provides. Lists replace rather than append, as in Helm itself.',
+  'clusters.chartValues.reapply.tip':
+    'Saving the cluster changes nothing in Kubernetes. Re-run Register Cluster to get the manifest and apply it again — the in-cluster Job compares what the manifest asks for against what the release has installed, and upgrades only on a difference.',
+  'clusters.chartValues.doc.chart': 'Chart values',
+  'clusters.chartValues.doc.operator': 'Operator chart',
+  'clusters.chartValues.error.invalidYaml': 'Invalid YAML: {reason}',
+  'clusters.chartValues.error.notJson':
+    'The value at {path} is not a string, number, boolean, list or map — YAML read it as a date or binary value, which cannot be passed through unchanged. Quote it to keep it as text.',
+  'clusters.chartValues.error.unsafeInteger':
+    'The whole number at {path} is larger than can be carried exactly — reading the YAML already rounded it, so a different value would be sent. Quote it to keep the digits.',
+  'clusters.chartValues.error.notMapping':
+    'Chart values must be a YAML mapping of keys, not a single value or a list.',
   'clusters.edit.registration.changed.tip':
     'You have changed settings that are applied when a worker registers. Re-run the registration command on the target cluster for the changes to take effect.',
   'clusters.addworker.containerName': 'Worker Container Name',

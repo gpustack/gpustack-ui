@@ -164,23 +164,24 @@ const Clusters: React.FC = () => {
     const params = {
       ...data
     };
-    try {
-      if (openAddModal.action === PageAction.EDIT) {
-        await updateCluster({
-          data: params,
-          id: openAddModal.currentData!.id
-        });
-      }
-      fetchData();
-      setOpenAddModal({
-        open: false,
-        action: PageAction.CREATE,
-        currentData: undefined,
-        title: '',
-        provider: null
+    // Deliberately not caught here: the drawer needs the rejection to put a
+    // field-level error (e.g. a rejected Chart Values path) under the field
+    // that caused it. The global handler still toasts the message.
+    if (openAddModal.action === PageAction.EDIT) {
+      await updateCluster({
+        data: params,
+        id: openAddModal.currentData!.id
       });
-      message.success(intl.formatMessage({ id: 'common.message.success' }));
-    } catch (error) {}
+    }
+    fetchData();
+    setOpenAddModal({
+      open: false,
+      action: PageAction.CREATE,
+      currentData: undefined,
+      title: '',
+      provider: null
+    });
+    message.success(intl.formatMessage({ id: 'common.message.success' }));
   };
 
   const handleModalCancel = () => {

@@ -123,6 +123,20 @@ export default {
     '{count} yeni işçi düğüm kümeye eklendi.',
   'clusters.create.serverUrl': "GPUStack Sunucu URL'si",
   'clusters.create.workerConfig': 'İşçi Düğüm Yapılandırması',
+  'clusters.chartValues.title': 'Chart Values (YAML)',
+  'clusters.chartValues.tip':
+    'GPUStack Helm chart’ının values değerleri; anahtarlar chart’ın kendi anahtarlarıyla aynıdır ve sunucunun türettiği değerlerin üzerine birleştirilir. Yukarıda karşılık gelen bir alan olmayan, chart ve alt chart’larının sunduğu her şey buradan ayarlanabilir — örneğin kümede hâlihazırda bulunan bir bileşeni kapatmak. Helm’de olduğu gibi listeler eklenmez, tümüyle değiştirilir.',
+  'clusters.chartValues.reapply.tip':
+    'Kümeyi kaydetmek Kubernetes tarafında hiçbir şeyi değiştirmez. Değişiklikten sonra «Kümeyi Kaydet» akışını yeniden çalıştırıp manifest’i alın ve tekrar uygulayın — küme içindeki Job, manifest’in istediği yapılandırmayı release’in kurulu yapılandırmasıyla karşılaştırır ve yalnızca fark varsa yükseltme yapar.',
+  'clusters.chartValues.doc.chart': 'Chart values',
+  'clusters.chartValues.doc.operator': 'Operator chart',
+  'clusters.chartValues.error.invalidYaml': 'Geçersiz YAML: {reason}',
+  'clusters.chartValues.error.notJson':
+    '{path} konumundaki değer bir dize, sayı, mantıksal değer, liste veya eşleme değil — YAML onu tarih ya da ikili değer olarak okudu ve bu hâliyle olduğu gibi iletilemez. Metin olarak kalması için tırnak içine alın.',
+  'clusters.chartValues.error.unsafeInteger':
+    '{path} konumundaki tam sayı tam olarak taşınabilecek aralığın dışında — YAML okunurken zaten yuvarlandı, dolayısıyla farklı bir değer gönderilirdi. Rakamları korumak için tırnak içine alın.',
+  'clusters.chartValues.error.notMapping':
+    'Chart values bir YAML anahtar eşlemesi olmalıdır; tek bir değer veya liste olamaz.',
   'clusters.edit.registration.changed.tip':
     'Bir işçi düğüm kaydolurken uygulanan ayarları değiştirdiniz. Değişikliklerin etkili olması için kayıt komutunu hedef kümede yeniden çalıştırın.',
   'clusters.addworker.containerName': 'İşçi Düğüm Konteyner Adı',

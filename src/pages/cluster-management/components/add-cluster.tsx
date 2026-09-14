@@ -14,6 +14,10 @@ import {
   ClusterFormData as FormData,
   ClusterListItem as ListItem
 } from '../config/types';
+import {
+  extractHelmValuesError,
+  isHelmValuesError
+} from '../utils/helm-values';
 import ClusterForm from './cluster-form';
 
 const ModalFooterStyle = {
@@ -56,12 +60,21 @@ const AddCluster: React.FC<AddModalProps> = ({
   };
 
   const handleOk = async (data: FormData) => {
-    await run(() =>
-      onOk({
-        ...data,
-        provider
-      })
-    );
+    try {
+      await run(() =>
+        onOk({
+          ...data,
+          provider
+        })
+      );
+    } catch (error) {
+      // A rejected `onFinish` would otherwise be an unhandled rejection. The
+      // global handler already toasts the message; park it under the Chart
+      // Values editor too when that is the field the server blamed.
+      if (isHelmValuesError(error)) {
+        form.current?.setChartValuesError(extractHelmValuesError(error));
+      }
+    }
   };
 
   const handleCancel = () => {

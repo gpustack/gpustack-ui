@@ -68,6 +68,8 @@ jobs:
             ${{ github.workspace }}/node_modules
       - name: Build
         run: scripts/build
+      - name: Runtime choice test
+        run: npm run test:runtime-choice
 
   build-publish:
     needs:

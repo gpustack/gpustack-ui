@@ -30,6 +30,7 @@ import { useCheckCompatibility } from '../../hooks';
 import useFormInitialValues from '../../hooks/use-form-initial-values';
 import { generateGPUIds } from '../../utils';
 import CompatibilityAlert from '../compatible-alert';
+import { resolveRuntimeChoice } from './runtime-choice';
 
 const ModesMap: Record<string, string> = {
   latency: 'models.form.mode.latency',
@@ -55,6 +56,8 @@ const pickFieldsFromSpec = [
   'source',
   'quantization',
   'backend_version',
+  'image_name',
+  'run_command',
   'backend_parameters',
   'backend',
   'extended_kv_cache',
@@ -168,10 +171,12 @@ const AddModal: React.FC<AddModalProps> = (props) => {
 
   const initFormDataBySource = (data: CatalogSpec) => {
     selectSpecRef.current = data;
+    const runtimeChoice = resolveRuntimeChoice(data);
     form.current?.setFieldsValue({
-      ..._.omit(data, ['name']),
+      ..._.omit(data, ['name', ...Object.keys(runtimeChoice)]),
       categories: _.get(current, 'categories.0', null)
     });
+    form.current?.applyRuntimeChoice(runtimeChoice);
   };
 
   const handleCheckCompatibility = async (formData: FormData) => {
@@ -349,9 +354,9 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       quantization: ''
     });
 
-    form.current.setFieldsValue({
-      ...data
-    });
+    const runtimeChoice = resolveRuntimeChoice(data);
+    form.current.setFieldsValue(_.omit(data, Object.keys(runtimeChoice)));
+    form.current.applyRuntimeChoice(runtimeChoice);
     handleCheckFormData();
   };
 

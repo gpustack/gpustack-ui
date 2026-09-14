@@ -33,6 +33,7 @@ import {
   DeployFormKey,
   FormData,
   LoraListItem,
+  RuntimeChoice,
   SourceType
 } from '../config/types';
 import { backendOptionsMap } from '../constants/backend-parameters';
@@ -48,6 +49,7 @@ import Roles from './roles';
 import { rolesFormToPayload } from './roles/transform';
 import ScheduleTypeForm from './schedule-type';
 import ScheduledScalingForm from './scheduled-scaling';
+import { useRuntimeChoiceMode } from './use-runtime-choice-mode';
 
 const baseRequiredFields = ['name', 'source'];
 
@@ -120,6 +122,8 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   const { getGPUOptionList, gpuOptions, workerLabelOptions } =
     useGenerateGPUOptions();
   const [form] = Form.useForm();
+  const { imageModePicked, setImageModePicked, applyRuntimeChoice } =
+    useRuntimeChoiceMode(form, initialValues);
   const intl = useIntl();
   const [activeKey, setActiveKey] = React.useState<string[]>([]);
   const [submitAttempted, setSubmitAttempted] = React.useState(false);
@@ -414,6 +418,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   };
 
   const handleBackendChange = async (val: string, option?: BackendOption) => {
+    setImageModePicked(false);
     /**
      * The stash belongs to the engine it was taken from, so a new engine
      * voids it.
@@ -442,6 +447,11 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     form.setFieldsValue({
       backend_version: null, // don't set default version here, let the user select it
       backend_parameters: option?.default_backend_param || [],
+      // An image and its command belong to the backend they were entered for,
+      // and vLLM and SGLang both offer the field, so without this the image
+      // would follow along when switching between the two.
+      image_name: null,
+      run_command: null,
       // Switching away from vLLM clears it: carrying the declaration to, say,
       // SGLang would have the gateway forward a request the new image cannot
       // answer, where translating it would have worked.
@@ -727,6 +737,9 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       setFieldsValue: (values: FormData) => {
         form.setFieldsValue(values);
       },
+      applyRuntimeChoice: (runtime: RuntimeChoice) => {
+        applyRuntimeChoice(runtime);
+      },
       setFieldValue: (name: string, value: any) => {
         form.setFieldValue(name, value);
       },
@@ -783,6 +796,8 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         modelContextData: modelContextData,
         submitAttempted: submitAttempted,
         clearCacheFormValues: clearCacheFormValues,
+        imageModePicked: imageModePicked,
+        setImageModePicked: setImageModePicked,
         /**
          * The WRAPPED handler, not the raw prop.
          *

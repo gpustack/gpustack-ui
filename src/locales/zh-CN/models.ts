@@ -141,6 +141,13 @@ export default {
   'models.form.backendVersion': '后端版本',
   'models.form.backendVersion.tips':
     '固定以使用期望的 {backend} 版本 {version}，在线环境会自动创建虚拟环境安装对应版本的 {backend}。在 GPUStack 升级后也将保持固定的后端版本。{link}',
+  'models.form.customImage': '自定义镜像',
+  'models.form.customImage.entry': '使用自定义镜像…',
+  'models.form.customImage.backToVersion': '改回选择版本',
+  'models.form.customImage.tips':
+    '使用自定义 {backend} 镜像替代目录版本。GPUStack 不再按 runner 目录校验该镜像，请确认它支持目标设备和分布式部署方式。',
+  'models.form.customRunCommand.tips':
+    '内置后端只填写启动参数，不包含可执行文件；GPUStack 仍会追加主机、端口，并在适用时追加分布式推理参数。',
   'models.form.gpuselector': 'GPU 选择器',
   'models.form.backend.llamabox':
     '用于 GGUF 格式模型，支持 Linux, macOS 和 Windows。',

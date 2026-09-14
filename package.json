@@ -10,7 +10,8 @@
     "prepare": "husky",
     "preview": "max preview",
     "setup": "max setup",
-    "start": "npm run dev"
+    "start": "npm run dev",
+    "test:runtime-choice": "node --import tsx --test --test-force-exit src/pages/llmodels/components/deployment/runtime-choice.test.ts src/pages/llmodels/forms/use-runtime-choice-mode.test.tsx"
   },
   "dependencies": {
     "@ant-design/icons": "^6.1.0",
@@ -81,6 +82,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
+    "@types/jsdom": "^21.1.7",
     "@types/node": "^25.0.3",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.0",
@@ -104,6 +106,7 @@
     "file-loader": "^6.2.0",
     "globals": "^17.4.0",
     "husky": "^9.0.11",
+    "jsdom": "^26.1.0",
     "less-loader": "^12.2.0",
     "lint-staged": "^15.2.2",
     "mini-css-extract-plugin": "^2.9.0",

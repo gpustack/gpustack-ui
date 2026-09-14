@@ -149,6 +149,13 @@ export default {
   'models.form.backendVersion': 'Версия бэкенда',
   'models.form.backendVersion.tips':
     'Чтобы использовать желаемую версию {backend} {version}, система автоматически создаст виртуальную среду в онлайн-окружении для установки соответствующей версии. После обновления GPUStack версия бэкенда останется зафиксированной. {link}',
+  'models.form.customImage': 'Custom Image',
+  'models.form.customImage.entry': 'Use a custom image…',
+  'models.form.customImage.backToVersion': 'Select a version instead',
+  'models.form.customImage.tips':
+    'Use your own {backend} image instead of a catalog version. GPUStack skips runner catalog compatibility checks for this image; confirm it supports your devices and distributed setup.',
+  'models.form.customRunCommand.tips':
+    'For built-in backends, enter startup arguments without the executable. GPUStack still appends host and port, plus distributed settings where applicable.',
   'models.form.gpuselector': 'Селектор GPU',
   'models.form.backend.llamabox':
     'Для моделей формата GGUF. Поддержка Linux, macOS и Windows.',

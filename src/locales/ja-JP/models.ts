@@ -149,6 +149,13 @@ export default {
   'models.form.backendVersion': 'バックエンドバージョン',
   'models.form.backendVersion.tips':
     '希望する{backend}{version}バージョンを使用するには、システムがオンライン環境で対応するバージョンをインストールする仮想環境を自動的に作成します。GPUStackのアップグレード後もバックエンドバージョンは固定されます。{link}',
+  'models.form.customImage': 'Custom Image',
+  'models.form.customImage.entry': 'Use a custom image…',
+  'models.form.customImage.backToVersion': 'Select a version instead',
+  'models.form.customImage.tips':
+    'Use your own {backend} image instead of a catalog version. GPUStack skips runner catalog compatibility checks for this image; confirm it supports your devices and distributed setup.',
+  'models.form.customRunCommand.tips':
+    'For built-in backends, enter startup arguments without the executable. GPUStack still appends host and port, plus distributed settings where applicable.',
   'models.form.gpuselector': 'GPUセレクター',
   'models.form.backend.llamabox':
     'GGUF形式のモデル用（Linux、macOS、Windowsをサポート）。',

@@ -448,9 +448,15 @@ export interface LoraListItem {
   path: string;
   model_file_id: number;
 }
+export type RuntimeChoice = {
+  image_name: string | null;
+  backend_version: string | null;
+  run_command: string | null;
+};
+
 export interface FormData {
-  image_name?: string;
-  run_command?: string;
+  image_name?: string | null;
+  run_command?: string | null;
   enable_model_route?: boolean;
   backend: string;
   native_anthropic_api?: boolean;
@@ -460,7 +466,7 @@ export interface FormData {
   quantization?: number;
   categories?: string[];
   backend_parameters?: string[];
-  backend_version?: string;
+  backend_version?: string | null;
   source: SourceType;
   huggingface_repo_id: string;
   huggingface_filename: string;
@@ -756,7 +762,10 @@ export interface CatalogSpec {
     ngram_max_match_length: number;
   };
   backend: string;
-  backend_version: string;
+  backend_version?: string | null;
+  // A spec pins either a backend version or an image, never both.
+  image_name?: string | null;
+  run_command?: string | null;
   backend_parameters: any[];
   quantization: string;
   size: number;
@@ -786,7 +795,8 @@ export interface EvaluateSpec {
     gpus_per_replica: number;
   };
   backend?: string;
-  backend_version?: string;
+  backend_version?: string | null;
+  image_name?: string | null;
   backend_parameters?: any[];
   env?: Record<string, any>;
   distributable?: boolean;

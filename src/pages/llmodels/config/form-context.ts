@@ -35,6 +35,8 @@ interface FormContextProps {
   modelContextData?: Record<string, any>;
   submitAttempted?: boolean;
   clearCacheFormValues?: () => void;
+  imageModePicked: boolean;
+  setImageModePicked: React.Dispatch<React.SetStateAction<boolean>>;
   onValuesChange?: (changedValues: any, allValues: any) => void;
   onBackendChange: (backend: string, option: any) => void;
 }

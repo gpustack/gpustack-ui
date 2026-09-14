@@ -73,6 +73,7 @@ export type ExternalAuth = {
   type: string;
   // Browser-facing login URL the SSO button should navigate to.
   login_url: string;
+  display_name: string;
 };
 
 export const fetchAuthConfig = async () => {

@@ -83,6 +83,10 @@ export function useSSOAuth({
   return {
     isSSOLogin: !!sso,
     options: loginOption,
+    displayName:
+      loginOption.external_auth?.display_name ||
+      loginOption.external_auth?.type ||
+      'SSO',
     loginWithExternalAuth: () =>
       loginWithExternalAuth(loginOption.external_auth)
   };

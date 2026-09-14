@@ -17,6 +17,18 @@ import { usePaginationStatus } from './use-pagination-status';
 // polling cycel
 const POLLING_CYCLE = 5000;
 
+// Which query params are worth sending. `null` / `undefined` / `''` mean "this
+// filter isn't set"; `false` and `0` are real filter values and must survive.
+// The previous `!!val` test swallowed them, so a tri-state boolean filter set
+// to its negative option silently behaved as "no filter at all" — the request
+// went out without the param and the server returned everything.
+//
+// Deliberately NOT `!_.isEmpty(val)`: lodash treats every primitive except a
+// non-empty string as empty, so that predicate would also drop `page`,
+// `perPage` and every numeric filter.
+const hasQueryValue = (val: any) =>
+  val !== undefined && val !== null && val !== '';
+
 type EventsType = 'CREATE' | 'UPDATE' | 'DELETE' | 'INSERT';
 
 type WatchConfig =
@@ -133,7 +145,7 @@ export default function useTableFetch<T>(
     const { query, loadmore } = externalParams || {};
     try {
       const params = {
-        ..._.pickBy(query || queryParams, (val: any) => !!val)
+        ..._.pickBy(query || queryParams, hasQueryValue)
       };
       axiosTokenRef.current?.cancel?.('CANCEL_PREVIOUS_REQUEST');
       axiosTokenRef.current = createAxiosToken();
@@ -277,7 +289,10 @@ export default function useTableFetch<T>(
       const query = _.omit(currentParams, ['page', 'perPage']);
 
       chunkRequestRef.current = setChunkRequest({
-        url: `${API}?${qs.stringify(_.pickBy(query, (val: any) => !!val))}`,
+        // Same predicate as `fetchData`: the watch stream has to carry the
+        // exact filter set the table was fetched with, or it would push rows
+        // the current filters exclude.
+        url: `${API}?${qs.stringify(_.pickBy(query, hasQueryValue))}`,
         handler: updateHandler
       });
       triggerAtRef.current = Date.now();

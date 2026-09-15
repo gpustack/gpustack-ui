@@ -60,6 +60,8 @@ const PlaceholderRow = styled.div`
 // value since the cell lands under an unrelated parent column header
 interface InstanceRowsProps {
   service: ListItem;
+  // one instance's declared RAM claim; 0 hides the bubble row
+  capacityGib?: number;
   workerNameMap: Record<number, string>;
   workerIpMap: Record<number, string>;
   // bumping forces an immediate refetch (e.g. after an instance recreate)
@@ -91,11 +93,12 @@ export const InstanceInfoContent: React.FC<{
         <ThunderboltFilled className="m-r-5" />
         {intl.formatMessage({ id: 'kvCache.form.version' })}: {version || '-'}
       </div>
-      <div className="flex-center">
-        <PieChartFilled className="m-r-5" />
-        {intl.formatMessage({ id: 'kvCache.detail.capacity' })}:{' '}
-        {ramSize ? `${ramSize} GiB` : '-'}
-      </div>
+      {!!ramSize && (
+        <div className="flex-center">
+          <PieChartFilled className="m-r-5" />
+          {intl.formatMessage({ id: 'kvCache.detail.capacity' })}: {ramSize} GiB
+        </div>
+      )}
     </div>
   );
 };
@@ -104,6 +107,7 @@ export const InstanceInfoContent: React.FC<{
 // the expanded list row
 const InstanceRows: React.FC<InstanceRowsProps> = ({
   service,
+  capacityGib,
   workerNameMap,
   workerIpMap,
   refreshKey,
@@ -196,7 +200,7 @@ const InstanceRows: React.FC<InstanceRowsProps> = ({
                       service.provider_version,
                       service.config?.image
                     )}
-                    ramSize={service.config?.ram_size}
+                    ramSize={capacityGib}
                   />
                 }
                 styles={{

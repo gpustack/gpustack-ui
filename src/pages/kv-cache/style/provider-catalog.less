@@ -6,9 +6,36 @@
   gap: 16px;
   // the drawer's scroll container carries no block padding of its own
   padding-bottom: 16px;
+  // anchors the pointer-following label below, which the cards cannot
+  // hold: each clips its own overflow
+  position: relative;
+
+  // why a card is faded, trailing the pointer that rides it. Inert to
+  // that pointer, so the brand links it passes over keep taking clicks,
+  // and free of the card's bounds, so it never stalls against an edge.
+  .unavailable-hint {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    padding: 4px 8px;
+    border-radius: var(--ant-border-radius);
+    background-color: var(--ant-color-bg-spotlight);
+    color: var(--ant-color-text-light-solid);
+    font-size: var(--font-size-small);
+    font-weight: 400;
+    line-height: 1.4;
+    white-space: nowrap;
+    pointer-events: none;
+    // hidden until a pointer places it: the position is written to the
+    // node, so the first frame after it mounts has none yet
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
 
   // follows the model catalog card look: bordered card, tinted hover,
-  // title row with a 32px brand image, tinted footer tags
+  // title row with a 32px brand image, footer pairing the accelerator
+  // tags with the brand links on one row
   .provider-card {
     display: flex;
     flex-direction: column;
@@ -16,6 +43,8 @@
     gap: 12px;
     width: 100%;
     padding: 16px;
+    // anchors and clips what a card places over itself
+    position: relative;
     overflow: hidden;
     border: 1px solid var(--ant-color-border);
     border-radius: var(--ant-border-radius-lg);
@@ -29,6 +58,24 @@
     // the provider the flow already holds, marked when stepping back
     &.active {
       background-color: var(--ant-color-fill-tertiary);
+    }
+
+    // listed, but nothing to select: inert under the cursor, with what
+    // it offers faded to read as out of reach. The brand links keep
+    // their colour and stay clickable, which is what this card is still
+    // good for.
+    &.unavailable {
+      cursor: default;
+
+      &:hover {
+        background-color: var(--ant-color-bg-container);
+      }
+
+      .img,
+      .desc,
+      .item-footer .frameworks {
+        opacity: 0.55;
+      }
     }
 
     .title {
@@ -49,7 +96,10 @@
     .frameworks {
       display: flex;
       align-items: center;
+      flex-wrap: wrap;
       gap: 4px;
+      // shares the footer row with the links, which never wrap
+      min-width: 0;
 
       .label {
         margin-right: 4px;
@@ -99,12 +149,6 @@
       justify-content: space-between;
       gap: 12px;
       width: 100%;
-    }
-
-    .tags {
-      display: flex;
-      align-items: center;
-      gap: 6px;
     }
 
     .tag-item {

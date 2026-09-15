@@ -7,8 +7,7 @@ import {
   AutoTooltip,
   DropdownButtons,
   IconFont,
-  StatusTag,
-  ThemeTag
+  StatusTag
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Tooltip, Typography } from 'antd';
@@ -19,12 +18,10 @@ import { useMemo } from 'react';
 import {
   isHttpUrl,
   rowActionList,
-  ServiceModeColorMap,
-  ServiceModeMap,
   ServiceStateLabelMap,
   ServiceStatus
 } from '../config';
-import { CacheProviderItem, ListItem, ServiceMode } from '../config/types';
+import { CacheProviderItem, ListItem } from '../config/types';
 
 // Single source of the column min-widths: the parent table reads them for its
 // columns and the expanded instance rows rebuild the same track layout from
@@ -32,7 +29,6 @@ import { CacheProviderItem, ListItem, ServiceMode } from '../config/types';
 export const serviceColumnMinWidths = {
   name: 160,
   provider: 160,
-  mode: 100,
   cluster: 120,
   status: 120,
   createTime: 160,
@@ -111,16 +107,6 @@ const useServiceColumns = (
         dataIndex: 'provider_name',
         minWidth: serviceColumnMinWidths.provider,
         render: (value: string) => renderProvider(value)
-      },
-      {
-        title: intl.formatMessage({ id: 'kvCache.table.mode' }),
-        dataIndex: 'mode',
-        minWidth: serviceColumnMinWidths.mode,
-        render: (value: ServiceMode) => (
-          <ThemeTag color={ServiceModeColorMap[value] || 'blue'} opacity={0.7}>
-            {intl.formatMessage({ id: ServiceModeMap[value] })}
-          </ThemeTag>
-        )
       },
       {
         title: intl.formatMessage({ id: 'clusters.title' }),

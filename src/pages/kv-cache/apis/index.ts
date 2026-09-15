@@ -95,25 +95,6 @@ export async function deleteCacheService(id: number) {
   });
 }
 
-export async function testCacheServiceConnection(params: {
-  data: {
-    provider_name: string;
-    provider_version?: string;
-    endpoint: {
-      host?: string;
-      port: number;
-    };
-  };
-}) {
-  return request<{ reachable: boolean; message?: string }>(
-    `${CACHE_SERVICES_API}/test-connection`,
-    {
-      method: 'POST',
-      data: params.data
-    }
-  );
-}
-
 export async function queryCacheServiceMetrics(
   id: number,
   params: { window: string; workers?: string }

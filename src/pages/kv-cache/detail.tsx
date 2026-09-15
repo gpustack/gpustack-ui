@@ -15,7 +15,6 @@ import ServiceMonitor from './components/service-monitor';
 import ServiceOverview from './components/service-overview';
 import SubTitle from './components/sub-title';
 import ViewLogsModal from './components/view-logs-modal';
-import { ServiceModeValueMap } from './config';
 import { CacheServiceInstanceItem, ListItem } from './config/types';
 import useCacheProviders from './hooks/use-cache-providers';
 import useClusterWorkerNames from './hooks/use-cluster-worker-names';
@@ -85,15 +84,10 @@ const CacheServiceDetail: React.FC = () => {
     try {
       const data = await queryCacheServiceDetail(serviceId);
       setDetailData(data);
-      // only managed services have instances
-      if (data.mode === ServiceModeValueMap.Managed) {
-        try {
-          const res = await queryCacheServiceInstances(serviceId);
-          setInstances(res.items || []);
-        } catch (error) {
-          setInstances([]);
-        }
-      } else {
+      try {
+        const res = await queryCacheServiceInstances(serviceId);
+        setInstances(res.items || []);
+      } catch (error) {
         setInstances([]);
       }
     } catch (error) {
@@ -165,7 +159,6 @@ const CacheServiceDetail: React.FC = () => {
         provider={
           detailData ? getProvider(detailData.provider_name) : undefined
         }
-        instances={instances}
         clusterNameMap={clusterNameMap}
         workerNameMap={workerNameMap}
         onViewLogs={openViewLogsModal}

@@ -168,6 +168,8 @@ export default {
   'playground.params.refAudio': 'Reference Audio',
   'playground.params.refAudio.tips':
     'Enter a reference audio URL, or upload an audio file.',
+  'playground.params.refAudio.unsupported':
+    'This model does not support voice cloning; use a preset speaker (voice) instead. Its weights do not include the audio encoder voice cloning requires.',
   'playground.params.refAudio.text':
     'Transcript of Reference Audio (for ICL mode)',
   'playground.params.refAudio.vectorMode':
@@ -185,4 +187,5 @@ export default {
 // 5. 'playground.params.resolution': 'Resolution',
 // 6.  'playground.params.streamMode': 'Enable Streaming',
 // 7. 'playground.speech.rules.refAudio': 'Either the reference audio transcript or speaker embedding must be set.'
+// 8. 'playground.params.refAudio.unsupported': 'This model does not support voice cloning; use a preset speaker (voice) instead. Its weights do not include the audio encoder voice cloning requires.'
 // ========== End of To-Do List ==========

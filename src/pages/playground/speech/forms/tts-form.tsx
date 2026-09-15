@@ -113,6 +113,12 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
       form.resetFields();
 
       const values = {
+        // Kept ahead of the meta spread so the keys are always present:
+        // updatateParams merges into the previous model's params, and a
+        // reference audio surviving a switch to a model without the audio
+        // encoder takes down the whole engine, not just the request.
+        ref_audio: '',
+        ref_text: '',
         ..._.pick(model?.meta || {}, MetaFields),
         task_type: model?.meta?.task_type,
         model: value,

@@ -171,6 +171,8 @@ export default {
   'playground.params.refAudio': 'Reference Audio',
   'playground.params.refAudio.tips':
     'Enter a reference audio URL, or upload an audio file.',
+  'playground.params.refAudio.unsupported':
+    'This model does not support voice cloning; use a preset speaker (voice) instead. Its weights do not include the audio encoder voice cloning requires.',
   'playground.params.refAudio.text':
     'Transcript of Reference Audio (for ICL mode)',
   'playground.params.refAudio.vectorMode':

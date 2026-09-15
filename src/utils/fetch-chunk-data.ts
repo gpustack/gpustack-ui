@@ -1,3 +1,4 @@
+import { withBasePath } from '@/utils/with-base-path';
 import { throttle } from 'lodash';
 import qs from 'query-string';
 
@@ -65,7 +66,7 @@ export const fetchChunkedData = async (params: {
   if (params.params) {
     url = `${url}?${qs.stringify(params.params)}`;
   }
-  const response = await fetch(url, {
+  const response = await fetch(withBasePath(url), {
     method,
     body: method === 'POST' ? JSON.stringify(params.data) : null,
     signal: params.signal,
@@ -119,7 +120,7 @@ export const fetchChunkedDataPostFormData = async (params: {
   headers?: any;
 }) => {
   const { url } = params;
-  const response = await fetch(url, {
+  const response = await fetch(withBasePath(url), {
     method: 'POST',
     body: createFormData(params.data),
     signal: params.signal,

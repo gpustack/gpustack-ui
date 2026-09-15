@@ -1,4 +1,5 @@
 // hooks/useSSOAuth.ts
+import { withBasePath } from '@/utils/with-base-path';
 import { history, useIntl } from '@umijs/max';
 import { useEffect, useState } from 'react';
 import { ExternalAuth, fetchAuthConfig } from '../apis';
@@ -37,7 +38,11 @@ export function useSSOAuth({
 
   const loginWithExternalAuth = (auth: ExternalAuth | null) => {
     if (auth) {
-      window.location.href = auth.login_url;
+      // The server hands back an app-relative path (`/auth/oidc/login`) — it
+      // has no idea what prefix it is mounted under, so navigating to it
+      // verbatim would leave for the origin root. An absolute URL, should the
+      // server ever return one, passes through untouched.
+      window.location.href = withBasePath(auth.login_url);
     }
   };
 

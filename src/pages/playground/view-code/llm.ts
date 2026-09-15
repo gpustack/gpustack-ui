@@ -1,3 +1,4 @@
+import { EXTERNAL_BASE_URL } from '@/config/settings';
 import { MODEL_PROXY, OPENAI_COMPATIBLE } from '../apis';
 import { fomatNodeJsParams, formatCurlArgs, formatPyParams } from './utils';
 
@@ -7,7 +8,7 @@ export const generateLLmCurlCode = ({
   routeID,
   parameters
 }: Record<string, any>) => {
-  const host = window.location.origin;
+  const host = EXTERNAL_BASE_URL;
   const api = modelProxy ? `${MODEL_PROXY}/${routeID}/\${YOUR_API_PATH}` : url;
 
   // ========================= Curl =========================
@@ -24,7 +25,7 @@ export const generateLLMCode = ({
   api: url,
   parameters
 }: Record<string, any>) => {
-  const host = window.location.origin;
+  const host = EXTERNAL_BASE_URL;
 
   // ========================= Curl =========================
   const curlCode = generateLLmCurlCode({ api: url, parameters });

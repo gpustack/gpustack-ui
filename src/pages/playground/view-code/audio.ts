@@ -1,3 +1,4 @@
+import { EXTERNAL_BASE_URL } from '@/config/settings';
 import _ from 'lodash';
 import { MODEL_PROXY, OPENAI_COMPATIBLE } from '../apis';
 import { fomatNodeJsParams, formatCurlArgs, formatPyParams } from './utils';
@@ -8,7 +9,7 @@ export const generateSpeechToTextCurlCode = ({
   routeID,
   parameters
 }: Record<string, any>) => {
-  const host = window.location.origin;
+  const host = EXTERNAL_BASE_URL;
   // replace url OPENAI_COMPATIBLE with GPUSTACK
   const api = modelProxy ? `${MODEL_PROXY}/${routeID}/\${YOUR_API_PATH}` : url;
 
@@ -30,7 +31,7 @@ export const speechToTextCode = ({
   api: url,
   parameters
 }: Record<string, any>) => {
-  const host = window.location.origin;
+  const host = EXTERNAL_BASE_URL;
 
   // ========================= Curl =========================
   const curlCode = generateSpeechToTextCurlCode({ api: url, parameters });
@@ -89,7 +90,7 @@ export const generateTextToSpeechCurlCode = ({
   routeID,
   parameters
 }: Record<string, any>) => {
-  const host = window.location.origin;
+  const host = EXTERNAL_BASE_URL;
   const api = modelProxy ? `${MODEL_PROXY}/${routeID}/\${YOUR_API_PATH}` : url;
 
   // ========================= Curl =========================
@@ -106,7 +107,7 @@ export const TextToSpeechCode = ({
   api: url,
   parameters
 }: Record<string, any>) => {
-  const host = window.location.origin;
+  const host = EXTERNAL_BASE_URL;
 
   // ========================= Curl =========================
   const curlCode = generateTextToSpeechCurlCode({ api: url, parameters });

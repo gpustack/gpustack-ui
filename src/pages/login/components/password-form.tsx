@@ -7,6 +7,7 @@ import {
   writeState
 } from '@/utils/localstore/index';
 import { LockOutlined } from '@ant-design/icons';
+import { useAppUtils } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Form, Input, message } from 'antd';
 import CryptoJS from 'crypto-js';
@@ -14,8 +15,15 @@ import { useAtom } from 'jotai';
 import { updatePassword } from '../apis';
 import { checkDefaultPage } from '../utils';
 
+interface FormData {
+  current_password?: string;
+  new_password: string;
+  confirm_password: string;
+}
+
 const PasswordForm: React.FC = () => {
   const intl = useIntl();
+  const { getRuleMessage } = useAppUtils();
   const [form] = Form.useForm();
 
   const [userInfo, setUserInfo] = useAtom(userAtom);
@@ -30,11 +38,13 @@ const PasswordForm: React.FC = () => {
     return res;
   };
 
-  const handleSubmit = async (values: any) => {
+  const handleSubmit = async (values: FormData) => {
     try {
       await updatePassword({
         new_password: values.new_password,
-        current_password: decryptPassword(initialPassword)
+        current_password: initialPassword
+          ? decryptPassword(initialPassword)
+          : values.current_password
       });
 
       await setUserInfo({
@@ -76,7 +86,29 @@ const PasswordForm: React.FC = () => {
             {intl.formatMessage({ id: 'users.password.modify.description' })}
           </span>
         </h2>
-        <Form.Item
+        {!initialPassword && (
+          <Form.Item<FormData>
+            name="current_password"
+            style={{ marginBottom: 20 }}
+            label={intl.formatMessage({ id: 'users.form.currentpassword' })}
+            rules={[
+              {
+                required: true,
+                message: getRuleMessage('input', 'users.form.currentpassword')
+              }
+            ]}
+          >
+            <Input.Password
+              style={{ height: 44 }}
+              autoComplete="current-password"
+              placeholder={intl.formatMessage({
+                id: 'common.login.password.holder'
+              })}
+              prefix={<LockOutlined />}
+            />
+          </Form.Item>
+        )}
+        <Form.Item<FormData>
           name="new_password"
           style={{ marginBottom: 20 }}
           label={intl.formatMessage({ id: 'users.form.newpassword' })}
@@ -99,7 +131,7 @@ const PasswordForm: React.FC = () => {
             prefix={<LockOutlined />}
           />
         </Form.Item>
-        <Form.Item
+        <Form.Item<FormData>
           style={{ marginBottom: 20 }}
           name="confirm_password"
           label={intl.formatMessage({ id: 'users.password.confirm' })}

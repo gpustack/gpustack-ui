@@ -25,10 +25,12 @@ import {
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useDebounceFn, useMemoizedFn } from 'ahooks';
-import { Button, Form } from 'antd';
+import { Button, Flex, Form } from 'antd';
+import { createStyles } from 'antd-style';
 import _ from 'lodash';
 import {
   forwardRef,
+  useCallback,
   useEffect,
   useImperativeHandle,
   useMemo,
@@ -36,17 +38,14 @@ import {
   useState
 } from 'react';
 import styled from 'styled-components';
-import TestConnection from '../components/test-connection';
-import { ServiceModeValueMap } from '../config';
+import { profileRamGib } from '../config';
 import {
-  CacheProviderExternalField,
   CacheProviderField,
   CacheProviderL2Backend,
   CacheProviderL2Field,
   FormData,
   L2StorageConfig,
-  ListItem,
-  ServiceMode
+  ListItem
 } from '../config/types';
 import useCacheProviders from '../hooks/use-cache-providers';
 
@@ -192,10 +191,90 @@ export interface ResourceCheckStatus {
   message: string;
 }
 
+// The frame the per-component editors share, so several roles read as
+// one Parameters field rather than as a stack of separate ones: the
+// outer frame is the one a single editor draws for itself, and each role
+// inside carries the entry card the L2 backend list uses.
+const useParametersStyles = createStyles(({ token, css }) => ({
+  group: css`
+    position: relative;
+    width: 100%;
+    padding: 16px;
+    // room for the label the frame carries in its top-left corner
+    padding-top: 36px;
+    border: 1px solid ${token.colorBorder};
+    border-radius: ${token.borderRadiusLG}px;
+  `,
+  groupLabel: css`
+    position: absolute;
+    left: 16px;
+    top: 12px;
+    line-height: 1;
+    color: ${token.colorTextTertiary};
+  `,
+  entry: css`
+    padding: 12px 16px 16px;
+    border: 1px solid ${token.colorSplit};
+    border-radius: ${token.borderRadiusLG}px;
+  `,
+  entryTitle: css`
+    margin-bottom: 10px;
+  `
+}));
+
+// Flags belong to the binary a role runs, so they are edited and stored
+// per component rather than once for the service. Every enabled role is
+// laid out at once: what one of them carries is configuration of the
+// same service, and hiding it behind a switch is how it gets forgotten.
+const ComponentParameters: React.FC<{
+  value?: Record<string, string[]>;
+  onChange?: (value: Record<string, string[]>) => void;
+  // each role's own completion hints: they run different binaries, so
+  // one's flags are the other's parse error
+  components: { name: string; hints: { label: string; value: string }[] }[];
+  btnText: string;
+  label: string;
+}> = ({ value, onChange, components, btnText, label }) => {
+  const { styles } = useParametersStyles();
+  const editor = (component: (typeof components)[number]) => (
+    <ListInput
+      value={value?.[component.name] || []}
+      onChange={(next: string[]) =>
+        onChange?.({ ...(value || {}), [component.name]: next })
+      }
+      placeholder="--max-workers=8"
+      options={component.hints}
+      btnText={btnText}
+      label={components.length > 1 ? undefined : label}
+      styles={
+        components.length > 1
+          ? { wrapper: { border: 'none', borderRadius: 0, padding: 0 } }
+          : undefined
+      }
+    ></ListInput>
+  );
+
+  if (components.length <= 1) {
+    return editor(components[0] || { name: '', hints: [] });
+  }
+  return (
+    <Flex vertical gap={12} className={styles.group}>
+      <span className={styles.groupLabel}>{label}</span>
+      {components.map((component) => (
+        <div className={styles.entry} key={component.name}>
+          <EntryTitle className={styles.entryTitle}>
+            {humanizeFieldName(component.name)}
+          </EntryTitle>
+          {editor(component)}
+        </div>
+      ))}
+    </Flex>
+  );
+};
+
 interface ServiceFormProps {
   ref?: any;
   action: PageActionType;
-  mode: ServiceMode;
   provider?: string; // provider chosen from the catalog cards on CREATE
   currentData?: ListItem; // Used when action is EDIT
   onFinish: (values: FormData) => Promise<void>;
@@ -208,7 +287,6 @@ interface ServiceFormProps {
 const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
   const {
     action,
-    mode,
     provider,
     currentData,
     onFinish,
@@ -219,12 +297,7 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
   const intl = useIntl();
   const { getRuleMessage } = useAppUtils();
   const [form] = Form.useForm();
-  const {
-    providers,
-    managedProviderOptions,
-    externalProviderOptions,
-    getProvider
-  } = useCacheProviders();
+  const { providers, providerOptions, getProvider } = useCacheProviders();
   // the form needs only the cluster options and this cluster's workers;
   // the shared query hooks carry request cancellation, so a fetch
   // superseded by a cluster switch (or unmount) aborts instead of
@@ -249,16 +322,19 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
   const providerVersion = Form.useWatch('provider_version', form);
   const clusterId = Form.useWatch('cluster_id', form);
   const prevClusterRef = useRef<number | undefined>(undefined);
+  const pinnedFields = useRef<Set<string>>(new Set());
   const [advancedKeys, setAdvancedKeys] = useState<string[]>([]);
   const [l2CollapseKeys, setL2CollapseKeys] = useState<Set<number>>(new Set());
-
-  const isManaged = mode === ServiceModeValueMap.Managed;
 
   // per_node providers run one instance on every worker of the cluster;
   // there is no single worker to pick and worker_id must not be submitted
   const isPerNode = getProvider(providerName)?.topology === 'per_node';
+  // multi-component providers state capacity through their own
+  // declared fields; the built-in RAM Size is not theirs
+  const hasComponents =
+    Object.keys(getProvider(providerName)?.components || {}).length > 0;
 
-  const ramSize = Form.useWatch(['config', 'ram_size'], form);
+  const fieldValues = Form.useWatch(['config', 'fields'], form);
   const workerId = Form.useWatch('worker_id', form);
   const workerSelector = Form.useWatch('worker_selector', form);
 
@@ -269,7 +345,95 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
     if (!onCheckStatusChange) {
       return;
     }
-    if (!isManaged || !ramSize || !workers.length) {
+    const provider = getProvider(providerName);
+    const managedFields = provider?.fields || [];
+    const resolveField = (name?: string) => {
+      if (!name) {
+        return undefined;
+      }
+      const declared = managedFields.find((field) => field.name === name);
+      return fieldValues?.[name] ?? declared?.default;
+    };
+    // The component claiming RAM through its resource_profile is the
+    // only placement the service form can check — engine-side
+    // consumption follows the deployments. What to check depends on how
+    // that component is placed, not on how many components there are: a
+    // replicas pool needs enough workers that fit, while a per_node
+    // component lands on every matching worker, so the tightest one
+    // decides (which is the path below).
+    const claiming = Object.values(provider?.components || {}).find(
+      (component) => {
+        if (!component.resource_profile?.ram_gib) {
+          return false;
+        }
+        if (!component.enabled_by) {
+          return true;
+        }
+        const gate = resolveField(component.enabled_by);
+        return component.enabled_when != null
+          ? gate === component.enabled_when
+          : Boolean(gate);
+      }
+    );
+    if (claiming && claiming.topology !== 'per_node') {
+      const size = profileRamGib(
+        claiming.resource_profile,
+        managedFields,
+        fieldValues
+      );
+      const replicas = claiming.replicas_by
+        ? Number(resolveField(claiming.replicas_by)) || 1
+        : (claiming.replicas ?? 1);
+      if (!size || !workers.length) {
+        onCheckStatusChange({ show: false, message: '' });
+        return;
+      }
+      const matched = workers.filter((worker) =>
+        matchesSelector(worker, workerSelector)
+      );
+      if (matched.length < replicas) {
+        onCheckStatusChange({
+          show: true,
+          type: 'warning',
+          message: intl.formatMessage(
+            { id: 'kvCache.check.store.insufficientWorkers' },
+            { count: matched.length, replicas }
+          )
+        });
+        return;
+      }
+      const fitting = matched.filter(
+        (worker) =>
+          getFreeMemory(worker) !== undefined &&
+          getFreeMemory(worker)! > size * GiB
+      );
+      onCheckStatusChange(
+        fitting.length >= replicas
+          ? {
+              show: true,
+              type: 'success',
+              message: intl.formatMessage(
+                { id: 'kvCache.check.ok.store' },
+                { replicas, size }
+              )
+            }
+          : {
+              show: true,
+              type: 'warning',
+              message: intl.formatMessage(
+                { id: 'kvCache.check.store.exceedsFree' },
+                { count: fitting.length, replicas, size }
+              )
+            }
+      );
+      return;
+    }
+    const instanceGib = profileRamGib(
+      claiming?.resource_profile ?? provider?.resource_profile,
+      managedFields,
+      fieldValues
+    );
+    if (!instanceGib || !workers.length) {
       onCheckStatusChange({ show: false, message: '' });
       return;
     }
@@ -293,7 +457,7 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
     // reason); accelerator-less workers run the plain image CPU-only
     const versionConfig =
       providerVersion && providerVersion !== 'custom'
-        ? getProvider(providerName)?.versions?.[providerVersion]
+        ? provider?.versions?.[providerVersion]
         : undefined;
     const runtimeImages = versionConfig?.runtime_images || {};
     const acceleratorOf = (worker: WorkerListItem) =>
@@ -324,7 +488,7 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
     const constrained = targets
       .filter((worker) => getTotalMemory(worker) !== undefined)
       .sort((a, b) => getTotalMemory(a)! - getTotalMemory(b)!)[0];
-    if (constrained && ramSize * GiB >= getTotalMemory(constrained)!) {
+    if (constrained && instanceGib * GiB >= getTotalMemory(constrained)!) {
       onCheckStatusChange({
         show: true,
         type: 'warning',
@@ -341,7 +505,7 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
     const tightest = targets
       .filter((worker) => getFreeMemory(worker) !== undefined)
       .sort((a, b) => getFreeMemory(a)! - getFreeMemory(b)!)[0];
-    if (tightest && ramSize * GiB > getFreeMemory(tightest)!) {
+    if (tightest && instanceGib * GiB > getFreeMemory(tightest)!) {
       onCheckStatusChange({
         show: true,
         type: 'warning',
@@ -370,9 +534,9 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
     });
   }, [
     onCheckStatusChange,
-    isManaged,
     isPerNode,
-    ramSize,
+    hasComponents,
+    fieldValues,
     workerId,
     workerSelector,
     workers,
@@ -384,7 +548,7 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
   // deployment-style edit notice: config changes only land on the next
   // instance recreation, so flag any drift from the saved service
   const compareWithSaved = useMemoizedFn(() => {
-    if (action !== PageAction.EDIT || !isManaged || !currentData) {
+    if (action !== PageAction.EDIT || !currentData) {
       return;
     }
     const values = form.getFieldsValue();
@@ -404,9 +568,16 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
     wait: 100
   });
 
-  const providerOptions = isManaged
-    ? managedProviderOptions
-    : externalProviderOptions;
+  // declared fields the user has decided for themselves. antd's touched
+  // flag also trips on the form's own seeding, while onValuesChange fires
+  // for user edits alone — which is what a hardware-decided default must
+  // yield to.
+  const handleFormValuesChange = (changed: any) => {
+    Object.keys(changed?.config?.fields || {}).forEach((name) =>
+      pinnedFields.current.add(name)
+    );
+    handleValuesChange();
+  };
 
   const versionOptions = useMemo(() => {
     const provider = providers.find((item) => item.name === providerName);
@@ -415,15 +586,15 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
       value: version
     }));
     // managed services may run a user-supplied image under the reserved
-    // "custom" version; external services always name a real release
-    if (isManaged && provider?.custom_version) {
+    // "custom" version
+    if (provider?.custom_version) {
       options.push({
         label: intl.formatMessage({ id: 'kvCache.form.version.custom' }),
         value: 'custom'
       });
     }
     return options;
-  }, [providers, providerName, isManaged, intl]);
+  }, [providers, providerName, intl]);
 
   // a provider whose image is not published declares no release line at
   // all: there is no version to pick, and the service names its image
@@ -448,16 +619,70 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
     form
   );
 
-  // completion hints for the extra-parameters editor, declared by the
-  // provider (flags GPUStack injects itself are excluded declaration-side)
-  const parameterHints = useMemo(() => {
-    return (getProvider(providerName)?.common_parameters || []).map(
-      (value) => ({
-        label: value,
-        value
+  const asHints = (flags?: string[]) =>
+    (flags || []).map((value) => ({ label: value, value }));
+
+  // One parameters editor per component the configuration turns on: the
+  // flags reach that component's launch command alone. A provider
+  // without components has the single unnamed one. Completion hints
+  // follow the same split — a component declaring its own offers those,
+  // and the provider-level list, which describes the binary engines
+  // attach to, belongs to the component they attach to.
+  const parameterComponents = useMemo(() => {
+    const provider = getProvider(providerName);
+    const providerHints = asHints(provider?.common_parameters);
+    const components = Object.entries(provider?.components || {});
+    if (!components.length) {
+      return [{ name: '', hints: providerHints }];
+    }
+    const resolveField = (name?: string) => {
+      if (!name) {
+        return undefined;
+      }
+      const declared = (provider?.fields || []).find(
+        (field) => field.name === name
+      );
+      return fieldValues?.[name] ?? declared?.default;
+    };
+    return components
+      .filter(([, component]) => {
+        if (!component.enabled_by) {
+          return true;
+        }
+        const gate = resolveField(component.enabled_by);
+        return component.enabled_when != null
+          ? gate === component.enabled_when
+          : Boolean(gate);
       })
+      .map(([name, component]) => ({
+        name,
+        hints: component.common_parameters?.length
+          ? asHints(component.common_parameters)
+          : component.attach_endpoint
+            ? providerHints
+            : []
+      }));
+  }, [getProvider, providerName, fieldValues]);
+
+  // The one accelerator the cluster's workers agree on, if they do. A
+  // field whose value the hardware decides (a transport that is the
+  // accelerator's own on NPU) defaults by it rather than leaving a
+  // choice that only fails once an engine attaches.
+  const clusterFramework = useMemo(() => {
+    const frameworks = new Set(
+      workers
+        .map((worker) => worker.status?.gpu_devices?.[0]?.type)
+        .filter(Boolean) as string[]
     );
-  }, [getProvider, providerName]);
+    return frameworks.size === 1 ? [...frameworks][0] : undefined;
+  }, [workers]);
+
+  const fieldDefault = useCallback(
+    (field: CacheProviderField) =>
+      (clusterFramework && field.framework_defaults?.[clusterFramework]) ??
+      field.default,
+    [clusterFramework]
+  );
 
   const l2Backends = useMemo(() => {
     return getProvider(providerName)?.l2_backends || {};
@@ -485,45 +710,33 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
     // config.image only accompanies the reserved "custom" version, and
     // the version just reset to the provider default
     form.setFieldValue(['config', 'image'], undefined);
-    // per_node services reject worker_id and singleton ones reject
-    // worker_selector; drop the counterpart so the hidden field never
-    // reaches the submit payload
-    if (provider?.topology === 'per_node') {
+    // A provider that offers no Worker picker must not carry a worker_id
+    // into the payload: per_node instances follow the cluster's workers,
+    // and a multi-component provider places each role on its own terms.
+    // The label selector scopes every managed topology and stays.
+    if (
+      provider?.topology === 'per_node' ||
+      Object.keys(provider?.components || {}).length > 0
+    ) {
       form.setFieldValue('worker_id', undefined);
-    } else {
-      form.setFieldValue('worker_selector', undefined);
     }
-    if (isManaged) {
-      // declared fields are provider-specific; reseed from the newly
-      // selected provider's declared defaults
-      const fieldValues: Record<string, any> = {};
-      provider?.managed_fields?.forEach((field) => {
-        if (field.default !== undefined) {
-          fieldValues[field.name] = field.default;
-        }
-      });
-      form.setFieldValue(['config', 'fields'], fieldValues);
-      // L2 backends are provider-specific; drop the stale entries
-      // (an empty list is normalized to null server-side)
-      form.setFieldValue(['config', 'l2_storages'], []);
-      setL2CollapseKeys(new Set());
-    } else {
-      // external connection fields are provider-specific; reseed from the
-      // newly selected provider's declared defaults
-      const params: Record<string, any> = {};
-      provider?.external_fields?.forEach((field) => {
-        if (field.default !== undefined) {
-          params[field.name] = field.default;
-        }
-      });
-      form.setFieldValue(['endpoint', 'params'], params);
-      // the engine's conventional metrics port (e.g. the Mooncake
-      // master's 9003) seeds the field; the user overrides as needed
-      form.setFieldValue(
-        ['endpoint', 'metrics_port'],
-        provider?.default_metrics?.default_port
-      );
-    }
+    // declared fields are provider-specific; reseed from the newly
+    // selected provider's declared defaults, including the ones the
+    // cluster's accelerator decides. The values the user pinned belong
+    // to the provider they were entered for.
+    pinnedFields.current.clear();
+    const fieldValues: Record<string, any> = {};
+    provider?.fields?.forEach((field) => {
+      const value = fieldDefault(field);
+      if (value !== undefined) {
+        fieldValues[field.name] = value;
+      }
+    });
+    form.setFieldValue(['config', 'fields'], fieldValues);
+    // L2 backends are provider-specific; drop the stale entries
+    // (an empty list is normalized to null server-side)
+    form.setFieldValue(['config', 'l2_storages'], []);
+    setL2CollapseKeys(new Set());
   };
 
   const handleProviderChange = (value: string) => {
@@ -572,13 +785,14 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
         recursive: true
       });
       const list = form.getFieldValue(['config', 'l2_storages']) || [];
-      // a provider declaring a single backend leaves nothing to choose:
-      // the new entry opens on it, seeded as a manual pick would be
-      const backendKeys = Object.keys(l2Backends);
-      const entry =
-        backendKeys.length === 1
-          ? { backend: backendKeys[0], ...seedL2Entry(backendKeys[0]) }
-          : { backend: undefined, params: {} };
+      // The new entry opens on the provider's first declared backend,
+      // seeded as a manual pick would be: the declaration's order is its
+      // recommendation, and an empty Type asks a question whose answer
+      // is almost always the first one.
+      const [firstBackend] = Object.keys(l2Backends);
+      const entry = firstBackend
+        ? { backend: firstBackend, ...seedL2Entry(firstBackend) }
+        : { backend: undefined, params: {} };
       form.setFieldValue(['config', 'l2_storages'], [...list, entry]);
       setTimeout(() => {
         setL2CollapseKeys(new Set([list.length]));
@@ -640,20 +854,86 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
   // provider-declared configuration knobs promoted to structured advanced
   // fields; a matching flag in free-form Parameters still overrides them
   const providerFields = useMemo(() => {
-    return getProvider(providerName)?.managed_fields || [];
+    return getProvider(providerName)?.fields || [];
   }, [getProvider, providerName]);
+
+  // The cluster's workers arrive after the form seeds its defaults, so a
+  // field the hardware decides re-takes its default once they do — and
+  // again whenever the cluster changes. Only the user's own edit pins it;
+  // an edited service keeps what it was saved with.
+  useEffect(() => {
+    if (action !== PageAction.CREATE) {
+      return;
+    }
+    providerFields.forEach((field) => {
+      if (!field.framework_defaults || pinnedFields.current.has(field.name)) {
+        return;
+      }
+      form.setFieldValue(['config', 'fields', field.name], fieldDefault(field));
+    });
+  }, [providerFields, fieldDefault, form, action]);
+
+  // chunk size is a reserved placeholder some providers never consume
+  // (one chunking by the engine's own block hashes has no use for it);
+  // offering it there would suggest an effect it cannot have
+  // a field may follow another one's value (e.g. the RDMA device only
+  // matters on the rdma protocol); hidden fields keep their values —
+  // the declared defaults still render server-side
+  // gates chain: a field behind a switch that is itself behind a mode is
+  // gone with the mode, whatever the switch was left on
+  const fieldVisible = (field: CacheProviderField, seen?: Set<string>) => {
+    if (!field.visible_by) {
+      return true;
+    }
+    const gate = providerFields.find((item) => item.name === field.visible_by);
+    const visited = seen || new Set<string>();
+    if (gate && !visited.has(gate.name)) {
+      visited.add(gate.name);
+      if (!fieldVisible(gate, visited)) {
+        return false;
+      }
+    }
+    const value = fieldValues?.[field.visible_by] ?? gate?.default;
+    return value === field.visible_when;
+  };
 
   const renderProviderFieldControl = (
     field: CacheProviderField,
-    label: string
+    label: string,
+    required?: boolean
   ) => {
     const description = localize(field.description);
     if (field.options?.length) {
       return (
         <SealSelect
+          required={required}
           label={label}
           description={description}
-          options={field.options.map((value) => ({ label: value, value }))}
+          options={field.options.map((option) =>
+            typeof option === 'string'
+              ? { label: option, value: option }
+              : {
+                  label: localize(option.label) || option.value,
+                  value: option.value,
+                  description: localize(option.description)
+                }
+          )}
+          optionRender={(option: any) => (
+            <div style={{ whiteSpace: 'normal' }}>
+              <div>{option.label}</div>
+              {option.data?.description && (
+                <div
+                  style={{
+                    fontSize: 12,
+                    color: 'var(--ant-color-text-tertiary)',
+                    lineHeight: 1.4
+                  }}
+                >
+                  {option.data.description}
+                </div>
+              )}
+            </div>
+          )}
         />
       );
     }
@@ -661,8 +941,10 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
       case 'number':
         return (
           <InputNumber
+            required={required}
             label={label}
             description={description}
+            placeholder={field.placeholder}
             min={field.min}
             max={field.max}
             step={field.step}
@@ -671,44 +953,21 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
       case 'boolean':
         return <CheckboxField label={label} description={description} />;
       default:
-        return <CInput.Input label={label} description={description} />;
+        return (
+          <CInput.Input
+            required={required}
+            label={label}
+            description={description}
+            placeholder={field.placeholder}
+          />
+        );
     }
   };
 
   const renderL2FieldControl = (field: CacheProviderL2Field, label: string) => {
-    switch (field.type) {
-      case 'number':
-        return <InputNumber required={field.required} label={label} />;
-      case 'boolean':
-        return <CheckboxField label={label} />;
-      case 'password':
-        return <CInput.Password required={field.required} label={label} />;
-      default:
-        return <CInput.Input required={field.required} label={label} />;
-    }
-  };
-
-  // external connection parameters the provider declares for its external
-  // mode (e.g. Mooncake's metadata_server, protocol)
-  const externalFields = useMemo(() => {
-    return getProvider(providerName)?.external_fields || [];
-  }, [getProvider, providerName]);
-
-  const renderExternalFieldControl = (
-    field: CacheProviderExternalField,
-    label: string
-  ) => {
+    // the backend's own description covers its field set; a field
+    // carrying one explains the knob its label cannot
     const description = localize(field.description);
-    if (field.options?.length) {
-      return (
-        <SealSelect
-          required={field.required}
-          label={label}
-          description={description}
-          options={field.options.map((value) => ({ label: value, value }))}
-        />
-      );
-    }
     switch (field.type) {
       case 'number':
         return (
@@ -779,6 +1038,7 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
       form.submit();
     },
     resetFields: () => {
+      pinnedFields.current.clear();
       form.resetFields();
     }
   }));
@@ -788,9 +1048,10 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
       form.setFieldsValue({ ...currentData });
       // surface the advanced section when it already holds configuration
       if (
-        currentData.config?.parameters?.length ||
+        Object.values(currentData.config?.parameters || {}).some(
+          (flags) => flags?.length
+        ) ||
         Object.keys(currentData.config?.env || {}).length ||
-        currentData.config?.chunk_size != null ||
         currentData.config?.management_url ||
         currentData.restart_on_error === false
       ) {
@@ -823,21 +1084,14 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
   // never reached the provider defaults — leaves it with neither a
   // version to pick nor the image field that replaces it
   useEffect(() => {
-    if (!isManaged || hasDeclaredVersions || providerVersion === 'custom') {
+    if (hasDeclaredVersions || providerVersion === 'custom') {
       return;
     }
     if (!getProvider(providerName)?.custom_version) {
       return;
     }
     form.setFieldValue('provider_version', 'custom');
-  }, [
-    form,
-    isManaged,
-    hasDeclaredVersions,
-    providerVersion,
-    providerName,
-    getProvider
-  ]);
+  }, [form, hasDeclaredVersions, providerVersion, providerName, getProvider]);
 
   // with a single cluster there is nothing to choose; preselect it
   // re-runs on a provider switch too: stepping back and picking a
@@ -861,9 +1115,6 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
   useEffect(() => {
     // cluster workers feed the singleton Worker select and the per_node
     // label-selector autocomplete
-    if (!isManaged) {
-      return;
-    }
     const fetchWorkers = async () => {
       if (!clusterId) {
         setWorkers([]);
@@ -881,8 +1132,8 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
           return;
         }
         setWorkers(items || []);
-        // per_node services have no Worker select to seed
-        if (isPerNode) {
+        // nothing to seed where the form offers no Worker select
+        if (isPerNode || hasComponents) {
           return;
         }
         // seed an empty selection with the least-loaded worker
@@ -898,7 +1149,7 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
       }
     };
     fetchWorkers();
-  }, [clusterId, isManaged, isPerNode]);
+  }, [clusterId, isPerNode, hasComponents]);
 
   // On a genuine cluster change, drop the now-out-of-scope worker selection.
   useEffect(() => {
@@ -918,7 +1169,7 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
       form={form}
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}
-      onValuesChange={handleValuesChange}
+      onValuesChange={handleFormValuesChange}
     >
       <Form.Item<FormData>
         name="name"
@@ -956,7 +1207,7 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
           label={intl.formatMessage({ id: 'kvCache.form.provider' })}
         />
       </Form.Item>
-      {isManaged && (
+      {
         // A provider with no declared release line has no version to pick,
         // but the field stays registered: an unmounted one is absent from
         // both the watched values and the submit payload, and the image
@@ -971,8 +1222,8 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
             label={intl.formatMessage({ id: 'kvCache.form.version' })}
           />
         </Form.Item>
-      )}
-      {isManaged && providerVersion === 'custom' && (
+      }
+      {providerVersion === 'custom' && (
         <Form.Item<FormData>
           name={['config', 'image']}
           rules={[
@@ -1005,26 +1256,21 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
           label={intl.formatMessage({ id: 'clusters.title' })}
         />
       </Form.Item>
-      {isManaged && (
+      {
         <>
-          {!isPerNode && (
-            <Form.Item<FormData>
-              name="worker_id"
-              rules={[
-                {
-                  required: true,
-                  message: getRuleMessage('select', 'kvCache.table.worker')
-                }
-              ]}
-            >
+          {!isPerNode && !hasComponents && (
+            <Form.Item<FormData> name="worker_id">
               <SealSelect
-                required
+                allowClear
                 options={workerOptions}
                 label={intl.formatMessage({ id: 'kvCache.table.worker' })}
+                description={intl.formatMessage({
+                  id: 'kvCache.form.worker.autoTips'
+                })}
               />
             </Form.Item>
           )}
-          {isPerNode && (
+          {
             <LabelSelectorProvider value={{ options: workerLabelOptions }}>
               <Form.Item<FormData>
                 name="worker_selector"
@@ -1058,50 +1304,52 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
                     id: 'kvCache.form.workerSelector'
                   })}
                   description={intl.formatMessage({
-                    id: 'kvCache.form.workerSelector.tips'
+                    // replicas-topology providers use the selector to
+                    // scope placement, not to fan out per node
+                    id: isPerNode
+                      ? 'kvCache.form.workerSelector.tips'
+                      : 'kvCache.form.workerSelector.scopeTips'
                   })}
                 ></LabelSelector>
               </Form.Item>
             </LabelSelectorProvider>
-          )}
-          <Form.Item<FormData>
-            name={['config', 'ram_size']}
-            initialValue={20}
-            rules={[
-              {
-                required: true,
-                type: 'number',
-                min: 1,
-                message: getRuleMessage('input', 'kvCache.form.ramSize')
-              }
-            ]}
-          >
-            <InputNumber
-              required
-              min={1}
-              label={intl.formatMessage({ id: 'kvCache.form.ramSize' })}
-              description={
-                isPerNode
-                  ? intl.formatMessage({
-                      id: 'kvCache.form.ramSize.perInstance'
-                    })
-                  : undefined
-              }
-            />
-          </Form.Item>
-          {providerFields.map((field) => (
-            <Form.Item
-              key={field.name}
-              name={['config', 'fields', field.name]}
-              initialValue={field.default}
-              valuePropName={field.type === 'boolean' ? 'checked' : 'value'}
-            >
-              {renderProviderFieldControl(
-                field,
-                localize(field.label) || humanizeFieldName(field.name)
-              )}
-            </Form.Item>
-          ))}
+          }
+          {providerFields.map((field) => {
+            // A hidden Form.Item still validates, so a required field
+            // behind a gate would block submission with a message nobody
+            // can see; it is required only while it is offered.
+            const required = !!field.required && fieldVisible(field);
+            return (
+              <Form.Item
+                key={field.name}
+                name={['config', 'fields', field.name]}
+                initialValue={fieldDefault(field)}
+                valuePropName={field.type === 'boolean' ? 'checked' : 'value'}
+                hidden={!fieldVisible(field)}
+                rules={
+                  required
+                    ? [
+                        {
+                          required: true,
+                          message: getRuleMessage(
+                            field.options ? 'select' : 'input',
+                            localize(field.label) ||
+                              humanizeFieldName(field.name),
+                            false
+                          )
+                        }
+                      ]
+                    : undefined
+                }
+              >
+                {renderProviderFieldControl(
+                  field,
+                  localize(field.label) || humanizeFieldName(field.name),
+                  required
+                )}
+              </Form.Item>
+            );
+          })}
           {l2BackendOptions.length > 0 && (
             <>
               <GroupTitle>
@@ -1352,28 +1600,16 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
                         />
                       </Form.Item>
                     )}
-                    <Form.Item<FormData> name={['config', 'chunk_size']}>
-                      <InputNumber
-                        min={1}
-                        label={intl.formatMessage({
-                          id: 'kvCache.form.chunkSize'
-                        })}
-                        description={intl.formatMessage({
-                          id: 'kvCache.form.chunkSize.tips'
-                        })}
-                      />
-                    </Form.Item>
                     <Form.Item<FormData> name={['config', 'parameters']}>
-                      <ListInput
-                        placeholder="--max-workers=8"
-                        options={parameterHints}
+                      <ComponentParameters
+                        components={parameterComponents}
                         btnText={intl.formatMessage({
                           id: 'common.button.addParams'
                         })}
                         label={intl.formatMessage({
                           id: 'kvCache.form.parameters'
                         })}
-                      ></ListInput>
+                      ></ComponentParameters>
                     </Form.Item>
                     <Form.Item<FormData> name={['config', 'env']}>
                       <LabelSelector
@@ -1381,6 +1617,13 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
                         btnText={intl.formatMessage({
                           id: 'common.button.vars'
                         })}
+                        description={
+                          hasComponents
+                            ? intl.formatMessage({
+                                id: 'kvCache.form.env.componentTips'
+                              })
+                            : undefined
+                        }
                       ></LabelSelector>
                     </Form.Item>
                     <Form.Item<FormData>
@@ -1404,93 +1647,7 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
             ]}
           ></CollapsePanel>
         </>
-      )}
-      {!isManaged && (
-        <>
-          <Form.Item<FormData>
-            name={['endpoint', 'host']}
-            rules={[
-              {
-                required: true,
-                message: getRuleMessage('input', 'kvCache.form.host')
-              }
-            ]}
-          >
-            <CInput.Input
-              required
-              label={intl.formatMessage({ id: 'kvCache.form.host' })}
-            />
-          </Form.Item>
-          <Form.Item<FormData>
-            name={['endpoint', 'port']}
-            rules={[
-              {
-                required: true,
-                message: getRuleMessage('input', 'kvCache.form.port')
-              },
-              {
-                type: 'number',
-                min: 1,
-                max: 65535,
-                message: getRuleMessage('input', 'kvCache.form.port')
-              }
-            ]}
-          >
-            <InputNumber
-              required
-              min={1}
-              max={65535}
-              label={intl.formatMessage({ id: 'kvCache.form.port' })}
-            />
-          </Form.Item>
-          <Form.Item<FormData>
-            name={['endpoint', 'metrics_port']}
-            rules={[
-              {
-                type: 'number',
-                min: 1,
-                max: 65535,
-                message: getRuleMessage('input', 'kvCache.form.metricsPort')
-              }
-            ]}
-          >
-            <InputNumber
-              min={1}
-              max={65535}
-              label={intl.formatMessage({ id: 'kvCache.form.metricsPort' })}
-              description={intl.formatMessage({
-                id: 'kvCache.form.metricsPort.tips'
-              })}
-            />
-          </Form.Item>
-          {externalFields.map((field) => {
-            const label =
-              localize(field.label) || humanizeFieldName(field.name);
-            const isBoolean = field.type === 'boolean';
-            return (
-              <Form.Item
-                // remount per provider so same-named fields never leak across providers
-                key={`${providerName}-${field.name}`}
-                name={['endpoint', 'params', field.name]}
-                valuePropName={isBoolean ? 'checked' : 'value'}
-                rules={
-                  field.required && !isBoolean
-                    ? [
-                        {
-                          required: true,
-                          message: getRuleMessage('input', label, false)
-                        }
-                      ]
-                    : []
-                }
-              >
-                {renderExternalFieldControl(field, label)}
-              </Form.Item>
-            );
-          })}
-          <TestConnection />
-        </>
-      )}
+      }
     </Form>
   );
 });

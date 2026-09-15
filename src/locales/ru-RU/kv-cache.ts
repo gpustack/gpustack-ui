@@ -5,51 +5,48 @@ export default {
   'kvCache.provider.source.builtin': 'Built-in',
   'kvCache.provider.source.community': 'Community',
   'kvCache.provider.source.partner': 'GPUStack Certified Partner',
-  'kvCache.button.testConnection': 'Test Connection',
   'kvCache.button.viewLogs': 'View Logs',
   'kvCache.edit.recreate.tips':
     'Changes take effect after the instances are deleted and recreated.',
-  'kvCache.test.success': 'Connection successful',
-  'kvCache.test.fail': 'Connection failed',
-  'kvCache.mode.managed': 'Managed',
-  'kvCache.mode.external': 'External',
   'kvCache.table.provider': 'Provider',
-  'kvCache.table.mode': 'Mode',
   'kvCache.table.worker': 'Worker',
-  'kvCache.table.endpoint': 'Endpoint',
   'kvCache.form.provider': 'Provider',
   'kvCache.form.version': 'Version',
   'kvCache.form.version.custom': 'Custom',
   'kvCache.form.image': 'Container Image',
-  'kvCache.form.host': 'Host',
-  'kvCache.form.port': 'Port',
-  'kvCache.form.ramSize': 'RAM Size (GiB)',
   'kvCache.check.ok.perNode':
     'Resources are sufficient; one instance will run on each of {count} workers.',
   'kvCache.check.ok.singleton':
     'Resources are sufficient; the instance will run on worker {worker}.',
   'kvCache.check.noWorkers': 'No workers match the selector.',
+  'kvCache.check.ok.store':
+    'Deployable: {replicas} store replica(s) x {size} GiB fit the matching workers',
+  'kvCache.check.store.insufficientWorkers':
+    'Only {count} worker(s) match the selector; {replicas} store replicas requested',
+  'kvCache.check.store.exceedsFree':
+    'Only {count} matching worker(s) have {size} GiB free memory; {replicas} replicas requested',
   'kvCache.check.unsupportedAccel':
     '{count} of {total} target workers use accelerators ({backends}) this version has no image for; instances there will fail to start',
   'kvCache.form.ramSize.exceedsTotal':
     'Exceeds the memory capacity of worker {worker} ({total} GiB).',
   'kvCache.form.ramSize.exceedsFree':
     'Exceeds the free memory on worker {worker} ({free} GiB free); the cache server may be OOM-killed.',
-  'kvCache.form.ramSize.perInstance': 'Applied per instance on each worker.',
   'kvCache.form.workerSelector': 'Worker Label Selector',
+  'kvCache.form.worker.autoTips':
+    'Optional — leave empty to let the scheduler place the instance',
+  'kvCache.form.workerSelector.scopeTips':
+    'Limits instance placement to workers matching all labels; leave empty to allow every worker.',
   'kvCache.form.workerSelector.tips':
     'Runs one instance on each worker matching all labels; leave empty to cover every worker.',
-  'kvCache.form.chunkSize': 'Chunk Size',
   'kvCache.form.managementUrl': 'Management URL',
   'kvCache.form.managementUrl.tips':
     'Link to the engine-provided management UI; shown as a link beside the service name',
   'kvCache.form.managementUrl.invalid': 'Enter a valid http(s) URL',
   'kvCache.button.management': 'Management URL',
-  'kvCache.form.chunkSize.tips':
-    'Tokens per KV cache chunk. Smaller chunks enable finer-grained reuse at higher overhead. Leave empty to use the engine default.',
   'kvCache.form.advanced': 'Advanced',
   'kvCache.form.parameters': 'Parameters',
   'kvCache.form.env': 'Environment Variables',
+  'kvCache.form.env.componentTips': 'Applies to every component of the service',
   'kvCache.form.l2Backend': 'L2 Storage Backend',
   'kvCache.form.l2Backend.add': 'Add Backend',
   'kvCache.form.l2Backend.backend': 'Backend',
@@ -57,9 +54,6 @@ export default {
   'kvCache.form.l2Backend.customOptions': 'Custom Options',
   'kvCache.form.l2Backend.tips':
     'Spill KV cache to larger secondary storage tiers. Entries are prioritized in order: reads prefer the first; writes go to all.',
-  'kvCache.form.metricsPort': 'Metrics Port (Prometheus)',
-  'kvCache.form.metricsPort.tips':
-    'Prometheus metrics port of the external cache service, used to collect monitoring data.',
   'kvCache.detail.overview': 'Overview',
   'kvCache.detail.perWorker': 'per worker',
   'kvCache.detail.capacity': 'Capacity',

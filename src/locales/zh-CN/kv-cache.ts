@@ -5,48 +5,44 @@ export default {
   'kvCache.provider.source.builtin': '内置',
   'kvCache.provider.source.community': '社区',
   'kvCache.provider.source.partner': 'GPUStack 认证合作伙伴',
-  'kvCache.button.testConnection': '测试连接',
   'kvCache.button.viewLogs': '查看日志',
   'kvCache.edit.recreate.tips': '配置将在实例删除重建后生效。',
-  'kvCache.test.success': '连接成功',
-  'kvCache.test.fail': '连接失败',
-  'kvCache.mode.managed': '受管',
-  'kvCache.mode.external': '外部',
   'kvCache.table.provider': '提供方',
-  'kvCache.table.mode': '模式',
   'kvCache.table.worker': '节点',
-  'kvCache.table.endpoint': '端点',
   'kvCache.form.provider': '提供方',
   'kvCache.form.version': '版本',
   'kvCache.form.version.custom': '自定义',
   'kvCache.form.image': '容器镜像',
-  'kvCache.form.host': '主机',
-  'kvCache.form.port': '端口',
-  'kvCache.form.ramSize': '内存容量 (GiB)',
   'kvCache.check.ok.perNode': '资源满足;将在 {count} 个节点上各部署一个实例。',
   'kvCache.check.ok.singleton': '资源满足;实例将部署在节点 {worker}。',
   'kvCache.check.noWorkers': '没有匹配选择器的节点。',
+  'kvCache.check.ok.store':
+    '可部署:{replicas} 个 store 副本 × {size} GiB 满足匹配节点的可用内存',
+  'kvCache.check.store.insufficientWorkers':
+    '匹配节点仅 {count} 个,少于 store 副本数 {replicas}',
+  'kvCache.check.store.exceedsFree':
+    '仅 {count} 个匹配节点有 {size} GiB 空闲内存,需要 {replicas} 个副本',
   'kvCache.check.unsupportedAccel':
     '{count}/{total} 个目标 Worker 的加速器({backends})不受该版本支持,其上的实例将无法启动',
   'kvCache.form.ramSize.exceedsTotal':
     '超过节点 {worker} 的内存上限({total} GiB)。',
   'kvCache.form.ramSize.exceedsFree':
     '超过节点 {worker} 的当前可用内存(剩余 {free} GiB),缓存服务可能被 OOM 终止。',
-  'kvCache.form.ramSize.perInstance': '每个节点上的实例各自使用该容量。',
   'kvCache.form.workerSelector': '节点标签选择器',
+  'kvCache.form.worker.autoTips': '可选;留空时由调度器自动放置实例',
+  'kvCache.form.workerSelector.scopeTips':
+    '实例只放置在匹配全部标签的节点上，留空则不限制节点。',
   'kvCache.form.workerSelector.tips':
     '在匹配全部标签的每个节点上各运行一个实例;留空则覆盖所有节点。',
-  'kvCache.form.chunkSize': '块大小',
   'kvCache.form.managementUrl': '管理地址',
   'kvCache.form.managementUrl.tips':
     '缓存引擎自带管理界面的链接，将显示为服务名称旁的跳转链接',
   'kvCache.form.managementUrl.invalid': '请输入合法的 http(s) 地址',
   'kvCache.button.management': '管理地址',
-  'kvCache.form.chunkSize.tips':
-    '每个 KV 缓存块的 token 数。块越小复用粒度越细，但开销越高。留空使用引擎默认值。',
   'kvCache.form.advanced': '高级配置',
   'kvCache.form.parameters': '参数',
   'kvCache.form.env': '环境变量',
+  'kvCache.form.env.componentTips': '对服务的所有组件生效',
   'kvCache.form.l2Backend': 'L2 存储后端',
   'kvCache.form.l2Backend.add': '添加后端',
   'kvCache.form.l2Backend.backend': '后端',
@@ -54,9 +50,6 @@ export default {
   'kvCache.form.l2Backend.customOptions': '自定义配置',
   'kvCache.form.l2Backend.tips':
     '将 KV 缓存下沉到容量更大的二级存储。条目按顺序生效:读取优先第一个,写入落所有后端。',
-  'kvCache.form.metricsPort': '监控端口 (Prometheus)',
-  'kvCache.form.metricsPort.tips':
-    '外部缓存服务的 Prometheus 指标端口,用于采集监控数据。',
   'kvCache.detail.overview': '概览',
   'kvCache.detail.perWorker': '每节点',
   'kvCache.detail.capacity': '容量',

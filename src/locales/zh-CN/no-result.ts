@@ -73,7 +73,6 @@ export default {
   'noresult.gpuservice.sshkey.subTitle': '尚未添加任何 SSH 公钥。',
   'noresult.gpuservice.sshkey.nofound': '未找到匹配的 SSH 公钥',
   'noresult.kvCache.title': '暂无缓存服务',
-  'noresult.kvCache.subTitle':
-    '创建受管缓存服务或登记外部缓存服务以加速 KV 缓存。',
+  'noresult.kvCache.subTitle': '创建缓存服务，让多个模型实例复用 KV 缓存。',
   'noresult.kvCache.nofound': '未找到匹配的缓存服务'
 };

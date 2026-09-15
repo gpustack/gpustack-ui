@@ -241,6 +241,9 @@ export default {
   'models.kvCache.degraded.tips': '该实例的共享缓存未生效',
   'models.kvCache.endpointDead.tips':
     '该实例启动时接入的共享缓存当前不可用，重启实例以恢复',
+  'models.kvCache.service': '缓存服务',
+  'models.kvCache.hitRate': '缓存服务命中率（{window}）',
+  'models.kvCache.hitRate.window': '1 小时',
   'models.form.scheduling': '调度',
   'models.form.scaling': '定时伸缩',
   'models.form.scaling.enable': '启用定时伸缩',

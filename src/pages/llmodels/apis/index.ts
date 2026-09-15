@@ -15,6 +15,7 @@ import {
   FormData,
   GPUListItem,
   ListItem,
+  ModelCacheMetrics,
   ModelInstanceFormData,
   ModelInstanceListItem,
   ModelLoraAdapterResult
@@ -132,6 +133,21 @@ export async function queryModelInstancesList(
       cancelToken: options?.token
     }
   );
+}
+
+export async function queryModelCacheMetrics(
+  id: number,
+  params: { window: string },
+  options?: any
+) {
+  return request<ModelCacheMetrics>(`${MODELS_API}/${id}/cache-metrics`, {
+    method: 'GET',
+    params,
+    cancelToken: options?.token,
+    // the hit rate only enriches a tooltip: a failure (or observability
+    // being disabled) drops the line instead of toasting
+    skipErrorHandler: true
+  });
 }
 
 export async function createModelInstance(params: {

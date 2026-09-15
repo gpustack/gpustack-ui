@@ -84,6 +84,6 @@ export default {
   'noresult.gpuservice.sshkey.nofound': '一致する SSH 公開鍵が見つかりません。',
   'noresult.kvCache.title': 'No cache services yet',
   'noresult.kvCache.subTitle':
-    'Create a managed cache service or register an external one to accelerate KV cache.',
+    'Create a cache service to reuse KV cache across model instances.',
   'noresult.kvCache.nofound': 'No matching cache services found.'
 };

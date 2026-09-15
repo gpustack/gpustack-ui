@@ -222,7 +222,6 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
           clusterList: clusterList,
           profilesOptions: profilesOptions,
           datasetList: datasetList,
-          currentData,
           applyAutoName
         }}
       >

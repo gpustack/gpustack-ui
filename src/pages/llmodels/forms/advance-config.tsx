@@ -134,6 +134,20 @@ const AdvanceConfig = () => {
           ></CheckboxField>
         </Form.Item>
       )}
+      <Form.Item<FormData>
+        name="restart_on_error"
+        valuePropName="checked"
+        style={{ marginBottom: 8 }}
+      >
+        <CheckboxField
+          description={intl.formatMessage({
+            id: 'models.form.restart.onerror.tips'
+          })}
+          label={intl.formatMessage({
+            id: 'models.form.restart.onerror'
+          })}
+        ></CheckboxField>
+      </Form.Item>
       {servesChatCompletions && (
         <Form.Item<FormData>
           name="native_anthropic_api"
@@ -150,20 +164,6 @@ const AdvanceConfig = () => {
           ></CheckboxField>
         </Form.Item>
       )}
-      <Form.Item<FormData>
-        name="restart_on_error"
-        valuePropName="checked"
-        style={{ marginBottom: 8 }}
-      >
-        <CheckboxField
-          description={intl.formatMessage({
-            id: 'models.form.restart.onerror.tips'
-          })}
-          label={intl.formatMessage({
-            id: 'models.form.restart.onerror'
-          })}
-        ></CheckboxField>
-      </Form.Item>
       {realAction === PageAction.COPY || action === PageAction.CREATE ? (
         <>
           <Form.Item<FormData>

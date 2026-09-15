@@ -253,6 +253,9 @@ export default {
     'Shared KV cache is not active for this instance',
   'models.kvCache.endpointDead.tips':
     'The shared cache this instance attached to is no longer available; restart the instance to recover',
+  'models.kvCache.service': 'Cache Service',
+  'models.kvCache.hitRate': 'Cache Service Hit Rate ({window})',
+  'models.kvCache.hitRate.window': '1h',
   'models.form.scheduling': 'Scheduling',
   'models.form.scaling': 'Scheduled Scaling',
   'models.form.scaling.enable': 'Enable scheduled scaling',

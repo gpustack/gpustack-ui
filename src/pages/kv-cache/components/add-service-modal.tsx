@@ -7,13 +7,7 @@ import { useIntl } from '@umijs/max';
 import { Button, Steps } from 'antd';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { ServiceModeValueMap } from '../config';
-import {
-  CacheProviderItem,
-  FormData,
-  ListItem,
-  ServiceMode
-} from '../config/types';
+import { CacheProviderItem, FormData, ListItem } from '../config/types';
 
 import ServiceForm, { ResourceCheckStatus } from '../forms';
 import ProviderCatalog from './provider-catalog';
@@ -76,7 +70,6 @@ const StepsStyles: Record<string, any> = {
 type AddModalProps = {
   title: string; // Used when action is EDIT; CREATE titles follow the steps
   action: PageActionType;
-  mode: ServiceMode; // Used when action is EDIT; CREATE takes it from the card
   providers: CacheProviderItem[];
   open: boolean;
   currentData?: ListItem; // Used when action is EDIT
@@ -86,7 +79,6 @@ type AddModalProps = {
 const AddService: React.FC<AddModalProps> = ({
   title,
   action,
-  mode,
   providers,
   open,
   currentData,
@@ -107,17 +99,11 @@ const AddService: React.FC<AddModalProps> = ({
   // creation walks two steps: 0 picks the provider card, 1 configures;
   // editing opens straight on the form
   const [currentStep, setCurrentStep] = useState(0);
-  const [selection, setSelection] = useState<{
-    provider?: string;
-    mode: ServiceMode;
-  }>({
-    provider: undefined,
-    mode: ServiceModeValueMap.Managed as ServiceMode
+  const [selection, setSelection] = useState<{ provider?: string }>({
+    provider: undefined
   });
 
   const onProviderStep = isCreate && currentStep === 0;
-  // the chosen card fixes both the provider and the mode of the form
-  const formMode = isCreate ? selection.mode : mode;
 
   // a failed resource check is advisory: the primary button gives way to
   // "Submit Anyway", mirroring the deployment compatibility flow
@@ -129,10 +115,7 @@ const AddService: React.FC<AddModalProps> = ({
   // the notice outranks the resource-check success message but yields to
   // its warnings, which drive the "Submit Anyway" footer
   const showUpdateTips =
-    !showExtraButton &&
-    configChanged &&
-    action === PageAction.EDIT &&
-    mode === ServiceModeValueMap.Managed;
+    !showExtraButton && configChanged && action === PageAction.EDIT;
 
   const alertStatus: ResourceCheckStatus = showUpdateTips
     ? {
@@ -146,10 +129,7 @@ const AddService: React.FC<AddModalProps> = ({
     setConfigChanged(false);
     if (open) {
       setCurrentStep(0);
-      setSelection({
-        provider: undefined,
-        mode: ServiceModeValueMap.Managed as ServiceMode
-      });
+      setSelection({ provider: undefined });
       setCheckStatus({ show: false, message: '' });
     }
   }, [open]);
@@ -160,11 +140,7 @@ const AddService: React.FC<AddModalProps> = ({
     if (item.name !== selection.provider) {
       form.current?.resetFields();
       setCheckStatus({ show: false, message: '' });
-      setSelection({
-        provider: item.name,
-        mode: (item.supported_modes?.[0] ||
-          ServiceModeValueMap.Managed) as ServiceMode
-      });
+      setSelection({ provider: item.name });
     }
     setCurrentStep(1);
   };
@@ -178,18 +154,7 @@ const AddService: React.FC<AddModalProps> = ({
   };
 
   const handleOnFinish = async (data: FormData) => {
-    // antd preserves unmounted fields' values: stepping back from a
-    // managed provider leaves config/restart defaults in the store, and
-    // they must not ride into an external registration payload
-    const payload: FormData = { ...data, mode: formMode };
-    if (formMode !== ServiceModeValueMap.Managed) {
-      delete payload.config;
-      delete payload.restart_on_error;
-      delete payload.provider_version;
-      delete payload.worker_id;
-      delete payload.worker_selector;
-    }
-    await run(() => onOk(payload));
+    await run(() => onOk(data));
   };
 
   const handleCancel = () => {
@@ -297,7 +262,6 @@ const AddService: React.FC<AddModalProps> = ({
           <ServiceForm
             ref={form}
             action={action}
-            mode={formMode}
             provider={selection.provider}
             currentData={currentData}
             onFinish={handleOnFinish}

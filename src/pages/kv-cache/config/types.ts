@@ -1,7 +1,5 @@
 import type { LocalizedText } from '@/utils/localize';
 
-export type ServiceMode = 'managed' | 'external';
-
 export type ServiceState =
   | 'pending'
   | 'starting'
@@ -23,6 +21,8 @@ export interface CacheProviderL2Field {
   // provider-defined technical key; humanized as the label fallback
   name: string;
   label?: LocalizedText;
+  // what the value does, for a knob the label alone does not explain
+  description?: LocalizedText;
   type?: 'string' | 'number' | 'boolean' | 'password';
   required?: boolean;
   default?: any;
@@ -41,22 +41,6 @@ export interface CacheProviderL2Backend {
   fields: CacheProviderL2Field[];
 }
 
-// external-mode connection parameter the user fills at registration
-// (e.g. Mooncake's metadata_server, protocol); rendered into the
-// connector injection server-side
-export interface CacheProviderExternalField {
-  name: string;
-  label?: LocalizedText;
-  description?: LocalizedText;
-  type?: 'string' | 'number' | 'boolean' | 'password';
-  required?: boolean;
-  default?: any;
-  // when set, the field is a fixed choice (e.g. protocol tcp/rdma); the
-  // values are the engine's own enum and reach it verbatim, so they are
-  // never localized — their meaning belongs in the field description
-  options?: string[];
-}
-
 // brand link (docs, homepage) shown on the provider card
 export interface CacheProviderLink {
   label: LocalizedText;
@@ -71,9 +55,26 @@ export interface CacheProviderField {
   name: string;
   label?: LocalizedText;
   description?: LocalizedText;
+  // sample value shown in the empty input
+  placeholder?: string;
   type?: 'string' | 'number' | 'boolean';
   default?: any;
-  options?: string[];
+  // the form requires a value (a declared default satisfies it)
+  required?: boolean;
+  // default per accelerator framework of the cluster's workers, falling
+  // back to `default` (e.g. Ascend transport on NPU nodes)
+  framework_defaults?: Record<string, any>;
+  // a choice is the stored value, or {value, label, description} when
+  // the display text differs (description renders under the label in
+  // the dropdown)
+  options?: (
+    | string
+    | { value: string; label?: LocalizedText; description?: LocalizedText }
+  )[];
+  // renders only while the visible_by field equals visible_when (a
+  // hidden field's default still renders server-side)
+  visible_by?: string;
+  visible_when?: any;
   // numeric bounds and stepper increment for number-typed fields
   min?: number;
   max?: number;
@@ -87,12 +88,44 @@ export interface CacheProviderItem {
   description?: LocalizedText;
   icon?: string;
   links?: CacheProviderLink[];
-  supported_modes: ServiceMode[];
+  // why this installation cannot run the provider, which is also what
+  // marks it unavailable: the card is listed so the choice stays
+  // visible, but it cannot be picked
+  unavailable_reason?: LocalizedText;
   // the engine ships its own management UI: the form offers management_url
   management_url?: boolean;
-  // managed-mode instance layout: "singleton" runs one instance on the
-  // worker picked at creation; "per_node" runs one on every worker
-  topology?: 'singleton' | 'per_node';
+  // managed-mode instance layout of single-component providers:
+  // "replicas" runs a scheduler-placed instance (optionally pinned to a
+  // picked worker); "per_node" runs one on every matching worker
+  topology?: 'replicas' | 'per_node';
+  // multi-component providers (a master and its stores, say) declare
+  // per-role layout; a component's resource_profile states one
+  // instance's RAM claim for the placement pre-flight
+  components?: Record<
+    string,
+    {
+      topology?: string;
+      replicas?: number;
+      replicas_by?: string;
+      depends_on?: string;
+      enabled_by?: string;
+      enabled_when?: any;
+      attach_endpoint?: boolean;
+      // every port the component binds, and which of them carries its
+      // address and its Prometheus exposition
+      ports?: (
+        | string
+        | { name: string; enabled_by?: string; enabled_when?: any }
+      )[];
+      address_port?: string;
+      metrics_port?: string;
+      // completion hints for this role's own binary; the provider-level
+      // list describes the one engines attach to
+      common_parameters?: string[];
+      gpu_access?: boolean;
+      resource_profile?: CacheProviderResourceProfile;
+    }
+  >;
   default_version?: string;
   // managed services may pick the reserved "custom" version and supply
   // their own container image via config.image
@@ -107,23 +140,18 @@ export interface CacheProviderItem {
     versions?: string;
   }[];
   health_check?: Record<string, any>;
-  resource_profile?: Record<string, any>;
+  resource_profile?: CacheProviderResourceProfile;
   // present when the provider supports spilling KV cache to L2 storage
   l2_adapter_flag?: string;
   common_parameters?: string[];
   l2_backends?: Record<string, CacheProviderL2Backend>;
-  // external-mode connection parameters, shown on the registration form
-  external_fields?: CacheProviderExternalField[];
-  // structured configuration fields shown on the managed form, wired
+  // structured configuration fields shown on the form, wired
   // into the runtime config via their {{name}} template placeholders
-  managed_fields?: CacheProviderField[];
+  fields?: CacheProviderField[];
   // the all-version default of where the service's Prometheus
-  // exposition is scraped (a version may override it server-side);
-  // default_port seeds the registration form's metrics-port field for
-  // external providers
+  // exposition is scraped (a version may override it server-side)
   default_metrics?: {
     path?: string;
-    default_port?: number;
     [key: string]: any;
   };
 }
@@ -136,27 +164,23 @@ export interface L2StorageConfig {
   adapter_flag_enabled?: boolean;
 }
 
-export interface ServiceEndpoint {
-  host?: string;
-  port?: number;
-  url?: string;
-  metrics_port?: number;
-  metrics_url?: string;
-  // values for the provider's declared external_fields, keyed by
-  // field name
-  params?: Record<string, any>;
+// ram_gib is a template over the declared field values (e.g.
+// "{{ram_size}}"); rendering it yields one instance's RAM claim
+export interface CacheProviderResourceProfile {
+  ram_gib?: string;
+  cpu?: number;
 }
 
 export interface ServiceConfig {
-  ram_size?: number;
-  chunk_size?: number;
   // container image ref; required with (and only allowed for) the
   // reserved "custom" provider_version
   image?: string;
-  // extra CLI flags passed to the provider container, e.g. "--max-workers=8"
-  parameters?: string[];
+  // extra CLI flags passed to the provider container, e.g.
+  // "--max-workers=8", keyed by the component whose launch command takes
+  // them ("" for a provider that runs a single process)
+  parameters?: Record<string, string[]>;
   env?: Record<string, string>;
-  // values for the provider's declared managed_fields, keyed by field name
+  // values for the provider's declared fields, keyed by field name
   fields?: Record<string, any>;
   // managed only; ordered by priority (reads prefer the first entry,
   // writes go to all); null or empty clears the L2 storage backends
@@ -169,32 +193,22 @@ export interface FormData {
   name: string;
   provider_name: string;
   provider_version?: string;
-  mode: ServiceMode;
   cluster_id: number;
   worker_id?: number;
-  // managed per_node topology only; instances run on workers matching
+  // per_node topology only; instances run on workers matching
   // ALL label pairs; empty or absent covers every cluster worker
   worker_selector?: Record<string, string> | null;
   restart_on_error?: boolean;
   config?: {
-    ram_size?: number;
-    chunk_size?: number;
     // container image ref; required with (and only allowed for) the
     // reserved "custom" provider_version
     image?: string;
-    parameters?: string[];
+    parameters?: Record<string, string[]>;
     env?: Record<string, string>;
     fields?: Record<string, any>;
     l2_storages?: L2StorageConfig[] | null;
     // link to the cache engine's own management console (display-only)
     management_url?: string;
-  };
-  endpoint?: {
-    host?: string;
-    port: number;
-    metrics_port?: number;
-    // values for the provider's declared external_fields
-    params?: Record<string, any>;
   };
 }
 
@@ -203,16 +217,18 @@ export interface ListItem {
   name: string;
   provider_name: string;
   provider_version?: string;
-  mode: ServiceMode;
   cluster_id: number;
-  // managed singleton topology only; per-instance placement lives in
+  // replicas topology only; per-instance placement lives in
   // CacheServiceInstanceItem
   worker_id?: number;
-  // managed per_node topology only; instances run on workers matching
+  // per_node topology only; instances run on workers matching
   // ALL label pairs; empty or absent covers every cluster worker
   worker_selector?: Record<string, string> | null;
   config?: ServiceConfig;
-  endpoint?: ServiceEndpoint;
+  // where engines are told to attach, resolved server-side. Filled when the service is read on its own (it resolves
+  // through the instances), absent in listings and wherever no single
+  // address exists — a node-local provider wires every engine to its own
+  // node's instance
   // managed services aggregate their instances' states; state_message
   // carries the roll-up (e.g. "2/3 instances running")
   state: ServiceState;
@@ -231,9 +247,14 @@ export interface CacheServiceInstanceItem {
   name: string;
   cache_service_id: number;
   worker_id: number;
+  // which provider component this instance runs (e.g. "master"); empty
+  // for single-component providers
+  component?: string;
   cluster_id: number;
+  // every port the instance holds, keyed by the name its component gave
+  // it; `port` is the one the instance is addressed by
+  ports?: Record<string, number>;
   port?: number;
-  metrics_port?: number;
   state: ServiceState;
   state_message?: string;
   healthy?: boolean;

@@ -2,17 +2,13 @@ import { StatusMaps } from '@/config';
 import { StatusType } from '@/config/types';
 import { GrafanaIcon, IconFont, icons } from '@gpustack/core-ui';
 import React from 'react';
-import { CacheProviderItem, CacheServiceInstanceItem, ListItem } from './types';
-
-export const ServiceModeValueMap = {
-  Managed: 'managed',
-  External: 'external'
-};
-
-export const ServiceModeMap: Record<string, string> = {
-  [ServiceModeValueMap.Managed]: 'kvCache.mode.managed',
-  [ServiceModeValueMap.External]: 'kvCache.mode.external'
-};
+import {
+  CacheProviderField,
+  CacheProviderItem,
+  CacheProviderResourceProfile,
+  CacheServiceInstanceItem,
+  ListItem
+} from './types';
 
 export const ProviderSourceLabelMap: Record<string, string> = {
   built_in: 'kvCache.provider.source.builtin',
@@ -28,10 +24,6 @@ export const ProviderSourceColorMap: Record<string, string> = {
 
 // managed=blue, external=purple; gold stays reserved for the certified
 // partner badge
-export const ServiceModeColorMap: Record<string, string> = {
-  managed: 'blue',
-  external: 'purple'
-};
 
 export const ServiceStateValueMap = {
   Pending: 'pending',
@@ -71,7 +63,6 @@ export const canViewServiceLogs = (
   record: ListItem,
   provider?: CacheProviderItem
 ) =>
-  record.mode === ServiceModeValueMap.Managed &&
   provider?.topology !== 'per_node' &&
   !!record.worker_id &&
   logViewableStates.includes(record.state);
@@ -82,6 +73,27 @@ export const canViewInstanceLogs = (instance: CacheServiceInstanceItem) =>
 // hrefs built from stored config must never carry a javascript: scheme
 export const isHttpUrl = (url?: string | null): boolean =>
   !!url && /^https?:\/\//i.test(url);
+
+// resource_profile.ram_gib is a template over the declared field
+// values; rendering it yields one instance's RAM claim in GiB (0 when
+// the profile is absent or a referenced field has no value)
+export const profileRamGib = (
+  profile: CacheProviderResourceProfile | undefined,
+  managedFields: CacheProviderField[] | undefined,
+  values?: Record<string, any> | null
+): number => {
+  const template = profile?.ram_gib;
+  if (!template) {
+    return 0;
+  }
+  const rendered = template.replace(/\{\{\s*([\w.]+)\s*\}\}/g, (_, name) => {
+    const declared = managedFields?.find((field) => field.name === name);
+    const value = values?.[name] ?? declared?.default;
+    return value == null ? '' : `${value}`;
+  });
+  const value = Number(rendered);
+  return Number.isFinite(value) && value > 0 ? value : 0;
+};
 
 // The reserved "custom" version names no release, so the image the
 // service actually runs stands in for it.

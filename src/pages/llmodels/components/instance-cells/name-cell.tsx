@@ -1,5 +1,7 @@
 import { convertFileSize } from '@/utils';
 import {
+  AimOutlined,
+  DatabaseFilled,
   HddFilled,
   InfoCircleOutlined,
   PieChartFilled,
@@ -26,6 +28,9 @@ import {
 export interface NameCellProps {
   record: ModelInstanceListItem;
   modelData: any;
+  // undefined = not read (no cache service, or metrics unavailable);
+  // null = read but the engine reports no lookups in the window
+  cacheHitRate?: number | null;
   defaultOpenId?: string;
   showWorkerInfo?: boolean;
   styles?: {
@@ -85,22 +90,39 @@ interface InfoRowProps {
   label: string;
   icon: React.ReactNode;
   value: React.ReactNode;
+  // values the label's own message interpolates (e.g. the window a rate
+  // was measured over)
+  labelValues?: Record<string, string | number>;
 }
 
-const InfoRow: React.FC<InfoRowProps> = ({ label, icon, value }) => {
+const InfoRow: React.FC<InfoRowProps> = ({
+  label,
+  icon,
+  value,
+  labelValues
+}) => {
   const intl = useIntl();
   return (
     <Flex align="flex-start" justify="space-between" gap={16}>
       <Flex align="center" gap={6} className="label">
         {icon}
-        <span>{intl.formatMessage({ id: label })}</span>
+        <span>{intl.formatMessage({ id: label }, labelValues)}</span>
       </Flex>
       <span className="value">{value}</span>
     </Flex>
   );
 };
 
-const WorkerInfoContent: React.FC<NameCellProps> = ({ record, modelData }) => {
+// A rate the engine reported; null means it looked nothing up in the
+// window (an idle instance), which is not a zero-percent hit rate.
+const formatHitRate = (value: number | null | undefined) =>
+  value == null ? '-' : `${_.round(value * 100, 1)}%`;
+
+const WorkerInfoContent: React.FC<NameCellProps> = ({
+  record,
+  modelData,
+  cacheHitRate
+}) => {
   const intl = useIntl();
   const { styles } = useStyles();
 
@@ -183,6 +205,35 @@ const WorkerInfoContent: React.FC<NameCellProps> = ({ record, modelData }) => {
       : [])
   ];
 
+  // What the shared cache does for this instance, where the instance is.
+  // The rate is absent unless it was read: no cache service, or metrics
+  // unavailable.
+  const cacheRows: InfoRowProps[] = [
+    ...(record.cache_config?.cache_service_name
+      ? [
+          {
+            label: 'models.kvCache.service',
+            icon: <DatabaseFilled />,
+            value: record.cache_config.cache_service_name
+          }
+        ]
+      : []),
+    ...(cacheHitRate !== undefined
+      ? [
+          {
+            label: 'models.kvCache.hitRate',
+            icon: <AimOutlined />,
+            value: formatHitRate(cacheHitRate),
+            labelValues: {
+              window: intl.formatMessage({
+                id: 'models.kvCache.hitRate.window'
+              })
+            }
+          }
+        ]
+      : [])
+  ];
+
   return (
     <div className={styles.card}>
       <Flex vertical gap={2}>
@@ -219,6 +270,16 @@ const WorkerInfoContent: React.FC<NameCellProps> = ({ record, modelData }) => {
           <InfoRow key={row.label} {...row}></InfoRow>
         ))}
       </Flex>
+      {cacheRows.length > 0 && (
+        <>
+          <div className="divider"></div>
+          <Flex vertical gap={6}>
+            {cacheRows.map((row) => (
+              <InfoRow key={row.label} {...row}></InfoRow>
+            ))}
+          </Flex>
+        </>
+      )}
     </div>
   );
 };
@@ -260,6 +321,7 @@ const WorkerInfo = (props: {
 const NameCell: React.FC<NameCellProps> = ({
   record,
   modelData,
+  cacheHitRate,
   defaultOpenId,
   showWorkerInfo = true,
   styles
@@ -281,6 +343,7 @@ const NameCell: React.FC<NameCellProps> = ({
               <WorkerInfoContent
                 record={record}
                 modelData={modelData}
+                cacheHitRate={cacheHitRate}
               ></WorkerInfoContent>
             }
             defaultOpen={defaultOpenId === record.name}

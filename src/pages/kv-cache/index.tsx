@@ -27,13 +27,8 @@ import {
 import AddService from './components/add-service-modal';
 import InstanceRows from './components/instance-rows';
 import ViewLogsModal from './components/view-logs-modal';
-import { ServiceModeValueMap } from './config';
-import {
-  CacheServiceInstanceItem,
-  FormData,
-  ListItem,
-  ServiceMode
-} from './config/types';
+import { profileRamGib } from './config';
+import { CacheServiceInstanceItem, FormData, ListItem } from './config/types';
 import useCacheProviders from './hooks/use-cache-providers';
 import useClusterWorkerNames from './hooks/use-cluster-worker-names';
 import useRecreateInstance from './hooks/use-recreate-instance';
@@ -90,24 +85,21 @@ const KVCache: React.FC = () => {
   const [openModalStatus, setOpenModalStatus] = useState<{
     open: boolean;
     action: PageActionType;
-    mode: ServiceMode;
     currentData?: ListItem;
     title: string;
   }>({
     open: false,
     action: PageAction.CREATE,
-    mode: ServiceModeValueMap.Managed as ServiceMode,
     currentData: undefined,
     title: ''
   });
 
   // creation starts on the drawer's provider-catalog step, which fixes
-  // both the provider and the mode of the service form
+  // the provider of the service form
   const handleAddService = () => {
     setOpenModalStatus({
       open: true,
       action: PageAction.CREATE,
-      mode: ServiceModeValueMap.Managed as ServiceMode,
       currentData: undefined,
       title: ''
     });
@@ -117,7 +109,6 @@ const KVCache: React.FC = () => {
     setOpenModalStatus({
       open: false,
       action: PageAction.CREATE,
-      mode: ServiceModeValueMap.Managed as ServiceMode,
       currentData: undefined,
       title: ''
     });
@@ -144,7 +135,6 @@ const KVCache: React.FC = () => {
     setOpenModalStatus({
       open: true,
       action: PageAction.EDIT,
-      mode: row.mode,
       currentData: row,
       title: intl.formatMessage(
         { id: 'kvCache.edit.title' },
@@ -214,6 +204,11 @@ const KVCache: React.FC = () => {
   const renderExpandedRow = useMemoizedFn((record: ListItem) => (
     <InstanceRows
       service={record}
+      capacityGib={profileRamGib(
+        getProvider(record.provider_name)?.resource_profile,
+        getProvider(record.provider_name)?.fields,
+        record.config?.fields
+      )}
       workerNameMap={workerNameMap}
       workerIpMap={workerIpMap}
       refreshKey={instancesRefreshKey}
@@ -278,9 +273,7 @@ const KVCache: React.FC = () => {
             rowSelection={rowSelection}
             expandable={{
               expandedRowKeys,
-              // only managed services run instances
-              rowExpandable: (record: ListItem) =>
-                record.mode === ServiceModeValueMap.Managed,
+              rowExpandable: () => true,
               expandedRowRender: renderExpandedRow,
               onExpand: (expanded: boolean, record: ListItem) =>
                 handleExpandChange(expanded, record, record.id),
@@ -317,7 +310,6 @@ const KVCache: React.FC = () => {
       <AddService
         open={openModalStatus.open}
         action={openModalStatus.action}
-        mode={openModalStatus.mode}
         providers={providers}
         title={openModalStatus.title}
         currentData={openModalStatus.currentData}

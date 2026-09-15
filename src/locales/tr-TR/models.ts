@@ -252,6 +252,9 @@ export default {
     'Bu örnek için paylaşılan KV önbelleği etkin değil',
   'models.kvCache.endpointDead.tips':
     'Bu örneğin bağlandığı paylaşılan önbellek artık kullanılamıyor; kurtarmak için örneği yeniden başlatın',
+  'models.kvCache.service': 'Cache Service',
+  'models.kvCache.hitRate': 'Cache Service Hit Rate ({window})',
+  'models.kvCache.hitRate.window': '1h',
   'models.form.scheduling': 'Zamanlama',
   'models.form.scaling': 'Zamanlanmış Ölçekleme',
   'models.form.scaling.enable': 'Zamanlanmış ölçeklemeyi etkinleştir',

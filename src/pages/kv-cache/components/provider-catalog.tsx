@@ -2,15 +2,10 @@ import { getGpuColor } from '@/pages/backends/config';
 import { localize } from '@/utils/localize';
 import { AutoTooltip, IconFont, ThemeTag } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Flex, Typography } from 'antd';
+import { Typography } from 'antd';
 import classNames from 'classnames';
-import React, { useMemo } from 'react';
-import {
-  ProviderSourceColorMap,
-  ProviderSourceLabelMap,
-  ServiceModeColorMap,
-  ServiceModeMap
-} from '../config';
+import React, { useMemo, useRef, useState } from 'react';
+import { ProviderSourceColorMap, ProviderSourceLabelMap } from '../config';
 import { CacheProviderItem } from '../config/types';
 import '../style/provider-catalog.less';
 
@@ -43,20 +38,19 @@ const ProviderCard: React.FC<{
   data: CacheProviderItem;
   active: boolean;
   onClick: (data: CacheProviderItem) => void;
-}> = ({ data, active, onClick }) => {
+  // where the pointer is while it rides an unavailable card, in client
+  // coordinates; null when it leaves
+  onReason: (reason: string | null, event?: React.MouseEvent) => void;
+}> = ({ data, active, onClick, onReason }) => {
   const intl = useIntl();
 
   // accelerator families the provider declares dedicated builds for
   // (runtime_images doubles as the support matrix). A provider that
   // publishes no image declares no matrix, so the claim falls back to
   // the accelerators its engine integrations are scoped to — the gate
-  // that decides whether an engine can attach at all. Managed only: an
-  // external provider runs no platform container, so the claim would be
-  // meaningless; a provider declaring neither shows nothing.
+  // that decides whether an engine can attach at all; a provider
+  // declaring neither shows nothing.
   const frameworks = useMemo(() => {
-    if (!data.supported_modes?.includes('managed')) {
-      return [];
-    }
     const names = new Set<string>();
     Object.values(data.versions || {}).forEach((versionConfig) => {
       Object.keys(versionConfig.runtime_images || {}).forEach((name) =>
@@ -71,10 +65,31 @@ const ProviderCard: React.FC<{
     return Array.from(names);
   }, [data]);
 
+  // A provider this installation cannot run keeps its card: the choice
+  // stays visible and reads like any other, but nothing selects it and
+  // the reason rides the pointer, which is where the eye already is.
+  // The catalog draws it, not the card: a card clips its own overflow,
+  // and a label pinned inside one would stall against its edges instead
+  // of trailing the pointer. It is the only floating text over an
+  // unavailable card, so the description's tooltip steps aside there.
+  const unavailable = localize(data.unavailable_reason);
+
   return (
     <div
-      className={classNames('provider-card', { active })}
-      onClick={() => onClick(data)}
+      className={classNames('provider-card', { active, unavailable })}
+      onClick={() => !unavailable && onClick(data)}
+      onMouseMove={(e) => unavailable && onReason(unavailable, e)}
+      onMouseLeave={() => unavailable && onReason(null)}
+      // the pointer-following label is decoration; the reason has to
+      // reach a reader who never moves a pointer, and the card has to
+      // announce that it takes no selection
+      title={unavailable || undefined}
+      aria-disabled={unavailable ? true : undefined}
+      aria-label={
+        unavailable
+          ? `${localize(data.display_name) || data.name} — ${unavailable}`
+          : undefined
+      }
     >
       <div className="title">
         <span className="img">
@@ -104,7 +119,9 @@ const ProviderCard: React.FC<{
         className="desc"
         ellipsis={{
           rows: 2,
-          tooltip: (
+          tooltip: unavailable ? (
+            false
+          ) : (
             <div
               className="custome-scrollbar"
               style={{
@@ -122,39 +139,25 @@ const ProviderCard: React.FC<{
       >
         {localize(data.description)}
       </Typography.Paragraph>
-      {frameworks.length > 0 && (
-        <div className="frameworks">
-          <Flex gap={4} className="label">
-            <IconFont type="icon-gpu1" />
-            {intl.formatMessage({ id: 'backend.availableFrameworks' })}:
-          </Flex>
-          {frameworks.map((framework) => (
-            <ThemeTag
-              key={framework}
-              className="tag-item"
-              color={getGpuColor(framework)}
-              opacity={0.7}
-            >
-              {framework}
-            </ThemeTag>
-          ))}
-        </div>
-      )}
       <div className="item-footer">
-        <span className="tags">
-          {/* registration takes the first declared mode, so the card
-              shows only that one — display and behavior must agree
-              until the card offers a mode choice */}
-          {data.supported_modes?.slice(0, 1).map((mode) => (
-            <ThemeTag
-              key={mode}
-              className="tag-item"
-              color={ServiceModeColorMap[mode] || 'blue'}
-              opacity={0.7}
-            >
-              {intl.formatMessage({ id: ServiceModeMap[mode] })}
-            </ThemeTag>
-          ))}
+        <span className="frameworks">
+          {frameworks.length > 0 && (
+            <>
+              <span className="label">
+                {intl.formatMessage({ id: 'backend.availableFrameworks' })}:
+              </span>
+              {frameworks.map((framework) => (
+                <ThemeTag
+                  key={framework}
+                  className="tag-item"
+                  color={getGpuColor(framework)}
+                  opacity={0.7}
+                >
+                  {framework}
+                </ThemeTag>
+              ))}
+            </>
+          )}
         </span>
         <span className="links">
           {data.links?.map((link) => (
@@ -180,16 +183,56 @@ const ProviderCatalog: React.FC<ProviderCatalogProps> = ({
   current,
   onSelect
 }) => {
+  const catalogRef = useRef<HTMLDivElement>(null);
+  const hintRef = useRef<HTMLSpanElement>(null);
+  const [reason, setReason] = useState('');
+
+  // The label's position is written to the node, not held in state: a
+  // pointer crossing a card fires often enough that re-rendering the
+  // catalog on every tick is felt. Only the text it carries is state,
+  // which changes once per card.
+  const trackReason = (text: string | null, event?: React.MouseEvent) => {
+    const label = hintRef.current;
+    if (!text || !event) {
+      // fading out leaves the position alone, or the label would drop to
+      // the catalog's origin for the length of the fade
+      if (label) {
+        label.style.opacity = '0';
+      }
+      return;
+    }
+    if (text !== reason) {
+      setReason(text);
+    }
+    if (!label) {
+      return;
+    }
+    const catalog = catalogRef.current?.getBoundingClientRect();
+    // trailing the pointer to its lower right, unbounded: a label held
+    // inside the card would stall against its edges while the pointer
+    // kept moving
+    const x = event.clientX - (catalog?.left ?? 0) + 14;
+    const y = event.clientY - (catalog?.top ?? 0) + 16;
+    label.style.transform = `translate(${x}px, ${y}px)`;
+    label.style.opacity = '1';
+  };
+
   return (
-    <div className="provider-catalog">
+    <div className="provider-catalog" ref={catalogRef}>
       {providers.map((item) => (
         <ProviderCard
           key={item.name}
           data={item}
           active={item.name === current}
           onClick={onSelect}
+          onReason={trackReason}
         ></ProviderCard>
       ))}
+      {reason && (
+        <span ref={hintRef} className="unavailable-hint" aria-hidden="true">
+          {reason}
+        </span>
+      )}
     </div>
   );
 };

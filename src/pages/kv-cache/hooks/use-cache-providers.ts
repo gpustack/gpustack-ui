@@ -1,8 +1,7 @@
 import { localize } from '@/utils/localize';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { queryCacheProviders } from '../apis';
-import { ServiceModeValueMap } from '../config';
-import { CacheProviderItem, ServiceMode } from '../config/types';
+import { CacheProviderItem } from '../config/types';
 
 // The option label is display text only; value stays the catalog name,
 // so what a form submits does not move with the user's locale.
@@ -51,24 +50,8 @@ const useCacheProviders = () => {
     };
   }, []);
 
-  const managedProviderOptions = useMemo(() => {
-    return providers
-      .filter((item) =>
-        item.supported_modes?.includes(
-          ServiceModeValueMap.Managed as ServiceMode
-        )
-      )
-      .map(toOption);
-  }, [providers]);
-
-  const externalProviderOptions = useMemo(() => {
-    return providers
-      .filter((item) =>
-        item.supported_modes?.includes(
-          ServiceModeValueMap.External as ServiceMode
-        )
-      )
-      .map(toOption);
+  const providerOptions = useMemo(() => {
+    return providers.map(toOption);
   }, [providers]);
 
   const getProvider = useCallback(
@@ -80,8 +63,7 @@ const useCacheProviders = () => {
 
   return {
     providers,
-    managedProviderOptions,
-    externalProviderOptions,
+    providerOptions,
     getProvider
   };
 };

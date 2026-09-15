@@ -198,6 +198,24 @@ export interface DistributedServerItem {
 export interface DistributedServers {
   subordinate_workers: DistributedServerItem[];
 }
+// What the attached cache service did for one deployment's instances over
+// the requested window, from the inference engine's own external-cache
+// counters. available=false carries why no numbers can be read (the
+// deployment uses no cache service, observability is off, Prometheus is
+// unreachable); an engine that exports no counters keeps an empty row.
+export interface ModelCacheMetrics {
+  available: boolean;
+  reason?: string;
+  window?: number;
+  instances: {
+    model_instance_name?: string;
+    worker_name?: string;
+    hit_tokens?: number | null;
+    queried_tokens?: number | null;
+    hit_rate?: number | null;
+  }[];
+}
+
 export interface ModelInstanceListItem {
   backend?: string;
   cluster_id: number;
@@ -215,6 +233,8 @@ export interface ModelInstanceListItem {
   injected_backend_parameters?: string[];
   // Present only for shared-KV-cache deployments; injected=false means the
   // instance started without the shared cache and fell back to local mode.
+  // The hit rate is not part of the instance: it is read per deployment
+  // from ModelCacheMetrics and passed alongside.
   cache_config?: {
     injected: boolean;
     reason?: string;

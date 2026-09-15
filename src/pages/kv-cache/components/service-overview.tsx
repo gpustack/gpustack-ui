@@ -13,18 +13,14 @@ import dayjs from 'dayjs';
 import React from 'react';
 import styled from 'styled-components';
 import {
-  ServiceModeValueMap,
   ServiceStateLabelMap,
   ServiceStatus,
   canViewServiceLogs,
   formatServiceVersion,
-  isHttpUrl
+  isHttpUrl,
+  profileRamGib
 } from '../config';
-import {
-  CacheProviderItem,
-  CacheServiceInstanceItem,
-  ListItem
-} from '../config/types';
+import { CacheProviderItem, ListItem } from '../config/types';
 
 const Container = styled.div`
   display: flex;
@@ -69,9 +65,6 @@ const Title = styled.div`
 interface ServiceOverviewProps {
   data: ListItem | null;
   provider?: CacheProviderItem;
-  // managed services only; the overview derives the singleton endpoint
-  // from its single instance
-  instances?: CacheServiceInstanceItem[];
   clusterNameMap: Record<number, string>;
   workerNameMap: Record<number, string>;
   onViewLogs: (row: ListItem) => void;
@@ -80,7 +73,6 @@ interface ServiceOverviewProps {
 const ServiceOverview: React.FC<ServiceOverviewProps> = ({
   data,
   provider,
-  instances,
   clusterNameMap,
   workerNameMap,
   onViewLogs
@@ -91,38 +83,19 @@ const ServiceOverview: React.FC<ServiceOverviewProps> = ({
     return null;
   }
 
-  const isPerNode =
-    data.mode === ServiceModeValueMap.Managed &&
-    provider?.topology === 'per_node';
+  const isPerNode = provider?.topology === 'per_node';
 
-  // a concrete worker exists only for singleton managed services;
-  // per_node spans workers and external services have none, so those
-  // render no Worker row at all
+  const capacityGib = profileRamGib(
+    provider?.resource_profile,
+    provider?.fields,
+    data.config?.fields
+  );
+
+  // a concrete worker exists only for a pinned replicas service;
+  // per_node spans workers, so it renders no Worker row at all
   const workerName = data.worker_id
     ? workerNameMap[data.worker_id] || '-'
     : null;
-
-  // per_node services have no endpoint to state: engines are wired to
-  // their own node's instance automatically and each instance owns its
-  // port (the instance rows on the list page carry them), so the row
-  // renders only where a single address exists
-  const renderEndpoint = (): string | null => {
-    if (data.mode === ServiceModeValueMap.Managed) {
-      if (isPerNode) {
-        return null;
-      }
-      // singleton topology has exactly one instance carrying the port
-      const instance = instances?.[0];
-      return instance?.port && workerName
-        ? `${workerName}:${instance.port}`
-        : '-';
-    }
-    if (data.endpoint?.host) {
-      return `${data.endpoint.host}:${data.endpoint.port}`;
-    }
-    return data.endpoint?.url || '-';
-  };
-  const endpoint = renderEndpoint();
 
   const items: DescriptionsProps['items'] = [
     {
@@ -166,27 +139,19 @@ const ServiceOverview: React.FC<ServiceOverviewProps> = ({
           }
         ]
       : []),
-    ...(endpoint != null
+    // per-instance capacity from the provider's declared resource
+    // profile; a provider without one (a multi-component pool) shows no
+    // row
+    ...(capacityGib
       ? [
           {
-            key: 'endpoint',
-            label: intl.formatMessage({ id: 'kvCache.table.endpoint' }),
-            children: endpoint
-          }
-        ]
-      : []),
-    // the configured L1 RAM size; external services manage their own
-    // capacity and show no row
-    ...(data.config?.ram_size != null
-      ? [
-          {
-            key: 'ram_size',
-            label: intl.formatMessage({ id: 'kvCache.form.ramSize' }),
+            key: 'capacity',
+            label: intl.formatMessage({ id: 'kvCache.detail.capacity' }),
             children: isPerNode
-              ? `${data.config.ram_size} (${intl.formatMessage({
+              ? `${capacityGib} GiB (${intl.formatMessage({
                   id: 'kvCache.detail.perWorker'
                 })})`
-              : data.config.ram_size
+              : `${capacityGib} GiB`
           }
         ]
       : []),

@@ -16,6 +16,9 @@ interface InstanceItemProps {
   instanceData: ModelInstanceListItem;
   workerList: WorkerListItem[];
   modelData?: any;
+  // undefined = not read (no cache service, or metrics unavailable);
+  // null = read but the engine reports no lookups in the window
+  cacheHitRate?: number | null;
   defaultOpenId: string;
   // Column grid shared from the parent SealTable so this child row aligns
   // its cells to the parent columns instead of guessing paddings.
@@ -29,6 +32,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
   instanceData,
   workerList,
   modelData,
+  cacheHitRate,
   defaultOpenId,
   gridTemplate,
   prefixWidth = 0,
@@ -53,6 +57,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
         <NameCell
           record={instanceData}
           modelData={modelData}
+          cacheHitRate={cacheHitRate}
           defaultOpenId={defaultOpenId}
         ></NameCell>
       </ExpandedRowGrid.Cell>

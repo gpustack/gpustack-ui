@@ -1,3 +1,4 @@
+import { GPUSTACK_API_BASE_URL } from '@/config/settings';
 import { request } from '@umijs/max';
 import type {
   SourceConfig,
@@ -12,6 +13,12 @@ import type {
 export const OTA_SOURCE_API = '/ota-sources';
 
 const sourceUrl = (kind: SourceProbeKind) => `${OTA_SOURCE_API}/${kind}`;
+
+// An address rather than a request: the packaged baseline is downloaded by the
+// browser through an `<a>`, so it carries the API prefix `request` would have
+// added on its own.
+export const builtinDocumentUrl = (kind: SourceProbeKind) =>
+  `/${GPUSTACK_API_BASE_URL}${sourceUrl(kind)}/builtin`;
 
 export async function queryOtaSource(kind: SourceProbeKind) {
   return request<SourceConfig>(sourceUrl(kind), {

@@ -1,5 +1,9 @@
 export default {
   'kvCache.title': '缓存服务',
+  'kvCache.source.title': 'Provider 来源',
+  'kvCache.source.manage': '管理 Provider',
+  'kvCache.source.builtin':
+    '本版本自带的缓存 Provider，以及已安装扩展提供的那些',
   'kvCache.button.add': '添加缓存服务',
   'kvCache.providerSelect.title': '选择提供方',
   'kvCache.provider.source.builtin': '内置',

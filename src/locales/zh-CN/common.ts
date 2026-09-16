@@ -324,9 +324,16 @@ export default {
   'common.source.tag.custom': '自定义',
   'common.source.tag.official': '官方',
   'common.source.empty.hint': '填入你自己的 URL 会完整替换官方来源。',
+  'common.source.empty.hint.builtin':
+    '填入你自己的来源会完整替换内置内容；留空则继续使用内置内容。',
   'common.source.empty.hint.file': '内容留空则使用官方来源——{description}',
+  'common.source.empty.hint.file.builtin':
+    '内容留空则继续使用内置内容——{description}',
   'common.source.reset': '重置为官方来源',
+  'common.source.reset.builtin': '重置为内置内容',
   'common.source.reset.tip': '改回官方来源（保存后生效）——{description}',
+  'common.source.reset.tip.builtin':
+    '改回内置内容（保存后生效）——{description}',
   'common.source.autoUpdate': '自动更新',
   'common.source.autoUpdate.interval': '更新间隔（小时）',
   'common.source.autoUpdate.official.tip':
@@ -335,6 +342,7 @@ export default {
     '多久重新拉取一次你的 URL。关闭后你的来源保持不变，直到你保存或重新拉取。',
   'common.source.lastUpdated': '上次更新 {time}',
   'common.source.official.link': '官方文件',
+  'common.source.builtin.link': '内置文件',
   'common.source.sync.official': '立即更新',
   'common.source.sync.custom': '立即更新',
   'common.source.sync.hint.dirty':

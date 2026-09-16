@@ -2,6 +2,7 @@ import { PageAction } from '@/config';
 import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import { PageActionType } from '@/config/types';
 import useTableFetch from '@/hooks/use-table-fetch';
+import { useSourceConfigVisible } from '@/pages/_components/source-config';
 import useGranfanaLink from '@/pages/resources/hooks/use-grafana-link';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import {
@@ -26,6 +27,7 @@ import {
 } from './apis';
 import AddService from './components/add-service-modal';
 import InstanceRows from './components/instance-rows';
+import ProviderSourceEntry from './components/provider-source-entry';
 import ViewLogsModal from './components/view-logs-modal';
 import { profileRamGib } from './config';
 import { CacheServiceInstanceItem, FormData, ListItem } from './config/types';
@@ -60,6 +62,7 @@ const KVCache: React.FC = () => {
   });
   const intl = useIntl();
   const navigate = useNavigate();
+  const showSourceEntry = useSourceConfigVisible();
   const { providers, getProvider } = useCacheProviders();
   const { clusterNameMap, workerNameMap, workerIpMap } =
     useClusterWorkerNames();
@@ -79,7 +82,7 @@ const KVCache: React.FC = () => {
       setInstancesRefreshKey((key) => key + 1);
     }
   });
-  const { goToGrafana, ActionButton } = useGranfanaLink({
+  const { goToGrafana } = useGranfanaLink({
     type: 'cache-service'
   });
   const [openModalStatus, setOpenModalStatus] = useState<{
@@ -234,7 +237,11 @@ const KVCache: React.FC = () => {
           handleSearch={handleSearch}
           right={
             <Space size={16}>
-              {ActionButton()}
+              {/* Gated here rather than inside the entry: a `Space` item that
+                  renders nothing still takes its gap. */}
+              {showSourceEntry && (
+                <ProviderSourceEntry onSaved={fetchData}></ProviderSourceEntry>
+              )}
               <Button
                 icon={<PlusOutlined></PlusOutlined>}
                 type="primary"

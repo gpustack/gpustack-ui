@@ -343,11 +343,18 @@ export default {
   'common.source.tag.official': 'Official',
   'common.source.empty.hint':
     "Kendi URL'niz resmi kaynağın tamamen yerine geçer.",
+  'common.source.empty.hint.builtin':
+    'Kendi kaynağınız yerleşik içeriğin tamamen yerine geçer. Yerleşik içeriği korumak için boş bırakın.',
   'common.source.empty.hint.file':
     'Resmi kaynağı izlemek için içeriği boş bırakın — {description}',
+  'common.source.empty.hint.file.builtin':
+    'Yerleşik içeriği korumak için içeriği boş bırakın — {description}',
   'common.source.reset': 'Resmi Kaynağa Sıfırla',
+  'common.source.reset.builtin': 'Yerleşik İçeriğe Sıfırla',
   'common.source.reset.tip':
     'Yeniden resmi kaynağı izler, kaydettiğinizde uygulanır — {description}',
+  'common.source.reset.tip.builtin':
+    'Yerleşik içeriğe döner, kaydettiğinizde uygulanır — {description}',
   'common.source.autoUpdate': 'Auto-update',
   'common.source.autoUpdate.interval': 'Güncelleme Aralığı (saat)',
   'common.source.autoUpdate.official.tip':
@@ -356,6 +363,7 @@ export default {
     "URL'nizin hangi sıklıkta yeniden çekileceği. Kapalıyken, siz kaydedene veya yeniden yükleyene kadar kaynağınıza dokunulmaz.",
   'common.source.lastUpdated': 'Son güncelleme {time}',
   'common.source.official.link': 'Resmi Dosya',
+  'common.source.builtin.link': 'Yerleşik Dosya',
   'common.source.sync.official': 'Şimdi Güncelle',
   'common.source.sync.custom': 'Şimdi Güncelle',
   'common.source.sync.hint.dirty':

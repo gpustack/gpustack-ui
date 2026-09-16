@@ -218,7 +218,7 @@ const ViewEventsModal: React.FC<ViewEventsModalProps> = (props) => {
           className="flex flex-center"
           style={{ gap: 8, paddingInline: 24 }}
         >
-          <span style={{ fontWeight: 'var(--font-weight-bold)' }}>
+          <span style={{ fontWeight: 'var(--font-weight-semibold)' }}>
             {intl.formatMessage({ id: 'common.button.viewevent' })}
           </span>
           <Button

@@ -1,4 +1,4 @@
-import { COLOR_PRIMARY } from './constants';
+import { COLOR_PRIMARY, FONT_FAMILY } from './constants';
 
 export default {
   'root-entry-name': 'variable',
@@ -107,15 +107,29 @@ export default {
   },
   token: {
     darkMode: false,
-    fontFamily:
-      "Helvetica Neue, -apple-system, BlinkMacSystemFont, Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'",
+    // `system-ui` leads so each platform gets its own UI grotesque (SF Pro on
+    // macOS, Segoe UI Variable on Windows) instead of the old stack, which
+    // missed on Windows all the way down to Arial. The CJK faces are the other
+    // half of the fix: the product ships zh-CN and ja-JP, and with no CJK entry
+    // those locales fell to the browser default — often a serif on Windows,
+    // rendering in a different family from the Latin text beside it.
+    fontFamily: FONT_FAMILY,
     colorText: '#1F1F1F',
     // colorTextSecondary: '#484848',
     // colorTextTertiary: '#757576',
     // colorTextQuaternary: '#A6A6A7',
-    colorFillSecondary: '#eaebec',
-    colorFillTertiary: '#f1f2f3',
-    colorFillQuaternary: '#f7f8fa',
+    // The three fill levels are deliberately NOT overridden. antd derives them
+    // as alpha overlays (`rgba(0,0,0,0.06 / 0.04 / 0.02)`) and the whole system
+    // depends on that: a hover fill is meant to DARKEN whatever it sits on, and
+    // antd stacks them (a quaternary zebra stripe plus a secondary hover). The
+    // opaque hex values this replaces (`#eaebec` / `#f1f2f3` / `#f7f8fa`) could
+    // not stack — they replaced the colour underneath instead of deepening it,
+    // which broke hover on any tinted or already-filled surface. They also left
+    // light and dark on different mechanisms, since dark never overrode them.
+    //
+    // The look barely moves: composited over this theme's `#fdfdfd` container
+    // the derived values are `#eeeeee` / `#f3f3f3` / `#f8f8f8`, i.e. within a
+    // couple of levels of the literals they replace.
     colorPrimary: COLOR_PRIMARY,
     colorSuccess: '#54cc98',
     colorBorder: '#d3d8de',
@@ -124,6 +138,11 @@ export default {
     borderRadius: 4,
     borderRadiusSM: 3,
     colorBgContainer: '#fdfdfd',
+    // antd's B1 layer. It had no value at all before, so nothing in the product
+    // used `colorBgLayout` — the page canvas was painted straight onto `<html>`
+    // and duplicated by two further tokens that had no consumers. Kept in sync
+    // with `--color-bg-page` in `global.less`, which paints that same backdrop.
+    colorBgLayout: '#f4f5f6',
     fontSize: 14,
     motion: true
   }

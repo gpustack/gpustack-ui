@@ -52,8 +52,18 @@ const DONUT_GAP = 12;
 // plotting area each would blow them up well past the size the section is
 // designed around, so the fitted radius is capped.
 const DONUT_MAX_RADIUS = 105;
-// Preserves the original ['50%', '70%'] inner/outer ratio.
-const DONUT_INNER_RATIO = 5 / 7;
+// The ring's thickness, expressed as the hole's share of the outer radius —
+// so the ring is `(1 - ratio) * outerRadius` thick. Kept as a ratio rather than
+// a px thickness so it thins along with the card instead of closing up into a
+// solid disc once the radius shrinks.
+//
+// Squeezed from both sides: too thick and the two donuts read as solid blobs
+// and the hole gets narrow enough that `DonutCenter` drops to its compact type
+// sizes (that happens below a 110px hole — see `compact` there); too thin and
+// the smallest of the ten legend slices stops being visible at all. It started
+// at 5/7 — the original `['50%', '70%']` — which was a ring 28.6% of the radius,
+// 30px at the 105px cap, and too heavy.
+const DONUT_INNER_RATIO = 0.76;
 
 // Legend label truncation, minus the marker and its gap.
 const legendTextWidth = (legendWidth: number) => Math.max(legendWidth - 24, 60);

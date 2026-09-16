@@ -115,7 +115,7 @@ const Playground: React.FC = () => {
     return (
       <div className="flex justify-between items-center">
         <div className="flex items-center">
-          <span className="font-600 flex-center">
+          <span className="flex-center">
             {intl.formatMessage({ id: 'menu.playground.chat' })}
           </span>
           {
@@ -157,7 +157,7 @@ const Playground: React.FC = () => {
     <>
       <HeaderLeft>
         <div className="flex items-center">
-          <span className="font-600 flex-center">
+          <span className="flex-center">
             {intl.formatMessage({ id: 'menu.playground.chat' })}
           </span>
           <Segmented

@@ -22,8 +22,8 @@ import usePoolsColumns from '../hooks/use-pools-columns';
 import AddPool from './add-pool';
 
 const SubTitle = styled.div`
-  font-size: var(--font-size-middle);
-  font-weight: 700;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
   color: var(--ant-color-text);
   margin-block: 24px 16px;
 `;
@@ -135,8 +135,6 @@ const WorkerPools = () => {
       </SubTitle>
       <FilterBar
         showSelect={false}
-        marginBottom={22}
-        marginTop={22}
         widths={{ input: 300 }}
         buttonText={intl.formatMessage({ id: 'clusters.button.addNodePool' })}
         rowSelection={rowSelection}

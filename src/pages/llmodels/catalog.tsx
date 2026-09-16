@@ -143,8 +143,6 @@ const Catalog: React.FC = () => {
       <FilterBar
         showSelect={true}
         selectHolder={intl.formatMessage({ id: 'models.filter.category' })}
-        marginBottom={22}
-        marginTop={0}
         handleSearch={handleSearch}
         handleSelectChange={handleCategoryChange}
         handleInputChange={handleNameChange}

@@ -388,7 +388,6 @@ const Clusters: React.FC = () => {
       <PageBox>
         <FilterBar
           showSelect={false}
-          marginBottom={22}
           widths={{ input: 300 }}
           buttonText={intl.formatMessage({ id: 'clusters.button.add' })}
           rowSelection={rowSelection}

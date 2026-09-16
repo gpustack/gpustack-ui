@@ -215,8 +215,6 @@ const APIKeys: React.FC = () => {
     <>
       <PageBox>
         <FilterBar
-          marginBottom={22}
-          marginTop={30}
           showSelect={canSeeAllKeys}
           selectOptions={userList}
           select={{ showSearch: { optionFilterProp: 'label' } }}

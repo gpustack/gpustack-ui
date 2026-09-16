@@ -1,4 +1,4 @@
-import { COLOR_PRIMARY } from './constants';
+import { COLOR_PRIMARY, FONT_FAMILY } from './constants';
 
 export default {
   'root-entry-name': 'variable',
@@ -101,8 +101,7 @@ export default {
   },
   token: {
     darkMode: true,
-    fontFamily:
-      "Helvetica Neue, -apple-system, BlinkMacSystemFont, Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'",
+    fontFamily: FONT_FAMILY,
     colorText: '#ccc',
     colorPrimary: COLOR_PRIMARY,
     colorSuccess: '#48A77E',
@@ -113,8 +112,16 @@ export default {
     borderRadiusSM: 3,
     fontSize: 14,
     motion: true,
-    colorFill: '#0A0A0A',
+    // `colorFill: '#0A0A0A'` was here alongside `colorBgBase` and is gone.
+    // It is antd's FIRST-LEVEL FILL — "the darkest fill color… currently only
+    // used in the hover effect of Slider", and in this app also the scrollbar
+    // thumb's hover. Setting it to the same value as the base background made
+    // both invisible in the dark theme. antd's own dark derivation is
+    // `rgba(255,255,255,0.18)`, i.e. a LIGHT overlay, which is what a fill on a
+    // dark canvas has to be.
     colorBgBase: '#0A0A0A',
+    // Matches `--color-bg-page` in the dark block of `global.less`.
+    colorBgLayout: '#141414',
     menuItemSelectedBg: '#292929'
   }
 };

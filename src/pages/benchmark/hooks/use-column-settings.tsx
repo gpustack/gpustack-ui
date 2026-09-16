@@ -250,7 +250,7 @@ const useColumnSettings = (options: {
         </AutoTooltip>
       ),
       precision: 0,
-      color: 'var(--ant-color-success)',
+      color: 'var(--color-status-success-text)',
       unit: ''
     },
     {
@@ -264,7 +264,7 @@ const useColumnSettings = (options: {
         </AutoTooltip>
       ),
       precision: 0,
-      color: 'var(--ant-color-error)',
+      color: 'var(--color-status-error-text)',
       unit: ''
     },
     {
@@ -278,7 +278,7 @@ const useColumnSettings = (options: {
         </AutoTooltip>
       ),
       precision: 0,
-      color: 'var(--ant-color-error)',
+      color: 'var(--color-status-error-text)',
       unit: ''
     },
     {

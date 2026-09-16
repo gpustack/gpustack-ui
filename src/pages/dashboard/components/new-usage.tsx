@@ -56,7 +56,7 @@ const NewUsage = () => {
       <PageTools
         style={{ margin: '24px 0 0' }}
         left={
-          <span className="font-700">
+          <span className="font-500">
             {intl.formatMessage(
               { id: 'dashboard.usage.title' },
               { days: USAGE_LOOKBACK_DAYS }

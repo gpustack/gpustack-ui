@@ -18,14 +18,39 @@
   }
 }
 
+// A stat tile's whole job is for the NUMBER to dominate. This was a 14px/600
+// label stacked on a 16px/600 value, both centred — the KPI was two pixels
+// bigger than its own caption and at the same weight, so the tile read as a
+// label:value pair rather than a statistic.
+//
+// Now: caption on top, small and recessive; number below at the display size.
+// Left-aligned, because a row of five centred numbers of different digit widths
+// cannot be scanned down a column.
 .content {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 14px;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 6px;
+  width: 100%;
 
+  // Kept at the body size. The defect here was that the VALUE was only 16px —
+  // two pixels above its own label and at the same weight — so growing the
+  // number is what fixes the hierarchy. Shrinking the label as well would be a
+  // second, unrelated change, and 12px is tight for the CJK locales this ships
+  // in.
   .label {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-normal);
+  }
+
+  .value {
+    font-size: var(--font-size-display);
     font-weight: var(--font-weight-medium);
+    line-height: 1.1;
+    color: var(--ant-color-text);
+    // Digits share one advance width, so the numbers line up across tiles and
+    // don't jitter as values tick.
+    font-variant-numeric: tabular-nums;
   }
 }

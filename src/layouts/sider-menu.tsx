@@ -83,13 +83,18 @@ const useStyles = createStyles(
         .anticon {
           transform: scale(0.8);
         }
+        /* 500, per the title tier the rest of the product uses (page / drawer /
+           section titles are all 500). It also gives the group / item split a
+           second channel, so the colour gap no longer has to carry it alone —
+           which is what let the items be lightened back to a legible .55
+           instead of the 3.30:1 tertiary they needed to stay scannable. */
         .group-title-text {
           display: flex;
           align-items: center;
           gap: 4px;
           font-size: 12px;
           color: var(--ant-color-text);
-          font-weight: 400;
+          font-weight: var(--font-weight-medium);
         }
 
         &.menu-item-group-title-collapsed {
@@ -129,25 +134,53 @@ const useStyles = createStyles(
         white-space: nowrap;
         height: ${Menu.itemHeight}px;
         line-height: ${Menu.itemHeight}px;
-        color: var(--ant-color-text-tertiary);
+        /* Colours BOTH the icon and the label — neither .anticon nor
+           .menu-item-title overrides it. See the token for why it is .55 and
+           not one of antd's steps: tertiary (.45) was the original choice and
+           gave the rail its hierarchy against the group titles, but 3.30:1
+           fails AA for a label; secondary (.65) passes but flattens the list.
+           4.67:1 light / 6.15:1 dark. */
+        color: var(--color-sider-item-text);
         transition:
           color ${motion},
           background-color ${motion};
-        &:hover {
-          background-color: ${Menu.itemHoverBg};
-          color: ${Menu.itemHoverColor};
-        }
-        &.menu-item-selected {
-          background-color: ${Menu.menuItemSelectedBg};
-          color: ${Menu.itemSelectedColor};
+        /* Fills come from the antd tokens rather than the hardcoded Menu ones,
+           so one declaration serves both themes. The dark values were wrong in
+           both directions: itemHoverBg rgb(24 25 27) is DARKER than the dark
+           sider, so hovering punched a hole instead of lifting the row, and
+           itemHoverColor rgba(0,0,0,1) is literally black text on a dark
+           surface — 1.19:1, invisible. Both were copied from the light theme.
 
-          .anticon {
-            color: ${Menu.itemSelectedColor};
-          }
+           The sider is NOT white: it shows through to the page background,
+           measured live at #f4f5f6 (dark: #141414). That sits close enough to
+           white that the neutral fills all compress — tertiary 1.094,
+           secondary 1.145, fill 1.415 — so there is no room to separate hover
+           and selected by fill STRENGTH alone without the selected row turning
+           into a slab. The strongest step was tried and read as exactly that.
+           So the fill only ever says "the mouse is here", and selected is told
+           apart by its ink and its filled glyph instead. */
+        &:hover {
+          background-color: var(--ant-color-fill-tertiary);
+          color: var(--ant-color-text);
+        }
+        /* Selected is NEUTRAL. It used to paint the row in COLOR_PRIMARY,
+           which failed twice over: 3.30:1 against the selected fill, and the
+           single most prominent use of brand colour in the app's skeleton
+           marking a navigation state rather than a semantic one.
+           "You are here" is already carried by the icon swapping to its filled
+           variant — every route ships a selectedIcon, so that channel is
+           fully populated and costs nothing. Background says where the MOUSE
+           is; the filled glyph says where YOU are. Two meanings, two channels.
+           The .anticon override that used to sit here is gone with it: the
+           icon inherits the row colour, so stating it twice was one channel
+           doing one job in two places. */
+        &.menu-item-selected {
+          background-color: var(--ant-color-fill-secondary);
+          color: var(--ant-color-text);
         }
         &:active {
-          background-color: ${Menu.itemActiveBg};
-          color: ${Menu.itemActiveColor};
+          background-color: var(--ant-color-fill-secondary);
+          color: var(--ant-color-text);
         }
         .anticon {
           font-size: 16px;

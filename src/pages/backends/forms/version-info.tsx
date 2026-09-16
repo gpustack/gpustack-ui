@@ -33,7 +33,7 @@ const ItemWrapper = styled.div`
     justify-content: space-between;
     display: flex;
     align-items: center;
-    font-weight: 600;
+    font-weight: var(--font-weight-medium);
   }
 `;
 

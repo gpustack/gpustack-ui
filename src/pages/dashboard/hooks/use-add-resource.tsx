@@ -16,8 +16,8 @@ const Content = styled.div`
   justify-content: center;
   margin: 32px auto 0px;
   .title {
-    font-size: 16px;
-    font-weight: 600;
+    font-size: var(--font-size-large);
+    font-weight: var(--font-weight-medium);
     margin-bottom: 12px;
   }
   .tips,

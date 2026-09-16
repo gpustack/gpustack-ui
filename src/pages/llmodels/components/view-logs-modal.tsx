@@ -187,7 +187,7 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
   const renderTitle = () => {
     return (
       <span className="flex-between flex-center gap-16" style={{ height: 40 }}>
-        <span style={{ fontWeight: 'var(--font-weight-bold)' }}>
+        <span style={{ fontWeight: 'var(--font-weight-semibold)' }}>
           {intl.formatMessage({ id: 'common.button.viewlog' })}
         </span>
         <span className="flex-center gap-8" style={{ height: 32 }}>

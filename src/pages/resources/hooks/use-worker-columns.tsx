@@ -128,7 +128,7 @@ const GPUCell = ({ devices }: { devices: GPUDeviceItem[] }) => (
         <span className="flex-center" key={index} style={{ height: 18 }}>
           <span
             className="m-r-5"
-            style={{ display: 'flex', width: 25, lineHeight: 1 }}
+            style={{ display: 'flex', width: 30, lineHeight: 1 }}
           >
             [{item.index}]
           </span>
@@ -170,7 +170,7 @@ const VRAMItem = ({
       <span className="flex-center" style={{ cursor: 'pointer' }}>
         <span
           className="m-r-5"
-          style={{ display: 'flex', width: 25, lineHeight: 1 }}
+          style={{ display: 'flex', width: 30, lineHeight: 1 }}
         >
           <span
             style={{
@@ -375,7 +375,7 @@ const useWorkerColumns = ({
             {shouldUpgrade && (
               <span
                 style={{
-                  color: 'var(--ant-color-warning)'
+                  color: 'var(--color-status-warning-text)'
                 }}
               >
                 {intl.formatMessage({

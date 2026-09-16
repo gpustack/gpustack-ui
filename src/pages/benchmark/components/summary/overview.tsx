@@ -42,24 +42,24 @@ const useStyles = createStyles(({ css }) => ({
     .pill {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
+      gap: 4px;
       font-size: 12px;
       border-radius: 999px;
       padding: 1px 9px;
       white-space: nowrap;
     }
     .pill.ok {
-      color: var(--ant-color-success);
+      color: var(--color-status-success-text);
       background: var(--ant-color-success-bg);
     }
     .pill.bad {
-      color: var(--ant-color-error);
+      color: var(--color-status-error-text);
       background: var(--ant-color-error-bg);
     }
     .charts-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 14px;
+      gap: 16px;
     }
     @media (max-width: 1200px) {
       .charts-grid {
@@ -73,7 +73,7 @@ const useStyles = createStyles(({ css }) => ({
     }
     .totals {
       display: flex;
-      gap: 22px;
+      gap: 24px;
       align-items: baseline;
     }
     .aux {
@@ -360,9 +360,13 @@ const Overview: React.FC<OverviewProps> = ({
             align: 'center' as const,
             render: (_v: unknown, p: StagePoint) =>
               p.sloPass ? (
-                <span style={{ color: 'var(--ant-color-success)' }}>✓</span>
+                <span style={{ color: 'var(--color-status-success-text)' }}>
+                  ✓
+                </span>
               ) : (
-                <span style={{ color: 'var(--ant-color-error)' }}>✗</span>
+                <span style={{ color: 'var(--color-status-error-text)' }}>
+                  ✗
+                </span>
               )
           }
         ]
@@ -378,7 +382,9 @@ const Overview: React.FC<OverviewProps> = ({
         return (
           <span
             style={
-              p.isOverloaded ? { color: 'var(--ant-color-error)' } : undefined
+              p.isOverloaded
+                ? { color: 'var(--color-status-error-text)' }
+                : undefined
             }
           >
             {num(v)}
@@ -400,7 +406,9 @@ const Overview: React.FC<OverviewProps> = ({
       render: (_v: unknown, p: StagePoint) => (
         <span
           style={
-            p.isOverloaded ? { color: 'var(--ant-color-error)' } : undefined
+            p.isOverloaded
+              ? { color: 'var(--color-status-error-text)' }
+              : undefined
           }
         >
           {num(p.tpot)}
@@ -470,7 +478,7 @@ const Overview: React.FC<OverviewProps> = ({
               display: 'inline-flex',
               alignItems: 'center',
               gap: 4,
-              ...(low ? { color: 'var(--ant-color-error)' } : {})
+              ...(low ? { color: 'var(--color-status-error-text)' } : {})
             }}
           >
             {ok}/{total}

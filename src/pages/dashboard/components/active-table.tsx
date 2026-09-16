@@ -112,7 +112,7 @@ const ActiveTable = () => {
           left={
             <span
               style={{
-                fontWeight: 'var(--font-weight-bold)'
+                fontWeight: 'var(--font-weight-medium)'
               }}
             >
               {intl.formatMessage({ id: 'dashboard.activeDeployments' })}

@@ -1,7 +1,4 @@
-import {
-  HeaderLeft,
-  usePageContentStyle
-} from '@/pages/_components/page-box';
+import { HeaderLeft, usePageContentStyle } from '@/pages/_components/page-box';
 import { IconFont } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
@@ -52,7 +49,7 @@ const LLModels: React.FC = () => {
   const title = useMemo(() => {
     return (
       <div className="flex items-center">
-        <span className="font-600 flex-center">
+        <span className="flex-center">
           {intl.formatMessage({ id: 'menu.models.deployment' })}
         </span>
         <Segmented

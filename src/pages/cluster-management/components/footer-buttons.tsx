@@ -10,7 +10,7 @@ const Title = styled.span`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-weight: 700;
+  font-weight: var(--font-weight-semibold);
   font-size: 16px;
   gap: 16px;
   padding-inline: 24px;

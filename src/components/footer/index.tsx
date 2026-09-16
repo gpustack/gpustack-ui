@@ -21,7 +21,7 @@ const useStyles = createStyles(({ token, css }) => ({
     background-color: transparent;
     padding: 20px 0;
     text-align: center;
-    font-size: var(--font-size-middle);
+    font-size: var(--font-size-base);
     color: ${token.colorTextTertiary};
   `,
   'footer-content-left-text': {

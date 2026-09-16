@@ -25,12 +25,12 @@ const filterOptions = {
     {
       label: 'Running',
       value: 'running',
-      color: 'var(--ant-color-success)'
+      color: 'var(--color-status-success-text)'
     },
     {
       label: 'Error',
       value: 'error',
-      color: 'var(--ant-color-error)'
+      color: 'var(--color-status-error-text)'
     },
     {
       label: 'Pending',
@@ -153,8 +153,6 @@ const InstanceView = forwardRef((props, ref) => {
       <PageBox>
         <FilterBar
           showSelect={false}
-          marginBottom={22}
-          marginTop={30}
           widths={{ input: 300 }}
           rowSelection={rowSelection}
           handleInputChange={handleNameChange}

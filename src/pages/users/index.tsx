@@ -174,8 +174,6 @@ const Users: React.FC = () => {
     <>
       <PageBox>
         <FilterBar
-          marginBottom={22}
-          marginTop={30}
           buttonText={intl.formatMessage({ id: 'users.button.create' })}
           handleSearch={handleSearch}
           handleDeleteByBatch={handleDeleteBatch}

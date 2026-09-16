@@ -124,7 +124,7 @@ const Header = styled.div`
   .text {
     display: flex;
     align-items: center;
-    font-size: var(--font-size-middle);
+    font-size: var(--font-size-base);
     font-weight: 500;
     color: var(--ant-color-text);
   }

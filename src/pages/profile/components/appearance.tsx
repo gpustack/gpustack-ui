@@ -43,7 +43,7 @@ const useStyles = createStyles(({ token, css }) => ({
   `,
   label: css`
     font-size: 14px;
-    font-weight: var(--font-weight-medium);
+    font-weight: var(--font-weight-semibold);
     color: ${token.colorText};
   `,
   check: css`

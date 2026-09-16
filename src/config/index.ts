@@ -8,32 +8,11 @@ export const PageAction: Record<string, PageActionType> = {
   COPY: 'copy'
 };
 
-export const StatusColorMap: Record<
-  StatusType,
-  { text: string; bg: string; border?: string }
-> = {
-  error: {
-    text: `var(--ant-red-6)`,
-    bg: `var(--ant-red-1)`
-  },
-  warning: {
-    text: `var(--ant-orange-6)`,
-    bg: `var(--ant-orange-1)`
-  },
-  transitioning: {
-    text: `var(--ant-blue-6)`,
-    bg: `var(--ant-blue-1)`
-  },
-  success: {
-    text: `var(--ant-color-success)`,
-    bg: `var(--ant-color-success-bg)`
-  },
-  inactive: {
-    text: `var(--ant-color-text-tertiary)`,
-    border: `var(--ant-color-border)`,
-    bg: `var(--ant-color-fill)`
-  }
-};
+// `StatusColorMap` used to be duplicated here with core-ui's, holding the
+// pre-refresh palette values and zero consumers. It is deleted rather than
+// resynced: two copies of the status palette is how the product ends up with
+// two different greens again. The single source is core-ui's
+// `StatusColorMap`, which `StatusTag` / `StatusDot` read.
 
 export const StatusMaps: Record<string, StatusType> = {
   error: 'error',

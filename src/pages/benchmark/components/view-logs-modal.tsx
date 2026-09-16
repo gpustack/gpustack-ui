@@ -66,7 +66,7 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
     <Modal
       title={
         <span className="flex flex-center">
-          <span style={{ fontWeight: 'var(--font-weight-bold)' }}>
+          <span style={{ fontWeight: 'var(--font-weight-semibold)' }}>
             {intl.formatMessage({ id: 'common.button.viewlog' })}
           </span>
         </span>

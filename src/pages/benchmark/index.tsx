@@ -286,8 +286,6 @@ const Benchmark: React.FC = () => {
       <PageBox style={{ flex: 1 }}>
         <FilterBar
           showSelect={false}
-          marginBottom={22}
-          marginTop={0}
           handleSearch={handleSearch}
           handleInputChange={handleNameChange}
           rowSelection={rowSelection}

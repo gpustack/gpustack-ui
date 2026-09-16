@@ -28,7 +28,7 @@ const useStyles = createStyles(({ token, css }) => ({
   `,
   title: css`
     font-size: 14px;
-    font-weight: var(--font-weight-medium);
+    font-weight: var(--font-weight-semibold);
     color: ${token.colorText};
     line-height: 22px;
   `,

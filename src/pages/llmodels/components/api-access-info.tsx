@@ -65,7 +65,7 @@ const ApiAccessInfoWrapper = styled.div`
 
 const Tips = styled.div`
   color: var(--ant-color-text-secondary);
-  font-size: var(--font-size-small);
+  font-size: var(--font-size-base);
   .tips {
     display: flex;
     align-items: flex-start;

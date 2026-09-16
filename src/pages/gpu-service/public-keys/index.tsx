@@ -138,8 +138,6 @@ const GPUServicePublicKeys: React.FC = () => {
     <>
       <PageBox>
         <FilterBar
-          marginBottom={22}
-          marginTop={30}
           showSelect={false}
           inputHolder={intl.formatMessage({
             id: 'gpuservice.publicKey.filter.name'

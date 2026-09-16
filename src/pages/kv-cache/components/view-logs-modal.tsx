@@ -64,7 +64,9 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
   return (
     <Modal
       title={
-        <span style={{ fontWeight: 'var(--font-weight-bold)' }}>{title}</span>
+        <span style={{ fontWeight: 'var(--font-weight-semibold)' }}>
+          {title}
+        </span>
       }
       open={open}
       centered={true}

@@ -163,7 +163,7 @@ const TextToImages: React.FC = () => {
     <>
       <HeaderLeft>
         <div className="flex items-center">
-          <span className="font-600 flex-center">
+          <span className="flex-center">
             {intl.formatMessage({ id: 'menu.playground.text2images' })}
           </span>
           <Segmented

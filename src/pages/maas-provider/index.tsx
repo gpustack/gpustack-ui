@@ -147,8 +147,6 @@ const MaasProvider: React.FC = () => {
       <PageBox>
         <FilterBar
           showSelect={false}
-          marginBottom={22}
-          marginTop={30}
           widths={{ input: 300 }}
           buttonText={intl.formatMessage({ id: 'providers.button.add' })}
           rowSelection={rowSelection}

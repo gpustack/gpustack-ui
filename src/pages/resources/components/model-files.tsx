@@ -320,8 +320,6 @@ const ModelFiles = () => {
     <>
       <PageBox>
         <FilterBar
-          marginBottom={22}
-          marginTop={30}
           actionType="dropdown"
           selectHolder={intl.formatMessage({ id: 'resources.filter.worker' })}
           inputHolder={intl.formatMessage({ id: 'resources.filter.path' })}

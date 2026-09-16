@@ -284,7 +284,6 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
         <FilterBar
           showSelect={source !== 'clusterDetail'}
           selectHolder={intl.formatMessage({ id: 'clusters.filterBy.cluster' })}
-          marginBottom={22}
           buttonText={intl.formatMessage({ id: 'resources.button.create' })}
           handleDeleteByBatch={handleDeleteBatch}
           handleSearch={handleSearch}

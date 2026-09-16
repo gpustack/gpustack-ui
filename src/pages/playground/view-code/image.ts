@@ -1,3 +1,4 @@
+import { EXTERNAL_BASE_URL } from '@/config/settings';
 import _ from 'lodash';
 import { MODEL_PROXY, OPENAI_COMPATIBLE } from '../apis';
 import { fomatNodeJsParams, formatCurlArgs, formatPyParams } from './utils';
@@ -10,7 +11,7 @@ export const generateImageCurlCode = ({
   isFormdata = false,
   edit = false
 }: Record<string, any>) => {
-  const host = window.location.origin;
+  const host = EXTERNAL_BASE_URL;
   const api = modelProxy ? `${MODEL_PROXY}/${routeID}/\${YOUR_API_PATH}` : url;
 
   // ========================= Curl =========================
@@ -41,7 +42,7 @@ export const generateImageCode = ({
   isFormdata = false,
   edit = false
 }: Record<string, any>) => {
-  const host = window.location.origin;
+  const host = EXTERNAL_BASE_URL;
   const api = url;
 
   // ========================= Curl =========================
@@ -110,7 +111,7 @@ export const generateOpenaiImageCode = ({
   isFormdata = false,
   edit = false
 }: Record<string, any>) => {
-  const host = window.location.origin;
+  const host = EXTERNAL_BASE_URL;
   const api = url;
 
   // ========================= Curl =========================

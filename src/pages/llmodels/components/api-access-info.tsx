@@ -1,4 +1,4 @@
-import { OPENAI_COMPATIBLE } from '@/config/settings';
+import { EXTERNAL_BASE_URL, OPENAI_COMPATIBLE } from '@/config/settings';
 import {
   AUDIO_SPEECH_TO_TEXT_API,
   AUDIO_TEXT_TO_SPEECH_API,
@@ -100,9 +100,9 @@ const ApiAccessInfo = ({ open, data, onClose }: ApiAccessInfoProps) => {
 
   const endPoint = useMemo(() => {
     if (!data.generic_proxy) {
-      return `${window.location.origin}/${OPENAI_COMPATIBLE}`;
+      return `${EXTERNAL_BASE_URL}/${OPENAI_COMPATIBLE}`;
     }
-    return `${window.location.origin}${MODEL_PROXY}/${data.id}/<YOUR_API_PATH>`;
+    return `${EXTERNAL_BASE_URL}${MODEL_PROXY}/${data.id}/<YOUR_API_PATH>`;
   }, [data]);
 
   const isRanker = useMemo(() => {

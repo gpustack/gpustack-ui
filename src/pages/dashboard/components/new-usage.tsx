@@ -7,7 +7,9 @@ import styled from 'styled-components';
 import {
   DashboardUsageCommonParams,
   getUsageRankHeight,
-  getUsageRankSlotCount
+  getUsageRankSlotCount,
+  sectionHeadingStyle,
+  sectionTitleStyle
 } from '../config';
 import useTopTokenUsageByUser from '../hooks/use-top-token-usage-by-user';
 import TopTokenUsageByUser from './usage-charts/top-token-usage-by-user';
@@ -54,9 +56,9 @@ const NewUsage = () => {
   return (
     <>
       <PageTools
-        style={{ margin: '24px 0 0' }}
+        style={sectionHeadingStyle}
         left={
-          <span className="font-500">
+          <span style={sectionTitleStyle}>
             {intl.formatMessage(
               { id: 'dashboard.usage.title' },
               { days: USAGE_LOOKBACK_DAYS }

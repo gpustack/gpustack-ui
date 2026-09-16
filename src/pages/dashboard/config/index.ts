@@ -71,6 +71,43 @@ export interface DashboardUsageCommonParams {
   filters: Record<string, any>;
 }
 
+/**
+ * The heading row that opens each dashboard section (System Load, the usage
+ * block, Active Deployments).
+ *
+ * The margin is deliberately ASYMMETRIC. The three call sites had drifted to
+ * `26px 0`, `26px 0` and `24px 0 0` — two of them with equal space above and
+ * below, which is why the headings read as belonging to neither the group above
+ * nor the one below. With proximity carrying no signal, the card borders were
+ * left to do all the grouping, and the heading itself became decoration.
+ *
+ * These numbers are NOT the whitespace a reader sees. `PageTools` is a 40px-tall
+ * toolbar row and the 25px title is centred in it, so roughly 7px is added above
+ * and below the text on top of the margin. Measured on the rendered page, 24/8
+ * lands at 31px above the title and 15px below it — the 2:1 that matters. An
+ * earlier 40/12, picked by reasoning about the margin alone, rendered as 47/19
+ * and read as a hole in the page.
+ *
+ * Worth noting that 31px above is slightly LESS than the 33px the old symmetric
+ * `26px 0` produced: the grouping signal comes from tightening the bottom, not
+ * from opening up the top, so the page gets more compact rather than airier.
+ */
+export const sectionHeadingStyle = { margin: '24px 0 8px' };
+
+/**
+ * The section heading's own text. One size step above the 14px titles that sit
+ * inside the cards below it — those were the same 14px/500, so a group heading
+ * was typographically identical to the card titles it governs and read as their
+ * peer rather than their parent.
+ *
+ * SIZE, not weight: the product's title tier is 500 throughout, and weight is
+ * already spoken for. Size is the free channel.
+ */
+export const sectionTitleStyle = {
+  fontSize: 'var(--font-size-large)',
+  fontWeight: 'var(--font-weight-medium)'
+};
+
 export const usageChartHeight = 300;
 export const usageChartCardHeight = usageChartHeight + 52;
 

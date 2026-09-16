@@ -21,6 +21,7 @@ import { createStyles } from 'antd-style';
 import dayjs from 'dayjs';
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { builtinDocumentUrl } from './apis';
 import { SourceTypeValueMap } from './config';
 import type {
   CustomSourceUpsert,
@@ -223,8 +224,13 @@ const SourceSlotForm: React.FC<SourceSlotFormProps> = ({
   // byte-identical to the one the server reads as "follow the official source",
   // or an OTA server URL configured with a trailing slash would fail
   // `urlIsOfficial` below and save the official address as a custom URL.
+  // Whether an OTA server publishes this kind at all. One that nobody does has
+  // no address to follow, nothing to schedule, and a baseline that is assembled
+  // here rather than downloaded — so every control that speaks of an official
+  // file is dropped for it.
+  const published = slot.published !== false;
   const officialFileUrl =
-    status?.filename && /^https?:\/\//i.test(otaServerUrl)
+    published && status?.filename && /^https?:\/\//i.test(otaServerUrl)
       ? `${otaServerUrl.replace(/\/+$/, '')}/${status.filename}`
       : '';
   // The box holds the official file's own address, which the server reads
@@ -250,6 +256,14 @@ const SourceSlotForm: React.FC<SourceSlotFormProps> = ({
       rel="noreferrer"
     >
       {intl.formatMessage({ id: 'common.source.official.link' })}
+    </a>
+  ) : !published ? (
+    // The baseline this installation actually carries — the packaged catalog
+    // plus whatever installed plugins contribute. Under replace semantics it is
+    // the only safe thing to edit from: start from an empty editor and the
+    // providers it carries are the ones you lose.
+    <a className="m-l-8" href={builtinDocumentUrl(slot.kind)} download>
+      {intl.formatMessage({ id: 'common.source.builtin.link' })}
     </a>
   ) : null;
 
@@ -409,24 +423,35 @@ const SourceSlotForm: React.FC<SourceSlotFormProps> = ({
   // official updates are off stays out of the round by design — offering the
   // button there would lie. Nothing is refreshed at all while fallen back.
   const storedIsUrl = config.custom?.source_type === SourceTypeValueMap.URL;
-  const showRefetch = remoteEnabled && (config.custom ? storedIsUrl : true);
+  // With nothing configured there has to be an official slot to refresh; a kind
+  // nothing publishes serves its packaged baseline, which no fetch can move.
+  // Tied to the branch on screen as well: under a file editor a button that
+  // re-pulls an address reads as if the file had one.
+  const showRefetch =
+    remoteEnabled && !isFileMode && (config.custom ? storedIsUrl : published);
   // A failed read rules it out on its own: `config` is then the placeholder,
   // whose cadence of 12 would otherwise offer a refetch of a slot nothing is
   // known about — under a banner saying exactly that.
   const canRefetch =
     !dirty &&
     !loadFailed &&
-    (config.custom ? storedIsUrl : config.official.auto_update_hours > 0);
+    (config.custom
+      ? storedIsUrl
+      : published && config.official.auto_update_hours > 0);
   // A cadence belongs to something that gets re-read, and inline content never
   // is. While that branch is still empty the cadence in play is the
   // official one — true, but under a file editor it reads as if the file had an
   // update schedule, so it stays in the URL branch where its subject is visible.
-  const showAutoUpdate = remoteEnabled && !isFileMode;
+  // Nothing walks an unpublished kind on a schedule, so a cadence set against it
+  // would be a control that does nothing.
+  const showAutoUpdate = remoteEnabled && !isFileMode && published;
 
   const buildPayload = async (): Promise<SourceConfigUpsert | null> => {
     const base = {
       remote_enabled: remoteEnabled,
-      official: { auto_update_hours: formState.officialHours }
+      official: {
+        auto_update_hours: published ? formState.officialHours : 0
+      }
     };
     // Falling back never deletes. The inputs are hidden while the factory card
     // is selected, so an empty box there is a leftover rather than a choice just
@@ -475,7 +500,7 @@ const SourceSlotForm: React.FC<SourceSlotFormProps> = ({
       custom: {
         source_type: SourceTypeValueMap.URL,
         url: values.url.trim(),
-        auto_update_hours: formState.customHours
+        auto_update_hours: published ? formState.customHours : 0
       }
     };
   };
@@ -632,7 +657,7 @@ const SourceSlotForm: React.FC<SourceSlotFormProps> = ({
             <CInput.Input
               label={intl.formatMessage({ id: 'common.source.url' })}
               description={intl.formatMessage({
-                id: 'common.source.empty.hint'
+                id: slot.emptyHintKey || 'common.source.empty.hint'
               })}
               // Beside the label rather than after the box: it says what the
               // address *is*, which belongs with the field's name and not with
@@ -669,7 +694,11 @@ const SourceSlotForm: React.FC<SourceSlotFormProps> = ({
                       </span>
                       <span>
                         {intl.formatMessage(
-                          { id: 'common.source.empty.hint.file' },
+                          {
+                            id: published
+                              ? 'common.source.empty.hint.file'
+                              : 'common.source.empty.hint.file.builtin'
+                          },
                           { description: officialDescription }
                         )}
                       </span>
@@ -694,12 +723,18 @@ const SourceSlotForm: React.FC<SourceSlotFormProps> = ({
 
         {/* The way back to the default, as something to press: the same rule the
           input's tooltip states, but it only makes sense once there is
-          something to undo. */}
-        {remoteEnabled && customConfigured && (
+          something to undo. A kind with no official source to go back to says
+          the same thing with its Embedded card, and two controls for one idea
+          read as two different ones. */}
+        {published && remoteEnabled && customConfigured && (
           <Flex className={styles.linkRow}>
             <Tooltip
               title={intl.formatMessage(
-                { id: 'common.source.reset.tip' },
+                {
+                  id: published
+                    ? 'common.source.reset.tip'
+                    : 'common.source.reset.tip.builtin'
+                },
                 { description: officialDescription }
               )}
             >
@@ -709,7 +744,11 @@ const SourceSlotForm: React.FC<SourceSlotFormProps> = ({
                 icon={<UndoOutlined />}
                 onClick={handleReset}
               >
-                {intl.formatMessage({ id: 'common.source.reset' })}
+                {intl.formatMessage({
+                  id: published
+                    ? 'common.source.reset'
+                    : 'common.source.reset.builtin'
+                })}
               </Button>
             </Tooltip>
           </Flex>

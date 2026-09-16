@@ -49,7 +49,11 @@ const SourceConfigEntry: React.FC<SourceConfigEntryProps> = ({
       {/* Icon only, with the label as its tooltip: a secondary action sitting
           beside the toolbar's primary button. Default styling, so it keeps the
           border that tells it apart from the page behind it. */}
-      <Tooltip title={intl.formatMessage({ id: 'common.source.manage' })}>
+      <Tooltip
+        title={intl.formatMessage({
+          id: config.entryLabelKey || 'common.source.manage'
+        })}
+      >
         <Button icon={<SettingOutlined />} onClick={handleOpen}></Button>
       </Tooltip>
       <SourceConfigDrawer

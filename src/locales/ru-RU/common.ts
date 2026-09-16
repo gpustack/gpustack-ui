@@ -338,11 +338,18 @@ export default {
   'common.source.tag.official': 'Official',
   'common.source.empty.hint':
     'Your own URL replaces the official source entirely.',
+  'common.source.empty.hint.builtin':
+    'Your own source replaces the built-in content entirely. Leave it empty to keep the built-in content.',
   'common.source.empty.hint.file':
     'Leave the content empty to follow the official source — {description}',
+  'common.source.empty.hint.file.builtin':
+    'Leave the content empty to keep the built-in content — {description}',
   'common.source.reset': 'Reset to Official Source',
+  'common.source.reset.builtin': 'Reset to Built-in Content',
   'common.source.reset.tip':
     'Follow the official source again, applied when you save — {description}',
+  'common.source.reset.tip.builtin':
+    'Go back to the built-in content, applied when you save — {description}',
   'common.source.autoUpdate': 'Auto-update',
   'common.source.autoUpdate.interval': 'Update Interval (hours)',
   'common.source.autoUpdate.official.tip':
@@ -351,6 +358,7 @@ export default {
     'How often to re-fetch your URL. Off leaves your source untouched until you save or reload it.',
   'common.source.lastUpdated': 'Last updated {time}',
   'common.source.official.link': 'Official File',
+  'common.source.builtin.link': 'Built-in File',
   'common.source.sync.official': 'Update Now',
   'common.source.sync.custom': 'Update Now',
   'common.source.sync.hint.dirty':

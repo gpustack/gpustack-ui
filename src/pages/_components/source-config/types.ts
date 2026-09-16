@@ -7,12 +7,16 @@
 // platform writes `builtin` / `official` itself, so neither is ever sent.
 export type SourceType = 'file' | 'url';
 
-// The refresher's per-kind key (`OFFICIAL_KINDS` in the backend). Also the
-// stable id a scope's slot binds its probe status to.
+// A kind of configurable content: the path segment its endpoints sit under, and
+// the id a slot binds its probe status to. Most are also published by an OTA
+// server (`OFFICIAL_KINDS` in the backend) and so appear in the probe; a kind
+// assembled locally — the cache-provider catalog — is configurable without being
+// published, and its slot reports no probe status at all.
 export type SourceProbeKind =
   | 'catalog'
   | 'community-backend'
-  | 'built-in-backend';
+  | 'built-in-backend'
+  | 'cache-provider';
 
 // The admin's own source. Setting one *replaces* both the packaged baseline
 // and the official slot — the layers never stack — so this is the whole content
@@ -131,6 +135,16 @@ export interface SourceSlotConfig {
   // Whether this slot accepts an inline FILE (catalog only) — the third card in
   // its row; URL-only slots show two.
   allowFile: boolean;
+  // Whether an OTA server publishes this kind. False drops everything that only
+  // makes sense against a published file: the cadence, the refetch of a slot
+  // with nothing configured, and the official-file link — which is replaced by
+  // the packaged baseline the server assembles (`/ota-sources/{kind}/builtin`).
+  // Defaults to true.
+  published?: boolean;
+  // What an empty source box means for this kind. Defaults to the official
+  // wording; a kind nothing publishes falls back to its packaged baseline
+  // instead.
+  emptyHintKey?: string;
   // What this kind's official source follows, shown as the hint beside the
   // input — leaving that input empty is what follows it.
   officialDescriptionKey: string;
@@ -142,6 +156,10 @@ export interface SourceSlotConfig {
 export interface SourceScopeConfig {
   // Drawer title, e.g. "Backend Source".
   titleKey: string;
+  // The entry button's tooltip. Defaults to "Manage Sources", which names the
+  // mechanism; a scope whose content has a name of its own says that instead —
+  // what an admin is looking for on that page is the thing, not the plumbing.
+  entryLabelKey?: string;
   slots: SourceSlotConfig[];
   // GET /source-probe. Shared across scopes: one call reports every kind.
   probe: () => Promise<SourceProbeStatus>;

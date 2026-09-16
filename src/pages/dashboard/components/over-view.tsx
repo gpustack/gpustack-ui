@@ -7,17 +7,17 @@ import { DashboardContext } from '../config/dashboard-context';
 import '../styles/index.less';
 import styles from './over-view.less';
 
-const renderCardItem = (data: {
-  label: string;
-  value: React.ReactNode;
-  bgColor: string;
-}) => {
-  const { label, value, bgColor } = data;
+// `bgColor` used to be destructured here and never read — a dead prop that
+// `overviewConfigs` was still supplying a value for on every entry. Sizing and
+// weight now come from `.label` / `.value` in the stylesheet rather than from
+// utility classes, so the tile's hierarchy is defined in one place.
+const renderCardItem = (data: { label: string; value: React.ReactNode }) => {
+  const { label, value } = data;
   return (
     <Card variant="borderless" className={styles['card-body']}>
       <div className={styles.content}>
-        <div className="label text-secondary">{label}</div>
-        <div className="value font-600 font-size-16">{value}</div>
+        <div className={`${styles.label} text-secondary`}>{label}</div>
+        <div className={styles.value}>{value}</div>
       </div>
     </Card>
   );
@@ -40,8 +40,7 @@ const Overview: React.FC = () => {
           >
             {renderCardItem({
               label: intl.formatMessage({ id: config.label }),
-              value: _.get(data, config.key, 0),
-              bgColor: config.backgroundColor
+              value: _.get(data, config.key, 0)
             })}
           </Col>
         ))}

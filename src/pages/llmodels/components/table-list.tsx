@@ -567,8 +567,8 @@ const Models: React.FC<ModelsProps> = ({
     >
       <div style={{ flex: 1, padding: '24px' }}>
         <PageTools
-          marginBottom={22}
           marginTop={0}
+          marginBottom={16}
           left={
             <LeftFilters
               showCategory

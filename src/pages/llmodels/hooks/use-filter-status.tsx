@@ -25,7 +25,7 @@ const useFilterStatus = (options?: {
   const statusOptions = [
     {
       value: MyModelsStatusValueMap.Ready,
-      color: 'var(--ant-color-success)',
+      color: 'var(--color-status-success-text)',
       icon: <Dot color="var(--ant-color-success)"></Dot>,
       label: intl.formatMessage({
         id: 'models.mymodels.status.active'
@@ -41,7 +41,7 @@ const useFilterStatus = (options?: {
     },
     {
       value: MyModelsStatusValueMap.NotReady,
-      color: 'var(--ant-color-warning)',
+      color: 'var(--color-status-warning-text)',
       icon: <Dot color="var(--ant-color-warning)"></Dot>,
       label: intl.formatMessage({
         id: 'models.mymodels.status.degrade'

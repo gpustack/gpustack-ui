@@ -19,7 +19,7 @@
     }
 
     .ant-page-header-heading-title {
-      font-size: 16px;
+      font-size: var(--font-size-large);
     }
 
     .ant-pro-page-container {
@@ -43,7 +43,9 @@
       display: flex;
       flex-direction: column;
       border: 1px solid var(--color-border-container);
-      border-radius: 8px;
+      // Was a bare `8px`: the app's outermost content container carried the one
+      // radius value that had no token at all.
+      border-radius: var(--border-radius-container);
       overflow: hidden;
       background-color: var(--ant-color-bg-container);
       padding: 0;
@@ -63,9 +65,11 @@
     justify-content: space-between;
     width: 100%;
     padding-inline: var(--layout-content-inlinepadding);
-    font-size: 16px;
+    font-size: var(--font-size-large);
     color: var(--ant-color-text);
-    font-weight: 600;
+    // 600 was heavier than this aesthetic wants for a page title; the size and
+    // the primary ink already separate it from everything around it.
+    font-weight: var(--font-weight-medium);
     padding-block: 9px 8px;
     height: 56px;
     border-bottom: 1px solid var(--ant-color-split);

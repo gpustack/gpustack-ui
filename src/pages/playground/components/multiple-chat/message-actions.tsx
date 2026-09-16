@@ -94,7 +94,7 @@ const MessageActions: React.FC<MessageActionsProps> = ({
             'has-url-input': isFromUrl
           })}
         >
-          <div className="actions-wrap gap-5">
+          <div className="actions-wrap gap-4">
             {actions.includes('upload') &&
               data.role === Roles.User &&
               UploadImageButton}

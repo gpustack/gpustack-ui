@@ -76,7 +76,7 @@ const SearchResult: React.FC<SearchResultProps> = (props) => {
             ></IconFont>
           }
           description={
-            <div className="flex-column gap-5">
+            <div className="flex-column gap-4">
               <span>
                 {intl.formatMessage({ id: 'models.search.networkerror' })}
               </span>

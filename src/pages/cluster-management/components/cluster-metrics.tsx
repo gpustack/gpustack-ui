@@ -43,8 +43,8 @@ const metricsMap = {
 };
 
 const SubTitle = styled.div`
-  font-size: var(--font-size-middle);
-  font-weight: 700;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
   color: var(--ant-color-text);
   margin-block: 24px 16px;
 `;
@@ -55,31 +55,21 @@ interface ClusterDetailProps {
 
 const titleConfig = {
   textStyle: {
-    color: '#000',
+    // Was a hardcoded `#000`, which left these four titles black-on-black in
+    // the dark theme.
+    color: 'var(--ant-color-text)',
     fontSize: 14,
-    fontWeight: 600
+    fontWeight: 500
   },
   top: -5
 };
 
+// Only the radius is local. The threshold zones used to be overridden here with
+// three more hardcoded `rgba(...)` stops — a FIFTH private copy of the product's
+// green/amber/red, and the reason this page's gauges and the dashboard's did not
+// look alike. They now come from the shared gauge config.
 const gaugeConfig = {
-  radius: '100%',
-  progress: {
-    show: true,
-    roundCap: false,
-    width: 8
-  },
-  axisLine: {
-    roundCap: false,
-    lineStyle: {
-      width: 8,
-      color: [
-        [0.5, 'rgba(84, 204, 152, 80%)'],
-        [0.8, 'rgba(250, 173, 20, 80%)'],
-        [1, 'rgba(255, 77, 79, 80%)']
-      ]
-    }
-  }
+  radius: '100%'
 };
 
 const formatValue = (value: number) => {

@@ -347,7 +347,7 @@ const useStyles = createStyles(({ css }) => ({
       font-variant-numeric: tabular-nums;
     }
     .error {
-      color: var(--ant-color-error);
+      color: var(--color-status-error-text);
     }
   `,
   sectionCard: css`
@@ -410,7 +410,7 @@ const useStyles = createStyles(({ css }) => ({
     .rules-error {
       margin-top: 4px;
       font-size: 12px;
-      color: var(--ant-color-error);
+      color: var(--color-status-error-text);
     }
     .rules-info {
       margin-top: 4px;
@@ -455,14 +455,14 @@ const useStyles = createStyles(({ css }) => ({
       font-weight: 600;
       line-height: 18px;
       white-space: nowrap;
-      color: var(--ant-color-warning);
+      color: var(--color-status-warning-text);
       background: var(--ant-color-warning-bg);
       cursor: help;
     }
     .field-error {
       margin: 4px 0 8px;
       font-size: 12px;
-      color: var(--ant-color-error);
+      color: var(--color-status-error-text);
     }
   `
 }));

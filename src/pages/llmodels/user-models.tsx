@@ -1,11 +1,12 @@
 import PluginExtraFields from '@/components/plugin-extra-fields';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { getGPUStackPlugin } from '@/plugins';
-import { SyncOutlined } from '@ant-design/icons';
+import { SearchOutlined, SyncOutlined } from '@ant-design/icons';
 import {
   BaseSelect,
   InfiniteScrollerProvider,
   PageTools,
+  StatusDot,
   TemplateCardList
 } from '@gpustack/core-ui';
 import { useAccess, useIntl, useNavigate } from '@umijs/max';
@@ -16,32 +17,32 @@ import PageBox from '../_components/page-box';
 import { MY_MODELS_API, queryMyModels } from './apis';
 import APIAccessInfoModal from './components/api-access-info';
 import ModelItem from './components/model-item';
-import { categoryOptions, MyModelsStatusValueMap } from './config';
+import {
+  categoryOptions,
+  MyModelsStatusMap,
+  MyModelsStatusValueMap
+} from './config';
 import useFormInitialValues from './hooks/use-form-initial-values';
 import useNoResourceResult from './hooks/use-no-resource-result';
 import useViewApIInfo from './hooks/use-view-api-info';
-const Dot = ({ color }: { color: string }) => {
-  return (
-    <span
-      style={{
-        backgroundColor: color,
-        borderRadius: '50%',
-        height: 8,
-        width: 8,
-        display: 'flex'
-      }}
-    ></span>
-  );
-};
-
-const optionRender = (item: any) => {
-  return (
-    <span className="flex-center gap-8">
-      <Dot color={item.data?.color}></Dot>
-      {item.label}
-    </span>
-  );
-};
+// The status filter renders the same dot + label that the model CARD does, so
+// it uses the same component and the same map. The local `Dot` this replaces
+// picked its colours from three different systems — `--ant-color-success` and
+// `--ant-color-warning` (semantic) but `--ant-color-fill` for Stopped, which is
+// antd's FIRST-LEVEL FILL, a token antd documents as "currently only used in
+// the hover effect of Slider". `dark.ts` sets `colorFill: '#0A0A0A'`, the same
+// value as `colorBgBase`, so the Stopped dot was invisible in the dark theme.
+//
+// It also disagreed with the card on what Not Ready means: this list said
+// `warning` (amber) while `MyModelsStatusMap` says `error` (red). One map now.
+const renderStatusOption = (item: any) => (
+  <StatusDot
+    statusValue={{
+      status: MyModelsStatusMap[item.value],
+      text: item.label
+    }}
+  />
+);
 
 const UserModels: React.FC = () => {
   const {
@@ -96,23 +97,22 @@ const UserModels: React.FC = () => {
 
   const statusOptions = useMemo(() => {
     return [
+      // No `color` field any more — the dot's colour comes from
+      // `MyModelsStatusMap` via `StatusDot`, the same route the card uses.
       {
         value: MyModelsStatusValueMap.Ready,
-        color: 'var(--ant-color-success)',
         label: intl.formatMessage({
           id: 'models.mymodels.status.active'
         })
       },
       {
         value: MyModelsStatusValueMap.Stopped,
-        color: 'var(--ant-color-fill)',
         label: intl.formatMessage({
           id: 'models.mymodels.status.inactive'
         })
       },
       {
         value: MyModelsStatusValueMap.NotReady,
-        color: 'var(--ant-color-warning)',
         label: intl.formatMessage({
           id: 'models.mymodels.status.degrade'
         })
@@ -144,16 +144,6 @@ const UserModels: React.FC = () => {
     handleQueryChange({
       state: value
     });
-  };
-
-  const labelRender = (item: any) => {
-    const current = statusOptions.find((option) => option.value === item.value);
-    return (
-      <span className="flex-center gap-8">
-        <Dot color={current!.color}></Dot>
-        {item.label}
-      </span>
-    );
   };
 
   const getStatus = useCallback((model: any) => {
@@ -223,8 +213,8 @@ const UserModels: React.FC = () => {
     <>
       <PageBox>
         <PageTools
-          marginBottom={22}
           marginTop={0}
+          marginBottom={16}
           left={
             <Space>
               <Input
@@ -232,6 +222,11 @@ const UserModels: React.FC = () => {
                 style={{ width: 230 }}
                 size="large"
                 allowClear
+                prefix={
+                  <SearchOutlined
+                    style={{ color: 'var(--ant-color-text-placeholder)' }}
+                  ></SearchOutlined>
+                }
                 onClear={() =>
                   handleNameChange({
                     target: {
@@ -260,8 +255,8 @@ const UserModels: React.FC = () => {
                 style={{ width: 180 }}
                 size="large"
                 maxTagCount={1}
-                optionRender={optionRender}
-                labelRender={labelRender}
+                optionRender={renderStatusOption}
+                labelRender={renderStatusOption}
                 options={statusOptions}
                 value={queryParams.state}
                 onChange={handleStatusChange}

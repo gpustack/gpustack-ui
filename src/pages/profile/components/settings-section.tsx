@@ -13,7 +13,7 @@ const useStyles = createStyles(({ token, css }) => ({
   title: css`
     margin: 0;
     font-size: 16px;
-    font-weight: var(--font-weight-medium);
+    font-weight: var(--font-weight-semibold);
     color: ${token.colorTextHeading};
     line-height: 24px;
   `,

@@ -86,7 +86,7 @@ const ClusterTypeLabel = styled.div`
   font-weight: 500;
   margin-bottom: 8px;
   .required {
-    color: var(--ant-color-error);
+    color: var(--color-status-error-text);
     margin-left: 4px;
   }
 `;

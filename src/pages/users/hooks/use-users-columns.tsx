@@ -1,15 +1,16 @@
 // columns.ts
+import { StatusMaps } from '@/config';
 import { tableSorter } from '@/config/settings';
 import { getGPUStackPlugin } from '@/plugins';
 import {
   AutoTooltip,
   DropdownButtons,
   IconFont,
+  StatusTag,
   icons
 } from '@gpustack/core-ui';
 import { useIntl, useModel } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { Tag } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
@@ -204,42 +205,28 @@ const useUsersColumns = ({
         ellipsis: {
           showTitle: false
         },
+        // `StatusTag`, not a hand-built antd `Tag`. The two branches here used
+        // to be a transparent-background `Tag` with an overridden `borderColor`
+        // and a matching radius/padding — i.e. a second, local implementation
+        // of the `outlined` variant, which is how this column's green drifted
+        // to the raw brand mint (`--ant-color-success`, 2.01:1 as a graphic on
+        // white, under even the 3:1 floor) while every other status in the
+        // product moved to the measured steps.
         render: (text: string, record: ListItem) => {
           return (
-            <>
-              {record.is_active ? (
-                <Tag
-                  style={{
-                    marginRight: 0,
-                    paddingInline: 12,
-                    borderRadius: 12,
-                    background: 'unset',
-                    borderColor: 'var(--ant-color-success)'
-                  }}
-                  color="success"
-                >
-                  {intl.formatMessage({
-                    id: 'users.status.active'
-                  })}
-                </Tag>
-              ) : (
-                <Tag
-                  style={{
-                    marginRight: 0,
-                    paddingInline: 12,
-                    borderRadius: 12,
-                    background: 'unset',
-                    color: 'var(--ant-color-text-description)'
-                  }}
-                  variant="outlined"
-                  color="default"
-                >
-                  {intl.formatMessage({
-                    id: 'users.status.inactive'
-                  })}
-                </Tag>
-              )}
-            </>
+            <StatusTag
+              variant="outlined"
+              statusValue={{
+                status: record.is_active
+                  ? StatusMaps.success
+                  : StatusMaps.inactive,
+                text: intl.formatMessage({
+                  id: record.is_active
+                    ? 'users.status.active'
+                    : 'users.status.inactive'
+                })
+              }}
+            />
           );
         }
       },

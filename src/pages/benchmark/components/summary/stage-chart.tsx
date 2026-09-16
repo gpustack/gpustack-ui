@@ -165,7 +165,7 @@ const useStyles = createStyles(({ css }) => ({
     .legend .li {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
+      gap: 4px;
       font-size: 12px;
       color: var(--ant-color-text-tertiary);
       white-space: nowrap;

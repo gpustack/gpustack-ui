@@ -51,8 +51,8 @@ import {
 import useCacheProviders from '../hooks/use-cache-providers';
 
 const GroupTitle = styled.div`
-  font-size: 14px;
-  font-weight: 600;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
   margin-block: 16px 12px;
 `;
 

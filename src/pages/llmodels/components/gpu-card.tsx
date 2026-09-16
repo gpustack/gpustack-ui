@@ -60,7 +60,7 @@ const GPUCard: React.FC<{
       header={
         header || (
           <AutoTooltip ghost>
-            <span className="font-700">[{data.index}] </span>
+            <span className="font-600">[{data.index}] </span>
             {data.label}
           </AutoTooltip>
         )

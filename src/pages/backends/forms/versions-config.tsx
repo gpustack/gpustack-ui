@@ -46,7 +46,7 @@ const Title = styled.div`
   align-items: center;
   justify-content: space-between;
   background-color: var(--ant-color-bg-elevated);
-  font-weight: 600;
+  font-weight: var(--font-weight-medium);
   padding-top: 8px;
   padding-bottom: 8px;
 `;

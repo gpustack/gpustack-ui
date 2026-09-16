@@ -138,8 +138,6 @@ const GPUServiceStorage: React.FC = () => {
     <>
       <PageBox>
         <FilterBar
-          marginBottom={22}
-          marginTop={30}
           showSelect={false}
           buttonText={intl.formatMessage({ id: 'gpuservice.storage.add' })}
           handleSearch={handleSearch}

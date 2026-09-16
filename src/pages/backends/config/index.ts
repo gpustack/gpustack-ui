@@ -144,20 +144,56 @@ export const yaml2Json = (input: string) => {
   }
 };
 
+/**
+ * Decorative hues for a custom backend's icon tile, picked by HASH — which is
+ * why every SEMANTIC hue is excluded here. The list used to include `red`,
+ * `orange`, `gold`, `volcano` and `green`, so a backend whose name happened to
+ * hash onto `red` wore a badge reading "errored" and one onto `green` read
+ * "healthy", for no reason anyone could act on. `TagColorMap` above was already
+ * doing it right (purple / geekblue / cyan); this now matches it.
+ *
+ * `gpuColorMap` below keeps its semantic hues on purpose — it is a deliberate
+ * per-framework mapping, not a hash, so the hue means something.
+ */
 export const customColors = [
-  'red',
-  'orange',
-  'gold',
-  'lime',
-  'volcano',
-  'green',
-  'magenta',
-  'cyan',
+  'geekblue',
   'purple',
+  'cyan',
   'blue',
-  'geekblue'
+  'magenta',
+  'lime'
 ];
 
+/**
+ * Stable index for a backend's decorative icon/colour.
+ *
+ * Keyed on the backend NAME, not the database `id`. `id % n` meant the same
+ * backend wore a different colour and glyph in every environment (and shifted
+ * again after a re-seed), so the cue it was supposed to provide — "this is the
+ * same thing I saw last time" — was the one thing it could not deliver.
+ */
+export const backendVisualIndex = (name: string, buckets: number): number => {
+  if (!name || buckets <= 0) return 0;
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = (hash * 31 + name.charCodeAt(i)) | 0;
+  }
+  return Math.abs(hash) % buckets;
+};
+
+/**
+ * One hue per GPU framework — a fixed, hand-picked mapping, unlike the hashed
+ * `customColors` above.
+ *
+ * These deliberately KEEP the semantic hues (`green`, `volcano`, `orange`,
+ * `gold`). Re-drawing them from the non-semantic set was tried and reverted:
+ * the set only holds six usable presets, so two frameworks had to collapse to a
+ * neutral grey and lost their identity — a worse outcome than the collision it
+ * was avoiding. And the collision is largely theoretical here: the backend card
+ * that renders these tags shows no status of its own, and `cuda: green` /
+ * `rocm: volcano` echo the vendors' own brand colours rather than picking a hue
+ * at random. Identity beats hue purity when the hue carries real meaning.
+ */
 export const gpuColorMap: Record<string, string> = {
   cann: 'orange',
   cuda: 'green',

@@ -72,7 +72,7 @@ const SystemLoad = () => {
         <PageTools
           style={{ margin: '26px 0px' }}
           left={
-            <span className="font-700">
+            <span className="font-500">
               {intl.formatMessage({ id: 'dashboard.systemload' })}
             </span>
           }

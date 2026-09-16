@@ -41,7 +41,7 @@ const useStyles = createStyles(({ css }) => ({
     .hero {
       display: flex;
       align-items: baseline;
-      gap: 7px;
+      gap: 8px;
     }
     .hero .v {
       font-size: 40px;
@@ -66,7 +66,7 @@ const useStyles = createStyles(({ css }) => ({
     @media (max-width: 1100px) {
       .col-stats {
         grid-template-columns: repeat(3, minmax(0, 1fr));
-        row-gap: 14px;
+        row-gap: 16px;
       }
     }
     .stat .k {
@@ -78,7 +78,7 @@ const useStyles = createStyles(({ css }) => ({
     .stat .b {
       display: flex;
       align-items: baseline;
-      gap: 3px;
+      gap: 4px;
       white-space: nowrap;
     }
     .stat .b .n {
@@ -119,7 +119,7 @@ const useStyles = createStyles(({ css }) => ({
       font-variant-numeric: tabular-nums;
     }
     .why .badge.up {
-      color: var(--ant-color-success);
+      color: var(--color-status-success-text);
       background: var(--ant-color-success-bg);
     }
     .why .badge.flat {
@@ -127,11 +127,11 @@ const useStyles = createStyles(({ css }) => ({
       background: var(--ant-color-fill-quaternary);
     }
     .why .badge.warn {
-      color: var(--ant-color-warning);
+      color: var(--color-status-warning-text);
       background: var(--ant-color-warning-bg);
     }
     .why .cost {
-      color: var(--ant-color-error);
+      color: var(--color-status-error-text);
     }
     .why .capacity {
       cursor: help;

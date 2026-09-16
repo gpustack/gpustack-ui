@@ -244,8 +244,6 @@ const BackendList = () => {
   return (
     <PageBox>
       <FilterBar
-        marginBottom={22}
-        marginTop={30}
         widths={{
           input: 230
         }}

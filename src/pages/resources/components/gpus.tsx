@@ -104,7 +104,6 @@ const GPUList: React.FC<GPUListProps> = ({ clusterId, source }) => {
     <>
       <PageBox>
         <FilterBar
-          marginBottom={22}
           buttonText={intl.formatMessage({ id: 'resources.button.create' })}
           selectHolder={intl.formatMessage({ id: 'clusters.filterBy.cluster' })}
           handleSearch={handleSearch}

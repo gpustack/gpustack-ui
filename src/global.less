@@ -8,7 +8,11 @@ html {
   --page-content-padding: 8px;
   --app-banner-height: 0px;
   --color-text-light-1: rgba(255, 255, 255, 90%);
-  --color-fill-1: var(--ant-color-bg-container);
+  // Literal, not `var(--ant-color-bg-container)` — see the status block below
+  // for why aliasing an antd cssVar at `html` scope silently yields nothing.
+  // This one predates that block: its three consumers (core-ui `transition`,
+  // `divider-line`) have been rendering a transparent background all along.
+  --color-fill-1: #fdfdfd;
   --color-scrollbar-thumb: rgba(193, 193, 193, 80%);
   --scrollbar-size: 6px;
   --scrollbar-handle-bg: rgba(0, 0, 0, 44%);
@@ -17,26 +21,39 @@ html {
   --color-editor-dark: #282c34;
   --color-editor-light: #fafafa;
   --color-editor-header-bg: #383838;
-  --color-scrollbar-track: #f4f5f4; // according to: --ant-color-fill-tertiary
-  --color-fill-sider: #f4f5f4;
-  --color-bg-1: #f4f5f4;
+  // Scrollbar track inside the log / terminal viewers. NOT a page surface —
+  // the old comment claimed it followed `--ant-color-fill-tertiary`, which it
+  // never matched. `--color-fill-sider` and `--color-bg-1` sat beside it with
+  // the same value and zero consumers; both are gone.
+  --color-scrollbar-track: #f4f5f4;
+  // The page canvas (antd's B1 layer). Also fed to antd as `colorBgLayout` in
+  // `theme/light.ts`, so the `<html>` backdrop and any antd Layout agree.
+  --color-bg-page: #f4f5f6;
   --color-scroll-bg: #d9d9d9;
   --color-logs-bg: #1e1e1e;
   --color-logs-text: #d4d4d4;
   --layout-content-blockpadding: 24px;
   --layout-content-inlinepadding: 24px;
   --layout-content-header-inlinepadding: 40px;
+  // Radius scale — one value per ROLE, no aliases and no value-named tokens.
+  // modal/drawer 12 · page container 8 · card & control 6 · inner control 4 ·
+  // hairline chip 2. Anything not on this list is off the scale.
+  // (`--border-radius-small: 3px` and `--border-radius-2px` are gone: both
+  // duplicated `base` / `mini` by value. `.desc-block` was the one consumer of
+  // `-2px` and now reads `mini`, which is the same 2px.)
   --border-radius-modal: 12px;
+  --border-radius-container: 8px;
   --menu-border-radius-base: 6px;
   --border-radius-lg: 6px;
   --border-radius-base: 4px;
-  --border-radius-small: 3px;
   --border-radius-mini: 2px;
-  --border-radius-2px: 2px;
   --color-white-1: rgba(255, 255, 255, 100%);
-  --font-weight-500: 500;
+  // Weight scale. `medium` is 500 and `semibold` is 600, per CSS convention —
+  // the old `--font-weight-medium: 600` claimed to be medium while emitting
+  // semibold, and `--font-weight-500` named itself by value instead of role.
   --font-weight-normal: 400;
-  --font-weight-medium: 600;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
   --font-weight-bold: 700;
   --color-progress-text: rgba(255, 255, 255, 100%);
   --color-white-primary: rgba(255, 255, 255, 100%);
@@ -52,26 +69,41 @@ html {
   --color-text-3: rgba(0, 0, 0, 45%);
   --color-text-2: rgba(0, 0, 0, 65%);
   --color-bg-light-1: #e6f6ff;
-  --font-size-small: 13px;
+  // Type scale — one value per role. `--font-size-middle` was a second name for
+  // `base` (both 14px) and is gone. `caption` is the 12px step the codebase was
+  // already using ~64 times as a bare literal (or via the misnamed `code`).
+  --font-size-caption: 12px;
   --font-size-code: 12px;
+  --font-size-small: 13px;
   --font-size-base: 14px;
   --font-size-large: 16px;
-  --font-size-middle: 14px;
+  --font-size-title: 20px;
+  --font-size-display: 24px;
   --table-td-radius: 6px;
   --checkbox-border-radius: 4px;
-  --ant-color-success-bg: #f0fff6;
-  --ant-color-success: #54cc98;
-  --ant-color-error-bg: #fff2f0;
-  --ant-color-error: #ff4d4f;
-  --ant-box-shadow-secondary:
-    0 6px 16px 0 rgba(0, 0, 0, 8%), 0 3px 6px -4px rgba(0, 0, 0, 12%),
-    0 9px 28px 8px rgba(0, 0, 0, 5%);
+  // ---------------------------------------------------------------------------
+  // There are deliberately NO `--ant-*` declarations in this file.
+  //
+  // antd owns those: with cssVar on (antd 6 default) it emits them scoped to a
+  // ConfigProvider-owned class, so anything declared here on `html` is only
+  // visible AT `html` — every real component reads antd's value instead. Ten
+  // such overrides used to live in this block and none of them did anything:
+  //
+  //   --ant-color-success / --ant-border-radius-lg  duplicated `theme/light.ts`
+  //   --ant-color-error / --ant-line-type / --ant-line-width /
+  //   --ant-rate-star-color / --ant-box-shadow-secondary
+  //                                        restated antd's own defaults verbatim
+  //   --ant-color-border: #d9d9d9          lost to `theme/light.ts`'s #d3d8de
+  //   --ant-color-success-bg / --ant-color-error-bg
+  //                                        lost to antd's derived palette step
+  //
+  // To change an antd token, edit `config/theme/light.ts` / `dark.ts`.
+  // ---------------------------------------------------------------------------
   --color-chart-red: rgba(255, 77, 79, 80%);
   --color-chart-green: rgb(84, 204, 152, 80%);
   --color-chart-glod: rgba(250, 173, 20, 80%);
   --seal-transition-func: cubic-bezier(0, 0, 1, 1);
   --color-green-fill-light: rgb(243 251 248);
-  --ant-rate-star-color: #fadb14;
   --color-fill-spin-bg: rgba(255, 255, 255, 15%);
   --width-tooltip-max: 420px;
   --color-modal-content-bg: rgba(255, 255, 255, 90%);
@@ -79,23 +111,128 @@ html {
   --color-spotlight-bg: rgba(255, 255, 255, 100%);
   // ======== input ============
   --box-shadow-base: 0 4px 6px rgba(227, 232, 240, 70%);
-  --ant-border-radius-lg: 6px;
   --color-selected-bg: rgba(230, 230, 230, 88%);
-  --ant-color-border: #d9d9d9;
-  --ant-line-type: solid;
-  --ant-line-width: 1px;
   --color-esc-hint-bg: rgba(0, 0, 0, 75%);
   // ======== container ============
   --color-border-container: #ededed;
-  --color-text-table-header: #71717a;
+  // 5.90:1 on the header's `--ant-color-fill-tertiary`. The previous #71717a
+  // measured 4.31:1 — under the 4.5:1 AA floor for the 14px header text.
+  --color-text-table-header: #5c5c66;
+  // Sider nav item resting colour — icon and label both. Not an antd step:
+  // `text-secondary` (.65) is legible but sits only 2.24x off the group titles
+  // (`colorText`), and with 30+ items in the rail that flattening is what makes
+  // the list unscannable. `text-tertiary` (.45) is what the design originally
+  // used FOR that separation, but it measures 3.30:1 here — fine for the icon
+  // as a graphic, a fail for the label as text.
+  // .55 is the lightest step that still clears 4.5:1, so it buys back most of
+  // the hierarchy (3.24x off the group titles) without the AA failure.
+  // Measured on the real sider surface: #f4f5f6 light, #141414 dark.
+  --color-sider-item-text: rgba(0, 0, 0, 55%);
   --seal-table-row-min-height: 68px;
-  --modal-border-radius: 12px;
+  // The expanded child row is 80% of a parent row rather than a literal, so the
+  // two stay on one rhythm when the parent height is retuned.
+  --seal-table-child-row-height: calc(var(--seal-table-row-min-height) * 0.8);
+  // ======== status ============
+  // One layer for all five states. `StatusColorMap` used to read the PALETTE
+  // scale for error/warning/transitioning but the SEMANTIC token for success, so
+  // a brand change reached two of five.
+  //
+  // LITERAL VALUES ON PURPOSE — do not rewrite these as `var(--ant-*)`.
+  // antd 6 enables cssVar by default and scopes its variables to a CLASS on a
+  // ConfigProvider-owned element, not to `:root`. A custom property's `var()` is
+  // substituted on the element the DECLARATION sits on, so `--x: var(--ant-red-7)`
+  // written here (on `html`) looks for `--ant-red-7` on `html`, does not find it,
+  // and collapses the whole property to guaranteed-invalid — consumers then fall
+  // back to inherited text and a transparent background. A `var(--ant-*)` used
+  // directly as a property value on a deep element is fine; it is only this
+  // aliasing-at-the-root pattern that breaks.
+  //
+  // Values are the antd palette steps by hex. Measured against their own tinted
+  // background, light theme: error 5.07 · warning 5.09 · transitioning 5.50 ·
+  // success 5.27. All clear the 4.5:1 AA floor for the tag's 12px/400 label.
+  // The TINTS are deliberately stronger than the antd `-1` steps they started
+  // from. Those were ~99% white, so the pill barely existed and the state read
+  // as a stretch of faint text rather than a badge. The text cannot go back
+  // toward vivid to compensate — at 12px on a light tint, `#fa8c16` tops out at
+  // 2.23:1 and the brand mint `#54cc98` at 1.94:1, which is arithmetic, not
+  // taste. So the contrast headroom is spent on the background instead, which is
+  // what makes the chip read as a chip.
+  --color-status-error-text: #cf1322;
+  --color-status-error-bg: #ffe3e1; // 4.60:1
+  --color-status-warning-text: #ad4e00;
+  --color-status-warning-bg: #ffeed2; // 4.76:1
+  --color-status-transitioning-text: #0958d9;
+  --color-status-transitioning-bg: #d6ebff; // 5.04:1
+  // The brand mint darkened along its own hue for use as TEXT.
+  --color-status-success-text: #317658;
+  --color-status-success-bg: #dcf8e8; // 4.82:1
+  --color-status-inactive-text: rgba(0, 0, 0, 45%);
+  --color-status-inactive-bg: #f7f8fa;
+  --color-status-inactive-border: #d9d9d9;
+  // A filled dot is a GRAPHIC, not text. It never carries the state on its own —
+  // `StatusDot` always renders a label beside it — so it is not bound by the
+  // 4.5:1 text floor, and painting it with the darkened text colour was a
+  // category error: it made a bright brand mint come out as dark pine. These are
+  // the vivid brand hues, which is what a dot wanted all along.
+  --color-status-error-dot: #f5222d;
+  --color-status-warning-dot: #fa8c16;
+  --color-status-transitioning-dot: #1677ff;
+  --color-status-success-dot: #54cc98;
+  // `outlined` StatusTag. A third step, because that variant has no tint under
+  // it — the label sits straight on the container. The `-text` steps above are
+  // darkened to clear 4.5:1 against their own PALE TINT, and a tint is darker
+  // than the container, so on white they overshoot to 5.4–6.2 and read muddy.
+  //
+  // These are the lightest value on each hue that still clears 4.5:1 on the
+  // container, solved in OKLCH from the vivid `-6` step. The old palette values
+  // cannot simply come back: as 12px text on white they measure error 4.08,
+  // transitioning 4.10, warning 2.38 and success 2.01 — all fails.
+  // error and transitioning land essentially back at vivid; success gets much
+  // more saturated than its `-text` step. Warning barely moves and that is
+  // arithmetic, not a choice — amber cannot be both vivid and 4.5:1 on white.
+  //
+  // Dark mode needs no counterpart: its `-text` steps are light-on-dark and
+  // already measure 6.51–10.32 on the container, so the dark block maps these
+  // straight onto `-text`.
+  --color-status-error-outline: #ec0f25; // 4.50:1
+  --color-status-warning-outline: #b46100; // 4.52:1
+  --color-status-transitioning-outline: #086ff7; // 4.54:1
+  --color-status-success-outline: #00875c; // 4.55:1
+  // The outlined pill's BORDER: a HAIRLINE, deliberately weaker than the label
+  // it encloses.
+  //
+  // These were briefly solved to 3:1 on the theory that a border is a graphic.
+  // That over-applies the rule — a decorative hairline carries no information,
+  // the label does — and it inverted the pill: the outline came out more vivid
+  // than its own text, so the eye read the ring instead of the state.
+  //
+  // The correct relationship was already in the component. `inactive` pairs a
+  // `.45` label with a `#d9d9d9` border at **1.41:1**, and the download state's
+  // border measures 1.42 — so the one variant the original author styled by
+  // hand used a hairline. These four now match that, per hue.
+  // Every one is 1.41–1.42:1 on the container; the labels are untouched.
+  --color-status-error-outline-border: #ffcdc8; // 1.42:1
+  --color-status-warning-outline-border: #ffd0ac; // 1.41:1
+  --color-status-transitioning-outline-border: #c3daff; // 1.42:1
+  --color-status-success-outline-border: #85edbd; // 1.41:1
+  // The download tag's progress bar, which is a THIRD surface again — neither
+  // the container nor the tint. It used `--ant-color-success-border` (#d8f2e4),
+  // which measures 1.050 against the filled variant's own tint: on the default
+  // variant the bar was invisible. And its label reused the tint's `-text` step
+  // (#317658), which lands at 3.83 once the bar is strong enough to see.
+  // Bar solved to stay visible on BOTH surfaces (1.418 on the container, 1.258
+  // on the tint); label solved for 4.5:1 against the bar, its hardest segment —
+  // it also crosses the unfilled part, measuring 6.39 on the container and 5.67
+  // on the tint.
+  --color-status-success-progress-bg: #a8e6c7;
+  --color-status-success-progress-text: #006d4a; // 4.51:1 on the bar
 }
 
 html[data-theme='realDark'] {
+  --color-fill-1: #1f1f1f;
   --color-logs-bg: #141414;
   --color-white-1: #141414;
-  --color-fill-sider: #1f1f1f;
+  --color-bg-page: #141414;
   --color-editor-dark: #00101f;
   --color-editor-light: #fafafa;
   --color-fill-spin-bg: rgba(55, 55, 55, 50%);
@@ -106,9 +243,84 @@ html[data-theme='realDark'] {
   --color-spotlight-bg: #3e3e3e;
   --color-esc-hint-bg: rgba(150, 150, 150, 75%);
   --color-border-container: #3a3a3a;
-  --color-text-table-header: rgba(255, 255, 255, 30%);
+  // 5.52:1 on the dark header fill. The previous 30% white measured 2.35:1.
+  --color-text-table-header: rgba(255, 255, 255, 60%);
+  // 6.15:1 on the dark sider (#141414). See the light block for why .55.
+  --color-sider-item-text: rgba(255, 255, 255, 55%);
+  // Dark counterparts — all five, since the light block is now literal hex and
+  // nothing inverts on its own.
+  //
+  // The tints are NOT antd's dark `-1` steps. Those are built to sit on antd's
+  // own `#141414` container; this app sets `colorBgBase: '#0a0a0a'`, from which
+  // antd derives container `#1e1e1e` and elevated `#292929`. Against those the
+  // `-1` steps measured 1.04–1.08:1 — invisible — and `error` / `transitioning`
+  // were actually DARKER than the container, so the pill read as a hole punched
+  // in the surface rather than a tint laid on it.
+  //
+  // These are generated instead: each keeps its text colour's OKLCH hue at
+  // C 0.055, with L fixed at 0.336 — the ELEVATED surface's L (0.281) plus the
+  // ΔL 0.055 that the light tints sit at against white. Targeting elevated
+  // rather than container is deliberate: a drawer is the harder surface, and a
+  // tint tuned only for the table would vanish there.
+  //   vs elevated  error 1.19 · warning 1.21 · transitioning 1.21 · success 1.26
+  //                (light mode against white: 1.13–1.22 — same step)
+  //   vs container error 1.36 · warning 1.38 · transitioning 1.39 · success 1.44
+  //   text on tint error 4.77 · warning 7.46 · transitioning 5.33 · success 5.78
+  // `error` is the binding constraint: one more L step puts it at 4.50, so do
+  // not lighten these without re-measuring the text against them.
+  --color-status-error-text: #ff7875;
+  --color-status-error-bg: #502b29;
+  --color-status-warning-text: #ffc069;
+  --color-status-warning-bg: #483213;
+  --color-status-transitioning-text: #69b1ff;
+  --color-status-transitioning-bg: #213852;
+  --color-status-success-text: #54cc98;
+  --color-status-success-bg: #18402e;
+  --color-status-inactive-text: rgba(255, 255, 255, 45%);
+  --color-status-inactive-bg: rgba(255, 255, 255, 4%);
+  --color-status-inactive-border: #424242;
+  // On a dark canvas the text steps are already vivid enough to double as dot
+  // fills, so these match — unlike light mode, dark needed no separate ramp.
+  --color-status-error-dot: #ff7875;
+  --color-status-warning-dot: #ffc069;
+  --color-status-transitioning-dot: #69b1ff;
+  --color-status-success-dot: #54cc98;
+  // Same as `-text` here. On a dark container these steps are light-on-dark and
+  // already measure 6.51 / 10.32 / 7.41 / 8.31 with no tint under them, so the
+  // light block's problem — a step darkened for a tint overshooting on the
+  // container — simply does not arise.
+  // NOT the `-text` values above. The container (#1e1e1e) is DARKER than the
+  // tint those are tuned for, so reusing them overshot in the bright direction
+  // — error 6.51, transitioning 7.41, success 8.31 and warning a glaring 10.32
+  // against a 4.5 requirement. These are the dimmest step on each hue that
+  // still clears 4.5:1 on the container. Mirror image of the light block, where
+  // the same rule makes `outline` LIGHTER than `text`.
+  --color-status-error-outline: #dd5a59; // 4.51:1
+  --color-status-warning-outline: #b47913; // 4.51:1
+  --color-status-transitioning-outline: #4088d2; // 4.50:1
+  --color-status-success-outline: #009867; // 4.51:1
+  // Hairlines at dark `inactive`'s strength (`#424242`, 1.66:1) — but derived
+  // by mixing the ink above toward the surface, NOT by holding chroma and
+  // dropping lightness the way the light block does.
+  //
+  // Both methods land on the same luminance; they differ in chroma, and on a
+  // dark surface that decides everything. Holding red's chroma at the required
+  // luminance produces #8a0018 — a saturated maroon that reads as a different
+  // colour from the salmon label it encloses, not as a faint version of it. A
+  // hairline should be a whisper of the ink, so it has to be desaturated.
+  --color-status-error-outline-border: #653434; // 1.66:1
+  --color-status-warning-outline-border: #543f1a; // 1.67:1
+  --color-status-transitioning-outline-border: #2a4560; // 1.68:1
+  --color-status-success-outline-border: #134b39; // 1.66:1
+  // Dark download. Bar 1.264 on the dark tint (#18402e) / 1.818 on the
+  // container; label 4.52 on the bar, 8.21 on the container, 5.71 on the tint.
+  // Note the light/dark inversion: on a light surface the bar is DARKER than
+  // what surrounds it and the label darker still, while here the bar is darker
+  // than the container but the label has to go LIGHTER than the bar.
+  --color-status-success-progress-bg: #005336;
+  --color-status-success-progress-text: #52cb97;
 
-  background: #141414;
+  background: var(--color-bg-page);
 
   .ant-result-image {
     opacity: 0.9;
@@ -116,7 +328,7 @@ html[data-theme='realDark'] {
 }
 
 html[data-theme='light'] {
-  background-color: #f4f5f6;
+  background-color: var(--color-bg-page);
 }
 
 body {
@@ -341,7 +553,7 @@ body {
       line-height: 40px;
 
       .anticon {
-        font-size: var(--font-size-middle);
+        font-size: var(--font-size-base);
       }
     }
   }
@@ -472,7 +684,7 @@ body {
     .ant-dropdown-menu-item-disabled
   ):hover {
   background-color: var(--ant-color-error-bg) !important;
-  color: var(--ant-color-error) !important;
+  color: var(--color-status-error-text) !important;
 }
 
 .ant-image {
@@ -492,7 +704,7 @@ body {
   .ant-message-notice-error {
     .ant-message-notice-content {
       background-color: var(--ant-color-error-bg);
-      color: var(--ant-color-error);
+      color: var(--color-status-error-text);
       // custom scrollbar
       &::-webkit-scrollbar {
         width: 6px;
@@ -519,7 +731,7 @@ body {
   .ant-message-notice-success {
     .ant-message-notice-content {
       background-color: var(--ant-color-success-bg);
-      color: var(--ant-color-success);
+      color: var(--color-status-success-text);
     }
   }
 
@@ -603,13 +815,29 @@ body {
 .ant-modal {
   max-width: 100vw;
 
+  // 500, same as the drawer title below. A modal and a drawer are the same
+  // class of overlay, so leaving one at 600 would just move the inconsistency
+  // rather than remove it. Same reasoning as the drawer: an overlay title
+  // already gets its level from position.
   .ant-modal-title {
-    font-weight: var(--font-weight-bold);
+    font-weight: var(--font-weight-medium);
   }
 }
 
+// 500, matching the inline weight `GSDrawer` puts on its own title. Without
+// this the two disagree: 55 files reach a drawer through `GSDrawer` /
+// `FormDrawer` and render 500, while the ~8 that use antd's `Drawer` directly
+// fall through to antd's default `fontWeightStrong` (600) — the same kind of
+// title rendering at two weights depending on which component the page picked.
+//
+// Not deleted, set: deleting this rule restores antd's 600 rather than
+// removing the override's effect.
+//
+// 500 rather than 600 because an overlay title already has all the hierarchy
+// it needs from position — it sits alone at the top of a panel with a rule
+// under it. Weight would be a second channel saying the same thing.
 .ant-drawer .ant-drawer-title {
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
 }
 
 .ant-cascader-menu-item.ant-cascader-menu-item-active {
@@ -794,9 +1022,9 @@ body {
 }
 
 .desc-block {
-  border-radius: var(--border-radius-2px);
+  border-radius: var(--border-radius-mini);
   background-color: rgb(89 89 89);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-semibold);
   padding: 2px;
 }
 

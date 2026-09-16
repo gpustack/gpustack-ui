@@ -134,8 +134,6 @@ const GPUServiceStorageTypes: React.FC = () => {
     <>
       <PageBox>
         <FilterBar
-          marginBottom={22}
-          marginTop={30}
           showSelect={false}
           inputHolder={intl.formatMessage({
             id: 'gpuservice.storageType.filter.name'

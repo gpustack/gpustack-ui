@@ -1,3 +1,4 @@
+import { SectionTitle } from '@gpustack/core-ui';
 import { createStyles } from 'antd-style';
 import React from 'react';
 import { BenchmarkResultItem } from '../../config/types';
@@ -78,7 +79,7 @@ const useStyles = createStyles(({ css }) => ({
   tag: css`
     display: inline-flex;
     align-items: center;
-    gap: 5px;
+    gap: 4px;
     font-size: 12px;
     font-weight: 600;
     padding: 1px 9px;
@@ -93,25 +94,19 @@ const useStyles = createStyles(({ css }) => ({
     background: var(--ant-color-primary-bg);
   `,
   tagPeak: css`
-    color: var(--ant-color-success);
+    color: var(--color-status-success-text);
     background: var(--ant-color-success-bg);
   `,
   tagOverloaded: css`
-    color: var(--ant-color-error);
+    color: var(--color-status-error-text);
     background: var(--ant-color-error-bg);
   `,
   tagOk: css`
     color: var(--ant-color-text-tertiary);
     background: var(--ant-color-fill-quaternary);
   `,
-  // Type scale — the page uses exactly four sizes: 40 (hero) · 16 (section) ·
-  // 14 (metric) · 12 (label). sectionTitle is the 16.
-  sectionTitle: css`
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--ant-color-text);
-    margin-bottom: 12px;
-  `,
+  // Section titles come from core-ui's `SectionTitle` (re-exported below), so
+  // the local `sectionTitle` class that used to live here is gone.
   // Hairline separator between major sections (flat layout, no boxes).
   sectionRule: css`
     border-top: 1px solid var(--ant-color-border-secondary);
@@ -173,16 +168,12 @@ export const StatusTag: React.FC<{
   );
 };
 
-// The four layout primitives keep their component API — they are consumed as
-// elements across the tab, so wrapping the class in a component leaves every
-// call site (and its `style` / `className` passthrough) untouched.
-export const SectionTitle: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
-  className,
-  ...rest
-}) => {
-  const { styles, cx } = useStyles();
-  return <div className={cx(styles.sectionTitle, className)} {...rest} />;
-};
+// Re-exported from core-ui rather than defined here: this local copy was
+// character-for-character the shared one (14px / 500 / text / 12px below), and
+// having two of them is how the product ended up with group titles that
+// differed page to page. Re-exporting keeps every call site in this tab
+// unchanged.
+export { SectionTitle };
 
 export const SectionRule: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
   className,

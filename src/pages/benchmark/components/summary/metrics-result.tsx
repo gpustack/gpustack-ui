@@ -193,13 +193,19 @@ const MetricsResult: React.FC<{ data?: any }> = (props) => {
       <>
         {success}/{total}
         {failed > 0 && (
-          <span className="sub" style={{ color: 'var(--ant-color-error)' }}>
+          <span
+            className="sub"
+            style={{ color: 'var(--color-status-error-text)' }}
+          >
             {' '}
             · {failed} {t('benchmark.detail.requests.failed')}
           </span>
         )}
         {incomplete > 0 && (
-          <span className="sub" style={{ color: 'var(--ant-color-warning)' }}>
+          <span
+            className="sub"
+            style={{ color: 'var(--color-status-warning-text)' }}
+          >
             {' '}
             · {incomplete} {t('benchmark.detail.requests.incomplete')}
           </span>

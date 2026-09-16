@@ -18,6 +18,7 @@ import {
   backendActions,
   BackendSourceLabelMap,
   BackendSourceValueMap,
+  backendVisualIndex,
   builtInBackendLogos,
   customColors,
   customIcons,
@@ -142,8 +143,12 @@ export const generateIcon = (data: ListItem, height?: number) => {
   if (data.icon) {
     return <img src={data.icon} height={innHeight} />;
   }
-  const color = customColors[data.id % customColors.length];
-  const icon = customIcons[data.id % customIcons.length];
+  // Hashed on the name so a backend keeps its identity across environments —
+  // `data.id % n` re-rolled both the colour and the glyph whenever ids differed.
+  const color =
+    customColors[backendVisualIndex(data.backend_name, customColors.length)];
+  const icon =
+    customIcons[backendVisualIndex(data.backend_name, customIcons.length)];
 
   return (
     <TagInner color={color} variant="filled" height={height || 28}>
@@ -300,6 +305,9 @@ const BackendCard: React.FC<BackendCardProps> = ({
             icon={<IconFont type="icon-more"></IconFont>}
             size="small"
             type="text"
+            // Icon-only: without this the button has no accessible name at all.
+            aria-label={intl.formatMessage({ id: 'common.button.more' })}
+            title={intl.formatMessage({ id: 'common.button.more' })}
           ></Button>
         </DropdownActions>
       </span>

@@ -223,6 +223,20 @@ const buildOption = (
         data: points.map((p, i) => {
           if (!p.isBest && !p.isPeak && !p.isOverloaded) return p.tps;
           const color = p.isBest ? '#f5a623' : p.isPeak ? C.green : C.red;
+          // Peak and Overloaded used to be separated by ring colour ALONE —
+          // and `C.green` vs `C.red` measure ΔE 1.8 under deuteranopia, i.e.
+          // the same colour to a red-green colourblind reader. Since these two
+          // carry opposite verdicts ("this is the best it gets" vs "past here
+          // the numbers are not an answer"), that was the one pair on the page
+          // that had to survive without colour. Shape and a text label now
+          // carry it; colour is the third channel, not the only one.
+          // Shapes echo the status glyphs the summary badges already use
+          // (▲ peak · ✕ overloaded — 'diamond' is the nearest ECharts symbol).
+          const symbol = p.isBest
+            ? 'circle'
+            : p.isPeak
+              ? 'triangle'
+              : 'diamond';
           // A centered label on the first or last stage runs into the y-axis (on
           // the right it lands on top of the axis ticks). Anchor it away from the
           // edge instead of letting it overhang.
@@ -230,6 +244,7 @@ const buildOption = (
           const atStart = i === 0;
           return {
             value: p.tps,
+            symbol,
             // The Best marker is the page's single answer, so it outsizes both
             // the curve's own symbols and the small charts' 8px echo of it.
             symbolSize: p.isBest ? 10 : 8,
@@ -238,28 +253,26 @@ const buildOption = (
               borderColor: color,
               borderWidth: 2
             },
-            label:
-              p.isBest || p.isPeak
-                ? {
-                    show: true,
-                    formatter: p.isBest ? '★ Best' : 'Peak',
-                    // Best above, Peak below: on a saturated curve the two sit
-                    // one category apart and would otherwise overlap.
-                    position: (p.isBest ? 'top' : 'bottom') as 'top' | 'bottom',
-                    distance: 10,
-                    align: (atEnd ? 'right' : atStart ? 'left' : 'center') as
-                      | 'right'
-                      | 'left'
-                      | 'center',
-                    offset: [atEnd ? -4 : atStart ? 4 : 0, 0] as [
-                      number,
-                      number
-                    ],
-                    color: p.isBest ? '#b8860b' : C.green,
-                    fontSize: 14,
-                    fontWeight: 'bold' as const
-                  }
-                : undefined
+            label: {
+              show: true,
+              formatter: p.isBest
+                ? '★ Best'
+                : p.isPeak
+                  ? 'Peak'
+                  : labels.overloaded,
+              // Best above, the other two below: on a saturated curve they sit
+              // one category apart and would otherwise overlap.
+              position: (p.isBest ? 'top' : 'bottom') as 'top' | 'bottom',
+              distance: 10,
+              align: (atEnd ? 'right' : atStart ? 'left' : 'center') as
+                | 'right'
+                | 'left'
+                | 'center',
+              offset: [atEnd ? -4 : atStart ? 4 : 0, 0] as [number, number],
+              color: p.isBest ? '#b8860b' : color,
+              fontSize: 14,
+              fontWeight: 'bold' as const
+            }
           };
         })
       },

@@ -233,7 +233,6 @@ const KVCache: React.FC = () => {
       <PageBox>
         <FilterBar
           showSelect={false}
-          marginBottom={22}
           widths={{ input: 300 }}
           rowSelection={rowSelection}
           handleInputChange={handleNameChange}

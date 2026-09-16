@@ -237,7 +237,6 @@ const GPUServiceInstanceTypes: React.FC = () => {
     <>
       <PageBox>
         <FilterBar
-          marginBottom={22}
           showSelect
           selectHolder={intl.formatMessage({ id: 'clusters.filterBy.cluster' })}
           inputHolder={intl.formatMessage({

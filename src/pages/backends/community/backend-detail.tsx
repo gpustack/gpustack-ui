@@ -20,7 +20,7 @@ const Title = styled.div`
     display: flex;
     align-items: center;
     gap: 8px;
-    font-weight: 700;
+    font-weight: var(--font-weight-semibold);
   }
 `;
 

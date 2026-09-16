@@ -2,23 +2,74 @@ import useMemoizedFn from 'ahooks/lib/useMemoizedFn';
 import { clampChroma, formatHex, modeOklch, modeRgb, useMode } from 'culori/fn';
 import useUserSettings from './use-user-settings';
 
-// Linear-style minimal/neutral palette: a TIGHT blue -> violet band in OKLCH
-// (perceptually uniform), kept moderate-chroma so fills read as clean and gentle
-// rather than candy-colored. We deliberately stay narrow and DON'T fan out to
-// green/magenta — in this aesthetic series are separated by LIGHTNESS, not by
-// spreading across the hue wheel. Every series (including the first) is generated
-// from this one ramp, so the whole palette stays in a single cohesive color
-// family — no special high-saturation brand color that clashes with the rest.
+// Linear/Vercel-style minimal palette: a tight blue -> violet band in OKLCH
+// (perceptually uniform), moderate-chroma so fills read clean rather than
+// candy-colored. Series are separated primarily by LIGHTNESS, not by fanning
+// across the hue wheel, which keeps the whole set in one cohesive family.
+//
+// Every constant below is validated, not chosen by eye. Running the palette
+// through the six-check validator (lightness band / chroma floor / CVD
+// separation / normal-vision floor / contrast) at 2, 3, 5 and 8 slots is what
+// fixed the three defects the previous version shipped with:
+//
+//   1. The light tier sat at L 0.82-0.84 — above the usable band, below the
+//      chroma floor (it read as gray), and at 1.7:1 against the surface.
+//   2. Compressing that tier alone was not enough: the anchor was special-cased
+//      at L 0.66 / C 0.20, i.e. the MIDDLE of the band, so the first generated
+//      slot landed right next to it (ΔE 9.3, under the 15 floor). The anchor had
+//      to move to the band's edge as well.
+//   3. The ramp started at `t = 0`, which gave that first slot the anchor's OWN
+//      hue. It now starts one step in.
+//
+// Light and dark are separately tuned because the usable lightness band differs
+// sharply: L 0.43-0.77 on the light surface but only L 0.48-0.67 on the dark
+// one. That 0.19-wide dark band cannot carry enough lightness separation on its
+// own, so dark compensates with a wider hue sweep.
 const COOL_HUE_START = 250; // blue
-const COOL_HUE_END = 315; // violet (stops short of magenta/pink, stays neutral-cool)
-const COOL_HUE_RANGE = COOL_HUE_END - COOL_HUE_START;
+
+// Tuned per theme. Each field is load-bearing; see the validated figures below.
+const COOL_RAMP = {
+  light: {
+    // Stops short of magenta/pink, stays neutral-cool.
+    hueEnd: 315,
+    anchorL: 0.6,
+    anchorC: 0.19,
+    lightL: 0.76,
+    darkL: 0.46,
+    chroma: 0.14
+  },
+  dark: {
+    // Reaches further round the wheel: the dark band is too narrow to separate
+    // on lightness alone, so hue has to make up the difference.
+    hueEnd: 340,
+    anchorL: 0.5,
+    anchorC: 0.17,
+    lightL: 0.665,
+    darkL: 0.485,
+    chroma: 0.15
+  }
+} as const;
+
+// Accents keep high chroma throughout (they are peers, not a base + fills) but
+// still have to move in lightness. The previous version held lightness CONSTANT
+// and separated on hue alone, which collapses under red-green colour blindness:
+// the blue and violet ends measured ΔE 0.3 (deutan) — the same colour. The band
+// is swept fully (to 340°) and lightness rides the sweep alongside it.
+const COOL_ACCENT = {
+  light: { lHi: 0.72, lLo: 0.48, chroma: 0.18 },
+  dark: { lHi: 0.66, lLo: 0.49, chroma: 0.17 }
+} as const;
 
 /**
  * Vivid, distinct cool accents — for places that need a handful of "primary"
  * colors, one per card/section (e.g. the summary trend cards), NOT a stacked
- * multi-series palette. Every color is anchor-quality (bright + saturated) and
- * spread evenly across the blue→violet band, so the set reads as several equally
- * strong primaries rather than one bold + several washed-out fills.
+ * multi-series palette.
+ *
+ * Validated for up to **three** accents (worst adjacent pair: ΔE 12.2 deutan /
+ * 17.6 normal in light, 8.4 / 15.6 in dark). A cool-only band cannot carry a
+ * fourth equally-strong peer — at four slots the middle pair drops to ΔE 5.8
+ * under deutan. Past three, use `useCoolColors`, which buys extra separable
+ * slots with lightness tiers instead of insisting every slot be anchor-bright.
  */
 export function useCoolAccents() {
   useMode(modeRgb);
@@ -29,15 +80,32 @@ export function useCoolAccents() {
   return useMemoizedFn((count: number): string[] => {
     if (count <= 0) return [];
 
-    const l = isDarkTheme ? 0.62 : 0.64;
-    const c = isDarkTheme ? 0.16 : 0.2;
+    if (process.env.NODE_ENV !== 'production' && count > 3) {
+      console.warn(
+        `useCoolAccents(${count}): only 3 accents stay separable under colour-blind simulation. Use useCoolColors for more series.`
+      );
+    }
+
+    const accent = isDarkTheme ? COOL_ACCENT.dark : COOL_ACCENT.light;
+    // Always the full sweep: the accents need every degree of hue they can get,
+    // since unlike `useCoolColors` they cannot lean on a wide lightness spread.
+    const hueRange = COOL_RAMP.dark.hueEnd - COOL_HUE_START;
 
     const out: string[] = [];
     for (let i = 0; i < count; i++) {
       const t = count <= 1 ? 0 : i / (count - 1);
-      const hue = COOL_HUE_START + t * COOL_HUE_RANGE;
       out.push(
-        formatHex(clampChroma({ mode: 'oklch', l, c, h: hue }, 'oklch'))
+        formatHex(
+          clampChroma(
+            {
+              mode: 'oklch',
+              l: accent.lHi + (accent.lLo - accent.lHi) * t,
+              c: accent.chroma,
+              h: COOL_HUE_START + t * hueRange
+            },
+            'oklch'
+          )
+        )
       );
     }
     return out;
@@ -53,23 +121,20 @@ export default function useCoolColors() {
   return useMemoizedFn((count: number): string[] => {
     if (count <= 0) return [];
 
-    // Moderate chroma: clean and crisp, but gentle (not neon). Too low reads as
-    // muddy/dirty; too high reads as harsh. Dark mode a touch lower so fills
-    // stay calm against the dark canvas.
-    const baseChroma = isDarkTheme ? 0.085 : 0.12;
+    const ramp = isDarkTheme ? COOL_RAMP.dark : COOL_RAMP.light;
+    const hueRange = ramp.hueEnd - COOL_HUE_START;
 
-    // First series is the "primary" anchor: SAME blue family (the bluest end of
-    // the ramp, nearest the brand hue) but clearly brighter and more saturated —
-    // a vivid, clean brand-blue that reads as the base color. The rest of the
-    // palette stays low-chroma, so the anchor pops as the primary while the
-    // family still feels cohesive.
+    // The first series is the "primary" anchor: the bluest end of the ramp,
+    // more saturated than the rest so it reads as the base color. It sits at the
+    // LOW edge of the usable lightness band, not the middle — from the middle,
+    // whichever tier came next landed too close to it to be told apart.
     const colors: string[] = [
       formatHex(
         clampChroma(
           {
             mode: 'oklch',
-            l: isDarkTheme ? 0.62 : 0.66,
-            c: isDarkTheme ? 0.16 : 0.2,
+            l: ramp.anchorL,
+            c: ramp.anchorC,
             h: COOL_HUE_START
           },
           'oklch'
@@ -80,49 +145,35 @@ export default function useCoolColors() {
     const rest = count - 1;
     if (rest <= 0) return colors;
 
-    // Separation is driven by LIGHTNESS, not hue. The hue band is narrow, so as
-    // the count grows we add lightness TIERS — each tier reuses the same narrow
-    // hue ramp at a distinct lightness level, multiplying how many separable
-    // colors fit while keeping the whole palette in one cohesive family.
+    // Separation is driven by LIGHTNESS first. The hue band is narrow, so as the
+    // count grows we add tiers — each reuses the hue ramp at a distinct
+    // lightness, multiplying how many separable colors fit in one family.
     const tiers = rest <= 6 ? 1 : rest <= 12 ? 2 : 3;
     const steps = Math.ceil(rest / tiers);
 
-    // Distinct lightness levels per tier count (index 0 → 2 tiers, 1 → 3 tiers).
-    // Lighter, airier levels for a fresh/crisp feel; kept in the upper-mid range
-    // so fills stay clean and legible.
-    const lightTiers = isDarkTheme
-      ? [
-          [0.68, 0.5],
-          [0.72, 0.6, 0.48]
-        ]
-      : [
-          [0.82, 0.64],
-          [0.84, 0.72, 0.6]
-        ];
-    // Single-tier light/dark zig-zag for the common small-count case.
-    const [lightLo, lightHi] = isDarkTheme ? [0.5, 0.68] : [0.64, 0.82];
-
     for (let i = 0; i < rest; i++) {
-      // Cycle the tier on every step so consecutive series always differ in
+      // Alternate on every step so consecutive series always differ in
       // lightness — exactly where stacked bars are hardest to tell apart.
       const tier = i % tiers;
       const step = Math.floor(i / tiers);
 
-      // Even hue ramp across the narrow band. Each tier is offset by a fraction
-      // of a step so same-step colors in different tiers don't share a hue.
-      const t = steps <= 1 ? 0.5 : (step + tier / tiers) / steps;
-      const hue = COOL_HUE_START + t * COOL_HUE_RANGE;
+      // `+ 1` starts the ramp one step in. At `t = 0` the first generated slot
+      // inherited the anchor's own hue, leaving lightness as its only axis of
+      // separation and putting the pair under the ΔE floor.
+      const t = Math.min((step + tier / tiers + 1) / steps, 1);
+      const hue = COOL_HUE_START + t * hueRange;
 
-      // 1 tier (≤6 series): light/dark zig-zag. 2-3 tiers: the tier's level.
-      const lightness =
-        tiers === 1 ? (i % 2 ? lightLo : lightHi) : lightTiers[tiers - 2][tier];
-
-      // Clamp chroma into the sRGB gamut so values don't get distorted by a raw
+      // Clamp chroma into the sRGB gamut so values aren't distorted by a raw
       // channel clip when serialized to hex.
       colors.push(
         formatHex(
           clampChroma(
-            { mode: 'oklch', l: lightness, c: baseChroma, h: hue },
+            {
+              mode: 'oklch',
+              l: i % 2 === 0 ? ramp.lightL : ramp.darkL,
+              c: ramp.chroma,
+              h: hue
+            },
             'oklch'
           )
         )

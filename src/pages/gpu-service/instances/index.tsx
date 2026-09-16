@@ -374,7 +374,6 @@ const GPUService: React.FC = () => {
     <>
       <PageBox>
         <FilterBar
-          marginBottom={22}
           showSelect={false}
           handleSearch={handleSearch}
           handleInputChange={handleNameChange}

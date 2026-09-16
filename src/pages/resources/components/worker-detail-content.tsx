@@ -86,8 +86,6 @@ const WorkerDetailContent: React.FC<{ worker_id: number | undefined }> = ({
   return (
     <>
       <FilterBar
-        marginBottom={22}
-        marginTop={0}
         buttonText={intl.formatMessage({ id: 'resources.button.create' })}
         handleSearch={handleSearch}
         handleSelectChange={handleSelectChange}

@@ -6,6 +6,7 @@ import { useIntl } from '@umijs/max';
 import { Col, Row, Table } from 'antd';
 import { useSetAtom } from 'jotai';
 import { useContext, useEffect } from 'react';
+import { sectionHeadingStyle, sectionTitleStyle } from '../config';
 import { DashboardContext } from '../config/dashboard-context';
 const NACategories = [
   modelCategoriesMap.llm,
@@ -108,13 +109,9 @@ const ActiveTable = () => {
     <Row gutter={[20, 0]}>
       <Col xs={24} sm={24} md={24} lg={24} xl={24}>
         <PageTools
-          style={{ margin: '26px 0px' }}
+          style={sectionHeadingStyle}
           left={
-            <span
-              style={{
-                fontWeight: 'var(--font-weight-medium)'
-              }}
-            >
+            <span style={sectionTitleStyle}>
               {intl.formatMessage({ id: 'dashboard.activeDeployments' })}
             </span>
           }

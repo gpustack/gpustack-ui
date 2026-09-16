@@ -117,7 +117,7 @@ const ActiveTable = () => {
           }
           right={false}
         />
-        <div>
+        <div style={{ marginTop: 16 }}>
           <Table
             columns={modelColumns}
             dataSource={data}

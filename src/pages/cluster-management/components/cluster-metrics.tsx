@@ -1,7 +1,7 @@
 import { TemplateCard } from '@gpustack/core-ui';
 import { GaugeChart } from '@gpustack/core-ui/charts';
 import { useSearchParams } from '@umijs/max';
-import { Col, Row } from 'antd';
+import { Col, Row, theme } from 'antd';
 import _ from 'lodash';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
@@ -53,16 +53,24 @@ interface ClusterDetailProps {
   data: ClusterListItem | null;
 }
 
-const titleConfig = {
+// Takes the colour as a resolved value rather than reading a token itself,
+// because this lands in an ECharts option and ECharts paints to canvas.
+// `ctx.fillStyle = 'var(--ant-color-text)'` is not an error — it is silently
+// IGNORED, leaving whatever colour was set last, which for a fresh text draw is
+// `#000000`. So the CSS variable this briefly used looked like a fix for the
+// hardcoded `#000` that preceded it, and rendered exactly the same black on
+// black in the dark theme.
+//
+// Anything that reaches a chart option has to be a real colour string; only
+// DOM-rendered parts of a chart (the tooltip's HTML) can carry a token.
+const getTitleConfig = (colorText: string) => ({
   textStyle: {
-    // Was a hardcoded `#000`, which left these four titles black-on-black in
-    // the dark theme.
-    color: 'var(--ant-color-text)',
+    color: colorText,
     fontSize: 14,
     fontWeight: 500
   },
   top: -5
-};
+});
 
 // Only the radius is local. The threshold zones used to be overridden here with
 // three more hardcoded `rgba(...)` stops — a FIFTH private copy of the product's
@@ -80,6 +88,11 @@ const CardHeight = 336;
 
 const ClusterMetrics = () => {
   const chartHeight = 160;
+  // Resolved here rather than in the module-level config: the token's value
+  // changes with the theme, so reading it inside the component is also what
+  // makes these titles follow a light/dark switch.
+  const { token } = theme.useToken();
+  const titleConfig = getTitleConfig(token.colorText);
   const [searchParams] = useSearchParams();
   const id = searchParams.get('id');
   const provider = searchParams.get('provider');

@@ -13,6 +13,7 @@ import { Flex, Tooltip } from 'antd';
 import { createStyles } from 'antd-style';
 import _ from 'lodash';
 import React, { useEffect } from 'react';
+import { CACHE_METRICS_WINDOW } from '../../config';
 import {
   DistributedServerItem,
   ModelInstanceListItem
@@ -226,7 +227,7 @@ const WorkerInfoContent: React.FC<NameCellProps> = ({
             value: formatHitRate(cacheHitRate),
             labelValues: {
               window: intl.formatMessage({
-                id: 'models.kvCache.hitRate.window'
+                id: CACHE_METRICS_WINDOW.labelKey
               })
             }
           }

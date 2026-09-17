@@ -5,28 +5,18 @@ import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
 import { useQueryWorkerList } from '@/pages/resources/services/use-query-worker-list';
 import { localize } from '@/utils/localize';
 import {
-  ArrowDownOutlined,
-  ArrowUpOutlined,
-  MinusOutlined,
-  PlusOutlined
-} from '@ant-design/icons';
-import {
   CheckboxField,
   Input as CInput,
-  CollapseContainer,
   CollapsePanel,
-  IconFont,
   InputNumber,
   LabelSelector,
   LabelSelectorProvider,
-  ListInput,
   Select as SealSelect,
   useAppUtils
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useDebounceFn, useMemoizedFn } from 'ahooks';
-import { Button, Flex, Form } from 'antd';
-import { createStyles } from 'antd-style';
+import { Form } from 'antd';
 import _ from 'lodash';
 import {
   forwardRef,
@@ -37,258 +27,25 @@ import {
   useRef,
   useState
 } from 'react';
-import styled from 'styled-components';
-import { profileRamGib } from '../config';
-import {
-  CacheProviderField,
-  CacheProviderL2Backend,
-  CacheProviderL2Field,
-  FormData,
-  L2StorageConfig,
-  ListItem
-} from '../config/types';
+import { CacheProviderField, FormData, ListItem } from '../config/types';
 import useCacheProviders from '../hooks/use-cache-providers';
+import usePlacementCheck, {
+  ResourceCheckStatus
+} from '../hooks/use-placement-check';
+import ComponentParameters from './component-parameters';
+import L2Storages from './l2-storages';
+import { OptionWithIcon } from './styled';
+import {
+  buildWorkerLabelOptions,
+  componentEnabled,
+  humanizeFieldName,
+  NO_RECREATE_FIELDS,
+  pickDefaultWorker,
+  resolveFieldValue,
+  stripUnset
+} from './utils';
 
-const GroupTitle = styled.div`
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-medium);
-  margin-block: 16px 12px;
-`;
-
-const GroupTips = styled.div`
-  font-size: 12px;
-  color: var(--ant-color-text-tertiary);
-  margin-block: -6px 12px;
-`;
-
-// stands in for the Worker select of per_node providers, matching the
-// vertical rhythm of the surrounding form items
-// workers of a cluster may share label keys with different values; group
-// values under their key so the selector can autocomplete both levels
-const buildWorkerLabelOptions = (workers: WorkerListItem[]) => {
-  const labelMap = new Map<string, Set<string>>();
-  workers.forEach((worker) => {
-    Object.entries(worker.labels || {}).forEach(([key, value]) => {
-      if (!labelMap.has(key)) {
-        labelMap.set(key, new Set());
-      }
-      labelMap.get(key)!.add(value);
-    });
-  });
-  return Array.from(labelMap.entries()).map(([key, values]) => ({
-    label: key,
-    value: key,
-    children: Array.from(values).map((value) => ({
-      label: value,
-      value: value
-    }))
-  }));
-};
-
-const EntryTitle = styled.span`
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  color: var(--ant-color-text-secondary);
-`;
-
-// provider-declared L2 field names are technical keys like "base_path";
-// turn them into "Base Path" when the declaration carries no label
-const humanizeFieldName = (name: string) =>
-  name
-    .split('_')
-    .filter(Boolean)
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-
-const GiB = 1024 * 1024 * 1024;
-
-// fields the controller applies to running instances directly; everything
-// else only lands when an instance is deleted and recreated
-const NO_RECREATE_FIELDS = ['name', 'restart_on_error'];
-
-// null, undefined, '' and empty containers are interchangeable spellings
-// of "unset" between the form state and the API payload
-const isUnset = (value: any) =>
-  value === null ||
-  value === undefined ||
-  value === '' ||
-  ((Array.isArray(value) || _.isPlainObject(value)) && _.isEmpty(value));
-
-// drops unset object entries so a field the user never touched compares
-// equal whether it is missing, null or an empty container
-const stripUnset = (value: any): any => {
-  if (Array.isArray(value)) {
-    return value.map(stripUnset);
-  }
-  if (_.isPlainObject(value)) {
-    return Object.fromEntries(
-      Object.entries(value)
-        .map(([key, entry]) => [key, stripUnset(entry)])
-        .filter(([, entry]) => !isUnset(entry))
-    );
-  }
-  return value;
-};
-
-const getTotalMemory = (worker: WorkerListItem) =>
-  worker.status?.memory?.total || undefined;
-
-// a worker matches when every selector pair is present in its labels
-const matchesSelector = (
-  worker: WorkerListItem,
-  selector?: Record<string, string> | null
-) => {
-  if (!selector || !Object.keys(selector).length) {
-    return true;
-  }
-  return Object.entries(selector).every(
-    ([key, value]) => worker.labels?.[key] === value
-  );
-};
-
-const getFreeMemory = (worker: WorkerListItem) => {
-  const memory = worker.status?.memory;
-  if (!memory?.total) {
-    return undefined;
-  }
-  return memory.total - (memory.used ?? memory.allocated ?? 0);
-};
-
-// prefer the worker with the most free RAM; fall back to the first
-// one when the list carries no memory status
-const pickDefaultWorker = (workers: WorkerListItem[]) => {
-  let best: WorkerListItem | undefined;
-  let bestFree = -Infinity;
-  workers.forEach((worker) => {
-    const free = getFreeMemory(worker);
-    if (free !== undefined && free > bestFree) {
-      best = worker;
-      bestFree = free;
-    }
-  });
-  return best ?? workers[0];
-};
-
-const OptionWithIcon: React.FC<{
-  icon?: string;
-  fallbackGlyph: string;
-  label: React.ReactNode;
-}> = ({ icon, fallbackGlyph, label }) => (
-  <span className="flex-center gap-8">
-    {icon ? (
-      <img src={icon} alt="" style={{ width: 16, height: 16 }} />
-    ) : (
-      <IconFont type={fallbackGlyph} />
-    )}
-    <span>{label}</span>
-  </span>
-);
-
-export interface ResourceCheckStatus {
-  show: boolean;
-  type?: Global.MessageType;
-  message: string;
-}
-
-// The frame the per-component editors share, so several roles read as
-// one Parameters field rather than as a stack of separate ones: the
-// outer frame is the one a single editor draws for itself, and each role
-// inside carries the entry card the L2 backend list uses.
-const useParametersStyles = createStyles(({ token, css }) => ({
-  group: css`
-    position: relative;
-    width: 100%;
-    padding: 16px;
-    // room for the label the frame carries in its top-left corner
-    padding-top: 36px;
-    border: 1px solid ${token.colorBorder};
-    border-radius: ${token.borderRadiusLG}px;
-  `,
-  groupLabel: css`
-    position: absolute;
-    left: 16px;
-    top: 12px;
-    line-height: 1;
-    color: ${token.colorTextTertiary};
-  `,
-  emptyNote: css`
-    color: ${token.colorTextTertiary};
-  `,
-  entry: css`
-    padding: 12px 16px 16px;
-    border: 1px solid ${token.colorSplit};
-    border-radius: ${token.borderRadiusLG}px;
-  `,
-  entryTitle: css`
-    margin-bottom: 10px;
-  `
-}));
-
-// Flags belong to the binary a role runs, so they are edited and stored
-// per component rather than once for the service. Every enabled role is
-// laid out at once: what one of them carries is configuration of the
-// same service, and hiding it behind a switch is how it gets forgotten.
-const ComponentParameters: React.FC<{
-  value?: Record<string, string[]>;
-  onChange?: (value: Record<string, string[]>) => void;
-  // each role's own completion hints: they run different binaries, so
-  // one's flags are the other's parse error
-  components: { name: string; hints: { label: string; value: string }[] }[];
-  btnText: string;
-  label: string;
-}> = ({ value, onChange, components, btnText, label }) => {
-  const intl = useIntl();
-  const { styles } = useParametersStyles();
-  const editor = (component: (typeof components)[number]) => (
-    <ListInput
-      value={value?.[component.name] || []}
-      onChange={(next: string[]) =>
-        onChange?.({ ...(value || {}), [component.name]: next })
-      }
-      placeholder="--max-workers=8"
-      options={component.hints}
-      btnText={btnText}
-      label={components.length > 1 ? undefined : label}
-      styles={
-        components.length > 1
-          ? { wrapper: { border: 'none', borderRadius: 0, padding: 0 } }
-          : undefined
-      }
-    ></ListInput>
-  );
-
-  if (!components.length) {
-    // Every declared component is gated off, so there is no role whose binary
-    // would read a flag. "" is not a fallback here: it keys the one process a
-    // provider without components runs, and parameters stored under it would
-    // reach nothing.
-    return (
-      <Flex vertical gap={12} className={styles.group}>
-        <span className={styles.groupLabel}>{label}</span>
-        <span className={styles.emptyNote}>
-          {intl.formatMessage({ id: 'kvCache.form.parameters.noComponent' })}
-        </span>
-      </Flex>
-    );
-  }
-  if (components.length === 1) {
-    return editor(components[0]);
-  }
-  return (
-    <Flex vertical gap={12} className={styles.group}>
-      <span className={styles.groupLabel}>{label}</span>
-      {components.map((component) => (
-        <div className={styles.entry} key={component.name}>
-          <EntryTitle className={styles.entryTitle}>
-            {humanizeFieldName(component.name)}
-          </EntryTitle>
-          {editor(component)}
-        </div>
-      ))}
-    </Flex>
-  );
-};
+export type { ResourceCheckStatus };
 
 interface ServiceFormProps {
   ref?: any;
@@ -342,226 +99,36 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
   const prevClusterRef = useRef<number | undefined>(undefined);
   const pinnedFields = useRef<Set<string>>(new Set());
   const [advancedKeys, setAdvancedKeys] = useState<string[]>([]);
-  const [l2CollapseKeys, setL2CollapseKeys] = useState<Set<number>>(new Set());
 
+  // the declaration the whole form reads from, as a value: it arrives
+  // with the catalog, after the first render of an edited service
+  const selectedProvider = useMemo(
+    () => getProvider(providerName),
+    [getProvider, providerName]
+  );
   // per_node providers run one instance on every worker of the cluster;
   // there is no single worker to pick and worker_id must not be submitted
-  const isPerNode = getProvider(providerName)?.topology === 'per_node';
+  const isPerNode = selectedProvider?.topology === 'per_node';
   // multi-component providers state capacity through their own
   // declared fields; the built-in RAM Size is not theirs
   const hasComponents =
-    Object.keys(getProvider(providerName)?.components || {}).length > 0;
+    Object.keys(selectedProvider?.components || {}).length > 0;
 
   const fieldValues = Form.useWatch(['config', 'fields'], form);
   const workerId = Form.useWatch('worker_id', form);
   const workerSelector = Form.useWatch('worker_selector', form);
 
-  // deployment-style resource pre-flight: green when every target worker
-  // can hold the L1, yellow (advisory, closable) when free memory falls
-  // short or the capacity cannot fit
-  useEffect(() => {
-    if (!onCheckStatusChange) {
-      return;
-    }
-    const provider = getProvider(providerName);
-    const managedFields = provider?.fields || [];
-    const resolveField = (name?: string) => {
-      if (!name) {
-        return undefined;
-      }
-      const declared = managedFields.find((field) => field.name === name);
-      return fieldValues?.[name] ?? declared?.default;
-    };
-    // The component claiming RAM through its resource_profile is the
-    // only placement the service form can check — engine-side
-    // consumption follows the deployments. What to check depends on how
-    // that component is placed, not on how many components there are: a
-    // replicas pool needs enough workers that fit, while a per_node
-    // component lands on every matching worker, so the tightest one
-    // decides (which is the path below).
-    const claiming = Object.values(provider?.components || {}).find(
-      (component) => {
-        if (!component.resource_profile?.ram_gib) {
-          return false;
-        }
-        if (!component.enabled_by) {
-          return true;
-        }
-        const gate = resolveField(component.enabled_by);
-        return component.enabled_when != null
-          ? gate === component.enabled_when
-          : Boolean(gate);
-      }
-    );
-    if (claiming && claiming.topology !== 'per_node') {
-      const size = profileRamGib(
-        claiming.resource_profile,
-        managedFields,
-        fieldValues
-      );
-      const replicas = claiming.replicas_by
-        ? Number(resolveField(claiming.replicas_by)) || 1
-        : (claiming.replicas ?? 1);
-      if (!size || !workers.length) {
-        onCheckStatusChange({ show: false, message: '' });
-        return;
-      }
-      const matched = workers.filter((worker) =>
-        matchesSelector(worker, workerSelector)
-      );
-      if (matched.length < replicas) {
-        onCheckStatusChange({
-          show: true,
-          type: 'warning',
-          message: intl.formatMessage(
-            { id: 'kvCache.check.store.insufficientWorkers' },
-            { count: matched.length, replicas }
-          )
-        });
-        return;
-      }
-      const fitting = matched.filter(
-        (worker) =>
-          getFreeMemory(worker) !== undefined &&
-          getFreeMemory(worker)! > size * GiB
-      );
-      onCheckStatusChange(
-        fitting.length >= replicas
-          ? {
-              show: true,
-              type: 'success',
-              message: intl.formatMessage(
-                { id: 'kvCache.check.ok.store' },
-                { replicas, size }
-              )
-            }
-          : {
-              show: true,
-              type: 'warning',
-              message: intl.formatMessage(
-                { id: 'kvCache.check.store.exceedsFree' },
-                { count: fitting.length, replicas, size }
-              )
-            }
-      );
-      return;
-    }
-    const instanceGib = profileRamGib(
-      claiming?.resource_profile ?? provider?.resource_profile,
-      managedFields,
-      fieldValues
-    );
-    if (!instanceGib || !workers.length) {
-      onCheckStatusChange({ show: false, message: '' });
-      return;
-    }
-    const targets = isPerNode
-      ? workers.filter((worker) => matchesSelector(worker, workerSelector))
-      : workers.filter((worker) => worker.id === workerId);
-    if (!targets.length) {
-      onCheckStatusChange(
-        isPerNode
-          ? {
-              show: true,
-              type: 'warning',
-              message: intl.formatMessage({ id: 'kvCache.check.noWorkers' })
-            }
-          : { show: false, message: '' }
-      );
-      return;
-    }
-    // a worker whose accelerator has no runtime image cannot run the
-    // cache server (the worker fails such instances fast with the same
-    // reason); accelerator-less workers run the plain image CPU-only
-    const versionConfig =
-      providerVersion && providerVersion !== 'custom'
-        ? provider?.versions?.[providerVersion]
-        : undefined;
-    const runtimeImages = versionConfig?.runtime_images || {};
-    const acceleratorOf = (worker: WorkerListItem) =>
-      worker.status?.gpu_devices?.[0]?.type;
-    const unsupported = Object.keys(runtimeImages).length
-      ? targets.filter((worker) => {
-          const backend = acceleratorOf(worker);
-          return Boolean(backend) && !(backend! in runtimeImages);
-        })
-      : [];
-    if (unsupported.length) {
-      onCheckStatusChange({
-        show: true,
-        type: 'warning',
-        message: intl.formatMessage(
-          { id: 'kvCache.check.unsupportedAccel' },
-          {
-            count: unsupported.length,
-            total: targets.length,
-            backends: Array.from(new Set(unsupported.map(acceleratorOf))).join(
-              ', '
-            )
-          }
-        )
-      });
-      return;
-    }
-    const constrained = targets
-      .filter((worker) => getTotalMemory(worker) !== undefined)
-      .sort((a, b) => getTotalMemory(a)! - getTotalMemory(b)!)[0];
-    if (constrained && instanceGib * GiB >= getTotalMemory(constrained)!) {
-      onCheckStatusChange({
-        show: true,
-        type: 'warning',
-        message: intl.formatMessage(
-          { id: 'kvCache.form.ramSize.exceedsTotal' },
-          {
-            worker: constrained.name,
-            total: Math.floor(getTotalMemory(constrained)! / GiB)
-          }
-        )
-      });
-      return;
-    }
-    const tightest = targets
-      .filter((worker) => getFreeMemory(worker) !== undefined)
-      .sort((a, b) => getFreeMemory(a)! - getFreeMemory(b)!)[0];
-    if (tightest && instanceGib * GiB > getFreeMemory(tightest)!) {
-      onCheckStatusChange({
-        show: true,
-        type: 'warning',
-        message: intl.formatMessage(
-          { id: 'kvCache.form.ramSize.exceedsFree' },
-          {
-            worker: tightest.name,
-            free: Math.floor(getFreeMemory(tightest)! / GiB)
-          }
-        )
-      });
-      return;
-    }
-    onCheckStatusChange({
-      show: true,
-      type: 'success',
-      message: isPerNode
-        ? intl.formatMessage(
-            { id: 'kvCache.check.ok.perNode' },
-            { count: targets.length }
-          )
-        : intl.formatMessage(
-            { id: 'kvCache.check.ok.singleton' },
-            { worker: targets[0].name }
-          )
-    });
-  }, [
-    onCheckStatusChange,
-    isPerNode,
-    hasComponents,
-    fieldValues,
-    workerId,
-    workerSelector,
-    workers,
-    providerName,
-    providerVersion,
-    intl
-  ]);
+  usePlacementCheck(
+    {
+      provider: selectedProvider,
+      providerVersion,
+      fieldValues,
+      workers,
+      workerId,
+      workerSelector
+    },
+    onCheckStatusChange
+  );
 
   // deployment-style edit notice: config changes only land on the next
   // instance recreation, so flag any drift from the saved service
@@ -618,24 +185,16 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
   // all: there is no version to pick, and the service names its image
   // under the reserved "custom" version instead
   const hasDeclaredVersions = useMemo(() => {
-    return Boolean(
-      Object.keys(getProvider(providerName)?.versions || {}).length
-    );
-  }, [getProvider, providerName]);
+    return Boolean(Object.keys(selectedProvider?.versions || {}).length);
+  }, [selectedProvider]);
 
   // the provider's pinned default image doubles as a format hint for
   // the custom image input
   const defaultImage = useMemo(() => {
-    const provider = getProvider(providerName);
-    return provider?.default_version
-      ? provider.versions?.[provider.default_version]?.image
+    return selectedProvider?.default_version
+      ? selectedProvider.versions?.[selectedProvider.default_version]?.image
       : undefined;
-  }, [getProvider, providerName]);
-
-  const l2Storages: L2StorageConfig[] | undefined = Form.useWatch(
-    ['config', 'l2_storages'],
-    form
-  );
+  }, [selectedProvider]);
 
   const asHints = (flags?: string[]) =>
     (flags || []).map((value) => ({ label: value, value }));
@@ -647,31 +206,15 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
   // and the provider-level list, which describes the binary engines
   // attach to, belongs to the component they attach to.
   const parameterComponents = useMemo(() => {
-    const provider = getProvider(providerName);
-    const providerHints = asHints(provider?.common_parameters);
-    const components = Object.entries(provider?.components || {});
+    const providerHints = asHints(selectedProvider?.common_parameters);
+    const components = Object.entries(selectedProvider?.components || {});
     if (!components.length) {
       return [{ name: '', hints: providerHints }];
     }
-    const resolveField = (name?: string) => {
-      if (!name) {
-        return undefined;
-      }
-      const declared = (provider?.fields || []).find(
-        (field) => field.name === name
-      );
-      return fieldValues?.[name] ?? declared?.default;
-    };
     return components
-      .filter(([, component]) => {
-        if (!component.enabled_by) {
-          return true;
-        }
-        const gate = resolveField(component.enabled_by);
-        return component.enabled_when != null
-          ? gate === component.enabled_when
-          : Boolean(gate);
-      })
+      .filter(([, component]) =>
+        componentEnabled(component, selectedProvider?.fields, fieldValues)
+      )
       .map(([name, component]) => ({
         name,
         hints: component.common_parameters?.length
@@ -680,7 +223,7 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
             ? providerHints
             : []
       }));
-  }, [getProvider, providerName, fieldValues]);
+  }, [selectedProvider, fieldValues]);
 
   // The one accelerator the cluster's workers agree on, if they do. A
   // field whose value the hardware decides (a transport that is the
@@ -703,16 +246,8 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
   );
 
   const l2Backends = useMemo(() => {
-    return getProvider(providerName)?.l2_backends || {};
-  }, [getProvider, providerName]);
-
-  const l2BackendOptions = useMemo(() => {
-    return Object.entries(l2Backends).map(([key, backend]) => ({
-      label: localize(backend.display_name) || key,
-      value: key,
-      icon: backend.icon
-    }));
-  }, [l2Backends]);
+    return selectedProvider?.l2_backends || {};
+  }, [selectedProvider]);
 
   // shared by the select's onChange and the create-time default so a
   // provider set either way carries its default version and a clean L2 config
@@ -754,7 +289,6 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
     // L2 backends are provider-specific; drop the stale entries
     // (an empty list is normalized to null server-side)
     form.setFieldValue(['config', 'l2_storages'], []);
-    setL2CollapseKeys(new Set());
   };
 
   const handleProviderChange = (value: string) => {
@@ -769,111 +303,11 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
     }
   };
 
-  const handleL2Toggle = (open: boolean, key: number) => {
-    setL2CollapseKeys(open ? new Set([key]) : new Set());
-  };
-
-  // the switch position a backend starts on, and the one the cache server
-  // runs with while an entry leaves the state unset (saved by the API, or
-  // before the backend declared the switch)
-  const l2ConfigDefault = (spec?: CacheProviderL2Backend) =>
-    spec?.adapter_flag_default !== false;
-
-  // a backend's declared starting state: its field defaults, plus the
-  // initial position of the switch when configuring it is optional
-  const seedL2Entry = (backend: string) => {
-    const spec = l2Backends[backend];
-    const params: Record<string, any> = {};
-    spec?.fields?.forEach((field) => {
-      if (field.default !== undefined) {
-        params[field.name] = field.default;
-      }
-    });
-    return {
-      params,
-      adapter_flag_enabled: spec?.adapter_flag_optional
-        ? l2ConfigDefault(spec)
-        : undefined
-    };
-  };
-
-  const handleAddL2Storage = async () => {
-    try {
-      await form.validateFields([['config', 'l2_storages']], {
-        recursive: true
-      });
-      const list = form.getFieldValue(['config', 'l2_storages']) || [];
-      // The new entry opens on the provider's first declared backend,
-      // seeded as a manual pick would be: the declaration's order is its
-      // recommendation, and an empty Type asks a question whose answer
-      // is almost always the first one.
-      const [firstBackend] = Object.keys(l2Backends);
-      const entry = firstBackend
-        ? { backend: firstBackend, ...seedL2Entry(firstBackend) }
-        : { backend: undefined, params: {} };
-      form.setFieldValue(['config', 'l2_storages'], [...list, entry]);
-      setTimeout(() => {
-        setL2CollapseKeys(new Set([list.length]));
-      }, 100);
-    } catch (error: any) {
-      const errorIndex = error?.errorFields?.[0]?.name?.[2];
-      if (typeof errorIndex === 'number') {
-        setL2CollapseKeys(new Set([errorIndex]));
-      }
-    }
-  };
-
-  // adjacent moves are index swaps; keep the open panel attached
-  // to the entry it was opened for
-  const handleMoveL2Storage = (
-    move: (from: number, to: number) => void,
-    from: number,
-    to: number
-  ) => {
-    move(from, to);
-    setL2CollapseKeys((prev) => {
-      const next = new Set<number>();
-      prev.forEach((key) => {
-        next.add(key === from ? to : key === to ? from : key);
-      });
-      return next;
-    });
-  };
-
-  const handleRemoveL2Storage = (
-    remove: (index: number) => void,
-    index: number
-  ) => {
-    remove(index);
-    setL2CollapseKeys((prev) => {
-      const next = new Set<number>();
-      prev.forEach((key) => {
-        if (key < index) {
-          next.add(key);
-        } else if (key > index) {
-          next.add(key - 1);
-        }
-      });
-      return next;
-    });
-  };
-
-  const handleL2BackendChange = (index: number, value: string) => {
-    // params and the switch are backend-specific; reseed this entry from
-    // the newly selected backend's declared defaults
-    const { params, adapter_flag_enabled } = seedL2Entry(value);
-    form.setFieldValue(['config', 'l2_storages', index, 'params'], params);
-    form.setFieldValue(
-      ['config', 'l2_storages', index, 'adapter_flag_enabled'],
-      adapter_flag_enabled
-    );
-  };
-
   // provider-declared configuration knobs promoted to structured advanced
   // fields; a matching flag in free-form Parameters still overrides them
   const providerFields = useMemo(() => {
-    return getProvider(providerName)?.fields || [];
-  }, [getProvider, providerName]);
+    return selectedProvider?.fields || [];
+  }, [selectedProvider]);
 
   // The cluster's workers arrive after the form seeds its defaults, so a
   // field the hardware decides re-takes its default once they do — and
@@ -911,7 +345,11 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
         return false;
       }
     }
-    const value = fieldValues?.[field.visible_by] ?? gate?.default;
+    const value = resolveFieldValue(
+      field.visible_by,
+      providerFields,
+      fieldValues
+    );
     return value === field.visible_when;
   };
 
@@ -982,40 +420,6 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
     }
   };
 
-  const renderL2FieldControl = (field: CacheProviderL2Field, label: string) => {
-    // the backend's own description covers its field set; a field
-    // carrying one explains the knob its label cannot
-    const description = localize(field.description);
-    switch (field.type) {
-      case 'number':
-        return (
-          <InputNumber
-            required={field.required}
-            label={label}
-            description={description}
-          />
-        );
-      case 'boolean':
-        return <CheckboxField label={label} description={description} />;
-      case 'password':
-        return (
-          <CInput.Password
-            required={field.required}
-            label={label}
-            description={description}
-          />
-        );
-      default:
-        return (
-          <CInput.Input
-            required={field.required}
-            label={label}
-            description={description}
-          />
-        );
-    }
-  };
-
   const renderProviderOption = (option: any) => (
     <OptionWithIcon
       icon={option.data?.icon}
@@ -1030,22 +434,6 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
     <OptionWithIcon
       icon={getProvider(data.value)?.icon}
       fallbackGlyph="icon-storage-outlined"
-      label={data.label}
-    />
-  );
-
-  const renderL2BackendOption = (option: any) => (
-    <OptionWithIcon
-      icon={option.data?.icon}
-      fallbackGlyph="icon-hard-disk"
-      label={option.label}
-    />
-  );
-
-  const renderL2BackendLabel = (data: any) => (
-    <OptionWithIcon
-      icon={l2Backends[data.value]?.icon}
-      fallbackGlyph="icon-hard-disk"
       label={data.label}
     />
   );
@@ -1105,11 +493,11 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
     if (hasDeclaredVersions || providerVersion === 'custom') {
       return;
     }
-    if (!getProvider(providerName)?.custom_version) {
+    if (!selectedProvider?.custom_version) {
       return;
     }
     form.setFieldValue('provider_version', 'custom');
-  }, [form, hasDeclaredVersions, providerVersion, providerName, getProvider]);
+  }, [form, hasDeclaredVersions, providerVersion, selectedProvider]);
 
   // with a single cluster there is nothing to choose; preselect it
   // re-runs on a provider switch too: stepping back and picking a
@@ -1368,221 +756,9 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
               </Form.Item>
             );
           })}
-          {l2BackendOptions.length > 0 && (
-            <>
-              <GroupTitle>
-                <span className="flex-center gap-8">
-                  <span>
-                    {intl.formatMessage({ id: 'kvCache.form.l2Backend' })}
-                  </span>
-                  <Button type="link" onClick={handleAddL2Storage}>
-                    <PlusOutlined />
-                    {intl.formatMessage({ id: 'kvCache.form.l2Backend.add' })}
-                  </Button>
-                </span>
-              </GroupTitle>
-              <GroupTips>
-                {intl.formatMessage({ id: 'kvCache.form.l2Backend.tips' })}
-              </GroupTips>
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '16px',
-                  marginBottom: '16px'
-                }}
-              >
-                <Form.List name={['config', 'l2_storages']}>
-                  {(fields, { remove, move }) =>
-                    fields.map(({ key, name }) => {
-                      const entryBackendName = l2Storages?.[name]?.backend;
-                      const entryBackend = entryBackendName
-                        ? l2Backends[entryBackendName]
-                        : undefined;
-                      return (
-                        <div
-                          key={key}
-                          style={{
-                            border: '1px solid var(--ant-color-split)',
-                            borderRadius: 'var(--ant-border-radius-lg)'
-                          }}
-                        >
-                          <CollapseContainer
-                            collapsible={true}
-                            showExpandIcon={true}
-                            open={l2CollapseKeys.has(name)}
-                            onToggle={(open: boolean) =>
-                              handleL2Toggle(open, name)
-                            }
-                            styles={{
-                              body: l2CollapseKeys.has(name)
-                                ? { paddingBlock: '16px 0', paddingInline: 16 }
-                                : {},
-                              content: { paddingTop: 0 },
-                              header: {
-                                backgroundColor: 'unset'
-                              }
-                            }}
-                            title={
-                              <EntryTitle>
-                                <span>
-                                  {localize(entryBackend?.display_name) ||
-                                    entryBackendName ||
-                                    intl.formatMessage({
-                                      id: 'kvCache.form.l2Backend.backend'
-                                    })}
-                                </span>
-                              </EntryTitle>
-                            }
-                            right={
-                              <span
-                                className="flex-center gap-8"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                {/* Cascade order is read priority; the
-                                    controls only appear once there is an
-                                    order to change. */}
-                                {fields.length > 1 && (
-                                  <>
-                                    <Button
-                                      size="small"
-                                      shape="circle"
-                                      disabled={name === 0}
-                                      onClick={() =>
-                                        handleMoveL2Storage(
-                                          move,
-                                          name,
-                                          name - 1
-                                        )
-                                      }
-                                    >
-                                      <ArrowUpOutlined />
-                                    </Button>
-                                    <Button
-                                      size="small"
-                                      shape="circle"
-                                      disabled={name === fields.length - 1}
-                                      onClick={() =>
-                                        handleMoveL2Storage(
-                                          move,
-                                          name,
-                                          name + 1
-                                        )
-                                      }
-                                    >
-                                      <ArrowDownOutlined />
-                                    </Button>
-                                  </>
-                                )}
-                                <Button
-                                  size="small"
-                                  shape="circle"
-                                  onClick={() =>
-                                    handleRemoveL2Storage(remove, name)
-                                  }
-                                >
-                                  <MinusOutlined />
-                                </Button>
-                              </span>
-                            }
-                          >
-                            <Form.Item
-                              name={[name, 'backend']}
-                              rules={[
-                                {
-                                  required: true,
-                                  message: getRuleMessage(
-                                    'select',
-                                    'kvCache.form.l2Backend.type'
-                                  )
-                                }
-                              ]}
-                            >
-                              <SealSelect
-                                required
-                                options={l2BackendOptions}
-                                optionRender={renderL2BackendOption}
-                                labelRender={renderL2BackendLabel}
-                                onChange={(value: string) =>
-                                  handleL2BackendChange(name, value)
-                                }
-                                label={intl.formatMessage({
-                                  id: 'kvCache.form.l2Backend.type'
-                                })}
-                                description={localize(
-                                  entryBackend?.description
-                                )}
-                              />
-                            </Form.Item>
-                            {entryBackend?.adapter_flag_optional && (
-                              <Form.Item
-                                // remount per backend: the switch belongs
-                                // to the backend that declared it
-                                key={`${entryBackendName}-adapter-flag`}
-                                name={[name, 'adapter_flag_enabled']}
-                                valuePropName="checked"
-                                getValueProps={(value) => ({
-                                  checked:
-                                    value ?? l2ConfigDefault(entryBackend)
-                                })}
-                              >
-                                <CheckboxField
-                                  label={
-                                    localize(entryBackend.adapter_flag_label) ||
-                                    intl.formatMessage({
-                                      id: 'kvCache.form.l2Backend.customOptions'
-                                    })
-                                  }
-                                />
-                              </Form.Item>
-                            )}
-                            {/* the backend carries a working configuration
-                                of its own while the switch is off, and the
-                                fields have nothing to apply to */}
-                            {(!entryBackend?.adapter_flag_optional ||
-                              (l2Storages?.[name]?.adapter_flag_enabled ??
-                                l2ConfigDefault(entryBackend))) &&
-                              entryBackend?.fields?.map((field) => {
-                                const label =
-                                  localize(field.label) ||
-                                  humanizeFieldName(field.name);
-                                const isBoolean = field.type === 'boolean';
-                                return (
-                                  <Form.Item
-                                    // remount per backend so same-named params never leak across backends
-                                    key={`${entryBackendName}-${field.name}`}
-                                    name={[name, 'params', field.name]}
-                                    valuePropName={
-                                      isBoolean ? 'checked' : 'value'
-                                    }
-                                    rules={
-                                      field.required && !isBoolean
-                                        ? [
-                                            {
-                                              required: true,
-                                              message: getRuleMessage(
-                                                'input',
-                                                label,
-                                                false
-                                              )
-                                            }
-                                          ]
-                                        : []
-                                    }
-                                  >
-                                    {renderL2FieldControl(field, label)}
-                                  </Form.Item>
-                                );
-                              })}
-                          </CollapseContainer>
-                        </div>
-                      );
-                    })
-                  }
-                </Form.List>
-              </div>
-            </>
-          )}
+          {/* entries belong to the provider that declared the backends,
+              and so does which of them is open: remount with it */}
+          <L2Storages key={providerName} form={form} l2Backends={l2Backends} />
           <CollapsePanel
             activeKey={advancedKeys}
             accordion={false}
@@ -1595,7 +771,7 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
                 label: intl.formatMessage({ id: 'kvCache.form.advanced' }),
                 children: (
                   <>
-                    {(getProvider(providerName)?.management_url ||
+                    {(selectedProvider?.management_url ||
                       currentData?.config?.management_url) && (
                       <Form.Item<FormData>
                         name={['config', 'management_url']}

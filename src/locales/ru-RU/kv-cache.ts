@@ -1,6 +1,5 @@
 export default {
   'kvCache.title': 'Cache Service',
-  'kvCache.source.title': 'Provider Source',
   'kvCache.source.manage': 'Manage Providers',
   'kvCache.source.builtin':
     'the cache providers this release carries, together with those any installed extension adds',

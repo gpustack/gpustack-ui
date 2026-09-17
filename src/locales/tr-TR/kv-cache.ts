@@ -1,6 +1,5 @@
 export default {
   'kvCache.title': 'Önbellek Hizmeti',
-  'kvCache.source.title': 'Sağlayıcı Kaynağı',
   'kvCache.source.manage': 'Sağlayıcıları Yönet',
   'kvCache.source.builtin':
     'bu sürümün getirdiği önbellek sağlayıcıları ve kurulu eklentilerin eklediği sağlayıcılar',

@@ -22,9 +22,6 @@ export const ProviderSourceColorMap: Record<string, string> = {
   partner: 'gold'
 };
 
-// managed=blue, external=purple; gold stays reserved for the certified
-// partner badge
-
 export const ServiceStateValueMap = {
   Pending: 'pending',
   Starting: 'starting',

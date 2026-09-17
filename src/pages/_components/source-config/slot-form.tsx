@@ -733,12 +733,12 @@ const SourceSlotForm: React.FC<SourceSlotFormProps> = ({
           ></YamlEditor>
         )}
 
-        {/* The way back to the default, as something to press: the same rule the
-          input's tooltip states, but it only makes sense once there is
-          something to undo. A kind with no official source to go back to says
-          the same thing with its Embedded card, and two controls for one idea
-          read as two different ones. */}
-        {published && remoteEnabled && customConfigured && (
+        {/* The way back to the default, as something to press: the same rule
+          the input's tooltip states, but it only makes sense once there is
+          something to undo. Not the same thing the Embedded card does — that
+          one parks a configured document, keeping it for the way back, while
+          this drops it. */}
+        {remoteEnabled && customConfigured && (
           <Flex className={styles.linkRow}>
             <Tooltip
               title={intl.formatMessage(

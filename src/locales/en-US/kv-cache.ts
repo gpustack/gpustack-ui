@@ -49,6 +49,8 @@ export default {
   'kvCache.button.management': 'Management URL',
   'kvCache.form.advanced': 'Advanced',
   'kvCache.form.parameters': 'Parameters',
+  'kvCache.form.parameters.noComponent':
+    'Every component of this provider is switched off by the settings above, so there is nothing to pass parameters to.',
   'kvCache.form.env': 'Environment Variables',
   'kvCache.form.env.componentTips': 'Applies to every component of the service',
   'kvCache.form.l2Backend': 'L2 Storage Backend',

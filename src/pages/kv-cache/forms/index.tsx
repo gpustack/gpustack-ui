@@ -212,6 +212,9 @@ const useParametersStyles = createStyles(({ token, css }) => ({
     line-height: 1;
     color: ${token.colorTextTertiary};
   `,
+  emptyNote: css`
+    color: ${token.colorTextTertiary};
+  `,
   entry: css`
     padding: 12px 16px 16px;
     border: 1px solid ${token.colorSplit};
@@ -235,6 +238,7 @@ const ComponentParameters: React.FC<{
   btnText: string;
   label: string;
 }> = ({ value, onChange, components, btnText, label }) => {
+  const intl = useIntl();
   const { styles } = useParametersStyles();
   const editor = (component: (typeof components)[number]) => (
     <ListInput
@@ -254,8 +258,22 @@ const ComponentParameters: React.FC<{
     ></ListInput>
   );
 
-  if (components.length <= 1) {
-    return editor(components[0] || { name: '', hints: [] });
+  if (!components.length) {
+    // Every declared component is gated off, so there is no role whose binary
+    // would read a flag. "" is not a fallback here: it keys the one process a
+    // provider without components runs, and parameters stored under it would
+    // reach nothing.
+    return (
+      <Flex vertical gap={12} className={styles.group}>
+        <span className={styles.groupLabel}>{label}</span>
+        <span className={styles.emptyNote}>
+          {intl.formatMessage({ id: 'kvCache.form.parameters.noComponent' })}
+        </span>
+      </Flex>
+    );
+  }
+  if (components.length === 1) {
+    return editor(components[0]);
   }
   return (
     <Flex vertical gap={12} className={styles.group}>

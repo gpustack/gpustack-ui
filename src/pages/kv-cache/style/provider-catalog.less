@@ -25,7 +25,9 @@
     font-size: var(--font-size-small);
     font-weight: 400;
     line-height: 1.4;
-    white-space: nowrap;
+    // a reason long enough to need it wraps rather than running out of the
+    // drawer; the placement keeps the box off the catalog's right edge
+    max-width: 260px;
     pointer-events: none;
     // hidden until a pointer places it: the position is written to the
     // node, so the first frame after it mounts has none yet
@@ -166,7 +168,9 @@
       align-items: center;
       gap: 12px;
       font-size: var(--font-size-small);
-      white-space: nowrap;
+      // a reason long enough to need it wraps rather than running out of the
+      // drawer; the placement keeps the box off the catalog's right edge
+      max-width: 260px;
 
       a {
         display: inline-flex;

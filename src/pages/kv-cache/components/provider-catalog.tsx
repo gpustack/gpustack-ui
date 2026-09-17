@@ -4,7 +4,13 @@ import { AutoTooltip, IconFont, ThemeTag } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Typography } from 'antd';
 import classNames from 'classnames';
-import React, { useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react';
 import { ProviderSourceColorMap, ProviderSourceLabelMap } from '../config';
 import { CacheProviderItem } from '../config/types';
 import '../style/provider-catalog.less';
@@ -34,6 +40,10 @@ interface ProviderCatalogProps {
   onSelect: (provider: CacheProviderItem) => void;
 }
 
+// Memoized: one card's hover changes the catalog's state, and without this
+// every other card re-runs the measuring its content does — AutoTooltip's
+// ResizeObserver and the description's ellipsis pass — for a frame that
+// changed nothing about them.
 const ProviderCard: React.FC<{
   data: CacheProviderItem;
   active: boolean;
@@ -83,7 +93,6 @@ const ProviderCard: React.FC<{
       // the pointer-following label is decoration; the reason has to
       // reach a reader who never moves a pointer, and the card has to
       // announce that it takes no selection
-      title={unavailable || undefined}
       aria-disabled={unavailable ? true : undefined}
       aria-label={
         unavailable
@@ -178,6 +187,8 @@ const ProviderCard: React.FC<{
   );
 };
 
+const MemoProviderCard = React.memo(ProviderCard);
+
 const ProviderCatalog: React.FC<ProviderCatalogProps> = ({
   providers,
   current,
@@ -186,53 +197,78 @@ const ProviderCatalog: React.FC<ProviderCatalogProps> = ({
   const catalogRef = useRef<HTMLDivElement>(null);
   const hintRef = useRef<HTMLSpanElement>(null);
   const [reason, setReason] = useState('');
+  // The pointer position the next frame will draw at, and the frame it is
+  // waiting on. A pointer crossing a card fires far more often than the screen
+  // refreshes, and the placement reads the catalog's box — one read per frame
+  // instead of one per event.
+  const pending = useRef<{ x: number; y: number } | null>(null);
+  const frame = useRef<number | null>(null);
 
-  // The label's position is written to the node, not held in state: a
-  // pointer crossing a card fires often enough that re-rendering the
-  // catalog on every tick is felt. Only the text it carries is state,
-  // which changes once per card.
-  const trackReason = (text: string | null, event?: React.MouseEvent) => {
+  const place = useCallback(() => {
+    frame.current = null;
     const label = hintRef.current;
-    if (!text || !event) {
-      // fading out leaves the position alone, or the label would drop to
-      // the catalog's origin for the length of the fade
-      if (label) {
-        label.style.opacity = '0';
-      }
-      return;
-    }
-    if (text !== reason) {
-      setReason(text);
-    }
-    if (!label) {
+    const point = pending.current;
+    if (!label || !point) {
       return;
     }
     const catalog = catalogRef.current?.getBoundingClientRect();
-    // trailing the pointer to its lower right, unbounded: a label held
-    // inside the card would stall against its edges while the pointer
-    // kept moving
-    const x = event.clientX - (catalog?.left ?? 0) + 14;
-    const y = event.clientY - (catalog?.top ?? 0) + 16;
-    label.style.transform = `translate(${x}px, ${y}px)`;
+    // trailing the pointer to its lower right rather than being held inside
+    // the card, which would stall the label against the card's edges while
+    // the pointer kept moving — but kept off the catalog's right edge, or a
+    // long reason runs out of the drawer it is read in
+    const x = point.x - (catalog?.left ?? 0) + 14;
+    const y = point.y - (catalog?.top ?? 0) + 16;
+    const limit = (catalog?.width ?? 0) - label.offsetWidth;
+    label.style.transform = `translate(${Math.max(0, Math.min(x, limit))}px, ${y}px)`;
     label.style.opacity = '1';
-  };
+  }, []);
+
+  const trackReason = useCallback(
+    (text: string | null, event?: React.MouseEvent) => {
+      if (!text || !event) {
+        pending.current = null;
+        // fading out leaves the position alone, or the label would drop to
+        // the catalog's origin for the length of the fade
+        if (hintRef.current) {
+          hintRef.current.style.opacity = '0';
+        }
+        return;
+      }
+      setReason((current) => (current === text ? current : text));
+      pending.current = { x: event.clientX, y: event.clientY };
+      if (frame.current === null) {
+        frame.current = requestAnimationFrame(place);
+      }
+    },
+    [place]
+  );
+
+  useEffect(
+    () => () => {
+      if (frame.current !== null) {
+        cancelAnimationFrame(frame.current);
+      }
+    },
+    []
+  );
 
   return (
     <div className="provider-catalog" ref={catalogRef}>
       {providers.map((item) => (
-        <ProviderCard
+        <MemoProviderCard
           key={item.name}
           data={item}
           active={item.name === current}
           onClick={onSelect}
           onReason={trackReason}
-        ></ProviderCard>
+        ></MemoProviderCard>
       ))}
-      {reason && (
-        <span ref={hintRef} className="unavailable-hint" aria-hidden="true">
-          {reason}
-        </span>
-      )}
+      {/* Always mounted: created with the first reason, its ref would still
+          be null when that same move tries to place it, and the label would
+          wait for a second one. */}
+      <span ref={hintRef} className="unavailable-hint" aria-hidden="true">
+        {reason}
+      </span>
     </div>
   );
 };

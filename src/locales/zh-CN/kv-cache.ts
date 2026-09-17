@@ -45,6 +45,8 @@ export default {
   'kvCache.button.management': '管理地址',
   'kvCache.form.advanced': '高级配置',
   'kvCache.form.parameters': '参数',
+  'kvCache.form.parameters.noComponent':
+    '上面的配置把该 Provider 的所有组件都关闭了,没有可传参数的对象。',
   'kvCache.form.env': '环境变量',
   'kvCache.form.env.componentTips': '对服务的所有组件生效',
   'kvCache.form.l2Backend': 'L2 存储后端',

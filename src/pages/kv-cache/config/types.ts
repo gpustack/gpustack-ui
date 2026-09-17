@@ -225,11 +225,7 @@ export interface ListItem {
   // ALL label pairs; empty or absent covers every cluster worker
   worker_selector?: Record<string, string> | null;
   config?: ServiceConfig;
-  // where engines are told to attach, resolved server-side. Filled when the service is read on its own (it resolves
-  // through the instances), absent in listings and wherever no single
-  // address exists — a node-local provider wires every engine to its own
-  // node's instance
-  // managed services aggregate their instances' states; state_message
+  // a service aggregates its instances' states; state_message
   // carries the roll-up (e.g. "2/3 instances running")
   state: ServiceState;
   state_message?: string;

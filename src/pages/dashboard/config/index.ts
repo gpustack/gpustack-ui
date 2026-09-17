@@ -104,7 +104,7 @@ export const sectionHeadingStyle = { margin: '24px 0 8px' };
  * already spoken for. Size is the free channel.
  */
 export const sectionTitleStyle = {
-  fontSize: 'var(--font-size-large)',
+  fontSize: 'var(--font-size-base)',
   fontWeight: 'var(--font-weight-medium)'
 };
 

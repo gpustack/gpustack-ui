@@ -191,8 +191,11 @@ const SourceSlotForm: React.FC<SourceSlotFormProps> = ({
   // that is tracked live. The text itself stays out of state for the reason
   // above.
   const [fileHasContent, setFileHasContent] = useState(false);
+  const primaryType: SourceType = slot.allowFile
+    ? slot.primaryType || SourceTypeValueMap.URL
+    : SourceTypeValueMap.URL;
   const [formState, setFormState] = useState({
-    sourceType: SourceTypeValueMap.URL as SourceType,
+    sourceType: primaryType,
     content: '',
     customHours: 0,
     officialHours: OFFICIAL_DEFAULT_HOURS
@@ -285,10 +288,9 @@ const SourceSlotForm: React.FC<SourceSlotFormProps> = ({
     setRemoteEnabled(cfg.remote_enabled);
     setFileHasContent(hasMeaningfulContent(cfg.custom?.content || ''));
     setFormState({
-      sourceType:
-        cfg.custom?.source_type === SourceTypeValueMap.FILE
-          ? SourceTypeValueMap.FILE
-          : SourceTypeValueMap.URL,
+      // What is configured decides the branch; with nothing configured the
+      // slot's own primary one opens.
+      sourceType: cfg.custom?.source_type || primaryType,
       content: cfg.custom?.content || slot.contentTemplate || '',
       customHours: cfg.custom?.auto_update_hours || 0,
       officialHours: cfg.official.auto_update_hours
@@ -607,11 +609,21 @@ const SourceSlotForm: React.FC<SourceSlotFormProps> = ({
           // the heading the component sizes it as.
           styles={{ title: { fontSize: 'var(--font-size-base)' } }}
           options={[
+            ...(slot.allowFile && primaryType === SourceTypeValueMap.FILE
+              ? [
+                  {
+                    label: intl.formatMessage({
+                      id: 'common.source.type.file'
+                    }),
+                    value: SourceTypeValueMap.FILE
+                  }
+                ]
+              : []),
             {
               label: intl.formatMessage({ id: 'common.source.type.url' }),
               value: SourceTypeValueMap.URL
             },
-            ...(slot.allowFile
+            ...(slot.allowFile && primaryType !== SourceTypeValueMap.FILE
               ? [
                   {
                     label: intl.formatMessage({

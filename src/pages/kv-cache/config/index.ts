@@ -172,3 +172,36 @@ export const rowActionList: ServiceRowAction[] = [
     }
   }
 ];
+
+// Seeded into the provider-source editor while it is empty. All comments, so
+// an untouched hint still counts as "nothing configured" — and the shape is
+// what a reader needs before the built-in file (which is the thing to actually
+// edit) makes sense: a list of providers, each naming the image its versions
+// run and the command that launches them.
+export const providerSourceTemplate = `# A YAML list of cache provider declarations. What you save replaces the
+# built-in catalog entirely — every provider it does not declare goes out of
+# service — so start from Built-in File above rather than from this hint.
+#
+# Example:
+#
+# - name: LMCache
+#   display_name: LMCache
+#   description: A KV cache layer for LLM serving.
+#   default_version: v0.5.3
+#   versions:
+#     v0.5.3:
+#       image: lmcache/vllm-openai:latest
+#   # {{host}} and {{port}} are filled in by the platform
+#   default_run_command: >-
+#     lmcache server --host {{host}} --port {{port}}
+#   # what an inference backend needs to attach to a service of this provider
+#   inference_backend_integrations:
+#     - backend: vLLM
+#       injection:
+#         kv_transfer_config:
+#           kv_connector: LMCacheMPConnector
+#           kv_role: kv_both
+#           kv_connector_extra_config:
+#             lmcache.mp.host: "tcp://{{host}}"
+#             lmcache.mp.port: "{{port}}"
+`;

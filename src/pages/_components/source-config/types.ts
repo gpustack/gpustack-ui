@@ -145,6 +145,11 @@ export interface SourceSlotConfig {
   // wording; a kind nothing publishes falls back to its packaged baseline
   // instead.
   emptyHintKey?: string;
+  // Which branch the row opens on, and which card leads it. Defaults to the
+  // URL, whose box holds the official address a kind follows — for a kind with
+  // no such address that box opens empty with nothing to act on, while the
+  // editor is where its baseline can be downloaded and edited.
+  primaryType?: SourceType;
   // What this kind's official source follows, shown as the hint beside the
   // input — leaving that input empty is what follows it.
   officialDescriptionKey: string;

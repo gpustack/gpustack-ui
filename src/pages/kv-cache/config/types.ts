@@ -102,7 +102,9 @@ export interface CacheProviderComponent {
   // completion hints for this role's own binary; the provider-level
   // list describes the one engines attach to
   common_parameters?: string[];
-  gpu_access?: boolean;
+  // a bare boolean, or a gate following a declared field for a
+  // component that needs a device only under some configurations
+  gpu_access?: boolean | { enabled_by: string; enabled_when?: any };
   resource_profile?: CacheProviderResourceProfile;
 }
 

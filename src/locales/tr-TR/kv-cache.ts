@@ -50,6 +50,8 @@ export default {
   'kvCache.button.management': "Yönetim URL'si",
   'kvCache.form.advanced': 'Advanced',
   'kvCache.form.parameters': 'Parameters',
+  'kvCache.form.parameters.noComponent':
+    'Yukarıdaki ayarlar bu sağlayıcının tüm bileşenlerini kapattı; parametre geçirilecek bir şey yok.',
   'kvCache.form.env': 'Ortam Değişkenleri',
   'kvCache.form.l2Backend': 'L2 Depolama Altyapısı',
   'kvCache.form.l2Backend.add': 'Altyapı Ekle',

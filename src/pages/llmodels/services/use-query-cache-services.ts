@@ -11,7 +11,6 @@ export interface CacheServiceOption {
   value: number;
   state: string;
   provider_name: string;
-  mode: string;
   // only running services can be attached to a deployment
   disabled: boolean;
 }
@@ -84,7 +83,6 @@ export default function useQueryCacheServices() {
           value: item.id,
           state: item.state,
           provider_name: item.provider_name,
-          mode: item.mode,
           disabled: item.state !== RUNNING_STATE
         }));
       setCacheServiceOptions(options);

@@ -81,6 +81,31 @@ export interface CacheProviderField {
   step?: number;
 }
 
+// one role of a multi-component provider: how its instances are placed,
+// what turns it on, and what it binds
+export interface CacheProviderComponent {
+  topology?: string;
+  replicas?: number;
+  replicas_by?: string;
+  depends_on?: string;
+  enabled_by?: string;
+  enabled_when?: any;
+  attach_endpoint?: boolean;
+  // every port the component binds, and which of them carries its
+  // address and its Prometheus exposition
+  ports?: (
+    | string
+    | { name: string; enabled_by?: string; enabled_when?: any }
+  )[];
+  address_port?: string;
+  metrics_port?: string;
+  // completion hints for this role's own binary; the provider-level
+  // list describes the one engines attach to
+  common_parameters?: string[];
+  gpu_access?: boolean;
+  resource_profile?: CacheProviderResourceProfile;
+}
+
 export interface CacheProviderItem {
   name: string;
   display_name: LocalizedText;
@@ -101,31 +126,7 @@ export interface CacheProviderItem {
   // multi-component providers (a master and its stores, say) declare
   // per-role layout; a component's resource_profile states one
   // instance's RAM claim for the placement pre-flight
-  components?: Record<
-    string,
-    {
-      topology?: string;
-      replicas?: number;
-      replicas_by?: string;
-      depends_on?: string;
-      enabled_by?: string;
-      enabled_when?: any;
-      attach_endpoint?: boolean;
-      // every port the component binds, and which of them carries its
-      // address and its Prometheus exposition
-      ports?: (
-        | string
-        | { name: string; enabled_by?: string; enabled_when?: any }
-      )[];
-      address_port?: string;
-      metrics_port?: string;
-      // completion hints for this role's own binary; the provider-level
-      // list describes the one engines attach to
-      common_parameters?: string[];
-      gpu_access?: boolean;
-      resource_profile?: CacheProviderResourceProfile;
-    }
-  >;
+  components?: Record<string, CacheProviderComponent>;
   default_version?: string;
   // managed services may pick the reserved "custom" version and supply
   // their own container image via config.image

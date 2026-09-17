@@ -3,13 +3,10 @@ import _ from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { queryModelCacheMetrics } from '../../apis';
+import { CACHE_METRICS_WINDOW } from '../../config';
 import { ModelInstanceListItem } from '../../config/types';
 import '../../style/instance-item.less';
 import InstanceItem from './instance-item';
-
-// The window every hit rate in the expanded row is read over; the
-// tooltip names it, since a rate without one says nothing.
-export const CACHE_METRICS_WINDOW = '1h';
 
 // Read once per expanded deployment rather than per instance: the
 // endpoint answers for all of the model's instances in one query, so the
@@ -28,7 +25,7 @@ const useCacheHitRates = (
       return;
     }
     let active = true;
-    queryModelCacheMetrics(modelId, { window: CACHE_METRICS_WINDOW })
+    queryModelCacheMetrics(modelId, { window: CACHE_METRICS_WINDOW.value })
       .then((data) => {
         if (!active) {
           return;

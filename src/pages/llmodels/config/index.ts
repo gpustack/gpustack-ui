@@ -546,3 +546,12 @@ export const catalogSourceTemplate = `# A YAML mapping with model_sets (and opti
 #           - --max-model-len=8192
 # draft_models: []
 `;
+
+// The window every KV cache hit rate is read over: the value the metrics
+// API is asked for, and the localized label that names it in the tooltip.
+// A rate without its window says nothing, and a label that drifts from
+// the query says something false — so the two travel together.
+export const CACHE_METRICS_WINDOW = {
+  value: '1h',
+  labelKey: 'models.kvCache.hitRate.window'
+} as const;

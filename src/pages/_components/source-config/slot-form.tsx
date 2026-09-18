@@ -507,12 +507,25 @@ const SourceSlotForm: React.FC<SourceSlotFormProps> = ({
     };
   };
 
+  // What was saved is seeded back into the editor, and the viewport stays
+  // where the last edit left it — after pasting a document that is its end,
+  // and an editor parked past the last line reads as an empty box. Put the
+  // view back where the document starts, once the re-seeded value has landed.
+  const revealDocumentStart = () => {
+    requestAnimationFrame(() => {
+      const editor = editorRef.current?.editor?.editor;
+      editor?.setPosition?.({ lineNumber: 1, column: 1 });
+      editor?.revealLine?.(1);
+    });
+  };
+
   const applyWrite = (payload: SourceConfigUpsert) =>
     guard(() =>
       run(async () => {
         try {
           setAlert('');
           seedForm(await save(payload));
+          revealDocumentStart();
           message.success(intl.formatMessage({ id: 'common.message.success' }));
           onSaved();
         } catch (error) {
@@ -733,20 +746,16 @@ const SourceSlotForm: React.FC<SourceSlotFormProps> = ({
           ></YamlEditor>
         )}
 
-        {/* The way back to the default, as something to press: the same rule
-          the input's tooltip states, but it only makes sense once there is
-          something to undo. Not the same thing the Embedded card does — that
-          one parks a configured document, keeping it for the way back, while
-          this drops it. */}
-        {remoteEnabled && customConfigured && (
+        {/* The way back to the official address, as something to press: the
+          same rule the input's tooltip states, but it only makes sense once
+          there is something to undo, and only where an official address is
+          what it goes back to. A kind that publishes none offers the Embedded
+          card instead, which is the whole of the choice there. */}
+        {published && remoteEnabled && customConfigured && (
           <Flex className={styles.linkRow}>
             <Tooltip
               title={intl.formatMessage(
-                {
-                  id: published
-                    ? 'common.source.reset.tip'
-                    : 'common.source.reset.tip.builtin'
-                },
+                { id: 'common.source.reset.tip' },
                 { description: officialDescription }
               )}
             >
@@ -756,11 +765,7 @@ const SourceSlotForm: React.FC<SourceSlotFormProps> = ({
                 icon={<UndoOutlined />}
                 onClick={handleReset}
               >
-                {intl.formatMessage({
-                  id: published
-                    ? 'common.source.reset'
-                    : 'common.source.reset.builtin'
-                })}
+                {intl.formatMessage({ id: 'common.source.reset' })}
               </Button>
             </Tooltip>
           </Flex>

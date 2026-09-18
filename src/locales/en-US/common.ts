@@ -346,11 +346,8 @@ export default {
   'common.source.empty.hint.file.builtin':
     'Leave the content empty to keep the built-in content — {description}',
   'common.source.reset': 'Reset to Official Source',
-  'common.source.reset.builtin': 'Reset to Built-in Content',
   'common.source.reset.tip':
     'Follow the official source again, applied when you save — {description}',
-  'common.source.reset.tip.builtin':
-    'Go back to the built-in content, applied when you save — {description}',
   'common.source.autoUpdate': 'Auto-update',
   'common.source.autoUpdate.interval': 'Update Interval (hours)',
   'common.source.autoUpdate.official.tip':

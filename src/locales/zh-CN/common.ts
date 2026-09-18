@@ -330,10 +330,7 @@ export default {
   'common.source.empty.hint.file.builtin':
     '内容留空则继续使用内置内容——{description}',
   'common.source.reset': '重置为官方来源',
-  'common.source.reset.builtin': '重置为内置内容',
   'common.source.reset.tip': '改回官方来源（保存后生效）——{description}',
-  'common.source.reset.tip.builtin':
-    '改回内置内容（保存后生效）——{description}',
   'common.source.autoUpdate': '自动更新',
   'common.source.autoUpdate.interval': '更新间隔（小时）',
   'common.source.autoUpdate.official.tip':

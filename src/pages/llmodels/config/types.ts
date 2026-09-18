@@ -53,6 +53,44 @@ export interface ListItem {
   worker_selector?: object;
 }
 
+// `POST /models/import`. The plan comes back the same shape either way: on a
+// dry run `items` is empty, otherwise it holds the rows as written.
+export type DeploymentAction = 'create' | 'update' | 'unchanged';
+
+export interface DeploymentChange {
+  // The document's own field name, e.g. `gpu_selector`. See
+  // `deployment-field-labels` for the wording.
+  field: string;
+  current?: any;
+  desired?: any;
+}
+
+export interface DeploymentPlanEntry {
+  index: number;
+  name?: string;
+  // Absent when the entry could not be parsed, leaving nothing to plan.
+  action?: DeploymentAction;
+  // The entry as the document describes it, which the preview row renders.
+  desired: Record<string, any>;
+  // The deployment this entry would replace, projected onto the same fields
+  // in the same order, so the two render as a YAML diff. Empty for a create.
+  current: Record<string, any>;
+  // The entry as the file spells it, sent only when it failed to validate —
+  // exactly when `desired` is empty. What the editor falls back to, so an
+  // invalid entry can still be fixed where it is.
+  raw: Record<string, any>;
+  changes: DeploymentChange[];
+  errors: string[];
+}
+
+export interface DeploymentImportResult {
+  dry_run: boolean;
+  // No entry has errors. What gates the confirm button.
+  valid: boolean;
+  entries: DeploymentPlanEntry[];
+  items: ListItem[];
+}
+
 // vGPU scheduling (issue #5192): deploy onto a GPU provided by a
 // gpustack-operator InstanceType. Mutually exclusive with `gpu_selector`.
 // Percentages 1-100 request a soft slice; both 0 request a whole card from

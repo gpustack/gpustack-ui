@@ -1,5 +1,53 @@
 export default {
   'models.button.deploy': 'Развернуть модель',
+  'models.button.exportYaml': 'Экспорт YAML',
+  'models.button.importYaml': 'Импорт YAML',
+  'models.form.yamlFile': 'YAML-файл',
+  'models.import.checking': 'Проверка…',
+  'models.import.hint.nothing': 'Здесь нечего импортировать',
+  'models.import.pickFile': 'Выбрать файл',
+  'models.import.empty.title': 'Импорт YAML-файла',
+  'models.import.empty.description':
+    'Выберите файл с описанием развёртываний. Он сначала сверяется с выбранным кластером, и различия показываются полностью — до того, как что-либо будет записано.',
+  'models.import.loaded':
+    'Развёртываний: {count} · совпадает с текущим состоянием кластера {cluster}',
+  'models.import.loaded.hint':
+    'Документ совпадает с текущим состоянием кластера {cluster}, записывать нечего.',
+  'models.import.counts':
+    'Развёртываний: {count} · проверено для кластера {cluster} · изменений: {changes}',
+  'models.import.parsed': 'Развёртываний: {count}',
+  'models.import.parsed.invalid': 'нельзя импортировать: {count}',
+  'models.import.fieldsDoc': 'Справочник полей',
+  'models.import.nav.invalid': 'Нельзя импортировать',
+  'models.import.scope.all': 'Все развёртывания ({count})',
+  'models.import.scope.whole': 'Весь документ',
+  'models.import.scope.wholeShort': 'Целиком',
+  'models.import.pane.current': 'В кластере · только чтение',
+  'models.import.pane.draft': 'К импорту · можно править',
+  'models.import.pane.absent': 'Развёртывания с таким именем нет',
+  'models.import.pane.none': 'В этом кластере нет подходящих развёртываний',
+  'models.import.pane.allNew':
+    'Все развёртывания здесь новые — ни одно не заменяется',
+  'models.import.pane.waiting': 'Пока нечего сравнивать',
+  'models.import.entry': 'Развёртывание {index}',
+  'models.import.entry.invalid': 'Развёртывание {index} нельзя импортировать',
+  'models.import.summary':
+    'Создать: {create}, обновить: {update}, без изменений: {unchanged}.',
+  'models.import.summary.replaces':
+    'Обновление заменяет развёртывание содержимым файла.',
+  'models.import.action.create': 'Создать',
+  'models.import.action.update': 'Обновить',
+  'models.import.action.unchanged': 'Без изменений',
+  'models.import.changes': 'Изменений: {count}',
+  'models.import.blocked':
+    'Нельзя импортировать развёртываний: {count}. Исправьте их, чтобы продолжить.',
+  'models.import.overwrite.title': 'Подтвердите импорт',
+  'models.import.overwrite.confirm':
+    'Следующие существующие развёртывания ({count}) будут полностью заменены содержимым файла. Настройки, которых нет в файле, вернутся к значениям по умолчанию.',
+  'models.import.overwrite.rest':
+    'Также будет создано: {create}, без изменений: {unchanged}.',
+  'models.import.invalid':
+    'Файл не может быть импортирован. Исправьте указанные ниже проблемы — проверка выполнится снова.',
   'models.title': 'Модели',
   'models.title.edit': 'Редактировать модель',
   'models.title.duplicate': 'Клонировать модель',

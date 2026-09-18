@@ -80,6 +80,11 @@ const ActionList: ActionItem[] = [
     icon: icons.CopyOutlined
   },
   {
+    key: 'export',
+    label: 'models.button.exportYaml',
+    icon: icons.DownloadOutlined
+  },
+  {
     label: 'common.button.delete',
     key: 'delete',
     props: {

@@ -9,6 +9,7 @@ import {
   SegmentLine,
   useSubmitLock
 } from '@gpustack/core-ui';
+import { preloadYamlEditor } from '@gpustack/core-ui/yaml-editor';
 import { useIntl } from '@umijs/max';
 import { Tabs } from 'antd';
 import _ from 'lodash';
@@ -206,6 +207,15 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       setActiveKey('form');
     }
   }, [action, currentData, open]);
+
+  // The modal opens on the form tab, so monaco is not needed yet — but the
+  // YAML tab is one click away, and that click would otherwise wait out the
+  // whole download. Fetching from here spends the wait on reading the form.
+  useEffect(() => {
+    if (open) {
+      preloadYamlEditor();
+    }
+  }, [open]);
 
   const yamlHeight = useMemo(() => {
     if (action !== PageAction.CREATE) {

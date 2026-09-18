@@ -169,8 +169,12 @@ const ServiceDeployments: React.FC<{ serviceId: number }> = ({ serviceId }) => {
       render: formatTokens
     },
     {
+      // Named apart from the monitoring chart's Hit Rate, which the same
+      // page carries: that one is the service counting what it was asked
+      // for, this one the engine counting the prompt tokens it looked up.
+      // Two denominators, so the two read far apart on the same service.
       title: titleWithTips(
-        'kvCache.detail.hitRate',
+        'kvCache.detail.externalHitRate',
         'kvCache.detail.hitRate.engineTips'
       ),
       dataIndex: 'hit_rate',

@@ -352,7 +352,13 @@ const registerAscendWorker = (params: AddWorkerCommandParams) => {
   const config = GPUsConfigs[params.gpu];
   const commonArgs = setNormalArgs(params);
   const imageArgs = setImageArgs(params);
+  // The host driver tree, which the containers this worker deploys inherit
+  // along with the rest of its mounts. A transport that puts KV cache on
+  // another node over Device RoCE reads the NPU NIC addresses through
+  // hccn_tool, which lives here and which neither the accelerator runtime
+  // nor the image supplies — without it that transport cannot start.
   return `${commonArgs}
+      --volume /usr/local/Ascend/driver:/usr/local/Ascend/driver:ro \\
       --env "ASCEND_VISIBLE_DEVICES=$(sudo ls /dev/davinci* | head -1 | grep -o '[0-9]\\+' || echo "0")" \\
       --runtime ${config.runtime} \\
       ${imageArgs}

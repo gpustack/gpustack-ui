@@ -68,6 +68,7 @@ export default {
   'kvCache.instances.empty': 'No instances yet',
   'kvCache.detail.monitoring': 'Monitoring',
   'kvCache.detail.hitRate': 'Hit Rate',
+  'kvCache.detail.externalHitRate': 'External Cache Hit Rate',
   'kvCache.detail.usage': 'L1 Cache Usage',
   'kvCache.detail.l2Usage': 'L2 Cache Usage',
   'kvCache.detail.lookupTraffic': 'Lookup Traffic',

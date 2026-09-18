@@ -68,6 +68,7 @@ export default {
   'kvCache.instances.empty': 'Henüz örnek yok',
   'kvCache.detail.monitoring': 'Monitoring',
   'kvCache.detail.hitRate': 'İsabet Oranı',
+  'kvCache.detail.externalHitRate': 'Harici Önbellek İsabet Oranı',
   'kvCache.detail.usage': 'L1 Önbellek Kullanımı',
   'kvCache.detail.l2Usage': 'L2 Önbellek Kullanımı',
   'kvCache.detail.lookupTraffic': 'Arama Trafiği',

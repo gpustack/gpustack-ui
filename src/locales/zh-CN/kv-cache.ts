@@ -64,6 +64,7 @@ export default {
   'kvCache.instances.empty': '暂无实例',
   'kvCache.detail.monitoring': '监控',
   'kvCache.detail.hitRate': '命中率',
+  'kvCache.detail.externalHitRate': '外部缓存命中率',
   'kvCache.detail.usage': 'L1 缓存用量',
   'kvCache.detail.l2Usage': 'L2 缓存用量',
   'kvCache.detail.lookupTraffic': '查询流量',

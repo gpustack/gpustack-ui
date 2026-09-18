@@ -53,10 +53,12 @@ import {
   SourceType
 } from '../config/types';
 import useEditDeployment from '../hooks/use-edit-deployment';
+import useExportDeployments from '../hooks/use-export-deployments';
 import useModelsColumns from '../hooks/use-models-columns';
 import useViewInstanceLogs from '../hooks/use-view-instance-logs';
 import LeftFilters from '../instance-view/left-filters';
 import DeployModal from './deployment/deploy-modal';
+import ImportYamlModal from './deployment/import-yaml-modal';
 import UpdateModelModal from './deployment/update-modal';
 import Instances from './instance/instances';
 import ViewLogsModal from './view-logs-modal';
@@ -175,6 +177,8 @@ const Models: React.FC<ModelsProps> = ({
     isGGUF: false,
     source: modelSourceMap.huggingface_value as SourceType
   });
+  const [openImportModal, setOpenImportModal] = useState(false);
+  const { exportDeployments } = useExportDeployments();
   const modalRef = useRef<any>(null);
 
   useEffect(() => {
@@ -257,14 +261,26 @@ const Models: React.FC<ModelsProps> = ({
     });
   };
 
-  const refreshListStatus = (modelData: ListItem) => {
-    setTimeout(() => {
-      updateExpandedRowKeys([modelData.id, ...expandedRowKeys]);
-    }, 300);
+  const refreshListStatus = (created: ListItem[]) => {
+    // Expanding follows a deployment the user just described one of, so it
+    // only applies to a single one. An import creates as many as the file
+    // holds, and expanding them all leaves a screen of rows open on nothing:
+    // the children are fetched by the expand button's own handler, which
+    // putting a key in here does not run.
+    if (created.length === 1) {
+      setTimeout(() => {
+        updateExpandedRowKeys([created[0].id, ...expandedRowKeys]);
+      }, 300);
+    }
     message.success(intl.formatMessage({ id: 'common.message.success' }));
     setTimeout(() => {
       handleSearch?.();
     }, 150);
+  };
+
+  const handleImportOk = (items: ListItem[]) => {
+    setOpenImportModal(false);
+    refreshListStatus(items ?? []);
   };
 
   const handleCreateModel = async (data: FormData) => {
@@ -276,7 +292,7 @@ const Models: React.FC<ModelsProps> = ({
         ...openDeployModal,
         show: false
       });
-      refreshListStatus(modelData);
+      refreshListStatus([modelData]);
     } catch (error) {}
   };
 
@@ -416,6 +432,9 @@ const Models: React.FC<ModelsProps> = ({
       if (val === 'metrics') {
         goToGrafana(row);
       }
+      if (val === 'export') {
+        exportDeployments([row.id]);
+      }
     } catch (error) {
       // ignore
     }
@@ -453,6 +472,10 @@ const Models: React.FC<ModelsProps> = ({
   const handleClickDropdown = (item: any) => {
     if (item.key === 'catalog') {
       navigate('/models/catalog');
+      return;
+    }
+    if (item.key === 'import_yaml') {
+      setOpenImportModal(true);
       return;
     }
 
@@ -508,6 +531,9 @@ const Models: React.FC<ModelsProps> = ({
     }
     if (val === 'stop') {
       handleStopBatch();
+    }
+    if (val === 'export') {
+      exportDeployments(rowSelection.selectedRowKeys as number[]);
     }
   };
 
@@ -669,6 +695,11 @@ const Models: React.FC<ModelsProps> = ({
         onCancel={handleDeployModalCancel}
         onOk={handleCreateModel}
       ></DeployModal>
+      <ImportYamlModal
+        open={openImportModal}
+        onCancel={() => setOpenImportModal(false)}
+        onOk={handleImportOk}
+      ></ImportYamlModal>
       <ViewLogsModal
         status={openViewLogsModalStatus.currentData.status}
         url={openViewLogsModalStatus.currentData.url}

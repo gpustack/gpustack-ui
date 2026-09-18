@@ -350,11 +350,8 @@ export default {
   'common.source.empty.hint.file.builtin':
     'Yerleşik içeriği korumak için içeriği boş bırakın — {description}',
   'common.source.reset': 'Resmi Kaynağa Sıfırla',
-  'common.source.reset.builtin': 'Yerleşik İçeriğe Sıfırla',
   'common.source.reset.tip':
     'Yeniden resmi kaynağı izler, kaydettiğinizde uygulanır — {description}',
-  'common.source.reset.tip.builtin':
-    'Yerleşik içeriğe döner, kaydettiğinizde uygulanır — {description}',
   'common.source.autoUpdate': 'Auto-update',
   'common.source.autoUpdate.interval': 'Güncelleme Aralığı (saat)',
   'common.source.autoUpdate.official.tip':

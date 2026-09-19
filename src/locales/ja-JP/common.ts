@@ -263,8 +263,6 @@ export default {
   'common.appearance.description':
     'デバイス上でのインターフェースの表示をカスタマイズします。',
   'common.security': 'セキュリティ',
-  'common.security.description':
-    'アカウントへのログインに使用するパスワードを管理します。',
   'common.page.wentwrong': 'Something went wrong.',
   'common.page.refresh.tips':
     'The page may need to be updated. Try refreshing it!',

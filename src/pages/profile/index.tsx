@@ -33,12 +33,14 @@ const Profile: React.FC = () => {
           <Appearance />
         </SettingsSection>
 
+        {/* No description: "Manage the password used to sign in to your
+            account" only restated the title and the row under it. Appearance
+            keeps its one because "on your device" is real information — the
+            theme and locale live in localStorage, so they do not follow the
+            account to another browser. */}
         {isLocalUser && (
           <SettingsSection
             title={intl.formatMessage({ id: 'common.security' })}
-            description={intl.formatMessage({
-              id: 'common.security.description'
-            })}
           >
             <Security />
           </SettingsSection>

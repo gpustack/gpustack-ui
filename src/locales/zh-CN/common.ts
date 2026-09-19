@@ -257,7 +257,6 @@ export default {
   'common.appearance.theme': '主题',
   'common.appearance.description': '自定义界面在您设备上的视觉表现。',
   'common.security': '安全设置',
-  'common.security.description': '管理用于登录账户的密码。',
   'common.page.wentwrong': '哎呀，出了点问题',
   'common.page.refresh.tips': '页面似乎需要更新，刷新一下试试吧！',
   'common.tips.escape.disable': '请点击「取消」按钮或右上角 X 关闭窗口',

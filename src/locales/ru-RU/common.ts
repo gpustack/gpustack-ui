@@ -262,8 +262,6 @@ export default {
   'common.appearance.description':
     'Настройте внешний вид интерфейса на вашем устройстве.',
   'common.security': 'Безопасность',
-  'common.security.description':
-    'Управляйте паролем для входа в учётную запись.',
   'common.page.wentwrong': 'Что-то пошло не так.',
   'common.page.refresh.tips':
     'Страница может нуждаться в обновлении. Попробуйте обновить её!',

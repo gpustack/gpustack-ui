@@ -266,8 +266,6 @@ export default {
   'common.appearance.description':
     'Arayüzün cihazınızdaki görünümünü özelleştirin.',
   'common.security': 'Güvenlik',
-  'common.security.description':
-    'Hesabınıza giriş yapmak için kullanılan parolayı yönetin.',
   'common.page.wentwrong': 'Bir şeyler ters gitti.',
   'common.page.refresh.tips':
     'Sayfanın güncellenmesi gerekebilir. Yenilemeyi deneyin!',

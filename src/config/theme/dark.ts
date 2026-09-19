@@ -4,6 +4,11 @@ export default {
   'root-entry-name': 'variable',
   hashed: false,
   components: {
+    // Keep in step with light.ts — see the note there on why the modal radius
+    // is set here rather than left to the global borderRadiusLG.
+    Modal: {
+      borderRadiusLG: 12
+    },
     Input: {
       inputFontSize: 14,
       inputFontSizeLG: 14

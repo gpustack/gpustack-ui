@@ -179,6 +179,7 @@ Always check `@gpustack/core-ui` first. Frequently reused:
 
 - **Drawer/Modal open/close**: `useBodyScroll`.
 - **Form drawer / footer**: `FormDrawer`, `ModalFooter`.
+- **Form _modal_**: no shared wrapper yet — `FormDrawer` has 34 consumers, its modal sibling was never written, so a page that wants a dialog instead of a drawer hand-rolls `Modal` + `ModalFooter` + `useSubmitLock`. Two do today (`src/pages/gpu-service/templates/components/edit-yaml-modal`, `src/pages/profile/components/modify-password-modal`) and they host different content, which is why there is no abstraction yet. **At the third, extract `FormModal` into core-ui and give it `FormDrawer`'s exact props**, so switching a page between drawer and dialog is one import.
 - **Delete confirmation**: `DeleteModal`.
 - **Search + bulk actions bar**: `FilterBar`.
 - **Form fields**: `BaseSelect`, `Input` (labeled).

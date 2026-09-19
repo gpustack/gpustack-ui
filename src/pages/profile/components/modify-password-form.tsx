@@ -1,130 +1,109 @@
 import { PasswordReg } from '@/config';
-import { INPUT_WIDTH } from '@/constants';
-import { updatePassword } from '@/pages/login/apis';
-import { Input as CInput, FormButtons, useSubmitLock } from '@gpustack/core-ui';
+import { Input as CInput } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Form, message } from 'antd';
-import React from 'react';
-
-interface FormData {
-  new_password: string;
-  current_password: string;
-  confirm_password?: string;
-}
+import { Form } from 'antd';
+import { forwardRef, useImperativeHandle } from 'react';
+import { FormData } from '../config/types';
 
 interface ModifyPasswordFormProps {
-  onCancel: () => void;
-  onSuccess?: () => void;
+  onFinish: (values: FormData) => void;
+  onFinishFailed?: () => void;
 }
 
-const ModifyPasswordForm: React.FC<ModifyPasswordFormProps> = ({
-  onCancel,
-  onSuccess
-}) => {
-  const [form] = Form.useForm();
-  const intl = useIntl();
-  const { guard, run, release } = useSubmitLock();
+/**
+ * Fields only. The submit lock, the request and the buttons belong to the modal
+ * that hosts it (modify-password-modal), the same split every other form in the
+ * product uses — the host owns the footer, so the form must not draw one.
+ */
+const ModifyPasswordForm = forwardRef<any, ModifyPasswordFormProps>(
+  ({ onFinish, onFinishFailed }, ref) => {
+    const [form] = Form.useForm();
+    const intl = useIntl();
 
-  const handleSubmit = () => {
-    guard(() => form.submit());
-  };
+    useImperativeHandle(ref, () => form, [form]);
 
-  const onFinish = async (values: FormData) => {
-    await run(async () => {
-      await updatePassword({
-        new_password: values.new_password,
-        current_password: values.current_password
-      });
-      message.success(intl.formatMessage({ id: 'common.message.success' }));
-      onSuccess?.();
-    });
-  };
-
-  return (
-    <Form
-      name="modifyPasswordForm"
-      form={form}
-      onFinish={onFinish}
-      onFinishFailed={release}
-      preserve={false}
-    >
-      <Form.Item<FormData>
-        name="current_password"
-        rules={[
-          {
-            required: true,
-            message: intl.formatMessage(
-              { id: 'common.form.rule.input' },
-              {
-                name: intl.formatMessage({
-                  id: 'users.form.currentpassword'
-                })
-              }
-            )
-          }
-        ]}
+    return (
+      <Form
+        name="modifyPasswordForm"
+        form={form}
+        onFinish={onFinish}
+        onFinishFailed={onFinishFailed}
+        preserve={false}
       >
-        <CInput.Password
-          autoComplete="current-password"
-          label={intl.formatMessage({ id: 'users.form.currentpassword' })}
-          required
-          style={{ width: INPUT_WIDTH.default }}
-        />
-      </Form.Item>
-      <Form.Item<FormData>
-        name="new_password"
-        rules={[
-          {
-            required: true,
-            pattern: PasswordReg,
-            message: intl.formatMessage({
-              id: 'users.form.rule.password'
-            })
-          }
-        ]}
-      >
-        <CInput.Password
-          autoComplete="new-password"
-          label={intl.formatMessage({ id: 'users.form.newpassword' })}
-          required
-          style={{ width: INPUT_WIDTH.default }}
-        />
-      </Form.Item>
-      <Form.Item
-        name="confirm_password"
-        dependencies={['new_password']}
-        rules={[
-          {
-            required: true,
-            message: intl.formatMessage({
-              id: 'users.password.confirm.empty'
-            })
-          },
-          ({ getFieldValue }) => ({
-            validator(_, value) {
-              if (!value || getFieldValue('new_password') === value) {
-                return Promise.resolve();
-              }
-              return Promise.reject(
-                new Error(
-                  intl.formatMessage({ id: 'users.password.confirm.error' })
-                )
-              );
+        <Form.Item<FormData>
+          name="current_password"
+          rules={[
+            {
+              required: true,
+              message: intl.formatMessage(
+                { id: 'common.form.rule.input' },
+                {
+                  name: intl.formatMessage({
+                    id: 'users.form.currentpassword'
+                  })
+                }
+              )
             }
-          })
-        ]}
-      >
-        <CInput.Password
-          required
-          autoComplete="new-password"
-          style={{ width: INPUT_WIDTH.default }}
-          label={intl.formatMessage({ id: 'users.password.confirm' })}
-        />
-      </Form.Item>
-      <FormButtons htmlType="submit" onCancel={onCancel} showCancel />
-    </Form>
-  );
-};
+          ]}
+        >
+          <CInput.Password
+            autoComplete="current-password"
+            label={intl.formatMessage({ id: 'users.form.currentpassword' })}
+            required
+          />
+        </Form.Item>
+        <Form.Item<FormData>
+          name="new_password"
+          rules={[
+            {
+              required: true,
+              pattern: PasswordReg,
+              message: intl.formatMessage({
+                id: 'users.form.rule.password'
+              })
+            }
+          ]}
+        >
+          <CInput.Password
+            autoComplete="new-password"
+            label={intl.formatMessage({ id: 'users.form.newpassword' })}
+            required
+          />
+        </Form.Item>
+        <Form.Item
+          name="confirm_password"
+          dependencies={['new_password']}
+          rules={[
+            {
+              required: true,
+              message: intl.formatMessage({
+                id: 'users.password.confirm.empty'
+              })
+            },
+            ({ getFieldValue }) => ({
+              validator(_, value) {
+                if (!value || getFieldValue('new_password') === value) {
+                  return Promise.resolve();
+                }
+                return Promise.reject(
+                  new Error(
+                    intl.formatMessage({ id: 'users.password.confirm.error' })
+                  )
+                );
+              }
+            })
+          ]}
+        >
+          <CInput.Password
+            required
+            autoComplete="new-password"
+            label={intl.formatMessage({ id: 'users.password.confirm' })}
+          />
+        </Form.Item>
+      </Form>
+    );
+  }
+);
 
 ModifyPasswordForm.displayName = 'ModifyPasswordForm';
 

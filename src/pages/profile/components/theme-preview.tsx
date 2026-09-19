@@ -3,18 +3,34 @@ import React from 'react';
 
 export type PreviewMode = 'light' | 'realDark' | 'auto';
 
+/**
+ * A symbol of each theme, not a screenshot of it — an accurate light preview is
+ * unusable, because the real light theme's own surfaces (`#fdfdfd` container on
+ * `#f4f5f6` layout) sit 1.03:1 apart and render as a blank rectangle. So the
+ * light side's internal contrast is deliberately exaggerated; what IS taken
+ * from the themes is their neutral cast and two real values — `#d3d8de` and
+ * `#3a3a3a` are each theme's `colorBorder`, `#1e1e1e` dark's
+ * `colorBgContainer`.
+ *
+ * The previous palette was a navy invention (`#0f1729`…) matching neither
+ * theme, and it left the three tiles wildly unequal for three peer options:
+ * measured against the page, every layer of the light tile fell in 1.02–1.43
+ * (no shape at all, just its border) while the dark tile ran 9.5–17.6. Fixing
+ * that is mostly about giving the LIGHT tile ink — a dark swatch on a light
+ * page is high-contrast by nature and should not be flattened into grey.
+ */
 const PALETTE = {
   light: {
     surface: '#ffffff',
-    bar: '#e7ebf2',
-    block: '#f1f4f9',
-    accent: '#cdd7e8'
+    bar: '#d3d8de',
+    block: '#eef0f3',
+    accent: '#b9c0ca'
   },
   dark: {
-    surface: '#0f1729',
-    bar: '#1d2740',
-    block: '#27324d',
-    accent: '#39445f'
+    surface: '#1e1e1e',
+    bar: '#3a3a3a',
+    block: '#2b2b2b',
+    accent: '#4a4a4a'
   }
 };
 

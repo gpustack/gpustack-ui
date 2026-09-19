@@ -264,8 +264,6 @@ export default {
   'common.appearance.description':
     'Customize how the interface looks on your device.',
   'common.security': 'Security',
-  'common.security.description':
-    'Manage the password used to sign in to your account.',
   'common.page.wentwrong': 'Something went wrong.',
   'common.page.refresh.tips':
     'The page may need to be updated. Try refreshing it!',

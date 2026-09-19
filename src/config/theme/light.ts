@@ -7,6 +7,14 @@ export default {
     Layout: {
       headerHeight: 48
     },
+    // One value for the modal role. `--border-radius-modal: 12px` (global.less)
+    // has named it since the beginning, but only DeleteModal and the login card
+    // read it — the other ~55 modals fell back to the global borderRadiusLG of
+    // 6. Setting it in the component scope makes the token the single source
+    // instead of a label on 7% of the cases.
+    Modal: {
+      borderRadiusLG: 12
+    },
     Input: {
       inputFontSize: 14,
       inputFontSizeLG: 14

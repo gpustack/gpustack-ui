@@ -1,6 +1,13 @@
 import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
+import sortVersions from '@/utils/sort-versions';
 import _ from 'lodash';
-import { CacheProviderComponent, CacheProviderField } from '../config/types';
+import { CPU_BACKEND, matrixServesFamily } from '../config';
+import {
+  CacheProviderComponent,
+  CacheProviderField,
+  CacheProviderItem,
+  CacheProviderVersionConfig
+} from '../config/types';
 
 export const GiB = 1024 * 1024 * 1024;
 
@@ -130,4 +137,74 @@ export const pickDefaultWorker = (workers: WorkerListItem[]) => {
     }
   });
   return best ?? workers[0];
+};
+
+// Every accelerator this cluster's workers present, plus "cpu" for any worker
+// that has none — the keys a version's support matrix is read against,
+// spelled as the matrix spells them.
+export const clusterFrameworksOf = (workers: WorkerListItem[]) => {
+  const frameworks = new Set<string>();
+  workers.forEach((worker) => {
+    const devices = worker.status?.gpu_devices || [];
+    if (!devices.length) {
+      frameworks.add(CPU_BACKEND);
+      return;
+    }
+    devices.forEach((device) => device.type && frameworks.add(device.type));
+  });
+  return frameworks;
+};
+
+// Whether any worker here could start this version. runtime_images is the
+// support matrix; a version declaring none has one build for everything, and
+// the plain image answers for a worker with no accelerator where the matrix
+// has no "cpu" entry.
+//
+// No frameworks means the workers have not arrived, which is not the same as
+// a cluster that can run nothing: with nothing to judge against, every version
+// stands, and the provider's own default holds until they do.
+export const versionRunsHere = (
+  version: CacheProviderVersionConfig | undefined,
+  frameworks: Set<string>
+) => {
+  if (!version) {
+    return false;
+  }
+  const matrix = version.runtime_images || {};
+  if (!Object.keys(matrix).length || !frameworks.size) {
+    return true;
+  }
+  return [...frameworks].some(
+    (framework) =>
+      matrixServesFamily(matrix, framework) ||
+      (framework === CPU_BACKEND && Boolean(version.image))
+  );
+};
+
+// The version a provider opens on. Its own default first, and the newest one
+// that runs here when that default does not: a release line read off the
+// runner images defaults to its newest package version, which an accelerator
+// the newest images skip has none of. Opening on it would put the form on an
+// entry the user has to discover is unusable and correct by hand.
+export const pickInitialVersion = (
+  provider: CacheProviderItem | undefined,
+  workers: WorkerListItem[]
+) => {
+  const versions = provider?.versions || {};
+  // With no declared release line to fall back to, the service runs its own
+  // image under the reserved "custom" version.
+  if (!Object.keys(versions).length) {
+    return provider?.custom_version ? 'custom' : undefined;
+  }
+  const frameworks = clusterFrameworksOf(workers);
+  const declared = provider?.default_version;
+  if (declared && versionRunsHere(versions[declared], frameworks)) {
+    return declared;
+  }
+  const runnable = Object.keys(versions).filter((version) =>
+    versionRunsHere(versions[version], frameworks)
+  );
+  // Ascending, so the last is the newest — and a value semver cannot read
+  // sorts before every one it can, which keeps it from being taken for one.
+  return runnable.sort(sortVersions).at(-1) ?? declared;
 };

@@ -35,6 +35,8 @@ export default {
   'kvCache.form.env.componentTips': 'Hizmetin her bileşenine uygulanır',
   'kvCache.check.unsupportedAccel':
     '{total} hedef işçi düğümden {count} tanesi, bu sürümde imajı bulunmayan hızlandırıcılar ({backends}) kullanıyor; oradaki örnekler başlatılamayacak',
+  'kvCache.check.noCpuImage':
+    '{count} of {total} target workers have no accelerator, and this version has no image that runs without one; instances there will fail to start',
   'kvCache.form.ramSize.exceedsTotal':
     '{worker} işçi düğümünün bellek kapasitesini ({total} GiB) aşıyor.',
   'kvCache.form.ramSize.exceedsFree':

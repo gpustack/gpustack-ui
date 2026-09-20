@@ -1,7 +1,7 @@
 import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
 import { useIntl } from '@umijs/max';
 import { useEffect } from 'react';
-import { profileRamGib } from '../config';
+import { CPU_BACKEND, matrixServesFamily, profileRamGib } from '../config';
 import { CacheProviderItem } from '../config/types';
 import {
   GiB,
@@ -135,35 +135,68 @@ export const evaluatePlacement = (
         }
       : hidden;
   }
-  // a worker whose accelerator has no runtime image cannot run the
-  // cache server (the worker fails such instances fast with the same
-  // reason); accelerator-less workers run the plain image CPU-only
+  // A worker whose accelerator the version has no image for cannot run the
+  // cache server — the worker refuses such an instance at start with this
+  // same reason, and saying it here is what keeps that off the instance.
+  //
+  // Mirrors the rule the worker applies, including for a worker with no
+  // accelerator: it asks under the CPU key like any other node, and the
+  // plain image answers where the matrix has none — for that node and for
+  // nothing else.
   const versionConfig =
     providerVersion && providerVersion !== 'custom'
       ? provider?.versions?.[providerVersion]
       : undefined;
   const runtimeImages = versionConfig?.runtime_images || {};
+  // A worker with no device asks under the CPU key; one whose device has not
+  // reported its family yet says nothing, and is left out of the judgement
+  // rather than read as having none — it has an accelerator, and taking it
+  // for a CPU node would pass it on the plain image the matrix has no build
+  // of for whatever it turns out to be.
   const acceleratorOf = (worker: WorkerListItem) =>
-    worker.status?.gpu_devices?.[0]?.type;
+    worker.status?.gpu_devices?.length
+      ? worker.status.gpu_devices[0]?.type
+      : CPU_BACKEND;
   const unsupported = Object.keys(runtimeImages).length
     ? targets.filter((worker) => {
-        const backend = acceleratorOf(worker);
-        return Boolean(backend) && !(backend! in runtimeImages);
+        const family = acceleratorOf(worker);
+        if (!family || matrixServesFamily(runtimeImages, family)) {
+          return false;
+        }
+        return !(family === CPU_BACKEND && Boolean(versionConfig?.image));
       })
     : [];
-  if (unsupported.length) {
+  // Two ways to be unserved, and they read as different sentences: a worker
+  // whose accelerator this version has no build for, and one with no
+  // accelerator where it has nothing to run without a device. A cluster
+  // holding both is reported on the accelerators — the answer there is a
+  // version or a selector, while the CPU side of it follows.
+  const unsupportedAccel = unsupported.filter(
+    (worker) => acceleratorOf(worker) !== CPU_BACKEND
+  );
+  if (unsupportedAccel.length) {
     return {
       show: true,
       type: 'warning',
       message: intl.formatMessage(
         { id: 'kvCache.check.unsupportedAccel' },
         {
-          count: unsupported.length,
+          count: unsupportedAccel.length,
           total: targets.length,
-          backends: Array.from(new Set(unsupported.map(acceleratorOf))).join(
-            ', '
-          )
+          backends: Array.from(
+            new Set(unsupportedAccel.map(acceleratorOf))
+          ).join(', ')
         }
+      )
+    };
+  }
+  if (unsupported.length) {
+    return {
+      show: true,
+      type: 'warning',
+      message: intl.formatMessage(
+        { id: 'kvCache.check.noCpuImage' },
+        { count: unsupported.length, total: targets.length }
       )
     };
   }

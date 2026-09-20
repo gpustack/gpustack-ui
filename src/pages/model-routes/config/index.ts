@@ -50,3 +50,27 @@ export const rowActionList = [
 ];
 
 export const genericReferLink = `https://docs.gpustack.ai/latest/user-guide/model-deployment-management/#enable-generic-proxy`;
+
+// Form-level LB mode: "weighted" = every target carries weight>0 (traffic
+// splitting); "policy" = all weights 0, targets picked by the capability
+// plugins — or round-robin, the gateway's own default, when none is enabled.
+export const LB_FORM_MODE = {
+  weighted: 'weighted',
+  policy: 'policy'
+} as const;
+
+// sessionKey source types; each chain entry has exactly one of them.
+export const SESSION_KEY_SOURCE = {
+  header: 'header',
+  bodyKey: 'bodyKey'
+} as const;
+
+// List rendering for the server-derived `lb_mode` (plain text — the column
+// shows no status color).
+export const LbModeStatusMap: Record<string, { textId: string }> = {
+  weighted: { textId: 'routes.lb.mode.weighted' },
+  // The list badge says "Policy" to mirror the form's "Policy Routing"
+  // choice — scoring is what that intent lands on when plugins are enabled.
+  scoring: { textId: 'routes.lb.mode.policy' },
+  invalid: { textId: 'routes.lb.mode.invalid' }
+};

@@ -107,18 +107,21 @@ const RouteItem: React.FC<TargetItemProps> = ({
   };
 
   const sourceNode = renderProviderSource();
-  const weightNode =
-    data.fallback_status_codes && data.fallback_status_codes?.length > 0 ? (
-      <>
-        {data.weight > 0 && <span style={{ marginInline: 8 }}>/</span>}
-        <span>{intl.formatMessage({ id: 'routes.table.label.fallback' })}</span>
-      </>
-    ) : (
-      <AutoTooltip ghost>
-        {intl.formatMessage({ id: 'routes.form.target.weight' })}:{' '}
-        {data.weight || 0}
-      </AutoTooltip>
-    );
+  // Weight 0 is what round-robin and policy mode write to every target, so it
+  // is the absence of a weight rather than a value — nothing to show. The cell
+  // carries whatever the target actually is: a weight, the fallback role, or
+  // both (`Weight: 70 / Fallback`).
+  const weightParts = [
+    (data.weight ?? 0) > 0
+      ? `${intl.formatMessage({ id: 'routes.form.target.weight' })}: ${data.weight}`
+      : null,
+    data.fallback_status_codes?.length
+      ? intl.formatMessage({ id: 'routes.table.label.fallback' })
+      : null
+  ].filter(Boolean);
+  const weightNode = weightParts.length ? (
+    <AutoTooltip ghost>{weightParts.join(' / ')}</AutoTooltip>
+  ) : null;
   const statusNode = (
     <StatusTag
       statusValue={{

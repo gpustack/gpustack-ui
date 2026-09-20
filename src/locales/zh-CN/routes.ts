@@ -6,8 +6,12 @@ export default {
   'routes.table.setAsFallback': 'Fallback',
   'routes.form.target.title': '路由目标',
   'routes.form.target.add': '添加路由目标',
+  'routes.form.target.advanced': '高级',
   'routes.form.target.fallback': 'Fallback 路由目标',
   'routes.form.target.weight': '权重',
+  'routes.form.target.moveUp': '上移',
+  'routes.form.target.moveDown': '下移',
+  'routes.form.target.remove': '移除',
   'routes.form.target.model': '模型',
   'routes.form.metadata.title': '元数据',
   'routes.form.metadata.add': '添加元数据',
@@ -23,5 +27,35 @@ export default {
   'routes.form.metadata.icons': '图标',
   'routes.form.metadata.uploadIcon': '上传图标',
   'routes.form.fallback.warning': 'Fallback 路由目标的更改将在一分钟后生效。',
-  'routes.form.weight.tips': '目标流量权重。'
+  'routes.form.weight.tips': '目标流量权重。',
+  'routes.lb.routeBy': '路由方式',
+  'routes.table.lbMode': '路由方式',
+  'routes.lb.mode.weighted': '目标权重',
+  'routes.lb.mode.policy': '策略',
+  'routes.lb.form.mode.weighted': '目标权重',
+  'routes.lb.form.mode.policy': '策略',
+  'routes.lb.form.mode.weighted.tips':
+    '按权重在目标间分流,每个目标的权重必须大于 0。',
+  'routes.lb.form.mode.policy.tips':
+    '由启用的策略插件选择目标(策略);未启用任何插件时按轮转处理。',
+  'routes.lb.mode.invalid': '无效',
+  'routes.lb.mode.invalid.tooltip':
+    '存在混配的 weight,该路由不可用 —— 网关拒绝为其提供服务。请将所有路由目标的 weight 全部大于 0,或全部为 0。',
+  'routes.lb.sessionAffinity': '会话粘性',
+  'routes.lb.sessionAffinity.tips':
+    '将同一会话的请求路由到相同目标,按有序的会话键链(Header 或 Body 字段)识别会话。',
+  'routes.lb.sessionKeys': '会话键链(有序,首个命中生效)',
+  'routes.lb.sessionKeys.source.header': 'Header',
+  'routes.lb.sessionKeys.source.bodyKey': 'Body 字段',
+  'routes.lb.sessionKeys.keyPlaceholder': '键名,如 session-id',
+  'routes.lb.sessionKeys.add': '添加会话键',
+  'routes.lb.sessionKeys.required': '启用会话粘性时至少配置一个会话键',
+  'routes.lb.sessionKeys.keyRequired': '请输入键名',
+  'routes.lb.leastLoad': '最小在途请求',
+  'routes.lb.leastLoad.tips':
+    '按各目标的在途请求(inflight)数量打分,优先将请求路由到在途请求最少的目标。',
+  'routes.lb.influence': '权重',
+  'routes.lb.weight.mixed':
+    '分流模式要求所有路由目标都设置大于 0 的权重;如需启用策略路由,请切换负载均衡模式。',
+  'routes.form.target.maxRunningRequests': '每实例最大在途请求数'
 };

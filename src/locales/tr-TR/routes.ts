@@ -6,8 +6,12 @@ export default {
   'routes.table.setAsFallback': 'Yedek Olarak Ayarla',
   'routes.form.target.title': 'Yönlendirme Hedefleri',
   'routes.form.target.add': 'Yönlendirme Hedefi Ekle',
+  'routes.form.target.advanced': 'Gelişmiş',
   'routes.form.target.fallback': 'Yedek Yönlendirme Hedefi',
   'routes.form.target.weight': 'Ağırlık',
+  'routes.form.target.moveUp': 'Yukarı taşı',
+  'routes.form.target.moveDown': 'Aşağı taşı',
+  'routes.form.target.remove': 'Kaldır',
   'routes.form.target.model': 'Model',
   'routes.form.metadata.title': 'Meta Veriler',
   'routes.form.metadata.add': 'Meta Veri Ekle',
@@ -24,5 +28,36 @@ export default {
   'routes.form.metadata.uploadIcon': 'Simge Yükle',
   'routes.form.fallback.warning':
     'Yedek yönlendirme hedefi değişiklikleri bir dakika sonra geçerli olur.',
-  'routes.form.weight.tips': 'Hedef trafik ağırlığı.'
+  'routes.form.weight.tips': 'Hedef trafik ağırlığı.',
+  'routes.lb.routeBy': 'Yönlendirme Şekli',
+  'routes.table.lbMode': 'Yönlendirme Şekli',
+  'routes.lb.mode.weighted': 'Hedef Ağırlığı',
+  'routes.lb.mode.policy': 'Politika',
+  'routes.lb.form.mode.weighted': 'Hedef Ağırlığı',
+  'routes.lb.form.mode.policy': 'Politika',
+  'routes.lb.form.mode.weighted.tips':
+    'Trafiği ağırlıklara göre hedefler arasında bölün; her hedefin ağırlığı 0 dan büyük olmalıdır.',
+  'routes.lb.form.mode.policy.tips':
+    'Hedefleri etkin politika eklentileri seçer (Politika); hiçbir eklenti etkin değilse round robin kullanılır.',
+  'routes.lb.mode.invalid': 'Geçersiz',
+  'routes.lb.mode.invalid.tooltip':
+    'Karışık ağırlıklar algılandı: bu rota kullanılamaz — ağ geçidi ona hizmet vermeyi reddediyor. Tüm hedef ağırlıklarını >0 ya da tümünü 0 yapın.',
+  'routes.lb.sessionAffinity': 'Oturum Benzeşimi',
+  'routes.lb.sessionAffinity.tips':
+    'Aynı oturumun isteklerini aynı hedefe yönlendirir; oturumlar sıralı bir anahtar zinciri (header veya body anahtarı) ile tanımlanır.',
+  'routes.lb.sessionKeys': 'Oturum anahtarları (sıralı, ilk eşleşme)',
+  'routes.lb.sessionKeys.source.header': 'Header',
+  'routes.lb.sessionKeys.source.bodyKey': 'Body anahtarı',
+  'routes.lb.sessionKeys.keyPlaceholder': 'Anahtar adı, örn. session-id',
+  'routes.lb.sessionKeys.add': 'Oturum anahtarı ekle',
+  'routes.lb.sessionKeys.required':
+    'Oturum benzeşimi etkinleştirildiğinde en az bir anahtar gerekli',
+  'routes.lb.sessionKeys.keyRequired': 'Anahtar adı girin',
+  'routes.lb.leastLoad': 'En Az Bekleyen İstek',
+  'routes.lb.leastLoad.tips':
+    'Hedefleri uçuştaki istek sayısına göre puanlar ve en az bekleyen isteğe sahip olanı tercih eder.',
+  'routes.lb.influence': 'Ağırlık',
+  'routes.lb.weight.mixed':
+    'Ağırlıklı modda her hedefin ağırlığı 0 dan büyük olmalıdır. Politika yönlendirme için LB modunu değiştirin.',
+  'routes.form.target.maxRunningRequests': 'Örnek Başına Maks. Bekleyen İstek'
 };

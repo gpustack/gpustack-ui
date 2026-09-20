@@ -848,12 +848,9 @@ body {
   flex-grow: unset;
 }
 
-.cascader-popup-wrapper {
-  width: 100%;
-  border: 1px solid var(--ant-color-border);
-  inset: 53px auto auto 0 !important;
-  border-radius: 0 0 var(--border-radius-base) var(--border-radius-base);
-  border-top: none;
+// Menu chrome shared by both placements of the model/GPU cascader dropdown.
+// Border is left to the caller: the pinned variant drops its top edge.
+.cascader-popup-menus() {
   .ant-cascader-menus {
     align-items: stretch;
   }
@@ -905,6 +902,29 @@ body {
       padding-right: 11px;
     }
   }
+}
+
+// Pinned placement: the popup is rendered into the field wrapper
+// (`getPopupContainer={(node) => node.parentNode}`), so it is hard-anchored to
+// the bottom edge of the 53px-tall labeled input and stretched to its width.
+.cascader-popup-wrapper {
+  width: 100%;
+  border: 1px solid var(--ant-color-border);
+  inset: 53px auto auto 0 !important;
+  border-radius: 0 0 var(--border-radius-base) var(--border-radius-base);
+  border-top: none;
+  .cascader-popup-menus();
+}
+
+// Floating placement: for a field inside a container that would clip a popup
+// parented to it (e.g. CollapseContainer animates height with overflow:
+// hidden), the popup goes to `document.body` and antd positions it. No inset
+// pin here — that is what would drop a body-rendered popup in the top-left
+// corner of the viewport.
+.cascader-popup-floating {
+  border: 1px solid var(--ant-color-border);
+  border-radius: var(--border-radius-base);
+  .cascader-popup-menus();
 }
 
 .ant-tooltip {

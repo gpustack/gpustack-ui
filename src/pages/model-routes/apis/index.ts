@@ -16,6 +16,12 @@ export async function queryModelRoutes(
   });
 }
 
+export async function queryModelRouteDetail(id: number) {
+  return request<RouteItem>(`${MODEL_ROUTES}/${id}`, {
+    method: 'GET'
+  });
+}
+
 export async function createModelRoute(params: { data: FormData }) {
   return request(`${MODEL_ROUTES}`, {
     method: 'POST',

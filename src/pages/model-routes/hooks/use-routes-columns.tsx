@@ -11,9 +11,10 @@ import {
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { MenuProps } from 'antd';
+import { MenuProps, Tooltip } from 'antd';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
+import { LbModeStatusMap } from '../config';
 import { RouteItem } from '../config/types';
 import type { ModelRouteConfigAction } from '../plugin';
 
@@ -61,7 +62,7 @@ interface ColumnsHookProps {
 // would exceed what these reductions can absorb fall back to their
 // declared widths and may visibly wrap — that's a plugin-author
 // concern, not a host one.
-const TARGETS_PREFERRED_SPAN = 10;
+const TARGETS_PREFERRED_SPAN = 8;
 const TARGETS_MIN_SPAN = 4;
 const CREATE_TIME_PREFERRED_SPAN = 5;
 const CREATE_TIME_MIN_SPAN = 2;
@@ -226,6 +227,44 @@ const useAccessColumns = ({
             {record.ready_targets} / {value}
           </span>
         )
+      },
+      {
+        title: intl.formatMessage({ id: 'routes.table.lbMode' }),
+        dataIndex: 'lb_mode',
+        span: 3,
+        // Width floor sized for the longest localized badge text ("Weighted
+        // routing") — the grid needs a floor to know when to start scrolling.
+        minWidth: 110,
+        render: (value: string, record: RouteItem) => {
+          // The watch stream's UPDATE payload does NOT lift `meta.lb_mode`
+          // to the row's top level the way the list endpoint does (verified
+          // against the API), and the watch merge replaces rows wholesale —
+          // so a streamed row arrives with a null top-level `lb_mode` while
+          // the value sits in `meta`. Fall back to `meta.lb_mode` there.
+          const lbMode = record.lb_mode ?? record.meta?.lb_mode;
+          if (!lbMode) {
+            return null;
+          }
+          const statusValue = LbModeStatusMap[lbMode];
+          if (!statusValue) {
+            return null;
+          }
+          const text = intl.formatMessage({ id: statusValue.textId });
+          // A plain text column — not a status badge. Only "invalid" needs to
+          // explain itself; the healthy modes are self-describing.
+          if (lbMode === 'invalid') {
+            return (
+              <Tooltip
+                title={intl.formatMessage({
+                  id: 'routes.lb.mode.invalid.tooltip'
+                })}
+              >
+                <span>{text}</span>
+              </Tooltip>
+            );
+          }
+          return text;
+        }
       },
       ...beforeTime,
       {

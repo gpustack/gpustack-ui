@@ -126,11 +126,13 @@ export default (props: any) => {
   const { clientRoutes } = useAppData();
   const requestResourceRef = useRef<boolean>(false);
 
-  const { fetchResourceData, NoResourceModal } = useAddResource({
-    onCreated() {
-      requestResourceRef.current = false;
+  const { fetchResourceData, NoResourceModal, canAddResource } = useAddResource(
+    {
+      onCreated() {
+        requestResourceRef.current = false;
+      }
     }
-  });
+  );
 
   const initialInfo = (useModel && useModel('@@initialState')) || {
     initialState: undefined,
@@ -265,9 +267,12 @@ export default (props: any) => {
     const { location } = history;
     const { pathname } = location;
 
+    // `canAddResource` is the hook's own access predicate, not
+    // `currentUser.is_admin` — the raw field disagrees with the
+    // routes the prompt sends you to (see use-add-resource).
     if (
       !CHECK_RESOURCE_PATH.includes(pathname) &&
-      initialState?.currentUser?.is_admin &&
+      canAddResource &&
       !requestResourceRef.current &&
       !userSettings.hideAddResourceModal
     ) {

@@ -1,5 +1,55 @@
 export default {
   'models.button.deploy': 'モデルをデプロイ',
+  'models.button.exportYaml': 'Export YAML',
+  'models.button.importYaml': 'Import YAML',
+  'models.form.yamlFile': 'YAML ファイル',
+  'models.import.checking': '検証中…',
+  'models.import.hint.nothing': 'インポートできるデプロイメントがありません',
+  'models.import.pickFile': 'ファイルを選択',
+  'models.import.empty.title': 'YAML ファイルをインポート',
+  'models.import.empty.description':
+    'デプロイメントを記述したファイルを選択してください。インポート前に比較し、書き込まれる内容を差分ですべて確認できます。',
+  'models.import.cluster.follow': 'ファイルに従う',
+  'models.import.loaded':
+    '{count} 件のデプロイメント · {cluster} クラスターの現状と一致',
+  'models.import.loaded.hint':
+    'このドキュメントは {cluster} クラスターの現状と一致しているため、書き込む内容はありません。',
+  'models.import.counts':
+    '{count} 件のデプロイメント · {cluster} へインポート · {changes} 件の変更',
+  'models.import.parsed': '{count} 件のデプロイメント',
+  'models.import.parsed.invalid': '{count} 件はインポートできません',
+  'models.import.fieldsDoc': 'フィールド説明',
+  'models.import.nav.invalid': 'インポート不可',
+  'models.import.scope.all': '全 {count} 件のデプロイメント',
+  'models.import.scope.whole': 'ドキュメント全体',
+  'models.import.scope.wholeShort': '全体',
+  'models.import.pane.current': 'クラスターの現状 · 読み取り専用',
+  'models.import.pane.draft': 'インポート内容 · 編集可能',
+  'models.import.pane.absent': '同名のデプロイメントはありません',
+  'models.import.pane.none': 'クラスターに一致するデプロイメントはありません',
+  'models.import.pane.allNew':
+    'すべて新規のデプロイメントです。置き換えられるものはありません',
+  'models.import.pane.waiting': '比較する内容はまだありません',
+  'models.import.entry': '{index} 番目のデプロイメント',
+  'models.import.entry.invalid':
+    '{index} 番目のデプロイメントはインポートできません',
+  'models.import.summary':
+    '新規作成 {create} 件、更新 {update} 件、変更なし {unchanged} 件。',
+  'models.import.summary.replaces':
+    '更新はファイルの内容で全体が置き換えられます。',
+  'models.import.action.create': '新規作成',
+  'models.import.action.update': '更新',
+  'models.import.action.unchanged': '変更なし',
+  'models.import.changes': '{count} 件の変更',
+  'models.import.blocked':
+    '{count} 件のデプロイメントをインポートできません。修正してから送信してください。',
+  'models.import.overwrite.title': 'インポートの確認',
+  'models.import.overwrite.confirm':
+    '以下の {count} 件の既存デプロイメントがファイルの内容で全体的に置き換えられます。ファイルに記載のない設定は既定値に戻ります。',
+  'models.import.overwrite.rest':
+    'さらに {create} 件を新規作成し、{unchanged} 件は変更されません。',
+  'models.import.invalid':
+    'このファイルはインポートできません。以下の問題を修正すると、再度検証されます。',
   'models.title': 'モデル',
   'models.title.edit': 'モデルを編集',
   'models.title.duplicate': 'モデルをクローン',

@@ -29,3 +29,23 @@ export const filenameFromDisposition = (
   const plain = disposition.match(/filename\s*=\s*(?:"([^"]*)"|([^;]+))/i);
   return (plain?.[1] ?? plain?.[2] ?? '').trim();
 };
+
+/**
+ * The server's message inside a failed download's response.
+ *
+ * A `responseType: 'blob'` request gets its error body as a Blob too, which the
+ * global `errorHandler` cannot read — so callers of a download endpoint decode
+ * it themselves. Covers FastAPI's own `{"detail"}` (routes raising Starlette's
+ * HTTPException) as well as gpustack's `{"message"}` / `{"error": {"message"}}`
+ * envelopes.
+ */
+export const readResponseError = async (error: any): Promise<string> => {
+  const body = error?.response?.data;
+  try {
+    const text = body instanceof Blob ? await body.text() : undefined;
+    const payload = text ? JSON.parse(text) : body;
+    return payload?.detail || payload?.error?.message || payload?.message || '';
+  } catch {
+    return '';
+  }
+};

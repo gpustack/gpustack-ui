@@ -30,6 +30,8 @@ export default {
     'Only {count} matching worker(s) have {size} GiB free memory; {replicas} replicas requested',
   'kvCache.check.unsupportedAccel':
     '{count} of {total} target workers use accelerators ({backends}) this version has no image for; instances there will fail to start',
+  'kvCache.check.noCpuImage':
+    '{count} of {total} target workers have no accelerator, and this version has no image that runs without one; instances there will fail to start',
   'kvCache.form.ramSize.exceedsTotal':
     'Exceeds the memory capacity of worker {worker} ({total} GiB).',
   'kvCache.form.ramSize.exceedsFree':

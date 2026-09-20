@@ -11,7 +11,12 @@ import React, {
   useRef,
   useState
 } from 'react';
-import { ProviderSourceColorMap, ProviderSourceLabelMap } from '../config';
+import {
+  CPU_BACKEND,
+  ProviderSourceColorMap,
+  ProviderSourceLabelMap,
+  backendFamily
+} from '../config';
 import { CacheProviderItem } from '../config/types';
 import '../style/provider-catalog.less';
 
@@ -63,9 +68,14 @@ const ProviderCard: React.FC<{
   const frameworks = useMemo(() => {
     const names = new Set<string>();
     Object.values(data.versions || {}).forEach((versionConfig) => {
-      Object.keys(versionConfig.runtime_images || {}).forEach((name) =>
-        names.add(name)
-      );
+      Object.keys(versionConfig.runtime_images || {}).forEach((name) => {
+        // The matrix carries more than accelerator families: the image a
+        // node with no accelerator runs, and one key per SoC generation
+        // where a family builds them apart. The claim is about families.
+        if (backendFamily(name) !== CPU_BACKEND) {
+          names.add(backendFamily(name));
+        }
+      });
     });
     if (!names.size) {
       (data.inference_backend_integrations || []).forEach((integration) =>

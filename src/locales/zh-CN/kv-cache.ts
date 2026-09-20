@@ -27,6 +27,8 @@ export default {
     '仅 {count} 个匹配节点有 {size} GiB 空闲内存,需要 {replicas} 个副本',
   'kvCache.check.unsupportedAccel':
     '{count}/{total} 个目标 Worker 的加速器({backends})不受该版本支持,其上的实例将无法启动',
+  'kvCache.check.noCpuImage':
+    '{count}/{total} 个目标 worker 没有加速卡，而该版本没有可在无加速卡环境运行的镜像，这些节点上的实例将无法启动',
   'kvCache.form.ramSize.exceedsTotal':
     '超过节点 {worker} 的内存上限({total} GiB)。',
   'kvCache.form.ramSize.exceedsFree':

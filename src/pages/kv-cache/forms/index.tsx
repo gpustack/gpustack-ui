@@ -37,12 +37,15 @@ import L2Storages from './l2-storages';
 import { OptionWithIcon } from './styled';
 import {
   buildWorkerLabelOptions,
+  clusterFrameworksOf,
   componentEnabled,
   humanizeFieldName,
   NO_RECREATE_FIELDS,
   pickDefaultWorker,
+  pickInitialVersion,
   resolveFieldValue,
-  stripUnset
+  stripUnset,
+  versionRunsHere
 } from './utils';
 
 export type { ResourceCheckStatus };
@@ -98,6 +101,9 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
   const clusterId = Form.useWatch('cluster_id', form);
   const prevClusterRef = useRef<number | undefined>(undefined);
   const pinnedFields = useRef<Set<string>>(new Set());
+  // set once the user picks a version themselves, which is what stops the
+  // hardware-decided pick below from overriding it
+  const versionPinned = useRef(false);
   const [advancedKeys, setAdvancedKeys] = useState<string[]>([]);
 
   // the declaration the whole form reads from, as a value: it arrives
@@ -164,22 +170,46 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
     handleValuesChange();
   };
 
+  // The support-matrix keys this cluster's workers are read against; the
+  // version list is the only thing that needs them as a set.
+  const clusterFrameworks = useMemo(
+    () => clusterFrameworksOf(workers),
+    [workers]
+  );
+
   const versionOptions = useMemo(() => {
-    const provider = providers.find((item) => item.name === providerName);
-    const options = Object.keys(provider?.versions || {}).map((version) => ({
+    const declared = Object.keys(selectedProvider?.versions || {});
+    // A version no worker here could start is left out rather than listed and
+    // explained: every instance of it would be refused at start, and the
+    // placement check below says why for whatever is picked. Unless none of
+    // them runs here, where the list stays whole — an empty picker states
+    // nothing at all.
+    const runnable = declared.filter((version) =>
+      versionRunsHere(selectedProvider?.versions?.[version], clusterFrameworks)
+    );
+    const listed = runnable.length ? runnable : declared;
+    // What the service already pins stays on the list even where it cannot
+    // run, so opening one does not quietly offer to move it elsewhere.
+    const shown =
+      providerVersion &&
+      declared.includes(providerVersion) &&
+      !listed.includes(providerVersion)
+        ? [...listed, providerVersion]
+        : listed;
+    const options = shown.map((version) => ({
       label: version,
       value: version
     }));
     // managed services may run a user-supplied image under the reserved
     // "custom" version
-    if (provider?.custom_version) {
+    if (selectedProvider?.custom_version) {
       options.push({
         label: intl.formatMessage({ id: 'kvCache.form.version.custom' }),
         value: 'custom'
       });
     }
     return options;
-  }, [providers, providerName, intl]);
+  }, [selectedProvider, providerVersion, clusterFrameworks, intl]);
 
   // a provider whose image is not published declares no release line at
   // all: there is no version to pick, and the service names its image
@@ -188,12 +218,25 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
     return Boolean(Object.keys(selectedProvider?.versions || {}).length);
   }, [selectedProvider]);
 
-  // the provider's pinned default image doubles as a format hint for
-  // the custom image input
+  // one of the provider's own images doubles as a format hint for the
+  // custom image input. A version reading its release line off the runner
+  // images names them per accelerator and carries no plain one, so the
+  // hint comes from whichever the matrix holds.
   const defaultImage = useMemo(() => {
-    return selectedProvider?.default_version
-      ? selectedProvider.versions?.[selectedProvider.default_version]?.image
+    const version = selectedProvider?.default_version
+      ? selectedProvider.versions?.[selectedProvider.default_version]
       : undefined;
+    if (!version) {
+      return undefined;
+    }
+    return (
+      // `||`, not `??`: an empty string is what the matrix fallback is here
+      // for, and `??` would short-circuit on it and leave the hint blank.
+      version.image ||
+      Object.values(version.runtime_images || {})
+        .flatMap((images) => Object.values(images))
+        .at(0)
+    );
   }, [selectedProvider]);
 
   const asHints = (flags?: string[]) =>
@@ -249,16 +292,30 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
     return selectedProvider?.l2_backends || {};
   }, [selectedProvider]);
 
+  // The workers decide the version, and they arrive on their own request —
+  // whichever of the two lands second re-takes it. Only on create, and only
+  // while the user has not picked one themselves.
+  const reseedVersionFor = useMemoizedFn((items: WorkerListItem[]) => {
+    if (action !== PageAction.CREATE || versionPinned.current) {
+      return;
+    }
+    if (form.getFieldValue('provider_version') === 'custom') {
+      return;
+    }
+    const provider = getProvider(form.getFieldValue('provider_name'));
+    form.setFieldValue('provider_version', pickInitialVersion(provider, items));
+  });
+
   // shared by the select's onChange and the create-time default so a
   // provider set either way carries its default version and a clean L2 config
   const applyProviderSelection = (value: string) => {
     const provider = getProvider(value);
-    // with no declared version to fall back to, the service runs its own
-    // image under the reserved "custom" version
+    // a version carried over from the provider just replaced is not a
+    // pick the user made about this one
+    versionPinned.current = false;
     form.setFieldValue(
       'provider_version',
-      provider?.default_version ??
-        (provider?.custom_version ? 'custom' : undefined)
+      pickInitialVersion(provider, workers)
     );
     // config.image only accompanies the reserved "custom" version, and
     // the version just reset to the provider default
@@ -298,6 +355,7 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
   // config.image only accompanies the reserved "custom" version; drop
   // it as soon as another version is picked
   const handleVersionChange = (value: string) => {
+    versionPinned.current = true;
     if (value !== 'custom') {
       form.setFieldValue(['config', 'image'], undefined);
     }
@@ -445,6 +503,10 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
     },
     resetFields: () => {
       pinnedFields.current.clear();
+      // The same concept, reset where that one is: a version the user picked
+      // belongs to the form being discarded, and leaving it set would keep
+      // the hardware-decided pick off for the rest of the session.
+      versionPinned.current = false;
       form.resetFields();
     }
   }));
@@ -538,6 +600,7 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
           return;
         }
         setWorkers(items || []);
+        reseedVersionFor(items || []);
         // nothing to seed where the form offers no Worker select
         if (isPerNode || hasComponents) {
           return;
@@ -551,6 +614,7 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
         // still-current cluster — only the latter clears the list
         if (form.getFieldValue('cluster_id') === clusterId) {
           setWorkers([]);
+          reseedVersionFor([]);
         }
       }
     };
@@ -621,8 +685,24 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
         <Form.Item<FormData>
           name="provider_version"
           hidden={!hasDeclaredVersions}
+          // A declared release line has to be named. The field is empty
+          // only while the cluster's workers are still arriving, and a
+          // submit landing in that window would otherwise store nothing
+          // and leave the server to resolve the provider default — which
+          // is the version this pick exists to move off.
+          rules={
+            hasDeclaredVersions
+              ? [
+                  {
+                    required: true,
+                    message: getRuleMessage('select', 'kvCache.form.version')
+                  }
+                ]
+              : []
+          }
         >
           <SealSelect
+            required={hasDeclaredVersions}
             options={versionOptions}
             onChange={handleVersionChange}
             label={intl.formatMessage({ id: 'kvCache.form.version' })}

@@ -1,4 +1,5 @@
 import PluginExtraFields from '@/components/plugin-extra-fields';
+import sortVersions from '@/utils/sort-versions';
 import {
   AutoTooltip,
   DropdownActions,
@@ -11,8 +12,6 @@ import { useIntl } from '@umijs/max';
 import { Button, Tag } from 'antd';
 import _ from 'lodash';
 import { useMemo } from 'react';
-import semverCoerce from 'semver/functions/coerce';
-import semverGt from 'semver/functions/gt';
 import styled from 'styled-components';
 import {
   backendActions,
@@ -191,18 +190,6 @@ const BackendCard: React.FC<BackendCardProps> = ({
 
   const handleonClickAction = (e: React.MouseEvent) => {
     e.stopPropagation();
-  };
-
-  const sortVersions = (v2: string, v1: string) => {
-    const sv1 = semverCoerce(v1);
-    const sv2 = semverCoerce(v2);
-
-    if (!sv1 && !sv2) return 0;
-    if (!sv1) return 1;
-    if (!sv2) return -1;
-
-    if (semverGt(sv1, sv2)) return -1;
-    return 1;
   };
 
   const renderTag = (item: any) => {

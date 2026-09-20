@@ -10,6 +10,30 @@ import {
   ListItem
 } from './types';
 
+// The support matrix keys the image a node with no accelerator runs under
+// this, beside the accelerator families. It is not one of them, so a claim
+// about which accelerators a provider covers leaves it out.
+export const CPU_BACKEND = 'cpu';
+
+// A family that builds one image per SoC generation keys them
+// "<family>-<variant>" (e.g. "cann-910b"). The family is what a worker
+// reports, and what a claim about coverage is made in.
+export const backendFamily = (key: string) => key.split('-')[0];
+
+// Whether a version's support matrix carries a build for this accelerator
+// family. Any of the family's per-generation builds answers: a worker
+// reports the family, and the generation is the worker's own to resolve —
+// it may still refuse one built for another.
+export const matrixServesFamily = (
+  matrix: Record<string, Record<string, string>>,
+  family: string
+) =>
+  // Both sides through the same reduction: a worker reports the family today,
+  // and the day one reports "cann-910b" this still answers about cann.
+  Object.keys(matrix).some(
+    (key) => backendFamily(key) === backendFamily(family)
+  );
+
 export const ProviderSourceLabelMap: Record<string, string> = {
   built_in: 'kvCache.provider.source.builtin',
   community: 'kvCache.provider.source.community',

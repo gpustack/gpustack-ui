@@ -244,11 +244,21 @@ export default (props: any) => {
 
   const role = initialState?.currentUser?.is_admin ? 'admin' : 'user';
   const [route] = useAccessMarkedRoutes(mapRoutes(newRoutes, role));
-  console.log('route++++++++', route, clientRoutes);
 
+  // `route` MUST stay in the deps. `useAccessMarkedRoutes` re-marks
+  // `unaccessible` whenever the access instance changes, and access is
+  // recomputed on every `initialState` commit — which happens twice on
+  // the SPA-login path (currentUser, then the probe backfill below).
+  // Keying only on `location.pathname` froze `matchedRoute` on the
+  // FIRST marking, so a route that later resolves to unaccessible kept
+  // its stale `unaccessible: false` and `Exception`'s 403 auto-redirect
+  // never fired — leaving the user parked on a page they can't see
+  // (e.g. `/dashboard` in a Personal Org) with no way out but a manual
+  // refresh. The memoized array is referentially stable between access
+  // changes, so this does not recompute per render.
   const matchedRoute = useMemo(
     () => matchRoutes(route?.children || [], location.pathname)?.pop?.()?.route,
-    [location.pathname]
+    [route, location.pathname]
   );
 
   const collapsed = useMemo(() => {

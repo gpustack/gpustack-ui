@@ -179,17 +179,17 @@ export default {
   'clusters.volume.sourceType.configMap': 'ConfigMap',
   'clusters.volume.hostPath.path': 'Ana Bilgisayar Yolu',
   'clusters.volume.hostPath.type': 'Yol Türü',
-  'clusters.volume.hostPath.type.directory': 'Directory',
+  'clusters.volume.hostPath.type.directory': 'Dizin',
   'clusters.volume.hostPath.type.directoryOrCreate': 'Dizin (yoksa oluştur)',
-  'clusters.volume.hostPath.type.file': 'File',
+  'clusters.volume.hostPath.type.file': 'Dosya',
   'clusters.volume.hostPath.type.fileOrCreate': 'Dosya (yoksa oluştur)',
-  'clusters.volume.hostPath.type.socket': 'Socket',
+  'clusters.volume.hostPath.type.socket': 'Soket',
   'clusters.volume.hostPath.type.charDevice': 'Karakter Aygıtı',
   'clusters.volume.hostPath.type.blockDevice': 'Blok Aygıtı',
   'clusters.volume.pvc.claimName': 'PVC Adı',
   'clusters.volume.pvc.readOnly': 'Salt Okunur',
   'clusters.volume.configMap.name': 'ConfigMap Adı',
-  'clusters.volume.configMap.optional': 'Optional',
+  'clusters.volume.configMap.optional': 'İsteğe bağlı',
   'clusters.volume.add': 'Birim Bağlaması Ekle',
   'clusters.systemDefaultContainerRegistry.title':
     'Varsayılan Konteyner Kayıt Defteri',
@@ -200,9 +200,9 @@ export default {
   'clusters.k8sOptions.title': 'Kubernetes Dağıtım Seçenekleri',
   'clusters.imageCredentials.title': 'İmaj Kimlik Bilgileri',
   'clusters.imageCredentials.add': 'Kimlik Bilgisi Ekle',
-  'clusters.imageCredentials.registry': 'Registry',
-  'clusters.imageCredentials.username': 'Username',
-  'clusters.imageCredentials.password': 'Password',
+  'clusters.imageCredentials.registry': 'Kayıt Defteri',
+  'clusters.imageCredentials.username': 'Kullanıcı adı',
+  'clusters.imageCredentials.password': 'Şifre',
   'clusters.nodeSelector.title': 'Düğüm Seçici',
   'clusters.nodeSelector.tip':
     "Her işçi düğüm DaemonSet'ine uygulanan pod nodeSelector değeri — yalnızca etiketleri eşleşen düğümler işçi düğümü çalıştırmaya uygundur.",
@@ -229,8 +229,8 @@ export default {
     'Bir Düğümde Karışık Örnek Türlerine İzin Ver',
   'clusters.gpuInstances.mixedOnNode.tip':
     "Bir düğümün hem hızlandırıcılı hem de yalnızca CPU'lu bir örnek türüne hizmet verip veremeyeceği. Etkin: düğüm, hizmet verebildiği her tür altında özetlenir. Devre dışı: hızlandırıcısı olan bir düğüm yalnızca hızlandırıcılı bir tür, yalnızca CPU'lu bir düğüm ise yalnızca genel bir tür üretir. Operatör varsayılanı: Etkin.",
-  'clusters.gpuInstances.setting.enabled': 'Enabled',
-  'clusters.gpuInstances.setting.disabled': 'Disabled',
+  'clusters.gpuInstances.setting.enabled': 'Etkin',
+  'clusters.gpuInstances.setting.disabled': 'Devre dışı',
   'clusters.gpuInstances.setting.unmanaged':
     'Yönetilmiyor (küme kendi değerini korur)'
 };

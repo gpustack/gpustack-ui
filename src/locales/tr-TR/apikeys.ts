@@ -18,12 +18,12 @@ export default {
   'apikeys.models.all': 'Tüm modeller',
   'apikeys.models.selected': 'İzin verilen modeller',
   'apikeys.models.noModelsFound': 'Model bulunamadı',
-  'apikeys.accessScope.all': 'All',
+  'apikeys.accessScope.all': 'Tümü',
   'apikeys.accessScope.management': 'Platform Yönetimi',
   'apikeys.accessScope.inference': "Çıkarım API'leri",
   'apikeys.access.permissions': 'Erişim İzinleri',
-  'apikeys.type.auto': 'Auto-generated',
-  'apikeys.type.custom': 'Custom',
+  'apikeys.type.auto': 'Otomatik oluşturulan',
+  'apikeys.type.custom': 'Özel',
   'apikeys.button.ipConfig': 'IP Erişim Denetimi',
   'quotaLimits.button.title': 'Kota Sınırı'
 };

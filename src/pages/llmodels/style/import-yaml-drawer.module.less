@@ -1,0 +1,343 @@
+// The import drawer is one diff, not a list of them: a narrow index of the
+// deployments the file holds, and beside it the whole remaining width for the
+// deployment currently selected.
+//
+// Layout that antd can compose is composed there — `Flex` rows and columns in
+// the components — so what is left here is what a component cannot express:
+// colour, type, borders, and the few rules that reach into the editor's own
+// DOM, which this module does not render and cannot wrap.
+
+// The editor draws its own border, and it sits inside this one.
+.diff {
+  overflow: hidden;
+  min-height: 260px;
+  border: 1px solid var(--ant-color-border);
+  border-radius: var(--ant-border-radius-lg);
+
+  // The editor's markup, not ours: both of these have to give up their
+  // intrinsic height for the editor to fill the drawer, and neither is a
+  // node this module renders.
+  :global(.yaml-diff-editor-container) {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+    border: none;
+    border-radius: 0;
+  }
+
+  // `EditorWrap` lays out a fixed-height header and the editor under it.
+  :global(.editor-wrap) {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+
+    > div:last-child {
+      flex: 1;
+      min-height: 0;
+    }
+  }
+}
+
+// What stands where the diff will be until a file arrives. Dashed rather than
+// solid so it reads as a place to put something, not a panel that failed to
+// load, and the same height as the diff so importing fills the space rather
+// than moving everything below it.
+.empty {
+  border: 1px dashed var(--ant-color-border);
+  border-radius: var(--ant-border-radius-lg);
+}
+
+.emptyIcon {
+  margin-bottom: 2px;
+  color: var(--ant-color-text-quaternary);
+  font-size: 40px;
+}
+
+.emptyTitle {
+  color: var(--ant-color-text);
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.emptyDescription {
+  max-width: 440px;
+  color: var(--ant-color-text-tertiary);
+  font-size: 13px;
+  line-height: 1.7;
+  text-align: center;
+}
+
+.emptyDoc {
+  margin-top: 2px;
+  font-size: 13px;
+}
+
+.nav {
+  flex: none;
+  width: 200px;
+  overflow: hidden;
+  border-right: 1px solid var(--ant-color-border-secondary);
+}
+
+// The document itself, above the deployments it holds: picking a range is
+// the same gesture as picking a deployment, so it is the same list.
+.navTop {
+  padding: 6px 6px 0;
+}
+
+.navDivider {
+  height: 1px;
+  margin: 6px 6px 0;
+  background-color: var(--ant-color-border-secondary);
+}
+
+.navItems {
+  flex: 1;
+  padding: 6px;
+  overflow-y: auto;
+}
+
+.navOption {
+  padding: 8px 10px;
+  border-radius: var(--ant-border-radius);
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--ant-color-fill-quaternary);
+  }
+
+  &.selected {
+    background-color: var(--ant-color-primary-bg);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ant-color-primary);
+    outline-offset: -2px;
+  }
+}
+
+.navBadge {
+  flex: none;
+  color: var(--ant-color-text-tertiary);
+  font-size: 12px;
+}
+
+// The two option shapes keep their flex here rather than becoming `Flex`
+// rows: collapsing the rail re-declares their alignment, and a rule competing
+// with the classes `Flex` emits for the same properties is a specificity
+// fight with nothing to gain.
+.navAll {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+// A problem outranks selection: the entry holding the import back has to
+// stay recognisable in the list whether or not it is the one on screen.
+.navItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  &.invalid {
+    background-color: var(--ant-color-error-bg);
+
+    .navName,
+    .navCaption {
+      color: var(--ant-color-error);
+    }
+
+    .navName {
+      font-weight: 600;
+    }
+  }
+}
+
+.navDot {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.navName {
+  overflow: hidden;
+  font-size: 13px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  .selected & {
+    font-weight: 600;
+  }
+}
+
+.navCaption {
+  padding-left: 12px;
+  overflow: hidden;
+  color: var(--ant-color-text-tertiary);
+  font-size: 12px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.diffMain {
+  flex: 1;
+  min-width: 0;
+}
+
+// Which side of the diff is which, on the editor's own 40px header. Stretched
+// rather than centred so the two panes carry the header's full height. A grid
+// rather than a row because the split has to line up with the editor's, which
+// is two equal halves whatever is in them.
+.diffPanes {
+  display: grid;
+  flex: 1;
+  grid-template-columns: 1fr 1fr;
+  align-self: stretch;
+  color: var(--ant-color-text-tertiary);
+  font-size: 12px;
+  background-color: var(--ant-color-fill-quaternary);
+  border-bottom: 1px solid var(--ant-color-border-secondary);
+
+  > div {
+    padding-inline: 12px;
+    overflow: hidden;
+  }
+
+  > div:first-child {
+    border-right: 1px solid var(--ant-color-border-secondary);
+  }
+}
+
+// Why an entry cannot be imported, directly above the diff that has to be
+// edited to fix it. Capped: a document with a problem on every entry would
+// otherwise take the editor's height away from the one being fixed.
+.entryError {
+  flex: none;
+  max-height: 104px;
+  padding: 10px 12px;
+  overflow-y: auto;
+  color: var(--ant-color-error);
+  background-color: var(--ant-color-error-bg);
+  border-bottom: 1px solid var(--ant-color-error-border);
+}
+
+.entryErrorTitle {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.entryErrorDetail {
+  font-size: 12.5px;
+  line-height: 1.7;
+}
+
+// Collapsed, the list gives up the names and keeps what orders them: the
+// action as a colour, and the position in the document as a number.
+.collapsed {
+  width: 44px;
+
+  .navTop,
+  .navItems {
+    padding-inline: 4px;
+  }
+
+  .navAll {
+    justify-content: center;
+    color: var(--ant-color-text-tertiary);
+  }
+
+  .navItem {
+    align-items: center;
+    padding-inline: 0;
+    border-left: 3px solid transparent;
+    border-radius: 0 var(--ant-border-radius) var(--ant-border-radius) 0;
+  }
+}
+
+.navIndex {
+  color: var(--ant-color-text-tertiary);
+  font-size: 12px;
+}
+
+// How much of the file was understood, beside the cluster it was understood
+// against.
+.status {
+  color: var(--ant-color-text-tertiary);
+  font-size: 13px;
+
+  &.invalid {
+    color: var(--ant-color-error);
+  }
+}
+
+.paneNote {
+  color: var(--ant-color-text-quaternary);
+}
+
+.paneChanges {
+  color: var(--ant-color-warning);
+}
+
+// Where in the document the diff is pointing. The trail is one line, so the
+// buttons in it give up the padding a standalone button would take.
+.crumbs {
+  min-width: 0;
+  font-size: 13px;
+
+  :global(.ant-btn-link) {
+    height: auto;
+    padding: 0;
+  }
+}
+
+.crumbCurrent {
+  overflow: hidden;
+  color: var(--ant-color-text);
+  font-weight: 500;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  &.invalid {
+    color: var(--ant-color-error);
+  }
+}
+
+.crumbNote {
+  color: var(--ant-color-text-tertiary);
+}
+
+.crumbSep {
+  color: var(--ant-color-text-quaternary);
+}
+
+// Laid out like the delete confirmation so the two read as the same kind of
+// moment, minus the colouring that says the action cannot be taken back.
+.confirmTitle {
+  font-weight: 500;
+  font-size: var(--font-size-large);
+
+  :global(.anticon) {
+    margin-right: 12px;
+    color: var(--ant-color-warning);
+    font-size: 28px;
+  }
+}
+
+.confirmBody {
+  padding-top: 20px;
+  color: var(--ant-color-text-secondary);
+}
+
+.confirmNames {
+  margin-top: 16px;
+
+  > span {
+    padding: 8px 12px;
+    background-color: var(--ant-color-fill-tertiary);
+    border-radius: var(--ant-border-radius);
+  }
+}

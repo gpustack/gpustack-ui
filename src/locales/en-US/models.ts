@@ -1,5 +1,53 @@
 export default {
   'models.button.deploy': 'Deploy Model',
+  'models.button.exportYaml': 'Export YAML',
+  'models.button.importYaml': 'Import YAML',
+  'models.form.yamlFile': 'YAML File',
+  'models.import.checking': 'Checking…',
+  'models.import.hint.nothing': 'Nothing here to import',
+  'models.import.pickFile': 'Choose a file',
+  'models.import.empty.title': 'Import a YAML file',
+  'models.import.empty.description':
+    'Pick a file describing one or more deployments. It is checked first, and the diff shows exactly what would be written before anything is.',
+  'models.import.cluster.follow': 'Follow the file',
+  'models.import.loaded':
+    '{count} deployment(s) · identical to what {cluster} runs now',
+  'models.import.loaded.hint':
+    'This document matches what {cluster} runs now, so there is nothing to write.',
+  'models.import.counts':
+    '{count} deployment(s) · into {cluster} · {changes} change(s)',
+  'models.import.parsed': '{count} deployment(s)',
+  'models.import.parsed.invalid': '{count} cannot be imported',
+  'models.import.fieldsDoc': 'Field reference',
+  'models.import.nav.invalid': 'Cannot import',
+  'models.import.scope.all': 'All {count} deployment(s)',
+  'models.import.scope.whole': 'Whole document',
+  'models.import.scope.wholeShort': 'Whole',
+  'models.import.pane.current': 'In the cluster · read-only',
+  'models.import.pane.draft': 'To import · editable',
+  'models.import.pane.absent': 'No deployment with this name',
+  'models.import.pane.none': 'No matching deployments in this cluster',
+  'models.import.pane.allNew': 'Every deployment here is new — none replaced',
+  'models.import.pane.waiting': 'Nothing to compare yet',
+  'models.import.entry': 'Deployment {index}',
+  'models.import.entry.invalid': 'Deployment {index} cannot be imported',
+  'models.import.summary':
+    '{create} to create, {update} to update, {unchanged} unchanged.',
+  'models.import.summary.replaces':
+    'An update replaces the deployment with the file.',
+  'models.import.action.create': 'Create',
+  'models.import.action.update': 'Update',
+  'models.import.action.unchanged': 'Unchanged',
+  'models.import.changes': '{count} change(s)',
+  'models.import.blocked':
+    '{count} deployment(s) cannot be imported. Fix them to continue.',
+  'models.import.overwrite.title': 'Confirm import',
+  'models.import.overwrite.confirm':
+    'The following {count} existing deployment(s) will be replaced by the file. Settings the file leaves out go back to their defaults.',
+  'models.import.overwrite.rest':
+    'It will also create {create} and leave {unchanged} unchanged.',
+  'models.import.invalid':
+    'The file cannot be imported. Fix the problems below and it is checked again.',
   'models.title': 'Models',
   'models.title.edit': 'Edit Model',
   'models.title.duplicate': 'Clone Model',

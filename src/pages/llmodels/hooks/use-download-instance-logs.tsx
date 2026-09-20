@@ -1,5 +1,9 @@
 import { convertFileSize } from '@/utils';
-import { downloadFile, filenameFromDisposition } from '@/utils/download-stream';
+import {
+  downloadFile,
+  filenameFromDisposition,
+  readResponseError
+} from '@/utils/download-stream';
 import { useIntl } from '@umijs/max';
 import { App } from 'antd';
 import { downloadModelInstanceLogs } from '../apis';
@@ -20,22 +24,6 @@ const PROGRESS_INTERVAL = 300;
  * to live in the same scope as the key it protects.
  */
 const inFlight = new Set<number | string>();
-
-/**
- * The failure body is FastAPI's own `{"detail": "..."}`: the download route
- * raises Starlette's HTTPException, and gpustack registers a handler only for
- * its own, so the usual `error.message` envelope never appears here.
- */
-const readLogsError = async (error: any): Promise<string> => {
-  const body = error?.response?.data;
-  try {
-    const text = body instanceof Blob ? await body.text() : undefined;
-    const payload = text ? JSON.parse(text) : body;
-    return payload?.detail || payload?.error?.message || payload?.message || '';
-  } catch {
-    return '';
-  }
-};
 
 const useDownloadInstanceLogs = () => {
   const intl = useIntl();
@@ -110,7 +98,7 @@ const useDownloadInstanceLogs = () => {
       notification.destroy(key);
       // The user closed the notification. Not a failure — say nothing.
       if (cancelled) return;
-      const detail = await readLogsError(error);
+      const detail = await readResponseError(error);
       notification.error({
         title: intl.formatMessage({ id: 'common.message.downloadFailed' }),
         description: detail || undefined

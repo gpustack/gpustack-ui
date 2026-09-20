@@ -1,5 +1,54 @@
 export default {
   'models.button.deploy': 'Model Dağıt',
+  'models.button.exportYaml': 'YAML Dışa Aktar',
+  'models.button.importYaml': 'YAML İçe Aktar',
+  'models.form.yamlFile': 'YAML Dosyası',
+  'models.import.checking': 'Denetleniyor…',
+  'models.import.hint.nothing': 'İçe aktarılacak bir şey yok',
+  'models.import.pickFile': 'Dosya seç',
+  'models.import.empty.title': 'YAML dosyası içe aktar',
+  'models.import.empty.description':
+    'Dağıtımları tanımlayan bir dosya seçin. İçe aktarmadan önce denetlenir ve yazılacak her şey farkta eksiksiz gösterilir.',
+  'models.import.cluster.follow': 'Dosyadaki gibi',
+  'models.import.loaded':
+    '{count} dağıtım · {cluster} kümesinin şu anki hâliyle aynı',
+  'models.import.loaded.hint':
+    'Bu belge {cluster} kümesinin şu anki hâliyle aynı, yazılacak bir şey yok.',
+  'models.import.counts':
+    '{count} dağıtım · {cluster} kümesine · {changes} değişiklik',
+  'models.import.parsed': '{count} dağıtım',
+  'models.import.parsed.invalid': '{count} tanesi içe aktarılamıyor',
+  'models.import.fieldsDoc': 'Alan başvurusu',
+  'models.import.nav.invalid': 'İçe aktarılamıyor',
+  'models.import.scope.all': 'Tüm dağıtımlar ({count})',
+  'models.import.scope.whole': 'Tüm belge',
+  'models.import.scope.wholeShort': 'Tümü',
+  'models.import.pane.current': 'Kümedeki hali · salt okunur',
+  'models.import.pane.draft': 'İçe aktarılacak · düzenlenebilir',
+  'models.import.pane.absent': 'Bu adda bir dağıtım yok',
+  'models.import.pane.none': 'Bu kümede eşleşen dağıtım yok',
+  'models.import.pane.allNew':
+    'Buradaki dağıtımların hepsi yeni — hiçbiri değiştirilmiyor',
+  'models.import.pane.waiting': 'Henüz karşılaştırılacak bir şey yok',
+  'models.import.entry': '{index}. dağıtım',
+  'models.import.entry.invalid': '{index}. dağıtım içe aktarılamıyor',
+  'models.import.summary':
+    '{create} oluşturulacak, {update} güncellenecek, {unchanged} değişmedi.',
+  'models.import.summary.replaces':
+    'Güncelleme, dağıtımı dosyadaki içerikle değiştirir.',
+  'models.import.action.create': 'Oluştur',
+  'models.import.action.update': 'Güncelle',
+  'models.import.action.unchanged': 'Değişmedi',
+  'models.import.changes': '{count} değişiklik',
+  'models.import.blocked':
+    '{count} dağıtım içe aktarılamıyor. Devam etmek için bunları düzeltin.',
+  'models.import.overwrite.title': 'İçe aktarmayı onayla',
+  'models.import.overwrite.confirm':
+    'Aşağıdaki {count} mevcut dağıtım dosyadaki içerikle tümüyle değiştirilecek. Dosyada yer almayan ayarlar varsayılan değerlerine döner.',
+  'models.import.overwrite.rest':
+    'Ayrıca {create} tane oluşturulacak, {unchanged} tanesi değişmeyecek.',
+  'models.import.invalid':
+    'Dosya içe aktarılamıyor. Aşağıdaki sorunları düzeltin, yeniden denetlenir.',
   'models.title': 'Modeller',
   'models.title.edit': 'Modeli Düzenle',
   'models.title.duplicate': 'Modeli Klonla',

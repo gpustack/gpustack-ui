@@ -49,6 +49,11 @@ export const ButtonList = [
     icon: icons.Stop
   },
   {
+    label: 'models.button.exportYaml',
+    key: 'export',
+    icon: icons.DownloadOutlined
+  },
+  {
     label: 'common.button.delete',
     key: 'delete',
     icon: icons.DeleteOutlined,
@@ -90,7 +95,16 @@ export const sourceOptions = [
     key: 'catalog',
     icon: icons.Catalog
   },
-  ...onLineSourceOptions
+  ...onLineSourceOptions,
+  {
+    // A noun, like every other entry here: the dropdown names where the
+    // deployment comes from, not what is done to it.
+    label: 'models.form.yamlFile',
+    locale: true,
+    value: 'import_yaml',
+    key: 'import_yaml',
+    icon: icons.Yaml
+  }
 ];
 
 export const generateSource = (record: any) => {

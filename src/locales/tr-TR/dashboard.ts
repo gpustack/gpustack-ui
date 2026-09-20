@@ -1,6 +1,6 @@
 export default {
   'dashboard.workers': 'İşçi Düğümler',
-  'dashboard.deployments': 'Deployments',
+  'dashboard.deployments': 'Dağıtımlar',
   'dashboard.clusters': 'Kümeler',
   'dashboard.totalgpus': "GPU'lar",
   'dashboard.systemload': 'Sistem Yükü',

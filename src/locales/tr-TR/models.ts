@@ -296,12 +296,12 @@ export default {
   'models.form.kvCache.service.tips':
     'Yalnızca aynı kümede bulunan ve seçilen altyapıyla uyumlu önbellek hizmetleri listelenir.',
   'models.form.kvCache.shared.builtinBackends':
-    'Cache Service yalnızca yerleşik vLLM ve SGLang arka uçlarıyla desteklenir.',
+    'Önbellek Hizmeti yalnızca yerleşik vLLM ve SGLang arka uçlarıyla desteklenir.',
   'models.kvCache.degraded.tips':
     'Bu örnek için paylaşılan KV önbelleği etkin değil',
   'models.kvCache.endpointDead.tips':
     'Bu örneğin bağlandığı paylaşılan önbellek artık kullanılamıyor; kurtarmak için örneği yeniden başlatın',
-  'models.kvCache.service': 'Cache Service',
+  'models.kvCache.service': 'Önbellek Hizmeti',
   'models.kvCache.hitRate': 'Harici Önbellek İsabet Oranı ({window})',
   'models.kvCache.hitRate.window': '1h',
   'models.form.scheduling': 'Zamanlama',
@@ -421,7 +421,7 @@ export default {
   'models.table.instance.benchmark': 'Kıyaslama Çalıştır',
   'models.table.modelView': 'Model Listesi',
   'models.table.instanceView': 'Örnek Listesi',
-  'models.table.category': 'Category',
+  'models.table.category': 'Kategori',
   'models.instance.currentRun': 'Geçerli Çalıştırma',
   'models.instance.previousRun': 'Önceki Çalıştırma',
   'models.instance.startHistory': 'Çalıştırma Geçmişi',

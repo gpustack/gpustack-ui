@@ -1,4 +1,9 @@
 export default {
+  'models.form.backend_api_key': 'Ключ API бэкенда',
+  'models.form.backend_api_key.tips':
+    'Пользовательский ключ API для бэкенда вывода для обеспечения безопасности доступа. Может быть введен вручную или сгенерирован автоматически.',
+  'models.form.backend_api_key.generate': 'Сгенерировать автоматически',
+
   'models.button.deploy': 'Развернуть модель',
   'models.title': 'Модели',
   'models.title.edit': 'Редактировать модель',

@@ -3,13 +3,15 @@ import DocLink from '@/pages/_components/doc-link';
 import { genericReferLink } from '@/pages/model-routes/config';
 import {
   CheckboxField,
+  Input as CInput,
   LabelSelector,
   Select as SealSelect
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Form } from 'antd';
+import { Button, Form, message, Modal, Typography } from 'antd';
 import _ from 'lodash';
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
+import { createApisKey } from '../../api-keys/apis';
 import { modelCategories } from '../config';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
@@ -18,6 +20,79 @@ import BackendParametersList from './backend-parameters-list';
 import ModelLoraList from './model-lora-list';
 
 const AdvanceConfig = () => {
+  const [generatingKey, setGeneratingKey] = React.useState(false);
+
+  const handleGenerateApiKey = async () => {
+    const modelName = form.getFieldValue('name');
+    if (!modelName) {
+      message.warning(
+        intl.formatMessage({ id: 'models.table.name' }) +
+          ' ' +
+          intl.formatMessage({
+            id: 'common.tips.required',
+            defaultMessage: 'is required'
+          })
+      );
+      return;
+    }
+    try {
+      setGeneratingKey(true);
+      const res = await createApisKey({
+        data: {
+          // eslint-disable-next-line react-hooks/purity
+          name: `${modelName}-backend-key-${Math.random().toString(36).substring(2, 6)}`,
+          allowed_model_names: [modelName],
+          scope: ['inference']
+        } as any
+      });
+      if (res && res.value) {
+        form.setFieldValue('backend_api_key', res.value);
+        message.success('Success');
+        Modal.success({
+          title: intl.formatMessage({
+            id: 'models.form.backend_api_key.generate.success.title',
+            defaultMessage: 'API Key Generated'
+          }),
+          content: (
+            <div>
+              <p>
+                {intl.formatMessage({
+                  id: 'models.form.backend_api_key.generate.success.desc',
+                  defaultMessage:
+                    'Please copy your API key now. You will not be able to see it again.'
+                })}
+              </p>
+              <div
+                style={{
+                  marginTop: 16,
+                  padding: '8px 12px',
+                  background: '#f5f5f5',
+                  borderRadius: 4,
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
+                }}
+              >
+                <Typography.Text
+                  copyable
+                  style={{ margin: 0, wordBreak: 'break-all', paddingRight: 8 }}
+                >
+                  {res.value}
+                </Typography.Text>
+              </div>
+            </div>
+          ),
+          width: 500
+        });
+        onValuesChange?.({}, form.getFieldsValue());
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setGeneratingKey(false);
+    }
+  };
+
   const intl = useIntl();
   const form = Form.useFormInstance();
   const backend = Form.useWatch('backend', form);
@@ -74,6 +149,33 @@ const AdvanceConfig = () => {
 
   return (
     <>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'flex-start',
+          gap: '8px',
+          width: '100%'
+        }}
+      >
+        <Form.Item name="backend_api_key" style={{ flex: 1 }}>
+          <CInput.Password
+            autoComplete="new-password"
+            label={intl.formatMessage({ id: 'models.form.backend_api_key' })}
+            description={intl.formatMessage({
+              id: 'models.form.backend_api_key.tips'
+            })}
+          />
+        </Form.Item>
+        <Button
+          type="primary"
+          loading={generatingKey}
+          onClick={handleGenerateApiKey}
+          style={{ height: '54px' }}
+        >
+          {intl.formatMessage({ id: 'models.form.backend_api_key.generate' })}
+        </Button>
+      </div>
+
       <Form.Item<FormData>
         name="categories"
         data-field="categories"

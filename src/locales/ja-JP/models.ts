@@ -1,4 +1,9 @@
 export default {
+  'models.form.backend_api_key': 'バックエンド API キー',
+  'models.form.backend_api_key.tips':
+    'アクセスを保護するための推論バックエンドのカスタム API キー。手動で入力するか、自動生成できます。',
+  'models.form.backend_api_key.generate': '自動生成',
+
   'models.button.deploy': 'モデルをデプロイ',
   'models.title': 'モデル',
   'models.title.edit': 'モデルを編集',

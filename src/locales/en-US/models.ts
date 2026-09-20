@@ -1,4 +1,9 @@
 export default {
+  'models.form.backend_api_key': 'Backend API Key',
+  'models.form.backend_api_key.tips':
+    'Custom API Key for the inference backend to secure access, which can be entered manually or auto-generated.',
+  'models.form.backend_api_key.generate': 'Auto Generate',
+
   'models.button.deploy': 'Deploy Model',
   'models.title': 'Models',
   'models.title.edit': 'Edit Model',

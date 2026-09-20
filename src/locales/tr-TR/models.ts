@@ -1,4 +1,9 @@
 export default {
+  'models.form.backend_api_key': 'Arka Uç API Anahtarı',
+  'models.form.backend_api_key.tips':
+    'Erişimi güvenli hale getirmek için çıkarım arka ucu için özel API Anahtarı; manuel olarak girilebilir veya otomatik oluşturulabilir.',
+  'models.form.backend_api_key.generate': 'Otomatik Oluştur',
+
   'models.button.deploy': 'Model Dağıt',
   'models.title': 'Modeller',
   'models.title.edit': 'Modeli Düzenle',

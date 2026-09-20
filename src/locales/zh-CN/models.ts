@@ -1,4 +1,9 @@
 export default {
+  'models.form.backend_api_key': '后端认证 API Key',
+  'models.form.backend_api_key.tips':
+    '自定义推理后端的 API Key，通过 API 密钥认证保障后端安全，可自行输入或一键生成。',
+  'models.form.backend_api_key.generate': '自动生成',
+
   'models.button.deploy': '部署模型',
   'models.title': '模型',
   'models.title.edit': '编辑模型',

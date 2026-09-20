@@ -1,3 +1,4 @@
+import { IconFont } from '@gpustack/core-ui';
 import { useIntl, useModel } from '@umijs/max';
 import { createStyles } from 'antd-style';
 import React from 'react';
@@ -25,6 +26,7 @@ const Profile: React.FC = () => {
     <PageBox>
       <div className={styles.wrapper}>
         <SettingsSection
+          icon={<IconFont type="icon-theme-auto" />}
           title={intl.formatMessage({ id: 'common.appearance' })}
           description={intl.formatMessage({
             id: 'common.appearance.description'
@@ -40,6 +42,7 @@ const Profile: React.FC = () => {
             account to another browser. */}
         {isLocalUser && (
           <SettingsSection
+            icon={<IconFont type="icon-shield" />}
             title={intl.formatMessage({ id: 'common.security' })}
           >
             <Security />

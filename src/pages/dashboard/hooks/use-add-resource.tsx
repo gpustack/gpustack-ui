@@ -3,7 +3,7 @@ import { hideModalTemporarilyAtom } from '@/atoms/settings';
 import useUserSettings from '@/hooks/use-user-settings';
 import useClusterList from '@/pages/cluster-management/hooks/use-cluster-list';
 import { IconFont, ScrollerModal } from '@gpustack/core-ui';
-import { useIntl, useNavigate } from '@umijs/max';
+import { useAccess, useIntl, useNavigate } from '@umijs/max';
 import { Button } from 'antd';
 import { useAtom } from 'jotai';
 import { useMemo, useState } from 'react';
@@ -58,6 +58,16 @@ export default function useAddResource(options?: { onCreated?: () => void }) {
   const { onCreated } = options || {};
   const intl = useIntl();
   const navigate = useNavigate();
+  const access = useAccess();
+  // Only a caller who can actually act on the prompt may see it.
+  // `canSeeOrgAdmin` is the right predicate on both ends of the flow:
+  // it gates `/dashboard` (the API this probes) and `/resources/*`
+  // (where the CTA navigates). Checking `currentUser.is_admin`
+  // instead would be wrong in both directions — a platform admin
+  // inside a Personal Org has `is_admin: true` but no cluster-admin
+  // routes, so the CTA dead-ends in a 403; an Org owner has
+  // `is_admin: false` yet is exactly who should be told to add one.
+  const canAddResource = !!access?.canSeeOrgAdmin;
   const { setUserSettings, userSettings } = useUserSettings();
   const [, setClusterSession] = useAtom(clusterSessionAtom);
   const [hideModalTemporarily, setHideModalTemporarily] = useAtom(
@@ -92,8 +102,8 @@ export default function useAddResource(options?: { onCreated?: () => void }) {
   }, [resourceCount, intl]);
 
   const open: boolean = useMemo(() => {
-    return isNoResource && !userSettings.hideAddResourceModal;
-  }, [isNoResource, userSettings.hideAddResourceModal]);
+    return canAddResource && isNoResource && !userSettings.hideAddResourceModal;
+  }, [canAddResource, isNoResource, userSettings.hideAddResourceModal]);
 
   const handleCreate = () => {
     setHideModalTemporarily(true);
@@ -125,6 +135,11 @@ export default function useAddResource(options?: { onCreated?: () => void }) {
   };
 
   const fetchResourceData = async () => {
+    // `/dashboard` is admin-scoped; probing it without the predicate
+    // just earns a 403 for a prompt we would never show anyway.
+    if (!canAddResource) {
+      return;
+    }
     setLoadingStatus({ loading: true, loadend: false });
     const { hasClusters, hasWorkers } = await fetchResource();
     setLoadingStatus({ loading: false, loadend: true });
@@ -134,7 +149,7 @@ export default function useAddResource(options?: { onCreated?: () => void }) {
     });
   };
 
-  const NoResourceModal = (
+  const NoResourceModal = !canAddResource ? null : (
     <ScrollerModal
       open={open && !hideModalTemporarily}
       footer={null}
@@ -171,6 +186,7 @@ export default function useAddResource(options?: { onCreated?: () => void }) {
 
   return {
     open,
+    canAddResource,
     contentInfo,
     loadingStatus,
     NoResourceModal,

@@ -42,7 +42,7 @@ const Profile: React.FC = () => {
             account to another browser. */}
         {isLocalUser && (
           <SettingsSection
-            icon={<IconFont type="icon-shield" />}
+            icon={<IconFont type="icon-admin-protect" />}
             title={intl.formatMessage({ id: 'common.security' })}
           >
             <Security />

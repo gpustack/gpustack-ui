@@ -145,10 +145,7 @@ const Appearance: React.FC = () => {
 
   return (
     <>
-      <SettingRow
-        title={intl.formatMessage({ id: 'common.appearance.theme' })}
-        description={intl.formatMessage({ id: 'common.appearance.tips' })}
-      >
+      <SettingRow styles={{ body: { marginTop: 0 } }}>
         <div
           className={styles.cards}
           role="radiogroup"

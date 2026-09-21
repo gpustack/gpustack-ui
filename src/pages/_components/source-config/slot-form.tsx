@@ -164,6 +164,9 @@ interface SourceSlotFormProps {
  * action too; the refetch button is the cheaper variant that reuses what is
  * already stored, and is disabled while the form is dirty.
  */
+// Bumped per mount so reopening a slot never lands on the model it left.
+let openSequence = 0;
+
 const SourceSlotForm: React.FC<SourceSlotFormProps> = ({
   slot,
   status,
@@ -186,6 +189,16 @@ const SourceSlotForm: React.FC<SourceSlotFormProps> = ({
   // keystroke), so its text is read through the ref and only mirrored into
   // state when the branch is about to unmount.
   const editorRef = useRef<any>(null);
+  // monaco keys a model — its text, its undo stack and its view state — by
+  // URI, and a default one is shared by every editor in the app: a slot
+  // reopened would land wherever the last edit left off, which for a document
+  // pasted whole is past its last line and reads as an empty box. One URI per
+  // mount is a model with no history to restore, so it opens where the
+  // document starts. Constant for the editor's lifetime, as that prop
+  // requires, because the slot is mounted with the drawer.
+  const editorPath = useRef(
+    `inmemory://source-slot/${slot.kind}-${++openSequence}.yaml`
+  );
   // Whether that text amounts to content, which is what decides custom vs
   // official and so has to re-render — the one thing about the editor's content
   // that is tracked live. The text itself stays out of state for the reason
@@ -507,25 +520,12 @@ const SourceSlotForm: React.FC<SourceSlotFormProps> = ({
     };
   };
 
-  // What was saved is seeded back into the editor, and the viewport stays
-  // where the last edit left it — after pasting a document that is its end,
-  // and an editor parked past the last line reads as an empty box. Put the
-  // view back where the document starts, once the re-seeded value has landed.
-  const revealDocumentStart = () => {
-    requestAnimationFrame(() => {
-      const editor = editorRef.current?.editor?.editor;
-      editor?.setPosition?.({ lineNumber: 1, column: 1 });
-      editor?.revealLine?.(1);
-    });
-  };
-
   const applyWrite = (payload: SourceConfigUpsert) =>
     guard(() =>
       run(async () => {
         try {
           setAlert('');
           seedForm(await save(payload));
-          revealDocumentStart();
           message.success(intl.formatMessage({ id: 'common.message.success' }));
           onSaved();
         } catch (error) {
@@ -703,6 +703,7 @@ const SourceSlotForm: React.FC<SourceSlotFormProps> = ({
         {remoteEnabled && isFileMode && (
           <YamlEditor
             ref={editorRef}
+            path={editorPath.current}
             // The editor's header already holds a label and the Import button, so
             // the guidance rides there as a tooltip instead of adding one more
             // line of grey text under a 320px box.

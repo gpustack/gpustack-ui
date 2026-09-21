@@ -72,17 +72,21 @@ export const SettingDivider: React.FC = () => {
 SettingDivider.displayName = 'SettingDivider';
 
 interface SettingRowProps {
-  title: React.ReactNode;
+  title?: React.ReactNode;
   description?: React.ReactNode;
   extra?: React.ReactNode;
   children?: React.ReactNode;
+  styles?: {
+    body?: React.CSSProperties;
+  };
 }
 
 export const SettingRow: React.FC<SettingRowProps> = ({
   title,
   description,
   extra,
-  children
+  children,
+  styles: rowStyles
 }) => {
   const { styles } = useStyles();
   return (
@@ -96,7 +100,11 @@ export const SettingRow: React.FC<SettingRowProps> = ({
         </div>
         {extra && <div className={styles.extra}>{extra}</div>}
       </div>
-      {children && <div className={styles.body}>{children}</div>}
+      {children && (
+        <div className={styles.body} style={rowStyles?.body}>
+          {children}
+        </div>
+      )}
     </div>
   );
 };

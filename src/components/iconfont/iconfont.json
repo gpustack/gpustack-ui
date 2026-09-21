@@ -6,6 +6,48 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "48578837",
+      "name": "display_settings_24dp_1F1F1F_FILL0_wght300_GRAD0_o",
+      "font_class": "display_settings",
+      "unicode": "e71c",
+      "unicode_decimal": 59164
+    },
+    {
+      "icon_id": "48578835",
+      "name": "admin_panel_settings_24dp_1F1F1F_FILL0_wght300_GRA",
+      "font_class": "admin-protect",
+      "unicode": "e71d",
+      "unicode_decimal": 59165
+    },
+    {
+      "icon_id": "48578836",
+      "name": "tune_24dp_1F1F1F_FILL0_wght300_GRAD0_opsz24",
+      "font_class": "tune",
+      "unicode": "e71f",
+      "unicode_decimal": 59167
+    },
+    {
+      "icon_id": "48578834",
+      "name": "account_balance_wallet_24dp_1F1F1F_FILL0_wght300_G",
+      "font_class": "wallet-outlined",
+      "unicode": "e721",
+      "unicode_decimal": 59169
+    },
+    {
+      "icon_id": "48578167",
+      "name": "palette_24dp_1F1F1F_FILL1_wght300_GRAD0_opsz24",
+      "font_class": "palette-filled",
+      "unicode": "e71a",
+      "unicode_decimal": 59162
+    },
+    {
+      "icon_id": "48578168",
+      "name": "palette_24dp_1F1F1F_FILL0_wght300_GRAD0_opsz24",
+      "font_class": "palette-outlined",
+      "unicode": "e71b",
+      "unicode_decimal": 59163
+    },
+    {
       "icon_id": "48450861",
       "name": "local_pizza_24dp_1F1F1F_FILL1_wght300_GRAD0_opsz24",
       "font_class": "sliced-filled",

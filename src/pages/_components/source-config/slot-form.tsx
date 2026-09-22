@@ -80,8 +80,19 @@ const errorMessageOf = (error: any): string =>
 // The editor is seeded with a commented schema hint, and empty content is a
 // *valid* source the server would normalize into an empty feed — so the
 // untouched hint counts as "nothing configured", the same as a blank box.
+//
+// A regex rather than `split('\n').some(...)`: this runs on every keystroke,
+// and `split` materializes every line of the document before `some` gets to
+// look at the first one. The API stores `content` with no length of its own, so
+// what `seedForm` reads back is not bounded by the editor's upload ceiling.
+// Matches a line whose first non-blank character is neither `#` nor the end of
+// the line, and stops at the first one it finds.
+//
+// `(^|\n)` rather than the `m` flag, which would also break lines on a lone
+// `\r` — `split('\n')` does not, and this is a rewrite for speed, not a change
+// of what counts as a line.
 const hasMeaningfulContent = (text: string) =>
-  text.split('\n').some((line) => line.trim() && !line.trim().startsWith('#'));
+  /(^|\n)[^\S\n]*[^\s#]/.test(text);
 
 /**
  * The refresh cadence, in hours, of whichever layer is showing. One number

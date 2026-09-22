@@ -10,6 +10,7 @@ import {
   useSubmitLock
 } from '@gpustack/core-ui';
 import {
+  checkYamlFile,
   preloadYamlEditor,
   YamlDiffEditor
 } from '@gpustack/core-ui/yaml-editor';
@@ -416,6 +417,20 @@ const ImportYamlModal: React.FC<ImportYamlModalProps> = ({
   // itself, and the two disagree on how to write a list — every
   // `backend_parameters` would read as an edit nobody made.
   const handleFile = async (rawFile: File) => {
+    // The same refusals the editor's own Import button makes, run before
+    // `text()` — which is itself enough to take the tab down on a large enough
+    // file (gpustack/gpustack#6234), and this screen pays for it twice over
+    // since the text goes on to back both sides of a diff. Surfaced in the
+    // banner rather than as a toast: it renders whether or not a file has been
+    // picked yet, so the empty state can say why nothing happened.
+    const rejection = checkYamlFile(rawFile);
+    if (rejection) {
+      setReview({
+        ...EMPTY_REVIEW,
+        errors: [intl.formatMessage({ id: rejection.id }, rejection.values)]
+      });
+      return false;
+    }
     try {
       const text = await rawFile.text();
       clearTimeout(debounce.current);
@@ -556,7 +571,10 @@ const ImportYamlModal: React.FC<ImportYamlModalProps> = ({
     : [
         ...new Set(
           review.entries
-            .map((entry) => entry.desired.cluster_name ?? entry.current.cluster_name)
+            .map(
+              (entry) =>
+                entry.desired.cluster_name ?? entry.current.cluster_name
+            )
             .filter(Boolean)
         )
       ].join(', ');

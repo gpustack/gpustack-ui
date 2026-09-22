@@ -18,6 +18,12 @@ interface ReferenceParamsProps {
     tokens_per_second: number;
     time_per_output_token_ms: number;
     time_to_first_token_ms: number;
+    // Only present when the serving engine reports prompt caching; absent
+    // means "not measured", which is not a zero-percent hit rate.
+    prompt_tokens_details?: {
+      cached_tokens?: number;
+      created_cache_tokens?: number;
+    };
   };
 }
 
@@ -54,6 +60,15 @@ const ReferenceParams = (props: ReferenceParamsProps) => {
       </Typography.Paragraph>
     );
   }
+
+  // The prefix cache only ever serves prompt tokens, so the prompt is the
+  // denominator the hit rate is measured against.
+  const cacheDetails = usage.prompt_tokens_details;
+  const cachedTokens = cacheDetails?.cached_tokens || 0;
+  const cacheHitRate = usage.prompt_tokens
+    ? _.round((cachedTokens / usage.prompt_tokens) * 100, 1)
+    : 0;
+
   return (
     <div
       className={classNames('reference-params', {
@@ -111,6 +126,34 @@ const ReferenceParams = (props: ReferenceParamsProps) => {
             <span>
               {intl.formatMessage({ id: 'playground.tokenoutput' })}:{' '}
               {_.round(usage.tokens_per_second, 2) || 0} Tokens/s
+            </span>
+          </Tooltip>
+        </span>
+      )}
+
+      {cacheDetails && (
+        <span
+          className={classNames('usage', {
+            scaleable: scaleable
+          })}
+        >
+          <Tooltip
+            title={
+              <Space>
+                <span>
+                  {intl.formatMessage({ id: 'playground.cached' })}:{' '}
+                  {cachedTokens}
+                </span>
+                <span>
+                  {intl.formatMessage({ id: 'playground.cachewrite' })}:{' '}
+                  {cacheDetails.created_cache_tokens || 0}
+                </span>
+              </Space>
+            }
+          >
+            <span>
+              {intl.formatMessage({ id: 'playground.cachehitrate' })}:{' '}
+              {cacheHitRate}%
             </span>
           </Tooltip>
         </span>

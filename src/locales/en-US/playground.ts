@@ -18,6 +18,9 @@ export default {
   'playground.tokenusage': 'Token Usage',
   'models.openinplayground': 'Open in Playground',
   'playground.tokenoutput': 'Output',
+  'playground.cachehitrate': 'Cache Hit Rate',
+  'playground.cached': 'Cached',
+  'playground.cachewrite': 'Cache Write',
   'playground.params.temperature.tips':
     'Controls randomness: Lowering results in less random completions. As the temperature approaches zero, the model will become deterministic and repetitive.',
   'playground.params.maxtokens.tips':

@@ -18,6 +18,9 @@ export default {
   'playground.tokenusage': 'Token 使用量',
   'models.openinplayground': '打开试验场',
   'playground.tokenoutput': '输出',
+  'playground.cachehitrate': '缓存命中率',
+  'playground.cached': '命中缓存',
+  'playground.cachewrite': '写入缓存',
   'playground.params.temperature.tips':
     '控制随机性：降低温度会导致更少的随机完成。当温度接近零时，模型将变得确定性和重复性。',
   'playground.params.maxtokens.tips':

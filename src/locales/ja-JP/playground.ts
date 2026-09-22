@@ -18,6 +18,9 @@ export default {
   'playground.tokenusage': 'トークン使用量',
   'models.openinplayground': 'プレイグラウンドで開く',
   'playground.tokenoutput': '出力',
+  'playground.cachehitrate': 'キャッシュヒット率',
+  'playground.cached': 'キャッシュヒット',
+  'playground.cachewrite': 'キャッシュ書き込み',
   'playground.params.temperature.tips':
     'ランダム性を制御します：値を下げると、結果がより決定的になります。値が0に近づくと、モデルは決定的で反復的になります。',
   'playground.params.maxtokens.tips':

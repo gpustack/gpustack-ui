@@ -18,6 +18,9 @@ export default {
   'playground.tokenusage': 'Использование токенов',
   'models.openinplayground': 'Открыть в Песочнице',
   'playground.tokenoutput': 'Вывод',
+  'playground.cachehitrate': 'Попаданий в кэш',
+  'playground.cached': 'Из кэша',
+  'playground.cachewrite': 'Запись в кэш',
   'playground.params.temperature.tips':
     'Контроль случайности: меньше значение — более предсказуемые результаты. При нуле модель становится детерминированной.',
   'playground.params.maxtokens.tips':

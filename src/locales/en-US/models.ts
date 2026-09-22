@@ -352,6 +352,7 @@ export default {
   'models.form.scaling.freq.month': 'Once a month',
   'models.form.scaling.freq.year': 'Once a year',
   'models.form.scaling.next': 'Next window:',
+  'models.form.scaling.current': 'Current window:',
   'models.form.scaling.addRule': 'Add rule',
   'models.form.scaling.removeRule': 'Remove rule',
   'models.form.scaling.rules.required':

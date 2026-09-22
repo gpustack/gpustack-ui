@@ -355,6 +355,7 @@ export default {
   'models.form.scaling.freq.month': '月に1回',
   'models.form.scaling.freq.year': '年に1回',
   'models.form.scaling.next': '次のウィンドウ：',
+  'models.form.scaling.current': '現在のウィンドウ：',
   'models.form.scaling.addRule': 'ルールを追加',
   'models.form.scaling.removeRule': 'ルールを削除',
   'models.form.scaling.rules.required':

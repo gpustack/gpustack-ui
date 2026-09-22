@@ -335,6 +335,7 @@ export default {
   'models.form.scaling.freq.month': '每月一次',
   'models.form.scaling.freq.year': '每年一次',
   'models.form.scaling.next': '下一个窗口：',
+  'models.form.scaling.current': '当前窗口：',
   'models.form.scaling.addRule': '添加规则',
   'models.form.scaling.removeRule': '删除规则',
   'models.form.scaling.rules.required': '请至少添加一条规则，或关闭定时伸缩。',

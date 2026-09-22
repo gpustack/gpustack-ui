@@ -424,11 +424,14 @@ export const DO_NOT_TRIGGER_CHECK_COMPATIBILITY = [
 // ignore to compare old and new data when these fields change in updating model
 // `native_anthropic_api` only reconfigures the gateway's ai-proxy provider, so
 // the running instances stay as they are.
+// `scaling_schedule` is applied live too — the scheduler just drives the
+// replica count from the new windows, exactly like a plain `replicas` edit.
 export const DO_NOT_NOTIFY_RECREATE = [
   'categories',
   'replicas',
   'description',
-  'native_anthropic_api'
+  'native_anthropic_api',
+  'scaling_schedule'
 ];
 
 export const defaultFormValues = {

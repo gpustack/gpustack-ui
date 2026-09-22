@@ -110,6 +110,12 @@ export const getRightRenderContent = (opts: {
       url: externalLinks.documentation
     },
     {
+      key: 'imageSelector',
+      icon: <IconFont type="icon-docker"></IconFont>,
+      label: intl.formatMessage({ id: 'common.button.imageSelector' }),
+      url: externalLinks.imageSelector
+    },
+    {
       key: 'version',
       icon: <InfoCircleOutlined />,
       label: intl.formatMessage({ id: 'common.button.version' })

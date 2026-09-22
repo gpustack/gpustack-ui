@@ -217,6 +217,7 @@ export default {
   'common.button.help': 'Помощь',
   'common.button.feedback': 'Обратная связь',
   'common.button.docs': 'Документация',
+  'common.button.imageSelector': 'Выбор образа',
   'common.button.version': 'Версия',
   'common.title.delete.confirm': 'Подтверждение удаления',
   'common.title.stop.confirm': 'Подтверждение остановки',

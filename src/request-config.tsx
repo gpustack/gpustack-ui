@@ -2,15 +2,16 @@ import { userAtom } from '@/atoms/user';
 import { clearAtomStorage } from '@/atoms/utils';
 import { history, RequestConfig } from '@umijs/max';
 import { message } from 'antd';
-import { DEFAULT_ENTER_PAGE } from './config/settings';
+import { BASE_PATH, DEFAULT_ENTER_PAGE } from './config/settings';
 import ErrorMessageContent from './pages/_components/error-message-content';
 import {
   extraRequestInterceptors,
   extraResponseInterceptors
 } from './request.extensions';
 
-//  these APIs do not via the GPUSTACK_API_BASE_URL
-const NoBaseURLAPIs = ['/auth', '/v1', '/version', '/proxy', '/update'];
+// These APIs sit outside the versioned management API, so they carry the mount
+// prefix on its own rather than the default `${BASE_PATH}/${GPUSTACK_API_BASE_URL}`.
+const UnversionedAPIs = ['/auth', '/v1', '/version', '/proxy', '/update'];
 
 export const requestConfig: RequestConfig = {
   errorConfig: {
@@ -38,8 +39,8 @@ export const requestConfig: RequestConfig = {
   },
   requestInterceptors: [
     (url, options) => {
-      if (NoBaseURLAPIs.some((api) => url.startsWith(api))) {
-        options.baseURL = '';
+      if (UnversionedAPIs.some((api) => url.startsWith(api))) {
+        options.baseURL = BASE_PATH;
         return { url, options };
       }
       return { url, options };

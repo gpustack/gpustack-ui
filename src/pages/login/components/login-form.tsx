@@ -1,6 +1,6 @@
 import LogoIcon from '@/assets/images/gpustack-logo.png';
 import { userAtom } from '@/atoms/user';
-import { history, useIntl, useModel } from '@umijs/max';
+import { useIntl, useModel } from '@umijs/max';
 import { Button, Divider, Form, Spin, message } from 'antd';
 import { createStyles } from 'antd-style';
 import { useAtom } from 'jotai';
@@ -156,8 +156,8 @@ const LoginForm = () => {
   // through the existing toast, and clear the param from the URL so
   // a refresh doesn't re-fire the toast.
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const errorCode = params.get('error');
+    const url = new URL(window.location.href);
+    const errorCode = url.searchParams.get('error');
     if (!errorCode) return;
     // Codes recognised by the backend's SSO callback wrapper. Map to
     // an i18n key per code; an unknown code is silently ignored so a
@@ -170,16 +170,15 @@ const LoginForm = () => {
     if (messageId) {
       handleOnError(new Error(intl.formatMessage({ id: messageId })));
     }
-    params.delete('error');
-    const newQuery = params.toString();
-    // Route through ``@umijs/max``'s ``history`` rather than
-    // ``window.history.replaceState`` so the router's internal
-    // location stays in sync with the address bar — any other code
-    // that reads it (route guards, ``useLocation``, …) sees the
-    // cleaned URL on the same render.
-    history.replace(
-      window.location.pathname + (newQuery ? `?${newQuery}` : '')
-    );
+    // Clear the param through the *browser's* history, not the router's.
+    // The router is hash-based, so its ``history`` owns only the fragment:
+    // it cannot reach the real query string the param lives in, and handing
+    // it a pathname would set the fragment to that value — navigating away
+    // from ``/login`` and unmounting this component, whose ``contextHolder``
+    // the toast above needs in order to render. Keeping the whole ``URL``
+    // preserves the ``#/login`` fragment untouched.
+    url.searchParams.delete('error');
+    window.history.replaceState(null, '', url.toString());
   }, []);
 
   // local user authentication

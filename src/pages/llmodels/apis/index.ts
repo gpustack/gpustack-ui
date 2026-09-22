@@ -207,8 +207,10 @@ export async function queryModelInstanceRestartCount(id: number) {
  * redirect sits outside that guard in `request-config.tsx`, so session expiry is
  * still handled.
  *
- * The response streams without a Content-Length, so `onDownloadProgress` gets a
- * ProgressEvent whose `total` is meaningless — only `loaded` is usable.
+ * A Content-Length comes back only where the server can state a length that
+ * will still hold when the last byte is sent: one stream, of known size, that
+ * the size cap has not truncated. Everywhere else the ProgressEvent carries no
+ * `total` and `loaded` is all there is to show.
  */
 export async function downloadModelInstanceLogs(
   id: number | string,

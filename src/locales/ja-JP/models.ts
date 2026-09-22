@@ -143,6 +143,7 @@ export default {
   'models.logs.pagination.next': '次の{lines}行',
   'models.logs.pagination.last': '最終ページ',
   'models.logs.pagination.first': '最初のページ',
+  'models.logs.pagination.jump': '指定ページへ移動',
   'models.form.localPath': 'ローカルパス',
   'models.form.filePath': 'モデルパス',
   'models.form.backendVersion': 'バックエンドバージョン',
@@ -431,6 +432,7 @@ export default {
   'models.instance.startHistory.tips':
     'Shows logs from the run before the last error-triggered restart.',
   'models.instance.logs.downloading': 'ダウンロード中… {size}',
+  'models.instance.logs.downloadingPercent': 'ダウンロード中… {percent}%',
   'models.form.lora.label': 'LoRA Adapters',
   'models.form.lora.add': 'Add LoRA Adapter',
   'models.form.lora.select': 'Select LoRA',

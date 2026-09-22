@@ -141,6 +141,7 @@ export default {
   'models.logs.pagination.next': 'Sonraki {lines} Satır',
   'models.logs.pagination.last': 'Son Sayfa',
   'models.logs.pagination.first': 'İlk Sayfa',
+  'models.logs.pagination.jump': 'Sayfaya Git',
   'models.form.localPath': 'Yerel Yol',
   'models.form.filePath': 'Model Yolu',
   'models.form.backendVersion': 'Altyapı Sürümü',
@@ -429,6 +430,7 @@ export default {
   'models.instance.startHistory.tips':
     'Hata kaynaklı son yeniden başlatmadan önceki çalıştırmanın günlüklerini gösterir.',
   'models.instance.logs.downloading': 'İndiriliyor… {size}',
+  'models.instance.logs.downloadingPercent': 'İndiriliyor… {percent}%',
   'models.form.lora.label': 'LoRA Adaptörleri',
   'models.form.lora.add': 'LoRA Adaptörü Ekle',
   'models.form.lora.select': 'LoRA Seç',

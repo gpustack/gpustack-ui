@@ -161,14 +161,16 @@ const previewWindow = (
     let active = false;
     try {
       // `prev()` yields the last occurrence STRICTLY before its currentDate, so
-      // nudge a second past now for a window starting on this very second.
+      // nudge a second past now for a window starting on this very second. The
+      // `<= now` clamp then drops what that nudge over-reached into: a second
+      // before a window opens, `prev()` already returns it.
       const started = CronExpressionParser.parse(cron, {
         tz,
         currentDate: new Date(now + 1000)
       })
         .prev()
         .toDate();
-      if (started.getTime() + durationMs > now) {
+      if (started.getTime() <= now && started.getTime() + durationMs > now) {
         start = started;
         active = true;
       }

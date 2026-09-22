@@ -425,6 +425,12 @@ const ImportYamlModal: React.FC<ImportYamlModalProps> = ({
     // picked yet, so the empty state can say why nothing happened.
     const rejection = checkYamlFile(rawFile);
     if (rejection) {
+      // Abandon what the replaced document had in flight first, exactly as
+      // `reset` does — a plan or a pending edit landing after this would put
+      // the old file's review back over the refusal.
+      requestId.current += 1;
+      inFlight.current?.abort();
+      clearTimeout(debounce.current);
       setReview({
         ...EMPTY_REVIEW,
         errors: [intl.formatMessage({ id: rejection.id }, rejection.values)]

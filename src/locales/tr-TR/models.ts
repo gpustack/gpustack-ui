@@ -184,7 +184,7 @@ export default {
   'models.instance.workergpu': '{n} düğüm / {m} GPU',
   'models.instance.mainworker': 'Ana İşçi Düğüm (Main)',
   'models.instance.worker': 'İşçi Düğüm',
-  'models.instance.workerip': 'İşçi Düğüm IP',
+  'models.instance.workerip': 'İşçi Düğüm IP:Port',
   'models.form.backend.warning':
     'Seçilen altyapı GGUF modellerini desteklemiyor. Lütfen Çıkarım Altyapısına GGUF desteği olan bir altyapı ekleyin.',
   'models.form.backend.warning.gguf':

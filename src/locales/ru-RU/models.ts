@@ -186,7 +186,7 @@ export default {
   'models.instance.workergpu': '{n} воркеров / {m} GPU',
   'models.instance.mainworker': 'Главный воркер (Main)',
   'models.instance.worker': 'Воркер',
-  'models.instance.workerip': 'IP воркера',
+  'models.instance.workerip': 'IP:Port воркера',
   'models.form.backend.warning':
     'Выбранный бэкенд не поддерживает модели GGUF. Пожалуйста, добавьте бэкенд с поддержкой GGUF в разделе Бэкенды вывода.',
   'models.form.backend.warning.gguf':

@@ -72,12 +72,6 @@ const useStyles = createStyles(({ css }) => ({
       color: var(--color-white-quaternary);
       text-align: right;
     }
-    .metric {
-      font-size: 14px;
-      font-weight: 500;
-      line-height: 1.2;
-      color: var(--color-white-secondary);
-    }
     .metric-unit {
       margin-left: 4px;
       font-size: 12px;
@@ -94,22 +88,28 @@ interface InfoRowProps {
   // values the label's own message interpolates (e.g. the window a rate
   // was measured over)
   labelValues?: Record<string, string | number>;
+  // a subordinate line under the value (e.g. how a total is spread)
+  hint?: React.ReactNode;
 }
 
 const InfoRow: React.FC<InfoRowProps> = ({
   label,
   icon,
   value,
-  labelValues
+  labelValues,
+  hint
 }) => {
   const intl = useIntl();
   return (
-    <Flex align="flex-start" justify="space-between" gap={16}>
-      <Flex align="center" gap={6} className="label">
-        {icon}
-        <span>{intl.formatMessage({ id: label }, labelValues)}</span>
+    <Flex vertical gap={2}>
+      <Flex align="flex-start" justify="space-between" gap={16}>
+        <Flex align="center" gap={6} className="label">
+          {icon}
+          <span>{intl.formatMessage({ id: label }, labelValues)}</span>
+        </Flex>
+        <span className="value">{value}</span>
       </Flex>
-      <span className="value">{value}</span>
+      {hint && <span className="hint">{hint}</span>}
     </Flex>
   );
 };
@@ -157,8 +157,7 @@ const WorkerInfoContent: React.FC<NameCellProps> = ({
     backendVersion ? ` (${backendVersion})` : ''
   }`;
 
-  // "152 GiB" split so the figure can carry the display weight and the unit
-  // stays subordinate to it.
+  // "152 GiB" split so the unit stays subordinate to the figure.
   const [vramValue, vramUnit] = String(
     convertFileSize(calcTotalVram(record), 1)
   ).split(' ');
@@ -174,9 +173,19 @@ const WorkerInfoContent: React.FC<NameCellProps> = ({
         _.keys(item.computed_resource_claim?.vram || {}).length
     );
 
-  // The last group describes the main worker — only its label changes when the
-  // instance is distributed. The per-worker breakdown of a distributed
-  // instance belongs to the "across workers" tooltip on the same row.
+  // Three groups, each answering one question: what serves the instance, where
+  // it runs, what it claims.
+  const backendRows: InfoRowProps[] = [
+    {
+      label: 'models.form.backend',
+      icon: <ThunderboltFilled />,
+      value: backend
+    }
+  ];
+
+  // Only the main worker — its label changes when the instance is distributed.
+  // The per-worker breakdown belongs to the "across workers" tooltip on the
+  // same row.
   const workerRows: InfoRowProps[] = [
     {
       label: isDistributed
@@ -189,11 +198,31 @@ const WorkerInfoContent: React.FC<NameCellProps> = ({
       label: 'models.instance.workerip',
       icon: <HddFilled />,
       value: workerIp
-    },
+    }
+  ];
+
+  const gpuRows: InfoRowProps[] = [
     {
       label: 'models.table.gpuindex',
       icon: <IconFont type="icon-filled-gpu" />,
       value: gpuIndexes.length ? `[${_.join(gpuIndexes, ', ')}]` : '-'
+    },
+    {
+      label: 'models.table.vram.allocated',
+      icon: <PieChartFilled />,
+      value: (
+        <>
+          {vramValue}
+          {vramUnit && <span className="metric-unit">{vramUnit}</span>}
+        </>
+      ),
+      // a cross-worker claim is instance-wide, so say what it covers
+      hint: isDistributed
+        ? intl.formatMessage(
+            { id: 'models.instance.workergpu' },
+            { n: workerCount, m: gpuCount }
+          )
+        : undefined
     },
     ...(vgpuAllocation
       ? [
@@ -235,52 +264,22 @@ const WorkerInfoContent: React.FC<NameCellProps> = ({
       : [])
   ];
 
+  const groups = [backendRows, workerRows, gpuRows, cacheRows].filter(
+    (rows) => rows.length > 0
+  );
+
   return (
     <div className={styles.card}>
-      <Flex vertical gap={2}>
-        <Flex align="baseline" justify="space-between" gap={16}>
-          <Flex align="center" gap={6} className="label">
-            <PieChartFilled />
-            <span>
-              {intl.formatMessage({ id: 'models.table.vram.allocated' })}
-            </span>
-          </Flex>
-          <span className="metric">
-            {vramValue}
-            {vramUnit && <span className="metric-unit">{vramUnit}</span>}
-          </span>
-        </Flex>
-        {isDistributed && (
-          <span className="hint">
-            {intl.formatMessage(
-              { id: 'models.instance.workergpu' },
-              { n: workerCount, m: gpuCount }
-            )}
-          </span>
-        )}
-      </Flex>
-      <div className="divider"></div>
-      <InfoRow
-        label="models.form.backend"
-        icon={<ThunderboltFilled />}
-        value={backend}
-      ></InfoRow>
-      <div className="divider"></div>
-      <Flex vertical gap={6}>
-        {workerRows.map((row) => (
-          <InfoRow key={row.label} {...row}></InfoRow>
-        ))}
-      </Flex>
-      {cacheRows.length > 0 && (
-        <>
-          <div className="divider"></div>
+      {groups.map((rows, index) => (
+        <React.Fragment key={rows[0].label}>
+          {index > 0 && <div className="divider"></div>}
           <Flex vertical gap={6}>
-            {cacheRows.map((row) => (
+            {rows.map((row) => (
               <InfoRow key={row.label} {...row}></InfoRow>
             ))}
           </Flex>
-        </>
-      )}
+        </React.Fragment>
+      ))}
     </div>
   );
 };

@@ -176,7 +176,7 @@ export default {
   'models.instance.workergpu': '{n} 节点 / {m} 卡',
   'models.instance.mainworker': '主节点（Main）',
   'models.instance.worker': '运行节点',
-  'models.instance.workerip': '节点 IP',
+  'models.instance.workerip': '节点 IP:端口',
   'models.form.backend.warning':
     '当前后端不支持 GGUF 格式模型。请在“推理后端”中添加一个支持 GGUF 的后端。',
   'models.form.backend.warning.gguf':

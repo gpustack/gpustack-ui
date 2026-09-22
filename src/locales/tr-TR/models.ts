@@ -352,6 +352,7 @@ export default {
   'models.form.scaling.freq.month': 'Ayda bir',
   'models.form.scaling.freq.year': 'Yılda bir',
   'models.form.scaling.next': 'Sonraki pencere:',
+  'models.form.scaling.current': 'Geçerli pencere:',
   'models.form.scaling.addRule': 'Kural ekle',
   'models.form.scaling.removeRule': 'Kuralı kaldır',
   'models.form.scaling.rules.required':

@@ -139,19 +139,47 @@ const formatInTimezone = (date: Date, tz: string): string => {
   }
 };
 
-// Next window occurrence [start, start+duration] for a start cron + duration.
-const nextWindow = (
+// The window occurrence [start, start+duration] to preview for a start cron +
+// duration: the one currently running when now falls inside it, otherwise the
+// next upcoming one. Always jumping to the next occurrence hid the window the
+// user was actually in — at 16:33 a 16:32 → 18:00 daily rule showed tomorrow.
+const previewWindow = (
   cron: string,
   durationSeconds: number | null | undefined,
   tz: string
-): { start: string; end: string } | null => {
+): { start: string; end: string; active: boolean } | null => {
   if (!cron?.trim() || !durationSeconds) return null;
   try {
-    const start = CronExpressionParser.parse(cron, { tz }).next().toDate();
-    const end = new Date(start.getTime() + durationSeconds * 1000);
+    const now = Date.now();
+    const durationMs = durationSeconds * 1000;
+    let start = CronExpressionParser.parse(cron, {
+      tz,
+      currentDate: new Date(now)
+    })
+      .next()
+      .toDate();
+    let active = false;
+    try {
+      // `prev()` yields the last occurrence STRICTLY before its currentDate, so
+      // nudge a second past now for a window starting on this very second.
+      const started = CronExpressionParser.parse(cron, {
+        tz,
+        currentDate: new Date(now + 1000)
+      })
+        .prev()
+        .toDate();
+      if (started.getTime() + durationMs > now) {
+        start = started;
+        active = true;
+      }
+    } catch {
+      // no earlier occurrence — keep the upcoming one
+    }
+    const end = new Date(start.getTime() + durationMs);
     return {
       start: formatInTimezone(start, tz),
-      end: formatInTimezone(end, tz)
+      end: formatInTimezone(end, tz),
+      active
     };
   } catch {
     return null;
@@ -634,7 +662,7 @@ const RuleEditor: React.FC<{
   );
   const tz = serverTimezone || getBrowserTimezone();
   const win = useMemo(
-    () => nextWindow(cronText, durationSeconds, tz),
+    () => previewWindow(cronText, durationSeconds, tz),
     [cronText, durationSeconds, tz]
   );
   // TimePicker only yields valid HH:mm, so no invalid-input state to track.
@@ -744,6 +772,7 @@ const RuleEditor: React.FC<{
           <div className="fld">
             <MultipleSelect
               mode="multiple"
+              maxTagCount={'responsive'}
               style={{ width: '100%' }}
               label={intl.formatMessage({
                 id: 'models.form.scaling.weekdaysLabel'
@@ -758,6 +787,7 @@ const RuleEditor: React.FC<{
           <div className="fld">
             <MultipleSelect
               mode="multiple"
+              maxTagCount={'responsive'}
               style={{ width: '100%' }}
               label={intl.formatMessage({
                 id: 'models.form.scaling.monthdaysLabel'
@@ -868,7 +898,11 @@ const RuleEditor: React.FC<{
             {win && (
               <>
                 <div className="next-title">
-                  {intl.formatMessage({ id: 'models.form.scaling.next' })}
+                  {intl.formatMessage({
+                    id: win.active
+                      ? 'models.form.scaling.current'
+                      : 'models.form.scaling.next'
+                  })}
                 </div>
                 <div className="next-item">
                   {win.start} → {win.end}

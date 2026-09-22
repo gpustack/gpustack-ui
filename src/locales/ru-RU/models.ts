@@ -357,6 +357,7 @@ export default {
   'models.form.scaling.freq.month': 'Раз в месяц',
   'models.form.scaling.freq.year': 'Раз в год',
   'models.form.scaling.next': 'Следующее окно:',
+  'models.form.scaling.current': 'Текущее окно:',
   'models.form.scaling.addRule': 'Добавить правило',
   'models.form.scaling.removeRule': 'Удалить правило',
   'models.form.scaling.rules.required':

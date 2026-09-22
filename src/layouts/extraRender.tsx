@@ -276,6 +276,12 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
       icon: <ReadOutlined />,
       label: intl.formatMessage({ id: 'common.button.docs' }),
       url: externalLinks.documentation
+    },
+    {
+      key: 'imageSelector',
+      icon: <IconFont type="icon-docker"></IconFont>,
+      label: intl.formatMessage({ id: 'common.button.imageSelector' }),
+      url: externalLinks.imageSelector
     }
   ];
 

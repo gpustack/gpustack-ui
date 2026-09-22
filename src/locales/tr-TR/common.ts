@@ -222,6 +222,7 @@ export default {
   'common.button.help': 'Yardım',
   'common.button.feedback': 'Geri Bildirim',
   'common.button.docs': 'Dokümantasyon',
+  'common.button.imageSelector': 'İmaj Seçici',
   'common.button.version': 'Sürüm',
   'common.title.delete.confirm': 'Silme onayı',
   'common.title.stop.confirm': 'Durdurma onayı',

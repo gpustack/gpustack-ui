@@ -6,6 +6,7 @@ const externalLinks = {
   release: 'https://github.com/gpustack/gpustack/releases',
   reportIssue: 'https://github.com/gpustack/gpustack/issues/new/choose',
   faq: 'https://docs.gpustack.ai/latest/faq/',
+  imageSelector: 'https://docs.gpustack.ai/latest/image-selector/',
   resetPassword:
     'https://docs.gpustack.ai/latest/troubleshooting/?h=reset#reset-admin-password'
 };

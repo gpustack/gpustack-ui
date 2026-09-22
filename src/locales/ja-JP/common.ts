@@ -219,6 +219,7 @@ export default {
   'common.button.help': 'ヘルプ',
   'common.button.feedback': 'フィードバック',
   'common.button.docs': 'ドキュメント',
+  'common.button.imageSelector': 'イメージセレクター',
   'common.button.version': 'バージョン',
   'common.title.delete.confirm': '削除を確認',
   'common.title.stop.confirm': '停止を確認',

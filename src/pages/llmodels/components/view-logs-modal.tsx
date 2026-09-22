@@ -7,7 +7,9 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { MODELS_API } from '../apis';
 
 import { InstanceRealtimeLogStatus, InstanceStatusMap } from '../config';
-import useQueryModelInstanceRestartCount from '../services/use-query-instance-restart-count';
+import useQueryModelInstanceRestartCount, {
+  RestartOption
+} from '../services/use-query-instance-restart-count';
 
 type ViewModalProps = {
   open: boolean;
@@ -108,14 +110,16 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
     cancelRequest();
   };
 
-  const handleOnChange = (option: any) => {
+  const handleOnChange = (option?: RestartOption) => {
     if (!option) {
       setParams({
         follow: true
       });
     } else {
       setParams({
-        follow: true,
+        // A previous run gains no more lines, so there is nothing to follow:
+        // open it on its last page and let the page controls move it.
+        follow: !option.previous,
         watch: !option.previous,
         previous: option.previous,
         worker_id: option.worker_id,
@@ -272,7 +276,7 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
       fetchData(props.id).then((list) => {
         const lastItem = list.find((item) => item.isMain);
         if (lastItem) {
-          handleOnChange(lastItem.children?.[0]);
+          handleOnChange(lastItem.children?.find((item) => !item.previous));
         }
       });
     } else {

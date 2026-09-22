@@ -4,6 +4,16 @@ import { useState } from 'react';
 import { queryModelInstanceRestartCount } from '../apis';
 import { InstanceRestartCount } from '../config/types';
 
+export interface RestartOption {
+  value: string;
+  label: string;
+  start_at: string;
+  previous: boolean;
+  worker_id: number;
+  container: string;
+  parentValue: string;
+}
+
 interface RestartCountOption {
   label: string;
   value: string;
@@ -13,15 +23,7 @@ interface RestartCountOption {
   start_at: string;
   isParent: boolean;
   isMain: boolean;
-  children?: {
-    value: string;
-    label: string;
-    start_at: string;
-    previous: boolean;
-    worker_id: number;
-    container: string;
-    parentValue: string;
-  }[];
+  children?: RestartOption[];
 }
 
 export default function useQueryModelInstanceRestartCount() {

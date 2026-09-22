@@ -140,6 +140,7 @@ export default {
   'models.logs.pagination.next': 'Next {lines} Lines',
   'models.logs.pagination.last': 'Last Page',
   'models.logs.pagination.first': 'First Page',
+  'models.logs.pagination.jump': 'Go to Page',
   'models.form.localPath': 'Local Path',
   'models.form.filePath': 'Model Path',
   'models.form.backendVersion': 'Backend Version',
@@ -427,6 +428,7 @@ export default {
   'models.instance.startHistory.tips':
     'Shows logs from the run before the last error-triggered restart.',
   'models.instance.logs.downloading': 'Downloading… {size}',
+  'models.instance.logs.downloadingPercent': 'Downloading… {percent}%',
   'models.form.lora.label': 'LoRA Adapters',
   'models.form.lora.add': 'Add LoRA Adapter',
   'models.form.lora.select': 'Select LoRA',

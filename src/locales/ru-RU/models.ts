@@ -143,6 +143,7 @@ export default {
   'models.logs.pagination.next': 'Следующие {lines} строк',
   'models.logs.pagination.last': 'Последняя страница',
   'models.logs.pagination.first': 'Первая страница',
+  'models.logs.pagination.jump': 'Перейти к странице',
   'models.form.localPath': 'Локальный путь',
   'models.form.filePath': 'Путь к модели',
   'models.form.backendVersion': 'Версия бэкенда',
@@ -432,6 +433,7 @@ export default {
   'models.instance.startHistory.tips':
     'Shows logs from the run before the last error-triggered restart.',
   'models.instance.logs.downloading': 'Загрузка… {size}',
+  'models.instance.logs.downloadingPercent': 'Загрузка… {percent}%',
   'models.form.lora.label': 'LoRA Adapters',
   'models.form.lora.add': 'Add LoRA Adapter',
   'models.form.lora.select': 'Select LoRA',

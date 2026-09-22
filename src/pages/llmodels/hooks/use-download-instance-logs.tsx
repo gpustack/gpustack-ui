@@ -45,7 +45,19 @@ const useDownloadInstanceLogs = () => {
     const controller = new AbortController();
     let lastTick = 0;
 
-    const openProgress = (loaded: number) => {
+    // A percentage needs a length, and the server can only state one when the
+    // log it is about to send cannot change under it; a multi-worker zip or a
+    // capped log has no such length, and then bytes so far is all there is.
+    const openProgress = (loaded: number, total?: number) => {
+      const progress = total
+        ? intl.formatMessage(
+            { id: 'models.instance.logs.downloadingPercent' },
+            { percent: Math.min(100, Math.floor((loaded / total) * 100)) }
+          )
+        : intl.formatMessage(
+            { id: 'models.instance.logs.downloading' },
+            { size: convertFileSize(loaded, 1, true) }
+          );
       notification.open({
         key,
         // 0, not null: antd types duration as `number | false` and treats 0 as
@@ -53,12 +65,7 @@ const useDownloadInstanceLogs = () => {
         duration: 0,
         // `title`, not `message`: antd 6 deprecated `message` in favour of it.
         title: record.name,
-        description: intl
-          .formatMessage(
-            { id: 'models.instance.logs.downloading' },
-            { size: convertFileSize(loaded, 1, true) }
-          )
-          .trim(),
+        description: progress.trim(),
         closeIcon: (
           <span>{intl.formatMessage({ id: 'common.button.cancel' })}</span>
         ),
@@ -75,7 +82,10 @@ const useDownloadInstanceLogs = () => {
           const now = Date.now();
           if (now - lastTick < PROGRESS_INTERVAL) return;
           lastTick = now;
-          openProgress(event.loaded);
+          openProgress(
+            event.loaded,
+            event.lengthComputable && event.total > 0 ? event.total : undefined
+          );
         }
       });
 

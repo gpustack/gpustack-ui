@@ -135,6 +135,7 @@ export default {
   'models.logs.pagination.next': '下一 {lines} 行',
   'models.logs.pagination.last': '最后一页',
   'models.logs.pagination.first': '第一页',
+  'models.logs.pagination.jump': '跳转到指定页',
   'models.form.localPath': '本地路径',
   'models.form.filePath': '模型路径',
   'models.form.backendVersion': '后端版本',
@@ -404,6 +405,7 @@ export default {
   'models.instance.startHistory.tips':
     '显示上一次因错误自动重启之前的那次运行的日志。',
   'models.instance.logs.downloading': '正在下载… {size}',
+  'models.instance.logs.downloadingPercent': '正在下载… {percent}%',
   'models.form.lora.label': 'LoRA 适配器',
   'models.form.lora.add': '添加 LoRA 适配器',
   'models.form.lora.select': '选择 LoRA',

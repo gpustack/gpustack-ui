@@ -185,7 +185,7 @@ export default {
   'models.instance.workergpu': '{n} ワーカー / {m} GPU',
   'models.instance.mainworker': 'メインワーカー（Main）',
   'models.instance.worker': '実行ワーカー',
-  'models.instance.workerip': 'ワーカー IP',
+  'models.instance.workerip': 'ワーカー IP:Port',
   'models.form.backend.warning':
     'The selected backend does not support GGUF models. Please add a backend with GGUF support in the Inference Backend.',
   'models.form.backend.warning.gguf':

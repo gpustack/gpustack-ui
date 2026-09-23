@@ -29,6 +29,10 @@ export default {
     'Please enter an absolute http(s) URL, including the port if there is one, e.g. https://gateway.example.com:8080',
   'providers.form.rules.openaiCustomUrl':
     'Please enter an absolute http(s) URL with a path, e.g. https://gateway.example.com:8080/v1',
+  'providers.form.rules.claudeCustomUrl.credentials':
+    'The URL must not carry credentials: they would be sent as the Host header of every request. Configure the endpoint key as the provider API key instead.',
+  'providers.form.rules.claudeCustomUrl.query':
+    'The URL takes an origin and an optional path prefix only; the query or fragment would be dropped.',
   'providers.form.model.duplicate': 'Duplicate model exists',
   'providers.table.registerRoute': 'Register Route',
   'providers.form.azureServiceUrl': 'Azure OpenAI Service URL',

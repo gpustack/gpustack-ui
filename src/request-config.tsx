@@ -19,7 +19,18 @@ export const requestConfig: RequestConfig = {
     },
     errorHandler: (error: any, opts: any) => {
       const { message: errorMessage, response } = error;
+      // FastAPI validation errors arrive as `{ detail: [{ msg, ... }, ...] }`.
+      // The backend now guarantees a single relevant entry for provider
+      // submits, but only ever surface the first one as a readable message
+      // instead of dumping the whole array.
+      const detail = response?.data?.detail;
+      const firstDetailMsg = Array.isArray(detail)
+        ? detail[0]?.msg
+        : typeof detail === 'string'
+          ? detail
+          : undefined;
       const errMsg =
+        firstDetailMsg ||
         response?.data?.error?.message ||
         response?.data?.message ||
         errorMessage;

@@ -394,5 +394,8 @@ export default {
   'benchmark.detail.targetMode.route': '路由（测部署）· {route}',
   'benchmark.form.target.route': '路由',
   'benchmark.form.target.route.empty':
-    '该集群下没有指向可服务 LLM 的路由。先部署一条路由，或改用实例形态。'
+    '该集群下没有指向可服务 LLM 的路由。先部署一条路由，或改用实例形态。',
+  'benchmark.detail.monitoring': '监控',
+  'benchmark.detail.monitoring.tips':
+    '打开这次运行对应时间范围的监控面板。分离部署的组会跳转到 PD 面板，那里分别展示 prefill 队列、decode 队列与 KV 传输。'
 };

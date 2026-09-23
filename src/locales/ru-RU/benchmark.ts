@@ -407,5 +407,8 @@ export default {
   'benchmark.detail.targetMode.route': 'Маршрут (развёртывание) · {route}',
   'benchmark.form.target.route': 'Маршрут',
   'benchmark.form.target.route.empty':
-    'В этом кластере нет маршрута, ведущего к работающей LLM. Разверните маршрут или измерьте экземпляр.'
+    'В этом кластере нет маршрута, ведущего к работающей LLM. Разверните маршрут или измерьте экземпляр.',
+  'benchmark.detail.monitoring': 'Мониторинг',
+  'benchmark.detail.monitoring.tips':
+    'Открыть панель мониторинга за интервал этого запуска. Разделённая группа откроется на панели PD, где очередь prefill, очередь decode и передача KV показаны отдельно.'
 };

@@ -7,6 +7,7 @@ import { HeaderLeft } from '../_components/page-box';
 import PageBreadcrumb from '../_components/page-breadcrumb';
 import { deleteBenchmark } from './apis';
 import BenchmarkStateTag from './components/benchmark-state-tag';
+import DashboardLink from './components/dashboard-link';
 import DetailContent from './components/detail-content';
 import FadeIn from './components/fade-in';
 import RowActions from './components/row-actions';
@@ -184,11 +185,14 @@ const Details: React.FC = () => {
                     right: -1
                   }}
                 >
-                  <RowActions
-                    page="detail"
-                    record={detailData as any}
-                    handleSelect={handleSelect}
-                  ></RowActions>
+                  <Flex align="center" gap={8}>
+                    <DashboardLink id={id ? Number(id) : undefined} />
+                    <RowActions
+                      page="detail"
+                      record={detailData as any}
+                      handleSelect={handleSelect}
+                    ></RowActions>
+                  </Flex>
                 </div>
               </FadeIn>
             )

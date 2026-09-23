@@ -71,8 +71,14 @@ export default {
     'Stop the run once throughput plateaus (guidellm over-saturation constraint) instead of pushing further past saturation.',
   'benchmark.form.warmup': 'Warmup (%)',
   'benchmark.form.cooldown': 'Cooldown (%)',
+  'benchmark.form.warmup.tips':
+    '各ステージの「最初の N% のリクエスト」を測定ウィンドウから切り落とします（最初の N% の秒数ではありません）。コールドスタートの影響を除くために使います — 実行の最初の数リクエストは定常状態より数倍遅いことがあります。パーセントで入力します。例: 10 は各ステージの最初の 10% のリクエストを切り落とします。',
+  'benchmark.form.cooldown.tips':
+    '各ステージの「最後の N% のリクエスト」を測定ウィンドウから切り落とし、ステージが流し終える末尾を除外します。パーセントで入力します。例: 10 は各ステージの最後の 10% のリクエストを切り落とします。',
   'benchmark.form.maxErrors': 'Max Errors',
-  'benchmark.form.maxErrorRate': '最大エラー率 (0–1)',
+  'benchmark.form.maxErrorRate': '最大エラー率 (%)',
+  'benchmark.form.maxErrorRate.tips':
+    '失敗したリクエストの割合がこの水準に達した時点でステージを停止します — 測定する価値がなくなるまでに、実行のどれだけが失敗してよいかの上限です。パーセントで入力します。例: 5 はエラー率 5% でステージを止めます。空欄にするとエラー率を制限しません。',
   'benchmark.form.stopOnSaturation': 'Stop on Saturation',
   'benchmark.form.datasetSeed.tips':
     '合成データ生成のシード。多段実行では初期シードとなり、各段は 初期 + 段インデックス を使用します(「詳細設定」の「段ごとに異なるシード」をオフにすると固定)。',
@@ -108,6 +114,7 @@ export default {
   'benchmark.form.concurrency': '並行数',
   'benchmark.form.stages': 'ステージ',
   'benchmark.form.stages.mode.manual': '手動',
+  'benchmark.detail.stageLimits': 'ステージごとの上限',
   'benchmark.form.addStage': 'ステージを追加',
   'benchmark.form.maxRequests': '最大リクエスト数',
   'benchmark.form.maxSeconds': '最大秒数',

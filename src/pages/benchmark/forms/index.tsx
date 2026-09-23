@@ -35,6 +35,40 @@ interface ProviderFormProps {
   onFinishFailed?: (errorInfo: any) => void;
 }
 
+/**
+ * Warmup / cooldown / max error rate unit conversion.
+ *
+ * Every one of these is typed as a whole percent (the fields are labelled "%")
+ * while the API column carries guidellm's own scalar, a fraction below 1.
+ * Sending the typed number straight through was a footgun for warmup/cooldown,
+ * where guidellm reads 1-and-above as an absolute request count: "10" meant to
+ * be 10% landed as an absolute 10. Max error rate had the mirror problem — the
+ * field was the only one in the form asking for a raw fraction, so it read as
+ * inconsistent next to its neighbours.
+ *
+ * Only the percent range is offered in the form, so the conversion is
+ * unambiguous in both directions. A stored value of 1 or more predates warmup /
+ * cooldown being a percent — it is an absolute count, and is shown as-is rather
+ * than multiplied into a nonsensical 1000%. (Max error rate can't hold such a
+ * value: guidellm's constraint rejects anything outside the open interval.)
+ *
+ * 🔴 Which makes the submit direction NOT a plain inverse. Such a count comes
+ * back into the field unconverted, and dividing it on the way out would rewrite
+ * a run's meaning behind the user's back — an edit that touched nothing but the
+ * name would turn a warmup of 10 REQUESTS into 10% of them. So a legacy count
+ * survives for exactly as long as the field still holds it: `isLegacyCount`
+ * below is what the submit path asks before converting, and typing in the field
+ * is the statement in percent that the label has been promising all along.
+ */
+const isLegacyCount = (v?: number | null): v is number =>
+  v !== undefined && v !== null && v >= 1;
+
+const percentToFraction = (v?: number | null): number | undefined | null =>
+  v === undefined || v === null ? v : v / 100;
+
+const fractionToPercent = (v?: number | null): number | undefined | null =>
+  v === undefined || v === null || v >= 1 ? v : Math.round(v * 1000) / 10;
+
 const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
   const {
     action,
@@ -52,6 +86,11 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
   const { getScrollElementScrollableHeight } = useWrapperContext();
   const [activeKey, setActiveKey] = useState<string[]>(['name']);
   const scrollTabsRef = useRef<any>(null);
+  // What warmup / cooldown held when this form was seeded, for the two of them
+  // that came in as absolute counts (see `isLegacyCount`). A ref, not state:
+  // nothing renders from it, and it must not re-seed a form the user is typing
+  // into.
+  const seededCounts = useRef<{ warmup?: number; cooldown?: number }>({});
 
   // The nav jumps to each real section instead of a single "Configuration": Basic
   // + Workload / SLO / Load / Stop Conditions. Each `field` matches the section
@@ -156,10 +195,22 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
     const datasetName = validTypes.includes(currentData.dataset_name)
       ? currentData.dataset_name
       : DatasetValueMap.Random;
+    seededCounts.current = {
+      ...(isLegacyCount(currentData.warmup)
+        ? { warmup: currentData.warmup }
+        : {}),
+      ...(isLegacyCount(currentData.cooldown)
+        ? { cooldown: currentData.cooldown }
+        : {})
+    };
     form.setFieldsValue({
       ...currentData,
       dataset_name: datasetName,
       // Editable view of the 9 flat slo_*_ms thresholds (see config/index.ts).
+      // Stored as a fraction, shown as a whole percent (see the onFinish note).
+      warmup: fractionToPercent(currentData.warmup),
+      cooldown: fractionToPercent(currentData.cooldown),
+      max_error_rate: fractionToPercent(currentData.max_error_rate),
       slo_targets: sloTargetsFromFields(currentData),
       model_instance: [currentData.model_name, currentData.model_instance_name],
       // A clone of a random-seeded benchmark re-rolls: running the same config
@@ -235,7 +286,28 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
           // associations break, screen readers land on the wrong control, and any
           // id selector silently picks whichever came first in the DOM.
           name="benchmark"
-          onFinish={onFinish}
+          // Warmup / cooldown / max error rate are entered as whole percents
+          // (the fields are labelled "%") but the API columns hold guidellm's
+          // own scalar convention, where a value below 1 is a FRACTION. Convert
+          // at the boundary so neither side has to know about the other's unit;
+          // see `percentToFraction`. A warmup / cooldown the form was seeded
+          // with as an absolute COUNT and that still holds that same number is
+          // sent back as it came, so an edit elsewhere in the form cannot
+          // rewrite what the run measures.
+          onFinish={(values: FormData) =>
+            onFinish({
+              ...values,
+              warmup:
+                values.warmup === seededCounts.current.warmup
+                  ? values.warmup
+                  : percentToFraction(values.warmup),
+              cooldown:
+                values.cooldown === seededCounts.current.cooldown
+                  ? values.cooldown
+                  : percentToFraction(values.cooldown),
+              max_error_rate: percentToFraction(values.max_error_rate)
+            })
+          }
           onFinishFailed={onFinishFailed}
           initialValues={{
             // Default to the Max Throughput preset: adaptive auto-tune on the

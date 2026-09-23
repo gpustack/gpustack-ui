@@ -72,8 +72,14 @@ export default {
     '当吞吐达到平台不再上升时停止（guidellm 过饱和约束），不再继续加压越过饱和点。',
   'benchmark.form.warmup': '预热（%）',
   'benchmark.form.cooldown': '冷却（%）',
+  'benchmark.form.warmup.tips':
+    '从测量窗口里裁掉每个阶梯「前 N% 的请求」（不是前 N% 的时间）。用于排除冷启动影响——一次运行的头几个请求可能比稳态慢好几倍。填百分比，例：10 = 裁掉每个阶梯前 10% 的请求。',
+  'benchmark.form.cooldown.tips':
+    '从测量窗口里裁掉每个阶梯「最后 N% 的请求」，排除阶梯收尾排空的那一段。填百分比，例：10 = 裁掉每个阶梯最后 10% 的请求。',
   'benchmark.form.maxErrors': '最大错误数',
-  'benchmark.form.maxErrorRate': '最大错误率（0–1）',
+  'benchmark.form.maxErrorRate': '最大错误率（%）',
+  'benchmark.form.maxErrorRate.tips':
+    '当失败请求占比达到该值时停止当前阶梯——用来限定一次运行最多允许失败到什么程度，再往下测数据也没有意义了。填百分比，例：5 = 错误率到 5% 就停。留空表示不限制错误率。',
   'benchmark.form.stopOnSaturation': '过饱和时停止',
   'benchmark.form.datasetSeed.tips':
     '生成随机数据的种子。多档运行时这是初始种子,每档实际种子 = 初始 + 档序号(在"高级"中关闭"每档使用不同 seed"可固定为同一 seed)。',
@@ -109,6 +115,7 @@ export default {
   'benchmark.form.concurrency': '并发数',
   'benchmark.form.stages': '阶段 (Stages)',
   'benchmark.form.stages.mode.manual': '手动',
+  'benchmark.detail.stageLimits': '各级上限',
   'benchmark.form.addStage': '添加阶段',
   'benchmark.form.maxRequests': '最大请求数',
   'benchmark.form.maxSeconds': '最大时长 (秒)',

@@ -127,10 +127,16 @@ export interface FormData {
   prefix_buckets?: PrefixBucket[];
   // Advanced
   turns?: number;
-  warmup?: number;
-  cooldown?: number;
+  // Nullable on purpose: clearing the field must send an explicit null (an
+  // omitted key would leave the stored value in place on edit). The form seeds
+  // them as null too. Unit is a whole PERCENT here; the API column holds a
+  // fraction -- converted in `forms/index.tsx`.
+  warmup?: number | null;
+  cooldown?: number | null;
   max_errors?: number;
-  max_error_rate?: number;
+  // Same story as warmup / cooldown above: a whole PERCENT in the form, a
+  // fraction in the API column, and nullable so clearing it is explicit.
+  max_error_rate?: number | null;
   stop_on_saturation?: boolean;
   // Best operating points (server-computed, persisted on the parent row).
   peak_rate?: number;

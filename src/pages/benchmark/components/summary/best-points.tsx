@@ -266,8 +266,11 @@ const BestPoints: React.FC<BestPointsProps> = ({ points, onSelect }) => {
       v: fmt(best.outTps, 0),
       u: 'tok/s'
     },
+    // Both latencies on p99, not one tail and one average: the two numbers sit
+    // side by side and are read against each other, so mixing the aggregations
+    // invites comparing a tail to a mean. The averages are in the stage detail.
     { k: 'TTFT p99', v: fmt(best.ttftP99), u: 'ms' },
-    { k: t('benchmark.detail.avg.tpot'), v: fmt(best.tpot), u: 'ms' }
+    { k: 'TPOT p99', v: fmt(best.tpotP99), u: 'ms' }
   ];
 
   return (

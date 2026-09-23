@@ -372,11 +372,14 @@ const Overview: React.FC<OverviewProps> = ({
         ]
       : []),
     {
-      title: unitTitle('TTFT', 'ms'),
+      // p99, not the mean: this is the column an SLO is written against, and a
+      // mean TTFT hides exactly the queueing the sweep exists to find. The mean
+      // stays available in the stage detail below.
+      title: unitTitle('TTFT p99', 'ms'),
       key: 'ttft',
-      width: 110,
+      width: 120,
       render: (_v: unknown, p: StagePoint) => {
-        const v = p.ttft;
+        const v = p.ttftP99;
         // Overloaded stages get red numbers: their latency describes a queue, so
         // the value should not read as this deployment's response time.
         return (
@@ -412,6 +415,51 @@ const Overview: React.FC<OverviewProps> = ({
           }
         >
           {num(p.tpot)}
+        </span>
+      )
+    },
+    {
+      // The decode tail next to its own mean. Kept as a separate column rather
+      // than replacing the mean: per-token latency is the one metric where the
+      // gap between mean and tail is the finding — a mean that holds while the
+      // tail runs away is what a saturating decode loop looks like.
+      title: (
+        <Tooltip title={t('benchmark.detail.tpot.tip')}>
+          {unitTitle('TPOT p99', 'ms')}
+        </Tooltip>
+      ),
+      key: 'tpotP99',
+      width: 120,
+      render: (_v: unknown, p: StagePoint) => (
+        <span
+          style={
+            p.isOverloaded ? { color: 'var(--ant-color-error)' } : undefined
+          }
+        >
+          {num(p.tpotP99)}
+        </span>
+      )
+    },
+    {
+      // Measured gaps between streamed outputs, not a per-request average —
+      // the column that answers "which stage did the stream start hitching at",
+      // which the TPOT columns cannot: they divide a stall away by the same
+      // request's healthy gaps. Renders "-" on runs recorded before the gaps
+      // were captured.
+      title: (
+        <Tooltip title={t('benchmark.detail.itl.tip')}>
+          {unitTitle('ITL p99', 'ms')}
+        </Tooltip>
+      ),
+      key: 'itlP99',
+      width: 120,
+      render: (_v: unknown, p: StagePoint) => (
+        <span
+          style={
+            p.isOverloaded ? { color: 'var(--ant-color-error)' } : undefined
+          }
+        >
+          {num(p.itlP99)}
         </span>
       )
     },

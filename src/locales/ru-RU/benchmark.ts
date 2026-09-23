@@ -5,6 +5,7 @@ export default {
   'benchmark.button.clone': 'Clone Benchmark',
   'benchmark.button.compare': 'Compare',
   'benchmark.table.model': 'Model',
+  'benchmark.form.target': 'Цель тестирования',
   'benchmark.table.dataset': 'Dataset',
   'benchmark.table.requestRate': 'Request Rate',
   'benchmark.table.gpu': 'GPU ',
@@ -182,6 +183,7 @@ export default {
   'benchmark.table.filter.bymodel': 'Поиск модели',
   'benchmark.table.filter.bydataset': 'Filter by Dataset',
   'benchmark.table.filter.byLoadType': 'Фильтр по типу нагрузки',
+  'benchmark.table.filter.byTargetMode': 'Фильтр по форме цели',
   'benchmark.table.filter.byProfile': 'Фильтр по профилю',
   'benchmark.table.best': 'Лучшая @',
   'benchmark.table.best.unit.concurrency': 'парал.',
@@ -189,6 +191,7 @@ export default {
   'benchmark.table.coverage': 'Покрытие',
   'benchmark.table.coverage.insufficient': 'Недостаточно',
   'benchmark.table.avg': 'Avg',
+  'benchmark.table.tailLatency': 'Хвостовая задержка',
   'benchmark.table.columnSettings': 'Column Settings',
   'benchmark.detail.summary.results': 'Test Results',
   'benchmark.detail.summary.recommendation': 'Оптимальная рабочая точка',
@@ -247,6 +250,7 @@ export default {
   'benchmark.detail.avg.reqLatency': 'Request Latency Avg',
   'benchmark.detail.avg.ttft': 'TTFT Avg',
   'benchmark.detail.avg.tpot': 'TPOT Avg',
+  'benchmark.detail.avg.itl': 'ITL сред.',
   'benchmark.detail.throughput.totalToken': 'Total Throughput',
   'benchmark.detail.throughput.inputToken': 'Input Throughput',
   'benchmark.detail.throughput.outputToken': 'Output Throughput',
@@ -266,6 +270,10 @@ export default {
   'benchmark.detail.percentile.title': 'Percentile',
   'benchmark.detail.modelName': 'Model Name',
   'benchmark.detail.instanceName': 'Instance Name',
+  'benchmark.detail.members.title': 'Участники',
+  'benchmark.detail.members.role': 'Роль',
+  'benchmark.detail.members.injected': 'Внедрённые параметры',
+  'benchmark.detail.members.endpoint': 'Точка входа',
   'benchmark.detail.configure': 'Configuration',
   'benchmark.detail.config.deployment': 'Развёртывание',
   'benchmark.detail.config.benchmark': 'Бенчмарк',
@@ -279,12 +287,17 @@ export default {
     'Выше этого значения ничего не измерялось — поиск закончился раньше, — поэтому читайте его как «не менее этого». Реальная точка нарушения находится выше и не была измерена.',
   'benchmark.detail.tpot.tip':
     'TPOT: время на выходной токен только для декодирования = (последний токен − первый токен) / (выходные токены − 1), без задержки первого токена. Это inter_token_latency_ms в guidellm и тот же TPOT, который сообщают vLLM и подобные инструменты. Если сервер не отдаёт поток по частям (весь вывод одним фрагментом, обычное дело при низкой нагрузке), измерять нечего, и здесь используется время на токен с учётом первого токена.',
+  'benchmark.detail.itl.tip':
+    'ITL (Inter-Token Latency) — измеренный интервал между последовательными потоковыми ответами: одна выборка на интервал, объединённая по всем запросам, без задержки первого токена. От TPOT отличается гранулярностью выборки: TPOT даёт одно среднее на запрос, поэтому отдельное подвисание усредняется остальными интервалами того же запроса, тогда как ITL сохраняет каждый интервал и подвисание попадает в хвост. Определение совпадает с vLLM и SGLang. Чанк с несколькими токенами (спекулятивное декодирование) по-прежнему считается одним интервалом.',
   'benchmark.detail.chart.sloBreached': 'Нарушение SLO',
   'benchmark.detail.chart.success': 'Доля успешных',
   'benchmark.detail.reason.peakTradeoff':
     'Рост до пика {rate} {unit} даёт всего {gain}% пропускной способности при росте задержки на {cost}',
   'benchmark.detail.unit.avg': 'сред.',
   'benchmark.detail.p99.ttft': 'TTFT p99',
+  'benchmark.detail.p99.tpot': 'TPOT p99',
+  'benchmark.detail.p99.itl': 'ITL p99',
+  'benchmark.detail.max.itl': 'ITL макс.',
   'benchmark.detail.lowSample':
     'На этом этапе {count} измерений, выше p99 находится всего {tail} — хвост определяют единичные запросы. Читайте как ориентир, а не как вывод по SLO (для p99 нужно ~1000 измерений).',
   'benchmark.detail.successPill': 'Успешно {pct}% · {ok} / {total} запросов',
@@ -326,6 +339,9 @@ export default {
   'benchmark.detail.chart.tpotPercentiles': 'Перцентили TPOT',
   'benchmark.detail.chart.tpotPercentiles.note':
     'Время декодирования на токен без первого токена · одно значение на запрос, поэтому график показывает замедление декодирования под нагрузкой, а не отдельные подвисания',
+  'benchmark.detail.chart.itlPercentiles': 'Перцентили ITL',
+  'benchmark.detail.chart.itlPercentiles.note':
+    'Измеренный интервал между последовательными потоковыми ответами · одна выборка на интервал, поэтому хвост показывает отдельные подвисания',
   'benchmark.detail.chart.success.note':
     'Показано, потому что часть запросов не удалась',
   'benchmark.detail.chart.legend.shortfall': 'Дефицит',
@@ -391,14 +407,11 @@ export default {
     'Benchmarking currently only supports LLM models',
   'benchmark.detail.result.duration': 'Duration',
   'benchmark.detail.result.basic': 'Basic',
-  'benchmark.form.target': 'Цель тестирования',
-  'benchmark.table.filter.byTargetMode': 'Фильтр по форме цели',
-  'benchmark.detail.members.title': 'Участники',
-  'benchmark.detail.members.role': 'Роль',
-  'benchmark.detail.members.injected': 'Внедрённые параметры',
-  'benchmark.detail.members.endpoint': 'Точка входа',
   'benchmark.form.pdGroup.tips':
     'Разделённая группа измеряется целиком: каждый запрос входит через её router, поэтому выбирать участника не нужно. Сервер направляет нагрузку на router и запускает генератор нагрузки на воркере, где лежат веса модели.',
+  'benchmark.detail.monitoring': 'Мониторинг',
+  'benchmark.detail.monitoring.tips':
+    'Открыть панель мониторинга за интервал этого запуска. Разделённая группа откроется на панели PD, где очередь prefill, очередь decode и передача KV показаны отдельно.',
   'benchmark.form.targetMode': 'Форма цели тестирования',
   'benchmark.form.targetMode.instance': 'Экземпляр (измеряется движок)',
   'benchmark.form.targetMode.route': 'Маршрут (измеряется развёртывание)',
@@ -407,8 +420,5 @@ export default {
   'benchmark.detail.targetMode.route': 'Маршрут (развёртывание) · {route}',
   'benchmark.form.target.route': 'Маршрут',
   'benchmark.form.target.route.empty':
-    'В этом кластере нет маршрута, ведущего к работающей LLM. Разверните маршрут или измерьте экземпляр.',
-  'benchmark.detail.monitoring': 'Мониторинг',
-  'benchmark.detail.monitoring.tips':
-    'Открыть панель мониторинга за интервал этого запуска. Разделённая группа откроется на панели PD, где очередь prefill, очередь decode и передача KV показаны отдельно.'
+    'В этом кластере нет маршрута, ведущего к работающей LLM. Разверните маршрут или измерьте экземпляр.'
 };

@@ -190,14 +190,9 @@ export interface PrefixBucket {
   bucket_weight?: number | null; // weight in the overall prefix distribution
 }
 
-// One measured (input_tokens, rate) point, from GET /benchmarks/{id}/results.
-export interface BenchmarkResultItem {
-  id: number;
-  benchmark_id: number;
-  input_tokens: number | null;
-  rate: number | null;
-  strategy_type: string | null;
-  sequence: number;
+// The metric columns the API returns for a measured point, and the same set on
+// the parent row for its representative point (the server's BenchmarkMetricsLite).
+export interface BenchmarkMetricsLite {
   requests_per_second_mean: number | null;
   request_latency_mean: number | null;
   time_per_output_token_mean: number | null;
@@ -218,6 +213,17 @@ export interface BenchmarkResultItem {
   inter_token_latency_p99: number | null;
   time_per_output_token_p99: number | null;
   request_latency_p99: number | null;
+  // Measured ITL: the gaps BETWEEN consecutive streamed outputs, one sample per
+  // gap, pooled across requests. Every metric above is one value per REQUEST,
+  // so a single decode stall is averaged away by that request's other gaps —
+  // this is the only reading that keeps it. Same definition as vLLM's ITL.
+  //
+  // null means NOT MEASURED (a point recorded before the runner started
+  // capturing the gaps, or a non-streaming run), never "the gaps were 0 ms".
+  itl_per_chunk_mean: number | null;
+  itl_per_chunk_p95: number | null;
+  itl_per_chunk_p99: number | null;
+  itl_per_chunk_max: number | null;
   tokens_per_second_mean: number | null;
   output_tokens_per_second_mean: number | null;
   input_tokens_per_second_mean: number | null;
@@ -227,13 +233,25 @@ export interface BenchmarkResultItem {
   request_successful: number | null;
   request_errored: number | null;
   request_incomplete: number | null;
+}
+
+// One measured (input_tokens, rate) point, from GET /benchmarks/{id}/results.
+export interface BenchmarkResultItem extends BenchmarkMetricsLite {
+  id: number;
+  benchmark_id: number;
+  input_tokens: number | null;
+  rate: number | null;
+  strategy_type: string | null;
+  sequence: number;
   // This stage's benchmarks[i] dump (includes percentiles) for drill-down.
   raw_metrics?: any;
   created_at: string;
   updated_at: string;
 }
 
-export interface BenchmarkListItem extends FormData {
+// A list row carries the run's configuration plus the metrics of the point the
+// server picked to represent it, which is what the table's metric columns read.
+export interface BenchmarkListItem extends FormData, BenchmarkMetricsLite {
   id: number;
   // Inherited from the parent cluster's owner_principal_id on the
   // wire so per-row tenant filtering works without joining.

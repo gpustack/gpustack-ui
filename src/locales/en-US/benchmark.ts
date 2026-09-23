@@ -382,6 +382,7 @@ export default {
     'Best: concurrency {rate} — {pct}% of peak throughput ({tps} tok/s) at TTFT {ttft} ms{slo, select, yes{, within the SLO} other{}}.',
   'benchmark.detail.analysis.text':
     'Concurrency {rate} sustains {tps} tok/s{prev, select, yes{ — {prevUp}% more throughput than {prevRate}} other{}}{next, select, yes{; pushing to {nextRate} adds only {nextUp}% throughput but {nextTtftUp}% TTFT} other{}}. That makes {rate} the best operating point{slo, select, yes{, within the SLO} other{}}.',
+  'benchmark.detail.specDigest': 'Spec Generation',
   'benchmark.detail.modelFile': 'Model File',
   'benchmark.detail.kvCache': 'Extended KV Cache',
   'benchmark.detail.cacheService': 'Cache Service',

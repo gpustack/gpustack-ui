@@ -383,6 +383,7 @@ export default {
     'En İyi: eşzamanlılık {rate} — pik verimin %{pct} ({tps} tok/s), TTFT {ttft} ms{slo, select, yes{, SLO içinde} other{}}.',
   'benchmark.detail.analysis.text':
     'Eşzamanlılık {rate}, {tps} tok/s sağlar{prev, select, yes{ — {prevRate} değerine göre %{prevUp} daha fazla verim} other{}}{next, select, yes{; {nextRate} değerine çıkmak verime yalnızca %{nextUp} eklerken TTFT %{nextTtftUp} artar} other{}}. Bu nedenle {rate} en iyi çalışma noktasıdır{slo, select, yes{, SLO içinde} other{}}.',
+  'benchmark.detail.specDigest': 'Yapılandırma Sürümü',
   'benchmark.detail.modelFile': 'Model Dosyası',
   'benchmark.detail.kvCache': 'Genişletilmiş KV Önbellek',
   'benchmark.detail.cacheService': 'Önbellek Hizmeti',

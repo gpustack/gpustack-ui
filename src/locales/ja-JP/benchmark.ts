@@ -381,6 +381,7 @@ export default {
     '最適:並行 {rate} —— ピークスループットの {pct}%({tps} tok/s)、TTFT {ttft} ms{slo, select, yes{(SLO 内)} other{}}。',
   'benchmark.detail.analysis.text':
     '並行 {rate} は {tps} tok/s を安定して出力します{prev, select, yes{。{prevRate} よりスループット +{prevUp}%} other{}}{next, select, yes{。{nextRate} まで上げてもスループットは +{nextUp}% のみ、TTFT は +{nextTtftUp}%} other{}}。したがって {rate} が最適な動作点です{slo, select, yes{(SLO 内)} other{}}。',
+  'benchmark.detail.specDigest': '構成世代',
   'benchmark.detail.modelFile': 'Model File',
   'benchmark.detail.kvCache': 'Extended KV Cache',
   'benchmark.detail.cacheService': 'Cache Service',

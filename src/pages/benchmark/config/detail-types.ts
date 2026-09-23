@@ -77,6 +77,11 @@ export interface Snapshot {
   // The route the load entered through, in route mode. Absent for a run aimed
   // at an instance, which is every run written before the mode existed.
   route_name?: string | null;
+  // The generation of the deployment spec these numbers came from: a
+  // content hash over the model's definitional fields. Two reports with
+  // different digests measured different configurations, however alike
+  // their names look.
+  spec_digest?: string | null;
   instances: Record<string, InstancesData>;
   workers: Record<string, WorkerData>;
   gpus: Record<string, GPUData>;

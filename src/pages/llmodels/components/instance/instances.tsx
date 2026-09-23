@@ -165,12 +165,9 @@ const Instances: React.FC<InstanceItemProps> = ({
   return (
     <Wrapper>
       {/* No group-level bar here: the expansion is role headings and their
-          members, nothing else. A `GroupSummary` panel once led it — PD
-          effectiveness, KV transfer rate and per-member request counts, read
-          from Prometheus on expand — and was removed along with its two hooks
-          once the hold on rendering it turned permanent. The server side is
-          untouched, so `GET /models/{id}/pd-metrics` and `POST
-          /models/kv-transfer-budget` still answer if it is ever reinstated. */}
+          members, nothing else. Reading PD effectiveness or KV transfer rate
+          would mean a Prometheus round trip per expand, and neither the
+          endpoints nor the panel for it exist on either side. */}
       {groups.map((group) => (
         <React.Fragment key={group.item.name}>
           <RoleGroupHeader

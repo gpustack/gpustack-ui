@@ -710,11 +710,6 @@ export const ModelStateLabelMap = {
 export const DegradationValueMap = {
   CacheNotInjected: 'cache_not_injected',
   RatioUnmet: 'ratio_unmet',
-  // Serving with no KV moving at all: disaggregation has collapsed into
-  // aggregated serving. Kept apart from `bandwidth_degraded` because the two
-  // have different fixes — slow transfer is a transport problem, no transfer
-  // is a pairing that never formed.
-  PDIneffective: 'pd_ineffective',
   // No prefill and decode member share a host, so every KV transfer crosses
   // the network. Placement-only, so unlike the bandwidth markers it is known
   // before any traffic has happened — which is the point of having it.
@@ -758,7 +753,6 @@ export const DegradationValueMap = {
 export const DegradationLabelMap = {
   [DegradationValueMap.CacheNotInjected]: 'models.pd.degraded.cache',
   [DegradationValueMap.RatioUnmet]: 'models.pd.degraded.ratio',
-  [DegradationValueMap.PDIneffective]: 'models.pd.degraded.ineffective',
   [DegradationValueMap.PairingRemote]: 'models.pd.degraded.pairing',
   [DegradationValueMap.GatherUnmet]: 'models.pd.degraded.gather',
   [DegradationValueMap.GatherBlockedScaleOut]: 'models.pd.degraded.scaleOut',

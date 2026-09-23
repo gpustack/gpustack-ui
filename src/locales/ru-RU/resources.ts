@@ -124,7 +124,14 @@ export default {
   'resources.server.version': 'Server Version: {version}',
   'resources.worker.currentVersion': 'Current Version: {version}',
   'resources.worker.targetVersion': 'Target Version: {version}',
-  'resources.driver.version': 'Driver Version: {version}'
+  'resources.driver.version': 'Driver Version: {version}',
+
+  'resources.worker.setLabels': 'Задать метки',
+  'resources.worker.setLabels.count': 'Выбрано воркеров: {count}',
+  'resources.worker.setLabels.partial':
+    'Метки обновлены на {done} воркерах, {failed} не удалось.',
+  'resources.table.location': 'Расположение',
+  'resources.worker.setLocation': 'Задать расположение'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

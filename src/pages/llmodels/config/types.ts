@@ -51,6 +51,18 @@ export interface ListItem {
   };
   gpu_type_selector?: GPUTypeSelector | null;
   worker_selector?: object;
+
+  /**
+   * How far apart this deployment's members may sit — the topology layer they
+   * are asked to gather within, and how hard that ask is.
+   *
+   * A layer without a strategy is refused server-side, so the two always move
+   * together.
+   */
+  gather?: {
+    strategy?: 'MustGather' | 'PreferGather' | null;
+    layer?: string | null;
+  } | null;
 }
 
 // `POST /models/import`. The plan comes back the same shape either way: on a

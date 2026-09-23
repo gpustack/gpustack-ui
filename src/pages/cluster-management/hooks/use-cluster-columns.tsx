@@ -71,6 +71,18 @@ const clusterActionList = [
     icon: icons.Catalog1
   },
   {
+    // Where a topology declaration lives in the open-source edition. There is
+    // no cluster-detail page to hang a tab on (see the note in the hook
+    // below), and the declaration needs a full-height two-column surface for
+    // "declare | preview" — so a row action opening a drawer, which also
+    // carries the cluster context for free.
+    key: 'topology',
+    label: 'clusters.topology.title',
+    locale: true,
+    order: 45,
+    icon: icons.Catalog1
+  },
+  {
     key: 'isDefault',
     label: 'clusters.form.setDefault',
     locale: true,

@@ -126,7 +126,14 @@ export default {
   'resources.server.version': 'Server Version: {version}',
   'resources.worker.currentVersion': 'Current Version: {version}',
   'resources.worker.targetVersion': 'Target Version: {version}',
-  'resources.driver.version': 'Driver Version: {version}'
+  'resources.driver.version': 'Driver Version: {version}',
+
+  'resources.worker.setLabels': 'ラベルを設定',
+  'resources.worker.setLabels.count': '{count} 台の worker を選択中',
+  'resources.worker.setLabels.partial':
+    '{done} 台の worker のラベルを更新しました。{failed} 台は失敗しました。',
+  'resources.table.location': '位置',
+  'resources.worker.setLocation': '位置を設定'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

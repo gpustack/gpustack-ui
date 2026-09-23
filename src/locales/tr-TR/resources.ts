@@ -124,9 +124,19 @@ export default {
   'resources.server.version': 'Sunucu Sürümü: {version}',
   'resources.worker.currentVersion': 'Geçerli Sürüm: {version}',
   'resources.worker.targetVersion': 'Hedef Sürüm: {version}',
-  'resources.driver.version': 'Sürücü Sürümü: {version}'
+  'resources.driver.version': 'Sürücü Sürümü: {version}',
+
+  'resources.worker.setLabels': 'Etiketleri ayarla',
+  'resources.worker.setLabels.count': '{count} worker seçildi',
+  'resources.worker.setLabels.partial':
+    '{done} worker üzerinde etiketler güncellendi, {failed} tanesi başarısız oldu.',
+  'resources.table.location': 'Konum',
+  'resources.worker.setLocation': 'Konum ayarla'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
 // 1. 'resoureces.worker.upgrade.tips': 'The Worker version does not match the GPUStack Server version. Please keep them consistent.'
+// 2. 'resources.worker.setLabels': 'Set Labels',
+// 3. 'resources.worker.setLabels.count': '{count} workers selected',
+// 4. 'resources.worker.setLabels.partial': 'Labels updated on {done} workers, {failed} failed.'
 // ========== End of To-Do List ==========

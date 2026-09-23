@@ -3,6 +3,7 @@ import { GPUSTACK_API_BASE_URL } from '@/config/settings';
 import { StatusType } from '@/config/types';
 import { GPUsConfigs } from '@/pages/resources/config/gpu-driver';
 import { icons } from '@gpustack/core-ui';
+import { NODE_LAYER_NAME } from './types';
 
 export const ClusterStatusValueMap = {
   Provisioning: 'provisioning',
@@ -301,3 +302,70 @@ export const sourceTypeOptions = [
   //   value: 'configMap'
   // }
 ];
+
+// Display names for layer ids we recognise. Named here rather than from the
+// API's `name`, which is an untranslated fallback; an id with no entry shows
+// its own name verbatim.
+//
+// 🔑 Only `room` · `row` · `rack` (+ the `host` leaf) are built in — that is
+// the whole vocabulary the server now ships. The rest are kept on purpose:
+// this is keyed by a layer's **canonical name**, so an operator who adds a
+// layer and calls it `accelerator_domain`, `switch`, `zone` or `region` gets a
+// translated column header for free, in five languages, at no cost to us. An
+// entry here asserts nothing about whether the server knows the field; it only
+// says "if this name turns up, here is what to call it".
+//
+// Keyed by name and never by id, now that the two are different things. A
+// layer's id is a registry number (`builtin-000003`, `custom-a7f3c1`) and has
+// no translation; its name is the word.
+//
+// Which is also why nothing was deleted when `region` / `zone` / `switch` /
+// `accelerator_domain` stopped being built in: deleting an entry can only
+// downgrade a custom layer's header from «接入交换机» to `switch`.
+export const TopologyFieldLabelMap: Record<string, string> = {
+  region: 'clusters.topology.field.region',
+  zone: 'clusters.topology.field.zone',
+  room: 'clusters.topology.field.room',
+  row: 'clusters.topology.field.row',
+  rack: 'clusters.topology.field.rack',
+  switch: 'clusters.topology.field.switch',
+  accelerator_domain: 'clusters.topology.field.acceleratorDomain',
+  [NODE_LAYER_NAME]: 'clusters.topology.field.host'
+};
+
+// One-line "what goes here" per known id, for the column picker. Same rule as
+// the label map above.
+export const TopologyFieldHintMap: Record<string, string> = {
+  region: 'clusters.topology.field.region.tips',
+  zone: 'clusters.topology.field.zone.tips',
+  room: 'clusters.topology.field.room.tips',
+  row: 'clusters.topology.field.row.tips',
+  rack: 'clusters.topology.field.rack.tips',
+  switch: 'clusters.topology.field.switch.tips',
+  accelerator_domain: 'clusters.topology.field.acceleratorDomain.tips'
+};
+
+export const topologyFieldLabel = (
+  intl: { formatMessage: (d: { id: string }) => string },
+  name: string,
+  fallback?: string | null
+) =>
+  TopologyFieldLabelMap[name]
+    ? intl.formatMessage({ id: TopologyFieldLabelMap[name] })
+    : fallback || name;
+
+/**
+ * What to call a layer: the operator's word if they set one, our translation
+ * of its canonical name otherwise.
+ *
+ * `displayName` wins and is **not** translated, which is the point of storing
+ * it — it is the operator's wording, and running it through a catalogue keyed
+ * by English slugs would either miss (fine) or hit by accident and render
+ * something they never typed.
+ */
+export const topologyLayerLabel = (
+  intl: { formatMessage: (d: { id: string }) => string },
+  layer: { name: string; display_name?: string | null } | null | undefined
+) =>
+  layer?.display_name ||
+  topologyFieldLabel(intl, layer?.name || '', layer?.name);

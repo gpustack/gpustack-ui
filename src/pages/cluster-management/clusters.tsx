@@ -15,7 +15,7 @@ import {
   useExpandedRowKeys,
   useWatchList
 } from '@gpustack/core-ui';
-import { useIntl } from '@umijs/max';
+import { useIntl, useSearchParams } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { message } from 'antd';
 import { useAtom } from 'jotai';
@@ -27,6 +27,7 @@ import {
   CLUSTERS_API,
   createWorkerPool,
   deleteCluster,
+  queryClusterItem,
   queryClusterList,
   queryCredentialList,
   queryWorkerPools,
@@ -43,6 +44,7 @@ import {
 } from './components/add-worker/config';
 import PoolRows from './components/pool-rows';
 import RightActions from './components/right-actions';
+import TopologyDrawer from './components/topology';
 import { isCloudProvider, ProviderType, ProviderValueMap } from './config';
 import {
   ClusterListItem,
@@ -225,6 +227,31 @@ const Clusters: React.FC = () => {
     }
   };
 
+  const [topologyCluster, setTopologyCluster] = useState<{
+    id: number;
+    name?: string;
+  } | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // `?topology=<id>` is the deployment form's "go fill it in" link (§8.8): a
+  // new tab landing here should open straight into that cluster's drawer. The
+  // param is stripped once read so a reload does not reopen it.
+  useEffect(() => {
+    const param = searchParams.get('topology');
+    if (!param) {
+      return;
+    }
+    const id = Number(param);
+    searchParams.delete('topology');
+    setSearchParams(searchParams, { replace: true });
+    if (!id) {
+      return;
+    }
+    queryClusterItem({ id })
+      .then((item) => setTopologyCluster({ id, name: item?.name }))
+      .catch(() => setTopologyCluster({ id }));
+  }, []);
+
   const handleSelect = useMemoizedFn((val: any, row: ListItem, item?: any) => {
     if (item?.onClick) {
       item.onClick(row);
@@ -248,6 +275,8 @@ const Clusters: React.FC = () => {
       });
     } else if (val === 'metrics') {
       goToGrafana(row);
+    } else if (val === 'topology') {
+      setTopologyCluster({ id: row.id, name: row.name });
     }
   });
 
@@ -495,6 +524,12 @@ const Clusters: React.FC = () => {
         pendingProviderHint={pendingProviderHint}
         onClose={handleClusterModalClose}
       ></ClusterModal>
+      <TopologyDrawer
+        open={!!topologyCluster}
+        clusterId={topologyCluster?.id}
+        clusterName={topologyCluster?.name}
+        onClose={() => setTopologyCluster(null)}
+      ></TopologyDrawer>
       {AddWorkerModal}
       {AccessDrawer && <AccessDrawer />}
     </>

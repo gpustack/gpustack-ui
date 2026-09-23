@@ -233,5 +233,171 @@ export default {
   'clusters.gpuInstances.setting.enabled': 'Enabled',
   'clusters.gpuInstances.setting.disabled': 'Disabled',
   'clusters.gpuInstances.setting.unmanaged':
-    'Unmanaged (the cluster keeps its own value)'
+    'Unmanaged (the cluster keeps its own value)',
+
+  // Topology: where this cluster's workers sit.
+  'clusters.topology.title': 'Topology',
+  'clusters.topology.noRebalance':
+    'Locations only affect later scheduling. Running deployments are not moved.',
+  'clusters.topology.load.failed': 'Could not load the topology.',
+  'clusters.topology.save.failed': 'Could not save.',
+  'clusters.topology.preview.failed': 'Could not preview this mapping.',
+  'clusters.topology.preview.noWorkers': 'This cluster has no workers yet.',
+  'clusters.topology.preview.capacity':
+    '{workers} workers · {gpus} GPUs · {free} free',
+  'clusters.topology.cluster': 'Cluster',
+  'clusters.topology.discard.ok': 'Discard',
+  'clusters.topology.field.region': 'Region',
+  'clusters.topology.field.zone': 'Zone',
+  'clusters.topology.field.room': 'Room',
+  'clusters.topology.field.row': 'Row',
+  'clusters.topology.field.rack': 'Rack',
+  'clusters.topology.field.switch': 'Access switch',
+  'clusters.topology.field.acceleratorDomain': 'Accelerator domain',
+  'clusters.topology.field.host': 'Host',
+  'clusters.topology.field.region.tips': 'Cloud region or datacentre',
+  'clusters.topology.field.zone.tips': 'Cloud availability zone or hall',
+  'clusters.topology.field.room.tips': 'Machine room',
+  'clusters.topology.field.row.tips': 'Row of racks',
+  'clusters.topology.field.rack.tips': 'Rack or cabinet',
+  'clusters.topology.field.switch.tips':
+    'Filled by hand, or written by a tool such as Topograph',
+  'clusters.topology.field.acceleratorDomain.tips':
+    'Fill by hand when the device does not report one',
+  'clusters.topology.overview.workers': '{count} workers',
+  'clusters.topology.overview.domains': '{count} {field}(s)',
+  'clusters.topology.overview.unfilled': '{count} without a {field}',
+  'clusters.topology.previewing': '● Previewing',
+  'clusters.topology.previewing.long':
+    '● Previewing: the main drawer shows the unsaved mapping',
+  'clusters.topology.view.table': 'Table',
+  'clusters.topology.view.tree': 'Tree',
+  'clusters.topology.search.placeholder': 'Search hosts…',
+  'clusters.topology.columns': 'Columns',
+  'clusters.topology.columns.fields': 'Location fields',
+  'clusters.topology.columns.manage': 'Manage layers',
+  'clusters.topology.columns.mapping': 'Label key mapping…',
+  'clusters.topology.columns.deleteCustom': 'Delete field “{name}”',
+  'clusters.topology.columns.deleteCustom.confirm':
+    'Delete field “{name}”? Filled values stay on the workers’ labels.',
+  'clusters.topology.columns.deleted': 'Field “{name}” deleted',
+  'clusters.topology.selected': '{count} selected',
+  'clusters.topology.clearSelection': 'Clear selection',
+  'clusters.topology.batch.button': 'Set location',
+  'clusters.topology.batch.title': 'Set location · {count} selected',
+  'clusters.topology.batch.field': 'Field',
+  'clusters.topology.batch.value': 'Value',
+  'clusters.topology.batch.overwrite':
+    'Overwrites {count} existing value(s): {names}',
+  'clusters.topology.batch.overwriteAuto':
+    '{count} of these have a device-reported {field}; it will be overridden',
+  'clusters.topology.batch.more': '{names} and {count} more',
+  'clusters.topology.batch.apply': 'Apply to {count}',
+  'clusters.topology.batch.partial': 'The write failed on {failed} cluster(s).',
+  'clusters.topology.toast.setOne': '{field} of {host} set to {value}',
+  'clusters.topology.toast.clearedOne': '{field} of {host} cleared',
+  'clusters.topology.toast.set': '{field} of {count} workers set to {value}',
+  'clusters.topology.toast.cleared': '{field} of {count} workers cleared',
+  'clusters.topology.toast.firstWrite': ' (only affects later scheduling)',
+  'clusters.topology.undo': 'Undo',
+  'clusters.topology.undo.done': 'Undone',
+  'clusters.topology.undo.failed': 'Undo failed: {reason}',
+  'clusters.topology.cell.fill': 'Fill in {field}',
+  'clusters.topology.cell.aria': '{field}, {state}, {host}',
+  'clusters.topology.state.unfilled': 'unfilled',
+  'clusters.topology.state.discovered.aria': '{value}, reported by the device',
+  'clusters.topology.state.override.aria':
+    '{value}, hand-filled over a reported value',
+  'clusters.topology.state.discovered.tips':
+    'Reported by the device ({key}). Filling it in overrides this.',
+  'clusters.topology.state.override.tips':
+    'Hand-filled. Clearing restores the reported value {value}',
+  'clusters.topology.state.user.tips': 'Hand-filled ({key})',
+  'clusters.topology.override.confirm':
+    'This value was reported by the device; filling it in overrides it.',
+  'clusters.topology.override.ok': 'Override',
+  'clusters.topology.value.count': '{count} workers',
+  'clusters.topology.value.create': 'Create “{value}”',
+  'clusters.topology.value.clear': 'Clear',
+  'clusters.topology.column.menu': '{field} column menu',
+  'clusters.topology.column.fillUnfilled': 'Fill the {count} unfilled…',
+  'clusters.topology.column.fillBySwitch':
+    'Fill by access switch ({count} groups)…',
+  'clusters.topology.source.user': 'hand-filled',
+  'clusters.topology.source.discovered': 'auto',
+  'clusters.topology.source.node': 'K8s node',
+  'clusters.topology.host.online': 'Online',
+  'clusters.topology.host.offline': 'Offline',
+  'clusters.topology.tree.byLayer': 'By layer',
+  'clusters.topology.tree.byField': 'By {field}',
+  'clusters.topology.tree.expandAll': 'Expand all',
+  'clusters.topology.tree.collapseAll': 'Collapse all',
+  'clusters.topology.tree.unfilled': 'No {field} yet',
+  'clusters.topology.tree.unfilled.why':
+    'Missing the label {key} (or any of its alternatives)',
+  'clusters.topology.tree.more': '{count} more',
+  'clusters.topology.tree.hostCapacity': '{gpus} GPUs · {free} free',
+  'clusters.topology.onboarding.hosts': '{hosts} hosts found.',
+  'clusters.topology.onboarding.goal':
+    'To keep the members of a disaggregated group together:',
+  'clusters.topology.onboarding.steps':
+    '① Select the machines in one rack → ② “Set location” with the rack name → ③ Choose “same rack” when deploying',
+  'clusters.topology.onboarding.domains':
+    'A device-reported accelerator domain (multi-node NVLink, an Ascend super pod) can be a layer too: add one under “Add layer”, point it at the matching label key, and it fills itself in.',
+  'clusters.topology.onboarding.dismiss': 'Got it',
+  'clusters.topology.mapping.title': 'Label key mapping',
+  'clusters.topology.mapping.intro':
+    'Which worker label each field reads its value from',
+  'clusters.topology.mapping.showUnused': 'Show the {count} unused field(s)',
+  'clusters.topology.mapping.hideUnused': 'Hide unused fields',
+  'clusters.topology.mapping.moreKeys': '+ {count} more key(s)',
+  'clusters.topology.mapping.classified': 'Resolved {classified} / {total}',
+  'clusters.topology.mapping.noKeys': 'No label keys',
+  'clusters.topology.layer.labelKeys': 'Label keys',
+  'clusters.topology.layer.addKey': 'Add key',
+  'clusters.topology.layer.rename': 'Rename',
+  'clusters.topology.layer.rename.tips':
+    "Changes the display name only. The layer's identity, its label keys and any topology affinity already saved on a model are untouched. Leave it empty to restore the default. Layer id:",
+  'clusters.topology.layer.rename.taken':
+    'Another layer on this chain is already called that.',
+  'clusters.topology.layer.disable': 'Disable',
+  'clusters.topology.layer.disabled': ' (disabled)',
+  'clusters.topology.layer.enable': 'Enable',
+  'clusters.topology.layer.inUse': 'This layer is still in use',
+  'clusters.topology.layer.inUse.tips':
+    'These models set their topology affinity to this layer and would lose it: {models}. Change those models first.',
+  'clusters.topology.layer.name': 'Name',
+  'clusters.topology.advanced.hostKeys': 'Built in, by worker name',
+  'clusters.topology.advanced.locked':
+    'GPUStack’s own key: hand-filled values are written here. Cannot be removed or moved.',
+  'clusters.topology.advanced.suggestions': 'Discovered label keys',
+  'clusters.topology.advanced.suggestion':
+    '{workers} workers · {values} values · looks like {field}',
+  'clusters.topology.advanced.discard':
+    'Discard the changes to the field mapping?',
+  'clusters.topology.advanced.discard.tips':
+    'Values filled in the table are not affected.',
+  'clusters.topology.advanced.saved':
+    'Saved. Only affects later scheduling; running groups are not moved.',
+  'clusters.topology.keys.placeholder': 'Type a label key, or pick one below',
+  'clusters.topology.keys.invalid':
+    'Not a valid Kubernetes label key (prefix ≤ 253, name ≤ 63, alphanumerics - _ .)',
+  'clusters.topology.keys.usage':
+    '{count} workers carry this key ({values} values)',
+  'clusters.topology.keys.exists': 'This key is already added',
+  'clusters.topology.custom.title': 'Add layer',
+  'clusters.topology.custom.name.required': 'Enter a name',
+  'clusters.topology.custom.name.taken': 'This name is taken or reserved',
+  'clusters.topology.custom.name.tips':
+    'Appears as a choice in the deployment form',
+  'clusters.topology.custom.position': 'Where in the chain',
+  'clusters.topology.custom.slot.insert': 'Insert here',
+  'clusters.topology.custom.slot.placeholder': 'New layer',
+  'clusters.topology.custom.slot.explain':
+    'A {parent} holds several {name}; a {name} holds several {child}',
+  'clusters.topology.custom.slot.explain.top': 'A {name} holds several {child}',
+  'clusters.topology.custom.keys.tips':
+    'A custom layer has no key of its own; to fill it in from the table, make the first key the one you intend to write.',
+  'clusters.topology.custom.referenced':
+    'Cannot delete “{name}”: these models gather on it'
 };

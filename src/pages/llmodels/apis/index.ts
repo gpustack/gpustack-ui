@@ -15,11 +15,17 @@ import {
   EvaluateSpec,
   FormData,
   GPUListItem,
+  KVTransferBudget,
   ListItem,
   ModelCacheMetrics,
   ModelInstanceFormData,
   ModelInstanceListItem,
-  ModelLoraAdapterResult
+  ModelLoraAdapterResult,
+  ModelRestartResult,
+  PDMetrics,
+  PDMode,
+  PDModeResolution,
+  SpanningPreview
 } from '../config/types';
 
 export const MODELS_API = '/models';
@@ -37,6 +43,8 @@ export const DRAFT_MODELS_API = '/draft-models';
 export const CATALOG_LIST_API = '/model-sets';
 
 export const MODEL_LORA_ADAPTER_API = '/models/adapters';
+
+export const PD_MODES_API = '/pd-modes';
 
 const setProxyUrl = (url: string) => {
   return `/proxy?url=${encodeURIComponent(url)}`;
@@ -70,6 +78,53 @@ export async function queryModelsList(
   );
 }
 
+/**
+ * Whether a disaggregated group is actually disaggregating.
+ *
+ * Server-side it is a PromQL query scoped to this model, so the caller never
+ * learns a metric name and can only read the series of a model it can already
+ * see. Fetched on expand rather than with the list: it is the only field that
+ * costs a Prometheus round trip, and a collapsed row does not show it.
+ */
+export async function queryModelPDMetrics(
+  id: number,
+  params?: { window?: string }
+) {
+  return request<PDMetrics>(`${MODELS_API}/${id}/pd-metrics`, {
+    method: 'GET',
+    params
+  });
+}
+
+/**
+ * The bandwidth this model's KV transfer would need.
+ *
+ * Computed from the model's own config, so it answers for a model that is not
+ * deployed yet — which is when the question is actually asked, and why this is
+ * a POST taking a source rather than a GET on an id. An id is accepted too,
+ * for the deployed case: paired with the group's measured transfer rate in
+ * `measured_bandwidth_bytes_per_second`, the response comes back with a
+ * verdict, so a reading becomes "the link is fast enough" or "it is not, and
+ * here is what to do".
+ */
+export async function estimateKVTransferBudget(payload: {
+  model_id?: number;
+  model_source?: Record<string, any>;
+  backend_parameters?: string[];
+  seq_len?: number;
+  ttft_budget_ms?: number;
+  prefill_ms?: number;
+  /** The transfer's window stated directly; wins over the two above. */
+  transfer_budget_ms?: number;
+  measured_bandwidth_bytes_per_second?: number;
+  trust_remote_code?: boolean;
+}) {
+  return request<KVTransferBudget>(`${MODELS_API}/kv-transfer-budget`, {
+    method: 'POST',
+    data: payload
+  });
+}
+
 export async function queryGPUList<T extends Record<string, any>>(
   params?: Global.SearchParams & T
 ) {
@@ -92,10 +147,45 @@ export async function deleteModel(id: number) {
   });
 }
 
+// Whether a member of this draft will have to occupy more than one machine.
+//
+// 🔴 Safe to ask while the form is still being typed, which the removed
+// `gather-feasibility` was not: this is one comparison between a width the user
+// has typed and the widest machine in the cluster — no placement solve, no free
+// capacity — so the answer does not move as the rest of the form is filled in.
+// Every uncertainty comes back empty, and the caller must render that the same
+// as «no», never as a third state.
+export async function queryModelSpanningRoles(
+  data: Record<string, any>,
+  options?: any
+) {
+  return request<SpanningPreview>(`${MODELS_API}/spanning-roles`, {
+    method: 'POST',
+    data,
+    cancelToken: options?.token,
+    skipErrorHandler: true
+  });
+}
+
 export async function updateModel(params: { id: number; data: FormData }) {
   return request(`${MODELS_API}/${params.id}`, {
     method: 'PUT',
     data: params.data
+  });
+}
+
+// Retire the running generation so the current spec takes effect. Not a PUT
+// with the same body: the whole group has to stop before any of it restarts,
+// or replica convergence pairs a new-generation prefill with an old-generation
+// decode — a combination the engines accept and only fail on later.
+//
+// `skipErrorHandler` because the one error this reliably returns is 409 "a
+// restart is already in flight", which is a wait rather than a fault and reads
+// wrong as a red toast. Every caller therefore owns its own error reporting.
+export async function restartModel(id: number) {
+  return request<ModelRestartResult>(`${MODELS_API}/${id}/restart`, {
+    method: 'POST',
+    skipErrorHandler: true
   });
 }
 
@@ -610,4 +700,42 @@ export async function queryModelContextLength(params: {
       data: params
     }
   );
+}
+
+/**
+ * The PD-mode catalog.
+ *
+ * Read from the server rather than mirrored in the frontend: the catalog's
+ * whole point is that adding an engine is a YAML change, and a hardcoded enum
+ * here would spend that benefit. Fetch it when the deploy drawer opens.
+ */
+export async function queryPDModes() {
+  return request<{
+    items: PDMode[];
+  }>(PD_MODES_API, {
+    method: 'GET'
+  });
+}
+
+/**
+ * Which PD recipe this deployment gets, and why every other one is out.
+ *
+ * The judgement is the server's because the deciding fact — which
+ * accelerators the cluster's ready workers report — is not in the deploy
+ * form. What the form has is the cluster's `provider` (Docker / Kubernetes),
+ * which is the infrastructure provider, not the accelerator vendor.
+ *
+ * Action-driven per the repo's conventions: called from the handlers that
+ * change an input it depends on (engine, cluster, vendor), never from an
+ * effect keyed on those values.
+ */
+export async function resolvePDMode(params: {
+  cluster_id?: number;
+  backend?: string;
+  vendor?: string;
+}) {
+  return request<PDModeResolution>(`${PD_MODES_API}/resolve`, {
+    method: 'GET',
+    params
+  });
 }

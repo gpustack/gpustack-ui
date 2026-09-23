@@ -17,7 +17,15 @@ import { backendOptionsMap } from '../constants/backend-parameters';
 import BackendParametersList from './backend-parameters-list';
 import ModelLoraList from './model-lora-list';
 
-const AdvanceConfig = () => {
+/**
+ * @param pdActive Whether PD is on. When it is, this card drops its
+ *   model-level backend parameters and env: every role carries its own pair,
+ *   so keeping these here showed the same two controls twice and the role
+ *   card's "Same as model" pointed back at a copy nobody should be filling.
+ *   The values are cleared by the mount site (`clearModelParams`), not just
+ *   hidden — see the effect's declaration for why.
+ */
+const AdvanceConfig = ({ pdActive }: { pdActive?: boolean } = {}) => {
   const intl = useIntl();
   const form = Form.useFormInstance();
   const backend = Form.useWatch('backend', form);
@@ -89,18 +97,38 @@ const AdvanceConfig = () => {
           options={modelCategories}
         ></SealSelect>
       </Form.Item>
-      <BackendParametersList></BackendParametersList>
-      <Form.Item<FormData> name="env">
-        <LabelSelector
-          label={intl.formatMessage({
-            id: 'models.form.env'
-          })}
-          btnText={intl.formatMessage({ id: 'common.button.vars' })}
-          onBlur={handleEnvSelectorOnBlur}
-          onDelete={handleDeleteEnvSelector}
-        ></LabelSelector>
-      </Form.Item>
-      <ModelLoraList></ModelLoraList>
+      {!pdActive && (
+        <>
+          <BackendParametersList></BackendParametersList>
+          <Form.Item<FormData> name="env">
+            <LabelSelector
+              label={intl.formatMessage({
+                id: 'models.form.env'
+              })}
+              btnText={intl.formatMessage({ id: 'common.button.vars' })}
+              onBlur={handleEnvSelectorOnBlur}
+              onDelete={handleDeleteEnvSelector}
+            ></LabelSelector>
+          </Form.Item>
+          {/* ⏳ Not «one value lands on every role» — that was the earlier
+              reading, and it was too generous. LoRA under PD does not work at
+              all: the router indexes its worker registry by SERVED-MODEL name
+              while the members register under the base name only, so every
+              request addressed to `<base>:<adapter>` comes back 503 «No
+              available workers» while the group reports running, the route
+              reports `ready_targets=1` and nothing anywhere degrades. Round-4
+              E2E reproduced it 3/3 with per-hop evidence; the same adapter on
+              the same worker without PD answers 200.
+
+              So the entry is withdrawn while PD is on rather than annotated.
+              The value is cleared too (`clearModelLora`), not merely hidden —
+              the backend refuses the combination at admission, and a 400 about
+              a field the user can no longer see is the worst of both. Bringing
+              it back needs F18 answered and the router's membership
+              registration to carry the adapter names. */}
+          <ModelLoraList></ModelLoraList>
+        </>
+      )}
       {(backend === backendOptionsMap.custom ||
         !currentBackendOptions?.isBuiltIn) && (
         <Form.Item<FormData>

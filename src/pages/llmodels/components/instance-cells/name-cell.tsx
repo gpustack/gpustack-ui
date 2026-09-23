@@ -7,7 +7,7 @@ import {
   PieChartFilled,
   ThunderboltFilled
 } from '@ant-design/icons';
-import { AutoTooltip, IconFont } from '@gpustack/core-ui';
+import { AutoTooltip, IconFont, TextAttribute } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Flex, Tooltip } from 'antd';
 import { createStyles } from 'antd-style';
@@ -21,6 +21,7 @@ import {
 import { useGPUTypeDisplayName } from '../../hooks/use-gpu-type-display-name';
 import '../../style/instance-item.less';
 import { calcTotalVram } from '../../utils';
+import { roleLabel } from '../pd/role-status';
 import {
   formatGPUTypeAllocation,
   getGPUTypeClusterId,
@@ -165,6 +166,7 @@ const WorkerInfoContent: React.FC<NameCellProps> = ({
   // A cross-worker instance spreads its claim over the main worker plus every
   // subordinate, so both the VRAM total and the card count are instance-wide.
   const workerCount = subordinateWorkers.length + 1;
+  const cpuOnly = !gpuIndexes.length && !calcTotalVram(record);
   const gpuCount =
     gpuIndexes.length +
     _.sumBy(
@@ -201,39 +203,53 @@ const WorkerInfoContent: React.FC<NameCellProps> = ({
     }
   ];
 
-  const gpuRows: InfoRowProps[] = [
-    {
-      label: 'models.table.gpuindex',
-      icon: <IconFont type="icon-filled-gpu" />,
-      value: gpuIndexes.length ? `[${_.join(gpuIndexes, ', ')}]` : '-'
-    },
-    {
-      label: 'models.table.vram.allocated',
-      icon: <PieChartFilled />,
-      value: (
-        <>
-          {vramValue}
-          {vramUnit && <span className="metric-unit">{vramUnit}</span>}
-        </>
-      ),
-      // a cross-worker claim is instance-wide, so say what it covers
-      hint: isDistributed
-        ? intl.formatMessage(
-            { id: 'models.instance.workergpu' },
-            { n: workerCount, m: gpuCount }
-          )
-        : undefined
-    },
-    ...(vgpuAllocation
-      ? [
-          {
-            label: 'models.table.vgpu',
-            icon: <IconFont type="icon-sliced-filled" />,
-            value: vgpuAllocation
-          }
-        ]
-      : [])
-  ];
+  // An instance that claims no accelerator — a managed PD router is the case
+  // that produced this — has nothing to say in either GPU row. Rendered anyway
+  // they read as a fault: `GPU Index: []` looks like a list that failed to load
+  // and `Allocated VRAM: 0` like an allocation that came back empty, when the
+  // truth is that neither was ever asked for. One line that says so replaces
+  // both.
+  const gpuRows: InfoRowProps[] = cpuOnly
+    ? [
+        {
+          label: 'models.form.roles.cpuonly',
+          icon: <IconFont type="icon-filled-gpu" />,
+          value: ''
+        }
+      ]
+    : [
+        {
+          label: 'models.table.gpuindex',
+          icon: <IconFont type="icon-filled-gpu" />,
+          value: gpuIndexes.length ? `[${_.join(gpuIndexes, ', ')}]` : '-'
+        },
+        {
+          label: 'models.table.vram.allocated',
+          icon: <PieChartFilled />,
+          value: (
+            <>
+              {vramValue}
+              {vramUnit && <span className="metric-unit">{vramUnit}</span>}
+            </>
+          ),
+          // a cross-worker claim is instance-wide, so say what it covers
+          hint: isDistributed
+            ? intl.formatMessage(
+                { id: 'models.instance.workergpu' },
+                { n: workerCount, m: gpuCount }
+              )
+            : undefined
+        },
+        ...(vgpuAllocation
+          ? [
+              {
+                label: 'models.table.vgpu',
+                icon: <IconFont type="icon-sliced-filled" />,
+                value: vgpuAllocation
+              }
+            ]
+          : [])
+      ];
 
   // What the shared cache does for this instance, where the instance is.
   // The rate is absent unless it was read: no cache service, or metrics
@@ -326,6 +342,7 @@ const NameCell: React.FC<NameCellProps> = ({
   showWorkerInfo = true,
   styles
 }) => {
+  const intl = useIntl();
   return (
     <span
       className="instance-name flex-center"
@@ -336,6 +353,22 @@ const NameCell: React.FC<NameCellProps> = ({
           {record.name}
         </span>
       </AutoTooltip>
+      {/* Which role of the group this member serves — a note on the name, not a
+          category of its own, which is what `TextAttribute` is for. Absent for
+          every single-role deployment, so those cells are untouched. */}
+      {!!record.role && (
+        <TextAttribute>{roleLabel(intl, record.role)}</TextAttribute>
+      )}
+      {/* `stale` is model-level: the group is one generation at a time, and the
+          per-instance truth (`spec_digest` against the model's current digest)
+          needs a digest the API does not expose yet. */}
+      {!!modelData?.stale && (
+        <Tooltip title={intl.formatMessage({ id: 'models.pd.instance.stale' })}>
+          <TextAttribute variant="outlined">
+            {intl.formatMessage({ id: 'models.stale.tag' })}
+          </TextAttribute>
+        </Tooltip>
+      )}
       {!!record.worker_id && showWorkerInfo && (
         <span>
           <WorkerInfo

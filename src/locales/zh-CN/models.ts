@@ -202,6 +202,12 @@ export default {
   'models.form.check.claims': '该模型大约需要消耗 {vram} 显存和 {ram} 内存。',
   'models.form.check.claims2': '该模型大约需要消耗 {vram} 显存。',
   'models.form.check.claims3': '该模型大约需要消耗 {ram} 内存。',
+  'models.form.check.claims.group':
+    '该部署组大约需要消耗 {vram} 显存和 {ram} 内存。',
+  'models.form.check.claims.role': '{role} × {replicas}：每副本约 {vram} 显存',
+  'models.form.check.claims.role.total':
+    '{role} × {replicas}：合计约 {vram} 显存',
+  'models.form.check.claims.role.ram': '{role} × {replicas}：合计约 {ram} 内存',
   'models.form.update.tips': '更改仅在删除并重新创建实例后生效。',
   'models.table.download.progress': '进度',
   'models.table.button.apiAccessInfo': 'API 接入信息',
@@ -416,5 +422,217 @@ export default {
   // Model catalog source configuration
   'models.catalog.source.title': '模型库来源',
   'models.catalog.source.official':
-    '在随本版本打包的内置模型库之上，跟随 GPUStack 发布的官方模型库。'
+    '在随本版本打包的内置模型库之上，跟随 GPUStack 发布的官方模型库。',
+
+  // --- Prefill/decode disaggregation ---
+  'models.form.pd.section': 'PD 分离配置',
+  'models.form.pd.enable': '启用',
+  // Why the server derived no transport. Keyed by `PDModeUnresolvedCode`;
+  // the server also sends English prose, which is rendered only when this
+  // catalog has no entry for the code it sent.
+  'models.form.pd.unresolved.vendor_not_in_cluster':
+    '集群里没有 {vendor} 加速卡（现有：{vendors}）。',
+  'models.form.pd.unresolved.vendors_unknown':
+    '还没读到集群的加速卡信息，暂时无法推导传输方案。',
+  'models.form.pd.unresolved.no_built_in_recipe':
+    '没有内置方案覆盖 {backend} × {vendors}。可改用「自定义」传输方案，自行提供连接参数。',
+  'models.form.pd.unresolved.multiple_vendors':
+    '集群里有多种加速卡都能承载这一组（{vendors}），而 PD 组不能跨厂商。请指定一种。',
+  'models.form.pd.unresolved.no_preferred_recipe':
+    '有多个方案都适用，但没有一个被标为首选。',
+  'models.form.pd.unresolved.thisEngine': '该引擎',
+  'models.form.pd.enable.off': '不开启',
+  'models.form.pd.enable.on': 'PD 分离',
+  'models.form.pd.enable.tips':
+    '将预填充（Prefill）与解码（Decode）拆分到不同实例，代价是多一跳网络与一次 KV 传输。并发低、prompt 短或前缀命中率很高时，聚合部署通常更快。建议先跑一轮基准再决定。',
+  'models.form.pd.shape.mono': '聚合部署',
+  'models.form.pd.shape.mono.tips': '同一个实例同时负责 Prefill 与 Decode。',
+  'models.form.pd.shape.pd': 'PD 分离',
+  'models.form.pd.shape.pd.tips':
+    'Prefill 与 Decode 拆成独立角色，各自的引擎、参数与副本数都可单独设置。',
+  'models.form.pd.shape.current': '当前',
+  'models.form.pd.mode': '传输方案',
+  'models.form.pd.mode.holder': '请选择传输方案',
+  'models.form.pd.mode.tips':
+    '连接态参数（connector、端口、对端地址）全部由所选模式推导，无需手工配置。',
+  'models.form.pd.mode.custom.tips':
+    '自定义模式下系统不注入任何连接参数，需自行提供 --kv-transfer-config、端口与对端地址。',
+  'models.form.pd.mode.backend.mismatch':
+    '需要 {targets}，当前引擎是 {backend}。跨角色混用引擎请选「自定义」模式。',
+  'models.form.pd.mode.runtime.mismatch':
+    '需要 {runtime} 加速卡，{scope, select, partition{所选分区} other{当前集群}}只有 {vendors}。',
+  'models.form.pd.mode.only.custom':
+    '当前引擎与加速卡组合没有内置配方。仍可用「自定义」模式：连接器、端口与握手变量由你自己填写。',
+  'models.form.pd.vendor': '加速卡厂商',
+  'models.form.pd.vendor.tips':
+    '当前集群有多个厂商的加速卡可以承载这个组，而 PD 组不能跨厂商 —— KV 传输通道不同。请选择部署到哪个分区。',
+  'models.form.pd.replicas.moved': 'PD 部署的副本数由各角色分别设置。',
+  'models.form.pd.disabled.gguf':
+    'PD 分离仅支持 vLLM / SGLang 引擎，当前模型为 GGUF 格式。',
+  'models.form.pd.disabled.backend':
+    'PD 分离仅支持 vLLM / SGLang 引擎。其他引擎可通过「自定义」模式使用。',
+  'models.form.pd.disabled.schedule':
+    'PD 部署暂不支持定时扩缩，请通过各角色的副本数调整。',
+  'models.form.pd.cache.cleared':
+    'PD 部署下 KV 缓存按角色配置，模型级设置已清空 —— 请在角色配置中为需要的角色单独选择。',
+  'models.form.roles': '角色配置',
+  'models.form.roles.prefill': 'Prefill',
+  'models.form.roles.decode': 'Decode',
+  'models.form.roles.router': 'Router',
+  'models.form.roles.override': '自定义',
+  'models.form.roles.inherited': '继承',
+  'models.form.roles.group.backend': '引擎与镜像',
+  'models.form.roles.group.parameters': '引擎参数与环境变量',
+  'models.form.roles.group.scheduling': '资源与调度',
+  'models.form.roles.group.backend.tips': '不改就跟随模型的引擎与镜像。',
+  'models.form.roles.group.scheduling.tips':
+    '不改就由调度器按上面的拓扑亲和性决定落在哪些卡上。',
+  'models.form.roles.group.cache': '共享 KV 缓存',
+  'models.form.roles.group.settings': '组级设置',
+  'models.form.roles.group.settings.tips': '对所有角色生效',
+  'models.form.roles.replicas': '副本数',
+  'models.form.roles.router.routeArgs': '路由参数',
+  'models.form.roles.router.routeArgs.tips':
+    'Router 进程启动时的命令行参数。带锁的由 GPUStack 按组的落点渲染，不可编辑。',
+  'models.form.roles.router.locality':
+    '仅 CPU，由系统就近 Prefill / Decode 自动选择 Worker',
+  'models.form.roles.router.workerAllocation': 'Worker 分配',
+  'models.form.roles.router.workerSelect': 'Worker 选择器',
+  'models.form.roles.router.scheduletype.tips':
+    '自动：在满足节点选择器的机器里，优先选已经跑着本组 Prefill / Decode 的那台。手动：直接指定一台 Worker。',
+  'models.form.roles.router.workerSelector.tips':
+    '按标签缩小候选范围。仍会在匹配到的机器里优先选离本组 Prefill / Decode 最近的。',
+  'models.form.roles.router.order.tips':
+    'Router 在 Prefill 与 Decode 就绪后才创建。',
+  'models.form.roles.router.custom.forced':
+    '自定义 PD 模式下系统不推导 Router，请提供镜像与启动命令。',
+  'models.form.roles.router.peers':
+    '部署后由系统注入 Prefill / Decode 实例地址。',
+  'models.form.roles.cache.holder': '不使用',
+  'models.form.roles.cache.tips': '连接方式与优先级顺序由系统推导，无需配置。',
+  'models.form.roles.cache.custom.conflict':
+    '自定义 PD 模式下需在引擎参数中自行提供 --kv-transfer-config，不能同时选择缓存服务。',
+  'models.form.roles.cache.param.conflict':
+    '与所选 PD 模式冲突。改用「自定义」PD 模式，或删除该参数。',
+  'models.state.pending': '等待中',
+  'models.state.partial': '部分就绪',
+  'models.state.running': '运行中',
+  'models.state.error': '异常',
+  'models.form.speculativeDecoding': '推测解码',
+  'models.pd.tag': 'PD',
+  'models.pd.roles.detail': '各角色状态',
+  'models.pd.degraded.cache': '部分成员未挂载共享 KV 缓存，展开实例可见原因。',
+  'models.pd.degraded.ratio': '就绪成员少于请求数量，当前以降低的容量服务。',
+  'models.form.roles.override.empty':
+    '该组当前没有任何值，将按「继承模型级配置」保存。至少填写一项才能保持为自定义。',
+  'models.form.pd.mode.cleared': '关闭 PD 分离时已清空 PD 模式，请重新选择。',
+  'models.form.pd.engineVersion.below':
+    '所选 PD 方案声明支持的引擎版本为 {range}，而当前固定的版本是 {version}。仍然可以部署 —— 自建镜像可能带有私有版本号 —— 但版本若确实低于下限，方案所依赖的行为可能并不存在，例如缩容成员的注销。',
+  'models.pd.degraded.pairing':
+    '没有任何 prefill 与 decode 成员在同一台机器上，因此每次 KV 传输都要走网络。在没有 RDMA 的链路上，这通常比不做分离更慢。请至少让一对同机，或为两个角色选择同一台机器上的 GPU。',
+  'models.pd.degraded.gather': '未达拓扑目标：成员实际分布比要求的更松',
+  'models.pd.degraded.scaleOut':
+    '本组在严格模式下被限制在同一个拓扑域内，要新增的成员尚未被放置。已有成员仍在正常服务，停下来的是扩容。该成员的状态信息会说明是什么挡住了它；据此可在域内腾出空位、把拓扑约束改为宽松，或把副本数调回原值。',
+  'models.pd.degraded.engineVersion':
+    '当前固定的引擎版本低于所选 PD 方案声明支持的版本范围。这是允许的 —— 自建镜像可能带有私有版本号 —— 但方案所依赖的行为可能并不存在：例如 SGLang 低于 0.5.7 时，缩容下线的成员无法注销，仍会继续接收流量。',
+  'models.pd.degraded.ineffective':
+    '本组正在服务，但没有任何 KV 传输发生 —— 分离已静默退化为聚合推理。请检查配对与 KV 连接器配置。',
+  'models.pd.degraded.pairingUnverified':
+    '配对参数只有一侧显式声明，另一侧沿用引擎默认值，GPUStack 无法判定两者是否一致 —— 常见于 --max-model-len、--block-size、--kv-cache-layout，以及一侧写 auto、另一侧写具体 dtype。这不代表配对是错的，只代表没有任何检查验证过它。在两个角色上都写明该参数即可被校验。',
+  'models.pd.degraded.pairingTP':
+    '按成员实际拿到的卡重新算出的有效张量并行度，违反了该 PD 方案声明的方向：NIXL 要求 decode 不窄于 prefill，昇腾 Mooncake 要求 prefill 不窄于 decode。准入阶段查不出来 —— 一个既不固定卡、也不写 --tensor-parallel-size 的角色，在落位之前根本没有数可查。请在两个角色上都设置 --tensor-parallel-size，或给它们符合方案要求的卡数。',
+  'models.pd.admission.infeasible':
+    '当前可用算力放不下这一组（需要 {required}，可用 {available}）。可减少副本数、换用切分卡型，或增加节点。',
+  'models.pd.ratio.waiting': '配比 {configured}（当前 {current}，等待 {role}）',
+  'models.instance.draining.tips':
+    '已缩容。不再接收新请求，等还在拉取它 KV 缓存的 decode 完成后删除。',
+  'models.pd.group.restarting.brief': '重启中…',
+  'models.pd.group.restarting.progress':
+    '组级重启中：成员是被主动停止后重建的，目前 {ready}/{total} 已就绪。副本数偏低是因为这个，而不是因为组出了故障。',
+  'models.pd.group.restart.confirm':
+    '此修改需要重启整个 PD 组：将先停止全部 {total} 个实例，再以新配置重建，期间该模型不可用。',
+  'models.pd.instance.stale': '该实例使用旧版配置，重启整组后生效。',
+  'models.pd.stale': '配置已变更，需重启部署生效。',
+  'models.restart': '重启',
+  'models.restart.inflight': '重启中…',
+  'models.restart.confirm':
+    '将停止 {name} 的全部实例，并以当前配置重建，期间该模型不可用。',
+  'models.restart.done': '正在重启：实例已停止，将以当前配置重建。',
+  'models.restart.uptodate': '没有可重启的实例：该部署当前没有实例在运行。',
+  'models.restart.inprogress': '重启进行中，请等待完成后重试。',
+  'models.restart.failed': '重启模型失败。',
+  'models.stale.tag': '待重启',
+  'models.pd.group.id': '组',
+  'models.form.pd.disabled.gpus':
+    'PD 分离至少需要 2 张可用 GPU（1 Prefill + 1 Decode），当前集群可用 {count} 张。',
+  'models.pd.ratio': '配比',
+  'models.form.roles.router.entrypoint': '执行命令',
+  'models.form.roles.router.connectionArgs': '连接参数',
+  'models.form.roles.managed': '系统托管',
+  'models.form.roles.managed.tips':
+    '由 GPUStack 按 PD 模式和调度结果自动填入，不可修改，也无需重复填写。双花括号包起来的是占位符，在部署时替换为实际的地址、端口和网卡。',
+  'models.form.roles.managed.mounts': '宿主机挂载',
+  'models.form.roles.managed.locked': '带锁为系统注入，不可编辑',
+  'models.form.roles.engine': '引擎',
+  'models.form.roles.scheduling.managed':
+    '由系统按拓扑亲和性自动调度，不附加节点约束',
+  'models.form.roles.managed.params.tips':
+    '这个角色启动时传给引擎的参数。带锁的由 GPUStack 按 PD 模式注入，你自己加的追加在后面。',
+  'models.form.roles.managed.env.tips':
+    '这个角色容器里的环境变量。带锁的由 GPUStack 注入，多为控制面地址与网卡。',
+  'models.form.roles.managed.mounts.tips':
+    '从宿主机挂进容器的路径。只能由 GPUStack 添加：传输方案需要读的宿主机文件，加速器运行时不会自动带进来。',
+  'models.form.roles.resources': '资源',
+  'models.form.roles.resources.cpu': 'CPU（核）',
+  'models.form.roles.resources.memory': '内存（GiB）',
+  'models.form.roles.resources.tips':
+    'Router 容器申请的资源，默认为 2 核 2 GiB。',
+  'models.form.roles.router.health': '健康检查',
+  'models.form.roles.router.peerslabel': '对端',
+  'models.form.roles.router.image.tips':
+    '留空则使用所选 PD 模式推导出的镜像。仅当该镜像不含 router 可执行文件时才需要填写——此时只需换镜像，启动命令仍由系统推导。',
+  'models.form.roles.cpuonly': '仅使用 CPU',
+
+  'models.form.gather.title': '拓扑亲和性',
+  'models.form.gather.target.auto': '自动',
+  'models.form.gather.target.auto.tips': '选传输最快的可行位置',
+  'models.form.gather.target.host': '同 Worker',
+  'models.form.gather.target.host.tips': 'Prefill / Decode 在同一个 Worker',
+  'models.form.gather.target.layer': '同{layer}',
+  'models.form.gather.target.tips':
+    '希望这组成员之间的传输链路不低于哪一档。同一加速器域的传输快于同机柜，因此跨机柜的域也算满足。Router 不占卡，不参与此约束。',
+  'models.form.gather.unmet': '放不下时',
+  'models.form.gather.unmet.prefer': '仍然部署',
+  'models.form.gather.unmet.prefer.tips':
+    '退到次优位置，并在模型上标记「未达拓扑目标」',
+  'models.form.gather.unmet.must': '拒绝部署',
+  'models.form.gather.unmet.must.tips': '不给出一个更慢的部署',
+  'models.form.gather.fits': '放得下',
+  'models.form.gather.fits.domain': '{domain} 放得下',
+  'models.form.gather.short':
+    '最大的 {domain} 只能放 {available}，需要 {needed}',
+  'models.form.gather.noRoom': '这一档没有任何域放得下',
+  'models.form.gather.unknown': '{count} 台 worker 容量读不到，这一档无法判断',
+  'models.form.gather.declare': '在集群「拓扑」里填机柜后，可以选更粗的档次。',
+  'models.form.gather.largeGroup':
+    '这个规模下至少约 {percent}% 的请求会落在同一台机上，与拓扑和上面的选择都无关。这是按副本数算的下界 —— 真实比例取决于这个组最终摊在几台机器上，部署后可在组摘要里看到。若追求 KV 传输局部性，考虑部署多个较小的分离组。',
+
+  'models.form.gather.spanning':
+    '{role} 需要 {gpus} 张卡，而这个集群最宽的机器有 {widest} 张 —— 每个成员会占满整台机器，P 与 D 不会共享机器，同机配对为 0。KV 必然跨机，此时要看的是上面的拓扑档次把它限制在哪一层。',
+
+  'models.form.gather.checking': '正在检查放得下哪一档…',
+  'models.form.gather.unavailable':
+    '暂时查不到放得下哪一档，所以只给出默认项。',
+  'models.form.gather.retry': '重试',
+
+  'models.form.groupSettings': '组级设置',
+  'models.form.groupSettings.tips':
+    '这些无法按角色区分：同一个值会同时作用于 Prefill 和 Decode。',
+
+  // Topology-aware gather tiers. One chain, root to leaf: the option list is
+  // flat in chain order and the retreat line says what happens when a rung
+  // does not fit. The `chain.*` group headings are gone with the second chain.
+  'models.form.gather.goFill': '去填',
+  'models.form.gather.infeasible.warning':
+    '按当前容量此组将无法部署；保存后组会一直等待，直到有空位。可选：改成「尽量靠近」（会跨机，KV 传输变慢）· 降低副本或每副本卡数'
 };

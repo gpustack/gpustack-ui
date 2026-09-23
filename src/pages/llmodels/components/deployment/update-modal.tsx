@@ -12,6 +12,7 @@ import {
 import { ClusterOption, FormData } from '../../config/types';
 import { backendOptionsMap } from '../../constants/backend-parameters';
 import DataForm from '../../forms';
+import { rehydrateRoleGpuIds } from '../../forms/roles/transform';
 import { useCheckCompatibility } from '../../hooks';
 import { generateGPUSelector } from '../../utils';
 import CompatibilityAlert from '../compatible-alert';
@@ -160,6 +161,11 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
       return;
     }
     submitloadingRef.current = true;
+    // Visible from the click, not from the request: `submit()` validates first,
+    // and on a PD form that is a large tree of conditional fields. Leaving the
+    // button idle until the request starts reads as the click not having
+    // registered — the reason to press Save again.
+    setLoading(true);
     formRef.current?.submit();
   };
 
@@ -169,7 +175,9 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
   };
 
   const onFinishFailed = () => {
+    // Validation rejected, so no request will run to clear the spinner.
     submitloadingRef.current = false;
+    setLoading(false);
   };
 
   const handleOk = async (formdata: FormData) => {
@@ -230,6 +238,15 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
       });
       const gpuSelector = generateGPUSelector(formData, gpuOptions);
       formRef.current?.setFieldsValue(gpuSelector);
+      // The roles need the same lift, and for the same reason: the drawer
+      // opens before this fetch returns, so their ids are still flat and the
+      // cascader has nothing to match them against. Only the model level was
+      // re-hydrated here, which is why a role's GPU selector opened blank over
+      // a selection that was really stored.
+      const roles = rehydrateRoleGpuIds(formData?.roles as any, gpuOptions);
+      if (roles) {
+        formRef.current?.setFieldsValue({ roles });
+      }
     };
 
     if (open && formData) {

@@ -45,6 +45,12 @@ export const workerListAtom = atom<
     id: number;
     labels: Record<string, any>;
     name: string;
+    // Accelerator manufacturer slugs this worker reports, from
+    // `status.gpu_devices[].vendor`. The cluster list only carries `provider`
+    // (Docker / Kubernetes), which is the infrastructure provider rather than
+    // the vendor, so this is the only place a form can learn which
+    // accelerators a cluster actually has.
+    vendors?: string[];
   }[]
 >([]);
 

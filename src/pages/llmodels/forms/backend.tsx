@@ -28,7 +28,16 @@ const CaretDownWrapper = styled.span`
   }
 `;
 
-const BackendFields: React.FC = () => {
+interface BackendFieldsProps {
+  /**
+   * Renders the same fields at a nested Form path (e.g. `['roles', 0]`) so a
+   * role tab can override the model-level engine. Absent means the
+   * model-level path, byte-for-byte what it was.
+   */
+  namePrefix?: (string | number)[];
+}
+
+const BackendFields: React.FC<BackendFieldsProps> = ({ namePrefix }) => {
   const intl = useIntl();
   const navigate = useNavigate();
   const { getRuleMessage } = useAppUtils();
@@ -41,17 +50,30 @@ const BackendFields: React.FC = () => {
     flatBackendOptions,
     onBackendChange
   } = useFormContext();
-  const backend = Form.useWatch('backend', form);
+  // Every Form path below goes through this, so the whole section can move
+  // under a role without any field knowing about roles.
+  const path = (...field: (string | number)[]) =>
+    namePrefix ? [...namePrefix, ...field] : field;
+  const backend = Form.useWatch(path('backend'), form);
   const [showDeprecated, setShowDeprecated] = React.useState<boolean>(false);
   const { openTips, diffEnvs, handleCloseTips, handleCompareEnvs } =
     useCompareEnvs();
 
+  // `getFieldsValue()` (no arguments) is the whole store either way, so the
+  // compatibility consumer still receives a model-level shape. The
+  // changed-values argument is dropped under a prefix: nothing downstream
+  // parses a role path, and a role-shaped key would read as an unknown
+  // model-level field.
+  const notifyValuesChange = (changedValues: Record<string, any>) => {
+    onValuesChange?.(namePrefix ? {} : changedValues, form.getFieldsValue());
+  };
+
   const handleBackendVersionOnChange = (value: any, option: any) => {
     if (Object.keys(option.data?.env || {}).length > 0) {
-      form.setFieldValue('env', { ...(option?.data?.env || {}) });
+      form.setFieldValue(path('env'), { ...(option?.data?.env || {}) });
     }
 
-    onValuesChange?.({}, form.getFieldsValue());
+    notifyValuesChange({});
   };
 
   const backendVersions = useMemo((): {
@@ -129,12 +151,27 @@ const BackendFields: React.FC = () => {
   };
 
   const handleOnBackendChange = (value: any, option: any) => {
-    form.setFieldsValue({
-      backend: value
-    });
-    form.setFieldValue('env', {
+    form.setFieldValue(path('backend'), value);
+    form.setFieldValue(path('env'), {
       ...(option.default_env || {})
     });
+    if (namePrefix) {
+      // The context handler writes MODEL-level fields (backend_version,
+      // backend_parameters, the KV-cache and speculative blocks,
+      // gpu_selector); running it from a role tab would overwrite the model
+      // with one role's choice. Do the role-scoped half of the same work here
+      // instead: drop the version so it is re-picked for the new engine, and
+      // seed the engine's default parameters. Both belong to override groups
+      // that may still be inheriting — harmless, because a group left on
+      // "same as model" submits null whatever the field holds.
+      form.setFieldValue(path('backend_version'), null);
+      form.setFieldValue(
+        path('backend_parameters'),
+        option.default_backend_param || []
+      );
+      notifyValuesChange({});
+      return;
+    }
     onBackendChange?.(value, option);
   };
 
@@ -168,10 +205,8 @@ const BackendFields: React.FC = () => {
   };
 
   const handleOnSaveEnvsOverride = (envs: Record<string, any>) => {
-    form.setFieldsValue({
-      env: { ...envs }
-    });
-    onValuesChange?.({}, form.getFieldsValue());
+    form.setFieldValue(path('env'), { ...envs });
+    notifyValuesChange({});
     handleCloseTips();
   };
 
@@ -207,7 +242,7 @@ const BackendFields: React.FC = () => {
   return (
     <>
       <Form.Item
-        name="backend"
+        name={path('backend')}
         rules={[
           {
             required: true,
@@ -233,7 +268,7 @@ const BackendFields: React.FC = () => {
       </Form.Item>
       {backendOptionsMap.custom !== backend && (
         <Form.Item
-          name="backend_version"
+          name={path('backend_version')}
           help={
             openTips && (
               <EnvsOverridePopover

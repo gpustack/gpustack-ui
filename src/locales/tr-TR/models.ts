@@ -213,6 +213,14 @@ export default {
     'Model yaklaşık {vram} VRAM ve {ram} RAM tüketecektir.',
   'models.form.check.claims2': 'Model yaklaşık {vram} VRAM tüketecektir.',
   'models.form.check.claims3': 'Model yaklaşık {ram} RAM tüketecektir.',
+  'models.form.check.claims.group':
+    'Grup toplamda yaklaşık {vram} VRAM ve {ram} RAM tüketecektir.',
+  'models.form.check.claims.role':
+    '{role} × {replicas}: replika başına yaklaşık {vram} VRAM',
+  'models.form.check.claims.role.total':
+    '{role} × {replicas}: toplamda yaklaşık {vram} VRAM',
+  'models.form.check.claims.role.ram':
+    '{role} × {replicas}: toplamda yaklaşık {ram} RAM',
   'models.form.update.tips':
     'Değişiklikler yalnızca örneği silip yeniden oluşturduğunuzda geçerli olur.',
   'models.table.download.progress': 'İlerleme',
@@ -440,17 +448,232 @@ export default {
   // Model catalog source configuration
   'models.catalog.source.title': 'Katalog Kaynağı',
   'models.catalog.source.official':
-    "Bu sürümle paketlenenin yanı sıra GPUStack'in yayınladığı kataloğu izler."
-};
+    "Bu sürümle paketlenenin yanı sıra GPUStack'in yayınladığı kataloğu izler.",
 
-// ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'models.table.modelView': 'Model List',
-// 2. 'models.table.instanceView': 'Instance List',
-// 3. 'models.table.category': 'Category',
-// 4. 'models.form.lora.label': 'LoRA Adapter',
-// 5. 'models.form.lora.add': 'Add LoRA Adapter',
-// 6. 'models.form.lora.select': 'Select LoRA',
-// 7. 'models.form.lora.name': 'LoRA name',
-// 8. 'models.form.lora.rule.empty': 'Input cannot be empty',
-// 9. 'models.form.lora.rule.duplicate': 'LoRA name cannot be duplicated'
-// ========== End of To-Do List ==========
+  // --- Prefill/decode disaggregation ---
+  'models.form.pd.section': 'PD Ayrıştırma Ayarları',
+  'models.form.pd.enable': 'Etkinleştir',
+  // Why the server derived no transport. Keyed by `PDModeUnresolvedCode`;
+  // the server also sends English prose, which is rendered only when this
+  // catalog has no entry for the code it sent.
+  'models.form.pd.unresolved.vendor_not_in_cluster':
+    'Bu kümede {vendor} hızlandırıcı yok (mevcut: {vendors}).',
+  'models.form.pd.unresolved.vendors_unknown':
+    'Kümenin hızlandırıcıları henüz bilinmiyor, bu nedenle aktarım şeması türetilemiyor.',
+  'models.form.pd.unresolved.no_built_in_recipe':
+    '{backend} için {vendors} üzerinde yerleşik bir reçete yok. Bağlantı parametrelerini kendiniz vermek üzere «Özel» aktarım şemasını seçin.',
+  'models.form.pd.unresolved.multiple_vendors':
+    'Bu kümede grubu barındırabilecek birden fazla hızlandırıcı üreticisi var ({vendors}) ve bir PD grubu üreticiler arasında bölünemez. Birini seçin.',
+  'models.form.pd.unresolved.no_preferred_recipe':
+    'Birden fazla reçete uyuyor ancak hiçbiri tercih edilen olarak işaretlenmemiş.',
+  'models.form.pd.unresolved.thisEngine': 'bu motor',
+  'models.form.pd.enable.off': 'Kapalı',
+  'models.form.pd.enable.on': 'PD Ayrıştırma',
+  'models.form.pd.enable.tips':
+    'Ön dolgu (prefill) ile kod çözmeyi (decode) ayrı örneklere böler; bedeli bir ek ağ atlaması ve bir KV aktarımıdır. Düşük eşzamanlılıkta, kısa istemlerde veya yüksek önek önbelleği isabetinde toplu dağıtım genellikle daha hızlıdır. Önce bir kıyaslama çalıştırın.',
+  'models.form.pd.shape.mono': 'Birleşik dağıtım',
+  'models.form.pd.shape.mono.tips':
+    'Tek bir örnek hem prefill hem decode işlemini yürütür.',
+  'models.form.pd.shape.pd': 'PD Ayrıştırma',
+  'models.form.pd.shape.pd.tips':
+    'Prefill ve decode ayrı roller olarak çalışır; her birinin motoru, parametreleri ve kopya sayısı bağımsızdır.',
+  'models.form.pd.shape.current': 'Mevcut',
+  'models.form.pd.mode': 'Taşıma',
+  'models.form.pd.mode.holder': 'Bir taşıma seçin',
+  'models.form.pd.mode.tips':
+    'Bağlantı durumu parametrelerinin tümü - connector, portlar, karşı taraf adresleri - seçilen moddan türetilir; elle ayarlanmaz.',
+  'models.form.pd.mode.custom.tips':
+    'Özel modda hiçbir bağlantı parametresi eklenmez: --kv-transfer-config, portlar ve karşı taraf adreslerini kendiniz vermelisiniz.',
+  'models.form.pd.mode.backend.mismatch':
+    '{targets} gerekiyor; seçili motor {backend}. Roller arasında motor karıştırmak için Özel modu kullanın.',
+  'models.form.pd.mode.runtime.mismatch':
+    '{runtime} hızlandırıcı gerekiyor; {scope, select, partition{seçilen bölümde} other{bu kümede}} yalnızca {vendors} var.',
+  'models.form.pd.mode.only.custom':
+    'Bu motor ve hızlandırıcı bileşimi için yerleşik bir reçete yok. Özel mod hâlâ kullanılabilir: bağlayıcı, portlar ve el sıkışma değişkenlerini kendiniz girersiniz.',
+  'models.form.pd.vendor': 'Hızlandırıcı üreticisi',
+  'models.form.pd.vendor.tips':
+    'Bu kümede grubu barındırabilecek birden fazla üretici var ve bir PD grubu üreticiler arasına yayılamaz — KV taşıma yolu farklıdır. Dağıtılacak bölümü seçin.',
+  'models.form.pd.replicas.moved':
+    'PD dağıtımında replika sayıları her rol için ayrı ayarlanır.',
+  'models.form.pd.disabled.gguf':
+    'PD ayrıştırma yalnızca vLLM / SGLang motorlarını destekler; bu model GGUF biçiminde.',
+  'models.form.pd.disabled.backend':
+    'PD ayrıştırma yalnızca vLLM / SGLang motorlarını destekler. Diğer motorlar Özel mod ile kullanılabilir.',
+  'models.form.pd.disabled.schedule':
+    'PD dağıtımı için zamanlanmış ölçekleme kullanılamaz. Rol başına replika sayısıyla ölçekleyin.',
+  'models.form.pd.cache.cleared':
+    'PD dağıtımında KV önbelleği rol başına ayarlanır; model düzeyindeki ayar temizlendi. Gereken roller için tek tek seçin.',
+  'models.form.roles': 'Roller',
+  'models.form.roles.prefill': 'Prefill',
+  'models.form.roles.decode': 'Decode',
+  'models.form.roles.router': 'Router',
+  'models.form.roles.override': 'Özel',
+  'models.form.roles.inherited': 'Devralınan',
+  'models.form.roles.group.backend': 'Motor ve imaj',
+  'models.form.roles.group.parameters': 'Parametreler ve ortam değişkenleri',
+  'models.form.roles.group.scheduling': 'Kaynaklar ve zamanlama',
+  'models.form.roles.group.backend.tips':
+    'Değiştirilmezse rol, modelin kendi motorunu ve imajını kullanır.',
+  'models.form.roles.group.scheduling.tips':
+    'Değiştirilmezse zamanlayıcı, yukarıda ayarlanan topoloji yakınlığına göre hangi kartlara yerleşeceğine karar verir.',
+  'models.form.roles.group.cache': 'Paylaşılan KV önbelleği',
+  'models.form.roles.group.settings': 'Grup ayarları',
+  'models.form.roles.group.settings.tips': 'Tüm rollere uygulanır',
+  'models.form.roles.replicas': 'Replikalar',
+  'models.form.roles.router.routeArgs': 'Yönlendirme argümanları',
+  'models.form.roles.router.routeArgs.tips':
+    'Router sürecinin başlatıldığı komut satırı argümanları. Kilitli satırları GPUStack, grubun yerleştiği yere göre üretir ve düzenlenemez.',
+  'models.form.roles.router.locality':
+    'Yalnızca CPU; bu grubun prefill ve decode üyelerine olabildiğince yakın bir Worker’a otomatik yerleştirilir',
+  'models.form.roles.router.workerAllocation': 'Worker ataması',
+  'models.form.roles.router.workerSelect': 'Worker seçici',
+  'models.form.roles.router.scheduletype.tips':
+    'Otomatik: seçicinin izin verdiği makineler arasında, bu grubun prefill veya decode’unu zaten çalıştıran biri tercih edilir. Elle: doğrudan bir Worker belirtin.',
+  'models.form.roles.router.workerSelector.tips':
+    'Adayları etikete göre daraltır. Eşleşenler arasında yine bu grubun prefill ve decode’una en yakın olan tercih edilir.',
+  'models.form.roles.router.order.tips':
+    'Router, Prefill ve Decode hazır olduktan sonra oluşturulur.',
+  'models.form.roles.router.custom.forced':
+    'Özel PD modu Router türetmez. İmajını ve başlatma komutunu verin.',
+  'models.form.roles.router.peers':
+    'Prefill / Decode örnek adresleri dağıtımdan sonra sistem tarafından eklenir.',
+  'models.form.roles.cache.holder': 'Kullanılmıyor',
+  'models.form.roles.cache.tips':
+    'Bağlantı yöntemi ve öncelik sırası sistem tarafından türetilir; ayar gerekmez.',
+  'models.form.roles.cache.custom.conflict':
+    'Özel PD modunda motor parametrelerinde --kv-transfer-config gerekir; bu nedenle önbellek servisi de seçilemez.',
+  'models.form.roles.cache.param.conflict':
+    'Seçili PD modu ile çakışıyor. Özel moda geçin veya --kv-transfer-config parametresini kaldırın.',
+  'models.state.pending': 'Bekliyor',
+  'models.state.partial': 'Kısmen hazır',
+  'models.state.running': 'Çalışıyor',
+  'models.state.error': 'Hata',
+  'models.form.speculativeDecoding': 'Spekülatif Kod Çözme',
+  'models.pd.tag': 'PD',
+  'models.pd.roles.detail': 'Rol başına durum',
+  'models.pd.degraded.cache':
+    'Bazı üyeler paylaşılan KV önbelleği olmadan çalışıyor; nedeni için örneği açın.',
+  'models.pd.degraded.ratio':
+    'Hazır üye sayısı istenenden az; dağıtım düşük kapasiteyle hizmet veriyor.',
+  'models.form.roles.override.empty':
+    'Bu grupta hiçbir değer yok, bu nedenle model düzeyindeki yapılandırmayı devralacak şekilde kaydedilecek. Özel kalması için en az bir alan doldurun.',
+  'models.form.pd.mode.cleared':
+    'PD ayrıştırma kapatıldığında PD modu temizlendi. Lütfen yeniden seçin.',
+  'models.form.pd.engineVersion.below':
+    'Seçilen PD reçetesi {range} motor sürümleri için destek bildiriyor, bu dağıtım ise {version} sürümünü sabitliyor. Yine de dağıtılabilir — kendi derlediğiniz bir imaj özel bir sürüm numarası taşıyor olabilir — ancak sürüm gerçekten alt sınırın altındaysa, reçetenin varsaydığı davranışlar eksik olabilir; örneğin küçültülen bir üyenin kaydının silinmesi.',
+  'models.pd.degraded.pairing':
+    'Hiçbir prefill üyesi herhangi bir decode üyesiyle aynı sunucuyu paylaşmıyor; bu yüzden her KV aktarımı ağ üzerinden gidiyor. RDMA’sız bir bağlantıda bu, genellikle hiç ayrıştırmamaktan bile yavaştır. En az bir çifti aynı sunucuya yerleştirin ya da her iki rol için aynı sunucudaki GPU’ları seçin.',
+  'models.pd.degraded.gather':
+    'Topoloji hedefinin altında: üyeler istenenden daha uzakta',
+  'models.pd.degraded.scaleOut':
+    'Grup, katı kipte tek bir topoloji alanına sabitlenmiş durumda ve eklenmesi istenen bir üye henüz yerleştirilemedi. Hâlihazırda çalışan üyeler normal biçimde hizmet vermeyi sürdürüyor — duran şey yalnızca ölçek büyütme. Neyin engellediğini o üyenin durum mesajı söyler; buradan hareketle alan içinde kapasite açın, topoloji kısıtını gevşetin ya da kopya sayısını eski değerine döndürün.',
+  'models.pd.degraded.engineVersion':
+    'Sabitlenen motor sürümü, seçilen PD reçetesinin desteklediğini bildirdiği aralığın altında. Buna izin verilir — kendiniz derlediğiniz bir imaj özel bir sürüm numarası taşıyabilir — ancak reçetenin varsaydığı davranış eksik olabilir: örneğin 0.5.7 altındaki SGLang sürümlerinde, ölçek küçültmeyle çıkarılan bir üyenin kaydı silinemez ve trafik almayı sürdürür.',
+  'models.pd.degraded.ineffective':
+    'Grup hizmet veriyor ancak hiç KV aktarımı olmuyor — ayrıştırma sessizce toplu çıkarıma geriledi. Eşleştirmeyi ve KV bağlayıcı yapılandırmasını denetleyin.',
+  'models.pd.degraded.pairingUnverified':
+    'Eşleştirme parametresi rollerden yalnızca birinde açıkça belirtilmiş, diğerinde motorun varsayılanına bırakılmış; bu yüzden GPUStack ikisinin uyuştuğunu doğrulayamadı — tipik olarak --max-model-len, --block-size, --kv-cache-layout ya da bir tarafta auto, diğerinde belirli bir dtype. Bu, eşleştirmenin yanlış olduğu anlamına gelmez; yalnızca doğrulanmadığı anlamına gelir. Doğrulanması için parametreyi iki rolde de yazın.',
+  'models.pd.degraded.pairingTP':
+    'Üyelerin gerçekte aldığı kartlardan yeniden hesaplanan etkin tensör paralelliği, bu PD reçetesinin bildirdiği yönü ihlal ediyor: NIXL, decode’un prefill’den dar olmamasını; Ascend Mooncake ise prefill’in decode’dan dar olmamasını gerektirir. Kart sabitlemeyen ve --tensor-parallel-size yazmayan bir rolün yerleşimden önce denetlenecek bir sayısı olmadığı için bu, kabul aşamasında yakalanamaz. --tensor-parallel-size değerini iki rolde de ayarlayın veya reçetenin izin verdiği GPU sayılarını verin.',
+  'models.pd.admission.infeasible':
+    'Mevcut kapasite bu grubu barındıramıyor (gereken {required}, mevcut {available}). Replika sayısını azaltın, dilimlenmiş kart türü kullanın veya düğüm ekleyin.',
+  'models.pd.ratio.waiting':
+    'Oran {configured} (şu an {current}, {role} bekleniyor)',
+  'models.instance.draining.tips':
+    'Ölçek küçültüldü. Yeni istek almıyor; KV önbelleğini hâlâ çeken decode örnekleri bitene kadar çalışmaya devam ediyor, ardından siliniyor.',
+  'models.pd.group.restarting.brief': 'Yeniden başlatılıyor…',
+  'models.pd.group.restarting.progress':
+    'Grup yeniden başlatılıyor: üyeleri bilerek durduruldu ve yeniden oluşturuluyor, şu ana kadar {ready}/{total} hazır. Kopya sayılarının düşük görünmesi bu yüzdendir, grup arızalandığı için değil.',
+  'models.pd.group.restart.confirm':
+    'Bu değişiklik tüm PD grubunun yeniden başlatılmasını gerektirir: önce {total} örneğin tümü durdurulur, sonra yeni yapılandırmayla yeniden oluşturulur; bu sürede model kullanılamaz.',
+  'models.pd.instance.stale':
+    'Bu örnek eski bir yapılandırmayla çalışıyor; değişikliği uygulamak için grubu yeniden başlatın.',
+  'models.pd.stale':
+    'Yapılandırma değişti; uygulamak için dağıtımı yeniden başlatın.',
+  'models.restart': 'Yeniden başlat',
+  'models.restart.inflight': 'Yeniden başlatılıyor…',
+  'models.restart.confirm':
+    '{name} modelinin tüm örnekleri durdurulur ve geçerli yapılandırmayla yeniden oluşturulur. Bu sırada model kullanılamaz.',
+  'models.restart.done':
+    'Yeniden başlatılıyor: örnekler durduruldu ve geçerli yapılandırmayla yeniden oluşturulacak.',
+  'models.restart.uptodate':
+    'Yeniden başlatılacak bir şey yok: bu dağıtımda çalışan örnek bulunmuyor.',
+  'models.restart.failed': 'Model yeniden başlatılamadı.',
+  'models.restart.inprogress':
+    'Zaten bir yeniden başlatma sürüyor. Tamamlanmasını bekleyip yeniden deneyin.',
+  'models.stale.tag': 'Eski',
+  'models.pd.group.id': 'Grup',
+  'models.form.pd.disabled.gpus':
+    'PD ayrıştırma en az 2 kullanılabilir GPU gerektirir (bir Prefill, bir Decode); seçili kümede {count} adet var.',
+  'models.pd.ratio': 'Oran',
+  'models.form.roles.router.entrypoint': 'Çalıştırma komutu',
+  'models.form.roles.router.connectionArgs':
+    'Bağlantı parametreleri (GPUStack tarafından verilir)',
+  'models.form.roles.managed': 'Sistem tarafından yönetilir',
+  'models.form.roles.managed.tips':
+    'GPUStack tarafından PD moduna ve grubun zamanlandığı yere göre doldurulur. Salt okunurdur ve bunların hiçbirini yeniden belirtmeniz gerekmez. Çift süslü parantez içindeki değerler yer tutucudur; dağıtım sırasında gerçek adresler, portlar ve ağ arayüzü ile değiştirilir.',
+  'models.form.roles.managed.mounts': 'Ana makine bağlamaları',
+  'models.form.roles.managed.locked':
+    'Kilitli satırlar sistem tarafından eklenir ve düzenlenemez',
+  'models.form.roles.engine': 'Motor',
+  'models.form.roles.scheduling.managed':
+    'Yukarıda ayarlanan topoloji yakınlığına göre sistem tarafından yerleştirilir; ayrıca düğüm kısıtı uygulanmaz',
+  'models.form.roles.managed.params.tips':
+    'Bu rolün motorunun başlatıldığı argümanlar. Kilitli olanları GPUStack, PD moduna göre ekler; sizinkiler bunların ardına eklenir.',
+  'models.form.roles.managed.env.tips':
+    'Bu rolün kapsayıcısına ayarlanan ortam değişkenleri. Kilitli olanları GPUStack ekler; çoğu denetim düzlemi adresleri ve kullanılacak ağ arayüzüdür.',
+  'models.form.roles.managed.mounts.tips':
+    'Ana makineden kapsayıcıya bağlanan yollar. Yalnızca GPUStack ekleyebilir: bunlar aktarımın okuması gereken, hızlandırıcı çalışma zamanının kendiliğinden getirmediği ana makine dosyalarıdır.',
+  'models.form.roles.resources': 'Kaynaklar',
+  'models.form.roles.resources.cpu': 'CPU (çekirdek)',
+  'models.form.roles.resources.memory': 'Bellek (GiB)',
+  'models.form.roles.resources.tips':
+    'Router konteynerinin istediği kaynaklar. Varsayılan 2 çekirdek ve 2 GiB.',
+  'models.form.roles.router.health': 'Sağlık kontrolü',
+  'models.form.roles.router.peerslabel': 'Karşı taraflar',
+  'models.form.roles.router.image.tips':
+    'Seçilen PD modundan türetilen görüntüyü kullanmak için boş bırakın. Yalnızca o görüntüde router çalıştırılabiliri yoksa doldurun — başlatma komutu yine türetilir.',
+  'models.form.roles.cpuonly': 'Yalnızca CPU',
+
+  'models.form.gather.title': 'Topoloji Yakınlığı',
+  'models.form.gather.target.auto': 'Otomatik',
+  'models.form.gather.target.auto.tips': 'Sığan en hızlı aktarım yolu',
+  'models.form.gather.target.host': 'Aynı Worker',
+  'models.form.gather.target.host.tips':
+    'Prefill ve Decode aynı Worker üzerinde',
+  'models.form.gather.target.layer': 'Aynı {layer}',
+  'models.form.gather.target.tips':
+    'Bu grubun üyeleri arasında istediğiniz aktarım kalitesi. Tek bir hızlandırıcı alanı içindeki aktarım aynı kabin içindekinden hızlıdır; bu yüzden kabinleri aşan bir alan da karşılanmış sayılır. Router hızlandırıcı kullanmaz ve bu kısıta dahil değildir.',
+  'models.form.gather.unmet': 'Sığmazsa',
+  'models.form.gather.unmet.prefer': 'Yine de dağıt',
+  'models.form.gather.unmet.prefer.tips':
+    'Bir sonraki en iyi yerleşime düş ve modeli topoloji hedefinin altında olarak işaretle',
+  'models.form.gather.unmet.must': 'Dağıtma',
+  'models.form.gather.unmet.must.tips': 'Daha yavaş bir dağıtım vermektense',
+  'models.form.gather.fits': 'sığıyor',
+  'models.form.gather.fits.domain': '{domain} içine sığıyor',
+  'models.form.gather.short':
+    'en geniş {domain} {needed} taneden {available} tanesini alıyor',
+  'models.form.gather.noRoom': 'bu katmanda yer olan hiçbir alan yok',
+  'models.form.gather.unknown':
+    '{count} worker üzerinde kapasite okunamıyor, bu nedenle bu katman denetlenemiyor',
+  'models.form.gather.declare':
+    'Kümenin “Topoloji” bölümünde kabinleri doldurarak daha kaba düzeyleri açın.',
+  'models.form.gather.largeGroup':
+    'Bu boyutta, topolojiden bağımsız olarak isteklerin en az yaklaşık %{percent} kadarı aynı sunucuda eşleşir. Bu, kopya sayısından türetilen bir alt sınırdır — gerçek oran grubun sonunda kaç makineye yayıldığına bağlıdır ve dağıtımdan sonra grup özetinde görünür. KV aktarım yerelliği için bunun yerine birkaç daha küçük ayrıştırılmış grup düşünün.',
+  'models.form.gather.spanning':
+    '{role} {gpus} GPU gerektiriyor ve bu kümedeki en geniş makinede {widest} tane var, bu yüzden her üye makineleri bütün olarak alıyor: prefill ile decode asla aynı makineyi paylaşmıyor ve sunucu içi eşleşme 0. KV her zaman makineler arasında geçiyor — önemli olan, yukarıdaki hangi katmanın onu kendi içinde tuttuğu.',
+  'models.form.gather.checking': 'Neyin sığdığı denetleniyor…',
+  'models.form.gather.unavailable':
+    'Şu anda neyin sığdığı denetlenemedi, bu nedenle yalnızca varsayılan sunuluyor.',
+  'models.form.gather.retry': 'Yeniden dene',
+  'models.form.groupSettings': 'Grup Ayarları',
+  'models.form.groupSettings.tips':
+    'Bunlar roller arasında farklılaşamaz: tek bir değer hem Prefill hem Decode için uygulanır.',
+  // Topology-aware gather tiers. One chain, root to leaf: the option list is
+  // flat in chain order and the retreat line says what happens when a rung
+  // does not fit. The `chain.*` group headings are gone with the second chain.
+  'models.form.gather.goFill': 'Doldur',
+  'models.form.gather.infeasible.warning':
+    'Mevcut kapasiteyle bu grup yerleştirilemez; kaydedildikten sonra yer açılana kadar bekler. Seçenekler: “olabildiğince yakın” seçeneğine geçin (sunuculara yayılabilir, KV aktarımı yavaşlar) · kopya sayısını veya kopya başına GPU sayısını azaltın'
+};

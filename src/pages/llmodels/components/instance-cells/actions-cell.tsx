@@ -2,7 +2,11 @@ import useDownloadInstanceLogs from '@/pages/llmodels/hooks/use-download-instanc
 import { useBenchmarkTargetInstance } from '@/pages/llmodels/hooks/use-run-benchmark';
 import { DeleteOutlined, DownloadOutlined } from '@ant-design/icons';
 import { DropdownButtons, IconFont } from '@gpustack/core-ui';
-import { InstanceStatusMap, modelCategoriesMap } from '../../config';
+import {
+  InstanceStatusMap,
+  RoleValueMap,
+  modelCategoriesMap
+} from '../../config';
 import { ListItem, ModelInstanceListItem } from '../../config/types';
 
 const childActionList = [
@@ -72,6 +76,13 @@ const ActionsCell: React.FC<ActionsCellProps> = ({
 
   const actionItems = childActionList.filter((action: any) => {
     if (action.key === 'benchmark') {
+      // A run measures the path a request takes, and in a group that path
+      // enters through the router. A prefill or a decode answers on its own
+      // port but never on its own behalf, so the entry belongs to the router
+      // row alone; a roleless instance is the whole deployment and keeps it.
+      if (record.role && record.role !== RoleValueMap.Router) {
+        return false;
+      }
       return (
         action.status.includes(record.state) &&
         modelData?.categories?.includes(modelCategoriesMap.llm)

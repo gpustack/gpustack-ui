@@ -6,6 +6,8 @@ import { queryModelCacheMetrics } from '../../apis';
 import { CACHE_METRICS_WINDOW } from '../../config';
 import { ModelInstanceListItem } from '../../config/types';
 import '../../style/instance-item.less';
+import RoleGroupHeader from '../pd/role-group-header';
+import { orderedRoleStatus } from '../pd/role-status';
 import InstanceItem from './instance-item';
 
 // Read once per expanded deployment rather than per instance: the
@@ -84,6 +86,20 @@ const Instances: React.FC<InstanceItemProps> = ({
   handleChildSelect
 }) => {
   const [firstLoad, setFirstLoad] = React.useState(true);
+  // Which role groups the user has folded away. Every group starts open: the
+  // expanded row was opened to see the members, so opening it onto a column of
+  // headings would answer nothing.
+  const [collapsed, setCollapsed] = React.useState<Set<string>>(new Set());
+
+  const toggleRole = (name: string) => {
+    setCollapsed((prev) => {
+      const next = new Set(prev);
+      if (!next.delete(name)) {
+        next.add(name);
+      }
+      return next;
+    });
+  };
 
   const attached = useMemo(
     () => _.some(list, (item: ModelInstanceListItem) => !!item.cache_config),
@@ -106,24 +122,79 @@ const Instances: React.FC<InstanceItemProps> = ({
     setFirstLoad(false);
   }, []);
 
+  const renderInstance = (item: ModelInstanceListItem) => (
+    <InstanceItem
+      key={item.name}
+      modelData={modelData}
+      workerList={workerList}
+      instanceData={item}
+      cacheHitRate={hitRates[item.name]}
+      defaultOpenId={firstLoad ? defaultOpenId : ''}
+      handleChildSelect={handleChildSelect}
+      gridTemplate={gridTemplate}
+      prefixWidth={prefixWidth}
+      columns={columns}
+    ></InstanceItem>
+  );
+
+  // A model without roles is the flat list it has always been: same wrapper,
+  // same rows, no summary bar and no headings. Everything below is additive and
+  // reached only through this flag.
+  if (!modelData?.roles?.length) {
+    return <Wrapper>{_.map(list, renderInstance)}</Wrapper>;
+  }
+
+  // Group by role, in the order the roles run in, with `role_status` as the
+  // authority for which roles exist and how many members each was asked for —
+  // a role whose members have not been created yet still gets its heading, and
+  // an instance whose role the spec no longer mentions still gets rendered.
+  const columnCount = columns?.length ?? 0;
+  const byRole = _.groupBy(
+    list,
+    (item: ModelInstanceListItem) => item.role || ''
+  );
+  const groups = orderedRoleStatus(modelData.role_status, modelData.roles).map(
+    (item) => ({ item, instances: byRole[item.name] || [] })
+  );
+  const named = new Set(groups.map((group) => group.item.name));
+  const ungrouped = _.flatMap(
+    Object.keys(byRole).filter((role) => !named.has(role)),
+    (role: string) => byRole[role]
+  );
+
   return (
     <Wrapper>
-      {_.map(list, (item: ModelInstanceListItem, index: number) => {
-        return (
-          <InstanceItem
-            key={item.name}
-            modelData={modelData}
-            workerList={workerList}
-            instanceData={item}
-            cacheHitRate={hitRates[item.name]}
-            defaultOpenId={firstLoad ? defaultOpenId : ''}
-            handleChildSelect={handleChildSelect}
+      {/* No group-level bar here: the expansion is role headings and their
+          members, nothing else. A `GroupSummary` panel once led it — PD
+          effectiveness, KV transfer rate and per-member request counts, read
+          from Prometheus on expand — and was removed along with its two hooks
+          once the hold on rendering it turned permanent. The server side is
+          untouched, so `GET /models/{id}/pd-metrics` and `POST
+          /models/kv-transfer-budget` still answer if it is ever reinstated. */}
+      {groups.map((group) => (
+        <React.Fragment key={group.item.name}>
+          <RoleGroupHeader
+            item={group.item}
             gridTemplate={gridTemplate}
             prefixWidth={prefixWidth}
-            columns={columns}
-          ></InstanceItem>
-        );
-      })}
+            columnCount={columnCount}
+            collapsed={collapsed.has(group.item.name)}
+            // No handler when there is nothing to hide, which is what turns
+            // the caret off in the heading.
+            onToggle={
+              group.instances.length
+                ? () => toggleRole(group.item.name)
+                : undefined
+            }
+          ></RoleGroupHeader>
+          {!collapsed.has(group.item.name) &&
+            group.instances.map(renderInstance)}
+        </React.Fragment>
+      ))}
+      {/* Members the role list does not account for. Rendered without a
+          heading rather than dropped — hiding a running instance is the one
+          thing this view must never do. */}
+      {ungrouped.map(renderInstance)}
     </Wrapper>
   );
 };

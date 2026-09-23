@@ -9,9 +9,43 @@ import {
 import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
 import { useAtom } from 'jotai';
 import { useState } from 'react';
+
 import { queryGPUList } from '../apis';
 import { ManualGPUModeMap, ScheduleValueMap } from '../config';
 import { GPUListItem, ListItem } from '../config/types';
+import { rolesSpecToForm } from '../forms/roles/transform';
+
+/**
+ * The one shape of a worker option, shared by both writers of
+ * `workerListAtom`.
+ *
+ * 🔴 There are two, and that is what this exists for: `getWorkerOptionList`
+ * (deploy form) and `getWorkerList` (model-file flow) both overwrite the same
+ * atom. When only one of them carried `vendors`, whichever ran last decided
+ * whether the PD-mode gate had any accelerator facts to work with — and with
+ * an empty set the gate passes everything, so an Ascend-only recipe stayed
+ * selectable on an NVIDIA cluster with no error anywhere.
+ */
+const toWorkerOption = (item: WorkerListItem) => ({
+  label: item.name,
+  value: item.id,
+  cluster_id: item.cluster_id,
+  state: item.state,
+  id: item.id,
+  labels: item.labels || {},
+  name: item.name,
+  // Accelerator manufacturer slugs, from `status.gpu_devices[].vendor`. The
+  // cluster list only carries `provider` (Docker / Kubernetes), which is the
+  // infrastructure provider rather than the vendor, so this is the only place
+  // a form can learn what the cluster actually has.
+  vendors: Array.from(
+    new Set(
+      (item.status?.gpu_devices || [])
+        .map((device) => (device.vendor || '').toLowerCase())
+        .filter(Boolean)
+    )
+  )
+});
 
 type EmptyObject = Record<never, never>;
 
@@ -153,7 +187,17 @@ export const useGenerateWorkerOptions = () => {
   const [workersList, setWorkersList] = useState<
     Global.BaseOption<
       number,
-      { state: string; labels: Record<string, string>; cluster_id: number }
+      {
+        state: string;
+        labels: Record<string, string>;
+        cluster_id: number;
+        // Accelerator manufacturer slugs this worker reports, from
+        // `status.gpu_devices[].vendor`. Carried so a form can tell which
+        // accelerators a cluster actually has — the cluster list itself only
+        // has `provider` (Docker / Kubernetes), which is the infrastructure
+        // provider, not the vendor.
+        vendors: string[];
+      }
     >[]
   >([]);
   const [, setClusterListAtom] = useAtom(clusterListAtom);
@@ -224,15 +268,7 @@ export const useGenerateWorkerOptions = () => {
     const [workerList, clusterList] = data;
     generateCascaderWorkerOptions(workerList, clusterList);
 
-    const workerOptions = workerList.map((item) => ({
-      cluster_id: item.cluster_id,
-      state: item.state,
-      label: item.name,
-      value: item.id,
-      id: item.id,
-      labels: item.labels || {},
-      name: item.name
-    }));
+    const workerOptions = workerList.map(toWorkerOption);
     const clusterOptions = clusterList.map((item) => ({
       label: item.name,
       value: item.id,
@@ -325,16 +361,7 @@ export default function useFormInitialValues() {
   const getWorkerList = async (): Promise<any> => {
     try {
       const data = await queryWorkersList({ page: -1 });
-      const list =
-        data.items?.map((item) => ({
-          label: item.name,
-          value: item.id,
-          cluster_id: item.cluster_id,
-          state: item.state,
-          id: item.id,
-          labels: item.labels || {},
-          name: item.name
-        })) || [];
+      const list = data.items?.map(toWorkerOption) || [];
       setWorkerList(data.items);
       setWorkerListAtom(list);
       return data;
@@ -363,7 +390,16 @@ export default function useFormInitialValues() {
         isVGPU || data?.gpu_selector
           ? ScheduleValueMap.Manual
           : ScheduleValueMap.Auto,
-      manualGpuMode: isVGPU ? ManualGPUModeMap.VGPU : ManualGPUModeMap.FullGPU
+      manualGpuMode: isVGPU ? ManualGPUModeMap.VGPU : ManualGPUModeMap.FullGPU,
+      // A stored group's roles arrive in wire shape: every field a role does
+      // not override is null, which is what the backend reads as inherit. The
+      // form needs the override switches derived back from those nulls, or a
+      // group that inherits everything would open with every switch on and
+      // submit the inherited values as overrides. `roles` absent stays absent —
+      // a plain model must hydrate exactly as it does today.
+      ...(data?.roles?.length
+        ? { roles: rolesSpecToForm(data.roles, gpuOptions) }
+        : {})
     };
     return formData;
   };

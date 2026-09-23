@@ -569,8 +569,6 @@ export default {
     'Grup, katı kipte tek bir topoloji alanına sabitlenmiş durumda ve eklenmesi istenen bir üye henüz yerleştirilemedi. Hâlihazırda çalışan üyeler normal biçimde hizmet vermeyi sürdürüyor — duran şey yalnızca ölçek büyütme. Neyin engellediğini o üyenin durum mesajı söyler; buradan hareketle alan içinde kapasite açın, topoloji kısıtını gevşetin ya da kopya sayısını eski değerine döndürün.',
   'models.pd.degraded.engineVersion':
     'Sabitlenen motor sürümü, seçilen PD reçetesinin desteklediğini bildirdiği aralığın altında. Buna izin verilir — kendiniz derlediğiniz bir imaj özel bir sürüm numarası taşıyabilir — ancak reçetenin varsaydığı davranış eksik olabilir: örneğin 0.5.7 altındaki SGLang sürümlerinde, ölçek küçültmeyle çıkarılan bir üyenin kaydı silinemez ve trafik almayı sürdürür.',
-  'models.pd.degraded.ineffective':
-    'Grup hizmet veriyor ancak hiç KV aktarımı olmuyor — ayrıştırma sessizce toplu çıkarıma geriledi. Eşleştirmeyi ve KV bağlayıcı yapılandırmasını denetleyin.',
   'models.pd.degraded.pairingUnverified':
     'Eşleştirme parametresi rollerden yalnızca birinde açıkça belirtilmiş, diğerinde motorun varsayılanına bırakılmış; bu yüzden GPUStack ikisinin uyuştuğunu doğrulayamadı — tipik olarak --max-model-len, --block-size, --kv-cache-layout ya da bir tarafta auto, diğerinde belirli bir dtype. Bu, eşleştirmenin yanlış olduğu anlamına gelmez; yalnızca doğrulanmadığı anlamına gelir. Doğrulanması için parametreyi iki rolde de yazın.',
   'models.pd.degraded.pairingTP':

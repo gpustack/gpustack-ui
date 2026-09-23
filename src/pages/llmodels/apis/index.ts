@@ -15,14 +15,12 @@ import {
   EvaluateSpec,
   FormData,
   GPUListItem,
-  KVTransferBudget,
   ListItem,
   ModelCacheMetrics,
   ModelInstanceFormData,
   ModelInstanceListItem,
   ModelLoraAdapterResult,
   ModelRestartResult,
-  PDMetrics,
   PDMode,
   PDModeResolution,
   SpanningPreview
@@ -76,53 +74,6 @@ export async function queryModelsList(
       ...options
     }
   );
-}
-
-/**
- * Whether a disaggregated group is actually disaggregating.
- *
- * Server-side it is a PromQL query scoped to this model, so the caller never
- * learns a metric name and can only read the series of a model it can already
- * see. Fetched on expand rather than with the list: it is the only field that
- * costs a Prometheus round trip, and a collapsed row does not show it.
- */
-export async function queryModelPDMetrics(
-  id: number,
-  params?: { window?: string }
-) {
-  return request<PDMetrics>(`${MODELS_API}/${id}/pd-metrics`, {
-    method: 'GET',
-    params
-  });
-}
-
-/**
- * The bandwidth this model's KV transfer would need.
- *
- * Computed from the model's own config, so it answers for a model that is not
- * deployed yet — which is when the question is actually asked, and why this is
- * a POST taking a source rather than a GET on an id. An id is accepted too,
- * for the deployed case: paired with the group's measured transfer rate in
- * `measured_bandwidth_bytes_per_second`, the response comes back with a
- * verdict, so a reading becomes "the link is fast enough" or "it is not, and
- * here is what to do".
- */
-export async function estimateKVTransferBudget(payload: {
-  model_id?: number;
-  model_source?: Record<string, any>;
-  backend_parameters?: string[];
-  seq_len?: number;
-  ttft_budget_ms?: number;
-  prefill_ms?: number;
-  /** The transfer's window stated directly; wins over the two above. */
-  transfer_budget_ms?: number;
-  measured_bandwidth_bytes_per_second?: number;
-  trust_remote_code?: boolean;
-}) {
-  return request<KVTransferBudget>(`${MODELS_API}/kv-transfer-budget`, {
-    method: 'POST',
-    data: payload
-  });
 }
 
 export async function queryGPUList<T extends Record<string, any>>(

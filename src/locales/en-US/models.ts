@@ -568,8 +568,6 @@ export default {
     'The group is pinned to a single topology domain under the strict posture, and a member it was asked to add has not been placed. The members already running keep serving normally — what stopped is the scale-out. The status message on that member says what blocked it; from there, free capacity inside the domain, switch the posture to lenient, or lower the replica count back.',
   'models.pd.degraded.engineVersion':
     'The pinned engine version is below the range the selected PD recipe declares support for. This is allowed — a self-built image may carry a private version number — but the behaviour the recipe assumes may be missing: on SGLang below 0.5.7, for example, a scaled-down member cannot be deregistered and keeps taking traffic.',
-  'models.pd.degraded.ineffective':
-    'The group is serving but no KV is being transferred — disaggregation has silently collapsed into aggregated serving. Check the pairing and the KV connector configuration.',
   'models.pd.degraded.pairingUnverified':
     'One role declares a pairing factor and the other leaves it to the engine default, so GPUStack could not verify that the two agree — typically --max-model-len, --block-size, --kv-cache-layout, or one side set to auto against a named dtype. It does not mean the pair is wrong, only that nothing checked it. Write the factor on both roles to have it verified.',
   'models.pd.degraded.pairingTP':

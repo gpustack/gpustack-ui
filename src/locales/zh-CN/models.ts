@@ -535,8 +535,6 @@ export default {
     '本组在严格模式下被限制在同一个拓扑域内，要新增的成员尚未被放置。已有成员仍在正常服务，停下来的是扩容。该成员的状态信息会说明是什么挡住了它；据此可在域内腾出空位、把拓扑约束改为宽松，或把副本数调回原值。',
   'models.pd.degraded.engineVersion':
     '当前固定的引擎版本低于所选 PD 方案声明支持的版本范围。这是允许的 —— 自建镜像可能带有私有版本号 —— 但方案所依赖的行为可能并不存在：例如 SGLang 低于 0.5.7 时，缩容下线的成员无法注销，仍会继续接收流量。',
-  'models.pd.degraded.ineffective':
-    '本组正在服务，但没有任何 KV 传输发生 —— 分离已静默退化为聚合推理。请检查配对与 KV 连接器配置。',
   'models.pd.degraded.pairingUnverified':
     '配对参数只有一侧显式声明，另一侧沿用引擎默认值，GPUStack 无法判定两者是否一致 —— 常见于 --max-model-len、--block-size、--kv-cache-layout，以及一侧写 auto、另一侧写具体 dtype。这不代表配对是错的，只代表没有任何检查验证过它。在两个角色上都写明该参数即可被校验。',
   'models.pd.degraded.pairingTP':

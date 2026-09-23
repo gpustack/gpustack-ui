@@ -22,6 +22,9 @@ export interface InstancesData {
   id: number;
   name: string;
   resolved_path: string;
+  // Which role of its model this member served; absent for a plain deployment.
+  // The only thing that tells a group's members apart in a finished report.
+  role?: string | null;
   state: string;
   state_message: string;
   backend: any;
@@ -71,6 +74,9 @@ export interface GPUData {
 }
 
 export interface Snapshot {
+  // The route the load entered through, in route mode. Absent for a run aimed
+  // at an instance, which is every run written before the mode existed.
+  route_name?: string | null;
   instances: Record<string, InstancesData>;
   workers: Record<string, WorkerData>;
   gpus: Record<string, GPUData>;

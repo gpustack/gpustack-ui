@@ -74,6 +74,14 @@ export interface FormData {
   model_id: number;
   model_name: string;
   model_instance_name: string;
+  // What the load is aimed at: one instance (an engine) or the deployment's
+  // route. Absent on rows written before the field existed, which measured an
+  // instance.
+  target_mode?: string;
+  // The route to drive, in route mode. Submitted rather than derived: a model
+  // can sit behind several routes (an alias, a canary) and they are different
+  // measurements, so the one the user picked from the list is the one to send.
+  route_name?: string;
   dataset_name: string;
   dataset_input_tokens: number;
   dataset_output_tokens: number;

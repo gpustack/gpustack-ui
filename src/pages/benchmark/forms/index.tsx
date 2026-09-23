@@ -16,7 +16,8 @@ import {
   genBenchmarkName,
   genDatasetSeed,
   profileAllowsSlo,
-  sloTargetsFromFields
+  sloTargetsFromFields,
+  TargetModeValueMap
 } from '../config';
 import FormContext from '../config/form-context';
 import { FormData, BenchmarkListItem as ListItem } from '../config/types';
@@ -206,11 +207,11 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
     form.setFieldsValue({
       ...currentData,
       dataset_name: datasetName,
-      // Editable view of the 9 flat slo_*_ms thresholds (see config/index.ts).
       // Stored as a fraction, shown as a whole percent (see the onFinish note).
       warmup: fractionToPercent(currentData.warmup),
       cooldown: fractionToPercent(currentData.cooldown),
       max_error_rate: fractionToPercent(currentData.max_error_rate),
+      // Editable view of the 9 flat slo_*_ms thresholds (see config/index.ts).
       slo_targets: sloTargetsFromFields(currentData),
       model_instance: [currentData.model_name, currentData.model_instance_name],
       // A clone of a random-seeded benchmark re-rolls: running the same config
@@ -316,6 +317,10 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
             dataset_input_tokens: 1024,
             dataset_output_tokens: 128,
             profile: 'Max Throughput',
+            // An engine measurement, which is what every run was before the
+            // choice existed. `route` is opt-in because it puts the server's
+            // proxy in the path.
+            target_mode: TargetModeValueMap.Instance,
             load_type: 'fixed_rate',
             auto_tune: true,
             lower_bound: AUTO_TUNE_DEFAULTS.lower_bound,

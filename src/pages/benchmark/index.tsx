@@ -287,6 +287,8 @@ const Benchmark: React.FC = () => {
         <FilterBar
           showSelect={false}
           handleSearch={handleSearch}
+          // Required by FilterBar, but unreachable here: passing `left` replaces
+          // the bar's own search input, and the name filter lives in LeftActions.
           handleInputChange={handleNameChange}
           rowSelection={rowSelection}
           widths={{ input: 300 }}
@@ -295,7 +297,6 @@ const Benchmark: React.FC = () => {
               modelList={modelList}
               handleSearch={handleSearch}
               handleQueryChange={handleQueryChange}
-              handleInputChange={handleNameChange}
               count={filtersCount.length}
               toggleFilters={toggleFilters}
               onClear={handleOnClearFilters}

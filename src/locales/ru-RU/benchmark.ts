@@ -5,7 +5,6 @@ export default {
   'benchmark.button.clone': 'Clone Benchmark',
   'benchmark.button.compare': 'Compare',
   'benchmark.table.model': 'Model',
-  'benchmark.table.instance': 'Model Instance',
   'benchmark.table.dataset': 'Dataset',
   'benchmark.table.requestRate': 'Request Rate',
   'benchmark.table.gpu': 'GPU ',
@@ -381,6 +380,7 @@ export default {
   'benchmark.detail.inputOutputTokenLength': 'Token Length (Input/Output)',
   'benchmark.env.gpuName': 'GPU Name',
   'benchmark.env.workerName': 'Worker Name',
+  'benchmark.env.hostedMembers': 'Размещённые участники',
   'benchmark.env.index': 'Index',
   'benchmark.env.system': 'System',
   'benchmark.env.runtimeVersion': 'Runtime Version',
@@ -390,5 +390,22 @@ export default {
   'benchmark.form.nonLlmModel.tips':
     'Benchmarking currently only supports LLM models',
   'benchmark.detail.result.duration': 'Duration',
-  'benchmark.detail.result.basic': 'Basic'
+  'benchmark.detail.result.basic': 'Basic',
+  'benchmark.form.target': 'Цель тестирования',
+  'benchmark.table.filter.byTargetMode': 'Фильтр по форме цели',
+  'benchmark.detail.members.title': 'Участники',
+  'benchmark.detail.members.role': 'Роль',
+  'benchmark.detail.members.injected': 'Внедрённые параметры',
+  'benchmark.detail.members.endpoint': 'Точка входа',
+  'benchmark.form.pdGroup.tips':
+    'Разделённая группа измеряется целиком: каждый запрос входит через её router, поэтому выбирать участника не нужно. Сервер направляет нагрузку на router и запускает генератор нагрузки на воркере, где лежат веса модели.',
+  'benchmark.form.targetMode': 'Форма цели тестирования',
+  'benchmark.form.targetMode.instance': 'Экземпляр (измеряется движок)',
+  'benchmark.form.targetMode.route': 'Маршрут (измеряется развёртывание)',
+  'benchmark.form.targetMode.tips':
+    'Экземпляр: нагрузка идёт напрямую в один движок — router разделённой группы или одну реплику обычной модели, — и в пути нет ничего, кроме движка. Маршрут: нагрузка входит там же, где и клиентский трафик, поэтому участвуют все реплики обычной модели; используйте этот режим, чтобы сравнить разделённое и объединённое развёртывания на одинаковом числе карт. ⚠️ В режиме маршрута в путь попадает прокси сервера. При высокой нагрузке прокси может насытиться раньше развёртывания и начать отбрасывать запросы, а отброшенные запросы не попадают в показатели задержки — поэтому TTFT / TPOT могут выглядеть лучше, чем есть. Результаты режима маршрута читайте вместе с числом ошибок и незавершённых запросов.',
+  'benchmark.detail.targetMode.route': 'Маршрут (развёртывание) · {route}',
+  'benchmark.form.target.route': 'Маршрут',
+  'benchmark.form.target.route.empty':
+    'В этом кластере нет маршрута, ведущего к работающей LLM. Разверните маршрут или измерьте экземпляр.'
 };

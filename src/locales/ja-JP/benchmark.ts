@@ -5,7 +5,6 @@ export default {
   'benchmark.button.clone': 'Clone Benchmark',
   'benchmark.button.compare': 'Compare',
   'benchmark.table.model': 'Model',
-  'benchmark.table.instance': 'Model Instance',
   'benchmark.table.dataset': 'Dataset',
   'benchmark.table.requestRate': 'Request Rate',
   'benchmark.table.gpu': 'GPU ',
@@ -373,6 +372,7 @@ export default {
   'benchmark.detail.inputOutputTokenLength': 'Token Length (Input/Output)',
   'benchmark.env.gpuName': 'GPU Name',
   'benchmark.env.workerName': 'Worker Name',
+  'benchmark.env.hostedMembers': '収容メンバー',
   'benchmark.env.index': 'Index',
   'benchmark.env.system': 'System',
   'benchmark.env.runtimeVersion': 'Runtime Version',
@@ -382,5 +382,22 @@ export default {
   'benchmark.form.nonLlmModel.tips':
     'Benchmarking currently only supports LLM models',
   'benchmark.detail.result.duration': 'Duration',
-  'benchmark.detail.result.basic': 'Basic'
+  'benchmark.detail.result.basic': 'Basic',
+  'benchmark.form.target': 'ベンチマーク対象',
+  'benchmark.table.filter.byTargetMode': '対象の形態で絞り込み',
+  'benchmark.detail.members.title': 'メンバー',
+  'benchmark.detail.members.role': 'ロール',
+  'benchmark.detail.members.injected': '注入パラメータ',
+  'benchmark.detail.members.endpoint': 'エンドポイント',
+  'benchmark.form.pdGroup.tips':
+    '分離構成のグループはグループ単位で計測します。すべてのリクエストは router を通るため、メンバーを選ぶ必要はありません。サーバーが負荷を router に送り、重みを保持しているワーカー上で負荷生成コンテナを実行します。',
+  'benchmark.form.targetMode': 'ベンチマーク対象の形態',
+  'benchmark.form.targetMode.instance': 'インスタンス（エンジンを計測）',
+  'benchmark.form.targetMode.route': 'ルート（デプロイメントを計測）',
+  'benchmark.form.targetMode.tips':
+    'インスタンス：負荷を単一のエンジンへ直接送ります（分離グループの router、または通常モデルの 1 レプリカ）。経路上にエンジン以外は入りません。ルート：クライアントが呼び出す入口から入るため、通常モデルのすべてのレプリカが対象になります。同じカード数で分離構成と集約構成を比較する場合はこちらを使ってください。⚠️ ルートではサーバーのプロキシが経路に入ります。高並列ではデプロイメントより先にプロキシが飽和してリクエストを落とすことがあり、落とされたリクエストはレイテンシに含まれないため、TTFT / TPOT が実際より良く見えます。ルートモードの結果は必ずエラー数・未完了数と合わせて読んでください。',
+  'benchmark.detail.targetMode.route': 'ルート（デプロイメント）· {route}',
+  'benchmark.form.target.route': 'ルート',
+  'benchmark.form.target.route.empty':
+    'このクラスターには、応答可能な LLM を指すルートがありません。ルートをデプロイするか、インスタンス形態に切り替えてください。'
 };

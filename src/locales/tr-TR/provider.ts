@@ -29,6 +29,10 @@ export default {
     'Lütfen şema içeren tam bir http(s) adresi girin (varsa portu da ekleyin), örneğin https://gateway.example.com:8080',
   'providers.form.rules.openaiCustomUrl':
     'Lütfen şema ve yol içeren tam bir http(s) adresi girin, örneğin https://gateway.example.com:8080/v1',
+  'providers.form.rules.claudeCustomUrl.credentials':
+    'Adreste kimlik bilgileri (kullanıcı adı/şifre) bulunmamalıdır: bunlar her isteğin Host başlığı olarak gönderilir. Erişim anahtarını bunun yerine sağlayıcının API Anahtarı olarak yapılandırın.',
+  'providers.form.rules.claudeCustomUrl.query':
+    'Adres yalnızca bir kaynak ve isteğe bağlı bir yol öneki kabul eder; sorgu veya parça kısmı atılır.',
   'providers.form.model.duplicate': 'Yinelenen model mevcut',
   'providers.table.registerRoute': 'Yönlendirme Kaydet',
   'providers.form.azureServiceUrl': "Azure OpenAI Hizmet URL'si",

@@ -8,15 +8,33 @@ const useProviderRequiredFields = () => {
   const intl = useIntl();
   const { getRuleMessage } = useAppUtils();
 
-  const validateCustomUrl = async (_: any, value: string) => {
-    if (!value || isAbsoluteHttpUrl(value)) {
+  // Mirrors the backend `ClaudeConfig.check_claude_custom_url` rules:
+  // an absolute http(s) URL with no credentials and no query/fragment.
+  // Empty is valid — the field is optional.
+  const validateClaudeCustomUrl = async (_: any, value: string) => {
+    const reject = (id: string) =>
+      Promise.reject(new Error(intl.formatMessage({ id })));
+
+    if (!value) {
       return Promise.resolve();
     }
-    return Promise.reject(
-      new Error(
-        intl.formatMessage({ id: 'providers.form.rules.absoluteHttpUrl' })
-      )
-    );
+
+    let url: URL;
+    try {
+      url = new URL(value);
+    } catch {
+      return reject('providers.form.rules.absoluteHttpUrl');
+    }
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+      return reject('providers.form.rules.absoluteHttpUrl');
+    }
+    if (url.username || url.password) {
+      return reject('providers.form.rules.claudeCustomUrl.credentials');
+    }
+    if (url.search || url.hash) {
+      return reject('providers.form.rules.claudeCustomUrl.query');
+    }
+    return Promise.resolve();
   };
 
   // openaiCustomUrl carries the extra requirement that claudeCustomUrl does not:
@@ -72,7 +90,7 @@ const useProviderRequiredFields = () => {
         },
         rules: [
           {
-            validator: validateCustomUrl
+            validator: validateClaudeCustomUrl
           }
         ]
       }

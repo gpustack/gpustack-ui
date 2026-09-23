@@ -29,6 +29,10 @@ export default {
     '请输入带协议的完整地址（如有端口需一并写明），例如 https://gateway.example.com:8080',
   'providers.form.rules.openaiCustomUrl':
     '请输入带协议和路径的完整地址，例如 https://gateway.example.com:8080/v1',
+  'providers.form.rules.claudeCustomUrl.credentials':
+    '地址中不能携带用户名/密码等凭据：它们会被作为每个请求的 Host 头发送。请改为将访问密钥填入 Provider 的 API Key。',
+  'providers.form.rules.claudeCustomUrl.query':
+    '该地址只接受源站及可选的路径前缀，查询串（?…）或片段（#…）会被丢弃。',
   'providers.form.model.duplicate': '存在相同的模型',
   'providers.table.registerRoute': '注册路由',
   'providers.form.azureServiceUrl': 'Azure OpenAI 服务 URL',

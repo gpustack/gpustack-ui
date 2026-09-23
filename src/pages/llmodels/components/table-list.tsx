@@ -55,6 +55,8 @@ import {
 import useEditDeployment from '../hooks/use-edit-deployment';
 import useExportDeployments from '../hooks/use-export-deployments';
 import useModelsColumns from '../hooks/use-models-columns';
+import useRestartModel from '../hooks/use-restart-model';
+import { useBenchmarkTargetInstance } from '../hooks/use-run-benchmark';
 import useViewInstanceLogs from '../hooks/use-view-instance-logs';
 import LeftFilters from '../instance-view/left-filters';
 import DeployModal from './deployment/deploy-modal';
@@ -159,6 +161,13 @@ const Models: React.FC<ModelsProps> = ({
   const { handleOpenPlayGround } = useOpenPlayground();
   const { openViewLogsModal, openViewLogsModalStatus, closeViewLogsModal } =
     useViewInstanceLogs();
+  // The row expands on success, because the whole visible effect of the action
+  // is the members being torn down and rebuilt one row down.
+  const { handleRestartModel } = useRestartModel({
+    onSuccess: (row) => updateExpandedRowKeys([row.id, ...expandedRowKeys])
+  });
+
+  const { runBenchmarkOnModel } = useBenchmarkTargetInstance();
 
   const { goToGrafana, ActionButton } = useGranfanaLink({
     type: 'model'
@@ -208,6 +217,16 @@ const Models: React.FC<ModelsProps> = ({
       // ignore
     }
   });
+
+  // Per-role scaling from the replica cell. Same PUT as every other edit on
+  // this page — the server converges role by role rather than restarting the
+  // group, because `replicas` is excluded from the spec digest.
+  const handleUpdateRoles = useMemoizedFn(
+    async (record: ListItem, roles: any[]) => {
+      await updateModel(getFormattedData(record, { roles }));
+      message.success(intl.formatMessage({ id: 'common.message.success' }));
+    }
+  );
 
   const handleStartModel = async (row: ListItem) => {
     await updateModel(getFormattedData(row, { replicas: row.replicas || 1 }));
@@ -416,6 +435,15 @@ const Models: React.FC<ModelsProps> = ({
           }
         });
       }
+      if (val === 'restart') {
+        await handleRestartModel(row);
+      }
+      if (val === 'benchmark') {
+        // The deployment is the target, so this hands over the model rather
+        // than one of its members. For a group that is the only correct
+        // answer — no member of it can serve a request alone.
+        runBenchmarkOnModel(row);
+      }
       if (val === 'chat') {
         const targetRoute = targetList.find(
           (target) =>
@@ -542,9 +570,10 @@ const Models: React.FC<ModelsProps> = ({
       handleSelect,
       clusterList,
       sortOrder,
-      targetList: targetList
+      targetList: targetList,
+      onUpdateRoles: handleUpdateRoles
     };
-  }, [handleSelect, clusterList, sortOrder, targetList]);
+  }, [handleSelect, clusterList, sortOrder, targetList, handleUpdateRoles]);
 
   const columns = useModelsColumns(options);
 

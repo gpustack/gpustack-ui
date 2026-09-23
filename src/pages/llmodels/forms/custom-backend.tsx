@@ -10,26 +10,43 @@ import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
 import { backendOptionsMap } from '../constants/backend-parameters';
 
-const CustomBackend: React.FC = () => {
+interface CustomBackendProps {
+  /**
+   * Renders the same fields at a nested Form path (e.g. `['roles', 0]`).
+   * Absent means the model-level path, byte-for-byte what it was.
+   */
+  namePrefix?: (string | number)[];
+}
+
+const CustomBackend: React.FC<CustomBackendProps> = ({ namePrefix }) => {
   const intl = useIntl();
   const { getRuleMessage } = useAppUtils();
   const form = Form.useFormInstance();
-  const backend = Form.useWatch('backend', form);
+  const path = (...field: (string | number)[]) =>
+    namePrefix ? [...namePrefix, ...field] : field;
+  const backend = Form.useWatch(path('backend'), form);
   const { onValuesChange } = useFormContext();
+
+  // See backend.tsx: `getFieldsValue()` stays the whole store (a model-level
+  // shape), and the changed-values argument is dropped under a prefix rather
+  // than handing the consumer a role field under a model-level key.
+  const notifyValuesChange = (changedValues: Record<string, any>) => {
+    onValuesChange?.(namePrefix ? {} : changedValues, form.getFieldsValue());
+  };
 
   const handleImageNameOnBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    const runCommand = form.getFieldValue('run_command');
+    const runCommand = form.getFieldValue(path('run_command'));
     if (value && runCommand) {
-      onValuesChange?.({ image_name: value }, form.getFieldsValue());
+      notifyValuesChange({ image_name: value });
     }
   };
 
   const handleRunCommandOnBlur = (e: React.FocusEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
-    const imageName = form.getFieldValue('image_name');
+    const imageName = form.getFieldValue(path('image_name'));
     if (value && imageName) {
-      onValuesChange?.({ run_command: value }, form.getFieldsValue());
+      notifyValuesChange({ run_command: value });
     }
   };
 
@@ -38,7 +55,7 @@ const CustomBackend: React.FC = () => {
       {backend === backendOptionsMap.custom && (
         <>
           <Form.Item<FormData>
-            name="image_name"
+            name={path('image_name')}
             rules={[
               {
                 required: true,
@@ -54,7 +71,7 @@ const CustomBackend: React.FC = () => {
             ></CInput.Input>
           </Form.Item>
           <Form.Item<FormData>
-            name="run_command"
+            name={path('run_command')}
             rules={[
               {
                 required: true,

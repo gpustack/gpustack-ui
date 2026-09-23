@@ -34,14 +34,14 @@ const KVCacheDegradedCell: React.FC<KVCacheDegradedCellProps> = ({
       : 'models.kvCache.degraded.tips'
   });
 
+  // The server's reason already names the subject ("Not attached on the
+  // 'decode' role …"), so prefixing it with this cell's own sentence said the
+  // same thing twice before the reader got to the part only the server knows.
+  // The generic line stays for the case where there is no reason to show.
+  const title = !endpointDead && cacheConfig.reason ? cacheConfig.reason : tips;
+
   return (
-    <Tooltip
-      title={
-        !endpointDead && cacheConfig.reason
-          ? `${tips}: ${cacheConfig.reason}`
-          : tips
-      }
-    >
+    <Tooltip title={title} styles={{ container: { maxWidth: 320 } }}>
       <WarningOutlined style={{ color: 'var(--ant-color-warning)' }} />
     </Tooltip>
   );

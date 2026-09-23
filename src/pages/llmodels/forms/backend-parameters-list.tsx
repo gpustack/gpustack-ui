@@ -10,11 +10,31 @@ import BackendParameters, {
   backendOptionsMap
 } from '../constants/backend-parameters';
 
-const BackendParametersList: React.FC = () => {
+interface BackendParametersListProps {
+  /**
+   * Renders the same field at a nested Form path (e.g. `['roles', 0]`).
+   * Absent means the model-level path, byte-for-byte what it was.
+   */
+  namePrefix?: (string | number)[];
+}
+
+const BackendParametersList: React.FC<BackendParametersListProps> = ({
+  namePrefix
+}) => {
   const intl = useIntl();
   const { onValuesChange, flatBackendOptions } = useFormContext();
   const form = Form.useFormInstance();
-  const backend = Form.useWatch('backend', form);
+  const path = (...field: (string | number)[]) =>
+    namePrefix ? [...namePrefix, ...field] : field;
+  // The engine is context here, not this section's own field: it only picks
+  // which parameter catalog to offer. A role that overrides its parameters
+  // without overriding its engine has no `backend` of its own, and it is the
+  // model's engine it will actually run — so fall back to it, otherwise the
+  // role's list would offer no suggestions at all. Without a prefix both
+  // watches read the same field and the fallback is a no-op.
+  const roleBackend = Form.useWatch(path('backend'), form);
+  const modelBackend = Form.useWatch('backend', form);
+  const backend = roleBackend ?? modelBackend;
 
   const backendParamsTips = useMemo(() => {
     return getBackendParamsTips(backend);
@@ -43,7 +63,7 @@ const BackendParametersList: React.FC = () => {
   };
 
   return (
-    <Form.Item<FormData> name="backend_parameters">
+    <Form.Item<FormData> name={path('backend_parameters')}>
       <ListInput
         trim={false}
         placeholder={

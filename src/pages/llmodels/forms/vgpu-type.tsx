@@ -156,6 +156,16 @@ const GPUTypeOption: React.FC<{ item: InstanceTypeListItem }> = ({ item }) => {
   );
 };
 
+interface VGPUTypeFormProps {
+  /**
+   * Renders the same fields at a nested Form path (e.g. `['roles', 0]`).
+   * `gpu_type_selector` per role is the only way to express a heterogeneous
+   * group, which is why this section has to move. Absent means the model-level
+   * path, byte-for-byte what it was.
+   */
+  namePrefix?: (string | number)[];
+}
+
 /**
  * vGPU scheduling section: pick an InstanceType from the cluster's synced
  * gpu-instance-types (the CRD names the backend validates against), then
@@ -164,18 +174,23 @@ const GPUTypeOption: React.FC<{ item: InstanceTypeListItem }> = ({ item }) => {
  * offers BOTH modes; a single offered mode renders directly, and a type with
  * no slicing capability requests a whole card with no extra controls.
  */
-const VGPUTypeForm: React.FC = () => {
+const VGPUTypeForm: React.FC<VGPUTypeFormProps> = ({ namePrefix }) => {
   const intl = useIntl();
   const { getRuleMessage } = useAppUtils();
   const { action, realAction, initialValues } = useFormContext();
   const form = Form.useFormInstance();
+  const path = (...field: (string | number)[]) =>
+    namePrefix ? [...namePrefix, ...field] : field;
   const [typeList, setTypeList] = useState<InstanceTypeListItem[]>([]);
   const [sliceMode, setSliceMode] = useState<SliceMode>(() =>
-    getSliceModeFromValues(form.getFieldValue('gpu_type_selector'))
+    getSliceModeFromValues(form.getFieldValue(path('gpu_type_selector')))
   );
 
+  // Deliberately NOT prefixed: the cluster is a model-level decision — a group
+  // deploys into one cluster, and the InstanceType catalog this section reads
+  // is that cluster's.
   const clusterId = Form.useWatch('cluster_id', form);
-  const typeName = Form.useWatch(['gpu_type_selector', 'type'], form);
+  const typeName = Form.useWatch(path('gpu_type_selector', 'type'), form);
 
   // The slice request this deployment is already running on.
   //
@@ -194,9 +209,14 @@ const VGPUTypeForm: React.FC = () => {
   // `action` EDIT and a copy of the same values (use-edit-deployment.ts), but a
   // copy is a second deployment that has to fit in the headroom actually left.
   // `realAction` is the only field that tells the two apart.
+  //
+  // Read at the same path the fields are written at, so a role reads the role's
+  // own stored selector — `initialValues.roles` is the same array the form
+  // renders (see `rolesSpecToForm`), and a heterogeneous group holds a
+  // different slice request per role.
   const persistedSelector =
     action === PageAction.EDIT && realAction !== PageAction.COPY
-      ? initialValues?.gpu_type_selector
+      ? _.get(initialValues, path('gpu_type_selector'))
       : null;
   const persistedTypeName = persistedSelector?.type || null;
   const persistedSlicedPercentage =
@@ -210,7 +230,7 @@ const VGPUTypeForm: React.FC = () => {
   const slicedMemoryPercentage =
     _.toNumber(
       Form.useWatch(
-        ['gpu_type_selector', 'accelerator_sliced_memory_percentage'],
+        path('gpu_type_selector', 'accelerator_sliced_memory_percentage'),
         form
       )
     ) || 1;
@@ -414,14 +434,14 @@ const VGPUTypeForm: React.FC = () => {
   // rides the submit.
   const commitSliceMode = (mode: SliceMode) => {
     setSliceMode(mode);
-    const current = form.getFieldValue('gpu_type_selector') || {};
+    const current = form.getFieldValue(path('gpu_type_selector')) || {};
     if (mode === 'sliced') {
       // With no sliceable capacity left, seed no percentage at all: a value
       // here could not validate against a max of 0, and a 0 would silently
       // turn the request into a whole card.
       const memory =
         slicedMaxPercentage > 0 ? Math.min(50, slicedMaxPercentage) : null;
-      form.setFieldValue('gpu_type_selector', {
+      form.setFieldValue(path('gpu_type_selector'), {
         ...current,
         accelerator_sliced_memory_percentage: memory,
         accelerator_sliced_cores_percentage:
@@ -429,7 +449,7 @@ const VGPUTypeForm: React.FC = () => {
         accelerator_partitioned_profile: null
       });
     } else if (mode === 'partitioned') {
-      form.setFieldValue('gpu_type_selector', {
+      form.setFieldValue(path('gpu_type_selector'), {
         ...current,
         accelerator_sliced_memory_percentage: 0,
         accelerator_sliced_cores_percentage: 0
@@ -437,7 +457,7 @@ const VGPUTypeForm: React.FC = () => {
         // otherwise (no silent fallback to the first profile)
       });
     } else {
-      form.setFieldValue('gpu_type_selector', {
+      form.setFieldValue(path('gpu_type_selector'), {
         ...current,
         accelerator_sliced_memory_percentage: 0,
         accelerator_sliced_cores_percentage: 0,
@@ -503,7 +523,7 @@ const VGPUTypeForm: React.FC = () => {
         : nextSlicedMax > 0
           ? Math.min(50, nextSlicedMax)
           : null;
-    form.setFieldValue('gpu_type_selector', {
+    form.setFieldValue(path('gpu_type_selector'), {
       type: name,
       accelerator_sliced_memory_percentage: memory,
       accelerator_sliced_cores_percentage:
@@ -517,7 +537,7 @@ const VGPUTypeForm: React.FC = () => {
   const handleMemoryPercentageChange = (value: number) => {
     if (!coresOvercommit) {
       form.setFieldValue(
-        ['gpu_type_selector', 'accelerator_sliced_cores_percentage'],
+        path('gpu_type_selector', 'accelerator_sliced_cores_percentage'),
         value
       );
     }
@@ -534,9 +554,11 @@ const VGPUTypeForm: React.FC = () => {
   const isPartitioned = sliceMode === 'partitioned' && supportsPartitioned;
 
   return (
-    <div data-field="gpuTypeSelector">
+    // The scroll anchor is a document-wide `[data-field]` query, so a copy of
+    // this section under a role must not answer to the model-level one.
+    <div data-field={path('gpuTypeSelector').join('.')}>
       <Form.Item<FormData>
-        name={['gpu_type_selector', 'type']}
+        name={path('gpu_type_selector', 'type')}
         style={{
           marginBottom: 12
         }}
@@ -611,7 +633,10 @@ const VGPUTypeForm: React.FC = () => {
             clears — as soon as the user switches to ByProfile, which stays
             submittable. */}
           <Form.Item<FormData>
-            name={['gpu_type_selector', 'accelerator_sliced_memory_percentage']}
+            name={path(
+              'gpu_type_selector',
+              'accelerator_sliced_memory_percentage'
+            )}
             rules={[
               {
                 validator: () =>
@@ -633,7 +658,10 @@ const VGPUTypeForm: React.FC = () => {
       {isSliced && !slicedCapacityExhausted && (
         <>
           <Form.Item<FormData>
-            name={['gpu_type_selector', 'accelerator_sliced_memory_percentage']}
+            name={path(
+              'gpu_type_selector',
+              'accelerator_sliced_memory_percentage'
+            )}
             getValueProps={(value) => ({
               value: value != null ? _.toNumber(value) : undefined
             })}
@@ -689,10 +717,10 @@ const VGPUTypeForm: React.FC = () => {
             a hidden field so it still rides the submit. */}
           {coresOvercommit ? (
             <Form.Item<FormData>
-              name={[
+              name={path(
                 'gpu_type_selector',
                 'accelerator_sliced_cores_percentage'
-              ]}
+              )}
               getValueProps={(value) => ({
                 value: value != null ? _.toNumber(value) : undefined
               })}
@@ -740,10 +768,10 @@ const VGPUTypeForm: React.FC = () => {
             </Form.Item>
           ) : (
             <Form.Item<FormData>
-              name={[
+              name={path(
                 'gpu_type_selector',
                 'accelerator_sliced_cores_percentage'
-              ]}
+              )}
               hidden
             >
               <InputNumber />
@@ -753,7 +781,7 @@ const VGPUTypeForm: React.FC = () => {
       )}
       {isPartitioned && (
         <Form.Item<FormData>
-          name={['gpu_type_selector', 'accelerator_partitioned_profile']}
+          name={path('gpu_type_selector', 'accelerator_partitioned_profile')}
           rules={[
             {
               required: true,
@@ -797,7 +825,7 @@ const VGPUTypeForm: React.FC = () => {
             the scheduler rejects much later, citing software slicing rather
             than the missing profile. */}
           <Form.Item<FormData>
-            name={['gpu_type_selector', 'accelerator_partitioned_profile']}
+            name={path('gpu_type_selector', 'accelerator_partitioned_profile')}
             rules={[
               {
                 validator: () =>

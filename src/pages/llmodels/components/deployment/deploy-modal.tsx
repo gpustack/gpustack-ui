@@ -430,6 +430,11 @@ const AddModal: FC<AddModalProps> = (props) => {
       return;
     }
     submitloadingRef.current = true;
+    // Visible from the click, not from the request: `submit()` validates first,
+    // and on a PD form that is a large tree of conditional fields. Leaving the
+    // button idle until the request starts reads as the click not having
+    // registered — the reason to press Save again.
+    setLoading(true);
     form.current?.submit?.();
   };
 
@@ -443,7 +448,9 @@ const AddModal: FC<AddModalProps> = (props) => {
   };
 
   const onFinishFailed = () => {
+    // Validation rejected, so no request will run to clear the spinner.
     submitloadingRef.current = false;
+    setLoading(false);
   };
 
   const handleBackendChange = async (backend: string) => {

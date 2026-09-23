@@ -51,6 +51,7 @@ Token source of truth (look up values here, don't memorize them): `StatusColorMa
 - Drawer/modal open-close uses `useBodyScroll`. Widen a drawer only when content needs it — flag a wide drawer with sparse content.
 - A form cramming many ungrouped fields — suggest `ScrollSpyTabs` or sectioning only when the schema genuinely has grouped sections (don't add tabs gratuitously).
 - Long text in a table cell must be single-line via `AutoTooltip`, not wrapped.
+- An expanded row / detail panel restating a field the parent row already shows (state, counts, name) — an expansion earns its space by adding what the row could not fit, not by repeating it. Count the renderings before accepting one: in the PD group expansion `Prefill 0/1` appeared in the parent's replicas column, again in a group summary bar, and again in the role heading — three statements of one fact, in three different visual languages. The summary bar was dropped and the heading reduced to the role label; compare `src/pages/llmodels/components/pd/pd-replicas-cell.tsx` (which prints the counts) against `role-group-header.tsx` (which does not).
 
 ### 5. Accessibility (usually the weakest area — look hard here)
 

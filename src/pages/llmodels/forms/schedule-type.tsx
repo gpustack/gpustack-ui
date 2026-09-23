@@ -85,7 +85,16 @@ const GPUsPerReplicaTips = [
   }
 ];
 
-const ScheduleTypeForm: React.FC = () => {
+interface ScheduleTypeFormProps {
+  /**
+   * Renders the same fields at a nested Form path (e.g. `['roles', 0]`), for a
+   * role's "Resources and scheduling" override group. Absent means the
+   * model-level path, byte-for-byte what it was.
+   */
+  namePrefix?: (string | number)[];
+}
+
+const ScheduleTypeForm: React.FC<ScheduleTypeFormProps> = ({ namePrefix }) => {
   const intl = useIntl();
   const { styles } = useStyles();
   const {
@@ -99,11 +108,19 @@ const ScheduleTypeForm: React.FC = () => {
   } = useFormContext();
   const { getRuleMessage } = useAppUtils();
   const form = Form.useFormInstance();
-  const scheduleType = Form.useWatch('scheduleType', form);
-  const manualGpuMode = Form.useWatch('manualGpuMode', form);
+  const path = (...field: (string | number)[]) =>
+    namePrefix ? [...namePrefix, ...field] : field;
+  // `scheduleType` and `manualGpuMode` are UI-only either way — they say which
+  // GPU source the section is editing. Under a prefix they belong to the role
+  // that owns the selectors, and the roles transform strips them before submit
+  // just as handleOk strips the model-level pair.
+  const scheduleType = Form.useWatch(path('scheduleType'), form);
+  const manualGpuMode = Form.useWatch(path('manualGpuMode'), form);
+  // Deliberately NOT prefixed: one group deploys into one cluster, so the
+  // cluster (and the GPU inventory it scopes) is model-level by construction.
   const clusterId = Form.useWatch('cluster_id', form);
   const GPUsPerReplicas = Form.useWatch(
-    ['gpu_selector', 'gpus_per_replica'],
+    path('gpu_selector', 'gpus_per_replica'),
     form
   );
 
@@ -122,21 +139,21 @@ const ScheduleTypeForm: React.FC = () => {
   // mutually exclusive, so seed the one the tab owns and null the other —
   // otherwise the abandoned tab's selector rides the submit.
   const commitManualGpuMode = (mode: string) => {
-    form.setFieldValue('manualGpuMode', mode);
+    form.setFieldValue(path('manualGpuMode'), mode);
     if (mode === ManualGPUModeMap.VGPU) {
-      form.setFieldValue('gpu_selector', null);
-      form.setFieldValue('gpu_type_selector', {
+      form.setFieldValue(path('gpu_selector'), null);
+      form.setFieldValue(path('gpu_type_selector'), {
         type: null,
         accelerator_sliced_memory_percentage: 0,
         accelerator_sliced_cores_percentage: 0,
         accelerator_partitioned_profile: null
       });
     } else {
-      form.setFieldValue('gpu_selector', {
+      form.setFieldValue(path('gpu_selector'), {
         gpu_ids: [],
         gpus_per_replica: null
       });
-      form.setFieldValue('gpu_type_selector', null);
+      form.setFieldValue(path('gpu_type_selector'), null);
     }
   };
 
@@ -146,8 +163,8 @@ const ScheduleTypeForm: React.FC = () => {
     });
 
     if (value === ScheduleValueMap.Auto) {
-      form.setFieldValue('gpu_selector', null);
-      form.setFieldValue('gpu_type_selector', null);
+      form.setFieldValue(path('gpu_selector'), null);
+      form.setFieldValue(path('gpu_type_selector'), null);
       onValuesChange?.({}, form.getFieldsValue());
     } else if (value === ScheduleValueMap.Manual) {
       // Entering manual seeds whichever source its tab currently points at —
@@ -155,16 +172,17 @@ const ScheduleTypeForm: React.FC = () => {
       commitManualGpuMode(
         isDockerCluster
           ? ManualGPUModeMap.FullGPU
-          : form.getFieldValue('manualGpuMode') || ManualGPUModeMap.FullGPU
+          : form.getFieldValue(path('manualGpuMode')) ||
+              ManualGPUModeMap.FullGPU
       );
     }
   };
 
   const handleGpusPerReplicasChange = (val: string | number | null) => {
     if (val === null) {
-      form.setFieldValue(['gpu_selector', 'gpus_per_replica'], null);
+      form.setFieldValue(path('gpu_selector', 'gpus_per_replica'), null);
     } else {
-      form.setFieldValue(['gpu_selector', 'gpus_per_replica'], val);
+      form.setFieldValue(path('gpu_selector', 'gpus_per_replica'), val);
     }
 
     onValuesChange?.({}, form.getFieldsValue());
@@ -179,7 +197,7 @@ const ScheduleTypeForm: React.FC = () => {
   };
 
   const onSelectorChange = (field: string, allowEmpty?: boolean) => {
-    const workerSelector = form.getFieldValue(field);
+    const workerSelector = form.getFieldValue(path(field));
     // check if all keys have values
     const hasEmptyValue = _.some(_.keys(workerSelector), (k: string) => {
       return !workerSelector[k];
@@ -199,7 +217,13 @@ const ScheduleTypeForm: React.FC = () => {
 
   return (
     <>
-      <Form.Item name="scheduleType" data-field="scheduleType">
+      {/* The scroll-to-segment anchor is a document-wide `[data-field]`
+        query, so a copy of this section under a role must not answer to the
+        model-level Scheduling tab's anchor. */}
+      <Form.Item
+        name={path('scheduleType')}
+        data-field={path('scheduleType').join('.')}
+      >
         <SealSelect
           onChange={handleScheduleTypeChange}
           label={intl.formatMessage({ id: 'models.form.scheduletype' })}
@@ -209,13 +233,13 @@ const ScheduleTypeForm: React.FC = () => {
       </Form.Item>
       {scheduleType === ScheduleValueMap.SpecificGPUType && (
         <>
-          <Form.Item name={['gpu_selector', 'gpu_type']}>
+          <Form.Item name={path('gpu_selector', 'gpu_type')}>
             <SealSelect
               label={intl.formatMessage({ id: 'models.form.gpuType' })}
               options={[]}
             ></SealSelect>
           </Form.Item>
-          <Form.Item name={['gpu_selector', 'gpu_count']}>
+          <Form.Item name={path('gpu_selector', 'gpu_count')}>
             <SealSelect
               label={intl.formatMessage({ id: 'models.form.gpuCount' })}
               options={[]}
@@ -223,6 +247,8 @@ const ScheduleTypeForm: React.FC = () => {
           </Form.Item>
         </>
       )}
+      {/* `fix_gpu_type` stays model-level: nothing in this repo writes it, and
+        it gates the section for the whole deployment rather than per role. */}
       {scheduleType === ScheduleValueMap.Manual &&
         !form.getFieldValue('fix_gpu_type') && (
           <div className={styles.sectionCard}>
@@ -242,7 +268,11 @@ const ScheduleTypeForm: React.FC = () => {
                 on an edit of a vGPU deployment is VGPU — the submit would then
                 take the vGPU path (dropping the whole cards the user picked)
                 for a cluster that cannot serve it. */}
-              <Form.Item name="manualGpuMode" noStyle hidden={isDockerCluster}>
+              <Form.Item
+                name={path('manualGpuMode')}
+                noStyle
+                hidden={isDockerCluster}
+              >
                 <Segmented
                   size="middle"
                   type="rounded"
@@ -266,12 +296,12 @@ const ScheduleTypeForm: React.FC = () => {
               </Form.Item>
             </Flex>
             {gpuMode === ManualGPUModeMap.VGPU ? (
-              <VGPUTypeForm />
+              <VGPUTypeForm namePrefix={namePrefix} />
             ) : (
               <>
                 <Form.Item
-                  data-field="gpu_selector.gpu_ids"
-                  name={['gpu_selector', 'gpu_ids']}
+                  data-field={path('gpu_selector', 'gpu_ids').join('.')}
+                  name={path('gpu_selector', 'gpu_ids')}
                   style={{
                     marginBottom: 16
                   }}
@@ -290,7 +320,13 @@ const ScheduleTypeForm: React.FC = () => {
                     showSearch
                     expandTrigger="click"
                     multiple={
-                      form.getFieldValue('backend') !== backendOptionsMap.voxBox
+                      // Engine as context, not this section's field: a role
+                      // that overrides only its GPUs has no `backend` of its
+                      // own and runs the model's. Without a prefix both reads
+                      // hit the same field.
+                      (form.getFieldValue(path('backend')) ??
+                        form.getFieldValue('backend')) !==
+                      backendOptionsMap.voxBox
                     }
                     classNames={{
                       popup: {
@@ -310,7 +346,7 @@ const ScheduleTypeForm: React.FC = () => {
                     })}
                     options={gpuOptions}
                     showCheckedStrategy="SHOW_CHILD"
-                    value={form.getFieldValue(['gpu_selector', 'gpu_ids'])}
+                    value={form.getFieldValue(path('gpu_selector', 'gpu_ids'))}
                     optionNode={GPUCard}
                     getPopupContainer={(triggerNode) => triggerNode.parentNode}
                     notFoundContent={intl.formatMessage({
@@ -320,7 +356,7 @@ const ScheduleTypeForm: React.FC = () => {
                   ></SealCascader>
                 </Form.Item>
                 <Form.Item
-                  name={['gpu_selector', 'gpus_per_replica']}
+                  name={path('gpu_selector', 'gpus_per_replica')}
                   style={{ marginBottom: 12 }}
                 >
                   <SealSelect
@@ -375,20 +411,34 @@ const ScheduleTypeForm: React.FC = () => {
         )}
       {scheduleType === ScheduleValueMap.Auto && (
         <>
-          <Form.Item<FormData> name="placement_strategy">
-            <SealSelect
-              label={intl.formatMessage({
-                id: 'resources.form.placementStrategy'
-              })}
-              options={placementStrategyOptions}
-              description={
-                <TooltipList list={placementStrategyTips}></TooltipList>
-              }
-            ></SealSelect>
-          </Form.Item>
+          {/* `RoleSpec` has no `placement_strategy`, so a role always runs the
+            model's. Rendering the field per role would be a control that
+            silently does nothing — the one failure mode this feature exists to
+            avoid — so the prefix is what takes it out of the section.
+
+            The prefix is the whole of the test: a PD group never reaches the
+            model-level branch either, because the mount site drops the entire
+            scheduling card under PD (`forms/index.tsx`). Which is the right
+            answer for a group too — `placement_strategy` spreads or bin-packs
+            a model's REPLICAS, and a group has none; where its members may sit
+            is «KV transfer locality» instead, and rendering both would be two
+            placement policies that can contradict each other. */}
+          {!namePrefix && (
+            <Form.Item<FormData> name="placement_strategy">
+              <SealSelect
+                label={intl.formatMessage({
+                  id: 'resources.form.placementStrategy'
+                })}
+                options={placementStrategyOptions}
+                description={
+                  <TooltipList list={placementStrategyTips}></TooltipList>
+                }
+              ></SealSelect>
+            </Form.Item>
+          )}
           <LabelSelectorProvider value={{ options: workerLabelOptions }}>
             <Form.Item<FormData>
-              name="worker_selector"
+              name={path('worker_selector')}
               rules={[
                 ({ getFieldValue }) => ({
                   validator(rule, value) {

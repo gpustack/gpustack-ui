@@ -5,11 +5,15 @@ import { getCloudProviderAdapter } from '../config/cloud-providers';
 import {
   ClusterFormData,
   ClusterListItem,
+  ClusterTopology,
   CredentialFormData,
   CredentialListItem,
+  LocationAssignment,
+  LocationsResponse,
   NodePoolFormData,
   NodePoolListItem,
-  SystemConfig
+  SystemConfig,
+  TopologyView
 } from '../config/types';
 
 export const CREDENTIALS_API = '/cloud-credentials';
@@ -222,4 +226,58 @@ export async function setDefaultCluster(params: { id: number }) {
   return request(`${CLUSTERS_API}/${params.id}/set-default`, {
     method: 'POST'
   });
+}
+
+// ===================== Topology =====================
+
+/** Everything the topology drawer paints on open, as the saved mapping sees it. */
+export async function queryClusterTopology(
+  params: { id: number },
+  options?: any
+) {
+  return request<TopologyView>(`${CLUSTERS_API}/${params.id}/topology`, {
+    method: 'GET',
+    cancelToken: options?.token,
+    skipErrorHandler: options?.skipErrorHandler
+  });
+}
+
+/**
+ * Fill in where workers sit. Writes the field's own label key on every worker
+ * listed; `value: null` deletes it. The response carries the inverse
+ * assignments, so undo is this same call with `previous` posted back as-is.
+ */
+export async function setTopologyLocations(params: {
+  id: number;
+  assignments: LocationAssignment[];
+}) {
+  return request<LocationsResponse>(
+    `${CLUSTERS_API}/${params.id}/topology/locations`,
+    {
+      method: 'POST',
+      data: { assignments: params.assignments },
+      skipErrorHandler: true
+    }
+  );
+}
+
+/**
+ * What an *unsaved* field-to-key mapping would make of this cluster's workers.
+ *
+ * A POST carrying the mapping, not a GET over the saved one, and that is the
+ * point: the question is "does this key pick up our old labels", asked before
+ * committing anything to a live cluster.
+ */
+export async function previewClusterTopology(params: {
+  id: number;
+  topology: ClusterTopology;
+}) {
+  return request<TopologyView>(
+    `${CLUSTERS_API}/${params.id}/topology/preview`,
+    {
+      method: 'POST',
+      data: { topology: params.topology },
+      skipErrorHandler: true
+    }
+  );
 }

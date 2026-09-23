@@ -150,6 +150,10 @@ export interface ClusterListItem {
   state_message: string;
   worker_pools: NodePoolListItem[];
   k8s_options?: K8sOptions;
+  // Stored alongside k8s_options and handled identically. Absent is not a
+  // degraded state: it means no layers declared, which the tree already
+  // handles by giving every worker a leaf of its own under the root.
+  topology?: ClusterTopology | null;
   // Backend ClusterPublic carries this; admin-"All" namespace
   // resolution falls back to the cluster's owner Org name.
   owner_principal_id?: number;
@@ -181,4 +185,241 @@ export interface SystemConfig {
   showMonitoring?: boolean;
   // Platform-wide business timezone (IANA name) resolved from GPUSTACK_TIMEZONE.
   timezone?: string;
+}
+
+// --------------------------------------------------------------------------
+// Topology: where this cluster's workers sit, and how far apart.
+//
+// The wire form of `ClusterTopology` is camelCase, matching the neighbouring
+// `k8s_options` blob — the backend declares aliases for exactly this. The
+// read models (`TopologyView` and friends) are snake_case like every other
+// response body.
+// --------------------------------------------------------------------------
+
+/**
+ * The built-in leaf. It takes the worker's *name* rather than a label, which is
+ * why the tightest gather choice exists even for a cluster that has declared
+ * nothing — and why a missing label can only cost resolution, never
+ * schedulability.
+ */
+export const NODE_LAYER = 'builtin-000004';
+
+/**
+ * The leaf's canonical name, and so its i18n key. Separate from the id for the
+ * same reason every other rung's is: the id is a registry number and has no
+ * translation.
+ */
+export const NODE_LAYER_NAME = 'host';
+
+/**
+ * The rack rung's id.
+ *
+ * Named rather than written out at each use. It is the default grouping and
+ * the one rung the empty-state guidance talks about, and with ids opaque a
+ * literal `'builtin-000003'` in a component says nothing about racks.
+ */
+export const RACK_LAYER = 'builtin-000003';
+
+// 🔴 The accelerator domain is no longer a model of its own. It was, twice:
+// first as a flat dimension beside the tree (`ACCELERATOR_DOMAIN`,
+// `TopologyView.accelerator_domain`), then as a second chain of the same type
+// (`acceleratorLayers` / `accelerator_tree` / a `chain` marker on every field).
+// Both are gone, and neither should come back as a compatibility path.
+//
+// The argument for a second dimension was that the domain nests in no fixed
+// place — inside a host on an 8-card server, across sixteen racks on a
+// CloudMatrix384. Review found that too weak to pay for: as long as a domain's
+// boundary is a run of *adjacent racks* it is simply a rung of the one chain,
+// and on all four generations it is (NVL72 = 1 rack, NVL36×2 = 2,
+// CloudMatrix384 = 16, Atlas 950 = 160). Where the domain is smaller than a
+// machine (910B2), "same domain" and "same host" mean the same thing to PD,
+// and the built-in leaf already covers that.
+//
+// So a domain is now a layer an operator adds, pointed at whichever key their
+// fleet publishes. The keys survive as *suggestions* in the add-layer dialog
+// (the server's `known_keys`), and `TopologyFieldLabelMap` still carries a
+// display name for the `accelerator_domain` id — an operator who names the
+// layer that gets «加速器域» for free. Nothing else treats it specially.
+
+/** The domain a worker lands in when every one of a layer's label keys misses. */
+export const UNCLASSIFIED = '<unclassified>';
+
+export type GatherStrategy = 'MustGather' | 'PreferGather';
+
+export interface TopologyLayer {
+  /**
+   * Stable identity, fixed at creation and never changed: `builtin-NNNNNN` for
+   * a vocabulary rung, `custom-<6 hex>` for one the operator added.
+   * `parentLayer` and a model's `gather.layer` point at this, which is why a
+   * rename writes `displayName` instead of touching it.
+   */
+  id: string;
+  /**
+   * Canonical name — the vocabulary slug (`rack`) for a built-in rung, the
+   * operator's original wording for a custom one. Set once at creation and
+   * never rewritten: it is the i18n lookup key, so putting a *translated*
+   * label here would freeze the row into whichever UI language last saved it.
+   */
+  name: string;
+  /**
+   * What the operator renamed this layer to. Absent means never renamed,
+   * which is the only way to say so — the effective label is
+   * `displayName ?? t(name)`. Shown verbatim and never translated: these are
+   * the operator's words, not ours.
+   */
+  displayName?: string | null;
+  /**
+   * Built-in rungs only: do not group by this layer even though workers carry
+   * its label. Distinct from a layer nobody filled in, which is a fact about
+   * the data and returns the moment someone writes the label; this is a
+   * decision and does not. A custom layer is deleted rather than disabled.
+   */
+  disabled?: boolean;
+  /**
+   * any-of, tried in order, first present wins. The same physical layer is
+   * spelled differently by every vendor and cloud, and a mixed fleet must not
+   * have to be relabelled before topology works at all.
+   */
+  labelKeys?: string[];
+  /**
+   * A chain rather than an ordered list: inserting a layer into a list
+   * renumbers every layer below it, and these names are referenced from saved
+   * model configurations. Unset means "hangs off the cluster root".
+   */
+  parentLayer?: string | null;
+}
+
+export interface ClusterTopology {
+  /**
+   * One chain, root to leaf. Empty means vocabulary mode. Entries are custom
+   * layers plus any vocabulary field whose keys were customised
+   * (`name` == the vocabulary id).
+   *
+   * No `acceleratorLayers` / `acceleratorDomain` sibling: the column is JSON
+   * with `extra="ignore"`, so an old cluster's declaration is dropped on read
+   * and there is deliberately no migration. A stale accelerator declaration
+   * simply stops having an effect.
+   */
+  layers?: TopologyLayer[];
+  /**
+   * No `defaultGatherStrategy` / `defaultGatherLayer` either. The cluster used
+   * to carry a gather default that models without one inherited; it was never
+   * exposed in this UI, and a deployment could be refused for a floor its own
+   * form never showed. Gone from the server too — the deploy form's own
+   * 拓扑亲和性 field is now the only source.
+   */
+}
+
+export interface TopologyVocabularyField {
+  id: string;
+  /** Server fallback only; the UI has an i18n name for every builtin id. */
+  name: string;
+}
+
+export interface TopologyKnownKey {
+  key: string;
+  vendor: string;
+  /** Which field ids this key is a sensible source for. */
+  fits: string[];
+  note?: string | null;
+}
+
+export interface TopologyLayerView {
+  id: string;
+  /** Canonical name; the i18n key. See `TopologyLayer.name`. */
+  name: string;
+  /** The operator's own wording, if they set one. Never translated. */
+  display_name?: string | null;
+  builtin: boolean;
+  /** Switched off by the operator; in this list so the panel can switch it back. */
+  disabled?: boolean;
+  /** At least one worker resolves a value here; only active layers form the tree. */
+  active: boolean;
+  label_keys: string[];
+  /** The key a hand-filled value is written to; null for custom layers. */
+  primary_key: string | null;
+  domains: number;
+  classified: number;
+  unclassified: number;
+  /**
+   * Models whose gather layer is this one; deleting it would strand them.
+   * Older servers omit the field, and the UI then asks the models API itself.
+   */
+  referenced_by_models?: string[];
+}
+
+export type LocationSource = 'user' | 'discovered' | 'node';
+
+export interface WorkerLocation {
+  value: string;
+  source: LocationSource;
+  /** Which any-of key produced the value. */
+  key: string;
+  /** Still carried when a hand-filled value overrides it: clearing restores it. */
+  discovered_value?: string | null;
+  /** A human name for an auto value (a switch's system name over its chassis id). */
+  display?: string | null;
+}
+
+export interface TopologyWorker {
+  id: number;
+  name: string;
+  state: string;
+  gpus: number;
+  free_gpus: number;
+  /** Keyed by field id; fields with no value are absent. */
+  location: Record<string, WorkerLocation>;
+  /** The worker's own labels, so key counts need no second request. */
+  labels?: Record<string, string>;
+}
+
+export interface TopologyDomain {
+  layer: string;
+  name: string;
+  /** Its label keys all missed. Rendered as a prompt to act, not as a domain. */
+  unclassified?: boolean;
+  /** Which of the layer's any-of keys actually matched here. */
+  matched_label_key?: string | null;
+  workers: number;
+  gpus: number;
+  /** GPUs with nothing allocated. The number "can my 2P2D fit here" needs. */
+  free_gpus: number;
+  /** Carried only on the unclassified bucket and the leaf — see the API doc. */
+  worker_ids?: number[];
+  children?: TopologyDomain[];
+}
+
+export interface TopologySuggestion {
+  key: string;
+  workers: number;
+  distinct_values: number;
+  looks_like: string;
+}
+
+/** Everything the topology drawer needs for its first paint, in one response. */
+export interface TopologyView {
+  vocabulary: {
+    fields: TopologyVocabularyField[];
+    known_keys: TopologyKnownKey[];
+  };
+  /** Root-to-leaf, every vocabulary field plus custom layers, the host last. */
+  layers: TopologyLayerView[];
+  workers: TopologyWorker[];
+  /** The one tree, built from `layers`. */
+  tree: TopologyDomain;
+  suggestions: TopologySuggestion[];
+}
+
+export interface LocationAssignment {
+  worker_ids: number[];
+  /** A vocabulary field id or a custom layer name. */
+  layer: string;
+  /** null deletes the field's own key and lets a discovered value show again. */
+  value: string | null;
+}
+
+export interface LocationsResponse {
+  /** The inverse operation, ready to be posted back verbatim as the undo. */
+  previous: LocationAssignment[];
+  topology: TopologyView;
 }

@@ -233,9 +233,179 @@ export default {
   'clusters.gpuInstances.setting.enabled': 'Enabled',
   'clusters.gpuInstances.setting.disabled': 'Disabled',
   'clusters.gpuInstances.setting.unmanaged':
-    'Unmanaged (the cluster keeps its own value)'
-};
+    'Unmanaged (the cluster keeps its own value)',
 
+  // Topology: where this cluster's workers sit.
+  'clusters.topology.title': 'トポロジー',
+  'clusters.topology.noRebalance':
+    '位置は以後のスケジューリングにのみ影響します。実行中のデプロイは移動されません。',
+  'clusters.topology.load.failed': 'トポロジーを読み込めませんでした。',
+  'clusters.topology.save.failed': '保存できませんでした。',
+  'clusters.topology.preview.failed':
+    'このマッピングをプレビューできませんでした。',
+  'clusters.topology.preview.noWorkers':
+    'このクラスターにはまだ worker がありません。',
+  'clusters.topology.preview.capacity':
+    '{workers} 台 · {gpus} GPU · 空き {free}',
+  'clusters.topology.cluster': 'クラスター',
+  'clusters.topology.discard.ok': '破棄',
+  'clusters.topology.field.region': 'リージョン',
+  'clusters.topology.field.zone': 'ゾーン',
+  'clusters.topology.field.room': 'マシンルーム',
+  'clusters.topology.field.row': 'ラック列',
+  'clusters.topology.field.rack': 'ラック',
+  'clusters.topology.field.switch': 'アクセススイッチ',
+  'clusters.topology.field.acceleratorDomain': 'アクセラレータードメイン',
+  'clusters.topology.field.host': 'ホスト',
+  'clusters.topology.field.region.tips':
+    'クラウドリージョンまたはデータセンター',
+  'clusters.topology.field.zone.tips': 'アベイラビリティゾーンまたはホール',
+  'clusters.topology.field.room.tips': 'マシンルーム',
+  'clusters.topology.field.row.tips': 'ラックの列',
+  'clusters.topology.field.rack.tips': 'ラックまたはキャビネット',
+  'clusters.topology.field.switch.tips':
+    '手入力、または Topograph などのツールが書き込む',
+  'clusters.topology.field.acceleratorDomain.tips':
+    'デバイスが報告しない場合は手入力',
+  'clusters.topology.overview.workers': '{count} 台の worker',
+  'clusters.topology.overview.domains': '{field} {count} 個',
+  'clusters.topology.overview.unfilled': '{count} 台に{field}がありません',
+  'clusters.topology.previewing': '● プレビュー中',
+  'clusters.topology.previewing.long':
+    '● プレビュー中：メインドロワーは未保存のマッピングで表示中',
+  'clusters.topology.view.table': 'テーブル',
+  'clusters.topology.view.tree': 'ツリー',
+  'clusters.topology.search.placeholder': 'ホストを検索…',
+  'clusters.topology.columns': '列の設定',
+  'clusters.topology.columns.fields': '位置フィールド',
+  'clusters.topology.columns.manage': '階層を管理',
+  'clusters.topology.columns.mapping': 'ラベルキーのマッピング…',
+  'clusters.topology.columns.deleteCustom': 'フィールド「{name}」を削除',
+  'clusters.topology.columns.deleteCustom.confirm':
+    'フィールド「{name}」を削除しますか？入力済みの値は worker のラベルに残ります。',
+  'clusters.topology.columns.deleted': 'フィールド「{name}」を削除しました',
+  'clusters.topology.selected': '{count} 台選択中',
+  'clusters.topology.clearSelection': '選択を解除',
+  'clusters.topology.batch.button': '位置を設定',
+  'clusters.topology.batch.title': '位置を設定 · {count} 台選択中',
+  'clusters.topology.batch.field': 'フィールド',
+  'clusters.topology.batch.value': '値',
+  'clusters.topology.batch.overwrite':
+    '{count} 台の既存の値を上書きします：{names}',
+  'clusters.topology.batch.overwriteAuto':
+    'うち {count} 台の{field}はデバイス自己報告で、上書きされます',
+  'clusters.topology.batch.more': '{names} ほか {count} 台',
+  'clusters.topology.batch.apply': '{count} 台に適用',
+  'clusters.topology.batch.partial':
+    '{failed} 個のクラスターで書き込みに失敗しました。',
+  'clusters.topology.toast.setOne': '{host} の{field}を {value} に設定しました',
+  'clusters.topology.toast.clearedOne': '{host} の{field}をクリアしました',
+  'clusters.topology.toast.set': '{count} 台の{field}を {value} に設定しました',
+  'clusters.topology.toast.cleared': '{count} 台の{field}をクリアしました',
+  'clusters.topology.toast.firstWrite': '（以後のスケジューリングにのみ影響）',
+  'clusters.topology.undo': '元に戻す',
+  'clusters.topology.undo.done': '元に戻しました',
+  'clusters.topology.undo.failed': '元に戻せませんでした：{reason}',
+  'clusters.topology.cell.fill': '{field}を入力',
+  'clusters.topology.cell.aria': '{field}、{state}、{host}',
+  'clusters.topology.state.unfilled': '未入力',
+  'clusters.topology.state.discovered.aria': '{value}、デバイス自己報告',
+  'clusters.topology.state.override.aria': '{value}、手入力で上書き',
+  'clusters.topology.state.discovered.tips':
+    'デバイス自己報告（{key}）。手入力すると上書きされます。',
+  'clusters.topology.state.override.tips':
+    '手入力。クリアするとデバイス報告値 {value} に戻ります',
+  'clusters.topology.state.user.tips': '手入力（{key}）',
+  'clusters.topology.override.confirm':
+    'この値はデバイスの自己報告です。手入力すると上書きされます。',
+  'clusters.topology.override.ok': '上書き',
+  'clusters.topology.value.count': '{count} 台',
+  'clusters.topology.value.create': '“{value}” を新規作成',
+  'clusters.topology.value.clear': 'クリア',
+  'clusters.topology.column.menu': '{field} 列メニュー',
+  'clusters.topology.column.fillUnfilled': '未入力の {count} 台を一括入力…',
+  'clusters.topology.column.fillBySwitch':
+    'アクセススイッチ別に入力（{count} グループ）…',
+  'clusters.topology.source.user': '手入力',
+  'clusters.topology.source.discovered': '自動',
+  'clusters.topology.source.node': 'K8s ノード',
+  'clusters.topology.host.online': 'オンライン',
+  'clusters.topology.host.offline': 'オフライン',
+  'clusters.topology.tree.byLayer': 'レイヤー別',
+  'clusters.topology.tree.byField': '{field}別',
+  'clusters.topology.tree.expandAll': 'すべて展開',
+  'clusters.topology.tree.collapseAll': 'すべて折りたたむ',
+  'clusters.topology.tree.unfilled': '{field}未設定',
+  'clusters.topology.tree.unfilled.why':
+    'ラベル {key}（またはその候補キー）がありません',
+  'clusters.topology.tree.more': 'あと {count} 台',
+  'clusters.topology.tree.hostCapacity': '{gpus} GPU · 空き {free}',
+  'clusters.topology.onboarding.hosts': '{hosts} 台のホストを認識しました。',
+  'clusters.topology.onboarding.goal':
+    'PD 分離グループのメンバーを近くに配置するには：',
+  'clusters.topology.onboarding.steps':
+    '① 同じラックのマシンを選択 → ②「位置を設定」でラック名を入力 → ③ デプロイ時に「同じラック」を選択',
+  'clusters.topology.onboarding.domains':
+    'デバイスが報告するアクセラレータードメイン（マルチノード NVLink、Ascend スーパーポッド）も 1 つの階層にできます。「階層を追加」で対応するラベルキーを指定すれば、その階層はそのまま値が入ります。',
+  'clusters.topology.onboarding.dismiss': '了解',
+  'clusters.topology.mapping.title': 'ラベルキーのマッピング',
+  'clusters.topology.mapping.intro':
+    '各フィールドが worker のどのラベルから値を読むか',
+  'clusters.topology.mapping.showUnused':
+    '未使用の {count} 個のフィールドを表示',
+  'clusters.topology.mapping.hideUnused': '未使用のフィールドを隠す',
+  'clusters.topology.mapping.moreKeys': '+ {count} 個の候補キー',
+  'clusters.topology.mapping.classified': '認識 {classified} / {total}',
+  'clusters.topology.mapping.noKeys': 'ラベルキー未設定',
+  'clusters.topology.layer.labelKeys': 'ラベルキー',
+  'clusters.topology.layer.addKey': 'キーを追加',
+  'clusters.topology.layer.rename': '名前を変更',
+  'clusters.topology.layer.rename.tips':
+    '表示名のみを変更します。階層の識別子、ラベルキー、モデルに保存済みのトポロジー親和性は変わりません。空欄にすると既定の名前に戻ります。階層 ID：',
+  'clusters.topology.layer.rename.taken':
+    '同じチェーン上の別の階層がその名前を使用しています。',
+  'clusters.topology.layer.disable': '無効化',
+  'clusters.topology.layer.disabled': '（無効）',
+  'clusters.topology.layer.enable': '有効化',
+  'clusters.topology.layer.inUse': 'この階層はまだ使用されています',
+  'clusters.topology.layer.inUse.tips':
+    '次のモデルがこの階層をトポロジー親和性に指定しており、削除すると制約を失います：{models}。先にこれらのモデルを変更してください。',
+  'clusters.topology.layer.name': '名前',
+  'clusters.topology.advanced.hostKeys': '組み込み、worker 名による',
+  'clusters.topology.advanced.locked':
+    'GPUStack 固有キー：手入力値はここに書かれます。削除・移動不可。',
+  'clusters.topology.advanced.suggestions': '発見されたラベルキー',
+  'clusters.topology.advanced.suggestion':
+    '{workers} 台 · {values} 個の値 · {field} のようです',
+  'clusters.topology.advanced.discard':
+    'フィールドマッピングの変更を破棄しますか？',
+  'clusters.topology.advanced.discard.tips':
+    'テーブルで入力した値には影響しません。',
+  'clusters.topology.advanced.saved':
+    '保存しました。以後のスケジューリングにのみ影響し、実行中のグループは移動されません。',
+  'clusters.topology.keys.placeholder': 'ラベルキーを入力するか、下から選択',
+  'clusters.topology.keys.invalid':
+    '有効な Kubernetes ラベルキーではありません（プレフィックス ≤ 253、名前 ≤ 63、英数字 - _ .）',
+  'clusters.topology.keys.usage':
+    '{count} 台の worker がこのキーを持っています（{values} 個の値）',
+  'clusters.topology.keys.exists': 'このキーはすでに追加されています',
+  'clusters.topology.custom.title': '階層を追加',
+  'clusters.topology.custom.name.required': '名前を入力してください',
+  'clusters.topology.custom.name.taken': 'この名前は使用済みか予約語です',
+  'clusters.topology.custom.name.tips':
+    'デプロイフォームの選択肢に表示されます',
+  'clusters.topology.custom.position': 'チェーンのどこに置くか',
+  'clusters.topology.custom.slot.insert': 'ここに挿入',
+  'clusters.topology.custom.slot.placeholder': '新しいレイヤー',
+  'clusters.topology.custom.slot.explain':
+    '1 つの{parent}に複数の{name}があり、1 つの{name}に複数の{child}があります',
+  'clusters.topology.custom.slot.explain.top':
+    '1 つの{name}に複数の{child}があります',
+  'clusters.topology.custom.keys.tips':
+    'カスタムレイヤーには固有キーがありません。テーブルから手入力するには、最初のキーを書き込み先にしてください。',
+  'clusters.topology.custom.referenced':
+    '「{name}」は削除できません：以下のモデルが参照しています'
+};
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
 // 1. 'clusters.title': 'Cluster',
 // 2. 'clusters.table.provider': 'Provider',

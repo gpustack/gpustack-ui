@@ -1,12 +1,19 @@
 import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import useTableFetch from '@/hooks/use-table-fetch';
 import PageBox from '@/pages/_components/page-box';
+import { queryClusterTopology } from '@/pages/cluster-management/apis';
 import { DockerStepsFromWorker } from '@/pages/cluster-management/components/add-worker/config';
-import { ClusterListItem } from '@/pages/cluster-management/config/types';
+import TopologyDrawer from '@/pages/cluster-management/components/topology';
+import { SetLocationForWorkers } from '@/pages/cluster-management/components/topology/set-location';
+import {
+  ClusterListItem,
+  TopologyView
+} from '@/pages/cluster-management/config/types';
 import useAddWorker from '@/pages/cluster-management/hooks/use-add-worker';
 import { useQueryClusterList } from '@/pages/cluster-management/services/use-query-cluster-list';
 import useNoResourceResult from '@/pages/llmodels/hooks/use-no-resource-result';
 import useGranfanaLink from '@/pages/resources/hooks/use-grafana-link';
+import { EnvironmentOutlined } from '@ant-design/icons';
 import {
   DeleteModal,
   FilterBar,
@@ -15,7 +22,7 @@ import {
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { message } from 'antd';
+import { Button, message } from 'antd';
 import { useEffect, useState } from 'react';
 import {
   WORKERS_API,
@@ -77,6 +84,10 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
   });
 
   const intl = useIntl();
+  // Non-empty means the labels modal is writing to the selection rather than
+  // to one row. Held as ids and not rows so a background refresh cannot leave
+  // the modal pointed at stale copies.
+  const [batchLabelTargets, setBatchLabelTargets] = useState<number[]>([]);
   const [updateLabelsData, setUpdateLabelsData] = useState<{
     open: boolean;
     data: ListItem;
@@ -107,6 +118,33 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
     open: false,
     currentData: null
   });
+  // Which label keys each cluster's location fields read; the location column
+  // resolves rows against these locally instead of asking per row.
+  const [topologies, setTopologies] = useState<Record<number, TopologyView>>(
+    {}
+  );
+  const [topologyTarget, setTopologyTarget] = useState<{
+    clusterId: number;
+    workerId?: number;
+  } | null>(null);
+  const [setLocationOpen, setSetLocationOpen] = useState(false);
+
+  const getTopologies = async (clusterIds: number[]) => {
+    const pairs = await Promise.all(
+      clusterIds.map((id) =>
+        queryClusterTopology({ id }, { skipErrorHandler: true })
+          .then((view) => [id, view] as const)
+          .catch(() => null)
+      )
+    );
+    const next: Record<number, TopologyView> = {};
+    pairs.forEach((pair) => {
+      if (pair) {
+        next[pair[0]] = pair[1];
+      }
+    });
+    setTopologies(next);
+  };
   const { handleAddWorker, checkDefaultCluster, AddWorkerModal, setStepList } =
     useAddWorker({
       clusterList: clusterData.list,
@@ -145,6 +183,7 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
         loading: false,
         data: clusterMap
       });
+      getTopologies((items || []).map((item: any) => item.id));
     } catch (error) {
       setClusterData({
         list: [],
@@ -156,12 +195,40 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
 
   const handleUpdateLabelsOk = async (values: Record<string, any>) => {
     try {
-      await updateWorker(updateLabelsData.data.id, {
-        ...updateLabelsData.data,
-        labels: values.labels
-      });
-      message.success(intl.formatMessage({ id: 'common.message.success' }));
+      if (batchLabelTargets.length) {
+        // The endpoint is a per-worker PUT taking the whole row, so a batch is
+        // N writes. Sent with `allSettled` and reported by count: labelling
+        // thirty workers and failing on one must not roll back the
+        // twenty-nine that worked, and must not claim success either.
+        const rows = (dataSource.dataList || []).filter((item: ListItem) =>
+          batchLabelTargets.includes(item.id)
+        );
+        const results = await Promise.allSettled(
+          rows.map((row: ListItem) =>
+            updateWorker(row.id, { ...row, labels: values.labels })
+          )
+        );
+        const failed = results.filter((r) => r.status === 'rejected').length;
+        if (failed) {
+          message.warning(
+            intl.formatMessage(
+              { id: 'resources.worker.setLabels.partial' },
+              { done: results.length - failed, failed }
+            )
+          );
+        } else {
+          message.success(intl.formatMessage({ id: 'common.message.success' }));
+        }
+        rowSelection?.clearSelections?.();
+      } else {
+        await updateWorker(updateLabelsData.data.id, {
+          ...updateLabelsData.data,
+          labels: values.labels
+        });
+        message.success(intl.formatMessage({ id: 'common.message.success' }));
+      }
       fetchData();
+      setBatchLabelTargets([]);
       setUpdateLabelsData({ open: false, data: {} as ListItem });
     } catch (error) {
       console.log('error', error);
@@ -169,6 +236,7 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
   };
 
   const handleCancelUpdateLabels = () => {
+    setBatchLabelTargets([]);
     setUpdateLabelsData({
       ...updateLabelsData,
       open: false
@@ -176,11 +244,30 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
   };
 
   const handleUpdateLabels = (record: ListItem) => {
+    setBatchLabelTargets([]);
     setUpdateLabelsData({
       open: true,
       data: {
         ...record
       }
+    });
+  };
+
+  /**
+   * Bulk labelling: the same modal, pointed at the selection.
+   *
+   * Topology is declared once and maintained by labelling, and a fleet is
+   * labelled forty machines at a time — a modal per host is not a workflow.
+   */
+  const handleUpdateLabelsByBatch = () => {
+    const ids = (rowSelection?.selectedRowKeys || []) as number[];
+    if (!ids.length) {
+      return;
+    }
+    setBatchLabelTargets(ids);
+    setUpdateLabelsData({
+      open: true,
+      data: {} as ListItem
     });
   };
 
@@ -222,7 +309,38 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
     if (val === 'metrics') {
       goToGrafana(record);
     }
+    if (val === 'topology') {
+      setTopologyTarget({ clusterId: record.cluster_id, workerId: record.id });
+    }
   });
+
+  const selectedWorkers = (dataSource.dataList || []).filter((item: ListItem) =>
+    (rowSelection?.selectedRowKeys || []).includes(item.id)
+  );
+
+  const setLocationAction = (
+    <SetLocationForWorkers
+      open={setLocationOpen}
+      onOpenChange={setSetLocationOpen}
+      workers={selectedWorkers}
+      onDone={() => {
+        fetchData();
+        getTopologies(Object.keys(topologies).map(Number));
+      }}
+    >
+      <Button
+        icon={<EnvironmentOutlined />}
+        disabled={!rowSelection?.selectedRowKeys?.length}
+      >
+        <span>
+          {intl.formatMessage({ id: 'resources.worker.setLocation' })}
+          {rowSelection?.selectedRowKeys?.length > 0 && (
+            <span>({rowSelection?.selectedRowKeys?.length})</span>
+          )}
+        </span>
+      </Button>
+    </SetLocationForWorkers>
+  );
 
   const handleOnAddWorker = () => {
     const targetCluster = checkDefaultCluster(clusterData.list);
@@ -266,6 +384,7 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
 
   const columns = useWorkerColumns({
     clusterData,
+    topologies,
     loadend: dataSource.loadend,
     firstLoad: extraStatus.firstLoad,
     sortOrder,
@@ -303,6 +422,8 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
             ) : (
               <WorkerRightActions
                 handleDeleteByBatch={handleDeleteBatch}
+                handleUpdateLabelsByBatch={handleUpdateLabelsByBatch}
+                SetLocationAction={setLocationAction}
                 handleClickPrimary={handleOnAddWorker}
                 rowSelection={rowSelection}
                 MonitorButton={ActionButton()}
@@ -346,6 +467,8 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
           open={updateLabelsData.open}
           onOk={handleUpdateLabelsOk}
           onCancel={handleCancelUpdateLabels}
+          batch={batchLabelTargets.length > 0}
+          count={batchLabelTargets.length}
           data={{
             name: updateLabelsData.data.name,
             labels: updateLabelsData.data.labels
@@ -362,6 +485,20 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
           open={workerSSHStatus.open}
           currentData={workerSSHStatus.currentData}
           onClose={() => setWorkerSSHStatus({ currentData: null, open: false })}
+        />
+        <TopologyDrawer
+          open={!!topologyTarget}
+          clusterId={topologyTarget?.clusterId}
+          clusterName={
+            topologyTarget ? clusterData.data[topologyTarget.clusterId] : null
+          }
+          highlightWorkerId={topologyTarget?.workerId}
+          onClose={() => {
+            setTopologyTarget(null);
+            // Values may have changed in the drawer; the list's own polling
+            // is manual here.
+            fetchData();
+          }}
         />
         {MaintenanceModal}
         {AddWorkerModal}

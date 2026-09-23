@@ -121,5 +121,13 @@ export default {
   'resources.server.version': 'Server 版本：{version}',
   'resources.worker.currentVersion': '当前版本：{version}',
   'resources.worker.targetVersion': '目标版本：{version}',
-  'resources.driver.version': '驱动版本：{version}'
+  'resources.driver.version': '驱动版本：{version}',
+
+  'resources.worker.setLabels': '设置标签',
+  'resources.worker.setLabels.count': '已选 {count} 台 worker',
+  'resources.worker.setLabels.partial':
+    '{done} 台已更新标签，{failed} 台失败。',
+
+  'resources.table.location': '位置',
+  'resources.worker.setLocation': '设置位置'
 };

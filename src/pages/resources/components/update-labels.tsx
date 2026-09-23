@@ -18,6 +18,21 @@ type ViewModalProps = {
     name: string;
     labels: object;
   };
+  /**
+   * Whether this write lands on a SELECTION rather than on one row.
+   *
+   * Stated by the caller rather than inferred from `count`, because a
+   * selection of exactly one is still a batch: the caller has no `data` to
+   * hand over, so inferring from `count > 1` put that case on the
+   * single-worker path and rendered a name and a label set that were both
+   * undefined.
+   */
+  batch?: boolean;
+  /**
+   * How many workers the batch will land on — what the name field shows in
+   * place of a name.
+   */
+  count?: number;
 };
 interface FormData {
   labels: object;
@@ -25,7 +40,7 @@ interface FormData {
 }
 
 const UpdateLabels: React.FC<ViewModalProps> = (props) => {
-  const { open, onCancel, data, onOk } = props || {};
+  const { open, onCancel, data, onOk, batch, count } = props || {};
   const intl = useIntl();
   const [form] = Form.useForm();
 
@@ -58,8 +73,16 @@ const UpdateLabels: React.FC<ViewModalProps> = (props) => {
         preserve={false}
         clearOnDestroy={true}
         initialValues={{
-          name: data.name,
-          labels: data.labels
+          name: batch
+            ? intl.formatMessage(
+                { id: 'resources.worker.setLabels.count' },
+                { count }
+              )
+            : data.name,
+          // Empty on a batch: the labels entered here are what every selected
+          // worker ends up with, so starting from one of them would be a
+          // silent overwrite of the rest.
+          labels: batch ? {} : data.labels
         }}
       >
         <Form.Item<FormData> name="name">

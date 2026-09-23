@@ -5,6 +5,7 @@ export default {
   'benchmark.button.clone': '克隆基准测试',
   'benchmark.button.compare': '对比',
   'benchmark.table.model': '模型',
+  'benchmark.form.target': '压测目标',
   'benchmark.table.dataset': '数据集',
   'benchmark.table.requestRate': '请求率',
   'benchmark.table.gpu': 'GPU ',
@@ -179,6 +180,7 @@ export default {
   'benchmark.table.filter.bymodel': '模型查询',
   'benchmark.table.filter.bydataset': '按数据集过滤',
   'benchmark.table.filter.byLoadType': '按负载类型过滤',
+  'benchmark.table.filter.byTargetMode': '按目标形态过滤',
   'benchmark.table.filter.byProfile': '按 Profile 筛选',
   'benchmark.table.best': '最佳点',
   'benchmark.table.best.unit.concurrency': '并发',
@@ -186,6 +188,7 @@ export default {
   'benchmark.table.coverage': '覆盖度',
   'benchmark.table.coverage.insufficient': '覆盖度不足',
   'benchmark.table.avg': '均值',
+  'benchmark.table.tailLatency': '尾延迟',
   'benchmark.table.columnSettings': '列设置',
   'benchmark.detail.summary.results': '测试结果',
   'benchmark.detail.summary.recommendation': '最佳工作点',
@@ -242,6 +245,7 @@ export default {
   'benchmark.detail.avg.reqLatency': '请求延迟 均值',
   'benchmark.detail.avg.ttft': 'TTFT 均值',
   'benchmark.detail.avg.tpot': 'TPOT 均值',
+  'benchmark.detail.avg.itl': 'ITL 均值',
   'benchmark.detail.throughput.totalToken': '总吞吐量',
   'benchmark.detail.throughput.inputToken': '输入吞吐量',
   'benchmark.detail.throughput.outputToken': '输出吞吐量',
@@ -261,6 +265,10 @@ export default {
   'benchmark.detail.percentile.title': '百分位数',
   'benchmark.detail.modelName': '模型名称',
   'benchmark.detail.instanceName': '实例名称',
+  'benchmark.detail.members.title': '成员',
+  'benchmark.detail.members.role': '角色',
+  'benchmark.detail.members.injected': '注入参数',
+  'benchmark.detail.members.endpoint': '入口',
   'benchmark.detail.configure': '测试配置',
   'benchmark.detail.config.deployment': '部署',
   'benchmark.detail.config.benchmark': '压测配置',
@@ -274,12 +282,17 @@ export default {
     '它之上没有任何实测点(搜索先结束了),所以只能读作「至少这么多」。真正的破线位置在更高处,本次没有测到。',
   'benchmark.detail.tpot.tip':
     'TPOT：仅解码阶段的每 token 耗时 =（末 token 时刻 − 首 token 时刻）/（输出 token 数 − 1），不含首字延迟。对应 guidellm 的 inter_token_latency_ms，也是 vLLM 等工具口径下的 TPOT。若服务端未增量流式返回（整段输出一次给出，低负载下常见），该口径无从测量，此处回落为含首字的每 token 耗时。',
+  'benchmark.detail.itl.tip':
+    'ITL（Inter-Token Latency）：流式输出中相邻两次返回之间的实测间隔，每个间隔一个样本、跨请求汇总，不含首字延迟。与 TPOT 的差别在样本粒度：TPOT 每个请求只有一个平均值，单次卡顿会被该请求其余间隔摊平；ITL 保留每一次间隔，尾部才看得见卡顿。与 vLLM / SGLang 的 ITL 同口径。一个返回块内含多个 token 时（如投机解码）仍只计一个间隔。',
   'benchmark.detail.chart.sloBreached': 'SLO 不达标',
   'benchmark.detail.chart.success': '成功率',
   'benchmark.detail.reason.peakTradeoff':
     '压到峰值 {rate} {unit} 只多 {gain}% 吞吐，延迟多 {cost}',
   'benchmark.detail.unit.avg': '均值',
   'benchmark.detail.p99.ttft': 'TTFT p99',
+  'benchmark.detail.p99.tpot': 'TPOT p99',
+  'benchmark.detail.p99.itl': 'ITL p99',
+  'benchmark.detail.max.itl': 'ITL 最大',
   'benchmark.detail.lowSample':
     '该档 {count} 个样本,p99 之上只有 {tail} 个 —— 尾部由极少数请求决定。只能当参考,不能作为 SLO 结论(p99 要约 1000 个样本才像一个估计)。',
   'benchmark.detail.successPill': '成功率 {pct}% · {ok} / {total} 请求',
@@ -317,6 +330,9 @@ export default {
   'benchmark.detail.chart.tpotPercentiles': 'TPOT 分位',
   'benchmark.detail.chart.tpotPercentiles.note':
     '解码阶段每 token 耗时（不含首字）· 每个请求一个取值，看的是负载升高后解码变慢，不是单次卡顿',
+  'benchmark.detail.chart.itlPercentiles': 'ITL 分位',
+  'benchmark.detail.chart.itlPercentiles.note':
+    '相邻两次流式返回的实测间隔 · 每个间隔一个样本，尾部能看见单次卡顿',
   'benchmark.detail.chart.success.note': '因存在失败请求才显示',
   'benchmark.detail.chart.legend.shortfall': '缺口',
   'benchmark.detail.chart.legend.attainment': '达成率',
@@ -368,6 +384,7 @@ export default {
   'benchmark.detail.inputOutputTokenLength': 'Token 长度 (输入/输出)',
   'benchmark.env.gpuName': 'GPU 名称',
   'benchmark.env.workerName': '节点名称',
+  'benchmark.env.hostedMembers': '承载成员',
   'benchmark.env.index': '序号',
   'benchmark.env.system': '系统',
   'benchmark.env.runtimeVersion': '运行时版本',
@@ -376,16 +393,11 @@ export default {
   'benchmark.table.export.results': '导出结果',
   'benchmark.form.nonLlmModel.tips': '基准测试目前仅支持 LLM 模型',
   'benchmark.detail.result.duration': '耗时',
-  'benchmark.detail.result.basic': '基础信息',
-  'benchmark.form.target': '压测目标',
-  'benchmark.table.filter.byTargetMode': '按目标形态过滤',
-  'benchmark.detail.members.title': '成员',
-  'benchmark.detail.members.role': '角色',
-  'benchmark.detail.members.injected': '注入参数',
-  'benchmark.detail.members.endpoint': '入口',
-  'benchmark.env.hostedMembers': '承载成员',
   'benchmark.form.pdGroup.tips':
     '分离部署的组整体压测：所有请求都经 router 进入，因此不需要也无法指定成员。服务端会把压力发往 router，并把压测容器放在持有模型权重的节点上。',
+  'benchmark.detail.monitoring': '监控',
+  'benchmark.detail.monitoring.tips':
+    '打开这次运行对应时间范围的监控面板。分离部署的组会跳转到 PD 面板，那里分别展示 prefill 队列、decode 队列与 KV 传输。',
   'benchmark.form.targetMode': '压测目标形态',
   'benchmark.form.targetMode.instance': '实例（测引擎）',
   'benchmark.form.targetMode.route': '路由（测部署）',
@@ -395,7 +407,5 @@ export default {
   'benchmark.form.target.route': '路由',
   'benchmark.form.target.route.empty':
     '该集群下没有指向可服务 LLM 的路由。先部署一条路由，或改用实例形态。',
-  'benchmark.detail.monitoring': '监控',
-  'benchmark.detail.monitoring.tips':
-    '打开这次运行对应时间范围的监控面板。分离部署的组会跳转到 PD 面板，那里分别展示 prefill 队列、decode 队列与 KV 传输。'
+  'benchmark.detail.result.basic': '基础信息'
 };

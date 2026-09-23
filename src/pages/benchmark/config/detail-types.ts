@@ -114,6 +114,10 @@ export interface BenchmarkDetail {
   time_per_output_token_mean: number;
   inter_token_latency_mean: number;
   time_to_first_token_mean: number;
+  // Tails, next to the means. Null on points measured before the runner started
+  // writing these columns — the metrics card falls back to the dump's quantile.
+  time_to_first_token_p99?: number | null;
+  inter_token_latency_p99?: number | null;
   tokens_per_second_mean: number;
   output_tokens_per_second_mean: number;
   input_tokens_per_second_mean: number;

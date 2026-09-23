@@ -5,6 +5,7 @@ export default {
   'benchmark.button.clone': 'Kıyaslamayı Klonla',
   'benchmark.button.compare': 'Karşılaştır',
   'benchmark.table.model': 'Model',
+  'benchmark.form.target': 'Kıyaslama hedefi',
   'benchmark.table.dataset': 'Veri Kümesi',
   'benchmark.table.requestRate': 'İstek Oranı',
   'benchmark.table.gpu': 'GPU ',
@@ -180,6 +181,7 @@ export default {
   'benchmark.table.filter.bymodel': 'Model ara',
   'benchmark.table.filter.bydataset': 'Veri Kümesine göre filtrele',
   'benchmark.table.filter.byLoadType': 'Yük türüne göre filtrele',
+  'benchmark.table.filter.byTargetMode': 'Hedef türüne göre filtrele',
   'benchmark.table.filter.byProfile': 'Profile göre filtrele',
   'benchmark.table.best': 'En iyi @',
   'benchmark.table.best.unit.concurrency': 'eşzaman',
@@ -187,6 +189,7 @@ export default {
   'benchmark.table.coverage': 'Kapsam',
   'benchmark.table.coverage.insufficient': 'Yetersiz',
   'benchmark.table.avg': 'Ort.',
+  'benchmark.table.tailLatency': 'Kuyruk Gecikmesi',
   'benchmark.table.columnSettings': 'Sütun Ayarları',
   'benchmark.detail.summary.results': 'Test Sonuçları',
   'benchmark.detail.summary.recommendation': 'En İyi Çalışma Noktası',
@@ -244,6 +247,7 @@ export default {
   'benchmark.detail.avg.reqLatency': 'İstek Gecikme Ort.',
   'benchmark.detail.avg.ttft': 'TTFT Ort.',
   'benchmark.detail.avg.tpot': 'TPOT Ort.',
+  'benchmark.detail.avg.itl': 'ITL Ort.',
   'benchmark.detail.throughput.totalToken': 'Toplam Verim',
   'benchmark.detail.throughput.inputToken': 'Giriş Verimi',
   'benchmark.detail.throughput.outputToken': 'Çıkış Verimi',
@@ -263,6 +267,10 @@ export default {
   'benchmark.detail.percentile.title': 'Yüzdelik Dilim',
   'benchmark.detail.modelName': 'Model Adı',
   'benchmark.detail.instanceName': 'Örnek Adı',
+  'benchmark.detail.members.title': 'Üyeler',
+  'benchmark.detail.members.role': 'Rol',
+  'benchmark.detail.members.injected': 'Enjekte parametreler',
+  'benchmark.detail.members.endpoint': 'Uç nokta',
   'benchmark.detail.configure': 'Yapılandırma',
   'benchmark.detail.config.deployment': 'Dağıtım',
   'benchmark.detail.config.benchmark': 'Kıyaslama',
@@ -276,12 +284,17 @@ export default {
     'Bunun üzerinde hiçbir ölçüm yapılmadı — arama daha önce sona erdi — bu yüzden "en az bu kadar" olarak okuyun. Gerçek kırılma noktası daha yukarıdadır ve ölçülmedi.',
   'benchmark.detail.tpot.tip':
     "TPOT: yalnızca çözme aşamasında token başına süre = (son token − ilk token) / (çıktı token sayısı − 1), ilk token gecikmesi hariç. guidellm'de inter_token_latency_ms alanına karşılık gelir ve vLLM gibi araçların bildirdiği TPOT ile aynıdır. Sunucu artımlı akış yapmıyorsa (tüm çıktı tek parçada, düşük yükte yaygın) ölçülecek bir aralık yoktur ve burada ilk token dahil token başına süreye geri düşülür.",
+  'benchmark.detail.itl.tip':
+    "ITL (Inter-Token Latency): ardışık akış çıktıları arasındaki ölçülen aralık — aralık başına tek örnek, istekler arasında birleştirilir, ilk token gecikmesi hariç. TPOT'tan farkı örnek ayrıntı düzeyidir: TPOT istek başına tek ortalamadır, bu yüzden tek bir takılma aynı isteğin diğer aralıklarıyla ortalanıp kaybolur; ITL her aralığı koruduğu için takılma kuyruğa ulaşır. vLLM ve SGLang ile aynı tanım. Birden çok token taşıyan bir yığın (spekülatif çözme) yine tek aralık sayılır.",
   'benchmark.detail.chart.sloBreached': 'SLO ihlali',
   'benchmark.detail.chart.success': 'Başarı oranı',
   'benchmark.detail.reason.peakTradeoff':
     'Zirveye ({rate} {unit}) çıkmak verime yalnızca %{gain} ekler, gecikme ise {cost} artar',
   'benchmark.detail.unit.avg': 'ort.',
   'benchmark.detail.p99.ttft': 'TTFT p99',
+  'benchmark.detail.p99.tpot': 'TPOT p99',
+  'benchmark.detail.p99.itl': 'ITL p99',
+  'benchmark.detail.max.itl': 'ITL Maks.',
   'benchmark.detail.lowSample':
     'Bu aşamada {count} örnek var, p99 üzerinde yalnızca {tail} tanesi bulunuyor — kuyruk bir avuç isteğe bağlı. Gösterge olarak okuyun, SLO sonucu olarak değil (p99 tahmin gibi davranması için ~1000 örnek gerekir).',
   'benchmark.detail.successPill': '%{pct} başarılı · {ok} / {total} istek',
@@ -322,6 +335,9 @@ export default {
   'benchmark.detail.chart.tpotPercentiles': 'TPOT yüzdelikleri',
   'benchmark.detail.chart.tpotPercentiles.note':
     'Token başına çözme süresi, ilk token hariç · istek başına tek değer, yani yük altında çözmenin yavaşlamasını gösterir, tek tek takılmaları değil',
+  'benchmark.detail.chart.itlPercentiles': 'ITL yüzdelikleri',
+  'benchmark.detail.chart.itlPercentiles.note':
+    'Ardışık akış çıktıları arasındaki ölçülen aralık · aralık başına tek örnek, bu yüzden kuyrukta tek tek takılmalar görünür',
   'benchmark.detail.chart.success.note':
     'Bazı istekler başarısız olduğu için gösteriliyor',
   'benchmark.detail.chart.legend.shortfall': 'Eksik',
@@ -374,6 +390,7 @@ export default {
   'benchmark.detail.inputOutputTokenLength': 'Token Uzunluğu (Giriş/Çıkış)',
   'benchmark.env.gpuName': 'GPU Adı',
   'benchmark.env.workerName': 'İşçi Düğüm Adı',
+  'benchmark.env.hostedMembers': 'Üyeler',
   'benchmark.env.index': 'İndeks',
   'benchmark.env.system': 'Sistem',
   'benchmark.env.runtimeVersion': 'Çalışma Zamanı Sürümü',
@@ -383,16 +400,11 @@ export default {
   'benchmark.form.nonLlmModel.tips':
     'Kıyaslama şu anda yalnızca LLM modellerini destekliyor',
   'benchmark.detail.result.duration': 'Süre',
-  'benchmark.detail.result.basic': 'Temel',
-  'benchmark.form.target': 'Kıyaslama hedefi',
-  'benchmark.table.filter.byTargetMode': 'Hedef türüne göre filtrele',
-  'benchmark.detail.members.title': 'Üyeler',
-  'benchmark.detail.members.role': 'Rol',
-  'benchmark.detail.members.injected': 'Enjekte parametreler',
-  'benchmark.detail.members.endpoint': 'Uç nokta',
-  'benchmark.env.hostedMembers': 'Üyeler',
   'benchmark.form.pdGroup.tips':
     'Ayrıştırılmış bir grup bütün olarak ölçülür: her istek router üzerinden girer, bu yüzden seçilecek bir üye yoktur. Sunucu yükü routera gönderir ve yük üretecini ağırlıkları tutan bir worker üzerinde çalıştırır.',
+  'benchmark.detail.monitoring': 'İzleme',
+  'benchmark.detail.monitoring.tips':
+    'Bu çalışmanın zaman aralığı için panoyu açar. Ayrıştırılmış bir grup, prefill kuyruğunun, decode kuyruğunun ve KV aktarımının ayrı ayrı gösterildiği PD panosuna gider.',
   'benchmark.form.targetMode': 'Kıyaslama hedefi türü',
   'benchmark.form.targetMode.instance': 'Örnek (motoru ölçer)',
   'benchmark.form.targetMode.route': 'Rota (dağıtımı ölçer)',
@@ -402,7 +414,5 @@ export default {
   'benchmark.form.target.route': 'Rota',
   'benchmark.form.target.route.empty':
     "Bu kümede hizmet verebilen bir LLM'e yönelen rota yok. Bir rota dağıtın ya da bunun yerine bir örnek ölçün.",
-  'benchmark.detail.monitoring': 'İzleme',
-  'benchmark.detail.monitoring.tips':
-    'Bu çalışmanın zaman aralığı için panoyu açar. Ayrıştırılmış bir grup, prefill kuyruğunun, decode kuyruğunun ve KV aktarımının ayrı ayrı gösterildiği PD panosuna gider.'
+  'benchmark.detail.result.basic': 'Temel'
 };

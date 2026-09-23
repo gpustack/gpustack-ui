@@ -62,9 +62,69 @@ const useStyles = createStyles(({ css }) => ({
 interface MetricDef {
   title: string;
   path: string | string[];
+  /**
+   * Tried in order when `path` holds no positive number, which is not the same
+   * as "the metric is zero":
+   *
+   * * the flat p99 columns only exist for points measured after the runner
+   *   started writing them, so on an older run the column is null while the
+   *   dump still carries the quantile;
+   * * the decode-only per-token metric needs two token timestamps, so a
+   *   response that arrived as a single chunk collapses it to 0 — then the
+   *   includes-TTFT metric is the only per-token number there is.
+   *
+   * Same precedence as `decodeMs` in metrics.ts and `_slo_value` on the server,
+   * so the card cannot disagree with the table or the SLO verdict.
+   */
+  fallbacks?: Array<string | string[]>;
+  /**
+   * Renders "-" instead of 0 when nothing was found.
+   *
+   * For a metric that simply may not have been recorded — a run from before it
+   * existed, or one where it does not apply. Zero is a real reading for the
+   * others (0 ms of latency is nonsense but 0 requests is not), whereas here it
+   * would claim a measurement that never happened.
+   */
+  optional?: boolean;
   unit?: string;
   render: (value: any) => React.ReactNode;
 }
+
+const BENCH0_METRICS = ['raw_metrics', 'benchmarks', '0', 'metrics'];
+
+/** The measured per-interval ITL distribution; see metrics.ts `ITL_FIELD`. */
+const ITL_FIELD = 'inter_token_latency_per_chunk_ms';
+
+/** A stage's quantile straight from its guidellm dump. */
+const dumpPct = (field: string, key: string): string[] => [
+  ...BENCH0_METRICS,
+  field,
+  'successful',
+  'percentiles',
+  key
+];
+
+/** A distribution's own scalar (mean / max / count) from the dump. */
+const dumpStat = (field: string, key: string): string[] => [
+  ...BENCH0_METRICS,
+  field,
+  'successful',
+  key
+];
+
+/** First positive value among a metric's path and its fallbacks. */
+const metricValue = (data: any, c: MetricDef): number | null => {
+  for (const path of [c.path, ...(c.fallbacks ?? [])]) {
+    const v = _.get(data, path);
+    if (typeof v === 'number' && v > 0) {
+      return v;
+    }
+  }
+  if (c.optional) {
+    return null;
+  }
+  return _.get(data, c.path) ?? 0;
+};
 
 const throughputColumns: MetricDef[] = [
   {
@@ -107,17 +167,69 @@ const latencyColumns: MetricDef[] = [
   {
     // Decode-only TPOT = guidellm's `inter_token_latency_ms`. Its
     // `time_per_output_token_ms` also divides by output tokens but starts the
-    // clock at request_start, so it includes TTFT; that one is not displayed.
+    // clock at request_start, so it includes TTFT; that one is only a fallback,
+    // for the single-chunk responses where the decode-only reading is 0.
     title: 'benchmark.detail.avg.tpot',
     path: 'inter_token_latency_mean',
+    fallbacks: ['time_per_output_token_mean'],
     unit: 'ms',
     render: (value: number) => round(value, 2)
   },
   {
-    // The tail, next to the averages it qualifies. A second per-token column
+    // The tails, each below the average it qualifies. A second per-token column
     // used to sit here; the two were the same metric under swapped names.
     title: 'benchmark.detail.p99.ttft',
     path: 'time_to_first_token_p99',
+    fallbacks: [dumpPct('time_to_first_token_ms', 'p99')],
+    unit: 'ms',
+    render: (value: number) => round(value, 2)
+  },
+  {
+    // Decode-only, same field as the TPOT average above — so this card carries
+    // the mean and the tail of ONE metric rather than two per-token metrics
+    // under different names.
+    title: 'benchmark.detail.p99.tpot',
+    path: 'inter_token_latency_p99',
+    fallbacks: [
+      dumpPct('inter_token_latency_ms', 'p99'),
+      dumpPct('time_per_output_token_ms', 'p99')
+    ],
+    unit: 'ms',
+    render: (value: number) => round(value, 2)
+  },
+  // ── Measured ITL ────────────────────────────────────────────────────────────
+  // A different metric from the TPOT rows above, not a second opinion on them:
+  // those are one value per request, these are the measured gaps between
+  // streamed outputs. On a request that stalls once, TPOT divides the stall by
+  // the request's other gaps and shows nothing; the gap itself lands here.
+  //
+  // `optional` throughout: absent on any run recorded before the gaps were
+  // captured, and rendering that as 0 would claim a decode with no latency
+  // between tokens at all.
+  {
+    title: 'benchmark.detail.avg.itl',
+    path: 'itl_per_chunk_mean',
+    fallbacks: [dumpStat(ITL_FIELD, 'mean')],
+    optional: true,
+    unit: 'ms',
+    render: (value: number) => round(value, 2)
+  },
+  {
+    title: 'benchmark.detail.p99.itl',
+    path: 'itl_per_chunk_p99',
+    fallbacks: [dumpPct(ITL_FIELD, 'p99')],
+    optional: true,
+    unit: 'ms',
+    render: (value: number) => round(value, 2)
+  },
+  {
+    // The worst single gap. Carried for ITL and nothing else here: for a
+    // per-request average a max is just the slowest request, but for the gaps
+    // it IS the stall the reader is looking for.
+    title: 'benchmark.detail.max.itl',
+    path: 'itl_per_chunk_max',
+    fallbacks: [dumpStat(ITL_FIELD, 'max')],
+    optional: true,
     unit: 'ms',
     render: (value: number) => round(value, 2)
   }
@@ -130,9 +242,8 @@ const MetricsResult: React.FC<{ data?: any }> = (props) => {
   const intl = useIntl();
   const t = (id?: string) => (id ? intl.formatMessage({ id }) : '');
 
-  const bench0 = ['raw_metrics', 'benchmarks', '0'];
   const reqTotal = (k: string) =>
-    round(_.get(data, [...bench0, 'metrics', 'request_totals', k]), 0) || 0;
+    round(_.get(data, [...BENCH0_METRICS, 'request_totals', k]), 0) || 0;
   const success = reqTotal('successful');
   const failed = reqTotal('errored');
   const incomplete = reqTotal('incomplete');
@@ -147,15 +258,14 @@ const MetricsResult: React.FC<{ data?: any }> = (props) => {
   const concAvg =
     round(
       _.get(data, [
-        ...bench0,
-        'metrics',
+        ...BENCH0_METRICS,
         'request_concurrency',
         'successful',
         'mean'
       ]),
       0
     ) || 0;
-  const duration = _.get(data, [...bench0, 'duration']);
+  const duration = _.get(data, ['raw_metrics', 'benchmarks', '0', 'duration']);
 
   const row = (
     key: string,
@@ -228,9 +338,15 @@ const MetricsResult: React.FC<{ data?: any }> = (props) => {
   const renderGroup = (titleId: string, cols: MetricDef[]) => (
     <div className="group">
       <div className="g-title">{t(titleId)}</div>
-      {cols.map((c) =>
-        row(c.title, t(c.title), c.render(_.get(data, c.path) ?? 0), c.unit)
-      )}
+      {cols.map((c) => {
+        const value = metricValue(data, c);
+        return row(
+          c.title,
+          t(c.title),
+          value == null ? '-' : c.render(value),
+          value == null ? undefined : c.unit
+        );
+      })}
     </div>
   );
 

@@ -67,6 +67,24 @@ const dist = (
 const TPOT_FIELD = 'inter_token_latency_ms';
 const TPOT_FALLBACK_FIELD = 'time_per_output_token_ms';
 
+// ── Which field is "ITL" ──────────────────────────────────────────────────────
+// The other per-token metric, and a genuinely different one: its samples are the
+// MEASURED gaps between consecutive streamed outputs — one per gap, pooled
+// across requests — where TPOT above is one value per request.
+//
+// The difference only shows in the tail. A request that streams 500 tokens at
+// 10ms and stalls once for 800ms has a TPOT of 11.6ms (the stall divided by the
+// other 499 gaps, i.e. invisible), while its gaps put an 800ms sample into the
+// ITL distribution. So TPOT answers "how fast did this request type out" and
+// ITL answers "did the stream ever hitch" — the two are read together, not
+// interchangeably.
+//
+// Recorded by benchmark-runner, not by guidellm (which keeps only the first and
+// last token timestamp per request and reconstructs the rest with np.linspace).
+// Absent on every point measured before that landed, hence null-not-zero
+// throughout.
+const ITL_FIELD = 'inter_token_latency_per_chunk_ms';
+
 /** A per-token latency, or null; 0 means "not incrementally streamed", not 0 ms. */
 const positive = (v: number | null | undefined): number | null =>
   typeof v === 'number' && v > 0 ? v : null;
@@ -120,6 +138,19 @@ export interface StagePoint {
   tpotP50: number | null;
   tpotP90: number | null;
   tpotP99: number | null;
+  /**
+   * Measured ITL (ms): the distribution of gaps between streamed outputs.
+   *
+   * null throughout when the run predates the gap recording — the report must
+   * render "-" there, never 0, which would read as a decode with no latency
+   * between tokens at all.
+   */
+  itlMean: number | null;
+  itlP50: number | null;
+  itlP90: number | null;
+  itlP99: number | null;
+  /** Worst single gap. The finding itself when hunting a stall. */
+  itlMax: number | null;
 
   total: number;
   ok: number;
@@ -311,6 +342,17 @@ export const buildStagePoints = (
       tpotP90: decodeMs(r, 'p90'),
       tpotP99: decodeMs(r, 'p99'),
 
+      // Flat column first, dump as the fallback: the columns only exist for
+      // points measured after the runner started writing them, while the dump
+      // carries the distribution for every point that has one. No `positive()`
+      // guard here — unlike the decode-only TPOT, a 0 is not how "not measured"
+      // shows up; an unmeasured point has no field at all and reads null.
+      itlMean: r.itl_per_chunk_mean ?? dist(r, ITL_FIELD, 'mean'),
+      itlP50: pct(r, ITL_FIELD, 'p50'),
+      itlP90: pct(r, ITL_FIELD, 'p90'),
+      itlP99: r.itl_per_chunk_p99 ?? pct(r, ITL_FIELD, 'p99'),
+      itlMax: r.itl_per_chunk_max ?? dist(r, ITL_FIELD, 'max'),
+
       total,
       ok: r.request_successful ?? 0,
       errored: r.request_errored ?? 0,
@@ -368,6 +410,17 @@ export const buildProbePoints = (probes: BenchmarkResultItem[]): StagePoint[] =>
       tpotP50: decodeMs(r, 'p50'),
       tpotP90: decodeMs(r, 'p90'),
       tpotP99: decodeMs(r, 'p99'),
+
+      // Flat column first, dump as the fallback: the columns only exist for
+      // points measured after the runner started writing them, while the dump
+      // carries the distribution for every point that has one. No `positive()`
+      // guard here — unlike the decode-only TPOT, a 0 is not how "not measured"
+      // shows up; an unmeasured point has no field at all and reads null.
+      itlMean: r.itl_per_chunk_mean ?? dist(r, ITL_FIELD, 'mean'),
+      itlP50: pct(r, ITL_FIELD, 'p50'),
+      itlP90: pct(r, ITL_FIELD, 'p90'),
+      itlP99: r.itl_per_chunk_p99 ?? pct(r, ITL_FIELD, 'p99'),
+      itlMax: r.itl_per_chunk_max ?? dist(r, ITL_FIELD, 'max'),
       total,
       ok: r.request_successful ?? 0,
       errored: r.request_errored ?? 0,

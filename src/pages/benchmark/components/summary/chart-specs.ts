@@ -301,8 +301,7 @@ export const buildChartSpecs = (
     //    the percentiles over those per-request means — token-weighted, so a
     //    128-token request contributes one value replicated 127 times. p99 here
     //    is "the request whose average decode was slowest", not "the worst gap
-    //    between two tokens". The per-chunk arrival deltas that would show a
-    //    stall are discarded at collection time and cannot be recovered.
+    //    between two tokens". For that, read the ITL chart below.
     {
       key: 'tpot-percentiles',
       title: t('benchmark.detail.chart.tpotPercentiles'),
@@ -317,6 +316,30 @@ export const buildChartSpecs = (
       ]
     }
   ];
+
+  // 9. The stutter chart the one above cannot be. Same shape on purpose, so the
+  //    two read against each other: where TPOT's percentiles are per-request
+  //    averages, these are the measured gaps between streamed outputs, and a
+  //    single stall reaches this p99 while leaving TPOT's flat.
+  //
+  //    Conditional, like the success chart below: runs recorded before the gaps
+  //    were captured have nothing to draw, and an empty panel spends the space
+  //    saying so.
+  if (points.some((p) => p.itlP99 != null)) {
+    specs.push({
+      key: 'itl-percentiles',
+      title: t('benchmark.detail.chart.itlPercentiles'),
+      note: t('benchmark.detail.chart.itlPercentiles.note'),
+      yName: 'ITL (ms)',
+      log: true,
+      fmt: fmtMs,
+      series: [
+        { name: p50, value: (p) => p.itlP50, color: C.blue },
+        { name: p90, value: (p) => p.itlP90, color: C.green },
+        { name: p99, value: (p) => p.itlP99, color: C.red }
+      ]
+    });
+  }
 
   // The success-rate chart is earned, not scheduled: a flat 100% line spends a
   // whole panel saying nothing happened. It appears only once something failed.

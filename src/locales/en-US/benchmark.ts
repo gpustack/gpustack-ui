@@ -5,6 +5,7 @@ export default {
   'benchmark.button.clone': 'Clone Benchmark',
   'benchmark.button.compare': 'Compare',
   'benchmark.table.model': 'Model',
+  'benchmark.form.target': 'Benchmark target',
   'benchmark.table.dataset': 'Dataset',
   'benchmark.table.requestRate': 'Request Rate',
   'benchmark.table.gpu': 'GPU ',
@@ -180,6 +181,7 @@ export default {
   'benchmark.table.filter.bymodel': 'Search by model',
   'benchmark.table.filter.bydataset': 'Filter by Dataset',
   'benchmark.table.filter.byLoadType': 'Filter by load type',
+  'benchmark.table.filter.byTargetMode': 'Filter by target type',
   'benchmark.table.filter.byProfile': 'Filter by profile',
   'benchmark.table.best': 'Best @',
   'benchmark.table.best.unit.concurrency': 'conc.',
@@ -187,6 +189,7 @@ export default {
   'benchmark.table.coverage': 'Coverage',
   'benchmark.table.coverage.insufficient': 'Insufficient',
   'benchmark.table.avg': 'Avg',
+  'benchmark.table.tailLatency': 'Tail Latency',
   'benchmark.table.columnSettings': 'Column Settings',
   'benchmark.detail.summary.results': 'Test Results',
   'benchmark.detail.summary.recommendation': 'Best Operating Point',
@@ -244,6 +247,7 @@ export default {
   'benchmark.detail.avg.reqLatency': 'Request Latency Avg',
   'benchmark.detail.avg.ttft': 'TTFT Avg',
   'benchmark.detail.avg.tpot': 'TPOT Avg',
+  'benchmark.detail.avg.itl': 'ITL Avg',
   'benchmark.detail.throughput.totalToken': 'Total Throughput',
   'benchmark.detail.throughput.inputToken': 'Input Throughput',
   'benchmark.detail.throughput.outputToken': 'Output Throughput',
@@ -263,6 +267,10 @@ export default {
   'benchmark.detail.percentile.title': 'Percentile',
   'benchmark.detail.modelName': 'Model Name',
   'benchmark.detail.instanceName': 'Instance Name',
+  'benchmark.detail.members.title': 'Members',
+  'benchmark.detail.members.role': 'Role',
+  'benchmark.detail.members.injected': 'Injected parameters',
+  'benchmark.detail.members.endpoint': 'Endpoint',
   'benchmark.detail.configure': 'Configuration',
   'benchmark.detail.config.deployment': 'Deployment',
   'benchmark.detail.config.benchmark': 'Benchmark',
@@ -276,12 +284,17 @@ export default {
     'Nothing above this was ever measured — the search ended first — so read it as "at least this much". The real breaking point is somewhere above and was not measured.',
   'benchmark.detail.tpot.tip':
     "TPOT: decode-only time per output token = (last token − first token) / (output tokens − 1), first-token latency excluded. This is guidellm's inter_token_latency_ms and the TPOT that vLLM and similar tools report. When the server does not stream incrementally (the whole output in one chunk, common at low load) there is no gap to measure, and this falls back to the per-token time including the first token.",
+  'benchmark.detail.itl.tip':
+    "ITL (Inter-Token Latency): the measured gap between consecutive streamed outputs — one sample per gap, pooled across requests, first-token latency excluded. It differs from TPOT in sample granularity: TPOT is one average per request, so a single stall is divided away by that request's other gaps, while ITL keeps every gap and the stall reaches the tail. Same definition as vLLM and SGLang. A chunk carrying several tokens (speculative decoding) still counts as one gap.",
   'benchmark.detail.chart.sloBreached': 'SLO breached',
   'benchmark.detail.chart.success': 'Success rate',
   'benchmark.detail.reason.peakTradeoff':
     'Pushing to the peak {rate} {unit} adds only {gain}% throughput for {cost} latency',
   'benchmark.detail.unit.avg': 'avg',
   'benchmark.detail.p99.ttft': 'TTFT p99',
+  'benchmark.detail.p99.tpot': 'TPOT p99',
+  'benchmark.detail.p99.itl': 'ITL p99',
+  'benchmark.detail.max.itl': 'ITL Max',
   'benchmark.detail.lowSample':
     'This stage has {count} samples, so only {tail} sit above p99 — the tail is decided by a handful of requests. Read it as indicative, not as an SLO conclusion (p99 needs ~1000 samples to behave like an estimate).',
   'benchmark.detail.successPill': '{pct}% success · {ok} / {total} requests',
@@ -321,6 +334,9 @@ export default {
   'benchmark.detail.chart.tpotPercentiles': 'TPOT percentiles',
   'benchmark.detail.chart.tpotPercentiles.note':
     'Decode time per token, first token excluded · one value per request, so this shows decode slowing under load, not individual stalls',
+  'benchmark.detail.chart.itlPercentiles': 'ITL percentiles',
+  'benchmark.detail.chart.itlPercentiles.note':
+    'Measured gap between consecutive streamed outputs · one sample per gap, so the tail shows individual stalls',
   'benchmark.detail.chart.success.note':
     'Shown because some requests did not succeed',
   'benchmark.detail.chart.legend.shortfall': 'Shortfall',
@@ -373,6 +389,7 @@ export default {
   'benchmark.detail.inputOutputTokenLength': 'Token Length (Input/Output)',
   'benchmark.env.gpuName': 'GPU Name',
   'benchmark.env.workerName': 'Worker Name',
+  'benchmark.env.hostedMembers': 'Members',
   'benchmark.env.index': 'Index',
   'benchmark.env.system': 'System',
   'benchmark.env.runtimeVersion': 'Runtime Version',
@@ -382,16 +399,11 @@ export default {
   'benchmark.form.nonLlmModel.tips':
     'Benchmarking currently only supports LLM models',
   'benchmark.detail.result.duration': 'Duration',
-  'benchmark.detail.result.basic': 'Basic',
-  'benchmark.form.target': 'Benchmark target',
-  'benchmark.table.filter.byTargetMode': 'Filter by target type',
-  'benchmark.detail.members.title': 'Members',
-  'benchmark.detail.members.role': 'Role',
-  'benchmark.detail.members.injected': 'Injected parameters',
-  'benchmark.detail.members.endpoint': 'Endpoint',
-  'benchmark.env.hostedMembers': 'Members',
   'benchmark.form.pdGroup.tips':
     'A disaggregated group is measured whole: every request enters through its router, so there is no member to pick. The server sends the load to the router and runs the load generator on a worker that holds the weights.',
+  'benchmark.detail.monitoring': 'Monitoring',
+  'benchmark.detail.monitoring.tips':
+    'Open the dashboard for this run, over the interval it ran. A disaggregated group goes to the PD dashboard, where the prefill queue, the decode queue and the KV transfer are shown separately.',
   'benchmark.form.targetMode': 'Target type',
   'benchmark.form.targetMode.instance': 'Instance (engine)',
   'benchmark.form.targetMode.route': 'Route (deployment)',
@@ -401,7 +413,5 @@ export default {
   'benchmark.form.target.route': 'Route',
   'benchmark.form.target.route.empty':
     'No route fronts a servable LLM in this cluster. Deploy a route, or measure an instance instead.',
-  'benchmark.detail.monitoring': 'Monitoring',
-  'benchmark.detail.monitoring.tips':
-    'Open the dashboard for this run, over the interval it ran. A disaggregated group goes to the PD dashboard, where the prefill queue, the decode queue and the KV transfer are shown separately.'
+  'benchmark.detail.result.basic': 'Basic'
 };

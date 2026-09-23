@@ -11,6 +11,7 @@ type ViewModalProps = {
   gpustackDataVolume?: string;
   advertisAddress?: string;
   dtkVersion?: string;
+  rdma?: boolean;
   registrationInfo: {
     token: string;
     image: string;
@@ -28,7 +29,8 @@ const AddWorkerCommand: React.FC<ViewModalProps> = ({
   currentGPU,
   containerName,
   gpustackDataVolume,
-  dtkVersion
+  dtkVersion,
+  rdma
 }) => {
   const code = React.useMemo(() => {
     const commandCode = addWorkerGuide['all'];
@@ -45,6 +47,7 @@ const AddWorkerCommand: React.FC<ViewModalProps> = ({
         containerName: containerName,
         gpustackDataVolume: gpustackDataVolume,
         dtkVersion: dtkVersion,
+        rdma: rdma,
         image: registrationInfo.image,
         token: registrationInfo.token || '${token}'
       })
@@ -60,7 +63,8 @@ const AddWorkerCommand: React.FC<ViewModalProps> = ({
     containerName,
     gpustackDataVolume,
     advertisAddress,
-    dtkVersion
+    dtkVersion,
+    rdma
   ]);
 
   return (

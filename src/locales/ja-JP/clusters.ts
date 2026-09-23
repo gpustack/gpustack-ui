@@ -100,6 +100,9 @@ export default {
   'clusters.addworker.enterWorkerAddress': 'Enter worker external address',
   'clusters.addworker.enterWorkerAddress.error':
     'Please enter the worker external address.',
+  'clusters.addworker.rdma': 'RDMA / InfiniBand',
+  'clusters.addworker.rdma.tips':
+    'worker が InfiniBand/RoCE の NIC を備えている場合に有効にします。ノード間の KV キャッシュ転送に必要です。',
   'clusters.addworker.extraVolume': 'Additional Volume Mount',
   'clusters.addworker.cacheVolume': 'Model Cache Volume Mount',
   'clusters.addworker.cacheVolume.tips':
@@ -335,4 +338,6 @@ export default {
 // 99. 'clusters.addworker.theadNotes': 'If the <span class="bold-text>/usr/local/PPU_SDK</span> directory does not exist, please create a symbolic link pointing to the T-Head PPU SDK installed path: <span class="bold-text>ln -s /path/to/PPU_SDK /usr/local/PPU_SDK</span>',
 // 100. 'clusters.addworker.theadNotes-02': 'T-Head PPU uses the Container Device Interface (CDI) for device injection and requires the <span class="bold-text">/var/run/cdi</span> directory to be available for CDI generation.',
 // 101. 'clusters.addworker.nvidiaNotes': 'The built-in inference backends in GPUStack v2.1 require <span class="bold-text">CUDA 12.6+</span>. Please ensure your NVIDIA driver version is <span class="bold-text">560</span> or newer.'
+// 102. 'clusters.addworker.rdma': 'RDMA / InfiniBand',
+// 103. 'clusters.addworker.rdma.tips': 'Enable if the worker has InfiniBand/RoCE NICs. Required for cross-node KV cache transfer.'
 // ========== End of To-Do List ==========

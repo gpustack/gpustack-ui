@@ -100,6 +100,9 @@ export default {
   'clusters.addworker.enterWorkerAddress': 'Enter worker external address',
   'clusters.addworker.enterWorkerAddress.error':
     'Please enter the worker external address.',
+  'clusters.addworker.rdma': 'RDMA / InfiniBand',
+  'clusters.addworker.rdma.tips':
+    'Включите, если на узле есть сетевые карты InfiniBand/RoCE. Требуется для передачи KV-кеша между узлами.',
   'clusters.addworker.extraVolume': 'Дополнительное монтирование тома',
   'clusters.addworker.cacheVolume': 'Model Cache Volume Mount',
   'clusters.addworker.cacheVolume.tips':

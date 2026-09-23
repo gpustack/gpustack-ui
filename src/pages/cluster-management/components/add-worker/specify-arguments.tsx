@@ -28,10 +28,12 @@ const SwitchSetting: React.FC<{
   errorMessage?: React.ReactNode;
   extra?: React.ReactNode;
   showSwitch?: boolean;
+  showInput?: boolean;
   onInputChange?: (value: string) => void;
   onChange: (checked: boolean) => void;
 }> = ({
   showSwitch = true,
+  showInput = true,
   label,
   checked,
   onChange,
@@ -59,7 +61,7 @@ const SwitchSetting: React.FC<{
           ></div>
         </Typography.Text>
       )}
-      {checked && (
+      {checked && showInput && (
         <div>
           <Input
             style={{ width: '100%' }}
@@ -115,6 +117,10 @@ const SpecifyArguments: React.FC<AddWorkerStepProps> = ({ disabled }) => {
     path: 'gpustack-data'
   };
 
+  const rdmaConfig = summary.get('rdmaConfig') || {
+    enable: false
+  };
+
   const selectedGPUs = summary.get('selectedGPUs') || [];
 
   const dtkVersion = summary.get('dtkVersion') || '25.04';
@@ -122,6 +128,9 @@ const SpecifyArguments: React.FC<AddWorkerStepProps> = ({ disabled }) => {
   // The DTK version selector only applies to Hygon DCUs, so only surface it
   // when Hygon ('dtk') is among the selected vendors.
   const showDtkVersion = selectedGPUs.includes(GPUDriverMap.HYGON);
+
+  // Only the NVIDIA command template consumes the RDMA arguments.
+  const showRDMA = selectedGPUs.includes(GPUDriverMap.NVIDIA);
 
   const setWorkerIPConfig = (config: {
     enable: boolean;
@@ -179,7 +188,9 @@ const SpecifyArguments: React.FC<AddWorkerStepProps> = ({ disabled }) => {
       'gpustackDataVolumeConfig'
     );
     const unregisterVersion = registerField('dtkVersion');
+    const unregisterRDMA = registerField('rdmaConfig');
     return () => {
+      unregisterRDMA();
       unregisterWorkerIP();
       unregisterModelDir();
       unregisterCacheDir();
@@ -222,6 +233,10 @@ const SpecifyArguments: React.FC<AddWorkerStepProps> = ({ disabled }) => {
       required: false
     });
     updateField('dtkVersion', '25.04');
+
+    updateField('rdmaConfig', {
+      enable: false
+    });
   }, []);
 
   return (
@@ -406,6 +421,21 @@ const SpecifyArguments: React.FC<AddWorkerStepProps> = ({ disabled }) => {
             )
           }
         ></SwitchSetting>
+        {/* RDMA config */}
+        {showRDMA && (
+          <SwitchSetting
+            showInput={false}
+            label={intl.formatMessage({ id: 'clusters.addworker.rdma' })}
+            tips={intl.formatMessage({ id: 'clusters.addworker.rdma.tips' })}
+            checked={rdmaConfig.enable}
+            onChange={(checked) =>
+              updateField('rdmaConfig', {
+                ...rdmaConfig,
+                enable: checked
+              })
+            }
+          ></SwitchSetting>
+        )}
         {/* cache directory config */}
         <SwitchSetting
           label={intl.formatMessage({ id: 'clusters.addworker.cacheVolume' })}

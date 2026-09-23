@@ -29,6 +29,26 @@ const useStyles = createStyles(({ css }) => ({
       color: var(--ant-color-text-tertiary);
       margin-bottom: 14px;
     }
+  `,
+  // A plain 3-column grid rather than a Table component: this is N rows of three
+  // numbers sitting inside a Descriptions cell, so a table would bring header /
+  // scroll / sort machinery none of it uses. Grid (not flex) because the columns
+  // have to line up across rows.
+  stageTable: css`
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, max-content));
+    column-gap: 32px;
+    row-gap: 4px;
+    .head {
+      font-size: 12px;
+      color: var(--ant-color-text-tertiary);
+      padding-bottom: 2px;
+    }
+    /* Equal-width digits, so the caps read as a column of numbers instead of a
+       ragged edge — 300 above 5120 above 320. */
+    .num {
+      font-variant-numeric: tabular-nums;
+    }
   `
 }));
 
@@ -47,7 +67,27 @@ interface Row {
   labelId: string;
   value?: unknown;
   children?: React.ReactNode;
+  // Columns this row spans in the group's 3-column Descriptions. Only the
+  // per-stage table needs it: it is a block, not a value.
+  span?: number;
 }
+
+/**
+ * Warmup / cooldown are stored in guidellm's scalar convention: below 1 is a
+ * FRACTION of the stage's requests, 1 and above is an absolute count. The form
+ * only offers the percent range, so render a fraction as the percent that was
+ * typed -- showing a bare "0.1" against a field labelled "%" reads as 0.1%.
+ *
+ * Max error rate shares this: it is a fraction too, and the form now asks for
+ * it in percent alongside the other two. Its stored value is always inside the
+ * open interval (0, 1), so it never reaches the count branch.
+ */
+const asPercentOrCount = (v?: number | null) =>
+  v === undefined || v === null
+    ? v
+    : v < 1
+      ? `${Math.round(v * 1000) / 10}%`
+      : v;
 
 const isEmpty = (value: unknown) =>
   value === undefined ||
@@ -67,7 +107,8 @@ const Benchmark: React.FC = () => {
       .map((row) => ({
         key: row.key,
         label: t(row.labelId),
-        children: row.children ?? (row.value as React.ReactNode)
+        children: row.children ?? (row.value as React.ReactNode),
+        ...(row.span ? { span: row.span } : {})
       }));
 
   const isShareGPT = detailData?.dataset_name === DatasetValueMap.ShareGPT;
@@ -204,6 +245,40 @@ const Benchmark: React.FC = () => {
     }
   ];
 
+  // Manual stages carry their own caps, and the caps differ stage by stage: a
+  // real run has 300 requests at C=1 but 5120 at C=512, and 1800s on the first
+  // three stages against 900s on the rest. The bare rate list ("1, 4, 16, …")
+  // showed none of it, so how much each stage actually runs was invisible on the
+  // page whose job is to state the configuration. One summary line can't carry
+  // it either — hence a row per stage.
+  //
+  // Only when some stage declares a cap. A stage list that is pure rates has
+  // nothing to tabulate, and a one-column table reads worse than the inline list
+  // it would replace.
+  const stagesHaveCaps = (detailData?.stages || []).some(
+    (stage) => stage.max_requests != null || stage.max_seconds != null
+  );
+
+  // Both caps hold simultaneously — guidellm stops the stage at whichever comes
+  // first — so a stage missing one of them is genuinely uncapped on that axis,
+  // not zero. "—" says that; a blank cell would read as a rendering gap.
+  const stageTable = (
+    <div className={styles.stageTable}>
+      <span className="head">{t(loadAxisLabelId(detailData))}</span>
+      <span className="head">{t('benchmark.form.maxRequests')}</span>
+      <span className="head">{t('benchmark.form.maxSeconds')}</span>
+      {(detailData?.stages || []).map((stage, index) => (
+        <React.Fragment key={`${stage.rate}-${index}`}>
+          <span className="num">{round(stage.rate ?? 0, loadDecimals)}</span>
+          <span className="num">{stage.max_requests ?? '—'}</span>
+          <span className="num">
+            {stage.max_seconds != null ? `${stage.max_seconds} s` : '—'}
+          </span>
+        </React.Fragment>
+      ))}
+    </div>
+  );
+
   const loadRows: Row[] = [
     {
       key: 'profile',
@@ -256,14 +331,22 @@ const Benchmark: React.FC = () => {
           }
         ]
       : [
-          {
-            key: 'stageList',
-            labelId: loadAxisLabelId(detailData),
-            value: hasStages ? detailData?.stages : null,
-            children: (detailData?.stages || [])
-              .map((stage) => round(stage.rate ?? 0, loadDecimals))
-              .join(', ')
-          },
+          stagesHaveCaps
+            ? {
+                key: 'stagePlan',
+                labelId: 'benchmark.detail.stageLimits',
+                span: 3,
+                value: detailData?.stages,
+                children: stageTable
+              }
+            : {
+                key: 'stageList',
+                labelId: loadAxisLabelId(detailData),
+                value: hasStages ? detailData?.stages : null,
+                children: (detailData?.stages || [])
+                  .map((stage) => round(stage.rate ?? 0, loadDecimals))
+                  .join(', ')
+              },
           {
             key: 'rate',
             labelId: 'benchmark.table.requestRate',
@@ -295,7 +378,7 @@ const Benchmark: React.FC = () => {
     {
       key: 'maxErrorRate',
       labelId: 'benchmark.form.maxErrorRate',
-      value: detailData?.max_error_rate
+      value: asPercentOrCount(detailData?.max_error_rate)
     },
     ...(detailData?.stop_on_saturation
       ? [
@@ -313,12 +396,12 @@ const Benchmark: React.FC = () => {
     {
       key: 'warmup',
       labelId: 'benchmark.form.warmup',
-      value: detailData?.warmup
+      value: asPercentOrCount(detailData?.warmup)
     },
     {
       key: 'cooldown',
       labelId: 'benchmark.form.cooldown',
-      value: detailData?.cooldown
+      value: asPercentOrCount(detailData?.cooldown)
     }
   ];
 

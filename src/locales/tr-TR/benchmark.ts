@@ -71,8 +71,14 @@ export default {
     'Doygunluğu daha da zorlamak yerine, verim düzleştiğinde çalıştırmayı durdurur (guidellm aşırı doygunluk kısıtı).',
   'benchmark.form.warmup': 'Isınma (%)',
   'benchmark.form.cooldown': 'Soğuma (%)',
+  'benchmark.form.warmup.tips':
+    'Trims the first N% of each stage’s REQUESTS from the measured window (not the first N% of its seconds). Use it to exclude cold-start effects — the first few requests of a run can be several times slower than steady state. Enter a percentage — e.g. 10 trims the first 10% of each stage’s requests.',
+  'benchmark.form.cooldown.tips':
+    'Trims the last N% of each stage’s REQUESTS from the measured window, excluding the tail where the stage is draining. Enter a percentage — e.g. 10 trims the last 10% of each stage’s requests.',
   'benchmark.form.maxErrors': 'Maksimum Hata',
-  'benchmark.form.maxErrorRate': 'Maks. Hata Oranı (0–1)',
+  'benchmark.form.maxErrorRate': 'Maks. Hata Oranı (%)',
+  'benchmark.form.maxErrorRate.tips':
+    'Başarısız isteklerin oranı bu düzeye ulaştığında aşamayı durdurur — sayılar ölçmeye değer olmaktan çıkmadan önce çalışmanın ne kadarının başarısız olabileceğine dair bir üst sınır. Yüzde girin — örneğin 5, aşamayı %5 hata oranında durdurur. Herhangi bir hata oranını tolere etmek için boş bırakın.',
   'benchmark.form.stopOnSaturation': 'Doygunlukta Durdur',
   'benchmark.form.datasetSeed.tips':
     'Sentetik veri üretme tohumu. Çok aşamalı çalıştırmada bu başlangıç tohumudur; her aşama başlangıç + aşama dizini kullanır (sabitlemek için «Gelişmiş» altındaki «Aşama başına farklı tohum» anahtarını kapatın).',
@@ -108,6 +114,7 @@ export default {
   'benchmark.form.concurrency': 'Eşzamanlılık',
   'benchmark.form.stages': 'Aşamalar',
   'benchmark.form.stages.mode.manual': 'Elle',
+  'benchmark.detail.stageLimits': 'Aşama Başına Limitler',
   'benchmark.form.addStage': 'Aşama Ekle',
   'benchmark.form.maxRequests': 'Maks. İstek',
   'benchmark.form.maxSeconds': 'Maks. Saniye',

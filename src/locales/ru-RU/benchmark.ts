@@ -73,8 +73,14 @@ export default {
     'Stop the run once throughput plateaus (guidellm over-saturation constraint) instead of pushing further past saturation.',
   'benchmark.form.warmup': 'Warmup (%)',
   'benchmark.form.cooldown': 'Cooldown (%)',
+  'benchmark.form.warmup.tips':
+    'Отсекает первые N% ЗАПРОСОВ каждой ступени из измеряемого окна (не первые N% её секунд). Используйте, чтобы исключить эффекты холодного старта — первые несколько запросов прогона могут быть в разы медленнее установившегося режима. Укажите процент — например, 10 отсечёт первые 10% запросов каждой ступени.',
+  'benchmark.form.cooldown.tips':
+    'Отсекает последние N% ЗАПРОСОВ каждой ступени из измеряемого окна, исключая хвост, где ступень доопустошается. Укажите процент — например, 10 отсечёт последние 10% запросов каждой ступени.',
   'benchmark.form.maxErrors': 'Max Errors',
-  'benchmark.form.maxErrorRate': 'Макс. доля ошибок (0–1)',
+  'benchmark.form.maxErrorRate': 'Макс. доля ошибок (%)',
+  'benchmark.form.maxErrorRate.tips':
+    'Останавливает ступень, когда доля неудачных запросов достигает этого уровня, — предел того, какая часть прогона может завершиться неудачей, прежде чем цифры перестанут что-либо значить. Укажите процент — например, 5 остановит ступень при 5% ошибок. Оставьте пустым, чтобы не ограничивать долю ошибок.',
   'benchmark.form.stopOnSaturation': 'Stop on Saturation',
   'benchmark.form.datasetSeed.tips':
     'Сид для генерации синтетических данных. В многоэтапном запуске это начальный сид; каждый этап использует начальный + индекс этапа (выключите «Разный сид на этап» в разделе «Дополнительно», чтобы зафиксировать).',
@@ -110,6 +116,7 @@ export default {
   'benchmark.form.concurrency': 'Параллелизм',
   'benchmark.form.stages': 'Этапы',
   'benchmark.form.stages.mode.manual': 'Вручную',
+  'benchmark.detail.stageLimits': 'Лимиты по этапам',
   'benchmark.form.addStage': 'Добавить этап',
   'benchmark.form.maxRequests': 'Макс. запросов',
   'benchmark.form.maxSeconds': 'Макс. секунд',

@@ -92,6 +92,13 @@ const useStyles = createStyles(({ token, css }) => ({
       font-size: 12px;
       color: ${token.colorTextTertiary};
     }
+    /* A unit / example under a pair of fields, where a placeholder cannot go. */
+    .field-hint {
+      margin-top: -6px;
+      margin-bottom: 12px;
+      font-size: 12px;
+      color: ${token.colorTextTertiary};
+    }
   `,
   // Three equal columns for a length-distribution row (Spread / Min / Max),
   // sitting above the full-width histogram.
@@ -1294,21 +1301,82 @@ const RandomSettingsForm: React.FC<{
       <Flex gap={12}>
         <Form.Item<FormData> name="warmup" style={{ flex: 1 }}>
           <CInputNumber
+            // A whole percent, bounded. Unbounded it was a footgun: the label
+            // says "%", but the API column uses guidellm's scalar convention
+            // where only values BELOW 1 are fractions -- so "10", typed as
+            // "10%", used to be sent as an absolute 10. The form now owns the
+            // percent unit and converts on submit (see `forms/index.tsx`).
+            //
+            // 99, not 100, and for the same reason the conversion exists: 100%
+            // converts to exactly 1.0, which is the first value guidellm reads
+            // as an ABSOLUTE COUNT -- so a run trimmed by "100%" would trim one
+            // request, and reload showing "1". There is nothing to measure in a
+            // stage trimmed away entirely, so the ceiling costs nothing.
             min={0}
+            max={99}
             disabled={disabled}
-            label={intl.formatMessage({ id: 'benchmark.form.warmup' })}
+            label={
+              <>
+                {intl.formatMessage({ id: 'benchmark.form.warmup' })}
+                <Tooltip
+                  title={intl.formatMessage({
+                    id: 'benchmark.form.warmup.tips'
+                  })}
+                >
+                  {/* Every other `title-help` in this file sits in a
+                      `.title-label` flex row and takes its spacing from that
+                      row's `gap`. These two are appended straight onto the
+                      label text, so without this the glyph collides with the
+                      "(%)" it follows. */}
+                  <QuestionCircleOutlined
+                    className="title-help"
+                    style={{ marginInlineStart: 6 }}
+                  />
+                </Tooltip>
+              </>
+            }
             style={{ width: '100%' }}
           ></CInputNumber>
         </Form.Item>
         <Form.Item<FormData> name="cooldown" style={{ flex: 1 }}>
           <CInputNumber
+            // Same ceiling as warmup above, for the same reason.
             min={0}
+            max={99}
             disabled={disabled}
-            label={intl.formatMessage({ id: 'benchmark.form.cooldown' })}
+            label={
+              <>
+                {intl.formatMessage({ id: 'benchmark.form.cooldown' })}
+                <Tooltip
+                  title={intl.formatMessage({
+                    id: 'benchmark.form.cooldown.tips'
+                  })}
+                >
+                  {/* Every other `title-help` in this file sits in a
+                      `.title-label` flex row and takes its spacing from that
+                      row's `gap`. These two are appended straight onto the
+                      label text, so without this the glyph collides with the
+                      "(%)" it follows. */}
+                  <QuestionCircleOutlined
+                    className="title-help"
+                    style={{ marginInlineStart: 6 }}
+                  />
+                </Tooltip>
+              </>
+            }
             style={{ width: '100%' }}
           ></CInputNumber>
         </Form.Item>
       </Flex>
+      {/* 🔴 The unit used to be a `field-hint` line of its own under both
+          fields. It said one thing ("enter a percentage, 10 means 10%") in a
+          sentence phrased for Warmup only, sitting under Cooldown as well —
+          and it is the same topic the two tooltips already cover, so it now
+          lives at the end of each of them, phrased per field (first N% vs last
+          N%). Still worth saying at all because the number is easy to get
+          wrong by an order of magnitude: the API column carries guidellm's
+          convention where only values BELOW 1 are fractions, so "10" used to
+          mean an absolute 10 rather than 10%. */}
     </>
   );
 
@@ -1446,15 +1514,33 @@ const RandomSettingsForm: React.FC<{
         </Form.Item>
         <Form.Item<FormData> name="max_error_rate" style={{ flex: 1 }}>
           <CInputNumber
-            // A FRACTION in the open interval (0, 1): guidellm's constraint
-            // rejects both endpoints, so the form must not be able to produce
-            // them. "Tolerate everything" is expressed by leaving this empty,
-            // not by entering 1.
-            min={0.01}
-            max={0.99}
-            step={0.01}
+            // A whole percent, like Warmup / Cooldown above — the API column
+            // holds guidellm's fraction and the form converts on submit (see
+            // `forms/index.tsx`). Bounded to 1-99 because guidellm's constraint
+            // rejects both endpoints of (0, 1): "tolerate everything" is
+            // expressed by leaving this empty, not by entering 100.
+            min={1}
+            max={99}
             disabled={disabled}
-            label={intl.formatMessage({ id: 'benchmark.form.maxErrorRate' })}
+            label={
+              <>
+                {intl.formatMessage({ id: 'benchmark.form.maxErrorRate' })}
+                <Tooltip
+                  title={intl.formatMessage({
+                    id: 'benchmark.form.maxErrorRate.tips'
+                  })}
+                >
+                  {/* Same as Warmup / Cooldown: the glyph is appended straight
+                      onto the label text rather than sitting in a `.title-label`
+                      flex row, so it needs its own leading space or it collides
+                      with the "(%)" it follows. */}
+                  <QuestionCircleOutlined
+                    className="title-help"
+                    style={{ marginInlineStart: 6 }}
+                  />
+                </Tooltip>
+              </>
+            }
             style={{ width: '100%' }}
           ></CInputNumber>
         </Form.Item>

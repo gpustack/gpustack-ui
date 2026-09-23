@@ -97,6 +97,9 @@ export default {
   'clusters.addworker.enterWorkerIP.error': '请输入节点 IP',
   'clusters.addworker.enterWorkerAddress': '输入节点外部地址',
   'clusters.addworker.enterWorkerAddress.error': '请输入节点外部地址',
+  'clusters.addworker.rdma': 'RDMA / InfiniBand',
+  'clusters.addworker.rdma.tips':
+    '若该节点配有 InfiniBand/RoCE 网卡则开启，跨节点 KV 缓存传输需要。',
   'clusters.addworker.extraVolume': '额外卷挂载',
   'clusters.addworker.cacheVolume': '缓存卷挂载',
   'clusters.addworker.cacheVolume.tips':

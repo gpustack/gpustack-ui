@@ -100,6 +100,9 @@ export default {
   'clusters.addworker.enterWorkerAddress': 'İşçi düğüm harici adresini girin',
   'clusters.addworker.enterWorkerAddress.error':
     'Lütfen işçi düğüm harici adresini girin.',
+  'clusters.addworker.rdma': 'RDMA / InfiniBand',
+  'clusters.addworker.rdma.tips':
+    'Çalışan düğümde InfiniBand/RoCE ağ kartları varsa etkinleştirin. Düğümler arası KV önbellek aktarımı için gereklidir.',
   'clusters.addworker.extraVolume': 'Ek Birim Bağlama',
   'clusters.addworker.cacheVolume': 'Model Önbellek Birimi Bağlama',
   'clusters.addworker.cacheVolume.tips':

@@ -246,6 +246,7 @@ interface AddWorkerCommandParams {
   gpustackDataVolume?: string;
   cacheDir?: string;
   dtkVersion?: string;
+  rdma?: boolean;
 }
 
 const generateEnvArgs = (params: any) => {
@@ -315,6 +316,19 @@ const setWorkerIPArg = (params: any) => {
       ${params.advertisAddress ? `--advertise-address ${params.advertisAddress} \\` : ''}`;
 };
 
+// Lists the ACTIVE InfiniBand ports as `device:port`. A host without RDMA
+// prints nothing, and an empty GPUSTACK_KV_IFNAME counts as unset, so the
+// worker falls back to detecting the NIC itself.
+const RDMA_KV_IFNAME_PROBE =
+  "$(grep -l ACTIVE /sys/class/infiniband/*/ports/*/state 2>/dev/null | sed 's|.*/infiniband/||; s|/ports/|:|; s|/state||' | paste -sd, -)";
+
+// The IB devices. Mirrored deployment copies them from the worker onto every
+// runner container it starts, which is how an inference backend reaches the
+// fabric.
+const setRDMAArgs = () => {
+  return `--device /dev/infiniband \\`;
+};
+
 const setImageArgs = (params: any) => {
   return `${params.image} \\
       --server-url ${params.server} \\`;
@@ -323,11 +337,23 @@ const setImageArgs = (params: any) => {
 // avaliable for  NVIDIA、MThreads
 const registerWorker = (params: AddWorkerCommandParams) => {
   const config = GPUsConfigs[params.gpu];
-  const commonArgs = setNormalArgs(params);
+  // RDMA is only offered for NVIDIA, and this builder is shared with MThreads.
+  const enableRDMA = params.gpu === GPUDriverMap.NVIDIA && params.rdma;
+  const commonArgs = setNormalArgs(
+    enableRDMA
+      ? {
+          ...params,
+          extraEnv: {
+            GPUSTACK_KV_IFNAME: RDMA_KV_IFNAME_PROBE
+          }
+        }
+      : params
+  );
   const imageArgs = setImageArgs(params);
 
   // remove empty enter lines and trailing backslash
   return `${commonArgs}
+      ${enableRDMA ? setRDMAArgs() : ''}
       --runtime ${config.runtime} \\
       ${imageArgs}
       ${setWorkerIPArg(params)}`;

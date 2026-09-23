@@ -100,6 +100,9 @@ export default {
   'clusters.addworker.enterWorkerAddress': 'Enter worker external address',
   'clusters.addworker.enterWorkerAddress.error':
     'Please enter the worker external address.',
+  'clusters.addworker.rdma': 'RDMA / InfiniBand',
+  'clusters.addworker.rdma.tips':
+    'Enable if the worker has InfiniBand/RoCE NICs. Required for cross-node KV cache transfer.',
   'clusters.addworker.extraVolume': 'Additional Volume Mount',
   'clusters.addworker.cacheVolume': 'Model Cache Volume Mount',
   'clusters.addworker.cacheVolume.tips':

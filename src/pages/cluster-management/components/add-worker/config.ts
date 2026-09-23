@@ -74,6 +74,11 @@ export interface SummaryDataKeys {
     ip: string;
     required: boolean;
   };
+  // NVIDIA only: gives the worker container the InfiniBand devices and the
+  // privileges RDMA needs, which mirrored deployment passes on to its runners.
+  rdmaConfig: {
+    enable: boolean;
+  };
 }
 
 export type SummaryDataMap = {

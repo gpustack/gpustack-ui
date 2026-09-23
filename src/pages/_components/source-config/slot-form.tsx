@@ -531,12 +531,25 @@ const SourceSlotForm: React.FC<SourceSlotFormProps> = ({
     };
   };
 
+  // What was saved is seeded back into the editor, and the viewport stays
+  // where the last edit left it — after pasting a document that is its end,
+  // and an editor parked past the last line reads as an empty box. Put the
+  // view back where the document starts, once the re-seeded value has landed.
+  const revealDocumentStart = () => {
+    requestAnimationFrame(() => {
+      const editor = editorRef.current?.editor?.editor;
+      editor?.setPosition?.({ lineNumber: 1, column: 1 });
+      editor?.revealLine?.(1);
+    });
+  };
+
   const applyWrite = (payload: SourceConfigUpsert) =>
     guard(() =>
       run(async () => {
         try {
           setAlert('');
           seedForm(await save(payload));
+          revealDocumentStart();
           message.success(intl.formatMessage({ id: 'common.message.success' }));
           onSaved();
         } catch (error) {

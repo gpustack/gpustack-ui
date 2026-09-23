@@ -1,3 +1,4 @@
+import { PageAction } from '@/config';
 import NumberSelection from '@/pages/_components/number-selection';
 import { queryGPUInstanceTypes } from '@/pages/gpu-service/instance-types/apis';
 import { ListItem as InstanceTypeListItem } from '@/pages/gpu-service/instance-types/config/types';
@@ -19,6 +20,7 @@ import { useIntl } from '@umijs/max';
 import { Flex, Form, Input, InputNumber, Segmented } from 'antd';
 import _ from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
+import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
 
 // Percentage presets for the sliced (percentage) mode, mirroring the
@@ -165,6 +167,7 @@ const GPUTypeOption: React.FC<{ item: InstanceTypeListItem }> = ({ item }) => {
 const VGPUTypeForm: React.FC = () => {
   const intl = useIntl();
   const { getRuleMessage } = useAppUtils();
+  const { action, realAction, initialValues } = useFormContext();
   const form = Form.useFormInstance();
   const [typeList, setTypeList] = useState<InstanceTypeListItem[]>([]);
   const [sliceMode, setSliceMode] = useState<SliceMode>(() =>
@@ -173,6 +176,37 @@ const VGPUTypeForm: React.FC = () => {
 
   const clusterId = Form.useWatch('cluster_id', form);
   const typeName = Form.useWatch(['gpu_type_selector', 'type'], form);
+
+  // The slice request this deployment is already running on.
+  //
+  // Every capacity gate below reads a LIVE ledger — `acceleratorSliced
+  // .onceMaxRequest`, `acceleratorPartitioned.remainingProfiles` — and a live
+  // ledger has this model's own allocation already subtracted from it. On a
+  // pool the model filled they therefore read zero, and the gates close on the
+  // model's own slice: the percentage input unmounts, the always-rejecting rule
+  // below it mounts, and an edit can no longer save anything at all, not even
+  // an unrelated backend parameter (gpustack#6262). Folding the persisted
+  // request back in is what keeps an existing deployment editable. It only ever
+  // says "what you already hold stays available to you" — never that there is
+  // more room than the ledger reports.
+  //
+  // Duplicate is NOT an edit and must not get this: it arrives with the same
+  // `action` EDIT and a copy of the same values (use-edit-deployment.ts), but a
+  // copy is a second deployment that has to fit in the headroom actually left.
+  // `realAction` is the only field that tells the two apart.
+  const persistedSelector =
+    action === PageAction.EDIT && realAction !== PageAction.COPY
+      ? initialValues?.gpu_type_selector
+      : null;
+  const persistedTypeName = persistedSelector?.type || null;
+  const persistedSlicedPercentage =
+    _.toNumber(persistedSelector?.accelerator_sliced_memory_percentage) || 0;
+  const persistedPartitionProfile =
+    persistedSelector?.accelerator_partitioned_profile || null;
+  // Held capacity travels with the type it was granted on: point the form at
+  // another type and the request is new again, headroom and all.
+  const holdsPersistedType =
+    !!persistedTypeName && typeName === persistedTypeName;
   const slicedMemoryPercentage =
     _.toNumber(
       Form.useWatch(
@@ -218,12 +252,21 @@ const VGPUTypeForm: React.FC = () => {
   const slicedDetail = selectedInstanceType?.status?.detail?.slicedDetail;
 
   // Max selectable ratio in sliced mode: status.acceleratorSliced
-  // .onceMaxRequest (a percentage). The sliced mode stays visible but
-  // unselectable when there is no sliced capacity.
-  const slicedMaxPercentage =
+  // .onceMaxRequest (a percentage), floored at what this deployment already
+  // holds on this type (see persistedSelector). The sliced mode stays visible
+  // but unselectable when there is no sliced capacity.
+  //
+  // max(), not held + headroom: onceMaxRequest is the largest SINGLE request
+  // the pool can still serve, not a total, and a replica's slice has to fit on
+  // one card — so the two numbers do not add up into a request anyone could
+  // place. The floor keeps the persisted ratio valid and lets the user go down
+  // from it; going up still needs headroom the ledger actually reports.
+  const slicedMaxPercentage = Math.max(
     _.toNumber(
       selectedInstanceType?.status?.acceleratorSliced?.onceMaxRequest
-    ) || 0;
+    ) || 0,
+    holdsPersistedType ? persistedSlicedPercentage : 0
+  );
 
   // Whether the compute (cores) ratio may exceed the memory ratio. Without
   // overcommit the cores ratio is locked to the memory ratio and the cores
@@ -243,14 +286,27 @@ const VGPUTypeForm: React.FC = () => {
   // are carved and released. It stays the fallback for a server older than the
   // ledger, where an empty list would read as "nothing available" instead of
   // "unknown".
-  const partitionOptions = useMemo(
-    () =>
-      getSelectablePartitionProfilesFromResource(
-        selectedInstanceType?.status?.acceleratorPartitioned,
-        slicedDetail
-      ).map((name) => ({ label: name, value: name })),
-    [selectedInstanceType, slicedDetail]
-  );
+  const partitionOptions = useMemo(() => {
+    const profiles = getSelectablePartitionProfilesFromResource(
+      selectedInstanceType?.status?.acceleratorPartitioned,
+      slicedDetail
+    );
+    // The held-capacity floor again (see persistedSelector), on the partition
+    // side: the profile this model runs on drops out of remainingProfiles as
+    // soon as the pool has no spare one left. Without it back in the list the
+    // picker unmounts, the mode effect below lands on `whole` and clears the
+    // profile, and the exhausted branch blocks the submit — the same dead-end
+    // edit as the ratio side, for a MIG type.
+    const held = holdsPersistedType ? persistedPartitionProfile : null;
+    const selectable =
+      held && !profiles.includes(held) ? [...profiles, held] : profiles;
+    return selectable.map((name) => ({ label: name, value: name }));
+  }, [
+    selectedInstanceType,
+    slicedDetail,
+    holdsPersistedType,
+    persistedPartitionProfile
+  ]);
 
   const supportsSliced = isLogicalSliceable(slicedDetail);
   const supportsPartitioned =
@@ -302,6 +358,13 @@ const VGPUTypeForm: React.FC = () => {
   // if a type ever reports a ledger of its own, the representative would start
   // gating its siblings and this dedup would need the max across the group.
   const typeOptions = useMemo(() => {
+    // A full pool disables its type — except the one this deployment is already
+    // running on, whose "full" is largely its own slice (see persistedSelector).
+    // Disabling that one leaves an edit unable to re-pick the type it is
+    // deployed on once the field has been touched.
+    const isSelectable = (item: InstanceTypeListItem) =>
+      item.name === persistedTypeName || isTypeRequestable(item);
+
     const byFlavor = new Map<string, InstanceTypeListItem>();
     typeList.forEach((item) => {
       const key = getFlavorKey(item);
@@ -314,7 +377,7 @@ const VGPUTypeForm: React.FC = () => {
       label: item.status?.detail?.product || item.name,
       value: item.name,
       instanceType: item,
-      disabled: !isTypeRequestable(item)
+      disabled: !isSelectable(item)
     }));
 
     // A stored selection is whatever was submitted, which may be a type this
@@ -336,7 +399,7 @@ const VGPUTypeForm: React.FC = () => {
           selectedInstanceType.name,
         value: selectedInstanceType.name,
         instanceType: selectedInstanceType,
-        disabled: !isTypeRequestable(selectedInstanceType)
+        disabled: !isSelectable(selectedInstanceType)
       });
     }
 
@@ -344,7 +407,7 @@ const VGPUTypeForm: React.FC = () => {
     // so a reordered list would reorder the dropdown even though the
     // representatives themselves did not change.
     return entries.sort((a, b) => a.value.localeCompare(b.value));
-  }, [typeList, selectedInstanceType]);
+  }, [typeList, selectedInstanceType, persistedTypeName]);
 
   // Single commit path for mode switches (form-patterns): write every
   // mode-specific field together so no stale value from the previous mode
@@ -424,8 +487,14 @@ const VGPUTypeForm: React.FC = () => {
         ? 'partitioned'
         : 'whole';
     setSliceMode(nextMode);
-    const nextSlicedMax =
-      _.toNumber(next?.status?.acceleratorSliced?.onceMaxRequest) || 0;
+    // Same floor as slicedMaxPercentage, computed off the picked type rather
+    // than the current one: coming back to the type this deployment runs on
+    // has to re-offer the ratio it already holds, or the re-pick lands on the
+    // dead end this fix removes.
+    const nextSlicedMax = Math.max(
+      _.toNumber(next?.status?.acceleratorSliced?.onceMaxRequest) || 0,
+      name === persistedTypeName ? persistedSlicedPercentage : 0
+    );
     // A sliced mode with no capacity left seeds no percentage (see
     // commitSliceMode); the other modes request a whole card / a profile at 0.
     const memory =

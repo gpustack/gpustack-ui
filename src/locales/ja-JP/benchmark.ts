@@ -399,5 +399,8 @@ export default {
   'benchmark.detail.targetMode.route': 'ルート（デプロイメント）· {route}',
   'benchmark.form.target.route': 'ルート',
   'benchmark.form.target.route.empty':
-    'このクラスターには、応答可能な LLM を指すルートがありません。ルートをデプロイするか、インスタンス形態に切り替えてください。'
+    'このクラスターには、応答可能な LLM を指すルートがありません。ルートをデプロイするか、インスタンス形態に切り替えてください。',
+  'benchmark.detail.monitoring': 'モニタリング',
+  'benchmark.detail.monitoring.tips':
+    'この実行の時間範囲でダッシュボードを開きます。分離構成のグループは PD ダッシュボードに移動し、prefill キュー・decode キュー・KV 転送がそれぞれ表示されます。'
 };

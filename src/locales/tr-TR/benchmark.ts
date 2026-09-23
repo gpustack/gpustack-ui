@@ -401,5 +401,8 @@ export default {
   'benchmark.detail.targetMode.route': 'Rota (dağıtım) · {route}',
   'benchmark.form.target.route': 'Rota',
   'benchmark.form.target.route.empty':
-    "Bu kümede hizmet verebilen bir LLM'e yönelen rota yok. Bir rota dağıtın ya da bunun yerine bir örnek ölçün."
+    "Bu kümede hizmet verebilen bir LLM'e yönelen rota yok. Bir rota dağıtın ya da bunun yerine bir örnek ölçün.",
+  'benchmark.detail.monitoring': 'İzleme',
+  'benchmark.detail.monitoring.tips':
+    'Bu çalışmanın zaman aralığı için panoyu açar. Ayrıştırılmış bir grup, prefill kuyruğunun, decode kuyruğunun ve KV aktarımının ayrı ayrı gösterildiği PD panosuna gider.'
 };

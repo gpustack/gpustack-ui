@@ -5,7 +5,6 @@ export default {
   'benchmark.button.clone': '克隆基准测试',
   'benchmark.button.compare': '对比',
   'benchmark.table.model': '模型',
-  'benchmark.table.instance': '模型实例',
   'benchmark.table.dataset': '数据集',
   'benchmark.table.requestRate': '请求率',
   'benchmark.table.gpu': 'GPU ',
@@ -377,5 +376,23 @@ export default {
   'benchmark.table.export.results': '导出结果',
   'benchmark.form.nonLlmModel.tips': '基准测试目前仅支持 LLM 模型',
   'benchmark.detail.result.duration': '耗时',
-  'benchmark.detail.result.basic': '基础信息'
+  'benchmark.detail.result.basic': '基础信息',
+  'benchmark.form.target': '压测目标',
+  'benchmark.table.filter.byTargetMode': '按目标形态过滤',
+  'benchmark.detail.members.title': '成员',
+  'benchmark.detail.members.role': '角色',
+  'benchmark.detail.members.injected': '注入参数',
+  'benchmark.detail.members.endpoint': '入口',
+  'benchmark.env.hostedMembers': '承载成员',
+  'benchmark.form.pdGroup.tips':
+    '分离部署的组整体压测：所有请求都经 router 进入，因此不需要也无法指定成员。服务端会把压力发往 router，并把压测容器放在持有模型权重的节点上。',
+  'benchmark.form.targetMode': '压测目标形态',
+  'benchmark.form.targetMode.instance': '实例（测引擎）',
+  'benchmark.form.targetMode.route': '路由（测部署）',
+  'benchmark.form.targetMode.tips':
+    '实例：压力直接打到单个引擎 —— 分离组的 router，或普通模型的某一个副本 —— 链路里除了引擎没有别的东西。路由：从客户端调用的入口进去，普通模型的每个副本都会参与；对比分离部署与聚合部署在同样卡数下的性能，要用这一档。⚠️ 路由模式把 server 的代理算进链路：高并发下代理可能先于部署成为瓶颈并丢请求，而被丢掉的请求不计入延迟，会让 TTFT / TPOT 看起来更好。读路由模式的结果必须连同错误数和未完成数一起看。',
+  'benchmark.detail.targetMode.route': '路由（测部署）· {route}',
+  'benchmark.form.target.route': '路由',
+  'benchmark.form.target.route.empty':
+    '该集群下没有指向可服务 LLM 的路由。先部署一条路由，或改用实例形态。'
 };

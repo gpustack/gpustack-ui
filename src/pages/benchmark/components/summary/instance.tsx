@@ -1,16 +1,37 @@
-import { AutoTooltip } from '@gpustack/core-ui';
+import { roleLabel } from '@/pages/llmodels/components/pd/role-status';
+import { AutoTooltip, TextAttribute } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Descriptions, Flex, Tag } from 'antd';
 import React, { useMemo } from 'react';
 import { useDetailContext } from '../../config/detail-context';
+import DeploymentMembers from './deployment-members';
+/** The member whose engine configuration the report describes.
+ *
+ * Not the endpoint, for a group: the endpoint is the router, which runs no
+ * engine and holds no weights, so reading backend, parameters and model file
+ * off it shows a report full of dashes for a deployment that has all three.
+ * The GPU-bearing members of one group share these, so the first that has them
+ * answers for the group. For every plain model it is the only member there is.
+ */
+const engineMember = (snapshot: any) => {
+  const members = Object.values(snapshot?.instances || {}) as any[];
+  return members.find((member) => member?.resolved_path) || members[0];
+};
+
 const Instance: React.FC = () => {
   const intl = useIntl();
   const { detailData } = useDetailContext();
 
   const items = useMemo(() => {
     const { snapshot } = detailData;
-    const [instanceName, instanceData] =
-      Object.entries(snapshot?.instances || {})[0] || [];
+    const instanceData = engineMember(snapshot);
+    // Present only for a run that went through a route, and it is the fact
+    // that names what was measured — a route's targets and weights can be
+    // edited, so "which route" is part of what the numbers mean.
+    const routeName = snapshot?.route_name;
+    const endpointRole = (
+      Object.values(snapshot?.instances || {}) as any[]
+    ).find((member) => member?.name === detailData?.model_instance_name)?.role;
     return [
       {
         key: '1',
@@ -23,12 +44,39 @@ const Instance: React.FC = () => {
         key: '2',
         label: intl.formatMessage({ id: 'benchmark.detail.instanceName' }),
         children: (
-          <AutoTooltip ghost>
-            {detailData?.model_instance_name || '-'}
-          </AutoTooltip>
+          <Flex align="center" gap={4}>
+            <AutoTooltip ghost>
+              {detailData?.model_instance_name || '-'}
+            </AutoTooltip>
+            {/* Which member the load was actually sent to. For a group that is
+                the router, and saying so is what keeps the row from reading as
+                "we benchmarked one arbitrary member of three". */}
+            {endpointRole && (
+              <TextAttribute>{roleLabel(intl, endpointRole)}</TextAttribute>
+            )}
+          </Flex>
         )
       },
 
+      {
+        // What was measured, which decides whether two reports can be
+        // compared at all: an engine straight at its port, or the deployment
+        // through the route clients call (every replica of a plain model).
+        key: '4',
+        label: intl.formatMessage({ id: 'benchmark.form.targetMode' }),
+        children: (
+          <AutoTooltip ghost>
+            {routeName
+              ? intl.formatMessage(
+                  { id: 'benchmark.detail.targetMode.route' },
+                  { route: routeName }
+                )
+              : intl.formatMessage({
+                  id: 'benchmark.form.targetMode.instance'
+                })}
+          </AutoTooltip>
+        )
+      },
       {
         key: '5',
         label: intl.formatMessage({ id: 'models.form.backend' }),
@@ -50,8 +98,7 @@ const Instance: React.FC = () => {
 
   const paramsItems = useMemo(() => {
     const { snapshot } = detailData;
-    const [instanceName, instanceData] =
-      Object.entries(snapshot?.instances || {})[0] || [];
+    const instanceData = engineMember(snapshot);
 
     const renderParams = (params: string[]) =>
       params.length > 0 ? (
@@ -217,6 +264,10 @@ const Instance: React.FC = () => {
           }
         }}
       ></Descriptions>
+      {/* Everything above describes the deployment as a whole, read off one
+          representative member. What differs BETWEEN members goes below, and
+          only when there is more than one. */}
+      <DeploymentMembers />
     </div>
   );
 };

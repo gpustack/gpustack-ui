@@ -38,9 +38,22 @@ const Environment: React.FC = () => {
   const { detailData } = useDetailContext();
   const { snapshot } = detailData;
 
-  // instance info
-  const instanceEntry = Object.entries(snapshot.instances || {})[0];
-  const instanceData = instanceEntry?.[1];
+  // Every member the run's snapshot covers. One for a plain model; for a group
+  // all of them, because what the reader compares is what the deployment cost
+  // and a group's cards are spread across its prefill and decode members. The
+  // endpoint alone would report the run on zero cards — the router holds none.
+  const members = useMemo(
+    () => Object.values(snapshot.instances || {}),
+    [snapshot.instances]
+  );
+  // The member the load was sent to, which is the group's router. Its own
+  // worker is marked Main below: it is the one address the run talked to.
+  const instanceData = useMemo(
+    () =>
+      members.find((item) => item.name === detailData?.model_instance_name) ||
+      members[0],
+    [members, detailData?.model_instance_name]
+  );
 
   const { handleExpandChange, handleExpandAll, expandedRowKeys } =
     useExpandedRowKeys();
@@ -66,51 +79,81 @@ const Environment: React.FC = () => {
     return gpuList.filter((gpu) => ids.includes(gpu.id));
   };
 
-  // main worker
-
-  const mainWorker = useMemo(() => {
-    const mainworker = findWorkerById(instanceData.worker_id);
-
-    if (!mainworker) {
-      return null;
-    }
-
-    const gpuData = findGPUByGPUIds(instanceData.gpu_ids);
-
-    return {
-      ...mainworker,
-      ..._.pick(gpuData?.[0], ['driver_version', 'runtime_version']),
-      isMain: true,
-      children: gpuData
-    };
-  }, [snapshot.gpus, snapshot.workers, instanceData]);
-
-  // subordinate workers
-
-  const subWorkerList = useMemo(() => {
-    const subOrdinaryWorkers = instanceData?.subordinate_workers || [];
-
-    return subOrdinaryWorkers.map((worker) => {
-      // Find the worker info from the snapshot workers
-      const subWorker = findWorkerById(worker.worker_id);
-
-      if (!subWorker) {
-        return null;
-      }
-      const gpuData = findGPUByGPUIds(worker.gpu_ids);
-
-      return {
-        ...subWorker,
-        ..._.pick(gpuData?.[0], ['driver_version', 'runtime_version']),
-        isMain: false,
-        children: gpuData
-      };
-    });
-  }, [snapshot.gpus, snapshot.workers, instanceData]);
-
+  // One row per WORKER, not per member: two members of a group placed on the
+  // same machine are one machine, and listing it twice would double its cards
+  // in a table that exists to say how much hardware the run used. A worker
+  // reached by several members carries the union of their cards.
+  //
+  // Which members those were is carried per row (`hosted`) rather than left
+  // implicit. Without it a disaggregated run is a list of identical-looking
+  // machines: the reader cannot tell which one held prefill and which held
+  // decode, and the router's machine — the one marked Main — looks broken
+  // because a router owns no card, so it has no driver or runtime version to
+  // show.
   const dataList = useMemo(() => {
-    return [mainWorker, ...subWorkerList].filter(Boolean) as WorkerData[];
-  }, [mainWorker, subWorkerList]);
+    const rows = new Map<number, any>();
+
+    const addWorker = (
+      workerId: number,
+      gpuIds: string[] | undefined,
+      isMain: boolean,
+      member: any
+    ) => {
+      const worker = findWorkerById(workerId);
+      if (!worker) {
+        return;
+      }
+      const gpuData = findGPUByGPUIds(gpuIds || []);
+      // A member spanning several workers is the same member on each of them,
+      // so it is listed once per row, not once per worker it reaches.
+      const hostedEntry = { name: member?.name, role: member?.role };
+      const existing = rows.get(worker.id);
+      if (existing) {
+        const seen = new Set(existing.children.map((gpu: GPUData) => gpu.id));
+        const added = gpuData.filter((gpu) => !seen.has(gpu.id));
+        existing.children.push(...added);
+        // The driver and runtime versions are read off a card, and the row may
+        // have been opened by a member that holds none — a router is the case
+        // that produced this. Backfill from the first card to arrive, or the
+        // row lists GPUs with both version columns blank.
+        if (!existing.driver_version && !existing.runtime_version) {
+          Object.assign(
+            existing,
+            _.pick(added[0], ['driver_version', 'runtime_version'])
+          );
+        }
+        existing.isMain = existing.isMain || isMain;
+        if (
+          hostedEntry.name &&
+          !existing.hosted.some((m: any) => m.name === hostedEntry.name)
+        ) {
+          existing.hosted.push(hostedEntry);
+        }
+        return;
+      }
+      rows.set(worker.id, {
+        ...worker,
+        ..._.pick(gpuData?.[0], ['driver_version', 'runtime_version']),
+        isMain,
+        hosted: hostedEntry.name ? [hostedEntry] : [],
+        children: [...gpuData]
+      });
+    };
+
+    members.forEach((member) => {
+      addWorker(
+        member.worker_id,
+        member.gpu_ids,
+        member.name === instanceData?.name,
+        member
+      );
+      (member.subordinate_workers || []).forEach((worker: any) =>
+        addWorker(worker.worker_id, worker.gpu_ids, false, member)
+      );
+    });
+
+    return Array.from(rows.values()) as WorkerData[];
+  }, [snapshot.gpus, snapshot.workers, members, instanceData]);
 
   const allChildren = useMemo(() => {
     return dataList.reduce<GPUData[]>(

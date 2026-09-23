@@ -5,7 +5,6 @@ export default {
   'benchmark.button.clone': 'Kıyaslamayı Klonla',
   'benchmark.button.compare': 'Karşılaştır',
   'benchmark.table.model': 'Model',
-  'benchmark.table.instance': 'Model Örneği',
   'benchmark.table.dataset': 'Veri Kümesi',
   'benchmark.table.requestRate': 'İstek Oranı',
   'benchmark.table.gpu': 'GPU ',
@@ -384,5 +383,23 @@ export default {
   'benchmark.form.nonLlmModel.tips':
     'Kıyaslama şu anda yalnızca LLM modellerini destekliyor',
   'benchmark.detail.result.duration': 'Süre',
-  'benchmark.detail.result.basic': 'Temel'
+  'benchmark.detail.result.basic': 'Temel',
+  'benchmark.form.target': 'Kıyaslama hedefi',
+  'benchmark.table.filter.byTargetMode': 'Hedef türüne göre filtrele',
+  'benchmark.detail.members.title': 'Üyeler',
+  'benchmark.detail.members.role': 'Rol',
+  'benchmark.detail.members.injected': 'Enjekte parametreler',
+  'benchmark.detail.members.endpoint': 'Uç nokta',
+  'benchmark.env.hostedMembers': 'Üyeler',
+  'benchmark.form.pdGroup.tips':
+    'Ayrıştırılmış bir grup bütün olarak ölçülür: her istek router üzerinden girer, bu yüzden seçilecek bir üye yoktur. Sunucu yükü routera gönderir ve yük üretecini ağırlıkları tutan bir worker üzerinde çalıştırır.',
+  'benchmark.form.targetMode': 'Kıyaslama hedefi türü',
+  'benchmark.form.targetMode.instance': 'Örnek (motoru ölçer)',
+  'benchmark.form.targetMode.route': 'Rota (dağıtımı ölçer)',
+  'benchmark.form.targetMode.tips':
+    "Örnek: yük doğrudan tek bir motora gider — ayrıştırılmış bir grubun routerı ya da düz bir modelin tek bir kopyası — ve yolda motordan başka bir şey yoktur. Rota: yük, istemcilerin çağırdığı girişten geçer, böylece düz bir modelin tüm kopyaları işin içine girer; ayrıştırılmış ve toplu dağıtımları aynı kart sayısında karşılaştırmak için bunu kullanın. ⚠️ Rota, sunucunun proxy'sini yola dahil eder. Yüksek eşzamanlılıkta proxy dağıtımdan önce doyuma ulaşıp istekleri düşürebilir; düşürülen istekler gecikme sayılarına girmediği için TTFT / TPOT olduğundan daha iyi görünebilir. Rota modu sonuçlarını hata ve tamamlanmamış istek sayılarıyla birlikte okuyun.",
+  'benchmark.detail.targetMode.route': 'Rota (dağıtım) · {route}',
+  'benchmark.form.target.route': 'Rota',
+  'benchmark.form.target.route.empty':
+    "Bu kümede hizmet verebilen bir LLM'e yönelen rota yok. Bir rota dağıtın ya da bunun yerine bir örnek ölçün."
 };

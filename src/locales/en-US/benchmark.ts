@@ -5,7 +5,6 @@ export default {
   'benchmark.button.clone': 'Clone Benchmark',
   'benchmark.button.compare': 'Compare',
   'benchmark.table.model': 'Model',
-  'benchmark.table.instance': 'Model Instance',
   'benchmark.table.dataset': 'Dataset',
   'benchmark.table.requestRate': 'Request Rate',
   'benchmark.table.gpu': 'GPU ',
@@ -383,5 +382,23 @@ export default {
   'benchmark.form.nonLlmModel.tips':
     'Benchmarking currently only supports LLM models',
   'benchmark.detail.result.duration': 'Duration',
-  'benchmark.detail.result.basic': 'Basic'
+  'benchmark.detail.result.basic': 'Basic',
+  'benchmark.form.target': 'Benchmark target',
+  'benchmark.table.filter.byTargetMode': 'Filter by target type',
+  'benchmark.detail.members.title': 'Members',
+  'benchmark.detail.members.role': 'Role',
+  'benchmark.detail.members.injected': 'Injected parameters',
+  'benchmark.detail.members.endpoint': 'Endpoint',
+  'benchmark.env.hostedMembers': 'Members',
+  'benchmark.form.pdGroup.tips':
+    'A disaggregated group is measured whole: every request enters through its router, so there is no member to pick. The server sends the load to the router and runs the load generator on a worker that holds the weights.',
+  'benchmark.form.targetMode': 'Target type',
+  'benchmark.form.targetMode.instance': 'Instance (engine)',
+  'benchmark.form.targetMode.route': 'Route (deployment)',
+  'benchmark.form.targetMode.tips':
+    "Instance sends the load straight at one engine — a group's router, or one replica of a plain model — so nothing but the engine is in the path. Route sends it through the entrance clients call, so every replica of a plain model takes part; use it to compare a disaggregated group against an aggregated deployment on the same cards. ⚠️ Route puts the server's proxy in the path. At high rates the proxy can saturate before the deployment does and drop requests — and dropped requests never reach the latency numbers, so TTFT / TPOT can look better than they are. Read route-mode results together with the error and incomplete counts.",
+  'benchmark.detail.targetMode.route': 'Route (deployment) · {route}',
+  'benchmark.form.target.route': 'Route',
+  'benchmark.form.target.route.empty':
+    'No route fronts a servable LLM in this cluster. Deploy a route, or measure an instance instead.'
 };

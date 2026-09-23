@@ -4,7 +4,7 @@ import { useIntl } from '@umijs/max';
 import { Form, Input } from 'antd';
 import { createStyles } from 'antd-style';
 import { forwardRef, useImperativeHandle, useRef } from 'react';
-import { loadTypeOptions } from '../config';
+import { loadTypeOptions, targetModeOptions } from '../config';
 
 const useStyles = createStyles(({ css }) => ({
   content: css`
@@ -113,6 +113,21 @@ const FilterFormContent: React.FC<FilterFormContentProps> = forwardRef(
                 id: 'benchmark.table.filter.byLoadType'
               })}
               options={loadTypeOptions.map((item) => ({
+                label: intl.formatMessage({ id: item.label }),
+                value: item.value
+              }))}
+            ></BaseSelect>
+          </Form.Item>
+          <span className={styles.label}>
+            {intl.formatMessage({ id: 'benchmark.form.targetMode' })}
+          </span>
+          <Form.Item noStyle name="target_mode">
+            <BaseSelect
+              allowClear
+              placeholder={intl.formatMessage({
+                id: 'benchmark.table.filter.byTargetMode'
+              })}
+              options={targetModeOptions.map((item) => ({
                 label: intl.formatMessage({ id: item.label }),
                 value: item.value
               }))}

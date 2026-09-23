@@ -1,13 +1,12 @@
 import { SearchOutlined, SyncOutlined } from '@ant-design/icons';
 import { BaseSelect } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Button, Input, Space } from 'antd';
+import { Button, Input, Select, Space } from 'antd';
 import _ from 'lodash';
 import React from 'react';
-import { loadTypeOptions } from '../config';
+import { loadTypeOptions, targetModeOptions } from '../config';
 
 export interface RightActionsProps {
-  handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSearch: () => void;
   handleQueryChange: (value: any, option?: any) => void;
   modelList?: Global.BaseOption<number, { categories: string[] }>[];
@@ -17,7 +16,6 @@ export interface RightActionsProps {
 }
 
 const RightActions: React.FC<RightActionsProps> = ({
-  handleInputChange,
   handleSearch,
   handleQueryChange,
   toggleFilters,
@@ -26,6 +24,17 @@ const RightActions: React.FC<RightActionsProps> = ({
   modelList
 }) => {
   const intl = useIntl();
+
+  // Names go to the API comma-separated, matching any of them. Comparing runs
+  // means pulling up exactly the handful being compared, which one substring
+  // rarely spans — and a benchmark name cannot contain a comma or a space, so
+  // neither separator is ambiguous.
+  const handleNamesChange = (values: string[]) => {
+    handleQueryChange({
+      page: 1,
+      search: values.join(',')
+    });
+  };
 
   const debounceUpdateFilter = _.debounce((e: any) => {
     handleQueryChange({
@@ -52,8 +61,17 @@ const RightActions: React.FC<RightActionsProps> = ({
 
   return (
     <Space>
-      <Input
-        prefix={
+      {/* antd's Select rather than core-ui's BaseSelect: BaseSelect always
+          renders an "empty" illustration for the dropdown, and this field has
+          no options to offer — every entry is typed. `notFoundContent={null}`
+          keeps the dropdown to the one "add this name" row antd puts there. */}
+      <Select
+        mode="tags"
+        allowClear
+        notFoundContent={null}
+        tokenSeparators={[',', ' ']}
+        maxTagCount="responsive"
+        suffixIcon={
           <SearchOutlined
             style={{ color: 'var(--ant-color-text-placeholder)' }}
           ></SearchOutlined>
@@ -61,10 +79,9 @@ const RightActions: React.FC<RightActionsProps> = ({
         placeholder={intl.formatMessage({
           id: 'common.filter.name'
         })}
-        style={{ width: 200 }}
-        allowClear
-        onChange={handleInputChange}
-      ></Input>
+        style={{ width: 240 }}
+        onChange={handleNamesChange}
+      ></Select>
       <Input
         prefix={
           <SearchOutlined
@@ -102,6 +119,23 @@ const RightActions: React.FC<RightActionsProps> = ({
         allowClear
         onChange={handleSearchByProfileDebounce}
       ></Input>
+      <BaseSelect
+        allowClear
+        placeholder={intl.formatMessage({
+          id: 'benchmark.table.filter.byTargetMode'
+        })}
+        style={{ width: 180 }}
+        options={targetModeOptions.map((item) => ({
+          label: intl.formatMessage({ id: item.label }),
+          value: item.value
+        }))}
+        onChange={(value) =>
+          handleQueryChange({
+            target_mode: value,
+            page: 1
+          })
+        }
+      ></BaseSelect>
       <BaseSelect
         allowClear
         placeholder={intl.formatMessage({

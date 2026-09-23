@@ -111,6 +111,29 @@ export const genDatasetSeed = () =>
   DATASET_SEED_MIN +
   Math.floor(Math.random() * (DATASET_SEED_MAX - DATASET_SEED_MIN + 1));
 
+// What the load is aimed at. `instance` measures an ENGINE (straight at a
+// member's port, nothing else in the path); `route` measures a DEPLOYMENT
+// (through the entrance clients call, so a plain model's replicas are all of
+// them and a group is its router). Comparing PD against non-PD needs `route`
+// on both sides; tuning engine parameters wants `instance`.
+export const TargetModeValueMap = {
+  Instance: 'instance',
+  Route: 'route'
+};
+
+export const targetModeOptions = [
+  {
+    label: 'benchmark.form.targetMode.instance',
+    value: TargetModeValueMap.Instance,
+    locale: true
+  },
+  {
+    label: 'benchmark.form.targetMode.route',
+    value: TargetModeValueMap.Route,
+    locale: true
+  }
+];
+
 export const loadTypeOptions = [
   {
     label: 'benchmark.form.loadType.fixedRate',

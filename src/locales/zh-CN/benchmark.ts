@@ -377,6 +377,7 @@ export default {
     '最佳:并发 {rate} —— 吞吐达峰值的 {pct}%({tps} tok/s),TTFT {ttft} ms{slo, select, yes{,在 SLO 内} other{}}。',
   'benchmark.detail.analysis.text':
     '并发 {rate} 可稳定输出 {tps} tok/s{prev, select, yes{,相比 {prevRate} 吞吐 +{prevUp}%} other{}}{next, select, yes{;继续加到 {nextRate} 吞吐仅 +{nextUp}% 而 TTFT +{nextTtftUp}%} other{}}。因此 {rate} 是最佳运行点{slo, select, yes{,且满足 SLO} other{}}。',
+  'benchmark.detail.specDigest': '配置版本',
   'benchmark.detail.modelFile': '模型文件',
   'benchmark.detail.kvCache': '扩展 KV 缓存',
   'benchmark.detail.cacheService': '缓存服务',

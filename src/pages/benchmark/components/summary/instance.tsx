@@ -29,6 +29,7 @@ const Instance: React.FC = () => {
     // that names what was measured — a route's targets and weights can be
     // edited, so "which route" is part of what the numbers mean.
     const routeName = snapshot?.route_name;
+    const specDigest = snapshot?.spec_digest;
     const endpointRole = (
       Object.values(snapshot?.instances || {}) as any[]
     ).find((member) => member?.name === detailData?.model_instance_name)?.role;
@@ -91,6 +92,21 @@ const Instance: React.FC = () => {
         label: intl.formatMessage({ id: 'benchmark.detail.modelFile' }),
         children: (
           <AutoTooltip ghost>{instanceData?.resolved_path || '-'}</AutoTooltip>
+        )
+      },
+      {
+        // Which generation of the spec produced these numbers. Shown short
+        // because nobody reads a hash — what it answers is "are these two
+        // reports about the same configuration", and the full value is one
+        // hover away for when that answer has to be exact.
+        key: '7',
+        label: intl.formatMessage({ id: 'benchmark.detail.specDigest' }),
+        children: specDigest ? (
+          <AutoTooltip ghost title={specDigest}>
+            {specDigest.slice(0, 12)}
+          </AutoTooltip>
+        ) : (
+          '-'
         )
       }
     ];

@@ -389,6 +389,7 @@ export default {
     'Оптимум: параллелизм {rate} — {pct}% пиковой пропускной способности ({tps} tok/s) при TTFT {ttft} мс{slo, select, yes{, в рамках SLO} other{}}.',
   'benchmark.detail.analysis.text':
     'Параллелизм {rate} обеспечивает {tps} tok/s{prev, select, yes{ — на {prevUp}% больше, чем {prevRate}} other{}}{next, select, yes{; переход к {nextRate} добавляет лишь {nextUp}% пропускной способности, но {nextTtftUp}% к TTFT} other{}}. Поэтому {rate} — оптимальная рабочая точка{slo, select, yes{, в рамках SLO} other{}}.',
+  'benchmark.detail.specDigest': 'Поколение конфигурации',
   'benchmark.detail.modelFile': 'Model File',
   'benchmark.detail.kvCache': 'Extended KV Cache',
   'benchmark.detail.cacheService': 'Cache Service',

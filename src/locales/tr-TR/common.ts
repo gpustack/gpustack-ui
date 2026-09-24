@@ -321,11 +321,11 @@ export default {
   'common.source.manage': 'Kaynakları Yönet',
   'common.source.type.builtin': 'Embedded',
   'common.source.type.builtin.desc':
-    'Yalnızca bu sürümle paketleneni sunar, ağ erişimi yoktur.',
+    'Yalnızca mevcut sürümle gelen içeriği kullanır, başka kaynak kullanmaz.',
   'common.source.type.url': 'URL',
   'common.source.type.url.desc':
     'Sunucu tarafından çekilir, kendini güncelleyebilir.',
-  'common.source.type.file': 'Yaml Dosyası',
+  'common.source.type.file': 'YAML Dosyası',
   'common.source.type.file.desc':
     'İçeriği doğrudan yapıştırın; hiçbir zaman kendini güncellemez.',
   'common.source.url': 'Kaynak URL',

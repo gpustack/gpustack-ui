@@ -173,7 +173,8 @@ interface SourceSlotFormProps {
  *
  * A URL is fetched server-side on every save, which makes Save the re-sync
  * action too; the refetch button is the cheaper variant that reuses what is
- * already stored, and is disabled while the form is dirty.
+ * already stored, and is disabled while an unsaved edit changes which source
+ * that is.
  */
 // Bumped per mount so reopening a slot never lands on the model it left.
 let openSequence = 0;
@@ -414,14 +415,13 @@ const SourceSlotForm: React.FC<SourceSlotFormProps> = ({
     setFileHasContent(false);
   };
 
-  // The form carries unsaved edits vs the persisted config. The refetch button
-  // acts on what is *stored*, so it is blocked while the form is dirty — Save is
-  // what applies an edit, and Save fetches on its own.
-  const isDirty = (): boolean => {
+  // Unsaved edits to *which* source serves. The refetch button acts on what is
+  // stored, so it is blocked while these differ — Save is what applies an edit,
+  // and Save fetches on its own. The cadence is left out: a manual refresh skips
+  // it server-side, so an unsaved change to it gives the button nothing to wait
+  // for.
+  const isSourceDirty = (): boolean => {
     if (remoteEnabled !== config.remote_enabled) {
-      return true;
-    }
-    if (formState.officialHours !== config.official.auto_update_hours) {
       return true;
     }
     const custom = config.custom;
@@ -435,19 +435,16 @@ const SourceSlotForm: React.FC<SourceSlotFormProps> = ({
       return true;
     }
     if (isUrlMode) {
-      return (
-        urlValue.trim() !== (custom.url || '') ||
-        formState.customHours !== (custom.auto_update_hours || 0)
-      );
+      return urlValue.trim() !== (custom.url || '');
     }
     return (formState.content || '') !== (custom.content || '');
   };
 
-  const dirty = isDirty();
+  const sourceDirty = isSourceDirty();
   // A stored URL of the admin's re-reads itself; the official slot runs one
-  // round. Stored inline content has nothing to fetch, and a kind whose
-  // official updates are off stays out of the round by design — offering the
-  // button there would lie. Nothing is refreshed at all while fallen back.
+  // round, whether or not its auto update is on — turning that off stops the
+  // schedule, not a refresh asked for by hand. Stored inline content has nothing
+  // to fetch. Nothing is refreshed at all while fallen back.
   const storedIsUrl = config.custom?.source_type === SourceTypeValueMap.URL;
   // With nothing configured there has to be an official slot to refresh; a kind
   // nothing publishes serves its packaged baseline, which no fetch can move.
@@ -456,14 +453,10 @@ const SourceSlotForm: React.FC<SourceSlotFormProps> = ({
   const showRefetch =
     remoteEnabled && !isFileMode && (config.custom ? storedIsUrl : published);
   // A failed read rules it out on its own: `config` is then the placeholder,
-  // whose cadence of 12 would otherwise offer a refetch of a slot nothing is
-  // known about — under a banner saying exactly that.
+  // whose empty `custom` would otherwise offer a refetch of an official slot
+  // nothing is known about — under a banner saying exactly that.
   const canRefetch =
-    !dirty &&
-    !loadFailed &&
-    (config.custom
-      ? storedIsUrl
-      : published && config.official.auto_update_hours > 0);
+    !sourceDirty && !loadFailed && (config.custom ? storedIsUrl : published);
   // A cadence belongs to something that gets re-read, and inline content never
   // is. While that branch is still empty the cadence in play is the
   // official one — true, but under a file editor it reads as if the file had an
@@ -583,12 +576,12 @@ const SourceSlotForm: React.FC<SourceSlotFormProps> = ({
     }
   };
 
-  // Acts on what is *stored*, so it is blocked while the form is dirty — Save is
-  // what applies an edit, and Save fetches on its own.
+  // Acts on what is *stored*, so it is blocked while the source on screen is not
+  // that — Save is what applies an edit, and Save fetches on its own.
   const refetchButton = (
     <Tooltip
       title={
-        dirty
+        sourceDirty
           ? intl.formatMessage({ id: 'common.source.sync.hint.dirty' })
           : undefined
       }
@@ -803,7 +796,9 @@ const SourceSlotForm: React.FC<SourceSlotFormProps> = ({
           ></AutoUpdateField>
         )}
 
-        {status?.updated_at && remoteEnabled && (
+        {/* Only where content arrives on its own: under the editor it would
+            date nothing but the last Save, or name a URL that is not on screen. */}
+        {status?.updated_at && remoteEnabled && !isFileMode && (
           <span className={styles.metaLine}>
             {intl.formatMessage(
               { id: 'common.source.lastUpdated' },

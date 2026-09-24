@@ -224,6 +224,11 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     form.setFieldsValue({
       backend_version: null, // don't set default version here, let the user select it
       backend_parameters: option?.default_backend_param || [],
+      // An image and its command belong to the backend they were entered for,
+      // and vLLM and SGLang both offer the field, so without this the image
+      // would follow along when switching between the two.
+      image_name: null,
+      run_command: null,
       // Switching away from vLLM clears it: carrying the declaration to, say,
       // SGLang would have the gateway forward a request the new image cannot
       // answer, where translating it would have worked.

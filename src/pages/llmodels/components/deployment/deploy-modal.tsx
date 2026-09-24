@@ -36,7 +36,12 @@ import SearchModel from '../model-source/search-model';
 import Separator from '../separator';
 import TitleWrapper from '../title-wrapper';
 
-const pickFieldsFromSpec = ['backend_version', 'backend_parameters', 'env'];
+const pickFieldsFromSpec = [
+  'backend_version',
+  'image_name',
+  'backend_parameters',
+  'env'
+];
 const dropFieldsFromForm = [
   'name',
   'huggingface_filename',
@@ -249,6 +254,9 @@ const AddModal: FC<AddModalProps> = (props) => {
             : defaultSpec.backend_parameters || [],
         backend_version:
           formValues.backend_version || defaultSpec.backend_version,
+        // A spec can pin an image instead of a version, for a runtime the
+        // backend version list does not carry yet.
+        image_name: formValues.image_name || defaultSpec.image_name,
         env: formValues.env || defaultSpec.env,
         categories: getCategory(item)
       });
@@ -277,6 +285,7 @@ const AddModal: FC<AddModalProps> = (props) => {
       model_scope_file_path: item.fakeName,
       backend_parameters: [],
       backend_version: null,
+      image_name: null,
       backend: modelInfo.backend,
       env: {
         ...modelInfo.env

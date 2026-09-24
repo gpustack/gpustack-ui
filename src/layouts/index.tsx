@@ -467,7 +467,7 @@ export default (props: any) => {
                 overflow: 'hidden'
               }}
             >
-              <PluginExtraFields name="GlobalLicenseBanner" />
+              <PluginExtraFields name="GlobalBanner" />
               <Exception
                 route={matchedRoute}
                 notFound={runtimeConfig?.notFound}

@@ -393,6 +393,13 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
           </IconWrapper>
         </DropdownActions>
       )}
+      {/* Generic right-header slot, between the org picker and the settings
+          gear. A plugin mounts whatever header-level control it owns here;
+          the host neither knows nor cares what that is, and renders nothing
+          when no plugin is registered. Distinct from `GlobalSettings`, which
+          is admin-gated — this slot carries no visibility rule of its own, so
+          what it hosts is free to be visible to every signed-in user. */}
+      <PluginExtraField name="HeaderExtra" />
       <PluginExtraField name="GlobalSettings" />
       <DropdownActions
         menu={{ ...userMenu }}

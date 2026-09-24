@@ -111,13 +111,17 @@ export const genDatasetSeed = () =>
   DATASET_SEED_MIN +
   Math.floor(Math.random() * (DATASET_SEED_MAX - DATASET_SEED_MIN + 1));
 
-// What the load is aimed at. `instance` measures an ENGINE (straight at a
-// member's port, nothing else in the path); `route` measures a DEPLOYMENT
+// What the load is aimed at. `model_instance` measures an ENGINE (straight at
+// a member's port, nothing else in the path); `route` measures a DEPLOYMENT
 // (through the entrance clients call, so a plain model's replicas are all of
 // them and a group is its router). Comparing PD against non-PD needs `route`
-// on both sides; tuning engine parameters wants `instance`.
+// on both sides; tuning engine parameters wants `model_instance`.
+//
+// Spelled out because "instance" is three things here -- a model instance, a
+// GPU instance type, a GPU Service instance -- and a load aimed at a machine
+// would be a different measurement again. The server's enum matches.
 export const TargetModeValueMap = {
-  Instance: 'instance',
+  Instance: 'model_instance',
   Route: 'route'
 };
 

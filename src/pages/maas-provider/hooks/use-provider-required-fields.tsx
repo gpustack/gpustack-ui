@@ -19,15 +19,13 @@ const useProviderRequiredFields = () => {
       return Promise.resolve();
     }
 
-    let url: URL;
-    try {
-      url = new URL(value);
-    } catch {
+    // `isAbsoluteHttpUrl` rejects non-absolute forms (`http:/foo`, `host:8080`)
+    // that `new URL` would happily normalize into valid HTTP URLs, mirroring
+    // the backend's `urlparse(...).netloc` check.
+    if (!isAbsoluteHttpUrl(value)) {
       return reject('providers.form.rules.absoluteHttpUrl');
     }
-    if (url.protocol !== 'http:' && url.protocol !== 'https:') {
-      return reject('providers.form.rules.absoluteHttpUrl');
-    }
+    const url = new URL(value);
     if (url.username || url.password) {
       return reject('providers.form.rules.claudeCustomUrl.credentials');
     }

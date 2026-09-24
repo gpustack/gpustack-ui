@@ -104,6 +104,15 @@ const useClusterColumns = (
 
   const setActionsItems = (row: ClusterListItem) => {
     return actionList.filter((item: any) => {
+      // Row-level predicate, same seam as the my-models card actions:
+      // an action whose applicability depends on more than the provider
+      // (a cluster option, a fetched state) answers for itself instead
+      // of the host carrying its rule. Contributed actions are untyped
+      // at this boundary, so a non-function `show` falls through to the
+      // provider rules below rather than throwing mid-render.
+      if (typeof item.show === 'function') {
+        return item.show(row);
+      }
       if (item.providers?.length) {
         return item.providers.includes(row.provider);
       }

@@ -316,10 +316,10 @@ export default {
   'common.source.manage': 'Управление источниками',
   'common.source.type.builtin': 'Embedded',
   'common.source.type.builtin.desc':
-    'Serves only what this release was packaged with, with no network access.',
+    'Uses only the content bundled with the current version, and no other source.',
   'common.source.type.url': 'URL',
   'common.source.type.url.desc': 'Fetched by the server, can auto-update.',
-  'common.source.type.file': 'Файл Yaml',
+  'common.source.type.file': 'Файл YAML',
   'common.source.type.file.desc':
     'Paste the content directly; never auto-updates.',
   'common.source.url': 'URL источника',

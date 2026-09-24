@@ -358,11 +358,24 @@ export default (props: any) => {
         }
       }}
     >
-      {/* Bridges antd's static-looking APIs (modal.confirm, message) into this
-          ConfigProvider. Without it a Modal.confirm renders with the default
-          algorithm and locale -- a light dialog with an untranslated "Cancel"
-          while the app is in dark mode. ``component={false}`` keeps it from
-          adding a DOM node that would change the layout.
+      {/* Supplies ConfigProvider-aware ``modal`` / ``message`` /
+          ``notification`` to any component that asks for them with
+          ``App.useApp()``. Without one, those render with the default algorithm
+          and locale -- a light dialog with an untranslated "Cancel" while the
+          app is in dark mode. ``component={false}`` keeps it from adding a DOM
+          node that would change the layout.
+
+          🔴 It does NOT reach the module-level statics. ``import { message }
+          from 'antd'`` renders in antd's own detached root whatever is mounted
+          here, and this comment used to say otherwise -- which is the likeliest
+          source of the ~41 files still importing them. A static toast in dark
+          mode is measurably broken, not merely off-theme: ``global.less``
+          colours its TEXT with a project variable declared on
+          ``html[data-theme='realDark']`` (inherited even by a detached
+          container) over a BACKGROUND from antd's cssVar (scoped to the
+          ConfigProvider container the static API never enters), so the pair
+          lands at ~2.0-2.3:1 against the 4.5:1 those same styles were measured
+          for. New code must take them from ``App.useApp()``.
 
           antd 6 turns cssVar on by default, and App warns whenever cssVar meets
           ``component={false}``: with no DOM node, its cssVar class has nothing to

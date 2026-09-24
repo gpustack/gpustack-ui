@@ -372,32 +372,57 @@ const RandomSettingsForm: React.FC<{
     revalidateStages();
   };
 
-  // Auto <-> Manual are two ways of producing the same thing (the stages), and the
-  // backend reads only one side per `auto_tune`. Clear the side being left so the
-  // saved row — and anything cloned from it — carries no values that never ran.
-  // Switching to Manual seeds one empty row so the table isn't just an Add button.
-  const handleStagesModeChange = (mode: 'auto' | 'manual') => {
-    if (mode === 'auto') {
-      form.setFieldsValue({
-        auto_tune: true,
-        stages: [],
-        lower_bound: AUTO_TUNE_DEFAULTS.lower_bound,
-        upper_bound: AUTO_TUNE_DEFAULTS.upper_bound,
-        max_points: AUTO_TUNE_DEFAULTS.max_points,
-        max_total_seconds: AUTO_TUNE_DEFAULTS.max_total_seconds
-      });
-      setStagesValidated(false);
-    } else {
-      form.setFieldsValue({
-        auto_tune: false,
-        lower_bound: null,
-        upper_bound: null,
-        max_points: null,
-        max_total_seconds: null,
-        stages: stages?.length ? stages : [{ rate: undefined }]
-      });
-    }
+  // Re-seeds the whole Stages card. Two things invalidate what it holds, and they
+  // are one decision rather than two:
+  //
+  // - The MODE. Auto <-> Manual are two ways of producing the same thing (the
+  //   stages), and the backend reads only one side per `auto_tune`. Clear the side
+  //   being left so the saved row — and anything cloned from it — carries no values
+  //   that never ran.
+  // - The AXIS (`load_type`). Every number in this card lives on that axis: the
+  //   bounds are labelled rate / concurrency accordingly, and so is each manual
+  //   row's `rate`. Carrying them across a switch is silent, since only the LABEL
+  //   changes — an 8192 req/s ceiling reads as an 8192-concurrent one and the run
+  //   measures something the user never asked for.
+  //
+  // Manual seeds one empty row so the table isn't just an Add button. The defaults
+  // are shared by both axes on purpose: they mirror benchmark-runner's own
+  // AutoTuneConfig (see AUTO_TUNE_DEFAULTS), and every one is a ceiling the search
+  // stops short of, so there is nothing axis-specific for the UI to fork.
+  const resetStageConfig = (autoTune: boolean) => {
+    form.setFieldsValue(
+      autoTune
+        ? {
+            auto_tune: true,
+            stages: [],
+            lower_bound: AUTO_TUNE_DEFAULTS.lower_bound,
+            upper_bound: AUTO_TUNE_DEFAULTS.upper_bound,
+            max_points: AUTO_TUNE_DEFAULTS.max_points,
+            max_total_seconds: AUTO_TUNE_DEFAULTS.max_total_seconds
+          }
+        : {
+            auto_tune: false,
+            lower_bound: null,
+            upper_bound: null,
+            max_points: null,
+            max_total_seconds: null,
+            stages: [{ rate: undefined }]
+          }
+    );
+    // The rows that failed a submit are gone either way, so neither half of that
+    // failure may outlive them onto the freshly seeded ones: the per-input red
+    // outline (`stagesValidated`) or the list's own error message. Switching MODE
+    // used to get the second one for free — the field unmounts — but switching
+    // AXIS leaves it mounted, so clear it explicitly.
+    setStagesValidated(false);
+    form.setFields([{ name: 'stages', errors: [] }]);
   };
+
+  const handleStagesModeChange = (mode: 'auto' | 'manual') =>
+    resetStageConfig(mode === 'auto');
+
+  // Switching the axis keeps the mode and re-seeds that mode's values.
+  const handleLoadTypeChange = () => resetStageConfig(effectiveAutoTune);
 
   // SLO targets: same controlled MetadataList pattern as the bucket / stage
   // lists. `slo_targets` is form-only — every mutation writes through to the 9
@@ -1043,9 +1068,12 @@ const RandomSettingsForm: React.FC<{
   const loadContent = (
     <>
       {/* Load Type (axis). Locked for named presets — the value then reads
-          "… (managed by profile)" to make the read-only nature explicit. */}
+          "… (managed by profile)" to make the read-only nature explicit. Changing
+          it re-seeds the Stages card below, whose every number is denominated in
+          the axis being left (see resetStageConfig). */}
       <Form.Item<FormData> name="load_type">
         <SealSelect
+          onChange={handleLoadTypeChange}
           disabled={disabled || presetLocked}
           label={intl.formatMessage({ id: 'benchmark.form.loadType' })}
           options={loadTypeOptions.map((o) => ({

@@ -7,7 +7,7 @@ import {
 import { useIntl } from '@umijs/max';
 import { Tabs } from 'antd';
 import { createStyles } from 'antd-style';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import SourceSlotForm from './slot-form';
 import type {
   SourceProbeKind,
@@ -25,6 +25,11 @@ const useStyles = createStyles(({ css }) => ({
     border-bottom: 1px solid var(--ant-color-split);
   `
 }));
+
+// A write answers once the source is stored, but the list behind the drawer
+// reads what the leader rebuilds from it afterwards — about a second later, more
+// on a slow server. Refetching at once would only read the list as it was.
+const LIST_REFETCH_DELAYS_MS = [1000, 3000];
 
 interface SourceConfigDrawerProps {
   open: boolean;
@@ -65,6 +70,12 @@ const SourceConfigDrawer: React.FC<SourceConfigDrawerProps> = ({
   // into it has to re-render once it exists, and a ref's `.current` does not
   // say when that is.
   const [footerEl, setFooterEl] = useState<HTMLDivElement | null>(null);
+  const listRefetchTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+  const cancelListRefetch = () => {
+    listRefetchTimers.current.forEach(clearTimeout);
+    listRefetchTimers.current = [];
+  };
 
   useEffect(() => {
     if (!open) {
@@ -75,11 +86,17 @@ const SourceConfigDrawer: React.FC<SourceConfigDrawerProps> = ({
     // the fetch is tied to open; loadProbe is recreated every render
   }, [open]);
 
+  useEffect(() => cancelListRefetch, []);
+
   // A tab saved: its merged content moved, so the probe and the list behind
-  // the drawer are both stale.
+  // the drawer are both stale. The probe reads the stored source and is current
+  // at once; the list is not (see `LIST_REFETCH_DELAYS_MS`).
   const handleSlotSaved = () => {
     loadProbe();
-    onSaved?.();
+    cancelListRefetch();
+    listRefetchTimers.current = LIST_REFETCH_DELAYS_MS.map((delay) =>
+      setTimeout(() => onSaved?.(), delay)
+    );
   };
 
   const renderSlot = (slot: SourceSlotConfig) => (

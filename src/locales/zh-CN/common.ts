@@ -306,10 +306,10 @@ export default {
   // Shared by the source config drawer (src/pages/_components/source-config)
   'common.source.manage': '管理来源',
   'common.source.type.builtin': '内嵌',
-  'common.source.type.builtin.desc': '只用随本版本打包的内容，不访问网络。',
+  'common.source.type.builtin.desc': '仅使用当前版本自带内容，不使用其他来源。',
   'common.source.type.url': 'URL',
   'common.source.type.url.desc': '由服务端定期拉取，可自动更新。',
-  'common.source.type.file': 'Yaml 文件',
+  'common.source.type.file': 'YAML 文件',
   'common.source.type.file.desc': '直接粘贴内容，不会自动更新。',
   'common.source.url': '来源 URL',
   'common.source.url.scheme': 'URL 必须以 http:// 或 https:// 开头',

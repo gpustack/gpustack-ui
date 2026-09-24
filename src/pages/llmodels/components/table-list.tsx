@@ -111,6 +111,40 @@ const getFormattedData = (record: any, extraData = {}) => ({
   }
 });
 
+// While scheduled scaling is on, `replicas` is the live count the scheduler
+// writes and `baseline_replicas` is the idle count the user actually declared;
+// the deploy form keeps the two equal (see `forms/index.tsx`). A list action
+// that moved only `replicas` left the baseline behind, so the next reconcile
+// drove the count straight back to it and the action looked like it had done
+// nothing at all.
+const getReplicasUpdate = (record: ListItem, replicas: number) => {
+  const schedule = record.scaling_schedule;
+  if (!schedule?.enabled) {
+    return { replicas };
+  }
+  return {
+    replicas,
+    scaling_schedule: { ...schedule, baseline_replicas: replicas }
+  };
+};
+
+// Start is only offered on a row already at `replicas: 0`, so the fallback is
+// what actually decides the count — the row's own value can never be anything
+// but the hardcoded 1. Under a schedule the baseline the user declared is the
+// better answer. A baseline of 0 is deliberately not one of those: stopping
+// from this list writes exactly that, and honouring it would make the next
+// start a no-op. Whether a zero baseline should mean something else is the
+// open question in gpustack/gpustack#6257.
+const getStartReplicas = (record: ListItem) => {
+  if (record.replicas) {
+    return record.replicas;
+  }
+  const baseline = record.scaling_schedule?.enabled
+    ? record.scaling_schedule.baseline_replicas
+    : null;
+  return baseline || 1;
+};
+
 const Models: React.FC<ModelsProps> = ({
   handleNameChange,
   handleSearch,
@@ -208,7 +242,9 @@ const Models: React.FC<ModelsProps> = ({
 
   const handleOnCell = useMemoizedFn(async (record: any, extra: any) => {
     try {
-      await updateModel(getFormattedData(record, { replicas: extra.newValue }));
+      await updateModel(
+        getFormattedData(record, getReplicasUpdate(record, extra.newValue))
+      );
       message.success(intl.formatMessage({ id: 'common.message.success' }));
       if (extra.newValue > extra.oldValue) {
         updateExpandedRowKeys([record.id, ...expandedRowKeys]);
@@ -229,11 +265,13 @@ const Models: React.FC<ModelsProps> = ({
   );
 
   const handleStartModel = async (row: ListItem) => {
-    await updateModel(getFormattedData(row, { replicas: row.replicas || 1 }));
+    await updateModel(
+      getFormattedData(row, getReplicasUpdate(row, getStartReplicas(row)))
+    );
   };
 
   const handleStopModel = async (row: ListItem) => {
-    await updateModel(getFormattedData(row, { replicas: 0 }));
+    await updateModel(getFormattedData(row, getReplicasUpdate(row, 0)));
     removeExpandedRowKey([row.id]);
   };
 

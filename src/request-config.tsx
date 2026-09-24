@@ -12,6 +12,31 @@ import {
 //  these APIs do not via the GPUSTACK_API_BASE_URL
 const NoBaseURLAPIs = ['/auth', '/v1', '/version', '/proxy', '/update'];
 
+/**
+ * Extracts a human-readable message from a FastAPI error `detail`.
+ * Handles the string form and the array form (objects with `msg`, or plain
+ * strings). For discriminated-union validation errors, Pydantic emits one
+ * `literal_error` per non-matching schema (its `loc` ends with the
+ * discriminator field, e.g. `type`); those are noise — skip them and prefer
+ * the first entry about the actual field that failed.
+ */
+const getFastApiDetailMessage = (detail: unknown): string | undefined => {
+  if (typeof detail === 'string') {
+    return detail || undefined;
+  }
+  if (!Array.isArray(detail) || detail.length === 0) {
+    return undefined;
+  }
+  if (detail.every((item) => typeof item === 'string')) {
+    return (detail[0] as string) || undefined;
+  }
+  const relevant = detail.find(
+    (item: any) =>
+      Array.isArray(item?.loc) && item.loc[item.loc.length - 1] !== 'type'
+  ) as any;
+  return (relevant ?? detail[0])?.msg;
+};
+
 export const requestConfig: RequestConfig = {
   errorConfig: {
     errorThrower: (res: any) => {
@@ -20,15 +45,12 @@ export const requestConfig: RequestConfig = {
     errorHandler: (error: any, opts: any) => {
       const { message: errorMessage, response } = error;
       // FastAPI validation errors arrive as `{ detail: [{ msg, ... }, ...] }`.
-      // The backend now guarantees a single relevant entry for provider
-      // submits, but only ever surface the first one as a readable message
-      // instead of dumping the whole array.
+      // `config` is validated as a discriminated union across all provider
+      // types, so the array also carries one `literal_error` per non-matching
+      // provider `type`. Skip those and surface the first relevant entry as a
+      // readable message instead of dumping the whole array.
       const detail = response?.data?.detail;
-      const firstDetailMsg = Array.isArray(detail)
-        ? detail[0]?.msg
-        : typeof detail === 'string'
-          ? detail
-          : undefined;
+      const firstDetailMsg = getFastApiDetailMessage(detail);
       const errMsg =
         firstDetailMsg ||
         response?.data?.error?.message ||

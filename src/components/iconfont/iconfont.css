@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 4613488 */
-  src: url('iconfont.woff2?t=1789971276266') format('woff2'),
-       url('iconfont.woff?t=1789971276266') format('woff'),
-       url('iconfont.ttf?t=1789971276266') format('truetype');
+  src: url('iconfont.woff2?t=1790596956404') format('woff2'),
+       url('iconfont.woff?t=1790596956404') format('woff'),
+       url('iconfont.ttf?t=1790596956404') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,26 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-notification-outlined:before {
+  content: "\e726";
+}
+
+.icon-mail-readed:before {
+  content: "\e723";
+}
+
+.icon-mail-outlined:before {
+  content: "\e724";
+}
+
+.icon-mail-filled:before {
+  content: "\e725";
+}
+
+.icon-bell-outlined:before {
+  content: "\e722";
 }
 
 .icon-display_settings:before {

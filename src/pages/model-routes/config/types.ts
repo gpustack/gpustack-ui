@@ -9,8 +9,8 @@ export interface RouteTargetFormItem {
   max_running_requests?: number | null;
 }
 
-// Server-derived lb_mode has three rendered states; null (pure round-robin
-// or no usable target) shows no badge (API spec §2.1).
+// Server-derived lb_mode has three named states. Null means pure round-robin
+// (shown as Policy) or no candidate targets (no routing mode to show).
 export type LbMode = 'weighted' | 'scoring' | 'invalid';
 
 export interface LbHealthConfig {

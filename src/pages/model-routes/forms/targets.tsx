@@ -127,7 +127,33 @@ const TargetsForm = forwardRef((props, ref) => {
     });
   };
 
+  const handleLbModeChange = (mode: string) => {
+    const shouldValidate =
+      validTriggered || form.getFieldError('targets').length > 0;
+    const targetList: FormData['targets'] = form.getFieldValue('targets') || [];
+    const nextTargets = targetList.map((target) => ({
+      ...target,
+      weight:
+        mode === LB_FORM_MODE.weighted && (target.weight ?? 0) <= 0
+          ? 100
+          : target.weight
+    }));
+
+    // The form store and the controlled target cards change in the same action.
+    form.setFieldsValue({ lb_policy_mode: mode, targets: nextTargets });
+    setDataList((prev) =>
+      prev.map((item, index) => ({
+        ...item,
+        weight: nextTargets[index]?.weight ?? null
+      }))
+    );
+    if (shouldValidate) {
+      form.validateFields(['targets']).catch(() => {});
+    }
+  };
+
   useImperativeHandle(ref, () => ({
+    handleLbModeChange,
     initFallbackValues: (values: { value: any[] }) => {
       setFallbackValues(values);
       fallbackCacheRef.current = values;
@@ -170,7 +196,7 @@ const TargetsForm = forwardRef((props, ref) => {
       weight: newDataList[index]?.weight || null,
       value: value
     };
-    form.validateFields(['targets']);
+    form.validateFields(['targets']).catch(() => {});
     setDataList(newDataList);
   };
 
@@ -296,7 +322,7 @@ const TargetsForm = forwardRef((props, ref) => {
       ...newDataList[index],
       weight: weight
     };
-    form.validateFields(['targets']);
+    form.validateFields(['targets']).catch(() => {});
     setDataList(newDataList);
   };
 
@@ -433,7 +459,8 @@ const TargetsForm = forwardRef((props, ref) => {
                 // weighted and unweighted targets yields lb_mode "invalid"
                 // and the gateway refuses to render the route.
                 if (
-                  !isSmartMode &&
+                  form.getFieldValue('lb_policy_mode') !==
+                    LB_FORM_MODE.policy &&
                   _.some(value, (target: any) => !(target?.weight > 0))
                 ) {
                   setValidTriggered(true);
@@ -611,8 +638,8 @@ const TargetsForm = forwardRef((props, ref) => {
                     {/* Weight only exists in weighted mode — round-robin and
                         policy hand every target to the gateway's picker with
                         weight 0, so the field has nothing to say there. The
-                        value survives in the form, so switching back restores
-                        what was typed. */}
+                        value survives in the form; switching back keeps positive
+                        weights and defaults zero or empty weights to 100. */}
                     {!isSmartMode && (
                       <Tooltip
                         title={intl.formatMessage({
@@ -627,7 +654,7 @@ const TargetsForm = forwardRef((props, ref) => {
                             min={0}
                             controls={false}
                             status={
-                              item.weight === null && validTriggered
+                              (item.weight ?? 0) <= 0 && validTriggered
                                 ? 'error'
                                 : 'success'
                             }
@@ -657,21 +684,25 @@ const TargetsForm = forwardRef((props, ref) => {
                   )}
                   {advancedKeys.has(index) && (
                     <div style={{ marginTop: 12 }}>
-                      <InputNumber
-                        label={intl.formatMessage({
-                          id: 'routes.form.target.maxRunningRequests'
-                        })}
-                        min={1}
-                        precision={0}
-                        controls={false}
-                        style={{ width: '100%' }}
-                        value={targets[index]?.max_running_requests ?? null}
-                        onChange={(value: any) =>
-                          handleAdvancedChange(index, {
-                            max_running_requests: (value as number) ?? null
-                          })
-                        }
-                      />
+                      {/* This optional field does not share target selection or
+                          weight errors from the enclosing Form.Item. */}
+                      <Form.Item noStyle validateStatus="">
+                        <InputNumber
+                          label={intl.formatMessage({
+                            id: 'routes.form.target.maxRunningRequests'
+                          })}
+                          min={1}
+                          precision={0}
+                          controls={false}
+                          style={{ width: '100%' }}
+                          value={targets[index]?.max_running_requests ?? null}
+                          onChange={(value: any) =>
+                            handleAdvancedChange(index, {
+                              max_running_requests: (value as number) ?? null
+                            })
+                          }
+                        />
+                      </Form.Item>
                     </div>
                   )}
                 </CollapseContainer>

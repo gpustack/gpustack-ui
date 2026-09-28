@@ -243,7 +243,11 @@ const useAccessColumns = ({
           // the value sits in `meta`. Fall back to `meta.lb_mode` there.
           const lbMode = record.lb_mode ?? record.meta?.lb_mode;
           if (!lbMode) {
-            return null;
+            // Plain round-robin has no server mode, but belongs to the form's
+            // Policy choice. Routes without targets still have no mode to show.
+            return record.targets > 0
+              ? intl.formatMessage({ id: 'routes.lb.mode.policy' })
+              : null;
           }
           const statusValue = LbModeStatusMap[lbMode];
           if (!statusValue) {

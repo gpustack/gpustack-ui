@@ -371,27 +371,27 @@ const InfluenceAdvanced = ({ name }: { name: (string | number)[] }) => {
 // Policy mode. Policy with no capability enabled is what used to be the
 // separate Round Robin choice — the gateway falls back to round-robin on
 // its own, so the mode did not need a tab of its own.
-const LbPolicySection = () => {
+const LbPolicySection = ({
+  onModeChange
+}: {
+  onModeChange: (mode: string) => void;
+}) => {
   const intl = useIntl();
   const { styles } = useStyles();
   const form = Form.useFormInstance<FormData>();
   const lbMode = Form.useWatch('lb_policy_mode', form);
   const isPolicy = lbMode === LB_FORM_MODE.policy;
 
-  // No weight pre-seeding here: the influence slider lives behind the
+  // No plugin influence pre-seeding here: the influence slider lives behind the
   // Advanced seam, and InfluenceAdvanced seeds `open` from
   // `getFieldValue(weight) != null`. A pre-seeded default of 1 would defeat
   // the seam on every create (the slider would mount already revealed). An
   // untouched weight stays undefined and the submit side (toServerWeight in
   // utils/lb-plugins) omits it so the server applies the plugin's built-in
   // default — only a stored weight (edit flow) auto-reveals the slider.
-  const handleModeChange = (mode: string) => {
-    form.setFieldValue('lb_policy_mode', mode);
-  };
-
   // First enable of Session Affinity with an empty key chain gets the
   // recommended defaults; an existing chain (edit flow) is never touched.
-  // (No weight seeding — see the note on handleModeChange above.)
+  // (No influence seeding — see the note above.)
   const handleSessionAffinitySwitch = (checked: boolean) => {
     if (!checked) {
       return;
@@ -427,7 +427,7 @@ const LbPolicySection = () => {
         <Segmented
           block
           value={lbMode}
-          onChange={(value) => handleModeChange(value as string)}
+          onChange={(value) => onModeChange(value as string)}
           options={[
             {
               value: LB_FORM_MODE.weighted,

@@ -155,6 +155,11 @@ const ScheduleTypeForm: React.FC<ScheduleTypeFormProps> = ({ namePrefix }) => {
       });
       form.setFieldValue(path('gpu_type_selector'), null);
     }
+    // The tab flip's natural onValuesChange is filtered out (manualGpuMode is
+    // in DO_NOT_TRIGGER_CHECK_COMPATIBILITY) and these setFieldValue writes
+    // never fire it anyway — notify evaluation with the committed values,
+    // matching the Auto branch in handleScheduleTypeChange.
+    onValuesChange?.({}, form.getFieldsValue());
   };
 
   const handleScheduleTypeChange = async (value: string) => {

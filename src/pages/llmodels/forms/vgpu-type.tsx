@@ -177,7 +177,8 @@ interface VGPUTypeFormProps {
 const VGPUTypeForm: React.FC<VGPUTypeFormProps> = ({ namePrefix }) => {
   const intl = useIntl();
   const { getRuleMessage } = useAppUtils();
-  const { action, realAction, initialValues } = useFormContext();
+  const { action, realAction, initialValues, onValuesChange } =
+    useFormContext();
   const form = Form.useFormInstance();
   const path = (...field: (string | number)[]) =>
     namePrefix ? [...namePrefix, ...field] : field;
@@ -464,6 +465,11 @@ const VGPUTypeForm: React.FC<VGPUTypeFormProps> = ({ namePrefix }) => {
         accelerator_partitioned_profile: null
       });
     }
+    // The single commit path for mode switches (Segmented onChange and the
+    // capability effect below). `setFieldValue` never fires antd's Form
+    // onValuesChange, so the seed would reach the submit but never the
+    // compatibility evaluation — notify with the committed values.
+    onValuesChange?.({}, form.getFieldsValue());
   };
 
   // Force the mode when the selected type offers exactly one, and clear back
@@ -530,6 +536,10 @@ const VGPUTypeForm: React.FC<VGPUTypeFormProps> = ({ namePrefix }) => {
         memory && nextDetail?.logical?.coresPercentageOvercommit ? 100 : memory,
       accelerator_partitioned_profile: null
     });
+    // The natural onValuesChange fired during the Select's collect carries the
+    // pre-commit selector; this notify carries the committed one and, via the
+    // request-id guard in handleDoEvalute, wins as the final verdict.
+    onValuesChange?.({}, form.getFieldsValue());
   };
 
   // Memory (VRAM) ratio changed — without cores overcommit the cores ratio is

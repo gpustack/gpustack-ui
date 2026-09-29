@@ -227,7 +227,7 @@ export default {
   'benchmark.detail.validity.notSaturated':
     '最佳工作点落在最高测得的点,且没有点过载——真实最优可能更高。调大搜索范围上界后重测。',
   'benchmark.detail.validity.budgetExhausted':
-    '吞吐尚未掉头,测量预算就用完了,所以最佳点只是最后测到的那个点。请调大{which, select, seconds{最大总时长} other{最大测试点数}}后重测。',
+    '搜索尚未完成就耗尽了测量预算。请调大{which, select, seconds{最大总时长} other{最大测试点数}}后重测。',
   'benchmark.detail.validity.saturatedAtLowerBound':
     '搜索范围的下界已高于该部署能承载的水平（约 {ceiling} req/s），范围内任何负载都不可能是最优点。请调小搜索范围下界后重测。',
   'benchmark.detail.validity.peakAtFloor':

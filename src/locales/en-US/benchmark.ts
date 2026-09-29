@@ -229,7 +229,7 @@ export default {
   'benchmark.detail.validity.notSaturated':
     'The best operating point is the highest measured point and nothing overloaded — the true optimum may be higher. Raise the search range (upper bound) and re-run.',
   'benchmark.detail.validity.budgetExhausted':
-    'The sweep ran out of its measurement budget before throughput turned over, so the best point is simply the last one measured. Raise {which, select, seconds{Max Total Duration} other{Max Test Points}} and re-run.',
+    'The search exhausted its measurement budget before it finished refining the result. Raise {which, select, seconds{Max Total Duration} other{Max Test Points}} and re-run.',
   'benchmark.detail.validity.saturatedAtLowerBound':
     'The search range starts above what this deployment can sustain (~{ceiling} req/s), so no load inside it can be the optimum. Lower the search range and re-run.',
   'benchmark.detail.validity.peakAtFloor':

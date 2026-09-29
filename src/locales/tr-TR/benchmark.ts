@@ -229,7 +229,7 @@ export default {
   'benchmark.detail.validity.notSaturated':
     'En iyi çalışma noktası en yüksek ölçülen noktadır ve hiçbir şey aşırı yüklenmedi — gerçek optimum daha yüksek olabilir. Arama aralığının üst sınırını artırıp yeniden çalıştırın.',
   'benchmark.detail.validity.budgetExhausted':
-    'Verim tepe noktasına ulaşmadan ölçüm bütçesi tükendi; bu nedenle en iyi nokta yalnızca ölçülen son noktadır. {which, select, seconds{Maksimum Toplam Süre} other{Maksimum Test Noktası}} değerini artırıp yeniden ölçün.',
+    'Sonuç araması tamamlanmadan ölçüm bütçesi tükendi. {which, select, seconds{Maksimum Toplam Süre} other{Maksimum Test Noktası}} değerini artırıp yeniden ölçün.',
   'benchmark.detail.validity.saturatedAtLowerBound':
     'Arama aralığının alt sınırı bu dağıtımın taşıyabileceğinin (~{ceiling} istek/s) üzerinde; aralık içindeki hiçbir yük optimum olamaz. Arama aralığını düşürüp yeniden çalıştırın.',
   'benchmark.detail.validity.peakAtFloor':

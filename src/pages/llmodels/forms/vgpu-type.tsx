@@ -568,6 +568,12 @@ const VGPUTypeForm: React.FC<VGPUTypeFormProps> = ({ namePrefix }) => {
         path('gpu_type_selector', 'accelerator_sliced_cores_percentage'),
         value
       );
+      // The natural onValuesChange from this edit already went out carrying
+      // the stale cores ratio (the Form.Item publishes before this mirror
+      // runs) and setFieldValue fires no second one — notify with the
+      // committed pair, which wins as the final verdict via the request-id
+      // guard, same as the Select commit above.
+      notifyCommittedSelector();
     }
   };
 

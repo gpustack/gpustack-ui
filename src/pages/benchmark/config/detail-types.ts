@@ -148,6 +148,8 @@ export interface BenchmarkDetail {
   // Test-coverage validity, computed on the backend (language-neutral codes +
   // params; the UI localizes them).
   validity?: {
+    // Manual stages have measurement findings but no search coverage verdict.
+    coverage_applicable?: boolean;
     // Absent while `in_progress`: mid-sweep there is no verdict to give.
     sufficient?: boolean;
     warnings?: { code: string; params?: Record<string, unknown> }[];

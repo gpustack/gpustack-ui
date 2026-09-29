@@ -152,6 +152,8 @@ export interface FormData {
   recommended_rate?: number;
   // Test-coverage validity (server-computed; language-neutral codes).
   validity?: {
+    // Manual stages have measurement findings but no search coverage verdict.
+    coverage_applicable?: boolean;
     // Absent while `in_progress`: mid-sweep there is no verdict to give.
     sufficient?: boolean;
     warnings?: { code: string; params?: Record<string, unknown> }[];

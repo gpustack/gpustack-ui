@@ -191,7 +191,7 @@ export default {
   'benchmark.table.avg': 'Avg',
   'benchmark.table.tailLatency': 'テールレイテンシ',
   'benchmark.table.columnSettings': 'Column Settings',
-  'benchmark.detail.summary.results': 'Test Results',
+  'benchmark.detail.summary.results': 'テスト結果',
   'benchmark.detail.summary.recommendation': '最適動作点',
   'benchmark.detail.summary.supporting': '詳細メトリクス',
   'benchmark.detail.summary.stages': 'ステージ別の結果',
@@ -228,7 +228,7 @@ export default {
   'benchmark.detail.validity.notSaturated':
     '最適動作点が最大の測定点で、過負荷も起きていません —— 真の最適値はさらに高い可能性があります。探索範囲(上限)を上げて再実行してください。',
   'benchmark.detail.validity.budgetExhausted':
-    'スループットが頭打ちになる前に測定予算を使い切ったため、最適点は単に最後に測定した点です。{which, select, seconds{最大総時間} other{最大テストポイント数}}を増やして再測定してください。',
+    '結果の探索が完了する前に測定予算を使い切りました。{which, select, seconds{最大総時間} other{最大テストポイント数}}を増やして再測定してください。',
   'benchmark.detail.validity.saturatedAtLowerBound':
     '探索範囲の下限がこのデプロイの処理能力（約 {ceiling} req/s）を超えているため、範囲内のどの負荷も最適値になりません。探索範囲を下げて再実行してください。',
   'benchmark.detail.validity.peakAtFloor':

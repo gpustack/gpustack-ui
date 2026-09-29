@@ -484,7 +484,7 @@ const useColumnSettings = (options: {
     {
       // Test coverage: green OK when the sweep explored enough; amber
       // "Insufficient" text with a tooltip listing the specific warnings
-      // otherwise; "-" when not yet computed.
+      // otherwise; "-" when not yet computed or not applicable.
       title: renderTitle(
         intl.formatMessage({ id: 'benchmark.table.coverage' })
       ),
@@ -495,7 +495,7 @@ const useColumnSettings = (options: {
         // running: green "OK" and amber "Insufficient" are both VERDICTS, and
         // mid-climb neither is earned. (The worker also withholds the coverage
         // codes from partial syncs, so an empty list here does not mean clean.)
-        if (!v || v.in_progress) {
+        if (!v || v.in_progress || v.coverage_applicable === false) {
           return (
             <span style={{ color: 'var(--ant-color-text-tertiary)' }}>-</span>
           );

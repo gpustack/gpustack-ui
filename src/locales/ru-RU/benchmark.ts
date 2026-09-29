@@ -193,7 +193,7 @@ export default {
   'benchmark.table.avg': 'Avg',
   'benchmark.table.tailLatency': 'Хвостовая задержка',
   'benchmark.table.columnSettings': 'Column Settings',
-  'benchmark.detail.summary.results': 'Test Results',
+  'benchmark.detail.summary.results': 'Результаты тестирования',
   'benchmark.detail.summary.recommendation': 'Оптимальная рабочая точка',
   'benchmark.detail.summary.supporting': 'Подробные метрики',
   'benchmark.detail.summary.stages': 'Результаты по этапам',
@@ -232,7 +232,7 @@ export default {
   'benchmark.detail.validity.notSaturated':
     'Оптимальная рабочая точка — самая высокая измеренная, и перегрузки не было — истинный оптимум может быть выше. Повысьте верхнюю границу диапазона поиска и перезапустите.',
   'benchmark.detail.validity.budgetExhausted':
-    'Бюджет измерений закончился до того, как пропускная способность пошла на спад, поэтому лучшая точка — это просто последняя измеренная. Увеличьте {which, select, seconds{максимальную общую длительность} other{максимальное число точек}} и повторите тест.',
+    'Бюджет измерений исчерпан до завершения поиска результата. Увеличьте {which, select, seconds{максимальную общую длительность} other{максимальное число точек}} и повторите тест.',
   'benchmark.detail.validity.saturatedAtLowerBound':
     'Нижняя граница диапазона поиска выше того, что выдерживает это развёртывание (~{ceiling} зап/с), поэтому оптимум не может лежать внутри диапазона. Понизьте диапазон и перезапустите.',
   'benchmark.detail.validity.peakAtFloor':

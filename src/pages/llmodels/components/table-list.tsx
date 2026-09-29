@@ -61,6 +61,8 @@ import useViewInstanceLogs from '../hooks/use-view-instance-logs';
 import LeftFilters from '../instance-view/left-filters';
 import DeployModal from './deployment/deploy-modal';
 import ImportYamlModal from './deployment/import-yaml-modal';
+import useModelRevisions from './deployment/revisions/hooks/use-model-revisions';
+import RevisionHistoryDrawer from './deployment/revisions/revision-history-drawer';
 import UpdateModelModal from './deployment/update-modal';
 import Instances from './instance/instances';
 import ViewLogsModal from './view-logs-modal';
@@ -174,6 +176,10 @@ const Models: React.FC<ModelsProps> = ({
   const [searchParams] = useSearchParams();
   const page = searchParams.get('page');
   const { saveScrollHeight, restoreScrollHeight } = useBodyScroll();
+  const revisionHistory = useModelRevisions(
+    () => handleSearch(),
+    restoreScrollHeight
+  );
   const {
     openEditModalStatus,
     openEditModal,
@@ -444,6 +450,10 @@ const Models: React.FC<ModelsProps> = ({
 
   const handleSelect = useMemoizedFn(async (val: any, row: ListItem) => {
     try {
+      if (val === 'history') {
+        saveScrollHeight();
+        revisionHistory.open(row);
+      }
       if (val === 'edit') {
         handleEdit(row, PageAction.EDIT);
       }
@@ -762,6 +772,10 @@ const Models: React.FC<ModelsProps> = ({
         onCancel={handleDeployModalCancel}
         onOk={handleCreateModel}
       ></DeployModal>
+      <RevisionHistoryDrawer
+        history={revisionHistory}
+        onClose={revisionHistory.close}
+      />
       <ImportYamlModal
         open={openImportModal}
         onCancel={() => setOpenImportModal(false)}

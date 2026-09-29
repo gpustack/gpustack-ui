@@ -1,14 +1,5 @@
-import jsYaml from 'js-yaml';
 import { DeploymentPlanEntry } from '../../config/types';
-
-// `lineWidth: -1` because a folded line is a diff artefact: the same value
-// would break differently on the two sides and read as an edit that is not
-// there. `noRefs` keeps a repeated block spelled out rather than turning into
-// a YAML anchor nobody wrote.
-const dump = (value: Record<string, any>): string =>
-  Object.keys(value || {}).length
-    ? jsYaml.dump(value, { lineWidth: -1, noRefs: true })
-    : '';
+import { dumpDeploymentConfig as dump } from '../../utils/deployment-yaml';
 
 // The deployment being replaced, which the editor shows read-only beside the
 // entry replacing it. Empty for a create — there is nothing to compare to.

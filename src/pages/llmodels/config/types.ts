@@ -1,4 +1,5 @@
 export interface ListItem {
+  revision_history_limit?: number;
   source: string;
   backend: string;
   categories?: string[];

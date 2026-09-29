@@ -48,5 +48,11 @@ export default {
     'Specifies the model version used in Triton Server.',
   'providers.form.tritonDomain.tips':
     'The domain used to send requests to the Triton Server deployment.',
-  'providers.form.awsRegion': 'AWS Region'
+  'providers.form.awsRegion': 'AWS Region',
+  'providers.form.systemoneEndpoint': 'Custom Base URL',
+  'providers.form.systemoneEndpoint.tips':
+    'Optional. The custom base URL of your Jev-compatible decision service, with no path suffix (e.g. http://jev.example.com:8010). Leave empty to use the TypeSafe managed service at https://api.typesafe.ai.',
+  'providers.form.decision': 'Decision',
+  'providers.form.decisionTest.tips':
+    'Send a decision round-trip to the service (validates the endpoint, token and decision path).'
 };

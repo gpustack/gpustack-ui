@@ -9,8 +9,6 @@ export default {
   'routes.form.target.advanced': 'Advanced',
   'routes.form.target.fallback': 'Fallback Route Target',
   'routes.form.target.weight': 'Weight',
-  'routes.form.target.moveUp': 'Move up',
-  'routes.form.target.moveDown': 'Move down',
   'routes.form.target.remove': 'Remove',
   'routes.form.target.model': 'Model',
   'routes.form.metadata.title': 'Metadata',
@@ -62,5 +60,37 @@ export default {
   'routes.lb.influence': 'Weight',
   'routes.lb.weight.mixed':
     'Weighted mode requires every target to have a weight greater than 0. To use policy routing, switch the LB mode.',
-  'routes.form.target.maxRunningRequests': 'Max Inflight Request per Instance'
+  'routes.form.target.maxRunningRequests': 'Max Inflight Request per Instance',
+  'routes.lb.systemone': 'Decision Service Routing',
+  'routes.lb.systemone.tips':
+    'Score targets by task difficulty: each request is sent (truncated) with a model-selection question to a Jev-compatible decision service, whose answer becomes a weighted vote. Decision failures, timeouts, or non-2xx responses fall back silently to the other plugins.',
+  'routes.lb.systemone.provider': 'Decision Service',
+  'routes.lb.systemone.provider.tips':
+    'Select a TypeSafe decision service provider.',
+  'routes.lb.systemone.provider.required': 'Please select a decision service',
+  'routes.lb.systemone.decisionModel': 'Decision Model',
+  'routes.lb.systemone.decisionModel.tips':
+    'Route-level decision model, read from the selected provider\u2019s cached engines; priority: this field > the provider\u2019s model > the service default.',
+  'routes.lb.systemone.decisionModel.required':
+    'Please select a decision model',
+  'routes.lb.systemone.instructions': 'Instructions',
+  'routes.lb.systemone.instructions.tips':
+    'Extra guidance for the model-selection question sent to the decision service.',
+  'routes.lb.systemone.instructions.required': 'Please enter the instructions',
+  'routes.lb.systemone.criteria': 'Model Criteria',
+  'routes.lb.systemone.criteria.add': 'Add criterion',
+  'routes.lb.systemone.criteria.tips':
+    'Model name → capability description: the basis the decision service uses to pick a model.',
+  'routes.lb.systemone.criteria.generate': 'Generate from targets',
+  'routes.lb.systemone.criteria.modelPlaceholder': 'Model name',
+  'routes.lb.systemone.criteria.descPlaceholder':
+    'Capability description, e.g. strongest reasoner / cheap and fast',
+  'routes.lb.systemone.criteria.required':
+    'At least one model criterion is required when smart routing is enabled',
+  'routes.lb.systemone.criteria.nameRequired':
+    'Please enter the model name for every criterion',
+  'routes.lb.systemone.criteria.valueRequired':
+    'Please fill in the description for every model criterion',
+  'routes.lb.systemone.criteria.duplicate':
+    'Model names in criteria must be unique'
 };

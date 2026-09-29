@@ -11,8 +11,12 @@ import { Button, Form, Tooltip } from 'antd';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import { useFormContext } from '../config/form-context';
+import { isDecisionServiceType } from '../config/providers';
 import { FormData, ProviderModel } from '../config/types';
-import { useTestProviderModel } from '../hooks/use-query-provider-models';
+import {
+  useTestDecisionModel,
+  useTestProviderModel
+} from '../hooks/use-query-provider-models';
 
 const SelectWrapper = styled.div`
   width: 100%;
@@ -53,8 +57,15 @@ const ModelItem: React.FC<ModelItemProps> = ({
   const intl = useIntl();
   const form = Form.useFormInstance<FormData>();
   const { runTestModel, loading: testLoading } = useTestProviderModel();
+  const { runTestDecisionModel, loading: decisionTestLoading } =
+    useTestDecisionModel();
   const { id, action, currentData, getCustomConfig } = useFormContext();
   const [openTip, setOpenTip] = React.useState(false);
+  // A decision service's models are decision engines: no category of their
+  // own to pick (fixed "decision") and nothing to "test" like an LLM.
+  const isSystemone = isDecisionServiceType(
+    Form.useWatch(['config', 'type'], form)
+  );
 
   const generateCurrentAPIKey = (currentAPIKey: string) => {
     if (
@@ -98,10 +109,45 @@ const ModelItem: React.FC<ModelItemProps> = ({
     });
   };
 
+  // Decision-service test (§13.2): one call to POST {endpoint}/v1/systemone
+  // via /test-decision-model — any 2xx validates endpoint + token + decision
+  // path. The saved-provider variant defaults the token to the first stored
+  // api_tokens and the config to the stored one, so only model_name rides
+  // along here.
+  const handleTestDecisionModel = async () => {
+    try {
+      const apiKey = generateCurrentAPIKey(
+        form.getFieldValue('api_key')
+      ) as string;
+      const res = await runTestDecisionModel({
+        id: generateID(),
+        data: {
+          model_name: item.name || undefined,
+          // The create-time test endpoint requires api_token to be present —
+          // send an explicit empty string for a tokenless service. On edit it
+          // is omitted so the backend falls back to the stored token.
+          api_token: apiKey || (action === PageAction.CREATE ? '' : undefined),
+          config: {
+            type: form.getFieldValue(['config', 'type']) || '',
+            endpoint: form.getFieldValue(['config', 'endpoint']) || undefined
+          }
+        }
+      });
+      onChange({
+        ...item,
+        accessible: res?.accessible
+      });
+    } catch {
+      // Error is handled by useRequest's onError callback
+    }
+  };
+
   const handleOnChange = (value: string, option: any) => {
     onChange({
       ...option,
-      name: value
+      name: value,
+      // Decision engines always carry the fixed "decision" category.
+      category: isSystemone ? 'decision' : option?.category
     });
   };
 
@@ -202,30 +248,52 @@ const ModelItem: React.FC<ModelItemProps> = ({
         </span>
       </Tooltip>
       <SealSelect
-        allowNull
-        value={item.category}
-        onChange={handleOnCategoryChange}
-        options={[
-          ...categoryOptions,
-          {
-            label: intl.formatMessage({ id: 'common.option.other' }),
-            value: null
-          }
-        ]}
+        // A decision service's models are all decision engines: the category
+        // cell shows a fixed read-only "Decision" value (server contract,
+        // never user-chosen) and takes no interaction.
+        disabled={isSystemone}
+        value={isSystemone ? 'decision' : item.category}
+        onChange={isSystemone ? undefined : handleOnCategoryChange}
+        options={
+          isSystemone
+            ? [
+                {
+                  label: intl.formatMessage({ id: 'providers.form.decision' }),
+                  value: 'decision'
+                }
+              ]
+            : [
+                ...categoryOptions,
+                {
+                  label: intl.formatMessage({ id: 'common.option.other' }),
+                  value: null
+                }
+              ]
+        }
         placeholder={intl.formatMessage({
           id: 'models.form.categories'
         })}
       ></SealSelect>
       <Tooltip
-        title={intl.formatMessage({ id: 'providers.form.model.test.tips' })}
+        title={intl.formatMessage({
+          id: isSystemone
+            ? 'providers.form.decisionTest.tips'
+            : 'providers.form.model.test.tips'
+        })}
       >
         <Button
           type="link"
           size="small"
-          onClick={handleTestModel}
-          disabled={item.category !== modelCategoriesMap.llm || !item.name}
+          // Same Test button as inference providers; for a decision service
+          // it fires a decision round-trip instead of an inference call.
+          onClick={isSystemone ? handleTestDecisionModel : handleTestModel}
+          disabled={
+            isSystemone
+              ? !item.name
+              : item.category !== modelCategoriesMap.llm || !item.name
+          }
         >
-          {testLoading ? (
+          {(isSystemone ? decisionTestLoading : testLoading) ? (
             <LoadingOutlined />
           ) : (
             intl.formatMessage({ id: 'providers.form.model.test' })

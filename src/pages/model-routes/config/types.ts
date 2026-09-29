@@ -60,12 +60,31 @@ export interface LeastLoadPluginConfig {
   weight?: number;
 }
 
+// `plugins["decision-service"]` section: route by task difficulty via a Jev
+// compatible decision service ("system-1"). providerId points to a
+// ModelProvider of type gpustack-lb-typesafe; absent = the managed
+// default service. weight maps to the wasm plugin's rankWeight (default 10).
+// criteria: model name -> capability description, the basis of the decision.
+export interface DecisionServicePluginConfig {
+  enabled?: boolean;
+  providerId?: number | null;
+  weight?: number;
+  // Optional route-level decision engine model override; priority:
+  // decisionModel > provider.model > omit (server/plugin default).
+  decisionModel?: string;
+  modelSelection?: {
+    instructions?: string;
+    criteria?: Record<string, string>;
+  };
+}
+
 // Route-level plugin namespace. A plugin key set to null means "delete the
 // plugin's config" on PUT; absent means "leave untouched".
 export interface RoutePlugins {
   lb?: LbPluginConfig | null;
   'session-affinity'?: SessionAffinityPluginConfig | null;
   'least-load'?: LeastLoadPluginConfig | null;
+  'decision-service'?: DecisionServicePluginConfig | null;
 }
 
 export interface FormData {

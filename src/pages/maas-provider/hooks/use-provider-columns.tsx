@@ -10,7 +10,10 @@ import { useMemo } from 'react';
 import ProviderLogo from '../components/provider-logo';
 import ProviderModels from '../components/provider-models';
 import { rowActionList } from '../config';
-import { maasProviderLabelMap } from '../config/providers';
+import {
+  isDecisionServiceType,
+  maasProviderLabelMap
+} from '../config/providers';
 import { MaasProviderItem, ProviderModel } from '../config/types';
 const useProviderColumns = (
   handleSelect: (val: string, record: MaasProviderItem) => void,
@@ -23,6 +26,11 @@ const useProviderColumns = (
     const setActionList = (record: MaasProviderItem) => {
       return rowActionList.filter((action) => {
         if (action.key === 'registerRoute') {
+          // A decision service is not an inference backend — its cached
+          // "models" are decision engines, never route targets.
+          if (isDecisionServiceType(record.config?.type)) {
+            return false;
+          }
           return record.models && record.models.length > 0;
         }
         return true;

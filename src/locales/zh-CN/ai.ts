@@ -30,6 +30,7 @@ export default {
   'ai.provider.stepfun': '阶跃星辰',
   'ai.provider.together-ai': 'Together AI',
   'ai.provider.triton': 'Triton',
+  'ai.provider.gpustack-lb-typesafe': 'TypeSafe 决策服务 (Jev)',
   'ai.provider.yi': '零一万物',
   'ai.provider.zhipuai': '智谱 AI'
 };

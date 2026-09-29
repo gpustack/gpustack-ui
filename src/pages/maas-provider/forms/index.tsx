@@ -101,7 +101,11 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
     const apiTokens = values.api_tokens?.filter?.(
       (item) => item && item.trim() !== ''
     );
-    const apiTokenList = _.concat([], values.api_key, apiTokens || []);
+    // A decision service's API key is optional — drop empty values instead of
+    // serializing a bogus `{ input: '' }` token.
+    const apiTokenList = _.concat([], values.api_key, apiTokens || []).filter(
+      (item: string) => item && item.trim() !== ''
+    );
     if (action === PageAction.CREATE) {
       return apiTokenList.map((item: string) => ({ input: item }));
     }
@@ -141,14 +145,21 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
   };
 
   const handleOnFinish = (values: FormData) => {
+    const config = {
+      ...normalizeConfig(values.config),
+      ...yaml2Json(advanceRef.current?.getYamlValue() || '')
+    };
+    // Note: no config.model fallback here — custom_config YAML already
+    // round-trips it, and resurrecting the stored value would override an
+    // explicit YAML removal.
     const data = {
       ..._.omit(values, ['api_key']),
       api_tokens: formatAPIKeys(values),
-      config: {
-        ...normalizeConfig(values.config),
-        ...yaml2Json(advanceRef.current?.getYamlValue() || '')
-      },
-      models: _.uniqBy(values.models, 'name'),
+      config,
+      // For a decision-service provider this list is the decision engine
+      // cache (category "decision") — it may legitimately be empty before the
+      // first fetch.
+      models: _.uniqBy(values.models || [], 'name'),
       clone_from_id: action === PageAction.COPY ? currentData?.id : undefined
     };
     onFinish(data);
@@ -254,6 +265,9 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
             accordion={false}
             onChange={handleOnCollapseChange}
             items={[
+              // For a decision-service provider this list is the cache of the
+              // decision engine models fetched via the usual「拉取模型」
+              // interaction; every entry carries category "decision".
               {
                 key: TABKeysMap.SUPPORTEDMODELS,
                 label: intl.formatMessage({ id: 'providers.table.models' }),

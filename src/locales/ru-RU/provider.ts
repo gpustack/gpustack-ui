@@ -48,5 +48,11 @@ export default {
     'Specifies the model version used in Triton Server.',
   'providers.form.tritonDomain.tips':
     'The domain used to send requests to the Triton Server deployment.',
-  'providers.form.awsRegion': 'AWS Region'
+  'providers.form.awsRegion': 'AWS Region',
+  'providers.form.systemoneEndpoint': 'Пользовательский базовый URL',
+  'providers.form.systemoneEndpoint.tips':
+    'Необязательно. Пользовательский базовый URL Jev-совместимого сервиса без суффикса пути (например, http://jev.example.com:8010). Если оставить пустым, используется управляемый сервис TypeSafe https://api.typesafe.ai.',
+  'providers.form.decision': 'Решение',
+  'providers.form.decisionTest.tips':
+    'Отправляет один решающий вызов сервису (проверяет адрес, токен и путь принятия решений).'
 };

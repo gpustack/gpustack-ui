@@ -30,6 +30,7 @@ export default {
   'ai.provider.stepfun': 'StepFun',
   'ai.provider.together-ai': 'TogetherAI',
   'ai.provider.triton': 'Triton',
+  'ai.provider.gpustack-lb-typesafe': 'TypeSafe 意思決定サービス (Jev)',
   'ai.provider.yi': 'Yi',
   'ai.provider.zhipuai': 'ZhipuAI'
 };

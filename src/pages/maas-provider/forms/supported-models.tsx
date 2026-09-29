@@ -5,6 +5,7 @@ import { Form } from 'antd';
 import _ from 'lodash';
 import { useRef } from 'react';
 import { useFormContext } from '../config/form-context';
+import { isDecisionServiceType } from '../config/providers';
 import { FormData, ProviderModel } from '../config/types';
 import { useQueryProviderModels } from '../hooks/use-query-provider-models';
 import ModelItem from './model-item';
@@ -19,6 +20,8 @@ const SupportedModels = () => {
   } = useQueryProviderModels();
   const form = Form.useFormInstance<FormData>();
   const modelList = Form.useWatch('models', form) || [];
+  const configType = Form.useWatch(['config', 'type'], form);
+  const isSystemone = isDecisionServiceType(configType);
   const prevConfigRef = useRef<{
     type: string;
     api_key: string;
@@ -48,9 +51,11 @@ const SupportedModels = () => {
     api_key: string;
     [key: string]: any;
   }) => {
+    // A decision service may legitimately run tokenless (self-hosted
+    // endpoints without auth), so only require a truthy key otherwise.
     return (
       !_.isEqual(current, prevConfigRef.current) &&
-      current.api_key &&
+      (current.api_key || isSystemone) &&
       current.type
     );
   };
@@ -110,7 +115,13 @@ const SupportedModels = () => {
 
   const onAdd = () => {
     const newList = [...modelList];
-    newList.push({ name: '', category: undefined, accessible: null });
+    // A decision service's models are all decision engines — the category is
+    // fixed "decision" (server contract), never user-chosen.
+    newList.push({
+      name: '',
+      category: isSystemone ? 'decision' : undefined,
+      accessible: null
+    });
     updateModelList(newList);
   };
 
@@ -136,6 +147,11 @@ const SupportedModels = () => {
           {
             required: true,
             validator: async (_, value) => {
+              // For a decision-service provider the list is a cache — it is
+              // legitimately empty until the first「拉取模型」.
+              if (isSystemone) {
+                return Promise.resolve();
+              }
               if (!value || value.length === 0) {
                 return Promise.reject(
                   new Error(

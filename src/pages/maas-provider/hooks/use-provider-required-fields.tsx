@@ -35,6 +35,19 @@ const useProviderRequiredFields = () => {
     return Promise.resolve();
   };
 
+  // Generic endpoint validator (no Claude-specific messages): an absolute
+  // http(s) URL. Empty is valid — the field is optional.
+  const validateHttpUrl = async (_: any, value: string) => {
+    if (!value || isAbsoluteHttpUrl(value)) {
+      return Promise.resolve();
+    }
+    return Promise.reject(
+      new Error(
+        intl.formatMessage({ id: 'providers.form.rules.absoluteHttpUrl' })
+      )
+    );
+  };
+
   // openaiCustomUrl carries the extra requirement that claudeCustomUrl does not:
   // the backend appends `/models` and `/chat/completions` to its path, so an
   // address without one (`http://my-openai.com`) is rejected as invalid.
@@ -207,6 +220,35 @@ const useProviderRequiredFields = () => {
           {
             required: true,
             message: getRuleMessage('input', 'providers.form.targetLang')
+          }
+        ]
+      }
+    ],
+    [ProviderEnum.TYPESAFE]: [
+      {
+        type: 'Input',
+        name: 'endpoint',
+        placeholder: 'https://api.typesafe.ai',
+        // Optional custom base url (single-type design): empty means the
+        // TypeSafe managed default endpoint — the backend falls back for
+        // both model discovery and the decision test, so the form does not
+        // force a value.
+        required: false,
+        label: {
+          text: 'providers.form.systemoneEndpoint',
+          locale: true
+        },
+        // The optional/managed-default explanation rides the label's "(?)"
+        // tooltip (like openaiCustomUrl), not an `extra` hint line below.
+        description: {
+          text: 'providers.form.systemoneEndpoint.tips',
+          locale: true
+        },
+        rules: [
+          {
+            // Generic URL validation — TypeSafe decision service is not Claude, so the
+            // Claude-specific credentials/query messages do not apply here.
+            validator: validateHttpUrl
           }
         ]
       }

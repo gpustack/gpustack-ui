@@ -28,6 +28,7 @@ export enum ProviderEnum {
   QWEN = 'qwen',
   SPARK = 'spark',
   STEPFUN = 'stepfun',
+  TYPESAFE = 'gpustack-lb-typesafe',
   TOGETHERAI = 'together-ai',
   TRITON = 'triton',
   YI = 'yi',
@@ -64,6 +65,7 @@ export const ProviderI18nKeyMap: Record<ProviderEnum, string> = {
   [ProviderEnum.QWEN]: 'ai.provider.qwen',
   [ProviderEnum.SPARK]: 'ai.provider.spark',
   [ProviderEnum.STEPFUN]: 'ai.provider.stepfun',
+  [ProviderEnum.TYPESAFE]: 'ai.provider.gpustack-lb-typesafe',
   [ProviderEnum.TOGETHERAI]: 'ai.provider.together-ai',
   [ProviderEnum.TRITON]: 'ai.provider.triton',
   [ProviderEnum.YI]: 'ai.provider.yi',
@@ -71,8 +73,17 @@ export const ProviderI18nKeyMap: Record<ProviderEnum, string> = {
 };
 
 export const ProviderDescriptionMap: Record<ProviderEnum, string> = {
-  [ProviderEnum.QWEN]: 'qwen, bailian, ali,alicloud,百炼, 阿里, 阿里云百炼'
+  [ProviderEnum.QWEN]: 'qwen, bailian, ali,alicloud,百炼, 阿里, 阿里云百炼',
+  [ProviderEnum.TYPESAFE]:
+    'systemone, jev, typesafe, decision service, system-1'
 } as Record<ProviderEnum, string>;
+
+// The single decision-service provider type (single-type design): a custom
+// base url is optional — empty means the TypeSafe managed default endpoint.
+// It serves decision engines, not inference.
+export const isDecisionServiceType = (
+  type?: unknown
+): type is ProviderEnum.TYPESAFE => type === ProviderEnum.TYPESAFE;
 
 // generate provider list: {label: string;value:string}[]
 export const maasProviderOptions = Object.entries(ProviderEnum).map(

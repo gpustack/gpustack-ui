@@ -9,8 +9,6 @@ export default {
   'routes.form.target.advanced': '詳細',
   'routes.form.target.fallback': 'Fallback Route Target',
   'routes.form.target.weight': '重み',
-  'routes.form.target.moveUp': '上へ移動',
-  'routes.form.target.moveDown': '下へ移動',
   'routes.form.target.remove': '削除',
   'routes.form.target.model': 'Model',
   'routes.form.metadata.title': 'Metadata',
@@ -60,5 +58,36 @@ export default {
   'routes.lb.weight.mixed':
     '重み付きモードではすべてのターゲットに 0 超の重みが必要です。ポリシールーティングを使用する場合は LB モードを切り替えてください。',
   'routes.form.target.maxRunningRequests':
-    'インスタンスあたりの最大インフライトリクエスト数'
+    'インスタンスあたりの最大インフライトリクエスト数',
+  'routes.lb.systemone': '意思決定サービスルーティング',
+  'routes.lb.systemone.tips':
+    'タスクの難易度でターゲットをスコアリングします。各リクエスト(切り詰め後)はモデル選択の質問とともに Jev 互換意思決定サービスへ送られ、その回答が加重投票になります。意思決定の失敗、タイムアウト、または非 2xx 応答時は他のプラグインへサイレントにフォールバックします。',
+  'routes.lb.systemone.provider': '意思決定サービス',
+  'routes.lb.systemone.provider.tips':
+    'TypeSafe 意思決定サービスプロバイダーを選択します。',
+  'routes.lb.systemone.provider.required': '意思決定サービスを選択してください',
+  'routes.lb.systemone.decisionModel': '意思決定モデル',
+  'routes.lb.systemone.decisionModel.tips':
+    'ルートレベルの意思決定モデル。選択したプロバイダーにキャッシュされたエンジンから選択します。優先度: この項目 > プロバイダーのモデル > サービスのデフォルト。',
+  'routes.lb.systemone.decisionModel.required':
+    '意思決定モデルを選択してください',
+  'routes.lb.systemone.instructions': '指示',
+  'routes.lb.systemone.instructions.tips':
+    '意思決定サービスに送るモデル選択の質問への追加ガイダンスです。',
+  'routes.lb.systemone.instructions.required': '指示を入力してください',
+  'routes.lb.systemone.criteria': 'モデル評価基準',
+  'routes.lb.systemone.criteria.add': '評価基準を追加',
+  'routes.lb.systemone.criteria.tips':
+    'モデル名 → 能力の説明:意思決定サービスが各リクエストに適したモデルを選ぶための根拠です。',
+  'routes.lb.systemone.criteria.generate': 'ターゲットから生成',
+  'routes.lb.systemone.criteria.modelPlaceholder': 'モデル名',
+  'routes.lb.systemone.criteria.descPlaceholder':
+    '能力の説明(例: 最強の推論 / 安くて高速)',
+  'routes.lb.systemone.criteria.required':
+    'スマートルーティングを有効にする場合は評価基準を少なくとも 1 つ設定してください',
+  'routes.lb.systemone.criteria.nameRequired':
+    'すべての評価基準にモデル名を入力してください',
+  'routes.lb.systemone.criteria.valueRequired':
+    'すべての評価基準に説明を入力してください',
+  'routes.lb.systemone.criteria.duplicate': '評価基準のモデル名は重複できません'
 };

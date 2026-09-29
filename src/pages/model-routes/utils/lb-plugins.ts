@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import { SESSION_KEY_SOURCE } from '../config';
 import {
+  DecisionServicePluginConfig,
   RoutePlugins,
   SessionAffinityPluginConfig,
   SessionKeyItem
@@ -12,6 +13,31 @@ export interface SessionKeyFormItem {
   type: string;
   key: string;
 }
+
+// criteria form shape (rows, like session keys): { name, description }.
+// Server shape: a plain map model name -> capability description.
+export interface CriteriaFormItem {
+  name: string;
+  description: string;
+}
+
+export const toFormCriteria = (
+  criteria?: Record<string, string>
+): CriteriaFormItem[] =>
+  Object.entries(criteria || {}).map(([name, description]) => ({
+    name,
+    description: description || ''
+  }));
+
+export const toServerCriteria = (
+  items?: CriteriaFormItem[]
+): Record<string, string> =>
+  (items || [])
+    .filter((item) => item?.name?.trim())
+    .reduce((acc: Record<string, string>, item) => {
+      acc[item.name.trim()] = (item.description || '').trim();
+      return acc;
+    }, {});
 
 export const toFormSessionKeys = (
   keys?: SessionKeyItem[]
@@ -50,6 +76,19 @@ export const toFormPlugins = (plugins?: RoutePlugins | null) => {
   }
   if (plugins['least-load']) {
     formPlugins['least-load'] = { ...plugins['least-load'] };
+  }
+  if (plugins['decision-service']) {
+    // criteria is edited as rows; the server map is converted to row form.
+    const systemone = _.cloneDeep(
+      plugins['decision-service']
+    ) as DecisionServicePluginConfig & {
+      modelSelection?: any;
+    };
+    systemone.modelSelection = {
+      ...systemone.modelSelection,
+      criteria: toFormCriteria(systemone.modelSelection?.criteria)
+    };
+    formPlugins['decision-service'] = systemone;
   }
   return formPlugins;
 };
@@ -126,6 +165,41 @@ export const buildPluginsPayload = (
     }
   } else if (llOriginal && llOriginal.enabled !== false) {
     payload['least-load'] = null;
+  }
+
+  // systemone. Mirrors the server's 422 rules: `modelSelection` without a
+  // non-empty `criteria` is a config error, so an enabled card with no usable
+  // criteria is treated as not configured (and deletes the stored config).
+  const soForm = formPlugins?.['decision-service'] as
+    | (DecisionServicePluginConfig & { modelSelection?: any })
+    | undefined;
+  const soOriginal = originalPlugins?.['decision-service'];
+  const criteria = _.pickBy(
+    toServerCriteria(soForm?.modelSelection?.criteria),
+    (v: string) => v !== ''
+  );
+  if (soForm?.enabled && !_.isEmpty(criteria)) {
+    const serverConfig: any = omitEmpty({
+      enabled: true,
+      providerId: soForm.providerId ?? null,
+      // Not the (0, 2] influence clamp: this is the wasm rankWeight, bounded
+      // (0, 20] per the current UI contract, the vote's strength in the
+      // finisher's weighted sum. Absent = the plugin's built-in default of 10.
+      weight:
+        soForm.weight != null && soForm.weight > 0
+          ? Math.min(20, Math.round(soForm.weight))
+          : null,
+      decisionModel: soForm.decisionModel?.trim() || null,
+      modelSelection: omitEmpty({
+        instructions: soForm.modelSelection?.instructions?.trim() || null,
+        criteria
+      })
+    });
+    if (!_.isEqual(serverConfig, soOriginal)) {
+      payload['decision-service'] = serverConfig;
+    }
+  } else if (soOriginal && soOriginal.enabled !== false) {
+    payload['decision-service'] = null;
   }
 
   return _.isEmpty(payload) ? undefined : payload;

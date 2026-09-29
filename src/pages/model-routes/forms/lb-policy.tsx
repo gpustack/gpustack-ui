@@ -1,5 +1,14 @@
+import { queryMaasProviders } from '@/pages/maas-provider/apis';
+import { isDecisionServiceType } from '@/pages/maas-provider/config/providers';
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import { IconFont, MetadataList, Slider } from '@gpustack/core-ui';
+import {
+  AutoComplete,
+  Select as CoreSelect,
+  IconFont,
+  MetadataList,
+  Slider,
+  Textarea
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import {
   Button,
@@ -12,10 +21,10 @@ import {
   Tooltip
 } from 'antd';
 import { createStyles } from 'antd-style';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { LB_FORM_MODE, SESSION_KEY_SOURCE } from '../config';
 import { FormData } from '../config/types';
-import { SessionKeyFormItem } from '../utils/lb-plugins';
+import { CriteriaFormItem, SessionKeyFormItem } from '../utils/lb-plugins';
 
 // Opt-in plugin card, mirroring the benchmark form's Data Distribution
 // section: bordered rounded panel, title with a "?" help tooltip on the left
@@ -218,6 +227,367 @@ const SessionKeysEditor = ({ disabled }: { disabled: boolean }) => {
   );
 };
 
+// The systemone (Jev decision service) plugin card body: decision-service
+// provider select, decision engine model, instructions and the criteria list
+// (model name -> capability description, edited as rows like session keys,
+// with a skeleton generator fed by the route's targets), plus the optional
+// decision weight (wasm rankWeight, default 10).
+const SYSTEMONE_CRITERIA_PATH = [
+  'plugins',
+  'decision-service',
+  'modelSelection',
+  'criteria'
+];
+
+// Label + "(?)" tooltip: the field's explanation lives on the label, not as
+// an `extra` hint line, per the systemone card's compact layout.
+const LabelWithHelp = ({
+  labelId,
+  tipsId
+}: {
+  labelId: string;
+  tipsId: string;
+}) => {
+  const intl = useIntl();
+  return (
+    <span>
+      {intl.formatMessage({ id: labelId })}
+      <Tooltip title={intl.formatMessage({ id: tipsId })}>
+        <QuestionCircleOutlined
+          style={{
+            marginLeft: 4,
+            fontSize: 12,
+            color: 'var(--ant-color-text-tertiary)',
+            cursor: 'help'
+          }}
+        />
+      </Tooltip>
+    </span>
+  );
+};
+
+const SystemoneEditor = ({
+  disabled,
+  getTargetModelNames
+}: {
+  disabled: boolean;
+  getTargetModelNames: () => string[];
+}) => {
+  const intl = useIntl();
+  const form = Form.useFormInstance<FormData>();
+  const enabled = Form.useWatch(
+    ['plugins', 'decision-service', 'enabled'],
+    form
+  );
+  const providerId = Form.useWatch(
+    ['plugins', 'decision-service', 'providerId'],
+    form
+  );
+  // Decision-service provider items (single type gpustack-lb-typesafe — an
+  // empty custom base url means the TypeSafe managed default): the
+  // decisionModel dropdown reads the engines cached in the selected
+  // provider's models list (no live fetch — an intranet endpoint is
+  // unreachable from the browser anyway).
+  const [providers, setProviders] = useState<any[]>([]);
+  const criteria: CriteriaFormItem[] =
+    Form.useWatch(SYSTEMONE_CRITERIA_PATH as any, form) || [];
+
+  const providerOptions = providers.map((item) => ({
+    label: item.name,
+    value: item.id
+  }));
+  const decisionModelOptions = (
+    providers.find((item) => item.id === providerId)?.models || []
+  )
+    .filter((model: any) => model?.name)
+    .map((model: any) => ({ label: model.name, value: model.name }));
+
+  // Fetch the decision-service provider options when the form opens (this
+  // editor mounts with the route form; the list is small and static).
+  useEffect(() => {
+    let cancelled = false;
+    queryMaasProviders({ page: -1 })
+      .then((res) => {
+        if (cancelled) {
+          return;
+        }
+        setProviders(
+          (res?.items || []).filter((item: any) =>
+            isDecisionServiceType(item.config?.type)
+          )
+        );
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const updateCriteria = (items: CriteriaFormItem[]) => {
+    form.setFieldValue(SYSTEMONE_CRITERIA_PATH as any, items);
+    if (form.getFieldError(SYSTEMONE_CRITERIA_PATH as any).length) {
+      form.validateFields([SYSTEMONE_CRITERIA_PATH as any]).catch(() => {});
+    }
+  };
+
+  // Regenerate the criteria skeleton from the route's targets, keeping the
+  // descriptions already entered for rows that survive. Manual rows not
+  // matching any target are dropped — the skeleton IS the current target
+  // set (the server treats unmatched keys as inert anyway).
+  const handleGenerateCriteria = () => {
+    const names = getTargetModelNames?.() || [];
+    updateCriteria(
+      names.map((name) => ({
+        name,
+        description:
+          criteria.find((item) => item.name === name)?.description || ''
+      }))
+    );
+  };
+
+  // Required only while the card is enabled (disabled = the card sits in
+  // weighted LB mode, where nothing is editable).
+  const requiredWhenEnabled = (messageId: string) => [
+    {
+      validator(_rule: any, value: any) {
+        if (!enabled || disabled) {
+          return Promise.resolve();
+        }
+        if (value == null || value === '') {
+          return Promise.reject(
+            new Error(intl.formatMessage({ id: messageId }))
+          );
+        }
+        return Promise.resolve();
+      }
+    }
+  ];
+
+  return (
+    <>
+      <Form.Item
+        name={['plugins', 'decision-service', 'providerId']}
+        rules={requiredWhenEnabled('routes.lb.systemone.provider.required')}
+      >
+        <CoreSelect
+          allowClear
+          options={providerOptions}
+          onChange={() => {
+            // The decision engine must exist in the newly selected
+            // provider's cache — a stale alias would pass required
+            // validation but render the route rule inert.
+            form.setFieldValue(
+              ['plugins', 'decision-service', 'decisionModel'],
+              undefined
+            );
+          }}
+          label={
+            <LabelWithHelp
+              labelId="routes.lb.systemone.provider"
+              tipsId="routes.lb.systemone.provider.tips"
+            />
+          }
+        />
+      </Form.Item>
+      {/* The backend allows omitting decisionModel — the provider's config
+          or the service's own default engine is used then. Optional here,
+          and an empty value is not sent on PUT (see buildPluginsPayload). */}
+      <Form.Item name={['plugins', 'decision-service', 'decisionModel']}>
+        <AutoComplete
+          options={decisionModelOptions}
+          allowClear
+          label={
+            <LabelWithHelp
+              labelId="routes.lb.systemone.decisionModel"
+              tipsId="routes.lb.systemone.decisionModel.tips"
+            />
+          }
+        />
+      </Form.Item>
+      {/* The backend schema treats instructions as optional — a valid
+          section may contain only criteria, so no required rule here. */}
+      <Form.Item
+        name={['plugins', 'decision-service', 'modelSelection', 'instructions']}
+      >
+        <Textarea
+          scaleSize
+          label={
+            <LabelWithHelp
+              labelId="routes.lb.systemone.instructions"
+              tipsId="routes.lb.systemone.instructions.tips"
+            />
+          }
+        />
+      </Form.Item>
+      <Form.Item
+        name={SYSTEMONE_CRITERIA_PATH}
+        hidden
+        noStyle
+        rules={[
+          {
+            validator(rule, value) {
+              if (!enabled || disabled) {
+                return Promise.resolve();
+              }
+              const rows: CriteriaFormItem[] = value || [];
+              if (rows.length === 0) {
+                return Promise.reject(
+                  intl.formatMessage({
+                    id: 'routes.lb.systemone.criteria.required'
+                  })
+                );
+              }
+              if (rows.some((item) => !item?.name?.trim())) {
+                return Promise.reject(
+                  intl.formatMessage({
+                    id: 'routes.lb.systemone.criteria.nameRequired'
+                  })
+                );
+              }
+              if (rows.some((item) => !item?.description?.trim())) {
+                return Promise.reject(
+                  intl.formatMessage({
+                    id: 'routes.lb.systemone.criteria.valueRequired'
+                  })
+                );
+              }
+              // toServerCriteria folds rows into a map keyed by name — a
+              // later duplicate would silently overwrite the earlier one.
+              const seen = new Set<string>();
+              for (const row of rows) {
+                const key = row.name.trim();
+                if (seen.has(key)) {
+                  return Promise.reject(
+                    intl.formatMessage({
+                      id: 'routes.lb.systemone.criteria.duplicate'
+                    })
+                  );
+                }
+                seen.add(key);
+              }
+              return Promise.resolve();
+            }
+          }
+        ]}
+      >
+        <FieldRegistrar />
+      </Form.Item>
+      <MetadataList
+        styles={{
+          item: { marginBottom: 16 },
+          wrapper: { boxSizing: 'border-box' }
+        }}
+        label={
+          // Plain inline content only (no Button): the MetadataList label is
+          // absolutely positioned over a 34px padding-top, and a 24px-tall
+          // button inside it would overlap the first row — session keys keep
+          // a plain-text label for the same reason.
+          <span>
+            {intl.formatMessage({ id: 'routes.lb.systemone.criteria' })}
+            <Tooltip
+              title={intl.formatMessage({
+                id: 'routes.lb.systemone.criteria.tips'
+              })}
+            >
+              <QuestionCircleOutlined
+                style={{
+                  marginLeft: 4,
+                  fontSize: 12,
+                  color: 'var(--ant-color-text-tertiary)',
+                  cursor: 'help'
+                }}
+              />
+            </Tooltip>
+            <Button
+              type="link"
+              onClick={handleGenerateCriteria}
+              style={{
+                marginLeft: 8,
+                padding: 0,
+                height: 'auto',
+                fontSize: 12,
+                lineHeight: 1
+              }}
+            >
+              {intl.formatMessage({
+                id: 'routes.lb.systemone.criteria.generate'
+              })}
+            </Button>
+          </span>
+        }
+        btnText={intl.formatMessage({
+          id: 'routes.lb.systemone.criteria.add'
+        })}
+        dataList={criteria}
+        onAdd={() =>
+          updateCriteria([...criteria, { name: '', description: '' }])
+        }
+        onDelete={(index) =>
+          updateCriteria(criteria.filter((_item, i) => i !== index))
+        }
+      >
+        {(item: CriteriaFormItem, index: number) => (
+          // Same proportions as a session-key row: narrow fixed key (140,
+          // like the source Select) + flexible value input.
+          <Flex gap={8} align="center" style={{ flex: 1, minWidth: 0 }}>
+            <Input
+              disabled={disabled}
+              value={item?.name ?? ''}
+              placeholder={intl.formatMessage({
+                id: 'routes.lb.systemone.criteria.modelPlaceholder'
+              })}
+              style={{ width: 140, flex: 'none' }}
+              onChange={(e) =>
+                updateCriteria(
+                  criteria.map((row, i) =>
+                    i === index ? { ...row, name: e.target.value } : row
+                  )
+                )
+              }
+            />
+            <Input
+              disabled={disabled}
+              value={item?.description ?? ''}
+              placeholder={intl.formatMessage({
+                id: 'routes.lb.systemone.criteria.descPlaceholder'
+              })}
+              style={{ flex: 1, minWidth: 0 }}
+              onChange={(e) =>
+                updateCriteria(
+                  criteria.map((row, i) =>
+                    i === index ? { ...row, description: e.target.value } : row
+                  )
+                )
+              }
+            />
+          </Flex>
+        )}
+      </MetadataList>
+      {/* The field itself is registered hidden (FieldRegistrar above), so its
+          validation errors have nowhere to render — surface them here or a
+          submit with all rows deleted is blocked silently. */}
+      <Form.Item noStyle shouldUpdate={() => true}>
+        {() => (
+          <Form.ErrorList
+            errors={form.getFieldError(SYSTEMONE_CRITERIA_PATH as any)}
+          />
+        )}
+      </Form.Item>
+      {/* Same Advanced seam and plain "Weight" label as the other plugin
+          cards: the rankWeight is rarely touched (default 10), and the slider
+          shows the (0, 20] scale unlike the influence sliders' (0, 2]. */}
+      <InfluenceAdvanced
+        name={['plugins', 'decision-service', 'weight']}
+        min={1}
+        max={SYSTEMONE_WEIGHT_MAX}
+        step={1}
+        seed={10}
+        transform={toSystemoneWeight}
+      />
+    </>
+  );
+};
+
 // The policy weight is always a number in the store, whatever the raw
 // input emits (antd may hand back a string mid-edit).
 const toWeightNumber = (value: any): number | undefined => {
@@ -250,6 +620,21 @@ const toInfluence = (value: any): number => {
     return 0;
   }
   return Math.min(INFLUENCE_MAX, Math.max(INFLUENCE_MIN, num));
+};
+
+// The systemone rankWeight transform: whole numbers on the (0, 20] scale
+// (no 0.1-style steps). 0 passes through as the transient first keystroke of
+// "10"; the positive bound is enforced at payload time.
+const SYSTEMONE_WEIGHT_MAX = 20;
+const toSystemoneWeight = (value: any): number => {
+  const num = toWeightNumber(value);
+  if (num == null) {
+    return 1;
+  }
+  if (num === 0) {
+    return 0;
+  }
+  return Math.min(SYSTEMONE_WEIGHT_MAX, Math.max(1, Math.round(num)));
 };
 
 // One capability plugin as an opt-in card (benchmark Data Distribution
@@ -310,9 +695,28 @@ const DEFAULT_SESSION_KEYS: SessionKeyFormItem[] = [
 
 // A plugin's advanced fields, hidden behind a full-row "Advanced" toggle —
 // the same dashed one-shot affordance the targets form uses for its advanced
-// fields. Most users never touch it (the default of 1 is the plugin's
-// built-in).
-const InfluenceAdvanced = ({ name }: { name: (string | number)[] }) => {
+// fields. Most users never touch it (the default is the plugin's built-in).
+// Parameterized for the two weight scales: the influence sliders (0, 2],
+// default 1, and the systemone rankWeight (0, N], default 10.
+const InfluenceAdvanced = ({
+  name,
+  min = INFLUENCE_MIN,
+  max = INFLUENCE_MAX,
+  step = INFLUENCE_STEP,
+  labelId = 'routes.lb.influence',
+  seed = 1,
+  tipsId,
+  transform = toInfluence
+}: {
+  name: (string | number)[];
+  min?: number;
+  max?: number;
+  step?: number;
+  labelId?: string;
+  seed?: number;
+  tipsId?: string;
+  transform?: (value: any) => number;
+}) => {
   const intl = useIntl();
   const { styles } = useStyles();
   const form = Form.useFormInstance<FormData>();
@@ -338,12 +742,12 @@ const InfluenceAdvanced = ({ name }: { name: (string | number)[] }) => {
           className={styles.advancedToggle}
           onClick={() => {
             setOpen(true);
-            // Seed the default (1) at reveal time, not at mount: seeding
+            // Seed the default at reveal time, not at mount: seeding
             // earlier would defeat the seam itself (open is seeded from
             // value != null), and an untouched plugin keeps weight unset so
             // the server applies its built-in default on submit.
             if (form.getFieldValue(name as any) == null) {
-              form.setFieldValue(name as any, 1);
+              form.setFieldValue(name as any, seed);
             }
           }}
         >
@@ -352,13 +756,19 @@ const InfluenceAdvanced = ({ name }: { name: (string | number)[] }) => {
         </Button>
       )}
       {open && (
-        <Form.Item name={name} noStyle getValueFromEvent={toInfluence}>
+        <Form.Item name={name} noStyle getValueFromEvent={transform}>
           <Slider
-            label={intl.formatMessage({ id: 'routes.lb.influence' })}
+            label={
+              tipsId ? (
+                <LabelWithHelp labelId={labelId} tipsId={tipsId} />
+              ) : (
+                intl.formatMessage({ id: labelId })
+              )
+            }
             inputnumber
-            min={INFLUENCE_MIN}
-            max={INFLUENCE_MAX}
-            step={INFLUENCE_STEP}
+            min={min}
+            max={max}
+            step={step}
           />
         </Form.Item>
       )}
@@ -372,9 +782,11 @@ const InfluenceAdvanced = ({ name }: { name: (string | number)[] }) => {
 // separate Round Robin choice — the gateway falls back to round-robin on
 // its own, so the mode did not need a tab of its own.
 const LbPolicySection = ({
-  onModeChange
+  onModeChange,
+  getTargetModelNames
 }: {
   onModeChange: (mode: string) => void;
+  getTargetModelNames: () => string[];
 }) => {
   const intl = useIntl();
   const { styles } = useStyles();
@@ -437,7 +849,7 @@ const LbPolicySection = ({
                     id: 'routes.lb.form.mode.weighted.tips'
                   })}
                 >
-                  <span>
+                  <span style={{ fontSize: 14 }}>
                     {intl.formatMessage({ id: 'routes.lb.form.mode.weighted' })}
                   </span>
                 </Tooltip>
@@ -451,7 +863,7 @@ const LbPolicySection = ({
                     id: 'routes.lb.form.mode.policy.tips'
                   })}
                 >
-                  <span>
+                  <span style={{ fontSize: 14 }}>
                     {intl.formatMessage({ id: 'routes.lb.form.mode.policy' })}
                   </span>
                 </Tooltip>
@@ -481,6 +893,17 @@ const LbPolicySection = ({
             disabled={!isPolicy}
           >
             <InfluenceAdvanced name={['plugins', 'least-load', 'weight']} />
+          </PluginCard>
+          <PluginCard
+            titleId="routes.lb.systemone"
+            tipsId="routes.lb.systemone.tips"
+            switchName={['plugins', 'decision-service', 'enabled']}
+            disabled={!isPolicy}
+          >
+            <SystemoneEditor
+              disabled={!isPolicy}
+              getTargetModelNames={getTargetModelNames}
+            />
           </PluginCard>
         </>
       )}

@@ -25,37 +25,47 @@ const ProviderModels: React.FC<ProviderModelProps> = ({ dataList }) => {
   const renderModels = (dataList: ProviderModel[]) => {
     return (
       <>
-        {dataList.map((model, index) => (
-          <Tag
-            key={index}
-            icon={
-              _.isBoolean(model.accessible)
-                ? iconsMap[model.accessible ? 'accessible' : 'inaccessible']
-                : iconsMap['none']
-            }
-            variant="outlined"
-            styles={{
-              root: {
-                backgroundColor: 'transparent',
-                display: 'flex',
-                alignItems: 'center',
-                borderRadius: 4
+        {dataList.map((model, index) => {
+          // Category badge — e.g. LLM/embedding; categories with no fitting
+          // badge (like a decision service's "decision" engines) render no
+          // icon at all, not an empty placeholder.
+          const categoryIcon = model.category
+            ? categoryConfig[model.category]?.icon
+            : undefined;
+          return (
+            <Tag
+              key={index}
+              icon={
+                _.isBoolean(model.accessible)
+                  ? iconsMap[model.accessible ? 'accessible' : 'inaccessible']
+                  : iconsMap['none']
               }
-            }}
-            color={
-              model.accessible === true ? 'var(--ant-color-success)' : 'default'
-            }
-          >
-            <span className="flex-center">
-              <AutoTooltip ghost maxWidth={'120px'}>
-                {model.name}
-              </AutoTooltip>
-              <span style={{ marginLeft: 8 }}>
-                {categoryConfig[model.category]?.icon}
+              variant="outlined"
+              styles={{
+                root: {
+                  backgroundColor: 'transparent',
+                  display: 'flex',
+                  alignItems: 'center',
+                  borderRadius: 4
+                }
+              }}
+              color={
+                model.accessible === true
+                  ? 'var(--ant-color-success)'
+                  : 'default'
+              }
+            >
+              <span className="flex-center">
+                <AutoTooltip ghost maxWidth={'120px'}>
+                  {model.name}
+                </AutoTooltip>
+                {categoryIcon && (
+                  <span style={{ marginLeft: 8 }}>{categoryIcon}</span>
+                )}
               </span>
-            </span>
-          </Tag>
-        ))}
+            </Tag>
+          );
+        })}
       </>
     );
   };

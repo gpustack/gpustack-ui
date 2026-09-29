@@ -10,7 +10,10 @@ import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import ProviderLogo from '../components/provider-logo';
 import { useFormContext } from '../config/form-context';
-import { maasProviderOptions } from '../config/providers';
+import {
+  isDecisionServiceType,
+  maasProviderOptions
+} from '../config/providers';
 import { FormData } from '../config/types';
 import providerTypeStyles from '../styles/provider-type.less';
 import ProviderConfigs from './provider-configs';
@@ -116,11 +119,14 @@ const Basic: React.FC<{
         />
       </Form.Item>
       <ProviderConfigs />
+      {/* A decision service's API key is optional and only the first token is
+          used as the decision Bearer (the managed flavour needs just a token
+          and the model pull). */}
       <Form.Item<FormData>
         name="api_key"
         rules={[
           {
-            required: true,
+            required: !isDecisionServiceType(providerType),
             message: getRuleMessage('input', 'providers.form.tokens.title')
           }
         ]}

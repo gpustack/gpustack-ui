@@ -48,5 +48,11 @@ export default {
     'Specifies the model version used in Triton Server.',
   'providers.form.tritonDomain.tips':
     'The domain used to send requests to the Triton Server deployment.',
-  'providers.form.awsRegion': 'AWS Region'
+  'providers.form.awsRegion': 'AWS Region',
+  'providers.form.systemoneEndpoint': 'カスタムベース URL',
+  'providers.form.systemoneEndpoint.tips':
+    '任意。Jev 互換意思決定サービスのカスタムベース URL。パス接尾辞は不要です(例: http://jev.example.com:8010)。空欄の場合は TypeSafe マネージドサービス https://api.typesafe.ai を使用します。',
+  'providers.form.decision': '意思決定',
+  'providers.form.decisionTest.tips':
+    '意思決定サービスへ 1 回の意思決定呼び出しを行います(アドレス・トークン・意思決定パスを同時に検証)。'
 };

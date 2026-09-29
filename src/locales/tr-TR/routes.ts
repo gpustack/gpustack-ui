@@ -9,8 +9,6 @@ export default {
   'routes.form.target.advanced': 'Gelişmiş',
   'routes.form.target.fallback': 'Yedek Yönlendirme Hedefi',
   'routes.form.target.weight': 'Ağırlık',
-  'routes.form.target.moveUp': 'Yukarı taşı',
-  'routes.form.target.moveDown': 'Aşağı taşı',
   'routes.form.target.remove': 'Kaldır',
   'routes.form.target.model': 'Model',
   'routes.form.metadata.title': 'Meta Veriler',
@@ -59,5 +57,36 @@ export default {
   'routes.lb.influence': 'Ağırlık',
   'routes.lb.weight.mixed':
     'Ağırlıklı modda her hedefin ağırlığı 0 dan büyük olmalıdır. Politika yönlendirme için LB modunu değiştirin.',
-  'routes.form.target.maxRunningRequests': 'Örnek Başına Maks. Bekleyen İstek'
+  'routes.form.target.maxRunningRequests': 'Örnek Başına Maks. Bekleyen İstek',
+  'routes.lb.systemone': 'Karar Servisi Yönlendirmesi',
+  'routes.lb.systemone.tips':
+    'Hedefleri görev zorluğuna göre puanlar: her istek (kısaltılmış) model seçim sorusuyla birlikte Jev uyumlu bir karar servisine gönderilir ve yanıt ağırlıklı bir oya dönüşür. Karar hatası, zaman aşımı veya 2xx olmayan yanıt durumunda diğer eklentilere sessizce geri dönülür.',
+  'routes.lb.systemone.provider': 'Karar Servisi',
+  'routes.lb.systemone.provider.tips':
+    'Bir TypeSafe karar servisi sağlayıcısı seçin.',
+  'routes.lb.systemone.provider.required': 'Lütfen bir karar servisi seçin',
+  'routes.lb.systemone.decisionModel': 'Karar Modeli',
+  'routes.lb.systemone.decisionModel.tips':
+    'Rota düzeyinde karar modeli; seçenekler seçilen sağlayıcının önbelleğindeki motorlardan okunur. Öncelik: bu alan > sağlayıcının modeli > servis varsayılanı.',
+  'routes.lb.systemone.decisionModel.required': 'Lütfen bir karar modeli seçin',
+  'routes.lb.systemone.instructions': 'Talimatlar',
+  'routes.lb.systemone.instructions.tips':
+    'Karar servisine gönderilen model seçim sorusu için ek yönlendirmedir.',
+  'routes.lb.systemone.instructions.required': 'Lütfen talimatları girin',
+  'routes.lb.systemone.criteria': 'Model Kriterleri',
+  'routes.lb.systemone.criteria.add': 'Kriter ekle',
+  'routes.lb.systemone.criteria.tips':
+    'Model adı → yetenek açıklaması: karar servisinin her istek için model seçme dayanağıdır.',
+  'routes.lb.systemone.criteria.generate': 'Hedeflerden oluştur',
+  'routes.lb.systemone.criteria.modelPlaceholder': 'Model adı',
+  'routes.lb.systemone.criteria.descPlaceholder':
+    'Yetenek açıklaması, örn. en güçlü akıl yürütme / ucuz ve hızlı',
+  'routes.lb.systemone.criteria.required':
+    'Akıllı yönlendirme etkinleştirildiğinde en az bir model kriteri gereklidir',
+  'routes.lb.systemone.criteria.nameRequired':
+    'Her kriter için model adını girin',
+  'routes.lb.systemone.criteria.valueRequired':
+    'Her model kriteri için açıklamayı doldurun',
+  'routes.lb.systemone.criteria.duplicate':
+    'Kriterlerdeki model adları benzersiz olmalıdır'
 };

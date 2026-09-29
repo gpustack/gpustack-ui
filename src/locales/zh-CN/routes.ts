@@ -9,8 +9,6 @@ export default {
   'routes.form.target.advanced': '高级',
   'routes.form.target.fallback': 'Fallback 路由目标',
   'routes.form.target.weight': '权重',
-  'routes.form.target.moveUp': '上移',
-  'routes.form.target.moveDown': '下移',
   'routes.form.target.remove': '移除',
   'routes.form.target.model': '模型',
   'routes.form.metadata.title': '元数据',
@@ -57,5 +55,32 @@ export default {
   'routes.lb.influence': '权重',
   'routes.lb.weight.mixed':
     '分流模式要求所有路由目标都设置大于 0 的权重;如需启用策略路由,请切换负载均衡模式。',
-  'routes.form.target.maxRunningRequests': '每实例最大在途请求数'
+  'routes.form.target.maxRunningRequests': '每实例最大在途请求数',
+  'routes.lb.systemone': '决策服务路由',
+  'routes.lb.systemone.tips':
+    '按任务难度选择模型:每个请求(截断后)连同模型选择问题发送给 Jev 兼容决策服务,决策结果折算为加权投票。决策失败、超时或服务返回非 2xx 时,静默回退到其余插件。',
+  'routes.lb.systemone.provider': '决策服务',
+  'routes.lb.systemone.provider.tips': '选择 TypeSafe 决策服务 Provider。',
+  'routes.lb.systemone.provider.required': '请选择决策服务',
+  'routes.lb.systemone.decisionModel': '决策模型',
+  'routes.lb.systemone.decisionModel.tips':
+    '路由级决策模型,选项读自所选 Provider 缓存的决策引擎;优先级:本字段 > Provider 的模型 > 服务端默认。',
+  'routes.lb.systemone.decisionModel.required': '请选择决策模型',
+  'routes.lb.systemone.instructions': '决策指令',
+  'routes.lb.systemone.instructions.tips':
+    '发送给决策服务的模型选择问题的补充指引。',
+  'routes.lb.systemone.instructions.required': '请输入决策指令',
+  'routes.lb.systemone.criteria': '模型评判标准',
+  'routes.lb.systemone.criteria.add': '添加评判标准',
+  'routes.lb.systemone.criteria.tips':
+    '模型名 → 能力描述:决策服务据此为每个请求挑选合适的模型。',
+  'routes.lb.systemone.criteria.generate': '从路由目标生成',
+  'routes.lb.systemone.criteria.modelPlaceholder': '模型名',
+  'routes.lb.systemone.criteria.descPlaceholder':
+    '能力描述,如:最强推理 / 便宜快速',
+  'routes.lb.systemone.criteria.required':
+    '启用智能路由时至少配置一条模型评判标准',
+  'routes.lb.systemone.criteria.nameRequired': '请填写每条评判标准的模型名',
+  'routes.lb.systemone.criteria.valueRequired': '请填写每条评判标准的能力描述',
+  'routes.lb.systemone.criteria.duplicate': '评判标准的模型名不能重复'
 };

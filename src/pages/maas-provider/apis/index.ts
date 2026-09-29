@@ -7,6 +7,8 @@ export const GET_PROVIDER_MODELS_API = '/get-models';
 
 export const TEST_PROVIDER_MODEL_API = '/test-model';
 
+export const TEST_DECISION_MODEL_API = '/test-decision-model';
+
 export async function queryMaasProviders(
   params: Global.SearchParams,
   options?: any
@@ -119,6 +121,53 @@ export async function testProviderModelInEditing(
 ) {
   return request<any>(
     `${MAAS_PROVIDERS_API}/${params.id}${TEST_PROVIDER_MODEL_API}`,
+    {
+      method: 'post',
+      data: params.data,
+      cancelToken: options?.token
+    }
+  );
+}
+
+// Decision-service connectivity test (design §13.2): one round-trip to
+// POST {endpoint}/v1/systemone — any 2xx means accessible, validating
+// endpoint + token + decision path at once.
+export async function testDecisionModel(
+  params: {
+    data: {
+      model_name?: string;
+      api_token?: string;
+      config: {
+        type: string;
+        [key: string]: any;
+      };
+    };
+  },
+  options?: any
+) {
+  return request<any>(`${MAAS_PROVIDERS_API}${TEST_DECISION_MODEL_API}`, {
+    method: 'post',
+    data: params.data,
+    cancelToken: options?.token
+  });
+}
+
+export async function testDecisionModelInEditing(
+  params: {
+    id?: number;
+    data: {
+      model_name?: string;
+      api_token?: string;
+      config?: {
+        type: string;
+        [key: string]: any;
+      };
+    };
+  },
+  options?: any
+) {
+  return request<any>(
+    `${MAAS_PROVIDERS_API}/${params.id}${TEST_DECISION_MODEL_API}`,
     {
       method: 'post',
       data: params.data,

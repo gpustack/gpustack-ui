@@ -6,6 +6,8 @@ import { useEffect, useRef, useState } from 'react';
 import {
   queryProviderModels,
   queryProviderModelsInEditing,
+  testDecisionModel,
+  testDecisionModelInEditing,
   testProviderModel,
   testProviderModelInEditing
 } from '../apis';
@@ -149,5 +151,79 @@ export const useTestProviderModel = () => {
   return {
     loading,
     runTestModel
+  };
+};
+
+// Decision-service connectivity test (design §13.2): unlike the inference
+// test there is no proxy_url, the saved-provider variant lets the server
+// default the token (first api_tokens entry) and reuse the stored config.
+export const useTestDecisionModel = () => {
+  const axiosTokenRef = useRef<CancelTokenSource | null>(null);
+
+  const {
+    runAsync: runTestDecisionModel,
+    loading,
+    cancel
+  } = useRequest(
+    async (params: {
+      id: number;
+      data: {
+        model_name?: string;
+        api_token?: string;
+        config: {
+          type: string;
+          [key: string]: any;
+        };
+      };
+    }) => {
+      axiosTokenRef.current?.cancel();
+      axiosTokenRef.current = createAxiosToken();
+
+      // for edit page
+      if (params.id) {
+        return await testDecisionModelInEditing(params, {
+          token: axiosTokenRef.current.token
+        });
+      }
+      // for create page
+      return await testDecisionModel(params, {
+        token: axiosTokenRef.current.token
+      });
+    },
+    {
+      manual: true,
+      onSuccess: (response) => {
+        if (!response?.accessible) {
+          message.error({
+            content: (
+              <ErrorMessage
+                errMsg={response?.error_message || 'Test failed'}
+              ></ErrorMessage>
+            )
+          });
+        }
+      },
+      onError: (error) => {
+        message.error({
+          content: (
+            <ErrorMessage
+              errMsg={error?.message || 'Test failed'}
+            ></ErrorMessage>
+          )
+        });
+      }
+    }
+  );
+
+  useEffect(() => {
+    return () => {
+      cancel();
+      axiosTokenRef.current?.cancel();
+    };
+  }, []);
+
+  return {
+    loading,
+    runTestDecisionModel
   };
 };

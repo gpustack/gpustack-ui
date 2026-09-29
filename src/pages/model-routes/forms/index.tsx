@@ -361,6 +361,9 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
             onModeChange={(mode) =>
               targetsRef.current?.handleLbModeChange(mode)
             }
+            getTargetModelNames={() =>
+              targetsRef.current?.getTargetModelNames?.() || []
+            }
           />
           {/* Targets carries its own section heading; it is the last section
               of the form and holds a required field, so there is nothing to

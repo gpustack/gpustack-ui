@@ -1,11 +1,6 @@
 import { PageAction } from '@/config';
 import ProviderLogo from '@/pages/maas-provider/components/provider-logo';
-import {
-  ArrowDownOutlined,
-  ArrowUpOutlined,
-  MinusOutlined,
-  PlusOutlined
-} from '@ant-design/icons';
+import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import {
   AutoTooltip,
   CollapseContainer,
@@ -177,6 +172,35 @@ const TargetsForm = forwardRef((props, ref) => {
         }
       );
       setAdvancedKeys(seeded);
+    },
+    // Model names of the currently selected (non-fallback) targets, for the
+    // systemone plugin's criteria skeleton: a LoRA's overridden name, a
+    // provider model's name (also stored in overridden_model_name), or the
+    // deployment's model name looked up from the cascader source. sourceModels
+    // is fetched at mount, so the lookup is available by the time the user
+    // reaches the LB section.
+    getTargetModelNames: (): string[] => {
+      const deployments = sourceModels.find(
+        (group) => group.value === 'deployments'
+      );
+      const targetList: FormData['targets'] =
+        form.getFieldValue('targets') || [];
+      return _.uniq(
+        targetList
+          .map((target) => {
+            if (target?.overridden_model_name) {
+              return target.overridden_model_name as string;
+            }
+            if (target?.model_id != null) {
+              const option = deployments?.children?.find(
+                (child) => child.value === target.model_id
+              );
+              return option?.label as string;
+            }
+            return '';
+          })
+          .filter(Boolean)
+      );
     }
   }));
 
@@ -244,28 +268,6 @@ const TargetsForm = forwardRef((props, ref) => {
     };
     setCollapseKeys(shiftKeys);
     setAdvancedKeys(shiftKeys);
-  };
-
-  // adjacent moves are index swaps across both the row list and the form
-  const handleMoveTarget = (from: number, to: number) => {
-    const newDataList = [...dataList];
-    const [moved] = newDataList.splice(from, 1);
-    newDataList.splice(to, 0, moved);
-    setDataList(newDataList);
-
-    const targetList = [...targets];
-    const [movedTarget] = targetList.splice(from, 1);
-    targetList.splice(to, 0, movedTarget);
-    form.setFieldValue('targets', [...targetList]);
-    const swapKeys = (keys: Set<number>) => {
-      const next = new Set<number>();
-      keys.forEach((key) => {
-        next.add(key === from ? to : key === to ? from : key);
-      });
-      return next;
-    };
-    setCollapseKeys(swapKeys);
-    setAdvancedKeys(swapKeys);
   };
 
   // Collapsed-card title: the selected provider / model labels resolved
@@ -551,32 +553,9 @@ const TargetsForm = forwardRef((props, ref) => {
                       className="flex-center gap-8"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      {dataList.length > 1 && (
-                        <>
-                          <Button
-                            size="small"
-                            shape="circle"
-                            disabled={index === 0}
-                            aria-label={intl.formatMessage({
-                              id: 'routes.form.target.moveUp'
-                            })}
-                            onClick={() => handleMoveTarget(index, index - 1)}
-                          >
-                            <ArrowUpOutlined />
-                          </Button>
-                          <Button
-                            size="small"
-                            shape="circle"
-                            disabled={index === dataList.length - 1}
-                            aria-label={intl.formatMessage({
-                              id: 'routes.form.target.moveDown'
-                            })}
-                            onClick={() => handleMoveTarget(index, index + 1)}
-                          >
-                            <ArrowDownOutlined />
-                          </Button>
-                        </>
-                      )}
+                      {/* No reorder arrows: the finisher consumes targets as
+                          an unordered candidate set — manual order carries no
+                          routing meaning, so the affordance is absent. */}
                       <Button
                         size="small"
                         shape="circle"

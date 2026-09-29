@@ -46,5 +46,11 @@ export default {
   'providers.form.modelVersion.tips': '用于指定 Triton Server 中的模型版本。',
   'providers.form.tritonDomain': 'Triton Server 域名',
   'providers.form.tritonDomain.tips': 'Triton Server 部署的指定请求的域名。',
-  'providers.form.awsRegion': 'AWS 区域'
+  'providers.form.awsRegion': 'AWS 区域',
+  'providers.form.systemoneEndpoint': '自定义 Base URL',
+  'providers.form.systemoneEndpoint.tips':
+    '可选。Jev 兼容决策服务的自定义 Base URL,无需路径后缀(如 http://jev.example.com:8010);留空使用 TypeSafe 托管服务 https://api.typesafe.ai。',
+  'providers.form.decision': '决策',
+  'providers.form.decisionTest.tips':
+    '向决策服务发起一次决策调用(同时验证地址、token 与决策路径)。'
 };

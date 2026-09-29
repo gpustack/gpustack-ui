@@ -68,6 +68,9 @@ const ProviderLogoMap: Record<string, string> = {
   [ProviderEnum.ZHIPUAI]: zhipuai,
   [ProviderEnum.GITHUB]: github,
   [ProviderEnum.TRITON]: triton,
+  // A decision service, not an inference provider — the GPUStack mark stands
+  // in until it gets a logo of its own.
+  [ProviderEnum.TYPESAFE]: GPUStackLogo,
   ['deployments']: GPUStackLogo
 };
 

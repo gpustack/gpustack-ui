@@ -48,5 +48,11 @@ export default {
     "Triton Server'da kullanılan model sürümünü belirtir.",
   'providers.form.tritonDomain.tips':
     'Triton Server dağıtımına istek göndermek için kullanılan alan adı.',
-  'providers.form.awsRegion': 'AWS Bölgesi'
+  'providers.form.awsRegion': 'AWS Bölgesi',
+  'providers.form.systemoneEndpoint': 'Özel Temel URL',
+  'providers.form.systemoneEndpoint.tips':
+    'İsteğe bağlı. Jev uyumlu karar servisinizin özel temel URL\u2019si, yol eki olmadan (örn. http://jev.example.com:8010). Boş bırakılırsa TypeSafe yönetilen servisi https://api.typesafe.ai kullanılır.',
+  'providers.form.decision': 'Karar',
+  'providers.form.decisionTest.tips':
+    'Servise bir karar çağrısı gönderir (adres, token ve karar yolunu aynı anda doğrular).'
 };

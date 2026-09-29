@@ -9,8 +9,6 @@ export default {
   'routes.form.target.advanced': 'Дополнительно',
   'routes.form.target.fallback': 'Fallback Route Target',
   'routes.form.target.weight': 'Вес',
-  'routes.form.target.moveUp': 'Переместить вверх',
-  'routes.form.target.moveDown': 'Переместить вниз',
   'routes.form.target.remove': 'Удалить',
   'routes.form.target.model': 'Model',
   'routes.form.metadata.title': 'Metadata',
@@ -60,5 +58,36 @@ export default {
   'routes.lb.weight.mixed':
     'Во взвешенном режиме каждая цель должна иметь вес больше 0. Для маршрутизации по политике переключите режим LB.',
   'routes.form.target.maxRunningRequests':
-    'Макс. запросов в обработке на экземпляр'
+    'Макс. запросов в обработке на экземпляр',
+  'routes.lb.systemone': 'Маршрутизация через сервис решений',
+  'routes.lb.systemone.tips':
+    'Оценивает цели по сложности задачи: каждый запрос (усечённый) вместе с вопросом выбора модели отправляется в Jev-совместимый сервис принятия решений, чей ответ становится взвешенным голосом. При сбое, тайм-ауте решения или не-2xx ответе происходит тихий откат к остальным плагинам.',
+  'routes.lb.systemone.provider': 'Сервис принятия решений',
+  'routes.lb.systemone.provider.tips': 'Выберите провайдера сервиса TypeSafe.',
+  'routes.lb.systemone.provider.required': 'Выберите сервис принятия решений',
+  'routes.lb.systemone.decisionModel': 'Модель принятия решений',
+  'routes.lb.systemone.decisionModel.tips':
+    'Модель принятия решений на уровне маршрута; варианты берутся из движков, кэшированных выбранным провайдером. Приоритет: это поле > модель провайдера > значение по умолчанию сервиса.',
+  'routes.lb.systemone.decisionModel.required':
+    'Выберите модель принятия решений',
+  'routes.lb.systemone.instructions': 'Инструкции',
+  'routes.lb.systemone.instructions.tips':
+    'Дополнительные указания к вопросу выбора модели, отправляемому в сервис.',
+  'routes.lb.systemone.instructions.required': 'Введите инструкции',
+  'routes.lb.systemone.criteria': 'Критерии моделей',
+  'routes.lb.systemone.criteria.add': 'Добавить критерий',
+  'routes.lb.systemone.criteria.tips':
+    'Имя модели → описание возможностей: на этом основании сервис выбирает модель для каждого запроса.',
+  'routes.lb.systemone.criteria.generate': 'Сгенерировать из целей',
+  'routes.lb.systemone.criteria.modelPlaceholder': 'Имя модели',
+  'routes.lb.systemone.criteria.descPlaceholder':
+    'Описание возможностей, напр. сильнейшая логика / дёшево и быстро',
+  'routes.lb.systemone.criteria.required':
+    'При включении умной маршрутизации задайте хотя бы один критерий модели',
+  'routes.lb.systemone.criteria.nameRequired':
+    'Введите имя модели для каждого критерия',
+  'routes.lb.systemone.criteria.valueRequired':
+    'Заполните описание для каждого критерия модели',
+  'routes.lb.systemone.criteria.duplicate':
+    'Имена моделей в критериях не должны повторяться'
 };

@@ -115,6 +115,24 @@ export interface InstanceStatus {
   allocations?: InstanceStatusAllocationItem[];
 }
 
+// Resolved read-only summary of the instance's type, joined by the server
+// from the type_snapshot stamped on the instance at create time
+// (GPUInstancePublic.typeSnapshotDetail). The type column / type card render
+// from it; `description` is display-only text. Only the fields the type
+// rendering reads are declared — the payload carries the type's timestamps
+// and provenance as well.
+export interface InstanceTypeSnapshotDetail {
+  id?: number;
+  clusterId?: number;
+  name?: string;
+  spec?: InstanceTypeSpec | null;
+  status?: {
+    detail?: InstanceTypeDetail | null;
+    phase?: string | null;
+    phaseMessage?: string | null;
+  } | null;
+}
+
 // instance list item
 export interface ListItem extends FormData {
   id: number;
@@ -124,6 +142,7 @@ export interface ListItem extends FormData {
   creator_id?: number | null;
   clusterId: number;
   status?: InstanceStatus | null;
+  typeSnapshotDetail?: InstanceTypeSnapshotDetail | null;
 }
 
 // =========== Instance Types ===========

@@ -317,7 +317,7 @@ const setWorkerIPArg = (params: any) => {
 };
 
 // Lists the ACTIVE InfiniBand ports as `device:port`. A host without RDMA
-// prints nothing, and an empty GPUSTACK_KV_IFNAME counts as unset, so the
+// prints nothing, and an empty GPUSTACK_KV_TRANSFER_IFNAME counts as unset, so the
 // worker falls back to detecting the NIC itself.
 const RDMA_KV_IFNAME_PROBE =
   "$(grep -l ACTIVE /sys/class/infiniband/*/ports/*/state 2>/dev/null | sed 's|.*/infiniband/||; s|/ports/|:|; s|/state||' | paste -sd, -)";
@@ -344,7 +344,7 @@ const registerWorker = (params: AddWorkerCommandParams) => {
       ? {
           ...params,
           extraEnv: {
-            GPUSTACK_KV_IFNAME: RDMA_KV_IFNAME_PROBE
+            GPUSTACK_KV_TRANSFER_IFNAME: RDMA_KV_IFNAME_PROBE
           }
         }
       : params

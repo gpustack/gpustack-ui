@@ -59,7 +59,7 @@ Token source of truth (look up values here, don't memorize them): `StatusColorMa
 - Interactive elements must be real buttons/links (keyboard-focusable), not `onClick` on a `div`/`span`.
 - Focus each custom clickable element and diff `outline` / `box-shadow` / `border-color` before vs after: all three unchanged → class B (focusable but invisible), `document.activeElement` can never reach it → class A (fix with a real element or `tabIndex`+key handler, not with a ring). Coverage must be 100%. A focus _glow_ does not count — this theme's is 1.13:1.
 - A `role` from a composite widget (`radio` / `tab` / `option`) without the rest of its pattern — the group container (`radiogroup`/`tablist`) with an accessible name, roving `tabIndex` (`active ? 0 : -1`), and arrow-key movement — is an incomplete widget: Tab walks every item and arrows do nothing.
-- Drawers/modals should close on `Esc` and trap focus — the core-ui drawer/`FormDrawer` give this; a hand-rolled overlay won't.
+- Drawers/modals must retain focus management and follow their component's dismissal contract. `FormDrawer` defaults to `dismissible={false}` (Escape and mask dismissal disabled); `DeleteModal` also disables them. Do not flag those defaults as defects or enable dismissal globally. When dismissal is explicitly enabled for a surface, verify Escape and mask behavior.
 
 ### 6. Destructive actions
 

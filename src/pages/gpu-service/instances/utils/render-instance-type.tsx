@@ -11,10 +11,19 @@
  * with ``buildInstanceTypeRecordFromMiB`` and feed it here.
  */
 import _ from 'lodash';
-import { ceilMilliToCore, parseJsonSafe, parseQuantityToGi } from '../../utils';
+import { ceilMilliToCore, parseQuantityToGi } from '../../utils';
 import InstanceTypeCell from '../components/instance-type-cell';
-import { formatMemoryDisplay, parseProfileMemoryGB } from '../config';
-import { InstanceTypeSnapshotSpec, ListItem } from '../config/types';
+import {
+  formatMemoryDisplay,
+  parseProfileMemoryGB,
+  profileMemoryMib
+} from '../config';
+import {
+  AcceleratorSlicedPhysicalDetailProfile,
+  InstanceTypeSnapshotSpec,
+  ListItem
+} from '../config/types';
+import { buildInstanceTypeSnapshot } from './type-snapshot';
 
 // Minimal shape of the ``useIntl()`` result we depend on — keeps this module
 // free of an intl package import.
@@ -59,7 +68,8 @@ const getPartitionProfile = (record: ListItem) =>
 
 const formatResources = (
   instanceTypeSpec: { spec: InstanceTypeSnapshotSpec },
-  record: ListItem
+  record: ListItem,
+  partitionProfiles?: AcceleratorSlicedPhysicalDetailProfile[] | null
 ) => {
   const resources = buildResourcesData(instanceTypeSpec, {
     count: _.toNumber(record.spec?.resources?.accelerator) || 0
@@ -91,14 +101,15 @@ const formatResources = (
   // percentage (floored, min 1) for a soft slice — not the whole card's size.
   if (sliceMemoryPercentage > 0 || partitionProfile) {
     const vramGi = parseQuantityToGi(instanceTypeSpec.spec?.memory)?.value;
-    // A partition's VRAM is parsed from its NAME here, which reads ~5% above the
-    // real figure (an A100 "1g.10gb" actually holds 9.5 GB, not 10). Known and
-    // accepted: this renderer only has the `description` snapshot to work from —
-    // the list page does not fetch instance types — and the reported `memoryMib`
-    // cannot be added to that snapshot without overflowing its 1024-char cap
-    // (see buildInstanceTypeSnapshotSpec). Metering is unaffected: it reads
-    // `memoryMib` server-side, so the bill is exact even while this cell is not.
-    const profileGB = parseProfileMemoryGB(partitionProfile);
+    // A partition's VRAM comes from its profile's reported memoryMib when the
+    // resolved summary carries the pool's profile ledger; parsed from its NAME
+    // otherwise (a fallback that reads ~5% above the real figure — an A100
+    // "1g.10gb" actually holds 9.5 GB, not 10). Usage / billing always read
+    // `memoryMib` server-side, so the bill is exact either way.
+    const profileMiB = profileMemoryMib(partitionProfiles, partitionProfile);
+    const profileGB = profileMiB
+      ? _.round(profileMiB / 1024, 1)
+      : parseProfileMemoryGB(partitionProfile);
     const vram = profileGB
       ? `${profileGB} GB`
       : vramGi != null && sliceMemoryPercentage > 0
@@ -154,27 +165,41 @@ export const renderInstanceType = (
   }
 ) => {
   const { intl, pvCapacityByName, categories } = options;
-  const description =
-    parseJsonSafe<any>(record?.description || '{}', {}).spec || {};
-  const resources = formatResources({ spec: description }, record);
+  // The type's flat display snapshot, resolved by the server from the type
+  // the instance was created against. Empty when the instance carries no
+  // summary (legacy rows, or the type row is gone) — the CPU-only literals
+  // below stay the no-type fallback.
+  const typeSnapshot =
+    buildInstanceTypeSnapshot(record?.typeSnapshotDetail) ?? {};
+  // The pool's partition-profile ledger rides the resolved summary (it never
+  // fit the 1024-char description cap), so a partition's VRAM can come from
+  // the profile's reported size instead of its name.
+  const partitionProfiles =
+    record?.typeSnapshotDetail?.status?.detail?.slicedDetail?.physical
+      ?.profiles;
+  const resources = formatResources(
+    { spec: typeSnapshot },
+    record,
+    partitionProfiles
+  );
   const accelerator = record.spec?.resources?.accelerator;
   const sliceMemoryPercentage = getSliceMemoryPercentage(record);
   const partitionProfile = getPartitionProfile(record);
-  const isSliced = description.acceleratable && sliceMemoryPercentage > 0;
-  const isPartitioned = !!description.acceleratable && !!partitionProfile;
+  const isSliced = typeSnapshot.acceleratable && sliceMemoryPercentage > 0;
+  const isPartitioned = !!typeSnapshot.acceleratable && !!partitionProfile;
   // Type label (primary cell label and the popover's "Type" row) prefers the
-  // user-defined displayName persisted in the description snapshot, falling
-  // back to the hardware product.
-  const typeLabel = description.displayName || description.product;
+  // type's user-defined displayName, falling back to the hardware product.
+  const typeLabel =
+    typeSnapshot.displayName || typeSnapshot.product || undefined;
   const title =
     options.title ??
-    (description.acceleratable
+    (typeSnapshot.acceleratable
       ? isPartitioned
         ? `${typeLabel} (${partitionProfile})`
         : isSliced
           ? `${typeLabel} (${sliceMemoryPercentage}%)`
           : `${typeLabel} x ${accelerator}`
-      : description.displayName || 'CPU-only');
+      : typeSnapshot.displayName || 'CPU-only');
 
   const volume = (record.spec as any)?.volume;
   // Spec popover grouped by category (GPU / CPU / Memory / Disk), mirroring
@@ -187,7 +212,7 @@ export const renderInstanceType = (
     rows: [string | null, string | undefined][];
   };
   const sections: Section[] = [];
-  if (description.acceleratable) {
+  if (typeSnapshot.acceleratable) {
     sections.push({
       key: 'gpu',
       icon: 'icon-gpu',
@@ -299,23 +324,46 @@ export interface InstanceTypeMiB {
 // canonical renderer consumes, so both tables render identically. CPU/RAM ride
 // on the parsed unit-resources (per card) for accelerated rows and on
 // ``spec.resources`` for CPU-only rows, matching how the list derives them.
+// The Usage rows carry the figures directly (no type row to resolve), so the
+// synthesized summary holds them verbatim — including the precomputed parsed
+// unit resources, which buildInstanceTypeSnapshot then keeps unchanged instead
+// of re-deriving from quantity strings.
 export const buildInstanceTypeRecordFromMiB = (
   data: InstanceTypeMiB
 ): ListItem => {
   const acceleratable = (data.gpuCount ?? 0) > 0;
   return {
     name: data.name,
-    description: JSON.stringify({
+    typeSnapshotDetail: {
+      name: data.name,
       spec: {
         acceleratable,
-        product: data.product,
-        memory: data.vramMib,
         unitResourcesParsed: {
-          cpu: data.unitCpuMilli ? { cores: data.unitCpuMilli / 1000 } : null,
-          ram: data.unitMemoryMib ? { value: data.unitMemoryMib / 1024 } : null
+          cpu: data.unitCpuMilli
+            ? {
+                cores: data.unitCpuMilli / 1000,
+                unit: 'Core',
+                num: data.unitCpuMilli / 1000
+              }
+            : null,
+          ram: data.unitMemoryMib
+            ? {
+                value: data.unitMemoryMib / 1024,
+                unit: 'Gi',
+                num: data.unitMemoryMib / 1024
+              }
+            : null
+        }
+      },
+      status: {
+        detail: {
+          product: data.product,
+          // Kept as a raw MiB number: formatMemoryDisplay treats a number as
+          // mebibytes, matching the previous description-blob channel.
+          memory: data.vramMib
         }
       }
-    }),
+    },
     spec: {
       resources: {
         accelerator: data.gpuCount ? `${data.gpuCount}` : null,

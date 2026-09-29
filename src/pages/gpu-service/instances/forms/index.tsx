@@ -48,9 +48,11 @@ import {
   AcceleratorSlicedPhysicalDetailProfile,
   FormData,
   InstanceTypeItem,
+  InstanceTypeSnapshotSpec,
   ListItem
 } from '../config/types';
 import instanceStyles from '../styles/instances.module.less';
+import { buildInstanceTypeSnapshot } from '../utils/type-snapshot';
 import Basic from './basic';
 import InstanceTypeFormItem from './instance-type';
 import PublicKeyOverlay from './public-key-overlay';
@@ -180,9 +182,19 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
     );
 
     const isGPUType = useMemo(() => {
-      const spec = parseJsonSafe(description || '{}', {} as any)?.spec;
-      return spec?.acceleratable;
-    }, [description]);
+      // The form's description carries the freshly picked type (create, or a
+      // re-typed stopped edit) and wins as a whole — by the presence of its
+      // spec, not its truthiness: a re-picked CPU type must be able to turn
+      // the form CPU-shaped over an older GPU summary. Only when no fresh
+      // pick has written a spec does the row's server-resolved summary
+      // decide, so an empty description blob cannot flip a GPU instance to
+      // the CPU-shaped fields.
+      const parsed = parseJsonSafe(description || '{}', {} as any);
+      if (parsed && typeof parsed === 'object' && 'spec' in parsed) {
+        return !!parsed.spec?.acceleratable;
+      }
+      return !!currentData?.typeSnapshotDetail?.spec?.acceleratable;
+    }, [description, currentData]);
 
     useEffect(() => {
       if (open) {
@@ -264,7 +276,12 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
     });
 
     const buildResourcesData = (
-      instanceType: InstanceTypeItem | undefined,
+      instanceType:
+        | {
+            spec?: InstanceTypeSnapshotSpec;
+          }
+        | InstanceTypeItem
+        | undefined,
       options: {
         count: number;
       }
@@ -738,12 +755,11 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       // Prefill from the source row on edit / view.
       if (currentData) {
         console.log('currentData', currentData);
-        const currentSpec = parseJsonSafe(
-          currentData?.description || '{}',
-          {} as any
-        )?.spec;
+        const typeSnapshot = buildInstanceTypeSnapshot(
+          currentData?.typeSnapshotDetail
+        );
 
-        const count = currentSpec?.acceleratable
+        const count = typeSnapshot?.acceleratable
           ? _.toNumber(currentData?.spec?.resources?.accelerator)
           : _.toNumber(currentData?.spec?.resources?.cpu) || 0;
 
@@ -770,7 +786,7 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
             resources: {
               ...currentData?.spec?.resources,
               ...buildResourcesData(
-                parseJsonSafe<any>(currentData?.description || '{}', {}),
+                { spec: typeSnapshot },
                 {
                   count
                 }
@@ -801,26 +817,19 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       if (parsed) {
         return parsed;
       }
-      try {
-        return (
-          parseJsonSafe<any>(currentData?.description || '{}', {})?.spec
-            ?.unitResourcesParsed ?? undefined
-        );
-      } catch {
-        return undefined;
-      }
+      return buildInstanceTypeSnapshot(currentData?.typeSnapshotDetail)
+        ?.unitResourcesParsed;
     };
 
     // Whole-card VRAM (status.detail.memory, e.g. "80Gi") — the denominator of
-    // the partition ratio. Falls back to the persisted description snapshot so
-    // a not-yet-re-typed edit can still scale.
+    // the partition ratio. Falls back to the server-resolved type summary so a
+    // not-yet-re-typed edit can still scale.
     const getCardMemory = (
       instanceType?: InstanceTypeItem
     ): string | undefined => {
       return (
         (instanceType ?? selectedInstanceType)?.status?.detail?.memory ??
-        parseJsonSafe<any>(currentData?.description || '{}', {})?.spec
-          ?.memory ??
+        buildInstanceTypeSnapshot(currentData?.typeSnapshotDetail)?.memory ??
         undefined
       );
     };
@@ -839,7 +848,13 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       instanceType?: InstanceTypeItem
     ): AcceleratorSlicedPhysicalDetailProfile[] | undefined =>
       (instanceType ?? selectedInstanceType)?.status?.detail?.slicedDetail
-        ?.physical?.profiles ?? undefined;
+        ?.physical?.profiles ??
+      // No fresh pick: an untouched partitioned edit still needs the ratio,
+      // which only the summary's ledger can supply — same precedence as
+      // getCardMemory above.
+      currentData?.typeSnapshotDetail?.status?.detail?.slicedDetail?.physical
+        ?.profiles ??
+      undefined;
 
     const handleFinish = async (values: InstanceFormValues) => {
       const submittedPorts = [...(values.spec?.ports ?? [])];

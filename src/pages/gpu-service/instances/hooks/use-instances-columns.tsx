@@ -13,7 +13,6 @@ import { Button } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import { Fragment, useMemo } from 'react';
-import { parseJsonSafe } from '../../utils';
 import UtilizationCell from '../components/utilization-cell';
 import {
   GaugeColumnOrder,
@@ -26,19 +25,16 @@ import {
 import {
   InstanceMetricsMap,
   InstanceServicePort,
-  InstanceTypeSnapshotSpec,
   ListItem
 } from '../config/types';
 import { renderInstanceType } from '../utils/render-instance-type';
+import { buildInstanceTypeSnapshot } from '../utils/type-snapshot';
 
-// GPU / VRAM gauges belong to accelerated instance types only. The flag lives
-// in the type snapshot persisted in the row's description — the same source the
-// Instance Type column renders from.
+// GPU / VRAM gauges belong to accelerated instance types only. The flag comes
+// from the server-resolved type summary — the same source the Instance Type
+// column renders from.
 const isAcceleratable = (record: ListItem) =>
-  !!parseJsonSafe<{ spec?: InstanceTypeSnapshotSpec }>(
-    record?.description || '{}',
-    {}
-  ).spec?.acceleratable;
+  !!buildInstanceTypeSnapshot(record?.typeSnapshotDetail)?.acceleratable;
 
 // Whether a sample can exist for this row at all — the poller's own rule, so a
 // row it skips (stopped, stopping, still initializing) renders a bare "--"

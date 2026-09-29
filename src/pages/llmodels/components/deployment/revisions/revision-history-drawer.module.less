@@ -1,0 +1,152 @@
+.title {
+  max-width: calc(min(max(62vw, 1120px), 96vw) - 104px);
+  font-weight: 400;
+  white-space: pre;
+}
+
+.titleName {
+  min-width: 0;
+  overflow: hidden;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.titleVersion {
+  flex-shrink: 0;
+  font-weight: 600;
+}
+
+.secondary {
+  color: var(--ant-color-text-tertiary);
+  font-size: var(--ant-font-size-sm);
+}
+
+.toolbar {
+  min-height: 28px;
+}
+
+.selection {
+  min-width: 0;
+}
+
+.selectionName {
+  flex-shrink: 0;
+  font-size: var(--ant-font-size-sm);
+  font-weight: 600;
+}
+
+.nav {
+  flex: none;
+  width: 300px;
+  min-height: 0;
+  border-right: 1px solid var(--ant-color-border-secondary);
+}
+
+.navHeader {
+  flex: none;
+  height: 40px;
+  padding-inline: var(--ant-padding-sm);
+  color: var(--ant-color-text-secondary);
+  font-size: var(--ant-font-size-sm);
+  background-color: var(--ant-color-fill-quaternary);
+  border-bottom: 1px solid var(--ant-color-border-secondary);
+}
+
+.navItems {
+  flex: 1;
+  min-height: 0;
+  padding: var(--ant-padding-xs);
+  overflow-y: auto;
+}
+
+.navOption {
+  flex-shrink: 0;
+  padding: var(--ant-padding-xs);
+  border-radius: var(--ant-border-radius);
+
+  &:hover {
+    background-color: var(--ant-color-fill-quaternary);
+  }
+
+  &.selected {
+    background-color: var(--ant-color-primary-bg);
+
+    .revisionName {
+      color: var(--ant-color-primary-text);
+      font-weight: 600;
+    }
+  }
+}
+
+.selectRevision {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  color: var(--ant-color-text);
+  font: inherit;
+  text-align: left;
+  background: transparent;
+  border: none;
+  border-radius: var(--ant-border-radius-sm);
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--ant-color-primary);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.6;
+  }
+}
+
+.revisionName {
+  flex-shrink: 0;
+  font-size: var(--ant-font-size-sm);
+  font-weight: 600;
+}
+
+.timestamp {
+  overflow: hidden;
+  color: var(--ant-color-text-tertiary);
+  font-size: var(--ant-font-size-sm);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.pagination {
+  flex: none;
+  padding: var(--ant-padding-sm) var(--ant-padding-xs);
+  border-top: 1px solid var(--ant-color-border-secondary);
+}
+
+.loading {
+  padding: var(--ant-padding);
+}
+
+.placeholder {
+  flex: 1;
+  min-height: 0;
+}
+
+.snapshot {
+  flex: 1;
+  min-height: 0;
+}
+
+.snapshotNote {
+  padding: var(--ant-padding-sm);
+  color: var(--ant-color-text-secondary);
+  font-size: var(--ant-font-size-sm);
+  background-color: var(--ant-color-fill-quaternary);
+  border-bottom: 1px solid var(--ant-color-border-secondary);
+}
+
+.snapshotContent {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}

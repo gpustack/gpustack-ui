@@ -11,6 +11,7 @@
     "preview": "max preview",
     "setup": "max setup",
     "start": "npm run dev",
+    "test:model-revisions": "node --conditions=import --experimental-test-module-mocks --import tsx --test --test-force-exit src/pages/llmodels/components/deployment/revisions/hooks/use-model-revisions.test.mts src/pages/llmodels/components/deployment/revisions/hooks/revision-title.test.mts src/pages/llmodels/utils/deployment-yaml.test.ts",
     "test:runtime-choice": "node --import tsx --test --test-force-exit src/pages/llmodels/components/deployment/runtime-choice.test.ts src/pages/llmodels/forms/use-runtime-choice-mode.test.tsx"
   },
   "dependencies": {

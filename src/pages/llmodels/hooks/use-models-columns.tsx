@@ -4,7 +4,11 @@ import { StatusMaps } from '@/config';
 import { OPENAI_COMPATIBLE, tableSorter } from '@/config/settings';
 import { TargetStatusValueMap } from '@/pages/model-routes/config';
 import { usePluginListColumns } from '@/plugins/list-extra-columns';
-import { QuestionCircleOutlined, WarningOutlined } from '@ant-design/icons';
+import {
+  HistoryOutlined,
+  QuestionCircleOutlined,
+  WarningOutlined
+} from '@ant-design/icons';
 import {
   AutoTooltip,
   DropdownButtons,
@@ -117,6 +121,11 @@ const ActionList: ActionItem[] = [
     label: 'models.restart',
     key: 'restart',
     icon: icons.RetweetOutlined
+  },
+  {
+    label: 'models.revisions.title',
+    key: 'history',
+    icon: <HistoryOutlined />
   },
   {
     label: 'models.table.instance.benchmark',

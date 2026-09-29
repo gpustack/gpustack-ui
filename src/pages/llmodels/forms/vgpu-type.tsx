@@ -430,6 +430,24 @@ const VGPUTypeForm: React.FC<VGPUTypeFormProps> = ({ namePrefix }) => {
     return entries.sort((a, b) => a.value.localeCompare(b.value));
   }, [typeList, selectedInstanceType, persistedTypeName]);
 
+  // Notify evaluation of a just-committed selector. `getFieldsValue()`
+  // collects REGISTERED paths only, and the slice fields mount with the
+  // re-render this commit has only just scheduled — inside this synchronous
+  // window they are absent from the result, so the notify would carry the
+  // selector without its slice request, compare equal to the pre-commit
+  // values, and die in the evaluation's dedupe guard. Overlay the selector
+  // straight from the store.
+  const notifyCommittedSelector = () => {
+    onValuesChange?.(
+      {},
+      _.set(
+        form.getFieldsValue(),
+        path('gpu_type_selector'),
+        form.getFieldValue(path('gpu_type_selector'))
+      )
+    );
+  };
+
   // Single commit path for mode switches (form-patterns): write every
   // mode-specific field together so no stale value from the previous mode
   // rides the submit.
@@ -469,7 +487,7 @@ const VGPUTypeForm: React.FC<VGPUTypeFormProps> = ({ namePrefix }) => {
     // capability effect below). `setFieldValue` never fires antd's Form
     // onValuesChange, so the seed would reach the submit but never the
     // compatibility evaluation — notify with the committed values.
-    onValuesChange?.({}, form.getFieldsValue());
+    notifyCommittedSelector();
   };
 
   // Force the mode when the selected type offers exactly one, and clear back
@@ -539,7 +557,7 @@ const VGPUTypeForm: React.FC<VGPUTypeFormProps> = ({ namePrefix }) => {
     // The natural onValuesChange fired during the Select's collect carries the
     // pre-commit selector; this notify carries the committed one and, via the
     // request-id guard in handleDoEvalute, wins as the final verdict.
-    onValuesChange?.({}, form.getFieldsValue());
+    notifyCommittedSelector();
   };
 
   // Memory (VRAM) ratio changed — without cores overcommit the cores ratio is

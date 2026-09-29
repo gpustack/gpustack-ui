@@ -158,8 +158,23 @@ const ScheduleTypeForm: React.FC<ScheduleTypeFormProps> = ({ namePrefix }) => {
     // The tab flip's natural onValuesChange is filtered out (manualGpuMode is
     // in DO_NOT_TRIGGER_CHECK_COMPATIBILITY) and these setFieldValue writes
     // never fire it anyway — notify evaluation with the committed values,
-    // matching the Auto branch in handleScheduleTypeChange.
-    onValuesChange?.({}, form.getFieldsValue());
+    // matching the Auto branch in handleScheduleTypeChange. `getFieldsValue()`
+    // collects REGISTERED paths only and the tab being entered mounts its
+    // fields with the re-render this commit has only just scheduled, so the
+    // just-committed selector would be absent from the result; overlay both
+    // selectors straight from the store.
+    const values = form.getFieldsValue();
+    _.set(
+      values,
+      path('gpu_selector'),
+      form.getFieldValue(path('gpu_selector'))
+    );
+    _.set(
+      values,
+      path('gpu_type_selector'),
+      form.getFieldValue(path('gpu_type_selector'))
+    );
+    onValuesChange?.({}, values);
   };
 
   const handleScheduleTypeChange = async (value: string) => {

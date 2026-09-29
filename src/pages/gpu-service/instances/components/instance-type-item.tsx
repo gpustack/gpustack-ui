@@ -87,8 +87,8 @@ interface InstanceTypeItemProps {
 
 interface MetadataSectionProps {
   // The flat snapshot / display model — built from a live item with
-  // buildInstanceTypeSnapshotSpec, or parsed back from a persisted
-  // `description` snapshot (readonly edit card).
+  // buildInstanceTypeSnapshotSpec, or rebuilt from the server-resolved
+  // type summary (readonly edit card).
   spec: InstanceTypeSnapshotSpec;
   // status.onceMaxRequest.acceleratorSliced (max sliceable percentage). Shown
   // next to Max for sliceable types.
@@ -149,7 +149,7 @@ const CPUManufacturerTag: React.FC<{ manufacturer?: string }> = ({
 
 // Derives the display fields from the flat snapshot spec (the UI document
 // format — built from a live item with buildInstanceTypeSnapshotSpec, or
-// parsed back from a persisted `description` snapshot). Observed hardware
+// rebuilt from the server-resolved type summary). Observed hardware
 // (manufacturer / product / memory / cpu) originates from status.detail.
 function getInstanceDerived(
   spec: InstanceTypeSnapshotSpec = {},

@@ -427,6 +427,13 @@ const InstanceTypeFormItem: React.FC<InstanceTypeFormItemProps> = ({
                 if (isSliced || isPartitioned) {
                   return Promise.resolve();
                 }
+                // A not-yet-re-typed edit renders the count read-only from
+                // the persisted resources; the only ceiling available here is
+                // the stale description figure (0 when the blob is absent),
+                // which would veto saving unrelated fields like the SSH keys.
+                if (readonlyType) {
+                  return Promise.resolve();
+                }
                 if (num > maxComputeUnitCount) {
                   return Promise.reject(
                     new Error(

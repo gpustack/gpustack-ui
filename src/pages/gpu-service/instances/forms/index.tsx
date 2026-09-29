@@ -1,10 +1,6 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
-import {
-  ceilMilliToCore,
-  parseJsonSafe,
-  parseQuantityToGi
-} from '@/pages/gpu-service/utils';
+import { ceilMilliToCore, parseQuantityToGi } from '@/pages/gpu-service/utils';
 import { PlusOutlined } from '@ant-design/icons';
 import {
   CheckboxField,
@@ -145,7 +141,6 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
     // sections; displayName and the SSH public keys keep following `disabled`.
     const sectionDisabled = disabled || restrictedEdit;
     const sshEnabled = Form.useWatch('enable_ssh', form);
-    const description = Form.useWatch(['description'], form);
     // `organization_id` is owned by the create-scope picker slot; it only
     // exists/changes when a platform admin retargets the form. Watch it
     // so the parent can re-scope offerings (see onScopeChange).
@@ -181,20 +176,24 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       [ports]
     );
 
-    const isGPUType = useMemo(() => {
-      // The form's description carries the freshly picked type (create, or a
-      // re-typed stopped edit) and wins as a whole — by the presence of its
-      // spec, not its truthiness: a re-picked CPU type must be able to turn
-      // the form CPU-shaped over an older GPU summary. Only when no fresh
-      // pick has written a spec does the row's server-resolved summary
-      // decide, so an empty description blob cannot flip a GPU instance to
-      // the CPU-shaped fields.
-      const parsed = parseJsonSafe(description || '{}', {} as any);
-      if (parsed && typeof parsed === 'object' && 'spec' in parsed) {
-        return !!parsed.spec?.acceleratable;
-      }
-      return !!currentData?.typeSnapshotDetail?.spec?.acceleratable;
-    }, [description, currentData]);
+    const [selectedInstanceType, setSelectedInstanceType] = useState<
+      InstanceTypeItem | undefined
+    >(undefined);
+    const [onceMaxRequest, setOnceMaxRequest] = useState<BasicResourceMax>({
+      cpu: null,
+      memory: null,
+      localStorage: null
+    });
+
+    // A type picked this session (create, or a re-typed stopped edit) decides
+    // the form's shape — by selection, not truthiness, so a re-picked CPU
+    // type still turns the form CPU-shaped. With no pick, the row's
+    // server-resolved summary decides. The persisted description blob is not
+    // a source: edit init backfills it, so its spec cannot tell a fresh pick
+    // from a stale row.
+    const isGPUType = selectedInstanceType
+      ? !!selectedInstanceType.spec?.acceleratable
+      : !!currentData?.typeSnapshotDetail?.spec?.acceleratable;
 
     useEffect(() => {
       if (open) {
@@ -265,15 +264,6 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
       ],
       [intl]
     );
-
-    const [selectedInstanceType, setSelectedInstanceType] = useState<
-      InstanceTypeItem | undefined
-    >(undefined);
-    const [onceMaxRequest, setOnceMaxRequest] = useState<BasicResourceMax>({
-      cpu: null,
-      memory: null,
-      localStorage: null
-    });
 
     const buildResourcesData = (
       instanceType:
@@ -783,15 +773,20 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
           ...currentData,
           spec: {
             ...currentData?.spec,
-            resources: {
-              ...currentData?.spec?.resources,
-              ...buildResourcesData(
-                { spec: typeSnapshot },
-                {
-                  count
+            resources: typeSnapshot
+              ? {
+                  ...currentData?.spec?.resources,
+                  ...buildResourcesData(
+                    { spec: typeSnapshot },
+                    {
+                      count
+                    }
+                  )
                 }
-              )
-            }
+              : // No server-resolved summary (older server, or the type row
+                // is gone): there is no unit shape to rebuild CPU / RAM
+                // from, so the persisted resources stand as they are.
+                currentData?.spec?.resources
           },
           enable_ssh: !!currentData?.spec?.sshPublicKeys?.length,
           storageMode: detectMode(currentData?.spec?.volume)
@@ -799,9 +794,11 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
 
         // buildResourcesData above filled CPU / RAM for the whole card; rescale
         // them off the persisted percentage / profile for a divided instance.
-        if (persistedProfile) {
+        // Without a summary there is no unit shape to scale from — the
+        // persisted figures already say what the slice holds.
+        if (typeSnapshot && persistedProfile) {
           applyPartitionResourceScaling(persistedProfile);
-        } else if (persistedSliced) {
+        } else if (typeSnapshot && persistedSliced) {
           applySlicedResourceScaling();
         }
       }

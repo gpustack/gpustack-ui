@@ -867,12 +867,24 @@ const GPUServiceInstanceForm: React.FC<InstanceFormProps> = forwardRef(
         });
       }
 
+      // Without a server-resolved summary the form falls back to the CPU
+      // shape, so the accelerator count never registers as a field and the
+      // submitted values drop it. The resources are not editable in that
+      // state — submit the persisted ones verbatim.
+      const keepExistingResources =
+        action === PageAction.EDIT &&
+        !!currentData &&
+        !selectedInstanceType &&
+        !currentData.typeSnapshotDetail;
+
       // Hardware and soft slices can't land on the same card, so only one set
       // of slice fields may ride the payload.
-      const resources = {
-        ...values.spec?.resources,
-        ...buildResourcesDataForSubmit(values)
-      };
+      const resources = keepExistingResources
+        ? { ...currentData?.spec?.resources }
+        : {
+            ...values.spec?.resources,
+            ...buildResourcesDataForSubmit(values)
+          };
       const exclusiveResources = resources.acceleratorPartitionedProfile
         ? _.omit(resources, [
             'acceleratorSlicedMemoryPercentage',

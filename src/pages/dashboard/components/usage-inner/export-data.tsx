@@ -124,7 +124,7 @@ const ExportData: React.FC<{
           formatMap: {
             user_id: (value: string) => {
               return (
-                userList.find((item) => item.value === value)?.label || value
+                userList.find((item) => item.value === value)?.username || value
               );
             },
             model_id: (value: string, record: any) => {

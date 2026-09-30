@@ -1,5 +1,6 @@
 import useTargetSourceModels from '@/pages/model-routes/hooks/use-target-source-models';
 import { queryUsersList } from '@/pages/users/apis';
+import { formatUserOption } from '@/pages/users/utils/format-user-option';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import { useMemo, useState } from 'react';
@@ -105,7 +106,12 @@ export default function useUseageData<T>(config: {
   });
   const { sourceModels: modelList, fetchSourceModels } =
     useTargetSourceModels();
-  const [userList, setUserList] = useState<Global.BaseOption<string>[]>([]);
+  const [userList, setUserList] = useState<
+    (Global.BaseOption<string> & {
+      description?: string;
+      username: string;
+    })[]
+  >([]);
   const [loading, setLoading] = useState(false);
   const [selectedModels, setSelectedModels] = useState<string[][]>([]);
 
@@ -220,8 +226,9 @@ export default function useUseageData<T>(config: {
       const response = await queryUsersList(params);
       const list = _.map(response.items || [], (item: any) => {
         return {
-          label: item.username,
-          value: item.id
+          ...formatUserOption(item),
+          value: item.id,
+          username: item.username
         };
       });
       setUserList(list);

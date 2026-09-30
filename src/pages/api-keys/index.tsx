@@ -2,11 +2,23 @@ import { PageAction } from '@/config';
 import { PaginationKey } from '@/config/settings';
 import type { PageActionType } from '@/config/types';
 import useTableFetch from '@/hooks/use-table-fetch';
+import { renderUserOption } from '@/pages/users/components/user-option-content';
 import useQueryUserList from '@/pages/users/services/use-query-user-list';
-import { DeleteModal, FilterBar, IconFont, NoResult } from '@gpustack/core-ui';
+import {
+  formatUserOption,
+  matchesUserOption
+} from '@/pages/users/utils/format-user-option';
+import { SearchOutlined, SyncOutlined } from '@ant-design/icons';
+import {
+  BaseSelect,
+  DeleteModal,
+  FilterBar,
+  IconFont,
+  NoResult
+} from '@gpustack/core-ui';
 import { useAccess, useIntl } from '@umijs/max';
 import useMemoizedFn from 'ahooks/lib/useMemoizedFn';
-import { ConfigProvider, Table } from 'antd';
+import { Button, ConfigProvider, Input, Space, Table } from 'antd';
 import _ from 'lodash';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import PageBox from '../_components/page-box';
@@ -56,9 +68,13 @@ const APIKeys: React.FC = () => {
     fetchData: fetchUserData,
     cancelRequest: cancelUserRequest
   } = useQueryUserList({
-    getLabel: (item) => item.username,
+    getLabel: (item) => formatUserOption(item).label,
     getValue: (item) => item.id
   });
+  const userOptions = useMemo(
+    () => userList.map((user) => ({ ...user, ...formatUserOption(user) })),
+    [userList]
+  );
 
   const intl = useIntl();
 
@@ -215,10 +231,42 @@ const APIKeys: React.FC = () => {
     <>
       <PageBox>
         <FilterBar
-          showSelect={canSeeAllKeys}
-          selectOptions={userList}
-          select={{ showSearch: { optionFilterProp: 'label' } }}
-          selectHolder={intl.formatMessage({ id: 'common.filter.byCreator' })}
+          left={
+            <Space>
+              <Input
+                prefix={
+                  <SearchOutlined
+                    style={{ color: 'var(--ant-color-text-placeholder)' }}
+                  />
+                }
+                placeholder={intl.formatMessage({ id: 'common.filter.name' })}
+                style={{ width: 300 }}
+                allowClear
+                onChange={handleNameChange}
+              />
+              {canSeeAllKeys && (
+                <BaseSelect
+                  allowClear
+                  showSearch={{ filterOption: matchesUserOption }}
+                  placeholder={intl.formatMessage({
+                    id: 'common.filter.byCreator'
+                  })}
+                  style={{ width: 230 }}
+                  options={userOptions}
+                  optionRender={renderUserOption}
+                  onChange={handleUserChange}
+                />
+              )}
+              <Button
+                type="text"
+                style={{ color: 'var(--ant-color-text-tertiary)' }}
+                onClick={handleSearch}
+                aria-label={intl.formatMessage({ id: 'common.button.refresh' })}
+                title={intl.formatMessage({ id: 'common.button.refresh' })}
+                icon={<SyncOutlined />}
+              />
+            </Space>
+          }
           buttonText={intl.formatMessage({ id: 'apikeys.button.create' })}
           handleSearch={handleSearch}
           handleDeleteByBatch={handleDeleteBatch}
@@ -226,7 +274,6 @@ const APIKeys: React.FC = () => {
           handleSelectChange={handleUserChange}
           handleInputChange={handleNameChange}
           rowSelection={rowSelection}
-          widths={{ input: 300 }}
         ></FilterBar>
         <ConfigProvider renderEmpty={renderEmpty}>
           <Table

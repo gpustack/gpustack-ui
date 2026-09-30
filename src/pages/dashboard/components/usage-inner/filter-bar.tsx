@@ -1,4 +1,5 @@
 import ProviderLogo from '@/pages/maas-provider/components/provider-logo';
+import { renderUserOption } from '@/pages/users/components/user-option-content';
 import { DownloadOutlined } from '@ant-design/icons';
 import {
   AutoTooltip,
@@ -117,6 +118,7 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
           showSearch
           mode="multiple"
           options={userList}
+          optionLabelRender={renderUserOption}
           maxTagCount={'responsive'}
           placeholder={intl.formatMessage({
             id: 'dashboard.usage.selectuser'

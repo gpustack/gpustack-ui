@@ -1,10 +1,10 @@
 import {
+  CheckboxField,
   InputNumber as CInputNumber,
-  LabelInfo,
   Select as SealSelect
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Flex, Form, Input, Switch, Tooltip } from 'antd';
+import { Form, Input, Switch, Tooltip } from 'antd';
 import _ from 'lodash';
 import { useEffect, useMemo, useRef } from 'react';
 import { useFormContext } from '../config/form-context';
@@ -41,23 +41,17 @@ interface KVCacheFormProps {
 }
 
 /**
- * The enable row: label on the left, switch on the right.
- *
- * A component rather than inline JSX because `Form.Item` injects `checked` and
- * `onChange` into its single child — inline, the injection would land on the
- * `Flex` and the switch would never see it.
+ * Forwards the form's checked value and change handler to the card switch,
+ * while keeping the disabled reason available through a tooltip.
  */
 const ExtendedKVCacheSwitch: React.FC<{
   checked?: boolean;
   disabled?: boolean;
-  /** Drop the label and render the switch alone, for a caller that already
-      has a heading to sit it beside. */
-  bare?: boolean;
   onChange?: (checked: boolean) => void;
-}> = ({ checked, disabled, bare, onChange }) => {
+}> = ({ checked, disabled, onChange }) => {
   const intl = useIntl();
   const reason = intl.formatMessage({ id: 'models.form.kvCache.tips2' });
-  const control = (
+  return (
     <Tooltip title={disabled ? reason : false}>
       <span>
         <Switch
@@ -68,18 +62,6 @@ const ExtendedKVCacheSwitch: React.FC<{
         ></Switch>
       </span>
     </Tooltip>
-  );
-  if (bare) {
-    return control;
-  }
-  return (
-    <Flex align="center" justify="space-between">
-      <LabelInfo
-        label={intl.formatMessage({ id: 'models.form.extendedkvcache' })}
-        description={reason}
-      ></LabelInfo>
-      {control}
-    </Flex>
   );
 };
 
@@ -408,21 +390,8 @@ const KVCacheForm: React.FC<KVCacheFormProps> = ({ namePrefix, section }) => {
     );
   };
 
-  // A `Switch`, the shape every other feature toggle in this form uses (PD
-  // Disaggregation, Scheduled Scaling). It was a checkbox, which read as one
-  // item in a list of options rather than as the gate for the whole section
-  // below it.
-  //
-  // Where it sits depends on whether the caller brought a heading. Under a
-  // role it goes in the card's title row beside "Shared KV cache", because a
-  // titled card plus a labelled enable row is the same fact twice with a
-  // switch between them. At the model level there is no card, so the labelled
-  // row is the heading and stays one.
-  //
-  // The disabled state carries its reason in a tooltip either way. A control
-  // greyed out with no explanation is the silent-failure mode this form keeps
-  // having to fix: the answer ("built-in backends only") was already written,
-  // it just was not reachable from the disabled control.
+  // Flat performance settings use labelled checkboxes; titled role cards
+  // place a compact switch beside their existing heading.
   const toggle = (
     <Form.Item<FormData>
       data-field="extended_kv_cache.enabled"
@@ -430,15 +399,30 @@ const KVCacheForm: React.FC<KVCacheFormProps> = ({ namePrefix, section }) => {
       valuePropName="checked"
       noStyle={!!section}
       style={section ? undefined : { marginBottom: 8 }}
+      extra={
+        !section &&
+        !sharedSupported && (
+          <span
+            dangerouslySetInnerHTML={{
+              __html: intl.formatMessage({ id: 'models.form.kvCache.tips' })
+            }}
+          ></span>
+        )
+      }
     >
-      {/* `onChange` here is NOT overridden by the one Form.Item injects —
-          antd wraps it, so the field's own write runs and then this does the
-          mode / cache_service_id work that actually turns the section on. */}
-      <ExtendedKVCacheSwitch
-        bare={!!section}
-        disabled={!sharedSupported}
-        onChange={handleEnableOnChange}
-      />
+      {section ? (
+        <ExtendedKVCacheSwitch
+          disabled={!sharedSupported}
+          onChange={handleEnableOnChange}
+        />
+      ) : (
+        <CheckboxField
+          description={intl.formatMessage({ id: 'models.form.kvCache.tips2' })}
+          label={intl.formatMessage({ id: 'models.form.extendedkvcache' })}
+          disabled={!sharedSupported}
+          onChange={(e) => handleEnableOnChange(e.target.checked)}
+        />
+      )}
     </Form.Item>
   );
 

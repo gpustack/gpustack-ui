@@ -56,6 +56,19 @@ export default {
   'usage.chart.cached': 'Cached',
   'usage.chart.uncached': 'Uncached',
   'usage.chart.inputTokensCached': 'Input Tokens (Cached/Uncached)',
+  'usage.chart.moreGroups':
+    '他 {count} 件（合計 {value} トークン）。棒をクリックしてすべて表示。',
+  'usage.chart.apiKeyDetails': 'API キー',
+  'usage.chart.groupCount': '合計 {count} 件',
+  'usage.chart.searchModels': 'モデルを検索',
+  'usage.chart.searchUsers': 'ユーザーを検索',
+  'usage.chart.searchApiKeys': 'API キーを検索',
+  'usage.chart.modelName': 'モデル名',
+  'usage.chart.userName': 'ユーザー名',
+  'usage.chart.apiKeyName': 'キー名',
+  'usage.chart.pageOf': '{page} / {total} ページ',
+  'usage.chart.previousPage': '前のページ',
+  'usage.chart.nextPage': '次のページ',
   'usage.table.inputTokensCached': 'Input Tokens Cached',
 
   // --- Resource usage: shared metrics & units ---

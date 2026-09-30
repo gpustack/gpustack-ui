@@ -56,6 +56,19 @@ export default {
   'usage.chart.cached': '缓存',
   'usage.chart.uncached': '非缓存',
   'usage.chart.inputTokensCached': '输入 Token 数（缓存/非缓存）',
+  'usage.chart.moreGroups':
+    '还有 {count} 项（合计 {value} Token）。点击柱子查看全部。',
+  'usage.chart.apiKeyDetails': 'API 密钥',
+  'usage.chart.groupCount': '共 {count} 项',
+  'usage.chart.searchModels': '搜索模型',
+  'usage.chart.searchUsers': '搜索用户',
+  'usage.chart.searchApiKeys': '搜索 API 密钥',
+  'usage.chart.modelName': '模型名称',
+  'usage.chart.userName': '用户名',
+  'usage.chart.apiKeyName': '密钥名称',
+  'usage.chart.pageOf': '第 {page} / {total} 页',
+  'usage.chart.previousPage': '上一页',
+  'usage.chart.nextPage': '下一页',
   'usage.table.inputTokensCached': '输入 Token 缓存数',
 
   // --- Resource usage: shared metrics & units ---

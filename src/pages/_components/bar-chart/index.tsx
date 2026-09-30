@@ -36,7 +36,42 @@ export interface BarChartProps {
     containLabel?: boolean;
   };
   legendIsolate?: boolean;
+  hideZeroValuesInTooltip?: boolean;
+  scrollableTooltip?: boolean;
+  tooltipMaxItems?: number;
+  tooltipTotalLabel?: string;
+  tooltipOverflowFormatter?: (count: number, value: number) => string;
+  onBarClick?: (xAxisValue: string) => void;
 }
+
+const positionScrollableTooltip = (
+  point: number[],
+  _params: unknown,
+  dom: HTMLElement,
+  _rect: unknown,
+  { contentSize }: { contentSize: [number, number] }
+): [number, number] => {
+  const chartRect = dom.parentElement?.getBoundingClientRect();
+  if (!chartRect) return [point[0], point[1]];
+
+  const [width, height] = contentSize;
+  const gap = 12;
+  const minX = gap - chartRect.left;
+  const maxX = window.innerWidth - gap - chartRect.left - width;
+  const minY = gap - chartRect.top;
+  const maxY = window.innerHeight - gap - chartRect.top - height;
+  const preferredX =
+    point[0] + width + gap > window.innerWidth - chartRect.left - gap
+      ? point[0] - width - gap
+      : point[0] + gap;
+  const clamp = (value: number, min: number, max: number) =>
+    Math.max(min, Math.min(value, max));
+
+  return [
+    clamp(preferredX, minX, maxX),
+    clamp(point[1] - height / 2, minY, maxY)
+  ];
+};
 
 const BarChart: React.FC<BarChartProps> = (props) => {
   const {
@@ -50,7 +85,13 @@ const BarChart: React.FC<BarChartProps> = (props) => {
     tooltipValueFormatter,
     title,
     grid,
-    legendIsolate
+    legendIsolate,
+    hideZeroValuesInTooltip,
+    scrollableTooltip,
+    tooltipMaxItems,
+    tooltipTotalLabel,
+    tooltipOverflowFormatter,
+    onBarClick
   } = props;
   const { token } = theme.useToken();
   const chartRef = useRef<{ chart: any } | null>(null);
@@ -144,6 +185,7 @@ const BarChart: React.FC<BarChartProps> = (props) => {
         barMinWidth: 2,
         barGap: '30%',
         barCategoryGap: '50%',
+        cursor: onBarClick ? 'pointer' : 'default',
         ...(stack === false || stack === undefined ? {} : { stack }),
         itemStyle: {
           color: resolvedColor,
@@ -169,21 +211,47 @@ const BarChart: React.FC<BarChartProps> = (props) => {
       },
       tooltip: {
         trigger: 'axis',
+        enterable: scrollableTooltip,
+        hideDelay: scrollableTooltip ? 200 : undefined,
+        position: scrollableTooltip ? positionScrollableTooltip : undefined,
+        className: scrollableTooltip
+          ? 'bar-chart-scrollable-tooltip'
+          : undefined,
         backgroundColor: token.colorBgElevated,
         borderColor: 'transparent',
         formatter: (params: any) => {
           let result = `<span class="tooltip-x-name">${params[0].axisValue}</span>`;
-          let visibleItemCount = 0;
-
-          params.forEach((item: any) => {
+          const items = params.flatMap((item: any) => {
             const raw = item.data?.value ?? item.value;
+            if (hideZeroValuesInTooltip && raw === 0) return [];
             const value = tooltipValueFormatter
               ? tooltipValueFormatter(raw)
               : raw;
+            if (value === null || value === undefined) return [];
+            return [{ item, raw, value }];
+          });
+          if (tooltipMaxItems) {
+            items.sort((a: any, b: any) => Number(b.raw) - Number(a.raw));
+          }
+          const visibleItems = tooltipMaxItems
+            ? items.slice(0, tooltipMaxItems)
+            : items;
+          const hiddenItems = tooltipMaxItems
+            ? items.slice(tooltipMaxItems)
+            : [];
 
-            if (value === null || value === undefined) return;
+          if (tooltipTotalLabel) {
+            const total = items.reduce(
+              (sum: number, { raw }: any) => sum + Number(raw),
+              0
+            );
+            result += `<span class="tooltip-total">
+              <span>${tooltipTotalLabel}</span>
+              <strong>${total.toLocaleString()}</strong>
+            </span>`;
+          }
 
-            visibleItemCount += 1;
+          visibleItems.forEach(({ item, value }: any) => {
             const stackLabel = item.data?.stackLabel;
             const baseName = item.data?.tooltipName ?? item.seriesName;
             const displayName = stackLabel
@@ -198,8 +266,16 @@ const BarChart: React.FC<BarChartProps> = (props) => {
             </span>`;
           });
 
+          if (hiddenItems.length && tooltipOverflowFormatter) {
+            const hiddenValue = hiddenItems.reduce(
+              (sum: number, { raw }: any) => sum + Number(raw),
+              0
+            );
+            result += `<span class="tooltip-overflow">${tooltipOverflowFormatter(hiddenItems.length, hiddenValue)}</span>`;
+          }
+
           const wrapperClassName =
-            visibleItemCount >= 12
+            visibleItems.length >= 12
               ? 'tooltip-wrapper tooltip-grid'
               : 'tooltip-wrapper';
           return `<div class="${wrapperClassName}">${result}</div>`;
@@ -255,10 +331,31 @@ const BarChart: React.FC<BarChartProps> = (props) => {
     dynamicColors,
     labelFormatter,
     tooltipValueFormatter,
+    hideZeroValuesInTooltip,
+    scrollableTooltip,
+    tooltipMaxItems,
+    tooltipTotalLabel,
+    tooltipOverflowFormatter,
+    onBarClick,
     legendData,
     title,
     token
   ]);
+
+  useEffect(() => {
+    if (!onBarClick) return;
+    const chart = chartRef.current?.chart;
+    if (!chart) return;
+
+    const handler = (params: any) => {
+      if (params.componentType !== 'series') return;
+      const date = xAxisData[params.dataIndex];
+      if (date) onBarClick(date);
+    };
+
+    chart.on('click', handler);
+    return () => chart.off('click', handler);
+  }, [onBarClick, seriesData, xAxisData]);
 
   useEffect(() => {
     if (!legendIsolate) return;

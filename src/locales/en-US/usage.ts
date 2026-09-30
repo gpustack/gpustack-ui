@@ -56,6 +56,19 @@ export default {
   'usage.chart.cached': 'Cached',
   'usage.chart.uncached': 'Uncached',
   'usage.chart.inputTokensCached': 'Input Tokens (Cached/Uncached)',
+  'usage.chart.moreGroups':
+    '{count} more items ({value} tokens). Click the bar to view all.',
+  'usage.chart.apiKeyDetails': 'API Key',
+  'usage.chart.groupCount': 'Total: {count}',
+  'usage.chart.searchModels': 'Search models',
+  'usage.chart.searchUsers': 'Search users',
+  'usage.chart.searchApiKeys': 'Search API keys',
+  'usage.chart.modelName': 'Model name',
+  'usage.chart.userName': 'User name',
+  'usage.chart.apiKeyName': 'Key name',
+  'usage.chart.pageOf': 'Page {page} of {total}',
+  'usage.chart.previousPage': 'Previous page',
+  'usage.chart.nextPage': 'Next page',
   'usage.table.inputTokensCached': 'Input Tokens Cached',
 
   // --- Resource usage: shared metrics & units ---

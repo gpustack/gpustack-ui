@@ -988,6 +988,15 @@ body {
     white-space: nowrap;
   }
 
+  .tooltip-total {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--ant-color-border-secondary);
+    color: var(--ant-color-text);
+  }
+
   .tooltip-item {
     color: var(--ant-color-text-secondary);
     display: flex;
@@ -1027,6 +1036,62 @@ body {
       overflow: hidden;
     }
   }
+
+  .tooltip-overflow {
+    margin-top: 4px;
+    padding-top: 6px;
+    border-top: 1px solid var(--ant-color-border-secondary);
+    color: var(--ant-color-text-tertiary);
+    white-space: normal;
+  }
+}
+
+.bar-chart-scrollable-tooltip {
+  max-height: min(60vh, 480px);
+  max-width: calc(100vw - 24px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--ant-color-fill) transparent;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--ant-color-fill);
+    border-radius: 4px;
+  }
+
+  .tooltip-wrapper {
+    background: inherit;
+  }
+
+  .tooltip-x-name {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: inherit;
+  }
+
+  @media (max-width: 600px) {
+    .tooltip-wrapper.tooltip-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+}
+
+.usage-group-detail-list .ant-list-item {
+  padding-inline: 12px;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: var(--ant-color-fill-tertiary);
+  }
+}
+
+.usage-group-detail-list.ant-list-split .ant-list-item:last-child {
+  border-block-end: 1px solid var(--ant-color-split);
 }
 
 .ant-pro-sider-logo + div {

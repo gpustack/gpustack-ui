@@ -2,6 +2,11 @@ import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { RouteItem } from '@/pages/model-routes/config/types';
 import { queryUserDirectory } from '@/pages/users/apis';
+import UserOptionContent from '@/pages/users/components/user-option-content';
+import {
+  formatUserOption,
+  matchesUserOption
+} from '@/pages/users/utils/format-user-option';
 import { getGPUStackPlugin } from '@/plugins';
 import { DownOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import {
@@ -150,7 +155,14 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
   const [targetKeys, setTargetKeys] = useState<TransferKey[]>([]);
   const [totalPages, setTotalPages] = useState(0);
   const [userList, setUserList] = useState<
-    { title: string; key: number; is_admin: boolean; is_active: boolean }[]
+    {
+      title: string;
+      displayName?: string;
+      description?: string;
+      key: number;
+      is_admin: boolean;
+      is_active: boolean;
+    }[]
   >([]);
   const [open, setOpen] = useState(false);
   const [filterInUsers, setFilterInUsers] = useState<Set<string>>(new Set());
@@ -181,12 +193,17 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
   const getUserList = async (query: Global.SearchParams) => {
     try {
       const res = await queryUserDirectory(query);
-      const options = res.items.map((item) => ({
-        title: item.username,
-        key: item.id,
-        is_admin: item.is_admin as boolean,
-        is_active: item.is_active as boolean
-      }));
+      const options = res.items.map((item) => {
+        const { label, displayName, description } = formatUserOption(item);
+        return {
+          title: label,
+          displayName,
+          description,
+          key: item.id,
+          is_admin: item.is_admin as boolean,
+          is_active: item.is_active as boolean
+        };
+      });
       setTotalPages(res.pagination.totalPage);
       setUserList(options);
       return options;
@@ -551,11 +568,18 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
                 })
               }}
               filterOption={(inputValue, item) =>
-                item.title.toLowerCase().includes(inputValue.toLowerCase())
+                matchesUserOption(inputValue, {
+                  label: item.title,
+                  description: item.description
+                })
               }
               render={(item) => (
-                <span className="flex-center gap-4">
-                  <span>{item.title}</span>
+                <div className="flex-center gap-4">
+                  <UserOptionContent
+                    label={item.title}
+                    displayName={item.displayName}
+                    description={item.description}
+                  />
                   <span className="text-tertiary">
                     {!item.is_active
                       ? `[${intl.formatMessage({ id: 'users.status.inactive' })}]`
@@ -563,7 +587,7 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
                         ? `[${intl.formatMessage({ id: 'models.table.admin' })}]`
                         : ''}
                   </span>
-                </span>
+                </div>
               )}
               onSearch={onSearch}
               onChange={handleOnChange}

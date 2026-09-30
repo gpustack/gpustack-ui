@@ -1,166 +1,116 @@
 import { SearchOutlined, SyncOutlined } from '@ant-design/icons';
-import { BaseSelect } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Button, Input, Select, Space } from 'antd';
-import _ from 'lodash';
-import React from 'react';
-import { loadTypeOptions, targetModeOptions } from '../config';
+import { Button, Input, Select } from 'antd';
+import { useState } from 'react';
+import type { BenchmarkFilterValues, TextFilterKey } from '../config/types';
+import useBenchmarkFilters from '../hooks/use-benchmark-filters';
+import FilterMenu from './filter-menu';
+import ResponsiveFilters, {
+  type ResponsiveFilterItem
+} from './responsive-filters';
 
-export interface RightActionsProps {
+export interface LeftActionsProps {
   handleSearch: () => void;
   handleQueryChange: (value: any, option?: any) => void;
-  modelList?: Global.BaseOption<number, { categories: string[] }>[];
-  toggleFilters: () => void;
-  count?: number;
-  onClear: () => void;
+  filters: Partial<BenchmarkFilterValues>;
 }
 
-const RightActions: React.FC<RightActionsProps> = ({
+const LeftActions: React.FC<LeftActionsProps> = ({
   handleSearch,
   handleQueryChange,
-  toggleFilters,
-  count,
-  onClear,
-  modelList
+  filters
 }) => {
   const intl = useIntl();
-
-  // Names go to the API comma-separated, matching any of them. Comparing runs
-  // means pulling up exactly the handful being compared, which one substring
-  // rarely spans — and a benchmark name cannot contain a comma or a space, so
-  // neither separator is ambiguous.
-  const handleNamesChange = (values: string[]) => {
-    handleQueryChange({
-      page: 1,
-      search: values.join(',')
+  const { values, changeValues, nameSearch, setNameSearch } =
+    useBenchmarkFilters({
+      initialValues: filters,
+      onChange: handleQueryChange
     });
-  };
+  const [nameDropdownOpen, setNameDropdownOpen] = useState(false);
+  const searchIcon = (
+    <SearchOutlined style={{ color: 'var(--ant-color-text-placeholder)' }} />
+  );
 
-  const debounceUpdateFilter = _.debounce((e: any) => {
-    handleQueryChange({
-      page: 1,
-      gpu_summary: e.target.value
-    });
-  }, 350);
+  const textFilters = [
+    {
+      key: 'model_name' as const,
+      placeholder: 'benchmark.table.filter.bymodel'
+    },
+    {
+      key: 'gpu_summary' as const,
+      placeholder: 'benchmark.table.filter.bygpu'
+    },
+    { key: 'profile' as const, placeholder: 'benchmark.table.filter.byProfile' }
+  ];
 
-  const handleGPUChange = debounceUpdateFilter;
-
-  const handleSearchByModelDebounce = _.debounce((e: any) => {
-    handleQueryChange({
-      page: 1,
-      model_name: e.target.value
-    });
-  }, 350);
-
-  const handleSearchByProfileDebounce = _.debounce((e: any) => {
-    handleQueryChange({
-      page: 1,
-      profile: e.target.value
-    });
-  }, 350);
+  const items: ResponsiveFilterItem<TextFilterKey>[] = [
+    {
+      key: 'search',
+      width: 200,
+      locked: nameDropdownOpen,
+      content: (
+        // Keep the original tags Select: names are sent comma-separated to
+        // match any of them, and this field has no predefined options.
+        <Select
+          mode="tags"
+          allowClear
+          notFoundContent={null}
+          tokenSeparators={[',', ' ']}
+          maxTagCount="responsive"
+          suffixIcon={searchIcon}
+          placeholder={intl.formatMessage({ id: 'common.filter.name' })}
+          aria-label={intl.formatMessage({ id: 'common.filter.name' })}
+          style={{ width: '100%' }}
+          value={values.search ? values.search.split(',') : []}
+          searchValue={nameSearch}
+          onSearch={setNameSearch}
+          onOpenChange={setNameDropdownOpen}
+          onChange={(names: string[]) =>
+            changeValues({ search: names.join(',') })
+          }
+        />
+      )
+    },
+    ...textFilters.map(({ key, placeholder }) => ({
+      key,
+      width: 160,
+      content: (
+        <Input
+          prefix={searchIcon}
+          placeholder={intl.formatMessage({ id: placeholder })}
+          aria-label={intl.formatMessage({ id: placeholder })}
+          style={{ width: '100%' }}
+          value={values[key]}
+          allowClear
+          onChange={(event) =>
+            changeValues({ [key]: event.target.value }, true)
+          }
+        />
+      )
+    }))
+  ];
 
   return (
-    <Space>
-      {/* antd's Select rather than core-ui's BaseSelect: BaseSelect always
-          renders an "empty" illustration for the dropdown, and this field has
-          no options to offer — every entry is typed. `notFoundContent={null}`
-          keeps the dropdown to the one "add this name" row antd puts there. */}
-      <Select
-        mode="tags"
-        allowClear
-        notFoundContent={null}
-        tokenSeparators={[',', ' ']}
-        maxTagCount="responsive"
-        suffixIcon={
-          <SearchOutlined
-            style={{ color: 'var(--ant-color-text-placeholder)' }}
-          ></SearchOutlined>
-        }
-        placeholder={intl.formatMessage({
-          id: 'common.filter.name'
-        })}
-        style={{ width: 240 }}
-        onChange={handleNamesChange}
-      ></Select>
-      <Input
-        prefix={
-          <SearchOutlined
-            style={{ color: 'var(--ant-color-text-placeholder)' }}
-          ></SearchOutlined>
-        }
-        placeholder={intl.formatMessage({
-          id: 'benchmark.table.filter.bymodel'
-        })}
-        style={{ width: 180 }}
-        allowClear
-        onChange={handleSearchByModelDebounce}
-      ></Input>
-      <Input
-        prefix={
-          <SearchOutlined
-            style={{ color: 'var(--ant-color-text-placeholder)' }}
-          ></SearchOutlined>
-        }
-        placeholder={intl.formatMessage({ id: 'benchmark.table.filter.bygpu' })}
-        style={{ width: 160 }}
-        allowClear
-        onChange={handleGPUChange}
-      ></Input>
-      <Input
-        prefix={
-          <SearchOutlined
-            style={{ color: 'var(--ant-color-text-placeholder)' }}
-          ></SearchOutlined>
-        }
-        placeholder={intl.formatMessage({
-          id: 'benchmark.table.filter.byProfile'
-        })}
-        style={{ width: 160 }}
-        allowClear
-        onChange={handleSearchByProfileDebounce}
-      ></Input>
-      <BaseSelect
-        allowClear
-        placeholder={intl.formatMessage({
-          id: 'benchmark.table.filter.byTargetMode'
-        })}
-        style={{ width: 180 }}
-        options={targetModeOptions.map((item) => ({
-          label: intl.formatMessage({ id: item.label }),
-          value: item.value
-        }))}
-        onChange={(value) =>
-          handleQueryChange({
-            target_mode: value,
-            page: 1
-          })
-        }
-      ></BaseSelect>
-      <BaseSelect
-        allowClear
-        placeholder={intl.formatMessage({
-          id: 'benchmark.table.filter.byLoadType'
-        })}
-        style={{ width: 160 }}
-        options={loadTypeOptions.map((item) => ({
-          label: intl.formatMessage({ id: item.label }),
-          value: item.value
-        }))}
-        onChange={(value, option) =>
-          handleQueryChange({
-            load_type: value,
-            page: 1
-          })
-        }
-      ></BaseSelect>
-      <Button
-        type="text"
-        style={{ color: 'var(--ant-color-text-tertiary)' }}
-        onClick={handleSearch}
-        icon={<SyncOutlined></SyncOutlined>}
-      ></Button>
-    </Space>
+    <ResponsiveFilters
+      items={items}
+      renderOverflow={(overflowItems) => (
+        <FilterMenu
+          values={values}
+          onChange={changeValues}
+          overflowItems={overflowItems}
+        />
+      )}
+      suffix={
+        <Button
+          type="text"
+          style={{ color: 'var(--ant-color-text-tertiary)' }}
+          aria-label={intl.formatMessage({ id: 'common.button.refresh' })}
+          onClick={handleSearch}
+          icon={<SyncOutlined />}
+        />
+      }
+    />
   );
 };
 
-export default RightActions;
+export default LeftActions;

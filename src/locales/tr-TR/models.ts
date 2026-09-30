@@ -147,11 +147,11 @@ export default {
   'models.form.backendVersion': 'Altyapı Sürümü',
   'models.form.backendVersion.tips':
     '{backend}{version} sürümünü kullanmak için sistem, ilgili sürümü yüklemek üzere çevrimiçi ortamda otomatik olarak sanal ortam oluşturur. GPUStack yükseltmesinden sonra altyapı sürümü sabit kalır. {link}',
-  'models.form.customImage': 'Custom Image',
-  'models.form.customImage.entry': 'Use a custom image…',
-  'models.form.customImage.backToVersion': 'Select a version instead',
+  'models.form.customImage': 'Özel İmaj',
+  'models.form.customImage.entry': 'Özel imaj kullan…',
+  'models.form.customImage.backToVersion': 'Bunun yerine bir sürüm seç',
   'models.form.customImage.tips':
-    'Use your own {backend} image instead of a catalog version. GPUStack skips runner catalog compatibility checks for this image; confirm it supports your devices and distributed setup.',
+    'Katalog sürümü yerine kendi {backend} imajınızı kullanın. GPUStack bu imaj için çalıştırıcı kataloğu uyumluluk kontrollerini atlar; imajın cihazlarınızı ve dağıtık kurulumunuzu desteklediğinden emin olun.',
   'models.form.customRunCommand.tips':
     'For built-in backends, enter startup arguments without the executable. GPUStack still appends host and port, plus distributed settings where applicable.',
   'models.form.gpuselector': 'GPU Seçici',

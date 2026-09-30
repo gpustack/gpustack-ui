@@ -988,6 +988,7 @@ body {
     white-space: nowrap;
   }
 
+  // BarChart emits this element only when tooltipTotalLabel is provided.
   .tooltip-total {
     display: flex;
     justify-content: space-between;
@@ -1037,6 +1038,7 @@ body {
     }
   }
 
+  // BarChart emits this element only when a limited preview has hidden items.
   .tooltip-overflow {
     margin-top: 4px;
     padding-top: 6px;
@@ -1046,6 +1048,7 @@ body {
   }
 }
 
+// ECharts adds this class only for BarChart's opt-in scrollable HTML tooltip.
 .bar-chart-scrollable-tooltip {
   max-height: min(60vh, 480px);
   max-width: calc(100vw - 24px);
@@ -1081,6 +1084,7 @@ body {
   }
 }
 
+// This class is used only by the grouped usage details modal's Ant List.
 .usage-group-detail-list .ant-list-item {
   padding-inline: 12px;
   transition: background-color 0.15s ease;

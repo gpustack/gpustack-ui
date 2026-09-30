@@ -72,9 +72,9 @@ export default {
   'benchmark.form.warmup': 'Isınma (%)',
   'benchmark.form.cooldown': 'Soğuma (%)',
   'benchmark.form.warmup.tips':
-    'Trims the first N% of each stage’s REQUESTS from the measured window (not the first N% of its seconds). Use it to exclude cold-start effects — the first few requests of a run can be several times slower than steady state. Enter a percentage — e.g. 10 trims the first 10% of each stage’s requests.',
+    "Her aşamanın İSTEKLERİNİN ilk %N'lik kısmını ölçüm penceresinden çıkarır (saniyelerinin ilk %N'lik kısmını değil). Soğuk başlatma etkilerini dışarıda bırakmak için kullanın — bir çalıştırmanın ilk birkaç isteği kararlı durumdan birkaç kat yavaş olabilir. Bir yüzde girin — örneğin 10, her aşamanın isteklerinin ilk %10'unu çıkarır.",
   'benchmark.form.cooldown.tips':
-    'Trims the last N% of each stage’s REQUESTS from the measured window, excluding the tail where the stage is draining. Enter a percentage — e.g. 10 trims the last 10% of each stage’s requests.',
+    "Her aşamanın İSTEKLERİNİN son %N'lik kısmını ölçüm penceresinden çıkarır; böylece aşamanın boşaldığı son bölüm dışarıda kalır. Bir yüzde girin — örneğin 10, her aşamanın isteklerinin son %10'unu çıkarır.",
   'benchmark.form.maxErrors': 'Maksimum Hata',
   'benchmark.form.maxErrorRate': 'Maks. Hata Oranı (%)',
   'benchmark.form.maxErrorRate.tips':

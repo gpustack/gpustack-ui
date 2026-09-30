@@ -150,6 +150,11 @@ export default {
   'benchmark.form.inputStdev': 'Разброс входа (±)',
   'benchmark.form.inputMin': 'Мин. вход',
   'benchmark.form.inputMax': 'Макс. вход',
+  'benchmark.form.sharegpt.tokenLengthSettings': 'Настройки длины токенов',
+  'benchmark.form.sharegpt.tokenLengthSettings.tip':
+    'Можно задать только минимум длины входа, только максимум или оба значения. Длина выхода также необязательна: по умолчанию используется длина исходного ответа.',
+  'benchmark.form.sharegpt.inputRangeError':
+    'Максимум входа должен быть не меньше минимума',
   'benchmark.form.outputStdev': 'Разброс выхода (±)',
   'benchmark.form.outputMin': 'Мин. выход',
   'benchmark.form.outputMax': 'Макс. выход',

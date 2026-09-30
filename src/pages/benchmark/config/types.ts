@@ -83,8 +83,10 @@ export interface FormData {
   // measurements, so the one the user picked from the list is the one to send.
   route_name?: string;
   dataset_name: string;
-  dataset_input_tokens: number;
-  dataset_output_tokens: number;
+  // Controls the optional ShareGPT token settings in the form only.
+  sharegpt_filter_enabled?: boolean;
+  dataset_input_tokens: number | null;
+  dataset_output_tokens: number | null;
   total_requests: number;
   request_rate: number;
   dataset_seed: number;
@@ -272,8 +274,10 @@ export interface ProfileOption {
   description: string;
   dataset_name: string;
   dataset_source: string;
-  dataset_input_tokens: number;
-  dataset_output_tokens: number;
+  dataset_input_tokens: number | null;
+  dataset_input_min?: number;
+  dataset_input_max?: number;
+  dataset_output_tokens: number | null;
   request_rate: number;
   total_requests: number;
   // preset fields (filled into the form when a preset is selected)

@@ -5,6 +5,7 @@ import { Form, Select, Tag } from 'antd';
 import React from 'react';
 import {
   AUTO_TUNE_DEFAULTS,
+  DatasetValueMap,
   genDatasetSeed,
   sloFieldsFromTargets,
   sloTargetsFromFields
@@ -68,8 +69,20 @@ const DatasetForm: React.FC = () => {
       max_total_seconds:
         config.max_total_seconds ?? AUTO_TUNE_DEFAULTS.max_total_seconds,
       dataset_name: config.dataset_name,
-      dataset_input_tokens: config.dataset_input_tokens ?? null,
+      dataset_input_tokens:
+        config.dataset_name === DatasetValueMap.ShareGPT
+          ? null
+          : (config.dataset_input_tokens ?? null),
       dataset_output_tokens: config.dataset_output_tokens ?? null,
+      dataset_input_min: config.dataset_input_min ?? null,
+      dataset_input_max: config.dataset_input_max ?? null,
+      sharegpt_filter_enabled:
+        config.dataset_name === DatasetValueMap.ShareGPT &&
+        [
+          config.dataset_input_min,
+          config.dataset_input_max,
+          config.dataset_output_tokens
+        ].some((value) => value != null),
       dataset_seed: seedRandom
         ? genDatasetSeed()
         : (form.getFieldValue('dataset_seed') ?? config.dataset_seed ?? null),

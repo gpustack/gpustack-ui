@@ -1,7 +1,8 @@
 import { tableSorter } from '@/config/settings';
 import { AutoTooltip, ColumnSettings, InfoColumn } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Tag, Tooltip, Typography } from 'antd';
+import { ConfigProvider, Tag, Tooltip, Typography } from 'antd';
+import { createStyles } from 'antd-style';
 import dayjs from 'dayjs';
 import _, { round } from 'lodash';
 import React from 'react';
@@ -15,6 +16,19 @@ import {
   targetModeOptions
 } from '../config';
 import { BenchmarkListItem as ListItem } from '../config/types';
+
+const useStyles = createStyles(({ css }) => ({
+  columnSettingsPopover: css`
+    .ant-checkbox-group {
+      width: 100%;
+
+      > div {
+        width: 100%;
+      }
+    }
+  `
+}));
+
 // sort by this order
 const allFields = [
   'cluster_id',
@@ -78,6 +92,7 @@ const useColumnSettings = (options: {
   clusterList: Global.BaseOption<number>[];
 }) => {
   const intl = useIntl();
+  const { styles } = useStyles();
   const { contentHeight, clusterList, profileOptions } = options;
 
   const [selectedColumns, setSelectedColumns] =
@@ -88,7 +103,7 @@ const useColumnSettings = (options: {
     options?: { subTitle?: React.ReactNode }
   ): React.ReactNode => {
     return (
-      <span>
+      <span style={{ lineHeight: 1.2 }}>
         <AutoTooltip
           ghost
           minWidth={20}
@@ -97,7 +112,7 @@ const useColumnSettings = (options: {
           {title}
         </AutoTooltip>
         {options?.subTitle && (
-          <span className="sub-title">
+          <span className="sub-title" style={{ fontWeight: 400 }}>
             <AutoTooltip
               ghost
               minWidth={20}
@@ -632,42 +647,50 @@ const useColumnSettings = (options: {
   }, [selectedColumns, clusterList, intl, profileOptions]);
 
   const SettingsButton = (
-    <ColumnSettings
-      tableName="benchmark"
-      contentHeight={contentHeight}
-      defaultSelectedColumns={defaultColumns}
-      selectedColumns={selectedColumns}
-      onChange={handleOnChange}
-      onReset={handleOnReset}
-      fixedColumns={fixedColumns}
-      grouped={true}
-      columns={[
-        {
-          title: intl.formatMessage({ id: 'benchmark.detail.summary.latency' }),
-          children: latencyColumns
-        },
-        {
-          title: intl.formatMessage({ id: 'benchmark.table.tailLatency' }),
-          children: tailLatencyColumns
-        },
-        {
-          title: intl.formatMessage({
-            id: 'benchmark.detail.summary.throughput'
-          }),
-          children: throughputColumns
-        },
-        {
-          title: intl.formatMessage({ id: 'benchmark.detail.summary.request' }),
-          children: requestColumns
-        },
-        {
-          title: intl.formatMessage({
-            id: 'benchmark.detail.summary.metadata'
-          }),
-          children: metadataColumns
-        }
-      ]}
-    ></ColumnSettings>
+    <ConfigProvider
+      popover={{ classNames: { root: styles.columnSettingsPopover } }}
+    >
+      <ColumnSettings
+        tableName="benchmark"
+        contentHeight={contentHeight}
+        defaultSelectedColumns={defaultColumns}
+        selectedColumns={selectedColumns}
+        onChange={handleOnChange}
+        onReset={handleOnReset}
+        fixedColumns={fixedColumns}
+        grouped={true}
+        columns={[
+          {
+            title: intl.formatMessage({
+              id: 'benchmark.detail.summary.latency'
+            }),
+            children: latencyColumns
+          },
+          {
+            title: intl.formatMessage({ id: 'benchmark.table.tailLatency' }),
+            children: tailLatencyColumns
+          },
+          {
+            title: intl.formatMessage({
+              id: 'benchmark.detail.summary.throughput'
+            }),
+            children: throughputColumns
+          },
+          {
+            title: intl.formatMessage({
+              id: 'benchmark.detail.summary.request'
+            }),
+            children: requestColumns
+          },
+          {
+            title: intl.formatMessage({
+              id: 'benchmark.detail.summary.metadata'
+            }),
+            children: metadataColumns
+          }
+        ]}
+      ></ColumnSettings>
+    </ConfigProvider>
   );
 
   return {

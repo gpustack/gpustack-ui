@@ -8,7 +8,7 @@ const useStyles = createStyles(({ token, css }) => ({
      always reads as belonging downward. */
   section: css`
     & + & {
-      margin-top: 48px;
+      margin-top: 24px;
     }
   `,
   /* The card now carries its own heading, so the title has moved back inside

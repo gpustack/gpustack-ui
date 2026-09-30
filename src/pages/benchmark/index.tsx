@@ -141,7 +141,8 @@ const Benchmark: React.FC = () => {
     // worker so the dataset picker can filter to it. Dropped, not expanded.
     const rest = _.omit(formValues, [
       'dataset_worker_id',
-      'dataset_worker_name'
+      'dataset_worker_name',
+      'sharegpt_filter_enabled'
     ]);
     const params = {
       ...rest,

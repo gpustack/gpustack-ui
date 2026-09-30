@@ -148,6 +148,12 @@ export default {
   'benchmark.form.inputStdev': '入力長のばらつき (±)',
   'benchmark.form.inputMin': '入力最小値',
   'benchmark.form.inputMax': '入力最大値',
+  'benchmark.form.sharegpt.tokenLengthSettings': 'トークン長の設定',
+  'benchmark.form.sharegpt.tokenLengthSettings.tip':
+    '入力トークン長は最小値、最大値、または両方を指定できます。出力トークン長も任意で、空欄の場合は元の回答長を使用します。',
+  'benchmark.form.sharegpt.inputRangeError':
+    '入力最大値は入力最小値以上にしてください',
+  'benchmark.form.sharegpt.positiveInteger': '正の整数を入力してください',
   'benchmark.form.outputStdev': '出力長のばらつき (±)',
   'benchmark.form.outputMin': '出力最小値',
   'benchmark.form.outputMax': '出力最大値',

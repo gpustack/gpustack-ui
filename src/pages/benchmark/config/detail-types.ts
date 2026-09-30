@@ -175,8 +175,8 @@ export interface BenchmarkDetail {
   description: string;
   labels: Record<string, any>;
   dataset_name: string;
-  dataset_input_tokens: number;
-  dataset_output_tokens: number;
+  dataset_input_tokens: number | null;
+  dataset_output_tokens: number | null;
   cluster_id: number;
   model_id: number;
   model_name: string;

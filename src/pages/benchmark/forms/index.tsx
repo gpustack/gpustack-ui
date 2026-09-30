@@ -207,6 +207,17 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
     form.setFieldsValue({
       ...currentData,
       dataset_name: datasetName,
+      dataset_input_tokens:
+        datasetName === DatasetValueMap.ShareGPT
+          ? null
+          : currentData.dataset_input_tokens,
+      sharegpt_filter_enabled:
+        datasetName === DatasetValueMap.ShareGPT &&
+        [
+          currentData.dataset_input_min,
+          currentData.dataset_input_max,
+          currentData.dataset_output_tokens
+        ].some((value) => value != null),
       // Stored as a fraction, shown as a whole percent (see the onFinish note).
       warmup: fractionToPercent(currentData.warmup),
       cooldown: fractionToPercent(currentData.cooldown),
@@ -314,6 +325,7 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
             // Default to the Max Throughput preset: adaptive auto-tune on the
             // rate axis (ramps request rate to the throughput peak).
             dataset_name: 'Random',
+            sharegpt_filter_enabled: false,
             dataset_input_tokens: 1024,
             dataset_output_tokens: 128,
             profile: 'Max Throughput',

@@ -56,6 +56,19 @@ export default {
   'usage.chart.cached': 'Önbellekli',
   'usage.chart.uncached': 'Önbelleksiz',
   'usage.chart.inputTokensCached': 'Giriş Tokenları (Önbellekli/Önbelleksiz)',
+  'usage.chart.moreGroups':
+    '{count} öğe daha (toplam {value} token). Tümünü görmek için çubuğa tıklayın.',
+  'usage.chart.apiKeyDetails': 'API Anahtarları',
+  'usage.chart.groupCount': 'Toplam: {count}',
+  'usage.chart.searchModels': 'Modelleri ara',
+  'usage.chart.searchUsers': 'Kullanıcıları ara',
+  'usage.chart.searchApiKeys': 'API anahtarlarını ara',
+  'usage.chart.modelName': 'Model adı',
+  'usage.chart.userName': 'Kullanıcı adı',
+  'usage.chart.apiKeyName': 'Anahtar adı',
+  'usage.chart.pageOf': 'Sayfa {page} / {total}',
+  'usage.chart.previousPage': 'Önceki sayfa',
+  'usage.chart.nextPage': 'Sonraki sayfa',
   'usage.table.inputTokensCached': 'Önbelleğe Alınan Giriş Tokenları',
 
   // --- Resource usage: shared metrics & units ---

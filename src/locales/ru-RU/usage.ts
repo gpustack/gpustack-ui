@@ -56,6 +56,19 @@ export default {
   'usage.chart.cached': 'Cached',
   'usage.chart.uncached': 'Uncached',
   'usage.chart.inputTokensCached': 'Input Tokens (Cached/Uncached)',
+  'usage.chart.moreGroups':
+    'Ещё {count} элементов (всего {value} токенов). Нажмите на столбец, чтобы увидеть все.',
+  'usage.chart.apiKeyDetails': 'API-ключи',
+  'usage.chart.groupCount': 'Всего: {count}',
+  'usage.chart.searchModels': 'Поиск моделей',
+  'usage.chart.searchUsers': 'Поиск пользователей',
+  'usage.chart.searchApiKeys': 'Поиск API-ключей',
+  'usage.chart.modelName': 'Имя модели',
+  'usage.chart.userName': 'Имя пользователя',
+  'usage.chart.apiKeyName': 'Имя ключа',
+  'usage.chart.pageOf': 'Страница {page} из {total}',
+  'usage.chart.previousPage': 'Предыдущая страница',
+  'usage.chart.nextPage': 'Следующая страница',
   'usage.table.inputTokensCached': 'Input Tokens Cached',
 
   // --- Resource usage: shared metrics & units ---

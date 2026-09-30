@@ -1,10 +1,11 @@
 import useCoolColors from '@/hooks/use-cool-colors';
 import BarChart from '@/pages/_components/bar-chart';
 import { BaseSelect, CardWrapper } from '@gpustack/core-ui';
+import { formatLargeNumber } from '@gpustack/core-ui/utils';
 import { useAccess, useIntl } from '@umijs/max';
 import { Segmented } from 'antd';
 import dayjs from 'dayjs';
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { granularities, groupByOptions, metricOptions } from '../config';
 import {
@@ -13,6 +14,9 @@ import {
   UsageFilterItem
 } from '../config/types';
 import { withDeletedMark } from '../utils/deleted-label';
+import GroupedUsageDetailsModal, {
+  UsageGroupBy
+} from './grouped-usage-details-modal';
 
 // group dimension → the id field inside ``identity.current`` (the backend nulls
 // it for deleted entities, so the marker falls back to just "[Deleted]").
@@ -74,6 +78,7 @@ const generateDateRange = (
 };
 
 const CACHED_METRIC = 'input_cached_tokens';
+const TOOLTIP_MAX_ITEMS = 10;
 
 const DailyUsage: React.FC<DailyUsageProps> = (props) => {
   const intl = useIntl();
@@ -95,6 +100,24 @@ const DailyUsage: React.FC<DailyUsageProps> = (props) => {
   // dimension.
   const access = useAccess();
   const canGroupByUser = !!access.canSeeOrgAdmin;
+  const [detailDate, setDetailDate] = useState<string | null>(null);
+  const detailGroupBy: UsageGroupBy | null =
+    metric === 'total_tokens' &&
+    (groupBy === 'route' || groupBy === 'user' || groupBy === 'api_key')
+      ? groupBy
+      : null;
+  const showGroupPreview = !!detailGroupBy;
+  const handleBarClick = useCallback((date: string) => {
+    setDetailDate(date);
+  }, []);
+  const formatTooltipOverflow = useCallback(
+    (count: number, value: number) =>
+      intl.formatMessage(
+        { id: 'usage.chart.moreGroups' },
+        { count, value: formatLargeNumber(value) }
+      ),
+    [intl]
+  );
 
   const labelFormatter = (v: any) => {
     if (granularity === 'month') {
@@ -266,8 +289,31 @@ const DailyUsage: React.FC<DailyUsageProps> = (props) => {
     };
   }, [timeSeriesData, intl, generateCoolColors]);
 
+  const detailRows = useMemo(() => {
+    const dateIndex = xAxisData.indexOf(detailDate ?? '');
+    if (dateIndex < 0) return [];
+
+    return seriesData
+      .map((series, key) => ({
+        key,
+        name: series.name as string,
+        value: Number(series.data[dateIndex]?.value ?? 0)
+      }))
+      .filter((row) => row.value > 0)
+      .sort((a, b) => b.value - a.value);
+  }, [detailDate, seriesData, xAxisData]);
+
   const handleOnGroupByChange = (value: string) => {
+    setDetailDate(null);
     onGroupByChange(value || null);
+  };
+  const handleOnMetricChange = (value: string) => {
+    setDetailDate(null);
+    onMetricChange(value);
+  };
+  const handleOnGranularityChange = (value: string) => {
+    setDetailDate(null);
+    onGranularityChange(value);
   };
 
   const groupByOptionsFiltered = groupByOptions
@@ -300,7 +346,7 @@ const DailyUsage: React.FC<DailyUsageProps> = (props) => {
               }))}
               value={metric}
               popupMatchSelectWidth={false}
-              onChange={onMetricChange}
+              onChange={handleOnMetricChange}
               style={{ width: 'max-content' }}
             />
 
@@ -326,7 +372,7 @@ const DailyUsage: React.FC<DailyUsageProps> = (props) => {
               value: item.value
             }))}
             value={granularity}
-            onChange={onGranularityChange}
+            onChange={handleOnGranularityChange}
           ></Segmented>
         </ControlsWrapper>
         <BarChart
@@ -339,8 +385,29 @@ const DailyUsage: React.FC<DailyUsageProps> = (props) => {
           legendData={legendData}
           labelFormatter={labelFormatter}
           legendIsolate={metric === CACHED_METRIC}
+          hideZeroValuesInTooltip
+          scrollableTooltip={!showGroupPreview}
+          tooltipMaxItems={showGroupPreview ? TOOLTIP_MAX_ITEMS : undefined}
+          tooltipTotalLabel={
+            showGroupPreview
+              ? intl.formatMessage({ id: 'usage.filter.totalTokens' })
+              : undefined
+          }
+          tooltipOverflowFormatter={
+            showGroupPreview ? formatTooltipOverflow : undefined
+          }
+          onBarClick={showGroupPreview ? handleBarClick : undefined}
         />
       </CardWrapper>
+      <GroupedUsageDetailsModal
+        detail={{
+          date: detailDate ?? '',
+          groupBy: detailGroupBy ?? 'api_key',
+          rows: detailRows
+        }}
+        open={!!detailGroupBy && !!detailDate}
+        onClose={() => setDetailDate(null)}
+      />
     </div>
   );
 };

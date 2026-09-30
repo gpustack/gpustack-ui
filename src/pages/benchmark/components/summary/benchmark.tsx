@@ -130,7 +130,13 @@ const Benchmark: React.FC = () => {
       children: detailData?.dataset_name || '-'
     },
     ...(isShareGPT
-      ? []
+      ? [
+          {
+            key: 'maxOutputTokens',
+            labelId: 'benchmark.table.outputTokenLength',
+            children: detailData?.dataset_output_tokens ?? '-'
+          }
+        ]
       : [
           {
             key: 'tokenLen',

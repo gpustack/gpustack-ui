@@ -148,6 +148,12 @@ export default {
   'benchmark.form.inputStdev': 'Input Spread (±)',
   'benchmark.form.inputMin': 'Input Min',
   'benchmark.form.inputMax': 'Input Max',
+  'benchmark.form.sharegpt.tokenLengthSettings': 'Token Length Settings',
+  'benchmark.form.sharegpt.tokenLengthSettings.tip':
+    'Optionally set a minimum input length, a maximum, or both. Output length is also optional; when empty, each sample uses its original answer length.',
+  'benchmark.form.sharegpt.inputRangeError':
+    'Input Max must be at least Input Min',
+  'benchmark.form.sharegpt.positiveInteger': 'Enter a positive integer',
   'benchmark.form.outputStdev': 'Output Spread (±)',
   'benchmark.form.outputMin': 'Output Min',
   'benchmark.form.outputMax': 'Output Max',

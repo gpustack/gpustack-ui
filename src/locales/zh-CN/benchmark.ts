@@ -148,6 +148,11 @@ export default {
   'benchmark.form.inputStdev': '输入长度浮动 (±)',
   'benchmark.form.inputMin': '输入最小值',
   'benchmark.form.inputMax': '输入最大值',
+  'benchmark.form.sharegpt.tokenLengthSettings': 'Token 长度设置',
+  'benchmark.form.sharegpt.tokenLengthSettings.tip':
+    '输入 Token 长度可只设最小值、只设最大值，或同时设置。输出 Token 长度也可留空，届时使用每条数据原始回答的长度。',
+  'benchmark.form.sharegpt.inputRangeError': '输入最大值不能小于输入最小值',
+  'benchmark.form.sharegpt.positiveInteger': '请输入正整数',
   'benchmark.form.outputStdev': '输出长度浮动 (±)',
   'benchmark.form.outputMin': '输出最小值',
   'benchmark.form.outputMax': '输出最大值',

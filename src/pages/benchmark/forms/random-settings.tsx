@@ -49,6 +49,7 @@ import {
 } from '../config';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
+import { optionalPositiveIntegerRule } from './sharegpt-token-validation';
 
 const useStyles = createStyles(({ token, css }) => ({
   // Opt-in sub-feature card (Data Distribution / Shared Prefix): a bordered
@@ -217,6 +218,10 @@ const RandomSettingsForm: React.FC<{
   // profileAllowsSlo; keep in sync with the nav's copy in forms/index.tsx.
   const showSLO = profileAllowsSlo(profile, profilesOptions as any[]);
   const isRandom = datasetName === DatasetValueMap.Random;
+  const isShareGPT = datasetName === DatasetValueMap.ShareGPT;
+  const shareGPTTokenRule = optionalPositiveIntegerRule(
+    intl.formatMessage({ id: 'benchmark.form.sharegpt.positiveInteger' })
+  );
   // Random seed is the default; only an explicit false means the user pinned one.
   const randomSeed = Form.useWatch('dataset_seed_random', form) !== false;
 
@@ -251,19 +256,23 @@ const RandomSettingsForm: React.FC<{
   const outStdev = Form.useWatch('dataset_output_stdev', form);
   const outMin = Form.useWatch('dataset_output_min', form);
   const outMax = Form.useWatch('dataset_output_max', form);
+  const showShareGPTFilter =
+    Form.useWatch('sharegpt_filter_enabled', form) === true;
 
   const hasVal = (...vs: any[]) => vs.some((v) => v != null && v !== '');
   // Initialize the disclosure from the prefilled config (clone / edit) — useWatch
   // can't see the still-unmounted distribution fields, so seed from currentData.
-  const [distToggle, setDistToggle] = useState(() =>
-    hasVal(
-      currentData?.dataset_input_stdev,
-      currentData?.dataset_input_min,
-      currentData?.dataset_input_max,
-      currentData?.dataset_output_stdev,
-      currentData?.dataset_output_min,
-      currentData?.dataset_output_max
-    )
+  const [distToggle, setDistToggle] = useState(
+    () =>
+      currentData?.dataset_name === DatasetValueMap.Random &&
+      hasVal(
+        currentData?.dataset_input_stdev,
+        currentData?.dataset_input_min,
+        currentData?.dataset_input_max,
+        currentData?.dataset_output_stdev,
+        currentData?.dataset_output_min,
+        currentData?.dataset_output_max
+      )
   );
   const showDist =
     distToggle || hasVal(inStdev, inMin, inMax, outStdev, outMin, outMax);
@@ -484,6 +493,25 @@ const RandomSettingsForm: React.FC<{
       >
         <SealSelect
           disabled={disabled}
+          onChange={(value) => {
+            form.setFieldsValue({
+              dataset_input_tokens:
+                value === DatasetValueMap.ShareGPT
+                  ? null
+                  : (form.getFieldValue('dataset_input_tokens') ?? 1024),
+              dataset_output_tokens:
+                value === DatasetValueMap.ShareGPT
+                  ? null
+                  : (form.getFieldValue('dataset_output_tokens') ?? 128),
+              dataset_input_min: null,
+              dataset_input_max: null,
+              sharegpt_filter_enabled: false,
+              dataset_input_stdev: null,
+              dataset_output_stdev: null,
+              dataset_output_min: null,
+              dataset_output_max: null
+            });
+          }}
           options={datasetList?.map((item) => ({
             ...item,
             label: item.label,
@@ -508,7 +536,7 @@ const RandomSettingsForm: React.FC<{
             ]}
           >
             <CInputNumber
-              min={0}
+              min={1}
               disabled={disabled}
               label={intl.formatMessage({
                 id: 'benchmark.table.inputTokenLength'
@@ -529,7 +557,7 @@ const RandomSettingsForm: React.FC<{
             ]}
           >
             <CInputNumber
-              min={0}
+              min={1}
               disabled={disabled}
               label={intl.formatMessage({
                 id: 'benchmark.table.outputTokenLength'
@@ -707,7 +735,7 @@ const RandomSettingsForm: React.FC<{
                       style={{ marginBottom: 0 }}
                     >
                       <CInputNumber
-                        min={0}
+                        min={1}
                         disabled={disabled}
                         style={{ width: '100%' }}
                         label={intl.formatMessage({
@@ -720,7 +748,7 @@ const RandomSettingsForm: React.FC<{
                       style={{ marginBottom: 0 }}
                     >
                       <CInputNumber
-                        min={0}
+                        min={1}
                         disabled={disabled}
                         style={{ width: '100%' }}
                         label={intl.formatMessage({
@@ -771,7 +799,7 @@ const RandomSettingsForm: React.FC<{
                       style={{ marginBottom: 0 }}
                     >
                       <CInputNumber
-                        min={0}
+                        min={1}
                         disabled={disabled}
                         style={{ width: '100%' }}
                         label={intl.formatMessage({
@@ -784,7 +812,7 @@ const RandomSettingsForm: React.FC<{
                       style={{ marginBottom: 0 }}
                     >
                       <CInputNumber
-                        min={0}
+                        min={1}
                         disabled={disabled}
                         style={{ width: '100%' }}
                         label={intl.formatMessage({
@@ -1011,6 +1039,119 @@ const RandomSettingsForm: React.FC<{
             </div>
           </>
         </>
+      )}
+      {isShareGPT && (
+        <div className={styles.sectionCard}>
+          <div
+            className="section-title"
+            style={{ marginBottom: showShareGPTFilter ? 16 : 0 }}
+          >
+            <span className="title-label">
+              {intl.formatMessage({
+                id: 'benchmark.form.sharegpt.tokenLengthSettings'
+              })}
+              <Tooltip
+                title={intl.formatMessage({
+                  id: 'benchmark.form.sharegpt.tokenLengthSettings.tip'
+                })}
+              >
+                <QuestionCircleOutlined className="title-help" />
+              </Tooltip>
+            </span>
+            <Form.Item<FormData>
+              name="sharegpt_filter_enabled"
+              valuePropName="checked"
+              noStyle
+            >
+              <Switch
+                size="small"
+                disabled={disabled}
+                onChange={(checked) => {
+                  if (!checked) {
+                    form.setFieldsValue({
+                      dataset_input_min: null,
+                      dataset_input_max: null,
+                      dataset_output_tokens: null
+                    });
+                  }
+                }}
+              />
+            </Form.Item>
+          </div>
+          {showShareGPTFilter && (
+            <>
+              <div
+                style={{
+                  fontWeight: 500,
+                  fontSize: 14,
+                  color: 'var(--ant-color-text-secondary)',
+                  margin: '4px 0 8px'
+                }}
+              >
+                {intl.formatMessage({ id: 'benchmark.table.inputTokenLength' })}
+              </div>
+              <Flex gap={12}>
+                <Form.Item<FormData>
+                  name="dataset_input_min"
+                  style={{ flex: 1 }}
+                  rules={[shareGPTTokenRule]}
+                >
+                  <CInputNumber
+                    min={1}
+                    disabled={disabled}
+                    label={intl.formatMessage({
+                      id: 'benchmark.form.dist.min'
+                    })}
+                  />
+                </Form.Item>
+                <Form.Item<FormData>
+                  name="dataset_input_max"
+                  style={{ flex: 1 }}
+                  dependencies={['dataset_input_min']}
+                  rules={[
+                    shareGPTTokenRule,
+                    {
+                      validator: async (_, value) => {
+                        const min = form.getFieldValue('dataset_input_min');
+                        if (
+                          Number.isSafeInteger(value) &&
+                          Number.isSafeInteger(min) &&
+                          value < min
+                        ) {
+                          throw new Error(
+                            intl.formatMessage({
+                              id: 'benchmark.form.sharegpt.inputRangeError'
+                            })
+                          );
+                        }
+                      }
+                    }
+                  ]}
+                >
+                  <CInputNumber
+                    min={1}
+                    disabled={disabled}
+                    label={intl.formatMessage({
+                      id: 'benchmark.form.dist.max'
+                    })}
+                  />
+                </Form.Item>
+              </Flex>
+              <Form.Item<FormData>
+                name="dataset_output_tokens"
+                rules={[shareGPTTokenRule]}
+              >
+                <CInputNumber
+                  min={1}
+                  disabled={disabled}
+                  label={intl.formatMessage({
+                    id: 'benchmark.table.outputTokenLength'
+                  })}
+                />
+              </Form.Item>
+            </>
+          )}
+        </div>
       )}
     </>
   );

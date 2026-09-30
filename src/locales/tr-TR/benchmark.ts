@@ -148,6 +148,12 @@ export default {
   'benchmark.form.inputStdev': 'Girdi Yayılımı (±)',
   'benchmark.form.inputMin': 'Girdi Min',
   'benchmark.form.inputMax': 'Girdi Maks',
+  'benchmark.form.sharegpt.tokenLengthSettings': 'Token Uzunluğu Ayarları',
+  'benchmark.form.sharegpt.tokenLengthSettings.tip':
+    'Giriş token uzunluğunda yalnızca alt sınırı, yalnızca üst sınırı veya ikisini birden belirleyebilirsiniz. Çıkış uzunluğu da isteğe bağlıdır; boşsa özgün yanıt uzunluğu kullanılır.',
+  'benchmark.form.sharegpt.inputRangeError':
+    'Girdi Maks, Girdi Min değerinden küçük olamaz',
+  'benchmark.form.sharegpt.positiveInteger': 'Pozitif bir tam sayı girin',
   'benchmark.form.outputStdev': 'Çıktı Yayılımı (±)',
   'benchmark.form.outputMin': 'Çıktı Min',
   'benchmark.form.outputMax': 'Çıktı Maks',

@@ -2,13 +2,12 @@ import { PageAction } from '@/config';
 import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { useBenchmarkTargetInstance } from '@/pages/llmodels/hooks/use-run-benchmark';
-import { useQueryModelList } from '@/pages/llmodels/services/use-query-model-list';
-import { DeleteModal, FilterBar, IconFont, NoResult } from '@gpustack/core-ui';
+import { DeleteModal, IconFont, NoResult } from '@gpustack/core-ui';
 import { useIntl, useNavigate } from '@umijs/max';
-import { useMemoizedFn, useToggle } from 'ahooks';
+import { useMemoizedFn } from 'ahooks';
 import { ConfigProvider, Table, message } from 'antd';
 import _ from 'lodash';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect } from 'react';
 import PageBox from '../_components/page-box';
 import { useQueryClusterList } from '../cluster-management/services/use-query-cluster-list';
 import {
@@ -20,6 +19,7 @@ import {
 } from './apis';
 import AddBenchmarkModal from './components/add-benchmark-modal';
 import LeftActions from './components/left-actions';
+import ResponsiveFilterBar from './components/responsive-filter-bar';
 import RightActions from './components/right-actions';
 import ViewLogsModal from './components/view-logs-modal';
 import {
@@ -29,7 +29,6 @@ import {
   type SloTarget
 } from './config';
 import { FormData, BenchmarkListItem as ListItem } from './config/types';
-import Filters from './filters';
 import useBenchmarkColumns from './hooks/use-benchmark-columns';
 import useCloneBenchmark from './hooks/use-clone-benchmark';
 import useColumnSettings from './hooks/use-column-settings';
@@ -66,9 +65,6 @@ const Benchmark: React.FC = () => {
   const navigate = useNavigate();
   const { openBenchmarkModal, closeBenchmarkModal, openBenchmarkModalStatus } =
     useCreateBenchmark();
-  const { dataList: modelList, fetchData: fetchModelList } = useQueryModelList({
-    getValue: (item: any) => item.name
-  });
   const { openViewLogsModal, closeViewLogsModal, openViewLogsModalStatus } =
     useViewLogs();
   const { handleStopBenchmark } = useStopBenchmark();
@@ -90,12 +86,7 @@ const Benchmark: React.FC = () => {
     clusterList,
     profileOptions: profilesOptions
   });
-  const [filtersVisible, { toggle: toggleFilters }] = useToggle();
-  const filterRef = useRef<any>(null);
-  const [filterValues, setFilterValues] = useState<any>({});
-
   useEffect(() => {
-    fetchModelList({ page: -1 });
     fetchProfilesData();
     fetchClusterList({ page: -1 }).then(() => {
       // Clone raised from the detail page, which has no drawer of its own: the
@@ -252,40 +243,10 @@ const Benchmark: React.FC = () => {
     exportData(rowSelection.selectedRowKeys);
   };
 
-  const handleOnFilterChange = (filters: any) => {
-    handleQueryChange({
-      page: 1,
-      ...filters
-    });
-
-    setFilterValues(filters);
-  };
-
-  const handleOnClearFilters = () => {
-    filterRef.current?.reset();
-  };
-
-  const filtersCount = Object.values(filterValues).filter(
-    (value) => value !== undefined && value !== null && value !== ''
-  );
-
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'flex-start'
-      }}
-    >
-      <Filters
-        ref={filterRef}
-        open={filtersVisible}
-        profilesOptions={profilesOptions}
-        onValuesChange={handleOnFilterChange}
-        onClose={toggleFilters}
-        onClear={handleOnClearFilters}
-      ></Filters>
-      <PageBox style={{ flex: 1 }}>
-        <FilterBar
+    <>
+      <PageBox>
+        <ResponsiveFilterBar
           showSelect={false}
           handleSearch={handleSearch}
           // Required by FilterBar, but unreachable here: passing `left` replaces
@@ -295,12 +256,9 @@ const Benchmark: React.FC = () => {
           widths={{ input: 300 }}
           left={
             <LeftActions
-              modelList={modelList}
               handleSearch={handleSearch}
               handleQueryChange={handleQueryChange}
-              count={filtersCount.length}
-              toggleFilters={toggleFilters}
-              onClear={handleOnClearFilters}
+              filters={queryParams}
             ></LeftActions>
           }
           right={
@@ -315,7 +273,7 @@ const Benchmark: React.FC = () => {
               rowSelection={rowSelection}
             />
           }
-        ></FilterBar>
+        ></ResponsiveFilterBar>
         <ConfigProvider renderEmpty={renderEmpty}>
           <Table
             tableLayout="fixed"
@@ -344,6 +302,7 @@ const Benchmark: React.FC = () => {
           ></Table>
         </ConfigProvider>
       </PageBox>
+
       <AddBenchmarkModal
         clusterList={clusterList}
         open={openBenchmarkModalStatus.open}
@@ -362,7 +321,7 @@ const Benchmark: React.FC = () => {
         onCancel={closeViewLogsModal}
       ></ViewLogsModal>
       <DeleteModal ref={modalRef}></DeleteModal>
-    </div>
+    </>
   );
 };
 

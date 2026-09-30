@@ -296,3 +296,14 @@ export interface ProfileOption {
   slo_p99_latency_ms?: number;
   dataset_seed?: number;
 }
+
+export interface BenchmarkFilterValues {
+  search: string;
+  model_name: string;
+  gpu_summary: string;
+  profile: string;
+  target_mode?: string;
+  load_type?: string;
+}
+
+export type TextFilterKey = 'search' | 'model_name' | 'gpu_summary' | 'profile';

@@ -6,6 +6,41 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "48614766",
+      "name": "notification_settings_24dp_1F1F1F_FILL0_wght300_GR",
+      "font_class": "notification-outlined",
+      "unicode": "e726",
+      "unicode_decimal": 59174
+    },
+    {
+      "icon_id": "48608693",
+      "name": "drafts_24dp_1F1F1F_FILL0_wght300_GRAD0_opsz24",
+      "font_class": "mail-readed",
+      "unicode": "e723",
+      "unicode_decimal": 59171
+    },
+    {
+      "icon_id": "48608691",
+      "name": "mail_24dp_1F1F1F_FILL0_wght300_GRAD0_opsz24",
+      "font_class": "mail-outlined",
+      "unicode": "e724",
+      "unicode_decimal": 59172
+    },
+    {
+      "icon_id": "48608692",
+      "name": "mail_24dp_1F1F1F_FILL1_wght300_GRAD0_opsz24",
+      "font_class": "mail-filled",
+      "unicode": "e725",
+      "unicode_decimal": 59173
+    },
+    {
+      "icon_id": "48595764",
+      "name": "notifications_24dp_1F1F1F_FILL0_wght300_GRAD0_opsz",
+      "font_class": "bell-outlined",
+      "unicode": "e722",
+      "unicode_decimal": 59170
+    },
+    {
       "icon_id": "48578837",
       "name": "display_settings_24dp_1F1F1F_FILL0_wght300_GRAD0_o",
       "font_class": "display_settings",

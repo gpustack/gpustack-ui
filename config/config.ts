@@ -1,6 +1,6 @@
 import { defineConfig } from '@umijs/max';
 import keepAlive from './keep-alive';
-import { extraMfsuExclude } from './mfsu.extensions';
+import { extraMfsuExclude, extraMfsuInclude } from './mfsu.extensions';
 import { compressionPluginConfig, monacoPluginConfig } from './plugins';
 import proxy from './proxy';
 import routes from './routes';
@@ -32,7 +32,11 @@ export default defineConfig({
     defaultSizes: 'parsed' // stat  // gzip
   },
   mfsu: {
-    exclude: ['lodash', 'ml-pca', ...extraMfsuExclude]
+    exclude: ['lodash', 'ml-pca', ...extraMfsuExclude],
+    // MFSU only pre-bundles what it finds by analyzing `src`; a package no
+    // file under `src` imports has to be named here or it lands in the host
+    // bundle with its own copy of React.
+    include: [...extraMfsuInclude]
   },
   base: process.env.npm_config_base || '/',
   ...(isProduction

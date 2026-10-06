@@ -73,7 +73,7 @@ export default {
   'clusters.addworker.selectCluster.tips':
     '<span class="bold-text">Docker dışı</span> kümeler için lütfen Kümeler sayfasından küme kaydı oluşturun veya işçi havuzlarını yönetin.',
   'clusters.addworker.selectGPU': 'GPU Üreticisi Seç',
-  'clusters.addworker.selectGPU.multiTag': 'Multi-select',
+  'clusters.addworker.selectGPU.multiTag': 'Çoklu seçim',
   'clusters.addworker.selectHardware': 'Donanım Türü Seç',
   'clusters.addworker.selectHardware.subtitle':
     'Bu kümenin worker çalıştırması gereken tüm donanım türlerini seçin',

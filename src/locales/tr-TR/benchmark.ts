@@ -28,12 +28,12 @@ export default {
   'benchmark.form.autoTune.concurrency.tip':
     'Bu çalıştırmada ölçülen yük noktaları — bir aşama = bir ölçüm noktası. Otomatik ayar, gecikme hedefleri karşılanamayana (SLO sınırı) kadar eşzamanlılığı kendiliğinden artırır; noktaları elle girmeniz gerekmez. Sabit bir eşzamanlılık listesi çalıştırmak için "Elle" seçeneğine geçin.',
   'benchmark.form.autoTune.rangeRate': 'Arama Aralığı · İstek Hızı (req/s)',
-  'benchmark.form.autoTune.rangeFrom': 'From',
+  'benchmark.form.autoTune.rangeFrom': 'Başlangıç',
   'benchmark.form.autoTune.rateFrom': 'Başlangıç Hızı (req/s)',
   'benchmark.form.autoTune.rateTo': 'Bitiş Hızı (req/s)',
   'benchmark.form.autoTune.concFrom': 'Başlangıç Eşzamanlılığı',
   'benchmark.form.autoTune.concTo': 'Bitiş Eşzamanlılığı',
-  'benchmark.form.autoTune.rangeTo': 'To',
+  'benchmark.form.autoTune.rangeTo': 'Bitiş',
   'benchmark.form.autoTune.rangeConcurrency': 'Arama Aralığı · Eşzamanlılık',
   'benchmark.form.autoTune.rangeMin': 'min',
   'benchmark.form.autoTune.rangeMax': 'maks',
@@ -63,8 +63,8 @@ export default {
   'benchmark.form.inputTokensList': 'Giriş Token Uzunlukları (tarama)',
   'benchmark.form.inputTokensList.placeholder': 'örn. 128, 4096, 32768',
   'benchmark.form.turns': 'Tur Sayısı (çok turlu)',
-  'benchmark.form.turns.unit': 'turns',
-  'benchmark.form.multiTurn': 'Multi-turn',
+  'benchmark.form.turns.unit': 'tur',
+  'benchmark.form.multiTurn': 'Çok turlu',
   'benchmark.form.multiTurn.tips':
     'Her örneği çok turlu bir konuşma olarak gönderir — her tur, birikmiş sohbet geçmişini taşıyan tek bir istektir. Yalnızca Sentetik (Rastgele) veri kümesi; sohbet uç noktası gerektirir.',
   'benchmark.form.stopOnSaturation.tips':

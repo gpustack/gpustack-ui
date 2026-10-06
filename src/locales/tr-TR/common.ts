@@ -319,7 +319,7 @@ export default {
   'common.preferences': 'Tercihler',
   // Shared by the single-slot source config drawer (src/pages/_components/source-config)
   'common.source.manage': 'Kaynakları Yönet',
-  'common.source.type.builtin': 'Embedded',
+  'common.source.type.builtin': 'Gömülü',
   'common.source.type.builtin.desc':
     'Yalnızca mevcut sürümle gelen içeriği kullanır, başka kaynak kullanmaz.',
   'common.source.type.url': 'URL',
@@ -339,7 +339,7 @@ export default {
   'common.source.sync.unchanged': 'Uzak içerik değişmedi.',
   'common.source.lastSync': 'İçerik {time} tarihinde alındı',
   'common.source.tag.custom': 'Özel',
-  'common.source.tag.official': 'Official',
+  'common.source.tag.official': 'Resmi',
   'common.source.empty.hint':
     "Kendi URL'niz resmi kaynağın tamamen yerine geçer.",
   'common.source.empty.hint.builtin':
@@ -351,7 +351,7 @@ export default {
   'common.source.reset': 'Resmi Kaynağa Sıfırla',
   'common.source.reset.tip':
     'Yeniden resmi kaynağı izler, kaydettiğinizde uygulanır — {description}',
-  'common.source.autoUpdate': 'Auto-update',
+  'common.source.autoUpdate': 'Otomatik Güncelleme',
   'common.source.autoUpdate.interval': 'Güncelleme Aralığı (saat)',
   'common.source.autoUpdate.official.tip':
     'Resmi OTA sunucusunda yeni içerik olup olmadığının hangi sıklıkta denetleneceği. Kapalıyken, siz kendiniz eşitleyene kadar kayıtlı içerik olduğu gibi kalır.',

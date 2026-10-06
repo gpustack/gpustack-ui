@@ -129,7 +129,7 @@ const useStyles = createStyles(
            this padding. Never re-center it for the collapsed state: the class
            lands before the sider has finished animating its width, so
            centering would fling the icon right and slide it back. */
-        padding-inline: 16px var(--ant-padding);
+        padding-inline: var(--sider-menu-item-padding-inline) var(--ant-padding);
         overflow: hidden;
         white-space: nowrap;
         height: ${Menu.itemHeight}px;
@@ -183,7 +183,7 @@ const useStyles = createStyles(
           color: var(--ant-color-text);
         }
         .anticon {
-          font-size: 16px;
+          font-size: var(--sider-menu-icon-size);
           /* The collapsed rail clips this row down to the icon's own width;
              without this flexbox squeezes the icon and it drifts as the
              width animates. */

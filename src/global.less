@@ -438,6 +438,20 @@ body {
   .ant-pro-layout {
     height: 100%;
 
+    .ant-pro-sider {
+      --sider-logo-size: 18px;
+      --sider-logo-expanded-area-height: 56px;
+      --sider-logo-area-height: var(--sider-logo-expanded-area-height);
+      --sider-menu-icon-size: 16px;
+      --sider-menu-item-padding-inline: var(--ant-padding);
+
+      &.ant-pro-sider-collapsed {
+        --sider-logo-size: 24px;
+        --sider-logo-area-height: 48px;
+        --sider-logo-optical-offset: 1px;
+      }
+    }
+
     .ant-pro-sider-footer {
       padding-block: 4px 0;
       padding-left: 8px;
@@ -453,8 +467,60 @@ body {
 
     .ant-pro-sider-logo {
       position: relative;
-      padding-block: 12px;
+      box-sizing: border-box;
+      // Give the expanded wordmark room while keeping the collapsed rail compact.
+      margin-block-start: 0;
+      height: var(--sider-logo-area-height);
+      flex-shrink: 0;
+      // Keep the logo's center fixed while the brand area changes height.
+      padding-block: calc(
+          var(--sider-logo-expanded-area-height) - var(--sider-logo-area-height)
+        )
+        0;
+      // Use the menu icons' axis with a small optical correction when collapsed.
+      padding-inline: calc(
+          var(--sider-menu-item-padding-inline) +
+            (var(--sider-menu-icon-size) - var(--sider-logo-size)) / 2 +
+            var(--sider-logo-optical-offset, 0px)
+        )
+        var(--sider-menu-item-padding-inline);
+      flex-direction: row;
+      justify-content: flex-start;
+      overflow: hidden;
       border-block-end: none;
+      transition:
+        height var(--ant-motion-duration-mid),
+        padding-block-start var(--ant-motion-duration-mid);
+
+      @media (prefers-reduced-motion: reduce) {
+        transition: none;
+      }
+
+      > a {
+        min-width: 0;
+        max-width: 100%;
+        justify-content: flex-start;
+
+        > h1:empty {
+          display: none;
+        }
+      }
+
+      .sider-brand-logo {
+        display: block;
+        height: var(--sider-logo-size);
+        width: auto;
+        max-width: 100%;
+        object-fit: contain;
+        flex-shrink: 0;
+      }
+
+      .sider-brand-logo-padded {
+        // The built-in wordmark is 108px tall with 72px of visible artwork.
+        height: calc(var(--sider-logo-size) * 1.5);
+        // Let the sider reveal the wordmark without shrinking it mid-transition.
+        max-width: none;
+      }
     }
 
     .ant-pro-sider-logo {
@@ -464,10 +530,6 @@ body {
           color: var(--ant-color-text);
         }
       }
-    }
-
-    .ant-pro-sider-logo-collapsed {
-      padding-left: 6px;
     }
   }
 

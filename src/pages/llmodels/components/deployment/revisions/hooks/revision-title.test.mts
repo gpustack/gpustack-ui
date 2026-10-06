@@ -43,14 +43,24 @@ for (const locale of ['en-US', 'zh-CN', 'ja-JP', 'ru-RU', 'tr-TR']) {
       );
       const container = dom.window.document.createElement('div');
       container.innerHTML = renderToStaticMarkup(title);
-      const expected =
-        locale === 'zh-CN'
-          ? rollback
-            ? `将 ${name} 回滚到 v2`
-            : `修订历史 · ${name}`
-          : rollback
-            ? `Roll back ${name} to v2`
-            : `Revision history · ${name}`;
+      // Locales that still carry the English source fall back to en-US.
+      const titles: Record<string, { history: string; rollback: string }> = {
+        'en-US': {
+          history: `Revision history · ${name}`,
+          rollback: `Roll back ${name} to v2`
+        },
+        'zh-CN': {
+          history: `修订历史 · ${name}`,
+          rollback: `将 ${name} 回滚到 v2`
+        },
+        'tr-TR': {
+          history: `Revizyon geçmişi · ${name}`,
+          rollback: `${name}: v2 revizyonuna geri al`
+        }
+      };
+      const expected = (titles[locale] ?? titles['en-US'])[
+        rollback ? 'rollback' : 'history'
+      ];
       assert.equal(container.textContent, expected);
       assert.equal(container.querySelector('[data-model]')?.textContent, name);
       assert.equal(

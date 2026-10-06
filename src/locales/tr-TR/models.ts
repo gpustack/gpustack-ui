@@ -153,7 +153,7 @@ export default {
   'models.form.customImage.tips':
     'Katalog sürümü yerine kendi {backend} imajınızı kullanın. GPUStack bu imaj için çalıştırıcı kataloğu uyumluluk kontrollerini atlar; imajın cihazlarınızı ve dağıtık kurulumunuzu desteklediğinden emin olun.',
   'models.form.customRunCommand.tips':
-    'For built-in backends, enter startup arguments without the executable. GPUStack still appends host and port, plus distributed settings where applicable.',
+    'Yerleşik altyapılarda başlatma argümanlarını çalıştırılabilir dosya olmadan girin. GPUStack yine de ana bilgisayarı ve portu, gerektiğinde dağıtık ayarları da ekler.',
   'models.form.gpuselector': 'GPU Seçici',
   'models.form.backend.llamabox':
     'GGUF format modeller için, Linux, macOS ve Windows destekler.',

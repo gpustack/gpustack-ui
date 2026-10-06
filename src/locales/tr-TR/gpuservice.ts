@@ -158,7 +158,7 @@ export default {
   'gpuservice.instanceType.activate': 'Etkinleştir',
   'gpuservice.instanceType.deactivate': 'Devre dışı bırak',
   'gpuservice.instanceType.platform': 'Platform',
-  'gpuservice.instanceType.product': 'Product',
+  'gpuservice.instanceType.product': 'Ürün',
   'gpuservice.instanceType.unitCpu': 'Birim CPU',
   'gpuservice.instanceType.unitCpu.tip': 'GPU başına ayrılan CPU',
   'gpuservice.instanceType.unitRam': 'Birim RAM',

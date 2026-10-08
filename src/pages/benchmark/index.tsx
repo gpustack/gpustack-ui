@@ -1,3 +1,4 @@
+import { ResponsiveFilterBar } from '@/components/responsive-filters';
 import { PageAction } from '@/config';
 import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import useTableFetch from '@/hooks/use-table-fetch';
@@ -19,7 +20,6 @@ import {
 } from './apis';
 import AddBenchmarkModal from './components/add-benchmark-modal';
 import LeftActions from './components/left-actions';
-import ResponsiveFilterBar from './components/responsive-filter-bar';
 import RightActions from './components/right-actions';
 import ViewLogsModal from './components/view-logs-modal';
 import {

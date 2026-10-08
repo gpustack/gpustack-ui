@@ -37,10 +37,13 @@ const LeftActions: React.FC<LeftActionsProps> = ({
       placeholder: 'benchmark.table.filter.bymodel'
     },
     {
+      key: 'profile' as const,
+      placeholder: 'benchmark.table.filter.byProfile'
+    },
+    {
       key: 'gpu_summary' as const,
       placeholder: 'benchmark.table.filter.bygpu'
-    },
-    { key: 'profile' as const, placeholder: 'benchmark.table.filter.byProfile' }
+    }
   ];
 
   const items: ResponsiveFilterItem<TextFilterKey>[] = [

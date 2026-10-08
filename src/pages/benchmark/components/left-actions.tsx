@@ -1,13 +1,12 @@
+import ResponsiveFilters, {
+  type ResponsiveFilterConfig
+} from '@/components/responsive-filters';
 import { SearchOutlined, SyncOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Input, Select } from 'antd';
-import { useState } from 'react';
-import type { BenchmarkFilterValues, TextFilterKey } from '../config/types';
+import { Button, Select } from 'antd';
+import { loadTypeOptions, targetModeOptions } from '../config';
+import type { BenchmarkFilterValues } from '../config/types';
 import useBenchmarkFilters from '../hooks/use-benchmark-filters';
-import FilterMenu from './filter-menu';
-import ResponsiveFilters, {
-  type ResponsiveFilterItem
-} from './responsive-filters';
 
 export interface LeftActionsProps {
   handleSearch: () => void;
@@ -26,7 +25,6 @@ const LeftActions: React.FC<LeftActionsProps> = ({
       initialValues: filters,
       onChange: handleQueryChange
     });
-  const [nameDropdownOpen, setNameDropdownOpen] = useState(false);
   const searchIcon = (
     <SearchOutlined style={{ color: 'var(--ant-color-text-placeholder)' }} />
   );
@@ -46,12 +44,14 @@ const LeftActions: React.FC<LeftActionsProps> = ({
     }
   ];
 
-  const items: ResponsiveFilterItem<TextFilterKey>[] = [
+  const filterConfigs: ResponsiveFilterConfig<BenchmarkFilterValues>[] = [
     {
       key: 'search',
+      type: 'custom',
+      label: intl.formatMessage({ id: 'common.filter.name' }),
       width: 200,
-      locked: nameDropdownOpen,
-      content: (
+      clearValue: '',
+      render: ({ value, onChange, onOpenChange }) => (
         // Keep the original tags Select: names are sent comma-separated to
         // match any of them, and this field has no predefined options.
         <Select
@@ -64,45 +64,59 @@ const LeftActions: React.FC<LeftActionsProps> = ({
           placeholder={intl.formatMessage({ id: 'common.filter.name' })}
           aria-label={intl.formatMessage({ id: 'common.filter.name' })}
           style={{ width: '100%' }}
-          value={values.search ? values.search.split(',') : []}
+          value={typeof value === 'string' && value ? value.split(',') : []}
           searchValue={nameSearch}
           onSearch={setNameSearch}
-          onOpenChange={setNameDropdownOpen}
-          onChange={(names: string[]) =>
-            changeValues({ search: names.join(',') })
-          }
+          onOpenChange={onOpenChange}
+          onChange={(names: string[]) => onChange(names.join(','))}
         />
       )
     },
     ...textFilters.map(({ key, placeholder }) => ({
       key,
-      width: 160,
-      content: (
-        <Input
-          prefix={searchIcon}
-          placeholder={intl.formatMessage({ id: placeholder })}
-          aria-label={intl.formatMessage({ id: placeholder })}
-          style={{ width: '100%' }}
-          value={values[key]}
-          allowClear
-          onChange={(event) =>
-            changeValues({ [key]: event.target.value }, true)
-          }
-        />
-      )
-    }))
+      type: 'input' as const,
+      label: intl.formatMessage({ id: placeholder }),
+      placeholder: intl.formatMessage({ id: placeholder }),
+      width: 160
+    })),
+    {
+      key: 'target_mode',
+      type: 'select',
+      placement: 'popover',
+      label: intl.formatMessage({ id: 'benchmark.form.targetMode' }),
+      placeholder: intl.formatMessage({
+        id: 'benchmark.table.filter.byTargetMode'
+      }),
+      options: targetModeOptions.map((option) => ({
+        value: option.value,
+        label: intl.formatMessage({ id: option.label })
+      }))
+    },
+    {
+      key: 'load_type',
+      type: 'select',
+      placement: 'popover',
+      label: intl.formatMessage({ id: 'benchmark.form.loadType' }),
+      placeholder: intl.formatMessage({
+        id: 'benchmark.table.filter.byLoadType'
+      }),
+      options: loadTypeOptions.map((option) => ({
+        value: option.value,
+        label: intl.formatMessage({ id: option.label })
+      }))
+    }
   ];
 
   return (
     <ResponsiveFilters
-      items={items}
-      renderOverflow={(overflowItems) => (
-        <FilterMenu
-          values={values}
-          onChange={changeValues}
-          overflowItems={overflowItems}
-        />
-      )}
+      filters={filterConfigs}
+      values={values}
+      onChange={(patch, info) =>
+        changeValues(
+          patch,
+          info.reason === 'change' && info.filter.type === 'input'
+        )
+      }
       suffix={
         <Button
           type="text"

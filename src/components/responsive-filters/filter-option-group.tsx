@@ -10,7 +10,7 @@ export interface FilterOption<Value extends string | number> {
   disabled?: boolean;
 }
 
-interface FilterOptionGroupProps<Value extends string | number> {
+export interface FilterOptionGroupProps<Value extends string | number> {
   label: string;
   placeholder?: ReactNode;
   options: FilterOption<Value>[];

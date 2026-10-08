@@ -1,6 +1,6 @@
 import { useMemoizedFn } from 'ahooks';
 import { useLayoutEffect, useRef, useState } from 'react';
-import { getVisibleFilterCount } from '../utils/filter-overflow';
+import { getVisibleFilterCount } from './filter-overflow';
 
 interface FilterOverflowOptions {
   widths: readonly number[];

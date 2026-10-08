@@ -309,5 +309,3 @@ export interface BenchmarkFilterValues {
   target_mode?: string;
   load_type?: string;
 }
-
-export type TextFilterKey = 'search' | 'model_name' | 'gpu_summary' | 'profile';

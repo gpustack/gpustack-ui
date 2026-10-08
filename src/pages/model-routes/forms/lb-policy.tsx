@@ -3,6 +3,7 @@ import { isDecisionServiceType } from '@/pages/maas-provider/config/providers';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import {
   AutoComplete,
+  Input as CoreInput,
   Select as CoreSelect,
   IconFont,
   MetadataList,
@@ -10,16 +11,7 @@ import {
   Textarea
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import {
-  Button,
-  Flex,
-  Form,
-  Input,
-  Segmented,
-  Select,
-  Switch,
-  Tooltip
-} from 'antd';
+import { Button, Flex, Form, Segmented, Switch, Tooltip } from 'antd';
 import { createStyles } from 'antd-style';
 import { useEffect, useState } from 'react';
 import { LB_FORM_MODE, SESSION_KEY_SOURCE } from '../config';
@@ -77,8 +69,8 @@ const useStyles = createStyles(({ css }) => ({
 const SESSION_KEYS_PATH = ['plugins', 'session-affinity', 'sessionKeys'];
 
 // Session key chain edited as a MetadataList (object-array convention):
-// each row is a source Select + key Input; rows live in the form store and
-// every action writes straight back to it.
+// each row is a source Select + key Input; every action updates the local
+// input values and the form store together.
 // Form.Item clones its single child with value/onChange; a native <input>
 // would surface an array value as an unknown-attribute warning, so register
 // the array field through this pass-through component instead.
@@ -93,10 +85,13 @@ const SessionKeysEditor = ({ disabled }: { disabled: boolean }) => {
     ['plugins', 'session-affinity', 'enabled'],
     form
   );
-  const sessionKeys: SessionKeyFormItem[] =
-    Form.useWatch(SESSION_KEYS_PATH as any, form) || [];
+  // Input values must update synchronously; useWatch notifies in a later task.
+  const [sessionKeys, setSessionKeys] = useState<SessionKeyFormItem[]>(
+    () => form.getFieldValue(SESSION_KEYS_PATH as any) || []
+  );
 
   const updateKeys = (keys: SessionKeyFormItem[]) => {
+    setSessionKeys(keys);
     form.setFieldValue(SESSION_KEYS_PATH as any, keys);
     // setFieldValue does not trigger validation, so a submit error on this
     // field would otherwise linger until the next submit even after the user
@@ -160,7 +155,6 @@ const SessionKeysEditor = ({ disabled }: { disabled: boolean }) => {
         btnText={intl.formatMessage({ id: 'routes.lb.sessionKeys.add' })}
         dataList={sessionKeys}
         styles={{
-          item: { marginBottom: 16 },
           // The wrapper is `width: 100%` + padding 14 + border 1 but not
           // box-sizing: border-box (styled-components ships no reset), so its
           // 100% resolves against the content box and overflows the plugin
@@ -183,26 +177,31 @@ const SessionKeysEditor = ({ disabled }: { disabled: boolean }) => {
           // minWidth: 0 on both levels lets the row actually shrink to the
           // MetadataList slot — flex items otherwise refuse to go below
           // their intrinsic (Input ≈ 20ch) width and overflow the drawer.
-          <Flex gap={8} align="center" style={{ flex: 1, minWidth: 0 }}>
-            <Select
-              disabled={disabled}
-              options={sourceOptions}
-              style={{ width: 140, flex: 'none' }}
-              value={item?.type || SESSION_KEY_SOURCE.header}
-              onChange={(type) =>
-                updateKeys(
-                  sessionKeys.map((k, i) => (i === index ? { ...k, type } : k))
-                )
-              }
-            />
-            <Input
+          <Flex gap={10} align="center" style={{ flex: 1, minWidth: 0 }}>
+            <Flex style={{ width: 140, flex: 'none' }}>
+              <CoreSelect
+                disabled={disabled}
+                options={sourceOptions}
+                style={{ width: '100%' }}
+                value={item?.type || SESSION_KEY_SOURCE.header}
+                onChange={(type) =>
+                  updateKeys(
+                    sessionKeys.map((k, i) =>
+                      i === index ? { ...k, type } : k
+                    )
+                  )
+                }
+              />
+            </Flex>
+            <CoreInput.Input
+              trim={false}
               disabled={disabled}
               value={item?.key ?? ''}
               placeholder={intl.formatMessage({
                 id: 'routes.lb.sessionKeys.keyPlaceholder'
               })}
               style={{ flex: 1, minWidth: 0 }}
-              onChange={(e) =>
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 updateKeys(
                   sessionKeys.map((k, i) =>
                     i === index ? { ...k, key: e.target.value } : k
@@ -289,8 +288,10 @@ const SystemoneEditor = ({
   // provider's models list (no live fetch — an intranet endpoint is
   // unreachable from the browser anyway).
   const [providers, setProviders] = useState<any[]>([]);
-  const criteria: CriteriaFormItem[] =
-    Form.useWatch(SYSTEMONE_CRITERIA_PATH as any, form) || [];
+  // Input values must update synchronously; useWatch notifies in a later task.
+  const [criteria, setCriteria] = useState<CriteriaFormItem[]>(
+    () => form.getFieldValue(SYSTEMONE_CRITERIA_PATH as any) || []
+  );
 
   const providerOptions = providers.map((item) => ({
     label: item.name,
@@ -324,6 +325,7 @@ const SystemoneEditor = ({
   }, []);
 
   const updateCriteria = (items: CriteriaFormItem[]) => {
+    setCriteria(items);
     form.setFieldValue(SYSTEMONE_CRITERIA_PATH as any, items);
     if (form.getFieldError(SYSTEMONE_CRITERIA_PATH as any).length) {
       form.validateFields([SYSTEMONE_CRITERIA_PATH as any]).catch(() => {});
@@ -474,7 +476,6 @@ const SystemoneEditor = ({
       </Form.Item>
       <MetadataList
         styles={{
-          item: { marginBottom: 16 },
           wrapper: { boxSizing: 'border-box' }
         }}
         label={
@@ -529,15 +530,16 @@ const SystemoneEditor = ({
         {(item: CriteriaFormItem, index: number) => (
           // Same proportions as a session-key row: narrow fixed key (140,
           // like the source Select) + flexible value input.
-          <Flex gap={8} align="center" style={{ flex: 1, minWidth: 0 }}>
-            <Input
+          <Flex gap={10} align="center" style={{ flex: 1, minWidth: 0 }}>
+            <CoreInput.Input
               disabled={disabled}
+              trim={false}
               value={item?.name ?? ''}
               placeholder={intl.formatMessage({
                 id: 'routes.lb.systemone.criteria.modelPlaceholder'
               })}
               style={{ width: 140, flex: 'none' }}
-              onChange={(e) =>
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 updateCriteria(
                   criteria.map((row, i) =>
                     i === index ? { ...row, name: e.target.value } : row
@@ -545,14 +547,15 @@ const SystemoneEditor = ({
                 )
               }
             />
-            <Input
+            <CoreInput.Input
               disabled={disabled}
+              trim={false}
               value={item?.description ?? ''}
               placeholder={intl.formatMessage({
                 id: 'routes.lb.systemone.criteria.descPlaceholder'
               })}
               style={{ flex: 1, minWidth: 0 }}
-              onChange={(e) =>
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 updateCriteria(
                   criteria.map((row, i) =>
                     i === index ? { ...row, description: e.target.value } : row
@@ -733,7 +736,7 @@ const InfluenceAdvanced = ({
     // `.slider-label` box (it is not flexed), so the revealed row may sit
     // close to the content above — to be fixed in core-ui, after which this
     // spacing works as intended.
-    <div style={{ marginTop: open ? 16 : 0, marginBottom: 16 }}>
+    <div style={{ marginTop: open ? 16 : 0 }}>
       {!open && (
         <Button
           type="dashed"

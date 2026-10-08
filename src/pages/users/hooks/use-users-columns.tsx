@@ -135,8 +135,8 @@ const useUsersColumns = ({
     return [
       {
         title: intl.formatMessage({ id: 'common.table.name' }),
-        dataIndex: 'name',
-        key: 'name',
+        dataIndex: 'username',
+        key: 'username',
         sorter: tableSorter(1),
         render: (text: string, record: ListItem) => (
           <AutoTooltip ghost style={{ maxWidth: 400 }} title={record.username}>

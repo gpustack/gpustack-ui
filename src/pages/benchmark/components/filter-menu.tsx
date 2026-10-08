@@ -1,4 +1,3 @@
-import { CheckOutlined } from '@ant-design/icons';
 import { FiltersButton, OverlayScroller } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Flex, Popover, theme } from 'antd';
@@ -6,6 +5,7 @@ import { createStyles } from 'antd-style';
 import { useRef, useState } from 'react';
 import { loadTypeOptions, targetModeOptions } from '../config';
 import type { BenchmarkFilterValues, TextFilterKey } from '../config/types';
+import FilterOptionGroup from './filter-option-group';
 import type { ResponsiveFilterItem } from './responsive-filters';
 
 interface FilterMenuProps {
@@ -16,50 +16,11 @@ interface FilterMenuProps {
 
 const useStyles = createStyles(({ css }) => ({
   menu: css`
-    width: 280px;
+    width: 220px;
     max-width: calc(100vw - 32px);
   `,
-  group: css`
+  controls: css`
     padding: var(--ant-padding-sm);
-
-    & + & {
-      border-top: 1px solid var(--ant-color-split);
-    }
-  `,
-  heading: css`
-    padding: 0 var(--ant-padding-xs) var(--ant-padding-xs);
-    color: var(--ant-color-text-tertiary);
-    font-size: 14px;
-  `,
-  item: css`
-    width: 100%;
-    min-height: 40px;
-    padding: var(--ant-padding-xs);
-    border: 0;
-    border-radius: var(--ant-border-radius);
-    background: transparent;
-    color: var(--ant-color-text);
-    text-align: left;
-    cursor: pointer;
-
-    &:hover,
-    &:focus-visible {
-      background: var(--ant-color-fill-tertiary);
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--ant-color-primary);
-      outline-offset: -2px;
-    }
-  `,
-  label: css`
-    min-width: 0;
-    overflow-wrap: anywhere;
-  `,
-  check: css`
-    flex-shrink: 0;
-    width: 16px;
-    color: var(--ant-color-text-secondary);
   `
 }));
 
@@ -95,6 +56,9 @@ const FilterMenu: React.FC<FilterMenuProps> = ({
     {
       key: 'target_mode' as const,
       label: intl.formatMessage({ id: 'benchmark.form.targetMode' }),
+      placeholder: intl.formatMessage({
+        id: 'benchmark.table.filter.byTargetMode'
+      }),
       options: targetModeOptions.map((item) => ({
         value: item.value,
         label: intl.formatMessage({ id: item.label })
@@ -103,6 +67,9 @@ const FilterMenu: React.FC<FilterMenuProps> = ({
     {
       key: 'load_type' as const,
       label: intl.formatMessage({ id: 'benchmark.form.loadType' }),
+      placeholder: intl.formatMessage({
+        id: 'benchmark.table.filter.byLoadType'
+      }),
       options: loadTypeOptions.map((item) => ({
         value: item.value,
         label: intl.formatMessage({ id: item.label })
@@ -128,46 +95,22 @@ const FilterMenu: React.FC<FilterMenuProps> = ({
         {/* OverlayScroller reparents its direct children. Keep this host stable
             so React inserts/removes dynamic groups within its own container. */}
         <div>
-          {overflowItems.length > 0 && (
-            <Flex vertical gap="small" className={styles.group}>
-              {overflowItems.map(({ key, content }) => (
-                <div key={key}>{content}</div>
-              ))}
-            </Flex>
-          )}
-          {filters.map((filter) => (
-            <div
-              key={filter.key}
-              role="group"
-              aria-label={filter.label}
-              className={styles.group}
-            >
-              <div className={styles.heading}>{filter.label}</div>
-              {filter.options.map((option) => (
-                <button
-                  key={option.value}
-                  type="button"
-                  className={styles.item}
-                  aria-pressed={values[filter.key] === option.value}
-                  onClick={() =>
-                    onChange({
-                      [filter.key]:
-                        values[filter.key] === option.value
-                          ? undefined
-                          : option.value
-                    })
-                  }
-                >
-                  <Flex align="center" justify="space-between" gap={8}>
-                    <span className={styles.label}>{option.label}</span>
-                    <span className={styles.check} aria-hidden="true">
-                      {values[filter.key] === option.value && <CheckOutlined />}
-                    </span>
-                  </Flex>
-                </button>
-              ))}
-            </div>
-          ))}
+          <Flex vertical gap={8} className={styles.controls}>
+            {overflowItems.map(({ key, content }) => (
+              <div key={key}>{content}</div>
+            ))}
+            {filters.map((filter) => (
+              <FilterOptionGroup
+                key={filter.key}
+                mode="select"
+                label={filter.label}
+                placeholder={filter.placeholder}
+                options={filter.options}
+                value={values[filter.key]}
+                onChange={(value) => onChange({ [filter.key]: value })}
+              />
+            ))}
+          </Flex>
         </div>
       </OverlayScroller>
     </div>

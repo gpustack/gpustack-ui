@@ -34,6 +34,10 @@
       "type": "string",
       "description": "Hugging Face access token"
     },
+    "insecure_tls": {
+      "type": "boolean",
+      "description": "Skip TLS verification of the server certificate on this cluster's workers. Trusted networks only."
+    },
     "disable_worker_metrics": {
       "type": "boolean",
       "description": "Disable worker metrics collection"

@@ -64,7 +64,7 @@ export default {
   'routes.lb.systemone.provider.required': '请选择决策服务',
   'routes.lb.systemone.decisionModel': '决策模型',
   'routes.lb.systemone.decisionModel.tips':
-    '路由级决策模型,选项读自所选 Provider 缓存的决策引擎;优先级:本字段 > Provider 的模型 > 服务端默认。',
+    '路由级决策模型,启用本卡片时必填。选项读自所选 Provider 缓存的决策引擎;若缺失或无效,将跳过 JEV 路由,请求回退到其余插件。',
   'routes.lb.systemone.decisionModel.required': '请选择决策模型',
   'routes.lb.systemone.instructions': '决策指令',
   'routes.lb.systemone.instructions.tips':

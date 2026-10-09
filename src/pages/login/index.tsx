@@ -26,7 +26,7 @@ import {
   useModel,
   useNavigate
 } from '@umijs/max';
-import { ConfigProvider, theme } from 'antd';
+import { ConfigProvider } from 'antd';
 import { createStyles } from 'antd-style';
 import CryptoJS from 'crypto-js';
 import { useAtom } from 'jotai';
@@ -200,21 +200,7 @@ const Login = () => {
     ]
   );
   return (
-    <ConfigProvider
-      componentSize="large"
-      theme={{
-        algorithm: userSettings.isDarkTheme
-          ? theme.darkAlgorithm
-          : theme.defaultAlgorithm,
-        ...themeData,
-        token: {
-          ...themeData?.token,
-          colorPrimary:
-            plugin?.getPrimaryColor?.(userSettings)?.colorPrimary ||
-            COLOR_PRIMARY
-        }
-      }}
-    >
+    <ConfigProvider componentSize="large" theme={themeData}>
       <CoreUIProvider
         config={{
           apiBaseUrl: GPUSTACK_API_BASE_URL,

@@ -1,0 +1,108 @@
+.ant-message .ant-message-notice-wrapper {
+  .ant-message-notice-content {
+    border-radius: var(--border-radius-base) !important;
+    max-width: 300px;
+    text-align: left;
+    word-wrap: break-word;
+    box-shadow: var(--ant-box-shadow-secondary) !important;
+    max-height: 140px;
+    overflow-y: auto;
+  }
+
+  .ant-message-custom-content {
+    align-items: flex-start !important;
+
+    > .anticon {
+      flex-shrink: 0;
+      padding-top: 3px;
+    }
+  }
+
+  .ant-message-notice-success {
+    --message-status-text: var(--color-status-success-text);
+    --message-status-bg: var(--color-status-success-bg);
+    --message-status-accent: var(--ant-color-success);
+  }
+
+  .ant-message-notice-error {
+    --message-status-text: var(--color-status-error-text);
+    --message-status-bg: var(--color-status-error-bg);
+    --message-status-accent: var(--ant-color-error);
+  }
+
+  .ant-message-notice-success,
+  .ant-message-notice-error {
+    .ant-message-notice-content {
+      position: relative;
+      box-sizing: border-box;
+      max-width: 420px;
+      max-height: none;
+      padding: var(--ant-padding-sm) var(--ant-padding);
+      overflow: visible;
+      border: 0;
+      border-radius: var(--border-radius-lg) !important;
+      background-color: var(--color-fill-1);
+      color: var(--ant-color-text);
+      box-shadow: var(--ant-box-shadow-tertiary) !important;
+
+      // Preserve the original 40% status tint without CSS color-mix().
+      &::before {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        border-radius: inherit;
+        background-color: var(--message-status-bg);
+        opacity: 0.4;
+        pointer-events: none;
+        content: '';
+      }
+    }
+
+    .ant-message-custom-content {
+      position: relative;
+
+      > .anticon {
+        color: var(--message-status-accent);
+      }
+
+      > span:last-child {
+        min-width: 0;
+        max-height: 240px;
+        overflow: auto;
+        overscroll-behavior: contain;
+        scrollbar-width: thin;
+        scrollbar-color: var(--color-scrollbar-thumb) transparent;
+
+        &::-webkit-scrollbar {
+          width: var(--scrollbar-size);
+          height: var(--scrollbar-size);
+        }
+
+        &::-webkit-scrollbar-thumb {
+          background-color: var(--color-scrollbar-thumb);
+          border-radius: var(--border-radius-base);
+        }
+
+        &::-webkit-scrollbar-track {
+          background-color: transparent;
+        }
+      }
+
+      .title {
+        margin-bottom: var(--ant-margin-xxs);
+        color: var(--message-status-text);
+        font-weight: var(--font-weight-semibold);
+      }
+
+      .ant-typography-copy {
+        color: var(--message-status-text);
+      }
+
+      .cp-btn {
+        right: 0;
+      }
+    }
+  }
+}

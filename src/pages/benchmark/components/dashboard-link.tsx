@@ -1,8 +1,8 @@
 import { systemConfigAtom } from '@/atoms/system';
 import { GPUSTACK_API_BASE_URL } from '@/config/settings';
-import { GrafanaIcon } from '@gpustack/core-ui';
+import { GrafanaIcon, IconFont } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Button, Tooltip } from 'antd';
+import { Button, Flex, Tooltip } from 'antd';
 import { useAtomValue } from 'jotai';
 import React from 'react';
 
@@ -44,10 +44,29 @@ const DashboardLink: React.FC<{ id?: number }> = ({ id }) => {
       title={intl.formatMessage({ id: 'benchmark.detail.monitoring.tips' })}
     >
       <Button
+        type="text"
+        size="middle"
         onClick={handleClick}
-        icon={<GrafanaIcon style={{ width: 16, height: 16 }}></GrafanaIcon>}
+        icon={
+          <Flex align="center">
+            <GrafanaIcon
+              style={{
+                width: 16,
+                height: 16
+              }}
+            ></GrafanaIcon>
+          </Flex>
+        }
       >
-        {intl.formatMessage({ id: 'benchmark.detail.monitoring' })}
+        <Flex gap={8} align="center">
+          <span>
+            {intl.formatMessage({ id: 'benchmark.detail.monitoring' })}
+          </span>
+          <IconFont
+            type="icon-external-link"
+            style={{ color: 'var(--ant-color-link)' }}
+          />
+        </Flex>
       </Button>
     </Tooltip>
   );

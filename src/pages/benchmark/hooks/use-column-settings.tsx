@@ -59,7 +59,7 @@ const allFields = [
   'requests_per_second_mean',
   'input_tokens_per_second_mean',
   'output_tokens_per_second_mean',
-  'total_requests',
+  'request_total',
   'request_successful',
   'request_errored',
   'request_incomplete',
@@ -278,8 +278,9 @@ const useColumnSettings = (options: {
       title: renderTitle(
         intl.formatMessage({ id: 'benchmark.detail.requests.total' })
       ),
-      dataIndex: 'total_requests',
-      path: 'total_requests',
+      // The measured count; total_requests is only the configured request limit.
+      dataIndex: 'request_total',
+      path: 'request_total',
       precision: 0,
       render: (value: number) => (
         <AutoTooltip ghost minWidth={20}>

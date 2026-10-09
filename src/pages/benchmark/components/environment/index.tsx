@@ -36,7 +36,7 @@ const Environment: React.FC = () => {
   const GPUColumns = useGPUColumns();
   const workerColumns = useWorkerColumns();
   const { detailData } = useDetailContext();
-  const { snapshot } = detailData;
+  const snapshot = detailData?.snapshot || {};
 
   // Every member the run's snapshot covers. One for a plain model; for a group
   // all of them, because what the reader compares is what the deployment cost

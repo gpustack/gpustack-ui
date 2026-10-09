@@ -348,14 +348,16 @@ const SystemoneEditor = ({
   };
 
   // Required only while the card is enabled (disabled = the card sits in
-  // weighted LB mode, where nothing is editable).
+  // weighted LB mode, where nothing is editable). Whitespace-only strings
+  // are rejected too — buildPluginsPayload trims before serializing, so
+  // spaces would slip through here and serialize as null server-side.
   const requiredWhenEnabled = (messageId: string) => [
     {
       validator(_rule: any, value: any) {
         if (!enabled || disabled) {
           return Promise.resolve();
         }
-        if (value == null || value === '') {
+        if (value == null || String(value).trim() === '') {
           return Promise.reject(
             new Error(intl.formatMessage({ id: messageId }))
           );
@@ -374,6 +376,7 @@ const SystemoneEditor = ({
         <CoreSelect
           allowClear
           options={providerOptions}
+          required
           onChange={() => {
             // The decision engine must exist in the newly selected
             // provider's cache — a stale alias would pass required
@@ -391,13 +394,19 @@ const SystemoneEditor = ({
           }
         />
       </Form.Item>
-      {/* The backend allows omitting decisionModel — the provider's config
-          or the service's own default engine is used then. Optional here,
-          and an empty value is not sent on PUT (see buildPluginsPayload). */}
-      <Form.Item name={['plugins', 'decision-service', 'decisionModel']}>
+      {/* Required while the card is enabled — without an explicit decision
+          model the server silently falls back and skips JEV-based routing
+          (gpustack/gpustack#6353); see buildPluginsPayload for the payload. */}
+      <Form.Item
+        name={['plugins', 'decision-service', 'decisionModel']}
+        rules={requiredWhenEnabled(
+          'routes.lb.systemone.decisionModel.required'
+        )}
+      >
         <AutoComplete
           options={decisionModelOptions}
           allowClear
+          required
           label={
             <LabelWithHelp
               labelId="routes.lb.systemone.decisionModel"

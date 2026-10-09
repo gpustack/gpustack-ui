@@ -1,5 +1,6 @@
+import { IconFont } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Table, Tooltip } from 'antd';
+import { Flex, Table, Tooltip } from 'antd';
 import { createStyles } from 'antd-style';
 import { round } from 'lodash';
 import React from 'react';
@@ -11,7 +12,7 @@ import { useDetailContext } from '../../config/detail-context';
 const useStyles = createStyles(({ css }) => ({
   box: css`
     border: 1px solid var(--ant-color-border-secondary);
-    border-radius: var(--ant-border-radius);
+    border-radius: var(--ant-border-radius-lg);
     overflow: hidden;
     .ant-table-thead > tr > th {
       background: var(--ant-color-fill-quaternary) !important;
@@ -74,9 +75,10 @@ const PercentileResult: React.FC<{ data?: any }> = (props) => {
         <Tooltip
           title={intl.formatMessage({ id: 'benchmark.detail.tpot.tip' })}
         >
-          <span style={{ borderBottom: '1px dashed currentColor' }}>
-            TPOT (ms)
-          </span>
+          <Flex align="center" gap={4}>
+            <span>TPOT (ms)</span>
+            <IconFont type="icon-help" style={{ fontSize: 16 }} />
+          </Flex>
         </Tooltip>
       ),
       dataIndex: 'inter_token_latency_ms',
@@ -90,9 +92,10 @@ const PercentileResult: React.FC<{ data?: any }> = (props) => {
       // and a 0 in this column would read as "no latency between tokens".
       title: (
         <Tooltip title={intl.formatMessage({ id: 'benchmark.detail.itl.tip' })}>
-          <span style={{ borderBottom: '1px dashed currentColor' }}>
-            ITL (ms)
-          </span>
+          <Flex align="center" gap={4}>
+            <span>ITL (ms)</span>
+            <IconFont type="icon-help" style={{ fontSize: 16 }} />
+          </Flex>
         </Tooltip>
       ),
       dataIndex: 'inter_token_latency_per_chunk_ms',

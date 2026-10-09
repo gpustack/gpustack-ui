@@ -1,23 +1,10 @@
+import { StatusDot, type StatusType } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { MyModelsStatusValueMap } from '../config';
-
-const Dot = ({ color }: { color: string }) => {
-  return (
-    <span
-      style={{
-        backgroundColor: color,
-        borderRadius: '50%',
-        height: 8,
-        width: 8,
-        display: 'flex'
-      }}
-    ></span>
-  );
-};
+import { MyModelsStatusMap, MyModelsStatusValueMap } from '../config';
 
 const useFilterStatus = (options?: {
   onStatusChange?: (value?: any) => void;
-  optionList?: (Global.BaseOption<string> & { color: string })[];
+  optionList?: (Global.BaseOption<string> & { status: StatusType })[];
 }) => {
   const { onStatusChange, optionList } = options || {};
   const intl = useIntl();
@@ -25,24 +12,21 @@ const useFilterStatus = (options?: {
   const statusOptions = [
     {
       value: MyModelsStatusValueMap.Ready,
-      color: 'var(--color-status-success-text)',
-      icon: <Dot color="var(--ant-color-success)"></Dot>,
+      status: MyModelsStatusMap[MyModelsStatusValueMap.Ready],
       label: intl.formatMessage({
         id: 'models.mymodels.status.active'
       })
     },
     {
       value: MyModelsStatusValueMap.Stopped,
-      color: 'var(--ant-color-fill-secondary)',
-      icon: <Dot color="var(--ant-color-fill-secondary)"></Dot>,
+      status: MyModelsStatusMap[MyModelsStatusValueMap.Stopped],
       label: intl.formatMessage({
         id: 'models.mymodels.status.inactive'
       })
     },
     {
       value: MyModelsStatusValueMap.NotReady,
-      color: 'var(--color-status-warning-text)',
-      icon: <Dot color="var(--ant-color-warning)"></Dot>,
+      status: MyModelsStatusMap[MyModelsStatusValueMap.NotReady],
       label: intl.formatMessage({
         id: 'models.mymodels.status.degrade'
       })
@@ -51,22 +35,12 @@ const useFilterStatus = (options?: {
 
   const mergedOptions = optionList || statusOptions;
 
-  const labelRender = (item: any) => {
+  const renderStatusOption = (item: any) => {
     const current = mergedOptions.find((option) => option.value === item.value);
-    return (
-      <span className="flex-center gap-8">
-        {current && <Dot color={current.color}></Dot>}
-        {item.label}
-      </span>
-    );
-  };
-
-  const optionRender = (item: any) => {
-    return (
-      <span className="flex-center gap-8">
-        <Dot color={item.data?.color}></Dot>
-        {item.label}
-      </span>
+    return current ? (
+      <StatusDot statusValue={{ status: current.status, text: item.label }} />
+    ) : (
+      item.label
     );
   };
 
@@ -76,8 +50,8 @@ const useFilterStatus = (options?: {
 
   return {
     statusOptions: mergedOptions,
-    labelRender,
-    optionRender,
+    labelRender: renderStatusOption,
+    optionRender: renderStatusOption,
     handleStatusChange
   };
 };

@@ -5,10 +5,11 @@ import _ from 'lodash';
 import { useMemo } from 'react';
 import { backendParamsHolderTips, getBackendParamsTips } from '../config';
 import { useFormContext } from '../config/form-context';
-import { FormData } from '../config/types';
+import { FormData, PDMode } from '../config/types';
 import BackendParameters, {
   backendOptionsMap
 } from '../constants/backend-parameters';
+import { getRouterParameterConfig } from '../constants/backend-parameters/router';
 
 interface BackendParametersListProps {
   /**
@@ -16,10 +17,13 @@ interface BackendParametersListProps {
    * Absent means the model-level path, byte-for-byte what it was.
    */
   namePrefix?: (string | number)[];
+  /** Undefined selects engine hints; null identifies a router without a recipe. */
+  router?: PDMode['router'];
 }
 
 const BackendParametersList: React.FC<BackendParametersListProps> = ({
-  namePrefix
+  namePrefix,
+  router
 }) => {
   const intl = useIntl();
   const { onValuesChange, flatBackendOptions } = useFormContext();
@@ -35,12 +39,21 @@ const BackendParametersList: React.FC<BackendParametersListProps> = ({
   const roleBackend = Form.useWatch(path('backend'), form);
   const modelBackend = Form.useWatch('backend', form);
   const backend = roleBackend ?? modelBackend;
+  const routerConfig = useMemo(
+    () => (router === undefined ? undefined : getRouterParameterConfig(router)),
+    [router]
+  );
 
   const backendParamsTips = useMemo(() => {
-    return getBackendParamsTips(backend);
-  }, [backend]);
+    return routerConfig ?? getBackendParamsTips(backend);
+  }, [backend, routerConfig]);
+  const holder =
+    routerConfig?.holder ?? backendParamsHolderTips[backend]?.holder;
 
   const paramsConfig = useMemo(() => {
+    if (routerConfig) {
+      return routerConfig.options;
+    }
     const builtIn = _.get(BackendParameters, backend, []) as Array<{
       label: string;
       value: string;
@@ -52,7 +65,7 @@ const BackendParametersList: React.FC<BackendParametersListProps> = ({
       value: v
     }));
     return _.uniqBy([...extra, ...builtIn], 'value');
-  }, [backend, flatBackendOptions]);
+  }, [backend, flatBackendOptions, routerConfig]);
 
   const handleBackendParametersOnBlur = () => {
     onValuesChange?.({}, form.getFieldsValue());
@@ -67,9 +80,9 @@ const BackendParametersList: React.FC<BackendParametersListProps> = ({
       <ListInput
         trim={false}
         placeholder={
-          backendParamsHolderTips[backend]
+          holder
             ? intl.formatMessage({
-                id: backendParamsHolderTips[backend].holder
+                id: holder
               })
             : ''
         }

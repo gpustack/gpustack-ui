@@ -133,6 +133,8 @@ export default {
     'örn., --ctx-size=8192 (ad ve değeri ayırmak için = veya boşluk kullanın)',
   'models.form.backend_parameters.vllm.placeholder':
     'örn., --max-model-len=8192 (ad ve değeri ayırmak için = veya boşluk kullanın)',
+  'models.form.backend_parameters.router.placeholder':
+    'örn., --prefill-policy=cache_aware (ad ve değeri ayırmak için = veya boşluk kullanın)',
   'models.form.backend_parameters.sglang.placeholder':
     'örn., --context-length=8192 (ad ve değeri ayırmak için = veya boşluk kullanın)',
   'models.form.backend_parameters.vllm.tips':

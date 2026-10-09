@@ -135,6 +135,8 @@ export default {
     'например: --ctx-size=8192（параметр и значение разделены знаком = или пробелом）',
   'models.form.backend_parameters.vllm.placeholder':
     'например: --max-model-len=8192（параметр и значение разделены знаком = или пробелом）',
+  'models.form.backend_parameters.router.placeholder':
+    'например: --prefill-policy=cache_aware（параметр и значение разделены знаком = или пробелом）',
   'models.form.backend_parameters.sglang.placeholder':
     'например: --context-length=8192（параметр и значение разделены знаком = или пробелом）',
   'models.form.backend_parameters.vllm.tips':

@@ -30,7 +30,7 @@ export interface BackendParameter {
   options?: Array<string | number>;
 }
 
-const generateBackendParameters = (options: BackendParameter[]) => {
+export const generateBackendParameters = (options: BackendParameter[]) => {
   return options.map((option) => {
     return {
       label: option.label,

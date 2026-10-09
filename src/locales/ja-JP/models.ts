@@ -135,6 +135,8 @@ export default {
     '例: --ctx-size=8192（=または空白で名前と値を分ける）',
   'models.form.backend_parameters.vllm.placeholder':
     '例: --max-model-len=8192（=または空白で名前と値を分ける）',
+  'models.form.backend_parameters.router.placeholder':
+    '例: --prefill-policy=cache_aware（=または空白で名前と値を分ける）',
   'models.form.backend_parameters.sglang.placeholder':
     '例: --context-length=8192（=または空白で名前と値を分ける）',
   'models.form.backend_parameters.vllm.tips':

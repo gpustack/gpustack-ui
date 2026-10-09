@@ -132,6 +132,8 @@ export default {
     'e.g., --ctx-size=8192 (use = or a space to separate name and value)',
   'models.form.backend_parameters.vllm.placeholder':
     'e.g., --max-model-len=8192 (use = or a space to separate name and value)',
+  'models.form.backend_parameters.router.placeholder':
+    'e.g., --prefill-policy=cache_aware (use = or a space to separate name and value)',
   'models.form.backend_parameters.sglang.placeholder':
     'e.g., --context-length=8192 (use = or a space to separate name and value)',
   'models.form.backend_parameters.vllm.tips':

@@ -174,6 +174,7 @@ const RouterForm: React.FC<RouterFormProps> = ({ index, mode }) => {
               footer: (
                 <BackendParametersList
                   namePrefix={['roles', index]}
+                  router={router ?? null}
                 ></BackendParametersList>
               )
             },

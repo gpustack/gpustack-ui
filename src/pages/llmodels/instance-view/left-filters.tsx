@@ -1,6 +1,6 @@
 import { ListItem as workerListItem } from '@/pages/resources/config/types';
 import { SearchOutlined, SyncOutlined } from '@ant-design/icons';
-import { BaseSelect } from '@gpustack/core-ui';
+import { BaseSelect, type StatusType } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Input, Space } from 'antd';
 import React from 'react';
@@ -21,7 +21,7 @@ interface LeftFiltersProps {
     optionList: {
       label: string;
       value: string;
-      color: string;
+      status: StatusType;
     }[];
   };
 }

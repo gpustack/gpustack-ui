@@ -13,6 +13,7 @@ import {
   queryModelsInstances
 } from '../apis';
 import ViewLogsModal from '../components/view-logs-modal';
+import { status as instanceStatus } from '../config';
 import { useDeploymentsContext } from '../config/deploments-context';
 import { ModelInstanceListItem as ListItem } from '../config/types';
 import useViewInstanceLogs from '../hooks/use-view-instance-logs';
@@ -25,22 +26,22 @@ const filterOptions = {
     {
       label: 'Running',
       value: 'running',
-      color: 'var(--color-status-success-text)'
+      status: instanceStatus.running
     },
     {
       label: 'Error',
       value: 'error',
-      color: 'var(--color-status-error-text)'
+      status: instanceStatus.error
     },
     {
       label: 'Pending',
       value: 'pending',
-      color: 'var(--ant-color-info)'
+      status: instanceStatus.pending
     },
     {
       label: 'Starting',
       value: 'starting',
-      color: 'var(--ant-color-info)'
+      status: instanceStatus.starting
     }
   ]
 };

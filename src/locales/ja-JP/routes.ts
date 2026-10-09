@@ -68,7 +68,7 @@ export default {
   'routes.lb.systemone.provider.required': '意思決定サービスを選択してください',
   'routes.lb.systemone.decisionModel': '意思決定モデル',
   'routes.lb.systemone.decisionModel.tips':
-    'ルートレベルの意思決定モデル。選択したプロバイダーにキャッシュされたエンジンから選択します。優先度: この項目 > プロバイダーのモデル > サービスのデフォルト。',
+    'ルートレベルの意思決定モデル。このカードの有効時は必須です。選択したプロバイダーにキャッシュされたエンジンから選択します。未設定または無効な場合、JEV ベースのルーティングはスキップされ、リクエストは他のプラグインへフォールバックします。',
   'routes.lb.systemone.decisionModel.required':
     '意思決定モデルを選択してください',
   'routes.lb.systemone.instructions': '指示',

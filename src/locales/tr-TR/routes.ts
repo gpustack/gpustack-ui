@@ -67,7 +67,7 @@ export default {
   'routes.lb.systemone.provider.required': 'Lütfen bir karar servisi seçin',
   'routes.lb.systemone.decisionModel': 'Karar Modeli',
   'routes.lb.systemone.decisionModel.tips':
-    'Rota düzeyinde karar modeli; seçenekler seçilen sağlayıcının önbelleğindeki motorlardan okunur. Öncelik: bu alan > sağlayıcının modeli > servis varsayılanı.',
+    'Rota düzeyinde karar modeli; bu kart etkinleştirildiğinde zorunludur. Seçenekler seçilen sağlayıcının önbelleğindeki motorlardan okunur. Ayarlanmamış veya geçersizse JEV tabanlı yönlendirme atlanır ve istekler diğer eklentilere geri döner.',
   'routes.lb.systemone.decisionModel.required': 'Lütfen bir karar modeli seçin',
   'routes.lb.systemone.instructions': 'Talimatlar',
   'routes.lb.systemone.instructions.tips':

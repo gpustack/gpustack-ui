@@ -70,7 +70,7 @@ export default {
   'routes.lb.systemone.provider.required': 'Please select a decision service',
   'routes.lb.systemone.decisionModel': 'Decision Model',
   'routes.lb.systemone.decisionModel.tips':
-    'Route-level decision model, read from the selected provider\u2019s cached engines; priority: this field > the provider\u2019s model > the service default.',
+    'Route-level decision model, required when this card is enabled. Options are read from the engines cached in the selected provider; if unset or invalid, JEV-based routing is skipped and requests fall back to the other plugins.',
   'routes.lb.systemone.decisionModel.required':
     'Please select a decision model',
   'routes.lb.systemone.instructions': 'Instructions',

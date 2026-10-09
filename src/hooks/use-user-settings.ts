@@ -1,12 +1,11 @@
 import { useAtom } from 'jotai';
 import { useEffect, useMemo } from 'react';
 import { userSettingsHelperAtom } from '../atoms/settings';
-import themeConfig from '../config/theme';
+import getThemeConfig from '../config/theme/get-theme-config';
 
 type Theme = 'light' | 'realDark' | 'auto';
 
 export default function useUserSettings() {
-  const { light, dark, colorPrimary } = themeConfig;
   const [userSettings, setUserSettings] = useAtom(userSettingsHelperAtom);
 
   const getCurrentTheme = (mode: Theme): 'light' | 'realDark' => {
@@ -25,16 +24,14 @@ export default function useUserSettings() {
     }
   };
 
-  const themeData = useMemo(() => {
-    const baseTokens = userSettings.theme === 'realDark' ? dark : light;
-    return {
-      ...baseTokens,
-      token: {
-        ...baseTokens.token,
-        colorPrimary: userSettings.colorPrimary || colorPrimary
-      }
-    };
-  }, [userSettings.theme, userSettings.colorPrimary]);
+  const themeData = useMemo(
+    () =>
+      getThemeConfig({
+        theme: userSettings.theme,
+        colorPrimary: userSettings.colorPrimary
+      }),
+    [userSettings.theme, userSettings.colorPrimary]
+  );
 
   const setTheme = (mode: Theme) => {
     const currentTheme = getCurrentTheme(mode);

@@ -39,7 +39,7 @@ import {
   useNavigate,
   type IRoute
 } from '@umijs/max';
-import { App, Button, ConfigProvider, Modal, theme } from 'antd';
+import { App, Button, ConfigProvider, Modal } from 'antd';
 import { useAtom } from 'jotai';
 import 'overlayscrollbars/overlayscrollbars.css';
 import { useEffect, useMemo, useRef } from 'react';
@@ -341,12 +341,7 @@ export default (props: any) => {
   return (
     <ConfigProvider
       componentSize="large"
-      theme={{
-        algorithm: userSettings.isDarkTheme
-          ? theme.darkAlgorithm
-          : theme.defaultAlgorithm,
-        ...themeData
-      }}
+      theme={themeData}
       modal={{
         mask: {
           blur: false
@@ -365,17 +360,11 @@ export default (props: any) => {
           app is in dark mode. ``component={false}`` keeps it from adding a DOM
           node that would change the layout.
 
-          🔴 It does NOT reach the module-level statics. ``import { message }
-          from 'antd'`` renders in antd's own detached root whatever is mounted
-          here, and this comment used to say otherwise -- which is the likeliest
-          source of the ~41 files still importing them. A static toast in dark
-          mode is measurably broken, not merely off-theme: ``global.less``
-          colours its TEXT with a project variable declared on
-          ``html[data-theme='realDark']`` (inherited even by a detached
-          container) over a BACKGROUND from antd's cssVar (scoped to the
-          ConfigProvider container the static API never enters), so the pair
-          lands at ~2.0-2.3:1 against the 4.5:1 those same styles were measured
-          for. New code must take them from ``App.useApp()``.
+          Module-level statics still render in antd's detached root.
+          ``global.tsx`` supplies that root with ``AppThemeProvider``, which
+          reads the same settings and theme configuration as this layout.
+          This shares theme tokens, but not the page's locale or other React
+          contexts. New component code should use ``App.useApp()``.
 
           antd 6 turns cssVar on by default, and App warns whenever cssVar meets
           ``component={false}``: with no DOM node, its cssVar class has nothing to

@@ -27,17 +27,23 @@ export const dockerConfig = `# This is a template for worker_config.
 #   vram: 1
  
 # ========= huggingface ===========
- 
+
 # huggingface_token: 
 # enable_hf_transfer: false
 # enable_hf_xet: false
- 
+
+# ========= tls ===========
+
+# Skip TLS verification of the server certificate on this cluster's workers.
+# Trusted networks only.
+# insecure_tls: false
+
 # ========= metrics ===========
- 
+
 # disable_worker_metrics: false
- 
+
 # ========= proxy ===========
- 
+
 # proxy_mode: worker
 `;
 
@@ -70,17 +76,23 @@ export const kubernetesConfig = `# This is a template for worker_config.
 #   vram: 1
  
 # ========= huggingface ===========
- 
+
 # huggingface_token: 
 # enable_hf_transfer: false
 # enable_hf_xet: false
- 
+
+# ========= tls ===========
+
+# Skip TLS verification of the server certificate on this cluster's workers.
+# Trusted networks only.
+# insecure_tls: false
+
 # ========= metrics ===========
- 
+
 # disable_worker_metrics: false
- 
+
 # ========= proxy ===========
- 
+
 # proxy_mode: worker`;
 
 // Placeholder for the Chart Values editor. Comment-only on purpose: an empty

@@ -1,4 +1,14 @@
 export default {
+  'models.scaling.paused': '已暂停',
+  'models.scaling.waiting': '等待定时窗口',
+  'models.scaling.resume': '恢复调度',
+  'models.scaling.pause.tip':
+    '暂停部署并保留定时计划。恢复后将按当前时间执行计划。',
+  'models.scaling.resume.tip':
+    '定时部署恢复后将按当前时间执行计划。窗口外的目标副本数可能仍为 0。',
+
+  'models.scaling.manual.confirm':
+    '此操作将关闭相关部署的定时伸缩，并保留基线副本数和规则。是否继续？',
   'models.button.deploy': '部署模型',
   'models.button.exportYaml': '导出 YAML',
   'models.button.importYaml': '导入 YAML',

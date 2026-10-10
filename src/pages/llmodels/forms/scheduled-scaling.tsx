@@ -21,9 +21,10 @@ import { CronExpressionParser } from 'cron-parser';
 import cronstrue from 'cronstrue/i18n';
 import dayjs from 'dayjs';
 import { useAtomValue } from 'jotai';
-import { Fragment, useMemo, useState } from 'react';
+import { Fragment, useMemo, useRef, useState } from 'react';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
+import { hasScalingScheduleConfig } from './scaling-schedule';
 
 // Map the app locale to a cronstrue locale id (falls back to English).
 const cronstrueLocaleMap: Record<string, string> = {
@@ -741,6 +742,9 @@ const RuleEditor: React.FC<{
         <Form.Item name={[name, 'replicas']} hidden noStyle>
           <input />
         </Form.Item>
+        <Form.Item name={[name, 'name']} hidden noStyle>
+          <input />
+        </Form.Item>
 
         {/* Replicas first, mirroring GCP's "min required instances". */}
         <div className="fld">
@@ -1048,12 +1052,17 @@ const ScheduledScalingForm: React.FC = () => {
   const intl = useIntl();
   const form = Form.useFormInstance<FormData>();
   const { styles } = useStyles();
-  const { onValuesChange } = useFormContext();
+  const { onValuesChange, initialValues } = useFormContext();
   const serverTimezone = useAtomValue(systemConfigAtom)?.timezone;
   const cronLocale = cronstrueLocaleMap[getLocale()] || 'en';
   const tz = serverTimezone || getBrowserTimezone();
-  const enabled = Form.useWatch(['scaling_schedule', 'enabled'], form);
-  const rules = Form.useWatch(['scaling_schedule', 'rules'], form);
+  const schedule =
+    Form.useWatch('scaling_schedule', { form, preserve: true }) ||
+    form.getFieldValue('scaling_schedule');
+  const enabled = schedule?.enabled;
+  const rules = schedule?.rules;
+  const showConfig = hasScalingScheduleConfig(schedule);
+  const manualReplicas = useRef<number | undefined>(initialValues?.replicas);
   // While scheduling is on, the top Replicas field holds the baseline value.
   const baselineReplicas = Form.useWatch('replicas', form);
   const conflictCrons = enabled ? startConflicts(rules) : [];
@@ -1066,27 +1075,43 @@ const ScheduledScalingForm: React.FC = () => {
   const notifyChange = () => onValuesChange?.({}, form.getFieldsValue());
 
   const handleEnableToggle = (checked: boolean) => {
+    const current = form.getFieldValue('scaling_schedule') || {};
+    const replicas = form.getFieldValue('replicas') ?? 0;
     if (checked) {
-      const current = form.getFieldValue('scaling_schedule') || {};
+      manualReplicas.current = replicas;
+      const baseline = current.baseline_replicas ?? replicas;
       form.setFieldsValue({
+        replicas: baseline,
         scaling_schedule: {
+          ...current,
           enabled: true,
-          // The top "Replicas" value doubles as the baseline (idle count); it
-          // is written to baseline_replicas on submit.
-          baseline_replicas:
-            current.baseline_replicas ?? form.getFieldValue('replicas') ?? 0,
+          baseline_replicas: baseline,
           rules:
             current.rules?.length > 0 ? current.rules : [{ ...DEFAULT_RULE }]
         }
       });
     } else {
-      form.setFieldValue(['scaling_schedule', 'enabled'], false);
+      form.setFieldsValue({
+        replicas: manualReplicas.current ?? replicas,
+        scaling_schedule: {
+          ...current,
+          enabled: false,
+          baseline_replicas: replicas
+        }
+      });
     }
     notifyChange();
   };
 
   return (
     <div className={styles.sectionCard}>
+      <Form.Item
+        name={['scaling_schedule', 'baseline_replicas']}
+        hidden
+        noStyle
+      >
+        <input />
+      </Form.Item>
       <div className="section-title" style={{ marginBottom: enabled ? 12 : 0 }}>
         <LabelInfo
           label={intl.formatMessage({ id: 'models.form.scaling' })}
@@ -1107,21 +1132,26 @@ const ScheduledScalingForm: React.FC = () => {
         </Form.Item>
       </div>
 
-      {enabled && (
-        <>
-          {/* The top Replicas field doubles as the baseline while scheduling is
-              on; surface its value here (explanation in the tooltip) instead of
-              relabeling the field. */}
+      {showConfig && (
+        // Keep registered fields mounted so hiding a saved plan does not
+        // discard its configuration when the parent form disables preserve.
+        <div hidden={!enabled} data-field="scaling_schedule.config">
+          {/* A disabled plan retains its baseline independently of the manual
+              target in the top Replicas field. */}
           <Tooltip
             title={intl.formatMessage({
-              id: 'models.form.scaling.baselineNote'
+              id: enabled
+                ? 'models.form.scaling.baselineNote'
+                : 'models.form.scaling.baseline.tips'
             })}
           >
             <div className="baseline-summary">
               <span className="label">
                 {intl.formatMessage({ id: 'models.form.scaling.baseline' })}:
               </span>
-              <span className="value">{baselineReplicas ?? 0}</span>
+              <span className="value">
+                {(enabled ? baselineReplicas : schedule.baseline_replicas) ?? 0}
+              </span>
               <InfoCircleOutlined className="help" />
             </div>
           </Tooltip>
@@ -1130,6 +1160,7 @@ const ScheduledScalingForm: React.FC = () => {
             rules={[
               {
                 validator: async (_r, value) => {
+                  if (!enabled) return;
                   if (!value || value.length < 1) {
                     throw new Error(
                       intl.formatMessage({
@@ -1200,7 +1231,7 @@ const ScheduledScalingForm: React.FC = () => {
                 >
                   {intl.formatMessage({ id: 'models.form.scaling.addRule' })}
                 </Button>
-                {fields.length === 0 && (
+                {enabled && fields.length === 0 && (
                   <div className="rules-error">
                     {intl.formatMessage({
                       id: 'models.form.scaling.rules.required'
@@ -1241,7 +1272,7 @@ const ScheduledScalingForm: React.FC = () => {
               </span>
             </div>
           </Tooltip>
-        </>
+        </div>
       )}
     </div>
   );

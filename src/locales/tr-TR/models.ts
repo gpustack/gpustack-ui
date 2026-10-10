@@ -1,4 +1,14 @@
 export default {
+  'models.scaling.paused': 'Duraklatıldı',
+  'models.scaling.waiting': 'Zamanlama bekleniyor',
+  'models.scaling.resume': 'Zamanlamayı Sürdür',
+  'models.scaling.pause.tip':
+    'Dağıtım duraklatılır ve zamanlama korunur. Sürdürüldüğünde plan geçerli saate göre uygulanır.',
+  'models.scaling.resume.tip':
+    'Zamanlanmış dağıtımlar geçerli planı sürdürür. Etkin aralıklar dışında hedef replika sayısı sıfır kalabilir.',
+
+  'models.scaling.manual.confirm':
+    'Bu işlem ilgili dağıtımlar için zamanlanmış ölçeklendirmeyi kapatır. Temel çoğaltma sayısı ve kurallar korunur. Devam edilsin mi?',
   'models.button.deploy': 'Model Dağıt',
   'models.button.exportYaml': 'YAML Dışa Aktar',
   'models.button.importYaml': 'YAML İçe Aktar',

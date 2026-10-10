@@ -52,9 +52,8 @@ export interface ListItem {
   };
   gpu_type_selector?: GPUTypeSelector | null;
   worker_selector?: object;
-  // Present on the row so a list action can carry the schedule back untouched
-  // apart from its baseline. While it is enabled, `replicas` above is the
-  // scheduler-driven live count, not the user's declared one.
+  // The schedule owns the live target while enabled. Pause and resume leave
+  // its configuration unchanged; paused deployments always target zero.
   scaling_schedule?: ScalingSchedule | null;
 
   // --- PD: user intent ---
@@ -548,6 +547,7 @@ export interface ScalingScheduleRule {
 
 export interface ScalingSchedule {
   enabled: boolean;
+  paused?: boolean;
   baseline_replicas?: number | null;
   rules: ScalingScheduleRule[];
 }

@@ -7,7 +7,7 @@ import {
   Textarea
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Button, Flex, Form, Tooltip } from 'antd';
+import { Button, Flex, Form, Tooltip, Typography } from 'antd';
 import { useState } from 'react';
 import type { FormData } from '../../config/types';
 import useDecisionServiceProviders from '../../hooks/use-decision-service-providers';
@@ -332,7 +332,11 @@ const DecisionServiceEditor = ({
           submit with all rows deleted is blocked silently. */}
       <Form.Item noStyle shouldUpdate={() => true}>
         {() => (
-          <Form.ErrorList errors={form.getFieldError(DECISION_CRITERIA_PATH)} />
+          <Typography.Paragraph type="danger" style={{ marginBottom: 0 }}>
+            <Form.ErrorList
+              errors={form.getFieldError(DECISION_CRITERIA_PATH)}
+            />
+          </Typography.Paragraph>
         )}
       </Form.Item>
       {/* Same Advanced seam and plain "Weight" label as the other plugin

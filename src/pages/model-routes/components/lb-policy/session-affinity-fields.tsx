@@ -4,7 +4,7 @@ import {
   MetadataList
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Flex, Form } from 'antd';
+import { Flex, Form, Typography } from 'antd';
 import { useState } from 'react';
 import { DEFAULT_SESSION_KEYS, SESSION_KEY_SOURCE } from '../../config';
 import type { FormData } from '../../config/types';
@@ -162,7 +162,9 @@ const SessionKeysEditor = () => {
           submit with all keys deleted is blocked silently. */}
       <Form.Item noStyle shouldUpdate={() => true}>
         {() => (
-          <Form.ErrorList errors={form.getFieldError(SESSION_KEYS_PATH)} />
+          <Typography.Paragraph type="danger" style={{ marginBottom: 0 }}>
+            <Form.ErrorList errors={form.getFieldError(SESSION_KEYS_PATH)} />
+          </Typography.Paragraph>
         )}
       </Form.Item>
     </>

@@ -25,16 +25,7 @@ import {
 import useFormInitialValues from './hooks/use-form-initial-values';
 import useNoResourceResult from './hooks/use-no-resource-result';
 import useViewApIInfo from './hooks/use-view-api-info';
-// The status filter renders the same dot + label that the model CARD does, so
-// it uses the same component and the same map. The local `Dot` this replaces
-// picked its colours from three different systems — `--ant-color-success` and
-// `--ant-color-warning` (semantic) but `--ant-color-fill` for Stopped, which is
-// antd's FIRST-LEVEL FILL, a token antd documents as "currently only used in
-// the hover effect of Slider". `dark.ts` sets `colorFill: '#0A0A0A'`, the same
-// value as `colorBgBase`, so the Stopped dot was invisible in the dark theme.
-//
-// It also disagreed with the card on what Not Ready means: this list said
-// `warning` (amber) while `MyModelsStatusMap` says `error` (red). One map now.
+// Keep filter and model-card status dots consistent through the shared map.
 const renderStatusOption = (item: any) => (
   <StatusDot
     statusValue={{

@@ -30,8 +30,10 @@ import openrouter from '@/assets/providers-logo/openrouter.svg';
 import spark from '@/assets/providers-logo/spark.svg';
 import stepfun from '@/assets/providers-logo/stepfun.svg';
 import togetherai from '@/assets/providers-logo/together.svg';
+import typesafeAI from '@/assets/providers-logo/typesafe-ai.png';
 import yi from '@/assets/providers-logo/yi.svg';
 import zhipuai from '@/assets/providers-logo/zhipu.svg';
+import { createStyles } from 'antd-style';
 import { ProviderEnum } from '../config/providers';
 
 const ProviderLogoMap: Record<string, string> = {
@@ -68,21 +70,37 @@ const ProviderLogoMap: Record<string, string> = {
   [ProviderEnum.ZHIPUAI]: zhipuai,
   [ProviderEnum.GITHUB]: github,
   [ProviderEnum.TRITON]: triton,
-  // A decision service, not an inference provider — the GPUStack mark stands
-  // in until it gets a logo of its own.
-  [ProviderEnum.TYPESAFE]: GPUStackLogo,
+  [ProviderEnum.TYPESAFE]: typesafeAI,
   ['deployments']: GPUStackLogo
 };
+
+// The TypeSafe mark is a light-colored PNG drawn for dark backgrounds; invert
+// it on light themes so it stays visible (alpha channel is unaffected by
+// invert, so the shape is preserved). Dark themes render it as-is.
+const useStyles = createStyles(({ css }) => ({
+  invertOnLight: css`
+    html:not([data-theme='realDark']) & {
+      filter: invert(1);
+    }
+  `
+}));
+
+// Providers whose PNG marks need light/dark adaptation.
+const InvertibleLogoProviders = new Set<string>([ProviderEnum.TYPESAFE]);
 
 const ProviderLogo: React.FC<{
   provider: string;
   style?: React.CSSProperties;
 }> = ({ provider, style }) => {
+  const { styles } = useStyles();
   const logoSrc = ProviderLogoMap[provider] || '';
   return (
     <img
       src={logoSrc}
       alt={`${provider} logo`}
+      className={
+        InvertibleLogoProviders.has(provider) ? styles.invertOnLight : undefined
+      }
       style={{ width: 16, height: 16, ...style }}
     />
   );

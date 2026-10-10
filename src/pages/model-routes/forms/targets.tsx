@@ -10,7 +10,7 @@ import {
   useAppUtils
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Button, Flex, Form, Tooltip } from 'antd';
+import { Button, Divider, Flex, Form, Tooltip } from 'antd';
 import { createStyles } from 'antd-style';
 import _ from 'lodash';
 import {
@@ -51,21 +51,27 @@ const useStyles = createStyles(({ css }) => ({
   // stays here.
   sectionTitle: css`
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 500;
   `,
-  // Full-row "show more" affordance for the optional per-target fields: thin,
-  // dashed, quiet until hovered, so it reads as a seam in the card rather than
-  // as a third action next to the real controls. Shown only while they are
-  // hidden — clicking it hands its row over to the fields it reveals.
+  // CollapseContainer clips its body even after expanding. Let expanded cards
+  // show the cascader popup outside their body; collapsed cards stay clipped.
+  targetCard: css`
+    &.isOpen > .ant-card-body > div {
+      overflow: visible !important;
+    }
+  `,
+  // Keep the optional-field trigger aligned with the fields' text.
   advancedToggle: css`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    height: 24px;
-    margin-top: 12px;
-    font-size: 12px;
-    color: var(--ant-color-text-tertiary);
+    height: var(--ant-control-height-sm);
+    margin-inline-start: calc(0px - var(--ant-padding-xs));
+    padding-inline: var(--ant-padding-xs);
+    font-size: var(--ant-font-size-sm);
+    color: var(--ant-color-text-secondary);
+
+    &&:focus-visible {
+      outline: 2px solid var(--ant-color-primary);
+      outline-offset: 2px;
+    }
   `
 }));
 
@@ -484,7 +490,7 @@ const TargetsForm = forwardRef((props, ref) => {
             align="center"
             style={{
               minHeight: 40,
-              marginBottom: 10,
+              marginBottom: 8,
               paddingInline: 5
             }}
           >
@@ -512,6 +518,7 @@ const TargetsForm = forwardRef((props, ref) => {
                 }}
               >
                 <CollapseContainer
+                  className={styles.targetCard}
                   collapsible={true}
                   showExpandIcon={true}
                   open={collapseKeys.has(index)}
@@ -529,7 +536,7 @@ const TargetsForm = forwardRef((props, ref) => {
                     <Flex
                       align="center"
                       gap={4}
-                      style={{ color: 'var(--ant-color-text-secondary)' }}
+                      style={{ color: 'var(--ant-color-text)' }}
                     >
                       <span>{resolveEntryTitle(item.value)}</span>
                       {!isSmartMode && (
@@ -570,7 +577,7 @@ const TargetsForm = forwardRef((props, ref) => {
                   }
                 >
                   {/* model selection + weight on one row */}
-                  <div className="flex-center" style={{ gap: 8 }}>
+                  <div className="flex-center" style={{ gap: 10 }}>
                     <SealCascader
                       required
                       showSearch
@@ -588,13 +595,16 @@ const TargetsForm = forwardRef((props, ref) => {
                       }
                       classNames={{
                         popup: {
-                          root: 'cascader-popup-floating gpu-selector'
+                          root: 'cascader-popup-wrapper gpu-selector'
                         }
                       }}
                       styles={{
                         popup: {
                           listItem: {
-                            padding: '5px 10px'
+                            padding: '5px 10px',
+                            width: '100%',
+                            maxWidth: 'none',
+                            boxSizing: 'border-box'
                           }
                         }
                       }}
@@ -607,12 +617,9 @@ const TargetsForm = forwardRef((props, ref) => {
                       showCheckedStrategy="SHOW_CHILD"
                       displayRender={displayRender}
                       optionNode={optionRender}
-                      // attach to body: the collapse body animates its height
-                      // with overflow: hidden, which clips a popup parented to
-                      // the field itself. Pairs with `cascader-popup-floating`
-                      // — the pinned popup class would place a body-rendered
-                      // popup in the viewport's top-left corner.
-                      getPopupContainer={() => document.body}
+                      getPopupContainer={(triggerNode) =>
+                        triggerNode.parentElement!
+                      }
                     ></SealCascader>
                     {/* Weight only exists in weighted mode — round-robin and
                         policy hand every target to the gateway's picker with
@@ -648,18 +655,26 @@ const TargetsForm = forwardRef((props, ref) => {
                   </div>
                   {/* one-shot: reveals the advanced fields and steps aside */}
                   {!advancedKeys.has(index) && (
-                    <Button
-                      type="dashed"
-                      size="small"
-                      block
-                      className={styles.advancedToggle}
-                      onClick={() => toggleKey(setAdvancedKeys, index, true)}
-                    >
-                      {intl.formatMessage({
-                        id: 'routes.form.target.advanced'
-                      })}
-                      <IconFont type="icon-down" style={{ fontSize: 12 }} />
-                    </Button>
+                    <Divider style={{ marginBottom: 0 }}>
+                      <Button
+                        type="text"
+                        size="small"
+                        aria-expanded={false}
+                        className={styles.advancedToggle}
+                        onClick={() => toggleKey(setAdvancedKeys, index, true)}
+                      >
+                        <Flex
+                          component="span"
+                          align="center"
+                          gap="var(--ant-padding-xxs)"
+                        >
+                          {intl.formatMessage({
+                            id: 'routes.form.target.advanced'
+                          })}
+                          <IconFont type="icon-down" style={{ fontSize: 12 }} />
+                        </Flex>
+                      </Button>
+                    </Divider>
                   )}
                   {advancedKeys.has(index) && (
                     <div style={{ marginTop: 12 }}>
@@ -699,13 +714,16 @@ const TargetsForm = forwardRef((props, ref) => {
             alwaysFocus={true}
             classNames={{
               popup: {
-                root: 'cascader-popup-floating gpu-selector'
+                root: 'cascader-popup-wrapper gpu-selector'
               }
             }}
             styles={{
               popup: {
                 listItem: {
-                  padding: '5px 10px'
+                  padding: '5px 10px',
+                  width: '100%',
+                  maxWidth: 'none',
+                  boxSizing: 'border-box'
                 }
               }
             }}
@@ -722,7 +740,7 @@ const TargetsForm = forwardRef((props, ref) => {
             showCheckedStrategy="SHOW_CHILD"
             displayRender={displayRender}
             optionNode={optionRender}
-            getPopupContainer={() => document.body}
+            getPopupContainer={(triggerNode) => triggerNode.parentElement!}
           ></SealCascader>
         </div>
       </Form.Item>

@@ -251,7 +251,7 @@ export const MyModelsStatusValueMap = {
 
 export const MyModelsStatusMap = {
   [MyModelsStatusValueMap.Stopped]: StatusMaps.inactive,
-  [MyModelsStatusValueMap.NotReady]: StatusMaps.error,
+  [MyModelsStatusValueMap.NotReady]: StatusMaps.warning,
   [MyModelsStatusValueMap.Ready]: StatusMaps.success
 };
 

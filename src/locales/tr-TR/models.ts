@@ -1,4 +1,14 @@
 export default {
+  'models.scaling.paused': 'Duraklatıldı',
+  'models.scaling.waiting': 'Zamanlama bekleniyor',
+  'models.scaling.resume': 'Zamanlamayı Sürdür',
+  'models.scaling.pause.tip':
+    'Dağıtım duraklatılır ve zamanlama korunur. Sürdürüldüğünde plan geçerli saate göre uygulanır.',
+  'models.scaling.resume.tip':
+    'Zamanlanmış dağıtımlar geçerli planı sürdürür. Etkin aralıklar dışında hedef replika sayısı sıfır kalabilir.',
+
+  'models.scaling.manual.confirm':
+    'Bu işlem ilgili dağıtımlar için zamanlanmış ölçeklendirmeyi kapatır. Temel çoğaltma sayısı ve kurallar korunur. Devam edilsin mi?',
   'models.button.deploy': 'Model Dağıt',
   'models.button.exportYaml': 'YAML Dışa Aktar',
   'models.button.importYaml': 'YAML İçe Aktar',
@@ -360,6 +370,13 @@ export default {
     'Geçerli saat hiçbir pencerede değilken kullanılan kopya sayısı.',
   'models.form.scaling.baselineNote':
     'Yukarıda ayarlanan Replicas değeri temel (baseline) olarak kullanılır — geçerli saat hiçbir pencerede değilken uygulanan kopya sayısı.',
+  'models.form.scaling.preview.unavailable':
+    'Önizleme kullanılamıyor. İfade değiştirilmeden korunur.',
+  'models.form.scaling.draft.title':
+    'Kaydedilmemiş zamanlama değişikliklerini inceleyin',
+  'models.form.scaling.draft.discard':
+    'Taslak geçersiz veya desteklenmiyor olabilir. Düzenlemeye devam edin ya da değişiklikleri iptal edip zamanlamayı kapatın. İptal edildiğinde ilk yapılandırma geri yüklenir; ilk yapılandırma yoksa zamanlama kaydedilmez.',
+  'models.form.scaling.draft.edit': 'Düzenlemeye devam et',
   'models.form.scaling.cron.invalid': 'Geçersiz cron ifadesi',
   'models.form.scaling.meaning': 'Özet',
   'models.form.scaling.summary.monthDays': 'Gün {days}',
@@ -373,6 +390,8 @@ export default {
   'models.form.scaling.current': 'Geçerli pencere:',
   'models.form.scaling.addRule': 'Kural ekle',
   'models.form.scaling.removeRule': 'Kuralı kaldır',
+  'models.form.scaling.rules.invalid':
+    'Her kuralın cron ifadesini, replika sayısını ve süresini kontrol edin.',
   'models.form.scaling.rules.required':
     'En az bir kural ekleyin veya zamanlanmış ölçeklemeyi kapatın.',
   'models.form.scaling.hint':

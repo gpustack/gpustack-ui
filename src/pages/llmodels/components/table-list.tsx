@@ -37,7 +37,8 @@ import {
   deleteModel,
   deleteModelInstance,
   queryModelInstancesList,
-  updateModel
+  updateModel,
+  updateModelLifecycle
 } from '../apis';
 import { modelSourceMap } from '../config';
 import {
@@ -59,6 +60,8 @@ import useRestartModel from '../hooks/use-restart-model';
 import { useBenchmarkTargetInstance } from '../hooks/use-run-benchmark';
 import useViewInstanceLogs from '../hooks/use-view-instance-logs';
 import LeftFilters from '../instance-view/left-filters';
+import { getDeploymentFormReplicas } from '../utils/deployment-lifecycle';
+import { getReplicasUpdate } from '../utils/manual-scaling';
 import DeployModal from './deployment/deploy-modal';
 import ImportYamlModal from './deployment/import-yaml-modal';
 import useModelRevisions from './deployment/revisions/hooks/use-model-revisions';
@@ -109,43 +112,13 @@ const getFormattedData = (record: any, extraData = {}) => ({
       'updated_at',
       'rowIndex'
     ]),
+    scaling_schedule: record.scaling_schedule
+      ? _.omit(record.scaling_schedule, ['paused'])
+      : record.scaling_schedule,
+    replicas: getDeploymentFormReplicas(record),
     ...extraData
   }
 });
-
-// While scheduled scaling is on, `replicas` is the live count the scheduler
-// writes and `baseline_replicas` is the idle count the user actually declared;
-// the deploy form keeps the two equal (see `forms/index.tsx`). A list action
-// that moved only `replicas` left the baseline behind, so the next reconcile
-// drove the count straight back to it and the action looked like it had done
-// nothing at all.
-const getReplicasUpdate = (record: ListItem, replicas: number) => {
-  const schedule = record.scaling_schedule;
-  if (!schedule?.enabled) {
-    return { replicas };
-  }
-  return {
-    replicas,
-    scaling_schedule: { ...schedule, baseline_replicas: replicas }
-  };
-};
-
-// Start is only offered on a row already at `replicas: 0`, so the fallback is
-// what actually decides the count — the row's own value can never be anything
-// but the hardcoded 1. Under a schedule the baseline the user declared is the
-// better answer. A baseline of 0 is deliberately not one of those: stopping
-// from this list writes exactly that, and honouring it would make the next
-// start a no-op. Whether a zero baseline should mean something else is the
-// open question in gpustack/gpustack#6257.
-const getStartReplicas = (record: ListItem) => {
-  if (record.replicas) {
-    return record.replicas;
-  }
-  const baseline = record.scaling_schedule?.enabled
-    ? record.scaling_schedule.baseline_replicas
-    : null;
-  return baseline || 1;
-};
 
 const Models: React.FC<ModelsProps> = ({
   handleNameChange,
@@ -247,6 +220,23 @@ const Models: React.FC<ModelsProps> = ({
   };
 
   const handleOnCell = useMemoizedFn(async (record: any, extra: any) => {
+    if (record.scaling_schedule?.enabled) {
+      modalRef.current?.show({
+        content: 'models.table.models',
+        title: 'models.table.replicas.edit',
+        okText: 'common.button.save',
+        operation: 'models.scaling.manual.confirm',
+        async onOk() {
+          await updateModel(
+            getFormattedData(record, getReplicasUpdate(record, extra.newValue))
+          );
+          if (extra.newValue > extra.oldValue) {
+            updateExpandedRowKeys([record.id, ...expandedRowKeys]);
+          }
+        }
+      });
+      return;
+    }
     try {
       await updateModel(
         getFormattedData(record, getReplicasUpdate(record, extra.newValue))
@@ -270,14 +260,15 @@ const Models: React.FC<ModelsProps> = ({
     }
   );
 
-  const handleStartModel = async (row: ListItem) => {
-    await updateModel(
-      getFormattedData(row, getReplicasUpdate(row, getStartReplicas(row)))
-    );
+  const handleStartModel = async (row: Pick<ListItem, 'id'>) => {
+    const resumed = await updateModelLifecycle(row.id, 'start');
+    if (resumed?.scaling_schedule?.enabled && resumed.replicas === 0) {
+      message.info(intl.formatMessage({ id: 'models.scaling.waiting' }));
+    }
   };
 
-  const handleStopModel = async (row: ListItem) => {
-    await updateModel(getFormattedData(row, getReplicasUpdate(row, 0)));
+  const handleStopModel = async (row: Pick<ListItem, 'id'>) => {
+    await updateModelLifecycle(row.id, 'stop');
     removeExpandedRowKey([row.id]);
   };
 
@@ -465,9 +456,9 @@ const Models: React.FC<ModelsProps> = ({
       }
       if (val === 'start') {
         await handleStartModel(row);
-        message.success(intl.formatMessage({ id: 'common.message.success' }));
         updateExpandedRowKeys([row.id, ...expandedRowKeys]);
         onStart?.();
+        message.success(intl.formatMessage({ id: 'common.message.success' }));
       }
 
       if (val === 'stop') {
@@ -477,6 +468,9 @@ const Models: React.FC<ModelsProps> = ({
           okText: 'common.button.stop',
           operation: 'common.stop.single.confirm',
           name: row.name,
+          tips: row.scaling_schedule?.enabled
+            ? intl.formatMessage({ id: 'models.scaling.pause.tip' })
+            : undefined,
           async onOk() {
             await handleStopModel(row);
             onStop?.([row.id]);
@@ -574,12 +568,15 @@ const Models: React.FC<ModelsProps> = ({
       title: 'common.title.start.confirm',
       okText: 'common.button.start',
       operation: 'common.start.confirm',
+      tips: rowSelection.selectedRows.some(
+        (row: ListItem) => row.scaling_schedule?.enabled
+      )
+        ? intl.formatMessage({ id: 'models.scaling.resume.tip' })
+        : undefined,
       async onOk() {
-        const selectedKeySet = new Set(rowSelection.selectedRowKeys);
-        const latestRows = dataSource.filter((item) =>
-          selectedKeySet.has(item.id)
+        await handleBatchRequest(rowSelection.selectedRowKeys, (id) =>
+          handleStartModel({ id: Number(id) })
         );
-        await handleBatchRequest(latestRows, handleStartModel);
         onStart?.();
       }
     });
@@ -591,8 +588,15 @@ const Models: React.FC<ModelsProps> = ({
       title: 'common.title.stop.confirm',
       okText: 'common.button.stop',
       operation: 'common.stop.confirm',
+      tips: rowSelection.selectedRows.some(
+        (row: ListItem) => row.scaling_schedule?.enabled
+      )
+        ? intl.formatMessage({ id: 'models.scaling.pause.tip' })
+        : undefined,
       async onOk() {
-        await handleBatchRequest(rowSelection.selectedRows, handleStopModel);
+        await handleBatchRequest(rowSelection.selectedRowKeys, (id) =>
+          handleStopModel({ id: Number(id) })
+        );
         onStop?.(rowSelection.selectedRowKeys as number[]);
       }
     });

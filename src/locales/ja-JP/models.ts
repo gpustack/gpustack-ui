@@ -1,4 +1,14 @@
 export default {
+  'models.scaling.paused': '一時停止中',
+  'models.scaling.waiting': 'スケジュール待機中',
+  'models.scaling.resume': 'スケジュールを再開',
+  'models.scaling.pause.tip':
+    'デプロイメントを一時停止し、スケジュールを保持します。再開時に現在の時刻で計画を適用します。',
+  'models.scaling.resume.tip':
+    'スケジュール付きデプロイメントは現在の計画を再開します。有効期間外ではレプリカ数が 0 のままになる場合があります。',
+
+  'models.scaling.manual.confirm':
+    'この操作は対象のデプロイのスケジュールスケーリングを無効にします。ベースラインとルールは保持されます。続行しますか？',
   'models.button.deploy': 'モデルをデプロイ',
   'models.button.exportYaml': 'Export YAML',
   'models.button.importYaml': 'Import YAML',
@@ -363,6 +373,12 @@ export default {
     '現在時刻がどのウィンドウにも該当しない場合に使用されるレプリカ数です。',
   'models.form.scaling.baselineNote':
     '上記で設定した Replicas がベースラインとして使用されます。現在時刻がどのウィンドウにも該当しない場合に適用されるレプリカ数です。',
+  'models.form.scaling.preview.unavailable':
+    'プレビューできません。式はそのまま保持されます。',
+  'models.form.scaling.draft.title': '未保存のスケジュール変更を確認',
+  'models.form.scaling.draft.discard':
+    '下書きが無効、または未対応の可能性があります。編集を続けるか、変更を破棄してスケジュールを無効にしてください。破棄すると元の設定に戻ります。元の設定がない場合、スケジュールは保存されません。',
+  'models.form.scaling.draft.edit': '編集を続ける',
   'models.form.scaling.cron.invalid': '無効な cron 式です',
   'models.form.scaling.meaning': '概要',
   'models.form.scaling.summary.monthDays': '{days} 日',
@@ -376,6 +392,8 @@ export default {
   'models.form.scaling.current': '現在のウィンドウ：',
   'models.form.scaling.addRule': 'ルールを追加',
   'models.form.scaling.removeRule': 'ルールを削除',
+  'models.form.scaling.rules.invalid':
+    '各ルールの cron 式、レプリカ数、期間を確認してください。',
   'models.form.scaling.rules.required':
     'ルールを少なくとも 1 つ追加するか、スケジュールスケーリングを無効にしてください。',
   'models.form.scaling.hint':

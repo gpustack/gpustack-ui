@@ -1,4 +1,14 @@
 export default {
+  'models.scaling.paused': 'Paused',
+  'models.scaling.waiting': 'Waiting for scheduled scaling',
+  'models.scaling.resume': 'Resume Schedule',
+  'models.scaling.pause.tip':
+    'This pauses the deployment and preserves its schedule. Resume it to apply the schedule at the current time.',
+  'models.scaling.resume.tip':
+    'Scheduled deployments resume their current schedule. Their replica target may remain zero outside active windows.',
+
+  'models.scaling.manual.confirm':
+    'This action will turn off scheduled scaling for the affected deployments. The baseline and rules will be preserved. Continue?',
   'models.button.deploy': 'Deploy Model',
   'models.button.exportYaml': 'Export YAML',
   'models.button.importYaml': 'Import YAML',
@@ -360,6 +370,12 @@ export default {
     'Replica count used when the current time is outside every window.',
   'models.form.scaling.baselineNote':
     'The Replicas value set above is used as the baseline — the replica count applied whenever the current time is outside every window.',
+  'models.form.scaling.preview.unavailable':
+    'Preview unavailable. The expression is preserved.',
+  'models.form.scaling.draft.title': 'Review unsaved schedule changes',
+  'models.form.scaling.draft.discard':
+    'The draft may be invalid or unsupported. Continue editing, or discard changes and disable scheduling. Discarding restores the original plan; if none existed, no plan will be saved.',
+  'models.form.scaling.draft.edit': 'Continue editing',
   'models.form.scaling.cron.invalid': 'Invalid cron expression',
   'models.form.scaling.meaning': 'Summary',
   'models.form.scaling.summary.monthDays': 'Day {days}',
@@ -373,6 +389,8 @@ export default {
   'models.form.scaling.current': 'Current window:',
   'models.form.scaling.addRule': 'Add rule',
   'models.form.scaling.removeRule': 'Remove rule',
+  'models.form.scaling.rules.invalid':
+    'Check the cron expression, replica count and duration in each rule.',
   'models.form.scaling.rules.required':
     'Add at least one rule, or turn off scheduled scaling.',
   'models.form.scaling.hint':

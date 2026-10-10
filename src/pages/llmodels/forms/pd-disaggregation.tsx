@@ -1086,6 +1086,7 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
             .join(' ')}
         ></LabelInfo>
         <Switch
+          size="small"
           checked={active}
           // Blocked only bars the way IN. An existing group must always be
           // able to turn itself off.

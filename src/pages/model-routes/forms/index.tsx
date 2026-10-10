@@ -9,15 +9,9 @@ import {
   useWrapperContext
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Form, Spin } from 'antd';
+import { Form } from 'antd';
 import _ from 'lodash';
-import {
-  forwardRef,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState
-} from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 import { queryModelRouteDetail } from '../apis';
 import { LB_FORM_MODE } from '../config';
 import FormContext from '../config/form-context';
@@ -77,7 +71,6 @@ interface ProviderFormProps {
   onFinish: (values: FormData) => Promise<void>;
   onFinishFailed?: (errorInfo: any) => void;
   onFallbackChange?: (changed: boolean) => void;
-  onLoadingChange?: (loading: boolean) => void;
 }
 
 const TABKeysMap = {
@@ -107,8 +100,7 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
     open,
     onFinish,
     onFinishFailed,
-    onFallbackChange,
-    onLoadingChange
+    onFallbackChange
   } = props;
   const { getScrollElementScrollableHeight } = useWrapperContext();
   const [form] = Form.useForm();
@@ -121,13 +113,6 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
   // Monotonic drawer-session token; guards the async edition init against
   // writing a stale response into a newer session.
   const initSessionRef = useRef(0);
-  const [initializedRoute, setInitializedRoute] =
-    useState<ProviderFormProps['currentData']>();
-  const initializing =
-    open &&
-    action === PageAction.EDIT &&
-    !!currentData &&
-    initializedRoute !== currentData;
   const { activeKey, handleActiveChange, updateActiveKey } =
     useScrollActiveChange({
       initalActiveKeys: [TABKeysMap.BASIC]
@@ -181,9 +166,6 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
   };
 
   const handleOnFinish = (values: FormData) => {
-    if (initializing) {
-      return;
-    }
     // Round-robin and policy both hand every target to the gateway's
     // picker: all weights 0.
     const isSmartMode = values.lb_policy_mode !== LB_FORM_MODE.weighted;
@@ -229,16 +211,12 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       // Invalidate any in-flight edition init: its response must not write
       // into a drawer session that has since closed or switched routes.
       initSessionRef.current += 1;
-      setInitializedRoute(undefined);
-      onLoadingChange?.(false);
       return;
     }
 
     const initSession = ++initSessionRef.current;
-    setInitializedRoute(undefined);
-    onLoadingChange?.(action === PageAction.EDIT && !!currentData);
 
-    const initDataList = (targets: RouteTargetFormItem[]) => {
+    const initDataList = async (targets: RouteTargetFormItem[]) => {
       // init targets form list
       targetsRef.current?.initDataList(
         targets?.map((ep) => ({
@@ -310,11 +288,6 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
             : [fallbackTarget.provider_id, fallbackTarget.overridden_model_name]
         });
       }
-
-      // Mount policy editors only after the store and target cards are ready:
-      // their local editing state is initialized from these saved values.
-      setInitializedRoute(currentData);
-      onLoadingChange?.(false);
     };
 
     const initRegisterForm = () => {
@@ -331,11 +304,7 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
     } else if (realAction === 'register' && currentData) {
       initRegisterForm();
     }
-
-    return () => {
-      initSessionRef.current += 1;
-    };
-  }, [action, currentData, form, open, realAction, onLoadingChange]);
+  }, [action, currentData, form, open, realAction]);
 
   const onTargetChange = (key: string) => {
     scrollTabsRef.current?.handleTargetChange(key);
@@ -353,11 +322,8 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
   };
 
   useImperativeHandle(ref, () => ({
-    isInitializing: () => initializing,
     submit: () => {
-      if (!initializing) {
-        form.submit();
-      }
+      form.submit();
     },
     resetFields: () => {
       form.resetFields();
@@ -380,35 +346,30 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       <FormContext.Provider
         value={{ onFallbackChange, action, realAction, currentData }}
       >
-        <Spin spinning={initializing}>
-          <Form
-            form={form}
-            disabled={initializing}
-            onFinish={handleOnFinish}
-            onFinishFailed={handleFinishFailed}
-            initialValues={{
-              categories: [modelCategoriesMap.llm],
-              meta: {},
-              lb_policy_mode: LB_FORM_MODE.weighted
-            }}
-          >
-            <Basic />
-            {!initializing && (
-              <LbPolicySection
-                onModeChange={(mode) =>
-                  targetsRef.current?.handleLbModeChange(mode)
-                }
-                getTargetModelNames={() =>
-                  targetsRef.current?.getTargetModelNames?.() || []
-                }
-              />
-            )}
-            {/* Targets carries its own section heading; it is the last section
+        <Form
+          form={form}
+          onFinish={handleOnFinish}
+          onFinishFailed={handleFinishFailed}
+          initialValues={{
+            categories: [modelCategoriesMap.llm],
+            meta: {},
+            lb_policy_mode: LB_FORM_MODE.weighted
+          }}
+        >
+          <Basic />
+          <LbPolicySection
+            onModeChange={(mode) =>
+              targetsRef.current?.handleLbModeChange(mode)
+            }
+            getTargetModelNames={() =>
+              targetsRef.current?.getTargetModelNames?.() || []
+            }
+          />
+          {/* Targets carries its own section heading; it is the last section
               of the form and holds a required field, so there is nothing to
               gain from collapsing it. */}
-            <Targets ref={targetsRef}></Targets>
-          </Form>
-        </Spin>
+          <Targets ref={targetsRef}></Targets>
+        </Form>
       </FormContext.Provider>
     </ScrollSpyTabs>
   );

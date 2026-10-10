@@ -30,14 +30,10 @@ const AddProvider: React.FC<AddModalProps> = ({
 }) => {
   const intl = useIntl();
   const [isChanged, setIsChanged] = React.useState(false);
-  const [initializing, setInitializing] = React.useState(false);
   const form = useRef<any>(null);
   const { loading, guard, run, release } = useSubmitLock();
 
   const handleSubmit = () => {
-    if (form.current?.isInitializing()) {
-      return;
-    }
     guard(() => form.current?.submit());
   };
 
@@ -76,7 +72,6 @@ const AddProvider: React.FC<AddModalProps> = ({
             onOk={handleSubmit}
             onCancel={onCancel}
             loading={loading}
-            okBtnProps={{ disabled: initializing }}
             styles={{
               wrapper: {
                 paddingTop: 16
@@ -93,7 +88,6 @@ const AddProvider: React.FC<AddModalProps> = ({
         currentData={currentData}
         onFinish={onFinish}
         onFinishFailed={release}
-        onLoadingChange={setInitializing}
         open={open}
         onFallbackChange={(changed: boolean) => {
           setIsChanged(changed);

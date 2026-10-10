@@ -41,12 +41,14 @@ import { useGenerateGPUOptions } from '../hooks/use-form-initial-values';
 import useQueryBackends from '../hooks/use-query-backends';
 import { useQueryContextLength } from '../services/use-query-context-length';
 import { derivesNativeAnthropicApi, generateGPUIds } from '../utils';
+import { getDeploymentFormReplicas } from '../utils/deployment-lifecycle';
 import AdvanceConfig from './advance-config';
 import BasicForm from './basic';
 import PDDisaggregation, { PDEffects } from './pd-disaggregation';
 import Performance from './performance';
 import Roles from './roles';
 import { rolesFormToPayload } from './roles/transform';
+import { getScalingSchedulePayload } from './scaling-schedule';
 import ScheduleTypeForm from './schedule-type';
 import ScheduledScalingForm from './scheduled-scaling';
 import { useRuntimeChoiceMode } from './use-runtime-choice-mode';
@@ -529,16 +531,10 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       allValues.roles = null;
       allValues.disaggregation = null;
     }
-    // Don't persist a disabled schedule — send null so the model carries no
-    // scaling config unless the user explicitly enabled it.
-    if (!allValues.scaling_schedule?.enabled) {
-      allValues.scaling_schedule = null;
-    } else {
-      // The top "Replicas" input IS the baseline while scheduling is on. Copy
-      // it into the schedule; `replicas` stays as this value and the backend
-      // drives it to the effective count.
-      allValues.scaling_schedule.baseline_replicas = allValues.replicas ?? 0;
-    }
+    allValues.scaling_schedule = getScalingSchedulePayload(
+      allValues.scaling_schedule,
+      allValues.replicas
+    );
     console.log('submit form data:', allValues);
     onOk(allValues);
   };
@@ -879,11 +875,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
             // Replicas field with the baseline instead, so it stays the single
             // source of truth for the idle count (it's copied back to
             // baseline_replicas on submit).
-            replicas: initialValues?.scaling_schedule?.enabled
-              ? (initialValues.scaling_schedule.baseline_replicas ??
-                initialValues.replicas ??
-                1)
-              : (initialValues?.replicas ?? 1),
+            replicas: getDeploymentFormReplicas(initialValues),
             backend_version: initialValues?.backend_version || null,
             max_context_len: initialValues?.max_context_len || 2048
           }}

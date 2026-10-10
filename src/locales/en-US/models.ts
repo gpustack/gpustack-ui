@@ -1,4 +1,14 @@
 export default {
+  'models.scaling.paused': 'Paused',
+  'models.scaling.waiting': 'Waiting for scheduled scaling',
+  'models.scaling.resume': 'Resume Schedule',
+  'models.scaling.pause.tip':
+    'This pauses the deployment and preserves its schedule. Resume it to apply the schedule at the current time.',
+  'models.scaling.resume.tip':
+    'Scheduled deployments resume their current schedule. Their replica target may remain zero outside active windows.',
+
+  'models.scaling.manual.confirm':
+    'This action will turn off scheduled scaling for the affected deployments. The baseline and rules will be preserved. Continue?',
   'models.button.deploy': 'Deploy Model',
   'models.button.exportYaml': 'Export YAML',
   'models.button.importYaml': 'Import YAML',

@@ -1,4 +1,14 @@
 export default {
+  'models.scaling.paused': '一時停止中',
+  'models.scaling.waiting': 'スケジュール待機中',
+  'models.scaling.resume': 'スケジュールを再開',
+  'models.scaling.pause.tip':
+    'デプロイメントを一時停止し、スケジュールを保持します。再開時に現在の時刻で計画を適用します。',
+  'models.scaling.resume.tip':
+    'スケジュール付きデプロイメントは現在の計画を再開します。有効期間外ではレプリカ数が 0 のままになる場合があります。',
+
+  'models.scaling.manual.confirm':
+    'この操作は対象のデプロイのスケジュールスケーリングを無効にします。ベースラインとルールは保持されます。続行しますか？',
   'models.button.deploy': 'モデルをデプロイ',
   'models.button.exportYaml': 'Export YAML',
   'models.button.importYaml': 'Import YAML',

@@ -13,8 +13,10 @@
     "start": "npm run dev",
     "test:backend-parameters": "node --conditions=import --experimental-test-module-mocks --import tsx --test --test-force-exit src/pages/llmodels/forms/backend-parameters-list.test.mts",
     "test:benchmark": "node --import tsx --test src/pages/benchmark/forms/sharegpt-token-validation.test.ts",
+    "test:manual-scaling": "node --import tsx --test src/pages/llmodels/utils/manual-scaling.test.ts src/pages/llmodels/utils/deployment-lifecycle.test.ts",
     "test:model-revisions": "node --conditions=import --experimental-test-module-mocks --import tsx --test --test-force-exit src/pages/llmodels/components/deployment/revisions/hooks/use-model-revisions.test.mts src/pages/llmodels/components/deployment/revisions/hooks/revision-title.test.mts src/pages/llmodels/utils/deployment-yaml.test.ts",
-    "test:runtime-choice": "node --import tsx --test --test-force-exit src/pages/llmodels/components/deployment/runtime-choice.test.ts src/pages/llmodels/forms/use-runtime-choice-mode.test.tsx"
+    "test:runtime-choice": "node --import tsx --test --test-force-exit src/pages/llmodels/components/deployment/runtime-choice.test.ts src/pages/llmodels/forms/use-runtime-choice-mode.test.tsx",
+    "test:scheduled-scaling": "node --conditions=import --experimental-test-module-mocks --import tsx --test --test-force-exit src/pages/llmodels/forms/scaling-schedule.test.ts src/pages/llmodels/forms/scheduled-scaling.test.mts src/pages/llmodels/apis/lifecycle.test.mts src/pages/llmodels/hooks/use-models-columns.test.mts"
   },
   "dependencies": {
     "@ant-design/icons": "^6.1.0",

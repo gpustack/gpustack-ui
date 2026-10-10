@@ -1,6 +1,33 @@
-import { SectionHeader } from '@gpustack/core-ui';
+import { Flex, Typography } from 'antd';
 import { createStyles } from 'antd-style';
 import React from 'react';
+
+// TEMP FIX: SectionHeader is not (yet) exported by @gpustack/core-ui, which
+// made the import undefined and crashed the page. Local stand-in with the
+// same props (icon / title / description / style) until core-ui ships it.
+const SectionHeader: React.FC<{
+  icon?: React.ReactNode;
+  title: React.ReactNode;
+  description?: React.ReactNode;
+  style?: React.CSSProperties;
+}> = ({ icon, title, description, style }) => (
+  <Flex align="flex-start" gap={12} style={style}>
+    {icon ? (
+      <div style={{ fontSize: 20, lineHeight: '24px' }}>{icon}</div>
+    ) : null}
+    <div>
+      <Typography.Title
+        level={5}
+        style={{ margin: 0, marginBottom: description ? 4 : 0 }}
+      >
+        {title}
+      </Typography.Title>
+      {description ? (
+        <Typography.Text type="secondary">{description}</Typography.Text>
+      ) : null}
+    </div>
+  </Flex>
+);
 
 const useStyles = createStyles(({ token, css }) => ({
   /* Clear of the largest gap INSIDE a card — the 40 between two rows — and four

@@ -1,4 +1,14 @@
 export default {
+  'models.scaling.paused': '已暂停',
+  'models.scaling.waiting': '等待定时窗口',
+  'models.scaling.resume': '恢复调度',
+  'models.scaling.pause.tip':
+    '暂停部署并保留定时计划。恢复后将按当前时间执行计划。',
+  'models.scaling.resume.tip':
+    '定时部署恢复后将按当前时间执行计划。窗口外的目标副本数可能仍为 0。',
+
+  'models.scaling.manual.confirm':
+    '此操作将关闭相关部署的定时伸缩，并保留基线副本数和规则。是否继续？',
   'models.button.deploy': '部署模型',
   'models.button.exportYaml': '导出 YAML',
   'models.button.importYaml': '导入 YAML',
@@ -341,6 +351,12 @@ export default {
   'models.form.scaling.baseline.tips': '当前时间不在任何窗口内时使用的副本数。',
   'models.form.scaling.baselineNote':
     '上方填写的 Replicas 将作为基线副本数（Baseline）——当前时间不在任何时段窗口内时使用该副本数。',
+  'models.form.scaling.preview.unavailable':
+    '无法预览此表达式，原始内容保持不变。',
+  'models.form.scaling.draft.title': '请处理未保存的计划草稿',
+  'models.form.scaling.draft.discard':
+    '无法确认草稿有效。请继续编辑，或放弃更改并关闭计划。放弃后将恢复原配置；没有原配置时不保存计划。',
+  'models.form.scaling.draft.edit': '继续编辑',
   'models.form.scaling.cron.invalid': '无效的 cron 表达式',
   'models.form.scaling.meaning': '摘要',
   'models.form.scaling.summary.monthDays': '{days} 号',
@@ -354,6 +370,8 @@ export default {
   'models.form.scaling.current': '当前窗口：',
   'models.form.scaling.addRule': '添加规则',
   'models.form.scaling.removeRule': '删除规则',
+  'models.form.scaling.rules.invalid':
+    '请检查每条规则的 cron 表达式、副本数和时长。',
   'models.form.scaling.rules.required': '请至少添加一条规则，或关闭定时伸缩。',
   'models.form.scaling.hint':
     '每条规则在开始时间开启一个窗口，持续设定的时长，期间维持其副本数；不在任何窗口内时，模型使用上方的基线副本数。窗口重叠时，以最近开始的窗口为准。',

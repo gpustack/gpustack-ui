@@ -43,6 +43,13 @@ import {
 } from '../config';
 import { generateSource } from '../config/button-actions';
 import { ListItem, RoleSpec } from '../config/types';
+import {
+  canPauseDeployment,
+  canResumeDeployment,
+  isSchedulePaused,
+  isWaitingForSchedule
+} from '../utils/deployment-lifecycle';
+
 interface ActionItem {
   label: string;
   key: string;
@@ -186,7 +193,7 @@ const useModelsColumns = ({
   const { styles } = useStyles();
 
   const setModelActionList = useMemoizedFn((record: any) => {
-    const actions = _.filter(ActionList, (action: any) => {
+    const filteredActions = _.filter(ActionList, (action: any) => {
       if (action.key === 'chat') {
         // `isModelServable` is the whole servability half of this gate: under
         // PD a running-instance count no longer implies the model can answer
@@ -205,11 +212,11 @@ const useModelsColumns = ({
       }
 
       if (action.key === 'start') {
-        return record.replicas === 0;
+        return canResumeDeployment(record);
       }
 
       if (action.key === 'stop') {
-        return record.replicas > 0;
+        return canPauseDeployment(record);
       }
       if (action.key === 'restart') {
         // The same "there is something to act on" gate as stop, and
@@ -235,6 +242,14 @@ const useModelsColumns = ({
 
       return true;
     });
+
+    const actions = filteredActions.map((action: ActionItem) =>
+      action.key === 'start' &&
+      isSchedulePaused(record) &&
+      record.scaling_schedule?.enabled
+        ? { ...action, label: 'models.scaling.resume' }
+        : action
+    );
 
     // A restart the server is still carrying out. Disabled rather than hidden:
     // the entry vanishing and coming back is the same ambiguity as a button
@@ -295,10 +310,17 @@ const useModelsColumns = ({
   //  - `state` is NULL between a model's creation and the first reconcile
   //    pass over it. `isModelServable` handles that window by reading the
   //    counter; the same fallback here keeps the cell from going blank.
-  //  - `replicas === 0` with nothing left running is the deployment switch
-  //    being off, which the lifecycle has no value for — it reports PENDING.
-  //    That is the one case today's cell greys out, and it stays grey.
+  //  - Pause and a scheduled zero target have distinct operational labels.
+  //    A manual zero target without a pause marker remains stopped.
   const replicaStatus = useMemoizedFn((record: ListItem, ready: number) => {
+    if (isSchedulePaused(record) || isWaitingForSchedule(record)) {
+      const text = intl.formatMessage({
+        id: isSchedulePaused(record)
+          ? 'models.scaling.paused'
+          : 'models.scaling.waiting'
+      });
+      return { status: StatusMaps.inactive, text, message: text };
+    }
     if (!record.replicas && !ready) {
       return {
         status: StatusMaps.inactive,
@@ -454,7 +476,10 @@ const useModelsColumns = ({
             <StatusDot
               statusValue={{
                 status: dotStatus.status,
-                text: `${ready} / ${total}`
+                text:
+                  isSchedulePaused(record) || isWaitingForSchedule(record)
+                    ? `${ready} / ${total} · ${dotStatus.text}`
+                    : `${ready} / ${total}`
               }}
               style={REPLICA_LINE}
             />
@@ -513,15 +538,19 @@ const useModelsColumns = ({
           // list response, which carries no instances, hence `role_status`
           // rather than a count of the expanded row's children.
           return (
-            <PDReplicasCell
-              record={record}
-              markers={markers}
-              mode={record.disaggregation?.mode}
-              className={styles.pdReplicas}
-              status={dotStatus.status}
-              statusMessage={dotStatus.message}
-              onSave={(roles) => onUpdateRoles(record, roles)}
-            ></PDReplicasCell>
+            <Flex vertical gap={4} className={styles.pdReplicas}>
+              {(isSchedulePaused(record) || isWaitingForSchedule(record)) && (
+                <span>{dotStatus.text}</span>
+              )}
+              <PDReplicasCell
+                record={record}
+                markers={markers}
+                mode={record.disaggregation?.mode}
+                status={dotStatus.status}
+                statusMessage={dotStatus.message}
+                onSave={(roles) => onUpdateRoles(record, roles)}
+              ></PDReplicasCell>
+            </Flex>
           );
         }
       },

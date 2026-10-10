@@ -1,4 +1,14 @@
 export default {
+  'models.scaling.paused': 'Приостановлено',
+  'models.scaling.waiting': 'Ожидание расписания',
+  'models.scaling.resume': 'Возобновить расписание',
+  'models.scaling.pause.tip':
+    'Развёртывание будет приостановлено с сохранением расписания. При возобновлении расписание применяется к текущему времени.',
+  'models.scaling.resume.tip':
+    'Развёртывания с расписанием возобновляют текущий план. Вне активных окон число реплик может оставаться нулевым.',
+
+  'models.scaling.manual.confirm':
+    'Это действие отключит масштабирование по расписанию для затронутых развертываний. Базовое количество реплик и правила будут сохранены. Продолжить?',
   'models.button.deploy': 'Развернуть модель',
   'models.button.exportYaml': 'Экспорт YAML',
   'models.button.importYaml': 'Импорт YAML',
@@ -365,6 +375,13 @@ export default {
     'Количество реплик, используемое, когда текущее время вне всех окон.',
   'models.form.scaling.baselineNote':
     'Значение Replicas, заданное выше, используется как базовое — количество реплик, применяемое, когда текущее время вне всех окон.',
+  'models.form.scaling.preview.unavailable':
+    'Предпросмотр недоступен. Выражение сохранено без изменений.',
+  'models.form.scaling.draft.title':
+    'Проверьте несохранённые изменения расписания',
+  'models.form.scaling.draft.discard':
+    'Черновик может быть недействительным или неподдерживаемым. Продолжите редактирование либо отмените изменения и отключите расписание. Будет восстановлен исходный план; если его не было, расписание не будет сохранено.',
+  'models.form.scaling.draft.edit': 'Продолжить редактирование',
   'models.form.scaling.cron.invalid': 'Недопустимое выражение cron',
   'models.form.scaling.meaning': 'Сводка',
   'models.form.scaling.summary.monthDays': 'День {days}',
@@ -378,6 +395,8 @@ export default {
   'models.form.scaling.current': 'Текущее окно:',
   'models.form.scaling.addRule': 'Добавить правило',
   'models.form.scaling.removeRule': 'Удалить правило',
+  'models.form.scaling.rules.invalid':
+    'Проверьте выражение cron, число реплик и длительность каждого правила.',
   'models.form.scaling.rules.required':
     'Добавьте хотя бы одно правило или отключите плановое масштабирование.',
   'models.form.scaling.hint':

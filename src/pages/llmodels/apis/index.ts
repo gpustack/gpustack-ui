@@ -2,6 +2,7 @@ import { ListItem as UserListItem } from '@/pages/users/config/types';
 import { downloadFile, listFiles, listModels } from '@huggingface/hub';
 import { PipelineType } from '@huggingface/tasks';
 import { request } from '@umijs/max';
+import { omit } from 'lodash';
 import qs from 'query-string';
 import { MODEL_ROUTES } from '../../model-routes/apis';
 import {
@@ -25,6 +26,12 @@ import {
   PDModeResolution,
   SpanningPreview
 } from '../config/types';
+import {
+  canPauseDeployment,
+  canResumeDeployment,
+  getStartUpdate,
+  getStopUpdate
+} from '../utils/deployment-lifecycle';
 
 export const MODELS_API = '/models';
 
@@ -143,6 +150,29 @@ export async function restartModel(id: number) {
 export async function queryModelDetail(id: number) {
   return request(`${MODELS_API}/${id}`, {
     method: 'GET'
+  });
+}
+
+export async function updateModelLifecycle(
+  id: number,
+  action: 'start' | 'stop'
+) {
+  const model = await queryModelDetail(id);
+  const canUpdate =
+    action === 'start' ? canResumeDeployment(model) : canPauseDeployment(model);
+  if (!canUpdate) return null;
+  return updateModel({
+    id,
+    data: {
+      ...omit(model, [
+        'id',
+        'ready_replicas',
+        'created_at',
+        'updated_at',
+        'rowIndex'
+      ]),
+      ...(action === 'start' ? getStartUpdate(model) : getStopUpdate(model))
+    } as FormData
   });
 }
 

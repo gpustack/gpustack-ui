@@ -66,12 +66,9 @@ const Basic = () => {
           })}
         ></CInput.TextArea>
       </Form.Item>
-      <Form.Item<FormData>
-        name="generic_proxy"
-        valuePropName="checked"
-        style={{ marginBottom: 8 }}
-      >
+      <Form.Item<FormData> name="generic_proxy" valuePropName="checked" noStyle>
         <CheckboxField
+          style={{ marginBottom: 16, marginTop: 16 }}
           description={
             <DocLink
               title={intl.formatMessage({

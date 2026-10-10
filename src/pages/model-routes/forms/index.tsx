@@ -339,7 +339,7 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       setActiveKey={handleActiveChange}
       segmentedTop={{
         top: 0,
-        offsetTop: 96
+        offsetTop: 40
       }}
       getScrollElementScrollableHeight={getScrollElementScrollableHeight}
     >

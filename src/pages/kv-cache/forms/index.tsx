@@ -75,7 +75,11 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
   const intl = useIntl();
   const { getRuleMessage } = useAppUtils();
   const [form] = Form.useForm();
-  const { providers, providerOptions, getProvider } = useCacheProviders();
+  const { providers, providerOptions, getProvider } = useCacheProviders({
+    // The catalog can arrive after workers or a user edit. Wait for its
+    // state and any provider defaults to commit before reading the form.
+    onLoaded: () => schedulePlacementCheck()
+  });
   // the form needs only the cluster options and this cluster's workers;
   // the shared query hooks carry request cancellation, so a fetch
   // superseded by a cluster switch (or unmount) aborts instead of
@@ -101,6 +105,7 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
   const clusterId = Form.useWatch('cluster_id', form);
   const prevClusterRef = useRef<number | undefined>(undefined);
   const pinnedFields = useRef<Set<string>>(new Set());
+  const placementEdited = useRef(false);
   // set once the user picks a version themselves, which is what stops the
   // hardware-decided pick below from overriding it
   const versionPinned = useRef(false);
@@ -121,20 +126,28 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
     Object.keys(selectedProvider?.components || {}).length > 0;
 
   const fieldValues = Form.useWatch(['config', 'fields'], form);
-  const workerId = Form.useWatch('worker_id', form);
-  const workerSelector = Form.useWatch('worker_selector', form);
-
-  usePlacementCheck(
-    {
-      provider: selectedProvider,
-      providerVersion,
-      fieldValues,
+  const { checkPlacement, resetPlacementCheck } =
+    usePlacementCheck(onCheckStatusChange);
+  const checkCurrentPlacement = useMemoizedFn(() => {
+    // Saved configuration is not a new deployment. Only a relevant user
+    // edit opts into the pre-flight; late catalog/worker data cannot do so.
+    if (action === PageAction.EDIT && !placementEdited.current) {
+      return;
+    }
+    const values = form.getFieldsValue(true) as FormData;
+    checkPlacement({
+      provider: getProvider(values.provider_name),
+      providerVersion: values.provider_version,
+      fieldValues: values.config?.fields,
       workers,
-      workerId,
-      workerSelector
-    },
-    onCheckStatusChange
-  );
+      workerId: values.worker_id,
+      workerSelector: values.worker_selector
+    });
+  });
+  // Every trigger joins the same queue. Read the store and fetched context
+  // after field/default cascades commit, then skip identical input snapshots.
+  const { run: schedulePlacementCheck, cancel: cancelPlacementCheck } =
+    useDebounceFn(checkCurrentPlacement, { wait: 100 });
 
   // deployment-style edit notice: config changes only land on the next
   // instance recreation, so flag any drift from the saved service
@@ -167,6 +180,19 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
     Object.keys(changed?.config?.fields || {}).forEach((name) =>
       pinnedFields.current.add(name)
     );
+    if (
+      [
+        'provider_name',
+        'provider_version',
+        'cluster_id',
+        'worker_id',
+        'worker_selector'
+      ].some((key) => Object.hasOwn(changed, key)) ||
+      Object.hasOwn(changed.config || {}, 'fields')
+    ) {
+      placementEdited.current = true;
+      schedulePlacementCheck();
+    }
     handleValuesChange();
   };
 
@@ -346,6 +372,7 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
     // L2 backends are provider-specific; drop the stale entries
     // (an empty list is normalized to null server-side)
     form.setFieldValue(['config', 'l2_storages'], []);
+    schedulePlacementCheck();
   };
 
   const handleProviderChange = (value: string) => {
@@ -381,6 +408,7 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
       }
       form.setFieldValue(['config', 'fields', field.name], fieldDefault(field));
     });
+    schedulePlacementCheck();
   }, [providerFields, fieldDefault, form, action]);
 
   // chunk size is a reserved placeholder some providers never consume
@@ -502,6 +530,9 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
       form.submit();
     },
     resetFields: () => {
+      placementEdited.current = false;
+      cancelPlacementCheck();
+      resetPlacementCheck();
       pinnedFields.current.clear();
       // The same concept, reset where that one is: a version the user picked
       // belongs to the form being discarded, and leaving it set would keep
@@ -513,6 +544,9 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
 
   useEffect(() => {
     if (action === PageAction.EDIT && currentData) {
+      placementEdited.current = false;
+      cancelPlacementCheck();
+      resetPlacementCheck();
       form.setFieldsValue({ ...currentData });
       // surface the advanced section when it already holds configuration
       if (
@@ -559,6 +593,7 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
       return;
     }
     form.setFieldValue('provider_version', 'custom');
+    schedulePlacementCheck();
   }, [form, hasDeclaredVersions, providerVersion, selectedProvider]);
 
   // with a single cluster there is nothing to choose; preselect it
@@ -603,18 +638,21 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
         reseedVersionFor(items || []);
         // nothing to seed where the form offers no Worker select
         if (isPerNode || hasComponents) {
+          schedulePlacementCheck();
           return;
         }
         // seed an empty selection with the least-loaded worker
         if (items?.length && form.getFieldValue('worker_id') == null) {
           form.setFieldValue('worker_id', pickDefaultWorker(items).id);
         }
+        schedulePlacementCheck();
       } catch (error) {
         // canceled (a newer fetch owns the state) or failed for the
         // still-current cluster — only the latter clears the list
         if (form.getFieldValue('cluster_id') === clusterId) {
           setWorkers([]);
           reseedVersionFor([]);
+          schedulePlacementCheck();
         }
       }
     };

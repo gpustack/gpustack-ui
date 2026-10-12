@@ -7,11 +7,11 @@ import {
   AutoTooltip,
   DropdownButtons,
   IconFont,
-  StatusTag
+  StatusTag,
+  type TableColumnProps
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Tooltip, Typography } from 'antd';
-import { ColumnsType } from 'antd/lib/table';
 import dayjs from 'dayjs';
 import { useAtomValue } from 'jotai';
 import { useMemo } from 'react';
@@ -23,10 +23,7 @@ import {
 } from '../config';
 import { CacheProviderItem, ListItem } from '../config/types';
 
-// Single source of the column min-widths: the parent table reads them for its
-// columns and the expanded instance rows rebuild the same track layout from
-// them so child cells align under these columns.
-export const serviceColumnMinWidths = {
+const serviceColumnMinWidths = {
   name: 160,
   provider: 160,
   cluster: 120,
@@ -42,7 +39,7 @@ const useServiceColumns = (
     clusterNameMap: Record<number, string>;
     onCellClick?: (record: ListItem) => void;
   }
-): ColumnsType<ListItem> => {
+): TableColumnProps[] => {
   const intl = useIntl();
   const systemConfig = useAtomValue(systemConfigAtom);
   const { getProvider, clusterNameMap, onCellClick } = options;

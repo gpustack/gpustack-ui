@@ -8,13 +8,13 @@ import {
   AutoTooltip,
   DropdownButtons,
   ExpandedRowGrid,
-  StatusTag
+  StatusTag,
+  type ChildGridOptions
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Spin, Tooltip } from 'antd';
 import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
 import { queryCacheServiceInstances } from '../apis';
 import {
   ServiceStateLabelMap,
@@ -23,42 +23,16 @@ import {
   instanceActionItems
 } from '../config';
 import { CacheServiceInstanceItem, ListItem } from '../config/types';
-import { serviceColumnMinWidths } from '../hooks/use-service-columns';
 
 // background refresh cadence while the row stays expanded
 const POLL_INTERVAL = 15 * 1000;
 
-// The parent is a plain antd table (tableLayout="fixed"), so its columns share
-// the extra width equally with each column's minWidth as the floor. Rebuilding
-// the tracks from the same minWidths reproduces that layout, so each child
-// cell lands under its parent column.
-const GRID_TEMPLATE = Object.values(serviceColumnMinWidths)
-  .map((width) => `minmax(${width}px, 1fr)`)
-  .join(' ');
-// clears the selection + expand gutter of the parent table so the first
-// cell starts under the name column
-const PREFIX_WIDTH = 80;
-
-// child row cells, keyed to the parent columns they sit under:
-// instance name | (provider..endpoint) | state | created | actions
-const columnKeys = Object.keys(serviceColumnMinWidths);
-const spanBetween = (from: string, to: string) =>
-  columnKeys.indexOf(to) - columnKeys.indexOf(from) - 1;
-const NAME_TO_STATUS_SPAN = spanBetween('name', 'status');
-const STATUS_TO_CREATED_SPAN = spanBetween('status', 'createTime');
-const CREATED_TO_ACTIONS_SPAN = spanBetween('createTime', 'operations');
-
-const PlaceholderRow = styled.div`
-  display: flex;
-  align-items: center;
-  height: 54px;
-  padding-left: calc(${PREFIX_WIDTH}px + var(--ant-table-cell-padding-inline));
-  color: var(--ant-color-text-secondary);
-`;
-
 // a compact metric readout in an instance row; the label sits above the
 // value since the cell lands under an unrelated parent column header
-interface InstanceRowsProps {
+interface InstanceRowsProps extends Pick<
+  ChildGridOptions,
+  'gridTemplate' | 'prefixWidth' | 'columns'
+> {
   service: ListItem;
   // one instance's declared RAM claim; 0 hides the bubble row
   capacityGib?: number;
@@ -110,6 +84,9 @@ const InstanceRows: React.FC<InstanceRowsProps> = ({
   capacityGib,
   workerNameMap,
   workerIpMap,
+  gridTemplate,
+  prefixWidth,
+  columns,
   refreshKey,
   onRecreate,
   onViewLogs
@@ -156,23 +133,32 @@ const InstanceRows: React.FC<InstanceRowsProps> = ({
     }
   };
 
-  if (!loadend) {
-    return (
-      <PlaceholderRow>
-        <Spin size="small" />
-      </PlaceholderRow>
-    );
-  }
+  const columnKeys = columns?.map((column) => column.dataIndex) || [];
+  const spanBetween = (from: string, to: string) =>
+    columnKeys.indexOf(to) - columnKeys.indexOf(from) - 1;
+  const nameToStatusSpan = spanBetween('name', 'state');
+  const statusToCreatedSpan = spanBetween('state', 'created_at');
+  const createdToActionsSpan = spanBetween('created_at', 'operations');
 
-  if (!instances.length) {
+  if (!loadend || !instances.length) {
     return (
-      <PlaceholderRow>
-        {intl.formatMessage({
-          id: loadFailed
-            ? 'kvCache.instances.loadFailed'
-            : 'kvCache.instances.empty'
-        })}
-      </PlaceholderRow>
+      <ExpandedRowGrid
+        gridTemplate={gridTemplate}
+        prefixWidth={prefixWidth}
+        style={{ color: 'var(--ant-color-text-secondary)' }}
+      >
+        <ExpandedRowGrid.Cell span={columns?.length}>
+          {!loadend ? (
+            <Spin size="small" />
+          ) : (
+            intl.formatMessage({
+              id: loadFailed
+                ? 'kvCache.instances.loadFailed'
+                : 'kvCache.instances.empty'
+            })
+          )}
+        </ExpandedRowGrid.Cell>
+      </ExpandedRowGrid>
     );
   }
 
@@ -181,8 +167,8 @@ const InstanceRows: React.FC<InstanceRowsProps> = ({
       {instances.map((item) => (
         <ExpandedRowGrid
           key={item.id}
-          gridTemplate={GRID_TEMPLATE}
-          prefixWidth={PREFIX_WIDTH}
+          gridTemplate={gridTemplate}
+          prefixWidth={prefixWidth}
           style={{ color: 'var(--ant-color-text-secondary)' }}
         >
           <ExpandedRowGrid.Cell>
@@ -216,8 +202,8 @@ const InstanceRows: React.FC<InstanceRowsProps> = ({
               </Tooltip>
             </span>
           </ExpandedRowGrid.Cell>
-          {NAME_TO_STATUS_SPAN > 0 && (
-            <ExpandedRowGrid.Cell span={NAME_TO_STATUS_SPAN} />
+          {nameToStatusSpan > 0 && (
+            <ExpandedRowGrid.Cell span={nameToStatusSpan} />
           )}
           <ExpandedRowGrid.Cell>
             <StatusTag
@@ -228,16 +214,16 @@ const InstanceRows: React.FC<InstanceRowsProps> = ({
               }}
             />
           </ExpandedRowGrid.Cell>
-          {STATUS_TO_CREATED_SPAN > 0 && (
-            <ExpandedRowGrid.Cell span={STATUS_TO_CREATED_SPAN} />
+          {statusToCreatedSpan > 0 && (
+            <ExpandedRowGrid.Cell span={statusToCreatedSpan} />
           )}
           <ExpandedRowGrid.Cell>
             <AutoTooltip ghost minWidth={20}>
               {dayjs(item.created_at).format('YYYY-MM-DD HH:mm:ss')}
             </AutoTooltip>
           </ExpandedRowGrid.Cell>
-          {CREATED_TO_ACTIONS_SPAN > 0 && (
-            <ExpandedRowGrid.Cell span={CREATED_TO_ACTIONS_SPAN} />
+          {createdToActionsSpan > 0 && (
+            <ExpandedRowGrid.Cell span={createdToActionsSpan} />
           )}
           <ExpandedRowGrid.Cell>
             <DropdownButtons

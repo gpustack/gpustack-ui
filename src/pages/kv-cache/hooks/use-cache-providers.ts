@@ -1,4 +1,5 @@
 import { localize } from '@/utils/localize';
+import { useMemoizedFn } from 'ahooks';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { queryCacheProviders } from '../apis';
 import { CacheProviderItem } from '../config/types';
@@ -29,8 +30,9 @@ const loadProviders = () => {
   return providersPromise;
 };
 
-const useCacheProviders = () => {
+const useCacheProviders = (options?: { onLoaded?: () => void }) => {
   const [providers, setProviders] = useState<CacheProviderItem[]>([]);
+  const onLoaded = useMemoizedFn(() => options?.onLoaded?.());
 
   useEffect(() => {
     let active = true;
@@ -38,6 +40,7 @@ const useCacheProviders = () => {
       .then((items) => {
         if (active) {
           setProviders(items);
+          onLoaded();
         }
       })
       .catch(() => {

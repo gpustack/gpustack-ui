@@ -1,6 +1,8 @@
 import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
 import { useIntl } from '@umijs/max';
-import { useEffect } from 'react';
+import { useMemoizedFn } from 'ahooks';
+import _ from 'lodash';
+import { useRef } from 'react';
 import { CPU_BACKEND, matrixServesFamily, profileRamGib } from '../config';
 import { CacheProviderItem } from '../config/types';
 import {
@@ -18,10 +20,7 @@ export interface ResourceCheckStatus {
   message: string;
 }
 
-// everything the pre-flight reads. It answers for the configuration as
-// it stands, so the caller passes values rather than accessors: a
-// catalog or worker list arriving late changes the answer, and a
-// function identity would let that change pass unnoticed.
+// Everything the pre-flight reads, supplied by the action that runs it.
 export interface PlacementInputs {
   provider?: CacheProviderItem;
   providerVersion?: string;
@@ -247,50 +246,27 @@ export const evaluatePlacement = (
   };
 };
 
-// reports the pre-flight for the configuration as it stands, re-running
-// whenever any of it changes — including the catalog and the worker
-// list, which land after the form first renders
 const usePlacementCheck = (
-  inputs: PlacementInputs,
   onCheckStatusChange?: (status: ResourceCheckStatus) => void
 ) => {
   const intl = useIntl();
-  const {
-    provider,
-    providerVersion,
-    fieldValues,
-    workers,
-    workerId,
-    workerSelector
-  } = inputs;
+  const lastInputs = useRef<PlacementInputs | null>(null);
 
-  useEffect(() => {
-    if (!onCheckStatusChange) {
+  const checkPlacement = useMemoizedFn((inputs: PlacementInputs) => {
+    if (_.isEqual(lastInputs.current, inputs)) {
       return;
     }
-    onCheckStatusChange(
-      evaluatePlacement(
-        {
-          provider,
-          providerVersion,
-          fieldValues,
-          workers,
-          workerId,
-          workerSelector
-        },
-        intl
-      )
-    );
-  }, [
-    onCheckStatusChange,
-    provider,
-    providerVersion,
-    fieldValues,
-    workers,
-    workerId,
-    workerSelector,
-    intl
-  ]);
+    // Include fetched context, and copy mutable form values: the same form
+    // configuration may need checking once its workers or catalog arrive.
+    lastInputs.current = _.cloneDeep(inputs);
+    onCheckStatusChange?.(evaluatePlacement(inputs, intl));
+  });
+
+  const resetPlacementCheck = () => {
+    lastInputs.current = null;
+  };
+
+  return { checkPlacement, resetPlacementCheck };
 };
 
 export default usePlacementCheck;

@@ -13,6 +13,7 @@
     "start": "npm run dev",
     "test:backend-parameters": "node --conditions=import --experimental-test-module-mocks --import tsx --test --test-force-exit src/pages/llmodels/forms/backend-parameters-list.test.mts",
     "test:benchmark": "node --import tsx --test src/pages/benchmark/forms/sharegpt-token-validation.test.ts",
+    "test:kv-cache": "node --conditions=import --experimental-test-module-mocks --import tsx --test --test-force-exit src/pages/kv-cache/forms/placement-check.test.mts",
     "test:manual-scaling": "node --import tsx --test src/pages/llmodels/utils/manual-scaling.test.ts src/pages/llmodels/utils/deployment-lifecycle.test.ts",
     "test:model-revisions": "node --conditions=import --experimental-test-module-mocks --import tsx --test --test-force-exit src/pages/llmodels/components/deployment/revisions/hooks/use-model-revisions.test.mts src/pages/llmodels/components/deployment/revisions/hooks/revision-title.test.mts src/pages/llmodels/utils/deployment-yaml.test.ts",
     "test:pd-backend-change": "node --conditions=import --experimental-test-module-mocks --import tsx --test --test-force-exit src/pages/llmodels/forms/pd-backend-change.test.mts",

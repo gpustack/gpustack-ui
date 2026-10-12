@@ -569,11 +569,18 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
      * `active` flipping false→true IS the action here, which is why this
      * belongs on this effect rather than on a fetch-function dependency.
      */
+    let cancelled = false;
     const resolveWithCatalog = async () => {
       // Held in a local, not read back off state: the fetch below does not
       // re-render before the next line runs.
       const modes = pdModes.length ? pdModes : await getPDModes();
+      if (cancelled) {
+        return;
+      }
       await runResolve(undefined, modes);
+      if (cancelled) {
+        return;
+      }
       /**
        * Re-ask the mode field's own rules, because nothing else will.
        *
@@ -598,6 +605,12 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
       }
     };
     resolveWithCatalog();
+    return () => {
+      cancelled = true;
+      // A backend change can unmount the body while resolution is in flight.
+      // Its response must not recreate the disaggregation value just cleared.
+      resolveSession.current += 1;
+    };
   }, [active, backend, clusterId]);
 
   // Mount is the one transition no handler can report: editing a model that is
@@ -606,6 +619,7 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
   // lifecycle entry point, not a dependency) — every later change comes from a
   // handler below, and a form that opens with PD off fetches nothing.
   useEffect(() => {
+    let cancelled = false;
     // The catalog has to land *before* the effects that read it are published:
     // an edit drawer opens with the mode already chosen, so `modeData` is
     // resolved exactly once here. Notifying first and fetching after left the
@@ -614,6 +628,9 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
     // "the catalog has not arrived".
     const seed = async () => {
       const modes = active ? await getPDModes() : undefined;
+      if (cancelled) {
+        return;
+      }
       notifyEffects({
         enabled: active,
         mode: form.getFieldValue(['disaggregation', 'mode']) ?? null,
@@ -622,6 +639,9 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
       });
     };
     seed();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const handleEnableChange = async (value: string) => {

@@ -59,6 +59,14 @@ jobs:
         with:
           fetch-depth: 1
           persist-credentials: false
+      - name: Setup Pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.3.0
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
       - name: Unarchive Node Modules
         timeout-minutes: 5
         uses: actions/cache/restore@v4
@@ -68,8 +76,8 @@ jobs:
             ${{ github.workspace }}/node_modules
       - name: Build
         run: scripts/build
-      - name: Runtime choice test
-        run: npm run test:runtime-choice
+      - name: Test
+        run: pnpm test
 
   build-publish:
     needs:

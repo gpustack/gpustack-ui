@@ -11,6 +11,7 @@ import DownloadingStatusCell from '../instance-cells/downloading-status-cell';
 import InstanceStatusCell from '../instance-cells/instance-status-cell';
 import KVCacheDegradedCell from '../instance-cells/kv-cache-degraded-cell';
 import NameCell from '../instance-cells/name-cell';
+import { getGPUTypeSelector } from '../instance-cells/vgpu-info';
 
 interface InstanceItemProps {
   instanceData: ModelInstanceListItem;
@@ -69,6 +70,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
         <DistributeInfoCell
           record={instanceData}
           workerList={workerList}
+          gpuTypeSelector={getGPUTypeSelector(instanceData, modelData)}
         ></DistributeInfoCell>
       </ExpandedRowGrid.Cell>
       <ExpandedRowGrid.Cell span={1} style={{ gap: 4 }}>

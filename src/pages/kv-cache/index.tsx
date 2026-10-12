@@ -10,11 +10,15 @@ import {
   FilterBar,
   IconFont,
   NoResult,
-  useExpandedRowKeys
+  Table as SealTable,
+  TableProvider,
+  useExpandedRowKeys,
+  type ChildGridOptions,
+  type TableOrder
 } from '@gpustack/core-ui';
 import { useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { Button, ConfigProvider, message, Space, Table } from 'antd';
+import { Button, message, Space } from 'antd';
 import _ from 'lodash';
 import { useState } from 'react';
 import PageBox from '../_components/page-box';
@@ -37,6 +41,11 @@ import useRecreateInstance from './hooks/use-recreate-instance';
 import useServiceColumns from './hooks/use-service-columns';
 import useViewLogs from './hooks/use-view-logs';
 import './style/index.less';
+
+// Core Table renders child panels only for nonempty child data. A service
+// marker also lets expand-all mount the panels, while InstanceRows owns the
+// instance request, polling and first-load error state.
+const loadServicePanel = async (service: ListItem) => [service];
 
 const KVCache: React.FC = () => {
   const {
@@ -72,7 +81,12 @@ const KVCache: React.FC = () => {
     openInstanceLogsModal,
     closeViewLogsModal
   } = useViewLogs();
-  const { expandedRowKeys, handleExpandChange } = useExpandedRowKeys();
+  const {
+    expandedRowKeys,
+    handleExpandChange,
+    handleExpandAll,
+    removeExpandedRowKey
+  } = useExpandedRowKeys();
   // bumped after a recreate so expanded rows refetch their instances at once
   const [instancesRefreshKey, setInstancesRefreshKey] = useState(0);
   const { handleRecreateInstance } = useRecreateInstance({
@@ -158,8 +172,7 @@ const KVCache: React.FC = () => {
     }
   });
 
-  const renderEmpty = (type?: string) => {
-    if (type !== 'Table') return;
+  const renderEmpty = () => {
     return (
       <NoResult
         minHeight="calc(100vh - 300px)"
@@ -204,21 +217,42 @@ const KVCache: React.FC = () => {
     }
   );
 
-  const renderExpandedRow = useMemoizedFn((record: ListItem) => (
-    <InstanceRows
-      service={record}
-      capacityGib={profileRamGib(
-        getProvider(record.provider_name)?.resource_profile,
-        getProvider(record.provider_name)?.fields,
-        record.config?.fields
-      )}
-      workerNameMap={workerNameMap}
-      workerIpMap={workerIpMap}
-      refreshKey={instancesRefreshKey}
-      onRecreate={handleRecreateInstanceClick}
-      onViewLogs={handleViewInstanceLogs}
-    ></InstanceRows>
-  ));
+  const renderChildren = useMemoizedFn(
+    (_panels: ListItem[], options: ChildGridOptions) => {
+      const record = options.parent as ListItem;
+      return (
+        <InstanceRows
+          service={record}
+          capacityGib={profileRamGib(
+            getProvider(record.provider_name)?.resource_profile,
+            getProvider(record.provider_name)?.fields,
+            record.config?.fields
+          )}
+          workerNameMap={workerNameMap}
+          workerIpMap={workerIpMap}
+          gridTemplate={options.gridTemplate}
+          prefixWidth={options.prefixWidth}
+          columns={options.columns}
+          refreshKey={instancesRefreshKey}
+          onRecreate={handleRecreateInstanceClick}
+          onViewLogs={handleViewInstanceLogs}
+        ></InstanceRows>
+      );
+    }
+  );
+
+  const handleToggleExpandAll = (expanded: boolean) => {
+    const keys = dataSource.dataList.map((item) => item.id);
+    if (expanded) {
+      handleExpandAll(true, keys);
+    } else {
+      removeExpandedRowKey(keys);
+    }
+  };
+
+  const handleOnSortChange = (order: TableOrder | TableOrder[]) => {
+    handleTableChange({}, {}, order, { action: 'sort' });
+  };
 
   const columns = useServiceColumns(handleSelect, {
     getProvider,
@@ -265,54 +299,40 @@ const KVCache: React.FC = () => {
             </Space>
           }
         ></FilterBar>
-        <ConfigProvider renderEmpty={renderEmpty}>
-          <Table
-            className={'scroll-table cache-services-table'}
-            rowKey="id"
-            tableLayout="fixed"
-            sortDirections={TABLE_SORT_DIRECTIONS}
-            showSorterTooltip={false}
-            dataSource={dataSource.dataList}
-            loading={{
-              spinning: dataSource.loading,
-              size: 'middle'
-            }}
-            rowSelection={rowSelection}
-            expandable={{
-              expandedRowKeys,
-              rowExpandable: () => true,
-              expandedRowRender: renderExpandedRow,
-              onExpand: (expanded: boolean, record: ListItem) =>
-                handleExpandChange(expanded, record, record.id),
-              expandIcon: ({ expanded, onExpand, record, expandable }) =>
-                expandable ? (
-                  <Button
-                    type="text"
-                    size="small"
-                    onClick={(e) => onExpand(record, e)}
-                  >
-                    <IconFont
-                      type="icon-down"
-                      rotate={expanded ? 0 : -90}
-                      style={{ fontSize: 12 }}
-                    ></IconFont>
-                  </Button>
-                ) : null
-            }}
-            columns={columns}
-            scroll={{ x: 1100 }}
-            onChange={handleTableChange}
-            pagination={{
-              size: 'middle',
-              showSizeChanger: true,
-              pageSize: queryParams.perPage,
-              current: queryParams.page,
-              total: dataSource.total,
-              hideOnSinglePage: queryParams.perPage === 10,
-              onChange: handlePageChange
-            }}
-          ></Table>
-        </ConfigProvider>
+        <div className="cache-services-table">
+          <TableProvider value={{ allChildren: dataSource.dataList }}>
+            <SealTable
+              rowKey="id"
+              emptyMinHeight="calc(100vh - 300px)"
+              sortDirections={TABLE_SORT_DIRECTIONS}
+              showSorterTooltip={false}
+              dataSource={dataSource.dataList}
+              loading={dataSource.loading}
+              loadend={dataSource.loadend}
+              rowSelection={rowSelection}
+              expandable={true}
+              expandedRowKeys={expandedRowKeys}
+              onExpand={handleExpandChange}
+              onExpandAll={handleToggleExpandAll}
+              loadChildren={loadServicePanel}
+              childParentKey="id"
+              renderChildren={renderChildren}
+              columns={columns}
+              scroll={{ x: true }}
+              onTableSort={handleOnSortChange}
+              empty={renderEmpty()}
+              pagination={{
+                size: 'middle',
+                showSizeChanger: true,
+                pageSize: queryParams.perPage,
+                current: queryParams.page,
+                total: dataSource.total,
+                hideOnSinglePage: queryParams.perPage === 10,
+                onChange: handlePageChange
+              }}
+            ></SealTable>
+          </TableProvider>
+        </div>
       </PageBox>
       <AddService
         open={openModalStatus.open}

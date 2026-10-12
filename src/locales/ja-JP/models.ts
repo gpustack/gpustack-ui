@@ -571,8 +571,14 @@ export default {
     '接続方式と優先順位はシステムが導出します。設定は不要です。',
   'models.form.pd.mode.custom.confirm.title':
     'カスタムモードに切り替えますか？',
-  'models.form.pd.mode.custom.confirm.content':
-    'カスタムモードでは GPUStack が管理する KV キャッシュを使用できません。キャッシュを無効にし、モデルとすべてのロールのキャッシュ設定を消去しますか？変更は保存後に適用されます。',
+  'models.form.pd.mode.custom.confirm.reason':
+    'カスタムモードでは GPUStack が管理する KV キャッシュを使用できません。',
+  'models.form.pd.mode.custom.confirm.effects':
+    '切り替えると、このモデルとすべてのロールに以下の変更が適用されます：',
+  'models.form.pd.mode.custom.confirm.disable': 'KV キャッシュを無効にする',
+  'models.form.pd.mode.custom.confirm.clear': 'キャッシュ設定を消去する',
+  'models.form.pd.mode.custom.confirm.save':
+    '変更はモデルを保存すると適用されます。',
   'models.form.pd.mode.custom.confirm.ok': 'キャッシュを無効にして切り替え',
   'models.form.roles.cache.custom.conflict':
     'カスタム PD モードではエンジンパラメータで --kv-transfer-config を指定するため、キャッシュサービスは同時に選択できません。',

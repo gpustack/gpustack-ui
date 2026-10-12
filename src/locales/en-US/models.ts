@@ -567,8 +567,14 @@ export default {
   'models.form.roles.cache.tips':
     'The connection method and priority order are derived by the system; no configuration needed.',
   'models.form.pd.mode.custom.confirm.title': 'Switch to Custom?',
-  'models.form.pd.mode.custom.confirm.content':
-    'Custom mode does not support GPUStack-managed KV cache. Disable it and clear cache settings for this model and all roles? Changes take effect when you save.',
+  'models.form.pd.mode.custom.confirm.reason':
+    'Custom mode cannot be used with GPUStack-managed KV cache.',
+  'models.form.pd.mode.custom.confirm.effects':
+    'Switching will make these changes to this model and all roles:',
+  'models.form.pd.mode.custom.confirm.disable': 'Disable KV cache',
+  'models.form.pd.mode.custom.confirm.clear': 'Clear cache settings',
+  'models.form.pd.mode.custom.confirm.save':
+    'Changes take effect when you save the model.',
   'models.form.pd.mode.custom.confirm.ok': 'Disable Cache and Switch',
   'models.form.roles.cache.custom.conflict':
     'The Custom PD mode needs --kv-transfer-config in the engine parameters, so a cache service cannot also be selected.',

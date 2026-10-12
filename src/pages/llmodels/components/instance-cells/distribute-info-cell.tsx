@@ -46,9 +46,9 @@ const useStyles = createStyles(({ css }) => ({
 interface DistributeInfoCellProps {
   record: ModelInstanceListItem;
   workerList: WorkerListItem[];
-  // The parent model's gpu_type_selector; when set (vGPU deployment) the
-  // tooltip table gains a vGPU column. Same for every worker — each holds
-  // one slice of the same InstanceType.
+  // The instance's effective vGPU selector, including any role override.
+  // When set, the tooltip table gains a vGPU column. Every worker of this
+  // instance holds one slice of the same InstanceType.
   gpuTypeSelector?: GPUTypeSelector | null;
 }
 

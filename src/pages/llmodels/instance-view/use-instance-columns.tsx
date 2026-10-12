@@ -130,18 +130,14 @@ const useInstancesColumns = (options: {
 
   const renderWorkerCell = (text: number, record: ListItem) => {
     if (text) {
-      // The instance payload does not echo gpu_type_selector; it lives on
-      // the parent model, already fetched into modelList.
+      // Keep the parent model's roles so PD members resolve their own
+      // vGPU allocation instead of only the model-level default.
       const modelData = modelById.get(record.model_id);
       return (
         <WorkerInfoContent
           workerList={workerList}
           record={record}
-          modelData={{
-            backend: record.backend,
-            backend_version: record.backend_version,
-            gpu_type_selector: modelData?.gpu_type_selector
-          }}
+          modelData={modelData}
         ></WorkerInfoContent>
       );
     }

@@ -1,5 +1,9 @@
 import _ from 'lodash';
-import { GPUTypeSelector, ModelInstanceListItem } from '../../config/types';
+import type {
+  GPUTypeSelector,
+  ModelInstanceListItem,
+  ListItem as ModelListItem
+} from '../../config/types';
 
 // Minimal shape of the useIntl() result we depend on — keeps this module
 // free of an intl package import (mirrors gpu-service render-instance-type).
@@ -10,16 +14,19 @@ type IntlLike = {
   ) => string;
 };
 
-// A vGPU instance is one whose model carries a gpu_type_selector (deployed
-// via an InstanceType). The selector is model-level and identical for all of
-// the model's instances — each worker holds one slice of the same type — so
-// it is read off the parent model; the instance's own echo (if the API ever
-// provides one) takes precedence.
+// PD members can override the model's vGPU allocation per role. A missing
+// or null role selector inherits the model default, matching the backend's
+// role_effective_model projection. An instance's own selector takes precedence.
 export const getGPUTypeSelector = (
   record: ModelInstanceListItem,
-  modelData?: any
+  modelData?: Pick<ModelListItem, 'gpu_type_selector' | 'roles'>
 ): GPUTypeSelector | null | undefined => {
-  return record?.gpu_type_selector || modelData?.gpu_type_selector;
+  if (record?.gpu_type_selector) {
+    return record.gpu_type_selector;
+  }
+
+  const role = modelData?.roles?.find((role) => role.name === record?.role);
+  return role?.gpu_type_selector ?? modelData?.gpu_type_selector;
 };
 
 // The cluster whose instance types the selector's `type` names — needed to

@@ -3,6 +3,7 @@ import { useIntl } from '@umijs/max';
 import { Flex, Tooltip } from 'antd';
 import React from 'react';
 import { DegradationLabelMap } from '../../config';
+import { configurationChangeMessage } from '../../utils/instance-recreation';
 
 type IntlShape = ReturnType<typeof useIntl>;
 
@@ -12,6 +13,7 @@ interface PDMarkersProps {
   // `DegradationValueMap` values; a list because they coexist.
   degradations?: string[] | null;
   fontSize?: number;
+  hasRoles?: boolean;
 }
 
 /**
@@ -41,13 +43,16 @@ export const degradationReason = (intl: IntlShape, reason: string) => {
 export const markerTexts = (
   intl: IntlShape,
   stale?: boolean | null,
-  degradations?: string[] | null
+  degradations?: string[] | null,
+  hasRoles = false
 ): string[] => {
   const texts = (degradations || []).map((reason) =>
     degradationReason(intl, reason)
   );
   if (stale) {
-    texts.push(intl.formatMessage({ id: 'models.pd.stale' }));
+    texts.push(
+      intl.formatMessage({ id: configurationChangeMessage(hasRoles) })
+    );
   }
   return texts;
 };
@@ -117,7 +122,8 @@ const Marker: React.FC<{
 const PDMarkers: React.FC<PDMarkersProps> = ({
   stale,
   degradations,
-  fontSize = 13
+  fontSize = 13,
+  hasRoles = false
 }) => {
   const intl = useIntl();
   const reasons = degradations || [];
@@ -126,7 +132,9 @@ const PDMarkers: React.FC<PDMarkersProps> = ({
     return null;
   }
 
-  const staleText = intl.formatMessage({ id: 'models.pd.stale' });
+  const staleText = intl.formatMessage({
+    id: configurationChangeMessage(hasRoles)
+  });
   const reasonTexts = reasons.map((reason) => degradationReason(intl, reason));
 
   return (

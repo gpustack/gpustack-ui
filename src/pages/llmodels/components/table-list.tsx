@@ -36,6 +36,7 @@ import {
   createModel,
   deleteModel,
   deleteModelInstance,
+  queryModelDetail,
   queryModelInstancesList,
   updateModel,
   updateModelLifecycle
@@ -62,6 +63,7 @@ import useViewInstanceLogs from '../hooks/use-view-instance-logs';
 import LeftFilters from '../instance-view/left-filters';
 import { getDeploymentFormReplicas } from '../utils/deployment-lifecycle';
 import { getReplicasUpdate } from '../utils/manual-scaling';
+import { instanceDeleteMessages } from '../utils/instance-recreation';
 import DeployModal from './deployment/deploy-modal';
 import ImportYamlModal from './deployment/import-yaml-modal';
 import useModelRevisions from './deployment/revisions/hooks/use-model-revisions';
@@ -397,17 +399,30 @@ const Models: React.FC<ModelsProps> = ({
     onViewLogs();
   };
 
-  const handleDeleteInstace = (row: any) => {
-    modalRef.current?.show({
-      content: 'models.instances',
-      okText: 'common.button.delrecreate',
-      operation: 'common.delete.single.confirm',
-      name: row.name,
-      async onOk() {
-        await deleteModelInstance(row.id);
-        onDeleteInstanceFromCache?.(row.id);
+  const handleDeleteInstace = async (row: ModelInstanceListItem) => {
+    try {
+      const model = await queryModelDetail(row.model_id);
+      const { okText, tip } = instanceDeleteMessages(model);
+      modalRef.current?.show({
+        content: 'models.instances',
+        okText,
+        tips: tip ? intl.formatMessage({ id: tip }) : undefined,
+        operation: 'common.delete.single.confirm',
+        name: row.name,
+        async onOk() {
+          await deleteModelInstance(row.id);
+          onDeleteInstanceFromCache?.(row.id);
+        }
+      });
+    } catch (error: any) {
+      // HTTP errors are reported globally; transport failures need local feedback.
+      if (!error?.response?.status) {
+        message.error(
+          error?.message || intl.formatMessage({ id: 'common.delete.fail' })
+        );
       }
-    });
+      return;
+    }
   };
 
   const getModelInstances = useCallback(async (row: any, options?: any) => {

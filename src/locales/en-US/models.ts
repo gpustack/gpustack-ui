@@ -628,6 +628,10 @@ export default {
     'This instance is running an older configuration; restart the group to apply the change.',
   'models.pd.stale':
     'Configuration changed; restart the deployment to apply it.',
+  'models.pd.recreation.paused':
+    'Configuration changed. Missing instances will not be recreated automatically until you restart the entire deployment.',
+  'models.pd.instance.delete.stale':
+    'This PD deployment has configuration changes waiting for a restart. This instance will not be recreated automatically after deletion. Restart the entire deployment to apply the configuration and restore its replicas.',
   'models.restart': 'Restart',
   'models.restart.inflight': 'Restarting…',
   'models.restart.confirm':

@@ -5,7 +5,7 @@ import {
   useAppUtils
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Flex, Form, Modal, Switch, Tooltip } from 'antd';
+import { Flex, Form, Modal, Switch, Tooltip, Typography } from 'antd';
 import { createStyles } from 'antd-style';
 import { useAtomValue } from 'jotai';
 import React, { useEffect, useRef, useState } from 'react';
@@ -776,12 +776,48 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
       currentRoles.some((role) => role.extended_kv_cache?.enabled);
     if (isCustomMode(value) && hasCache) {
       modal.confirm({
+        width: 520,
         title: intl.formatMessage({
           id: 'models.form.pd.mode.custom.confirm.title'
         }),
-        content: intl.formatMessage({
-          id: 'models.form.pd.mode.custom.confirm.content'
-        }),
+        content: (
+          <Flex vertical gap="middle">
+            <Typography.Text strong>
+              {intl.formatMessage({
+                id: 'models.form.pd.mode.custom.confirm.reason'
+              })}
+            </Typography.Text>
+            <Flex vertical gap="small">
+              <Typography.Text>
+                {intl.formatMessage({
+                  id: 'models.form.pd.mode.custom.confirm.effects'
+                })}
+              </Typography.Text>
+              <ul
+                style={{
+                  marginBlock: 0,
+                  paddingInlineStart: 'var(--ant-padding-lg)'
+                }}
+              >
+                <li>
+                  {intl.formatMessage({
+                    id: 'models.form.pd.mode.custom.confirm.disable'
+                  })}
+                </li>
+                <li>
+                  {intl.formatMessage({
+                    id: 'models.form.pd.mode.custom.confirm.clear'
+                  })}
+                </li>
+              </ul>
+            </Flex>
+            <Typography.Text style={{ fontSize: 'var(--ant-font-size-sm)' }}>
+              {intl.formatMessage({
+                id: 'models.form.pd.mode.custom.confirm.save'
+              })}
+            </Typography.Text>
+          </Flex>
+        ),
         okText: intl.formatMessage({
           id: 'models.form.pd.mode.custom.confirm.ok'
         }),

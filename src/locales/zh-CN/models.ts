@@ -538,8 +538,13 @@ export default {
   'models.form.roles.cache.holder': '不使用',
   'models.form.roles.cache.tips': '连接方式与优先级顺序由系统推导，无需配置。',
   'models.form.pd.mode.custom.confirm.title': '切换到自定义模式？',
-  'models.form.pd.mode.custom.confirm.content':
-    '自定义模式不支持 GPUStack 管理的 KV 缓存。是否关闭缓存并清空模型及所有角色的缓存配置？修改将在保存后生效。',
+  'models.form.pd.mode.custom.confirm.reason':
+    '自定义模式不能与 GPUStack 管理的 KV 缓存同时使用。',
+  'models.form.pd.mode.custom.confirm.effects':
+    '切换后，模型及所有角色的缓存配置将调整为：',
+  'models.form.pd.mode.custom.confirm.disable': '关闭 KV 缓存',
+  'models.form.pd.mode.custom.confirm.clear': '清空缓存配置',
+  'models.form.pd.mode.custom.confirm.save': '修改将在保存模型后生效。',
   'models.form.pd.mode.custom.confirm.ok': '关闭缓存并切换',
   'models.form.roles.cache.custom.conflict':
     '自定义 PD 模式下需在引擎参数中自行提供 --kv-transfer-config，不能同时选择缓存服务。',

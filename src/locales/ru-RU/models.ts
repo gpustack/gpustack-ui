@@ -574,8 +574,14 @@ export default {
     'Способ подключения и порядок приоритета выводятся системой; настройка не требуется.',
   'models.form.pd.mode.custom.confirm.title':
     'Переключить в пользовательский режим?',
-  'models.form.pd.mode.custom.confirm.content':
-    'Пользовательский режим не поддерживает KV-кэш под управлением GPUStack. Отключить кэш и очистить его настройки для модели и всех ролей? Изменения вступят в силу после сохранения.',
+  'models.form.pd.mode.custom.confirm.reason':
+    'Пользовательский режим нельзя использовать с KV-кэшем под управлением GPUStack.',
+  'models.form.pd.mode.custom.confirm.effects':
+    'При переключении для этой модели и всех ролей будут внесены следующие изменения:',
+  'models.form.pd.mode.custom.confirm.disable': 'Отключение KV-кэша',
+  'models.form.pd.mode.custom.confirm.clear': 'Очистка настроек кэша',
+  'models.form.pd.mode.custom.confirm.save':
+    'Изменения вступят в силу после сохранения модели.',
   'models.form.pd.mode.custom.confirm.ok': 'Отключить кэш и переключить',
   'models.form.roles.cache.custom.conflict':
     'В пользовательском режиме нужен --kv-transfer-config в параметрах движка, поэтому кэш-сервис выбрать нельзя.',

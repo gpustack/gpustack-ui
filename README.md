@@ -61,8 +61,6 @@ UI interaction tests in this suite use React and JSDOM, with mocked dependencies
 
 The runner enables import conditions and module mocking only for `*.test.mts`, so ordinary tests keep their default dependency resolution. Any failing test or unmatched input path causes a nonzero exit code.
 
-No browser E2E runner or command is configured yet.
-
 ## Bugs & Issues
 
 - Please submit [bugs and issues](https://github.com/gpustack/gpustack/issues) with a label `ui`

@@ -4,12 +4,13 @@ import PageBox from '@/pages/_components/page-box';
 import { DeleteModal, FilterBar, IconFont, NoResult } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { ConfigProvider, Table } from 'antd';
+import { ConfigProvider, message, Table } from 'antd';
 import _ from 'lodash';
 import { forwardRef, useEffect, useImperativeHandle } from 'react';
 import {
   deleteModelInstance,
   MODEL_INSTANCE_API,
+  queryModelDetail,
   queryModelsInstances
 } from '../apis';
 import ViewLogsModal from '../components/view-logs-modal';
@@ -18,6 +19,7 @@ import { useDeploymentsContext } from '../config/deploments-context';
 import { ModelInstanceListItem as ListItem } from '../config/types';
 import useViewInstanceLogs from '../hooks/use-view-instance-logs';
 import useQueryModelList from '../services/use-query-model-list';
+import { instanceDeleteMessages } from '../utils/instance-recreation';
 import LeftFilters from './left-filters';
 import useInstanceColumns from './use-instance-columns';
 
@@ -92,11 +94,24 @@ const InstanceView = forwardRef((props, ref) => {
   useEffect(() => {
     fetchModelList({ page: -1 });
   }, []);
-  const handleSelect = useMemoizedFn((val: any, row: ListItem) => {
+  const handleSelect = useMemoizedFn(async (val: any, row: ListItem) => {
     if (val === 'delete') {
-      handleDelete(row, {
-        okText: 'common.button.delrecreate'
-      });
+      try {
+        const model = await queryModelDetail(row.model_id);
+        const { okText, tip } = instanceDeleteMessages(model);
+        handleDelete(row, {
+          okText,
+          tips: tip ? intl.formatMessage({ id: tip }) : undefined
+        });
+      } catch (error: any) {
+        // HTTP errors are reported globally; transport failures need local feedback.
+        if (!error?.response?.status) {
+          message.error(
+            error?.message || intl.formatMessage({ id: 'common.delete.fail' })
+          );
+        }
+        return;
+      }
     }
 
     if (val === 'viewlog') {

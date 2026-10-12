@@ -462,7 +462,12 @@ const useModelsColumns = ({
           // unchanged.
           const { ready, total } = modelReplicaCounts(record);
           const isPD = isPDModel(record);
-          const markers = markerTexts(intl, record.stale, record.degradations);
+          const markers = markerTexts(
+            intl,
+            record.stale,
+            record.degradations,
+            isPD
+          );
 
           // The colour still comes from `replicaStatus` — i.e. from
           // `Model.state` and `state_message`, not from the numbers. Only the

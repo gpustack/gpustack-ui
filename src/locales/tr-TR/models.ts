@@ -631,6 +631,10 @@ export default {
     'Bu örnek eski bir yapılandırmayla çalışıyor; değişikliği uygulamak için grubu yeniden başlatın.',
   'models.pd.stale':
     'Yapılandırma değişti; uygulamak için dağıtımı yeniden başlatın.',
+  'models.pd.recreation.paused':
+    'Yapılandırma değişti. Dağıtımın tamamını yeniden başlatana kadar eksik örnekler otomatik olarak yeniden oluşturulmaz.',
+  'models.pd.instance.delete.stale':
+    'Bu PD dağıtımında yeniden başlatma bekleyen yapılandırma değişiklikleri var. Bu örnek silindikten sonra otomatik olarak yeniden oluşturulmaz. Yapılandırmayı uygulamak ve kopyaları geri yüklemek için dağıtımın tamamını yeniden başlatın.',
   'models.restart': 'Yeniden başlat',
   'models.restart.inflight': 'Yeniden başlatılıyor…',
   'models.restart.confirm':

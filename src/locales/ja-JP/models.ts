@@ -632,6 +632,10 @@ export default {
     'このインスタンスは古い設定で稼働しています。グループ全体を再起動すると反映されます。',
   'models.pd.stale':
     '設定が変更されました。デプロイを再起動すると反映されます。',
+  'models.pd.recreation.paused':
+    '設定が変更されました。デプロイ全体を再起動するまで、不足しているインスタンスは自動で再作成されません。',
+  'models.pd.instance.delete.stale':
+    'この PD デプロイには再起動待ちの設定変更があります。このインスタンスを削除しても自動で再作成されません。デプロイ全体を再起動して設定を適用し、レプリカを復元してください。',
   'models.restart': '再起動',
   'models.restart.inflight': '再起動中…',
   'models.restart.confirm':

@@ -15,7 +15,7 @@ import { useIntl } from '@umijs/max';
 import { Tooltip } from 'antd';
 import _ from 'lodash';
 import React, { useEffect } from 'react';
-import { CACHE_METRICS_WINDOW } from '../../config';
+import { CACHE_METRICS_WINDOW, isPDModel } from '../../config';
 import {
   DistributedServerItem,
   ModelInstanceListItem
@@ -23,6 +23,7 @@ import {
 import { useGPUTypeDisplayName } from '../../hooks/use-gpu-type-display-name';
 import '../../style/instance-item.less';
 import { calcTotalVram } from '../../utils';
+import { configurationChangeMessage } from '../../utils/instance-recreation';
 import { roleLabel } from '../pd/role-status';
 import {
   formatGPUTypeAllocation,
@@ -276,7 +277,11 @@ const NameCell: React.FC<NameCellProps> = ({
           per-instance truth (`spec_digest` against the model's current digest)
           needs a digest the API does not expose yet. */}
       {!!modelData?.stale && (
-        <Tooltip title={intl.formatMessage({ id: 'models.pd.instance.stale' })}>
+        <Tooltip
+          title={intl.formatMessage({
+            id: configurationChangeMessage(isPDModel(modelData), true)
+          })}
+        >
           <TextAttribute variant="outlined">
             {intl.formatMessage({ id: 'models.stale.tag' })}
           </TextAttribute>

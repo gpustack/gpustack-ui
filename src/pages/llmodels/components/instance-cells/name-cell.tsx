@@ -1,6 +1,6 @@
-import InstanceInfoCard, {
-  type InstanceInfoRow as InfoRowProps
-} from '@/pages/_components/instance-info-card';
+import GroupedInfoTooltipContent, {
+  type GroupedInfoTooltipRow as InfoRowProps
+} from '@/pages/_components/grouped-info-tooltip-content';
 import { convertFileSize } from '@/utils';
 import {
   AimOutlined,
@@ -207,7 +207,9 @@ const WorkerInfoContent: React.FC<NameCellProps> = ({
   ];
 
   return (
-    <InstanceInfoCard groups={[backendRows, workerRows, gpuRows, cacheRows]} />
+    <GroupedInfoTooltipContent
+      groups={[backendRows, workerRows, gpuRows, cacheRows]}
+    />
   );
 };
 

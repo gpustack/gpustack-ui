@@ -6,7 +6,7 @@ import React from 'react';
 // Tooltip backgrounds stay dark in both themes, so their content uses
 // white foreground tokens rather than the page's themed text colours.
 const useStyles = createStyles(({ css }) => ({
-  card: css`
+  content: css`
     min-width: 240px;
     font-size: 13px;
     line-height: 1.5;
@@ -42,7 +42,7 @@ const useStyles = createStyles(({ css }) => ({
   `
 }));
 
-export interface InstanceInfoRow {
+export interface GroupedInfoTooltipRow {
   label: string;
   icon: React.ReactNode;
   value: React.ReactNode;
@@ -50,14 +50,14 @@ export interface InstanceInfoRow {
   hint?: React.ReactNode;
 }
 
-const InstanceInfoCard: React.FC<{ groups: InstanceInfoRow[][] }> = ({
-  groups
-}) => {
+const GroupedInfoTooltipContent: React.FC<{
+  groups: GroupedInfoTooltipRow[][];
+}> = ({ groups }) => {
   const intl = useIntl();
   const { styles } = useStyles();
 
   return (
-    <div className={styles.card}>
+    <div className={styles.content}>
       {groups
         .filter((rows) => rows.length > 0)
         .map((rows, index) => (
@@ -85,4 +85,4 @@ const InstanceInfoCard: React.FC<{ groups: InstanceInfoRow[][] }> = ({
   );
 };
 
-export default InstanceInfoCard;
+export default GroupedInfoTooltipContent;

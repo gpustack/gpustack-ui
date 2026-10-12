@@ -1,4 +1,4 @@
-import InstanceInfoCard from '@/pages/_components/instance-info-card';
+import GroupedInfoTooltipContent from '@/pages/_components/grouped-info-tooltip-content';
 import {
   HddFilled,
   InfoCircleOutlined,
@@ -55,7 +55,7 @@ export const InstanceInfoContent: React.FC<{
   ramSize?: number;
 }> = ({ item, workerName, workerIp, version, ramSize }) => {
   return (
-    <InstanceInfoCard
+    <GroupedInfoTooltipContent
       groups={[
         [
           {

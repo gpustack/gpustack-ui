@@ -66,7 +66,7 @@ export const transportLabel = (mode?: PDMode) =>
 let catalog: PDMode[] | null = null;
 let inflight: Promise<PDMode[]> | null = null;
 
-const fetchCatalog = async (): Promise<PDMode[]> => {
+export const fetchCatalog = async (): Promise<PDMode[]> => {
   if (catalog) {
     return catalog;
   }

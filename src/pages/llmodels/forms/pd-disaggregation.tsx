@@ -29,6 +29,7 @@ import {
 import { backendOptionsMap } from '../constants/backend-parameters';
 import useQueryPDModes, { transportLabel } from '../hooks/use-query-pd-modes';
 import { pdBackendVersionWarning } from '../utils/pd-cache-services';
+import { membershipUpdateNotice } from '../utils/pd-membership';
 import { createDefaultRoles, rolesFormToPayload } from './roles/transform';
 
 // Form.Item must receive the change only after the user accepts any cache
@@ -45,7 +46,6 @@ const PDTransportSelect: React.FC<
     }
   />
 );
-
 
 // Bordered block whose switch sits in the title row, like the Scheduled Scaling
 // and GPU-allocation sections of the same form.
@@ -251,6 +251,11 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
   // See the note in forms/roles/index.tsx: without `preserve` this reads only
   // registered fields, and `roles` is written straight into the store.
   const roles = Form.useWatch('roles', { form, preserve: true });
+  const membershipRoles = rolesFormToPayload(roles, form.getFieldsValue(true));
+  const membershipNotice = membershipUpdateNotice(
+    findMode(mode),
+    membershipRoles
+  );
   const kvCacheEnabled = Form.useWatch(['extended_kv_cache', 'enabled'], form);
 
   /**
@@ -1326,9 +1331,14 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
               // top of each other. Every other SealSelect in this form passes
               // label alone for the same reason.
               label={intl.formatMessage({ id: 'models.form.pd.mode' })}
-              description={intl.formatMessage({
-                id: 'models.form.pd.mode.tips'
-              })}
+              description={[
+                intl.formatMessage({ id: 'models.form.pd.mode.tips' }),
+                membershipNotice
+                  ? intl.formatMessage({ id: membershipNotice })
+                  : null
+              ]
+                .filter(Boolean)
+                .join(' ')}
               options={visibleModeOptions}
               optionRender={modeOptionRender}
               labelRender={modeLabelRender}

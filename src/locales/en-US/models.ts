@@ -720,5 +720,16 @@ export default {
   // does not fit. The `chain.*` group headings are gone with the second chain.
   'models.form.gather.goFill': 'Fill it in',
   'models.form.gather.infeasible.warning':
-    'At current capacity this group cannot be placed; once saved it will wait until room frees up. Options: switch to “as close as possible” (may span hosts, slower KV transfer) · reduce replicas or GPUs per replica'
+    'At current capacity this group cannot be placed; once saved it will wait until room frees up. Options: switch to “as close as possible” (may span hosts, slower KV transfer) · reduce replicas or GPUs per replica',
+  'models.pd.membership.dynamic':
+    'Supports dynamic scaling. GPUStack updates router members through the API without rebuilding the router for membership changes.',
+  'models.pd.membership.restart':
+    'Dynamic member updates are unavailable. GPUStack automatically rebuilds the router after scaling or member recovery/restarts. Service may be briefly unavailable and in-flight requests may fail.',
+  'models.pd.membership.manual':
+    'You manage this router. After scaling or member changes, update peer addresses and bootstrap metadata and restart the router when needed.',
+  'models.pd.instance.delete.restart':
+    'After recreating the member, GPUStack rebuilds the router. Service may be briefly unavailable and in-flight requests may fail.',
+  'models.pd.instance.delete.manual':
+    'GPUStack recreates the member. Update your router peer addresses and bootstrap metadata, and restart the router when needed.',
+  'models.pd.membership.updating': 'Loading router members'
 };

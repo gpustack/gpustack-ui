@@ -676,5 +676,16 @@ export default {
   // does not fit. The `chain.*` group headings are gone with the second chain.
   'models.form.gather.goFill': '去填',
   'models.form.gather.infeasible.warning':
-    '按当前容量此组将无法部署；保存后组会一直等待，直到有空位。可选：改成「尽量靠近」（会跨机，KV 传输变慢）· 降低副本或每副本卡数'
+    '按当前容量此组将无法部署；保存后组会一直等待，直到有空位。可选：改成「尽量靠近」（会跨机，KV 传输变慢）· 降低副本或每副本卡数',
+  'models.pd.membership.dynamic':
+    '支持动态扩缩容。GPUStack 通过 API 更新 Router 成员，无需因成员变化重建 Router。',
+  'models.pd.membership.restart':
+    '不支持动态成员更新。扩缩容、成员重建或重启后，GPUStack 会自动重建 Router；期间服务可能短暂不可用，正在处理的请求可能中断。',
+  'models.pd.membership.manual':
+    '此 Router 由你维护。扩缩容或成员变化后，请更新成员地址和 bootstrap 信息，必要时重启 Router。',
+  'models.pd.instance.delete.restart':
+    '补建成员后，GPUStack 会重建 Router；期间服务可能短暂不可用，正在处理的请求可能中断。',
+  'models.pd.instance.delete.manual':
+    'GPUStack 会补建成员。请同步更新你维护的 Router 的成员地址和 bootstrap 信息，必要时重启 Router。',
+  'models.pd.membership.updating': '正在加载 Router 成员'
 };

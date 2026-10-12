@@ -9,7 +9,7 @@ import {
 } from '@ant-design/icons';
 import { config as coreConfig, StatusDot } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Button, Flex, InputNumber, Tooltip } from 'antd';
+import { Alert, Button, Flex, InputNumber, Tooltip } from 'antd';
 import { createStyles } from 'antd-style';
 import React from 'react';
 import {
@@ -20,6 +20,12 @@ import {
   RoleValueMap
 } from '../../config';
 import { ListItem, RoleSpec } from '../../config/types';
+import useQueryPDModes from '../../hooks/use-query-pd-modes';
+import {
+  membershipUpdateNotice,
+  membershipUpdatePolicy,
+  routerMembershipUpdating
+} from '../../utils/pd-membership';
 import { MarkerReasons } from './pd-markers';
 import {
   isRoleDraining,
@@ -154,6 +160,9 @@ const PDReplicasCell: React.FC<PDReplicasCellProps> = ({
 }) => {
   const intl = useIntl();
   const { styles } = useStyles();
+  const { getPDModes, findMode } = useQueryPDModes();
+  const membershipNotice = membershipUpdateNotice(findMode(mode), record.roles);
+  const membershipPolicy = membershipUpdatePolicy(findMode(mode), record.roles);
   const [editing, setEditing] = React.useState(false);
   const [saving, setSaving] = React.useState(false);
   const [draft, setDraft] = React.useState<Record<string, number>>({});
@@ -245,7 +254,8 @@ const PDReplicasCell: React.FC<PDReplicasCellProps> = ({
     return isRoleDraining(item) ? StatusMaps.warning : StatusMaps.success;
   };
 
-  const openEditor = () => {
+  const openEditor = async () => {
+    await getPDModes();
     setDraft(
       roles.reduce<Record<string, number>>((acc, role) => {
         acc[role.name] = role.replicas ?? 0;
@@ -421,6 +431,19 @@ const PDReplicasCell: React.FC<PDReplicasCellProps> = ({
   return (
     <Flex vertical gap={4} className={className}>
       {restartingNotice}
+      {!restarting && routerMembershipUpdating(statusMessage) && (
+        <Flex align="center" gap={6} style={{ fontSize: 12 }}>
+          <SyncOutlined spin />
+          {intl.formatMessage({ id: 'models.pd.membership.updating' })}
+        </Flex>
+      )}
+      {editing && membershipNotice && (
+        <Alert
+          type={membershipPolicy === 'dynamic' ? 'info' : 'warning'}
+          showIcon
+          message={intl.formatMessage({ id: membershipNotice })}
+        />
+      )}
       <Flex align="flex-start" gap={12}>
         {/* The lines carry the tooltip, so the thing you hover is the thing it
           explains. It is no longer where the per-role counts live — they are

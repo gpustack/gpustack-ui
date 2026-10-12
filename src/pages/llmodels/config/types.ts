@@ -344,6 +344,7 @@ export interface PDMode {
   roles?: Record<string, PDRoleInjection>;
   router?: {
     protocol?: string;
+    membership_update?: 'dynamic' | 'restart' | 'manual';
     image?: string | null;
     // The invocation, in three parts that mean three different things to the
     // form. `command` is all of them concatenated and stays the read-only

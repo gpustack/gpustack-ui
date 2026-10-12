@@ -17,6 +17,7 @@ import ViewLogsModal from '../components/view-logs-modal';
 import { status as instanceStatus } from '../config';
 import { useDeploymentsContext } from '../config/deploments-context';
 import { ModelInstanceListItem as ListItem } from '../config/types';
+import { fetchCatalog } from '../hooks/use-query-pd-modes';
 import useViewInstanceLogs from '../hooks/use-view-instance-logs';
 import useQueryModelList from '../services/use-query-model-list';
 import { instanceDeleteMessages } from '../utils/instance-recreation';
@@ -98,7 +99,11 @@ const InstanceView = forwardRef((props, ref) => {
     if (val === 'delete') {
       try {
         const model = await queryModelDetail(row.model_id);
-        const { okText, tip } = instanceDeleteMessages(model);
+        const modes = model.roles?.length ? await fetchCatalog() : [];
+        const { okText, tip } = instanceDeleteMessages(
+          model,
+          modes.find((mode) => mode.name === model.disaggregation?.mode)
+        );
         handleDelete(row, {
           okText,
           tips: tip ? intl.formatMessage({ id: tip }) : undefined

@@ -7,13 +7,10 @@ import {
   useAppUtils
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Flex, Form, Modal, Switch, Tooltip, Typography } from 'antd';
+import { Alert, Flex, Form, Modal, Switch, Tooltip, Typography } from 'antd';
 import { createStyles } from 'antd-style';
 import { useAtomValue } from 'jotai';
 import React, { useEffect, useRef, useState } from 'react';
-import semverCoerce from 'semver/functions/coerce';
-import semverSatisfies from 'semver/functions/satisfies';
-import semverValidRange from 'semver/ranges/valid';
 import { queryModelSpanningRoles, resolvePDMode } from '../apis';
 import {
   PD_CAPABLE_BACKENDS,
@@ -31,6 +28,7 @@ import {
 } from '../config/types';
 import { backendOptionsMap } from '../constants/backend-parameters';
 import useQueryPDModes, { transportLabel } from '../hooks/use-query-pd-modes';
+import { pdBackendVersionWarning } from '../utils/pd-cache-services';
 import { createDefaultRoles, rolesFormToPayload } from './roles/transform';
 
 // 1 prefill + 1 decode is the smallest group that can exist, so a cluster with
@@ -250,6 +248,7 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
   // role that does own its engine — the router — runs a `vllm-router` image
   // whose version the recipe's engine range does not describe.
   const backendVersion = Form.useWatch('backend_version', form);
+  const imageName = Form.useWatch('image_name', form);
   const mode = Form.useWatch(['disaggregation', 'mode'], form);
   // Read-only reads of other sections: the role ratio and the model-level cache
   // are owned elsewhere, this block only reflects them.
@@ -1080,53 +1079,18 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
     return intl.formatMessage({ id }, params);
   })();
 
-  /**
-   * The pinned engine version against the range the chosen recipe declares.
-   *
-   * Asked here rather than left to the `engine_version_below_recipe_floor`
-   * badge, because the two facts it needs — which recipe, which version — are
-   * both on this screen and both still editable. The badge arrives after a
-   * deployment has already been created, and the fix at that point is the same
-   * edit the user could have made before submitting.
-   *
-   * 🔑 Never a gate, matching the server: an out-of-range version deploys and
-   * is *marked*, because a self-built image legitimately carries a private
-   * version number no declared range can cover. What the note buys is that the
-   * behaviour the recipe assumes may be missing — on SGLang below 0.5.7 a
-   * scaled-down member cannot be deregistered and keeps taking traffic.
-   *
-   * Silent when the version does not coerce to a semver at all (`2024.3`, a
-   * vendor tag) and when nothing is pinned (`auto` submits null, and then the
-   * server picks the version). Both are cases where the only honest answer is
-   * "unknown", and a warning we cannot substantiate is worse than none —
-   * especially for `auto`, where it would fire on a form the user never
-   * touched.
-   *
-   * 🔴 Silent for a range this grammar cannot read, too, and that guard is not
-   * defensive coding — the two sides parse ranges differently. The server's
-   * `version_in_range` is PEP 440 over comma-separated conditions, so
-   * `">=0.5.7,<0.6.0"` is a legal thing to write in `pd-modes.yaml`; npm semver
-   * reads a comma as neither a separator nor an operator and rejects the whole
-   * range. `satisfies` swallows that rejection and answers **false**, which
-   * would put "below the declared range" under every version including the
-   * correct ones. `validRange` is the only way to tell that answer apart from a
-   * real verdict. Today's catalog is single-condition `">=x.y.z"` on both
-   * sides, so this costs nothing until someone writes the upper bound.
-   */
-  const engineVersionNote = (() => {
-    const range = findMode(mode)?.backend_versions;
-    if (!range || !backendVersion || !semverValidRange(range)) {
-      return null;
-    }
-    const pinned = semverCoerce(backendVersion);
-    if (!pinned || semverSatisfies(pinned, range)) {
-      return null;
-    }
-    return intl.formatMessage(
-      { id: 'models.form.pd.engineVersion.below' },
-      { version: backendVersion, range }
-    );
-  })();
+  const engineRange = findMode(mode)?.backend_versions;
+  const engineVersionNote = pdBackendVersionWarning(
+    flatBackendOptions.find((item) => item.value === backend),
+    backendVersion,
+    engineRange,
+    imageName
+  )
+    ? intl.formatMessage(
+        { id: 'models.form.pd.engineVersion.below' },
+        { version: backendVersion, range: engineRange }
+      )
+    : null;
 
   const onlyCustomLeft =
     modeOptions.length > 0 &&
@@ -1482,13 +1446,8 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
                 {intl.formatMessage({ id: 'models.form.pd.mode.cleared' })}
               </div>
             )}
-            {/* Below the recipe's declared engine range. Warning-coloured and
-                non-blocking, like the capacity shortfall above it: the
-                deployment is accepted either way and comes back carrying
-                `engine_version_below_recipe_floor`, so this note is the same
-                sentence said early enough to act on. */}
             {engineVersionNote && (
-              <div className="note note-warning">{engineVersionNote}</div>
+              <Alert type="warning" showIcon message={engineVersionNote} />
             )}
           </Flex>
         </>

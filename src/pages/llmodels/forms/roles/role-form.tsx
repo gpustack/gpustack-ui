@@ -3,7 +3,7 @@ import { useIntl } from '@umijs/max';
 import { Form, Input } from 'antd';
 import React from 'react';
 import { OverrideGroupMap } from '../../config';
-import { PDRoleInjection } from '../../config/types';
+import { PDMode, PDRoleInjection } from '../../config/types';
 import BackendParametersList from '../backend-parameters-list';
 import ScheduleTypeForm from '../schedule-type';
 import SpeculativeDecode from '../speculative-decode';
@@ -13,6 +13,8 @@ import RoleKVCache from './role-kv-cache';
 import SystemManaged, { LockedRow, flagLines } from './system-managed';
 
 interface RoleFormProps {
+  mode?: PDMode;
+  role?: string;
   /** The role's index in `roles`. */
   index: number;
   /** Reason this role cannot configure a cache; from the pd mode. */
@@ -34,7 +36,9 @@ interface RoleFormProps {
 const RoleForm: React.FC<RoleFormProps> = ({
   index,
   cacheDisabledReason,
-  injection
+  injection,
+  mode,
+  role
 }) => {
   const intl = useIntl();
   const form = Form.useFormInstance();
@@ -267,6 +271,8 @@ const RoleForm: React.FC<RoleFormProps> = ({
       </OverrideSection>
 
       <RoleKVCache
+        mode={mode}
+        role={role}
         index={index}
         disabledReason={cacheDisabledReason}
       ></RoleKVCache>

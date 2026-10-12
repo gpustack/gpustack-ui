@@ -190,6 +190,8 @@ const Roles: React.FC<RolesProps> = ({ enabled, mode, modeName, pdBody }) => {
             <RouterForm index={index} mode={mode}></RouterForm>
           ) : (
             <RoleForm
+              mode={mode}
+              role={role.name}
               index={index}
               cacheDisabledReason={cacheDisabledReason}
               injection={mode?.roles?.[role.name]}

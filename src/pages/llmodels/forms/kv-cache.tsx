@@ -4,13 +4,17 @@ import {
   Select as SealSelect
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Form, Input, Switch, Tooltip } from 'antd';
+import { Alert, Form, Input, Switch, Tooltip } from 'antd';
 import _ from 'lodash';
 import { useEffect, useMemo, useRef } from 'react';
 import { useFormContext } from '../config/form-context';
-import { FormData } from '../config/types';
+import { FormData, PDMode } from '../config/types';
 import { backendOptionsMap } from '../constants/backend-parameters';
 import useQueryCacheServices from '../services/use-query-cache-services';
+import {
+  pdBackendVersionWarning,
+  supportsPDCacheService
+} from '../utils/pd-cache-services';
 import { RoleSection } from './roles/override-section';
 
 // Sentinel for the in-process (local) cache in the merged backend dropdown;
@@ -22,6 +26,8 @@ const IN_PROCESS = 'in-process';
 const FORM_FLUSH_DELAY_MS = 100;
 
 interface KVCacheFormProps {
+  mode?: PDMode;
+  role?: string;
   /**
    * Renders the same fields at a nested Form path (e.g. `['roles', 0]`) so a
    * role can carry its own cache choice. Absent means the model-level path,
@@ -65,7 +71,12 @@ const ExtendedKVCacheSwitch: React.FC<{
   );
 };
 
-const KVCacheForm: React.FC<KVCacheFormProps> = ({ namePrefix, section }) => {
+const KVCacheForm: React.FC<KVCacheFormProps> = ({
+  namePrefix,
+  section,
+  mode,
+  role
+}) => {
   const intl = useIntl();
   const form = Form.useFormInstance();
   const { onValuesChange, flatBackendOptions } = useFormContext();
@@ -99,6 +110,20 @@ const KVCacheForm: React.FC<KVCacheFormProps> = ({ namePrefix, section }) => {
   const roleBackend = Form.useWatch(path('backend'), form);
   const modelBackend = Form.useWatch('backend', form);
   const backend = namePrefix ? (roleBackend ?? modelBackend) : modelBackend;
+  const modelVersion = Form.useWatch('backend_version', form);
+  const roleVersion = Form.useWatch(path('backend_version'), form);
+  const backendVersion = namePrefix
+    ? (roleVersion ?? modelVersion)
+    : modelVersion;
+  const modelImage = Form.useWatch('image_name', form);
+  const roleImage = Form.useWatch(path('image_name'), form);
+  const imageName = namePrefix ? (roleImage ?? modelImage) : modelImage;
+  const policyRef = useRef({ mode, role });
+  policyRef.current = { mode, role };
+  const compatibleService = (service: { provider_name: string }) => {
+    const policy = policyRef.current;
+    return supportsPDCacheService(service, policy.mode, policy.role);
+  };
   const configCacheRef = useRef<any>({});
   // set when the user enables the checkbox without a stashed shared
   // selection; the options-sync effect resolves it into a default pick
@@ -144,10 +169,15 @@ const KVCacheForm: React.FC<KVCacheFormProps> = ({ namePrefix, section }) => {
 
   const handleEnableOnChange = async (checked: boolean) => {
     if (checked) {
-      // fall back to in-process when the stashed shared selection is no
-      // longer supported
+      const cachedService = cacheServiceOptions.find(
+        (service) => service.value === configCacheRef.current?.cache_service_id
+      );
+      // Restore shared selections only when the current mode and role support them.
       const mode =
-        sharedSupported && configCacheRef.current?.mode === 'shared'
+        sharedSupported &&
+        configCacheRef.current?.mode === 'shared' &&
+        cachedService &&
+        compatibleService(cachedService)
           ? 'shared'
           : 'local';
       if (mode === 'shared') {
@@ -160,6 +190,11 @@ const KVCacheForm: React.FC<KVCacheFormProps> = ({ namePrefix, section }) => {
           ram_size: null
         });
       } else {
+        configCacheRef.current = {
+          ...configCacheRef.current,
+          mode,
+          cache_service_id: null
+        };
         setCache({
           enabled: true,
           mode,
@@ -248,13 +283,14 @@ const KVCacheForm: React.FC<KVCacheFormProps> = ({ namePrefix, section }) => {
       return;
     }
     fetchCacheServices({ clusterId, backend })
-      .then(async (options) => {
+      .then(async (services) => {
         // null = failure or cancellation: prove nothing, and keep the
         // auto-select flag — a canceled request must not eat the marker
         // its superseding request will consume
-        if (!options) {
+        if (!services) {
           return;
         }
+        const options = services.filter(compatibleService);
         const current = form.getFieldValue(
           path('extended_kv_cache', 'cache_service_id')
         );
@@ -338,6 +374,20 @@ const KVCacheForm: React.FC<KVCacheFormProps> = ({ namePrefix, section }) => {
   }, [flatBackendOptions, kvCacheEnabled, sharedSupported, kvCacheMode]);
 
   const isLocal = (kvCacheMode ?? 'local') !== 'shared';
+  const service = cacheServiceOptions.find(
+    (item) => item.value === cacheServiceId
+  );
+  const versionRange = isLocal
+    ? mode?.in_process_cache_versions
+    : mode?.cache_services?.find(
+        (item) => item.provider === service?.provider_name
+      )?.backend_versions;
+  const showVersionWarning = pdBackendVersionWarning(
+    flatBackendOptions.find((item) => item.value === backend),
+    backendVersion,
+    versionRange,
+    imageName
+  );
 
   // in-process first, then each compatible cache service as "name (provider)"
   const backendOptions = useMemo(() => {
@@ -350,12 +400,12 @@ const KVCacheForm: React.FC<KVCacheFormProps> = ({ namePrefix, section }) => {
     }
     return [
       inProcess,
-      ...cacheServiceOptions.map((option) => ({
+      ...cacheServiceOptions.filter(compatibleService).map((option) => ({
         ...option,
         label: `${option.label} (${option.provider_name})`
       }))
     ];
-  }, [sharedSupported, cacheServiceOptions, intl]);
+  }, [sharedSupported, cacheServiceOptions, intl, mode, role]);
 
   // A saved shared selection is an id; its name only exists in the fetched
   // service list. Two windows have the id but no option for it, and antd
@@ -461,6 +511,25 @@ const KVCacheForm: React.FC<KVCacheFormProps> = ({ namePrefix, section }) => {
               })}
             ></SealSelect>
           </Form.Item>
+          {showVersionWarning && (
+            <Alert
+              type="warning"
+              showIcon
+              message={intl.formatMessage(
+                {
+                  id: isLocal
+                    ? 'models.form.pd.inProcessVersion.below'
+                    : 'models.form.pd.cacheServiceVersion.below'
+                },
+                {
+                  version: backendVersion,
+                  range: versionRange,
+                  provider: service?.provider_name
+                }
+              )}
+              style={{ marginBottom: 16 }}
+            />
+          )}
           {isLocal && (
             <>
               <Form.Item<FormData>

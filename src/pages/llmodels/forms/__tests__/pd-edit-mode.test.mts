@@ -16,6 +16,9 @@ const modes = [
     name: 'vllm-nixl',
     backends: ['vLLM'],
     display_name: 'vLLM + NIXL',
+    cache_services: [
+      { provider: 'LMCache', roles: { prefill: {}, decode: {} } }
+    ],
     roles: {
       prefill: {
         connector: { kv_connector: 'NixlConnector', kv_role: 'kv_both' },
@@ -42,6 +45,14 @@ const modes = [
       }
     },
     router: { connection_args: ['--alternate-host', '{{worker_ip}}'] }
+  },
+  {
+    name: 'vllm-mooncake',
+    backends: ['vLLM'],
+    display_name: 'vLLM + Mooncake',
+    cache_services: [
+      { provider: 'Mooncake', roles: { prefill: {}, decode: {} } }
+    ]
   },
   { name: 'sglang-nixl', backends: ['SGLang'], display_name: 'SGLang + NIXL' },
   { name: 'custom', backends: [], display_name: 'Custom' }
@@ -131,7 +142,8 @@ mock.module(
       backendOptions: [],
       flatBackendOptions: ['vLLM', 'SGLang', 'llama-box'].map((value) => ({
         value,
-        isBuiltIn: true
+        isBuiltIn: true,
+        versions: [{ value: '0.29.0', label: '0.29.0' }]
       })),
       getBackendOptions: async () => {}
     })
@@ -146,6 +158,15 @@ mock.module(
         workerLabelOptions: [],
         getGPUOptionList: async () => {}
       })
+    }
+  }
+);
+mock.module(
+  new URL('../../services/use-query-cache-services.ts', import.meta.url).href,
+  {
+    namedExports: {
+      knownCacheService: (_clusterId: number, serviceId: number) =>
+        serviceId === 14 ? { provider_name: 'Mooncake' } : undefined
     }
   }
 );
@@ -243,12 +264,14 @@ const renderForm = async ({
   mode,
   vendor,
   action = 'edit',
-  pd = true
+  pd = true,
+  roles = savedRoles()
 }: {
   mode?: string;
   vendor?: string;
   action?: string;
   pd?: boolean;
+  roles?: any[];
 } = {}) => {
   const root = createRoot(dom.window.document.getElementById('root')!);
   const ref: any = { current: null };
@@ -262,7 +285,7 @@ const renderForm = async ({
     name: 'model',
     ...(pd
       ? {
-          roles: savedRoles(),
+          roles,
           disaggregation: mode ? { mode, vendor } : undefined
         }
       : {})
@@ -383,6 +406,49 @@ test('opening a saved explicit built-in transport preserves it over the recommen
     await act(async () => root.unmount());
   }
 });
+
+for (const action of ['edit', 'create']) {
+  test(`opening a saved Mooncake deployment preserves both role caches and submit (${action === 'create' ? 'copy' : action})`, async () => {
+    const roles = savedRoles().map((role: any) => ({
+      ...role,
+      extended_kv_cache:
+        role.name === 'router'
+          ? null
+          : { enabled: true, mode: 'shared', cache_service_id: 14 }
+    }));
+    const { root, ref, submit } = await renderForm({
+      mode: 'vllm-mooncake',
+      roles,
+      action
+    });
+    try {
+      assert.equal(
+        ref.current.form.getFieldValue(['disaggregation', 'mode']),
+        'vllm-mooncake'
+      );
+      assert.equal(
+        dom.window.document.querySelector<HTMLSelectElement>(
+          'select[aria-label="models.form.pd.mode"]'
+        )?.selectedOptions[0].textContent,
+        'Mooncake'
+      );
+      const payload = await submit();
+      assert.equal(payload.disaggregation.mode, 'vllm-mooncake');
+      for (const index of [0, 1]) {
+        assert.deepEqual(
+          ref.current.form.getFieldValue(['roles', index, 'extended_kv_cache']),
+          roles[index].extended_kv_cache
+        );
+        assert.deepEqual(
+          payload.roles[index].extended_kv_cache,
+          roles[index].extended_kv_cache
+        );
+      }
+    } finally {
+      await act(async () => root.unmount());
+    }
+  });
+}
 
 test('enabling PD without a selected transport applies the recommendation and role injection', async () => {
   const { root, ref } = await renderForm({ action: 'create', pd: false });

@@ -434,7 +434,7 @@ export default (props: any) => {
             menuFooterRender={() => (
               <Button
                 style={{
-                  border: 'none'
+                  color: 'var(--color-sider-item-text)'
                 }}
                 size="small"
                 type={'text'}
@@ -442,7 +442,7 @@ export default (props: any) => {
               >
                 <IconFont
                   type={collapsed ? 'icon-expand-left' : 'icon-expand-right'}
-                  className="font-size-18"
+                  className="font-size-16"
                 />
               </Button>
             )}

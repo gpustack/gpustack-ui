@@ -62,40 +62,43 @@ mock.module('@umijs/max', {
 mock.module('antd-style', {
   namedExports: { createStyles: () => () => ({ styles: {} }) }
 });
-mock.module(new URL('../../../config/index.ts', import.meta.url).href, {
+mock.module(new URL('../../../../config/index.ts', import.meta.url).href, {
   namedExports: {
     PageAction: { CREATE: 'create', EDIT: 'edit' },
     StatusMaps: {}
   }
 });
-mock.module(new URL('../../../atoms/models.ts', import.meta.url).href, {
+mock.module(new URL('../../../../atoms/models.ts', import.meta.url).href, {
   namedExports: { workerListAtom: atom([]) }
 });
 mock.module(
-  new URL('../../cluster-management/config/index.ts', import.meta.url).href,
+  new URL('../../../cluster-management/config/index.ts', import.meta.url).href,
   {
     namedExports: { ProviderValueMap: { Docker: 'Docker' } }
   }
 );
-mock.module(new URL('../apis/index.ts', import.meta.url).href, {
+mock.module(new URL('../../apis/index.ts', import.meta.url).href, {
   namedExports: {
     resolvePDMode: resolutionRequests,
     queryPDModes: async () => ({ items: modes }),
     queryModelSpanningRoles: async () => null
   }
 });
-mock.module(new URL('../hooks/use-query-backends.ts', import.meta.url).href, {
-  defaultExport: () => ({
-    backendOptions: [],
-    flatBackendOptions: ['vLLM', 'SGLang', 'llama-box'].map((value) => ({
-      value,
-      isBuiltIn: true
-    })),
-    getBackendOptions: async () => {}
-  })
-});
 mock.module(
-  new URL('../hooks/use-form-initial-values.ts', import.meta.url).href,
+  new URL('../../hooks/use-query-backends.ts', import.meta.url).href,
+  {
+    defaultExport: () => ({
+      backendOptions: [],
+      flatBackendOptions: ['vLLM', 'SGLang', 'llama-box'].map((value) => ({
+        value,
+        isBuiltIn: true
+      })),
+      getBackendOptions: async () => {}
+    })
+  }
+);
+mock.module(
+  new URL('../../hooks/use-form-initial-values.ts', import.meta.url).href,
   {
     namedExports: {
       useGenerateGPUOptions: () => ({
@@ -107,7 +110,7 @@ mock.module(
   }
 );
 mock.module(
-  new URL('../services/use-query-context-length.ts', import.meta.url).href,
+  new URL('../../services/use-query-context-length.ts', import.meta.url).href,
   {
     namedExports: { useQueryContextLength: () => ({}) }
   }
@@ -139,11 +142,11 @@ dom.window.matchMedia = (media) => ({
 });
 after(() => dom.window.close());
 const { Form } = await import('antd');
-const { FormContext } = await import('../config/form-context.ts');
+const { FormContext } = await import('../../config/form-context.ts');
 const { createDefaultRoles, rolesFormToPayload } =
-  await import('./roles/transform.ts');
+  await import('../roles/transform.ts');
 let context: any;
-mock.module(new URL('./basic.tsx', import.meta.url).href, {
+mock.module(new URL('../basic.tsx', import.meta.url).href, {
   defaultExport: () => {
     context = useContext(FormContext);
     return [
@@ -172,21 +175,21 @@ const RoleFields = ({ index }: any) =>
       createElement(InputField)
     )
   );
-for (const path of ['./roles/role-form.tsx', './roles/router-form.tsx']) {
+for (const path of ['../roles/role-form.tsx', '../roles/router-form.tsx']) {
   mock.module(new URL(path, import.meta.url).href, {
     defaultExport: RoleFields
   });
 }
 for (const path of [
-  './advance-config.tsx',
-  './performance.tsx',
-  './schedule-type.tsx',
-  './scheduled-scaling.tsx',
-  './gather-locality.tsx'
+  '../advance-config.tsx',
+  '../performance.tsx',
+  '../schedule-type.tsx',
+  '../scheduled-scaling.tsx',
+  '../gather-locality.tsx'
 ]) {
   mock.module(new URL(path, import.meta.url).href, { defaultExport: empty });
 }
-const { default: DataForm } = await import('./index.tsx');
+const { default: DataForm } = await import('../index.tsx');
 
 const renderForm = async (savedRoles = false) => {
   const root = createRoot(dom.window.document.getElementById('root')!);

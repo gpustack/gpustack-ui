@@ -54,20 +54,20 @@ mock.module('@umijs/max', {
 mock.module('antd-style', {
   namedExports: { createStyles: () => () => ({ styles: {} }) }
 });
-mock.module(new URL('../../../config/index.ts', import.meta.url).href, {
+mock.module(new URL('../../../../config/index.ts', import.meta.url).href, {
   namedExports: {
     PageAction: { CREATE: 'create', EDIT: 'edit' },
     StatusMaps: {}
   }
 });
-mock.module(new URL('../../../atoms/models.ts', import.meta.url).href, {
+mock.module(new URL('../../../../atoms/models.ts', import.meta.url).href, {
   namedExports: { workerListAtom: atom([]) }
 });
 mock.module(
-  new URL('../../cluster-management/config/index.ts', import.meta.url).href,
+  new URL('../../../cluster-management/config/index.ts', import.meta.url).href,
   { namedExports: { ProviderValueMap: { Docker: 'Docker' } } }
 );
-mock.module(new URL('../apis/index.ts', import.meta.url).href, {
+mock.module(new URL('../../apis/index.ts', import.meta.url).href, {
   namedExports: {
     resolvePDMode: async () => ({
       mode: 'vllm-nixl',
@@ -80,15 +80,18 @@ mock.module(new URL('../apis/index.ts', import.meta.url).href, {
     queryModelSpanningRoles: async () => null
   }
 });
-mock.module(new URL('../hooks/use-query-backends.ts', import.meta.url).href, {
-  defaultExport: () => ({
-    backendOptions: [],
-    flatBackendOptions: [{ value: 'vLLM', isBuiltIn: true }],
-    getBackendOptions: async () => {}
-  })
-});
 mock.module(
-  new URL('../hooks/use-form-initial-values.ts', import.meta.url).href,
+  new URL('../../hooks/use-query-backends.ts', import.meta.url).href,
+  {
+    defaultExport: () => ({
+      backendOptions: [],
+      flatBackendOptions: [{ value: 'vLLM', isBuiltIn: true }],
+      getBackendOptions: async () => {}
+    })
+  }
+);
+mock.module(
+  new URL('../../hooks/use-form-initial-values.ts', import.meta.url).href,
   {
     namedExports: {
       useGenerateGPUOptions: () => ({
@@ -100,7 +103,7 @@ mock.module(
   }
 );
 mock.module(
-  new URL('../services/use-query-context-length.ts', import.meta.url).href,
+  new URL('../../services/use-query-context-length.ts', import.meta.url).href,
   { namedExports: { useQueryContextLength: () => ({}) } }
 );
 
@@ -134,8 +137,8 @@ dom.window.matchMedia = (media) => ({
 after(() => dom.window.close());
 
 const { Form } = await import('antd');
-const { createDefaultRoles } = await import('./roles/transform.ts');
-mock.module(new URL('./basic.tsx', import.meta.url).href, {
+const { createDefaultRoles } = await import('../roles/transform.ts');
+mock.module(new URL('../basic.tsx', import.meta.url).href, {
   defaultExport: () =>
     [
       'backend',
@@ -187,21 +190,21 @@ const RoleFields = ({ index, cacheDisabledReason }: any) => [
       )
     : [])
 ];
-for (const path of ['./roles/role-form.tsx', './roles/router-form.tsx']) {
+for (const path of ['../roles/role-form.tsx', '../roles/router-form.tsx']) {
   mock.module(new URL(path, import.meta.url).href, {
     defaultExport: RoleFields
   });
 }
 for (const path of [
-  './advance-config.tsx',
-  './performance.tsx',
-  './schedule-type.tsx',
-  './scheduled-scaling.tsx',
-  './gather-locality.tsx'
+  '../advance-config.tsx',
+  '../performance.tsx',
+  '../schedule-type.tsx',
+  '../scheduled-scaling.tsx',
+  '../gather-locality.tsx'
 ]) {
   mock.module(new URL(path, import.meta.url).href, { defaultExport: empty });
 }
-const { default: DataForm } = await import('./index.tsx');
+const { default: DataForm } = await import('../index.tsx');
 
 type CacheLocation = 'model' | 'prefill' | 'decode' | 'all' | 'none';
 const clone = (value: any) => JSON.parse(JSON.stringify(value));

@@ -443,10 +443,25 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
      * user watched being overwritten.
      */
     preservedModelFields.current = null;
+    const clearPD = !PD_ELIGIBLE_BACKENDS.includes(val);
+    if (clearPD) {
+      setPDEffects({
+        enabled: false,
+        mode: null,
+        isCustomMode: false,
+        replicasLocked: false,
+        scalingDisabled: false,
+        clearModelKVCache: false
+      });
+    }
+    // Unmount backend-specific fields before writing the new defaults. With
+    // preserve={false}, role fields can restore initialValues during cleanup
+    // on edit, so clear the entire PD value after that cleanup has finished.
     await new Promise((resolve) => {
       setTimeout(resolve, 100);
     });
     form.setFieldsValue({
+      ...(clearPD ? { roles: null, disaggregation: null } : {}),
       backend_version: null, // don't set default version here, let the user select it
       backend_parameters: option?.default_backend_param || [],
       // An image and its command belong to the backend they were entered for,
@@ -461,25 +476,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       ...updateKVCacheConfig(val, option),
       ...updateGPUSelector(val)
     });
-
-    // Switching to an engine PD does not apply to takes the section away, so
-    // the state it published has to go with it. Turned off HERE rather than
-    // left to the unmount: `pdEffects.enabled` is what decides the rest of the
-    // form's shape — whether Performance and Scheduling exist, whether
-    // `replicas` is locked — and `handleOk` reads it to decide between sending
-    // `roles` and sending `null`. A group left enabled behind a section that
-    // is no longer on screen would submit roles the new engine cannot run,
-    // with nothing visible saying so.
-    if (!PD_ELIGIBLE_BACKENDS.includes(val)) {
-      setPDEffects({
-        enabled: false,
-        mode: null,
-        isCustomMode: false,
-        replicasLocked: false,
-        scalingDisabled: false,
-        clearModelKVCache: false
-      });
-    }
 
     onBackendChange?.(val);
   };

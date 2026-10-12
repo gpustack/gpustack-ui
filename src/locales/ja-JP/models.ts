@@ -720,5 +720,16 @@ export default {
   // does not fit. The `chain.*` group headings are gone with the second chain.
   'models.form.gather.goFill': '入力する',
   'models.form.gather.infeasible.warning':
-    '現在の容量ではこのグループは配置できません。保存すると空きが出るまで待機します。選択肢：「できるだけ近く」に変更（ホストをまたぎ、KV 転送が遅くなる）· レプリカ数またはレプリカあたりの GPU 数を減らす'
+    '現在の容量ではこのグループは配置できません。保存すると空きが出るまで待機します。選択肢：「できるだけ近く」に変更（ホストをまたぎ、KV 転送が遅くなる）· レプリカ数またはレプリカあたりの GPU 数を減らす',
+  'models.pd.membership.dynamic':
+    '動的スケーリングに対応しています。GPUStack は API で Router のメンバーを更新するため、メンバー変更による Router の再構築は不要です。',
+  'models.pd.membership.restart':
+    '動的なメンバー更新には対応していません。スケーリングやメンバーの復旧・再起動後、GPUStack が Router を再構築します。一時的にサービスが停止し、処理中のリクエストが失敗する場合があります。',
+  'models.pd.membership.manual':
+    'この Router はユーザーが管理します。スケーリングやメンバー変更後はアドレスと bootstrap 情報を更新し、必要に応じて Router を再起動してください。',
+  'models.pd.instance.delete.restart':
+    'メンバー再作成後、GPUStack が Router を再構築します。一時的にサービスが停止し、処理中のリクエストが失敗する場合があります。',
+  'models.pd.instance.delete.manual':
+    'GPUStack がメンバーを再作成します。Router のメンバーアドレスと bootstrap 情報を更新し、必要に応じて再起動してください。',
+  'models.pd.membership.updating': 'Router メンバーを読み込み中'
 };

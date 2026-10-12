@@ -720,5 +720,16 @@ export default {
   // does not fit. The `chain.*` group headings are gone with the second chain.
   'models.form.gather.goFill': 'Doldur',
   'models.form.gather.infeasible.warning':
-    'Mevcut kapasiteyle bu grup yerleştirilemez; kaydedildikten sonra yer açılana kadar bekler. Seçenekler: “olabildiğince yakın” seçeneğine geçin (sunuculara yayılabilir, KV aktarımı yavaşlar) · kopya sayısını veya kopya başına GPU sayısını azaltın'
+    'Mevcut kapasiteyle bu grup yerleştirilemez; kaydedildikten sonra yer açılana kadar bekler. Seçenekler: “olabildiğince yakın” seçeneğine geçin (sunuculara yayılabilir, KV aktarımı yavaşlar) · kopya sayısını veya kopya başına GPU sayısını azaltın',
+  'models.pd.membership.dynamic':
+    'Dinamik ölçeklendirme desteklenir. GPUStack, üye değişikliklerinde Router yeniden oluşturmadan API üzerinden üyeleri günceller.',
+  'models.pd.membership.restart':
+    'Dinamik üye güncellemeleri desteklenmez. Ölçeklendirme, üye kurtarma veya yeniden başlatma sonrasında GPUStack Router yeniden oluşturur. Hizmet kısa süreli kesilebilir ve devam eden istekler başarısız olabilir.',
+  'models.pd.membership.manual':
+    'Bu Router sizin tarafınızdan yönetilir. Ölçeklendirme veya üye değişikliklerinden sonra adresleri ve bootstrap bilgilerini güncelleyin; gerekirse Router yeniden başlatın.',
+  'models.pd.instance.delete.restart':
+    'Üye yeniden oluşturulduktan sonra GPUStack Router yeniden oluşturur. Hizmet kısa süreli kesilebilir ve devam eden istekler başarısız olabilir.',
+  'models.pd.instance.delete.manual':
+    'GPUStack üyeyi yeniden oluşturur. Router üye adreslerini ve bootstrap bilgilerini güncelleyin; gerekirse Router yeniden başlatın.',
+  'models.pd.membership.updating': 'Router üyeleri yükleniyor'
 };

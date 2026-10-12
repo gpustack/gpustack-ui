@@ -12,6 +12,9 @@ const mode = {
   transport: 'NIXL',
   backends: ['vLLM'],
   gpu_filters: { vendor: 'nvidia' },
+  router: {
+    membership_update: 'dynamic' as 'dynamic' | 'restart' | 'manual' | undefined
+  },
   roles: { prefill: {}, decode: {} }
 };
 const context = {
@@ -26,11 +29,12 @@ const context = {
 mock.module('@gpustack/core-ui', {
   namedExports: {
     LabelInfo: ({ label }: any) => createElement('span', null, label),
-    Select: ({ value, onChange, options = [], label }: any) =>
+    Select: ({ value, onChange, options = [], label, description }: any) =>
       createElement(
         'select',
         {
           'aria-label': label,
+          title: description,
           value: value ?? '',
           onChange: (event: any) => onChange?.(event.target.value)
         },
@@ -81,20 +85,23 @@ mock.module(new URL('../../apis/index.ts', import.meta.url).href, {
     queryModelSpanningRoles: async () => ({ roles: [], widest_worker_gpus: 1 })
   }
 });
-mock.module(new URL('../../hooks/use-query-pd-modes.ts', import.meta.url).href, {
-  defaultExport: Object.assign(
-    () => ({
-      pdModes: [mode],
-      getPDModes: async () => [mode],
-      buildOptions: () => [
-        { value: mode.name, label: 'NIXL', disabled: false }
-      ],
-      isCustomMode: (name: string) => name === 'custom',
-      findMode: (name: string) => (name === mode.name ? mode : undefined)
-    }),
-    { transportLabel: () => 'NIXL' }
-  )
-});
+mock.module(
+  new URL('../../hooks/use-query-pd-modes.ts', import.meta.url).href,
+  {
+    defaultExport: Object.assign(
+      () => ({
+        pdModes: [mode],
+        getPDModes: async () => [mode],
+        buildOptions: () => [
+          { value: mode.name, label: 'NIXL', disabled: false }
+        ],
+        isCustomMode: (name: string) => name === 'custom',
+        findMode: (name: string) => (name === mode.name ? mode : undefined)
+      }),
+      { transportLabel: () => 'NIXL' }
+    )
+  }
+);
 
 const dom = new JSDOM('<!doctype html><body></body>', {
   url: 'http://localhost/'
@@ -280,6 +287,34 @@ test('a capability restriction still disables enabling PD and explains why', asy
     await rendered.cleanup();
   }
 });
+
+for (const policy of ['dynamic', 'restart', 'manual', undefined] as const) {
+  test(`transport help includes the ${policy ?? 'unknown'} membership policy without a separate notice`, async () => {
+    mode.router.membership_update = policy;
+    const rendered = await renderPD();
+    try {
+      const description = rendered.container
+        .querySelector('select[aria-label="models.form.pd.mode"]')
+        ?.getAttribute('title');
+      assert.equal(
+        description,
+        [
+          'models.form.pd.mode.tips',
+          policy ? `models.pd.membership.${policy}` : undefined
+        ]
+          .filter(Boolean)
+          .join(' ')
+      );
+      assert.equal(
+        rendered.container.textContent?.includes('models.pd.membership.'),
+        false
+      );
+    } finally {
+      await rendered.cleanup();
+      mode.router.membership_update = 'dynamic';
+    }
+  });
+}
 
 for (const roles of [undefined, null, []]) {
   test(`membership role conversion accepts ${JSON.stringify(roles)} when PD is disabled`, async () => {

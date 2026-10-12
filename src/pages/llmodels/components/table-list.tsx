@@ -57,13 +57,14 @@ import {
 import useEditDeployment from '../hooks/use-edit-deployment';
 import useExportDeployments from '../hooks/use-export-deployments';
 import useModelsColumns from '../hooks/use-models-columns';
+import { fetchCatalog } from '../hooks/use-query-pd-modes';
 import useRestartModel from '../hooks/use-restart-model';
 import { useBenchmarkTargetInstance } from '../hooks/use-run-benchmark';
 import useViewInstanceLogs from '../hooks/use-view-instance-logs';
 import LeftFilters from '../instance-view/left-filters';
 import { getDeploymentFormReplicas } from '../utils/deployment-lifecycle';
-import { getReplicasUpdate } from '../utils/manual-scaling';
 import { instanceDeleteMessages } from '../utils/instance-recreation';
+import { getReplicasUpdate } from '../utils/manual-scaling';
 import DeployModal from './deployment/deploy-modal';
 import ImportYamlModal from './deployment/import-yaml-modal';
 import useModelRevisions from './deployment/revisions/hooks/use-model-revisions';
@@ -402,7 +403,11 @@ const Models: React.FC<ModelsProps> = ({
   const handleDeleteInstace = async (row: ModelInstanceListItem) => {
     try {
       const model = await queryModelDetail(row.model_id);
-      const { okText, tip } = instanceDeleteMessages(model);
+      const modes = model.roles?.length ? await fetchCatalog() : [];
+      const { okText, tip } = instanceDeleteMessages(
+        model,
+        modes.find((mode) => mode.name === model.disaggregation?.mode)
+      );
       modalRef.current?.show({
         content: 'models.instances',
         okText,

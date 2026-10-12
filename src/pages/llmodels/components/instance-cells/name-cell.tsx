@@ -1,3 +1,6 @@
+import InstanceInfoCard, {
+  type InstanceInfoRow as InfoRowProps
+} from '@/pages/_components/instance-info-card';
 import { convertFileSize } from '@/utils';
 import {
   AimOutlined,
@@ -9,8 +12,7 @@ import {
 } from '@ant-design/icons';
 import { AutoTooltip, IconFont, TextAttribute } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Flex, Tooltip } from 'antd';
-import { createStyles } from 'antd-style';
+import { Tooltip } from 'antd';
 import _ from 'lodash';
 import React, { useEffect } from 'react';
 import { CACHE_METRICS_WINDOW } from '../../config';
@@ -40,81 +42,6 @@ export interface NameCellProps {
   };
 }
 
-// Every colour here is a `--color-white-*` token rather than `--ant-color-text-*`:
-// the card lives inside a Tooltip, whose background stays dark in both themes.
-// Same pair the distributed-servers table uses, so the two popups on one row read
-// alike — label at tertiary, value at secondary.
-const useStyles = createStyles(({ css }) => ({
-  card: css`
-    min-width: 240px;
-    font-size: 13px;
-    line-height: 1.5;
-
-    .divider {
-      margin: 10px 0;
-      border-top: 1px solid var(--color-white-light-1);
-    }
-    .label {
-      flex: none;
-      color: var(--color-white-tertiary);
-    }
-    .label .anticon {
-      font-size: 12px;
-      color: var(--color-white-quaternary);
-    }
-    /* Right column: values hug the right edge so they line up. */
-    .value {
-      color: var(--color-white-secondary);
-      word-break: break-all;
-      text-align: right;
-    }
-    .hint {
-      font-size: 12px;
-      color: var(--color-white-quaternary);
-      text-align: right;
-    }
-    .metric-unit {
-      margin-left: 4px;
-      font-size: 12px;
-      font-weight: 400;
-      color: var(--color-white-tertiary);
-    }
-  `
-}));
-
-interface InfoRowProps {
-  label: string;
-  icon: React.ReactNode;
-  value: React.ReactNode;
-  // values the label's own message interpolates (e.g. the window a rate
-  // was measured over)
-  labelValues?: Record<string, string | number>;
-  // a subordinate line under the value (e.g. how a total is spread)
-  hint?: React.ReactNode;
-}
-
-const InfoRow: React.FC<InfoRowProps> = ({
-  label,
-  icon,
-  value,
-  labelValues,
-  hint
-}) => {
-  const intl = useIntl();
-  return (
-    <Flex vertical gap={2}>
-      <Flex align="flex-start" justify="space-between" gap={16}>
-        <Flex align="center" gap={6} className="label">
-          {icon}
-          <span>{intl.formatMessage({ id: label }, labelValues)}</span>
-        </Flex>
-        <span className="value">{value}</span>
-      </Flex>
-      {hint && <span className="hint">{hint}</span>}
-    </Flex>
-  );
-};
-
 // A rate the engine reported; null means it looked nothing up in the
 // window (an idle instance), which is not a zero-percent hit rate.
 const formatHitRate = (value: number | null | undefined) =>
@@ -126,7 +53,6 @@ const WorkerInfoContent: React.FC<NameCellProps> = ({
   cacheHitRate
 }) => {
   const intl = useIntl();
-  const { styles } = useStyles();
 
   // vGPU (InstanceType) allocation; empty for non-vGPU instances.
   const gpuTypeSelector = getGPUTypeSelector(record, modelData);
@@ -280,23 +206,8 @@ const WorkerInfoContent: React.FC<NameCellProps> = ({
       : [])
   ];
 
-  const groups = [backendRows, workerRows, gpuRows, cacheRows].filter(
-    (rows) => rows.length > 0
-  );
-
   return (
-    <div className={styles.card}>
-      {groups.map((rows, index) => (
-        <React.Fragment key={rows[0].label}>
-          {index > 0 && <div className="divider"></div>}
-          <Flex vertical gap={6}>
-            {rows.map((row) => (
-              <InfoRow key={row.label} {...row}></InfoRow>
-            ))}
-          </Flex>
-        </React.Fragment>
-      ))}
-    </div>
+    <InstanceInfoCard groups={[backendRows, workerRows, gpuRows, cacheRows]} />
   );
 };
 

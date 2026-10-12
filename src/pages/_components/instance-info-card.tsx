@@ -1,0 +1,88 @@
+import { useIntl } from '@umijs/max';
+import { Flex } from 'antd';
+import { createStyles } from 'antd-style';
+import React from 'react';
+
+// Tooltip backgrounds stay dark in both themes, so their content uses
+// white foreground tokens rather than the page's themed text colours.
+const useStyles = createStyles(({ css }) => ({
+  card: css`
+    min-width: 240px;
+    font-size: 13px;
+    line-height: 1.5;
+
+    .divider {
+      margin: 10px 0;
+      border-top: 1px solid var(--color-white-light-1);
+    }
+    .label {
+      flex: none;
+      color: var(--color-white-tertiary);
+    }
+    .label .anticon {
+      font-size: 12px;
+      color: var(--color-white-quaternary);
+    }
+    .value {
+      color: var(--color-white-secondary);
+      word-break: break-all;
+      text-align: right;
+    }
+    .hint {
+      font-size: 12px;
+      color: var(--color-white-quaternary);
+      text-align: right;
+    }
+    .metric-unit {
+      margin-left: 4px;
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--color-white-tertiary);
+    }
+  `
+}));
+
+export interface InstanceInfoRow {
+  label: string;
+  icon: React.ReactNode;
+  value: React.ReactNode;
+  labelValues?: Record<string, string | number>;
+  hint?: React.ReactNode;
+}
+
+const InstanceInfoCard: React.FC<{ groups: InstanceInfoRow[][] }> = ({
+  groups
+}) => {
+  const intl = useIntl();
+  const { styles } = useStyles();
+
+  return (
+    <div className={styles.card}>
+      {groups
+        .filter((rows) => rows.length > 0)
+        .map((rows, index) => (
+          <React.Fragment key={rows[0].label}>
+            {index > 0 && <div className="divider" />}
+            <Flex vertical gap={6}>
+              {rows.map(({ label, icon, value, labelValues, hint }) => (
+                <Flex vertical gap={2} key={label}>
+                  <Flex align="flex-start" justify="space-between" gap={16}>
+                    <Flex align="center" gap={6} className="label">
+                      {icon}
+                      <span>
+                        {intl.formatMessage({ id: label }, labelValues)}
+                      </span>
+                    </Flex>
+                    <span className="value">{value}</span>
+                  </Flex>
+                  {hint && <span className="hint">{hint}</span>}
+                </Flex>
+              ))}
+            </Flex>
+          </React.Fragment>
+        ))}
+    </div>
+  );
+};
+
+export default InstanceInfoCard;

@@ -1,3 +1,4 @@
+import InstanceInfoCard from '@/pages/_components/instance-info-card';
 import {
   HddFilled,
   InfoCircleOutlined,
@@ -8,6 +9,7 @@ import {
   AutoTooltip,
   DropdownButtons,
   ExpandedRowGrid,
+  IconFont,
   StatusTag,
   type ChildGridOptions
 } from '@gpustack/core-ui';
@@ -44,10 +46,7 @@ interface InstanceRowsProps extends Pick<
   onViewLogs: (service: ListItem, instance: CacheServiceInstanceItem) => void;
 }
 
-// info tooltip next to the instance name, laid out like the model instance
-// tooltip: the worker name leads on its own, the endpoint follows with an
-// icon and no label, and every other field is an icon plus its label.
-// Shared with the detail page's instances table.
+// Keep the same grouped label/value layout as deployment instance details.
 export const InstanceInfoContent: React.FC<{
   item: CacheServiceInstanceItem;
   workerName?: string;
@@ -55,25 +54,48 @@ export const InstanceInfoContent: React.FC<{
   version?: string;
   ramSize?: number;
 }> = ({ item, workerName, workerIp, version, ramSize }) => {
-  const intl = useIntl();
   return (
-    <div>
-      <div>{workerName || '-'}</div>
-      <div className="flex-center">
-        <HddFilled className="m-r-5" />
-        {workerIp && item.port ? `${workerIp}:${item.port}` : '-'}
-      </div>
-      <div className="flex-center">
-        <ThunderboltFilled className="m-r-5" />
-        {intl.formatMessage({ id: 'kvCache.form.version' })}: {version || '-'}
-      </div>
-      {!!ramSize && (
-        <div className="flex-center">
-          <PieChartFilled className="m-r-5" />
-          {intl.formatMessage({ id: 'kvCache.detail.capacity' })}: {ramSize} GiB
-        </div>
-      )}
-    </div>
+    <InstanceInfoCard
+      groups={[
+        [
+          {
+            label: 'kvCache.form.version',
+            icon: <ThunderboltFilled />,
+            value: version || '-'
+          }
+        ],
+        [
+          {
+            label: 'kvCache.table.worker',
+            icon: <IconFont type="icon-server-fill" />,
+            value: workerName || '-'
+          },
+          {
+            label: 'models.instance.workerip',
+            icon: <HddFilled />,
+            value: workerIp
+              ? item.port
+                ? `${workerIp}:${item.port}`
+                : workerIp
+              : '-'
+          }
+        ],
+        ramSize
+          ? [
+              {
+                label: 'kvCache.detail.capacity',
+                icon: <PieChartFilled />,
+                value: (
+                  <>
+                    {ramSize}
+                    <span className="metric-unit">GiB</span>
+                  </>
+                )
+              }
+            ]
+          : []
+      ]}
+    />
   );
 };
 
@@ -191,8 +213,7 @@ const InstanceRows: React.FC<InstanceRowsProps> = ({
                 }
                 styles={{
                   container: {
-                    width: 'max-content',
-                    maxWidth: '400px'
+                    width: 'max-content'
                   }
                 }}
               >

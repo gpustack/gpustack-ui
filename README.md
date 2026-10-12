@@ -52,7 +52,7 @@ Run all Node.js tests, or select files and directories relative to the project r
 ```sh
 pnpm test
 pnpm test src/pages/llmodels
-pnpm test src/pages/llmodels/forms/pd-backend-change.test.mts
+pnpm test src/pages/llmodels/forms/__tests__/pd-backend-change.test.mts
 ```
 
 Tests named `*.test.ts`, `*.test.tsx`, `*.test.mts`, or `*.test.mjs` under `src/` and `scripts/` are discovered automatically. Adding a test does not require changing `package.json`. PR CI runs the full suite with the same `pnpm test` command after the build, regardless of which modules changed.

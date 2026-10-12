@@ -1408,7 +1408,7 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
                   borderColor: 'var(--ant-color-info-border)'
                 }}
                 ellipsis={false}
-                contentStyle={{ maxHeight: 'none' }}
+                contentStyle={{ maxHeight: 'none', paddingLeft: 0 }}
                 message={intl.formatMessage({
                   id: 'models.form.pd.mode.custom.tips'
                 })}

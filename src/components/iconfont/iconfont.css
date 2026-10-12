@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 4613488 */
-  src: url('iconfont.woff2?t=1790596956404') format('woff2'),
-       url('iconfont.woff?t=1790596956404') format('woff'),
-       url('iconfont.ttf?t=1790596956404') format('truetype');
+  src: url('iconfont.woff2?t=1791786108838') format('woff2'),
+       url('iconfont.woff?t=1791786108838') format('woff'),
+       url('iconfont.ttf?t=1791786108838') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,110 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-alt-route:before {
+  content: "\e740";
+}
+
+.icon-builtIn:before {
+  content: "\e741";
+}
+
+.icon-rule_settings:before {
+  content: "\e73b";
+}
+
+.icon-track:before {
+  content: "\e73c";
+}
+
+.icon-history-setting:before {
+  content: "\e73d";
+}
+
+.icon-advance:before {
+  content: "\e73e";
+}
+
+.icon-user_group:before {
+  content: "\e73f";
+}
+
+.icon-edit_line:before {
+  content: "\e730";
+}
+
+.icon-home:before {
+  content: "\e72e";
+}
+
+.icon-docs:before {
+  content: "\e737";
+}
+
+.icon-category_24dp_1F1F1F_FILL0_wght300_GRAD0_opsz24:before {
+  content: "\e738";
+}
+
+.icon-category_24dp_1F1F1F_FILL1_wght300_GRAD0_opsz24:before {
+  content: "\e739";
+}
+
+.icon-billing-outlined:before {
+  content: "\e73a";
+}
+
+.icon-leaderboard_24dp_1F1F1F_FILL1_wght300_GRAD0_opsz24:before {
+  content: "\e732";
+}
+
+.icon-edit-outlined:before {
+  content: "\e734";
+}
+
+.icon-usage-outlined01:before {
+  content: "\e735";
+}
+
+.icon-home_storage_24dp_1F1F1F_FILL0_wght300_GRAD0_opsz2:before {
+  content: "\e736";
+}
+
+.icon-layers-filled:before {
+  content: "\e727";
+}
+
+.icon-edit_document_24dp_1F1F1F_FILL0_wght300_GRAD0_opsz:before {
+  content: "\e728";
+}
+
+.icon-backend-filled:before {
+  content: "\e729";
+}
+
+.icon-home_storage_24dp_1F1F1F_FILL1_wght300_GRAD0_opsz2:before {
+  content: "\e72a";
+}
+
+.icon-layers:before {
+  content: "\e72b";
+}
+
+.icon-backend:before {
+  content: "\e72c";
+}
+
+.icon-dashboard-02:before {
+  content: "\e72d";
+}
+
+.icon-billing-filled:before {
+  content: "\e72f";
+}
+
+.icon-dashboard-filled-02:before {
+  content: "\e731";
 }
 
 .icon-notification-outlined:before {
@@ -93,11 +197,11 @@
   content: "\e710";
 }
 
-.icon-billing-outlined:before {
+.icon-billing:before {
   content: "\e70d";
 }
 
-.icon-billing-filled:before {
+.icon-billing-filled-02:before {
   content: "\e70e";
 }
 
@@ -529,11 +633,11 @@
   content: "\e6ad";
 }
 
-.icon-backend-filled:before {
+.icon-backend-filled-02:before {
   content: "\e6a9";
 }
 
-.icon-backend:before {
+.icon-backend-outlined:before {
   content: "\e6aa";
 }
 
@@ -789,11 +893,11 @@
   content: "\e678";
 }
 
-.icon-layers-filled:before {
+.icon-layers-filled-01:before {
   content: "\e671";
 }
 
-.icon-layers:before {
+.icon-layers-outlined:before {
   content: "\e673";
 }
 

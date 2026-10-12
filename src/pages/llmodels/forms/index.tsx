@@ -304,7 +304,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           {
             value: TABKeysMap.PD,
             label: intl.formatMessage({ id: 'models.form.pd.section' }),
-            icon: <IconFont type="icon-model" />,
+            icon: <IconFont type="icon-alt-route" />,
             field: pdEffects.enabled ? 'roles' : 'pdMode'
           }
         ]
@@ -335,14 +335,14 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           {
             value: TABKeysMap.SCHEDULING,
             label: intl.formatMessage({ id: 'models.form.scheduling' }),
-            icon: <IconFont type="icon-model" />,
+            icon: <IconFont type="icon-rule_settings" />,
             field: 'scheduleType'
           }
         ]),
     {
       value: TABKeysMap.ADVANCED,
       label: intl.formatMessage({ id: 'resources.form.advanced' }),
-      icon: <IconFont type="icon-settings" />,
+      icon: <IconFont type="icon-advance" />,
       field: 'categories'
     }
   ];
@@ -361,7 +361,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
 
     return {
       top: 50,
-      offsetTop: 146
+      offsetTop: 96
     };
   }, [source, formKey, action]);
 

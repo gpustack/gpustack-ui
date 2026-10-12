@@ -5,12 +5,7 @@ import externalLinks from '@/constants/external-links';
 import { logout } from '@/pages/login/apis';
 import { getGPUStackPlugin } from '@/plugins';
 import { useModel } from '@@/plugin-model';
-import {
-  DiscordOutlined,
-  GithubOutlined,
-  HomeOutlined,
-  ReadOutlined
-} from '@ant-design/icons';
+import { DiscordOutlined, GithubOutlined } from '@ant-design/icons';
 import { DropdownActions, IconFont, useBodyScroll } from '@gpustack/core-ui';
 import { history, useIntl, useNavigate } from '@umijs/max';
 import { Avatar, Button, Divider, Modal } from 'antd';
@@ -249,7 +244,7 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
   const helpList = [
     {
       key: 'site',
-      icon: <HomeOutlined />,
+      icon: <IconFont type="icon-home"></IconFont>,
       label: 'GPUStack',
       url: externalLinks.site
     },
@@ -273,7 +268,7 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
     },
     {
       key: 'docs',
-      icon: <ReadOutlined />,
+      icon: <IconFont type="icon-docs"></IconFont>,
       label: intl.formatMessage({ id: 'common.button.docs' }),
       url: externalLinks.documentation
     },

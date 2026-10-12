@@ -512,7 +512,7 @@ export default {
   'models.form.pd.mode.tips':
     '接続関連のパラメータ（connector・ポート・対向アドレス）はすべて選択したモードから導出されます。手動設定は不要です。',
   'models.form.pd.mode.custom.tips':
-    'カスタムモードでは接続パラメータを一切注入しません。--kv-transfer-config、ポート、対向アドレスを自身で指定してください。',
+    'カスタムモードでは PD 接続は自動設定されません。各ロールの KV 転送設定、相互接続ポート、対向アドレスを手動で設定してください。',
   'models.form.pd.mode.backend.mismatch':
     '{targets} が必要ですが、現在のエンジンは {backend} です。ロール間でエンジンを混在させる場合は「カスタム」モードを選択してください。',
   'models.form.pd.mode.runtime.mismatch':

@@ -509,7 +509,7 @@ export default {
   'models.form.pd.mode.tips':
     'Every connection-state parameter - connector, ports, peer addresses - is derived from the selected mode. None of them is configured by hand.',
   'models.form.pd.mode.custom.tips':
-    'Custom mode injects nothing: you must supply --kv-transfer-config, the ports and the peer addresses yourself.',
+    'Custom mode does not automatically configure PD connections. Configure the KV transfer settings, interconnection ports, and peer addresses for each role yourself.',
   'models.form.pd.mode.backend.mismatch':
     'Requires {targets}; the selected engine is {backend}. Mixing engines across roles needs the Custom mode.',
   'models.form.pd.mode.runtime.mismatch':

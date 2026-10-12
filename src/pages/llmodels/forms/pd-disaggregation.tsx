@@ -31,10 +31,6 @@ import useQueryPDModes, { transportLabel } from '../hooks/use-query-pd-modes';
 import { pdBackendVersionWarning } from '../utils/pd-cache-services';
 import { createDefaultRoles, rolesFormToPayload } from './roles/transform';
 
-// 1 prefill + 1 decode is the smallest group that can exist, so a cluster with
-// fewer usable cards than this cannot run PD at all.
-const PD_MIN_GPUS = 2;
-
 // Form.Item must receive the change only after the user accepts any cache
 // cleanup, otherwise it hides the cache controls before confirmation.
 const PDTransportSelect: React.FC<
@@ -49,6 +45,7 @@ const PDTransportSelect: React.FC<
     }
   />
 );
+
 
 // Bordered block whose switch sits in the title row, like the Scheduled Scaling
 // and GPU-allocation sections of the same form.
@@ -230,8 +227,7 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
   const form = Form.useFormInstance<FormData>();
   const { getRuleMessage } = useAppUtils();
   const [modal, modalContext] = Modal.useModal();
-  const { isGGUF, clusterList, flatBackendOptions, onValuesChange } =
-    useFormContext();
+  const { isGGUF, flatBackendOptions, onValuesChange } = useFormContext();
   const { pdModes, getPDModes, buildOptions, isCustomMode, findMode } =
     useQueryPDModes();
   const workerList = useAtomValue(workerListAtom);
@@ -318,22 +314,13 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
   // block goes rather than offering a mode that cannot run.
   const ggufBlocked = !!isGGUF || backend === backendOptionsMap.llamaBox;
 
-  // A cluster with no ready worker publishes no usable GPU whatever its
-  // inventory says. Unknown (options still loading, or nothing picked yet) is
-  // not "too few" — it must not disable the block.
-  const cluster = clusterList?.find((item) => item.value === clusterId);
-  const usableGpus = cluster
-    ? (cluster.ready_workers ?? 0) > 0
-      ? (cluster.gpus ?? 0)
-      : 0
-    : null;
-  const gpuLabel = intl.formatMessage({ id: 'menu.resources.gpus' });
-
   /**
    * Reasons PD *cannot* run at all, which is the only thing that may disable
    * the switch. Both are statements about capability, not about today's
    * occupancy: llama-box has no PD recipe in existence, and `disabledReason`
    * is passed in by a caller that knows the form cannot offer it.
+   * Capacity comes from the backend's per-member resource evaluation;
+   * prefill and decode can share a physical GPU.
    */
   const blockedReason =
     disabledReason ||
@@ -341,32 +328,6 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
       ? intl.formatMessage({ id: 'models.form.pd.disabled.gguf' })
       : '');
   const blocked = !!blockedReason;
-
-  /**
-   * Not enough free accelerators for the smallest group — a warning, never a
-   * gate.
-   *
-   * 🔴 It used to disable the switch, and that was wrong twice over. It
-   * contradicted this very form, where every other capacity shortfall is
-   * non-blocking: pick a gather tier nothing can hold and it saves, with
-   * «保存后组会一直等待，直到有空位». And it was self-defeating — the message
-   * tells the operator to reduce replicas or change the card type, and both
-   * of those live *behind* the switch it was holding shut.
-   *
-   * Capacity is also the most temporary fact on this screen: a group
-   * configured now and admitted when a node frees up is an ordinary
-   * workflow, not a mistake to be prevented.
-   */
-  const capacityShortfall =
-    usableGpus !== null && usableGpus < PD_MIN_GPUS
-      ? intl.formatMessage(
-          { id: 'models.pd.admission.infeasible' },
-          {
-            required: `${PD_MIN_GPUS} ${gpuLabel}`,
-            available: `${usableGpus} ${gpuLabel}`
-          }
-        )
-      : '';
 
   // Recipes, not eligibility. Whether the engine can be disaggregated at all
   // was decided before this block rendered — `PD_ELIGIBLE_BACKENDS` at the
@@ -1210,17 +1171,12 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
         />
       </Flex>
     );
-    /* The reason has to be reachable, and a disabled Switch never receives
-       hover on touch — so the tooltip wraps the label too, which is not
-       disabled.
-
-       Carries the capacity shortfall as well, which no longer disables
-       anything: the operator can turn PD on regardless, and this is where
-       they find out the group will wait for room. Once it is on, the body
-       repeats it as a standing note — a tooltip is for the moment before the
-       decision, not for living with its consequence. */
-    const hint = blockedReason || capacityShortfall;
-    const withHint = hint ? <Tooltip title={hint}>{toggle}</Tooltip> : toggle;
+    // Wrap the label too so a disabled switch's capability reason stays reachable.
+    const withHint = blockedReason ? (
+      <Tooltip title={blockedReason}>{toggle}</Tooltip>
+    ) : (
+      toggle
+    );
     /* Wrapped in a `Form.Item` with no `name`, purely for layout.
      *
      * 🔴 Hand-written margins did not work here. Every neighbour is a
@@ -1400,15 +1356,7 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
                 })}
               />
             )}
-            {/* The capacity shortfall, repeated here as a standing note.
-                The switch's tooltip said it once, before the decision; this
-                is what the operator lives with afterwards, and it is the
-                only place that survives a reopened drawer. Warning-coloured
-                but non-blocking — the group saves and waits for room, the
-                same as every other capacity shortfall in this form. */}
-            {capacityShortfall && (
-              <div className="note note-warning">{capacityShortfall}</div>
-            )}
+
             {/* §2.5.4: P(same host) = 1/x, and it depends on neither the
                 topology nor the gather choice — so at 8P8D even a perfectly
                 declared fabric pairs on-host about 12% of the time. Told here

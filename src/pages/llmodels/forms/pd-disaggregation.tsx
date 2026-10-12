@@ -5,7 +5,7 @@ import {
   useAppUtils
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Flex, Form, Switch, Tooltip } from 'antd';
+import { Flex, Form, Modal, Switch, Tooltip } from 'antd';
 import { createStyles } from 'antd-style';
 import { useAtomValue } from 'jotai';
 import React, { useEffect, useRef, useState } from 'react';
@@ -34,6 +34,21 @@ import { createDefaultRoles, rolesFormToPayload } from './roles/transform';
 // 1 prefill + 1 decode is the smallest group that can exist, so a cluster with
 // fewer usable cards than this cannot run PD at all.
 const PD_MIN_GPUS = 2;
+
+// Form.Item must receive the change only after the user accepts any cache
+// cleanup, otherwise it hides the cache controls before confirmation.
+const PDTransportSelect: React.FC<
+  React.ComponentProps<typeof SealSelect> & {
+    onModeChange: (value: string, commit: () => void) => void;
+  }
+> = ({ onChange, onModeChange, ...props }) => (
+  <SealSelect
+    {...props}
+    onChange={(value, option) =>
+      onModeChange(value, () => onChange?.(value, option))
+    }
+  />
+);
 
 // Bordered block whose switch sits in the title row, like the Scheduled Scaling
 // and GPU-allocation sections of the same form.
@@ -214,6 +229,7 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
   const { styles } = useStyles();
   const form = Form.useFormInstance<FormData>();
   const { getRuleMessage } = useAppUtils();
+  const [modal, modalContext] = Modal.useModal();
   const { isGGUF, clusterList, flatBackendOptions, onValuesChange } =
     useFormContext();
   const { pdModes, getPDModes, buildOptions, isCustomMode, findMode } =
@@ -700,7 +716,22 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
     onValuesChange?.({}, form.getFieldsValue());
   };
 
-  const handleModeChange = (value: string) => {
+  const clearKVCache = () => {
+    form.setFieldValue('extended_kv_cache', { enabled: false });
+    const currentRoles: RoleFormItem[] = form.getFieldValue('roles') || [];
+    currentRoles.forEach((_role, index) => {
+      form.setFieldValue(['roles', index, 'extended_kv_cache'], {
+        enabled: false
+      });
+    });
+  };
+
+  const applyModeChange = async (value: string, commit: () => void) => {
+    const clearCache = isCustomMode(value);
+    if (clearCache) {
+      clearKVCache();
+    }
+    commit();
     // The notice has done its job once a mode is chosen again. Cleared through
     // the same channel it arrived on — this runs in the body, whose
     // `notifyEffects` reaches nobody, so `onModeChange` below is what the
@@ -724,6 +755,42 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
      * mount point knows better than the switch does.
      */
     onModeChange?.(value ?? null, findMode(value));
+    if (clearCache) {
+      // preserve={false} restores saved initialValues when cache fields
+      // unmount. Clear again after that cleanup, before closing the dialog.
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      if (form.getFieldValue(['disaggregation', 'mode']) !== value) {
+        return;
+      }
+      clearKVCache();
+      onValuesChange?.({}, form.getFieldsValue());
+    }
+  };
+
+  const handleModeChange = (value: string, commit: () => void) => {
+    // A pending automatic resolution must not overwrite the user's choice.
+    resolveSession.current += 1;
+    const currentRoles: RoleFormItem[] = form.getFieldValue('roles') || [];
+    const hasCache =
+      form.getFieldValue(['extended_kv_cache', 'enabled']) ||
+      currentRoles.some((role) => role.extended_kv_cache?.enabled);
+    if (isCustomMode(value) && hasCache) {
+      modal.confirm({
+        title: intl.formatMessage({
+          id: 'models.form.pd.mode.custom.confirm.title'
+        }),
+        content: intl.formatMessage({
+          id: 'models.form.pd.mode.custom.confirm.content'
+        }),
+        okText: intl.formatMessage({
+          id: 'models.form.pd.mode.custom.confirm.ok'
+        }),
+        cancelText: intl.formatMessage({ id: 'common.button.cancel' }),
+        onOk: () => applyModeChange(value, commit)
+      });
+      return;
+    }
+    void applyModeChange(value, commit);
   };
 
   // ---- role-derived reflections -----------------------------------------
@@ -1153,6 +1220,7 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
 
   return (
     <div className={styles.sectionCard} data-field="pdMode">
+      {modalContext}
       {active && (
         <>
           {/* The toggle's own state, registered only while on so the off
@@ -1271,7 +1339,7 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
               }
             ]}
           >
-            <SealSelect
+            <PDTransportSelect
               required
               // No placeholder: this field's label floats *inside* the input,
               // so an empty value renders the label and the placeholder on
@@ -1284,8 +1352,8 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
               options={visibleModeOptions}
               optionRender={modeOptionRender}
               labelRender={modeLabelRender}
-              onChange={handleModeChange}
-            ></SealSelect>
+              onModeChange={handleModeChange}
+            ></PDTransportSelect>
           </Form.Item>
           <Flex vertical gap={4}>
             {/* The capacity shortfall, repeated here as a standing note.

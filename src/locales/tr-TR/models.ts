@@ -568,6 +568,10 @@ export default {
   'models.form.roles.cache.holder': 'Kullanılmıyor',
   'models.form.roles.cache.tips':
     'Bağlantı yöntemi ve öncelik sırası sistem tarafından türetilir; ayar gerekmez.',
+  'models.form.pd.mode.custom.confirm.title': 'Özel moda geçilsin mi?',
+  'models.form.pd.mode.custom.confirm.content':
+    'Özel mod, GPUStack tarafından yönetilen KV önbelleğini desteklemez. Önbellek devre dışı bırakılsın ve model ile tüm rollerin önbellek ayarları temizlensin mi? Değişiklikler kaydettiğinizde uygulanır.',
+  'models.form.pd.mode.custom.confirm.ok': 'Önbelleği Devre Dışı Bırak ve Geç',
   'models.form.roles.cache.custom.conflict':
     'Özel PD modunda motor parametrelerinde --kv-transfer-config gerekir; bu nedenle önbellek servisi de seçilemez.',
   'models.form.roles.cache.param.conflict':

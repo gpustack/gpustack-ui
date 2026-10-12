@@ -523,6 +523,10 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       // `data` stays as the model-level half: those fields ARE registered, and
       // it is the shape the rest of this function already works from.
       allValues.roles = rolesFormToPayload(form.getFieldValue('roles'), data);
+      // The model-level cache fields are unmounted under PD. Send the store's
+      // value even after switching back to a built-in mode, so the confirmed
+      // cleanup also clears the saved model-level cache on edit.
+      allValues.extended_kv_cache = form.getFieldValue('extended_kv_cache');
     } else {
       allValues.roles = null;
       allValues.disaggregation = null;

@@ -18,7 +18,7 @@ export default defineConfig([
     'src/components/iconfont/'
   ]),
   {
-    files: ['**/*.{ts,tsx,js,jsx}'],
+    files: ['**/*.{ts,tsx,js,jsx,mjs}'],
     extends: [
       js.configs.recommended,
       tseslint.configs.recommended,

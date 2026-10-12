@@ -1,5 +1,7 @@
 import { workerListAtom } from '@/atoms/models';
+import { InfoCircleFilled } from '@ant-design/icons';
 import {
+  AlertBlockInfo,
   LabelInfo,
   Select as SealSelect,
   useAppUtils
@@ -1392,6 +1394,26 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
             ></PDTransportSelect>
           </Form.Item>
           <Flex vertical gap={4}>
+            {isCustomMode(mode) && (
+              <AlertBlockInfo
+                type="info"
+                icon={
+                  <InfoCircleFilled
+                    style={{ color: 'var(--ant-color-info-text)' }}
+                  />
+                }
+                // core-ui's current block has no default palette for info.
+                style={{
+                  backgroundColor: 'var(--ant-color-info-bg)',
+                  borderColor: 'var(--ant-color-info-border)'
+                }}
+                ellipsis={false}
+                contentStyle={{ maxHeight: 'none' }}
+                message={intl.formatMessage({
+                  id: 'models.form.pd.mode.custom.tips'
+                })}
+              />
+            )}
             {/* The capacity shortfall, repeated here as a standing note.
                 The switch's tooltip said it once, before the decision; this
                 is what the operator lives with afterwards, and it is the
@@ -1426,13 +1448,6 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
             {pdCapableBackend && onlyCustomLeft && (
               <div className="note">
                 {intl.formatMessage({ id: 'models.form.pd.mode.only.custom' })}
-              </div>
-            )}
-            {isCustomMode(mode) && (
-              <div className="note">
-                {intl.formatMessage({
-                  id: 'models.form.pd.mode.custom.tips'
-                })}
               </div>
             )}
             {cacheCleared && (

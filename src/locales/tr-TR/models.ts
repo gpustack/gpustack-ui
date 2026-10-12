@@ -511,7 +511,7 @@ export default {
   'models.form.pd.mode.tips':
     'Bağlantı durumu parametrelerinin tümü - connector, portlar, karşı taraf adresleri - seçilen moddan türetilir; elle ayarlanmaz.',
   'models.form.pd.mode.custom.tips':
-    'Özel modda hiçbir bağlantı parametresi eklenmez: --kv-transfer-config, portlar ve karşı taraf adreslerini kendiniz vermelisiniz.',
+    'Özel modda PD bağlantıları otomatik olarak yapılandırılmaz. Her rol için KV aktarım ayarlarını, roller arası bağlantı portlarını ve karşı taraf adreslerini kendiniz yapılandırın.',
   'models.form.pd.mode.backend.mismatch':
     '{targets} gerekiyor; seçili motor {backend}. Roller arasında motor karıştırmak için Özel modu kullanın.',
   'models.form.pd.mode.runtime.mismatch':

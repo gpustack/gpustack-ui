@@ -483,7 +483,7 @@ export default {
   'models.form.pd.mode.tips':
     '连接态参数（connector、端口、对端地址）全部由所选模式推导，无需手工配置。',
   'models.form.pd.mode.custom.tips':
-    '自定义模式下系统不注入任何连接参数，需自行提供 --kv-transfer-config、端口与对端地址。',
+    '自定义模式不会自动配置 PD 连接。请自行设置各角色的 KV 传输参数、互联端口和对端地址。',
   'models.form.pd.mode.backend.mismatch':
     '需要 {targets}，当前引擎是 {backend}。跨角色混用引擎请选「自定义」模式。',
   'models.form.pd.mode.runtime.mismatch':

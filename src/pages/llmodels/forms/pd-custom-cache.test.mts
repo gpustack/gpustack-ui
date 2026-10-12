@@ -17,6 +17,7 @@ const modes = [
 ];
 mock.module('@gpustack/core-ui', {
   namedExports: {
+    AlertBlockInfo: ({ message }: any) => createElement('div', null, message),
     CollapsePanel: ({ items }: any) =>
       items.map((item: any) =>
         createElement(Fragment, { key: item.key }, item.children)

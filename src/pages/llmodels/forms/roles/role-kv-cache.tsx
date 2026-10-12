@@ -1,40 +1,29 @@
 import { useIntl } from '@umijs/max';
 import { Alert } from 'antd';
 import React from 'react';
+import { PDMode } from '../../config/types';
 import KVCacheForm from '../kv-cache';
 import { RoleSection } from './override-section';
 
 interface RoleKVCacheProps {
+  mode?: PDMode;
+  role?: string;
   /** The role's index in `roles`, i.e. the Form path this section writes to. */
   index: number;
   /** Reason a cache cannot be configured for this role; shown, not hidden. */
   disabledReason?: string;
 }
 
-/**
- * A role's KV cache.
- *
- * The one field group that deliberately does NOT inherit from the model, which
- * is the opposite of every other group here and needs its reasons on the
- * record:
- *
- * 1. The benefit is asymmetric. A cache on the prefill side skips the prefill
- *    compute for whatever it hits; on the decode side it is only a fallback. A
- *    model-level setting applied to both hands decode a "save to all" cost and
- *    a doubled descriptor count for nothing, while the user believes they
- *    gained something.
- * 2. The `custom` pd mode's mutual exclusion is per role: that mode needs
- *    `--kv-transfer-config` in the engine parameters, and a cache would fight
- *    it. A model-level switch cannot express "this role only".
- *
- * The section is the model-level `KVCacheForm` rendered at this role's Form
- * path, so a role gets the same merged choice the model has — the in-process
- * cache or a specific cache service — with no second control to keep in step.
- * Two of its inputs stay model-level on purpose: the cluster (a role does not
- * pick its own) and, when a role inherits its engine, the engine that decides
- * whether sharing is possible at all.
+/** A role's cache selection, filtered by the mode's provider and role recipes.
+ * The shared field group writes at this role's path. Cluster and inherited
+ * backend values remain model-level because they determine service eligibility.
  */
-const RoleKVCache: React.FC<RoleKVCacheProps> = ({ index, disabledReason }) => {
+const RoleKVCache: React.FC<RoleKVCacheProps> = ({
+  index,
+  disabledReason,
+  mode,
+  role
+}) => {
   const intl = useIntl();
 
   const section = {
@@ -59,7 +48,12 @@ const RoleKVCache: React.FC<RoleKVCacheProps> = ({ index, disabledReason }) => {
   }
 
   return (
-    <KVCacheForm namePrefix={['roles', index]} section={section}></KVCacheForm>
+    <KVCacheForm
+      namePrefix={['roles', index]}
+      section={section}
+      mode={mode}
+      role={role}
+    ></KVCacheForm>
   );
 };
 

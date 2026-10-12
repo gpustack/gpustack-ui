@@ -596,7 +596,11 @@ export default {
   'models.form.pd.mode.cleared':
     'The PD mode was cleared when disaggregation was turned off. Please select it again.',
   'models.form.pd.engineVersion.below':
-    'The selected PD recipe declares support for engine versions {range}, and this deployment pins {version}. It will still deploy — a self-built image may carry a private version number — but a version genuinely below the floor can be missing behaviour the recipe assumes, such as deregistering a scaled-down member.',
+    'This PD mode supports backend versions {range}; the selected built-in version is {version}. You can still deploy, but startup or operation may fail.',
+  'models.form.pd.inProcessVersion.below':
+    'PD with in-process cache supports backend versions {range}; the selected built-in version is {version}. You can still deploy, but startup or operation may fail.',
+  'models.form.pd.cacheServiceVersion.below':
+    'PD with {provider} cache service supports backend versions {range}; the selected built-in version is {version}. You can still deploy, but startup or operation may fail.',
   'models.pd.degraded.pairing':
     'No prefill member shares a host with any decode member, so every KV transfer crosses the network. On a link without RDMA that is usually slower than not disaggregating at all. Co-locate at least one pair, or pick GPUs on the same host for both roles.',
   'models.pd.degraded.gather':

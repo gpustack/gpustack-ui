@@ -599,7 +599,11 @@ export default {
   'models.form.pd.mode.cleared':
     'PD ayrıştırma kapatıldığında PD modu temizlendi. Lütfen yeniden seçin.',
   'models.form.pd.engineVersion.below':
-    'Seçilen PD reçetesi {range} motor sürümleri için destek bildiriyor, bu dağıtım ise {version} sürümünü sabitliyor. Yine de dağıtılabilir — kendi derlediğiniz bir imaj özel bir sürüm numarası taşıyor olabilir — ancak sürüm gerçekten alt sınırın altındaysa, reçetenin varsaydığı davranışlar eksik olabilir; örneğin küçültülen bir üyenin kaydının silinmesi.',
+    'Bu PD modu {range} aralığındaki arka uç sürümlerini destekler; seçilen yerleşik sürüm {version}. Dağıtım yapılabilir ancak başlatma veya çalışma hataları oluşabilir.',
+  'models.form.pd.inProcessVersion.below':
+    'İşlem içi önbellekle PD, {range} aralığındaki arka uç sürümlerini destekler; seçilen yerleşik sürüm {version}. Dağıtım yapılabilir ancak başlatma veya çalışma hataları oluşabilir.',
+  'models.form.pd.cacheServiceVersion.below':
+    '{provider} önbellek hizmetiyle PD, {range} aralığındaki arka uç sürümlerini destekler; seçilen yerleşik sürüm {version}. Dağıtım yapılabilir ancak başlatma veya çalışma hataları oluşabilir.',
   'models.pd.degraded.pairing':
     'Hiçbir prefill üyesi herhangi bir decode üyesiyle aynı sunucuyu paylaşmıyor; bu yüzden her KV aktarımı ağ üzerinden gidiyor. RDMA’sız bir bağlantıda bu, genellikle hiç ayrıştırmamaktan bile yavaştır. En az bir çifti aynı sunucuya yerleştirin ya da her iki rol için aynı sunucudaki GPU’ları seçin.',
   'models.pd.degraded.gather':

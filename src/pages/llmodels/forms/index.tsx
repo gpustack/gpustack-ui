@@ -33,15 +33,18 @@ import {
   DeployFormKey,
   FormData,
   LoraListItem,
+  PDMode,
   RuntimeChoice,
   SourceType
 } from '../config/types';
 import { backendOptionsMap } from '../constants/backend-parameters';
 import { useGenerateGPUOptions } from '../hooks/use-form-initial-values';
 import useQueryBackends from '../hooks/use-query-backends';
+import { knownCacheService } from '../services/use-query-cache-services';
 import { useQueryContextLength } from '../services/use-query-context-length';
 import { derivesNativeAnthropicApi, generateGPUIds } from '../utils';
 import { getDeploymentFormReplicas } from '../utils/deployment-lifecycle';
+import { clearUnsupportedPDCacheServices } from '../utils/pd-cache-services';
 import AdvanceConfig from './advance-config';
 import BasicForm from './basic';
 import PDDisaggregation, { PDEffects } from './pd-disaggregation';
@@ -217,9 +220,23 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
    */
   const preservedModelFields = React.useRef<Record<string, any> | null>(null);
 
+  const clearIncompatibleRoleCaches = (mode?: PDMode) => {
+    const clusterId = form.getFieldValue('cluster_id');
+    const roles = form.getFieldValue('roles') || [];
+    const next = clearUnsupportedPDCacheServices(
+      roles,
+      (id) => knownCacheService(clusterId, id),
+      mode
+    );
+    if (next.some((role, index) => role !== roles[index])) {
+      form.setFieldValue('roles', next);
+    }
+  };
+
   // `clearModelKVCache` is a one-shot instruction, so consume it where it
   // arrives rather than letting it sit true and re-clear on every render.
   const handlePDEffectsChange = (next: PDEffects) => {
+    clearIncompatibleRoleCaches(next.modeData);
     setPDEffects(next);
     if (next.enabled && !preservedModelFields.current) {
       // Every field any branch below clears, read before any of them run.
@@ -639,6 +656,9 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
    * @returns
    */
   const handleOnValuesChange = async (changedValues: any, allValues: any) => {
+    if (pdEffects.enabled) {
+      clearIncompatibleRoleCaches(pdEffects.modeData);
+    }
     const fieldName = getFieldPaths(changedValues);
 
     if (
@@ -955,7 +975,8 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
                                   // choice is made here — but the switch above
                                   // owns `enabled`. Only the choice comes back,
                                   // patched onto what the switch published.
-                                  onModeChange={(mode, data) =>
+                                  onModeChange={(mode, data) => {
+                                    clearIncompatibleRoleCaches(data);
                                     setPDEffects((prev) => ({
                                       ...prev,
                                       mode,
@@ -963,8 +984,8 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
                                       isCustomMode: mode === PD_MODE_CUSTOM,
                                       // Picking one answers the notice.
                                       modeCleared: false
-                                    }))
-                                  }
+                                    }));
+                                  }}
                                 ></PDDisaggregation>
                               }
                             ></Roles>

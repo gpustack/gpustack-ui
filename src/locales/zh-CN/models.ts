@@ -563,7 +563,11 @@ export default {
     '该组当前没有任何值，将按「继承模型级配置」保存。至少填写一项才能保持为自定义。',
   'models.form.pd.mode.cleared': '关闭 PD 分离时已清空 PD 模式，请重新选择。',
   'models.form.pd.engineVersion.below':
-    '所选 PD 方案声明支持的引擎版本为 {range}，而当前固定的版本是 {version}。仍然可以部署 —— 自建镜像可能带有私有版本号 —— 但版本若确实低于下限，方案所依赖的行为可能并不存在，例如缩容成员的注销。',
+    '该 PD 模式支持的后端版本为 {range}，当前选择的内置版本为 {version}。仍可部署，但可能启动失败或运行异常。',
+  'models.form.pd.inProcessVersion.below':
+    'PD 搭配 in process 缓存支持的后端版本为 {range}，当前选择的内置版本为 {version}。仍可部署，但可能启动失败或运行异常。',
+  'models.form.pd.cacheServiceVersion.below':
+    'PD 搭配 {provider} cache service 支持的后端版本为 {range}，当前选择的内置版本为 {version}。仍可部署，但可能启动失败或运行异常。',
   'models.pd.degraded.pairing':
     '没有任何 prefill 与 decode 成员在同一台机器上，因此每次 KV 传输都要走网络。在没有 RDMA 的链路上，这通常比不做分离更慢。请至少让一对同机，或为两个角色选择同一台机器上的 GPU。',
   'models.pd.degraded.gather': '未达拓扑目标：成员实际分布比要求的更松',

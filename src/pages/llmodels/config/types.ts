@@ -297,6 +297,19 @@ export interface PDRoleInjection {
 }
 
 export interface PDMode {
+  in_process_cache_versions?: string | null;
+  cache_services?:
+    | {
+        provider: string;
+        backend_versions?: string | null;
+        roles: Record<
+          string,
+          {
+            kv_role?: string | null;
+          }
+        >;
+      }[]
+    | null;
   name: string;
   display_name: string;
   description?: string;

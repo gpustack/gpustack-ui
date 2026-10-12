@@ -15,6 +15,10 @@ export interface CacheServiceOption {
   disabled: boolean;
 }
 
+const knownServices = new Map<string, CacheServiceOption>();
+export const knownCacheService = (clusterId: number, serviceId: number) =>
+  knownServices.get(`${clusterId}:${serviceId}`);
+
 // providers are cluster-independent and the deployment modals are
 // destroyOnHidden (a hook-local cache would refetch on every open), so a
 // single in-flight catalog fetch is shared module-wide; a failure clears
@@ -85,6 +89,9 @@ export default function useQueryCacheServices() {
           provider_name: item.provider_name,
           disabled: item.state !== RUNNING_STATE
         }));
+      options.forEach((option) => {
+        knownServices.set(`${clusterId}:${option.value}`, option);
+      });
       setCacheServiceOptions(options);
       return options;
     } catch (error) {

@@ -238,8 +238,12 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
     useQueryPDModes();
   const workerList = useAtomValue(workerListAtom);
 
-  const backend = Form.useWatch('backend', form);
-  const clusterId = Form.useWatch('cluster_id', form);
+  // useWatch subscribes after the first render. Read the saved inputs now so
+  // that subscription hydration is not mistaken for a user changing them.
+  const backend =
+    Form.useWatch('backend', form) ?? form.getFieldValue('backend');
+  const clusterId =
+    Form.useWatch('cluster_id', form) ?? form.getFieldValue('cluster_id');
   // Model-level only, and that is the whole story rather than a shortcut: the
   // engine override group is forced off for prefill and decode (see
   // `isGroupOn` in roles/transform), so both inherit this field, and the one
@@ -463,6 +467,7 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
   // Without this a slow answer for the previous engine lands after the fast
   // answer for the current one and silently overwrites the mode field.
   const resolveSession = useRef(0);
+  const resolutionInputs = useRef({ backend, clusterId });
 
   /**
    * One atomic write: local state, the form field, and the published effects.
@@ -472,18 +477,29 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
    * `custom` means "I will supply the connection parameters myself", which is
    * not a decision the platform can make on the user's behalf.
    */
-  const applyResolution = (resolution: PDModeResolution, modes?: PDMode[]) => {
+  const applyResolution = (
+    resolution: PDModeResolution,
+    modes?: PDMode[],
+    preserveMode = false
+  ) => {
     setDerived({ resolution });
-    if (!resolution.mode) {
+    const currentMode = form.getFieldValue(['disaggregation', 'mode']);
+    const selectedMode =
+      preserveMode && currentMode ? currentMode : resolution.mode;
+    if (!selectedMode) {
       return;
     }
-    form.setFieldsValue({
-      disaggregation: {
-        ...(form.getFieldValue('disaggregation') || {}),
-        mode: resolution.mode,
-        vendor: resolution.vendor ?? undefined
-      }
-    });
+    // Opening an edit/copy form asks for eligibility, not a replacement for
+    // its saved choice. Only an empty mode or changed inputs select the recipe.
+    if (!preserveMode || !currentMode) {
+      form.setFieldsValue({
+        disaggregation: {
+          ...(form.getFieldValue('disaggregation') || {}),
+          mode: selectedMode,
+          vendor: resolution.vendor ?? undefined
+        }
+      });
+    }
     // Through `onModeChange`, the same narrow channel `handleModeChange` uses,
     // rather than `notifyEffects`.
     //
@@ -499,10 +515,10 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
     // the body owns `mode`; `notifyEffects` carries both, and its `enabled:
     // active` was only ever echoing back what the switch had already said.
     onModeChange?.(
-      resolution.mode,
+      selectedMode,
       modes
-        ? modes.find((mode) => mode.name === resolution.mode)
-        : findMode(resolution.mode)
+        ? modes.find((mode) => mode.name === selectedMode)
+        : findMode(selectedMode)
     );
   };
 
@@ -522,7 +538,8 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
    */
   const runResolve = async (
     overrides?: { vendor?: string },
-    modes?: PDMode[]
+    modes?: PDMode[],
+    preserveMode = false
   ) => {
     const session = ++resolveSession.current;
     try {
@@ -535,7 +552,7 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
       if (resolveSession.current !== session) {
         return;
       }
-      applyResolution(resolution, modes);
+      applyResolution(resolution, modes, preserveMode);
     } catch (error) {
       // An older server has no /resolve. Fall back to the full picker rather
       // than to a field that renders nothing: the catalog is already loaded,
@@ -587,15 +604,20 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
      * `active` flipping false→true IS the action here, which is why this
      * belongs on this effect rather than on a fetch-function dependency.
      */
+    const inputsChanged =
+      resolutionInputs.current.backend !== backend ||
+      resolutionInputs.current.clusterId !== clusterId;
+    resolutionInputs.current = { backend, clusterId };
     let cancelled = false;
+    const session = resolveSession.current;
     const resolveWithCatalog = async () => {
       // Held in a local, not read back off state: the fetch below does not
       // re-render before the next line runs.
       const modes = pdModes.length ? pdModes : await getPDModes();
-      if (cancelled) {
+      if (cancelled || resolveSession.current !== session) {
         return;
       }
-      await runResolve(undefined, modes);
+      await runResolve(undefined, modes, !inputsChanged);
       if (cancelled) {
         return;
       }

@@ -361,7 +361,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
 
     return {
       top: 50,
-      offsetTop: 96
+      offsetTop: 146
     };
   }, [source, formKey, action]);
 

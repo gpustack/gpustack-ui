@@ -1,7 +1,7 @@
 import { JSDOM } from 'jsdom';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { after, mock, test } from 'node:test';
+import { after, mock, test, type TestContext } from 'node:test';
 import { act, createElement, Fragment, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 
@@ -529,20 +529,61 @@ test('validation in a closed form keeps groups closed and disables auto-scroll',
   }
 });
 
-test('closing the form cancels a pending validation scroll after a group opens', async () => {
+const holdNextRevealTimer = (context: TestContext) => {
+  const schedule = globalThis.setTimeout;
+  const cancel = globalThis.clearTimeout;
+  let heldTimer: ReturnType<typeof setTimeout> | undefined;
+  let pending: (() => void) | undefined;
+  // Hold only this submission's reveal timer. React, antd and tab scrolling
+  // retain their real timers, regardless of how long act takes on CI.
+  context.mock.method(
+    globalThis,
+    'setTimeout',
+    (callback: (...args: any[]) => void, delay?: number, ...args: any[]) => {
+      if (delay !== 300 || heldTimer !== undefined) {
+        return schedule(callback, delay, ...args);
+      }
+      heldTimer = schedule(() => {}, 0);
+      cancel(heldTimer);
+      pending = () => callback(...args);
+      return heldTimer;
+    }
+  );
+  context.mock.method(
+    globalThis,
+    'clearTimeout',
+    (timer: ReturnType<typeof setTimeout> | number | undefined) => {
+      if (timer === heldTimer) pending = undefined;
+      cancel(timer);
+    }
+  );
+  return {
+    isPending: () => pending !== undefined,
+    run: () => {
+      const callback = pending;
+      pending = undefined;
+      callback?.();
+    }
+  };
+};
+
+test('closing the form cancels a pending validation scroll after a group opens', async (context) => {
   const view = await renderForm();
   try {
     await act(async () =>
       form.setFieldValue('dataset_input_tokens', undefined)
     );
     await toggleGroup('dataset');
+    const revealTimer = holdNextRevealTimer(context);
     scrolled = [];
     await view.submit(25);
     assert.equal(view.release.mock.callCount(), 1);
     assert.equal(isOpen('dataset'), true);
+    assert.equal(revealTimer.isPending(), true);
     assert.equal(scrolled.length, 0);
     await view.render(false);
-    await tick(350);
+    assert.equal(revealTimer.isPending(), false);
+    await act(async () => revealTimer.run());
     assert.equal(scrolled.length, 0);
   } finally {
     await view.unmount();
@@ -552,7 +593,7 @@ test('closing the form cancels a pending validation scroll after a group opens',
 test(
   'selecting another tab cancels a pending validation scroll without expanding the selected group',
   { skip: !supportsControlledTabs },
-  async () => {
+  async (context) => {
     const view = await renderForm();
     try {
       await act(async () =>
@@ -560,16 +601,19 @@ test(
       );
       await toggleGroup('dataset');
       await toggleGroup('execution');
+      const revealTimer = holdNextRevealTimer(context);
       scrolled = [];
       await view.submit(25);
       assert.equal(view.release.mock.callCount(), 1);
       assert.equal(isOpen('dataset'), true);
+      assert.equal(revealTimer.isPending(), true);
       assert.equal(scrolled.length, 0);
 
       await clickTab('execution');
       assert.equal(selectedTab(), 'benchmark.form.group.execution');
       assert.equal(isOpen('execution'), false);
-      await tick(350);
+      assert.equal(revealTimer.isPending(), false);
+      await act(async () => revealTimer.run());
       assert.equal(scrolled.length, 0);
       assert.equal(isOpen('dataset'), true);
       assert.equal(isOpen('execution'), false);

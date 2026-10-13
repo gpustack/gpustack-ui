@@ -890,6 +890,11 @@ const ImportYamlModal: React.FC<ImportYamlModalProps> = ({
       footer={false}
     >
       <ColumnWrapper
+        styles={{
+          container: {
+            paddingTop: 0
+          }
+        }}
         footer={
           <ModalFooter
             styles={{ wrapper: { padding: '16px 24px 8px' } }}
@@ -912,7 +917,7 @@ const ImportYamlModal: React.FC<ImportYamlModalProps> = ({
                 rule would have nothing to fire on — the cluster always holds
                 a value, since following the file is one. */}
             <SealSelect
-              style={{ width: 280 }}
+              style={{ width: 320 }}
               label={intl.formatMessage({ id: 'clusters.title' })}
               options={clusterOptions}
               value={clusterId ?? FOLLOW_FILE}

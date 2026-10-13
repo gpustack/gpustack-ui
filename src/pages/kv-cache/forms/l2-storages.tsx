@@ -362,6 +362,17 @@ const L2Storages: React.FC<{
                             key={`${entryBackendName}-${field.name}`}
                             name={[name, 'params', field.name]}
                             valuePropName={isBoolean ? 'checked' : 'value'}
+                            getValueProps={
+                              isBoolean
+                                ? (value) => ({
+                                    checked: Boolean(
+                                      value === undefined
+                                        ? field.default
+                                        : value
+                                    )
+                                  })
+                                : undefined
+                            }
                             rules={
                               field.required && !isBoolean
                                 ? [

@@ -185,7 +185,7 @@ let form: any;
 // Retain the real parent prefill and async target picker. The unrelated basic
 // fields are registered on the same real antd Form, without their own requests.
 mock.module(new URL('../basic.tsx', import.meta.url).href, {
-  defaultExport: () => {
+  defaultExport: function BasicFields() {
     form = Form.useFormInstance();
     return createElement(
       Fragment,
@@ -260,6 +260,9 @@ const renderForm = async (currentData?: any, options: any = {}) => {
     (async ({ id }: any) => clone(members.get(id) ?? []));
   fetchRoutes = options.fetchRoutes ?? (async () => clone(routes));
   const root = createRoot(dom.window.document.getElementById('root')!);
+  let completeSubmit: (() => void) | undefined;
+  const submitted = mock.fn(async (_values: any) => completeSubmit?.());
+  const rejected = mock.fn((_errorInfo: any) => completeSubmit?.());
   let props: any = {
     action: 'create',
     open: true,
@@ -270,7 +273,8 @@ const renderForm = async (currentData?: any, options: any = {}) => {
     ],
     datasetList: [],
     profilesOptions: [],
-    onFinish: async () => {}
+    onFinish: submitted,
+    onFinishFailed: rejected
   };
   const render = async (updates: any = {}) => {
     props = { ...props, ...updates };
@@ -284,12 +288,24 @@ const renderForm = async (currentData?: any, options: any = {}) => {
   if (!currentData) await act(async () => form.setFieldValue('cluster_id', 1));
   return {
     render,
+    submitted,
+    rejected,
+    submit: async () => {
+      const finished = new Promise<void>((resolve) => {
+        completeSubmit = resolve;
+      });
+      await act(async () => {
+        form.submit();
+        await finished;
+      });
+      completeSubmit = undefined;
+    },
     changeMode: async (value: string) => {
       const selector = selectors.get('benchmark.form.targetMode');
       assert.ok(selector);
       await act(async () => selector.onChange(value));
     },
-    changeCluster: async (value: number) => {
+    changeCluster: async (value: number | undefined) => {
       await act(async () => form.setFieldValue('cluster_id', value));
     },
     unmount: async () => {
@@ -580,6 +596,135 @@ const deferred = () => {
   });
   return { promise, resolve };
 };
+
+for (const mode of ['instance', 'PD', 'route']) {
+  test(`switching clusters clears the ${mode} target before the new request completes and blocks stale submission`, async () => {
+    const pending = deferred();
+    const firstModel = mode === 'PD' ? pdModel : sourceModel;
+    const nextModel = { ...firstModel, id: 33, name: 'cluster-two-model' };
+    const firstMember =
+      mode === 'instance' ? instances(firstModel)[1] : undefined;
+    members = new Map([
+      [firstModel.id, instances(firstModel)],
+      [nextModel.id, instances(nextModel)]
+    ]);
+    routes = [
+      {
+        id: 1,
+        route_name: 'cluster-one-route',
+        model_id: firstModel.id,
+        state: 'active',
+        weight: 100
+      },
+      {
+        id: 2,
+        route_name: 'cluster-two-route',
+        model_id: nextModel.id,
+        state: 'active',
+        weight: 100
+      }
+    ];
+    const currentData = {
+      ...source(firstModel, firstMember),
+      ...(mode === 'route'
+        ? { target_mode: 'route', route_name: 'cluster-one-route' }
+        : {})
+    };
+    const view = await renderForm(currentData, {
+      fetchModels: async ({ cluster_id }: any) =>
+        cluster_id === 1 ? clone([firstModel]) : pending.promise
+    });
+    try {
+      assert.equal(form.getFieldValue('model_id'), firstModel.id);
+      await act(async () => form.setFieldValue('name', 'user-named-benchmark'));
+      await view.changeCluster(2);
+      assert.equal(modelRequests.mock.calls.at(-1)?.arguments[0].cluster_id, 2);
+      for (const [field, value] of Object.entries({
+        ...target(),
+        route_name: form.getFieldValue('route_name')
+      })) {
+        assert.ok(!value, `stale ${field} while the new cluster is loading`);
+      }
+      assert.equal(form.getFieldValue('name'), 'user-named-benchmark');
+      const requiredField = mode === 'route' ? 'route_name' : 'model_instance';
+      await act(async () =>
+        assert.rejects(form.validateFields([requiredField]), (error: any) =>
+          error.errorFields.some(
+            (field: any) => field.name[0] === requiredField
+          )
+        )
+      );
+      await view.submit();
+      assert.equal(view.submitted.mock.callCount(), 0);
+      assert.equal(view.rejected.mock.callCount(), 1);
+      assert.ok(
+        view.rejected.mock.calls[0].arguments[0].errorFields.some(
+          (field: any) => field.name[0] === requiredField
+        )
+      );
+
+      await act(async () => pending.resolve(clone([nextModel])));
+      if (mode === 'route') {
+        assert.equal(form.getFieldValue('route_name'), 'cluster-two-route');
+        assert.equal(form.getFieldValue('model_id'), nextModel.id);
+        assert.equal(form.getFieldValue('model_name'), nextModel.name);
+      } else {
+        expectTarget(
+          nextModel,
+          mode === 'instance' ? instances(nextModel)[0] : undefined
+        );
+      }
+      await view.submit();
+      assert.equal(view.submitted.mock.callCount(), 1);
+      const payload = view.submitted.mock.calls[0].arguments[0];
+      assert.equal(payload.cluster_id, 2);
+      assert.equal(payload.model_id, nextModel.id);
+      assert.equal(payload.model_name, nextModel.name);
+      assert.equal(
+        payload.route_name,
+        mode === 'route' ? 'cluster-two-route' : undefined
+      );
+      assert.equal(form.getFieldValue('name'), 'user-named-benchmark');
+    } finally {
+      await view.unmount();
+    }
+  });
+}
+
+test('clearing a cluster clears its route and bookkeeping without starting another request', async () => {
+  models = [sourceModel];
+  routes = [
+    {
+      id: 1,
+      route_name: 'source-route',
+      model_id: sourceModel.id,
+      state: 'active',
+      weight: 100
+    }
+  ];
+  const view = await renderForm({
+    ...source(sourceModel),
+    target_mode: 'route',
+    route_name: 'source-route'
+  });
+  try {
+    assert.equal(form.getFieldValue('route_name'), 'source-route');
+    const requestCount = modelRequests.mock.callCount();
+    await view.changeCluster(undefined);
+    assert.equal(modelRequests.mock.callCount(), requestCount);
+    for (const [field, value] of Object.entries({
+      ...target(),
+      route_name: form.getFieldValue('route_name')
+    })) {
+      assert.ok(!value, `stale ${field} after the cluster is cleared`);
+    }
+    await view.submit();
+    assert.equal(view.submitted.mock.callCount(), 0);
+    assert.equal(view.rejected.mock.callCount(), 1);
+  } finally {
+    await view.unmount();
+  }
+});
 
 test('manually clearing a cloned route ends loading and prevents a pending request from restoring it', async () => {
   const pending = deferred();

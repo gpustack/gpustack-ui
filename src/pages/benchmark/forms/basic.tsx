@@ -48,12 +48,15 @@ const BasicForm: React.FC = () => {
     );
   }, [orgScoped, scopedClusterList, clusterList, scopeOrgId]);
 
-  const handleOnOrgChange = (value: any) => {
+  const clearTarget = () => {
     form.setFieldsValue({
+      route_name: undefined,
       model_name: undefined,
       model_id: undefined,
       model_instance_name: undefined,
-      model_instance: undefined
+      model_instance: undefined,
+      dataset_worker_id: undefined,
+      dataset_worker_name: undefined
     });
   };
 
@@ -90,10 +93,12 @@ const BasicForm: React.FC = () => {
     // Re-pick within the (org-scoped) list. When the chosen org owns no
     // clusters this resolves to undefined, clearing a stale cross-org cluster
     // instead of leaving it selected.
-    form.setFieldValue(
-      'cluster_id',
-      benchmarkTargetInstance.cluster_id || initClusterId(effectiveClusterList)
-    );
+    const nextClusterId =
+      benchmarkTargetInstance.cluster_id || initClusterId(effectiveClusterList);
+    if (current !== nextClusterId) {
+      clearTarget();
+      form.setFieldValue('cluster_id', nextClusterId);
+    }
   }, [form, action, effectiveClusterList, benchmarkTargetInstance]);
 
   return (
@@ -119,7 +124,7 @@ const BasicForm: React.FC = () => {
       </Form.Item>
       <PluginExtraFields
         name="CreateOrgScopeField"
-        context={{ action, onChange: handleOnOrgChange }}
+        context={{ action, onChange: clearTarget }}
       />
       <Form.Item<FormData>
         name="cluster_id"
@@ -131,6 +136,7 @@ const BasicForm: React.FC = () => {
         ]}
       >
         <SealSelect
+          onChange={clearTarget}
           disabled={action === PageAction.EDIT}
           options={effectiveClusterList}
           label={intl.formatMessage({ id: 'clusters.title' })}

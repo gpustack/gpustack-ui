@@ -82,6 +82,7 @@ const ModelInstanceForm: React.FC = () => {
   const { action, open, currentData, applyAutoName } = useFormContext();
   const clusterId = Form.useWatch('cluster_id', form);
   const initializationVersion = React.useRef(0);
+  const previousClusterId = React.useRef<number>();
   const [modelList, setModelList] = React.useState<any[]>([]);
   const {
     loading: modelLoading,
@@ -311,12 +312,29 @@ const ModelInstanceForm: React.FC = () => {
   };
   const initModelInstance = useMemoizedFn(async (preserveSource = true) => {
     const version = ++initializationVersion.current;
-    if (!clusterId) {
-      return;
+    const clusterChanged =
+      previousClusterId.current != null &&
+      previousClusterId.current !== clusterId;
+    previousClusterId.current = clusterId;
+    // Also cover programmatic cluster changes. Keep the initial clone/handoff
+    // prefill, but invalidate an old cluster's target before loading a new one.
+    if (clusterChanged) {
+      form.setFieldsValue({
+        route_name: undefined,
+        model_name: undefined,
+        model_id: undefined,
+        model_instance: undefined,
+        model_instance_name: undefined,
+        dataset_worker_id: undefined,
+        dataset_worker_name: undefined
+      });
     }
     setModelList([]);
     setRouteOptions([]);
     setRouteLoading(false);
+    if (!clusterId) {
+      return;
+    }
     const mode =
       form.getFieldValue('target_mode') || TargetModeValueMap.Instance;
     const cloneSource =

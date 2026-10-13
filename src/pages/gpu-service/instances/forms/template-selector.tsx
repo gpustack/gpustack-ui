@@ -6,6 +6,7 @@ import _ from 'lodash';
 import { Fragment } from 'react';
 import styled from 'styled-components';
 import { ListItem as TemplateItem } from '../../templates/config/types';
+import styles from '../styles/instances.module.less';
 
 const GroupTitle = styled.div`
   font-size: 12px;
@@ -97,8 +98,8 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
   const renderItem = (item: TemplateItem) => (
     <TemplateCard
       key={item.id}
+      className={styles.instanceTemplateCard}
       clickable
-      ghost
       hoverable
       height={102}
       active={value === item.id}

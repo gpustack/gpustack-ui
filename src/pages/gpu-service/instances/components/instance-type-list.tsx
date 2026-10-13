@@ -53,7 +53,6 @@ const InstanceTypeList: React.FC<InstanceTypeListProps> = ({
             key={name}
             className={styles.instanceTypeCard}
             clickable
-            ghost
             hoverable
             active={value === name}
             disabled={item.disabled}

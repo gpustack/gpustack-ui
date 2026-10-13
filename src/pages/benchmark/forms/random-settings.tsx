@@ -190,7 +190,8 @@ const RandomSettingsForm: React.FC<{
   const { datasetList } = props;
   const { styles } = useStyles();
   const intl = useIntl();
-  const { action, currentData, profilesOptions } = useFormContext();
+  const { action, currentData, profilesOptions, groupKeys, onGroupChange } =
+    useFormContext();
   const form = Form.useFormInstance();
   const profile = Form.useWatch('profile', form);
   const loadType = Form.useWatch('load_type', form);
@@ -465,19 +466,6 @@ const RandomSettingsForm: React.FC<{
     writeSloTargets(next);
     revalidateSlo();
   };
-
-  // Collapsible field groups, all open by default: Workload / SLO / Load / Stop
-  // Conditions. Every field now has a real home (no "Advanced" catch-all), so
-  // there is nothing left to hide behind a collapsed section. Uses the app's
-  // CollapsePanel for a style consistent with the model form & Configuration.
-  const [groupKeys, setGroupKeys] = useState<string[]>([
-    'dataset',
-    'slo',
-    'load',
-    'execution'
-  ]);
-  const handleGroupChange = (keys: string | string[]) =>
-    setGroupKeys(Array.isArray(keys) ? keys : [keys]);
 
   // ---- Group 1: Dataset (what data to send) ----
   const datasetContent = (
@@ -855,104 +843,106 @@ const RandomSettingsForm: React.FC<{
                 />
               </div>
               {showPrefix && (
-                <Form.Item
-                  name="prefix_buckets"
-                  style={{ marginBottom: 0 }}
-                  rules={[
-                    {
-                      validator: async (_r, value: any[]) => {
-                        if (!value?.length) return;
-                        if (value.some((b) => b?.prefix_tokens == null)) {
-                          setPrefixValidated(true);
-                          throw new Error(
-                            getRuleMessage(
-                              'input',
-                              'benchmark.form.prefix.length'
-                            )
-                          );
+                <div id="benchmark_prefix_buckets">
+                  <Form.Item
+                    name="prefix_buckets"
+                    style={{ marginBottom: 0 }}
+                    rules={[
+                      {
+                        validator: async (_r, value: any[]) => {
+                          if (!value?.length) return;
+                          if (value.some((b) => b?.prefix_tokens == null)) {
+                            setPrefixValidated(true);
+                            throw new Error(
+                              getRuleMessage(
+                                'input',
+                                'benchmark.form.prefix.length'
+                              )
+                            );
+                          }
                         }
                       }
-                    }
-                  ]}
-                >
-                  {/* Same list UX as Add Cluster's Image Credentials: a
+                    ]}
+                  >
+                    {/* Same list UX as Add Cluster's Image Credentials: a
                       MetadataList (bordered card stripped here since the section
                       is already a card) with a block "Add" button and a circular
                       per-row delete button. */}
-                  <MetadataList
-                    label={null}
-                    dataList={prefixBuckets || []}
-                    disabled={disabled}
-                    btnText={intl.formatMessage({
-                      id: 'benchmark.form.prefix.add'
-                    })}
-                    onAdd={handlePrefixAdd}
-                    onDelete={handlePrefixDelete}
-                    styles={{
-                      wrapper: {
-                        border: 'none',
-                        borderRadius: 0,
-                        padding: 0
-                      }
-                    }}
-                  >
-                    {(item: any, index: number) => (
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        {index !== 0 && <div style={{ height: 12 }} />}
-                        <div style={{ display: 'flex', gap: 12 }}>
-                          <CInputNumber
-                            required
-                            min={1}
-                            disabled={disabled}
-                            value={item.prefix_tokens}
-                            onChange={(v) =>
-                              handlePrefixItemChange(index, {
-                                prefix_tokens: v
-                              })
-                            }
-                            checkStatus={
-                              prefixValidated && item.prefix_tokens == null
-                                ? 'error'
-                                : 'success'
-                            }
-                            label={intl.formatMessage({
-                              id: 'benchmark.form.prefix.length'
-                            })}
-                            style={{ width: '100%' }}
-                          ></CInputNumber>
-                          <CInputNumber
-                            min={1}
-                            disabled={disabled}
-                            value={item.prefix_count}
-                            onChange={(v) =>
-                              handlePrefixItemChange(index, {
-                                prefix_count: v
-                              })
-                            }
-                            label={intl.formatMessage({
-                              id: 'benchmark.form.prefix.count'
-                            })}
-                            style={{ width: '100%' }}
-                          ></CInputNumber>
-                          <CInputNumber
-                            min={1}
-                            disabled={disabled}
-                            value={item.bucket_weight}
-                            onChange={(v) =>
-                              handlePrefixItemChange(index, {
-                                bucket_weight: v
-                              })
-                            }
-                            label={intl.formatMessage({
-                              id: 'benchmark.form.prefix.weight'
-                            })}
-                            style={{ width: '100%' }}
-                          ></CInputNumber>
+                    <MetadataList
+                      label={null}
+                      dataList={prefixBuckets || []}
+                      disabled={disabled}
+                      btnText={intl.formatMessage({
+                        id: 'benchmark.form.prefix.add'
+                      })}
+                      onAdd={handlePrefixAdd}
+                      onDelete={handlePrefixDelete}
+                      styles={{
+                        wrapper: {
+                          border: 'none',
+                          borderRadius: 0,
+                          padding: 0
+                        }
+                      }}
+                    >
+                      {(item: any, index: number) => (
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          {index !== 0 && <div style={{ height: 12 }} />}
+                          <div style={{ display: 'flex', gap: 12 }}>
+                            <CInputNumber
+                              required
+                              min={1}
+                              disabled={disabled}
+                              value={item.prefix_tokens}
+                              onChange={(v) =>
+                                handlePrefixItemChange(index, {
+                                  prefix_tokens: v
+                                })
+                              }
+                              checkStatus={
+                                prefixValidated && item.prefix_tokens == null
+                                  ? 'error'
+                                  : 'success'
+                              }
+                              label={intl.formatMessage({
+                                id: 'benchmark.form.prefix.length'
+                              })}
+                              style={{ width: '100%' }}
+                            ></CInputNumber>
+                            <CInputNumber
+                              min={1}
+                              disabled={disabled}
+                              value={item.prefix_count}
+                              onChange={(v) =>
+                                handlePrefixItemChange(index, {
+                                  prefix_count: v
+                                })
+                              }
+                              label={intl.formatMessage({
+                                id: 'benchmark.form.prefix.count'
+                              })}
+                              style={{ width: '100%' }}
+                            ></CInputNumber>
+                            <CInputNumber
+                              min={1}
+                              disabled={disabled}
+                              value={item.bucket_weight}
+                              onChange={(v) =>
+                                handlePrefixItemChange(index, {
+                                  bucket_weight: v
+                                })
+                              }
+                              label={intl.formatMessage({
+                                id: 'benchmark.form.prefix.weight'
+                              })}
+                              style={{ width: '100%' }}
+                            ></CInputNumber>
+                          </div>
                         </div>
-                      </div>
-                    )}
-                  </MetadataList>
-                </Form.Item>
+                      )}
+                    </MetadataList>
+                  </Form.Item>
+                </div>
               )}
             </div>
             {/* Multi-turn: synthetic `turns`. A data-shape knob (each request
@@ -1325,115 +1315,119 @@ const RandomSettingsForm: React.FC<{
              Same list UX as Add Cluster's Image Credentials (MetadataList with a
              block "Add" button and a circular per-row delete); the card border is
              stripped since this card already provides one. */
-          <Form.Item
-            name="stages"
-            style={{ marginBottom: 0 }}
-            rules={[
-              {
-                validator: async (_r, value: any[]) => {
-                  if (!value || value.length === 0) {
-                    setStagesValidated(true);
-                    throw new Error(
-                      getRuleMessage('input', 'benchmark.form.stages')
-                    );
-                  }
-                  if (value.some((s) => s?.rate == null)) {
-                    setStagesValidated(true);
-                    throw new Error(
-                      getRuleMessage('input', 'benchmark.form.rate')
-                    );
-                  }
-                  if (
-                    value.some(
-                      (s) => s?.max_requests == null && s?.max_seconds == null
-                    )
-                  ) {
-                    setStagesValidated(true);
-                    throw new Error(
-                      intl.formatMessage({
-                        id: 'benchmark.form.requestsOrSeconds'
-                      })
-                    );
+          <div id="benchmark_stages">
+            <Form.Item
+              name="stages"
+              style={{ marginBottom: 0 }}
+              rules={[
+                {
+                  validator: async (_r, value: any[]) => {
+                    if (!value || value.length === 0) {
+                      setStagesValidated(true);
+                      throw new Error(
+                        getRuleMessage('input', 'benchmark.form.stages')
+                      );
+                    }
+                    if (value.some((s) => s?.rate == null)) {
+                      setStagesValidated(true);
+                      throw new Error(
+                        getRuleMessage('input', 'benchmark.form.rate')
+                      );
+                    }
+                    if (
+                      value.some(
+                        (s) => s?.max_requests == null && s?.max_seconds == null
+                      )
+                    ) {
+                      setStagesValidated(true);
+                      throw new Error(
+                        intl.formatMessage({
+                          id: 'benchmark.form.requestsOrSeconds'
+                        })
+                      );
+                    }
                   }
                 }
-              }
-            ]}
-          >
-            <MetadataList
-              label={null}
-              dataList={stages || []}
-              disabled={disabled}
-              btnText={intl.formatMessage({ id: 'benchmark.form.addStage' })}
-              onAdd={handleStageAdd}
-              onDelete={handleStageDelete}
-              styles={{
-                wrapper: { border: 'none', borderRadius: 0, padding: 0 }
-              }}
+              ]}
             >
-              {(item: any, index: number) => (
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  {index !== 0 && <div style={{ height: 12 }} />}
-                  <div style={{ display: 'flex', gap: 12 }}>
-                    {/* Wrap each field in a flex div (Rate wider — its label is
+              <MetadataList
+                label={null}
+                dataList={stages || []}
+                disabled={disabled}
+                btnText={intl.formatMessage({ id: 'benchmark.form.addStage' })}
+                onAdd={handleStageAdd}
+                onDelete={handleStageDelete}
+                styles={{
+                  wrapper: { border: 'none', borderRadius: 0, padding: 0 }
+                }}
+              >
+                {(item: any, index: number) => (
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    {index !== 0 && <div style={{ height: 12 }} />}
+                    <div style={{ display: 'flex', gap: 12 }}>
+                      {/* Wrap each field in a flex div (Rate wider — its label is
                       the longest); the SealInputNumber's own `style` is passed
                       to the inner input, so the column width must live on the
                       wrapper. */}
-                    <div style={{ flex: 1.7, minWidth: 0 }}>
-                      <CInputNumber
-                        required
-                        min={1}
-                        disabled={disabled}
-                        value={item.rate}
-                        onChange={(v) => handleStageChange(index, { rate: v })}
-                        checkStatus={
-                          stagesValidated && item.rate == null
-                            ? 'error'
-                            : 'success'
-                        }
-                        label={rateLabel}
-                        style={{ width: '100%' }}
-                      ></CInputNumber>
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <CInputNumber
-                        min={1}
-                        disabled={disabled}
-                        value={item.max_requests}
-                        onChange={(v) =>
-                          handleStageChange(index, { max_requests: v })
-                        }
-                        checkStatus={
-                          stagesValidated &&
-                          item.max_requests == null &&
-                          item.max_seconds == null
-                            ? 'error'
-                            : 'success'
-                        }
-                        label={intl.formatMessage({
-                          id: 'benchmark.form.requests'
-                        })}
-                        style={{ width: '100%' }}
-                      ></CInputNumber>
-                    </div>
-                    <div style={{ flex: 1.2, minWidth: 0 }}>
-                      <CInputNumber
-                        min={1}
-                        disabled={disabled}
-                        value={item.max_seconds}
-                        onChange={(v) =>
-                          handleStageChange(index, { max_seconds: v })
-                        }
-                        label={intl.formatMessage({
-                          id: 'benchmark.form.maxSeconds'
-                        })}
-                        style={{ width: '100%' }}
-                      ></CInputNumber>
+                      <div style={{ flex: 1.7, minWidth: 0 }}>
+                        <CInputNumber
+                          required
+                          min={1}
+                          disabled={disabled}
+                          value={item.rate}
+                          onChange={(v) =>
+                            handleStageChange(index, { rate: v })
+                          }
+                          checkStatus={
+                            stagesValidated && item.rate == null
+                              ? 'error'
+                              : 'success'
+                          }
+                          label={rateLabel}
+                          style={{ width: '100%' }}
+                        ></CInputNumber>
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <CInputNumber
+                          min={1}
+                          disabled={disabled}
+                          value={item.max_requests}
+                          onChange={(v) =>
+                            handleStageChange(index, { max_requests: v })
+                          }
+                          checkStatus={
+                            stagesValidated &&
+                            item.max_requests == null &&
+                            item.max_seconds == null
+                              ? 'error'
+                              : 'success'
+                          }
+                          label={intl.formatMessage({
+                            id: 'benchmark.form.requests'
+                          })}
+                          style={{ width: '100%' }}
+                        ></CInputNumber>
+                      </div>
+                      <div style={{ flex: 1.2, minWidth: 0 }}>
+                        <CInputNumber
+                          min={1}
+                          disabled={disabled}
+                          value={item.max_seconds}
+                          onChange={(v) =>
+                            handleStageChange(index, { max_seconds: v })
+                          }
+                          label={intl.formatMessage({
+                            id: 'benchmark.form.maxSeconds'
+                          })}
+                          style={{ width: '100%' }}
+                        ></CInputNumber>
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
-            </MetadataList>
-          </Form.Item>
+                )}
+              </MetadataList>
+            </Form.Item>
+          </div>
         )}
       </div>
       {/* Warmup / Cooldown trim the first / last slice of each stage's requests
@@ -1533,107 +1527,113 @@ const RandomSettingsForm: React.FC<{
   // as Shared Prefix / manual stages. Empty list = no SLO, which is what makes
   // the whole latency-SLO analysis opt-in.
   const sloContent = (
-    <Form.Item
-      name="slo_targets"
-      rules={[
-        {
-          validator: async (_r, value: SloTarget[]) => {
-            if (!value?.length) return;
-            if (value.some((t) => !t?.metric || !t?.agg || t?.value == null)) {
-              setSloValidated(true);
-              throw new Error(
-                getRuleMessage('input', 'benchmark.form.slo.threshold')
-              );
+    <div id="benchmark_slo_targets">
+      <Form.Item
+        name="slo_targets"
+        rules={[
+          {
+            validator: async (_r, value: SloTarget[]) => {
+              if (!value?.length) return;
+              if (
+                value.some((t) => !t?.metric || !t?.agg || t?.value == null)
+              ) {
+                setSloValidated(true);
+                throw new Error(
+                  getRuleMessage('input', 'benchmark.form.slo.threshold')
+                );
+              }
             }
           }
-        }
-      ]}
-    >
-      <MetadataList
-        label={null}
-        dataList={sloTargets}
-        disabled={disabled}
-        btnText={intl.formatMessage({ id: 'benchmark.form.slo.add' })}
-        onAdd={handleSloAdd}
-        onDelete={handleSloDelete}
-        styles={{
-          // Keep MetadataList's own border (unlike the Shared Prefix list, which
-          // strips it because its sectionCard already draws one). Without a box
-          // the full-width grey "Add SLO Target" button butts straight up against
-          // the equally grey "Load" group header below it and the two read as one
-          // control. Only the top padding is overridden: the component reserves
-          // 34px there for an absolutely-positioned label we don't render.
-          wrapper: { paddingTop: 14 }
-        }}
+        ]}
       >
-        {(item: SloTarget, index: number) => {
-          const taken = sloTakenByOthers(index);
-          return (
-            <div style={{ flex: 1, minWidth: 0 }}>
-              {index !== 0 && <div style={{ height: 12 }} />}
-              <div style={{ display: 'flex', gap: 12 }}>
-                <div style={{ flex: 1.2, minWidth: 0 }}>
-                  <CSelect
-                    disabled={disabled}
-                    value={item.metric}
-                    onChange={(v: SloMetric) =>
-                      handleSloChange(index, { metric: v })
-                    }
-                    label={intl.formatMessage({
-                      id: 'benchmark.form.slo.metric'
-                    })}
-                    options={SLO_METRICS.map((m) => ({
-                      label: intl.formatMessage({ id: m.label }),
-                      value: m.value,
-                      // A metric whose every aggregation is already claimed has
-                      // nothing left to offer this row.
-                      disabled: SLO_AGGS.every((a) =>
-                        taken.has(sloTargetKey(m.value, a.value))
-                      )
-                    }))}
-                  />
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <CSelect
-                    disabled={disabled}
-                    value={item.agg}
-                    onChange={(v: SloAgg) => handleSloChange(index, { agg: v })}
-                    label={intl.formatMessage({
-                      id: 'benchmark.form.slo.aggregation'
-                    })}
-                    options={SLO_AGGS.map((a) => ({
-                      label: intl.formatMessage({ id: a.label }),
-                      value: a.value,
-                      disabled: taken.has(sloTargetKey(item.metric, a.value))
-                    }))}
-                  />
-                </div>
-                <div style={{ flex: 1.3, minWidth: 0 }}>
-                  <CInputNumber
-                    required
-                    min={0}
-                    disabled={disabled}
-                    value={item.value}
-                    onChange={(v) =>
-                      handleSloChange(index, {
-                        value: v == null || v === '' ? null : Number(v)
-                      })
-                    }
-                    checkStatus={
-                      sloValidated && item.value == null ? 'error' : 'success'
-                    }
-                    label={intl.formatMessage({
-                      id: 'benchmark.form.slo.threshold'
-                    })}
-                    style={{ width: '100%' }}
-                  ></CInputNumber>
+        <MetadataList
+          label={null}
+          dataList={sloTargets}
+          disabled={disabled}
+          btnText={intl.formatMessage({ id: 'benchmark.form.slo.add' })}
+          onAdd={handleSloAdd}
+          onDelete={handleSloDelete}
+          styles={{
+            // Keep MetadataList's own border (unlike the Shared Prefix list, which
+            // strips it because its sectionCard already draws one). Without a box
+            // the full-width grey "Add SLO Target" button butts straight up against
+            // the equally grey "Load" group header below it and the two read as one
+            // control. Only the top padding is overridden: the component reserves
+            // 34px there for an absolutely-positioned label we don't render.
+            wrapper: { paddingTop: 14 }
+          }}
+        >
+          {(item: SloTarget, index: number) => {
+            const taken = sloTakenByOthers(index);
+            return (
+              <div style={{ flex: 1, minWidth: 0 }}>
+                {index !== 0 && <div style={{ height: 12 }} />}
+                <div style={{ display: 'flex', gap: 12 }}>
+                  <div style={{ flex: 1.2, minWidth: 0 }}>
+                    <CSelect
+                      disabled={disabled}
+                      value={item.metric}
+                      onChange={(v: SloMetric) =>
+                        handleSloChange(index, { metric: v })
+                      }
+                      label={intl.formatMessage({
+                        id: 'benchmark.form.slo.metric'
+                      })}
+                      options={SLO_METRICS.map((m) => ({
+                        label: intl.formatMessage({ id: m.label }),
+                        value: m.value,
+                        // A metric whose every aggregation is already claimed has
+                        // nothing left to offer this row.
+                        disabled: SLO_AGGS.every((a) =>
+                          taken.has(sloTargetKey(m.value, a.value))
+                        )
+                      }))}
+                    />
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <CSelect
+                      disabled={disabled}
+                      value={item.agg}
+                      onChange={(v: SloAgg) =>
+                        handleSloChange(index, { agg: v })
+                      }
+                      label={intl.formatMessage({
+                        id: 'benchmark.form.slo.aggregation'
+                      })}
+                      options={SLO_AGGS.map((a) => ({
+                        label: intl.formatMessage({ id: a.label }),
+                        value: a.value,
+                        disabled: taken.has(sloTargetKey(item.metric, a.value))
+                      }))}
+                    />
+                  </div>
+                  <div style={{ flex: 1.3, minWidth: 0 }}>
+                    <CInputNumber
+                      required
+                      min={0}
+                      disabled={disabled}
+                      value={item.value}
+                      onChange={(v) =>
+                        handleSloChange(index, {
+                          value: v == null || v === '' ? null : Number(v)
+                        })
+                      }
+                      checkStatus={
+                        sloValidated && item.value == null ? 'error' : 'success'
+                      }
+                      label={intl.formatMessage({
+                        id: 'benchmark.form.slo.threshold'
+                      })}
+                      style={{ width: '100%' }}
+                    ></CInputNumber>
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        }}
-      </MetadataList>
-    </Form.Item>
+            );
+          }}
+        </MetadataList>
+      </Form.Item>
+    </div>
   );
 
   // ---- Group: Stop Conditions (when the benchmark stops) ----
@@ -1720,15 +1720,13 @@ const RandomSettingsForm: React.FC<{
   // Workload and before Load. The header carries a data-field anchor so the top
   // scroll-spy nav can jump to each section (see segmentOptions in ./index).
   const groupLabel = (field: string, id: string) => (
-    <span data-field={field} style={{ scrollMarginTop: 160 }}>
-      {intl.formatMessage({ id })}
-    </span>
+    <span data-field={field}>{intl.formatMessage({ id })}</span>
   );
   return (
     <CollapsePanel
       activeKey={groupKeys}
       accordion={false}
-      onChange={handleGroupChange}
+      onChange={onGroupChange}
       items={[
         {
           key: 'dataset',

@@ -16,6 +16,8 @@ interface FormContextProps {
   // user has manually edited it. Called from the model-instance / profile
   // onChange handlers.
   applyAutoName?: () => void;
+  groupKeys: string[];
+  onGroupChange: (keys: string | string[]) => void;
 }
 
 const FormContext = createContext<FormContextProps>({} as FormContextProps);

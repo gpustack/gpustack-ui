@@ -37,6 +37,19 @@ export const ProfileValueMap = {
   Custom: 'Custom'
 };
 
+export const benchmarkValidationGroups = {
+  dataset: [
+    'dataset_name',
+    'dataset_input_tokens',
+    'dataset_output_tokens',
+    'dataset_input_min',
+    'dataset_input_max',
+    'prefix_buckets'
+  ],
+  slo: ['slo_targets'],
+  load: ['stages']
+};
+
 export const ProfileLabelMap = {
   [ProfileValueMap.Custom]: 'benchmark.form.profile.custom'
 };

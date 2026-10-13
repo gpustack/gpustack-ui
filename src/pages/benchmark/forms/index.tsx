@@ -3,6 +3,7 @@ import { PageActionType } from '@/config/types';
 import { IconFont, ScrollSpyTabs, useWrapperContext } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
+import { createStyles } from 'antd-style';
 import {
   forwardRef,
   useEffect,
@@ -12,6 +13,7 @@ import {
 } from 'react';
 import {
   AUTO_TUNE_DEFAULTS,
+  benchmarkValidationGroups,
   DatasetValueMap,
   genBenchmarkName,
   genDatasetSeed,
@@ -23,6 +25,14 @@ import FormContext from '../config/form-context';
 import { FormData, BenchmarkListItem as ListItem } from '../config/types';
 import Basic from './basic';
 import DatasetForm from './dataset';
+
+const useStyles = createStyles(({ css }) => ({
+  form: css`
+    [id^='benchmark_'] {
+      scroll-margin-top: 96px;
+    }
+  `
+}));
 
 interface ProviderFormProps {
   ref?: any;
@@ -82,11 +92,19 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
     datasetList
   } = props;
   const intl = useIntl();
+  const { styles } = useStyles();
   const [form] = Form.useForm();
   const profile = Form.useWatch('profile', form);
   const { getScrollElementScrollableHeight } = useWrapperContext();
   const [activeKey, setActiveKey] = useState<string[]>(['name']);
-  const scrollTabsRef = useRef<any>(null);
+  const [selectedTarget, setSelectedTarget] = useState('name');
+  const [groupKeys, setGroupKeys] = useState<string[]>([
+    'dataset',
+    'slo',
+    'load',
+    'execution'
+  ]);
+  const errorScrollTimer = useRef<ReturnType<typeof setTimeout>>();
   // What warmup / cooldown held when this form was seeded, for the two of them
   // that came in as absolute counts (see `isLegacyCount`). A ref, not state:
   // nothing renders from it, and it must not re-seed a form the user is typing
@@ -102,6 +120,11 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
   // profileAllowsSlo). Must stay in sync with random-settings' own gate, or the nav
   // grows an anchor that scrolls to nothing.
   const showSLO = profileAllowsSlo(profile, profilesOptions as any[]);
+  const visibleTarget =
+    !showSLO && selectedTarget === 'slo' ? 'dataset' : selectedTarget;
+  if (visibleTarget !== selectedTarget) {
+    setSelectedTarget(visibleTarget);
+  }
   const segmentOptions = [
     {
       value: 'name',
@@ -112,7 +135,7 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
     {
       value: 'dataset',
       label: intl.formatMessage({ id: 'benchmark.form.group.dataset' }),
-      icon: <IconFont type="icon-settings" />,
+      icon: <IconFont type="icon-database" />,
       field: 'dataset'
     },
     ...(showSLO
@@ -120,7 +143,7 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
           {
             value: 'slo',
             label: intl.formatMessage({ id: 'benchmark.form.group.slo' }),
-            icon: <IconFont type="icon-settings" />,
+            icon: <IconFont type="icon-track" />,
             field: 'slo'
           }
         ]
@@ -128,19 +151,66 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
     {
       value: 'load',
       label: intl.formatMessage({ id: 'benchmark.form.group.load' }),
-      icon: <IconFont type="icon-settings" />,
+      icon: <IconFont type="icon-speed" />,
       field: 'load'
     },
     {
       value: 'execution',
       label: intl.formatMessage({ id: 'benchmark.form.group.execution' }),
-      icon: <IconFont type="icon-settings" />,
+      icon: <IconFont type="icon-stop3" />,
       field: 'execution'
     }
   ];
 
-  const handleActiveChange = (key: string[]) => {
-    setActiveKey(key);
+  const handleGroupChange = (keys: string | string[]) => {
+    setGroupKeys(Array.isArray(keys) ? keys : [keys]);
+  };
+
+  const cancelErrorScroll = () => clearTimeout(errorScrollTimer.current);
+  useEffect(() => cancelErrorScroll, [open]);
+
+  const handleTargetChange = (target: string) => {
+    cancelErrorScroll();
+    setSelectedTarget(target);
+  };
+  // Older core-ui releases ignore these optional props and keep their existing
+  // navigation behavior until controlled tabs are available in a published build.
+  const controlledTabsProps = {
+    value: visibleTarget,
+    onChange: handleTargetChange
+  };
+
+  const handleFinishFailed = (errorInfo: any) => {
+    onFinishFailed?.(errorInfo);
+    cancelErrorScroll();
+    if (open === false || !errorInfo.errorFields?.length) return;
+    const names = errorInfo.errorFields.map(
+      ({ name }: { name: (string | number)[] }) => String(name[0])
+    );
+    const sections = Object.entries(benchmarkValidationGroups);
+    const invalidGroups = sections
+      .filter(([, fields]) => fields.some((field) => names.includes(field)))
+      .map(([key]) => key);
+    const target =
+      names[0] === 'profile'
+        ? 'dataset'
+        : sections.find(([, fields]) => fields.includes(names[0]))?.[0] ||
+          'name';
+
+    const expanded = invalidGroups.some((key) => !groupKeys.includes(key));
+    setGroupKeys((previous) => [...new Set([...previous, ...invalidGroups])]);
+    setSelectedTarget(target);
+    // scrollToFirstError runs before collapsed fields finish revealing. Use
+    // the same antd scrolling method after the panel's expansion animation.
+    errorScrollTimer.current = setTimeout(
+      () => {
+        form.scrollToField(errorInfo.errorFields[0].name, {
+          behavior: 'smooth',
+          block: 'start'
+        });
+      },
+      expanded ? 300 : 0
+    );
   };
 
   // Auto default name = {model}-{profile}-{time}-{rand}. We only overwrite it
@@ -224,7 +294,13 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       max_error_rate: fractionToPercent(currentData.max_error_rate),
       // Editable view of the 9 flat slo_*_ms thresholds (see config/index.ts).
       slo_targets: sloTargetsFromFields(currentData),
-      model_instance: [currentData.model_name, currentData.model_instance_name],
+      target_mode: currentData.target_mode || TargetModeValueMap.Instance,
+      model_instance:
+        currentData.target_mode === TargetModeValueMap.Route
+          ? undefined
+          : currentData.model_instance_name
+            ? [currentData.model_name, currentData.model_instance_name]
+            : [currentData.model_name],
       // A clone of a random-seeded benchmark re-rolls: running the same config
       // twice is exactly the case that must not reuse the first run's prompts.
       // A seed the user pinned is carried over — that clone wants to reproduce.
@@ -267,15 +343,12 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
 
   return (
     <ScrollSpyTabs
-      ref={scrollTabsRef}
+      {...controlledTabsProps}
       defaultTarget="name"
       segmentOptions={segmentOptions}
       activeKey={activeKey}
-      setActiveKey={handleActiveChange}
-      segmentedTop={{
-        top: 0,
-        offsetTop: 96
-      }}
+      setActiveKey={setActiveKey}
+      segmentedTop={{ top: 0, offsetTop: 96 }}
       getScrollElementScrollableHeight={getScrollElementScrollableHeight}
     >
       <FormContext.Provider
@@ -286,11 +359,14 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
           profilesOptions: profilesOptions,
           datasetList: datasetList,
           currentData,
-          applyAutoName
+          applyAutoName,
+          groupKeys,
+          onGroupChange: handleGroupChange
         }}
       >
         <Form
           form={form}
+          className={styles.form}
           // Namespaces the auto-generated control ids ("benchmark_profile"
           // instead of "profile"). The list page's filter panel is a second form
           // on the same page with overlapping field names (profile / load_type /
@@ -320,7 +396,8 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
               max_error_rate: percentToFraction(values.max_error_rate)
             })
           }
-          onFinishFailed={onFinishFailed}
+          onFinishFailed={handleFinishFailed}
+          scrollToFirstError={false}
           initialValues={{
             // Default to the Max Throughput preset: adaptive auto-tune on the
             // rate axis (ramps request rate to the throughput peak).

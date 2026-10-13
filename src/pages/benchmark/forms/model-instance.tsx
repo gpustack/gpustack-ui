@@ -79,8 +79,9 @@ const ModelInstanceForm: React.FC = () => {
   // painting dark text on a light background.
   const { message } = App.useApp();
   const { getRuleMessage } = useAppUtils();
-  const { action, open, applyAutoName } = useFormContext();
+  const { action, open, currentData, applyAutoName } = useFormContext();
   const clusterId = Form.useWatch('cluster_id', form);
+  const initializationVersion = React.useRef(0);
   const [modelList, setModelList] = React.useState<any[]>([]);
   const {
     loading: modelLoading,
@@ -130,63 +131,69 @@ const ModelInstanceForm: React.FC = () => {
   // target, on a model of this cluster that can answer. A route whose only
   // target is UNAVAILABLE resolves to nothing at request time, so offering it
   // would offer a run that measures a 503.
-  const loadRoutes = useMemoizedFn(async (models: any[]) => {
-    setRouteLoading(true);
-    try {
-      const { items } = await queryRouteTargets({});
-      const modelById = new Map(
-        models
-          .filter((model: any) => !model.disabled && model.servable)
-          .map((model: any) => [model.id, model])
-      );
-      const byRoute = new Map<string, any>();
-      (items || []).forEach((target: any) => {
-        const model = modelById.get(target.model_id);
-        if (target.state !== TargetStatusValueMap.Active || !model) {
-          return;
+  const loadRoutes = useMemoizedFn(
+    async (models: any[], isCurrent: () => boolean) => {
+      setRouteLoading(true);
+      try {
+        const { items } = await queryRouteTargets({});
+        const modelById = new Map(
+          models
+            .filter((model: any) => !model.disabled && model.servable)
+            .map((model: any) => [model.id, model])
+        );
+        const byRoute = new Map<string, any>();
+        (items || []).forEach((target: any) => {
+          const model = modelById.get(target.model_id);
+          if (target.state !== TargetStatusValueMap.Active || !model) {
+            return;
+          }
+          const current = byRoute.get(target.route_name);
+          // The model recorded against the run is the route's principal target:
+          // a canary splits the load, and the report has to name the deployment
+          // the numbers mostly describe rather than whichever target sorted
+          // first.
+          const heavier =
+            !current ||
+            (target.weight ?? 0) > current.weight ||
+            ((target.weight ?? 0) === current.weight && target.id < current.id);
+          if (heavier) {
+            byRoute.set(target.route_name, {
+              label: target.route_name,
+              value: target.route_name,
+              weight: target.weight ?? 0,
+              id: target.id,
+              model_id: model.id,
+              model_name: model.value
+            });
+          }
+        });
+        const options = Array.from(byRoute.values());
+        if (isCurrent()) setRouteOptions(options);
+        return options;
+      } catch (error) {
+        // Without this the rejection escapes an async `onChange` as an unhandled
+        // one, and the picker shows its empty state — which says «no route fronts
+        // a servable LLM here», a sentence about the cluster, for what is
+        // actually a failed request. Say which it was, and hand back an empty
+        // list so the caller's single-route auto-select cannot read `undefined`.
+        if (isCurrent()) {
+          setRouteOptions([]);
+          message.error(
+            (error as any)?.response?.data?.message ||
+              (error as any)?.message ||
+              intl.formatMessage({ id: 'common.text.error' })
+          );
         }
-        const current = byRoute.get(target.route_name);
-        // The model recorded against the run is the route's principal target:
-        // a canary splits the load, and the report has to name the deployment
-        // the numbers mostly describe rather than whichever target sorted
-        // first.
-        const heavier =
-          !current ||
-          (target.weight ?? 0) > current.weight ||
-          ((target.weight ?? 0) === current.weight && target.id < current.id);
-        if (heavier) {
-          byRoute.set(target.route_name, {
-            label: target.route_name,
-            value: target.route_name,
-            weight: target.weight ?? 0,
-            id: target.id,
-            model_id: model.id,
-            model_name: model.value
-          });
-        }
-      });
-      const options = Array.from(byRoute.values());
-      setRouteOptions(options);
-      return options;
-    } catch (error) {
-      // Without this the rejection escapes an async `onChange` as an unhandled
-      // one, and the picker shows its empty state — which says «no route fronts
-      // a servable LLM here», a sentence about the cluster, for what is
-      // actually a failed request. Say which it was, and hand back an empty
-      // list so the caller's single-route auto-select cannot read `undefined`.
-      setRouteOptions([]);
-      message.error(
-        (error as any)?.response?.data?.message ||
-          (error as any)?.message ||
-          intl.formatMessage({ id: 'common.text.error' })
-      );
-      return [];
-    } finally {
-      setRouteLoading(false);
+        return [];
+      } finally {
+        if (isCurrent()) setRouteLoading(false);
+      }
     }
-  });
+  );
 
-  const handleRouteChange = (value: string, option: any) => {
+  const handleRouteChange = (value: string | undefined, option: any) => {
+    initializationVersion.current += 1;
+    setRouteLoading(false);
     // A route is the whole target: the model behind it is bookkeeping (the
     // snapshot, the placement worker), not something the user picked.
     form.setFieldsValue({
@@ -205,32 +212,40 @@ const ModelInstanceForm: React.FC = () => {
   // selection has to go with it — a stale `model_instance` under route mode
   // would ride the submit and name a member the server must ignore.
   const handleTargetModeChange = useMemoizedFn(async (mode: string) => {
+    const version = ++initializationVersion.current;
+    setRouteLoading(false);
+    const isCurrent = () =>
+      initializationVersion.current === version &&
+      form.getFieldValue('cluster_id') === clusterId &&
+      form.getFieldValue('target_mode') === mode;
     form.setFieldsValue({
       route_name: undefined,
+      model_name: undefined,
+      model_id: undefined,
       model_instance: undefined,
       model_instance_name: undefined,
       dataset_worker_id: undefined,
       dataset_worker_name: undefined
     });
     if (mode === TargetModeValueMap.Route) {
-      // The model list is what says which routes are worth offering (this
-      // cluster, an LLM, servable). Switching modes before it has landed must
-      // not produce an empty picker, so fetch it here rather than assume.
-      const models = modelList.length
-        ? modelList
-        : buildModelOptions(
-            await fetchModelList({ page: -1, cluster_id: clusterId })
-          );
-      const options = await loadRoutes(models);
+      // Fetch this cluster's models: a cached list may still belong to the
+      // previous cluster when the user switches modes while it is loading.
+      const list = await fetchModelList({ page: -1, cluster_id: clusterId });
+      if (!isCurrent()) return;
+      const models = buildModelOptions(list);
+      setModelList(models);
+      const options = await loadRoutes(models, isCurrent);
+      if (!isCurrent()) return;
       if (options.length === 1) {
         handleRouteChange(options[0].value, options[0]);
       }
       return;
     }
-    initModelInstance();
+    initModelInstance(false);
   });
 
-  const handleOnChange = async (value: any, selectedOptions: any) => {
+  const handleOnChange = (value: any, selectedOptions: any) => {
+    initializationVersion.current += 1;
     // Clearing the Cascader fires this with both arguments undefined, so nothing
     // here may index blind — the whole selection has to null out together.
     const options = selectedOptions || [];
@@ -268,12 +283,7 @@ const ModelInstanceForm: React.FC = () => {
 
   const clearModelInstance = () => {
     setModelList([]);
-    form.setFieldsValue({
-      model_name: '',
-      model_id: '',
-      model_instance_name: '',
-      model_instance: ''
-    });
+    handleOnChange(undefined, []);
   };
 
   const loadInstances = async (selectedOptions: any[]) => {
@@ -299,89 +309,99 @@ const ModelInstanceForm: React.FC = () => {
       });
     }
   };
-  /**
-   * Seed the target from a handoff (the models list's «压测», the instance
-   * row's own entry) — see `use-run-benchmark`.
-   *
-   * A handoff from the models list names the DEPLOYMENT, which is the whole
-   * target for a group and only half of one for an ordinary model: that
-   * model's members are the cascader's leaves and `changeOnSelect` is off, so
-   * a model-only value is not a selection the picker can hold, and the drawer
-   * would open on a target that looks filled and cannot be submitted. The
-   * missing half is resolved here, where members are already being fetched.
-   */
-  const applyHandoff = async (modelOptions: any[]) => {
-    const handed = modelOptions.find(
-      (model) => model.value === benchmarkTargetInstance.model_name
-    );
-    // Already a complete target, a group (which has no second level), or a
-    // model this cluster's list does not carry — nothing to resolve.
-    if (!handed || handed.pd || benchmarkTargetInstance.model_instance_name) {
-      form.setFieldsValue({ ...benchmarkTargetInstance });
-      return;
-    }
-    const members = (await fetchInstanceList({ id: handed.id })).map(
-      (instance: any) => renderInstance(instance)
-    );
-    if (!members.length) {
-      form.setFieldsValue({ ...benchmarkTargetInstance });
-      return;
-    }
-    handed.children = [...members];
-    handleOnChange([handed.value, members[0].value], [handed, members[0]]);
-  };
-
-  const initModelInstance = useMemoizedFn(async () => {
+  const initModelInstance = useMemoizedFn(async (preserveSource = true) => {
+    const version = ++initializationVersion.current;
     if (!clusterId) {
       return;
     }
-    // fetch model list when dropdown is opened
+    setModelList([]);
+    setRouteOptions([]);
+    setRouteLoading(false);
+    const mode =
+      form.getFieldValue('target_mode') || TargetModeValueMap.Instance;
+    const cloneSource =
+      preserveSource &&
+      currentData &&
+      currentData.cluster_id === clusterId &&
+      (currentData.target_mode || TargetModeValueMap.Instance) === mode
+        ? currentData
+        : undefined;
+    const isCurrent = () =>
+      initializationVersion.current === version &&
+      form.getFieldValue('cluster_id') === clusterId &&
+      (form.getFieldValue('target_mode') || TargetModeValueMap.Instance) ===
+        mode;
+    const source =
+      cloneSource ||
+      (preserveSource && benchmarkTargetInstance.cluster_id === clusterId
+        ? benchmarkTargetInstance
+        : undefined);
+
     const list = await fetchModelList({ page: -1, cluster_id: clusterId });
+    if (!isCurrent()) return;
     const modelOptions = buildModelOptions(list);
+    setModelList(modelOptions);
+
+    if (mode === TargetModeValueMap.Route) {
+      const routes = await loadRoutes(modelOptions, isCurrent);
+      if (!isCurrent()) return;
+      const selectedRoute = cloneSource
+        ? routes.find((route) => route.value === cloneSource.route_name)
+        : routes.length === 1
+          ? routes[0]
+          : undefined;
+      handleRouteChange(selectedRoute?.value, selectedRoute);
+      return;
+    }
 
     if (modelOptions.length === 0) {
       clearModelInstance();
       return;
     }
 
-    // preload instances for the first model
-    const selectedllmModel = modelOptions.find(
-      (model) => !model.disabled && model.servable
-    );
-    if (!selectedllmModel) {
-      setModelList(modelOptions);
-      form.setFieldsValue({
-        model_name: '',
-        model_id: '',
-        model_instance_name: '',
-        model_instance: ''
-      });
+    // Cloning keeps the source deployment, even when another model sorts first.
+    // Match its id so a replacement with the same name cannot inherit the run.
+    const selectedModel = source?.model_name
+      ? modelOptions.find((model) =>
+          source.model_id != null
+            ? model.id === source.model_id
+            : model.value === source.model_name
+        )
+      : modelOptions.find((model) => !model.disabled && model.servable);
+    if (!selectedModel || selectedModel.disabled || !selectedModel.servable) {
+      handleOnChange(undefined, []);
       return;
     }
-    // A group is selected whole, so there are no members to preload and the
-    // initial value is one level deep.
-    const instanceOptions = selectedllmModel.pd
-      ? []
-      : (await fetchInstanceList({ id: selectedllmModel.id })).map(
-          (instance: any) => renderInstance(instance)
-        );
-    if (selectedllmModel && !selectedllmModel.pd) {
-      selectedllmModel.children = [...instanceOptions] as never[];
+
+    // PD is measured through its router, without selecting a member instance.
+    if (selectedModel.pd) {
+      handleOnChange([selectedModel.value], [selectedModel]);
+      return;
     }
 
-    // init form value for model instance
-    if (benchmarkTargetInstance.model_name) {
-      await applyHandoff(modelOptions);
-    } else if (selectedllmModel.pd) {
-      handleOnChange([selectedllmModel.value], [selectedllmModel]);
-    } else {
+    const instances = (await fetchInstanceList({ id: selectedModel.id })).map(
+      (instance: any) => renderInstance(instance)
+    );
+    if (!isCurrent()) return;
+    selectedModel.children = instances as never[];
+    setModelList([...modelOptions]);
+    // A clone needs the exact replica. Only a fresh create or a deployment-level
+    // handoff may choose a default; an unavailable source requires a new choice.
+    const selectedInstance = source?.model_instance_name
+      ? instances.find(
+          (instance: any) => instance.value === source.model_instance_name
+        )
+      : cloneSource
+        ? undefined
+        : instances.find((instance: any) => !instance.disabled);
+    if (selectedInstance && !selectedInstance.disabled) {
       handleOnChange(
-        [selectedllmModel.value, instanceOptions[0]?.value],
-        [selectedllmModel, instanceOptions[0]]
+        [selectedModel.value, selectedInstance.value],
+        [selectedModel, selectedInstance]
       );
+    } else {
+      handleOnChange(undefined, []);
     }
-
-    setModelList(modelOptions);
   });
 
   useEffect(() => {
@@ -392,8 +412,12 @@ const ModelInstanceForm: React.FC = () => {
       cancelModelRequest();
       cancelInstanceRequest();
       clearBenchmarkTargetInstance();
+      setRouteLoading(false);
     }
-  }, [open, action, clusterId]);
+    return () => {
+      initializationVersion.current += 1;
+    };
+  }, [open, action, clusterId, currentData]);
 
   return (
     <>

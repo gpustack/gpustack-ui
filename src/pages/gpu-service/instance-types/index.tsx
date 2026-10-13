@@ -209,7 +209,7 @@ const GPUServiceInstanceTypes: React.FC = () => {
       loading={dataSource.loading || clusterLoading}
       loadend={dataSource.loadend}
       dataSource={dataSource.dataList}
-      image={<IconFont type="icon-gpu1" />}
+      image={<IconFont type="icon-instance-type-outlined" />}
       filters={_.pick(queryParams, ['search', 'cluster_id'])}
       noFoundText={intl.formatMessage({
         id: 'noresult.gpuservice.instanceType.nofound'

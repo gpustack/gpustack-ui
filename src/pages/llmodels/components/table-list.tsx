@@ -642,7 +642,7 @@ const Models: React.FC<ModelsProps> = ({
     loading: loading,
     dataSource: dataSource,
     queryParams: queryParams,
-    iconType: 'icon-resources',
+    iconType: 'icon-rocket-launch1',
     title: intl.formatMessage({ id: 'noresult.deployments.title' }),
     noClusters: !clusterList.length,
     noWorkers: workerList.length === 0 && clusterList.length > 0,

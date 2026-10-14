@@ -2,7 +2,7 @@ import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
 import sortVersions from '@/utils/sort-versions';
 import _ from 'lodash';
 import { CPU_BACKEND, matrixServesFamily } from '../config';
-import { resolveFieldValue } from '../config/field-values';
+import { resolvedFieldValues, resolveFieldValue } from '../config/field-values';
 import {
   CacheProviderComponent,
   CacheProviderField,
@@ -97,6 +97,9 @@ export const placementConfig = (
     addDependency(component.replicas_by);
     addDependency(component.enabled_by);
   });
+  const resolved = dependencies.size
+    ? resolvedFieldValues(fields, fieldValues || {})
+    : {};
   return stripUnset({
     provider_name: values.provider_name,
     provider_version: values.provider_version,
@@ -107,7 +110,7 @@ export const placementConfig = (
       ? Object.fromEntries(
           [...dependencies].map((name) => [
             name,
-            resolveFieldValue(name, fields, fieldValues)
+            Object.hasOwn(resolved, name) ? resolved[name] : fieldValues?.[name]
           ])
         )
       : fieldValues

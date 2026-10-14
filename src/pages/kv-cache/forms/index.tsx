@@ -87,10 +87,8 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
     // state and any provider defaults to commit before reading the form.
     onLoaded: () => schedulePlacementCheck()
   });
-  // the form needs only the cluster options and this cluster's workers;
-  // the shared query hooks carry request cancellation, so a fetch
-  // superseded by a cluster switch (or unmount) aborts instead of
-  // landing stale state
+  // The shared query hooks cancel requests when a replacement fetch starts;
+  // the worker effect also guards the debounce window before it starts.
   const { clusterList: clusterOptions, fetchClusterList } =
     useQueryClusterList();
   const { fetchData: fetchWorkerList } = useQueryWorkerList();
@@ -704,6 +702,7 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
   }, []);
 
   useEffect(() => {
+    let active = true;
     // cluster workers feed the singleton Worker select and the per_node
     // label-selector autocomplete
     const fetchWorkers = async () => {
@@ -718,10 +717,9 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
           cluster_id: clusterId,
           page: -1
         })) as WorkerListItem[];
-        // a superseded request rejects through its cancel token, so a
-        // stale response cannot normally land here; the guard stays as
-        // a belt against any non-canceling caller
-        if (form.getFieldValue('cluster_id') !== clusterId) {
+        // The next fetch is debounced, so the previous HTTP request can
+        // finish before it is canceled, including for this same cluster.
+        if (!active || form.getFieldValue('cluster_id') !== clusterId) {
           return;
         }
         setWorkers(items || []);
@@ -742,9 +740,8 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
         }
         schedulePlacementCheck();
       } catch (error) {
-        // canceled (a newer fetch owns the state) or failed for the
-        // still-current cluster — only the latter clears the list
-        if (form.getFieldValue('cluster_id') === clusterId) {
+        // Only the still-active effect may clear workers on failure.
+        if (active && form.getFieldValue('cluster_id') === clusterId) {
           setWorkers([]);
           setWorkersLoading(false);
           reseedVersionFor([]);
@@ -753,6 +750,9 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
       }
     };
     fetchWorkers();
+    return () => {
+      active = false;
+    };
   }, [clusterId, isPerNode, hasComponents]);
 
   // On a genuine cluster change, drop the now-out-of-scope worker selection.

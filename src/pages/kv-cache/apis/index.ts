@@ -19,7 +19,8 @@ export async function queryCacheProviders(
   return request<Global.PageResponse<CacheProviderItem>>(CACHE_PROVIDERS_API, {
     params,
     method: 'GET',
-    cancelToken: options?.token
+    cancelToken: options?.token,
+    skipErrorHandler: options?.skipErrorHandler
   });
 }
 
@@ -54,7 +55,8 @@ export async function updateCacheService(
 export async function queryCacheServiceDetail(id: number, options?: any) {
   return request<ListItem>(`${CACHE_SERVICES_API}/${id}`, {
     method: 'GET',
-    cancelToken: options?.token
+    cancelToken: options?.token,
+    skipErrorHandler: options?.skipErrorHandler
   });
 }
 

@@ -36,14 +36,17 @@ const useRecreateInstance = (options: {
         let checkStatus: ResourceCheckStatus;
         try {
           const [latestService, instances, providers] = await Promise.all([
-            queryCacheServiceDetail(service.id),
-            queryCacheServiceInstances(service.id),
-            queryCacheProviders({ page: -1 })
+            queryCacheServiceDetail(service.id, { skipErrorHandler: true }),
+            queryCacheServiceInstances(service.id, { skipErrorHandler: true }),
+            queryCacheProviders({ page: -1 }, { skipErrorHandler: true })
           ]);
-          const { items: workers } = await queryWorkersList({
-            cluster_id: latestService.cluster_id,
-            page: -1
-          });
+          const { items: workers } = await queryWorkersList(
+            {
+              cluster_id: latestService.cluster_id,
+              page: -1
+            },
+            { skipErrorHandler: true }
+          );
           const latestInstance = instances.items.find(
             (item) => item.id === instance.id
           );

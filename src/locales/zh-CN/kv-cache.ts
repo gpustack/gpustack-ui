@@ -1,7 +1,7 @@
 export default {
   'kvCache.check.recreate.insufficientRam':
     '按当前资源情况，节点 {worker} 重建需要 {required} GiB，仅可分配 {available} GiB。请释放资源或调整配置。',
-  'kvCache.check.recreate.unavailable': '无法评估重建资源，请刷新后重试。',
+  'kvCache.check.recreate.unavailable': '无法获取重建所需的资源数据',
   'kvCache.title': '缓存服务',
   'kvCache.source.manage': '管理 Provider',
   'kvCache.source.builtin':

@@ -2,7 +2,7 @@ export default {
   'kvCache.check.recreate.insufficientRam':
     'ワーカー {worker} での再作成には {required} GiB が必要ですが、現在割り当て可能なのは {available} GiB です。リソースを解放するか、設定を変更してください。',
   'kvCache.check.recreate.unavailable':
-    '再作成に必要なリソースを評価できません。更新して再試行してください。',
+    '再作成に必要なリソースデータを取得できません。',
   'kvCache.title': 'Cache Service',
   'kvCache.source.manage': 'Manage Providers',
   'kvCache.source.builtin':

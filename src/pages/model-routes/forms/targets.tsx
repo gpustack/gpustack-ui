@@ -513,7 +513,7 @@ const TargetsForm = forwardRef((props, ref) => {
               <div
                 key={index}
                 style={{
-                  border: '1px solid var(--ant-color-split)',
+                  border: '1px solid var(--ant-color-border)',
                   borderRadius: 'var(--ant-border-radius-lg)'
                 }}
               >
@@ -527,8 +527,13 @@ const TargetsForm = forwardRef((props, ref) => {
                   }
                   styles={{
                     body: collapseKeys.has(index)
-                      ? { paddingBlock: 16, paddingInline: 16 }
-                      : {},
+                      ? {
+                          paddingBlock: 16,
+                          paddingInline: 16,
+                          marginTop: 1,
+                          backgroundColor: 'var(--ant-color-bg-elevated)'
+                        }
+                      : { backgroundColor: 'var(--ant-color-bg-elevated)' },
                     content: { paddingTop: 0 },
                     header: { backgroundColor: 'unset' }
                   }}

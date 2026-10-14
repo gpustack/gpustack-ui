@@ -87,11 +87,14 @@
   color: var(--ant-color-text);
 }
 
-.navItems {
+.navScroller {
   flex: 1;
   min-height: 0;
+  overflow: hidden;
+}
+
+.navItems {
   padding: var(--ant-padding-xs);
-  overflow-y: auto;
 }
 
 .navOption {
@@ -173,12 +176,6 @@
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
   text-overflow: ellipsis;
-}
-
-.pagination {
-  flex: none;
-  padding: var(--ant-padding-sm) var(--ant-padding-xs);
-  border-top: 1px solid var(--ant-color-border-secondary);
 }
 
 .loading {

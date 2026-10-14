@@ -1,3 +1,4 @@
+import { CardWrapper } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Flex, Form, Segmented, Tooltip } from 'antd';
 import { createStyles } from 'antd-style';
@@ -8,16 +9,21 @@ import SessionAffinityFields from '../components/lb-policy/session-affinity-fiel
 import { LB_FORM_MODE } from '../config';
 import type { FormData } from '../config/types';
 
-const useStyles = createStyles(({ css }) => ({
+const useStyles = createStyles(({ css }, isPolicy: boolean) => ({
   sectionTitle: css`
     font-size: var(--ant-font-size);
     font-weight: 500;
   `,
-  sectionCard: css`
-    border: 1px solid var(--ant-color-border);
-    border-radius: 6px;
-    padding: 14px 10px 12px;
-    margin-bottom: 12px;
+  sectionHeader: css`
+    &.ant-segmented {
+      padding: var(--ant-padding-xs);
+      border-radius: 0;
+    }
+  `,
+  sectionBody: css`
+    border-block-start: 1px solid var(--ant-color-border-secondary);
+    padding-inline: var(--ant-padding);
+    background-color: var(--ant-color-bg-elevated);
   `
 }));
 
@@ -29,13 +35,14 @@ const LbPolicySection = ({
   getTargetModelNames: () => string[];
 }) => {
   const intl = useIntl();
-  const { styles } = useStyles();
   const form = Form.useFormInstance<FormData>();
   const mode = Form.useWatch('lb_policy_mode', form);
+  const { styles } = useStyles(mode === LB_FORM_MODE.policy);
 
   return (
     <>
       <Flex
+        data-field="lb_policy_mode"
         justify="space-between"
         align="center"
         style={{ minHeight: 40, marginBottom: 8, paddingInline: 5 }}
@@ -44,15 +51,23 @@ const LbPolicySection = ({
           {intl.formatMessage({ id: 'routes.lb.routeBy' })}
         </span>
       </Flex>
-      <div className={styles.sectionCard}>
+      <CardWrapper
+        style={{
+          padding: 0,
+          marginBottom: 'var(--ant-margin-sm)',
+          overflow: 'hidden'
+        }}
+      >
         <Form.Item name="lb_policy_mode" hidden noStyle>
           <input />
         </Form.Item>
-        <Segmented
+        <Segmented<string>
+          className={styles.sectionHeader}
           block
           size="middle"
+          aria-label={intl.formatMessage({ id: 'routes.lb.routeBy' })}
           value={mode}
-          onChange={(value) => onModeChange(value as string)}
+          onChange={onModeChange}
           options={[
             {
               value: LB_FORM_MODE.weighted,
@@ -63,7 +78,9 @@ const LbPolicySection = ({
                   })}
                 >
                   <span>
-                    {intl.formatMessage({ id: 'routes.lb.form.mode.weighted' })}
+                    {intl.formatMessage({
+                      id: 'routes.lb.form.mode.weighted'
+                    })}
                   </span>
                 </Tooltip>
               )
@@ -84,16 +101,16 @@ const LbPolicySection = ({
             }
           ]}
         />
-      </div>
-      {mode === LB_FORM_MODE.policy && (
-        <>
-          <SessionAffinityFields />
-          <PolicyPluginSection plugin="least-load">
-            <PolicyWeightField plugin="least-load" />
-          </PolicyPluginSection>
-          <DecisionServiceFields getTargetModelNames={getTargetModelNames} />
-        </>
-      )}
+        {mode === LB_FORM_MODE.policy && (
+          <div className={styles.sectionBody}>
+            <SessionAffinityFields />
+            <PolicyPluginSection plugin="least-load">
+              <PolicyWeightField plugin="least-load" />
+            </PolicyPluginSection>
+            <DecisionServiceFields getTargetModelNames={getTargetModelNames} />
+          </div>
+        )}
+      </CardWrapper>
     </>
   );
 };

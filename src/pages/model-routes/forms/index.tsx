@@ -75,6 +75,7 @@ interface ProviderFormProps {
 
 const TABKeysMap = {
   BASIC: 'basic',
+  LB_POLICY: 'lbPolicy',
   TARGETS: 'targets'
 };
 
@@ -83,11 +84,13 @@ const requiredFields = {
     sort: 1,
     fields: ['name']
   },
-  [TABKeysMap.TARGETS]: {
+  [TABKeysMap.LB_POLICY]: {
     sort: 2,
-    // The LB policy section has no segment of its own, so its errors (which
-    // surface under the top-level field name `plugins`) route to this one.
-    fields: ['targets', 'plugins']
+    fields: ['lb_policy_mode', 'plugins']
+  },
+  [TABKeysMap.TARGETS]: {
+    sort: 3,
+    fields: ['targets']
   }
 };
 
@@ -124,6 +127,12 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       label: intl.formatMessage({ id: 'common.title.basicInfo' }),
       icon: <IconFont type="icon-basic" />,
       field: 'name'
+    },
+    {
+      value: TABKeysMap.LB_POLICY,
+      label: intl.formatMessage({ id: 'routes.lb.routeBy' }),
+      icon: <IconFont type="icon-alt-route" />,
+      field: 'lb_policy_mode'
     },
     {
       value: TABKeysMap.TARGETS,

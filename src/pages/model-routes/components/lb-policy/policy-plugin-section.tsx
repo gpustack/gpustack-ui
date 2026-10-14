@@ -8,10 +8,11 @@ import type { FormData } from '../../config/types';
 
 const useStyles = createStyles(({ css }) => ({
   section: css`
-    border: 1px solid var(--ant-color-border);
-    border-radius: 6px;
-    padding: 14px 10px 12px;
-    margin-bottom: 12px;
+    padding-block: var(--ant-padding);
+
+    & + & {
+      border-block-start: 1px solid var(--ant-color-border-secondary);
+    }
   `,
   title: css`
     color: var(--ant-color-text-tertiary);

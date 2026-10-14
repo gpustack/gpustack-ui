@@ -133,6 +133,7 @@ after(() => dom.window.close());
 const { Form, Input } = await import('antd');
 const { FormContext } = await import('../../config/form-context.ts');
 const { default: KVCacheForm } = await import('../kv-cache.tsx');
+const { default: RoleKVCache } = await import('../roles/role-kv-cache.tsx');
 const { clearUnsupportedPDCacheServices } =
   await import('../../utils/pd-cache-services.ts');
 
@@ -164,12 +165,16 @@ const mode: PDMode = {
   ]
 };
 
-const mountCacheForm = async (version = '0.29.0') => {
+const mountCacheForm = async (
+  version = '0.29.0',
+  options: { role?: string; roleSection?: boolean; mode?: PDMode } = {}
+) => {
   const container = dom.window.document.createElement('div');
   dom.window.document.body.appendChild(container);
   const root = createRoot(container);
   let form!: FormInstance;
-  let selectedMode = mode;
+  let selectedMode = options.mode ?? mode;
+  const role = options.role ?? 'decode';
   const clearIncompatibleCaches = () => {
     const roles = form.getFieldValue('roles');
     const next = clearUnsupportedPDCacheServices(
@@ -203,7 +208,7 @@ const mountCacheForm = async (version = '0.29.0') => {
             cluster_id: 2,
             roles: [
               {
-                name: 'decode',
+                name: role,
                 backend: null,
                 backend_version: null,
                 image_name: null,
@@ -231,12 +236,18 @@ const mountCacheForm = async (version = '0.29.0') => {
             createElement(Input)
           )
         ),
-        createElement(KVCacheForm, {
-          mode: selectedMode,
-          role: 'decode',
-          namePrefix: ['roles', 0],
-          section: { label: 'Decode KV cache' }
-        })
+        options.roleSection
+          ? createElement(RoleKVCache, {
+              mode: selectedMode,
+              role,
+              index: 0
+            })
+          : createElement(KVCacheForm, {
+              mode: selectedMode,
+              role,
+              namePrefix: ['roles', 0],
+              section: { label: 'Role KV cache' }
+            })
       )
     );
   };
@@ -513,6 +524,63 @@ test('re-enabling a role cache retains a shared service supported by the current
         'cache_service_id'
       ]),
       8
+    );
+  } finally {
+    await view.dispose();
+  }
+});
+
+for (const name of [
+  'vllm-nixl',
+  'vllm-mooncake',
+  'vllm-ascend-mooncake',
+  'sglang-mooncake',
+  'sglang-nixl',
+  'custom'
+]) {
+  test(`${name} Decode hides cache controls and preserves saved configuration`, async () => {
+    const view = await mountCacheForm('0.29.0', {
+      roleSection: true,
+      mode: { ...mode, name, cache_services: [] }
+    });
+    const savedCache = { enabled: true, mode: 'shared', cache_service_id: 7 };
+    try {
+      assert.equal(view.container.querySelector('button[role="switch"]'), null);
+      assert.equal(view.container.querySelector('select'), null);
+      assert.deepEqual(view.warnings(), []);
+      await act(async () => {
+        view.form.setFieldValue(['roles', 0, 'replicas'], 2);
+        await view.form.validateFields();
+      });
+      assert.deepEqual(
+        view.form.getFieldValue(['roles', 0, 'extended_kv_cache']),
+        savedCache
+      );
+      assert.deepEqual(
+        view.form.getFieldValue('roles')[0].extended_kv_cache,
+        savedCache
+      );
+    } finally {
+      await view.dispose();
+    }
+  });
+}
+
+test('Prefill keeps its editable role cache controls', async () => {
+  const view = await mountCacheForm('0.29.0', {
+    role: 'prefill',
+    roleSection: true,
+    mode: {
+      ...mode,
+      cache_services: [{ provider: 'LMCache', roles: { prefill: {} } }]
+    }
+  });
+  try {
+    assertChoicesEnabled(view.container);
+    await chooseCacheBackend(view.container, 'in-process');
+    assert.equal(
+      view.form.getFieldValue(['roles', 0, 'extended_kv_cache', 'mode']),
+      'local'
     );
   } finally {
     await view.dispose();

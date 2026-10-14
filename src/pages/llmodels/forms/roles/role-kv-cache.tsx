@@ -1,6 +1,7 @@
 import { useIntl } from '@umijs/max';
 import { Alert } from 'antd';
 import React from 'react';
+import { RoleValueMap } from '../../config';
 import { PDMode } from '../../config/types';
 import KVCacheForm from '../kv-cache';
 import { RoleSection } from './override-section';
@@ -25,6 +26,12 @@ const RoleKVCache: React.FC<RoleKVCacheProps> = ({
   role
 }) => {
   const intl = useIntl();
+
+  // Keep stored Decode cache settings intact without mounting editable fields
+  // or the cache form's service-selection effects.
+  if (role === RoleValueMap.Decode) {
+    return null;
+  }
 
   const section = {
     label: intl.formatMessage({ id: 'models.form.roles.group.cache' }),

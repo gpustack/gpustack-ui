@@ -426,6 +426,7 @@ const Clusters: React.FC = () => {
           handleClickPrimary={handleClickDropdown}
           right={
             <RightActions
+              clusters={dataSource.dataList}
               handleDeleteByBatch={handleDeleteBatch}
               handleClickPrimary={handleClickDropdown}
               rowSelection={rowSelection}

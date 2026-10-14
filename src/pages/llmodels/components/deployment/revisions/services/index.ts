@@ -1,6 +1,7 @@
 import { request } from '@umijs/max';
 import { MODELS_API } from '../../../../apis';
 import type { ListItem } from '../../../../config/types';
+import { REVISION_HISTORY_LIMIT } from '../config';
 import type {
   ModelRevisionDetail,
   RevisionPage,
@@ -12,9 +13,9 @@ export { restartModel } from '../../../../apis';
 export const getRevisionModel = (id: number) =>
   request<ListItem>(`${MODELS_API}/${id}`, { skipErrorHandler: true });
 
-export const getRevisions = (id: number, page: number) =>
+export const getRevisions = (id: number) =>
   request<RevisionPage>(`${MODELS_API}/${id}/revisions`, {
-    params: { page, perPage: 10 },
+    params: { page: 1, perPage: REVISION_HISTORY_LIMIT },
     skipErrorHandler: true
   });
 

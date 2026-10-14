@@ -2,6 +2,7 @@ import { useSubmitLock } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useRef, useState } from 'react';
 import type { ListItem } from '../../../../config/types';
+import { REVISION_HISTORY_LIMIT } from '../config';
 import type { HistoryState } from '../config/types';
 import {
   deleteRevision,
@@ -17,8 +18,6 @@ const initialState: HistoryState = {
   restartError: null,
   model: null,
   items: [],
-  page: 1,
-  total: 0,
   latest: null,
   selected: null,
   comparison: null,
@@ -80,12 +79,11 @@ export default function useModelRevisions(
     }
   }
 
-  async function load(model: ListItem, page = 1) {
+  async function load(model: ListItem) {
     const ticket = ++requestId.current;
     setState((previous) => ({
       ...previous,
       model,
-      page,
       items: [],
       loading: true,
       comparison: null,
@@ -96,20 +94,19 @@ export default function useModelRevisions(
     }));
     try {
       const [result, current] = await Promise.all([
-        getRevisions(model.id, page),
+        getRevisions(model.id),
         getRevisionModel(model.id)
       ]);
       if (ticket !== requestId.current) return;
+      const items = result.items.slice(0, REVISION_HISTORY_LIMIT);
       setState((previous) => ({
         ...previous,
         model: current,
-        items: result.items,
-        total: result.pagination.total,
-        latest:
-          page === 1 ? (result.items[0]?.revision ?? null) : previous.latest,
+        items,
+        latest: items[0]?.revision ?? null,
         loading: false
       }));
-      if (result.items[0]) await select(current, result.items[0].revision);
+      if (items[0]) await select(current, items[0].revision);
     } catch (error) {
       if (ticket === requestId.current) {
         setState((previous) => ({
@@ -304,7 +301,6 @@ export default function useModelRevisions(
     confirmRollback,
     setRestartOnRollback,
     retryRestart,
-    changePage: (page: number) => state.model && void load(state.model, page),
     select: (revision: number) =>
       state.model && void select(state.model, revision)
   };

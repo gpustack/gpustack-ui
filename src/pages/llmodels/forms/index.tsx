@@ -237,7 +237,12 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   // arrives rather than letting it sit true and re-clear on every render.
   const handlePDEffectsChange = (next: PDEffects) => {
     clearIncompatibleRoleCaches(next.modeData);
-    setPDEffects(next);
+    const loraCleared =
+      next.clearModelLora && !!form.getFieldValue('lora_list')?.length;
+    setPDEffects((previous) => ({
+      ...next,
+      loraCleared: next.enabled && (loraCleared || previous.loraCleared)
+    }));
     if (next.enabled && !preservedModelFields.current) {
       // Every field any branch below clears, read before any of them run.
       preservedModelFields.current = {
@@ -274,14 +279,8 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       } as any);
     }
     if (next.clearModelLora) {
-      // Not a projection problem — an admission one. LoRA does not serve under
-      // PD at all (the router's registry is keyed by served-model name, the
-      // members register the base name), so the backend refuses `lora_list`
-      // together with `roles`. The field is unmounted while PD is on, and an
-      // unmounted field is already absent from what `onFinish` hands over —
-      // this clears the store as well, so nothing reads a value the user can
-      // no longer see (`getFieldsValue(true)`, the copy path, a later switch
-      // back to a form that would show it again as if it were still deployed).
+      // PD and LoRA cannot be submitted together. Clear the hidden field and
+      // retain its snapshot so turning PD back off restores the user's adapters.
       form.setFieldValue('lora_list', []);
     }
     // PD off again: give the model-level fields back. Guarded on the stash
@@ -544,6 +543,9 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       // value even after switching back to a built-in mode, so the confirmed
       // cleanup also clears the saved model-level cache on edit.
       allValues.extended_kv_cache = form.getFieldValue('extended_kv_cache');
+      // Unmounted fields are absent from onFinish. An explicit empty list
+      // clears stored adapters; omitting the field preserves them on update.
+      allValues.lora_list = [];
     } else {
       allValues.roles = null;
       allValues.disaggregation = null;
@@ -971,6 +973,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
                                   // neither of them shares.
                                   cacheCleared={pdEffects.cacheCleared}
                                   modeCleared={pdEffects.modeCleared}
+                                  loraCleared={pdEffects.loraCleared}
                                   // The transport picker is in here, so the
                                   // choice is made here — but the switch above
                                   // owns `enabled`. Only the choice comes back,

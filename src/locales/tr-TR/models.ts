@@ -529,6 +529,8 @@ export default {
     'PD ayrıştırma yalnızca vLLM / SGLang motorlarını destekler. Diğer motorlar Özel mod ile kullanılabilir.',
   'models.form.pd.disabled.schedule':
     'PD dağıtımı için zamanlanmış ölçekleme kullanılamaz. Rol başına replika sayısıyla ölçekleyin.',
+  'models.form.pd.lora.cleared':
+    'PD ayrıştırması ve LoRA şu anda birlikte kullanılamaz. LoRA bu yapılandırmada devre dışı bırakıldı; değişiklik kaydettiğinizde uygulanır.',
   'models.form.pd.cache.cleared':
     'PD dağıtımında KV önbelleği rol başına ayarlanır; model düzeyindeki ayar temizlendi. Gereken roller için tek tek seçin.',
   'models.form.roles': 'Roller',

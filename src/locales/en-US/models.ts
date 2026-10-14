@@ -527,6 +527,8 @@ export default {
     'PD disaggregation supports the vLLM and SGLang engines only. Other engines can still use it through the Custom mode.',
   'models.form.pd.disabled.schedule':
     'Scheduled scaling is not available for a PD deployment. Scale it through the per-role replica counts.',
+  'models.form.pd.lora.cleared':
+    'PD disaggregation and LoRA cannot currently be used together. LoRA has been disabled in this configuration; the change takes effect when you save.',
   'models.form.pd.cache.cleared':
     'KV cache is configured per role for a PD deployment; the model-level setting has been cleared. Select it for the roles that need it.',
   'models.form.roles': 'Roles',

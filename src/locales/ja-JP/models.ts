@@ -530,6 +530,8 @@ export default {
     'PD 分離は vLLM / SGLang エンジンのみ対応です。他のエンジンは「カスタム」モードで利用できます。',
   'models.form.pd.disabled.schedule':
     'PD デプロイは定時スケーリングに未対応です。各ロールのレプリカ数で調整してください。',
+  'models.form.pd.lora.cleared':
+    '現在、PD 分離と LoRA は併用できません。LoRA 設定を無効にしました。保存後に反映されます。',
   'models.form.pd.cache.cleared':
     'PD デプロイでは KV キャッシュをロール単位で設定します。モデルレベルの設定はクリアされました。必要なロールで個別に選択してください。',
   'models.form.roles': 'ロール設定',

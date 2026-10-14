@@ -4,7 +4,7 @@ import { useMemoizedFn } from 'ahooks';
 import _ from 'lodash';
 import { useRef } from 'react';
 import { CPU_BACKEND, matrixServesFamily, profileRamGib } from '../config';
-import { CacheProviderItem } from '../config/types';
+import { CacheProviderItem, CacheServiceInstanceItem } from '../config/types';
 import {
   GiB,
   componentEnabled,
@@ -13,6 +13,7 @@ import {
   matchesSelector,
   resolveFieldValue
 } from '../forms/utils';
+import { planRecreation, recreationAvailableRam } from './placement-resources';
 
 export interface ResourceCheckStatus {
   show: boolean;
@@ -28,129 +29,24 @@ export interface PlacementInputs {
   workers: WorkerListItem[];
   workerId?: number;
   workerSelector?: Record<string, string> | null;
-  // Edits only take effect on instance recreation. Current free RAM may
-  // already include this service, and its attributable usage is unknown.
-  checkFreeMemory?: boolean;
+  mode?: 'create' | 'recreate';
+  replacingInstances?: CacheServiceInstanceItem[];
+  // A single-instance replacement reclaims only this instance's claim.
+  recreateInstance?: CacheServiceInstanceItem;
+  // The current siblings determine sticky placement after a single delete.
+  existingInstances?: CacheServiceInstanceItem[];
 }
 
 const hidden: ResourceCheckStatus = { show: false, message: '' };
 
 type Formatter = ReturnType<typeof useIntl>;
 
-// Creation checks current free RAM. Editing checks static capacity only:
-// free RAM already reflects running instances, whose share is unknown.
-// Pure in its inputs, including late catalog or worker responses.
-export const evaluatePlacement = (
-  inputs: PlacementInputs,
+const checkVersionCompatibility = (
+  targets: WorkerListItem[],
+  provider: CacheProviderItem | undefined,
+  providerVersion: string | undefined,
   intl: Formatter
-): ResourceCheckStatus => {
-  const {
-    provider,
-    providerVersion,
-    fieldValues,
-    workers,
-    workerId,
-    workerSelector,
-    checkFreeMemory = true
-  } = inputs;
-  const managedFields = provider?.fields || [];
-  const isPerNode = provider?.topology === 'per_node';
-  // The component claiming RAM through its resource_profile is the
-  // only placement the service form can check — engine-side
-  // consumption follows the deployments. What to check depends on how
-  // that component is placed, not on how many components there are: a
-  // replicas pool needs enough workers that fit, while a per_node
-  // component lands on every matching worker, so the tightest one
-  // decides (which is the path below).
-  const claiming = Object.values(provider?.components || {}).find(
-    (component) =>
-      Boolean(component.resource_profile?.ram_gib) &&
-      componentEnabled(component, managedFields, fieldValues)
-  );
-  if (claiming && claiming.topology !== 'per_node') {
-    const size = profileRamGib(
-      claiming.resource_profile,
-      managedFields,
-      fieldValues
-    );
-    const replicas = claiming.replicas_by
-      ? Number(
-          resolveFieldValue(claiming.replicas_by, managedFields, fieldValues)
-        ) || 1
-      : (claiming.replicas ?? 1);
-    if (!size || !workers.length) {
-      return hidden;
-    }
-    const matched = workers.filter((worker) =>
-      matchesSelector(worker, workerSelector)
-    );
-    if (matched.length < replicas) {
-      return {
-        show: true,
-        type: 'warning',
-        message: intl.formatMessage(
-          { id: 'kvCache.check.store.insufficientWorkers' },
-          { count: matched.length, replicas }
-        )
-      };
-    }
-    const memoryOf = checkFreeMemory ? getFreeMemory : getTotalMemory;
-    const fitting = matched.filter((worker) => {
-      const memory = memoryOf(worker);
-      return memory !== undefined && memory > size * GiB;
-    });
-    if (fitting.length < replicas) {
-      // Missing worker metrics cannot establish a static capacity failure.
-      if (
-        !checkFreeMemory &&
-        matched.some((worker) => getTotalMemory(worker) === undefined)
-      ) {
-        return hidden;
-      }
-      return {
-        show: true,
-        type: 'warning',
-        message: intl.formatMessage(
-          {
-            id: checkFreeMemory
-              ? 'kvCache.check.store.exceedsFree'
-              : 'kvCache.check.store.exceedsTotal'
-          },
-          { count: fitting.length, replicas, size }
-        )
-      };
-    }
-    return checkFreeMemory
-      ? {
-          show: true,
-          type: 'success',
-          message: intl.formatMessage(
-            { id: 'kvCache.check.ok.store' },
-            { replicas, size }
-          )
-        }
-      : hidden;
-  }
-  const instanceGib = profileRamGib(
-    claiming?.resource_profile ?? provider?.resource_profile,
-    managedFields,
-    fieldValues
-  );
-  if (!instanceGib || !workers.length) {
-    return hidden;
-  }
-  const targets = isPerNode
-    ? workers.filter((worker) => matchesSelector(worker, workerSelector))
-    : workers.filter((worker) => worker.id === workerId);
-  if (!targets.length) {
-    return isPerNode
-      ? {
-          show: true,
-          type: 'warning',
-          message: intl.formatMessage({ id: 'kvCache.check.noWorkers' })
-        }
-      : hidden;
-  }
+): ResourceCheckStatus | undefined => {
   // A worker whose accelerator the version has no image for cannot run the
   // cache server — the worker refuses such an instance at start with this
   // same reason, and saying it here is what keeps that off the instance.
@@ -216,6 +112,200 @@ export const evaluatePlacement = (
       )
     };
   }
+  return undefined;
+};
+
+const evaluateRecreation = (
+  inputs: PlacementInputs,
+  intl: Formatter
+): ResourceCheckStatus => {
+  const unavailable = (): ResourceCheckStatus => ({
+    show: true,
+    type: 'warning',
+    message: intl.formatMessage({ id: 'kvCache.check.recreate.unavailable' })
+  });
+  if (!inputs.provider) {
+    return unavailable();
+  }
+  const plan = planRecreation({ ...inputs, provider: inputs.provider });
+  if (!plan.hasDeployments && !plan.unavailable) {
+    return hidden;
+  }
+  if (!inputs.workers.length) {
+    return unavailable();
+  }
+  if (plan.insufficientWorkers) {
+    return {
+      show: true,
+      type: 'warning',
+      message: intl.formatMessage(
+        { id: 'kvCache.check.store.insufficientWorkers' },
+        plan.insufficientWorkers
+      )
+    };
+  }
+  if (!plan.targets.length) {
+    return plan.unavailable
+      ? unavailable()
+      : {
+          show: true,
+          type: 'warning',
+          message: intl.formatMessage({ id: 'kvCache.check.noWorkers' })
+        };
+  }
+  const compatibility = checkVersionCompatibility(
+    plan.targets,
+    inputs.provider,
+    inputs.providerVersion,
+    intl
+  );
+  if (compatibility) {
+    return compatibility;
+  }
+  const replacing = inputs.recreateInstance
+    ? [inputs.recreateInstance]
+    : inputs.replacingInstances;
+  let incomplete = plan.unavailable || false;
+  for (const worker of plan.targets) {
+    const required = plan.required.get(worker.id) || 0;
+    if (!required) {
+      continue;
+    }
+    const available = recreationAvailableRam(worker, replacing);
+    if (available === undefined) {
+      incomplete = true;
+    } else if (required > available) {
+      return {
+        show: true,
+        type: 'warning',
+        message: intl.formatMessage(
+          { id: 'kvCache.check.recreate.insufficientRam' },
+          {
+            worker: worker.name,
+            required: _.round(required / GiB, 2),
+            available: _.round(available / GiB, 2)
+          }
+        )
+      };
+    }
+  }
+  // A passing reservation check does not promise physical free RAM or
+  // future placement; preserve the form's existing recreate-to-apply notice.
+  return incomplete ? unavailable() : hidden;
+};
+
+// Creation retains the free-RAM advisory. Recreation uses the scheduler's
+// reservation budget and reclaims only the instances being replaced.
+export const evaluatePlacement = (
+  inputs: PlacementInputs,
+  intl: Formatter
+): ResourceCheckStatus => {
+  if (inputs.mode === 'recreate') {
+    return evaluateRecreation(inputs, intl);
+  }
+  const {
+    provider,
+    providerVersion,
+    fieldValues,
+    workers,
+    workerId,
+    workerSelector
+  } = inputs;
+  const managedFields = provider?.fields || [];
+  const isPerNode = provider?.topology === 'per_node';
+  // The component claiming RAM through its resource_profile is the
+  // only placement the service form can check — engine-side
+  // consumption follows the deployments. What to check depends on how
+  // that component is placed, not on how many components there are: a
+  // replicas pool needs enough workers that fit, while a per_node
+  // component lands on every matching worker, so the tightest one
+  // decides (which is the path below).
+  const claiming = Object.values(provider?.components || {}).find(
+    (component) =>
+      Boolean(component.resource_profile?.ram_gib) &&
+      componentEnabled(component, managedFields, fieldValues)
+  );
+  if (claiming && claiming.topology !== 'per_node') {
+    const size = profileRamGib(
+      claiming.resource_profile,
+      managedFields,
+      fieldValues
+    );
+    const replicas = claiming.replicas_by
+      ? Number(
+          resolveFieldValue(claiming.replicas_by, managedFields, fieldValues)
+        ) || 1
+      : (claiming.replicas ?? 1);
+    if (!size || !workers.length) {
+      return hidden;
+    }
+    const matched = workers.filter((worker) =>
+      matchesSelector(worker, workerSelector)
+    );
+    if (matched.length < replicas) {
+      return {
+        show: true,
+        type: 'warning',
+        message: intl.formatMessage(
+          { id: 'kvCache.check.store.insufficientWorkers' },
+          { count: matched.length, replicas }
+        )
+      };
+    }
+    const fitting = matched.filter((worker) => {
+      const memory = getFreeMemory(worker);
+      return memory !== undefined && memory > size * GiB;
+    });
+    if (fitting.length < replicas) {
+      return {
+        show: true,
+        type: 'warning',
+        message: intl.formatMessage(
+          {
+            id: 'kvCache.check.store.exceedsFree'
+          },
+          { count: fitting.length, replicas, size }
+        )
+      };
+    }
+    return {
+      show: true,
+      type: 'success',
+      message: intl.formatMessage(
+        { id: 'kvCache.check.ok.store' },
+        { replicas, size }
+      )
+    };
+  }
+  const instanceGib = profileRamGib(
+    claiming?.resource_profile ?? provider?.resource_profile,
+    managedFields,
+    fieldValues
+  );
+  if (!instanceGib || !workers.length) {
+    return hidden;
+  }
+  const targets = isPerNode
+    ? workers.filter((worker) => matchesSelector(worker, workerSelector))
+    : workers.filter((worker) => worker.id === workerId);
+  if (!targets.length) {
+    return isPerNode
+      ? {
+          show: true,
+          type: 'warning',
+          message: intl.formatMessage({ id: 'kvCache.check.noWorkers' })
+        }
+      : hidden;
+  }
+  const compatibility = checkVersionCompatibility(
+    targets,
+    provider,
+    providerVersion,
+    intl
+  );
+  if (compatibility) {
+    return compatibility;
+  }
   const constrained = targets
     .filter((worker) => getTotalMemory(worker) !== undefined)
     .sort((a, b) => getTotalMemory(a)! - getTotalMemory(b)!)[0];
@@ -231,11 +321,6 @@ export const evaluatePlacement = (
         }
       )
     };
-  }
-  // Passing static edit checks does not prove current resources are free.
-  // Let the form's existing "recreate to apply" notice explain the save.
-  if (!checkFreeMemory) {
-    return hidden;
   }
   const tightest = targets
     .filter((worker) => getFreeMemory(worker) !== undefined)

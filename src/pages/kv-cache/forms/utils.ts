@@ -2,18 +2,22 @@ import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
 import sortVersions from '@/utils/sort-versions';
 import _ from 'lodash';
 import { CPU_BACKEND, matrixServesFamily } from '../config';
+import { resolveFieldValue } from '../config/field-values';
 import {
   CacheProviderComponent,
   CacheProviderField,
   CacheProviderItem,
-  CacheProviderVersionConfig
+  CacheProviderVersionConfig,
+  FormData
 } from '../config/types';
+
+export { resolveFieldValue } from '../config/field-values';
 
 export const GiB = 1024 * 1024 * 1024;
 
 // fields the controller applies to running instances directly; everything
 // else only lands when an instance is deleted and recreated
-export const NO_RECREATE_FIELDS = ['name', 'restart_on_error'];
+export const NO_RECREATE_FIELDS = ['name', 'description', 'restart_on_error'];
 
 // provider-declared field names are technical keys like "base_path";
 // turn them into "Base Path" when the declaration carries no label
@@ -48,20 +52,6 @@ export const stripUnset = (value: any): any => {
   return value;
 };
 
-// what a declared field holds right now: the form's value where the user
-// (or a seeding pass) put one, the declaration's default otherwise
-export const resolveFieldValue = (
-  name: string | undefined,
-  fields: CacheProviderField[] | undefined,
-  values?: Record<string, any> | null
-) => {
-  if (!name) {
-    return undefined;
-  }
-  const declared = fields?.find((field) => field.name === name);
-  return values?.[name] ?? declared?.default;
-};
-
 // a component runs when the field gating it holds the declared value; an
 // ungated one always runs. enabled_when absent means "any truthy value"
 export const componentEnabled = (
@@ -76,6 +66,52 @@ export const componentEnabled = (
   return component.enabled_when != null
     ? gate === component.enabled_when
     : Boolean(gate);
+};
+
+// Only effective placement changes opt edits into resource checks. Fields
+// unrelated to RAM, replicas or component gates may still require a restart,
+// but do not change this projection. Defaults match evaluation's resolution.
+export const placementConfig = (
+  values: Partial<FormData>,
+  provider?: CacheProviderItem
+) => {
+  const fields = provider?.fields;
+  const fieldValues = values.config?.fields;
+  const components = Object.entries(provider?.components || {});
+  const dependencies = new Set<string>();
+  const addDependency = (name?: string) => {
+    if (!name || dependencies.has(name)) {
+      return;
+    }
+    dependencies.add(name);
+    addDependency(fields?.find((field) => field.name === name)?.visible_by);
+  };
+  const addProfile = (template?: string) => {
+    for (const match of template?.matchAll(/\{\{\s*([\w.]+)\s*\}\}/g) || []) {
+      addDependency(match[1]);
+    }
+  };
+  addProfile(provider?.resource_profile?.ram_gib);
+  components.forEach(([, component]) => {
+    addProfile(component.resource_profile?.ram_gib);
+    addDependency(component.replicas_by);
+    addDependency(component.enabled_by);
+  });
+  return stripUnset({
+    provider_name: values.provider_name,
+    provider_version: values.provider_version,
+    cluster_id: values.cluster_id,
+    worker_id: values.worker_id,
+    worker_selector: values.worker_selector,
+    fields: provider
+      ? Object.fromEntries(
+          [...dependencies].map((name) => [
+            name,
+            resolveFieldValue(name, fields, fieldValues)
+          ])
+        )
+      : fieldValues
+  });
 };
 
 // workers of a cluster may share label keys with different values; group

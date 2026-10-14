@@ -3,15 +3,22 @@ import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 import { afterEach, beforeEach, mock, test } from 'node:test';
 import React, { act, createElement, useEffect, useMemo, useState } from 'react';
-import type { CacheProviderItem, ListItem } from '../../config/types';
+import type {
+  CacheProviderItem,
+  CacheServiceInstanceItem,
+  FormData,
+  ListItem
+} from '../../config/types';
 import type { ResourceCheckStatus } from '../../hooks/use-placement-check';
 
 const deferred = <T,>() => {
   let resolve!: (value: T) => void;
-  const promise = new Promise<T>((done) => {
+  let reject!: (reason: Error) => void;
+  const promise = new Promise<T>((done, fail) => {
     resolve = done;
+    reject = fail;
   });
-  return { promise, resolve };
+  return { promise, resolve, reject };
 };
 
 const GiB = 1024 ** 3;
@@ -20,14 +27,14 @@ const workers = [
     id: 1,
     name: 'worker-tight',
     labels: { pool: 'tight' },
-    status: { memory: { total: 32 * GiB, used: 24 * GiB } }
+    status: { memory: { total: 32 * GiB, used: 24 * GiB, allocated: 24 * GiB } }
   },
   {
     id: 2,
     name: 'worker-large',
     labels: { pool: 'large' },
     status: {
-      memory: { total: 64 * GiB, used: 0 },
+      memory: { total: 64 * GiB, used: 0, allocated: 0 },
       gpu_devices: [{ type: 'cuda' }]
     }
   }
@@ -65,7 +72,25 @@ const saved: ListItem = {
   updated_at: ''
 };
 
+const savedInstances = (service = saved): CacheServiceInstanceItem[] => [
+  {
+    id: service.id,
+    name: `${service.name}-instance`,
+    cache_service_id: service.id,
+    worker_id: service.worker_id ?? 1,
+    cluster_id: service.cluster_id,
+    computed_resource_claim: {
+      ram: (service.config?.fields?.ram_size ?? 16) * GiB
+    },
+    state: 'running',
+    created_at: '',
+    updated_at: ''
+  }
+];
+type InstanceResponse = { items: CacheServiceInstanceItem[] };
 type Fixture = {
+  instances: Map<number, ReturnType<typeof deferred<InstanceResponse>>>;
+  instanceRequests: number[];
   catalog: ReturnType<typeof deferred<CacheProviderItem[]>>;
   workerList: ReturnType<typeof deferred<typeof workers>>;
 };
@@ -244,6 +269,17 @@ mock.module(
     }
   }
 );
+mock.module(new URL('../../apis/index.ts', import.meta.url).href, {
+  namedExports: {
+    queryCacheServiceInstances: (id: number) => {
+      fixture.instanceRequests.push(id);
+      if (!fixture.instances.has(id)) {
+        fixture.instances.set(id, deferred<InstanceResponse>());
+      }
+      return fixture.instances.get(id)!.promise;
+    }
+  }
+});
 mock.module(new URL('../component-parameters.tsx', import.meta.url).href, {
   defaultExport: () => null
 });
@@ -296,27 +332,44 @@ const settle = async () => {
   });
 };
 const mount = async (action: 'create' | 'edit', currentData = saved) => {
-  fixture = { catalog: deferred(), workerList: deferred() };
+  fixture = {
+    catalog: deferred(),
+    workerList: deferred(),
+    instances: new Map([[currentData.id, deferred<InstanceResponse>()]]),
+    instanceRequests: []
+  };
   const source = fixture;
   const container = dom.window.document.getElementById('root')!;
   const root = createRoot(container);
   const statuses: ResourceCheckStatus[] = [];
   const configChanges: boolean[] = [];
+  const submissions: FormData[] = [];
   const ref = React.createRef<any>();
-  await act(async () => {
-    root.render(
-      createElement(ServiceForm, {
-        ref,
-        action,
-        provider: provider.name,
-        currentData: action === 'edit' ? currentData : undefined,
-        onFinish: async () => {},
-        onConfigChanged: (changed: boolean) => configChanges.push(changed),
-        onCheckStatusChange: (status: ResourceCheckStatus) =>
-          statuses.push(status)
-      })
-    );
-  });
+  const render = async (data = currentData) => {
+    await act(async () => {
+      root.render(
+        createElement(ServiceForm, {
+          ref,
+          action,
+          provider: provider.name,
+          currentData: action === 'edit' ? data : undefined,
+          onFinish: async (values: FormData) => {
+            submissions.push(values);
+          },
+          onConfigChanged: (changed: boolean) => configChanges.push(changed),
+          onCheckStatusChange: (status: ResourceCheckStatus) =>
+            statuses.push(status)
+        })
+      );
+    });
+  };
+  await render();
+  const instancesReady = async (
+    items = savedInstances(currentData),
+    id = currentData.id
+  ) => {
+    await act(async () => source.instances.get(id)!.resolve({ items }));
+  };
   const changeNow = async (id: string, value: string) => {
     const element = container.querySelector<HTMLInputElement>(`#${id}`)!;
     assert.ok(element, `Expected form control ${id}`);
@@ -340,15 +393,32 @@ const mount = async (action: 'create' | 'edit', currentData = saved) => {
     ...source,
     statuses,
     configChanges,
+    submissions,
+    render,
+    instancesReady,
     ref,
     changeNow,
     change: async (id: string, value: string) => {
       await changeNow(id, value);
       await settle();
     },
-    ready: async (catalog = [provider], workerItems = workers) => {
+    ready: async (
+      catalog = [provider],
+      workerItems = workers,
+      instances = savedInstances(currentData)
+    ) => {
+      await instancesReady(instances);
       await act(async () => source.catalog.resolve(catalog));
       await act(async () => source.workerList.resolve(workerItems));
+      await settle();
+    },
+    submit: async () => {
+      await act(async () => ref.current.submit());
+    },
+    toggle: async (id: string) => {
+      const element = container.querySelector<HTMLInputElement>(`#${id}`)!;
+      assert.ok(element, `Expected form control ${id}`);
+      await act(async () => element.click());
       await settle();
     },
     unmount: async () => {
@@ -368,7 +438,9 @@ test('editing only the version does not count an existing cache allocation twice
       [
         {
           ...workers[0],
-          status: { memory: { total: 20 * GiB, used: 15 * GiB } }
+          status: {
+            memory: { total: 20 * GiB, used: 15 * GiB, allocated: 15 * GiB }
+          }
         }
       ]
     );
@@ -390,6 +462,7 @@ test('editing only the version does not count an existing cache allocation twice
 test('edit checks placement only after relevant user edits, using the latest form values', async () => {
   const form = await mount('edit');
   try {
+    await form.instancesReady();
     await settle();
     assert.equal(
       form.statuses.some((status) => status.show),
@@ -418,7 +491,7 @@ test('edit checks placement only after relevant user edits, using the latest for
     await form.change('config_fields_ram_size', '32');
     assert.equal(
       form.statuses.at(-1)?.message,
-      'kvCache.form.ramSize.exceedsTotal'
+      'kvCache.check.recreate.insufficientRam'
     );
     await form.change('config_fields_ram_size', '16');
     assert.deepEqual(form.statuses.at(-1), { show: false, message: '' });
@@ -440,7 +513,7 @@ test('edit checks placement only after relevant user edits, using the latest for
   }
 });
 
-test('editing a singleton worker checks the new target total memory', async () => {
+test('editing a singleton worker checks the new target reservation budget', async () => {
   const form = await mount('edit', {
     ...saved,
     worker_id: 1,
@@ -455,10 +528,7 @@ test('editing a singleton worker checks the new target total memory', async () =
     await form.change('worker_id', '2');
     assert.deepEqual(form.statuses.at(-1), { show: false, message: '' });
     await form.change('worker_id', '1');
-    assert.equal(
-      form.statuses.at(-1)?.message,
-      'kvCache.form.ramSize.exceedsTotal'
-    );
+    assert.deepEqual(form.statuses.at(-1), { show: false, message: '' });
     assert.equal(form.statuses.length, 2);
   } finally {
     await form.unmount();
@@ -468,6 +538,7 @@ test('editing a singleton worker checks the new target total memory', async () =
 test('a pending worker response checks an edited configuration, while resetting cancels pending checks', async () => {
   const form = await mount('edit');
   try {
+    await form.instancesReady();
     await act(async () => form.catalog.resolve([provider]));
     await form.change('config_fields_ram_size', '64');
     assert.equal(
@@ -478,7 +549,7 @@ test('a pending worker response checks an edited configuration, while resetting 
     await settle();
     assert.equal(
       form.statuses.at(-1)?.message,
-      'kvCache.form.ramSize.exceedsTotal'
+      'kvCache.check.recreate.insufficientRam'
     );
 
     // Queue a relevant user edit and reset before its debounce can run.
@@ -540,6 +611,7 @@ test('creation still checks the seeded configuration when workers arrive asynchr
 test('reset clears the edit gate before a delayed worker response arrives', async () => {
   const form = await mount('edit');
   try {
+    await form.instancesReady();
     await act(async () => form.catalog.resolve([provider]));
     await form.change('config_fields_ram_size', '64');
     await act(async () => {
@@ -586,6 +658,7 @@ test('an edited singleton is checked when its catalog arrives after a worker cha
     config: { fields: { ram_size: 48 } }
   });
   try {
+    await form.instancesReady();
     await act(async () => form.workerList.resolve(workers));
     await settle();
     assert.equal(
@@ -608,7 +681,7 @@ test('an edited singleton is checked when its catalog arrives after a worker cha
     assert.equal(form.statuses.filter((status) => status.show).length, 1);
     assert.equal(
       form.statuses.at(-1)?.message,
-      'kvCache.form.ramSize.exceedsTotal'
+      'kvCache.check.recreate.insufficientRam'
     );
   } finally {
     await form.unmount();
@@ -647,6 +720,7 @@ test('rapid capacity and selector edits are checked once with the final values',
 test('workers arriving during a pending edit merge into one placement check', async () => {
   const form = await mount('edit');
   try {
+    await form.instancesReady();
     await act(async () => form.catalog.resolve([provider]));
     await settle();
     await form.changeNow('config_fields_ram_size', '64');
@@ -656,7 +730,7 @@ test('workers arriving during a pending edit merge into one placement check', as
     assert.equal(form.statuses.filter((status) => status.show).length, 1);
     assert.equal(
       form.statuses.at(-1)?.message,
-      'kvCache.form.ramSize.exceedsTotal'
+      'kvCache.check.recreate.insufficientRam'
     );
   } finally {
     await form.unmount();
@@ -675,10 +749,373 @@ test('resetting allows the same placement snapshot to be checked in a new sessio
       form.ref.current.form.setFieldsValue({ ...saved });
     });
     await settle();
-    assert.equal(form.statuses.length, 1);
-    await form.change('config_fields_ram_size', '4');
-    assert.equal(form.statuses.length, 2);
+    const afterReset = form.statuses.length;
     assert.deepEqual(form.statuses.at(-1), { show: false, message: '' });
+    await form.change('config_fields_ram_size', '4');
+    assert.equal(form.statuses.length, afterReset + 1);
+    assert.deepEqual(form.statuses.at(-1), { show: false, message: '' });
+  } finally {
+    await form.unmount();
+  }
+});
+
+test('name and restart changes submit normally without checking placement', async () => {
+  const form = await mount('edit');
+  try {
+    await form.ready();
+    const initialChecks = form.statuses.length;
+    await form.change('name', 'renamed-cache');
+    await form.toggle('restart_on_error');
+    assert.equal(form.statuses.length, initialChecks);
+    assert.equal(form.configChanges.at(-1), false);
+
+    await form.submit();
+    assert.equal(form.submissions.length, 1);
+    assert.equal(form.submissions[0].name, 'renamed-cache');
+    assert.equal(form.submissions[0].restart_on_error, false);
+  } finally {
+    await form.unmount();
+  }
+});
+
+test('a provider field unrelated to resource profiles does not trigger a placement check', async () => {
+  const form = await mount('edit');
+  try {
+    await form.ready();
+    const initialChecks = form.statuses.length;
+    await form.change('config_fields_transport', 'rdma');
+    await form.change('config_env', '{"DESCRIPTION":"updated"}');
+    assert.equal(form.statuses.length, initialChecks);
+    // Runtime configuration can still need recreation independently of RAM.
+    assert.equal(form.configChanges.at(-1), true);
+
+    await form.submit();
+    assert.equal(form.submissions.length, 1);
+    assert.equal(form.submissions[0].config?.fields?.transport, 'rdma');
+  } finally {
+    await form.unmount();
+  }
+});
+
+test('recreation reports the RAM gap after crediting only the actual old instance claim', async () => {
+  const current = {
+    ...saved,
+    config: { fields: { ram_size: 15, transport: 'tcp' } }
+  };
+  const form = await mount('edit', current);
+  try {
+    await form.ready(
+      [provider],
+      [
+        {
+          ...workers[0],
+          status: {
+            memory: {
+              total: 20 * GiB,
+              used: 18 * GiB,
+              allocated: 18 * GiB
+            }
+          }
+        }
+      ],
+      savedInstances(current)
+    );
+    await form.change('config_fields_ram_size', '18');
+    assert.equal(
+      form.statuses.at(-1)?.message,
+      'kvCache.check.recreate.insufficientRam'
+    );
+    assert.equal(form.statuses.at(-1)?.type, 'warning');
+
+    // Saving configuration is allowed; the warning concerns its recreation.
+    await form.submit();
+    assert.equal(form.submissions.length, 1);
+    assert.equal(form.submissions[0].config?.fields?.ram_size, 18);
+
+    await form.changeNow('config_fields_ram_size', '15');
+    assert.equal(
+      form.ref.current.form.getFieldValue(['config', 'fields', 'ram_size']),
+      15
+    );
+    assert.deepEqual(form.statuses.at(-1), { show: false, message: '' });
+    const afterRestore = form.statuses.length;
+    await settle();
+    assert.equal(form.statuses.length, afterRestore);
+    assert.equal(form.configChanges.at(-1), false);
+
+    // Restoring clears the deduplication snapshot as well as the warning.
+    await form.change('config_fields_ram_size', '18');
+    assert.equal(form.statuses.length, afterRestore + 1);
+    assert.equal(
+      form.statuses.at(-1)?.message,
+      'kvCache.check.recreate.insufficientRam'
+    );
+  } finally {
+    await form.unmount();
+  }
+});
+
+test('restoring relevant values cancels a queued check before late workers and instances arrive', async () => {
+  const form = await mount('edit');
+  try {
+    await act(async () => form.catalog.resolve([provider]));
+    await form.changeNow('config_fields_ram_size', '64');
+    await form.changeNow('config_fields_ram_size', '16');
+    assert.deepEqual(form.statuses.at(-1), { show: false, message: '' });
+    const afterRestore = form.statuses.length;
+
+    await act(async () => form.workerList.resolve(workers));
+    await form.instancesReady();
+    await settle();
+    assert.equal(form.statuses.length, afterRestore);
+    assert.equal(form.configChanges.at(-1), false);
+
+    await form.change('name', 'only-name-remains');
+    await form.submit();
+    assert.equal(form.statuses.length, afterRestore);
+    assert.equal(form.submissions.length, 1);
+    assert.equal(form.submissions[0].name, 'only-name-remains');
+  } finally {
+    await form.unmount();
+  }
+});
+
+test('a failed instance request warns only after a relevant edit and clears on restoration', async () => {
+  const form = await mount('edit');
+  try {
+    await act(async () => form.catalog.resolve([provider]));
+    await act(async () => form.workerList.resolve(workers));
+    await act(async () =>
+      form.instances.get(saved.id)!.reject(new Error('instances unavailable'))
+    );
+    await settle();
+    assert.equal(
+      form.statuses.some((status) => status.show),
+      false
+    );
+
+    await form.change('name', 'renamed-without-claim-data');
+    await form.submit();
+    assert.equal(
+      form.statuses.some((status) => status.show),
+      false
+    );
+    assert.equal(form.submissions.length, 1);
+
+    await form.change('provider_version', '1.1.0');
+    assert.equal(
+      form.statuses.at(-1)?.message,
+      'kvCache.check.recreate.unavailable'
+    );
+    await form.changeNow('provider_version', '1.0.0');
+    assert.equal(
+      form.ref.current.form.getFieldValue('provider_version'),
+      '1.0.0'
+    );
+    assert.deepEqual(form.statuses.at(-1), { show: false, message: '' });
+    const afterRestore = form.statuses.length;
+    await settle();
+    assert.equal(form.statuses.length, afterRestore);
+  } finally {
+    await form.unmount();
+  }
+});
+
+for (const lateResult of ['resolve', 'reject'] as const) {
+  test(`a late instance ${lateResult} from the previous service does not replace the current resource budget`, async () => {
+    const form = await mount('edit');
+    const nextService = {
+      ...saved,
+      id: 2,
+      name: 'next-service',
+      config: { fields: { ram_size: 15, transport: 'tcp' } }
+    };
+    try {
+      await act(async () => form.catalog.resolve([provider]));
+      await act(async () =>
+        form.workerList.resolve([
+          {
+            ...workers[0],
+            status: {
+              memory: {
+                total: 20 * GiB,
+                used: 18 * GiB,
+                allocated: 18 * GiB
+              }
+            }
+          }
+        ])
+      );
+      await form.render(nextService);
+      assert.deepEqual(form.instanceRequests, [saved.id, nextService.id]);
+      await form.instancesReady(savedInstances(nextService), nextService.id);
+      await settle();
+      assert.equal(
+        form.statuses.some((status) => status.show),
+        false
+      );
+
+      await form.change('config_fields_ram_size', '18');
+      assert.equal(
+        form.statuses.at(-1)?.message,
+        'kvCache.check.recreate.insufficientRam'
+      );
+      const currentChecks = form.statuses.length;
+      await act(async () => {
+        const stale = form.instances.get(saved.id)!;
+        if (lateResult === 'reject') {
+          stale.reject(new Error('old request failed'));
+        } else {
+          stale.resolve({
+            items: [
+              {
+                ...savedInstances()[0],
+                computed_resource_claim: { ram: 18 * GiB }
+              }
+            ]
+          });
+        }
+      });
+      await settle();
+      assert.equal(form.statuses.length, currentChecks);
+      assert.equal(
+        form.statuses.at(-1)?.message,
+        'kvCache.check.recreate.insufficientRam'
+      );
+      assert.equal(
+        form.ref.current.form.getFieldValue('name'),
+        nextService.name
+      );
+    } finally {
+      await form.unmount();
+    }
+  });
+}
+
+test('resource field visibility gates are relevant even when the RAM amount is unchanged', async () => {
+  const gatedProvider: CacheProviderItem = {
+    ...provider,
+    fields: [
+      ...provider.fields!.map((field) =>
+        field.name === 'ram_size'
+          ? { ...field, visible_by: 'capacity_mode', visible_when: 'manual' }
+          : field
+      ),
+      {
+        name: 'capacity_mode',
+        default: 'manual',
+        options: ['manual', 'automatic']
+      }
+    ]
+  };
+  const form = await mount('edit', {
+    ...saved,
+    config: {
+      fields: { ...saved.config?.fields, capacity_mode: 'manual' }
+    }
+  });
+  try {
+    await form.ready([gatedProvider]);
+    const initialChecks = form.statuses.length;
+    await form.change('config_fields_capacity_mode', 'automatic');
+    assert.equal(form.statuses.length, initialChecks + 1);
+
+    await form.changeNow('config_fields_capacity_mode', 'manual');
+    assert.deepEqual(form.statuses.at(-1), { show: false, message: '' });
+    const afterRestore = form.statuses.length;
+    await settle();
+    await form.change('config_fields_transport', 'rdma');
+    assert.equal(form.statuses.length, afterRestore);
+  } finally {
+    await form.unmount();
+  }
+});
+
+test('component replica and enabled gates trigger checks and restoring them clears the result', async () => {
+  const componentProvider: CacheProviderItem = {
+    ...provider,
+    resource_profile: undefined,
+    fields: [
+      ...provider.fields!,
+      { name: 'store_replicas', type: 'number', default: 1 },
+      { name: 'store_enabled', type: 'boolean', default: true }
+    ],
+    components: {
+      store: {
+        topology: 'replicas',
+        replicas_by: 'store_replicas',
+        enabled_by: 'store_enabled',
+        enabled_when: true,
+        resource_profile: { ram_gib: '{{ram_size}}' }
+      }
+    }
+  };
+  const form = await mount('edit', {
+    ...saved,
+    config: {
+      fields: {
+        ...saved.config?.fields,
+        store_replicas: 1,
+        store_enabled: true
+      }
+    }
+  });
+  try {
+    await form.ready([componentProvider]);
+    await form.change('config_fields_store_replicas', '3');
+    assert.equal(
+      form.statuses.at(-1)?.message,
+      'kvCache.check.store.insufficientWorkers'
+    );
+    await form.changeNow('config_fields_store_replicas', '1');
+    assert.equal(
+      form.ref.current.form.getFieldValue([
+        'config',
+        'fields',
+        'store_replicas'
+      ]),
+      1
+    );
+    assert.deepEqual(form.statuses.at(-1), { show: false, message: '' });
+    await settle();
+    const afterRestore = form.statuses.length;
+
+    await form.toggle('config_fields_store_enabled');
+    assert.equal(form.statuses.length, afterRestore + 1);
+    assert.deepEqual(form.statuses.at(-1), { show: false, message: '' });
+    await form.toggle('config_fields_store_enabled');
+    assert.deepEqual(form.statuses.at(-1), { show: false, message: '' });
+  } finally {
+    await form.unmount();
+  }
+});
+
+test('a metadata edit during a late singleton worker response keeps automatic placement and skips resource checks', async () => {
+  const form = await mount('edit');
+  try {
+    await form.instancesReady();
+    await act(async () =>
+      form.catalog.resolve([{ ...provider, topology: 'replicas' }])
+    );
+    await settle();
+    assert.equal(form.ref.current.form.getFieldValue('worker_id'), undefined);
+
+    // Metadata changes before the worker-response debounce runs must not
+    // turn a saved automatic placement into a newly pinned worker.
+    await act(async () => form.workerList.resolve(workers));
+    await form.changeNow('name', 'renamed-auto-placement');
+    await settle();
+    assert.equal(form.ref.current.form.getFieldValue('worker_id'), undefined);
+    assert.equal(
+      form.statuses.some((status) => status.show),
+      false
+    );
+    assert.equal(form.configChanges.at(-1), false);
+
+    await form.submit();
+    assert.equal(form.submissions.length, 1);
+    assert.equal(form.submissions[0].name, 'renamed-auto-placement');
+    assert.equal(form.submissions[0].worker_id, undefined);
   } finally {
     await form.unmount();
   }

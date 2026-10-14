@@ -74,7 +74,8 @@ export async function queryCacheServiceInstances(id: number, options?: any) {
     `${CACHE_SERVICES_API}/${id}/instances`,
     {
       method: 'GET',
-      cancelToken: options?.token
+      cancelToken: options?.token,
+      skipErrorHandler: options?.skipErrorHandler
     }
   );
 }

@@ -500,6 +500,8 @@ export default {
     'PD 分离仅支持 vLLM / SGLang 引擎。其他引擎可通过「自定义」模式使用。',
   'models.form.pd.disabled.schedule':
     'PD 部署暂不支持定时扩缩，请通过各角色的副本数调整。',
+  'models.form.pd.lora.cleared':
+    '当前暂不支持 PD 分离与 LoRA 同时使用。已关闭 LoRA 配置，保存后生效。',
   'models.form.pd.cache.cleared':
     'PD 部署下 KV 缓存按角色配置，模型级设置已清空 —— 请在角色配置中为需要的角色单独选择。',
   'models.form.roles': '角色配置',

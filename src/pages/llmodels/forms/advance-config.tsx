@@ -110,22 +110,8 @@ const AdvanceConfig = ({ pdActive }: { pdActive?: boolean } = {}) => {
               onDelete={handleDeleteEnvSelector}
             ></LabelSelector>
           </Form.Item>
-          {/* ⏳ Not «one value lands on every role» — that was the earlier
-              reading, and it was too generous. LoRA under PD does not work at
-              all: the router indexes its worker registry by SERVED-MODEL name
-              while the members register under the base name only, so every
-              request addressed to `<base>:<adapter>` comes back 503 «No
-              available workers» while the group reports running, the route
-              reports `ready_targets=1` and nothing anywhere degrades. Round-4
-              E2E reproduced it 3/3 with per-hop evidence; the same adapter on
-              the same worker without PD answers 200.
-
-              So the entry is withdrawn while PD is on rather than annotated.
-              The value is cleared too (`clearModelLora`), not merely hidden —
-              the backend refuses the combination at admission, and a 400 about
-              a field the user can no longer see is the worst of both. Bringing
-              it back needs F18 answered and the router's membership
-              registration to carry the adapter names. */}
+          {/* GPUStack does not support LoRA under PD. The form clears these
+              adapters and submits an empty list while their control is hidden. */}
           <ModelLoraList></ModelLoraList>
         </>
       )}

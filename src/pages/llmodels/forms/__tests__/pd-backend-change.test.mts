@@ -180,8 +180,17 @@ for (const path of ['../roles/role-form.tsx', '../roles/router-form.tsx']) {
     defaultExport: RoleFields
   });
 }
+mock.module(new URL('../advance-config.tsx', import.meta.url).href, {
+  defaultExport: ({ pdActive }: any) =>
+    pdActive
+      ? null
+      : createElement(
+          Form.Item,
+          { name: 'lora_list', 'data-field': 'lora_list' },
+          createElement(InputField)
+        )
+});
 for (const path of [
-  '../advance-config.tsx',
   '../performance.tsx',
   '../schedule-type.tsx',
   '../scheduled-scaling.tsx',
@@ -191,7 +200,11 @@ for (const path of [
 }
 const { default: DataForm } = await import('../index.tsx');
 
-const renderForm = async (savedRoles = false) => {
+const renderForm = async (
+  savedRoles = false,
+  loraList: any[] = [],
+  backend = 'vLLM'
+) => {
   const root = createRoot(dom.window.document.getElementById('root')!);
   const ref: any = { current: null };
   const evaluated: any[] = [];
@@ -199,7 +212,8 @@ const renderForm = async (savedRoles = false) => {
     JSON.parse(JSON.stringify(values))
   );
   const initialValues: any = {
-    backend: 'vLLM',
+    backend,
+    lora_list: loraList,
     cluster_id: 1,
     replicas: 1,
     source: 'local_path',
@@ -214,7 +228,7 @@ const renderForm = async (savedRoles = false) => {
         ref,
         initialValues,
         source: 'local_path',
-        action: savedRoles ? 'edit' : 'create',
+        action: savedRoles || loraList.length ? 'edit' : 'create',
         formKey: 'deployment',
         isGGUF: false,
         clusterList: [],
@@ -360,6 +374,86 @@ test('a late PD resolution cannot restore configuration after backend change', a
     );
   } finally {
     resolveMode = defaultResolution;
+    await act(async () => root.unmount());
+  }
+});
+
+const loraList = [
+  {
+    lora_name: 'adapter',
+    source: 'huggingface',
+    lora_repo_name: 'org/adapter'
+  }
+];
+const loraNotice = 'models.form.pd.lora.cleared';
+
+for (const backend of ['vLLM', 'SGLang']) {
+  test(`enabling PD on a LoRA deployment explains the disabled adapter (${backend})`, async () => {
+    const { root, toggle } = await renderForm(false, loraList, backend);
+    try {
+      assert.ok(dom.window.document.querySelector('[data-field="lora_list"]'));
+      assert.equal(
+        dom.window.document.body.textContent?.includes(loraNotice),
+        false
+      );
+      await toggle();
+      assert.equal(
+        dom.window.document.querySelector('[data-field="lora_list"]'),
+        null
+      );
+      assert.ok(dom.window.document.body.textContent?.includes(loraNotice));
+    } finally {
+      await act(async () => root.unmount());
+    }
+  });
+
+  test(`saving PD explicitly removes saved LoRA adapters after their field unmounts (${backend})`, async () => {
+    const { root, toggle, submit } = await renderForm(false, loraList, backend);
+    try {
+      await toggle();
+      const payload = await submit();
+      assert.ok(payload.roles.length);
+      assert.ok(payload.disaggregation.mode);
+      assert.deepEqual(payload.lora_list, []);
+    } finally {
+      await act(async () => root.unmount());
+    }
+  });
+}
+
+test('enabling PD without adapters does not show a LoRA removal notice', async () => {
+  const { root, toggle, submit } = await renderForm();
+  try {
+    await toggle();
+    assert.equal(
+      dom.window.document.body.textContent?.includes(loraNotice),
+      false
+    );
+    assert.deepEqual((await submit()).lora_list, []);
+  } finally {
+    await act(async () => root.unmount());
+  }
+});
+
+test('turning PD back off restores the adapters and removes the LoRA notice', async () => {
+  const { root, toggle, submit } = await renderForm(false, loraList);
+  try {
+    await toggle();
+    await toggle();
+    assert.ok(dom.window.document.querySelector('[data-field="lora_list"]'));
+    assert.equal(
+      dom.window.document.body.textContent?.includes(loraNotice),
+      false
+    );
+    const payload = await submit();
+    assert.equal(payload.roles, null);
+    assert.equal(payload.disaggregation, null);
+    assert.equal(payload.lora_list[0].lora_name, loraList[0].lora_name);
+    assert.equal(
+      payload.lora_list[0].lora_repo_name,
+      loraList[0].lora_repo_name
+    );
+  } finally {
     await act(async () => root.unmount());
   }
 });

@@ -141,14 +141,8 @@ export interface PDEffects {
   // none, so a leftover `--tensor-parallel-size` would silently constrain all
   // three members with nothing on screen saying where it came from.
   clearModelParams?: boolean;
-  // 🆕 LoRA is withdrawn under PD, not relocated. Unlike the two above this is
-  // not a duplication argument: the combination does not serve. The router
-  // indexes its worker registry by served-model name and the members register
-  // under the base name only, so a request for `<base>:<adapter>` is answered
-  // 503 by a group every health surface calls running. Cleared rather than
-  // hidden for the usual reason plus one more — the backend refuses
-  // `lora_list` + `roles` at admission, so a leftover value turns an invisible
-  // field into a 400 on submit.
+  // GPUStack does not support LoRA under PD. Clear the hidden adapter field
+  // so it cannot conflict with the disaggregated deployment on submit.
   clearModelLora?: boolean;
   // Model-level `replicas` is a 0/1 deployment switch under PD, never a group
   // count: pin the field to 1 and make it read-only.
@@ -162,20 +156,13 @@ export interface PDEffects {
   // `extended_kv_cache` — under PD the cache is a per-role choice.
   clearModelKVCache: boolean;
   /**
-   * The two notices the BODY renders about what turning PD on just did.
-   *
-   * 🔴 They live out here because the thing that knows is not the thing that
-   * shows. Both facts are produced by the switch's handler, which only ever
-   * runs in the `toggle` instance; both are rendered in the `body`, which is a
-   * different instance with its own `useState`. As component state they were
-   * therefore always false where they were read, and neither notice had ever
-   * appeared — including the one that exists to tell the user their
-   * model-level cache setting was just discarded. Sharing state would not have
-   * been enough either: the body only mounts once PD is on, so it would mount
-   * after the write and start from the initial value regardless.
+   * Notices about configuration removed when enabling PD.
+   * The toggle and body are separate component instances, so their parent
+   * holds these notices and passes them to the body.
    */
   cacheCleared?: boolean;
   modeCleared?: boolean;
+  loraCleared?: boolean;
 }
 
 interface PDDisaggregationProps {
@@ -207,12 +194,12 @@ interface PDDisaggregationProps {
    */
   onModeChange?: (mode: string | null, data?: PDMode) => void;
   /**
-   * The two notices, for the `body` mount point — what turning PD on just
-   * discarded. Produced by the switch's handler in the other instance, so they
-   * arrive as props rather than as this one's state. See `PDEffects`.
+   * Notices held by the parent form about configuration removed by PD.
+   * They arrive as props because the body does not handle the enable action.
    */
   cacheCleared?: boolean;
   modeCleared?: boolean;
+  loraCleared?: boolean;
 }
 
 const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
@@ -297,15 +284,14 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
   // `use-form-initial-values`, so the store read one line up already answers
   // for an edit on the first render.
   //
-  // The two notices below are the parent's to hold (see `PDEffects`): the
-  // handler that produces them runs in the `toggle` instance and the markup
-  // that shows them is in the `body`.
+  // Notices are held by the parent because the enable action and the body
+  // that shows its effects belong to separate component instances.
   //
   // `modeCleared`: turning PD off drops `disaggregation` entirely, mode
   // included. Coming back in therefore lands on an empty required field with
   // nothing to explain it, which reads as the form having lost the value by
   // accident. Remembered on the way out so the way in can say so.
-  const { cacheCleared, modeCleared } = props;
+  const { cacheCleared, modeCleared, loraCleared } = props;
   // What the switch's handler last produced, so its own next notification can
   // carry it forward rather than re-deriving it.
   const noticesRef = React.useRef<{ cache: boolean; mode: boolean }>({
@@ -1398,6 +1384,15 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
               <div className="note">
                 {intl.formatMessage({ id: 'models.form.pd.cache.cleared' })}
               </div>
+            )}
+            {loraCleared && (
+              <Alert
+                type="warning"
+                showIcon
+                message={intl.formatMessage({
+                  id: 'models.form.pd.lora.cleared'
+                })}
+              />
             )}
             {modeCleared && !mode && (
               <div className="note">

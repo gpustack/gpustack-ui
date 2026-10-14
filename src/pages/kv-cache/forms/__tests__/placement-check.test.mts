@@ -93,6 +93,11 @@ type Fixture = {
   instanceRequests: number[];
   catalog: ReturnType<typeof deferred<CacheProviderItem[]>>;
   workerList: ReturnType<typeof deferred<typeof workers>>;
+  debounceWorkers: boolean;
+  workerRequests: {
+    clusterId: number;
+    response: ReturnType<typeof deferred<typeof workers>>;
+  }[];
 };
 let fixture: Fixture;
 
@@ -157,6 +162,7 @@ mock.module(requireAhooks.resolve('tslib'), {
   namedExports: tslib,
   defaultExport: tslib
 });
+const { useRequest } = await import('ahooks');
 
 mock.module('@gpustack/core-ui', {
   namedExports: {
@@ -237,8 +243,20 @@ mock.module(
     namedExports: {
       useQueryWorkerList: () => {
         const source = fixture;
+        const { runAsync } = useRequest(
+          ({ cluster_id }: { cluster_id: number }) => {
+            const response = deferred<typeof workers>();
+            source.workerRequests.push({ clusterId: cluster_id, response });
+            return response.promise;
+          },
+          { manual: true, debounceWait: 300 }
+        );
         return useMemo(
-          () => ({ fetchData: () => source.workerList.promise }),
+          () => ({
+            fetchData: source.debounceWorkers
+              ? runAsync
+              : () => source.workerList.promise
+          }),
           []
         );
       }
@@ -331,10 +349,16 @@ const settle = async () => {
     mock.timers.tick(150);
   });
 };
-const mount = async (action: 'create' | 'edit', currentData = saved) => {
+const mount = async (
+  action: 'create' | 'edit',
+  currentData = saved,
+  options: { debounceWorkers?: boolean } = {}
+) => {
   fixture = {
     catalog: deferred(),
     workerList: deferred(),
+    debounceWorkers: !!options.debounceWorkers,
+    workerRequests: [],
     instances: new Map([[currentData.id, deferred<InstanceResponse>()]]),
     instanceRequests: []
   };
@@ -736,6 +760,56 @@ test('workers arriving during a pending edit merge into one placement check', as
     await form.unmount();
   }
 });
+
+for (const lateResult of ['resolve', 'reject'] as const) {
+  test(`a stale worker ${lateResult} during the next request's debounce cannot finish a catalog topology update`, async () => {
+    const form = await mount('edit', saved, { debounceWorkers: true });
+    try {
+      await form.instancesReady();
+      await act(async () => mock.timers.tick(300));
+      assert.deepEqual(
+        form.workerRequests.map((request) => request.clusterId),
+        [saved.cluster_id]
+      );
+      // The catalog reveals the saved provider's per-node topology and
+      // queues another 300 ms worker fetch for the same cluster. The old
+      // HTTP request is still live while the user edits its RAM capacity.
+      await act(async () => form.catalog.resolve([provider]));
+      await form.changeNow('config_fields_ram_size', '64');
+      assert.equal(form.statuses.length, 0);
+      await act(async () => {
+        const stale = form.workerRequests[0].response;
+        if (lateResult === 'reject') {
+          stale.reject(new Error('old worker request failed'));
+        } else {
+          stale.resolve(workers);
+        }
+      });
+      await settle();
+      assert.equal(form.workerRequests.length, 1);
+      assert.equal(
+        form.statuses.length,
+        0,
+        'The pending current worker fetch must still gate placement checks'
+      );
+
+      await act(async () => mock.timers.tick(150));
+      assert.deepEqual(
+        form.workerRequests.map((request) => request.clusterId),
+        [saved.cluster_id, saved.cluster_id]
+      );
+      await act(async () => form.workerRequests[1].response.resolve(workers));
+      await settle();
+      assert.equal(form.statuses.length, 1);
+      assert.equal(
+        form.statuses.at(-1)?.message,
+        'kvCache.check.recreate.insufficientRam'
+      );
+    } finally {
+      await form.unmount();
+    }
+  });
+}
 
 test('resetting allows the same placement snapshot to be checked in a new session', async () => {
   const form = await mount('edit');

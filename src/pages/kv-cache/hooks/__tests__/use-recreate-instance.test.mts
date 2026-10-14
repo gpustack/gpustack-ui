@@ -148,16 +148,21 @@ test('confirmation refreshes the saved spec, exact target reservation, provider 
   resolveWorkers({ items: [worker] });
   await confirmed;
 
-  assert.deepEqual(calls.queryCacheServiceDetail.mock.calls[0].arguments, [1]);
-  assert.deepEqual(
-    calls.queryCacheServiceInstances.mock.calls[0].arguments,
-    [1]
-  );
+  assert.deepEqual(calls.queryCacheServiceDetail.mock.calls[0].arguments, [
+    1,
+    { skipErrorHandler: true }
+  ]);
+  assert.deepEqual(calls.queryCacheServiceInstances.mock.calls[0].arguments, [
+    1,
+    { skipErrorHandler: true }
+  ]);
   assert.deepEqual(calls.queryCacheProviders.mock.calls[0].arguments, [
-    { page: -1 }
+    { page: -1 },
+    { skipErrorHandler: true }
   ]);
   assert.deepEqual(calls.queryWorkersList.mock.calls[0].arguments, [
-    { cluster_id: 3, page: -1 }
+    { cluster_id: 3, page: -1 },
+    { skipErrorHandler: true }
   ]);
   assert.deepEqual(
     calls.deleteCacheServiceInstance.mock.calls[0].arguments,
@@ -286,6 +291,7 @@ test('a missing current target or provider blocks deletion', async (t) => {
       await assert.rejects(h.open().onOk());
       assert.equal(calls.deleteCacheServiceInstance.mock.callCount(), 0);
       assert.equal(h.onSuccess.mock.callCount(), 0);
+      assert.equal(warning.mock.callCount(), 1);
       assert.equal(warning.mock.calls[0].arguments[0], unavailable);
     });
   }
@@ -300,12 +306,14 @@ test('failed preflight requests or missing worker accounting never delete the in
   ] as const) {
     await t.test(name, async () => {
       const h = harness();
+      const requestError = new Error('Request failed');
       calls[name].mock.mockImplementation(async () => {
-        throw new Error('Request failed');
+        throw requestError;
       });
-      await assert.rejects(h.open().onOk());
+      await assert.rejects(h.open().onOk(), (error) => error === requestError);
       assert.equal(calls.deleteCacheServiceInstance.mock.callCount(), 0);
       assert.equal(h.onSuccess.mock.callCount(), 0);
+      assert.equal(warning.mock.callCount(), 1);
       assert.equal(warning.mock.calls[0].arguments[0], unavailable);
     });
   }

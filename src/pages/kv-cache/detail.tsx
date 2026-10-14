@@ -170,13 +170,13 @@ const CacheServiceDetail: React.FC = () => {
           monitor/table state (filters, last data) must not leak across
           services */}
       <ServiceMonitor
-        key={serviceId}
+        key={`${serviceId}-monitor`}
         serviceId={serviceId}
         l2BackendNames={l2BackendNames}
         workerOptions={workerOptions}
       ></ServiceMonitor>
       <ServiceDeployments
-        key={serviceId}
+        key={`${serviceId}-deployments`}
         serviceId={serviceId}
       ></ServiceDeployments>
       <ViewLogsModal

@@ -2,7 +2,7 @@ import { ClockCircleOutlined, WarningOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Flex, Tooltip } from 'antd';
 import React from 'react';
-import { DegradationLabelMap } from '../../config';
+import { DegradationLabelMap, DegradationValueMap } from '../../config';
 import { configurationChangeMessage } from '../../utils/instance-recreation';
 
 type IntlShape = ReturnType<typeof useIntl>;
@@ -15,6 +15,12 @@ interface PDMarkersProps {
   fontSize?: number;
   hasRoles?: boolean;
 }
+
+// Cross-host PD placement is valid and does not establish performance degradation.
+const visibleDegradations = (degradations?: string[] | null): string[] =>
+  (degradations || []).filter(
+    (reason) => reason !== DegradationValueMap.PairingRemote
+  );
 
 /**
  * The reason text behind one degradation marker.
@@ -46,7 +52,7 @@ export const markerTexts = (
   degradations?: string[] | null,
   hasRoles = false
 ): string[] => {
-  const texts = (degradations || []).map((reason) =>
+  const texts = visibleDegradations(degradations).map((reason) =>
     degradationReason(intl, reason)
   );
   if (stale) {
@@ -126,7 +132,7 @@ const PDMarkers: React.FC<PDMarkersProps> = ({
   hasRoles = false
 }) => {
   const intl = useIntl();
-  const reasons = degradations || [];
+  const reasons = visibleDegradations(degradations);
 
   if (!stale && !reasons.length) {
     return null;

@@ -3,20 +3,12 @@ import {
   AlertBlockInfo,
   GSDrawer,
   ModalFooter,
+  OverlayScroller,
   TextAttribute,
   ThemeTag
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import {
-  Alert,
-  Button,
-  Checkbox,
-  Empty,
-  Flex,
-  Pagination,
-  Spin,
-  Tooltip
-} from 'antd';
+import { Alert, Button, Checkbox, Empty, Flex, Spin, Tooltip } from 'antd';
 import classNames from 'classnames';
 import dayjs from 'dayjs';
 import isEqual from 'lodash/isEqual';
@@ -237,103 +229,100 @@ export default function RevisionHistoryDrawer({
           {!review && (
             <Flex vertical className={styles.nav}>
               <Flex align="center" className={styles.navHeader}>
-                <span>{text('list', { count: state.total })}</span>
+                <span>{text('list', { count: state.items.length })}</span>
               </Flex>
-              <Flex
-                vertical
-                gap="small"
-                className={styles.navItems}
-                aria-label={text('title')}
-              >
-                {state.items.map((item) => (
+              <div className={styles.navScroller}>
+                <OverlayScroller
+                  maxHeight="100%"
+                  styles={{ wrapper: { height: '100%', padding: 0 } }}
+                >
                   <Flex
-                    key={item.revision}
-                    align="flex-start"
-                    gap={4}
-                    className={classNames(styles.navOption, {
-                      [styles.selected]: activeRevision === item.revision
-                    })}
+                    vertical
+                    gap="small"
+                    className={styles.navItems}
+                    aria-label={text('title')}
                   >
-                    <button
-                      type="button"
-                      className={styles.selectRevision}
-                      aria-pressed={activeRevision === item.revision}
-                      disabled={browsingDisabled}
-                      onClick={() => history.select(item.revision)}
-                    >
-                      <Flex vertical gap={4}>
-                        <Flex
-                          align="center"
-                          justify="space-between"
-                          gap="small"
-                          className={styles.revisionHeader}
-                        >
-                          <span className={styles.revisionName}>
-                            {text('target', { revision: item.revision })}
-                          </span>
-                          {item.revision === state.latest && (
-                            <ThemeTag className={styles.latestTag}>
-                              {text('latest')}
-                            </ThemeTag>
-                          )}
-                        </Flex>
-                        <time
-                          className={styles.timestamp}
-                          dateTime={item.created_at}
-                          title={dayjs(item.created_at).format(
-                            'YYYY-MM-DD HH:mm:ss'
-                          )}
-                        >
-                          {dayjs(item.created_at).format('YYYY-MM-DD HH:mm')}
-                        </time>
-                      </Flex>
-                    </button>
-                    {item.revision !== state.latest && (
-                      <Tooltip
-                        title={text('rollbackToVersion', {
-                          revision: item.revision
+                    {state.items.map((item) => (
+                      <Flex
+                        key={item.revision}
+                        align="flex-start"
+                        gap={4}
+                        className={classNames(styles.navOption, {
+                          [styles.selected]: activeRevision === item.revision
                         })}
                       >
-                        <Button
-                          type="text"
-                          size="small"
-                          className={styles.rollbackAction}
-                          icon={<UndoOutlined />}
-                          aria-label={text('rollbackToVersion', {
-                            revision: item.revision
-                          })}
-                          disabled={
-                            browsingDisabled ||
-                            state.comparisonLoading ||
-                            !comparison
-                          }
-                          onClick={() => history.reviewRollback(item.revision)}
-                        />
-                      </Tooltip>
+                        <button
+                          type="button"
+                          className={styles.selectRevision}
+                          aria-pressed={activeRevision === item.revision}
+                          disabled={browsingDisabled}
+                          onClick={() => history.select(item.revision)}
+                        >
+                          <Flex vertical gap={4}>
+                            <Flex
+                              align="center"
+                              justify="space-between"
+                              gap="small"
+                              className={styles.revisionHeader}
+                            >
+                              <span className={styles.revisionName}>
+                                {text('target', { revision: item.revision })}
+                              </span>
+                              {item.revision === state.latest && (
+                                <ThemeTag className={styles.latestTag}>
+                                  {text('latest')}
+                                </ThemeTag>
+                              )}
+                            </Flex>
+                            <time
+                              className={styles.timestamp}
+                              dateTime={item.created_at}
+                              title={dayjs(item.created_at).format(
+                                'YYYY-MM-DD HH:mm:ss'
+                              )}
+                            >
+                              {dayjs(item.created_at).format(
+                                'YYYY-MM-DD HH:mm'
+                              )}
+                            </time>
+                          </Flex>
+                        </button>
+                        {item.revision !== state.latest && (
+                          <Tooltip
+                            title={text('rollbackToVersion', {
+                              revision: item.revision
+                            })}
+                          >
+                            <Button
+                              type="text"
+                              size="small"
+                              className={styles.rollbackAction}
+                              icon={<UndoOutlined />}
+                              aria-label={text('rollbackToVersion', {
+                                revision: item.revision
+                              })}
+                              disabled={
+                                browsingDisabled ||
+                                state.comparisonLoading ||
+                                !comparison
+                              }
+                              onClick={() =>
+                                history.reviewRollback(item.revision)
+                              }
+                            />
+                          </Tooltip>
+                        )}
+                      </Flex>
+                    ))}
+                    {state.loading && (
+                      <Spin className={styles.loading} size="middle" />
+                    )}
+                    {!state.loading && !state.items.length && (
+                      <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
                     )}
                   </Flex>
-                ))}
-                {state.loading && (
-                  <Spin className={styles.loading} size="middle" />
-                )}
-                {!state.loading && !state.items.length && (
-                  <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-                )}
-              </Flex>
-              {state.total > 10 && (
-                <Flex justify="center" className={styles.pagination}>
-                  <Pagination
-                    simple={{ readOnly: true }}
-                    size="small"
-                    current={state.page}
-                    pageSize={10}
-                    total={state.total}
-                    showSizeChanger={false}
-                    disabled={browsingDisabled}
-                    onChange={history.changePage}
-                  />
-                </Flex>
-              )}
+                </OverlayScroller>
+              </div>
             </Flex>
           )}
           <Flex vertical className={diffStyles.diffMain}>

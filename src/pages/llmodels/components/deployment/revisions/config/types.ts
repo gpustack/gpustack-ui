@@ -48,8 +48,6 @@ export interface HistoryState {
   restartError: string | null;
   model: ListItem | null;
   items: ModelRevision[];
-  page: number;
-  total: number;
   latest: number | null;
   selected: number | null;
   comparison: RevisionComparison | null;

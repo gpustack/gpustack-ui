@@ -27,10 +27,11 @@ mock.module('@gpustack/core-ui', {
     })
   }
 });
-mock.module(new URL('../services/index.ts', import.meta.url).href, {
+mock.module(new URL('../../services/index.ts', import.meta.url).href, {
   namedExports: calls
 });
-const { default: useModelRevisions } = await import('./use-model-revisions.ts');
+const { default: useModelRevisions } =
+  await import('../use-model-revisions.ts');
 
 function deferred<T>() {
   let resolve!: (value: T) => void;
@@ -42,8 +43,10 @@ function deferred<T>() {
   return { promise, resolve, reject };
 }
 
-const page = (revision: number) => ({
-  items: [{ revision }],
+const historyResponse = (revision: number, count = 1) => ({
+  items: Array.from({ length: count }, (_, index) => ({
+    revision: revision - index
+  })),
   pagination: { total: 21, page: 1, perPage: 10, totalPage: 3 }
 });
 const model = { id: 42, name: 'model', revision_history_limit: 10 };
@@ -64,7 +67,7 @@ async function harness() {
     document: { configurable: true, value: dom.window.document },
     IS_REACT_ACT_ENVIRONMENT: { configurable: true, value: true }
   });
-  calls.getRevisions.mock.mockImplementation(async () => page(21));
+  calls.getRevisions.mock.mockImplementation(async () => historyResponse(21));
   calls.getRevisionModel.mock.mockImplementation(async () => model);
   calls.previewRollback.mock.mockImplementation(async (_, revision) => ({
     target_revision: revision,
@@ -105,7 +108,7 @@ test('history requests and mutations', async (t) => {
         calls.getRevisions.mock.mockImplementation(() => pending.promise);
         await act(async () => h.controller.open(model as any));
         await act(async () => h.controller.close());
-        await act(async () => pending.resolve(page(21)));
+        await act(async () => pending.resolve(historyResponse(21)));
         assert.equal(h.controller.state.model, null);
         assert.deepEqual(h.controller.state.items, []);
       } finally {
@@ -134,16 +137,53 @@ test('history requests and mutations', async (t) => {
     }
   );
   await t.test(
-    'paging preserves the latest revision from page one',
+    'history retains only the latest ten returned revisions and selects the newest',
     async () => {
       const h = await harness();
       try {
+        calls.getRevisions.mock.mockImplementation(async () =>
+          historyResponse(21, 15)
+        );
         await act(async () => h.controller.open(model as any));
-        calls.getRevisions.mock.mockImplementation(async () => page(11));
-        await act(async () => h.controller.changePage(2));
+        assert.deepEqual(
+          h.controller.state.items.map((item) => item.revision),
+          [21, 20, 19, 18, 17, 16, 15, 14, 13, 12]
+        );
         assert.equal(h.controller.state.latest, 21);
-        assert.equal(h.controller.state.items[0].revision, 11);
-        assert.equal(h.controller.state.page, 2);
+        assert.equal(h.controller.state.selected, 21);
+        assert.equal(h.controller.state.comparison?.target.revision, 21);
+        assert.deepEqual(calls.getRevisions.mock.calls[0].arguments, [42]);
+      } finally {
+        await h.dispose();
+      }
+    }
+  );
+  await t.test(
+    'reopening history fetches and selects the newest revisions',
+    async () => {
+      const h = await harness();
+      try {
+        calls.getRevisions.mock.mockImplementation(async () =>
+          historyResponse(21, 10)
+        );
+        await act(async () => h.controller.open(model as any));
+        await act(async () => h.controller.select(19));
+        await act(async () => h.controller.close());
+        calls.getRevisions.mock.mockImplementation(async () =>
+          historyResponse(22, 2)
+        );
+        await act(async () => h.controller.open(model as any));
+        assert.deepEqual(
+          h.controller.state.items.map((item) => item.revision),
+          [22, 21]
+        );
+        assert.equal(h.controller.state.latest, 22);
+        assert.equal(h.controller.state.selected, 22);
+        assert.equal(h.controller.state.comparison?.target.revision, 22);
+        assert.deepEqual(
+          calls.getRevisions.mock.calls.map((call) => call.arguments),
+          [[42], [42]]
+        );
       } finally {
         await h.dispose();
       }
@@ -151,34 +191,38 @@ test('history requests and mutations', async (t) => {
   );
   for (const failedRequest of ['getRevisions', 'getRevisionModel'] as const) {
     await t.test(
-      `failed paging (${failedRequest}) clears stale revisions and allows retry`,
+      `failed history loading (${failedRequest}) clears stale revisions and allows retry`,
       async () => {
         const h = await harness();
         try {
           await act(async () => h.controller.open(model as any));
           const pending = deferred<any>();
           calls[failedRequest].mock.mockImplementation(() => pending.promise);
-          await act(async () => h.controller.changePage(2));
-          assert.equal(h.controller.state.page, 2);
+          await act(async () => h.controller.open(model as any));
           assert.deepEqual(h.controller.state.items, []);
           assert.equal(h.controller.state.comparison, null);
+          assert.equal(h.controller.state.selected, null);
+          assert.equal(h.controller.state.latest, null);
           assert.equal(h.controller.state.loading, true);
           await act(async () =>
             pending.reject({
-              response: { data: { message: 'Page unavailable' } }
+              response: { data: { message: 'History unavailable' } }
             })
           );
           assert.equal(h.controller.state.loading, false);
-          assert.equal(h.controller.state.error, 'Page unavailable');
+          assert.equal(h.controller.state.error, 'History unavailable');
           assert.deepEqual(h.controller.state.items, []);
           assert.equal(h.controller.state.selected, null);
-          assert.equal(h.controller.state.latest, 21);
-          calls.getRevisions.mock.mockImplementation(async () => page(11));
+          assert.equal(h.controller.state.latest, null);
+          calls.getRevisions.mock.mockImplementation(async () =>
+            historyResponse(22)
+          );
           calls.getRevisionModel.mock.mockImplementation(async () => model);
-          await act(async () => h.controller.changePage(2));
+          await act(async () => h.controller.open(model as any));
           assert.equal(h.controller.state.error, null);
-          assert.equal(h.controller.state.items[0].revision, 11);
-          assert.equal(h.controller.state.comparison?.target.revision, 11);
+          assert.equal(h.controller.state.items[0].revision, 22);
+          assert.equal(h.controller.state.latest, 22);
+          assert.equal(h.controller.state.comparison?.target.revision, 22);
         } finally {
           await h.dispose();
         }
@@ -220,7 +264,9 @@ test('history requests and mutations', async (t) => {
       const h = await harness();
       try {
         await act(async () => h.controller.open(model as any));
-        calls.getRevisions.mock.mockImplementation(async () => page(22));
+        calls.getRevisions.mock.mockImplementation(async () =>
+          historyResponse(22)
+        );
         await act(async () => {
           await h.controller.mutate('rollback', 19);
         });
@@ -246,7 +292,9 @@ test('history requests and mutations', async (t) => {
         calls.rollbackRevision.mock.mockImplementation(async () => {
           throw error;
         });
-        calls.getRevisions.mock.mockImplementation(async () => page(23));
+        calls.getRevisions.mock.mockImplementation(async () =>
+          historyResponse(23)
+        );
         await act(async () => {
           await assert.rejects(
             h.controller.mutate('rollback', 19)!,
@@ -287,7 +335,9 @@ test('history requests and mutations', async (t) => {
     async () => {
       const h = await harness();
       try {
-        calls.getRevisions.mock.mockImplementation(async () => page(1));
+        calls.getRevisions.mock.mockImplementation(async () =>
+          historyResponse(1)
+        );
         await act(async () => h.controller.open(model as any));
         assert.equal(h.controller.state.comparison?.previous, null);
         assert.equal(h.controller.state.comparison?.target.revision, 1);
@@ -507,27 +557,31 @@ test('history requests and mutations', async (t) => {
     }
   });
   await t.test(
-    'a row action previews that row and back restores the browsing selection and page',
+    'a row action previews that row and back preserves the browsing selection and list',
     async () => {
       const h = await harness();
       try {
+        calls.getRevisions.mock.mockImplementation(async () =>
+          historyResponse(21, 10)
+        );
         await act(async () => h.controller.open(model as any));
-        calls.getRevisions.mock.mockImplementation(async () => page(11));
-        await act(async () => h.controller.changePage(2));
+        await act(async () => h.controller.select(19));
+        const items = h.controller.state.items;
         const comparison = h.controller.state.comparison;
         const reads = calls.getRevision.mock.callCount();
         await act(async () => {
-          await h.controller.reviewRollback(10);
+          await h.controller.reviewRollback(20);
         });
-        assert.equal(h.controller.state.rollback?.revision, 10);
+        assert.equal(h.controller.state.rollback?.revision, 20);
         assert.deepEqual(
           calls.previewRollback.mock.calls[0].arguments,
-          [42, 10]
+          [42, 20]
         );
         await act(async () => h.controller.cancelRollback());
         assert.equal(h.controller.state.rollback, null);
-        assert.equal(h.controller.state.selected, 11);
-        assert.equal(h.controller.state.page, 2);
+        assert.equal(h.controller.state.selected, 19);
+        assert.equal(h.controller.state.items, items);
+        assert.equal(h.controller.state.latest, 21);
         assert.equal(h.controller.state.comparison, comparison);
         assert.equal(calls.getRevision.mock.callCount(), reads);
         assert.equal(calls.rollbackRevision.mock.callCount(), 0);
@@ -656,7 +710,9 @@ test('history requests and mutations', async (t) => {
           await act(async () => {
             await h.controller.reviewRollback(20);
           });
-          calls.getRevisions.mock.mockImplementation(async () => page(22));
+          calls.getRevisions.mock.mockImplementation(async () =>
+            historyResponse(22)
+          );
           calls.restartModel.mock.mockImplementation(async () => {
             throw {
               response: { status, data: { message: 'Restart unavailable' } }

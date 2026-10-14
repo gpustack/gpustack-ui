@@ -267,7 +267,7 @@ const VersionsForm: React.FC<AddModalProps> = ({
                 key={name}
                 style={{
                   borderRadius: 'var(--ant-border-radius-lg)',
-                  border: '1px solid var(--ant-color-split)'
+                  border: '1px solid var(--ant-color-border)'
                 }}
               >
                 <CollapseContainer
@@ -277,8 +277,13 @@ const VersionsForm: React.FC<AddModalProps> = ({
                   defaultOpen
                   styles={{
                     body: collapseKey.has(name)
-                      ? { paddingInline: 16, paddingBlock: '16px 0' }
-                      : {},
+                      ? {
+                          paddingInline: 16,
+                          paddingBlock: '16px 0',
+                          marginTop: 1,
+                          backgroundColor: 'var(--ant-color-bg-elevated)'
+                        }
+                      : { backgroundColor: 'var(--ant-color-bg-elevated)' },
                     content: { paddingTop: 0 },
                     header: {
                       backgroundColor: 'unset'

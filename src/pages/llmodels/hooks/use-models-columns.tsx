@@ -115,6 +115,20 @@ const ActionList: ActionItem[] = [
     icon: icons.ExperimentOutlined
   },
   {
+    label: 'resources.metrics.details',
+    key: 'metrics',
+    icon: (
+      <span className="flex-center">
+        <GrafanaIcon style={{ width: 14, height: 14 }}></GrafanaIcon>
+      </span>
+    )
+  },
+  {
+    label: 'models.table.instance.benchmark',
+    key: 'benchmark',
+    icon: <IconFont type="icon-speed" />
+  },
+  {
     label: 'common.button.start',
     key: 'start',
     icon: icons.Play
@@ -133,20 +147,6 @@ const ActionList: ActionItem[] = [
     label: 'models.revisions.title',
     key: 'history',
     icon: <HistoryOutlined />
-  },
-  {
-    label: 'models.table.instance.benchmark',
-    key: 'benchmark',
-    icon: <IconFont type="icon-speed" />
-  },
-  {
-    label: 'resources.metrics.details',
-    key: 'metrics',
-    icon: (
-      <span className="flex-center">
-        <GrafanaIcon style={{ width: 14, height: 14 }}></GrafanaIcon>
-      </span>
-    )
   },
   {
     key: 'copy',

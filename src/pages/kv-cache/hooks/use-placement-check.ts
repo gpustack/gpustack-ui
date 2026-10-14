@@ -28,16 +28,18 @@ export interface PlacementInputs {
   workers: WorkerListItem[];
   workerId?: number;
   workerSelector?: Record<string, string> | null;
+  // Edits only take effect on instance recreation. Current free RAM may
+  // already include this service, and its attributable usage is unknown.
+  checkFreeMemory?: boolean;
 }
 
 const hidden: ResourceCheckStatus = { show: false, message: '' };
 
 type Formatter = ReturnType<typeof useIntl>;
 
-// deployment-style resource pre-flight: success when every target worker
-// can hold the L1, warning (advisory, closable) when free memory falls
-// short or the capacity cannot fit. Pure in its inputs, so the answer is
-// the same whether a change arrives from an edit or from a late fetch.
+// Creation checks current free RAM. Editing checks static capacity only:
+// free RAM already reflects running instances, whose share is unknown.
+// Pure in its inputs, including late catalog or worker responses.
 export const evaluatePlacement = (
   inputs: PlacementInputs,
   intl: Formatter
@@ -48,7 +50,8 @@ export const evaluatePlacement = (
     fieldValues,
     workers,
     workerId,
-    workerSelector
+    workerSelector,
+    checkFreeMemory = true
   } = inputs;
   const managedFields = provider?.fields || [];
   const isPerNode = provider?.topology === 'per_node';
@@ -91,12 +94,33 @@ export const evaluatePlacement = (
         )
       };
     }
-    const fitting = matched.filter(
-      (worker) =>
-        getFreeMemory(worker) !== undefined &&
-        getFreeMemory(worker)! > size * GiB
-    );
-    return fitting.length >= replicas
+    const memoryOf = checkFreeMemory ? getFreeMemory : getTotalMemory;
+    const fitting = matched.filter((worker) => {
+      const memory = memoryOf(worker);
+      return memory !== undefined && memory > size * GiB;
+    });
+    if (fitting.length < replicas) {
+      // Missing worker metrics cannot establish a static capacity failure.
+      if (
+        !checkFreeMemory &&
+        matched.some((worker) => getTotalMemory(worker) === undefined)
+      ) {
+        return hidden;
+      }
+      return {
+        show: true,
+        type: 'warning',
+        message: intl.formatMessage(
+          {
+            id: checkFreeMemory
+              ? 'kvCache.check.store.exceedsFree'
+              : 'kvCache.check.store.exceedsTotal'
+          },
+          { count: fitting.length, replicas, size }
+        )
+      };
+    }
+    return checkFreeMemory
       ? {
           show: true,
           type: 'success',
@@ -105,14 +129,7 @@ export const evaluatePlacement = (
             { replicas, size }
           )
         }
-      : {
-          show: true,
-          type: 'warning',
-          message: intl.formatMessage(
-            { id: 'kvCache.check.store.exceedsFree' },
-            { count: fitting.length, replicas, size }
-          )
-        };
+      : hidden;
   }
   const instanceGib = profileRamGib(
     claiming?.resource_profile ?? provider?.resource_profile,
@@ -214,6 +231,11 @@ export const evaluatePlacement = (
         }
       )
     };
+  }
+  // Passing static edit checks does not prove current resources are free.
+  // Let the form's existing "recreate to apply" notice explain the save.
+  if (!checkFreeMemory) {
+    return hidden;
   }
   const tightest = targets
     .filter((worker) => getFreeMemory(worker) !== undefined)

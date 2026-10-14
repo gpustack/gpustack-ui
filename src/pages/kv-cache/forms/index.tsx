@@ -141,7 +141,8 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
       fieldValues: values.config?.fields,
       workers,
       workerId: values.worker_id,
-      workerSelector: values.worker_selector
+      workerSelector: values.worker_selector,
+      checkFreeMemory: action === PageAction.CREATE
     });
   });
   // Every trigger joins the same queue. Read the store and fetched context

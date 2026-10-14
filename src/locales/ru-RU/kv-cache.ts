@@ -1,4 +1,8 @@
 export default {
+  'kvCache.check.recreate.insufficientRam':
+    'Для повторного создания на воркере {worker} требуется {required} GiB, но сейчас доступно для выделения только {available} GiB. Освободите ресурсы или измените конфигурацию.',
+  'kvCache.check.recreate.unavailable':
+    'Не удалось оценить ресурсы для повторного создания. Обновите данные и повторите попытку.',
   'kvCache.title': 'Cache Service',
   'kvCache.source.manage': 'Manage Providers',
   'kvCache.source.builtin':

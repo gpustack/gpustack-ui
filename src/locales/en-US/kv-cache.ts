@@ -1,4 +1,8 @@
 export default {
+  'kvCache.check.recreate.insufficientRam':
+    'Recreation on worker {worker} requires {required} GiB, but only {available} GiB is currently allocatable. Free resources or adjust the configuration.',
+  'kvCache.check.recreate.unavailable':
+    'Unable to evaluate recreation resources. Refresh and try again.',
   'kvCache.title': 'Cache Service',
   'kvCache.source.manage': 'Manage Providers',
   'kvCache.source.builtin':

@@ -89,6 +89,7 @@ export interface ListItem {
   } | null;
   advertise_address: string;
   provision_progress: string;
+  system_reserved?: { ram?: number | null; vram?: number | null } | null;
   worker_version: string;
   maintenance: {
     enabled: boolean;
@@ -104,6 +105,7 @@ export interface ListItem {
       total: number;
       used: number;
       allocated: number;
+      is_unified_memory?: boolean;
     };
     gpu_devices: GPUDeviceItem[];
     swap: {

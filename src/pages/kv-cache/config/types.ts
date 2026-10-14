@@ -75,6 +75,7 @@ export interface CacheProviderField {
   // hidden field's default still renders server-side)
   visible_by?: string;
   visible_when?: any;
+  gated_default?: any;
   // numeric bounds and stepper increment for number-typed fields
   min?: number;
   max?: number;
@@ -246,6 +247,9 @@ export interface CacheServiceInstanceItem {
   name: string;
   cache_service_id: number;
   worker_id: number;
+  // Frozen at instance creation; service config may have changed since then.
+  computed_resource_claim?: { ram?: number | null; cpu?: number | null } | null;
+  deleted_at?: string | null;
   // which provider component this instance runs (e.g. "master"); empty
   // for single-component providers
   component?: string;

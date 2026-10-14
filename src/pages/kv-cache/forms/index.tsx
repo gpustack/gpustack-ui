@@ -27,7 +27,13 @@ import {
   useRef,
   useState
 } from 'react';
-import { CacheProviderField, FormData, ListItem } from '../config/types';
+import { queryCacheServiceInstances } from '../apis';
+import {
+  CacheProviderField,
+  CacheServiceInstanceItem,
+  FormData,
+  ListItem
+} from '../config/types';
 import useCacheProviders from '../hooks/use-cache-providers';
 import usePlacementCheck, {
   ResourceCheckStatus
@@ -43,6 +49,7 @@ import {
   NO_RECREATE_FIELDS,
   pickDefaultWorker,
   pickInitialVersion,
+  placementConfig,
   resolveFieldValue,
   stripUnset,
   versionRunsHere
@@ -88,6 +95,7 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
     useQueryClusterList();
   const { fetchData: fetchWorkerList } = useQueryWorkerList();
   const [workers, setWorkers] = useState<WorkerListItem[]>([]);
+  const [workersLoading, setWorkersLoading] = useState(true);
   const workerOptions = useMemo(
     () =>
       workers.map((item) => ({
@@ -106,6 +114,14 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
   const prevClusterRef = useRef<number | undefined>(undefined);
   const pinnedFields = useRef<Set<string>>(new Set());
   const placementEdited = useRef(false);
+  const lastPlacementConfig = useRef<ReturnType<typeof placementConfig> | null>(
+    null
+  );
+  const [instanceRead, setInstanceRead] = useState<{
+    serviceId?: number;
+    status: 'loading' | 'loaded' | 'error';
+    items?: CacheServiceInstanceItem[];
+  }>({ status: 'loading' });
   // set once the user picks a version themselves, which is what stops the
   // hardware-decided pick below from overriding it
   const versionPinned = useRef(false);
@@ -128,13 +144,47 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
   const fieldValues = Form.useWatch(['config', 'fields'], form);
   const { checkPlacement, resetPlacementCheck } =
     usePlacementCheck(onCheckStatusChange);
-  const checkCurrentPlacement = useMemoizedFn(() => {
-    // Saved configuration is not a new deployment. Only a relevant user
-    // edit opts into the pre-flight; late catalog/worker data cannot do so.
-    if (action === PageAction.EDIT && !placementEdited.current) {
-      return;
+  const clearPlacementCheck = useMemoizedFn(() => {
+    const hadEdit = placementEdited.current;
+    placementEdited.current = false;
+    cancelPlacementCheck();
+    resetPlacementCheck();
+    if (hadEdit) {
+      onCheckStatusChange?.({ show: false, message: '' });
     }
+  });
+  const placementChanged = useMemoizedFn(
+    (values: FormData) =>
+      !_.isEqual(
+        placementConfig(values, getProvider(values.provider_name)),
+        placementConfig(
+          currentData || {},
+          getProvider(currentData?.provider_name || '')
+        )
+      )
+  );
+  const checkCurrentPlacement = useMemoizedFn(() => {
     const values = form.getFieldsValue(true) as FormData;
+    lastPlacementConfig.current = placementConfig(
+      values,
+      getProvider(values.provider_name)
+    );
+    if (action === PageAction.EDIT) {
+      // Late data cannot opt an unchanged edit into checks or restore a
+      // warning after the user has reverted the relevant fields.
+      if (!placementEdited.current || !placementChanged(values)) {
+        clearPlacementCheck();
+        return;
+      }
+      if (
+        !getProvider(values.provider_name) ||
+        workersLoading ||
+        instanceRead.serviceId !== currentData?.id ||
+        instanceRead.status === 'loading'
+      ) {
+        return;
+      }
+    }
     checkPlacement({
       provider: getProvider(values.provider_name),
       providerVersion: values.provider_version,
@@ -142,7 +192,9 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
       workers,
       workerId: values.worker_id,
       workerSelector: values.worker_selector,
-      checkFreeMemory: action === PageAction.CREATE
+      mode: action === PageAction.CREATE ? 'create' : 'recreate',
+      replacingInstances:
+        instanceRead.status === 'loaded' ? instanceRead.items : undefined
     });
   });
   // Every trigger joins the same queue. Read the store and fetched context
@@ -177,23 +229,19 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
   // flag also trips on the form's own seeding, while onValuesChange fires
   // for user edits alone — which is what a hardware-decided default must
   // yield to.
-  const handleFormValuesChange = (changed: any) => {
+  const handleFormValuesChange = (changed: any, allValues: FormData) => {
     Object.keys(changed?.config?.fields || {}).forEach((name) =>
       pinnedFields.current.add(name)
     );
-    if (
-      [
-        'provider_name',
-        'provider_version',
-        'cluster_id',
-        'worker_id',
-        'worker_selector'
-      ].some((key) => Object.hasOwn(changed, key)) ||
-      Object.hasOwn(changed.config || {}, 'fields')
-    ) {
+    const values = allValues;
+    const snapshot = placementConfig(values, getProvider(values.provider_name));
+    if (action === PageAction.EDIT && !placementChanged(values)) {
+      clearPlacementCheck();
+    } else if (!_.isEqual(snapshot, lastPlacementConfig.current)) {
       placementEdited.current = true;
       schedulePlacementCheck();
     }
+    lastPlacementConfig.current = _.cloneDeep(snapshot);
     handleValuesChange();
   };
 
@@ -532,8 +580,10 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
     },
     resetFields: () => {
       placementEdited.current = false;
+      lastPlacementConfig.current = null;
       cancelPlacementCheck();
       resetPlacementCheck();
+      onCheckStatusChange?.({ show: false, message: '' });
       pinnedFields.current.clear();
       // The same concept, reset where that one is: a version the user picked
       // belongs to the form being discarded, and leaving it set would keep
@@ -545,7 +595,11 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
 
   useEffect(() => {
     if (action === PageAction.EDIT && currentData) {
-      placementEdited.current = false;
+      clearPlacementCheck();
+      lastPlacementConfig.current = placementConfig(
+        currentData,
+        getProvider(currentData.provider_name)
+      );
       cancelPlacementCheck();
       resetPlacementCheck();
       form.setFieldsValue({ ...currentData });
@@ -562,6 +616,39 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
       }
     }
   }, [form, currentData, action]);
+
+  // Load frozen instance reservations when the edit opens. A service's saved
+  // config may already differ from its running instances; never infer their
+  // reclaimable RAM from the form. Ignore replies from another edit session.
+  useEffect(() => {
+    if (action !== PageAction.EDIT || !currentData?.id) {
+      return;
+    }
+    let active = true;
+    const serviceId = currentData.id;
+    setInstanceRead({ serviceId, status: 'loading' });
+    queryCacheServiceInstances(serviceId, { skipErrorHandler: true }).then(
+      (response) => {
+        if (active) {
+          setInstanceRead({
+            serviceId,
+            status: 'loaded',
+            items: response.items || []
+          });
+          schedulePlacementCheck();
+        }
+      },
+      () => {
+        if (active) {
+          setInstanceRead({ serviceId, status: 'error' });
+          schedulePlacementCheck();
+        }
+      }
+    );
+    return () => {
+      active = false;
+    };
+  }, [action, currentData?.id]);
 
   // default to the caller-chosen provider (falling back to the first
   // mode-appropriate one) once the list arrives, leaving a user's (or
@@ -622,8 +709,10 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
     const fetchWorkers = async () => {
       if (!clusterId) {
         setWorkers([]);
+        setWorkersLoading(false);
         return;
       }
+      setWorkersLoading(true);
       try {
         const items = (await fetchWorkerList({
           cluster_id: clusterId,
@@ -636,6 +725,7 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
           return;
         }
         setWorkers(items || []);
+        setWorkersLoading(false);
         reseedVersionFor(items || []);
         // nothing to seed where the form offers no Worker select
         if (isPerNode || hasComponents) {
@@ -643,7 +733,11 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
           return;
         }
         // seed an empty selection with the least-loaded worker
-        if (items?.length && form.getFieldValue('worker_id') == null) {
+        if (
+          action === PageAction.CREATE &&
+          items?.length &&
+          form.getFieldValue('worker_id') == null
+        ) {
           form.setFieldValue('worker_id', pickDefaultWorker(items).id);
         }
         schedulePlacementCheck();
@@ -652,6 +746,7 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
         // still-current cluster — only the latter clears the list
         if (form.getFieldValue('cluster_id') === clusterId) {
           setWorkers([]);
+          setWorkersLoading(false);
           reseedVersionFor([]);
           schedulePlacementCheck();
         }

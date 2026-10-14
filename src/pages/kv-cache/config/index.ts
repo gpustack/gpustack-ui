@@ -2,6 +2,7 @@ import { StatusMaps } from '@/config';
 import { StatusType } from '@/config/types';
 import { GrafanaIcon, IconFont, icons } from '@gpustack/core-ui';
 import React from 'react';
+import { resolvedFieldValues } from './field-values';
 import {
   CacheProviderField,
   CacheProviderItem,
@@ -107,9 +108,9 @@ export const profileRamGib = (
   if (!template) {
     return 0;
   }
+  const resolved = resolvedFieldValues(managedFields, values || {});
   const rendered = template.replace(/\{\{\s*([\w.]+)\s*\}\}/g, (_, name) => {
-    const declared = managedFields?.find((field) => field.name === name);
-    const value = values?.[name] ?? declared?.default;
+    const value = resolved[name] ?? values?.[name];
     return value == null ? '' : `${value}`;
   });
   const value = Number(rendered);

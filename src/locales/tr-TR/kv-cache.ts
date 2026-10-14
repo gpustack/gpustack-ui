@@ -2,7 +2,7 @@ export default {
   'kvCache.check.recreate.insufficientRam':
     '{worker} çalışanında yeniden oluşturma için {required} GiB gerekiyor, ancak şu anda yalnızca {available} GiB ayrılabilir. Kaynakları boşaltın veya yapılandırmayı değiştirin.',
   'kvCache.check.recreate.unavailable':
-    'Yeniden oluşturma kaynakları değerlendirilemiyor. Yenileyip tekrar deneyin.',
+    'Yeniden oluşturma için gereken kaynak verileri alınamıyor.',
   'kvCache.title': 'Önbellek Hizmeti',
   'kvCache.source.manage': 'Sağlayıcıları Yönet',
   'kvCache.source.builtin':

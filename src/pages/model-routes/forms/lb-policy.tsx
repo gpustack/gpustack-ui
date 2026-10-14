@@ -1,6 +1,6 @@
 import { CardWrapper } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Flex, Form, Radio, Tooltip } from 'antd';
+import { Flex, Form, Segmented, Tooltip } from 'antd';
 import { createStyles } from 'antd-style';
 import DecisionServiceFields from '../components/lb-policy/decision-service-fields';
 import PolicyPluginSection from '../components/lb-policy/policy-plugin-section';
@@ -15,10 +15,10 @@ const useStyles = createStyles(({ css }, isPolicy: boolean) => ({
     font-weight: 500;
   `,
   sectionHeader: css`
-    padding: var(--ant-padding-sm) var(--ant-padding);
-    background-color: ${isPolicy
-      ? 'var(--ant-color-fill-quaternary)'
-      : 'var(--ant-color-bg-container)'};
+    &.ant-segmented {
+      padding: var(--ant-padding-xs);
+      border-radius: 0;
+    }
   `,
   sectionBody: css`
     border-block-start: 1px solid var(--ant-color-border-secondary);
@@ -61,46 +61,46 @@ const LbPolicySection = ({
         <Form.Item name="lb_policy_mode" hidden noStyle>
           <input />
         </Form.Item>
-        <div className={styles.sectionHeader}>
-          <Radio.Group
-            orientation="horizontal"
-            aria-label={intl.formatMessage({ id: 'routes.lb.routeBy' })}
-            value={mode}
-            onChange={(event) => onModeChange(event.target.value)}
-            options={[
-              {
-                value: LB_FORM_MODE.weighted,
-                label: (
-                  <Tooltip
-                    title={intl.formatMessage({
-                      id: 'routes.lb.form.mode.weighted.tips'
+        <Segmented<string>
+          className={styles.sectionHeader}
+          block
+          size="middle"
+          aria-label={intl.formatMessage({ id: 'routes.lb.routeBy' })}
+          value={mode}
+          onChange={onModeChange}
+          options={[
+            {
+              value: LB_FORM_MODE.weighted,
+              label: (
+                <Tooltip
+                  title={intl.formatMessage({
+                    id: 'routes.lb.form.mode.weighted.tips'
+                  })}
+                >
+                  <span>
+                    {intl.formatMessage({
+                      id: 'routes.lb.form.mode.weighted'
                     })}
-                  >
-                    <span>
-                      {intl.formatMessage({
-                        id: 'routes.lb.form.mode.weighted'
-                      })}
-                    </span>
-                  </Tooltip>
-                )
-              },
-              {
-                value: LB_FORM_MODE.policy,
-                label: (
-                  <Tooltip
-                    title={intl.formatMessage({
-                      id: 'routes.lb.form.mode.policy.tips'
-                    })}
-                  >
-                    <span>
-                      {intl.formatMessage({ id: 'routes.lb.form.mode.policy' })}
-                    </span>
-                  </Tooltip>
-                )
-              }
-            ]}
-          />
-        </div>
+                  </span>
+                </Tooltip>
+              )
+            },
+            {
+              value: LB_FORM_MODE.policy,
+              label: (
+                <Tooltip
+                  title={intl.formatMessage({
+                    id: 'routes.lb.form.mode.policy.tips'
+                  })}
+                >
+                  <span>
+                    {intl.formatMessage({ id: 'routes.lb.form.mode.policy' })}
+                  </span>
+                </Tooltip>
+              )
+            }
+          ]}
+        />
         {mode === LB_FORM_MODE.policy && (
           <div className={styles.sectionBody}>
             <SessionAffinityFields />

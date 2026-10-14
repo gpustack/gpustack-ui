@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 import { afterEach, beforeEach, mock, test } from 'node:test';
 import React, { act, createElement, useEffect, useMemo, useState } from 'react';
-import type { CacheProviderItem, ListItem } from '../config/types';
-import type { ResourceCheckStatus } from '../hooks/use-placement-check';
+import type { CacheProviderItem, ListItem } from '../../config/types';
+import type { ResourceCheckStatus } from '../../hooks/use-placement-check';
 
 const deferred = <T,>() => {
   let resolve!: (value: T) => void;
@@ -40,6 +40,7 @@ const provider: CacheProviderItem = {
   default_version: '1.0.0',
   versions: {
     '1.0.0': { image: 'test:1' },
+    '1.1.0': { image: 'test:1.1' },
     '2.0.0': {
       image: '',
       runtime_images: { cuda: { '12.8': 'test:2' } }
@@ -166,40 +167,47 @@ mock.module('@umijs/max', {
     getLocale: () => 'en-US'
   }
 });
-mock.module(new URL('../hooks/use-cache-providers.ts', import.meta.url).href, {
-  defaultExport: (options?: { onLoaded?: () => void }) => {
-    const source = fixture;
-    const [providers, setProviders] = useState<CacheProviderItem[]>([]);
-    useEffect(() => {
-      let active = true;
-      source.catalog.promise.then((items) => {
-        if (active) {
-          setProviders(items);
-          options?.onLoaded?.();
-        }
-      });
-      return () => {
-        active = false;
-      };
-    }, []);
-    return useMemo(
-      () => ({
-        providers,
-        providerOptions: providers.map((item) => ({
-          ...item,
-          value: item.name,
-          label: item.display_name
-        })),
-        getProvider: (name: string) =>
-          providers.find((item) => item.name === name)
-      }),
-      [providers]
-    );
-  }
-});
 mock.module(
-  new URL('../../resources/services/use-query-worker-list.ts', import.meta.url)
-    .href,
+  new URL('../../hooks/use-cache-providers.ts', import.meta.url).href,
+  {
+    defaultExport: function useCacheProviders(options?: {
+      onLoaded?: () => void;
+    }) {
+      const source = fixture;
+      const [providers, setProviders] = useState<CacheProviderItem[]>([]);
+      useEffect(() => {
+        let active = true;
+        source.catalog.promise.then((items) => {
+          if (active) {
+            setProviders(items);
+            options?.onLoaded?.();
+          }
+        });
+        return () => {
+          active = false;
+        };
+      }, []);
+      return useMemo(
+        () => ({
+          providers,
+          providerOptions: providers.map((item) => ({
+            ...item,
+            value: item.name,
+            label: item.display_name
+          })),
+          getProvider: (name: string) =>
+            providers.find((item) => item.name === name)
+        }),
+        [providers]
+      );
+    }
+  }
+);
+mock.module(
+  new URL(
+    '../../../resources/services/use-query-worker-list.ts',
+    import.meta.url
+  ).href,
   {
     namedExports: {
       useQueryWorkerList: () => {
@@ -214,7 +222,7 @@ mock.module(
 );
 mock.module(
   new URL(
-    '../../cluster-management/services/use-query-cluster-list.tsx',
+    '../../../cluster-management/services/use-query-cluster-list.tsx',
     import.meta.url
   ).href,
   {
@@ -236,13 +244,13 @@ mock.module(
     }
   }
 );
-mock.module(new URL('./component-parameters.tsx', import.meta.url).href, {
+mock.module(new URL('../component-parameters.tsx', import.meta.url).href, {
   defaultExport: () => null
 });
-mock.module(new URL('./l2-storages.tsx', import.meta.url).href, {
+mock.module(new URL('../l2-storages.tsx', import.meta.url).href, {
   defaultExport: () => null
 });
-mock.module(new URL('./styled.tsx', import.meta.url).href, {
+mock.module(new URL('../styled.tsx', import.meta.url).href, {
   namedExports: { OptionWithIcon: () => null }
 });
 
@@ -271,7 +279,7 @@ dom.window.matchMedia = (media) => ({
   dispatchEvent: () => false
 });
 const { createRoot } = await import('react-dom/client');
-const { default: ServiceForm } = await import('./index.tsx');
+const { default: ServiceForm } = await import('../index.tsx');
 
 beforeEach(() => {
   mock.timers.enable({ apis: ['setTimeout', 'Date'] });
@@ -293,6 +301,7 @@ const mount = async (action: 'create' | 'edit', currentData = saved) => {
   const container = dom.window.document.getElementById('root')!;
   const root = createRoot(container);
   const statuses: ResourceCheckStatus[] = [];
+  const configChanges: boolean[] = [];
   const ref = React.createRef<any>();
   await act(async () => {
     root.render(
@@ -302,6 +311,7 @@ const mount = async (action: 'create' | 'edit', currentData = saved) => {
         provider: provider.name,
         currentData: action === 'edit' ? currentData : undefined,
         onFinish: async () => {},
+        onConfigChanged: (changed: boolean) => configChanges.push(changed),
         onCheckStatusChange: (status: ResourceCheckStatus) =>
           statuses.push(status)
       })
@@ -329,15 +339,16 @@ const mount = async (action: 'create' | 'edit', currentData = saved) => {
   return {
     ...source,
     statuses,
+    configChanges,
     ref,
     changeNow,
     change: async (id: string, value: string) => {
       await changeNow(id, value);
       await settle();
     },
-    ready: async (catalog = [provider]) => {
+    ready: async (catalog = [provider], workerItems = workers) => {
       await act(async () => source.catalog.resolve(catalog));
-      await act(async () => source.workerList.resolve(workers));
+      await act(async () => source.workerList.resolve(workerItems));
       await settle();
     },
     unmount: async () => {
@@ -345,6 +356,36 @@ const mount = async (action: 'create' | 'edit', currentData = saved) => {
     }
   };
 };
+
+test('editing only the version does not count an existing cache allocation twice', async () => {
+  const form = await mount('edit', {
+    ...saved,
+    config: { fields: { ram_size: 15, transport: 'tcp' } }
+  });
+  try {
+    await form.ready(
+      [provider],
+      [
+        {
+          ...workers[0],
+          status: { memory: { total: 20 * GiB, used: 15 * GiB } }
+        }
+      ]
+    );
+    assert.equal(form.statuses.length, 0);
+
+    await form.change('provider_version', '1.1.0');
+    assert.deepEqual(form.statuses.at(-1), { show: false, message: '' });
+    assert.equal(form.configChanges.at(-1), true);
+
+    // Reverting an edit must not claim that currently free RAM was checked.
+    await form.change('provider_version', '1.0.0');
+    assert.deepEqual(form.statuses.at(-1), { show: false, message: '' });
+    assert.equal(form.configChanges.at(-1), false);
+  } finally {
+    await form.unmount();
+  }
+});
 
 test('edit checks placement only after relevant user edits, using the latest form values', async () => {
   const form = await mount('edit');
@@ -373,18 +414,20 @@ test('edit checks placement only after relevant user edits, using the latest for
     assert.equal(form.statuses.length, count);
 
     await form.change('config_fields_ram_size', '4');
-    assert.equal(form.statuses.at(-1)?.type, 'success');
-    await form.change('config_fields_ram_size', '16');
+    assert.deepEqual(form.statuses.at(-1), { show: false, message: '' });
+    await form.change('config_fields_ram_size', '32');
     assert.equal(
       form.statuses.at(-1)?.message,
-      'kvCache.form.ramSize.exceedsFree'
+      'kvCache.form.ramSize.exceedsTotal'
     );
+    await form.change('config_fields_ram_size', '16');
+    assert.deepEqual(form.statuses.at(-1), { show: false, message: '' });
 
     await form.change('provider_version', '2.0.0');
     assert.equal(form.statuses.at(-1)?.message, 'kvCache.check.noCpuImage');
     await form.change('provider_version', '1.0.0');
     await form.change('worker_selector', '{"pool":"large"}');
-    assert.equal(form.statuses.at(-1)?.type, 'success');
+    assert.deepEqual(form.statuses.at(-1), { show: false, message: '' });
     await form.change('worker_selector', '{"pool":"missing"}');
     assert.equal(form.statuses.at(-1)?.message, 'kvCache.check.noWorkers');
 
@@ -397,8 +440,12 @@ test('edit checks placement only after relevant user edits, using the latest for
   }
 });
 
-test('editing a singleton worker recomputes placement for that worker', async () => {
-  const form = await mount('edit', { ...saved, worker_id: 1 });
+test('editing a singleton worker checks the new target total memory', async () => {
+  const form = await mount('edit', {
+    ...saved,
+    worker_id: 1,
+    config: { fields: { ram_size: 48 } }
+  });
   try {
     await form.ready([{ ...provider, topology: 'replicas' }]);
     assert.equal(
@@ -406,13 +453,13 @@ test('editing a singleton worker recomputes placement for that worker', async ()
       false
     );
     await form.change('worker_id', '2');
-    assert.equal(form.statuses.at(-1)?.type, 'success');
+    assert.deepEqual(form.statuses.at(-1), { show: false, message: '' });
     await form.change('worker_id', '1');
     assert.equal(
       form.statuses.at(-1)?.message,
-      'kvCache.form.ramSize.exceedsFree'
+      'kvCache.form.ramSize.exceedsTotal'
     );
-    assert.equal(form.statuses.filter((status) => status.show).length, 2);
+    assert.equal(form.statuses.length, 2);
   } finally {
     await form.unmount();
   }
@@ -533,7 +580,11 @@ test('creation checks placement when the provider catalog arrives after workers'
 });
 
 test('an edited singleton is checked when its catalog arrives after a worker change', async () => {
-  const form = await mount('edit', { ...saved, worker_id: 1 });
+  const form = await mount('edit', {
+    ...saved,
+    worker_id: 2,
+    config: { fields: { ram_size: 48 } }
+  });
   try {
     await act(async () => form.workerList.resolve(workers));
     await settle();
@@ -541,7 +592,7 @@ test('an edited singleton is checked when its catalog arrives after a worker cha
       form.statuses.some((status) => status.show),
       false
     );
-    await form.change('worker_id', '2');
+    await form.change('worker_id', '1');
     assert.equal(
       form.statuses.some((status) => status.show),
       false
@@ -553,9 +604,12 @@ test('an edited singleton is checked when its catalog arrives after a worker cha
       form.catalog.resolve([{ ...provider, topology: 'replicas' }])
     );
     await settle();
-    assert.equal(form.ref.current.form.getFieldValue('worker_id'), 2);
-    assert.equal(form.statuses.at(-1)?.type, 'success');
-    assert.equal(form.statuses.at(-1)?.message, 'kvCache.check.ok.singleton');
+    assert.equal(form.ref.current.form.getFieldValue('worker_id'), 1);
+    assert.equal(form.statuses.filter((status) => status.show).length, 1);
+    assert.equal(
+      form.statuses.at(-1)?.message,
+      'kvCache.form.ramSize.exceedsTotal'
+    );
   } finally {
     await form.unmount();
   }
@@ -571,8 +625,8 @@ test('rapid capacity and selector edits are checked once with the final values',
     assert.equal(form.statuses.filter((status) => status.show).length, 0);
 
     await settle();
-    assert.equal(form.statuses.filter((status) => status.show).length, 1);
-    assert.equal(form.statuses.at(-1)?.type, 'success');
+    assert.equal(form.statuses.length, 1);
+    assert.deepEqual(form.statuses.at(-1), { show: false, message: '' });
     assert.equal(
       form.ref.current.form.getFieldValue(['config', 'fields', 'ram_size']),
       4
@@ -584,7 +638,7 @@ test('rapid capacity and selector edits are checked once with the final values',
     // A control can emit a newly allocated object with the same selection.
     // Its placement snapshot was already checked, even after debounce ends.
     await form.change('worker_selector', '{ "pool": "large" }');
-    assert.equal(form.statuses.filter((status) => status.show).length, 1);
+    assert.equal(form.statuses.length, 1);
   } finally {
     await form.unmount();
   }
@@ -614,17 +668,17 @@ test('resetting allows the same placement snapshot to be checked in a new sessio
   try {
     await form.ready();
     await form.change('config_fields_ram_size', '4');
-    assert.equal(form.statuses.filter((status) => status.show).length, 1);
+    assert.equal(form.statuses.length, 1);
 
     await act(async () => {
       form.ref.current.resetFields();
       form.ref.current.form.setFieldsValue({ ...saved });
     });
     await settle();
-    assert.equal(form.statuses.filter((status) => status.show).length, 1);
+    assert.equal(form.statuses.length, 1);
     await form.change('config_fields_ram_size', '4');
-    assert.equal(form.statuses.filter((status) => status.show).length, 2);
-    assert.equal(form.statuses.at(-1)?.type, 'success');
+    assert.equal(form.statuses.length, 2);
+    assert.deepEqual(form.statuses.at(-1), { show: false, message: '' });
   } finally {
     await form.unmount();
   }

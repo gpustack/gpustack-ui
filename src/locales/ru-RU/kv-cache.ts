@@ -28,6 +28,8 @@ export default {
     'Only {count} worker(s) match the selector; {replicas} store replicas requested',
   'kvCache.check.store.exceedsFree':
     'Only {count} matching worker(s) have {size} GiB free memory; {replicas} replicas requested',
+  'kvCache.check.store.exceedsTotal':
+    'Только у {count} подходящих рабочих узлов общий объём памяти достаточен для размещения реплики store размером {size} GiB; необходимое количество реплик: {replicas}',
   'kvCache.check.unsupportedAccel':
     '{count} of {total} target workers use accelerators ({backends}) this version has no image for; instances there will fail to start',
   'kvCache.check.noCpuImage':

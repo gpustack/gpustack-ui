@@ -25,6 +25,8 @@ export default {
     '匹配节点仅 {count} 个,少于 store 副本数 {replicas}',
   'kvCache.check.store.exceedsFree':
     '仅 {count} 个匹配节点有 {size} GiB 空闲内存,需要 {replicas} 个副本',
+  'kvCache.check.store.exceedsTotal':
+    '仅 {count} 个匹配节点的总内存能容纳 {size} GiB 的 store 副本，需要 {replicas} 个副本',
   'kvCache.check.unsupportedAccel':
     '{count}/{total} 个目标 Worker 的加速器({backends})不受该版本支持,其上的实例将无法启动',
   'kvCache.check.noCpuImage':

@@ -28,6 +28,8 @@ export default {
     'Seçiciyle yalnızca {count} işçi düğüm eşleşiyor; {replicas} depolama kopyası istendi',
   'kvCache.check.store.exceedsFree':
     'Eşleşen işçi düğümlerden yalnızca {count} tanesinde {size} GiB boş bellek var; {replicas} kopya istendi',
+  'kvCache.check.store.exceedsTotal':
+    'Eşleşen işçi düğümlerden yalnızca {count} tanesi, {size} GiB boyutunda bir store kopyası için yeterli toplam belleğe sahip; {replicas} kopya gerekiyor',
   'kvCache.form.worker.autoTips':
     'İsteğe bağlı — örneği zamanlayıcının yerleştirmesi için boş bırakın',
   'kvCache.form.workerSelector.scopeTips':

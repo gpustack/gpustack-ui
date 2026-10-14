@@ -76,7 +76,7 @@ const clusterActionList = [
     // below), and the declaration needs a full-height two-column surface for
     // "declare | preview" — so a row action opening a drawer, which also
     // carries the cluster context for free.
-    key: 'topology',
+    key: 'configureTopology',
     label: 'clusters.topology.title',
     locale: true,
     order: 45,

@@ -3,6 +3,7 @@ import { HighlightCode } from '@gpustack/core-ui';
 import { YamlDiffEditor } from '@gpustack/core-ui/yaml-editor';
 import { useIntl } from '@umijs/max';
 import { Flex } from 'antd';
+import classNames from 'classnames';
 import diffStyles from '../../../style/import-yaml-drawer.module.less';
 import { dumpDeploymentConfig as dump } from '../../../utils/deployment-yaml';
 import type { RevisionComparison } from './config/types';
@@ -49,12 +50,20 @@ export default function RevisionComparisonView({
       modified={dump(target.spec)}
       height="100%"
       header={
-        <div className={diffStyles.diffPanes}>
-          <Flex align="center">
-            {text('target', { revision: previous.revision })}
+        <div className={classNames(diffStyles.diffPanes, styles.paneHeaders)}>
+          <Flex align="center" gap={4}>
+            {text('previousVersion', {
+              revision: (
+                <span className={styles.paneVersion}>v{previous.revision}</span>
+              )
+            })}
           </Flex>
-          <Flex align="center">
-            {text('target', { revision: target.revision })}
+          <Flex align="center" gap={4}>
+            {text('selectedVersion', {
+              revision: (
+                <span className={styles.paneVersion}>v{target.revision}</span>
+              )
+            })}
           </Flex>
         </div>
       }

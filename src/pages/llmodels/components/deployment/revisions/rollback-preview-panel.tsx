@@ -2,6 +2,7 @@ import useUserSettings from '@/hooks/use-user-settings';
 import { YamlDiffEditor } from '@gpustack/core-ui/yaml-editor';
 import { useIntl } from '@umijs/max';
 import { Alert, Flex, Spin } from 'antd';
+import classNames from 'classnames';
 import diffStyles from '../../../style/import-yaml-drawer.module.less';
 import { dumpDeploymentConfig as dump } from '../../../utils/deployment-yaml';
 import type { RollbackReview } from './config/types';
@@ -32,17 +33,21 @@ export default function RollbackPreviewPanel({
           isDarkTheme={isDarkTheme}
           height="100%"
           header={
-            <div className={diffStyles.diffPanes}>
+            <div
+              className={classNames(diffStyles.diffPanes, styles.paneHeaders)}
+            >
               <Flex align="center">{text('current')}</Flex>
               <Flex align="center">
-                {text('target', { revision: preview.target_revision })}
+                <span className={styles.paneVersion}>
+                  {text('target', { revision: preview.target_revision })}
+                </span>
               </Flex>
             </div>
           }
         />
       ) : review.loading ? (
         <Flex justify="center" align="center" className={styles.placeholder}>
-          <Spin />
+          <Spin size="middle" />
         </Flex>
       ) : null}
     </Flex>

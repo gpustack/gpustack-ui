@@ -1,4 +1,3 @@
-import { CheckCircleFilled, CopyOutlined } from '@ant-design/icons';
 import { Typography } from 'antd';
 import styled from 'styled-components';
 
@@ -21,19 +20,7 @@ const Content = styled.div`
 const ErrorMessageContent: React.FC<{ errMsg: string }> = ({ errMsg }) => {
   return (
     <Content>
-      <Typography.Text
-        className="cp-btn"
-        copyable={{
-          text: errMsg,
-          icon: [
-            <CopyOutlined style={{ fontSize: 14 }} key="copy" />,
-            <CheckCircleFilled
-              style={{ color: 'var(--ant-color-success)', fontSize: 14 }}
-              key="copied"
-            />
-          ]
-        }}
-      >
+      <Typography.Text className="cp-btn">
         <span className="msg">{errMsg}</span>
       </Typography.Text>
       {errMsg}

@@ -6,7 +6,7 @@ export default {
   'models.revisions.missingPrevious':
     '前一版本 v{revision} 已不可用，展示所选版本的完整配置。',
   'models.revisions.reviewRollback': '将 {name} 回滚到 {revision}',
-  'models.revisions.list': '修订记录',
+  'models.revisions.list': '修订记录({count})',
   'models.revisions.changes': '{count} 项配置变更',
   'models.revisions.title': '修订历史',
   'models.revisions.latest': '最新',
@@ -19,6 +19,10 @@ export default {
   'models.revisions.retryRestart': '重试重启',
   'models.revisions.current': '当前配置',
   'models.revisions.target': 'v{revision}',
+  'models.revisions.previousVersion': '上一版本 {revision}',
+  'models.revisions.selectedVersion': '所选版本 {revision}',
+  'models.revisions.rollbackToVersion': '回滚到 v{revision}',
+  'models.revisions.comparisonRange': 'v{previous} → v{revision}',
   'models.revisions.unchanged': '该版本与当前配置一致。',
   'models.revisions.failed': '无法完成修订历史操作。'
 };

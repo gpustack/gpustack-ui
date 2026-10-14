@@ -5,7 +5,7 @@ import { ArrowLeftOutlined } from '@ant-design/icons';
 import { FormDrawer, ModalFooter, useSubmitLock } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Steps } from 'antd';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { CacheProviderItem, FormData, ListItem } from '../config/types';
 
@@ -105,11 +105,9 @@ const AddService: React.FC<AddModalProps> = ({
 
   const onProviderStep = isCreate && currentStep === 0;
 
-  // a failed resource check is advisory: the primary button gives way to
-  // "Submit Anyway", mirroring the deployment compatibility flow
-  const showExtraButton = useMemo(() => {
-    return checkStatus.show && checkStatus.type !== 'success';
-  }, [checkStatus.show, checkStatus.type]);
+  // Creation always submits to server validation; edit warnings are advisory.
+  const showExtraButton =
+    !isCreate && checkStatus.show && checkStatus.type !== 'success';
 
   // edits are saved as-is and picked up on the next instance recreation;
   // the notice outranks the resource-check success message but yields to

@@ -7,7 +7,7 @@ export default {
   'models.revisions.missingPrevious':
     'The preceding revision v{revision} is unavailable. Showing the selected revision’s full configuration.',
   'models.revisions.reviewRollback': 'Roll back {name} to {revision}',
-  'models.revisions.list': 'Revisions',
+  'models.revisions.list': 'Revisions ({count})',
   'models.revisions.changes': '{count} configuration changes',
   'models.revisions.title': 'Revision history',
   'models.revisions.latest': 'Latest',
@@ -21,6 +21,10 @@ export default {
   'models.revisions.retryRestart': 'Retry restart',
   'models.revisions.current': 'Current configuration',
   'models.revisions.target': 'v{revision}',
+  'models.revisions.previousVersion': 'Previous revision {revision}',
+  'models.revisions.selectedVersion': 'Selected revision {revision}',
+  'models.revisions.rollbackToVersion': 'Roll back to v{revision}',
+  'models.revisions.comparisonRange': 'v{previous} → v{revision}',
   'models.revisions.unchanged':
     'This revision matches the current configuration.',
   'models.revisions.failed': 'Unable to complete the revision history request.'

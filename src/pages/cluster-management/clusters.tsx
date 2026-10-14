@@ -275,7 +275,7 @@ const Clusters: React.FC = () => {
       });
     } else if (val === 'metrics') {
       goToGrafana(row);
-    } else if (val === 'topology') {
+    } else if (val === 'configureTopology') {
       setTopologyCluster({ id: row.id, name: row.name });
     }
   });

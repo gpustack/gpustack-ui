@@ -217,7 +217,7 @@ const ServiceMonitor: React.FC<ServiceMonitorProps> = ({
               }))}
               placeholder={intl.formatMessage({ id: 'kvCache.table.worker' })}
               styles={{
-                wrapper: { maxWidth: 280, minWidth: 150 }
+                wrapper: { maxWidth: 280, minWidth: 240 }
               }}
               value={workers}
               onChange={(value: string[]) => setWorkers(value || [])}
@@ -452,13 +452,8 @@ const ServiceMonitor: React.FC<ServiceMonitorProps> = ({
       <Row gutter={16} style={{ marginBottom: 16 }}>
         {statCards.map((card) => (
           <Col span={24 / statCards.length} key={card.key}>
-            <CardWrapper style={{ padding: 16, height: 120 }}>
-              <Flex
-                vertical
-                gap={16}
-                className={styles.statCard}
-                style={{ height: 86 }}
-              >
+            <CardWrapper style={{ padding: 16, height: 100 }}>
+              <Flex vertical gap={16} className={styles.statCard}>
                 <div className="title">{card.title}</div>
                 <div className="value">{card.value}</div>
               </Flex>

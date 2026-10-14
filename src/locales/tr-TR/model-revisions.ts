@@ -7,7 +7,7 @@ export default {
   'models.revisions.missingPrevious':
     'Önceki revizyon v{revision} kullanılamıyor. Seçilen revizyonun tam yapılandırması gösteriliyor.',
   'models.revisions.reviewRollback': '{name}: {revision} revizyonuna geri al',
-  'models.revisions.list': 'Revizyonlar',
+  'models.revisions.list': 'Revizyonlar ({count})',
   'models.revisions.changes': '{count} yapılandırma değişikliği',
   'models.revisions.title': 'Revizyon geçmişi',
   'models.revisions.latest': 'En son',
@@ -21,6 +21,10 @@ export default {
   'models.revisions.retryRestart': 'Yeniden başlatmayı tekrar dene',
   'models.revisions.current': 'Mevcut yapılandırma',
   'models.revisions.target': 'v{revision}',
+  'models.revisions.previousVersion': 'Önceki revizyon {revision}',
+  'models.revisions.selectedVersion': 'Seçilen revizyon {revision}',
+  'models.revisions.rollbackToVersion': 'v{revision} revizyonuna geri al',
+  'models.revisions.comparisonRange': 'v{previous} → v{revision}',
   'models.revisions.unchanged': 'Bu revizyon mevcut yapılandırmayla aynı.',
   'models.revisions.failed': 'Revizyon geçmişi isteği tamamlanamadı.'
 };

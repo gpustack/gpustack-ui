@@ -54,7 +54,7 @@ let response = fixture();
 const queryMeta = mock.fn(async () => clone(response));
 const queryUsage = mock.fn(async (_params: any) => ({}));
 
-// File URLs match the @/ and @@/ aliases without loading Umi's runtime.
+// Match the @/ alias without loading the request hook's runtime dependencies.
 mock.module(
   new URL('../../../../hooks/use-query-data-list.ts', import.meta.url).href,
   {
@@ -68,14 +68,6 @@ mock.module(
     }
   }
 );
-mock.module(
-  new URL('../../../../.umi/plugin-model/index.tsx', import.meta.url).href,
-  {
-    namedExports: {
-      useModel: () => ({ initialState: { currentUser: { id: 7 } } })
-    }
-  }
-);
 mock.module(new URL('../../apis/index.ts', import.meta.url).href, {
   namedExports: {
     queryUsageMetaData: queryMeta,
@@ -83,7 +75,10 @@ mock.module(new URL('../../apis/index.ts', import.meta.url).href, {
   }
 });
 mock.module('@umijs/max', {
-  namedExports: { useIntl: () => ({ formatMessage: ({ id }: any) => id }) }
+  namedExports: {
+    useIntl: () => ({ formatMessage: ({ id }: any) => id }),
+    useModel: () => ({ initialState: { currentUser: { id: 7 } } })
+  }
 });
 mock.module('@gpustack/core-ui/excel', {
   namedExports: { exportJsonToExcel() {} }

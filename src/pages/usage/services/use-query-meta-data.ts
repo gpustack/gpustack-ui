@@ -1,5 +1,5 @@
 import { useQueryData } from '@/hooks/use-query-data-list';
-import { useModel } from '@@/plugin-model';
+import { useModel } from '@umijs/max';
 import { useState } from 'react';
 import { queryUsageMetaData } from '../apis';
 import { GroupOption, groupToOptions } from '../config';

@@ -17,6 +17,7 @@ interface InstanceItemProps {
   instanceData: ModelInstanceListItem;
   workerList: WorkerListItem[];
   modelData?: any;
+  showRole?: boolean;
   // undefined = not read (no cache service, or metrics unavailable);
   // null = read but the engine reports no lookups in the window
   cacheHitRate?: number | null;
@@ -33,6 +34,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
   instanceData,
   workerList,
   modelData,
+  showRole = true,
   cacheHitRate,
   defaultOpenId,
   gridTemplate,
@@ -57,6 +59,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
       <ExpandedRowGrid.Cell span={1}>
         <NameCell
           record={instanceData}
+          showRole={showRole}
           modelData={modelData}
           cacheHitRate={cacheHitRate}
           defaultOpenId={defaultOpenId}

@@ -1,8 +1,11 @@
 import { localize } from '@/utils/localize';
 import { useMemoizedFn } from 'ahooks';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { queryCacheProviders } from '../apis';
 import { CacheProviderItem } from '../config/types';
+import {
+  loadProviders,
+  subscribeCacheProviders
+} from '../services/provider-catalog';
 
 // The option label is display text only; value stays the catalog name,
 // so what a form submits does not move with the user's locale.
@@ -12,44 +15,30 @@ const toOption = (item: CacheProviderItem) => ({
   value: item.name
 });
 
-// The catalog is a read-only asset shipped with the release: one fetch
-// serves every mount (list page, drawer form, and detail would otherwise
-// each pull the full catalog). A failed fetch is not cached so the next
-// mount retries.
-let providersPromise: Promise<CacheProviderItem[]> | null = null;
-
-const loadProviders = () => {
-  if (!providersPromise) {
-    providersPromise = queryCacheProviders({ page: -1 })
-      .then((res) => res.items || [])
-      .catch((error) => {
-        providersPromise = null;
-        throw error;
-      });
-  }
-  return providersPromise;
-};
-
 const useCacheProviders = (options?: { onLoaded?: () => void }) => {
   const [providers, setProviders] = useState<CacheProviderItem[]>([]);
   const onLoaded = useMemoizedFn(() => options?.onLoaded?.());
 
   useEffect(() => {
-    let active = true;
-    loadProviders()
-      .then((items) => {
-        if (active) {
-          setProviders(items);
-          onLoaded();
-        }
-      })
-      .catch(() => {
-        if (active) {
-          setProviders([]);
-        }
-      });
+    let generation = 0;
+    const refresh = () => {
+      const current = ++generation;
+      loadProviders()
+        .then((items) => {
+          if (current === generation) {
+            setProviders(items);
+            onLoaded();
+          }
+        })
+        .catch(() => {
+          if (current === generation) setProviders([]);
+        });
+    };
+    const unsubscribe = subscribeCacheProviders(refresh);
+    refresh();
     return () => {
-      active = false;
+      generation++;
+      unsubscribe();
     };
   }, []);
 

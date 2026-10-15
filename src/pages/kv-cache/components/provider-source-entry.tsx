@@ -3,6 +3,7 @@ import { querySourceProbe } from '@/pages/_components/source-config/probe';
 import type { SourceScopeConfig } from '@/pages/_components/source-config/types';
 import React from 'react';
 import { providerSourceTemplate } from '../config';
+import { scheduleCacheProvidersRefresh } from '../services/provider-catalog';
 
 // The one kind no OTA server publishes: the provider catalog is assembled from
 // what this release carries and what installed extensions add, so there is no
@@ -31,6 +32,12 @@ const cacheProviderSourceScope: SourceScopeConfig = {
 
 const ProviderSourceEntry: React.FC<{ onSaved?: () => void }> = ({
   onSaved
-}) => <SourceConfigEntry config={cacheProviderSourceScope} onSaved={onSaved} />;
+}) => (
+  <SourceConfigEntry
+    config={cacheProviderSourceScope}
+    onSourceSaved={scheduleCacheProvidersRefresh}
+    onSaved={onSaved}
+  />
+);
 
 export default ProviderSourceEntry;

@@ -1,5 +1,6 @@
-import { queryCacheProviders, queryCacheServices } from '@/pages/kv-cache/apis';
-import { CacheProviderItem, ListItem } from '@/pages/kv-cache/config/types';
+import { queryCacheServices } from '@/pages/kv-cache/apis';
+import { ListItem } from '@/pages/kv-cache/config/types';
+import { loadProviders } from '@/pages/kv-cache/services/provider-catalog';
 import { useQueryData } from '@gpustack/core-ui';
 import { useState } from 'react';
 import { backendOptionsMap } from '../constants/backend-parameters';
@@ -19,24 +20,7 @@ const knownServices = new Map<string, CacheServiceOption>();
 export const knownCacheService = (clusterId: number, serviceId: number) =>
   knownServices.get(`${clusterId}:${serviceId}`);
 
-// providers are cluster-independent and the deployment modals are
-// destroyOnHidden (a hook-local cache would refetch on every open), so a
-// single in-flight catalog fetch is shared module-wide; a failure clears
-// it so the next call retries
-let providersPromise: Promise<CacheProviderItem[]> | null = null;
-export const loadProviders = (): Promise<CacheProviderItem[]> => {
-  let promise = providersPromise;
-  if (!promise) {
-    promise = queryCacheProviders({ page: -1 })
-      .then((res) => res?.items || [])
-      .catch((error) => {
-        providersPromise = null;
-        throw error;
-      });
-    providersPromise = promise;
-  }
-  return promise;
-};
+export { loadProviders };
 
 export default function useQueryCacheServices() {
   const [cacheServiceOptions, setCacheServiceOptions] = useState<

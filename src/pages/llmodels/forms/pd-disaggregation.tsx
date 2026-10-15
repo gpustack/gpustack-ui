@@ -11,6 +11,7 @@ import { Alert, Flex, Form, Modal, Switch, Tooltip, Typography } from 'antd';
 import { createStyles } from 'antd-style';
 import { useAtomValue } from 'jotai';
 import React, { useEffect, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { queryModelSpanningRoles, resolvePDMode } from '../apis';
 import {
   PD_CAPABLE_BACKENDS,
@@ -243,7 +244,6 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
     findMode(mode),
     membershipRoles
   );
-  const kvCacheEnabled = Form.useWatch(['extended_kv_cache', 'enabled'], form);
 
   /**
    * On/off is DERIVED from `roles`, not held in local state.
@@ -418,6 +418,7 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
   // Without this a slow answer for the previous engine lands after the fast
   // answer for the current one and silently overwrites the mode field.
   const resolveSession = useRef(0);
+  const toggleSession = useRef(0);
   const resolutionInputs = useRef({ backend, clusterId });
 
   /**
@@ -450,6 +451,12 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
           vendor: resolution.vendor ?? undefined
         }
       });
+      // Programmatic writes do not fire Form.onValuesChange. Evaluate again
+      // once the automatic transport arrives, with its placement constraints.
+      onValuesChange?.(
+        { disaggregation: { mode: selectedMode } },
+        form.getFieldsValue()
+      );
     }
     // Through `onModeChange`, the same narrow channel `handleModeChange` uses,
     // rather than `notifyEffects`.
@@ -611,6 +618,7 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
   // handler below, and a form that opens with PD off fetches nothing.
   useEffect(() => {
     let cancelled = false;
+    const session = toggleSession.current;
     // The catalog has to land *before* the effects that read it are published:
     // an edit drawer opens with the mode already chosen, so `modeData` is
     // resolved exactly once here. Notifying first and fetching after left the
@@ -619,7 +627,7 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
     // "the catalog has not arrived".
     const seed = async () => {
       const modes = active ? await getPDModes() : undefined;
-      if (cancelled) {
+      if (cancelled || toggleSession.current !== session) {
         return;
       }
       notifyEffects({
@@ -632,16 +640,19 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
     seed();
     return () => {
       cancelled = true;
+      toggleSession.current += 1;
     };
   }, []);
 
   const handleEnableChange = async (value: string) => {
+    const session = ++toggleSession.current;
     const next = value === PDEnableValueMap.Disaggregated;
     // The model-level cache does not survive the switch: its benefit is
     // asymmetric between prefill and decode, so a model-level setting would
     // hand decode a cost it cannot use. The mount site clears it; the notice
     // below is what makes that visible.
-    const clearModelKVCache = next && !!kvCacheEnabled;
+    const clearModelKVCache =
+      next && !!form.getFieldValue(['extended_kv_cache', 'enabled']);
     // Only on the way in. Turning PD off leaves the roles behind too, so
     // re-clearing would wipe values the user is about to see again.
     const clearModelScheduling = next;
@@ -652,42 +663,55 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
       // and carried, for the same reason `runResolve` carries it: the
       // notification below resolves a recipe name against it.
       modes = await getPDModes();
+      if (
+        toggleSession.current !== session ||
+        form.getFieldValue('backend') !== backend ||
+        form.getFieldValue('cluster_id') !== clusterId
+      ) {
+        return;
+      }
+    }
+    // Commit the layout before the final clears below. preserve={false}
+    // restores saved initialValues when conditional fields unregister.
+    // Only this user action flushes; mount notifications remain asynchronous.
+    flushSync(() => {
       // Seed the role set here, not in the roles section's mount effect: that
       // section only mounts when its panel is expanded, so a user who turns PD
       // on and submits without opening it would send `disaggregation` with no
       // roles — which the backend refuses, and rightly so. The value has to
       // exist the moment PD does.
-      if (!form.getFieldValue('roles')?.length) {
+      if (next && !form.getFieldValue('roles')?.length) {
         form.setFieldValue('roles', createDefaultRoles());
       }
-    }
-    if (!next) {
-      // Off means a plain model again: leave no group behind for the payload
-      // to pick up.
-      noticesRef.current.mode = !!form.getFieldValue([
-        'disaggregation',
-        'mode'
-      ]);
+      if (!next) {
+        // Off means a plain model again: leave no group behind for the payload
+        // to pick up.
+        noticesRef.current.mode = !!form.getFieldValue([
+          'disaggregation',
+          'mode'
+        ]);
+        form.setFieldValue('roles', null);
+        form.setFieldValue('disaggregation', null);
+      }
+      // No `setEnabled`: `roles` above IS the state, and the watch re-renders
+      // both the switch and this body from it.
+      noticesRef.current.cache = clearModelKVCache;
+      notifyEffects({
+        enabled: next,
+        mode: form.getFieldValue(['disaggregation', 'mode']) ?? null,
+        clearModelKVCache,
+        clearModelScheduling,
+        cacheCleared: noticesRef.current.cache,
+        modeCleared: noticesRef.current.mode,
+        modes
+      });
+    });
+    if (next) {
+      form.setFieldValue('extended_kv_cache', { enabled: false });
+    } else {
       form.setFieldValue('roles', null);
       form.setFieldValue('disaggregation', null);
     }
-    // No `setEnabled`: `roles` above IS the state, and the watch re-renders
-    // both the switch and this body from it.
-    noticesRef.current.cache = clearModelKVCache;
-    notifyEffects({
-      enabled: next,
-      mode: form.getFieldValue(['disaggregation', 'mode']) ?? null,
-      clearModelKVCache,
-      clearModelScheduling,
-      cacheCleared: noticesRef.current.cache,
-      modeCleared: noticesRef.current.mode,
-      modes
-    });
-    // Let the conditional fields register/unregister first: what the form hands
-    // out is what is mounted at that moment.
-    await new Promise((resolve) => {
-      setTimeout(resolve, 100);
-    });
     onValuesChange?.({}, form.getFieldsValue());
   };
 

@@ -129,12 +129,10 @@ const AddModal: React.FC<AddModalProps> = (props) => {
 
   const generateSubmitData = (formData: FormData) => {
     const gpuSelector = generateGPUIds(formData);
-    const data = {
-      ...getCatalogFormValues(form.current, formData),
+    return getCatalogFormValues(form.current, {
+      ..._.omit(formData, ['scheduleType', 'manualGpuMode', 'pdMode']),
       ...gpuSelector
-    };
-
-    return data;
+    });
   };
 
   const getModelSpec = (mode: string) => {
@@ -148,9 +146,9 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     };
   };
 
-  const initFormDataBySource = (data: CatalogSpec) => {
+  const applyCatalogSpec = (data: Partial<CatalogSpec>) => {
     const runtimeChoice = resolveRuntimeChoice(data);
-    form.current?.setFieldsValue({
+    form.current?.applyCatalogSpec({
       ..._.omit(data, ['name', ...Object.keys(runtimeChoice)]),
       categories: _.get(current, 'categories.0', null)
     });
@@ -174,7 +172,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   const handleSourceChange = (source: string) => {
     const defaultSpec = _.get(sourceGroupMap.current, `${source}.0`, {});
     // set form value
-    initFormDataBySource(defaultSpec);
+    applyCatalogSpec(defaultSpec);
     handleCheckFormData();
   };
 
@@ -278,7 +276,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
 
       setModeList(modeDataList);
       setSourceList(sources);
-      initFormDataBySource({
+      applyCatalogSpec({
         ...defaultSpec,
         backend_parameters: mergeBackendParameters(
           defaultBackendParams,
@@ -295,12 +293,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       } else {
         setIsGGUF(false);
       }
-      const allValues = generateSubmitData({
-        ...defaultSpec,
-        categories: _.get(current, 'categories.0', null),
-        cluster_id: clusterId,
-        name
-      });
+      const allValues = generateSubmitData(form.current.getFieldsValue(true));
 
       // If no avaliable gpus for the model, show warning message
       if (!res.items.length) {
@@ -322,9 +315,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   const handleOnModeChange = (val: string) => {
     const data = getModelSpec(val);
 
-    const runtimeChoice = resolveRuntimeChoice(data);
-    form.current.setFieldsValue(_.omit(data, Object.keys(runtimeChoice)));
-    form.current.applyRuntimeChoice(runtimeChoice);
+    applyCatalogSpec(data);
     handleCheckFormData();
   };
 

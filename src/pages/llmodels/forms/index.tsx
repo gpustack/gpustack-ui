@@ -239,9 +239,9 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       form.setFieldsValue({
         gpu_selector: null,
         gpu_type_selector: null,
-        worker_selector: {},
         placement_strategy: undefined
       } as any);
+      form.setFieldValue('worker_selector', {});
     }
     if (next.clearModelKVCache) {
       form.setFieldValue('extended_kv_cache', { enabled: false });
@@ -249,10 +249,9 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     if (next.clearModelParams) {
       // Same reason as `clearModelScheduling`: hidden-but-set would keep
       // projecting onto every role through `role_effective_model`.
-      form.setFieldsValue({
-        backend_parameters: [],
-        env: {}
-      } as any);
+      form.setFieldsValue({ backend_parameters: [] });
+      // Replace object fields so nested keys are cleared as well.
+      form.setFieldValue('env', {});
     }
     if (next.clearModelLora) {
       // Not a projection problem — an admission one. LoRA does not serve under
@@ -746,8 +745,8 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       getFieldValue: (name: string) => {
         return form.getFieldValue(name);
       },
-      getFieldsValue: () => {
-        return form.getFieldsValue();
+      getFieldsValue: (all = false) => {
+        return all ? form.getFieldsValue(true) : form.getFieldsValue();
       },
       getGPUOptionList: async (params: { clusterId: number }) => {
         return await getGPUOptionList(params);

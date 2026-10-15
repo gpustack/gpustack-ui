@@ -236,7 +236,7 @@ export default {
     'Unmanaged (the cluster keeps its own value)',
 
   // Topology: where this cluster's workers sit.
-  'clusters.topology.title': 'Topology',
+  'clusters.topology.title': 'Topology Configuration',
   'clusters.topology.noRebalance':
     'Locations only affect later scheduling. Running deployments are not moved.',
   'clusters.topology.load.failed': 'Could not load the topology.',

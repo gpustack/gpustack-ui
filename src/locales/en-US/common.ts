@@ -220,6 +220,8 @@ export default {
   'common.button.help': 'Help',
   'common.button.feedback': 'Feedback',
   'common.button.docs': 'Documentation',
+  'common.button.onlineDocs': 'Online Documentation',
+  'common.button.offlineDocs': 'Offline Documentation',
   'common.button.imageSelector': 'Image Selector',
   'common.button.version': 'Version',
   'common.title.delete.confirm': 'Confirm deletion',

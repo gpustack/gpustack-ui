@@ -5,7 +5,11 @@ import externalLinks from '@/constants/external-links';
 import { logout } from '@/pages/login/apis';
 import { getGPUStackPlugin } from '@/plugins';
 import { useModel } from '@@/plugin-model';
-import { DiscordOutlined, GithubOutlined } from '@ant-design/icons';
+import {
+  DiscordOutlined,
+  GithubOutlined,
+  ReadOutlined
+} from '@ant-design/icons';
 import { DropdownActions, IconFont, useBodyScroll } from '@gpustack/core-ui';
 import { history, useIntl, useNavigate } from '@umijs/max';
 import { Avatar, Button, Divider, Modal } from 'antd';
@@ -268,9 +272,15 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
     },
     {
       key: 'docs',
-      icon: <IconFont type="icon-docs"></IconFont>,
-      label: intl.formatMessage({ id: 'common.button.docs' }),
+      icon: <ReadOutlined />,
+      label: intl.formatMessage({ id: 'common.button.onlineDocs' }),
       url: externalLinks.documentation
+    },
+    {
+      key: 'offlineDocs',
+      icon: <IconFont type="icon-docs" />,
+      label: intl.formatMessage({ id: 'common.button.offlineDocs' }),
+      url: new URL('/help', window.location.origin).href
     },
     {
       key: 'imageSelector',
@@ -288,7 +298,7 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
           className="flex flex-center gap-8"
           href={item.url}
           target="_blank"
-          rel="noreferrer"
+          rel="noopener noreferrer"
         >
           {item.icon}
           {item.label}
@@ -401,6 +411,7 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
           is admin-gated — this slot carries no visibility rule of its own, so
           what it hosts is free to be visible to every signed-in user. */}
       <PluginExtraField name="HeaderExtra" />
+      <PluginExtraField name="GlobalDocs" />
       <PluginExtraField name="GlobalSettings" />
       <DropdownActions
         menu={{ ...userMenu }}

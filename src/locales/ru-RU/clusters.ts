@@ -237,7 +237,7 @@ export default {
     'Unmanaged (the cluster keeps its own value)',
 
   // Topology: where this cluster's workers sit.
-  'clusters.topology.title': 'Топология',
+  'clusters.topology.title': 'Настройка топологии',
   'clusters.topology.noRebalance':
     'Расположение влияет только на последующее планирование. Работающие развёртывания не перемещаются.',
   'clusters.topology.load.failed': 'Не удалось загрузить топологию.',

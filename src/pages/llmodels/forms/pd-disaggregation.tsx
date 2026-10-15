@@ -708,6 +708,7 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
     });
     if (next) {
       form.setFieldValue('extended_kv_cache', { enabled: false });
+      form.setFieldValue('speculative_config', { enabled: false });
     } else {
       form.setFieldValue('roles', null);
       form.setFieldValue('disaggregation', null);

@@ -74,9 +74,11 @@ const getCatalogModelFields = (values: Partial<FormData>) => ({
   worker_selector: values.worker_selector ?? {},
   placement_strategy: values.placement_strategy ?? 'spread',
   extended_kv_cache: values.extended_kv_cache ?? { enabled: false },
+  speculative_config: values.speculative_config ?? { enabled: false },
   backend_parameters: values.backend_parameters ?? [],
   env: values.env ?? {},
-  lora_list: values.lora_list ?? []
+  lora_list: values.lora_list ?? [],
+  replicas: getDeploymentFormReplicas(values)
 });
 
 interface DataFormProps {
@@ -256,16 +258,21 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     }));
     if (next.enabled && !preservedModelFields.current) {
       // Every field any branch below clears, read before any of them run.
-      preservedModelFields.current = {
+      preservedModelFields.current = _.cloneDeep({
         gpu_selector: form.getFieldValue('gpu_selector'),
         gpu_type_selector: form.getFieldValue('gpu_type_selector'),
         worker_selector: form.getFieldValue('worker_selector'),
         placement_strategy: form.getFieldValue('placement_strategy'),
         extended_kv_cache: form.getFieldValue('extended_kv_cache'),
+        speculative_config: form.getFieldValue('speculative_config'),
         backend_parameters: form.getFieldValue('backend_parameters'),
         env: form.getFieldValue('env'),
-        lora_list: form.getFieldValue('lora_list')
-      };
+        lora_list: form.getFieldValue('lora_list'),
+        replicas: form.getFieldValue('replicas') ?? 1
+      });
+    }
+    if (next.enabled) {
+      form.setFieldValue('speculative_config', { enabled: false });
     }
     if (next.clearModelScheduling) {
       // Cleared, not just hidden. `role_effective_model` projects the model's
@@ -297,7 +304,9 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     // rather than on a transition flag, which is what keeps it to the one
     // notification that matters — the ref is non-null only after an enable.
     if (!next.enabled && preservedModelFields.current) {
-      form.setFieldsValue(preservedModelFields.current as any);
+      Object.entries(preservedModelFields.current).forEach(([field, value]) => {
+        form.setFieldValue(field, value);
+      });
       preservedModelFields.current = null;
     }
     // Only when it actually differs. An unconditional write fires the form's
@@ -447,30 +456,18 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
 
   const handleBackendChange = async (val: string, option?: BackendOption) => {
     setImageModePicked(false);
-    /**
-     * The stash belongs to the engine it was taken from, so a new engine
-     * voids it.
-     *
-     * 🔴 Unconditional, and before anything below runs. The reset further down
-     * only fires for an engine PD does NOT apply to, and the damaging path is
-     * the one where it does: vLLM and SGLang are both eligible, so switching
-     * between them leaves PD on and the stash intact — holding vLLM's
-     * parameters, GPU selector and cache config, which are exactly three of
-     * the fields the write below is replacing with SGLang's defaults. Turning
-     * PD off afterwards would put the vLLM values back over them, and the
-     * deployment would save an SGLang engine configured as a vLLM one, with
-     * nothing on screen saying so.
-     *
-     * Nulling it means turning PD off now leaves the new engine's defaults
-     * standing, which is what the user is looking at and what they last chose.
-     * Switching back and forth does not resurrect the original values either,
-     * and must not: this write has already replaced them in the store, so the
-     * stash was their last copy and restoring it would bring back values the
-     * user watched being overwritten.
-     */
-    preservedModelFields.current = null;
+    // A new engine replaces engine-specific settings, including the deferred
+    // snapshot, so disabling PD must not resurrect the old engine's defaults.
+    // The ordinary replica count is independent of the engine and survives.
+    preservedModelFields.current = preservedModelFields.current
+      ? { replicas: preservedModelFields.current.replicas }
+      : null;
     const clearPD = !PD_ELIGIBLE_BACKENDS.includes(val);
     if (clearPD) {
+      if (preservedModelFields.current) {
+        form.setFieldValue('replicas', preservedModelFields.current.replicas);
+        preservedModelFields.current = null;
+      }
       setPDEffects({
         enabled: false,
         mode: null,
@@ -549,10 +546,10 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       // `data` stays as the model-level half: those fields ARE registered, and
       // it is the shape the rest of this function already works from.
       allValues.roles = rolesFormToPayload(form.getFieldValue('roles'), data);
-      // The model-level cache fields are unmounted under PD. Send the store's
-      // value even after switching back to a built-in mode, so the confirmed
-      // cleanup also clears the saved model-level cache on edit.
+      // Model-level performance fields are unmounted under PD. Send the
+      // cleared store values explicitly so updates clear the saved settings.
       allValues.extended_kv_cache = form.getFieldValue('extended_kv_cache');
+      allValues.speculative_config = form.getFieldValue('speculative_config');
       // Unmounted fields are absent from onFinish. An explicit empty list
       // clears stored adapters; omitting the field preserves them on update.
       allValues.lora_list = [];
@@ -782,9 +779,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         Object.entries(activeFields).forEach(([field, value]) => {
           form.setFieldValue(field, value);
         });
-        if (pdActive) {
-          form.setFieldValue('replicas', 1);
-        }
       },
       applyRuntimeChoice: (runtime: RuntimeChoice) => {
         applyRuntimeChoice(runtime);

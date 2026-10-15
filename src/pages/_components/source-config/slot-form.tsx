@@ -145,6 +145,8 @@ interface SourceSlotFormProps {
   otaServerUrl: string;
   // A write landed, so the probe and the list behind the drawer are stale.
   onSaved: () => void;
+  // Only successful source writes and reloads notify shared catalog caches.
+  onSourceSaved?: () => void;
   // Closes the drawer, for the Cancel this form's footer carries.
   onCancel: () => void;
   // The drawer's fixed bottom bar, to render this form's buttons into. Null
@@ -184,6 +186,7 @@ const SourceSlotForm: React.FC<SourceSlotFormProps> = ({
   status,
   otaServerUrl,
   onSaved,
+  onSourceSaved,
   onCancel,
   footerContainer
 }) => {
@@ -541,7 +544,9 @@ const SourceSlotForm: React.FC<SourceSlotFormProps> = ({
       run(async () => {
         try {
           setAlert('');
-          seedForm(await save(payload));
+          const saved = await save(payload);
+          onSourceSaved?.();
+          seedForm(saved);
           revealDocumentStart();
           message.success(intl.formatMessage({ id: 'common.message.success' }));
           onSaved();
@@ -571,6 +576,7 @@ const SourceSlotForm: React.FC<SourceSlotFormProps> = ({
       // in either arrives as a rejected request rather than a per-kind entry in
       // a round's report.
       const { changed } = await reload();
+      onSourceSaved?.();
       onSaved();
       message[changed ? 'success' : 'info'](
         intl.formatMessage({

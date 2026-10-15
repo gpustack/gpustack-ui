@@ -10,6 +10,8 @@ interface SourceConfigEntryProps {
   config: SourceScopeConfig;
   // The merged result changed, so the list behind the drawer is stale.
   onSaved?: () => void;
+  // The source write succeeded; notify before any delayed list refresh.
+  onSourceSaved?: () => void;
 }
 
 /**
@@ -28,7 +30,8 @@ export const useSourceConfigVisible = () => !!useAccess().canSeeAdmin;
 
 const SourceConfigEntry: React.FC<SourceConfigEntryProps> = ({
   config,
-  onSaved
+  onSaved,
+  onSourceSaved
 }) => {
   const intl = useIntl();
   const { saveScrollHeight, restoreScrollHeight } = useBodyScroll();
@@ -60,6 +63,7 @@ const SourceConfigEntry: React.FC<SourceConfigEntryProps> = ({
         open={open}
         onCancel={handleCancel}
         onSaved={onSaved}
+        onSourceSaved={onSourceSaved}
         config={config}
       ></SourceConfigDrawer>
     </>

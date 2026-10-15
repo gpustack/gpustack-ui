@@ -36,6 +36,8 @@ interface SourceConfigDrawerProps {
   onCancel: () => void;
   // The merged result changed, so the list behind the drawer is stale.
   onSaved?: () => void;
+  // The source write succeeded; notify before any delayed list refresh.
+  onSourceSaved?: () => void;
   config: SourceScopeConfig;
 }
 
@@ -59,6 +61,7 @@ const SourceConfigDrawer: React.FC<SourceConfigDrawerProps> = ({
   open,
   onCancel,
   onSaved,
+  onSourceSaved,
   config: scope
 }) => {
   const intl = useIntl();
@@ -105,6 +108,7 @@ const SourceConfigDrawer: React.FC<SourceConfigDrawerProps> = ({
       status={probeStatus?.kinds?.[slot.kind]}
       otaServerUrl={probeStatus?.ota_server_url || ''}
       onSaved={handleSlotSaved}
+      onSourceSaved={onSourceSaved}
       onCancel={onCancel}
       // Every tab stays mounted, so the bar goes to the one on screen — the
       // others render no buttons at all.

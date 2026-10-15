@@ -38,6 +38,7 @@ export interface NameCellProps {
   cacheHitRate?: number | null;
   defaultOpenId?: string;
   showWorkerInfo?: boolean;
+  showRole?: boolean;
   styles?: {
     label?: React.CSSProperties;
   };
@@ -254,6 +255,7 @@ const NameCell: React.FC<NameCellProps> = ({
   cacheHitRate,
   defaultOpenId,
   showWorkerInfo = true,
+  showRole = true,
   styles
 }) => {
   const intl = useIntl();
@@ -267,10 +269,7 @@ const NameCell: React.FC<NameCellProps> = ({
           {record.name}
         </span>
       </AutoTooltip>
-      {/* Which role of the group this member serves — a note on the name, not a
-          category of its own, which is what `TextAttribute` is for. Absent for
-          every single-role deployment, so those cells are untouched. */}
-      {!!record.role && (
+      {showRole && !!record.role && (
         <TextAttribute>{roleLabel(intl, record.role)}</TextAttribute>
       )}
       {/* `stale` is model-level: the group is one generation at a time, and the

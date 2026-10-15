@@ -122,12 +122,13 @@ const Instances: React.FC<InstanceItemProps> = ({
     setFirstLoad(false);
   }, []);
 
-  const renderInstance = (item: ModelInstanceListItem) => (
+  const renderInstance = (item: ModelInstanceListItem, showRole = true) => (
     <InstanceItem
       key={item.name}
       modelData={modelData}
       workerList={workerList}
       instanceData={item}
+      showRole={showRole}
       cacheHitRate={hitRates[item.name]}
       defaultOpenId={firstLoad ? defaultOpenId : ''}
       handleChildSelect={handleChildSelect}
@@ -141,7 +142,7 @@ const Instances: React.FC<InstanceItemProps> = ({
   // same rows, no summary bar and no headings. Everything below is additive and
   // reached only through this flag.
   if (!modelData?.roles?.length) {
-    return <Wrapper>{_.map(list, renderInstance)}</Wrapper>;
+    return <Wrapper>{list?.map((item) => renderInstance(item))}</Wrapper>;
   }
 
   // Group by role, in the order the roles run in, with `role_status` as the
@@ -185,13 +186,13 @@ const Instances: React.FC<InstanceItemProps> = ({
             }
           ></RoleGroupHeader>
           {!collapsed.has(group.item.name) &&
-            group.instances.map(renderInstance)}
+            group.instances.map((item) => renderInstance(item, false))}
         </React.Fragment>
       ))}
       {/* Members the role list does not account for. Rendered without a
           heading rather than dropped — hiding a running instance is the one
           thing this view must never do. */}
-      {ungrouped.map(renderInstance)}
+      {ungrouped.map((item) => renderInstance(item))}
     </Wrapper>
   );
 };

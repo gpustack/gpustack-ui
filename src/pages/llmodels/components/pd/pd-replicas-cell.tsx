@@ -3,13 +3,14 @@ import type { StatusType } from '@/config/types';
 import {
   CheckOutlined,
   FormOutlined,
+  InfoCircleOutlined,
   SyncOutlined,
   UndoOutlined,
   WarningOutlined
 } from '@ant-design/icons';
 import { config as coreConfig, StatusDot } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Alert, Button, Flex, InputNumber, Tooltip } from 'antd';
+import { Button, Flex, InputNumber, Tooltip } from 'antd';
 import { createStyles } from 'antd-style';
 import React from 'react';
 import {
@@ -163,6 +164,11 @@ const PDReplicasCell: React.FC<PDReplicasCellProps> = ({
   const { getPDModes, findMode } = useQueryPDModes();
   const membershipNotice = membershipUpdateNotice(findMode(mode), record.roles);
   const membershipPolicy = membershipUpdatePolicy(findMode(mode), record.roles);
+  const membershipText = membershipNotice
+    ? intl.formatMessage({ id: membershipNotice })
+    : undefined;
+  const MembershipIcon =
+    membershipPolicy === 'dynamic' ? InfoCircleOutlined : WarningOutlined;
   const [editing, setEditing] = React.useState(false);
   const [saving, setSaving] = React.useState(false);
   const [draft, setDraft] = React.useState<Record<string, number>>({});
@@ -255,7 +261,6 @@ const PDReplicasCell: React.FC<PDReplicasCellProps> = ({
   };
 
   const openEditor = async () => {
-    await getPDModes();
     setDraft(
       roles.reduce<Record<string, number>>((acc, role) => {
         acc[role.name] = role.replicas ?? 0;
@@ -263,6 +268,7 @@ const PDReplicasCell: React.FC<PDReplicasCellProps> = ({
       }, {})
     );
     setEditing(true);
+    await getPDModes();
   };
 
   const handleSave = async () => {
@@ -437,13 +443,6 @@ const PDReplicasCell: React.FC<PDReplicasCellProps> = ({
           {intl.formatMessage({ id: 'models.pd.membership.updating' })}
         </Flex>
       )}
-      {editing && membershipNotice && (
-        <Alert
-          type={membershipPolicy === 'dynamic' ? 'info' : 'warning'}
-          showIcon
-          message={intl.formatMessage({ id: membershipNotice })}
-        />
-      )}
       <Flex align="flex-start" gap={12}>
         {/* The lines carry the tooltip, so the thing you hover is the thing it
           explains. It is no longer where the per-role counts live — they are
@@ -506,7 +505,9 @@ const PDReplicasCell: React.FC<PDReplicasCellProps> = ({
                 disabled={!dirty}
                 icon={<CheckOutlined />}
                 onClick={handleSave}
-                aria-label={intl.formatMessage({ id: 'common.button.confirm' })}
+                aria-label={intl.formatMessage({
+                  id: 'common.button.confirm'
+                })}
               />
             </Tooltip>
             <Tooltip title={intl.formatMessage({ id: 'common.button.cancel' })}>
@@ -515,9 +516,41 @@ const PDReplicasCell: React.FC<PDReplicasCellProps> = ({
                 size="small"
                 icon={<UndoOutlined />}
                 onClick={() => setEditing(false)}
-                aria-label={intl.formatMessage({ id: 'common.button.cancel' })}
+                aria-label={intl.formatMessage({
+                  id: 'common.button.cancel'
+                })}
               />
             </Tooltip>
+            {membershipText && (
+              <Tooltip
+                title={
+                  membershipPolicy === 'dynamic' ? (
+                    membershipText
+                  ) : (
+                    <MarkerReasons texts={[membershipText]} />
+                  )
+                }
+                trigger={['hover', 'focus']}
+              >
+                <Flex
+                  component="span"
+                  align="center"
+                  className="m-l-5"
+                  tabIndex={0}
+                  role="img"
+                  aria-label={membershipText}
+                  style={{
+                    cursor: 'help',
+                    color:
+                      membershipPolicy === 'dynamic'
+                        ? 'var(--ant-color-info)'
+                        : 'var(--ant-color-warning)'
+                  }}
+                >
+                  <MembershipIcon aria-hidden />
+                </Flex>
+              </Tooltip>
+            )}
           </Flex>
         ) : (
           <Flex align="center" gap={2} style={{ height: 22, flexShrink: 0 }}>

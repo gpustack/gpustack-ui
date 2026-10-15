@@ -342,7 +342,12 @@ const AddModal: React.FC<AddModalProps> = ({
     } else if (action === PageAction.EDIT) {
       // Edit has no card columns, but the change-type overlay still needs the
       // full instance-type list to re-type a stopped instance.
-      fetchData({ page: -1 });
+      // Re-typing a stopped instance must stay within its own cluster, so
+      // narrow server-side by cluster_id.
+      fetchData({
+        page: -1,
+        ...(data?.clusterId != null ? { cluster_id: data.clusterId } : {})
+      });
     }
   }, [open, action]);
 

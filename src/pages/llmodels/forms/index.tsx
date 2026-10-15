@@ -68,6 +68,17 @@ const scheduleRequiredFields = [
 
 const performanceRequiredFields = ['speculative_config'];
 
+const getCatalogModelFields = (values: Partial<FormData>) => ({
+  gpu_selector: values.gpu_selector ?? null,
+  gpu_type_selector: values.gpu_type_selector ?? null,
+  worker_selector: values.worker_selector ?? {},
+  placement_strategy: values.placement_strategy ?? 'spread',
+  extended_kv_cache: values.extended_kv_cache ?? { enabled: false },
+  backend_parameters: values.backend_parameters ?? [],
+  env: values.env ?? {},
+  lora_list: values.lora_list ?? []
+});
+
 interface DataFormProps {
   initialValues?: FormData;
   ref?: any;
@@ -753,6 +764,27 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       },
       setFieldsValue: (values: FormData) => {
         form.setFieldsValue(values);
+      },
+      applyCatalogSpec: (values: Partial<FormData>) => {
+        const pdActive =
+          !!form.getFieldValue('roles')?.length ||
+          !!form.getFieldValue(['disaggregation', 'mode']);
+        const modelFields = _.cloneDeep(getCatalogModelFields(values));
+        // A new spec replaces the configuration to restore when PD turns off.
+        // Missing model fields use defaults instead of inheriting the old spec.
+        preservedModelFields.current = pdActive ? modelFields : null;
+        form.setFieldsValue(_.omit(values, Object.keys(modelFields)));
+        const activeFields = pdActive
+          ? { ...getCatalogModelFields({}), placement_strategy: undefined }
+          : modelFields;
+        // Replace nested maps and cache objects; setFieldsValue deep-merges
+        // them and would retain keys from the previous catalog spec.
+        Object.entries(activeFields).forEach(([field, value]) => {
+          form.setFieldValue(field, value);
+        });
+        if (pdActive) {
+          form.setFieldValue('replicas', 1);
+        }
       },
       applyRuntimeChoice: (runtime: RuntimeChoice) => {
         applyRuntimeChoice(runtime);

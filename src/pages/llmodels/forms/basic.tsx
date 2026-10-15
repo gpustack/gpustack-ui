@@ -278,6 +278,7 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
       {!props.pdActive && (
         <Form.Item<FormData>
           name="replicas"
+          preserve
           rules={[
             {
               required: true,
@@ -308,7 +309,7 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
           switch the backend expects. Hidden rather than absent: the effects
           pin it to 1 and nothing on screen should invite editing it. */}
       {props.pdActive && (
-        <Form.Item<FormData> name="replicas" hidden noStyle>
+        <Form.Item<FormData> name="replicas" hidden noStyle preserve>
           <input />
         </Form.Item>
       )}

@@ -2,7 +2,7 @@ import { atom } from 'jotai';
 import { JSDOM } from 'jsdom';
 import assert from 'node:assert/strict';
 import { after, mock, test } from 'node:test';
-import { act, createElement, forwardRef, Fragment } from 'react';
+import { act, createElement, forwardRef, Fragment, useContext } from 'react';
 import { createRoot } from 'react-dom/client';
 
 const passChildren = ({ children }: any) =>
@@ -34,6 +34,10 @@ mock.module('@gpustack/core-ui', {
     ScrollSpyTabs,
     IconFont: empty,
     LabelInfo: empty,
+    AutoComplete: InputField,
+    CheckboxField: InputField,
+    Input: { Input: InputField },
+    InputNumber: InputField,
     Select: ({ value, onChange, options, label }: any) =>
       createElement(
         'select',
@@ -88,7 +92,10 @@ mock.module(
   {
     defaultExport: () => ({
       backendOptions: [],
-      flatBackendOptions: [{ value: 'vLLM', isBuiltIn: true }],
+      flatBackendOptions: ['vLLM', 'SGLang', 'llama-box'].map((value) => ({
+        value,
+        isBuiltIn: true
+      })),
       getBackendOptions: async () => {}
     })
   }
@@ -140,10 +147,13 @@ dom.window.matchMedia = (media) => ({
 after(() => dom.window.close());
 
 const { Form } = await import('antd');
+const { FormContext } = await import('../../config/form-context.ts');
 const { createDefaultRoles } = await import('../roles/transform.ts');
+let formContext: any;
 mock.module(new URL('../basic.tsx', import.meta.url).href, {
-  defaultExport: () =>
-    [
+  defaultExport: () => {
+    formContext = useContext(FormContext);
+    return [
       'backend',
       'backend_version',
       'cluster_id',
@@ -156,7 +166,8 @@ mock.module(new URL('../basic.tsx', import.meta.url).href, {
         { key: name, name, hidden: true },
         createElement(InputField)
       )
-    )
+    );
+  }
 });
 
 const cacheFields = [
@@ -170,6 +181,22 @@ const cacheFields = [
 // Keep the real Form, PD control, and role tabs. These leaves reproduce the
 // model-cache and saved-role registrations that restore initialValues on
 // unmount when the deployment Form has preserve=false.
+mock.module(
+  new URL('../../hooks/use-query-draftModels.ts', import.meta.url).href,
+  {
+    defaultExport: () => ({
+      draftModelList: [],
+      loading: false,
+      resetDraftModels() {},
+      onSearch() {}
+    })
+  }
+);
+mock.module(new URL('../roles/override-section.tsx', import.meta.url).href, {
+  namedExports: { RoleSection: passChildren }
+});
+const { default: SpeculativeDecode } =
+  await import('../speculative-decode.tsx');
 mock.module(new URL('../performance.tsx', import.meta.url).href, {
   defaultExport: () =>
     createElement(
@@ -181,7 +208,8 @@ mock.module(new URL('../performance.tsx', import.meta.url).href, {
           { key: field, name: ['extended_kv_cache', field], hidden: true },
           createElement(InputField)
         )
-      )
+      ),
+      createElement(SpeculativeDecode)
     )
 });
 const RoleFields = ({ index }: any) =>
@@ -232,9 +260,17 @@ mock.module(new URL('../advance-config.tsx', import.meta.url).href, {
       )
     )
 });
-for (const path of ['../scheduled-scaling.tsx', '../gather-locality.tsx']) {
-  mock.module(new URL(path, import.meta.url).href, { defaultExport: empty });
-}
+mock.module(new URL('../scheduled-scaling.tsx', import.meta.url).href, {
+  defaultExport: () =>
+    createElement(
+      Form.Item,
+      { name: 'scaling_schedule', hidden: true },
+      createElement(InputField)
+    )
+});
+mock.module(new URL('../gather-locality.tsx', import.meta.url).href, {
+  defaultExport: empty
+});
 const { default: DataForm } = await import('../index.tsx');
 
 const clone = (value: any) => JSON.parse(JSON.stringify(value));
@@ -299,11 +335,12 @@ const renderForm = async (savedPD = false, catalog = false) => {
   const panelVisible = (panel: string) =>
     !!dom.window.document.querySelector(`[data-panel="${panel}"]`);
   const submit = async () => {
+    const previousCalls = submitted.mock.callCount();
     await act(async () => {
       await ref.current.form.validateFields();
       ref.current.submit();
     });
-    assert.equal(submitted.mock.callCount(), 1);
+    assert.equal(submitted.mock.callCount(), previousCalls + 1);
     return submitted.mock.calls.at(-1)!.result;
   };
   const unmount = async () => {
@@ -631,3 +668,195 @@ test('replacing an ordinary catalog spec preserves only its new settings through
     await form.unmount();
   }
 });
+
+const speculativeA = {
+  enabled: true,
+  algorithm: 'eagle3',
+  draft_model: 'org/draft-A',
+  num_draft_tokens: 17,
+  ngram_min_match_length: 3,
+  ngram_max_match_length: 9
+};
+const speculativeB = {
+  enabled: true,
+  algorithm: 'ngram',
+  num_draft_tokens: 6,
+  ngram_min_match_length: 2,
+  ngram_max_match_length: 7
+};
+
+test('a PD round trip restores ordinary speculative decoding after its real fields unmount', async () => {
+  const form = await renderForm();
+  try {
+    await act(async () =>
+      form.ref.current.form.setFieldValue('speculative_config', speculativeB)
+    );
+    await form.toggle();
+    assert.deepEqual(form.values().speculative_config, { enabled: false });
+    const pdPayload = await form.submit();
+    assert.deepEqual(pdPayload.speculative_config, { enabled: false });
+    await form.toggle();
+    assert.deepEqual(form.values().speculative_config, speculativeB);
+    const payload = await form.submit();
+    assert.deepEqual(payload.speculative_config, speculativeB);
+  } finally {
+    await form.unmount();
+  }
+});
+
+for (const replacement of ['omitted', 'partial'] as const) {
+  test(`replacing catalog speculative decoding with ${replacement} settings drops all previous settings`, async () => {
+    const form = await renderForm(false, true);
+    try {
+      await form.applyCatalogSpec({
+        ...catalogSpec('A'),
+        speculative_config: speculativeA
+      });
+      await form.applyCatalogSpec({
+        ...catalogSpec('B'),
+        ...(replacement === 'partial'
+          ? { speculative_config: { enabled: true, algorithm: 'mtp' } }
+          : {})
+      });
+      const assertReplacement = (config: any) => {
+        assert.equal(config.enabled, replacement === 'partial');
+        if (replacement === 'partial') {
+          assert.equal(config.algorithm, 'mtp');
+        }
+        assert.notEqual(config.draft_model, speculativeA.draft_model);
+        assert.notEqual(config.num_draft_tokens, speculativeA.num_draft_tokens);
+        assert.notEqual(
+          config.ngram_min_match_length,
+          speculativeA.ngram_min_match_length
+        );
+        assert.notEqual(
+          config.ngram_max_match_length,
+          speculativeA.ngram_max_match_length
+        );
+      };
+      assertReplacement(form.values().speculative_config);
+      await form.toggle();
+      await form.toggle();
+      assertReplacement(form.values().speculative_config);
+      const payload = await form.submit();
+      assertReplacement(payload.speculative_config);
+      if (replacement === 'omitted') {
+        assert.deepEqual(payload.speculative_config, { enabled: false });
+      }
+    } finally {
+      await form.unmount();
+    }
+  });
+}
+
+test('a catalog speculative setting selected while PD is on is restored after disabling PD', async () => {
+  const form = await renderForm(false, true);
+  try {
+    await form.applyCatalogSpec({
+      ...catalogSpec('A'),
+      speculative_config: speculativeA
+    });
+    await form.toggle();
+    await form.applyCatalogSpec({
+      ...catalogSpec('B'),
+      speculative_config: speculativeB
+    });
+    assert.deepEqual(form.values().speculative_config, { enabled: false });
+    await form.toggle();
+    assert.deepEqual(form.values().speculative_config, speculativeB);
+    const payload = await form.submit();
+    assert.deepEqual(payload.speculative_config, speculativeB);
+    assert.equal(payload.replicas, 7);
+  } finally {
+    await form.unmount();
+  }
+});
+
+for (const replicas of [4, 0]) {
+  test(`ordinary replicas ${replicas} survive a PD round trip`, async () => {
+    const form = await renderForm();
+    try {
+      await act(async () =>
+        form.ref.current.form.setFieldValue('replicas', replicas)
+      );
+      await form.toggle();
+      assert.equal(form.values().replicas, 1);
+      await form.toggle();
+      assert.equal(form.values().replicas, replicas);
+      const payload = await form.submit();
+      assert.equal(payload.replicas, replicas);
+    } finally {
+      await form.unmount();
+    }
+  });
+}
+
+for (const replicas of [7, 0]) {
+  test(`catalog replicas ${replicas} selected while PD is on are restored after disabling PD`, async () => {
+    const form = await renderForm(false, true);
+    try {
+      await form.applyCatalogSpec(catalogSpec('A'));
+      await form.toggle();
+      await form.applyCatalogSpec({ ...catalogSpec('B'), replicas });
+      assert.equal(form.values().replicas, 1);
+      await form.toggle();
+      assert.equal(form.values().replicas, replicas);
+      const payload = await form.submit();
+      assert.equal(payload.replicas, replicas);
+    } finally {
+      await form.unmount();
+    }
+  });
+}
+
+test('catalog scheduled scaling restores its baseline after PD instead of its live replica count', async () => {
+  const form = await renderForm(false, true);
+  try {
+    await form.applyCatalogSpec(catalogSpec('A'));
+    await form.toggle();
+    await form.applyCatalogSpec({
+      ...catalogSpec('B'),
+      replicas: 9,
+      scaling_schedule: { enabled: true, baseline_replicas: 3, rules: [] }
+    });
+    assert.equal(form.values().replicas, 1);
+    await form.toggle();
+    assert.equal(form.values().replicas, 3);
+    const payload = await form.submit();
+    assert.equal(payload.replicas, 3);
+    assert.equal(payload.scaling_schedule.baseline_replicas, 3);
+  } finally {
+    await form.unmount();
+  }
+});
+
+for (const backend of ['SGLang', 'llama-box']) {
+  test(`ordinary zero replicas survive changing backend to ${backend} while PD is on`, async (context) => {
+    const form = await renderForm();
+    try {
+      await act(async () => form.ref.current.form.setFieldValue('replicas', 0));
+      await form.toggle();
+      context.mock.timers.enable({ apis: ['setTimeout'] });
+      let pending!: Promise<void>;
+      await act(async () => {
+        form.ref.current.form.setFieldValue('backend', backend);
+        pending = formContext.onBackendChange(backend, { isBuiltIn: true });
+      });
+      await act(async () => context.mock.timers.tick(100));
+      await act(async () => pending);
+      if (backend === 'SGLang') {
+        assert.equal(form.switchChecked(), 'true');
+        assert.equal(form.values().replicas, 1);
+        await form.toggle();
+      }
+      assert.equal(form.values().replicas, 0);
+      assert.equal(form.values().roles, null);
+      const payload = await form.submit();
+      assert.equal(payload.backend, backend);
+      assert.equal(payload.replicas, 0);
+    } finally {
+      await form.unmount();
+      context.mock.timers.reset();
+    }
+  });
+}

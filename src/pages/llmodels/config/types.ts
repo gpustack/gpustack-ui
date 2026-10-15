@@ -496,12 +496,12 @@ export interface FormData {
     gpu_ids?: string[];
     gpu_type?: string;
     gpu_count?: number;
-    gpus_per_replica?: number;
-  };
+    gpus_per_replica?: number | null;
+  } | null;
   gpu_type_selector?: GPUTypeSelector | null;
   placement_strategy?: string;
   cpu_offloading?: boolean;
-  worker_selector?: object;
+  worker_selector?: object | null;
   scheduleType?: string;
   // Which GPU source the manual mode picks from (ManualGPUModeMap): whole
   // cards or an InstanceType pool. UI-only, stripped before submit.

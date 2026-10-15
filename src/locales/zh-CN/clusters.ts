@@ -229,7 +229,7 @@ export default {
 
   // 拓扑：这个集群的 worker 相距多远。
   // Topology: where this cluster's workers sit.
-  'clusters.topology.title': '拓扑管理',
+  'clusters.topology.title': '拓扑配置',
   'clusters.topology.noRebalance':
     '位置只影响之后的调度，已运行的部署不会被重新放置。',
   'clusters.topology.load.failed': '拓扑信息加载失败。',

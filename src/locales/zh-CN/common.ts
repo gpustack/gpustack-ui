@@ -210,6 +210,8 @@ export default {
   'common.button.help': '帮助',
   'common.button.feedback': '反馈',
   'common.button.docs': '文档',
+  'common.button.onlineDocs': '在线文档',
+  'common.button.offlineDocs': '离线文档',
   'common.button.imageSelector': '镜像选择器',
   'common.button.version': '版本',
   'common.title.delete.confirm': '确认删除',

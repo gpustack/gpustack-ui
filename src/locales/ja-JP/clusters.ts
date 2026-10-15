@@ -236,7 +236,7 @@ export default {
     'Unmanaged (the cluster keeps its own value)',
 
   // Topology: where this cluster's workers sit.
-  'clusters.topology.title': 'トポロジー',
+  'clusters.topology.title': 'トポロジー設定',
   'clusters.topology.noRebalance':
     '位置は以後のスケジューリングにのみ影響します。実行中のデプロイは移動されません。',
   'clusters.topology.load.failed': 'トポロジーを読み込めませんでした。',

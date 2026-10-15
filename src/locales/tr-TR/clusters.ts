@@ -238,7 +238,7 @@ export default {
     'Yönetilmiyor (küme kendi değerini korur)',
 
   // Topology: where this cluster's workers sit.
-  'clusters.topology.title': 'Topoloji',
+  'clusters.topology.title': 'Topoloji Yapılandırması',
   'clusters.topology.noRebalance':
     'Konum yalnızca sonraki zamanlamayı etkiler. Çalışan dağıtımlar taşınmaz.',
   'clusters.topology.load.failed': 'Topoloji yüklenemedi.',

@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import { after, mock, test } from 'node:test';
 import { act, createElement, forwardRef, Fragment, useContext } from 'react';
 import { createRoot } from 'react-dom/client';
+import type { PDModeResolution } from '../../config/types';
 
 const passChildren = ({ children }: any) =>
   createElement(Fragment, null, children);
@@ -54,21 +55,46 @@ const modes = [
       { provider: 'Mooncake', roles: { prefill: {}, decode: {} } }
     ]
   },
-  { name: 'sglang-nixl', backends: ['SGLang'], display_name: 'SGLang + NIXL' },
+  {
+    name: 'sglang-mooncake',
+    backends: ['SGLang'],
+    display_name: 'SGLang + Mooncake'
+  },
   { name: 'custom', backends: [], display_name: 'Custom' }
 ];
-const defaultResolution = async ({ backend, cluster_id, vendor }: any) => ({
-  mode:
+const defaultResolution = async ({
+  backend,
+  cluster_id,
+  vendor
+}: any): Promise<PDModeResolution> => {
+  const recommendedMode =
     backend === 'SGLang'
-      ? 'sglang-nixl'
+      ? 'sglang-mooncake'
       : cluster_id === 2 || vendor === 'Ascend'
         ? 'vllm-alternate'
-        : 'vllm-nixl',
-  vendor: vendor ?? 'NVIDIA',
-  candidate_vendors: ['NVIDIA', 'Ascend'],
-  cluster_vendors: ['NVIDIA'],
-  options: []
-});
+        : 'vllm-nixl';
+  return {
+    mode: recommendedMode,
+    vendor: vendor ?? 'NVIDIA',
+    candidate_vendors: ['NVIDIA', 'Ascend'],
+    cluster_vendors: ['NVIDIA'],
+    options: modes.map((mode) => {
+      const eligible = !mode.backends.length || mode.backends.includes(backend);
+      return {
+        name: mode.name,
+        eligible,
+        recommended: mode.name === recommendedMode,
+        ...(eligible
+          ? {}
+          : {
+              ineligible_code: 'backend_mismatch',
+              ineligible_reason: `Requires ${mode.backends.join(' / ')} (current: ${backend}).`,
+              ineligible_params: { backend, targets: mode.backends.join(' / ') }
+            })
+      };
+    })
+  };
+};
 let resolveMode = defaultResolution;
 const resolutionRequests = mock.fn((params: any) => resolveMode(params));
 mock.module('@gpustack/core-ui', {
@@ -335,6 +361,14 @@ const renderForm = async ({
       ref.current.form.setFieldValue('cluster_id', clusterId)
     );
   };
+  const enablePD = async () => {
+    await act(async () =>
+      (
+        dom.window.document.querySelector('[role="switch"]') as HTMLElement
+      ).click()
+    );
+    await act(async () => new Promise((resolve) => setTimeout(resolve, 110)));
+  };
   return {
     root,
     ref,
@@ -342,7 +376,8 @@ const renderForm = async ({
     change,
     submit,
     changeBackend,
-    changeCluster
+    changeCluster,
+    enablePD
   };
 };
 
@@ -451,14 +486,12 @@ for (const action of ['edit', 'create']) {
 }
 
 test('enabling PD without a selected transport applies the recommendation and role injection', async () => {
-  const { root, ref } = await renderForm({ action: 'create', pd: false });
+  const { root, ref, enablePD } = await renderForm({
+    action: 'create',
+    pd: false
+  });
   try {
-    await act(async () =>
-      (
-        dom.window.document.querySelector('[role="switch"]') as HTMLElement
-      ).click()
-    );
-    await act(async () => new Promise((resolve) => setTimeout(resolve, 110)));
+    await enablePD();
     assert.equal(
       ref.current.form.getFieldValue(['disaggregation', 'mode']),
       'vllm-nixl'
@@ -487,7 +520,7 @@ for (const input of ['backend', 'cluster', 'vendor']) {
       if (input === 'vendor') await change('models.form.pd.vendor', 'Ascend');
       assert.equal(
         ref.current.form.getFieldValue(['disaggregation', 'mode']),
-        input === 'backend' ? 'sglang-nixl' : 'vllm-alternate'
+        input === 'backend' ? 'sglang-mooncake' : 'vllm-alternate'
       );
       assert.ok(
         ref.current.form
@@ -499,6 +532,106 @@ for (const input of ['backend', 'cluster', 'vendor']) {
     }
   });
 }
+
+for (const action of ['create', 'edit']) {
+  test(`switching engines automatically selects an eligible transport without field errors (${action})`, async () => {
+    const { root, ref, changeBackend, enablePD } = await renderForm({
+      action,
+      pd: action === 'edit',
+      mode: 'vllm-nixl'
+    });
+    const modePath = ['disaggregation', 'mode'];
+    try {
+      if (action === 'create') await enablePD();
+      assert.equal(ref.current.form.getFieldValue(modePath), 'vllm-nixl');
+      assert.deepEqual(ref.current.form.getFieldError(modePath), []);
+      for (const [backend, expectedMode] of [
+        ['SGLang', 'sglang-mooncake'],
+        ['vLLM', 'vllm-nixl']
+      ]) {
+        await changeBackend(backend);
+        assert.equal(ref.current.form.getFieldValue(modePath), expectedMode);
+        // A later validateFields/submit would clear the stale error and hide
+        // the regression, so inspect the automatic validation result directly.
+        assert.deepEqual(ref.current.form.getFieldError(modePath), []);
+      }
+    } finally {
+      await act(async () => root.unmount());
+    }
+  });
+}
+
+test('a retained ineligible transport is rejected and its error clears when eligibility recovers', async () => {
+  const { root, ref, changeCluster } = await renderForm({ mode: 'vllm-nixl' });
+  const modePath = ['disaggregation', 'mode'];
+  const reason = 'This transport is unavailable on the selected accelerator.';
+  resolveMode = async (params: any) => {
+    const resolution = await defaultResolution(params);
+    return params.cluster_id === 2
+      ? {
+          ...resolution,
+          mode: null,
+          options: resolution.options.map((option) =>
+            option.name === 'vllm-nixl'
+              ? {
+                  ...option,
+                  eligible: false,
+                  ineligible_code: 'vendor_mismatch',
+                  ineligible_reason: reason
+                }
+              : option
+          )
+        }
+      : resolution;
+  };
+  try {
+    await changeCluster(2);
+    assert.equal(ref.current.form.getFieldValue(modePath), 'vllm-nixl');
+    assert.deepEqual(ref.current.form.getFieldError(modePath), [reason]);
+    await act(async () => {
+      await assert.rejects(
+        ref.current.form.validateFields([modePath]),
+        (error: any) => {
+          assert.deepEqual(error.errorFields[0].errors, [reason]);
+          return true;
+        }
+      );
+    });
+    await changeCluster(1);
+    assert.equal(ref.current.form.getFieldValue(modePath), 'vllm-nixl');
+    assert.deepEqual(ref.current.form.getFieldError(modePath), []);
+  } finally {
+    resolveMode = defaultResolution;
+    await act(async () => root.unmount());
+  }
+});
+
+test('a late resolution for the previous engine cannot replace the current transport or eligibility', async () => {
+  const { root, ref, changeBackend } = await renderForm({ mode: 'vllm-nixl' });
+  const modePath = ['disaggregation', 'mode'];
+  let finishResolution!: (value: any) => void;
+  resolveMode = (params: any) =>
+    params.backend === 'SGLang'
+      ? new Promise((resolve) => {
+          finishResolution = resolve;
+        })
+      : defaultResolution(params);
+  try {
+    await changeBackend('SGLang');
+    assert.ok(finishResolution);
+    await changeBackend('vLLM');
+    assert.equal(ref.current.form.getFieldValue(modePath), 'vllm-nixl');
+    assert.deepEqual(ref.current.form.getFieldError(modePath), []);
+    await act(async () =>
+      finishResolution(await defaultResolution({ backend: 'SGLang' }))
+    );
+    assert.equal(ref.current.form.getFieldValue(modePath), 'vllm-nixl');
+    assert.deepEqual(ref.current.form.getFieldError(modePath), []);
+  } finally {
+    resolveMode = defaultResolution;
+    await act(async () => root.unmount());
+  }
+});
 
 test('a late recommendation cannot overwrite a transport explicitly picked while resolving', async () => {
   let finishResolution!: (value: any) => void;

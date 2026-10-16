@@ -404,15 +404,24 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
     });
   };
 
-  /**
-   * The server's derived answer, and whether the user has opened the picker.
-   *
-   * Grouped: they always change together, and the picker's visibility is a
-   * function of the answer (no answer ⇒ the picker is the only way forward).
-   */
+  // Keep the resolution, its inputs and catalog together. Validation can run
+  // before React renders the new rules, so it also needs a synchronous snapshot.
   const [derived, setDerived] = useState<{
     resolution: PDModeResolution | null;
+    backend?: string;
+    clusterId?: number;
+    modes?: PDMode[];
   }>({ resolution: null });
+  const derivedRef = useRef(derived);
+
+  const updateResolution = (
+    resolution: PDModeResolution | null,
+    modes?: PDMode[]
+  ) => {
+    const next = { resolution, backend, clusterId, modes };
+    derivedRef.current = next;
+    setDerived(next);
+  };
 
   // A resolve in flight is invalidated by any later change to its inputs.
   // Without this a slow answer for the previous engine lands after the fast
@@ -434,7 +443,7 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
     modes?: PDMode[],
     preserveMode = false
   ) => {
-    setDerived({ resolution });
+    updateResolution(resolution, modes);
     const currentMode = form.getFieldValue(['disaggregation', 'mode']);
     const selectedMode =
       preserveMode && currentMode ? currentMode : resolution.mode;
@@ -516,7 +525,7 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
       // than to a field that renders nothing: the catalog is already loaded,
       // so the dropdown still works — only the derivation is missing.
       if (resolveSession.current === session) {
-        setDerived({ resolution: null });
+        updateResolution(null, modes);
       }
     }
   };
@@ -544,7 +553,7 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
     }
     if (!active) {
       resolveSession.current += 1;
-      setDerived({ resolution: null });
+      updateResolution(null);
       return;
     }
     /**
@@ -975,22 +984,38 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
   // Options come from the catalog, gated by engine *and* by the accelerators
   // the picked cluster actually has: a recipe that targets another engine or
   // another accelerator stays visible but disabled, carrying why.
-  const clusterVendors = Array.from(
-    new Set(
-      workerList
-        .filter((worker) => worker.cluster_id === clusterId)
-        .flatMap((worker) => worker.vendors || [])
-    )
-  );
-  // The server's per-entry verdict, keyed by mode name, when the resolve call
-  // has come back. Before that — the dropdown paints before the round trip —
-  // `buildOptions` evaluates the same two constraints locally.
-  const modeVerdicts = derived.resolution?.options?.length
-    ? Object.fromEntries(
-        derived.resolution.options.map((option) => [option.name, option])
+  const getModeOptions = (
+    snapshot: typeof derived,
+    currentBackend = backend,
+    currentClusterId = clusterId
+  ) => {
+    const clusterVendors = Array.from(
+      new Set(
+        workerList
+          .filter((worker) => worker.cluster_id === currentClusterId)
+          .flatMap((worker) => worker.vendors || [])
       )
-    : undefined;
-  const modeOptions = buildOptions(backend, clusterVendors, modeVerdicts);
+    );
+    // A previous engine/cluster's verdict must not override the local checks
+    // while the next resolution is pending.
+    const resolution =
+      snapshot.backend === currentBackend &&
+      snapshot.clusterId === currentClusterId
+        ? snapshot.resolution
+        : null;
+    const modeVerdicts = resolution?.options?.length
+      ? Object.fromEntries(
+          resolution.options.map((option) => [option.name, option])
+        )
+      : undefined;
+    return buildOptions(
+      currentBackend,
+      clusterVendors,
+      modeVerdicts,
+      snapshot.modes
+    );
+  };
+  const modeOptions = getModeOptions(derived);
 
   // Every built-in recipe is unavailable for this engine × accelerator pair,
   // leaving only Custom. The per-option reasons already say *why* each one is
@@ -1325,9 +1350,11 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
                */
               {
                 validator: async (_rule: any, value: string) => {
-                  const option = modeOptions.find(
-                    (item) => item.value === value
-                  );
+                  const option = getModeOptions(
+                    derivedRef.current,
+                    form.getFieldValue('backend'),
+                    form.getFieldValue('cluster_id')
+                  ).find((item) => item.value === value);
                   if (value && option?.disabled) {
                     throw new Error(option.reason);
                   }

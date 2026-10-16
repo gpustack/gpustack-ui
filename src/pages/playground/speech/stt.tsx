@@ -399,7 +399,8 @@ const GroundSTT: React.FC<MessageProps> = forwardRef((props, ref) => {
               >
                 <CopyButton
                   text={messageList[0]?.content}
-                  type="link"
+                  type="default"
+                  size="small"
                 ></CopyButton>
               </span>
             )}

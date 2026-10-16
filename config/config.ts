@@ -41,6 +41,8 @@ export default defineConfig({
   base: process.env.npm_config_base || '/',
   ...(isProduction
     ? {
+        // Extracted CSS lives in css/, while fonts and images live in static/.
+        cssPublicPath: '../',
         jsMinifierOptions: {
           compress: {
             drop_console: true,

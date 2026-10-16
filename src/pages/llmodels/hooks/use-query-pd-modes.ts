@@ -180,9 +180,10 @@ export default function useQueryPDModes() {
   const buildOptions = (
     backend?: string,
     vendors?: string[],
-    verdicts?: Record<string, PDModeEligibility>
+    verdicts?: Record<string, PDModeEligibility>,
+    modes: PDMode[] = pdModes
   ): PDModeOption[] =>
-    pdModes.map((mode) => {
+    modes.map((mode) => {
       const targets = mode.backends || [];
       const backendOk =
         !targets.length || !backend || targets.includes(backend);

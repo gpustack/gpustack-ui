@@ -404,8 +404,8 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
     });
   };
 
-  // Keep the resolution, its inputs and catalog together. Validation can run
-  // before React renders the new rules, so it also needs a synchronous snapshot.
+  // Keep each resolution with its backend, cluster and catalog. Validation can
+  // run before React renders new rules, so it also needs a synchronous snapshot.
   const [derived, setDerived] = useState<{
     resolution: PDModeResolution | null;
     backend?: string;
@@ -421,6 +421,14 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
     const next = { resolution, backend, clusterId, modes };
     derivedRef.current = next;
     setDerived(next);
+  };
+
+  const revalidateMode = () => {
+    // Sibling fields and programmatic writes do not trigger the mode's rules.
+    // Leave an untouched empty mode to the required rule at submit time.
+    if (form.getFieldValue(['disaggregation', 'mode'])) {
+      form.validateFields([['disaggregation', 'mode']]).catch(() => {});
+    }
   };
 
   // A resolve in flight is invalidated by any later change to its inputs.
@@ -524,10 +532,14 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
       // An older server has no /resolve. Fall back to the full picker rather
       // than to a field that renders nothing: the catalog is already loaded,
       // so the dropdown still works — only the derivation is missing.
-      if (resolveSession.current === session) {
-        updateResolution(null, modes);
+      if (resolveSession.current !== session) {
+        return;
       }
+      updateResolution(null, modes);
     }
+    // Includes vendor changes and unresolved answers that retain the mode.
+    // The synchronous snapshot is already updated even before new rules render.
+    revalidateMode();
   };
 
   // The inputs the answer is a function of. Not a request-function
@@ -585,31 +597,6 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
         return;
       }
       await runResolve(undefined, modes, !inputsChanged);
-      if (cancelled) {
-        return;
-      }
-      /**
-       * Re-ask the mode field's own rules, because nothing else will.
-       *
-       * antd re-runs a field's rules when *its* value changes, and what makes a
-       * transport ineligible is a change to `cluster_id` or `backend` — sibling
-       * fields it does not watch. Without this the mismatch below is only
-       * raised at submit: the gate holds, but the user learns about it one
-       * click before the end instead of at the change that caused it.
-       *
-       * After the resolve, never before: when the server derives a mode for the
-       * new pair, `applyResolution` has just replaced the stale value and there
-       * is nothing left to complain about.
-       *
-       * 🔑 Only when a value is present. An empty field is the `required` rule's
-       * business, and asking here would paint "please select" red on a field the
-       * user has not touched yet — turning PD on for a pair the server derives
-       * nothing for would open with an error already on screen.
-       */
-      if (form.getFieldValue(['disaggregation', 'mode'])) {
-        // Rejection IS the outcome this asks for, and the field renders it.
-        form.validateFields([['disaggregation', 'mode']]).catch(() => {});
-      }
     };
     resolveWithCatalog();
     return () => {
@@ -984,6 +971,16 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
   // Options come from the catalog, gated by engine *and* by the accelerators
   // the picked cluster actually has: a recipe that targets another engine or
   // another accelerator stays visible but disabled, carrying why.
+  const getCurrentResolution = (
+    snapshot: typeof derived,
+    currentBackend = backend,
+    currentClusterId = clusterId
+  ) =>
+    snapshot.backend === currentBackend &&
+    snapshot.clusterId === currentClusterId
+      ? snapshot.resolution
+      : null;
+
   const getModeOptions = (
     snapshot: typeof derived,
     currentBackend = backend,
@@ -994,15 +991,24 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
         workerList
           .filter((worker) => worker.cluster_id === currentClusterId)
           .flatMap((worker) => worker.vendors || [])
+          .map((vendor) => vendor.toLowerCase())
       )
     );
+    const selectedVendor = form
+      .getFieldValue(['disaggregation', 'vendor'])
+      ?.toLowerCase();
+    // A selected partition narrows a mixed cluster. If it is absent from a
+    // known new cluster, keep checking that cluster's actual accelerators.
+    const usePartition =
+      selectedVendor &&
+      (!clusterVendors.length || clusterVendors.includes(selectedVendor));
     // A previous engine/cluster's verdict must not override the local checks
     // while the next resolution is pending.
-    const resolution =
-      snapshot.backend === currentBackend &&
-      snapshot.clusterId === currentClusterId
-        ? snapshot.resolution
-        : null;
+    const resolution = getCurrentResolution(
+      snapshot,
+      currentBackend,
+      currentClusterId
+    );
     const modeVerdicts = resolution?.options?.length
       ? Object.fromEntries(
           resolution.options.map((option) => [option.name, option])
@@ -1010,11 +1016,13 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
       : undefined;
     return buildOptions(
       currentBackend,
-      clusterVendors,
+      usePartition ? [selectedVendor] : clusterVendors,
       modeVerdicts,
-      snapshot.modes
+      snapshot.modes,
+      usePartition ? 'partition' : 'cluster'
     );
   };
+  const currentResolution = getCurrentResolution(derived);
   const modeOptions = getModeOptions(derived);
 
   // Every built-in recipe is unavailable for this engine × accelerator pair,
@@ -1061,7 +1069,7 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
    * English sentence that at least says what happened).
    */
   const unresolvedNote = (() => {
-    const resolution = derived.resolution;
+    const resolution = currentResolution;
     if (!resolution?.unresolved_reason && !resolution?.unresolved_code) {
       return null;
     }
@@ -1262,8 +1270,8 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
           <Form.Item name={['disaggregation', 'vendor']} hidden noStyle>
             <input />
           </Form.Item>
-          {derived.resolution &&
-            derived.resolution.candidate_vendors.length > 1 && (
+          {currentResolution &&
+            currentResolution.candidate_vendors.length > 1 && (
               <Form.Item>
                 <SealSelect
                   required
@@ -1274,16 +1282,32 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
                     id: 'models.form.pd.vendor.tips'
                   })}
                   value={form.getFieldValue(['disaggregation', 'vendor'])}
-                  options={derived.resolution.candidate_vendors.map(
+                  options={currentResolution.candidate_vendors.map(
                     (vendor) => ({ label: vendor, value: vendor })
                   )}
                   onChange={(vendor: string) => {
+                    const previous = getCurrentResolution(derivedRef.current);
+                    if (previous) {
+                      // Candidates still describe this engine/cluster, but its
+                      // old partition's verdicts and warning no longer apply.
+                      updateResolution(
+                        {
+                          ...previous,
+                          options: [],
+                          unresolved_reason: undefined,
+                          unresolved_code: undefined,
+                          unresolved_params: undefined
+                        },
+                        derivedRef.current.modes
+                      );
+                    }
                     form.setFieldsValue({
                       disaggregation: {
                         ...(form.getFieldValue('disaggregation') || {}),
                         vendor
                       }
                     });
+                    revalidateMode();
                     runResolve({ vendor });
                   }}
                 ></SealSelect>

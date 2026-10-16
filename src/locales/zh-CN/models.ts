@@ -15,10 +15,11 @@ export default {
   'models.form.yamlFile': 'YAML 文件',
   'models.import.checking': '正在校验…',
   'models.import.hint.nothing': '当前内容里没有可导入的部署',
-  'models.import.pickFile': '选择文件',
+  'models.import.pickFile': '选择 YAML 文件',
   'models.import.empty.title': '导入 YAML 文件',
   'models.import.empty.description':
     '选择一个描述部署的文件。导入前会先比对，差异会完整列出，确认后才会写入。',
+  'models.import.cluster.target': '目标集群',
   'models.import.cluster.follow': '跟随文件',
   'models.import.loaded': '{count} 个部署 · 与 {cluster} 集群现状一致',
   'models.import.loaded.hint':
@@ -26,10 +27,8 @@ export default {
   'models.import.counts':
     '{count} 个部署 · 导入到 {cluster} · {changes} 项变更',
   'models.import.parsed': '{count} 个部署',
-  'models.import.parsed.invalid': '{count} 个无法导入',
   'models.import.fieldsDoc': '字段说明',
   'models.import.nav.invalid': '无法导入',
-  'models.import.scope.all': '全部 {count} 个部署',
   'models.import.scope.whole': '整篇文档',
   'models.import.scope.wholeShort': '整篇',
   'models.import.pane.current': '集群现状 · 只读',
@@ -39,7 +38,10 @@ export default {
   'models.import.pane.allNew': '这些全是新增部署，不会替换任何现有部署',
   'models.import.pane.waiting': '尚无可对比的内容',
   'models.import.entry': '第 {index} 个部署',
-  'models.import.entry.invalid': '第 {index} 个部署无法导入',
+  'models.import.errors.title': '{count} 个部署存在配置错误',
+  'models.import.errors.position': '{current}/{total}',
+  'models.import.errors.previous': '上一条',
+  'models.import.errors.next': '下一条',
   'models.import.summary':
     '将新建 {create} 个，更新 {update} 个，{unchanged} 个无变化。',
   'models.import.summary.replaces': '更新会按文件内容整体替换。',

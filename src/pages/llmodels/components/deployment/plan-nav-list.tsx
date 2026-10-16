@@ -1,49 +1,42 @@
-import { IconFont } from '@gpustack/core-ui';
+import { StatusDot } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Flex, Tooltip } from 'antd';
+import { Flex } from 'antd';
 import classNames from 'classnames';
 import React, { useRef } from 'react';
-import { entryCaption, entryColor, entryName } from '../../config/import-plan';
+import { entryCaption, entryName } from '../../config/import-plan';
 import { DeploymentPlanEntry } from '../../config/types';
-import styles from '../../style/import-yaml-drawer.module.less';
+import styles from '../../style/import-yaml-modal.module.less';
 
 // What the diff is showing: one deployment by its position in the document,
-// or the document itself. Making the range a place in this list rather than a
-// mode beside it leaves one thing to point at instead of two to reconcile.
+// or the whole document selected from the header.
 export type PlanSelection = number | 'whole';
 
 interface PlanNavListProps {
   entries: DeploymentPlanEntry[];
   selected: PlanSelection;
-  collapsed?: boolean;
   onSelect: (selection: PlanSelection) => void;
 }
 
 const PlanNavList: React.FC<PlanNavListProps> = ({
   entries,
   selected,
-  collapsed,
   onSelect
 }) => {
   const intl = useIntl();
 
-  // The listbox is one sequence -- the whole document, then each deployment --
-  // so Arrow/Home/End walk it and Enter/Space commit, the way a listbox is
-  // expected to behave. Focus rides the selection (roving tabindex), so only
-  // the selected option is a tab stop.
-  const optionRefs = useRef(new Map<PlanSelection, HTMLDivElement | null>());
-  const order: PlanSelection[] = [
-    'whole',
-    ...entries.map((entry) => entry.index)
-  ];
+  // The list contains deployments only. When the whole document is selected,
+  // Tab enters at the first deployment without changing the displayed scope.
+  const optionRefs = useRef(new Map<number, HTMLElement | null>());
+  const order = entries.map((entry) => entry.index);
+  const tabStop = selected === 'whole' ? order[0] : selected;
 
-  const moveTo = (next: PlanSelection) => {
+  const moveTo = (next: number) => {
     onSelect(next);
     optionRefs.current.get(next)?.focus();
   };
 
-  const onKeyDown = (event: React.KeyboardEvent) => {
-    const at = order.indexOf(selected);
+  const onKeyDown = (event: React.KeyboardEvent, index: number) => {
+    const at = order.indexOf(index);
     switch (event.key) {
       case 'ArrowDown':
         event.preventDefault();
@@ -64,114 +57,66 @@ const PlanNavList: React.FC<PlanNavListProps> = ({
       case 'Enter':
       case ' ':
         event.preventDefault();
-        onSelect(selected);
+        onSelect(index);
         break;
       default:
         break;
     }
   };
 
-  const allLabel = intl.formatMessage(
-    { id: 'models.import.scope.all' },
-    { count: entries.length }
-  );
-
-  const renderAll = () => {
-    const item = (
-      <div
-        className={classNames(styles.navOption, styles.navAll, {
-          [styles.selected]: selected === 'whole'
-        })}
-        role="option"
-        aria-selected={selected === 'whole'}
-        aria-label={allLabel}
-        tabIndex={selected === 'whole' ? 0 : -1}
-        ref={(node) => optionRefs.current.set('whole', node)}
-        onClick={() => onSelect('whole')}
-      >
-        {collapsed ? (
-          <IconFont type="icon-layers" />
-        ) : (
-          <>
-            <span className={styles.navName}>{allLabel}</span>
-            <span className={styles.navBadge}>
-              {intl.formatMessage({ id: 'models.import.scope.wholeShort' })}
-            </span>
-          </>
-        )}
-      </div>
-    );
-    return collapsed ? (
-      <Tooltip placement="right" title={allLabel}>
-        {item}
-      </Tooltip>
-    ) : (
-      item
-    );
-  };
-
   const renderEntry = (entry: DeploymentPlanEntry) => {
-    const item = (
-      <div
+    const name = entryName(intl, entry);
+    const caption = entryCaption(intl, entry);
+    const invalid = entry.errors.length > 0;
+    const status = invalid
+      ? 'error'
+      : entry.action === 'update'
+        ? 'warning'
+        : entry.action === 'create'
+          ? 'success'
+          : 'inactive';
+
+    return (
+      <Flex
         key={entry.index}
-        className={classNames(styles.navOption, styles.navItem, {
-          [styles.selected]: entry.index === selected,
-          [styles.invalid]: entry.errors.length > 0
+        vertical
+        gap={4}
+        className={classNames(styles.navOption, {
+          [styles.selected]: entry.index === selected
         })}
         role="option"
         aria-selected={entry.index === selected}
-        aria-label={entryName(intl, entry)}
-        tabIndex={entry.index === selected ? 0 : -1}
+        aria-label={[name, caption].filter(Boolean).join(' · ')}
+        tabIndex={entry.index === tabStop ? 0 : -1}
         ref={(node) => optionRefs.current.set(entry.index, node)}
         onClick={() => onSelect(entry.index)}
-        style={collapsed ? { borderLeftColor: entryColor(entry) } : undefined}
+        onKeyDown={(event) => onKeyDown(event, entry.index)}
       >
-        {collapsed ? (
-          <span className={styles.navIndex}>{entry.index + 1}</span>
-        ) : (
-          <>
-            <Flex align="center" gap={6}>
-              <span
-                className={styles.navDot}
-                style={{ backgroundColor: entryColor(entry) }}
-              ></span>
-              <span className={styles.navName}>{entryName(intl, entry)}</span>
-            </Flex>
-            <span className={styles.navCaption}>
-              {entryCaption(intl, entry)}
-            </span>
-          </>
-        )}
-      </div>
-    );
-    // Collapsed, the rail is a colour and a number; the name it stands for
-    // has to stay reachable without expanding it again.
-    return collapsed ? (
-      <Tooltip
-        key={entry.index}
-        placement="right"
-        title={`${entryName(intl, entry)} · ${entryCaption(intl, entry)}`}
-      >
-        {item}
-      </Tooltip>
-    ) : (
-      item
+        <span className={styles.navName} title={name}>
+          <StatusDot statusValue={{ status, text: name }} />
+        </span>
+        <span
+          className={classNames(styles.navCaption, {
+            [styles.invalid]: invalid
+          })}
+          title={caption}
+        >
+          {caption}
+        </span>
+      </Flex>
     );
   };
 
   return (
     <Flex
       vertical
-      className={classNames(styles.nav, { [styles.collapsed]: collapsed })}
+      gap={4}
+      className={styles.nav}
       role="listbox"
+      aria-label={intl.formatMessage({ id: 'dashboard.deployments' })}
       aria-orientation="vertical"
-      onKeyDown={onKeyDown}
     >
-      <div className={styles.navTop}>{renderAll()}</div>
-      <div className={styles.navDivider}></div>
-      <Flex vertical gap={2} className={styles.navItems}>
-        {entries.map(renderEntry)}
-      </Flex>
+      {entries.map(renderEntry)}
     </Flex>
   );
 };

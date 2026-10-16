@@ -1,12 +1,18 @@
 import useUserSettings from '@/hooks/use-user-settings';
-import { ExclamationCircleFilled, LoadingOutlined } from '@ant-design/icons';
+import {
+  ExclamationCircleFilled,
+  LeftOutlined,
+  LoadingOutlined,
+  RightOutlined,
+  UploadOutlined
+} from '@ant-design/icons';
 import {
   AlertBlockInfo,
-  ColumnWrapper,
+  BaseSelect,
   GSDrawer,
   IconFont,
   ModalFooter,
-  Select as SealSelect,
+  OverlayScroller,
   useSubmitLock
 } from '@gpustack/core-ui';
 import {
@@ -15,14 +21,15 @@ import {
   YamlDiffEditor
 } from '@gpustack/core-ui/yaml-editor';
 import { useIntl } from '@umijs/max';
-import { Button, Flex, Modal, Space, Tooltip, Upload } from 'antd';
+import { Button, Flex, Modal, Space, Upload } from 'antd';
 import classNames from 'classnames';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { importModels } from '../../apis';
 import { useDeploymentsContext } from '../../config/deploments-context';
-import { entryCaption, entryColor, entryName } from '../../config/import-plan';
+import { entryName } from '../../config/import-plan';
 import { DeploymentPlanEntry, ListItem } from '../../config/types';
-import styles from '../../style/import-yaml-drawer.module.less';
+import diffStyles from '../../style/import-yaml-drawer.module.less';
+import styles from '../../style/import-yaml-modal.module.less';
 import {
   currentDocumentText,
   currentText,
@@ -40,13 +47,7 @@ interface ImportYamlModalProps {
 }
 
 // Where the field names in the document are written down.
-const FIELDS_DOC =
-  'https://docs.gpustack.ai/latest/user-guide/model-deployment-management/#field-reference';
-
-// Everything the drawer puts above and below the diff — its own header, the
-// cluster row, the breadcrumb and the footer. What is left over is the diff's,
-// which carries its own 40px header inside that height.
-const DIFF_HEIGHT = 'calc(100vh - 288px)';
+const FIELDS_DOC = `${window.location.origin}/help/user-guide/model-deployment-management/#field-reference`;
 
 // Long enough that a typed-out value is one request rather than one per
 // character, short enough that the plan is describing what is on screen by
@@ -135,12 +136,12 @@ const ImportYamlModal: React.FC<ImportYamlModalProps> = ({
   const [draft, setDraft] = useState('');
   const [review, setReview] = useState(EMPTY_REVIEW);
   const [pending, setPending] = useState(false);
-  // Whether a file has been brought in. Until one has there is nothing to
-  // diff, so the editor is not mounted and the drawer holds only what can
-  // produce a document: the cluster to check against, and the file picker.
-  const [started, setStarted] = useState(false);
+  // Until a file is read, only the file picker is shown. The filename also
+  // identifies the document being reviewed in the editor header.
+  const [fileName, setFileName] = useState<string | null>(null);
+  const started = fileName !== null;
   const [selected, setSelected] = useState<PlanSelection>('whole');
-  const [navCollapsed, setNavCollapsed] = useState(false);
+  const [errorPage, setErrorPage] = useState(0);
   const [confirming, setConfirming] = useState(false);
   const [picked, setPicked] = useState<number | null>(null);
   // Only the newest request may write state: they are fired from three places
@@ -204,6 +205,7 @@ const ImportYamlModal: React.FC<ImportYamlModalProps> = ({
   const select = (next: PlanSelection) => {
     selectedRef.current = next;
     setSelected(next);
+    setErrorPage(0);
   };
 
   // What the editable pane should hold for a given selection: the document,
@@ -441,7 +443,7 @@ const ImportYamlModal: React.FC<ImportYamlModalProps> = ({
       const text = await rawFile.text();
       clearTimeout(debounce.current);
       setPending(false);
-      setStarted(true);
+      setFileName(rawFile.name);
       setDocument(text, false);
       setBuffer(text);
       select('whole');
@@ -468,11 +470,10 @@ const ImportYamlModal: React.FC<ImportYamlModalProps> = ({
     clearTimeout(debounce.current);
     reseedRef.current = false;
     setPending(false);
-    setStarted(false);
+    setFileName(null);
     setDocument('', false);
     setBuffer('');
     select('whole');
-    setNavCollapsed(false);
     setConfirming(false);
     setReview(EMPTY_REVIEW);
   };
@@ -584,136 +585,10 @@ const ImportYamlModal: React.FC<ImportYamlModalProps> = ({
             .filter(Boolean)
         )
       ].join(', ');
-  const allLabel = intl.formatMessage(
-    { id: 'models.import.scope.all' },
-    { count: review.entries.length }
-  );
-
   const fieldsDocLink = (
     <a href={FIELDS_DOC} target="_blank" rel="noreferrer">
       {intl.formatMessage({ id: 'models.import.fieldsDoc' })}
     </a>
-  );
-
-  // How much of the document was understood, against which cluster, and
-  // whether any of it is in the way.
-  const renderStatus = () => {
-    if (busy) {
-      return (
-        <Flex align="center" gap={6} className={styles.status}>
-          <LoadingOutlined />
-          {intl.formatMessage({ id: 'models.import.checking' })}
-        </Flex>
-      );
-    }
-    if (!review.entries.length) {
-      // A check that failed says so in its own banner, and left no plan
-      // behind to describe. Reporting nothing to import would be a claim
-      // about a document the server may never have got to read.
-      return review.errors.length ? null : (
-        <span className={styles.status}>
-          {intl.formatMessage({ id: 'models.import.hint.nothing' })}
-          {' · '}
-          {fieldsDocLink}
-        </span>
-      );
-    }
-    if (invalidCount) {
-      return (
-        <span className={classNames(styles.status, styles.invalid)}>
-          {`${intl.formatMessage(
-            { id: 'models.import.parsed' },
-            { count: review.entries.length }
-          )} · ${intl.formatMessage(
-            { id: 'models.import.parsed.invalid' },
-            { count: invalidCount }
-          )}`}
-        </span>
-      );
-    }
-    if (!writes) {
-      return (
-        <span className={styles.status}>
-          {intl.formatMessage(
-            { id: 'models.import.loaded' },
-            { cluster: clusterName, count: review.entries.length }
-          )}
-          {' · '}
-          {fieldsDocLink}
-        </span>
-      );
-    }
-    return (
-      <span className={styles.status}>
-        {intl.formatMessage(
-          { id: 'models.import.counts' },
-          {
-            count: review.entries.length,
-            cluster: clusterName,
-            changes: counts.changes
-          }
-        )}
-      </span>
-    );
-  };
-
-  // Where in the document the diff is pointing, and the way back up to the
-  // whole of it.
-  const renderBreadcrumb = () => (
-    <Flex align="center" gap={8} className={styles.crumbs}>
-      <Tooltip
-        title={intl.formatMessage({
-          id: navCollapsed ? 'common.button.expand' : 'common.button.collapse'
-        })}
-      >
-        <Button
-          type="text"
-          size="small"
-          aria-label={intl.formatMessage({
-            id: navCollapsed ? 'common.button.expand' : 'common.button.collapse'
-          })}
-          icon={
-            <IconFont
-              type={
-                navCollapsed ? 'icon-left_panel_open' : 'icon-left_panel_close'
-              }
-            />
-          }
-          onClick={() => setNavCollapsed((value) => !value)}
-        ></Button>
-      </Tooltip>
-      {whole ? (
-        <>
-          <span className={styles.crumbCurrent}>{allLabel}</span>
-          <span className={styles.crumbNote}>
-            {intl.formatMessage({ id: 'models.import.scope.whole' })}
-          </span>
-        </>
-      ) : (
-        <>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => handleSelect('whole')}
-          >
-            {allLabel}
-          </Button>
-          <span className={styles.crumbSep}>›</span>
-          <span
-            className={classNames(styles.crumbCurrent, {
-              [styles.invalid]: !!selectedEntry?.errors.length
-            })}
-          >
-            {selectedEntry ? entryName(intl, selectedEntry) : ''}
-          </span>
-          {selectedEntry && (
-            <span style={{ color: entryColor(selectedEntry) }}>
-              {entryCaption(intl, selectedEntry)}
-            </span>
-          )}
-        </>
-      )}
-    </Flex>
   );
 
   // Which side of the diff is which. The left one says so twice when there is
@@ -726,11 +601,11 @@ const ImportYamlModal: React.FC<ImportYamlModalProps> = ({
   // and every entry in it is a create, the empty side is not an absence to
   // explain but the point: nothing here is being replaced.
   const renderPanes = () => (
-    <div className={styles.diffPanes}>
+    <div className={diffStyles.diffPanes}>
       <Flex gap={8} align="center" justify="space-between">
         <span>{intl.formatMessage({ id: 'models.import.pane.current' })}</span>
         {!original.trim() && (
-          <span className={styles.paneNote}>
+          <span className={diffStyles.paneNote}>
             {intl.formatMessage({
               id: !whole
                 ? 'models.import.pane.absent'
@@ -746,7 +621,7 @@ const ImportYamlModal: React.FC<ImportYamlModalProps> = ({
       <Flex gap={8} align="center" justify="space-between">
         <span>{intl.formatMessage({ id: 'models.import.pane.draft' })}</span>
         {!whole && !!selectedEntry?.changes.length && (
-          <span className={styles.paneChanges}>
+          <span className={diffStyles.paneChanges}>
             {intl.formatMessage(
               { id: 'models.import.changes' },
               { count: selectedEntry.changes.length }
@@ -759,8 +634,8 @@ const ImportYamlModal: React.FC<ImportYamlModalProps> = ({
 
   // Why an entry cannot be imported, directly above the diff that has to be
   // edited to fix it. On one deployment that is the one it is showing; on the
-  // whole document it is every entry holding the import back, since the pane
-  // no longer moves to them.
+  // whole document, page through the failed deployments without changing the
+  // editor's scope or taking space away from the YAML.
   const renderErrors = () => {
     const failed = whole
       ? review.entries.filter((entry) => entry.errors.length)
@@ -770,33 +645,96 @@ const ImportYamlModal: React.FC<ImportYamlModalProps> = ({
     if (!failed.length) {
       return null;
     }
+    const page = whole ? Math.min(errorPage, failed.length - 1) : 0;
+    const entry = failed[page];
     return (
-      <Flex vertical gap={8} className={styles.entryError}>
-        {failed.map((entry) => (
-          <Flex vertical gap={4} key={entry.index}>
-            <span className={styles.entryErrorTitle}>
+      <Flex
+        vertical
+        gap="small"
+        className={classNames(diffStyles.entryError, styles.errorPanel, {
+          [styles.wholeErrors]: whole
+        })}
+      >
+        {whole && (
+          <Flex
+            align="center"
+            justify="space-between"
+            gap="small"
+            className={styles.errorPager}
+          >
+            <span className={diffStyles.entryErrorTitle}>
               {intl.formatMessage(
-                { id: 'models.import.entry.invalid' },
-                { index: entry.index + 1 }
+                { id: 'models.import.errors.title' },
+                { count: failed.length }
               )}
             </span>
-            {entry.errors.map((error, index) => (
-              <span key={index} className={styles.entryErrorDetail}>
-                {error}
-              </span>
-            ))}
+            {failed.length > 1 && (
+              <Flex align="center" gap={4} className={styles.errorNavigation}>
+                <Button
+                  size="small"
+                  type="text"
+                  icon={<LeftOutlined aria-hidden="true" />}
+                  aria-label={intl.formatMessage({
+                    id: 'models.import.errors.previous'
+                  })}
+                  title={intl.formatMessage({
+                    id: 'models.import.errors.previous'
+                  })}
+                  disabled={page === 0}
+                  onClick={() => setErrorPage(page - 1)}
+                />
+                <span className={styles.errorPosition}>
+                  {intl.formatMessage(
+                    { id: 'models.import.errors.position' },
+                    { current: page + 1, total: failed.length }
+                  )}
+                </span>
+                <Button
+                  size="small"
+                  type="text"
+                  icon={<RightOutlined aria-hidden="true" />}
+                  aria-label={intl.formatMessage({
+                    id: 'models.import.errors.next'
+                  })}
+                  title={intl.formatMessage({
+                    id: 'models.import.errors.next'
+                  })}
+                  disabled={page === failed.length - 1}
+                  onClick={() => setErrorPage(page + 1)}
+                />
+              </Flex>
+            )}
           </Flex>
-        ))}
+        )}
+        <Flex
+          key={entry.index}
+          vertical
+          gap={4}
+          className={styles.errorDetails}
+          role="status"
+        >
+          {entry.errors.map((error, index) => (
+            <span key={index} className={diffStyles.entryErrorDetail}>
+              {whole && index === 0 && (
+                <strong className={styles.errorName}>
+                  {entryName(intl, entry)}:{' '}
+                </strong>
+              )}
+              {error}
+            </span>
+          ))}
+        </Flex>
       </Flex>
     );
   };
 
   // A picker, not an upload: `beforeUpload` returning false is what keeps
   // antd from sending the file anywhere. The same control sits in the empty
-  // state and, once there is a diff, in its toolbar — one way in, wherever
+  // state and, once there is a diff, in the toolbar — one way in, wherever
   // the user is looking for it.
   const renderPicker = (trigger: React.ReactNode) => (
     <Upload
+      className={styles.picker}
       accept=".yaml,.yml"
       maxCount={1}
       showUploadList={false}
@@ -815,9 +753,8 @@ const ImportYamlModal: React.FC<ImportYamlModalProps> = ({
       vertical
       align="center"
       justify="center"
-      gap={10}
+      gap="middle"
       className={styles.empty}
-      style={{ height: DIFF_HEIGHT }}
     >
       <IconFont type="icon-files" className={styles.emptyIcon} />
       <span className={styles.emptyTitle}>
@@ -836,17 +773,34 @@ const ImportYamlModal: React.FC<ImportYamlModalProps> = ({
   );
 
   const renderFooterDescription = () => {
+    if (busy) {
+      return (
+        <Flex align="center" gap="small" role="status">
+          <LoadingOutlined />
+          {intl.formatMessage({ id: 'models.import.checking' })}
+        </Flex>
+      );
+    }
     if (!review.entries.length) {
-      return null;
+      return started && !review.errors.length ? (
+        <span>{intl.formatMessage({ id: 'models.import.hint.nothing' })}</span>
+      ) : null;
     }
     if (invalidCount) {
       return (
-        <span style={{ color: 'var(--ant-color-error)' }}>
-          {intl.formatMessage(
-            { id: 'models.import.blocked' },
-            { count: invalidCount }
-          )}
-        </span>
+        <Flex
+          align="center"
+          gap="small"
+          className={styles.footerError}
+          role="status"
+        >
+          <span>
+            {intl.formatMessage(
+              { id: 'models.import.blocked' },
+              { count: invalidCount }
+            )}
+          </span>
+        </Flex>
       );
     }
     if (!writes) {
@@ -861,7 +815,26 @@ const ImportYamlModal: React.FC<ImportYamlModalProps> = ({
     }
     return (
       <span>
-        {intl.formatMessage({ id: 'models.import.summary' }, counts)}
+        {intl.formatMessage(
+          { id: 'models.import.summary' },
+          {
+            create: (
+              <span key="create" className={styles.summaryCount}>
+                {counts.create}
+              </span>
+            ),
+            update: (
+              <span key="update" className={styles.summaryCount}>
+                {counts.update}
+              </span>
+            ),
+            unchanged: (
+              <span key="unchanged" className={styles.summaryCount}>
+                {counts.unchanged}
+              </span>
+            )
+          }
+        )}
         {counts.update > 0 &&
           ` ${intl.formatMessage({ id: 'models.import.summary.replaces' })}`}
       </span>
@@ -879,54 +852,62 @@ const ImportYamlModal: React.FC<ImportYamlModalProps> = ({
         closable: false
       }}
       keyboard={false}
-      // Wide: the index of the document takes a fixed column off the left, and
-      // what is left has to hold a deployment's YAML beside the deployment it
-      // would replace without either side wrapping. Capped at the viewport so
-      // the fixed left column stays on screen on a display narrower than the
-      // preferred width -- the drawer is right-aligned and does not scroll.
       styles={{
-        wrapper: { width: 'min(max(62vw, 1120px), 96vw)' }
+        wrapper: { width: 'min(max(62vw, 1120px), 96vw)' },
+        body: { paddingBlock: 0, overflow: 'hidden' }
       }}
-      footer={false}
-    >
-      <ColumnWrapper
-        styles={{
-          container: {
-            paddingTop: 0
-          }
-        }}
-        footer={
+      classNames={{ footer: styles.footer }}
+      footer={
+        started ? (
           <ModalFooter
-            styles={{ wrapper: { padding: '16px 24px 8px' } }}
+            style={{ marginInlineStart: 'auto' }}
+            styles={{
+              wrapper: { flexWrap: 'wrap', rowGap: 'var(--ant-margin-sm)' }
+            }}
             onOk={handleSubmit}
             onCancel={handleCancel}
             loading={loading}
             okText={intl.formatMessage({ id: 'common.button.import' })}
             okBtnProps={{ disabled: !ready }}
-            // What this import would do, beside the button that would do it.
-            // It does not belong above the diff, where it pushes the diff down
-            // and reads as a standing caveat about the document.
             description={renderFooterDescription()}
-          ></ModalFooter>
-        }
-      >
-        <Flex vertical gap={12}>
-          <Flex align="center" gap={16} wrap>
-            {/* Not a form: one field, nothing submitted from it, and the
-                import is gated on a plan rather than on validity. A required
-                rule would have nothing to fire on — the cluster always holds
-                a value, since following the file is one. */}
-            <SealSelect
-              style={{ width: 320 }}
-              label={intl.formatMessage({ id: 'clusters.title' })}
-              options={clusterOptions}
-              value={clusterId ?? FOLLOW_FILE}
-              onChange={handleClusterChange}
-              required
-            ></SealSelect>
-            {started && renderStatus()}
+          />
+        ) : null
+      }
+    >
+      <Flex vertical className={styles.body}>
+        {started && (
+          <Flex
+            align="center"
+            justify="space-between"
+            gap="middle"
+            wrap
+            className={styles.controls}
+          >
+            <Flex vertical gap="small" className={styles.clusterField}>
+              <BaseSelect
+                aria-label={intl.formatMessage({
+                  id: 'models.import.cluster.target'
+                })}
+                prefix={
+                  <span className={styles.clusterLabel}>
+                    {intl.formatMessage({ id: 'models.import.cluster.target' })}
+                  </span>
+                }
+                style={{ width: '100%' }}
+                options={clusterOptions}
+                value={clusterId ?? FOLLOW_FILE}
+                onChange={handleClusterChange}
+              />
+            </Flex>
+            {renderPicker(
+              <Button icon={<UploadOutlined />}>
+                {intl.formatMessage({ id: 'models.import.pickFile' })}
+              </Button>
+            )}
           </Flex>
-          {review.errors.length > 0 && (
+        )}
+        {review.errors.length > 0 && (
+          <div className={styles.documentError}>
             <AlertBlockInfo
               type="danger"
               title={intl.formatMessage({ id: 'models.import.invalid' })}
@@ -938,52 +919,88 @@ const ImportYamlModal: React.FC<ImportYamlModalProps> = ({
                   ))}
                 </Flex>
               }
-            ></AlertBlockInfo>
-          )}
-          {started ? (
-            <Flex vertical gap={10}>
-              <Flex align="center" justify="space-between">
-                {renderBreadcrumb()}
-                {renderPicker(
-                  <Button
-                    type="text"
-                    size="small"
-                    icon={<IconFont type="icon-files" />}
-                  >
-                    {intl.formatMessage({ id: 'models.import.pickFile' })}
-                  </Button>
-                )}
+            />
+          </div>
+        )}
+        <Flex
+          className={classNames(styles.workspace, { [styles.framed]: started })}
+        >
+          {started && (
+            <Flex vertical className={styles.sidebar}>
+              <Flex
+                align="center"
+                justify="space-between"
+                gap="small"
+                className={styles.navHeader}
+              >
+                <span>
+                  {intl.formatMessage({ id: 'dashboard.deployments' })} (
+                  {review.entries.length})
+                </span>
+                <Button
+                  type="text"
+                  size="small"
+                  icon={<IconFont type="icon-layers" aria-hidden="true" />}
+                  className={styles.wholeButton}
+                  title={intl.formatMessage({
+                    id: 'models.import.scope.whole'
+                  })}
+                  onClick={() => handleSelect('whole')}
+                >
+                  {intl.formatMessage({ id: 'models.import.scope.wholeShort' })}
+                </Button>
               </Flex>
-              <Flex className={styles.diff} style={{ height: DIFF_HEIGHT }}>
-                <PlanNavList
-                  entries={review.entries}
-                  selected={selected}
-                  collapsed={navCollapsed}
-                  onSelect={handleSelect}
-                ></PlanNavList>
-                <Flex vertical className={styles.diffMain}>
-                  {renderErrors()}
-                  {/* One editor per selection: an undo stack that reached back
-                      into the deployment before it would undo edits off
-                      screen. */}
-                  <YamlDiffEditor
-                    key={whole ? 'whole' : selected}
-                    original={original}
-                    modified={draft}
-                    height="100%"
-                    isDarkTheme={isDarkTheme}
-                    header={renderPanes()}
-                    onChange={handleDiffChange}
-                    onBlur={handleDiffBlur}
-                  ></YamlDiffEditor>
-                </Flex>
-              </Flex>
+              <div className={styles.navScroller}>
+                <OverlayScroller
+                  maxHeight="100%"
+                  styles={{ wrapper: { height: '100%', padding: 0 } }}
+                >
+                  <PlanNavList
+                    entries={review.entries}
+                    selected={selected}
+                    onSelect={handleSelect}
+                  />
+                </OverlayScroller>
+              </div>
             </Flex>
-          ) : (
-            renderEmpty()
           )}
+          <Flex vertical className={styles.main}>
+            {started && (
+              <Flex
+                align="center"
+                justify="space-between"
+                gap="middle"
+                className={styles.fileHeader}
+              >
+                <Flex align="center" gap="small" className={styles.fileName}>
+                  <span title={fileName ?? undefined}>{fileName}</span>
+                </Flex>
+                <span className={styles.fieldsDoc}>{fieldsDocLink}</span>
+              </Flex>
+            )}
+
+            {started ? (
+              <Flex vertical className={styles.editor}>
+                {renderErrors()}
+                {/* Selection owns its undo history; a delayed review never
+                    replaces edits currently being typed in this buffer. */}
+                <YamlDiffEditor
+                  key={whole ? 'whole' : selected}
+                  original={original}
+                  modified={draft}
+                  height="100%"
+                  isDarkTheme={isDarkTheme}
+                  header={renderPanes()}
+                  onChange={handleDiffChange}
+                  onBlur={handleDiffBlur}
+                />
+              </Flex>
+            ) : (
+              renderEmpty()
+            )}
+          </Flex>
         </Flex>
-      </ColumnWrapper>
+      </Flex>
       {/* The overwrite is agreed to once, here, rather than entry by entry in
           the plan: the diff has already spelled out what each replacement
           does, and a tick beside it adds nothing the diff did not say. Laid
@@ -1012,13 +1029,13 @@ const ImportYamlModal: React.FC<ImportYamlModalProps> = ({
           </Space>
         }
       >
-        <Flex align="center" className={styles.confirmTitle}>
+        <Flex align="center" className={diffStyles.confirmTitle}>
           <ExclamationCircleFilled />
           <span>
             {intl.formatMessage({ id: 'models.import.overwrite.title' })}
           </span>
         </Flex>
-        <div className={styles.confirmBody}>
+        <div className={diffStyles.confirmBody}>
           {intl.formatMessage(
             { id: 'models.import.overwrite.confirm' },
             { count: overwrites.length }
@@ -1026,7 +1043,7 @@ const ImportYamlModal: React.FC<ImportYamlModalProps> = ({
           {(counts.create > 0 || counts.unchanged > 0) &&
             ` ${intl.formatMessage({ id: 'models.import.overwrite.rest' }, counts)}`}
         </div>
-        <Flex vertical gap={4} className={styles.confirmNames}>
+        <Flex vertical gap={4} className={diffStyles.confirmNames}>
           {overwrites.map((name) => (
             <span key={name}>{name}</span>
           ))}

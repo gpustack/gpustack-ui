@@ -15,10 +15,11 @@ export default {
   'models.form.yamlFile': 'YAML Dosyası',
   'models.import.checking': 'Denetleniyor…',
   'models.import.hint.nothing': 'İçe aktarılacak bir şey yok',
-  'models.import.pickFile': 'Dosya seç',
+  'models.import.pickFile': 'YAML dosyası seç',
   'models.import.empty.title': 'YAML dosyası içe aktar',
   'models.import.empty.description':
     'Dağıtımları tanımlayan bir dosya seçin. İçe aktarmadan önce denetlenir ve yazılacak her şey farkta eksiksiz gösterilir.',
+  'models.import.cluster.target': 'Hedef Küme',
   'models.import.cluster.follow': 'Dosyadaki gibi',
   'models.import.loaded':
     '{count} dağıtım · {cluster} kümesinin şu anki hâliyle aynı',
@@ -27,10 +28,8 @@ export default {
   'models.import.counts':
     '{count} dağıtım · {cluster} kümesine · {changes} değişiklik',
   'models.import.parsed': '{count} dağıtım',
-  'models.import.parsed.invalid': '{count} tanesi içe aktarılamıyor',
   'models.import.fieldsDoc': 'Alan başvurusu',
   'models.import.nav.invalid': 'İçe aktarılamıyor',
-  'models.import.scope.all': 'Tüm dağıtımlar ({count})',
   'models.import.scope.whole': 'Tüm belge',
   'models.import.scope.wholeShort': 'Tümü',
   'models.import.pane.current': 'Kümedeki hali · salt okunur',
@@ -41,7 +40,10 @@ export default {
     'Buradaki dağıtımların hepsi yeni — hiçbiri değiştirilmiyor',
   'models.import.pane.waiting': 'Henüz karşılaştırılacak bir şey yok',
   'models.import.entry': '{index}. dağıtım',
-  'models.import.entry.invalid': '{index}. dağıtım içe aktarılamıyor',
+  'models.import.errors.title': '{count} dağıtımda yapılandırma hatası var',
+  'models.import.errors.position': '{current}/{total}',
+  'models.import.errors.previous': 'Önceki',
+  'models.import.errors.next': 'Sonraki',
   'models.import.summary':
     '{create} oluşturulacak, {update} güncellenecek, {unchanged} değişmedi.',
   'models.import.summary.replaces':

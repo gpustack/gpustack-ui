@@ -15,10 +15,11 @@ export default {
   'models.form.yamlFile': 'YAML ファイル',
   'models.import.checking': '検証中…',
   'models.import.hint.nothing': 'インポートできるデプロイメントがありません',
-  'models.import.pickFile': 'ファイルを選択',
+  'models.import.pickFile': 'YAML ファイルを選択',
   'models.import.empty.title': 'YAML ファイルをインポート',
   'models.import.empty.description':
     'デプロイメントを記述したファイルを選択してください。インポート前に比較し、書き込まれる内容を差分ですべて確認できます。',
+  'models.import.cluster.target': '対象クラスター',
   'models.import.cluster.follow': 'ファイルに従う',
   'models.import.loaded':
     '{count} 件のデプロイメント · {cluster} クラスターの現状と一致',
@@ -27,10 +28,8 @@ export default {
   'models.import.counts':
     '{count} 件のデプロイメント · {cluster} へインポート · {changes} 件の変更',
   'models.import.parsed': '{count} 件のデプロイメント',
-  'models.import.parsed.invalid': '{count} 件はインポートできません',
   'models.import.fieldsDoc': 'フィールド説明',
   'models.import.nav.invalid': 'インポート不可',
-  'models.import.scope.all': '全 {count} 件のデプロイメント',
   'models.import.scope.whole': 'ドキュメント全体',
   'models.import.scope.wholeShort': '全体',
   'models.import.pane.current': 'クラスターの現状 · 読み取り専用',
@@ -41,8 +40,11 @@ export default {
     'すべて新規のデプロイメントです。置き換えられるものはありません',
   'models.import.pane.waiting': '比較する内容はまだありません',
   'models.import.entry': '{index} 番目のデプロイメント',
-  'models.import.entry.invalid':
-    '{index} 番目のデプロイメントはインポートできません',
+  'models.import.errors.title':
+    '{count} 件のデプロイメントに設定エラーがあります',
+  'models.import.errors.position': '{current}/{total}',
+  'models.import.errors.previous': '前へ',
+  'models.import.errors.next': '次へ',
   'models.import.summary':
     '新規作成 {create} 件、更新 {update} 件、変更なし {unchanged} 件。',
   'models.import.summary.replaces':

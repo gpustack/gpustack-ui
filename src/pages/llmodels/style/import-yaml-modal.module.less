@@ -1,0 +1,293 @@
+.body {
+  height: 100%;
+  min-height: 0;
+}
+
+.workspace {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+
+  &.framed {
+    margin: var(--ant-margin) var(--ant-margin-lg) var(--ant-margin-sm);
+    border: 1px solid var(--ant-color-border);
+    border-radius: var(--ant-border-radius-lg);
+  }
+}
+
+.sidebar {
+  flex: none;
+  width: clamp(260px, 27%, 320px);
+  min-height: 0;
+  border-right: 1px solid var(--ant-color-border-secondary);
+}
+
+.controls {
+  flex: none;
+  padding: var(--ant-padding) var(--ant-padding-lg) 0;
+  background-color: var(--ant-color-bg-elevated);
+}
+
+.clusterField {
+  width: 360px;
+  max-width: 100%;
+
+  :global(.ant-select-prefix) {
+    margin-inline-end: var(--ant-padding-xs);
+  }
+}
+
+.clusterLabel {
+  padding-inline-end: var(--ant-padding-xs);
+  color: var(--ant-color-text-tertiary);
+  border-inline-end: 1px solid var(--ant-color-border-secondary);
+}
+
+.picker {
+  flex: none;
+}
+
+.navHeader {
+  flex: none;
+  min-height: 44px;
+  padding: var(--ant-padding-xs) var(--ant-padding);
+  color: var(--ant-color-text-secondary);
+  font-weight: 500;
+  border-bottom: 1px solid var(--ant-color-border-secondary);
+  padding-right: var(--ant-padding-xs);
+}
+
+.navScroller {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.nav {
+  padding: var(--ant-padding-xs);
+}
+
+.wholeButton {
+  flex: none;
+}
+
+.navOption {
+  flex-shrink: 0;
+  padding: var(--ant-padding-sm);
+  background: transparent;
+  border-radius: var(--ant-border-radius);
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--ant-color-fill-tertiary);
+  }
+
+  &.selected {
+    background-color: var(--ant-color-fill-secondary);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ant-color-primary);
+    outline-offset: -2px;
+  }
+}
+
+.navName {
+  min-width: 0;
+  overflow: hidden;
+  font-weight: 500;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  // StatusDot centers the line box; lower its dot to match the visible glyphs.
+  > span > span:first-child {
+    transform: translateY(1px);
+  }
+}
+
+.navCaption {
+  // Align with StatusDot's text after its 8px dot and 6px gap.
+  padding-inline-start: 14px;
+  color: var(--ant-color-text-secondary);
+  font-size: var(--ant-font-size-sm);
+
+  &.invalid {
+    color: var(--ant-color-error);
+  }
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+
+.fileHeader {
+  flex: none;
+  min-height: 44px;
+  padding: var(--ant-padding-sm) var(--ant-padding);
+  background-color: var(--ant-color-fill-quaternary);
+  border-bottom: 1px solid var(--ant-color-border-secondary);
+}
+
+.fileName {
+  min-width: 0;
+  font-weight: 500;
+
+  > span:last-child {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  :global(.anticon) {
+    color: var(--ant-color-text-secondary);
+  }
+}
+
+.fieldsDoc {
+  flex: none;
+  font-size: var(--ant-font-size-sm);
+}
+
+.documentError {
+  flex: none;
+  padding: var(--ant-padding-sm) var(--ant-padding-lg) 0;
+  :global(.title-text) {
+    font-size: var(--ant-font-size);
+  }
+}
+
+.errorPanel {
+  overflow: hidden;
+
+  &.wholeErrors {
+    max-height: none;
+
+    .errorDetails {
+      max-height: 64px;
+    }
+  }
+}
+
+.errorPager {
+  flex: none;
+
+  > span {
+    min-width: 0;
+  }
+}
+
+.errorNavigation {
+  flex: none;
+}
+
+.errorPosition {
+  color: var(--ant-color-text-secondary);
+  font-size: var(--ant-font-size-sm);
+  white-space: nowrap;
+}
+
+.errorDetails {
+  min-height: 0;
+  overflow-y: auto;
+  overflow-wrap: anywhere;
+}
+
+.errorName {
+  font-weight: 600;
+}
+
+.editor {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+
+  // These wrappers belong to core-ui. Let Monaco fill the remaining height
+  // beneath the filename and validation messages without a second scroller.
+  :global(.yaml-diff-editor-container),
+  :global(.editor-wrap) {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+    border: none;
+    border-radius: 0;
+  }
+
+  :global(.editor-wrap) > div:last-child {
+    flex: 1;
+    min-height: 0;
+  }
+}
+
+.empty {
+  flex: 1;
+  min-height: 0;
+  margin: var(--ant-margin-lg);
+  padding: var(--ant-padding-lg);
+  border: 1px dashed var(--ant-color-border);
+  border-radius: var(--ant-border-radius-lg);
+}
+
+.emptyIcon {
+  color: var(--ant-color-text-quaternary);
+  font-size: var(--ant-font-size-heading-1);
+}
+
+.emptyTitle {
+  color: var(--ant-color-text);
+  font-size: var(--ant-font-size-lg);
+  font-weight: 500;
+}
+
+.emptyDescription {
+  max-width: 440px;
+  color: var(--ant-color-text-secondary);
+  line-height: var(--ant-line-height);
+  text-align: center;
+}
+
+.emptyDoc {
+  font-size: var(--ant-font-size-sm);
+}
+
+.footer:global(.ant-drawer-footer) {
+  flex: none;
+  padding: var(--ant-padding) var(--ant-padding-lg) var(--ant-padding-lg);
+  color: var(--ant-color-text-secondary);
+  background-color: var(--ant-color-bg-elevated);
+  border-top: none;
+}
+
+.summaryCount {
+  color: var(--ant-color-text);
+  font-weight: 500;
+}
+
+.footerError {
+  color: var(--ant-color-error);
+}
+
+@media (max-width: 768px) {
+  .workspace {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    max-height: 45%;
+    border-right: none;
+    border-bottom: 1px solid var(--ant-color-border-secondary);
+  }
+
+  .controls {
+    gap: var(--ant-margin-sm);
+    padding-top: var(--ant-padding-sm);
+  }
+
+  .navHeader {
+    min-height: var(--ant-control-height-sm);
+    padding-block: var(--ant-padding-xs);
+  }
+}

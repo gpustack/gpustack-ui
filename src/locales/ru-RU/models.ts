@@ -15,10 +15,11 @@ export default {
   'models.form.yamlFile': 'YAML-файл',
   'models.import.checking': 'Проверка…',
   'models.import.hint.nothing': 'Здесь нечего импортировать',
-  'models.import.pickFile': 'Выбрать файл',
+  'models.import.pickFile': 'Выбрать файл YAML',
   'models.import.empty.title': 'Импорт YAML-файла',
   'models.import.empty.description':
     'Выберите файл с описанием развёртываний. Он сначала проверяется, и различия показываются полностью — до того, как что-либо будет записано.',
+  'models.import.cluster.target': 'Целевой кластер',
   'models.import.cluster.follow': 'Как указано в файле',
   'models.import.loaded':
     'Развёртываний: {count} · совпадает с текущим состоянием кластера {cluster}',
@@ -27,10 +28,8 @@ export default {
   'models.import.counts':
     'Развёртываний: {count} · в кластер {cluster} · изменений: {changes}',
   'models.import.parsed': 'Развёртываний: {count}',
-  'models.import.parsed.invalid': 'нельзя импортировать: {count}',
   'models.import.fieldsDoc': 'Справочник полей',
   'models.import.nav.invalid': 'Нельзя импортировать',
-  'models.import.scope.all': 'Все развёртывания ({count})',
   'models.import.scope.whole': 'Весь документ',
   'models.import.scope.wholeShort': 'Целиком',
   'models.import.pane.current': 'В кластере · только чтение',
@@ -41,7 +40,11 @@ export default {
     'Все развёртывания здесь новые — ни одно не заменяется',
   'models.import.pane.waiting': 'Пока нечего сравнивать',
   'models.import.entry': 'Развёртывание {index}',
-  'models.import.entry.invalid': 'Развёртывание {index} нельзя импортировать',
+  'models.import.errors.title':
+    'Развёртывания с ошибками конфигурации: {count}',
+  'models.import.errors.position': '{current}/{total}',
+  'models.import.errors.previous': 'Предыдущее',
+  'models.import.errors.next': 'Следующее',
   'models.import.summary':
     'Создать: {create}, обновить: {update}, без изменений: {unchanged}.',
   'models.import.summary.replaces':

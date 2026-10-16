@@ -15,10 +15,11 @@ export default {
   'models.form.yamlFile': 'YAML File',
   'models.import.checking': 'Checking…',
   'models.import.hint.nothing': 'Nothing here to import',
-  'models.import.pickFile': 'Choose a file',
+  'models.import.pickFile': 'Choose a YAML file',
   'models.import.empty.title': 'Import a YAML file',
   'models.import.empty.description':
     'Pick a file describing one or more deployments. It is checked first, and the diff shows exactly what would be written before anything is.',
+  'models.import.cluster.target': 'Target Cluster',
   'models.import.cluster.follow': 'Follow the file',
   'models.import.loaded':
     '{count} deployment(s) · identical to what {cluster} runs now',
@@ -27,10 +28,8 @@ export default {
   'models.import.counts':
     '{count} deployment(s) · into {cluster} · {changes} change(s)',
   'models.import.parsed': '{count} deployment(s)',
-  'models.import.parsed.invalid': '{count} cannot be imported',
   'models.import.fieldsDoc': 'Field reference',
   'models.import.nav.invalid': 'Cannot import',
-  'models.import.scope.all': 'All {count} deployment(s)',
   'models.import.scope.whole': 'Whole document',
   'models.import.scope.wholeShort': 'Whole',
   'models.import.pane.current': 'In the cluster · read-only',
@@ -40,7 +39,11 @@ export default {
   'models.import.pane.allNew': 'Every deployment here is new — none replaced',
   'models.import.pane.waiting': 'Nothing to compare yet',
   'models.import.entry': 'Deployment {index}',
-  'models.import.entry.invalid': 'Deployment {index} cannot be imported',
+  'models.import.errors.title':
+    '{count} deployment(s) with configuration errors',
+  'models.import.errors.position': '{current}/{total}',
+  'models.import.errors.previous': 'Previous',
+  'models.import.errors.next': 'Next',
   'models.import.summary':
     '{create} to create, {update} to update, {unchanged} unchanged.',
   'models.import.summary.replaces':

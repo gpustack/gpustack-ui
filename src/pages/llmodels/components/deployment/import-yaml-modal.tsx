@@ -150,6 +150,9 @@ const ImportYamlModal: React.FC<ImportYamlModalProps> = ({
   // document nobody is looking at.
   const requestId = useRef(0);
   const inFlight = useRef<AbortController | null>(null);
+  // File reads cannot be aborted. A new selection or reset makes their
+  // eventual success or failure obsolete, independently of review requests.
+  const fileReadId = useRef(0);
   // Read synchronously by the debounce and by a click that has to bank an
   // edit before it moves the pane, both of which run outside the render that
   // would have the state.
@@ -419,6 +422,7 @@ const ImportYamlModal: React.FC<ImportYamlModalProps> = ({
   // itself, and the two disagree on how to write a list — every
   // `backend_parameters` would read as an edit nobody made.
   const handleFile = async (rawFile: File) => {
+    const id = ++fileReadId.current;
     // The same refusals the editor's own Import button makes, run before
     // `text()` — which is itself enough to take the tab down on a large enough
     // file (gpustack/gpustack#6234), and this screen pays for it twice over
@@ -433,6 +437,7 @@ const ImportYamlModal: React.FC<ImportYamlModalProps> = ({
       requestId.current += 1;
       inFlight.current?.abort();
       clearTimeout(debounce.current);
+      setPending(false);
       setReview({
         ...EMPTY_REVIEW,
         errors: [intl.formatMessage({ id: rejection.id }, rejection.values)]
@@ -441,6 +446,9 @@ const ImportYamlModal: React.FC<ImportYamlModalProps> = ({
     }
     try {
       const text = await rawFile.text();
+      if (id !== fileReadId.current) {
+        return false;
+      }
       clearTimeout(debounce.current);
       setPending(false);
       setFileName(rawFile.name);
@@ -450,6 +458,9 @@ const ImportYamlModal: React.FC<ImportYamlModalProps> = ({
       reseedRef.current = true;
       reviewDocument(text, clusterId, true);
     } catch (error) {
+      if (id !== fileReadId.current) {
+        return false;
+      }
       setReview({ ...EMPTY_REVIEW, errors: errorLines(error) });
     }
     return false;
@@ -464,6 +475,7 @@ const ImportYamlModal: React.FC<ImportYamlModalProps> = ({
   };
 
   const reset = () => {
+    fileReadId.current += 1;
     requestId.current += 1;
     setPicked(null);
     inFlight.current?.abort();

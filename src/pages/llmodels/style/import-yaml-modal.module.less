@@ -77,6 +77,8 @@
   background: transparent;
   border-radius: var(--ant-border-radius);
   cursor: pointer;
+  background-color: var(--ant-color-bg-container);
+  border: 1px solid var(--ant-color-border);
 
   &:hover {
     background-color: var(--ant-color-fill-tertiary);
@@ -95,7 +97,7 @@
 .navName {
   min-width: 0;
   overflow: hidden;
-  font-weight: 500;
+  font-weight: 400;
   white-space: nowrap;
   text-overflow: ellipsis;
 
@@ -132,7 +134,7 @@
 
 .fileName {
   min-width: 0;
-  font-weight: 500;
+  font-weight: 400;
 
   > span:last-child {
     overflow: hidden;
@@ -228,6 +230,7 @@
   padding: var(--ant-padding-lg);
   border: 1px dashed var(--ant-color-border);
   border-radius: var(--ant-border-radius-lg);
+  background-color: var(--ant-color-bg-container);
 }
 
 .emptyIcon {

@@ -80,7 +80,7 @@ const PlanNavList: React.FC<PlanNavListProps> = ({
       <Flex
         key={entry.index}
         vertical
-        gap={4}
+        gap={6}
         className={classNames(styles.navOption, {
           [styles.selected]: entry.index === selected
         })}
@@ -110,7 +110,7 @@ const PlanNavList: React.FC<PlanNavListProps> = ({
   return (
     <Flex
       vertical
-      gap={4}
+      gap={'small'}
       className={styles.nav}
       role="listbox"
       aria-label={intl.formatMessage({ id: 'dashboard.deployments' })}

@@ -87,6 +87,11 @@ export default {
   'benchmark.detail.result.inProgress': 'Measurement in progress',
   'benchmark.detail.result.peakFact':
     'Peak Throughput: {throughput} tok/s @ {load} {unit}',
+  'benchmark.form.load.positiveRate': 'Enter a positive request rate',
+  'benchmark.form.load.positiveConcurrency':
+    'Enter a positive integer concurrency',
+  'benchmark.form.load.rangeError':
+    'The upper bound must be greater than the lower bound',
   'benchmark.title': 'Benchmarks',
   'benchmark.button.add': 'Add Benchmark',
   'benchmark.button.edit': 'Edit Benchmark',

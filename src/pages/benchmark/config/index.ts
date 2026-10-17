@@ -47,7 +47,7 @@ export const benchmarkValidationGroups = {
     'prefix_buckets'
   ],
   slo: ['slo_targets'],
-  load: ['stages']
+  load: ['lower_bound', 'upper_bound', 'stages']
 };
 
 export const ProfileLabelMap = {

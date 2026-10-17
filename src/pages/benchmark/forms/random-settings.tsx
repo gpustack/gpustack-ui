@@ -49,6 +49,7 @@ import {
 } from '../config';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
+import { isValidLoadValue, optionalLoadValueRule } from './load-validation';
 import { optionalPositiveIntegerRule } from './sharegpt-token-validation';
 
 const useStyles = createStyles(({ token, css }) => ({
@@ -208,6 +209,20 @@ const RandomSettingsForm: React.FC<{
   const isCustom = profile === 'Custom';
   const presetLocked = !isCustom;
   const isFixedRate = loadType === LoadTypeValueMap.FixedRate;
+  const loadValueMessage = intl.formatMessage({
+    id: isFixedRate
+      ? 'benchmark.form.load.positiveRate'
+      : 'benchmark.form.load.positiveConcurrency'
+  });
+  const searchBoundRule = optionalLoadValueRule(
+    false,
+    intl.formatMessage({ id: 'benchmark.form.sharegpt.positiveInteger' })
+  );
+  const loadInputProps = {
+    min: isFixedRate ? 0 : 1,
+    step: 1,
+    precision: isFixedRate ? undefined : 0
+  };
   // Named presets are ALWAYS auto-tune (the ramp is the whole point); only Custom
   // can switch to manual stages. Derive from that so the section renders correctly
   // even if the auto_tune field value lags/is missing.
@@ -1252,10 +1267,14 @@ const RandomSettingsForm: React.FC<{
             <Flex gap={12}>
               <Form.Item<FormData>
                 name="lower_bound"
+                dependencies={['load_type']}
+                rules={[searchBoundRule]}
                 style={{ flex: 1, marginBottom: 0 }}
               >
                 <CInputNumber
                   min={1}
+                  step={1}
+                  precision={0}
                   disabled={disabled}
                   style={{ width: '100%' }}
                   label={intl.formatMessage({
@@ -1267,10 +1286,32 @@ const RandomSettingsForm: React.FC<{
               </Form.Item>
               <Form.Item<FormData>
                 name="upper_bound"
+                dependencies={['load_type', 'lower_bound']}
+                rules={[
+                  searchBoundRule,
+                  {
+                    validator: async (_, value) => {
+                      const lower = form.getFieldValue('lower_bound');
+                      if (
+                        isValidLoadValue(lower, false) &&
+                        isValidLoadValue(value, false) &&
+                        lower >= value
+                      ) {
+                        throw new Error(
+                          intl.formatMessage({
+                            id: 'benchmark.form.load.rangeError'
+                          })
+                        );
+                      }
+                    }
+                  }
+                ]}
                 style={{ flex: 1, marginBottom: 0 }}
               >
                 <CInputNumber
                   min={1}
+                  step={1}
+                  precision={0}
                   disabled={disabled}
                   style={{ width: '100%' }}
                   label={intl.formatMessage({
@@ -1335,6 +1376,12 @@ const RandomSettingsForm: React.FC<{
                       );
                     }
                     if (
+                      value.some((s) => !isValidLoadValue(s?.rate, isFixedRate))
+                    ) {
+                      setStagesValidated(true);
+                      throw new Error(loadValueMessage);
+                    }
+                    if (
                       value.some(
                         (s) => s?.max_requests == null && s?.max_seconds == null
                       )
@@ -1372,14 +1419,15 @@ const RandomSettingsForm: React.FC<{
                       <div style={{ flex: 1.7, minWidth: 0 }}>
                         <CInputNumber
                           required
-                          min={1}
+                          {...loadInputProps}
                           disabled={disabled}
                           value={item.rate}
                           onChange={(v) =>
                             handleStageChange(index, { rate: v })
                           }
                           checkStatus={
-                            stagesValidated && item.rate == null
+                            stagesValidated &&
+                            !isValidLoadValue(item.rate, isFixedRate)
                               ? 'error'
                               : 'success'
                           }

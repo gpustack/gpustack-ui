@@ -385,6 +385,34 @@ test('validation scrolls the first invalid basic field while revealing later inv
   }
 });
 
+for (const field of ['lower_bound', 'upper_bound']) {
+  test(`validation reveals a collapsed load section for an invalid ${field}`, async () => {
+    const view = await renderForm();
+    try {
+      await act(async () =>
+        form.setFieldsValue({
+          auto_tune: true,
+          lower_bound: field === 'lower_bound' ? 0 : 4,
+          upper_bound: field === 'upper_bound' ? 2 : 8192
+        })
+      );
+      await toggleGroup('load');
+      scrolled = [];
+      await view.submit();
+      assert.equal(view.release.mock.callCount(), 1);
+      assert.equal(isOpen('load'), true);
+      assert.deepEqual(scrolled[0]?.name, [field]);
+      assert.equal(scrolled[0]?.expanded, true);
+      assert.equal(scrolled[0]?.visible, true);
+      if (supportsControlledTabs) {
+        assert.equal(selectedTab(), 'benchmark.form.group.load');
+      }
+    } finally {
+      await view.unmount();
+    }
+  });
+}
+
 test('validation scrolls an invalid metadata list through its native wrapper id', async () => {
   const view = await renderForm();
   try {

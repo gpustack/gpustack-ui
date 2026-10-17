@@ -79,6 +79,9 @@ export default {
   'benchmark.detail.result.inProgress': '测试进行中',
   'benchmark.detail.result.peakFact':
     '总吞吐峰值：{throughput} tok/s，位于 {load} {unit}',
+  'benchmark.form.load.positiveRate': '请输入大于 0 的请求速率',
+  'benchmark.form.load.positiveConcurrency': '请输入正整数并发数',
+  'benchmark.form.load.rangeError': '搜索上限必须大于下限',
   'benchmark.title': '基准测试',
   'benchmark.button.add': '添加基准测试',
   'benchmark.button.edit': '编辑基准测试',

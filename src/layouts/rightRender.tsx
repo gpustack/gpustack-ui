@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { getDocumentationUrl } from '@/utils/documentation';
 import avatarImg from '@/assets/images/avatar.png';
 import externalLinks from '@/constants/external-links';
 import {
@@ -95,7 +96,7 @@ export const getRightRenderContent = (opts: {
       key: 'faq',
       icon: <IconFont type="icon-fankuifaqs"></IconFont>,
       label: intl.formatMessage({ id: 'common.button.faq' }),
-      url: externalLinks.faq
+      url: getDocumentationUrl(externalLinks.faq, intl.locale)
     },
     {
       key: 'Discord',
@@ -107,13 +108,13 @@ export const getRightRenderContent = (opts: {
       key: 'docs',
       icon: <ReadOutlined />,
       label: intl.formatMessage({ id: 'common.button.docs' }),
-      url: externalLinks.documentation
+      url: getDocumentationUrl(externalLinks.documentation, intl.locale)
     },
     {
       key: 'imageSelector',
       icon: <IconFont type="icon-docker"></IconFont>,
       label: intl.formatMessage({ id: 'common.button.imageSelector' }),
-      url: externalLinks.imageSelector
+      url: getDocumentationUrl(externalLinks.imageSelector, intl.locale)
     },
     {
       key: 'version',

@@ -1,4 +1,5 @@
 import externalLinks from '@/constants/external-links';
+import { getDocumentationUrl } from '@/utils/documentation';
 import {
   InfoCircleOutlined,
   LockOutlined,
@@ -163,7 +164,7 @@ const LocalUserForm: React.FC<LocalUserFormProps> = (props) => {
           size="small"
           className="forgot-password"
           style={{ fontSize: 12, padding: 0 }}
-          href={externalLinks.resetPassword}
+          href={getDocumentationUrl(externalLinks.resetPassword, intl.locale)}
           target="_blank"
         >
           {intl.formatMessage({ id: 'common.button.forgotpassword' })}

@@ -4,6 +4,7 @@ import VersionInfo, { modalConfig } from '@/components/version-info';
 import externalLinks from '@/constants/external-links';
 import { logout } from '@/pages/login/apis';
 import { getGPUStackPlugin } from '@/plugins';
+import { getDocumentationUrl } from '@/utils/documentation';
 import { useModel } from '@@/plugin-model';
 import { DiscordOutlined, GithubOutlined } from '@ant-design/icons';
 import { DropdownActions, IconFont, useBodyScroll } from '@gpustack/core-ui';
@@ -258,7 +259,7 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
       key: 'faq',
       icon: <IconFont type="icon-fankuifaqs"></IconFont>,
       label: intl.formatMessage({ id: 'common.button.faq' }),
-      url: externalLinks.faq
+      url: getDocumentationUrl(externalLinks.faq, intl.locale)
     },
     {
       key: 'Discord',
@@ -270,13 +271,13 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
       key: 'docs',
       icon: <IconFont type="icon-docs" />,
       label: intl.formatMessage({ id: 'common.button.docs' }),
-      url: new URL('/help', window.location.origin).href
+      url: getDocumentationUrl('', intl.locale)
     },
     {
       key: 'imageSelector',
       icon: <IconFont type="icon-docker"></IconFont>,
       label: intl.formatMessage({ id: 'common.button.imageSelector' }),
-      url: externalLinks.imageSelector
+      url: getDocumentationUrl(externalLinks.imageSelector, intl.locale)
     }
   ];
 
@@ -401,7 +402,10 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
           is admin-gated — this slot carries no visibility rule of its own, so
           what it hosts is free to be visible to every signed-in user. */}
       <PluginExtraField name="HeaderExtra" />
-      <PluginExtraField name="GlobalDocs" />
+      <PluginExtraField
+        name="GlobalDocs"
+        documentationUrl={getDocumentationUrl('', intl.locale)}
+      />
       <PluginExtraField name="GlobalSettings" />
       <DropdownActions
         menu={{ ...userMenu }}

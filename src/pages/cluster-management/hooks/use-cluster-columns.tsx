@@ -281,7 +281,7 @@ const useClusterColumns = (
         )
       }
     ];
-  }, [handleSelect, intl, pluginCols]);
+  }, [handleSelect, intl, pluginCols, actionList]);
 };
 
 export default useClusterColumns;

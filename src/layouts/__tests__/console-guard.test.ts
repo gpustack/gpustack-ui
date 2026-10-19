@@ -52,6 +52,9 @@ function renderLayout(mode?: string) {
     },
     '@/atoms/user': { userAtom },
     '@/atoms/route-cache': { routeCacheAtom: {} },
+    '@/components/core-ui-provider-props': {
+      getCoreUIProviderProps: () => ({ hooks: {} })
+    },
     '@/components/dark-mask': { default: mark('dark-mask') },
     '@/components/plugin-extra-fields': { default: mark('banner') },
     '@/config/route-cachekey': { default: {} },

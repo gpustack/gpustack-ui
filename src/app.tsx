@@ -1,6 +1,7 @@
 import { userSettingsHelperAtom } from '@/atoms/settings';
 import { GPUStackVersionAtom, UpdateCheckAtom, userAtom } from '@/atoms/user';
 import { setAtomStorage } from '@/atoms/utils';
+import PublicPageProvider from '@/components/public-page-provider';
 import { DEFAULT_ENTER_PAGE, GPUSTACK_API_BASE_URL } from '@/config/settings';
 import { COLOR_PRIMARY } from '@/config/theme/constants';
 import ErrorBoundary from '@/layouts/error-boundary';
@@ -8,6 +9,7 @@ import { ensureCurrentLocaleMessages } from '@/locales/load-messages';
 import { canInitializeConsole, getGPUStackPlugin } from '@/plugins';
 import { enterprisePluginReady } from '@/plugins/enterprise-ready';
 import { GPUStackPluginManager } from '@/plugins/manager';
+import { isPluginPublicPage } from '@/plugins/public-routes';
 import { requestConfig } from '@/request-config';
 import {
   queryCurrentUserState,
@@ -32,13 +34,31 @@ import { message } from 'antd';
 
 installTenantFetch();
 
+let routerBasename = '/';
+
+const isCurrentPublicPage = () =>
+  isPluginPublicPage(
+    history.location.pathname,
+    GPUStackPluginManager.getAll().values(),
+    routerBasename
+  );
+
+// Umi history.location retains the base, while Router useLocation strips it.
+// Capture the renderer's runtime value before initial-state hooks mount.
+export function modifyClientRenderOpts<T extends { basename?: string }>(
+  options: T
+): T {
+  routerBasename = options.basename || '/';
+  return options;
+}
+
 // only for the first login and access from http://localhost
 
 const checkDefaultPage = async (userInfo: any) => {
   const isFirstLogin = await readState(IS_FIRST_LOGIN);
   if (isFirstLogin === null && isOnline()) {
     writeState(IS_FIRST_LOGIN, true);
-    if (userInfo && userInfo?.is_admin) {
+    if (userInfo && userInfo?.is_admin && !isCurrentPublicPage()) {
       history.push(DEFAULT_ENTER_PAGE.adminForFirst);
     }
   }
@@ -49,26 +69,29 @@ export async function getInitialState(): Promise<{
   fetchUserInfo: () => Promise<Global.UserInfo>;
   currentUser?: Global.UserInfo;
   pluginData?: Record<string, any>;
+  isPublicPage?: boolean;
   hasKubernetesCluster?: boolean;
   hasResourceEvents?: boolean;
 }> {
-  const { location } = history;
-
   // In open-source builds the promise resolves immediately.
   await enterprisePluginReady;
 
-  // initialize plugins and merge enterprise locales
+  // Public boot must not consume the plugins' one-time management initialization.
   let pluginData = {};
-  try {
-    pluginData = await GPUStackPluginManager.initialize({
-      request: umiRequest,
-      setUserSettings: (value) => setAtomStorage(userSettingsHelperAtom, value),
-      setStorageUserSettings: (value) =>
-        setAtomStorage(userSettingsHelperAtom, value),
-      defaultColorPrimary: COLOR_PRIMARY
-    });
-  } catch (error) {
-    console.error('Failed to initialize plugins:', error);
+  if (!isCurrentPublicPage()) {
+    try {
+      pluginData = await GPUStackPluginManager.initialize({
+        request: umiRequest,
+        isPublicPage: false,
+        setUserSettings: (value) =>
+          setAtomStorage(userSettingsHelperAtom, value),
+        setStorageUserSettings: (value) =>
+          setAtomStorage(userSettingsHelperAtom, value),
+        defaultColorPrimary: COLOR_PRIMARY
+      });
+    } catch (error) {
+      console.error('Failed to initialize plugins:', error);
+    }
   }
 
   const getUpdateCheck = async () => {
@@ -141,7 +164,7 @@ export async function getInitialState(): Promise<{
           duration: 5
         });
       }
-      history.push(DEFAULT_ENTER_PAGE.login);
+      if (!isCurrentPublicPage()) history.push(DEFAULT_ENTER_PAGE.login);
     }
     return {} as Global.UserInfo;
   };
@@ -164,14 +187,26 @@ export async function getInitialState(): Promise<{
     }
   };
 
+  // Public plugin pages have their own credential and data flow. Do not probe
+  // management identity, access flags or version/update state on their behalf.
+  if (isCurrentPublicPage()) {
+    return { fetchUserInfo, pluginData, isPublicPage: true };
+  }
+
   getAppVersionInfo();
 
-  if (![DEFAULT_ENTER_PAGE.login].includes(location.pathname)) {
+  if (![DEFAULT_ENTER_PAGE.login].includes(history.location.pathname)) {
     const userInfo = await fetchUserInfo();
+    if (isCurrentPublicPage()) {
+      return { fetchUserInfo, pluginData, isPublicPage: true };
+    }
     const accessFlags =
       userInfo?.username && businessInitializationAllowed
         ? await probeAccessFlags()
         : {};
+    if (isCurrentPublicPage()) {
+      return { fetchUserInfo, pluginData, isPublicPage: true };
+    }
     // Record that the probes ran for an authenticated user this page load
     // (the refresh path) so the layout doesn't re-probe. A failed
     // fetch (empty user — e.g. unauthenticated deep link that bounces to
@@ -196,7 +231,16 @@ export async function getInitialState(): Promise<{
 
 export const request: RequestConfig = {
   baseURL: `/${GPUSTACK_API_BASE_URL}`,
-  ...requestConfig
+  ...requestConfig,
+  errorConfig: {
+    ...requestConfig.errorConfig,
+    errorHandler: (error, options) => {
+      // A deferred management request may fail after navigation back to public.
+      if (!isCurrentPublicPage()) {
+        requestConfig.errorConfig?.errorHandler?.(error, options);
+      }
+    }
+  }
 };
 
 export function render(oldRender: () => void) {
@@ -208,6 +252,14 @@ export function render(oldRender: () => void) {
   // already falls back to the bundled English copy on a failed fetch, and the app
   // has to start regardless.
   ensureCurrentLocaleMessages().finally(oldRender);
+}
+
+export function innerProvider(container: React.ReactNode) {
+  return (
+    <PublicPageProvider basename={routerBasename}>
+      {container}
+    </PublicPageProvider>
+  );
 }
 
 export function rootContainer(container: React.ReactNode) {

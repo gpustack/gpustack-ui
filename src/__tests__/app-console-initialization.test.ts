@@ -50,6 +50,7 @@ function application(
     '@/atoms/settings': {},
     '@/atoms/user': {},
     '@/atoms/utils': { setAtomStorage() {} },
+    '@/components/public-page-provider': {},
     '@/config/settings': { DEFAULT_ENTER_PAGE: { login: '/login' } },
     '@/config/theme/constants': {},
     '@/layouts/error-boundary': {},
@@ -57,8 +58,12 @@ function application(
     '@/plugins': plugins,
     '@/plugins/enterprise-ready': { enterprisePluginReady: Promise.resolve() },
     '@/plugins/manager': {
-      GPUStackPluginManager: { initialize: async () => ({}) }
+      GPUStackPluginManager: {
+        initialize: async () => ({}),
+        getAll: () => new Map()
+      }
     },
+    '@/plugins/public-routes': { isPluginPublicPage: () => false },
     '@/request-config': { requestConfig: {} },
     '@/services/profile/apis': {
       queryCurrentUserState: async () => {

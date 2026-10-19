@@ -1,13 +1,12 @@
 import LogoIcon from '@/assets/images/gpustack-logo.png';
 import { initialPasswordAtom, userAtom } from '@/atoms/user';
 import { resetStorageUserSettings } from '@/atoms/utils';
+import { getCoreUIProviderProps } from '@/components/core-ui-provider-props';
 import DarkMask from '@/components/dark-mask';
 import Footer from '@/components/footer';
 import LangSelect from '@/components/lang-select';
 import ThemeDropActions from '@/components/theme-toggle/theme-drop-actions';
 import { PasswordReg } from '@/config';
-import { GPUSTACK_API_BASE_URL } from '@/config/settings';
-import { COLOR_PRIMARY } from '@/config/theme/constants';
 import { documentationPaths } from '@/constants/documentation';
 import useUserSettings from '@/hooks/use-user-settings';
 import useUserSettingsStorage from '@/hooks/use-user-settings-storage';
@@ -19,14 +18,7 @@ import {
   writeState
 } from '@/utils/localstore/index';
 import { CoreUIProvider } from '@gpustack/core-ui';
-import {
-  getAllLocales,
-  request,
-  setLocale,
-  useIntl,
-  useModel,
-  useNavigate
-} from '@umijs/max';
+import { request, useIntl, useModel, useNavigate } from '@umijs/max';
 import { ConfigProvider } from 'antd';
 import { createStyles } from 'antd-style';
 import CryptoJS from 'crypto-js';
@@ -119,6 +111,7 @@ const Login = () => {
   const navigate = useNavigate();
   const userSettingsStorage = useUserSettingsStorage();
   const { themeData, userSettings, isDarkTheme } = useUserSettings();
+  const coreUIProviderProps = getCoreUIProviderProps(userSettings, intl);
   const [userInfo, setUserInfo] = useAtom(userAtom);
   const [initialPassword, setInitialPassword] = useAtom(initialPasswordAtom);
   const { initialState, setInitialState } = useModel('@@initialState') || {};
@@ -207,18 +200,11 @@ const Login = () => {
   return (
     <ConfigProvider componentSize="large" theme={themeData}>
       <CoreUIProvider
-        config={{
-          apiBaseUrl: GPUSTACK_API_BASE_URL,
-          theme: userSettings.theme,
-          iconUrl: '',
-          isDarkTheme: userSettings.isDarkTheme,
-          defaultColorPrimary: COLOR_PRIMARY
-        }}
+        {...coreUIProviderProps}
         hooks={
           {
-            useUserSettings: useUserSettings as any,
-            useUserSettingsStorage: () => userSettingsStorage,
-            useIntl: useIntl
+            ...coreUIProviderProps.hooks,
+            useUserSettingsStorage: () => userSettingsStorage
             // useCurrentUser / useTableFetch are required by the
             // 1.0.10 CoreHooks type but the login page doesn't use
             // either — nothing here lists data or reads the current
@@ -226,11 +212,6 @@ const Login = () => {
             // never run.
           } as any
         }
-        i18n={intl}
-        locale={{
-          getAllLocales: getAllLocales,
-          setLocale: setLocale
-        }}
         services={{
           request: request,
           router: {

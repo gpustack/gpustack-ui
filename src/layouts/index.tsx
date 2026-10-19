@@ -1,15 +1,14 @@
 import { routeCacheAtom, setRouteCache } from '@/atoms/route-cache';
 import { userAtom } from '@/atoms/user';
+import { getCoreUIProviderProps } from '@/components/core-ui-provider-props';
 import DarkMask from '@/components/dark-mask';
 import '@/components/iconfont/iconfont.js';
 import PluginExtraFields from '@/components/plugin-extra-fields';
 import routeCachekey from '@/config/route-cachekey';
-import { DEFAULT_ENTER_PAGE, GPUSTACK_API_BASE_URL } from '@/config/settings';
-import { COLOR_PRIMARY } from '@/config/theme';
+import { DEFAULT_ENTER_PAGE } from '@/config/settings';
 import useCurrentUser from '@/hooks/use-current-user';
 import useTableFetch from '@/hooks/use-table-fetch';
 import useUserSettings from '@/hooks/use-user-settings';
-import useUserSettingsStorage from '@/hooks/use-user-settings-storage';
 import useAddResource from '@/pages/dashboard/hooks/use-add-resource';
 import { logout } from '@/pages/login/apis';
 import { canInitializeConsole, getGPUStackPlugin } from '@/plugins';
@@ -28,11 +27,9 @@ import {
   Access,
   Outlet,
   dropByCacheKey,
-  getAllLocales,
   history,
   matchRoutes,
   request,
-  setLocale,
   useAccess,
   useAppData,
   useIntl,
@@ -125,6 +122,7 @@ export default (props: any) => {
   const location = useLocation();
   const navigate = useNavigate();
   const intl = useIntl();
+  const coreUIProviderProps = getCoreUIProviderProps(userSettings, intl);
   const { clientRoutes } = useAppData();
   const requestResourceRef = useRef<boolean>(false);
 
@@ -366,24 +364,11 @@ export default (props: any) => {
           avoid, and would need the height chain rebuilt for ProLayout. */}
       <App component={false}>
         <CoreUIProvider
-          config={{
-            apiBaseUrl: GPUSTACK_API_BASE_URL,
-            theme: userSettings.theme,
-            iconUrl: '',
-            isDarkTheme: userSettings.isDarkTheme,
-            defaultColorPrimary: COLOR_PRIMARY
-          }}
+          {...coreUIProviderProps}
           hooks={{
-            useUserSettings,
-            useUserSettingsStorage,
-            useIntl,
+            ...coreUIProviderProps.hooks,
             useCurrentUser,
             useTableFetch
-          }}
-          i18n={intl}
-          locale={{
-            getAllLocales: getAllLocales,
-            setLocale: setLocale
           }}
           services={{
             request: request,

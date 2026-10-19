@@ -337,6 +337,8 @@ export default {
   'models.form.scaling.monthdaysLabel': '日期',
   'models.form.scaling.startTime': '开始时间',
   'models.form.scaling.endTime': '结束时间',
+  'models.form.scaling.time.hour': '时',
+  'models.form.scaling.time.minute': '分',
   'models.form.scaling.crossDay': '次日结束',
   'models.form.scaling.nextDayBadge': '+1 天',
   'models.form.scaling.timezone': '时区',

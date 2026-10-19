@@ -8,6 +8,7 @@ import { createRoot } from 'react-dom/client';
 const numberInputs = new Map<string, any>();
 const textInputs = new Map<string, any>();
 const selectInputs = new Map<string, any>();
+let useRealTimePicker = false;
 const Field = ({ label, value }: any) =>
   createElement('span', { 'data-field': label }, String(value ?? ''));
 mock.module('@gpustack/core-ui', {
@@ -28,8 +29,14 @@ mock.module('@gpustack/core-ui', {
       selectInputs.set(props.label, props);
       return createElement(Field, props);
     },
-    TimePicker: ({ label, value }: any) =>
-      createElement(Field, { label, value: value?.format('HH:mm') })
+    TimePicker: ({ label, value, ...props }: any) =>
+      useRealTimePicker
+        ? createElement(
+            'div',
+            { 'data-field': label },
+            createElement(AntdTimePicker, { ...props, value })
+          )
+        : createElement(Field, { label, value: value?.format('HH:mm') })
   }
 });
 mock.module('@umijs/max', {
@@ -38,7 +45,7 @@ mock.module('@umijs/max', {
     useIntl: () => ({ formatMessage: ({ id }: { id: string }) => id })
   }
 });
-mock.module(new URL('../../../atoms/system.ts', import.meta.url).href, {
+mock.module(new URL('../../../../atoms/system.ts', import.meta.url).href, {
   namedExports: { systemConfigAtom: atom({ timezone: 'Asia/Shanghai' }) }
 });
 mock.module('antd-style', {
@@ -48,6 +55,11 @@ mock.module('antd-style', {
 const dom = new JSDOM('<div id="root"></div>');
 const getStyle = dom.window.getComputedStyle.bind(dom.window);
 dom.window.getComputedStyle = (element) => getStyle(element);
+// react-dom initializes before JSDOM and uses its legacy input-event fallback.
+Object.assign(dom.window.HTMLElement.prototype, {
+  attachEvent() {},
+  detachEvent() {}
+});
 Object.defineProperties(globalThis, {
   window: { configurable: true, value: dom.window },
   document: { configurable: true, value: dom.window.document },
@@ -57,6 +69,14 @@ Object.defineProperties(globalThis, {
   SVGElement: { configurable: true, value: dom.window.SVGElement },
   Node: { configurable: true, value: dom.window.Node },
   MutationObserver: { configurable: true, value: dom.window.MutationObserver },
+  ResizeObserver: {
+    configurable: true,
+    value: class {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    }
+  },
   ShadowRoot: { configurable: true, value: dom.window.ShadowRoot },
   getComputedStyle: { configurable: true, value: dom.window.getComputedStyle },
   IS_REACT_ACT_ENVIRONMENT: { configurable: true, value: true }
@@ -72,14 +92,18 @@ dom.window.matchMedia = (media) => ({
   removeEventListener() {},
   dispatchEvent: () => false
 });
-const { Form, ConfigProvider } = await import('antd');
+const {
+  Form,
+  ConfigProvider,
+  TimePicker: AntdTimePicker
+} = await import('antd');
 after(() => dom.window.close());
-const { FormContext } = await import('../config/form-context.ts');
+const { FormContext } = await import('../../config/form-context.ts');
 const { default: ScheduledScalingForm } =
-  await import('./scheduled-scaling.tsx');
+  await import('../scheduled-scaling.tsx');
 const { getDeploymentFormReplicas } =
-  await import('../utils/deployment-lifecycle.ts');
-const { getScalingSchedulePayload } = await import('./scaling-schedule.ts');
+  await import('../../utils/deployment-lifecycle.ts');
+const { getScalingSchedulePayload } = await import('../scaling-schedule.ts');
 
 test('schedule details show only while enabled and hidden configuration survives submission', async () => {
   const container = dom.window.document.getElementById('root')!;
@@ -656,3 +680,125 @@ test('new backend-supported aliases save even when the preview is unavailable', 
     await view.close();
   }
 });
+
+for (const { repeat, initialCron, expectedCron } of [
+  { repeat: 'daily', initialCron: '0 9 * * *', expectedCron: '35 22 * * *' },
+  {
+    repeat: 'weekly',
+    initialCron: '0 9 * * 1,3',
+    expectedCron: '35 22 * * 1,3'
+  },
+  {
+    repeat: 'monthly',
+    initialCron: '0 9 1,15 * *',
+    expectedCron: '35 22 1,15 * *'
+  }
+]) {
+  test(`${repeat} time selections survive closing the picker without confirmation`, async () => {
+    useRealTimePicker = true;
+    const original = { ...savedSchedule(initialCron), enabled: true };
+    const view = await renderSchedule({
+      replicas: 2,
+      scaling_schedule: original
+    });
+    const input = (field: string) => {
+      const element = view.container.querySelector(
+        `[data-field="models.form.scaling.${field}"] input`
+      ) as HTMLInputElement;
+      assert.ok(element, `missing ${field} input`);
+      return element;
+    };
+    const openPopup = () =>
+      dom.window.document.querySelector(
+        '.ant-picker-dropdown:not(.ant-picker-dropdown-hidden)'
+      ) as HTMLElement | null;
+    const selectTime = async (field: string, hour: number, minute: number) => {
+      await act(async () => input(field).click());
+      const popup = openPopup();
+      assert.ok(popup, `missing ${field} popup`);
+      assert.ok(
+        !popup.querySelector('.ant-picker-ok'),
+        'no OK button is required'
+      );
+      assert.ok(popup.textContent?.includes('models.form.scaling.time.hour'));
+      assert.ok(popup.textContent?.includes('models.form.scaling.time.minute'));
+      for (const [type, value] of [
+        ['hour', hour],
+        ['minute', minute]
+      ] as const) {
+        const option = popup.querySelector(
+          `[data-type="${type}"] [data-value="${value}"]`
+        ) as HTMLElement;
+        assert.ok(option, `missing ${type} ${value}`);
+        await act(async () => option.click());
+        assert.ok(openPopup(), 'selecting a column must leave the picker open');
+      }
+      await act(async () => {
+        view.container.dispatchEvent(
+          new dom.window.MouseEvent('pointerdown', { bubbles: true })
+        );
+        view.container.dispatchEvent(
+          new dom.window.MouseEvent('mousedown', { bubbles: true })
+        );
+        await new Promise((resolve) => setTimeout(resolve, 50));
+      });
+      assert.ok(!openPopup(), 'clicking outside must close the picker');
+    };
+    try {
+      await selectTime('startTime', 22, 35);
+      assert.equal(input('startTime').value, '22:35');
+      assert.equal(
+        view.form.getFieldValue(['scaling_schedule', 'rules', 0, 'start_cron']),
+        expectedCron
+      );
+      await selectTime('endTime', 3, 20);
+      assert.equal(input('startTime').value, '22:35');
+      assert.equal(input('endTime').value, '03:20');
+      const payload = await view.payload();
+      assert.deepEqual(payload, {
+        ...original,
+        rules: [
+          {
+            ...original.rules[0],
+            start_cron: expectedCron,
+            duration_seconds: 17100
+          }
+        ]
+      });
+      assert.ok(
+        view.container
+          .querySelector('.meaning')
+          ?.textContent?.includes('22:35 → 03:20')
+      );
+      assert.ok(
+        view.container
+          .querySelector('.meaning')
+          ?.textContent?.includes('models.form.scaling.nextDayBadge')
+      );
+      assert.ok(view.container.querySelector('.next-day-badge'));
+      assert.match(
+        view.container.querySelector('.next-item')?.textContent ?? '',
+        /22:35 → .*03:20/
+      );
+      await act(async () => input('startTime').click());
+      assert.equal(
+        input('startTime').value,
+        '22:35',
+        'reopening must retain the selected time'
+      );
+      assert.ok(
+        openPopup()?.querySelector(
+          '[data-type="hour"] [data-value="22"].ant-picker-time-panel-cell-selected'
+        )
+      );
+      assert.ok(
+        openPopup()?.querySelector(
+          '[data-type="minute"] [data-value="35"].ant-picker-time-panel-cell-selected'
+        )
+      );
+    } finally {
+      await view.close();
+      useRealTimePicker = false;
+    }
+  });
+}

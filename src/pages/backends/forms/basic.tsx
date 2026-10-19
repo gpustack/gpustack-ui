@@ -21,7 +21,7 @@ const defaultCommand = {
   [backendOptionsMap.SGLang]: {
     defaultEntry: 'sglang serve',
     defaultCommand:
-      '--model-path {{model_path}} --host {{worker_ip}} --port {{port}}'
+      '--model-path {{model_path}} --host {{worker_ip}} --port {{port}} --served-model-name {{model_name}}'
   },
   [backendOptionsMap.vllm]: {
     defaultEntry: 'vllm serve',

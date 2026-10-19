@@ -356,6 +356,8 @@ export default {
   'models.form.scaling.monthdaysLabel': 'Day(s) of the month',
   'models.form.scaling.startTime': 'Start time',
   'models.form.scaling.endTime': 'End time',
+  'models.form.scaling.time.hour': 'Hour',
+  'models.form.scaling.time.minute': 'Minute',
   'models.form.scaling.crossDay': 'Ends the next day',
   'models.form.scaling.nextDayBadge': '+1 day',
   'models.form.scaling.timezone': 'Timezone',

@@ -374,6 +374,17 @@ const durationShort = (seconds: number | null | undefined): string => {
 // styled-components for new code). Nested class selectors match descendant
 // elements exactly as before; theme tokens use the CSS variables.
 const useStyles = createStyles(({ css }) => ({
+  timePanelHeader: css`
+    padding-block: var(--ant-padding-xxs);
+    border-bottom: 1px solid var(--ant-color-border-secondary);
+    color: var(--ant-color-text-secondary);
+    font-size: var(--ant-font-size-sm);
+    text-align: center;
+
+    > span {
+      flex: 1;
+    }
+  `,
   previewWrapper: css`
     margin: 0 0 4px;
     padding: 8px 12px;
@@ -528,6 +539,20 @@ const RuleEditor: React.FC<{
   const cronLocale = cronstrueLocaleMap[uiLocale] || 'en';
   const form = Form.useFormInstance<FormData>();
   const { styles } = useStyles();
+
+  const renderTimePanel = (panel: React.ReactNode) => (
+    <>
+      <Flex className={styles.timePanelHeader}>
+        <span>
+          {intl.formatMessage({ id: 'models.form.scaling.time.hour' })}
+        </span>
+        <span>
+          {intl.formatMessage({ id: 'models.form.scaling.time.minute' })}
+        </span>
+      </Flex>
+      {panel}
+    </>
+  );
 
   const path = (key: string) => ['scaling_schedule', 'rules', name, key];
 
@@ -865,6 +890,8 @@ const RuleEditor: React.FC<{
                 })}
                 format="HH:mm"
                 allowClear={false}
+                needConfirm={false}
+                panelRender={renderTimePanel}
                 value={toDayjs(timeText)}
                 onChange={(d: any) =>
                   handleTimeChange(d ? d.format('HH:mm') : '')
@@ -877,6 +904,8 @@ const RuleEditor: React.FC<{
                 })}
                 format="HH:mm"
                 allowClear={false}
+                needConfirm={false}
+                panelRender={renderTimePanel}
                 value={toDayjs(endTimeText)}
                 onChange={(d: any) =>
                   handleEndTimeChange(d ? d.format('HH:mm') : '')

@@ -88,7 +88,19 @@ const savedInstances = (service = saved): CacheServiceInstanceItem[] => [
   }
 ];
 type InstanceResponse = { items: CacheServiceInstanceItem[] };
+type ClusterOption = {
+  id: number;
+  value: number;
+  name: string;
+  label: string;
+  is_default?: boolean;
+};
+const clusters: ClusterOption[] = [
+  { id: 1, value: 1, name: 'first', label: 'first' },
+  { id: 2, value: 2, name: 'default', label: 'default', is_default: true }
+];
 type Fixture = {
+  clusters: ReturnType<typeof deferred<ClusterOption[]>>;
   instances: Map<number, ReturnType<typeof deferred<InstanceResponse>>>;
   instanceRequests: number[];
   catalog: ReturnType<typeof deferred<CacheProviderItem[]>>;
@@ -271,12 +283,11 @@ mock.module(
   {
     namedExports: {
       useQueryClusterList: () => {
+        const source = fixture;
         const [clusterList, setClusterList] = useState<any[]>([]);
         const fetchClusterList = useMemo(
           () => async () => {
-            const items = [
-              { id: 1, value: 1, name: 'cluster', label: 'cluster' }
-            ];
+            const items = await source.clusters.promise;
             setClusterList(items);
             return items;
           },
@@ -352,9 +363,10 @@ const settle = async () => {
 const mount = async (
   action: 'create' | 'edit',
   currentData = saved,
-  options: { debounceWorkers?: boolean } = {}
+  options: { debounceWorkers?: boolean; deferClusters?: boolean } = {}
 ) => {
   fixture = {
+    clusters: deferred(),
     catalog: deferred(),
     workerList: deferred(),
     debounceWorkers: !!options.debounceWorkers,
@@ -362,6 +374,9 @@ const mount = async (
     instances: new Map([[currentData.id, deferred<InstanceResponse>()]]),
     instanceRequests: []
   };
+  if (!options.deferClusters) {
+    fixture.clusters.resolve([clusters[0]]);
+  }
   const source = fixture;
   const container = dom.window.document.getElementById('root')!;
   const root = createRoot(container);
@@ -369,13 +384,16 @@ const mount = async (
   const configChanges: boolean[] = [];
   const submissions: FormData[] = [];
   const ref = React.createRef<any>();
-  const render = async (data = currentData) => {
+  const render = async (
+    data = currentData,
+    selectedProvider = provider.name
+  ) => {
     await act(async () => {
       root.render(
         createElement(ServiceForm, {
           ref,
           action,
-          provider: provider.name,
+          provider: selectedProvider,
           currentData: action === 'edit' ? data : undefined,
           onFinish: async (values: FormData) => {
             submissions.push(values);
@@ -450,6 +468,58 @@ const mount = async (
     }
   };
 };
+
+test('new cache services select the default cluster after options load', async () => {
+  const form = await mount('create', saved, { deferClusters: true });
+  try {
+    assert.equal(form.ref.current.form.getFieldValue('cluster_id'), undefined);
+    await act(async () => form.clusters.resolve(clusters));
+    assert.equal(form.ref.current.form.getFieldValue('cluster_id'), 2);
+
+    await form.change('cluster_id', '1');
+    await form.render(saved, 'another-provider');
+    assert.equal(form.ref.current.form.getFieldValue('cluster_id'), 1);
+
+    await act(async () => form.ref.current.resetFields());
+    await form.render(saved, provider.name);
+    assert.equal(form.ref.current.form.getFieldValue('cluster_id'), 2);
+  } finally {
+    await form.unmount();
+  }
+});
+
+for (const [name, options, expected] of [
+  ['no clusters', [], undefined],
+  ['one cluster', [clusters[0]], 1],
+  [
+    'multiple clusters without a default',
+    clusters.map((item) => ({ ...item, is_default: false })),
+    undefined
+  ]
+] as const) {
+  test(`new cache services preserve selection rules for ${name}`, async () => {
+    const form = await mount('create', saved, { deferClusters: true });
+    try {
+      await act(async () => form.clusters.resolve([...options]));
+      assert.equal(form.ref.current.form.getFieldValue('cluster_id'), expected);
+    } finally {
+      await form.unmount();
+    }
+  });
+}
+
+test('editing a cache service keeps its cluster when the default differs', async () => {
+  const form = await mount('edit', saved, { deferClusters: true });
+  try {
+    await act(async () => form.clusters.resolve(clusters));
+    assert.equal(
+      form.ref.current.form.getFieldValue('cluster_id'),
+      saved.cluster_id
+    );
+  } finally {
+    await form.unmount();
+  }
+});
 
 test('editing only the version does not count an existing cache allocation twice', async () => {
   const form = await mount('edit', {

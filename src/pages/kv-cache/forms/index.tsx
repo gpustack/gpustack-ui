@@ -682,18 +682,22 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
     schedulePlacementCheck();
   }, [form, hasDeclaredVersions, providerVersion, selectedProvider]);
 
-  // with a single cluster there is nothing to choose; preselect it
-  // re-runs on a provider switch too: stepping back and picking a
-  // different card resets the form, which empties cluster_id
+  // Seed new services with the default cluster, or the only available one.
+  // A provider switch resets the form, so it also needs the initial selection.
   useEffect(() => {
-    if (clusterOptions.length !== 1) {
+    if (
+      action !== PageAction.CREATE ||
+      form.getFieldValue('cluster_id') != null
+    ) {
       return;
     }
-    if (form.getFieldValue('cluster_id') != null) {
-      return;
+    const initialCluster =
+      clusterOptions.find((item) => item.is_default) ??
+      (clusterOptions.length === 1 ? clusterOptions[0] : undefined);
+    if (initialCluster) {
+      form.setFieldValue('cluster_id', initialCluster.value);
     }
-    form.setFieldValue('cluster_id', clusterOptions[0].value);
-  }, [clusterOptions, provider]);
+  }, [clusterOptions, provider, action]);
 
   useEffect(() => {
     fetchClusterList({ page: -1 }).catch(() => {

@@ -640,16 +640,6 @@ export default {
     '設定が変更されました。デプロイ全体を再起動するまで、不足しているインスタンスは自動で再作成されません。',
   'models.pd.instance.delete.stale':
     'この PD デプロイには再起動待ちの設定変更があります。このインスタンスを削除しても自動で再作成されません。デプロイ全体を再起動して設定を適用し、レプリカを復元してください。',
-  'models.restart': '再起動',
-  'models.restart.inflight': '再起動中…',
-  'models.restart.confirm':
-    '{name} のすべてのインスタンスを停止し、現在の設定で再構築します。その間、このモデルは利用できません。',
-  'models.restart.done':
-    '再起動中：インスタンスを停止しました。現在の設定で再構築されます。',
-  'models.restart.uptodate':
-    '再起動するものがありません: このデプロイには実行中のインスタンスがありません。',
-  'models.restart.inprogress':
-    '再起動がすでに進行中です。完了してからもう一度お試しください。',
   'models.restart.failed': 'モデルの再起動に失敗しました。',
   'models.stale.tag': '要再起動',
   'models.pd.group.id': 'グループ',

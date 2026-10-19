@@ -25,14 +25,13 @@ import { createStyles } from 'antd-style';
 import dayjs from 'dayjs';
 import { useAtomValue } from 'jotai';
 import _ from 'lodash';
-import { cloneElement, useMemo, type CSSProperties } from 'react';
+import { useMemo, type CSSProperties } from 'react';
 import ModelTag from '../../_components/model-tag';
 import { MarkerReasons, markerTexts } from '../components/pd/pd-markers';
 import PDReplicasCell from '../components/pd/pd-replicas-cell';
 import {
   isModelServable,
   isPDModel,
-  isRestartInFlight,
   modelCategoriesMap,
   modelReplicaCounts,
   ModelStateLabelMap,
@@ -139,11 +138,6 @@ const ActionList: ActionItem[] = [
     icon: icons.Stop
   },
   {
-    label: 'models.restart',
-    key: 'restart',
-    icon: icons.RetweetOutlined
-  },
-  {
     label: 'models.revisions.title',
     key: 'history',
     icon: <HistoryOutlined />
@@ -218,13 +212,6 @@ const useModelsColumns = ({
       if (action.key === 'stop') {
         return canPauseDeployment(record);
       }
-      if (action.key === 'restart') {
-        // The same "there is something to act on" gate as stop, and
-        // deliberately not `stale`: whether an edit is worth a restart window
-        // is the operator's call, and an entry that only appears once the
-        // model is already stale teaches nobody it exists.
-        return record.replicas > 0;
-      }
       if (action.key === 'benchmark') {
         // Same servability gate as the playground, for the same reason: a
         // group whose router is down has RUNNING members and answers nothing,
@@ -243,61 +230,11 @@ const useModelsColumns = ({
       return true;
     });
 
-    const actions = filteredActions.map((action: ActionItem) =>
+    return filteredActions.map((action: ActionItem) =>
       action.key === 'start' &&
       isSchedulePaused(record) &&
       record.scaling_schedule?.enabled
         ? { ...action, label: 'models.scaling.resume' }
-        : action
-    );
-
-    // A restart the server is still carrying out. Disabled rather than hidden:
-    // the entry vanishing and coming back is the same ambiguity as a button
-    // that does nothing, and this is the one moment the reader most needs to
-    // be told the action is already under way.
-    //
-    // 🔴 It is not cosmetic. A second teardown during this window deletes the
-    // replacements the first one just built, costing the group another full
-    // startup — and "clicked it, nothing seemed to happen, clicked again" is
-    // exactly how an operator reaches it. The server answers 409, so the worst
-    // case without this is a refusal the user has to read; the point of the
-    // disabled state is that they never have to.
-    //
-    // 🔑 Through `isRestartInFlight`, never off the raw field. `restarting_since`
-    // is cleared only on reaching RUNNING, so a deployment that never converges
-    // carries it forever — and testing it directly turned this guard into a
-    // permanent one on exactly the wedged group an operator needs to restart.
-    // The server lapses it after the same window and would accept the request;
-    // the entry has to agree, or it disables an action that works.
-    //
-    // Evaluated per menu open rather than on a timer: this runs when the ⋮ is
-    // clicked, which is the only moment its answer is read.
-    if (isRestartInFlight(record.restarting_since)) {
-      return _.map(actions, (action: ActionItem) =>
-        action.key === 'restart'
-          ? {
-              ...action,
-              label: 'models.restart.inflight',
-              props: { ...action.props, disabled: true }
-            }
-          : action
-      );
-    }
-
-    if (!record.stale) {
-      return actions;
-    }
-    // Stale is the state this action exists for, so the entry points at
-    // itself — same warning colour as the marker on the replica cell. A hint
-    // only: the action is no more available here than it was a moment ago.
-    return _.map(actions, (action: ActionItem) =>
-      action.key === 'restart'
-        ? {
-            ...action,
-            icon: cloneElement(action.icon as React.ReactElement, {
-              style: { color: 'var(--ant-color-warning)' }
-            })
-          }
         : action
     );
   });

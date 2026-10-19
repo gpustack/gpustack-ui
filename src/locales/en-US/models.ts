@@ -637,16 +637,6 @@ export default {
     'Configuration changed. Missing instances will not be recreated automatically until you restart the entire deployment.',
   'models.pd.instance.delete.stale':
     'This PD deployment has configuration changes waiting for a restart. This instance will not be recreated automatically after deletion. Restart the entire deployment to apply the configuration and restore its replicas.',
-  'models.restart': 'Restart',
-  'models.restart.inflight': 'Restarting…',
-  'models.restart.confirm':
-    'All instances of {name} are stopped and rebuilt with its current configuration. The model is unavailable in between.',
-  'models.restart.done':
-    'Restarting: the instances have been retired and will be rebuilt with the current configuration.',
-  'models.restart.uptodate':
-    'Nothing to restart: this deployment has no instances running.',
-  'models.restart.inprogress':
-    'A restart is already in progress. Wait for it to finish and try again.',
   'models.restart.failed': 'Failed to restart the model.',
   'models.stale.tag': 'Outdated',
   'models.pd.group.id': 'Group',

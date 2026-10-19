@@ -599,13 +599,6 @@ export default {
     '配置已变更。在重启整个部署前，缺失实例不会自动重建。',
   'models.pd.instance.delete.stale':
     '该 PD 部署的配置尚待重启生效。删除此实例后不会自动重建。请重启整个部署，以应用配置并恢复副本。',
-  'models.restart': '重启',
-  'models.restart.inflight': '重启中…',
-  'models.restart.confirm':
-    '将停止 {name} 的全部实例，并以当前配置重建，期间该模型不可用。',
-  'models.restart.done': '正在重启：实例已停止，将以当前配置重建。',
-  'models.restart.uptodate': '没有可重启的实例：该部署当前没有实例在运行。',
-  'models.restart.inprogress': '重启进行中，请等待完成后重试。',
   'models.restart.failed': '重启模型失败。',
   'models.stale.tag': '待重启',
   'models.pd.group.id': '组',

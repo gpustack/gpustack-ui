@@ -48,6 +48,10 @@ const BackendParametersList: React.FC<BackendParametersListProps> = ({
   const backendParamsTips = useMemo(() => {
     return routerConfig ?? getBackendParamsTips(backend);
   }, [backend, routerConfig]);
+  const backendParamsLink =
+    'documentationPath' in backendParamsTips
+      ? getDocumentationUrl(backendParamsTips.documentationPath, intl.locale)
+      : backendParamsTips.link;
   const holder =
     routerConfig?.holder ?? backendParamsHolderTips[backend]?.holder;
 
@@ -95,7 +99,7 @@ const BackendParametersList: React.FC<BackendParametersListProps> = ({
         onDelete={handleDeleteBackendParameters}
         options={paramsConfig}
         description={
-          backendParamsTips.link && (
+          backendParamsLink && (
             <span>
               <span
                 style={{
@@ -106,10 +110,7 @@ const BackendParametersList: React.FC<BackendParametersListProps> = ({
                     { id: 'models.form.backend_parameters.vllm.tips' },
                     {
                       backend: backendParamsTips.backend || '',
-                      link: getDocumentationUrl(
-                        backendParamsTips.link,
-                        intl.locale
-                      )
+                      link: backendParamsLink
                     }
                   )
                 }}

@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
+import { documentationPaths } from '../../constants/documentation';
 import { getDocumentationUrl } from '../documentation';
 
 for (const [locale, prefix] of [
@@ -15,10 +16,7 @@ for (const [locale, prefix] of [
   test(`documentation follows ${locale || 'an unsupported empty locale'}`, () => {
     assert.equal(getDocumentationUrl('', locale), `/help/${prefix}`);
     assert.equal(
-      getDocumentationUrl(
-        'https://docs.gpustack.ai/latest/user-guide/usage/?q=GPU%20memory#limits',
-        locale
-      ),
+      getDocumentationUrl('user-guide/usage/?q=GPU%20memory#limits', locale),
       `/help/${prefix}user-guide/usage/?q=GPU%20memory#limits`
     );
   });
@@ -30,10 +28,7 @@ test('a new preference replaces an existing language without duplicating prefixe
     '/help/ja/user-guide/sso/?h=cert#cas'
   );
   assert.equal(
-    getDocumentationUrl(
-      'https://docs.gpustack-enterprise.ai/v2.3/ru/overview/',
-      'tr-TR'
-    ),
+    getDocumentationUrl('v2.3/ru/overview/', 'tr-TR'),
     '/help/tr/overview/'
   );
 });
@@ -52,23 +47,31 @@ test('relative documentation keeps page paths, queries, and fragments', () => {
   );
 });
 
-test('third-party backend documentation keeps its original URL', () => {
-  for (const link of [
-    'https://docs.vllm.ai/en/stable/cli/serve/',
-    'https://github.com/gpustack/llama-box?tab=readme-ov-file#usage',
-    '//docs.sglang.ai/server/?q=flags#arguments',
-    'https://docs.gpustack.ai/gpustack-operator/main/docs/operate/migration/'
-  ]) {
-    assert.equal(getDocumentationUrl(link, 'ja-JP'), link);
+test('shared documentation entries keep their page, query, and fragment', () => {
+  for (const [name, path] of Object.entries(documentationPaths)) {
+    assert.equal(getDocumentationUrl(path, 'ja-JP'), `/help/ja/${path}`, name);
   }
 });
 
-test('versioned online documentation opens the corresponding bundled page', () => {
+test('versioned documentation paths open the corresponding bundled page', () => {
+  for (const version of ['latest', '2.3', 'v2.3']) {
+    assert.equal(
+      getDocumentationUrl(
+        `${version}/ja/installation/requirements/?h=gpu#t-head-ppu`,
+        'tr-TR'
+      ),
+      '/help/tr/installation/requirements/?h=gpu#t-head-ppu'
+    );
+  }
+});
+
+test('a documentation root preserves its query and fragment', () => {
   assert.equal(
-    getDocumentationUrl(
-      'https://docs.gpustack.ai/2.3/ja/installation/requirements/?h=gpu#t-head-ppu',
-      'tr-TR'
-    ),
-    '/help/tr/installation/requirements/?h=gpu#t-head-ppu'
+    getDocumentationUrl('/help/zh/?q=GPU%20memory#overview', 'ru-RU'),
+    '/help/ru/?q=GPU%20memory#overview'
+  );
+  assert.equal(
+    getDocumentationUrl('/latest#overview', 'tr-TR'),
+    '/help/tr/#overview'
   );
 });

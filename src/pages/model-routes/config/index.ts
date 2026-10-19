@@ -49,7 +49,7 @@ export const rowActionList = [
   }
 ];
 
-export const genericReferLink = `https://docs.gpustack.ai/latest/user-guide/model-deployment-management/#enable-generic-proxy`;
+export const genericReferLink = `user-guide/model-deployment-management/#enable-generic-proxy`;
 
 // Form-level LB mode: "weighted" = every target carries weight>0 (traffic
 // splitting); "policy" = all weights 0, targets picked by the capability

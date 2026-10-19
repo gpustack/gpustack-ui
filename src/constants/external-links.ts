@@ -1,18 +1,9 @@
 const externalLinks = {
-  documentation: 'https://docs.gpustack.ai/',
   github: 'https://github.com/gpustack/gpustack',
   discord: 'https://discord.gg/VXYJzuaqwD',
   site: 'https://gpustack.ai/',
   release: 'https://github.com/gpustack/gpustack/releases',
-  reportIssue: 'https://github.com/gpustack/gpustack/issues/new/choose',
-  faq: 'https://docs.gpustack.ai/latest/faq/',
-  imageSelector: 'https://docs.gpustack.ai/latest/image-selector/',
-  resetPassword:
-    'https://docs.gpustack.ai/latest/troubleshooting/?h=reset#reset-admin-password'
+  reportIssue: 'https://github.com/gpustack/gpustack/issues/new/choose'
 };
 
 export default externalLinks;
-
-export const externalRefer = {
-  audioPermission: `${externalLinks.documentation}latest/user-guide/playground/audio/#provide-audio-file`
-};

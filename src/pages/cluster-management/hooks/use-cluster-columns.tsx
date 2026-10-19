@@ -269,6 +269,8 @@ const useClusterColumns = (
         title: intl.formatMessage({ id: 'common.table.operation' }),
         dataIndex: 'operations',
         span: 3,
+        maxWidth: 160,
+        minWidth: 100,
         render: (value: string, record: ClusterListItem) => (
           <DropdownButtons
             items={setActionsItems(record)}

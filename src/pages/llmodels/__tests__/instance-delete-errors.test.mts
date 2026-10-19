@@ -117,7 +117,6 @@ moduleMock('../hooks/use-edit-deployment.ts', {
   defaultExport: () => ({ openEditModalStatus: { currentData: {} } })
 });
 moduleMock('../hooks/use-export-deployments.ts', { defaultExport: () => ({}) });
-moduleMock('../hooks/use-restart-model.ts', { defaultExport: () => ({}) });
 moduleMock('../hooks/use-run-benchmark.ts', {
   namedExports: { useBenchmarkTargetInstance: () => ({}) }
 });

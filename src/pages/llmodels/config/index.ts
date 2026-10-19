@@ -198,32 +198,14 @@ export const InstanceStatusMapValue = {
 export const InstanceDrainingLabel = 'Draining';
 
 /**
- * How long a `restarting_since` is believed, mirroring the server's own
- * `RESTART_IN_FLIGHT_LAPSE_SECONDS` (15 minutes).
- *
- * 🔴 The field is only ever cleared on reaching RUNNING (`sync_model_status`),
- * so a deployment whose rebuild never converges carries it forever. The server
- * lapses it anyway — `_restart_in_flight` compares the age against this same
- * window — precisely so that a group that never converges, which is the one an
- * operator most needs to restart again, does not become the one group that can
- * never be restarted.
- *
- * Hard-coded against a server-side env var, deliberately: nothing exposes it.
- * The cost of a mismatch is bounded and one-sided — lapsing a little late
- * leaves the menu entry disabled slightly longer than the API would refuse it,
- * and lapsing early only means an enabled entry whose 409 the user has to
- * read.
+ * Restart status display window, matching the server's default
+ * RESTART_IN_FLIGHT_LAPSE_SECONDS. The server setting is not exposed to the UI.
  */
 export const RESTART_LAPSE_MS = 15 * 60 * 1000;
 
 /**
- * Whether a restart is still rebuilding this deployment, i.e. whether the
- * server would refuse a second one with a 409.
- *
- * Every read of `restarting_since` goes through here. Reading the field raw is
- * how the replica cell and the row's ⋮ menu came to disagree about the same
- * deployment: one lapsed, the other did not, so the cell stopped saying
- * «Restarting» while the menu stayed disabled forever.
+ * Keep a retained restarting_since timestamp from showing an indefinite restart
+ * when the deployment never becomes ready.
  */
 export const isRestartInFlight = (since?: string | null): boolean => {
   const started = since ? Date.parse(since) : NaN;

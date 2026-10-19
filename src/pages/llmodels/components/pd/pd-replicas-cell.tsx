@@ -173,18 +173,8 @@ const PDReplicasCell: React.FC<PDReplicasCellProps> = ({
   const [saving, setSaving] = React.useState(false);
   const [draft, setDraft] = React.useState<Record<string, number>>({});
 
-  /**
-   * A restart the server is still carrying out, off the same `restarting_since`
-   * — and through the same `isRestartInFlight` — that the row's ⋮ menu reads to
-   * disable a second one. Shared so the banner and that entry cannot answer
-   * differently about one deployment.
-   *
-   * Unlike the menu, which is evaluated afresh each time it opens, this is on
-   * screen while the lapse passes, and a wedged group produces no events to
-   * bring the re-render that would notice. Hence the timer: it carries no state
-   * of its own, it just fires once at the moment the answer changes. Only while
-   * a restart is actually believed — an idle row keeps no timer.
-   */
+  // Expire the restart indicator even when a stuck deployment emits no updates.
+  // An idle row keeps no timer.
   const [, lapse] = React.useState(0);
   const since = record.restarting_since
     ? Date.parse(record.restarting_since)

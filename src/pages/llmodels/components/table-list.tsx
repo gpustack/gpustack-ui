@@ -58,7 +58,6 @@ import useEditDeployment from '../hooks/use-edit-deployment';
 import useExportDeployments from '../hooks/use-export-deployments';
 import useModelsColumns from '../hooks/use-models-columns';
 import { fetchCatalog } from '../hooks/use-query-pd-modes';
-import useRestartModel from '../hooks/use-restart-model';
 import { useBenchmarkTargetInstance } from '../hooks/use-run-benchmark';
 import useViewInstanceLogs from '../hooks/use-view-instance-logs';
 import LeftFilters from '../instance-view/left-filters';
@@ -177,12 +176,6 @@ const Models: React.FC<ModelsProps> = ({
   const { handleOpenPlayGround } = useOpenPlayground();
   const { openViewLogsModal, openViewLogsModalStatus, closeViewLogsModal } =
     useViewInstanceLogs();
-  // The row expands on success, because the whole visible effect of the action
-  // is the members being torn down and rebuilt one row down.
-  const { handleRestartModel } = useRestartModel({
-    onSuccess: (row) => updateExpandedRowKeys([row.id, ...expandedRowKeys])
-  });
-
   const { runBenchmarkOnModel } = useBenchmarkTargetInstance();
 
   const { goToGrafana, ActionButton } = useGranfanaLink({
@@ -496,9 +489,6 @@ const Models: React.FC<ModelsProps> = ({
             onStop?.([row.id]);
           }
         });
-      }
-      if (val === 'restart') {
-        await handleRestartModel(row);
       }
       if (val === 'benchmark') {
         // The deployment is the target, so this hands over the model rather

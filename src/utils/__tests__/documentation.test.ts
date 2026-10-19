@@ -35,6 +35,26 @@ test('relative documentation keeps page paths, queries, and fragments', () => {
   );
 });
 
+for (const path of [
+  '12-factor-app/',
+  '3d-models/',
+  '2.3/upgrade/?q=GPU%20memory#overview',
+  'v2-topic/'
+]) {
+  test(`documentation preserves numeric or version-like page path ${path}`, () => {
+    for (const [locale, prefix] of [
+      ['en-US', ''],
+      ['zh-CN', 'zh/'],
+      ['ja-JP', 'ja/'],
+      ['ru-RU', 'ru/'],
+      ['tr-TR', 'tr/'],
+      ['de-DE', '']
+    ]) {
+      assert.equal(getDocumentationUrl(path, locale), `/help/${prefix}${path}`);
+    }
+  });
+}
+
 test('shared documentation entries keep their page, query, and fragment', () => {
   for (const [name, path] of Object.entries(documentationPaths)) {
     assert.equal(getDocumentationUrl(path, 'ja-JP'), `/help/ja/${path}`, name);

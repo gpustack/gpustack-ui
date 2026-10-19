@@ -434,8 +434,8 @@ const BackendFields: React.FC<BackendFieldsProps> = ({ namePrefix }) => {
                 {
                   content:
                     backend === backendOptionsMap.SGLang
-                      ? '--model-path {{model_path}}'
-                      : '{{model_path}}'
+                      ? '--model-path {{model_path}} --host {{worker_ip}} --port {{port}} --served-model-name {{model_name}}'
+                      : '{{model_path}} --host {{worker_ip}} --port {{port}} --served-model-name {{model_name}}'
                 }
               )}
             ></SealTextArea>

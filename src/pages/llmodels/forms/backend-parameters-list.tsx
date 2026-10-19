@@ -1,3 +1,4 @@
+import { getDocumentationUrl } from '@/utils/documentation';
 import { ListInput } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
@@ -105,7 +106,10 @@ const BackendParametersList: React.FC<BackendParametersListProps> = ({
                     { id: 'models.form.backend_parameters.vllm.tips' },
                     {
                       backend: backendParamsTips.backend || '',
-                      link: backendParamsTips.link
+                      link: getDocumentationUrl(
+                        backendParamsTips.link,
+                        intl.locale
+                      )
                     }
                   )
                 }}

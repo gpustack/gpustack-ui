@@ -1,3 +1,4 @@
+import { getDocumentationUrl } from '@/utils/documentation';
 import { IconFont } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button } from 'antd';
@@ -25,7 +26,7 @@ const DocLink: React.FC<{
         size="small"
         type="link"
         target="_blank"
-        href={link}
+        href={getDocumentationUrl(link, intl.locale)}
         style={{ padding: 0 }}
       >
         {intl.formatMessage({ id: 'playground.audio.enablemic.doc' })}

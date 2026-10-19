@@ -12,6 +12,7 @@ import externalLinks from '@/constants/external-links';
 import useUserSettings from '@/hooks/use-user-settings';
 import useUserSettingsStorage from '@/hooks/use-user-settings-storage';
 import { getGPUStackPlugin } from '@/plugins';
+import { getDocumentationUrl } from '@/utils/documentation';
 import {
   CRYPT_TEXT,
   IS_FIRST_LOGIN,
@@ -187,7 +188,10 @@ const Login = () => {
       updatePassword: updatePasswordApi,
       passwordReg: PasswordReg,
       onPasswordChanged,
-      resetPasswordUrl: externalLinks.resetPassword,
+      resetPasswordUrl: getDocumentationUrl(
+        externalLinks.resetPassword,
+        intl.locale
+      ),
       formLogoUrl: LogoIcon
     }),
     [
@@ -196,7 +200,8 @@ const Login = () => {
       fetchUserInfo,
       initialPassword,
       setInitialPassword,
-      onPasswordChanged
+      onPasswordChanged,
+      intl.locale
     ]
   );
   return (

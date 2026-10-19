@@ -12,6 +12,7 @@ import {
   AddWorkerDockerNotes,
   GPUDriverMap
 } from '@/pages/resources/config/gpu-driver';
+import { getDocumentationUrl } from '@/utils/documentation';
 import { IconFont } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import styled from 'styled-components';
@@ -237,7 +238,7 @@ export const useSupportedGPUList = () => {
       value: GPUDriverMap.THEAD,
       key: GPUDriverMap.THEAD,
       locale: false,
-      link: 'https://docs.gpustack.ai/latest/installation/requirements/#thead-gpu',
+      link: 'https://docs.gpustack.ai/latest/installation/requirements/#t-head-ppu',
       notes: AddWorkerDockerNotes[GPUDriverMap.THEAD],
       icon: (
         <ProviderImage
@@ -246,7 +247,10 @@ export const useSupportedGPUList = () => {
         />
       )
     }
-  ];
+  ].map((item) => ({
+    ...item,
+    link: getDocumentationUrl(item.link, intl.locale)
+  }));
 };
 
 const SupportedHardware: React.FC<SupportedHardwareProps> = ({

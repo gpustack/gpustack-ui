@@ -1,4 +1,5 @@
 import useUserSettings from '@/hooks/use-user-settings';
+import { getDocumentationUrl } from '@/utils/documentation';
 import {
   ExclamationCircleFilled,
   LeftOutlined,
@@ -47,7 +48,7 @@ interface ImportYamlModalProps {
 }
 
 // Where the field names in the document are written down.
-const FIELDS_DOC = `${window.location.origin}/help/user-guide/model-deployment-management/#field-reference`;
+const FIELDS_DOC = 'user-guide/model-deployment-management/#field-reference';
 
 // Long enough that a typed-out value is one request rather than one per
 // character, short enough that the plan is describing what is on screen by
@@ -598,7 +599,11 @@ const ImportYamlModal: React.FC<ImportYamlModalProps> = ({
         )
       ].join(', ');
   const fieldsDocLink = (
-    <a href={FIELDS_DOC} target="_blank" rel="noreferrer">
+    <a
+      href={getDocumentationUrl(FIELDS_DOC, intl.locale)}
+      target="_blank"
+      rel="noreferrer"
+    >
       {intl.formatMessage({ id: 'models.import.fieldsDoc' })}
     </a>
   );

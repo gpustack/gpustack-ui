@@ -1,4 +1,5 @@
 import { externalRefer } from '@/constants/external-links';
+import { getDocumentationUrl } from '@/utils/documentation';
 import { AudioOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Space, Tooltip } from 'antd';
@@ -300,7 +301,10 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
               size="small"
               color="primary"
               variant="link"
-              href={`${externalRefer.audioPermission}`}
+              href={getDocumentationUrl(
+                externalRefer.audioPermission,
+                intl.locale
+              )}
               target="_blank"
               style={{
                 paddingInline: 0

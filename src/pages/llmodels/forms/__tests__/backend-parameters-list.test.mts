@@ -3,9 +3,17 @@ import assert from 'node:assert/strict';
 import { mock, test } from 'node:test';
 import { act, createElement } from 'react';
 import { createRoot } from 'react-dom/client';
-import type { PDMode } from '../config/types';
+import type { PDMode } from '../../config/types';
 
 let listProps: any;
+let locale = 'en-US';
+const externalBackendLinks: Record<string, string> = {
+  vLLM: 'https://docs.vllm.ai/en/stable/cli/serve.html',
+  SGLang: 'https://docs.sglang.io/docs/advanced_features/server_arguments',
+  'llama-box': 'https://github.com/gpustack/llama-box?tab=readme-ov-file#usage',
+  operator:
+    'https://docs.gpustack.ai/gpustack-operator/main/docs/operate/migration/'
+};
 mock.module('@gpustack/core-ui', {
   namedExports: {
     ListInput: (props: any) => {
@@ -17,21 +25,26 @@ mock.module('@gpustack/core-ui', {
 mock.module('@umijs/max', {
   namedExports: {
     useIntl: () => ({
+      locale,
       formatMessage: ({ id }: { id: string }, values?: any) =>
         values ? `${values.backend} <a href="${values.link}">docs</a>` : id
     })
   }
 });
-mock.module(new URL('../config/index.ts', import.meta.url).href, {
+mock.module(new URL('../../config/index.ts', import.meta.url).href, {
   namedExports: {
     backendParamsHolderTips: {
       vLLM: { holder: 'models.form.backend_parameters.vllm.placeholder' },
       SGLang: { holder: 'models.form.backend_parameters.sglang.placeholder' }
     },
-    getBackendParamsTips: (backend: string) => ({
-      backend,
-      link: `https://engine.example/${backend}`
-    })
+    getBackendParamsTips: (backend: string) =>
+      backend === 'Ascend MindIE'
+        ? {
+            backend,
+            documentationPath:
+              'user-guide/built-in-inference-backends/?h=parameters+reference#parameters-reference_2'
+          }
+        : { backend, link: externalBackendLinks[backend] }
   }
 });
 
@@ -56,9 +69,9 @@ dom.window.matchMedia = (media) => ({
   dispatchEvent: () => false
 });
 const { Form } = await import('antd');
-const { FormContext } = await import('../config/form-context.ts');
+const { FormContext } = await import('../../config/form-context.ts');
 const { default: BackendParametersList } =
-  await import('./backend-parameters-list.tsx');
+  await import('../backend-parameters-list.tsx');
 
 test('parameter hints follow the router executable while engine roles retain engine hints', async () => {
   const container = dom.window.document.getElementById('root')!;
@@ -161,7 +174,37 @@ test('parameter hints follow the router executable while engine roles retain eng
         listProps.placeholder,
         `models.form.backend_parameters.${placeholder}.placeholder`
       );
-      assert.match(container.innerHTML, /engine.example/);
+      assert.equal(
+        container.querySelector('a')?.getAttribute('href'),
+        externalBackendLinks[backend]
+      );
+    }
+
+    for (const [language, prefix] of [
+      ['en-US', ''],
+      ['zh-CN', 'zh/'],
+      ['ja-JP', 'ja/'],
+      ['ru-RU', 'ru/'],
+      ['tr-TR', 'tr/'],
+      ['fr-FR', '']
+    ]) {
+      locale = language;
+      await render('Ascend MindIE');
+      assert.equal(
+        container.querySelector('a')?.getAttribute('href'),
+        `/help/${prefix}user-guide/built-in-inference-backends/?h=parameters+reference#parameters-reference_2`
+      );
+
+      for (const [backend, link] of Object.entries(externalBackendLinks)) {
+        await render(backend);
+        assert.equal(container.querySelector('a')?.getAttribute('href'), link);
+      }
+
+      await render('Ascend MindIE', { entrypoint: ['vllm-router'] });
+      assert.equal(
+        container.querySelector('a')?.getAttribute('href'),
+        'https://github.com/vllm-project/router/'
+      );
     }
   } finally {
     await act(async () => root.unmount());

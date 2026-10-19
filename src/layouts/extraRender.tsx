@@ -1,6 +1,7 @@
 import { GPUStackVersionAtom, UpdateCheckAtom } from '@/atoms/user';
 import PluginExtraField from '@/components/plugin-extra-fields';
 import VersionInfo, { modalConfig } from '@/components/version-info';
+import { documentationPaths } from '@/constants/documentation';
 import externalLinks from '@/constants/external-links';
 import { logout } from '@/pages/login/apis';
 import { getGPUStackPlugin } from '@/plugins';
@@ -259,7 +260,7 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
       key: 'faq',
       icon: <IconFont type="icon-fankuifaqs"></IconFont>,
       label: intl.formatMessage({ id: 'common.button.faq' }),
-      url: getDocumentationUrl(externalLinks.faq, intl.locale)
+      url: getDocumentationUrl(documentationPaths.faq, intl.locale)
     },
     {
       key: 'Discord',
@@ -271,13 +272,13 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
       key: 'docs',
       icon: <IconFont type="icon-docs" />,
       label: intl.formatMessage({ id: 'common.button.docs' }),
-      url: getDocumentationUrl('', intl.locale)
+      url: getDocumentationUrl(documentationPaths.home, intl.locale)
     },
     {
       key: 'imageSelector',
       icon: <IconFont type="icon-docker"></IconFont>,
       label: intl.formatMessage({ id: 'common.button.imageSelector' }),
-      url: getDocumentationUrl(externalLinks.imageSelector, intl.locale)
+      url: getDocumentationUrl(documentationPaths.imageSelector, intl.locale)
     }
   ];
 
@@ -404,7 +405,10 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
       <PluginExtraField name="HeaderExtra" />
       <PluginExtraField
         name="GlobalDocs"
-        documentationUrl={getDocumentationUrl('', intl.locale)}
+        documentationUrl={getDocumentationUrl(
+          documentationPaths.home,
+          intl.locale
+        )}
       />
       <PluginExtraField name="GlobalSettings" />
       <DropdownActions

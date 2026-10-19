@@ -1,6 +1,6 @@
 import { GPUStackVersionAtom } from '@/atoms/user';
 import VersionInfo, { modalConfig } from '@/components/version-info';
-import externalLinks from '@/constants/external-links';
+import { documentationPaths } from '@/constants/documentation';
 import { getDocumentationUrl } from '@/utils/documentation';
 import { useIntl } from '@umijs/max';
 import { Button, Divider, Modal, Typography } from 'antd';
@@ -68,10 +68,7 @@ const Footer: React.FC = () => {
               <Button
                 type="link"
                 size="small"
-                href={getDocumentationUrl(
-                  externalLinks.documentation,
-                  intl.locale
-                )}
+                href={getDocumentationUrl(documentationPaths.home, intl.locale)}
                 target="_blank"
               >
                 {intl.formatMessage({ id: 'common.button.help' })}

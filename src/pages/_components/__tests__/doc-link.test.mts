@@ -40,7 +40,7 @@ test('page documentation follows the active UI locale on every render', () => {
     locale = language;
     const markup = renderToStaticMarkup(
       createElement(DocLink, {
-        link: 'https://docs.gpustack.ai/latest/user-guide/usage/?q=gpu#limits'
+        link: 'user-guide/usage/?q=gpu#limits'
       })
     );
     assert.ok(

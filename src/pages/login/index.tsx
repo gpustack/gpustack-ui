@@ -8,7 +8,7 @@ import ThemeDropActions from '@/components/theme-toggle/theme-drop-actions';
 import { PasswordReg } from '@/config';
 import { GPUSTACK_API_BASE_URL } from '@/config/settings';
 import { COLOR_PRIMARY } from '@/config/theme/constants';
-import externalLinks from '@/constants/external-links';
+import { documentationPaths } from '@/constants/documentation';
 import useUserSettings from '@/hooks/use-user-settings';
 import useUserSettingsStorage from '@/hooks/use-user-settings-storage';
 import { getGPUStackPlugin } from '@/plugins';
@@ -189,7 +189,7 @@ const Login = () => {
       passwordReg: PasswordReg,
       onPasswordChanged,
       resetPasswordUrl: getDocumentationUrl(
-        externalLinks.resetPassword,
+        documentationPaths.resetPassword,
         intl.locale
       ),
       formLogoUrl: LogoIcon

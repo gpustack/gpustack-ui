@@ -730,8 +730,7 @@ export interface CatalogItem {
   activated_size: number;
   licenses: string[];
   release_date: string;
-  // Which source materialized this entry. Absent / builtin / official all mean
-  // platform-owned content, which carries no badge.
+  // Which source materialized this entry.
   source_name?: string;
   source_type?: string;
 }

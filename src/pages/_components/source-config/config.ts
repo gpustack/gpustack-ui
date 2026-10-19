@@ -1,6 +1,6 @@
 // Runtime values for the source configuration UI. Split from `types.ts` so the
-// two consumers that only ask "did this record come from a custom source?"
-// (the catalog card and the backend select) pull in a constant instead of the
+// consumers that only ask "did this record come from a custom source?"
+// (such as the backend select) pull in a constant instead of the
 // drawer's module graph.
 
 // Where a source's content comes from. `builtin` / `official` are written by

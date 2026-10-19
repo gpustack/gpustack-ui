@@ -361,6 +361,8 @@ export default {
   'models.form.scaling.monthdaysLabel': 'Дни месяца',
   'models.form.scaling.startTime': 'Время начала',
   'models.form.scaling.endTime': 'Время окончания',
+  'models.form.scaling.time.hour': 'Час',
+  'models.form.scaling.time.minute': 'Минута',
   'models.form.scaling.crossDay': 'Заканчивается на следующий день',
   'models.form.scaling.nextDayBadge': '+1 дн.',
   'models.form.scaling.timezone': 'Часовой пояс',

@@ -355,6 +355,8 @@ export default {
   'models.form.scaling.monthdaysLabel': 'Ayın günleri',
   'models.form.scaling.startTime': 'Başlangıç saati',
   'models.form.scaling.endTime': 'Bitiş saati',
+  'models.form.scaling.time.hour': 'Saat',
+  'models.form.scaling.time.minute': 'Dakika',
   'models.form.scaling.crossDay': 'Ertesi gün biter',
   'models.form.scaling.nextDayBadge': '+1 gün',
   'models.form.scaling.timezone': 'Saat dilimi',

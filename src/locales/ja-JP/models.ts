@@ -357,6 +357,8 @@ export default {
   'models.form.scaling.monthdaysLabel': '日付',
   'models.form.scaling.startTime': '開始時刻',
   'models.form.scaling.endTime': '終了時刻',
+  'models.form.scaling.time.hour': '時',
+  'models.form.scaling.time.minute': '分',
   'models.form.scaling.crossDay': '翌日に終了',
   'models.form.scaling.nextDayBadge': '+1 日',
   'models.form.scaling.timezone': 'タイムゾーン',

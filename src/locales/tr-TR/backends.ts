@@ -1,6 +1,8 @@
 export default {
   'backends.title': 'Çıkarım Altyapıları',
   'backend.button.add': 'Altyapı Ekle',
+  'backend.button.marketplace': 'Pazaryeri',
+  'backend.button.browseMarketplace': 'Pazaryerini Keşfet',
   'backend.button.edit': 'Altyapıyı Düzenle',
   'backend.versions': 'Sürüm Listesi',
   'backend.defaultVersion': 'Varsayılan Sürüm',
@@ -50,8 +52,6 @@ export default {
   'backend.form.defaultEnvironment': 'Varsayılan Ortam Değişkenleri',
   'backend.recommendModels': 'Önerilen Modeller',
   'backend.filter.source': 'Kaynağa göre filtrele',
-  'backend.add.custom': 'Özel',
-  'backend.add.community': 'Topluluk',
   'backend.community.title': 'Topluluk Altyapı Pazaryeri',
   'backend.form.add.hint':
     'Yerleşik bir altyapının (örn., vLLM, SGLang, MindIE) farklı sürümünü kullanmak için özel altyapı eklemek yerine mevcut altyapıya yeni sürüm ekleyin.',

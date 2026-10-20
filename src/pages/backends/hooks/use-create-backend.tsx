@@ -1,6 +1,6 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
-import { IconFont, useBodyScroll } from '@gpustack/core-ui';
+import { useBodyScroll } from '@gpustack/core-ui';
 import { ListItem } from '../config/types';
 import useCommunityBackend from './use-community-backend';
 import useCustomBackend from './use-custom-backend';
@@ -11,23 +11,6 @@ const useCreateBackend = () => {
     useCommunityBackend();
   const { openCustomModal, closeCustomModal, openCustomModalStatus } =
     useCustomBackend();
-
-  const addItems = [
-    {
-      label: 'backend.add.community',
-      locale: true,
-      key: 'community',
-      value: 'community',
-      icon: <IconFont type="icon-public" />
-    },
-    {
-      label: 'backend.add.custom',
-      locale: true,
-      key: 'custom',
-      value: 'custom',
-      icon: <IconFont type="icon-person" />
-    }
-  ];
 
   const handleEditBackend = (
     action: PageActionType,
@@ -61,8 +44,7 @@ const useCreateBackend = () => {
     addBackend: handleAddBackend,
     editBackend: handleEditBackend,
     openBackendModalStatus: openCustomModalStatus, // for create custom backend and edit custom/builtin/community backend
-    openCommunityModalStatus: openCommunityModalStatus, // for create community backend
-    addActions: addItems
+    openCommunityModalStatus: openCommunityModalStatus // for create community backend
   };
 };
 

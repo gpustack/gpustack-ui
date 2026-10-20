@@ -1,6 +1,8 @@
 export default {
   'backends.title': 'Инференс Бэкенды вывода',
   'backend.button.add': 'Добавить бэкенд',
+  'backend.button.marketplace': 'Маркетплейс',
+  'backend.button.browseMarketplace': 'Открыть маркетплейс',
   'backend.button.edit': 'Редактировать бэкенд',
   'backend.versions': 'Список версий',
   'backend.defaultVersion': 'Версия по умолчанию',
@@ -51,8 +53,6 @@ export default {
   'backend.form.defaultEnvironment': 'Default Environment Variables',
   'backend.recommendModels': 'Recommended Models',
   'backend.filter.source': 'Filter by source',
-  'backend.add.custom': 'Custom',
-  'backend.add.community': 'Community',
   'backend.community.title': 'Community Backend Marketplace',
   'backend.form.add.hint':
     'To use a different version of a built-in backend (e.g., vLLM, SGLang, MindIE), please add a new version to the existing backend instead of adding a custom backend.',
@@ -70,8 +70,6 @@ export default {
 // 1. 'backend.form.defaultEnvironment': 'Default Environment Variables',
 // 2. 'backend.recommendModels': 'Recommended Models',
 // 3. 'backend.filter.source': 'Filter by source',
-// 4.  'backend.add.custom': 'Custom',
-// 5.  'backend.add.community': 'Community',
 // 6. 'backend.community.title': 'Community Backend Marketplace'
 // 7. 'backend.form.add.hint': 'To use a different version of a built-in backend (e.g., vLLM, SGLang, MindIE), please add a new version to the existing backend instead of adding a custom backend.'
 // ========== End of To-Do List ==========

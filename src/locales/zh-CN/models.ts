@@ -1,6 +1,6 @@
 export default {
   'models.scaling.paused': '已暂停',
-  'models.scaling.waiting': '等待定时窗口',
+  'models.scaling.waiting': '等待定时伸缩',
   'models.scaling.resume': '恢复调度',
   'models.scaling.pause.tip':
     '暂停部署并保留定时计划。恢复后将按当前时间执行计划。',
@@ -157,7 +157,7 @@ export default {
     '固定以使用期望的 {backend} 版本 {version}，在线环境会自动创建虚拟环境安装对应版本的 {backend}。在 GPUStack 升级后也将保持固定的后端版本。{link}',
   'models.form.customImage': '自定义镜像',
   'models.form.customImage.entry': '使用自定义镜像…',
-  'models.form.customImage.backToVersion': '改回选择版本',
+  'models.form.customImage.backToVersion': '切换至版本选择',
   'models.form.customImage.tips':
     '使用自定义 {backend} 镜像替代目录版本。GPUStack 不再按 runner 目录校验该镜像，请确认它支持目标设备和分布式部署方式。',
   'models.form.customRunCommand.tips':
@@ -503,7 +503,7 @@ export default {
   'models.form.pd.disabled.backend':
     'PD 分离仅支持 vLLM / SGLang 引擎。其他引擎可通过「自定义」模式使用。',
   'models.form.pd.disabled.schedule':
-    'PD 部署暂不支持定时扩缩，请通过各角色的副本数调整。',
+    'PD 部署暂不支持定时伸缩，请通过各角色的副本数调整。',
   'models.form.pd.lora.cleared':
     '当前暂不支持 PD 分离与 LoRA 同时使用。已关闭 LoRA 配置，保存后生效。',
   'models.form.pd.cache.cleared':

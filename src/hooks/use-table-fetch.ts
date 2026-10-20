@@ -1,3 +1,4 @@
+import { WatchEventType } from '@/config';
 import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import { handleBatchRequest } from '@/utils';
 import {
@@ -8,7 +9,7 @@ import {
   useTableRowSelection,
   useUpdateChunkedList
 } from '@gpustack/core-ui';
-import { useMemoizedFn } from 'ahooks';
+import { useDebounceFn, useMemoizedFn } from 'ahooks';
 import _ from 'lodash';
 import qs from 'query-string';
 import { useEffect, useRef, useState } from 'react';
@@ -91,6 +92,8 @@ export default function useTableFetch<T>(
   const timerIDRef = useRef<any>(null);
   const hasInitRef = useRef(false);
   const mountedRef = useRef(true);
+  const requestIdRef = useRef(0);
+  const watchGenerationRef = useRef(0);
   const { pagination, setPagination } = usePaginationStatus(options.key || '');
 
   // for skeleton loading
@@ -121,12 +124,11 @@ export default function useTableFetch<T>(
   });
   const queryParamsRef = useRef(queryParams);
 
-  // for recognize the current watch trigger time, so that we can ignore the previous events
-  const triggerAtRef = useRef<number>(0);
-
   const { setChunkRequest } = useChunkRequest();
 
-  const debounceSetExtraStatus = _.debounce(setExtraStatus, 3000);
+  const { run: debounceSetExtraStatus } = useDebounceFn(setExtraStatus, {
+    wait: 3000
+  });
 
   useEffect(() => {
     queryParamsRef.current = queryParams;
@@ -136,6 +138,9 @@ export default function useTableFetch<T>(
     externalParams?: { query: Record<string, any>; loadmore?: boolean },
     polling = false
   ) => {
+    const requestId = ++requestIdRef.current;
+    const isCurrentRequest = () =>
+      mountedRef.current && requestId === requestIdRef.current;
     if (!polling) {
       setDataSource((pre) => {
         pre.loading = true;
@@ -145,19 +150,22 @@ export default function useTableFetch<T>(
     const { query, loadmore } = externalParams || {};
     try {
       const params = {
-        ..._.pickBy(query || queryParams, hasQueryValue)
+        ..._.pickBy(query || queryParamsRef.current, hasQueryValue)
       };
       axiosTokenRef.current?.cancel?.('CANCEL_PREVIOUS_REQUEST');
-      axiosTokenRef.current = createAxiosToken();
+      const axiosToken = createAxiosToken();
+      axiosTokenRef.current = axiosToken;
       const res = await fetchAPI(params, {
-        token: axiosTokenRef.current?.token
+        token: axiosToken.token
       });
+      if (!isCurrentRequest()) return false;
       if (!dataSource.loadend) {
         // add a delay to avoid flash
         await new Promise((resolve) => {
           setTimeout(resolve, 200);
         });
       }
+      if (!isCurrentRequest()) return false;
       if (
         !res.items.length &&
         params.page > res.pagination.totalPage &&
@@ -168,43 +176,46 @@ export default function useTableFetch<T>(
           page: res.pagination.totalPage
         };
         const newRes = await fetchAPI(newParams, {
-          token: axiosTokenRef.current?.token
+          token: axiosToken.token
         });
 
+        if (!isCurrentRequest()) return false;
+        const dataList = loadmore
+          ? [...cacheDataListRef.current, ...(newRes.items || [])]
+          : newRes.items || [];
+        cacheDataListRef.current = dataList;
         setDataSource({
-          dataList: loadmore
-            ? [...dataSource.dataList, ...(newRes.items || [])]
-            : newRes.items || [],
+          dataList,
           loading: false,
           loadend: true,
           total: newRes.pagination.total,
           totalPage: newRes.pagination.totalPage
         });
 
-        if (isInfiniteScroll) {
-          setQueryParams(newParams);
-        }
+        queryParamsRef.current = newParams;
+        setQueryParams(newParams);
         return true;
       }
 
+      const dataList = loadmore
+        ? [...cacheDataListRef.current, ...(res.items || [])]
+        : res.items || [];
+      cacheDataListRef.current = dataList;
       setDataSource({
-        dataList: loadmore
-          ? [...dataSource.dataList, ...(res.items || [])]
-          : res.items || [],
+        dataList,
         loading: false,
         loadend: true,
         total: res.pagination.total,
         totalPage: res.pagination.totalPage
       });
       if (isInfiniteScroll && query?.page) {
-        setQueryParams({
-          ...queryParams,
-          ...query
-        });
+        queryParamsRef.current = { ...queryParamsRef.current, ...query };
+        setQueryParams(queryParamsRef.current);
       }
       return true;
     } catch (error: any) {
-      if (error.message !== 'CANCEL_PREVIOUS_REQUEST') {
+      if (isCurrentRequest() && error.message !== 'CANCEL_PREVIOUS_REQUEST') {
+        cacheDataListRef.current = [];
         setDataSource({
           dataList: [],
           loading: false,
@@ -215,35 +226,22 @@ export default function useTableFetch<T>(
       }
       return false;
     } finally {
-      debounceSetExtraStatus({
-        firstLoad: false
-      });
+      if (isCurrentRequest()) {
+        debounceSetExtraStatus({ firstLoad: false });
+      }
     }
   };
 
-  // @ts-ignore for watch mode
-  const debounceFetchData = _.debounce(
-    () =>
-      fetchData(
-        {
-          query: {
-            ...queryParamsRef.current
-          }
-        },
-        true
-      ),
-    1000
-  );
+  const { run: debounceFetchData, cancel: cancelDebouncedFetch } =
+    useDebounceFn(
+      () => fetchData({ query: { ...queryParamsRef.current } }, true),
+      { wait: 1000, maxWait: 3000 }
+    );
 
   const { updateChunkedList, cacheDataListRef } = useUpdateChunkedList({
     limit: queryParams.perPage,
     events: events,
     dataList: dataSource.dataList,
-    isNewItem: updateManually
-      ? (item: any) =>
-          !!triggerAtRef.current &&
-          Date.parse(item?.created_at) >= triggerAtRef.current
-      : undefined,
     setDataList(list, opts?: any) {
       setDataSource((pre) => {
         return {
@@ -255,47 +253,91 @@ export default function useTableFetch<T>(
           deletedIds: opts?.deletedIds || []
         };
       });
-    },
-    onCreate: (newItems: any) => {
-      // ======= to resolve worker update issue =======
-      if (updateManually && triggerAtRef.current && newItems.length > 0) {
-        debounceFetchData();
-      }
-    },
-    onDelete: (newItems: any) => {
-      // ======= to resolve worker update issue =======
-      if (updateManually && triggerAtRef.current && newItems.length > 0) {
-        debounceFetchData();
-      }
     }
   });
 
-  const updateHandler = (list: any) => {
-    _.each(list, (data: any) => {
-      updateChunkedList(data);
-    });
-  };
+  const updateHandler = useMemoizedFn((list: any[]) => {
+    if (!updateManually) {
+      list.forEach(updateChunkedList);
+      return;
+    }
+
+    // Watch reconnects replay ALL matching workers as CREATED, including rows
+    // outside the current page, without distinguishing replay from new workers.
+    // Only the paginated response determines this page's membership and order.
+    // Passing these events to the shared CREATE merger would prepend off-page
+    // rows and truncate the fetched page, even when isNewItem returns false:
+    // that predicate only controls notification callbacks, not cache insertion.
+    // Patch visible rows in place and coalesce a page refetch for unknown IDs
+    // or deletions; never prepend CREATED rows or infer membership by timestamp.
+    // Keep this policy local to the paginated table: useAddWorkerMessage uses
+    // its own subscription and CREATE callbacks to count successful additions.
+    // See src/hooks/__tests__/use-table-fetch.test.mts for replay and drawer cases.
+    let dataList = cacheDataListRef.current;
+    let changed = false;
+    let needsRefresh = false;
+    const deletedIds: number[] = [];
+    for (const event of list) {
+      if (event.type === WatchEventType.DELETE && events.includes('DELETE')) {
+        const ids = new Set<number>(event.ids || []);
+        const remaining = dataList.filter((item: any) => !ids.has(item.id));
+        changed ||= remaining.length !== dataList.length;
+        dataList = remaining;
+        deletedIds.push(...ids);
+        // Even a deletion outside this page changes the total and page bounds.
+        needsRefresh ||= ids.size > 0;
+      } else if (
+        (event.type === WatchEventType.CREATE && events.includes('CREATE')) ||
+        (event.type === WatchEventType.UPDATE && events.includes('UPDATE'))
+      ) {
+        const items = new Map<any, any>(
+          (event.collection || []).map((item: any) => [item.id, item])
+        );
+        if (event.type === WatchEventType.CREATE) {
+          const currentIds = new Set(dataList.map((item: any) => item.id));
+          needsRefresh ||= [...items.keys()].some((id) => !currentIds.has(id));
+        }
+        dataList = dataList.map((item: any) => {
+          if (!items.has(item.id)) return item;
+          changed = true;
+          return { ...items.get(item.id) };
+        });
+      }
+    }
+    if (changed) {
+      cacheDataListRef.current = dataList;
+      setDataSource((previous) => ({ ...previous, dataList, deletedIds }));
+    }
+    if (needsRefresh) debounceFetchData();
+  });
 
   const cancelChunkRequest = () => {
+    watchGenerationRef.current += 1;
+    cancelDebouncedFetch();
+    clearTimeout(timerIDRef.current);
     chunkRequestRef.current?.current?.cancel?.();
   };
 
   const createTableListChunkRequest = async (params?: any) => {
     if (!API || !watch) return;
-    chunkRequestRef.current?.current?.cancel?.();
+    cancelChunkRequest();
+    const generation = watchGenerationRef.current;
     try {
-      const currentParams = params || queryParams;
+      const currentParams = params || queryParamsRef.current;
 
-      const query = _.omit(currentParams, ['page', 'perPage']);
+      const query = _.omit(currentParams, ['page', 'perPage', 'sort_by']);
 
       chunkRequestRef.current = setChunkRequest({
         // Same predicate as `fetchData`: the watch stream has to carry the
         // exact filter set the table was fetched with, or it would push rows
         // the current filters exclude.
         url: `${API}?${qs.stringify(_.pickBy(query, hasQueryValue))}`,
-        handler: updateHandler
+        handler: (list: any[]) => {
+          if (mountedRef.current && generation === watchGenerationRef.current) {
+            updateHandler(list);
+          }
+        }
       });
-      triggerAtRef.current = Date.now();
     } catch (error) {
       // ignore
     }
@@ -306,6 +348,8 @@ export default function useTableFetch<T>(
   // a hidden tab's 5s polling burns the request budget we reserve for the
   // visible one.
   const cancelRequestsOnPageInactive = useMemoizedFn(() => {
+    requestIdRef.current += 1;
+    axiosTokenRef.current?.cancel?.();
     if (watch) {
       cancelChunkRequest();
       // DELETE events fired while we were not watching are never re-sent, so a
@@ -320,10 +364,12 @@ export default function useTableFetch<T>(
 
   const resumeRequestsOnPageActive = useMemoizedFn(async () => {
     // queryParamsRef, not queryParams: the current page/filters must survive
-    await fetchData({ query: { ...queryParamsRef.current } }, true);
+    const loaded = await fetchData(
+      { query: { ...queryParamsRef.current } },
+      true
+    );
+    if (!loaded) return;
     if (watch) {
-      // this also resets triggerAtRef, so only items created after the resume
-      // count as new
       createTableListChunkRequest(queryParamsRef.current);
     } else {
       fetchAPIWithPolling(queryParamsRef.current);
@@ -355,12 +401,19 @@ export default function useTableFetch<T>(
       paginate?: boolean; // it's change for pagination
     }
   ) => {
-    // cancel previous chunk request so that we can create a new one with updated params
-    chunkRequestRef.current?.current?.cancel?.();
-    const newQueryParams = { ...queryParams, ...params };
+    cancelDebouncedFetch();
+    if (!options?.paginate) cancelChunkRequest();
+    const generation = watchGenerationRef.current;
+    const newQueryParams = { ...queryParamsRef.current, ...params };
+    queryParamsRef.current = newQueryParams;
     setQueryParams(newQueryParams);
     const res = await fetchData({ query: newQueryParams });
-    if (watch && !options?.paginate && res) {
+    if (
+      watch &&
+      !options?.paginate &&
+      res &&
+      generation === watchGenerationRef.current
+    ) {
       createTableListChunkRequest(newQueryParams);
     }
   };
@@ -381,10 +434,12 @@ export default function useTableFetch<T>(
     if (extra.action === 'sort') {
       const sortKeys = handleMultiSortChange(sorter);
       const newQueryParams = {
-        ...queryParams,
+        ...queryParamsRef.current,
         page: 1,
         sort_by: sortKeys.join(',')
       };
+      cancelDebouncedFetch();
+      queryParamsRef.current = newQueryParams;
       setQueryParams(newQueryParams);
       fetchData({
         query: newQueryParams
@@ -489,9 +544,10 @@ export default function useTableFetch<T>(
     const init = async () => {
       if (hasInitRef.current) return;
       hasInitRef.current = true;
-      await fetchData({
-        query: { ...queryParams, ...pagination }
+      const loaded = await fetchData({
+        query: { ...queryParamsRef.current, ...pagination }
       });
+      if (!loaded) return;
 
       timerIDRef.current = setTimeout(() => {
         if (mountedRef.current) {
@@ -507,10 +563,10 @@ export default function useTableFetch<T>(
     return () => {
       mountedRef.current = false;
       clearTimeout(timerIDRef.current);
-      chunkRequestRef.current?.current?.cancel?.();
+      requestIdRef.current += 1;
+      cancelChunkRequest();
       axiosTokenRef.current?.cancel?.();
       cacheDataListRef.current = [];
-      triggerAtRef.current = 0;
     };
   }, []);
 

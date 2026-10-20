@@ -63,12 +63,9 @@ export default {
     'Hedefleri görev zorluğuna göre puanlar: her istek (kısaltılmış) model seçim sorusuyla birlikte Jev uyumlu bir karar servisine gönderilir ve yanıt ağırlıklı bir oya dönüşür. Karar hatası, zaman aşımı veya 2xx olmayan yanıt durumunda diğer eklentilere sessizce geri dönülür.',
   'routes.lb.systemone.provider': 'Karar Servisi',
   'routes.lb.systemone.provider.tips':
-    'Bir TypeSafe karar servisi sağlayıcısı seçin.',
+    'Bir karar servisi seçin: harici bir TypeSafe sağlayıcısı veya yerel olarak dağıtılmış bir decision modeli (karar kategorisinde çalışan dağıtımlar).',
+  'routes.lb.systemone.provider.group.local': 'Yerel dağıtımlar',
   'routes.lb.systemone.provider.required': 'Lütfen bir karar servisi seçin',
-  'routes.lb.systemone.decisionModel': 'Karar Modeli',
-  'routes.lb.systemone.decisionModel.tips':
-    'Rota düzeyinde karar modeli; bu kart etkinleştirildiğinde zorunludur. Seçenekler seçilen sağlayıcının önbelleğindeki motorlardan okunur. Ayarlanmamış veya geçersizse JEV tabanlı yönlendirme atlanır ve istekler diğer eklentilere geri döner.',
-  'routes.lb.systemone.decisionModel.required': 'Lütfen bir karar modeli seçin',
   'routes.lb.systemone.instructions': 'Talimatlar',
   'routes.lb.systemone.instructions.tips':
     'Karar servisine gönderilen model seçim sorusu için ek yönlendirmedir.',

@@ -16,6 +16,11 @@ export const OPENAI_MODELS = `/${OPENAI_COMPATIBLE}/models`;
 
 export const RERANKER_API = `/${OPENAI_COMPATIBLE}/rerank`;
 
+// System One / Jev decision inference. Unlike the OpenAI-shaped endpoints
+// above, the `model` field in the body is REQUIRED (GPUStack resolves the
+// target route from it, like chat/completions).
+export const SYSTEMONE_API = `/${OPENAI_COMPATIBLE}/systemone`;
+
 export const AUDIO_TEXT_TO_SPEECH_API = `/${OPENAI_COMPATIBLE}/audio/speech`;
 
 export const AUDIO_SPEECH_TO_TEXT_API = `/${OPENAI_COMPATIBLE}/audio/transcriptions`;
@@ -46,6 +51,25 @@ export const rerankerQuery = async (
   options?: any
 ) => {
   return request(`${RERANKER_API}`, {
+    method: 'POST',
+    data: params,
+    cancelToken: options?.cancelToken
+  });
+};
+
+// One decision round-trip: the systemone body with `model` resolved by the
+// caller (GPUStack requires it — the target route is looked up from it).
+// Responses and error bodies pass through verbatim — GPUStack does not
+// validate the request shape beyond `model`, and neither does this call.
+export const decisionQuery = async (
+  params: {
+    model: string;
+    // state / questions / per-type extras: open, engine-dependent schema.
+    [key: string]: any;
+  },
+  options?: any
+) => {
+  return request(`${SYSTEMONE_API}`, {
     method: 'POST',
     data: params,
     cancelToken: options?.cancelToken

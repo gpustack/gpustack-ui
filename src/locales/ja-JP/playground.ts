@@ -183,5 +183,23 @@ export default {
   'playground.params.refAudio.vectorMode': '話者埋め込みのみ使用（ICL なし）',
   'playground.params.streamMode': 'ストリーミングを有効にする',
   'playground.speech.rules.refAudio':
-    '参照音声の文字起こし、または話者埋め込みのいずれかを設定してください。'
+    '参照音声の文字起こし、または話者埋め込みのいずれかを設定してください。',
+  'playground.decision.state': '状態',
+  'playground.decision.state.tooltip':
+    'プレーンテキスト、または JSON オブジェクト/配列（例：チャットメッセージ）。判断の対象となる状況を記述します。',
+  'playground.decision.state.invalidJson': 'JSON が無効です: {message}',
+  'playground.decision.state.required': '状態を入力してください。',
+  'playground.decision.run.noModel': '実行するにはモデルを選択してください。',
+  'playground.decision.questions': '質問',
+  'playground.decision.questions.format': 'フォーマット',
+  'playground.decision.questions.invalidJson': 'JSON が無効です: {message}',
+  'playground.decision.questions.notObject':
+    '質問は JSON オブジェクトである必要があります。',
+  'playground.decision.answers': '回答',
+  'playground.decision.answers.placeholder':
+    '送信すると意思決定結果が表示されます。',
+  'playground.decision.answers.empty': 'レスポンスに回答が含まれていません。',
+  'playground.decision.answer.choice': '選択',
+  'playground.decision.answer.score': 'スコア',
+  'playground.decision.answer.confidence': '信頼度'
 };

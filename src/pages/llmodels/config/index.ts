@@ -325,7 +325,8 @@ export const modelCategoriesMap = {
   speech_to_text: 'speech_to_text',
   embedding: 'embedding',
   reranker: 'reranker',
-  llm: 'llm'
+  llm: 'llm',
+  decision: 'decision'
 };
 
 export const categoryOptions = [
@@ -352,6 +353,10 @@ export const categoryOptions = [
   {
     label: 'Speech-to-Text',
     value: modelCategoriesMap.speech_to_text
+  },
+  {
+    label: 'Decision',
+    value: modelCategoriesMap.decision
   }
 ];
 

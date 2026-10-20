@@ -28,6 +28,7 @@ const KeybindingsMap = {
   NEW4: ['Ctrl+4', 'Meta+4'],
   FOCUS: ['/', '/'],
   ADD: ['Alt+Ctrl+Enter', 'Alt+Meta+Enter'],
+  RUN: ['Ctrl+Enter', 'Meta+Enter'],
   ESC: ['Esc', 'Esc']
 };
 

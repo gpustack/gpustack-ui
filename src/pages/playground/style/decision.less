@@ -1,0 +1,186 @@
+.ground-left-wrapper.decision {
+  .center {
+    height: 100%;
+    // The whole column scrolls as one page; the monaco editors scroll
+    // internally at their own fixed heights. The flex axis comes from the
+    // ant Flex that renders this column (component="div" vertical).
+    overflow-y: auto;
+  }
+
+  // Sticky section titles for the scroll column; the space-between row is
+  // an ant Flex at each usage site, CSS keeps only spacing, the item's
+  // flex:none, and the sticky visual.
+  .section-header {
+    margin-bottom: 8px;
+    flex: none;
+    // Section titles stick to the top of the scrolling column.
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-color: var(--ant-color-bg-container);
+
+    // TypeSafe-style blocking status beside the submit action, dimmed and
+    // ellipsized — the full reason rides on its tooltip. The inline row is
+    // an ant Flex (component="span"); CSS keeps the clamp and ellipsis.
+    .run-status {
+      max-width: 360px;
+      font-size: 12px;
+      color: var(--ant-color-text-tertiary);
+
+      .run-status-text {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+
+  // The vertical stack is an ant Flex (component="div" vertical); CSS keeps
+  // the item's flex:none and the region padding.
+  .decision-input-region {
+    flex: none;
+    padding-inline: var(--layout-content-inlinepadding);
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+
+  // Always-mounted token strip wrapper: OverlayScrollbars owns `.center`'s
+  // direct children once initialized (it moves them into its viewport), so
+  // React must never insert or remove one after mount — only the wrapper's
+  // contents toggle. Collapses fully while empty.
+  .decision-token-strip {
+    flex: none;
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  .state-editor-resizable {
+    display: flex;
+    flex: none;
+
+    .state-editor {
+      flex: 1;
+      min-width: 0;
+      height: 100%;
+      overflow: hidden;
+      border: 1px solid var(--ant-color-border-secondary);
+      border-radius: var(--border-radius-base);
+    }
+  }
+
+  // Row-resize grip between the state and questions editors; geometry comes
+  // from re-resizable's inline handle styles, visuals from these tokens.
+  .decision-resize-handle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &::after {
+      content: '';
+      width: 36px;
+      height: 3px;
+      border-radius: 2px;
+      background-color: var(--ant-color-fill-tertiary);
+      transition: background-color 0.2s ease;
+    }
+
+    &:hover::after,
+    &:active::after {
+      background-color: var(--ant-color-primary);
+    }
+  }
+
+  .questions-header {
+    margin-top: 16px;
+  }
+
+  .questions-editor-wrap {
+    flex: none;
+    height: 320px;
+    overflow: hidden;
+    border: 1px solid var(--ant-color-border-secondary);
+    border-radius: var(--border-radius-base);
+  }
+
+  // Natural height in the single scroll column; scroll-margin keeps the
+  // sticky section header from covering the region after scrollIntoView.
+  .answers-region {
+    flex: none;
+    padding-inline: var(--layout-content-inlinepadding);
+    padding-top: 16px;
+    padding-bottom: 16px;
+    scroll-margin-top: 48px;
+  }
+
+  // Question editing lives in the monaco JSON editor; only the answer
+  // rendering carries local styles here.
+
+  .answer-card {
+    border: 1px solid var(--ant-color-border-secondary);
+    border-radius: var(--border-radius-base);
+    padding: 12px;
+    margin-bottom: 12px;
+    background-color: var(--ant-color-bg-container);
+  }
+
+  // Rows are ant Flex (align/gap via props); CSS keeps the row spacing and
+  // the children's own (item) styles.
+  .probability-row {
+    margin-bottom: 6px;
+
+    .probability-name {
+      flex: none;
+      max-width: 280px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .probability-bar-track {
+      flex: 1;
+      height: 6px;
+      border-radius: 3px;
+      background-color: var(--ant-color-fill-tertiary);
+      overflow: hidden;
+    }
+
+    .probability-bar {
+      height: 100%;
+      border-radius: 3px;
+      background-image: linear-gradient(
+        90deg,
+        var(--ant-blue-5) 0%,
+        var(--ant-blue-2) 100%
+      );
+    }
+
+    .probability-value {
+      flex: none;
+      width: 56px;
+      text-align: right;
+      color: var(--ant-color-text-secondary);
+    }
+  }
+
+  .answer-raw {
+    margin: 0;
+    padding: 8px;
+    border-radius: var(--border-radius-base);
+    background-color: var(--ant-color-fill-quaternary);
+    font-size: 12px;
+    overflow: auto;
+    max-height: 240px;
+  }
+}
+
+// Rendered inside antd tooltip portals (outside this component's subtree),
+// so this rule must stay un-nested to match.
+.run-shortcut {
+  margin-left: 8px;
+  padding: 0 4px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 4px;
+  font-size: 12px;
+}

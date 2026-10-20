@@ -172,5 +172,21 @@ export default {
     '仅使用说话人嵌入（不使用上下文学习）',
   'playground.params.streamMode': '启用流式输出',
   'playground.speech.rules.refAudio':
-    '设置参考音频文本或仅使用说话人嵌入的任意一项。'
+    '设置参考音频文本或仅使用说话人嵌入的任意一项。',
+  'playground.decision.state': '状态',
+  'playground.decision.state.tooltip':
+    '纯文本，或 JSON 对象/数组（如聊天消息），描述决策所依据的情境。',
+  'playground.decision.state.invalidJson': 'JSON 无效：{message}',
+  'playground.decision.state.required': '请输入状态。',
+  'playground.decision.run.noModel': '选择模型后才能运行。',
+  'playground.decision.questions': '问题',
+  'playground.decision.questions.format': '格式化',
+  'playground.decision.questions.invalidJson': 'JSON 无效：{message}',
+  'playground.decision.questions.notObject': '问题必须是 JSON 对象。',
+  'playground.decision.answers': '回答',
+  'playground.decision.answers.placeholder': '提交后查看决策结果。',
+  'playground.decision.answers.empty': '响应中没有回答。',
+  'playground.decision.answer.choice': '选择',
+  'playground.decision.answer.score': '评分',
+  'playground.decision.answer.confidence': '置信度'
 };

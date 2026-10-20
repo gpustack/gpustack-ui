@@ -69,3 +69,60 @@ export const rerankerSamples: Record<
     ]
   }
 };
+
+// Playground decision samples: the structured `state` (chat-messages shape,
+// mirroring the schema's own example and TypeSafe's default) plus the
+// options of the seeded `route` choice question (System One / Jev shape).
+export const decisionSamples: Record<
+  string,
+  {
+    state: Record<string, any>;
+    criteria: { name: string; description: string }[];
+  }
+> = {
+  'zh-CN': {
+    state: {
+      messages: [{ role: 'user', content: '用匈牙利语写一首 200 词的诗。' }]
+    },
+    criteria: [
+      { name: 'qwen3-8b', description: '多语言生成能力强。' },
+      { name: 'llama3-8b', description: '速度更快，多语言能力较弱。' }
+    ]
+  },
+  'en-US': {
+    state: {
+      messages: [
+        { role: 'user', content: 'Write a 200-word poem in Hungarian.' }
+      ]
+    },
+    criteria: [
+      { name: 'qwen3-8b', description: 'Strong multilingual generation.' },
+      { name: 'llama3-8b', description: 'Faster, weaker multilingual.' }
+    ]
+  },
+  'ja-JP': {
+    state: {
+      messages: [
+        { role: 'user', content: 'ハンガリー語で200語の詩を書いてください。' }
+      ]
+    },
+    criteria: [
+      { name: 'qwen3-8b', description: '多言語生成に強い。' },
+      { name: 'llama3-8b', description: '高速だが多言語は弱い。' }
+    ]
+  },
+  'ru-RU': {
+    state: {
+      messages: [
+        {
+          role: 'user',
+          content: 'Напишите стихотворение на 200 слов на венгерском языке.'
+        }
+      ]
+    },
+    criteria: [
+      { name: 'qwen3-8b', description: 'Сильная многоязычная генерация.' },
+      { name: 'llama3-8b', description: 'Быстрее, слабее в многоязычности.' }
+    ]
+  }
+};

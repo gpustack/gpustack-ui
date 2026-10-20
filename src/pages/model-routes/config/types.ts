@@ -61,18 +61,22 @@ export interface LeastLoadPluginConfig {
 }
 
 // `plugins["decision-service"]` section: route by task difficulty via a Jev
-// compatible decision service ("system-1"). providerId points to a
-// ModelProvider of type gpustack-lb-typesafe (required in the UI when the
-// card is enabled). weight maps to the wasm plugin's rankWeight (default 10).
-// criteria: model name -> capability description, the basis of the decision.
+// compatible decision service ("system-1"). Exactly one of providerId /
+// modelId points at the decision service (server-validated): providerId → a
+// ModelProvider of type gpustack-lb-typesafe, modelId → a locally deployed
+// Model whose categories contain "decision". weight maps to the wasm
+// plugin's rankWeight (default 10). criteria: model name -> capability
+// description, the basis of the decision.
 export interface DecisionServicePluginConfig {
   enabled?: boolean;
   providerId?: number | null;
+  modelId?: number | null;
   weight?: number;
-  // Route-level decision engine model, read from the selected provider's
-  // cached engines. Required in the UI when the card is enabled: without a
+  // Route-level decision engine model, required when the card is enabled.
+  // External providers: read from the provider's cached engines — without a
   // valid model the server silently falls back and skips JEV-based routing
-  // (gpustack/gpustack#6353).
+  // (gpustack/gpustack#6353). Local deployments: the UI seeds it with the
+  // model name (the local engines accept any alias), still editable.
   decisionModel?: string;
   modelSelection?: {
     instructions?: string;

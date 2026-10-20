@@ -180,5 +180,22 @@ export default {
     'Use Speaker Embedding Only (no ICL)',
   'playground.params.streamMode': 'Enable Streaming',
   'playground.speech.rules.refAudio':
-    'Either the reference audio transcript or speaker embedding must be set.'
+    'Either the reference audio transcript or speaker embedding must be set.',
+  'playground.decision.state': 'State',
+  'playground.decision.state.tooltip':
+    'Plain text, or a JSON object/array (e.g. chat messages) describing the situation the decision is made against.',
+  'playground.decision.state.invalidJson': 'Invalid JSON: {message}',
+  'playground.decision.state.required': 'The state is required.',
+  'playground.decision.run.noModel': 'Select a model to run.',
+  'playground.decision.questions': 'Questions',
+  'playground.decision.questions.format': 'Format',
+  'playground.decision.questions.invalidJson': 'Invalid JSON: {message}',
+  'playground.decision.questions.notObject': 'Questions must be a JSON object.',
+  'playground.decision.answers': 'Answers',
+  'playground.decision.answers.placeholder':
+    'Submit to see the decision results.',
+  'playground.decision.answers.empty': 'The response contained no answers.',
+  'playground.decision.answer.choice': 'Choice',
+  'playground.decision.answer.score': 'Score',
+  'playground.decision.answer.confidence': 'Confidence'
 };

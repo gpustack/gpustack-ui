@@ -6,6 +6,7 @@ export default {
   'menu.playground.chat': 'Sohbet',
   'menu.playground.speech': 'Ses',
   'menu.playground.text2images': 'Görsel',
+  'menu.playground.decision': 'Karar',
   'menu.playground.video': 'Video',
   'menu.compare': 'Karşılaştır',
   'menu.models': 'Model Hizmetleri',

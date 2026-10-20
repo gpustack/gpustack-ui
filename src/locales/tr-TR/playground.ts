@@ -179,7 +179,25 @@ export default {
     'Yalnızca Konuşmacı Gömme Kullan (ICL yok)',
   'playground.params.streamMode': 'Akışı Etkinleştir',
   'playground.speech.rules.refAudio':
-    'Referans ses metni veya konuşmacı gömmesinden biri mutlaka ayarlanmalıdır.'
+    'Referans ses metni veya konuşmacı gömmesinden biri mutlaka ayarlanmalıdır.',
+  'playground.decision.state': 'Durum',
+  'playground.decision.state.tooltip':
+    'Karar verilen durumu açıklayan düz metin veya JSON nesnesi/dizisi (ör. sohbet mesajları).',
+  'playground.decision.state.invalidJson': 'Geçersiz JSON: {message}',
+  'playground.decision.state.required': 'Durum gereklidir.',
+  'playground.decision.run.noModel': 'Çalıştırmak için bir model seçin.',
+  'playground.decision.questions': 'Sorular',
+  'playground.decision.questions.format': 'Biçimlendir',
+  'playground.decision.questions.invalidJson': 'Geçersiz JSON: {message}',
+  'playground.decision.questions.notObject':
+    'Sorular bir JSON nesnesi olmalıdır.',
+  'playground.decision.answers': 'Yanıtlar',
+  'playground.decision.answers.placeholder':
+    'Karar sonuçlarını görmek için gönderin.',
+  'playground.decision.answers.empty': 'Yanıt hiçbir karar içermiyordu.',
+  'playground.decision.answer.choice': 'Seçim',
+  'playground.decision.answer.score': 'Puan',
+  'playground.decision.answer.confidence': 'Güven'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

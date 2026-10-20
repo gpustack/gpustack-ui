@@ -60,12 +60,10 @@ export default {
   'routes.lb.systemone.tips':
     '按任务难度选择模型:每个请求(截断后)连同模型选择问题发送给 Jev 兼容决策服务,决策结果折算为加权投票。决策失败、超时或服务返回非 2xx 时,静默回退到其余插件。',
   'routes.lb.systemone.provider': '决策服务',
-  'routes.lb.systemone.provider.tips': '选择 TypeSafe 决策服务 Provider。',
+  'routes.lb.systemone.provider.tips':
+    '选择决策服务:外部 TypeSafe Provider,或本地部署的 decision 模型(decision 类别中处于运行状态的部署)。',
+  'routes.lb.systemone.provider.group.local': '本地部署',
   'routes.lb.systemone.provider.required': '请选择决策服务',
-  'routes.lb.systemone.decisionModel': '决策模型',
-  'routes.lb.systemone.decisionModel.tips':
-    '路由级决策模型,启用本卡片时必填。选项读自所选 Provider 缓存的决策引擎;若缺失或无效,将跳过 JEV 路由,请求回退到其余插件。',
-  'routes.lb.systemone.decisionModel.required': '请选择决策模型',
   'routes.lb.systemone.instructions': '决策指令',
   'routes.lb.systemone.instructions.tips':
     '发送给决策服务的模型选择问题的补充指引。',

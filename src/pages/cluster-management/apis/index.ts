@@ -36,7 +36,16 @@ export const SYSTEM_CONFIG_API = '/config';
 
 type CloudQueryParams = { id: number; provider?: ProviderType | string | null };
 
-const requestProviderProxy = (
+/**
+ * Safety valve for the pagination walk below: a provider that always answers
+ * with a `next` link (misbehaving API, mocked payload) must not loop forever.
+ * 20 pages x 200 items already covers any current list several times over,
+ * and tripping the guard throws rather than silently returning a truncated
+ * list — which would recreate the very bug this walk exists to fix.
+ */
+const PROVIDER_PROXY_MAX_PAGES = 20;
+
+const requestProviderProxy = async (
   credentialId: number,
   // Absent when the provider has no such list (Shuihua has no regions), which
   // is not an error: the caller gets an empty payload rather than a request to
@@ -44,15 +53,56 @@ const requestProviderProxy = (
   endpoint?: { path: string; params?: Record<string, any> }
 ) => {
   if (!endpoint) {
-    return Promise.resolve(undefined);
+    return undefined;
   }
-  return request(
-    `${CREDENTIALS_API}/${credentialId}${PROVIDER_PROXY_API}${endpoint.path}`,
-    {
-      method: 'GET',
-      params: endpoint.params
-    }
+  const requestPage = (params?: Record<string, any>) =>
+    request(
+      `${CREDENTIALS_API}/${credentialId}${PROVIDER_PROXY_API}${endpoint.path}`,
+      { method: 'GET', params }
+    );
+
+  let res = await requestPage(endpoint.params);
+
+  // DigitalOcean paginates every list: items ride under one top-level array
+  // key (`sizes` / `regions` / `images`) and `links.pages.next` is set while
+  // pages remain. The API caps `per_page` at 200 while `/v2/sizes` holds 311
+  // entries, so a single call stopped at the cap and the GPU sizes past it —
+  // every one NYC2 offers — never reached the instance-type dropdown
+  // (gpustack#6495). Providers without this envelope (Shuihua) take the early
+  // return and behave exactly as before. `next` targets the provider host,
+  // which the proxy refuses by design, so each follow-up re-issues the same
+  // request with an incrementing `page` instead of following the link.
+  const arrayKey = Object.keys(res || {}).find((key) =>
+    Array.isArray(res[key])
   );
+  if (!arrayKey || !res?.links?.pages?.next) {
+    return res;
+  }
+  const merged = [...res[arrayKey]];
+  let page = 2;
+  // Walk until the provider stops linking a next page. A falsy follow-up
+  // (empty body) or a malformed one (no array under the list key — an
+  // error object, say) ends the walk on the last good response: its
+  // envelope, `meta.total` included, is what the merged payload carries,
+  // and adopting the malformed page's fields would drop that metadata.
+  // Reaching the page guard with a `next` link still present fails
+  // loudly: a silently truncated list is exactly the bug this walk
+  // exists to fix.
+  while (res?.links?.pages?.next) {
+    if (page > PROVIDER_PROXY_MAX_PAGES) {
+      throw new Error(
+        `Provider proxy list ${endpoint.path} exceeded ${PROVIDER_PROXY_MAX_PAGES} pages`
+      );
+    }
+    const next = await requestPage({ ...endpoint.params, page });
+    if (!next || !Array.isArray(next[arrayKey])) {
+      break;
+    }
+    merged.push(...next[arrayKey]);
+    res = next;
+    page++;
+  }
+  return { ...res, [arrayKey]: merged };
 };
 
 export async function queryCloudRegions(params: CloudQueryParams) {

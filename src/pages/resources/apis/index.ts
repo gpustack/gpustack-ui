@@ -2,7 +2,12 @@ import { GPUSTACK_API_BASE_URL } from '@/config/settings';
 import { downloadFile } from '@/utils/download-stream';
 import { request } from '@umijs/max';
 import { message } from 'antd';
-import { GPUDeviceItem, ListItem, ModelFile } from '../config/types';
+import {
+  GPUDeviceItem,
+  ListItem,
+  ModelFile,
+  WorkerLabelsUpdate
+} from '../config/types';
 import { workerPrivateKeyFilename } from '../utils/ssh-access';
 
 export const WORKERS_API = '/workers';
@@ -91,6 +96,15 @@ export async function deleteWorker(id: string | number) {
 export async function updateWorker(id: string | number, data: any) {
   return request(`${WORKERS_API}/${id}`, {
     method: 'PUT',
+    data
+  });
+}
+
+export async function updateWorkerLabels(
+  data: WorkerLabelsUpdate
+): Promise<void> {
+  return request<void>(`${WORKERS_API}/labels`, {
+    method: 'POST',
     data
   });
 }

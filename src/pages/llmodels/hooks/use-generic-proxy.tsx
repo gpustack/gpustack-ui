@@ -5,12 +5,14 @@ import {
   CREAT_IMAGE_API,
   EMBEDDING_API,
   MODEL_PROXY,
-  RERANKER_API
+  RERANKER_API,
+  SYSTEMONE_API
 } from '@/pages/playground/apis';
 import {
   generateSpeechToTextCurlCode,
   generateTextToSpeechCurlCode
 } from '@/pages/playground/view-code/audio';
+import { generateDecisionCurlCode } from '@/pages/playground/view-code/decision';
 import { generateEmbeddingCurlCode } from '@/pages/playground/view-code/embedding';
 import { generateImageCurlCode } from '@/pages/playground/view-code/image';
 import { generateLLmCurlCode } from '@/pages/playground/view-code/llm';
@@ -70,6 +72,14 @@ const API_MAP: Record<
       messages: []
     },
     generateCurlCode: generateRerankCurlCode
+  },
+  [modelCategoriesMap.decision]: {
+    api: SYSTEMONE_API,
+    parameters: {
+      state: '',
+      questions: {}
+    },
+    generateCurlCode: generateDecisionCurlCode
   }
 };
 

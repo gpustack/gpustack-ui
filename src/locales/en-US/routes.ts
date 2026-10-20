@@ -66,13 +66,9 @@ export default {
     'Score targets by task difficulty: each request is sent (truncated) with a model-selection question to a Jev-compatible decision service, whose answer becomes a weighted vote. Decision failures, timeouts, or non-2xx responses fall back silently to the other plugins.',
   'routes.lb.systemone.provider': 'Decision Service',
   'routes.lb.systemone.provider.tips':
-    'Select a TypeSafe decision service provider.',
+    'Select a decision service: an external TypeSafe provider, or a locally deployed decision model (running deployments in the decision category).',
+  'routes.lb.systemone.provider.group.local': 'Local deployments',
   'routes.lb.systemone.provider.required': 'Please select a decision service',
-  'routes.lb.systemone.decisionModel': 'Decision Model',
-  'routes.lb.systemone.decisionModel.tips':
-    'Route-level decision model, required when this card is enabled. Options are read from the engines cached in the selected provider; if unset or invalid, JEV-based routing is skipped and requests fall back to the other plugins.',
-  'routes.lb.systemone.decisionModel.required':
-    'Please select a decision model',
   'routes.lb.systemone.instructions': 'Instructions',
   'routes.lb.systemone.instructions.tips':
     'Extra guidance for the model-selection question sent to the decision service.',

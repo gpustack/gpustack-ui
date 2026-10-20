@@ -64,13 +64,9 @@ export default {
     'タスクの難易度でターゲットをスコアリングします。各リクエスト(切り詰め後)はモデル選択の質問とともに Jev 互換意思決定サービスへ送られ、その回答が加重投票になります。意思決定の失敗、タイムアウト、または非 2xx 応答時は他のプラグインへサイレントにフォールバックします。',
   'routes.lb.systemone.provider': '意思決定サービス',
   'routes.lb.systemone.provider.tips':
-    'TypeSafe 意思決定サービスプロバイダーを選択します。',
+    '意思決定サービスを選択:外部の TypeSafe プロバイダー、またはローカルにデプロイされた decision モデル(decision カテゴリの実行中のデプロイ)。',
+  'routes.lb.systemone.provider.group.local': 'ローカルデプロイ',
   'routes.lb.systemone.provider.required': '意思決定サービスを選択してください',
-  'routes.lb.systemone.decisionModel': '意思決定モデル',
-  'routes.lb.systemone.decisionModel.tips':
-    'ルートレベルの意思決定モデル。このカードの有効時は必須です。選択したプロバイダーにキャッシュされたエンジンから選択します。未設定または無効な場合、JEV ベースのルーティングはスキップされ、リクエストは他のプラグインへフォールバックします。',
-  'routes.lb.systemone.decisionModel.required':
-    '意思決定モデルを選択してください',
   'routes.lb.systemone.instructions': '指示',
   'routes.lb.systemone.instructions.tips':
     '意思決定サービスに送るモデル選択の質問への追加ガイダンスです。',

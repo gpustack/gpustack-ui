@@ -1,3 +1,5 @@
+import typesafeLogo from '@/assets/providers-logo/typesafe-ai.png';
+
 // Load every image under src/assets/model_icons at build time.
 const iconContext = (require as any).context(
   '@/assets/model_icons',
@@ -83,19 +85,32 @@ const CATEGORY_ICON_MAP: Record<string, string> = {
   reranker: 'reranker',
   image: 'image',
   text_to_speech: 'tts',
-  speech_to_text: 'stt'
+  speech_to_text: 'stt',
+  // Decision models (System One / Jev) reuse the TypeSafe provider mark
+  // from providers-logo — a direct asset url instead of an iconMap key.
+  decision: typesafeLogo
 };
 
+// The TypeSafe mark is drawn light-on-dark (see provider-logo.tsx); the
+// model card inverts it on light themes so it stays visible.
+export const isInvertibleModelLogo = (url?: string | null): boolean =>
+  !!url && url === typesafeLogo;
+
 /**
- * Resolve a category icon (from model_icons) for a model's categories.
- * Returns the first matching category icon url, or null when none match.
+ * Resolve a category icon for a model's categories. Map values are either
+ * an iconMap key (a model_icons filename) or a direct asset url — the
+ * TypeSafe mark above. Returns the first resolved url, or null when none
+ * match.
  */
 export const getCategoryLogo = (categories?: string[]): string | null => {
-  const iconName = categories
+  const resolved = categories
     ?.map((category) => CATEGORY_ICON_MAP[category])
-    .find((name) => name && iconMap[name]);
+    .find(Boolean);
 
-  return iconName ? iconMap[iconName] : null;
+  if (!resolved) {
+    return null;
+  }
+  return iconMap[resolved] || resolved;
 };
 
 /**

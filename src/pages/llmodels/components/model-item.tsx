@@ -10,6 +10,7 @@ import {
 } from '@gpustack/core-ui';
 import { useIntl, useNavigate } from '@umijs/max';
 import { Button, Tooltip } from 'antd';
+import { createStyles } from 'antd-style';
 import _ from 'lodash';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
@@ -29,8 +30,19 @@ import {
 import {
   defaultModelLogo,
   getCategoryLogo,
-  getModelLogo
+  getModelLogo,
+  isInvertibleModelLogo
 } from '../utils/model-logo';
+
+// Light-on-dark PNG marks need inverting on light themes; dark themes
+// render them as-is (mirrors provider-logo.tsx).
+const useStyles = createStyles(({ css }) => ({
+  invertOnLight: css`
+    html:not([data-theme='realDark']) & {
+      filter: invert(1);
+    }
+  `
+}));
 
 const CardWrapper = styled.div`
   &:hover {
@@ -145,6 +157,7 @@ const ModelItem: React.FC<{
   const { model, onClick } = props;
   const intl = useIntl();
   const navigate = useNavigate();
+  const { styles } = useStyles();
   // A plugin may contribute extra card actions (enterprise adds
   // "Pricing", which opens a drawer it owns) via
   // `myModels.useGenerateActions` — same seam as the cluster list's
@@ -214,6 +227,10 @@ const ModelItem: React.FC<{
   // icon (from model_icons) → generic default image.
   const brandLogo = getModelLogo(model.name);
   const categoryLogo = brandLogo ? null : getCategoryLogo(model.categories);
+  const logoSrc = brandLogo || categoryLogo || defaultModelLogo;
+  // Light-on-dark marks (the TypeSafe decision logo) need inverting on
+  // light themes — same treatment as provider-logo.tsx.
+  const invertLogo = isInvertibleModelLogo(logoSrc);
 
   // context length
   const maxToken = useMemo(() => {
@@ -261,13 +278,11 @@ const ModelItem: React.FC<{
         header={
           <Header>
             <span className="text gap-16">
-              {brandLogo ? (
-                <ModelLogo src={brandLogo} alt="" />
-              ) : categoryLogo ? (
-                <ModelLogo src={categoryLogo} alt="" />
-              ) : (
-                <ModelLogo src={defaultModelLogo} alt="" />
-              )}
+              <ModelLogo
+                src={logoSrc}
+                alt=""
+                className={invertLogo ? styles.invertOnLight : undefined}
+              />
               <span className="flex-center" style={{ gap: 8, minWidth: 0 }}>
                 <span>{model.name}</span>
                 {/* Status moved to a compact dot right after the name, leaving

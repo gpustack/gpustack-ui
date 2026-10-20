@@ -64,6 +64,14 @@ export const formatPyParams = (parameters: Record<string, any>) => {
   }, '');
 };
 
+// python object literal (the `data = {...}` body form): the same toPyLiteral
+// serializer formatPyParams builds kwargs from, exposed for view-code bodies
+// that post one object instead of kwargs — true/false/null must become
+// True/False/None, which JSON.stringify would leave as-is.
+export const formatPyObject = (value: Record<string, any>) => {
+  return toPyLiteral(value);
+};
+
 // node format
 export const fomatNodeJsParams = (parameters: Record<string, any>) => {
   return JSON.stringify(

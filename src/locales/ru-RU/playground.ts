@@ -179,5 +179,23 @@ export default {
     'Использовать только эмбеддинг голоса (без ICL)',
   'playground.params.streamMode': 'Включить потоковую передачу',
   'playground.speech.rules.refAudio':
-    'Необходимо задать расшифровку эталонного аудио или эмбеддинг голоса.'
+    'Необходимо задать расшифровку эталонного аудио или эмбеддинг голоса.',
+  'playground.decision.state': 'Состояние',
+  'playground.decision.state.tooltip':
+    'Обычный текст или объект/массив JSON (например, сообщения чата), описывающий ситуацию для принятия решения.',
+  'playground.decision.state.invalidJson': 'Неверный JSON: {message}',
+  'playground.decision.state.required': 'Укажите состояние.',
+  'playground.decision.run.noModel': 'Выберите модель для запуска.',
+  'playground.decision.questions': 'Вопросы',
+  'playground.decision.questions.format': 'Форматировать',
+  'playground.decision.questions.invalidJson': 'Неверный JSON: {message}',
+  'playground.decision.questions.notObject':
+    'Вопросы должны быть JSON-объектом.',
+  'playground.decision.answers': 'Ответы',
+  'playground.decision.answers.placeholder':
+    'Отправьте запрос, чтобы увидеть результаты решения.',
+  'playground.decision.answers.empty': 'Ответ не содержит решений.',
+  'playground.decision.answer.choice': 'Выбор',
+  'playground.decision.answer.score': 'Оценка',
+  'playground.decision.answer.confidence': 'Уверенность'
 };

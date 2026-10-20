@@ -181,10 +181,22 @@ export const extractErrorMessage = (result: any) => {
     (result?.error === true ? 'Unknown error' : result?.error);
 
   if (errorMsg) {
-    return typeof errorMsg === 'string' ? errorMsg : JSON.stringify(errorMsg);
+    if (typeof errorMsg === 'string') {
+      return errorMsg;
+    }
+    // Non-string bodies: stringify defensively — a circular value must not
+    // turn an error display into a crash.
+    try {
+      return JSON.stringify(errorMsg);
+    } catch {
+      return 'Unknown error';
+    }
   }
   try {
-    return typeof result === 'string' ? result : JSON.stringify(result);
+    if (typeof result === 'string') {
+      return result;
+    }
+    return JSON.stringify(result) ?? 'Unknown error';
   } catch {
     return 'Unknown error';
   }

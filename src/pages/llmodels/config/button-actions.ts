@@ -150,7 +150,8 @@ export const categoryToPathMap: Record<string, string> = {
   [modelCategoriesMap.text_to_speech]: '/playground/speech?type=tts',
   [modelCategoriesMap.speech_to_text]: '/playground/speech?type=stt',
   [modelCategoriesMap.reranker]: '/playground/rerank',
-  [modelCategoriesMap.embedding]: '/playground/embedding'
+  [modelCategoriesMap.embedding]: '/playground/embedding',
+  [modelCategoriesMap.decision]: '/playground/decision'
 };
 
 export interface MyModelAction {

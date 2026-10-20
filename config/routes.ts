@@ -59,6 +59,16 @@ const baseRoutes = [
         component: './playground/rerank/index'
       },
       {
+        name: 'decision',
+        title: 'Decision',
+        path: '/playground/decision',
+        key: 'decision',
+        icon: 'icon-alt-route',
+        selectedIcon: 'icon-alt-route',
+        defaultIcon: 'icon-alt-route',
+        component: './playground/decision/index'
+      },
+      {
         name: 'text2images',
         title: 'Text2Images',
         path: keepAliveRoutes.text2images,

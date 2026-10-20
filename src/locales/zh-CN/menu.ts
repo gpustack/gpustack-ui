@@ -6,6 +6,7 @@ export default {
   'menu.playground.chat': '对话',
   'menu.playground.speech': '语音',
   'menu.playground.text2images': '图像',
+  'menu.playground.decision': '决策',
   'menu.playground.video': '视频',
   'menu.compare': '多模型对比',
   'menu.models': '模型服务',

@@ -37,6 +37,11 @@ export const categoryConfig = {
     icon: <WechatWorkOutlined />,
     color: 'green',
     label: 'LLM'
+  },
+  [modelCategoriesMap.decision]: {
+    icon: <IconFont type="icon-alt-route" />,
+    color: 'purple',
+    label: 'Decision'
   }
 };
 

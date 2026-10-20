@@ -182,6 +182,10 @@ export const buildPluginsPayload = (
     const serverConfig: any = omitEmpty({
       enabled: true,
       providerId: soForm.providerId ?? null,
+      // Local decision deployment — mutually exclusive with providerId at
+      // the server (a 422 when both are set). `omitEmpty` drops whichever
+      // is null, so exactly one of the two is sent.
+      modelId: soForm.modelId ?? null,
       // Not the (0, 2] influence clamp: this is the wasm rankWeight, bounded
       // (0, 20] per the current UI contract, the vote's strength in the
       // finisher's weighted sum. Absent = the plugin's built-in default of 10.

@@ -1,15 +1,18 @@
+import ProviderLogo from '@/pages/maas-provider/components/provider-logo';
+import { ProviderEnum } from '@/pages/maas-provider/config/providers';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import {
-  AutoComplete,
+  AutoTooltip,
   Input as CoreInput,
-  Select as CoreSelect,
   MetadataList,
+  Cascader as SealCascader,
   Textarea
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Flex, Form, Tooltip, Typography } from 'antd';
 import { useState } from 'react';
 import type { FormData } from '../../config/types';
+import type { DecisionCascaderOption } from '../../hooks/use-decision-service-providers';
 import useDecisionServiceProviders from '../../hooks/use-decision-service-providers';
 import type { CriteriaFormItem } from '../../utils/lb-plugins';
 import PolicyPluginSection from './policy-plugin-section';
@@ -30,6 +33,24 @@ const DECISION_CRITERIA_PATH: [
   'modelSelection',
   'criteria'
 ] = ['plugins', 'decision-service', 'modelSelection', 'criteria'];
+
+const DECISION_PROVIDER_PATH: ['plugins', 'decision-service', 'providerId'] = [
+  'plugins',
+  'decision-service',
+  'providerId'
+];
+
+const DECISION_MODEL_ID_PATH: ['plugins', 'decision-service', 'modelId'] = [
+  'plugins',
+  'decision-service',
+  'modelId'
+];
+
+const DECISION_MODEL_FIELD_PATH: [
+  'plugins',
+  'decision-service',
+  'decisionModel'
+] = ['plugins', 'decision-service', 'decisionModel'];
 
 // Label + "(?)" tooltip: the field's explanation lives on the label, not as
 // an `extra` hint line, per the systemone card's compact layout.
@@ -58,6 +79,41 @@ const LabelWithHelp = ({
   );
 };
 
+// Selected row: provider logo + "group / engine", mirroring the route-target
+// picker's collapsed display (targets.tsx displayRender).
+const renderSelectedSource = (labels: any[], option: any) => {
+  const text = labels.join(' / ');
+  return (
+    <Flex component="span" align="center" gap={8}>
+      <ProviderLogo provider={option?.[0]?.providerType as string} />
+      <AutoTooltip ghost maxWidth={300} title={<span>{text}</span>}>
+        <span>{text}</span>
+      </AutoTooltip>
+    </Flex>
+  );
+};
+
+// Dropdown rows: groups carry the provider logo, engines a plain tooltip'd
+// label — same rows as the target cascader's dropdown (targets.tsx
+// optionRender). `data` is the raw cascader option here, not its payload.
+const renderSourceOption = ({ data }: { data: DecisionCascaderOption }) => {
+  if (data.isParent) {
+    return (
+      <Flex component="span" align="center" gap={8}>
+        <ProviderLogo provider={data.providerType as string} />
+        <AutoTooltip ghost maxWidth={105}>
+          <span>{data.label}</span>
+        </AutoTooltip>
+      </Flex>
+    );
+  }
+  return (
+    <AutoTooltip ghost>
+      <span>{data.label}</span>
+    </AutoTooltip>
+  );
+};
+
 const DecisionServiceEditor = ({
   getTargetModelNames
 }: DecisionServiceFieldsProps) => {
@@ -67,16 +123,106 @@ const DecisionServiceEditor = ({
     ['plugins', 'decision-service', 'enabled'],
     form
   );
-  const providerId = Form.useWatch(
-    ['plugins', 'decision-service', 'providerId'],
-    form
-  );
-  const { providerOptions, decisionModelOptions } =
-    useDecisionServiceProviders(providerId);
+  const providerId = Form.useWatch(DECISION_PROVIDER_PATH, form);
+  const modelId = Form.useWatch(DECISION_MODEL_ID_PATH, form);
+  const decisionModel = Form.useWatch(DECISION_MODEL_FIELD_PATH, form);
+  const { sourceOptions } = useDecisionServiceProviders();
   // Keep input edits synchronous with writes to the form store.
   const [criteria, setCriteria] = useState<CriteriaFormItem[]>(
     () => form.getFieldValue(DECISION_CRITERIA_PATH) || []
   );
+
+  // One picker over two sources, using the same two-level cascader as the
+  // route-target selection: a local-deployments group (servable decision
+  // models) and one group per TypeSafe provider (its cached decision
+  // engines). The [parent, child] path decomposes on change into
+  // providerId XOR modelId — the server rejects a config carrying both —
+  // and the engine alias (`decisionModel`) is derived from the same child
+  // row, so picking the source is the whole interaction: no manual model
+  // name input.
+  const sourceValue: (string | number)[] =
+    modelId != null
+      ? ['deployments', modelId]
+      : providerId != null && decisionModel
+        ? [providerId, decisionModel]
+        : [];
+
+  // The stored selection must always resolve against the options tree:
+  // while the sources load, a stand-in branch keeps it visible instead of
+  // flashing raw ids; once loaded, a stored alias no longer among the
+  // provider's cached engine names is re-added as an extra child so the
+  // row still shows. Stand-in rows carry the same payload a real row
+  // would, so re-picking them writes identical form values.
+  const buildPickerOptions = (): DecisionCascaderOption[] => {
+    const [parentValue, childValue] = sourceValue;
+    if (parentValue == null || childValue == null) {
+      return sourceOptions;
+    }
+    const isDeployments = parentValue === 'deployments';
+    const makeChild = (): DecisionCascaderOption => ({
+      label: String(childValue),
+      value: childValue,
+      parent: false,
+      data: isDeployments
+        ? { model_id: Number(childValue) }
+        : {
+            provider_id: Number(parentValue),
+            decision_model: String(childValue)
+          }
+    });
+    const groups = sourceOptions.some((group) => group.value === parentValue)
+      ? sourceOptions.map((group) => ({
+          ...group,
+          children: [...(group.children || [])]
+        }))
+      : [
+          {
+            label: isDeployments
+              ? intl.formatMessage({
+                  id: 'routes.lb.systemone.provider.group.local'
+                })
+              : String(parentValue),
+            value: parentValue,
+            providerType: isDeployments ? 'deployments' : ProviderEnum.TYPESAFE,
+            parent: false,
+            isParent: true,
+            children: [makeChild()]
+          },
+          ...sourceOptions
+        ];
+    const group = groups.find((item) => item.value === parentValue)!;
+    if (!group.children?.some((child) => child.value === childValue)) {
+      group.children?.push(makeChild());
+    }
+    return groups;
+  };
+  const pickerOptions = buildPickerOptions();
+
+  const handleSourceChange = (value: any[], selectedOptions: any[]) => {
+    const selected =
+      selectedOptions?.find?.((option) => option.value === value?.[1]) || {};
+    const data = selected.data || {};
+    if (data.model_id != null) {
+      // A local decision deployment: local engines accept any alias — the
+      // decision model is the deployment's name (design §6.2).
+      form.setFieldValue(DECISION_MODEL_ID_PATH, data.model_id);
+      form.setFieldValue(DECISION_PROVIDER_PATH, undefined);
+      form.setFieldValue(DECISION_MODEL_FIELD_PATH, selected.label);
+    } else if (data.provider_id != null) {
+      // The picked engine is the provider's decision model alias.
+      form.setFieldValue(DECISION_PROVIDER_PATH, data.provider_id);
+      form.setFieldValue(DECISION_MODEL_ID_PATH, undefined);
+      form.setFieldValue(DECISION_MODEL_FIELD_PATH, data.decision_model);
+    } else {
+      // Cleared (allowClear): no source selected anymore.
+      form.setFieldValue(DECISION_MODEL_ID_PATH, undefined);
+      form.setFieldValue(DECISION_PROVIDER_PATH, undefined);
+      form.setFieldValue(DECISION_MODEL_FIELD_PATH, undefined);
+    }
+    if (form.getFieldError(DECISION_PROVIDER_PATH).length) {
+      form.validateFields([DECISION_PROVIDER_PATH]).catch(() => {});
+    }
+  };
 
   const updateCriteria = (items: CriteriaFormItem[]) => {
     setCriteria(items);
@@ -101,17 +247,39 @@ const DecisionServiceEditor = ({
     );
   };
 
-  // Required only while the plugin is enabled. Reject whitespace-only
-  // strings too: buildPluginsPayload trims them before serializing.
-  const requiredWhenEnabled = (messageId: string) => [
+  // Required only while the plugin is enabled: the decision-service source,
+  // and the pick must be complete — one of providerId (external TypeSafe
+  // provider) or modelId (local decision deployment), mirroring the server's
+  // exactly-one rule, PLUS the derived engine alias. A persisted id without
+  // its alias would otherwise pass, omit decisionModel from the payload, and
+  // the route would save while silently skipping JEV routing
+  // (gpustack/gpustack#6353); a persisted BOTH-ids state would serialize
+  // both and 422 on resubmit. Either way the source error makes the user
+  // re-pick the child row, which writes all three values atomically.
+  // Registered on the hidden providerId field; its error is surfaced
+  // explicitly below the source cascader.
+  const requiredWhenEitherSelected = [
     {
       validator(_rule: any, value: any) {
         if (!enabled) {
           return Promise.resolve();
         }
-        if (value == null || String(value).trim() === '') {
+        const modelIdValue = form.getFieldValue(DECISION_MODEL_ID_PATH);
+        if (
+          // No source picked at all…
+          (value == null && modelIdValue == null) ||
+          // …or a persisted both-ids state the server's exactly-one rule
+          // rejects…
+          (value != null && modelIdValue != null) ||
+          // …or the pick is incomplete (an id without its derived alias).
+          !form.getFieldValue(DECISION_MODEL_FIELD_PATH)
+        ) {
           return Promise.reject(
-            new Error(intl.formatMessage({ id: messageId }))
+            new Error(
+              intl.formatMessage({
+                id: 'routes.lb.systemone.provider.required'
+              })
+            )
           );
         }
         return Promise.resolve();
@@ -121,51 +289,92 @@ const DecisionServiceEditor = ({
 
   return (
     <>
+      {/* The backing form fields stay registered (hidden) so validation
+          fires on submit: required = one of providerId / modelId, mirroring
+          the server's exactly-one rule. The composite cascader below is the
+          only editor for the pair. */}
       <Form.Item
-        name={['plugins', 'decision-service', 'providerId']}
-        rules={requiredWhenEnabled('routes.lb.systemone.provider.required')}
+        name={DECISION_PROVIDER_PATH}
+        hidden
+        noStyle
+        rules={requiredWhenEitherSelected}
       >
-        <CoreSelect
+        <FieldRegistrar />
+      </Form.Item>
+      <Form.Item name={DECISION_MODEL_ID_PATH} hidden noStyle>
+        <FieldRegistrar />
+      </Form.Item>
+      {/* The engine alias is derived from the picked child row (see
+          handleSourceChange) — registered hidden so it stays in the form
+          store for buildPluginsPayload, never edited by hand. */}
+      <Form.Item name={DECISION_MODEL_FIELD_PATH} hidden noStyle>
+        <FieldRegistrar />
+      </Form.Item>
+      {/* Layout-only Form.Item (no name): the composite source cascader is
+          controlled — its backing fields are the hidden registrar items
+          above — but a bare Cascader gets neither antd's
+          `ant-select-in-form-item` width:100% (antd cascaders reuse the
+          select classes) nor the standard item margin, leaving a
+          content-width box flush against the decision model field below.
+          Same wrapper as the flavor select in the instance-type forms. */}
+      <Form.Item>
+        <SealCascader
           allowClear
-          options={providerOptions}
           required
-          onChange={() => {
-            // The decision engine must exist in the newly selected
-            // provider's cache — a stale alias would pass required
-            // validation but render the route rule inert.
-            form.setFieldValue(
-              ['plugins', 'decision-service', 'decisionModel'],
-              undefined
-            );
-          }}
+          showSearch
+          expandTrigger="hover"
+          multiple={false}
+          alwaysFocus
+          maxTagCount={1}
+          showCheckedStrategy="SHOW_CHILD"
+          placeholder={intl.formatMessage({
+            id: 'routes.lb.systemone.provider.required'
+          })}
+          options={pickerOptions}
+          value={sourceValue}
+          onChange={handleSourceChange}
+          displayRender={renderSelectedSource}
+          optionNode={renderSourceOption}
           label={
             <LabelWithHelp
               labelId="routes.lb.systemone.provider"
               tipsId="routes.lb.systemone.provider.tips"
             />
           }
+          // Floating popup, not the pinned `.cascader-popup-wrapper`: the LB
+          // card renders with overflow hidden and the decision-service section
+          // sits at its bottom, so a popup parented to the trigger would be
+          // clipped — it goes to document.body and antd positions it. The
+          // pinned variant's `inset: 53px` would land a body-rendered popup
+          // at the top-left of the page.
+          classNames={{
+            popup: { root: 'cascader-popup-floating gpu-selector' }
+          }}
+          styles={{
+            popup: {
+              listItem: {
+                padding: '5px 10px',
+                width: '100%',
+                maxWidth: 'none',
+                boxSizing: 'border-box'
+              }
+            }
+          }}
         />
-      </Form.Item>
-      {/* Required while the plugin is enabled — without an explicit decision
-          model the server silently falls back and skips JEV-based routing
-          (gpustack/gpustack#6353); see buildPluginsPayload for the payload. */}
-      <Form.Item
-        name={['plugins', 'decision-service', 'decisionModel']}
-        rules={requiredWhenEnabled(
-          'routes.lb.systemone.decisionModel.required'
-        )}
-      >
-        <AutoComplete
-          options={decisionModelOptions}
-          allowClear
-          required
-          label={
-            <LabelWithHelp
-              labelId="routes.lb.systemone.decisionModel"
-              tipsId="routes.lb.systemone.decisionModel.tips"
-            />
-          }
-        />
+        {/* The providerId field is registered hidden (FieldRegistrar above),
+            so its validation error has nowhere to render — surface it here or
+            a submit with no source selected is blocked silently. Kept inside
+            the layout Form.Item so the error hugs the select and the item's
+            own margin still separates the next field. */}
+        <Form.Item noStyle shouldUpdate={() => true}>
+          {() => (
+            <Typography.Paragraph type="danger" style={{ marginBottom: 0 }}>
+              <Form.ErrorList
+                errors={form.getFieldError(DECISION_PROVIDER_PATH)}
+              />
+            </Typography.Paragraph>
+          )}
+        </Form.Item>
       </Form.Item>
       {/* The backend schema treats instructions as optional — a valid
           section may contain only criteria, so no required rule here. */}

@@ -6,7 +6,8 @@ import {
   CREAT_IMAGE_API,
   EMBEDDING_API,
   MODEL_PROXY,
-  RERANKER_API
+  RERANKER_API,
+  SYSTEMONE_API
 } from '@/pages/playground/apis';
 import {
   AutoTooltip,
@@ -40,6 +41,9 @@ const API_MAP: Record<string, { api: string }> = {
   },
   [modelCategoriesMap.reranker]: {
     api: RERANKER_API
+  },
+  [modelCategoriesMap.decision]: {
+    api: SYSTEMONE_API
   }
 };
 

@@ -13,7 +13,6 @@ import useAddWorker from '@/pages/cluster-management/hooks/use-add-worker';
 import { useQueryClusterList } from '@/pages/cluster-management/services/use-query-cluster-list';
 import useNoResourceResult from '@/pages/llmodels/hooks/use-no-resource-result';
 import useGranfanaLink from '@/pages/resources/hooks/use-grafana-link';
-import { EnvironmentOutlined } from '@ant-design/icons';
 import {
   DeleteModal,
   FilterBar,
@@ -22,7 +21,7 @@ import {
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { Button, message } from 'antd';
+import { message } from 'antd';
 import { useEffect, useState } from 'react';
 import {
   WORKERS_API,
@@ -205,7 +204,10 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
         );
         const results = await Promise.allSettled(
           rows.map((row: ListItem) =>
-            updateWorker(row.id, { ...row, labels: values.labels })
+            updateWorker(row.id, {
+              ...row,
+              labels: { ...(row.labels || {}), ...(values.labels || {}) }
+            })
           )
         );
         const failed = results.filter((r) => r.status === 'rejected').length;
@@ -264,6 +266,7 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
     if (!ids.length) {
       return;
     }
+    setSetLocationOpen(false);
     setBatchLabelTargets(ids);
     setUpdateLabelsData({
       open: true,
@@ -318,27 +321,23 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
     (rowSelection?.selectedRowKeys || []).includes(item.id)
   );
 
-  const setLocationAction = (
+  const renderBatchActions = (actions: React.ReactElement) => (
     <SetLocationForWorkers
       open={setLocationOpen}
-      onOpenChange={setSetLocationOpen}
+      onOpenChange={(nextOpen) => {
+        // Only the location action opens this popover. Other batch controls
+        // share its anchor and must not open it when clicked.
+        if (!nextOpen) {
+          setSetLocationOpen(false);
+        }
+      }}
       workers={selectedWorkers}
       onDone={() => {
         fetchData();
         getTopologies(Object.keys(topologies).map(Number));
       }}
     >
-      <Button
-        icon={<EnvironmentOutlined />}
-        disabled={!rowSelection?.selectedRowKeys?.length}
-      >
-        <span>
-          {intl.formatMessage({ id: 'resources.worker.setLocation' })}
-          {rowSelection?.selectedRowKeys?.length > 0 && (
-            <span>({rowSelection?.selectedRowKeys?.length})</span>
-          )}
-        </span>
-      </Button>
+      <span>{actions}</span>
     </SetLocationForWorkers>
   );
 
@@ -421,9 +420,15 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
               <></>
             ) : (
               <WorkerRightActions
-                handleDeleteByBatch={handleDeleteBatch}
+                handleDeleteByBatch={() => {
+                  setSetLocationOpen(false);
+                  handleDeleteBatch();
+                }}
+                handleSetLocationByBatch={() => {
+                  setSetLocationOpen((open) => !open);
+                }}
                 handleUpdateLabelsByBatch={handleUpdateLabelsByBatch}
-                SetLocationAction={setLocationAction}
+                renderBatchActions={renderBatchActions}
                 handleClickPrimary={handleOnAddWorker}
                 rowSelection={rowSelection}
                 MonitorButton={ActionButton()}

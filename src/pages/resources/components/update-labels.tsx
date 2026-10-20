@@ -79,9 +79,8 @@ const UpdateLabels: React.FC<ViewModalProps> = (props) => {
                 { count }
               )
             : data.name,
-          // Empty on a batch: the labels entered here are what every selected
-          // worker ends up with, so starting from one of them would be a
-          // silent overwrite of the rest.
+          // A batch only adds or overrides the labels entered here; each
+          // worker keeps its other labels when the updates are submitted.
           labels: batch ? {} : data.labels
         }}
       >

@@ -164,3 +164,13 @@ export interface ModelFileFormData {
   local_dir: string;
   is_lora: boolean;
 }
+
+export interface WorkerLabelsFormData {
+  labels: Record<string, string>;
+  name: string;
+}
+
+export interface WorkerLabelsUpdate {
+  worker_ids: number[];
+  labels: Record<string, string>;
+}

@@ -127,10 +127,10 @@ export default {
   'resources.worker.targetVersion': 'Target Version: {version}',
   'resources.driver.version': 'Driver Version: {version}',
 
-  'resources.worker.setLabels': 'Set Labels',
+  'resources.worker.setLabels': 'Add/Update Labels',
   'resources.worker.setLabels.count': '{count} workers selected',
-  'resources.worker.setLabels.partial':
-    'Labels updated on {done} workers, {failed} failed.',
+  'resources.worker.setLabels.hint':
+    'Adds new labels and updates matching keys on all selected workers. Other labels are preserved. To remove labels, edit a worker individually.',
 
   'resources.table.location': 'Location',
   'resources.worker.setLocation': 'Set Location'

@@ -26,11 +26,11 @@ import { useEffect, useState } from 'react';
 import {
   WORKERS_API,
   deleteWorker,
-  queryWorker,
   queryWorkersList,
-  updateWorker
+  updateWorker,
+  updateWorkerLabels
 } from '../apis';
-import { ListItem } from '../config/types';
+import { ListItem, WorkerLabelsFormData } from '../config/types';
 import useWorkerColumns from '../hooks/use-worker-columns';
 import useWorkerMaintenance from '../hooks/use-worker-maintenance';
 import UpdateLabels from './update-labels';
@@ -85,7 +85,7 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
 
   const intl = useIntl();
   // Non-empty means the labels modal is writing to the selection rather than
-  // to one row. Load these ids afresh on save, independent of the visible page.
+  // to one row. Send every selected id, independent of the visible page.
   const [batchLabelTargets, setBatchLabelTargets] = useState<number[]>([]);
   const [updateLabelsData, setUpdateLabelsData] = useState<{
     open: boolean;
@@ -192,32 +192,17 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
     }
   };
 
-  const handleUpdateLabelsOk = async (values: Record<string, any>) => {
+  const handleUpdateLabelsOk = async (values: WorkerLabelsFormData) => {
     try {
       if (batchLabelTargets.length) {
-        // Read every selected worker, including other pages, before merging.
-        // A failed read or write counts against that worker without blocking
-        // the other selected workers.
-        const results = await Promise.allSettled(
-          batchLabelTargets.map(async (id) => {
-            const worker = await queryWorker(id, { skipErrorHandler: true });
-            return updateWorker(id, {
-              ...worker,
-              labels: { ...(worker.labels || {}), ...(values.labels || {}) }
-            });
-          })
-        );
-        const failed = results.filter((r) => r.status === 'rejected').length;
-        if (failed) {
-          message.warning(
-            intl.formatMessage(
-              { id: 'resources.worker.setLabels.partial' },
-              { done: results.length - failed, failed }
-            )
-          );
-        } else {
-          message.success(intl.formatMessage({ id: 'common.message.success' }));
+        if (!Object.keys(values.labels).length) {
+          return;
         }
+        await updateWorkerLabels({
+          worker_ids: batchLabelTargets,
+          labels: values.labels
+        });
+        message.success(intl.formatMessage({ id: 'common.message.success' }));
         rowSelection?.clearSelections?.();
       } else {
         await updateWorker(updateLabelsData.data.id, {
@@ -229,8 +214,8 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
       fetchData();
       setBatchLabelTargets([]);
       setUpdateLabelsData({ open: false, data: {} as ListItem });
-    } catch (error) {
-      console.log('error', error);
+    } catch {
+      // The global request handler reports the error; keep the form for retry.
     }
   };
 

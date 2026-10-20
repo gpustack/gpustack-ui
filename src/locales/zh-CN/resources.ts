@@ -123,10 +123,10 @@ export default {
   'resources.worker.targetVersion': '目标版本：{version}',
   'resources.driver.version': '驱动版本：{version}',
 
-  'resources.worker.setLabels': '设置标签',
+  'resources.worker.setLabels': '添加/更新标签',
   'resources.worker.setLabels.count': '已选 {count} 台 worker',
-  'resources.worker.setLabels.partial':
-    '{done} 台已更新标签，{failed} 台失败。',
+  'resources.worker.setLabels.hint':
+    '为所有选中的 worker 添加新标签，并更新同名标签的值，其他标签保持不变。如需删除标签，请单独编辑 worker。',
 
   'resources.table.location': '位置',
   'resources.worker.setLocation': '设置位置'

@@ -126,10 +126,10 @@ export default {
   'resources.worker.targetVersion': 'Target Version: {version}',
   'resources.driver.version': 'Driver Version: {version}',
 
-  'resources.worker.setLabels': 'Задать метки',
+  'resources.worker.setLabels': 'Добавить/обновить метки',
   'resources.worker.setLabels.count': 'Выбрано воркеров: {count}',
-  'resources.worker.setLabels.partial':
-    'Метки обновлены на {done} воркерах, {failed} не удалось.',
+  'resources.worker.setLabels.hint':
+    'Добавляет новые метки и обновляет значения совпадающих ключей у всех выбранных воркеров. Остальные метки сохраняются. Для удаления меток редактируйте воркеры по отдельности.',
   'resources.table.location': 'Расположение',
   'resources.worker.setLocation': 'Задать расположение'
 };

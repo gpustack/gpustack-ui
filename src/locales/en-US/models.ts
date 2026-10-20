@@ -636,7 +636,7 @@ export default {
   'models.pd.stale':
     'Configuration changed; restart the deployment to apply it.',
   'models.pd.recreation.paused':
-    'Configuration changed. Missing instances will not be recreated automatically until you restart the entire deployment.',
+    'Configuration changed. Automatic restarts of failed instances and recreation of missing instances are paused. Stop the deployment, wait for all instances to be removed, then start it to apply the new configuration.',
   'models.pd.instance.delete.stale':
     'This PD deployment has configuration changes waiting for a restart. This instance will not be recreated automatically after deletion. Restart the entire deployment to apply the configuration and restore its replicas.',
   'models.restart.failed': 'Failed to restart the model.',

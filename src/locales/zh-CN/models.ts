@@ -598,7 +598,7 @@ export default {
   'models.pd.instance.stale': '该实例使用旧版配置，重启整组后生效。',
   'models.pd.stale': '配置已变更，需重启部署生效。',
   'models.pd.recreation.paused':
-    '配置已变更。在重启整个部署前，缺失实例不会自动重建。',
+    '配置已变更，错误实例的自动重启和缺失实例的自动重建已暂停。请先停止部署，等待所有实例移除后，再启动部署以应用新配置。',
   'models.pd.instance.delete.stale':
     '该 PD 部署的配置尚待重启生效。删除此实例后不会自动重建。请重启整个部署，以应用配置并恢复副本。',
   'models.restart.failed': '重启模型失败。',

@@ -12,10 +12,19 @@ const { default: useUpdateChunkedList } = await import(
   ).href
 );
 const EventType = { CREATE: 1, UPDATE: 2, DELETE: 3 };
-type Worker = { id: number; name: string; created_at: string; state?: string };
+type Worker = {
+  id: number;
+  name: string;
+  created_at: string;
+  state?: string;
+  status?: any;
+};
 type Subscription = {
   url: string;
-  handler: (events: any[]) => void;
+  handler: (events: any) => void;
+  contentType?: string;
+  beforeReconnect?: () => void;
+  response?: string;
   cancel: ReturnType<typeof mock.fn>;
 };
 const subscriptions: Subscription[] = [];
@@ -201,8 +210,21 @@ async function mount(
     },
     advance,
     dispose,
+    async raw(subscription: Subscription, chunk: string) {
+      subscription.response = (subscription.response || '') + chunk;
+      await act(async () => subscription.handler(subscription.response));
+    },
     async emit(subscription: Subscription, events: any[]) {
-      await act(async () => subscription.handler(events));
+      await act(async () => {
+        if (subscription.contentType === 'text') {
+          subscription.response =
+            (subscription.response || '') +
+            events.map((event) => JSON.stringify(event) + '\n\n').join('');
+          subscription.handler(subscription.response);
+        } else {
+          subscription.handler(events);
+        }
+      });
     }
   };
 }
@@ -262,7 +284,10 @@ test('watch updates replace visible rows without inserting off-page rows or quer
   const h = await mount(t);
   await h.emit(subscriptions[0], [
     event(EventType.UPDATE, { ...worker(197), state: 'ready' }),
-    event(EventType.UPDATE, worker(1)),
+    {
+      ...event(EventType.UPDATE, worker(1)),
+      changed_fields: { state: [['not_ready'], ['ready']] }
+    },
     event(EventType.CREATE, { ...worker(198), state: 'ready' })
   ]);
   assert.deepEqual(h.ids, [200, 197, 198]);
@@ -420,3 +445,305 @@ for (const seed of [[], [1, 2, 3, 4]]) {
     await h.advance(200);
   });
 }
+
+test('updating a visible sort field refetches the ordered page', async (t) => {
+  const h = await mount(t);
+  await act(async () =>
+    h.table.handleQueryChange({ sort_by: 'name' }, { paginate: true })
+  );
+  h.respond(() => response([198, 200, 197]));
+  await h.emit(subscriptions[0], [
+    event(EventType.UPDATE, { ...worker(197), name: 'zulu' })
+  ]);
+  const before = h.fetchPage.mock.callCount();
+  await h.advance(1000);
+  assert.equal(h.fetchPage.mock.callCount(), before + 1);
+  assert.deepEqual(h.ids, [198, 200, 197]);
+  assert.equal(h.fetchPage.mock.calls.at(-1)!.arguments[0].sort_by, 'name');
+});
+
+for (const metadata of [undefined, {}, { name: [['worker-1'], ['aaa']] }]) {
+  test(`an off-page sort update refreshes membership (${metadata ? 'with' : 'without'} change metadata)`, async (t) => {
+    const h = await mount(t);
+    await act(async () =>
+      h.table.handleQueryChange(
+        { sort_by: 'name', page: 2 },
+        { paginate: true }
+      )
+    );
+    h.respond(() => response([1, 200, 197], 200, 2));
+    await h.emit(subscriptions[0], [
+      {
+        ...event(EventType.UPDATE, { ...worker(1), name: 'aaa' }),
+        changed_fields: metadata
+      }
+    ]);
+    assert.deepEqual(h.ids, [200, 197, 198]);
+    await h.advance(1000);
+    assert.deepEqual(h.ids, [1, 200, 197]);
+    assert.equal(h.fetchPage.mock.calls.at(-1)!.arguments[0].page, 2);
+  });
+}
+
+for (const sortBy of [
+  'name,-state',
+  '-status.cpu.utilization_rate',
+  'status.memory.utilization_rate',
+  '-gpus'
+]) {
+  test(`sort changes refresh nested, secondary and aliased fields (${sortBy})`, async (t) => {
+    const h = await mount(t);
+    await act(async () =>
+      h.table.handleQueryChange({ sort_by: sortBy }, { paginate: true })
+    );
+    const before = h.fetchPage.mock.callCount();
+    await h.emit(subscriptions[0], [
+      event(EventType.UPDATE, {
+        ...worker(197),
+        state: 'ready',
+        status: {
+          cpu: { utilization_rate: 90 },
+          memory: { utilization_rate: 80 },
+          gpu_devices: [{}]
+        }
+      })
+    ]);
+    await h.advance(1000);
+    assert.equal(h.fetchPage.mock.callCount(), before + 1);
+    assert.equal(h.fetchPage.mock.calls.at(-1)!.arguments[0].sort_by, sortBy);
+  });
+}
+
+test('unrelated updates do not refetch a name-sorted page', async (t) => {
+  const h = await mount(t);
+  await act(async () =>
+    h.table.handleQueryChange({ sort_by: 'name' }, { paginate: true })
+  );
+  const before = h.fetchPage.mock.callCount();
+  await h.emit(subscriptions[0], [
+    event(EventType.UPDATE, { ...worker(197), state: 'ready' }),
+    {
+      ...event(EventType.UPDATE, worker(1)),
+      changed_fields: { status: [{}, { cpu: { utilization_rate: 90 } }] }
+    }
+  ]);
+  await h.advance(1000);
+  assert.equal(h.fetchPage.mock.callCount(), before);
+});
+
+test('a pending REST response retains the newest visible watch update', async (t) => {
+  const h = await mount(t);
+  const slow = deferred<ReturnType<typeof response>>();
+  h.respond(() => slow.promise);
+  let pending!: Promise<boolean>;
+  await act(async () => {
+    pending = h.table.fetchData();
+  });
+  await h.emit(subscriptions[0], [
+    event(EventType.UPDATE, { ...worker(197), state: 'ready' })
+  ]);
+  await h.emit(subscriptions[0], [
+    event(EventType.UPDATE, { ...worker(197), state: 'not_ready' })
+  ]);
+  await act(async () => {
+    slow.resolve(response([200, 197, 198]));
+    await pending;
+  });
+  assert.equal(h.table.dataSource.dataList[1].state, 'not_ready');
+});
+
+test('updates to rows on an incoming page survive its pending REST response', async (t) => {
+  const h = await mount(t);
+  const slow = deferred<ReturnType<typeof response>>();
+  h.respond(() => slow.promise);
+  let pending!: Promise<void>;
+  await act(async () => {
+    pending = h.table.handleQueryChange({ page: 2 }, { paginate: true });
+  });
+  await h.emit(subscriptions[0], [
+    {
+      ...event(EventType.UPDATE, { ...worker(5), state: 'ready' }),
+      changed_fields: { state: [['not_ready'], ['ready']] }
+    }
+  ]);
+  await act(async () => {
+    slow.resolve(response([6, 5, 4], 200, 2));
+    await pending;
+  });
+  assert.deepEqual(h.ids, [6, 5, 4]);
+  assert.equal(h.table.dataSource.dataList[1].state, 'ready');
+});
+
+test('watch deletions cannot be resurrected by a pending REST response', async (t) => {
+  const h = await mount(t);
+  const slow = deferred<ReturnType<typeof response>>();
+  h.respond(() => slow.promise);
+  let pending!: Promise<boolean>;
+  await act(async () => {
+    pending = h.table.fetchData();
+  });
+  await h.emit(subscriptions[0], [event(EventType.DELETE, worker(197))]);
+  await act(async () => {
+    slow.resolve(response([200, 197, 198]));
+    await pending;
+  });
+  assert.deepEqual(h.ids, [200, 198]);
+  h.respond(() => response([200, 198, 196], 199));
+  await h.advance(1000);
+  assert.deepEqual(h.ids, [200, 198, 196]);
+  assert.equal(h.table.dataSource.total, 199);
+});
+
+for (const survivors of [[200, 198], []]) {
+  test(`transport reconnect refetches after replay even with ${survivors.length} known survivors`, async (t) => {
+    const h = await mount(t);
+    const watch = subscriptions[0];
+    assert.equal(watch.contentType, 'text');
+    await act(async () => watch.beforeReconnect!());
+    watch.response = '';
+    const before = h.fetchPage.mock.callCount();
+    // The deletion happens during retry backoff, after beforeReconnect ran.
+    h.respond(() => response(survivors, survivors.length));
+    await h.advance(2000);
+    assert.equal(h.fetchPage.mock.callCount(), before);
+    await h.raw(
+      watch,
+      survivors
+        .map(
+          (id) =>
+            JSON.stringify({ type: EventType.CREATE, data: worker(id) }) +
+            '\n\n'
+        )
+        .join('') || '\n\n'
+    );
+    assert.equal(h.fetchPage.mock.callCount(), before + 1);
+    assert.deepEqual(h.ids, survivors);
+    assert.equal(h.table.dataSource.total, survivors.length);
+    await h.raw(watch, '\n\n');
+    assert.equal(h.fetchPage.mock.callCount(), before + 1);
+  });
+}
+
+test('stale reconnect callbacks cannot refresh a different cluster or a hidden table', async (t) => {
+  const h = await mount(t);
+  const old = subscriptions[0];
+  old.beforeReconnect!();
+  old.response = '';
+  await act(async () => h.table.handleQueryChange({ cluster_id: 2 }));
+  await h.raw(old, '\n\n');
+  const current = subscriptions[1];
+  current.beforeReconnect!();
+  current.response = '';
+  await act(async () => h.table.cancelRequestsOnPageInactive());
+  await h.raw(current, '\n\n');
+  assert.equal(h.fetchPage.mock.callCount(), 2);
+});
+
+test('text watch preserves partial frames, ignores malformed rows, and batches complete events', async (t) => {
+  const h = await mount(t);
+  const watch = subscriptions[0];
+  const updated = {
+    ...worker(197),
+    name: 'worker-197 {"quoted"}\nnext',
+    state: 'ready'
+  };
+  const frame = JSON.stringify({ type: EventType.UPDATE, data: updated });
+  await h.raw(watch, frame.slice(0, 25));
+  assert.equal(h.table.dataSource.dataList[1].state, undefined);
+  await h.raw(
+    watch,
+    frame.slice(25) +
+      '\n\ninvalid\nnull\n' +
+      JSON.stringify({ type: EventType.UPDATE, data: null }) +
+      '\n\n'
+  );
+  assert.equal(h.table.dataSource.dataList[1].name, updated.name);
+  assert.equal(h.table.dataSource.dataList[1].state, 'ready');
+  await h.advance(1000);
+  assert.equal(h.fetchPage.mock.callCount(), 1);
+});
+
+test('off-page nested sort updates ignore unrelated status fields', async (t) => {
+  const h = await mount(t);
+  await act(async () =>
+    h.table.handleQueryChange(
+      { sort_by: '-status.cpu.utilization_rate' },
+      { paginate: true }
+    )
+  );
+  const before = h.fetchPage.mock.callCount();
+  const oldStatus = {
+    cpu: { utilization_rate: 10 },
+    memory: { utilization_rate: 20 }
+  };
+  const newStatus = { ...oldStatus, memory: { utilization_rate: 90 } };
+  await h.emit(subscriptions[0], [
+    {
+      ...event(EventType.UPDATE, { ...worker(1), status: newStatus }),
+      changed_fields: { status: [oldStatus, newStatus] }
+    }
+  ]);
+  await h.advance(1000);
+  assert.equal(h.fetchPage.mock.callCount(), before);
+  const nextStatus = { ...newStatus, cpu: { utilization_rate: 95 } };
+  h.respond(() => response([1, 200, 197]));
+  await h.emit(subscriptions[0], [
+    {
+      ...event(EventType.UPDATE, { ...worker(1), status: nextStatus }),
+      changed_fields: { status: [newStatus, nextStatus] }
+    }
+  ]);
+  await h.advance(1000);
+  assert.equal(h.fetchPage.mock.callCount(), before + 1);
+  assert.deepEqual(h.ids, [1, 200, 197]);
+});
+
+test('watch updates survive the fallback request when the last page shrinks', async (t) => {
+  const h = await mount(t);
+  const fallback = deferred<ReturnType<typeof response>>();
+  h.respond((params) =>
+    params.page === 3 ? response([], 6, 3) : fallback.promise
+  );
+  let pending!: Promise<void>;
+  await act(async () => {
+    pending = h.table.handleQueryChange({ page: 3 }, { paginate: true });
+  });
+  await h.emit(subscriptions[0], [
+    {
+      ...event(EventType.UPDATE, { ...worker(5), state: 'ready' }),
+      changed_fields: { state: [['not_ready'], ['ready']] }
+    }
+  ]);
+  await act(async () => {
+    fallback.resolve(response([4, 5, 6], 6, 2));
+    await pending;
+  });
+  assert.equal(h.table.queryParams.page, 2);
+  assert.equal(h.table.dataSource.dataList[1].state, 'ready');
+});
+
+test('a canceled REST request cannot discard the current request watch buffer', async (t) => {
+  const h = await mount(t);
+  const first = deferred<ReturnType<typeof response>>();
+  const second = deferred<ReturnType<typeof response>>();
+  let count = 0;
+  h.respond(() => (++count === 1 ? first.promise : second.promise));
+  let oldRequest!: Promise<boolean>;
+  let currentRequest!: Promise<boolean>;
+  await act(async () => {
+    oldRequest = h.table.fetchData();
+    currentRequest = h.table.fetchData();
+  });
+  await act(async () => {
+    first.resolve(response([200, 197, 198]));
+    await oldRequest;
+  });
+  await h.emit(subscriptions[0], [
+    event(EventType.UPDATE, { ...worker(197), state: 'ready' })
+  ]);
+  await act(async () => {
+    second.resolve(response([200, 197, 198]));
+    await currentRequest;
+  });
+  assert.equal(h.table.dataSource.dataList[1].state, 'ready');
+});

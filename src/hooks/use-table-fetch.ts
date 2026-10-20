@@ -1,6 +1,12 @@
-import { WatchEventType } from '@/config';
 import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import { handleBatchRequest } from '@/utils';
+import {
+  applyWatchChanges,
+  createPaginatedWatchStream,
+  reconcileWatchPage,
+  recordWatchChanges,
+  type WatchChanges
+} from '@/utils/paginated-watch';
 import {
   createAxiosToken,
   useChunkRequest,
@@ -93,6 +99,7 @@ export default function useTableFetch<T>(
   const hasInitRef = useRef(false);
   const mountedRef = useRef(true);
   const requestIdRef = useRef(0);
+  const pendingWatchChangesRef = useRef<WatchChanges<T> | null>(null);
   const watchGenerationRef = useRef(0);
   const { pagination, setPagination } = usePaginationStatus(options.key || '');
 
@@ -134,103 +141,114 @@ export default function useTableFetch<T>(
     queryParamsRef.current = queryParams;
   }, [queryParams]);
 
-  const fetchData = async (
-    externalParams?: { query: Record<string, any>; loadmore?: boolean },
-    polling = false
-  ) => {
-    const requestId = ++requestIdRef.current;
-    const isCurrentRequest = () =>
-      mountedRef.current && requestId === requestIdRef.current;
-    if (!polling) {
-      setDataSource((pre) => {
-        pre.loading = true;
-        return { ...pre };
-      });
-    }
-    const { query, loadmore } = externalParams || {};
-    try {
-      const params = {
-        ..._.pickBy(query || queryParamsRef.current, hasQueryValue)
-      };
-      axiosTokenRef.current?.cancel?.('CANCEL_PREVIOUS_REQUEST');
-      const axiosToken = createAxiosToken();
-      axiosTokenRef.current = axiosToken;
-      const res = await fetchAPI(params, {
-        token: axiosToken.token
-      });
-      if (!isCurrentRequest()) return false;
-      if (!dataSource.loadend) {
-        // add a delay to avoid flash
-        await new Promise((resolve) => {
-          setTimeout(resolve, 200);
+  const fetchData = useMemoizedFn(
+    async (
+      externalParams?: { query: Record<string, any>; loadmore?: boolean },
+      polling = false
+    ) => {
+      const requestId = ++requestIdRef.current;
+      const watchChanges: WatchChanges<T> = new Map();
+      pendingWatchChangesRef.current = updateManually ? watchChanges : null;
+      const isCurrentRequest = () =>
+        mountedRef.current && requestId === requestIdRef.current;
+      if (!polling) {
+        setDataSource((pre) => {
+          pre.loading = true;
+          return { ...pre };
         });
       }
-      if (!isCurrentRequest()) return false;
-      if (
-        !res.items.length &&
-        params.page > res.pagination.totalPage &&
-        res.pagination.totalPage > 0
-      ) {
-        const newParams = {
-          ...params,
-          page: res.pagination.totalPage
+      const { query, loadmore } = externalParams || {};
+      try {
+        const params = {
+          ..._.pickBy(query || queryParamsRef.current, hasQueryValue)
         };
-        const newRes = await fetchAPI(newParams, {
+        axiosTokenRef.current?.cancel?.('CANCEL_PREVIOUS_REQUEST');
+        const axiosToken = createAxiosToken();
+        axiosTokenRef.current = axiosToken;
+        const res = await fetchAPI(params, {
           token: axiosToken.token
         });
-
         if (!isCurrentRequest()) return false;
-        const dataList = loadmore
-          ? [...cacheDataListRef.current, ...(newRes.items || [])]
-          : newRes.items || [];
+        if (!dataSource.loadend) {
+          // add a delay to avoid flash
+          await new Promise((resolve) => {
+            setTimeout(resolve, 200);
+          });
+        }
+        if (!isCurrentRequest()) return false;
+        if (
+          !res.items.length &&
+          params.page > res.pagination.totalPage &&
+          res.pagination.totalPage > 0
+        ) {
+          const newParams = {
+            ...params,
+            page: res.pagination.totalPage
+          };
+          const newRes = await fetchAPI(newParams, {
+            token: axiosToken.token
+          });
+
+          if (!isCurrentRequest()) return false;
+          const dataList = applyWatchChanges(
+            loadmore
+              ? [...cacheDataListRef.current, ...(newRes.items || [])]
+              : newRes.items || [],
+            watchChanges
+          );
+          cacheDataListRef.current = dataList;
+          setDataSource({
+            dataList,
+            loading: false,
+            loadend: true,
+            total: newRes.pagination.total,
+            totalPage: newRes.pagination.totalPage
+          });
+
+          queryParamsRef.current = newParams;
+          setQueryParams(newParams);
+          return true;
+        }
+
+        const dataList = applyWatchChanges(
+          loadmore
+            ? [...cacheDataListRef.current, ...(res.items || [])]
+            : res.items || [],
+          watchChanges
+        );
         cacheDataListRef.current = dataList;
         setDataSource({
           dataList,
           loading: false,
           loadend: true,
-          total: newRes.pagination.total,
-          totalPage: newRes.pagination.totalPage
+          total: res.pagination.total,
+          totalPage: res.pagination.totalPage
         });
-
-        queryParamsRef.current = newParams;
-        setQueryParams(newParams);
+        if (isInfiniteScroll && query?.page) {
+          queryParamsRef.current = { ...queryParamsRef.current, ...query };
+          setQueryParams(queryParamsRef.current);
+        }
         return true;
-      }
-
-      const dataList = loadmore
-        ? [...cacheDataListRef.current, ...(res.items || [])]
-        : res.items || [];
-      cacheDataListRef.current = dataList;
-      setDataSource({
-        dataList,
-        loading: false,
-        loadend: true,
-        total: res.pagination.total,
-        totalPage: res.pagination.totalPage
-      });
-      if (isInfiniteScroll && query?.page) {
-        queryParamsRef.current = { ...queryParamsRef.current, ...query };
-        setQueryParams(queryParamsRef.current);
-      }
-      return true;
-    } catch (error: any) {
-      if (isCurrentRequest() && error.message !== 'CANCEL_PREVIOUS_REQUEST') {
-        cacheDataListRef.current = [];
-        setDataSource({
-          dataList: [],
-          loading: false,
-          loadend: true,
-          total: dataSource.total,
-          totalPage: dataSource.totalPage
-        });
-      }
-      return false;
-    } finally {
-      if (isCurrentRequest()) {
-        debounceSetExtraStatus({ firstLoad: false });
+      } catch (error: any) {
+        if (isCurrentRequest() && error.message !== 'CANCEL_PREVIOUS_REQUEST') {
+          cacheDataListRef.current = [];
+          setDataSource({
+            dataList: [],
+            loading: false,
+            loadend: true,
+            total: dataSource.total,
+            totalPage: dataSource.totalPage
+          });
+        }
+        return false;
+      } finally {
+        if (isCurrentRequest()) {
+          pendingWatchChangesRef.current = null;
+          debounceSetExtraStatus({ firstLoad: false });
+        }
       }
     }
-  };
+  );
 
   const { run: debounceFetchData, cancel: cancelDebouncedFetch } =
     useDebounceFn(
@@ -273,38 +291,13 @@ export default function useTableFetch<T>(
     // Keep this policy local to the paginated table: useAddWorkerMessage uses
     // its own subscription and CREATE callbacks to count successful additions.
     // See src/hooks/__tests__/use-table-fetch.test.mts for replay and drawer cases.
-    let dataList = cacheDataListRef.current;
-    let changed = false;
-    let needsRefresh = false;
-    const deletedIds: number[] = [];
-    for (const event of list) {
-      if (event.type === WatchEventType.DELETE && events.includes('DELETE')) {
-        const ids = new Set<number>(event.ids || []);
-        const remaining = dataList.filter((item: any) => !ids.has(item.id));
-        changed ||= remaining.length !== dataList.length;
-        dataList = remaining;
-        deletedIds.push(...ids);
-        // Even a deletion outside this page changes the total and page bounds.
-        needsRefresh ||= ids.size > 0;
-      } else if (
-        (event.type === WatchEventType.CREATE && events.includes('CREATE')) ||
-        (event.type === WatchEventType.UPDATE && events.includes('UPDATE'))
-      ) {
-        const items = new Map<any, any>(
-          (event.collection || []).map((item: any) => [item.id, item])
-        );
-        if (event.type === WatchEventType.CREATE) {
-          const currentIds = new Set(dataList.map((item: any) => item.id));
-          needsRefresh ||= [...items.keys()].some((id) => !currentIds.has(id));
-        }
-        dataList = dataList.map((item: any) => {
-          if (!items.has(item.id)) return item;
-          changed = true;
-          return { ...items.get(item.id) };
-        });
-      }
-    }
-    if (changed) {
+    recordWatchChanges(pendingWatchChangesRef.current, list, events);
+    const { dataList, needsRefresh, deletedIds } = reconcileWatchPage(
+      cacheDataListRef.current,
+      list,
+      { events, sortBy: queryParamsRef.current.sort_by }
+    );
+    if (dataList !== cacheDataListRef.current) {
       cacheDataListRef.current = dataList;
       setDataSource((previous) => ({ ...previous, dataList, deletedIds }));
     }
@@ -327,16 +320,23 @@ export default function useTableFetch<T>(
 
       const query = _.omit(currentParams, ['page', 'perPage', 'sort_by']);
 
+      const isCurrentWatch = () =>
+        mountedRef.current && generation === watchGenerationRef.current;
+      const handler = (list: any[]) => {
+        if (isCurrentWatch()) updateHandler(list);
+      };
+      const stream = updateManually
+        ? createPaginatedWatchStream(handler, () => {
+            if (isCurrentWatch()) {
+              cancelDebouncedFetch();
+              fetchData({ query: { ...queryParamsRef.current } }, true);
+            }
+          })
+        : { handler };
       chunkRequestRef.current = setChunkRequest({
-        // Same predicate as `fetchData`: the watch stream has to carry the
-        // exact filter set the table was fetched with, or it would push rows
-        // the current filters exclude.
+        // Match the REST filters exactly; page and sort belong to REST only.
         url: `${API}?${qs.stringify(_.pickBy(query, hasQueryValue))}`,
-        handler: (list: any[]) => {
-          if (mountedRef.current && generation === watchGenerationRef.current) {
-            updateHandler(list);
-          }
-        }
+        ...stream
       });
     } catch (error) {
       // ignore
@@ -349,6 +349,7 @@ export default function useTableFetch<T>(
   // visible one.
   const cancelRequestsOnPageInactive = useMemoizedFn(() => {
     requestIdRef.current += 1;
+    pendingWatchChangesRef.current = null;
     axiosTokenRef.current?.cancel?.();
     if (watch) {
       cancelChunkRequest();
@@ -564,6 +565,7 @@ export default function useTableFetch<T>(
       mountedRef.current = false;
       clearTimeout(timerIDRef.current);
       requestIdRef.current += 1;
+      pendingWatchChangesRef.current = null;
       cancelChunkRequest();
       axiosTokenRef.current?.cancel?.();
       cacheDataListRef.current = [];

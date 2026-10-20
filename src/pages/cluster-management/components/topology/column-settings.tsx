@@ -1,14 +1,6 @@
-import { DeleteOutlined, SettingOutlined } from '@ant-design/icons';
+import { SettingOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import {
-  Button,
-  Checkbox,
-  Divider,
-  Flex,
-  Popconfirm,
-  Popover,
-  Tooltip
-} from 'antd';
+import { Button, Checkbox, Flex, Popover, Tooltip } from 'antd';
 import { createStyles } from 'antd-style';
 import { useState } from 'react';
 import { TopologyFieldHintMap } from '../../config';
@@ -24,6 +16,10 @@ const useStyles = createStyles(({ css }) => ({
     }
     .row {
       min-height: 28px;
+      border-radius: var(--ant-border-radius-sm);
+      &:hover {
+        background: var(--ant-control-item-bg-hover);
+      }
     }
     .row .ant-checkbox-wrapper {
       flex: 1;
@@ -34,12 +30,6 @@ const useStyles = createStyles(({ css }) => ({
       color: var(--ant-color-text-quaternary);
       font-size: 12px;
     }
-    .delete {
-      color: var(--ant-color-text-tertiary);
-    }
-    .ant-divider {
-      margin-block: 8px;
-    }
   `
 }));
 
@@ -48,101 +38,38 @@ interface ColumnSettingsProps {
   fields: LocationField[];
   isShown: (field: LocationField) => boolean;
   onToggle: (id: string, shown: boolean) => void;
-  /**
-   * Models gathering on a custom layer, or undefined when the server does not
-   * say — then `onDeleteCustom` finds out itself before deleting.
-   */
-  referencedBy: (id: string) => string[] | undefined;
-  onDeleteCustom: (field: LocationField) => Promise<void>;
-  onOpenMapping: () => void;
+  onReset: () => void;
   disabled?: boolean;
 }
 
 /**
  * [M2] The column picker. Ticking a column shows it — an empty column is the
  * invitation to fill it — and unticking only hides it; no data moves either
- * way. It is also the one door to the two rarer things: adding a field the
- * vocabulary lacks and changing which labels the fields read.
+ * way. Layer management has its own entry in the topology toolbar.
  */
 const ColumnSettings: React.FC<ColumnSettingsProps> = ({
   fields,
   isShown,
   onToggle,
-  referencedBy,
-  onDeleteCustom,
-  onOpenMapping,
+  onReset,
   disabled
 }) => {
   const intl = useIntl();
   const { styles } = useStyles();
   const [open, setOpen] = useState(false);
-  const [deleting, setDeleting] = useState<string | null>(null);
 
   const title = intl.formatMessage({ id: 'clusters.topology.columns' });
 
-  const deleteButton = (field: LocationField) => {
-    const referencing = referencedBy(field.id);
-    const button = (
-      <Button
-        type="text"
-        size="small"
-        className="delete"
-        icon={<DeleteOutlined />}
-        disabled={!!referencing?.length}
-        loading={deleting === field.id}
-        aria-label={intl.formatMessage(
-          { id: 'clusters.topology.columns.deleteCustom' },
-          { name: field.label }
-        )}
-      />
-    );
-    if (referencing?.length) {
-      return (
-        <Tooltip
-          title={
-            <>
-              {intl.formatMessage(
-                { id: 'clusters.topology.custom.referenced' },
-                { name: field.label }
-              )}
-              <br />
-              {referencing.join('、')}
-            </>
-          }
-        >
-          {/* A disabled button swallows hover; the span carries the tooltip. */}
-          <span>{button}</span>
-        </Tooltip>
-      );
-    }
-    return (
-      <Popconfirm
-        title={intl.formatMessage(
-          { id: 'clusters.topology.columns.deleteCustom.confirm' },
-          { name: field.label }
-        )}
-        okText={intl.formatMessage({ id: 'common.button.delete' })}
-        okButtonProps={{ danger: true }}
-        cancelText={intl.formatMessage({ id: 'common.button.cancel' })}
-        onConfirm={async () => {
-          setDeleting(field.id);
-          try {
-            await onDeleteCustom(field);
-          } finally {
-            setDeleting(null);
-          }
-        }}
-      >
-        {button}
-      </Popconfirm>
-    );
-  };
-
   const content = (
     <div className={styles.content}>
-      <div className="group">
-        {intl.formatMessage({ id: 'clusters.topology.columns.fields' })}
-      </div>
+      <Flex align="center" justify="space-between" gap={8} className="group">
+        <span>
+          {intl.formatMessage({ id: 'clusters.topology.columns.fields' })}
+        </span>
+        <Button type="link" size="small" onClick={onReset}>
+          {intl.formatMessage({ id: 'common.button.resetdefault' })}
+        </Button>
+      </Flex>
       {fields.map((field) => (
         <Flex key={field.id} align="center" className="row">
           <Checkbox
@@ -156,33 +83,8 @@ const ColumnSettings: React.FC<ColumnSettingsProps> = ({
               </span>
             )}
           </Checkbox>
-          {!field.builtin && deleteButton(field)}
         </Flex>
       ))}
-      {/* The «其它» group is gone with its last member: «卡 / 空闲» and «来源»
-          were both removed in review, and a group heading over nothing reads
-          as a section that failed to load. */}
-      <Divider />
-      <Flex orientation="vertical" align="flex-start">
-        {/* 🔴 One entry, not two. This popover used to offer «添加层级…»
-            beside «标签键映射…», and both ended in the same place — the chain
-            editor, which is where a layer is created, renamed, keyed and
-            ordered. Splitting «add» out of «manage» made one of those four
-            operations look like it lived somewhere else. The popover's own job
-            is column visibility; layer management is one topic and gets one
-            door. */}
-        <Button
-          type="link"
-          size="small"
-          style={{ padding: 0 }}
-          onClick={() => {
-            setOpen(false);
-            onOpenMapping();
-          }}
-        >
-          {intl.formatMessage({ id: 'clusters.topology.columns.manage' })}
-        </Button>
-      </Flex>
     </div>
   );
 

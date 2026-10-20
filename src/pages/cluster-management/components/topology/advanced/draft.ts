@@ -27,7 +27,7 @@ export interface DraftLayer {
   /** Switched off by the operator; not the same as "nobody filled it in". */
   disabled: boolean;
   labelKeys: string[];
-  /** Locked, always first, where hand-filled values land. Null for custom layers. */
+  /** Write target; fixed for built-ins, otherwise the first candidate key. */
   primaryKey: string | null;
   /**
    * This rung departs from the vocabulary, so it has to be written out.

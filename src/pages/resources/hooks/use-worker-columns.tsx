@@ -1,6 +1,7 @@
 import { systemConfigAtom } from '@/atoms/system';
 import { GPUStackVersionAtom } from '@/atoms/user';
 import { tableSorter } from '@/config/settings';
+import { TopologyView } from '@/pages/cluster-management/config/types';
 import { usePluginListColumns } from '@/plugins/list-extra-columns';
 import { convertFileSize } from '@/utils';
 import {
@@ -26,6 +27,7 @@ import { Flex, Tooltip } from 'antd';
 import { useAtom, useAtomValue } from 'jotai';
 import _ from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
+import WorkerLocationCell from '../components/worker-location-cell';
 import { status, WorkerStatusMap, WorkerStatusMapValue } from '../config';
 import { Filesystem, GPUDeviceItem, ListItem } from '../config/types';
 import workerCss from '../styles/worker.less';
@@ -252,6 +254,7 @@ const HolderStatus = () => {
 
 const useWorkerColumns = ({
   clusterData,
+  topologies,
   loadend,
   firstLoad,
   sortOrder,
@@ -262,6 +265,12 @@ const useWorkerColumns = ({
     list: Global.BaseOption<number>[];
     data: Record<number, string>;
   };
+  /**
+   * Per cluster, which label keys each location field reads. The cell
+   * resolves the worker's own labels and facts against them locally — this
+   * list polls, and a request per row would poll with it.
+   */
+  topologies?: Record<number, TopologyView>;
   source?: string;
   loadend: boolean;
   firstLoad: boolean;
@@ -456,6 +465,17 @@ const useWorkerColumns = ({
           <LabelCell labels={record.labels} />
         )
       },
+      {
+        title: intl.formatMessage({ id: 'resources.table.location' }),
+        dataIndex: 'location',
+        minWidth: 240,
+        render: (_text: any, record: ListItem) => (
+          <WorkerLocationCell
+            worker={record}
+            view={topologies?.[record.cluster_id]}
+          />
+        )
+      },
       ...pluginRendered,
       {
         title: intl.formatMessage({ id: 'clusters.title' }),
@@ -611,6 +631,7 @@ const useWorkerColumns = ({
     intl,
     sortOrder,
     clusterData,
+    topologies,
     loadend,
     source,
     firstLoad,

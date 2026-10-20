@@ -1,17 +1,23 @@
+import { Input as CInput, ModalFooter, SubDrawer } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Alert, Flex, Input, Modal } from 'antd';
+import { Alert, Flex } from 'antd';
 import { createStyles } from 'antd-style';
 import classNames from 'classnames';
-import { useState } from 'react';
 import { RACK_LAYER, TopologyKnownKey } from '../../../config/types';
 import { DraftLayer } from './draft';
-import { KeyList } from './field-chain';
 import { CUSTOM_FIELD, KeyVocabulary } from './key-editor';
+import KeyList from './key-list';
 
 /** Indent per rung of the staircase, in px. */
 const STEP = 14;
 
 const useStyles = createStyles(({ css }) => ({
+  drawer: css`
+    /* Let ColumnWrapper shrink and scroll without pushing its footer out. */
+    > :last-child {
+      min-height: 0;
+    }
+  `,
   /* The chain as a staircase with a clickable gap between every two rungs.
      A gap is a thin line until hovered, so the eye reads the chain first and
      the slots second; the chosen gap becomes the new layer's row. */
@@ -92,8 +98,28 @@ export interface CustomLayerValue {
   index: number;
 }
 
+export const createCustomLayerValue = (
+  chain: DraftLayer[],
+  initial?: CustomLayerValue
+): CustomLayerValue => ({
+  name: initial?.name ?? '',
+  labelKeys: [...(initial?.labelKeys ?? [])],
+  // Above the rack by default: the network block / pod case a vocabulary of
+  // rows and racks has no word for.
+  index:
+    initial?.index ??
+    Math.max(
+      0,
+      chain.findIndex((layer) => layer.id === RACK_LAYER)
+    )
+});
+
 interface CustomLayerProps {
   open: boolean;
+  value: CustomLayerValue;
+  width?: number | string;
+  onChange: (value: CustomLayerValue) => void;
+  getContainer: () => HTMLElement | null | undefined;
   /** The chain as it stands, root to leaf, host excluded. */
   chain: DraftLayer[];
   /** Names a custom layer may not take — the leaf's, and the vocabulary's. */
@@ -115,6 +141,10 @@ interface CustomLayerProps {
  */
 const CustomLayer: React.FC<CustomLayerProps> = ({
   open,
+  value,
+  width = 'min(720px, 100vw)',
+  onChange,
+  getContainer,
   chain,
   reserved,
   initial,
@@ -125,19 +155,7 @@ const CustomLayer: React.FC<CustomLayerProps> = ({
 }) => {
   const intl = useIntl();
   const { styles } = useStyles();
-  const [name, setName] = useState(initial?.name || '');
-  const [labelKeys, setLabelKeys] = useState<string[]>(
-    initial?.labelKeys || []
-  );
-  // Above the rack by default: the network block / pod case a vocabulary of
-  // rows and racks has no word for.
-  const [index, setIndex] = useState<number>(
-    initial?.index ??
-      Math.max(
-        0,
-        chain.findIndex((l) => l.id === RACK_LAYER)
-      )
-  );
+  const { name, labelKeys, index } = value;
 
   const others = chain.filter((layer) => layer.id !== initial?.id);
   const trimmed = name.trim();
@@ -184,26 +202,43 @@ const CustomLayer: React.FC<CustomLayerProps> = ({
   };
 
   return (
-    <Modal
+    <SubDrawer
       open={open}
-      width={560}
-      destroyOnHidden
+      className={styles.drawer}
+      width={width}
+      getContainer={getContainer}
       title={intl.formatMessage({ id: 'clusters.topology.custom.title' })}
-      okText={intl.formatMessage({ id: 'common.button.confirm' })}
-      cancelText={intl.formatMessage({ id: 'common.button.cancel' })}
-      okButtonProps={{ disabled: !!nameError }}
-      onOk={handleOk}
       onCancel={onCancel}
+      footer={
+        <ModalFooter
+          onOk={handleOk}
+          onCancel={onCancel}
+          okText={intl.formatMessage({ id: 'common.button.confirm' })}
+          cancelText={intl.formatMessage({ id: 'common.button.cancel' })}
+          okBtnProps={{ disabled: !!nameError }}
+          style={{
+            padding: '16px 24px 24px',
+            display: 'flex',
+            justifyContent: 'flex-end'
+          }}
+        />
+      }
     >
       <Flex orientation="vertical" gap={16}>
         <Flex orientation="vertical" gap={4}>
-          <span>
-            {intl.formatMessage({ id: 'clusters.topology.layer.name' })}
-          </span>
-          <Input
+          <CInput.Input
+            label={intl.formatMessage({ id: 'clusters.topology.layer.name' })}
+            aria-label={intl.formatMessage({
+              id: 'clusters.topology.layer.name'
+            })}
+            required
+            isInFormItems={false}
+            trim={false}
             value={name}
             status={name && nameError ? 'error' : undefined}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              onChange({ ...value, name: e.target.value })
+            }
           />
           <span
             className="text-tertiary"
@@ -213,7 +248,9 @@ const CustomLayer: React.FC<CustomLayerProps> = ({
             }}
           >
             {(name && nameError) ||
-              intl.formatMessage({ id: 'clusters.topology.custom.name.tips' })}
+              intl.formatMessage({
+                id: 'clusters.topology.custom.name.tips'
+              })}
           </span>
         </Flex>
         <Flex orientation="vertical" gap={4}>
@@ -246,11 +283,11 @@ const CustomLayer: React.FC<CustomLayerProps> = ({
                       aria-checked={false}
                       tabIndex={0}
                       style={{ marginLeft: at * STEP }}
-                      onClick={() => setIndex(at)}
+                      onClick={() => onChange({ ...value, index: at })}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' || e.key === ' ') {
                           e.preventDefault();
-                          setIndex(at);
+                          onChange({ ...value, index: at });
                         }
                       }}
                     >
@@ -276,16 +313,15 @@ const CustomLayer: React.FC<CustomLayerProps> = ({
           <span>
             {intl.formatMessage({ id: 'clusters.topology.layer.labelKeys' })}
           </span>
-          {/* The same chips-plus-inline-editor as the mapping drawer: a tags
-              Select wraps badly once keys get long, and two ways of doing the
-              same thing is one too many. No locked key — a custom layer has
-              no owned key, its first key is the one the table writes. */}
+          {/* Share the ordered candidate-key list with layer management.
+              Custom layers have no locked key; their first candidate is
+              where the table writes manually entered values. */}
           <KeyList
             keys={labelKeys}
             fieldId={CUSTOM_FIELD}
             vocabulary={vocabulary}
             defaultEditing={labelKeys.length === 0}
-            onChange={setLabelKeys}
+            onChange={(keys) => onChange({ ...value, labelKeys: keys })}
           />
         </Flex>
         <Alert
@@ -296,7 +332,7 @@ const CustomLayer: React.FC<CustomLayerProps> = ({
           })}
         />
       </Flex>
-    </Modal>
+    </SubDrawer>
   );
 };
 

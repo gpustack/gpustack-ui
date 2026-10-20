@@ -55,6 +55,16 @@ export async function queryWorkersList<T extends Record<string, any>>(
   });
 }
 
+export async function queryWorker(
+  id: string | number,
+  options?: { skipErrorHandler?: boolean }
+) {
+  return request<ListItem>(`${WORKERS_API}/${id}`, {
+    method: 'GET',
+    skipErrorHandler: options?.skipErrorHandler
+  });
+}
+
 export async function queryGpuDevicesList(
   params: Global.SearchParams,
   options?: { token: any }

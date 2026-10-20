@@ -1,6 +1,8 @@
 export default {
   'backends.title': '推理后端',
   'backend.button.add': '添加后端',
+  'backend.button.marketplace': '社区市场',
+  'backend.button.browseMarketplace': '浏览社区市场',
   'backend.button.edit': '编辑后端',
   'backend.versions': '版本列表',
   'backend.defaultVersion': '默认版本',
@@ -47,8 +49,6 @@ export default {
   'backend.form.defaultEnvironment': '默认环境变量',
   'backend.recommendModels': '推荐模型',
   'backend.filter.source': '按来源过滤',
-  'backend.add.custom': '自定义',
-  'backend.add.community': '社区',
   'backend.community.title': '社区后端市场',
   'backend.form.add.hint':
     '如果需要使用内置后端（如 vLLM、SGLang、MindIE）的其他版本，请在对应后端中添加新版本，而不是添加自定义后端。',

@@ -1,24 +1,20 @@
 import { useSourceConfigVisible } from '@/pages/_components/source-config';
-import { DownOutlined } from '@ant-design/icons';
-import { DropdownActions } from '@gpustack/core-ui';
+import { PlusOutlined } from '@ant-design/icons';
+import { IconFont } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Space } from 'antd';
 import React from 'react';
 import BackendSourceEntry from './backend-source-entry';
 
 export interface RightActionsProps {
-  actionItems: any[];
-  handleClickPrimary: (item: any) => void;
+  onOpenCommunity: () => void;
+  onAddBackend: () => void;
   onSourceSaved: () => void;
 }
 
-/**
- * Replaces FilterBar's default right side so the source drawer can sit beside
- * the add button. Mirrors what FilterBar renders for `actionType="dropdown"`.
- */
 const RightActions: React.FC<RightActionsProps> = ({
-  actionItems,
-  handleClickPrimary,
+  onOpenCommunity,
+  onAddBackend,
   onSourceSaved
 }) => {
   const intl = useIntl();
@@ -31,14 +27,12 @@ const RightActions: React.FC<RightActionsProps> = ({
       {showSourceEntry && (
         <BackendSourceEntry onSaved={onSourceSaved}></BackendSourceEntry>
       )}
-      <DropdownActions
-        styles={{ root: { minWidth: '140px' } }}
-        menu={{ items: actionItems, onClick: handleClickPrimary }}
-      >
-        <Button icon={<DownOutlined />} type="primary" iconPlacement="end">
-          {intl.formatMessage({ id: 'backend.button.add' })}
-        </Button>
-      </DropdownActions>
+      <Button icon={<IconFont type="icon-public" />} onClick={onOpenCommunity}>
+        {intl.formatMessage({ id: 'backend.button.marketplace' })}
+      </Button>
+      <Button icon={<PlusOutlined />} type="primary" onClick={onAddBackend}>
+        {intl.formatMessage({ id: 'backend.button.add' })}
+      </Button>
     </Space>
   );
 };

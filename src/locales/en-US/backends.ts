@@ -1,6 +1,8 @@
 export default {
   'backends.title': 'Inference Backends',
   'backend.button.add': 'Add Backend',
+  'backend.button.marketplace': 'Marketplace',
+  'backend.button.browseMarketplace': 'Browse Marketplace',
   'backend.button.edit': 'Edit Backend',
   'backend.versions': 'Version List',
   'backend.defaultVersion': 'Default Version',
@@ -51,8 +53,6 @@ export default {
   'backend.form.defaultEnvironment': 'Default Environment Variables',
   'backend.recommendModels': 'Recommended Models',
   'backend.filter.source': 'Filter by source',
-  'backend.add.custom': 'Custom',
-  'backend.add.community': 'Community',
   'backend.community.title': 'Community Backend Marketplace',
   'backend.form.add.hint':
     'To use a different version of a built-in backend (e.g., vLLM, SGLang, MindIE), please add a new version to the existing backend instead of adding a custom backend.',

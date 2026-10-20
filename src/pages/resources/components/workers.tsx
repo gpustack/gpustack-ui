@@ -26,6 +26,7 @@ import { useEffect, useState } from 'react';
 import {
   WORKERS_API,
   deleteWorker,
+  queryWorker,
   queryWorkersList,
   updateWorker
 } from '../apis';
@@ -84,8 +85,7 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
 
   const intl = useIntl();
   // Non-empty means the labels modal is writing to the selection rather than
-  // to one row. Held as ids and not rows so a background refresh cannot leave
-  // the modal pointed at stale copies.
+  // to one row. Load these ids afresh on save, independent of the visible page.
   const [batchLabelTargets, setBatchLabelTargets] = useState<number[]>([]);
   const [updateLabelsData, setUpdateLabelsData] = useState<{
     open: boolean;
@@ -195,20 +195,17 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
   const handleUpdateLabelsOk = async (values: Record<string, any>) => {
     try {
       if (batchLabelTargets.length) {
-        // The endpoint is a per-worker PUT taking the whole row, so a batch is
-        // N writes. Sent with `allSettled` and reported by count: labelling
-        // thirty workers and failing on one must not roll back the
-        // twenty-nine that worked, and must not claim success either.
-        const rows = (dataSource.dataList || []).filter((item: ListItem) =>
-          batchLabelTargets.includes(item.id)
-        );
+        // Read every selected worker, including other pages, before merging.
+        // A failed read or write counts against that worker without blocking
+        // the other selected workers.
         const results = await Promise.allSettled(
-          rows.map((row: ListItem) =>
-            updateWorker(row.id, {
-              ...row,
-              labels: { ...(row.labels || {}), ...(values.labels || {}) }
-            })
-          )
+          batchLabelTargets.map(async (id) => {
+            const worker = await queryWorker(id, { skipErrorHandler: true });
+            return updateWorker(id, {
+              ...worker,
+              labels: { ...(worker.labels || {}), ...(values.labels || {}) }
+            });
+          })
         );
         const failed = results.filter((r) => r.status === 'rejected').length;
         if (failed) {

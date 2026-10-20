@@ -20,6 +20,11 @@ let columnActions: any;
 let batchActions: any;
 let locationPopover: any;
 let writeWorker = async (_id: number, _data: any) => ({});
+let readWorker: (id: number | string) => Promise<any>;
+const queryWorker = mock.fn(
+  (id: number | string, _options?: { skipErrorHandler?: boolean }) =>
+    readWorker(id)
+);
 const updateWorker = mock.fn((id: number, data: any) => writeWorker(id, data));
 
 mock.module('@ant-design/icons', {
@@ -172,6 +177,7 @@ mock.module(new URL('../../apis/index.ts', import.meta.url).href, {
     WORKERS_API: '/workers',
     deleteWorker: empty,
     queryWorkersList: empty,
+    queryWorker,
     updateWorker
   }
 });
@@ -227,6 +233,7 @@ const worker = (id: number, labels: any) => ({
 });
 const mount = async (t: any, rows: any[], selected: number[] = []) => {
   for (const fn of [
+    queryWorker,
     updateWorker,
     success,
     warning,
@@ -258,6 +265,13 @@ const mount = async (t: any, rows: any[], selected: number[] = []) => {
     handleQueryChange: empty,
     handleNameChange: empty
   };
+  readWorker = async (id) => {
+    const row = table.dataSource.dataList.find(
+      (item: any) => item.id === Number(id)
+    );
+    if (!row) throw new Error(`Worker ${id} is not available`);
+    return row;
+  };
   const root = createRoot(document.getElementById('root')!);
   t.after(async () => act(async () => root.unmount()));
   await act(async () => root.render(createElement(Workers)));
@@ -278,6 +292,7 @@ const submit = async (labels: any) => {
   await act(async () => labelsModal.onOk({ labels }));
 };
 const writes = () => updateWorker.mock.calls.map((call) => call.arguments);
+const reads = () => queryWorker.mock.calls.map((call) => call.arguments);
 
 test('batch actions use location by default and open only its location popover', async (t) => {
   const selected = worker(1, { rack: 'rack-a' });
@@ -410,6 +425,7 @@ for (const labels of [{ keep: 'yes' }, {}]) {
     await submit(labels);
 
     assert.deepEqual(writes(), [[1, { ...original, labels }]]);
+    assert.equal(queryWorker.mock.callCount(), 0);
     assert.equal(clearSelections.mock.callCount(), 0);
   });
 }
@@ -454,6 +470,142 @@ test('a failed worker does not prevent other selected workers receiving merged l
   assert.equal(success.mock.callCount(), 0);
   assert.equal(warning.mock.callCount(), 1);
   assert.match(warning.mock.calls[0].arguments[0], /"done":1,"failed":1/);
+  assert.equal(fetchData.mock.callCount(), 1);
+  assert.equal(clearSelections.mock.callCount(), 1);
+  assert.equal(labelsModal.open, false);
+});
+
+test('a worker selected on an earlier page is fetched and updated after navigating away', async (t) => {
+  const selected = worker(1, { rack: 'rack-a', owner: 'alice' });
+  const other = worker(2, { rack: 'rack-b' });
+  const root = await mount(t, [selected], [1]);
+  table.dataSource = { ...table.dataSource, dataList: [other] };
+  await act(async () => root.render(createElement(Workers)));
+  readWorker = async () => selected;
+  await openBatch(1);
+  await submit({ pool: 'gpu' });
+
+  assert.deepEqual(reads(), [[1, { skipErrorHandler: true }]]);
+  assert.deepEqual(writes(), [
+    [
+      1,
+      {
+        ...selected,
+        labels: { rack: 'rack-a', owner: 'alice', pool: 'gpu' }
+      }
+    ]
+  ]);
+  assert.equal(success.mock.callCount(), 1);
+  assert.equal(warning.mock.callCount(), 0);
+});
+
+test('a cross-page selection updates every selected ID and excludes unselected current-page workers', async (t) => {
+  const first = worker(1, { rack: 'rack-a', owner: 'alice' });
+  const second = worker(2, { rack: 'rack-b', pool: 'gpu' });
+  const unselected = worker(3, { rack: 'rack-c', untouched: 'yes' });
+  await mount(t, [second, unselected], [1, 2]);
+  readWorker = async (id) => {
+    if (id === 1) return first;
+    if (id === 2) return second;
+    throw new Error('Unselected worker must not be fetched');
+  };
+  await openBatch(2);
+  await submit({ rack: 'shared-rack' });
+
+  assert.deepEqual(reads(), [
+    [1, { skipErrorHandler: true }],
+    [2, { skipErrorHandler: true }]
+  ]);
+  assert.deepEqual(writes(), [
+    [1, { ...first, labels: { rack: 'shared-rack', owner: 'alice' } }],
+    [2, { ...second, labels: { rack: 'shared-rack', pool: 'gpu' } }]
+  ]);
+  assert.deepEqual(unselected.labels, { rack: 'rack-c', untouched: 'yes' });
+});
+
+test('fresh worker data prevents restoring deleted labels or overwriting newer non-label fields', async (t) => {
+  const cached = {
+    ...worker(1, { rack: 'cached-rack', deleted: 'do-not-restore' }),
+    address: 'old-address'
+  };
+  await mount(t, [cached], [1]);
+  await openBatch(1);
+  const fresh = {
+    ...worker(1, { rack: 'fresh-rack', discovered: 'new-label' }),
+    name: 'renamed-on-server',
+    address: 'new-address',
+    maintenance: { enabled: true }
+  };
+  readWorker = async () => fresh;
+  await submit({ owner: 'alice' });
+
+  assert.deepEqual(reads(), [[1, { skipErrorHandler: true }]]);
+  assert.deepEqual(writes(), [
+    [
+      1,
+      {
+        ...fresh,
+        labels: { rack: 'fresh-rack', discovered: 'new-label', owner: 'alice' }
+      }
+    ]
+  ]);
+  assert.deepEqual(fresh.labels, {
+    rack: 'fresh-rack',
+    discovered: 'new-label'
+  });
+});
+
+test('a failed worker read is counted without preventing other selected workers being updated', async (t) => {
+  const rows = [worker(1, { rack: 'rack-a' }), worker(2, { rack: 'rack-b' })];
+  await mount(t, rows, [1, 2]);
+  readWorker = async (id) => {
+    if (id === 1) throw new Error('First worker is no longer available');
+    return rows[1];
+  };
+  await openBatch(2);
+  await submit({ owner: 'alice' });
+
+  assert.deepEqual(reads(), [
+    [1, { skipErrorHandler: true }],
+    [2, { skipErrorHandler: true }]
+  ]);
+  assert.deepEqual(writes(), [
+    [
+      2,
+      {
+        ...rows[1],
+        labels: { rack: 'rack-b', owner: 'alice' }
+      }
+    ]
+  ]);
+  assert.equal(success.mock.callCount(), 0);
+  assert.equal(warning.mock.callCount(), 1);
+  assert.match(warning.mock.calls[0].arguments[0], /"done":1,"failed":1/);
+  assert.equal(fetchData.mock.callCount(), 1);
+  assert.equal(clearSelections.mock.callCount(), 1);
+  assert.equal(labelsModal.open, false);
+});
+
+test('when every selected worker read fails no updates or success notification are sent', async (t) => {
+  await mount(
+    t,
+    [worker(1, { rack: 'rack-a' }), worker(2, { rack: 'rack-b' })],
+    [1, 2]
+  );
+  readWorker = async () => {
+    throw new Error('Worker read failed');
+  };
+  await openBatch(2);
+  await submit({ owner: 'alice' });
+
+  assert.deepEqual(reads(), [
+    [1, { skipErrorHandler: true }],
+    [2, { skipErrorHandler: true }]
+  ]);
+  assert.equal(updateWorker.mock.callCount(), 0);
+  assert.equal(success.mock.callCount(), 0);
+  assert.equal(warning.mock.callCount(), 1);
+  assert.match(warning.mock.calls[0].arguments[0], /"done":0,"failed":2/);
   assert.equal(fetchData.mock.callCount(), 1);
   assert.equal(clearSelections.mock.callCount(), 1);
   assert.equal(labelsModal.open, false);

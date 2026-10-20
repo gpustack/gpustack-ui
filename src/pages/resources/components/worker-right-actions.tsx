@@ -1,12 +1,12 @@
-import { DeleteOutlined, PlusOutlined, TagsOutlined } from '@ant-design/icons';
-import { DropdownButtons } from '@gpustack/core-ui';
+import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
+import { DropdownButtons, IconFont } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Space } from 'antd';
 import React from 'react';
 
 export interface WorkerRightActionsProps {
   handleDeleteByBatch: () => void;
-  handleUpdateLabelsByBatch?: () => void;
+  handleUpdateLabelsByBatch: () => void;
   handleClickPrimary?: () => void;
   MonitorButton?: React.ReactNode;
   rowSelection: {
@@ -25,16 +25,12 @@ const WorkerRightActions: React.FC<WorkerRightActionsProps> = ({
   const count = rowSelection?.selectedRowKeys?.length || 0;
   const disabled = !count;
   const items = [
-    ...(handleUpdateLabelsByBatch
-      ? [
-          {
-            key: 'labels',
-            label: 'resources.worker.setLabels',
-            icon: <TagsOutlined />,
-            disabled
-          }
-        ]
-      : []),
+    {
+      key: 'labels',
+      label: 'resources.worker.setLabels',
+      icon: <IconFont type="icon-tag-outlined" />,
+      disabled
+    },
     {
       key: 'delete',
       label: 'common.button.delete',
@@ -52,7 +48,7 @@ const WorkerRightActions: React.FC<WorkerRightActionsProps> = ({
       disabled={disabled}
       onSelect={(key) => {
         if (key === 'labels') {
-          handleUpdateLabelsByBatch?.();
+          handleUpdateLabelsByBatch();
         } else if (key === 'delete') {
           handleDeleteByBatch();
         }

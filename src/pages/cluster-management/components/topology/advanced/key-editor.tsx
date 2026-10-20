@@ -4,7 +4,7 @@ import { AutoComplete, Button, Flex } from 'antd';
 import { useRef, useState } from 'react';
 import { TopologyKnownKey } from '../../../config/types';
 
-/** The field id a known key lists in `fits` to be offered for a custom layer. */
+/** Custom layers can use presets from any built-in layer. */
 export const CUSTOM_FIELD = 'custom';
 
 /**
@@ -28,7 +28,7 @@ export const isValidLabelKey = (key: string) => {
 /** What the editors need to offer and count keys; the same for every field. */
 export interface KeyVocabulary {
   known: TopologyKnownKey[];
-  /** Every worker's labels and discovered facts, for "N workers carry this key". */
+  /** Worker labels and discovered facts, for suggestions and usage counts. */
   workerLabels: Record<string, string>[];
 }
 
@@ -45,31 +45,61 @@ export interface KnownKeyGroup {
 }
 
 /**
- * The known keys that make sense for `fieldId` (an empty `fits` fits all),
- * grouped by vendor; the ones already in `existing` are greyed, not hidden.
+ * Worker keys come first, followed by applicable preset keys grouped by vendor.
+ * A key appears once; already configured keys stay visible but disabled.
  */
-export const knownKeyOptions = (
-  known: TopologyKnownKey[],
+export const labelKeyOptions = (
+  vocabulary: KeyVocabulary,
   fieldId: string,
-  existing: string[]
+  existing: string[],
+  workerLabel: string
 ): KnownKeyGroup[] => {
-  const fitting = known.filter(
-    (item) => !item.fits?.length || item.fits.includes(fieldId)
+  const existingKeys = new Set(existing);
+  const known = new Map(vocabulary.known.map((item) => [item.key, item]));
+  const workerKeys = new Set(
+    vocabulary.workerLabels.flatMap((labels) => Object.keys(labels))
   );
-  const vendors = Array.from(new Set(fitting.map((item) => item.vendor)));
-  return vendors.map((vendor) => ({
-    label: vendor,
-    options: fitting
-      .filter((item) => item.vendor === vendor)
-      .map(
-        (item): KnownKeyOption => ({
-          value: item.key,
-          label: item.key,
-          disabled: existing.includes(item.key),
-          note: item.note
-        })
-      )
-  }));
+  const groups: KnownKeyGroup[] = [];
+  if (workerKeys.size) {
+    groups.push({
+      label: workerLabel,
+      options: [...workerKeys]
+        .sort((a, b) => a.localeCompare(b))
+        .map((key) => ({
+          value: key,
+          label: key,
+          disabled: existingKeys.has(key),
+          note: known.get(key)?.note
+        }))
+    });
+  }
+
+  const vendors = new Map<string, KnownKeyGroup>();
+  const seen = new Set(workerKeys);
+  vocabulary.known.forEach((item) => {
+    if (
+      seen.has(item.key) ||
+      (fieldId !== CUSTOM_FIELD &&
+        item.fits?.length &&
+        !item.fits.includes(fieldId))
+    ) {
+      return;
+    }
+    seen.add(item.key);
+    let group = vendors.get(item.vendor);
+    if (!group) {
+      group = { label: item.vendor, options: [] };
+      vendors.set(item.vendor, group);
+      groups.push(group);
+    }
+    group.options.push({
+      value: item.key,
+      label: item.key,
+      disabled: existingKeys.has(item.key),
+      note: item.note
+    });
+  });
+  return groups;
 };
 
 export const renderKnownKey = (option: {
@@ -79,12 +109,8 @@ export const renderKnownKey = (option: {
   const item = option.data as KnownKeyOption;
   return (
     <Flex orientation="vertical">
-      <code style={{ fontSize: 12 }}>{item.value}</code>
-      {item.note && (
-        <span className="text-tertiary" style={{ fontSize: 12 }}>
-          {item.note}
-        </span>
-      )}
+      <span>{item.value}</span>
+      {item.note && <span className="text-tertiary">{item.note}</span>}
     </Flex>
   );
 };
@@ -133,23 +159,24 @@ export const KeyEditor: React.FC<KeyEditorProps> = ({
   };
 
   return (
-    // Takes what is left of the chip line, or a line of its own in a narrow card.
-    <Flex
-      orientation="vertical"
-      gap={4}
-      style={{ flex: '1 1 200px', minWidth: 0 }}
-    >
+    // Use the full candidate-key panel width, including for long label keys.
+    <Flex orientation="vertical" gap={4} style={{ width: '100%', minWidth: 0 }}>
       <Flex align="center" gap={4}>
         <AutoComplete
           autoFocus
-          size="small"
-          style={{ flex: 1, minWidth: 0, maxWidth: 320 }}
+          size="middle"
+          style={{ flex: 1, minWidth: 0 }}
           value={typed}
           status={error ? 'error' : undefined}
           placeholder={intl.formatMessage({
             id: 'clusters.topology.keys.placeholder'
           })}
-          options={knownKeyOptions(vocabulary.known, fieldId, existing)}
+          options={labelKeyOptions(
+            vocabulary,
+            fieldId,
+            existing,
+            intl.formatMessage({ id: 'clusters.topology.keys.workerLabels' })
+          )}
           optionRender={renderKnownKey}
           defaultActiveFirstOption={false}
           filterOption={(input, option?: KnownKeyOption | KnownKeyGroup) =>
@@ -179,7 +206,8 @@ export const KeyEditor: React.FC<KeyEditorProps> = ({
         />
         <Button
           type="text"
-          size="small"
+          size="middle"
+          style={{ flexShrink: 0 }}
           icon={<CheckOutlined />}
           disabled={!valid || exists}
           onClick={() => commit(typed)}

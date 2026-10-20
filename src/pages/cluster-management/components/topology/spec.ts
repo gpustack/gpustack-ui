@@ -1,4 +1,3 @@
-import { queryModelsList } from '@/pages/llmodels/apis';
 import { queryWorkersList } from '@/pages/resources/apis';
 import { queryClusterItem, updateCluster } from '../../apis';
 import { ClusterListItem, ClusterTopology } from '../../config/types';
@@ -12,7 +11,8 @@ export interface SpecContext {
 /**
  * What editing the mapping needs besides the view: the saved topology says
  * which builtin entries are customised, and the PUT needs the whole cluster
- * anyway. A failed worker list only costs the key counts, so it is swallowed.
+ * anyway. A failed worker list leaves preset suggestions available, so it is
+ * swallowed while worker-key suggestions and usage counts are unavailable.
  */
 export const loadSpecContext = async (
   clusterId: number
@@ -44,28 +44,3 @@ export const saveTopologySpec = (
     id: cluster.id,
     data: { ...(cluster as any), topology } as any
   });
-
-/**
- * Names of this cluster's models gathering on `layer`. The fallback for a
- * server that does not report `referenced_by_models` on the view; the server
- * enforces the rule on save either way, this is only the early warning.
- */
-export const modelsGatheringOn = async (
-  clusterId: number,
-  layer: string
-): Promise<string[]> => {
-  try {
-    const models = await queryModelsList(
-      { page: -1, cluster_id: clusterId } as any,
-      { skipErrorHandler: true }
-    );
-    return (models?.items || [])
-      .filter(
-        (model: any) =>
-          model.cluster_id === clusterId && model.gather?.layer === layer
-      )
-      .map((model: any) => model.name);
-  } catch {
-    return [];
-  }
-};

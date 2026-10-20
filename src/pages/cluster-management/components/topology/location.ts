@@ -1,7 +1,6 @@
 import { topologyLayerLabel } from '../../config';
 import {
   NODE_LAYER,
-  RACK_LAYER,
   TopologyLayerView,
   TopologyView,
   TopologyWorker,
@@ -21,6 +20,7 @@ export interface LocationField {
   /** Already translated; custom layers pass their name through. */
   label: string;
   builtin: boolean;
+  disabled?: boolean;
   /** Some worker resolves a value here. */
   active: boolean;
   primaryKey: string | null;
@@ -50,6 +50,7 @@ const toField =
     // called `accelerator_domain` gets the translation just like a builtin.
     label: topologyLayerLabel(intl, layer),
     builtin: layer.builtin,
+    disabled: layer.disabled,
     active: layer.active,
     primaryKey: layer.primary_key,
     labelKeys: layer.label_keys || []
@@ -59,22 +60,15 @@ const toField =
 export const allFields = (intl: Intl, view: TopologyView): LocationField[] =>
   fieldLayers(view).map(toField(intl));
 
-/**
- * The rack always, because it is what the onboarding tells people to fill
- * first and an empty table has nowhere to write; everything else once some
- * worker has a value.
- *
- * By the layer's id, not the string `'rack'`: a field's id is the registry
- * number, so the literal never matched and a fresh cluster — where nothing is
- * active yet — opened on a table with no writable column at all, which is the
- * one state the onboarding walks the user through.
- */
-export const shownByDefault = (field: LocationField) =>
-  field.active || field.id === RACK_LAYER;
+/** The single label key the layer assignment endpoint writes or removes. */
+export const writableLabelKey = (field?: LocationField | null) =>
+  !field || field.disabled || !field.labelKeys.length
+    ? null
+    : field.primaryKey || field.labelKeys[0] || null;
 
-/** What a cluster's table shows before anyone touches the column picker. */
-export const visibleFields = (intl: Intl, view: TopologyView) =>
-  allFields(intl, view).filter(shownByDefault);
+/** Availability zone and rack start visible; other layers are opt-in. */
+export const shownByDefault = (field: LocationField) =>
+  field.builtin && (field.name === 'zone' || field.name === 'rack');
 
 export const isFilled = (worker: TopologyWorker, field: string) =>
   !!worker.location?.[field]?.value;
@@ -139,8 +133,3 @@ export const resolveLocation = (
   }
   return null;
 };
-
-/** A field's any-of keys. */
-export const layerKeys = (view: TopologyView | undefined, field: string) =>
-  view?.layers.find((layer: TopologyLayerView) => layer.id === field)
-    ?.label_keys || [];

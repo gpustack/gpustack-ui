@@ -126,10 +126,15 @@ export default {
   'resources.worker.targetVersion': 'Целевая версия: {version}',
   'resources.driver.version': 'Версия драйвера: {version}',
 
-  'resources.worker.setLabels': 'Добавить/обновить метки',
+  'resources.worker.setLabels': 'Задать метки',
   'resources.worker.setLabels.count': 'Выбрано Worker: {count}',
   'resources.worker.setLabels.hint':
     'Добавляет новые метки и обновляет значения совпадающих ключей у всех выбранных Worker. Остальные метки сохраняются. Для удаления меток редактируйте Worker по отдельности.',
-  'resources.table.location': 'Уровни топологии',
-  'resources.worker.setLocation': 'Задать расположение'
+  'resources.table.location': 'Расположение в топологии',
+  'resources.worker.location.moreLayers': '+{count} ур.',
+  'resources.worker.location.totalLayers': 'Всего уровней: {count}',
+  'resources.worker.location.unfilled': 'Не заполнено',
+  'resources.worker.location.unavailable':
+    'Информация о топологии временно недоступна',
+  'resources.worker.location.open': 'Показать расположение {worker} в топологии'
 };

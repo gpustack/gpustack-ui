@@ -132,6 +132,11 @@ export default {
   'resources.worker.setLabels.hint':
     'Adds new labels and updates matching keys on all selected workers. Other labels are preserved. To remove labels, edit a worker individually.',
 
-  'resources.table.location': 'Topology Layers',
-  'resources.worker.setLocation': 'Set Location'
+  'resources.table.location': 'Topology location',
+  'resources.worker.location.moreLayers': '+{count} layers',
+  'resources.worker.location.totalLayers': '{count} layers',
+  'resources.worker.location.unfilled': 'Not set',
+  'resources.worker.location.unavailable':
+    'Topology information is temporarily unavailable',
+  'resources.worker.location.open': 'View topology location for {worker}'
 };

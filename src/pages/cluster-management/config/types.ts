@@ -319,7 +319,7 @@ export interface TopologyVocabularyField {
 export interface TopologyKnownKey {
   key: string;
   vendor: string;
-  /** Which field ids this key is a sensible source for. */
+  /** Built-in layer names this key is nearest to, such as `zone` or `rack`. */
   fits: string[];
   note?: string | null;
 }
@@ -336,7 +336,7 @@ export interface TopologyLayerView {
   /** At least one worker resolves a value here; only active layers form the tree. */
   active: boolean;
   label_keys: string[];
-  /** The key a hand-filled value is written to; null for custom layers. */
+  /** Write target; fixed for built-ins, otherwise the first candidate key. */
   primary_key: string | null;
   domains: number;
   classified: number;

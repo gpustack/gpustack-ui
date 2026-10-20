@@ -1,3 +1,4 @@
+import { StatusDot } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Table, Tooltip } from 'antd';
 import { createStyles } from 'antd-style';
@@ -16,28 +17,6 @@ const useStyles = createStyles(({ css }) => ({
   table: css`
     .ant-table-cell {
       padding-block: 6px !important;
-    }
-    .host {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      max-width: 100%;
-      .dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        flex-shrink: 0;
-        background: var(--ant-color-success);
-      }
-      .dot.offline {
-        background: transparent;
-        border: 1px solid var(--ant-color-text-quaternary);
-      }
-      .name {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
     }
   `,
   /* A tint that fades rather than a border: the row was pointed at from the
@@ -202,13 +181,13 @@ const LocationTable: React.FC<LocationTableProps> = ({
               : intl.formatMessage({ id: 'clusters.topology.host.offline' })
           }
         >
-          {/* Plain text: the open-source edition has no worker detail page
-              to send anyone to. */}
-          <span className="host">
-            <span
-              className={worker.state === 'ready' ? 'dot' : 'dot offline'}
+          <span>
+            <StatusDot
+              statusValue={{
+                status: worker.state === 'ready' ? 'success' : 'inactive',
+                text: name
+              }}
             />
-            <span className="name">{name}</span>
           </span>
         </Tooltip>
       )
@@ -230,7 +209,7 @@ const LocationTable: React.FC<LocationTableProps> = ({
   return (
     <Table
       ref={tableRef}
-      className={styles.table}
+      className={`${styles.table} scroll-table`}
       size="small"
       rowKey="id"
       tableLayout="fixed"

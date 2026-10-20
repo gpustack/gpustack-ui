@@ -12,7 +12,7 @@ const useStyles = createStyles(({ css }) => ({
     line-height: 1.5;
 
     .divider {
-      margin: 10px 0;
+      margin: 8px 0;
       border-top: 1px solid var(--color-white-light-1);
     }
     .label {
@@ -52,7 +52,9 @@ export interface GroupedInfoTooltipRow {
 
 const GroupedInfoTooltipContent: React.FC<{
   groups: GroupedInfoTooltipRow[][];
-}> = ({ groups }) => {
+  /** Whether labels are message ids. Disable for already resolved names. */
+  locale?: boolean;
+}> = ({ groups, locale = true }) => {
   const intl = useIntl();
   const { styles } = useStyles();
 
@@ -61,7 +63,7 @@ const GroupedInfoTooltipContent: React.FC<{
       {groups
         .filter((rows) => rows.length > 0)
         .map((rows, index) => (
-          <React.Fragment key={rows[0].label}>
+          <React.Fragment key={`${rows[0].label}-${index}`}>
             {index > 0 && <div className="divider" />}
             <Flex vertical gap={6}>
               {rows.map(({ label, icon, value, labelValues, hint }) => (
@@ -70,7 +72,9 @@ const GroupedInfoTooltipContent: React.FC<{
                     <Flex align="center" gap={6} className="label">
                       {icon}
                       <span>
-                        {intl.formatMessage({ id: label }, labelValues)}
+                        {locale
+                          ? intl.formatMessage({ id: label }, labelValues)
+                          : label}
                       </span>
                     </Flex>
                     <span className="value">{value}</span>

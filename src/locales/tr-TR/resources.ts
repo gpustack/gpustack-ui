@@ -126,12 +126,17 @@ export default {
   'resources.worker.targetVersion': 'Hedef Sürüm: {version}',
   'resources.driver.version': 'Sürücü Sürümü: {version}',
 
-  'resources.worker.setLabels': 'Etiket ekle/güncelle',
+  'resources.worker.setLabels': 'Etiketleri ayarla',
   'resources.worker.setLabels.count': '{count} worker seçildi',
   'resources.worker.setLabels.hint':
     'Seçili tüm worker’lara yeni etiketler ekler ve eşleşen anahtarların değerlerini günceller. Diğer etiketler korunur. Etiketleri silmek için worker’ları tek tek düzenleyin.',
-  'resources.table.location': 'Konum',
-  'resources.worker.setLocation': 'Konum ayarla'
+  'resources.table.location': 'Topoloji konumu',
+  'resources.worker.location.moreLayers': '+{count} katman',
+  'resources.worker.location.totalLayers': 'Toplam {count} katman',
+  'resources.worker.location.unfilled': 'Doldurulmamış',
+  'resources.worker.location.unavailable':
+    'Topoloji bilgisi geçici olarak kullanılamıyor',
+  'resources.worker.location.open': '{worker} için topoloji konumunu görüntüle'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

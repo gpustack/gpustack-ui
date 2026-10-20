@@ -11,7 +11,6 @@ const useStyles = createStyles(({ css }) => ({
     font-size: 12px;
     color: var(--ant-color-text-tertiary);
     .layer-id {
-      font-family: var(--ant-font-family-code);
       color: var(--ant-color-text-quaternary);
     }
   `,

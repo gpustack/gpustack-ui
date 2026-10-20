@@ -1,4 +1,4 @@
-import { GSDrawer, ModalFooter } from '@gpustack/core-ui';
+import { DeleteModal, ModalFooter, SubDrawer } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Alert, Flex, Modal, Spin, message } from 'antd';
 import { createStyles } from 'antd-style';
@@ -12,7 +12,6 @@ import {
 import { UsePreview } from '../hooks/use-preview';
 import { fieldLayers } from '../location';
 import { loadSpecContext, saveTopologySpec } from '../spec';
-import CustomLayer, { CustomLayerValue } from './custom-layer';
 import {
   Draft,
   DraftLayer,
@@ -31,25 +30,36 @@ import RenameLayer from './rename-layer';
 const FLASH_MS = 1000;
 
 const useStyles = createStyles(({ css }) => ({
-  title: css`
-    .sub {
-      margin-left: 8px;
-      font-weight: 400;
-      font-size: 12px;
-      color: var(--ant-color-text-tertiary);
-    }
-  `,
   /* `.stats` and `.heading` lived here, for the domain pane's «共 N 个域» line
      and the «层级» heading above the chain. All three are gone; the classes
      stay removed rather than kept "in case", since a rule with no element is
      invisible breakage waiting for the next reader. */
   pane: css`
     min-width: 0;
+  `,
+  content: css`
+    padding: var(--ant-padding) var(--ant-padding-lg);
+  `,
+  guidance: css`
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    margin-block: calc(0px - var(--ant-padding));
+    margin-inline: calc(0px - var(--ant-padding-lg));
+    padding: var(--ant-padding) var(--ant-padding-lg);
+    background: var(--ant-color-bg-elevated);
+  `,
+  drawer: css`
+    > :last-child {
+      min-height: 0;
+    }
   `
 }));
 
 interface AdvancedDrawerProps {
   open: boolean;
+  width: number | string;
+  getContainer: () => HTMLElement | null | undefined;
   clusterId: number;
   /** The saved mapping's view: what the draft starts from. */
   view: TopologyView;
@@ -58,8 +68,8 @@ interface AdvancedDrawerProps {
   preview: UsePreview;
   /** Closed without saving; the caller drops the preview. */
   onClose: () => void;
-  /** Saved; the caller drops the preview and refetches. */
-  onSaved: () => void;
+  /** Saved; the caller shows new columns, drops the preview and refetches. */
+  onSaved: (addedLayerIds: string[]) => void;
 }
 
 /**
@@ -70,6 +80,8 @@ interface AdvancedDrawerProps {
  */
 const AdvancedDrawer: React.FC<AdvancedDrawerProps> = ({
   open,
+  width,
+  getContainer,
   clusterId,
   view,
   displayed,
@@ -86,18 +98,15 @@ const AdvancedDrawer: React.FC<AdvancedDrawerProps> = ({
   const [draft, setDraft] = useState<Draft | null>(null);
   const [baseline, setBaseline] = useState<string>('');
   const [saving, setSaving] = useState(false);
-  /** The "add layer" modal. It used to also carry which chain to add to. */
-  const [adding, setAdding] = useState(false);
   /** The rung being renamed, if any. */
   const [renaming, setRenaming] = useState<DraftLayer | null>(null);
   const [flashing, setFlashing] = useState<Set<string>>(new Set());
+  const discardModalRef = useRef<any>(null);
   const prevCountsRef = useRef<Record<string, number>>({});
-
   useEffect(() => {
     if (!open) {
       setDraft(null);
       setCluster(null);
-      setAdding(false);
       return;
     }
     loadSpecContext(clusterId).then((ctx) => {
@@ -149,7 +158,9 @@ const AdvancedDrawer: React.FC<AdvancedDrawerProps> = ({
         ? {
             ...layer,
             labelKeys:
-              layer.primaryKey && !keys.includes(layer.primaryKey)
+              layer.builtin &&
+              layer.primaryKey &&
+              !keys.includes(layer.primaryKey)
                 ? [layer.primaryKey, ...keys]
                 : keys,
             customised: true
@@ -164,13 +175,13 @@ const AdvancedDrawer: React.FC<AdvancedDrawerProps> = ({
    * under a draft this drawer opened before it, and the next Save would drop
    * the new layer again.
    */
-  const handleAddLayer = (value: CustomLayerValue) => {
+  const handleAddLayer = (name: string, index: number) => {
     if (!draft) {
       return;
     }
-    const layer = newCustomLayer(value.name, value.labelKeys);
-    update(insertLayer(draft, layer, value.index));
-    setAdding(false);
+    const layer = newCustomLayer(name, []);
+    update(insertLayer(draft, layer, index));
+    return layer.id;
   };
 
   const handleRename = (displayName: string | null) => {
@@ -221,14 +232,13 @@ const AdvancedDrawer: React.FC<AdvancedDrawerProps> = ({
       onClose();
       return;
     }
-    Modal.confirm({
-      title: intl.formatMessage({ id: 'clusters.topology.advanced.discard' }),
-      content: intl.formatMessage({
-        id: 'clusters.topology.advanced.discard.tips'
-      }),
-      okText: intl.formatMessage({ id: 'clusters.topology.discard.ok' }),
-      cancelText: intl.formatMessage({ id: 'common.button.cancel' }),
-      okButtonProps: { danger: true },
+    discardModalRef.current?.show({
+      title: 'clusters.topology.advanced.discard',
+      content: 'clusters.topology.mapping.title',
+      operation: 'clusters.topology.advanced.discard.tips',
+      okText: 'clusters.topology.discard.ok',
+      cancelText: 'clusters.topology.advanced.discard.cancel',
+      showSuccess: false,
       onOk: onClose
     });
   };
@@ -243,7 +253,12 @@ const AdvancedDrawer: React.FC<AdvancedDrawerProps> = ({
       message.success(
         intl.formatMessage({ id: 'clusters.topology.advanced.saved' })
       );
-      onSaved();
+      const savedIds = new Set(view.layers.map((layer) => layer.id));
+      onSaved(
+        draft.chain
+          .filter((layer) => !savedIds.has(layer.id))
+          .map((layer) => layer.id)
+      );
     } catch (e: any) {
       message.error(
         e?.response?.data?.message ||
@@ -288,101 +303,115 @@ const AdvancedDrawer: React.FC<AdvancedDrawerProps> = ({
   // and the chain below states its own shape, so the heading restated both and
   // the count answered a question nobody was asking.
 
-  return (
-    <GSDrawer
-      title={
-        <span className={styles.title}>
-          {intl.formatMessage({ id: 'clusters.topology.mapping.title' })}
-          <span className="sub">
-            · {intl.formatMessage({ id: 'clusters.topology.mapping.intro' })}
-          </span>
-        </span>
-      }
+  const drawer = (
+    <SubDrawer
+      title={intl.formatMessage({ id: 'clusters.topology.mapping.title' })}
       open={open}
-      onClose={handleClose}
-      destroyOnHidden
-      // Stacked on the main drawer, which stays where it is.
-      push={false}
+      onCancel={handleClose}
+      getContainer={getContainer}
+      width={width}
+      className={styles.drawer}
       styles={{
-        wrapper: { width: 'min(720px, 100vw)' },
-        body: { paddingInline: 24 }
+        container: {
+          paddingBlock: 0,
+          paddingInline: 0,
+          minHeight: 0
+        }
       }}
       footer={
-        <Flex align="center" justify="space-between" gap={12}>
-          <span className="text-tertiary" style={{ fontSize: 12 }}>
-            {preview.active &&
-              intl.formatMessage({ id: 'clusters.topology.previewing.long' })}
-          </span>
-          <ModalFooter
-            onCancel={handleClose}
-            onOk={handleSave}
-            okText={intl.formatMessage({ id: 'common.button.save' })}
-            loading={saving}
-            okBtnProps={{ disabled: !dirty || !!preview.error }}
-            style={{ padding: 0 }}
-          />
-        </Flex>
+        <ModalFooter
+          onCancel={handleClose}
+          onOk={handleSave}
+          okText={intl.formatMessage({ id: 'common.button.save' })}
+          loading={saving}
+          okBtnProps={{ disabled: !!preview.error }}
+          styles={{
+            wrapper: {
+              padding:
+                'var(--ant-padding) var(--ant-padding-lg) var(--ant-padding-lg)',
+              flexWrap: 'wrap',
+              gap: 'var(--ant-padding-sm) var(--ant-padding-lg)'
+            }
+          }}
+          style={{
+            flexShrink: 0,
+            marginInlineStart: 'auto',
+            flexWrap: 'wrap',
+            justifyContent: 'flex-end',
+            maxWidth: '100%'
+          }}
+        />
       }
     >
-      {!draft ? (
-        <Flex align="center" justify="center" style={{ minHeight: 200 }}>
-          <Spin />
-        </Flex>
-      ) : (
-        <Flex orientation="vertical" gap={20}>
-          {preview.error && (
-            <Alert type="warning" showIcon message={preview.error} />
-          )}
-
-          <Flex orientation="vertical" className={styles.pane}>
-            <FieldChain
-              rows={draft.chain}
-              total={total}
-              classified={classified}
-              flashing={flashing}
-              vocabulary={vocabulary}
-              onAddLayer={() => setAdding(true)}
-              onKeysChange={handleKeysChange}
-              onRename={setRenaming}
-              onToggleDisabled={(row) =>
-                draft && update(setLayerDisabled(draft, row.id, !row.disabled))
-              }
-              onDelete={handleDelete}
-            />
+      <div className={styles.content}>
+        {!draft ? (
+          <Flex align="center" justify="center" style={{ minHeight: 200 }}>
+            <Spin size="small" />
           </Flex>
-
-          {displayed.suggestions?.length > 0 && (
-            <Flex orientation="vertical" gap={8}>
-              <span style={{ fontWeight: 500 }}>
-                {intl.formatMessage({
-                  id: 'clusters.topology.advanced.suggestions'
+        ) : (
+          <Flex orientation="vertical" gap={20}>
+            <div className={styles.guidance}>
+              <Alert
+                type="info"
+                showIcon
+                title={intl.formatMessage({
+                  id: 'clusters.topology.mapping.intro'
                 })}
-              </span>
-              {displayed.suggestions.map((suggestion) => (
-                <span key={suggestion.key} className="text-tertiary">
-                  <code>{suggestion.key}</code> ·{' '}
-                  {intl.formatMessage(
-                    { id: 'clusters.topology.advanced.suggestion' },
-                    {
-                      workers: suggestion.workers,
-                      values: suggestion.distinct_values,
-                      field: topologyFieldLabel(
-                        intl,
-                        suggestion.looks_like,
-                        suggestion.looks_like
-                      )
-                    }
-                  )}
-                </span>
-              ))}
-            </Flex>
-          )}
-        </Flex>
-      )}
+              />
+            </div>
+            {preview.error && (
+              <Alert type="warning" showIcon message={preview.error} />
+            )}
 
-      {/* The picker draws the one chain and asks only where in it the new
-          layer goes — which is now the whole question, including for an
-          accelerator domain. */}
+            <Flex orientation="vertical" className={styles.pane}>
+              <FieldChain
+                rows={draft.chain}
+                total={total}
+                classified={classified}
+                flashing={flashing}
+                vocabulary={vocabulary}
+                reserved={reserved}
+                onAddLayer={handleAddLayer}
+                onKeysChange={handleKeysChange}
+                onRename={setRenaming}
+                onToggleDisabled={(row) =>
+                  draft &&
+                  update(setLayerDisabled(draft, row.id, !row.disabled))
+                }
+                onDelete={handleDelete}
+              />
+            </Flex>
+
+            {displayed.suggestions?.length > 0 && (
+              <Flex orientation="vertical" gap={8}>
+                <span style={{ fontWeight: 500 }}>
+                  {intl.formatMessage({
+                    id: 'clusters.topology.advanced.suggestions'
+                  })}
+                </span>
+                {displayed.suggestions.map((suggestion) => (
+                  <span key={suggestion.key} className="text-tertiary">
+                    <code>{suggestion.key}</code> ·{' '}
+                    {intl.formatMessage(
+                      { id: 'clusters.topology.advanced.suggestion' },
+                      {
+                        workers: suggestion.workers,
+                        values: suggestion.distinct_values,
+                        field: topologyFieldLabel(
+                          intl,
+                          suggestion.looks_like,
+                          suggestion.looks_like
+                        )
+                      }
+                    )}
+                  </span>
+                ))}
+              </Flex>
+            )}
+          </Flex>
+        )}
+      </div>
+
       {renaming && (
         <RenameLayer
           open
@@ -395,19 +424,14 @@ const AdvancedDrawer: React.FC<AdvancedDrawerProps> = ({
           onCancel={() => setRenaming(null)}
         />
       )}
+    </SubDrawer>
+  );
 
-      {draft && adding && (
-        <CustomLayer
-          open
-          chain={draft.chain}
-          reserved={reserved}
-          knownKeys={view.vocabulary?.known_keys || []}
-          workerLabels={workerLabels}
-          onOk={handleAddLayer}
-          onCancel={() => setAdding(false)}
-        />
-      )}
-    </GSDrawer>
+  return (
+    <>
+      {drawer}
+      <DeleteModal ref={discardModalRef} />
+    </>
   );
 };
 

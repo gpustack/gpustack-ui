@@ -238,7 +238,8 @@ export const K8SStatuses = [
   InstanceStatusValueMap.Initialized,
   InstanceStatusValueMap.Preparing,
   InstanceStatusValueMap.NotReady,
-  InstanceStatusValueMap.Ready
+  InstanceStatusValueMap.Ready,
+  InstanceStatusValueMap.Failed
 ];
 
 // Phases whose Pod is running, so the metrics subresource has something to
@@ -289,7 +290,6 @@ export const InstanceStatusLabelMap: Record<string, string> = {
   [InstanceStatusValueMap.Deleting]: 'Deleting',
   [InstanceStatusValueMap.Stopping]: 'Stopping',
   [InstanceStatusValueMap.Stopped]: 'Stopped',
-  [InstanceStatusValueMap.Failed]: 'Failed',
   [InstanceStatusValueMap.Unknown]: 'Unknown',
   [InstanceStatusValueMap.Starting]: 'Starting',
   ...Object.fromEntries(

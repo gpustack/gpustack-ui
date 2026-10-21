@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ListItem } from '../config/types';
+import { InstanceStatus, ListItem } from '../config/types';
 
 // View events still hits the K8s proxy. clusterID and namespace are taken
 // from the row itself (`row.clusterId`, `row.status.namespace`).
@@ -11,6 +11,7 @@ const useViewEvents = () => {
     clusterID?: number;
     volumeName?: string;
     hasPersistentVolume: boolean;
+    instanceStatus?: InstanceStatus | null;
   }>({
     open: false,
     name: '',
@@ -27,6 +28,7 @@ const useViewEvents = () => {
       name: row?.name || '',
       namespace: row?.status?.namespace || '',
       clusterID: row?.clusterId ?? undefined,
+      instanceStatus: row?.status,
       volumeName: volume?.persistent?.name || volume?.persistentTemplate?.name,
       hasPersistentVolume:
         !!volume?.persistent?.name || !!volume?.persistentTemplate?.name

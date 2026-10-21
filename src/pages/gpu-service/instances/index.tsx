@@ -460,6 +460,7 @@ const GPUService: React.FC = () => {
         clusterID={openViewEventsModalStatus.clusterID}
         volumeName={openViewEventsModalStatus.volumeName}
         hasPersistentVolume={openViewEventsModalStatus.hasPersistentVolume}
+        instanceStatus={openViewEventsModalStatus.instanceStatus}
         onCancel={closeViewEventsModal}
       />
       <DeleteModal ref={modalRef} />

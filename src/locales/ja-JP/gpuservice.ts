@@ -186,6 +186,9 @@ export default {
   'gpuservice.instance.template.mount': 'マウント',
   'gpuservice.instance.connect': '接続',
   'gpuservice.instance.connect.copySshCommand': 'SSH コマンドをコピー',
+  'gpuservice.instance.event.failureDetails': '失敗の詳細',
+  'gpuservice.instance.event.failureMessageUnavailable':
+    'サーバーから失敗の詳細が返されませんでした。以下のイベントの理由とメッセージを確認してください。',
   'gpuservice.instance.event.reason': '理由',
   'gpuservice.instance.event.message': 'メッセージ',
   'gpuservice.instance.event.source': 'ソース',

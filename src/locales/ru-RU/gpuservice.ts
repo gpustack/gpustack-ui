@@ -184,6 +184,9 @@ export default {
   'gpuservice.instance.template.mount': 'Монтирование',
   'gpuservice.instance.connect': 'Подключение',
   'gpuservice.instance.connect.copySshCommand': 'Скопировать команду SSH',
+  'gpuservice.instance.event.failureDetails': 'Подробности сбоя',
+  'gpuservice.instance.event.failureMessageUnavailable':
+    'Сервер не вернул подробности сбоя. Проверьте причины и сообщения в событиях ниже.',
   'gpuservice.instance.event.reason': 'Причина',
   'gpuservice.instance.event.message': 'Сообщение',
   'gpuservice.instance.event.source': 'Источник',

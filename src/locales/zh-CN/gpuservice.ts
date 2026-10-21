@@ -171,6 +171,9 @@ export default {
   'gpuservice.instance.template.mount': '挂载',
   'gpuservice.instance.connect': '连接',
   'gpuservice.instance.connect.copySshCommand': '复制 SSH 命令',
+  'gpuservice.instance.event.failureDetails': '失败详情',
+  'gpuservice.instance.event.failureMessageUnavailable':
+    '服务端未返回失败详情，请查看下方事件中的原因和消息。',
   'gpuservice.instance.event.reason': '原因',
   'gpuservice.instance.event.message': '消息',
   'gpuservice.instance.event.source': '来源',

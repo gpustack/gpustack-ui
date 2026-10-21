@@ -181,6 +181,9 @@ export default {
   'gpuservice.instance.template.mount': 'Bağlama',
   'gpuservice.instance.connect': 'Bağlan',
   'gpuservice.instance.connect.copySshCommand': 'SSH Komutunu Kopyala',
+  'gpuservice.instance.event.failureDetails': 'Hata ayrıntıları',
+  'gpuservice.instance.event.failureMessageUnavailable':
+    'Sunucu hata ayrıntılarını döndürmedi. Aşağıdaki olayların nedenlerini ve mesajlarını kontrol edin.',
   'gpuservice.instance.event.reason': 'Neden',
   'gpuservice.instance.event.message': 'Mesaj',
   'gpuservice.instance.event.source': 'Kaynak',

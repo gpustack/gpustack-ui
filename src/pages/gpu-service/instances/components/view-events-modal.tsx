@@ -10,7 +10,7 @@ import { Button, Table, Tabs, TabsProps } from 'antd';
 import type { ColumnsType } from 'antd/lib/table';
 import dayjs from 'dayjs';
 import React, { useEffect, useMemo, useState } from 'react';
-import { InstanceEventItem } from '../config/types';
+import { InstanceEventItem, InstanceStatus } from '../config/types';
 import useQueryInstanceEvents from '../services/use-query-instance-events';
 import useQueryVolumeEvents from '../services/use-query-volume-events';
 
@@ -21,6 +21,7 @@ type ViewEventsModalProps = {
   volumeName?: string;
   clusterID?: number;
   hasPersistentVolume?: boolean;
+  instanceStatus?: InstanceStatus | null;
   onCancel: () => void;
 };
 
@@ -40,7 +41,8 @@ const ViewEventsModal: React.FC<ViewEventsModalProps> = (props) => {
     namespace,
     clusterID,
     volumeName,
-    hasPersistentVolume
+    hasPersistentVolume,
+    instanceStatus
   } = props || {};
   const [activeKey, setActiveKey] = useState('instance');
 
@@ -71,6 +73,7 @@ const ViewEventsModal: React.FC<ViewEventsModalProps> = (props) => {
 
   useEffect(() => {
     if (open) {
+      setActiveKey('instance');
       refreshAll();
     } else {
       cancelInstanceRequest();
@@ -253,6 +256,22 @@ const ViewEventsModal: React.FC<ViewEventsModalProps> = (props) => {
       footer={null}
     >
       <div style={{ marginBlock: '8px 16px' }}>
+        {instanceStatus?.phase === 'Failed' && (
+          <AlertBlockInfo
+            type="danger"
+            ellipsis={false}
+            title={intl.formatMessage({
+              id: 'gpuservice.instance.event.failureDetails'
+            })}
+            message={
+              instanceStatus.phaseMessage ||
+              intl.formatMessage({
+                id: 'gpuservice.instance.event.failureMessageUnavailable'
+              })
+            }
+            style={{ marginBlockEnd: 'var(--ant-margin-sm)' }}
+          />
+        )}
         <AlertBlockInfo
           message={intl.formatMessage({
             id: 'gpuservice.instance.event.recentHourTip'

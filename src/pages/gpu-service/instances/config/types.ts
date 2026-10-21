@@ -106,7 +106,7 @@ export interface InstanceStatusAllocationItem {
 export interface InstanceStatus {
   namespace?: string;
   phase?: string;
-  phaseMessage?: string;
+  phaseMessage?: string | null;
   nodeName?: string;
   accessAddresses?: string[];
   hostIPs?: InstanceIP[];

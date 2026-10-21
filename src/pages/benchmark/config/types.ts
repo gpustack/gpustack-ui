@@ -1,3 +1,5 @@
+import type { Snapshot } from './detail-types';
+
 export interface ComputedResourceClaim {
   is_unified_memory: boolean;
   offload_layers: number;
@@ -257,6 +259,7 @@ export interface BenchmarkResultItem extends BenchmarkMetricsLite {
 // server picked to represent it, which is what the table's metric columns read.
 export interface BenchmarkListItem extends FormData, BenchmarkMetricsLite {
   id: number;
+  snapshot?: Snapshot | null;
   // Inherited from the parent cluster's owner_principal_id on the
   // wire so per-row tenant filtering works without joining.
   owner_principal_id?: number | null;

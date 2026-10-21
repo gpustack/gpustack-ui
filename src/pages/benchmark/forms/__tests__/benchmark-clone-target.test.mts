@@ -24,6 +24,7 @@ mock.module('@gpustack/core-ui', {
     Cascader: SelectField,
     Select: SelectField,
     TextAttribute: passChildren,
+    TooltipList: empty,
     IconFont: empty,
     ScrollSpyTabs: forwardRef((props: any, _ref) => passChildren(props)),
     useAppUtils: () => ({ getRuleMessage: (_: string, id: string) => id }),
@@ -264,7 +265,7 @@ const renderForm = async (currentData?: any, options: any = {}) => {
   const submitted = mock.fn(async (_values: any) => completeSubmit?.());
   const rejected = mock.fn((_errorInfo: any) => completeSubmit?.());
   let props: any = {
-    action: 'create',
+    action: options.action ?? 'create',
     open: true,
     currentData,
     clusterList: [
@@ -397,7 +398,57 @@ for (const scenario of [
   });
 }
 
-test('a route clone loads route choices and preserves the exact route', async () => {
+test('editing a route benchmark displays its snapshot route and can submit without current targets', async () => {
+  models = [];
+  routes = [];
+  const currentData = {
+    ...source(sourceModel),
+    target_mode: 'route',
+    snapshot: { route_name: 'historical-route' }
+  };
+  const view = await renderForm(currentData, { action: 'edit' });
+  try {
+    const selector = selectors.get('benchmark.form.target.route');
+    assert.equal(selector.value, 'historical-route');
+    assert.equal(selector.disabled, true);
+    assert.ok(
+      dom.window.document.body.textContent?.includes('historical-route')
+    );
+    assert.equal(modelRequests.mock.callCount(), 0);
+    assert.equal(routeRequests.mock.callCount(), 0);
+    await act(async () => form.validateFields(['route_name']));
+    await view.submit();
+    assert.equal(view.rejected.mock.callCount(), 0);
+    assert.equal(view.submitted.mock.callCount(), 1);
+    const payload = view.submitted.mock.calls[0].arguments[0];
+    assert.equal(payload.route_name, 'historical-route');
+    assert.equal(payload.model_id, sourceModel.id);
+    assert.ok(!payload.model_instance);
+
+    await view.render({ open: false });
+    await view.render({
+      open: true,
+      currentData: {
+        ...currentData,
+        id: 2,
+        snapshot: { route_name: 'another-route' }
+      }
+    });
+    assert.equal(
+      selectors.get('benchmark.form.target.route').value,
+      'another-route'
+    );
+    await view.submit();
+    assert.equal(
+      view.submitted.mock.calls[1].arguments[0].route_name,
+      'another-route'
+    );
+  } finally {
+    await view.unmount();
+  }
+});
+
+test('a route clone loads route choices and preserves the exact route from its snapshot', async () => {
   models = [plainModel, sourceModel];
   members = new Map([[plainModel.id, instances(plainModel)]]);
   routes = [
@@ -419,7 +470,7 @@ test('a route clone loads route choices and preserves the exact route', async ()
   const view = await renderForm({
     ...source(sourceModel),
     target_mode: 'route',
-    route_name: 'source-route'
+    snapshot: { route_name: 'source-route' }
   });
   try {
     assert.equal(form.getFieldValue('target_mode'), 'route');

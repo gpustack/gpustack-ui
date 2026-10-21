@@ -407,8 +407,13 @@ export default {
   'benchmark.form.targetMode': '压测目标形态',
   'benchmark.form.targetMode.instance': '实例（测引擎）',
   'benchmark.form.targetMode.route': '路由（测部署）',
-  'benchmark.form.targetMode.tips':
-    '实例：压力直接打到单个引擎 —— 分离组的 router，或普通模型的某一个副本 —— 链路里除了引擎没有别的东西。路由：从客户端调用的入口进去，普通模型的每个副本都会参与；对比分离部署与聚合部署在同样卡数下的性能，要用这一档。⚠️ 路由模式把 server 的代理算进链路：高并发下代理可能先于部署成为瓶颈并丢请求，而被丢掉的请求不计入延迟，会让 TTFT / TPOT 看起来更好。读路由模式的结果必须连同错误数和未完成数一起看。',
+  'benchmark.form.targetMode.tips.instance':
+    '压力直接打到单个引擎 —— 分离组的 router，或普通模型的某一个副本 —— 链路里除了引擎没有别的东西。',
+  'benchmark.form.targetMode.tips.route':
+    '从客户端调用的入口进去，普通模型的每个副本都会参与；对比分离部署与聚合部署在同样卡数下的性能，要用这一档。',
+  'benchmark.form.targetMode.tips.results.title': '解读路由结果',
+  'benchmark.form.targetMode.tips.results':
+    '路由模式把 server 的代理算进链路：高并发下代理可能先于部署成为瓶颈并丢请求，而被丢掉的请求不计入延迟，会让 TTFT / TPOT 看起来更好。读路由模式的结果必须连同错误数和未完成数一起看。',
   'benchmark.detail.targetMode.route': '路由（测部署）· {route}',
   'benchmark.form.target.route': '路由',
   'benchmark.form.target.route.empty':

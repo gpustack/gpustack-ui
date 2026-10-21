@@ -415,8 +415,13 @@ export default {
   'benchmark.form.targetMode': 'Kıyaslama hedefi türü',
   'benchmark.form.targetMode.instance': 'Örnek (motoru ölçer)',
   'benchmark.form.targetMode.route': 'Rota (dağıtımı ölçer)',
-  'benchmark.form.targetMode.tips':
-    "Örnek: yük doğrudan tek bir motora gider — ayrıştırılmış bir grubun routerı ya da düz bir modelin tek bir kopyası — ve yolda motordan başka bir şey yoktur. Rota: yük, istemcilerin çağırdığı girişten geçer, böylece düz bir modelin tüm kopyaları işin içine girer; ayrıştırılmış ve toplu dağıtımları aynı kart sayısında karşılaştırmak için bunu kullanın. ⚠️ Rota, sunucunun proxy'sini yola dahil eder. Yüksek eşzamanlılıkta proxy dağıtımdan önce doyuma ulaşıp istekleri düşürebilir; düşürülen istekler gecikme sayılarına girmediği için TTFT / TPOT olduğundan daha iyi görünebilir. Rota modu sonuçlarını hata ve tamamlanmamış istek sayılarıyla birlikte okuyun.",
+  'benchmark.form.targetMode.tips.instance':
+    'Yük doğrudan tek bir motora gider — ayrıştırılmış bir grubun routerı ya da düz bir modelin tek bir kopyası — ve yolda motordan başka bir şey yoktur.',
+  'benchmark.form.targetMode.tips.route':
+    'Yük, istemcilerin çağırdığı girişten geçer, böylece düz bir modelin tüm kopyaları işin içine girer; ayrıştırılmış ve toplu dağıtımları aynı kart sayısında karşılaştırmak için bunu kullanın.',
+  'benchmark.form.targetMode.tips.results.title': 'Rota sonuçlarını yorumlama',
+  'benchmark.form.targetMode.tips.results':
+    "Rota, sunucunun proxy'sini yola dahil eder. Yüksek eşzamanlılıkta proxy dağıtımdan önce doyuma ulaşıp istekleri düşürebilir; düşürülen istekler gecikme sayılarına girmediği için TTFT / TPOT olduğundan daha iyi görünebilir. Rota modu sonuçlarını hata ve tamamlanmamış istek sayılarıyla birlikte okuyun.",
   'benchmark.detail.targetMode.route': 'Rota (dağıtım) · {route}',
   'benchmark.form.target.route': 'Rota',
   'benchmark.form.target.route.empty':

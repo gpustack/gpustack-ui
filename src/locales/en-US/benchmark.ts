@@ -414,8 +414,13 @@ export default {
   'benchmark.form.targetMode': 'Target type',
   'benchmark.form.targetMode.instance': 'Instance (engine)',
   'benchmark.form.targetMode.route': 'Route (deployment)',
-  'benchmark.form.targetMode.tips':
-    "Instance sends the load straight at one engine — a group's router, or one replica of a plain model — so nothing but the engine is in the path. Route sends it through the entrance clients call, so every replica of a plain model takes part; use it to compare a disaggregated group against an aggregated deployment on the same cards. ⚠️ Route puts the server's proxy in the path. At high rates the proxy can saturate before the deployment does and drop requests — and dropped requests never reach the latency numbers, so TTFT / TPOT can look better than they are. Read route-mode results together with the error and incomplete counts.",
+  'benchmark.form.targetMode.tips.instance':
+    "Sends the load straight at one engine — a group's router, or one replica of a plain model — so nothing but the engine is in the path.",
+  'benchmark.form.targetMode.tips.route':
+    'Sends the load through the entrance clients call, so every replica of a plain model takes part; use it to compare a disaggregated group against an aggregated deployment on the same cards.',
+  'benchmark.form.targetMode.tips.results.title': 'Reading route results',
+  'benchmark.form.targetMode.tips.results':
+    "Route puts the server's proxy in the path. At high rates the proxy can saturate before the deployment does and drop requests — and dropped requests never reach the latency numbers, so TTFT / TPOT can look better than they are. Read route-mode results together with the error and incomplete counts.",
   'benchmark.detail.targetMode.route': 'Route (deployment) · {route}',
   'benchmark.form.target.route': 'Route',
   'benchmark.form.target.route.empty':

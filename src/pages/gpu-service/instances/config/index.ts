@@ -221,6 +221,7 @@ export const InstanceStatusValueMap = {
   Deleting: 'Deleting',
   Stopping: 'Stopping',
   Stopped: 'Stopped',
+  Failed: 'Failed',
   CreateFailed: 'CreateFailed',
   SSHPublicKeyCreateFailed: 'SSHPublicKeyCreateFailed',
   PersistentVolumeTypeCreateFailed: 'PersistentVolumeTypeCreateFailed',
@@ -288,6 +289,7 @@ export const InstanceStatusLabelMap: Record<string, string> = {
   [InstanceStatusValueMap.Deleting]: 'Deleting',
   [InstanceStatusValueMap.Stopping]: 'Stopping',
   [InstanceStatusValueMap.Stopped]: 'Stopped',
+  [InstanceStatusValueMap.Failed]: 'Failed',
   [InstanceStatusValueMap.Unknown]: 'Unknown',
   [InstanceStatusValueMap.Starting]: 'Starting',
   ...Object.fromEntries(
@@ -309,6 +311,7 @@ export const status: Record<string, StatusType> = {
   [InstanceStatusValueMap.Deleting]: StatusMaps.warning,
   [InstanceStatusValueMap.Stopping]: StatusMaps.transitioning,
   [InstanceStatusValueMap.Stopped]: StatusMaps.inactive,
+  [InstanceStatusValueMap.Failed]: StatusMaps.error,
   [InstanceStatusValueMap.CreateFailed]: StatusMaps.error,
   [InstanceStatusValueMap.SSHPublicKeyCreateFailed]: StatusMaps.error,
   [InstanceStatusValueMap.PersistentVolumeTypeCreateFailed]: StatusMaps.error,

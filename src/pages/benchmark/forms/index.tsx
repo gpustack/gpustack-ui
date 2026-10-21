@@ -157,7 +157,7 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
     {
       value: 'execution',
       label: intl.formatMessage({ id: 'benchmark.form.group.execution' }),
-      icon: <IconFont type="icon-stop3" />,
+      icon: <IconFont type="icon-rule_settings" />,
       field: 'execution'
     }
   ];
@@ -295,6 +295,11 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       // Editable view of the 9 flat slo_*_ms thresholds (see config/index.ts).
       slo_targets: sloTargetsFromFields(currentData),
       target_mode: currentData.target_mode || TargetModeValueMap.Instance,
+      // The API stores the measured route in the snapshot, not on the row.
+      route_name:
+        currentData.target_mode === TargetModeValueMap.Route
+          ? (currentData.snapshot?.route_name ?? currentData.route_name)
+          : undefined,
       model_instance:
         currentData.target_mode === TargetModeValueMap.Route
           ? undefined

@@ -151,6 +151,24 @@ export const targetModeOptions = [
   }
 ];
 
+export const targetModeTips = [
+  {
+    title: { text: 'benchmark.form.targetMode.instance', locale: true },
+    tips: 'benchmark.form.targetMode.tips.instance'
+  },
+  {
+    title: { text: 'benchmark.form.targetMode.route', locale: true },
+    tips: 'benchmark.form.targetMode.tips.route'
+  },
+  {
+    title: {
+      text: 'benchmark.form.targetMode.tips.results.title',
+      locale: true
+    },
+    tips: 'benchmark.form.targetMode.tips.results'
+  }
+];
+
 export const loadTypeOptions = [
   {
     label: 'benchmark.form.loadType.fixedRate',

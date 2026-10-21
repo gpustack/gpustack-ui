@@ -15,13 +15,18 @@ import {
   Cascader as SealCascader,
   Select as SealSelect,
   TextAttribute,
+  TooltipList,
   useAppUtils
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { App, Form, Tooltip } from 'antd';
 import React, { useEffect } from 'react';
-import { targetModeOptions, TargetModeValueMap } from '../config';
+import {
+  targetModeOptions,
+  targetModeTips,
+  TargetModeValueMap
+} from '../config';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
 
@@ -363,8 +368,10 @@ const ModelInstanceForm: React.FC = () => {
     if (mode === TargetModeValueMap.Route) {
       const routes = await loadRoutes(modelOptions, isCurrent);
       if (!isCurrent()) return;
+      const sourceRouteName =
+        cloneSource?.snapshot?.route_name ?? cloneSource?.route_name;
       const selectedRoute = cloneSource
-        ? routes.find((route) => route.value === cloneSource.route_name)
+        ? routes.find((route) => route.value === sourceRouteName)
         : routes.length === 1
           ? routes[0]
           : undefined;
@@ -449,9 +456,7 @@ const ModelInstanceForm: React.FC = () => {
           disabled={action === PageAction.EDIT}
           options={targetModeOptions}
           label={intl.formatMessage({ id: 'benchmark.form.targetMode' })}
-          description={intl.formatMessage({
-            id: 'benchmark.form.targetMode.tips'
-          })}
+          description={<TooltipList list={targetModeTips} />}
           onChange={handleTargetModeChange}
         ></SealSelect>
       </Form.Item>

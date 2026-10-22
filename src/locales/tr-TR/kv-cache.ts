@@ -26,6 +26,14 @@ export default {
   'kvCache.check.ok.singleton':
     'Kaynaklar yeterli; örnek {worker} işçi düğümünde çalışacak.',
   'kvCache.check.noWorkers': 'Seçiciyle eşleşen işçi düğüm yok.',
+  'kvCache.check.noReadyWorkers':
+    'Bu kümede Ready durumunda işçi düğüm yok. Başka bir küme seçin veya işçi düğümlerin durumunu kontrol edin.',
+  'kvCache.check.noReadyTargets':
+    'Seçilen işçi düğüm ve etiketlerle eşleşen Ready durumunda işçi düğüm yok. Seçimi değiştirin veya işçi düğümlerin durumunu kontrol edin.',
+  'kvCache.check.workersLoading':
+    'İşçi düğümlerin durumu yükleniyor. Dağıtımdan önce bekleyin.',
+  'kvCache.check.workersUnavailable':
+    'İşçi düğümlerin durumu yüklenemedi. Dağıtımdan önce yeniden denemek için kümeyi tekrar seçin.',
   'kvCache.check.ok.store':
     'Dağıtılabilir: {replicas} depolama kopyası x {size} GiB eşleşen işçi düğümlere sığıyor',
   'kvCache.check.store.insufficientWorkers':

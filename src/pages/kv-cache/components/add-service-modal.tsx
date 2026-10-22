@@ -105,7 +105,7 @@ const AddService: React.FC<AddModalProps> = ({
 
   const onProviderStep = isCreate && currentStep === 0;
 
-  // Creation always submits to server validation; edit warnings are advisory.
+  // Worker readiness blocks creation in the form; capacity warnings are advisory.
   const showExtraButton =
     !isCreate && checkStatus.show && checkStatus.type !== 'success';
 

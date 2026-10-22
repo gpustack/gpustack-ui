@@ -264,7 +264,7 @@ export default {
   'clusters.topology.view.tree': '树',
   'clusters.topology.search.placeholder': '搜索主机…',
   'clusters.topology.columns': '列设置',
-  'clusters.topology.columns.fields': '位置字段',
+  'clusters.topology.columns.fields': '拓扑层级',
   'clusters.topology.columns.manage': '管理层级',
   'clusters.topology.columns.mapping': '标签键映射…',
   'clusters.topology.columns.deleteCustom': '删除字段「{name}」',
@@ -273,8 +273,8 @@ export default {
   'clusters.topology.columns.deleted': '已删除字段「{name}」',
   'clusters.topology.selected': '已选 {count} 台',
   'clusters.topology.clearSelection': '清除选择',
-  'clusters.topology.batch.button': '设置位置',
-  'clusters.topology.batch.title': '设置位置 · 已选 {count} 台',
+  'clusters.topology.batch.button': '设置拓扑层级',
+  'clusters.topology.batch.title': '设置拓扑层级 · 已选 {count} 台',
   'clusters.topology.batch.field': '字段',
   'clusters.topology.batch.value': '值',
   'clusters.topology.batch.overwrite': '将覆盖 {count} 台已有值：{names}',
@@ -325,7 +325,7 @@ export default {
   'clusters.topology.onboarding.hosts': '已识别 {hosts} 台主机。',
   'clusters.topology.onboarding.goal': '要让 PD 分离的成员尽量落在一起：',
   'clusters.topology.onboarding.steps':
-    '① 选中同一机柜的机器 → ② 「设置位置」填机柜名 → ③ 部署时选「至少同机柜」',
+    '① 选中同一机柜的机器 → ② 「设置拓扑层级」填机柜名 → ③ 部署时选「至少同机柜」',
   'clusters.topology.onboarding.domains':
     '机器自报的加速器域（NVLink 多机互联、昇腾超节点）也能当成一层：在「添加层级」里指向对应的标签键，这一层就直接有值。',
   'clusters.topology.onboarding.dismiss': '知道了',

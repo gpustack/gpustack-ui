@@ -128,6 +128,6 @@ export default {
   'resources.worker.setLabels.hint':
     '为所有选中的 worker 添加新标签，并更新同名标签的值，其他标签保持不变。如需删除标签，请单独编辑 worker。',
 
-  'resources.table.location': '位置',
+  'resources.table.location': '拓扑层级',
   'resources.worker.setLocation': '设置位置'
 };

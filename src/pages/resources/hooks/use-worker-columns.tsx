@@ -31,7 +31,7 @@ import {
   type TableColumnProps
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Button, Flex, Tooltip } from 'antd';
+import { Flex, Tooltip } from 'antd';
 import { useAtom, useAtomValue } from 'jotai';
 import _ from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
@@ -474,8 +474,7 @@ const useWorkerColumns = ({
       },
       {
         // The declared rungs this worker resolves, root to leaf; a dash when
-        // it resolves none. Clicking goes to the cluster's topology drawer
-        // with this row pointed at.
+        // it resolves none. This cell only displays the resolved hierarchy.
         //
         // 🔴 It used to be exactly two values, «rack · accelerator domain»,
         // because those were the two dimensions the model had. One chain means
@@ -495,21 +494,13 @@ const useWorkerColumns = ({
             )
             .filter(Boolean);
           return (
-            <Button
-              type="link"
-              size="small"
-              style={{ padding: 0, maxWidth: '100%' }}
-              disabled={!view}
-              onClick={() => handleSelect('topology', record)}
-            >
-              <AutoTooltip ghost maxWidth={220}>
-                {parts.length ? (
-                  parts.join(' · ')
-                ) : (
-                  <span className="text-tertiary">—</span>
-                )}
-              </AutoTooltip>
-            </Button>
+            <AutoTooltip ghost maxWidth={220}>
+              {parts.length ? (
+                parts.join(' · ')
+              ) : (
+                <span className="text-tertiary">—</span>
+              )}
+            </AutoTooltip>
           );
         }
       },

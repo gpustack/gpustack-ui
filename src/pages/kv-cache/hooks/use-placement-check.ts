@@ -53,15 +53,18 @@ export const checkWorkerReadiness = (
   const ready = workers.filter(
     (worker) => worker.state === WorkerStatusMap.ready
   );
-  const messageId = !ready.length
-    ? 'kvCache.check.noReadyWorkers'
-    : !ready.some(
-          (worker) =>
-            (workerId == null || worker.id === workerId) &&
-            matchesSelector(worker, workerSelector)
-        )
-      ? 'kvCache.check.noReadyTargets'
-      : undefined;
+  let messageId: string | undefined;
+  if (!ready.length) {
+    messageId = 'kvCache.check.noReadyWorkers';
+  } else if (
+    !ready.some(
+      (worker) =>
+        (workerId == null || worker.id === workerId) &&
+        matchesSelector(worker, workerSelector)
+    )
+  ) {
+    messageId = 'kvCache.check.noReadyTargets';
+  }
   return messageId
     ? {
         show: true,

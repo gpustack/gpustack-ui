@@ -95,8 +95,6 @@ interface TreeViewProps {
   onGroupingChange: (grouping: string) => void;
   /** Switch to the table and point at this row. The tree is for checking. */
   onHostClick: (worker: TopologyWorker) => void;
-  /** The bucket's "set location": select its hosts and open the batch panel. */
-  onSetLocation: (workers: TopologyWorker[], field: string) => void;
 }
 
 interface Group {
@@ -120,8 +118,7 @@ const TreeView: React.FC<TreeViewProps> = ({
   workers,
   grouping,
   onGroupingChange,
-  onHostClick,
-  onSetLocation
+  onHostClick
 }) => {
   const intl = useIntl();
   const { styles } = useStyles();
@@ -354,21 +351,6 @@ const TreeView: React.FC<TreeViewProps> = ({
           {group.label}
         </span>
         <span className="meta">{capacity(group.workers)}</span>
-        <span className="tail">
-          {group.unfilledField && (
-            <Button
-              type="link"
-              size="small"
-              style={{ padding: 0 }}
-              onClick={(e) => {
-                e.stopPropagation();
-                onSetLocation(group.workers, group.unfilledField!);
-              }}
-            >
-              {intl.formatMessage({ id: 'clusters.topology.batch.button' })}
-            </Button>
-          )}
-        </span>
       </span>
     );
     return {

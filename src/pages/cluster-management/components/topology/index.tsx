@@ -1,8 +1,4 @@
-import {
-  DownOutlined,
-  InfoCircleOutlined,
-  WarningOutlined
-} from '@ant-design/icons';
+import { DownOutlined } from '@ant-design/icons';
 import { GSDrawer, useWindowResize } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useSize } from 'ahooks';
@@ -14,12 +10,10 @@ import {
   Modal,
   Segmented,
   Spin,
-  Tooltip,
   message
 } from 'antd';
 import { createStyles } from 'antd-style';
 import { useEffect, useRef, useState } from 'react';
-import { topologyFieldLabel } from '../../config';
 import {
   NODE_LAYER_NAME,
   RACK_LAYER,
@@ -79,23 +73,7 @@ const useStyles = createStyles(({ css }) => ({
     padding-inline: 24px;
     overflow: auto;
   `,
-  /* The numbers sit on the title line so the chrome is two rows: this one and
-     the toolbar. Normal weight and a size down, so the name stays the title. */
   title: css`
-    .info {
-      color: var(--ant-color-text-tertiary);
-      font-size: 14px;
-    }
-    .overview {
-      font-weight: 400;
-      font-size: 13px;
-    }
-    .sep {
-      color: var(--ant-color-text-quaternary);
-    }
-    .warn {
-      color: var(--ant-color-warning);
-    }
     .previewing {
       color: var(--ant-color-primary);
       font-weight: 400;
@@ -224,16 +202,11 @@ const TopologyDrawer: React.FC<TopologyDrawerProps> = ({
     selectedIds.includes(worker.id)
   );
 
-  const rackLayer = displayed?.layers.find((layer) => layer.id === RACK_LAYER);
   const anyHandFilled = allWorkers.some((worker) =>
     Object.values(worker.location || {}).some(
       (location) => location.source === 'user'
     )
   );
-
-  const fieldLabel = (id: string) =>
-    everyField.find((field) => field.id === id)?.label ||
-    topologyFieldLabel(intl, id);
 
   const summarize = (
     field: LocationField,
@@ -276,12 +249,6 @@ const TopologyDrawer: React.FC<TopologyDrawerProps> = ({
       summarize(field, targets, value) + suffix
     );
     wroteOnceRef.current = true;
-  };
-
-  const openBatch = (targets: TopologyWorker[], field: string) => {
-    setViewMode('table');
-    setSelectedIds(targets.map((w) => w.id));
-    setBatch({ open: true, field });
   };
 
   const handleBatchApply = async (fieldId: string, value: string | null) => {
@@ -418,16 +385,6 @@ const TopologyDrawer: React.FC<TopologyDrawerProps> = ({
     setOnboardingDismissed(true);
   };
 
-  const overviewLink = (text: React.ReactNode, onClick: () => void) => (
-    <Button type="link" size="small" style={{ padding: 0 }} onClick={onClick}>
-      {text}
-    </Button>
-  );
-
-  const clearFilters = () => {
-    setSearch('');
-  };
-
   const width = size.width < FULL_WIDTH_BELOW ? '100%' : DRAWER_WIDTH;
 
   const titleText = clusterName
@@ -443,75 +400,6 @@ const TopologyDrawer: React.FC<TopologyDrawerProps> = ({
       className={styles.title}
     >
       <span>{titleText}</span>
-      {/* Said on this screen rather than in release notes: filling a location
-          relocates nothing already running. */}
-      <Tooltip
-        title={intl.formatMessage({ id: 'clusters.topology.noRebalance' })}
-      >
-        <InfoCircleOutlined className="info" />
-      </Tooltip>
-      {displayed && (
-        <Flex component="span" align="center" gap={8} wrap className="overview">
-          {overviewLink(
-            intl.formatMessage(
-              { id: 'clusters.topology.overview.workers' },
-              { count: allWorkers.length }
-            ),
-            clearFilters
-          )}
-          {/* One counter per rung that resolved anything — an operator's own
-              «加速器域» layer gets one on exactly the same terms as «机柜», which
-              is the whole point of folding it into the chain. The dedicated
-              «加速器域 N 个» counter it replaces was the last place the domain
-              was named as a dimension of its own. */}
-          {fields.map((field) => {
-            const layer = displayed.layers.find((l) => l.id === field.id);
-            if (!layer?.domains) {
-              return null;
-            }
-            return (
-              <Flex key={field.id} align="center" gap={8}>
-                <span className="sep">·</span>
-                {overviewLink(
-                  intl.formatMessage(
-                    { id: 'clusters.topology.overview.domains' },
-                    { field: field.label, count: layer.domains }
-                  ),
-                  () => {
-                    changeViewMode('tree');
-                    setGrouping(
-                      field.id === RACK_LAYER ? TREE_GROUPING : field.id
-                    );
-                  }
-                )}
-              </Flex>
-            );
-          })}
-          {!!rackLayer?.unclassified && (
-            <>
-              <span className="sep">·</span>
-              <WarningOutlined className="warn" />
-              {overviewLink(
-                <span className="warn">
-                  {intl.formatMessage(
-                    { id: 'clusters.topology.overview.unfilled' },
-                    {
-                      count: rackLayer.unclassified,
-                      field: fieldLabel(RACK_LAYER)
-                    }
-                  )}
-                </span>,
-                /* Switches to the table and stops there. It used to also
-                   turn on an «只看未填的» filter, which was removed in review:
-                   in the table an unfilled cell is an empty input carrying a
-                   «填写机柜» placeholder, so the rows this link points at are
-                   already the ones that stand out. */
-                () => changeViewMode('table')
-              )}
-            </>
-          )}
-        </Flex>
-      )}
       {preview.active && (
         <span className="previewing">
           {intl.formatMessage({ id: 'clusters.topology.previewing' })}
@@ -614,7 +502,6 @@ const TopologyDrawer: React.FC<TopologyDrawerProps> = ({
                 changeViewMode('table');
                 highlight(worker.id);
               }}
-              onSetLocation={openBatch}
             />
           ) : (
             <Flex orientation="vertical" gap={12} style={{ height: '100%' }}>

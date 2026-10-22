@@ -274,7 +274,7 @@ export default {
   'clusters.topology.view.tree': 'Tree',
   'clusters.topology.search.placeholder': 'Search hosts…',
   'clusters.topology.columns': 'Columns',
-  'clusters.topology.columns.fields': 'Location fields',
+  'clusters.topology.columns.fields': 'Topology Layers',
   'clusters.topology.columns.manage': 'Manage layers',
   'clusters.topology.columns.mapping': 'Label key mapping…',
   'clusters.topology.columns.deleteCustom': 'Delete field “{name}”',
@@ -283,8 +283,8 @@ export default {
   'clusters.topology.columns.deleted': 'Field “{name}” deleted',
   'clusters.topology.selected': '{count} selected',
   'clusters.topology.clearSelection': 'Clear selection',
-  'clusters.topology.batch.button': 'Set location',
-  'clusters.topology.batch.title': 'Set location · {count} selected',
+  'clusters.topology.batch.button': 'Set Topology Layers',
+  'clusters.topology.batch.title': 'Set Topology Layers · {count} selected',
   'clusters.topology.batch.field': 'Field',
   'clusters.topology.batch.value': 'Value',
   'clusters.topology.batch.overwrite':
@@ -341,7 +341,7 @@ export default {
   'clusters.topology.onboarding.goal':
     'To keep the members of a disaggregated group together:',
   'clusters.topology.onboarding.steps':
-    '① Select the machines in one rack → ② “Set location” with the rack name → ③ Choose “same rack” when deploying',
+    '① Select the machines in one rack → ② Use “Set Topology Layers” to enter the rack name → ③ Choose “same rack” when deploying',
   'clusters.topology.onboarding.domains':
     'A device-reported accelerator domain (multi-node NVLink, an Ascend super pod) can be a layer too: add one under “Add layer”, point it at the matching label key, and it fills itself in.',
   'clusters.topology.onboarding.dismiss': 'Got it',

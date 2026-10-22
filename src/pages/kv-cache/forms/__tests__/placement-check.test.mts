@@ -62,6 +62,18 @@ const provider: CacheProviderItem = {
   resource_profile: { ram_gib: '{{ram_size}}' },
   inference_backend_integrations: []
 };
+const hardwareProvider: CacheProviderItem = {
+  ...provider,
+  default_version: '2.0.0',
+  fields: [
+    { name: 'ram_size', type: 'number', default: 4, min: 1 },
+    {
+      name: 'transport',
+      default: 'tcp',
+      framework_defaults: { cuda: 'cuda-ipc', cann: 'ascend' }
+    }
+  ]
+};
 const saved: ListItem = {
   id: 1,
   name: 'saved-cache',
@@ -548,6 +560,188 @@ test('a singleton defaults to a Ready worker and still submits with an advisory 
     await form.submit();
     assert.equal(form.submissions.length, 1);
     assert.equal(form.submissions[0].worker_id, 1);
+  } finally {
+    await form.unmount();
+  }
+});
+
+for (const topology of ['per_node', 'replicas'] as const) {
+  for (const first of ['workers', 'catalog']) {
+    test(`${topology} creation ignores offline CUDA for versions and defaults when ${first} arrive first`, async () => {
+      const form = await mount('create');
+      const catalog = [{ ...hardwareProvider, topology }];
+      const mixedWorkers = [workers[0], { ...workers[1], state: 'not_ready' }];
+      try {
+        if (first === 'workers') {
+          await act(async () => form.workerList.resolve(mixedWorkers));
+          await settle();
+          await act(async () => form.catalog.resolve(catalog));
+        } else {
+          await act(async () => form.catalog.resolve(catalog));
+          await settle();
+          await act(async () => form.workerList.resolve(mixedWorkers));
+        }
+        await settle();
+        assert.equal(
+          form.ref.current.form.getFieldValue('provider_version'),
+          '1.1.0'
+        );
+        assert.equal(
+          form.ref.current.form.getFieldValue([
+            'config',
+            'fields',
+            'transport'
+          ]),
+          'tcp'
+        );
+        assert.equal(
+          document.querySelector('#provider_version option[value="2.0.0"]'),
+          null
+        );
+        assert.equal(form.statuses.at(-1)?.type, 'success');
+        if (topology === 'replicas') {
+          assert.equal(
+            (
+              document.querySelector(
+                '#worker_id option[value="2"]'
+              ) as HTMLOptionElement
+            ).disabled,
+            true
+          );
+        }
+        await form.change('name', 'ready-cpu-cache');
+        await form.submit();
+        assert.equal(form.submissions.length, 1);
+        assert.equal(form.submissions[0].provider_version, '1.1.0');
+      } finally {
+        await form.unmount();
+      }
+    });
+  }
+}
+
+test('Ready CUDA determines hardware defaults even when an offline worker reports another accelerator', async () => {
+  const form = await mount('create');
+  try {
+    await form.ready(
+      [hardwareProvider],
+      [
+        {
+          ...workers[0],
+          state: 'unreachable',
+          status: { ...workers[0].status, gpu_devices: [{ type: 'cann' }] }
+        },
+        workers[1]
+      ]
+    );
+    assert.equal(
+      form.ref.current.form.getFieldValue('provider_version'),
+      '2.0.0'
+    );
+    assert.equal(
+      form.ref.current.form.getFieldValue(['config', 'fields', 'transport']),
+      'cuda-ipc'
+    );
+    assert.equal(form.statuses.at(-1)?.type, 'success');
+  } finally {
+    await form.unmount();
+  }
+});
+
+test('Ready-worker defaults preserve an explicit version and field choice made before workers arrive', async () => {
+  const form = await mount('create');
+  try {
+    await act(async () => form.catalog.resolve([hardwareProvider]));
+    await form.change('provider_version', '1.0.0');
+    await form.change('config_fields_transport', 'manual-transport');
+    await act(async () => form.workerList.resolve([workers[1]]));
+    await settle();
+    assert.equal(
+      form.ref.current.form.getFieldValue('provider_version'),
+      '1.0.0'
+    );
+    assert.equal(
+      form.ref.current.form.getFieldValue(['config', 'fields', 'transport']),
+      'manual-transport'
+    );
+  } finally {
+    await form.unmount();
+  }
+});
+
+test('editing keeps saved configuration and its existing version choices when CUDA is not Ready', async () => {
+  const form = await mount('edit');
+  try {
+    await form.ready(
+      [hardwareProvider],
+      [workers[0], { ...workers[1], state: 'not_ready' }]
+    );
+    assert.equal(
+      form.ref.current.form.getFieldValue('provider_version'),
+      saved.provider_version
+    );
+    assert.equal(
+      form.ref.current.form.getFieldValue(['config', 'fields', 'transport']),
+      saved.config?.fields?.transport
+    );
+    assert.ok(
+      document.querySelector('#provider_version option[value="2.0.0"]')
+    );
+    await form.change('name', 'renamed-cache');
+    await form.submit();
+    assert.equal(form.submissions.length, 1);
+    assert.equal(form.submissions[0].provider_version, saved.provider_version);
+  } finally {
+    await form.unmount();
+  }
+});
+
+test('switching clusters recomputes unpinned versions and defaults from the new Ready workers', async () => {
+  const form = await mount('create', saved, {
+    debounceWorkers: true,
+    deferClusters: true
+  });
+  try {
+    await act(async () => form.clusters.resolve(clusters));
+    await act(async () => form.catalog.resolve([hardwareProvider]));
+    await act(async () => mock.timers.tick(300));
+    const cudaRequest = form.workerRequests.at(-1)!;
+    assert.equal(cudaRequest.clusterId, 2);
+    await act(async () => cudaRequest.response.resolve([workers[1]]));
+    await settle();
+    assert.equal(
+      form.ref.current.form.getFieldValue('provider_version'),
+      '2.0.0'
+    );
+    assert.equal(
+      form.ref.current.form.getFieldValue(['config', 'fields', 'transport']),
+      'cuda-ipc'
+    );
+
+    await form.changeNow('cluster_id', '1');
+    await act(async () => mock.timers.tick(300));
+    const cpuRequest = form.workerRequests.at(-1)!;
+    assert.equal(cpuRequest.clusterId, 1);
+    await act(async () =>
+      cpuRequest.response.resolve([
+        workers[0],
+        { ...workers[1], state: 'not_ready' }
+      ])
+    );
+    await settle();
+    assert.equal(
+      form.ref.current.form.getFieldValue('provider_version'),
+      '1.1.0'
+    );
+    assert.equal(
+      form.ref.current.form.getFieldValue(['config', 'fields', 'transport']),
+      'tcp'
+    );
+    assert.equal(
+      document.querySelector('#provider_version option[value="2.0.0"]'),
+      null
+    );
+    assert.equal(form.statuses.at(-1)?.type, 'success');
   } finally {
     await form.unmount();
   }

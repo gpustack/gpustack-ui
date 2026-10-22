@@ -101,6 +101,15 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
   }>({ status: 'loading', workers: [] });
   const { workers } = workerRead;
   const workersLoading = workerRead.status === 'loading';
+  // Offline hardware cannot choose a new service's runtime or defaults.
+  // Keep the full list for options and the existing edit behavior.
+  const hardwareWorkers = useMemo(
+    () =>
+      action === PageAction.CREATE
+        ? workers.filter((worker) => worker.state === WorkerStatusMap.ready)
+        : workers,
+    [workers, action]
+  );
   const workerOptions = useMemo(
     () =>
       workers.map((item) => ({
@@ -298,8 +307,8 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
   // The support-matrix keys this cluster's workers are read against; the
   // version list is the only thing that needs them as a set.
   const clusterFrameworks = useMemo(
-    () => clusterFrameworksOf(workers),
-    [workers]
+    () => clusterFrameworksOf(hardwareWorkers),
+    [hardwareWorkers]
   );
 
   const versionOptions = useMemo(() => {
@@ -399,12 +408,12 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
   // choice that only fails once an engine attaches.
   const clusterFramework = useMemo(() => {
     const frameworks = new Set(
-      workers
+      hardwareWorkers
         .map((worker) => worker.status?.gpu_devices?.[0]?.type)
         .filter(Boolean) as string[]
     );
     return frameworks.size === 1 ? [...frameworks][0] : undefined;
-  }, [workers]);
+  }, [hardwareWorkers]);
 
   const fieldDefault = useCallback(
     (field: CacheProviderField) =>
@@ -440,7 +449,7 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
     versionPinned.current = false;
     form.setFieldValue(
       'provider_version',
-      pickInitialVersion(provider, workers)
+      pickInitialVersion(provider, hardwareWorkers)
     );
     // config.image only accompanies the reserved "custom" version, and
     // the version just reset to the provider default
@@ -779,17 +788,17 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
         if (!active || form.getFieldValue('cluster_id') !== clusterId) {
           return;
         }
+        const readyWorkers = (items || []).filter(
+          (worker) => worker.state === WorkerStatusMap.ready
+        );
         setWorkerRead({ clusterId, status: 'loaded', workers: items || [] });
-        reseedVersionFor(items || []);
+        reseedVersionFor(readyWorkers);
         // nothing to seed where the form offers no Worker select
         if (isPerNode || hasComponents) {
           schedulePlacementCheck();
           return;
         }
         // seed an empty selection with the least-loaded worker
-        const readyWorkers = (items || []).filter(
-          (worker) => worker.state === WorkerStatusMap.ready
-        );
         if (
           action === PageAction.CREATE &&
           readyWorkers.length &&

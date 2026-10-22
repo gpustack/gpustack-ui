@@ -75,11 +75,16 @@ export default {
   'models.form.selector': 'Селектор',
   'models.form.env': 'Переменные окружения',
   'models.form.configurations': 'Конфигурации',
+  'models.form.tabs.basic': 'Основное',
+  'models.form.tabs.pd': 'Разделение PD',
+  'models.form.tabs.performance': 'Ускорение',
+  'models.form.tabs.scheduling': 'Размещение',
+  'models.form.tabs.advanced': 'Дополн.',
   'models.form.s3address': 'S3-адрес',
   'models.form.partialoffload.tips':
     'При включении CPU оффлоудинга GPUStack будет выделять оперативную память, если ресурсов GPU недостаточно. Вы должны правильно настроить бэкенд вывода для использования гибридного CPU+GPU или полного CPU вывода.',
   'models.form.distribution.tips':
-    'Позволяет переносить часть слоёв модели на один или несколько удалённых воркеров, когда ресурсов текущего воркера недостаточно.',
+    'Позволяет переносить часть слоёв модели на один или несколько удалённых Worker, когда ресурсов текущего Worker недостаточно.',
   'models.openinplayground': 'Открыть в Песочнице',
   'models.instances': 'инстансы',
   'models.table.replicas.edit': 'Редактировать реплики',
@@ -129,12 +134,12 @@ export default {
   'models.table.vgpu': 'vGPU',
   'models.table.vgpu.slice': '{memory}% VRAM / {cores}% вычислений',
   'models.table.backend': 'Бэкенды',
-  'models.table.acrossworker': 'Распределение по воркерам',
+  'models.table.acrossworker': 'Распределение по Worker',
   'models.table.cpuoffload': 'CPU оффлоуд',
   'models.table.layers': 'Слои',
   'models.form.backend': 'Бэкенд',
   'models.form.backend_parameters': 'Параметры бэкенда',
-  'models.instance.params.configured': 'User Configured',
+  'models.instance.params.configured': 'Задано пользователем',
   'models.instance.params.autoInjected': 'Автовнедрённые параметры',
   'models.search.gguf.tips':
     'GGUF-модели используют llama-box (поддерживает Linux, macOS и Windows).',
@@ -164,24 +169,24 @@ export default {
   'models.form.backendVersion': 'Версия бэкенда',
   'models.form.backendVersion.tips':
     'Чтобы использовать желаемую версию {backend} {version}, система автоматически создаст виртуальную среду в онлайн-окружении для установки соответствующей версии. После обновления GPUStack версия бэкенда останется зафиксированной. {link}',
-  'models.form.customImage': 'Custom Image',
-  'models.form.customImage.entry': 'Use a custom image…',
-  'models.form.customImage.backToVersion': 'Select a version instead',
+  'models.form.customImage': 'Пользовательский образ',
+  'models.form.customImage.entry': 'Использовать свой образ…',
+  'models.form.customImage.backToVersion': 'Выбрать версию вместо образа',
   'models.form.customImage.tips':
-    'Use your own {backend} image instead of a catalog version. GPUStack skips runner catalog compatibility checks for this image; confirm it supports your devices and distributed setup.',
+    'Используйте собственный образ {backend} вместо версии из каталога. GPUStack не проверяет совместимость этого образа по каталогу сред запуска; убедитесь, что он поддерживает ваши устройства и распределённую конфигурацию.',
   'models.form.customRunCommand.tips':
-    'For built-in backends, enter startup arguments without the executable. GPUStack still appends host and port, plus distributed settings where applicable.',
+    'Для встроенных бэкендов укажите аргументы запуска без имени исполняемого файла. GPUStack добавит хост, порт и, при необходимости, параметры распределённого запуска.',
   'models.form.gpuselector': 'Селектор GPU',
   'models.form.backend.llamabox':
     'Для моделей формата GGUF. Поддержка Linux, macOS и Windows.',
   'models.form.backend.vllm':
-    'Built-in support for NVIDIA, AMD, Ascend, Hygon, Moore Threads, Iluvatar, MetaX, T-Head PPU devices.',
+    'Встроенная поддержка устройств NVIDIA, AMD, Ascend, Hygon, Moore Threads, Iluvatar, MetaX и T-Head PPU.',
   'models.form.backend.voxbox': 'Поддерживает только GPU NVIDIA и CPU.',
   'models.form.backend.mindie': 'Поддерживает только Ascend NPU.',
   'models.form.backend.sglang':
-    'Built-in support for NVIDIA, AMD, Ascend, Moore Threads, MetaX, T-Head PPU devices.',
+    'Встроенная поддержка устройств NVIDIA, AMD, Ascend, Moore Threads, MetaX и T-Head PPU.',
   'models.form.search.gguftips':
-    'Для воркеров на macOS/Windows отметьте GGUF (для аудиомоделей снимите).',
+    'Для Worker на macOS/Windows отметьте GGUF (для аудиомоделей снимите).',
   'models.form.button.addlabel': 'Добавить метку',
   'models.filter.category': 'Фильтр по категориям',
   'models.list.more.logs': 'Показать больше',
@@ -192,7 +197,7 @@ export default {
   'models.localpath.gguf.tips':
     'Укажите файл модели, например: /data/models/model.gguf.',
   'models.localpath.safe.tips':
-    'Укажите директорию модели с файлами .safetensors и config.json.',
+    'Укажите каталог модели, содержащий файлы .safetensors и config.json, например /data/models/model.',
   'models.localpath.chunks.tips':
     'Укажите первый шард модели, например: /data/models/model-00001-of-00004.gguf.',
   'models.form.replicas.tips':
@@ -200,16 +205,16 @@ export default {
   'models.table.list.empty': 'Модели отсутствуют!',
   'models.table.list.getStart':
     '<span style="margin-right: 5px;font-size: 13px;">Начните работу с</span> <span style="font-size: 14px;font-weight: 700">DeepSeek-R1-Distill-Qwen-1.5B</span>',
-  'models.table.llamaAcrossworker': 'Llama-box между воркерами',
-  'models.table.vllmAcrossworker': 'vLLM между воркерами',
+  'models.table.llamaAcrossworker': 'Llama-box между Worker',
+  'models.table.vllmAcrossworker': 'vLLM между Worker',
   'models.form.releases': 'Релизы',
   'models.form.moreparameters': 'Описание параметров',
   'models.table.vram.allocated': 'Выделенная VRAM',
-  'models.table.vram.workers': '{n} рабочих узлов',
-  'models.instance.workergpu': '{n} воркеров / {m} GPU',
-  'models.instance.mainworker': 'Главный воркер (Main)',
-  'models.instance.worker': 'Воркер',
-  'models.instance.workerip': 'IP:Port воркера',
+  'models.table.vram.workers': '{n} Worker',
+  'models.instance.workergpu': '{n} Worker / {m} GPU',
+  'models.instance.mainworker': 'Главный Worker (Main)',
+  'models.instance.worker': 'Worker',
+  'models.instance.workerip': 'IP:порт Worker',
   'models.form.backend.warning':
     'Выбранный бэкенд не поддерживает модели GGUF. Пожалуйста, добавьте бэкенд с поддержкой GGUF в разделе Бэкенды вывода.',
   'models.form.backend.warning.gguf':
@@ -268,9 +273,9 @@ export default {
   'models.ollama.deprecated.following':
     '<span class="bold-text">После обновления до версии (v0.7.0),</span> все ранее развёрнутые модели продолжат работать в обычном режиме.',
   'models.ollama.deprecated.issue':
-    'См. связанную проблему: <a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">#1979 on GitHub</a>.',
+    'См. связанную проблему: <a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">#1979 на GitHub</a>.',
   'models.ollama.deprecated.notice':
-    'Источник моделей Ollama объявлен устаревшим начиная с версии v0.6.1. Подробности см. в  <a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">соответствующем issue на GitHub</a>.',
+    'Источник моделей Ollama объявлен устаревшим начиная с версии v0.6.1. Подробности см. в <a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">соответствующей проблеме на GitHub</a>.',
   'models.backend.mindie.310p':
     'Ascend 310P поддерживает только FP16, поэтому необходимо установить --dtype=float16.',
   'models.form.gpuCount': 'GPU на реплику',
@@ -327,18 +332,18 @@ export default {
     'Расширенный KV-кэш и спекулятивное декодирование доступны только для встроенных бэкендов (vLLM / SGLang). Пожалуйста, переключите бэкенд, чтобы включить их.',
   'models.form.kvCache.tips2':
     'Поддерживается только при использовании встроенных бэкендов вывода (vLLM или SGLang).',
-  'models.form.kvCache.backend': 'Cache Backend',
-  'models.form.kvCache.local': 'In-Process Cache',
+  'models.form.kvCache.backend': 'Бэкенд кеширования',
+  'models.form.kvCache.local': 'Кеш внутри процесса',
   'models.form.kvCache.service.tips':
-    'Only cache services in the same cluster and compatible with the selected backend are listed.',
+    'Показаны только сервисы кеширования из того же кластера, совместимые с выбранным бэкендом.',
   'models.form.kvCache.shared.builtinBackends':
-    'Cache Service поддерживается только для встроенных бэкендов vLLM и SGLang.',
+    'Сервис кеширования поддерживается только для встроенных бэкендов vLLM и SGLang.',
   'models.kvCache.degraded.tips':
-    'Shared KV cache is not active for this instance',
+    'Общий KV-кеш не активен для этого экземпляра',
   'models.kvCache.endpointDead.tips':
-    'The shared cache this instance attached to is no longer available; restart the instance to recover',
-  'models.kvCache.service': 'Cache Service',
-  'models.kvCache.hitRate': 'External Cache Hit Rate ({window})',
+    'Общий кеш, к которому был подключён этот экземпляр, больше недоступен; перезапустите экземпляр для восстановления',
+  'models.kvCache.service': 'Сервис кеширования',
+  'models.kvCache.hitRate': 'Доля попаданий во внешний кеш ({window})',
   'models.kvCache.hitRate.window': '1h',
   'models.form.scheduling': 'Планирование',
   'models.form.scaling': 'Плановое масштабирование',
@@ -416,22 +421,22 @@ export default {
     'Соотношение системной оперативной памяти к видеопамяти GPU, используемое для KV-кэша. Например, 2.0 означает, что кэш в ОЗУ может быть в два раза больше, чем в видеопамяти GPU.',
   'models.form.ramSize.tips':
     'Максимальный размер KV-кэша, хранящегося в системной памяти (ГиБ). Если задано, это значение переопределяет "{content}".',
-  'models.form.chunkSize.tips': 'Количество токенов на чанк KV-кэша.',
+  'models.form.chunkSize.tips': 'Количество Token на чанк KV-кэша.',
   'models.form.mode': 'Режим',
   'models.form.algorithm': 'Алгоритм',
   'models.form.draftModel': 'Черновая модель',
-  'models.form.numDraftTokens': 'Количество черновых токенов',
+  'models.form.numDraftTokens': 'Количество черновых Token',
   'models.form.ngramMinMatchLength': 'Минимальная длина совпадения N-граммы',
   'models.form.ngramMaxMatchLength': 'Максимальная длина совпадения N-граммы',
   'models.form.mode.throughput': 'Пропускная способность',
   'models.form.mode.latency': 'Задержка',
   'models.form.mode.baseline': 'Стандартный',
   'models.form.mode.throughput.tips':
-    'оптимизировано для высокой пропускной способности при высокой конкурентности запросов.',
+    'Оптимизировано для высокой пропускной способности при большом числе одновременных запросов.',
   'models.form.mode.latency.tips':
-    'оптимизировано для низкой задержки при низкой конкурентности запросов.',
+    'Оптимизировано для низкой задержки при небольшом числе одновременных запросов.',
   'models.form.mode.baseline.tips':
-    'наиболее совместимый вариант с полной точностью.',
+    'Работает с полной исходной точностью и отдаёт приоритет совместимости.',
   'models.form.draftModel.placeholder': 'Выберите или введите черновую модель',
   'models.form.draftModel.tips':
     'Вы можете ввести локальный путь (например, /path/to/model) или выбрать модель из Hugging Face или ModelScope (например, Tengyunw/qwen3_8b_eagle3). Система автоматически сопоставит модель на основе источника основной модели.',
@@ -439,12 +444,12 @@ export default {
   'models.form.backend.custom': 'Пользовательский',
   'models.form.rules.name':
     'До 63 символов; только буквы, цифры, точки (.), подчёркивания (_) и дефисы (-); должно начинаться и заканчиваться буквенно-цифровым символом.',
-  'models.catalog.button.explore': 'Исследовать больше моделей',
+  'models.catalog.button.explore': 'Найти больше моделей',
   'models.catalog.precision': 'Точность',
   'models.form.gpuPerReplica.tips': 'Введите произвольное число',
   'models.form.generic_proxy': 'Включить универсальный прокси',
-  'models.form.enableModelRoute': 'Enable Model Route',
-  'models.form.enableModelRoute.tips': 'Enable Model Route',
+  'models.form.enableModelRoute': 'Включить маршрут модели',
+  'models.form.enableModelRoute.tips': 'Включить маршрут модели',
   'models.form.generic_proxy.tips':
     'После включения универсального прокси вы можете получать доступ к URI-путям, которые не следуют стандарту OpenAI API.',
   'models.form.generic_proxy.button': 'Универсальный прокси',
@@ -460,32 +465,33 @@ export default {
   'models.form.backendVersions.tips': `Чтобы использовать больше версий, перейдите на страницу {link} и отредактируйте бэкенд для добавления версий.`,
   'models.catalog.nogpus.tips':
     'В выбранном кластере нет доступных GPU, совместимых с этой моделью.',
-  'models.form.modelfile.notfound': `Указанный путь к файлу модели не существует на сервере GPUStack. Рекомендуется размещать файл модели по одному и тому же пути как на сервере GPUStack, так и на воркерах GPUStack. Это поможет системе принимать лучшие решения по распределению ресурсов.`,
-  'models.form.readyWorkers': 'воркеров готово',
-  'models.form.maxContextLength': 'Maximum Context Length',
+  'models.form.modelfile.notfound':
+    'Указанный путь к файлу модели не существует на GPUStack Server. Рекомендуется размещать файл модели по одному и тому же пути как на GPUStack Server, так и на Worker GPUStack. Это поможет системе принимать лучшие решения по распределению ресурсов.',
+  'models.form.readyWorkers': 'Worker готово',
+  'models.form.maxContextLength': 'Максимальная длина контекста',
   'models.form.backend.helperText':
-    'Not enabled yet. Will be enabled after deployment. ',
-  'models.table.instance.benchmark': 'Run Benchmark',
-  'models.table.modelView': 'Model List',
-  'models.table.instanceView': 'Instance List',
-  'models.table.category': 'Category',
-  'models.instance.currentRun': 'Current Run',
-  'models.instance.previousRun': 'Previous Run',
-  'models.instance.startHistory': 'Run History',
+    'Пока не включено. Будет включено после развёртывания.',
+  'models.table.instance.benchmark': 'Запустить бенчмарк',
+  'models.table.modelView': 'Список моделей',
+  'models.table.instanceView': 'Список экземпляров',
+  'models.table.category': 'Категория',
+  'models.instance.currentRun': 'Текущий запуск',
+  'models.instance.previousRun': 'Предыдущий запуск',
+  'models.instance.startHistory': 'История запусков',
   'models.instance.startHistory.tips':
-    'Shows logs from the run before the last error-triggered restart.',
+    'Показывает логи запуска до последнего перезапуска, вызванного ошибкой.',
   'models.instance.logs.downloading': 'Загрузка… {size}',
   'models.instance.logs.downloadingPercent': 'Загрузка… {percent}%',
-  'models.form.lora.label': 'LoRA Adapters',
-  'models.form.lora.add': 'Add LoRA Adapter',
-  'models.form.lora.select': 'Select LoRA',
-  'models.form.lora.name': 'LoRA name',
-  'models.form.lora.rule.empty': 'Input cannot be empty',
-  'models.form.lora.rule.duplicate': 'LoRA name cannot be duplicated',
+  'models.form.lora.label': 'Адаптеры LoRA',
+  'models.form.lora.add': 'Добавить адаптер LoRA',
+  'models.form.lora.select': 'Выбрать LoRA',
+  'models.form.lora.name': 'Имя LoRA',
+  'models.form.lora.rule.empty': 'Поле не может быть пустым',
+  'models.form.lora.rule.duplicate': 'Имя LoRA должно быть уникальным',
   // Model catalog source configuration
   'models.catalog.source.title': 'Источник каталога',
   'models.catalog.source.official':
-    'Follows the catalog GPUStack publishes, on top of the one packaged with this release.',
+    'Использует каталог, публикуемый GPUStack, в дополнение к каталогу из этого выпуска.',
 
   // --- Prefill/decode disaggregation ---
   'models.form.pd.section': 'Настройки разделения PD',
@@ -507,13 +513,13 @@ export default {
   'models.form.pd.enable.off': 'Выключено',
   'models.form.pd.enable.on': 'Разделение PD',
   'models.form.pd.enable.tips':
-    'Разделяет префилл и декодирование по разным экземплярам за счёт дополнительного сетевого перехода и одной передачи KV. При низкой конкурентности, коротких запросах или высоком попадании в кэш префиксов агрегированное развёртывание обычно быстрее. Сначала снимите базовые показатели.',
+    'Разделяет Prefill и Decode по разным экземплярам за счёт дополнительного сетевого перехода и одной передачи KV. При небольшом числе одновременных запросов, коротких промптах или высокой доле попаданий в префиксный кеш агрегированное развёртывание обычно быстрее. Сначала проведите бенчмарк агрегированного развёртывания.',
   'models.form.pd.shape.mono': 'Агрегированное развёртывание',
   'models.form.pd.shape.mono.tips':
-    'Один экземпляр выполняет и prefill, и decode.',
+    'Один экземпляр выполняет и Prefill, и Decode.',
   'models.form.pd.shape.pd': 'Разделение PD',
   'models.form.pd.shape.pd.tips':
-    'Prefill и decode работают как отдельные роли, каждая со своим движком, параметрами и числом реплик.',
+    'Prefill и Decode работают как отдельные роли, каждая со своим движком, параметрами и числом реплик.',
   'models.form.pd.shape.current': 'Текущее',
   'models.form.pd.mode': 'Транспорт',
   'models.form.pd.mode.holder': 'Выберите транспорт',
@@ -545,7 +551,7 @@ export default {
   'models.form.roles': 'Роли',
   'models.form.roles.prefill': 'Prefill',
   'models.form.roles.decode': 'Decode',
-  'models.form.roles.router': 'Router',
+  'models.form.roles.router': 'Маршрутизатор',
   'models.form.roles.override': 'Пользовательские',
   'models.form.roles.inherited': 'Наследуется',
   'models.form.roles.group.backend': 'Движок и образ',
@@ -561,19 +567,19 @@ export default {
   'models.form.roles.replicas': 'Реплики',
   'models.form.roles.router.routeArgs': 'Аргументы маршрутизации',
   'models.form.roles.router.routeArgs.tips':
-    'Аргументы командной строки, с которыми запускается процесс router. Строки с замком формирует GPUStack по месту размещения группы; редактировать их нельзя.',
+    'Командная строка запуска процесса маршрутизатора. Строки с замком формирует GPUStack на основе размещения группы; редактировать их нельзя.',
   'models.form.roles.router.locality':
-    'Только CPU; размещается автоматически, по возможности рядом с prefill и decode этой группы',
+    'Только CPU; размещается автоматически, по возможности рядом с Prefill и Decode этой группы',
   'models.form.roles.router.workerAllocation': 'Назначение Worker',
-  'models.form.roles.router.workerSelect': 'Селектор воркера',
+  'models.form.roles.router.workerSelect': 'Worker',
   'models.form.roles.router.scheduletype.tips':
-    'Автоматически: среди узлов, прошедших селектор, предпочитается тот, где уже работает prefill или decode этой группы. Вручную: указать Worker напрямую.',
+    'Автоматически: среди Worker, прошедших селектор, предпочитается тот, где уже работает Prefill или Decode этой группы. Вручную: указать Worker напрямую.',
   'models.form.roles.router.workerSelector.tips':
-    'Сужает список кандидатов по меткам. Среди подходящих по-прежнему предпочитается ближайший к prefill и decode этой группы.',
+    'Сужает список кандидатов по меткам. Среди подходящих по-прежнему предпочитается ближайший к Prefill и Decode этой группы.',
   'models.form.roles.router.order.tips':
-    'Router создаётся после готовности Prefill и Decode.',
+    'Маршрутизатор создаётся после готовности Prefill и Decode.',
   'models.form.roles.router.custom.forced':
-    'Режим «Пользовательский» не выводит Router. Укажите его образ и команду запуска.',
+    'В пользовательском режиме PD маршрутизатор не определяется автоматически. Укажите его образ и команду запуска.',
   'models.form.roles.router.peers':
     'Адреса экземпляров Prefill / Decode подставляются системой после развёртывания.',
   'models.form.roles.cache.holder': 'Не используется',
@@ -616,7 +622,7 @@ export default {
   'models.form.pd.cacheServiceVersion.below':
     'PD с сервисом кеша {provider} поддерживает версии бэкенда {range}; выбрана встроенная версия {version}. Развертывание разрешено, но возможны ошибки запуска или работы.',
   'models.pd.degraded.pairing':
-    'Ни один участник prefill не делит хост ни с одним участником decode, поэтому каждая передача KV идёт по сети. На линии без RDMA это обычно медленнее, чем вообще не разделять роли. Разместите хотя бы одну пару на одном хосте или выберите для обеих ролей GPU одного и того же хоста.',
+    'Ни один участник Prefill не делит хост ни с одним участником Decode, поэтому каждая передача KV идёт по сети. На линии без RDMA это обычно медленнее, чем вообще не разделять роли. Разместите хотя бы одну пару на одном хосте или выберите для обеих ролей GPU одного и того же хоста.',
   'models.pd.degraded.gather':
     'Ниже цели по топологии: участники расположены дальше друг от друга, чем требовалось',
   'models.pd.degraded.scaleOut':
@@ -626,13 +632,13 @@ export default {
   'models.pd.degraded.pairingUnverified':
     'Одна роль задаёт параметр связывания явно, а другая оставляет его значению движка по умолчанию, поэтому GPUStack не смог проверить их согласованность — обычно это --max-model-len, --block-size, --kv-cache-layout либо auto с одной стороны против явного dtype с другой. Это не значит, что пара настроена неверно, — значит, что её никто не проверил. Укажите параметр в обеих ролях, чтобы он проверялся.',
   'models.pd.degraded.pairingTP':
-    'Эффективная тензорная параллельность, пересчитанная по картам, которые участники действительно получили, нарушает направление, объявленное этим PD-рецептом: NIXL требует, чтобы decode был не уже prefill, Ascend Mooncake — чтобы prefill был не уже decode. На приёме это не поймать: у роли, которая не закрепляет карты и не задаёт --tensor-parallel-size, до размещения нет числа для проверки. Задайте --tensor-parallel-size в обеих ролях или выделите им количество GPU, допустимое рецептом.',
+    'Эффективная тензорная параллельность, пересчитанная по картам, которые участники действительно получили, нарушает направление, объявленное этим PD-рецептом: NIXL требует, чтобы Decode был не уже Prefill, Ascend Mooncake — чтобы Prefill был не уже Decode. На приёме это не поймать: у роли, которая не закрепляет карты и не задаёт --tensor-parallel-size, до размещения нет числа для проверки. Задайте --tensor-parallel-size в обеих ролях или выделите им количество GPU, допустимое рецептом.',
   'models.pd.admission.infeasible':
     'Доступной ёмкости недостаточно для этой группы (требуется {required}, доступно {available}). Уменьшите число реплик, выберите нарезанный тип карты или добавьте узлы.',
   'models.pd.ratio.waiting':
     'Соотношение {configured} (сейчас {current}, ожидается {role})',
   'models.instance.draining.tips':
-    'Масштабирование вниз. Экземпляр больше не принимает новые запросы и продолжает работать, пока decode-узлы не дочитают его KV-кеш, после чего удаляется.',
+    'Масштабирование вниз. Экземпляр больше не принимает новые запросы и продолжает работать, пока Decode-узлы не дочитают его KV-кеш, после чего удаляется.',
   'models.pd.group.restarting.brief': 'Перезапуск…',
   'models.pd.group.restarting.progress':
     'Перезапуск группы: её участники были намеренно остановлены и сейчас пересоздаются, готово {ready}/{total}. Счётчики реплик занижены именно поэтому, а не из-за сбоя.',
@@ -674,11 +680,11 @@ export default {
   'models.form.roles.resources.cpu': 'CPU (ядра)',
   'models.form.roles.resources.memory': 'Память (ГиБ)',
   'models.form.roles.resources.tips':
-    'Что запрашивает контейнер роутера. По умолчанию 2 ядра и 2 ГиБ.',
+    'Ресурсы, запрашиваемые контейнером маршрутизатора. По умолчанию 2 ядра и 2 GiB.',
   'models.form.roles.router.health': 'Проверка состояния',
   'models.form.roles.router.peerslabel': 'Узлы',
   'models.form.roles.router.image.tips':
-    'Оставьте пустым, чтобы использовать образ, выведенный из выбранного режима PD. Указывайте только если в этом образе нет исполняемого файла router — команда запуска всё равно выводится автоматически.',
+    'Оставьте пустым, чтобы использовать образ, определённый выбранным режимом PD. Задавайте его только тогда, когда в этом образе нет исполняемого файла маршрутизатора: команда запуска по-прежнему определяется автоматически, поэтому достаточно указать образ с нужным файлом.',
   'models.form.roles.cpuonly': 'Только CPU',
 
   'models.form.gather.title': 'Топологическая аффинность',
@@ -689,7 +695,7 @@ export default {
   'models.form.gather.target.host.tips': 'Prefill и Decode на одном Worker',
   'models.form.gather.target.layer': 'Один {layer}',
   'models.form.gather.target.tips':
-    'Желаемое качество передачи между участниками группы. Передача внутри одного домена ускорителей быстрее, чем внутри стойки, поэтому домен, охватывающий несколько стоек, тоже считается подходящим. Router не занимает ускоритель и под это ограничение не попадает.',
+    'Желаемое качество передачи между участниками группы. Передача внутри одного домена ускорителей быстрее, чем внутри стойки, поэтому домен, охватывающий несколько стоек, тоже считается подходящим. Маршрутизатор не занимает ускоритель и под это ограничение не попадает.',
   'models.form.gather.unmet': 'Если не помещается',
   'models.form.gather.unmet.prefer': 'Всё равно развернуть',
   'models.form.gather.unmet.prefer.tips':
@@ -703,13 +709,13 @@ export default {
     'самый просторный {domain} вмещает {available} из {needed}',
   'models.form.gather.noRoom': 'на этом уровне нигде нет места',
   'models.form.gather.unknown':
-    'на {count} воркер(ах) ёмкость неизвестна, поэтому проверить это нельзя',
+    'на {count} Worker ёмкость неизвестна, поэтому проверить это нельзя',
   'models.form.gather.declare':
     'Заполните стойки в разделе «Топология» кластера, чтобы открыть более крупные уровни.',
   'models.form.gather.largeGroup':
     'При таком размере как минимум около {percent}% запросов образуют пару на одном хосте — независимо от топологии. Это нижняя граница, выведенная из числа реплик; реальная доля зависит от того, на скольких машинах в итоге окажется группа, и показывается в сводке группы после развёртывания. Ради локальности передачи KV рассмотрите вместо этого несколько групп меньшего размера.',
   'models.form.gather.spanning':
-    '{role} требует {gpus} GPU, а самая широкая машина в этом кластере имеет {widest}, поэтому каждый участник занимает машины целиком: prefill и decode никогда не делят одну, а объединение в пары на хосте равно 0. KV всегда идёт между машинами — важно то, какой уровень выше удерживает его внутри.',
+    '{role} требует {gpus} GPU, а самая широкая машина в этом кластере имеет {widest}, поэтому каждый участник занимает машины целиком: Prefill и Decode никогда не делят одну, а объединение в пары на хосте равно 0. KV всегда идёт между машинами — важно то, какой уровень выше удерживает его внутри.',
   'models.form.gather.checking': 'Проверяем, что помещается…',
   'models.form.gather.unavailable':
     'Сейчас не удалось проверить, что помещается, поэтому предлагается только значение по умолчанию.',
@@ -724,14 +730,14 @@ export default {
   'models.form.gather.infeasible.warning':
     'При текущей ёмкости эту группу разместить нельзя; после сохранения она будет ждать освобождения места. Варианты: переключиться на «как можно ближе» (может занять несколько хостов, KV-передача медленнее) · уменьшить число реплик или GPU на реплику',
   'models.pd.membership.dynamic':
-    'Поддерживается динамическое масштабирование. GPUStack обновляет участников Router через API без пересоздания Router при изменении состава.',
+    'Поддерживается динамическое масштабирование. GPUStack обновляет участников маршрутизатора через API без пересоздания маршрутизатора при изменении состава.',
   'models.pd.membership.restart':
-    'Динамическое обновление участников недоступно. После масштабирования, восстановления или перезапуска участников GPUStack пересоздаёт Router. Возможны краткий простой и сбой выполняемых запросов.',
+    'Динамическое обновление участников недоступно. После масштабирования, восстановления или перезапуска участников GPUStack пересоздаёт маршрутизатор. Возможны кратковременная недоступность сервиса и сбои выполняемых запросов.',
   'models.pd.membership.manual':
-    'Вы управляете этим Router. После масштабирования или изменения состава обновите адреса и метаданные bootstrap, при необходимости перезапустите Router.',
+    'Вы управляете этим маршрутизатором. После масштабирования или изменения состава обновите адреса участников и метаданные начальной загрузки, при необходимости перезапустите маршрутизатор.',
   'models.pd.instance.delete.restart':
-    'После восстановления участника GPUStack пересоздаёт Router. Возможны краткий простой и сбой выполняемых запросов.',
+    'После пересоздания участника GPUStack пересоздаёт маршрутизатор. Возможны кратковременная недоступность сервиса и сбои выполняемых запросов.',
   'models.pd.instance.delete.manual':
-    'GPUStack восстановит участника. Обновите адреса участников и метаданные bootstrap своего Router, при необходимости перезапустите его.',
-  'models.pd.membership.updating': 'Загрузка участников Router'
+    'GPUStack пересоздаёт участника. Обновите адреса участников и метаданные начальной загрузки своего маршрутизатора, при необходимости перезапустите его.',
+  'models.pd.membership.updating': 'Загрузка участников маршрутизатора'
 };

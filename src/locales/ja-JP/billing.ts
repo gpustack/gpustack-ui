@@ -1,15 +1,13 @@
 export default {
-  'billing.upsell.title': 'Billing is an Enterprise feature',
+  'billing.upsell.title': '請求管理は GPUStack Enterprise の機能です',
   'billing.upsell.subtitle':
-    'Track spend, generate invoices, and enforce budgets across teams. Upgrade to GPUStack Enterprise to manage billing.',
-  'billing.upsell.featuresTitle': 'What you get in Enterprise',
+    'チームごとの支出の追跡、請求書の発行、予算の管理ができます。請求管理を利用するには GPUStack Enterprise にアップグレードしてください。',
+  'billing.upsell.featuresTitle': 'Enterprise で利用できる機能',
   'billing.upsell.feature.usage':
-    'See cost breakdowns by organization, user, and model',
-  'billing.upsell.feature.invoices':
-    'Generate invoices and export billing reports',
-  'billing.upsell.feature.budgets':
-    'Set budgets and spending limits with alerts',
+    '組織、ユーザー、モデルごとの費用の内訳を確認',
+  'billing.upsell.feature.invoices': '請求書の発行と請求レポートのエクスポート',
+  'billing.upsell.feature.budgets': '予算と支出上限を設定し、アラートで通知',
   'billing.upsell.feature.chargeback':
-    'Attribute and charge back usage to teams and projects',
-  'billing.upsell.cta': 'Learn about Enterprise'
+    '使用量をチームやプロジェクトに割り当てて費用を精算',
+  'billing.upsell.cta': 'Enterprise の詳細'
 };

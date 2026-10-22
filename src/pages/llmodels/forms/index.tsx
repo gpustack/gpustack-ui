@@ -321,7 +321,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   const segmentOptions = [
     {
       value: TABKeysMap.BASIC,
-      label: intl.formatMessage({ id: 'common.title.basicInfo' }),
+      label: intl.formatMessage({ id: 'models.form.tabs.basic' }),
       icon: <IconFont type="icon-basic" />,
       field: 'name'
     },
@@ -338,7 +338,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       ? [
           {
             value: TABKeysMap.PD,
-            label: intl.formatMessage({ id: 'models.form.pd.section' }),
+            label: intl.formatMessage({ id: 'models.form.tabs.pd' }),
             icon: <IconFont type="icon-alt-route" />,
             field: pdEffects.enabled ? 'roles' : 'pdMode'
           }
@@ -355,7 +355,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       : [
           {
             value: TABKeysMap.PERFORMANCE,
-            label: intl.formatMessage({ id: 'models.form.performance' }),
+            label: intl.formatMessage({ id: 'models.form.tabs.performance' }),
             icon: <IconFont type="icon-speed" />,
             field: 'extended_kv_cache.enabled'
           }
@@ -369,14 +369,14 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       : [
           {
             value: TABKeysMap.SCHEDULING,
-            label: intl.formatMessage({ id: 'models.form.scheduling' }),
+            label: intl.formatMessage({ id: 'models.form.tabs.scheduling' }),
             icon: <IconFont type="icon-rule_settings" />,
             field: 'scheduleType'
           }
         ]),
     {
       value: TABKeysMap.ADVANCED,
-      label: intl.formatMessage({ id: 'resources.form.advanced' }),
+      label: intl.formatMessage({ id: 'models.form.tabs.advanced' }),
       icon: <IconFont type="icon-advance" />,
       field: 'categories'
     }
@@ -970,7 +970,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
                     {
                       key: TABKeysMap.PD,
                       label: intl.formatMessage({
-                        id: 'models.form.pd.section'
+                        id: 'models.form.tabs.pd'
                       }),
                       forceRender: true,
                       children: (
@@ -1029,7 +1029,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
                     {
                       key: TABKeysMap.PERFORMANCE,
                       label: intl.formatMessage({
-                        id: 'models.form.performance'
+                        id: 'models.form.tabs.performance'
                       }),
                       forceRender: true,
                       children: <Performance></Performance>
@@ -1047,7 +1047,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
                     {
                       key: TABKeysMap.SCHEDULING,
                       label: intl.formatMessage({
-                        id: 'models.form.scheduling'
+                        id: 'models.form.tabs.scheduling'
                       }),
                       forceRender: true,
                       children: (
@@ -1060,7 +1060,9 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
                   ]),
               {
                 key: TABKeysMap.ADVANCED,
-                label: intl.formatMessage({ id: 'resources.form.advanced' }),
+                label: intl.formatMessage({
+                  id: 'models.form.tabs.advanced'
+                }),
                 forceRender: true,
                 children: <AdvanceConfig pdActive={pdEffects.enabled} />
               }

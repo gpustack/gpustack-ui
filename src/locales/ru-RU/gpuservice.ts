@@ -67,7 +67,7 @@ export default {
   'gpuservice.storageType.nfs.mountPermissions': 'Права монтирования',
   'gpuservice.storageType.nfs.mountPermissions.tips':
     'Наследует права файлов с NFS-сервера.',
-  'gpuservice.storageType.s3.endpoint': 'Endpoint',
+  'gpuservice.storageType.s3.endpoint': 'Конечная точка',
   'gpuservice.storageType.s3.endpoint.tips':
     'Убедитесь, что S3 endpoint доступен из всех кластеров Kubernetes.',
   'gpuservice.storageType.s3.endpoint.rule':
@@ -80,8 +80,8 @@ export default {
     'В этом бакете будет автоматически создан префикс на основе названия организации и названия хранилища.',
   'gpuservice.storageType.s3.bucket.tips2':
     'Например, если организация называется <span class="desc-block">awesome-group</span>, а хранилище — <span class="desc-block">storage-1</span>, итоговый префикс будет: <span class="desc-block">awesome-group/storage-1</span>.',
-  'gpuservice.storageType.s3.accessKey': 'Access Key',
-  'gpuservice.storageType.s3.secretKey': 'Secret Key',
+  'gpuservice.storageType.s3.accessKey': 'Ключ доступа',
+  'gpuservice.storageType.s3.secretKey': 'Секретный ключ',
   'gpuservice.storageType.s3.insecure':
     'Пропустить проверку сертификата TLS/SSL',
   'gpuservice.storageType.s3.insecure.tips':
@@ -151,27 +151,29 @@ export default {
   'gpuservice.instance.utilization.cpu': 'CPU',
   'gpuservice.instance.utilization.memory': 'Память',
   'gpuservice.instance.utilization.storage': 'Хранилище',
-  'gpuservice.instanceType': 'GPU Instance Type',
-  'gpuservice.instanceType.add': 'Add Instance Type',
-  'gpuservice.instanceType.flavor': 'Flavor',
+  'gpuservice.instanceType': 'Тип экземпляра GPU',
+  'gpuservice.instanceType.add': 'Добавить тип экземпляра',
+  'gpuservice.instanceType.flavor': 'Конфигурация',
   'gpuservice.instanceType.flavor.required':
-    'Please select an instance type flavor',
-  'gpuservice.instanceType.flavor.gpuGroup': 'GPU Compute',
-  'gpuservice.instanceType.flavor.cpuGroup': 'CPU Compute',
-  'gpuservice.instanceType.activate': 'Activate',
-  'gpuservice.instanceType.deactivate': 'Deactivate',
-  'gpuservice.instanceType.platform': 'Platform',
-  'gpuservice.instanceType.product': 'Product',
-  'gpuservice.instanceType.unitCpu': 'Unit CPU',
-  'gpuservice.instanceType.unitCpu.tip': 'CPU allocated per GPU',
-  'gpuservice.instanceType.unitRam': 'Unit RAM',
-  'gpuservice.instanceType.unitRam.tip': 'RAM allocated per GPU',
-  'gpuservice.instanceType.localStorage': 'Storage',
-  'gpuservice.instanceType.localStorage.tip': 'Maximum available disk',
-  'gpuservice.instanceType.notSliceable': 'Not Sliceable',
+    'Выберите конфигурацию типа экземпляра',
+  'gpuservice.instanceType.flavor.gpuGroup': 'Вычисления на GPU',
+  'gpuservice.instanceType.flavor.cpuGroup': 'Вычисления на CPU',
+  'gpuservice.instanceType.activate': 'Активировать',
+  'gpuservice.instanceType.deactivate': 'Деактивировать',
+  'gpuservice.instanceType.platform': 'Платформа',
+  'gpuservice.instanceType.product': 'Продукт',
+  'gpuservice.instanceType.unitCpu': 'CPU на GPU',
+  'gpuservice.instanceType.unitCpu.tip':
+    'Количество CPU, выделяемых на один GPU',
+  'gpuservice.instanceType.unitRam': 'RAM на GPU',
+  'gpuservice.instanceType.unitRam.tip': 'Объём RAM, выделяемый на один GPU',
+  'gpuservice.instanceType.localStorage': 'Хранилище',
+  'gpuservice.instanceType.localStorage.tip':
+    'Максимальный доступный объём диска',
+  'gpuservice.instanceType.notSliceable': 'Не поддерживает разделение',
   'gpuservice.instanceType.filter.name': 'Поиск по имени',
   'gpuservice.instanceType.clusterUnavailable':
-    'Кластер не ответил, скорее всего потому, что в нём нет готового рабочего узла. Проверьте кластер и повторите попытку.',
+    'Кластер не ответил, скорее всего потому, что в нём нет готового Worker. Проверьте кластер и повторите попытку.',
   'gpuservice.instance.disk': 'Диск',
   'gpuservice.table.count': 'Количество',
   'gpuservice.instance.disk.system': 'Системный диск',
@@ -221,9 +223,9 @@ export default {
   'gpuservice.form.rule.name':
     "Строчные буквы, цифры и '-'. Должно начинаться и заканчиваться буквой или цифрой, без подряд идущих '-', максимум 63 символа.",
   'gpuservice.storage.temporary.tips':
-    'Data is cleared when the instance stops.',
+    'Данные удаляются при остановке экземпляра.',
   'gpuservice.storage.persistentVolume.tips':
-    'Data persists across instance restarts. Persistent volumes remain intact after instance termination and can be shared by multiple instances.',
+    'Данные сохраняются при перезапуске экземпляра. Постоянные тома сохраняются после завершения экземпляра и могут использоваться несколькими экземплярами.',
   'gpuservice.form.storage.select': 'Выберите хранилище',
   'gpuservice.creator': 'Создатель',
   'gpuservice.owner.global': 'Глобальный',

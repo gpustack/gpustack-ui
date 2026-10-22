@@ -47,7 +47,7 @@ export default {
   'common.button.enabled': 'Активно',
   'common.button.disabled': 'Отключено',
   'common.button.upgrade': 'Обновить',
-  'common.enterprise.feature': 'Available in GPUStack Enterprise',
+  'common.enterprise.feature': 'Доступно в GPUStack Enterprise',
   'common.input.holder': 'Введите значение',
   'common.validate.value': 'Поле {name} обязательно',
   'common.button.edit': 'Редактировать',
@@ -244,7 +244,7 @@ export default {
   'common.options.auto': 'Авто',
   'common.search.empty': 'Ничего не найдено',
   'common.button.downloadLog': 'Скачать логи',
-  'common.button.faq': 'FAQ',
+  'common.button.faq': 'Часто задаваемые вопросы',
   'common.button.moreInfo': 'Подробнее',
   'common.text.warning': 'Предупреждение',
   'common.text.error': 'Ошибка',
@@ -297,31 +297,33 @@ export default {
   'common.sorter.tips.ascend': 'Нажмите для сортировки по возрастанию',
   'common.sorter.tips.descend': 'Нажмите для сортировки по убыванию',
   'common.sorter.tips.cancel': 'Нажмите, чтобы отменить сортировку',
-  'common.button.enable': 'Enable',
-  'common.button.disable': 'Disable',
-  'common.status.enabled': 'Enabled',
-  'common.status.disabled': 'Disabled',
-  'common.button.duplicate': 'Duplicate',
+  'common.button.enable': 'Включить',
+  'common.button.disable': 'Отключить',
+  'common.status.enabled': 'Включено',
+  'common.status.disabled': 'Отключено',
+  'common.button.duplicate': 'Дублировать',
   'common.option.other': 'Другое',
-  'common.file.size.limit': 'File size must not exceed {size}.',
-  'common.file.format.limit': 'Invalid file format. Allowed: {formats}.',
-  'common.image.limit.width': 'Image width must be {width}.',
-  'common.image.limit.height': 'Image height must be {height}.',
+  'common.file.size.limit': 'Размер файла не должен превышать {size}.',
+  'common.file.format.limit':
+    'Недопустимый формат файла. Допустимые форматы: {formats}.',
+  'common.image.limit.width': 'Ширина изображения должна быть {width}.',
+  'common.image.limit.height': 'Высота изображения должна быть {height}.',
   'common.remaining': 'Остаток {count}',
   'common.max': 'Макс. {count}',
   'common.max.count': 'Количество {label}',
-  'common.validate.group': 'Please complete the {group} configuration',
-  'common.preferences': 'Preferences',
+  'common.validate.group': 'Завершите настройку {group}',
+  'common.preferences': 'Настройки пользователя',
   // Shared by the single-slot source config drawer (src/pages/_components/source-config)
   'common.source.manage': 'Управление источниками',
-  'common.source.type.builtin': 'Embedded',
+  'common.source.type.builtin': 'Встроенный',
   'common.source.type.builtin.desc':
-    'Uses only the content bundled with the current version, and no other source.',
+    'Использует только содержимое, включённое в текущую версию, без других источников.',
   'common.source.type.url': 'URL',
-  'common.source.type.url.desc': 'Fetched by the server, can auto-update.',
+  'common.source.type.url.desc':
+    'Загружается сервером; поддерживает автоматическое обновление.',
   'common.source.type.file': 'Файл YAML',
   'common.source.type.file.desc':
-    'Paste the content directly; never auto-updates.',
+    'Содержимое вставляется напрямую и не обновляется автоматически.',
   'common.source.url': 'URL источника',
   'common.source.url.scheme': 'URL должен начинаться с http:// или https://',
   'common.source.url.credentials': 'URL не должен содержать учётные данные',
@@ -329,41 +331,36 @@ export default {
   'common.source.content': 'Содержимое',
   'common.source.content.hint':
     'Вставьте YAML здесь или импортируйте файл, чтобы загрузить его в редактор. Отправляется только этот текст — сервер не хранит файл.',
-  'common.source.save': 'Сохранить и синхронизировать',
+  'common.source.save': 'Сохранить',
   'common.source.sync.unchanged':
     'Содержимое на удалённой стороне не изменилось.',
   'common.source.lastSync': 'Содержимое получено: {time}',
   'common.source.tag.custom': 'Пользовательский',
-  'common.source.tag.official': 'Official',
+  'common.source.tag.official': 'Официальный',
   'common.source.empty.hint':
-    'Your own URL replaces the official source entirely.',
+    'Ваш URL полностью заменяет официальный источник.',
   'common.source.empty.hint.builtin':
-    'Your own source replaces the built-in content entirely. Leave it empty to keep the built-in content.',
+    'Ваш источник полностью заменяет встроенное содержимое. Оставьте поле пустым, чтобы использовать встроенное содержимое.',
   'common.source.empty.hint.file':
-    'Leave the content empty to follow the official source — {description}',
+    'Оставьте содержимое пустым, чтобы использовать официальный источник — {description}',
   'common.source.empty.hint.file.builtin':
-    'Leave the content empty to keep the built-in content — {description}',
-  'common.source.reset': 'Reset to Official Source',
+    'Оставьте содержимое пустым, чтобы использовать встроенное содержимое — {description}',
+  'common.source.reset': 'Вернуть официальный источник',
   'common.source.reset.tip':
-    'Follow the official source again, applied when you save — {description}',
-  'common.source.autoUpdate': 'Auto-update',
-  'common.source.autoUpdate.interval': 'Update Interval (hours)',
+    'Возврат к официальному источнику применяется при сохранении — {description}',
+  'common.source.autoUpdate': 'Автоматическое обновление',
+  'common.source.autoUpdate.interval': 'Интервал обновления (часы)',
   'common.source.autoUpdate.official.tip':
-    'How often to check the official OTA server for new content. Off leaves the stored content in place until you sync it yourself.',
+    'Периодичность проверки нового содержимого на официальном OTA-сервере. Если отключено, сохранённое содержимое используется до ручной синхронизации.',
   'common.source.autoUpdate.custom.tip':
-    'How often to re-fetch your URL. Off leaves your source untouched until you save or reload it.',
-  'common.source.lastUpdated': 'Last updated {time}',
-  'common.source.official.link': 'Official File',
-  'common.source.builtin.link': 'Built-in File',
-  'common.source.sync.official': 'Update Now',
-  'common.source.sync.custom': 'Update Now',
+    'Периодичность повторной загрузки по вашему URL. Если отключено, источник обновляется только при сохранении или перезагрузке.',
+  'common.source.lastUpdated': 'Последнее обновление: {time}',
+  'common.source.official.link': 'Официальный файл',
+  'common.source.builtin.link': 'Встроенный файл',
+  'common.source.sync.official': 'Обновить сейчас',
+  'common.source.sync.custom': 'Обновить сейчас',
   'common.source.sync.hint.dirty':
-    'Save first — Save writes the new URL and fetches it. Update Now only re-pulls the URL already saved.',
+    'Сначала сохраните изменения: сохранение записывает новый URL и загружает его содержимое. «Обновить сейчас» повторно загружает только уже сохранённый URL.',
   'common.source.load.failed':
-    'Could not read the stored configuration, so there is nothing here to save. Close and reopen to try again.'
+    'Не удалось прочитать сохранённую конфигурацию, поэтому сохранять нечего. Закройте окно и откройте его снова.'
 };
-
-// ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1.  'common.button.copy.item': 'Duplicate {name}',
-// 2. 'common.button.duplicate': 'Duplicate'
-// ========== End of To-Do List ==========

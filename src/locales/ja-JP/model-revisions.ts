@@ -1,31 +1,31 @@
 export default {
-  'models.revisions.rollBackAction': 'Roll back',
-  'models.revisions.backToHistory': 'Back to history',
-  'models.revisions.snapshot': 'Full configuration',
+  'models.revisions.rollBackAction': 'ロールバック',
+  'models.revisions.backToHistory': '履歴に戻る',
+  'models.revisions.snapshot': '設定全体',
   'models.revisions.initialSnapshot':
-    'This is the initial revision. Showing its full configuration.',
+    'これは最初のリビジョンです。設定全体を表示しています。',
   'models.revisions.missingPrevious':
-    'The preceding revision v{revision} is unavailable. Showing the selected revision’s full configuration.',
-  'models.revisions.reviewRollback': 'Roll back {name} to {revision}',
-  'models.revisions.list': 'Revisions ({count})',
-  'models.revisions.changes': '{count} configuration changes',
-  'models.revisions.title': 'Revision history',
-  'models.revisions.latest': 'Latest',
-  'models.revisions.rollback': 'Roll back to this revision',
-  'models.revisions.titleWithName': 'Revision history · {name}',
-  'models.revisions.restartOnRollback': 'Restart on rollback',
+    '直前のリビジョン v{revision} を取得できません。選択したリビジョンの設定全体を表示しています。',
+  'models.revisions.reviewRollback': '{name} を {revision} にロールバック',
+  'models.revisions.list': 'リビジョン（{count}）',
+  'models.revisions.changes': '設定の変更 {count} 件',
+  'models.revisions.title': 'リビジョン履歴',
+  'models.revisions.latest': '最新',
+  'models.revisions.rollback': 'このリビジョンにロールバック',
+  'models.revisions.titleWithName': 'リビジョン履歴 · {name}',
+  'models.revisions.restartOnRollback': 'ロールバック時に再起動',
   'models.revisions.restartWarning':
-    'Some changes require recreating instances to take effect. Restart the deployment after rollback to apply them.',
+    '一部の変更は、インスタンスを再作成するまで反映されません。ロールバック後にデプロイを再起動して適用してください。',
   'models.revisions.restartFailed':
-    'Configuration rolled back, but restart failed. Retry restarting the deployment.',
-  'models.revisions.retryRestart': 'Retry restart',
-  'models.revisions.current': 'Current configuration',
+    '設定をロールバックしましたが、再起動に失敗しました。デプロイの再起動を再試行してください。',
+  'models.revisions.retryRestart': '再起動を再試行',
+  'models.revisions.current': '現在の設定',
   'models.revisions.target': 'v{revision}',
-  'models.revisions.previousVersion': 'Previous revision {revision}',
-  'models.revisions.selectedVersion': 'Selected revision {revision}',
-  'models.revisions.rollbackToVersion': 'Roll back to v{revision}',
+  'models.revisions.previousVersion': '前のリビジョン {revision}',
+  'models.revisions.selectedVersion': '選択したリビジョン {revision}',
+  'models.revisions.rollbackToVersion': 'v{revision} にロールバック',
   'models.revisions.comparisonRange': 'v{previous} → v{revision}',
-  'models.revisions.unchanged':
-    'This revision matches the current configuration.',
-  'models.revisions.failed': 'Unable to complete the revision history request.'
+  'models.revisions.unchanged': 'このリビジョンは現在の設定と同じです。',
+  'models.revisions.failed':
+    'リビジョン履歴のリクエストを完了できませんでした。'
 };

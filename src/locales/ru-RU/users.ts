@@ -47,9 +47,5 @@ export default {
   'users.status.deactivate': 'Деактивировать аккаунт',
   'users.status.inactiveAccount': 'Неактивный аккаунт',
   'users.login.getInitialPassword':
-    'Выполните следующую команду на вашем сервере, чтобы получить начальный пароль администратора.'
+    'Выполните следующую команду на вашем GPUStack Server, чтобы получить начальный пароль администратора.'
 };
-
-// ========== To-Do: Translate Keys (Remove After Translation) ==========
-
-// ========== End of To-Do List ==========

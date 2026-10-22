@@ -14,24 +14,16 @@ export default {
   'apikeys.form.expiration.1month': '1ヶ月',
   'apikeys.form.expiration.6months': '6ヶ月',
   'apikeys.form.expiration.never': '無期限',
-  'apikeys.table.bindModels': 'Model Access',
-  'apikeys.models.all': 'All models',
-  'apikeys.models.selected': 'Allowed models',
-  'apikeys.models.noModelsFound': 'No models found',
-  'apikeys.accessScope.all': 'All',
-  'apikeys.accessScope.management': 'Platform Management',
-  'apikeys.accessScope.inference': 'Inference APIs',
-  'apikeys.access.permissions': 'Access Permissions',
-  'apikeys.type.auto': 'Auto-generated',
-  'apikeys.type.custom': 'Custom',
-  'apikeys.button.ipConfig': 'IP Access Control',
-  'quotaLimits.button.title': 'Quota Limit'
+  'apikeys.table.bindModels': 'モデルへのアクセス',
+  'apikeys.models.all': 'すべてのモデル',
+  'apikeys.models.selected': 'アクセスを許可したモデル',
+  'apikeys.models.noModelsFound': 'モデルが見つかりません',
+  'apikeys.accessScope.all': 'すべて',
+  'apikeys.accessScope.management': 'プラットフォーム管理',
+  'apikeys.accessScope.inference': '推論 API',
+  'apikeys.access.permissions': 'アクセス権限',
+  'apikeys.type.auto': '自動生成',
+  'apikeys.type.custom': 'カスタム',
+  'apikeys.button.ipConfig': 'IP アクセス制御',
+  'quotaLimits.button.title': 'クォータ制限'
 };
-
-// ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'apikeys.table.bindModels': 'Model Access',
-// 2. 'apikeys.models.all': 'All models',
-// 3. 'apikeys.models.selected': 'Allowed models',
-// 4. 'apikeys.models.noModelsFound': 'No models found',
-// 5. 'apikeys.access.permissions': 'Access Permissions'
-// ========== End of To-Do List ==========

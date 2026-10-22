@@ -1,12 +1,8 @@
 import { PaginationKey, TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import useTableFetch from '@/hooks/use-table-fetch';
 import PageBox from '@/pages/_components/page-box';
-import { queryClusterTopology } from '@/pages/cluster-management/apis';
 import { DockerStepsFromWorker } from '@/pages/cluster-management/components/add-worker/config';
-import {
-  ClusterListItem,
-  TopologyView
-} from '@/pages/cluster-management/config/types';
+import { ClusterListItem } from '@/pages/cluster-management/config/types';
 import useAddWorker from '@/pages/cluster-management/hooks/use-add-worker';
 import { useQueryClusterList } from '@/pages/cluster-management/services/use-query-cluster-list';
 import useNoResourceResult from '@/pages/llmodels/hooks/use-no-resource-result';
@@ -115,28 +111,6 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
     open: false,
     currentData: null
   });
-  // Which label keys each cluster's location fields read; the location column
-  // resolves rows against these locally instead of asking per row.
-  const [topologies, setTopologies] = useState<Record<number, TopologyView>>(
-    {}
-  );
-
-  const getTopologies = async (clusterIds: number[]) => {
-    const pairs = await Promise.all(
-      clusterIds.map((id) =>
-        queryClusterTopology({ id }, { skipErrorHandler: true })
-          .then((view) => [id, view] as const)
-          .catch(() => null)
-      )
-    );
-    const next: Record<number, TopologyView> = {};
-    pairs.forEach((pair) => {
-      if (pair) {
-        next[pair[0]] = pair[1];
-      }
-    });
-    setTopologies(next);
-  };
   const { handleAddWorker, checkDefaultCluster, AddWorkerModal, setStepList } =
     useAddWorker({
       clusterList: clusterData.list,
@@ -175,7 +149,6 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
         loading: false,
         data: clusterMap
       });
-      getTopologies((items || []).map((item: any) => item.id));
     } catch (error) {
       setClusterData({
         list: [],
@@ -330,7 +303,6 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
 
   const columns = useWorkerColumns({
     clusterData,
-    topologies,
     loadend: dataSource.loadend,
     firstLoad: extraStatus.firstLoad,
     sortOrder,

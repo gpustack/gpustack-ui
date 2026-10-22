@@ -42,18 +42,10 @@ export default {
   'users.login.title': 'ログイン',
   'users.version.islatest': 'GPUStack {version} は最新バージョンです',
   'users.version.update': 'GPUStack {version} が利用可能です',
-  'users.settings.title': 'User Settings',
-  'users.status.activate': 'Activate Account',
-  'users.status.deactivate': 'Deactivate Account',
-  'users.status.inactiveAccount': 'Inactive Account',
+  'users.settings.title': 'ユーザー設定',
+  'users.status.activate': 'アカウントを有効化',
+  'users.status.deactivate': 'アカウントを無効化',
+  'users.status.inactiveAccount': '無効なアカウント',
   'users.login.getInitialPassword':
-    'Run the following command on your GPUStack Server to retrieve the initial admin password.'
+    'GPUStack Server で次のコマンドを実行し、管理者の初期パスワードを取得してください。'
 };
-
-// ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'users.settings.title': 'User Settings',
-// 2. 'users.status.activate': 'Activate Account',
-// 3. 'users.status.deactivate': 'Deactivate Account',
-// 4. 'users.status.inactiveAccount': 'Inactive Account',
-// 5. 'users.login.getInitialPassword': 'Run the following command on your GPUStack Server to retrieve the initial admin password.'
-// ========== End of To-Do List ==========

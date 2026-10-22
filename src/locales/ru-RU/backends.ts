@@ -1,5 +1,5 @@
 export default {
-  'backends.title': 'Инференс Бэкенды вывода',
+  'backends.title': 'Бэкенды инференса',
   'backend.button.add': 'Добавить бэкенд',
   'backend.button.edit': 'Редактировать бэкенд',
   'backend.versions': 'Список версий',
@@ -18,7 +18,7 @@ export default {
   'backend.export.yaml': 'Экспорт YAML',
   'backend.mode.form': 'Режим формы',
   'backend.mode.yaml': 'Режим YAML',
-  'backend.form.healthCheckPath': 'Путь проверки здоровья',
+  'backend.form.healthCheckPath': 'Путь проверки работоспособности',
   'backend.form.defaultEntrypoint': 'Точка входа образа по умолчанию',
   'backend.form.defaultExecuteCommand': 'Команда выполнения по умолчанию',
   'backend.form.defaultExecuteCommand.tips': `'{{'model_path'}}', '{{'port'}}', '{{'worker_ip'}}' и '{{'model_name'}}' заполняются реальными значениями во время запуска`,
@@ -35,7 +35,8 @@ export default {
   'backend.form.addParameter': 'Добавить параметр',
   'backend.form.noVersion': 'Версии не добавлены',
   'backend.noVersion': 'Версии не найдены',
-  'backend.versionInfo.autoImage': 'Автоматически выбор во время запуска',
+  'backend.versionInfo.autoImage':
+    'Автоматически выбирается во время выполнения',
   'backend.version.rules.builtin': 'Должен заканчиваться на "-custom"',
   'backend.version.no.tips':
     'Пользовательское название версии встроенного бэкенда должно оканчиваться на «-custom».',
@@ -48,30 +49,20 @@ export default {
   'backend.entrypoint': 'Точка входа образа',
   'backend.entrypoint.tips':
     'Если указано, ENTRYPOINT, заданный в образе, будет проигнорирован, а вместо него для запуска контейнера будет использована команда ниже.',
-  'backend.form.defaultEnvironment': 'Default Environment Variables',
-  'backend.recommendModels': 'Recommended Models',
-  'backend.filter.source': 'Filter by source',
-  'backend.add.custom': 'Custom',
-  'backend.add.community': 'Community',
-  'backend.community.title': 'Community Backend Marketplace',
+  'backend.form.defaultEnvironment': 'Переменные окружения по умолчанию',
+  'backend.recommendModels': 'Рекомендуемые модели',
+  'backend.filter.source': 'Фильтр по источнику',
+  'backend.add.custom': 'Пользовательский',
+  'backend.add.community': 'Сообщество',
+  'backend.community.title': 'Каталог бэкендов сообщества',
   'backend.form.add.hint':
-    'To use a different version of a built-in backend (e.g., vLLM, SGLang, MindIE), please add a new version to the existing backend instead of adding a custom backend.',
+    'Чтобы использовать другую версию встроенного бэкенда (например, vLLM, SGLang или MindIE), добавьте версию к существующему бэкенду вместо создания пользовательского бэкенда.',
   // Backend source configuration (built-in backend versions + community library)
   'backend.source.title': 'Источник бэкендов',
-  'backend.source.builtin.title': 'Built-in Backend',
+  'backend.source.builtin.title': 'Встроенный бэкенд',
   'backend.source.builtin.official':
-    'Follows the image versions GPUStack publishes for the built-in backends (vLLM, SGLang, MindIE, VoxBox).',
-  'backend.source.community.title': 'Community Backend',
+    'Использует версии образов, которые GPUStack публикует для встроенных бэкендов (vLLM, SGLang, MindIE, VoxBox).',
+  'backend.source.community.title': 'Бэкенд сообщества',
   'backend.source.community.official':
-    'Follows the community backend list GPUStack publishes, on top of the one packaged with this release.'
+    'Использует публикуемый GPUStack список бэкендов сообщества в дополнение к списку, включённому в этот выпуск.'
 };
-
-// ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'backend.form.defaultEnvironment': 'Default Environment Variables',
-// 2. 'backend.recommendModels': 'Recommended Models',
-// 3. 'backend.filter.source': 'Filter by source',
-// 4.  'backend.add.custom': 'Custom',
-// 5.  'backend.add.community': 'Community',
-// 6. 'backend.community.title': 'Community Backend Marketplace'
-// 7. 'backend.form.add.hint': 'To use a different version of a built-in backend (e.g., vLLM, SGLang, MindIE), please add a new version to the existing backend instead of adding a custom backend.'
-// ========== End of To-Do List ==========

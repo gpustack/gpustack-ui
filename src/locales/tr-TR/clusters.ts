@@ -47,7 +47,7 @@ export default {
   'clusters.create.addCommand.k8s.tips':
     'Kaydedilmesi gereken Kubernetes kümesinde, Kubernetes kaynaklarını oluşturmak ve kümeyi kaydetmek için aşağıdaki komutu çalıştırın.',
   'clusters.create.addCommand.k8s.version.warning':
-    'Desteklenen minimum Kubernetes sürümü 1.23’tür. GPU Service özelliğini kullanmak için desteklenen minimum Kubernetes sürümü 1.27’dir.',
+    'Desteklenen minimum Kubernetes sürümü 1.23’tür. GPU hizmeti özelliğini kullanmak için desteklenen minimum Kubernetes sürümü 1.27’dir.',
   'clusters.create.register.tips':
     'Eklenmesi gereken Kubernetes kümesinde, düğümlerini kümeye katılması için aşağıdaki komutu çalıştırın.',
   'cluster.create.checkEnv.tips':
@@ -126,12 +126,12 @@ export default {
     '{count} yeni işçi düğüm kümeye eklendi.',
   'clusters.create.serverUrl': "GPUStack Sunucu URL'si",
   'clusters.create.workerConfig': 'İşçi Düğüm Yapılandırması',
-  'clusters.chartValues.title': 'Chart Values (YAML)',
+  'clusters.chartValues.title': 'Chart Değerleri (YAML)',
   'clusters.chartValues.tip':
-    'GPUStack Helm chart’ının values değerleri; anahtarlar chart’ın kendi anahtarlarıyla aynıdır ve sunucunun türettiği değerlerin üzerine birleştirilir. Yukarıda karşılık gelen bir alan olmayan, chart ve alt chart’larının sunduğu her şey buradan ayarlanabilir — örneğin kümede hâlihazırda bulunan bir bileşeni kapatmak. Helm’de olduğu gibi listeler eklenmez, tümüyle değiştirilir.',
+    'GPUStack Helm chart’ının değerleri; anahtarlar chart’ın kendi anahtarlarıyla aynıdır ve sunucunun türettiği değerlerin üzerine birleştirilir. Yukarıda karşılık gelen bir alan olmayan, chart ve alt chart’larının sunduğu her şey buradan ayarlanabilir — örneğin kümede hâlihazırda bulunan bir bileşeni kapatmak. Helm’de olduğu gibi listeler eklenmez, tümüyle değiştirilir.',
   'clusters.chartValues.reapply.tip':
     'Kümeyi kaydetmek Kubernetes tarafında hiçbir şeyi değiştirmez. Değişiklikten sonra «Kümeyi Kaydet» akışını yeniden çalıştırıp manifest’i alın ve tekrar uygulayın — küme içindeki Job, manifest’in istediği yapılandırmayı release’in kurulu yapılandırmasıyla karşılaştırır ve yalnızca fark varsa yükseltme yapar.',
-  'clusters.chartValues.doc.chart': 'Chart values',
+  'clusters.chartValues.doc.chart': 'Chart değerleri',
   'clusters.chartValues.doc.operator': 'Operator chart',
   'clusters.chartValues.error.invalidYaml': 'Geçersiz YAML: {reason}',
   'clusters.chartValues.error.notJson':
@@ -139,7 +139,7 @@ export default {
   'clusters.chartValues.error.unsafeInteger':
     '{path} konumundaki tam sayı tam olarak taşınabilecek aralığın dışında — YAML okunurken zaten yuvarlandı, dolayısıyla farklı bir değer gönderilirdi. Rakamları korumak için tırnak içine alın.',
   'clusters.chartValues.error.notMapping':
-    'Chart values bir YAML anahtar eşlemesi olmalıdır; tek bir değer veya liste olamaz.',
+    'Chart değerleri bir YAML anahtar eşlemesi olmalıdır; tek bir değer veya liste olamaz.',
   'clusters.edit.registration.changed.tip':
     'Bir işçi düğüm kaydolurken uygulanan ayarları değiştirdiniz. Değişikliklerin etkili olması için kayıt komutunu hedef kümede yeniden çalıştırın.',
   'clusters.addworker.containerName': 'İşçi Düğüm Konteyner Adı',

@@ -1,15 +1,6 @@
 import { systemConfigAtom } from '@/atoms/system';
 import { GPUStackVersionAtom } from '@/atoms/user';
 import { tableSorter } from '@/config/settings';
-import {
-  layerKeys,
-  resolveLocation,
-  shownValue
-} from '@/pages/cluster-management/components/topology/location';
-import {
-  NODE_LAYER,
-  TopologyView
-} from '@/pages/cluster-management/config/types';
 import { usePluginListColumns } from '@/plugins/list-extra-columns';
 import { convertFileSize } from '@/utils';
 import {
@@ -261,7 +252,6 @@ const HolderStatus = () => {
 
 const useWorkerColumns = ({
   clusterData,
-  topologies,
   loadend,
   firstLoad,
   sortOrder,
@@ -272,12 +262,6 @@ const useWorkerColumns = ({
     list: Global.BaseOption<number>[];
     data: Record<number, string>;
   };
-  /**
-   * Per cluster, which label keys each location field reads. The cell
-   * resolves the worker's own labels and facts against them locally — this
-   * list polls, and a request per row would poll with it.
-   */
-  topologies?: Record<number, TopologyView>;
   source?: string;
   loadend: boolean;
   firstLoad: boolean;
@@ -472,38 +456,6 @@ const useWorkerColumns = ({
           <LabelCell labels={record.labels} />
         )
       },
-      {
-        // The declared rungs this worker resolves, root to leaf; a dash when
-        // it resolves none. This cell only displays the resolved hierarchy.
-        //
-        // 🔴 It used to be exactly two values, «rack · accelerator domain»,
-        // because those were the two dimensions the model had. One chain means
-        // there is no privileged pair to pick — an operator who declared a
-        // domain layer wants to see it here on the same footing as the rack,
-        // and one who declared a `room` wants that. So the cell follows the
-        // cluster's own chain instead of naming rungs.
-        title: intl.formatMessage({ id: 'resources.table.location' }),
-        dataIndex: 'location',
-        minWidth: 140,
-        render: (_text: any, record: ListItem) => {
-          const view = topologies?.[record.cluster_id];
-          const parts = (view?.layers || [])
-            .filter((entry) => entry.active && entry.id !== NODE_LAYER)
-            .map((entry) =>
-              shownValue(resolveLocation(record, layerKeys(view, entry.id)))
-            )
-            .filter(Boolean);
-          return (
-            <AutoTooltip ghost maxWidth={220}>
-              {parts.length ? (
-                parts.join(' · ')
-              ) : (
-                <span className="text-tertiary">—</span>
-              )}
-            </AutoTooltip>
-          );
-        }
-      },
       ...pluginRendered,
       {
         title: intl.formatMessage({ id: 'clusters.title' }),
@@ -659,7 +611,6 @@ const useWorkerColumns = ({
     intl,
     sortOrder,
     clusterData,
-    topologies,
     loadend,
     source,
     firstLoad,

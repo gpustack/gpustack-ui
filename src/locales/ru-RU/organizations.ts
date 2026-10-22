@@ -1,15 +1,16 @@
 export default {
-  'organizations.upsell.title': 'Organizations are an Enterprise feature',
+  'organizations.upsell.title':
+    'Управление организациями доступно в GPUStack Enterprise',
   'organizations.upsell.subtitle':
-    'Multi-tenancy lets you isolate users, resources, and quotas across teams. Upgrade to GPUStack Enterprise to manage organizations.',
-  'organizations.upsell.featuresTitle': 'What you get in Enterprise',
+    'Мультитенантность позволяет изолировать пользователей, ресурсы и квоты команд. Перейдите на GPUStack Enterprise, чтобы управлять организациями.',
+  'organizations.upsell.featuresTitle': 'Возможности Enterprise',
   'organizations.upsell.feature.orgs':
-    'Create organizations to group users and isolate workloads',
+    'Создание организаций для группировки пользователей и изоляции рабочих нагрузок',
   'organizations.upsell.feature.members':
-    'Manage members and roles per organization',
+    'Управление участниками и ролями в каждой организации',
   'organizations.upsell.feature.quotas':
-    'Set resource and token quotas per organization',
+    'Настройка квот ресурсов и Token для каждой организации',
   'organizations.upsell.feature.isolation':
-    'Scope API keys, model deployments, and resources per organization',
-  'organizations.upsell.cta': 'Learn about Enterprise'
+    'Разграничение API-ключей, развёртываний моделей и ресурсов по организациям',
+  'organizations.upsell.cta': 'Подробнее об Enterprise'
 };

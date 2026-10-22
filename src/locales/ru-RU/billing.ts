@@ -1,15 +1,15 @@
 export default {
-  'billing.upsell.title': 'Billing is an Enterprise feature',
+  'billing.upsell.title': 'Управление оплатой доступно в GPUStack Enterprise',
   'billing.upsell.subtitle':
-    'Track spend, generate invoices, and enforce budgets across teams. Upgrade to GPUStack Enterprise to manage billing.',
-  'billing.upsell.featuresTitle': 'What you get in Enterprise',
+    'Отслеживайте расходы, создавайте счета и контролируйте бюджеты команд. Перейдите на GPUStack Enterprise, чтобы управлять оплатой.',
+  'billing.upsell.featuresTitle': 'Возможности Enterprise',
   'billing.upsell.feature.usage':
-    'See cost breakdowns by organization, user, and model',
+    'Просмотр расходов по организациям, пользователям и моделям',
   'billing.upsell.feature.invoices':
-    'Generate invoices and export billing reports',
+    'Создание счетов и экспорт отчётов об оплате',
   'billing.upsell.feature.budgets':
-    'Set budgets and spending limits with alerts',
+    'Настройка бюджетов, лимитов расходов и уведомлений',
   'billing.upsell.feature.chargeback':
-    'Attribute and charge back usage to teams and projects',
-  'billing.upsell.cta': 'Learn about Enterprise'
+    'Распределение затрат между командами и проектами на основе их использования',
+  'billing.upsell.cta': 'Подробнее об Enterprise'
 };

@@ -16,6 +16,7 @@ export default {
   'kvCache.table.provider': '提供方',
   'kvCache.table.worker': '节点',
   'kvCache.form.provider': '提供方',
+  'kvCache.form.cluster.tips': 'GPU 服务类型的集群不支持缓存加速。',
   'kvCache.form.version': '版本',
   'kvCache.form.version.custom': '自定义',
   'kvCache.form.image': '容器镜像',

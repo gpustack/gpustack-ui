@@ -18,6 +18,8 @@ export default {
   'kvCache.table.provider': 'Provider',
   'kvCache.table.worker': 'Worker',
   'kvCache.form.provider': 'Provider',
+  'kvCache.form.cluster.tips':
+    'Кластеры типа GPU Service не поддерживают ускорение кеширования.',
   'kvCache.form.version': 'Version',
   'kvCache.form.version.custom': 'Custom',
   'kvCache.form.image': 'Container Image',

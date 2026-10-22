@@ -971,6 +971,9 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
             disabled: isGpuServiceCluster(item)
           }))}
           label={intl.formatMessage({ id: 'clusters.title' })}
+          description={intl.formatMessage({
+            id: 'kvCache.form.cluster.tips'
+          })}
         />
       </Form.Item>
       {

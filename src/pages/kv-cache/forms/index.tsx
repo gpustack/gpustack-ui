@@ -1,5 +1,6 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
+import { ClusterListItem } from '@/pages/cluster-management/config/types';
 import { useQueryClusterList } from '@/pages/cluster-management/services/use-query-cluster-list';
 import { WorkerStatusMap } from '@/pages/resources/config';
 import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
@@ -58,6 +59,9 @@ import {
 } from './utils';
 
 export type { ResourceCheckStatus };
+
+const isGpuServiceCluster = (cluster: ClusterListItem) =>
+  Boolean(cluster.k8s_options?.gpuInstanceOptions);
 
 interface ServiceFormProps {
   ref?: any;
@@ -205,10 +209,6 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
       getProvider(values.provider_name)
     );
     if (action === PageAction.CREATE) {
-      // Recheck field errors after the current cluster's asynchronous read.
-      if (form.getFieldError('cluster_id').length) {
-        form.validateFields(['cluster_id']).catch(() => {});
-      }
       if (
         !values.cluster_id ||
         workerRead.clusterId !== values.cluster_id ||
@@ -289,6 +289,10 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
   // for user edits alone — which is what a hardware-decided default must
   // yield to.
   const handleFormValuesChange = (changed: any, allValues: FormData) => {
+    if (action === PageAction.CREATE && 'cluster_id' in changed) {
+      resetPlacementCheck();
+      onCheckStatusChange?.({ show: false, message: '' });
+    }
     Object.keys(changed?.config?.fields || {}).forEach((name) =>
       pinnedFields.current.add(name)
     );
@@ -632,6 +636,26 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
     />
   );
 
+  const handleFinish = async (values: FormData) => {
+    const error = createWorkerError(values.cluster_id);
+    if (error) {
+      // Worker availability belongs to the placement alert, not field
+      // validation. Check again here so loading or dismissed alerts cannot
+      // allow a service with no Ready target through.
+      onCheckStatusChange?.({
+        show: true,
+        type:
+          workerRead.clusterId !== values.cluster_id || workersLoading
+            ? 'transition'
+            : 'danger',
+        message: error
+      });
+      onFinishFailed?.({ values, errorFields: [], outOfDate: false });
+      return;
+    }
+    await onFinish(values);
+  };
+
   useImperativeHandle(ref, () => ({
     form,
     submit: () => {
@@ -752,9 +776,12 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
     ) {
       return;
     }
+    const availableClusters = clusterOptions.filter(
+      (item) => !isGpuServiceCluster(item)
+    );
     const initialCluster =
-      clusterOptions.find((item) => item.is_default) ??
-      (clusterOptions.length === 1 ? clusterOptions[0] : undefined);
+      availableClusters.find((item) => item.is_default) ??
+      (availableClusters.length === 1 ? availableClusters[0] : undefined);
     if (initialCluster) {
       form.setFieldValue('cluster_id', initialCluster.value);
     }
@@ -838,7 +865,7 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
   return (
     <Form
       form={form}
-      onFinish={onFinish}
+      onFinish={handleFinish}
       onFinishFailed={onFinishFailed}
       onValuesChange={handleFormValuesChange}
     >
@@ -929,26 +956,20 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
       )}
       <Form.Item<FormData>
         name="cluster_id"
-        dependencies={['worker_id', 'worker_selector']}
         rules={[
           {
             required: true,
             message: getRuleMessage('select', 'clusters.title')
-          },
-          {
-            validator: (_, value) => {
-              const error = createWorkerError(value);
-              return error
-                ? Promise.reject(new Error(error))
-                : Promise.resolve();
-            }
           }
         ]}
       >
         <SealSelect
           required
           disabled={action === PageAction.EDIT}
-          options={clusterOptions}
+          options={clusterOptions.map((item) => ({
+            ...item,
+            disabled: isGpuServiceCluster(item)
+          }))}
           label={intl.formatMessage({ id: 'clusters.title' })}
         />
       </Form.Item>

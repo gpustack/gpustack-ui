@@ -1,9 +1,4 @@
-import {
-  DeleteOutlined,
-  EnvironmentOutlined,
-  PlusOutlined,
-  TagsOutlined
-} from '@ant-design/icons';
+import { DeleteOutlined, PlusOutlined, TagsOutlined } from '@ant-design/icons';
 import { DropdownButtons } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Space } from 'antd';
@@ -11,9 +6,7 @@ import React from 'react';
 
 export interface WorkerRightActionsProps {
   handleDeleteByBatch: () => void;
-  handleSetLocationByBatch: () => void;
   handleUpdateLabelsByBatch?: () => void;
-  renderBatchActions?: (actions: React.ReactElement) => React.ReactNode;
   handleClickPrimary?: () => void;
   MonitorButton?: React.ReactNode;
   rowSelection: {
@@ -23,9 +16,7 @@ export interface WorkerRightActionsProps {
 
 const WorkerRightActions: React.FC<WorkerRightActionsProps> = ({
   handleDeleteByBatch,
-  handleSetLocationByBatch,
   handleUpdateLabelsByBatch,
-  renderBatchActions,
   handleClickPrimary,
   rowSelection,
   MonitorButton
@@ -34,12 +25,6 @@ const WorkerRightActions: React.FC<WorkerRightActionsProps> = ({
   const count = rowSelection?.selectedRowKeys?.length || 0;
   const disabled = !count;
   const items = [
-    {
-      key: 'location',
-      label: 'resources.worker.setLocation',
-      icon: <EnvironmentOutlined />,
-      disabled
-    },
     ...(handleUpdateLabelsByBatch
       ? [
           {
@@ -66,9 +51,7 @@ const WorkerRightActions: React.FC<WorkerRightActionsProps> = ({
       showText={true}
       disabled={disabled}
       onSelect={(key) => {
-        if (key === 'location') {
-          handleSetLocationByBatch();
-        } else if (key === 'labels') {
+        if (key === 'labels') {
           handleUpdateLabelsByBatch?.();
         } else if (key === 'delete') {
           handleDeleteByBatch();
@@ -87,7 +70,7 @@ const WorkerRightActions: React.FC<WorkerRightActionsProps> = ({
       >
         {intl.formatMessage({ id: 'resources.button.create' })}
       </Button>
-      {renderBatchActions ? renderBatchActions(batchActions) : batchActions}
+      {batchActions}
     </Space>
   );
 };

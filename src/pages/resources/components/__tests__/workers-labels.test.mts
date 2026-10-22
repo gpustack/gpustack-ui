@@ -18,7 +18,6 @@ let table: any;
 let labelsModal: any;
 let columnActions: any;
 let batchActions: any;
-let locationPopover: any;
 const queryWorker = mock.fn(async (_id: number) => ({}));
 const updateWorker = mock.fn(async (_id: number, _data: any) => ({}));
 let writeLabels = async (_data: any) => {};
@@ -27,7 +26,6 @@ const updateWorkerLabels = mock.fn((data: any) => writeLabels(data));
 mock.module('@ant-design/icons', {
   namedExports: {
     DeleteOutlined: empty,
-    EnvironmentOutlined: empty,
     PlusOutlined: empty,
     TagsOutlined: empty
   }
@@ -118,20 +116,6 @@ mock.module(
   ).href,
   {
     defaultExport: empty
-  }
-);
-mock.module(
-  new URL(
-    '../../../cluster-management/components/topology/set-location.tsx',
-    import.meta.url
-  ).href,
-  {
-    namedExports: {
-      SetLocationForWorkers: (props: any) => {
-        locationPopover = props;
-        return passChildren(props);
-      }
-    }
   }
 );
 mock.module(
@@ -287,29 +271,29 @@ const writes = () => updateWorker.mock.calls.map((call) => call.arguments);
 const batches = () =>
   updateWorkerLabels.mock.calls.map((call) => call.arguments);
 
-test('batch actions use location by default and open only its location popover', async (t) => {
+test('batch actions default to setting labels without a location action', async (t) => {
   const selected = worker(1, { rack: 'rack-a' });
   await mount(t, [selected], [1]);
   assert.deepEqual(
     batchActions.items.map((item: any) => item.key),
-    ['location', 'labels', 'delete']
+    ['labels', 'delete']
   );
   assert.equal(batchActions.disabled, false);
   assert.equal(batchActions.size, 'large');
   assert.equal(batchActions.showText, true);
   const primary = document.querySelector<HTMLButtonElement>(
-    '[data-batch-action="location"]'
+    '[data-batch-action="labels"]'
   )!;
+  assert.match(primary.textContent!, /resources.worker.setLabels/);
   assert.match(primary.textContent!, /\(1\)/);
+  assert.equal(document.querySelector('[data-batch-action="location"]'), null);
   await act(async () => primary.click());
 
-  assert.equal(locationPopover.open, true);
-  assert.deepEqual(locationPopover.workers, [selected]);
-  assert.equal(labelsModal.open, false);
+  assert.equal(labelsModal.open, true);
+  assert.equal(labelsModal.batch, true);
+  assert.equal(labelsModal.count, 1);
   assert.equal(updateWorker.mock.callCount(), 0);
   assert.equal(handleDeleteBatch.mock.callCount(), 0);
-  await act(async () => locationPopover.onOpenChange(false));
-  assert.equal(locationPopover.open, false);
 });
 
 test('the entire batch action group is disabled without a worker selection', async (t) => {
@@ -318,34 +302,27 @@ test('the entire batch action group is disabled without a worker selection', asy
   const buttons = [
     ...document.querySelectorAll<HTMLButtonElement>('[data-batch-action]')
   ];
-  assert.equal(buttons.length, 3);
+  assert.equal(buttons.length, 2);
   for (const button of buttons) {
     assert.equal(button.disabled, true);
     await act(async () => button.click());
   }
-  assert.equal(locationPopover.open, false);
   assert.equal(labelsModal.open, false);
   assert.equal(handleDeleteBatch.mock.callCount(), 0);
   assert.equal(updateWorker.mock.callCount(), 0);
 });
 
-test('labels and delete keep the location popover closed and preserve batch deletion', async (t) => {
+test('label editing and batch deletion remain available', async (t) => {
   await mount(t, [worker(1, { rack: 'rack-a' })], [1]);
   await openBatch(1);
-  // A Popover wrapping the group can receive a click from a non-location
-  // action. Its trigger must not independently open the location editor.
-  await act(async () => locationPopover.onOpenChange(true));
-  assert.equal(locationPopover.open, false);
   assert.equal(handleDeleteBatch.mock.callCount(), 0);
   await act(async () => labelsModal.onCancel());
   const button = document.querySelector<HTMLButtonElement>(
     '[data-batch-action="delete"]'
   )!;
   await act(async () => button.click());
-  await act(async () => locationPopover.onOpenChange(true));
 
   assert.equal(handleDeleteBatch.mock.callCount(), 1);
-  assert.equal(locationPopover.open, false);
   assert.equal(labelsModal.open, false);
   assert.equal(updateWorker.mock.callCount(), 0);
 });

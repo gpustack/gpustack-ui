@@ -1,3 +1,4 @@
+import { WorkerStatusMap } from '@/pages/resources/config';
 import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
@@ -40,6 +41,35 @@ export interface PlacementInputs {
 const hidden: ResourceCheckStatus = { show: false, message: '' };
 
 type Formatter = ReturnType<typeof useIntl>;
+
+export const checkWorkerReadiness = (
+  {
+    workers,
+    workerId,
+    workerSelector
+  }: Pick<PlacementInputs, 'workers' | 'workerId' | 'workerSelector'>,
+  intl: Formatter
+): ResourceCheckStatus | undefined => {
+  const ready = workers.filter(
+    (worker) => worker.state === WorkerStatusMap.ready
+  );
+  const messageId = !ready.length
+    ? 'kvCache.check.noReadyWorkers'
+    : !ready.some(
+          (worker) =>
+            (workerId == null || worker.id === workerId) &&
+            matchesSelector(worker, workerSelector)
+        )
+      ? 'kvCache.check.noReadyTargets'
+      : undefined;
+  return messageId
+    ? {
+        show: true,
+        type: 'danger',
+        message: intl.formatMessage({ id: messageId })
+      }
+    : undefined;
+};
 
 const checkVersionCompatibility = (
   targets: WorkerListItem[],
@@ -203,14 +233,18 @@ export const evaluatePlacement = (
   if (inputs.mode === 'recreate') {
     return evaluateRecreation(inputs, intl);
   }
-  const {
-    provider,
-    providerVersion,
-    fieldValues,
-    workers,
-    workerId,
-    workerSelector
-  } = inputs;
+  if (!inputs.provider) {
+    return hidden;
+  }
+  const readiness = checkWorkerReadiness(inputs, intl);
+  if (readiness) {
+    return readiness;
+  }
+  const { provider, providerVersion, fieldValues, workerId, workerSelector } =
+    inputs;
+  const workers = inputs.workers.filter(
+    (worker) => worker.state === WorkerStatusMap.ready
+  );
   const managedFields = provider?.fields || [];
   const isPerNode = provider?.topology === 'per_node';
   // The component claiming RAM through its resource_profile is the

@@ -55,6 +55,7 @@ const worker = (
   ({
     id,
     name: `worker-${id}`,
+    state: 'ready',
     labels,
     status: {
       memory: {
@@ -171,6 +172,96 @@ test('creation keeps its total-memory boundary and free-memory success behavior'
       { worker: occupied.name }
     )
   });
+});
+
+test('creation rejects empty clusters and non-Ready snapshots before checking RAM', () => {
+  const states = [
+    'not_ready',
+    'unreachable',
+    'provisioning',
+    'deleting',
+    'error',
+    'pending',
+    'initializing',
+    'maintenance',
+    undefined
+  ];
+  for (const currentProvider of [
+    provider,
+    perNodeProvider,
+    poolProvider,
+    { ...provider, resource_profile: undefined }
+  ]) {
+    for (const workers of [
+      [],
+      ...states.map((state) => [{ ...worker(1, 64, 0), state }])
+    ]) {
+      assert.deepEqual(
+        evaluate({
+          provider: currentProvider,
+          mode: 'create',
+          workers: workers as PlacementInputs['workers']
+        }),
+        {
+          show: true,
+          type: 'danger',
+          message: formatMessage({ id: 'kvCache.check.noReadyWorkers' })
+        }
+      );
+    }
+  }
+});
+
+test('per-node capacity and compatibility checks count only Ready workers', () => {
+  assert.deepEqual(
+    evaluate({
+      provider: perNodeProvider,
+      providerVersion: 'gpu-only',
+      mode: 'create',
+      workers: [
+        worker(1, 64, 0, {}, 'cuda'),
+        { ...worker(2, 1, 1), state: 'unreachable' }
+      ]
+    }),
+    {
+      show: true,
+      type: 'success',
+      message: formatMessage({ id: 'kvCache.check.ok.perNode' }, { count: 1 })
+    }
+  );
+});
+
+test('creation rejects a pinned or label-selected target that is not Ready', () => {
+  const workers = [
+    worker(1, 64, 0, { pool: 'ready' }),
+    { ...worker(2, 64, 0, { pool: 'offline' }), state: 'not_ready' }
+  ];
+  for (const selection of [
+    { workerId: 2 },
+    { workerId: undefined, workerSelector: { pool: 'offline' } },
+    { workerId: undefined, workerSelector: { pool: 'missing' } }
+  ]) {
+    assert.deepEqual(evaluate({ mode: 'create', workers, ...selection }), {
+      show: true,
+      type: 'danger',
+      message: formatMessage({ id: 'kvCache.check.noReadyTargets' })
+    });
+  }
+});
+
+test('replica capacity excludes non-Ready workers even when their snapshots have free RAM', () => {
+  assert.deepEqual(
+    evaluate({
+      mode: 'create',
+      provider: poolProvider,
+      workerId: undefined,
+      workers: [worker(1, 64, 0), { ...worker(2, 64, 0), state: 'not_ready' }]
+    }),
+    warning('kvCache.check.store.insufficientWorkers', {
+      count: 1,
+      replicas: 2
+    })
+  );
 });
 
 test('other allocations and system reservation can prevent a replacement', () => {

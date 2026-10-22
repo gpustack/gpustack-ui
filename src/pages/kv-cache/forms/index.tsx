@@ -1,6 +1,7 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { useQueryClusterList } from '@/pages/cluster-management/services/use-query-cluster-list';
+import { WorkerStatusMap } from '@/pages/resources/config';
 import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
 import { useQueryWorkerList } from '@/pages/resources/services/use-query-worker-list';
 import { localize } from '@/utils/localize';
@@ -36,6 +37,7 @@ import {
 } from '../config/types';
 import useCacheProviders from '../hooks/use-cache-providers';
 import usePlacementCheck, {
+  checkWorkerReadiness,
   ResourceCheckStatus
 } from '../hooks/use-placement-check';
 import ComponentParameters from './component-parameters';
@@ -92,15 +94,22 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
   const { clusterList: clusterOptions, fetchClusterList } =
     useQueryClusterList();
   const { fetchData: fetchWorkerList } = useQueryWorkerList();
-  const [workers, setWorkers] = useState<WorkerListItem[]>([]);
-  const [workersLoading, setWorkersLoading] = useState(true);
+  const [workerRead, setWorkerRead] = useState<{
+    clusterId?: number;
+    status: 'loading' | 'loaded' | 'error';
+    workers: WorkerListItem[];
+  }>({ status: 'loading', workers: [] });
+  const { workers } = workerRead;
+  const workersLoading = workerRead.status === 'loading';
   const workerOptions = useMemo(
     () =>
       workers.map((item) => ({
         label: item.name,
-        value: item.id
+        value: item.id,
+        disabled:
+          action === PageAction.CREATE && item.state !== WorkerStatusMap.ready
       })),
-    [workers]
+    [workers, action]
   );
   const workerLabelOptions = useMemo(
     () => buildWorkerLabelOptions(workers),
@@ -161,12 +170,55 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
         )
       )
   );
+  const createWorkerError = useMemoizedFn((clusterId?: number) => {
+    if (action !== PageAction.CREATE || !clusterId) {
+      return undefined;
+    }
+    if (workerRead.clusterId !== clusterId || workersLoading) {
+      return intl.formatMessage({ id: 'kvCache.check.workersLoading' });
+    }
+    if (workerRead.status === 'error') {
+      return intl.formatMessage({ id: 'kvCache.check.workersUnavailable' });
+    }
+    return checkWorkerReadiness(
+      {
+        workers,
+        workerId: form.getFieldValue('worker_id'),
+        workerSelector: form.getFieldValue('worker_selector')
+      },
+      intl
+    )?.message;
+  });
   const checkCurrentPlacement = useMemoizedFn(() => {
     const values = form.getFieldsValue(true) as FormData;
     lastPlacementConfig.current = placementConfig(
       values,
       getProvider(values.provider_name)
     );
+    if (action === PageAction.CREATE) {
+      // Recheck field errors after the current cluster's asynchronous read.
+      if (form.getFieldError('cluster_id').length) {
+        form.validateFields(['cluster_id']).catch(() => {});
+      }
+      if (
+        !values.cluster_id ||
+        workerRead.clusterId !== values.cluster_id ||
+        workersLoading
+      ) {
+        resetPlacementCheck();
+        onCheckStatusChange?.({ show: false, message: '' });
+        return;
+      }
+      if (workerRead.status === 'error') {
+        resetPlacementCheck();
+        onCheckStatusChange?.({
+          show: true,
+          type: 'danger',
+          message: createWorkerError(values.cluster_id)!
+        });
+        return;
+      }
+    }
     if (action === PageAction.EDIT) {
       // Late data cannot opt an unchanged edit into checks or restore a
       // warning after the user has reverted the relevant fields.
@@ -711,11 +763,12 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
     // label-selector autocomplete
     const fetchWorkers = async () => {
       if (!clusterId) {
-        setWorkers([]);
-        setWorkersLoading(false);
+        setWorkerRead({ status: 'loaded', workers: [] });
+        schedulePlacementCheck();
         return;
       }
-      setWorkersLoading(true);
+      setWorkerRead({ clusterId, status: 'loading', workers: [] });
+      schedulePlacementCheck();
       try {
         const items = (await fetchWorkerList({
           cluster_id: clusterId,
@@ -726,8 +779,7 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
         if (!active || form.getFieldValue('cluster_id') !== clusterId) {
           return;
         }
-        setWorkers(items || []);
-        setWorkersLoading(false);
+        setWorkerRead({ clusterId, status: 'loaded', workers: items || [] });
         reseedVersionFor(items || []);
         // nothing to seed where the form offers no Worker select
         if (isPerNode || hasComponents) {
@@ -735,19 +787,21 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
           return;
         }
         // seed an empty selection with the least-loaded worker
+        const readyWorkers = (items || []).filter(
+          (worker) => worker.state === WorkerStatusMap.ready
+        );
         if (
           action === PageAction.CREATE &&
-          items?.length &&
+          readyWorkers.length &&
           form.getFieldValue('worker_id') == null
         ) {
-          form.setFieldValue('worker_id', pickDefaultWorker(items).id);
+          form.setFieldValue('worker_id', pickDefaultWorker(readyWorkers).id);
         }
         schedulePlacementCheck();
       } catch (error) {
         // Only the still-active effect may clear workers on failure.
         if (active && form.getFieldValue('cluster_id') === clusterId) {
-          setWorkers([]);
-          setWorkersLoading(false);
+          setWorkerRead({ clusterId, status: 'error', workers: [] });
           reseedVersionFor([]);
           schedulePlacementCheck();
         }
@@ -866,10 +920,19 @@ const ServiceForm: React.FC<ServiceFormProps> = forwardRef((props, ref) => {
       )}
       <Form.Item<FormData>
         name="cluster_id"
+        dependencies={['worker_id', 'worker_selector']}
         rules={[
           {
             required: true,
             message: getRuleMessage('select', 'clusters.title')
+          },
+          {
+            validator: (_, value) => {
+              const error = createWorkerError(value);
+              return error
+                ? Promise.reject(new Error(error))
+                : Promise.resolve();
+            }
           }
         ]}
       >

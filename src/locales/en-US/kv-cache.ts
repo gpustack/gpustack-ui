@@ -26,6 +26,14 @@ export default {
   'kvCache.check.ok.singleton':
     'Resources are sufficient; the instance will run on worker {worker}.',
   'kvCache.check.noWorkers': 'No workers match the selector.',
+  'kvCache.check.noReadyWorkers':
+    'This cluster has no Ready workers. Select another cluster or check worker status.',
+  'kvCache.check.noReadyTargets':
+    'No Ready workers match the selected worker and labels. Change the selection or check worker status.',
+  'kvCache.check.workersLoading':
+    'Worker status is loading. Wait before deploying.',
+  'kvCache.check.workersUnavailable':
+    'Unable to load worker status. Select the cluster again to retry before deploying.',
   'kvCache.check.ok.store':
     'Deployable: {replicas} store replica(s) x {size} GiB fit the matching workers',
   'kvCache.check.store.insufficientWorkers':

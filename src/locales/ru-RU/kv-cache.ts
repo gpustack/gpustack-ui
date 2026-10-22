@@ -26,6 +26,14 @@ export default {
   'kvCache.check.ok.singleton':
     'Resources are sufficient; the instance will run on worker {worker}.',
   'kvCache.check.noWorkers': 'No workers match the selector.',
+  'kvCache.check.noReadyWorkers':
+    'В этом кластере нет узлов в состоянии Ready. Выберите другой кластер или проверьте состояние узлов.',
+  'kvCache.check.noReadyTargets':
+    'Нет узлов в состоянии Ready, соответствующих выбранному узлу и меткам. Измените выбор или проверьте состояние узлов.',
+  'kvCache.check.workersLoading':
+    'Загружается состояние узлов. Дождитесь завершения перед развёртыванием.',
+  'kvCache.check.workersUnavailable':
+    'Не удалось загрузить состояние узлов. Выберите кластер повторно перед развёртыванием.',
   'kvCache.check.ok.store':
     'Deployable: {replicas} store replica(s) x {size} GiB fit the matching workers',
   'kvCache.check.store.insufficientWorkers':

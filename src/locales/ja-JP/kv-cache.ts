@@ -26,6 +26,14 @@ export default {
   'kvCache.check.ok.singleton':
     'Resources are sufficient; the instance will run on worker {worker}.',
   'kvCache.check.noWorkers': 'No workers match the selector.',
+  'kvCache.check.noReadyWorkers':
+    'このクラスターには Ready 状態のワーカーがありません。別のクラスターを選択するか、ワーカーの状態を確認してください。',
+  'kvCache.check.noReadyTargets':
+    '選択したワーカーとラベルに一致する Ready 状態のワーカーがありません。選択を変更するか、ワーカーの状態を確認してください。',
+  'kvCache.check.workersLoading':
+    'ワーカーの状態を読み込み中です。デプロイする前にお待ちください。',
+  'kvCache.check.workersUnavailable':
+    'ワーカーの状態を読み込めません。クラスターを選択し直して再試行してからデプロイしてください。',
   'kvCache.check.ok.store':
     'Deployable: {replicas} store replica(s) x {size} GiB fit the matching workers',
   'kvCache.check.store.insufficientWorkers':

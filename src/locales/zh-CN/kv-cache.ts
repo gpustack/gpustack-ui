@@ -22,6 +22,13 @@ export default {
   'kvCache.check.ok.perNode': '资源满足;将在 {count} 个节点上各部署一个实例。',
   'kvCache.check.ok.singleton': '资源满足;实例将部署在节点 {worker}。',
   'kvCache.check.noWorkers': '没有匹配选择器的节点。',
+  'kvCache.check.noReadyWorkers':
+    '当前集群没有就绪节点，请选择其他集群或检查节点状态。',
+  'kvCache.check.noReadyTargets':
+    '没有符合所选节点和标签条件的就绪节点，请调整选择或检查节点状态。',
+  'kvCache.check.workersLoading': '正在加载节点状态，请稍后再部署。',
+  'kvCache.check.workersUnavailable':
+    '无法加载节点状态，请重新选择集群以重试后再部署。',
   'kvCache.check.ok.store':
     '可部署:{replicas} 个 store 副本 × {size} GiB 满足匹配节点的可用内存',
   'kvCache.check.store.insufficientWorkers':

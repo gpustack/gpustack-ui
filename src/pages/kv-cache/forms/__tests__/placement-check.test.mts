@@ -26,12 +26,14 @@ const workers = [
   {
     id: 1,
     name: 'worker-tight',
+    state: 'ready',
     labels: { pool: 'tight' },
     status: { memory: { total: 32 * GiB, used: 24 * GiB, allocated: 24 * GiB } }
   },
   {
     id: 2,
     name: 'worker-large',
+    state: 'ready',
     labels: { pool: 'large' },
     status: {
       memory: { total: 64 * GiB, used: 0, allocated: 0 },
@@ -150,7 +152,7 @@ const Select = ({ value, onChange, id, label, options = [], disabled }: any) =>
     options.map((option: any) =>
       createElement(
         'option',
-        { key: option.value, value: option.value },
+        { key: option.value, value: option.value, disabled: option.disabled },
         option.label
       )
     )
@@ -383,6 +385,7 @@ const mount = async (
   const statuses: ResourceCheckStatus[] = [];
   const configChanges: boolean[] = [];
   const submissions: FormData[] = [];
+  const failures: any[] = [];
   const ref = React.createRef<any>();
   const render = async (
     data = currentData,
@@ -398,6 +401,7 @@ const mount = async (
           onFinish: async (values: FormData) => {
             submissions.push(values);
           },
+          onFinishFailed: (error: any) => failures.push(error),
           onConfigChanged: (changed: boolean) => configChanges.push(changed),
           onCheckStatusChange: (status: ResourceCheckStatus) =>
             statuses.push(status)
@@ -436,6 +440,7 @@ const mount = async (
     statuses,
     configChanges,
     submissions,
+    failures,
     render,
     instancesReady,
     ref,
@@ -483,6 +488,197 @@ test('new cache services select the default cluster after options load', async (
     await act(async () => form.ref.current.resetFields());
     await form.render(saved, provider.name);
     assert.equal(form.ref.current.form.getFieldValue('cluster_id'), 2);
+  } finally {
+    await form.unmount();
+  }
+});
+
+for (const state of ['empty', 'not_ready', 'unreachable', 'maintenance']) {
+  test(`creation shows an error and blocks submission for ${state} workers`, async () => {
+    const form = await mount('create');
+    try {
+      await form.ready(
+        [provider],
+        state === 'empty' ? [] : workers.map((worker) => ({ ...worker, state }))
+      );
+      await form.change('name', 'new-cache');
+      assert.deepEqual(form.statuses.at(-1), {
+        show: true,
+        type: 'danger',
+        message: 'kvCache.check.noReadyWorkers'
+      });
+      await form.submit();
+      assert.equal(form.submissions.length, 0);
+      assert.ok(
+        form.failures
+          .at(-1)
+          .errorFields.some(
+            (field: any) =>
+              field.name[0] === 'cluster_id' &&
+              field.errors.includes('kvCache.check.noReadyWorkers')
+          )
+      );
+    } finally {
+      await form.unmount();
+    }
+  });
+}
+
+test('a singleton defaults to a Ready worker and still submits with an advisory RAM warning', async () => {
+  const form = await mount('create');
+  try {
+    await form.ready(
+      [{ ...provider, topology: 'replicas' }],
+      [workers[0], { ...workers[1], state: 'not_ready' }]
+    );
+    await form.change('name', 'new-cache');
+    assert.equal(form.ref.current.form.getFieldValue('worker_id'), 1);
+    assert.equal(
+      (
+        document.querySelector(
+          '#worker_id option[value="2"]'
+        ) as HTMLOptionElement
+      ).disabled,
+      true
+    );
+    assert.equal(
+      form.statuses.at(-1)?.message,
+      'kvCache.form.ramSize.exceedsFree'
+    );
+    await form.submit();
+    assert.equal(form.submissions.length, 1);
+    assert.equal(form.submissions[0].worker_id, 1);
+  } finally {
+    await form.unmount();
+  }
+});
+
+test('selecting labels without Ready targets blocks creation and recovers after selecting Ready targets', async () => {
+  const form = await mount('create');
+  try {
+    await form.ready(
+      [provider],
+      [workers[0], { ...workers[1], state: 'unreachable' }]
+    );
+    await form.change('name', 'new-cache');
+    await form.change('config_fields_ram_size', '4');
+    await form.change('worker_selector', '{"pool":"large"}');
+    assert.equal(form.statuses.at(-1)?.type, 'danger');
+    assert.equal(form.statuses.at(-1)?.message, 'kvCache.check.noReadyTargets');
+    await form.submit();
+    assert.equal(form.submissions.length, 0);
+
+    await form.change('worker_selector', '{}');
+    assert.equal(form.statuses.at(-1)?.type, 'success');
+    assert.deepEqual(form.ref.current.form.getFieldError('cluster_id'), []);
+    await form.submit();
+    assert.equal(form.submissions.length, 1);
+  } finally {
+    await form.unmount();
+  }
+});
+
+test('creation waits for worker status and clears the validation error when Ready workers arrive', async () => {
+  const form = await mount('create');
+  try {
+    await act(async () => form.catalog.resolve([provider]));
+    await form.change('name', 'new-cache');
+    await form.submit();
+    assert.equal(form.submissions.length, 0);
+    assert.deepEqual(form.ref.current.form.getFieldError('cluster_id'), [
+      'kvCache.check.workersLoading'
+    ]);
+
+    await act(async () => form.workerList.resolve([workers[1]]));
+    await settle();
+    assert.equal(form.statuses.at(-1)?.type, 'success');
+    assert.deepEqual(form.ref.current.form.getFieldError('cluster_id'), []);
+    await form.submit();
+    assert.equal(form.submissions.length, 1);
+  } finally {
+    await form.unmount();
+  }
+});
+
+test('a failed worker read shows an error and cannot be submitted as an empty or unchecked cluster', async () => {
+  const form = await mount('create');
+  try {
+    await act(async () => form.catalog.resolve([provider]));
+    await act(async () => form.workerList.reject(new Error('network failure')));
+    await form.change('name', 'new-cache');
+    assert.equal(form.statuses.at(-1)?.type, 'danger');
+    assert.equal(
+      form.statuses.at(-1)?.message,
+      'kvCache.check.workersUnavailable'
+    );
+    await form.submit();
+    assert.equal(form.submissions.length, 0);
+    assert.deepEqual(form.ref.current.form.getFieldError('cluster_id'), [
+      'kvCache.check.workersUnavailable'
+    ]);
+  } finally {
+    await form.unmount();
+  }
+});
+
+test('changing clusters blocks submission until the selected cluster has Ready workers', async () => {
+  const form = await mount('create', saved, {
+    debounceWorkers: true,
+    deferClusters: true
+  });
+  try {
+    await act(async () => form.clusters.resolve(clusters));
+    await act(async () => form.catalog.resolve([provider]));
+    await act(async () => mock.timers.tick(300));
+    const initialRequest = form.workerRequests.at(-1)!;
+    assert.equal(initialRequest.clusterId, 2);
+    await act(async () => initialRequest.response.resolve([workers[1]]));
+    await form.change('name', 'new-cache');
+    assert.equal(form.statuses.at(-1)?.type, 'success');
+
+    await form.changeNow('cluster_id', '1');
+    await form.submit();
+    assert.equal(form.submissions.length, 0);
+    assert.deepEqual(form.ref.current.form.getFieldError('cluster_id'), [
+      'kvCache.check.workersLoading'
+    ]);
+    await act(async () => mock.timers.tick(300));
+    const offlineRequest = form.workerRequests.at(-1)!;
+    assert.equal(offlineRequest.clusterId, 1);
+    await act(async () =>
+      offlineRequest.response.resolve([{ ...workers[0], state: 'not_ready' }])
+    );
+    await settle();
+    assert.equal(form.statuses.at(-1)?.message, 'kvCache.check.noReadyWorkers');
+    await form.submit();
+    assert.equal(form.submissions.length, 0);
+
+    await form.changeNow('cluster_id', '2');
+    await act(async () => mock.timers.tick(300));
+    const readyRequest = form.workerRequests.at(-1)!;
+    assert.equal(readyRequest.clusterId, 2);
+    await act(async () => readyRequest.response.resolve([workers[1]]));
+    await settle();
+    assert.equal(form.statuses.at(-1)?.type, 'success');
+    await form.submit();
+    assert.equal(form.submissions.length, 1);
+    assert.equal(form.submissions[0].cluster_id, 2);
+  } finally {
+    await form.unmount();
+  }
+});
+
+test('metadata edits remain saveable when a service cluster has no Ready workers', async () => {
+  const form = await mount('edit');
+  try {
+    await form.ready(
+      [provider],
+      workers.map((worker) => ({ ...worker, state: 'not_ready' }))
+    );
+    await form.change('name', 'renamed-cache');
+    await form.submit();
+    assert.equal(form.submissions.length, 1);
+    assert.equal(form.submissions[0].name, 'renamed-cache');
   } finally {
     await form.unmount();
   }

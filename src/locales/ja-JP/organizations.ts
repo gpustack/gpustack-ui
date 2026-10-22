@@ -1,15 +1,14 @@
 export default {
-  'organizations.upsell.title': 'Organizations are an Enterprise feature',
+  'organizations.upsell.title': '組織管理は GPUStack Enterprise の機能です',
   'organizations.upsell.subtitle':
-    'Multi-tenancy lets you isolate users, resources, and quotas across teams. Upgrade to GPUStack Enterprise to manage organizations.',
-  'organizations.upsell.featuresTitle': 'What you get in Enterprise',
+    'マルチテナント機能により、チームごとにユーザー、リソース、クォータを分離できます。組織管理を利用するには GPUStack Enterprise にアップグレードしてください。',
+  'organizations.upsell.featuresTitle': 'Enterprise で利用できる機能',
   'organizations.upsell.feature.orgs':
-    'Create organizations to group users and isolate workloads',
-  'organizations.upsell.feature.members':
-    'Manage members and roles per organization',
+    '組織を作成してユーザーをグループ化し、ワークロードを分離',
+  'organizations.upsell.feature.members': '組織ごとのメンバーとロールの管理',
   'organizations.upsell.feature.quotas':
-    'Set resource and token quotas per organization',
+    '組織ごとのリソースと Token のクォータ設定',
   'organizations.upsell.feature.isolation':
-    'Scope API keys, model deployments, and resources per organization',
-  'organizations.upsell.cta': 'Learn about Enterprise'
+    'API キー、モデルのデプロイ、リソースを組織ごとに分離',
+  'organizations.upsell.cta': 'Enterprise の詳細'
 };

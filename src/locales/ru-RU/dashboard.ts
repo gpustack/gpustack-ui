@@ -1,6 +1,6 @@
 export default {
-  'dashboard.workers': 'Рабочие узлы',
-  'dashboard.deployments': 'Deployments',
+  'dashboard.workers': 'Worker',
+  'dashboard.deployments': 'Развёртывания',
   'dashboard.totalgpus': 'Всего GPU',
   'dashboard.systemload': 'Нагрузка системы',
   'dashboard.memory': 'ОЗУ',
@@ -12,11 +12,11 @@ export default {
   'dashboard.usage': 'Использование',
   'dashboard.usage.title': 'Использование за последние {days} дн.',
   'dashboard.usage.others': 'Прочее',
-  'dashboard.tokens': 'Использование токенов',
+  'dashboard.tokens': 'Использование Token',
   'dashboard.topusers': 'Топ пользователей',
-  'dashboard.activeDeployments': 'Active Deployments',
+  'dashboard.activeDeployments': 'Активные развёртывания',
   'dashboard.usageByModel': 'Использование по моделям',
-  'dashboard.topTokenUsageByUser': 'Топ-10 пользователей по токенам',
+  'dashboard.topTokenUsageByUser': 'Топ-10 пользователей по Token',
   'dashboard.allocatevram': 'Выделено VRAM / ОЗУ',
   'dashboard.usage.selectuser': 'Выбрать пользователей',
   'dashboard.usage.selectmodel': 'Выбрать модели',
@@ -24,13 +24,9 @@ export default {
   'dashboard.usage.export.user': 'Пользователь',
   'dashboard.usage.export.model': 'Модель',
   'dashboard.usage.export.date': 'Дата',
-  'dashboard.usage.datePicker.last7days': 'Последние 7 Days',
-  'dashboard.usage.datePicker.last30days': 'Последние 30 Days',
-  'dashboard.usage.datePicker.last60days': 'Последние 60 Days',
-  'dashboard.usage.datePicker.last90days': 'Последние 90 Days',
+  'dashboard.usage.datePicker.last7days': 'Последние 7 дней',
+  'dashboard.usage.datePicker.last30days': 'Последние 30 дней',
+  'dashboard.usage.datePicker.last60days': 'Последние 60 дней',
+  'dashboard.usage.datePicker.last90days': 'Последние 90 дней',
   'dashboard.clusters': 'Кластеры'
 };
-
-// ========== To-Do: Translate Keys (Remove After Translation) ==========
-
-// ========== End of To-Do List ==========

@@ -13,26 +13,26 @@ export default {
     'Используйте этот код для интеграции текущих настроек в ваше приложение.',
   'playground.completion': 'Завершение',
   'playground.prompt': 'Промпт',
-  'playground.timeToFirstToken': 'Время до первого токена',
-  'playground.timePerOutputToken': 'Время на токен вывода',
-  'playground.tokenusage': 'Использование токенов',
+  'playground.timeToFirstToken': 'Время до первого Token',
+  'playground.timePerOutputToken': 'Время на Token вывода',
+  'playground.tokenusage': 'Использование Token',
   'models.openinplayground': 'Открыть в Песочнице',
   'playground.tokenoutput': 'Вывод',
   'playground.cachehitrate': 'Попаданий в кэш',
   'playground.cached': 'Из кэша',
   'playground.cachewrite': 'Запись в кэш',
   'playground.params.temperature.tips':
-    'Контроль случайности: меньше значение — более предсказуемые результаты. При нуле модель становится детерминированной.',
+    'Управляет случайностью: уменьшение значения делает ответы менее случайными. По мере приближения температуры к нулю результаты становятся детерминированными и повторяющимися.',
   'playground.params.maxtokens.tips':
-    'Максимальное количество генерируемых токенов. Ограничено длиной контекста модели.',
+    'Максимальное количество генерируемых Token. Ограничено длиной контекста модели.',
   'playground.params.topp.tips':
-    'Контроль разнообразия через ядерную выборку: 0.5 означает рассмотрение половины вариантов.',
+    'Управляет разнообразием с помощью выборки по вероятностному ядру: 0.5 означает, что рассматривается половина вариантов с учётом их вероятностей.',
   'playground.params.seed.tips':
-    'При указании seed система будет стараться генерировать детерминированные результаты.',
+    'Если задано, система будет стараться выполнять выборку детерминированно, чтобы повторные запросы с тем же начальным значением генератора и параметрами возвращали одинаковый результат.',
   'playground.params.stop.tips':
-    'Стоп-последовательность останавливает генерацию при её появлении в выводе.',
+    'Стоп-последовательность — это предопределённая или заданная пользователем строка текста, при появлении которой ИИ прекращает генерировать новые Token.',
   'playground.viewcode.tips':
-    'Ваш API-ключ можно найти {here}. Используйте переменные окружения для его защиты.',
+    'Ваш API-ключ можно найти {here}. Передавайте ключ приложениям через переменные окружения или средство управления секретами.',
   'playground.viewcode.here': 'здесь',
   'playground.delete.img': 'Удалить изображение',
   'playground.img.upload': 'Загрузить изображение',
@@ -53,7 +53,7 @@ export default {
   'playground.compare.applytoall': 'Применить ко всем моделям',
   'playground.model.noavailable': 'Нет доступных моделей',
   'playground.model.noavailable.tips':
-    'Сначала разверните модель (не embedding-типа).',
+    'Сначала разверните модель, которая не предназначена исключительно для создания эмбеддингов.',
   'playground.params.counts': 'Количество',
   'playground.params.quality': 'Качество',
   'playground.params.style': 'Стиль',
@@ -145,8 +145,10 @@ export default {
   'playground.image.mask.uploaded': 'Маска загружена',
   'playground.image.mask.upload':
     'Маска загрузки: Дополнительное редактирование запрещено после загрузки.',
-  'playground.params.frequency_penalty.tips': `Число от -2.0 до 2.0. Положительные значения снижают вероятность повторения токенов, уже часто встречающихся в тексте, уменьшая склонность модели дословно повторять одни и те же фразы.`,
-  'playground.params.presence_penalty.tips': `Число от -2.0 до 2.0. Положительные значения снижают вероятность повторения любых токенов, присутствующих в тексте, повышая склонность модели к обсуждению новых тем.`,
+  'playground.params.frequency_penalty.tips':
+    'Число от -2.0 до 2.0. Положительные значения снижают вероятность повторения Token, уже часто встречающихся в тексте, уменьшая склонность модели дословно повторять одни и те же фразы.',
+  'playground.params.presence_penalty.tips':
+    'Число от -2.0 до 2.0. Положительные значения снижают вероятность повторения любых Token, присутствующих в тексте, повышая склонность модели к обсуждению новых тем.',
   'playground.image.origin': 'Оригинал',
   'playground.image.mask': 'Маска',
   'playground.image.negativeMask.tips':
@@ -159,33 +161,23 @@ export default {
   'playground.uploadfile.sizeError':
     'Размер файла превышает ограничение. Максимальный размер: {size}.',
   'playground.uploadImage.url.invalid':
-    'Please enter a direct image URL (e.g. https://.../image.png). Press ESC to cancel.',
-  'playground.uploadImage.url.holder': 'Enter an image URL',
-  'playground.uploadImage.url.button': 'Add Image from URL',
-  'playground.params.duration': 'Duration (seconds)',
-  'playground.params.resolution': 'Resolution',
-  'playground.params.taskType': 'Task Type',
-  'playground.params.instructions': 'Instructions',
-  'playground.params.instructions.tips': 'Voice style/emotion instructions',
-  'playground.params.maxTokens': 'Max New Tokens',
-  'playground.params.refAudio': 'Reference Audio',
+    'Введите прямой URL изображения (например, https://.../image.png). Нажмите ESC для отмены.',
+  'playground.uploadImage.url.holder': 'Введите URL изображения',
+  'playground.uploadImage.url.button': 'Добавить изображение по URL',
+  'playground.params.duration': 'Длительность (секунды)',
+  'playground.params.resolution': 'Разрешение',
+  'playground.params.taskType': 'Тип задачи',
+  'playground.params.instructions': 'Инструкции',
+  'playground.params.instructions.tips':
+    'Инструкции по стилю и эмоциональной окраске голоса',
+  'playground.params.maxTokens': 'Максимум новых Token',
+  'playground.params.refAudio': 'Эталонное аудио',
   'playground.params.refAudio.tips':
-    'Enter a reference audio URL, or upload an audio file.',
-  'playground.params.refAudio.text':
-    'Transcript of Reference Audio (for ICL mode)',
+    'Введите URL эталонного аудио или загрузите аудиофайл.',
+  'playground.params.refAudio.text': 'Текст эталонного аудио (ICL)',
   'playground.params.refAudio.vectorMode':
-    'Use Speaker Embedding Only (no ICL)',
-  'playground.params.streamMode': 'Enable Streaming',
+    'Использовать только эмбеддинг голоса (без ICL)',
+  'playground.params.streamMode': 'Включить потоковую передачу',
   'playground.speech.rules.refAudio':
-    'Either the reference audio transcript or speaker embedding must be set.'
+    'Необходимо задать расшифровку эталонного аудио или эмбеддинг голоса.'
 };
-
-// ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'playground.uploadImage.url.invalid': 'Please enter a direct image URL(e.g. https://.../image.png). Press ESC to cancel.',
-// 2. 'playground.uploadImage.url.holder': 'Enter an image URL',
-// 3.  'playground.uploadImage.url.button': 'Add Image from URL',
-// 4. 'playground.params.duration': 'Duration (seconds)',
-// 5. 'playground.params.resolution': 'Resolution',
-// 6.  'playground.params.streamMode': 'Enable Streaming',
-// 7. 'playground.speech.rules.refAudio': 'Either the reference audio transcript or speaker embedding must be set.'
-// ========== End of To-Do List ==========

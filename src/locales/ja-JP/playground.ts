@@ -13,9 +13,9 @@ export default {
     '以下のコードを使用して、現在のプロンプトと設定をアプリケーションに統合できます。',
   'playground.completion': '補完',
   'playground.prompt': 'プロンプト',
-  'playground.timeToFirstToken': '最初のトークンまでの時間',
-  'playground.timePerOutputToken': '出力トークンごとの時間',
-  'playground.tokenusage': 'トークン使用量',
+  'playground.timeToFirstToken': '最初のTokenまでの時間',
+  'playground.timePerOutputToken': '出力Tokenごとの時間',
+  'playground.tokenusage': 'Token使用量',
   'models.openinplayground': 'プレイグラウンドで開く',
   'playground.tokenoutput': '出力',
   'playground.cachehitrate': 'キャッシュヒット率',
@@ -24,15 +24,15 @@ export default {
   'playground.params.temperature.tips':
     'ランダム性を制御します：値を下げると、結果がより決定的になります。値が0に近づくと、モデルは決定的で反復的になります。',
   'playground.params.maxtokens.tips':
-    '生成されるトークンの最大数。入力トークンと生成トークンの合計長は、モデルのコンテキスト長によって制限されます。',
+    '生成されるTokenの最大数。入力Tokenと生成Tokenの合計長は、モデルのコンテキスト長によって制限されます。',
   'playground.params.topp.tips':
-    '核サンプリングによる多様性を制御します：0.5は、すべての可能性のうち半分を考慮します。',
+    '核サンプリングで多様性を制御します。0.5 の場合、確率で重み付けされた候補の半分が考慮されます。',
   'playground.params.seed.tips':
     '指定された場合、同じシードとパラメータでのリクエストが同じ結果を返すように、システムは可能な限り決定的にサンプルを生成します。',
   'playground.params.stop.tips':
-    '停止シーケンスは、AIがこれ以上トークンを生成しないようにするための事前定義またはユーザー指定のテキスト文字列です。',
+    '停止シーケンスは、AIがこれ以上Tokenを生成しないようにするための事前定義またはユーザー指定のテキスト文字列です。',
   'playground.viewcode.tips':
-    'APIキーは{here}で見つけることができます。アプリケーションにキーを公開するには、環境変数または秘密管理ツールを使用してください。',
+    'API キーは {here} で確認できます。環境変数またはシークレット管理ツールを使用して、アプリケーションにキーを渡してください。',
   'playground.viewcode.here': 'こちら',
   'playground.delete.img': '画像を削除',
   'playground.img.upload': '画像をアップロード',
@@ -151,50 +151,37 @@ export default {
   'playground.image.mask.uploaded': 'マスクがアップロードされました',
   'playground.image.mask.upload':
     'マスクをアップロード: アップロード後は追加の描画はできません。',
-  'playground.params.frequency_penalty.tips': `-2.0から2.0の間の数値。正の値は、これまでのテキストでの出現頻度に基づいて新しいトークンをペナルティ化し、同じ行をそのまま繰り返す可能性を減らします。`,
-  'playground.params.presence_penalty.tips': `-2.0から2.0の間の数値。正の値は、これまでのテキストでの出現に基づいて新しいトークンをペナルティ化し、新しいトピックについて話す可能性を高めます。`,
+  'playground.params.frequency_penalty.tips':
+    '-2.0から2.0の間の数値。正の値は、これまでのテキストでの出現頻度に基づいて新しいTokenをペナルティ化し、同じ行をそのまま繰り返す可能性を減らします。',
+  'playground.params.presence_penalty.tips':
+    '-2.0から2.0の間の数値。正の値は、これまでのテキストでの出現に基づいて新しいTokenをペナルティ化し、新しいトピックについて話す可能性を高めます。',
   'playground.image.origin': 'オリジナル',
   'playground.image.mask': 'マスク',
   'playground.image.negativeMask.tips':
     '1. 選択後は追加のマスクを描画できません。そのため、最初にマスクを描画してからオプションを選択してください。\n 2. マスク画像をアップロードすると、追加のマスクを生成することはできません。',
   'playground.model.noavailable.tips2':
     '期待するモデルが表示されない場合は、モデルが実行中で正しく分類されていることを確認してください。カテゴリが間違っている場合は、モデルの設定で手動で調整できます。',
-  'playground.rerank.query.validate': 'The query is required.',
+  'playground.rerank.query.validate': 'クエリを入力してください。',
   'playground.image.generate.error':
-    'Something went wrong. The image could not be generated.',
+    'エラーが発生し、画像を生成できませんでした。',
   'playground.uploadfile.sizeError':
-    'File size exceeds the limit. Maximum allowed: {size}.',
+    'ファイルサイズが上限を超えています。最大サイズ：{size}。',
   'playground.uploadImage.url.invalid':
-    'Please enter a direct image URL (e.g. https://.../image.png). Press ESC to cancel.',
-  'playground.uploadImage.url.holder': 'Enter an image URL',
-  'playground.uploadImage.url.button': 'Add Image from URL',
-  'playground.params.duration': 'Duration (seconds)',
-  'playground.params.resolution': 'Resolution',
-  'playground.params.taskType': 'Task Type',
-  'playground.params.instructions': 'Instructions',
-  'playground.params.instructions.tips': 'Voice style/emotion instructions',
-  'playground.params.maxTokens': 'Max New Tokens',
-  'playground.params.refAudio': 'Reference Audio',
+    '画像の直接 URL を入力してください（例：https://.../image.png）。キャンセルするには ESC を押してください。',
+  'playground.uploadImage.url.holder': '画像の URL を入力',
+  'playground.uploadImage.url.button': 'URL から画像を追加',
+  'playground.params.duration': '長さ（秒）',
+  'playground.params.resolution': '解像度',
+  'playground.params.taskType': 'タスクの種類',
+  'playground.params.instructions': '指示',
+  'playground.params.instructions.tips': '声のスタイルや感情に関する指示',
+  'playground.params.maxTokens': '新規 Token の最大数',
+  'playground.params.refAudio': '参照音声',
   'playground.params.refAudio.tips':
-    'Enter a reference audio URL, or upload an audio file.',
-  'playground.params.refAudio.text':
-    'Transcript of Reference Audio (for ICL mode)',
-  'playground.params.refAudio.vectorMode':
-    'Use Speaker Embedding Only (no ICL)',
-  'playground.params.streamMode': 'Enable Streaming',
+    '参照音声の URL を入力するか、音声ファイルをアップロードしてください。',
+  'playground.params.refAudio.text': '参照音声の文字起こし（ICL モード用）',
+  'playground.params.refAudio.vectorMode': '話者埋め込みのみ使用（ICL なし）',
+  'playground.params.streamMode': 'ストリーミングを有効にする',
   'playground.speech.rules.refAudio':
-    'Either the reference audio transcript or speaker embedding must be set.'
+    '参照音声の文字起こし、または話者埋め込みのいずれかを設定してください。'
 };
-
-// ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'playground.rerank.query.validate': 'The query is required.'
-// 2.  'playground.image.generate.error': 'Something went wrong. The image could not be generated.',
-// 3. 'playground.uploadfile.sizeError': 'File size exceeds the limit. Maximum allowed: {size}.'
-// 4. 'playground.uploadImage.url.invalid': 'Please enter a direct image URL(e.g. https://.../image.png). Press ESC to cancel.',
-// 5. 'playground.uploadImage.url.holder': 'Enter an image URL'
-// 6.  'playground.uploadImage.url.button': 'Add Image from URL',
-// 7. 'playground.params.duration': 'Duration (seconds)',
-// 8. 'playground.params.resolution': 'Resolution'
-// 9.  'playground.params.streamMode': 'Enable Streaming'
-// 10. 'playground.speech.rules.refAudio': 'Either the reference audio transcript or speaker embedding must be set.'
-// ========== End of To-Do List ==========

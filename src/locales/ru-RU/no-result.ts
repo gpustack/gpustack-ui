@@ -8,12 +8,13 @@ export default {
   'noresult.deployments.subTitle':
     'Вы еще не развернули ни одной модели. Нажмите кнопку ниже, чтобы начать.',
   'noresult.gpus.title': 'GPU устройства не обнаружены',
-  'noresult.gpus.subTitle': 'Проверьте, что статус Worker READY.',
+  'noresult.gpus.subTitle':
+    'Проверьте, что Worker находится в состоянии готовности.',
   'noresult.gpus.nofound': 'Подходящие GPU устройства не найдены.',
-  'noresult.workers.title': 'Нет воркеров',
-  'noresult.workers.subTitle': 'Воркеры не найдены ни в одном кластере.',
-  'noresult.workers.nofound': 'Подходящие воркеры не найдены.',
-  'noresult.workers.button.add': 'Перейти к добавлению воркера',
+  'noresult.workers.title': 'Нет Worker',
+  'noresult.workers.subTitle': 'Worker не найдены ни в одном кластере.',
+  'noresult.workers.nofound': 'Подходящие Worker не найдены.',
+  'noresult.workers.button.add': 'Перейти к добавлению Worker',
   'noresult.modelfiles.title': 'Нет файлов моделей',
   'noresult.modelfiles.subTitle': 'Файлы моделей еще не добавлены.',
   'noresult.modelfiles.nofound': 'Подходящие файлы моделей не найдены.',
@@ -36,27 +37,27 @@ export default {
   'noresult.catalog.subTitle': 'Модели еще не настроены.',
   'noresult.catalog.nofound': 'Подходящие модели не найдены.',
   'noresult.resources.cluster':
-    'No clusters available. Add a cluster to get started.',
+    'Нет доступных кластеров. Добавьте кластер, чтобы начать работу.',
   'noresult.resources.k8sCluster':
-    'No clusters available. Register a Kubernetes cluster for GPU Service to get started.',
+    'Нет доступных кластеров. Зарегистрируйте кластер Kubernetes для сервиса GPU, чтобы начать работу.',
   'noresult.resources.worker':
-    'No workers available. Add a worker to get started.',
-  'noresult.resources.gotocluster': 'Create Your First Cluster',
-  'noresult.resources.addk8scluster': 'Add a Kubernetes Cluster',
-  'noresult.resources.gotoworker': 'Add Worker',
-  'noresult.benchmark.title': 'No Benchmarks',
-  'noresult.benchmark.subTitle': 'No benchmarks have been added yet.',
-  'noresult.benchmark.nofound': 'No matching benchmarks found.',
-  'noresult.providers.title': 'No Providers',
-  'noresult.providers.subTitle': 'No providers have been added yet.',
-  'noresult.providers.nofound': 'No matching providers found.',
-  'noresult.routes.title': 'No Routes',
-  'noresult.routes.subTitle': 'No routes have been added yet.',
-  'noresult.routes.nofound': 'No matching routes found.',
-  'noresult.instances.title': 'No instances',
+    'Нет доступных Worker. Добавьте Worker, чтобы начать работу.',
+  'noresult.resources.gotocluster': 'Создать первый кластер',
+  'noresult.resources.addk8scluster': 'Добавить кластер Kubernetes',
+  'noresult.resources.gotoworker': 'Добавить Worker',
+  'noresult.benchmark.title': 'Нет бенчмарков',
+  'noresult.benchmark.subTitle': 'Бенчмарки ещё не добавлены.',
+  'noresult.benchmark.nofound': 'Подходящие бенчмарки не найдены.',
+  'noresult.providers.title': 'Нет провайдеров',
+  'noresult.providers.subTitle': 'Провайдеры ещё не добавлены.',
+  'noresult.providers.nofound': 'Подходящие провайдеры не найдены.',
+  'noresult.routes.title': 'Нет маршрутов',
+  'noresult.routes.subTitle': 'Маршруты ещё не добавлены.',
+  'noresult.routes.nofound': 'Подходящие маршруты не найдены.',
+  'noresult.instances.title': 'Нет экземпляров',
   'noresult.instances.subTitle':
-    'There are no running model instances. Deploy a model to create one automatically.',
-  'noresult.instances.nofound': 'No matching instances found.',
+    'Нет работающих экземпляров моделей. Разверните модель, чтобы автоматически создать экземпляр.',
+  'noresult.instances.nofound': 'Подходящие экземпляры не найдены.',
   'noresult.gpuservice.template.title': 'Нет шаблонов экземпляров',
   'noresult.gpuservice.template.subTitle':
     'Шаблоны экземпляров ещё не добавлены.',
@@ -69,10 +70,10 @@ export default {
   'noresult.gpuservice.storage.title': 'Нет хранилищ',
   'noresult.gpuservice.storage.subTitle': 'Хранилища ещё не добавлены.',
   'noresult.gpuservice.storage.nofound': 'Подходящие хранилища не найдены.',
-  'noresult.gpuservice.instanceType.title': 'No Instance Types',
+  'noresult.gpuservice.instanceType.title': 'Нет типов экземпляров',
   'noresult.gpuservice.instanceType.subTitle':
-    'Create an instance type to get started',
-  'noresult.gpuservice.instanceType.nofound': 'No instance types found',
+    'Создайте тип экземпляра, чтобы начать работу',
+  'noresult.gpuservice.instanceType.nofound': 'Типы экземпляров не найдены',
   'noresult.gpuservice.storageType.title': 'Нет типов хранилищ',
   'noresult.gpuservice.storageType.subTitle': 'Типы хранилищ ещё не добавлены.',
   'noresult.gpuservice.storageType.nofound':
@@ -81,27 +82,8 @@ export default {
   'noresult.gpuservice.sshkey.subTitle': 'Открытые ключи SSH ещё не добавлены.',
   'noresult.gpuservice.sshkey.nofound':
     'Подходящие открытые ключи SSH не найдены.',
-  'noresult.kvCache.title': 'No cache services yet',
+  'noresult.kvCache.title': 'Пока нет сервисов кеширования',
   'noresult.kvCache.subTitle':
-    'Create a cache service to reuse KV cache across model instances.',
-  'noresult.kvCache.nofound': 'No matching cache services found.'
+    'Создайте сервис кеширования для повторного использования KV-кеша между экземплярами моделей.',
+  'noresult.kvCache.nofound': 'Подходящие сервисы кеширования не найдены.'
 };
-
-// ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'noresult.resources.cluster': 'No clusters available. Add a cluster to get started.',
-// 2. 'noresult.resources.worker': 'No workers available. Add a worker to get started.',
-// 3. 'noresult.resources.gotocluster': 'Create Your First Cluster',
-// 4. 'noresult.resources.gotoworker': 'Add Worker',
-// 5. 'noresult.benchmark.title': 'No Benchmarks',
-// 6. 'noresult.benchmark.subTitle': 'No benchmarks have been added yet.',
-// 7. 'noresult.benchmark.nofound': 'No matching benchmarks found.'
-// 5. 'noresult.providers.title': 'No Providers',
-// 6. 'noresult.providers.subTitle': 'No providers have been added yet.',
-// 7. 'noresult.providers.nofound': 'No matching providers found.',
-// 8. 'noresult.routes.title': 'No Routes',
-// 9. 'noresult.routes.subTitle': 'No routes have been added yet.',
-// 10. 'noresult.routes.nofound': 'No matching routes found.'
-// 11. 'noresult.instances.title': 'No instances',
-// 12. 'noresult.instances.subTitle': 'There are no running model instances. Deploy a model to create one automatically.',
-// 13. 'noresult.instances.nofound': 'No matching instances found.'
-// ========================================================================

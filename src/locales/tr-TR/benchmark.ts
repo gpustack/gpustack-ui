@@ -159,7 +159,7 @@ export default {
   'benchmark.form.outputMax': 'Çıktı Maks',
   'benchmark.form.sharedPrefix': 'Paylaşılan Önek',
   'benchmark.form.prefix.tip':
-    'İstekler arasında paylaşılan ortak istem öneki (sistem istemi / RAG bağlamı); prefix-cache yeniden kullanımını test eder. Kova başına — Prefix Length: önek token sayısı; Count: farklı önek sayısı; Weight: onu kullanan isteklerin göreli payı.',
+    'İstekler arasında paylaşılan ortak istem öneki (sistem istemi / RAG bağlamı); önek önbelleğinin yeniden kullanımını test eder. Her grup için — Önek Uzunluğu: önek Token sayısı; Adet: farklı önek sayısı; Ağırlık: o öneki kullanan isteklerin göreli payı.',
   'benchmark.form.prefix.intro':
     'İstekler arasında paylaşılan ortak bir istem öneki (sistem istemi / RAG bağlamı); önek önbelleği yeniden kullanımını test eder. Birden çok kova ekleyerek farklı önek uzunluklarını ağırlığa göre karıştırın.',
   'benchmark.form.prefix.length': 'Önek Uzunluğu',

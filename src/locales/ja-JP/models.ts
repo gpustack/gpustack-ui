@@ -10,8 +10,8 @@ export default {
   'models.scaling.manual.confirm':
     'この操作は対象のデプロイのスケジュールスケーリングを無効にします。ベースラインとルールは保持されます。続行しますか？',
   'models.button.deploy': 'モデルをデプロイ',
-  'models.button.exportYaml': 'Export YAML',
-  'models.button.importYaml': 'Import YAML',
+  'models.button.exportYaml': 'YAML をエクスポート',
+  'models.button.importYaml': 'YAML をインポート',
   'models.form.yamlFile': 'YAML ファイル',
   'models.import.checking': '検証中…',
   'models.import.hint.nothing': 'インポートできるデプロイメントがありません',
@@ -75,10 +75,16 @@ export default {
   'models.form.selector': 'セレクター',
   'models.form.env': '環境変数',
   'models.form.configurations': '設定',
+  'models.form.tabs.basic': '基本情報',
+  'models.form.tabs.pd': 'PD 分離設定',
+  'models.form.tabs.performance': '性能',
+  'models.form.tabs.scheduling': 'スケジュール',
+  'models.form.tabs.advanced': '詳細設定',
   'models.form.s3address': 'S3アドレス',
-  'models.form.partialoffload.tips': `When CPU offloading is enabled, GPUStack will allocate CPU memory if GPU resources are insufficient. You must correctly configure the inference backend to use hybrid CPU+GPU or full CPU inference.`,
+  'models.form.partialoffload.tips':
+    'CPU オフロードを有効にすると、GPU リソースが不足している場合に GPUStack が CPU メモリを割り当てます。CPU と GPU の併用または CPU のみの推論を利用するには、推論バックエンドを正しく設定する必要があります。',
   'models.form.distribution.tips':
-    'ワーカーのリソースが不足している場合、モデルの一部のレイヤーを単一または複数のリモートワーカーにオフロードすることができます。',
+    'Workerのリソースが不足している場合、モデルの一部のレイヤーを単一または複数のリモートWorkerにオフロードすることができます。',
   'models.openinplayground': 'プレイグラウンドで開く',
   'models.instances': 'インスタンス',
   'models.table.replicas.edit': 'レプリカを編集',
@@ -128,12 +134,12 @@ export default {
   'models.table.vgpu': 'vGPU',
   'models.table.vgpu.slice': '{memory}% VRAM / {cores}% 演算',
   'models.table.backend': 'バックエンド',
-  'models.table.acrossworker': 'ワーカー間で分散',
+  'models.table.acrossworker': 'Worker間で分散',
   'models.table.cpuoffload': 'CPUオフロード',
   'models.table.layers': 'レイヤー',
   'models.form.backend': 'バックエンド',
   'models.form.backend_parameters': 'バックエンドパラメータ',
-  'models.instance.params.configured': 'User Configured',
+  'models.instance.params.configured': 'ユーザー設定',
   'models.instance.params.autoInjected': '自動注入パラメータ',
   'models.search.gguf.tips':
     'GGUFモデルはllama-boxを使用します（Linux、macOS、Windowsをサポート）。',
@@ -152,7 +158,7 @@ export default {
   'models.form.backend_parameters.sglang.placeholder':
     '例: --context-length=8192（=または空白で名前と値を分ける）',
   'models.form.backend_parameters.vllm.tips':
-    'For more details about {backend} parameters, see <a href={link} target="_blank">here</a>.',
+    '{backend} のパラメーターの詳細は、<a href={link} target="_blank">こちら</a>をご覧ください。',
   'models.logs.pagination.prev': '前の{lines}行',
   'models.logs.pagination.next': '次の{lines}行',
   'models.logs.pagination.last': '最終ページ',
@@ -163,24 +169,24 @@ export default {
   'models.form.backendVersion': 'バックエンドバージョン',
   'models.form.backendVersion.tips':
     '希望する{backend}{version}バージョンを使用するには、システムがオンライン環境で対応するバージョンをインストールする仮想環境を自動的に作成します。GPUStackのアップグレード後もバックエンドバージョンは固定されます。{link}',
-  'models.form.customImage': 'Custom Image',
-  'models.form.customImage.entry': 'Use a custom image…',
-  'models.form.customImage.backToVersion': 'Select a version instead',
+  'models.form.customImage': 'カスタムイメージ',
+  'models.form.customImage.entry': 'カスタムイメージを使用…',
+  'models.form.customImage.backToVersion': 'バージョンの選択に戻る',
   'models.form.customImage.tips':
-    'Use your own {backend} image instead of a catalog version. GPUStack skips runner catalog compatibility checks for this image; confirm it supports your devices and distributed setup.',
+    'カタログのバージョンの代わりに、独自の {backend} イメージを使用します。このイメージでは、GPUStack はランナーカタログの互換性チェックを行いません。使用するデバイスと分散構成に対応していることを確認してください。',
   'models.form.customRunCommand.tips':
-    'For built-in backends, enter startup arguments without the executable. GPUStack still appends host and port, plus distributed settings where applicable.',
+    '内蔵バックエンドでは、実行ファイル名を含めずに起動引数を入力してください。GPUStack はホストとポートを追加し、必要に応じて分散実行の設定も追加します。',
   'models.form.gpuselector': 'GPUセレクター',
   'models.form.backend.llamabox':
     'GGUF形式のモデル用（Linux、macOS、Windowsをサポート）。',
   'models.form.backend.vllm':
-    'Built-in support for NVIDIA, AMD, Ascend, Hygon, Moore Threads, Iluvatar, MetaX, T-Head PPU devices.',
-  'models.form.backend.voxbox': 'Only supports NVIDIA GPUs and CPUs.',
-  'models.form.backend.mindie': 'Only supports Ascend NPUs.',
+    'NVIDIA、AMD、Ascend、Hygon、Moore Threads、Iluvatar、MetaX、T-Head PPU デバイスに標準対応しています。',
+  'models.form.backend.voxbox': 'NVIDIA GPU と CPU のみ対応しています。',
+  'models.form.backend.mindie': 'Ascend NPU のみ対応しています。',
   'models.form.backend.sglang':
-    'Built-in support for NVIDIA, AMD, Ascend, Moore Threads, MetaX, T-Head PPU devices.',
+    'NVIDIA、AMD、Ascend、Moore Threads、MetaX、T-Head PPU デバイスに標準対応しています。',
   'models.form.search.gguftips':
-    'macOSまたはWindowsをワーカーとして使用する場合、GGUFをチェックしてください（音声モデルの場合はオフにしてください）。',
+    'macOSまたはWindowsをWorkerとして使用する場合、GGUFをチェックしてください（音声モデルの場合はオフにしてください）。',
   'models.form.button.addlabel': 'ラベルを追加',
   'models.filter.category': 'カテゴリでフィルタ',
   'models.list.more.logs': 'さらに表示',
@@ -191,27 +197,27 @@ export default {
   'models.localpath.gguf.tips':
     'モデルファイルを指定してください。例: /data/models/model.gguf。',
   'models.localpath.safe.tips':
-    'config.jsonファイルを含む.safetensorsディレクトリを指定してください。例: /data/models/model。',
+    '.safetensors ファイルと config.json ファイルを含むモデルディレクトリを指定してください。例：/data/models/model。',
   'models.localpath.chunks.tips': `モデルの最初のシャードファイルを指定してください。例: /data/models/model-00001-of-00004.gguf。`,
   'models.form.replicas.tips':
     '複数のレプリカにより、{api} 推論リクエストの負荷分散が可能になります。',
   'models.table.list.empty': 'まだモデルがありません！',
   'models.table.list.getStart':
     '<span style="margin-right: 5px;font-size: 13px;">始めるには</span> <span style="font-size: 14px;font-weight: 700">DeepSeek-R1-Distill-Qwen-1.5B</span>',
-  'models.table.llamaAcrossworker': 'Llama-box ワーカー間分散',
-  'models.table.vllmAcrossworker': 'vLLM ワーカー間分散',
+  'models.table.llamaAcrossworker': 'Llama-box Worker間分散',
+  'models.table.vllmAcrossworker': 'vLLM Worker間分散',
   'models.form.releases': 'リリース',
   'models.form.moreparameters': 'パラメータ説明',
   'models.table.vram.allocated': '割り当て済みVRAM',
-  'models.table.vram.workers': '{n} ワーカー',
-  'models.instance.workergpu': '{n} ワーカー / {m} GPU',
-  'models.instance.mainworker': 'メインワーカー（Main）',
-  'models.instance.worker': '実行ワーカー',
-  'models.instance.workerip': 'ワーカー IP:Port',
+  'models.table.vram.workers': 'Worker {n} 台',
+  'models.instance.workergpu': 'Worker {n} 台 / GPU {m} 台',
+  'models.instance.mainworker': 'メインWorker（Main）',
+  'models.instance.worker': 'Worker',
+  'models.instance.workerip': 'Worker の IP:ポート',
   'models.form.backend.warning':
-    'The selected backend does not support GGUF models. Please add a backend with GGUF support in the Inference Backend.',
+    '選択したバックエンドは GGUF モデルに対応していません。推論バックエンド画面で GGUF に対応したバックエンドを追加してください。',
   'models.form.backend.warning.gguf':
-    'Please ensure that the selected custom backend supports GGUF models.',
+    '選択したカスタムバックエンドが GGUF モデルに対応していることを確認してください。',
   'models.form.ollama.warning':
     'Ollamaモデルのバックエンドをllama-boxを使用してデプロイします。',
   'models.form.backend.warning.llamabox':
@@ -258,85 +264,86 @@ export default {
   'models.table.apiAccessInfo.gotoCreate': '作成に移動',
   'models.search.parts': '{n} 部分',
   'models.search.evaluate.error': '評価中にエラーが発生しました: ',
-  'models.ollama.deprecated.title': 'Deprecation Notice',
+  'models.ollama.deprecated.title': '非推奨機能のお知らせ',
   'models.ollama.deprecated.current':
-    '<span class="bold-text">Current Version (v0.6.1): </span>Ollama models are currently available for use.',
+    '<span class="bold-text">現在のバージョン（v0.6.1）: </span>Ollama モデルを使用できます。',
   'models.ollama.deprecated.upcoming':
-    '<span class="bold-text">Upcoming Version (v0.7.0): </span>The Ollama model source will be removed from the UI.',
+    '<span class="bold-text">次のバージョン（v0.7.0）: </span>UI から Ollama のモデルソースが削除されます。',
   'models.ollama.deprecated.following':
-    '<span class="bold-text">Following the v0.7.0 update,</span> all previously deployed models will continue to work as expected.',
+    '<span class="bold-text">v0.7.0 への更新後も、</span>デプロイ済みのモデルはこれまでどおり動作します。',
   'models.ollama.deprecated.issue':
-    'See the related issue: <a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">#1979 on GitHub</a>.',
-  'models.ollama.deprecated.notice': `The Ollama model source has been deprecated as of v0.6.1. For more information, see the <a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">related GitHub issue</a>.`,
+    '関連する課題を参照してください：<a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">GitHub の #1979</a>。',
+  'models.ollama.deprecated.notice':
+    'Ollama のモデルソースは v0.6.1 から非推奨です。詳細は<a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">関連する GitHub の課題</a>を参照してください。',
   'models.backend.mindie.310p':
-    'Ascend 310P only supports FP16, so you need to set --dtype=float16.',
+    'Ascend 310P は FP16 のみ対応しているため、--dtype=float16 を設定する必要があります。',
   'models.form.gpuCount': '各レプリカのGPU数',
   'models.form.gpuType': 'GPU タイプ',
   'models.form.optimizeLongPrompt': '長いプロンプトを最適化',
-  'models.form.enableSpeculativeDecoding': '推測デコーディングを有効にする',
-  'models.form.check.clusterUnavailable': 'Current cluster is unavailable',
+  'models.form.enableSpeculativeDecoding': '投機的デコードを有効にする',
+  'models.form.check.clusterUnavailable': '現在のクラスターは利用できません',
   'models.form.check.otherClustersAvailable':
-    'Available clusters: {clusters}. Please switch cluster.',
-  'models.button.accessSettings': 'Access Settings',
-  'models.table.accessScope': 'Access Scope',
-  'models.table.accessScope.all': 'All users',
-  'models.table.userSelection': 'User Selection',
+    '利用可能なクラスター: {clusters}。クラスターを切り替えてください。',
+  'models.button.accessSettings': 'アクセス設定',
+  'models.table.accessScope': 'アクセス範囲',
+  'models.table.accessScope.all': 'すべてのユーザー',
+  'models.table.userSelection': 'ユーザー選択',
   'models.button.accessSettings.tips':
-    'Changes to access settings take effect after one minute.',
+    'アクセス設定の変更は 1 分後に反映されます。',
   'models.table.userSelection.tips':
-    'Admin users can access all models by default.',
-  'models.table.filterByName': 'Filter by username',
-  'models.table.admin': 'Admin',
-  'models.table.noselected': 'No users selected',
-  'models.table.users.all': 'All Users',
-  'models.table.users.selected': 'Selected Users',
-  'models.table.nouserFound': 'No users found',
-  'models.form.performance': 'Performance',
-  'models.form.gpus.notfound': 'No GPUs found',
-  'models.form.extendedkvcache': 'Enable Extended KV Cache',
-  'models.form.chunkSize': 'Size of Cache Chunks',
-  'models.form.maxCPUSize': 'Maximum CPU Cache Size (GiB)',
-  'models.form.remoteURL': 'Remote Storage URL',
+    '管理者ユーザーは、デフォルトですべてのモデルにアクセスできます。',
+  'models.table.filterByName': 'ユーザー名で絞り込み',
+  'models.table.admin': '管理者',
+  'models.table.noselected': 'ユーザーが選択されていません',
+  'models.table.users.all': 'すべてのユーザー',
+  'models.table.users.selected': '選択したユーザー',
+  'models.table.nouserFound': 'ユーザーが見つかりません',
+  'models.form.performance': 'パフォーマンス',
+  'models.form.gpus.notfound': 'GPU が見つかりません',
+  'models.form.extendedkvcache': '拡張 KV キャッシュを有効化',
+  'models.form.chunkSize': 'キャッシュチャンクのサイズ',
+  'models.form.maxCPUSize': 'CPU キャッシュの最大サイズ（GiB）',
+  'models.form.remoteURL': 'リモートストレージ URL',
   'models.form.remoteURL.tips':
-    'Refer to the <a href="https://docs.lmcache.ai/api_reference/configurations.html" target="_blank">configuration documentation</a> for details.',
+    '詳細は<a href="https://docs.lmcache.ai/api_reference/configurations.html" target="_blank">設定ドキュメント</a>を参照してください。',
   'models.form.runCommandPlaceholder':
-    'e.g., vllm serve Qwen/Qwen2.5-1.5B-Instruct',
-  'models.accessSettings.public': 'Public',
-  'models.accessSettings.authed': 'Authenticated',
-  'models.accessSettings.allowedUsers': 'Allowed users',
+    '例: vllm serve Qwen/Qwen2.5-1.5B-Instruct',
+  'models.accessSettings.public': '公開',
+  'models.accessSettings.authed': '認証済み',
+  'models.accessSettings.allowedUsers': '許可されたユーザー',
   'models.accessSettings.public.tips':
-    'When set to public, anyone can access this model without authentication, which may lead to data exposure risks.',
-  'models.table.button.deploy': 'Deploy Now',
-  'models.form.backendVersion.holder': 'Enter or select a version',
-  'models.form.gpusperreplica': 'GPUs per Replica',
-  'models.form.gpusAllocationType': 'GPU Allocation Type',
-  'models.form.gpusAllocationType.auto': 'Auto',
-  'models.form.gpusAllocationType.custom': 'Custom',
+    '公開に設定すると、誰でも認証なしでこのモデルにアクセスできるため、データが漏えいするおそれがあります。',
+  'models.table.button.deploy': '今すぐデプロイ',
+  'models.form.backendVersion.holder': 'バージョンを入力または選択してください',
+  'models.form.gpusperreplica': 'レプリカあたりの GPU 数',
+  'models.form.gpusAllocationType': 'GPU 割り当て方式',
+  'models.form.gpusAllocationType.auto': '自動',
+  'models.form.gpusAllocationType.custom': 'カスタム',
   'models.form.gpusAllocationType.auto.tips':
-    'The system automatically calculates the GPU count per replica, using powers of two by default and capped by the selected GPUs.',
+    'レプリカあたりの GPU 数を自動計算します。デフォルトでは 2 の累乗を使用し、選択した GPU 数が上限になります。',
   'models.form.gpusAllocationType.custom.tips':
-    'You can specify the exact number of GPUs per replica.',
-  'models.mymodels.status.inactive': 'Stopped',
-  'models.mymodels.status.degrade': 'Not Ready',
-  'models.mymodels.status.active': 'Ready',
+    'レプリカあたりの GPU 数を指定できます。',
+  'models.mymodels.status.inactive': '停止中',
+  'models.mymodels.status.degrade': '準備未完了',
+  'models.mymodels.status.active': '準備完了',
   'models.form.kvCache.tips':
-    'Extended KV cache and speculative decoding are only available with built-in backends (vLLM / SGLang), Please switch the backend to enable them.',
+    '拡張 KV キャッシュと投機的デコードは、内蔵バックエンド（vLLM / SGLang）でのみ利用できます。有効にするにはバックエンドを切り替えてください。',
   'models.form.kvCache.tips2':
-    'Only supported when using built-in inference backends (vLLM or SGLang).',
-  'models.form.kvCache.backend': 'Cache Backend',
-  'models.form.kvCache.local': 'In-Process Cache',
+    '内蔵推論バックエンド（vLLM または SGLang）を使用する場合のみ対応しています。',
+  'models.form.kvCache.backend': 'キャッシュバックエンド',
+  'models.form.kvCache.local': 'プロセス内キャッシュ',
   'models.form.kvCache.service.tips':
-    'Only cache services in the same cluster and compatible with the selected backend are listed.',
+    '同じクラスターにあり、選択したバックエンドと互換性のあるキャッシュサービスのみを表示します。',
   'models.form.kvCache.shared.builtinBackends':
-    'Cache Service is only supported with the built-in vLLM and SGLang backends.',
+    'キャッシュサービスは、内蔵の vLLM および SGLang バックエンドでのみ利用できます。',
   'models.kvCache.degraded.tips':
-    'Shared KV cache is not active for this instance',
+    'このインスタンスでは共有 KV キャッシュが有効になっていません',
   'models.kvCache.endpointDead.tips':
-    'The shared cache this instance attached to is no longer available; restart the instance to recover',
-  'models.kvCache.service': 'Cache Service',
-  'models.kvCache.hitRate': 'External Cache Hit Rate ({window})',
+    'このインスタンスに接続されていた共有キャッシュは利用できなくなりました。復旧するにはインスタンスを再起動してください',
+  'models.kvCache.service': 'キャッシュサービス',
+  'models.kvCache.hitRate': '外部キャッシュのヒット率（{window}）',
   'models.kvCache.hitRate.window': '1h',
-  'models.form.scheduling': 'Scheduling',
+  'models.form.scheduling': 'スケジューリング',
   'models.form.scaling': 'スケジュールスケーリング',
   'models.form.scaling.enable': 'スケジュールスケーリングを有効化',
   'models.form.scaling.enable.tips':
@@ -406,82 +413,86 @@ export default {
     '競合：開始時刻が同じ（{times}）ルールのレプリカ数が異なります。同じレプリカ数にするか、開始時刻を分けてください。',
   'models.form.scaling.overlap':
     '重複：ウィンドウ（{times}）が重複しています。重複する部分では、後から始まるルールが優先されます。',
-  'models.form.ramRatio': 'RAM-to-VRAM Ratio',
-  'models.form.ramSize': 'Maximum RAM Size (GiB)',
+  'models.form.ramRatio': 'RAM と VRAM の比率',
+  'models.form.ramSize': 'RAM の最大容量 (GiB)',
   'models.form.ramRatio.tips':
-    'Ratio of system RAM to GPU VRAM used for KV cache. For example, 2.0 means the cache in RAM can be twice as large as the GPU VRAM.',
-  'models.form.ramSize.tips': `Maximum size of the KV cache stored in system memory (GiB). If set, this value overrides "{content}".`,
-  'models.form.chunkSize.tips': 'Number of tokens per KV cache chunk.',
-  'models.form.mode': 'Mode',
-  'models.form.algorithm': 'Algorithm',
-  'models.form.draftModel': 'Draft Model',
-  'models.form.numDraftTokens': 'Number of Draft Tokens',
-  'models.form.ngramMinMatchLength': 'N-gram Minimum Match Length',
-  'models.form.ngramMaxMatchLength': 'N-gram Maximum Match Length',
-  'models.form.mode.throughput': 'Throughput',
-  'models.form.mode.latency': 'Latency',
-  'models.form.mode.baseline': 'Standard',
+    'KV キャッシュに使用するシステム RAM と GPU VRAM の比率です。たとえば、2.0 の場合、RAM 内のキャッシュは GPU VRAM の最大 2 倍の容量になります。',
+  'models.form.ramSize.tips':
+    'システムメモリに保存する KV キャッシュの最大容量 (GiB) です。設定すると、この値が「{content}」より優先されます。',
+  'models.form.chunkSize.tips':
+    'KV キャッシュのチャンクあたりの Token 数です。',
+  'models.form.mode': 'モード',
+  'models.form.algorithm': 'アルゴリズム',
+  'models.form.draftModel': 'ドラフトモデル',
+  'models.form.numDraftTokens': 'ドラフト Token 数',
+  'models.form.ngramMinMatchLength': 'N-gram の最小一致長',
+  'models.form.ngramMaxMatchLength': 'N-gram の最大一致長',
+  'models.form.mode.throughput': 'スループット',
+  'models.form.mode.latency': 'レイテンシー',
+  'models.form.mode.baseline': '標準',
   'models.form.mode.throughput.tips':
-    'Optimized for high throughput under high request concurrency.',
+    '同時リクエスト数が多い場合に、高いスループットを得られるよう最適化します。',
   'models.form.mode.latency.tips':
-    'Optimized for low latency under low request concurrency.',
+    '同時リクエスト数が少ない場合に、低レイテンシを得られるよう最適化します。',
   'models.form.mode.baseline.tips':
-    'The most compatible option with full precision.',
-  'models.form.draftModel.placeholder': 'Please select or enter a draft model',
+    '元の完全な精度で実行し、互換性を優先します。',
+  'models.form.draftModel.placeholder':
+    'ドラフトモデルを選択または入力してください',
   'models.form.draftModel.tips':
-    'You can enter a local path (e.g., /path/to/model) or select a model from Hugging Face or ModelScope (e.g., Tengyunw/qwen3_8b_eagle3). The system will automatically match based on the primary model source.',
-  'models.form.quantization': 'Quantization',
-  'models.form.backend.custom': 'User Defined',
+    'ローカルパス（例：/path/to/model）を入力するか、Hugging Face または ModelScope のモデル（例：Tengyunw/qwen3_8b_eagle3）を選択できます。システムはメインモデルのソースに基づいて自動的に照合します。',
+  'models.form.quantization': '量子化',
+  'models.form.backend.custom': 'ユーザー定義',
   'models.form.rules.name':
-    'Up to 63 characters; letters, numbers, dots (.), underscores (_), and hyphens (-) only; must start and end with an alphanumeric character.',
-  'models.catalog.button.explore': 'Explore More Models',
-  'models.catalog.precision': 'Precision',
-  'models.form.gpuPerReplica.tips': 'Enter a custom number',
-  'models.form.generic_proxy': 'Enable Generic Proxy',
-  'models.form.enableModelRoute': 'Enable Model Route',
-  'models.form.enableModelRoute.tips': 'Enable Model Route',
+    '63 文字以内で、英字、数字、ドット (.)、アンダースコア (_)、ハイフン (-) のみ使用できます。先頭と末尾は英数字にしてください。',
+  'models.catalog.button.explore': 'さらにモデルを探す',
+  'models.catalog.precision': '精度',
+  'models.form.gpuPerReplica.tips': '任意の数値を入力してください',
+  'models.form.generic_proxy': '汎用プロキシを有効にする',
+  'models.form.enableModelRoute': 'モデルルートを有効にする',
+  'models.form.enableModelRoute.tips': 'モデルルートを有効にする',
   'models.form.generic_proxy.tips':
-    'After enabling the generic proxy, you can access URI paths that do not follow the OpenAI API standard.',
-  'models.form.generic_proxy.button': 'Generic Proxy',
-  'models.accessControlModal.includeusers': 'Include Users',
+    '汎用プロキシを有効にすると、OpenAI API 標準に準拠しない URI パスにアクセスできます。',
+  'models.form.generic_proxy.button': '汎用プロキシ',
+  'models.accessControlModal.includeusers': 'ユーザーを含める',
   'models.table.genericProxy':
-    'Use the following path prefix, and set the model name in either the <span class="bold-text">X-GPUStack-Model</span> request header or the model field in the request body. All requests under this path prefix will be forwarded to the inference backend.',
-  'models.form.backendVersion.deprecated': 'Deprecated',
-  'models.accessSettings.public.desc':
-    'Accessible to anyone without authentication.',
+    '以下のパスプレフィックスを使用し、<span class="bold-text">X-GPUStack-Model</span> リクエストヘッダーまたはリクエスト本文の model フィールドにモデル名を設定してください。このパスプレフィックス配下のすべてのリクエストは推論バックエンドに転送されます。',
+  'models.form.backendVersion.deprecated': '非推奨',
+  'models.accessSettings.public.desc': '認証なしで誰でもアクセスできます。',
   'models.accessSettings.authed.tips':
-    'Accessible to all authenticated platform users.',
+    '認証済みのすべてのプラットフォームユーザーがアクセスできます。',
   'models.accessSettings.allowedUsers.tips':
-    'Only designated users can access the model.',
-  'models.form.backendVersions.tips': `To use more versions, go to the {link} page and edit the backend to add versions.`,
+    '指定されたユーザーのみがモデルにアクセスできます。',
+  'models.form.backendVersions.tips':
+    'さらにバージョンを使用するには、{link} ページでバックエンドを編集し、バージョンを追加してください。',
   'models.catalog.nogpus.tips':
-    'No compatible GPUs are available in the selected cluster for this model.',
-  'models.form.modelfile.notfound': `The model file path you specified does not exist on the GPUStack server. It's recommended to place the model file at the same path on both the GPUStack server and GPUStack workers. This helps GPUStack make better decisions.`,
-  'models.form.readyWorkers': 'workers ready',
-  'models.form.maxContextLength': 'Maximum Context Length',
+    '選択したクラスターには、このモデルに対応する GPU がありません。',
+  'models.form.modelfile.notfound':
+    '指定されたモデルファイルのパスは GPUStack Server に存在しません。GPUStack Server と GPUStack Worker の両方で、モデルファイルを同じパスに配置することを推奨します。これにより、GPUStack がより適切に判断できます。',
+  'models.form.readyWorkers': '準備完了の Worker',
+  'models.form.maxContextLength': '最大コンテキスト長',
   'models.form.backend.helperText':
-    'Not enabled yet. Will be enabled after deployment. ',
-  'models.table.instance.benchmark': 'Run Benchmark',
-  'models.table.modelView': 'Model List',
-  'models.table.instanceView': 'Instance List',
-  'models.table.category': 'Category',
-  'models.instance.currentRun': 'Current Run',
-  'models.instance.previousRun': 'Previous Run',
-  'models.instance.startHistory': 'Run History',
+    'まだ有効になっていません。デプロイ後に有効になります。',
+  'models.table.instance.benchmark': 'ベンチマークを実行',
+  'models.table.modelView': 'モデル一覧',
+  'models.table.instanceView': 'インスタンス一覧',
+  'models.table.category': 'カテゴリ',
+  'models.instance.currentRun': '今回の実行',
+  'models.instance.previousRun': '前回の実行',
+  'models.instance.startHistory': '実行履歴',
   'models.instance.startHistory.tips':
-    'Shows logs from the run before the last error-triggered restart.',
+    '直近のエラーによる再起動前の実行ログを表示します。',
   'models.instance.logs.downloading': 'ダウンロード中… {size}',
   'models.instance.logs.downloadingPercent': 'ダウンロード中… {percent}%',
-  'models.form.lora.label': 'LoRA Adapters',
-  'models.form.lora.add': 'Add LoRA Adapter',
-  'models.form.lora.select': 'Select LoRA',
-  'models.form.lora.name': 'LoRA name',
-  'models.form.lora.rule.empty': 'Input cannot be empty',
-  'models.form.lora.rule.duplicate': 'LoRA name cannot be duplicated',
+  'models.form.lora.label': 'LoRA アダプター',
+  'models.form.lora.add': 'LoRA アダプターを追加',
+  'models.form.lora.select': 'LoRA を選択',
+  'models.form.lora.name': 'LoRA 名',
+  'models.form.lora.rule.empty': '入力は空にできません',
+  'models.form.lora.rule.duplicate': 'LoRA 名は重複できません',
   // Model catalog source configuration
   'models.catalog.source.title': 'カタログのソース',
   'models.catalog.source.official':
-    'Follows the catalog GPUStack publishes, on top of the one packaged with this release.',
+    'このリリースに同梱されたカタログに加え、GPUStack が公開するカタログを使用します。',
 
   // --- Prefill/decode disaggregation ---
   'models.form.pd.section': 'PD 分離設定',
@@ -503,7 +514,7 @@ export default {
   'models.form.pd.enable.off': '無効',
   'models.form.pd.enable.on': 'PD 分離',
   'models.form.pd.enable.tips':
-    'プレフィル（Prefill）とデコード（Decode）を別インスタンスに分割します。代償はネットワーク 1 ホップと KV 転送 1 回です。同時実行数が少ない、プロンプトが短い、プレフィックスキャッシュのヒット率が高い場合は、集約デプロイの方が高速なことが多いです。まずベンチマークを取ることを推奨します。',
+    'Prefill（Prefill）とDecode（Decode）を別インスタンスに分割します。代償はネットワーク 1 ホップと KV 転送 1 回です。同時実行数が少ない、プロンプトが短い、プレフィックスキャッシュのヒット率が高い場合は、集約デプロイの方が高速なことが多いです。まずベンチマークを取ることを推奨します。',
   'models.form.pd.shape.mono': '統合デプロイ',
   'models.form.pd.shape.mono.tips':
     '1 つのインスタンスが Prefill と Decode の両方を担います。',
@@ -541,7 +552,7 @@ export default {
   'models.form.roles': 'ロール設定',
   'models.form.roles.prefill': 'Prefill',
   'models.form.roles.decode': 'Decode',
-  'models.form.roles.router': 'Router',
+  'models.form.roles.router': 'ルーター',
   'models.form.roles.override': 'カスタム',
   'models.form.roles.inherited': '継承',
   'models.form.roles.group.backend': 'エンジンとイメージ',
@@ -557,19 +568,19 @@ export default {
   'models.form.roles.replicas': 'レプリカ数',
   'models.form.roles.router.routeArgs': 'ルーティング引数',
   'models.form.roles.router.routeArgs.tips':
-    'Router プロセスの起動コマンドライン引数です。鍵付きはグループの配置先から GPUStack が生成するもので、編集できません。',
+    'ルータープロセスの起動コマンドラインです。ロックされた行は、グループの配置先に基づいて GPUStack が生成するため、編集できません。',
   'models.form.roles.router.locality':
     'CPU のみ。このグループの Prefill / Decode になるべく近い Worker にシステムが自動配置します',
   'models.form.roles.router.workerAllocation': 'Worker 割り当て',
-  'models.form.roles.router.workerSelect': 'Worker セレクター',
+  'models.form.roles.router.workerSelect': 'Worker',
   'models.form.roles.router.scheduletype.tips':
     '自動：セレクターを満たすマシンのうち、このグループの Prefill / Decode が動いているものを優先します。手動：Worker を直接指定します。',
   'models.form.roles.router.workerSelector.tips':
     'ラベルで候補を絞り込みます。一致したマシンの中では、引き続きこのグループの Prefill / Decode に最も近いものが優先されます。',
   'models.form.roles.router.order.tips':
-    'Router は Prefill と Decode が準備できた後に作成されます。',
+    'ルーターは Prefill と Decode の準備が完了した後に作成されます。',
   'models.form.roles.router.custom.forced':
-    'カスタム PD モードでは Router を導出しません。イメージと起動コマンドを指定してください。',
+    'カスタム PD モードではルーターが自動導出されません。イメージと起動コマンドを指定してください。',
   'models.form.roles.router.peers':
     'デプロイ後にシステムが Prefill / Decode インスタンスのアドレスを注入します。',
   'models.form.roles.cache.holder': '使用しない',
@@ -589,7 +600,7 @@ export default {
   'models.form.roles.cache.custom.conflict':
     'カスタム PD モードではエンジンパラメータで --kv-transfer-config を指定するため、キャッシュサービスは同時に選択できません。',
   'models.form.roles.cache.param.conflict':
-    '選択した PD モードと競合します。「カスタム」PD モードに切り替えるか、このパラメータを削除してください。',
+    '選択した PD モードと競合します。「カスタム」モードに切り替えるか、--kv-transfer-config を削除してください。',
   'models.state.pending': '待機中',
   'models.state.partial': '一部準備完了',
   'models.state.running': '実行中',
@@ -612,7 +623,7 @@ export default {
   'models.form.pd.cacheServiceVersion.below':
     'PD と {provider} キャッシュサービスの対応バックエンドバージョンは {range} です。選択した組み込みバージョンは {version} です。デプロイは可能ですが、起動や動作に失敗する場合があります。',
   'models.pd.degraded.pairing':
-    'prefill メンバーと同じホストに乗っている decode メンバーが 1 つもないため、KV 転送は毎回ネットワークを経由します。RDMA のないリンクでは、これは分離しない場合よりも遅くなるのが普通です。少なくとも 1 組を同一ホストに配置するか、両方のロールで同じホスト上の GPU を選んでください。',
+    'Prefill メンバーと同じホストに乗っている Decode メンバーが 1 つもないため、KV 転送は毎回ネットワークを経由します。RDMA のないリンクでは、これは分離しない場合よりも遅くなるのが普通です。少なくとも 1 組を同一ホストに配置するか、両方のロールで同じホスト上の GPU を選んでください。',
   'models.pd.degraded.gather':
     'トポロジー目標未達：メンバーが要求より離れて配置されています',
   'models.pd.degraded.scaleOut':
@@ -622,13 +633,13 @@ export default {
   'models.pd.degraded.pairingUnverified':
     'ペアリング要素が一方のロールだけで明示され、もう一方はエンジンの既定値に委ねられているため、両者が一致するか検証できませんでした —— 典型的には --max-model-len、--block-size、--kv-cache-layout、または片側が auto でもう片側が具体的な dtype の場合です。ペアリングが誤っているという意味ではなく、検証されていないという意味です。両方のロールに明記すると検証されます。',
   'models.pd.degraded.pairingTP':
-    'メンバーが実際に取得したカードから再計算した実効テンソル並列度が、この PD レシピの宣言する方向に反しています：NIXL は decode が prefill 以上、Ascend Mooncake は prefill が decode 以上である必要があります。カードを固定せず --tensor-parallel-size も書かないロールは配置されるまで検査できる数値を持たないため、受け入れ時には検出できません。両方のロールに --tensor-parallel-size を設定するか、レシピが許す枚数を割り当ててください。',
+    'メンバーが実際に取得したカードから再計算した実効テンソル並列度が、この PD レシピの宣言する方向に反しています：NIXL は Decode が Prefill 以上、Ascend Mooncake は Prefill が Decode 以上である必要があります。カードを固定せず --tensor-parallel-size も書かないロールは配置されるまで検査できる数値を持たないため、受け入れ時には検出できません。両方のロールに --tensor-parallel-size を設定するか、レシピが許す枚数を割り当ててください。',
   'models.pd.admission.infeasible':
     '利用可能な容量ではこのグループを収容できません（必要 {required}、利用可能 {available}）。レプリカ数を減らす、分割カード種別に変える、ノードを追加してください。',
   'models.pd.ratio.waiting':
     '配分 {configured}（現在 {current}、{role} を待機中）',
   'models.instance.draining.tips':
-    'スケールインされました。新しいリクエストは受け付けず、KV キャッシュを取得中の decode が完了するまで稼働を続けたあと削除されます。',
+    'スケールインされました。新しいリクエストは受け付けず、KV キャッシュを取得中の Decode が完了するまで稼働を続けたあと削除されます。',
   'models.pd.group.restarting.brief': '再起動中…',
   'models.pd.group.restarting.progress':
     'グループを再起動中：メンバーは意図的に停止され、再作成されています（現在 {ready}/{total} が準備完了）。レプリカ数が少なく見えるのはそのためで、障害が起きたからではありません。',
@@ -670,11 +681,11 @@ export default {
   'models.form.roles.resources.cpu': 'CPU（コア）',
   'models.form.roles.resources.memory': 'メモリ（GiB）',
   'models.form.roles.resources.tips':
-    'Router コンテナが要求するリソース。デフォルトは 2 コア 2 GiB。',
+    'ルーターコンテナが要求するリソースです。デフォルトは 2 コア、2 GiB です。',
   'models.form.roles.router.health': 'ヘルスチェック',
   'models.form.roles.router.peerslabel': '対向',
   'models.form.roles.router.image.tips':
-    '空欄の場合は選択した PD モードから導出されたイメージを使用します。そのイメージに router の実行ファイルが含まれていない場合にのみ指定してください。起動コマンドは引き続き自動導出されます。',
+    '空欄の場合は選択した PD モードから導出されたイメージを使用します。そのイメージにルーターの実行ファイルが含まれていない場合にのみ指定してください。起動コマンドは引き続き自動導出されるため、実行ファイルを含むイメージの指定だけで済みます。',
   'models.form.roles.cpuonly': 'CPU のみ',
 
   'models.form.gather.title': 'トポロジー親和性',
@@ -684,7 +695,7 @@ export default {
   'models.form.gather.target.host.tips': 'Prefill / Decode が同一 Worker',
   'models.form.gather.target.layer': '同一{layer}',
   'models.form.gather.target.tips':
-    'このグループのメンバー間に求める転送品質。同一アクセラレータドメイン内の転送はラック内より高速なため、ラックをまたぐドメインも条件を満たすとみなします。Router はアクセラレータを占有しないため、この制約の対象外です。',
+    'このグループのメンバー間に求める転送品質です。同一アクセラレータドメイン内の転送は同一ラック内より高速なため、ラックをまたぐドメインも条件を満たすとみなします。ルーターはアクセラレータを占有しないため、この制約の対象外です。',
   'models.form.gather.unmet': '収まらない場合',
   'models.form.gather.unmet.prefer': 'そのままデプロイ',
   'models.form.gather.unmet.prefer.tips':
@@ -697,7 +708,7 @@ export default {
     '最も余裕のある {domain} でも {needed} のうち {available} しか収まりません',
   'models.form.gather.noRoom': 'この階層には収まる場所がありません',
   'models.form.gather.unknown':
-    '{count} 台の worker で容量を読み取れないため、この階層は判定できません',
+    '{count} 台の Worker で容量を読み取れないため、この階層は判定できません',
   'models.form.gather.declare':
     'クラスターの「トポロジー」でラックを入力すると、より粗いレベルを選べます。',
   'models.form.gather.largeGroup':
@@ -718,14 +729,14 @@ export default {
   'models.form.gather.infeasible.warning':
     '現在の容量ではこのグループは配置できません。保存すると空きが出るまで待機します。選択肢：「できるだけ近く」に変更（ホストをまたぎ、KV 転送が遅くなる）· レプリカ数またはレプリカあたりの GPU 数を減らす',
   'models.pd.membership.dynamic':
-    '動的スケーリングに対応しています。GPUStack は API で Router のメンバーを更新するため、メンバー変更による Router の再構築は不要です。',
+    '動的スケーリングに対応しています。GPUStack は API でルーターのメンバーを更新するため、メンバー変更によるルーターの再構築は不要です。',
   'models.pd.membership.restart':
-    '動的なメンバー更新には対応していません。スケーリングやメンバーの復旧・再起動後、GPUStack が Router を再構築します。一時的にサービスが停止し、処理中のリクエストが失敗する場合があります。',
+    '動的なメンバー更新には対応していません。スケーリングやメンバーの復旧・再起動後、GPUStack がルーターを再構築します。一時的にサービスが停止し、処理中のリクエストが失敗する場合があります。',
   'models.pd.membership.manual':
-    'この Router はユーザーが管理します。スケーリングやメンバー変更後はアドレスと bootstrap 情報を更新し、必要に応じて Router を再起動してください。',
+    'このルーターはユーザーが管理します。スケーリングやメンバー変更後は、接続先アドレスとブートストラップのメタデータを更新し、必要に応じてルーターを再起動してください。',
   'models.pd.instance.delete.restart':
-    'メンバー再作成後、GPUStack が Router を再構築します。一時的にサービスが停止し、処理中のリクエストが失敗する場合があります。',
+    'メンバー再作成後、GPUStack がルーターを再構築します。一時的にサービスが停止し、処理中のリクエストが失敗する場合があります。',
   'models.pd.instance.delete.manual':
-    'GPUStack がメンバーを再作成します。Router のメンバーアドレスと bootstrap 情報を更新し、必要に応じて再起動してください。',
-  'models.pd.membership.updating': 'Router メンバーを読み込み中'
+    'GPUStack がメンバーを再作成します。ルーターのメンバーアドレスとブートストラップのメタデータを更新し、必要に応じてルーターを再起動してください。',
+  'models.pd.membership.updating': 'ルーターのメンバーを読み込み中'
 };

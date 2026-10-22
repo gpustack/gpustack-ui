@@ -69,6 +69,11 @@ export default {
   'models.form.selector': '选择器',
   'models.form.env': '环境变量',
   'models.form.configurations': '配置',
+  'models.form.tabs.basic': '基本信息',
+  'models.form.tabs.pd': 'PD 分离配置',
+  'models.form.tabs.performance': '性能',
+  'models.form.tabs.scheduling': '调度',
+  'models.form.tabs.advanced': '高级',
   'models.form.s3address': 'S3 地址',
   'models.form.partialoffload.tips':
     '启用 CPU 卸载后，GPU 不足时 GPUStack 会自动使用 CPU 内存。请确保推理后端已正确配置为混合 CPU+GPU 或纯 CPU 推理。',

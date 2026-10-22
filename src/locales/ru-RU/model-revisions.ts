@@ -1,31 +1,31 @@
 export default {
-  'models.revisions.rollBackAction': 'Roll back',
-  'models.revisions.backToHistory': 'Back to history',
-  'models.revisions.snapshot': 'Full configuration',
+  'models.revisions.rollBackAction': 'Откатить',
+  'models.revisions.backToHistory': 'Вернуться к истории',
+  'models.revisions.snapshot': 'Полная конфигурация',
   'models.revisions.initialSnapshot':
-    'This is the initial revision. Showing its full configuration.',
+    'Это начальная ревизия. Показана её полная конфигурация.',
   'models.revisions.missingPrevious':
-    'The preceding revision v{revision} is unavailable. Showing the selected revision’s full configuration.',
-  'models.revisions.reviewRollback': 'Roll back {name} to {revision}',
-  'models.revisions.list': 'Revisions ({count})',
-  'models.revisions.changes': '{count} configuration changes',
-  'models.revisions.title': 'Revision history',
-  'models.revisions.latest': 'Latest',
-  'models.revisions.rollback': 'Roll back to this revision',
-  'models.revisions.titleWithName': 'Revision history · {name}',
-  'models.revisions.restartOnRollback': 'Restart on rollback',
+    'Предыдущая ревизия v{revision} недоступна. Показана полная конфигурация выбранной ревизии.',
+  'models.revisions.reviewRollback': 'Откатить {name} до {revision}',
+  'models.revisions.list': 'Ревизии ({count})',
+  'models.revisions.changes': 'Изменений конфигурации: {count}',
+  'models.revisions.title': 'История ревизий',
+  'models.revisions.latest': 'Последняя',
+  'models.revisions.rollback': 'Откатить до этой ревизии',
+  'models.revisions.titleWithName': 'История ревизий · {name}',
+  'models.revisions.restartOnRollback': 'Перезапустить после отката',
   'models.revisions.restartWarning':
-    'Some changes require recreating instances to take effect. Restart the deployment after rollback to apply them.',
+    'Для применения некоторых изменений требуется пересоздать экземпляры. После отката перезапустите развёртывание.',
   'models.revisions.restartFailed':
-    'Configuration rolled back, but restart failed. Retry restarting the deployment.',
-  'models.revisions.retryRestart': 'Retry restart',
-  'models.revisions.current': 'Current configuration',
+    'Конфигурация восстановлена, но перезапуск не удался. Повторите перезапуск развёртывания.',
+  'models.revisions.retryRestart': 'Повторить перезапуск',
+  'models.revisions.current': 'Текущая конфигурация',
   'models.revisions.target': 'v{revision}',
-  'models.revisions.previousVersion': 'Previous revision {revision}',
-  'models.revisions.selectedVersion': 'Selected revision {revision}',
-  'models.revisions.rollbackToVersion': 'Roll back to v{revision}',
+  'models.revisions.previousVersion': 'Предыдущая ревизия {revision}',
+  'models.revisions.selectedVersion': 'Выбранная ревизия {revision}',
+  'models.revisions.rollbackToVersion': 'Откатить до v{revision}',
   'models.revisions.comparisonRange': 'v{previous} → v{revision}',
   'models.revisions.unchanged':
-    'This revision matches the current configuration.',
-  'models.revisions.failed': 'Unable to complete the revision history request.'
+    'Эта ревизия совпадает с текущей конфигурацией.',
+  'models.revisions.failed': 'Не удалось выполнить запрос истории ревизий.'
 };

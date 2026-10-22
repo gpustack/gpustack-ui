@@ -10,12 +10,12 @@ export default {
   'clusters.edit.cluster': 'Редактировать {cluster}',
   'clusters.provider.custom': 'Пользовательский',
   'clusters.button.register': 'Зарегистрировать кластер',
-  'clusters.button.addNodePool': 'Добавить пул воркеров',
+  'clusters.button.addNodePool': 'Добавить пул Worker',
   'clusters.button.add.credential': 'Добавить аккаунт {provider}',
   'clusters.credential.title': 'Учетные данные',
   'clusters.credential.signinToCreate':
     '{name}: <a href="{link}" target="_blank">войдите или зарегистрируйтесь</a>, чтобы создать.',
-  'clusters.credential.token': 'Токен доступа',
+  'clusters.credential.token': 'Token доступа',
   'clusters.workerpool.region': 'Регион',
   'clusters.workerpool.zone': 'Зона',
   'clusters.workerpool.instanceType': 'Тип инстанса',
@@ -25,7 +25,7 @@ export default {
   'clusters.workerpool.volumes': 'Тома',
   'clusters.workerpool.format': 'Формат',
   'clusters.workerpool.size': 'Размер (ГиБ)',
-  'clusters.workerpool.title': 'Пулы воркеров',
+  'clusters.workerpool.title': 'Пулы Worker',
   'clusters.workerpool.cloudOptions': 'Добавить облачные опции',
   'clusters.workerpool.volumes.add': 'Добавить том',
   'clusters.create.provider.self': 'Самостоятельное размещение',
@@ -39,100 +39,99 @@ export default {
   'clusters.create.noInstanceTypes': 'Нет доступных типов инстансов',
   'clusters.create.noRegions': 'Нет доступных регионов',
   'clusters.workerpool.batchSize.desc':
-    'Количество воркеров, создаваемых одновременно в пуле воркеров',
+    'Количество Worker, создаваемых одновременно в пуле Worker',
   'clusters.create.addworker.tips':
     'Пожалуйста, убедитесь, что выполнены <a href={link} target="_blank">предварительные условия</a> перед выполнением следующей команды.',
   'clusters.create.addCommand.tips':
-    'На воркере, который необходимо добавить, выполните следующую команду, чтобы присоединить его к кластеру.',
+    'На Worker, который необходимо добавить, выполните следующую команду, чтобы присоединить его к кластеру.',
   'clusters.create.addCommand.k8s.tips':
     'На Kubernetes-кластере, который необходимо зарегистрировать, выполните следующую команду, чтобы создать ресурсы Kubernetes и зарегистрировать этот кластер.',
   'clusters.create.addCommand.k8s.version.warning':
-    'Минимальная поддерживаемая версия Kubernetes — 1.23. Для использования функции GPU Service минимальная поддерживаемая версия Kubernetes — 1.27.',
+    'Минимальная поддерживаемая версия Kubernetes — 1.23. Для использования функции сервиса GPU требуется Kubernetes версии 1.27 или выше.',
   'cluster.create.checkEnv.tips':
     'Используйте следующую команду для проверки готовности окружения',
   'clusters.create.register.tips':
     'На Kubernetes кластере, который необходимо добавить, выполните следующую команду, чтобы присоединить его узлы к кластеру.',
   'cluster.provider.comingsoon': 'Скоро будет',
   'clusters.addworker.nvidiaNotes-01':
-    'Если существует несколько исходящих IP-адресов, укажите тот, который должен использовать воркер. Пожалуйста, перепроверьте с помощью <span class="bold-text">hostname -I | xargs -n1</span>.',
+    'Если существует несколько исходящих IP-адресов, укажите тот, который должен использовать Worker. Пожалуйста, перепроверьте с помощью <span class="bold-text">hostname -I | xargs -n1</span>.',
   'clusters.addworker.nvidiaNotes-02':
-    'Если директория с моделями уже существует на воркере, вы можете указать путь для её монтирования.',
-  'clusters.addworker.hygonNotes': `If <span class="bold-text">/opt/hyhal</span> or <span class="bold-text">/opt/dtk</span> does not exist, create symbolic links pointing to the corresponding Hygon installation paths, for example: 
-  <span class="desc-fill">ln -s /path/to/hyhal /opt/hyhal</span> 
-  <span class="desc-fill">ln -s /path/to/dtk /opt/dtk</span>.`,
+    'Если директория с моделями уже существует на Worker, вы можете указать путь для её монтирования.',
+  'clusters.addworker.hygonNotes':
+    'Если <span class="bold-text">/opt/hyhal</span> или <span class="bold-text">/opt/dtk</span> отсутствует, создайте символические ссылки на соответствующие каталоги установки Hygon, например:\n  <span class="desc-fill">ln -s /path/to/hyhal /opt/hyhal</span>\n  <span class="desc-fill">ln -s /path/to/dtk /opt/dtk</span>.',
   'clusters.addworker.corexNotes':
     'Если директория <span class="bold-text">/usr/local/corex</span> не существует, создайте символическую ссылку на путь установки Iluvatar SDK: <span class="bold-text">ln -s /path/to/corex /usr/local/corex</span>.',
-  'clusters.addworker.metaxNotes': `If the <span class="bold-text">/opt/mxdriver</span> or <span class="bold-text">/opt/maca</span> directory does not exist, create a symbolic link to the MetaX driver and SDK installation path:  
-  <span class="desc-fill">ln -s /path/to/mxdriver /opt/mxdriver</span>
-  <span class="desc-fill">ln -s /path/to/maca /opt/maca</span>.`,
+  'clusters.addworker.metaxNotes':
+    'Если каталог <span class="bold-text">/opt/mxdriver</span> или <span class="bold-text">/opt/maca</span> отсутствует, создайте символические ссылки на каталоги установки драйвера и SDK MetaX:\n<span class="desc-fill">ln -s /path/to/mxdriver /opt/mxdriver</span>\n<span class="desc-fill">ln -s /path/to/maca /opt/maca</span>.',
   'clusters.addworker.cambriconNotes':
     'Если директория <span class="bold-text">/usr/local/neuware</span> не существует, создайте символическую ссылку на путь установки Cambricon: <span class="bold-text">ln -s /path/to/neuware /usr/local/neuware</span>.',
   'clusters.addworker.hygonNotes-02':
     'Если не удается обнаружить устройства, попробуйте удалить <span class="bold-text">--env ROCM_SMI_LIB_PATH=/opt/hyhal/lib</span>.',
   'clusters.addworker.selectCluster': 'Выбрать кластер',
   'clusters.addworker.selectCluster.tips':
-    'Для <span class="bold-text">не-Docker</span> кластеров, пожалуйста, регистрируйте кластеры или управляйте пулами воркеров на странице Кластеры.',
+    'Для <span class="bold-text">не-Docker</span> кластеров, пожалуйста, регистрируйте кластеры или управляйте пулами Worker на странице Кластеры.',
   'clusters.addworker.selectGPU': 'Выбрать производителя GPU',
-  'clusters.addworker.selectGPU.multiTag': 'Multi-select',
+  'clusters.addworker.selectGPU.multiTag': 'Множественный выбор',
   'clusters.addworker.selectHardware': 'Выбрать тип оборудования',
   'clusters.addworker.selectHardware.subtitle':
-    'Выберите все типы оборудования, на которых этот кластер должен запускать worker’ы',
+    'Выберите все типы оборудования, на которых этот кластер должен запускать Worker',
   'clusters.addworker.cpuNode.tips':
-    'Разворачивает worker на всех узлах без GPU. Не выбирайте, если ваша control plane находится в том же кластере, что и узлы с GPU, и вы не хотите запускать worker на узлах с CPU.',
+    'Разворачивает Worker на каждом узле без GPU. Не выбирайте, если плоскость управления находится в том же кластере, что и узлы с GPU, и вы не хотите запускать Worker на узлах с CPU.',
   'clusters.addworker.noWorkerSelected.error':
-    'Выберите хотя бы один тип оборудования — если не выбраны ни CPU Node, ни производитель GPU, не будет развёрнут ни один worker.',
+    'Выберите хотя бы один тип оборудования — если не выбраны ни CPU Node, ни производитель GPU, не будет развёрнут ни один Worker.',
   'clusters.addworker.checkEnv': 'Проверить окружение',
   'clusters.addworker.checkEnv.cpuOnlyTips':
     'Используйте следующую команду, чтобы убедиться, что в кластере Kubernetes есть хотя бы один готовый узел. Вы регистрируете кластер только с CPU.',
   'clusters.addworker.specifyArgs': 'Указать аргументы',
   'clusters.addworker.dtkVersion': 'Версия DTK',
   'clusters.addworker.runCommand': 'Выполнить команду',
-  'clusters.addworker.specifyWorkerIP': 'Указать IP воркера',
-  'clusters.addworker.detectWorkerIP': 'Автоматически определить IP воркера',
-  'clusters.addworker.specifyWorkerAddress': 'Указать внешний адрес воркера',
-  'clusters.addworker.detectWorkerAddress': 'Указать внешний адрес воркера',
+  'clusters.addworker.specifyWorkerIP': 'Указать IP Worker',
+  'clusters.addworker.detectWorkerIP': 'Автоматически определить IP Worker',
+  'clusters.addworker.specifyWorkerAddress': 'Указать внешний адрес Worker',
+  'clusters.addworker.detectWorkerAddress': 'Указать внешний адрес Worker',
   'clusters.addworker.detectWorkerAddress.tips':
-    'По умолчанию используется IP воркера, если не указано иное.',
+    'По умолчанию используется IP Worker, если не указано иное.',
   'clusters.addworker.externalIP.tips':
-    'Если работаете в VPC или частной сети, укажите внешний адрес воркера, доступный для сервера.',
-  'clusters.addworker.enterWorkerIP': 'Введите IP воркера',
-  'clusters.addworker.enterWorkerIP.error': 'Пожалуйста, введите IP воркера.',
-  'clusters.addworker.enterWorkerAddress': 'Enter worker external address',
+    'При работе в VPC или частной сети укажите внешний адрес Worker, доступный для GPUStack Server.',
+  'clusters.addworker.enterWorkerIP': 'Введите IP Worker',
+  'clusters.addworker.enterWorkerIP.error': 'Пожалуйста, введите IP Worker.',
+  'clusters.addworker.enterWorkerAddress': 'Введите внешний адрес Worker',
   'clusters.addworker.enterWorkerAddress.error':
-    'Please enter the worker external address.',
+    'Введите внешний адрес Worker.',
   'clusters.addworker.rdma': 'RDMA / InfiniBand',
   'clusters.addworker.rdma.tips':
-    'Включите, если на узле есть сетевые карты InfiniBand/RoCE. Требуется для передачи KV-кеша между узлами.',
+    'Включите, если у Worker есть сетевые карты InfiniBand/RoCE. Требуется для передачи KV-кеша между узлами.',
   'clusters.addworker.extraVolume': 'Дополнительное монтирование тома',
-  'clusters.addworker.cacheVolume': 'Model Cache Volume Mount',
+  'clusters.addworker.cacheVolume': 'Монтирование тома кеша моделей',
   'clusters.addworker.cacheVolume.tips':
-    'If you want to customize the model cache directory, you can specify the path to mount it.',
+    'Чтобы изменить каталог кеша моделей, укажите путь для монтирования.',
   'clusters.addworker.configSummary': 'Сводка конфигурации',
   'clusters.addworker.gpuVendor': 'Производитель GPU',
-  'clusters.addworker.workerIP': 'IP воркера',
-  'clusters.addworker.workerExternalIP': 'Внешний адрес воркера',
+  'clusters.addworker.workerIP': 'IP Worker',
+  'clusters.addworker.workerExternalIP': 'Внешний адрес Worker',
   'clusters.addworker.notSpecified': 'Не указано',
   'clusters.addworker.autoDetect': 'Автоопределение',
   'clusters.addworker.extraVolume.holder':
-    'e.g. /data/models (path must start with /). Use commas to separate multiple paths.',
+    'Например: /data/models (путь должен начинаться с /). Несколько путей разделяйте запятыми.',
   'clusters.addworker.cacheVolume.holder':
-    'e.g. /data/cache (path must start with /)',
+    'Например: /data/cache (путь должен начинаться с /)',
   'clusters.addworker.vendorNotes.title': 'Примечания для устройств {vendor}',
-  'clusters.addworker.amdNotes-01': `Если директория <span class="bold-text">/opt/rocm</span> не существует, создайте символическую ссылку на путь установки ROCm: <span class="bold-text">ln -s /путь/к/rocm /opt/rocm</span>.`,
+  'clusters.addworker.amdNotes-01':
+    'Если каталог <span class="bold-text">/opt/rocm</span> не существует, создайте символическую ссылку на путь установки ROCm: <span class="bold-text">ln -s /path/to/rocm /opt/rocm</span>.',
   'clusters.addworker.amdNotes-02': `Если на хосте управляется несколько версий ROCm, необходимо смонтировать <span class="bold-text">/opt/rocm/lib</span>, чтобы избежать сбоев обнаружения устройств.`,
   'clusters.addworker.message.success_single':
-    '{count} новый воркер был добавлен в кластер.',
+    '{count} новый Worker был добавлен в кластер.',
   'clusters.addworker.message.success_multiple':
-    '{count} новых воркеров были добавлены в кластер.',
-  'clusters.create.serverUrl': 'GPUStack Server URL',
-  'clusters.create.workerConfig': 'Конфигурация воркера',
-  'clusters.chartValues.title': 'Chart Values (YAML)',
+    '{count} новых Worker были добавлены в кластер.',
+  'clusters.create.serverUrl': 'URL GPUStack Server',
+  'clusters.create.workerConfig': 'Конфигурация Worker',
+  'clusters.chartValues.title': 'Значения чарта (YAML)',
   'clusters.chartValues.tip':
-    'Values для Helm chart GPUStack: ключи те же, что и в самом chart, значения накладываются поверх выведенных сервером. Здесь доступно всё, что предоставляют chart и его subcharts и для чего нет поля выше — например отключение компонента, который уже есть в кластере. Как и в Helm, списки заменяются целиком, а не дополняются.',
+    'Значения для Helm-чарта GPUStack: ключи должны точно совпадать с ключами чарта, а значения накладываются поверх значений, определённых сервером. Здесь можно задать настройки чарта и его подчартов, для которых выше нет отдельного поля, например отключить компонент, уже предоставляемый кластером. Как и в Helm, списки заменяются целиком, а не дополняются.',
   'clusters.chartValues.reapply.tip':
-    'Сохранение кластера ничего не меняет в Kubernetes. После изменений заново выполните «Зарегистрировать кластер», получите manifest и примените его снова — Job внутри кластера сравнивает требуемую manifest конфигурацию с фактически установленной и обновляет release только при различии.',
-  'clusters.chartValues.doc.chart': 'Chart values',
-  'clusters.chartValues.doc.operator': 'Operator chart',
+    'Сохранение кластера ничего не меняет в Kubernetes. Повторно выполните «Зарегистрировать кластер», получите манифест и примените его снова. Job внутри кластера сравнивает требуемую манифестом конфигурацию с фактически установленной в релизе и выполняет обновление только при наличии различий.',
+  'clusters.chartValues.doc.chart': 'Значения чарта',
+  'clusters.chartValues.doc.operator': 'Чарт Operator',
   'clusters.chartValues.error.invalidYaml': 'Некорректный YAML: {reason}',
   'clusters.chartValues.error.notJson':
     'Значение в {path} не является строкой, числом, логическим значением, списком или отображением — YAML прочитал его как дату или двоичное значение, которое нельзя передать без изменений. Возьмите его в кавычки, чтобы оставить текстом.',
@@ -141,100 +140,105 @@ export default {
   'clusters.chartValues.error.notMapping':
     'Chart values должны быть YAML-отображением ключей, а не отдельным значением или списком.',
   'clusters.edit.registration.changed.tip':
-    'Вы изменили параметры, которые применяются при регистрации воркера. Чтобы изменения вступили в силу, повторно выполните команду регистрации в целевом кластере.',
-  'clusters.addworker.containerName': 'Имя контейнера воркера',
-  'clusters.addworker.containerName.tips':
-    'Укажите имя для контейнера воркера.',
+    'Вы изменили параметры, которые применяются при регистрации Worker. Чтобы изменения вступили в силу, повторно выполните команду регистрации в целевом кластере.',
+  'clusters.addworker.containerName': 'Имя контейнера Worker',
+  'clusters.addworker.containerName.tips': 'Укажите имя для контейнера Worker.',
   'clusters.addworker.dataVolume': 'Том данных GPUStack',
   'clusters.addworker.dataVolume.tips':
     'Укажите путь для хранения данных GPUStack.',
   'clusters.table.ip.internal': 'Внутренний',
   'clusters.table.ip.external': 'Внешний',
   'clusters.form.serverUrl.tips':
-    'Если рабочий узел не может напрямую получить доступ к GPUStack Server, укажите внешний URL службы GPUStack Server. Например: {example}',
+    'Если Worker не может напрямую получить доступ к GPUStack Server, укажите внешний URL службы GPUStack Server. Например: {example}',
   'clusters.form.setDefault': 'Установить по умолчанию',
   'clusters.form.setDefault.tips':
     'Использовать по умолчанию для развертывания.',
-  'clusters.addworker.noClusters': 'No available Docker clusters found',
-  'clusters.create.steps.complete.tips': 'Cluster created successfully!',
-  'clusters.create.steps.complete': 'Complete',
-  'clusters.create.steps.configure': 'Configure',
-  'clusters.create.dockerTips1': 'Next, add worker to this cluster.',
+  'clusters.addworker.noClusters': 'Доступные кластеры Docker не найдены',
+  'clusters.create.steps.complete.tips': 'Кластер успешно создан!',
+  'clusters.create.steps.complete': 'Готово',
+  'clusters.create.steps.configure': 'Настроить',
+  'clusters.create.dockerTips1': 'Теперь добавьте Worker в этот кластер.',
   'clusters.create.dockerTips2':
-    'You can also skip this step and add them later from the cluster list.',
-  'clusters.create.k8sTips1': 'Next, register existing Kubernetes cluster.',
+    'Этот шаг можно пропустить и добавить Worker позже из списка кластеров.',
+  'clusters.create.k8sTips1':
+    'Теперь зарегистрируйте существующий кластер Kubernetes.',
   'clusters.create.k8sTips2':
-    'You can also skip this step and register it later from the cluster list.',
+    'Этот шаг можно пропустить и зарегистрировать кластер позже из списка кластеров.',
   'clusters.addworker.theadNotes':
-    'If the <span class="bold-text>/usr/local/PPU_SDK</span> directory does not exist, please create a symbolic link pointing to the T-Head PPU SDK installed path: <span class="bold-text>ln -s /path/to/PPU_SDK /usr/local/PPU_SDK</span>',
+    'Если каталог <span class="bold-text">/usr/local/PPU_SDK</span> отсутствует, создайте символическую ссылку на каталог установки T-Head PPU SDK: <span class="bold-text">ln -s /path/to/PPU_SDK /usr/local/PPU_SDK</span>.',
   'clusters.addworker.theadNotes-02':
-    'T-Head PPU uses the Container Device Interface (CDI) for device injection and requires the <span class="bold-text">/var/run/cdi</span> directory to be available for CDI generation.',
+    'T-Head PPU использует Container Device Interface (CDI) для подключения устройств; для генерации CDI должен быть доступен каталог <span class="bold-text">/var/run/cdi</span>.',
   'clusters.addworker.nvidiaNotes':
-    'The built-in inference backends in GPUStack require <span class="bold-text">CUDA 12.8+</span>. Please ensure your NVIDIA driver version is <span class="bold-text">570</span> or newer.',
-  'clusters.volume.title': 'Volume Mounts',
-  'clusters.volume.name': 'Volume Name',
-  'clusters.volume.mountPath': 'Container Path',
-  'clusters.volume.mountPath.format': 'Path must start with /',
-  'clusters.volume.readOnly': 'Read Only',
-  'clusters.volume.sourceType': 'Source Type',
-  'clusters.volume.sourceType.hostPath': 'Host Path',
-  'clusters.volume.sourceType.pvc': 'Persistent Volume Claim (PVC)',
+    'Встроенные бэкенды инференса GPUStack требуют <span class="bold-text">CUDA 12.8+</span>. Убедитесь, что версия драйвера NVIDIA — <span class="bold-text">570</span> или новее.',
+  'clusters.volume.title': 'Монтирование томов',
+  'clusters.volume.name': 'Имя тома',
+  'clusters.volume.mountPath': 'Путь в контейнере',
+  'clusters.volume.mountPath.format': 'Путь должен начинаться с /',
+  'clusters.volume.readOnly': 'Только чтение',
+  'clusters.volume.sourceType': 'Тип источника',
+  'clusters.volume.sourceType.hostPath': 'Путь на хосте',
+  'clusters.volume.sourceType.pvc': 'Запрос постоянного тома (PVC)',
   'clusters.volume.sourceType.configMap': 'ConfigMap',
-  'clusters.volume.hostPath.path': 'Host Path',
-  'clusters.volume.hostPath.type': 'Path Type',
-  'clusters.volume.hostPath.type.directory': 'Directory',
+  'clusters.volume.hostPath.path': 'Путь на хосте',
+  'clusters.volume.hostPath.type': 'Тип пути',
+  'clusters.volume.hostPath.type.directory': 'Каталог',
   'clusters.volume.hostPath.type.directoryOrCreate':
-    'Directory (create if not exists)',
-  'clusters.volume.hostPath.type.file': 'File',
-  'clusters.volume.hostPath.type.fileOrCreate': 'File (create if not exists)',
-  'clusters.volume.hostPath.type.socket': 'Socket',
-  'clusters.volume.hostPath.type.charDevice': 'Character Device',
-  'clusters.volume.hostPath.type.blockDevice': 'Block Device',
-  'clusters.volume.pvc.claimName': 'PVC Name',
-  'clusters.volume.pvc.readOnly': 'Read Only',
-  'clusters.volume.configMap.name': 'ConfigMap Name',
-  'clusters.volume.configMap.optional': 'Optional',
-  'clusters.volume.add': 'Add Volume Mount',
-  'clusters.systemDefaultContainerRegistry.title': 'Default Container Registry',
+    'Каталог (создать, если отсутствует)',
+  'clusters.volume.hostPath.type.file': 'Файл',
+  'clusters.volume.hostPath.type.fileOrCreate':
+    'Файл (создать, если отсутствует)',
+  'clusters.volume.hostPath.type.socket': 'Сокет',
+  'clusters.volume.hostPath.type.charDevice': 'Символьное устройство',
+  'clusters.volume.hostPath.type.blockDevice': 'Блочное устройство',
+  'clusters.volume.pvc.claimName': 'Имя PVC',
+  'clusters.volume.pvc.readOnly': 'Только чтение',
+  'clusters.volume.configMap.name': 'Имя ConfigMap',
+  'clusters.volume.configMap.optional': 'Необязательно',
+  'clusters.volume.add': 'Добавить монтирование тома',
+  'clusters.systemDefaultContainerRegistry.title':
+    'Реестр контейнеров по умолчанию',
   'clusters.systemDefaultContainerRegistry.tip':
-    'Default registry used to resolve GPUStack images for this cluster. Falls back to the server default when unset.',
+    'Реестр по умолчанию для разрешения образов GPUStack в этом кластере. Если не задан, используется значение сервера по умолчанию.',
   'clusters.systemDefaultContainerRegistry.dockerHubUnreachable':
     'Экземпляры {provider} не имеют доступа к Docker Hub. Используйте зеркало или приватный реестр.',
-  'clusters.k8sOptions.title': 'Kubernetes Deployment Options',
-  'clusters.imageCredentials.title': 'Image Credentials',
-  'clusters.imageCredentials.add': 'Add Credential',
-  'clusters.imageCredentials.registry': 'Registry',
-  'clusters.imageCredentials.username': 'Username',
-  'clusters.imageCredentials.password': 'Password',
-  'clusters.nodeSelector.title': 'Node Selector',
+  'clusters.k8sOptions.title': 'Параметры развёртывания Kubernetes',
+  'clusters.imageCredentials.title': 'Учётные данные реестра образов',
+  'clusters.imageCredentials.add': 'Добавить учётные данные',
+  'clusters.imageCredentials.registry': 'Реестр',
+  'clusters.imageCredentials.username': 'Имя пользователя',
+  'clusters.imageCredentials.password': 'Пароль',
+  'clusters.nodeSelector.title': 'Селектор узлов',
   'clusters.nodeSelector.tip':
-    'Pod nodeSelector applied to every worker DaemonSet — only nodes whose labels match are eligible to run the worker.',
-  'clusters.operatorImage.title': 'Operator Image',
+    'Поле nodeSelector для Pod всех DaemonSet Worker. Запускать Worker могут только узлы с подходящими метками.',
+  'clusters.operatorImage.title': 'Образ Operator',
   'clusters.operatorImage.tip':
-    'Override for the GPUStack Operator container image. Leave empty to use the server default.',
-  'clusters.namespace.title': 'Namespace',
+    'Переопределяет образ контейнера GPUStack Operator. Оставьте пустым, чтобы использовать значение сервера по умолчанию.',
+  'clusters.namespace.title': 'Пространство имён',
   'clusters.namespace.tip':
-    'Kubernetes namespace the cluster’s manifests render into. Leave empty to use gpustack-system.',
-  'clusters.clusterType.title': 'Cluster Type',
-  'clusters.modelService.title': 'Model Service',
+    'Пространство имён Kubernetes, для которого формируются манифесты кластера. Оставьте пустым, чтобы использовать gpustack-system.',
+  'clusters.clusterType.title': 'Тип кластера',
+  'clusters.modelService.title': 'Сервис моделей',
   'clusters.modelService.tip':
-    'For LLM inference and API serving — e.g. exposing model APIs and token-based services.',
-  'clusters.gpuInstances.title': 'GPU Service',
+    'Для инференса LLM и предоставления API, например API моделей и сервисов на основе Token.',
+  'clusters.gpuInstances.title': 'Сервис GPU',
   'clusters.gpuInstances.tip':
-    'For on-demand GPU compute — e.g. interactive development, training jobs, or custom environments.',
-  'clusters.gpuInstances.staticAddress': 'GPU Service Static Access Address',
+    'Для вычислений на GPU по запросу, например интерактивной разработки, задач обучения или пользовательских окружений.',
+  'clusters.gpuInstances.staticAddress':
+    'Статический адрес доступа к сервису GPU',
   'clusters.gpuInstances.staticAddress.tip':
-    'Static address the operator uses to access GPU instances in this cluster (e.g. a LoadBalancer VIP). Operator default: empty — the access address is generated from host IPs. Changing it does not re-address GPU instances that are already deployed; it applies to newly created ones.',
-  'clusters.gpuInstances.derivedFromNode': 'Derive Instance Types from Nodes',
+    'Статический адрес, по которому Operator обращается к экземплярам GPU в этом кластере (например, VIP LoadBalancer). По умолчанию поле пустое: адрес доступа формируется из IP хостов. Изменение применяется только к новым экземплярам и не меняет адреса уже развёрнутых экземпляров GPU.',
+  'clusters.gpuInstances.derivedFromNode':
+    'Создавать типы экземпляров на основе узлов',
   'clusters.gpuInstances.derivedFromNode.tip':
-    'Whether the operator auto-derives instance types (and their backing queues) from node hardware. Enabled: the operator authors a derived instance type for each node flavor. Disabled: it only aligns the resource flavor, and you define every instance type yourself. Operator default: Enabled.',
-  'clusters.gpuInstances.mixedOnNode': 'Allow Mixed Instance Types on a Node',
+    'Определяет, создаёт ли Operator типы экземпляров и соответствующие очереди на основе оборудования узлов. Если включено, тип экземпляра создаётся для каждой конфигурации узла. Если отключено, Operator только согласует конфигурацию ресурсов, а все типы экземпляров нужно определить вручную. По умолчанию включено.',
+  'clusters.gpuInstances.mixedOnNode':
+    'Разрешить разные типы экземпляров на одном узле',
   'clusters.gpuInstances.mixedOnNode.tip':
-    'Whether one node may serve both an accelerated and a CPU-only instance type. Enabled: a node is summarized into every type it can serve. Disabled: a node with accelerators yields only an accelerated type, and a CPU-only node only a general one. Operator default: Enabled.',
-  'clusters.gpuInstances.setting.enabled': 'Enabled',
-  'clusters.gpuInstances.setting.disabled': 'Disabled',
+    'Определяет, может ли один узел предоставлять типы экземпляров с ускорителем и только с CPU. Если включено, узел учитывается во всех подходящих типах. Если отключено, узел с ускорителями предоставляет только тип с ускорителем, а узел только с CPU — только универсальный тип. По умолчанию включено.',
+  'clusters.gpuInstances.setting.enabled': 'Включено',
+  'clusters.gpuInstances.setting.disabled': 'Отключено',
   'clusters.gpuInstances.setting.unmanaged':
-    'Unmanaged (the cluster keeps its own value)',
+    'Не управляется (сохраняется собственное значение кластера)',
 
   // Topology: where this cluster's workers sit.
   'clusters.topology.title': 'Настройка топологии',
@@ -244,9 +248,9 @@ export default {
   'clusters.topology.save.failed': 'Не удалось сохранить.',
   'clusters.topology.preview.failed':
     'Не удалось показать предпросмотр этого сопоставления.',
-  'clusters.topology.preview.noWorkers': 'В этом кластере пока нет worker.',
+  'clusters.topology.preview.noWorkers': 'В этом кластере пока нет Worker.',
   'clusters.topology.preview.capacity':
-    '{workers} worker · {gpus} GPU · свободно {free}',
+    '{workers} Worker · {gpus} GPU · свободно {free}',
   'clusters.topology.cluster': 'Кластер',
   'clusters.topology.discard.ok': 'Отменить',
   'clusters.topology.field.region': 'Регион',
@@ -266,8 +270,8 @@ export default {
     'Заполняется вручную или записывается инструментом вроде Topograph',
   'clusters.topology.field.acceleratorDomain.tips':
     'Заполните вручную, если устройство не сообщает',
-  'clusters.topology.overview.workers': '{count} worker',
-  'clusters.topology.overview.domains': '{field}: {count}',
+  'clusters.topology.overview.workers': 'Worker: {count}',
+  'clusters.topology.overview.domains': '{count} {field}',
   'clusters.topology.overview.unfilled': '{count} без значения «{field}»',
   'clusters.topology.previewing': '● Предпросмотр',
   'clusters.topology.previewing.long':
@@ -281,7 +285,7 @@ export default {
   'clusters.topology.columns.mapping': 'Сопоставление ключей меток…',
   'clusters.topology.columns.deleteCustom': 'Удалить поле «{name}»',
   'clusters.topology.columns.deleteCustom.confirm':
-    'Удалить поле «{name}»? Заполненные значения останутся в метках worker.',
+    'Удалить поле «{name}»? Заполненные значения останутся в метках Worker.',
   'clusters.topology.columns.deleted': 'Поле «{name}» удалено',
   'clusters.topology.selected': 'Выбрано: {count}',
   'clusters.topology.clearSelection': 'Снять выбор',
@@ -298,8 +302,8 @@ export default {
   'clusters.topology.batch.partial': 'Запись не удалась в кластерах: {failed}.',
   'clusters.topology.toast.setOne': '{field} для {host}: {value}',
   'clusters.topology.toast.clearedOne': '{field} для {host} очищено',
-  'clusters.topology.toast.set': '{field} для {count} worker: {value}',
-  'clusters.topology.toast.cleared': '{field} для {count} worker очищено',
+  'clusters.topology.toast.set': '{field} для {count} Worker: {value}',
+  'clusters.topology.toast.cleared': '{field} для {count} Worker очищено',
   'clusters.topology.toast.firstWrite':
     ' (влияет только на последующее планирование)',
   'clusters.topology.undo': 'Отменить',
@@ -319,7 +323,7 @@ export default {
   'clusters.topology.override.confirm':
     'Это значение сообщено устройством; ручной ввод переопределит его.',
   'clusters.topology.override.ok': 'Переопределить',
-  'clusters.topology.value.count': '{count} worker',
+  'clusters.topology.value.count': 'Worker: {count}',
   'clusters.topology.value.create': 'Создать «{value}»',
   'clusters.topology.value.clear': 'Очистить',
   'clusters.topology.column.menu': 'Меню столбца «{field}»',
@@ -350,7 +354,7 @@ export default {
   'clusters.topology.onboarding.dismiss': 'Понятно',
   'clusters.topology.mapping.title': 'Сопоставление ключей меток',
   'clusters.topology.mapping.intro':
-    'Из какой метки worker каждое поле читает значение',
+    'Из какой метки Worker каждое поле читает значение',
   'clusters.topology.mapping.showUnused':
     'Показать неиспользуемые поля ({count})',
   'clusters.topology.mapping.hideUnused': 'Скрыть неиспользуемые поля',
@@ -371,12 +375,12 @@ export default {
   'clusters.topology.layer.inUse.tips':
     'Эти модели ссылаются на уровень в топологической привязке и потеряют её: {models}. Сначала измените эти модели.',
   'clusters.topology.layer.name': 'Имя',
-  'clusters.topology.advanced.hostKeys': 'Встроено, по имени worker',
+  'clusters.topology.advanced.hostKeys': 'Встроено, по имени Worker',
   'clusters.topology.advanced.locked':
     'Собственный ключ GPUStack: сюда записываются значения из таблицы. Нельзя удалить или переместить.',
   'clusters.topology.advanced.suggestions': 'Обнаруженные ключи меток',
   'clusters.topology.advanced.suggestion':
-    '{workers} worker · {values} значений · похоже на {field}',
+    '{workers} Worker · {values} значений · похоже на {field}',
   'clusters.topology.advanced.discard':
     'Отменить изменения сопоставления полей?',
   'clusters.topology.advanced.discard.tips':
@@ -387,7 +391,7 @@ export default {
   'clusters.topology.keys.invalid':
     'Некорректный ключ метки Kubernetes (префикс ≤ 253, имя ≤ 63, буквы, цифры, - _ .)',
   'clusters.topology.keys.usage':
-    'Этот ключ есть у {count} worker ({values} значений)',
+    'Этот ключ есть у {count} Worker ({values} значений)',
   'clusters.topology.keys.exists': 'Этот ключ уже добавлен',
   'clusters.topology.custom.title': 'Добавить уровень',
   'clusters.topology.custom.name.required': 'Введите имя',
@@ -406,18 +410,3 @@ export default {
   'clusters.topology.custom.referenced':
     'Нельзя удалить «{name}»: на него ссылаются модели'
 };
-// ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'clusters.addworker.hygonNotes': `If <span class="bold-text">/opt/hyhal</span> or <span class="bold-text">/opt/dtk</span> does not exist, create symbolic links pointing to the corresponding Hygon installation paths, for example: <span class="desc-fill">ln -s /path/to/hyhal /opt/hyhal</span> <span class="desc-fill">ln -s /path/to/dtk /opt/dtk</span>.`,
-// 2. 'clusters.addworker.noClusters': 'No available Docker clusters found',
-// 3. 'clusters.create.steps.complete.tips': 'Cluster created successfully!',
-// 4. 'clusters.create.steps.complete': 'Complete',
-// 5. 'clusters.create.dockerTips1': 'Next, add worker to this cluster.',
-// 6. 'clusters.create.dockerTips2': 'You can also skip this step and add them later from the cluster list.',
-// 7. 'clusters.create.k8sTips1': 'Next, register existing Kubernetes cluster.',
-// 8. 'clusters.create.k8sTips2': 'You can also skip this step and register it later from the cluster list.',
-// 9. 'clusters.create.steps.configure': 'Configure',
-// 10. 'clusters.addworker.theadNotes': 'If the <span class="bold-text>/usr/local/PPU_SDK</span> directory does not exist, please create a symbolic link pointing to the T-Head PPU SDK installed path: <span class="bold-text>ln -s /path/to/PPU_SDK /usr/local/PPU_SDK</span>',
-// 11. 'clusters.addworker.theadNotes-02': 'T-Head PPU uses the Container Device Interface (CDI) for device injection and requires the <span class="bold-text">/var/run/cdi</span> directory to be available for CDI generation.'
-// 12. 'clusters.addworker.metaxNotes': `If the <span class="bold-text">/opt/mxdriver</span> or <span class="bold-text">/opt/maca</span> directory does not exist, create a symbolic link to the MetaX driver and SDK installation path: <span class="desc-fill">ln -s /path/to/mxdriver /opt/mxdriver</span><span class="desc-fill">ln -s /path/to/maca /opt/maca</span>.`,
-// 13. 'clusters.addworker.nvidiaNotes': 'The built-in inference backends in GPUStack v2.1 require <span class="bold-text">CUDA 12.6+</span>. Please ensure your NVIDIA driver version is <span class="bold-text">560</span> or newer.'
-// ================================================================

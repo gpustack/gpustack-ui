@@ -133,11 +133,11 @@ export default {
   'resources.worker.setLabels.count': '{count} 台の Worker を選択中',
   'resources.worker.setLabels.hint':
     '選択したすべての Worker にラベルを追加し、同じキーの値を更新します。他のラベルは保持されます。ラベルを削除するには、Worker を個別に編集してください。',
-  'resources.table.location': 'トポロジー上の位置',
+  'resources.table.location': 'トポロジー階層',
   'resources.worker.location.moreLayers': '+{count} 階層',
   'resources.worker.location.totalLayers': '全 {count} 階層',
   'resources.worker.location.unfilled': '未入力',
   'resources.worker.location.unavailable':
     'トポロジー情報は一時的に利用できません',
-  'resources.worker.location.open': '{worker} のトポロジー上の位置を表示'
+  'resources.worker.location.open': '{worker} のトポロジー階層を表示'
 };

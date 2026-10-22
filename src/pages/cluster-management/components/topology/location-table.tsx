@@ -18,12 +18,28 @@ const useStyles = createStyles(({ css }) => ({
     .ant-table-cell {
       padding-block: 6px !important;
     }
+    .ant-table .ant-table-cell-fix {
+      background-color: var(--ant-color-bg-elevated);
+    }
+    .ant-table .ant-table-thead > tr > .ant-table-cell-fix {
+      background:
+        linear-gradient(
+          var(--ant-color-fill-tertiary),
+          var(--ant-color-fill-tertiary)
+        ),
+        var(--ant-color-bg-elevated);
+    }
+    .ant-table
+      .ant-table-row-selected
+      > .ant-table-cell.ant-table-cell-fix:not(.ant-table-cell-row-hover) {
+      background-color: var(--ant-color-bg-elevated);
+    }
   `,
   /* A tint that fades rather than a border: the row was pointed at from the
      tree or the Workers list, and the eye needs a moment to find it, not a
      permanent mark. */
   highlight: css`
-    > td {
+    > .ant-table-cell {
       animation: topology-row-highlight 3s ease-out forwards;
     }
     @keyframes topology-row-highlight {
@@ -32,7 +48,7 @@ const useStyles = createStyles(({ css }) => ({
         background-color: var(--ant-color-primary-bg);
       }
       100% {
-        background-color: transparent;
+        background-color: var(--ant-color-bg-elevated);
       }
     }
   `

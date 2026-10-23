@@ -114,25 +114,33 @@ A page module lives under `src/pages/{module}` with this sub-structure: `compone
 - **Create/edit modal**: `add-{feature}-modal.tsx` (keep the `-modal` suffix even when built with `FormDrawer`).
 - **Table columns hook**: `use-{feature}-columns.tsx`.
 - **Open/close & request hooks**: `use-{verb}-{noun}.ts` (e.g. `use-create-user.ts`, `use-query-user-list.ts`).
-- **Complex table cell**: extract into `{feature}-cell.tsx`.
+- **Complex table cell**: when extracted, name it `{feature}-cell.tsx`.
 
 # Module structure & file size
 
-## Split by reason-to-change, not by line count
+## Split for clear responsibilities and separation of concerns
 
-Line count is a smoke alarm, not the criterion. A 300-line file with two unrelated concerns should be split; a 700-line controlled form whose fields all interlock should not. Decide with these three questions, in order:
+The purpose of splitting is to make responsibilities explicit and separate concerns. In this section, **splitting a component means extracting it into a separate file**. Defining a child component within the same file is outside the scope of this file-organization rule.
 
-**1. How many independent reasons-to-change does the file hold?** Two or more that don't share state → split, extracting sub-components into `components/`, state / request / derivation logic into `hooks/`, pure transforms into `utils/`, and constants / local view-model types into `config/`. One concern that is simply large → leave it. A list tab that fetches, filters, defines columns and lays out sections holds four; a cascading form whose every field feeds the next holds one, however long it gets.
+Use these questions to review a proposed boundary. Line count, naming, and interface size are **signals to inspect**, not automatic reasons to require or reject a split:
 
-Watch for the near-miss: a column definition and the cell it renders look like two things but are **one** reason-to-change — adding a column means adding its cell, and changing a cell means finding its column. Splitting them yields a file that only forwards `record` to the other. Same trap for a form and its field renderers, or a request hook and its response mapper.
+**1. What responsibility would each file own?** Identify the concerns and the reasons each may change. Extract a component when it gives a concern a clear owner and separates it from the parent's responsibilities. Fetching, filtering, column definitions, and layout may warrant separate owners, but a small list can keep them together coherently. Shared state does not prevent a split: related sections of a form can share state owned by their parent while each owns a distinct concern.
 
-**2. Can the extracted piece take a domain name?** `use-keys-columns`, `instance-status-cell`, `use-query-benchmarks` → the seam is real. If the only name you can find is `-utils`, `-helpers`, `-part2`, or the parent's name with a suffix, you are cutting mid-concern — don't.
+Closely related code often benefits from staying together, such as a simple column and its cell renderer, a form and its field renderers, or a request and its response mapping. A cell or form section with its own substantial interaction, state, or domain responsibility may warrant a separate component. Check that extraction clarifies ownership rather than merely moving JSX or forwarding parameters to another file.
 
-**3. How many props would the split need?** More than 2–3, or having to pass a `form` instance / a `setState` down, means the seam is in the wrong place. That prop list is the coupling you failed to cut. Count a hook's arguments the same way. Shared setup (`useStyles`, `intl`, a context hook) does **not** count as a prop — split it by consumer and let each side call it, rather than threading one instance across the seam.
+**2. Can the extracted responsibility be named clearly?** Names such as `instance-status-cell`, `use-keys-columns`, and `use-query-benchmarks` help explain ownership. Difficulty finding a meaningful name is a reason to reconsider the boundary. A domain name alone does not prove a good split, and a utility filename alone does not invalidate one; assess the responsibility the file actually owns.
 
-Line count only decides **when to run this checklist**, not its outcome: past **~600 lines**, stop and walk the three questions. Never split just to get under the number — every extra file costs real navigation time, so only pay it where the seam is genuine.
+**3. Does the interface express that responsibility clearly?** Several props or hook arguments, a whole `form` instance, or a `setState` callback are signals to inspect coupling and state ownership. There is no fixed prop limit: `value`, `options`, `disabled`, and `onChange` can form a coherent interface, while one large object can hide unrelated dependencies. Prefer focused inputs and callbacks that describe the component's actions. Let each consumer obtain shared setup such as `useStyles`, `intl`, and context hooks locally when appropriate.
 
-A naming convention can outrank all of the above: `use-{feature}-columns` is extracted even from a 300-line tab, because table columns change for their own reasons (design tweaks) independently of the tab's business logic. Ref `src/pages/api-keys/hooks/use-keys-columns.tsx`.
+At **~600 lines**, review the responsibilities and boundaries using these questions. This is a review threshold, not a file-size limit. A shorter file may need separation, and a longer file may remain cohesive. Consider maintenance, testing, reuse, and cross-file navigation costs when evaluating whether the proposed split achieves clearer responsibilities.
+
+Keep the existing `use-{feature}-columns` convention for table column definitions. Simple cell renderers can stay with their columns; complex cells can be extracted using the same responsibility checks. Ref `src/pages/api-keys/hooks/use-keys-columns.tsx`.
+
+## Place extracted components near their owner
+
+**By default, put an extracted component in the same directory as the original component**, using a meaningful business name. Do not create a directory solely to hold one extracted component.
+
+Follow an established directory convention when applicable. Components shared across tabs or modules belong in the appropriate shared directory; a group that develops into a complete submodule may get its own directory. Hooks, pure transforms, constants, and types continue to follow their existing naming and directory conventions. The tab ownership rules below still apply.
 
 ## One directory per tab
 

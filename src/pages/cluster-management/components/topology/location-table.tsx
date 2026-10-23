@@ -1,10 +1,11 @@
+import { status, WorkerStatusMapValue } from '@/pages/resources/config';
 import { StatusDot } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Table, Tooltip } from 'antd';
 import { createStyles } from 'antd-style';
 import { useState } from 'react';
 import { TopologyWorker } from '../../config/types';
-import { LocationField, isFilled, valueOptions } from './location';
+import { isFilled, LocationField, valueOptions } from './location';
 import LocationCell from './location-cell';
 
 /** Past this many rows the table renders only what is on screen. */
@@ -164,17 +165,11 @@ const LocationTable: React.FC<LocationTableProps> = ({
       fixed: 'left',
       width: HOST_WIDTH,
       render: (name: string, worker: TopologyWorker) => (
-        <Tooltip
-          title={
-            worker.state === 'ready'
-              ? intl.formatMessage({ id: 'clusters.topology.host.online' })
-              : intl.formatMessage({ id: 'clusters.topology.host.offline' })
-          }
-        >
+        <Tooltip title={WorkerStatusMapValue[worker.state] || worker.state}>
           <span>
             <StatusDot
               statusValue={{
-                status: worker.state === 'ready' ? 'success' : 'inactive',
+                status: status[worker.state] || 'inactive',
                 text: name
               }}
             />

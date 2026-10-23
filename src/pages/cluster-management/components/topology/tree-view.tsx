@@ -1,3 +1,4 @@
+import { status, WorkerStatusMapValue } from '@/pages/resources/config';
 import {
   ExpandAltOutlined,
   InfoCircleOutlined,
@@ -18,7 +19,7 @@ import {
   TopologyView,
   TopologyWorker
 } from '../../config/types';
-import { LocationField, isDiscovered } from './location';
+import { isDiscovered, LocationField } from './location';
 
 /** Hosts shown per domain before "N more". Forty expanded is not a view. */
 const HOSTS_PREVIEW = 3;
@@ -373,10 +374,15 @@ const TreeView: React.FC<TreeViewProps> = ({
         className="row host"
         onClick={() => onHostClick(worker)}
       >
-        <AutoTooltip ghost title={worker.name} minWidth={20} showTitle>
+        <AutoTooltip
+          ghost
+          title={`${worker.name} · ${WorkerStatusMapValue[worker.state] || worker.state}`}
+          minWidth={20}
+          showTitle
+        >
           <StatusDot
             statusValue={{
-              status: worker.state === 'ready' ? 'success' : 'inactive',
+              status: status[worker.state] || 'inactive',
               text: worker.name
             }}
           />

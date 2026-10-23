@@ -3,6 +3,7 @@ import _ from 'lodash';
 import assert from 'node:assert/strict';
 import { after, mock, test } from 'node:test';
 import { act, createElement, isValidElement, useState } from 'react';
+import type { WorkerLocation } from '../../../config/types';
 
 mock.module('@umijs/max', {
   namedExports: {
@@ -431,7 +432,13 @@ const mountCell = async (labelKeys: string[]) => {
   const root = createRoot(container);
   const renderValue = async (
     current?: string,
-    next: { labelKeys?: string[]; editing?: boolean } = {}
+    next: {
+      labelKeys?: string[];
+      editing?: boolean;
+      disabled?: boolean;
+      builtin?: boolean;
+      location?: Partial<WorkerLocation>;
+    } = {}
   ) => {
     await act(async () => {
       root.render(
@@ -443,16 +450,24 @@ const mountCell = async (labelKeys: string[]) => {
             gpus: 0,
             free_gpus: 0,
             location: current
-              ? { rack: { value: current, source: 'user', key: 'labels/rack' } }
+              ? {
+                  rack: {
+                    value: current,
+                    source: 'user',
+                    key: 'labels/rack',
+                    ...next.location
+                  }
+                }
               : {}
           },
           field: {
             id: 'rack',
             name: 'rack',
             label: 'Rack',
-            builtin: false,
+            builtin: next.builtin ?? false,
             active: false,
             primaryKey: null,
+            disabled: next.disabled,
             labelKeys: next.labelKeys ?? labelKeys
           },
           options: [],
@@ -575,4 +590,89 @@ test('a cell with missing worker labels has no hover tooltip and still starts in
     'Rack: rack-a (worker-a)'
   );
   assert.equal(await cell.tooltip(), 'Worker label: labels/rack');
+});
+
+for (const current of [undefined, 'rack-a']) {
+  test(`a disabled layer keeps ${current ? 'its existing value' : 'its empty state'} read-only`, async (t) => {
+    const cell = await mountCell(['labels/rack']);
+    t.after(cell.unmount);
+    await cell.renderValue(current, {
+      builtin: true,
+      disabled: true,
+      editing: true
+    });
+    assert.equal(
+      cell.container.querySelector('.value')?.textContent,
+      current || 'Layer value not set'
+    );
+    assert.equal(
+      cell.container.querySelector(
+        'button, [role="button"], [role="combobox"], [tabindex], .edit'
+      ),
+      null
+    );
+    const text = cell.container.firstElementChild as HTMLElement;
+    assert.equal(text.getAttribute('aria-disabled'), 'true');
+    await act(async () => {
+      text.click();
+      for (const key of ['Enter', ' ']) {
+        text.dispatchEvent(
+          new dom.window.KeyboardEvent('keydown', { key, bubbles: true })
+        );
+      }
+    });
+    assert.equal(cell.onStartEdit.mock.callCount(), 0);
+    assert.equal(cell.onSave.mock.callCount(), 0);
+    assert.equal(cell.onBusy.mock.callCount(), 0);
+  });
+}
+
+test('disabling an open editor releases the busy state and re-enabling restores editing', async (t) => {
+  const cell = await mountCell(['labels/rack']);
+  t.after(cell.unmount);
+  await cell.renderValue(undefined, { builtin: true, editing: true });
+  assert.ok(cell.container.querySelector('[role="combobox"]'));
+  assert.deepEqual(
+    cell.onBusy.mock.calls.map((call) => call.arguments),
+    [[true]]
+  );
+
+  await cell.renderValue('rack-a', {
+    builtin: true,
+    editing: true,
+    disabled: true
+  });
+  assert.equal(cell.container.querySelector('[role="combobox"]'), null);
+  assert.equal(cell.container.querySelector('.value')?.textContent, 'rack-a');
+  assert.deepEqual(
+    cell.onBusy.mock.calls.map((call) => call.arguments),
+    [[true], [false]]
+  );
+  assert.equal(cell.onSave.mock.callCount(), 0);
+
+  await cell.renderValue('rack-a', { builtin: true, disabled: false });
+  assert.ok(cell.button);
+  await act(async () => cell.button.click());
+  assert.equal(cell.onStartEdit.mock.callCount(), 1);
+});
+
+test('a disabled layer preserves the display name and lock for a discovered value', async (t) => {
+  const cell = await mountCell(['labels/rack']);
+  t.after(cell.unmount);
+  await cell.renderValue('rack-id', {
+    builtin: true,
+    disabled: true,
+    location: { source: 'discovered', display: 'Rack display name' }
+  });
+  assert.equal(
+    cell.container.querySelector('.value')?.textContent,
+    'Rack display name'
+  );
+  assert.ok(cell.container.querySelector('[aria-label="lock"]'));
+  await act(async () =>
+    (cell.container.firstElementChild as HTMLElement).click()
+  );
+  assert.equal(document.querySelector('.ant-popconfirm'), null);
+  assert.equal(cell.onStartEdit.mock.callCount(), 0);
+  assert.equal(cell.onSave.mock.callCount(), 0);
 });

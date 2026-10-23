@@ -342,7 +342,7 @@ interface LocationCellProps {
 /**
  * [C1] One worker's value for one field: missing label keys, missing worker
  * labels, hand-filled, reported by the device, or a hand-filled override.
- * Layers without candidate keys are static; configured layers are editable.
+ * Disabled layers and layers without candidate keys are read-only.
  *
  * Editing saves on the spot — Enter, a pick, or clicking away with a change —
  * because a value is data, not a rule (P7). A device-reported value asks
@@ -367,6 +367,7 @@ const LocationCell: React.FC<LocationCellProps> = ({
   const discovered = isDiscovered(location);
   const override = isOverride(location);
   const hasLabelKeys = field.labelKeys.length > 0;
+  const editable = hasLabelKeys && !field.disabled;
   const emptyLabel = intl.formatMessage({
     id: 'clusters.topology.cell.unfilled'
   });
@@ -378,12 +379,12 @@ const LocationCell: React.FC<LocationCellProps> = ({
   const failedTimer = useRef<any>(null);
 
   useEffect(() => {
-    if (!editing || !hasLabelKeys) {
+    if (!editing || !editable) {
       return;
     }
     onBusy(true);
     return () => onBusy(false);
-  }, [editing, hasLabelKeys]);
+  }, [editing, editable]);
 
   useEffect(() => () => clearTimeout(failedTimer.current), []);
 
@@ -409,6 +410,9 @@ const LocationCell: React.FC<LocationCellProps> = ({
   };
 
   const commit = async (value: string | null, then?: () => void) => {
+    if (!editable) {
+      return;
+    }
     onStopEdit();
     if (value === current) {
       then?.();
@@ -439,7 +443,7 @@ const LocationCell: React.FC<LocationCellProps> = ({
   };
 
   const handleClick = () => {
-    if (saving) {
+    if (!editable || saving) {
       return;
     }
     if (discovered) {
@@ -479,6 +483,23 @@ const LocationCell: React.FC<LocationCellProps> = ({
             { id: 'clusters.topology.state.user.tips' },
             { key: location?.key || '' }
           );
+
+  if (!editable) {
+    return (
+      <Tooltip title={hover}>
+        <span
+          className={classNames(styles.cell, { static: !current })}
+          aria-disabled
+        >
+          {discovered && <LockOutlined className="mark" />}
+          <span className="value">
+            {current ? shownValue(location) : emptyLabel}
+          </span>
+          {override && <RiseOutlined className="mark" />}
+        </span>
+      </Tooltip>
+    );
+  }
 
   if (editing) {
     return (

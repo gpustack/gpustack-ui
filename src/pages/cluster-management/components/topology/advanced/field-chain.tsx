@@ -196,7 +196,7 @@ const useStyles = createStyles(({ css }) => ({
         left: 9.5px;
         top: 34px;
         bottom: -14px;
-        border-left: 1px solid var(--ant-color-border);
+        border-left: 1px dashed var(--ant-color-border);
       }
     }
     .insert-slot {
@@ -353,7 +353,7 @@ const FieldRow: React.FC<FieldRowProps> = ({
             </Flex>
           )}
         </Flex>
-        <Flex align="center" gap={12} className="metrics">
+        <Flex align="center" gap={16} className="metrics">
           <span className={classNames('count', { flash: flashing })}>
             {intl.formatMessage(
               { id: 'clusters.topology.mapping.classified' },
@@ -592,7 +592,7 @@ const FieldChain: React.FC<FieldChainProps> = ({
                 id: 'clusters.topology.advanced.hostKeys'
               })}
             </span>
-            <Flex align="center" gap={12} className="metrics">
+            <Flex align="center" gap={16} className="metrics">
               <span className="count">
                 {intl.formatMessage(
                   { id: 'clusters.topology.mapping.classified' },

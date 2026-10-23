@@ -173,7 +173,7 @@ interface TreeViewProps {
   workers: TopologyWorker[];
   grouping: string;
   onGroupingChange: (grouping: string) => void;
-  /** Switch to the table and point at this row. The tree is for checking. */
+  /** Switch to the table and filter by this worker's name. */
   onHostClick: (worker: TopologyWorker) => void;
 }
 
@@ -190,7 +190,7 @@ interface Group {
 /**
  * [S1b] The cluster's one tree, re-counted here from `workers` so the
  * toolbar's filter applies without a request. Nothing is edited on the tree
- * (P8): clicking a host goes back to its row.
+ * (P8): clicking a host filters the table by its name.
  */
 const TreeView: React.FC<TreeViewProps> = ({
   toolbarContainer,

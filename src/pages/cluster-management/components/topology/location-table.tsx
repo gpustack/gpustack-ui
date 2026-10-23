@@ -2,7 +2,7 @@ import { StatusDot } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Table, Tooltip } from 'antd';
 import { createStyles } from 'antd-style';
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { TopologyWorker } from '../../config/types';
 import { LocationField, isFilled, valueOptions } from './location';
 import LocationCell from './location-cell';
@@ -34,23 +34,6 @@ const useStyles = createStyles(({ css }) => ({
       > .ant-table-cell.ant-table-cell-fix:not(.ant-table-cell-row-hover) {
       background-color: var(--ant-color-bg-elevated);
     }
-  `,
-  /* A tint that fades rather than a border: the row was pointed at from the
-     tree or the Workers list, and the eye needs a moment to find it, not a
-     permanent mark. */
-  highlight: css`
-    > .ant-table-cell {
-      animation: topology-row-highlight 3s ease-out forwards;
-    }
-    @keyframes topology-row-highlight {
-      0%,
-      60% {
-        background-color: var(--ant-color-primary-bg);
-      }
-      100% {
-        background-color: var(--ant-color-bg-elevated);
-      }
-    }
   `
 }));
 
@@ -67,7 +50,6 @@ interface LocationTableProps {
   fields: LocationField[];
   selectedIds: number[];
   onSelectionChange: (ids: number[]) => void;
-  highlightId?: number | null;
   /** Body height in px; the virtual list needs a number. */
   height: number;
   onAssign: (
@@ -88,7 +70,6 @@ const LocationTable: React.FC<LocationTableProps> = ({
   fields,
   selectedIds,
   onSelectionChange,
-  highlightId,
   height,
   onAssign,
   onBusy
@@ -96,7 +77,6 @@ const LocationTable: React.FC<LocationTableProps> = ({
   const intl = useIntl();
   const { styles } = useStyles();
   const [editing, setEditing] = useState<EditingCell | null>(null);
-  const tableRef = useRef<any>(null);
 
   const fieldIds = fields.map((field) => field.id);
   const unfilledAny = (worker: TopologyWorker) =>
@@ -113,12 +93,6 @@ const LocationTable: React.FC<LocationTableProps> = ({
     const br = b.location?.rack?.value || '';
     return ar.localeCompare(br) || a.name.localeCompare(b.name);
   });
-
-  useEffect(() => {
-    if (highlightId && rows.some((row) => row.id === highlightId)) {
-      tableRef.current?.scrollTo?.({ key: highlightId });
-    }
-  }, [highlightId]);
 
   const optionsByField = Object.fromEntries(
     fields.map((field) => [field.id, valueOptions(allWorkers, field.id)])
@@ -224,7 +198,6 @@ const LocationTable: React.FC<LocationTableProps> = ({
 
   return (
     <Table
-      ref={tableRef}
       className={`${styles.table} scroll-table`}
       size="small"
       rowKey="id"
@@ -234,9 +207,6 @@ const LocationTable: React.FC<LocationTableProps> = ({
       pagination={false}
       virtual={rows.length > VIRTUAL_THRESHOLD}
       scroll={{ x: totalWidth, y: height }}
-      rowClassName={(row: TopologyWorker) =>
-        row.id === highlightId ? styles.highlight : ''
-      }
       rowSelection={{
         selectedRowKeys: selectedIds,
         columnWidth: SELECT_WIDTH,

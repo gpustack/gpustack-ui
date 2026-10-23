@@ -239,8 +239,6 @@ export default {
 
   // Topology: where this cluster's workers sit.
   'clusters.topology.title': 'Topoloji Yapılandırması',
-  'clusters.topology.noRebalance':
-    'Topoloji yapılandırmasındaki değişiklikler yalnızca sonraki zamanlamayı etkiler. Çalışan dağıtımlar yeniden yerleştirilmez.',
   'clusters.topology.load.failed': 'Topoloji yüklenemedi.',
   'clusters.topology.save.failed': 'Kaydedilemedi.',
   'clusters.topology.preview.failed': 'Bu eşleme önizlenemedi.',
@@ -277,10 +275,10 @@ export default {
   'clusters.topology.search.placeholder': 'Sunucu ara',
   'clusters.topology.columns': 'Sütunlar',
   'clusters.topology.columns.fields': 'Topoloji katmanları',
-  'clusters.topology.columns.manage': 'Katman yönetimi',
-  'clusters.topology.columns.mapping': 'Katman yönetimi',
-  'clusters.topology.batch.button': 'Etiketleri ayarla',
-  'clusters.topology.batch.title': 'Etiketleri ayarla',
+  'clusters.topology.columns.manage': 'Katmanları yönet',
+  'clusters.topology.columns.mapping': 'Katmanları yönet',
+  'clusters.topology.batch.button': 'Katman değerini ayarla',
+  'clusters.topology.batch.title': 'Katman değerini ayarla',
   'clusters.topology.batch.selected': '{count} seçili',
   'clusters.topology.batch.field': 'Topoloji katmanı',
   'clusters.topology.batch.value': 'Etiket değeri',
@@ -289,7 +287,7 @@ export default {
   'clusters.topology.batch.summary':
     '{count} Worker için {field} değeri {value} olarak ayarlanacak',
   'clusters.topology.batch.noWritableLayers':
-    'Ayarlanabilir katman yok. Önce “Katman yönetimi” bölümünde etiket anahtarlarını yapılandırın.',
+    'Ayarlanabilir katman yok. Önce “Katmanları yönet” bölümünde etiket anahtarlarını yapılandırın.',
   'clusters.topology.batch.clearHint':
     'Yazılan etiket kaldırıldığında katman, başka bir aday etiketin veya cihazın bildirdiği değere dönebilir.',
   'clusters.topology.batch.clearSummary':
@@ -312,11 +310,9 @@ export default {
   'clusters.topology.undo.done': 'Geri alındı',
   'clusters.topology.undo.failed': 'Geri alınamadı: {reason}',
   'clusters.topology.cell.fill': '{field} doldur',
-  'clusters.topology.cell.unfilled': 'Eşleşen etiket ayarlanmamış',
+  'clusters.topology.cell.unfilled': 'Katman değeri ayarlanmamış',
   'clusters.topology.cell.noKeys.tips':
-    'Önce “Katman yönetimi” bölümünde bu katman için etiket anahtarlarını ayarlayın.',
-  'clusters.topology.cell.unfilled.tips':
-    'Worker için şu etiketlerden birini ayarlayın: {keys}',
+    'Önce “Katmanları yönet” bölümünde bu katman için etiket anahtarlarını ayarlayın.',
   'clusters.topology.cell.aria': '{field}, {state}, {host}',
   'clusters.topology.state.unfilled': 'doldurulmamış',
   'clusters.topology.state.discovered.aria':
@@ -335,7 +331,7 @@ export default {
   'clusters.topology.value.create': '“{value}” oluştur',
   'clusters.topology.value.clear': 'Temizle',
   'clusters.topology.value.empty':
-    'Henüz bir değer yok. Bir etiket değeri girebilirsiniz.',
+    'Seçilebilir değer yok. Bir etiket değeri girin.',
   'clusters.topology.column.menu': '{field} sütun menüsü',
   'clusters.topology.column.fillUnfilled':
     'Doldurulmamış {count} taneyi doldur…',
@@ -357,15 +353,7 @@ export default {
     'Aday etiket anahtarları (herhangi bir etiketi ayarlayın)',
   'clusters.topology.tree.more': '{count} tane daha',
   'clusters.topology.tree.hostCapacity': '{gpus} GPU · {free} ayrılmamış',
-  'clusters.topology.onboarding.goal':
-    'Ayrıştırılmış bir grubun üyelerini bir arada tutmak için:',
-  'clusters.topology.onboarding.step.select': 'Aynı kabindeki makineleri seçin',
-  'clusters.topology.onboarding.step.setLocation':
-    '“Etiketleri ayarla”ya tıklayın ve kabin adını girin',
-  'clusters.topology.onboarding.step.deploy': 'Dağıtırken “aynı kabin” seçin',
-  'clusters.topology.onboarding.domains':
-    'Cihazın bildirdiği hızlandırıcı etki alanı (çok düğümlü NVLink, Ascend süper pod) da bir katman olabilir: “Katman ekle” ile ilgili etiket anahtarını gösterin, katman değerlerini kendiliğinden alsın.',
-  'clusters.topology.mapping.title': 'Katman yönetimi',
+  'clusters.topology.mapping.title': 'Katmanları yönet',
   'clusters.topology.mapping.intro':
     'Katman değerleri, aday etiket anahtarları kullanılarak Worker etiketlerinden okunur. Anahtar sırası önceliği belirler; ilk boş olmayan değer kullanılır.',
   'clusters.topology.mapping.keysPriority':

@@ -242,8 +242,6 @@ export default {
 
   // Topology: where this cluster's workers sit.
   'clusters.topology.title': 'Настройка топологии',
-  'clusters.topology.noRebalance':
-    'Изменения конфигурации топологии влияют только на последующее планирование. Работающие развёртывания не перемещаются.',
   'clusters.topology.load.failed': 'Не удалось загрузить топологию.',
   'clusters.topology.save.failed': 'Не удалось сохранить.',
   'clusters.topology.preview.failed':
@@ -281,10 +279,10 @@ export default {
   'clusters.topology.search.placeholder': 'Поиск хостов',
   'clusters.topology.columns': 'Столбцы',
   'clusters.topology.columns.fields': 'Уровни топологии',
-  'clusters.topology.columns.manage': 'Управление уровнями',
-  'clusters.topology.columns.mapping': 'Управление уровнями',
-  'clusters.topology.batch.button': 'Задать метки',
-  'clusters.topology.batch.title': 'Задать метки',
+  'clusters.topology.columns.manage': 'Управлять уровнями',
+  'clusters.topology.columns.mapping': 'Управлять уровнями',
+  'clusters.topology.batch.button': 'Задать значение уровня',
+  'clusters.topology.batch.title': 'Задать значение уровня',
   'clusters.topology.batch.selected': 'Выбрано: {count}',
   'clusters.topology.batch.field': 'Уровень топологии',
   'clusters.topology.batch.value': 'Значение метки',
@@ -294,7 +292,7 @@ export default {
   'clusters.topology.batch.summary':
     'Задать значение уровня «{field}» для {count} Worker: {value}',
   'clusters.topology.batch.noWritableLayers':
-    'Нет доступных для записи уровней. Сначала настройте ключи меток в разделе «Управление уровнями».',
+    'Нет доступных для записи уровней. Сначала настройте ключи меток в разделе «Управлять уровнями».',
   'clusters.topology.batch.clearHint':
     'После удаления записанной метки уровень может вернуться к значению другой метки-кандидата или к значению, сообщённому устройством.',
   'clusters.topology.batch.clearSummary':
@@ -317,11 +315,9 @@ export default {
   'clusters.topology.undo.done': 'Отменено',
   'clusters.topology.undo.failed': 'Не удалось отменить: {reason}',
   'clusters.topology.cell.fill': 'Заполнить: {field}',
-  'clusters.topology.cell.unfilled': 'Соответствующая метка не задана',
+  'clusters.topology.cell.unfilled': 'Значение уровня не задано',
   'clusters.topology.cell.noKeys.tips':
-    'Сначала задайте ключи меток этого уровня в разделе «Управление уровнями».',
-  'clusters.topology.cell.unfilled.tips':
-    'Задайте для Worker любую из этих меток: {keys}',
+    'Сначала задайте ключи меток этого уровня в разделе «Управлять уровнями».',
   'clusters.topology.cell.aria': '{field}, {state}, {host}',
   'clusters.topology.state.unfilled': 'не заполнено',
   'clusters.topology.state.discovered.aria': '{value}, сообщено устройством',
@@ -339,7 +335,7 @@ export default {
   'clusters.topology.value.create': 'Создать «{value}»',
   'clusters.topology.value.clear': 'Очистить',
   'clusters.topology.value.empty':
-    'Существующих значений нет. Введите значение метки.',
+    'Нет доступных значений. Введите значение метки.',
   'clusters.topology.column.menu': 'Меню столбца «{field}»',
   'clusters.topology.column.fillUnfilled': 'Заполнить незаполненные ({count})…',
   'clusters.topology.column.fillBySwitch':
@@ -360,16 +356,7 @@ export default {
     'Ключи-кандидаты меток (задайте любую из меток)',
   'clusters.topology.tree.more': 'ещё {count}',
   'clusters.topology.tree.hostCapacity': '{gpus} GPU · не выделено {free}',
-  'clusters.topology.onboarding.goal':
-    'Чтобы участники PD-группы размещались рядом:',
-  'clusters.topology.onboarding.step.select': 'Выберите машины одной стойки',
-  'clusters.topology.onboarding.step.setLocation':
-    'Нажмите «Задать метки» и введите имя стойки',
-  'clusters.topology.onboarding.step.deploy':
-    'При развёртывании выберите «та же стойка»',
-  'clusters.topology.onboarding.domains':
-    'Домен ускорителей, о котором сообщает оборудование (многоузловой NVLink, суперпод Ascend), тоже может быть уровнем: добавьте его в «Добавить уровень» и укажите подходящий ключ метки — значения подставятся сами.',
-  'clusters.topology.mapping.title': 'Управление уровнями',
+  'clusters.topology.mapping.title': 'Управлять уровнями',
   'clusters.topology.mapping.intro':
     'Значения уровней читаются из меток Worker по ключам-кандидатам. Порядок ключей задаёт приоритет: используется первое непустое значение.',
   'clusters.topology.mapping.keysPriority':

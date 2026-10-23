@@ -1,9 +1,17 @@
-import { LockOutlined, WarningOutlined } from '@ant-design/icons';
-import { AutoTooltip } from '@gpustack/core-ui';
+import { status, WorkerStatusMapValue } from '@/pages/resources/config';
+import {
+  ExpandAltOutlined,
+  InfoCircleOutlined,
+  LockOutlined,
+  ShrinkOutlined,
+  WarningOutlined
+} from '@ant-design/icons';
+import { AutoTooltip, StatusDot } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Button, Empty, Flex, Segmented, Tree } from 'antd';
+import { Button, Empty, Flex, Segmented, Tooltip, Tree } from 'antd';
 import { createStyles } from 'antd-style';
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { topologyLayerLabel } from '../../config';
 import {
   NODE_LAYER,
@@ -11,7 +19,7 @@ import {
   TopologyView,
   TopologyWorker
 } from '../../config/types';
-import { LocationField, isDiscovered, shownValue } from './location';
+import { isDiscovered, LocationField } from './location';
 
 /** Hosts shown per domain before "N more". Forty expanded is not a view. */
 const HOSTS_PREVIEW = 3;
@@ -30,16 +38,63 @@ const useStyles = createStyles(({ css }) => ({
   tree: css`
     .ant-tree-treenode {
       width: 100%;
-      padding-block: 2px;
+      padding-block: 0;
+      border-radius: var(--ant-border-radius);
+      &:hover {
+        background: var(--ant-control-item-bg-hover);
+        > .ant-tree-node-content-wrapper {
+          background: transparent;
+        }
+      }
     }
     .ant-tree-node-content-wrapper {
       flex: 1;
       min-width: 0;
+      padding-block: var(--ant-padding-xs);
+    }
+    .ant-tree-switcher {
+      line-height: calc(
+        var(--ant-control-height-sm) + 2 * var(--ant-padding-xs)
+      );
+      &::before {
+        height: 100%;
+      }
+    }
+    .ant-tree-indent-unit {
+      position: relative;
+      height: 100%;
+      &::before {
+        content: '';
+        position: absolute;
+        inset-block-start: 0;
+        inset-block-end: calc(-0.5 * var(--ant-padding-xs));
+        inset-inline-start: 50%;
+        border-inline-start: 1px solid var(--ant-color-border-secondary);
+        pointer-events: none;
+      }
+      &:last-child::after {
+        content: '';
+        position: absolute;
+        inset-block-start: 50%;
+        inset-inline-start: 50%;
+        width: 50%;
+        border-block-start: 1px solid var(--ant-color-border-secondary);
+        pointer-events: none;
+      }
+    }
+    .ant-tree-indent:not(:empty) + .ant-tree-switcher::after {
+      content: '';
+      position: absolute;
+      inset-block-start: 50%;
+      inset-inline-start: 0;
+      width: calc(50% - var(--ant-font-size-sm) / 2);
+      border-block-start: 1px solid var(--ant-color-border-secondary);
+      pointer-events: none;
+    }
+    .ant-tree-indent:not(:empty) + .ant-tree-switcher-noop::after {
+      width: 100%;
     }
     .row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
       width: 100%;
       min-width: 0;
     }
@@ -52,30 +107,44 @@ const useStyles = createStyles(({ css }) => ({
       white-space: nowrap;
     }
     .tail {
-      margin-left: auto;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
+      margin-inline-start: auto;
+      min-width: 0;
       color: var(--ant-color-text-tertiary);
       font-size: 12px;
       white-space: nowrap;
     }
+    .why {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .ant-tree-treenode:hover > .ant-tree-node-content-wrapper .why,
+    .ant-tree-treenode:focus-within > .ant-tree-node-content-wrapper .why,
+    &:focus-within
+      .ant-tree-treenode-active
+      > .ant-tree-node-content-wrapper
+      .why {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    @media (hover: none) {
+      .why {
+        opacity: 1;
+        pointer-events: auto;
+      }
+    }
     .warn {
       color: var(--ant-color-warning);
     }
-    /* The bucket says why nothing landed here, under its own row: the reason
-       is the whole point of the node, and it does not fit on the line. */
-    .bucket {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      width: 100%;
-      min-width: 0;
-    }
-    .bucket .why {
+    .info {
       color: var(--ant-color-text-tertiary);
-      font-size: 12px;
-      white-space: normal;
+      cursor: help;
+      &:focus-visible {
+        outline: 2px solid var(--ant-color-primary-border);
+        outline-offset: 2px;
+        border-radius: var(--ant-border-radius-sm);
+      }
     }
     .host {
       cursor: pointer;
@@ -83,17 +152,29 @@ const useStyles = createStyles(({ css }) => ({
         color: var(--ant-color-primary);
       }
     }
+  `,
+  hint: css`
+    overflow-wrap: anywhere;
+  `,
+  keys: css`
+    margin: 0;
+    padding-inline-start: var(--ant-padding);
+    list-style-type: disc;
+    li + li {
+      margin-block-start: var(--ant-margin-xxs);
+    }
   `
 }));
 
 interface TreeViewProps {
+  toolbarContainer: HTMLElement | null;
   view: TopologyView;
   fields: LocationField[];
   /** After the toolbar's search and filter. */
   workers: TopologyWorker[];
   grouping: string;
   onGroupingChange: (grouping: string) => void;
-  /** Switch to the table and point at this row. The tree is for checking. */
+  /** Switch to the table and filter by this worker's name. */
   onHostClick: (worker: TopologyWorker) => void;
 }
 
@@ -110,9 +191,10 @@ interface Group {
 /**
  * [S1b] The cluster's one tree, re-counted here from `workers` so the
  * toolbar's filter applies without a request. Nothing is edited on the tree
- * (P8): clicking a host goes back to its row.
+ * (P8): clicking a host filters the table by its name.
  */
 const TreeView: React.FC<TreeViewProps> = ({
+  toolbarContainer,
   view,
   fields,
   workers,
@@ -150,26 +232,14 @@ const TreeView: React.FC<TreeViewProps> = ({
   const allDiscovered = (list: TopologyWorker[], field: string) =>
     list.every((w) => isDiscovered(w.location?.[field]));
 
-  const bucketLabel = (field: string) =>
-    intl.formatMessage(
-      { id: 'clusters.topology.tree.unfilled' },
-      { field: fieldLabel(field) }
-    );
-
-  /**
-   * 🔴 The one node the industry's tools do not have. A missing label never
-   * fails a deployment — the group simply never gathers, silently — so the
-   * only place it can surface is here, and it has to say which key is missing:
-   * "no rack yet" is a symptom, `topology.gpustack.ai/rack` is the fix.
-   */
-  const layerPrimaryKey = (field: string) =>
-    view.layers.find((layer) => layer.id === field)?.label_keys?.[0] || '';
+  /** Unconfigured layers need a different fix from missing worker labels. */
+  const layerLabelKeys = (field: string) =>
+    view.layers.find((layer) => layer.id === field)?.label_keys || [];
 
   const bucketWhy = (field: string) =>
-    intl.formatMessage(
-      { id: 'clusters.topology.tree.unfilled.why' },
-      { key: layerPrimaryKey(field) || fieldLabel(field) }
-    );
+    layerLabelKeys(field).length
+      ? undefined
+      : intl.formatMessage({ id: 'clusters.topology.cell.noKeys.tips' });
 
   /** Flat: one group per value of `field`, plus the unfilled bucket. */
   const flatGroups = (field: string, list: TopologyWorker[]): Group[] => {
@@ -189,9 +259,7 @@ const TreeView: React.FC<TreeViewProps> = ({
         key: `${field}:${value}`,
         label: (
           <>
-            <span>
-              {fieldLabel(field)} {shownValue(members[0].location[field])}
-            </span>
+            {fieldLabel(field)}
             {allDiscovered(members, field) && (
               <LockOutlined className="text-tertiary" />
             )}
@@ -202,7 +270,7 @@ const TreeView: React.FC<TreeViewProps> = ({
     if (unfilled.length) {
       groups.push({
         key: `${field}:<unfilled>`,
-        label: bucketLabel(field),
+        label: fieldLabel(field),
         workers: unfilled,
         unfilledField: field,
         why: bucketWhy(field)
@@ -229,9 +297,7 @@ const TreeView: React.FC<TreeViewProps> = ({
     }
     return {
       key,
-      label: node.unclassified
-        ? bucketLabel(node.layer)
-        : `${fieldLabel(node.layer)} ${node.name}`,
+      label: fieldLabel(node.layer),
       workers: members,
       unfilledField: node.unclassified ? node.layer : undefined,
       why: node.unclassified ? bucketWhy(node.layer) : undefined,
@@ -280,7 +346,7 @@ const TreeView: React.FC<TreeViewProps> = ({
   if (stranded.length) {
     groups.push({
       key: `${rootLayer!.id}:<stranded>`,
-      label: bucketLabel(rootLayer!.id),
+      label: fieldLabel(rootLayer!.id),
       workers: stranded,
       unfilledField: rootLayer!.id,
       why: bucketWhy(rootLayer!.id)
@@ -301,17 +367,33 @@ const TreeView: React.FC<TreeViewProps> = ({
     isLeaf: true,
     selectable: false,
     title: (
-      <span className="row host" onClick={() => onHostClick(worker)}>
-        <AutoTooltip ghost title={worker.name} minWidth={20}>
-          {worker.name}
+      <Flex
+        component="span"
+        align="center"
+        gap={12}
+        className="row host"
+        onClick={() => onHostClick(worker)}
+      >
+        <AutoTooltip
+          ghost
+          title={`${worker.name} · ${WorkerStatusMapValue[worker.state] || worker.state}`}
+          minWidth={20}
+          showTitle
+        >
+          <StatusDot
+            statusValue={{
+              status: status[worker.state] || 'inactive',
+              text: worker.name
+            }}
+          />
         </AutoTooltip>
-        <span className="tail">
+        <span className="meta">
           {intl.formatMessage(
             { id: 'clusters.topology.tree.hostCapacity' },
             { gpus: worker.gpus, free: worker.free_gpus }
           )}
         </span>
-      </span>
+      </Flex>
     )
   });
 
@@ -341,29 +423,61 @@ const TreeView: React.FC<TreeViewProps> = ({
     return nodes;
   };
 
+  const unmatched = intl.formatMessage({
+    id: 'clusters.topology.tree.unmatched.tips'
+  });
+  const candidateKeys = intl.formatMessage({
+    id: 'clusters.topology.tree.candidateKeys'
+  });
+
   const groupNode = (group: Group): any => {
+    const keys = group.unfilledField ? layerLabelKeys(group.unfilledField) : [];
     const row = (
-      <span className="row">
-        <span className="label">
-          {group.unfilledField && (
-            <WarningOutlined className="warn" style={{ marginRight: 6 }} />
-          )}
+      <Flex component="span" align="center" gap={12} className="row">
+        <Flex component="span" align="center" gap={6} className="label">
+          {group.unfilledField &&
+            (keys.length ? (
+              <Tooltip
+                trigger={['hover', 'focus']}
+                title={
+                  <Flex
+                    orientation="vertical"
+                    gap="small"
+                    className={styles.hint}
+                  >
+                    <span>{unmatched}</span>
+                    <Flex orientation="vertical" gap="var(--ant-margin-xxs)">
+                      <span>{candidateKeys}</span>
+                      <ul className={styles.keys}>
+                        {keys.map((key) => (
+                          <li key={key}>{key}</li>
+                        ))}
+                      </ul>
+                    </Flex>
+                  </Flex>
+                }
+              >
+                <InfoCircleOutlined
+                  className="info"
+                  tabIndex={0}
+                  aria-label={`${unmatched} ${candidateKeys}：${keys.join(', ')}`}
+                />
+              </Tooltip>
+            ) : (
+              <WarningOutlined className="warn" />
+            ))}
           {group.label}
-        </span>
-        <span className="meta">{capacity(group.workers)}</span>
-      </span>
+        </Flex>
+        {!group.unfilledField && (
+          <span className="meta">{capacity(group.workers)}</span>
+        )}
+        {group.why && <span className="tail why">{group.why}</span>}
+      </Flex>
     );
     return {
       key: group.key,
       selectable: false,
-      title: group.why ? (
-        <span className="bucket">
-          {row}
-          <span className="why">{group.why}</span>
-        </span>
-      ) : (
-        row
-      ),
+      title: row,
       children: group.children
         ? group.children.map(groupNode)
         : hostNodes(group.workers, group.key)
@@ -375,12 +489,12 @@ const TreeView: React.FC<TreeViewProps> = ({
       key: 'root',
       selectable: false,
       title: (
-        <span className="row">
+        <Flex component="span" align="center" gap={12} className="row">
           <span className="label">
             {intl.formatMessage({ id: 'clusters.topology.cluster' })}
           </span>
           <span className="meta">{capacity(workers)}</span>
-        </span>
+        </Flex>
       ),
       children: [...groups.map(groupNode), ...hostNodes(looseHosts, 'root')]
     }
@@ -395,6 +509,16 @@ const TreeView: React.FC<TreeViewProps> = ({
       }
     });
   collect(groups);
+
+  const expandedKeys = expanded ?? allGroupKeys;
+  const expandedKeySet = new Set(expandedKeys);
+  const allExpanded = allGroupKeys.every((key) => expandedKeySet.has(key));
+  const collapsedKeys = groups.length ? ['root'] : [];
+  const toggleLabel = intl.formatMessage({
+    id: allExpanded
+      ? 'clusters.topology.tree.collapseAll'
+      : 'clusters.topology.tree.expandAll'
+  });
 
   // One tree, so the switch only ever has a second entry when the overview
   // sent us here to look at a single rung flat («机房 3 个»). It is not a
@@ -417,41 +541,27 @@ const TreeView: React.FC<TreeViewProps> = ({
 
   return (
     <Flex orientation="vertical" gap={12}>
-      <Flex align="center" justify="space-between">
-        {/* Hidden while it holds a single option. With one tree that is the
-            normal case, and a Segmented with nothing to switch to is a control
-            that looks like a choice and offers none. It reappears only when the
-            overview sent the reader to a flat rung — which is also the only
-            time there is somewhere to switch back to. */}
-        {options.length > 1 ? (
-          <Segmented
-            size="small"
-            value={grouping}
-            options={options}
-            onChange={(value) => onGroupingChange(value as string)}
-          />
-        ) : (
-          /* Keeps the expand/collapse pair pinned right when the switch is
-             gone; `justify="space-between"` needs two children. */
-          <span />
+      {options.length > 1 && (
+        <Segmented
+          size="small"
+          value={grouping}
+          options={options}
+          onChange={(value) => onGroupingChange(value as string)}
+        />
+      )}
+      {toolbarContainer &&
+        createPortal(
+          <Button
+            icon={allExpanded ? <ShrinkOutlined /> : <ExpandAltOutlined />}
+            disabled={!workers.length}
+            onClick={() =>
+              setExpanded(allExpanded ? collapsedKeys : allGroupKeys)
+            }
+          >
+            {toggleLabel}
+          </Button>,
+          toolbarContainer
         )}
-        <Flex gap={4}>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => setExpanded(allGroupKeys)}
-          >
-            {intl.formatMessage({ id: 'clusters.topology.tree.expandAll' })}
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => setExpanded(['root'])}
-          >
-            {intl.formatMessage({ id: 'clusters.topology.tree.collapseAll' })}
-          </Button>
-        </Flex>
-      </Flex>
       {workers.length ? (
         <Tree
           className={styles.tree}
@@ -459,7 +569,7 @@ const TreeView: React.FC<TreeViewProps> = ({
           blockNode
           selectable={false}
           // Down to the domain level by default: hosts stay folded.
-          expandedKeys={expanded ?? allGroupKeys}
+          expandedKeys={expandedKeys}
           onExpand={(keys) => setExpanded(keys as string[])}
         />
       ) : (

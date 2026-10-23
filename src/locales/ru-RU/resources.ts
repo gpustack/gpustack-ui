@@ -126,10 +126,8 @@ export default {
   'resources.worker.targetVersion': 'Целевая версия: {version}',
   'resources.driver.version': 'Версия драйвера: {version}',
 
-  'resources.worker.setLabels': 'Добавить/обновить метки',
+  'resources.worker.setLabels': 'Задать метки',
   'resources.worker.setLabels.count': 'Выбрано Worker: {count}',
   'resources.worker.setLabels.hint':
-    'Добавляет новые метки и обновляет значения совпадающих ключей у всех выбранных Worker. Остальные метки сохраняются. Для удаления меток редактируйте Worker по отдельности.',
-  'resources.table.location': 'Уровни топологии',
-  'resources.worker.setLocation': 'Задать расположение'
+    'Добавляет новые метки и обновляет значения совпадающих ключей у всех выбранных Worker. Остальные метки сохраняются. Для удаления меток редактируйте Worker по отдельности.'
 };

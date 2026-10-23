@@ -1,114 +1,163 @@
 import {
-  CloseOutlined,
-  DownOutlined,
-  HolderOutlined,
-  LockOutlined,
+  ExclamationCircleOutlined,
   MoreOutlined,
-  PlusOutlined,
-  RightOutlined
+  PlusOutlined
 } from '@ant-design/icons';
+import { IconFont, ThemeTag } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Dropdown, Flex, Tooltip } from 'antd';
 import { createStyles } from 'antd-style';
 import classNames from 'classnames';
 import { useState } from 'react';
 import { DraftLayer } from './draft';
-import { KeyEditor, KeyVocabulary } from './key-editor';
+import InsertLayerInput from './insert-layer-input';
+import { CUSTOM_FIELD, KeyVocabulary } from './key-editor';
+import KeyList from './key-list';
 
 const useStyles = createStyles(({ css }) => ({
-  key: css`
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 0 6px;
-    border-radius: 4px;
-    background: var(--ant-color-fill-quaternary);
-    font-family: var(--ant-font-family-code);
-    font-size: 12px;
-    line-height: 22px;
-    .grip {
-      color: var(--ant-color-text-quaternary);
-      cursor: grab;
-    }
-    .lock {
-      color: var(--ant-color-text-tertiary);
-    }
-    &.dragging {
-      opacity: 0.4;
-    }
-  `,
   row: css`
+    position: relative;
+    isolation: isolate;
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0 0 0 32px;
+      z-index: -1;
+      border: 1px solid var(--ant-color-border);
+      border-radius: var(--ant-border-radius-lg);
+      background: var(--ant-color-bg-container);
+      pointer-events: none;
+    }
     .head {
-      min-height: 32px;
-      padding-inline: 4px;
-      border-radius: 4px;
+      min-height: 48px;
+      padding: var(--ant-padding-xs) var(--ant-padding-sm);
+      padding-inline-start: 0;
+      border-radius: var(--ant-border-radius-lg);
       cursor: pointer;
-      &:hover {
-        background: var(--ant-color-fill-quaternary);
+      position: relative;
+      isolation: isolate;
+      &::before {
+        content: '';
+        position: absolute;
+        inset: 1px 1px 1px 33px;
+        z-index: -1;
+        border-radius: inherit;
+        pointer-events: none;
+      }
+      &:hover::before,
+      &[aria-expanded='true']::before {
+        background: var(--ant-color-fill-tertiary);
+      }
+      &[aria-expanded='true']::before {
+        border-end-start-radius: 0;
+        border-end-end-radius: 0;
+      }
+      &:focus-visible {
+        outline: 2px solid var(--ant-color-primary);
+        outline-offset: 2px;
+      }
+      &.static {
+        cursor: default;
       }
     }
-    .head.static {
-      cursor: default;
-      &:hover {
-        background: transparent;
-      }
+    .identity {
+      flex-shrink: 0;
+      min-width: 0;
     }
-    .chevron {
-      width: 12px;
-      color: var(--ant-color-text-tertiary);
-      font-size: 10px;
+    .sequence {
+      position: relative;
+      z-index: 1;
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      background: var(--ant-color-fill-content);
+      color: var(--ant-color-text-secondary);
+      font-size: var(--ant-font-size-sm);
+      font-variant-numeric: tabular-nums;
+    }
+    .sequence-icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: inherit;
+      opacity: 0;
+      pointer-events: none;
+    }
+    &:hover {
+      .sequence-number {
+        visibility: hidden;
+      }
+      .sequence-icon {
+        opacity: 1;
+      }
     }
     .name {
+      width: 220px;
       flex-shrink: 0;
-      min-width: 88px;
-      font-weight: 500;
-    }
-    .name.dim {
-      color: var(--ant-color-text-tertiary);
+      min-width: 0;
+      overflow-wrap: anywhere;
       font-weight: 400;
     }
-    /* The key gives way first: the count on the right must stay in one place. */
-    .key,
-    .note {
+    .row-note {
+      margin-inline-start: 6px;
+      font-size: var(--ant-font-size-sm);
+      font-weight: 400;
+      color: var(--ant-color-text-tertiary);
+      white-space: nowrap;
+    }
+    .summary {
+      flex: 1;
+      min-width: 0;
+    }
+    .key {
+      min-width: 0;
+      max-width: 100%;
+    }
+    .key-text {
       min-width: 0;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
-    .key {
-      font-size: 12px;
+    .no-keys {
+      font-size: var(--ant-font-size-sm);
+      color: var(--ant-color-warning-text);
     }
-    .more,
     .note {
       color: var(--ant-color-text-tertiary);
-      font-size: 12px;
+      font-size: var(--ant-font-size-sm);
     }
-    .more {
+    .metrics {
       flex-shrink: 0;
-      white-space: nowrap;
-    }
-    .row-note {
-      margin-left: 6px;
-      font-size: 12px;
-      font-weight: 400;
-      color: var(--ant-color-text-quaternary);
-    }
-    .row-actions {
-      flex-shrink: 0;
-      margin-left: 4px;
+      margin-inline-start: auto;
     }
     .count {
-      margin-left: auto;
+      font-size: var(--ant-font-size-sm);
+      color: var(--ant-color-text-tertiary);
       font-variant-numeric: tabular-nums;
       white-space: nowrap;
-      font-size: 12px;
-      color: var(--ant-color-text-secondary);
+      .classified {
+        color: var(--ant-color-text);
+        font-weight: 500;
+      }
       &.flash {
         animation: topology-count-flash 1s ease-out;
       }
     }
+    .row-actions {
+      width: 24px;
+      flex-shrink: 0;
+    }
     .body {
-      padding: 4px 4px 12px 24px;
+      margin: 0 1px 1px 33px;
+      padding: var(--ant-padding-sm);
+      border-top: 1px solid var(--ant-color-border);
+    }
+    .keys-title {
+      font-size: var(--ant-font-size-sm);
+      color: var(--ant-color-text-tertiary);
     }
     @keyframes topology-count-flash {
       0% {
@@ -118,249 +167,202 @@ const useStyles = createStyles(({ css }) => ({
         color: inherit;
       }
     }
+    @media (max-width: 600px) {
+      .head {
+        flex-wrap: wrap;
+      }
+      .identity {
+        flex: 1;
+        width: auto;
+      }
+      .name {
+        width: auto;
+        flex: 1;
+      }
+      .summary {
+        order: 1;
+        flex-basis: 100%;
+        margin-inline-start: 44px;
+      }
+    }
   `,
-  /* One straight rail with a dot per rung. The rungs stay left-aligned so the
-     key column lines up; the rail is what says "one path, root to host". */
   chain: css`
     position: relative;
-    padding-left: 18px;
-    &::before {
-      content: '';
-      position: absolute;
-      left: 5px;
-      top: 14px;
-      bottom: 14px;
-      border-left: 1px solid var(--ant-color-border);
-    }
     .rung {
       position: relative;
+      &::before {
+        content: '';
+        position: absolute;
+        left: 9.5px;
+        top: 34px;
+        bottom: -14px;
+        border-left: 1px dashed var(--ant-color-border);
+      }
     }
-    .rung::before {
-      content: '';
-      position: absolute;
-      left: -16px;
-      top: 11px;
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--ant-color-bg-container);
-      border: 1px solid var(--ant-color-border);
+    .insert-slot {
+      position: relative;
+      height: 20px;
+      z-index: 2;
+      &::before {
+        content: '';
+        position: absolute;
+        inset-inline: 32px 12px;
+        top: 50%;
+        border-top: 1px dashed var(--ant-color-border);
+        opacity: 0;
+      }
+      .insert-button {
+        opacity: 0;
+        pointer-events: none;
+        height: 24px;
+        padding-inline: var(--ant-padding-xs);
+        border: 1px solid var(--ant-color-border);
+        border-radius: 12px;
+        background: var(--ant-color-bg-container);
+        color: var(--ant-color-text-secondary);
+        font-size: var(--ant-font-size-sm);
+        &:not(:disabled):hover,
+        &:not(:disabled):active {
+          border-color: var(--ant-color-border);
+          background: var(--ant-color-fill-quaternary);
+          color: var(--ant-color-text);
+        }
+      }
     }
-    .rung.dim::before {
-      border-color: var(--ant-color-border-secondary);
+    .rung:hover > .insert-slot,
+    .insert-slot:hover,
+    .insert-slot:has(.insert-button:focus-visible) {
+      &::before {
+        opacity: 1;
+      }
+      .insert-button {
+        opacity: 1;
+        pointer-events: auto;
+      }
     }
-  `,
-  /* The whole vocabulary in one line, so the order stays readable while the
-     unused rungs are folded away. */
-  formula: css`
-    margin-top: 8px;
-    padding-left: 4px;
-    font-size: 12px;
-    color: var(--ant-color-text-tertiary);
-    .unused {
-      color: var(--ant-color-text-quaternary);
+    .insert-slot.editing {
+      height: auto;
+      padding: var(--ant-padding-xs) 0 var(--ant-padding-xs) 32px;
+      &::before {
+        content: none;
+      }
     }
-    .sup {
-      color: var(--ant-color-text-quaternary);
-      margin-inline: 6px;
+    @media (hover: none) {
+      .insert-slot::before,
+      .insert-slot .insert-button {
+        opacity: 1;
+        pointer-events: auto;
+      }
+    }
+    @media (max-width: 600px) {
+      .rung::before {
+        top: 29px;
+        bottom: -9px;
+      }
     }
   `
 }));
 
-interface KeyListProps {
-  keys: string[];
-  /** Rendered first with a lock; not removable, not draggable. */
-  lockedKey?: string | null;
-  /** The field the keys feed; decides which known keys are offered. */
-  fieldId: string;
-  vocabulary: KeyVocabulary;
-  /** Start with the editor open, for a list that begins empty. */
-  defaultEditing?: boolean;
-  onChange: (keys: string[]) => void;
-}
-
-/**
- * The any-of list of one field. Order matters only for a worker carrying two
- * of these keys at once, so the reorder is a plain drag between chips rather
- * than a full-blown sortable. Adding is inline, where the button was.
- */
-export const KeyList: React.FC<KeyListProps> = ({
-  keys,
-  lockedKey,
-  fieldId,
-  vocabulary,
-  defaultEditing,
-  onChange
-}) => {
-  const intl = useIntl();
-  const { styles } = useStyles();
-  const [dragging, setDragging] = useState<string | null>(null);
-  const [editing, setEditing] = useState(!!defaultEditing);
-
-  const movable = keys.filter((key) => key !== lockedKey);
-
-  const drop = (target: string) => {
-    if (!dragging || dragging === target) {
-      return;
-    }
-    const next = movable.filter((key) => key !== dragging);
-    next.splice(next.indexOf(target), 0, dragging);
-    onChange(lockedKey ? [lockedKey, ...next] : next);
-    setDragging(null);
-  };
-
-  return (
-    <Flex wrap gap={6} align="center">
-      {lockedKey && (
-        <Tooltip
-          title={intl.formatMessage({
-            id: 'clusters.topology.advanced.locked'
-          })}
-        >
-          <span className={styles.key}>
-            <LockOutlined className="lock" />
-            {lockedKey}
-          </span>
-        </Tooltip>
-      )}
-      {movable.map((key) => (
-        <span
-          key={key}
-          className={classNames(styles.key, { dragging: dragging === key })}
-          draggable
-          onDragStart={() => setDragging(key)}
-          onDragEnd={() => setDragging(null)}
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={() => drop(key)}
-        >
-          <HolderOutlined className="grip" />
-          {key}
-          <Button
-            type="text"
-            size="small"
-            icon={<CloseOutlined />}
-            style={{ width: 18, height: 18, minWidth: 18 }}
-            onClick={() => onChange(keys.filter((k) => k !== key))}
-          />
-        </span>
-      ))}
-      {editing ? (
-        <KeyEditor
-          fieldId={fieldId}
-          vocabulary={vocabulary}
-          existing={keys}
-          onAdd={(key) => {
-            onChange([...keys, key]);
-            setEditing(false);
-          }}
-          onCancel={() => setEditing(false)}
-        />
-      ) : (
-        <Button
-          type="link"
-          size="small"
-          style={{ padding: 0 }}
-          onClick={() => setEditing(true)}
-        >
-          <PlusOutlined />
-          {intl.formatMessage({ id: 'clusters.topology.layer.addKey' })}
-        </Button>
-      )}
-    </Flex>
-  );
-};
-
 interface FieldRowProps {
-  fieldId: string;
-  name: React.ReactNode;
-  /** The row's own actions, rendered at the right of the header. */
-  actions?: React.ReactNode;
-  keys: string[];
-  lockedKey?: string | null;
+  sequence: number;
+  row: DraftLayer;
+  actions: React.ReactNode;
   vocabulary: KeyVocabulary;
   classified: number;
   total: number;
-  /** The count just left zero: it blinks green once. */
-  flashing?: boolean;
-  /** No worker resolves it under the saved mapping. */
-  dim?: boolean;
+  flashing: boolean;
   expanded: boolean;
+  editing: boolean;
   onToggle: () => void;
+  onEditingChange: (editing: boolean) => void;
   onChange: (keys: string[]) => void;
 }
 
-/**
- * One line while collapsed — name, the key that decides, how many more are
- * tried, how many workers resolve — so a six-rung chain reads at a glance.
- * Open, it is the full any-of list.
- */
-export const FieldRow: React.FC<FieldRowProps> = ({
-  fieldId,
-  name,
+const FieldRow: React.FC<FieldRowProps> = ({
+  sequence,
+  row,
   actions,
-  keys,
-  lockedKey,
   vocabulary,
   classified,
   total,
   flashing,
-  dim,
   expanded,
+  editing,
   onToggle,
+  onEditingChange,
   onChange
 }) => {
   const intl = useIntl();
   const { styles } = useStyles();
-  const primary = lockedKey || keys[0] || null;
-  const more = keys.length - (primary ? 1 : 0);
-
+  const primary =
+    (row.builtin ? row.primaryKey : null) || row.labelKeys[0] || null;
   return (
     <div className={styles.row}>
       <Flex
         align="center"
-        gap={8}
+        gap={12}
         className="head"
         role="button"
         tabIndex={0}
         aria-expanded={expanded}
         onClick={onToggle}
         onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
+          if (
+            e.target === e.currentTarget &&
+            (e.key === 'Enter' || e.key === ' ')
+          ) {
             e.preventDefault();
             onToggle();
           }
         }}
       >
-        <span className="chevron">
-          {expanded ? <DownOutlined /> : <RightOutlined />}
-        </span>
-        <span className={classNames('name', { dim })}>{name}</span>
-        {primary ? (
-          <Tooltip title={primary}>
-            <code className="key">{primary}</code>
-          </Tooltip>
-        ) : (
-          <span className="note">
-            {intl.formatMessage({ id: 'clusters.topology.mapping.noKeys' })}
-          </span>
-        )}
-        {more > 0 && (
-          <span className="more">
-            {intl.formatMessage(
-              { id: 'clusters.topology.mapping.moreKeys' },
-              { count: more }
+        <Flex align="center" gap={24} className="identity">
+          <Flex align="center" justify="center" className="sequence">
+            <span className="sequence-number">{sequence}</span>
+            <IconFont type="icon-down" className="sequence-icon" aria-hidden />
+          </Flex>
+          <span className="name">
+            {row.label}
+            {row.builtin && (
+              <span className="row-note">
+                {intl.formatMessage({ id: 'clusters.topology.layer.builtin' })}
+              </span>
+            )}
+            {row.disabled && (
+              <span className="row-note">
+                {intl.formatMessage({ id: 'clusters.topology.layer.disabled' })}
+              </span>
             )}
           </span>
-        )}
-        <span className={classNames('count', { flash: flashing })}>
-          {intl.formatMessage(
-            { id: 'clusters.topology.mapping.classified' },
-            { classified, total }
+        </Flex>
+        <Flex align="center" gap={8} wrap className="summary">
+          {primary ? (
+            <Tooltip title={primary}>
+              <ThemeTag className="key" opacity={1}>
+                <span className="key-text">{primary}</span>
+              </ThemeTag>
+            </Tooltip>
+          ) : (
+            <Flex align="center" gap={4} className="no-keys">
+              <ExclamationCircleOutlined />
+              <span>
+                {intl.formatMessage({
+                  id: 'clusters.topology.mapping.noKeys.add'
+                })}
+              </span>
+            </Flex>
           )}
-        </span>
-        {/* Stops the click from also toggling the row: the menu is about the
-            layer, not about opening its key list. */}
-        {actions && (
+        </Flex>
+        <Flex align="center" gap={16} className="metrics">
+          <span className={classNames('count', { flash: flashing })}>
+            {intl.formatMessage(
+              { id: 'clusters.topology.mapping.classified' },
+              {
+                classified: <span className="classified">{classified}</span>,
+                total
+              }
+            )}
+          </span>
           <span
             className="row-actions"
             onClick={(e) => e.stopPropagation()}
@@ -368,51 +370,26 @@ export const FieldRow: React.FC<FieldRowProps> = ({
           >
             {actions}
           </span>
-        )}
+        </Flex>
       </Flex>
       {expanded && (
-        <div className="body">
+        <Flex orientation="vertical" gap={8} className="body">
+          <span className="keys-title">
+            {intl.formatMessage({
+              id: 'clusters.topology.mapping.keysPriority'
+            })}
+          </span>
           <KeyList
-            keys={keys}
-            lockedKey={lockedKey}
-            fieldId={fieldId}
+            keys={row.labelKeys}
+            lockedKey={row.builtin ? row.primaryKey : null}
+            fieldId={row.builtin ? row.name : CUSTOM_FIELD}
             vocabulary={vocabulary}
+            editing={editing}
+            onEditingChange={onEditingChange}
             onChange={onChange}
           />
-        </div>
+        </Flex>
       )}
-    </div>
-  );
-};
-
-interface StaticRowProps {
-  name: React.ReactNode;
-  /** Same grey as an unresolved field row. */
-  dim?: boolean;
-  count?: React.ReactNode;
-  /** Sits under the row at the key-list indent. */
-  detail?: React.ReactNode;
-  children?: React.ReactNode;
-}
-
-/** A row in the FieldRow grid that has nothing to fold: the host, a select. */
-export const StaticRow: React.FC<StaticRowProps> = ({
-  name,
-  dim,
-  count,
-  detail,
-  children
-}) => {
-  const { styles } = useStyles();
-  return (
-    <div className={styles.row}>
-      <Flex align="center" gap={8} className="head static">
-        <span className="chevron" />
-        <span className={classNames('name', { dim })}>{name}</span>
-        {children}
-        {count !== undefined && <span className="count">{count}</span>}
-      </Flex>
-      {detail && <div className="body">{detail}</div>}
     </div>
   );
 };
@@ -420,32 +397,26 @@ export const StaticRow: React.FC<StaticRowProps> = ({
 interface FieldChainProps {
   rows: DraftLayer[];
   total: number;
-  /** Workers resolving a value per field id, from the live preview. */
   classified: Record<string, number>;
   flashing: Set<string>;
   vocabulary: KeyVocabulary;
-  // `defaultShowUnused` was removed with the second chain: only the
-  // accelerator pane passed it, to keep its two still-unused rungs visible.
-  // The one chain's unused rungs stay folded, as they always did.
-  onAddLayer?: () => void;
+  reserved: string[];
+  /** Stages a layer and returns its id so its candidate-key editor can open. */
+  onAddLayer: (name: string, index: number) => string | undefined;
   onKeysChange: (id: string, keys: string[]) => void;
   onRename: (row: DraftLayer) => void;
   onToggleDisabled: (row: DraftLayer) => void;
   onDelete: (row: DraftLayer) => void;
 }
 
-/**
- * The layer chain, root at the top and the host at the bottom; the pane around
- * it owns the title. Rows nobody uses are hidden behind "show the N unused
- * fields": a fleet with racks and nothing else should see one rung and the
- * host, not the whole vocabulary.
- */
+/** The complete hierarchy, root to host. New layers are entered in the chain. */
 const FieldChain: React.FC<FieldChainProps> = ({
   rows,
   total,
   classified,
   flashing,
   vocabulary,
+  reserved,
   onAddLayer,
   onKeysChange,
   onRename,
@@ -454,36 +425,52 @@ const FieldChain: React.FC<FieldChainProps> = ({
 }) => {
   const intl = useIntl();
   const { styles } = useStyles();
-  const [expanded, setExpanded] = useState<Set<string>>(new Set());
-  const [showUnused, setShowUnused] = useState(false);
-
-  // A disabled rung is never "in use" however its data looks — that is the
-  // difference between switching it off and nobody having filled it in.
-  const inUse = (row: DraftLayer) =>
-    !row.disabled && (row.active || !row.builtin || row.customised);
-  const unused = rows.filter((row) => !inUse(row)).length;
-  const shown = showUnused ? rows : rows.filter(inUse);
-
-  const toggle = (id: string) => {
-    const next = new Set(expanded);
-    if (next.has(id)) {
-      next.delete(id);
-    } else {
-      next.add(id);
-    }
-    setExpanded(next);
-  };
-
+  const [{ expanded, editing }, setPanels] = useState(() => ({
+    expanded: new Set<string>(),
+    editing: new Set<string>()
+  }));
+  // Stable neighbour identity keeps the slot correct if another row is removed.
+  const [insertingAfter, setInsertingAfter] = useState<string | null>(null);
   const hostLabel = intl.formatMessage({ id: 'clusters.topology.field.host' });
-
-  /**
-   * What a rung offers. The two branches are the design's own split: a
-   * built-in rung belongs to the vocabulary and can only be switched off,
-   * while a custom one exists because someone added it and can be removed.
-   * Offering "delete" on a built-in would promise something the server
-   * refuses, and "disable" on a custom one would leave a row meaning nothing.
-   */
+  const taken = [...reserved, ...rows.flatMap((row) => [row.name, row.label])];
+  const toggle = (row: DraftLayer) => {
+    setPanels((current) => {
+      const expanded = new Set(current.expanded);
+      const editing = new Set(current.editing);
+      if (expanded.has(row.id)) {
+        expanded.delete(row.id);
+        editing.delete(row.id);
+      } else {
+        expanded.add(row.id);
+        if (!row.labelKeys.length) editing.add(row.id);
+      }
+      return { expanded, editing };
+    });
+  };
+  const openKeyEditor = (id: string) => {
+    setPanels((current) => ({
+      expanded: new Set([...current.expanded, id]),
+      editing: new Set([...current.editing, id])
+    }));
+  };
+  const changeEditing = (id: string, value: boolean) => {
+    setPanels((current) => {
+      const editing = new Set(current.editing);
+      if (value) editing.add(id);
+      else editing.delete(id);
+      return { ...current, editing };
+    });
+  };
   const rowActions = (row: DraftLayer) => [
+    {
+      key: 'addKey',
+      label: intl.formatMessage({ id: 'clusters.topology.layer.addKey' })
+    },
+    {
+      key: 'insert',
+      label: intl.formatMessage({ id: 'clusters.topology.layer.insert' })
+    },
+    { type: 'divider' as const },
     {
       key: 'rename',
       label: intl.formatMessage({ id: 'clusters.topology.layer.rename' })
@@ -503,67 +490,58 @@ const FieldChain: React.FC<FieldChainProps> = ({
           label: intl.formatMessage({ id: 'common.button.delete' })
         }
   ];
-
+  const insertionSlot = (afterId: string) => {
+    const editing = insertingAfter === afterId;
+    return (
+      <Flex
+        align="center"
+        justify="center"
+        className={classNames('insert-slot', { editing })}
+      >
+        {editing ? (
+          <InsertLayerInput
+            taken={taken}
+            onCancel={() => setInsertingAfter(null)}
+            onConfirm={(name) => {
+              const index = rows.findIndex((row) => row.id === afterId) + 1;
+              const id = onAddLayer(name, index);
+              if (id) {
+                openKeyEditor(id);
+                setInsertingAfter(null);
+              }
+            }}
+          />
+        ) : (
+          <Button
+            className="insert-button"
+            icon={<PlusOutlined />}
+            onClick={() => setInsertingAfter(afterId)}
+          >
+            {intl.formatMessage({ id: 'clusters.topology.custom.insertHere' })}
+          </Button>
+        )}
+      </Flex>
+    );
+  };
   return (
     <Flex orientation="vertical" gap={8}>
-      {unused > 0 && (
-        <Flex justify="flex-end">
-          <Button
-            type="link"
-            size="small"
-            style={{ padding: 0 }}
-            onClick={() => setShowUnused(!showUnused)}
-          >
-            {showUnused
-              ? intl.formatMessage({
-                  id: 'clusters.topology.mapping.hideUnused'
-                })
-              : intl.formatMessage(
-                  { id: 'clusters.topology.mapping.showUnused' },
-                  { count: unused }
-                )}
-          </Button>
-        </Flex>
-      )}
       <div className={styles.chain}>
-        {shown.map((row) => (
-          <div
-            key={row.id}
-            className={classNames('rung', { dim: !inUse(row) })}
-          >
+        {rows.map((row, index) => (
+          <div key={row.id} className="rung">
             <FieldRow
-              fieldId={row.id}
-              // Both a disabled rung and one nobody filled in are folded away
-              // and drawn grey, but they are not the same state: the second
-              // comes back the moment a worker grows the label, the first
-              // does not. Only one of them needs saying.
-              name={
-                row.disabled ? (
-                  <>
-                    {row.label}
-                    <span className="row-note">
-                      {intl.formatMessage({
-                        id: 'clusters.topology.layer.disabled'
-                      })}
-                    </span>
-                  </>
-                ) : (
-                  row.label
-                )
-              }
+              sequence={index + 1}
+              row={row}
               actions={
                 <Dropdown
                   trigger={['click']}
                   menu={{
                     items: rowActions(row),
                     onClick: ({ key }) => {
-                      if (key === 'rename') {
-                        onRename(row);
-                      } else if (key === 'disable') {
-                        onToggleDisabled(row);
-                      } else if (key === 'delete') {
-                        onDelete(row);
-                      }
+                      if (key === 'addKey') openKeyEditor(row.id);
+                      else if (key === 'insert') setInsertingAfter(row.id);
+                      else if (key === 'rename') onRename(row);
+                      else if (key === 'disable') onToggleDisabled(row);
+                      else if (key === 'delete') onDelete(row);
                     }
                   }}
                 >
@@ -577,61 +555,59 @@ const FieldChain: React.FC<FieldChainProps> = ({
                   />
                 </Dropdown>
               }
-              keys={row.labelKeys}
-              lockedKey={row.primaryKey}
               vocabulary={vocabulary}
               classified={classified[row.id] ?? 0}
               total={total}
               flashing={flashing.has(row.id)}
-              dim={!inUse(row)}
               expanded={expanded.has(row.id)}
-              onToggle={() => toggle(row.id)}
+              editing={editing.has(row.id)}
+              onToggle={() => toggle(row)}
+              onEditingChange={(value) => changeEditing(row.id, value)}
               onChange={(keys) => onKeysChange(row.id, keys)}
             />
+            {!expanded.has(row.id) || insertingAfter === row.id ? (
+              insertionSlot(row.id)
+            ) : (
+              <div style={{ height: 20 }} />
+            )}
           </div>
         ))}
-        <div className="rung">
-          <StaticRow
-            name={hostLabel}
-            count={intl.formatMessage(
-              { id: 'clusters.topology.mapping.classified' },
-              { classified: total, total }
-            )}
-          >
-            <span className="note">
+        <div className={styles.row}>
+          <Flex align="center" gap={12} className="head static">
+            <Flex align="center" gap={24} className="identity">
+              <Flex align="center" justify="center" className="sequence">
+                {rows.length + 1}
+              </Flex>
+              <span className="name">
+                {hostLabel}
+                <span className="row-note">
+                  {intl.formatMessage({
+                    id: 'clusters.topology.layer.builtin'
+                  })}
+                </span>
+              </span>
+            </Flex>
+            <span className="summary note">
               {intl.formatMessage({
                 id: 'clusters.topology.advanced.hostKeys'
               })}
             </span>
-          </StaticRow>
+            <Flex align="center" gap={16} className="metrics">
+              <span className="count">
+                {intl.formatMessage(
+                  { id: 'clusters.topology.mapping.classified' },
+                  {
+                    classified: <span className="classified">{total}</span>,
+                    total
+                  }
+                )}
+              </span>
+              <span className="row-actions" />
+            </Flex>
+          </Flex>
         </div>
-      </div>
-      {onAddLayer && (
-        <Flex>
-          <Button
-            type="link"
-            size="small"
-            style={{ padding: 0 }}
-            onClick={onAddLayer}
-          >
-            <PlusOutlined />
-            {intl.formatMessage({ id: 'clusters.topology.custom.title' })}
-          </Button>
-        </Flex>
-      )}
-      <div className={styles.formula}>
-        {rows.map((row) => (
-          <span key={row.id}>
-            <span className={classNames({ unused: !inUse(row) })}>
-              {row.label}
-            </span>
-            <span className="sup">⊃</span>
-          </span>
-        ))}
-        <span>{hostLabel}</span>
       </div>
     </Flex>
   );
 };
-
 export default FieldChain;

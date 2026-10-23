@@ -242,17 +242,15 @@ export default {
 
   // Topology: where this cluster's workers sit.
   'clusters.topology.title': 'Настройка топологии',
-  'clusters.topology.noRebalance':
-    'Расположение влияет только на последующее планирование. Работающие развёртывания не перемещаются.',
   'clusters.topology.load.failed': 'Не удалось загрузить топологию.',
   'clusters.topology.save.failed': 'Не удалось сохранить.',
   'clusters.topology.preview.failed':
     'Не удалось показать предпросмотр этого сопоставления.',
   'clusters.topology.preview.noWorkers': 'В этом кластере пока нет Worker.',
   'clusters.topology.preview.capacity':
-    '{workers} Worker · {gpus} GPU · свободно {free}',
+    '{workers} Worker · {gpus} GPU · не выделено {free}',
   'clusters.topology.cluster': 'Кластер',
-  'clusters.topology.discard.ok': 'Отменить',
+  'clusters.topology.discard.ok': 'Отменить изменения',
   'clusters.topology.field.region': 'Регион',
   'clusters.topology.field.zone': 'Зона',
   'clusters.topology.field.room': 'Зал',
@@ -278,28 +276,35 @@ export default {
     '● Предпросмотр: основная панель показывает несохранённое сопоставление',
   'clusters.topology.view.table': 'Таблица',
   'clusters.topology.view.tree': 'Дерево',
-  'clusters.topology.search.placeholder': 'Поиск хостов…',
+  'clusters.topology.search.placeholder': 'Поиск хостов',
   'clusters.topology.columns': 'Столбцы',
-  'clusters.topology.columns.fields': 'Поля расположения',
-  'clusters.topology.columns.manage': 'Управление уровнями',
-  'clusters.topology.columns.mapping': 'Сопоставление ключей меток…',
-  'clusters.topology.columns.deleteCustom': 'Удалить поле «{name}»',
-  'clusters.topology.columns.deleteCustom.confirm':
-    'Удалить поле «{name}»? Заполненные значения останутся в метках Worker.',
-  'clusters.topology.columns.deleted': 'Поле «{name}» удалено',
-  'clusters.topology.selected': 'Выбрано: {count}',
-  'clusters.topology.clearSelection': 'Снять выбор',
-  'clusters.topology.batch.button': 'Задать расположение',
-  'clusters.topology.batch.title': 'Задать расположение · выбрано {count}',
-  'clusters.topology.batch.field': 'Поле',
-  'clusters.topology.batch.value': 'Значение',
+  'clusters.topology.columns.fields': 'Уровни топологии',
+  'clusters.topology.columns.manage': 'Управлять уровнями',
+  'clusters.topology.columns.mapping': 'Управлять уровнями',
+  'clusters.topology.batch.button': 'Задать значение уровня',
+  'clusters.topology.batch.title': 'Задать значение уровня',
+  'clusters.topology.batch.selected': 'Выбрано: {count}',
+  'clusters.topology.batch.field': 'Уровень топологии',
+  'clusters.topology.batch.value': 'Значение метки',
+  'clusters.topology.batch.value.placeholder':
+    'Выберите или введите значение метки',
+  'clusters.topology.batch.labelKey': 'Метка: {key}',
+  'clusters.topology.batch.summary':
+    'Задать значение уровня «{field}» для {count} Worker: {value}',
+  'clusters.topology.batch.noWritableLayers':
+    'Нет доступных для записи уровней. Сначала настройте ключи меток в разделе «Управлять уровнями».',
+  'clusters.topology.batch.clearHint':
+    'После удаления записанной метки уровень может вернуться к значению другой метки-кандидата или к значению, сообщённому устройством.',
+  'clusters.topology.batch.clearSummary':
+    'Удалить метку, записанную для этого уровня, у {count} Worker.',
+  'clusters.topology.batch.clearExisting':
+    'Удалить метки у {count} Worker: {names}',
   'clusters.topology.batch.overwrite':
-    'Будет перезаписано значений: {count}: {names}',
+    'Будут перезаписаны существующие значения {count} Worker: {names}',
   'clusters.topology.batch.overwriteAuto':
-    'У {count} из них «{field}» сообщено устройством и будет переопределено',
+    'Будут перезаписаны полученные от устройств значения для {count} Worker',
   'clusters.topology.batch.more': '{names} и ещё {count}',
   'clusters.topology.batch.apply': 'Применить к {count}',
-  'clusters.topology.batch.partial': 'Запись не удалась в кластерах: {failed}.',
   'clusters.topology.toast.setOne': '{field} для {host}: {value}',
   'clusters.topology.toast.clearedOne': '{field} для {host} очищено',
   'clusters.topology.toast.set': '{field} для {count} Worker: {value}',
@@ -310,6 +315,9 @@ export default {
   'clusters.topology.undo.done': 'Отменено',
   'clusters.topology.undo.failed': 'Не удалось отменить: {reason}',
   'clusters.topology.cell.fill': 'Заполнить: {field}',
+  'clusters.topology.cell.unfilled': 'Значение уровня не задано',
+  'clusters.topology.cell.noKeys.tips':
+    'Сначала задайте ключи меток этого уровня в разделе «Управлять уровнями».',
   'clusters.topology.cell.aria': '{field}, {state}, {host}',
   'clusters.topology.state.unfilled': 'не заполнено',
   'clusters.topology.state.discovered.aria': '{value}, сообщено устройством',
@@ -319,13 +327,15 @@ export default {
     'Сообщено устройством ({key}). Ручной ввод переопределит это.',
   'clusters.topology.state.override.tips':
     'Введено вручную. Очистка вернёт сообщённое значение {value}',
-  'clusters.topology.state.user.tips': 'Введено вручную ({key})',
+  'clusters.topology.state.user.tips': 'Из метки: {key}',
   'clusters.topology.override.confirm':
     'Это значение сообщено устройством; ручной ввод переопределит его.',
   'clusters.topology.override.ok': 'Переопределить',
   'clusters.topology.value.count': 'Worker: {count}',
   'clusters.topology.value.create': 'Создать «{value}»',
   'clusters.topology.value.clear': 'Очистить',
+  'clusters.topology.value.empty':
+    'Нет доступных значений. Введите значение метки.',
   'clusters.topology.column.menu': 'Меню столбца «{field}»',
   'clusters.topology.column.fillUnfilled': 'Заполнить незаполненные ({count})…',
   'clusters.topology.column.fillBySwitch':
@@ -339,30 +349,26 @@ export default {
   'clusters.topology.tree.byField': 'По «{field}»',
   'clusters.topology.tree.expandAll': 'Развернуть всё',
   'clusters.topology.tree.collapseAll': 'Свернуть всё',
-  'clusters.topology.tree.unfilled': 'Без значения «{field}»',
-  'clusters.topology.tree.unfilled.why':
-    'Нет метки {key} (и ни одного из её вариантов)',
+  'clusters.topology.tree.unfilled': 'Не задано',
+  'clusters.topology.tree.unmatched.tips':
+    'Для этих Worker пока не найдено подходящее значение метки этого уровня.',
+  'clusters.topology.tree.candidateKeys':
+    'Ключи-кандидаты меток (задайте любую из меток)',
   'clusters.topology.tree.more': 'ещё {count}',
-  'clusters.topology.tree.hostCapacity': '{gpus} GPU · свободно {free}',
-  'clusters.topology.onboarding.hosts': 'Обнаружено хостов: {hosts}.',
-  'clusters.topology.onboarding.goal':
-    'Чтобы участники PD-группы размещались рядом:',
-  'clusters.topology.onboarding.steps':
-    '① Выберите машины одной стойки → ② «Задать расположение» с именем стойки → ③ При развёртывании выберите «та же стойка»',
-  'clusters.topology.onboarding.domains':
-    'Домен ускорителей, о котором сообщает оборудование (многоузловой NVLink, суперпод Ascend), тоже может быть уровнем: добавьте его в «Добавить уровень» и укажите подходящий ключ метки — значения подставятся сами.',
-  'clusters.topology.onboarding.dismiss': 'Понятно',
-  'clusters.topology.mapping.title': 'Сопоставление ключей меток',
+  'clusters.topology.tree.hostCapacity': '{gpus} GPU · не выделено {free}',
+  'clusters.topology.mapping.title': 'Управлять уровнями',
   'clusters.topology.mapping.intro':
-    'Из какой метки Worker каждое поле читает значение',
-  'clusters.topology.mapping.showUnused':
-    'Показать неиспользуемые поля ({count})',
-  'clusters.topology.mapping.hideUnused': 'Скрыть неиспользуемые поля',
-  'clusters.topology.mapping.moreKeys': '+ ещё {count} ключ(ей)',
+    'Значения уровней читаются из меток Worker по ключам-кандидатам. Порядок ключей задаёт приоритет: используется первое непустое значение.',
+  'clusters.topology.mapping.keysPriority':
+    'Ключи-кандидаты меток (по приоритету)',
   'clusters.topology.mapping.classified': 'Распознано {classified} / {total}',
   'clusters.topology.mapping.noKeys': 'Ключи меток не заданы',
+  'clusters.topology.mapping.noKeys.add':
+    'Ключи меток не заданы (нажмите, чтобы добавить)',
+  'clusters.topology.layer.builtin': '[Встроенный]',
   'clusters.topology.layer.labelKeys': 'Ключи меток',
-  'clusters.topology.layer.addKey': 'Добавить ключ',
+  'clusters.topology.layer.addKey': 'Добавить ключ-кандидат',
+  'clusters.topology.layer.insert': 'Вставить уровень',
   'clusters.topology.layer.rename': 'Переименовать',
   'clusters.topology.layer.rename.tips':
     'Меняется только отображаемое имя. Идентификатор уровня, его ключи меток и уже сохранённая в моделях топологическая привязка не затрагиваются. Оставьте поле пустым, чтобы вернуть имя по умолчанию. Идентификатор уровня:',
@@ -382,18 +388,22 @@ export default {
   'clusters.topology.advanced.suggestion':
     '{workers} Worker · {values} значений · похоже на {field}',
   'clusters.topology.advanced.discard':
-    'Отменить изменения сопоставления полей?',
+    'Отменить несохранённые изменения уровней?',
   'clusters.topology.advanced.discard.tips':
-    'Значения, заполненные в таблице, не затрагиваются.',
+    'Изменения уровней и ключей-кандидатов меток не будут сохранены.',
+  'clusters.topology.advanced.discard.cancel': 'Продолжить редактирование',
   'clusters.topology.advanced.saved':
     'Сохранено. Влияет только на последующее планирование; работающие группы не перемещаются.',
-  'clusters.topology.keys.placeholder': 'Введите ключ метки или выберите ниже',
+  'clusters.topology.keys.workerLabels': 'Метки Worker',
+  'clusters.topology.keys.placeholder': 'Введите или выберите ключ метки',
   'clusters.topology.keys.invalid':
     'Некорректный ключ метки Kubernetes (префикс ≤ 253, имя ≤ 63, буквы, цифры, - _ .)',
   'clusters.topology.keys.usage':
     'Этот ключ есть у {count} Worker ({values} значений)',
   'clusters.topology.keys.exists': 'Этот ключ уже добавлен',
   'clusters.topology.custom.title': 'Добавить уровень',
+  'clusters.topology.custom.insertHere': 'Вставить уровень здесь',
+  'clusters.topology.custom.name.placeholder': 'Название уровня',
   'clusters.topology.custom.name.required': 'Введите имя',
   'clusters.topology.custom.name.taken': 'Это имя занято или зарезервировано',
   'clusters.topology.custom.name.tips':

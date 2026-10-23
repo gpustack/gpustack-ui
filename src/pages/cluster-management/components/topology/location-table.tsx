@@ -1,9 +1,11 @@
+import { status, WorkerStatusMapValue } from '@/pages/resources/config';
+import { StatusDot } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Table, Tooltip } from 'antd';
 import { createStyles } from 'antd-style';
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { TopologyWorker } from '../../config/types';
-import { LocationField, isFilled, valueOptions } from './location';
+import { isFilled, LocationField, valueOptions } from './location';
 import LocationCell from './location-cell';
 
 /** Past this many rows the table renders only what is on screen. */
@@ -17,44 +19,21 @@ const useStyles = createStyles(({ css }) => ({
     .ant-table-cell {
       padding-block: 6px !important;
     }
-    .host {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      max-width: 100%;
-      .dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        flex-shrink: 0;
-        background: var(--ant-color-success);
-      }
-      .dot.offline {
-        background: transparent;
-        border: 1px solid var(--ant-color-text-quaternary);
-      }
-      .name {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
+    .ant-table .ant-table-cell-fix {
+      background-color: var(--ant-color-bg-elevated);
     }
-  `,
-  /* A tint that fades rather than a border: the row was pointed at from the
-     tree or the Workers list, and the eye needs a moment to find it, not a
-     permanent mark. */
-  highlight: css`
-    > td {
-      animation: topology-row-highlight 3s ease-out forwards;
+    .ant-table .ant-table-thead > tr > .ant-table-cell-fix {
+      background:
+        linear-gradient(
+          var(--ant-color-fill-tertiary),
+          var(--ant-color-fill-tertiary)
+        ),
+        var(--ant-color-bg-elevated);
     }
-    @keyframes topology-row-highlight {
-      0%,
-      60% {
-        background-color: var(--ant-color-primary-bg);
-      }
-      100% {
-        background-color: transparent;
-      }
+    .ant-table
+      .ant-table-row-selected
+      > .ant-table-cell.ant-table-cell-fix:not(.ant-table-cell-row-hover) {
+      background-color: var(--ant-color-bg-elevated);
     }
   `
 }));
@@ -72,7 +51,6 @@ interface LocationTableProps {
   fields: LocationField[];
   selectedIds: number[];
   onSelectionChange: (ids: number[]) => void;
-  highlightId?: number | null;
   /** Body height in px; the virtual list needs a number. */
   height: number;
   onAssign: (
@@ -93,7 +71,6 @@ const LocationTable: React.FC<LocationTableProps> = ({
   fields,
   selectedIds,
   onSelectionChange,
-  highlightId,
   height,
   onAssign,
   onBusy
@@ -101,7 +78,6 @@ const LocationTable: React.FC<LocationTableProps> = ({
   const intl = useIntl();
   const { styles } = useStyles();
   const [editing, setEditing] = useState<EditingCell | null>(null);
-  const tableRef = useRef<any>(null);
 
   const fieldIds = fields.map((field) => field.id);
   const unfilledAny = (worker: TopologyWorker) =>
@@ -118,12 +94,6 @@ const LocationTable: React.FC<LocationTableProps> = ({
     const br = b.location?.rack?.value || '';
     return ar.localeCompare(br) || a.name.localeCompare(b.name);
   });
-
-  useEffect(() => {
-    if (highlightId && rows.some((row) => row.id === highlightId)) {
-      tableRef.current?.scrollTo?.({ key: highlightId });
-    }
-  }, [highlightId]);
 
   const optionsByField = Object.fromEntries(
     fields.map((field) => [field.id, valueOptions(allWorkers, field.id)])
@@ -195,20 +165,14 @@ const LocationTable: React.FC<LocationTableProps> = ({
       fixed: 'left',
       width: HOST_WIDTH,
       render: (name: string, worker: TopologyWorker) => (
-        <Tooltip
-          title={
-            worker.state === 'ready'
-              ? intl.formatMessage({ id: 'clusters.topology.host.online' })
-              : intl.formatMessage({ id: 'clusters.topology.host.offline' })
-          }
-        >
-          {/* Plain text: the open-source edition has no worker detail page
-              to send anyone to. */}
-          <span className="host">
-            <span
-              className={worker.state === 'ready' ? 'dot' : 'dot offline'}
+        <Tooltip title={WorkerStatusMapValue[worker.state] || worker.state}>
+          <span>
+            <StatusDot
+              statusValue={{
+                status: status[worker.state] || 'inactive',
+                text: name
+              }}
             />
-            <span className="name">{name}</span>
           </span>
         </Tooltip>
       )
@@ -229,8 +193,7 @@ const LocationTable: React.FC<LocationTableProps> = ({
 
   return (
     <Table
-      ref={tableRef}
-      className={styles.table}
+      className={`${styles.table} scroll-table`}
       size="small"
       rowKey="id"
       tableLayout="fixed"
@@ -239,9 +202,6 @@ const LocationTable: React.FC<LocationTableProps> = ({
       pagination={false}
       virtual={rows.length > VIRTUAL_THRESHOLD}
       scroll={{ x: totalWidth, y: height }}
-      rowClassName={(row: TopologyWorker) =>
-        row.id === highlightId ? styles.highlight : ''
-      }
       rowSelection={{
         selectedRowKeys: selectedIds,
         columnWidth: SELECT_WIDTH,

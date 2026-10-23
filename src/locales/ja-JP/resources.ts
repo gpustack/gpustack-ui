@@ -129,10 +129,8 @@ export default {
   'resources.worker.targetVersion': '更新先のバージョン: {version}',
   'resources.driver.version': 'ドライバーのバージョン: {version}',
 
-  'resources.worker.setLabels': 'ラベルを追加・更新',
+  'resources.worker.setLabels': 'ラベルを設定',
   'resources.worker.setLabels.count': '{count} 台の Worker を選択中',
   'resources.worker.setLabels.hint':
-    '選択したすべての Worker にラベルを追加し、同じキーの値を更新します。他のラベルは保持されます。ラベルを削除するには、Worker を個別に編集してください。',
-  'resources.table.location': 'トポロジー階層',
-  'resources.worker.setLocation': '位置を設定'
+    '選択したすべての Worker にラベルを追加し、同じキーの値を更新します。他のラベルは保持されます。ラベルを削除するには、Worker を個別に編集してください。'
 };

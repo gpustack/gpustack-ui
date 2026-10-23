@@ -237,16 +237,14 @@ export default {
 
   // Topology: where this cluster's workers sit.
   'clusters.topology.title': 'Topology Configuration',
-  'clusters.topology.noRebalance':
-    'Locations only affect later scheduling. Running deployments are not moved.',
   'clusters.topology.load.failed': 'Could not load the topology.',
   'clusters.topology.save.failed': 'Could not save.',
   'clusters.topology.preview.failed': 'Could not preview this mapping.',
   'clusters.topology.preview.noWorkers': 'This cluster has no workers yet.',
   'clusters.topology.preview.capacity':
-    '{workers} workers · {gpus} GPUs · {free} free',
+    '{workers} workers · {gpus} GPUs · {free} unallocated',
   'clusters.topology.cluster': 'Cluster',
-  'clusters.topology.discard.ok': 'Discard',
+  'clusters.topology.discard.ok': 'Discard changes',
   'clusters.topology.field.region': 'Region',
   'clusters.topology.field.zone': 'Zone',
   'clusters.topology.field.room': 'Room',
@@ -272,28 +270,34 @@ export default {
     '● Previewing: the main drawer shows the unsaved mapping',
   'clusters.topology.view.table': 'Table',
   'clusters.topology.view.tree': 'Tree',
-  'clusters.topology.search.placeholder': 'Search hosts…',
+  'clusters.topology.search.placeholder': 'Search hosts',
   'clusters.topology.columns': 'Columns',
-  'clusters.topology.columns.fields': 'Topology Layers',
-  'clusters.topology.columns.manage': 'Manage layers',
-  'clusters.topology.columns.mapping': 'Label key mapping…',
-  'clusters.topology.columns.deleteCustom': 'Delete field “{name}”',
-  'clusters.topology.columns.deleteCustom.confirm':
-    'Delete field “{name}”? Filled values stay on the workers’ labels.',
-  'clusters.topology.columns.deleted': 'Field “{name}” deleted',
-  'clusters.topology.selected': '{count} selected',
-  'clusters.topology.clearSelection': 'Clear selection',
-  'clusters.topology.batch.button': 'Set Topology Layers',
-  'clusters.topology.batch.title': 'Set Topology Layers · {count} selected',
-  'clusters.topology.batch.field': 'Field',
-  'clusters.topology.batch.value': 'Value',
+  'clusters.topology.columns.fields': 'Topology layers',
+  'clusters.topology.columns.manage': 'Manage Layers',
+  'clusters.topology.columns.mapping': 'Manage Layers',
+  'clusters.topology.batch.button': 'Set Layer Value',
+  'clusters.topology.batch.title': 'Set Layer Value',
+  'clusters.topology.batch.selected': '{count} selected',
+  'clusters.topology.batch.field': 'Topology layer',
+  'clusters.topology.batch.value': 'Label value',
+  'clusters.topology.batch.value.placeholder': 'Select or enter a label value',
+  'clusters.topology.batch.labelKey': 'Label: {key}',
+  'clusters.topology.batch.summary':
+    'Set {field} to {value} on {count} Workers',
+  'clusters.topology.batch.noWritableLayers':
+    'No writable layers. Configure label keys in “Manage Layers” first.',
+  'clusters.topology.batch.clearHint':
+    'After removing the written label, the layer may fall back to another candidate label or a device-reported value.',
+  'clusters.topology.batch.clearSummary':
+    'Remove the label written for this layer from {count} Workers.',
+  'clusters.topology.batch.clearExisting':
+    'Remove labels from {count} Workers: {names}',
   'clusters.topology.batch.overwrite':
-    'Overwrites {count} existing value(s): {names}',
+    'Overwrite existing values on {count} Workers: {names}',
   'clusters.topology.batch.overwriteAuto':
-    '{count} of these have a device-reported {field}; it will be overridden',
+    'Overwrite device-reported values on {count} Workers',
   'clusters.topology.batch.more': '{names} and {count} more',
   'clusters.topology.batch.apply': 'Apply to {count}',
-  'clusters.topology.batch.partial': 'The write failed on {failed} cluster(s).',
   'clusters.topology.toast.setOne': '{field} of {host} set to {value}',
   'clusters.topology.toast.clearedOne': '{field} of {host} cleared',
   'clusters.topology.toast.set': '{field} of {count} workers set to {value}',
@@ -303,6 +307,9 @@ export default {
   'clusters.topology.undo.done': 'Undone',
   'clusters.topology.undo.failed': 'Undo failed: {reason}',
   'clusters.topology.cell.fill': 'Fill in {field}',
+  'clusters.topology.cell.unfilled': 'Layer value not set',
+  'clusters.topology.cell.noKeys.tips':
+    'First set label keys for this layer in “Manage Layers”.',
   'clusters.topology.cell.aria': '{field}, {state}, {host}',
   'clusters.topology.state.unfilled': 'unfilled',
   'clusters.topology.state.discovered.aria': '{value}, reported by the device',
@@ -312,13 +319,14 @@ export default {
     'Reported by the device ({key}). Filling it in overrides this.',
   'clusters.topology.state.override.tips':
     'Hand-filled. Clearing restores the reported value {value}',
-  'clusters.topology.state.user.tips': 'Hand-filled ({key})',
+  'clusters.topology.state.user.tips': 'From label: {key}',
   'clusters.topology.override.confirm':
     'This value was reported by the device; filling it in overrides it.',
   'clusters.topology.override.ok': 'Override',
   'clusters.topology.value.count': '{count} workers',
   'clusters.topology.value.create': 'Create “{value}”',
   'clusters.topology.value.clear': 'Clear',
+  'clusters.topology.value.empty': 'No available values. Enter a label value.',
   'clusters.topology.column.menu': '{field} column menu',
   'clusters.topology.column.fillUnfilled': 'Fill the {count} unfilled…',
   'clusters.topology.column.fillBySwitch':
@@ -332,29 +340,25 @@ export default {
   'clusters.topology.tree.byField': 'By {field}',
   'clusters.topology.tree.expandAll': 'Expand all',
   'clusters.topology.tree.collapseAll': 'Collapse all',
-  'clusters.topology.tree.unfilled': 'No {field} yet',
-  'clusters.topology.tree.unfilled.why':
-    'Missing the label {key} (or any of its alternatives)',
+  'clusters.topology.tree.unfilled': 'Not set',
+  'clusters.topology.tree.unmatched.tips':
+    'These Workers have no matching label value for this layer yet.',
+  'clusters.topology.tree.candidateKeys':
+    'Candidate label keys (set any one label)',
   'clusters.topology.tree.more': '{count} more',
-  'clusters.topology.tree.hostCapacity': '{gpus} GPUs · {free} free',
-  'clusters.topology.onboarding.hosts': '{hosts} hosts found.',
-  'clusters.topology.onboarding.goal':
-    'To keep the members of a disaggregated group together:',
-  'clusters.topology.onboarding.steps':
-    '① Select the machines in one rack → ② Use “Set Topology Layers” to enter the rack name → ③ Choose “same rack” when deploying',
-  'clusters.topology.onboarding.domains':
-    'A device-reported accelerator domain (multi-node NVLink, an Ascend super pod) can be a layer too: add one under “Add layer”, point it at the matching label key, and it fills itself in.',
-  'clusters.topology.onboarding.dismiss': 'Got it',
-  'clusters.topology.mapping.title': 'Label key mapping',
+  'clusters.topology.tree.hostCapacity': '{gpus} GPUs · {free} unallocated',
+  'clusters.topology.mapping.title': 'Manage Layers',
   'clusters.topology.mapping.intro':
-    'Which worker label each field reads its value from',
-  'clusters.topology.mapping.showUnused': 'Show the {count} unused field(s)',
-  'clusters.topology.mapping.hideUnused': 'Hide unused fields',
-  'clusters.topology.mapping.moreKeys': '+ {count} more key(s)',
+    'Layer values are read from Worker labels using the candidate label keys. Key order determines priority: the first non-empty value is used.',
+  'clusters.topology.mapping.keysPriority':
+    'Candidate label keys (in priority order)',
   'clusters.topology.mapping.classified': 'Resolved {classified} / {total}',
   'clusters.topology.mapping.noKeys': 'No label keys',
+  'clusters.topology.mapping.noKeys.add': 'No label keys (click to add)',
+  'clusters.topology.layer.builtin': '[Built-in]',
   'clusters.topology.layer.labelKeys': 'Label keys',
-  'clusters.topology.layer.addKey': 'Add key',
+  'clusters.topology.layer.addKey': 'Add candidate key',
+  'clusters.topology.layer.insert': 'Insert layer',
   'clusters.topology.layer.rename': 'Rename',
   'clusters.topology.layer.rename.tips':
     "Changes the display name only. The layer's identity, its label keys and any topology affinity already saved on a model are untouched. Leave it empty to restore the default. Layer id:",
@@ -373,19 +377,22 @@ export default {
   'clusters.topology.advanced.suggestions': 'Discovered label keys',
   'clusters.topology.advanced.suggestion':
     '{workers} workers · {values} values · looks like {field}',
-  'clusters.topology.advanced.discard':
-    'Discard the changes to the field mapping?',
+  'clusters.topology.advanced.discard': 'Discard unsaved layer changes?',
   'clusters.topology.advanced.discard.tips':
-    'Values filled in the table are not affected.',
+    'These changes to layers and candidate label keys will not be saved.',
+  'clusters.topology.advanced.discard.cancel': 'Continue editing',
   'clusters.topology.advanced.saved':
     'Saved. Only affects later scheduling; running groups are not moved.',
-  'clusters.topology.keys.placeholder': 'Type a label key, or pick one below',
+  'clusters.topology.keys.workerLabels': 'Worker labels',
+  'clusters.topology.keys.placeholder': 'Enter or select a label key',
   'clusters.topology.keys.invalid':
     'Not a valid Kubernetes label key (prefix ≤ 253, name ≤ 63, alphanumerics - _ .)',
   'clusters.topology.keys.usage':
     '{count} workers carry this key ({values} values)',
   'clusters.topology.keys.exists': 'This key is already added',
   'clusters.topology.custom.title': 'Add layer',
+  'clusters.topology.custom.insertHere': 'Insert layer here',
+  'clusters.topology.custom.name.placeholder': 'Layer name',
   'clusters.topology.custom.name.required': 'Enter a name',
   'clusters.topology.custom.name.taken': 'This name is taken or reserved',
   'clusters.topology.custom.name.tips':

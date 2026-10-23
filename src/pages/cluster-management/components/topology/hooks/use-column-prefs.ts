@@ -28,8 +28,8 @@ const read = (clusterId?: number | null): ColumnPrefs => {
 export interface UseColumnPrefs {
   isShown: (field: LocationField) => boolean;
   setShown: (id: string, shown: boolean) => void;
-  /** A deleted layer must not leave a stale toggle behind. */
-  forget: (id: string) => void;
+  showFields: (ids: string[]) => void;
+  reset: () => void;
   gpus: boolean;
   source: boolean;
   setGpus: (shown: boolean) => void;
@@ -37,9 +37,9 @@ export interface UseColumnPrefs {
 }
 
 /**
- * Which columns the table shows, per cluster, in localStorage. Stored as
- * overrides rather than the full set so a field that becomes active later —
- * a colleague filled it — appears without anyone having to re-tick it.
+ * Which columns the table shows, per cluster, in localStorage. Only explicit
+ * choices are stored; other fields follow the default availability-zone and
+ * rack visibility, even when workers acquire values for another layer.
  */
 const useColumnPrefs = (clusterId?: number | null): UseColumnPrefs => {
   const [prefs, setPrefs] = useState<ColumnPrefs>(() => read(clusterId));
@@ -59,10 +59,19 @@ const useColumnPrefs = (clusterId?: number | null): UseColumnPrefs => {
     isShown: (field) => prefs.fields[field.id] ?? shownByDefault(field),
     setShown: (id, shown) =>
       update({ ...prefs, fields: { ...prefs.fields, [id]: shown } }),
-    forget: (id) => {
-      const { [id]: _dropped, ...fields } = prefs.fields;
-      update({ ...prefs, fields });
+    showFields: (ids) => {
+      if (!ids.length) {
+        return;
+      }
+      update({
+        ...prefs,
+        fields: {
+          ...prefs.fields,
+          ...Object.fromEntries(ids.map((id) => [id, true]))
+        }
+      });
     },
+    reset: () => update(DEFAULTS),
     gpus: prefs.gpus,
     source: prefs.source,
     setGpus: (gpus) => update({ ...prefs, gpus }),

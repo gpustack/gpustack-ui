@@ -32,6 +32,7 @@ mock.module('@ant-design/icons', {
 });
 mock.module('@gpustack/core-ui', {
   namedExports: {
+    IconFont: empty,
     DeleteModal: forwardRef(empty),
     DropdownButtons: (props: any) => {
       batchActions = props;
@@ -95,27 +96,12 @@ mock.module(
   }
 );
 mock.module(
-  new URL('../../../cluster-management/apis/index.ts', import.meta.url).href,
-  {
-    namedExports: { queryClusterTopology: async () => ({}) }
-  }
-);
-mock.module(
   new URL(
     '../../../cluster-management/components/add-worker/config.ts',
     import.meta.url
   ).href,
   {
     namedExports: { DockerStepsFromWorker: [] }
-  }
-);
-mock.module(
-  new URL(
-    '../../../cluster-management/components/topology/index.tsx',
-    import.meta.url
-  ).href,
-  {
-    defaultExport: empty
   }
 );
 mock.module(
@@ -271,7 +257,7 @@ const writes = () => updateWorker.mock.calls.map((call) => call.arguments);
 const batches = () =>
   updateWorkerLabels.mock.calls.map((call) => call.arguments);
 
-test('batch actions default to setting labels without a location action', async (t) => {
+test('batch actions use labels by default and open the batch label editor', async (t) => {
   const selected = worker(1, { rack: 'rack-a' });
   await mount(t, [selected], [1]);
   assert.deepEqual(
@@ -284,9 +270,7 @@ test('batch actions default to setting labels without a location action', async 
   const primary = document.querySelector<HTMLButtonElement>(
     '[data-batch-action="labels"]'
   )!;
-  assert.match(primary.textContent!, /resources.worker.setLabels/);
   assert.match(primary.textContent!, /\(1\)/);
-  assert.equal(document.querySelector('[data-batch-action="location"]'), null);
   await act(async () => primary.click());
 
   assert.equal(labelsModal.open, true);
@@ -312,7 +296,7 @@ test('the entire batch action group is disabled without a worker selection', asy
   assert.equal(updateWorker.mock.callCount(), 0);
 });
 
-test('label editing and batch deletion remain available', async (t) => {
+test('labels and delete invoke their own actions and preserve batch deletion', async (t) => {
   await mount(t, [worker(1, { rack: 'rack-a' })], [1]);
   await openBatch(1);
   assert.equal(handleDeleteBatch.mock.callCount(), 0);

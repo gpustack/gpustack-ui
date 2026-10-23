@@ -5,8 +5,9 @@ import {
   PlusOutlined,
   RiseOutlined
 } from '@ant-design/icons';
+import { BaseSelect, IconFont, Select } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Flex, Popconfirm, Select, Spin, Tooltip } from 'antd';
+import { Flex, Popconfirm, Spin, Tooltip } from 'antd';
 import { createStyles } from 'antd-style';
 import classNames from 'classnames';
 import { useEffect, useRef, useState } from 'react';
@@ -27,6 +28,13 @@ const CREATE_PREFIX = '__create__:';
 export interface ValueOption {
   value: string;
   count: number;
+}
+
+interface SelectValueOption {
+  value: string;
+  label: string;
+  count?: number;
+  action?: 'create' | 'clear';
 }
 
 const useStyles = createStyles(({ css }) => ({
@@ -54,14 +62,33 @@ const useStyles = createStyles(({ css }) => ({
       cursor: default;
       background: transparent;
     }
-    .edit {
-      margin-left: auto;
-      opacity: 0;
+    &.static {
+      cursor: default;
       color: var(--ant-color-text-tertiary);
+      &:hover {
+        background: transparent;
+      }
+    }
+    .action {
+      position: relative;
+      margin-inline-start: auto;
+      flex-shrink: 0;
+      color: var(--ant-color-text-tertiary);
+    }
+    .edit {
+      opacity: 0;
+    }
+    .empty-state {
+      position: absolute;
+      inset: 0;
     }
     &:hover .edit,
     &:focus-visible .edit {
       opacity: 1;
+    }
+    &:hover .empty-state,
+    &:focus-visible .empty-state {
+      opacity: 0;
     }
     .value {
       overflow: hidden;
@@ -73,13 +100,12 @@ const useStyles = createStyles(({ css }) => ({
       color: var(--ant-color-text-tertiary);
     }
   `,
-  /* A dashed frame in the quietest text colour. Not a warning: an unfilled
-     rack is a fact about the fleet, and a red cell per new machine would train
-     people to stop looking at red. */
   unfilled: css`
-    border-style: dashed;
-    border-color: var(--ant-color-border);
-    color: var(--ant-color-text-quaternary);
+    color: var(--ant-color-text-tertiary);
+    &:hover {
+      border-style: dashed;
+      border-color: var(--ant-color-border);
+    }
   `,
   failed: css`
     font-size: 12px;
@@ -106,12 +132,17 @@ interface LocationValueSelectProps {
   inline?: boolean;
   value?: string | null;
   onPick: (value: string | null) => void;
+  /** Reset a form draft without requesting removal of the worker label. */
+  onClear?: () => void;
   onCancel?: () => void;
   /** Tab / Shift+Tab with whatever has been typed so far (null = nothing). */
   onTab?: (shift: boolean, typed: string | null) => void;
   onBlur?: (typed: string) => void;
   style?: React.CSSProperties;
   size?: 'small' | 'middle';
+  label?: string;
+  disabled?: boolean;
+  placeholder?: string;
 }
 
 /**
@@ -127,28 +158,75 @@ export const LocationValueSelect: React.FC<LocationValueSelectProps> = ({
   inline,
   value,
   onPick,
+  onClear,
   onCancel,
   onTab,
   onBlur,
   style,
-  size
+  size,
+  label,
+  disabled,
+  placeholder
 }) => {
   const intl = useIntl();
   const { styles } = useStyles();
   const [typed, setTyped] = useState('');
 
   const needle = typed.trim();
+  const search = needle.toLowerCase();
   const matching = options.filter(
-    (option) =>
-      !needle || option.value.toLowerCase().includes(needle.toLowerCase())
+    (option) => !needle || option.value.toLowerCase().includes(search)
   );
   const exists = options.some((option) => option.value === needle);
+  const clearLabel = intl.formatMessage({
+    id: 'clusters.topology.value.clear'
+  });
 
-  const items: any[] = matching.map((option) => ({
+  // Core-UI clones options before translating them. Keep React elements out
+  // of that data so typing never copies their owning component tree.
+  const items: SelectValueOption[] = matching.map((option) => ({
     value: option.value,
-    label: (
+    label: option.value,
+    count: option.count
+  }));
+  if (needle && !exists) {
+    items.push({
+      value: `${CREATE_PREFIX}${needle}`,
+      label: intl.formatMessage(
+        { id: 'clusters.topology.value.create' },
+        { value: needle }
+      ),
+      action: 'create'
+    });
+  }
+  if (current) {
+    items.push({
+      value: CLEAR_OPTION,
+      label: clearLabel,
+      action: 'clear'
+    });
+  }
+
+  const renderOption = (option: SelectValueOption) => {
+    if (option.action === 'create') {
+      return (
+        <span>
+          <PlusOutlined style={{ marginRight: 6 }} />
+          {option.label}
+        </span>
+      );
+    }
+    if (option.action === 'clear') {
+      return (
+        <span className="text-tertiary">
+          <CloseOutlined style={{ marginRight: 6 }} />
+          {option.label}
+        </span>
+      );
+    }
+    return (
       <span className={styles.option}>
-        <span>{option.value}</span>
+        <span>{option.label}</span>
         <span className="count">
           {intl.formatMessage(
             { id: 'clusters.topology.value.count' },
@@ -156,33 +234,8 @@ export const LocationValueSelect: React.FC<LocationValueSelectProps> = ({
           )}
         </span>
       </span>
-    )
-  }));
-  if (needle && !exists) {
-    items.push({
-      value: `${CREATE_PREFIX}${needle}`,
-      label: (
-        <span>
-          <PlusOutlined style={{ marginRight: 6 }} />
-          {intl.formatMessage(
-            { id: 'clusters.topology.value.create' },
-            { value: needle }
-          )}
-        </span>
-      )
-    });
-  }
-  if (current) {
-    items.push({
-      value: CLEAR_OPTION,
-      label: (
-        <span className="text-tertiary">
-          <CloseOutlined style={{ marginRight: 6 }} />
-          {intl.formatMessage({ id: 'clusters.topology.value.clear' })}
-        </span>
-      )
-    });
-  }
+    );
+  };
 
   const pick = (picked: string) => {
     if (picked === CLEAR_OPTION) {
@@ -194,29 +247,72 @@ export const LocationValueSelect: React.FC<LocationValueSelectProps> = ({
     }
     setTyped('');
   };
+  const SelectControl = label ? Select : BaseSelect;
 
   return (
-    <Select
+    <SelectControl
+      {...(label && {
+        label,
+        'aria-label': label,
+        isInFormItems: false,
+        alwaysFocus: true
+      })}
       showSearch
+      allowClear={Boolean(onClear)}
       size={size}
+      disabled={disabled}
       style={{ width: '100%', ...style }}
       autoFocus={inline}
       defaultOpen={inline}
       value={
-        inline ? undefined : value === null ? CLEAR_OPTION : value || undefined
+        inline
+          ? current || undefined
+          : value === null
+            ? CLEAR_OPTION
+            : value || undefined
       }
-      placeholder={intl.formatMessage(
-        { id: 'clusters.topology.cell.fill' },
-        { field: fieldLabel }
-      )}
+      optionLabelProp={inline ? 'value' : undefined}
+      placeholder={
+        placeholder ||
+        intl.formatMessage(
+          { id: 'clusters.topology.cell.fill' },
+          { field: fieldLabel }
+        )
+      }
       searchValue={typed}
       onSearch={setTyped}
       // Filtering is done above, where the "create" row is decided on the same
       // needle; letting the Select filter again would hide that row.
       filterOption={false}
       options={items}
-      notFoundContent={null}
+      optionRender={({ data }) => renderOption(data as SelectValueOption)}
+      labelRender={
+        inline
+          ? undefined
+          : (selected) => {
+              if (selected.value === CLEAR_OPTION) {
+                return renderOption({
+                  value: CLEAR_OPTION,
+                  label: clearLabel,
+                  action: 'clear'
+                });
+              }
+              const option = options.find(
+                (item) => item.value === selected.value
+              );
+              return option
+                ? renderOption({ ...option, label: option.value })
+                : selected.label;
+            }
+      }
+      notFoundContent={intl.formatMessage({
+        id: 'clusters.topology.value.empty'
+      })}
       onSelect={(picked: string) => pick(picked)}
+      onClear={() => {
+        setTyped('');
+        onClear?.();
+      }}
       onBlur={() => onBlur?.(needle)}
       onInputKeyDown={(e) => {
         if (e.key === 'Escape') {
@@ -244,9 +340,9 @@ interface LocationCellProps {
 }
 
 /**
- * [C1] One worker's value for one field, in one of four states: unfilled,
- * hand-filled, reported by the device, or hand-filled over a reported value.
- * The states differ by icon and hover text, never by colour alone.
+ * [C1] One worker's value for one field: missing label keys, missing worker
+ * labels, hand-filled, reported by the device, or a hand-filled override.
+ * Disabled layers and layers without candidate keys are read-only.
  *
  * Editing saves on the spot — Enter, a pick, or clicking away with a change —
  * because a value is data, not a rule (P7). A device-reported value asks
@@ -270,6 +366,11 @@ const LocationCell: React.FC<LocationCellProps> = ({
   const current = location?.value || null;
   const discovered = isDiscovered(location);
   const override = isOverride(location);
+  const hasLabelKeys = field.labelKeys.length > 0;
+  const editable = hasLabelKeys && !field.disabled;
+  const emptyLabel = intl.formatMessage({
+    id: 'clusters.topology.cell.unfilled'
+  });
 
   const [confirming, setConfirming] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -278,14 +379,29 @@ const LocationCell: React.FC<LocationCellProps> = ({
   const failedTimer = useRef<any>(null);
 
   useEffect(() => {
-    if (!editing) {
+    if (!editing || !editable) {
       return;
     }
     onBusy(true);
     return () => onBusy(false);
-  }, [editing]);
+  }, [editing, editable]);
 
   useEffect(() => () => clearTimeout(failedTimer.current), []);
+
+  if (!hasLabelKeys) {
+    return (
+      <Tooltip
+        title={intl.formatMessage({ id: 'clusters.topology.cell.noKeys.tips' })}
+      >
+        <span className={classNames(styles.cell, 'static')}>
+          <span className="value">
+            {intl.formatMessage({ id: 'clusters.topology.mapping.noKeys' })}
+          </span>
+          <IconFont type="icon-label_thin" className="action" aria-hidden />
+        </span>
+      </Tooltip>
+    );
+  }
 
   const startEdit = () => {
     clearTimeout(failedTimer.current);
@@ -294,6 +410,9 @@ const LocationCell: React.FC<LocationCellProps> = ({
   };
 
   const commit = async (value: string | null, then?: () => void) => {
+    if (!editable) {
+      return;
+    }
     onStopEdit();
     if (value === current) {
       then?.();
@@ -324,7 +443,7 @@ const LocationCell: React.FC<LocationCellProps> = ({
   };
 
   const handleClick = () => {
-    if (saving) {
+    if (!editable || saving) {
       return;
     }
     if (discovered) {
@@ -335,7 +454,7 @@ const LocationCell: React.FC<LocationCellProps> = ({
   };
 
   const stateLabel = !current
-    ? intl.formatMessage({ id: 'clusters.topology.state.unfilled' })
+    ? emptyLabel
     : discovered
       ? intl.formatMessage(
           { id: 'clusters.topology.state.discovered.aria' },
@@ -348,22 +467,39 @@ const LocationCell: React.FC<LocationCellProps> = ({
           )
         : current;
 
-  const hover = discovered
-    ? intl.formatMessage(
-        { id: 'clusters.topology.state.discovered.tips' },
-        { key: location?.key || '' }
-      )
-    : override
+  const hover = !current
+    ? null
+    : discovered
       ? intl.formatMessage(
-          { id: 'clusters.topology.state.override.tips' },
-          { value: location?.discovered_value || '' }
+          { id: 'clusters.topology.state.discovered.tips' },
+          { key: location?.key || '' }
         )
-      : current
+      : override
         ? intl.formatMessage(
+            { id: 'clusters.topology.state.override.tips' },
+            { value: location?.discovered_value || '' }
+          )
+        : intl.formatMessage(
             { id: 'clusters.topology.state.user.tips' },
             { key: location?.key || '' }
-          )
-        : null;
+          );
+
+  if (!editable) {
+    return (
+      <Tooltip title={hover}>
+        <span
+          className={classNames(styles.cell, { static: !current })}
+          aria-disabled
+        >
+          {discovered && <LockOutlined className="mark" />}
+          <span className="value">
+            {current ? shownValue(location) : emptyLabel}
+          </span>
+          {override && <RiseOutlined className="mark" />}
+        </span>
+      </Tooltip>
+    );
+  }
 
   if (editing) {
     return (
@@ -412,18 +548,26 @@ const LocationCell: React.FC<LocationCellProps> = ({
     >
       {discovered && <LockOutlined className="mark" />}
       <span className="value">
-        {current
-          ? shownValue(location)
-          : intl.formatMessage(
-              { id: 'clusters.topology.cell.fill' },
-              { field: field.label }
-            )}
+        {current ? shownValue(location) : emptyLabel}
       </span>
       {override && <RiseOutlined className="mark" />}
       {saving ? (
         <Spin size="small" style={{ marginLeft: 'auto' }} />
       ) : (
-        current && !discovered && <EditOutlined className="edit" />
+        !discovered && (
+          <Flex
+            component="span"
+            align="center"
+            justify="center"
+            className="action"
+            aria-hidden
+          >
+            {!current && (
+              <IconFont type="icon-tag-outlined" className="empty-state" />
+            )}
+            <EditOutlined className="edit" />
+          </Flex>
+        )
       )}
     </button>
   );

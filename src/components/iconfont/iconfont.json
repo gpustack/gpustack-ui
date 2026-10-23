@@ -6,6 +6,34 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "48741233",
+      "name": "label_important_24dp_1F1F1F_FILL0_wght300_GRAD0_op",
+      "font_class": "label_thin",
+      "unicode": "e742",
+      "unicode_decimal": 59202
+    },
+    {
+      "icon_id": "48741232",
+      "name": "shoppingmode_24dp_1F1F1F_FILL0_wght300_GRAD0_opsz2",
+      "font_class": "tag-outlined",
+      "unicode": "e743",
+      "unicode_decimal": 59203
+    },
+    {
+      "icon_id": "48741230",
+      "name": "new_label_24dp_1F1F1F_FILL0_wght300_GRAD0_opsz24",
+      "font_class": "new_label",
+      "unicode": "e744",
+      "unicode_decimal": 59204
+    },
+    {
+      "icon_id": "48741231",
+      "name": "label_24dp_1F1F1F_FILL0_wght300_GRAD0_opsz24",
+      "font_class": "label-outlined",
+      "unicode": "e745",
+      "unicode_decimal": 59205
+    },
+    {
       "icon_id": "48673738",
       "name": "alt_route_24dp_1F1F1F_FILL0_wght300_GRAD0_opsz24",
       "font_class": "alt-route",

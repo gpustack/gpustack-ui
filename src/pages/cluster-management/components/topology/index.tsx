@@ -1,17 +1,18 @@
-import { DownOutlined } from '@ant-design/icons';
-import { GSDrawer, useWindowResize } from '@gpustack/core-ui';
+import {
+  ApartmentOutlined,
+  SearchOutlined,
+  TableOutlined
+} from '@ant-design/icons';
+import {
+  AutoTooltip,
+  GSDrawer,
+  IconFont,
+  TextAttribute,
+  useWindowResize
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useSize } from 'ahooks';
-import {
-  Alert,
-  Button,
-  Flex,
-  Input,
-  Modal,
-  Segmented,
-  Spin,
-  message
-} from 'antd';
+import { Alert, Button, Flex, Input, Segmented, Spin, message } from 'antd';
 import { createStyles } from 'antd-style';
 import { useEffect, useRef, useState } from 'react';
 import {
@@ -21,36 +22,29 @@ import {
   TopologyWorker
 } from '../../config/types';
 import AdvancedDrawer from './advanced';
-import CustomLayer, { CustomLayerValue } from './advanced/custom-layer';
+import CustomLayer, {
+  CustomLayerValue,
+  createCustomLayerValue
+} from './advanced/custom-layer';
 import {
   draftFromView,
   insertLayer,
   newCustomLayer,
-  removeLayer,
   toWire
 } from './advanced/draft';
 import ColumnSettings from './column-settings';
 import useColumnPrefs from './hooks/use-column-prefs';
 import usePreview from './hooks/use-preview';
 import useTopology from './hooks/use-topology';
-import { LocationField, allFields } from './location';
+import { LocationField, allFields, writableLabelKey } from './location';
 import LocationTable from './location-table';
-import Onboarding from './onboarding';
-import { SetLocationPopover } from './set-location';
-import {
-  SpecContext,
-  loadSpecContext,
-  modelsGatheringOn,
-  saveTopologySpec
-} from './spec';
+import { SetLocationModal } from './set-location';
+import { SpecContext, loadSpecContext, saveTopologySpec } from './spec';
 import TreeView, { TREE_GROUPING } from './tree-view';
 
-const ONBOARDING_KEY = 'gpustack.topology.onboarding.dismissed';
 /** Below this viewport width the drawer takes the whole screen. */
 const FULL_WIDTH_BELOW = 1280;
 const DRAWER_WIDTH = 1080;
-/** How long a row pointed at from elsewhere stays tinted. */
-const HIGHLIGHT_MS = 3000;
 /** The table's header row, which the virtual body's height must leave out. */
 const TABLE_HEADER_HEIGHT = 40;
 
@@ -74,16 +68,24 @@ const useStyles = createStyles(({ css }) => ({
     overflow: auto;
   `,
   title: css`
+    min-width: 0;
+    .label {
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+    .subtitle {
+      min-width: 0;
+      font-size: var(--ant-font-size-sm);
+      font-weight: 400;
+      color: var(--ant-color-text-secondary);
+      border-radius: 4px;
+    }
     .previewing {
+      flex-shrink: 0;
       color: var(--ant-color-primary);
       font-weight: 400;
       font-size: 12px;
     }
-  `,
-  selection: css`
-    border-top: 1px solid var(--ant-color-border-secondary);
-    padding-block: 10px;
-    background: var(--ant-color-bg-container);
   `
 }));
 
@@ -91,14 +93,13 @@ interface TopologyDrawerProps {
   open: boolean;
   clusterId?: number | null;
   clusterName?: string | null;
-  /** Point at this worker's row when opening from elsewhere. */
-  highlightWorkerId?: number | null;
   onClose: () => void;
 }
 
-interface BatchState {
+interface CustomLayerState {
   open: boolean;
-  field?: string;
+  context: SpecContext | null;
+  value: CustomLayerValue;
 }
 
 /**
@@ -111,7 +112,6 @@ const TopologyDrawer: React.FC<TopologyDrawerProps> = ({
   open,
   clusterId,
   clusterName,
-  highlightWorkerId,
   onClose
 }) => {
   const intl = useIntl();
@@ -136,33 +136,28 @@ const TopologyDrawer: React.FC<TopologyDrawerProps> = ({
        one view where nothing can be filled in. */
     'table'
   );
+  const [treeToolbarContainer, setTreeToolbarContainer] =
+    useState<HTMLDivElement | null>(null);
   const [search, setSearch] = useState('');
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [grouping, setGrouping] = useState<string>(TREE_GROUPING);
   const [lastField, setLastField] = useState<string>(RACK_LAYER);
-  const [batch, setBatch] = useState<BatchState>({ open: false });
+  const [batchOpen, setBatchOpen] = useState(false);
   const [mappingOpen, setMappingOpen] = useState(false);
-  const [customLayer, setCustomLayer] = useState<SpecContext | null>(null);
-  const [highlightId, setHighlightId] = useState<number | null>(null);
-  const [onboardingDismissed, setOnboardingDismissed] = useState(
-    () => localStorage.getItem(ONBOARDING_KEY) === '1'
-  );
-
+  const [customLayer, setCustomLayer] = useState<CustomLayerState>(() => ({
+    open: false,
+    context: null,
+    value: createCustomLayerValue([])
+  }));
   const searchRef = useRef<any>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
   const bodySize = useSize(bodyRef);
-  const highlightTimer = useRef<any>(null);
   /** The first write of a session says once that nothing running moves. */
   const wroteOnceRef = useRef(false);
 
-  const highlight = (id: number) => {
-    clearTimeout(highlightTimer.current);
-    setHighlightId(id);
-    highlightTimer.current = setTimeout(
-      () => setHighlightId(null),
-      HIGHLIGHT_MS
-    );
-  };
+  const getDrawerContainer = () =>
+    contentRef.current?.closest<HTMLElement>('.ant-drawer-section');
 
   useEffect(() => {
     if (!open) {
@@ -170,29 +165,29 @@ const TopologyDrawer: React.FC<TopologyDrawerProps> = ({
       setSearch('');
       setSelectedIds([]);
       setGrouping(TREE_GROUPING);
-      setBatch({ open: false });
+      setBatchOpen(false);
       setMappingOpen(false);
-      setCustomLayer(null);
-      setHighlightId(null);
+      setCustomLayer({
+        open: false,
+        context: null,
+        value: createCustomLayerValue([])
+      });
       wroteOnceRef.current = false;
       return;
-    }
-    if (highlightWorkerId) {
-      setViewMode('table');
-      highlight(highlightWorkerId);
     }
   }, [open]);
 
   const changeViewMode = (mode: ViewMode) => {
     setViewMode(mode);
-    // The selection survives a trip to the tree; only its action bar hides.
-    setBatch({ open: false });
+    // Keep the table selection while cross-checking it in the tree.
+    setBatchOpen(false);
   };
 
   const everyField: LocationField[] = displayed
     ? allFields(intl, displayed)
     : [];
   const fields = everyField.filter(prefs.isShown);
+  const batchFields = everyField.filter((field) => !field.disabled);
   const allWorkers = displayed?.workers || [];
   const needle = search.trim().toLowerCase();
   const workers = allWorkers.filter(
@@ -200,12 +195,6 @@ const TopologyDrawer: React.FC<TopologyDrawerProps> = ({
   );
   const selectedWorkers = allWorkers.filter((worker) =>
     selectedIds.includes(worker.id)
-  );
-
-  const anyHandFilled = allWorkers.some((worker) =>
-    Object.values(worker.location || {}).some(
-      (location) => location.source === 'user'
-    )
   );
 
   const summarize = (
@@ -252,8 +241,8 @@ const TopologyDrawer: React.FC<TopologyDrawerProps> = ({
   };
 
   const handleBatchApply = async (fieldId: string, value: string | null) => {
-    const field = fields.find((f) => f.id === fieldId);
-    if (!field) {
+    const field = batchFields.find((f) => f.id === fieldId);
+    if (!field || !writableLabelKey(field) || !selectedWorkers.length) {
       return;
     }
     try {
@@ -263,7 +252,7 @@ const TopologyDrawer: React.FC<TopologyDrawerProps> = ({
       return;
     }
     // The selection stays so the next field can be filled for the same hosts.
-    setBatch({ open: false });
+    setBatchOpen(false);
   };
 
   const saveFailed = (e: any) =>
@@ -272,66 +261,32 @@ const TopologyDrawer: React.FC<TopologyDrawerProps> = ({
         intl.formatMessage({ id: 'clusters.topology.save.failed' })
     );
 
-  /**
-   * A layer a saved model gathers on cannot go: the model would fail
-   * validation on its next save for a reason it cannot see from its form.
-   * The view says who; an older server does not, and then we ask.
-   */
-  const deleteCustomLayer = async (field: LocationField) => {
+  const openCustomLayer = async () => {
     if (!clusterId || !topo.topology) {
       return;
     }
-    const layer = topo.topology.layers.find((l) => l.id === field.id);
-    if (!layer?.referenced_by_models) {
-      const referencing = await modelsGatheringOn(clusterId, field.id);
-      if (referencing.length) {
-        Modal.warning({
-          title: intl.formatMessage(
-            { id: 'clusters.topology.custom.referenced' },
-            { name: field.label }
-          ),
-          content: referencing.join('、')
-        });
-        return;
-      }
-    }
     try {
-      const { cluster } = await loadSpecContext(clusterId);
-      const draft = removeLayer(
-        draftFromView(intl, topo.topology, cluster.topology),
-        field.id
-      );
-      await saveTopologySpec(cluster, toWire(draft, cluster.topology));
-    } catch (e) {
-      saveFailed(e);
-      return;
-    }
-    prefs.forget(field.id);
-    message.success(
-      intl.formatMessage(
-        { id: 'clusters.topology.columns.deleted' },
-        { name: field.label }
-      )
-    );
-    topo.refresh();
-  };
-
-  const openCustomLayer = async () => {
-    if (!clusterId) {
-      return;
-    }
-    try {
-      setCustomLayer(await loadSpecContext(clusterId));
+      const context = await loadSpecContext(clusterId);
+      const chain = draftFromView(
+        intl,
+        topo.topology,
+        context.cluster.topology
+      ).chain;
+      setCustomLayer({
+        open: true,
+        context,
+        value: createCustomLayerValue(chain)
+      });
     } catch (e) {
       saveFailed(e);
     }
   };
 
   const handleCustomOk = async (value: CustomLayerValue) => {
-    if (!customLayer || !topo.topology) {
+    if (!customLayer.context || !topo.topology) {
       return;
     }
-    const { cluster } = customLayer;
+    const { cluster } = customLayer.context;
     const layer = newCustomLayer(value.name, value.labelKeys);
     const draft = insertLayer(
       draftFromView(intl, topo.topology, cluster.topology),
@@ -344,7 +299,7 @@ const TopologyDrawer: React.FC<TopologyDrawerProps> = ({
       saveFailed(e);
       return;
     }
-    setCustomLayer(null);
+    setCustomLayer((current) => ({ ...current, open: false }));
     // The new column shows at once, empty: that is what it is for.
     //
     // By id, which is what `isShown` looks the preference up by. The name went
@@ -357,8 +312,9 @@ const TopologyDrawer: React.FC<TopologyDrawerProps> = ({
   };
 
   const customChain =
-    customLayer && topo.topology
-      ? draftFromView(intl, topo.topology, customLayer.cluster.topology).chain
+    customLayer.context && topo.topology
+      ? draftFromView(intl, topo.topology, customLayer.context.cluster.topology)
+          .chain
       : [];
   // 🔴 Names, not ids. Ids are generated now and cannot be typed into
   // collision; two rungs *called* the same thing still can, and that is the
@@ -374,32 +330,29 @@ const TopologyDrawer: React.FC<TopologyDrawerProps> = ({
     NODE_LAYER_NAME
   ];
 
-  const showOnboarding =
-    viewMode === 'table' &&
-    !!displayed?.workers?.length &&
-    !anyHandFilled &&
-    !onboardingDismissed;
-
-  const dismissOnboarding = () => {
-    localStorage.setItem(ONBOARDING_KEY, '1');
-    setOnboardingDismissed(true);
-  };
-
   const width = size.width < FULL_WIDTH_BELOW ? '100%' : DRAWER_WIDTH;
-
-  const titleText = clusterName
-    ? `${intl.formatMessage({ id: 'clusters.topology.title' })} · ${clusterName}`
-    : intl.formatMessage({ id: 'clusters.topology.title' });
 
   const title = (
     <Flex
       component="span"
       align="center"
-      gap={10}
-      wrap
+      gap="small"
       className={styles.title}
+      style={{
+        maxWidth:
+          typeof width === 'number' ? width - 104 : 'calc(100vw - 104px)'
+      }}
     >
-      <span>{titleText}</span>
+      <span className="label">
+        {intl.formatMessage({ id: 'clusters.topology.title' })}
+      </span>
+      {clusterName && (
+        <TextAttribute variant="outlined" className="subtitle">
+          <AutoTooltip ghost minWidth={0}>
+            {clusterName}
+          </AutoTooltip>
+        </TextAttribute>
+      )}
       {preview.active && (
         <span className="previewing">
           {intl.formatMessage({ id: 'clusters.topology.previewing' })}
@@ -409,185 +362,234 @@ const TopologyDrawer: React.FC<TopologyDrawerProps> = ({
   );
 
   return (
-    <GSDrawer
-      title={title}
-      open={open}
-      onClose={onClose}
-      destroyOnHidden
-      styles={{
-        wrapper: { width },
-        body: { paddingBlock: 0, overflow: 'hidden' }
-      }}
-    >
-      <div
-        className={styles.root}
-        onKeyDown={(e) => {
-          // "/" anywhere in the drawer focuses the search, unless typing.
-          const tag = (e.target as HTMLElement).tagName;
-          if (e.key === '/' && tag !== 'INPUT' && tag !== 'TEXTAREA') {
-            e.preventDefault();
-            searchRef.current?.focus?.();
-          }
+    <div>
+      <GSDrawer
+        title={title}
+        open={open}
+        onClose={onClose}
+        keyboard={false}
+        destroyOnHidden
+        styles={{
+          wrapper: { width },
+          body: { paddingBlock: 0, overflow: 'hidden' }
         }}
       >
-        <Flex
-          align="center"
-          gap={12}
-          className={styles.fixed}
-          style={{ paddingBlock: 12 }}
+        <div
+          ref={contentRef}
+          className={styles.root}
+          onKeyDown={(e) => {
+            // "/" anywhere in the drawer focuses the search, unless typing.
+            const tag = (e.target as HTMLElement).tagName;
+            if (e.key === '/' && tag !== 'INPUT' && tag !== 'TEXTAREA') {
+              e.preventDefault();
+              searchRef.current?.focus?.();
+            }
+          }}
         >
-          <Segmented
-            value={viewMode}
-            onChange={(value) => changeViewMode(value as ViewMode)}
-            options={[
-              {
-                value: 'table',
-                label: intl.formatMessage({
-                  id: 'clusters.topology.view.table'
-                })
-              },
-              {
-                value: 'tree',
-                label: intl.formatMessage({ id: 'clusters.topology.view.tree' })
-              }
-            ]}
-          />
-          <Input.Search
-            ref={searchRef}
-            allowClear
-            style={{ width: 240 }}
-            placeholder={intl.formatMessage({
-              id: 'clusters.topology.search.placeholder'
-            })}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <span style={{ marginLeft: 'auto' }}>
-            <ColumnSettings
-              disabled={!topo.topology}
-              fields={everyField}
-              isShown={prefs.isShown}
-              onToggle={prefs.setShown}
-              referencedBy={(id) =>
-                topo.topology?.layers.find((layer) => layer.id === id)
-                  ?.referenced_by_models
-              }
-              onDeleteCustom={deleteCustomLayer}
-              onOpenMapping={() => setMappingOpen(true)}
-            />
-          </span>
-        </Flex>
+          <Flex
+            orientation="vertical"
+            gap={12}
+            className={styles.fixed}
+            style={{ paddingBlock: 12 }}
+          >
+            <Flex align="center" gap={12} wrap>
+              <Input
+                ref={searchRef}
+                prefix={
+                  <SearchOutlined
+                    style={{ color: 'var(--ant-color-text-placeholder)' }}
+                  />
+                }
+                allowClear
+                style={{ width: 300, maxWidth: '100%' }}
+                placeholder={intl.formatMessage({
+                  id: 'clusters.topology.search.placeholder'
+                })}
+                aria-label={intl.formatMessage({
+                  id: 'clusters.topology.search.placeholder'
+                })}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+              <Flex
+                align="center"
+                justify="flex-end"
+                gap={12}
+                wrap
+                style={{
+                  marginInlineStart: 'auto',
+                  flexShrink: 0,
+                  maxWidth: '100%'
+                }}
+              >
+                {viewMode === 'tree' && displayed && (
+                  <Flex ref={setTreeToolbarContainer} align="center" />
+                )}
+                <Segmented
+                  value={viewMode}
+                  onChange={(value) => changeViewMode(value as ViewMode)}
+                  options={[
+                    {
+                      value: 'table',
+                      icon: (
+                        <TableOutlined
+                          aria-label={intl.formatMessage({
+                            id: 'clusters.topology.view.table'
+                          })}
+                        />
+                      ),
+                      tooltip: intl.formatMessage({
+                        id: 'clusters.topology.view.table'
+                      })
+                    },
+                    {
+                      value: 'tree',
+                      icon: (
+                        <ApartmentOutlined
+                          aria-label={intl.formatMessage({
+                            id: 'clusters.topology.view.tree'
+                          })}
+                        />
+                      ),
+                      tooltip: intl.formatMessage({
+                        id: 'clusters.topology.view.tree'
+                      })
+                    }
+                  ]}
+                />
+                <ColumnSettings
+                  disabled={!topo.topology}
+                  fields={everyField}
+                  isShown={prefs.isShown}
+                  onToggle={prefs.setShown}
+                  onReset={prefs.reset}
+                />
+                <Button
+                  icon={<IconFont type="icon-layers-outlined" />}
+                  disabled={!topo.topology}
+                  onClick={() => setMappingOpen(true)}
+                >
+                  {intl.formatMessage({
+                    id: 'clusters.topology.mapping.title'
+                  })}
+                </Button>
+                <Button
+                  type="primary"
+                  icon={<IconFont type="icon-tag-outlined" />}
+                  disabled={
+                    viewMode === 'tree' || !selectedWorkers.length || !displayed
+                  }
+                  onClick={() => setBatchOpen(true)}
+                >
+                  {intl.formatMessage({
+                    id: 'clusters.topology.batch.button'
+                  })}
+                </Button>
+              </Flex>
+            </Flex>
+          </Flex>
 
-        <div className={styles.body}>
-          {topo.error && (
-            <Alert
-              type="error"
-              showIcon
-              message={topo.error}
-              style={{ marginBottom: 12 }}
-            />
-          )}
-          {!displayed ? (
-            <Flex align="center" justify="center" style={{ minHeight: 240 }}>
-              <Spin spinning={topo.loading} />
-            </Flex>
-          ) : viewMode === 'tree' ? (
-            <TreeView
-              view={displayed}
-              fields={fields}
-              workers={workers}
-              grouping={grouping}
-              onGroupingChange={setGrouping}
-              onHostClick={(worker) => {
-                changeViewMode('table');
-                highlight(worker.id);
-              }}
-            />
-          ) : (
-            <Flex orientation="vertical" gap={12} style={{ height: '100%' }}>
-              {showOnboarding && (
-                <Onboarding
-                  hosts={allWorkers.length}
-                  onDismiss={dismissOnboarding}
-                />
-              )}
-              <div ref={bodyRef} style={{ flex: 1, minHeight: 0 }}>
-                <LocationTable
-                  workers={workers}
-                  allWorkers={allWorkers}
-                  fields={fields}
-                  selectedIds={selectedIds}
-                  onSelectionChange={setSelectedIds}
-                  highlightId={highlightId}
-                  height={Math.max(
-                    160,
-                    (bodySize?.height || 400) - TABLE_HEADER_HEIGHT
-                  )}
-                  onAssign={assign}
-                  onBusy={(busy) => (busy ? topo.beginBusy() : topo.endBusy())}
-                />
-              </div>
-            </Flex>
-          )}
+          <div className={styles.body}>
+            {topo.error && (
+              <Alert
+                type="error"
+                showIcon
+                message={topo.error}
+                style={{ marginBottom: 12 }}
+              />
+            )}
+            {!displayed ? (
+              <Flex align="center" justify="center" style={{ minHeight: 240 }}>
+                <Spin spinning={topo.loading} />
+              </Flex>
+            ) : viewMode === 'tree' ? (
+              <TreeView
+                toolbarContainer={treeToolbarContainer}
+                view={displayed}
+                fields={fields}
+                workers={workers}
+                grouping={grouping}
+                onGroupingChange={setGrouping}
+                onHostClick={(worker) => {
+                  setSearch(worker.name);
+                  changeViewMode('table');
+                }}
+              />
+            ) : (
+              <Flex orientation="vertical" gap={12} style={{ height: '100%' }}>
+                <div ref={bodyRef} style={{ flex: 1, minHeight: 0 }}>
+                  <LocationTable
+                    workers={workers}
+                    allWorkers={allWorkers}
+                    fields={fields}
+                    selectedIds={selectedIds}
+                    onSelectionChange={(ids) => {
+                      setSelectedIds(ids);
+                      setBatchOpen(false);
+                    }}
+                    height={Math.max(
+                      160,
+                      (bodySize?.height || 400) - TABLE_HEADER_HEIGHT
+                    )}
+                    onAssign={assign}
+                    onBusy={(busy) =>
+                      busy ? topo.beginBusy() : topo.endBusy()
+                    }
+                  />
+                </div>
+              </Flex>
+            )}
+          </div>
         </div>
 
-        {viewMode === 'table' && selectedIds.length > 0 && displayed && (
-          <Flex
-            align="center"
-            gap={16}
-            className={`${styles.fixed} ${styles.selection}`}
-          >
-            <span>
-              {intl.formatMessage(
-                { id: 'clusters.topology.selected' },
-                { count: selectedIds.length }
-              )}
-            </span>
-            <SetLocationPopover
-              open={batch.open}
-              onOpenChange={(next) =>
-                setBatch({ open: next, field: batch.field })
-              }
-              targets={selectedWorkers}
-              allWorkers={allWorkers}
-              fields={fields}
-              defaultField={batch.field || lastField}
-              onApply={handleBatchApply}
-            >
-              <Button type="primary" size="small">
-                {intl.formatMessage({ id: 'clusters.topology.batch.button' })}
-                <DownOutlined />
-              </Button>
-            </SetLocationPopover>
-            <Button type="link" size="small" onClick={() => setSelectedIds([])}>
-              {intl.formatMessage({ id: 'clusters.topology.clearSelection' })}
-            </Button>
-          </Flex>
+        {displayed && (
+          <SetLocationModal
+            open={
+              viewMode === 'table' && batchOpen && selectedWorkers.length > 0
+            }
+            onCancel={() => setBatchOpen(false)}
+            targets={selectedWorkers}
+            allWorkers={allWorkers}
+            fields={batchFields}
+            defaultField={lastField}
+            onApply={handleBatchApply}
+            onManageLayers={() => {
+              setBatchOpen(false);
+              setMappingOpen(true);
+            }}
+          />
         )}
-      </div>
 
-      {clusterId && topo.topology && (
-        <AdvancedDrawer
-          open={mappingOpen}
-          clusterId={clusterId}
-          view={topo.topology}
-          displayed={displayed || topo.topology}
-          preview={preview}
-          onClose={() => {
-            preview.reset();
-            setMappingOpen(false);
-          }}
-          onSaved={() => {
-            preview.reset();
-            setMappingOpen(false);
-            topo.refresh();
-          }}
-        />
-      )}
-
-      {customLayer && topo.topology && (
+        {clusterId && topo.topology && (
+          <AdvancedDrawer
+            open={mappingOpen}
+            width={width}
+            getContainer={getDrawerContainer}
+            clusterId={clusterId}
+            view={topo.topology}
+            displayed={displayed || topo.topology}
+            preview={preview}
+            onClose={() => {
+              preview.reset();
+              setMappingOpen(false);
+            }}
+            onSaved={(addedLayerIds) => {
+              prefs.showFields(addedLayerIds);
+              preview.reset();
+              setMappingOpen(false);
+              topo.refresh();
+            }}
+          />
+        )}
+      </GSDrawer>
+      {topo.topology && (
         <CustomLayer
-          open
+          open={customLayer.open}
+          value={customLayer.value}
+          onChange={(value) =>
+            setCustomLayer((current) => ({ ...current, value }))
+          }
+          getContainer={getDrawerContainer}
           chain={customChain}
           reserved={reserved}
           knownKeys={topo.topology.vocabulary?.known_keys || []}
@@ -595,10 +597,12 @@ const TopologyDrawer: React.FC<TopologyDrawerProps> = ({
             (w) => w.labels || {}
           )}
           onOk={handleCustomOk}
-          onCancel={() => setCustomLayer(null)}
+          onCancel={() =>
+            setCustomLayer((current) => ({ ...current, open: false }))
+          }
         />
       )}
-    </GSDrawer>
+    </div>
   );
 };
 

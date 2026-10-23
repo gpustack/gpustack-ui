@@ -126,12 +126,10 @@ export default {
   'resources.worker.targetVersion': 'Hedef Sürüm: {version}',
   'resources.driver.version': 'Sürücü Sürümü: {version}',
 
-  'resources.worker.setLabels': 'Etiket ekle/güncelle',
+  'resources.worker.setLabels': 'Etiketleri ayarla',
   'resources.worker.setLabels.count': '{count} worker seçildi',
   'resources.worker.setLabels.hint':
-    'Seçili tüm worker’lara yeni etiketler ekler ve eşleşen anahtarların değerlerini günceller. Diğer etiketler korunur. Etiketleri silmek için worker’ları tek tek düzenleyin.',
-  'resources.table.location': 'Konum',
-  'resources.worker.setLocation': 'Konum ayarla'
+    'Seçili tüm worker’lara yeni etiketler ekler ve eşleşen anahtarların değerlerini günceller. Diğer etiketler korunur. Etiketleri silmek için worker’ları tek tek düzenleyin.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

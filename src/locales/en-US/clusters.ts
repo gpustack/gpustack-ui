@@ -237,8 +237,6 @@ export default {
 
   // Topology: where this cluster's workers sit.
   'clusters.topology.title': 'Topology Configuration',
-  'clusters.topology.noRebalance':
-    'Changes to the topology configuration only affect future scheduling. Running deployments are not moved.',
   'clusters.topology.load.failed': 'Could not load the topology.',
   'clusters.topology.save.failed': 'Could not save.',
   'clusters.topology.preview.failed': 'Could not preview this mapping.',
@@ -275,10 +273,10 @@ export default {
   'clusters.topology.search.placeholder': 'Search hosts',
   'clusters.topology.columns': 'Columns',
   'clusters.topology.columns.fields': 'Topology layers',
-  'clusters.topology.columns.manage': 'Layer management',
-  'clusters.topology.columns.mapping': 'Layer management',
-  'clusters.topology.batch.button': 'Set Labels',
-  'clusters.topology.batch.title': 'Set Labels',
+  'clusters.topology.columns.manage': 'Manage Layers',
+  'clusters.topology.columns.mapping': 'Manage Layers',
+  'clusters.topology.batch.button': 'Set Layer Value',
+  'clusters.topology.batch.title': 'Set Layer Value',
   'clusters.topology.batch.selected': '{count} selected',
   'clusters.topology.batch.field': 'Topology layer',
   'clusters.topology.batch.value': 'Label value',
@@ -287,7 +285,7 @@ export default {
   'clusters.topology.batch.summary':
     'Set {field} to {value} on {count} Workers',
   'clusters.topology.batch.noWritableLayers':
-    'No writable layers. Configure label keys in “Layer management” first.',
+    'No writable layers. Configure label keys in “Manage Layers” first.',
   'clusters.topology.batch.clearHint':
     'After removing the written label, the layer may fall back to another candidate label or a device-reported value.',
   'clusters.topology.batch.clearSummary':
@@ -309,11 +307,9 @@ export default {
   'clusters.topology.undo.done': 'Undone',
   'clusters.topology.undo.failed': 'Undo failed: {reason}',
   'clusters.topology.cell.fill': 'Fill in {field}',
-  'clusters.topology.cell.unfilled': 'Missing matching label',
+  'clusters.topology.cell.unfilled': 'Layer value not set',
   'clusters.topology.cell.noKeys.tips':
-    'First set label keys for this layer in “Layer management”.',
-  'clusters.topology.cell.unfilled.tips':
-    'Set any of these labels on the Worker: {keys}',
+    'First set label keys for this layer in “Manage Layers”.',
   'clusters.topology.cell.aria': '{field}, {state}, {host}',
   'clusters.topology.state.unfilled': 'unfilled',
   'clusters.topology.state.discovered.aria': '{value}, reported by the device',
@@ -330,7 +326,7 @@ export default {
   'clusters.topology.value.count': '{count} workers',
   'clusters.topology.value.create': 'Create “{value}”',
   'clusters.topology.value.clear': 'Clear',
-  'clusters.topology.value.empty': 'No existing values. Enter a label value.',
+  'clusters.topology.value.empty': 'No available values. Enter a label value.',
   'clusters.topology.column.menu': '{field} column menu',
   'clusters.topology.column.fillUnfilled': 'Fill the {count} unfilled…',
   'clusters.topology.column.fillBySwitch':
@@ -351,16 +347,7 @@ export default {
     'Candidate label keys (set any one label)',
   'clusters.topology.tree.more': '{count} more',
   'clusters.topology.tree.hostCapacity': '{gpus} GPUs · {free} unallocated',
-  'clusters.topology.onboarding.goal':
-    'To keep the members of a disaggregated group together:',
-  'clusters.topology.onboarding.step.select': 'Select the machines in one rack',
-  'clusters.topology.onboarding.step.setLocation':
-    'Click “Set Labels” and enter the rack name',
-  'clusters.topology.onboarding.step.deploy':
-    'Choose “same rack” when deploying',
-  'clusters.topology.onboarding.domains':
-    'A device-reported accelerator domain (multi-node NVLink, an Ascend super pod) can be a layer too: add one under “Add layer”, point it at the matching label key, and it fills itself in.',
-  'clusters.topology.mapping.title': 'Layer management',
+  'clusters.topology.mapping.title': 'Manage Layers',
   'clusters.topology.mapping.intro':
     'Layer values are read from Worker labels using the candidate label keys. Key order determines priority: the first non-empty value is used.',
   'clusters.topology.mapping.keysPriority':

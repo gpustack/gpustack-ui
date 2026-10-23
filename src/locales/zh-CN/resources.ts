@@ -126,12 +126,5 @@ export default {
   'resources.worker.setLabels': '设置标签',
   'resources.worker.setLabels.count': '已选 {count} 台 worker',
   'resources.worker.setLabels.hint':
-    '为所有选中的 worker 添加新标签，并更新同名标签的值，其他标签保持不变。如需删除标签，请单独编辑 worker。',
-
-  'resources.table.location': '拓扑层级',
-  'resources.worker.location.moreLayers': '+{count} 层',
-  'resources.worker.location.totalLayers': '共 {count} 层',
-  'resources.worker.location.unfilled': '未设置',
-  'resources.worker.location.unavailable': '拓扑信息暂不可用',
-  'resources.worker.location.open': '查看 {worker} 的拓扑层级'
+    '为所有选中的 worker 添加新标签，并更新同名标签的值，其他标签保持不变。如需删除标签，请单独编辑 worker。'
 };

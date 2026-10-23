@@ -96,12 +96,6 @@ mock.module(
   }
 );
 mock.module(
-  new URL('../../../cluster-management/apis/index.ts', import.meta.url).href,
-  {
-    namedExports: { queryClusterTopology: async () => ({}) }
-  }
-);
-mock.module(
   new URL(
     '../../../cluster-management/components/add-worker/config.ts',
     import.meta.url

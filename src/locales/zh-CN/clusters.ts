@@ -230,8 +230,6 @@ export default {
   // 拓扑：这个集群的 worker 相距多远。
   // Topology: where this cluster's workers sit.
   'clusters.topology.title': '拓扑配置',
-  'clusters.topology.noRebalance':
-    '拓扑配置的变更仅影响后续调度，已运行的部署不会被重新放置。',
   'clusters.topology.load.failed': '拓扑信息加载失败。',
   'clusters.topology.save.failed': '保存失败。',
   'clusters.topology.preview.failed': '无法按这份映射预览。',
@@ -265,10 +263,10 @@ export default {
   'clusters.topology.search.placeholder': '搜索主机',
   'clusters.topology.columns': '列设置',
   'clusters.topology.columns.fields': '拓扑层级',
-  'clusters.topology.columns.manage': '层级管理',
-  'clusters.topology.columns.mapping': '层级管理',
-  'clusters.topology.batch.button': '设置标签',
-  'clusters.topology.batch.title': '设置标签',
+  'clusters.topology.columns.manage': '管理层级',
+  'clusters.topology.columns.mapping': '管理层级',
+  'clusters.topology.batch.button': '设置层级值',
+  'clusters.topology.batch.title': '设置层级值',
   'clusters.topology.batch.selected': '已选 {count} 台',
   'clusters.topology.batch.field': '拓扑层级',
   'clusters.topology.batch.value': '标签值',
@@ -277,7 +275,7 @@ export default {
   'clusters.topology.batch.summary':
     '将为 {count} 台 Worker 设置{field}值：{value}',
   'clusters.topology.batch.noWritableLayers':
-    '暂无可设置的层级，请先在层级管理中配置标签键。',
+    '暂无可设置的层级，请先在「管理层级」中配置标签键。',
   'clusters.topology.batch.clearHint':
     '移除写入的标签后，层级可能恢复为其他候选标签或设备自报的值。',
   'clusters.topology.batch.clearSummary':
@@ -299,11 +297,9 @@ export default {
   'clusters.topology.undo.done': '已撤销',
   'clusters.topology.undo.failed': '撤销失败：{reason}',
   'clusters.topology.cell.fill': '填写{field}',
-  'clusters.topology.cell.unfilled': '未设置对应标签',
+  'clusters.topology.cell.unfilled': '未设置层级值',
   'clusters.topology.cell.noKeys.tips':
-    '请先在「层级管理」中为该层级设置标签键。',
-  'clusters.topology.cell.unfilled.tips':
-    '请为 Worker 设置以下任一标签：{keys}',
+    '请先在「管理层级」中为该层级设置标签键。',
   'clusters.topology.cell.aria': '{field}，{state}，{host}',
   'clusters.topology.state.unfilled': '未填',
   'clusters.topology.state.discovered.aria': '{value}，设备自报',
@@ -318,7 +314,7 @@ export default {
   'clusters.topology.value.count': '{count} 台',
   'clusters.topology.value.create': '新建 “{value}”',
   'clusters.topology.value.clear': '清除',
-  'clusters.topology.value.empty': '暂无已有值，可输入标签值',
+  'clusters.topology.value.empty': '暂无可选值，请输入标签值',
   'clusters.topology.column.menu': '{field} 列菜单',
   'clusters.topology.column.fillUnfilled': '给未填的 {count} 台批量填…',
   'clusters.topology.column.fillBySwitch': '按接入交换机分批填（{count} 组）…',
@@ -337,14 +333,7 @@ export default {
   'clusters.topology.tree.candidateKeys': '候选标签键（设置任一标签即可）',
   'clusters.topology.tree.more': '还有 {count} 台',
   'clusters.topology.tree.hostCapacity': '{gpus} 卡 · 未分配 {free}',
-  'clusters.topology.onboarding.goal': '要让 PD 分离的成员尽量落在一起：',
-  'clusters.topology.onboarding.step.select': '选中同一机柜的机器',
-  'clusters.topology.onboarding.step.setLocation':
-    '点击「设置标签」，填写机柜名',
-  'clusters.topology.onboarding.step.deploy': '部署时选择「至少同机柜」',
-  'clusters.topology.onboarding.domains':
-    '机器自报的加速器域（NVLink 多机互联、昇腾超节点）也能当成一层：在「添加层级」里指向对应的标签键，这一层就直接有值。',
-  'clusters.topology.mapping.title': '层级管理',
+  'clusters.topology.mapping.title': '管理层级',
   'clusters.topology.mapping.intro':
     '层级值按候选标签键从 Worker 标签中读取。键的排列顺序决定优先级，优先使用第一个非空值。',
   'clusters.topology.mapping.keysPriority': '候选标签键（按优先级排序）',

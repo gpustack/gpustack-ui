@@ -243,8 +243,6 @@ export default {
 
   // Topology: where this cluster's workers sit.
   'clusters.topology.title': 'トポロジー設定',
-  'clusters.topology.noRebalance':
-    'トポロジー設定の変更は今後のスケジューリングにのみ影響します。実行中のデプロイは再配置されません。',
   'clusters.topology.load.failed': 'トポロジーを読み込めませんでした。',
   'clusters.topology.save.failed': '保存できませんでした。',
   'clusters.topology.preview.failed':
@@ -284,10 +282,10 @@ export default {
   'clusters.topology.search.placeholder': 'ホストを検索',
   'clusters.topology.columns': '列の設定',
   'clusters.topology.columns.fields': 'トポロジー階層',
-  'clusters.topology.columns.manage': '階層管理',
-  'clusters.topology.columns.mapping': '階層管理',
-  'clusters.topology.batch.button': 'ラベルを設定',
-  'clusters.topology.batch.title': 'ラベルを設定',
+  'clusters.topology.columns.manage': '階層を管理',
+  'clusters.topology.columns.mapping': '階層を管理',
+  'clusters.topology.batch.button': '階層の値を設定',
+  'clusters.topology.batch.title': '階層の値を設定',
   'clusters.topology.batch.selected': '{count} 台選択中',
   'clusters.topology.batch.field': 'トポロジー階層',
   'clusters.topology.batch.value': 'ラベル値',
@@ -296,7 +294,7 @@ export default {
   'clusters.topology.batch.summary':
     '{count} 台の Worker の{field}を {value} に設定します',
   'clusters.topology.batch.noWritableLayers':
-    '設定できる階層がありません。先に「階層管理」でラベルキーを設定してください。',
+    '設定できる階層がありません。先に「階層を管理」でラベルキーを設定してください。',
   'clusters.topology.batch.clearHint':
     '書き込んだラベルを削除すると、階層の値が別の候補ラベルやデバイスの報告値に戻る場合があります。',
   'clusters.topology.batch.clearSummary':
@@ -320,11 +318,9 @@ export default {
   'clusters.topology.undo.done': '元に戻しました',
   'clusters.topology.undo.failed': '元に戻せませんでした：{reason}',
   'clusters.topology.cell.fill': '{field}を入力',
-  'clusters.topology.cell.unfilled': '対応するラベル未設定',
+  'clusters.topology.cell.unfilled': '階層の値が未設定',
   'clusters.topology.cell.noKeys.tips':
-    'まず「階層管理」でこの階層のラベルキーを設定してください。',
-  'clusters.topology.cell.unfilled.tips':
-    'Worker に次のいずれかのラベルを設定してください：{keys}',
+    'まず「階層を管理」でこの階層のラベルキーを設定してください。',
   'clusters.topology.cell.aria': '{field}、{state}、{host}',
   'clusters.topology.state.unfilled': '未入力',
   'clusters.topology.state.discovered.aria': '{value}、デバイス自己報告',
@@ -341,7 +337,7 @@ export default {
   'clusters.topology.value.create': '“{value}” を新規作成',
   'clusters.topology.value.clear': 'クリア',
   'clusters.topology.value.empty':
-    '既存の値はありません。ラベル値を入力できます。',
+    '選択できる値がありません。ラベル値を入力してください。',
   'clusters.topology.column.menu': '{field} 列メニュー',
   'clusters.topology.column.fillUnfilled': '未入力の {count} 台を一括入力…',
   'clusters.topology.column.fillBySwitch':
@@ -362,16 +358,7 @@ export default {
     '候補ラベルキー（いずれかのラベルを設定）',
   'clusters.topology.tree.more': 'あと {count} 台',
   'clusters.topology.tree.hostCapacity': '{gpus} GPU · 未割り当て {free}',
-  'clusters.topology.onboarding.goal':
-    'PD 分離グループのメンバーを近くに配置するには：',
-  'clusters.topology.onboarding.step.select': '同じラックのマシンを選択',
-  'clusters.topology.onboarding.step.setLocation':
-    '「ラベルを設定」をクリックしてラック名を入力',
-  'clusters.topology.onboarding.step.deploy':
-    'デプロイ時に「同じラック」を選択',
-  'clusters.topology.onboarding.domains':
-    'デバイスが報告するアクセラレータードメイン（マルチノード NVLink、Ascend スーパーポッド）も 1 つの階層にできます。「階層を追加」で対応するラベルキーを指定すれば、その階層はそのまま値が入ります。',
-  'clusters.topology.mapping.title': '階層管理',
+  'clusters.topology.mapping.title': '階層を管理',
   'clusters.topology.mapping.intro':
     '階層の値は、候補のラベルキーを使って Worker のラベルから読み取ります。キーの順序が優先順位となり、最初の空でない値を使用します。',
   'clusters.topology.mapping.keysPriority': '候補ラベルキー（優先順位順）',

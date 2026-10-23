@@ -100,36 +100,3 @@ export const valueOptions = (workers: TopologyWorker[], field: string) => {
     .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
     .map(([value, count]) => ({ value, count }));
 };
-
-/**
- * Resolve a field's value from a worker's own labels and discovered facts,
- * the same any-of walk the server does. For the Workers list, which polls on
- * its own and must not add a request per row; labels win over facts because
- * a hand-filled value is what the operator expects to see.
- */
-export const resolveLocation = (
-  worker: {
-    labels?: Record<string, string> | null;
-    status?: { topology_facts?: Record<string, string> | null } | null;
-  },
-  labelKeys: string[]
-): WorkerLocation | null => {
-  const labels = worker.labels || {};
-  const facts = worker.status?.topology_facts || {};
-  for (const key of labelKeys) {
-    if (labels[key]) {
-      return {
-        value: labels[key],
-        source: 'user',
-        key,
-        discovered_value: facts[key] || null
-      };
-    }
-  }
-  for (const key of labelKeys) {
-    if (facts[key]) {
-      return { value: facts[key], source: 'discovered', key };
-    }
-  }
-  return null;
-};

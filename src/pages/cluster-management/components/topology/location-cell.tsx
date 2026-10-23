@@ -62,6 +62,13 @@ const useStyles = createStyles(({ css }) => ({
       cursor: default;
       background: transparent;
     }
+    &.static {
+      cursor: default;
+      color: var(--ant-color-text-tertiary);
+      &:hover {
+        background: transparent;
+      }
+    }
     .action {
       position: relative;
       margin-inline-start: auto;
@@ -335,7 +342,7 @@ interface LocationCellProps {
 /**
  * [C1] One worker's value for one field: missing label keys, missing worker
  * labels, hand-filled, reported by the device, or a hand-filled override.
- * The states differ by icon and hover text, never by colour alone.
+ * Layers without candidate keys are static; configured layers are editable.
  *
  * Editing saves on the spot — Enter, a pick, or clicking away with a change —
  * because a value is data, not a rule (P7). A device-reported value asks
@@ -359,10 +366,9 @@ const LocationCell: React.FC<LocationCellProps> = ({
   const current = location?.value || null;
   const discovered = isDiscovered(location);
   const override = isOverride(location);
+  const hasLabelKeys = field.labelKeys.length > 0;
   const emptyLabel = intl.formatMessage({
-    id: field.labelKeys.length
-      ? 'clusters.topology.cell.unfilled'
-      : 'clusters.topology.mapping.noKeys'
+    id: 'clusters.topology.cell.unfilled'
   });
 
   const [confirming, setConfirming] = useState(false);
@@ -372,14 +378,29 @@ const LocationCell: React.FC<LocationCellProps> = ({
   const failedTimer = useRef<any>(null);
 
   useEffect(() => {
-    if (!editing) {
+    if (!editing || !hasLabelKeys) {
       return;
     }
     onBusy(true);
     return () => onBusy(false);
-  }, [editing]);
+  }, [editing, hasLabelKeys]);
 
   useEffect(() => () => clearTimeout(failedTimer.current), []);
+
+  if (!hasLabelKeys) {
+    return (
+      <Tooltip
+        title={intl.formatMessage({ id: 'clusters.topology.cell.noKeys.tips' })}
+      >
+        <span className={classNames(styles.cell, 'static')}>
+          <span className="value">
+            {intl.formatMessage({ id: 'clusters.topology.mapping.noKeys' })}
+          </span>
+          <IconFont type="icon-label_thin" className="action" aria-hidden />
+        </span>
+      </Tooltip>
+    );
+  }
 
   const startEdit = () => {
     clearTimeout(failedTimer.current);
@@ -443,12 +464,7 @@ const LocationCell: React.FC<LocationCellProps> = ({
         : current;
 
   const hover = !current
-    ? field.labelKeys.length
-      ? intl.formatMessage(
-          { id: 'clusters.topology.cell.unfilled.tips' },
-          { keys: field.labelKeys.join(', ') }
-        )
-      : intl.formatMessage({ id: 'clusters.topology.cell.noKeys.tips' })
+    ? null
     : discovered
       ? intl.formatMessage(
           { id: 'clusters.topology.state.discovered.tips' },
@@ -526,14 +542,7 @@ const LocationCell: React.FC<LocationCellProps> = ({
             aria-hidden
           >
             {!current && (
-              <IconFont
-                type={
-                  field.labelKeys.length
-                    ? 'icon-tag-outlined'
-                    : 'icon-label_thin'
-                }
-                className="empty-state"
-              />
+              <IconFont type="icon-tag-outlined" className="empty-state" />
             )}
             <EditOutlined className="edit" />
           </Flex>

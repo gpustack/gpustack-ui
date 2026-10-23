@@ -38,7 +38,6 @@ import usePreview from './hooks/use-preview';
 import useTopology from './hooks/use-topology';
 import { LocationField, allFields, writableLabelKey } from './location';
 import LocationTable from './location-table';
-import Onboarding from './onboarding';
 import { SetLocationModal } from './set-location';
 import { SpecContext, loadSpecContext, saveTopologySpec } from './spec';
 import TreeView, { TREE_GROUPING } from './tree-view';
@@ -46,8 +45,6 @@ import TreeView, { TREE_GROUPING } from './tree-view';
 /** Below this viewport width the drawer takes the whole screen. */
 const FULL_WIDTH_BELOW = 1280;
 const DRAWER_WIDTH = 1080;
-/** How long a row pointed at from elsewhere stays tinted. */
-const HIGHLIGHT_MS = 3000;
 /** The table's header row, which the virtual body's height must leave out. */
 const TABLE_HEADER_HEIGHT = 40;
 
@@ -152,27 +149,15 @@ const TopologyDrawer: React.FC<TopologyDrawerProps> = ({
     context: null,
     value: createCustomLayerValue([])
   }));
-  const [highlightId, setHighlightId] = useState<number | null>(null);
-
   const searchRef = useRef<any>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
   const bodySize = useSize(bodyRef);
-  const highlightTimer = useRef<any>(null);
   /** The first write of a session says once that nothing running moves. */
   const wroteOnceRef = useRef(false);
 
   const getDrawerContainer = () =>
     contentRef.current?.closest<HTMLElement>('.ant-drawer-section');
-
-  const highlight = (id: number) => {
-    clearTimeout(highlightTimer.current);
-    setHighlightId(id);
-    highlightTimer.current = setTimeout(
-      () => setHighlightId(null),
-      HIGHLIGHT_MS
-    );
-  };
 
   useEffect(() => {
     if (!open) {
@@ -187,7 +172,6 @@ const TopologyDrawer: React.FC<TopologyDrawerProps> = ({
         context: null,
         value: createCustomLayerValue([])
       });
-      setHighlightId(null);
       wroteOnceRef.current = false;
       return;
     }
@@ -408,7 +392,6 @@ const TopologyDrawer: React.FC<TopologyDrawerProps> = ({
             className={styles.fixed}
             style={{ paddingBlock: 12 }}
           >
-            {displayed && <Onboarding />}
             <Flex align="center" gap={12} wrap>
               <Input
                 ref={searchRef}
@@ -528,8 +511,8 @@ const TopologyDrawer: React.FC<TopologyDrawerProps> = ({
                 grouping={grouping}
                 onGroupingChange={setGrouping}
                 onHostClick={(worker) => {
+                  setSearch(worker.name);
                   changeViewMode('table');
-                  highlight(worker.id);
                 }}
               />
             ) : (
@@ -544,7 +527,6 @@ const TopologyDrawer: React.FC<TopologyDrawerProps> = ({
                       setSelectedIds(ids);
                       setBatchOpen(false);
                     }}
-                    highlightId={highlightId}
                     height={Math.max(
                       160,
                       (bodySize?.height || 400) - TABLE_HEADER_HEIGHT

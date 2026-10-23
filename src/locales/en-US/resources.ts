@@ -130,13 +130,5 @@ export default {
   'resources.worker.setLabels': 'Set Labels',
   'resources.worker.setLabels.count': '{count} workers selected',
   'resources.worker.setLabels.hint':
-    'Adds new labels and updates matching keys on all selected workers. Other labels are preserved. To remove labels, edit a worker individually.',
-
-  'resources.table.location': 'Topology layers',
-  'resources.worker.location.moreLayers': '+{count} layers',
-  'resources.worker.location.totalLayers': '{count} layers',
-  'resources.worker.location.unfilled': 'Not set',
-  'resources.worker.location.unavailable':
-    'Topology information is temporarily unavailable',
-  'resources.worker.location.open': 'View topology layers for {worker}'
+    'Adds new labels and updates matching keys on all selected workers. Other labels are preserved. To remove labels, edit a worker individually.'
 };

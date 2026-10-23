@@ -13,15 +13,16 @@ mock.module('@umijs/max', {
         if (id === 'clusters.topology.value.create')
           return `Create “${values.value}”`;
         if (id === 'clusters.topology.value.clear') return 'Clear value';
-        if (id === 'clusters.topology.value.empty') return 'No existing values';
+        if (id === 'clusters.topology.value.empty')
+          return 'No available values. Enter a label value.';
         if (id === 'clusters.topology.mapping.noKeys')
           return 'No candidate keys';
         if (id === 'clusters.topology.cell.noKeys.tips')
-          return 'Configure candidate keys in Layer management';
+          return 'Configure candidate keys in Manage Layers';
         if (id === 'clusters.topology.cell.unfilled')
-          return 'Worker label is not set';
-        if (id === 'clusters.topology.cell.unfilled.tips')
-          return `Candidate keys: ${values.keys}`;
+          return 'Layer value not set';
+        if (id === 'clusters.topology.state.user.tips')
+          return `Worker label: ${values.key}`;
         if (id === 'clusters.topology.cell.aria')
           return `${values.field}: ${values.state} (${values.host})`;
         return id;
@@ -131,7 +132,8 @@ const assertPlainOptions = (value: unknown, path = 'options') => {
 mock.module('@gpustack/core-ui', {
   namedExports: {
     BaseSelect,
-    IconFont: () => null,
+    IconFont: ({ type, ...props }: any) =>
+      createElement('span', { ...props, 'data-icon': type }),
     Select: ({ label, isInFormItems, alwaysFocus, options, ...props }: any) => {
       assertPlainOptions(options);
       floatingSelectOptions = options;
@@ -202,7 +204,9 @@ test('an empty inline picker keeps its dropdown visible and offers guidance', as
   const dropdown = document.querySelector('.ant-select-dropdown');
   assert.ok(dropdown);
   assert.ok(!dropdown.classList.contains('ant-select-dropdown-hidden'));
-  assert.ok(dropdown.textContent?.includes('No existing values'));
+  assert.ok(
+    dropdown.textContent?.includes('No available values. Enter a label value.')
+  );
   assert.equal(editor.onPick.mock.callCount(), 0);
 });
 
@@ -422,9 +426,13 @@ test('the floating clear icon resets the selection and search without choosing l
 const mountCell = async (labelKeys: string[]) => {
   const onStartEdit = mock.fn();
   const onSave = mock.fn(async (_value: string | null) => undefined);
+  const onBusy = mock.fn();
   const container = document.getElementById('root')!;
   const root = createRoot(container);
-  const renderValue = async (current?: string) => {
+  const renderValue = async (
+    current?: string,
+    next: { labelKeys?: string[]; editing?: boolean } = {}
+  ) => {
     await act(async () => {
       root.render(
         createElement(LocationCell, {
@@ -445,15 +453,15 @@ const mountCell = async (labelKeys: string[]) => {
             builtin: false,
             active: false,
             primaryKey: null,
-            labelKeys
+            labelKeys: next.labelKeys ?? labelKeys
           },
           options: [],
-          editing: false,
+          editing: next.editing ?? false,
           onStartEdit,
           onStopEdit: () => {},
           onSave,
           onTab: () => {},
-          onBusy: () => {}
+          onBusy
         })
       );
     });
@@ -462,6 +470,8 @@ const mountCell = async (labelKeys: string[]) => {
   return {
     onStartEdit,
     onSave,
+    onBusy,
+    container,
     renderValue,
     get button() {
       return container.querySelector<HTMLButtonElement>(
@@ -470,11 +480,12 @@ const mountCell = async (labelKeys: string[]) => {
     },
     tooltip: async () => {
       await act(async () => {
-        container
-          .querySelector('button.location-cell')!
-          .dispatchEvent(
-            new dom.window.MouseEvent('mouseover', { bubbles: true })
-          );
+        const target =
+          container.querySelector('button.location-cell') ||
+          container.firstElementChild!;
+        target.dispatchEvent(
+          new dom.window.MouseEvent('mouseover', { bubbles: true })
+        );
         await new Promise((resolve) => setTimeout(resolve, 150));
       });
       return document.querySelector('[role="tooltip"]')?.textContent;
@@ -485,21 +496,74 @@ const mountCell = async (labelKeys: string[]) => {
   };
 };
 
-test('a cell without candidate keys explains layer management and remains editable without hiding an existing value', async (t) => {
+test('a cell without candidate keys stays static despite input events, stale values, or external editing', async (t) => {
   const cell = await mountCell([]);
+  t.after(cell.unmount);
+  const assertStatic = () => {
+    assert.equal(cell.container.textContent, 'No candidate keys');
+    assert.equal(
+      cell.container.querySelector(
+        'button, [role="button"], [role="combobox"], [tabindex], .edit, [data-icon="edit"]'
+      ),
+      null
+    );
+    assert.ok(cell.container.querySelector('[data-icon="icon-label_thin"]'));
+  };
+  assertStatic();
+  assert.equal(
+    await cell.tooltip(),
+    'Configure candidate keys in Manage Layers'
+  );
+  assertStatic();
+  await act(async () => {
+    const text = cell.container.firstElementChild as HTMLElement;
+    text.click();
+    for (const key of ['Enter', ' ']) {
+      text.dispatchEvent(
+        new dom.window.KeyboardEvent('keydown', {
+          key,
+          bubbles: true,
+          cancelable: true
+        })
+      );
+    }
+  });
+  assert.equal(cell.onStartEdit.mock.callCount(), 0);
+  assert.equal(cell.onSave.mock.callCount(), 0);
+  assert.equal(cell.onBusy.mock.callCount(), 0);
+
+  await cell.renderValue('stale-rack', { editing: true });
+  assertStatic();
+  assert.equal(cell.onBusy.mock.callCount(), 0);
+  await cell.renderValue(undefined, {
+    labelKeys: ['labels/rack'],
+    editing: true
+  });
+  assert.ok(cell.container.querySelector('[role="combobox"]'));
+  assert.deepEqual(
+    cell.onBusy.mock.calls.map((call) => call.arguments),
+    [[true]]
+  );
+  await cell.renderValue('stale-rack', { labelKeys: [], editing: true });
+  assertStatic();
+  assert.deepEqual(
+    cell.onBusy.mock.calls.map((call) => call.arguments),
+    [[true], [false]]
+  );
+});
+
+test('a cell with missing worker labels has no hover tooltip and still starts inline editing on click', async (t) => {
+  const cell = await mountCell(['labels/rack', 'legacy/rack']);
   t.after(cell.unmount);
   assert.equal(
     cell.button.querySelector('.value')?.textContent,
-    'No candidate keys'
+    'Layer value not set'
   );
   assert.equal(
     cell.button.getAttribute('aria-label'),
-    'Rack: No candidate keys (worker-a)'
+    'Rack: Layer value not set (worker-a)'
   );
-  assert.equal(
-    await cell.tooltip(),
-    'Configure candidate keys in Layer management'
-  );
+  assert.equal(await cell.tooltip(), undefined);
   await act(async () => cell.button.click());
   assert.equal(cell.onStartEdit.mock.callCount(), 1);
   assert.equal(cell.onSave.mock.callCount(), 0);
@@ -510,24 +574,5 @@ test('a cell without candidate keys explains layer management and remains editab
     cell.button.getAttribute('aria-label'),
     'Rack: rack-a (worker-a)'
   );
-});
-
-test('a cell with missing worker labels lists the candidate keys and still starts inline editing on click', async (t) => {
-  const cell = await mountCell(['labels/rack', 'legacy/rack']);
-  t.after(cell.unmount);
-  assert.equal(
-    cell.button.querySelector('.value')?.textContent,
-    'Worker label is not set'
-  );
-  assert.equal(
-    cell.button.getAttribute('aria-label'),
-    'Rack: Worker label is not set (worker-a)'
-  );
-  assert.equal(
-    await cell.tooltip(),
-    'Candidate keys: labels/rack, legacy/rack'
-  );
-  await act(async () => cell.button.click());
-  assert.equal(cell.onStartEdit.mock.callCount(), 1);
-  assert.equal(cell.onSave.mock.callCount(), 0);
+  assert.equal(await cell.tooltip(), 'Worker label: labels/rack');
 });

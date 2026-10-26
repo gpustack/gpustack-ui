@@ -47,7 +47,7 @@
     "jdenticon": "^3.3.0",
     "jotai": "^2.8.4",
     "js-yaml": "^4.3.0",
-    "katex": "^0.16.21",
+    "katex": "^0.18.2",
     "lamejs": "github:zhuker/lamejs",
     "localforage": "^1.10.0",
     "lodash": "^4.17.21",

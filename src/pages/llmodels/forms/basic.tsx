@@ -221,17 +221,18 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
                   : 'models.form.rules.name'
             })
           }),
-          ({ getFieldValue }) => ({
+          ({ getFieldValue }) => {
             // Read the live value so toggling the route revalidates the name
             // against the new setting, before useWatch rerenders the hint.
-            pattern:
-              isCreate && getFieldValue('enable_model_route')
-                ? /^[A-Za-z]/
-                : undefined,
-            message: intl.formatMessage({
-              id: 'models.form.rules.nameWithRoute'
-            })
-          })
+            return isCreate && getFieldValue('enable_model_route')
+              ? {
+                  pattern: /^[A-Za-z]/,
+                  message: intl.formatMessage({
+                    id: 'models.form.rules.nameWithRoute'
+                  })
+                }
+              : {};
+          }
         ]}
       >
         <CInput.Input

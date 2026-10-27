@@ -186,6 +186,9 @@ const AdvanceConfig = ({ pdActive }: { pdActive?: boolean } = {}) => {
             style={{ marginBottom: 8 }}
           >
             <CheckboxField
+              description={intl.formatMessage({
+                id: 'models.form.enableModelRoute.tips'
+              })}
               label={intl.formatMessage({
                 id: 'models.form.enableModelRoute'
               })}

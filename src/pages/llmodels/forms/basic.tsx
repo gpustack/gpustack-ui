@@ -62,7 +62,16 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
   const intl = useIntl();
   const form = Form.useFormInstance();
   const { getRuleMessage } = useAppUtils();
-  const { onValuesChange, action, formKey } = useFormContext();
+  const { onValuesChange, action, realAction, formKey } = useFormContext();
+  const enableModelRoute = Form.useWatch('enable_model_route', form);
+  const isCreate =
+    action === PageAction.CREATE || realAction === PageAction.COPY;
+  const nameRuleMessage = intl.formatMessage({
+    id:
+      isCreate && enableModelRoute
+        ? 'models.form.rules.nameWithRoute'
+        : 'models.form.rules.name'
+  });
 
   const handleOnSourceChange = (val: string) => {
     onSourceChange?.(val);
@@ -196,20 +205,38 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
       <Form.Item<FormData>
         data-field="name"
         name="name"
+        dependencies={['enable_model_route']}
+        validateFirst
         rules={[
           {
             required: true,
             message: getRuleMessage('input', 'common.table.name')
           },
-          {
+          ({ getFieldValue }) => ({
             pattern: modelNameReg,
-            message: intl.formatMessage({ id: 'models.form.rules.name' })
-          }
+            message: intl.formatMessage({
+              id:
+                isCreate && getFieldValue('enable_model_route')
+                  ? 'models.form.rules.nameWithRoute'
+                  : 'models.form.rules.name'
+            })
+          }),
+          ({ getFieldValue }) => ({
+            // Read the live value so toggling the route revalidates the name
+            // against the new setting, before useWatch rerenders the hint.
+            pattern:
+              isCreate && getFieldValue('enable_model_route')
+                ? /^[A-Za-z]/
+                : undefined,
+            message: intl.formatMessage({
+              id: 'models.form.rules.nameWithRoute'
+            })
+          })
         ]}
       >
         <CInput.Input
           onBlur={handleNameBlur}
-          description={intl.formatMessage({ id: 'models.form.rules.name' })}
+          description={nameRuleMessage}
           label={intl.formatMessage({
             id: 'common.table.name'
           })}

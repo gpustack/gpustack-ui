@@ -442,6 +442,8 @@ export default {
     'ローカルパス（例：/path/to/model）を入力するか、Hugging Face または ModelScope のモデル（例：Tengyunw/qwen3_8b_eagle3）を選択できます。システムはメインモデルのソースに基づいて自動的に照合します。',
   'models.form.quantization': '量子化',
   'models.form.backend.custom': 'ユーザー定義',
+  'models.form.rules.nameWithRoute':
+    'モデルルートを有効にする場合、名前は英字で始める必要があります。63文字以内で、英数字、ドット（.）、アンダースコア（_）、ハイフン（-）のみ使用でき、末尾は英数字にしてください。',
   'models.form.rules.name':
     '63 文字以内で、英字、数字、ドット (.)、アンダースコア (_)、ハイフン (-) のみ使用できます。先頭と末尾は英数字にしてください。',
   'models.catalog.button.explore': 'さらにモデルを探す',
@@ -449,7 +451,8 @@ export default {
   'models.form.gpuPerReplica.tips': '任意の数値を入力してください',
   'models.form.generic_proxy': '汎用プロキシを有効にする',
   'models.form.enableModelRoute': 'モデルルートを有効にする',
-  'models.form.enableModelRoute.tips': 'モデルルートを有効にする',
+  'models.form.enableModelRoute.tips':
+    'デプロイメントと同じ名前のモデルルートを作成します。デプロイメント名は英字で始める必要があります。',
   'models.form.generic_proxy.tips':
     '汎用プロキシを有効にすると、OpenAI API 標準に準拠しない URI パスにアクセスできます。',
   'models.form.generic_proxy.button': '汎用プロキシ',

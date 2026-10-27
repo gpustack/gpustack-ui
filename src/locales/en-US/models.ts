@@ -435,6 +435,8 @@ export default {
     'You can enter a local path (e.g., /path/to/model) or select a model from Hugging Face or ModelScope (e.g., Tengyunw/qwen3_8b_eagle3). The system will automatically match based on the primary model source.',
   'models.form.quantization': 'Quantization',
   'models.form.backend.custom': 'User-defined',
+  'models.form.rules.nameWithRoute':
+    'With Model Route enabled, the name must start with a letter. Up to 63 characters; letters, numbers, dots (.), underscores (_), and hyphens (-) only; must end with a letter or number.',
   'models.form.rules.name':
     'Up to 63 characters; letters, numbers, dots (.), underscores (_), and hyphens (-) only; must start and end with an alphanumeric character.',
   'models.catalog.button.explore': 'Explore More Models',
@@ -442,7 +444,8 @@ export default {
   'models.form.gpuPerReplica.tips': 'Enter a custom number',
   'models.form.generic_proxy': 'Enable Generic Proxy',
   'models.form.enableModelRoute': 'Enable Model Route',
-  'models.form.enableModelRoute.tips': 'Enable Model Route',
+  'models.form.enableModelRoute.tips':
+    'Creates a route with the same name as this deployment. The deployment name must start with a letter.',
   'models.form.generic_proxy.tips':
     'After enabling the generic proxy, you can access URI paths that do not follow the OpenAI API standard.',
   'models.form.generic_proxy.button': 'Generic Proxy',

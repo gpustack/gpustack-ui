@@ -436,6 +436,8 @@ export default {
     "Yerel yol (örn., /path/to/model) girebilir veya Hugging Face ya da ModelScope'dan bir model seçebilirsiniz (örn., Tengyunw/qwen3_8b_eagle3). Sistem birincil model kaynağına göre otomatik eşleme yapar.",
   'models.form.quantization': 'Niceleme',
   'models.form.backend.custom': 'Kullanıcı tanımlı',
+  'models.form.rules.nameWithRoute':
+    'Model rotası etkinken ad bir harfle başlamalıdır. En fazla 63 karakter olabilir; yalnızca harf, rakam, nokta (.), alt çizgi (_) ve tire (-) içerebilir; harf veya rakamla bitmelidir.',
   'models.form.rules.name':
     'En fazla 63 karakter; yalnızca harf, rakam, nokta (.), alt çizgi (_) ve tire (-); alfanümerik karakterle başlamalı ve bitmelidir.',
   'models.catalog.button.explore': 'Daha Fazla Model Keşfet',
@@ -443,7 +445,8 @@ export default {
   'models.form.gpuPerReplica.tips': 'Özel bir sayı girin',
   'models.form.generic_proxy': "Genel Proxy'yi Etkinleştir",
   'models.form.enableModelRoute': 'Model Yönlendirmesini Etkinleştir',
-  'models.form.enableModelRoute.tips': 'Model Yönlendirmesini Etkinleştir',
+  'models.form.enableModelRoute.tips':
+    'Dağıtımla aynı ada sahip bir model rotası oluşturur. Dağıtım adı bir harfle başlamalıdır.',
   'models.form.generic_proxy.tips':
     'Genel proxy etkinleştirildikten sonra OpenAI API standardına uymayan URI yollarına erişebilirsiniz.',
   'models.form.generic_proxy.button': 'Genel Proxy',

@@ -413,6 +413,8 @@ export default {
     '可填写本地路径（如 /path/to/model），或从 Hugging Face、ModelScope 选择模型（如 Tengyunw/qwen3_8b_eagle3）。系统将根据主模型来源自动匹配。',
   'models.form.quantization': '量化',
   'models.form.backend.custom': '用户定义',
+  'models.form.rules.nameWithRoute':
+    '启用模型路由时，名称必须以字母开头。长度不超过 63 个字符，只能包含字母、数字、点（.）、下划线（_）和连字符（-），且必须以字母或数字结尾。',
   'models.form.rules.name':
     '长度不超过 63 个字符，只能包含字母、数字、点（.）、下划线（_）和连字符（-），且必须以字母或数字开头和结尾。',
   'models.catalog.button.explore': '浏览更多模型',
@@ -420,7 +422,8 @@ export default {
   'models.form.gpuPerReplica.tips': '输入自定义数值',
   'models.form.generic_proxy': '启用通用代理',
   'models.form.enableModelRoute': '启用模型路由',
-  'models.form.enableModelRoute.tips': '启用模型路由',
+  'models.form.enableModelRoute.tips':
+    '创建与部署同名的模型路由。部署名称必须以字母开头。',
   'models.form.generic_proxy.tips':
     '启用通用代理后可支持访问非 OpenAI-API 标准的 URI 路径。',
   'models.form.generic_proxy.button': '通用代理',

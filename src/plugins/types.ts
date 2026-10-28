@@ -135,6 +135,11 @@ export interface AppPluginContext {
  * application plugin interface
  */
 export interface AppPlugin {
+  /** Whether business capability and administrator startup requests may run. */
+  canInitializeConsole?: (
+    context: Pick<AppPluginContext, 'request'>
+  ) => boolean | Promise<boolean>;
+
   /**
    * application initialization hook
    * called when the application starts, can return initialization data

@@ -5,7 +5,7 @@ import { DEFAULT_ENTER_PAGE, GPUSTACK_API_BASE_URL } from '@/config/settings';
 import { COLOR_PRIMARY } from '@/config/theme/constants';
 import ErrorBoundary from '@/layouts/error-boundary';
 import { ensureCurrentLocaleMessages } from '@/locales/load-messages';
-import { getGPUStackPlugin } from '@/plugins';
+import { canInitializeConsole, getGPUStackPlugin } from '@/plugins';
 import { enterprisePluginReady } from '@/plugins/enterprise-ready';
 import { GPUStackPluginManager } from '@/plugins/manager';
 import { requestConfig } from '@/request-config';
@@ -84,17 +84,15 @@ export async function getInitialState(): Promise<{
     }
   };
 
+  let businessInitializationAllowed = false;
   const fetchUserInfo = async (config?: {
     skipErrorHandler?: boolean;
   }): Promise<Global.UserInfo> => {
+    businessInitializationAllowed = false;
     try {
       const data = await queryCurrentUserState({
         skipErrorHandler: true
       });
-      if (data.is_admin) {
-        getUpdateCheck();
-        fetchSystemConfig();
-      }
       // Only commit a substantive user object. A truthy-but-empty
       // `data` (e.g. server responded 200 with an empty body) would
       // otherwise look like "logged in" to every `currentUser`
@@ -123,6 +121,11 @@ export async function getInitialState(): Promise<{
           });
         } catch (err) {
           console.error('onUserFetched plugin hook error:', err);
+        }
+        businessInitializationAllowed = await canInitializeConsole(umiRequest);
+        if (data.is_admin && businessInitializationAllowed) {
+          getUpdateCheck();
+          fetchSystemConfig();
         }
       }
       return data;
@@ -164,19 +167,20 @@ export async function getInitialState(): Promise<{
   getAppVersionInfo();
 
   if (![DEFAULT_ENTER_PAGE.login].includes(location.pathname)) {
-    const [userInfo, accessFlags] = await Promise.all([
-      fetchUserInfo(),
-      probeAccessFlags()
-    ]);
+    const userInfo = await fetchUserInfo();
+    const accessFlags =
+      userInfo?.username && businessInitializationAllowed
+        ? await probeAccessFlags()
+        : {};
     // Record that the probes ran for an authenticated user this page load
     // (the refresh path) so the layout doesn't re-probe. A failed
     // fetch (empty user — e.g. unauthenticated deep link that bounces to
     // login) is NOT marked: the user will log in via SPA afterwards and
     // the layout becomes responsible for probing.
-    if (userInfo?.username) {
+    if (userInfo?.username && businessInitializationAllowed) {
       markInitialStateProbed();
+      checkDefaultPage(userInfo);
     }
-    checkDefaultPage(userInfo);
     return {
       fetchUserInfo,
       currentUser: userInfo,

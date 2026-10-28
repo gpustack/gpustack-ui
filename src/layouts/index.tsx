@@ -12,6 +12,7 @@ import useUserSettings from '@/hooks/use-user-settings';
 import useUserSettingsStorage from '@/hooks/use-user-settings-storage';
 import useAddResource from '@/pages/dashboard/hooks/use-add-resource';
 import { logout } from '@/pages/login/apis';
+import { canInitializeConsole, getGPUStackPlugin } from '@/plugins';
 import { didInitialStateProbe, probeAccessFlags } from '@/utils/access-probes';
 import {
   readColumnSettings,
@@ -42,13 +43,14 @@ import {
 import { App, Button, ConfigProvider, Modal } from 'antd';
 import { useAtom } from 'jotai';
 import 'overlayscrollbars/overlayscrollbars.css';
-import { useEffect, useMemo, useRef } from 'react';
+import { Fragment, useEffect, useMemo, useRef } from 'react';
 import { PageContainerInner } from '../pages/_components/page-box';
+import AccessLayout from './access-layout';
+import ErrorBoundary from './error-boundary';
 import Exception from './Exception';
+import { ExtraContent } from './extraRender';
 import './Layout.css';
 import { LogoIcon, SLogoIcon } from './Logo';
-import ErrorBoundary from './error-boundary';
-import { ExtraContent } from './extraRender';
 import SiderMenu from './sider-menu';
 
 const CHECK_RESOURCE_PATH = [
@@ -144,47 +146,28 @@ export default (props: any) => {
   const access = useAccess();
   const probedForUserRef = useRef<string | null>(null);
 
-  // Backfill the access probes (cluster / resource-events) once we're in
-  // the authenticated shell. `getInitialState` runs only once at app
-  // boot and can't probe on the login page (no session => 401), so after
-  // a first login the flags arrive here as `undefined` — which the
-  // access predicate treats as "don't restrict", flashing GPU Service /
-  // the full Usage page on until a manual refresh. This layout mounts
-  // only post-auth (login is `layout:false`) and on every entry, so it's
-  // the reliable place to resolve them.
-  //
-  // The effect is keyed on the user IDENTITY, not on the flag values —
-  // gating on the flags is what made this fragile (on a refresh
-  // `getInitialState` commits `currentUser` and the flags in the same
-  // update, so a flag-gated effect sees them already-known and never
-  // fires). Whether to actually hit the network is decided by the
-  // module-scoped `didInitialStateProbe()` marker, which is true only
-  // when `getInitialState` already probed for an authenticated user this
-  // page load (the refresh path) — so we skip the duplicate request there
-  // but still probe on the SPA-login path. Keying on identity also
-  // re-probes correctly if the signed-in user changes.
+  // Capability probes are business requests. A setup/recovery shell must
+  // resolve startup permission before issuing them on a SPA login.
   const currentUser = initialState?.currentUser;
   const username = currentUser?.username;
 
   useEffect(() => {
-    if (!username || !setInitialState) {
+    if (!username || !setInitialState || probedForUserRef.current === username)
       return;
-    }
-    if (probedForUserRef.current === username) {
-      return;
-    }
-    probedForUserRef.current = username;
-    // The refresh path already resolved the flags inside `getInitialState`
-    // for this user — don't issue a duplicate probe.
-    if (didInitialStateProbe()) {
-      return;
-    }
-    probeAccessFlags().then((accessFlags) => {
-      setInitialState((prev: any) => ({
-        ...prev,
-        ...accessFlags
-      }));
-    });
+    let current = true;
+    const initialize = async () => {
+      if (!(await canInitializeConsole(request)) || !current) return;
+      probedForUserRef.current = username;
+      if (didInitialStateProbe()) return;
+      const accessFlags = await probeAccessFlags();
+      if (current) {
+        setInitialState((previous: any) => ({ ...previous, ...accessFlags }));
+      }
+    };
+    initialize();
+    return () => {
+      current = false;
+    };
   }, [username, setInitialState]);
 
   const userConfig = {
@@ -221,6 +204,12 @@ export default (props: any) => {
     showShortcuts: () => {},
     notFound: <span>404 not found</span>
   };
+
+  const ConsoleGuard = getGPUStackPlugin()?.components?.ConsoleGuard;
+  const Guard = ConsoleGuard || Fragment;
+  const guardProps = ConsoleGuard
+    ? { onLogout: runtimeConfig.logout, AccessLayout }
+    : {};
 
   const coreUISlots = useMemo(() => ({ ExtraContent }), []);
 
@@ -413,80 +402,82 @@ export default (props: any) => {
           slots={coreUISlots}
           access={{ Access, useAccess }}
         >
-          <DarkMask></DarkMask>
-          <ProLayout
-            fixSiderbar
-            fixedHeader={false}
-            headerRender={false}
-            breadcrumbRender={false}
-            route={route}
-            location={location}
-            title={userConfig.title}
-            navTheme={userSettings.theme}
-            layout="side"
-            contentStyle={{
-              paddingBlock: 0,
-              paddingInline: 0
-            }}
-            openKeys={false}
-            disableMobile={true}
-            siderWidth={220}
-            menuFooterRender={() => (
-              <Button
-                style={{
-                  color: 'var(--color-sider-item-text)'
-                }}
-                size="small"
-                type={'text'}
-                onClick={handleToggleCollapse}
-              >
-                <IconFont
-                  type={collapsed ? 'icon-expand-left' : 'icon-expand-right'}
-                  className="font-size-16"
-                />
-              </Button>
-            )}
-            onCollapse={onCollapse}
-            onMenuHeaderClick={onMenuHeaderClick}
-            collapsed={userSettings.collapsed}
-            onPageChange={onPageChange}
-            formatMessage={formatMessage}
-            menu={{
-              locale: true,
-              type: 'group'
-            }}
-            splitMenus={true}
-            logo={userSettings.collapsed ? <SLogoIcon /> : <LogoIcon />}
-            menuContentRender={menuContentRender}
-            {...runtimeConfig}
-            ErrorBoundary={ErrorBoundary}
-          >
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                height: '100vh',
-                overflow: 'hidden'
+          <Guard key={currentUser?.id} {...guardProps}>
+            <DarkMask></DarkMask>
+            <ProLayout
+              fixSiderbar
+              fixedHeader={false}
+              headerRender={false}
+              breadcrumbRender={false}
+              route={route}
+              location={location}
+              title={userConfig.title}
+              navTheme={userSettings.theme}
+              layout="side"
+              contentStyle={{
+                paddingBlock: 0,
+                paddingInline: 0
               }}
+              openKeys={false}
+              disableMobile={true}
+              siderWidth={220}
+              menuFooterRender={() => (
+                <Button
+                  style={{
+                    color: 'var(--color-sider-item-text)'
+                  }}
+                  size="small"
+                  type={'text'}
+                  onClick={handleToggleCollapse}
+                >
+                  <IconFont
+                    type={collapsed ? 'icon-expand-left' : 'icon-expand-right'}
+                    className="font-size-16"
+                  />
+                </Button>
+              )}
+              onCollapse={onCollapse}
+              onMenuHeaderClick={onMenuHeaderClick}
+              collapsed={userSettings.collapsed}
+              onPageChange={onPageChange}
+              formatMessage={formatMessage}
+              menu={{
+                locale: true,
+                type: 'group'
+              }}
+              splitMenus={true}
+              logo={userSettings.collapsed ? <SLogoIcon /> : <LogoIcon />}
+              menuContentRender={menuContentRender}
+              {...runtimeConfig}
+              ErrorBoundary={ErrorBoundary}
             >
-              <PluginExtraFields name="GlobalBanner" />
-              <Exception
-                route={matchedRoute}
-                notFound={runtimeConfig?.notFound}
-                noFound={runtimeConfig?.noFound}
-                unAccessible={runtimeConfig?.unAccessible}
-                noAccessible={runtimeConfig?.noAccessible}
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  height: '100vh',
+                  overflow: 'hidden'
+                }}
               >
-                <PageContainerInner>
-                  <div>
-                    <Outlet />
-                  </div>
-                </PageContainerInner>
-              </Exception>
-            </div>
-            {NoResourceModal}
-            {contextHolder}
-          </ProLayout>
+                <PluginExtraFields name="GlobalBanner" />
+                <Exception
+                  route={matchedRoute}
+                  notFound={runtimeConfig?.notFound}
+                  noFound={runtimeConfig?.noFound}
+                  unAccessible={runtimeConfig?.unAccessible}
+                  noAccessible={runtimeConfig?.noAccessible}
+                >
+                  <PageContainerInner>
+                    <div>
+                      <Outlet />
+                    </div>
+                  </PageContainerInner>
+                </Exception>
+              </div>
+              {NoResourceModal}
+              {contextHolder}
+            </ProLayout>
+          </Guard>
         </CoreUIProvider>
       </App>
     </ConfigProvider>

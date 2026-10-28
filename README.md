@@ -45,6 +45,8 @@ npm run dev
 npm run build
 ```
 
+Production Umi/Webpack builds use esbuild for source transpilation and JavaScript/CSS minification. Minifiers use esbuild's native concurrency without an additional JavaScript worker pool. Production builds continue to remove `console` and `debugger` statements and emit content-hashed assets, gzip files, and Monaco/YAML workers. Development keeps Babel's Fast Refresh instrumentation and MFSU dependency caching.
+
 ## Testing
 
 Run all Node.js tests, or select files and directories relative to the project root:

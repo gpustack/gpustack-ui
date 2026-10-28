@@ -1,5 +1,5 @@
 import { GPUStackPluginManager } from './manager';
-import { AppPlugin } from './types';
+import { AppPlugin, AppPluginContext } from './types';
 
 /**
  * Hook to access the enterprise plugin instance
@@ -20,4 +20,17 @@ export const getPlugin = (name: string): AppPlugin | undefined => {
  */
 export const hasPlugin = (name: string): boolean => {
   return GPUStackPluginManager.has(name);
+};
+
+/** Keep setup and recovery screens free of protected business requests. */
+export const canInitializeConsole = async (
+  request: AppPluginContext['request']
+): Promise<boolean> => {
+  const check = getGPUStackPlugin()?.canInitializeConsole;
+  if (!check) return true;
+  try {
+    return (await check({ request })) === true;
+  } catch {
+    return false;
+  }
 };

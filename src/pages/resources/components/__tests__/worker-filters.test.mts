@@ -8,6 +8,7 @@ const empty = () => null;
 const passChildren = ({ children }: any) =>
   createElement(Fragment, null, children);
 const inputs = new Map<string, any>();
+let tooltip: any;
 
 mock.module('@ant-design/icons', {
   namedExports: { SearchOutlined: empty, SyncOutlined: empty }
@@ -29,6 +30,10 @@ mock.module('antd', {
   namedExports: {
     Button: passChildren,
     Flex: passChildren,
+    Tooltip: (props: any) => {
+      tooltip = props;
+      return passChildren(props);
+    },
     Input: (props: any) => {
       inputs.set(props['aria-label'], props);
       return null;
@@ -77,9 +82,15 @@ for (const value of [
   'region=',
   'city=New York',
   'url=http://host:8000?a=b',
-  ''
+  '',
+  'region',
+  'beijing',
+  'region beijing',
+  'region:beijing',
+  '=beijing',
+  ' '
 ]) {
-  test(`submits an exact label filter or clear: ${JSON.stringify(value)}`, async (t) => {
+  test(`forwards label input without validation: ${JSON.stringify(value)}`, async (t) => {
     const { onLabelChange, change } = await mount(t);
     await change(value);
     assert.deepEqual(
@@ -94,30 +105,20 @@ for (const value of [
   });
 }
 
-for (const value of [
-  'region',
-  'beijing',
-  'region beijing',
-  'region:beijing',
-  '=beijing',
-  ' '
-]) {
-  test(`shows invalid format without a request: ${JSON.stringify(value)}`, async (t) => {
-    const { onLabelChange, change } = await mount(t);
-    await change(value);
-    assert.equal(onLabelChange.mock.callCount(), 0);
-    assert.equal(inputs.get('resources.filter.label').status, 'error');
-    assert.equal(inputs.get('resources.filter.label')['aria-invalid'], true);
-  });
-}
-
-test('clearing an invalid label removes its error and clears the active filter', async (t) => {
+test('clearing label input clears the active filter', async (t) => {
   const { onLabelChange, change } = await mount(t);
   await change('region:beijing');
   await change('');
   assert.deepEqual(
     onLabelChange.mock.calls.map((call) => call.arguments),
-    [['']]
+    [['region:beijing'], ['']]
   );
   assert.equal(inputs.get('resources.filter.label').status, undefined);
+});
+
+test('shows label matching rules in a tooltip on hover or focus', async (t) => {
+  await mount(t);
+  assert.equal(tooltip.title, 'resources.filter.label.help');
+  assert.deepEqual(tooltip.trigger, ['hover', 'focus']);
+  assert.equal(tooltip.children.props['aria-label'], 'resources.filter.label');
 });

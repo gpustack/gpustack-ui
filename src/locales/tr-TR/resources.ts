@@ -1,7 +1,7 @@
 export default {
   'resources.filter.label': 'Etiket: key=value',
   'resources.filter.label.help':
-    'Büyük/küçük harfe duyarlı tam etiket eşleşmesi için key=value girin. Değer boş olabilir.',
+    'Büyük/küçük harfe duyarlı tam eşleşme için key=value (ör. region=beijing) kullanın. Anahtar boş olamaz; değer boş olabilir. Filtreyi kaldırmak için alanı temizleyin.',
   'resources.title': 'Kaynaklar',
   'resources.nodes': 'İşçi Düğümler',
   'resources.worker': 'İşçi Düğüm',

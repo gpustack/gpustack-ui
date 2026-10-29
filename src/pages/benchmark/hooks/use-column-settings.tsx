@@ -10,12 +10,13 @@ import BenchmarkStateTag from '../components/benchmark-state-tag';
 import {
   LoadTypeValueMap,
   TargetModeValueMap,
-  VALIDITY_MESSAGE_KEY,
   loadTypeOptions,
   loadValueDecimals,
   targetModeOptions
 } from '../config';
 import { BenchmarkListItem as ListItem } from '../config/types';
+import { getPrimaryResultRate } from '../utils/primary-result';
+import { getValidityWarningPresentation } from '../utils/validity-warning';
 
 const useStyles = createStyles(({ css }) => ({
   columnSettingsPopover: css`
@@ -470,13 +471,11 @@ const useColumnSettings = (options: {
       )
     },
     {
-      // Best @ — the recommended operating point (peak / max-within-SLO). The
-      // value lives on the load axis, so we spell out its unit (concurrency vs
-      // request rate) instead of a bare number.
+      // Best @ is the primary result's configured load, with the load-axis unit.
       title: renderTitle(intl.formatMessage({ id: 'benchmark.table.best' })),
       dataIndex: 'recommended_rate',
       render: (_text: number, record: ListItem) => {
-        const rate = record.recommended_rate ?? record.peak_rate;
+        const rate = getPrimaryResultRate(record);
         if (rate == null) {
           return (
             <AutoTooltip ghost minWidth={20}>
@@ -524,12 +523,13 @@ const useColumnSettings = (options: {
             </Tag>
           );
         }
-        const msgs = warnings.map((w) =>
-          intl.formatMessage(
-            { id: VALIDITY_MESSAGE_KEY[w.code] || w.code },
-            (w.params || {}) as Record<string, string | number>
-          )
-        );
+        const msgs = warnings.map((warning) => {
+          const presentation = getValidityWarningPresentation(warning, v);
+          return intl.formatMessage(
+            { id: presentation.messageId },
+            presentation.params as Record<string, string | number>
+          );
+        });
         return (
           <Tooltip
             title={

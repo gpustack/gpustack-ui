@@ -243,6 +243,7 @@ export const genBenchmarkName = (model?: string, profile?: string): string => {
 // Map backend validity warning `code` -> i18n key (backend emits codes + params;
 // the UI localizes them). Used by the detail banner and the list Coverage column.
 export const VALIDITY_MESSAGE_KEY: Record<string, string> = {
+  throughput_decline: 'benchmark.detail.validity.throughputDecline',
   slo_never_met: 'benchmark.detail.validity.sloNeverMet',
   slo_not_binding: 'benchmark.detail.validity.sloNotBinding',
   not_saturated: 'benchmark.detail.validity.notSaturated',
@@ -261,6 +262,9 @@ export const VALIDITY_MESSAGE_KEY: Record<string, string> = {
 // Absent for stage / legacy runs and for rows measured before the runner started
 // reporting it — render nothing rather than "unknown".
 export const STOP_REASON_LABEL: Record<string, string> = {
+  throughput_gain_converged:
+    'benchmark.detail.stopReason.throughputGainConverged',
+  throughput_decline: 'benchmark.detail.stopReason.throughputDecline',
   capacity_plateau: 'benchmark.detail.stopReason.capacityPlateau',
   upper_bound: 'benchmark.detail.stopReason.upperBound',
   budget_points: 'benchmark.detail.stopReason.budgetPoints',

@@ -1,4 +1,93 @@
 export default {
+  'benchmark.detail.result.selectMeasuredPoint':
+    '{load} {unit} ölçüm noktasını seç',
+  'benchmark.detail.metric.ttftP99': 'TTFT p99',
+  'benchmark.detail.metric.tpotP99': 'TPOT p99',
+  'benchmark.detail.metric.itlP99': 'ITL p99',
+  'benchmark.detail.statistics.p25': 'P25',
+  'benchmark.detail.statistics.p50': 'P50',
+  'benchmark.detail.statistics.p75': 'P75',
+  'benchmark.detail.statistics.p90': 'P90',
+  'benchmark.detail.stopReason.throughputGainConverged':
+    'Verim artışı yakınsaması',
+  'benchmark.detail.stopReason.throughputGainConverged.detail':
+    'Son {points} ince arama noktasında kaydedilen zirvenin toplam artışı %{gain} ile %{threshold} eşiğinin altında kaldı; ince arama sona erdi. Bu sonuç yalnızca ölçülen noktaları kapsar.',
+  'benchmark.detail.stopReason.throughputGainConverged.baseline':
+    'Pencere başlangıcı: {load} {unit} yükte {throughput} tok/s',
+  'benchmark.detail.stopReason.throughputGainConverged.best':
+    'Pencerede kaydedilen en iyi: {load} {unit} yükte {throughput} tok/s',
+  'benchmark.detail.stopReason.throughputGainConverged.range':
+    'En iyi noktanın iki yanındaki ölçülen yükler: {lower}–{upper} {unit}',
+  'benchmark.detail.stopReason.throughputGainConverged.point':
+    'İnce arama noktası {point}: {load} {unit}, toplam TPS {throughput} tok/s, o ana kadarki en iyi {best} tok/s',
+  'benchmark.detail.statistics.load': 'Yük ve verim',
+  'benchmark.detail.statistics.latency': 'Gecikme',
+  'benchmark.detail.statistics.tokens': 'İstek boyutu istatistikleri',
+  'benchmark.detail.statistics.requestRate': 'Gerçekleşen istek hızı',
+  'benchmark.detail.statistics.concurrency': 'Gerçekleşen eşzamanlılık',
+  'benchmark.detail.statistics.requestsUnit': 'istek',
+  'benchmark.detail.statistics.tokensUnit': 'token/istek',
+  'benchmark.detail.statistics.successTotal': 'Başarılı / toplam istek',
+  'benchmark.detail.statistics.requestSize': 'İstek boyutu',
+  'benchmark.detail.statistics.requestSizeNote':
+    'Girdi / çıktı token dağılımları',
+  'benchmark.detail.statistics.load.min.tip':
+    'Bu aşamada kaydedilen en düşük değerdir. Hızlar olay zamanlarına dayanır; eşzamanlılık işlenmekte olan istekleri sayar.',
+  'benchmark.detail.statistics.load.max.tip':
+    'Bu aşamada kaydedilen en yüksek değerdir. Kısa hız sıçramaları sürdürülebilir kapasiteyi göstermez. Ana zirve aşamaların ortalama toplam TPS değerinden seçilir.',
+  'benchmark.detail.statistics.latency.min.tip':
+    'Bu aşamadaki gecikme ölçütünün en küçük örneğidir. Birimler satırda belirtilir.',
+  'benchmark.detail.statistics.latency.max.tip':
+    'Bu aşamadaki gecikme ölçütünün en büyük örneğidir. ITL Max en uzun akış çıktısı aralığıdır.',
+  'benchmark.detail.statistics.tokens.min.tip':
+    'Bu aşamadaki başarılı isteklerin en düşük girdi/çıktı token sayısıdır.',
+  'benchmark.detail.statistics.tokens.max.tip':
+    'Bu aşamadaki başarılı isteklerin en yüksek girdi/çıktı token sayısıdır.',
+  'benchmark.detail.latency.scrollHint':
+    'Tüm yüzdelikleri görmek için yatay kaydırın',
+  'benchmark.detail.latency.metric': 'Metrik',
+  'benchmark.detail.latency.endToEnd': 'Uçtan uca gecikme',
+  'benchmark.detail.validity.throughputDeclineGeneric':
+    'Toplam TPS’deki sürekli düşüş nedeniyle test erken sona erdi. SLO sınırı bulunamadı.',
+  'benchmark.detail.validity.declineEvidence.peak':
+    'Ölçülen zirve: {tps} tok/s',
+  'benchmark.detail.validity.declineEvidence.concurrency':
+    'Eşzamanlılık {rate}: {tps} tok/s (%{drop} düşüş)',
+  'benchmark.detail.validity.declineEvidence.rate':
+    'Hedef istek hızı {rate} req/s: {tps} tok/s (%{drop} düşüş)',
+  'benchmark.detail.validity.declineEvidence.details':
+    'Verim değişikliklerini görüntüle',
+  'benchmark.detail.marker.sloCapacity.tip':
+    'Yapılandırılan tüm SLO hedeflerini sağlayan en yüksek ölçülen yük.',
+  'benchmark.detail.marker.peakThroughput.tip':
+    'Ölçülen noktalar arasında kaydedilen en yüksek toplam TPS.',
+  'benchmark.detail.stage.measuredRate.tip':
+    'İstek tamamlanma zamanlarına göre saniyede başarıyla tamamlanan isteklerin ölçülen hızıdır. Yapılandırılan geliş hızı değildir.',
+  'benchmark.detail.stage.measuredConcurrency.tip':
+    'Başarılı isteklerin başlangıçtan tamamlanmaya kadar olan aralıklarına göre ölçülen ortalama eşzamanlılıktır.',
+  'benchmark.detail.stage.configuredConcurrency': 'Hedef eşzamanlılık',
+  'benchmark.detail.stage.configuredRate': 'Hedef istek hızı',
+  'benchmark.detail.stage.measuredConcurrency': 'Gerçekleşen eşzamanlılık Ort.',
+  'benchmark.detail.stage.measuredRate': 'Gerçekleşen istek hızı Ort.',
+  'benchmark.detail.validity.throughputDecline':
+    'Artan yükteki ardışık {points} aşamada toplam TPS ölçülen zirvenin en az %{threshold} altında kaldığı için test erken sona erdi. SLO sınırı bulunamadı.',
+  'benchmark.detail.stopReason.throughputDecline': 'Verim düşüşü koruması',
+  'benchmark.detail.result.load': 'Sonuç yükü',
+  'benchmark.detail.result.boundaryPair':
+    '{pass} {unit} SLO’yu sağladı; {fail} {unit} sağlamadı',
+  'benchmark.detail.result.sloConcurrency':
+    'SLO’yu sağlayan en yüksek ölçülen eşzamanlılık',
+  'benchmark.detail.result.sloRate':
+    'SLO’yu sağlayan en yüksek ölçülen istek hızı',
+  'benchmark.detail.result.totalPeak': 'Ölçülen en yüksek toplam verim',
+  'benchmark.detail.result.measured': 'Ölçüm sonucu',
+  'benchmark.detail.result.noSloPoint': 'Ölçülen hiçbir nokta SLO’yu sağlamadı',
+  'benchmark.detail.result.boundaryLocated': 'SLO sınırı bulundu',
+  'benchmark.detail.result.boundaryUnknown':
+    'Daha yüksek SLO sınırı bulunamadı',
+  'benchmark.detail.result.inProgress': 'Ölçüm sürüyor',
+  'benchmark.detail.result.peakFact':
+    'Tepe Verim: {load} {unit} düzeyinde {throughput} tok/s',
   'benchmark.title': 'Kıyaslamalar',
   'benchmark.button.add': 'Kıyaslama Ekle',
   'benchmark.button.edit': 'Kıyaslamayı Düzenle',
@@ -198,7 +287,7 @@ export default {
   'benchmark.table.tailLatency': 'Kuyruk Gecikmesi',
   'benchmark.table.columnSettings': 'Sütun Ayarları',
   'benchmark.detail.summary.results': 'Test Sonuçları',
-  'benchmark.detail.summary.recommendation': 'En İyi Çalışma Noktası',
+  'benchmark.detail.summary.recommendation': 'Ana sonuç',
   'benchmark.detail.summary.supporting': 'Ayrıntılı metrikler',
   'benchmark.detail.summary.stages': 'Aşamaya göre sonuçlar',
   'benchmark.detail.summary.totalStages': 'aşama',
@@ -231,7 +320,7 @@ export default {
   'benchmark.detail.validity.sloNeverMet':
     'Gecikme hedeflerini karşılayan hiçbir ölçüm noktası yok — sunucu bu SLO için çok yavaş; hedefleri düşürün veya dağıtımı değiştirin.',
   'benchmark.detail.validity.sloNotBinding':
-    'Gecikme eşikleri sonucu hiç belirlemedi — ölçülen en yüksek yükte bile en sıkı bütçenin yalnızca %{used} kadarı kullanıldı — ve verim {rate} değerinde zaten zirveye ulaşmıştı. Bu koşuyu sınırlayan şey kapasiteydi, gecikme bütçesi değil: {rate} bir verim üst sınırıdır, SLO sınırı değil; dolayısıyla en iyi çalışma noktası orasıdır (ötesinde fazladan yük yalnızca kuyruğa girer: verim artmaz, gecikme sürekli kötüleşir). Gerçek bir SLO sınırı bulmak için eşikleri sıkılaştırıp yeniden ölçün.',
+    'SLO sınırı bulunamadı. En yüksek ölçülen yük gecikme hedeflerini karşılarken arama {rate} yakınındaki verim platosunda durdu. Uygun aralık ve bütçe içinde SLO aramasını sürdürün.',
   'benchmark.detail.validity.notSaturated':
     'En iyi çalışma noktası en yüksek ölçülen noktadır ve hiçbir şey aşırı yüklenmedi — gerçek optimum daha yüksek olabilir. Arama aralığının üst sınırını artırıp yeniden çalıştırın.',
   'benchmark.detail.validity.budgetExhausted':
@@ -261,8 +350,8 @@ export default {
   'benchmark.detail.requests.success': 'Başarılı İstekler',
   'benchmark.detail.requests.failed': 'Başarısız İstekler',
   'benchmark.detail.requests.incomplete': 'Tamamlanmamış İstekler',
-  'benchmark.detail.requests.concurrency': 'Eşzamanlılık Ort.',
-  'benchmark.detail.requests.concurrency.max': 'Eşzamanlılık Maks.',
+  'benchmark.detail.requests.concurrency': 'Gerçekleşen eşzamanlılık Ort.',
+  'benchmark.detail.requests.concurrency.max': 'Gerçekleşen eşzamanlılık Maks.',
   'benchmark.detail.percentile.latency': 'Gecikme',
   'benchmark.detail.percentile.inputTokens': 'Giriş Tokenları',
   'benchmark.detail.percentile.outputTokens': 'Çıkış Tokenları',
@@ -295,7 +384,7 @@ export default {
   'benchmark.detail.chart.sloBreached': 'SLO ihlali',
   'benchmark.detail.chart.success': 'Başarı oranı',
   'benchmark.detail.reason.peakTradeoff':
-    'Zirveye ({rate} {unit}) çıkmak verime yalnızca %{gain} ekler, gecikme ise {cost} artar',
+    'Zirve {rate} {unit} düzeyinde: toplam verim %{gain}, TTFT p99 {cost}',
   'benchmark.detail.unit.avg': 'ort.',
   'benchmark.detail.p99.ttft': 'TTFT p99',
   'benchmark.detail.p99.tpot': 'TPOT p99',
@@ -307,9 +396,10 @@ export default {
   'benchmark.detail.summary.stagesHint':
     'Ayrıntı için herhangi bir satıra tıklayın',
   'benchmark.detail.chart.loadSweep': 'Yük taraması',
-  'benchmark.detail.chart.loadSweep.note': 'Yük arttıkça verim ve p99 TTFT',
+  'benchmark.detail.chart.loadSweep.note':
+    'Yük arttıkça toplam verim ve {metric}',
   'benchmark.detail.chart.dualAxisHint':
-    'Sol eksen (verim) doğrusaldır — her kılavuz çizgisi aynı miktarı ekler. Sağ eksen (TTFT p99) logaritmiktir — her çizgi altındakinin 10 katıdır; gecikme binlerce kat değiştiği için doğrusal ölçek dirsek sonrasındaki patlamayı gizler.',
+    'Sol eksen (toplam verim) doğrusaldır — her kılavuz çizgisi aynı miktarı ekler. Sağ eksen, gösterilen gecikme metriği için logaritmiktir — her çizgi altındakinin 10 katıdır. Metriğin adını sağ eksen başlığından okuyabilirsiniz.',
   'benchmark.detail.chart.logHint':
     'Bu eksende her kılavuz çizgisi altındakinin 10 katıdır; eşit oranlar eşit uzaklık olarak okunur. Doğrusal ölçek düşük yüklü aşamaları sıfıra bastırır.',
   'benchmark.detail.chart.ttftDist': 'TTFT dağılımı',
@@ -348,9 +438,9 @@ export default {
     'Bazı istekler başarısız olduğu için gösteriliyor',
   'benchmark.detail.chart.legend.shortfall': 'Eksik',
   'benchmark.detail.chart.legend.attainment': 'Korunan',
-  'benchmark.detail.chart.legend.configured': 'Yapılandırılan',
-  'benchmark.detail.chart.legend.achieved': 'Ulaşılan',
-  'benchmark.detail.chart.legend.actual': 'Gerçek (ort.)',
+  'benchmark.detail.chart.legend.configured': 'Hedef',
+  'benchmark.detail.chart.legend.achieved': 'Gerçekleşen Ort.',
+  'benchmark.detail.chart.legend.actual': 'Gerçekleşen Ort.',
   'benchmark.detail.chart.legend.generation': 'Üretim',
   'benchmark.detail.chart.legend.perRequest': 'İstek başına tok/s',
   'benchmark.detail.chart.axis.latencyMs': 'Gecikme (ms)',
@@ -358,20 +448,21 @@ export default {
   'benchmark.detail.chart.axis.inFlight': 'Uçuştaki istekler',
   'benchmark.detail.chart.axis.shortfall': 'Eksik (istek)',
   'benchmark.detail.chart.axis.successRate': 'Başarı oranı (%)',
-  'benchmark.detail.chart.axis.load.rate': 'İstek hızı (req/s)',
-  'benchmark.detail.chart.axis.load.concurrency': 'Eşzamanlılık (istek)',
+  'benchmark.detail.chart.axis.load.rate': 'Hedef istek hızı (req/s)',
+  'benchmark.detail.chart.axis.load.concurrency': 'Hedef eşzamanlılık (istek)',
   'benchmark.detail.chart.axis.throughput': 'Toplam verim (tok/s)',
-  'benchmark.detail.chart.axis.concurrencyAvg': 'Ortalama eşzamanlılık (istek)',
+  'benchmark.detail.chart.axis.concurrencyAvg':
+    'Gerçekleşen eşzamanlılık Ort. (istek)',
   'benchmark.detail.reason.peakTradeoffPlain':
-    'Zirveye ({rate} {unit}) çıkmak verime yalnızca %{gain} ekler',
+    'Zirve {rate} {unit} düzeyinde: toplam verim %{gain}',
   'benchmark.detail.summary.showMore': '{n} tane daha göster',
   'benchmark.detail.summary.showLess': 'Daha az göster',
   'benchmark.detail.selectedStage': 'Seçili Aşama',
   'benchmark.detail.showPercentiles': 'Yüzdelikleri göster',
   'benchmark.detail.hidePercentiles': 'Yüzdelikleri gizle',
   'benchmark.detail.status': 'Durum',
-  'benchmark.detail.status.recommended': 'En İyi',
-  'benchmark.detail.status.peak': 'Pik',
+  'benchmark.detail.status.recommended': 'SLO Kapasitesi',
+  'benchmark.detail.status.peak': 'Tepe Verim',
   'benchmark.detail.status.overloaded': 'Aşırı Yük',
   'benchmark.detail.status.healthy': 'Sağlıklı',
   'benchmark.state.stoppedAt': '%{percent} seviyesinde durduruldu',

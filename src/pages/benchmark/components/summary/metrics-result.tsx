@@ -1,363 +1,226 @@
+import { DownOutlined, RightOutlined } from '@ant-design/icons';
+import { HeadlessCollapse } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
+import { Button, Col, Flex, Row } from 'antd';
 import { createStyles } from 'antd-style';
-import _, { round } from 'lodash';
-import React from 'react';
+import { round } from 'lodash';
+import React, { useId, useState } from 'react';
 import { loadAxisLabelId, loadValueDecimals } from '../../config';
 import { useDetailContext } from '../../config/detail-context';
+import { recordedNumber } from '../../utils/stage-detail-metrics';
+import StageStatisticsTable from './stage-statistics-table';
+import { SectionTitle } from './ui';
 
-// Grouped metric report (Basic / Throughput / Latency), each a label→value list.
-// Three columns separated by hairlines — a card inside a card reads as two
-// levels of nesting for one level of meaning. Values are right-aligned against a
-// fixed unit column so the numbers form a readable stack.
 const useStyles = createStyles(({ css }) => ({
   box: css`
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    .group {
-      padding: 0 26px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+    container-type: inline-size;
+    min-width: 0;
+    .stage-meta {
+      padding-bottom: var(--ant-padding, 16px);
+      margin-bottom: var(--ant-margin-lg, 24px);
+      border-bottom: 1px solid var(--ant-color-border-secondary);
     }
-    .group:first-child {
-      padding-left: 0;
-    }
-    .group + .group {
-      border-left: 1px solid var(--ant-color-border-secondary);
-    }
-    .group .g-title {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
-      color: var(--ant-color-text-tertiary);
-    }
-    .metric {
-      display: flex;
-      align-items: baseline;
-      gap: 12px;
-      font-size: 13px;
-    }
-    .metric .m-label {
-      flex: 1;
-      min-width: 0;
+    .meta-label,
+    .meta-unit,
+    .request-size-note {
       color: var(--ant-color-text-secondary);
-    }
-    .metric .m-value {
-      font-variant-numeric: tabular-nums;
-      text-align: right;
-      white-space: nowrap;
-    }
-    .metric .m-unit {
-      width: 42px;
-      font-size: 11px;
-      color: var(--ant-color-text-tertiary);
-    }
-    .metric .m-value .sub {
       font-size: 12px;
+    }
+    .meta-value {
+      color: var(--ant-color-text);
+      font-size: 13px;
+      font-weight: 500;
+      font-variant-numeric: tabular-nums;
+    }
+    .meta-status {
+      font-size: 12px;
+      color: var(--color-status-error-text);
+    }
+    .load-col,
+    .latency-col {
+      min-width: 0;
+    }
+    .latency-col {
+      border-top: 1px solid var(--ant-color-border-secondary);
+      padding-top: var(--ant-padding-lg, 24px);
+      margin-top: var(--ant-margin-lg, 24px);
+    }
+    .request-size {
+      border-top: 1px solid var(--ant-color-border-secondary);
+      margin-top: var(--ant-margin-lg, 24px);
+      padding-top: var(--ant-padding-sm, 12px);
+    }
+    .request-size-toggle {
+      padding: 0;
+      height: auto;
+    }
+    .request-size-table {
+      padding-top: var(--ant-padding-sm, 12px);
+    }
+    @container (min-width: 1520px) {
+      .load-col {
+        flex: 0 0 36%;
+        max-width: 36%;
+        padding-inline-end: 40px;
+      }
+      .latency-col {
+        flex: 0 0 64%;
+        max-width: 64%;
+        border-top: none;
+        border-inline-start: 1px solid var(--ant-color-border-secondary);
+        padding-top: 0;
+        padding-inline-start: 40px;
+        margin-top: 0;
+      }
     }
   `
 }));
-
-interface MetricDef {
-  title: string;
-  path: string | string[];
-  /**
-   * Tried in order when `path` holds no positive number, which is not the same
-   * as "the metric is zero":
-   *
-   * * the flat p99 columns only exist for points measured after the runner
-   *   started writing them, so on an older run the column is null while the
-   *   dump still carries the quantile;
-   * * the decode-only per-token metric needs two token timestamps, so a
-   *   response that arrived as a single chunk collapses it to 0 — then the
-   *   includes-TTFT metric is the only per-token number there is.
-   *
-   * Same precedence as `decodeMs` in metrics.ts and `_slo_value` on the server,
-   * so the card cannot disagree with the table or the SLO verdict.
-   */
-  fallbacks?: Array<string | string[]>;
-  /**
-   * Renders "-" instead of 0 when nothing was found.
-   *
-   * For a metric that simply may not have been recorded — a run from before it
-   * existed, or one where it does not apply. Zero is a real reading for the
-   * others (0 ms of latency is nonsense but 0 requests is not), whereas here it
-   * would claim a measurement that never happened.
-   */
-  optional?: boolean;
-  unit?: string;
-  render: (value: any) => React.ReactNode;
-}
-
-const BENCH0_METRICS = ['raw_metrics', 'benchmarks', '0', 'metrics'];
-
-/** The measured per-interval ITL distribution; see metrics.ts `ITL_FIELD`. */
-const ITL_FIELD = 'inter_token_latency_per_chunk_ms';
-
-/** A stage's quantile straight from its guidellm dump. */
-const dumpPct = (field: string, key: string): string[] => [
-  ...BENCH0_METRICS,
-  field,
-  'successful',
-  'percentiles',
-  key
-];
-
-/** A distribution's own scalar (mean / max / count) from the dump. */
-const dumpStat = (field: string, key: string): string[] => [
-  ...BENCH0_METRICS,
-  field,
-  'successful',
-  key
-];
-
-/** First positive value among a metric's path and its fallbacks. */
-const metricValue = (data: any, c: MetricDef): number | null => {
-  for (const path of [c.path, ...(c.fallbacks ?? [])]) {
-    const v = _.get(data, path);
-    if (typeof v === 'number' && v > 0) {
-      return v;
-    }
-  }
-  if (c.optional) {
-    return null;
-  }
-  return _.get(data, c.path) ?? 0;
-};
-
-const throughputColumns: MetricDef[] = [
-  {
-    title: 'benchmark.detail.throughput.totalToken',
-    path: 'tokens_per_second_mean',
-    unit: 'tok/s',
-    render: (value: number) => round(value, 2)
-  },
-  {
-    title: 'benchmark.detail.throughput.inputToken',
-    path: 'input_tokens_per_second_mean',
-    unit: 'tok/s',
-    render: (value: number) => round(value, 2)
-  },
-  {
-    title: 'benchmark.detail.throughput.outputToken',
-    path: 'output_tokens_per_second_mean',
-    unit: 'tok/s',
-    render: (value: number) => round(value, 2)
-  }
-];
-
-const latencyColumns: MetricDef[] = [
-  {
-    // request_latency is SECONDS everywhere (the schema, the backend's SLO
-    // scale x1000, the percentile table's "Latency (s)" header, the list
-    // column's "Avg (s)" subtitle) — only this card used to label it ms, which
-    // read as a 1000x faster response than measured.
-    title: 'benchmark.detail.avg.reqLatency',
-    path: 'request_latency_mean',
-    unit: 's',
-    render: (value: number) => round(value, 2)
-  },
-  {
-    title: 'benchmark.detail.avg.ttft',
-    path: 'time_to_first_token_mean',
-    unit: 'ms',
-    render: (value: number) => round(value, 2)
-  },
-  {
-    // Decode-only TPOT = guidellm's `inter_token_latency_ms`. Its
-    // `time_per_output_token_ms` also divides by output tokens but starts the
-    // clock at request_start, so it includes TTFT; that one is only a fallback,
-    // for the single-chunk responses where the decode-only reading is 0.
-    title: 'benchmark.detail.avg.tpot',
-    path: 'inter_token_latency_mean',
-    fallbacks: ['time_per_output_token_mean'],
-    unit: 'ms',
-    render: (value: number) => round(value, 2)
-  },
-  {
-    // The tails, each below the average it qualifies. A second per-token column
-    // used to sit here; the two were the same metric under swapped names.
-    title: 'benchmark.detail.p99.ttft',
-    path: 'time_to_first_token_p99',
-    fallbacks: [dumpPct('time_to_first_token_ms', 'p99')],
-    unit: 'ms',
-    render: (value: number) => round(value, 2)
-  },
-  {
-    // Decode-only, same field as the TPOT average above — so this card carries
-    // the mean and the tail of ONE metric rather than two per-token metrics
-    // under different names.
-    title: 'benchmark.detail.p99.tpot',
-    path: 'inter_token_latency_p99',
-    fallbacks: [
-      dumpPct('inter_token_latency_ms', 'p99'),
-      dumpPct('time_per_output_token_ms', 'p99')
-    ],
-    unit: 'ms',
-    render: (value: number) => round(value, 2)
-  },
-  // ── Measured ITL ────────────────────────────────────────────────────────────
-  // A different metric from the TPOT rows above, not a second opinion on them:
-  // those are one value per request, these are the measured gaps between
-  // streamed outputs. On a request that stalls once, TPOT divides the stall by
-  // the request's other gaps and shows nothing; the gap itself lands here.
-  //
-  // `optional` throughout: absent on any run recorded before the gaps were
-  // captured, and rendering that as 0 would claim a decode with no latency
-  // between tokens at all.
-  {
-    title: 'benchmark.detail.avg.itl',
-    path: 'itl_per_chunk_mean',
-    fallbacks: [dumpStat(ITL_FIELD, 'mean')],
-    optional: true,
-    unit: 'ms',
-    render: (value: number) => round(value, 2)
-  },
-  {
-    title: 'benchmark.detail.p99.itl',
-    path: 'itl_per_chunk_p99',
-    fallbacks: [dumpPct(ITL_FIELD, 'p99')],
-    optional: true,
-    unit: 'ms',
-    render: (value: number) => round(value, 2)
-  },
-  {
-    // The worst single gap. Carried for ITL and nothing else here: for a
-    // per-request average a max is just the slowest request, but for the gaps
-    // it IS the stall the reader is looking for.
-    title: 'benchmark.detail.max.itl',
-    path: 'itl_per_chunk_max',
-    fallbacks: [dumpStat(ITL_FIELD, 'max')],
-    optional: true,
-    unit: 'ms',
-    render: (value: number) => round(value, 2)
-  }
-];
 
 const MetricsResult: React.FC<{ data?: any }> = (props) => {
   const { styles } = useStyles();
   const { detailData } = useDetailContext();
   const data = props.data ?? detailData;
   const intl = useIntl();
-  const t = (id?: string) => (id ? intl.formatMessage({ id }) : '');
-
-  const reqTotal = (k: string) =>
-    round(_.get(data, [...BENCH0_METRICS, 'request_totals', k]), 0) || 0;
-  const success = reqTotal('successful');
-  const failed = reqTotal('errored');
-  const incomplete = reqTotal('incomplete');
-  // Actual number of requests made this run. Prefer the measured total from
-  // request_totals; fall back to the configured `total_requests` (which is empty
-  // for stages / auto-tune runs, so it must NOT be the denominator — that showed
-  // "20/0"), then to the sum of the status buckets.
+  const t = (id: string) => intl.formatMessage({ id });
+  const [requestSizeOpen, setRequestSizeOpen] = useState(false);
+  const requestSizeId = useId();
+  const benchmark = data?.raw_metrics?.benchmarks?.[0] ?? data?.raw_metrics;
+  const totals = benchmark?.metrics?.request_totals;
+  const success =
+    recordedNumber(data?.request_successful) ??
+    recordedNumber(totals?.successful);
+  const failed =
+    recordedNumber(data?.request_errored) ?? recordedNumber(totals?.errored);
+  const incomplete =
+    recordedNumber(data?.request_incomplete) ??
+    recordedNumber(totals?.incomplete);
   const total =
-    reqTotal('total') ||
-    round(data?.total_requests ?? 0, 0) ||
-    success + failed + incomplete;
-  const concAvg =
-    round(
-      _.get(data, [
-        ...BENCH0_METRICS,
-        'request_concurrency',
-        'successful',
-        'mean'
-      ]),
-      0
-    ) || 0;
-  const duration = _.get(data, ['raw_metrics', 'benchmarks', '0', 'duration']);
-
-  const row = (
+    recordedNumber(data?.request_total) ??
+    recordedNumber(totals?.total) ??
+    (success != null && failed != null && incomplete != null
+      ? success + failed + incomplete
+      : null);
+  const duration = recordedNumber(benchmark?.duration);
+  const target =
+    recordedNumber(data?.rate) ??
+    (props.data == null ? recordedNumber(data?.request_rate) : null);
+  const count = (value: number | null) =>
+    value == null
+      ? '-'
+      : value.toLocaleString(undefined, { maximumFractionDigits: 0 });
+  const isConcurrency =
+    loadAxisLabelId(detailData) === 'benchmark.form.concurrency';
+  const meta = (
     key: string,
-    label: React.ReactNode,
+    label: string,
     value: React.ReactNode,
     unit?: string
   ) => (
-    <div className="metric" key={key}>
-      <span className="m-label">{label}</span>
-      <span className="m-value">{value}</span>
-      <span className="m-unit">{unit}</span>
-    </div>
-  );
-
-  const basicRows: React.ReactNode[] = [];
-  // The selected stage's load value lives here now (no separate header line).
-  if (data?.rate != null) {
-    basicRows.push(
-      row(
-        'rate',
-        t(loadAxisLabelId(detailData)),
-        round(data.rate, loadValueDecimals(detailData)),
-        t(
-          loadValueDecimals(detailData) === 0
-            ? 'benchmark.table.best.unit.concurrency'
-            : 'benchmark.table.best.unit.rate'
-        )
-      )
-    );
-  }
-  basicRows.push(
-    row(
-      'requests',
-      t('benchmark.detail.summary.request'),
-      <>
-        {success}/{total}
-        {failed > 0 && (
-          <span
-            className="sub"
-            style={{ color: 'var(--color-status-error-text)' }}
-          >
-            {' '}
-            · {failed} {t('benchmark.detail.requests.failed')}
-          </span>
-        )}
-        {incomplete > 0 && (
-          <span
-            className="sub"
-            style={{ color: 'var(--color-status-warning-text)' }}
-          >
-            {' '}
-            · {incomplete} {t('benchmark.detail.requests.incomplete')}
-          </span>
-        )}
-      </>
-    )
-  );
-  basicRows.push(
-    row('conc', t('benchmark.detail.requests.concurrency'), concAvg)
-  );
-  basicRows.push(
-    row(
-      'duration',
-      t('benchmark.detail.result.duration'),
-      duration ? round(duration, 2) : 0,
-      's'
-    )
-  );
-
-  const renderGroup = (titleId: string, cols: MetricDef[]) => (
-    <div className="group">
-      <div className="g-title">{t(titleId)}</div>
-      {cols.map((c) => {
-        const value = metricValue(data, c);
-        return row(
-          c.title,
-          t(c.title),
-          value == null ? '-' : c.render(value),
-          value == null ? undefined : c.unit
-        );
-      })}
-    </div>
+    <Flex key={key} align="baseline" gap={8} wrap className="meta-item">
+      <span className="meta-label">{label}</span>
+      <span className="meta-value">{value}</span>
+      {unit && <span className="meta-unit">{unit}</span>}
+    </Flex>
   );
 
   return (
     <div className={styles.box}>
-      <div className="group">
-        <div className="g-title">{t('benchmark.detail.result.basic')}</div>
-        {basicRows}
+      <Flex
+        wrap
+        gap="8px 24px"
+        align="center"
+        className="stage-meta"
+        role="group"
+        aria-label={t('benchmark.detail.result.basic')}
+      >
+        {target != null &&
+          meta(
+            'target',
+            t(
+              isConcurrency
+                ? 'benchmark.detail.stage.configuredConcurrency'
+                : 'benchmark.detail.stage.configuredRate'
+            ),
+            round(target, loadValueDecimals(detailData)),
+            t(
+              isConcurrency
+                ? 'benchmark.table.best.unit.concurrency'
+                : 'benchmark.table.best.unit.rate'
+            )
+          )}
+        {meta(
+          'requests',
+          t('benchmark.detail.statistics.successTotal'),
+          <Flex wrap gap={4}>
+            <span>
+              {count(success)} / {count(total)}
+            </span>
+            {failed != null && failed > 0 && (
+              <span className="meta-status">
+                · {count(failed)} {t('benchmark.detail.requests.failed')}
+              </span>
+            )}
+            {incomplete != null && incomplete > 0 && (
+              <span className="meta-status">
+                · {count(incomplete)}{' '}
+                {t('benchmark.detail.requests.incomplete')}
+              </span>
+            )}
+          </Flex>
+        )}
+        {meta(
+          'duration',
+          t('benchmark.detail.result.duration'),
+          duration == null ? '-' : round(duration, 2).toLocaleString(),
+          's'
+        )}
+      </Flex>
+      <Row>
+        <Col span={24} className="load-col">
+          <SectionTitle
+            style={{ fontSize: 13, fontWeight: 500, marginBottom: 12 }}
+          >
+            {t('benchmark.detail.statistics.load')}
+          </SectionTitle>
+          <StageStatisticsTable kind="load" data={data} />
+        </Col>
+        <Col span={24} className="latency-col">
+          <SectionTitle
+            style={{ fontSize: 13, fontWeight: 500, marginBottom: 12 }}
+          >
+            {t('benchmark.detail.statistics.latency')}
+          </SectionTitle>
+          <StageStatisticsTable kind="latency" data={data} />
+        </Col>
+      </Row>
+      <div className="request-size">
+        <Button
+          type="link"
+          size="small"
+          className="request-size-toggle"
+          icon={requestSizeOpen ? <DownOutlined /> : <RightOutlined />}
+          onClick={() => setRequestSizeOpen((open) => !open)}
+          aria-label={t('benchmark.detail.statistics.requestSize')}
+          aria-expanded={requestSizeOpen}
+          aria-controls={requestSizeId}
+        >
+          <Flex align="center" wrap gap={8}>
+            <span>{t('benchmark.detail.statistics.requestSize')}</span>
+            <span className="request-size-note">
+              {t('benchmark.detail.statistics.requestSizeNote')}
+            </span>
+          </Flex>
+        </Button>
+        <div id={requestSizeId}>
+          <HeadlessCollapse open={requestSizeOpen}>
+            {requestSizeOpen && (
+              <div className="request-size-table">
+                <StageStatisticsTable kind="tokens" data={data} />
+              </div>
+            )}
+          </HeadlessCollapse>
+        </div>
       </div>
-      {renderGroup('benchmark.detail.summary.throughput', throughputColumns)}
-      {renderGroup('benchmark.detail.summary.latency', latencyColumns)}
     </div>
   );
 };

@@ -1,4 +1,87 @@
 export default {
+  'benchmark.detail.result.selectMeasuredPoint': '{load} {unit} の測定点を選択',
+  'benchmark.detail.metric.ttftP99': 'TTFT p99',
+  'benchmark.detail.metric.tpotP99': 'TPOT p99',
+  'benchmark.detail.metric.itlP99': 'ITL p99',
+  'benchmark.detail.statistics.p25': 'P25',
+  'benchmark.detail.statistics.p50': 'P50',
+  'benchmark.detail.statistics.p75': 'P75',
+  'benchmark.detail.statistics.p90': 'P90',
+  'benchmark.detail.stopReason.throughputGainConverged':
+    'スループット改善幅の収束',
+  'benchmark.detail.stopReason.throughputGainConverged.detail':
+    '直近 {points} 個の絞り込み測定点で、記録されたピークの累積改善は {gain}% で、しきい値 {threshold}% 未満のため絞り込みを終了しました。結論は測定済みの点に限られます。',
+  'benchmark.detail.stopReason.throughputGainConverged.baseline':
+    '区間開始時：{throughput} tok/s、{load} {unit}',
+  'benchmark.detail.stopReason.throughputGainConverged.best':
+    '区間内の累積最高：{throughput} tok/s、{load} {unit}',
+  'benchmark.detail.stopReason.throughputGainConverged.range':
+    '最良点の左右で測定済みの負荷：{lower}–{upper} {unit}',
+  'benchmark.detail.stopReason.throughputGainConverged.point':
+    '測定点 {point}：{load} {unit}、総 TPS {throughput} tok/s、累積最高 {best} tok/s',
+  'benchmark.detail.statistics.load': '負荷とスループット',
+  'benchmark.detail.statistics.latency': 'レイテンシ',
+  'benchmark.detail.statistics.tokens': 'リクエストサイズ統計',
+  'benchmark.detail.statistics.requestRate': '実績リクエストレート',
+  'benchmark.detail.statistics.concurrency': '実績同時実行数',
+  'benchmark.detail.statistics.requestsUnit': 'リクエスト',
+  'benchmark.detail.statistics.tokensUnit': 'トークン/リクエスト',
+  'benchmark.detail.statistics.successTotal': '成功 / 全リクエスト',
+  'benchmark.detail.statistics.requestSize': 'リクエストサイズ',
+  'benchmark.detail.statistics.requestSizeNote': '入力 / 出力トークン分布',
+  'benchmark.detail.statistics.load.min.tip':
+    'このステージ内の最小記録値です。レートはイベント時刻に基づき、同時実行数は処理中のリクエスト数です。',
+  'benchmark.detail.statistics.load.max.tip':
+    'このステージ内の最大記録値です。瞬間的なレートの上昇は持続可能な容量を示しません。主結果のピークはステージ平均の総 TPS で選択します。',
+  'benchmark.detail.statistics.latency.min.tip':
+    'このステージにおけるレイテンシ指標の最小サンプル値です。単位は行の表示に従います。',
+  'benchmark.detail.statistics.latency.max.tip':
+    'このステージにおけるレイテンシ指標の最大サンプル値です。ITL Max は最長のストリーム出力間隔です。',
+  'benchmark.detail.statistics.tokens.min.tip':
+    'このステージの成功リクエストにおける最小入力／出力トークン数です。',
+  'benchmark.detail.statistics.tokens.max.tip':
+    'このステージの成功リクエストにおける最大入力／出力トークン数です。',
+  'benchmark.detail.latency.scrollHint':
+    '横にスクロールしてすべての分位値を表示',
+  'benchmark.detail.latency.metric': '指標',
+  'benchmark.detail.latency.endToEnd': 'エンドツーエンド遅延',
+  'benchmark.detail.validity.throughputDeclineGeneric':
+    '総 TPS の継続的な低下により、テストを早期終了しました。SLO 境界は未確認です。',
+  'benchmark.detail.validity.declineEvidence.peak': '実測ピーク：{tps} tok/s',
+  'benchmark.detail.validity.declineEvidence.concurrency':
+    '同時実行数 {rate}：{tps} tok/s（{drop}% 低下）',
+  'benchmark.detail.validity.declineEvidence.rate':
+    '目標リクエストレート {rate} req/s：{tps} tok/s（{drop}% 低下）',
+  'benchmark.detail.validity.declineEvidence.details':
+    'スループットの変化を表示',
+  'benchmark.detail.marker.sloCapacity.tip':
+    '設定したすべての SLO 目標を満たす最大の実測負荷です。',
+  'benchmark.detail.marker.peakThroughput.tip':
+    '測定点の中で記録された最大の総 TPS です。',
+  'benchmark.detail.stage.measuredRate.tip':
+    'リクエスト完了時刻に基づく、成功リクエストの毎秒実測完了数です。設定された到着レートではありません。',
+  'benchmark.detail.stage.measuredConcurrency.tip':
+    '成功リクエストの開始から完了までの区間に基づく、処理中同時実行数の実測平均です。',
+  'benchmark.detail.stage.configuredConcurrency': '目標同時実行数',
+  'benchmark.detail.stage.configuredRate': '目標リクエストレート',
+  'benchmark.detail.stage.measuredConcurrency': '実績同時実行数（平均）',
+  'benchmark.detail.stage.measuredRate': '実績リクエストレート（平均）',
+  'benchmark.detail.validity.throughputDecline':
+    '連続する {points} 個の負荷増加ステージで、総 TPS が実測ピークより {threshold}% 以上低下したため、テストを早期終了しました。SLO 境界は未確認です。',
+  'benchmark.detail.stopReason.throughputDecline': 'スループット低下保護',
+  'benchmark.detail.result.load': '結果の負荷',
+  'benchmark.detail.result.boundaryPair':
+    '{pass} {unit} は SLO 達成、{fail} {unit} は未達',
+  'benchmark.detail.result.sloConcurrency': 'SLO を満たす最大実測同時実行数',
+  'benchmark.detail.result.sloRate': 'SLO を満たす最大実測リクエストレート',
+  'benchmark.detail.result.totalPeak': '最大実測総スループット',
+  'benchmark.detail.result.measured': '測定結果',
+  'benchmark.detail.result.noSloPoint': 'SLO を満たす測定点がありません',
+  'benchmark.detail.result.boundaryLocated': 'SLO 境界を確認済み',
+  'benchmark.detail.result.boundaryUnknown': 'より高い SLO 境界は未確認',
+  'benchmark.detail.result.inProgress': '測定中',
+  'benchmark.detail.result.peakFact':
+    '総スループットのピーク：{throughput} tok/s、{load} {unit}',
   'benchmark.title': 'ベンチマーク',
   'benchmark.button.add': 'ベンチマークを追加',
   'benchmark.button.edit': 'ベンチマークを編集',
@@ -24,7 +107,7 @@ export default {
   'benchmark.form.loadType.sweep': '自動スイープ',
   'benchmark.form.autoTune': '自動チューニング',
   'benchmark.form.autoTune.rate.tip':
-    'この実行で測定する負荷ポイントです（1 ステージ = 1 測定点）。自動チューニングでは、出力スループットが伸びなくなる（ピーク）までリクエストレートを自動的に引き上げるため、ポイントを手入力する必要はありません。「手動」に切り替えると、指定したレートを順に実行します。',
+    'この実行で測定する負荷ポイントです（1 ステージ = 1 測定点）。自動チューニングでは、総スループットが伸びなくなる（ピーク）までリクエストレートを自動的に引き上げるため、ポイントを手入力する必要はありません。「手動」に切り替えると、指定したレートを順に実行します。',
   'benchmark.form.autoTune.concurrency.tip':
     'この実行で測定する負荷ポイントです（1 ステージ = 1 測定点）。自動チューニングでは、レイテンシ目標を満たせなくなる（SLO 境界）まで並行数を自動的に増やすため、ポイントを手入力する必要はありません。「手動」に切り替えると、指定した並行数を順に実行します。',
   'benchmark.form.autoTune.rangeRate': '探索範囲 · リクエストレート (req/s)',
@@ -198,7 +281,7 @@ export default {
   'benchmark.table.tailLatency': 'テールレイテンシ',
   'benchmark.table.columnSettings': '列の設定',
   'benchmark.detail.summary.results': 'テスト結果',
-  'benchmark.detail.summary.recommendation': '最適動作点',
+  'benchmark.detail.summary.recommendation': '主結果',
   'benchmark.detail.summary.supporting': '詳細メトリクス',
   'benchmark.detail.summary.stages': 'ステージ別の結果',
   'benchmark.detail.summary.totalStages': 'ステージ',
@@ -230,7 +313,7 @@ export default {
   'benchmark.detail.validity.sloNeverMet':
     'レイテンシ目標を満たす測定点がありません —— サーバーがこの SLO には遅すぎます。目標を緩めるかデプロイを変更してください。',
   'benchmark.detail.validity.sloNotBinding':
-    'レイテンシのしきい値は結果に影響していません——測定した最大負荷でも最も厳しい予算の {used}% しか使っておらず、スループットは {rate} で既に頭打ちでした。この実行を制限したのは容量であり、レイテンシ予算ではありません:{rate} はスループットの上限で、SLO の境界ではないため、そこが最適動作点です(それ以上の負荷はキューに積まれるだけで、スループットは増えずレイテンシだけが悪化します)。本当の SLO 境界を求めるには、しきい値を厳しくして再測定してください。',
+    'SLO 境界は未確認です。最高実測負荷が遅延目標を満たしたまま、{rate} 付近のスループット横ばいで探索が停止しました。適切な範囲と予算で SLO 探索を継続してください。',
   'benchmark.detail.validity.notSaturated':
     '最適動作点が最大の測定点で、過負荷も起きていません —— 真の最適値はさらに高い可能性があります。探索範囲(上限)を上げて再実行してください。',
   'benchmark.detail.validity.budgetExhausted':
@@ -260,8 +343,8 @@ export default {
   'benchmark.detail.requests.success': '成功したリクエスト',
   'benchmark.detail.requests.failed': '失敗したリクエスト',
   'benchmark.detail.requests.incomplete': '未完了のリクエスト',
-  'benchmark.detail.requests.concurrency': '平均同時実行数',
-  'benchmark.detail.requests.concurrency.max': '最大同時実行数',
+  'benchmark.detail.requests.concurrency': '実績同時実行数（平均）',
+  'benchmark.detail.requests.concurrency.max': '実績同時実行数（最大）',
   'benchmark.detail.percentile.latency': 'レイテンシー',
   'benchmark.detail.percentile.inputTokens': '入力 Token',
   'benchmark.detail.percentile.outputTokens': '出力 Token',
@@ -294,7 +377,7 @@ export default {
   'benchmark.detail.chart.sloBreached': 'SLO 違反',
   'benchmark.detail.chart.success': '成功率',
   'benchmark.detail.reason.peakTradeoff':
-    'ピークの {rate} {unit} まで上げてもスループットは {gain}% 増にとどまり、レイテンシは {cost} 増えます',
+    'ピークは {rate} {unit}：総スループット {gain}%、TTFT p99 {cost}',
   'benchmark.detail.unit.avg': '平均',
   'benchmark.detail.p99.ttft': 'TTFT p99',
   'benchmark.detail.p99.tpot': 'TPOT p99',
@@ -307,9 +390,9 @@ export default {
     '任意の行をクリックすると詳細を表示します',
   'benchmark.detail.chart.loadSweep': '負荷スイープ',
   'benchmark.detail.chart.loadSweep.note':
-    '負荷に対するスループットと P99 TTFT の変化',
+    '負荷に対する総スループットと {metric}',
   'benchmark.detail.chart.dualAxisHint':
-    '左軸（スループット）は等間隔で、1 目盛りごとに同じ値が加算されます。右軸（TTFT p99）は 1 目盛りごとに 10 倍 — レイテンシは千倍規模で変動するため、等間隔目盛りでは変曲点以降の急増が見えなくなります。',
+    '左軸（総スループット）は等間隔です。右軸は表示中のレイテンシ指標の対数目盛りで、1 目盛りごとに 10 倍になります。指標名は右軸のタイトルを確認してください。',
   'benchmark.detail.chart.logHint':
     'この軸は 1 目盛りごとに 10 倍で、同じ比率が同じ間隔として読めます。等間隔目盛りでは低負荷のステージが 0 付近に押し潰されます。',
   'benchmark.detail.chart.ttftDist': 'TTFT 分布',
@@ -346,9 +429,9 @@ export default {
     '失敗したリクエストがあるため表示しています',
   'benchmark.detail.chart.legend.shortfall': '不足',
   'benchmark.detail.chart.legend.attainment': '達成率',
-  'benchmark.detail.chart.legend.configured': '設定値',
-  'benchmark.detail.chart.legend.achieved': '実測',
-  'benchmark.detail.chart.legend.actual': '実測（平均）',
+  'benchmark.detail.chart.legend.configured': '目標',
+  'benchmark.detail.chart.legend.achieved': '実績（平均）',
+  'benchmark.detail.chart.legend.actual': '実績（平均）',
   'benchmark.detail.chart.legend.generation': '生成',
   'benchmark.detail.chart.legend.perRequest': 'リクエストあたり tok/s',
   'benchmark.detail.chart.axis.latencyMs': 'レイテンシ (ms)',
@@ -356,20 +439,21 @@ export default {
   'benchmark.detail.chart.axis.inFlight': '実行中リクエスト数',
   'benchmark.detail.chart.axis.shortfall': '不足（リクエスト数）',
   'benchmark.detail.chart.axis.successRate': '成功率 (%)',
-  'benchmark.detail.chart.axis.load.rate': 'リクエストレート (req/s)',
-  'benchmark.detail.chart.axis.load.concurrency': '同時実行数 (リクエスト)',
-  'benchmark.detail.chart.axis.throughput': '総スループット (tok/s)',
-  'benchmark.detail.chart.axis.concurrencyAvg': '平均同時実行数 (リクエスト)',
+  'benchmark.detail.chart.axis.load.rate': '目標リクエストレート (req/s)',
+  'benchmark.detail.chart.axis.load.concurrency': '目標同時実行数 (リクエスト)',
+  'benchmark.detail.chart.axis.throughput': '総スループット（tok/s）',
+  'benchmark.detail.chart.axis.concurrencyAvg':
+    '実績同時実行数（平均） (リクエスト)',
   'benchmark.detail.reason.peakTradeoffPlain':
-    'ピークの {rate} {unit} まで上げてもスループットは {gain}% 増にとどまります',
+    'ピークは {rate} {unit}：総スループット {gain}%',
   'benchmark.detail.summary.showMore': '他 {n} 件を表示',
   'benchmark.detail.summary.showLess': '折りたたむ',
   'benchmark.detail.selectedStage': '選択したステージ',
   'benchmark.detail.showPercentiles': 'パーセンタイルを表示',
   'benchmark.detail.hidePercentiles': 'パーセンタイルを非表示',
   'benchmark.detail.status': 'ステータス',
-  'benchmark.detail.status.recommended': '最適',
-  'benchmark.detail.status.peak': 'ピーク',
+  'benchmark.detail.status.recommended': 'SLO 達成容量',
+  'benchmark.detail.status.peak': '総スループットのピーク',
   'benchmark.detail.status.overloaded': '過負荷',
   'benchmark.detail.status.healthy': '正常',
   'benchmark.state.stoppedAt': '{percent}% で停止',

@@ -1,5 +1,10 @@
 import _ from 'lodash';
 import { BenchmarkResultItem } from '../../config/types';
+import { getPrimaryResultRate } from '../../utils/primary-result';
+import {
+  StageStatistic,
+  stageLatencyValue
+} from '../../utils/stage-detail-metrics';
 import { StageStatusKind, getStageStatus } from './ui';
 
 // ── The report's single data source ────────────────────────────────────────────
@@ -64,8 +69,6 @@ const dist = (
 // at low load) collapses it to 0. Then, and only then, the includes-TTFT value is
 // the only per-token number there is, and every layer falls back to it —
 // `decodeMs` here, `t.fallback` on the server, `or` in the runner.
-const TPOT_FIELD = 'inter_token_latency_ms';
-const TPOT_FALLBACK_FIELD = 'time_per_output_token_ms';
 
 // ── Which field is "ITL" ──────────────────────────────────────────────────────
 // The other per-token metric, and a genuinely different one: its samples are the
@@ -85,14 +88,9 @@ const TPOT_FALLBACK_FIELD = 'time_per_output_token_ms';
 // throughout.
 const ITL_FIELD = 'inter_token_latency_per_chunk_ms';
 
-/** A per-token latency, or null; 0 means "not incrementally streamed", not 0 ms. */
-const positive = (v: number | null | undefined): number | null =>
-  typeof v === 'number' && v > 0 ? v : null;
-
-/** Decode-only per-token time for one percentile, falling back as described above. */
-const decodeMs = (r: BenchmarkResultItem, key: string): number | null =>
-  positive(pct(r, TPOT_FIELD, key)) ??
-  positive(pct(r, TPOT_FALLBACK_FIELD, key));
+/** Share the detail panel's recorded TPOT values and same-stage raw fallback. */
+const decodeMs = (r: BenchmarkResultItem, key: StageStatistic): number | null =>
+  stageLatencyValue(r, 'tpot', key);
 
 export interface StagePoint {
   raw: BenchmarkResultItem;
@@ -175,6 +173,9 @@ export interface StagePoint {
   sloPass: boolean | null;
 }
 
+export const isSloCapacityPoint = (point: StagePoint): boolean =>
+  point.isBest && point.sloPass === true;
+
 /**
  * Below this sample count the tail percentiles are not an estimate, they are one or
  * two individual requests.
@@ -200,7 +201,7 @@ export const tailSamples = (count: number): number => Math.floor(count / 100);
 // and the backend's own slo_met_rate cannot tell three different stories.
 
 /** The nine optional thresholds, each paired with the value it bounds. */
-const SLO_CHECKS: Array<{
+export const SLO_CHECKS: Array<{
   field: string;
   get: (p: SloInputs) => number | null | undefined;
   /** Onto milliseconds: request latency is stored in seconds. */
@@ -209,27 +210,23 @@ const SLO_CHECKS: Array<{
   { field: 'slo_avg_ttft_ms', get: (p) => p.ttft, scale: 1 },
   {
     field: 'slo_p95_ttft_ms',
-    get: (p) => p.raw.time_to_first_token_p95,
+    get: (p) => stageLatencyValue(p.raw, 'ttft', 'p95'),
     scale: 1
   },
   { field: 'slo_p99_ttft_ms', get: (p) => p.ttftP99, scale: 1 },
-  // The tpot thresholds bound the decode-only metric, same as the displayed TPOT
-  // and same as the server's SLO_THRESHOLDS. p95 / p99 fall back to the dump
-  // because the two flat columns only exist for points measured after the basis
-  // moved; without the fallback every stage of an older run would read as a
-  // breach ("not measured" fails closed, by design).
+  // TPOT thresholds use the same decode-only metric and same-stage fallback as
+  // the displayed values. Missing measurements fail closed.
   { field: 'slo_avg_tpot_ms', get: (p) => p.tpot, scale: 1 },
   {
     field: 'slo_p95_tpot_ms',
-    get: (p) =>
-      positive(p.raw.inter_token_latency_p95) ?? decodeMs(p.raw, 'p95'),
+    get: (p) => decodeMs(p.raw, 'p95'),
     scale: 1
   },
   { field: 'slo_p99_tpot_ms', get: (p) => p.tpotP99, scale: 1 },
   { field: 'slo_avg_latency_ms', get: (p) => p.latency, scale: 1000 },
   {
     field: 'slo_p95_latency_ms',
-    get: (p) => p.raw.request_latency_p95,
+    get: (p) => stageLatencyValue(p.raw, 'latency', 'p95'),
     scale: 1000
   },
   { field: 'slo_p99_latency_ms', get: (p) => p.latP99, scale: 1000 }
@@ -259,7 +256,52 @@ const evalSlo = (p: SloInputs, targets: SloTargets): boolean | null => {
   });
 };
 
+export interface ResultPointKey {
+  input_tokens: number | null;
+  sequence: number;
+  rate: number;
+}
+
+export const matchesResultPoint = (
+  row: BenchmarkResultItem,
+  point: ResultPointKey | null | undefined,
+  legacyRate?: number | null
+): boolean =>
+  point !== undefined
+    ? point != null &&
+      row.rate === point.rate &&
+      row.sequence === point.sequence &&
+      (row.input_tokens ?? null) === point.input_tokens
+    : legacyRate != null && row.rate === legacyRate;
+
+export const configuredSloMetrics = (
+  point: StagePoint,
+  targets: SloTargets,
+  t: (id: string) => string
+) =>
+  SLO_CHECKS.filter((c) => typeof targets?.[c.field] === 'number').map((c) => {
+    const metric = c.field.includes('ttft')
+      ? 'ttft'
+      : c.field.includes('tpot')
+        ? 'tpot'
+        : 'latency';
+    const aggregation = c.field.includes('_avg_')
+      ? 'avg'
+      : c.field.includes('_p95_')
+        ? 'p95'
+        : 'p99';
+    const value = c.get(point);
+    return {
+      field: c.field,
+      label: `${t(`benchmark.form.slo.metric.${metric}`)} ${t(`benchmark.form.slo.agg.${aggregation}`)}`,
+      value: value == null ? null : value * c.scale,
+      threshold: targets![c.field] as number
+    };
+  });
+
 interface BuildOpts {
+  primaryPoint?: ResultPointKey | null;
+  peakPoint?: ResultPointKey | null;
   recommendedRate?: number | null;
   peakRate?: number | null;
   // True when the load axis is concurrency (so `load` is the configured
@@ -279,7 +321,14 @@ interface BuildOpts {
  */
 export const buildStagePoints = (
   results: BenchmarkResultItem[],
-  { recommendedRate, peakRate, isConcurrency, sloTargets }: BuildOpts
+  {
+    recommendedRate,
+    peakRate,
+    primaryPoint,
+    peakPoint,
+    isConcurrency,
+    sloTargets
+  }: BuildOpts
 ): StagePoint[] => {
   const measured = results
     .filter((r) => r.rate != null)
@@ -290,6 +339,11 @@ export const buildStagePoints = (
     (m, r) => Math.max(m, r.tokens_per_second_mean ?? 0),
     0
   );
+  const primaryRate = getPrimaryResultRate({
+    ...sloTargets,
+    recommended_rate: recommendedRate,
+    validity: { primary_point: primaryPoint }
+  });
 
   return measured.map((r) => {
     const status = getStageStatus(
@@ -297,7 +351,7 @@ export const buildStagePoints = (
       { recommended_rate: recommendedRate, peak_rate: peakRate },
       maxThroughput
     );
-    const isBest = status === 'recommended';
+    const isBest = matchesResultPoint(r, primaryPoint, primaryRate);
     const total = r.request_total ?? 0;
     // Prefer the TTFT distribution's own sample count (per-request, which is
     // what a latency percentile is over); fall back to the request tally for
@@ -313,11 +367,9 @@ export const buildStagePoints = (
       conc: r.request_concurrency_mean,
       confConc: isConcurrency ? (r.rate as number) : null,
 
-      ttft: r.time_to_first_token_mean,
-      tpot:
-        positive(r.inter_token_latency_mean) ??
-        positive(r.time_per_output_token_mean),
-      latency: r.request_latency_mean,
+      ttft: stageLatencyValue(r, 'ttft', 'mean'),
+      tpot: decodeMs(r, 'mean'),
+      latency: stageLatencyValue(r, 'latency', 'mean'),
 
       tps: r.tokens_per_second_mean,
       inTps: r.input_tokens_per_second_mean,
@@ -328,16 +380,14 @@ export const buildStagePoints = (
       ttftP75: pct(r, 'time_to_first_token_ms', 'p75'),
       // The flat column and the dump agree; read the column so the table, the
       // hero bar and the curve cannot drift apart.
-      ttftP99:
-        r.time_to_first_token_p99 ?? pct(r, 'time_to_first_token_ms', 'p99'),
+      ttftP99: stageLatencyValue(r, 'ttft', 'p99'),
 
       latP25: pct(r, 'request_latency', 'p25'),
       latP50: pct(r, 'request_latency', 'p50'),
       latP75: pct(r, 'request_latency', 'p75'),
-      latP99: r.request_latency_p99 ?? pct(r, 'request_latency', 'p99'),
+      latP99: stageLatencyValue(r, 'latency', 'p99'),
 
-      // All three from the dump: unlike TTFT there is no flat p99 column for the
-      // decode-only metric, and inventing one would mean a migration.
+      // Use the detail panel's TPOT reader so partial and complete results agree.
       tpotP50: decodeMs(r, 'p50'),
       tpotP90: decodeMs(r, 'p90'),
       tpotP99: decodeMs(r, 'p99'),
@@ -366,7 +416,7 @@ export const buildStagePoints = (
 
       status,
       isBest,
-      isPeak: !isBest && peakRate != null && r.rate === peakRate,
+      isPeak: matchesResultPoint(r, peakPoint, peakRate),
       isOverloaded: status === 'overloaded'
     };
 
@@ -390,23 +440,20 @@ export const buildProbePoints = (probes: BenchmarkResultItem[]): StagePoint[] =>
       achievedRate: r.requests_per_second_mean,
       conc: r.request_concurrency_mean,
       confConc: null,
-      ttft: r.time_to_first_token_mean,
-      tpot:
-        positive(r.inter_token_latency_mean) ??
-        positive(r.time_per_output_token_mean),
-      latency: r.request_latency_mean,
+      ttft: stageLatencyValue(r, 'ttft', 'mean'),
+      tpot: decodeMs(r, 'mean'),
+      latency: stageLatencyValue(r, 'latency', 'mean'),
       tps: r.tokens_per_second_mean,
       inTps: r.input_tokens_per_second_mean,
       outTps: r.output_tokens_per_second_mean,
       ttftP25: pct(r, 'time_to_first_token_ms', 'p25'),
       ttftP50: pct(r, 'time_to_first_token_ms', 'p50'),
       ttftP75: pct(r, 'time_to_first_token_ms', 'p75'),
-      ttftP99:
-        r.time_to_first_token_p99 ?? pct(r, 'time_to_first_token_ms', 'p99'),
+      ttftP99: stageLatencyValue(r, 'ttft', 'p99'),
       latP25: pct(r, 'request_latency', 'p25'),
       latP50: pct(r, 'request_latency', 'p50'),
       latP75: pct(r, 'request_latency', 'p75'),
-      latP99: r.request_latency_p99 ?? pct(r, 'request_latency', 'p99'),
+      latP99: stageLatencyValue(r, 'latency', 'p99'),
       tpotP50: decodeMs(r, 'p50'),
       tpotP90: decodeMs(r, 'p90'),
       tpotP99: decodeMs(r, 'p99'),
@@ -566,7 +613,9 @@ export const fmtDuration = (sec: number): string => {
 export const logDomain = (
   values: Array<number | null | undefined>
 ): { min: number; max: number } | null => {
-  const pos = values.filter((v): v is number => typeof v === 'number' && v > 0);
+  const pos = values.filter(
+    (v): v is number => typeof v === 'number' && Number.isFinite(v) && v > 0
+  );
   if (!pos.length) return null;
   const min = 10 ** Math.floor(Math.log10(Math.min(...pos)));
   const max = 10 ** Math.ceil(Math.log10(Math.max(...pos)));

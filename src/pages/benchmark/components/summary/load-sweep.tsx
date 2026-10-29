@@ -6,6 +6,7 @@ import {
   fmtMs,
   fmtTps,
   fmtTpsFull,
+  isSloCapacityPoint,
   linearMax,
   logDomain,
   sloBreachOnset
@@ -14,6 +15,8 @@ import { C, tooltipRows } from './stage-chart';
 
 interface Props {
   points: StagePoint[];
+  latencyValue: (point: StagePoint) => number | null;
+  latencyThreshold?: number;
   /** Tooltip header, e.g. "Request Rate 29" — no unit, the value carries it. */
   loadAxisName: string;
   /** x-axis title, e.g. "Request rate (req/s)" — bare ticks, so it needs one. */
@@ -21,6 +24,10 @@ interface Props {
   loadDecimals: number;
   labels: {
     concurrency: string;
+    primary: string;
+    peak: string;
+    primaryHint?: string;
+    peakHint?: string;
     /** Tooltip label for the throughput series. */
     throughput: string;
     /** Left axis title, unit included. */
@@ -47,14 +54,25 @@ interface Props {
  * NOT shaded — they would need a "where does the knee begin" call the backend
  * does not compute, and a band drawn from a guess is worse than no band.
  */
-const buildOption = (
-  { points, loadAxisName, loadAxisTitle, loadDecimals, labels }: Props,
+export const buildLoadSweepOption = (
+  {
+    points,
+    latencyValue,
+    latencyThreshold,
+    loadAxisName,
+    loadAxisTitle,
+    loadDecimals,
+    labels
+  }: Props,
   // See stage-chart: the gridline colour is the one part of the palette that has
   // to come from the theme token rather than a hex literal.
   splitLineColor: string
 ): EChartsCoreOption => {
   const cats = points.map((p) => String(Number(p.load.toFixed(loadDecimals))));
-  const ttftDomain = logDomain(points.map((p) => p.ttftP99));
+  const ttftDomain = logDomain([
+    ...points.map((p) => latencyValue(p)),
+    latencyThreshold
+  ]);
   const firstOver = points.findIndex((p) => p.isOverloaded);
   const firstBreach = sloBreachOnset(points);
 
@@ -74,7 +92,7 @@ const buildOption = (
     position: 'insideBottomLeft' | 'insideBottomRight'
   ) => [
     {
-      xAxis: cats[from],
+      xAxis: from,
       itemStyle: { color },
       label: {
         show: true,
@@ -86,7 +104,7 @@ const buildOption = (
         formatter: text
       }
     },
-    { xAxis: cats[cats.length - 1] }
+    { xAxis: cats.length - 1 }
   ];
 
   const areas = [
@@ -174,19 +192,15 @@ const buildOption = (
           : params?.dataIndex;
         const p = points[idx];
         if (!p) return '';
-        const tag = p.isBest
-          ? '  ★ Best'
-          : p.isPeak
-            ? '  Peak'
-            : p.isOverloaded
-              ? `  ${labels.overloaded}`
-              : // Only reached by a stage that is neither Best/Peak nor
-                // overloaded: the server is still healthy here, it just is not
-                // meeting the target, which is precisely the case the shaded
-                // region exists to name.
-                p.sloPass === false
-                ? `  ${labels.sloBreached}`
-                : '';
+        const latency = latencyValue(p);
+        const tag = [
+          isSloCapacityPoint(p) ? `★ ${labels.primary}` : '',
+          p.isPeak ? labels.peak : '',
+          p.isOverloaded ? labels.overloaded : '',
+          p.sloPass === false ? labels.sloBreached : ''
+        ]
+          .filter(Boolean)
+          .join(' · ');
         return tooltipRows(
           [
             {
@@ -195,14 +209,20 @@ const buildOption = (
             },
             {
               color: C.amber,
-              label: `${labels.ttftP99}  ${p.ttftP99 == null ? '-' : fmtMs(p.ttftP99)}`
+              label: `${labels.ttftP99}  ${latency == null ? '-' : fmtMs(latency)}`
             },
             {
               color: C.gray,
               label: `${labels.concurrency}  ${p.conc == null ? '-' : Math.round(p.conc)}`
-            }
+            },
+            ...(isSloCapacityPoint(p) && labels.primaryHint
+              ? [{ color: C.amber, label: labels.primaryHint }]
+              : []),
+            ...(p.isPeak && labels.peakHint
+              ? [{ color: C.green, label: labels.peakHint }]
+              : [])
           ],
-          `${loadAxisName} ${Number(p.load.toFixed(loadDecimals))}${tag}`
+          `${loadAxisName} ${Number(p.load.toFixed(loadDecimals))}${tag ? ` · ${tag}` : ''}`
         );
       }
     },
@@ -221,8 +241,13 @@ const buildOption = (
         symbolSize: 6,
         markArea: markAreas,
         data: points.map((p, i) => {
-          if (!p.isBest && !p.isPeak && !p.isOverloaded) return p.tps;
-          const color = p.isBest ? '#f5a623' : p.isPeak ? C.green : C.red;
+          if (!isSloCapacityPoint(p) && !p.isPeak && !p.isOverloaded)
+            return p.tps;
+          const color = isSloCapacityPoint(p)
+            ? '#f5a623'
+            : p.isPeak
+              ? C.green
+              : C.red;
           // Peak and Overloaded used to be separated by ring colour ALONE —
           // and `C.green` vs `C.red` measure ΔE 1.8 under deuteranopia, i.e.
           // the same colour to a red-green colourblind reader. Since these two
@@ -232,7 +257,7 @@ const buildOption = (
           // carry it; colour is the third channel, not the only one.
           // Shapes echo the status glyphs the summary badges already use
           // (▲ peak · ✕ overloaded — 'diamond' is the nearest ECharts symbol).
-          const symbol = p.isBest
+          const symbol = isSloCapacityPoint(p)
             ? 'circle'
             : p.isPeak
               ? 'triangle'
@@ -247,29 +272,33 @@ const buildOption = (
             symbol,
             // The Best marker is the page's single answer, so it outsizes both
             // the curve's own symbols and the small charts' 8px echo of it.
-            symbolSize: p.isBest ? 10 : 8,
+            symbolSize: isSloCapacityPoint(p) ? 10 : 8,
             itemStyle: {
-              color: p.isBest ? '#f5a623' : '#fff',
+              color: isSloCapacityPoint(p) ? '#f5a623' : '#fff',
               borderColor: color,
               borderWidth: 2
             },
             label: {
               show: true,
-              formatter: p.isBest
-                ? '★ Best'
-                : p.isPeak
-                  ? 'Peak'
-                  : labels.overloaded,
+              formatter: [
+                isSloCapacityPoint(p) ? `★ ${labels.primary}` : '',
+                p.isPeak ? labels.peak : '',
+                p.isOverloaded ? labels.overloaded : ''
+              ]
+                .filter(Boolean)
+                .join(' · '),
               // Best above, the other two below: on a saturated curve they sit
               // one category apart and would otherwise overlap.
-              position: (p.isBest ? 'top' : 'bottom') as 'top' | 'bottom',
+              position: (isSloCapacityPoint(p) ? 'top' : 'bottom') as
+                | 'top'
+                | 'bottom',
               distance: 10,
               align: (atEnd ? 'right' : atStart ? 'left' : 'center') as
                 | 'right'
                 | 'left'
                 | 'center',
               offset: [atEnd ? -4 : atStart ? 4 : 0, 0] as [number, number],
-              color: p.isBest ? '#b8860b' : color,
+              color: isSloCapacityPoint(p) ? '#b8860b' : color,
               fontSize: 14,
               fontWeight: 'bold' as const
             }
@@ -278,13 +307,21 @@ const buildOption = (
       },
       {
         name: labels.ttftP99,
+        markLine:
+          latencyThreshold == null
+            ? undefined
+            : {
+                silent: true,
+                symbol: 'none',
+                data: [{ yAxis: latencyThreshold, name: labels.ttftP99 }]
+              },
         type: 'line',
         yAxisIndex: 1,
         z: 4,
         lineStyle: { color: C.amber, width: 2, type: 'dashed' },
         itemStyle: { color: C.amber },
         symbolSize: 5,
-        data: points.map((p) => p.ttftP99)
+        data: points.map((p) => latencyValue(p))
       }
     ]
   };
@@ -298,7 +335,10 @@ const LoadSweep: React.FC<Props> = (props) => {
   useEffect(() => {
     if (!ref.current) return;
     if (!inst.current) inst.current = echarts.init(ref.current);
-    inst.current.setOption(buildOption(props, token.colorBorder), true);
+    inst.current.setOption(
+      buildLoadSweepOption(props, token.colorBorder),
+      true
+    );
     inst.current.resize();
   }, [props, token.colorBorder]);
 

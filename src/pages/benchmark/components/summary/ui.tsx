@@ -23,10 +23,6 @@ export const getStageStatus = (
   maxThroughput?: number
 ): StageStatusKind => {
   const rate = r.rate;
-  const recRate = detail?.recommended_rate;
-  if (rate != null && recRate != null && rate === recRate) {
-    return 'recommended';
-  }
   // "Overloaded" = a meaningful share of requests failed / didn't finish, OR the
   // point sits on the DECLINING side of the curve: past the peak rate AND
   // delivering meaningfully less throughput than the peak. Being merely past the

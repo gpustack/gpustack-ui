@@ -1,4 +1,9 @@
-import { PrefixBucket, StageRow } from './types';
+import {
+  PrefixBucket,
+  StageRow,
+  ThroughputDeclineEvidence,
+  ThroughputGainEvidence
+} from './types';
 
 export interface ComputedResourceClaim {
   is_unified_memory: boolean;
@@ -148,6 +153,19 @@ export interface BenchmarkDetail {
   // Test-coverage validity, computed on the backend (language-neutral codes +
   // params; the UI localizes them).
   validity?: {
+    throughput_decline?: ThroughputDeclineEvidence;
+    throughput_gain_evidence?: ThroughputGainEvidence;
+    slo_bracket?: [number | null, number | null];
+    primary_point?: {
+      input_tokens: number | null;
+      sequence: number;
+      rate: number;
+    } | null;
+    peak_point?: {
+      input_tokens: number | null;
+      sequence: number;
+      rate: number;
+    } | null;
     // Manual stages have measurement findings but no search coverage verdict.
     coverage_applicable?: boolean;
     // Absent while `in_progress`: mid-sweep there is no verdict to give.

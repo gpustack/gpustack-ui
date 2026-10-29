@@ -1,4 +1,84 @@
 export default {
+  'benchmark.detail.result.selectMeasuredPoint': '选择 {load} {unit} 的测量点',
+  'benchmark.detail.metric.ttftP99': 'TTFT p99',
+  'benchmark.detail.metric.tpotP99': 'TPOT p99',
+  'benchmark.detail.metric.itlP99': 'ITL p99',
+  'benchmark.detail.statistics.p25': 'P25',
+  'benchmark.detail.statistics.p50': 'P50',
+  'benchmark.detail.statistics.p75': 'P75',
+  'benchmark.detail.statistics.p90': 'P90',
+  'benchmark.detail.stopReason.throughputGainConverged': '吞吐收益收敛',
+  'benchmark.detail.stopReason.throughputGainConverged.detail':
+    '最近 {points} 个细搜点，已测峰值累计提升 {gain}%，低于 {threshold}% 阈值，结束细搜。结论仅覆盖本次已测点。',
+  'benchmark.detail.stopReason.throughputGainConverged.baseline':
+    '窗口起点：{throughput} tok/s，位于 {load} {unit}',
+  'benchmark.detail.stopReason.throughputGainConverged.best':
+    '窗口内累计最高：{throughput} tok/s，位于 {load} {unit}',
+  'benchmark.detail.stopReason.throughputGainConverged.range':
+    '最好点左右已测负载：{lower}–{upper} {unit}',
+  'benchmark.detail.stopReason.throughputGainConverged.point':
+    '细搜点 {point}：{load} {unit}，总 TPS {throughput} tok/s，累计最高 {best} tok/s',
+  'benchmark.detail.statistics.load': '负载与吞吐',
+  'benchmark.detail.statistics.latency': '延迟',
+  'benchmark.detail.statistics.tokens': '请求规模统计',
+  'benchmark.detail.statistics.requestRate': '实际请求率',
+  'benchmark.detail.statistics.concurrency': '实际并发',
+  'benchmark.detail.statistics.requestsUnit': '请求',
+  'benchmark.detail.statistics.tokensUnit': 'tokens/请求',
+  'benchmark.detail.statistics.successTotal': '成功 / 总请求',
+  'benchmark.detail.statistics.requestSize': '请求规模',
+  'benchmark.detail.statistics.requestSizeNote': '输入 / 输出 Token 分布',
+  'benchmark.detail.statistics.load.min.tip':
+    '本阶段各指标的最小原始统计值。速率按事件时间间隔统计，并发表示在途请求数。',
+  'benchmark.detail.statistics.load.max.tip':
+    '本阶段各指标的最大原始统计值。速率可能包含短时尖峰，不代表可持续能力；主卡峰值仍按各阶段平均总 TPS 选取。',
+  'benchmark.detail.statistics.latency.min.tip':
+    '本阶段对应延迟指标的最小样本值，单位跟随指标名。',
+  'benchmark.detail.statistics.latency.max.tip':
+    '本阶段对应延迟指标的最大样本值；ITL Max 表示最长的一次流式输出间隔。',
+  'benchmark.detail.statistics.tokens.min.tip':
+    '本阶段成功请求的最小输入／输出 Token 数。',
+  'benchmark.detail.statistics.tokens.max.tip':
+    '本阶段成功请求的最大输入／输出 Token 数。',
+  'benchmark.detail.latency.scrollHint': '左右滑动查看全部分位数',
+  'benchmark.detail.latency.metric': '指标',
+  'benchmark.detail.latency.endToEnd': '端到端延迟',
+  'benchmark.detail.validity.throughputDeclineGeneric':
+    '总 TPS 持续下降，测试提前结束。SLO 边界尚未定位。',
+  'benchmark.detail.validity.declineEvidence.peak': '已测峰值：{tps} tok/s',
+  'benchmark.detail.validity.declineEvidence.concurrency':
+    '并发 {rate}：{tps} tok/s（下降 {drop}%）',
+  'benchmark.detail.validity.declineEvidence.rate':
+    '目标请求率 {rate} req/s：{tps} tok/s（下降 {drop}%）',
+  'benchmark.detail.validity.declineEvidence.details': '查看吞吐变化详情',
+  'benchmark.detail.marker.sloCapacity.tip':
+    '满足所有已配置 SLO 目标的最高已测负载。',
+  'benchmark.detail.marker.peakThroughput.tip':
+    '所有测量点中记录到的最高总 TPS。',
+  'benchmark.detail.stage.measuredRate.tip':
+    '实测成功请求完成速率，按请求完成时间统计，不是配置的发起速率。',
+  'benchmark.detail.stage.measuredConcurrency.tip':
+    '成功请求在途并发数的实测均值，按请求开始至完成的区间统计。',
+  'benchmark.detail.stage.configuredConcurrency': '目标并发数',
+  'benchmark.detail.stage.configuredRate': '目标请求率',
+  'benchmark.detail.stage.measuredConcurrency': '实际并发数均值',
+  'benchmark.detail.stage.measuredRate': '实际请求率均值',
+  'benchmark.detail.validity.throughputDecline':
+    '连续 {points} 个递增负载档位的总 TPS 均较已测峰值下降至少 {threshold}%，测试提前结束。SLO 边界尚未定位。',
+  'benchmark.detail.stopReason.throughputDecline': '吞吐下降保护',
+  'benchmark.detail.result.load': '结果负载',
+  'benchmark.detail.result.boundaryPair':
+    '{pass} {unit} 达标；{fail} {unit} 未达标',
+  'benchmark.detail.result.sloConcurrency': '最高已测达标并发',
+  'benchmark.detail.result.sloRate': '最高已测达标请求率',
+  'benchmark.detail.result.totalPeak': '最高已测总吞吐',
+  'benchmark.detail.result.measured': '实测结果',
+  'benchmark.detail.result.noSloPoint': '没有已测点满足 SLO',
+  'benchmark.detail.result.boundaryLocated': 'SLO 边界已定位',
+  'benchmark.detail.result.boundaryUnknown': '更高 SLO 边界尚未定位',
+  'benchmark.detail.result.inProgress': '测试进行中',
+  'benchmark.detail.result.peakFact':
+    '总吞吐峰值：{throughput} tok/s，位于 {load} {unit}',
   'benchmark.title': '基准测试',
   'benchmark.button.add': '添加基准测试',
   'benchmark.button.edit': '编辑基准测试',
@@ -25,7 +105,7 @@ export default {
   'benchmark.form.loadType.sweep': '自动扫描',
   'benchmark.form.autoTune': '自动探测',
   'benchmark.form.autoTune.rate.tip':
-    '本次压测要测的负载点，一个阶段 = 一个实测点。自动探测会自动抬高请求速率，直到输出吞吐不再增长（即峰值），无需手填负载点；切到「手动」则按你列出的速率逐档运行。',
+    '本次压测要测的负载点，一个阶段 = 一个实测点。自动探测会自动抬高请求速率，直到总吞吐不再增长（即峰值），无需手填负载点；切到「手动」则按你列出的速率逐档运行。',
   'benchmark.form.autoTune.concurrency.tip':
     '本次压测要测的负载点，一个阶段 = 一个实测点。自动探测会自动增加并发，直到无法满足延迟目标（即 SLO 边界），无需手填负载点；切到「手动」则按你列出的并发逐档运行。',
   'benchmark.form.autoTune.rangeRate': '搜索范围 · 请求速率 (req/s)',
@@ -196,7 +276,7 @@ export default {
   'benchmark.table.tailLatency': '尾延迟',
   'benchmark.table.columnSettings': '列设置',
   'benchmark.detail.summary.results': '测试结果',
-  'benchmark.detail.summary.recommendation': '最佳工作点',
+  'benchmark.detail.summary.recommendation': '主结果',
   'benchmark.detail.summary.supporting': '指标明细',
   'benchmark.detail.summary.stages': '各阶段结果',
   'benchmark.detail.summary.totalStages': '阶段',
@@ -228,7 +308,7 @@ export default {
   'benchmark.detail.validity.sloNeverMet':
     '没有任何测得的点满足延迟目标——服务器对该 SLO 太慢;请放宽目标或更换部署。',
   'benchmark.detail.validity.sloNotBinding':
-    'SLO 阈值从未真正起作用——最高测得的那一档只用掉最严格预算的 {used}%,而吞吐在 {rate} 就已见顶。限制这次测试的是容量,不是延迟目标:{rate} 是吞吐上限,不是 SLO 边界,因此它就是最佳工作点(继续加负载只会排队:吞吐不再增加,延迟持续变差)。想找出真正的 SLO 边界,请收紧阈值后重测。',
+    '尚未定位 SLO 边界。搜索在 {rate} 附近出现吞吐平台后停止，但最高已测负载仍满足延迟目标。可在合适范围和预算内继续搜索 SLO 边界。',
   'benchmark.detail.validity.notSaturated':
     '最佳工作点落在最高测得的点,且没有点过载——真实最优可能更高。调大搜索范围上界后重测。',
   'benchmark.detail.validity.budgetExhausted':
@@ -258,8 +338,8 @@ export default {
   'benchmark.detail.requests.success': '请求成功数',
   'benchmark.detail.requests.failed': '请求失败数',
   'benchmark.detail.requests.incomplete': '请求未完成数',
-  'benchmark.detail.requests.concurrency': '请求并发数均值',
-  'benchmark.detail.requests.concurrency.max': '请求并发数峰值',
+  'benchmark.detail.requests.concurrency': '实际并发数均值',
+  'benchmark.detail.requests.concurrency.max': '实际并发数峰值',
   'benchmark.detail.percentile.latency': '延迟',
   'benchmark.detail.percentile.inputTokens': '输入 Token',
   'benchmark.detail.percentile.outputTokens': '输出 Token',
@@ -292,7 +372,7 @@ export default {
   'benchmark.detail.chart.sloBreached': 'SLO 不达标',
   'benchmark.detail.chart.success': '成功率',
   'benchmark.detail.reason.peakTradeoff':
-    '压到峰值 {rate} {unit} 只多 {gain}% 吞吐，延迟多 {cost}',
+    '峰值位于 {rate} {unit}：总吞吐 {gain}%，TTFT p99 {cost}',
   'benchmark.detail.unit.avg': '均值',
   'benchmark.detail.p99.ttft': 'TTFT p99',
   'benchmark.detail.p99.tpot': 'TPOT p99',
@@ -303,9 +383,9 @@ export default {
   'benchmark.detail.successPill': '成功率 {pct}% · {ok} / {total} 请求',
   'benchmark.detail.summary.stagesHint': '点击任意行查看明细',
   'benchmark.detail.chart.loadSweep': '负载扫描',
-  'benchmark.detail.chart.loadSweep.note': '吞吐与 P99 TTFT 随负载的变化',
+  'benchmark.detail.chart.loadSweep.note': '总吞吐与 {metric} 随负载的变化',
   'benchmark.detail.chart.dualAxisHint':
-    '左轴（吞吐）是等距刻度，每格加固定值；右轴（TTFT p99）每格是上一格的 10 倍 —— 延迟跨度上千倍，等距刻度看不出拐点后的爆发。',
+    '左轴（总吞吐）为等距刻度，每格增加固定值；右轴为当前延迟指标的对数刻度，每格是上一格的 10 倍。具体指标见右轴标题。',
   'benchmark.detail.chart.logHint':
     '纵轴每条网格线是上一条的 10 倍，相同倍数对应相同间距。等距刻度会把低负载档位全部压在 0 线附近。',
   'benchmark.detail.chart.ttftDist': 'TTFT 分布',
@@ -341,9 +421,9 @@ export default {
   'benchmark.detail.chart.success.note': '因存在失败请求才显示',
   'benchmark.detail.chart.legend.shortfall': '缺口',
   'benchmark.detail.chart.legend.attainment': '达成率',
-  'benchmark.detail.chart.legend.configured': '配置值',
-  'benchmark.detail.chart.legend.achieved': '实测',
-  'benchmark.detail.chart.legend.actual': '实测（均值）',
+  'benchmark.detail.chart.legend.configured': '目标',
+  'benchmark.detail.chart.legend.achieved': '实际均值',
+  'benchmark.detail.chart.legend.actual': '实际均值',
   'benchmark.detail.chart.legend.generation': '生成阶段',
   'benchmark.detail.chart.legend.perRequest': '每请求 tok/s',
   'benchmark.detail.chart.axis.latencyMs': '延迟 (ms)',
@@ -351,20 +431,20 @@ export default {
   'benchmark.detail.chart.axis.inFlight': '并发请求数',
   'benchmark.detail.chart.axis.shortfall': '缺口（请求数）',
   'benchmark.detail.chart.axis.successRate': '成功率 (%)',
-  'benchmark.detail.chart.axis.load.rate': '请求速率 (req/s)',
-  'benchmark.detail.chart.axis.load.concurrency': '并发数 (请求)',
-  'benchmark.detail.chart.axis.throughput': '总吞吐 (tok/s)',
-  'benchmark.detail.chart.axis.concurrencyAvg': '平均并发 (请求)',
+  'benchmark.detail.chart.axis.load.rate': '目标请求率 (req/s)',
+  'benchmark.detail.chart.axis.load.concurrency': '目标并发数 (请求)',
+  'benchmark.detail.chart.axis.throughput': '总吞吐（tok/s）',
+  'benchmark.detail.chart.axis.concurrencyAvg': '实际并发数均值 (请求)',
   'benchmark.detail.reason.peakTradeoffPlain':
-    '压到峰值 {rate} {unit} 只多 {gain}% 吞吐',
+    '峰值位于 {rate} {unit}：总吞吐 {gain}%',
   'benchmark.detail.summary.showMore': '展开其余 {n} 张',
   'benchmark.detail.summary.showLess': '收起',
   'benchmark.detail.selectedStage': '选中阶段',
   'benchmark.detail.showPercentiles': '显示分位数',
   'benchmark.detail.hidePercentiles': '隐藏分位数',
   'benchmark.detail.status': '状态',
-  'benchmark.detail.status.recommended': '最佳',
-  'benchmark.detail.status.peak': '峰值',
+  'benchmark.detail.status.recommended': 'SLO 达标容量',
+  'benchmark.detail.status.peak': '总吞吐峰值',
   'benchmark.detail.status.overloaded': '过载',
   'benchmark.detail.status.healthy': '正常',
   'benchmark.state.stoppedAt': '已在 {percent}% 处停止',

@@ -1,5 +1,26 @@
 import type { Snapshot } from './detail-types';
 
+export interface ThroughputDeclineEvidence {
+  threshold_percent: number;
+  consecutive_points: number;
+  peak_rate: number;
+  peak_total_tps: number;
+  points: { rate: number; total_tps: number; drop_percent: number }[];
+}
+
+export interface ThroughputGainEvidence {
+  threshold_percent: number;
+  window_points: number;
+  baseline_rate: number;
+  baseline_total_tps: number;
+  best_rate: number;
+  best_total_tps: number;
+  gain_percent: number;
+  lower_rate: number;
+  upper_rate: number;
+  points: { rate: number; total_tps: number; best_total_tps: number }[];
+}
+
 export interface ComputedResourceClaim {
   is_unified_memory: boolean;
   offload_layers: number;
@@ -150,12 +171,25 @@ export interface FormData {
   // fraction in the API column, and nullable so clearing it is explicit.
   max_error_rate?: number | null;
   stop_on_saturation?: boolean;
-  // Best operating points (server-computed, persisted on the parent row).
+  // Primary result load and observed total-throughput peak, selected by the server.
   peak_rate?: number;
   slo_met_rate?: number;
   recommended_rate?: number;
   // Test-coverage validity (server-computed; language-neutral codes).
   validity?: {
+    throughput_decline?: ThroughputDeclineEvidence;
+    throughput_gain_evidence?: ThroughputGainEvidence;
+    slo_bracket?: [number | null, number | null];
+    primary_point?: {
+      input_tokens: number | null;
+      sequence: number;
+      rate: number;
+    } | null;
+    peak_point?: {
+      input_tokens: number | null;
+      sequence: number;
+      rate: number;
+    } | null;
     // Manual stages have measurement findings but no search coverage verdict.
     coverage_applicable?: boolean;
     // Absent while `in_progress`: mid-sweep there is no verdict to give.

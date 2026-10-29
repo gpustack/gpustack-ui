@@ -1,13 +1,10 @@
-import { DownOutlined, RightOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button } from 'antd';
 import { round } from 'lodash';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { loadValueDecimals } from '../../config';
 import { useDetailContext } from '../../config/detail-context';
-import { StagePoint } from './metrics';
+import { StagePoint, isSloCapacityPoint } from './metrics';
 import MetricsResult from './metrics-result';
-import PercentileResult from './percentile-result';
 import { LoadChip, Panel, SectionTitle, StatusTag, statusLabelId } from './ui';
 
 interface SelectedStageProps {
@@ -21,11 +18,8 @@ interface SelectedStageProps {
 const SelectedStage: React.FC<SelectedStageProps> = ({ point }) => {
   const intl = useIntl();
   const { detailData } = useDetailContext();
-  // Percentiles are rarely read on first open — collapsed to keep the page short.
-  const [showPct, setShowPct] = useState(false);
 
-  // MetricsResult / PercentileResult were written for the single-point view, which
-  // reads the whole report; feed them this stage's dump in that shape.
+  // The detail reader accepts a report-shaped dump of this measured stage.
   const shaped = useMemo(() => {
     if (!point) return null;
     return {
@@ -38,14 +32,6 @@ const SelectedStage: React.FC<SelectedStageProps> = ({ point }) => {
   if (!shaped || !point) {
     return null;
   }
-
-  const kind = point.isBest
-    ? 'recommended'
-    : point.isPeak
-      ? 'peak'
-      : point.isOverloaded
-        ? 'overloaded'
-        : null;
 
   return (
     <Panel>
@@ -70,36 +56,27 @@ const SelectedStage: React.FC<SelectedStageProps> = ({ point }) => {
             </>
           )}
         </LoadChip>
-        {kind && (
+        {isSloCapacityPoint(point) && (
           <StatusTag
-            kind={kind}
-            label={intl.formatMessage({ id: statusLabelId[kind] })}
+            kind="recommended"
+            label={intl.formatMessage({ id: statusLabelId.recommended })}
           />
         )}
-        <span className="spacer" />
-        <Button
-          type="link"
-          size="small"
-          style={{ padding: 0 }}
-          icon={showPct ? <DownOutlined /> : <RightOutlined />}
-          onClick={() => setShowPct((v) => !v)}
-        >
-          {intl.formatMessage({
-            id: showPct
-              ? 'benchmark.detail.hidePercentiles'
-              : 'benchmark.detail.showPercentiles'
-          })}
-        </Button>
+        {point.isPeak && (
+          <StatusTag
+            kind="peak"
+            label={intl.formatMessage({ id: statusLabelId.peak })}
+          />
+        )}
+        {point.isOverloaded && (
+          <StatusTag
+            kind="overloaded"
+            label={intl.formatMessage({ id: statusLabelId.overloaded })}
+          />
+        )}
       </div>
       <div className="panel-body" style={{ paddingTop: 16 }}>
         <MetricsResult data={shaped} />
-        {showPct && (
-          /* The 8-column percentile table can outgrow the page — let it scroll
-             horizontally rather than stretch the layout. */
-          <div style={{ overflowX: 'auto', marginTop: 18 }}>
-            <PercentileResult data={shaped} />
-          </div>
-        )}
       </div>
     </Panel>
   );

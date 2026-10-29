@@ -1,4 +1,96 @@
 export default {
+  'benchmark.detail.result.selectMeasuredPoint':
+    'Выбрать измеренную точку при {load} {unit}',
+  'benchmark.detail.metric.ttftP99': 'TTFT p99',
+  'benchmark.detail.metric.tpotP99': 'TPOT p99',
+  'benchmark.detail.metric.itlP99': 'ITL p99',
+  'benchmark.detail.statistics.p25': 'P25',
+  'benchmark.detail.statistics.p50': 'P50',
+  'benchmark.detail.statistics.p75': 'P75',
+  'benchmark.detail.statistics.p90': 'P90',
+  'benchmark.detail.stopReason.throughputGainConverged':
+    'Сходимость прироста пропускной способности',
+  'benchmark.detail.stopReason.throughputGainConverged.detail':
+    'За последние {points} точки уточнения измеренный пик вырос на {gain}%, что ниже порога {threshold}%; уточнение завершено. Вывод относится только к измеренным точкам.',
+  'benchmark.detail.stopReason.throughputGainConverged.baseline':
+    'Начало окна: {throughput} ток/с при {load} {unit}',
+  'benchmark.detail.stopReason.throughputGainConverged.best':
+    'Лучшее значение в окне: {throughput} ток/с при {load} {unit}',
+  'benchmark.detail.stopReason.throughputGainConverged.range':
+    'Измеренные нагрузки по обе стороны лучшей точки: {lower}–{upper} {unit}',
+  'benchmark.detail.stopReason.throughputGainConverged.point':
+    'Точка уточнения {point}: {load} {unit}, общая TPS {throughput} ток/с, текущий максимум {best} ток/с',
+  'benchmark.detail.statistics.load': 'Нагрузка и пропускная способность',
+  'benchmark.detail.statistics.latency': 'Задержка',
+  'benchmark.detail.statistics.tokens': 'Статистика размера запросов',
+  'benchmark.detail.statistics.requestRate': 'Достигнутая частота запросов',
+  'benchmark.detail.statistics.concurrency': 'Достигнутая параллельность',
+  'benchmark.detail.statistics.requestsUnit': 'запросы',
+  'benchmark.detail.statistics.tokensUnit': 'токенов/запрос',
+  'benchmark.detail.statistics.successTotal': 'Успешные / все запросы',
+  'benchmark.detail.statistics.requestSize': 'Размер запросов',
+  'benchmark.detail.statistics.requestSizeNote':
+    'Распределения входных / выходных токенов',
+  'benchmark.detail.statistics.load.min.tip':
+    'Минимальное значение на этом этапе. Частоты вычислены по времени событий; параллельность — число выполняющихся запросов.',
+  'benchmark.detail.statistics.load.max.tip':
+    'Максимальное значение на этом этапе. Краткие всплески частоты не означают устойчивую производительность. Основной пик определяется по средней общей TPS этапов.',
+  'benchmark.detail.statistics.latency.min.tip':
+    'Минимальный образец показателя задержки на этом этапе. Единицы указаны в строке.',
+  'benchmark.detail.statistics.latency.max.tip':
+    'Максимальный образец задержки на этом этапе. ITL Max — самый длинный интервал потокового вывода.',
+  'benchmark.detail.statistics.tokens.min.tip':
+    'Минимальное число входных/выходных токенов успешных запросов на этом этапе.',
+  'benchmark.detail.statistics.tokens.max.tip':
+    'Максимальное число входных/выходных токенов успешных запросов на этом этапе.',
+  'benchmark.detail.latency.scrollHint':
+    'Прокрутите по горизонтали, чтобы увидеть все процентили',
+  'benchmark.detail.latency.metric': 'Метрика',
+  'benchmark.detail.latency.endToEnd': 'Сквозная задержка',
+  'benchmark.detail.validity.throughputDeclineGeneric':
+    'Тест завершён досрочно из-за устойчивого снижения общей TPS. Граница SLO не найдена.',
+  'benchmark.detail.validity.declineEvidence.peak':
+    'Измеренный пик: {tps} токенов/с',
+  'benchmark.detail.validity.declineEvidence.concurrency':
+    'Параллельность {rate}: {tps} токенов/с (снижение {drop}%)',
+  'benchmark.detail.validity.declineEvidence.rate':
+    'Целевая частота запросов {rate} req/s: {tps} токенов/с (снижение {drop}%)',
+  'benchmark.detail.validity.declineEvidence.details':
+    'Изменения пропускной способности',
+  'benchmark.detail.marker.sloCapacity.tip':
+    'Максимальная измеренная нагрузка, соответствующая всем заданным целям SLO.',
+  'benchmark.detail.marker.peakThroughput.tip':
+    'Максимальное значение общей TPS, зарегистрированное среди измеренных точек.',
+  'benchmark.detail.stage.measuredRate.tip':
+    'Измеренная частота успешных завершений запросов по времени завершения. Это не заданная частота поступления запросов.',
+  'benchmark.detail.stage.measuredConcurrency.tip':
+    'Измеренная средняя параллельность успешных запросов по интервалам от начала до завершения.',
+  'benchmark.detail.stage.configuredConcurrency': 'Целевая параллельность',
+  'benchmark.detail.stage.configuredRate': 'Целевая частота запросов',
+  'benchmark.detail.stage.measuredConcurrency':
+    'Достигнутая параллельность (сред.)',
+  'benchmark.detail.stage.measuredRate': 'Достигнутая частота запросов (сред.)',
+  'benchmark.detail.validity.throughputDecline':
+    'Тест завершён досрочно: на {points} последовательных этапах с возрастающей нагрузкой общая TPS была ниже измеренного пика минимум на {threshold}%. Граница SLO не найдена.',
+  'benchmark.detail.stopReason.throughputDecline':
+    'Защита при снижении пропускной способности',
+  'benchmark.detail.result.load': 'Нагрузка результата',
+  'benchmark.detail.result.boundaryPair':
+    '{pass} {unit} соответствует SLO; {fail} {unit} — нет',
+  'benchmark.detail.result.sloConcurrency':
+    'Максимальная измеренная параллельность в рамках SLO',
+  'benchmark.detail.result.sloRate':
+    'Максимальная измеренная частота запросов в рамках SLO',
+  'benchmark.detail.result.totalPeak':
+    'Максимальная измеренная общая пропускная способность',
+  'benchmark.detail.result.measured': 'Результат измерения',
+  'benchmark.detail.result.noSloPoint':
+    'Ни одна измеренная точка не соответствует SLO',
+  'benchmark.detail.result.boundaryLocated': 'Граница SLO найдена',
+  'benchmark.detail.result.boundaryUnknown': 'Верхняя граница SLO не найдена',
+  'benchmark.detail.result.inProgress': 'Измерение выполняется',
+  'benchmark.detail.result.peakFact':
+    'Пиковая пропускная способность: {throughput} токенов/с при {load} {unit}',
   'benchmark.title': 'Бенчмарки',
   'benchmark.button.add': 'Добавить бенчмарк',
   'benchmark.button.edit': 'Редактировать бенчмарк',
@@ -201,7 +293,7 @@ export default {
   'benchmark.table.tailLatency': 'Хвостовая задержка',
   'benchmark.table.columnSettings': 'Настройки столбцов',
   'benchmark.detail.summary.results': 'Результаты тестирования',
-  'benchmark.detail.summary.recommendation': 'Оптимальная рабочая точка',
+  'benchmark.detail.summary.recommendation': 'Основной результат',
   'benchmark.detail.summary.supporting': 'Подробные метрики',
   'benchmark.detail.summary.stages': 'Результаты по этапам',
   'benchmark.detail.summary.totalStages': 'этапов',
@@ -235,7 +327,7 @@ export default {
   'benchmark.detail.validity.sloNeverMet':
     'Ни одна измеренная точка не соответствует целевым задержкам — сервер слишком медленный для этого SLO; снизьте цели или смените развёртывание.',
   'benchmark.detail.validity.sloNotBinding':
-    'Пороги задержки ни на что не повлияли — на самой высокой измеренной нагрузке самый строгий бюджет был израсходован лишь на {used}%, а пропускная способность уже достигла максимума при {rate}. Этот запуск ограничила ёмкость, а не бюджет задержки: {rate} — это потолок пропускной способности, а не граница SLO, поэтому именно он и есть лучшая рабочая точка (выше него дополнительная нагрузка только встаёт в очередь: пропускная способность не растёт, задержка неуклонно ухудшается). Чтобы найти реальную границу SLO, ужесточите пороги и повторите тест.',
+    'Граница SLO не найдена. Поиск остановился на плато пропускной способности около {rate}, хотя максимальная измеренная нагрузка соответствовала целям задержки. Продолжите поиск SLO в подходящем диапазоне и бюджете.',
   'benchmark.detail.validity.notSaturated':
     'Оптимальная рабочая точка — самая высокая измеренная, и перегрузки не было — истинный оптимум может быть выше. Повысьте верхнюю границу диапазона поиска и перезапустите.',
   'benchmark.detail.validity.budgetExhausted':
@@ -265,8 +357,9 @@ export default {
   'benchmark.detail.requests.success': 'Успешные запросы',
   'benchmark.detail.requests.failed': 'Неудачные запросы',
   'benchmark.detail.requests.incomplete': 'Незавершённые запросы',
-  'benchmark.detail.requests.concurrency': 'Средний параллелизм',
-  'benchmark.detail.requests.concurrency.max': 'Максимальный параллелизм',
+  'benchmark.detail.requests.concurrency': 'Достигнутая параллельность (сред.)',
+  'benchmark.detail.requests.concurrency.max':
+    'Достигнутая параллельность (макс.)',
   'benchmark.detail.percentile.latency': 'Задержка',
   'benchmark.detail.percentile.inputTokens': 'Входные Token',
   'benchmark.detail.percentile.outputTokens': 'Выходные Token',
@@ -299,7 +392,7 @@ export default {
   'benchmark.detail.chart.sloBreached': 'Нарушение SLO',
   'benchmark.detail.chart.success': 'Доля успешных',
   'benchmark.detail.reason.peakTradeoff':
-    'Рост до пика {rate} {unit} даёт всего {gain}% пропускной способности при росте задержки на {cost}',
+    'Пик при {rate} {unit}: общая пропускная способность {gain}%, TTFT p99 {cost}',
   'benchmark.detail.unit.avg': 'сред.',
   'benchmark.detail.p99.ttft': 'TTFT p99',
   'benchmark.detail.p99.tpot': 'TPOT p99',
@@ -312,9 +405,9 @@ export default {
     'Нажмите на любую строку, чтобы увидеть детали',
   'benchmark.detail.chart.loadSweep': 'Развёртка нагрузки',
   'benchmark.detail.chart.loadSweep.note':
-    'Пропускная способность и p99 TTFT при росте нагрузки',
+    'Общая пропускная способность и {metric} при росте нагрузки',
   'benchmark.detail.chart.dualAxisHint':
-    'Левая ось (пропускная способность) линейная — каждая линия сетки добавляет одинаковую величину. Правая ось (TTFT p99) логарифмическая — каждая линия в 10 раз больше предыдущей: задержка меняется в тысячи раз, и линейная шкала скрыла бы рост после перелома.',
+    'Левая ось (общая пропускная способность) линейная — каждая линия сетки добавляет одинаковую величину. Правая ось логарифмическая для отображаемого показателя задержки — каждая линия в 10 раз больше предыдущей. Название показателя указано в заголовке правой оси.',
   'benchmark.detail.chart.logHint':
     'Каждая линия сетки по этой оси в 10 раз больше предыдущей, поэтому равные отношения дают равные расстояния. На линейной шкале этапы с низкой нагрузкой прижались бы к нулю.',
   'benchmark.detail.chart.ttftDist': 'Распределение TTFT',
@@ -353,8 +446,8 @@ export default {
     'Показано, потому что часть запросов не удалась',
   'benchmark.detail.chart.legend.shortfall': 'Дефицит',
   'benchmark.detail.chart.legend.attainment': 'Достигнуто',
-  'benchmark.detail.chart.legend.configured': 'Задано',
-  'benchmark.detail.chart.legend.achieved': 'Достигнуто',
+  'benchmark.detail.chart.legend.configured': 'Целевая',
+  'benchmark.detail.chart.legend.achieved': 'Факт (сред.)',
   'benchmark.detail.chart.legend.actual': 'Факт (сред.)',
   'benchmark.detail.chart.legend.generation': 'Генерация',
   'benchmark.detail.chart.legend.perRequest': 'tok/s на запрос',
@@ -363,22 +456,23 @@ export default {
   'benchmark.detail.chart.axis.inFlight': 'Активные запросы',
   'benchmark.detail.chart.axis.shortfall': 'Дефицит (запросы)',
   'benchmark.detail.chart.axis.successRate': 'Успешность (%)',
-  'benchmark.detail.chart.axis.load.rate': 'Частота запросов (req/s)',
-  'benchmark.detail.chart.axis.load.concurrency': 'Параллельность (запросы)',
+  'benchmark.detail.chart.axis.load.rate': 'Целевая частота запросов (req/s)',
+  'benchmark.detail.chart.axis.load.concurrency':
+    'Целевая параллельность (запросы)',
   'benchmark.detail.chart.axis.throughput':
-    'Общая пропускная способность (tok/s)',
+    'Общая пропускная способность (токенов/с)',
   'benchmark.detail.chart.axis.concurrencyAvg':
-    'Средняя параллельность (запросы)',
+    'Достигнутая параллельность (сред.) (запросы)',
   'benchmark.detail.reason.peakTradeoffPlain':
-    'Рост до пика {rate} {unit} даёт всего {gain}% пропускной способности',
+    'Пик при {rate} {unit}: общая пропускная способность {gain}%',
   'benchmark.detail.summary.showMore': 'Показать ещё {n}',
   'benchmark.detail.summary.showLess': 'Свернуть',
   'benchmark.detail.selectedStage': 'Выбранный этап',
   'benchmark.detail.showPercentiles': 'Показать перцентили',
   'benchmark.detail.hidePercentiles': 'Скрыть перцентили',
   'benchmark.detail.status': 'Статус',
-  'benchmark.detail.status.recommended': 'Оптимум',
-  'benchmark.detail.status.peak': 'Пик',
+  'benchmark.detail.status.recommended': 'Ёмкость SLO',
+  'benchmark.detail.status.peak': 'Пиковая пропускная способность',
   'benchmark.detail.status.overloaded': 'Перегрузка',
   'benchmark.detail.status.healthy': 'Норма',
   'benchmark.state.stoppedAt': 'Остановлено на {percent}%',

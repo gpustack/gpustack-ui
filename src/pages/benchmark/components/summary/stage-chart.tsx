@@ -3,7 +3,7 @@ import { Tooltip, theme } from 'antd';
 import { createStyles } from 'antd-style';
 import React, { useEffect, useRef } from 'react';
 import echarts, { ECharts, EChartsCoreOption } from '../echarts';
-import { StagePoint, logDomain } from './metrics';
+import { StagePoint, isSloCapacityPoint, logDomain } from './metrics';
 
 // Echarts can't read CSS variables, so the chart palette lives here as hex.
 export const C = {
@@ -209,12 +209,25 @@ interface Props {
    *  because the ticks are bare numbers. */
   loadAxisTitle: string;
   loadDecimals: number;
+  markerLabels: {
+    primary: string;
+    peak: string;
+    primaryHint?: string;
+    peakHint?: string;
+  };
   logHint?: string;
   height?: number;
 }
 
-const buildOption = (
-  { spec, points, loadAxisName, loadAxisTitle, loadDecimals }: Props,
+export const buildStageChartOption = (
+  {
+    spec,
+    points,
+    loadAxisName,
+    loadAxisTitle,
+    loadDecimals,
+    markerLabels
+  }: Props,
   // Gridlines are the one part of the palette that cannot be a hex literal like
   // the rest of `C`: they have to recede into whichever background is behind
   // them, and a light-theme value reads as a set of bright solid rules in dark
@@ -265,7 +278,7 @@ const buildOption = (
     return [base, span];
   });
 
-  const bestIdx = points.findIndex((p) => p.isBest);
+  const bestIdx = points.findIndex(isSloCapacityPoint);
   const peakIdx = points.findIndex((p) => p.isPeak);
 
   // A label centred on a mark that sits against an edge hangs half of itself off
@@ -297,7 +310,7 @@ const buildOption = (
           label: {
             show: true,
             position: 'end' as const,
-            formatter: '★ Best',
+            formatter: `★ ${markerLabels.primary}${points[bestIdx]?.isPeak ? ` · ${markerLabels.peak}` : ''}`,
             color: '#b8860b',
             fontSize: 11,
             fontWeight: 'bold' as const,
@@ -311,7 +324,7 @@ const buildOption = (
           },
           data: [
             {
-              xAxis: String(Number(points[bestIdx].load.toFixed(loadDecimals)))
+              xAxis: bestIdx
             }
           ]
         }
@@ -369,11 +382,17 @@ const buildOption = (
       const atLeft = align === 'left';
       return {
         value,
+        symbol: isBest ? 'circle' : 'triangle',
         symbolSize: 8,
         itemStyle: { color: isBest ? '#f5a623' : C.green },
         label: {
           show: labelled,
-          formatter: isBest ? '★ Best' : 'Peak',
+          formatter: [
+            isSloCapacityPoint(p) ? `★ ${markerLabels.primary}` : '',
+            p.isPeak ? markerLabels.peak : ''
+          ]
+            .filter(Boolean)
+            .join(' · '),
           color: isBest ? '#b8860b' : C.green,
           fontSize: 11,
           fontWeight: 'bold' as const,
@@ -501,13 +520,15 @@ const buildOption = (
         // concurrency and the reader otherwise has no way back to "which stage is
         // this?". Naming only the x metric there left the frontier unreadable: a
         // dot at 34.95k tok/s could be any rate in the sweep.
-        const tag =
-          spec.marks && p.isBest
-            ? '  ★ Best'
-            : spec.marks && p.isPeak
-              ? '  Peak'
-              : '';
-        const header = `${loadAxisName} ${Number(p.load.toFixed(loadDecimals))}${tag}`;
+        const tag = spec.marks
+          ? [
+              isSloCapacityPoint(p) ? `★ ${markerLabels.primary}` : '',
+              p.isPeak ? markerLabels.peak : ''
+            ]
+              .filter(Boolean)
+              .join(' · ')
+          : '';
+        const header = `${loadAxisName} ${Number(p.load.toFixed(loadDecimals))}${tag ? ` · ${tag}` : ''}`;
         const rows: Array<{ color: string; label: string }> = [];
         if (isValueX) {
           // Moved out of the header rather than dropped: it is still the position
@@ -542,6 +563,12 @@ const buildOption = (
           });
         });
         rows.push(...(spec.tooltipExtra?.(p) ?? []));
+        if (spec.marks && isSloCapacityPoint(p) && markerLabels.primaryHint) {
+          rows.push({ color: C.amber, label: markerLabels.primaryHint });
+        }
+        if (spec.marks && p.isPeak && markerLabels.peakHint) {
+          rows.push({ color: C.green, label: markerLabels.peakHint });
+        }
         return tooltipRows(rows, header);
       }
     },
@@ -565,7 +592,10 @@ const StageChart: React.FC<Props> = (props) => {
   useEffect(() => {
     if (!ref.current) return;
     if (!inst.current) inst.current = echarts.init(ref.current);
-    inst.current.setOption(buildOption(props, token.colorBorder), true);
+    inst.current.setOption(
+      buildStageChartOption(props, token.colorBorder),
+      true
+    );
     inst.current.resize();
   }, [props, token.colorBorder]);
 

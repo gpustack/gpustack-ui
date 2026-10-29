@@ -11,7 +11,7 @@ import { createStyles } from 'antd-style';
 import _ from 'lodash';
 import React, { useMemo, useState } from 'react';
 import {
-  STOP_REASON_LABEL,
+  ProfileValueMap,
   loadAxisLabelId,
   loadAxisTitleId,
   loadValueDecimals
@@ -20,13 +20,17 @@ import { useDetailContext } from '../../config/detail-context';
 import { RESIDENT_CHARTS, buildChartSpecs } from './chart-specs';
 import LoadSweep from './load-sweep';
 import {
+  SLO_CHECKS,
   SLO_SUCCESS_FLOOR,
   StagePoint,
+  configuredSloMetrics,
   fmtDuration,
+  isSloCapacityPoint,
   stageTotals,
   tailSamples
 } from './metrics';
 import StageChart, { C } from './stage-chart';
+import StopReason from './stop-reason';
 import { Panel, SectionTitle, StatusTag, statusLabelId } from './ui';
 
 const useStyles = createStyles(({ css }) => ({
@@ -236,10 +240,16 @@ const Overview: React.FC<OverviewProps> = ({
   //     (req/s) 29".
   //   * `loadAxisTitle` — unit included. Goes on the chart AXIS, whose ticks are
   //     bare numbers with nothing else to say what 29 counts.
-  const loadAxisName = t(loadAxisLabelId(detailData));
   const loadAxisTitle = t(loadAxisTitleId(detailData));
   const isConcurrency =
     loadAxisLabelId(detailData) === 'benchmark.form.concurrency';
+  const loadAxisName = t(
+    isConcurrency
+      ? 'benchmark.detail.stage.configuredConcurrency'
+      : 'benchmark.detail.stage.configuredRate'
+  );
+  const primaryLabel = t('benchmark.detail.status.recommended');
+  const peakLabel = t('benchmark.detail.status.peak');
 
   // Stages / requests / success rate count the measured stages only; elapsed also
   // covers the probe, which runs first and is time the user waited. See stageTotals.
@@ -251,6 +261,22 @@ const Overview: React.FC<OverviewProps> = ({
   const visible = showMore ? specs : specs.slice(0, RESIDENT_CHARTS);
   const moreCount = specs.length - RESIDENT_CHARTS;
   const maxTps = points.reduce((m, p) => Math.max(m, p.tps ?? 0), 0);
+  const activeTarget = SLO_CHECKS.find(
+    (c) => typeof (detailData as any)?.[c.field] === 'number'
+  );
+  const metricLabel =
+    points[0] && activeTarget
+      ? configuredSloMetrics(
+          points[0],
+          detailData as unknown as Record<string, unknown>,
+          t
+        )[0].label
+      : t('benchmark.detail.metric.ttftP99');
+  const latencyValue = (p: StagePoint) => {
+    if (!activeTarget) return p.ttftP99;
+    const value = activeTarget.get(p);
+    return value == null ? null : value * activeTarget.scale;
+  };
   // The soft cap the probe produced, and what it ended up doing. Read from the
   // ramp facts rather than recomputed: `ceil(ceiling * 1.2)`, the Phase-1/2 split
   // and the clamp rule all live in the runner, and re-deriving them here is how
@@ -264,11 +290,6 @@ const Overview: React.FC<OverviewProps> = ({
         : (detailData?.validity?.stopped_at ?? -1) >= probeCap
           ? 'benchmark.detail.aux.capClamped'
           : 'benchmark.detail.aux.capUnused';
-
-  // Only once the run is done: mid-sweep there is no termination to report.
-  const stopReason = detailData?.validity?.in_progress
-    ? null
-    : STOP_REASON_LABEL[detailData?.validity?.stop_reason ?? ''];
 
   if (points.length < 2) {
     return null;
@@ -324,33 +345,74 @@ const Overview: React.FC<OverviewProps> = ({
   // dead block and no column running away with it. The two things that did not
   // work: leaving a column unsized (it takes ALL the surplus — a 500px bar), and
   // a blank trailing spacer (the dead space just moves to the right edge).
+  const measuredColumns = {
+    concurrency: {
+      title: (
+        <Tooltip title={t('benchmark.detail.stage.measuredConcurrency.tip')}>
+          <span>{t('benchmark.detail.stage.measuredConcurrency')}</span>
+        </Tooltip>
+      ),
+      key: 'conc',
+      width: 160,
+      render: (_v: unknown, p: StagePoint) => num(p.conc)
+    },
+    rate: {
+      title: (
+        <Tooltip title={t('benchmark.detail.stage.measuredRate.tip')}>
+          {unitTitle(t('benchmark.detail.stage.measuredRate'), 'req/s')}
+        </Tooltip>
+      ),
+      key: 'achievedRate',
+      width: 160,
+      render: (_v: unknown, p: StagePoint) => num(p.achievedRate)
+    }
+  };
+
   const columns = [
     {
-      title: loadAxisName,
+      title: isConcurrency
+        ? t('benchmark.detail.stage.configuredConcurrency')
+        : unitTitle(t('benchmark.detail.stage.configuredRate'), 'req/s'),
       key: 'rate',
       // Fits the load value plus its status tag.
       width: 190,
       render: (_v: unknown, p: StagePoint) => {
-        const kind = p.isPeak ? 'peak' : p.status;
         return (
           <span className="rate-cell">
             <span className="n">{_.round(p.load, dec)}</span>
-            {kind !== 'ok' && (
-              <StatusTag kind={kind} label={t(statusLabelId[kind])} />
+            {isSloCapacityPoint(p) && (
+              <Tooltip
+                title={t('benchmark.detail.marker.sloCapacity.tip')}
+                trigger={['hover', 'focus']}
+              >
+                <span tabIndex={0}>
+                  <StatusTag kind="recommended" label={primaryLabel} />
+                </span>
+              </Tooltip>
+            )}
+            {p.isPeak && (
+              <Tooltip
+                title={t('benchmark.detail.marker.peakThroughput.tip')}
+                trigger={['hover', 'focus']}
+              >
+                <span tabIndex={0}>
+                  <StatusTag kind="peak" label={peakLabel} />
+                </span>
+              </Tooltip>
+            )}
+            {p.isOverloaded && (
+              <StatusTag
+                kind="overloaded"
+                label={t(statusLabelId.overloaded)}
+              />
             )}
           </span>
         );
       }
     },
-    {
-      title: unitTitle(
-        t('benchmark.detail.requests.concurrency'),
-        t('benchmark.detail.unit.avg')
-      ),
-      key: 'conc',
-      width: 130,
-      render: (_v: unknown, p: StagePoint) => num(p.conc, 0)
-    },
+    ...(detailData?.profile === ProfileValueMap.MaxThroughput
+      ? [measuredColumns.rate, measuredColumns.concurrency]
+      : [measuredColumns.concurrency, measuredColumns.rate]),
     ...(hasSloTargets
       ? [
           {
@@ -375,7 +437,7 @@ const Overview: React.FC<OverviewProps> = ({
       // p99, not the mean: this is the column an SLO is written against, and a
       // mean TTFT hides exactly the queueing the sweep exists to find. The mean
       // stays available in the stage detail below.
-      title: unitTitle('TTFT p99', 'ms'),
+      title: unitTitle(t('benchmark.detail.metric.ttftP99'), 'ms'),
       key: 'ttft',
       width: 120,
       render: (_v: unknown, p: StagePoint) => {
@@ -396,36 +458,10 @@ const Overview: React.FC<OverviewProps> = ({
       }
     },
     {
-      // Decode-only TPOT (guidellm's `inter_token_latency_ms`); the tooltip says
-      // so, because the same acronym means the includes-TTFT metric in guidellm's
-      // own output.
+      // Decode-only tail, using the same per-token metric as SLO evaluation.
       title: (
         <Tooltip title={t('benchmark.detail.tpot.tip')}>
-          {unitTitle('TPOT', 'ms')}
-        </Tooltip>
-      ),
-      key: 'tpot',
-      width: 100,
-      render: (_v: unknown, p: StagePoint) => (
-        <span
-          style={
-            p.isOverloaded
-              ? { color: 'var(--color-status-error-text)' }
-              : undefined
-          }
-        >
-          {num(p.tpot)}
-        </span>
-      )
-    },
-    {
-      // The decode tail next to its own mean. Kept as a separate column rather
-      // than replacing the mean: per-token latency is the one metric where the
-      // gap between mean and tail is the finding — a mean that holds while the
-      // tail runs away is what a saturating decode loop looks like.
-      title: (
-        <Tooltip title={t('benchmark.detail.tpot.tip')}>
-          {unitTitle('TPOT p99', 'ms')}
+          {unitTitle(t('benchmark.detail.metric.tpotP99'), 'ms')}
         </Tooltip>
       ),
       key: 'tpotP99',
@@ -448,7 +484,7 @@ const Overview: React.FC<OverviewProps> = ({
       // were captured.
       title: (
         <Tooltip title={t('benchmark.detail.itl.tip')}>
-          {unitTitle('ITL p99', 'ms')}
+          {unitTitle(t('benchmark.detail.metric.itlP99'), 'ms')}
         </Tooltip>
       ),
       key: 'itlP99',
@@ -568,7 +604,9 @@ const Overview: React.FC<OverviewProps> = ({
             {t('benchmark.detail.chart.loadSweep')}
           </SectionTitle>
           <span className="sub">
-            {t('benchmark.detail.chart.loadSweep.note')}
+            {t('benchmark.detail.chart.loadSweep.note', {
+              metric: metricLabel
+            })}
           </span>
           <span className="spacer" />
           {/* The two y-axes follow different rules while sharing one grid, which
@@ -581,14 +619,22 @@ const Overview: React.FC<OverviewProps> = ({
         <div className="panel-body">
           <LoadSweep
             points={points}
+            latencyValue={latencyValue}
+            latencyThreshold={
+              activeTarget ? (detailData as any)[activeTarget.field] : undefined
+            }
             loadAxisName={loadAxisName}
             loadAxisTitle={loadAxisTitle}
             loadDecimals={dec}
             labels={{
               concurrency: t('benchmark.detail.requests.concurrency'),
               throughput: t('benchmark.detail.throughput.totalToken'),
+              primary: primaryLabel,
+              peak: peakLabel,
+              primaryHint: t('benchmark.detail.marker.sloCapacity.tip'),
+              peakHint: t('benchmark.detail.marker.peakThroughput.tip'),
               throughputAxis: t('benchmark.detail.chart.axis.throughput'),
-              ttftP99: 'TTFT p99',
+              ttftP99: metricLabel,
               overloaded: t('benchmark.detail.status.overloaded'),
               sloBreached: t('benchmark.detail.chart.sloBreached')
             }}
@@ -636,6 +682,12 @@ const Overview: React.FC<OverviewProps> = ({
                 loadAxisName={loadAxisName}
                 loadAxisTitle={loadAxisTitle}
                 loadDecimals={dec}
+                markerLabels={{
+                  primary: primaryLabel,
+                  peak: peakLabel,
+                  primaryHint: t('benchmark.detail.marker.sloCapacity.tip'),
+                  peakHint: t('benchmark.detail.marker.peakThroughput.tip')
+                }}
                 logHint={t('benchmark.detail.chart.logHint')}
               />
             ))}
@@ -655,12 +707,7 @@ const Overview: React.FC<OverviewProps> = ({
           {/* Why the search ended here. This sits beside the stage count because
               that is the number it explains — a run that measured 7 of a possible
               12 points used to give the reader nothing to go on. */}
-          {stopReason && (
-            <span className="stop-reason">
-              {t('benchmark.detail.stopReason.label')}
-              <b>{t(stopReason)}</b>
-            </span>
-          )}
+          <StopReason />
           <span className="totals">
             {[
               {

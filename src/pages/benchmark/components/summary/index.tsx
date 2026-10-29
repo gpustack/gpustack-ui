@@ -1,4 +1,4 @@
-import { Divider } from 'antd';
+import { useIntl } from '@umijs/max';
 import { createStyles } from 'antd-style';
 import React, { useEffect, useMemo, useState } from 'react';
 import { queryBenchmarkResults } from '../../apis';
@@ -10,9 +10,9 @@ import ConfigSummary from './config-summary';
 import { buildProbePoints, buildStagePoints } from './metrics';
 import MetricsResult from './metrics-result';
 import Overview from './overview';
-import PercentileResult from './percentile-result';
 import RunningHint from './running-hint';
 import SelectedStage from './selected-stage';
+import { Panel, SectionTitle } from './ui';
 import ValidityAlert from './validity-alert';
 
 const useStyles = createStyles(({ css }) => ({
@@ -25,6 +25,7 @@ const useStyles = createStyles(({ css }) => ({
 
 const Summary: React.FC = () => {
   const { styles } = useStyles();
+  const intl = useIntl();
   const { id, detailData, refreshToken } = useDetailContext();
   const [results, setResults] = useState<BenchmarkResultItem[]>([]);
   const [selected, setSelected] = useState<BenchmarkResultItem | null>(null);
@@ -63,6 +64,8 @@ const Summary: React.FC = () => {
     () =>
       buildStagePoints(results, {
         recommendedRate: detailData?.recommended_rate,
+        primaryPoint: detailData?.validity?.primary_point,
+        peakPoint: detailData?.validity?.peak_point,
         peakRate: detailData?.peak_rate,
         isConcurrency:
           loadAxisLabelId(detailData) === 'benchmark.form.concurrency',
@@ -83,18 +86,14 @@ const Summary: React.FC = () => {
   const isMulti = points.length > 1;
   const measuredPoints = points.length;
 
-  // Default selection = recommended → peak → first.
+  // Default selection follows the primary point provided by the server.
   useEffect(() => {
     if (!isMulti) {
       setSelected(null);
       return;
     }
     const best = points.find((p) => p.isBest);
-    const peak = points.reduce(
-      (b, p) => (!b || (p.tps ?? 0) > (b.tps ?? 0) ? p : b),
-      points[0]
-    );
-    setSelected((best || peak).raw);
+    setSelected(best?.raw ?? null);
   }, [points, isMulti]);
 
   const resultsView = useMemo(() => {
@@ -121,15 +120,33 @@ const Summary: React.FC = () => {
         </div>
       );
     }
-    // Single point (or legacy data): the existing single-result view.
+    if (points.length === 1) {
+      return (
+        <>
+          <BestPoints points={points} onSelect={(p) => setSelected(p.raw)} />
+          <SelectedStage point={points[0]} />
+        </>
+      );
+    }
+    // Reports without a stage grid retain their stored single-result metrics.
     return (
       <>
-        <MetricsResult />
-        <Divider />
-        <PercentileResult />
+        <BestPoints points={points} onSelect={(p) => setSelected(p.raw)} />
+        <Panel>
+          <div className="panel-head divided">
+            <SectionTitle style={{ marginBottom: 0 }}>
+              {intl.formatMessage({
+                id: 'benchmark.detail.summary.stageDetail'
+              })}
+            </SectionTitle>
+          </div>
+          <div className="panel-body">
+            <MetricsResult />
+          </div>
+        </Panel>
       </>
     );
-  }, [isMulti, points, probes, selected]);
+  }, [isMulti, points, probes, selected, intl]);
 
   return (
     <div className={styles.container}>

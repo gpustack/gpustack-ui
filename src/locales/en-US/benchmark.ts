@@ -1,4 +1,92 @@
 export default {
+  'benchmark.detail.result.selectMeasuredPoint':
+    'Select measured point at {load} {unit}',
+  'benchmark.detail.metric.ttftP99': 'TTFT p99',
+  'benchmark.detail.metric.tpotP99': 'TPOT p99',
+  'benchmark.detail.metric.itlP99': 'ITL p99',
+  'benchmark.detail.statistics.p25': 'P25',
+  'benchmark.detail.statistics.p50': 'P50',
+  'benchmark.detail.statistics.p75': 'P75',
+  'benchmark.detail.statistics.p90': 'P90',
+  'benchmark.detail.stopReason.throughputGainConverged':
+    'Throughput gain convergence',
+  'benchmark.detail.stopReason.throughputGainConverged.detail':
+    'Across the last {points} refinement points, the recorded peak improved by {gain}%, below the {threshold}% threshold; refinement ended. This conclusion covers measured points only.',
+  'benchmark.detail.stopReason.throughputGainConverged.baseline':
+    'Window baseline: {throughput} tok/s @ {load} {unit}',
+  'benchmark.detail.stopReason.throughputGainConverged.best':
+    'Best recorded in the window: {throughput} tok/s @ {load} {unit}',
+  'benchmark.detail.stopReason.throughputGainConverged.range':
+    'Measured neighbors of the best point: {lower}–{upper} {unit}',
+  'benchmark.detail.stopReason.throughputGainConverged.point':
+    'Refinement point {point}: {load} {unit}, total TPS {throughput} tok/s, running best {best} tok/s',
+  'benchmark.detail.statistics.load': 'Load & throughput',
+  'benchmark.detail.statistics.latency': 'Latency',
+  'benchmark.detail.statistics.tokens': 'Request-size statistics',
+  'benchmark.detail.statistics.requestRate': 'Achieved request rate',
+  'benchmark.detail.statistics.concurrency': 'Achieved concurrency',
+  'benchmark.detail.statistics.requestsUnit': 'requests',
+  'benchmark.detail.statistics.tokensUnit': 'tokens/request',
+  'benchmark.detail.statistics.successTotal': 'Successful / total requests',
+  'benchmark.detail.statistics.requestSize': 'Request size',
+  'benchmark.detail.statistics.requestSizeNote':
+    'Input / output token distributions',
+  'benchmark.detail.statistics.load.min.tip':
+    'Lowest recorded value within this stage. Rates use event timing; concurrency counts in-flight requests.',
+  'benchmark.detail.statistics.load.max.tip':
+    'Highest recorded value within this stage. Rate spikes do not represent sustained capacity. The headline peak uses the highest stage-average total TPS.',
+  'benchmark.detail.statistics.latency.min.tip':
+    'Smallest recorded sample for this stage’s latency metric. Units follow the row label.',
+  'benchmark.detail.statistics.latency.max.tip':
+    'Largest recorded sample for this stage’s latency metric. ITL Max is the longest streamed-output gap.',
+  'benchmark.detail.statistics.tokens.min.tip':
+    'Smallest input/output token count among successful requests in this stage.',
+  'benchmark.detail.statistics.tokens.max.tip':
+    'Largest input/output token count among successful requests in this stage.',
+  'benchmark.detail.latency.scrollHint':
+    'Scroll horizontally to view all percentiles.',
+  'benchmark.detail.latency.metric': 'Metric',
+  'benchmark.detail.latency.endToEnd': 'End-to-end latency',
+  'benchmark.detail.validity.throughputDeclineGeneric':
+    'The test ended early after a sustained decline in total TPS. The SLO boundary has not been located.',
+  'benchmark.detail.validity.declineEvidence.peak':
+    'Measured peak: {tps} tok/s',
+  'benchmark.detail.validity.declineEvidence.concurrency':
+    'Concurrency {rate}: {tps} tok/s (down {drop}%)',
+  'benchmark.detail.validity.declineEvidence.rate':
+    'Target request rate {rate} req/s: {tps} tok/s (down {drop}%)',
+  'benchmark.detail.validity.declineEvidence.details':
+    'View throughput changes',
+  'benchmark.detail.marker.sloCapacity.tip':
+    'Highest measured load meeting all configured SLO targets.',
+  'benchmark.detail.marker.peakThroughput.tip':
+    'Highest recorded total TPS among measured points.',
+  'benchmark.detail.stage.measuredRate.tip':
+    'Measured successful request completions per second, based on request completion times. This is not the configured arrival rate.',
+  'benchmark.detail.stage.measuredConcurrency.tip':
+    'Measured average in-flight concurrency of successful requests, based on their start-to-completion intervals.',
+  'benchmark.detail.stage.configuredConcurrency': 'Target concurrency',
+  'benchmark.detail.stage.configuredRate': 'Target request rate',
+  'benchmark.detail.stage.measuredConcurrency': 'Achieved concurrency Avg',
+  'benchmark.detail.stage.measuredRate': 'Achieved request rate Avg',
+  'benchmark.detail.validity.throughputDecline':
+    'The test ended early after total TPS remained at least {threshold}% below the measured peak for {points} consecutive increasing-load stages. The SLO boundary has not been located.',
+  'benchmark.detail.stopReason.throughputDecline': 'Throughput decline guard',
+  'benchmark.detail.result.load': 'Result load',
+  'benchmark.detail.result.boundaryPair':
+    '{pass} {unit} met SLO; {fail} {unit} did not',
+  'benchmark.detail.result.sloConcurrency':
+    'Highest measured concurrency meeting SLO',
+  'benchmark.detail.result.sloRate':
+    'Highest measured request rate meeting SLO',
+  'benchmark.detail.result.totalPeak': 'Highest measured total throughput',
+  'benchmark.detail.result.measured': 'Measured result',
+  'benchmark.detail.result.noSloPoint': 'No measured point met the SLO',
+  'benchmark.detail.result.boundaryLocated': 'SLO boundary located',
+  'benchmark.detail.result.boundaryUnknown': 'Higher SLO boundary not located',
+  'benchmark.detail.result.inProgress': 'Measurement in progress',
+  'benchmark.detail.result.peakFact':
+    'Peak Throughput: {throughput} tok/s @ {load} {unit}',
   'benchmark.title': 'Benchmarks',
   'benchmark.button.add': 'Add Benchmark',
   'benchmark.button.edit': 'Edit Benchmark',
@@ -24,7 +112,7 @@ export default {
   'benchmark.form.loadType.sweep': 'Auto Sweep',
   'benchmark.form.autoTune': 'Auto-tune',
   'benchmark.form.autoTune.rate.tip':
-    'The load points measured in this run — one stage = one measured point. Auto-tune ramps the request rate automatically until output throughput stops growing (the peak), so you do not list points yourself. Switch to Manual to run a fixed list of rates.',
+    'The load points measured in this run — one stage = one measured point. Auto-tune ramps the request rate automatically until total throughput stops growing (the peak), so you do not list points yourself. Switch to Manual to run a fixed list of rates.',
   'benchmark.form.autoTune.concurrency.tip':
     'The load points measured in this run — one stage = one measured point. Auto-tune ramps concurrency automatically until the latency targets can no longer be met (the SLO boundary), so you do not list points yourself. Switch to Manual to run a fixed list of concurrency levels.',
   'benchmark.form.autoTune.rangeRate': 'Search Range · Request Rate (req/s)',
@@ -198,7 +286,7 @@ export default {
   'benchmark.table.tailLatency': 'Tail Latency',
   'benchmark.table.columnSettings': 'Column Settings',
   'benchmark.detail.summary.results': 'Test Results',
-  'benchmark.detail.summary.recommendation': 'Best Operating Point',
+  'benchmark.detail.summary.recommendation': 'Primary result',
   'benchmark.detail.summary.supporting': 'Detailed metrics',
   'benchmark.detail.summary.stages': 'Results by stage',
   'benchmark.detail.summary.totalStages': 'stages',
@@ -231,7 +319,7 @@ export default {
   'benchmark.detail.validity.sloNeverMet':
     'No measured point met the latency targets — the server is too slow for this SLO; lower the targets or change the deployment.',
   'benchmark.detail.validity.sloNotBinding':
-    'The latency thresholds never came into play — at the highest load measured the strictest budget was only {used}% used — while throughput had already peaked at {rate}. What limited this run was capacity, not the latency budget: {rate} is a throughput ceiling, not an SLO boundary. It is therefore the best operating point (past it, extra load only queues: no more throughput, steadily worse latency). Tighten the thresholds and re-run to locate a real SLO boundary.',
+    'The SLO boundary was not located. The search stopped after throughput plateaued near {rate}, while the highest measured load still met the latency targets. Continue the SLO search within a suitable range and budget to locate the boundary.',
   'benchmark.detail.validity.notSaturated':
     'The best operating point is the highest measured point and nothing overloaded — the true optimum may be higher. Raise the search range (upper bound) and re-run.',
   'benchmark.detail.validity.budgetExhausted':
@@ -261,8 +349,8 @@ export default {
   'benchmark.detail.requests.success': 'Successful Requests',
   'benchmark.detail.requests.failed': 'Failed Requests',
   'benchmark.detail.requests.incomplete': 'Incomplete Requests',
-  'benchmark.detail.requests.concurrency': 'Concurrency Avg',
-  'benchmark.detail.requests.concurrency.max': 'Concurrency Max',
+  'benchmark.detail.requests.concurrency': 'Achieved concurrency Avg',
+  'benchmark.detail.requests.concurrency.max': 'Achieved concurrency Max',
   'benchmark.detail.percentile.latency': 'Latency',
   'benchmark.detail.percentile.inputTokens': 'Input Tokens',
   'benchmark.detail.percentile.outputTokens': 'Output Tokens',
@@ -295,7 +383,7 @@ export default {
   'benchmark.detail.chart.sloBreached': 'SLO breached',
   'benchmark.detail.chart.success': 'Success rate',
   'benchmark.detail.reason.peakTradeoff':
-    'Pushing to the peak {rate} {unit} adds only {gain}% throughput for {cost} latency',
+    'Peak at {rate} {unit}: {gain}% total throughput, {cost} TTFT p99',
   'benchmark.detail.unit.avg': 'avg',
   'benchmark.detail.p99.ttft': 'TTFT p99',
   'benchmark.detail.p99.tpot': 'TPOT p99',
@@ -307,9 +395,9 @@ export default {
   'benchmark.detail.summary.stagesHint': 'Click any row to see its detail',
   'benchmark.detail.chart.loadSweep': 'Load sweep',
   'benchmark.detail.chart.loadSweep.note':
-    'Throughput and p99 TTFT as the load rises',
+    'Total throughput and {metric} as the load rises',
   'benchmark.detail.chart.dualAxisHint':
-    'The left axis (throughput) is linear — every gridline adds the same amount. The right axis (TTFT p99) is logarithmic — every gridline is 10x the one below it, because latency spans a thousandfold and a linear scale would hide the blow-up past the knee.',
+    'The left axis (total throughput) is linear — every gridline adds the same amount. The right axis is logarithmic for the displayed latency metric — every gridline is 10x the one below it. Read the right-axis title to identify the metric.',
   'benchmark.detail.chart.logHint':
     'Every gridline on this axis is 10x the one below it, so equal ratios read as equal distances. A linear scale would flatten the low-load stages against zero.',
   'benchmark.detail.chart.ttftDist': 'TTFT distribution',
@@ -347,9 +435,9 @@ export default {
     'Shown because some requests did not succeed',
   'benchmark.detail.chart.legend.shortfall': 'Shortfall',
   'benchmark.detail.chart.legend.attainment': 'Held',
-  'benchmark.detail.chart.legend.configured': 'Configured',
-  'benchmark.detail.chart.legend.achieved': 'Achieved',
-  'benchmark.detail.chart.legend.actual': 'Actual (mean)',
+  'benchmark.detail.chart.legend.configured': 'Target',
+  'benchmark.detail.chart.legend.achieved': 'Achieved Avg',
+  'benchmark.detail.chart.legend.actual': 'Achieved Avg',
   'benchmark.detail.chart.legend.generation': 'Generation',
   'benchmark.detail.chart.legend.perRequest': 'tok/s per request',
   'benchmark.detail.chart.axis.latencyMs': 'Latency (ms)',
@@ -357,20 +445,22 @@ export default {
   'benchmark.detail.chart.axis.inFlight': 'In-flight requests',
   'benchmark.detail.chart.axis.shortfall': 'Shortfall (requests)',
   'benchmark.detail.chart.axis.successRate': 'Success rate (%)',
-  'benchmark.detail.chart.axis.load.rate': 'Request rate (req/s)',
-  'benchmark.detail.chart.axis.load.concurrency': 'Concurrency (requests)',
+  'benchmark.detail.chart.axis.load.rate': 'Target request rate (req/s)',
+  'benchmark.detail.chart.axis.load.concurrency':
+    'Target concurrency (requests)',
   'benchmark.detail.chart.axis.throughput': 'Total throughput (tok/s)',
-  'benchmark.detail.chart.axis.concurrencyAvg': 'Concurrency avg (requests)',
+  'benchmark.detail.chart.axis.concurrencyAvg':
+    'Achieved concurrency Avg (requests)',
   'benchmark.detail.reason.peakTradeoffPlain':
-    'Pushing to the peak {rate} {unit} adds only {gain}% throughput',
+    'Peak at {rate} {unit}: {gain}% total throughput',
   'benchmark.detail.summary.showMore': 'Show {n} more',
   'benchmark.detail.summary.showLess': 'Show less',
   'benchmark.detail.selectedStage': 'Selected Stage',
   'benchmark.detail.showPercentiles': 'Show percentiles',
   'benchmark.detail.hidePercentiles': 'Hide percentiles',
   'benchmark.detail.status': 'Status',
-  'benchmark.detail.status.recommended': 'Best',
-  'benchmark.detail.status.peak': 'Peak',
+  'benchmark.detail.status.recommended': 'SLO Capacity',
+  'benchmark.detail.status.peak': 'Peak Throughput',
   'benchmark.detail.status.overloaded': 'Overloaded',
   'benchmark.detail.status.healthy': 'Healthy',
   'benchmark.state.stoppedAt': 'Stopped at {percent}%',

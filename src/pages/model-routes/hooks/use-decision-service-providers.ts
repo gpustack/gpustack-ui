@@ -36,10 +36,9 @@ export interface DecisionCascaderOption {
 
 // The decision-service picker is fed by two sources (design §6.2), arranged
 // as the same two-level tree the route-target picker uses:
-// - local deployments: /models?categories=decision&state=running (writes
-//   `modelId`) — `running` is the /models servability gate (the `ready`
-//   vocabulary belongs to /my-models), anything else cannot serve decision
-//   traffic;
+// - local deployments: /models?categories=decision&state=ready (writes
+//   `modelId`) — the API's readiness filter includes running and partial
+//   models; Model.state resource values are not valid filter values;
 // - external services: ModelProviders filtered to config.type ==
 //   "gpustack-lb-typesafe" (writes `providerId`), whose cached models are
 //   the decision engines to pick as the child row.
@@ -69,7 +68,7 @@ const useDecisionServiceProviders = () => {
     queryModelsList({
       page: -1,
       categories: 'decision',
-      state: 'running'
+      state: 'ready'
     })
       .then((res) => {
         if (!cancelled) {

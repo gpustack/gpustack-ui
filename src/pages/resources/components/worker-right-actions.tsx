@@ -57,7 +57,7 @@ const WorkerRightActions: React.FC<WorkerRightActionsProps> = ({
   );
 
   return (
-    <Space size={16}>
+    <Space size="middle" wrap style={{ maxWidth: '100%' }}>
       {MonitorButton}
       <Button
         icon={<PlusOutlined />}

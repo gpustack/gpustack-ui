@@ -1,4 +1,7 @@
 export default {
+  'resources.filter.label': 'Фильтр по метке',
+  'resources.filter.label.help':
+    'Поиск по ключам и значениям меток. Все слова через пробел должны совпасть (AND); key=value или key:value — точное совпадение.',
   'resources.title': 'Ресурсы',
   'resources.nodes': 'Worker',
   'resources.container': 'Контейнер',

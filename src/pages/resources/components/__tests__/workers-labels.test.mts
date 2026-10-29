@@ -11,6 +11,7 @@ const success = mock.fn();
 const warning = mock.fn();
 const fetchData = mock.fn();
 const handleDeleteBatch = mock.fn();
+const handleQueryChange = mock.fn();
 const clearSelections = mock.fn(() => {
   table.rowSelection.selectedRowKeys = [];
 });
@@ -18,6 +19,7 @@ let table: any;
 let labelsModal: any;
 let columnActions: any;
 let batchActions: any;
+let workerFilters: any;
 const queryWorker = mock.fn(async (_id: number) => ({}));
 const updateWorker = mock.fn(async (_id: number, _data: any) => ({}));
 let writeLabels = async (_data: any) => {};
@@ -54,7 +56,8 @@ mock.module('@gpustack/core-ui', {
         )
       );
     },
-    FilterBar: ({ right }: any) => right,
+    FilterBar: ({ left, right }: any) =>
+      createElement(Fragment, null, left, right),
     Table: empty
   }
 });
@@ -174,6 +177,12 @@ mock.module(new URL('../update-labels.tsx', import.meta.url).href, {
     return props.open ? createElement('div', { role: 'dialog' }) : null;
   }
 });
+mock.module(new URL('../worker-filters.tsx', import.meta.url).href, {
+  defaultExport: (props: any) => {
+    workerFilters = props;
+    return null;
+  }
+});
 for (const name of ['worker-detail-modal', 'worker-ssh-modal']) {
   mock.module(new URL(`../${name}.tsx`, import.meta.url).href, {
     defaultExport: empty
@@ -208,6 +217,7 @@ const mount = async (t: any, rows: any[], selected: number[] = []) => {
     warning,
     fetchData,
     handleDeleteBatch,
+    handleQueryChange,
     clearSelections
   ]) {
     fn.mock.resetCalls();
@@ -231,7 +241,7 @@ const mount = async (t: any, rows: any[], selected: number[] = []) => {
     handlePageChange: empty,
     handleTableChange: empty,
     handleSearch: empty,
-    handleQueryChange: empty,
+    handleQueryChange,
     handleNameChange: empty
   };
   const root = createRoot(document.getElementById('root')!);
@@ -256,6 +266,34 @@ const submit = async (labels: any) => {
 const writes = () => updateWorker.mock.calls.map((call) => call.arguments);
 const batches = () =>
   updateWorkerLabels.mock.calls.map((call) => call.arguments);
+
+test('label searches reset pagination and forward keywords, AND terms and exact pairs', async (t) => {
+  await mount(t, [worker(1, { region: 'beijing' })]);
+  for (const label of [
+    'region',
+    'beijing',
+    'region beijing',
+    '  region  beijing  ',
+    'region=beijing',
+    'region:beijing',
+    ''
+  ]) {
+    await act(async () => workerFilters.onLabelChange(label));
+  }
+  assert.deepEqual(
+    handleQueryChange.mock.calls.map((call) => call.arguments),
+    [
+      'region',
+      'beijing',
+      'region beijing',
+      '  region  beijing  ',
+      'region=beijing',
+      'region:beijing',
+      ''
+    ].map((label) => [{ page: 1, label }])
+  );
+  assert.equal(workerFilters.showCluster, true);
+});
 
 test('batch actions use labels by default and open the batch label editor', async (t) => {
   const selected = worker(1, { rack: 'rack-a' });

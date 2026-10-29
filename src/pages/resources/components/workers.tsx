@@ -29,6 +29,7 @@ import useWorkerColumns from '../hooks/use-worker-columns';
 import useWorkerMaintenance from '../hooks/use-worker-maintenance';
 import UpdateLabels from './update-labels';
 import WorkerDetailModal from './worker-detail-modal';
+import WorkerFilters from './worker-filters';
 import WorkerRightActions from './worker-right-actions';
 import WorkerSSHModal from './worker-ssh-modal';
 
@@ -301,6 +302,10 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
     });
   };
 
+  const handleLabelChange = (label: string) => {
+    handleQueryChange({ page: 1, label });
+  };
+
   const columns = useWorkerColumns({
     clusterData,
     loadend: dataSource.loadend,
@@ -319,6 +324,22 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
     <>
       <PageBox>
         <FilterBar
+          styles={{
+            root: { flexWrap: 'wrap', gap: 'var(--ant-margin-sm)' },
+            left: { minWidth: 0, maxWidth: '100%' },
+            right: { maxWidth: '100%' }
+          }}
+          left={
+            <WorkerFilters
+              label={queryParams.label}
+              showCluster={source !== 'clusterDetail'}
+              clusterOptions={clusterData.list}
+              onNameChange={handleNameChange}
+              onLabelChange={handleLabelChange}
+              onClusterChange={handleClusterChange}
+              onRefresh={handleSearch}
+            />
+          }
           showSelect={source !== 'clusterDetail'}
           selectHolder={intl.formatMessage({ id: 'clusters.filterBy.cluster' })}
           buttonText={intl.formatMessage({ id: 'resources.button.create' })}
@@ -329,11 +350,6 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
           handleInputChange={handleNameChange}
           rowSelection={rowSelection}
           selectOptions={clusterData.list}
-          widths={
-            source !== 'clusterDetail'
-              ? { select: 230, input: 230 }
-              : { input: 300 }
-          }
           right={
             source === 'clusterDetail' ? (
               <></>

@@ -1,4 +1,7 @@
 export default {
+  'resources.filter.label': '按标签筛选',
+  'resources.filter.label.help':
+    '搜索标签键或值；空格分隔的词需全部匹配（AND），使用 key=value、key:value 精确匹配。',
   'resources.title': '资源',
   'resources.button.create': '添加节点',
   'resources.button.edit': '编辑节点',

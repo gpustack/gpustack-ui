@@ -1,4 +1,7 @@
 export default {
+  'resources.filter.label': 'Filter by label',
+  'resources.filter.label.help':
+    'Search label keys or values. Space-separated terms must all match (AND); use key=value or key:value for an exact match.',
   'resources.title': 'Resources',
   'resources.nodes': 'Workers',
   'resources.worker': 'Worker',

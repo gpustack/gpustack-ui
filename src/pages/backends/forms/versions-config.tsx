@@ -266,8 +266,7 @@ const VersionsForm: React.FC<AddModalProps> = ({
               <div
                 key={name}
                 style={{
-                  borderRadius: 'var(--ant-border-radius-lg)',
-                  border: '1px solid var(--ant-color-border)'
+                  borderRadius: 'var(--ant-border-radius-lg)'
                 }}
               >
                 <CollapseContainer

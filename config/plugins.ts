@@ -7,7 +7,7 @@ export function monacoPluginConfig(config: any) {
     .use(MonacoWebpackPlugin, [
       {
         filename: 'js/[name].[contenthash:8].worker.js',
-        languages: ['yaml'],
+        languages: ['json', 'yaml'],
         customLanguages: [
           {
             label: 'yaml',

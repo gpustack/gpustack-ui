@@ -513,7 +513,6 @@ const TargetsForm = forwardRef((props, ref) => {
               <div
                 key={index}
                 style={{
-                  border: '1px solid var(--ant-color-border)',
                   borderRadius: 'var(--ant-border-radius-lg)'
                 }}
               >

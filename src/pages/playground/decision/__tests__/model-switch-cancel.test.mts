@@ -13,6 +13,7 @@ interface PendingRequest {
   reject: (reason?: any) => void;
 }
 const pending: PendingRequest[] = [];
+const editors = new Map<string, any>();
 
 // Each requestSource() call is recorded so the test can assert which run
 // was canceled and which token stayed current.
@@ -36,9 +37,6 @@ mock.module('@umijs/max', {
     useSearchParams: () => [new URLSearchParams('model=model-a')]
   }
 });
-mock.module('@monaco-editor/react', {
-  defaultExport: () => null
-});
 mock.module(new URL('../../apis/index.ts', import.meta.url).href, {
   namedExports: {
     SYSTEMONE_API: '/v1/systemone',
@@ -51,6 +49,14 @@ mock.module(new URL('../../apis/index.ts', import.meta.url).href, {
       new Promise((resolve, reject) => {
         pending.push({ payload, resolve, reject });
       })
+  }
+});
+mock.module('@gpustack/core-ui/json-editor', {
+  namedExports: {
+    JsonEditor: (props: any) => {
+      editors.set(props.path, props);
+      return null;
+    }
   }
 });
 mock.module('@gpustack/core-ui', {
@@ -197,12 +203,43 @@ test('switching models cancels the in-flight run and ignores its late result', a
       input.dispatchEvent(new dom.window.Event('input', { bubbles: true }));
     };
 
+    assert.equal(editors.size, 2);
+    const stateEditor = editors.get('playground-decision-state.json');
+    const questionsEditor = editors.get('playground-decision-questions.json');
+    assert.ok(stateEditor.schema.anyOf);
+    assert.equal(questionsEditor.schema.type, 'object');
+    assert.equal(stateEditor.isDarkTheme, false);
+    await act(async () => setModelSelectValue(''));
+    assert.equal(primaryButton()?.disabled, true);
+    assert.equal(
+      primaryButton()?.getAttribute('aria-label'),
+      'playground.decision.run.noModel'
+    );
+    assert.equal(container.querySelector('.run-status'), null);
+    assert.doesNotMatch(
+      container.textContent || '',
+      /playground\.decision\.run\.noModel/
+    );
+    assert.equal(pending.length, 0);
+    await act(async () => setModelSelectValue('model-a'));
+    assert.equal(primaryButton()?.disabled, false);
+    const editedState = { conversation: 'edited state' };
+    const editedQuestions = {
+      edited: { type: 'noul', instructions: 'Decide' }
+    };
+    await act(async () => {
+      stateEditor.onChange(JSON.stringify(editedState));
+      questionsEditor.onChange(JSON.stringify(editedQuestions));
+    });
+
     // 1. A model-a run goes in flight and stays pending.
     await act(async () => {
       primaryButton()!.click();
     });
     assert.equal(pending.length, 1, 'the run was submitted');
     assert.equal(pending[0].payload.model, 'model-a');
+    assert.deepEqual(pending[0].payload.state, editedState);
+    assert.deepEqual(pending[0].payload.questions, editedQuestions);
     assert.ok(stopButton(), 'the run is in flight');
     assert.equal(createdSources[0].cancelCalls, 0);
 

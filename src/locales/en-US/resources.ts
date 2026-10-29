@@ -1,7 +1,7 @@
 export default {
   'resources.filter.label': 'Label: key=value',
   'resources.filter.label.help':
-    'Use key=value (e.g. region=beijing) for an exact, case-sensitive match. The key must be non-empty; the value may be empty. Clear the input to remove the filter.',
+    'Exact, case-sensitive match. For the label os: linux, enter os=linux.',
   'resources.title': 'Resources',
   'resources.nodes': 'Workers',
   'resources.worker': 'Worker',

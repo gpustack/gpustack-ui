@@ -1,7 +1,7 @@
 export default {
   'resources.filter.label': 'Метка: key=value',
   'resources.filter.label.help':
-    'Используйте key=value (например, region=beijing) для точного поиска с учётом регистра. Ключ не может быть пустым, значение может. Очистите поле, чтобы убрать фильтр.',
+    'Точное совпадение с учётом регистра. Для метки os: linux введите os=linux.',
   'resources.title': 'Ресурсы',
   'resources.nodes': 'Worker',
   'resources.container': 'Контейнер',

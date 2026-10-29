@@ -1,7 +1,7 @@
 export default {
   'resources.filter.label': 'ラベル: key=value',
   'resources.filter.label.help':
-    'key=value（例：region=beijing）でラベルを完全一致検索します。大文字と小文字を区別します。キーは必須ですが、値は空でも指定できます。入力を消すと絞り込みを解除します。',
+    '大文字と小文字を区別して完全一致検索します。ラベル os: linux は os=linux と入力します。',
   'resources.title': 'リソース',
   'resources.nodes': 'Worker',
   'resources.container': 'コンテナ',

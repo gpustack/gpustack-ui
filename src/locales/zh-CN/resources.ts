@@ -1,7 +1,7 @@
 export default {
   'resources.filter.label': '标签：key=value',
   'resources.filter.label.help':
-    '使用 key=value（如 region=beijing）精确匹配标签，区分大小写。key 不能为空，value 可以为空；清空输入取消筛选。',
+    '精确匹配，区分大小写。例如标签 os: linux，输入 os=linux。',
   'resources.title': '资源',
   'resources.button.create': '添加节点',
   'resources.button.edit': '编辑节点',

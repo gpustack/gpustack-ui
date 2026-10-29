@@ -41,9 +41,6 @@ mock.module('@umijs/max', {
     useSearchParams: () => [new URLSearchParams('model=jev-1.13.0')]
   }
 });
-mock.module('@monaco-editor/react', {
-  defaultExport: () => null
-});
 mock.module(new URL('../../apis/index.ts', import.meta.url).href, {
   namedExports: {
     SYSTEMONE_API: '/v1/systemone',
@@ -54,6 +51,11 @@ mock.module(new URL('../../apis/index.ts', import.meta.url).href, {
     decisionQuery: async () => {
       throw axiosLikeError;
     }
+  }
+});
+mock.module('@gpustack/core-ui/json-editor', {
+  namedExports: {
+    JsonEditor: () => null
   }
 });
 mock.module('@gpustack/core-ui', {

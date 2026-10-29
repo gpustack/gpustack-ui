@@ -23,7 +23,7 @@ const ItemWrapper = styled.div`
   gap: 8px;
   width: 100%;
   border: 1px solid var(--ant-color-border);
-  border-radius: var(--ant-border-radius-lg);
+  border-radius: var(--border-radius-lg);
   padding: 12px 16px;
   &:hover {
     background-color: var(--ant-color-fill-tertiary);

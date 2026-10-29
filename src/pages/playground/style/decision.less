@@ -18,21 +18,6 @@
     top: 0;
     z-index: 100;
     background-color: var(--ant-color-bg-container);
-
-    // TypeSafe-style blocking status beside the submit action, dimmed and
-    // ellipsized — the full reason rides on its tooltip. The inline row is
-    // an ant Flex (component="span"); CSS keeps the clamp and ellipsis.
-    .run-status {
-      max-width: 360px;
-      font-size: 12px;
-      color: var(--ant-color-text-tertiary);
-
-      .run-status-text {
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-      }
-    }
   }
 
   // The vertical stack is an ant Flex (component="div" vertical); CSS keeps

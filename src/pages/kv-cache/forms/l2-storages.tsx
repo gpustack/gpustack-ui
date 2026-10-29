@@ -229,7 +229,6 @@ const L2Storages: React.FC<{
                 <div
                   key={key}
                   style={{
-                    border: '1px solid var(--ant-color-split)',
                     borderRadius: 'var(--ant-border-radius-lg)'
                   }}
                 >

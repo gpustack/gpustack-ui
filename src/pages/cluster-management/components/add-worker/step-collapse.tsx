@@ -19,10 +19,9 @@ interface StepItemProps {
 }
 
 const Box = styled.div`
-  border: 1px solid var(--ant-color-border);
   border-radius: 4px;
   overflow: hidden;
-  &.step-collapse-open {
+  &.step-collapse-open > .ant-card {
     border-color: var(--ant-color-primary);
   }
   &:not(.step-collapse-open):hover {

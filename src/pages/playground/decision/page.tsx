@@ -2,7 +2,6 @@ import HotKeys, { KeyMap } from '@/config/hotkeys';
 import useUserSettings from '@/hooks/use-user-settings';
 import {
   ClearOutlined,
-  ExclamationCircleOutlined,
   PlusOutlined,
   QuestionCircleOutlined,
   SendOutlined
@@ -13,7 +12,7 @@ import {
   useOverlayScroller,
   useRequestToken
 } from '@gpustack/core-ui';
-import Editor from '@monaco-editor/react';
+import { JsonEditor } from '@gpustack/core-ui/json-editor';
 import { useIntl, useSearchParams } from '@umijs/max';
 import { Button, Flex, Spin, Tag, Tooltip } from 'antd';
 import axios from 'axios';
@@ -84,7 +83,6 @@ const CONTENT_SCHEMA = {
     'System One content: plain text, or a JSON object/array (rendered as JSON by the engine).'
 };
 
-const STATE_SCHEMA_URI = 'https://gpustack.io/schemas/systemone-state.json';
 const STATE_JSON_SCHEMA = {
   $schema: 'http://json-schema.org/draft-07/schema#',
   ...CONTENT_SCHEMA,
@@ -92,8 +90,6 @@ const STATE_JSON_SCHEMA = {
     'The situation the decision is made against: plain text, or structured JSON (e.g. chat messages).'
 };
 
-const QUESTIONS_SCHEMA_URI =
-  'https://gpustack.io/schemas/systemone-questions.json';
 const QUESTIONS_JSON_SCHEMA = {
   $schema: 'http://json-schema.org/draft-07/schema#',
   type: 'object',
@@ -423,27 +419,6 @@ const GroundDecision: React.FC<MessageProps> = forwardRef((props, ref) => {
     setError(null);
   };
 
-  // Register both schemas with monaco's json worker, each scoped to its
-  // editor's model path so no other JSON model in the app is affected.
-  const handleEditorBeforeMount = (monaco: any) => {
-    monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
-      validate: true,
-      allowComments: false,
-      schemas: [
-        {
-          uri: STATE_SCHEMA_URI,
-          fileMatch: [STATE_EDITOR_PATH],
-          schema: STATE_JSON_SCHEMA
-        },
-        {
-          uri: QUESTIONS_SCHEMA_URI,
-          fileMatch: [QUESTIONS_EDITOR_PATH],
-          schema: QUESTIONS_JSON_SCHEMA
-        }
-      ]
-    });
-  };
-
   const handleSubmit = async () => {
     setError(null);
     try {
@@ -737,22 +712,6 @@ const GroundDecision: React.FC<MessageProps> = forwardRef((props, ref) => {
                 </Tooltip>
               </h3>
               <div className="flex-center gap-10">
-                {/* TypeSafe-style blocking status: what prevents the run is
-                    visible next to the action before the click, not only
-                    after it fails. */}
-                {runBlockReason && !loading && (
-                  <Tooltip title={runBlockReason}>
-                    <Flex
-                      component="span"
-                      align="center"
-                      gap={6}
-                      className="run-status"
-                    >
-                      <ExclamationCircleOutlined />
-                      <span className="run-status-text">{runBlockReason}</span>
-                    </Flex>
-                  </Tooltip>
-                )}
                 <Button
                   size="middle"
                   icon={<ClearOutlined />}
@@ -846,26 +805,14 @@ const GroundDecision: React.FC<MessageProps> = forwardRef((props, ref) => {
               }}
             >
               <div className="state-editor">
-                <Editor
-                  language="json"
-                  theme={isDarkTheme ? 'vs-dark' : 'vs'}
+                <JsonEditor
+                  isDarkTheme={isDarkTheme}
                   path={STATE_EDITOR_PATH}
-                  beforeMount={handleEditorBeforeMount}
+                  schema={STATE_JSON_SCHEMA}
                   value={stateJson}
                   onChange={(value) => setStateJson(value ?? '')}
                   height="100%"
-                  options={{
-                    minimap: { enabled: false },
-                    fontSize: 14,
-                    scrollBeyondLastLine: false,
-                    lineNumbers: 'off',
-                    folding: false,
-                    automaticLayout: true,
-                    scrollbar: {
-                      verticalScrollbarSize: 6,
-                      horizontalScrollbarSize: 6
-                    }
-                  }}
+                  options={{ lineNumbers: 'off', folding: false }}
                 />
               </div>
             </Resizable>
@@ -908,24 +855,13 @@ const GroundDecision: React.FC<MessageProps> = forwardRef((props, ref) => {
                 remaining input height; syntax errors are marked inline by
                 monaco and reflected live in the run bar below. */}
             <div className="questions-editor-wrap">
-              <Editor
-                language="json"
-                theme={isDarkTheme ? 'vs-dark' : 'vs'}
+              <JsonEditor
+                isDarkTheme={isDarkTheme}
                 path={QUESTIONS_EDITOR_PATH}
-                beforeMount={handleEditorBeforeMount}
+                schema={QUESTIONS_JSON_SCHEMA}
                 value={questionsJson}
                 onChange={(value) => setQuestionsJson(value ?? '')}
                 height="100%"
-                options={{
-                  minimap: { enabled: false },
-                  fontSize: 14,
-                  scrollBeyondLastLine: false,
-                  automaticLayout: true,
-                  scrollbar: {
-                    verticalScrollbarSize: 6,
-                    horizontalScrollbarSize: 6
-                  }
-                }}
               />
             </div>
           </Flex>

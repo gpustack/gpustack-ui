@@ -24,11 +24,13 @@ const RightActions: React.FC<RightActionsProps> = ({
 }) => {
   const intl = useIntl();
   const ListActions = getGPUStackPlugin()?.clusterDetail?.ListActions;
+  const BeforeAddActions = getGPUStackPlugin()?.clusterDetail?.BeforeAddActions;
 
   return (
     <Space size={16}>
       {ListActions ? <ListActions clusters={clusters} /> : null}
       {MonitorButton}
+      {BeforeAddActions ? <BeforeAddActions clusters={clusters} /> : null}
       <Button
         icon={<PlusOutlined />}
         type="primary"

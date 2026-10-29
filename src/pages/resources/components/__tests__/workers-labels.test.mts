@@ -267,30 +267,22 @@ const writes = () => updateWorker.mock.calls.map((call) => call.arguments);
 const batches = () =>
   updateWorkerLabels.mock.calls.map((call) => call.arguments);
 
-test('label searches reset pagination and forward keywords, AND terms and exact pairs', async (t) => {
+test('exact label filters and clearing reset pagination', async (t) => {
   await mount(t, [worker(1, { region: 'beijing' })]);
   for (const label of [
-    'region',
-    'beijing',
-    'region beijing',
-    '  region  beijing  ',
     'region=beijing',
-    'region:beijing',
+    'Region=Beijing',
+    'region=',
+    'city=New York',
     ''
   ]) {
     await act(async () => workerFilters.onLabelChange(label));
   }
   assert.deepEqual(
     handleQueryChange.mock.calls.map((call) => call.arguments),
-    [
-      'region',
-      'beijing',
-      'region beijing',
-      '  region  beijing  ',
-      'region=beijing',
-      'region:beijing',
-      ''
-    ].map((label) => [{ page: 1, label }])
+    ['region=beijing', 'Region=Beijing', 'region=', 'city=New York', ''].map(
+      (label) => [{ page: 1, label }]
+    )
   );
   assert.equal(workerFilters.showCluster, true);
 });

@@ -1,7 +1,7 @@
 export default {
-  'resources.filter.label': 'Etikete göre filtrele',
+  'resources.filter.label': 'Etiket: key=value',
   'resources.filter.label.help':
-    'Etiket anahtarlarında veya değerlerinde arayın. Boşlukla ayrılan tüm sözcükler eşleşmelidir (AND); tam eşleşme için key=value veya key:value kullanın.',
+    'Büyük/küçük harfe duyarlı tam etiket eşleşmesi için key=value girin. Değer boş olabilir.',
   'resources.title': 'Kaynaklar',
   'resources.nodes': 'İşçi Düğümler',
   'resources.worker': 'İşçi Düğüm',

@@ -1,7 +1,7 @@
 export default {
-  'resources.filter.label': 'ラベルで絞り込み',
+  'resources.filter.label': 'ラベル: key=value',
   'resources.filter.label.help':
-    'ラベルのキーや値を検索します。空白で区切った語はすべて一致する必要があります（AND）。key=value または key:value は完全一致です。',
+    'key=value でラベルを完全一致検索します。大文字と小文字を区別し、値は空でも指定できます。',
   'resources.title': 'リソース',
   'resources.nodes': 'Worker',
   'resources.container': 'コンテナ',

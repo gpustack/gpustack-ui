@@ -4,6 +4,7 @@ import { useIntl } from '@umijs/max';
 import { useDebounceFn } from 'ahooks';
 import { Button, Flex, Input } from 'antd';
 import type { ChangeEvent } from 'react';
+import { useState } from 'react';
 
 interface WorkerFiltersProps {
   label?: string;
@@ -25,8 +26,13 @@ export default function WorkerFilters({
   onRefresh
 }: WorkerFiltersProps) {
   const intl = useIntl();
+  const [invalidLabel, setInvalidLabel] = useState(false);
   const { run: changeLabel, flush: searchLabel } = useDebounceFn(
-    onLabelChange,
+    (value: string) => {
+      const valid = value === '' || value.indexOf('=') > 0;
+      setInvalidLabel(!valid);
+      if (valid) onLabelChange(value);
+    },
     {
       wait: 350
     }
@@ -60,7 +66,12 @@ export default function WorkerFilters({
         placeholder={labelPlaceholder}
         aria-label={labelPlaceholder}
         title={intl.formatMessage({ id: 'resources.filter.label.help' })}
-        onChange={(event) => changeLabel(event.target.value)}
+        status={invalidLabel ? 'error' : undefined}
+        aria-invalid={invalidLabel || undefined}
+        onChange={(event) => {
+          setInvalidLabel(false);
+          changeLabel(event.target.value);
+        }}
         onPressEnter={() => searchLabel()}
         style={{ width: 220 }}
       />

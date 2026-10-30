@@ -7,6 +7,7 @@ import {
   GPUDeviceItem,
   ListItem,
   ModelFile,
+  WorkerLabelOption,
   WorkerLabelsUpdate
 } from '../config/types';
 import { workerPrivateKeyFilename } from '../utils/ssh-access';
@@ -68,6 +69,18 @@ export async function queryWorker(
 ) {
   return request<ListItem>(`${WORKERS_API}/${id}`, {
     method: 'GET',
+    skipErrorHandler: options?.skipErrorHandler
+  });
+}
+
+export async function queryWorkerLabelOptions(
+  params: { cluster_id?: number },
+  options?: { token?: any; skipErrorHandler?: boolean }
+) {
+  return request<WorkerLabelOption[]>(`${WORKERS_API}/label-options`, {
+    method: 'GET',
+    params,
+    cancelToken: options?.token,
     skipErrorHandler: options?.skipErrorHandler
   });
 }

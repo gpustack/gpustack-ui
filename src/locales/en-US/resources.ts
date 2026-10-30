@@ -1,5 +1,6 @@
 export default {
   'resources.filter.label': 'Filter by label',
+  'resources.filter.label.title': 'Label filters',
   'resources.filter.label.action': 'Filter by label {label}',
   'resources.title': 'Resources',
   'resources.nodes': 'Workers',

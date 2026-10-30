@@ -1,5 +1,5 @@
 import { SearchOutlined, SyncOutlined } from '@ant-design/icons';
-import { BaseSelect } from '@gpustack/core-ui';
+import { BaseSelect, SimpleSelect } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Flex, Input } from 'antd';
 import type { ChangeEvent } from 'react';
@@ -34,7 +34,12 @@ export default function WorkerFilters({
   const refreshLabel = intl.formatMessage({ id: 'common.button.refresh' });
 
   return (
-    <Flex gap="small" wrap align="center">
+    <Flex
+      gap="small"
+      wrap
+      align="center"
+      style={{ width: '100%', minWidth: 0 }}
+    >
       <Input
         allowClear
         prefix={
@@ -45,9 +50,9 @@ export default function WorkerFilters({
         placeholder={namePlaceholder}
         aria-label={namePlaceholder}
         onChange={onNameChange}
-        style={{ width: 180 }}
+        style={{ width: 200 }}
       />
-      <BaseSelect
+      <SimpleSelect
         mode="multiple"
         showSearch
         allowClear
@@ -65,7 +70,14 @@ export default function WorkerFilters({
         placeholder={labelPlaceholder}
         aria-label={labelPlaceholder}
         onChange={onLabelChange}
-        style={{ width: 320, maxWidth: '100%' }}
+        styles={{
+          wrapper: {
+            width: 300,
+            flex: '0 1 300px',
+            minWidth: 0,
+            maxWidth: '100%'
+          }
+        }}
       />
       {showCluster ? (
         <BaseSelect
@@ -73,7 +85,7 @@ export default function WorkerFilters({
           placeholder={intl.formatMessage({ id: 'clusters.filterBy.cluster' })}
           options={clusterOptions}
           onChange={onClusterChange}
-          style={{ width: 180 }}
+          style={{ width: 200 }}
         />
       ) : null}
       <Button

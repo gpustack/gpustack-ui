@@ -1,4 +1,5 @@
 export default {
+  'resources.filter.label.title': 'Etiket filtreleri',
   'resources.filter.label': 'Etikete göre filtrele',
   'resources.filter.label.action': '{label} etiketine göre filtrele',
   'resources.title': 'Kaynaklar',

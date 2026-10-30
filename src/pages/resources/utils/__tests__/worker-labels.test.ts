@@ -1,16 +1,20 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { buildWorkerLabelOptions, formatWorkerLabel } from '../worker-labels';
+import {
+  buildWorkerLabelOptions,
+  formatWorkerLabel,
+  groupWorkerLabelOptions,
+  isFilterableLabelKey,
+  parseWorkerLabelFilters
+} from '../worker-labels';
 
-test('collects readable unique label choices across all returned workers', () => {
-  const workers = [
-    { labels: { arch: 'amd64', region: 'beijing' } },
-    { labels: { arch: 'amd64', Region: 'Beijing' } },
-    { labels: { arch: 'arm64', region: 'shanghai' } },
-    { labels: null },
-    { labels: {} }
+test('flattens grouped label candidates into readable choices in server order', () => {
+  const groups = [
+    { key: 'Region', values: ['Beijing'] },
+    { key: 'arch', values: ['amd64', 'arm64'] },
+    { key: 'region', values: ['beijing', 'shanghai'] }
   ];
-  const options = buildWorkerLabelOptions(workers as any);
+  const options = buildWorkerLabelOptions(groups);
   assert.deepEqual(options, [
     { value: 'Region=Beijing', label: 'Region: Beijing' },
     { value: 'arch=amd64', label: 'arch: amd64' },
@@ -23,7 +27,9 @@ test('collects readable unique label choices across all returned workers', () =>
 test('preserves literal spaces, commas, empty values and equals signs', () => {
   assert.deepEqual(
     buildWorkerLabelOptions([
-      { labels: { city: 'New York, US', url: 'a=b=c', empty: '' } }
+      { key: 'city', values: ['New York, US'] },
+      { key: 'empty', values: [''] },
+      { key: 'url', values: ['a=b=c'] }
     ]),
     [
       { value: 'city=New York, US', label: 'city: New York, US' },
@@ -35,10 +41,53 @@ test('preserves literal spaces, commas, empty values and equals signs', () => {
 });
 
 test('does not offer keys that cannot be expressed by the exact-filter API', () => {
+  assert.equal(isFilterableLabelKey(''), false);
+  assert.equal(isFilterableLabelKey('a=b'), false);
+  assert.equal(isFilterableLabelKey('arch'), true);
+});
+
+test('includes worker-name candidates alongside other labels and literal values', () => {
   assert.deepEqual(
     buildWorkerLabelOptions([
-      { labels: { '': 'empty-key', 'a=b': 'ambiguous-key', arch: 'amd64' } }
+      { key: 'env', values: ['production'] },
+      { key: 'team', values: ['worker-name'] },
+      { key: 'worker-name-extra', values: ['custom'] },
+      { key: 'worker-name', values: ['gpu-01', 'gpu-02'] }
     ]),
-    [{ value: 'arch=amd64', label: 'arch: amd64' }]
+    [
+      { value: 'env=production', label: 'env: production' },
+      { value: 'team=worker-name', label: 'team: worker-name' },
+      { value: 'worker-name-extra=custom', label: 'worker-name-extra: custom' },
+      { value: 'worker-name=gpu-01', label: 'worker-name: gpu-01' },
+      { value: 'worker-name=gpu-02', label: 'worker-name: gpu-02' }
+    ]
   );
+});
+
+test('empty grouped candidates produce no options', () => {
+  assert.deepEqual(buildWorkerLabelOptions([]), []);
+});
+
+test('groups dependent values by their exact keys without splitting literal values', () => {
+  const labels = [
+    'env=production',
+    'env=staging',
+    'env=production',
+    'literal=a=b,c d',
+    'empty=',
+    'Env=Production'
+  ];
+  assert.deepEqual(
+    groupWorkerLabelOptions(labels.map((value) => ({ value, label: value }))),
+    [
+      { key: 'env', values: ['production', 'staging'] },
+      { key: 'literal', values: ['a=b,c d'] },
+      { key: 'empty', values: [''] },
+      { key: 'Env', values: ['Production'] }
+    ]
+  );
+  assert.deepEqual(parseWorkerLabelFilters(['a.b/c=x=y', 'empty=']), [
+    { key: 'a.b/c', value: 'x=y' },
+    { key: 'empty', value: '' }
+  ]);
 });

@@ -17,6 +17,10 @@ mock.module('@gpustack/core-ui', {
     BaseSelect: (props: any) => {
       inputs.set(props['aria-label'], props);
       return null;
+    },
+    SimpleSelect: (props: any) => {
+      inputs.set(props['aria-label'], props);
+      return null;
     }
   }
 });
@@ -49,7 +53,10 @@ const labelOptions = [
   { value: 'arch=amd64', label: 'arch: amd64' },
   { value: 'city=New York, US', label: 'city: New York, US' },
   { value: 'url=http://host?a=b', label: 'url: http://host?a=b' },
-  { value: 'region=', label: 'region: ' }
+  { value: 'region=', label: 'region: ' },
+  { value: 'region=beijing', label: 'region: beijing' },
+  { value: 'region=shanghai', label: 'region: shanghai' },
+  { value: 'worker-name=gpu-01', label: 'worker-name: gpu-01' }
 ];
 const mount = async (t: any) => {
   inputs.clear();
@@ -80,6 +87,8 @@ for (const labels of [
   ['arch=amd64'],
   ['arch=amd64', 'city=New York, US'],
   ['region='],
+  ['region=beijing', 'region=shanghai'],
+  ['worker-name=gpu-01'],
   ['url=http://host?a=b'],
   []
 ]) {
@@ -109,14 +118,26 @@ test('clearing label input clears the active filter', async (t) => {
   assert.equal(inputs.get('resources.filter.label').status, undefined);
 });
 
-test('offers searchable existing choices and readable selected labels', async (t) => {
+test('uses searchable SimpleSelect multiple choices with a 300px wrapper', async (t) => {
   await mount(t);
   const select = inputs.get('resources.filter.label');
-  assert.equal(select.mode, 'multiple');
   assert.deepEqual(select.options, labelOptions);
+  assert.deepEqual(select.value, ['region=beijing']);
+  assert.equal(select.mode, 'multiple');
   assert.equal(select.showSearch, true);
   assert.equal(select.optionFilterProp, 'label');
-  assert.equal(select.labelRender({ value: 'arch=amd64' }), 'arch: amd64');
+  assert.equal(select.allowClear, true);
+  assert.equal(select.maxTagCount, 'responsive');
+  assert.deepEqual(select.styles.wrapper, {
+    width: 300,
+    flex: '0 1 300px',
+    minWidth: 0,
+    maxWidth: '100%'
+  });
+  assert.equal(
+    select.labelRender({ value: 'worker-name=gpu-01' }),
+    'worker-name: gpu-01'
+  );
 });
 
 test('adding and removing label tags preserves complete values', async (t) => {

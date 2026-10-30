@@ -1,4 +1,11 @@
 export default {
+  'common.filter.keyValue.chooseKeyFirst': 'Сначала выберите ключ',
+  'common.filter.keyValue.placeholder': 'Фильтр по ключу и значению',
+  'common.filter.keyValue.key': 'Выберите ключ',
+  'common.filter.keyValue.value': 'Выберите значение',
+  'common.filter.keyValue.add': 'Добавить условие фильтра',
+  'common.filter.keyValue.clear': 'Очистить условия фильтра',
+  'common.filter.keyValue.empty': '(пустое значение)',
   'common.button.resetdefault': 'Сбросить по умолчанию',
   'common.button.perview': 'Предпросмотр',
   'common.button.readonly': 'Только чтение',

@@ -1,6 +1,6 @@
 import { useQueryData } from '@gpustack/core-ui';
 import { useMemoizedFn } from 'ahooks';
-import { queryWorkersList } from '../apis';
+import { queryWorkerLabelOptions } from '../apis';
 import { buildWorkerLabelOptions } from '../utils/worker-labels';
 
 interface LabelOptionsQuery {
@@ -19,16 +19,15 @@ export default function useWorkerLabelOptions(clusterId?: number) {
   >({
     key: 'worker-label-options',
     fetchDetail: async (query, options) => {
-      const response = await queryWorkersList(
+      const response = await queryWorkerLabelOptions(
         {
-          page: -1,
           ...(query.cluster_id == null ? {} : { cluster_id: query.cluster_id })
         },
         options
       );
       return {
         clusterId: query.cluster_id ?? null,
-        options: buildWorkerLabelOptions(response.items)
+        options: buildWorkerLabelOptions(response)
       };
     }
   });

@@ -38,3 +38,19 @@ for (const labels of [
     assert.equal(query.get('page'), '1');
   });
 }
+
+for (const params of [{}, { cluster_id: 7 }]) {
+  test(`label options uses its scoped lightweight endpoint: ${JSON.stringify(params)}`, async () => {
+    const token = {};
+    await api.queryWorkerLabelOptions(params, { token });
+    assert.deepEqual(request.mock.calls.at(-1)!.arguments, [
+      '/workers/label-options',
+      {
+        method: 'GET',
+        params,
+        cancelToken: token,
+        skipErrorHandler: undefined
+      }
+    ]);
+  });
+}

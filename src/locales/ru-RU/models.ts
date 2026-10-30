@@ -1,4 +1,21 @@
 export default {
+  'models.instance.workloads.logicalDPSize':
+    'Количество логических DP: {count}',
+  'models.instance.workloads.apiReady': 'API готов',
+  'models.instance.workloads.apiNotReady': 'API не готов',
+  'models.instance.workloads.apiUnknown': 'Готовность API неизвестна',
+  'models.instance.workloads': 'Workload / rank',
+  'models.instance.workloads.pending': 'Ожидание регистрации Workload',
+  'models.instance.monitor.rank': 'Мониторинг DP {rank}',
+  'models.instance.monitor.engine': 'Мониторинг общего Engine',
+  'models.instance.monitor.smg': 'Мониторинг SMG (attempt {attempt})',
+  'models.instance.monitor.logicalDP': 'Мониторинг логического DP',
+  'models.instance.monitor.logicalRank': 'Логический DP {rank} · общий Engine',
+  'models.instance.monitor.logicalHint':
+    'Логический DP фильтрует общий Engine. Метрики без нативного dp_rank могут показывать No data.',
+  'models.instance.monitor.target': 'Мониторинг R{run} на Worker {worker}',
+  'models.form.external.conflict': 'Режимы External-LB взаимоисключающие.',
+
   'models.scaling.paused': 'Приостановлено',
   'models.scaling.waiting': 'Ожидание расписания',
   'models.scaling.resume': 'Возобновить расписание',
@@ -641,10 +658,10 @@ export default {
   'models.pd.ratio.waiting':
     'Соотношение {configured} (сейчас {current}, ожидается {role})',
   'models.instance.draining.tips':
-    'Масштабирование вниз. Экземпляр больше не принимает новые запросы и продолжает работать, пока Decode-узлы не дочитают его KV-кеш, после чего удаляется.',
+    'Остановка экземпляра. Запись сохраняется до остановки всех Workload.',
   'models.pd.group.restarting.brief': 'Перезапуск…',
   'models.pd.group.restarting.progress':
-    'Перезапуск группы: её участники были намеренно остановлены и сейчас пересоздаются, готово {ready}/{total}. Счётчики реплик занижены именно поэтому, а не из-за сбоя.',
+    'Ожидание остановки всех старых Workload перед пересозданием группы: готово {ready}/{total}.',
   'models.pd.group.restart.confirm':
     'Это изменение требует перезапуска всей группы PD: сначала останавливаются все {total} экземпляров, затем они пересоздаются с новой конфигурацией; в это время модель недоступна.',
   'models.pd.instance.stale':

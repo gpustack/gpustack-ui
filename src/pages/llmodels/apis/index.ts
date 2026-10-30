@@ -16,10 +16,13 @@ import {
   EvaluateSpec,
   FormData,
   GPUListItem,
+  InstanceRestartCount,
   ListItem,
   ModelCacheMetrics,
   ModelInstanceFormData,
   ModelInstanceListItem,
+  ModelInstanceLogQuery,
+  ModelInstanceLogSourceQuery,
   ModelLoraAdapterResult,
   ModelRestartResult,
   PDMode,
@@ -253,19 +256,36 @@ export async function queryModelInstanceDetail(id: number) {
   });
 }
 
-export async function queryModelInstanceLogs(id: number) {
+export async function queryModelInstanceLogs(
+  id: number,
+  params?: ModelInstanceLogQuery & {
+    offset?: number;
+    limit?: number;
+    follow?: boolean;
+  },
+  options?: { signal?: AbortSignal; skipErrorHandler?: boolean }
+) {
   return request(`${MODEL_INSTANCE_API}/${id}/logs`, {
-    method: 'GET'
+    method: 'GET',
+    params,
+    ...options
   });
 }
-export async function queryModelInstanceRestartCount(id: number) {
-  return request(`${MODEL_INSTANCE_API}/${id}/log-options`, {
-    method: 'GET'
-  });
+export async function queryModelInstanceRestartCount(
+  id: number,
+  options?: { signal?: AbortSignal; skipErrorHandler?: boolean }
+) {
+  return request<InstanceRestartCount>(
+    `${MODEL_INSTANCE_API}/${id}/log-options`,
+    {
+      method: 'GET',
+      ...options
+    }
+  );
 }
 
 /**
- * Download an instance's complete logs across every worker and container.
+ * Download complete instance logs, or the explicitly selected source view.
  *
  * `responseType: 'blob'` keeps the bytes intact: one log stream comes back as
  * text/plain, but several come back zipped, and decoding a zip as text destroys
@@ -286,6 +306,7 @@ export async function queryModelInstanceRestartCount(id: number) {
 export async function downloadModelInstanceLogs(
   id: number | string,
   options?: {
+    params?: ModelInstanceLogSourceQuery;
     signal?: AbortSignal;
     onDownloadProgress?: (event: ProgressEvent) => void;
   }
@@ -295,6 +316,7 @@ export async function downloadModelInstanceLogs(
     responseType: 'blob',
     getResponse: true,
     skipErrorHandler: true,
+    params: options?.params,
     signal: options?.signal,
     onDownloadProgress: options?.onDownloadProgress
   });

@@ -1,3 +1,4 @@
+import { parseParamsString } from '@/utils';
 import { BackendParameter } from './index';
 
 // Generated from the vLLM `vllm serve` CLI reference:
@@ -1440,3 +1441,29 @@ const options: BackendParameter[] = [
 ];
 
 export default options;
+
+export function conflictingExternalLBParameters(
+  parameters: string[] = []
+): string[] {
+  const flags = parameters.map((parameter) =>
+    /^\s*-{1,2}[a-zA-Z][\w-]*(?:[=\s]|$)/.test(parameter)
+      ? parseParamsString(parameter).map(
+          (argument) => argument.split(/[=\s]/, 1)[0]
+        )
+      : []
+  );
+  const external = ['--data-parallel-external-lb', '-dpe'];
+  const multiPort = ['--data-parallel-multi-port-external-lb', '-dpm'];
+  if (
+    !flags.some((row) => row.some((flag) => external.includes(flag))) ||
+    !flags.some((row) => row.some((flag) => multiPort.includes(flag)))
+  )
+    return [];
+  return parameters.filter((_, index) =>
+    flags[index].some((flag) => [...external, ...multiPort].includes(flag))
+  );
+}
+
+export function hasConflictingExternalLB(parameters: string[] = []): boolean {
+  return conflictingExternalLBParameters(parameters).length > 0;
+}

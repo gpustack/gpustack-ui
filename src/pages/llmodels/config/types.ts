@@ -189,6 +189,7 @@ export interface RoleStatus {
 export interface ModelRestartResult {
   spec_digest: string;
   restarted: boolean;
+  // Empty while an accepted managed restart waits for old workloads to stop.
   deleted_instances?: string[];
   message?: string | null;
 }
@@ -574,6 +575,7 @@ interface ComputedResourceClaim {
 }
 
 export interface DistributedServerItem {
+  worker_ip?: string | null;
   pid: number;
   port: number;
   // Numeric on the wire (ModelInstanceSubordinateWorker.worker_id), so it
@@ -582,7 +584,44 @@ export interface DistributedServerItem {
   computed_resource_claim: ComputedResourceClaim;
 }
 
+export interface DPRankPlacement {
+  dp_rank: number;
+  node_rank: number;
+  gpu_indexes: number[];
+  api_port?: number | null;
+  ready?: boolean | null;
+}
+
+export interface ModelInstanceDashboardTarget {
+  restart_count: number;
+  worker_id: number;
+  dp_rank?: number;
+  component?: 'sglang_engine' | 'sglang_smg';
+  attempt?: number;
+}
+
+export interface ModelInstanceComponent {
+  kind: 'sglang_engine' | 'sglang_smg';
+  api_port?: number | null;
+  metrics_port?: number | null;
+  ready?: boolean | null;
+  dp_size?: number | null;
+  attempt: number;
+  stop_requested: boolean;
+  last_restart_time?: string | null;
+}
+
+export interface ModelInstanceWorkload {
+  name: string;
+  worker_id: number;
+  state: 'pending' | 'running' | 'stopped' | 'failed' | 'unknown';
+  dp_rank_placements: DPRankPlacement[];
+  component?: ModelInstanceComponent | null;
+}
+
 export interface DistributedServers {
+  // null/absent is legacy; [] is managed and awaiting registration.
+  workloads?: ModelInstanceWorkload[] | null;
   subordinate_workers: DistributedServerItem[];
 }
 // What the attached cache service did for one deployment's instances over
@@ -604,6 +643,8 @@ export interface ModelCacheMetrics {
 }
 
 export interface ModelInstanceListItem {
+  // Instance runtime generation, shared by all its workloads.
+  restart_count?: number | null;
   // --- PD ---
   // Which role of the parent Model this instance serves; absent for a plain
   // single-role deployment.
@@ -995,6 +1036,42 @@ export interface DraftModelItem {
   algorithm: string;
 }
 
+export interface ModelInstanceLogSource {
+  id: string;
+  worker_id: number;
+  restart_count: number;
+  previous: boolean;
+  kind: 'preparation' | 'workload' | 'rank' | 'public';
+  label: string;
+  component_kind: 'sglang_engine' | 'sglang_smg' | null;
+  workload_name: string | null;
+  container_name: string | null;
+  dp_rank: number | null;
+  node_rank: number | null;
+  main: boolean | null;
+  attribution: 'all' | 'supervisor_rank' | 'native_api_rank' | 'unattributed';
+  available: boolean;
+  active_workload_name: string | null;
+  active_attempt: number | null;
+}
+
+// Source IDs already bind the run and view; legacy selectors cannot accompany one.
+export interface ModelInstanceLogSourceQuery {
+  worker_id: number;
+  source: string;
+  previous?: never;
+  container_name?: never;
+}
+
+export type ModelInstanceLogQuery =
+  | ModelInstanceLogSourceQuery
+  | {
+      worker_id: number;
+      source?: never;
+      previous: boolean;
+      container_name?: string;
+    };
+
 export interface InstanceRestartCount {
   main_worker_id: number;
   workers: {
@@ -1002,8 +1079,10 @@ export interface InstanceRestartCount {
     name: string;
     restarts: {
       previous: boolean;
-      started_at: string;
+      started_at: string | null;
       containers: string[];
+      // Empty can also accompany legacy Worker responses.
+      sources?: ModelInstanceLogSource[];
     }[];
     error?: string | null;
   }[];

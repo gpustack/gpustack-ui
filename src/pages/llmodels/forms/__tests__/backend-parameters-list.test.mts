@@ -16,9 +16,36 @@ const externalBackendLinks: Record<string, string> = {
 };
 mock.module('@gpustack/core-ui', {
   namedExports: {
+    AutoComplete: (props: any) =>
+      createElement('input', {
+        value: props.value,
+        'data-status': Form.Item.useStatus().status,
+        onChange: props.onInput
+      }),
     ListInput: (props: any) => {
       listProps = props;
-      return createElement('div', null, props.description);
+      return createElement(
+        'div',
+        null,
+        props.description,
+        ...(props.value || []).map((value: string, index: number) =>
+          createElement(
+            'div',
+            { key: index },
+            props.renderItem?.(
+              { value },
+              {
+                onChange: (next: string) =>
+                  props.onChange(
+                    props.value.map((v: string, i: number) =>
+                      i === index ? next : v
+                    )
+                  )
+              }
+            )
+          )
+        )
+      );
     }
   }
 });
@@ -77,6 +104,7 @@ test('parameter hints follow the router executable while engine roles retain eng
   const container = dom.window.document.getElementById('root')!;
   const root = createRoot(container);
   const onValuesChange = mock.fn();
+  let currentForm: any;
   const commonParameter = '--engine-only-parameter';
   const render = async (backend: string, router?: PDMode['router']) => {
     await act(async () => {
@@ -93,7 +121,13 @@ test('parameter hints follow the router executable while engine roles retain eng
           },
           createElement(
             Form,
-            { key: backend, initialValues: { backend } },
+            {
+              key: backend,
+              initialValues: { backend },
+              ref: (instance: any) => {
+                currentForm = instance;
+              }
+            },
             createElement(
               Form.Item,
               { name: 'backend', hidden: true },
@@ -180,6 +214,35 @@ test('parameter hints follow the router executable while engine roles retain eng
       );
     }
 
+    await render('vLLM');
+    await act(async () => {
+      listProps.onChange([
+        '--data-parallel-external-lb',
+        '--data-parallel-multi-port-external-lb',
+        '--max-model-len=4096'
+      ]);
+    });
+    await act(async () => {
+      await assert.rejects(currentForm.validateFields(), (error: any) => {
+        assert.deepEqual(error.errorFields[0].errors, [
+          'models.form.external.conflict'
+        ]);
+        return true;
+      });
+    });
+    const statuses = [...container.querySelectorAll('input[data-status]')].map(
+      (input) => input.getAttribute('data-status')
+    );
+    assert.deepEqual(statuses, ['error', 'error', '']);
+    assert.doesNotMatch(
+      container.textContent!,
+      /models.form.external.help|models.form.smg.policy.help/
+    );
+    await act(async () => {
+      listProps.onChange(['--data-parallel-size=4']);
+    });
+    await currentForm.validateFields();
+
     for (const [language, prefix] of [
       ['en-US', ''],
       ['zh-CN', 'zh/'],
@@ -210,4 +273,61 @@ test('parameter hints follow the router executable while engine roles retain eng
     await act(async () => root.unmount());
     dom.window.close();
   }
+});
+
+test('external modes are mutually exclusive with either CLI argument spelling', async () => {
+  const { hasConflictingExternalLB } =
+    await import('../../constants/backend-parameters/vllm.ts');
+  assert.equal(hasConflictingExternalLB(['--data-parallel-size=4']), false);
+  assert.equal(
+    hasConflictingExternalLB(['--data-parallel-external-lb']),
+    false
+  );
+  assert.equal(
+    hasConflictingExternalLB([
+      '--data-parallel-external-lb',
+      '--data-parallel-multi-port-external-lb'
+    ]),
+    true
+  );
+  assert.equal(
+    hasConflictingExternalLB([
+      '--data-parallel-external-lb=true --data-parallel-multi-port-external-lb'
+    ]),
+    true
+  );
+});
+
+test('external aliases conflict only as independent flags, including mixed spellings', async () => {
+  const { hasConflictingExternalLB } =
+    await import('../../constants/backend-parameters/vllm.ts');
+  for (const parameters of [
+    ['-dpe', '-dpm'],
+    ['-dpe --data-parallel-multi-port-external-lb'],
+    ['--data-parallel-external-lb', '-dpm'],
+    ['-dpe=true', '-dpm=true']
+  ])
+    assert.equal(
+      hasConflictingExternalLB(parameters),
+      true,
+      JSON.stringify(parameters)
+    );
+  for (const parameters of [
+    [
+      '--data-parallel-external-lb',
+      '--chat-template="example --data-parallel-multi-port-external-lb"'
+    ],
+    [
+      '--data-parallel-external-lb',
+      '--chat-template "example --data-parallel-multi-port-external-lb"'
+    ],
+    ['-dpe', '--metadata={"description":"example -dpm"}'],
+    ['-dpe', 'opaque value -dpm'],
+    ['-dpn=0', '-dpr=0', '--data-parallel-size=4']
+  ])
+    assert.equal(
+      hasConflictingExternalLB(parameters),
+      false,
+      JSON.stringify(parameters)
+    );
 });

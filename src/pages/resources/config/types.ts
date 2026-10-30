@@ -63,6 +63,11 @@ export interface Kernel {
   architecture: string;
 }
 
+export interface WorkerLabelOption {
+  key: string;
+  values: string[];
+}
+
 export interface ListItem {
   name: string;
   hostname: string;

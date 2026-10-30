@@ -1,4 +1,6 @@
 export default {
+  'resources.filter.label': '按标签筛选',
+  'resources.filter.label.action': '按标签 {label} 筛选',
   'resources.title': '资源',
   'resources.button.create': '添加节点',
   'resources.button.edit': '编辑节点',

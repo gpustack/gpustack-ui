@@ -2,10 +2,12 @@ import { GPUSTACK_API_BASE_URL } from '@/config/settings';
 import { downloadFile } from '@/utils/download-stream';
 import { request } from '@umijs/max';
 import { message } from 'antd';
+import qs from 'query-string';
 import {
   GPUDeviceItem,
   ListItem,
   ModelFile,
+  WorkerLabelOption,
   WorkerLabelsUpdate
 } from '../config/types';
 import { workerPrivateKeyFilename } from '../utils/ssh-access';
@@ -55,6 +57,7 @@ export async function queryWorkersList<T extends Record<string, any>>(
   return request<Global.PageResponse<ListItem>>(`${WORKERS_API}`, {
     method: 'GET',
     params,
+    paramsSerializer: (query) => qs.stringify(query),
     cancelToken: options?.token,
     skipErrorHandler: options?.skipErrorHandler
   });
@@ -66,6 +69,18 @@ export async function queryWorker(
 ) {
   return request<ListItem>(`${WORKERS_API}/${id}`, {
     method: 'GET',
+    skipErrorHandler: options?.skipErrorHandler
+  });
+}
+
+export async function queryWorkerLabelOptions(
+  params: { cluster_id?: number },
+  options?: { token?: any; skipErrorHandler?: boolean }
+) {
+  return request<WorkerLabelOption[]>(`${WORKERS_API}/label-options`, {
+    method: 'GET',
+    params,
+    cancelToken: options?.token,
     skipErrorHandler: options?.skipErrorHandler
   });
 }

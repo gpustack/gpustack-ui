@@ -1,4 +1,6 @@
 export default {
+  'resources.filter.label': 'Etikete göre filtrele',
+  'resources.filter.label.action': '{label} etiketine göre filtrele',
   'resources.title': 'Kaynaklar',
   'resources.nodes': 'İşçi Düğümler',
   'resources.worker': 'İşçi Düğüm',

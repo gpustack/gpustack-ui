@@ -16,7 +16,6 @@ import {
   GrafanaIcon,
   IconFont,
   InfoColumn,
-  LabelCell,
   ProgressBar,
   StatusTag,
   type TableColumnProps
@@ -26,6 +25,7 @@ import { Flex, Tooltip } from 'antd';
 import { useAtom, useAtomValue } from 'jotai';
 import _ from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
+import WorkerLabelCell from '../components/worker-label-cell';
 import { status, WorkerStatusMap, WorkerStatusMapValue } from '../config';
 import { Filesystem, GPUDeviceItem, ListItem } from '../config/types';
 import workerCss from '../styles/worker.less';
@@ -256,7 +256,8 @@ const useWorkerColumns = ({
   firstLoad,
   sortOrder,
   source,
-  handleSelect
+  handleSelect,
+  onLabelFilter
 }: {
   clusterData: {
     list: Global.BaseOption<number>[];
@@ -267,6 +268,7 @@ const useWorkerColumns = ({
   firstLoad: boolean;
   sortOrder: string[];
   handleSelect: (action: string, record: ListItem) => void;
+  onLabelFilter: (label: string) => void;
 }): TableColumnProps[] => {
   const intl = useIntl();
   const systemConfig = useAtomValue(systemConfigAtom);
@@ -453,7 +455,7 @@ const useWorkerColumns = ({
         dataIndex: 'labels',
         minWidth: 180,
         render: (_text: any, record: ListItem) => (
-          <LabelCell labels={record.labels} />
+          <WorkerLabelCell labels={record.labels} onFilter={onLabelFilter} />
         )
       },
       ...pluginRendered,
@@ -615,6 +617,7 @@ const useWorkerColumns = ({
     source,
     firstLoad,
     handleSelect,
+    onLabelFilter,
     pluginCols,
     // read by `setActions` (metrics entry) and `renderVersionInfo`; `pluginCols`
     // now has a pinned identity, so the memo really holds and these have to be

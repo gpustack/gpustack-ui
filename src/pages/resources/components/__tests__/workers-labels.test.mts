@@ -11,6 +11,9 @@ const success = mock.fn();
 const warning = mock.fn();
 const fetchData = mock.fn();
 const handleDeleteBatch = mock.fn();
+const handleQueryChange = mock.fn();
+const fetchLabelOptions = mock.fn(async (_scope?: number) => undefined);
+const labelOptions = [{ value: 'arch=amd64', label: 'arch: amd64' }];
 const clearSelections = mock.fn(() => {
   table.rowSelection.selectedRowKeys = [];
 });
@@ -18,6 +21,7 @@ let table: any;
 let labelsModal: any;
 let columnActions: any;
 let batchActions: any;
+let workerFilters: any;
 const queryWorker = mock.fn(async (_id: number) => ({}));
 const updateWorker = mock.fn(async (_id: number, _data: any) => ({}));
 let writeLabels = async (_data: any) => {};
@@ -54,7 +58,8 @@ mock.module('@gpustack/core-ui', {
         )
       );
     },
-    FilterBar: ({ right }: any) => right,
+    FilterBar: ({ left, right }: any) =>
+      createElement(Fragment, null, left, right),
     Table: empty
   }
 });
@@ -174,6 +179,22 @@ mock.module(new URL('../update-labels.tsx', import.meta.url).href, {
     return props.open ? createElement('div', { role: 'dialog' }) : null;
   }
 });
+mock.module(new URL('../worker-filters.tsx', import.meta.url).href, {
+  defaultExport: (props: any) => {
+    workerFilters = props;
+    return null;
+  }
+});
+mock.module(
+  new URL('../../hooks/use-worker-label-options.ts', import.meta.url).href,
+  {
+    defaultExport: () => ({
+      labelOptions,
+      labelOptionsLoading: false,
+      fetchLabelOptions
+    })
+  }
+);
 for (const name of ['worker-detail-modal', 'worker-ssh-modal']) {
   mock.module(new URL(`../${name}.tsx`, import.meta.url).href, {
     defaultExport: empty
@@ -208,6 +229,8 @@ const mount = async (t: any, rows: any[], selected: number[] = []) => {
     warning,
     fetchData,
     handleDeleteBatch,
+    handleQueryChange,
+    fetchLabelOptions,
     clearSelections
   ]) {
     fn.mock.resetCalls();
@@ -231,7 +254,7 @@ const mount = async (t: any, rows: any[], selected: number[] = []) => {
     handlePageChange: empty,
     handleTableChange: empty,
     handleSearch: empty,
-    handleQueryChange: empty,
+    handleQueryChange,
     handleNameChange: empty
   };
   const root = createRoot(document.getElementById('root')!);
@@ -256,6 +279,65 @@ const submit = async (labels: any) => {
 const writes = () => updateWorker.mock.calls.map((call) => call.arguments);
 const batches = () =>
   updateWorkerLabels.mock.calls.map((call) => call.arguments);
+
+test('exact label filters and clearing reset pagination', async (t) => {
+  await mount(t, [worker(1, { region: 'beijing' })]);
+  for (const label of [
+    ['region=beijing'],
+    ['region=beijing', 'env=production'],
+    ['Region=Beijing'],
+    ['region='],
+    ['city=New York'],
+    []
+  ]) {
+    await act(async () => workerFilters.onLabelChange(label));
+  }
+  assert.deepEqual(
+    handleQueryChange.mock.calls.map((call) => call.arguments),
+    [
+      ['region=beijing'],
+      ['region=beijing', 'env=production'],
+      ['Region=Beijing'],
+      ['region='],
+      ['city=New York'],
+      []
+    ].map((label) => [{ page: 1, label }])
+  );
+  assert.equal(workerFilters.showCluster, true);
+  assert.deepEqual(workerFilters.labelOptions, labelOptions);
+  assert.deepEqual(
+    fetchLabelOptions.mock.calls.map((call) => call.arguments),
+    [[undefined]]
+  );
+});
+
+test('cluster changes and manual refresh reload the candidate scope, but label changes do not', async (t) => {
+  await mount(t, [worker(1, {})]);
+  await act(async () => workerFilters.onClusterChange(7));
+  table.queryParams.cluster_id = 7;
+  await act(async () => workerFilters.onRefresh());
+  await act(async () => workerFilters.onLabelChange(['arch=amd64']));
+  assert.deepEqual(
+    fetchLabelOptions.mock.calls.map((call) => call.arguments),
+    [[undefined], [7], [7]]
+  );
+  assert.deepEqual(handleQueryChange.mock.calls[0].arguments, [
+    { page: 1, cluster_id: 7 }
+  ]);
+});
+
+test('row label shortcuts add conditions without toggling or duplicating selected labels', async (t) => {
+  const root = await mount(t, [worker(1, { arch: 'amd64' })]);
+  table.queryParams.label = ['region=beijing'];
+  await act(async () => root.render(createElement(Workers)));
+  await act(async () => columnActions.onLabelFilter('region=beijing'));
+  assert.equal(handleQueryChange.mock.callCount(), 0);
+  await act(async () => columnActions.onLabelFilter('arch=amd64'));
+  assert.deepEqual(handleQueryChange.mock.calls[0].arguments, [
+    { page: 1, label: ['region=beijing', 'arch=amd64'] }
+  ]);
+  assert.equal(fetchLabelOptions.mock.callCount(), 1);
+});
 
 test('batch actions use labels by default and open the batch label editor', async (t) => {
   const selected = worker(1, { rack: 'rack-a' });

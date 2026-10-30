@@ -22,3 +22,19 @@ test('batch labels POST sends only ids and label patch and accepts a 204 respons
     { method: 'POST', data }
   ]);
 });
+
+for (const labels of [
+  ['arch=amd64', 'city=New York, US', 'url=http://host?a=b'],
+  []
+]) {
+  test(`worker list serializes ${labels.length} labels as repeated parameters`, async () => {
+    await api.queryWorkersList({ label: labels, cluster_id: 7, page: 1 });
+    const [url, options] = request.mock.calls.at(-1)!.arguments;
+    assert.equal(url, '/workers');
+    const query = new URLSearchParams(options.paramsSerializer(options.params));
+    assert.deepEqual(query.getAll('label'), labels);
+    assert.equal(query.has('label[]'), false);
+    assert.equal(query.get('cluster_id'), '7');
+    assert.equal(query.get('page'), '1');
+  });
+}

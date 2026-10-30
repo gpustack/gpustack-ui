@@ -13,16 +13,16 @@ mock.module('@ant-design/icons', {
   namedExports: { SearchOutlined: empty, SyncOutlined: empty }
 });
 mock.module('@gpustack/core-ui', {
-  namedExports: { BaseSelect: empty }
+  namedExports: {
+    BaseSelect: (props: any) => {
+      inputs.set(props['aria-label'], props);
+      return null;
+    }
+  }
 });
 mock.module('@umijs/max', {
   namedExports: {
     useIntl: () => ({ formatMessage: ({ id }: any) => id })
-  }
-});
-mock.module('ahooks', {
-  namedExports: {
-    useDebounceFn: (callback: any) => ({ run: callback, flush: empty })
   }
 });
 mock.module('antd', {
@@ -52,7 +52,7 @@ const mount = async (t: any) => {
   await act(async () => {
     root.render(
       createElement(WorkerFilters, {
-        label: 'region=beijing',
+        label: ['region=beijing'],
         showCluster: true,
         clusterOptions: [],
         onNameChange: empty,
@@ -63,10 +63,8 @@ const mount = async (t: any) => {
     );
   });
   t.after(async () => act(async () => root.unmount()));
-  const change = async (value: string) => {
-    await act(async () =>
-      inputs.get('resources.filter.label').onChange({ target: { value } })
-    );
+  const change = async (value: string[]) => {
+    await act(async () => inputs.get('resources.filter.label').onChange(value));
   };
   return { onLabelChange, change };
 };
@@ -85,12 +83,13 @@ for (const value of [
   '=beijing',
   ' '
 ]) {
-  test(`forwards label input without validation: ${JSON.stringify(value)}`, async (t) => {
+  test(`forwards committed labels without validation: ${JSON.stringify(value)}`, async (t) => {
     const { onLabelChange, change } = await mount(t);
-    await change(value);
+    const labels = value === '' ? [] : [value];
+    await change(labels);
     assert.deepEqual(
       onLabelChange.mock.calls.map((call) => call.arguments),
-      [[value]]
+      [[labels]]
     );
     assert.equal(inputs.get('resources.filter.label').status, undefined);
     assert.equal(
@@ -102,11 +101,27 @@ for (const value of [
 
 test('clearing label input clears the active filter', async (t) => {
   const { onLabelChange, change } = await mount(t);
-  await change('region:beijing');
-  await change('');
+  await change(['region:beijing']);
+  await change([]);
   assert.deepEqual(
     onLabelChange.mock.calls.map((call) => call.arguments),
-    [['region:beijing'], ['']]
+    [[['region:beijing']], [[]]]
   );
   assert.equal(inputs.get('resources.filter.label').status, undefined);
+});
+
+test('adding and removing label tags preserves complete values', async (t) => {
+  const { onLabelChange, change } = await mount(t);
+  await change(['arch=amd64', 'city=New York, US', 'url=http://host?a=b']);
+  await change(['arch=amd64', 'url=http://host?a=b']);
+  await change([]);
+  assert.deepEqual(
+    onLabelChange.mock.calls.map((call) => call.arguments),
+    [
+      [['arch=amd64', 'city=New York, US', 'url=http://host?a=b']],
+      [['arch=amd64', 'url=http://host?a=b']],
+      [[]]
+    ]
+  );
+  assert.equal(inputs.get('resources.filter.label').tokenSeparators, undefined);
 });

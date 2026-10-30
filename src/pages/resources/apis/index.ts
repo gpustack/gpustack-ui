@@ -2,6 +2,7 @@ import { GPUSTACK_API_BASE_URL } from '@/config/settings';
 import { downloadFile } from '@/utils/download-stream';
 import { request } from '@umijs/max';
 import { message } from 'antd';
+import qs from 'query-string';
 import {
   GPUDeviceItem,
   ListItem,
@@ -55,6 +56,7 @@ export async function queryWorkersList<T extends Record<string, any>>(
   return request<Global.PageResponse<ListItem>>(`${WORKERS_API}`, {
     method: 'GET',
     params,
+    paramsSerializer: (query) => qs.stringify(query),
     cancelToken: options?.token,
     skipErrorHandler: options?.skipErrorHandler
   });

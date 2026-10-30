@@ -302,7 +302,7 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
     });
   };
 
-  const handleLabelChange = (label: string) => {
+  const handleLabelChange = (label: string[]) => {
     handleQueryChange({ page: 1, label });
   };
 

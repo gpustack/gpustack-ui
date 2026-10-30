@@ -446,6 +446,24 @@ for (const seed of [[], [1, 2, 3, 4]]) {
   });
 }
 
+test('REST and watch keep every label filter when tags change or clear', async (t) => {
+  const h = await mount(t);
+  const labels = ['arch=amd64', 'city=New York, US'];
+  await act(async () => h.table.handleQueryChange({ page: 1, label: labels }));
+  const request = h.fetchPage.mock.calls.at(-1)!.arguments[0];
+  assert.deepEqual(request.label, labels);
+  let query = new URL(subscriptions.at(-1)!.url, 'http://localhost')
+    .searchParams;
+  assert.deepEqual(query.getAll('label'), labels);
+  assert.equal(query.has('label[]'), false);
+  assert.equal(query.get('cluster_id'), '1');
+
+  await act(async () => h.table.handleQueryChange({ page: 1, label: [] }));
+  assert.deepEqual(h.fetchPage.mock.calls.at(-1)!.arguments[0].label, []);
+  query = new URL(subscriptions.at(-1)!.url, 'http://localhost').searchParams;
+  assert.equal(query.has('label'), false);
+});
+
 test('updating a visible sort field refetches the ordered page', async (t) => {
   const h = await mount(t);
   await act(async () =>

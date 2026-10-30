@@ -160,12 +160,22 @@ export default function useTextImage(props: any) {
       result?.data?.forEach((item: any, index: number) => {
         const imgItem = newImageList[index];
 
+        // imgItem is part of the list already handed to setImageList, so
+        // resolve the next dataUrl into a local variable instead of
+        // mutating the state object in place.
+        let dataUrl = imgItem.dataUrl;
         if (item.b64_json) {
-          imgItem.dataUrl = `data:image/png;base64,${item.b64_json}`;
+          dataUrl = `data:image/png;base64,${item.b64_json}`;
+        } else if (item.url) {
+          // Provider-backed image models (e.g. qwen via DashScope) answer
+          // with a hosted URL instead of inline base64. The link is
+          // short-lived, so the image is only guaranteed to display while
+          // this response is on screen.
+          dataUrl = item.url;
         }
 
         newImageList[index] = {
-          dataUrl: imgItem.dataUrl,
+          dataUrl,
           height: imgSize[1],
           width: imgSize[0],
           maxHeight: `${imgSize[1]}px`,

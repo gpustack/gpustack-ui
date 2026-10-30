@@ -1,8 +1,9 @@
 import useUserSettings from '@/hooks/use-user-settings';
+import { ensureLocaleMessages } from '@/locales/load-messages';
 import { GPUStackPluginManager } from '@/plugins/manager';
 import { isPluginPublicPage } from '@/plugins/public-routes';
 import { CoreUIProvider } from '@gpustack/core-ui';
-import { history, useIntl, useModel } from '@umijs/max';
+import { history, setLocale, useIntl, useModel } from '@umijs/max';
 import { App, ConfigProvider } from 'antd';
 import {
   useEffect,
@@ -22,6 +23,13 @@ const unavailableRequest = async (): Promise<never> => {
   throw new Error('Public pages must use a credential-free request client.');
 };
 
+const setPublicLocale = async (locale: string, reload = false) => {
+  if (!(await ensureLocaleMessages(locale))) {
+    throw new Error('Locale messages unavailable.');
+  }
+  setLocale(locale, reload);
+};
+
 /** Mounted by innerProvider: inside Umi locale context, outside its Router. */
 const PublicPageContext = ({ children }: PropsWithChildren) => {
   const intl = useIntl();
@@ -33,6 +41,7 @@ const PublicPageContext = ({ children }: PropsWithChildren) => {
       <App>
         <CoreUIProvider
           {...coreUIProviderProps}
+          locale={{ ...coreUIProviderProps.locale, setLocale: setPublicLocale }}
           hooks={{
             ...coreUIProviderProps.hooks,
             useCurrentUser: usePublicUser,

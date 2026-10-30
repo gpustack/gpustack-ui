@@ -20,6 +20,11 @@ export default {
   'providers.form.claudeCustomUrl': '自定义 API 地址',
   'providers.form.claudeCustomUrl.tips':
     '填写后该提供商仅提供 Anthropic 协议（/v1/messages），OpenAI 协议的请求不会被转换。留空则使用 api.anthropic.com 并通过 OpenAI 协议访问。',
+  'providers.form.qwenDomain': '自定义域名',
+  'providers.form.qwenDomain.tips':
+    '可选。域名可在阿里云百炼（DashScope）控制台的「业务空间」中查看（形如 maas.aliyuncs.com）。兼容模式图像生成接口未部署在默认域名 dashscope.aliyuncs.com 上，图像模型需填写工作空间域名。',
+  'providers.form.qwenDomain.imageNotice':
+    '已选择 image 类别的模型：兼容模式图像生成接口未部署在默认域名 dashscope.aliyuncs.com 上。请将上方「自定义域名」设置为 DashScope 工作空间域名，否则图像调用将返回 404。',
   'providers.form.more': '+{count} 更多',
   'providers.form.addAll': '添加全部',
   'providers.form.rules.models': '请选择至少一个模型',
@@ -33,6 +38,8 @@ export default {
     '地址中不能携带用户名/密码等凭据：它们会被作为每个请求的 Host 头发送。请改为将访问密钥填入 Provider 的 API Key。',
   'providers.form.rules.claudeCustomUrl.query':
     '该地址只接受源站及可选的路径前缀，查询串（?…）或片段（#…）会被丢弃。',
+  'providers.form.rules.qwenDomain':
+    '请输入纯域名（非 443 端口时需含端口），如 maas.aliyuncs.com 或 my-gateway.example.com:8443',
   'providers.form.model.duplicate': '存在相同的模型',
   'providers.table.registerRoute': '注册路由',
   'providers.form.azureServiceUrl': 'Azure OpenAI 服务 URL',

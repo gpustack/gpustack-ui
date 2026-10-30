@@ -20,6 +20,11 @@ export default {
   'providers.form.claudeCustomUrl': "Özel API URL'si",
   'providers.form.claudeCustomUrl.tips':
     'Ayarlandığında bu sağlayıcı yalnızca Anthropic protokolünü (/v1/messages) sunar ve OpenAI biçimindeki istekler dönüştürülmez. Boş bırakılırsa api.anthropic.com adresi OpenAI protokolü üzerinden kullanılır.',
+  'providers.form.qwenDomain': 'Özel Alan Adı',
+  'providers.form.qwenDomain.tips':
+    "İsteğe bağlı. Alan adını Alibaba Cloud konsolundaki DashScope (Bailian) çalışma alanında görebilirsiniz (örn. maas.aliyuncs.com). Uyumlu mod görsel üretim API'si varsayılan dashscope.aliyuncs.com alan adında sunulmaz — görsel modeller için çalışma alanı alan adı gerekir.",
+  'providers.form.qwenDomain.imageNotice':
+    "Bir görsel modeli seçildi: uyumlu mod görsel üretim API'si varsayılan dashscope.aliyuncs.com alan adında sunulmaz. Yukarıdaki «Özel Alan Adı» alanını DashScope çalışma alanı alan adına ayarlayın, aksi halde görsel istekleri 404 ile başarısız olur.",
   'providers.form.more': '+{count} daha fazla',
   'providers.form.addAll': 'Tümünü Ekle',
   'providers.form.rules.models': 'Lütfen en az bir model seçin',
@@ -33,6 +38,8 @@ export default {
     'Adreste kimlik bilgileri (kullanıcı adı/şifre) bulunmamalıdır: bunlar her isteğin Host başlığı olarak gönderilir. Erişim anahtarını bunun yerine sağlayıcının API Anahtarı olarak yapılandırın.',
   'providers.form.rules.claudeCustomUrl.query':
     'Adres yalnızca bir kaynak ve isteğe bağlı bir yol öneki kabul eder; sorgu veya parça kısmı atılır.',
+  'providers.form.rules.qwenDomain':
+    'Yalnızca alan adı girin (443 değilse portu da dahil edin), örneğin maas.aliyuncs.com veya my-gateway.example.com:8443',
   'providers.form.model.duplicate': 'Yinelenen model mevcut',
   'providers.table.registerRoute': 'Yönlendirme Kaydet',
   'providers.form.azureServiceUrl': "Azure OpenAI Hizmet URL'si",

@@ -67,6 +67,50 @@ const useProviderRequiredFields = () => {
     );
   };
 
+  // qwenDomain is a bare domain — the backend always speaks https to it and
+  // the gateway plugin writes it to the Host header verbatim, so a scheme, a
+  // path, a query, or credentials would corrupt both. Empty is valid — the
+  // field is optional.
+  const validateBareDomain = async (_: any, value: string) => {
+    if (!value) {
+      return Promise.resolve();
+    }
+    const reject = () =>
+      Promise.reject(
+        new Error(intl.formatMessage({ id: 'providers.form.rules.qwenDomain' }))
+      );
+
+    // Raw-character gate before parsing: the saved value is the original
+    // string, and `new URL` normalizes away a trailing `\`, `?`, `#`, or
+    // whitespace (and folds `\` into path separators), so such inputs
+    // would parse clean yet stay polluted on the wire. Reject any
+    // character that can start a path, query, fragment, or credentials —
+    // `/ \ ? # @` — plus any whitespace, up front.
+    if (/[/\\?#@\s]/.test(value)) {
+      return reject();
+    }
+
+    // Parsing "https://" + value turns a bare host[:port] into a clean
+    // origin; anything else leaves traces in the parsed parts and is
+    // rejected.
+    let url: URL;
+    try {
+      url = new URL(`https://${value}`);
+    } catch {
+      return reject();
+    }
+    if (
+      url.username ||
+      url.password ||
+      url.pathname !== '/' ||
+      url.search ||
+      url.hash
+    ) {
+      return reject();
+    }
+    return Promise.resolve();
+  };
+
   const providerRequiredFieldsMap: Record<string, RequiredFields[]> = {
     [ProviderEnum.OPENAI]: [
       {
@@ -102,6 +146,29 @@ const useProviderRequiredFields = () => {
         rules: [
           {
             validator: validateClaudeCustomUrl
+          }
+        ]
+      }
+    ],
+    [ProviderEnum.QWEN]: [
+      {
+        type: 'Input',
+        name: 'qwenDomain',
+        placeholder: 'maas.aliyuncs.com',
+        required: false,
+        label: {
+          text: 'providers.form.qwenDomain',
+          locale: true
+        },
+        // The domain format restriction and its traffic-wide effect ride the
+        // label's "(?)" tooltip (like systemoneEndpoint), not a hint line.
+        description: {
+          text: 'providers.form.qwenDomain.tips',
+          locale: true
+        },
+        rules: [
+          {
+            validator: validateBareDomain
           }
         ]
       }

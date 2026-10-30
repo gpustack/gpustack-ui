@@ -20,6 +20,11 @@ export default {
   'providers.form.claudeCustomUrl': 'Custom API URL',
   'providers.form.claudeCustomUrl.tips':
     'When set, this provider serves the Anthropic protocol (/v1/messages) only, and OpenAI-style requests are not converted. Leave it empty to use api.anthropic.com through the OpenAI protocol.',
+  'providers.form.qwenDomain': 'Custom Domain',
+  'providers.form.qwenDomain.tips':
+    'Optional. Find the domain in your DashScope (Bailian) workspace on the Alibaba Cloud console (e.g. maas.aliyuncs.com). The compatible-mode image API is not served on the default dashscope.aliyuncs.com — image models require the workspace domain.',
+  'providers.form.qwenDomain.imageNotice':
+    'An image model is selected: the compatible-mode image API is not served on the default dashscope.aliyuncs.com. Set Custom Domain above to your DashScope workspace domain, or image requests will fail with 404.',
   'providers.form.more': '+{count} more',
   'providers.form.addAll': 'Add All',
   'providers.form.rules.models': 'Please select at least one model',
@@ -33,6 +38,8 @@ export default {
     'The URL must not carry credentials: they would be sent as the Host header of every request. Configure the endpoint key as the provider API key instead.',
   'providers.form.rules.claudeCustomUrl.query':
     'The URL takes an origin and an optional path prefix only; the query or fragment would be dropped.',
+  'providers.form.rules.qwenDomain':
+    'Please enter a bare domain, including the port when it is not 443, e.g. maas.aliyuncs.com or my-gateway.example.com:8443',
   'providers.form.model.duplicate': 'Duplicate model exists',
   'providers.table.registerRoute': 'Register Route',
   'providers.form.azureServiceUrl': 'Azure OpenAI Service URL',

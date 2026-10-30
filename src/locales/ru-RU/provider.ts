@@ -20,6 +20,11 @@ export default {
   'providers.form.claudeCustomUrl': 'Пользовательский URL API',
   'providers.form.claudeCustomUrl.tips':
     'При заполнении этого поля провайдер обслуживает только протокол Anthropic (/v1/messages), а запросы в формате OpenAI не преобразуются. Оставьте поле пустым, чтобы обращаться к api.anthropic.com через протокол OpenAI.',
+  'providers.form.qwenDomain': 'Пользовательский домен',
+  'providers.form.qwenDomain.tips':
+    'Необязательно. Домен можно посмотреть в рабочем пространстве DashScope (Bailian) в консоли Alibaba Cloud (например, maas.aliyuncs.com). API генерации изображений совместимого режима недоступен на домене по умолчанию dashscope.aliyuncs.com — для моделей изображений нужен домен рабочего пространства.',
+  'providers.form.qwenDomain.imageNotice':
+    'Выбрана модель изображений: API генерации изображений совместимого режима недоступен на домене по умолчанию dashscope.aliyuncs.com. Укажите домен рабочего пространства DashScope в поле «Пользовательский домен» выше, иначе запросы изображений будут завершаться ошибкой 404.',
   'providers.form.more': 'Ещё {count}',
   'providers.form.addAll': 'Добавить все',
   'providers.form.rules.models': 'Выберите хотя бы одну модель',
@@ -33,6 +38,8 @@ export default {
     'URL не должен содержать учётные данные: они будут отправляться в заголовке Host каждого запроса. Вместо этого укажите ключ конечной точки в поле API-ключа провайдера.',
   'providers.form.rules.claudeCustomUrl.query':
     'URL принимает только адрес источника и необязательный префикс пути; параметры запроса и фрагмент будут отброшены.',
+  'providers.form.rules.qwenDomain':
+    'Введите только домен (с портом, если он не 443), например maas.aliyuncs.com или my-gateway.example.com:8443',
   'providers.form.model.duplicate': 'Такая модель уже существует',
   'providers.table.registerRoute': 'Зарегистрировать маршрут',
   'providers.form.azureServiceUrl': 'URL Azure OpenAI Service',

@@ -2,6 +2,7 @@ import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { json2Yaml, yaml2Json } from '@/pages/backends/config';
 import {
+  AlertBlockInfo,
   CollapsePanel,
   IconFont,
   ScrollSpyTabs,
@@ -20,7 +21,12 @@ import {
   useRef
 } from 'react';
 import FormContext from '../config/form-context';
-import { FormData, MaasProviderItem as ListItem } from '../config/types';
+import { ProviderEnum } from '../config/providers';
+import {
+  FormData,
+  MaasProviderItem as ListItem,
+  ProviderModel
+} from '../config/types';
 import useProviderRequiredFields from '../hooks/use-provider-required-fields';
 import AdvanceConfig from './advance-config';
 import Basic from './basic';
@@ -96,6 +102,18 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
     const currentProviderFields = providerRequiredFieldsMap[configType] || [];
     return currentProviderFields;
   }, [providerRequiredFieldsMap, configType]);
+
+  const qwenDomain = Form.useWatch(['config', 'qwenDomain'], form);
+  const modelList = Form.useWatch('models', form);
+
+  // The compatible-mode image API exists only on DashScope workspace domains —
+  // the legacy dashscope.aliyuncs.com answers 404 — so an image model on a
+  // qwen provider without a custom domain cannot serve. The notice sits right
+  // above the drawer's Save button so it is seen at submit time.
+  const showQwenImageNotice =
+    configType === ProviderEnum.QWEN &&
+    !qwenDomain &&
+    (modelList || []).some((item: ProviderModel) => item?.category === 'image');
 
   const formatAPIKeys = (values: FormData) => {
     const apiTokens = values.api_tokens?.filter?.(
@@ -287,6 +305,16 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
               }
             ]}
           ></CollapsePanel>
+          {showQwenImageNotice && (
+            <AlertBlockInfo
+              type="warning"
+              ellipsis={false}
+              style={{ marginTop: 16 }}
+              message={intl.formatMessage({
+                id: 'providers.form.qwenDomain.imageNotice'
+              })}
+            />
+          )}
         </Form>
       </FormContext.Provider>
     </ScrollSpyTabs>

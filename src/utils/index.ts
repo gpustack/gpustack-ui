@@ -205,11 +205,16 @@ export const isHTMLDocumentString = (str: string) => {
   return htmlSpecialTags.test(str?.trim());
 };
 
-// generate a random number between 0 and 64 bit
-
-export const generateRandomNumber = () => {
-  // 16: 0x1000；32:0x100000000
-  return Math.floor(Math.random() * 0x100000000);
+// Generate a random integer in [min, max]. The default range is deliberately
+// decoupled from any field's own min/max limits: the strictest seed limit in
+// play is qwen (DashScope compatible mode), which rejects seeds above the
+// int32 maximum 2147483647, so the default random never exceeds it. Callers
+// with a wider tolerated range pass their own bounds.
+export const generateRandomNumber = (
+  min: number = 0,
+  max: number = 2147483647
+) => {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
 function base64ToBlob(base64: string, contentType = '', sliceSize = 512) {

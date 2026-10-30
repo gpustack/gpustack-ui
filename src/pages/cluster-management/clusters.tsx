@@ -92,9 +92,6 @@ const Clusters: React.FC = () => {
   // row action and this self-controlled drawer, owning its own
   // open/close state. OSS just mounts it (nothing without a plugin).
   const AccessDrawer = getGPUStackPlugin()?.clusterDetail?.AccessDrawer;
-  // Resource-view sharing has its own independent drawer and controller.
-  const ResourceViewShareDrawer =
-    getGPUStackPlugin()?.clusterDetail?.ResourceViewShareDrawer;
   // Node pools only exist under cloud providers — they are what makes a row
   // expandable (see `setDisableExpand`). On a page of Docker / K8s clusters
   // the stream would be held open for rows that can never use it, so gate it
@@ -536,7 +533,6 @@ const Clusters: React.FC = () => {
       ></TopologyDrawer>
       {AddWorkerModal}
       {AccessDrawer && <AccessDrawer />}
-      {ResourceViewShareDrawer && <ResourceViewShareDrawer />}
     </>
   );
 };

@@ -81,7 +81,11 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
 
   useEffect(() => {
     const handleKeyDown = (e: any) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
+      if (
+        (e.ctrlKey || e.metaKey) &&
+        e.key === 'a' &&
+        contentRef.current?.contains(document.activeElement)
+      ) {
         e.preventDefault();
         if (contentRef.current) {
           const range = document.createRange();
@@ -267,13 +271,17 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
   };
 
   useEffect(() => {
+    let active = true;
     if (open && props.id) {
+      handleOnChange();
+      setShowPrevious(false);
       requestRef.current?.current?.cancel?.();
       requestRef.current = setChunkRequest({
         url: `${MODELS_API}/${props.modelId}/instances`,
         handler: updateHandler
       });
       fetchData(props.id).then((list) => {
+        if (!active) return;
         const lastItem = list.find((item) => item.isMain);
         if (lastItem) {
           handleOnChange(lastItem.children?.find((item) => !item.previous));
@@ -284,6 +292,7 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
     }
 
     return () => {
+      active = false;
       cancelOnClose();
     };
   }, [props.id, open]);

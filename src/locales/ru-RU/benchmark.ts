@@ -1,4 +1,8 @@
 export default {
+  'benchmark.detail.configSource.fallback.title':
+    'Конфигурация запуска не сохранена',
+  'benchmark.detail.configSource.fallback.description':
+    'Для {instances} показаны настройки модели на момент создания теста. Эти настройки приведены только для справки.',
   'benchmark.detail.result.selectMeasuredPoint':
     'Выбрать измеренную точку при {load} {unit}',
   'benchmark.detail.metric.ttftP99': 'TTFT p99',

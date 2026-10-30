@@ -1,4 +1,8 @@
 export default {
+  'benchmark.detail.configSource.fallback.title':
+    'Startup configuration not recorded',
+  'benchmark.detail.configSource.fallback.description':
+    'For {instances}, the displayed settings come from the model configuration at benchmark creation and are for reference only.',
   'benchmark.detail.result.selectMeasuredPoint':
     'Select measured point at {load} {unit}',
   'benchmark.detail.metric.ttftP99': 'TTFT p99',

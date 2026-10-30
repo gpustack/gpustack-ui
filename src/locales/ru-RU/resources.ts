@@ -1,5 +1,5 @@
 export default {
-  'resources.filter.label': 'Точный поиск метки: os=linux',
+  'resources.filter.label': 'Точный поиск метки: arch=amd64',
   'resources.title': 'Ресурсы',
   'resources.nodes': 'Worker',
   'resources.container': 'Контейнер',

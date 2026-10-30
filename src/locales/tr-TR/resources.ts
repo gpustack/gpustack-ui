@@ -1,5 +1,5 @@
 export default {
-  'resources.filter.label': 'Tam etiket eşleşmesi, ör. os=linux',
+  'resources.filter.label': 'Tam etiket eşleşmesi, ör. arch=amd64',
   'resources.title': 'Kaynaklar',
   'resources.nodes': 'İşçi Düğümler',
   'resources.worker': 'İşçi Düğüm',

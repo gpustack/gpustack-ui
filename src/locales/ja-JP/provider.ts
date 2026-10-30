@@ -20,6 +20,11 @@ export default {
   'providers.form.claudeCustomUrl': 'カスタム API URL',
   'providers.form.claudeCustomUrl.tips':
     '設定すると、このプロバイダーは Anthropic プロトコル（/v1/messages）のみを提供し、OpenAI 形式のリクエストは変換されません。空欄にすると、OpenAI プロトコル経由で api.anthropic.com を使用します。',
+  'providers.form.qwenDomain': 'カスタムドメイン',
+  'providers.form.qwenDomain.tips':
+    '任意。ドメインは Alibaba Cloud コンソールの DashScope（百炼）ワークスペースで確認できます（例: maas.aliyuncs.com）。互換モードの画像生成 API は既定ドメイン dashscope.aliyuncs.com では提供されず、画像モデルにはワークスペースドメインが必要です。',
+  'providers.form.qwenDomain.imageNotice':
+    '画像モデルが選択されています: 互換モードの画像生成 API は既定ドメイン dashscope.aliyuncs.com では提供されません。上の「カスタムドメイン」を DashScope ワークスペースドメインに設定しないと、画像リクエストは 404 になります。',
   'providers.form.more': 'ほか {count} 件',
   'providers.form.addAll': 'すべて追加',
   'providers.form.rules.models': 'モデルを 1 つ以上選択してください',
@@ -33,6 +38,8 @@ export default {
     'URL に認証情報を含めることはできません。各リクエストの Host ヘッダーとして送信されてしまいます。代わりに、エンドポイントのキーをプロバイダーの API キーに設定してください。',
   'providers.form.rules.claudeCustomUrl.query':
     'URL にはオリジンと任意のパスプレフィックスのみを指定できます。クエリやフラグメントは破棄されます。',
+  'providers.form.rules.qwenDomain':
+    'ドメインのみを入力してください（443 以外のポートの場合はポートを含む）。例: maas.aliyuncs.com または my-gateway.example.com:8443',
   'providers.form.model.duplicate': '同じモデルがすでに存在します',
   'providers.table.registerRoute': 'ルートを登録',
   'providers.form.azureServiceUrl': 'Azure OpenAI Service の URL',

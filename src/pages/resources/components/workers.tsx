@@ -26,6 +26,7 @@ import {
 } from '../apis';
 import { ListItem, WorkerLabelsFormData } from '../config/types';
 import useWorkerColumns from '../hooks/use-worker-columns';
+import useWorkerLabelOptions from '../hooks/use-worker-label-options';
 import useWorkerMaintenance from '../hooks/use-worker-maintenance';
 import UpdateLabels from './update-labels';
 import WorkerDetailModal from './worker-detail-modal';
@@ -69,6 +70,8 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
     updateManually: true,
     defaultQueryParams: clusterId ? { cluster_id: clusterId } : undefined
   });
+  const { labelOptions, labelOptionsLoading, fetchLabelOptions } =
+    useWorkerLabelOptions(queryParams.cluster_id);
   const { goToGrafana, ActionButton } = useGranfanaLink({
     type: 'worker'
   });
@@ -179,6 +182,7 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
         message.success(intl.formatMessage({ id: 'common.message.success' }));
       }
       fetchData();
+      fetchLabelOptions(queryParams.cluster_id);
       setBatchLabelTargets([]);
       setUpdateLabelsData({ open: false, data: {} as ListItem });
     } catch {
@@ -296,6 +300,7 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
   };
 
   const handleClusterChange = (value: number) => {
+    fetchLabelOptions(value);
     handleQueryChange({
       page: 1,
       cluster_id: value
@@ -306,17 +311,31 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
     handleQueryChange({ page: 1, label });
   };
 
+  const handleLabelFilter = useMemoizedFn((label: string) => {
+    const selected: string[] = queryParams.label || [];
+    if (!selected.includes(label)) {
+      handleLabelChange([...selected, label]);
+    }
+  });
+
+  const handleRefresh = () => {
+    handleSearch();
+    fetchLabelOptions(queryParams.cluster_id);
+  };
+
   const columns = useWorkerColumns({
     clusterData,
     loadend: dataSource.loadend,
     firstLoad: extraStatus.firstLoad,
     sortOrder,
     source,
-    handleSelect
+    handleSelect,
+    onLabelFilter: handleLabelFilter
   });
 
   useEffect(() => {
     getClusterList();
+    fetchLabelOptions(queryParams.cluster_id);
     setStepList(DockerStepsFromWorker);
   }, []);
 
@@ -332,19 +351,21 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
           left={
             <WorkerFilters
               label={queryParams.label}
+              labelOptions={labelOptions}
+              labelOptionsLoading={labelOptionsLoading}
               showCluster={source !== 'clusterDetail'}
               clusterOptions={clusterData.list}
               onNameChange={handleNameChange}
               onLabelChange={handleLabelChange}
               onClusterChange={handleClusterChange}
-              onRefresh={handleSearch}
+              onRefresh={handleRefresh}
             />
           }
           showSelect={source !== 'clusterDetail'}
           selectHolder={intl.formatMessage({ id: 'clusters.filterBy.cluster' })}
           buttonText={intl.formatMessage({ id: 'resources.button.create' })}
           handleDeleteByBatch={handleDeleteBatch}
-          handleSearch={handleSearch}
+          handleSearch={handleRefresh}
           handleSelectChange={handleClusterChange}
           handleClickPrimary={handleOnAddWorker}
           handleInputChange={handleNameChange}

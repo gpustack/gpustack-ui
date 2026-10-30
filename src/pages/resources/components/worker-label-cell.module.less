@@ -1,0 +1,19 @@
+.label {
+  cursor: pointer;
+  transition:
+    background-color 150ms,
+    border-color 150ms,
+    color 150ms;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--ant-color-primary-text);
+    background-color: var(--ant-color-primary-bg);
+    border-color: var(--ant-color-primary-border-hover);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ant-color-primary);
+    outline-offset: 2px;
+  }
+}

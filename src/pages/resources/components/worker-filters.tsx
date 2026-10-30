@@ -3,9 +3,12 @@ import { BaseSelect } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Flex, Input } from 'antd';
 import type { ChangeEvent } from 'react';
+import { formatWorkerLabel } from '../utils/worker-labels';
 
 interface WorkerFiltersProps {
   label?: string[];
+  labelOptions?: Global.BaseOption<string>[];
+  labelOptionsLoading?: boolean;
   showCluster: boolean;
   clusterOptions: Global.BaseOption<number>[];
   onNameChange: (event: ChangeEvent<HTMLInputElement>) => void;
@@ -16,6 +19,8 @@ interface WorkerFiltersProps {
 
 export default function WorkerFilters({
   label,
+  labelOptions = [],
+  labelOptionsLoading,
   showCluster,
   clusterOptions,
   onNameChange,
@@ -43,9 +48,13 @@ export default function WorkerFilters({
         style={{ width: 180 }}
       />
       <BaseSelect
-        mode="tags"
+        mode="multiple"
+        showSearch
         allowClear
-        notFoundContent={null}
+        options={labelOptions}
+        loading={labelOptionsLoading}
+        optionFilterProp="label"
+        labelRender={({ value }) => formatWorkerLabel(String(value))}
         maxTagCount="responsive"
         value={label || []}
         suffixIcon={

@@ -1,5 +1,6 @@
 export default {
-  'resources.filter.label': 'Точный поиск метки: arch=amd64',
+  'resources.filter.label': 'Фильтр по метке',
+  'resources.filter.label.action': 'Фильтровать по метке {label}',
   'resources.title': 'Ресурсы',
   'resources.nodes': 'Worker',
   'resources.container': 'Контейнер',

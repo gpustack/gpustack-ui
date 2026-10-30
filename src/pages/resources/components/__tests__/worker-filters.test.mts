@@ -45,6 +45,12 @@ Object.assign(globalThis, {
 after(() => dom.window.close());
 
 const WorkerFilters = (await import('../worker-filters.tsx')).default;
+const labelOptions = [
+  { value: 'arch=amd64', label: 'arch: amd64' },
+  { value: 'city=New York, US', label: 'city: New York, US' },
+  { value: 'url=http://host?a=b', label: 'url: http://host?a=b' },
+  { value: 'region=', label: 'region: ' }
+];
 const mount = async (t: any) => {
   inputs.clear();
   const onLabelChange = mock.fn();
@@ -53,6 +59,7 @@ const mount = async (t: any) => {
     root.render(
       createElement(WorkerFilters, {
         label: ['region=beijing'],
+        labelOptions,
         showCluster: true,
         clusterOptions: [],
         onNameChange: empty,
@@ -69,23 +76,15 @@ const mount = async (t: any) => {
   return { onLabelChange, change };
 };
 
-for (const value of [
-  'region=beijing',
-  'Region=Beijing',
-  'region=',
-  'city=New York',
-  'url=http://host:8000?a=b',
-  '',
-  'region',
-  'beijing',
-  'region beijing',
-  'region:beijing',
-  '=beijing',
-  ' '
+for (const labels of [
+  ['arch=amd64'],
+  ['arch=amd64', 'city=New York, US'],
+  ['region='],
+  ['url=http://host?a=b'],
+  []
 ]) {
-  test(`forwards committed labels without validation: ${JSON.stringify(value)}`, async (t) => {
+  test(`selects existing labels without requiring typed syntax: ${JSON.stringify(labels)}`, async (t) => {
     const { onLabelChange, change } = await mount(t);
-    const labels = value === '' ? [] : [value];
     await change(labels);
     assert.deepEqual(
       onLabelChange.mock.calls.map((call) => call.arguments),
@@ -101,13 +100,23 @@ for (const value of [
 
 test('clearing label input clears the active filter', async (t) => {
   const { onLabelChange, change } = await mount(t);
-  await change(['region:beijing']);
+  await change(['arch=amd64']);
   await change([]);
   assert.deepEqual(
     onLabelChange.mock.calls.map((call) => call.arguments),
-    [[['region:beijing']], [[]]]
+    [[['arch=amd64']], [[]]]
   );
   assert.equal(inputs.get('resources.filter.label').status, undefined);
+});
+
+test('offers searchable existing choices and readable selected labels', async (t) => {
+  await mount(t);
+  const select = inputs.get('resources.filter.label');
+  assert.equal(select.mode, 'multiple');
+  assert.deepEqual(select.options, labelOptions);
+  assert.equal(select.showSearch, true);
+  assert.equal(select.optionFilterProp, 'label');
+  assert.equal(select.labelRender({ value: 'arch=amd64' }), 'arch: amd64');
 });
 
 test('adding and removing label tags preserves complete values', async (t) => {

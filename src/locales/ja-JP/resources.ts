@@ -1,5 +1,6 @@
 export default {
-  'resources.filter.label': 'ラベル完全一致（例: arch=amd64）',
+  'resources.filter.label': 'ラベルで絞り込み',
+  'resources.filter.label.action': 'ラベル {label} で絞り込み',
   'resources.title': 'リソース',
   'resources.nodes': 'Worker',
   'resources.container': 'コンテナ',

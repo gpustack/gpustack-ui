@@ -1,5 +1,5 @@
 export default {
-  'resources.filter.label': 'Метка, напр. os=linux',
+  'resources.filter.label': 'Точный поиск метки: os=linux',
   'resources.title': 'Ресурсы',
   'resources.nodes': 'Worker',
   'resources.container': 'Контейнер',

@@ -1,5 +1,5 @@
 export default {
-  'resources.filter.label': '按标签筛选，如 os=linux',
+  'resources.filter.label': '标签精确匹配，如 os=linux',
   'resources.title': '资源',
   'resources.button.create': '添加节点',
   'resources.button.edit': '编辑节点',

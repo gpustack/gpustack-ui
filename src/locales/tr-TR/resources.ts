@@ -1,5 +1,5 @@
 export default {
-  'resources.filter.label': 'Etiket, ör. os=linux',
+  'resources.filter.label': 'Tam etiket eşleşmesi, ör. os=linux',
   'resources.title': 'Kaynaklar',
   'resources.nodes': 'İşçi Düğümler',
   'resources.worker': 'İşçi Düğüm',

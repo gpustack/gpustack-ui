@@ -1,5 +1,5 @@
 export default {
-  'resources.filter.label': 'Label, e.g. os=linux',
+  'resources.filter.label': 'Exact label match, e.g. os=linux',
   'resources.title': 'Resources',
   'resources.nodes': 'Workers',
   'resources.worker': 'Worker',

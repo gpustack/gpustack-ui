@@ -1,5 +1,5 @@
 export default {
-  'resources.filter.label': 'ラベル検索（例: os=linux）',
+  'resources.filter.label': 'ラベル完全一致（例: os=linux）',
   'resources.title': 'リソース',
   'resources.nodes': 'Worker',
   'resources.container': 'コンテナ',

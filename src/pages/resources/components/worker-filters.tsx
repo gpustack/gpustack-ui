@@ -61,7 +61,7 @@ export default function WorkerFilters({
         aria-label={labelPlaceholder}
         onChange={(event) => changeLabel(event.target.value)}
         onPressEnter={() => searchLabel()}
-        style={{ width: 220 }}
+        style={{ width: 280, maxWidth: '100%' }}
       />
       {showCluster ? (
         <BaseSelect

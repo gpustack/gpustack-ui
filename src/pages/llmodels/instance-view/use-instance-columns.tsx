@@ -53,9 +53,10 @@ const WorkerInfoContent: React.FC<
   );
 
   if (record.worker_ip) {
-    workerIp = record.port
-      ? `${record.worker_ip}:${record.port}`
-      : record.worker_ip;
+    workerIp =
+      distributed_servers?.workloads == null && record.port
+        ? `${record.worker_ip}:${record.port}`
+        : record.worker_ip;
   }
 
   return (
@@ -160,7 +161,7 @@ const useInstancesColumns = (options: {
         render: (value: string, record: ListItem) => (
           <>
             <NameCell
-              showWorkerInfo={false}
+              showWorkerInfo={record.distributed_servers?.workloads != null}
               record={record}
               modelData={{
                 backend: record.backend,

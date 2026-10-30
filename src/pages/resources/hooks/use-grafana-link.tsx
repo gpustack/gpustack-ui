@@ -1,5 +1,6 @@
 import { systemConfigAtom } from '@/atoms/system';
 import { GPUSTACK_API_BASE_URL } from '@/config/settings';
+import type { ModelInstanceDashboardTarget } from '@/pages/llmodels/config/types';
 import { GrafanaIcon } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button } from 'antd';
@@ -27,9 +28,26 @@ const useGranfanaLink = (options: {
     );
   };
 
-  const goToInstanceGrafana = (row: { id: number }) => {
+  const goToInstanceGrafana = (
+    row: { id: number },
+    target?: ModelInstanceDashboardTarget
+  ) => {
+    const query = new URLSearchParams();
+    if (target) {
+      const { restart_count, worker_id, dp_rank, component, attempt } = target;
+      Object.entries({
+        restart_count,
+        worker_id,
+        dp_rank,
+        component,
+        attempt
+      }).forEach(([key, value]) => {
+        if (value !== undefined) query.set(key, String(value));
+      });
+    }
+    const encoded = query.toString();
     window.open(
-      `/${GPUSTACK_API_BASE_URL}/model-instances/${row.id}/dashboard`,
+      `/${GPUSTACK_API_BASE_URL}/model-instances/${row.id}/dashboard${encoded ? `?${encoded}` : ''}`,
       '_blank'
     );
   };
@@ -48,13 +66,16 @@ const useGranfanaLink = (options: {
     );
   };
 
-  const goToGrafana = (row: { id: number }) => {
+  const goToGrafana = (
+    row: { id: number },
+    target?: ModelInstanceDashboardTarget
+  ) => {
     if (options.type === 'model') {
       goToModelGrafana(row);
     } else if (options.type === 'worker') {
       goToWorkerGrafana(row);
     } else if (options.type === 'instance') {
-      goToInstanceGrafana(row);
+      goToInstanceGrafana(row, target);
     } else if (options.type === 'cluster') {
       goToClusterGrafana(row);
     } else if (options.type === 'cache-service') {
@@ -107,6 +128,7 @@ const useGranfanaLink = (options: {
 
   return {
     goToGrafana,
+    showMonitoring: !!systemConfig?.showMonitoring,
     ActionButton
   };
 };

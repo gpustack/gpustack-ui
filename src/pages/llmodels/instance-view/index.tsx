@@ -68,7 +68,18 @@ const InstanceView = forwardRef((props, ref) => {
   } = useTableFetch<ListItem>({
     key: PaginationKey.Instances,
     fetchAPI: queryModelsInstances,
-    deleteAPI: deleteModelInstance,
+    deleteAPI: async (id: number) => {
+      try {
+        return await deleteModelInstance(id);
+      } catch (error: any) {
+        if (!error?.response?.status) {
+          message.error(
+            error?.message || intl.formatMessage({ id: 'common.delete.fail' })
+          );
+        }
+        throw error;
+      }
+    },
     watch: true,
     API: MODEL_INSTANCE_API,
     // The hook's default is `['UPDATE', 'DELETE']`, and on this list that

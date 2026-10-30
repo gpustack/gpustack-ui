@@ -56,6 +56,12 @@ const history = {
 let intl = { locale: 'zh-CN', formatMessage: ({ id }: { id: string }) => id };
 let userSettings = { theme: 'light', isDarkTheme: false };
 const useIntl = mock.fn(() => intl);
+let loadLocale = async (_locale: string): Promise<boolean> => true;
+const ensureLocaleMessages = mock.fn((locale: string) => loadLocale(locale));
+const setLocale = mock.fn();
+mock.module(new URL('../../locales/load-messages.ts', import.meta.url).href, {
+  namedExports: { ensureLocaleMessages }
+});
 type InitialState = {
   isPublicPage?: boolean;
   fetchUserInfo?: () => Promise<unknown>;
@@ -174,6 +180,7 @@ type TestCoreUIContext = {
   config: { theme: string; isDarkTheme: boolean };
   i18n: typeof intl;
   hooks: { useCurrentUser: () => unknown };
+  locale: { setLocale: (locale: string, reload?: boolean) => Promise<void> };
 };
 const TestCoreUIContext = createContext<TestCoreUIContext | undefined>(
   undefined
@@ -196,7 +203,7 @@ mock.module('@umijs/max', {
   namedExports: {
     history,
     getAllLocales: () => ['zh-CN'],
-    setLocale: () => {},
+    setLocale,
     useIntl,
     useModel: () => {
       const state = useFrameworkModel('@@initialState') as InitialStateModel & {
@@ -267,6 +274,9 @@ const resetEnvironment = (pathname = '/console/private/example') => {
   userSettings = { theme: 'light', isDarkTheme: false };
   intl = { ...intl, locale: 'zh-CN' };
   useIntl.mock.resetCalls();
+  ensureLocaleMessages.mock.resetCalls();
+  setLocale.mock.resetCalls();
+  loadLocale = async () => true;
 };
 
 test('public context follows pathname while private pages and standalone OSS retain their providers', async () => {
@@ -585,4 +595,65 @@ test('a failed management refresh leaves public pages usable and reaches the exi
     consoleLog.mock.restore();
   }
   assert.equal(listeners.size, 0);
+});
+
+test('public language changes wait for lazy messages and preserve the mounted page and management isolation', async () => {
+  resetEnvironment('/console/public/example');
+  const model = createInitialStateHarness({ isPublicPage: true });
+  let mounts = 0;
+  const Page = () => {
+    useEffect(() => {
+      ++mounts;
+    }, []);
+    return createElement('div', { 'data-locale-content': '' }, intl.locale);
+  };
+  const root = createRoot(document.getElementById('root')!);
+  const render = () =>
+    root.render(
+      createElement(
+        model.Harness,
+        null,
+        createElement(
+          PublicPageProvider,
+          { basename: '/console/' },
+          createElement(Page)
+        )
+      )
+    );
+  try {
+    await act(async () => render());
+    const page = document.querySelector('[data-locale-content]');
+    assert.equal(ensureLocaleMessages.mock.callCount(), 0);
+    let finish!: (ready: boolean) => void;
+    loadLocale = () =>
+      new Promise((resolve) => {
+        finish = resolve;
+      });
+    const switching = publicContext.locale.setLocale('ja-JP', false);
+    assert.deepEqual(ensureLocaleMessages.mock.calls[0].arguments, ['ja-JP']);
+    assert.equal(setLocale.mock.callCount(), 0);
+    finish(true);
+    await switching;
+    assert.deepEqual(setLocale.mock.calls[0].arguments, ['ja-JP', false]);
+    intl = { ...intl, locale: 'ja-JP' };
+    await act(async () => render());
+    assert.equal(document.querySelector('[data-locale-content]'), page);
+    assert.equal(page?.textContent, 'ja-JP');
+    assert.equal(mounts, 1);
+    assert.equal(model.refresh.mock.callCount(), 0);
+    assert.equal(publicContext.hooks.useCurrentUser(), undefined);
+
+    loadLocale = async () => false;
+    await assert.rejects(
+      publicContext.locale.setLocale('ru-RU', false),
+      /Locale messages unavailable/
+    );
+    assert.equal(setLocale.mock.callCount(), 1);
+    assert.equal(page?.textContent, 'ja-JP');
+    assert.equal(mounts, 1);
+    assert.equal(model.refresh.mock.callCount(), 0);
+  } finally {
+    await act(async () => root.unmount());
+    GPUStackPluginManager.getAll().clear();
+  }
 });

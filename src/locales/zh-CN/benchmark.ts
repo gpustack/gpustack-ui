@@ -1,4 +1,7 @@
 export default {
+  'benchmark.detail.configSource.fallback.title': '启动配置未记录',
+  'benchmark.detail.configSource.fallback.description':
+    '实例 {instances} 未记录启动配置；报告中这些实例的配置来自创建基准测试时的模型配置，仅供参考。',
   'benchmark.detail.result.selectMeasuredPoint': '选择 {load} {unit} 的测量点',
   'benchmark.detail.metric.ttftP99': 'TTFT p99',
   'benchmark.detail.metric.tpotP99': 'TPOT p99',

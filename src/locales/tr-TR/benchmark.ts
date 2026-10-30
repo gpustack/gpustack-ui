@@ -1,4 +1,8 @@
 export default {
+  'benchmark.detail.configSource.fallback.title':
+    'Başlangıç yapılandırması kaydedilmemiş',
+  'benchmark.detail.configSource.fallback.description':
+    '{instances} için gösterilen ayarlar, kıyaslama oluşturulurken geçerli olan model yapılandırmasından alınmıştır ve yalnızca referans amaçlıdır.',
   'benchmark.detail.result.selectMeasuredPoint':
     '{load} {unit} ölçüm noktasını seç',
   'benchmark.detail.metric.ttftP99': 'TTFT p99',

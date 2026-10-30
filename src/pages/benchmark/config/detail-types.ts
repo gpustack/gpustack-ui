@@ -26,6 +26,7 @@ export interface InstancesData {
   gpu_ids: string[];
   id: number;
   name: string;
+  config_source?: 'instance_snapshot' | 'current_model' | null;
   resolved_path: string;
   // Which role of its model this member served; absent for a plain deployment.
   // The only thing that tells a group's members apart in a finished report.

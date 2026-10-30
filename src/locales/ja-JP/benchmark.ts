@@ -1,4 +1,8 @@
 export default {
+  'benchmark.detail.configSource.fallback.title':
+    '起動時の設定が記録されていません',
+  'benchmark.detail.configSource.fallback.description':
+    '{instances} に表示される設定は、ベンチマーク作成時のモデル設定に基づく参考情報です。',
   'benchmark.detail.result.selectMeasuredPoint': '{load} {unit} の測定点を選択',
   'benchmark.detail.metric.ttftP99': 'TTFT p99',
   'benchmark.detail.metric.tpotP99': 'TPOT p99',

@@ -1,11 +1,4 @@
 export default {
-  'common.filter.keyValue.chooseKeyFirst': '先にキーを選択してください',
-  'common.filter.keyValue.placeholder': 'キーと値で絞り込む',
-  'common.filter.keyValue.key': 'キーを選択',
-  'common.filter.keyValue.value': '値を選択',
-  'common.filter.keyValue.add': '絞り込み条件を追加',
-  'common.filter.keyValue.clear': '絞り込み条件をクリア',
-  'common.filter.keyValue.empty': '（空の値）',
   'common.button.resetdefault': 'デフォルトにリセット',
   'common.button.perview': 'プレビュー',
   'common.button.readonly': '読み取り専用',

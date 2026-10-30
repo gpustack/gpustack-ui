@@ -1,11 +1,4 @@
 export default {
-  'common.filter.keyValue.chooseKeyFirst': 'Select a key first',
-  'common.filter.keyValue.placeholder': 'Filter by key and value',
-  'common.filter.keyValue.key': 'Select key',
-  'common.filter.keyValue.value': 'Select value',
-  'common.filter.keyValue.add': 'Add filter condition',
-  'common.filter.keyValue.clear': 'Clear filter conditions',
-  'common.filter.keyValue.empty': '(empty value)',
   'common.button.resetdefault': 'Reset to default',
   'common.button.perview': 'Preview',
   'common.button.readonly': 'Readonly',

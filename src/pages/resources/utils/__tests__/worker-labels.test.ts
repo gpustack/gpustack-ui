@@ -3,9 +3,7 @@ import { test } from 'node:test';
 import {
   buildWorkerLabelOptions,
   formatWorkerLabel,
-  groupWorkerLabelOptions,
-  isFilterableLabelKey,
-  parseWorkerLabelFilters
+  isFilterableLabelKey
 } from '../worker-labels';
 
 test('flattens grouped label candidates into readable choices in server order', () => {
@@ -66,28 +64,4 @@ test('includes worker-name candidates alongside other labels and literal values'
 
 test('empty grouped candidates produce no options', () => {
   assert.deepEqual(buildWorkerLabelOptions([]), []);
-});
-
-test('groups dependent values by their exact keys without splitting literal values', () => {
-  const labels = [
-    'env=production',
-    'env=staging',
-    'env=production',
-    'literal=a=b,c d',
-    'empty=',
-    'Env=Production'
-  ];
-  assert.deepEqual(
-    groupWorkerLabelOptions(labels.map((value) => ({ value, label: value }))),
-    [
-      { key: 'env', values: ['production', 'staging'] },
-      { key: 'literal', values: ['a=b,c d'] },
-      { key: 'empty', values: [''] },
-      { key: 'Env', values: ['Production'] }
-    ]
-  );
-  assert.deepEqual(parseWorkerLabelFilters(['a.b/c=x=y', 'empty=']), [
-    { key: 'a.b/c', value: 'x=y' },
-    { key: 'empty', value: '' }
-  ]);
 });

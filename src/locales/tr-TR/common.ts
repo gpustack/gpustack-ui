@@ -1,11 +1,4 @@
 export default {
-  'common.filter.keyValue.chooseKeyFirst': 'Önce bir anahtar seçin',
-  'common.filter.keyValue.placeholder': 'Anahtar ve değere göre filtrele',
-  'common.filter.keyValue.key': 'Anahtar seçin',
-  'common.filter.keyValue.value': 'Değer seçin',
-  'common.filter.keyValue.add': 'Filtre koşulu ekle',
-  'common.filter.keyValue.clear': 'Filtre koşullarını temizle',
-  'common.filter.keyValue.empty': '(boş değer)',
   'common.button.resetdefault': 'Varsayılana sıfırla',
   'common.button.perview': 'Önizleme',
   'common.button.readonly': 'Salt okunur',

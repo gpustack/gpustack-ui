@@ -1,5 +1,4 @@
 export default {
-  'resources.filter.label.title': 'Фильтры меток',
   'resources.filter.label': 'Фильтр по метке',
   'resources.filter.label.action': 'Фильтровать по метке {label}',
   'resources.title': 'Ресурсы',

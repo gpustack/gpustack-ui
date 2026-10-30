@@ -1,5 +1,4 @@
 export default {
-  'resources.filter.label.title': 'ラベルで絞り込み',
   'resources.filter.label': 'ラベルで絞り込み',
   'resources.filter.label.action': 'ラベル {label} で絞り込み',
   'resources.title': 'リソース',

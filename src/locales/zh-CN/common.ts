@@ -1,11 +1,4 @@
 export default {
-  'common.filter.keyValue.chooseKeyFirst': '请先选择键',
-  'common.filter.keyValue.placeholder': '按键值筛选',
-  'common.filter.keyValue.key': '选择键',
-  'common.filter.keyValue.value': '选择值',
-  'common.filter.keyValue.add': '添加筛选条件',
-  'common.filter.keyValue.clear': '清空筛选条件',
-  'common.filter.keyValue.empty': '（空值）',
   'common.button.resetdefault': '恢复默认',
   'common.button.perview': '预览',
   'common.button.readonly': '只读',

@@ -8,7 +8,6 @@ const empty = () => null;
 const passChildren = ({ children }: any) =>
   createElement(Fragment, null, children);
 const inputs = new Map<string, any>();
-let tooltip: any;
 
 mock.module('@ant-design/icons', {
   namedExports: { SearchOutlined: empty, SyncOutlined: empty }
@@ -30,10 +29,6 @@ mock.module('antd', {
   namedExports: {
     Button: passChildren,
     Flex: passChildren,
-    Tooltip: (props: any) => {
-      tooltip = props;
-      return passChildren(props);
-    },
     Input: (props: any) => {
       inputs.set(props['aria-label'], props);
       return null;
@@ -114,11 +109,4 @@ test('clearing label input clears the active filter', async (t) => {
     [['region:beijing'], ['']]
   );
   assert.equal(inputs.get('resources.filter.label').status, undefined);
-});
-
-test('shows label matching rules in a tooltip on hover or focus', async (t) => {
-  await mount(t);
-  assert.equal(tooltip.title, 'resources.filter.label.help');
-  assert.deepEqual(tooltip.trigger, ['hover', 'focus']);
-  assert.equal(tooltip.children.props['aria-label'], 'resources.filter.label');
 });

@@ -1,7 +1,5 @@
 export default {
-  'resources.filter.label': 'Label: key=value',
-  'resources.filter.label.help':
-    'Exact, case-sensitive match. For the label os: linux, enter os=linux.',
+  'resources.filter.label': 'Label, e.g. os=linux',
   'resources.title': 'Resources',
   'resources.nodes': 'Workers',
   'resources.worker': 'Worker',

@@ -1,7 +1,5 @@
 export default {
-  'resources.filter.label': 'Etiket: key=value',
-  'resources.filter.label.help':
-    'Büyük/küçük harfe duyarlı tam eşleşme. os: linux etiketi için os=linux girin.',
+  'resources.filter.label': 'Etiket, ör. os=linux',
   'resources.title': 'Kaynaklar',
   'resources.nodes': 'İşçi Düğümler',
   'resources.worker': 'İşçi Düğüm',

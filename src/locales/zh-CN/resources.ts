@@ -1,7 +1,5 @@
 export default {
-  'resources.filter.label': '标签：key=value',
-  'resources.filter.label.help':
-    '精确匹配，区分大小写。例如标签 os: linux，输入 os=linux。',
+  'resources.filter.label': '按标签筛选，如 os=linux',
   'resources.title': '资源',
   'resources.button.create': '添加节点',
   'resources.button.edit': '编辑节点',

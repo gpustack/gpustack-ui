@@ -2,7 +2,7 @@ import { SearchOutlined, SyncOutlined } from '@ant-design/icons';
 import { BaseSelect } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useDebounceFn } from 'ahooks';
-import { Button, Flex, Input, Tooltip } from 'antd';
+import { Button, Flex, Input } from 'antd';
 import type { ChangeEvent } from 'react';
 
 interface WorkerFiltersProps {
@@ -49,25 +49,20 @@ export default function WorkerFilters({
         onChange={onNameChange}
         style={{ width: 180 }}
       />
-      <Tooltip
-        title={intl.formatMessage({ id: 'resources.filter.label.help' })}
-        trigger={['hover', 'focus']}
-      >
-        <Input
-          allowClear
-          defaultValue={label}
-          prefix={
-            <SearchOutlined
-              style={{ color: 'var(--ant-color-text-placeholder)' }}
-            />
-          }
-          placeholder={labelPlaceholder}
-          aria-label={labelPlaceholder}
-          onChange={(event) => changeLabel(event.target.value)}
-          onPressEnter={() => searchLabel()}
-          style={{ width: 220 }}
-        />
-      </Tooltip>
+      <Input
+        allowClear
+        defaultValue={label}
+        prefix={
+          <SearchOutlined
+            style={{ color: 'var(--ant-color-text-placeholder)' }}
+          />
+        }
+        placeholder={labelPlaceholder}
+        aria-label={labelPlaceholder}
+        onChange={(event) => changeLabel(event.target.value)}
+        onPressEnter={() => searchLabel()}
+        style={{ width: 220 }}
+      />
       {showCluster ? (
         <BaseSelect
           allowClear

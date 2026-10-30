@@ -1,7 +1,5 @@
 export default {
-  'resources.filter.label': 'ラベル: key=value',
-  'resources.filter.label.help':
-    '大文字と小文字を区別して完全一致検索します。ラベル os: linux は os=linux と入力します。',
+  'resources.filter.label': 'ラベル検索（例: os=linux）',
   'resources.title': 'リソース',
   'resources.nodes': 'Worker',
   'resources.container': 'コンテナ',

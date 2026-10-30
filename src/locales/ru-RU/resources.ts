@@ -1,7 +1,5 @@
 export default {
-  'resources.filter.label': 'Метка: key=value',
-  'resources.filter.label.help':
-    'Точное совпадение с учётом регистра. Для метки os: linux введите os=linux.',
+  'resources.filter.label': 'Метка, напр. os=linux',
   'resources.title': 'Ресурсы',
   'resources.nodes': 'Worker',
   'resources.container': 'Контейнер',

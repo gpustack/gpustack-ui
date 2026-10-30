@@ -7,7 +7,10 @@ import {
 import { useIntl } from '@umijs/max';
 import { App } from 'antd';
 import { downloadModelInstanceLogs } from '../apis';
-import { ModelInstanceListItem as ListItem } from '../config/types';
+import {
+  ModelInstanceListItem as ListItem,
+  ModelInstanceLogSourceQuery
+} from '../config/types';
 
 // A ProgressEvent fires every few milliseconds; reopening the notification on
 // every one of them is a re-render per tick for no readable gain.
@@ -33,7 +36,10 @@ const useDownloadInstanceLogs = () => {
   // <App component={false}> in layouts/index.tsx holds this one app-wide.
   const { notification } = App.useApp();
 
-  const downloadLogs = async (record: ListItem) => {
+  const downloadLogs = async (
+    record: Pick<ListItem, 'id' | 'name'>,
+    params?: ModelInstanceLogSourceQuery
+  ) => {
     // Checked and set synchronously, so two clicks in the same tick can't both
     // get through the way a state flag would.
     if (inFlight.has(record.id)) return;
@@ -77,6 +83,7 @@ const useDownloadInstanceLogs = () => {
 
     try {
       const { data, headers } = await downloadModelInstanceLogs(record.id, {
+        params,
         signal: controller.signal,
         onDownloadProgress: (event) => {
           const now = Date.now();

@@ -5,6 +5,7 @@ import { queryBenchmarkResults } from '../../apis';
 import { loadAxisLabelId } from '../../config';
 import { useDetailContext } from '../../config/detail-context';
 import { BenchmarkResultItem } from '../../config/types';
+import ConfigSourceAlert from '../config-source-alert';
 import BestPoints from './best-points';
 import ConfigSummary from './config-summary';
 import { buildProbePoints, buildStagePoints } from './metrics';
@@ -152,6 +153,7 @@ const Summary: React.FC = () => {
     <div className={styles.container}>
       <RunningHint points={measuredPoints} />
       <ConfigSummary />
+      <ConfigSourceAlert />
       {/* Coverage warnings apply to the run as a whole, so they sit above both
           the multi-point overview and the single-point view. */}
       <ValidityAlert />

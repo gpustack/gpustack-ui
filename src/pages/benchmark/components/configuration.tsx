@@ -1,6 +1,7 @@
 import { useIntl } from '@umijs/max';
 import { createStyles } from 'antd-style';
 import React from 'react';
+import ConfigSourceAlert from './config-source-alert';
 import BenchMark from './summary/benchmark';
 import Instance from './summary/instance';
 import { SectionTitle } from './summary/ui';
@@ -26,6 +27,7 @@ const Configuration: React.FC = () => {
   const intl = useIntl();
   return (
     <div className={styles.container}>
+      <ConfigSourceAlert />
       <div>
         <SectionTitle>
           {intl.formatMessage({ id: 'benchmark.detail.config.deployment' })}

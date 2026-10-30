@@ -408,8 +408,18 @@ const Models: React.FC<ModelsProps> = ({
         operation: 'common.delete.single.confirm',
         name: row.name,
         async onOk() {
-          await deleteModelInstance(row.id);
-          onDeleteInstanceFromCache?.(row.id);
+          try {
+            await deleteModelInstance(row.id);
+          } catch (error: any) {
+            if (!error?.response?.status) {
+              message.error(
+                error?.message ||
+                  intl.formatMessage({ id: 'common.delete.fail' })
+              );
+            }
+            throw error;
+          }
+          if (!row.group_id) onDeleteInstanceFromCache?.(row.id);
         }
       });
     } catch (error: any) {

@@ -75,6 +75,11 @@ const ActionsCell: React.FC<ActionsCellProps> = ({
   };
 
   const actionItems = childActionList.filter((action: any) => {
+    if (
+      action.key === 'delete' &&
+      (record.draining_since || modelData?.restarting_since)
+    )
+      return false;
     if (action.key === 'benchmark') {
       // A run measures the path a request takes, and in a group that path
       // enters through the router. A prefill or a decode answers on its own

@@ -16,6 +16,7 @@ import { Tooltip } from 'antd';
 import _ from 'lodash';
 import React, { useEffect } from 'react';
 import { CACHE_METRICS_WINDOW, isPDModel } from '../../config';
+import { useDeploymentsContext } from '../../config/deploments-context';
 import {
   DistributedServerItem,
   ModelInstanceListItem
@@ -30,6 +31,8 @@ import {
   getGPUTypeClusterId,
   getGPUTypeSelector
 } from './vgpu-info';
+import { workloadInfoEntries } from './workload-info';
+import WorkloadInfoContent from './workload-info-content';
 export interface NameCellProps {
   record: ModelInstanceListItem;
   modelData: any;
@@ -72,11 +75,15 @@ const WorkerInfoContent: React.FC<NameCellProps> = ({
     record.distributed_servers?.subordinate_workers || [];
   const isDistributed = subordinateWorkers.length > 0;
 
+  const { workerList = [] } = useDeploymentsContext();
+  const workloads = workloadInfoEntries(record, workerList);
+
   let workerIp = '-';
   if (record.worker_ip) {
-    workerIp = record.port
-      ? `${record.worker_ip}:${record.port}`
-      : record.worker_ip;
+    workerIp =
+      workloads === null && record.port
+        ? `${record.worker_ip}:${record.port}`
+        : record.worker_ip;
   }
 
   const gpuIndexes = [...(record.gpu_indexes || [])].sort((a, b) => a - b);
@@ -209,15 +216,21 @@ const WorkerInfoContent: React.FC<NameCellProps> = ({
   ];
 
   return (
-    <GroupedInfoTooltipContent
-      groups={[backendRows, workerRows, gpuRows, cacheRows]}
-    />
+    <>
+      <GroupedInfoTooltipContent
+        groups={[backendRows, workerRows, gpuRows, cacheRows]}
+      />
+      {workloads !== null && (
+        <WorkloadInfoContent entries={workloads} record={record} />
+      )}
+    </>
   );
 };
 
 const WorkerInfo = (props: {
   title: React.ReactNode;
   defaultOpen: boolean;
+  hasWorkloads: boolean;
 }) => {
   const [open, setOpen] = React.useState(props.defaultOpen);
 
@@ -236,8 +249,12 @@ const WorkerInfo = (props: {
         onOpenChange={setOpen}
         title={props.title}
         styles={{
+          root: props.hasWorkloads
+            ? { width: 'max-content', maxWidth: 'calc(100vw - 32px)' }
+            : undefined,
           container: {
-            width: 'max-content'
+            width: 'max-content',
+            ...(props.hasWorkloads ? { maxWidth: 'calc(100vw - 32px)' } : {})
           }
         }}
       >
@@ -296,6 +313,7 @@ const NameCell: React.FC<NameCellProps> = ({
                 cacheHitRate={cacheHitRate}
               ></WorkerInfoContent>
             }
+            hasWorkloads={record.distributed_servers?.workloads != null}
             defaultOpen={defaultOpenId === record.name}
           ></WorkerInfo>
         </span>

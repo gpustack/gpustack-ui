@@ -1,4 +1,20 @@
 export default {
+  'models.instance.workloads.logicalDPSize': '逻辑 DP 数：{count}',
+  'models.instance.workloads.apiReady': 'API 就绪',
+  'models.instance.workloads.apiNotReady': 'API 未就绪',
+  'models.instance.workloads.apiUnknown': 'API 就绪状态未知',
+  'models.instance.workloads': 'Workload / rank',
+  'models.instance.workloads.pending': '等待 Workload 登记',
+  'models.instance.monitor.rank': '监控 DP {rank}',
+  'models.instance.monitor.engine': '监控共享 Engine',
+  'models.instance.monitor.smg': '监控 SMG（attempt {attempt}）',
+  'models.instance.monitor.logicalDP': '监控逻辑 DP',
+  'models.instance.monitor.logicalRank': '逻辑 DP {rank} · 共享 Engine',
+  'models.instance.monitor.logicalHint':
+    '逻辑 DP 筛选共享 Engine；缺少原生 dp_rank 的指标可能显示 No data。',
+  'models.instance.monitor.target': '监控 Worker {worker} 上的 R{run}',
+  'models.form.external.conflict': '两种 External-LB 模式不能同时启用。',
+
   'models.scaling.paused': '已暂停',
   'models.scaling.waiting': '等待定时伸缩',
   'models.scaling.resume': '恢复调度',
@@ -597,10 +613,10 @@ export default {
     '当前可用算力放不下这一组（需要 {required}，可用 {available}）。可减少副本数、换用切分卡型，或增加节点。',
   'models.pd.ratio.waiting': '配比 {configured}（当前 {current}，等待 {role}）',
   'models.instance.draining.tips':
-    '已缩容。不再接收新请求，等还在拉取它 KV 缓存的 decode 完成后删除。',
+    '正在停止实例；全部 Workload 停止前保留实例记录。',
   'models.pd.group.restarting.brief': '重启中…',
   'models.pd.group.restarting.progress':
-    '组级重启中：成员是被主动停止后重建的，目前 {ready}/{total} 已就绪。副本数偏低是因为这个，而不是因为组出了故障。',
+    '等待全部旧 Workload 停止后重建通信组，当前 {ready}/{total} 就绪。',
   'models.pd.group.restart.confirm':
     '此修改需要重启整个 PD 组：将先停止全部 {total} 个实例，再以新配置重建，期间该模型不可用。',
   'models.pd.instance.stale': '该实例使用旧版配置，重启整组后生效。',

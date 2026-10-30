@@ -1,4 +1,20 @@
 export default {
+  'models.instance.workloads.logicalDPSize': 'Logical DP count: {count}',
+  'models.instance.workloads.apiReady': 'API ready',
+  'models.instance.workloads.apiNotReady': 'API not ready',
+  'models.instance.workloads.apiUnknown': 'API readiness unknown',
+  'models.instance.workloads': 'Workloads / ranks',
+  'models.instance.workloads.pending': 'Waiting for workload registration',
+  'models.instance.monitor.rank': 'Monitor DP {rank}',
+  'models.instance.monitor.engine': 'Monitor shared Engine',
+  'models.instance.monitor.smg': 'Monitor SMG (attempt {attempt})',
+  'models.instance.monitor.logicalDP': 'Monitor logical DP',
+  'models.instance.monitor.logicalRank': 'Logical DP {rank} · shared Engine',
+  'models.instance.monitor.logicalHint':
+    'Logical DP filters the shared Engine. Metrics without native dp_rank may show No data.',
+  'models.instance.monitor.target': 'Monitor R{run} on Worker {worker}',
+  'models.form.external.conflict': 'External-LB modes are mutually exclusive.',
+
   'models.scaling.paused': 'Paused',
   'models.scaling.waiting': 'Waiting for scheduled scaling',
   'models.scaling.resume': 'Resume Schedule',
@@ -633,10 +649,10 @@ export default {
   'models.pd.ratio.waiting':
     'Ratio {configured} (currently {current}, waiting for {role})',
   'models.instance.draining.tips':
-    'Scaled down. It no longer takes new requests and keeps running until the decodes still fetching its KV cache are done, then it is deleted.',
+    'Stopping this instance. It is retained until all workloads have stopped.',
   'models.pd.group.restarting.brief': 'Restarting…',
   'models.pd.group.restarting.progress':
-    'Restarting the group: its members were stopped on purpose and are being rebuilt, {ready}/{total} ready so far. The replica counts read low for that reason, not because the group failed.',
+    'Waiting for all old workloads to stop, then rebuilding the group: {ready}/{total} ready.',
   'models.pd.group.restart.confirm':
     'This change needs the whole PD group restarted: all {total} instances are stopped first and rebuilt with the new configuration, and the model is unavailable in between.',
   'models.pd.instance.stale':

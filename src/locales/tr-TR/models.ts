@@ -1,4 +1,22 @@
 export default {
+  'models.instance.workloads.logicalDPSize': 'Mantıksal DP sayısı: {count}',
+  'models.instance.workloads.apiReady': 'API hazır',
+  'models.instance.workloads.apiNotReady': 'API hazır değil',
+  'models.instance.workloads.apiUnknown': 'API hazırlık durumu bilinmiyor',
+  'models.instance.workloads': 'Workload / rank',
+  'models.instance.workloads.pending': 'Workload kaydı bekleniyor',
+  'models.instance.monitor.rank': 'DP {rank} izle',
+  'models.instance.monitor.engine': 'Paylaşılan Engine izle',
+  'models.instance.monitor.smg': 'SMG izle (attempt {attempt})',
+  'models.instance.monitor.logicalDP': 'Mantıksal DP izle',
+  'models.instance.monitor.logicalRank':
+    'Mantıksal DP {rank} · paylaşılan Engine',
+  'models.instance.monitor.logicalHint':
+    'Mantıksal DP, paylaşılan Engine üzerinde filtre uygular. Yerel dp_rank içermeyen metrikler No data gösterebilir.',
+  'models.instance.monitor.target': 'Worker {worker} üzerindeki R{run} izle',
+  'models.form.external.conflict':
+    'External-LB modları birlikte etkinleştirilemez.',
+
   'models.scaling.paused': 'Duraklatıldı',
   'models.scaling.waiting': 'Zamanlama bekleniyor',
   'models.scaling.resume': 'Zamanlamayı Sürdür',
@@ -635,10 +653,10 @@ export default {
   'models.pd.ratio.waiting':
     'Oran {configured} (şu an {current}, {role} bekleniyor)',
   'models.instance.draining.tips':
-    'Ölçek küçültüldü. Yeni istek almıyor; KV önbelleğini hâlâ çeken decode örnekleri bitene kadar çalışmaya devam ediyor, ardından siliniyor.',
+    'Örnek durduruluyor. Tüm Workload görevleri durana kadar kayıt korunur.',
   'models.pd.group.restarting.brief': 'Yeniden başlatılıyor…',
   'models.pd.group.restarting.progress':
-    'Grup yeniden başlatılıyor: üyeleri bilerek durduruldu ve yeniden oluşturuluyor, şu ana kadar {ready}/{total} hazır. Kopya sayılarının düşük görünmesi bu yüzdendir, grup arızalandığı için değil.',
+    'Tüm eski Workload görevleri durduktan sonra grup yeniden oluşturulacak: {ready}/{total} hazır.',
   'models.pd.group.restart.confirm':
     'Bu değişiklik tüm PD grubunun yeniden başlatılmasını gerektirir: önce {total} örneğin tümü durdurulur, sonra yeni yapılandırmayla yeniden oluşturulur; bu sürede model kullanılamaz.',
   'models.pd.instance.stale':

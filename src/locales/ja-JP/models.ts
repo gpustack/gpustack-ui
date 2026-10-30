@@ -1,4 +1,21 @@
 export default {
+  'models.instance.workloads.logicalDPSize': '論理 DP 数：{count}',
+  'models.instance.workloads.apiReady': 'API 準備完了',
+  'models.instance.workloads.apiNotReady': 'API 未準備',
+  'models.instance.workloads.apiUnknown': 'API の準備状態は不明',
+  'models.instance.workloads': 'Workload / rank',
+  'models.instance.workloads.pending': 'Workload の登録待ち',
+  'models.instance.monitor.rank': 'DP {rank} の監視',
+  'models.instance.monitor.engine': '共有 Engine の監視',
+  'models.instance.monitor.smg': 'SMG の監視（attempt {attempt}）',
+  'models.instance.monitor.logicalDP': '論理 DP の監視',
+  'models.instance.monitor.logicalRank': '論理 DP {rank} · 共有 Engine',
+  'models.instance.monitor.logicalHint':
+    '論理 DP は共有 Engine を絞り込みます。ネイティブ dp_rank を持たない指標は No data になる場合があります。',
+  'models.instance.monitor.target': 'Worker {worker} の R{run} を監視',
+  'models.form.external.conflict':
+    'External-LB モードは同時に有効にできません。',
+
   'models.scaling.paused': '一時停止中',
   'models.scaling.waiting': 'スケジュール待機中',
   'models.scaling.resume': 'スケジュールを再開',
@@ -642,10 +659,10 @@ export default {
   'models.pd.ratio.waiting':
     '配分 {configured}（現在 {current}、{role} を待機中）',
   'models.instance.draining.tips':
-    'スケールインされました。新しいリクエストは受け付けず、KV キャッシュを取得中の Decode が完了するまで稼働を続けたあと削除されます。',
+    'インスタンスを停止中です。すべての Workload が停止するまで保持されます。',
   'models.pd.group.restarting.brief': '再起動中…',
   'models.pd.group.restarting.progress':
-    'グループを再起動中：メンバーは意図的に停止され、再作成されています（現在 {ready}/{total} が準備完了）。レプリカ数が少なく見えるのはそのためで、障害が起きたからではありません。',
+    'すべての旧 Workload の停止後にグループを再構築します。準備完了: {ready}/{total}。',
   'models.pd.group.restart.confirm':
     'この変更には PD グループ全体の再起動が必要です：まず {total} 個すべてのインスタンスを停止し、新しい設定で再作成します。その間モデルは利用できません。',
   'models.pd.instance.stale':

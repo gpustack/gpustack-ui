@@ -576,6 +576,7 @@ interface ComputedResourceClaim {
 
 export interface DistributedServerItem {
   worker_ip?: string | null;
+  gpu_indexes?: number[] | null;
   pid: number;
   port: number;
   // Numeric on the wire (ModelInstanceSubordinateWorker.worker_id), so it
@@ -596,12 +597,12 @@ export interface ModelInstanceDashboardTarget {
   restart_count: number;
   worker_id: number;
   dp_rank?: number;
-  component?: 'sglang_engine' | 'sglang_smg';
+  component?: 'sglang_engine' | 'sglang_smg' | 'vllm_hybrid';
   attempt?: number;
 }
 
 export interface ModelInstanceComponent {
-  kind: 'sglang_engine' | 'sglang_smg';
+  kind: 'sglang_engine' | 'sglang_smg' | 'vllm_hybrid';
   api_port?: number | null;
   metrics_port?: number | null;
   ready?: boolean | null;
@@ -1043,13 +1044,17 @@ export interface ModelInstanceLogSource {
   previous: boolean;
   kind: 'preparation' | 'workload' | 'rank' | 'public';
   label: string;
-  component_kind: 'sglang_engine' | 'sglang_smg' | null;
+  component_kind: 'sglang_engine' | 'sglang_smg' | 'vllm_hybrid' | null;
   workload_name: string | null;
   container_name: string | null;
   dp_rank: number | null;
   node_rank: number | null;
   main: boolean | null;
-  attribution: 'all' | 'supervisor_rank' | 'native_api_rank' | 'unattributed';
+  attribution:
+    | 'all'
+    | 'supervisor_rank'
+    | 'multi_port_external_api_rank'
+    | 'unattributed';
   available: boolean;
   active_workload_name: string | null;
   active_attempt: number | null;

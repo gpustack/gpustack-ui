@@ -1,4 +1,10 @@
 export default {
+  'models.instance.workloads.state.pending': '待機中',
+  'models.instance.workloads.state.running': '実行中',
+  'models.instance.workloads.state.stopped': '停止済み',
+  'models.instance.workloads.state.failed': '失敗',
+  'models.instance.workloads.state.unknown': '不明',
+  'models.instance.workloads.localDPSize': 'ローカル DP 数：{count}',
   'models.instance.workloads.logicalDPSize': '論理 DP 数：{count}',
   'models.instance.workloads.apiReady': 'API 準備完了',
   'models.instance.workloads.apiNotReady': 'API 未準備',

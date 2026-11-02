@@ -1,4 +1,10 @@
 export default {
+  'models.instance.workloads.state.pending': 'Pending',
+  'models.instance.workloads.state.running': 'Running',
+  'models.instance.workloads.state.stopped': 'Stopped',
+  'models.instance.workloads.state.failed': 'Failed',
+  'models.instance.workloads.state.unknown': 'Unknown',
+  'models.instance.workloads.localDPSize': 'Local DP count: {count}',
   'models.instance.workloads.logicalDPSize': 'Logical DP count: {count}',
   'models.instance.workloads.apiReady': 'API ready',
   'models.instance.workloads.apiNotReady': 'API not ready',

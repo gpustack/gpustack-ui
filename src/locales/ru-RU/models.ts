@@ -1,4 +1,10 @@
 export default {
+  'models.instance.workloads.state.pending': 'В ожидании',
+  'models.instance.workloads.state.running': 'Выполняется',
+  'models.instance.workloads.state.stopped': 'Остановлено',
+  'models.instance.workloads.state.failed': 'Ошибка',
+  'models.instance.workloads.state.unknown': 'Неизвестно',
+  'models.instance.workloads.localDPSize': 'Количество локальных DP: {count}',
   'models.instance.workloads.logicalDPSize':
     'Количество логических DP: {count}',
   'models.instance.workloads.apiReady': 'API готов',

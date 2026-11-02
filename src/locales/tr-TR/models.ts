@@ -1,4 +1,10 @@
 export default {
+  'models.instance.workloads.state.pending': 'Bekliyor',
+  'models.instance.workloads.state.running': 'Çalışıyor',
+  'models.instance.workloads.state.stopped': 'Durduruldu',
+  'models.instance.workloads.state.failed': 'Başarısız',
+  'models.instance.workloads.state.unknown': 'Bilinmiyor',
+  'models.instance.workloads.localDPSize': 'Yerel DP sayısı: {count}',
   'models.instance.workloads.logicalDPSize': 'Mantıksal DP sayısı: {count}',
   'models.instance.workloads.apiReady': 'API hazır',
   'models.instance.workloads.apiNotReady': 'API hazır değil',

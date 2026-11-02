@@ -121,14 +121,20 @@ const calcStorage = (files: Filesystem[]) => {
 };
 
 const GPUCell = ({ devices }: { devices: GPUDeviceItem[] }) => (
-  <Flex orientation="vertical" gap={4} style={{ width: '100%' }}>
+  <Flex orientation="vertical" gap={3} style={{ width: '100%' }}>
     {_.map(
       _.sortBy(devices || [], ['index']),
       (item: GPUDeviceItem, index: number) => (
         <span className="flex-center" key={index} style={{ height: 18 }}>
           <span
             className="m-r-5"
-            style={{ display: 'flex', width: 30, lineHeight: 1 }}
+            style={{
+              display: 'flex',
+              fontSize: 12,
+              width: 40,
+              lineHeight: 1,
+              justifyContent: 'flex-end'
+            }}
           >
             [{item.index}]
           </span>
@@ -170,7 +176,13 @@ const VRAMItem = ({
       <span className="flex-center" style={{ cursor: 'pointer' }}>
         <span
           className="m-r-5"
-          style={{ display: 'flex', width: 30, lineHeight: 1 }}
+          style={{
+            display: 'flex',
+            fontSize: 12,
+            width: 40,
+            lineHeight: 1,
+            justifyContent: 'flex-end'
+          }}
         >
           <span
             style={{
@@ -202,7 +214,7 @@ const VRAMCell = ({
   loadend: boolean;
   firstLoad: boolean;
 }) => (
-  <Flex orientation="vertical" gap={4} style={{ width: '100%' }}>
+  <Flex orientation="vertical" gap={5} style={{ width: '100%' }}>
     {_.map(
       _.sortBy(devices || [], ['index']),
       (item: GPUDeviceItem, index: number) => (

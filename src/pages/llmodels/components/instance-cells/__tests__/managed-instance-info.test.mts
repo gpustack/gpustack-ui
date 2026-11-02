@@ -776,7 +776,7 @@ for (const view of ['standalone', 'expanded']) {
     assert.equal(doc.querySelector('.worker-name')?.textContent, 'alpha');
     assert.equal(
       doc.querySelector('.placement-meta [data-status]')?.textContent,
-      'failed'
+      'models.instance.workloads.state.failed'
     );
     const headless = doc.querySelectorAll('.workload-group')[1];
     assert.equal(headless.querySelector('.readiness'), null);
@@ -788,6 +788,35 @@ for (const view of ['standalone', 'expanded']) {
     dom.window.close();
   });
 }
+
+test('workload status labels use locale messages for every wire state', async () => {
+  const expected = {
+    pending: 'transitioning',
+    running: 'success',
+    stopped: 'inactive',
+    failed: 'error',
+    unknown: 'inactive'
+  } as const;
+  for (const [state, color] of Object.entries(expected)) {
+    const instance = rankInstance();
+    instance.distributed_servers!.workloads![0].state =
+      state as keyof typeof expected;
+    const dom = new JSDOM(renderView('expanded', instance));
+    const status = dom.window.document.querySelector('[data-status]')!;
+    assert.equal(
+      status.textContent,
+      `models.instance.workloads.state.${state}`
+    );
+    assert.equal(status.getAttribute('data-status'), color);
+    dom.window.close();
+    for (const locale of ['en-US', 'zh-CN', 'ja-JP', 'ru-RU', 'tr-TR']) {
+      const { default: messages } = await import(
+        `../../../../../locales/${locale}/models.ts`
+      );
+      assert.ok(messages[`models.instance.workloads.state.${state}`]);
+    }
+  }
+});
 
 test('API readiness is independent of workload running state and unknown stays unknown', () => {
   const instance = rankInstance();
@@ -836,4 +865,152 @@ test('the scalar information groups stay separate and only managed tooltips get 
   );
   assert.equal(legacyTooltip.styles.root, undefined);
   assert.deepEqual(legacyTooltip.styles.container, { width: 'max-content' });
+});
+
+const hybridInstance = () => ({
+  ...record({
+    subordinate_workers: [
+      { worker_id: 2, worker_ip: '10.0.0.2', gpu_indexes: [1, 3] },
+      { worker_id: 3, worker_ip: '10.0.0.3', gpu_indexes: [4, 6] },
+      { worker_id: 4, worker_ip: '10.0.0.4', gpu_indexes: [5, 7] }
+    ],
+    workloads: [1, 2, 3, 4].map((worker_id) => ({
+      name: `hybrid-${worker_id}`,
+      worker_id,
+      state: 'running',
+      dp_rank_placements: [],
+      component: {
+        kind: 'vllm_hybrid',
+        api_port: worker_id === 1 || worker_id === 3 ? 9000 : null,
+        ready: worker_id === 1 || worker_id === 3 ? true : null,
+        dp_size: worker_id === 1 || worker_id === 3 ? 1 : null,
+        attempt: 0,
+        stop_requested: false
+      }
+    }))
+  }),
+  name: 'hybrid-instance',
+  state: 'running',
+  gpu_indexes: [0, 2]
+});
+
+test('Hybrid entries use actual local allocations and shared APIs without inventing ranks', () => {
+  const instance = hybridInstance();
+  const entries = workloadInfoEntries(instance)!;
+  assert.equal(entries.length, 4);
+  assert.deepEqual(
+    entries.map((entry) => entry.gpuIndexes),
+    [
+      [0, 2],
+      [1, 3],
+      [4, 6],
+      [5, 7]
+    ]
+  );
+  assert.deepEqual(
+    entries.map((entry) => entry.api),
+    ['10.0.0.1:9000', '-', '10.0.0.3:9000', '-']
+  );
+  assert.deepEqual(
+    entries.map((entry) => entry.monitor),
+    [
+      { restart_count: 3, worker_id: 1, component: 'vllm_hybrid' },
+      undefined,
+      { restart_count: 3, worker_id: 3, component: 'vllm_hybrid' },
+      undefined
+    ]
+  );
+  assert.ok(
+    entries.every(
+      (entry) =>
+        entry.placement === undefined && entry.logicalDPSize === undefined
+    )
+  );
+  assert.match(entries[0].detail, /shared API 10.0.0.1:9000.*local DP 1/);
+  assert.match(entries[1].detail, /headless.*API -.*GPU \[1, 3\]/);
+  assert.doesNotMatch(
+    entries.map((entry) => entry.detail).join('\n'),
+    /logical DP|attempt=|DP \d+ \/ node|undefined/
+  );
+  const workers = [{ id: 3, name: 'current-worker', ip: '10.1.0.3' }];
+  assert.equal(workloadInfoEntries(instance, workers)![2].api, '10.1.0.3:9000');
+  assert.equal(
+    workloadInfoEntries(instance, workers)![2].workerName,
+    'current-worker'
+  );
+  const noAllocation = { ...instance, gpu_indexes: undefined };
+  noAllocation.distributed_servers!.subordinate_workers![0].gpu_indexes =
+    undefined;
+  assert.equal(workloadInfoEntries(noAllocation)![0].gpuIndexes, undefined);
+  assert.equal(workloadInfoEntries(noAllocation)![1].gpuIndexes, undefined);
+});
+
+for (const view of ['standalone', 'expanded']) {
+  for (const role of [undefined, 'prefill']) {
+    test(`${view} ${role ?? 'ordinary'} Hybrid view keeps one shared monitor per API and all Worker devices`, () => {
+      const instance = { ...hybridInstance(), role };
+      const dom = new JSDOM(renderView(view, instance));
+      const doc = dom.window.document;
+      assert.equal(doc.querySelectorAll('.workload-group').length, 4);
+      assert.deepEqual(
+        [...doc.querySelectorAll('.placement-meta')].map(
+          (el) => el.textContent?.match(/GPU \[[^\]]*\]/)?.[0]
+        ),
+        ['GPU [0, 2]', 'GPU [1, 3]', 'GPU [4, 6]', 'GPU [5, 7]']
+      );
+      assert.equal(doc.querySelectorAll('.workload-heading button').length, 2);
+      assert.equal(doc.querySelectorAll('.readiness').length, 2);
+      assert.equal(monitorMenus.length, 0);
+      assert.equal(doc.querySelectorAll('.workload-heading strong').length, 4);
+      assert.ok(
+        [...doc.querySelectorAll('.workload-heading strong')].every(
+          (el) => el.textContent === 'Engine'
+        )
+      );
+      const endpoints = [...doc.querySelectorAll('.endpoint')].map(
+        (el) => el.textContent
+      );
+      assert.deepEqual(endpoints, [
+        'shared API 10.0.0.1:9000 | models.instance.workloads.localDPSize 1',
+        'headless | API -',
+        'shared API 10.0.0.3:9000 | models.instance.workloads.localDPSize 1',
+        'headless | API -'
+      ]);
+      const buttons = monitorButtons.filter(
+        (button) => button['aria-label'] === 'resources.metrics.details'
+      );
+      assert.equal(buttons.length, 2);
+      buttons.forEach((button) => button.onClick());
+      assert.deepEqual(targetAt(0), {
+        restart_count: '3',
+        worker_id: '1',
+        component: 'vllm_hybrid'
+      });
+      assert.deepEqual(targetAt(1), {
+        restart_count: '3',
+        worker_id: '3',
+        component: 'vllm_hybrid'
+      });
+      assert.deepEqual(copiedDetails.sort(), workloadInfo(instance)!.sort());
+      dom.window.close();
+    });
+  }
+}
+
+test('Hybrid shared local DP count does not create logical rank controls or infer ranges', () => {
+  const instance = hybridInstance();
+  instance.distributed_servers!.workloads![0].component!.dp_size = 2;
+  instance.restart_count = 0;
+  renderView('expanded', instance);
+  assert.equal(monitorMenus.length, 0);
+  assert.match(workloadInfo(instance)![0], /local DP 2/);
+  assert.ok(
+    workloadInfoEntries(instance)!.every(
+      (entry) => entry.logicalDPSize === undefined
+    )
+  );
+  monitorButtons
+    .find((button) => button['aria-label'] === 'resources.metrics.details')
+    .onClick();
+  assert.equal(targetAt(0).restart_count, '0');
 });

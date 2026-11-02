@@ -122,11 +122,13 @@ const WorkloadInfoContent: React.FC<{
     const label = intl.formatMessage(
       {
         id:
-          monitor.component === 'sglang_engine'
-            ? 'models.instance.monitor.engine'
-            : monitor.component === 'sglang_smg'
-              ? 'models.instance.monitor.smg'
-              : 'models.instance.monitor.rank'
+          monitor.component === 'vllm_hybrid'
+            ? 'resources.metrics.details'
+            : monitor.component === 'sglang_engine'
+              ? 'models.instance.monitor.engine'
+              : monitor.component === 'sglang_smg'
+                ? 'models.instance.monitor.smg'
+                : 'models.instance.monitor.rank'
       },
       { rank: monitor.dp_rank, attempt: monitor.attempt }
     );
@@ -191,6 +193,7 @@ const WorkloadInfoContent: React.FC<{
       ? placement.node_rank === 0
       : component?.api_port != null;
     const ready = placement?.ready ?? component?.ready;
+    const gpuIndexes = placement?.gpu_indexes ?? entry.gpuIndexes;
     return (
       <div className="placement" key={entry.key}>
         <Flex align="center" gap={6}>
@@ -217,7 +220,7 @@ const WorkloadInfoContent: React.FC<{
             gap={12}
             wrap
           >
-            {placement && <span>GPU [{placement.gpu_indexes.join(', ')}]</span>}
+            {gpuIndexes && <span>GPU [{gpuIndexes.join(', ')}]</span>}
             <StatusDot
               statusValue={{
                 status:
@@ -228,7 +231,9 @@ const WorkloadInfoContent: React.FC<{
                       : state === 'pending'
                         ? 'transitioning'
                         : 'inactive',
-                text: state
+                text: intl.formatMessage({
+                  id: `models.instance.workloads.state.${state}`
+                })
               }}
             />
             {main && (
@@ -267,7 +272,11 @@ const WorkloadInfoContent: React.FC<{
           const api = component
             ? component.kind === 'sglang_smg'
               ? `aggregate API ${entry.api}`
-              : `${component.api_port == null ? 'headless | API -' : `shared API ${entry.api}`} | ${intl.formatMessage({ id: 'models.instance.workloads.logicalDPSize' }, { count: component.dp_size ?? '-' })}`
+              : component.kind === 'vllm_hybrid'
+                ? component.api_port == null
+                  ? 'headless | API -'
+                  : `shared API ${entry.api} | ${intl.formatMessage({ id: 'models.instance.workloads.localDPSize' }, { count: component.dp_size ?? '-' })}`
+                : `${component.api_port == null ? 'headless | API -' : `shared API ${entry.api}`} | ${intl.formatMessage({ id: 'models.instance.workloads.logicalDPSize' }, { count: component.dp_size ?? '-' })}`
             : main?.api || '-';
           return (
             <section className="workload-group" key={group.key}>

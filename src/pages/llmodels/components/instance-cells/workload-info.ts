@@ -16,6 +16,7 @@ export interface WorkloadInfoEntry {
   detail: string;
   monitor?: ModelInstanceDashboardTarget;
   logicalDPSize?: number;
+  gpuIndexes?: number[];
 }
 
 // Keep the authoritative empty manifest distinct from legacy placement data.
@@ -42,12 +43,21 @@ export function workloadInfoEntries(
     };
     const component = workload.component;
     if (component) {
+      const hybrid = component.kind === 'vllm_hybrid';
+      const gpuIndexes = hybrid
+        ? ((local ? record.gpu_indexes : peer?.gpu_indexes) ?? undefined)
+        : undefined;
       const endpoint = (port?: number | null) =>
         port == null ? '-' : `${ip || `Worker ${workload.worker_id}`}:${port}`;
+      const dp = hybrid
+        ? component.api_port == null
+          ? ''
+          : ` | local DP ${component.dp_size ?? '-'}`
+        : ` | logical DP ${component.dp_size ?? '-'}`;
       const service =
         component.kind === 'sglang_smg'
           ? `CPU | aggregate API ${endpoint(component.api_port)}`
-          : `${component.api_port == null ? 'headless | API -' : `shared API ${endpoint(component.api_port)}`} | logical DP ${component.dp_size ?? '-'}`;
+          : `${component.api_port == null ? 'headless | API -' : `shared API ${endpoint(component.api_port)}`}${dp}`;
       const monitor: ModelInstanceDashboardTarget | undefined =
         epoch != null && component.api_port != null
           ? {
@@ -63,9 +73,12 @@ export function workloadInfoEntries(
         {
           ...common,
           component,
+          gpuIndexes,
           api: endpoint(component.api_port),
           key: `${workload.worker_id}:${workload.name}:${component.kind}`,
-          detail: `${workload.name} | ${name} | ${component.kind} | ${service} | metrics ${endpoint(component.metrics_port)} | attempt=${component.attempt} | ready=${component.ready ?? '-'} | stop_requested=${component.stop_requested} | last_restart_time=${component.last_restart_time ?? '-'} | ${workload.state}`,
+          detail: hybrid
+            ? `${workload.name} | ${name} | ${component.kind} | ${service}${gpuIndexes ? ` | GPU [${gpuIndexes.join(', ')}]` : ''}${component.api_port != null ? ` | ready=${component.ready ?? '-'}` : ''} | ${workload.state}`
+            : `${workload.name} | ${name} | ${component.kind} | ${service} | metrics ${endpoint(component.metrics_port)} | attempt=${component.attempt} | ready=${component.ready ?? '-'} | stop_requested=${component.stop_requested} | last_restart_time=${component.last_restart_time ?? '-'} | ${workload.state}`,
           monitor,
           logicalDPSize:
             monitor &&

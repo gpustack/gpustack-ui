@@ -82,7 +82,7 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
       }}
       keyboard={true}
       styles={{
-        wrapper: {
+        container: {
           borderRadius: 0
         }
       }}

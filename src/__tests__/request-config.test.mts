@@ -1,4 +1,6 @@
 import assert from 'node:assert/strict';
+import { createServer } from 'node:http';
+import { createRequire } from 'node:module';
 import { beforeEach, mock, test } from 'node:test';
 
 const userAtom = Symbol('user');
@@ -36,7 +38,8 @@ mock.module(
     .href,
   { defaultExport: () => null }
 );
-const { requestConfig } = await import('../request-config.tsx');
+const requestModule = await import('../request-config.tsx');
+const { requestConfig } = requestModule;
 handleError = requestConfig.errorConfig!.errorHandler!;
 const settle = () => new Promise((resolve) => setImmediate(resolve));
 const failure = (url: string, status = 401) => ({
@@ -48,6 +51,7 @@ const failure = (url: string, status = 401) => ({
 beforeEach(() => {
   currentUser = { id: 1, username: 'test-user' };
   sessionStatus = 200;
+  requestModule.setRequestBasename('/console/');
   [request, push, clearAtomStorage, showError].forEach((fn) =>
     fn.mock.resetCalls()
   );
@@ -119,4 +123,83 @@ test('skipErrorHandler suppresses the toast while still validating inference 401
   assert.equal(currentUser.username, 'test-user');
   assert.equal(request.mock.calls.length, 1);
   assert.equal(push.mock.calls.length, 0);
+});
+
+for (const url of [
+  'http://localhost:8000/v1/embeddings',
+  '//localhost:8000/v1/embeddings',
+  '/console/v1/embeddings',
+  'https://gpustack.example/console/v1/rerank?limit=1'
+]) {
+  test(`${url} inference 401 validates the console session`, async () => {
+    handleError(failure(url), {});
+    await settle();
+    assert.equal(request.mock.calls.length, 1);
+    assert.equal(push.mock.calls.length, 0);
+    assert.equal(currentUser.username, 'test-user');
+  });
+}
+
+for (const url of [
+  '/workers?next=/v1/embeddings',
+  'https://gpustack.example/workers?next=/v1/embeddings',
+  '/workers#/v1/embeddings',
+  '/console/v10/models',
+  '/another/v1/models',
+  '/v2/proxy/v1/models',
+  'http://[invalid/v1/embeddings'
+]) {
+  test(`${url} must not be classified as inference`, () => {
+    handleError(failure(url), {});
+    assert.equal(request.mock.calls.length, 0);
+    assert.equal(push.mock.calls.length, 1);
+  });
+}
+
+test('the actual Umi Axios dependency supplies config.url on HTTP 401', async (t) => {
+  const hostRequire = createRequire(import.meta.url);
+  const pluginRequire = createRequire(
+    hostRequire.resolve('@umijs/plugins/package.json')
+  );
+  // Use the request plugin's dependency, not the UI's direct Axios version.
+  const axios = pluginRequire('axios');
+  const server = createServer((_request, response) => {
+    response.writeHead(401, { 'Content-Type': 'application/json' });
+    response.end(JSON.stringify({ error: 'Unauthorized' }));
+  });
+  await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
+  t.after(
+    () =>
+      new Promise<void>((resolve, reject) => {
+        server.close((error) => (error ? reject(error) : resolve()));
+      })
+  );
+  const address = server.address();
+  assert.ok(address && typeof address !== 'string');
+  const url = `http://127.0.0.1:${address.port}/v1/embeddings`;
+  await assert.rejects(
+    axios.post(url, { model: 'test', input: ['hello'] }),
+    (asyncError) => {
+      const error = asyncError as any;
+      assert.equal(error.response.status, 401);
+      assert.equal(error.config.url, url);
+      handleError(error, {});
+      return true;
+    }
+  );
+  await settle();
+  assert.equal(request.mock.calls.length, 1);
+  assert.equal(push.mock.calls.length, 0);
+  assert.equal(currentUser.username, 'test-user');
+});
+
+test('resetting the deployment basename removes the previous prefix', async () => {
+  requestModule.setRequestBasename('/');
+  handleError(failure('/v1/embeddings?input=test'), {});
+  await settle();
+  assert.equal(request.mock.calls.length, 1);
+  assert.equal(push.mock.calls.length, 0);
+  handleError(failure('/console/v1/embeddings'), {});
+  assert.equal(request.mock.calls.length, 1);
+  assert.equal(push.mock.calls.length, 1);
 });

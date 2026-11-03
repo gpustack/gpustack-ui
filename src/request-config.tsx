@@ -8,6 +8,7 @@ import {
   extraRequestInterceptors,
   extraResponseInterceptors
 } from './request.extensions';
+import { queryCurrentUserState } from './services/profile/apis';
 
 //  these APIs do not via the GPUSTACK_API_BASE_URL
 const NoBaseURLAPIs = ['/auth', '/v1', '/version', '/proxy', '/update'];
@@ -63,6 +64,15 @@ export const requestConfig: RequestConfig = {
         });
       }
       if (response?.status === 401) {
+        // Inference endpoints can forward an upstream provider's 401. Only
+        // the management identity endpoint can establish session expiry.
+        if (/^\/v1(?:\/|\?|$)/.test(error.config?.url || '')) {
+          void queryCurrentUserState().catch(() => {
+            // A management 401 follows the login path below. Other probe
+            // failures do not establish that the console session expired.
+          });
+          return;
+        }
         clearAtomStorage(userAtom);
 
         history.push(DEFAULT_ENTER_PAGE.login, { replace: true });

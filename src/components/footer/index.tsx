@@ -2,6 +2,7 @@ import { GPUStackVersionAtom } from '@/atoms/user';
 import VersionInfo, { modalConfig } from '@/components/version-info';
 import { documentationPaths } from '@/constants/documentation';
 import useSiteSettings from '@/hooks/use-site-settings';
+import { resolveFooterUrl } from '@/pages/site-settings/config/validation';
 import { getDocumentationUrl } from '@/utils/documentation';
 import { useIntl } from '@umijs/max';
 import { Button, Divider, Modal, Typography } from 'antd';
@@ -59,7 +60,10 @@ const Footer: React.FC = () => {
                 <span>&copy;</span>
                 <span> {new Date().getFullYear()}</span>
                 <Typography.Link
-                  href={settings.footer_url || 'https://gpustack.ai'}
+                  href={
+                    resolveFooterUrl(settings.footer_url) ||
+                    'https://gpustack.ai'
+                  }
                   target="_blank"
                   rel="noopener noreferrer"
                 >

@@ -22,6 +22,8 @@ export default {
   'siteSettings.assetReadError': '選択した画像を読み込めませんでした。',
   'siteSettings.footerName': 'フッター会社名',
   'siteSettings.footerUrl': 'フッター会社 URL',
+  'siteSettings.urlInvalid':
+    'HTTP(S) URL または / で始まる同一オリジンのパスを入力してください。',
   'siteSettings.save': '変更を保存',
   'siteSettings.saveSuccess': 'サイト設定を保存しました。',
   'siteSettings.saveError': 'サイト設定を保存できませんでした。'

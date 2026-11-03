@@ -90,6 +90,8 @@ for (const response of [
   null,
   {},
   { site_name: 123, primary_color: '#123456' },
+  { site_name: 'Lab', primary_color: ['#123456'] },
+  { site_name: 'Lab', primary_color: null },
   { site_name: 'Lab', primary_color: 'red' }
 ]) {
   test(`invalid public response ${JSON.stringify(response)} falls back to defaults`, async () => {

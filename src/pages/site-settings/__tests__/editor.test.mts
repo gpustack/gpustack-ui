@@ -32,6 +32,7 @@ const saved: any[] = [];
 let rejectRead!: (error: Error) => void;
 let reads = 0;
 let failFirstRead = false;
+let readResponse: unknown;
 let saveRequest = async (values: any) => ({
   ...values,
   updated_at: '2026-11-02T00:00:00Z'
@@ -41,6 +42,7 @@ beforeEach(() => {
   saved.length = 0;
   applied.length = 0;
   failFirstRead = false;
+  readResponse = persisted;
   ControlledFileReader.instances = [];
   saveRequest = async (values: any) => ({
     ...values,
@@ -71,7 +73,7 @@ mock.module('@gpustack/core-ui', {
               return new Promise((_resolve, reject) => {
                 rejectRead = reject;
               });
-            return persisted;
+            return readResponse;
           }
           saved.push(options.data);
           return saveRequest(options.data);
@@ -216,6 +218,10 @@ test('save failure preserves edits, does not apply branding, and allows retry', 
     assert.equal(saved.length, 2);
     assert.equal(saved[1].primary_color, defaultSiteSettings.primary_color);
     assert.equal(applied[0].site_name, 'Server-normalized name');
+    assert.equal(
+      ui.container.querySelector<HTMLInputElement>('#site_name')?.value,
+      'Server-normalized name'
+    );
   } finally {
     await ui.unmount();
   }
@@ -319,6 +325,79 @@ test('invalid form submission does not save and a corrected name can be submitte
     await ui.save();
     assert.equal(saved.length, 1);
     assert.equal(saved[0].site_name, 'Corrected Lab');
+  } finally {
+    await ui.unmount();
+  }
+});
+
+for (const response of [
+  '<html>GPUStack</html>',
+  {},
+  { ...persisted, primary_color: ['#123456'] }
+]) {
+  test(`malformed successful read ${JSON.stringify(response)} blocks saving until retry`, async () => {
+    readResponse = response;
+    const ui = await mountEditor();
+    try {
+      assert.equal(ui.button('siteSettings.save').disabled, true);
+      assert.ok(ui.container.textContent?.includes('siteSettings.loadError'));
+      await ui.submit();
+      assert.equal(saved.length, 0);
+      readResponse = persisted;
+      await act(async () => {
+        ui.button('siteSettings.retry').click();
+        await flushEvents();
+      });
+      assert.equal(ui.button('siteSettings.save').disabled, false);
+      await ui.save();
+      assert.equal(saved.length, 1);
+    } finally {
+      await ui.unmount();
+    }
+  });
+}
+
+test('unsafe footer links cannot be saved and correction releases the submit lock', async () => {
+  const { Simulate } = await import('react-dom/test-utils');
+  const ui = await mountEditor();
+  const input = ui.container.querySelector<HTMLInputElement>('#footer_url')!;
+  try {
+    for (const value of [
+      'javascript:alert(1)',
+      '//outside.test',
+      'https://example.com:65536'
+    ]) {
+      await act(async () => {
+        input.value = value;
+        Simulate.change(input);
+      });
+      await ui.save();
+      assert.equal(saved.length, 0);
+      assert.ok(ui.container.textContent?.includes('siteSettings.urlInvalid'));
+    }
+    await act(async () => {
+      input.value = '/about';
+      Simulate.change(input);
+    });
+    await ui.save();
+    assert.equal(saved[0].footer_url, '/about');
+  } finally {
+    await ui.unmount();
+  }
+});
+
+test('malformed save responses preserve edits and never apply invalid branding', async () => {
+  saveRequest = async () => ({ ...persisted, primary_color: null }) as any;
+  const ui = await mountEditor();
+  try {
+    await ui.save();
+    assert.equal(applied.length, 0);
+    assert.ok(document.body.textContent?.includes('siteSettings.saveError'));
+    assert.equal(
+      ui.container.querySelector<HTMLInputElement>('#site_name')?.value,
+      'Lab'
+    );
+    assert.equal(ui.button('siteSettings.save').disabled, false);
   } finally {
     await ui.unmount();
   }

@@ -22,6 +22,7 @@ export default {
   'siteSettings.assetReadError': '无法读取所选图片。',
   'siteSettings.footerName': '页脚公司名称',
   'siteSettings.footerUrl': '页脚公司链接',
+  'siteSettings.urlInvalid': '请输入 HTTP(S) 链接或以 / 开头的同源路径。',
   'siteSettings.save': '保存修改',
   'siteSettings.saveSuccess': '站点设置已保存。',
   'siteSettings.saveError': '站点设置保存失败。'

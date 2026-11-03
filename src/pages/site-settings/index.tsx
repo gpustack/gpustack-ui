@@ -17,6 +17,7 @@ import { applySiteSettings } from './bootstrap';
 import AssetInput from './components/asset-input';
 import { defaultSiteSettings } from './config';
 import type { FormData } from './config/types';
+import { resolveFooterUrl } from './config/validation';
 import { querySiteSettings, updateSiteSettings } from './services/api';
 import styles from './styles.module.less';
 
@@ -44,6 +45,7 @@ export default function SiteSettings() {
     await run(async () => {
       try {
         const next = await updateSiteSettings(request, values);
+        form.setFieldsValue(next);
         applySiteSettings(next);
         messageApi.success(
           intl.formatMessage({ id: 'siteSettings.saveSuccess' })
@@ -222,6 +224,17 @@ export default function SiteSettings() {
               <Form.Item
                 name="footer_url"
                 label={intl.formatMessage({ id: 'siteSettings.footerUrl' })}
+                rules={[
+                  {
+                    validator: async (_, value: string | null) => {
+                      if (value?.trim() && !resolveFooterUrl(value)) {
+                        throw new Error(
+                          intl.formatMessage({ id: 'siteSettings.urlInvalid' })
+                        );
+                      }
+                    }
+                  }
+                ]}
               >
                 <Input maxLength={2048} placeholder="https://gpustack.ai" />
               </Form.Item>

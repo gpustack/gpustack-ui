@@ -233,3 +233,29 @@ test('enterprise logos take precedence and missing plugin assets fall back indep
     await ui.unmount();
   }
 });
+
+test('untrusted footer URLs never become executable or protocol-relative links', async () => {
+  const ui = await mount();
+  try {
+    for (const url of [
+      'javascript:alert(1)',
+      'data:text/html,hello',
+      '//outside.test',
+      '/\\outside.test'
+    ]) {
+      await act(async () =>
+        store.set(siteSettingsAtom, {
+          ...defaultSiteSettings,
+          footer_name: 'Lab Inc.',
+          footer_url: url
+        })
+      );
+      const company = [...ui.container.querySelectorAll('a')].find(
+        (a) => a.textContent === 'Lab Inc.'
+      )!;
+      assert.equal(company.getAttribute('href'), 'https://gpustack.ai');
+    }
+  } finally {
+    await ui.unmount();
+  }
+});

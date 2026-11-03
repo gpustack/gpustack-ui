@@ -24,6 +24,8 @@ export default {
   'siteSettings.assetReadError': 'Не удалось прочитать выбранное изображение.',
   'siteSettings.footerName': 'Название компании в подвале',
   'siteSettings.footerUrl': 'Ссылка компании в подвале',
+  'siteSettings.urlInvalid':
+    'Введите HTTP(S) URL или путь того же источника, начинающийся с /.',
   'siteSettings.save': 'Сохранить изменения',
   'siteSettings.saveSuccess': 'Настройки сайта сохранены.',
   'siteSettings.saveError': 'Не удалось сохранить настройки сайта.'

@@ -1,5 +1,6 @@
 import { SITE_SETTINGS_API } from '../config';
-import type { FormData, SiteSettings } from '../config/types';
+import type { FormData } from '../config/types';
+import { parseSiteSettings } from '../config/validation';
 
 export type Request = <T>(
   url: string,
@@ -7,14 +8,14 @@ export type Request = <T>(
 ) => Promise<T>;
 
 export const querySiteSettings = (request: Request) =>
-  request<SiteSettings>(SITE_SETTINGS_API, {
+  request<unknown>(SITE_SETTINGS_API, {
     method: 'GET',
     skipErrorHandler: true
-  });
+  }).then(parseSiteSettings);
 
 export const updateSiteSettings = (request: Request, data: FormData) =>
-  request<SiteSettings>(SITE_SETTINGS_API, {
+  request<unknown>(SITE_SETTINGS_API, {
     method: 'PUT',
     data,
     skipErrorHandler: true
-  });
+  }).then(parseSiteSettings);

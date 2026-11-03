@@ -23,6 +23,8 @@ export default {
   'siteSettings.assetReadError': 'Seçilen görüntü okunamadı.',
   'siteSettings.footerName': 'Alt bilgi şirket adı',
   'siteSettings.footerUrl': 'Alt bilgi şirket URL’si',
+  'siteSettings.urlInvalid':
+    'HTTP(S) URL’si veya / ile başlayan aynı kökene ait bir yol girin.',
   'siteSettings.save': 'Değişiklikleri kaydet',
   'siteSettings.saveSuccess': 'Site ayarları kaydedildi.',
   'siteSettings.saveError': 'Site ayarları kaydedilemedi.'

@@ -1,12 +1,9 @@
 import { userSettingsHelperAtom } from '@/atoms/settings';
 import { siteSettingsAtom } from '@/atoms/site-settings';
 import { setAtomStorage } from '@/atoms/utils';
-import {
-  defaultSiteSettings,
-  resolveSiteSettings,
-  SITE_SETTINGS_PUBLIC_API
-} from './config';
+import { defaultSiteSettings, SITE_SETTINGS_PUBLIC_API } from './config';
 import type { SiteSettings } from './config/types';
+import { parseSiteSettings } from './config/validation';
 import type { Request } from './services/api';
 
 export const applySiteSettings = (settings: SiteSettings) => {
@@ -29,19 +26,13 @@ export const loadSiteSettings = async (
 ): Promise<SiteSettings> => {
   let settings = defaultSiteSettings;
   try {
-    const response = await request<SiteSettings>(SITE_SETTINGS_PUBLIC_API, {
+    const response = await request<unknown>(SITE_SETTINGS_PUBLIC_API, {
       method: 'GET',
       skipErrorHandler: true,
       timeout: 5000
     });
     // An older server may serve the SPA fallback instead of this API.
-    if (
-      response &&
-      typeof response.site_name === 'string' &&
-      /^#[0-9a-fA-F]{6}$/.test(response.primary_color)
-    ) {
-      settings = resolveSiteSettings(response);
-    }
+    settings = parseSiteSettings(response);
   } catch {
     // Branding must never prevent authentication on an older or unavailable server.
   }

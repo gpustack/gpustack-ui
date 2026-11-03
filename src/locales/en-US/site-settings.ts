@@ -22,6 +22,8 @@ export default {
   'siteSettings.assetReadError': 'Unable to read the selected image.',
   'siteSettings.footerName': 'Footer company name',
   'siteSettings.footerUrl': 'Footer company URL',
+  'siteSettings.urlInvalid':
+    'Enter an HTTP(S) URL or a same-origin path starting with /.',
   'siteSettings.save': 'Save changes',
   'siteSettings.saveSuccess': 'Site settings saved.',
   'siteSettings.saveError': 'Site settings could not be saved.'

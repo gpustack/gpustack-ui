@@ -20,6 +20,7 @@ function renderLayout(mode?: string) {
   const mounted: string[] = [];
   const effects: Array<() => unknown> = [];
   let probes = 0;
+  let pageTitle: string | undefined;
   const navigated: string[] = [];
   let loggedOut = false;
   let guardLogout: (() => Promise<void>) | undefined;
@@ -60,6 +61,7 @@ function renderLayout(mode?: string) {
     '@/config/route-cachekey': { default: {} },
     '@/config/settings': { DEFAULT_ENTER_PAGE: { login: '/login' } },
     '@/config/theme': {},
+    '@/hooks/use-site-settings': { default: () => ({ site_name: 'Lab' }) },
     '@/hooks/use-current-user': { default: () => ({ id: 1 }) },
     '@/hooks/use-table-fetch': { default: () => ({}) },
     '@/hooks/use-user-settings': {
@@ -92,7 +94,8 @@ function renderLayout(mode?: string) {
       })
     },
     '@ant-design/pro-components': {
-      ProLayout: ({ children, menuContentRender }: any) => {
+      ProLayout: ({ children, menuContentRender, pageTitleRender }: any) => {
+        pageTitle = pageTitleRender?.();
         mounted.push('shell');
         return h('main', {}, menuContentRender({}), children);
       }
@@ -137,6 +140,7 @@ function renderLayout(mode?: string) {
   const html = renderToStaticMarkup(h(exports.default));
   return {
     html,
+    pageTitle,
     mounted,
     navigated,
     logout: () => guardLogout!(),
@@ -196,3 +200,7 @@ for (const mode of [
     );
   });
 }
+
+test('console document titles use the configured site name', () => {
+  assert.equal(renderLayout().pageTitle, 'Lab');
+});

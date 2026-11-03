@@ -69,3 +69,7 @@ The runner enables import conditions and module mocking only for `*.test.mts`, s
 
 - Official website: https://gpustack.ai/
 - Documents: https://docs.gpustack.ai/latest/overview/
+
+## Site settings
+
+Platform administrators can customize the deployment name, primary color, logos, favicon, and footer at `/access-control/site-settings`. This requires a server with the `/v2/site-settings` API and its database migration. The public branding read falls back to GPUStack defaults on older or unavailable servers; the editor stays disabled until its administrator read succeeds. Builds with a branding plugin retain that plugin's initialization and editor.

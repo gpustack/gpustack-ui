@@ -409,6 +409,14 @@ const baseRoutes = [
         component: './organizations'
       },
       {
+        name: 'siteSettings',
+        path: '/access-control/site-settings',
+        key: 'siteSettings',
+        icon: 'icon-settings',
+        access: 'canManageSiteSettings',
+        component: './site-settings'
+      },
+      {
         name: 'users',
         path: '/access-control/users',
         key: 'users',

@@ -6,6 +6,7 @@ import { DEFAULT_ENTER_PAGE, GPUSTACK_API_BASE_URL } from '@/config/settings';
 import { COLOR_PRIMARY } from '@/config/theme/constants';
 import ErrorBoundary from '@/layouts/error-boundary';
 import { ensureCurrentLocaleMessages } from '@/locales/load-messages';
+import { loadSiteSettings } from '@/pages/site-settings/bootstrap';
 import { canInitializeConsole, getGPUStackPlugin } from '@/plugins';
 import { enterprisePluginReady } from '@/plugins/enterprise-ready';
 import { GPUStackPluginManager } from '@/plugins/manager';
@@ -75,6 +76,7 @@ export async function getInitialState(): Promise<{
 }> {
   // In open-source builds the promise resolves immediately.
   await enterprisePluginReady;
+  if (!getGPUStackPlugin()?.branding) await loadSiteSettings(umiRequest);
 
   // Public boot must not consume the plugins' one-time management initialization.
   let pluginData = {};

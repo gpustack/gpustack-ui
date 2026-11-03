@@ -1,4 +1,4 @@
-import { defaultSettings } from '@/atoms/settings';
+import { defaultSettings, getStorageUserSettings } from '@/atoms/settings';
 import { nsLocal, nsSession } from '@gpustack/core-ui/utils';
 import { getDefaultStore } from 'jotai';
 
@@ -64,7 +64,7 @@ export const resetStorageUserSettings = () => {
       'userSettings',
       JSON.stringify({
         ...defaultSettings,
-        colorPrimary: undefined
+        colorPrimary: getStorageUserSettings().colorPrimary
       })
     );
   } catch (error) {

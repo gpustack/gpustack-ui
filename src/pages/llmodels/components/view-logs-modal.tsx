@@ -302,9 +302,7 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
       keyboard={true}
       styles={{
         container: {
-          padding: '12px 24px 24px 20px'
-        },
-        wrapper: {
+          padding: '12px 24px 24px 20px',
           borderRadius: 0
         }
       }}

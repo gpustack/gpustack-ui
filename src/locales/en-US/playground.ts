@@ -187,7 +187,18 @@ export default {
   'playground.decision.state.invalidJson': 'Invalid JSON: {message}',
   'playground.decision.state.required': 'The state is required.',
   'playground.decision.run.noModel': 'Select a model to run.',
+  'playground.decision.run': 'Run decision',
+  'playground.decision.run.scope':
+    'Run with the current state and all questions.',
+  'playground.decision.answers.expand': 'Expand answers',
+  'playground.decision.answers.collapse': 'Collapse answers',
+  'playground.decision.answers.resize': 'Resize the answers panel',
+  'playground.decision.answers.resize.tooltip':
+    'Drag to resize; double-click to reset. Use arrow keys to resize and Enter to collapse or expand.',
   'playground.decision.questions': 'Questions',
+  'playground.decision.questions.type.choice': 'Choice',
+  'playground.decision.questions.type.score': 'Score',
+  'playground.decision.questions.type.noul': 'Yes/No',
   'playground.decision.questions.format': 'Format',
   'playground.decision.questions.invalidJson': 'Invalid JSON: {message}',
   'playground.decision.questions.notObject': 'Questions must be a JSON object.',

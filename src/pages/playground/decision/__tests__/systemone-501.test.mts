@@ -53,6 +53,8 @@ mock.module(new URL('../../apis/index.ts', import.meta.url).href, {
     }
   }
 });
+// JSDOM does not provide layout; browser checks cover measured Splitter sizes.
+mock.module('ahooks', { namedExports: { useSize: () => undefined } });
 mock.module('@gpustack/core-ui/json-editor', {
   namedExports: {
     JsonEditor: () => null

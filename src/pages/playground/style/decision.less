@@ -1,102 +1,201 @@
 .ground-left-wrapper.decision {
   .center {
     height: 100%;
-    // The whole column scrolls as one page; the monaco editors scroll
-    // internally at their own fixed heights. The flex axis comes from the
-    // ant Flex that renders this column (component="div" vertical).
+    // Retain access to both editors when the answer pane leaves little space.
     overflow-y: auto;
   }
 
-  // Sticky section titles for the scroll column; the space-between row is
-  // an ant Flex at each usage site, CSS keeps only spacing, the item's
-  // flex:none, and the sticky visual.
-  .section-header {
-    margin-bottom: 8px;
-    flex: none;
-    // Section titles stick to the top of the scrolling column.
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background-color: var(--ant-color-bg-container);
-  }
-
-  // The vertical stack is an ant Flex (component="div" vertical); CSS keeps
-  // the item's flex:none and the region padding.
   .decision-input-region {
-    flex: none;
+    height: 100%;
+    // Two 40px headers, 72px editor bodies, borders, gap and outer padding.
+    min-height: 276px;
     padding-inline: var(--layout-content-inlinepadding);
     padding-top: 16px;
     padding-bottom: 16px;
   }
 
-  // Always-mounted token strip wrapper: OverlayScrollbars owns `.center`'s
-  // direct children once initialized (it moves them into its viewport), so
-  // React must never insert or remove one after mount — only the wrapper's
-  // contents toggle. Collapses fully while empty.
-  .decision-token-strip {
-    flex: none;
+  .decision-workspace {
+    height: 100%;
+    min-height: 0;
+  }
 
-    &:empty {
+  .decision-splitter-wrap {
+    flex: 1;
+    min-height: 0;
+  }
+
+  .decision-splitter > .ant-splitter-bar {
+    height: 2px;
+    background-color: var(--ant-color-border-secondary);
+
+    .ant-splitter-bar-dragger::before,
+    .ant-splitter-bar-dragger:hover::before,
+    .ant-splitter-bar-dragger-active::before {
+      height: 2px;
+      background-color: transparent;
+    }
+  }
+
+  .decision-split-handle {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 12px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--ant-border-radius-sm);
+    color: var(--ant-color-text-secondary);
+    cursor: row-resize;
+
+    &:hover {
+      color: var(--ant-color-primary);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--ant-color-primary);
+      outline-offset: 2px;
+    }
+  }
+
+  .decision-token-strip {
+    min-width: 0;
+
+    .reference-params {
+      height: auto;
+      white-space: nowrap;
+    }
+  }
+
+  .editor-panel {
+    --decision-editor-radius: 6px;
+    flex: 3;
+    min-height: 114px;
+    min-width: 0;
+    border: 1px solid var(--ant-color-border);
+    border-radius: var(--decision-editor-radius);
+  }
+
+  .editor-header {
+    flex: none;
+    height: 40px;
+    gap: var(--ant-margin-xs);
+    padding: 6px var(--ant-padding-sm);
+    border-bottom: 1px solid var(--ant-color-border-secondary);
+    border-radius: calc(var(--decision-editor-radius) - 1px)
+      calc(var(--decision-editor-radius) - 1px) 0 0;
+    background-color: var(--ant-color-fill-quaternary);
+
+    h3 {
+      flex: none;
+      white-space: nowrap;
+    }
+  }
+
+  .editor-actions {
+    flex: 1;
+    min-width: 0;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    .ant-btn {
+      flex: none;
+    }
+
+    &::-webkit-scrollbar {
+      height: 3px;
+    }
+  }
+
+  .state-editor {
+    flex: 1;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+    border-radius: 0 0 calc(var(--decision-editor-radius) - 1px)
+      calc(var(--decision-editor-radius) - 1px);
+  }
+
+  .questions-editor-wrap {
+    flex: 5;
+    margin-top: var(--ant-margin);
+  }
+
+  .questions-editor {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    border-radius: 0 0 calc(var(--decision-editor-radius) - 1px)
+      calc(var(--decision-editor-radius) - 1px);
+  }
+
+  .answers-region {
+    height: 100%;
+    min-height: 0;
+  }
+
+  .answers-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    column-gap: var(--ant-margin-xs);
+    flex: none;
+    height: 40px;
+    padding-inline: var(--layout-content-inlinepadding);
+    border-bottom: 1px solid var(--ant-color-border-secondary);
+    background-color: var(--ant-color-fill-quaternary);
+
+    > h3 {
+      justify-self: start;
+    }
+
+    > .ant-btn {
+      justify-self: end;
+    }
+  }
+
+  .answers-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+
+    &[hidden] {
       display: none;
     }
   }
 
-  .state-editor-resizable {
-    display: flex;
-    flex: none;
+  .answers-content {
+    min-height: 100%;
+    padding: var(--ant-padding) var(--layout-content-inlinepadding);
 
-    .state-editor {
-      flex: 1;
-      min-width: 0;
-      height: 100%;
-      overflow: hidden;
-      border: 1px solid var(--ant-color-border-secondary);
-      border-radius: var(--border-radius-base);
+    &.is-empty {
+      display: grid;
+      place-items: center;
     }
   }
 
-  // Row-resize grip between the state and questions editors; geometry comes
-  // from re-resizable's inline handle styles, visuals from these tokens.
-  .decision-resize-handle {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    &::after {
-      content: '';
-      width: 36px;
-      height: 3px;
-      border-radius: 2px;
-      background-color: var(--ant-color-fill-tertiary);
-      transition: background-color 0.2s ease;
-    }
-
-    &:hover::after,
-    &:active::after {
-      background-color: var(--ant-color-primary);
-    }
+  .decision-answer-placeholder {
+    color: var(--ant-color-text-tertiary);
   }
 
-  .questions-header {
-    margin-top: 16px;
-  }
-
-  .questions-editor-wrap {
+  .decision-run-bar {
     flex: none;
-    height: 320px;
-    overflow: hidden;
-    border: 1px solid var(--ant-color-border-secondary);
-    border-radius: var(--border-radius-base);
+    padding: var(--ant-padding-sm) var(--layout-content-inlinepadding);
+    border-top: 1px solid var(--ant-color-border-secondary);
+    background-color: var(--ant-color-bg-container);
   }
 
-  // Natural height in the single scroll column; scroll-margin keeps the
-  // sticky section header from covering the region after scrollIntoView.
-  .answers-region {
+  .decision-run-description {
+    flex: 1;
+    min-width: 0;
+    color: var(--ant-color-text-secondary);
+  }
+
+  .decision-run-description .anticon {
     flex: none;
-    padding-inline: var(--layout-content-inlinepadding);
-    padding-top: 16px;
-    padding-bottom: 16px;
-    scroll-margin-top: 48px;
+  }
+
+  .decision-run-button {
+    min-width: 112px;
   }
 
   // Question editing lives in the monaco JSON editor; only the answer
@@ -158,14 +257,4 @@
     overflow: auto;
     max-height: 240px;
   }
-}
-
-// Rendered inside antd tooltip portals (outside this component's subtree),
-// so this rule must stay un-nested to match.
-.run-shortcut {
-  margin-left: 8px;
-  padding: 0 4px;
-  border: 1px solid rgba(255, 255, 255, 0.45);
-  border-radius: 4px;
-  font-size: 12px;
 }

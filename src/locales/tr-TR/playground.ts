@@ -186,7 +186,18 @@ export default {
   'playground.decision.state.invalidJson': 'Geçersiz JSON: {message}',
   'playground.decision.state.required': 'Durum gereklidir.',
   'playground.decision.run.noModel': 'Çalıştırmak için bir model seçin.',
+  'playground.decision.run': 'Kararı çalıştır',
+  'playground.decision.run.scope':
+    'Geçerli durum ve tüm sorularla karar verin.',
+  'playground.decision.answers.expand': 'Yanıtları genişlet',
+  'playground.decision.answers.collapse': 'Yanıtları daralt',
+  'playground.decision.answers.resize': 'Yanıt panelinin yüksekliğini ayarla',
+  'playground.decision.answers.resize.tooltip':
+    'Boyutlandırmak için sürükleyin, sıfırlamak için çift tıklayın. Ok tuşlarıyla boyutlandırın, Enter ile daraltın veya genişletin.',
   'playground.decision.questions': 'Sorular',
+  'playground.decision.questions.type.choice': 'Seçim',
+  'playground.decision.questions.type.score': 'Puan',
+  'playground.decision.questions.type.noul': 'Evet/Hayır',
   'playground.decision.questions.format': 'Biçimlendir',
   'playground.decision.questions.invalidJson': 'Geçersiz JSON: {message}',
   'playground.decision.questions.notObject':

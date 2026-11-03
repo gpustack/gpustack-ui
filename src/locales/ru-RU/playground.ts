@@ -186,7 +186,18 @@ export default {
   'playground.decision.state.invalidJson': 'Неверный JSON: {message}',
   'playground.decision.state.required': 'Укажите состояние.',
   'playground.decision.run.noModel': 'Выберите модель для запуска.',
+  'playground.decision.run': 'Запустить решение',
+  'playground.decision.run.scope':
+    'Используются текущее состояние и все вопросы.',
+  'playground.decision.answers.expand': 'Развернуть ответы',
+  'playground.decision.answers.collapse': 'Свернуть ответы',
+  'playground.decision.answers.resize': 'Изменить высоту панели ответов',
+  'playground.decision.answers.resize.tooltip':
+    'Перетащите для изменения высоты, дважды нажмите для сброса. Стрелки меняют высоту, Enter сворачивает или разворачивает панель.',
   'playground.decision.questions': 'Вопросы',
+  'playground.decision.questions.type.choice': 'Выбор',
+  'playground.decision.questions.type.score': 'Оценка',
+  'playground.decision.questions.type.noul': 'Да/нет',
   'playground.decision.questions.format': 'Форматировать',
   'playground.decision.questions.invalidJson': 'Неверный JSON: {message}',
   'playground.decision.questions.notObject':

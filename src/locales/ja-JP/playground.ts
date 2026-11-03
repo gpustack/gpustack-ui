@@ -190,7 +190,18 @@ export default {
   'playground.decision.state.invalidJson': 'JSON が無効です: {message}',
   'playground.decision.state.required': '状態を入力してください。',
   'playground.decision.run.noModel': '実行するにはモデルを選択してください。',
+  'playground.decision.run': '判断を実行',
+  'playground.decision.run.scope':
+    '現在の状態とすべての質問で判断を実行します。',
+  'playground.decision.answers.expand': '回答を展開',
+  'playground.decision.answers.collapse': '回答を折りたたむ',
+  'playground.decision.answers.resize': '回答パネルの高さを調整',
+  'playground.decision.answers.resize.tooltip':
+    'ドラッグで高さを調整し、ダブルクリックで元に戻します。矢印キーで調整、Enter で折りたたみ・展開します。',
   'playground.decision.questions': '質問',
+  'playground.decision.questions.type.choice': '選択',
+  'playground.decision.questions.type.score': '評価',
+  'playground.decision.questions.type.noul': 'はい／いいえ',
   'playground.decision.questions.format': 'フォーマット',
   'playground.decision.questions.invalidJson': 'JSON が無効です: {message}',
   'playground.decision.questions.notObject':

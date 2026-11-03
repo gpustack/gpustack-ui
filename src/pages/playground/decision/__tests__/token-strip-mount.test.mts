@@ -5,15 +5,15 @@ import { createElement as h } from 'react';
 
 // Regression harness for the token-strip insertBefore crash:
 // OverlayScrollbars (useOverlayScroller's initialize) restructures the scroll
-// host after mount — it moves `.center`'s children into its viewport. The
-// strip used to mount as a NEW direct child of `.center` on the first
+// host after mount — it moves the host's children into its viewport. The
+// strip used to mount as a NEW direct child of the scroll host on the first
 // successful run, and React's insertBefore then targeted a sibling the
 // scroller had moved away:
 //   Failed to execute 'insertBefore' on 'Node': The node before which the
 //   new node is to be inserted is not a child of this node.
-// The page now keeps an always-mounted wrapper; only its contents toggle. If
-// the crash comes back, the error propagates out of act() and fails this test
-// with the real stack.
+// Answers keep a stable content wrapper in their scroll host; token usage
+// lives in the header and remains visible when the answers are collapsed.
+// A DOM ownership regression propagates out of act() and fails this test.
 
 const decisionResponse = {
   model: 'jev-1.13.0',
@@ -51,6 +51,8 @@ mock.module(new URL('../../apis/index.ts', import.meta.url).href, {
     decisionQuery: async () => decisionResponse
   }
 });
+// JSDOM does not provide layout; browser checks cover measured Splitter sizes.
+mock.module('ahooks', { namedExports: { useSize: () => undefined } });
 mock.module('@gpustack/core-ui/json-editor', {
   namedExports: {
     JsonEditor: () => null
@@ -108,7 +110,7 @@ mock.module(fromRoot('hooks/use-user-settings.ts'), {
   defaultExport: () => ({ isDarkTheme: false })
 });
 
-test('the token strip mounts after a run without insertBefore crashing', async () => {
+test('answer usage mounts in the header without crashing the scroll region', async () => {
   // A real origin (not about:blank) so jsdom enables localStorage.
   const dom = new JSDOM('<!doctype html><div id="root"></div>', {
     url: 'http://localhost/'
@@ -176,10 +178,17 @@ test('the token strip mounts after a run without insertBefore crashing', async (
       );
     });
 
-    // The scroller mock moved `.center`'s children into its viewport — the
-    // same post-init DOM the real OverlayScrollbars leaves behind.
-    const center = container.querySelector('.center');
-    assert.ok(center, 'the scroll column is rendered');
+    // Input and answers have separate scroll hosts. The mock moves each
+    // host's children just as the real OverlayScrollbars does after mount.
+    const answerScroll =
+      container.querySelector<HTMLElement>('.answers-scroll');
+    assert.ok(answerScroll, 'the answers scroll region is rendered');
+    const answerToggle = () =>
+      container.querySelector<HTMLButtonElement>('.answers-header button')!;
+    assert.equal(answerToggle().getAttribute('aria-expanded'), 'true');
+    assert.equal(answerScroll.hidden, false, 'answers are expanded by default');
+    await act(async () => answerToggle().click());
+    assert.equal(answerToggle().getAttribute('aria-expanded'), 'false');
 
     const primaryButton = () =>
       Array.from(container.querySelectorAll('button')).find((button) =>
@@ -189,10 +198,15 @@ test('the token strip mounts after a run without insertBefore crashing', async (
 
     // Before the wrapper fix this click crashed the commit with
     // insertBefore — the strip mounted as a NEW direct child of the
-    // restructured `.center`.
+    // restructured scroll host.
     await act(async () => {
       primaryButton()!.click();
     });
+    assert.equal(
+      answerToggle().getAttribute('aria-expanded'),
+      'true',
+      'running reveals the answers panel'
+    );
 
     assert.match(
       container.textContent || '',
@@ -204,10 +218,48 @@ test('the token strip mounts after a run without insertBefore crashing', async (
       /playground\.tokenusage/,
       'the token strip is rendered'
     );
-    assert.ok(
-      center?.querySelector('.reference-params'),
-      'the usage strip is rendered'
+    const answerHeader = container.querySelector('.answers-header')!;
+    const usage = answerHeader.querySelector('.reference-params');
+    assert.ok(usage, 'usage is rendered in the answer header');
+    assert.equal(
+      answerScroll.querySelector('.reference-params'),
+      null,
+      'usage is outside the scrolling answer body'
     );
+
+    await act(async () => answerToggle().click());
+    assert.equal(answerScroll.hidden, true, 'collapsing hides the body');
+    assert.equal(
+      answerHeader.querySelector('.reference-params'),
+      usage,
+      'usage remains in the header when the body is collapsed'
+    );
+    await act(async () => answerToggle().click());
+    assert.equal(answerScroll.hidden, false, 'expanding restores the body');
+    assert.match(
+      answerScroll.textContent || '',
+      /department/,
+      'the result survives collapsing'
+    );
+
+    const separator = container.querySelector<HTMLButtonElement>(
+      'button[role="separator"]'
+    )!;
+    await act(async () =>
+      separator.dispatchEvent(
+        new dom.window.KeyboardEvent('keydown', {
+          key: 'ArrowUp',
+          bubbles: true
+        })
+      )
+    );
+    assert.equal(separator.getAttribute('aria-valuenow'), '284');
+    await act(async () =>
+      separator.dispatchEvent(
+        new dom.window.KeyboardEvent('keydown', { key: 'Home', bubbles: true })
+      )
+    );
+    assert.equal(separator.getAttribute('aria-valuenow'), '260');
 
     await act(async () => {
       root.unmount();

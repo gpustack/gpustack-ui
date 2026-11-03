@@ -51,6 +51,8 @@ mock.module(new URL('../../apis/index.ts', import.meta.url).href, {
       })
   }
 });
+// JSDOM does not provide layout; browser checks cover measured Splitter sizes.
+mock.module('ahooks', { namedExports: { useSize: () => undefined } });
 mock.module('@gpustack/core-ui/json-editor', {
   namedExports: {
     JsonEditor: (props: any) => {
@@ -217,8 +219,9 @@ test('switching models cancels the in-flight run and ignores its late result', a
     );
     assert.equal(container.querySelector('.run-status'), null);
     assert.doesNotMatch(
-      container.textContent || '',
-      /playground\.decision\.run\.noModel/
+      container.querySelector('.decision-run-description')?.textContent || '',
+      /playground\.decision\.run\.noModel/,
+      'the run bar does not repeat the blocking reason already on the button'
     );
     assert.equal(pending.length, 0);
     await act(async () => setModelSelectValue('model-a'));

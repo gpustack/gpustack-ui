@@ -1,26 +1,19 @@
-import HotKeys, { KeyMap } from '@/config/hotkeys';
+import HotKeys from '@/config/hotkeys';
 import useUserSettings from '@/hooks/use-user-settings';
 import {
   ClearOutlined,
+  FormatPainterOutlined,
   PlusOutlined,
-  QuestionCircleOutlined,
-  SendOutlined
+  QuestionCircleOutlined
 } from '@ant-design/icons';
-import {
-  AlertInfo,
-  IconFont,
-  useOverlayScroller,
-  useRequestToken
-} from '@gpustack/core-ui';
+import { AlertInfo, useRequestToken } from '@gpustack/core-ui';
 import { JsonEditor } from '@gpustack/core-ui/json-editor';
 import { useIntl, useSearchParams } from '@umijs/max';
 import { Button, Flex, Spin, Tag, Tooltip } from 'antd';
 import axios from 'axios';
 import _ from 'lodash';
-import { Resizable } from 're-resizable';
 import React, {
   forwardRef,
-  useEffect,
   useImperativeHandle,
   useMemo,
   useRef,
@@ -36,6 +29,9 @@ import { decisionSamples } from '../config/samples';
 import '../style/decision.less';
 import '../style/ground-llm.less';
 import { generateDecisionCode } from '../view-code/decision';
+import DecisionWorkspace, {
+  DecisionWorkspaceHandle
+} from './decision-workspace';
 import DataForm from './forms';
 
 interface MessageProps {
@@ -214,8 +210,7 @@ const GroundDecision: React.FC<MessageProps> = forwardRef((props, ref) => {
   const requestSource = useRequestToken();
   const requestToken = useRef<any>(null);
   const formRef = useRef<any>(null);
-  const scroller = useRef<any>(null);
-  const answersRegionRef = useRef<any>(null);
+  const workspaceRef = useRef<DecisionWorkspaceHandle>(null);
 
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -246,14 +241,6 @@ const GroundDecision: React.FC<MessageProps> = forwardRef((props, ref) => {
   const [parameters, setParameters] = useState<any>(() => ({
     model: searchParams.get('model') || ''
   }));
-
-  const { initialize } = useOverlayScroller();
-
-  useEffect(() => {
-    if (scroller.current) {
-      initialize(scroller.current);
-    }
-  }, [initialize]);
 
   useImperativeHandle(ref, () => {
     return {
@@ -448,6 +435,7 @@ const GroundDecision: React.FC<MessageProps> = forwardRef((props, ref) => {
     }
 
     setLoading(true);
+    workspaceRef.current?.showAnswers();
     requestToken.current?.cancel?.();
     requestToken.current = requestSource();
     // Stop and a newer run both cancel this token; once superseded, this
@@ -473,9 +461,6 @@ const GroundDecision: React.FC<MessageProps> = forwardRef((props, ref) => {
       }
       setAnswers(res?.answers || {});
       setMeta(res ?? null);
-      // Fresh answers land below the input region — bring the answers
-      // section into view.
-      answersRegionRef.current?.scrollIntoView?.({ block: 'start' });
     } catch (err: any) {
       // A cancellation is intentional (Stop, or a newer run replacing this
       // one): no error UI for it, and a superseded run leaves the newer
@@ -691,119 +676,105 @@ const GroundDecision: React.FC<MessageProps> = forwardRef((props, ref) => {
   return (
     <div className="ground-left-wrapper decision">
       <div className="ground-left">
-        <Flex component="div" vertical className="center" ref={scroller}>
-          {/* Single scroll column: the editors scroll internally at fixed
-              heights, answers follow below, section titles stick. */}
-          <Flex component="div" vertical className="decision-input-region">
-            <Flex
-              component="div"
-              justify="space-between"
-              align="center"
-              className="section-header"
-            >
-              <h3 className="m-b-0 font-size-14 line-24 font-500">
-                {intl.formatMessage({ id: 'playground.decision.state' })}
-                <Tooltip
-                  title={intl.formatMessage({
-                    id: 'playground.decision.state.tooltip'
-                  })}
-                >
-                  <QuestionCircleOutlined className="m-l-4" />
-                </Tooltip>
-              </h3>
-              <div className="flex-center gap-10">
-                <Button
-                  size="middle"
-                  icon={<ClearOutlined />}
-                  disabled={loading}
-                  onClick={handleClear}
-                >
-                  {intl.formatMessage({ id: 'common.button.clear' })}
-                </Button>
-                {/* Same submit affordance as the rerank/embedding document
-                    header: icon-only primary button beside Clear, morphing
-                    into Stop while the request is in flight; disabled with
-                    the blocking reason on hover (TypeSafe-style lint
-                    gating). */}
-                {!loading ? (
-                  <Tooltip
-                    title={
-                      <span>
-                        {runBlockReason ||
-                          intl.formatMessage({ id: 'common.button.submit' })}
-                        <span className="run-shortcut">
-                          {KeyMap.RUN.textKeybinding}
-                        </span>
-                      </span>
-                    }
-                  >
-                    <Button
-                      size="middle"
-                      type="primary"
-                      onClick={handleSubmit}
-                      disabled={!!runBlockReason}
-                      // The tooltip title is not a reliable accessible name;
-                      // mirror it as the label (the blocking reason reads
-                      // out when the run is gated).
-                      aria-label={
-                        runBlockReason ||
-                        intl.formatMessage({ id: 'common.button.submit' })
-                      }
-                      icon={
-                        <SendOutlined rotate={0} className="font-size-14" />
-                      }
-                      style={{ width: 60 }}
-                    ></Button>
-                  </Tooltip>
-                ) : (
-                  <Tooltip
-                    title={intl.formatMessage({ id: 'common.button.stop' })}
-                  >
-                    <Button
-                      size="middle"
-                      type="primary"
-                      style={{ width: 60 }}
-                      onClick={handleStop}
-                      // Icon-only control: the tooltip is not a dependable
-                      // accessible name, so carry the stop label explicitly.
-                      aria-label={intl.formatMessage({
-                        id: 'common.button.stop'
-                      })}
-                      icon={
-                        <IconFont
-                          type="icon-stop1"
-                          className="font-size-12"
-                        ></IconFont>
-                      }
-                    ></Button>
-                  </Tooltip>
+        <DecisionWorkspace
+          ref={workspaceRef}
+          loading={loading}
+          runBlockReason={runBlockReason}
+          onRun={handleSubmit}
+          onStop={handleStop}
+          answersEmpty={!loading && !answers && !error}
+          answerUsage={
+            meta?.usage &&
+            (meta.usage.input_tokens ?? 0) + (meta.usage.output_tokens ?? 0) >
+              0 && (
+              <ReferenceParams
+                usage={{
+                  prompt_tokens: meta.usage.input_tokens ?? 0,
+                  completion_tokens: meta.usage.output_tokens ?? 0,
+                  total_tokens:
+                    (meta.usage.input_tokens ?? 0) +
+                    (meta.usage.output_tokens ?? 0),
+                  // Decision runs are one-shot (no streaming), so the
+                  // throughput fields stay 0; showOutput=false never
+                  // renders them.
+                  tokens_per_second: 0,
+                  time_per_output_token_ms: 0,
+                  time_to_first_token_ms: 0
+                }}
+                showOutput={false}
+              ></ReferenceParams>
+            )
+          }
+          answers={
+            <div>
+              {error && (
+                <div className="m-b-8">
+                  <AlertInfo type="danger" message={error}></AlertInfo>
+                </div>
+              )}
+
+              {loading && (
+                <Spin size="small">
+                  <div style={{ height: 46 }}></div>
+                </Spin>
+              )}
+              {!loading &&
+                answers &&
+                Object.entries(answers).map(([name, answer]) =>
+                  renderAnswer(name, answer)
                 )}
-              </div>
-            </Flex>
-            {/* State follows the spec's content triple (string | object |
-                array): seeded as structured JSON (chat messages, like
-                TypeSafe's default), editable down to a plain string —
-                schema hints flag off-contract values, only unparseable text
-                blocks submit. The block height is draggable (TypeSafe-style
-                row resize) between the state and questions editors. */}
-            <Resizable
-              className="state-editor-resizable"
-              defaultSize={{ width: '100%', height: 180 }}
-              minHeight={72}
-              maxHeight={400}
-              enable={{ bottom: true }}
-              handleClasses={{ bottom: 'decision-resize-handle' }}
-              handleStyles={{
-                bottom: {
-                  position: 'absolute',
-                  bottom: '-6px',
-                  left: '0',
-                  width: '100%',
-                  height: '12px',
-                  cursor: 'row-resize'
-                }
-              }}
-            >
+              {!loading && answers && _.isEmpty(answers) && (
+                <span style={{ color: 'var(--ant-color-text-secondary)' }}>
+                  {intl.formatMessage({
+                    id: 'playground.decision.answers.empty'
+                  })}
+                </span>
+              )}
+              {!loading && !answers && !error && (
+                <span className="decision-answer-placeholder">
+                  {intl.formatMessage({
+                    id: 'playground.decision.answers.placeholder'
+                  })}
+                </span>
+              )}
+            </div>
+          }
+        >
+          <Flex component="div" vertical className="decision-input-region">
+            <Flex vertical className="editor-panel">
+              <Flex
+                component="div"
+                justify="space-between"
+                align="center"
+                className="editor-header"
+              >
+                <h3 className="m-b-0 font-size-14 line-24 font-500">
+                  {intl.formatMessage({ id: 'playground.decision.state' })}
+                  <Tooltip
+                    title={intl.formatMessage({
+                      id: 'playground.decision.state.tooltip'
+                    })}
+                  >
+                    <QuestionCircleOutlined className="m-l-4" />
+                  </Tooltip>
+                </h3>
+                <Flex
+                  align="center"
+                  justify="end"
+                  gap="small"
+                  wrap
+                  className="editor-actions"
+                >
+                  <Button
+                    size="small"
+                    icon={<ClearOutlined />}
+                    disabled={loading}
+                    onClick={handleClear}
+                  >
+                    {intl.formatMessage({ id: 'common.button.clear' })}
+                  </Button>
+                </Flex>
+              </Flex>
               <div className="state-editor">
                 <JsonEditor
                   isDarkTheme={isDarkTheme}
@@ -815,131 +786,69 @@ const GroundDecision: React.FC<MessageProps> = forwardRef((props, ref) => {
                   options={{ lineNumbers: 'off', folding: false }}
                 />
               </div>
-            </Resizable>
-
-            <Flex
-              component="div"
-              justify="space-between"
-              align="center"
-              className="section-header questions-header"
-            >
-              <h3 className="m-b-0 font-size-14 line-24 font-500">
-                {intl.formatMessage({ id: 'playground.decision.questions' })}
-              </h3>
-              <div className="flex-center gap-10">
-                {Object.keys(QUESTION_TEMPLATES).map((type) => (
-                  <Button
-                    key={type}
-                    size="middle"
-                    disabled={loading || !questionsParsable}
-                    onClick={() => handleInsertTemplate(type)}
-                  >
-                    <PlusOutlined />
-                    {type}
-                  </Button>
-                ))}
-                <Button
-                  size="middle"
-                  disabled={loading || !questionsParsable}
-                  onClick={handleFormat}
-                >
-                  {intl.formatMessage({
-                    id: 'playground.decision.questions.format'
-                  })}
-                </Button>
-              </div>
             </Flex>
-            {/* Schema-guided JSON editing: autocomplete/hover/validation for
+
+            <Flex vertical className="editor-panel questions-editor-wrap">
+              <Flex
+                component="div"
+                justify="space-between"
+                align="center"
+                className="editor-header"
+              >
+                <h3 className="m-b-0 font-size-14 line-24 font-500">
+                  {intl.formatMessage({ id: 'playground.decision.questions' })}
+                </h3>
+                <Flex
+                  align="center"
+                  justify="end"
+                  gap="small"
+                  wrap
+                  className="editor-actions"
+                >
+                  {Object.keys(QUESTION_TEMPLATES).map((type) => (
+                    <Tooltip key={type} title={type}>
+                      <Button
+                        size="small"
+                        disabled={loading || !questionsParsable}
+                        onClick={() => handleInsertTemplate(type)}
+                      >
+                        <PlusOutlined />
+                        {intl.formatMessage({
+                          id: `playground.decision.questions.type.${type}`
+                        })}
+                      </Button>
+                    </Tooltip>
+                  ))}
+                  <Button
+                    size="small"
+                    icon={<FormatPainterOutlined />}
+                    disabled={loading || !questionsParsable}
+                    onClick={handleFormat}
+                  >
+                    {intl.formatMessage({
+                      id: 'playground.decision.questions.format'
+                    })}
+                  </Button>
+                </Flex>
+              </Flex>
+              {/* Schema-guided JSON editing: autocomplete/hover/validation for
                 the known question shape (scoped to this model's path), with
                 template inserts and formatting above. The editor fills the
                 remaining input height; syntax errors are marked inline by
                 monaco and reflected live in the run bar below. */}
-            <div className="questions-editor-wrap">
-              <JsonEditor
-                isDarkTheme={isDarkTheme}
-                path={QUESTIONS_EDITOR_PATH}
-                schema={QUESTIONS_JSON_SCHEMA}
-                value={questionsJson}
-                onChange={(value) => setQuestionsJson(value ?? '')}
-                height="100%"
-              />
-            </div>
-          </Flex>
-
-          {/* Token strip between the inputs and the answers — the same
-              centered orange affordance as the chat playground
-              (ReferenceParams); the input/output breakdown rides on the
-              tooltip. The wrapper is always mounted and only its contents
-              toggle: OverlayScrollbars restructures `.center`'s direct
-              children on init, so React must never insert or remove one
-              after mount (insertBefore throws against the moved nodes). */}
-          <div className="decision-token-strip">
-            {meta?.usage &&
-              (meta.usage.input_tokens ?? 0) + (meta.usage.output_tokens ?? 0) >
-                0 && (
-                <ReferenceParams
-                  usage={{
-                    prompt_tokens: meta.usage.input_tokens ?? 0,
-                    completion_tokens: meta.usage.output_tokens ?? 0,
-                    total_tokens:
-                      (meta.usage.input_tokens ?? 0) +
-                      (meta.usage.output_tokens ?? 0),
-                    // Decision runs are one-shot (no streaming), so the
-                    // throughput fields stay 0; showOutput=false never
-                    // renders them.
-                    tokens_per_second: 0,
-                    time_per_output_token_ms: 0,
-                    time_to_first_token_ms: 0
-                  }}
-                  showOutput={false}
-                ></ReferenceParams>
-              )}
-          </div>
-
-          {/* Answers follow the inputs in the same scroll column. */}
-          <div className="answers-region" ref={answersRegionRef}>
-            {error && (
-              <div className="m-b-8">
-                <AlertInfo type="danger" message={error}></AlertInfo>
+              <div className="questions-editor">
+                <JsonEditor
+                  isDarkTheme={isDarkTheme}
+                  path={QUESTIONS_EDITOR_PATH}
+                  schema={QUESTIONS_JSON_SCHEMA}
+                  value={questionsJson}
+                  onChange={(value) => setQuestionsJson(value ?? '')}
+                  height="100%"
+                />
               </div>
-            )}
-
-            <Flex
-              component="div"
-              justify="space-between"
-              align="center"
-              className="section-header"
-            >
-              <h3 className="m-b-0 font-size-14 line-24 font-500">
-                {intl.formatMessage({ id: 'playground.decision.answers' })}
-              </h3>
             </Flex>
-            {loading && (
-              <Spin size="small">
-                <div style={{ height: 46 }}></div>
-              </Spin>
-            )}
-            {!loading &&
-              answers &&
-              Object.entries(answers).map(([name, answer]) =>
-                renderAnswer(name, answer)
-              )}
-            {!loading && answers && _.isEmpty(answers) && (
-              <span style={{ color: 'var(--ant-color-text-tertiary)' }}>
-                {intl.formatMessage({
-                  id: 'playground.decision.answers.empty'
-                })}
-              </span>
-            )}
-            {!loading && !answers && (
-              <span style={{ color: 'var(--ant-color-text-tertiary)' }}>
-                {intl.formatMessage({
-                  id: 'playground.decision.answers.placeholder'
-                })}
-              </span>
-            )}
-          </div>
-        </Flex>
+          </Flex>
+        </DecisionWorkspace>
       </div>
       <RightContainer collapsed={collapse}>
         <DataForm

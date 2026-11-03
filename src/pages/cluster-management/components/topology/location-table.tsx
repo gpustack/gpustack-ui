@@ -1,7 +1,7 @@
 import { status, WorkerStatusMapValue } from '@/pages/resources/config';
 import { StatusDot } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Table, Tooltip } from 'antd';
+import { Empty, Flex, Table, Tooltip } from 'antd';
 import { createStyles } from 'antd-style';
 import { useState } from 'react';
 import { TopologyWorker } from '../../config/types';
@@ -201,7 +201,9 @@ const LocationTable: React.FC<LocationTableProps> = ({
       dataSource={rows}
       pagination={false}
       virtual={rows.length > VIRTUAL_THRESHOLD}
-      scroll={{ x: totalWidth, y: height }}
+      // Without rows, separate scrolling header/body tables measure different
+      // column widths and shift the fixed host column over the next heading.
+      scroll={rows.length ? { x: totalWidth, y: height } : undefined}
       rowSelection={{
         selectedRowKeys: selectedIds,
         columnWidth: SELECT_WIDTH,
@@ -222,9 +224,16 @@ const LocationTable: React.FC<LocationTableProps> = ({
         }
       })}
       locale={{
-        emptyText: intl.formatMessage({
-          id: 'clusters.topology.preview.noWorkers'
-        })
+        emptyText: (
+          <Flex align="center" justify="center" style={{ minHeight: 160 }}>
+            <Empty
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+              description={intl.formatMessage({
+                id: 'clusters.topology.preview.noWorkers'
+              })}
+            />
+          </Flex>
+        )
       }}
     />
   );

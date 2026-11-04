@@ -130,6 +130,7 @@ const useStyles = createStyles(
            lands before the sider has finished animating its width, so
            centering would fling the icon right and slide it back. */
         padding-inline: var(--sider-menu-item-padding-inline) var(--ant-padding);
+        border-radius: inherit;
         overflow: hidden;
         white-space: nowrap;
         height: ${Menu.itemHeight}px;
@@ -162,6 +163,11 @@ const useStyles = createStyles(
         &:hover {
           background-color: var(--ant-color-fill-tertiary);
           color: var(--ant-color-text);
+        }
+        &:focus-visible {
+          /* Keep the ring inside the row so its overflow-hidden wrapper cannot clip it. */
+          outline: 2px solid var(--ant-color-primary);
+          outline-offset: -2px;
         }
         /* Selected is NEUTRAL. It used to paint the row in COLOR_PRIMARY,
            which failed twice over: 3.30:1 against the selected fill, and the

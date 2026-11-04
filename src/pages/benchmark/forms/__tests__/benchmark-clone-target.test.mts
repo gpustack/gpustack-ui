@@ -5,6 +5,7 @@ import { act, createElement, forwardRef, Fragment, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 
 const empty = () => null;
+let handoff: any = {};
 const passChildren = ({ children }: any) =>
   createElement(Fragment, null, children);
 const InputField = ({ value }: any) =>
@@ -68,7 +69,7 @@ mock.module(
   {
     namedExports: {
       useBenchmarkTargetInstance: () => ({
-        benchmarkTargetInstance: {},
+        benchmarkTargetInstance: handoff,
         clearBenchmarkTargetInstance() {}
       })
     }
@@ -181,7 +182,8 @@ dom.window.matchMedia = (media) => ({
 });
 after(() => dom.window.close());
 const { App, Form } = await import('antd');
-const { default: ModelInstanceForm } = await import('../model-instance.tsx');
+const { default: ModelInstanceForm, hasMultipleInferenceEndpoints } =
+  await import('../model-instance.tsx');
 let form: any;
 // Retain the real parent prefill and async target picker. The unrelated basic
 // fields are registered on the same real antd Form, without their own requests.
@@ -361,6 +363,267 @@ test('plain create still defaults to the first running replica', async () => {
   const view = await renderForm();
   try {
     expectTarget(plainModel, list[1]);
+  } finally {
+    await view.unmount();
+  }
+});
+
+const multiEndpointManifest = {
+  workloads: [
+    {
+      worker_id: 101,
+      dp_rank_placements: [
+        { dp_rank: 0, node_rank: 0, api_port: 40000, ready: true },
+        { dp_rank: 1, node_rank: 0, api_port: 40001, ready: false }
+      ]
+    }
+  ]
+};
+const warningId = 'benchmark.form.multipleEndpoints.tips';
+const warningVisible = () =>
+  !!dom.window.document
+    .querySelector('.ant-alert-warning')
+    ?.textContent?.includes(warningId);
+
+test('a default multi-endpoint target warns without blocking submission or changing the payload', async () => {
+  models = [plainModel];
+  const list = instances(plainModel);
+  Object.assign(list[0], { distributed_servers: multiEndpointManifest });
+  members = new Map([[plainModel.id, list]]);
+  const view = await renderForm();
+  try {
+    expectTarget(plainModel, list[0]);
+    assert.equal(warningVisible(), true);
+    await view.submit();
+    assert.equal(view.rejected.mock.callCount(), 0);
+    assert.equal(view.submitted.mock.callCount(), 1);
+    const payload = view.submitted.mock.calls[0].arguments[0];
+    assert.equal(payload.model_instance_name, list[0].name);
+    assert.equal(payload.target_mode, 'model_instance');
+    assert.ok(!('hasMultipleInferenceEndpoints' in payload));
+    assert.ok(!('showMultipleEndpointsWarning' in payload));
+  } finally {
+    await view.unmount();
+  }
+});
+
+const hybridWorkload = (worker_id: number, api_port?: number) => ({
+  worker_id,
+  component: { kind: 'vllm_hybrid', api_port, ready: false },
+  dp_rank_placements: []
+});
+const rankWorkload = (
+  worker_id: number,
+  node_rank: number,
+  api_port?: number
+) => ({
+  worker_id,
+  dp_rank_placements: [{ node_rank, api_port, ready: false }]
+});
+
+for (const [name, instance, expected] of [
+  [
+    'single-worker external and multi-port external',
+    { distributed_servers: multiEndpointManifest },
+    true
+  ],
+  [
+    'cross-worker external with equal ports',
+    {
+      distributed_servers: {
+        workloads: [rankWorkload(1, 0, 40000), rankWorkload(2, 0, 40000)]
+      }
+    },
+    true
+  ],
+  [
+    'hybrid with two API owners',
+    {
+      distributed_servers: {
+        workloads: [hybridWorkload(1, 40000), hybridWorkload(2, 40000)]
+      }
+    },
+    true
+  ],
+  [
+    'hybrid with cross-worker TP/PP',
+    {
+      distributed_servers: {
+        workloads: [
+          hybridWorkload(1, 40000),
+          hybridWorkload(2),
+          hybridWorkload(3, 40000),
+          hybridWorkload(4)
+        ]
+      }
+    },
+    true
+  ],
+  [
+    'single-worker hybrid',
+    { distributed_servers: { workloads: [hybridWorkload(1, 40000)] } },
+    false
+  ],
+  [
+    'single-entry TP/PP with headless workers',
+    {
+      distributed_servers: {
+        workloads: [
+          rankWorkload(1, 0, 40000),
+          rankWorkload(2, 1),
+          rankWorkload(3, 2)
+        ]
+      }
+    },
+    false
+  ],
+  [
+    'duplicate endpoint identity',
+    {
+      distributed_servers: {
+        workloads: [rankWorkload(1, 0, 40000), rankWorkload(1, 0, 40000)]
+      }
+    },
+    false
+  ],
+  [
+    'multiple communication ports without a manifest',
+    { ports: [40000, 40010, 40020] },
+    false
+  ],
+  ['missing manifest', {}, false],
+  ['empty manifest', { distributed_servers: { workloads: [] } }, false],
+  [
+    'SGLang Engine and SMG',
+    {
+      distributed_servers: {
+        workloads: [
+          {
+            worker_id: 1,
+            component: { kind: 'sglang_engine', api_port: 40000 }
+          },
+          { worker_id: 1, component: { kind: 'sglang_smg', api_port: 40010 } }
+        ]
+      }
+    },
+    false
+  ]
+] as const) {
+  test(`multi-endpoint detection: ${name}`, () => {
+    assert.equal(hasMultipleInferenceEndpoints(instance as any), expected);
+  });
+}
+
+for (const entry of ['clone', 'model-page handoff']) {
+  test(`a multi-endpoint ${entry} uses the current instance manifest`, async () => {
+    models = [plainModel, sourceModel];
+    const list = instances(sourceModel);
+    Object.assign(list[1], { distributed_servers: multiEndpointManifest });
+    members = new Map([[sourceModel.id, list]]);
+    if (entry === 'model-page handoff') handoff = source(sourceModel, list[1]);
+    const view = await renderForm(
+      entry === 'clone' ? source(sourceModel, list[1]) : undefined
+    );
+    try {
+      expectTarget(sourceModel, list[1]);
+      assert.equal(warningVisible(), true);
+    } finally {
+      handoff = {};
+      await view.unmount();
+    }
+  });
+}
+
+test('manual selection and clearing update the warning, while route mode hides it', async () => {
+  models = [plainModel, sourceModel];
+  const list = instances(plainModel);
+  Object.assign(list[1], { distributed_servers: multiEndpointManifest });
+  members = new Map([
+    [plainModel.id, list],
+    [sourceModel.id, instances(sourceModel)]
+  ]);
+  routes = [
+    {
+      id: 1,
+      route_name: 'only-route',
+      model_id: plainModel.id,
+      state: 'active',
+      weight: 100
+    }
+  ];
+  const view = await renderForm();
+  const select = async (modelIndex: number, instanceIndex: number) => {
+    const selector = selectors.get('benchmark.form.target');
+    const model = selector.options[modelIndex];
+    if (!model.children.length)
+      await act(async () => selector.loadData([model]));
+    const current = selectors.get('benchmark.form.target');
+    const parent = current.options[modelIndex];
+    const child = parent.children[instanceIndex];
+    await act(async () =>
+      current.onChange([parent.value, child.value], [parent, child])
+    );
+  };
+  try {
+    assert.equal(warningVisible(), false);
+    await select(0, 1);
+    assert.equal(warningVisible(), true);
+    await select(1, 0);
+    assert.equal(warningVisible(), false);
+    await select(0, 1);
+    await act(async () =>
+      selectors.get('benchmark.form.target').onChange(undefined, undefined)
+    );
+    assert.equal(warningVisible(), false);
+    await select(0, 1);
+    await view.changeMode('route');
+    assert.equal(warningVisible(), false);
+    await view.changeMode('model_instance');
+    assert.equal(warningVisible(), false);
+  } finally {
+    await view.unmount();
+  }
+});
+
+test('cluster changes and late requests cannot revive an old warning after closing and reopening', async () => {
+  models = [plainModel];
+  const list = instances(plainModel);
+  Object.assign(list[0], { distributed_servers: multiEndpointManifest });
+  members = new Map([[plainModel.id, list]]);
+  let finish!: (value: any[]) => void;
+  const pending = new Promise<any[]>((resolve) => {
+    finish = resolve;
+  });
+  let delay = true;
+  const view = await renderForm(undefined, {
+    fetchModels: async ({ cluster_id }: any) =>
+      cluster_id === 2 && delay ? pending : clone(models)
+  });
+  try {
+    assert.equal(warningVisible(), true);
+    await view.changeCluster(2);
+    assert.equal(warningVisible(), false);
+    await view.render({ open: false });
+    assert.equal(warningVisible(), false);
+    members = new Map([[plainModel.id, instances(plainModel)]]);
+    delay = false;
+    await view.render({ open: true });
+    assert.equal(warningVisible(), false);
+    await act(async () => finish(clone(models)));
+    assert.equal(warningVisible(), false);
+  } finally {
+    finish([]);
+    await view.unmount();
+  }
+});
+
+test('PD model-level selection does not show the multi-endpoint warning', async () => {
+  models = [pdModel];
+  members = new Map();
+  const view = await renderForm(source(pdModel));
+  try {
+    assert.equal(warningVisible(), false);
+    assert.equal(instanceRequests.mock.callCount(), 0);
   } finally {
     await view.unmount();
   }

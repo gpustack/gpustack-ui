@@ -14,6 +14,8 @@ export default {
     'Конфигурация запуска не сохранена',
   'benchmark.detail.configSource.fallback.description':
     'Для {instances} показаны настройки модели на момент создания теста. Эти настройки приведены только для справки.',
+  'benchmark.form.multipleEndpoints.tips':
+    'У этого экземпляра несколько конечных точек инференса. При тестировании экземпляра запросы отправляются только в одну из них, поэтому его полная производительность может быть не измерена. Рекомендуется тестировать маршрут.',
   'benchmark.detail.result.selectMeasuredPoint':
     'Выбрать измеренную точку при {load} {unit}',
   'benchmark.detail.metric.ttftP99': 'TTFT p99',

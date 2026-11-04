@@ -1,3 +1,5 @@
+export const MIN_REQUEST_RATE = 0.001;
+
 export const isValidLoadValue = (
   value: unknown,
   fixedRate: boolean
@@ -5,7 +7,7 @@ export const isValidLoadValue = (
   typeof value === 'number' &&
   Number.isFinite(value) &&
   value > 0 &&
-  (fixedRate || Number.isSafeInteger(value));
+  (fixedRate ? value >= MIN_REQUEST_RATE : Number.isSafeInteger(value));
 
 export const optionalLoadValueRule = (fixedRate: boolean, message: string) => ({
   validator: async (_: unknown, value: unknown): Promise<void> => {

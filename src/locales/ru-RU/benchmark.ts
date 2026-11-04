@@ -95,7 +95,8 @@ export default {
   'benchmark.detail.result.inProgress': 'Измерение выполняется',
   'benchmark.detail.result.peakFact':
     'Пиковая пропускная способность: {throughput} токенов/с при {load} {unit}',
-  'benchmark.form.load.positiveRate': 'Введите положительную частоту запросов',
+  'benchmark.form.load.minimumRate':
+    'Укажите частоту запросов не менее {min} req/s',
   'benchmark.form.load.positiveConcurrency':
     'Введите положительное целое число параллельных запросов',
   'benchmark.form.load.rangeError': 'Верхняя граница должна быть больше нижней',

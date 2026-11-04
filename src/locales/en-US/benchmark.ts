@@ -91,7 +91,8 @@ export default {
   'benchmark.detail.result.inProgress': 'Measurement in progress',
   'benchmark.detail.result.peakFact':
     'Peak Throughput: {throughput} tok/s @ {load} {unit}',
-  'benchmark.form.load.positiveRate': 'Enter a positive request rate',
+  'benchmark.form.load.minimumRate':
+    'Enter a request rate of at least {min} req/s',
   'benchmark.form.load.positiveConcurrency':
     'Enter a positive integer concurrency',
   'benchmark.form.load.rangeError':

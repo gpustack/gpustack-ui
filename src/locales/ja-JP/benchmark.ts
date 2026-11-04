@@ -86,8 +86,8 @@ export default {
   'benchmark.detail.result.inProgress': '測定中',
   'benchmark.detail.result.peakFact':
     '総スループットのピーク：{throughput} tok/s、{load} {unit}',
-  'benchmark.form.load.positiveRate':
-    '0 より大きいリクエストレートを入力してください',
+  'benchmark.form.load.minimumRate':
+    'リクエストレートは {min} req/s 以上で入力してください',
   'benchmark.form.load.positiveConcurrency':
     '同時実行数には正の整数を入力してください',
   'benchmark.form.load.rangeError': '上限は下限より大きくする必要があります',

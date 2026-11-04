@@ -92,7 +92,7 @@ export default {
   'benchmark.detail.result.inProgress': 'Ölçüm sürüyor',
   'benchmark.detail.result.peakFact':
     'Tepe Verim: {load} {unit} düzeyinde {throughput} tok/s',
-  'benchmark.form.load.positiveRate': 'Pozitif bir istek hızı girin',
+  'benchmark.form.load.minimumRate': 'En az {min} req/s istek hızı girin',
   'benchmark.form.load.positiveConcurrency':
     'Pozitif bir tam sayı eşzamanlılık değeri girin',
   'benchmark.form.load.rangeError': 'Üst sınır alt sınırdan büyük olmalıdır',

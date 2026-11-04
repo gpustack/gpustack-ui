@@ -175,11 +175,12 @@ test('manual request-rate stages accept and retain sub-one values', async () => 
   const view = await renderLoadForm('fixed_rate', false);
   try {
     const props = fields.get('benchmark.form.rate');
-    assert.ok(props.min === undefined || props.min < 0.001);
+    assert.equal(props.min, 0.001);
     assert.equal(props.step, 1);
     await view.set({
       stages: [
-        { rate: 0.1, max_requests: 10 },
+        { rate: 0.001, max_requests: 10 },
+        { rate: 0.0011, max_requests: 10 },
         { rate: 0.5, max_seconds: 60 }
       ]
     });
@@ -189,7 +190,7 @@ test('manual request-rate stages accept and retain sub-one values', async () => 
     });
     assert.deepEqual(
       values.stages.map((stage: any) => stage.rate),
-      [0.1, 0.5]
+      [0.001, 0.0011, 0.5]
     );
   } finally {
     await view.unmount();
@@ -279,7 +280,8 @@ test('manual stages reject non-positive rates and fractional concurrency', async
   for (const loadType of ['fixed_rate', 'concurrency']) {
     const view = await renderLoadForm(loadType, false);
     try {
-      const invalid = loadType === 'fixed_rate' ? [0, -0.1] : [0, 0.1, 1.5];
+      const invalid =
+        loadType === 'fixed_rate' ? [0, -0.1, 0.0001] : [0, 0.1, 1.5];
       for (const rate of invalid) {
         await view.set({ stages: [{ rate, max_requests: 10 }] });
         await act(async () =>

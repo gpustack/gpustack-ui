@@ -82,7 +82,7 @@ export default {
   'benchmark.detail.result.inProgress': '测试进行中',
   'benchmark.detail.result.peakFact':
     '总吞吐峰值：{throughput} tok/s，位于 {load} {unit}',
-  'benchmark.form.load.positiveRate': '请输入大于 0 的请求速率',
+  'benchmark.form.load.minimumRate': '请求速率不能小于 {min} req/s',
   'benchmark.form.load.positiveConcurrency': '请输入正整数并发数',
   'benchmark.form.load.rangeError': '搜索上限必须大于下限',
   'benchmark.title': '基准测试',

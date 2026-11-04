@@ -1,9 +1,24 @@
 import * as requireForTest from 'jsdom';
 import assert from 'node:assert/strict';
-import { mock, test } from 'node:test';
+import { after, mock, test } from 'node:test';
 import { act, cloneElement, createElement, isValidElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import messages from '../../../../../locales/en-US/benchmark';
+
+// Statistics assertions use English formatting regardless of the host locale.
+const numberToLocaleString = Number.prototype.toLocaleString;
+mock.method(
+  Number.prototype,
+  'toLocaleString',
+  function (
+    this: number,
+    locales?: string | string[],
+    options?: Intl.NumberFormatOptions
+  ) {
+    return numberToLocaleString.call(this, locales ?? 'en-US', options);
+  }
+);
+after(() => mock.restoreAll());
 
 const translations = (messages as any).default ?? messages;
 const element = ({ children, className }: any) =>

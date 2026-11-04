@@ -141,7 +141,7 @@ export const buildChartSpecs = (
           title: t('benchmark.detail.chart.rateShortfall'),
           note: t('benchmark.detail.chart.rateShortfall.note'),
           yName: 'Requests/s',
-          fmt: fmtInt,
+          fmt: String,
           max: linearMax(
             points.map((p) => Math.max(p.load, p.achievedRate ?? 0))
           ),

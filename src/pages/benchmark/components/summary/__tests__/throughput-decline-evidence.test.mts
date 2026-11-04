@@ -1,9 +1,24 @@
 import { JSDOM } from 'jsdom';
 import assert from 'node:assert/strict';
-import { mock, test } from 'node:test';
+import { after, mock, test } from 'node:test';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import messages from '../../../../../locales/zh-CN/benchmark';
+
+// Statistics assertions use English formatting regardless of the host locale.
+const numberToLocaleString = Number.prototype.toLocaleString;
+mock.method(
+  Number.prototype,
+  'toLocaleString',
+  function (
+    this: number,
+    locales?: string | string[],
+    options?: Intl.NumberFormatOptions
+  ) {
+    return numberToLocaleString.call(this, locales ?? 'en-US', options);
+  }
+);
+after(() => mock.restoreAll());
 
 const translations = (messages as any).default ?? messages;
 let tooltipProps: any[] = [];
@@ -189,3 +204,23 @@ test('malformed evidence or mismatched rule parameters never expose fabricated d
   );
   dom.window.close();
 });
+
+for (const rate of [0.001, 0.0011, 0.01, 1.2345]) {
+  test(`decline evidence retains the recorded ${rate} req/s stage`, () => {
+    reset();
+    detail.load_type = 'fixed_rate';
+    detail.validity.throughput_decline.peak_rate = rate / 2;
+    detail.validity.throughput_decline.points[0].rate = rate;
+    detail.validity.throughput_decline.points[1].rate = rate * 2;
+    const dom = render();
+    assert.equal(tooltipProps.length, 1);
+    const tooltip = new JSDOM(renderToStaticMarkup(tooltipProps[0].title));
+    assert.ok(
+      tooltip.window.document.body.textContent?.includes(
+        `目标请求率 ${rate} req/s`
+      )
+    );
+    tooltip.window.close();
+    dom.window.close();
+  });
+}

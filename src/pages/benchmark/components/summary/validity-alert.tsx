@@ -38,7 +38,7 @@ const ValidityAlert: React.FC = () => {
                         ? 'benchmark.detail.validity.declineEvidence.concurrency'
                         : 'benchmark.detail.validity.declineEvidence.rate',
                       {
-                        rate: number(point.rate),
+                        rate: String(point.rate),
                         tps: number(point.total_tps),
                         drop: number(point.drop_percent)
                       }

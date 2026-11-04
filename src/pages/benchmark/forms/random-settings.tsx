@@ -49,7 +49,11 @@ import {
 } from '../config';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
-import { isValidLoadValue, optionalLoadValueRule } from './load-validation';
+import {
+  MIN_REQUEST_RATE,
+  isValidLoadValue,
+  optionalLoadValueRule
+} from './load-validation';
 import { optionalPositiveIntegerRule } from './sharegpt-token-validation';
 
 const useStyles = createStyles(({ token, css }) => ({
@@ -209,17 +213,20 @@ const RandomSettingsForm: React.FC<{
   const isCustom = profile === 'Custom';
   const presetLocked = !isCustom;
   const isFixedRate = loadType === LoadTypeValueMap.FixedRate;
-  const loadValueMessage = intl.formatMessage({
-    id: isFixedRate
-      ? 'benchmark.form.load.positiveRate'
-      : 'benchmark.form.load.positiveConcurrency'
-  });
+  const loadValueMessage = intl.formatMessage(
+    {
+      id: isFixedRate
+        ? 'benchmark.form.load.minimumRate'
+        : 'benchmark.form.load.positiveConcurrency'
+    },
+    { min: MIN_REQUEST_RATE }
+  );
   const searchBoundRule = optionalLoadValueRule(
     false,
     intl.formatMessage({ id: 'benchmark.form.sharegpt.positiveInteger' })
   );
   const loadInputProps = {
-    min: isFixedRate ? 0 : 1,
+    min: isFixedRate ? MIN_REQUEST_RATE : 1,
     step: 1,
     precision: isFixedRate ? undefined : 0
   };

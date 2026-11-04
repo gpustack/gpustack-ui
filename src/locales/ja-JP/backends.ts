@@ -1,6 +1,8 @@
 export default {
   'backends.title': '推論バックエンド',
   'backend.button.add': 'バックエンドを追加',
+  'backend.button.marketplace': 'マーケットプレイス',
+  'backend.button.browseMarketplace': 'マーケットプレイスを見る',
   'backend.button.edit': 'バックエンドを編集',
   'backend.versions': 'バージョン一覧',
   'backend.defaultVersion': 'デフォルトバージョン',
@@ -53,8 +55,6 @@ export default {
   'backend.form.defaultEnvironment': 'デフォルトの環境変数',
   'backend.recommendModels': '推奨モデル',
   'backend.filter.source': 'ソースで絞り込み',
-  'backend.add.custom': 'カスタム',
-  'backend.add.community': 'コミュニティ',
   'backend.community.title': 'コミュニティバックエンドのマーケットプレイス',
   'backend.form.add.hint':
     '内蔵バックエンド（vLLM、SGLang、MindIE など）の別バージョンを使用するには、カスタムバックエンドを追加せずに、既存のバックエンドに新しいバージョンを追加してください。',

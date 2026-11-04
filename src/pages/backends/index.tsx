@@ -71,8 +71,7 @@ const BackendList = () => {
     editBackend,
     closeBackendModal,
     openCommunityModalStatus,
-    openBackendModalStatus,
-    addActions
+    openBackendModalStatus
   } = useCreateBackend();
 
   // built_in_version_configs is read-only, but needs to be included when updating
@@ -137,8 +136,8 @@ const BackendList = () => {
     });
   };
 
-  const handleAddBackend = (item: { key: 'community' | 'custom' }) => {
-    addBackend(item.key);
+  const handleOpenCommunity = () => {
+    addBackend('community');
   };
 
   const handleDisableCommunityBackend = async (item: any) => {
@@ -244,6 +243,11 @@ const BackendList = () => {
   return (
     <PageBox>
       <FilterBar
+        styles={{
+          root: { flexWrap: 'wrap', gap: 'var(--ant-margin)' },
+          left: { flexShrink: 0 },
+          right: { marginInlineStart: 'auto', flexShrink: 0 }
+        }}
         widths={{
           input: 230
         }}
@@ -257,14 +261,10 @@ const BackendList = () => {
           label: intl.formatMessage({ id: item.label }),
           value: item.value
         }))}
-        // Replaces the default right side wholesale, so the props that would
-        // have built it (`actionItems` / `actionType` / `buttonText` /
-        // `handleClickPrimary`, and `rowSelection`, which only drove its batch
-        // delete) have no effect and are not passed.
         right={
           <RightActions
-            actionItems={addActions}
-            handleClickPrimary={handleAddBackend}
+            onOpenCommunity={handleOpenCommunity}
+            onAddBackend={() => addBackend('custom')}
             onSourceSaved={handleSearch}
           ></RightActions>
         }
@@ -297,8 +297,11 @@ const BackendList = () => {
           })}
           title={intl.formatMessage({ id: 'noresult.backend.title' })}
           subTitle={intl.formatMessage({ id: 'noresult.backend.subTitle' })}
-          onClick={() => handleAddBackend({ key: 'community' })}
-          buttonText={intl.formatMessage({ id: 'noresult.button.add' })}
+          onClick={handleOpenCommunity}
+          buttonText={intl.formatMessage({
+            id: 'backend.button.browseMarketplace'
+          })}
+          buttonIcon={<IconFont type="icon-public" />}
         ></NoResult>
       </InfiniteScrollerProvider>
       <AddModal

@@ -46,7 +46,7 @@
     "highlight.js": "^11.10.0",
     "jdenticon": "^3.3.0",
     "jotai": "^2.8.4",
-    "js-yaml": "^4.3.0",
+    "js-yaml": "^4.3.2",
     "katex": "^0.16.21",
     "lamejs": "github:zhuker/lamejs",
     "localforage": "^1.10.0",
@@ -125,10 +125,14 @@
   "packageManager": "pnpm@9.3.0",
   "pnpm": {
     "overrides": {
+      "@gpustack/core-ui@1.1.26>dompurify": "3.4.17",
+      "@istanbuljs/load-nyc-config@1.1.0>js-yaml": "3.15.2",
       "@umijs/plugins>axios": "^0.33.0",
       "@xmldom/xmldom": "^0.8.14",
       "elliptic": "^6.6.1",
-      "js-cookie": "^3.0.7"
+      "js-cookie": "^3.0.7",
+      "js-yaml@4": "4.3.2",
+      "minimatch@3.1.5>brace-expansion": "1.1.21"
     }
   }
 }

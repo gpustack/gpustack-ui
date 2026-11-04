@@ -1,6 +1,8 @@
 export default {
   'backends.title': 'Бэкенды инференса',
   'backend.button.add': 'Добавить бэкенд',
+  'backend.button.marketplace': 'Маркетплейс',
+  'backend.button.browseMarketplace': 'Открыть маркетплейс',
   'backend.button.edit': 'Редактировать бэкенд',
   'backend.versions': 'Список версий',
   'backend.defaultVersion': 'Версия по умолчанию',
@@ -52,8 +54,6 @@ export default {
   'backend.form.defaultEnvironment': 'Переменные окружения по умолчанию',
   'backend.recommendModels': 'Рекомендуемые модели',
   'backend.filter.source': 'Фильтр по источнику',
-  'backend.add.custom': 'Пользовательский',
-  'backend.add.community': 'Сообщество',
   'backend.community.title': 'Каталог бэкендов сообщества',
   'backend.form.add.hint':
     'Чтобы использовать другую версию встроенного бэкенда (например, vLLM, SGLang или MindIE), добавьте версию к существующему бэкенду вместо создания пользовательского бэкенда.',

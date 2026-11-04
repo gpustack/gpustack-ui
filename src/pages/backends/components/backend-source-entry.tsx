@@ -23,8 +23,7 @@ const backendSourceScope: SourceScopeConfig = {
     {
       kind: 'community-backend',
       titleKey: 'backend.source.community.title',
-      // The same icon the Add menu marks a community backend with
-      // (`hooks/use-create-backend.tsx`).
+      // Matches the community marketplace entry in the backend toolbar.
       iconType: 'icon-public',
       allowFile: false,
       officialDescriptionKey: 'backend.source.community.official'

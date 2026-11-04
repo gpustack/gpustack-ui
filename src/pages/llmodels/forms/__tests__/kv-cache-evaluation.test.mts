@@ -275,8 +275,7 @@ for (const pd of [false, true]) {
       };
       const ram = () =>
         find<HTMLInputElement>('input[aria-label="models.form.ramSize"]');
-      const typeRam = (value: string) => {
-        const input = ram();
+      const typeNumber = (input: HTMLInputElement, value: string) => {
         input.focus();
         Object.getOwnPropertyDescriptor(
           dom.window.HTMLInputElement.prototype,
@@ -284,6 +283,7 @@ for (const pd of [false, true]) {
         )!.set!.call(input, value);
         input.dispatchEvent(new dom.window.Event('input', { bubbles: true }));
       };
+      const typeRam = (value: string) => typeNumber(ram(), value);
       const stepRam = (label: string) => {
         const button = ram()
           .closest('.ant-input-number')
@@ -333,7 +333,23 @@ for (const pd of [false, true]) {
       assert.equal(enabled?.mode, 'local');
       assert.equal(enabled?.ram_ratio, 1.2);
 
-      assert.equal((await change(() => typeRam('12.6')))?.ram_size, 13);
+      request.mock.resetCalls();
+      await act(async () =>
+        typeNumber(
+          find<HTMLInputElement>('input[aria-label="models.form.chunkSize"]'),
+          '512'
+        )
+      );
+      await settle();
+      assert.equal(
+        requests().length,
+        0,
+        'chunk size must not trigger evaluation'
+      );
+
+      const resized = await change(() => typeRam('12.6'));
+      assert.equal(resized?.ram_size, 13);
+      assert.equal(resized?.chunk_size, 512);
       assert.equal((await change(() => typeRam('')))?.ram_size, null);
       assert.equal(
         (await change(() => stepRam('Increase Value')))?.ram_size,

@@ -12,6 +12,7 @@ import { Alert, Button, Checkbox, Empty, Flex, Spin, Tooltip } from 'antd';
 import classNames from 'classnames';
 import dayjs from 'dayjs';
 import isEqual from 'lodash/isEqual';
+import { useRef, type KeyboardEvent } from 'react';
 import { DO_NOT_NOTIFY_RECREATE } from '../../../config';
 import diffStyles from '../../../style/import-yaml-drawer.module.less';
 import type { ModelRevisionsController } from './hooks/use-model-revisions';
@@ -28,6 +29,7 @@ export default function RevisionHistoryDrawer({
 }) {
   const intl = useIntl();
   const { state, saving } = history;
+  const revisionButtons = useRef<(HTMLButtonElement | null)[]>([]);
   const review = state.rollback;
   const showRestartWarning =
     !!review &&
@@ -56,6 +58,17 @@ export default function RevisionHistoryDrawer({
           )
       ).length
     : null;
+
+  const moveRevisionFocus = (
+    event: KeyboardEvent<HTMLButtonElement>,
+    index: number
+  ) => {
+    if (event.key !== 'ArrowUp' && event.key !== 'ArrowDown') return;
+    event.preventDefault();
+    // Load the comparison only when the native button is activated.
+    const offset = event.key === 'ArrowUp' ? -1 : 1;
+    revisionButtons.current[index + offset]?.focus();
+  };
 
   const submitRollback = async () => {
     try {
@@ -242,7 +255,7 @@ export default function RevisionHistoryDrawer({
                     className={styles.navItems}
                     aria-label={text('title')}
                   >
-                    {state.items.map((item) => (
+                    {state.items.map((item, index) => (
                       <Flex
                         key={item.revision}
                         align="flex-start"
@@ -256,6 +269,10 @@ export default function RevisionHistoryDrawer({
                           className={styles.selectRevision}
                           aria-pressed={activeRevision === item.revision}
                           disabled={browsingDisabled}
+                          ref={(button) => {
+                            revisionButtons.current[index] = button;
+                          }}
+                          onKeyDown={(event) => moveRevisionFocus(event, index)}
                           onClick={() => history.select(item.revision)}
                         >
                           <Flex vertical gap={4}>

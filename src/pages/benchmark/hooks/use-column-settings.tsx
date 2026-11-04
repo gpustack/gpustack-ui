@@ -11,7 +11,6 @@ import {
   LoadTypeValueMap,
   TargetModeValueMap,
   loadTypeOptions,
-  loadValueDecimals,
   targetModeOptions
 } from '../config';
 import { BenchmarkListItem as ListItem } from '../config/types';
@@ -491,7 +490,7 @@ const useColumnSettings = (options: {
         });
         return (
           <AutoTooltip ghost minWidth={20}>
-            {`${round(rate, loadValueDecimals(record))} ${unit}`}
+            {`${rate} ${unit}`}
           </AutoTooltip>
         );
       }

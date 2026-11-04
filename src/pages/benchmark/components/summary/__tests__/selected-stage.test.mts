@@ -26,10 +26,8 @@ mock.module('@umijs/max', {
     useIntl: () => ({ formatMessage: ({ id }: any) => translations[id] || id })
   }
 });
-mock.module(new URL('../../../config/index.ts', import.meta.url).href, {
-  namedExports: {
-    loadValueDecimals: (d: any) => (d.load_type === 'concurrency' ? 0 : 2)
-  }
+mock.module(new URL('../../../../../config/index.ts', import.meta.url).href, {
+  namedExports: { StatusMaps: {} }
 });
 let detail: any = {};
 mock.module(
@@ -139,3 +137,24 @@ test('an overloaded SLO primary retains its peak and health facts without a capa
   assert.match(header, /Overloaded/);
   dom.window.close();
 });
+
+for (const rate of [0.5, 0.01, 0.001, 1.2345]) {
+  test(`stage detail header retains configured ${rate} req/s`, () => {
+    detail = { load_type: 'fixed_rate', profile: 'Custom' };
+    const point = buildStagePoints(
+      [
+        { id: 1, sequence: 0, rate, request_total: 10, request_successful: 10 }
+      ] as any,
+      {}
+    )[0];
+    const dom = new JSDOM(
+      renderToStaticMarkup(createElement(SelectedStage, { point }))
+    );
+    assert.ok(
+      dom.window.document
+        .querySelector('.panel-head')
+        ?.textContent?.includes(`${rate} req/s`)
+    );
+    dom.window.close();
+  });
+}

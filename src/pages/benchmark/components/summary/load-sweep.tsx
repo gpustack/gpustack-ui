@@ -21,7 +21,6 @@ interface Props {
   loadAxisName: string;
   /** x-axis title, e.g. "Request rate (req/s)" — bare ticks, so it needs one. */
   loadAxisTitle: string;
-  loadDecimals: number;
   labels: {
     concurrency: string;
     primary: string;
@@ -61,14 +60,13 @@ export const buildLoadSweepOption = (
     latencyThreshold,
     loadAxisName,
     loadAxisTitle,
-    loadDecimals,
     labels
   }: Props,
   // See stage-chart: the gridline colour is the one part of the palette that has
   // to come from the theme token rather than a hex literal.
   splitLineColor: string
 ): EChartsCoreOption => {
-  const cats = points.map((p) => String(Number(p.load.toFixed(loadDecimals))));
+  const cats = points.map((p) => String(p.load));
   const ttftDomain = logDomain([
     ...points.map((p) => latencyValue(p)),
     latencyThreshold
@@ -222,7 +220,7 @@ export const buildLoadSweepOption = (
               ? [{ color: C.green, label: labels.peakHint }]
               : [])
           ],
-          `${loadAxisName} ${Number(p.load.toFixed(loadDecimals))}${tag ? ` · ${tag}` : ''}`
+          `${loadAxisName} ${p.load}${tag ? ` · ${tag}` : ''}`
         );
       }
     },

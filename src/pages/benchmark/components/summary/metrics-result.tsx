@@ -5,7 +5,7 @@ import { Button, Col, Flex, Row } from 'antd';
 import { createStyles } from 'antd-style';
 import { round } from 'lodash';
 import React, { useId, useState } from 'react';
-import { loadAxisLabelId, loadValueDecimals } from '../../config';
+import { loadAxisLabelId } from '../../config';
 import { useDetailContext } from '../../config/detail-context';
 import { recordedNumber } from '../../utils/stage-detail-metrics';
 import StageStatisticsTable from './stage-statistics-table';
@@ -141,7 +141,7 @@ const MetricsResult: React.FC<{ data?: any }> = (props) => {
                 ? 'benchmark.detail.stage.configuredConcurrency'
                 : 'benchmark.detail.stage.configuredRate'
             ),
-            round(target, loadValueDecimals(detailData)),
+            target,
             t(
               isConcurrency
                 ? 'benchmark.table.best.unit.concurrency'

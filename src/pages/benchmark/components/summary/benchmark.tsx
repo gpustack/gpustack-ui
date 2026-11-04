@@ -2,13 +2,11 @@ import { useIntl } from '@umijs/max';
 import { Descriptions } from 'antd';
 import { createStyles } from 'antd-style';
 import { DescriptionsItemType } from 'antd/es/descriptions';
-import { round } from 'lodash';
 import React from 'react';
 import {
   DatasetValueMap,
   loadAxisLabelId,
-  loadTypeOptions,
-  loadValueDecimals
+  loadTypeOptions
 } from '../../config';
 import { useDetailContext } from '../../config/detail-context';
 
@@ -112,7 +110,6 @@ const Benchmark: React.FC = () => {
       }));
 
   const isShareGPT = detailData?.dataset_name === DatasetValueMap.ShareGPT;
-  const loadDecimals = loadValueDecimals(detailData);
   // Stages = the measured load points, mirroring the config form's "Stages" card:
   // the mode first, then either the auto-tune search range + budget or the manual
   // list. Legacy rows (no auto_tune, no stages — a single fixed rate) predate the
@@ -275,7 +272,7 @@ const Benchmark: React.FC = () => {
       <span className="head">{t('benchmark.form.maxSeconds')}</span>
       {(detailData?.stages || []).map((stage, index) => (
         <React.Fragment key={`${stage.rate}-${index}`}>
-          <span className="num">{round(stage.rate ?? 0, loadDecimals)}</span>
+          <span className="num">{stage.rate ?? 0}</span>
           <span className="num">{stage.max_requests ?? '—'}</span>
           <span className="num">
             {stage.max_seconds != null ? `${stage.max_seconds} s` : '—'}
@@ -350,7 +347,7 @@ const Benchmark: React.FC = () => {
                 labelId: loadAxisLabelId(detailData),
                 value: hasStages ? detailData?.stages : null,
                 children: (detailData?.stages || [])
-                  .map((stage) => round(stage.rate ?? 0, loadDecimals))
+                  .map((stage) => stage.rate ?? 0)
                   .join(', ')
               },
           {

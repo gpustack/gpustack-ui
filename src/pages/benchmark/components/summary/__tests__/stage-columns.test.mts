@@ -413,3 +413,33 @@ for (const slo of [false, true]) {
     dom.window.close();
   });
 }
+
+for (const rate of [0.5, 0.01, 0.001, 1.2345]) {
+  test(`stage table retains configured ${rate} req/s`, () => {
+    detail = { load_type: 'fixed_rate', auto_tune: false, profile: 'Custom' };
+    const points = buildStagePoints(
+      [
+        { id: 1, sequence: 0, rate, request_total: 10, request_successful: 10 },
+        {
+          id: 2,
+          sequence: 1,
+          rate: 2,
+          request_total: 10,
+          request_successful: 10
+        }
+      ] as any,
+      {}
+    );
+    const dom = new JSDOM(
+      renderToStaticMarkup(
+        createElement(Overview, { points, probes: [], onSelect: () => {} })
+      )
+    );
+    assert.equal(
+      dom.window.document.querySelector('tbody [data-column="rate"] .n')
+        ?.textContent,
+      String(rate)
+    );
+    dom.window.close();
+  });
+}

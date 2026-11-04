@@ -197,7 +197,7 @@ export default {
   'playground.decision.answers.collapse': '回答を折りたたむ',
   'playground.decision.answers.resize': '回答パネルの高さを調整',
   'playground.decision.answers.resize.tooltip':
-    'ドラッグで高さを調整し、ダブルクリックで元に戻します。矢印キーで調整、Enter で折りたたみ・展開します。',
+    'ドラッグまたは矢印キーで高さを調整します。',
   'playground.decision.questions': '質問',
   'playground.decision.questions.type.choice': '選択',
   'playground.decision.questions.type.score': '評価',

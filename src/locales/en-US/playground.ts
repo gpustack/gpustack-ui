@@ -194,7 +194,7 @@ export default {
   'playground.decision.answers.collapse': 'Collapse answers',
   'playground.decision.answers.resize': 'Resize the answers panel',
   'playground.decision.answers.resize.tooltip':
-    'Drag to resize; double-click to reset. Use arrow keys to resize and Enter to collapse or expand.',
+    'Drag or use arrow keys to resize.',
   'playground.decision.questions': 'Questions',
   'playground.decision.questions.type.choice': 'Choice',
   'playground.decision.questions.type.score': 'Score',

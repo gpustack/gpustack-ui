@@ -88,8 +88,8 @@ test('duplicate resize events skip rendering while collapsed answers can still r
         );
 
       const initialRenders = renders;
-      await resizeTo(260);
-      await resizeTo(260);
+      await resizeTo(120);
+      await resizeTo(120);
       assert.equal(
         renders,
         initialRenders,

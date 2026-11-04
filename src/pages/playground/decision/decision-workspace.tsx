@@ -13,7 +13,7 @@ import React, {
   useState
 } from 'react';
 
-const DEFAULT_ANSWER_HEIGHT = 260;
+const DEFAULT_ANSWER_HEIGHT = 120;
 const MIN_ANSWER_HEIGHT = 120;
 const COLLAPSED_ANSWER_HEIGHT = 40;
 
@@ -85,10 +85,7 @@ const DecisionWorkspace = forwardRef<
     const resizeWithKeyboard = (
       event: React.KeyboardEvent<HTMLButtonElement>
     ) => {
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
-        toggleAnswers();
-      } else if (event.key === 'Home') {
+      if (event.key === 'Home') {
         event.preventDefault();
         resetHeight();
       } else if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
@@ -129,7 +126,6 @@ const DecisionWorkspace = forwardRef<
                 return { collapsed: false, height };
               });
             }}
-            onDraggerDoubleClick={resetHeight}
             draggerIcon={
               <Tooltip
                 title={intl.formatMessage({

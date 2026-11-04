@@ -193,7 +193,7 @@ export default {
   'playground.decision.answers.collapse': 'Yanıtları daralt',
   'playground.decision.answers.resize': 'Yanıt panelinin yüksekliğini ayarla',
   'playground.decision.answers.resize.tooltip':
-    'Boyutlandırmak için sürükleyin, sıfırlamak için çift tıklayın. Ok tuşlarıyla boyutlandırın, Enter ile daraltın veya genişletin.',
+    'Yüksekliği ayarlamak için sürükleyin veya ok tuşlarını kullanın.',
   'playground.decision.questions': 'Sorular',
   'playground.decision.questions.type.choice': 'Seçim',
   'playground.decision.questions.type.score': 'Puan',

@@ -45,6 +45,7 @@ const Details: React.FC = () => {
   const [searchParams] = useSearchParams();
   const name = searchParams.get('name');
   const id = searchParams.get('id');
+  const hasCurrentDetail = id != null && detailData?.id === Number(id);
 
   // Bumped on each live refresh so the Summary tab re-pulls the per-point
   // results (which don't ride the row's stream).
@@ -175,18 +176,17 @@ const Details: React.FC = () => {
       >
         <DetailContent
           tabBarExtraContent={{
-            right: (
+            right: hasCurrentDetail ? (
               <FadeIn>
                 <div
                   style={{
-                    opacity: loading ? 0 : 1,
                     position: 'relative',
                     bottom: 1,
                     right: -1
                   }}
                 >
                   <Flex align="center" gap={8}>
-                    <DashboardLink id={id ? Number(id) : undefined} />
+                    <DashboardLink id={detailData.id} />
                     <RowActions
                       page="detail"
                       record={detailData as any}
@@ -195,7 +195,7 @@ const Details: React.FC = () => {
                   </Flex>
                 </div>
               </FadeIn>
-            )
+            ) : null
           }}
         ></DetailContent>
       </DetailContext.Provider>

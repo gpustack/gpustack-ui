@@ -74,7 +74,11 @@ export const MarkerReasons: React.FC<{ texts: string[] }> = ({ texts }) => {
     return null;
   }
   return (
-    <Flex vertical gap={4} style={{ color: 'var(--ant-color-warning)' }}>
+    <Flex
+      vertical
+      gap={4}
+      style={{ color: 'var(--ant-color-warning)', whiteSpace: 'pre-line' }}
+    >
       {texts.map((text) => (
         <span key={text}>{text}</span>
       ))}

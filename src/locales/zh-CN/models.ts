@@ -590,7 +590,7 @@ export default {
   'models.pd.degraded.engineVersion':
     '当前固定的引擎版本低于所选 PD 方案声明支持的版本范围。这是允许的 —— 自建镜像可能带有私有版本号 —— 但方案所依赖的行为可能并不存在：例如 SGLang 低于 0.5.7 时，缩容下线的成员无法注销，仍会继续接收流量。',
   'models.pd.degraded.pairingUnverified':
-    '配对参数只有一侧显式声明，另一侧沿用引擎默认值，GPUStack 无法判定两者是否一致 —— 常见于 --max-model-len、--block-size、--kv-cache-layout，以及一侧写 auto、另一侧写具体 dtype。这不代表配对是错的，只代表没有任何检查验证过它。在两个角色上都写明该参数即可被校验。',
+    'GPUStack 无法确认 Prefill 和 Decode 的部分设置是否满足配对要求。常见情形是一个角色显式指定了某项配对参数的值，另一个角色沿用引擎默认值（如 --max-model-len、--block-size 或 --kv-cache-layout），或由引擎自动选择参数值（如一个角色将 --dtype 设为 auto，另一个设为 float16）。\n\n部署可继续，对于上述情况，请为两个角色显式设置具体值，以便 GPUStack 校验。',
   'models.pd.degraded.pairingTP':
     '按成员实际拿到的卡重新算出的有效张量并行度，违反了该 PD 方案声明的方向：NIXL 要求 decode 不窄于 prefill，昇腾 Mooncake 要求 prefill 不窄于 decode。准入阶段查不出来 —— 一个既不固定卡、也不写 --tensor-parallel-size 的角色，在落位之前根本没有数可查。请在两个角色上都设置 --tensor-parallel-size，或给它们符合方案要求的卡数。',
   'models.pd.admission.infeasible':

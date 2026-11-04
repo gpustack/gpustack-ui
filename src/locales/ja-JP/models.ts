@@ -634,7 +634,7 @@ export default {
   'models.pd.degraded.engineVersion':
     '固定されているエンジンバージョンが、選択した PD レシピが対応を宣言する範囲を下回っています。これは許容されます —— 自前でビルドしたイメージが独自のバージョン番号を持つことがあります —— が、レシピが前提とする動作が存在しない可能性があります。たとえば SGLang 0.5.7 未満では、縮退で外されたメンバーを登録解除できず、トラフィックを受け取り続けます。',
   'models.pd.degraded.pairingUnverified':
-    'ペアリング要素が一方のロールだけで明示され、もう一方はエンジンの既定値に委ねられているため、両者が一致するか検証できませんでした —— 典型的には --max-model-len、--block-size、--kv-cache-layout、または片側が auto でもう片側が具体的な dtype の場合です。ペアリングが誤っているという意味ではなく、検証されていないという意味です。両方のロールに明記すると検証されます。',
+    'GPUStack は、Prefill と Decode の一部の設定がペアリング要件を満たしているか確認できませんでした。よくあるのは、一方のロールでペアリングパラメーターの値を明示的に指定し、もう一方ではエンジンの既定値を使用する場合（--max-model-len、--block-size、--kv-cache-layout など）や、値の選択をエンジンに任せる場合（例として、一方で --dtype=auto、もう一方で --dtype=float16 を指定）です。\n\nデプロイは続行できます。上記の場合は、GPUStack が検証できるように、両方のロールで該当パラメーターに具体的な値を明示的に設定してください。',
   'models.pd.degraded.pairingTP':
     'メンバーが実際に取得したカードから再計算した実効テンソル並列度が、この PD レシピの宣言する方向に反しています：NIXL は Decode が Prefill 以上、Ascend Mooncake は Prefill が Decode 以上である必要があります。カードを固定せず --tensor-parallel-size も書かないロールは配置されるまで検査できる数値を持たないため、受け入れ時には検出できません。両方のロールに --tensor-parallel-size を設定するか、レシピが許す枚数を割り当ててください。',
   'models.pd.admission.infeasible':

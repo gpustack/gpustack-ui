@@ -184,8 +184,7 @@ export default {
   'playground.decision.answers.expand': '展开回答',
   'playground.decision.answers.collapse': '折叠回答',
   'playground.decision.answers.resize': '调整回答区高度',
-  'playground.decision.answers.resize.tooltip':
-    '拖动调整高度，双击恢复默认。方向键调整，Enter 折叠或展开。',
+  'playground.decision.answers.resize.tooltip': '拖动或使用方向键调整高度。',
   'playground.decision.questions': '问题',
   'playground.decision.questions.type.choice': '选择题',
   'playground.decision.questions.type.score': '评分题',

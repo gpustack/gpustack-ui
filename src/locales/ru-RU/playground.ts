@@ -193,7 +193,7 @@ export default {
   'playground.decision.answers.collapse': 'Свернуть ответы',
   'playground.decision.answers.resize': 'Изменить высоту панели ответов',
   'playground.decision.answers.resize.tooltip':
-    'Перетащите для изменения высоты, дважды нажмите для сброса. Стрелки меняют высоту, Enter сворачивает или разворачивает панель.',
+    'Перетащите или используйте клавиши со стрелками для изменения высоты.',
   'playground.decision.questions': 'Вопросы',
   'playground.decision.questions.type.choice': 'Выбор',
   'playground.decision.questions.type.score': 'Оценка',

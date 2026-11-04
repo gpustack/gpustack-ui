@@ -253,13 +253,13 @@ test('answer usage mounts in the header without crashing the scroll region', asy
         })
       )
     );
-    assert.equal(separator.getAttribute('aria-valuenow'), '284');
+    assert.equal(separator.getAttribute('aria-valuenow'), '144');
     await act(async () =>
       separator.dispatchEvent(
         new dom.window.KeyboardEvent('keydown', { key: 'Home', bubbles: true })
       )
     );
-    assert.equal(separator.getAttribute('aria-valuenow'), '260');
+    assert.equal(separator.getAttribute('aria-valuenow'), '120');
 
     await act(async () => {
       root.unmount();

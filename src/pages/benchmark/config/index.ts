@@ -210,13 +210,6 @@ export const loadAxisTitleId = (d?: {
     ? 'benchmark.detail.chart.axis.load.concurrency'
     : 'benchmark.detail.chart.axis.load.rate';
 
-// Concurrency is an integer (# of concurrent requests); request rate is a
-// continuous req/s frequency, so show it with one decimal.
-export const loadValueDecimals = (d?: {
-  load_type?: string;
-  stages?: unknown[] | null;
-}): number => (loadAxisLabelId(d) === 'benchmark.form.concurrency' ? 0 : 1);
-
 // Auto-generate a benchmark name: {model}-{profile}-{MMdd-HHmm}-{3 random}.
 // Slugged + length-bounded so it always satisfies the name pattern
 // (^[A-Za-z0-9][A-Za-z0-9._-]{0,61}[A-Za-z0-9]$).

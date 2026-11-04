@@ -13,8 +13,7 @@ import React, { useMemo, useState } from 'react';
 import {
   ProfileValueMap,
   loadAxisLabelId,
-  loadAxisTitleId,
-  loadValueDecimals
+  loadAxisTitleId
 } from '../../config';
 import { useDetailContext } from '../../config/detail-context';
 import { RESIDENT_CHARTS, buildChartSpecs } from './chart-specs';
@@ -232,7 +231,6 @@ const Overview: React.FC<OverviewProps> = ({
   const t = (id: string, values?: Record<string, string | number>) =>
     intl.formatMessage({ id }, values);
 
-  const dec = loadValueDecimals(detailData);
   // Two forms of the same label, and the difference is not cosmetic:
   //   * `loadAxisName` — no unit. Goes where the value is printed right next to
   //     it: the stage table's column header and the charts' tooltip headers
@@ -379,7 +377,7 @@ const Overview: React.FC<OverviewProps> = ({
       render: (_v: unknown, p: StagePoint) => {
         return (
           <span className="rate-cell">
-            <span className="n">{_.round(p.load, dec)}</span>
+            <span className="n">{p.load}</span>
             {isSloCapacityPoint(p) && (
               <Tooltip
                 title={t('benchmark.detail.marker.sloCapacity.tip')}
@@ -625,7 +623,6 @@ const Overview: React.FC<OverviewProps> = ({
             }
             loadAxisName={loadAxisName}
             loadAxisTitle={loadAxisTitle}
-            loadDecimals={dec}
             labels={{
               concurrency: t('benchmark.detail.requests.concurrency'),
               throughput: t('benchmark.detail.throughput.totalToken'),
@@ -681,7 +678,6 @@ const Overview: React.FC<OverviewProps> = ({
                 points={points}
                 loadAxisName={loadAxisName}
                 loadAxisTitle={loadAxisTitle}
-                loadDecimals={dec}
                 markerLabels={{
                   primary: primaryLabel,
                   peak: peakLabel,

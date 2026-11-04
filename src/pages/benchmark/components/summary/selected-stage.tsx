@@ -1,7 +1,6 @@
 import { useIntl } from '@umijs/max';
-import { round } from 'lodash';
 import React, { useMemo } from 'react';
-import { loadValueDecimals } from '../../config';
+import { loadAxisLabelId } from '../../config';
 import { useDetailContext } from '../../config/detail-context';
 import { StagePoint, isSloCapacityPoint } from './metrics';
 import MetricsResult from './metrics-result';
@@ -46,10 +45,10 @@ const SelectedStage: React.FC<SelectedStageProps> = ({ point }) => {
             })
           ) : (
             <>
-              {round(point.load, loadValueDecimals(detailData))}{' '}
+              {point.load}{' '}
               {intl.formatMessage({
                 id:
-                  loadValueDecimals(detailData) === 0
+                  loadAxisLabelId(detailData) === 'benchmark.form.concurrency'
                     ? 'benchmark.table.best.unit.concurrency'
                     : 'benchmark.table.best.unit.rate'
               })}

@@ -110,14 +110,8 @@ mock.module('@umijs/max', {
     useIntl: () => ({ formatMessage: ({ id }: any) => translations[id] || id })
   }
 });
-mock.module(new URL('../../../config/index.ts', import.meta.url).href, {
-  namedExports: {
-    loadAxisLabelId: (d: any) =>
-      d.load_type === 'concurrency'
-        ? 'benchmark.form.concurrency'
-        : 'benchmark.table.requestRate',
-    loadValueDecimals: (d: any) => (d.load_type === 'concurrency' ? 0 : 1)
-  }
+mock.module(new URL('../../../../../config/index.ts', import.meta.url).href, {
+  namedExports: { StatusMaps: {} }
 });
 let detail: any = {};
 mock.module(
@@ -614,3 +608,17 @@ test('request-size disclosure adds only token data, with the same ordering and n
     dom.window.close();
   }
 });
+
+for (const rate of [0.5, 0.01, 0.001, 1.2345]) {
+  test(`target request rate retains configured ${rate} req/s`, () => {
+    detail = { load_type: 'fixed_rate', request_rate: rate };
+    for (const data of [undefined, { rate }]) {
+      const dom = render(data);
+      const target = dom.window.document.querySelector(
+        '.stage-meta .meta-value'
+      );
+      assert.equal(target?.textContent, String(rate));
+      dom.window.close();
+    }
+  });
+}

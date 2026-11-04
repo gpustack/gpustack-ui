@@ -72,8 +72,7 @@ mock.module(new URL('../../../config/index.ts', import.meta.url).href, {
     loadAxisLabelId: (d: any) =>
       d?.load_type === 'concurrency'
         ? 'benchmark.form.concurrency'
-        : 'benchmark.form.rate',
-    loadValueDecimals: (d: any) => (d?.load_type === 'concurrency' ? 0 : 2)
+        : 'benchmark.form.rate'
   }
 });
 let detail: any = {};
@@ -555,7 +554,6 @@ for (const threshold of [1, 500]) {
         latencyThreshold: threshold,
         loadAxisName: 'Concurrency',
         loadAxisTitle: 'Concurrency',
-        loadDecimals: 0,
         labels: {
           concurrency: 'Concurrency',
           primary: 'SLO Capacity',
@@ -590,7 +588,6 @@ test('main chart uses total throughput and the configured latency metric, preser
       latencyThreshold: 500,
       loadAxisName: 'Rate',
       loadAxisTitle: 'Rate (req/s)',
-      loadDecimals: 0,
       labels: {
         concurrency: 'Concurrency',
         primary: 'SLO Capacity',
@@ -723,7 +720,6 @@ for (const loadType of ['concurrency', 'fixed_rate']) {
         latencyThreshold: 500,
         loadAxisName: 'Load',
         loadAxisTitle: 'Load',
-        loadDecimals: 0,
         labels: {
           concurrency: 'Concurrency',
           primary: 'SLO Capacity',
@@ -835,7 +831,6 @@ test('duplicate categorical load labels keep the primary guide at the exact poin
       points,
       loadAxisName: 'Concurrency',
       loadAxisTitle: 'Concurrency',
-      loadDecimals: 0,
       markerLabels: { primary: 'Primary', peak: 'Peak' },
       spec: {
         key: 'output',
@@ -875,7 +870,6 @@ test('non-SLO primary and coincident peak render one green Peak Throughput marke
       latencyValue: (p) => p.ttftP99,
       loadAxisName: 'Rate',
       loadAxisTitle: 'Rate',
-      loadDecimals: 0,
       labels: {
         concurrency: 'Concurrency',
         primary: 'SLO Capacity',
@@ -900,7 +894,6 @@ test('non-SLO primary and coincident peak render one green Peak Throughput marke
       points,
       loadAxisName: 'Rate',
       loadAxisTitle: 'Rate',
-      loadDecimals: 0,
       markerLabels: { primary: 'SLO Capacity', peak: 'Peak Throughput' },
       spec: {
         key: 'throughput',
@@ -968,3 +961,66 @@ test('throughput card labels a concurrency-axis configured load separately from 
   assert.equal(stats['ITL p99'], '-');
   dom.window.close();
 });
+
+for (const rate of [0.01, 0.001, 1.2345]) {
+  test(`load chart labels and tooltips retain configured ${rate} req/s`, () => {
+    const points = buildStagePoints([row(rate, 100)], {});
+    const props = {
+      points,
+      loadAxisName: 'Target request rate',
+      loadAxisTitle: 'Request rate (req/s)',
+      markerLabels: { primary: 'Primary', peak: 'Peak' },
+      spec: {
+        key: 'throughput',
+        title: 'TPS',
+        note: '',
+        yName: 'TPS',
+        fmt: String,
+        series: [{ name: 'TPS', value: (p: any) => p.tps, color: '#000' }]
+      },
+      latencyValue: (p: any) => p.ttftP99,
+      labels: {
+        concurrency: 'Concurrency',
+        primary: 'Primary',
+        peak: 'Peak',
+        throughput: 'Total',
+        throughputAxis: 'TPS',
+        ttftP99: 'TTFT P99',
+        overloaded: 'Overloaded',
+        sloBreached: 'SLO breached'
+      }
+    };
+    for (const build of [buildStageChartOption, buildLoadSweepOption]) {
+      const chart: any = build(props, '#ddd');
+      assert.deepEqual(chart.xAxis.data, [String(rate)]);
+      assert.ok(
+        chart.tooltip
+          .formatter([{ dataIndex: 0 }])
+          .includes(`Target request rate ${rate}`)
+      );
+    }
+  });
+}
+
+for (const rate of [0.01, 0.001, 1.2345, 1000, 1000.2345]) {
+  test(`primary and peak configured loads retain ${rate} req/s`, () => {
+    detail = {
+      profile: 'Custom',
+      load_type: 'fixed_rate',
+      recommended_rate: rate,
+      peak_rate: rate
+    };
+    const dom = new requireForTest.JSDOM(render([row(rate, 100)]));
+    const values = [...dom.window.document.querySelectorAll('.stat .n')].map(
+      (node) => node.textContent
+    );
+    assert.ok(values.includes(String(rate)));
+    assert.ok(
+      dom.window.document
+        .querySelector('button[aria-label]')
+        ?.getAttribute('aria-label')
+        ?.includes(String(rate))
+    );
+    dom.window.close();
+  });
+}

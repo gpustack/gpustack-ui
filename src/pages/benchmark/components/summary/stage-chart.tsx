@@ -208,7 +208,6 @@ interface Props {
   /** Categorical x-axis title, e.g. "Concurrency (requests)" — needs the unit,
    *  because the ticks are bare numbers. */
   loadAxisTitle: string;
-  loadDecimals: number;
   markerLabels: {
     primary: string;
     peak: string;
@@ -220,14 +219,7 @@ interface Props {
 }
 
 export const buildStageChartOption = (
-  {
-    spec,
-    points,
-    loadAxisName,
-    loadAxisTitle,
-    loadDecimals,
-    markerLabels
-  }: Props,
+  { spec, points, loadAxisName, loadAxisTitle, markerLabels }: Props,
   // Gridlines are the one part of the palette that cannot be a hex literal like
   // the rest of `C`: they have to recede into whichever background is behind
   // them, and a light-theme value reads as a set of bright solid rules in dark
@@ -482,7 +474,7 @@ export const buildStageChartOption = (
       }
     : {
         type: 'category',
-        data: points.map((p) => String(Number(p.load.toFixed(loadDecimals)))),
+        data: points.map((p) => String(p.load)),
         name: loadAxisTitle,
         nameLocation: 'middle',
         nameGap: 26,
@@ -528,7 +520,7 @@ export const buildStageChartOption = (
               .filter(Boolean)
               .join(' · ')
           : '';
-        const header = `${loadAxisName} ${Number(p.load.toFixed(loadDecimals))}${tag ? ` · ${tag}` : ''}`;
+        const header = `${loadAxisName} ${p.load}${tag ? ` · ${tag}` : ''}`;
         const rows: Array<{ color: string; label: string }> = [];
         if (isValueX) {
           // Moved out of the header rather than dropped: it is still the position

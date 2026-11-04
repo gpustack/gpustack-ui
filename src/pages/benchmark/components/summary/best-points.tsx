@@ -3,7 +3,7 @@ import { Button, Flex, Tooltip } from 'antd';
 import { createStyles } from 'antd-style';
 import { round } from 'lodash';
 import React from 'react';
-import { loadAxisLabelId, loadValueDecimals } from '../../config';
+import { loadAxisLabelId } from '../../config';
 import { useDetailContext } from '../../config/detail-context';
 import {
   getPrimaryResultRate,
@@ -216,7 +216,6 @@ const BestPoints: React.FC<BestPointsProps> = ({ points, onSelect }) => {
   }
   if (hasSlo && !isSloCapacityPoint(best)) return null;
 
-  const dec = loadValueDecimals(detailData);
   const isConc = loadAxisLabelId(detailData) === 'benchmark.form.concurrency';
   const isSearch = detailData?.auto_tune === true;
   const loadUnit = t(
@@ -237,6 +236,8 @@ const BestPoints: React.FC<BestPointsProps> = ({ points, onSelect }) => {
     v == null
       ? '-'
       : round(v, digits ?? (Math.abs(v) < 10 ? 2 : 0)).toLocaleString();
+  // Match stage labels in the table and charts without rounding or locale changes.
+  const fmtLoad = (value: number) => String(value);
   const title = hasSlo
     ? isConc
       ? 'benchmark.detail.result.sloConcurrency'
@@ -253,7 +254,7 @@ const BestPoints: React.FC<BestPointsProps> = ({ points, onSelect }) => {
                 ? 'benchmark.detail.stage.configuredConcurrency'
                 : 'benchmark.detail.stage.configuredRate'
             ),
-            v: fmt(best.load, dec),
+            v: fmtLoad(best.load),
             u: loadUnit
           },
           {
@@ -310,8 +311,8 @@ const BestPoints: React.FC<BestPointsProps> = ({ points, onSelect }) => {
         <>
           {' '}
           {t('benchmark.detail.result.boundaryPair', {
-            pass: fmt(bracket[0], dec),
-            fail: fmt(bracket[1], dec),
+            pass: fmtLoad(bracket[0]),
+            fail: fmtLoad(bracket[1]),
             unit: loadUnit
           })}
         </>
@@ -328,14 +329,14 @@ const BestPoints: React.FC<BestPointsProps> = ({ points, onSelect }) => {
             type="text"
             className="hero"
             aria-label={t('benchmark.detail.result.selectMeasuredPoint', {
-              load: fmt(best.load, dec),
+              load: fmtLoad(best.load),
               unit: loadUnit
             })}
             onClick={() => onSelect(best)}
           >
             <Flex component="span" align="baseline" gap={8}>
               <span className="v">
-                {fmt(hasSlo ? best.load : best.tps, hasSlo ? dec : 0)}
+                {hasSlo ? fmtLoad(best.load) : fmt(best.tps, 0)}
               </span>
               <span className="u">{hasSlo ? loadUnit : 'tok/s'}</span>
             </Flex>
@@ -409,7 +410,7 @@ const BestPoints: React.FC<BestPointsProps> = ({ points, onSelect }) => {
                       style={{ padding: 0, height: 'auto' }}
                       onClick={() => onSelect(peak)}
                     >
-                      {fmt(peak.load, dec)}
+                      {fmtLoad(peak.load)}
                     </Button>
                   ),
                   unit: loadUnit,

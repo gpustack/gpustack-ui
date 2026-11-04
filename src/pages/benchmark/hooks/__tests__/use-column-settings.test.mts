@@ -35,9 +35,7 @@ mock.module(new URL('../../config/index.ts', import.meta.url).href, {
     LoadTypeValueMap: { Concurrency: 'concurrency' },
     TargetModeValueMap: { Instance: 'model_instance', Route: 'route' },
     loadTypeOptions: [],
-    targetModeOptions: [],
-    loadValueDecimals: (record: any) =>
-      record.load_type === 'concurrency' ? 0 : 2
+    targetModeOptions: []
   }
 });
 mock.module(
@@ -96,3 +94,13 @@ test('Best @ honors exact primary descriptors and explicit no-primary results', 
 test('Best @ retains non-SLO recommendations', () => {
   assert.match(renderBest({ recommended_rate: 128, slo_met_rate: 512 }), /128/);
 });
+
+for (const rate of [0.01, 0.001, 1.2345]) {
+  test(`Best @ retains configured ${rate} req/s`, () => {
+    assert.ok(
+      renderBest({ load_type: 'fixed_rate', recommended_rate: rate }).includes(
+        String(rate)
+      )
+    );
+  });
+}

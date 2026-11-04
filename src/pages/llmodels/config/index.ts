@@ -450,6 +450,7 @@ export const DO_NOT_TRIGGER_CHECK_COMPATIBILITY = [
   'extended_kv_cache.mode',
   'extended_kv_cache.cache_service_id',
   'extended_kv_cache.ram_size',
+  'extended_kv_cache.chunk_size',
   'speculative_config.enabled',
   'speculative_config.draft_model',
   'max_context_len',

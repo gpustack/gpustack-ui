@@ -6,6 +6,7 @@ import {
   isPDModel,
   modelCategoriesMap
 } from '@/pages/llmodels/config';
+import { ModelInstanceListItem } from '@/pages/llmodels/config/types';
 import { useBenchmarkTargetInstance } from '@/pages/llmodels/hooks/use-run-benchmark';
 import { useQueryModelInstancesList } from '@/pages/llmodels/services/use-query-model-instances';
 import { useQueryModelList } from '@/pages/llmodels/services/use-query-model-list';
@@ -20,7 +21,7 @@ import {
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { App, Form, Tooltip } from 'antd';
+import { Alert, App, Form, Tooltip } from 'antd';
 import React, { useEffect } from 'react';
 import {
   targetModeOptions,
@@ -29,6 +30,24 @@ import {
 } from '../config';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
+
+export const hasMultipleInferenceEndpoints = (
+  instance: Pick<ModelInstanceListItem, 'distributed_servers'>
+): boolean => {
+  const endpoints = new Set<string>();
+  for (const workload of instance.distributed_servers?.workloads || []) {
+    const component = workload.component;
+    if (component?.kind === 'vllm_hybrid' && component.api_port != null) {
+      endpoints.add(`${workload.worker_id}:${component.api_port}`);
+    }
+    for (const placement of workload.dp_rank_placements || []) {
+      if (placement.node_rank === 0 && placement.api_port != null) {
+        endpoints.add(`${workload.worker_id}:${placement.api_port}`);
+      }
+    }
+  }
+  return endpoints.size > 1;
+};
 
 // benchmark.form.nonLlmModel.tips
 const InstanceNode = (props: any) => {
@@ -103,6 +122,8 @@ const ModelInstanceForm: React.FC = () => {
     useBenchmarkTargetInstance();
   const [routeOptions, setRouteOptions] = React.useState<any[]>([]);
   const [routeLoading, setRouteLoading] = React.useState(false);
+  const [showMultipleEndpointsWarning, setShowMultipleEndpointsWarning] =
+    React.useState(false);
   const targetMode = Form.useWatch('target_mode', form);
   const routeMode = targetMode === TargetModeValueMap.Route;
 
@@ -200,6 +221,7 @@ const ModelInstanceForm: React.FC = () => {
   const handleRouteChange = (value: string | undefined, option: any) => {
     initializationVersion.current += 1;
     setRouteLoading(false);
+    setShowMultipleEndpointsWarning(false);
     // A route is the whole target: the model behind it is bookkeeping (the
     // snapshot, the placement worker), not something the user picked.
     form.setFieldsValue({
@@ -220,6 +242,7 @@ const ModelInstanceForm: React.FC = () => {
   const handleTargetModeChange = useMemoizedFn(async (mode: string) => {
     const version = ++initializationVersion.current;
     setRouteLoading(false);
+    setShowMultipleEndpointsWarning(false);
     const isCurrent = () =>
       initializationVersion.current === version &&
       form.getFieldValue('cluster_id') === clusterId &&
@@ -260,6 +283,9 @@ const ModelInstanceForm: React.FC = () => {
     // endpoint (the router) and the worker the run is placed on.
     const instanceOption =
       value?.length > 1 ? options[options.length - 1] : null;
+    setShowMultipleEndpointsWarning(
+      !!instanceOption?.hasMultipleInferenceEndpoints
+    );
     form.setFieldsValue({
       model_name: value?.[0],
       model_id: options[0]?.id,
@@ -281,6 +307,7 @@ const ModelInstanceForm: React.FC = () => {
       id: instance.id,
       worker_id: instance.worker_id,
       worker_name: instance.worker_name,
+      hasMultipleInferenceEndpoints: hasMultipleInferenceEndpoints(instance),
       isLeaf: true,
       disabled: instance.state !== InstanceStatusMap.Running,
       state: InstanceStatusMapValue[instance.state]
@@ -337,6 +364,7 @@ const ModelInstanceForm: React.FC = () => {
     setModelList([]);
     setRouteOptions([]);
     setRouteLoading(false);
+    setShowMultipleEndpointsWarning(false);
     if (!clusterId) {
       return;
     }
@@ -438,6 +466,7 @@ const ModelInstanceForm: React.FC = () => {
       cancelInstanceRequest();
       clearBenchmarkTargetInstance();
       setRouteLoading(false);
+      setShowMultipleEndpointsWarning(false);
     }
     return () => {
       initializationVersion.current += 1;
@@ -518,6 +547,18 @@ const ModelInstanceForm: React.FC = () => {
           ></SealCascader>
         </Form.Item>
       )}
+      {open &&
+        action === PageAction.CREATE &&
+        !routeMode &&
+        showMultipleEndpointsWarning && (
+          <Alert
+            type="warning"
+            showIcon
+            title={intl.formatMessage({
+              id: 'benchmark.form.multipleEndpoints.tips'
+            })}
+          />
+        )}
     </>
   );
 };

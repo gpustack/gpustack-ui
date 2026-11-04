@@ -12,6 +12,8 @@ export default {
     'Startup configuration not recorded',
   'benchmark.detail.configSource.fallback.description':
     'For {instances}, the displayed settings come from the model configuration at benchmark creation and are for reference only.',
+  'benchmark.form.multipleEndpoints.tips':
+    'This instance has multiple inference endpoints. Instance benchmarking sends requests to only one endpoint and may not measure the instance’s full performance. Consider benchmarking a route instead.',
   'benchmark.detail.result.selectMeasuredPoint':
     'Select measured point at {load} {unit}',
   'benchmark.detail.metric.ttftP99': 'TTFT p99',

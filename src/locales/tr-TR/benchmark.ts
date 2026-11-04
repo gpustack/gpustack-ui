@@ -14,6 +14,8 @@ export default {
     'Başlangıç yapılandırması kaydedilmemiş',
   'benchmark.detail.configSource.fallback.description':
     '{instances} için gösterilen ayarlar, kıyaslama oluşturulurken geçerli olan model yapılandırmasından alınmıştır ve yalnızca referans amaçlıdır.',
+  'benchmark.form.multipleEndpoints.tips':
+    'Bu örneğin birden fazla çıkarım uç noktası var. Örnek kıyaslaması istekleri yalnızca bir uç noktaya gönderdiğinden örneğin tam performansını ölçemeyebilir. Bunun yerine bir rotayı kıyaslamayı değerlendirin.',
   'benchmark.detail.result.selectMeasuredPoint':
     '{load} {unit} ölçüm noktasını seç',
   'benchmark.detail.metric.ttftP99': 'TTFT p99',

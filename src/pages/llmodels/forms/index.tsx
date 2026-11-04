@@ -682,6 +682,20 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     // cluster. `roles` used to sit in DO_NOT_TRIGGER_CHECK_COMPATIBILITY for
     // that reason, which also meant changing 1P1D to 4P4D never re-evaluated.
     if (fieldName === 'roles') {
+      const roleChange = Array.isArray(changedValues.roles)
+        ? changedValues.roles.find(Boolean)
+        : undefined;
+      // A cache input reports its completed write separately, even when the
+      // role's scheduling signature still reflects an earlier PD mode.
+      if (roleChange && Object.keys(roleChange).length === 1) {
+        const roleField = getFieldPaths(roleChange);
+        if (
+          roleField.startsWith('extended_kv_cache.') &&
+          DO_NOT_TRIGGER_CHECK_COMPATIBILITY.includes(roleField)
+        ) {
+          return;
+        }
+      }
       const signature = rolesEvaluationSignature(form.getFieldValue('roles'));
       if (signature === rolesSignatureRef.current) {
         return;

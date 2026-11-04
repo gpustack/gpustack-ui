@@ -21,8 +21,7 @@ import { RoleSection } from './roles/override-section';
 // real options carry the cache service's numeric id.
 const IN_PROCESS = 'in-process';
 
-// antd batches Form.setFieldsValue; the follow-up onValuesChange must run
-// after that internal flush or it reads the pre-update values.
+// Read registered values after conditional cache fields mount or unmount.
 const FORM_FLUSH_DELAY_MS = 100;
 
 interface KVCacheFormProps {
@@ -148,15 +147,18 @@ const KVCacheForm: React.FC<KVCacheFormProps> = ({
     );
   }, [backend, flatBackendOptions]);
 
-  const notifyValuesChangeDelayed = async (changedValues: any) => {
-    await new Promise((resolve) => {
-      setTimeout(resolve, FORM_FLUSH_DELAY_MS);
-    });
-    // `getFieldsValue()` is the whole store either way, so the compatibility
-    // consumer still receives a model-level shape. The changed-values argument
-    // is dropped under a prefix: nothing downstream parses a role path, and a
-    // role-shaped key would read as an unknown model-level field.
-    onValuesChange?.(namePrefix ? {} : changedValues, form.getFieldsValue());
+  const onValuesChangeRef = useRef(onValuesChange);
+  onValuesChangeRef.current = onValuesChange;
+  const cacheNotificationTimer = useRef<ReturnType<typeof setTimeout>>();
+  useEffect(() => () => clearTimeout(cacheNotificationTimer.current), []);
+
+  const notifyCacheChange = () => {
+    clearTimeout(cacheNotificationTimer.current);
+    cacheNotificationTimer.current = setTimeout(() => {
+      // The empty patch signals a completed write to the form wrapper, which
+      // adds the full PD roles from the store before forwarding it.
+      onValuesChangeRef.current?.({}, form.getFieldsValue());
+    }, FORM_FLUSH_DELAY_MS);
   };
 
   // in-process defaults, restoring whatever the user had filled before a
@@ -164,10 +166,10 @@ const KVCacheForm: React.FC<KVCacheFormProps> = ({
   const localCacheFields = () => ({
     chunk_size: configCacheRef.current?.chunk_size || null,
     ram_ratio: configCacheRef.current?.ram_ratio || 1.2,
-    ram_size: configCacheRef.current?.ram_size || null
+    ram_size: configCacheRef.current?.ram_size ?? null
   });
 
-  const handleEnableOnChange = async (checked: boolean) => {
+  const handleEnableOnChange = (checked: boolean) => {
     if (checked) {
       const cachedService = cacheServiceOptions.find(
         (service) => service.value === configCacheRef.current?.cache_service_id
@@ -210,15 +212,11 @@ const KVCacheForm: React.FC<KVCacheFormProps> = ({
     } else {
       configCacheRef.current = form.getFieldValue(path('extended_kv_cache'));
     }
-    await notifyValuesChangeDelayed({
-      extended_kv_cache: {
-        enabled: checked
-      }
-    });
+    notifyCacheChange();
   };
 
   // Merged backend choice: the in-process cache, or a specific cache service.
-  const handleBackendChange = async (value: string | number) => {
+  const handleBackendChange = (value: string | number) => {
     if (value === IN_PROCESS) {
       setCache({
         enabled: true,
@@ -226,16 +224,15 @@ const KVCacheForm: React.FC<KVCacheFormProps> = ({
         cache_service_id: null,
         ...localCacheFields()
       });
-      await notifyValuesChangeDelayed({
-        extended_kv_cache: { mode: 'local' }
-      });
     } else {
-      // stash the local-mode fields so switching back restores them
+      // Keep the local values when switching between two shared services.
       const current = form.getFieldValue(path('extended_kv_cache'));
-      configCacheRef.current = {
-        ...configCacheRef.current,
-        ..._.pick(current, ['chunk_size', 'ram_ratio', 'ram_size'])
-      };
+      if (current?.mode !== 'shared') {
+        configCacheRef.current = {
+          ...configCacheRef.current,
+          ..._.pick(current, ['chunk_size', 'ram_ratio', 'ram_size'])
+        };
+      }
       setCache({
         enabled: true,
         mode: 'shared',
@@ -244,10 +241,8 @@ const KVCacheForm: React.FC<KVCacheFormProps> = ({
         ram_ratio: null,
         ram_size: null
       });
-      await notifyValuesChangeDelayed({
-        extended_kv_cache: { mode: 'shared', cache_service_id: value }
-      });
     }
+    notifyCacheChange();
   };
 
   const handleRamRatioChange = (
@@ -259,22 +254,6 @@ const KVCacheForm: React.FC<KVCacheFormProps> = ({
     }
   };
 
-  const handleRamSizeInput = (value: number | null | string) => {
-    if (!value) {
-      form.setFieldValue(path('extended_kv_cache', 'ram_size'), null);
-    } else {
-      form.setFieldValue(path('extended_kv_cache', 'ram_size'), _.round(value));
-    }
-    onValuesChange?.(
-      {
-        extended_kv_cache: {
-          ram_size: value
-        }
-      },
-      form.getFieldsValue()
-    );
-  };
-
   // keep the service options in sync with the cluster / backend and drop a
   // selection that is no longer listed (falling back to in-process); a
   // failed fetch (null) proves nothing about the saved selection
@@ -282,12 +261,13 @@ const KVCacheForm: React.FC<KVCacheFormProps> = ({
     if (!kvCacheEnabled || !sharedSupported || !clusterId) {
       return;
     }
+    let active = true;
     fetchCacheServices({ clusterId, backend })
-      .then(async (services) => {
+      .then((services) => {
         // null = failure or cancellation: prove nothing, and keep the
         // auto-select flag — a canceled request must not eat the marker
         // its superseding request will consume
-        if (!services) {
+        if (!active || !services) {
           return;
         }
         const options = services.filter(compatibleService);
@@ -303,11 +283,7 @@ const KVCacheForm: React.FC<KVCacheFormProps> = ({
             cache_service_id: null,
             ...localCacheFields()
           });
-          // setFieldsValue does not fire onValuesChange: tell the parent
-          // explicitly so compatibility checks see the fallback
-          await notifyValuesChangeDelayed({
-            extended_kv_cache: { mode: 'local', cache_service_id: null }
-          });
+          notifyCacheChange();
         }
         if (!autoSelectPendingRef.current) {
           return;
@@ -337,17 +313,15 @@ const KVCacheForm: React.FC<KVCacheFormProps> = ({
             ram_ratio: null,
             ram_size: null
           });
-          await notifyValuesChangeDelayed({
-            extended_kv_cache: {
-              mode: 'shared',
-              cache_service_id: eligible[0].value
-            }
-          });
+          notifyCacheChange();
         }
       })
       .catch(() => {
         // cancellation rejects the underlying request; nothing to do
       });
+    return () => {
+      active = false;
+    };
   }, [kvCacheEnabled, sharedSupported, clusterId, backend]);
 
   // a backend that cannot share forces the in-process cache. Until the
@@ -365,11 +339,7 @@ const KVCacheForm: React.FC<KVCacheFormProps> = ({
         cache_service_id: null,
         ...localCacheFields()
       });
-      // setFieldsValue does not fire onValuesChange: tell the parent
-      // explicitly so compatibility checks see the fallback
-      void notifyValuesChangeDelayed({
-        extended_kv_cache: { mode: 'local', cache_service_id: null }
-      });
+      notifyCacheChange();
     }
   }, [flatBackendOptions, kvCacheEnabled, sharedSupported, kvCacheMode]);
 
@@ -546,9 +516,12 @@ const KVCacheForm: React.FC<KVCacheFormProps> = ({
                   precision={1}
                 />
               </Form.Item>
-              <Form.Item<FormData> name={path('extended_kv_cache', 'ram_size')}>
+              <Form.Item<FormData>
+                name={path('extended_kv_cache', 'ram_size')}
+                normalize={(value) => (value == null ? null : _.round(value))}
+              >
                 <CInputNumber
-                  onInput={(value) => handleRamSizeInput(value)}
+                  onChange={notifyCacheChange}
                   label={intl.formatMessage({ id: 'models.form.ramSize' })}
                   description={intl.formatMessage(
                     {

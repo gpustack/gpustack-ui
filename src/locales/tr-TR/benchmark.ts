@@ -1,4 +1,15 @@
 export default {
+  'benchmark.detail.slo.boundary': 'SLO sınırı',
+  'benchmark.detail.slo.firstBreachLoad': 'İlk başarısız yük:',
+  'benchmark.detail.slo.measurementUnavailable': 'Ölçüm verisi yok',
+  'benchmark.detail.slo.moreTargets': '{count} ek SLO hedefi',
+  'benchmark.detail.slo.moreFailures': '+{count} hedef karşılanmadı',
+  'benchmark.detail.slo.successBelow':
+    'Başarı oranı %{actual}, %{threshold} sınırının altında',
+  'benchmark.detail.slo.allMeasuredPassed':
+    'Ölçülen tüm noktalar SLO hedeflerini karşıladı',
+  'benchmark.detail.slo.noHigherBreach':
+    'Daha yüksek yükte SLO ihlali gözlemlenmedi',
   'benchmark.detail.configSource.fallback.title':
     'Başlangıç yapılandırması kaydedilmemiş',
   'benchmark.detail.configSource.fallback.description':
@@ -330,7 +341,7 @@ export default {
   'benchmark.detail.validity.sloNotBinding':
     'SLO sınırı bulunamadı. En yüksek ölçülen yük gecikme hedeflerini karşılarken arama {rate} yakınındaki verim platosunda durdu. Uygun aralık ve bütçe içinde SLO aramasını sürdürün.',
   'benchmark.detail.validity.notSaturated':
-    'En iyi çalışma noktası en yüksek ölçülen noktadır ve hiçbir şey aşırı yüklenmedi — gerçek optimum daha yüksek olabilir. Arama aralığının üst sınırını artırıp yeniden çalıştırın.',
+    'En iyi çalışma noktası en yüksek ölçülen noktadır ve hiçbir ölçüm noktasında istek başarı oranı %95’in altına düşmedi — gerçek optimum daha yüksek olabilir. Arama aralığının üst sınırını artırıp yeniden çalıştırın.',
   'benchmark.detail.validity.budgetExhausted':
     'Sonuç araması tamamlanmadan ölçüm bütçesi tükendi. {which, select, seconds{Maksimum Toplam Süre} other{Maksimum Test Noktası}} değerini artırıp yeniden ölçün.',
   'benchmark.detail.validity.saturatedAtLowerBound':
@@ -472,6 +483,7 @@ export default {
   'benchmark.detail.status.recommended': 'SLO Kapasitesi',
   'benchmark.detail.status.peak': 'Tepe Verim',
   'benchmark.detail.status.overloaded': 'Aşırı Yük',
+  'benchmark.detail.status.declining': 'Verim düşüşü',
   'benchmark.detail.status.healthy': 'Sağlıklı',
   'benchmark.state.stoppedAt': '%{percent} seviyesinde durduruldu',
   'benchmark.detail.stopReason.label': 'Arama şurada bitti',

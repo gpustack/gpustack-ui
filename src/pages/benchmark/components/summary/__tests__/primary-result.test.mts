@@ -21,8 +21,20 @@ mock.method(
 after(() => mock.restoreAll());
 
 const translations = (messages as any).default ?? messages;
-const element = ({ children, className }: any) =>
-  createElement('div', { className }, children);
+const element = ({ children, className, ...props }: any) =>
+  createElement(
+    'div',
+    {
+      className,
+      ...Object.fromEntries(
+        Object.entries(props).filter(
+          ([key]) =>
+            key.startsWith('data-') || key === 'tabIndex' || key === 'role'
+        )
+      )
+    },
+    children
+  );
 mock.module('@gpustack/core-ui', { namedExports: { SectionTitle: element } });
 mock.module('antd-style', {
   namedExports: {
@@ -101,7 +113,8 @@ const {
   buildStagePoints,
   configuredSloMetrics,
   isSloCapacityPoint,
-  logDomain
+  logDomain,
+  sloBoundary
 } = await import('../metrics');
 const { default: PrimaryResult } = await import('../best-points');
 
@@ -133,6 +146,244 @@ const render = (rows: any[]) =>
       onSelect: () => {}
     })
   );
+
+test('SLO boundary preserves the exact next measured fractional request rate', () => {
+  detail = {
+    load_type: 'fixed_rate',
+    recommended_rate: 0.001,
+    slo_avg_ttft_ms: 500
+  };
+  const dom = new requireForTest.JSDOM(
+    render([row(0.001, 1000, 499), row(0.0023, 2000, 501)])
+  );
+  assert.equal(
+    dom.window.document.querySelector('.slo-boundary button')?.textContent,
+    '0.0023'
+  );
+  assert.equal(
+    dom.window.document.querySelector('.hero .v')?.textContent,
+    '0.001'
+  );
+  dom.window.close();
+});
+
+test('boundary copy preserves enough precision to explain a near-threshold excess', () => {
+  detail = {
+    load_type: 'concurrency',
+    recommended_rate: 16,
+    slo_avg_ttft_ms: 500
+  };
+  const dom = new requireForTest.JSDOM(
+    render([row(16, 1000, 499), row(32, 2000, 500.01)])
+  );
+  assert.match(
+    dom.window.document.querySelector('.slo-boundary')?.textContent || '',
+    /500\.01 > 500\.00 ms/
+  );
+  dom.window.close();
+});
+
+test('boundary copy uses shared precision for a sub-millisecond latency excess', () => {
+  detail = {
+    load_type: 'concurrency',
+    recommended_rate: 16,
+    slo_avg_ttft_ms: 500
+  };
+  const dom = new requireForTest.JSDOM(
+    render([row(16, 1000, 499), row(32, 2000, 500.0004)])
+  );
+  assert.match(
+    dom.window.document.querySelector('.slo-boundary')?.textContent || '',
+    /500\.0004 > 500\.0000 ms/
+  );
+  dom.window.close();
+});
+
+test('boundary copy preserves a near-threshold success-rate failure', () => {
+  detail = {
+    load_type: 'concurrency',
+    recommended_rate: 16,
+    slo_avg_ttft_ms: 500
+  };
+  const dom = new requireForTest.JSDOM(
+    render([
+      row(16, 1000),
+      {
+        ...row(32, 2000),
+        request_total: 399,
+        request_successful: 379,
+        request_errored: 20
+      }
+    ])
+  );
+  assert.match(
+    dom.window.document.querySelector('.slo-boundary')?.textContent || '',
+    /Success rate 94\.99% is below 95\.00%/
+  );
+  dom.window.close();
+});
+
+test('boundary selects a later configured TPOT target rather than an earlier passing TTFT target', () => {
+  const targets = { slo_avg_ttft_ms: 500, slo_p99_tpot_ms: 50 };
+  const points = buildStagePoints(
+    [
+      { ...row(16, 1000, 100), inter_token_latency_p99: 20 },
+      { ...row(32, 2000, 200), inter_token_latency_p99: 60 },
+      { ...row(64, 2100, 700), inter_token_latency_p99: 80 }
+    ],
+    { recommendedRate: 16, sloTargets: targets }
+  );
+  const boundary = sloBoundary(points, targets);
+  assert.equal(boundary.point?.load, 32);
+  assert.deepEqual(
+    boundary.failed.map((c) => c.field),
+    ['slo_p99_tpot_ms']
+  );
+  assert.equal(boundary.activeTarget?.field, 'slo_p99_tpot_ms');
+  assert.deepEqual(
+    points.map((p) => boundary.activeTarget!.get(p)),
+    [20, 60, 80]
+  );
+});
+
+test('boundary ignores recovered lower-load failures and retains all simultaneous violations', () => {
+  const targets = { slo_avg_ttft_ms: 500, slo_p99_tpot_ms: 50 };
+  const points = buildStagePoints(
+    [
+      { ...row(8, 500, 700), inter_token_latency_p99: 20 },
+      { ...row(16, 1000, 100), inter_token_latency_p99: 20 },
+      { ...row(32, 2000, 600), inter_token_latency_p99: 60 }
+    ],
+    { recommendedRate: 16, sloTargets: targets }
+  );
+  const boundary = sloBoundary(points, targets);
+  assert.equal(boundary.point?.load, 32);
+  assert.deepEqual(
+    boundary.failed.map((c) => c.field),
+    ['slo_avg_ttft_ms', 'slo_p99_tpot_ms']
+  );
+  assert.equal(boundary.activeTarget?.field, 'slo_avg_ttft_ms');
+});
+
+test('boundary finds the first higher failing load after an intermediate passing point', () => {
+  const targets = { slo_avg_ttft_ms: 500, slo_p99_tpot_ms: 50 };
+  const rows = [
+    { ...row(16, 1000, 100), inter_token_latency_p99: 20 },
+    { ...row(32, 2000, 200), inter_token_latency_p99: 40 },
+    { ...row(64, 2100, 300), inter_token_latency_p99: 60 },
+    { ...row(128, 2200, 700), inter_token_latency_p99: 80 }
+  ];
+  const points = buildStagePoints(rows, {
+    recommendedRate: 16,
+    sloTargets: targets
+  });
+  const boundary = sloBoundary([...points].reverse(), targets);
+  assert.equal(boundary.point?.load, 64);
+  assert.deepEqual(
+    boundary.failed.map((check) => check.field),
+    ['slo_p99_tpot_ms']
+  );
+  assert.equal(boundary.activeTarget?.field, 'slo_p99_tpot_ms');
+  assert.equal(points.find((point) => point.isBest)?.load, 16);
+  detail = { ...targets, load_type: 'concurrency', recommended_rate: 16 };
+  const dom = new requireForTest.JSDOM(render(rows));
+  assert.equal(
+    dom.window.document.querySelector('.slo-boundary button')?.textContent,
+    '64'
+  );
+  assert.match(
+    dom.window.document.querySelector('.slo-boundary')?.textContent || '',
+    /TPOT P99.*60 > 50 ms/
+  );
+  assert.doesNotMatch(
+    dom.window.document.querySelector('.slo-boundary')?.textContent || '',
+    /No higher-load SLO breach observed/
+  );
+  dom.window.close();
+});
+
+test('all-pass results keep the first configured curve without inventing a higher breach', () => {
+  const targets = { slo_p95_ttft_ms: 500 };
+  const points = buildStagePoints(
+    [
+      { ...row(16, 1000), time_to_first_token_p95: 200 },
+      { ...row(32, 2000), time_to_first_token_p95: 300 }
+    ],
+    { recommendedRate: 32, sloTargets: targets }
+  );
+  const boundary = sloBoundary(points, targets);
+  assert.equal(boundary.point, null);
+  assert.deepEqual(boundary.failed, []);
+  assert.equal(boundary.activeTarget?.field, 'slo_p95_ttft_ms');
+  detail = { ...targets, load_type: 'concurrency', recommended_rate: 32 };
+  assert.match(
+    render(points.map((p) => p.raw)),
+    /All measured points met the SLO/
+  );
+});
+
+test('success-rate failure is explained without inventing an exceeded latency target', () => {
+  const targets = { slo_avg_ttft_ms: 500 };
+  const points = buildStagePoints([row(16, 1000), row(32, 2000, 200, 90)], {
+    recommendedRate: 16,
+    sloTargets: targets
+  });
+  const boundary = sloBoundary(points, targets);
+  assert.equal(boundary.point?.load, 32);
+  assert.equal(boundary.successFailed, true);
+  assert.deepEqual(boundary.failed, []);
+  detail = { ...targets, load_type: 'concurrency', recommended_rate: 16 };
+  assert.match(render(points.map((p) => p.raw)), /Success rate.*90%.*95%/);
+});
+
+test('missing measurements fail the boundary without being described as a measured excess', () => {
+  const targets = { slo_p95_ttft_ms: 500 };
+  const rows = [
+    { ...row(16, 1000), time_to_first_token_p95: 200 },
+    row(32, 2000)
+  ];
+  const boundary = sloBoundary(
+    buildStagePoints(rows, { recommendedRate: 16, sloTargets: targets }),
+    targets
+  );
+  assert.equal(boundary.failed[0]?.field, 'slo_p95_ttft_ms');
+  detail = { ...targets, load_type: 'concurrency', recommended_rate: 16 };
+  assert.match(render(rows), /TTFT P95.*Measurement unavailable/);
+});
+
+test('end-to-end targets use milliseconds in the boundary and capacity statistics', () => {
+  const targets = { slo_p95_latency_ms: 3000 };
+  const rows = [
+    {
+      ...row(16, 1000),
+      request_latency_mean: 1.2,
+      request_latency_p95: 2.5,
+      request_latency_p99: 2.8
+    },
+    { ...row(32, 2000), request_latency_mean: 2, request_latency_p95: 3.5 }
+  ];
+  const boundary = sloBoundary(
+    buildStagePoints(rows, { recommendedRate: 16, sloTargets: targets }),
+    targets
+  );
+  assert.equal(boundary.activeTarget?.field, 'slo_p95_latency_ms');
+  assert.equal(
+    boundary.activeTarget!.get(boundary.point!)! * boundary.activeTarget!.scale,
+    3500
+  );
+  detail = { ...targets, load_type: 'concurrency', recommended_rate: 16 };
+  const dom = new requireForTest.JSDOM(render(rows));
+  assert.match(
+    dom.window.document.querySelector('[data-latency-metric="latency"]')
+      ?.textContent || '',
+    /Avg.*1,200.*P95.*2,500.*P99.*2,800/
+  );
+  assert.match(
+    dom.window.document.querySelector('.col-why')?.textContent || '',
+    /Latency P95.*3,500.*3,000/
+  );
+  dom.window.close();
+});
 
 test('a server-selected failing point is inspectable but never labeled as SLO capacity or replaced', () => {
   detail = {
@@ -191,12 +442,12 @@ test('configured SLO labels use the provided metric and aggregation translations
   const point = buildStagePoints([row(32, 4000)], { sloTargets: targets })[0];
   const labels: Record<string, string> = {
     'benchmark.form.slo.metric.ttft': '首字延迟',
-    'benchmark.form.slo.agg.avg': '平均'
+    'benchmark.form.slo.agg.avg': '均值'
   };
   assert.equal(
     configuredSloMetrics(point, targets, (id: string) => labels[id] || id)[0]
       .label,
-    '首字延迟 平均'
+    '首字延迟 均值'
   );
 });
 
@@ -294,7 +545,7 @@ for (const slo of [false, true]) {
   });
 }
 
-test('SLO keeps its load headline, original stage metrics plus Total, and original right-side facts', () => {
+test('SLO shows grouped latency statistics at capacity and explains the higher-load breach', () => {
   detail = {
     auto_tune: true,
     load_type: 'concurrency',
@@ -345,20 +596,40 @@ test('SLO keeps its load headline, original stage metrics plus Total, and origin
     'Achieved concurrency Avg',
     'Total',
     'Input',
-    'Output',
-    'TTFT p99',
-    'TPOT p99',
-    'ITL p99'
+    'Output'
   ]);
   assert.deepEqual(stats, {
     'Achieved concurrency Avg': '137.38',
     Total: '28,084',
     Input: '15,132',
-    Output: '13,413',
-    'TTFT p99': '1,120',
-    'TPOT p99': '11',
-    'ITL p99': '23'
+    Output: '13,413'
   });
+  const ttft = dom.window.document.querySelector(
+    '[data-latency-metric="ttft"]'
+  );
+  assert.match(ttft?.textContent || '', /TTFT.*Avg.*499.*P95.*-.*P99.*1,120/);
+  assert.equal(
+    ttft
+      ?.querySelector('[data-aggregation="avg"]')
+      ?.getAttribute('data-slo-target'),
+    'true'
+  );
+  assert.equal(
+    ttft
+      ?.querySelector('[data-aggregation="p99"]')
+      ?.getAttribute('data-slo-target'),
+    'false'
+  );
+  assert.match(
+    dom.window.document.querySelector('[data-latency-metric="tpot"]')
+      ?.textContent || '',
+    /P99.*11/
+  );
+  assert.match(
+    dom.window.document.querySelector('[data-latency-metric="itl"]')
+      ?.textContent || '',
+    /P99.*23/
+  );
   assert.match(
     dom.window.document.querySelector('.slo')?.textContent || '',
     /TTFT Avg ≤ 500 ms.*TPOT Avg ≤ 50 ms/
@@ -379,7 +650,11 @@ test('SLO keeps its load headline, original stage metrics plus Total, and origin
   );
   assert.match(
     dom.window.document.querySelector('.col-why')?.textContent || '',
-    /Peak at.*256.*\+10%.*\+45%.*TTFT p99/
+    /First failing load.*256.*TTFT Avg.*1,351.*500/
+  );
+  assert.doesNotMatch(
+    dom.window.document.querySelector('.col-why')?.textContent || '',
+    /Peak at/
   );
   assert.doesNotMatch(
     html,
@@ -577,6 +852,7 @@ for (const threshold of [1, 500]) {
           throughputAxis: 'Total (tok/s)',
           ttftP99: 'TTFT Avg',
           overloaded: 'Overloaded',
+          declining: 'Throughput decline',
           sloBreached: 'SLO breached'
         }
       },
@@ -611,6 +887,7 @@ test('main chart uses total throughput and the configured latency metric, preser
         throughputAxis: 'Total (tok/s)',
         ttftP99: 'TTFT Avg',
         overloaded: 'Overloaded',
+        declining: 'Throughput decline',
         sloBreached: 'SLO breached'
       }
     },
@@ -743,6 +1020,7 @@ for (const loadType of ['concurrency', 'fixed_rate']) {
           throughputAxis: 'Total (tok/s)',
           ttftP99: 'TTFT Avg',
           overloaded: 'Overloaded',
+          declining: 'Throughput decline',
           sloBreached: 'SLO breached'
         }
       },
@@ -871,7 +1149,8 @@ test('post-peak health uses total throughput even when output throughput rises',
     ],
     { recommendedRate: 32, peakRate: 8 }
   );
-  assert.equal(points[2].isOverloaded, true);
+  assert.equal(points[2].isOverloaded, false);
+  assert.equal(points[2].status, 'declining');
 });
 
 test('non-SLO primary and coincident peak render one green Peak Throughput marker', () => {
@@ -893,6 +1172,7 @@ test('non-SLO primary and coincident peak render one green Peak Throughput marke
         throughputAxis: 'TPS',
         ttftP99: 'TTFT P99',
         overloaded: 'Overloaded',
+        declining: 'Throughput decline',
         sloBreached: 'SLO breached'
       }
     },
@@ -1002,6 +1282,7 @@ for (const rate of [0.01, 0.001, 1.2345]) {
         throughputAxis: 'TPS',
         ttftP99: 'TTFT P99',
         overloaded: 'Overloaded',
+        declining: 'Throughput decline',
         sloBreached: 'SLO breached'
       }
     };

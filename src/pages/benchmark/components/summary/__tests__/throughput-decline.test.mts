@@ -1,3 +1,4 @@
+import { JSDOM } from 'jsdom';
 import assert from 'node:assert/strict';
 import { mock, test } from 'node:test';
 import { cloneElement, createElement, isValidElement } from 'react';
@@ -132,9 +133,11 @@ test('protective stopping retains the latest passing load as primary despite low
   );
   assert.match(html, /Highest measured concurrency meeting SLO/);
   assert.match(html, /512/);
-  assert.match(html, /Peak at.*128/);
-  assert.match(html, /class="improvement">-56%/);
+  assert.doesNotMatch(html, /Peak at/);
+  assert.match(html, /All measured points met the SLO/);
   assert.doesNotMatch(html, /SLO capacity/);
-  assert.match(html, /ITL p99/);
+  const dom = new JSDOM(html);
+  assert.match(dom.window.document.body.textContent || '', /ITL \(ms\)/);
+  dom.window.close();
   assert.doesNotMatch(html, /SLO boundary located/);
 });

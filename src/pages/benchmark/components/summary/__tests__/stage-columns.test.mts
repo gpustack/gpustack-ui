@@ -111,6 +111,62 @@ const { buildStagePoints, buildProbePoints } = await import('../metrics');
 const { stageLatencyValue } =
   await import('../../../utils/stage-detail-metrics');
 
+test('load sweep follows the first higher failing target after an intermediate passing load', () => {
+  detail = {
+    load_type: 'concurrency',
+    slo_avg_ttft_ms: 500,
+    slo_p99_tpot_ms: 50
+  };
+  const points = buildStagePoints(
+    [
+      {
+        id: 1,
+        rate: 16,
+        sequence: 0,
+        request_total: 100,
+        request_successful: 100,
+        time_to_first_token_mean: 100,
+        inter_token_latency_p99: 20
+      },
+      {
+        id: 2,
+        rate: 32,
+        sequence: 1,
+        request_total: 100,
+        request_successful: 100,
+        time_to_first_token_mean: 200,
+        inter_token_latency_p99: 40
+      },
+      {
+        id: 3,
+        rate: 64,
+        sequence: 2,
+        request_total: 100,
+        request_successful: 100,
+        time_to_first_token_mean: 300,
+        inter_token_latency_p99: 60
+      },
+      {
+        id: 4,
+        rate: 128,
+        sequence: 3,
+        request_total: 100,
+        request_successful: 100,
+        time_to_first_token_mean: 700,
+        inter_token_latency_p99: 80
+      }
+    ] as any,
+    { recommendedRate: 16, sloTargets: detail }
+  );
+  const html = renderToStaticMarkup(
+    createElement(Overview, { points, probes: [], onSelect: () => {} })
+  );
+  assert.equal(sweepProps.labels.ttftP99, 'TPOT P99');
+  assert.equal(sweepProps.latencyThreshold, 50);
+  assert.deepEqual(points.map(sweepProps.latencyValue), [20, 40, 60, 80]);
+  assert.match(html, /Total throughput and TPOT P99/);
+});
+
 test('stage marker explanations support focus as well as hover', () => {
   detail = { load_type: 'concurrency', slo_avg_ttft_ms: 500 };
   const points = buildStagePoints(
@@ -443,3 +499,45 @@ for (const rate of [0.5, 0.01, 0.001, 1.2345]) {
     dom.window.close();
   });
 }
+
+test('a passing post-peak stage displays throughput decline without an overload verdict', () => {
+  detail = {
+    load_type: 'concurrency',
+    auto_tune: true,
+    slo_avg_ttft_ms: 1000
+  };
+  const points = buildStagePoints(
+    [
+      {
+        id: 1,
+        rate: 128,
+        sequence: 0,
+        request_total: 100,
+        request_successful: 100,
+        tokens_per_second_mean: 36988.27,
+        time_to_first_token_mean: 160.52
+      },
+      {
+        id: 2,
+        rate: 256,
+        sequence: 1,
+        request_total: 100,
+        request_successful: 100,
+        tokens_per_second_mean: 33067.6,
+        time_to_first_token_mean: 305.98
+      }
+    ] as any,
+    { recommendedRate: 256, peakRate: 128, sloTargets: detail }
+  );
+  const dom = new JSDOM(
+    renderToStaticMarkup(
+      createElement(Overview, { points, probes: [], onSelect: () => {} })
+    )
+  );
+  const stage = dom.window.document.querySelectorAll('tbody tr')[1];
+  assert.match(stage.textContent || '', /SLO Capacity.*Throughput decline/);
+  assert.doesNotMatch(stage.textContent || '', /Overloaded/);
+  assert.equal(stage.querySelector('[data-column="slo"]')?.textContent, '✓');
+  assert.equal(sweepProps.labels.declining, 'Throughput decline');
+  dom.window.close();
+});

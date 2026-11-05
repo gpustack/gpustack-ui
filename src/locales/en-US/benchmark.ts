@@ -1,4 +1,13 @@
 export default {
+  'benchmark.detail.slo.boundary': 'SLO boundary',
+  'benchmark.detail.slo.firstBreachLoad': 'First failing load:',
+  'benchmark.detail.slo.measurementUnavailable': 'Measurement unavailable',
+  'benchmark.detail.slo.moreTargets': '{count} additional SLO targets',
+  'benchmark.detail.slo.moreFailures': '+{count} targets not met',
+  'benchmark.detail.slo.successBelow':
+    'Success rate {actual}% is below {threshold}%',
+  'benchmark.detail.slo.allMeasuredPassed': 'All measured points met the SLO',
+  'benchmark.detail.slo.noHigherBreach': 'No higher-load SLO breach observed',
   'benchmark.detail.configSource.fallback.title':
     'Startup configuration not recorded',
   'benchmark.detail.configSource.fallback.description':
@@ -331,7 +340,7 @@ export default {
   'benchmark.detail.validity.sloNotBinding':
     'The SLO boundary was not located. The search stopped after throughput plateaued near {rate}, while the highest measured load still met the latency targets. Continue the SLO search within a suitable range and budget to locate the boundary.',
   'benchmark.detail.validity.notSaturated':
-    'The best operating point is the highest measured point and nothing overloaded — the true optimum may be higher. Raise the search range (upper bound) and re-run.',
+    'The best operating point is the highest measured point, and no measured point had a request success rate below 95% — the true optimum may be higher. Raise the search range (upper bound) and re-run.',
   'benchmark.detail.validity.budgetExhausted':
     'The search exhausted its measurement budget before it finished refining the result. Raise {which, select, seconds{Max Total Duration} other{Max Test Points}} and re-run.',
   'benchmark.detail.validity.saturatedAtLowerBound':
@@ -472,6 +481,7 @@ export default {
   'benchmark.detail.status.recommended': 'SLO Capacity',
   'benchmark.detail.status.peak': 'Peak Throughput',
   'benchmark.detail.status.overloaded': 'Overloaded',
+  'benchmark.detail.status.declining': 'Throughput decline',
   'benchmark.detail.status.healthy': 'Healthy',
   'benchmark.state.stoppedAt': 'Stopped at {percent}%',
   'benchmark.detail.stopReason.label': 'Search ended on',

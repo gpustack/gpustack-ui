@@ -9,16 +9,19 @@ import {
   getPrimaryResultRate,
   hasSloTargets
 } from '../../utils/primary-result';
+import LatencySummary from './latency-summary';
 import {
   SLO_SUCCESS_FLOOR,
   StagePoint,
   configuredSloMetrics,
   isSloCapacityPoint,
-  pctDelta
+  sloBoundary
 } from './metrics';
+import { formatThresholdComparison } from './threshold-comparison';
 
-// One horizontal band: the payoff number on the left, the operating point's six
-// defining metrics in a single row, and the "why this one" reasoning on the right.
+// One summary band: capacity, operating metrics, compact latency groups, and
+// SLO evidence. Reserve space for the latency groups instead of squeezing them
+// into the same equal-width tracks as the throughput metrics.
 // The success rate on the right is THIS POINT's, standing as a credential on the
 // headline throughput; the RUN-wide rate is a separate pill on the Detailed
 // metrics header, where a 100% run has nothing to say.
@@ -39,6 +42,7 @@ const useStyles = createStyles(({ css }) => ({
       display: flex;
       flex-direction: column;
       gap: 8px;
+      justify-content: center;
     }
     .caption {
       display: flex;
@@ -68,49 +72,57 @@ const useStyles = createStyles(({ css }) => ({
     }
     .hero .u {
       font-size: 15px;
-      color: var(--ant-color-text-tertiary);
+      color: var(--ant-color-text-secondary);
     }
     .col-stats {
       flex: 1 1 560px;
       min-width: 0;
+      align-items: center;
+    }
+    .col-stats:not(.slo-stats) {
       display: grid;
       grid-template-columns: repeat(var(--stat-count), minmax(0, 1fr));
       gap: 8px;
-      align-items: center;
     }
-    @media (max-width: 1680px) {
-      .col-stats {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        row-gap: 16px;
-      }
+    &.slo-summary .col-hero {
+      min-width: 180px;
+      max-width: 220px;
     }
-    @media (max-width: 600px) {
-      .col-hero {
-        min-width: 0;
-        max-width: 100%;
-        width: 100%;
-        padding-right: 0;
-        border-right: none;
-      }
-      .col-stats {
-        flex-basis: 100%;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-      .col-why {
-        min-width: 0;
-        padding-left: 0;
-        border-left: none;
-        flex-basis: 100%;
-      }
-      .stat .b .n {
-        font-size: 14px;
-      }
+    .col-stats.slo-stats {
+      align-items: start;
+      align-self: start;
+    }
+    .operating-stats {
+      flex: 1 1 calc(4 * 112px + 3 * var(--ant-margin));
+      min-width: 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
+      gap: var(--ant-margin);
+      align-items: start;
+    }
+    .latency-stats {
+      flex: 1 1
+        calc(var(--latency-count) * 112px + (var(--latency-count) - 1) * 36px);
+      min-width: 0;
+      max-width: min(100%, var(--latency-width, 540px));
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
+      column-gap: 36px;
+      row-gap: var(--ant-margin);
+    }
+    &.slo-summary .col-why {
+      flex: 0 0 380px;
+      min-width: 0;
+      max-width: 100%;
+      padding-left: var(--ant-padding-lg);
+      justify-content: flex-start;
     }
     .stat .k {
       font-size: 12px;
-      color: var(--ant-color-text-tertiary);
+      color: var(--ant-color-text-secondary);
       white-space: normal;
       margin-bottom: 8px;
+      line-height: 20px;
     }
     .stat .b {
       display: flex;
@@ -127,7 +139,7 @@ const useStyles = createStyles(({ css }) => ({
     }
     .stat .b .u {
       font-size: 11px;
-      color: var(--ant-color-text-tertiary);
+      color: var(--ant-color-text-secondary);
     }
     .col-why {
       flex: 0 1 300px;
@@ -173,6 +185,27 @@ const useStyles = createStyles(({ css }) => ({
     .why .improvement {
       color: var(--color-status-success-text);
     }
+    .slo-boundary {
+      padding-top: var(--ant-padding-xs);
+      border-top: 1px solid var(--ant-color-border-secondary);
+    }
+    .boundary-heading {
+      width: 100%;
+    }
+    .boundary-heading strong {
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .boundary-load {
+      color: var(--ant-color-text-secondary);
+      white-space: nowrap;
+    }
+    .boundary-load .ant-btn {
+      font-size: 12px;
+    }
+    .failure-line {
+      font-variant-numeric: tabular-nums;
+    }
     /* SLO budget: pills, so an SLO run makes its thresholds explicit next to the
        point that was chosen to satisfy them. */
     .slo {
@@ -188,6 +221,46 @@ const useStyles = createStyles(({ css }) => ({
       border-radius: 10px;
       padding: 0 8px;
       white-space: nowrap;
+    }
+    @media (max-width: 1680px) {
+      .col-stats:not(.slo-stats) {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        row-gap: var(--ant-margin);
+      }
+    }
+    @media (max-width: 1200px) {
+      &.slo-summary .col-why {
+        flex-basis: 100%;
+        padding-left: 0;
+        border-left: none;
+        padding-top: var(--ant-padding);
+        border-top: 1px solid var(--ant-color-border-secondary);
+      }
+    }
+    @media (max-width: 600px) {
+      .col-hero,
+      &.slo-summary .col-hero {
+        min-width: 0;
+        max-width: 100%;
+        width: 100%;
+        padding-right: 0;
+        border-right: none;
+      }
+      .col-stats {
+        flex-basis: 100%;
+      }
+      .col-stats:not(.slo-stats) {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .col-why {
+        min-width: 0;
+        padding-left: 0;
+        border-left: none;
+        flex-basis: 100%;
+      }
+      .stat .b .n {
+        font-size: 14px;
+      }
     }
   `
 }));
@@ -223,7 +296,6 @@ const BestPoints: React.FC<BestPointsProps> = ({ points, onSelect }) => {
       ? 'benchmark.table.best.unit.concurrency'
       : 'benchmark.table.best.unit.rate'
   );
-  const peak = points.find((p) => p.isPeak);
   const bracket = detailData?.validity?.slo_bracket;
   const okRate = best.total > 0 ? best.ok / best.total : null;
   const okPct = okRate == null ? null : round(okRate * 100, 1);
@@ -287,17 +359,62 @@ const BestPoints: React.FC<BestPointsProps> = ({ points, onSelect }) => {
       v: fmt(best.outTps),
       u: 'tok/s'
     },
-    { k: t('benchmark.detail.metric.ttftP99'), v: fmt(best.ttftP99), u: 'ms' },
-    { k: t('benchmark.detail.metric.tpotP99'), v: fmt(best.tpotP99), u: 'ms' },
-    { k: t('benchmark.detail.metric.itlP99'), v: fmt(best.itlP99), u: 'ms' }
+    ...(!hasSlo
+      ? [
+          {
+            k: t('benchmark.detail.metric.ttftP99'),
+            v: fmt(best.ttftP99),
+            u: 'ms'
+          },
+          {
+            k: t('benchmark.detail.metric.tpotP99'),
+            v: fmt(best.tpotP99),
+            u: 'ms'
+          },
+          {
+            k: t('benchmark.detail.metric.itlP99'),
+            v: fmt(best.itlP99),
+            u: 'ms'
+          }
+        ]
+      : [])
   ];
-  const peakGain =
-    peak && peak !== best && peak.tps != null && best.tps != null
-      ? pctDelta(best.tps, peak.tps)
-      : null;
-  const peakLatencyCost =
-    peak && peak.ttftP99 != null && best.ttftP99 != null
-      ? pctDelta(best.ttftP99, peak.ttftP99)
+  const latencyMetrics = [
+    'ttft',
+    'tpot',
+    'itl',
+    ...(configured.some((m) => m.field.includes('_latency_'))
+      ? ['latency' as const]
+      : [])
+  ] as const;
+  const boundary = sloBoundary(
+    points,
+    detailData as unknown as Record<string, unknown>
+  );
+  const failed = boundary.point
+    ? configuredSloMetrics(
+        boundary.point,
+        detailData as unknown as Record<string, unknown>,
+        t
+      ).filter((m) => boundary.failed.some((check) => check.field === m.field))
+    : [];
+  const failureValue = (m: (typeof failed)[number]) => {
+    if (m.value == null || !Number.isFinite(m.value) || m.value <= 0) {
+      return t('benchmark.detail.slo.measurementUnavailable');
+    }
+    const comparison = formatThresholdComparison(m.value, m.threshold);
+    return comparison
+      ? `${comparison.actual} > ${comparison.threshold} ms`
+      : t('benchmark.detail.slo.measurementUnavailable');
+  };
+  const failureText = (m: (typeof failed)[number]) =>
+    `${m.label}: ${failureValue(m)}`;
+  const successComparison =
+    boundary.successFailed && boundary.point && boundary.point.total > 0
+      ? formatThresholdComparison(
+          (boundary.point.ok / boundary.point.total) * 100,
+          SLO_SUCCESS_FLOOR * 100
+        )
       : null;
   const boundaryLocated = detailData?.validity?.slo_boundary_located === true;
   const capacityHint = hasSlo ? (
@@ -320,8 +437,24 @@ const BestPoints: React.FC<BestPointsProps> = ({ points, onSelect }) => {
     </>
   ) : undefined;
 
+  const statisticItems = stats.map((s) => (
+    <div className="stat" key={s.k}>
+      <Flex gap={4} align="center" className="k">
+        <span>{s.k}</span>
+        {s.u && <span>({s.u})</span>}
+      </Flex>
+      <span className="b">
+        <span className="n">{s.v}</span>
+      </span>
+    </div>
+  ));
+
   return (
-    <Flex className={styles.wrapper}>
+    <Flex
+      className={[styles.wrapper, hasSlo && 'slo-summary']
+        .filter(Boolean)
+        .join(' ')}
+    >
       <Flex vertical className="col-hero">
         <div className="caption">{t(title)}</div>
         <Tooltip title={capacityHint} trigger={['hover', 'focus']}>
@@ -343,32 +476,71 @@ const BestPoints: React.FC<BestPointsProps> = ({ points, onSelect }) => {
           </Button>
         </Tooltip>
       </Flex>
-      <div
-        className="col-stats"
-        style={{ '--stat-count': stats.length } as React.CSSProperties}
+      <Flex
+        wrap={hasSlo}
+        gap={hasSlo ? 'var(--ant-margin-lg)' : undefined}
+        className={hasSlo ? 'col-stats slo-stats' : 'col-stats'}
+        style={
+          {
+            '--stat-count': stats.length + (hasSlo ? latencyMetrics.length : 0),
+            '--latency-width': latencyMetrics.length > 3 ? '700px' : '540px'
+          } as React.CSSProperties
+        }
       >
-        {stats.map((s) => (
-          <div className="stat" key={s.k}>
-            <Flex gap={4} align="center" className="k">
-              <span>{s.k}</span>
-              {s.u && <span>({s.u})</span>}
-            </Flex>
-            <span className="b">
-              <span className="n">{s.v}</span>
-            </span>
-          </div>
-        ))}
-      </div>
+        {hasSlo ? (
+          <>
+            <div className="operating-stats">{statisticItems}</div>
+            <div
+              className="latency-stats"
+              style={
+                {
+                  '--latency-count': latencyMetrics.length
+                } as React.CSSProperties
+              }
+            >
+              {latencyMetrics.map((metric) => (
+                <LatencySummary key={metric} metric={metric} point={best} />
+              ))}
+            </div>
+          </>
+        ) : (
+          statisticItems
+        )}
+      </Flex>
       <Flex vertical gap={8} className="col-why">
         {hasSlo && (
           <>
             <Flex wrap="wrap" gap={6} className="slo">
-              {configured.map((m) => (
+              {configured.slice(0, 2).map((m) => (
                 <span
                   className="pill"
                   key={m.field}
                 >{`${m.label} ≤ ${m.threshold} ms`}</span>
               ))}
+              {configured.length > 2 && (
+                <Tooltip
+                  title={
+                    <Flex vertical gap={4}>
+                      {configured.slice(2).map((m) => (
+                        <span
+                          key={m.field}
+                        >{`${m.label} ≤ ${m.threshold} ms`}</span>
+                      ))}
+                    </Flex>
+                  }
+                  trigger={['hover', 'focus']}
+                >
+                  <span
+                    className="pill"
+                    tabIndex={0}
+                    aria-label={t('benchmark.detail.slo.moreTargets', {
+                      count: configured.length - 2
+                    })}
+                  >
+                    +{configured.length - 2}
+                  </span>
+                </Tooltip>
+              )}
             </Flex>
           </>
         )}
@@ -389,52 +561,72 @@ const BestPoints: React.FC<BestPointsProps> = ({ points, onSelect }) => {
             </span>
           </Flex>
         )}
-        {hasSlo && peak && peakGain != null && (
-          <Flex gap={8} className="why">
-            <span className={`badge ${peakGain > 5 ? 'up' : 'flat'}`}>
-              {peakGain > 0 ? '+' : ''}
-              {peakGain}%
-            </span>
-            <span>
-              {intl.formatMessage(
-                {
-                  id:
-                    peakLatencyCost != null
-                      ? 'benchmark.detail.reason.peakTradeoff'
-                      : 'benchmark.detail.reason.peakTradeoffPlain'
-                },
-                {
-                  rate: (
+        {hasSlo && (
+          <Flex vertical gap={4} className="why slo-boundary" role="note">
+            {boundary.point ? (
+              <>
+                <Flex
+                  align="center"
+                  justify="space-between"
+                  gap={12}
+                  className="boundary-heading"
+                >
+                  <strong>{t('benchmark.detail.slo.boundary')}</strong>
+                  <span className="boundary-load">
+                    {t('benchmark.detail.slo.firstBreachLoad')}{' '}
                     <Button
                       type="link"
                       style={{ padding: 0, height: 'auto' }}
-                      onClick={() => onSelect(peak)}
+                      onClick={() => onSelect(boundary.point!)}
                     >
-                      {fmtLoad(peak.load)}
-                    </Button>
-                  ),
-                  unit: loadUnit,
-                  gain: `${peakGain > 0 ? '+' : ''}${peakGain}`,
-                  cost:
-                    peakLatencyCost == null ? (
-                      ''
-                    ) : (
-                      <span
-                        className={
-                          peakLatencyCost < 0
-                            ? 'improvement'
-                            : peakLatencyCost > 0
-                              ? 'cost'
-                              : undefined
-                        }
-                      >
-                        {peakLatencyCost > 0 ? '+' : ''}
-                        {peakLatencyCost}%
-                      </span>
-                    )
-                }
-              )}
-            </span>
+                      {fmtLoad(boundary.point.load)}
+                    </Button>{' '}
+                    {loadUnit}
+                  </span>
+                </Flex>
+                {failed.slice(0, 2).map((m) => (
+                  <Flex
+                    gap={8}
+                    align="baseline"
+                    className="failure-line"
+                    key={m.field}
+                  >
+                    <span>{m.label}</span>
+                    <span className="cost">{failureValue(m)}</span>
+                  </Flex>
+                ))}
+                {failed.length > 2 && (
+                  <Tooltip
+                    title={failed.slice(2).map(failureText).join('; ')}
+                    trigger={['hover', 'focus']}
+                  >
+                    <span tabIndex={0}>
+                      {t('benchmark.detail.slo.moreFailures', {
+                        count: failed.length - 2
+                      })}
+                    </span>
+                  </Tooltip>
+                )}
+                {boundary.successFailed && (
+                  <span className="cost">
+                    {successComparison
+                      ? t('benchmark.detail.slo.successBelow', {
+                          actual: successComparison.actual,
+                          threshold: successComparison.threshold
+                        })
+                      : t('benchmark.detail.slo.measurementUnavailable')}
+                  </span>
+                )}
+              </>
+            ) : (
+              <span>
+                {t(
+                  points.every((p) => p.sloPass === true)
+                    ? 'benchmark.detail.slo.allMeasuredPassed'
+                    : 'benchmark.detail.slo.noHigherBreach'
+                )}
+              </span>
+            )}
           </Flex>
         )}
       </Flex>

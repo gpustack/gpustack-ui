@@ -165,6 +165,7 @@ export interface StagePoint {
   isBest: boolean;
   isPeak: boolean;
   isOverloaded: boolean;
+  isDeclining: boolean;
   /**
    * SLO verdict for this stage. null = the run set no thresholds, which is NOT
    * the same as false ("measured, and it breached") — conflating them would
@@ -299,6 +300,45 @@ export const configuredSloMetrics = (
     };
   });
 
+/** Find the first measured failure above the server-selected capacity.
+ * Skip intermediate passing points without changing the server's result. A
+ * recovered failure below capacity is not the boundary. Keep one target for the
+ * whole sweep, even when different targets fail at still higher loads.
+ */
+export const sloBoundary = (points: StagePoint[], targets: SloTargets) => {
+  const active = SLO_CHECKS.filter(
+    (check) => typeof targets?.[check.field] === 'number'
+  );
+  const capacity = points.find(isSloCapacityPoint);
+  const firstFailure = [...points]
+    .sort((a, b) => a.load - b.load || a.raw.sequence - b.raw.sequence)
+    .find(
+      (point) =>
+        point.sloPass === false && (!capacity || point.load > capacity.load)
+    );
+  const point: StagePoint | null =
+    active.length > 0 ? (firstFailure ?? null) : null;
+  const failed = point
+    ? active.filter((check) => {
+        const value = check.get(point);
+        return (
+          value == null ||
+          !Number.isFinite(value) ||
+          value <= 0 ||
+          value * check.scale > (targets![check.field] as number)
+        );
+      })
+    : [];
+  return {
+    point,
+    failed,
+    activeTarget: failed[0] ?? active[0],
+    successFailed:
+      point != null &&
+      (point.total <= 0 || point.ok / point.total < SLO_SUCCESS_FLOOR)
+  };
+};
+
 interface BuildOpts {
   primaryPoint?: ResultPointKey | null;
   peakPoint?: ResultPointKey | null;
@@ -333,12 +373,13 @@ export const buildStagePoints = (
   const measured = results
     .filter((r) => r.rate != null)
     .sort((a, b) => (a.rate ?? 0) - (b.rate ?? 0));
-  // Peak throughput across the measured points, needed to tell a declining
-  // (overloaded) point from one merely past the knee at ~peak throughput.
-  const maxThroughput = measured.reduce(
-    (m, r) => Math.max(m, r.tokens_per_second_mean ?? 0),
-    0
-  );
+  // Only recorded finite throughputs can establish a decline from the run peak.
+  const maxThroughput = measured.reduce((max, row) => {
+    const throughput = row.tokens_per_second_mean;
+    return typeof throughput === 'number' && Number.isFinite(throughput)
+      ? Math.max(max, throughput)
+      : max;
+  }, 0);
   const primaryRate = getPrimaryResultRate({
     ...sloTargets,
     recommended_rate: recommendedRate,
@@ -417,7 +458,8 @@ export const buildStagePoints = (
       status,
       isBest,
       isPeak: matchesResultPoint(r, peakPoint, peakRate),
-      isOverloaded: status === 'overloaded'
+      isOverloaded: status === 'overloaded',
+      isDeclining: status === 'declining'
     };
 
     return { ...point, sloPass: evalSlo(point, sloTargets) };
@@ -482,6 +524,7 @@ export const buildProbePoints = (probes: BenchmarkResultItem[]): StagePoint[] =>
       isBest: false,
       isPeak: false,
       isOverloaded: false,
+      isDeclining: false,
       sloPass: null
     };
   });

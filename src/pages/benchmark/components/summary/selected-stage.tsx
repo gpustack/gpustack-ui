@@ -73,6 +73,12 @@ const SelectedStage: React.FC<SelectedStageProps> = ({ point }) => {
             label={intl.formatMessage({ id: statusLabelId.overloaded })}
           />
         )}
+        {point.isDeclining && (
+          <StatusTag
+            kind="declining"
+            label={intl.formatMessage({ id: statusLabelId.declining })}
+          />
+        )}
       </div>
       <div className="panel-body" style={{ paddingTop: 16 }}>
         <MetricsResult data={shaped} />

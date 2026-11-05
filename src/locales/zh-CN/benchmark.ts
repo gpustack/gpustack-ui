@@ -1,4 +1,12 @@
 export default {
+  'benchmark.detail.slo.boundary': 'SLO 边界',
+  'benchmark.detail.slo.firstBreachLoad': '首个未达标测点：',
+  'benchmark.detail.slo.measurementUnavailable': '测量数据缺失',
+  'benchmark.detail.slo.moreTargets': '另有 {count} 项 SLO 目标',
+  'benchmark.detail.slo.moreFailures': '另有 {count} 项未达标',
+  'benchmark.detail.slo.successBelow': '请求成功率 {actual}% 低于 {threshold}%',
+  'benchmark.detail.slo.allMeasuredPassed': '全部已测点均满足 SLO',
+  'benchmark.detail.slo.noHigherBreach': '尚未观测到更高负载的 SLO 违约',
   'benchmark.detail.configSource.fallback.title': '启动配置未记录',
   'benchmark.detail.configSource.fallback.description':
     '实例 {instances} 未记录启动配置；报告中这些实例的配置来自创建基准测试时的模型配置，仅供参考。',
@@ -175,13 +183,13 @@ export default {
   'benchmark.form.seedIncrement': '每档使用不同 seed',
   'benchmark.form.seedIncrement.tips':
     '开启(默认):每档 seed = 初始 + 档序号,各档数据不同,降低跨档缓存偏差。关闭:所有档共用同一 seed。仅对 Random 数据集生效。',
-  'benchmark.form.slo.ttft': '平均 TTFT ≤ (ms)',
+  'benchmark.form.slo.ttft': 'TTFT 均值 ≤ (ms)',
   'benchmark.form.slo.p95Ttft': 'P95 TTFT ≤ (ms)',
   'benchmark.form.slo.p99Ttft': 'P99 TTFT ≤ (ms)',
-  'benchmark.form.slo.tpot': '平均 TPOT ≤ (ms)',
+  'benchmark.form.slo.tpot': 'TPOT 均值 ≤ (ms)',
   'benchmark.form.slo.p95Tpot': 'P95 TPOT ≤ (ms)',
   'benchmark.form.slo.p99Tpot': 'P99 TPOT ≤ (ms)',
-  'benchmark.form.slo.avgLatency': '平均延迟 ≤ (ms)',
+  'benchmark.form.slo.avgLatency': '延迟均值 ≤ (ms)',
   'benchmark.form.slo.p95Latency': 'P95 延迟 ≤ (ms)',
   'benchmark.form.slo.p99Latency': 'P99 延迟 ≤ (ms)',
   'benchmark.form.slo.metric': '指标',
@@ -191,7 +199,7 @@ export default {
   'benchmark.form.slo.metric.ttft': 'TTFT',
   'benchmark.form.slo.metric.tpot': 'TPOT',
   'benchmark.form.slo.metric.latency': '延迟',
-  'benchmark.form.slo.agg.avg': '平均',
+  'benchmark.form.slo.agg.avg': '均值',
   'benchmark.form.slo.agg.p95': 'P95',
   'benchmark.form.slo.agg.p99': 'P99',
   'benchmark.form.slo.col.metric': '指标',
@@ -316,7 +324,7 @@ export default {
   'benchmark.detail.validity.sloNotBinding':
     '尚未定位 SLO 边界。搜索在 {rate} 附近出现吞吐平台后停止，但最高已测负载仍满足延迟目标。可在合适范围和预算内继续搜索 SLO 边界。',
   'benchmark.detail.validity.notSaturated':
-    '最佳工作点落在最高测得的点,且没有点过载——真实最优可能更高。调大搜索范围上界后重测。',
+    '最佳工作点落在最高测得的点，且未观测到请求成功率低于 95% 的测量点——真实最优可能更高。调大搜索范围上界后重测。',
   'benchmark.detail.validity.budgetExhausted':
     '搜索尚未完成就耗尽了测量预算。请调大{which, select, seconds{最大总时长} other{最大测试点数}}后重测。',
   'benchmark.detail.validity.saturatedAtLowerBound':
@@ -452,6 +460,7 @@ export default {
   'benchmark.detail.status.recommended': 'SLO 达标容量',
   'benchmark.detail.status.peak': '总吞吐峰值',
   'benchmark.detail.status.overloaded': '过载',
+  'benchmark.detail.status.declining': '吞吐回落',
   'benchmark.detail.status.healthy': '正常',
   'benchmark.state.stoppedAt': '已在 {percent}% 处停止',
   'benchmark.detail.stopReason.label': '搜索停止于',

@@ -20,7 +20,8 @@ export default {
   'models.instance.monitor.logicalHint':
     'Логический DP фильтрует общий Engine. Метрики без нативного dp_rank могут показывать No data.',
   'models.instance.monitor.target': 'Мониторинг R{run} на Worker {worker}',
-  'models.form.external.conflict': 'Режимы External-LB взаимоисключающие.',
+  'models.form.external.conflict':
+    'Можно включить только один режим балансировки нагрузки параллелизма данных.',
 
   'models.scaling.paused': 'Приостановлено',
   'models.scaling.waiting': 'Ожидание расписания',

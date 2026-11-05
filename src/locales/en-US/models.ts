@@ -19,7 +19,8 @@ export default {
   'models.instance.monitor.logicalHint':
     'Logical DP filters the shared Engine. Metrics without native dp_rank may show No data.',
   'models.instance.monitor.target': 'Monitor R{run} on Worker {worker}',
-  'models.form.external.conflict': 'External-LB modes are mutually exclusive.',
+  'models.form.external.conflict':
+    'Choose only one data-parallel load balancing mode.',
 
   'models.scaling.paused': 'Paused',
   'models.scaling.waiting': 'Waiting for scheduled scaling',

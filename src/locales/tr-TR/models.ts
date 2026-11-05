@@ -21,7 +21,7 @@ export default {
     'Mantıksal DP, paylaşılan Engine üzerinde filtre uygular. Yerel dp_rank içermeyen metrikler No data gösterebilir.',
   'models.instance.monitor.target': 'Worker {worker} üzerindeki R{run} izle',
   'models.form.external.conflict':
-    'External-LB modları birlikte etkinleştirilemez.',
+    'Yalnızca bir veri paralel yük dengeleme modu etkinleştirilebilir.',
 
   'models.scaling.paused': 'Duraklatıldı',
   'models.scaling.waiting': 'Zamanlama bekleniyor',

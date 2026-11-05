@@ -4,8 +4,9 @@ import { DeleteOutlined, DownloadOutlined } from '@ant-design/icons';
 import { DropdownButtons, IconFont } from '@gpustack/core-ui';
 import {
   InstanceStatusMap,
-  RoleValueMap,
-  modelCategoriesMap
+  isRestartInFlight,
+  modelCategoriesMap,
+  RoleValueMap
 } from '../../config';
 import { ListItem, ModelInstanceListItem } from '../../config/types';
 
@@ -77,7 +78,7 @@ const ActionsCell: React.FC<ActionsCellProps> = ({
   const actionItems = childActionList.filter((action: any) => {
     if (
       action.key === 'delete' &&
-      (record.draining_since || modelData?.restarting_since)
+      (record.draining_since || isRestartInFlight(modelData?.restarting_since))
     )
       return false;
     if (action.key === 'benchmark') {

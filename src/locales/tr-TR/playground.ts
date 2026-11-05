@@ -204,7 +204,7 @@ export default {
     'Sorular bir JSON nesnesi olmalıdır.',
   'playground.decision.answers': 'Yanıtlar',
   'playground.decision.answers.placeholder':
-    'Karar sonuçlarını görmek için gönderin.',
+    'Sonuçları görmek için kararı çalıştırın.',
   'playground.decision.answers.empty': 'Yanıt hiçbir karar içermiyordu.',
   'playground.decision.answer.choice': 'Seçim',
   'playground.decision.answer.score': 'Puan',

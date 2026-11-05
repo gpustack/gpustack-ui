@@ -204,7 +204,7 @@ export default {
     'Вопросы должны быть JSON-объектом.',
   'playground.decision.answers': 'Ответы',
   'playground.decision.answers.placeholder':
-    'Отправьте запрос, чтобы увидеть результаты решения.',
+    'Запустите решение, чтобы увидеть результаты.',
   'playground.decision.answers.empty': 'Ответ не содержит решений.',
   'playground.decision.answer.choice': 'Выбор',
   'playground.decision.answer.score': 'Оценка',

@@ -203,8 +203,7 @@ export default {
   'playground.decision.questions.invalidJson': 'Invalid JSON: {message}',
   'playground.decision.questions.notObject': 'Questions must be a JSON object.',
   'playground.decision.answers': 'Answers',
-  'playground.decision.answers.placeholder':
-    'Submit to see the decision results.',
+  'playground.decision.answers.placeholder': 'Run to see the decision results.',
   'playground.decision.answers.empty': 'The response contained no answers.',
   'playground.decision.answer.choice': 'Choice',
   'playground.decision.answer.score': 'Score',

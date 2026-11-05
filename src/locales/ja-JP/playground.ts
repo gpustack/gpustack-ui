@@ -208,7 +208,7 @@ export default {
     '質問は JSON オブジェクトである必要があります。',
   'playground.decision.answers': '回答',
   'playground.decision.answers.placeholder':
-    '送信すると意思決定結果が表示されます。',
+    '判断を実行すると、結果が表示されます。',
   'playground.decision.answers.empty': 'レスポンスに回答が含まれていません。',
   'playground.decision.answer.choice': '選択',
   'playground.decision.answer.score': 'スコア',

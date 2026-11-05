@@ -33,8 +33,8 @@ const Content = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    color: var(--ant-color-primary);
-    background-color: var(--ant-color-primary-bg);
+    color: var(--ant-color-text-tertiary);
+    background-color: var(--ant-color-fill-content);
   }
   .desc {
     display: flex;

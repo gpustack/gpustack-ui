@@ -63,11 +63,16 @@ mock.module('antd', {
     Tooltip: pass,
     Button: ({ children, onClick, disabled, title }: any) =>
       createElement('button', { onClick, disabled, title }, children),
-    Checkbox: ({ children, onChange, checked }: any) =>
+    Checkbox: ({ children, onChange, checked, disabled }: any) =>
       createElement(
         'label',
         null,
-        createElement('input', { type: 'checkbox', onChange, checked }),
+        createElement('input', {
+          type: 'checkbox',
+          onChange,
+          checked,
+          disabled
+        }),
         children
       ),
     Modal: ({ open, children, title }: any) =>
@@ -318,6 +323,63 @@ test('previous run automatically selects the matching container and toggles back
   assert.equal(viewer.params.follow, true);
 });
 
+test('SMG has a distinct source option when Engine uses the same default container', async () => {
+  optionsResponse = response([
+    source({ kind: 'workload', component_kind: 'sglang_engine', id: 'engine' }),
+    source({
+      kind: 'workload',
+      component_kind: 'sglang_smg',
+      id: 'smg-current'
+    })
+  ]);
+  optionsResponse.workers[0].restarts.push({
+    previous: true,
+    started_at: null,
+    containers: ['default'],
+    sources: [
+      source({
+        kind: 'workload',
+        component_kind: 'sglang_smg',
+        id: 'smg-previous',
+        previous: true,
+        restart_count: 2
+      })
+    ]
+  });
+  await mount(modal());
+  assert.equal(container.querySelectorAll('select option').length, 3);
+  assert.equal(viewer.params.container_name, 'default');
+  assert.equal(viewer.params.source, undefined);
+  await select('7:source:sglang_smg');
+  assert.deepEqual(viewer.params, {
+    follow: true,
+    watch: true,
+    worker_id: 7,
+    source: 'smg-current'
+  });
+  await act(async () => {
+    container.querySelector('input[type="checkbox"]')!.click();
+  });
+  assert.deepEqual(viewer.params, {
+    follow: false,
+    watch: false,
+    worker_id: 7,
+    source: 'smg-previous'
+  });
+  await act(async () => {
+    container.querySelector('input[type="checkbox"]')!.click();
+  });
+  assert.equal(viewer.params.source, 'smg-current');
+});
+
+test('unavailable SMG sources do not create selectable log options', async () => {
+  optionsResponse = response([
+    source({ kind: 'workload', component_kind: 'sglang_smg', available: false })
+  ]);
+  await mount(modal());
+  assert.equal(Boolean(container.querySelector('select')), false);
+});
+
 test('history falls back to the main container when the selected Worker has no previous run', async () => {
   optionsResponse = response();
   optionsResponse.workers[0].restarts.push({
@@ -340,6 +402,109 @@ test('history falls back to the main container when the selected Worker has no p
   });
   assert.equal(viewer.params.worker_id, 7);
   assert.equal(viewer.params.previous, true);
+});
+
+test('history falls back to another Worker and reads its newest archive when the current run is absent', async () => {
+  optionsResponse = response();
+  optionsResponse.workers.push({
+    worker_id: 9,
+    name: 'historical-peer',
+    restarts: [
+      {
+        previous: true,
+        started_at: null,
+        containers: ['ray-worker'],
+        sources: []
+      }
+    ]
+  });
+  await mount(modal());
+  await act(async () => {
+    container.querySelector('input[type="checkbox"]')!.click();
+  });
+  assert.equal(
+    (container.querySelector('input[type="checkbox"]') as HTMLInputElement)
+      .checked,
+    true
+  );
+  assert.equal(
+    (container.querySelector('select') as HTMLSelectElement).value,
+    '9:ray-worker'
+  );
+  assert.deepEqual(viewer.params, {
+    follow: false,
+    watch: false,
+    previous: false,
+    worker_id: 9,
+    container_name: 'ray-worker'
+  });
+  readLogs = async (options) => {
+    assert.equal(options.params.worker_id, 9);
+    // This Worker has one archived generation: selecting the second would be 404.
+    if (options.params.previous)
+      throw new Error('404 Previous logs are unavailable');
+    return 'startup context\nengine output\n';
+  };
+  const text = await api.queryModelInstanceLogs(42, viewer.params);
+  assert.equal(text, 'startup context\nengine output\n');
+  await act(async () => {
+    container.querySelector('input[type="checkbox"]')!.click();
+  });
+  assert.equal(viewer.params.worker_id, 7);
+  assert.equal(viewer.params.follow, true);
+  assert.equal(
+    (container.querySelector('select') as HTMLSelectElement).value,
+    '7:default'
+  );
+});
+
+test('switching between historical containers keeps history selected and preserves Worker archive positions', async () => {
+  optionsResponse = response();
+  optionsResponse.workers[0].restarts.push({
+    previous: true,
+    started_at: null,
+    containers: ['default'],
+    sources: []
+  });
+  optionsResponse.workers.push({
+    worker_id: 9,
+    name: 'peer',
+    restarts: [{ previous: true, started_at: null, containers: ['ray-worker'] }]
+  });
+  await mount(modal());
+  await act(async () => {
+    container.querySelector('input[type="checkbox"]')!.click();
+  });
+  assert.equal(viewer.params.previous, true);
+  await select('9:ray-worker');
+  assert.equal(viewer.params.previous, false);
+  assert.equal(viewer.params.follow, false);
+  assert.equal(
+    (container.querySelector('input[type="checkbox"]') as HTMLInputElement)
+      .checked,
+    true
+  );
+  await select('7:default');
+  assert.equal(viewer.params.previous, true);
+  assert.equal(viewer.params.follow, false);
+});
+
+test('a Worker with only archived logs opens history without following or requesting a missing second archive', async () => {
+  optionsResponse = response();
+  optionsResponse.workers[0].restarts[0].previous = true;
+  await mount(modal());
+  const checkbox = container.querySelector(
+    'input[type="checkbox"]'
+  ) as HTMLInputElement;
+  assert.equal(checkbox.checked, true);
+  assert.equal(checkbox.disabled, true);
+  assert.deepEqual(viewer.params, {
+    follow: false,
+    watch: false,
+    previous: false,
+    worker_id: 7,
+    container_name: 'default'
+  });
 });
 
 test('opening does not wait for source validation and closing cancels option discovery', async () => {

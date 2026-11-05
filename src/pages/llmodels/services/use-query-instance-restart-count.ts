@@ -8,9 +8,11 @@ export interface RestartOption {
   label: string;
   start_at: string | null;
   previous: boolean;
+  readPrevious: boolean;
   worker_id: number;
   container: string;
   parentValue: string;
+  source?: string;
 }
 
 interface RestartCountOption {
@@ -53,11 +55,31 @@ export default function useQueryModelInstanceRestartCount() {
       res.workers?.flatMap((worker) => {
         const containerMap = new Map<string, RestartCountOption>();
         const isMain = res.main_worker_id === worker.worker_id;
+        const hasCurrentRun = worker.restarts?.some(
+          (restart) => !restart.previous
+        );
 
         worker.restarts?.forEach((restart, index) => {
-          restart.containers?.forEach((container) => {
-            const parentValue = `${worker.worker_id}:${container}`;
-            const option = containerMap.get(container) || {
+          const containers = (restart.containers || []).map((container) => ({
+            container,
+            key: container,
+            source: undefined as string | undefined
+          }));
+          const smg = restart.sources?.find(
+            (source) =>
+              source.kind === 'workload' &&
+              source.component_kind === 'sglang_smg' &&
+              source.available
+          );
+          if (smg)
+            containers.push({
+              container: 'SMG',
+              key: 'source:sglang_smg',
+              source: smg.id
+            });
+          containers.forEach(({ container, key, source }) => {
+            const parentValue = `${worker.worker_id}:${key}`;
+            const option = containerMap.get(key) || {
               value: parentValue,
               label: `${container}:${worker.name}`,
               worker_id: worker.worker_id,
@@ -76,15 +98,19 @@ export default function useQueryModelInstanceRestartCount() {
             option.children?.push({
               value: `${parentValue}:${index}`,
               previous: restart.previous,
+              // Legacy reads address the newest two archives on this Worker.
+              // A Worker without the current run keeps history in its newest archive.
+              readPrevious: restart.previous && !!hasCurrentRun,
               label: restart.previous
                 ? intl.formatMessage({ id: 'models.instance.previousRun' })
                 : intl.formatMessage({ id: 'models.instance.currentRun' }),
               start_at: restart.started_at,
               worker_id: worker.worker_id,
               container,
-              parentValue
+              parentValue,
+              source
             });
-            containerMap.set(container, option);
+            containerMap.set(key, option);
           });
         });
 

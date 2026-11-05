@@ -6,20 +6,24 @@ import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { ConfigProvider, message, Table } from 'antd';
 import _ from 'lodash';
-import { forwardRef, useEffect, useImperativeHandle } from 'react';
+import { forwardRef, useImperativeHandle } from 'react';
 import {
   deleteModelInstance,
   MODEL_INSTANCE_API,
+  MODELS_API,
   queryModelDetail,
-  queryModelsInstances
+  queryModelsInstances,
+  queryModelsList
 } from '../apis';
 import ViewLogsModal from '../components/view-logs-modal';
 import { status as instanceStatus } from '../config';
 import { useDeploymentsContext } from '../config/deploments-context';
-import { ModelInstanceListItem as ListItem } from '../config/types';
+import {
+  ModelInstanceListItem as ListItem,
+  ListItem as ModelListItem
+} from '../config/types';
 import { fetchCatalog } from '../hooks/use-query-pd-modes';
 import useViewInstanceLogs from '../hooks/use-view-instance-logs';
-import useQueryModelList from '../services/use-query-model-list';
 import { instanceDeleteMessages } from '../utils/instance-recreation';
 import LeftFilters from './left-filters';
 import useInstanceColumns from './use-instance-columns';
@@ -97,15 +101,23 @@ const InstanceView = forwardRef((props, ref) => {
     pauseOnHidden: false
   });
   const intl = useIntl();
-  const { dataList: modelList, fetchData: fetchModelList } =
-    useQueryModelList();
+  const {
+    dataSource: modelSource,
+    cancelRequestsOnPageInactive: cancelModelRequests,
+    resumeRequestsOnPageActive: resumeModelRequests
+  } = useTableFetch<ModelListItem>({
+    fetchAPI: queryModelsList,
+    API: MODELS_API,
+    watch: true,
+    updateManually: true,
+    events: ['CREATE', 'UPDATE', 'DELETE', 'INSERT'],
+    defaultQueryParams: { page: -1 },
+    pauseOnHidden: false
+  });
   const { clusterList, workerList } = useDeploymentsContext();
   const { openViewLogsModal, openViewLogsModalStatus, closeViewLogsModal } =
     useViewInstanceLogs();
 
-  useEffect(() => {
-    fetchModelList({ page: -1 });
-  }, []);
   const handleSelect = useMemoizedFn(async (val: any, row: ListItem) => {
     if (val === 'delete') {
       try {
@@ -136,8 +148,14 @@ const InstanceView = forwardRef((props, ref) => {
   });
 
   useImperativeHandle(ref, () => ({
-    resumeRequestsOnPageActive,
-    cancelRequestsOnPageInactive
+    resumeRequestsOnPageActive: () => {
+      resumeRequestsOnPageActive();
+      resumeModelRequests();
+    },
+    cancelRequestsOnPageInactive: () => {
+      cancelRequestsOnPageInactive();
+      cancelModelRequests();
+    }
   }));
 
   const renderEmpty = (type?: string) => {
@@ -186,7 +204,7 @@ const InstanceView = forwardRef((props, ref) => {
   const columns = useInstanceColumns({
     handleSelect,
     clusterList,
-    modelList,
+    modelList: modelSource.dataList,
     workerList
   });
 

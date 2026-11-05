@@ -1,6 +1,15 @@
+import { JSDOM } from 'jsdom';
 import assert from 'node:assert/strict';
 import { mock, test } from 'node:test';
-import { createElement, forwardRef, Fragment } from 'react';
+import {
+  act,
+  createElement,
+  createRef,
+  forwardRef,
+  Fragment,
+  useState
+} from 'react';
+import { createRoot } from 'react-dom/client';
 import { renderToStaticMarkup } from 'react-dom/server';
 
 const empty = () => null;
@@ -19,6 +28,13 @@ let batchDelete: () => void;
 let deleteRequest: (id: number) => Promise<void>;
 let instanceAction: (action: string, row: any) => Promise<void>;
 let childAction: (action: string, row: any) => void;
+let modelWatchOptions: any;
+let displayedModels: any[];
+let updateModels: (models: any[]) => void;
+const resumeModels = mock.fn();
+const cancelModels = mock.fn();
+const resumeInstances = mock.fn();
+const cancelInstances = mock.fn();
 
 mock.module('@umijs/max', {
   namedExports: {
@@ -82,6 +98,16 @@ moduleMock('../../../utils/index.ts', {
 });
 moduleMock('../../../hooks/use-table-fetch.ts', {
   defaultExport: (options: any) => {
+    if (options.API === 'models') {
+      modelWatchOptions = options;
+      const [models, setModels] = useState<any[]>([]);
+      updateModels = setModels;
+      return {
+        dataSource: { dataList: models },
+        resumeRequestsOnPageActive: resumeModels,
+        cancelRequestsOnPageInactive: cancelModels
+      };
+    }
     deleteRequest = options.deleteAPI;
     return {
       dataSource: { dataList: selectedRows },
@@ -91,7 +117,9 @@ moduleMock('../../../hooks/use-table-fetch.ts', {
       },
       queryParams: {},
       handleDeleteBatch: confirmDelete,
-      handleDelete: confirmDelete
+      handleDelete: confirmDelete,
+      resumeRequestsOnPageActive: resumeInstances,
+      cancelRequestsOnPageInactive: cancelInstances
     };
   }
 });
@@ -107,14 +135,15 @@ moduleMock('../../resources/hooks/use-grafana-link.tsx', {
 });
 moduleMock('../apis/index.ts', {
   namedExports: {
-    MODEL_INSTANCE_API: '',
-    MODELS_API: '',
+    MODEL_INSTANCE_API: 'model-instances',
+    MODELS_API: 'models',
     createModel: empty,
     deleteModel: empty,
     deleteModelInstance: deleteInstance,
     queryModelDetail: queryDetail,
     queryModelInstancesList: empty,
     queryModelsInstances: empty,
+    queryModelsList: empty,
     updateModel: empty,
     updateModelLifecycle: empty
   }
@@ -147,12 +176,10 @@ moduleMock('../hooks/use-no-resource-result.tsx', {
   defaultExport: () => ({})
 });
 moduleMock('../hooks/use-models-columns.tsx', { defaultExport: () => [] });
-moduleMock('../services/use-query-model-list.ts', {
-  defaultExport: () => ({ dataList: [] })
-});
 moduleMock('../instance-view/use-instance-columns.tsx', {
-  defaultExport: ({ handleSelect }: any) => {
+  defaultExport: ({ handleSelect, modelList }: any) => {
     instanceAction = handleSelect;
+    displayedModels = modelList;
     return [];
   }
 });
@@ -178,6 +205,49 @@ for (const path of [
 
 const { default: InstanceView } = await import('../instance-view/index.tsx');
 const { default: Models } = await import('../components/table-list.tsx');
+
+test('standalone instances refresh action models and pause both subscriptions with the tab', async () => {
+  const dom = new JSDOM('<div id="root"></div>');
+  Object.assign(globalThis, {
+    window: dom.window,
+    document: dom.window.document,
+    IS_REACT_ACT_ENVIRONMENT: true
+  });
+  const root = createRoot(document.getElementById('root')!);
+  const ref = createRef<any>();
+  try {
+    await act(async () => {
+      root.render(createElement(InstanceView, { ref }));
+    });
+    assert.equal(modelWatchOptions.watch, true);
+    assert.equal(modelWatchOptions.updateManually, true);
+    assert.equal(modelWatchOptions.pauseOnHidden, false);
+    assert.equal(modelWatchOptions.defaultQueryParams.page, -1);
+    const restarting = { id: 2, restarting_since: new Date().toISOString() };
+    await act(async () => {
+      updateModels([restarting]);
+    });
+    assert.equal(displayedModels[0], restarting);
+    const stopped = { id: 2, restarting_since: null };
+    await act(async () => {
+      updateModels([stopped]);
+    });
+    assert.equal(displayedModels[0], stopped);
+    ref.current.cancelRequestsOnPageInactive();
+    ref.current.resumeRequestsOnPageActive();
+    for (const action of [
+      cancelModels,
+      cancelInstances,
+      resumeModels,
+      resumeInstances
+    ]) {
+      assert.equal(action.mock.callCount(), 1);
+    }
+  } finally {
+    await act(async () => root.unmount());
+    dom.window.close();
+  }
+});
 
 for (const view of ['instances', 'deployment children']) {
   for (const [name, error, expected] of [

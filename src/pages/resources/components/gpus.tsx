@@ -132,6 +132,7 @@ const GPUList: React.FC<GPUListProps> = ({ clusterId, source }) => {
             rowKey="id"
             onChange={handleTableChange}
             pagination={{
+              size: 'middle',
               showSizeChanger: true,
               pageSize: queryParams.perPage,
               current: queryParams.page,

@@ -158,3 +158,39 @@ for (const rate of [0.5, 0.01, 0.001, 1.2345]) {
     dom.window.close();
   });
 }
+
+test('a selected passing stage with lower post-peak throughput shows decline beside SLO capacity', () => {
+  detail = { load_type: 'concurrency', slo_avg_ttft_ms: 1000 };
+  const points = buildStagePoints(
+    [
+      {
+        id: 1,
+        sequence: 0,
+        rate: 128,
+        request_total: 100,
+        request_successful: 100,
+        tokens_per_second_mean: 36988.27,
+        time_to_first_token_mean: 160.52
+      },
+      {
+        id: 2,
+        sequence: 1,
+        rate: 256,
+        request_total: 100,
+        request_successful: 100,
+        tokens_per_second_mean: 33067.6,
+        time_to_first_token_mean: 305.98
+      }
+    ] as any,
+    { recommendedRate: 256, peakRate: 128, sloTargets: detail }
+  );
+  const dom = new JSDOM(
+    renderToStaticMarkup(createElement(SelectedStage, { point: points[1] }))
+  );
+  const header =
+    dom.window.document.querySelector('.panel-head')?.textContent || '';
+  assert.match(header, /SLO Capacity/);
+  assert.match(header, /Throughput decline/);
+  assert.doesNotMatch(header, /Overloaded/);
+  dom.window.close();
+});

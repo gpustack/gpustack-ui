@@ -33,6 +33,7 @@ interface Props {
     throughputAxis: string;
     ttftP99: string;
     overloaded: string;
+    declining: string;
     sloBreached: string;
   };
   height?: number;
@@ -48,10 +49,9 @@ interface Props {
  * the panel carries a (?) explaining it: read the amber line as linear and you
  * underestimate the post-knee blow-up by an order of magnitude.
  *
- * Two regions are shaded, both of them measured verdicts: where the SLO stops
- * being met, and where throughput itself collapses. Scaling and Saturated are
- * NOT shaded — they would need a "where does the knee begin" call the backend
- * does not compute, and a band drawn from a guess is worse than no band.
+ * SLO breaches, request overload and throughput decline have separate labels.
+ * Health regions span consecutive affected measurements only; an isolated point
+ * gets its own marker without implying that later measured loads share its state.
  */
 export const buildLoadSweepOption = (
   {
@@ -71,61 +71,76 @@ export const buildLoadSweepOption = (
     ...points.map((p) => latencyValue(p)),
     latencyThreshold
   ]);
-  const firstOver = points.findIndex((p) => p.isOverloaded);
   const firstBreach = sloBreachOnset(points);
 
-  // Two red regions, both running to the right edge: where the SLO stops holding
-  // and where throughput itself collapses. They answer different questions and
-  // are NOT the same boundary — an SLO can break long before the server is
-  // overloaded, which is the whole reason a latency target is worth setting.
-  //
-  // The SLO region is drawn first so the overload region layers on top of it:
-  // the shared stretch reads darker, which is the right ordering of bad news.
-  // Their labels anchor to opposite ends so they stay legible when the two
-  // regions coincide.
-  const shadeFrom = (
+  const shadeRange = (
     from: number,
-    color: string,
+    to: number,
     text: string,
-    position: 'insideBottomLeft' | 'insideBottomRight'
+    appearance: {
+      color: string;
+      opacity?: number;
+      labelColor: string;
+      position: 'insideBottomLeft' | 'insideBottomRight';
+    }
   ) => [
     {
       xAxis: from,
-      itemStyle: { color },
+      itemStyle: { color: appearance.color, opacity: appearance.opacity ?? 1 },
       label: {
         show: true,
-        position,
+        position: appearance.position,
         distance: 6,
-        color: C.red,
+        color: appearance.labelColor,
         fontSize: 11,
         fontWeight: 600 as const,
         formatter: text
       }
     },
-    { xAxis: cats.length - 1 }
+    { xAxis: to }
   ];
+
+  const consecutiveStatusRanges = (kind: 'overloaded' | 'declining') => {
+    const ranges: [number, number][] = [];
+    let start = -1;
+    for (let i = 0; i <= points.length; i++) {
+      if (i < points.length && points[i].status === kind) {
+        if (start < 0) start = i;
+      } else if (start >= 0) {
+        if (i - start > 1) {
+          ranges.push([start, i - 1]);
+        }
+        start = -1;
+      }
+    }
+    return ranges;
+  };
+  const statusRanges = {
+    declining: consecutiveStatusRanges('declining'),
+    overloaded: consecutiveStatusRanges('overloaded')
+  };
+  const shadeStatus = (kind: 'overloaded' | 'declining') =>
+    statusRanges[kind].map(([start, end]) =>
+      shadeRange(start, end, labels[kind], {
+        color: kind === 'declining' ? C.amber : C.overloadArea,
+        opacity: kind === 'declining' ? 0.06 : 1,
+        labelColor: kind === 'declining' ? C.text : C.red,
+        position: 'insideBottomRight'
+      })
+    );
 
   const areas = [
     ...(firstBreach >= 0
       ? [
-          shadeFrom(
-            firstBreach,
-            C.sloArea,
-            labels.sloBreached,
-            'insideBottomLeft'
-          )
+          shadeRange(firstBreach, cats.length - 1, labels.sloBreached, {
+            color: C.sloArea,
+            labelColor: C.red,
+            position: 'insideBottomLeft'
+          })
         ]
       : []),
-    ...(firstOver >= 0
-      ? [
-          shadeFrom(
-            firstOver,
-            C.overloadArea,
-            labels.overloaded,
-            'insideBottomRight'
-          )
-        ]
-      : [])
+    ...shadeStatus('declining'),
+    ...shadeStatus('overloaded')
   ];
   const markAreas = areas.length ? { silent: true, data: areas } : undefined;
 
@@ -195,6 +210,7 @@ export const buildLoadSweepOption = (
           isSloCapacityPoint(p) ? `★ ${labels.primary}` : '',
           p.isPeak ? labels.peak : '',
           p.isOverloaded ? labels.overloaded : '',
+          p.isDeclining ? labels.declining : '',
           p.sloPass === false ? labels.sloBreached : ''
         ]
           .filter(Boolean)
@@ -239,35 +255,44 @@ export const buildLoadSweepOption = (
         symbolSize: 6,
         markArea: markAreas,
         data: points.map((p, i) => {
-          if (!isSloCapacityPoint(p) && !p.isPeak && !p.isOverloaded)
+          if (
+            !isSloCapacityPoint(p) &&
+            !p.isPeak &&
+            !p.isOverloaded &&
+            !p.isDeclining
+          )
             return p.tps;
           const color = isSloCapacityPoint(p)
             ? '#f5a623'
             : p.isPeak
               ? C.green
-              : C.red;
-          // Peak and Overloaded used to be separated by ring colour ALONE —
-          // and `C.green` vs `C.red` measure ΔE 1.8 under deuteranopia, i.e.
-          // the same colour to a red-green colourblind reader. Since these two
-          // carry opposite verdicts ("this is the best it gets" vs "past here
-          // the numbers are not an answer"), that was the one pair on the page
-          // that had to survive without colour. Shape and a text label now
-          // carry it; colour is the third channel, not the only one.
-          // Shapes echo the status glyphs the summary badges already use
-          // (▲ peak · ✕ overloaded — 'diamond' is the nearest ECharts symbol).
+              : p.isDeclining
+                ? C.amber
+                : C.red;
+          // Shape and text distinguish peak, decline and request overload even
+          // when their status colors cannot be told apart.
           const symbol = isSloCapacityPoint(p)
             ? 'circle'
             : p.isPeak
               ? 'triangle'
-              : 'diamond';
+              : p.isDeclining
+                ? 'triangle'
+                : 'diamond';
           // A centered label on the first or last stage runs into the y-axis (on
           // the right it lands on top of the axis ticks). Anchor it away from the
           // edge instead of letting it overhang.
           const atEnd = i === points.length - 1;
           const atStart = i === 0;
+          // A continuous decline is labeled once by its shaded region. Keep
+          // isolated decline labels and every point's marker and tooltip.
+          const declineInArea = statusRanges.declining.some(
+            ([start, end]) => i >= start && i <= end
+          );
           return {
             value: p.tps,
             symbol,
+            symbolRotate:
+              p.isDeclining && !isSloCapacityPoint(p) && !p.isPeak ? 180 : 0,
             // The Best marker is the page's single answer, so it outsizes both
             // the curve's own symbols and the small charts' 8px echo of it.
             symbolSize: isSloCapacityPoint(p) ? 10 : 8,
@@ -281,7 +306,8 @@ export const buildLoadSweepOption = (
               formatter: [
                 isSloCapacityPoint(p) ? `★ ${labels.primary}` : '',
                 p.isPeak ? labels.peak : '',
-                p.isOverloaded ? labels.overloaded : ''
+                p.isOverloaded ? labels.overloaded : '',
+                p.isDeclining && !declineInArea ? labels.declining : ''
               ]
                 .filter(Boolean)
                 .join(' · '),

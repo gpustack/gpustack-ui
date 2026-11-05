@@ -1,4 +1,15 @@
 export default {
+  'benchmark.detail.slo.boundary': 'Граница SLO',
+  'benchmark.detail.slo.firstBreachLoad': 'Первая нагрузка с нарушением:',
+  'benchmark.detail.slo.measurementUnavailable': 'Данные измерения отсутствуют',
+  'benchmark.detail.slo.moreTargets': 'Дополнительные цели SLO: {count}',
+  'benchmark.detail.slo.moreFailures': 'Не выполнено ещё целей: {count}',
+  'benchmark.detail.slo.successBelow':
+    'Доля успешных запросов {actual}% ниже {threshold}%',
+  'benchmark.detail.slo.allMeasuredPassed':
+    'Все измеренные точки соответствуют SLO',
+  'benchmark.detail.slo.noHigherBreach':
+    'Нарушение SLO при более высокой нагрузке не обнаружено',
   'benchmark.detail.configSource.fallback.title':
     'Конфигурация запуска не сохранена',
   'benchmark.detail.configSource.fallback.description':
@@ -338,7 +349,7 @@ export default {
   'benchmark.detail.validity.sloNotBinding':
     'Граница SLO не найдена. Поиск остановился на плато пропускной способности около {rate}, хотя максимальная измеренная нагрузка соответствовала целям задержки. Продолжите поиск SLO в подходящем диапазоне и бюджете.',
   'benchmark.detail.validity.notSaturated':
-    'Оптимальная рабочая точка — самая высокая измеренная, и перегрузки не было — истинный оптимум может быть выше. Повысьте верхнюю границу диапазона поиска и перезапустите.',
+    'Оптимальная рабочая точка — самая высокая измеренная, и ни в одной измеренной точке доля успешных запросов не была ниже 95%. Истинный оптимум может быть выше. Повысьте верхнюю границу диапазона поиска и перезапустите.',
   'benchmark.detail.validity.budgetExhausted':
     'Бюджет измерений исчерпан до завершения поиска результата. Увеличьте {which, select, seconds{максимальную общую длительность} other{максимальное число точек}} и повторите тест.',
   'benchmark.detail.validity.saturatedAtLowerBound':
@@ -483,6 +494,7 @@ export default {
   'benchmark.detail.status.recommended': 'Ёмкость SLO',
   'benchmark.detail.status.peak': 'Пиковая пропускная способность',
   'benchmark.detail.status.overloaded': 'Перегрузка',
+  'benchmark.detail.status.declining': 'Снижение пропускной способности',
   'benchmark.detail.status.healthy': 'Норма',
   'benchmark.state.stoppedAt': 'Остановлено на {percent}%',
   'benchmark.detail.stopReason.label': 'Поиск остановлен на',

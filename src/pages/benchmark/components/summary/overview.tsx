@@ -19,12 +19,12 @@ import { useDetailContext } from '../../config/detail-context';
 import { RESIDENT_CHARTS, buildChartSpecs } from './chart-specs';
 import LoadSweep from './load-sweep';
 import {
-  SLO_CHECKS,
   SLO_SUCCESS_FLOOR,
   StagePoint,
   configuredSloMetrics,
   fmtDuration,
   isSloCapacityPoint,
+  sloBoundary,
   stageTotals,
   tailSamples
 } from './metrics';
@@ -259,8 +259,9 @@ const Overview: React.FC<OverviewProps> = ({
   const visible = showMore ? specs : specs.slice(0, RESIDENT_CHARTS);
   const moreCount = specs.length - RESIDENT_CHARTS;
   const maxTps = points.reduce((m, p) => Math.max(m, p.tps ?? 0), 0);
-  const activeTarget = SLO_CHECKS.find(
-    (c) => typeof (detailData as any)?.[c.field] === 'number'
+  const { activeTarget } = sloBoundary(
+    points,
+    detailData as unknown as Record<string, unknown>
   );
   const metricLabel =
     points[0] && activeTarget
@@ -268,12 +269,14 @@ const Overview: React.FC<OverviewProps> = ({
           points[0],
           detailData as unknown as Record<string, unknown>,
           t
-        )[0].label
+        ).find((metric) => metric.field === activeTarget.field)!.label
       : t('benchmark.detail.metric.ttftP99');
   const latencyValue = (p: StagePoint) => {
     if (!activeTarget) return p.ttftP99;
     const value = activeTarget.get(p);
-    return value == null ? null : value * activeTarget.scale;
+    return value == null || !Number.isFinite(value) || value <= 0
+      ? null
+      : value * activeTarget.scale;
   };
   // The soft cap the probe produced, and what it ended up doing. Read from the
   // ramp facts rather than recomputed: `ceil(ceiling * 1.2)`, the Phase-1/2 split
@@ -403,6 +406,9 @@ const Overview: React.FC<OverviewProps> = ({
                 kind="overloaded"
                 label={t(statusLabelId.overloaded)}
               />
+            )}
+            {p.isDeclining && (
+              <StatusTag kind="declining" label={t(statusLabelId.declining)} />
             )}
           </span>
         );
@@ -633,6 +639,7 @@ const Overview: React.FC<OverviewProps> = ({
               throughputAxis: t('benchmark.detail.chart.axis.throughput'),
               ttftP99: metricLabel,
               overloaded: t('benchmark.detail.status.overloaded'),
+              declining: t('benchmark.detail.status.declining'),
               sloBreached: t('benchmark.detail.chart.sloBreached')
             }}
           />

@@ -7,9 +7,14 @@ import { BenchmarkResultItem } from '../../config/types';
 // One semantic palette, applied everywhere (badge, chart markers, row
 // highlight) so the page reads with a single visual grammar:
 //   blue = recommended / selected   green = peak / SLO met
-//   red  = overloaded / SLO broken   gray = secondary
+//   red = request overload / SLO broken   amber = throughput decline
 
-export type StageStatusKind = 'recommended' | 'peak' | 'overloaded' | 'ok';
+export type StageStatusKind =
+  | 'recommended'
+  | 'peak'
+  | 'overloaded'
+  | 'declining'
+  | 'ok';
 
 interface DetailLike {
   recommended_rate?: number | null;
@@ -23,25 +28,31 @@ export const getStageStatus = (
   maxThroughput?: number
 ): StageStatusKind => {
   const rate = r.rate;
-  // "Overloaded" = a meaningful share of requests failed / didn't finish, OR the
-  // point sits on the DECLINING side of the curve: past the peak rate AND
-  // delivering meaningfully less throughput than the peak. Being merely past the
-  // recommended knee at ~peak throughput with no failures is NOT overload — the
-  // point one step above the knee is often the true throughput argmax. A couple of
-  // incomplete requests at the max_seconds boundary (common at low rates) is
-  // normal, so gate on a failure RATE (>5%) rather than any single failure.
+  // Request overload and post-peak throughput loss are different findings. A
+  // throughput decline can still meet every SLO target with all requests passing.
+  // A few incomplete requests at a duration boundary do not establish overload.
   const failedCount = (r.request_errored ?? 0) + (r.request_incomplete ?? 0);
   const total = r.request_total ?? (r.request_successful ?? 0) + failedCount;
   const failRate = total > 0 ? failedCount / total : 0;
-  const throughput = r.tokens_per_second_mean ?? 0;
-  const pastPeak = detail?.peak_rate != null && (rate ?? 0) > detail.peak_rate;
-  const declining =
-    pastPeak &&
-    maxThroughput != null &&
+  if (failRate > 0.05) return 'overloaded';
+
+  const throughput = r.tokens_per_second_mean;
+  const peakRate = detail?.peak_rate;
+  if (
+    typeof rate === 'number' &&
+    Number.isFinite(rate) &&
+    typeof peakRate === 'number' &&
+    Number.isFinite(peakRate) &&
+    rate > peakRate &&
+    typeof throughput === 'number' &&
+    Number.isFinite(throughput) &&
+    throughput >= 0 &&
+    typeof maxThroughput === 'number' &&
+    Number.isFinite(maxThroughput) &&
     maxThroughput > 0 &&
-    throughput < maxThroughput * 0.95;
-  if (failRate > 0.05 || declining) {
-    return 'overloaded';
+    throughput < maxThroughput * 0.95
+  ) {
+    return 'declining';
   }
   return 'ok';
 };
@@ -50,15 +61,17 @@ export const statusLabelId: Record<StageStatusKind, string> = {
   recommended: 'benchmark.detail.status.recommended',
   peak: 'benchmark.detail.status.peak',
   overloaded: 'benchmark.detail.status.overloaded',
+  declining: 'benchmark.detail.status.declining',
   ok: 'benchmark.detail.status.healthy'
 };
 
 // One glyph per status, matching the chart markers (⭐ recommended · ▲ peak ·
-// ✕ overloaded) so the badge and the chart speak the same language.
+// ✕ overloaded · ↘ throughput decline) so every view keeps the same meaning.
 const statusGlyph: Record<StageStatusKind, string> = {
   recommended: '⭐',
   peak: '▲',
   overloaded: '✕',
+  declining: '↘',
   ok: '•'
 };
 
@@ -68,6 +81,7 @@ const tagKindClass = {
   recommended: 'tagRecommended',
   peak: 'tagPeak',
   overloaded: 'tagOverloaded',
+  declining: 'tagDeclining',
   ok: 'tagOk'
 } as const;
 
@@ -96,6 +110,10 @@ const useStyles = createStyles(({ css }) => ({
   tagOverloaded: css`
     color: var(--color-status-error-text);
     background: var(--ant-color-error-bg);
+  `,
+  tagDeclining: css`
+    color: var(--ant-color-warning-text);
+    background: var(--ant-color-warning-bg);
   `,
   tagOk: css`
     color: var(--ant-color-text-tertiary);

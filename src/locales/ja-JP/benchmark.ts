@@ -1,4 +1,13 @@
 export default {
+  'benchmark.detail.slo.boundary': 'SLO 境界',
+  'benchmark.detail.slo.firstBreachLoad': '最初の未達成負荷：',
+  'benchmark.detail.slo.measurementUnavailable': '測定データなし',
+  'benchmark.detail.slo.moreTargets': '追加の SLO 目標 {count} 件',
+  'benchmark.detail.slo.moreFailures': 'ほか {count} 件が未達成',
+  'benchmark.detail.slo.successBelow':
+    '成功率 {actual}% は {threshold}% 未満です',
+  'benchmark.detail.slo.allMeasuredPassed': 'すべての測定点で SLO を達成',
+  'benchmark.detail.slo.noHigherBreach': 'より高い負荷での SLO 違反は未観測',
   'benchmark.detail.configSource.fallback.title':
     '起動時の設定が記録されていません',
   'benchmark.detail.configSource.fallback.description':
@@ -324,7 +333,7 @@ export default {
   'benchmark.detail.validity.sloNotBinding':
     'SLO 境界は未確認です。最高実測負荷が遅延目標を満たしたまま、{rate} 付近のスループット横ばいで探索が停止しました。適切な範囲と予算で SLO 探索を継続してください。',
   'benchmark.detail.validity.notSaturated':
-    '最適動作点が最大の測定点で、過負荷も起きていません —— 真の最適値はさらに高い可能性があります。探索範囲(上限)を上げて再実行してください。',
+    '最適動作点が最大の測定点で、リクエスト成功率が 95% を下回る測定点はありませんでした。真の最適値はさらに高い可能性があります。探索範囲(上限)を上げて再実行してください。',
   'benchmark.detail.validity.budgetExhausted':
     '結果の探索が完了する前に測定予算を使い切りました。{which, select, seconds{最大総時間} other{最大テストポイント数}}を増やして再測定してください。',
   'benchmark.detail.validity.saturatedAtLowerBound':
@@ -464,6 +473,7 @@ export default {
   'benchmark.detail.status.recommended': 'SLO 達成容量',
   'benchmark.detail.status.peak': '総スループットのピーク',
   'benchmark.detail.status.overloaded': '過負荷',
+  'benchmark.detail.status.declining': 'スループット低下',
   'benchmark.detail.status.healthy': '正常',
   'benchmark.state.stoppedAt': '{percent}% で停止',
   'benchmark.detail.stopReason.label': '探索の終了理由',

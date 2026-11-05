@@ -61,9 +61,6 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
       option.children?.some((child) => child.previous)
     );
   }, [countOptions]);
-  const hasCurrentContainer = countOptions.some((option) =>
-    option.children?.some((child) => !child.previous)
-  );
 
   const handleCancel = useCallback(() => {
     logsViewerRef.current?.abort();
@@ -131,17 +128,17 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
         worker_id: option.worker_id,
         ...(option.source
           ? { source: option.source }
-          : { previous: option.readPrevious, container_name: option.container })
+          : { previous: option.previous, container_name: option.container })
       });
     }
     setSelectedContainer(option?.parentValue || null);
-    setShowPrevious(option?.previous ?? false);
   };
 
   const handleContainerChange = (value: string, option: any) => {
+    setSelectedContainer(value);
+    setShowPrevious(false);
     const counts = option?.children || [];
-    const lastItem =
-      counts.find((item: any) => item.previous === showPrevious) || counts[0];
+    const lastItem = counts.find((item: any) => !item.previous);
     if (lastItem) {
       handleOnChange(lastItem);
     }
@@ -153,20 +150,34 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
 
   const handleOnChecked = (e: any) => {
     const checked = e.target.checked;
-    const matchesRun = (item: RestartOption) => item.previous === checked;
-    const target =
-      currentWorkerCountList.find(matchesRun) ||
-      countOptions
-        .find((option) => option.isMain && option.children?.some(matchesRun))
-        ?.children?.find(matchesRun) ||
-      countOptions.flatMap((option) => option.children || []).find(matchesRun);
-    if (target) handleOnChange(target);
+    setShowPrevious(checked);
+
+    if (checked) {
+      const currentPrev = currentWorkerCountList.find((item) => item.previous);
+      if (currentPrev) {
+        handleOnChange(currentPrev);
+        return;
+      }
+      const mainOptionWithPrev = countOptions?.find(
+        (option) =>
+          option.isMain && option.children?.some((child) => child.previous)
+      );
+      const prevChild = mainOptionWithPrev?.children?.find(
+        (child) => child.previous
+      );
+      if (prevChild) {
+        handleOnChange(prevChild);
+      }
+      return;
+    }
+
+    const currentItem = currentWorkerCountList.find((item) => !item.previous);
+    handleOnChange(currentItem);
   };
 
   const optionRender = (option: any) => {
     const optionData = option?.data || option;
-    const container = optionData.container;
-    const worker = optionData.name;
+    const [container, worker] = optionData.label.split(':');
     const startAt = optionData.start_at
       ? dayjs(optionData.start_at).format('YYYY-MM-DD HH:mm:ss')
       : '';
@@ -198,11 +209,7 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
             }}
           >
             {hasPreviousContainer && (
-              <Checkbox
-                onChange={handleOnChecked}
-                checked={showPrevious}
-                disabled={!hasCurrentContainer}
-              >
+              <Checkbox onChange={handleOnChecked} checked={showPrevious}>
                 <Tooltip
                   title={
                     <span>
@@ -277,14 +284,9 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
       fetchData(props.id).then((list) => {
         if (!active) return;
         const lastItem = list.find((item) => item.isMain);
-        handleOnChange(
-          lastItem?.children?.find((item) => !item.previous) ||
-            list
-              .flatMap((item) => item.children || [])
-              .find((item) => !item.previous) ||
-            lastItem?.children?.[0] ||
-            list.flatMap((item) => item.children || [])[0]
-        );
+        if (lastItem) {
+          handleOnChange(lastItem.children?.find((item) => !item.previous));
+        }
       });
     } else {
       cancelOnClose();

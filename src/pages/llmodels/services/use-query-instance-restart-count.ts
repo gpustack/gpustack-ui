@@ -8,7 +8,6 @@ export interface RestartOption {
   label: string;
   start_at: string | null;
   previous: boolean;
-  readPrevious: boolean;
   worker_id: number;
   container: string;
   parentValue: string;
@@ -55,9 +54,6 @@ export default function useQueryModelInstanceRestartCount() {
       res.workers?.flatMap((worker) => {
         const containerMap = new Map<string, RestartCountOption>();
         const isMain = res.main_worker_id === worker.worker_id;
-        const hasCurrentRun = worker.restarts?.some(
-          (restart) => !restart.previous
-        );
 
         worker.restarts?.forEach((restart, index) => {
           const containers = (restart.containers || []).map((container) => ({
@@ -98,9 +94,6 @@ export default function useQueryModelInstanceRestartCount() {
             option.children?.push({
               value: `${parentValue}:${index}`,
               previous: restart.previous,
-              // Legacy reads address the newest two archives on this Worker.
-              // A Worker without the current run keeps history in its newest archive.
-              readPrevious: restart.previous && !!hasCurrentRun,
               label: restart.previous
                 ? intl.formatMessage({ id: 'models.instance.previousRun' })
                 : intl.formatMessage({ id: 'models.instance.currentRun' }),

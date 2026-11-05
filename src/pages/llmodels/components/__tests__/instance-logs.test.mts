@@ -63,16 +63,11 @@ mock.module('antd', {
     Tooltip: pass,
     Button: ({ children, onClick, disabled, title }: any) =>
       createElement('button', { onClick, disabled, title }, children),
-    Checkbox: ({ children, onChange, checked, disabled }: any) =>
+    Checkbox: ({ children, onChange, checked }: any) =>
       createElement(
         'label',
         null,
-        createElement('input', {
-          type: 'checkbox',
-          onChange,
-          checked,
-          disabled
-        }),
+        createElement('input', { type: 'checkbox', onChange, checked }),
         children
       ),
     Modal: ({ open, children, title }: any) =>
@@ -404,104 +399,24 @@ test('history falls back to the main container when the selected Worker has no p
   assert.equal(viewer.params.previous, true);
 });
 
-test('history falls back to another Worker and reads its newest archive when the current run is absent', async () => {
-  optionsResponse = response();
-  optionsResponse.workers.push({
-    worker_id: 9,
-    name: 'historical-peer',
-    restarts: [
-      {
-        previous: true,
-        started_at: null,
-        containers: ['ray-worker'],
-        sources: []
-      }
-    ]
-  });
-  await mount(modal());
-  await act(async () => {
-    container.querySelector('input[type="checkbox"]')!.click();
-  });
-  assert.equal(
-    (container.querySelector('input[type="checkbox"]') as HTMLInputElement)
-      .checked,
-    true
-  );
-  assert.equal(
-    (container.querySelector('select') as HTMLSelectElement).value,
-    '9:ray-worker'
-  );
-  assert.deepEqual(viewer.params, {
-    follow: false,
-    watch: false,
-    previous: false,
-    worker_id: 9,
-    container_name: 'ray-worker'
-  });
-  readLogs = async (options) => {
-    assert.equal(options.params.worker_id, 9);
-    // This Worker has one archived generation: selecting the second would be 404.
-    if (options.params.previous)
-      throw new Error('404 Previous logs are unavailable');
-    return 'startup context\nengine output\n';
-  };
-  const text = await api.queryModelInstanceLogs(42, viewer.params);
-  assert.equal(text, 'startup context\nengine output\n');
-  await act(async () => {
-    container.querySelector('input[type="checkbox"]')!.click();
-  });
-  assert.equal(viewer.params.worker_id, 7);
-  assert.equal(viewer.params.follow, true);
-  assert.equal(
-    (container.querySelector('select') as HTMLSelectElement).value,
-    '7:default'
-  );
-});
-
-test('switching between historical containers keeps history selected and preserves Worker archive positions', async () => {
-  optionsResponse = response();
-  optionsResponse.workers[0].restarts.push({
-    previous: true,
-    started_at: null,
-    containers: ['default'],
-    sources: []
-  });
-  optionsResponse.workers.push({
-    worker_id: 9,
-    name: 'peer',
-    restarts: [{ previous: true, started_at: null, containers: ['ray-worker'] }]
-  });
-  await mount(modal());
-  await act(async () => {
-    container.querySelector('input[type="checkbox"]')!.click();
-  });
-  assert.equal(viewer.params.previous, true);
-  await select('9:ray-worker');
-  assert.equal(viewer.params.previous, false);
-  assert.equal(viewer.params.follow, false);
-  assert.equal(
-    (container.querySelector('input[type="checkbox"]') as HTMLInputElement)
-      .checked,
-    true
-  );
-  await select('7:default');
-  assert.equal(viewer.params.previous, true);
-  assert.equal(viewer.params.follow, false);
-});
-
-test('a Worker with only archived logs opens history without following or requesting a missing second archive', async () => {
+test('history remains opt-in and preserves the previous selector when no current run is discovered', async () => {
   optionsResponse = response();
   optionsResponse.workers[0].restarts[0].previous = true;
   await mount(modal());
   const checkbox = container.querySelector(
     'input[type="checkbox"]'
   ) as HTMLInputElement;
+  assert.equal(checkbox.checked, false);
+  assert.equal(checkbox.disabled, false);
+  assert.deepEqual(viewer.params, { follow: true });
+  await act(async () => {
+    checkbox.click();
+  });
   assert.equal(checkbox.checked, true);
-  assert.equal(checkbox.disabled, true);
   assert.deepEqual(viewer.params, {
     follow: false,
     watch: false,
-    previous: false,
+    previous: true,
     worker_id: 7,
     container_name: 'default'
   });

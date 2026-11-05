@@ -19,7 +19,7 @@ export default {
   'models.instance.monitor.logicalHint':
     '逻辑 DP 筛选共享 Engine；缺少原生 dp_rank 的指标可能显示 No data。',
   'models.instance.monitor.target': '监控 Worker {worker} 上的 R{run}',
-  'models.form.external.conflict': '两种 External-LB 模式不能同时启用。',
+  'models.form.external.conflict': '只能启用一种数据并行负载均衡模式。',
 
   'models.scaling.paused': '已暂停',
   'models.scaling.waiting': '等待定时伸缩',

@@ -99,10 +99,26 @@ const BackendParametersList: React.FC<BackendParametersListProps> = ({
   const modelBackend = Form.useWatch('backend', form);
   const backend = roleBackend ?? modelBackend;
   const parameters = Form.useWatch(path('backend_parameters'), form);
-  const conflicts =
-    router === undefined && backend === backendOptionsMap.vllm
-      ? conflictingExternalLBParameters(parameters)
-      : [];
+  const env = Form.useWatch('env', { form, preserve: true });
+  const roles = Form.useWatch('roles', { form, preserve: true });
+  const disaggregation = Form.useWatch('disaggregation', {
+    form,
+    preserve: true
+  });
+  const manualDP =
+    !namePrefix &&
+    !disaggregation &&
+    !roles?.length &&
+    ['1', 'true', 'yes', 'on'].includes(
+      String(env?.GPUSTACK_MANUAL_DP ?? '')
+        .trim()
+        .toLowerCase()
+    );
+  const validateManagedLB =
+    router === undefined && backend === backendOptionsMap.vllm && !manualDP;
+  const conflicts = validateManagedLB
+    ? conflictingExternalLBParameters(parameters)
+    : [];
 
   const routerConfig = useMemo(
     () => (router === undefined ? undefined : getRouterParameterConfig(router)),
@@ -147,14 +163,11 @@ const BackendParametersList: React.FC<BackendParametersListProps> = ({
   return (
     <Form.Item<FormData>
       name={path('backend_parameters')}
+      dependencies={['env', 'roles', 'disaggregation']}
       rules={[
         {
           validator: async (_, value) => {
-            if (
-              router === undefined &&
-              backend === backendOptionsMap.vllm &&
-              hasConflictingExternalLB(value)
-            )
+            if (validateManagedLB && hasConflictingExternalLB(value))
               throw new Error(
                 intl.formatMessage({ id: 'models.form.external.conflict' })
               );

@@ -20,7 +20,7 @@ export default {
     '論理 DP は共有 Engine を絞り込みます。ネイティブ dp_rank を持たない指標は No data になる場合があります。',
   'models.instance.monitor.target': 'Worker {worker} の R{run} を監視',
   'models.form.external.conflict':
-    'External-LB モードは同時に有効にできません。',
+    'データ並列の負荷分散モードは1つだけ有効にできます。',
 
   'models.scaling.paused': '一時停止中',
   'models.scaling.waiting': 'スケジュール待機中',

@@ -1,4 +1,3 @@
-import { parseParamsString } from '@/utils';
 import { BackendParameter } from './index';
 
 // Generated from the vLLM `vllm serve` CLI reference:
@@ -1442,28 +1441,142 @@ const options: BackendParameter[] = [
 
 export default options;
 
-export function conflictingExternalLBParameters(
-  parameters: string[] = []
-): string[] {
-  const flags = parameters.map((parameter) =>
-    /^\s*-{1,2}[a-zA-Z][\w-]*(?:[=\s]|$)/.test(parameter)
-      ? parseParamsString(parameter).map(
-          (argument) => argument.split(/[=\s]/, 1)[0]
-        )
-      : []
-  );
-  const external = ['--data-parallel-external-lb', '-dpe'];
-  const multiPort = ['--data-parallel-multi-port-external-lb', '-dpm'];
-  if (
-    !flags.some((row) => row.some((flag) => external.includes(flag))) ||
-    !flags.some((row) => row.some((flag) => multiPort.includes(flag)))
-  )
-    return [];
-  return parameters.filter((_, index) =>
-    flags[index].some((flag) => [...external, ...multiPort].includes(flag))
+function isParameterKey(value: string): boolean {
+  return (
+    value.startsWith('-') &&
+    value.length > 1 &&
+    value !== '--' &&
+    Number.isNaN(Number(value.replaceAll('_', ''))) &&
+    !/^-(?:inf(?:inity)?|nan)$/i.test(value)
   );
 }
 
-export function hasConflictingExternalLB(parameters: string[] = []): boolean {
+// Decode shell fragments for validation without rewriting submitted parameters.
+function parameterArguments(parameter: string): string[] {
+  const stripped = parameter.replace(
+    /^\p{White_Space}+|\p{White_Space}+$/gu,
+    ''
+  );
+  if (!stripped) return [];
+  if (!isParameterKey(stripped.split(/\p{White_Space}+/u, 1)[0]))
+    return [stripped];
+  const text = stripped.replace(/\\\r?\n/g, ' ');
+  const tokens: string[] = [];
+  let token = '';
+  let started = false;
+  let quote = '';
+  let depth = 0;
+  const flush = () => {
+    if (started) tokens.push(token);
+    token = '';
+    started = false;
+  };
+  for (let index = 0; index < text.length; index++) {
+    const char = text[index];
+    if (char === '\\' && quote !== "'") {
+      const next = text[index + 1];
+      if (next !== undefined) {
+        if (quote === '"' && next !== '"' && next !== '\\') token += '\\';
+        token += next;
+        started = true;
+        index++;
+      }
+      continue;
+    }
+    if (quote) {
+      if (char === quote) quote = '';
+      else token += char;
+      continue;
+    }
+    if (char === '"' || char === "'") {
+      quote = char;
+      started = true;
+      continue;
+    }
+    if (
+      (depth > 0 || text[index - 1] === '=') &&
+      (char === '{' || char === '[')
+    )
+      depth++;
+    if (depth > 0 && (char === '}' || char === ']')) depth--;
+    // shlex keeps non-ASCII whitespace inside an argument.
+    if (' \t\r\n'.includes(char) && depth === 0) flush();
+    else {
+      token += char;
+      started = true;
+    }
+  }
+  flush();
+  return tokens;
+}
+
+export function conflictingExternalLBParameters(
+  parameters: string[] | null = []
+): string[] {
+  const argv = (parameters ?? []).flatMap((parameter, row) =>
+    parameterArguments(parameter).map((argument) => ({ argument, row }))
+  );
+  const names = new Map([
+    ['data-parallel-external-lb', 'external'],
+    ['dpe', 'external'],
+    ['data-parallel-multi-port-external-lb', 'multiPort'],
+    ['dpm', 'multiPort'],
+    ['data-parallel-hybrid-lb', 'hybrid'],
+    ['dph', 'hybrid']
+  ]);
+  const modes = new Map<string, { enabled: boolean; row: number }>();
+  let startRank: number | undefined;
+  let rank: number | undefined;
+  for (let index = 0; index < argv.length; index++) {
+    const { argument, row } = argv[index];
+    if (!isParameterKey(argument)) continue;
+    const separator = argument.indexOf('=');
+    const name = separator < 0 ? argument : argument.slice(0, separator);
+    const key = (
+      name.startsWith('--') ? name.replaceAll('_', '-') : name
+    ).replace(/^-+/, '');
+    let value = separator < 0 ? undefined : argument.slice(separator + 1);
+    if (
+      value === undefined &&
+      argv[index + 1] &&
+      !isParameterKey(argv[index + 1].argument)
+    ) {
+      value = argv[++index].argument;
+    }
+    const negative = [
+      'no-data-parallel-external-lb',
+      'no-data-parallel-hybrid-lb'
+    ].includes(key);
+    const mode = names.get(negative ? key.slice(3) : key);
+    if (mode) {
+      modes.set(mode, {
+        enabled:
+          !negative &&
+          !['0', 'false', 'no', 'off', 'f', 'n'].includes(
+            value?.toLowerCase() ?? ''
+          ),
+        row
+      });
+    } else if (value !== undefined) {
+      if (['data-parallel-start-rank', 'dpr', 'dps'].includes(key))
+        startRank = row;
+      if (['data-parallel-rank', 'dpn'].includes(key)) rank = row;
+    }
+  }
+  // A start rank still selects native Hybrid unless multi-port is enabled.
+  const multiPort = modes.get('multiPort')?.enabled;
+  if (!multiPort && !modes.get('hybrid')?.enabled && startRank !== undefined) {
+    modes.set('hybrid', { enabled: true, row: startRank });
+  }
+  const enabled = [...modes.values()].filter((mode) => mode.enabled);
+  if (enabled.length < 2 && !(multiPort && rank !== undefined)) return [];
+  const rows = new Set(enabled.map((mode) => mode.row));
+  if (multiPort && rank !== undefined) rows.add(rank);
+  return (parameters ?? []).filter((_, row) => rows.has(row));
+}
+
+export function hasConflictingExternalLB(
+  parameters: string[] | null = []
+): boolean {
   return conflictingExternalLBParameters(parameters).length > 0;
 }

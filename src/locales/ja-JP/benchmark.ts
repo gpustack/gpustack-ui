@@ -296,7 +296,7 @@ export default {
   'benchmark.table.best.unit.concurrency': '同時実行数',
   'benchmark.table.best.unit.rate': 'req/s',
   'benchmark.table.coverage': 'カバレッジ',
-  'benchmark.table.coverage.insufficient': 'カバレッジ不足',
+  'benchmark.table.coverage.insufficient': '不足',
   'benchmark.table.avg': '平均',
   'benchmark.table.tailLatency': 'テールレイテンシ',
   'benchmark.table.columnSettings': '列の設定',

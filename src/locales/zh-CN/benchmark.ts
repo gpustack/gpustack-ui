@@ -287,7 +287,7 @@ export default {
   'benchmark.table.best.unit.concurrency': '并发',
   'benchmark.table.best.unit.rate': 'req/s',
   'benchmark.table.coverage': '覆盖度',
-  'benchmark.table.coverage.insufficient': '覆盖度不足',
+  'benchmark.table.coverage.insufficient': '不足',
   'benchmark.table.avg': '均值',
   'benchmark.table.tailLatency': '尾延迟',
   'benchmark.table.columnSettings': '列设置',

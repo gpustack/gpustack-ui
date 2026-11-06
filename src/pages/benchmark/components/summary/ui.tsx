@@ -127,8 +127,9 @@ const useStyles = createStyles(({ css }) => ({
   `,
   panel: css`
     background: var(--ant-color-bg-container);
-    border: 1px solid var(--ant-color-border-secondary);
-    border-radius: var(--ant-border-radius);
+    border: 1px solid
+      var(--benchmark-summary-section-border, var(--ant-color-border));
+    border-radius: var(--ant-border-radius-lg);
     overflow: hidden;
     .panel-head {
       display: flex;

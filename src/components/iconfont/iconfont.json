@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "48829154",
+      "name": "target_24dp_1F1F1F_FILL0_wght300_GRAD0_opsz24",
+      "font_class": "target",
+      "unicode": "e747",
+      "unicode_decimal": 59207
+    },
+    {
+      "icon_id": "48829155",
+      "name": "warning_24dp_1F1F1F_FILL0_wght300_GRAD0_opsz24",
+      "font_class": "warning-outlined",
+      "unicode": "e746",
+      "unicode_decimal": 59206
+    },
+    {
       "icon_id": "48741233",
       "name": "label_important_24dp_1F1F1F_FILL0_wght300_GRAD0_op",
       "font_class": "label_thin",

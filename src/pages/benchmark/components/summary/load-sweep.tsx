@@ -62,9 +62,8 @@ export const buildLoadSweepOption = (
     loadAxisTitle,
     labels
   }: Props,
-  // See stage-chart: the gridline colour is the one part of the palette that has
-  // to come from the theme token rather than a hex literal.
-  splitLineColor: string
+  splitLineColor: string,
+  axisLineColor = C.axis
 ): EChartsCoreOption => {
   const cats = points.map((p) => String(p.load));
   const ttftDomain = logDomain([
@@ -158,7 +157,7 @@ export const buildLoadSweepOption = (
       nameTextStyle: { color: C.text, fontSize: 12 },
       axisTick: { show: false },
       axisLabel: { color: C.text },
-      axisLine: { lineStyle: { color: C.axis } },
+      axisLine: { lineStyle: { color: axisLineColor } },
       boundaryGap: false
     },
     yAxis: [
@@ -355,16 +354,18 @@ const LoadSweep: React.FC<Props> = (props) => {
   const ref = useRef<HTMLDivElement>(null);
   const inst = useRef<ECharts | null>(null);
   const { token } = theme.useToken();
+  const axisLineColor =
+    'darkMode' in token && token.darkMode ? token.colorBorder : C.axis;
 
   useEffect(() => {
     if (!ref.current) return;
     if (!inst.current) inst.current = echarts.init(ref.current);
     inst.current.setOption(
-      buildLoadSweepOption(props, token.colorBorder),
+      buildLoadSweepOption(props, token.colorBorder, axisLineColor),
       true
     );
     inst.current.resize();
-  }, [props, token.colorBorder]);
+  }, [props, token.colorBorder, axisLineColor]);
 
   useEffect(() => {
     if (!ref.current) return;

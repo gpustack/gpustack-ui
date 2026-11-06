@@ -214,7 +214,6 @@ const RoleForm: React.FC<RoleFormProps> = ({
       >
         <InputNumber
           min={1}
-          controls={false}
           style={{ width: '100%' }}
           label={intl.formatMessage({ id: 'models.form.roles.replicas' })}
         ></InputNumber>

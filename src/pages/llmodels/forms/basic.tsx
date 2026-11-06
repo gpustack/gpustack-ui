@@ -316,8 +316,6 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
         >
           <CInput.Number
             style={{ width: '100%' }}
-            // No spinner: a replica count is typed, not nudged one at a time.
-            controls={false}
             // The Replicas field keeps its label/description unchanged even
             // when scheduled scaling is on. While scheduling is on this value
             // doubles as the baseline (idle) replica count — that's explained

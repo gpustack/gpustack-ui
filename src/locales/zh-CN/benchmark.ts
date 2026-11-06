@@ -282,7 +282,7 @@ export default {
   'benchmark.table.filter.bydataset': '按数据集过滤',
   'benchmark.table.filter.byLoadType': '按负载类型过滤',
   'benchmark.table.filter.byTargetMode': '按目标形态过滤',
-  'benchmark.table.filter.byProfile': '按 Profile 筛选',
+  'benchmark.table.filter.byProfile': '按模式筛选',
   'benchmark.table.best': '最佳点',
   'benchmark.table.best.unit.concurrency': '并发',
   'benchmark.table.best.unit.rate': 'req/s',

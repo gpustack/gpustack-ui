@@ -1,7 +1,12 @@
 import { tableSorter } from '@/config/settings';
-import { AutoTooltip, ColumnSettings, InfoColumn } from '@gpustack/core-ui';
+import {
+  AutoTooltip,
+  ColumnSettings,
+  InfoColumn,
+  StatusDot
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { ConfigProvider, Tag, Tooltip, Typography } from 'antd';
+import { ConfigProvider, Typography } from 'antd';
 import { createStyles } from 'antd-style';
 import dayjs from 'dayjs';
 import _, { round } from 'lodash';
@@ -517,9 +522,12 @@ const useColumnSettings = (options: {
         const warnings = v.warnings || [];
         if (warnings.length === 0) {
           return (
-            <Tag color="success" variant="filled">
-              {intl.formatMessage({ id: 'benchmark.detail.validity.ok' })}
-            </Tag>
+            <StatusDot
+              statusValue={{
+                status: 'success',
+                text: intl.formatMessage({ id: 'benchmark.detail.validity.ok' })
+              }}
+            />
           );
         }
         const msgs = warnings.map((warning) => {
@@ -530,19 +538,21 @@ const useColumnSettings = (options: {
           );
         });
         return (
-          <Tooltip
-            title={
+          <StatusDot
+            statusValue={{
+              status: 'warning',
+              text: intl.formatMessage({
+                id: 'benchmark.table.coverage.insufficient'
+              })
+            }}
+            message={
               <ul style={{ margin: 0, paddingLeft: 16 }}>
                 {msgs.map((m, i) => (
                   <li key={i}>{m}</li>
                 ))}
               </ul>
             }
-          >
-            <Tag color="warning" variant="filled">
-              {`⚠ ${intl.formatMessage({ id: 'benchmark.table.coverage.insufficient' })}`}
-            </Tag>
-          </Tooltip>
+          />
         );
       }
     },

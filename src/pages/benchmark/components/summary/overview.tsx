@@ -6,7 +6,7 @@ import {
   WarningOutlined
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Table, Tooltip } from 'antd';
+import { Button, ConfigProvider, Table, Tooltip } from 'antd';
 import { createStyles } from 'antd-style';
 import _ from 'lodash';
 import React, { useMemo, useState } from 'react';
@@ -734,21 +734,26 @@ const Overview: React.FC<OverviewProps> = ({
           </span>
         </div>
         <div className="panel-body flush">
-          <Table
-            className="stage-table scroll-table"
-            size="small"
-            rowKey={(p: StagePoint) => p.id}
-            pagination={false}
-            columns={columns}
-            dataSource={rows}
-            scroll={{ x: 'max-content' }}
-            onRow={(p: StagePoint) => ({ onClick: () => onSelect(p.raw) })}
-            rowClassName={(p: StagePoint) =>
-              ['clickable-row', p.id === selectedId ? 'selected-row' : ''].join(
-                ' '
-              )
-            }
-          />
+          <ConfigProvider
+            theme={{ components: { Table: { headerBorderRadius: 0 } } }}
+          >
+            <Table
+              className="stage-table scroll-table"
+              size="small"
+              rowKey={(p: StagePoint) => p.id}
+              pagination={false}
+              columns={columns}
+              dataSource={rows}
+              scroll={{ x: 'max-content' }}
+              onRow={(p: StagePoint) => ({ onClick: () => onSelect(p.raw) })}
+              rowClassName={(p: StagePoint) =>
+                [
+                  'clickable-row',
+                  p.id === selectedId ? 'selected-row' : ''
+                ].join(' ')
+              }
+            />
+          </ConfigProvider>
         </div>
         {probes.length > 0 && (
           <div className="aux">

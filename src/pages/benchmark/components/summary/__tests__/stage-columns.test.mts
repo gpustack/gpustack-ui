@@ -31,6 +31,7 @@ mock.module('antd-style', {
 mock.module('antd', {
   namedExports: {
     Button: empty,
+    ConfigProvider: element,
     Flex: element,
     Tooltip: (props: any) => {
       tooltipProps.push(props);

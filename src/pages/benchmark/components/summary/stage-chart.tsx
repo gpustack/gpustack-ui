@@ -36,8 +36,6 @@ export const C = {
   // secondary text gets its own value and the right axis its own amber.
   text: '#8b939e',
   axis: '#e5e8ec'
-  // No gridline value here: it is the one colour that has to recede into the
-  // background behind it, so it comes from the theme token at render time.
 };
 
 type Getter = (p: StagePoint) => number | null;
@@ -122,7 +120,7 @@ const useStyles = createStyles(({ css }) => ({
   card: css`
     background: var(--ant-color-bg-container);
     border: 1px solid var(--ant-color-border-secondary);
-    border-radius: var(--ant-border-radius);
+    border-radius: var(--ant-border-radius-lg);
     padding: 12px 14px 6px;
     display: flex;
     flex-direction: column;
@@ -220,12 +218,8 @@ interface Props {
 
 export const buildStageChartOption = (
   { spec, points, loadAxisName, loadAxisTitle, markerLabels }: Props,
-  // Gridlines are the one part of the palette that cannot be a hex literal like
-  // the rest of `C`: they have to recede into whichever background is behind
-  // them, and a light-theme value reads as a set of bright solid rules in dark
-  // mode. Taken from the antd token so it tracks the theme, and dashed to match
-  // core-ui's charts.
-  splitLineColor: string
+  splitLineColor: string,
+  axisLineColor = C.axis
 ): EChartsCoreOption => {
   const isValueX = !!spec.x;
   const num = (v: number | null) => (v == null ? null : v);
@@ -466,7 +460,7 @@ export const buildStageChartOption = (
         nameTextStyle: { color: C.text, fontSize: 12 },
         axisTick: { show: false },
         axisLabel: { color: C.text, formatter: (v: number) => spec.x!.fmt(v) },
-        axisLine: { lineStyle: { color: C.axis } },
+        axisLine: { lineStyle: { color: axisLineColor } },
         splitLine: { show: false },
         ...(spec.x!.log
           ? logDomain(points.map((p) => spec.x!.value(p))) || {}
@@ -481,7 +475,7 @@ export const buildStageChartOption = (
         nameTextStyle: { color: C.text, fontSize: 12 },
         axisTick: { show: false },
         axisLabel: { color: C.text },
-        axisLine: { lineStyle: { color: C.axis } },
+        axisLine: { lineStyle: { color: axisLineColor } },
         boundaryGap: false
       };
 
@@ -580,16 +574,18 @@ const StageChart: React.FC<Props> = (props) => {
   const ref = useRef<HTMLDivElement>(null);
   const inst = useRef<ECharts | null>(null);
   const { token } = theme.useToken();
+  const axisLineColor =
+    'darkMode' in token && token.darkMode ? token.colorBorder : C.axis;
 
   useEffect(() => {
     if (!ref.current) return;
     if (!inst.current) inst.current = echarts.init(ref.current);
     inst.current.setOption(
-      buildStageChartOption(props, token.colorBorder),
+      buildStageChartOption(props, token.colorBorder, axisLineColor),
       true
     );
     inst.current.resize();
-  }, [props, token.colorBorder]);
+  }, [props, token.colorBorder, axisLineColor]);
 
   useEffect(() => {
     if (!ref.current) return;
@@ -647,7 +643,7 @@ const StageChart: React.FC<Props> = (props) => {
           ))}
         </div>
       </div>
-      <div ref={ref} style={{ width: '100%', height }} />
+      <div ref={ref} style={{ width: '100%', height, marginTop: 'auto' }} />
     </div>
   );
 };

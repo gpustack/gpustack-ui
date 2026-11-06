@@ -184,14 +184,7 @@ const VRAMItem = ({
             justifyContent: 'flex-end'
           }}
         >
-          <span
-            style={{
-              paddingBottom: 3,
-              borderBottom: '1px dashed var(--ant-blue-6)'
-            }}
-          >
-            [{item.index}]
-          </span>
+          <span className="dashed-underline">[{item.index}]</span>
         </span>
         <ProgressBar percent={percent} />
       </span>

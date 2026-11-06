@@ -52,7 +52,8 @@ export const buildChartSpecs = (
       key: 'ttft-dist',
       title: t('benchmark.detail.chart.ttftDist'),
       note: t('benchmark.detail.chart.ttftDist.note'),
-      yName: 'TTFT (ms)',
+      yName: 'TTFT',
+      yNameOffsetX: 10,
       log: true,
       fmt: fmtMs,
       bands: [
@@ -177,7 +178,8 @@ export const buildChartSpecs = (
       key: 'latency-composition',
       title: t('benchmark.detail.chart.latencyComposition'),
       note: t('benchmark.detail.chart.latencyComposition.note'),
-      yName: t('benchmark.detail.chart.axis.latencyMs'),
+      yName: t('benchmark.detail.chart.axis.latency'),
+      yNameOffsetX: 10,
       log: true,
       fmt: fmtMs,
       bands: [

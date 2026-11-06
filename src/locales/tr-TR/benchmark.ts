@@ -464,7 +464,7 @@ export default {
   'benchmark.detail.chart.legend.actual': 'Gerçekleşen Ort.',
   'benchmark.detail.chart.legend.generation': 'Üretim',
   'benchmark.detail.chart.legend.perRequest': 'İstek başına tok/s',
-  'benchmark.detail.chart.axis.latencyMs': 'Gecikme (ms)',
+  'benchmark.detail.chart.axis.latency': 'Gecikme',
   'benchmark.detail.chart.axis.latencySec': 'İstek gecikmesi (s)',
   'benchmark.detail.chart.axis.inFlight': 'Uçuştaki istekler',
   'benchmark.detail.chart.axis.shortfall': 'Eksik (istek)',

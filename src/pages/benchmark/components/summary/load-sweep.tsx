@@ -142,18 +142,24 @@ export const buildLoadSweepOption = (
     ...shadeStatus('overloaded')
   ];
   const markAreas = areas.length ? { silent: true, data: areas } : undefined;
-
   return {
     animation: false,
-    // Extra headroom so a Best/Peak label on the top-most point stays inside the
-    // canvas instead of being clipped by the plot edge.
-    grid: { left: 74, right: 74, top: 38, bottom: 52 },
+    // Let the tick labels determine the side gutters.
+    grid: { left: 4, right: 8, top: 48, bottom: 20, containLabel: true },
+    // Anchor the name to the canvas edge so wide ticks cannot shift it.
+    graphic: {
+      type: 'text',
+      left: 4,
+      top: 4,
+      silent: true,
+      style: { text: labels.throughputAxis, fill: C.text, fontSize: 12 }
+    },
     xAxis: {
       type: 'category',
       data: cats,
       name: loadAxisTitle,
       nameLocation: 'middle',
-      nameGap: 30,
+      nameGap: 26,
       nameTextStyle: { color: C.text, fontSize: 12 },
       axisTick: { show: false },
       axisLabel: { color: C.text },
@@ -163,10 +169,6 @@ export const buildLoadSweepOption = (
     yAxis: [
       {
         type: 'value',
-        name: labels.throughputAxis,
-        nameLocation: 'middle',
-        nameGap: 56,
-        nameTextStyle: { color: C.text, fontSize: 12 },
         min: 0,
         max: linearMax(points.map((p) => p.tps)),
         axisLine: { show: false },
@@ -180,11 +182,18 @@ export const buildLoadSweepOption = (
       {
         type: 'log',
         name: labels.ttftP99,
-        nameLocation: 'middle',
-        nameGap: 56,
+        nameLocation: 'end',
+        nameRotate: 0,
+        nameGap: 32,
         // The right axis gets its own amber so the reader ties the scale to the
         // dashed line it belongs to.
-        nameTextStyle: { color: '#b58a17', fontSize: 12 },
+        nameTextStyle: {
+          align: 'right',
+          verticalAlign: 'bottom',
+          padding: [0, -8, 0, 0],
+          color: '#b58a17',
+          fontSize: 12
+        },
         ...(ttftDomain || {}),
         axisLine: { show: false },
         axisTick: { show: false },

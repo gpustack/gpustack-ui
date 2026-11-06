@@ -442,7 +442,7 @@ export default {
   'benchmark.detail.chart.legend.actual': '实际均值',
   'benchmark.detail.chart.legend.generation': '生成阶段',
   'benchmark.detail.chart.legend.perRequest': '每请求 tok/s',
-  'benchmark.detail.chart.axis.latencyMs': '延迟 (ms)',
+  'benchmark.detail.chart.axis.latency': '延迟',
   'benchmark.detail.chart.axis.latencySec': '请求延迟 (s)',
   'benchmark.detail.chart.axis.inFlight': '并发请求数',
   'benchmark.detail.chart.axis.shortfall': '缺口（请求数）',

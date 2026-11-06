@@ -1,5 +1,6 @@
-import LogoIcon from '@/assets/images/gpustack-logo.png';
 import { userAtom } from '@/atoms/user';
+import { useLogo } from '@/hooks/use-logo';
+import useSiteSettings from '@/hooks/use-site-settings';
 import { history, useIntl, useModel } from '@umijs/max';
 import { Button, Divider, Form, Spin, message } from 'antd';
 import { createStyles } from 'antd-style';
@@ -93,6 +94,8 @@ const LoginForm = () => {
   const { initialState, setInitialState } = useModel('@@initialState') || {};
   const [authError, setAuthError] = useState<Error | null>(null);
   const intl = useIntl();
+  const { sidebarLogo, siteName } = useLogo();
+  const siteSettings = useSiteSettings();
   const [form] = Form.useForm();
   const [isPassword, setIsPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -104,11 +107,22 @@ const LoginForm = () => {
           <span className="text">
             {intl?.formatMessage({ id: 'users.login.title' })}
           </span>
-          <img
-            src={LogoIcon}
-            alt="logo"
-            style={{ height: '36px', marginLeft: 10 }}
-          />
+          {siteName !== 'GPUStack' &&
+          !siteSettings.logo &&
+          !siteSettings.logo_dark ? (
+            <span style={{ marginLeft: 10 }}>{siteName}</span>
+          ) : (
+            <img
+              src={sidebarLogo}
+              alt={siteName}
+              style={{
+                maxWidth: 180,
+                maxHeight: 36,
+                objectFit: 'contain',
+                marginLeft: 10
+              }}
+            />
+          )}
         </div>
       </div>
     );

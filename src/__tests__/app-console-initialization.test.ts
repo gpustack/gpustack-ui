@@ -47,6 +47,7 @@ function application(
     './manager': { GPUStackPluginManager: { get: () => plugin } }
   });
   const exports = loadSource('../app.tsx', {
+    '@/pages/site-settings/bootstrap': { loadSiteSettings: async () => {} },
     '@/atoms/settings': {},
     '@/atoms/user': {},
     '@/atoms/utils': { setAtomStorage() {} },

@@ -1,4 +1,5 @@
 import { applyAccessExtensions } from './access.extensions';
+import { getGPUStackPlugin } from './plugins';
 
 export default (initialState: {
   currentUser?: Global.UserInfo;
@@ -45,6 +46,7 @@ export default (initialState: {
   // widen these without editing this file. Default is a no-op.
   return applyAccessExtensions({
     canSeeAdmin: isPlatformAdmin,
+    canManageSiteSettings: isPlatformAdmin && !getGPUStackPlugin()?.branding,
     canSeeOrgAdmin: isPlatformAdmin,
     canSeeGpuService:
       isPlatformAdmin || hasKubernetesCluster !== false || hasResourceEvents,

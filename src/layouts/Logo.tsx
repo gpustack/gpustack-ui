@@ -3,12 +3,12 @@ import { useLogo } from '@/hooks/use-logo';
 import React from 'react';
 
 const LogoIcon: React.FC = () => {
-  const { sidebarLogo } = useLogo();
+  const { sidebarLogo, siteName } = useLogo();
 
   return (
     <img
       src={sidebarLogo}
-      alt="logo"
+      alt={siteName}
       className={
         sidebarLogo === GpustackLogo
           ? 'sider-brand-logo sider-brand-logo-padded'
@@ -19,9 +19,9 @@ const LogoIcon: React.FC = () => {
 };
 
 const SLogoIcon: React.FC = () => {
-  const { miniLogo } = useLogo();
+  const { miniLogo, siteName } = useLogo();
 
-  return <img src={miniLogo} alt="logo" className="sider-brand-logo" />;
+  return <img src={miniLogo} alt={siteName} className="sider-brand-logo" />;
 };
 
 export { LogoIcon, SLogoIcon };

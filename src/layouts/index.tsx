@@ -7,6 +7,7 @@ import PluginExtraFields from '@/components/plugin-extra-fields';
 import routeCachekey from '@/config/route-cachekey';
 import { DEFAULT_ENTER_PAGE } from '@/config/settings';
 import useCurrentUser from '@/hooks/use-current-user';
+import useSiteSettings from '@/hooks/use-site-settings';
 import useTableFetch from '@/hooks/use-table-fetch';
 import useUserSettings from '@/hooks/use-user-settings';
 import useAddResource from '@/pages/dashboard/hooks/use-add-resource';
@@ -141,6 +142,7 @@ export default (props: any) => {
   };
 
   const { initialState, loading, setInitialState } = initialInfo;
+  const siteSettings = useSiteSettings();
   const access = useAccess();
   const probedForUserRef = useRef<string | null>(null);
 
@@ -397,6 +399,11 @@ export default (props: any) => {
               route={route}
               location={location}
               title={userConfig.title}
+              pageTitleRender={
+                getGPUStackPlugin()?.branding
+                  ? undefined
+                  : () => siteSettings.site_name
+              }
               navTheme={userSettings.theme}
               layout="side"
               contentStyle={{

@@ -70,6 +70,12 @@ const originalErrorHandler = mock.fn(
 const mockSource = (path: string, namedExports: Record<string, unknown>) =>
   mock.module(new URL(path, import.meta.url).href, { namedExports });
 
+let brandingLoads = 0;
+mockSource('../pages/site-settings/bootstrap.ts', {
+  loadSiteSettings: async () => {
+    brandingLoads += 1;
+  }
+});
 mockSource('../atoms/settings.ts', { userSettingsHelperAtom: settingsAtom });
 mockSource('../atoms/user.ts', {
   GPUStackVersionAtom: versionAtom,
@@ -178,6 +184,7 @@ beforeEach(() => {
   managerCalls = 0;
   consoleChecks = 0;
   consoleAccess = true;
+  brandingLoads = 0;
   originalErrorHandler.mock.resetCalls();
   ready = Promise.resolve();
   observedReady = deferred<void>();
@@ -454,4 +461,20 @@ test('private request errors delegate the original error and options unchanged',
     assert.equal(handledError, error, pathname);
     assert.equal(handledOptions, options, pathname);
   }
+});
+
+test('built-in branding initializes before sign-in without initializing management', async () => {
+  assertPublic(await getInitialState());
+  assert.equal(brandingLoads, 1);
+  assert.equal(managerCalls, 0);
+});
+
+test('a branding plugin retains exclusive control of branding initialization', async () => {
+  plugin.branding = {
+    resolveLogos: () => ({ sidebarLogo: 'enterprise-logo' })
+  };
+  location.pathname = '/private/example';
+  await getInitialState();
+  assert.equal(brandingLoads, 0);
+  assert.equal(pluginCalls, 1);
 });

@@ -1,6 +1,8 @@
 import { GPUStackVersionAtom } from '@/atoms/user';
 import VersionInfo, { modalConfig } from '@/components/version-info';
 import { documentationPaths } from '@/constants/documentation';
+import useSiteSettings from '@/hooks/use-site-settings';
+import { resolveFooterUrl } from '@/pages/site-settings/config/validation';
 import { getDocumentationUrl } from '@/utils/documentation';
 import { useIntl } from '@umijs/max';
 import { Button, Divider, Modal, Typography } from 'antd';
@@ -34,6 +36,7 @@ const useStyles = createStyles(({ token, css }) => ({
 
 const Footer: React.FC = () => {
   const intl = useIntl();
+  const settings = useSiteSettings();
   const [modal, contextHolder] = Modal.useModal();
   const { styles } = useStyles();
   const version = useAtomValue(GPUStackVersionAtom);
@@ -57,11 +60,15 @@ const Footer: React.FC = () => {
                 <span>&copy;</span>
                 <span> {new Date().getFullYear()}</span>
                 <Typography.Link
-                  href="https://gpustack.ai"
+                  href={
+                    resolveFooterUrl(settings.footer_url) ||
+                    'https://gpustack.ai'
+                  }
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  {intl.formatMessage({ id: 'settings.company' })}
+                  {settings.footer_name ||
+                    intl.formatMessage({ id: 'settings.company' })}
                 </Typography.Link>
               </CompanyWrapper>
               <Divider orientation="vertical" />

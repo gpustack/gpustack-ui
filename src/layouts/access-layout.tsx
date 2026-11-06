@@ -99,9 +99,8 @@ export default function AccessLayout({
                 padding: 0,
                 color: token.colorTextSecondary
               }}
-              icon={
-                <IconFont type="icon-user-filled" className="font-size-20" />
-              }
+              styles={{ icon: { fontSize: 16 } }}
+              icon={<IconFont type="icon-user-filled" />}
             />
           </Tooltip>
         </Dropdown>

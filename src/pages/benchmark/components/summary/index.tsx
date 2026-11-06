@@ -21,6 +21,14 @@ const useStyles = createStyles(({ css }) => ({
     display: flex;
     flex-direction: column;
     gap: 16px;
+
+    html[data-theme='realDark'] & {
+      --benchmark-summary-section-border: color-mix(
+        in srgb,
+        var(--ant-color-border),
+        var(--ant-color-text) 8%
+      );
+    }
   `
 }));
 

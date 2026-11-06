@@ -31,8 +31,9 @@ const useStyles = createStyles(({ css }) => ({
     align-items: stretch;
     gap: 24px;
     flex-wrap: wrap;
-    border: 1px solid var(--ant-color-border-secondary);
-    border-radius: var(--ant-border-radius);
+    border: 1px solid
+      var(--benchmark-summary-section-border, var(--ant-color-border));
+    border-radius: var(--ant-border-radius-lg);
     padding: 16px 20px;
     .col-hero {
       flex: none;

@@ -32,7 +32,7 @@
     "ansi-to-html": "^0.7.2",
     "antd": "^6.3.3",
     "antd-style": "^3.6.2",
-    "axios": "^1.18.1",
+    "axios": "^1.20.0",
     "classnames": "^2.5.1",
     "clipboard": "^2.0.11",
     "cron-parser": "^5.6.2",

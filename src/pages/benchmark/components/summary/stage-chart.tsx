@@ -68,6 +68,7 @@ export interface ChartSpec {
   title: string;
   note: string;
   yName: string;
+  yNameOffsetX?: number;
   /** Shared by axis ticks and the tooltip — one formatter, one rendering. */
   fmt: (v: number) => string;
   log?: boolean;
@@ -128,10 +129,11 @@ const useStyles = createStyles(({ css }) => ({
     .head {
       display: flex;
       align-items: baseline;
+      flex-wrap: wrap;
       gap: 10px;
     }
     .head .meta {
-      flex: 1;
+      flex: 1 1 120px;
       min-width: 0;
     }
     .head .t {
@@ -159,6 +161,7 @@ const useStyles = createStyles(({ css }) => ({
       flex: none;
       flex-wrap: wrap;
       justify-content: flex-end;
+      max-width: 100%;
     }
     .legend .li {
       display: inline-flex;
@@ -395,10 +398,6 @@ export const buildStageChartOption = (
 
   const yAxis: Record<string, unknown> = {
     type: spec.log ? 'log' : 'value',
-    name: spec.yName,
-    nameLocation: 'middle',
-    nameGap: 46,
-    nameTextStyle: { color: C.text, fontSize: 12 },
     axisLine: { show: false },
     axisTick: { show: false },
     axisLabel: { color: C.text, formatter: (v: number) => spec.fmt(v) },
@@ -429,9 +428,16 @@ export const buildStageChartOption = (
   const yAxis2 = spec.y2 && {
     type: 'value',
     name: spec.y2.name,
-    nameLocation: 'middle',
-    nameGap: 42,
-    nameTextStyle: { color: C.red, fontSize: 12 },
+    nameLocation: 'end',
+    nameRotate: 0,
+    nameGap: 28,
+    nameTextStyle: {
+      align: 'right',
+      verticalAlign: 'bottom',
+      padding: [0, -8, 0, 0],
+      color: C.red,
+      fontSize: 12
+    },
     min: 0,
     axisLine: { show: false },
     axisTick: { show: false },
@@ -455,9 +461,6 @@ export const buildStageChartOption = (
     ? {
         type: spec.x!.log ? 'log' : 'value',
         name: spec.x!.title ?? spec.x!.name,
-        nameLocation: 'middle',
-        nameGap: 28,
-        nameTextStyle: { color: C.text, fontSize: 12 },
         axisTick: { show: false },
         axisLabel: { color: C.text, formatter: (v: number) => spec.x!.fmt(v) },
         axisLine: { lineStyle: { color: axisLineColor } },
@@ -470,9 +473,6 @@ export const buildStageChartOption = (
         type: 'category',
         data: points.map((p) => String(p.load)),
         name: loadAxisTitle,
-        nameLocation: 'middle',
-        nameGap: 26,
-        nameTextStyle: { color: C.text, fontSize: 12 },
         axisTick: { show: false },
         axisLabel: { color: C.text },
         axisLine: { lineStyle: { color: axisLineColor } },
@@ -481,11 +481,27 @@ export const buildStageChartOption = (
 
   return {
     animation: false,
-    // Top headroom is for the Best / Peak label: those points sit near the top of
-    // their own chart by definition, and a 'top'-positioned label on the highest
-    // point gets clipped by the plot edge without it.
-    grid: { left: 62, right: spec.y2 ? 56 : 14, top: 26, bottom: 44 },
-    xAxis,
+    grid: {
+      left: 4,
+      right: spec.y2 ? 4 : 14,
+      top: 44,
+      bottom: 32,
+      containLabel: true
+    },
+    // Anchor the name to the canvas edge so wide ticks cannot shift it.
+    graphic: {
+      type: 'text',
+      left: 4 + (spec.yNameOffsetX ?? 0),
+      top: 4,
+      silent: true,
+      style: { text: spec.yName, fill: C.text, fontSize: 12 }
+    },
+    xAxis: {
+      ...xAxis,
+      nameLocation: 'middle',
+      nameGap: 34,
+      nameTextStyle: { color: C.text, fontSize: 12 }
+    },
     yAxis: yAxis2 ? [yAxis, yAxis2] : yAxis,
     tooltip: {
       trigger: 'axis',
@@ -570,7 +586,7 @@ export const buildStageChartOption = (
  */
 const StageChart: React.FC<Props> = (props) => {
   const { styles } = useStyles();
-  const { spec, points, logHint, height = 200 } = props;
+  const { spec, points, logHint, height = 228 } = props;
   const ref = useRef<HTMLDivElement>(null);
   const inst = useRef<ECharts | null>(null);
   const { token } = theme.useToken();

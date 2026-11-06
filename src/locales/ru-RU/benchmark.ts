@@ -473,7 +473,7 @@ export default {
   'benchmark.detail.chart.legend.actual': 'Факт (сред.)',
   'benchmark.detail.chart.legend.generation': 'Генерация',
   'benchmark.detail.chart.legend.perRequest': 'tok/s на запрос',
-  'benchmark.detail.chart.axis.latencyMs': 'Задержка (мс)',
+  'benchmark.detail.chart.axis.latency': 'Задержка',
   'benchmark.detail.chart.axis.latencySec': 'Задержка запроса (с)',
   'benchmark.detail.chart.axis.inFlight': 'Активные запросы',
   'benchmark.detail.chart.axis.shortfall': 'Дефицит (запросы)',

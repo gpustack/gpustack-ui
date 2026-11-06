@@ -22,6 +22,10 @@ const useStyles = createStyles(({ css }) => ({
     flex-direction: column;
     gap: 16px;
 
+    .ant-alert-with-description .ant-alert-title {
+      font-size: var(--ant-font-size);
+    }
+
     html[data-theme='realDark'] & {
       --benchmark-summary-section-border: color-mix(
         in srgb,

@@ -461,7 +461,7 @@ export default {
   'benchmark.detail.chart.legend.actual': 'Achieved Avg',
   'benchmark.detail.chart.legend.generation': 'Generation',
   'benchmark.detail.chart.legend.perRequest': 'tok/s per request',
-  'benchmark.detail.chart.axis.latencyMs': 'Latency (ms)',
+  'benchmark.detail.chart.axis.latency': 'Latency',
   'benchmark.detail.chart.axis.latencySec': 'Request latency (s)',
   'benchmark.detail.chart.axis.inFlight': 'In-flight requests',
   'benchmark.detail.chart.axis.shortfall': 'Shortfall (requests)',

@@ -454,7 +454,7 @@ export default {
   'benchmark.detail.chart.legend.actual': '実績（平均）',
   'benchmark.detail.chart.legend.generation': '生成',
   'benchmark.detail.chart.legend.perRequest': 'リクエストあたり tok/s',
-  'benchmark.detail.chart.axis.latencyMs': 'レイテンシ (ms)',
+  'benchmark.detail.chart.axis.latency': 'レイテンシ',
   'benchmark.detail.chart.axis.latencySec': 'リクエストレイテンシ (s)',
   'benchmark.detail.chart.axis.inFlight': '実行中リクエスト数',
   'benchmark.detail.chart.axis.shortfall': '不足（リクエスト数）',

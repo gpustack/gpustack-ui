@@ -41,15 +41,21 @@ export default defineConfig({
   base: process.env.npm_config_base || '/',
   ...(isProduction
     ? {
+        srcTranspiler: 'esbuild',
         // Extracted CSS lives in css/, while fonts and images live in static/.
         cssPublicPath: '../',
         jsMinifierOptions: {
-          compress: {
-            drop_console: true,
-            drop_debugger: true
-          }
+          drop: ['console', 'debugger']
         },
         chainWebpack(config: any) {
+          // esbuild manages native concurrency; extra JS workers multiply memory.
+          for (const name of ['js-esbuild', 'css-esbuild']) {
+            if (config.optimization.minimizers.has(name)) {
+              config.optimization
+                .minimizer(name)
+                .tap((args: any[]) => [{ ...args[0], parallel: false }]);
+            }
+          }
           // Keep the js/ and css/ output directories, but name files by content
           // hash instead of the build clock: a release then only invalidates the
           // assets it actually changed.
@@ -73,8 +79,10 @@ export default defineConfig({
         }
       }),
   favicons: ['/static/favicon.png'],
-  jsMinifier: 'terser',
-  cssMinifier: 'cssnano',
+  jsMinifier: 'esbuild',
+  cssMinifier: 'esbuild',
+  // Scope minifier helpers to each chunk so they cannot collide at runtime.
+  esbuildMinifyIIFE: true,
   presets: ['umi-presets-pro'],
   clickToComponent: {},
   antd: {

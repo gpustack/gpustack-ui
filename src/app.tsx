@@ -10,7 +10,7 @@ import { canInitializeConsole, getGPUStackPlugin } from '@/plugins';
 import { enterprisePluginReady } from '@/plugins/enterprise-ready';
 import { GPUStackPluginManager } from '@/plugins/manager';
 import { isPluginPublicPage } from '@/plugins/public-routes';
-import { requestConfig } from '@/request-config';
+import { requestConfig, setRequestBasename } from '@/request-config';
 import {
   queryCurrentUserState,
   queryVersionInfo,
@@ -49,6 +49,7 @@ export function modifyClientRenderOpts<T extends { basename?: string }>(
   options: T
 ): T {
   routerBasename = options.basename || '/';
+  setRequestBasename(routerBasename);
   return options;
 }
 

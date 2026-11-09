@@ -197,5 +197,14 @@ export default {
   'playground.decision.answers.empty': '响应中没有回答。',
   'playground.decision.answer.choice': '选择',
   'playground.decision.answer.score': '评分',
-  'playground.decision.answer.confidence': '置信度'
+  'playground.decision.answer.confidence': '置信度',
+  'playground.decision.images.upload': '图片',
+  'playground.decision.images.copyPlaceholder': '复制占位符',
+  'playground.decision.images.notReferenced': '未被引用',
+  'playground.decision.assets': '资产',
+  'playground.decision.assets.tooltip':
+    '以 assets 映射发送的图片。在 state 或 questions(指令、判据)的任意字符串中通过占位符(如 img-1)引用。',
+  'playground.decision.assets.empty': '暂无资产。上传图片后可用 img-N 引用。',
+  'playground.decision.assets.deletedStillReferenced':
+    '已从 Assets 移除，但 Questions 中仍引用 {placeholders}。请按需调整问题。'
 };

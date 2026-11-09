@@ -41,6 +41,26 @@ const UploadImg: React.FC<UploadImgProps> = ({
 }) => {
   const intl = useIntl();
   const uploadRef = useRef<any>(null);
+  // Single-select: uid of the MOST RECENT selection, recorded the moment
+  // onChange fires (BEFORE any async read starts). A slow-decoding earlier
+  // file must never overwrite a newer choice — checked both when a decode
+  // finishes (enqueue) and when the debounce delivers the batch.
+  const latestUidRef = useRef<string | number | null>(null);
+  // Batches read within the 300ms debounce window ACCUMULATE here, keyed by
+  // file uid (later reads of the same uid win). Without this, two rapid
+  // selections would silently drop the first batch — debounce only delivers
+  // its last call's arguments.
+  const pendingRef = useRef(
+    new Map<
+      string | number,
+      {
+        dataUrl: string;
+        uid: string | number;
+        rawWidth: number;
+        rawHeight: number;
+      }
+    >()
+  );
 
   const getImgSize = useCallback(
     (url: string): Promise<{ rawWidth: number; rawHeight: number }> => {
@@ -71,25 +91,32 @@ const UploadImg: React.FC<UploadImgProps> = ({
   }, []);
 
   const debouncedUpdate = useCallback(
-    debounce(
-      (
-        base64List: {
-          dataUrl: string;
-          uid: number | string;
-          rawWidth: number;
-          rawHeight: number;
-        }[]
-      ) => {
-        handleUpdateImgList(base64List);
-      },
-      300
-    ),
-    [handleUpdateImgList, intl]
+    debounce(() => {
+      if (pendingRef.current.size === 0) {
+        return;
+      }
+      // Single-select: drop anything that is no longer the latest choice,
+      // even if it already made it into the pending queue — the latest file
+      // may still be decoding and will deliver on its own debounce.
+      const batch = Array.from(pendingRef.current.values()).filter(
+        (item) => multiple || item.uid === latestUidRef.current
+      );
+      pendingRef.current.clear();
+      if (batch.length > 0) {
+        handleUpdateImgList(batch);
+      }
+    }, 300),
+    [handleUpdateImgList, intl, multiple]
   );
 
   const handleChange = useCallback(
     async (info: any) => {
       const { fileList } = info;
+      // Record the latest selection BEFORE any reading starts, so a slow
+      // decode of an earlier file can be recognized as stale later.
+      if (!multiple && fileList.length > 0) {
+        latestUidRef.current = fileList[fileList.length - 1].uid;
+      }
 
       const newFileList = await Promise.all(
         fileList.map(
@@ -109,22 +136,33 @@ const UploadImg: React.FC<UploadImgProps> = ({
         )
       );
 
-      if (newFileList.length > 0) {
-        const base64List = newFileList
-          .filter((sitem) => sitem.url)
-          .map((item: UploadFile & { rawHeight: number; rawWidth: number }) => {
-            return {
-              dataUrl: item.url as string,
-              uid: item.uid,
-              rawWidth: item.rawWidth,
-              rawHeight: item.rawHeight
-            };
+      for (const item of newFileList) {
+        if (item.url) {
+          // Single-select consumers (e.g. the image editor's source picker)
+          // read only the FIRST delivered item, so accumulating would make
+          // a quick re-selection keep the first image — deliver only the
+          // latest selection instead. Multi-select accumulates by uid.
+          if (!multiple) {
+            if (item.uid !== latestUidRef.current) {
+              // Stale decode: a newer selection arrived while this file was
+              // being read. Drop it instead of letting it overwrite.
+              continue;
+            }
+            pendingRef.current.clear();
+          }
+          pendingRef.current.set(item.uid, {
+            dataUrl: item.url as string,
+            uid: item.uid,
+            rawWidth: item.rawWidth,
+            rawHeight: item.rawHeight
           });
-
-        debouncedUpdate(base64List);
+        }
+      }
+      if (pendingRef.current.size > 0) {
+        debouncedUpdate();
       }
     },
-    [debouncedUpdate, getBase64]
+    [debouncedUpdate, getBase64, multiple]
   );
 
   return (

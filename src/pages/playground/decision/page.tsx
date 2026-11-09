@@ -2,14 +2,18 @@ import HotKeys from '@/config/hotkeys';
 import useUserSettings from '@/hooks/use-user-settings';
 import {
   ClearOutlined,
-  FormatPainterOutlined,
   PlusOutlined,
   QuestionCircleOutlined
 } from '@ant-design/icons';
-import { AlertInfo, useRequestToken } from '@gpustack/core-ui';
+import {
+  AlertInfo,
+  CopyButton,
+  IconFont,
+  useRequestToken
+} from '@gpustack/core-ui';
 import { JsonEditor } from '@gpustack/core-ui/json-editor';
 import { useIntl, useSearchParams } from '@umijs/max';
-import { Button, Flex, Spin, Tag, Tooltip } from 'antd';
+import { App, Button, Flex, Spin, Tag, Tooltip } from 'antd';
 import axios from 'axios';
 import _ from 'lodash';
 import React, {
@@ -23,6 +27,8 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import { SYSTEMONE_API, decisionQuery } from '../apis';
 import ReferenceParams from '../components/reference-params';
 import RightContainer from '../components/right-container';
+import ThumbImg from '../components/thumb-img';
+import UploadImg from '../components/upload-img';
 import ViewCommonCode from '../components/view-common-code';
 import { extractErrorMessage } from '../config';
 import { decisionSamples } from '../config/samples';
@@ -168,6 +174,108 @@ const QUESTION_TEMPLATES: Record<string, Record<string, any>> = {
   noul: { type: 'noul', instructions: '' }
 };
 
+// ============ Image assets (System One media support, issue #6622) ============
+
+// One uploaded image: the base64 data URL kept for preview / requests, plus
+// the collision-free placeholder that references it inside any string of the
+// state, question instructions, or criteria.
+interface DecisionImage {
+  placeholder: string;
+  dataUrl: string;
+}
+
+// A collision-free `img-N` placeholder: collisions are checked against the
+// given USED set (parsed tokens from both editors + live image placeholders,
+// built by the callers), so a reference written as "\u0069mg-1" is avoided
+// too — a raw-text scan would miss it and hand out an in-use name.
+const nextImagePlaceholder = (used: Set<string>): string => {
+  let n = used.size + 1;
+  let key = `img-${n}`;
+  while (used.has(key)) {
+    n += 1;
+    key = `img-${n}`;
+  }
+  return key;
+};
+
+// `data:image/png;base64,AAAA` → `{ format: 'png', dataBase64: 'AAAA' }`.
+// URL-sourced "data URLs" (http(s)://…) yield no payload — they are skipped
+// for requests (the System One assets contract only carries inline base64).
+const splitDataUrl = (
+  dataUrl: string
+): { format: string; dataBase64: string } | null => {
+  const match = /^data:image\/([a-zA-Z0-9.+-]+);base64,(.+)$/.exec(
+    dataUrl || ''
+  );
+  if (!match) {
+    return null;
+  }
+  return { format: match[1].toLowerCase(), dataBase64: match[2] };
+};
+
+// Best-effort placeholder injection into the state (issue #6622 item 2):
+// - pure-image source (plain string / empty / unparseable) → the bare
+//   placeholder string, matching the contract's own `"state": "photo"`;
+// - chat-shaped state (array of {role, content: string} messages) → appended
+//   to the last text message's content;
+// - other shapes (arbitrary objects) are left alone — the thumbnail shows a
+//   "not referenced" hint and the user wires it by hand.
+// NEVER destructive: a non-empty state (plain string, unparseable text,
+// non-chat array, arbitrary object) is preserved and at most gets the
+// placeholder appended — only an empty editor is replaced by the bare
+// placeholder string.
+const injectPlaceholderIntoState = (
+  stateJson: string,
+  placeholder: string
+): string => {
+  const trimmed = stateJson.trim();
+  if (!trimmed || trimmed === '{}' || trimmed === '[]') {
+    return JSON.stringify(placeholder);
+  }
+  let parsed: any = null;
+  let parseable = true;
+  try {
+    parsed = JSON.parse(stateJson);
+  } catch {
+    parseable = false;
+  }
+  if (parseable) {
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      const last = parsed[parsed.length - 1];
+      if (
+        _.isPlainObject(last) &&
+        typeof last.content === 'string' &&
+        typeof last.role === 'string'
+      ) {
+        parsed = [...parsed];
+        parsed[parsed.length - 1] = {
+          ...last,
+          content: last.content ? `${last.content} ${placeholder}` : placeholder
+        };
+        return JSON.stringify(parsed, null, 2);
+      }
+      // A valid non-chat array is user data — leave it untouched (the asset
+      // shows the not-referenced hint until wired by hand).
+      return stateJson;
+    }
+    if (typeof parsed === 'string') {
+      return JSON.stringify(`${parsed} ${placeholder}`);
+    }
+    // Arbitrary object: nothing sensible to append to — leave as is.
+    return stateJson;
+  }
+  // Unparseable non-empty text: append the placeholder to the raw text so
+  // no user input is lost.
+  return `${stateJson}\n${placeholder}`;
+};
+
+// NOTE: deleting an asset intentionally does NOT edit either editor's
+// text. Stripping the placeholder automatically sounds nice but requires
+// JSON-aware surgical edits (keys vs values, escapes, token boundaries,
+// formatting) whose failure modes corrupt user input — far worse than a
+// leftover literal token, which the engine simply passes through as text.
+// The not-referenced hint already tells the user what to clean up by hand.
+
 // A collision-free `question-N` key: the map key IS the identity, two
 // entries sharing one would silently overwrite each other.
 const nextQuestionKey = (existing: string[]) => {
@@ -205,6 +313,10 @@ const buildSampleQuestions = (sample: {
 const GroundDecision: React.FC<MessageProps> = forwardRef((props, ref) => {
   const { modelList } = props;
   const intl = useIntl();
+  // ConfigProvider-aware message API (plain antd `message` would ignore the
+  // app theme / dark mode — the layout wires the App provider for exactly
+  // this).
+  const { message } = App.useApp();
   const { isDarkTheme } = useUserSettings();
   const [searchParams] = useSearchParams();
   const requestSource = useRequestToken();
@@ -241,6 +353,17 @@ const GroundDecision: React.FC<MessageProps> = forwardRef((props, ref) => {
   const [parameters, setParameters] = useState<any>(() => ({
     model: searchParams.get('model') || ''
   }));
+  // Uploaded images: base64 payloads + their referencing placeholders. They
+  // ride the request as `assets` (and a top-level `images` array for
+  // upstream vLLM — see buildImageRequest), never stored server-side.
+  const [images, setImages] = useState<DecisionImage[]>([]);
+  // Latest-commit mirrors for the async upload callback (file reading +
+  // debounce can resolve after edits/deletions; snapshots captured at call
+  // time would clobber that newer state).
+  const imagesRef = useRef(images);
+  imagesRef.current = images;
+  const stateJsonRef = useRef(stateJson);
+  stateJsonRef.current = stateJson;
 
   useImperativeHandle(ref, () => {
     return {
@@ -332,33 +455,244 @@ const GroundDecision: React.FC<MessageProps> = forwardRef((props, ref) => {
     return !!body;
   }, [questionsJson]);
 
+  // ============ Image asset wiring (issue #6622) ============
+
+  // All placeholders referenced by either editor. The scan works on PARSED
+  // VALUES, not raw text: object keys are skipped (a question id of "img-1"
+  // is not a reference) and JSON escapes are already decoded (so
+  // "\u0069mg-1" counts). Unparseable text falls back to a raw scan — the
+  // injection itself appends to raw text in that case. One pass per editor
+  // change; lookups below are O(1) Set hits.
+  const collectReferencedPlaceholders = (value: any, set: Set<string>) => {
+    if (typeof value === 'string') {
+      for (const match of value.matchAll(/\bimg-\d+\b/g)) {
+        set.add(match[0]);
+      }
+    } else if (Array.isArray(value)) {
+      value.forEach((item) => collectReferencedPlaceholders(item, set));
+    } else if (_.isPlainObject(value)) {
+      Object.values(value).forEach((item) =>
+        collectReferencedPlaceholders(item, set)
+      );
+    }
+  };
+  const referencedImages = useMemo(() => {
+    const set = new Set<string>();
+    const collectFrom = (text: string) => {
+      try {
+        collectReferencedPlaceholders(JSON.parse(text), set);
+      } catch {
+        for (const match of text.matchAll(/\bimg-\d+\b/g)) {
+          set.add(match[0]);
+        }
+      }
+    };
+    collectFrom(stateJson);
+    collectFrom(questionsJson);
+    return set;
+  }, [stateJson, questionsJson]);
+
+  const isImageReferenced = (placeholder: string) =>
+    referencedImages.has(placeholder);
+
+  // ALL placeholder tokens present anywhere in the editors — keys AND
+  // values, parsed (so escaped forms count). Used to steer placeholder
+  // allocation away from in-use names; reference detection above is the
+  // stricter values-only view.
+  const usedPlaceholderTokens = useMemo(() => {
+    const set = new Set<string>();
+    const walk = (value: any) => {
+      if (typeof value === 'string') {
+        for (const match of value.matchAll(/\bimg-\d+\b/g)) {
+          set.add(match[0]);
+        }
+      } else if (Array.isArray(value)) {
+        value.forEach((item) => walk(item));
+      } else if (_.isPlainObject(value)) {
+        // Keys AND values: allocation must avoid both (a key named img-1
+        // would be shadowed by a new upload).
+        Object.entries(value).forEach(([key, item]) => {
+          walk(key);
+          walk(item);
+        });
+      }
+    };
+    const collect = (text: string) => {
+      try {
+        walk(JSON.parse(text));
+      } catch {
+        for (const match of text.matchAll(/\bimg-\d+\b/g)) {
+          set.add(match[0]);
+        }
+      }
+    };
+    collect(stateJson);
+    collect(questionsJson);
+    return set;
+  }, [stateJson, questionsJson]);
+
+  const handleUploadImages = (imgList: { dataUrl: string }[]) => {
+    if (!imgList?.length) {
+      return;
+    }
+    const added: DecisionImage[] = [];
+    // Placeholders are allocated against the LATEST parsed token set (refs
+    // + memo): the set starts from every img-N in either editor (keys and
+    // values, escaped forms included) plus live image placeholders, then
+    // grows with each allocation in this batch. The state injection runs
+    // against the latest committed state; the image list merges
+    // functionally so a deletion made in between is preserved.
+    const used = new Set([
+      ...imagesRef.current.map((image) => image.placeholder),
+      ...usedPlaceholderTokens
+    ]);
+    let nextStateJson = stateJsonRef.current;
+    for (const item of imgList) {
+      const placeholder = nextImagePlaceholder(used);
+      used.add(placeholder);
+      added.push({ placeholder, dataUrl: item.dataUrl });
+      nextStateJson = injectPlaceholderIntoState(nextStateJson, placeholder);
+    }
+    setImages((current) => [...current, ...added]);
+    setStateJson(nextStateJson);
+  };
+
+  // Deleting an image removes ONLY the tray entry — the editors' text is
+  // never edited (see the note above stripPlaceholderFromText's old spot).
+  // If the questions still reference a deleted placeholder, warn instead:
+  // the leftover token is harmless to the engine, but the questions may no
+  // longer ask what the user intends.
+  const warnIfStillReferenced = (placeholders: string[]) => {
+    const stillReferenced = placeholders.filter((placeholder) =>
+      new RegExp(`\\b${_.escapeRegExp(placeholder)}\\b`).test(questionsJson)
+    );
+    if (stillReferenced.length > 0) {
+      message.warning(
+        intl.formatMessage(
+          { id: 'playground.decision.assets.deletedStillReferenced' },
+          { placeholders: stillReferenced.join(', ') }
+        )
+      );
+    }
+  };
+
+  const handleDeleteImage = (placeholder: string) => {
+    setImages(images.filter((image) => image.placeholder !== placeholder));
+    warnIfStillReferenced([placeholder]);
+  };
+
+  // The request payload for the uploaded images (issue #6622 items 3 & 6):
+  // - `assets` — the TypeSafe placeholder map, the only way TypeSafe-hosted
+  //   and vllm-sr engines read images (and the only way to scope one to a
+  //   single question/option); values carry raw base64 in `data_base64`;
+  // - top-level `images` — the only field upstream vLLM (>= 0.32) reads.
+  //   Unlike `assets`, its entries must be FULL data URLs
+  //   ("data:image/png;base64,..." — a raw payload is rejected with
+  //   "media must be data URLs"), so the original data URL is reused.
+  const buildImageRequest = () => {
+    const assets: Record<string, any> = {};
+    const topLevelImages: string[] = [];
+    for (const image of images) {
+      const parts = splitDataUrl(image.dataUrl);
+      if (!parts) {
+        continue;
+      }
+      assets[image.placeholder] = {
+        type: 'image',
+        format: parts.format,
+        data_base64: parts.dataBase64
+      };
+      topLevelImages.push(image.dataUrl);
+    }
+    return { assets, topLevelImages };
+  };
+
   const viewCodeContent = useMemo(() => {
     const { value: state } = parseStateJson();
     const { body } = parseQuestionsJson();
+    const { assets, topLevelImages } = buildImageRequest();
+    const codeParameters: Record<string, any> = {
+      state: state ?? '',
+      questions: body || {},
+      model: parameters.model || ''
+    };
+    // Readability stub: real base64 payloads would bury the sample. The
+    // `images` stub keeps each data URL's MIME prefix — a non-data-URL
+    // entry fails vLLM's media validation if the sample is copied as-is.
+    if (Object.keys(assets).length > 0) {
+      codeParameters.assets = _.mapValues(assets, (asset: any) => ({
+        ...asset,
+        data_base64: '<base64-image-data>'
+      }));
+      codeParameters.images = topLevelImages.map((dataUrl) =>
+        dataUrl.replace(
+          /^(data:image\/[a-z0-9.+-]+;base64,).*/,
+          '$1<base64-image-data>'
+        )
+      );
+    }
     return generateDecisionCode({
       api: SYSTEMONE_API,
-      parameters: {
-        state: state ?? '',
-        questions: body || {},
-        model: parameters.model || ''
-      }
+      parameters: codeParameters,
+      headers:
+        Object.keys(assets).length > 0
+          ? [['TypeSafe-Danger-Zone-Images', 'true']]
+          : []
     });
-  }, [parameters.model, stateJson, questionsJson]);
+  }, [parameters.model, stateJson, questionsJson, images]);
 
   const handleCloseViewCode = () => {
     setShow(false);
   };
 
-  const handleClear = () => {
-    // Reset to the sample rather than empty editors: an empty body teaches
-    // nothing, the sample stays one click away.
+  // Per-editor resets: each editor goes back to its sample half (an empty
+  // editor teaches nothing); answers belong to the run and stay untouched.
+  const handleClearState = () => {
     const sample = decisionSamples[intl.locale] || decisionSamples['en-US'];
     setStateJson(JSON.stringify(sample?.state ?? {}, null, 2));
-    setQuestionsJson(sample ? buildSampleQuestions(sample) : '{}');
-    setAnswers(null);
-    setMeta(null);
     setError(null);
   };
+  const handleClearQuestions = () => {
+    const sample = decisionSamples[intl.locale] || decisionSamples['en-US'];
+    setQuestionsJson(sample ? buildSampleQuestions(sample) : '{}');
+    setError(null);
+  };
+  // Bulk remove: empty the tray only; editors' text is intentionally left
+  // untouched (see the note by the asset wiring section) — a warning fires
+  // for any placeholder the questions still reference.
+  const handleClearAssets = () => {
+    warnIfStillReferenced(images.map((image) => image.placeholder));
+    setImages([]);
+  };
+
+  // Re-indent an editor's content — the usual rescue after pasting
+  // minified JSON from a curl example or an SDK log.
+  const formatJsonText = (
+    text: string,
+    setText: (v: string) => void,
+    errorId: string
+  ) => {
+    try {
+      setText(JSON.stringify(JSON.parse(text), null, 2));
+      setError(null);
+    } catch (e: any) {
+      setError(
+        intl.formatMessage({ id: errorId }, { message: e?.message || '' })
+      );
+    }
+  };
+  const handleFormatState = () =>
+    formatJsonText(
+      stateJson,
+      setStateJson,
+      'playground.decision.state.invalidJson'
+    );
+  const handleFormat = () =>
+    formatJsonText(
+      questionsJson,
+      setQuestionsJson,
+      'playground.decision.questions.invalidJson'
+    );
 
   // Invalidate + cancel the in-flight run, shared by Stop and model
   // switches: the ref is nulled BEFORE cancel() so the canceled run's
@@ -373,22 +707,6 @@ const GroundDecision: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   const handleStop = () => {
     cancelCurrentRequest();
-  };
-
-  // Re-indent the editor content — the usual rescue after pasting
-  // minified JSON from a curl example or an SDK log.
-  const handleFormat = () => {
-    try {
-      setQuestionsJson(JSON.stringify(JSON.parse(questionsJson), null, 2));
-      setError(null);
-    } catch (e: any) {
-      setError(
-        intl.formatMessage(
-          { id: 'playground.decision.questions.invalidJson' },
-          { message: e?.message || '' }
-        )
-      );
-    }
   };
 
   // Insert a typed question template with a collision-free question-N key,
@@ -446,16 +764,28 @@ const GroundDecision: React.FC<MessageProps> = forwardRef((props, ref) => {
     try {
       // The selector's model wins: GPUStack resolves the target route from
       // body.model, so the selector is the single source of truth.
-      const res: any = await decisionQuery(
-        {
-          state,
-          questions: body,
-          model: parameters.model
-        },
-        {
-          cancelToken: token.token
-        }
-      );
+      const requestBody: { model: string; [key: string]: any } = {
+        state,
+        questions: body,
+        model: parameters.model
+      };
+      // Images ride both `assets` and a top-level `images` array (one body
+      // shape for TypeSafe-hosted, vllm-sr, and upstream vLLM engines).
+      const { assets, topLevelImages } = buildImageRequest();
+      const withImages = Object.keys(assets).length > 0;
+      if (withImages) {
+        requestBody.assets = assets;
+        requestBody.images = topLevelImages;
+      }
+      // The opt-in image header, attached whenever assets are present
+      // (issue #6622 item 3); the gateway passes it through.
+      const imageHeaders = withImages
+        ? { 'TypeSafe-Danger-Zone-Images': 'true' }
+        : undefined;
+      const res: any = await decisionQuery(requestBody, {
+        cancelToken: token.token,
+        headers: imageHeaders
+      });
       if (!isCurrent()) {
         return;
       }
@@ -741,7 +1071,164 @@ const GroundDecision: React.FC<MessageProps> = forwardRef((props, ref) => {
           }
         >
           <Flex component="div" vertical className="decision-input-region">
-            <Flex vertical className="editor-panel">
+            {/* PoC layout: state and questions editors SIDE BY SIDE, the
+                uploaded images in a horizontal tray BELOW both. */}
+            <Flex className="editors-row">
+              <Flex vertical className="editor-panel">
+                <Flex
+                  component="div"
+                  justify="space-between"
+                  align="center"
+                  className="editor-header"
+                >
+                  <h3 className="m-b-0 font-size-14 line-24 font-500">
+                    {intl.formatMessage({ id: 'playground.decision.state' })}
+                    <Tooltip
+                      title={intl.formatMessage({
+                        id: 'playground.decision.state.tooltip'
+                      })}
+                    >
+                      <QuestionCircleOutlined className="m-l-4" />
+                    </Tooltip>
+                  </h3>
+                  <Flex
+                    align="center"
+                    justify="end"
+                    gap="small"
+                    wrap
+                    className="editor-actions"
+                  >
+                    <Button
+                      size="small"
+                      icon={<IconFont type="icon-object" />}
+                      disabled={loading}
+                      onClick={handleFormatState}
+                    >
+                      {intl.formatMessage({
+                        id: 'playground.decision.questions.format'
+                      })}
+                    </Button>
+                    <Tooltip
+                      title={intl.formatMessage({
+                        id: 'common.button.clear'
+                      })}
+                    >
+                      <Button
+                        size="small"
+                        icon={<ClearOutlined />}
+                        disabled={loading}
+                        onClick={handleClearState}
+                        aria-label={intl.formatMessage({
+                          id: 'common.button.clear'
+                        })}
+                        title={intl.formatMessage({
+                          id: 'common.button.clear'
+                        })}
+                      />
+                    </Tooltip>
+                  </Flex>
+                </Flex>
+                {/* Editor body only — uploads live in the Assets panel below
+                  (assets are a peer of state/questions in the System One
+                  contract, referenced by placeholder from BOTH editors). */}
+                <div className="state-editor">
+                  <JsonEditor
+                    isDarkTheme={isDarkTheme}
+                    path={STATE_EDITOR_PATH}
+                    schema={STATE_JSON_SCHEMA}
+                    value={stateJson}
+                    onChange={(value) => setStateJson(value ?? '')}
+                    height="100%"
+                    options={{ lineNumbers: 'off', folding: false }}
+                  />
+                </div>
+              </Flex>
+
+              <Flex vertical className="editor-panel questions-editor-wrap">
+                <Flex
+                  component="div"
+                  justify="space-between"
+                  align="center"
+                  className="editor-header"
+                >
+                  <h3 className="m-b-0 font-size-14 line-24 font-500">
+                    {intl.formatMessage({
+                      id: 'playground.decision.questions'
+                    })}
+                  </h3>
+                  <Flex
+                    align="center"
+                    justify="end"
+                    gap="small"
+                    wrap
+                    className="editor-actions"
+                  >
+                    {Object.keys(QUESTION_TEMPLATES).map((type) => (
+                      <Tooltip key={type} title={type}>
+                        <Button
+                          size="small"
+                          disabled={loading || !questionsParsable}
+                          onClick={() => handleInsertTemplate(type)}
+                        >
+                          <PlusOutlined />
+                          {intl.formatMessage({
+                            id: `playground.decision.questions.type.${type}`
+                          })}
+                        </Button>
+                      </Tooltip>
+                    ))}
+                    <Button
+                      size="small"
+                      icon={<IconFont type="icon-object" />}
+                      disabled={loading || !questionsParsable}
+                      onClick={handleFormat}
+                    >
+                      {intl.formatMessage({
+                        id: 'playground.decision.questions.format'
+                      })}
+                    </Button>
+                    <Tooltip
+                      title={intl.formatMessage({
+                        id: 'common.button.clear'
+                      })}
+                    >
+                      <Button
+                        size="small"
+                        icon={<ClearOutlined />}
+                        disabled={loading}
+                        onClick={handleClearQuestions}
+                        aria-label={intl.formatMessage({
+                          id: 'common.button.clear'
+                        })}
+                        title={intl.formatMessage({
+                          id: 'common.button.clear'
+                        })}
+                      />
+                    </Tooltip>
+                  </Flex>
+                </Flex>
+                {/* Schema-guided JSON editing: autocomplete/hover/validation for
+                the known question shape (scoped to this model's path), with
+                template inserts and formatting above. The editor fills the
+                remaining input height; syntax errors are marked inline by
+                monaco and reflected live in the run bar below. */}
+                <div className="questions-editor">
+                  <JsonEditor
+                    isDarkTheme={isDarkTheme}
+                    path={QUESTIONS_EDITOR_PATH}
+                    schema={QUESTIONS_JSON_SCHEMA}
+                    value={questionsJson}
+                    onChange={(value) => setQuestionsJson(value ?? '')}
+                    height="100%"
+                  />
+                </div>
+              </Flex>
+            </Flex>
+            {/* Assets panel (System One contract): a peer of state/questions —
+                uploaded images live here and are referenced by placeholder
+                from strings in BOTH editors (state, instructions, criteria).
+                Always visible; the upload affordance lives in its header. */}
+            <Flex vertical className="assets-panel">
               <Flex
                 component="div"
                 justify="space-between"
@@ -749,10 +1236,10 @@ const GroundDecision: React.FC<MessageProps> = forwardRef((props, ref) => {
                 className="editor-header"
               >
                 <h3 className="m-b-0 font-size-14 line-24 font-500">
-                  {intl.formatMessage({ id: 'playground.decision.state' })}
+                  {intl.formatMessage({ id: 'playground.decision.assets' })}
                   <Tooltip
                     title={intl.formatMessage({
-                      id: 'playground.decision.state.tooltip'
+                      id: 'playground.decision.assets.tooltip'
                     })}
                   >
                     <QuestionCircleOutlined className="m-l-4" />
@@ -765,86 +1252,99 @@ const GroundDecision: React.FC<MessageProps> = forwardRef((props, ref) => {
                   wrap
                   className="editor-actions"
                 >
-                  <Button
+                  <UploadImg
+                    handleUpdateImgList={handleUploadImages}
+                    multiple
                     size="small"
-                    icon={<ClearOutlined />}
-                    disabled={loading}
-                    onClick={handleClear}
                   >
-                    {intl.formatMessage({ id: 'common.button.clear' })}
-                  </Button>
+                    <Button
+                      size="small"
+                      icon={<PlusOutlined />}
+                      disabled={loading}
+                    >
+                      {intl.formatMessage({
+                        id: 'playground.decision.images.upload'
+                      })}
+                    </Button>
+                  </UploadImg>
+                  <Tooltip
+                    title={intl.formatMessage({ id: 'common.button.clear' })}
+                  >
+                    <Button
+                      size="small"
+                      icon={<ClearOutlined />}
+                      disabled={loading || images.length === 0}
+                      onClick={handleClearAssets}
+                      aria-label={intl.formatMessage({
+                        id: 'common.button.clear'
+                      })}
+                      title={intl.formatMessage({
+                        id: 'common.button.clear'
+                      })}
+                    />
+                  </Tooltip>
                 </Flex>
               </Flex>
-              <div className="state-editor">
-                <JsonEditor
-                  isDarkTheme={isDarkTheme}
-                  path={STATE_EDITOR_PATH}
-                  schema={STATE_JSON_SCHEMA}
-                  value={stateJson}
-                  onChange={(value) => setStateJson(value ?? '')}
-                  height="100%"
-                  options={{ lineNumbers: 'off', folding: false }}
-                />
-              </div>
-            </Flex>
-
-            <Flex vertical className="editor-panel questions-editor-wrap">
-              <Flex
-                component="div"
-                justify="space-between"
-                align="center"
-                className="editor-header"
-              >
-                <h3 className="m-b-0 font-size-14 line-24 font-500">
-                  {intl.formatMessage({ id: 'playground.decision.questions' })}
-                </h3>
-                <Flex
-                  align="center"
-                  justify="end"
-                  gap="small"
-                  wrap
-                  className="editor-actions"
-                >
-                  {Object.keys(QUESTION_TEMPLATES).map((type) => (
-                    <Tooltip key={type} title={type}>
-                      <Button
-                        size="small"
-                        disabled={loading || !questionsParsable}
-                        onClick={() => handleInsertTemplate(type)}
-                      >
-                        <PlusOutlined />
-                        {intl.formatMessage({
-                          id: `playground.decision.questions.type.${type}`
-                        })}
-                      </Button>
-                    </Tooltip>
-                  ))}
-                  <Button
-                    size="small"
-                    icon={<FormatPainterOutlined />}
-                    disabled={loading || !questionsParsable}
-                    onClick={handleFormat}
-                  >
+              <div className="decision-images-strip assets-flow">
+                {images.length > 0 ? (
+                  images.map((image) => {
+                    const referenced = isImageReferenced(image.placeholder);
+                    return (
+                      <div key={image.placeholder} className="image-item">
+                        <div className="thumb-image-wrap">
+                          <ThumbImg
+                            dataList={[
+                              {
+                                uid: image.placeholder,
+                                dataUrl: image.dataUrl,
+                                height: 96
+                              }
+                            ]}
+                            editable
+                            onDelete={(uid) => handleDeleteImage(String(uid))}
+                          />
+                        </div>
+                        <span className="image-caption">
+                          <span className="caption-state">
+                            {!referenced && (
+                              <Tooltip
+                                title={intl.formatMessage({
+                                  id: 'playground.decision.images.notReferenced'
+                                })}
+                              >
+                                <span className="thumb-unref-dot" />
+                              </Tooltip>
+                            )}
+                          </span>
+                          <span
+                            className="caption-name"
+                            title={image.placeholder}
+                          >
+                            {image.placeholder}
+                          </span>
+                          {/* core-ui CopyButton: secure-context clipboard with
+                              an execCommand fallback, so copying also works
+                              on plain-HTTP intranet pages. */}
+                          <CopyButton
+                            text={image.placeholder}
+                            type="text"
+                            size="small"
+                            tips={intl.formatMessage({
+                              id: 'playground.decision.images.copyPlaceholder'
+                            })}
+                            btnStyle={{ padding: 0, fontSize: '11px' }}
+                          />
+                        </span>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <span className="assets-empty">
                     {intl.formatMessage({
-                      id: 'playground.decision.questions.format'
+                      id: 'playground.decision.assets.empty'
                     })}
-                  </Button>
-                </Flex>
-              </Flex>
-              {/* Schema-guided JSON editing: autocomplete/hover/validation for
-                the known question shape (scoped to this model's path), with
-                template inserts and formatting above. The editor fills the
-                remaining input height; syntax errors are marked inline by
-                monaco and reflected live in the run bar below. */}
-              <div className="questions-editor">
-                <JsonEditor
-                  isDarkTheme={isDarkTheme}
-                  path={QUESTIONS_EDITOR_PATH}
-                  schema={QUESTIONS_JSON_SCHEMA}
-                  value={questionsJson}
-                  onChange={(value) => setQuestionsJson(value ?? '')}
-                  height="100%"
-                />
+                  </span>
+                )}
               </div>
             </Flex>
           </Flex>

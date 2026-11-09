@@ -91,7 +91,8 @@ mock.module('@gpustack/core-ui', {
       createdSources.push(source as any);
       return source;
     },
-    CommandViewer: () => null,
+    CopyButton: () => null,
+
     Select: (props: Record<string, any>) =>
       h('input', {
         'data-testid': 'model-select',
@@ -101,6 +102,11 @@ mock.module('@gpustack/core-ui', {
   }
 });
 mock.module(new URL('../../style/decision.less', import.meta.url).href, {
+  defaultExport: {}
+});
+// Brought in by the image tray (ThumbImg → SingleImage); the page imports it
+// transitively, so its stylesheet needs a stub too.
+mock.module(new URL('../../style/thumb-img.less', import.meta.url).href, {
   defaultExport: {}
 });
 mock.module(new URL('../../style/ground-llm.less', import.meta.url).href, {

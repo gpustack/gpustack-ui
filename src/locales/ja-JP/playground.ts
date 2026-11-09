@@ -212,5 +212,15 @@ export default {
   'playground.decision.answers.empty': 'レスポンスに回答が含まれていません。',
   'playground.decision.answer.choice': '選択',
   'playground.decision.answer.score': 'スコア',
-  'playground.decision.answer.confidence': '信頼度'
+  'playground.decision.answer.confidence': '信頼度',
+  'playground.decision.images.upload': '画像',
+  'playground.decision.images.copyPlaceholder': 'プレースホルダーをコピー',
+  'playground.decision.images.notReferenced': '未参照',
+  'playground.decision.assets': 'アセット',
+  'playground.decision.assets.tooltip':
+    'assets マップとして送信される画像。state または questions(指示・基準)の任意の文字列内でプレースホルダー(例: img-1)で参照します。',
+  'playground.decision.assets.empty':
+    'アセットはありません。画像をアップロードすると img-N で参照できます。',
+  'playground.decision.assets.deletedStillReferenced':
+    'Assets から削除しましたが、Questions ではまだ {placeholders} が参照されています。必要に応じて質問を調整してください。'
 };

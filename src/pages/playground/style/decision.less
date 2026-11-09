@@ -1,4 +1,8 @@
 .ground-left-wrapper.decision {
+  // Shared by the editor panels and the Assets panel (hoisted here so the
+  // Assets panel — not an .editor-panel — resolves it too).
+  --decision-editor-radius: 6px;
+
   .center {
     height: 100%;
     // Retain access to both editors when the answer pane leaves little space.
@@ -67,7 +71,6 @@
   }
 
   .editor-panel {
-    --decision-editor-radius: 6px;
     flex: 3;
     min-height: 114px;
     min-width: 0;
@@ -89,6 +92,23 @@
       flex: none;
       white-space: nowrap;
     }
+
+    // The antd icon slot (.ant-btn-icon) sizes itself to the button's
+    // 22px line-height while IconFont svgs sit on the text baseline —
+    // without centering, icon buttons (+ Image, Format) misalign against
+    // their plain-antd-icon siblings. Normalize the slot (and the Upload
+    // wrapper around the + Image button) to a 1em flex box.
+    .ant-btn .ant-btn-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .ant-upload {
+      display: inline-flex;
+      align-items: center;
+    }
   }
 
   .editor-actions {
@@ -107,6 +127,7 @@
     }
   }
 
+  // Editor body: the state editor fills its panel below the header.
   .state-editor {
     flex: 1;
     min-height: 0;
@@ -256,5 +277,135 @@
     font-size: 12px;
     overflow: auto;
     max-height: 240px;
+  }
+}
+
+// ============ Image assets (issue #6622) ============
+// The assets panel below the state/questions editors renders the horizontal
+// image flow (.assets-flow, defined inside the wrapper scope below); these
+// are the shared per-image bits.
+.image-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: center;
+}
+
+// Whisper-quiet caption in a FIXED [state][name][copy] layout: the state
+// slot keeps its width whether or not the dot shows, so nothing ever shifts.
+.image-caption {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 2px;
+  max-width: 100%;
+  font-size: 11px;
+  color: var(--ant-color-text-tertiary);
+
+  .caption-state {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 12px;
+  }
+
+  .caption-name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: center;
+  }
+}
+
+// The image box (SingleImage is a fixed, shared style with only the ✕ delete
+// affordance); the copy/unreferenced affordances live on the caption row.
+.thumb-image-wrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+// Not-referenced marker: a small warning dot inside the caption's fixed
+// state slot; hidden (with the slot kept) once referenced. The dot is the
+// tooltip's hover target, so it keeps pointer events.
+.thumb-unref-dot {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  cursor: help;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    border-radius: 50%;
+    background: var(--ant-color-warning);
+  }
+}
+
+// ============ Editors row + Assets panel (issue #6622 final layout) ============
+// State and questions editors side by side (equal halves); the dedicated
+// Assets panel below both — assets are a peer of state/questions in the
+// System One contract, so the panel is always present.
+.ground-left-wrapper.decision {
+  .editors-row {
+    flex: 1;
+    min-height: 0;
+    // display comes from antd <Flex>; only the gap is styled here.
+    gap: var(--ant-margin);
+  }
+
+  .editor-panel {
+    // Equal halves instead of the stacked 3:5 split.
+    flex: 1 1 0;
+  }
+
+  .questions-editor-wrap {
+    margin-top: 0;
+  }
+
+  // The dedicated Assets panel below both editors: same framing as the
+  // editor panels (border + radius via the shared --decision-editor-radius,
+  // header via the shared .editor-header) — assets are a peer of
+  // state/questions in the System One contract.
+  .assets-panel {
+    flex: none;
+    min-width: 0;
+    margin-top: var(--ant-margin);
+    border: 1px solid var(--ant-color-border);
+    border-radius: var(--decision-editor-radius);
+  }
+
+  // The image tray: full width, horizontal flow.
+  .decision-images-strip.assets-flow {
+    flex: none;
+    width: auto;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 12px;
+    min-height: 40px;
+    max-height: 150px;
+    padding: 8px;
+    border: 0;
+    border-radius: 0 0 calc(var(--decision-editor-radius) - 1px)
+      calc(var(--decision-editor-radius) - 1px);
+    background: var(--ant-color-bg-container);
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    .image-item {
+      flex: none;
+      width: 116px;
+    }
+
+    .assets-empty {
+      align-self: center;
+      font-size: 12px;
+      color: var(--ant-color-text-tertiary);
+    }
   }
 }

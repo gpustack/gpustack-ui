@@ -72,7 +72,10 @@ export const decisionQuery = async (
   return request(`${SYSTEMONE_API}`, {
     method: 'POST',
     data: params,
-    cancelToken: options?.cancelToken
+    cancelToken: options?.cancelToken,
+    // Extra request headers (e.g. the opt-in image header
+    // `TypeSafe-Danger-Zone-Images: true`); the gateway passes them through.
+    headers: options?.headers
   });
 };
 

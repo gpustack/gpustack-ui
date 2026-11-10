@@ -5,7 +5,7 @@ import { request } from '@umijs/max';
 export { GPUSTACK_API_BASE_URL, OPENAI_COMPATIBLE };
 
 export const CHAT_API = `/${OPENAI_COMPATIBLE}/chat/completions`;
-export const CREATE_VIDEO_API = `/${OPENAI_COMPATIBLE}/videos`;
+export const CREATE_VIDEO_API = `/${OPENAI_COMPATIBLE}/videos/sync`;
 
 export const CREAT_IMAGE_API = `/${OPENAI_COMPATIBLE}/images/generations`;
 export const EDIT_IMAGE_API = `/${OPENAI_COMPATIBLE}/images/edits`;
@@ -166,14 +166,16 @@ export const createImage = async (params: {
   return response.json();
 };
 
-export const createVideo = async (params: { data?: any; token?: any }) => {
-  return request(CREATE_VIDEO_API, {
+export const createVideo = (params: {
+  data: Record<string, unknown>;
+  signal: AbortSignal;
+}) => {
+  return request<Blob>(CREATE_VIDEO_API, {
     method: 'POST',
-    data: params.data,
-    cancelToken: params.token,
-    headers: {
-      'Content-Type': 'multipart/form-data'
-    }
+    data: createFormData(params.data),
+    signal: params.signal,
+    responseType: 'blob',
+    skipErrorHandler: true
   });
 };
 

@@ -1,6 +1,4 @@
 import VideoPoster from '@/assets/images/video-poster.png';
-import { setRouteCache } from '@/atoms/route-cache';
-import routeCachekey from '@/config/route-cachekey';
 import { VideoCameraOutlined } from '@ant-design/icons';
 import { AlertInfo, IconFont } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
@@ -38,34 +36,27 @@ const GroundVideo: React.FC<MessageProps> = forwardRef((props, ref) => {
   const intl = useIntl();
   const [show, setShow] = useState(false);
   const [collapse, setCollapse] = useState(false);
-  const scroller = useRef<any>(null);
+  const scroller = useRef<HTMLDivElement>(null);
   const inputRef = useRef<any>(null);
 
   const {
     handleOnValuesChange,
-    handleToggleParamsStyle,
-    setParams,
     form,
     paramsConfig,
     initialValues,
-    parameters,
-    isOpenaiCompatible
-  } = useInitVideoMeta(props, {
-    type: 'create'
-  });
+    parameters
+  } = useInitVideoMeta(props, { type: 'create' });
   const {
     loading,
-    tokenResult,
-    videoList,
+    errorMessage,
+    videoUrl,
     currentPrompt,
     setCurrentPrompt,
     handleClear,
     handleStopConversation,
     submitMessage
-  } = useTextVideo({
-    scroller,
-    API: CREATE_VIDEO_API
-  });
+  } = useTextVideo(scroller);
+  const showPlayer = loading || Boolean(videoUrl);
 
   useImperativeHandle(ref, () => {
     return {
@@ -108,48 +99,40 @@ const GroundVideo: React.FC<MessageProps> = forwardRef((props, ref) => {
     };
   }, [parameters]);
 
-  const viewCodeContent = useMemo(() => {
-    return generateCode({
-      api: CREATE_VIDEO_API,
-      isFormdata: true,
-      parameters: {
-        ...finalParameters,
-        prompt: currentPrompt
-      }
-    });
-  }, [finalParameters, isOpenaiCompatible, currentPrompt]);
+  const generateParams = () => {
+    const { referenceImage, ...videoParameters } = finalParameters;
+    return {
+      ..._.omitBy(
+        videoParameters,
+        (value: unknown) => value == null || value === ''
+      ),
+      prompt: currentPrompt,
+      ...(typeof referenceImage === 'string' && referenceImage.trim()
+        ? { reference_url: referenceImage.trim() }
+        : {}),
+      ...(referenceImage instanceof File
+        ? { input_reference: referenceImage }
+        : {})
+    };
+  };
+
+  const viewCodeContent = generateCode({
+    api: CREATE_VIDEO_API,
+    parameters: generateParams()
+  });
 
   const handleInputChange = (e: any) => {
     setCurrentPrompt(e.target.value);
   };
 
-  const generateParams = () => {
-    const params = {
-      ..._.omitBy(finalParameters, (value: string) => !value),
-      prompt: currentPrompt
-    };
-    return params;
-  };
-
   const handleSendMessage = async () => {
     try {
       await form.current?.form?.validateFields();
-      if (!parameters.model) return;
-      const params = generateParams();
-      console.log('generateParams:', params);
-      setParams({
-        ...parameters
-      });
-
-      console.log('params:', params, parameters);
-      setRouteCache(routeCachekey['/playground/video'], true);
-      await submitMessage(params);
-    } catch (error) {
-      // console.log('error:', error);
-    } finally {
-      console.log('finally---------');
-      setRouteCache(routeCachekey['/playground/video'], false);
+    } catch {
+      return;
     }
+    if (!parameters.model) return;
+    await submitMessage(generateParams());
   };
 
   const handleCloseViewCode = useCallback(() => {
@@ -166,7 +149,7 @@ const GroundVideo: React.FC<MessageProps> = forwardRef((props, ref) => {
         >
           <>
             <div className="content" style={{ height: '100%' }}>
-              {videoList.length > 0 && (
+              {showPlayer && (
                 <div
                   style={{
                     width: '100%',
@@ -182,19 +165,31 @@ const GroundVideo: React.FC<MessageProps> = forwardRef((props, ref) => {
                   <Spin
                     spinning={loading}
                     size="middle"
+                    description={intl.formatMessage({
+                      id: 'playground.video.generating'
+                    })}
                     styles={{
                       root: {
                         height: '100%'
                       },
                       container: {
                         height: '100%'
+                      },
+                      section: {
+                        backgroundColor: 'var(--ant-color-bg-elevated)',
+                        borderRadius: 'var(--ant-border-radius)',
+                        padding: 'var(--ant-padding-sm) var(--ant-padding)'
+                      },
+                      description: {
+                        color: 'var(--ant-color-text)',
+                        textShadow: 'none'
                       }
                     }}
                   >
                     <video
-                      src={videoList[0]?.dataUrl}
+                      src={videoUrl || undefined}
                       poster={VideoPoster}
-                      controls
+                      controls={Boolean(videoUrl)}
                       disablePictureInPicture
                       style={{
                         width: '100%',
@@ -205,7 +200,7 @@ const GroundVideo: React.FC<MessageProps> = forwardRef((props, ref) => {
                   </Spin>
                 </div>
               )}
-              {!videoList.length && (
+              {!showPlayer && (
                 <div className="flex-column font-size-14 flex-center gap-20 justify-center hold-wrapper">
                   <VideoCameraOutlined className="font-size-32 text-secondary" />
                   <span>
@@ -218,12 +213,9 @@ const GroundVideo: React.FC<MessageProps> = forwardRef((props, ref) => {
             </div>
           </>
         </div>
-        {tokenResult && (
+        {errorMessage && (
           <div style={{ height: 40 }}>
-            <AlertInfo
-              type="danger"
-              message={tokenResult?.errorMessage}
-            ></AlertInfo>
+            <AlertInfo type="danger" message={errorMessage}></AlertInfo>
           </div>
         )}
         <div className="ground-left-footer">
@@ -240,7 +232,7 @@ const GroundVideo: React.FC<MessageProps> = forwardRef((props, ref) => {
             title={intl.formatMessage({ id: 'playground.image.prompt' })}
             loading={loading}
             disabled={!parameters.model}
-            isEmpty={!videoList.length}
+            isEmpty={!showPlayer}
             handleSubmit={handleSendMessage}
             handleAbortFetch={handleStopConversation}
             onInputChange={handleInputChange}

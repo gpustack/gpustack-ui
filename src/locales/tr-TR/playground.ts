@@ -71,6 +71,12 @@ export default {
   'playground.params.custom': 'Özel',
   'playground.params.empty.tips': 'Üretilen görseller burada görünecektir.',
   'playground.video.empty.tips': 'Üretilen video burada görünecektir.',
+  'playground.video.generating': 'Üretiliyor…',
+  'playground.params.refImage': 'Referans görsel',
+  'playground.params.refImage.tips':
+    'Görsel URL’si girin veya bir PNG ya da JPEG yükleyin.',
+  'playground.params.refImage.invalid':
+    'Geçerli bir HTTP veya HTTPS görsel URL’si girin.',
   'playground.params.standard': 'Standart',
   'playground.params.hd': 'HD',
   'playground.params.style.vivid': 'Canlı',

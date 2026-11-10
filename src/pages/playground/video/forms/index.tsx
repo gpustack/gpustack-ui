@@ -1,9 +1,19 @@
+import { CollapsePanel } from '@gpustack/core-ui';
+import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
-import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
+import React, {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useState
+} from 'react';
 import ModelSelect from '../../components/model-select';
 import ParamsFields from '../../components/params-fields';
 import { FormContext } from '../../config/form-context';
 import { ParamsSchema } from '../../config/types';
+import ReferenceImageInput from './reference-image-input';
+
+const ADVANCED_CONFIG = 'advanced_config';
 
 type ParamsSettingsProps = {
   ref?: any;
@@ -35,7 +45,11 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
     },
     ref
   ) => {
+    const intl = useIntl();
     const [form] = Form.useForm();
+    const [activeKey, setActiveKey] = useState<string | string[]>(
+      ADVANCED_CONFIG
+    );
 
     useImperativeHandle(ref, () => ({
       form,
@@ -76,6 +90,50 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
             showModelSelector={showModelSelector}
           ></ModelSelect>
           <ParamsFields paramsConfig={paramsConfig}></ParamsFields>
+          <CollapsePanel
+            activeKey={activeKey}
+            onChange={setActiveKey}
+            items={[
+              {
+                key: ADVANCED_CONFIG,
+                label: intl.formatMessage({ id: 'resources.form.advanced' }),
+                forceRender: true,
+                children: (
+                  <Form.Item
+                    name="referenceImage"
+                    rules={[
+                      {
+                        validator: async (_, value?: File | string) => {
+                          const link =
+                            typeof value === 'string' ? value.trim() : '';
+                          if (!link) return;
+
+                          try {
+                            const url = new URL(link);
+                            if (
+                              /^https?:\/\//i.test(link) &&
+                              !url.username &&
+                              !url.password
+                            )
+                              return;
+                          } catch {
+                            // Report malformed URLs with the same field error.
+                          }
+                          throw new Error(
+                            intl.formatMessage({
+                              id: 'playground.params.refImage.invalid'
+                            })
+                          );
+                        }
+                      }
+                    ]}
+                  >
+                    <ReferenceImageInput />
+                  </Form.Item>
+                )
+              }
+            ]}
+          />
         </Form>
       </FormContext.Provider>
     );

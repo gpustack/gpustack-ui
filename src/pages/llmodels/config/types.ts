@@ -8,6 +8,7 @@ export interface ListItem {
   huggingface_repo_id: string;
   huggingface_file_name: string;
   backend_version?: string;
+  run_command?: string | null;
   huggingface_filename: string;
   ollama_library_model_name: string;
   model_scope_file_path: string;
@@ -965,6 +966,8 @@ export interface BackendOption {
   title?: string;
   default_backend_param: string[];
   default_version: string;
+  default_command_version?: string | null;
+  default_run_command?: string | null;
   isBuiltIn: boolean;
   backend_source: string;
   default_env?: Record<string, any>;
@@ -980,6 +983,7 @@ export interface BackendOption {
     value: string;
     title?: string;
     env?: Record<string, any>;
+    run_command?: string | null;
     is_deprecated: boolean;
   }[];
 }
@@ -1010,6 +1014,8 @@ export interface BackendItem {
   backend_name: string;
   from_config: boolean;
   default_version: string;
+  default_command_version?: string | null;
+  default_run_command?: string | null;
   default_backend_param: string[];
   is_built_in: boolean;
   backend_source: string;
@@ -1021,6 +1027,7 @@ export interface BackendItem {
   versions: {
     version: string;
     env?: Record<string, any>;
+    run_command?: string | null;
     is_deprecated: boolean;
   }[];
 }

@@ -87,14 +87,6 @@ const Roles: React.FC<RolesProps> = ({ enabled, mode, modeName, pdBody }) => {
   const cacheDisabledReason = isCustom
     ? intl.formatMessage({ id: 'models.form.roles.cache.custom.conflict' })
     : undefined;
-  // 🔴 `managedDisabledReason` went with the router's engine group. It said
-  // «自定义 PD 模式下系统不推导 Router，请提供镜像与启动命令», and the place to
-  // provide them is now the Model's own «镜像» and «启动命令» — the router
-  // role inherits both (`role_effective_model`), because `custom` sets
-  // `router.protocol = user_provided` and the worker then reads the role
-  // spec rather than the catalog. Pointing at a per-role field that is no
-  // longer there would be the wrong instruction.
-
   // Which roles have a validation error, so the user can see it without
   // switching tabs. `getFieldsError` on the role subtree rather than a watch:
   // the errors are not form values and do not move on every keystroke.

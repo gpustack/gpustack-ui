@@ -135,22 +135,10 @@ export const rolesSpecToForm = (
         ? (gpuSelector as any)
         : role.gpu_selector,
       overrides,
-      // The router is system-managed unless it carries an image or a command
-      // of its own — those two are the whole of what the catalog derives, so
-      // their presence IS the user having taken it over.
+      // Router resources are role-owned; unchanged defaults are stripped on
+      // submit so the deployment continues to follow the server's floor.
       ...(role.name === RoleValueMap.Router
         ? {
-            // 🔴 No `managed` flag. It was derived here as «carries neither an
-            // image nor a command» and read by `roleFormToPayload` to decide
-            // the engine group — which is now forced off for every role, so
-            // the flag had one reader and it stopped asking. `UI_ONLY_KEYS`
-            // still lists it, to strip it off anything that still carries one.
-            //
-            // Seeded so the two inputs read like ordinary filled fields
-            // instead of empty ones whose meaning the user has to know.
-            // `stripDefaultResources` takes them back off at submit while
-            // they still equal the floor, so an untouched router keeps
-            // following the server's default rather than freezing today's.
             resources: {
               cpu: role.resources?.cpu ?? ROUTER_DEFAULT_CPU,
               memory: role.resources?.memory ?? ROUTER_DEFAULT_MEMORY
@@ -188,39 +176,10 @@ export const rolesSpecToForm = (
 const roleFormToPayload = (role: RoleFormItem): RoleSpec => {
   const isRouter = role.name === RoleValueMap.Router;
   const isGroupOn = (group: string) => {
-    /**
-     * 🔴 The engine group is never on, for any role.
-     *
-     * There is no «引擎与镜像» section in the form any more: a prefill or a
-     * decode runs the Model's engine (`RoleSpec.backend` &co. are
-     * `Optional = None`, and `role_effective_model()` reads that None as
-     * "inherit the Model field of the same name"), and a router derives its
-     * image and invocation from the mode catalog.
-     *
-     * Forced here rather than left to `overrides`, so that the wire cannot
-     * disagree with the screen. Two ways it could: `rolesSpecToForm` derives
-     * the flag from the stored spec, so editing a model saved while the
-     * section still existed would pass its frozen engine through invisibly;
-     * and the router's flag used to come from `role.managed`, which nothing
-     * sets any more.
-     *
-     * ⚠️ Editing such a model therefore CLEARS its per-role engine override.
-     * That is the intent — one engine per deployment — and PD has not shipped,
-     * so there is nothing in the field to clear.
-     *
-     * 🔴 Except for the router, which has an «引擎与镜像» section again. Its
-     * fields became editable when that section lost its managed/custom switch,
-     * and a blanket `false` here meant a hand-written router image or command
-     * was accepted by the form and dropped on the way out. A router is the one
-     * role whose engine is genuinely its own — a `vllm-router` is not the
-     * model's engine — so it answers the same data question every other group
-     * now answers.
-     */
+    // Backend inheritance is an explicit choice, including when the role's
+    // values happen to equal the deployment's defaults.
     if (group === OverrideGroupMap.Backend) {
-      return (
-        role.name === RoleValueMap.Router &&
-        isGroupOverridden(role as unknown as RoleSpec, group)
-      );
+      return role.overrides?.[group] ?? isGroupOverridden(role, group);
     }
     // The cache group is the one that does not inherit (see role-kv-cache):
     // there is no "same as model" switch for it, so nothing writes an override
@@ -484,8 +443,11 @@ const demoteUntouchedGroups = (
   }
   const demoted: Record<string, any> = {};
   Object.values(OverrideGroupMap).forEach((group) => {
-    // The cache group never inherits, so there is nothing to demote it to.
-    if (group === OverrideGroupMap.Cache) {
+    // Cache has no inheritance; backend inheritance uses its explicit switch.
+    if (
+      group === OverrideGroupMap.Cache ||
+      group === OverrideGroupMap.Backend
+    ) {
       return;
     }
     const fields = OverrideGroupFields[group];

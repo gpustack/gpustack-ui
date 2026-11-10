@@ -575,6 +575,7 @@ export default {
   'models.form.roles.router': 'Router',
   'models.form.roles.override': 'Özel',
   'models.form.roles.inherited': 'Devralınan',
+  'models.form.roles.backend.inherit': 'Dağıtım ayarlarını devral',
   'models.form.roles.group.backend': 'Motor ve imaj',
   'models.form.roles.group.parameters': 'Parametreler ve ortam değişkenleri',
   'models.form.roles.group.scheduling': 'Kaynaklar ve zamanlama',
@@ -586,6 +587,65 @@ export default {
   'models.form.roles.group.settings': 'Grup ayarları',
   'models.form.roles.group.settings.tips': 'Tüm rollere uygulanır',
   'models.form.roles.replicas': 'Replikalar',
+  'models.form.roles.router.command.auto.placeholder':
+    'Boş bırakıldığında arka uç veya PD şeması komutu kullanılır',
+  'models.form.roles.router.command.custom.placeholder':
+    'Tam Router komutu girin veya arka uç tanımını kullanın',
+  'models.form.roles.router.command.managed.tips':
+    'Boş bırakıldığında belirtilen kaynak kullanılır. Tam komut arka uç entrypoint değerini geçersiz kılar.',
+  'models.form.roles.router.command.custom.tips':
+    'Tam komut girin veya seçilen arka ucun komutunu kullanın.',
+  'models.form.roles.router.command.manual.tips':
+    'Arka uç veya PD şeması komut sağlamıyorsa tam Router komutu girin.',
+  'models.form.roles.router.command.source.role':
+    'Komut kaynağı: bu Router için girilen komut',
+  'models.form.roles.router.command.source.backend_version':
+    'Komut kaynağı: {backend} · {version} sürüm komutu',
+  'models.form.roles.router.command.source.backend_default':
+    'Komut kaynağı: {backend} varsayılan komutu',
+  'models.form.roles.router.command.source.recipe':
+    'Komut kaynağı: PD şeması; üst çıkarım komutu devralınmaz',
+  'models.form.roles.router.command.source.missing':
+    'Router komutu yok. Bir komut girin veya komut tanımlı bir arka uç seçin.',
+  'models.form.roles.router.command.priority':
+    'Öncelik: rol → arka uç sürümü → arka uç varsayılanı → PD şeması. Üst çıkarım komutu devralınmaz.',
+  'models.form.roles.router.command.help': 'Şablon açıklamaları ve örnekler',
+  'models.form.roles.router.command.title': 'Router komut şablonları',
+  'models.form.roles.router.command.examples': 'Komut örnekleri',
+  'models.form.roles.router.command.variables': 'Değişken açıklamaları',
+  'models.form.roles.router.command.copy': 'Örneği kopyala',
+  'models.form.roles.router.command.example.current':
+    'Seçili PD modunun başlatma komutu',
+  'models.form.roles.router.command.example.generic':
+    'Uç noktaları tek tek geçirme',
+  'models.form.roles.router.command.example.join':
+    'Virgülle ayrılmış uç nokta listeleri',
+  'models.form.roles.router.command.example.note':
+    'Örneğin tamamını çalıştırma komutuna kopyalayın. P/D adresleri motorlar hazır olduktan sonra doldurulur.',
+  'models.form.roles.router.command.example.generic.note':
+    'Özel CLI sözdizimi örneğidir. your-router ve bayrakları imajınızın gerçek programı ve argümanlarıyla değiştirin.',
+  'models.form.roles.router.command.vars.workerIp':
+    'Bu Router’ı çalıştıran Worker’ın IP adresi.',
+  'models.form.roles.router.command.vars.port':
+    'Bu Router’a ayrılan servis portu. Servis bu portu dinlemelidir.',
+  'models.form.roles.router.command.vars.ports':
+    'Router’ın adlandırılmış portu. Prometheus yalnızca seçili PD modu port ayırıyorsa kullanılabilir.',
+  'models.form.roles.router.command.vars.peers':
+    'Birden çok örnek dahil geçerli grubun hazır uç noktaları. Listeyi for ile gezin; for içindeki liste adını ayrıca çıktı parantezlerine almayın.',
+  'models.form.roles.router.command.vars.peerUrl':
+    'Döngüdeki geçerli uç noktanın HTTP URL adresi. decode döngüsünde d.url kullanın.',
+  'models.form.roles.router.command.vars.peerAddress':
+    'Döngüdeki geçerli uç noktanın IP adresi ve servis portu.',
+  'models.form.roles.router.command.vars.peerPorts':
+    'Uç noktanın adlandırılmış portu. bootstrap yalnızca seçili PD modu tarafından ayrıldığında kullanılabilir.',
+  'models.form.roles.router.command.vars.urls':
+    'URL dizesi listeleri. Önce join uygulayın, sonra ifadenin tamamını çıktı parantezlerine alın. Ham liste doğrudan yazdırılamaz.',
+  'models.form.roles.router.command.vars.modelName':
+    'Dağıtımın hizmet verirken kullandığı model adı.',
+  'models.form.roles.router.command.syntax':
+    'Değişkenler, tek seviyeli for döngüleri ve join desteklenir. Bilinmeyen adlar reddedilir; eksik çalışma zamanı değerleri başlatmayı durdurur.',
+  'models.form.roles.router.command.membership':
+    'P/D uç noktalarını kullanan komutlar üyeler değiştiğinde yeniden açılır ve Router yeniden başlar. Sabit adresler elle güncellenmelidir.',
   'models.form.roles.router.routeArgs': 'Yönlendirme argümanları',
   'models.form.roles.router.routeArgs.tips':
     'Router sürecinin başlatıldığı komut satırı argümanları. Kilitli satırları GPUStack, grubun yerleştiği yere göre üretir ve düzenlenemez.',

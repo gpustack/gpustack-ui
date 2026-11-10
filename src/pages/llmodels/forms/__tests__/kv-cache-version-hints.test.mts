@@ -366,6 +366,25 @@ test('custom images, custom versions and Auto suppress built-in engine hints', a
   }
 });
 
+test('an independent Auto role does not inherit the parent version or image for hints', async () => {
+  const view = await mountCacheForm('0.24.0');
+  try {
+    assert.equal(view.warnings().length, 1);
+    await act(async () => {
+      view.form.setFieldValue(['roles', 0, 'backend'], 'vLLM');
+      view.form.setFieldValue(['roles', 0, 'backend_version'], null);
+    });
+    assert.deepEqual(view.warnings(), []);
+    await act(async () => {
+      view.form.setFieldValue('image_name', 'parent:custom');
+      view.form.setFieldValue(['roles', 0, 'backend_version'], '0.24.0');
+    });
+    assert.equal(view.warnings().length, 1);
+  } finally {
+    await view.dispose();
+  }
+});
+
 test('switching local and shared cache updates engine hints without disabling choices', async () => {
   const view = await mountCacheForm('0.24.0');
   try {

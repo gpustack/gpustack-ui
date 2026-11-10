@@ -14,16 +14,23 @@ import {
   useAppUtils
 } from '@gpustack/core-ui';
 import { useIntl, useNavigate } from '@umijs/max';
-import { Button, Form, Select } from 'antd';
+import { Button, Form, Select, Typography } from 'antd';
 import { createStyles } from 'antd-style';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
-import { backendTipsList } from '../config';
+import {
+  backendTipsList,
+  OverrideGroupFields,
+  OverrideGroupMap,
+  ROLE_BACKEND_INHERIT
+} from '../config';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
 import { backendOptionsMap } from '../constants/backend-parameters';
 import useCompareEnvs from '../hooks/use-compare-envs';
 import EnvsOverridePopover from './envs-override-popover';
+import RouterCommandHelp from './router-command-help';
+import useRouterCommandHelp from './use-router-command-help';
 
 const CaretDownWrapper = styled.span`
   display: flex;
@@ -71,14 +78,20 @@ interface BackendFieldsProps {
    * model-level path, byte-for-byte what it was.
    */
   namePrefix?: (string | number)[];
+  /** Label of the role's form-only "inherit deployment" option. */
+  inheritLabel?: string;
 }
 
-const BackendFields: React.FC<BackendFieldsProps> = ({ namePrefix }) => {
+const BackendFields: React.FC<BackendFieldsProps> = ({
+  namePrefix,
+  inheritLabel
+}) => {
   const intl = useIntl();
   const navigate = useNavigate();
   const { styles } = useStyles();
   const { getRuleMessage } = useAppUtils();
   const form = Form.useFormInstance();
+  const routerCommand = useRouterCommandHelp(namePrefix);
   const {
     action,
     initialValues,
@@ -86,16 +99,49 @@ const BackendFields: React.FC<BackendFieldsProps> = ({ namePrefix }) => {
     backendOptions,
     flatBackendOptions,
     onBackendChange,
-    imageModePicked,
-    setImageModePicked
+    imageModePicked: modelImageModePicked,
+    setImageModePicked: setModelImageModePicked
   } = useFormContext();
+  const [roleImageModePicked, setRoleImageModePicked] = React.useState(false);
+  const imageModePicked = namePrefix
+    ? roleImageModePicked
+    : modelImageModePicked;
+  const setImageModePicked = namePrefix
+    ? setRoleImageModePicked
+    : setModelImageModePicked;
   // Every Form path below goes through this, so the whole section can move
   // under a role without any field knowing about roles.
   const path = (...field: (string | number)[]) =>
     namePrefix ? [...namePrefix, ...field] : field;
-  const backend = Form.useWatch(path('backend'), form);
-  const backendVersion = Form.useWatch(path('backend_version'), form);
-  const imageName = Form.useWatch(path('image_name'), form);
+  const ownBackend = Form.useWatch(path('backend'), { form, preserve: true });
+  const canInherit = !!namePrefix && !!inheritLabel;
+  const backendVersion = Form.useWatch(path('backend_version'), {
+    form,
+    preserve: true
+  });
+  const imageName = Form.useWatch(path('image_name'), { form, preserve: true });
+  const runCommand = Form.useWatch(path('run_command'), {
+    form,
+    preserve: true
+  });
+  const override = Form.useWatch(path('overrides', OverrideGroupMap.Backend), {
+    form,
+    preserve: true
+  });
+  const parentBackend = Form.useWatch('backend', { form, preserve: true });
+  const parentVersion = Form.useWatch('backend_version', {
+    form,
+    preserve: true
+  });
+  const hasOverrides =
+    override ||
+    [ownBackend, backendVersion, imageName, runCommand].some(
+      (value) => value != null && value !== ''
+    );
+  const isInherited = canInherit && !hasOverrides;
+  const backend =
+    canInherit && !isInherited ? (ownBackend ?? parentBackend) : ownBackend;
+  const legacyOverride = canInherit && !isInherited && ownBackend == null;
   const [showDeprecated, setShowDeprecated] = React.useState<boolean>(false);
   const [versionOpen, setVersionOpen] = React.useState<boolean>(false);
   const imageEntryRef = React.useRef<HTMLButtonElement>(null);
@@ -111,7 +157,10 @@ const BackendFields: React.FC<BackendFieldsProps> = ({ namePrefix }) => {
     onValuesChange?.(namePrefix ? {} : changedValues, form.getFieldsValue());
   };
 
-  const supportsImageOverride = imageOverrideBackends.includes(backend);
+  const supportsImageOverride =
+    imageOverrideBackends.includes(backend) ||
+    (canInherit && !!(imageName || runCommand));
+  const commandOnly = canInherit && !!runCommand && !imageName;
   // Picking the dropdown entry has to hold the mode while the field is still
   // empty; past that the value itself implies it, which is how a catalog spec
   // or an edited deployment opens straight into the image.
@@ -251,6 +300,35 @@ const BackendFields: React.FC<BackendFieldsProps> = ({ namePrefix }) => {
 
   const handleOnBackendChange = (value: any, option: any) => {
     setImageModePicked(false);
+    if (canInherit) {
+      const inherit = value === ROLE_BACKEND_INHERIT;
+      form.setFieldValue(path('overrides', OverrideGroupMap.Backend), !inherit);
+      // Reselecting the effective backend must preserve legacy per-field
+      // overrides and their remaining deployment defaults.
+      if (!isInherited && value === backend) {
+        form.setFieldValue(path('backend'), ownBackend);
+        notifyValuesChange({});
+        return;
+      }
+      const copyDefaults =
+        isInherited && value === form.getFieldValue('backend');
+      if (inherit || copyDefaults) {
+        OverrideGroupFields[OverrideGroupMap.Backend].forEach((field) => {
+          // Router commands come from the role, selected backend or recipe.
+          // The deployment command belongs to the inference engines.
+          const useGeneratedRouterCommand =
+            field === 'run_command' && !!routerCommand;
+          form.setFieldValue(
+            path(field),
+            inherit || useGeneratedRouterCommand
+              ? null
+              : (form.getFieldValue(field) ?? null)
+          );
+        });
+        notifyValuesChange({});
+        return;
+      }
+    }
     form.setFieldValue(path('backend'), value);
     form.setFieldValue(path('env'), {
       ...(option.default_env || {})
@@ -265,6 +343,8 @@ const BackendFields: React.FC<BackendFieldsProps> = ({ namePrefix }) => {
       // that may still be inheriting — harmless, because a group left on
       // "same as model" submits null whatever the field holds.
       form.setFieldValue(path('backend_version'), null);
+      form.setFieldValue(path('image_name'), null);
+      form.setFieldValue(path('run_command'), null);
       form.setFieldValue(
         path('backend_parameters'),
         option.default_backend_param || []
@@ -333,25 +413,63 @@ const BackendFields: React.FC<BackendFieldsProps> = ({ namePrefix }) => {
   };
 
   const backendGroupList = useMemo(() => {
-    if (backendOptions.length === 1) {
-      return [...backendOptions[0].options];
-    }
-    return backendOptions;
-  }, [backendOptions]);
+    const options =
+      backendOptions.length === 1
+        ? [...backendOptions[0].options]
+        : backendOptions;
+    return canInherit
+      ? [
+          {
+            value: ROLE_BACKEND_INHERIT,
+            label: inheritLabel,
+            title: inheritLabel
+          },
+          ...options
+        ]
+      : options;
+  }, [backendOptions, canInherit, inheritLabel]);
 
   return (
     <>
       <Form.Item
         name={path('backend')}
+        extra={
+          routerCommand ? (
+            <Typography.Text type="secondary">
+              {intl.formatMessage(
+                {
+                  id: `models.form.roles.router.command.source.${routerCommand.source}`
+                },
+                {
+                  backend: ownBackend || parentBackend,
+                  version: routerCommand.version || ''
+                }
+              )}
+            </Typography.Text>
+          ) : undefined
+        }
+        preserve={namePrefix ? true : undefined}
+        getValueProps={
+          canInherit
+            ? (value) => ({
+                value: value ?? (isInherited ? ROLE_BACKEND_INHERIT : backend)
+              })
+            : undefined
+        }
+        getValueFromEvent={
+          canInherit
+            ? (value) => (value === ROLE_BACKEND_INHERIT ? null : value)
+            : undefined
+        }
         rules={[
           {
-            required: true,
+            required: !canInherit,
             message: getRuleMessage('select', 'models.form.backend')
           }
         ]}
       >
         <SealSelect
-          required
+          required={!canInherit}
           showSearch
           // Without this the search filters on `value` (the backend name),
           // which is not what the option shows for the built-in "custom"
@@ -366,85 +484,67 @@ const BackendFields: React.FC<BackendFieldsProps> = ({ namePrefix }) => {
           labelRender={labelRender}
         ></SealSelect>
       </Form.Item>
-      {backendOptionsMap.custom !== backend && supportsImageOverride && (
-        <>
-          <Form.Item<FormData>
-            name={path('image_name')}
-            // Hidden rather than unmounted: an unregistered field is left out of
-            // the submitted values, and unmounting one under `preserve={false}`
-            // restores the value the form was opened with — so clearing the
-            // image while editing would never reach the server.
-            hidden={!isImageMode}
-            rules={
-              isImageMode
-                ? [
-                    {
-                      required: true,
-                      message: getRuleMessage(
-                        'input',
-                        'models.form.customImage'
-                      )
-                    }
-                  ]
-                : undefined
-            }
-          >
-            <CInput.Input
-              required
-              allowClear
-              onChange={handleImageNameOnChange}
-              onBlur={handleImageNameOnBlur}
-              label={intl.formatMessage({ id: 'models.form.customImage' })}
-              labelExtra={
-                <Button
-                  type="link"
-                  className="m-l-8 font-size-12"
-                  style={{ padding: 0, height: 'auto' }}
-                  onClick={handleBackToVersion}
-                >
-                  {intl.formatMessage({
-                    id: 'models.form.customImage.backToVersion'
-                  })}
-                </Button>
+      {!isInherited &&
+        backendOptionsMap.custom !== backend &&
+        supportsImageOverride && (
+          <>
+            <Form.Item<FormData>
+              name={path('image_name')}
+              preserve={namePrefix ? true : undefined}
+              // Hidden rather than unmounted: an unregistered field is left out of
+              // the submitted values, and unmounting one under `preserve={false}`
+              // restores the value the form was opened with — so clearing the
+              // image while editing would never reach the server.
+              hidden={!isImageMode}
+              rules={
+                isImageMode
+                  ? [
+                      {
+                        required: true,
+                        message: getRuleMessage(
+                          'input',
+                          'models.form.customImage'
+                        )
+                      }
+                    ]
+                  : undefined
               }
-              description={intl.formatMessage(
-                { id: 'models.form.customImage.tips' },
-                { backend }
-              )}
-            ></CInput.Input>
-          </Form.Item>
-          <Form.Item<FormData> name={path('run_command')} hidden={!isImageMode}>
-            <SealTextArea
-              allowClear
-              scaleSize={false}
-              alwaysFocus={true}
-              autoSize={{ minRows: 2, maxRows: 5 }}
-              onBlur={handleRunCommandOnBlur}
-              label={intl.formatMessage({ id: 'backend.runCommand' })}
-              labelExtra={
-                <TextAttribute className="m-l-4">
-                  {intl.formatMessage({ id: 'common.form.field.optional' })}
-                </TextAttribute>
-              }
-              description={intl.formatMessage({
-                id: 'models.form.customRunCommand.tips'
-              })}
-              placeholder={intl.formatMessage(
-                { id: 'common.help.eg' },
-                {
-                  content:
-                    backend === backendOptionsMap.SGLang
-                      ? '--model-path {{model_path}} --host {{worker_ip}} --port {{port}} --served-model-name {{model_name}}'
-                      : '{{model_path}} --host {{worker_ip}} --port {{port}} --served-model-name {{model_name}}'
+            >
+              <CInput.Input
+                required
+                allowClear
+                onChange={handleImageNameOnChange}
+                onBlur={handleImageNameOnBlur}
+                label={intl.formatMessage({ id: 'models.form.customImage' })}
+                labelExtra={
+                  <Button
+                    type="link"
+                    className="m-l-8 font-size-12"
+                    style={{ padding: 0, height: 'auto' }}
+                    onClick={handleBackToVersion}
+                  >
+                    {intl.formatMessage({
+                      id: 'models.form.customImage.backToVersion'
+                    })}
+                  </Button>
                 }
-              )}
-            ></SealTextArea>
-          </Form.Item>
-        </>
-      )}
-      {backendOptionsMap.custom !== backend && (
+                description={intl.formatMessage(
+                  { id: 'models.form.customImage.tips' },
+                  { backend }
+                )}
+              ></CInput.Input>
+            </Form.Item>
+          </>
+        )}
+      {!isInherited && backendOptionsMap.custom !== backend && (
         <Form.Item
           name={path('backend_version')}
+          preserve={namePrefix ? true : undefined}
+          getValueProps={
+            legacyOverride
+              ? (value) => ({ value: value ?? parentVersion })
+              : undefined
+          }
           hidden={isImageMode}
           help={
             openTips && (
@@ -542,6 +642,68 @@ const BackendFields: React.FC<BackendFieldsProps> = ({ namePrefix }) => {
           </SealSelect>
         </Form.Item>
       )}
+      {!isInherited &&
+        backendOptionsMap.custom !== backend &&
+        (supportsImageOverride || routerCommand) && (
+          <Form.Item<FormData>
+            name={path('run_command')}
+            extra={
+              routerCommand ? (
+                <RouterCommandHelp mode={routerCommand.mode} />
+              ) : undefined
+            }
+            preserve={namePrefix ? true : undefined}
+            hidden={!routerCommand && !isImageMode && !commandOnly}
+            rules={
+              routerCommand?.required
+                ? [
+                    {
+                      required: true,
+                      whitespace: true,
+                      message: getRuleMessage('input', 'backend.runCommand')
+                    }
+                  ]
+                : undefined
+            }
+          >
+            <SealTextArea
+              allowClear
+              scaleSize={false}
+              alwaysFocus={true}
+              autoSize={{ minRows: 2, maxRows: 5 }}
+              onBlur={handleRunCommandOnBlur}
+              label={intl.formatMessage({ id: 'backend.runCommand' })}
+              required={routerCommand?.required}
+              labelExtra={
+                !routerCommand?.required ? (
+                  <TextAttribute className="m-l-4">
+                    {intl.formatMessage({ id: 'common.form.field.optional' })}
+                  </TextAttribute>
+                ) : undefined
+              }
+              description={intl.formatMessage({
+                id: routerCommand
+                  ? `models.form.roles.router.command.${routerCommand.managed ? 'managed' : 'manual'}.tips`
+                  : 'models.form.customRunCommand.tips'
+              })}
+              placeholder={
+                routerCommand
+                  ? intl.formatMessage({
+                      id: `models.form.roles.router.command.${routerCommand.managed ? 'auto' : 'custom'}.placeholder`
+                    })
+                  : intl.formatMessage(
+                      { id: 'common.help.eg' },
+                      {
+                        content:
+                          backend === backendOptionsMap.SGLang
+                            ? '--model-path {{model_path}} --host {{worker_ip}} --port {{port}} --served-model-name {{model_name}}'
+                            : '{{model_path}} --host {{worker_ip}} --port {{port}} --served-model-name {{model_name}}'
+                      }
+                    )
+              }
+            ></SealTextArea>
+          </Form.Item>
+        )}
     </>
   );
 };

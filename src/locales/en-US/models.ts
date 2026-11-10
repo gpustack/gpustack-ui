@@ -573,6 +573,7 @@ export default {
   'models.form.roles.router': 'Router',
   'models.form.roles.override': 'Custom',
   'models.form.roles.inherited': 'Inherited',
+  'models.form.roles.backend.inherit': 'Inherit deployment',
   'models.form.roles.group.backend': 'Engine and image',
   'models.form.roles.group.parameters': 'Parameters and environment',
   'models.form.roles.group.scheduling': 'Resources and scheduling',
@@ -584,6 +585,65 @@ export default {
   'models.form.roles.group.settings': 'Group settings',
   'models.form.roles.group.settings.tips': 'Apply to every role',
   'models.form.roles.replicas': 'Replicas',
+  'models.form.roles.router.command.auto.placeholder':
+    'Leave empty to use the selected backend or PD recipe command',
+  'models.form.roles.router.command.custom.placeholder':
+    'Enter a full Router command, or reuse the backend definition',
+  'models.form.roles.router.command.managed.tips':
+    'Leave empty to use the indicated command source. A full command overrides the backend entrypoint.',
+  'models.form.roles.router.command.custom.tips':
+    'Enter a full command or reuse the selected backend’s command.',
+  'models.form.roles.router.command.manual.tips':
+    'Enter a full Router command unless the backend or PD recipe provides one.',
+  'models.form.roles.router.command.source.role':
+    'Command source: this Router’s command',
+  'models.form.roles.router.command.source.backend_version':
+    'Command source: {backend} · {version} version command',
+  'models.form.roles.router.command.source.backend_default':
+    'Command source: {backend} default command',
+  'models.form.roles.router.command.source.recipe':
+    'Command source: PD recipe; the parent inference command is not inherited',
+  'models.form.roles.router.command.source.missing':
+    'No Router command available. Enter one or select a backend with a command.',
+  'models.form.roles.router.command.priority':
+    'Command priority: role → backend version → backend default → PD recipe. Inheriting deployment settings never inherits the parent inference command.',
+  'models.form.roles.router.command.help': 'Template reference and examples',
+  'models.form.roles.router.command.title': 'Router command templates',
+  'models.form.roles.router.command.examples': 'Command examples',
+  'models.form.roles.router.command.variables': 'Variable reference',
+  'models.form.roles.router.command.copy': 'Copy example',
+  'models.form.roles.router.command.example.current':
+    'Command for the selected PD mode',
+  'models.form.roles.router.command.example.generic':
+    'Repeated endpoint arguments',
+  'models.form.roles.router.command.example.join':
+    'Comma-separated endpoint lists',
+  'models.form.roles.router.command.example.note':
+    'Copy the full example into Execution Command. P/D addresses are filled after the engines are ready.',
+  'models.form.roles.router.command.example.generic.note':
+    'This illustrates a custom CLI. Replace your-router and the flags with those required by your image.',
+  'models.form.roles.router.command.vars.workerIp':
+    'The IP address of the Worker running this Router.',
+  'models.form.roles.router.command.vars.port':
+    'The serving port allocated to this Router. Bind the service to this port.',
+  'models.form.roles.router.command.vars.ports':
+    'A named Router port. Prometheus is available only when allocated by the selected PD mode.',
+  'models.form.roles.router.command.vars.peers':
+    'Ready endpoints in this group, including multiple instances. Traverse the list with for; do not add output braces around the list name inside the for statement.',
+  'models.form.roles.router.command.vars.peerUrl':
+    'The HTTP URL of the endpoint in the current loop. Use d.url in a loop over decode.',
+  'models.form.roles.router.command.vars.peerAddress':
+    'The IP address and serving port of the endpoint in the current loop.',
+  'models.form.roles.router.command.vars.peerPorts':
+    'A named endpoint port. Bootstrap is available only when allocated by the selected PD mode.',
+  'models.form.roles.router.command.vars.urls':
+    'URL string lists. Apply join, then enclose the whole expression in output braces. The raw list cannot be output directly.',
+  'models.form.roles.router.command.vars.modelName':
+    "The deployment's served model name.",
+  'models.form.roles.router.command.syntax':
+    'Supports variables, single-level for loops and join. Unknown names are rejected; missing runtime values stop startup.',
+  'models.form.roles.router.command.membership':
+    'Commands referencing P/D endpoints are rendered again and the Router restarts when members change. Static addresses require manual updates.',
   'models.form.roles.router.routeArgs': 'Route arguments',
   'models.form.roles.router.routeArgs.tips':
     'The command line the router process starts with. Locked rows are rendered by GPUStack from where the group landed and cannot be edited.',

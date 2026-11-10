@@ -581,6 +581,7 @@ export default {
   'models.form.roles.router': 'ルーター',
   'models.form.roles.override': 'カスタム',
   'models.form.roles.inherited': '継承',
+  'models.form.roles.backend.inherit': 'デプロイ設定を継承',
   'models.form.roles.group.backend': 'エンジンとイメージ',
   'models.form.roles.group.parameters': 'エンジンパラメータと環境変数',
   'models.form.roles.group.scheduling': 'リソースとスケジューリング',
@@ -592,6 +593,63 @@ export default {
   'models.form.roles.group.settings': 'グループ設定',
   'models.form.roles.group.settings.tips': 'すべてのロールに適用',
   'models.form.roles.replicas': 'レプリカ数',
+  'models.form.roles.router.command.auto.placeholder':
+    '空欄で選択したバックエンドまたは PD 方式のコマンドを使用',
+  'models.form.roles.router.command.custom.placeholder':
+    '完全な Router コマンドを入力、またはバックエンド定義を使用',
+  'models.form.roles.router.command.managed.tips':
+    '空欄では表示された取得元を使用します。完全なコマンドを入力するとバックエンドの entrypoint を上書きします。',
+  'models.form.roles.router.command.custom.tips':
+    '完全なコマンドを入力するか、選択したバックエンドのコマンドを使用してください。',
+  'models.form.roles.router.command.manual.tips':
+    'バックエンドまたは PD 方式がコマンドを提供しない場合、完全な Router コマンドを入力してください。',
+  'models.form.roles.router.command.source.role':
+    'コマンドの取得元：この Router に入力したコマンド',
+  'models.form.roles.router.command.source.backend_version':
+    'コマンドの取得元：{backend} · {version} のバージョン設定',
+  'models.form.roles.router.command.source.backend_default':
+    'コマンドの取得元：{backend} のデフォルトコマンド',
+  'models.form.roles.router.command.source.recipe':
+    'コマンドの取得元：PD 方式。親の推論コマンドは継承しません',
+  'models.form.roles.router.command.source.missing':
+    'Router コマンドがありません。入力するか、コマンドを定義したバックエンドを選択してください。',
+  'models.form.roles.router.command.priority':
+    '優先順位：ロール → バックエンドのバージョン → バックエンドのデフォルト → PD 方式。親の推論コマンドは継承しません。',
+  'models.form.roles.router.command.help': 'テンプレートの説明と例',
+  'models.form.roles.router.command.title': 'Router コマンドテンプレート',
+  'models.form.roles.router.command.examples': 'コマンド例',
+  'models.form.roles.router.command.variables': '変数の説明',
+  'models.form.roles.router.command.copy': '例をコピー',
+  'models.form.roles.router.command.example.current':
+    '選択した PD モードの起動コマンド',
+  'models.form.roles.router.command.example.generic': '接続先を個別に渡す',
+  'models.form.roles.router.command.example.join': 'カンマ区切りの接続先リスト',
+  'models.form.roles.router.command.example.note':
+    '例全体を実行コマンドにコピーしてください。P/D のアドレスはエンジンの準備後に自動で埋め込まれます。',
+  'models.form.roles.router.command.example.generic.note':
+    '独自 CLI の構文例です。your-router とフラグはイメージ内の実行ファイルと引数に置き換えてください。',
+  'models.form.roles.router.command.vars.workerIp':
+    'この Router を実行する Worker の IP アドレス。',
+  'models.form.roles.router.command.vars.port':
+    'この Router に割り当てられたサービスポート。このポートで待ち受けてください。',
+  'models.form.roles.router.command.vars.ports':
+    'Router の名前付きポート。Prometheus は選択した PD モードが割り当てた場合のみ利用できます。',
+  'models.form.roles.router.command.vars.peers':
+    '複数インスタンスを含む、現在のグループの準備済みエンドポイントのリスト。for で反復し、for 文中のリスト名を出力用の括弧で囲まないでください。',
+  'models.form.roles.router.command.vars.peerUrl':
+    'ループ中のエンドポイントの HTTP URL。decode のループでは d.url を使用します。',
+  'models.form.roles.router.command.vars.peerAddress':
+    'ループ中のエンドポイントの IP アドレスとサービスポート。',
+  'models.form.roles.router.command.vars.peerPorts':
+    'エンドポイントの名前付きポート。bootstrap は選択した PD モードで割り当てられた場合のみ利用できます。',
+  'models.form.roles.router.command.vars.urls':
+    'URL 文字列のリスト。join を適用し、式全体を出力用の括弧で囲みます。リストを直接出力することはできません。',
+  'models.form.roles.router.command.vars.modelName':
+    'デプロイが公開するモデル名。',
+  'models.form.roles.router.command.syntax':
+    '変数、単一階層の for ループ、join に対応します。不明な変数は拒否され、実行時の値が不足すると起動できません。',
+  'models.form.roles.router.command.membership':
+    'P/D の接続先を参照するコマンドは、メンバー変更時に再展開して Router を再起動します。静的アドレスは手動で更新してください。',
   'models.form.roles.router.routeArgs': 'ルーティング引数',
   'models.form.roles.router.routeArgs.tips':
     'ルータープロセスの起動コマンドラインです。ロックされた行は、グループの配置先に基づいて GPUStack が生成するため、編集できません。',

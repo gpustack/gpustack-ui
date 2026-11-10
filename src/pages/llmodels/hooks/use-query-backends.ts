@@ -60,6 +60,8 @@ export default function useQueryBackends() {
           ..._.pick(item, [
             'enabled',
             'default_version',
+            'default_command_version',
+            'default_run_command',
             'backend_source',
             'is_built_in',
             'default_backend_param',
@@ -86,6 +88,7 @@ export default function useQueryBackends() {
             value: vItem.version,
             is_deprecated: vItem.is_deprecated,
             env: vItem.env || {},
+            run_command: vItem.run_command,
             title: vItem.version.replace(/-custom$/, '')
           }))
         };

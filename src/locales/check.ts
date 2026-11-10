@@ -94,7 +94,8 @@ function validateLocales() {
     .filter(
       (dir) =>
         fs.statSync(path.join(localesDir, dir)).isDirectory() &&
-        dir !== baseLang
+        dir !== baseLang &&
+        dir !== '__tests__'
     );
 
   let hasErrors = false;

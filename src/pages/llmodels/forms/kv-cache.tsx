@@ -111,12 +111,19 @@ const KVCacheForm: React.FC<KVCacheFormProps> = ({
   const backend = namePrefix ? (roleBackend ?? modelBackend) : modelBackend;
   const modelVersion = Form.useWatch('backend_version', form);
   const roleVersion = Form.useWatch(path('backend_version'), form);
+  const independentBackend = namePrefix && roleBackend != null;
   const backendVersion = namePrefix
-    ? (roleVersion ?? modelVersion)
+    ? independentBackend
+      ? roleVersion
+      : (roleVersion ?? modelVersion)
     : modelVersion;
   const modelImage = Form.useWatch('image_name', form);
   const roleImage = Form.useWatch(path('image_name'), form);
-  const imageName = namePrefix ? (roleImage ?? modelImage) : modelImage;
+  const imageName = namePrefix
+    ? independentBackend
+      ? roleImage
+      : (roleImage ?? modelImage)
+    : modelImage;
   const policyRef = useRef({ mode, role });
   policyRef.current = { mode, role };
   const compatibleService = (service: { provider_name: string }) => {

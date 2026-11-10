@@ -45,6 +45,28 @@ test('a user router command requires manual peer updates even for dynamic recipe
   );
 });
 
+for (const [command, expected] of [
+  ['vllm-router --port {{port}}', 'manual'],
+  ['  ', 'dynamic'],
+  ["router --workers {{ prefill_urls | join(',') }}", 'restart'],
+  ['router {% for p in prefill %}--peer {{p.url}} {% endfor %}', 'restart'],
+  ['router --tag prefill_urls', 'manual'],
+  ['router --prefill fixed --decode fixed', 'manual']
+] as const) {
+  test(`runtime command ${command} reports ${expected} membership`, () => {
+    const mode = {
+      name: 'vllm-nixl',
+      display_name: 'NIXL',
+      backends: ['vLLM'],
+      router: { membership_update: 'dynamic' as const }
+    };
+    assert.equal(
+      membershipUpdatePolicy(mode, [{ name: 'router', run_command: command }]),
+      expected
+    );
+  });
+}
+
 test('stale configuration takes priority over automatic router recreation', () => {
   assert.equal(
     instanceDeleteMessages(
@@ -72,6 +94,26 @@ test('missing catalog policy does not promise dynamic membership', () => {
   assert.equal(membershipUpdateNotice(undefined), undefined);
 });
 
+test('a custom PD recipe refreshes peer-dependent templates by restart', () => {
+  assert.equal(
+    membershipUpdatePolicy(
+      {
+        name: 'custom',
+        display_name: 'Custom',
+        backends: [],
+        router: { membership_update: 'manual' }
+      },
+      [
+        {
+          name: 'router',
+          run_command: "router --workers {{decode_urls | join(',')}}"
+        }
+      ]
+    ),
+    'restart'
+  );
+});
+
 test('membership refresh states show a localized router progress notice', async () => {
   const { routerMembershipUpdating } = await import('../pd-membership');
   assert.equal(
@@ -94,3 +136,40 @@ test('membership refresh states show a localized router progress notice', async 
   );
   assert.equal(routerMembershipUpdating(undefined), false);
 });
+
+for (const modeName of ['custom', 'vllm-nixl']) {
+  test(`${modeName} uses the selected backend command for membership`, () => {
+    const mode = {
+      name: modeName,
+      display_name: 'PD',
+      backends: [],
+      router: { membership_update: 'dynamic' as const }
+    };
+    const roles = [{ name: 'router', backend: 'router-custom' }];
+    const definition = {
+      value: 'router-custom',
+      default_run_command: "router --peers {{decode_urls | join(',')}}"
+    };
+    assert.equal(membershipUpdatePolicy(mode, roles, definition), 'restart');
+    assert.equal(
+      membershipUpdatePolicy(mode, roles, {
+        ...definition,
+        default_run_command: 'static-router'
+      }),
+      'manual'
+    );
+    assert.equal(
+      membershipUpdatePolicy(
+        mode,
+        [{ ...roles[0], run_command: 'own-router' }],
+        definition
+      ),
+      'manual'
+    );
+    assert.equal(membershipUpdatePolicy(mode, roles), undefined);
+    assert.equal(
+      membershipUpdatePolicy(mode, [{ name: 'router' }], definition),
+      'dynamic'
+    );
+  });
+}

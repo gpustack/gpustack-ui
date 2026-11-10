@@ -45,9 +45,6 @@ mock.module('@umijs/max', {
 mock.module('antd-style', {
   namedExports: { createStyles: () => () => ({ styles: {} }) }
 });
-mock.module(new URL('../../config/index.ts', import.meta.url).href, {
-  namedExports: { backendTipsList: [] }
-});
 mock.module(new URL('../envs-override-popover.tsx', import.meta.url).href, {
   defaultExport: empty
 });
@@ -171,3 +168,56 @@ for (const backend of ['vLLM', 'SGLang']) {
     }
   }
 }
+
+test('custom image selection stays local to its role', async () => {
+  const container = dom.window.document.getElementById('root')!;
+  const root = createRoot(container);
+  const Harness = () => {
+    const [form] = Form.useForm();
+    const [imageModePicked, setImageModePicked] = useState(false);
+    return createElement(
+      Form,
+      {
+        form,
+        preserve: false,
+        initialValues: {
+          backend: 'vLLM',
+          roles: [
+            { backend: 'vLLM', backend_version: null },
+            { backend: 'vLLM', backend_version: null }
+          ]
+        }
+      },
+      createElement(
+        FormContext.Provider,
+        {
+          value: {
+            backendOptions: [],
+            flatBackendOptions: [],
+            imageModePicked,
+            setImageModePicked
+          } as any
+        },
+        createElement(BackendFields),
+        createElement(BackendFields, { namePrefix: ['roles', 0] }),
+        createElement(BackendFields, { namePrefix: ['roles', 1] })
+      )
+    );
+  };
+  try {
+    await act(async () => root.render(createElement(Harness)));
+    const buttons = Array.from(container.querySelectorAll('button')).filter(
+      (button) => button.textContent === 'models.form.customImage.entry'
+    );
+    assert.equal(buttons.length, 3);
+    await act(async () => buttons[1].click());
+    const visibleImages = Array.from(
+      container.querySelectorAll<HTMLInputElement>(
+        'input[aria-label="models.form.customImage"]'
+      )
+    ).filter((input) => !input.closest('.ant-form-item-hidden'));
+    assert.equal(visibleImages.length, 1);
+  } finally {
+    await act(async () => root.unmount());
+  }
+});

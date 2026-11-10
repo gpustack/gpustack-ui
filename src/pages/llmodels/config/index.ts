@@ -763,6 +763,9 @@ export const OverrideGroupMap = {
   Cache: 'cache'
 };
 
+// Form-only value; choosing it clears the role's persisted backend overrides.
+export const ROLE_BACKEND_INHERIT = '__inherit_deployment_backend__';
+
 export const OverrideGroupLabelMap = {
   [OverrideGroupMap.Backend]: 'models.form.roles.group.backend',
   [OverrideGroupMap.Parameters]: 'models.form.roles.group.parameters',

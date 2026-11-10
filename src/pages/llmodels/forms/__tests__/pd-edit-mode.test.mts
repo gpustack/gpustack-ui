@@ -19,6 +19,7 @@ const modes = [
     backends: ['vLLM'],
     gpu_filters: { vendor: ['nvidia'] },
     display_name: 'vLLM + NIXL',
+    backend_versions: '>=0.27.1',
     cache_services: [
       { provider: 'LMCache', roles: { prefill: {}, decode: {} } }
     ],
@@ -84,7 +85,8 @@ const defaultResolution = async ({
     candidate_vendors: ['NVIDIA', 'Ascend'],
     cluster_vendors: ['NVIDIA'],
     options: modes.map((mode) => {
-      const eligible = !mode.backends.length || mode.backends.includes(backend);
+      const eligible =
+        !backend || !mode.backends.length || mode.backends.includes(backend);
       return {
         name: mode.name,
         eligible,
@@ -175,6 +177,10 @@ const resolutionRequests = mock.fn((params: any) => resolveMode(params));
 mock.module('@gpustack/core-ui', {
   namedExports: {
     AlertBlockInfo: empty,
+    Input: { Input: InputField },
+    Textarea: InputField,
+    TextAttribute: empty,
+    ThemeTag: empty,
     CollapsePanel: ({ items }: any) =>
       items.map((item: any) =>
         createElement(Fragment, { key: item.key }, item.children)
@@ -185,6 +191,7 @@ mock.module('@gpustack/core-ui', {
     InputNumber: InputField,
     LabelSelector: InputField,
     LabelInfo: empty,
+    TooltipList: empty,
     Select: ({ value, onChange, options, label }: any) =>
       createElement(
         'select',
@@ -212,7 +219,14 @@ mock.module('@gpustack/core-ui', {
 });
 mock.module('@umijs/max', {
   namedExports: {
-    useIntl: () => ({ messages: {}, formatMessage: ({ id }: any) => id })
+    useIntl: () => ({
+      messages: {},
+      formatMessage: ({ id }: any, values?: any) =>
+        id === 'models.form.pd.engineVersion.below'
+          ? `${id} ${JSON.stringify(values)}`
+          : id
+    }),
+    useNavigate: () => empty
   }
 });
 mock.module('antd-style', {
@@ -248,7 +262,7 @@ mock.module(
       flatBackendOptions: ['vLLM', 'SGLang', 'llama-box'].map((value) => ({
         value,
         isBuiltIn: true,
-        versions: [{ value: '0.29.0', label: '0.29.0' }]
+        versions: ['0.25.3', '0.29.0'].map((value) => ({ value, label: value }))
       })),
       getBackendOptions: async () => {}
     })
@@ -354,6 +368,9 @@ for (const path of [
 mock.module(new URL('../roles/router-scheduling.tsx', import.meta.url).href, {
   defaultExport: Object.assign(empty, { RouterResources: empty })
 });
+mock.module(new URL('../router-command-help.tsx', import.meta.url).href, {
+  defaultExport: empty
+});
 const { default: DataForm } = await import('../index.tsx');
 
 const clone = (value: any) => JSON.parse(JSON.stringify(value));
@@ -371,7 +388,9 @@ const renderForm = async ({
   action = 'edit',
   pd = true,
   roles = savedRoles(),
-  workers = []
+  workers = [],
+  backendVersion = '0.29.0',
+  imageName = null
 }: {
   mode?: string;
   vendor?: string;
@@ -379,6 +398,8 @@ const renderForm = async ({
   pd?: boolean;
   roles?: any[];
   workers?: any[];
+  backendVersion?: string | null;
+  imageName?: string | null;
 } = {}) => {
   getDefaultStore().set(workerListAtom, workers);
   const root = createRoot(dom.window.document.getElementById('root')!);
@@ -386,7 +407,8 @@ const renderForm = async ({
   const submitted = mock.fn(clone);
   const initialValues: any = {
     backend: 'vLLM',
-    backend_version: '0.29.0',
+    backend_version: backendVersion,
+    image_name: imageName,
     cluster_id: 1,
     replicas: 1,
     source: 'local_path',
@@ -1032,5 +1054,257 @@ test('an unresolved recommendation retains a saved mode and vendor without selec
     }
   } finally {
     resolveMode = defaultResolution;
+  }
+});
+
+const independentRoles = () =>
+  savedRoles().map((role) => ({
+    ...role,
+    backend: 'vLLM',
+    backend_version: '0.29.0',
+    image_name: null,
+    run_command: null,
+    overrides: { ...role.overrides, backend: true }
+  }));
+
+test('unused parent backend changes preserve independent P/D mode and payload', async () => {
+  const { root, ref, changeBackend, submit } = await renderForm({
+    mode: 'vllm-nixl',
+    roles: independentRoles()
+  });
+  try {
+    const requests = resolutionRequests.mock.callCount();
+    await changeBackend('SGLang');
+    assert.equal(
+      ref.current.form.getFieldValue(['disaggregation', 'mode']),
+      'vllm-nixl'
+    );
+    assert.equal(resolutionRequests.mock.callCount(), requests);
+    const payload = await submit();
+    assert.equal(payload.disaggregation.mode, 'vllm-nixl');
+    assert.ok(
+      payload.roles
+        .filter((role: any) => role.name !== 'router')
+        .every((role: any) => role.backend === 'vLLM')
+    );
+  } finally {
+    await act(async () => root.unmount());
+  }
+});
+
+test('changing the effective P/D backend resolves a new mode with the parent unchanged', async () => {
+  const { root, ref } = await renderForm({
+    mode: 'vllm-nixl',
+    roles: independentRoles()
+  });
+  try {
+    await act(async () =>
+      ref.current.form.setFieldValue(
+        'roles',
+        ref.current.form
+          .getFieldValue('roles')
+          .map((role: any) =>
+            role.name === 'router'
+              ? role
+              : { ...role, backend: 'SGLang', backend_version: null }
+          )
+      )
+    );
+    assert.equal(ref.current.form.getFieldValue('backend'), 'vLLM');
+    assert.equal(
+      ref.current.form.getFieldValue(['disaggregation', 'mode']),
+      'sglang-mooncake'
+    );
+    assert.equal(
+      resolutionRequests.mock.calls.at(-1)?.arguments[0].backend,
+      'SGLang'
+    );
+  } finally {
+    await act(async () => root.unmount());
+  }
+});
+
+for (const [
+  label,
+  parentVersion,
+  parentImage,
+  decode,
+  routerVersion,
+  warning
+] of [
+  [
+    'old Decode',
+    '0.29.0',
+    null,
+    { backend: 'vLLM', backend_version: '0.25.3' },
+    '0.29.0',
+    true
+  ],
+  [
+    'unused old parent',
+    '0.25.3',
+    null,
+    { backend: 'vLLM', backend_version: '0.29.0' },
+    '0.29.0',
+    false
+  ],
+  [
+    'Router excluded',
+    '0.29.0',
+    null,
+    { backend: 'vLLM', backend_version: '0.29.0' },
+    '0.25.3',
+    false
+  ],
+  [
+    'independent Auto',
+    '0.25.3',
+    null,
+    { backend: 'vLLM', backend_version: null },
+    '0.29.0',
+    false
+  ],
+  [
+    'independent Decode ignores parent image',
+    null,
+    'parent:patched',
+    { backend: 'vLLM', backend_version: '0.25.3' },
+    '0.29.0',
+    true
+  ],
+  [
+    'legacy version override',
+    '0.29.0',
+    null,
+    { backend: null, backend_version: '0.25.3' },
+    '0.29.0',
+    true
+  ],
+  [
+    'explicit Decode image',
+    '0.29.0',
+    null,
+    { backend: 'vLLM', backend_version: null, image_name: 'patched:decode' },
+    '0.29.0',
+    false
+  ]
+] as const) {
+  test(`PD engine warning uses effective role configuration: ${label}`, async () => {
+    const roles = independentRoles().map((role) =>
+      role.name === 'decode'
+        ? { ...role, ...decode }
+        : role.name === 'router'
+          ? { ...role, backend_version: routerVersion }
+          : role
+    );
+    const { root } = await renderForm({
+      mode: 'vllm-nixl',
+      roles,
+      backendVersion: parentVersion,
+      imageName: parentImage
+    });
+    try {
+      const content = dom.window.document.body.textContent!;
+      assert.equal(
+        content.includes('models.form.pd.engineVersion.below'),
+        warning
+      );
+      if (warning) {
+        assert.ok(content.includes('0.25.3'));
+        assert.ok(content.includes('models.form.roles.decode'));
+      }
+    } finally {
+      await act(async () => root.unmount());
+    }
+  });
+}
+
+test('an unused non-PD parent backend cannot clear an independently configured group', async () => {
+  const { root, ref, changeBackend } = await renderForm({
+    mode: 'vllm-nixl',
+    roles: independentRoles()
+  });
+  try {
+    await changeBackend('llama-box');
+    assert.equal(
+      ref.current.form.getFieldValue(['disaggregation', 'mode']),
+      'vllm-nixl'
+    );
+    assert.equal(ref.current.form.getFieldValue('roles').length, 3);
+    assert.equal(
+      dom.window.document
+        .querySelector('[role="switch"]')
+        ?.getAttribute('aria-checked'),
+      'true'
+    );
+  } finally {
+    await act(async () => root.unmount());
+  }
+});
+
+test('mixed effective P/D engines intersect eligibility instead of following one recommendation', async () => {
+  const roles = independentRoles();
+  roles[1] = {
+    ...roles[1],
+    backend: null,
+    backend_version: null,
+    overrides: { ...roles[1].overrides, backend: false }
+  };
+  const { root, ref, changeBackend, change } = await renderForm({
+    mode: 'vllm-nixl',
+    roles
+  });
+  try {
+    await changeBackend('SGLang');
+    assert.equal(
+      ref.current.form.getFieldValue(['disaggregation', 'mode']),
+      'vllm-nixl'
+    );
+    await assert.rejects(() =>
+      ref.current.form.validateFields([['disaggregation', 'mode']])
+    );
+    assert.ok(
+      Array.from(transportSelect().options).some(
+        (option) => option.value === 'custom' && !option.disabled
+      )
+    );
+    await change('models.form.pd.mode', 'custom');
+    await ref.current.form.validateFields([['disaggregation', 'mode']]);
+  } finally {
+    await act(async () => root.unmount());
+  }
+});
+
+test('Custom engine images do not let an unused parent choose their saved recipe', async () => {
+  const roles = independentRoles().map((role) =>
+    role.name === 'router'
+      ? role
+      : {
+          ...role,
+          backend: 'Custom',
+          backend_version: null,
+          image_name: 'engine:custom',
+          run_command: 'engine'
+        }
+  );
+  const { root, ref, changeBackend } = await renderForm({
+    mode: 'sglang-mooncake',
+    roles
+  });
+  try {
+    assert.equal(
+      resolutionRequests.mock.calls.at(-1)?.arguments[0].backend,
+      undefined
+    );
+    const calls = resolutionRequests.mock.callCount();
+    await changeBackend('SGLang');
+    assert.equal(
+      ref.current.form.getFieldValue(['disaggregation', 'mode']),
+      'sglang-mooncake'
+    );
+    assert.equal(resolutionRequests.mock.callCount(), calls);
+    await ref.current.form.validateFields([['disaggregation', 'mode']]);
+  } finally {
+    await act(async () => root.unmount());
   }
 });

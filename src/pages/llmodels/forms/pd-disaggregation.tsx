@@ -31,6 +31,11 @@ import { backendOptionsMap } from '../constants/backend-parameters';
 import useQueryPDModes, { transportLabel } from '../hooks/use-query-pd-modes';
 import { pdBackendVersionWarning } from '../utils/pd-cache-services';
 import { membershipUpdateNotice } from '../utils/pd-membership';
+import {
+  intersectPDResolutions,
+  pdEngineConfigs,
+  pdResolverBackends
+} from '../utils/pd-role-backends';
 import { createDefaultRoles, rolesFormToPayload } from './roles/transform';
 
 // Form.Item must receive the change only after the user accepts any cache
@@ -226,23 +231,34 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
     Form.useWatch('backend', form) ?? form.getFieldValue('backend');
   const clusterId =
     Form.useWatch('cluster_id', form) ?? form.getFieldValue('cluster_id');
-  // Model-level only, and that is the whole story rather than a shortcut: the
-  // engine override group is forced off for prefill and decode (see
-  // `isGroupOn` in roles/transform), so both inherit this field, and the one
-  // role that does own its engine — the router — runs a `vllm-router` image
-  // whose version the recipe's engine range does not describe.
-  const backendVersion = Form.useWatch('backend_version', form);
-  const imageName = Form.useWatch('image_name', form);
+  // Version and image changes update per-role warnings without reselecting a recipe.
+  Form.useWatch('backend_version', { form, preserve: true });
+  Form.useWatch('image_name', { form, preserve: true });
   const mode = Form.useWatch(['disaggregation', 'mode'], form);
   // Read-only reads of other sections: the role ratio and the model-level cache
   // are owned elsewhere, this block only reflects them.
   // See the note in forms/roles/index.tsx: without `preserve` this reads only
   // registered fields, and `roles` is written straight into the store.
-  const roles = Form.useWatch('roles', { form, preserve: true });
-  const membershipRoles = rolesFormToPayload(roles, form.getFieldsValue(true));
+  const roles =
+    Form.useWatch('roles', { form, preserve: true }) ??
+    form.getFieldValue('roles');
+  const deployment = form.getFieldsValue(true);
+  const membershipRoles = rolesFormToPayload(roles, deployment);
+  const engines = pdEngineConfigs(membershipRoles, deployment);
+  const resolverBackends = pdResolverBackends(membershipRoles, deployment);
+  const backendKey = JSON.stringify(resolverBackends);
+  const currentBackendInputs = () => {
+    const values = form.getFieldsValue(true);
+    return pdResolverBackends(rolesFormToPayload(values.roles, values), values);
+  };
   const membershipNotice = membershipUpdateNotice(
     findMode(mode),
-    membershipRoles
+    membershipRoles,
+    flatBackendOptions?.find(
+      (item) =>
+        item.value ===
+        membershipRoles?.find((role) => role.name === 'router')?.backend
+    )
   );
 
   /**
@@ -303,7 +319,11 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
 
   // GGUF is served by llama-box, which has no PD recipe at all — so the whole
   // block goes rather than offering a mode that cannot run.
-  const ggufBlocked = !!isGGUF || backend === backendOptionsMap.llamaBox;
+  const engineBackends = engines.length
+    ? engines.map((engine) => engine.backend)
+    : [backend];
+  const ggufBlocked =
+    !!isGGUF || engineBackends.includes(backendOptionsMap.llamaBox);
 
   /**
    * Reasons PD *cannot* run at all, which is the only thing that may disable
@@ -328,12 +348,11 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
   // their own engines here). The mode dropdown already disables the recipes
   // that do not target this engine; this note is what tells the user why only
   // Custom is left.
-  const selectedBackend = flatBackendOptions?.find(
-    (item) => item.value === backend
+  const pdCapableBackend = engineBackends.some(
+    (engineBackend) =>
+      flatBackendOptions.find((item) => item.value === engineBackend)
+        ?.isBuiltIn && PD_CAPABLE_BACKENDS.includes(engineBackend as string)
   );
-  const pdCapableBackend =
-    !!selectedBackend?.isBuiltIn &&
-    PD_CAPABLE_BACKENDS.includes(backend as string);
 
   /**
    * 🔴 `blocked` no longer un-sets the displayed state.
@@ -408,7 +427,7 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
   // run before React renders new rules, so it also needs a synchronous snapshot.
   const [derived, setDerived] = useState<{
     resolution: PDModeResolution | null;
-    backend?: string;
+    backendKey?: string;
     clusterId?: number;
     modes?: PDMode[];
   }>({ resolution: null });
@@ -418,7 +437,7 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
     resolution: PDModeResolution | null,
     modes?: PDMode[]
   ) => {
-    const next = { resolution, backend, clusterId, modes };
+    const next = { resolution, backendKey, clusterId, modes };
     derivedRef.current = next;
     setDerived(next);
   };
@@ -436,7 +455,7 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
   // answer for the current one and silently overwrites the mode field.
   const resolveSession = useRef(0);
   const toggleSession = useRef(0);
-  const resolutionInputs = useRef({ backend, clusterId });
+  const resolutionInputs = useRef({ backendKey, clusterId });
 
   /**
    * One atomic write: local state, the form field, and the published effects.
@@ -518,12 +537,19 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
   ) => {
     const session = ++resolveSession.current;
     try {
-      const resolution = await resolvePDMode({
-        cluster_id: clusterId,
-        backend,
-        vendor:
-          overrides?.vendor ?? form.getFieldValue(['disaggregation', 'vendor'])
-      });
+      const resolution = intersectPDResolutions(
+        await Promise.all(
+          resolverBackends.map((engineBackend) =>
+            resolvePDMode({
+              cluster_id: clusterId,
+              backend: engineBackend,
+              vendor:
+                overrides?.vendor ??
+                form.getFieldValue(['disaggregation', 'vendor'])
+            })
+          )
+        )
+      );
       if (resolveSession.current !== session) {
         return;
       }
@@ -584,9 +610,9 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
      * belongs on this effect rather than on a fetch-function dependency.
      */
     const inputsChanged =
-      resolutionInputs.current.backend !== backend ||
+      resolutionInputs.current.backendKey !== backendKey ||
       resolutionInputs.current.clusterId !== clusterId;
-    resolutionInputs.current = { backend, clusterId };
+    resolutionInputs.current = { backendKey, clusterId };
     let cancelled = false;
     const session = resolveSession.current;
     const resolveWithCatalog = async () => {
@@ -605,7 +631,7 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
       // Its response must not recreate the disaggregation value just cleared.
       resolveSession.current += 1;
     };
-  }, [active, backend, clusterId]);
+  }, [active, backendKey, clusterId]);
 
   // Mount is the one transition no handler can report: editing a model that is
   // already disaggregated arrives with its replicas locked and its mode
@@ -973,17 +999,17 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
   // another accelerator stays visible but disabled, carrying why.
   const getCurrentResolution = (
     snapshot: typeof derived,
-    currentBackend = backend,
+    currentBackends = resolverBackends,
     currentClusterId = clusterId
   ) =>
-    snapshot.backend === currentBackend &&
+    snapshot.backendKey === JSON.stringify(currentBackends) &&
     snapshot.clusterId === currentClusterId
       ? snapshot.resolution
       : null;
 
   const getModeOptions = (
     snapshot: typeof derived,
-    currentBackend = backend,
+    currentBackends = resolverBackends,
     currentClusterId = clusterId
   ) => {
     const clusterVendors = Array.from(
@@ -1006,7 +1032,7 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
     // while the next resolution is pending.
     const resolution = getCurrentResolution(
       snapshot,
-      currentBackend,
+      currentBackends,
       currentClusterId
     );
     const modeVerdicts = resolution?.options?.length
@@ -1014,12 +1040,19 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
           resolution.options.map((option) => [option.name, option])
         )
       : undefined;
-    return buildOptions(
-      currentBackend,
-      usePartition ? [selectedVendor] : clusterVendors,
-      modeVerdicts,
-      snapshot.modes,
-      usePartition ? 'partition' : 'cluster'
+    const options = currentBackends.map((engineBackend) =>
+      buildOptions(
+        engineBackend,
+        usePartition ? [selectedVendor] : clusterVendors,
+        modeVerdicts,
+        snapshot.modes,
+        usePartition ? 'partition' : 'cluster'
+      )
+    );
+    return options[0].map(
+      (option, index) =>
+        options.map((list) => list[index]).find((item) => item.disabled) ||
+        option
     );
   };
   const currentResolution = getCurrentResolution(derived);
@@ -1090,17 +1123,22 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
   })();
 
   const engineRange = findMode(mode)?.backend_versions;
-  const engineVersionNote = pdBackendVersionWarning(
-    flatBackendOptions.find((item) => item.value === backend),
-    backendVersion,
-    engineRange,
-    imageName
-  )
-    ? intl.formatMessage(
-        { id: 'models.form.pd.engineVersion.below' },
-        { version: backendVersion, range: engineRange }
+  const engineVersionNotes = engines
+    .filter((engine) =>
+      pdBackendVersionWarning(
+        flatBackendOptions.find((item) => item.value === engine.backend),
+        engine.backend_version,
+        engineRange,
+        engine.image_name
       )
-    : null;
+    )
+    .map((engine) => ({
+      role: engine.name,
+      message: intl.formatMessage(
+        { id: 'models.form.pd.engineVersion.below' },
+        { version: engine.backend_version, range: engineRange }
+      )
+    }));
 
   const onlyCustomLeft =
     modeOptions.length > 0 &&
@@ -1376,7 +1414,7 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
                 validator: async (_rule: any, value: string) => {
                   const option = getModeOptions(
                     derivedRef.current,
-                    form.getFieldValue('backend'),
+                    currentBackendInputs(),
                     form.getFieldValue('cluster_id')
                   ).find((item) => item.value === value);
                   if (value && option?.disabled) {
@@ -1475,8 +1513,25 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
                 {intl.formatMessage({ id: 'models.form.pd.mode.cleared' })}
               </div>
             )}
-            {engineVersionNote && (
-              <Alert type="warning" showIcon message={engineVersionNote} />
+            {engineVersionNotes.length > 0 && (
+              <Alert
+                type="warning"
+                showIcon
+                message={
+                  <Flex vertical gap={4}>
+                    {engineVersionNotes.map((note) => (
+                      <div key={note.role}>
+                        {intl.formatMessage({
+                          id: RoleLabelMap[
+                            note.role as keyof typeof RoleLabelMap
+                          ]
+                        })}
+                        : {note.message}
+                      </div>
+                    ))}
+                  </Flex>
+                }
+              />
             )}
           </Flex>
         </>

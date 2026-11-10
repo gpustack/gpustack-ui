@@ -581,6 +581,7 @@ export default {
   'models.form.roles.router': 'Маршрутизатор',
   'models.form.roles.override': 'Пользовательские',
   'models.form.roles.inherited': 'Наследуется',
+  'models.form.roles.backend.inherit': 'Наследовать настройки развёртывания',
   'models.form.roles.group.backend': 'Движок и образ',
   'models.form.roles.group.parameters': 'Параметры и переменные среды',
   'models.form.roles.group.scheduling': 'Ресурсы и планирование',
@@ -592,6 +593,65 @@ export default {
   'models.form.roles.group.settings': 'Настройки группы',
   'models.form.roles.group.settings.tips': 'Применяются ко всем ролям',
   'models.form.roles.replicas': 'Реплики',
+  'models.form.roles.router.command.auto.placeholder':
+    'Пустое поле использует команду бэкенда или схемы PD',
+  'models.form.roles.router.command.custom.placeholder':
+    'Введите полную команду Router или используйте определение бэкенда',
+  'models.form.roles.router.command.managed.tips':
+    'Пустое поле использует указанный источник. Полная команда заменяет entrypoint бэкенда.',
+  'models.form.roles.router.command.custom.tips':
+    'Введите полную команду или используйте команду выбранного бэкенда.',
+  'models.form.roles.router.command.manual.tips':
+    'Введите полную команду Router, если бэкенд или схема PD её не предоставляет.',
+  'models.form.roles.router.command.source.role':
+    'Источник команды: команда этого Router',
+  'models.form.roles.router.command.source.backend_version':
+    'Источник команды: версия {backend} · {version}',
+  'models.form.roles.router.command.source.backend_default':
+    'Источник команды: команда по умолчанию {backend}',
+  'models.form.roles.router.command.source.recipe':
+    'Источник команды: схема PD; команда инференса родителя не наследуется',
+  'models.form.roles.router.command.source.missing':
+    'Команда Router отсутствует. Введите её или выберите бэкенд с командой.',
+  'models.form.roles.router.command.priority':
+    'Приоритет: роль → версия бэкенда → команда бэкенда по умолчанию → схема PD. Команда инференса родителя не наследуется.',
+  'models.form.roles.router.command.help': 'Переменные и примеры шаблонов',
+  'models.form.roles.router.command.title': 'Шаблоны команды Router',
+  'models.form.roles.router.command.examples': 'Примеры команд',
+  'models.form.roles.router.command.variables': 'Справочник переменных',
+  'models.form.roles.router.command.copy': 'Копировать пример',
+  'models.form.roles.router.command.example.current':
+    'Команда выбранного режима PD',
+  'models.form.roles.router.command.example.generic':
+    'Передача каждого узла отдельно',
+  'models.form.roles.router.command.example.join':
+    'Списки адресов через запятую',
+  'models.form.roles.router.command.example.note':
+    'Скопируйте весь пример в поле команды. Адреса P/D будут подставлены после готовности движков.',
+  'models.form.roles.router.command.example.generic.note':
+    'Пример синтаксиса своего CLI. Замените your-router и флаги на исполняемый файл и аргументы вашего образа.',
+  'models.form.roles.router.command.vars.workerIp':
+    'IP-адрес Worker, на котором работает этот Router.',
+  'models.form.roles.router.command.vars.port':
+    'Порт сервиса, выделенный этому Router. Сервис должен слушать этот порт.',
+  'models.form.roles.router.command.vars.ports':
+    'Именованный порт Router. Prometheus доступен, только если порт выделен выбранным режимом PD.',
+  'models.form.roles.router.command.vars.peers':
+    'Список готовых конечных точек группы, включая несколько экземпляров. Обходите его через for; имя списка внутри for не нужно заключать в скобки вывода.',
+  'models.form.roles.router.command.vars.peerUrl':
+    'HTTP URL текущей конечной точки в цикле. Для цикла по decode используйте d.url.',
+  'models.form.roles.router.command.vars.peerAddress':
+    'IP-адрес и порт сервиса текущей конечной точки в цикле.',
+  'models.form.roles.router.command.vars.peerPorts':
+    'Именованный порт конечной точки. bootstrap доступен, только если он выделен выбранным режимом PD.',
+  'models.form.roles.router.command.vars.urls':
+    'Списки строк URL. Примените join и заключите всё выражение в скобки вывода. Сам список напрямую вывести нельзя.',
+  'models.form.roles.router.command.vars.modelName':
+    'Имя модели, под которым развёртывание предоставляет сервис.',
+  'models.form.roles.router.command.syntax':
+    'Доступны переменные, одноуровневые циклы for и join. Неизвестные имена отклоняются; отсутствие значений при запуске приводит к ошибке.',
+  'models.form.roles.router.command.membership':
+    'Команды со ссылками на P/D заново формируются и перезапускают Router при изменении участников. Статические адреса обновляются вручную.',
   'models.form.roles.router.routeArgs': 'Аргументы маршрутизации',
   'models.form.roles.router.routeArgs.tips':
     'Командная строка запуска процесса маршрутизатора. Строки с замком формирует GPUStack на основе размещения группы; редактировать их нельзя.',

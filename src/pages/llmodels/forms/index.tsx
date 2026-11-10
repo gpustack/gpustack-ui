@@ -45,6 +45,7 @@ import { useQueryContextLength } from '../services/use-query-context-length';
 import { derivesNativeAnthropicApi, generateGPUIds } from '../utils';
 import { getDeploymentFormReplicas } from '../utils/deployment-lifecycle';
 import { clearUnsupportedPDCacheServices } from '../utils/pd-cache-services';
+import { pdEngineConfigs } from '../utils/pd-role-backends';
 import AdvanceConfig from './advance-config';
 import BasicForm from './basic';
 import PDDisaggregation, { PDEffects } from './pd-disaggregation';
@@ -462,7 +463,14 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     preservedModelFields.current = preservedModelFields.current
       ? { replicas: preservedModelFields.current.replicas }
       : null;
-    const clearPD = !PD_ELIGIBLE_BACKENDS.includes(val);
+    const nextDefaults = { ...form.getFieldsValue(true), backend: val };
+    const engineBackends = pdEngineConfigs(
+      rolesFormToPayload(nextDefaults.roles, nextDefaults),
+      nextDefaults
+    ).map((engine) => engine.backend);
+    const clearPD = !(engineBackends.length ? engineBackends : [val]).every(
+      (engineBackend) => PD_ELIGIBLE_BACKENDS.includes(engineBackend)
+    );
     if (clearPD) {
       if (preservedModelFields.current) {
         form.setFieldValue('replicas', preservedModelFields.current.replicas);

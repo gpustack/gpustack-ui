@@ -9,6 +9,7 @@ import ScheduleTypeForm from '../schedule-type';
 import SpeculativeDecode from '../speculative-decode';
 import OverrideSection from './override-section';
 import { reseedRoleInjection } from './reseed-injection';
+import RoleBackend from './role-backend';
 import RoleKVCache from './role-kv-cache';
 import SystemManaged, { LockedRow, flagLines } from './system-managed';
 
@@ -219,23 +220,7 @@ const RoleForm: React.FC<RoleFormProps> = ({
         ></InputNumber>
       </Form.Item>
 
-      {/* 🔴 No «引擎与镜像» section. A role runs the Model's engine, full stop:
-          the four fields are `Optional = None` on `RoleSpec` and
-          `role_effective_model()` reads that None as "inherit the Model field
-          of the same name", so the Model already answers this question for
-          every role. The section only ever offered a second place to answer
-          it — and answering it there froze a copy that stopped following
-          later edits to the Model, which is the failure `demoteUntouchedGroups`
-          exists to catch.
-
-          `roleFormToPayload` now nulls the group unconditionally, so the form
-          and the wire agree: there is one engine per deployment.
-
-          ⚠️ What goes with it is the MIXED-engine group under
-          `pd_mode=custom` — the one mode the server permits it on. Every role
-          now runs the Model's engine, so "prefill on vLLM, decode on SGLang"
-          has no form representation. The API still accepts it: the fields are
-          on `RoleSpec` and the projection still reads them. */}
+      <RoleBackend index={index} />
 
       {/* `inheritContent={null}` rather than the derived summary: the prefix
           above already lists what runs, row by row and in the engine's own

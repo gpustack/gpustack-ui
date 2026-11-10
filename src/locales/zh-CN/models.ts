@@ -544,6 +544,7 @@ export default {
   'models.form.roles.router': 'Router',
   'models.form.roles.override': '自定义',
   'models.form.roles.inherited': '继承',
+  'models.form.roles.backend.inherit': '继承上层',
   'models.form.roles.group.backend': '引擎与镜像',
   'models.form.roles.group.parameters': '引擎参数与环境变量',
   'models.form.roles.group.scheduling': '资源与调度',
@@ -554,6 +555,62 @@ export default {
   'models.form.roles.group.settings': '组级设置',
   'models.form.roles.group.settings.tips': '对所有角色生效',
   'models.form.roles.replicas': '副本数',
+  'models.form.roles.router.command.auto.placeholder':
+    '留空使用所选后端或 PD 方案的命令',
+  'models.form.roles.router.command.custom.placeholder':
+    '输入完整 Router 命令，或留空复用后端定义',
+  'models.form.roles.router.command.managed.tips':
+    '留空按命令来源启动；填写完整命令会覆盖后端的 entrypoint。',
+  'models.form.roles.router.command.custom.tips':
+    '请填写完整命令，或复用所选后端定义中的命令。',
+  'models.form.roles.router.command.manual.tips':
+    '所选后端或 PD 方案需提供命令，否则请填写完整 Router 命令。',
+  'models.form.roles.router.command.source.role':
+    '命令来源：当前 Router 填写的命令',
+  'models.form.roles.router.command.source.backend_version':
+    '命令来源：后端 {backend} · {version} 的版本命令',
+  'models.form.roles.router.command.source.backend_default':
+    '命令来源：后端 {backend} 的默认命令',
+  'models.form.roles.router.command.source.recipe':
+    '命令来源：PD 方案生成，不继承父级推理命令',
+  'models.form.roles.router.command.source.missing':
+    '尚无 Router 命令，请填写命令或选择已定义命令的后端',
+  'models.form.roles.router.command.priority':
+    '命令优先级：当前角色 → 后端版本 → 后端默认 → PD 方案。继承上层配置时，不继承父级推理命令。',
+  'models.form.roles.router.command.help': '模板说明与示例',
+  'models.form.roles.router.command.title': 'Router 命令模板',
+  'models.form.roles.router.command.examples': '命令示例',
+  'models.form.roles.router.command.variables': '变量说明',
+  'models.form.roles.router.command.copy': '复制示例',
+  'models.form.roles.router.command.example.current': '当前 PD 方案的启动命令',
+  'models.form.roles.router.command.example.generic': '逐个传入端点',
+  'models.form.roles.router.command.example.join': '逗号分隔的端点列表',
+  'models.form.roles.router.command.example.note':
+    '将完整示例复制到「执行命令」。P/D 地址会在引擎就绪后自动填入。',
+  'models.form.roles.router.command.example.generic.note':
+    '这是自定义 CLI 的写法示意，请将 your-router 和 flags 替换为镜像内实际程序及参数。',
+  'models.form.roles.router.command.vars.workerIp':
+    '当前 Router 所在 Worker 的 IP 地址。',
+  'models.form.roles.router.command.vars.port':
+    '分配给当前 Router 的服务端口，服务应监听此端口。',
+  'models.form.roles.router.command.vars.ports':
+    'Router 的命名端口。所选 PD 方案分配了 Prometheus 端口时才可使用。',
+  'models.form.roles.router.command.vars.peers':
+    '当前组内全部就绪端点的列表（包含多实例）。请用 for 遍历，for 中的列表名不额外包裹花括号。',
+  'models.form.roles.router.command.vars.peerUrl':
+    '循环中当前端点的 HTTP URL。遍历 decode 时可使用 d.url。',
+  'models.form.roles.router.command.vars.peerAddress':
+    '循环中当前端点的 IP 地址和服务端口。',
+  'models.form.roles.router.command.vars.peerPorts':
+    '当前端点的命名端口，bootstrap 仅在所选 PD 方案分配该端口时可用。',
+  'models.form.roles.router.command.vars.urls':
+    '对应端点的 URL 字符串列表。需先 join，再将整个表达式放在输出花括号中；不能直接输出整个列表。',
+  'models.form.roles.router.command.vars.modelName':
+    '部署对外提供服务时使用的模型名称。',
+  'models.form.roles.router.command.syntax':
+    '支持变量、单层 for 循环和 join。未知变量会被拒绝；缺少运行时值时无法启动。',
+  'models.form.roles.router.command.membership':
+    '引用 P/D 端点的命令会在成员变化时重新展开并重启 Router；静态地址需手动维护。',
   'models.form.roles.router.routeArgs': '路由参数',
   'models.form.roles.router.routeArgs.tips':
     'Router 进程启动时的命令行参数。带锁的由 GPUStack 按组的落点渲染，不可编辑。',

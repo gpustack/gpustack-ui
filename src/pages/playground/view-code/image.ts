@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { MODEL_PROXY, OPENAI_COMPATIBLE } from '../apis';
+import { MODEL_PROXY } from '../apis';
 import { fomatNodeJsParams, formatCurlArgs } from './utils';
 
 export const generateImageCurlCode = ({
@@ -83,10 +83,10 @@ print(response.json()['data'][0]['b64_json'])`.trim();
   }
 
   // ========================= Node.js =========================
-  const nodeJsCode = `
+  let nodeJsCode = `
 const axios = require('axios');
 
-const url = "${host}/${OPENAI_COMPATIBLE}/images/generations";
+const url = "${host}${api}";
 const headers = {
   "Content-type": "application/json",
   "Authorization": "Bearer $\{YOUR_GPUSTACK_API_KEY}"
@@ -96,6 +96,25 @@ const data = ${fomatNodeJsParams(parameters)};
 axios.post(url, data, { headers }).then((response) => {
   console.log(response.data.data[0].b64_json);
 });`.trim();
+
+  if (edit) {
+    nodeJsCode = `
+const axios = require('axios');
+const fs = require('fs');
+
+const url = "${host}${api}";
+const headers = {
+  "Authorization": "Bearer $\{YOUR_GPUSTACK_API_KEY}"
+};
+const data = ${fomatNodeJsParams(_.omit(parameters, ['image', 'mask']))};
+data.image = fs.createReadStream("image.png");
+// Optional mask for inpainting.
+// data.mask = fs.createReadStream("mask.png");
+
+axios.postForm(url, data, { headers }).then((response) => {
+  console.log(response.data.data[0].b64_json);
+});`.trim();
+  }
 
   return {
     curlCode,

@@ -25,10 +25,10 @@
 import { useCoolAccents } from '@/hooks/use-cool-colors';
 import BarChart from '@/pages/_components/bar-chart';
 import PieChart from '@/pages/_components/pie-chart';
+import { getGPUStackPlugin } from '@/plugins';
 import { formatLargeNumber } from '@/utils';
-import { useModel } from '@@/plugin-model';
 import { CardWrapper } from '@gpustack/core-ui';
-import { useAccess, useIntl } from '@umijs/max';
+import { useAccess, useIntl, useModel } from '@umijs/max';
 import { Col, Row } from 'antd';
 import dayjs from 'dayjs';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -250,13 +250,21 @@ const SummaryTab: React.FC = () => {
     selectedOrganizations,
     selectedUserGroups
   } = queryParams;
-  const {
-    creators: resourceUsers,
-    organizations,
-    user_groups: userGroups
-  } = useResourceMeta(scope);
+  const resourceMeta = useResourceMeta(scope);
+  const { creators: resourceUsers } = resourceMeta;
   const { detailData: tokenMeta, fetchData: fetchTokenMeta } =
     useQueryUsageMetaData();
+
+  // Plugins can combine the available domains for their filter options.
+  const pluginFilterOptions =
+    getGPUStackPlugin()?.usage?.summaryFilterOptions?.({
+      resourceMeta,
+      tokenMeta
+    });
+  const organizations =
+    pluginFilterOptions?.organizations ?? resourceMeta.organizations;
+  const userGroups =
+    pluginFilterOptions?.user_groups ?? resourceMeta.user_groups;
 
   // The user filter unions two sources: resource creators (GPU / storage
   // usage) and the token-usage users (/usage/meta) — a user may appear in only
@@ -420,7 +428,13 @@ const SummaryTab: React.FC = () => {
         group_by: ['date'],
         granularity,
         page: -1,
-        filters: tokenUserFilter
+        filters: {
+          ...tokenUserFilter,
+          ...getGPUStackPlugin()?.usage?.summaryTokenFilters?.({
+            selectedOrganizations: currentParams.selectedOrganizations,
+            selectedUserGroups: currentParams.selectedUserGroups
+          })
+        }
       }),
 
       fetchComputeBreakdown({

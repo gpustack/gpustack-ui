@@ -1,7 +1,5 @@
-import { setRouteCache } from '@/atoms/route-cache';
-import routeCachekey from '@/config/route-cachekey';
 import UploadImg from '@/pages/playground/components/upload-img';
-import { base64ToFile, generateRandomNumber } from '@/utils';
+import { base64ToFile } from '@/utils';
 import {
   AlertInfo,
   ImageEditor as CanvasImageEditor,
@@ -26,12 +24,14 @@ import MessageInput from '../components/message-input';
 import RightContainer from '../components/right-container';
 import ViewCommonCode from '../components/view-common-code';
 import { EDIT_IMAGE_ACCEPT, scaleImageSize } from '../config';
+import useImageRouteCache from '../hooks/use-image-route-cache';
 import { useInitImageMeta } from '../hooks/use-init-image';
 import useTextImage from '../hooks/use-text-image';
 import '../style/ground-llm.less';
 import '../style/system-message-wrap.less';
-import { generateImageCode, generateOpenaiImageCode } from '../view-code/image';
+import { generateImageCode } from '../view-code/image';
 import DataForm from './forms';
+import { buildImageParameters, normalizeImageParameters } from './parameters';
 
 interface MessageProps {
   modelList: Global.BaseOption<string>[];
@@ -43,6 +43,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   const { modelList } = props;
 
   const intl = useIntl();
+  const setRunning = useImageRouteCache();
   const [show, setShow] = useState(false);
   const [collapse, setCollapse] = useState(false);
   const scroller = useRef<any>(null);
@@ -68,9 +69,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   const {
     handleOnValuesChange,
-    handleToggleParamsStyle,
     setParams,
-    updateCacheFormData,
     setInitialValues,
     updateParamsConfig,
     setParamsConfig,
@@ -78,8 +77,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     modelMeta,
     paramsConfig,
     initialValues,
-    parameters,
-    isOpenaiCompatible
+    parameters
   } = useInitImageMeta(props, {
     type: 'edit'
   });
@@ -94,6 +92,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     submitMessage
   } = useTextImage({
     scroller,
+    onLoadingChange: setRunning,
     chunkFields: ['stream_options_chunk_result'],
     API: EDIT_IMAGE_API
   });
@@ -110,37 +109,13 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     };
   });
 
-  const finalParameters = useMemo(() => {
-    if (parameters.size === 'custom') {
-      return {
-        ..._.omit(parameters, ['width', 'height', 'preview', 'random_seed']),
-        image: null,
-        mask: null,
-        size:
-          parameters.width && parameters.height
-            ? `${parameters.width}x${parameters.height}`
-            : ''
-      };
-    }
-    return {
-      image: null,
-      mask: null,
-      ..._.omit(parameters, ['width', 'height', 'random_seed', 'preview'])
-    };
-  }, [parameters]);
+  const finalParameters = {
+    ...normalizeImageParameters(parameters),
+    image: null,
+    mask: null
+  };
 
   const viewCodeContent = useMemo(() => {
-    if (isOpenaiCompatible) {
-      return generateOpenaiImageCode({
-        api: EDIT_IMAGE_API,
-        edit: true,
-        isFormdata: true,
-        parameters: {
-          ...finalParameters,
-          prompt: currentPrompt
-        }
-      });
-    }
     return generateImageCode({
       api: EDIT_IMAGE_API,
       isFormdata: true,
@@ -150,7 +125,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
         prompt: currentPrompt
       }
     });
-  }, [finalParameters, currentPrompt, isOpenaiCompatible]);
+  }, [finalParameters, currentPrompt]);
 
   const handleClear = () => {
     setCurrentPrompt('');
@@ -160,31 +135,17 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     setCurrentPrompt(e.target.value);
   };
 
-  const generateParams = () => {
-    const params = {
-      ..._.omitBy(finalParameters, (value: string) => !value),
-      seed: parameters.random_seed
-        ? generateRandomNumber()
-        : parameters.seed || null,
-      stream: false,
-      prompt: currentPrompt
-    };
-    return params;
-  };
-
   const handleSendMessage = async () => {
     try {
       await form.current?.form?.validateFields();
       if (!parameters.model) return;
-      const params = generateParams();
+      const params = buildImageParameters(parameters, currentPrompt);
       setParams({
         ...parameters,
         seed: params.seed
       });
 
       form.current?.form?.setFieldValue('seed', params.seed);
-
-      setRouteCache(routeCachekey['/playground/text-to-image'], true);
 
       await submitMessage({
         ...params,
@@ -193,9 +154,6 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       });
     } catch (error) {
       // console.log('error:', error);
-    } finally {
-      console.log('finally---------');
-      setRouteCache(routeCachekey['/playground/text-to-image'], false);
     }
   };
 
@@ -221,8 +179,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       }
 
       const newParamsConfig = updateParamsConfig({
-        size: 'custom',
-        isOpenaiCompatible
+        size: 'custom'
       });
       setParamsConfig(newParamsConfig);
       const newParameters = {
@@ -232,14 +189,9 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
         height: height || 512
       };
       setParams(newParameters);
-      updateCacheFormData({
-        size: 'custom',
-        width: width || 512,
-        height: height || 512
-      });
       setInitialValues(newParameters);
     },
-    [parameters, modelMeta, isOpenaiCompatible]
+    [parameters, modelMeta]
   );
 
   const handleUpdateImageList = useCallback(
@@ -513,7 +465,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
                 id: 'playground.input.prompt.holder'
               })}
               title={
-                <span className="font-600">
+                <span className="font-500">
                   {intl.formatMessage({ id: 'playground.image.prompt' })}
                 </span>
               }

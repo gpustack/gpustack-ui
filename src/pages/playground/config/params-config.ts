@@ -182,51 +182,6 @@ export const ImageEidtParamsConfig: ParamsSchema[] = [
   }
 ];
 
-export const ImageconstExtraConfig: ParamsSchema[] = [
-  // {
-  //   type: 'Select',
-  //   name: 'quality',
-  //   options: [
-  //     { label: 'playground.params.standard', value: 'standard', locale: true },
-  //     { label: 'playground.params.hd', value: 'hd', locale: true }
-  //   ],
-  //   label: {
-  //     text: 'playground.params.quality',
-  //     isLocalized: true
-  //   },
-  //   rules: [
-  //     {
-  //       required: false
-  //     }
-  //   ]
-  // },
-  {
-    type: 'Select',
-    name: 'style',
-    options: [
-      { label: 'playground.params.style.vivid', value: 'vivid', locale: true },
-      {
-        label: 'playground.params.style.natural',
-        value: 'natural',
-        locale: true
-      },
-      { label: 'common.options.none', value: null, locale: true }
-    ],
-    label: {
-      text: 'playground.params.style',
-      isLocalized: true
-    },
-    attrs: {
-      allowNull: true
-    },
-    rules: [
-      {
-        required: false
-      }
-    ]
-  }
-];
-
 const advancedConfig = [
   {
     type: 'Select',

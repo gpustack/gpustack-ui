@@ -1,4 +1,8 @@
 export default {
+  'playground.image.compare.invalidParameters':
+    'Проверьте параметры: {fields}.',
+  'playground.image.compare.applyFailed':
+    'Не удалось применить параметры к моделям: {models}.',
   'playground.system.tips': 'Введите системные инструкции здесь',
   'playground.title': 'Песочница',
   'playground.system': 'Система',

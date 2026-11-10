@@ -1,4 +1,8 @@
 export default {
+  'playground.image.compare.invalidParameters':
+    '次のパラメーターを確認してください：{fields}。',
+  'playground.image.compare.applyFailed':
+    '次のモデルにパラメーターを適用できませんでした：{models}。',
   'playground.system.tips': 'システム指示をここに入力してください',
   'playground.title': 'プレイグラウンド',
   'playground.system': 'システム',

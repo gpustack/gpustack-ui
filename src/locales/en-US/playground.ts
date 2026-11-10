@@ -1,4 +1,8 @@
 export default {
+  'playground.image.compare.invalidParameters':
+    'Check these parameters: {fields}.',
+  'playground.image.compare.applyFailed':
+    'Could not apply parameters to these models: {models}.',
   'playground.system.tips': 'Type system instructions here',
   'playground.title': 'Playground',
   'playground.system': 'System',

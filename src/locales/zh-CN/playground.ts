@@ -1,4 +1,7 @@
 export default {
+  'playground.image.compare.invalidParameters': '请检查这些参数：{fields}。',
+  'playground.image.compare.applyFailed':
+    '无法将参数应用到这些模型：{models}。',
   'playground.system.tips': '在这里输入系统消息',
   'playground.title': '试验场',
   'playground.system': '系统',

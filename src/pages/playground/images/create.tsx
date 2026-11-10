@@ -1,12 +1,8 @@
-import { setRouteCache } from '@/atoms/route-cache';
-import routeCachekey from '@/config/route-cachekey';
 import ThumbImg from '@/pages/playground/components/thumb-img';
-import { generateRandomNumber } from '@/utils';
 import { FileImageOutlined } from '@ant-design/icons';
 import { AlertInfo, IconFont } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Tooltip } from 'antd';
-import _ from 'lodash';
 import React, {
   forwardRef,
   useCallback,
@@ -19,12 +15,14 @@ import { CREAT_IMAGE_API } from '../apis';
 import MessageInput from '../components/message-input';
 import RightContainer from '../components/right-container';
 import ViewCommonCode from '../components/view-common-code';
+import useImageRouteCache from '../hooks/use-image-route-cache';
 import { useInitImageMeta } from '../hooks/use-init-image';
 import useTextImage from '../hooks/use-text-image';
 import '../style/ground-llm.less';
 import '../style/system-message-wrap.less';
-import { generateImageCode, generateOpenaiImageCode } from '../view-code/image';
+import { generateImageCode } from '../view-code/image';
 import DataForm from './forms';
+import { buildImageParameters, normalizeImageParameters } from './parameters';
 interface MessageProps {
   modelList: Global.BaseOption<string>[];
   loaded?: boolean;
@@ -35,6 +33,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   const { modelList } = props;
 
   const intl = useIntl();
+  const setRunning = useImageRouteCache();
   const [show, setShow] = useState(false);
   const [collapse, setCollapse] = useState(false);
   const scroller = useRef<any>(null);
@@ -42,13 +41,11 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   const {
     handleOnValuesChange,
-    handleToggleParamsStyle,
     setParams,
     form,
     paramsConfig,
     initialValues,
-    parameters,
-    isOpenaiCompatible
+    parameters
   } = useInitImageMeta(props, {
     type: 'create'
   });
@@ -64,6 +61,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     submitMessage
   } = useTextImage({
     scroller,
+    onLoadingChange: setRunning,
     chunkFields: ['stream_options', 'chunk_results'],
     API: CREAT_IMAGE_API
   });
@@ -94,31 +92,9 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     });
   }, []);
 
-  const finalParameters = useMemo(() => {
-    if (parameters.size === 'custom') {
-      return {
-        ..._.omit(parameters, ['width', 'height', 'preview', 'random_seed']),
-        size:
-          parameters.width && parameters.height
-            ? `${parameters.width}x${parameters.height}`
-            : ''
-      };
-    }
-    return {
-      ..._.omit(parameters, ['width', 'height', 'random_seed', 'preview'])
-    };
-  }, [parameters]);
+  const finalParameters = normalizeImageParameters(parameters);
 
   const viewCodeContent = useMemo(() => {
-    if (isOpenaiCompatible) {
-      return generateOpenaiImageCode({
-        api: CREAT_IMAGE_API,
-        parameters: {
-          ...finalParameters,
-          prompt: currentPrompt
-        }
-      });
-    }
     return generateImageCode({
       api: CREAT_IMAGE_API,
       parameters: {
@@ -126,29 +102,17 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
         prompt: currentPrompt
       }
     });
-  }, [finalParameters, isOpenaiCompatible, currentPrompt]);
+  }, [finalParameters, currentPrompt]);
 
   const handleInputChange = (e: any) => {
     setCurrentPrompt(e.target.value);
-  };
-
-  const generateParams = () => {
-    const params = {
-      ..._.omitBy(finalParameters, (value: string) => !value),
-      seed: parameters.random_seed
-        ? generateRandomNumber()
-        : parameters.seed || null,
-      stream: false,
-      prompt: currentPrompt
-    };
-    return params;
   };
 
   const handleSendMessage = async () => {
     try {
       await form.current?.form?.validateFields();
       if (!parameters.model) return;
-      const params = generateParams();
+      const params = buildImageParameters(parameters, currentPrompt);
       console.log('generateParams:', params);
       setParams({
         ...parameters,
@@ -157,13 +121,9 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
 
       form.current?.form?.setFieldValue('seed', params.seed);
       console.log('params:', params, parameters);
-      setRouteCache(routeCachekey['/playground/text-to-image'], true);
       await submitMessage(params);
     } catch (error) {
       // console.log('error:', error);
-    } finally {
-      console.log('finally---------');
-      setRouteCache(routeCachekey['/playground/text-to-image'], false);
     }
   };
 

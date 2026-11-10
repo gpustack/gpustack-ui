@@ -1,4 +1,8 @@
 export default {
+  'playground.image.compare.invalidParameters':
+    'Şu parametreleri kontrol edin: {fields}.',
+  'playground.image.compare.applyFailed':
+    'Parametreler şu modellere uygulanamadı: {models}.',
   'playground.system.tips': 'Sistem talimatlarını buraya yazın',
   'playground.title': 'Deneme Alanı',
   'playground.system': 'Sistem',

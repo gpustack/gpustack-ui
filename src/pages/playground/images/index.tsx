@@ -1,7 +1,11 @@
 import breakpoints from '@/config/breakpoints';
 import HotKeys from '@/config/hotkeys';
 import { modelCategoriesMap } from '@/pages/llmodels/config';
-import { DiffOutlined, HighlightOutlined } from '@ant-design/icons';
+import {
+  DiffOutlined,
+  HighlightOutlined,
+  OneToOneOutlined
+} from '@ant-design/icons';
 import { useWindowResize } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
@@ -17,12 +21,14 @@ import {
 import { queryModelsList } from '../apis';
 import ViewCodeButtons from '../components/view-code-buttons';
 import '../style/play-ground.less';
+import ImageCompare from './compare';
 import ImageCreate from './create';
 import ImageEdit from './edit';
 
 const TabsValueMap = {
   Tab1: 'generate',
-  Tab2: 'edit'
+  Tab2: 'edit',
+  Compare: 'compare'
 };
 
 const TextToImages: React.FC = () => {
@@ -32,6 +38,7 @@ const TextToImages: React.FC = () => {
   const groundTabRef1 = useRef<any>(null);
   const groundTabRef2 = useRef<any>(null);
   const [modelList, setModelList] = useState<Global.BaseOption<string>[]>([]);
+  const [loaded, setLoaded] = useState(false);
 
   const optionsList = useMemo(() => {
     return [
@@ -44,6 +51,11 @@ const TextToImages: React.FC = () => {
         label: intl.formatMessage({ id: 'playground.image.edit' }),
         value: TabsValueMap.Tab2,
         icon: <HighlightOutlined />
+      },
+      {
+        label: intl.formatMessage({ id: 'menu.compare' }),
+        value: TabsValueMap.Compare,
+        icon: <OneToOneOutlined />
       }
     ];
   }, [intl]);
@@ -61,7 +73,7 @@ const TextToImages: React.FC = () => {
       groundTabRef1.current?.setCollapse?.();
       return;
     }
-    groundTabRef2.current?.setCollapse?.();
+    if (activeKey === TabsValueMap.Tab2) groundTabRef2.current?.setCollapse?.();
   });
 
   const items: TabsProps['items'] = useMemo(() => {
@@ -77,9 +89,14 @@ const TextToImages: React.FC = () => {
         key: TabsValueMap.Tab2,
         label: 'Edit',
         children: <ImageEdit modelList={modelList} ref={groundTabRef2} />
+      },
+      {
+        key: TabsValueMap.Compare,
+        label: 'Compare',
+        children: <ImageCompare modelList={modelList} loaded={loaded} />
       }
     ];
-  }, [modelList]);
+  }, [modelList, loaded]);
 
   useEffect(() => {
     if (size.width < breakpoints.lg) {
@@ -120,6 +137,8 @@ const TextToImages: React.FC = () => {
         setModelList(modelist);
       } catch (error) {
         // error
+      } finally {
+        setLoaded(true);
       }
     };
     fetchData();
@@ -150,7 +169,7 @@ const TextToImages: React.FC = () => {
   useHotkeys(
     HotKeys.RIGHT.join(','),
     () => {
-      groundTabRef1.current?.setCollapse?.();
+      handleToggleCollapse();
     },
     {
       preventDefault: true

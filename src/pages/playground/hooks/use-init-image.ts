@@ -2,7 +2,6 @@ import {
   CustomSizeConfig,
   ImageCountConfig,
   ImageSizeConfig,
-  ImageconstExtraConfig,
   SizeOption,
   imageSizeOptions as imageSizeList
 } from '@/pages/playground/config/params-config';
@@ -10,13 +9,12 @@ import { generateRandomNumber } from '@/utils';
 import { useSearchParams } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import _ from 'lodash';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ParamsSchema } from '../config/types';
 import {
   IMG_METAKEYS,
   advancedFieldsDefaultValus,
-  imgInitialValues,
-  openaiCompatibleFieldsDefaultValus
+  imgInitialValues
 } from './config';
 
 interface MessageProps {
@@ -31,13 +29,11 @@ export const useInitImageMeta = (
   props: MessageProps,
   options: { type: string }
 ) => {
-  const { modelList } = props;
-  const ImageAdvancedParamsConfig: ParamsSchema[] = [];
+  const { modelList, model } = props;
 
   const form = useRef<any>(null);
   const [searchParams] = useSearchParams();
   const [modelMeta, setModelMeta] = useState<any>({});
-  const [isOpenaiCompatible, setIsOpenaiCompatible] = useState<boolean>(false);
   const [imageSizeOptions, setImageSizeOptions] = React.useState<SizeOption[]>(
     []
   );
@@ -54,8 +50,7 @@ export const useInitImageMeta = (
   });
   const [paramsConfig, setParamsConfig] = useState<ParamsSchema[]>([
     ...ImageCountConfig,
-    ...ImageSizeConfig,
-    ...ImageAdvancedParamsConfig
+    ...ImageSizeConfig
   ]);
 
   const [parameters, setParams] = useState<any>({
@@ -65,15 +60,8 @@ export const useInitImageMeta = (
     model: ''
   });
 
-  const defaultModel = useMemo(() => {
-    return searchParams.get('model') || modelList?.[0]?.value || '';
-  }, [modelList]);
-
-  const cacheFormData = React.useRef<Record<string, any>>({
-    ...imgInitialValues,
-    ...openaiCompatibleFieldsDefaultValus,
-    ...advancedFieldsDefaultValus
-  });
+  const defaultModel =
+    model ?? (searchParams.get('model') || modelList?.[0]?.value || '');
 
   const ensureSizeOption = (
     options: SizeOption[],
@@ -97,14 +85,15 @@ export const useInitImageMeta = (
   const getNewImageSizeOptions = (metaData: any) => {
     const { max_height, max_width, default_width, default_height } =
       metaData || {};
-    if (!max_height || !max_width) {
+    if (!max_height && !max_width) {
       const newImageSizeOptions = [...imageSizeList];
       ensureSizeOption(newImageSizeOptions, default_width, default_height);
       return newImageSizeOptions;
     }
     const newImageSizeOptions = imageSizeList.filter((item) => {
       return (
-        (item.width <= max_width && item.height <= max_height) ||
+        ((!max_width || item.width <= max_width) &&
+          (!max_height || item.height <= max_height)) ||
         item.value === 'custom'
       );
     });
@@ -164,71 +153,30 @@ export const useInitImageMeta = (
     };
   };
 
-  const updateParamsConfig = (values: {
-    size: string;
-    isOpenaiCompatible: boolean;
-  }) => {
-    // update config
+  const updateParamsConfig = (values: { size: string }) => {
     if (values.size === 'custom') {
       return [
         ...basicParamsConfig,
-        ...CustomSizeConfig,
-        ...(values.isOpenaiCompatible
-          ? ImageconstExtraConfig
-          : ImageAdvancedParamsConfig)
+        ...CustomSizeConfig.map((field) => ({
+          ...field,
+          attrs: {
+            ...field.attrs,
+            max:
+              modelMeta[`max_${field.name}`] ||
+              Math.max(1024, modelMeta[`default_${field.name}`] || 0)
+          }
+        }))
       ];
     }
-    return [
-      ...basicParamsConfig,
-      ...(values.isOpenaiCompatible
-        ? ImageconstExtraConfig
-        : ImageAdvancedParamsConfig)
-    ];
+    return [...basicParamsConfig];
   };
 
-  const updateCacheFormData = (values: Record<string, any>) => {
-    _.merge(cacheFormData.current, values);
-  };
-  const handleToggleParamsStyle = () => {
-    // update values
-    let values: any = {};
-    if (!isOpenaiCompatible) {
-      values = _.pick(
-        cacheFormData.current,
-        _.keys({
-          ...imgInitialValues,
-          ...openaiCompatibleFieldsDefaultValus
-        })
-      );
-    } else {
-      values = _.pick(
-        cacheFormData.current,
-        _.keys({
-          ...imgInitialValues,
-          ...advancedFieldsDefaultValus
-        })
-      );
-    }
-
-    // update config
-    const newParamsConfig = updateParamsConfig({
-      size: values.size,
-      isOpenaiCompatible: !isOpenaiCompatible
-    });
-    form.current?.form?.setFieldsValue({
-      ...values,
-      model: parameters.model
-    });
-    setParamsConfig(newParamsConfig);
-    setParams({
-      ...values,
-      model: parameters.model
-    });
-    setIsOpenaiCompatible(!isOpenaiCompatible);
-    updateCacheFormData({
-      ...values,
-      model: parameters
-    });
+  const applyParameters = (values: Record<string, any>) => {
+    const next = { ...parameters, ...values, model: parameters.model };
+    setParamsConfig(updateParamsConfig(next));
+    setParams(next);
+    setInitialValues(next);
+    form.current?.form?.setFieldsValue(next);
   };
 
   const handleOnModelChange = useMemoizedFn((val: string) => {
@@ -237,11 +185,7 @@ export const useInitImageMeta = (
     const { form: initialData, sizeOptions } = extractIMGMeta(model?.meta);
     const newParamsConfig = generateImageParamsConfig(model, sizeOptions);
 
-    if (!isOpenaiCompatible) {
-      setParamsConfig([...newParamsConfig, ...ImageAdvancedParamsConfig]);
-    } else {
-      setParamsConfig(newParamsConfig);
-    }
+    setParamsConfig(newParamsConfig);
     setBasicParamsConfig(newParamsConfig);
     setImageSizeOptions(sizeOptions);
     setModelMeta(model?.meta || {});
@@ -255,7 +199,6 @@ export const useInitImageMeta = (
       seed: parameters.seed,
       model: val
     });
-    updateCacheFormData(initialData);
   });
 
   const handleOnValuesChange = useMemoizedFn(
@@ -268,13 +211,7 @@ export const useInitImageMeta = (
       }
 
       if (changeValues.size && changeValues.size === 'custom') {
-        setParamsConfig([
-          ...basicParamsConfig,
-          ...CustomSizeConfig,
-          ...(!isOpenaiCompatible
-            ? ImageAdvancedParamsConfig
-            : ImageconstExtraConfig)
-        ]);
+        setParamsConfig(updateParamsConfig({ size: 'custom' }));
         setParams({
           ...allValues,
           width: modelMeta.default_width || 512,
@@ -284,16 +221,9 @@ export const useInitImageMeta = (
           width: modelMeta.default_width || 512,
           height: modelMeta.default_height || 512
         });
-        updateCacheFormData(changeValues);
       } else if (changeValues.size && parameters.size === 'custom') {
-        setParamsConfig([
-          ...basicParamsConfig,
-          ...(!isOpenaiCompatible
-            ? ImageAdvancedParamsConfig
-            : ImageconstExtraConfig)
-        ]);
+        setParamsConfig([...basicParamsConfig]);
         setParams(allValues);
-        updateCacheFormData(changeValues);
       } else if (_.isBoolean(changeValues.random_seed)) {
         const seed = changeValues.random_seed
           ? generateRandomNumber()
@@ -306,10 +236,8 @@ export const useInitImageMeta = (
         form.current?.form?.setFieldsValue({
           seed: seed
         });
-        updateCacheFormData(changeValues);
       } else {
         setParams(allValues);
-        updateCacheFormData(changeValues);
       }
     }
   );
@@ -325,9 +253,9 @@ export const useInitImageMeta = (
     generateImageParamsConfig,
     setImageSizeOptions,
     setBasicParamsConfig,
-    updateCacheFormData,
     handleOnValuesChange,
-    handleToggleParamsStyle,
+    handleOnModelChange,
+    applyParameters,
     setParams,
     setInitialValues,
     updateParamsConfig,
@@ -337,16 +265,12 @@ export const useInitImageMeta = (
     paramsConfig,
     initialValues,
     parameters,
-    isOpenaiCompatible,
-    cacheFormData,
     basicParamsConfig,
     imageSizeOptions,
-    openaiCompatibleFieldsDefaultValus,
     advancedFieldsDefaultValus,
     imgInitialValues,
     ImageCountConfig,
     ImageSizeConfig,
-    CustomSizeConfig,
-    ImageconstExtraConfig
+    CustomSizeConfig
   };
 };

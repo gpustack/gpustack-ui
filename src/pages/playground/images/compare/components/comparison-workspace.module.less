@@ -1,0 +1,30 @@
+.panels {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--ant-padding) var(--layout-content-inlinepadding) 0;
+}
+
+.grid {
+  height: 100%;
+}
+
+.panelColumn {
+  height: calc(100% - var(--ant-padding));
+  overflow: hidden;
+}
+
+.halfHeight {
+  height: calc(50% - var(--ant-padding));
+}
+
+@media (max-width: 767px) {
+  .grid {
+    height: auto;
+    row-gap: var(--ant-padding);
+  }
+
+  .panelColumn {
+    height: 340px;
+  }
+}

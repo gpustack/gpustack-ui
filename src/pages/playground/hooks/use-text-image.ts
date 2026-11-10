@@ -1,219 +1,122 @@
 import { extractErrorMessage, promptList } from '@/pages/playground/config';
 import { useOverlayScroller } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import _ from 'lodash';
+import { useMemoizedFn } from 'ahooks';
 import { useEffect, useRef, useState } from 'react';
-import {
-  CREAT_IMAGE_API,
-  EDIT_IMAGE_API,
-  createImage,
-  editImage
-} from '../apis';
-
-const ODD_STRING = 'AAAABJRU5ErkJgg===';
+import { CREAT_IMAGE_API, createImage, editImage } from '../apis';
 
 export default function useTextImage(props: any) {
   const intl = useIntl();
-  const { scroller, chunkFields, API } = props;
+  const { scroller, API, onLoadingChange } = props;
   const [loading, setLoading] = useState(false);
   const [tokenResult, setTokenResult] = useState<any>(null);
-  const [imageList, setImageList] = useState<
-    {
-      dataUrl: string;
-      height: number | string;
-      width: string | number;
-      maxHeight: string | number;
-      maxWidth: string | number;
-      uid: number;
-      span?: number;
-      loading?: boolean;
-      progress?: number;
-      preview?: boolean;
-    }[]
-  >([]);
+  const [imageList, setImageList] = useState<any[]>([]);
   const [currentPrompt, setCurrentPrompt] = useState('');
-  const messageId = useRef<number>(0);
-  const requestToken = useRef<any>(null);
+  const messageId = useRef(0);
+  const requestToken = useRef<AbortController | null>(null);
+  const requestIdRef = useRef(0);
   const { initialize } = useOverlayScroller();
-  const streamReaderRef = useRef<any>(null);
-  const requestIdRef = useRef<number>(0);
+
+  const updateLoading = useMemoizedFn((running: boolean) => {
+    setLoading(running);
+    onLoadingChange?.(running);
+  });
 
   useEffect(() => {
-    if (scroller.current) {
-      initialize(scroller.current);
-    }
+    if (scroller.current) initialize(scroller.current);
   }, [initialize]);
 
-  const updateRequestId = () => {
-    requestIdRef.current = requestIdRef.current + 1;
-    return requestIdRef.current;
+  const handleStopConversation = () => {
+    requestIdRef.current += 1;
+    requestToken.current?.abort('stop');
+    requestToken.current = null;
+    setImageList((images) => images.filter((image) => !image.loading));
+    updateLoading(false);
   };
-
-  const removeBase64Suffix = (str: string, suffix: string) => {
-    return str.endsWith(suffix) ? str.slice(0, -suffix.length) : str;
-  };
-
-  const setImageSize = (parameters: any) => {
-    const size: Record<string, string | number> = {
-      span: 12
-    };
-    if (parameters.n === 1) {
-      size.span = 24;
-    }
-    if (parameters.n === 2) {
-      size.span = 12;
-    }
-    if (parameters.n === 3) {
-      size.span = 12;
-    }
-    if (parameters.n === 4) {
-      size.span = 12;
-    }
-    return size;
-  };
-
-  const setMessageId = () => {
-    messageId.current = messageId.current + 1;
-    return messageId.current;
-  };
-
-  const generateNumber = (min: number, max: number) => {
-    return Math.floor(Math.random() * (max - min + 1) + min);
-  };
-
-  const stopDebounce = _.debounce(() => {
-    setImageList([]);
-    setLoading(false);
-  }, 200);
 
   const submitMessage = async (parameters: any) => {
+    if (!parameters.model) return;
+    const requestId = ++requestIdRef.current;
+    requestToken.current?.abort('cancel');
+    const controller = new AbortController();
+    requestToken.current = controller;
+    const [width, height] = String(parameters.size || '')
+      .split('x')
+      .map(Number);
+    const images = Array.from({ length: parameters.n || 1 }, () => ({
+      dataUrl: 'data:image/png;base64,',
+      height,
+      width,
+      span: parameters.n > 1 ? 12 : 24,
+      loading: true,
+      progress: 0,
+      progressType: 'dashboard',
+      preview: false,
+      uid: ++messageId.current
+    }));
+    setImageList(images);
+    setTokenResult(null);
+    updateLoading(true);
     try {
-      if (!parameters.model) return;
-
-      requestToken.current?.abort?.('cancel');
-      requestToken.current = new AbortController();
-      const currentRequestId = updateRequestId();
-      const size: any = setImageSize(parameters);
-      setLoading(true);
-      setMessageId();
-      setTokenResult(null);
-
-      const imgSize = _.split(parameters.size, 'x').map((item: string) =>
-        _.toNumber(item)
-      );
-
-      const newImageList = Array(parameters.n)
-        .fill({})
-        .map((item, index: number) => {
-          return {
-            dataUrl: 'data:image/png;base64,',
-            ...size,
-            progress: 0,
-            height: imgSize[1],
-            width: imgSize[0],
-            loading: true,
-            progressType: 'dashboard',
-            preview: false,
-            uid: setMessageId()
-          };
-        });
-      setImageList(newImageList);
-
-      let result: any = {};
-      if (API === CREAT_IMAGE_API) {
-        result = await createImage({
-          data: parameters,
-          signal: requestToken.current.signal
-        });
+      const request = API === CREAT_IMAGE_API ? createImage : editImage;
+      const result = await request({
+        data: parameters,
+        signal: controller.signal
+      });
+      if (requestId !== requestIdRef.current) return;
+      if (result?.error) throw new Error(extractErrorMessage(result));
+      if (
+        !result?.data?.length ||
+        !result.data.every((item: any) => item.b64_json || item.url)
+      ) {
+        throw new Error(
+          intl.formatMessage({ id: 'playground.image.generate.error' })
+        );
       }
-
-      if (API === EDIT_IMAGE_API) {
-        result = await editImage({
-          data: parameters,
-          signal: requestToken.current.signal
-        });
-      }
-
-      console.log('result:', result);
-
-      if (result.error) {
-        setTokenResult({
-          error: true,
-          errorMessage: extractErrorMessage(result)
-        });
-        setImageList([]);
-        return;
-      }
-
-      // If the request ID has changed, ignore this chunk
-      if (requestIdRef.current !== currentRequestId) {
-        return;
-      }
-      if (result?.error) {
-        setTokenResult({
-          error: true,
-          errorMessage: extractErrorMessage(result)
-        });
-        return;
-      }
-
-      result?.data?.forEach((item: any, index: number) => {
-        const imgItem = newImageList[index];
-
-        // imgItem is part of the list already handed to setImageList, so
-        // resolve the next dataUrl into a local variable instead of
-        // mutating the state object in place.
-        let dataUrl = imgItem.dataUrl;
-        if (item.b64_json) {
-          dataUrl = `data:image/png;base64,${item.b64_json}`;
-        } else if (item.url) {
-          // Provider-backed image models (e.g. qwen via DashScope) answer
-          // with a hosted URL instead of inline base64. The link is
-          // short-lived, so the image is only guaranteed to display while
-          // this response is on screen.
-          dataUrl = item.url;
-        }
-
-        newImageList[index] = {
-          dataUrl,
-          height: imgSize[1],
-          width: imgSize[0],
-          maxHeight: `${imgSize[1]}px`,
-          maxWidth: `${imgSize[0]}px`,
-          uid: imgItem.uid,
-          span: imgItem.span,
+      setImageList(
+        result.data.map((item: any, index: number) => ({
+          ...images[index],
+          uid: images[index]?.uid ?? ++messageId.current,
+          dataUrl: item.b64_json
+            ? `data:image/png;base64,${item.b64_json}`
+            : item.url,
+          height,
+          width,
+          span: result.data.length > 1 ? 12 : 24,
+          maxHeight: `${height}px`,
+          maxWidth: `${width}px`,
           loading: false,
           preview: true,
           progress: 100
-        };
-      });
-      console.log('newImageList:', newImageList);
-      setImageList([...newImageList]);
+        }))
+      );
     } catch (error) {
-      console.log('error:', error);
-      updateRequestId();
-      stopDebounce();
-      requestToken.current?.abort?.('cancel');
+      if (requestId !== requestIdRef.current) return;
+      setImageList([]);
+      setTokenResult({ error: true, errorMessage: extractErrorMessage(error) });
     } finally {
-      setLoading(false);
+      if (requestId === requestIdRef.current) {
+        requestToken.current = null;
+        updateLoading(false);
+      }
     }
   };
 
   const handleClear = () => {
+    handleStopConversation();
     setImageList([]);
     setTokenResult(null);
     setCurrentPrompt('');
   };
 
-  const handleStopConversation = () => {
-    requestToken.current?.abort?.('stop');
-  };
-
-  useEffect(() => {
-    return () => {
-      requestToken.current?.abort?.('cancel');
-    };
-  }, []);
+  useEffect(
+    () => () => {
+      requestIdRef.current += 1;
+      requestToken.current?.abort('cancel');
+      onLoadingChange?.(false);
+    },
+    []
+  );
 
   return {
     loading,
@@ -225,7 +128,6 @@ export default function useTextImage(props: any) {
     setTokenResult,
     setCurrentPrompt,
     handleStopConversation,
-    generateNumber,
     handleClear,
     submitMessage
   };

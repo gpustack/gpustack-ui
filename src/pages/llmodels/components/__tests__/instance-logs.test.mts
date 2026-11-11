@@ -607,3 +607,45 @@ test('read and options API wrappers forward action cancellation and local errors
     assert.equal(options.skipErrorHandler, true);
   }
 });
+
+test('opening a mounted modal initializes download mode from the selected instance', async () => {
+  optionsResponse = response();
+  await mount(modal({ open: false, status: '' }));
+  await act(async () => {
+    root!.render(modal({ status: 'downloading' }));
+  });
+  assert.equal(viewer.isDownloading, true);
+  assert.equal(viewer.enableScorllLoad, false);
+
+  await act(async () => {
+    root!.render(modal({ open: false, status: '' }));
+  });
+  await act(async () => {
+    root!.render(modal({ status: 'running' }));
+  });
+  assert.equal(viewer.isDownloading, false);
+  assert.equal(viewer.enableScorllLoad, true);
+});
+
+test('download mode applies only to current combined logs', async () => {
+  optionsResponse = response();
+  optionsResponse.workers[0].restarts[0].containers.push('sidecar');
+  optionsResponse.workers[0].restarts.push({
+    previous: true,
+    started_at: null,
+    containers: ['default'],
+    sources: []
+  });
+  await mount(modal({ status: 'downloading' }));
+  assert.equal(viewer.isDownloading, true);
+  await act(async () => {
+    container.querySelector('input[type="checkbox"]')!.click();
+  });
+  assert.equal(viewer.isDownloading, false);
+  await act(async () => {
+    container.querySelector('input[type="checkbox"]')!.click();
+  });
+  assert.equal(viewer.isDownloading, true);
+  await select('7:sidecar');
+  assert.equal(viewer.isDownloading, false);
+});

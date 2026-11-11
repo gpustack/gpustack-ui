@@ -9,6 +9,7 @@ export interface RestartOption {
   start_at: string | null;
   previous: boolean;
   worker_id: number;
+  // Internal request name; the parent option retains the display name.
   container: string;
   parentValue: string;
   source?: string;
@@ -56,6 +57,19 @@ export default function useQueryModelInstanceRestartCount() {
         const isMain = res.main_worker_id === worker.worker_id;
 
         worker.restarts?.forEach((restart, index) => {
+          const sourceContainers = new Set(
+            restart.sources?.map((source) => source.container_name)
+          );
+          // Only the main container is renamed for display. Source identities
+          // retain internal names; legacy responses list the main container first.
+          const defaultContainer = restart.sources?.length
+            ? sourceContainers.has('default')
+              ? restart.containers?.find(
+                  (container) =>
+                    container === 'default' || !sourceContainers.has(container)
+                )
+              : undefined
+            : restart.containers?.[0];
           const containers = (restart.containers || []).map((container) => ({
             container,
             key: container,
@@ -99,7 +113,10 @@ export default function useQueryModelInstanceRestartCount() {
                 : intl.formatMessage({ id: 'models.instance.currentRun' }),
               start_at: restart.started_at,
               worker_id: worker.worker_id,
-              container,
+              container:
+                !source && container === defaultContainer
+                  ? 'default'
+                  : container,
               parentValue,
               source
             });

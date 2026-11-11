@@ -274,6 +274,8 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
   useEffect(() => {
     let active = true;
     if (open && props.id) {
+      setIsDownloading(status === InstanceStatusMap.Downloading);
+      setEnableScorllLoad(!InstanceRealtimeLogStatus.includes(status || ''));
       handleOnChange();
       setShowPrevious(false);
       requestRef.current?.current?.cancel?.();
@@ -326,7 +328,12 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
           url={url}
           tail={tail}
           enableScorllLoad={enableScorllLoad}
-          isDownloading={isDownloading}
+          isDownloading={
+            isDownloading &&
+            !params.previous &&
+            !params.source &&
+            (!params.container_name || params.container_name === 'default')
+          }
           params={params}
         ></LogsViewer>
       </div>

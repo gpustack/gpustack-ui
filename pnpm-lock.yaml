@@ -28,8 +28,8 @@ importers:
         specifier: ^7.1.1
         version: 7.1.2
       '@gpustack/core-ui':
-        specifier: ^1.1.28
-        version: 1.1.28(kccvev4yntxcdwnpucakbdvpu4)
+        specifier: ^1.1.29
+        version: 1.1.29(kccvev4yntxcdwnpucakbdvpu4)
       '@huggingface/gguf':
         specifier: ^0.1.7
         version: 0.1.18
@@ -1474,8 +1474,8 @@ packages:
     resolution: {integrity: sha512-KWk80UPIzPmUg+P0rKh6TqspRw0G6eux1PuJr+zz47ftMaZ9QDwbGzHZbtzWkl5hgayM/qrKRutllRC7D/vVXQ==, tarball: https://registry.npmjs.org/@formatjs/intl-utils/-/intl-utils-2.3.0.tgz}
     deprecated: the package is rather renamed to @formatjs/ecma-abstract with some changes in functionality (primarily selectUnit is removed and we don't plan to make any further changes to this package
 
-  '@gpustack/core-ui@1.1.28':
-    resolution: {integrity: sha512-SJy+AbGJpyyNIEaSTO4eIYyIL5kq5Ui0frnKc5kD/XMKsQIIN3NgPbhD+39UfSIIAnXzrHGXPvzH9qwaglKR+w==, tarball: https://registry.npmjs.org/@gpustack/core-ui/-/core-ui-1.1.28.tgz}
+  '@gpustack/core-ui@1.1.29':
+    resolution: {integrity: sha512-qCFnziRHKbvEBJSolS9frCKibUxgqyKnhpA0uUHl3SVrQDNWmMcuZwurh6E1i3Uml4sPhYSaUQQoAihvidMg1A==, tarball: https://registry.npmjs.org/@gpustack/core-ui/-/core-ui-1.1.29.tgz}
     peerDependencies:
       '@ant-design/icons': ^6.1.0
       '@ant-design/pro-components': 3.1.0-0
@@ -5127,6 +5127,7 @@ packages:
   image-size@0.5.5:
     resolution: {integrity: sha512-6TDAlDPZxUFCv+fuOkIoXT/V/f3Qbq8e37p+YOiYrUv3v9cc3/6x78VdfPgFVaB9dZYeLUfKgHRebpkm/oP2VQ==, tarball: https://registry.npmjs.org/image-size/-/image-size-0.5.5.tgz}
     engines: {node: '>=0.10.0'}
+    deprecated: Please migrate to image-size@2.x
     hasBin: true
 
   immediate@3.0.6:
@@ -10493,7 +10494,7 @@ snapshots:
 
   '@formatjs/intl-utils@2.3.0': {}
 
-  '@gpustack/core-ui@1.1.28(kccvev4yntxcdwnpucakbdvpu4)':
+  '@gpustack/core-ui@1.1.29(kccvev4yntxcdwnpucakbdvpu4)':
     dependencies:
       '@ant-design/icons': 6.2.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@ant-design/pro-components': 3.1.0-0(antd@6.3.7(date-fns@2.30.0)(luxon@3.7.2)(moment@2.30.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)

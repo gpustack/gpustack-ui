@@ -107,18 +107,23 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
   const { initialize, updateScrollerPosition: updateDocumentScrollerPosition } =
     useOverlayScroller();
 
-  const { handleOnValuesChange, formRef, parameters, modelMeta } =
-    useInitLLmMeta(
-      {
-        modelList,
-        isChat: true
-      },
-      {
-        defaultValues: { top_n: 3 },
-        defaultParamsConfig: fieldConfig,
-        metaKeys: LLM_METAKEYS
-      }
-    );
+  const {
+    handleOnValuesChange,
+    handleOnModelChange,
+    formRef,
+    parameters,
+    modelMeta
+  } = useInitLLmMeta(
+    {
+      modelList,
+      isChat: true
+    },
+    {
+      defaultValues: { top_n: 3 },
+      defaultParamsConfig: fieldConfig,
+      metaKeys: LLM_METAKEYS
+    }
+  );
 
   useImperativeHandle(ref, () => {
     return {
@@ -609,6 +614,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
         <DataForm
           ref={formRef}
           onValuesChange={onValuesChange}
+          onModelChange={handleOnModelChange}
           initialValues={{ top_n: 3 }}
           modelList={modelList}
           meta={modelMeta}

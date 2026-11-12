@@ -107,18 +107,23 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
   const { initialize, updateScrollerPosition: updateDocumentScrollerPosition } =
     useOverlayScroller();
 
-  const { handleOnValuesChange, formRef, parameters, modelMeta } =
-    useInitLLmMeta(
-      {
-        modelList,
-        isChat: true
-      },
-      {
-        defaultValues: {},
-        defaultParamsConfig: [],
-        metaKeys: LLM_METAKEYS
-      }
-    );
+  const {
+    handleOnValuesChange,
+    handleOnModelChange,
+    formRef,
+    parameters,
+    modelMeta
+  } = useInitLLmMeta(
+    {
+      modelList,
+      isChat: true
+    },
+    {
+      defaultValues: {},
+      defaultParamsConfig: [],
+      metaKeys: LLM_METAKEYS
+    }
+  );
 
   useImperativeHandle(ref, () => {
     return {
@@ -722,6 +727,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
         <DataForm
           ref={formRef}
           onValuesChange={onValuesChange}
+          onModelChange={handleOnModelChange}
           initialValues={{}}
           modelList={modelList}
         />

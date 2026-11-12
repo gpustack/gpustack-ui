@@ -1,6 +1,11 @@
 export const keepAliveRoutes = {
   text2images: '/playground/text-to-image',
-  speech: '/playground/speech'
+  speech: '/playground/speech',
+  video: '/playground/video'
 };
 
-export default [keepAliveRoutes.text2images, keepAliveRoutes.speech];
+export default [
+  keepAliveRoutes.text2images,
+  keepAliveRoutes.speech,
+  keepAliveRoutes.video
+];

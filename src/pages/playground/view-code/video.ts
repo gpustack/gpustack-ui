@@ -1,4 +1,29 @@
+import { MODEL_PROXY } from '../apis';
 import { formatPyObject } from './utils';
+
+export const generateVideoCurlCode = ({
+  api,
+  parameters,
+  modelProxy,
+  routeID
+}: {
+  api: string;
+  parameters: Record<string, unknown>;
+  modelProxy?: boolean;
+  routeID?: string | number;
+}) => {
+  if (!modelProxy) return generateCode({ api, parameters }).curlCode;
+
+  const fields = Object.entries(parameters).map(([key, value]) => {
+    const field = `${key}=${String(value)}`.replace(/'/g, "'\\''");
+    return `  --form-string '${field}'`;
+  });
+  return [
+    `curl --fail "${window.location.origin}${MODEL_PROXY}/${routeID}/\${YOUR_API_PATH}"`,
+    '  -H "Authorization: Bearer ${YOUR_GPUSTACK_API_KEY}"',
+    ...fields
+  ].join(' \\\n');
+};
 
 export const generateCode = ({
   api,
@@ -29,7 +54,7 @@ video_id=$(printf '%s' "$job" | jq -er '.id')
 status=$(printf '%s' "$job" | jq -r '.status')
 while [ "$status" != "completed" ]; do
   case "$status" in
-    queued|in_progress) sleep 2 ;;
+    queued|in_progress) sleep 5 ;;
     *) printf '%s\\n' "$job" >&2; exit 1 ;;
   esac
   job=$(curl --fail "${url}/$video_id" \\
@@ -64,7 +89,7 @@ response.raise_for_status()
 job = response.json()
 video_id = job["id"]
 while job["status"] in ("queued", "in_progress"):
-    time.sleep(2)
+    time.sleep(5)
     response = requests.get("${url}/" + video_id, headers=headers)
     response.raise_for_status()
     job = response.json()
@@ -102,7 +127,7 @@ ${nodeUpload}
   let job = await response.json();
   const id = encodeURIComponent(job.id);
   while (["queued", "in_progress"].includes(job.status)) {
-    await delay(2000);
+    await delay(5000);
     response = await fetch("${url}/" + id, { headers });
     if (!response.ok) throw new Error(await response.text());
     job = await response.json();

@@ -84,6 +84,7 @@ const CATEGORY_ICON_MAP: Record<string, string> = {
   embedding: 'embedding',
   reranker: 'reranker',
   image: 'image',
+  video: 'video',
   text_to_speech: 'tts',
   speech_to_text: 'stt',
   // Decision models (System One / Jev) reuse the TypeSafe provider mark

@@ -179,7 +179,7 @@ const GroundVideo: React.FC<MessageProps> = forwardRef((props, ref) => {
                       size="middle"
                       description={`${intl.formatMessage({
                         id: 'playground.video.generating'
-                      })}${progress === undefined ? '' : ` ${progress}%`}`}
+                      })}${progress !== undefined && progress > 0 ? ` ${progress}%` : ''}`}
                       styles={{
                         root: {
                           position: 'absolute',

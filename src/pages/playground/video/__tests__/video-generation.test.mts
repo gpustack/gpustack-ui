@@ -24,6 +24,7 @@ mock.module(new URL('../../apis/index.ts', import.meta.url).href, {
 });
 
 const { generateVideo } = await import('../video-generation');
+const { createVideoPollingController } = await import('../video-polling');
 const flush = () => new Promise<void>((resolve) => setImmediate(resolve));
 
 test.beforeEach(() => {
@@ -34,7 +35,7 @@ test.beforeEach(() => {
 });
 test.afterEach(() => mock.timers.reset());
 
-test('polls serially and downloads only after completion', async () => {
+test('polls every five seconds serially and downloads only after completion', async () => {
   const progress: (number | undefined)[] = [];
   const jobs = [
     { id: 'video-1', status: 'in_progress', progress: 42 },
@@ -46,10 +47,13 @@ test('polls serially and downloads only after completion', async () => {
   );
   await flush();
   assert.deepEqual(calls, ['create']);
-  mock.timers.tick(2000);
+  mock.timers.tick(4999);
+  await flush();
+  assert.deepEqual(calls, ['create']);
+  mock.timers.tick(1);
   await flush();
   assert.deepEqual(calls, ['create', 'poll:video-1']);
-  mock.timers.tick(2000);
+  mock.timers.tick(5000);
   assert.equal(await result, video);
   assert.deepEqual(progress, [0, 42, 100]);
   assert.deepEqual(calls, [
@@ -78,7 +82,7 @@ test('a late completed poll cannot update progress or download after cancellatio
   const controller = new AbortController();
   const result = generateVideo({}, controller.signal, (p) => progress.push(p));
   await flush();
-  mock.timers.tick(2000);
+  mock.timers.tick(5000);
   await flush();
   controller.abort();
   complete({ id: 'video-1', status: 'completed', progress: 100 });
@@ -116,4 +120,104 @@ test('missing progress remains unknown and is not replaced with a fake percentag
     progress.push(p)
   );
   assert.deepEqual(progress, [undefined]);
+});
+
+test('leaving pauses polls and returning immediately resumes the same video job', async () => {
+  const polling = createVideoPollingController();
+  const jobs = [
+    { id: 'video-1', status: 'in_progress', progress: 42 },
+    { id: 'video-1', status: 'completed', progress: 100 }
+  ];
+  pollJob = async () => jobs.shift();
+  const result = generateVideo(
+    {},
+    new AbortController().signal,
+    () => {},
+    polling
+  );
+  await flush();
+  mock.timers.tick(2000);
+  polling.setActive(false);
+  mock.timers.tick(30000);
+  await flush();
+  assert.deepEqual(calls, ['create']);
+
+  polling.setActive(true);
+  await flush();
+  assert.deepEqual(calls, ['create', 'poll:video-1']);
+  mock.timers.tick(4999);
+  await flush();
+  assert.deepEqual(calls, ['create', 'poll:video-1']);
+
+  polling.setActive(false);
+  mock.timers.tick(30000);
+  await flush();
+  assert.deepEqual(calls, ['create', 'poll:video-1']);
+  polling.setActive(true);
+  assert.equal(await result, video);
+  assert.deepEqual(calls, [
+    'create',
+    'poll:video-1',
+    'poll:video-1',
+    'content:video-1'
+  ]);
+});
+
+test('leaving while creation is pending retains the returned job without polling until return', async () => {
+  let complete!: (job: any) => void;
+  createJob = () => new Promise((resolve) => (complete = resolve));
+  const polling = createVideoPollingController();
+  const result = generateVideo(
+    {},
+    new AbortController().signal,
+    () => {},
+    polling
+  );
+  polling.setActive(false);
+  complete({ id: 'video-1', status: 'queued', progress: 0 });
+  await flush();
+  mock.timers.tick(30000);
+  await flush();
+  assert.deepEqual(calls, ['create']);
+  polling.setActive(true);
+  assert.equal(await result, video);
+  assert.deepEqual(calls, ['create', 'poll:video-1', 'content:video-1']);
+});
+
+test('a completed in-flight poll waits until return before downloading', async () => {
+  let complete!: (job: any) => void;
+  pollJob = () => new Promise((resolve) => (complete = resolve));
+  const polling = createVideoPollingController();
+  const result = generateVideo(
+    {},
+    new AbortController().signal,
+    () => {},
+    polling
+  );
+  await flush();
+  mock.timers.tick(5000);
+  await flush();
+  polling.setActive(false);
+  complete({ id: 'video-1', status: 'completed', progress: 100 });
+  await flush();
+  mock.timers.tick(30000);
+  await flush();
+  assert.deepEqual(calls, ['create', 'poll:video-1']);
+  polling.setActive(true);
+  assert.equal(await result, video);
+  assert.deepEqual(calls, ['create', 'poll:video-1', 'content:video-1']);
+});
+
+test('cancelling a paused job prevents polls after returning', async () => {
+  const polling = createVideoPollingController();
+  const controller = new AbortController();
+  const result = generateVideo({}, controller.signal, () => {}, polling);
+  await flush();
+  polling.setActive(false);
+  controller.abort();
+  await assert.rejects(result, { name: 'AbortError' });
+  polling.setActive(true);
+  mock.timers.tick(30000);
+  await flush();
+  assert.deepEqual(calls, ['create']);
 });

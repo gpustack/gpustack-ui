@@ -1,23 +1,11 @@
 import { createVideo, getVideo, getVideoContent } from '../apis';
-
-const waitForPoll = (signal: AbortSignal) =>
-  new Promise<void>((resolve, reject) => {
-    signal.throwIfAborted();
-    const handleAbort = () => {
-      clearTimeout(timer);
-      reject(signal.reason);
-    };
-    const timer = setTimeout(() => {
-      signal.removeEventListener('abort', handleAbort);
-      resolve();
-    }, 2000);
-    signal.addEventListener('abort', handleAbort, { once: true });
-  });
+import { createVideoPollingController } from './video-polling';
 
 export async function generateVideo(
   parameters: Record<string, unknown>,
   signal: AbortSignal,
-  onProgress: (progress: number | undefined) => void
+  onProgress: (progress: number | undefined) => void,
+  polling = createVideoPollingController()
 ) {
   let job = await createVideo({ data: parameters, signal });
   signal.throwIfAborted();
@@ -38,11 +26,13 @@ export async function generateVideo(
         typeof job.error === 'string' ? job.error : job.error?.message;
       throw new Error(message || `Video generation ${job.status || 'failed'}`);
     }
-    await waitForPoll(signal);
+    await polling.waitForPoll(signal);
+    await polling.waitUntilActive(signal);
     signal.throwIfAborted();
     job = await getVideo(id, signal);
   }
 
+  await polling.waitUntilActive(signal);
   signal.throwIfAborted();
   return getVideoContent(id, signal);
 }

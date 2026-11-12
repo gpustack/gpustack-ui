@@ -1,8 +1,12 @@
+import { setRouteCache } from '@/atoms/route-cache';
+import routeCachekey from '@/config/route-cachekey';
 import { readResponseError } from '@/utils/download-stream';
 import { useOverlayScroller } from '@gpustack/core-ui';
+import { useLocation } from '@umijs/max';
 import { useEffect, useRef, useState, type RefObject } from 'react';
 import { extractErrorMessage } from '../config';
 import { generateVideo } from '../video/video-generation';
+import { createVideoPollingController } from '../video/video-polling';
 
 export default function useTextVideo(scroller: RefObject<HTMLDivElement>) {
   const [loading, setLoading] = useState(false);
@@ -11,7 +15,27 @@ export default function useTextVideo(scroller: RefObject<HTMLDivElement>) {
   const [progress, setProgress] = useState<number>();
   const [currentPrompt, setCurrentPrompt] = useState('');
   const requestRef = useRef<AbortController | null>(null);
+  const [polling] = useState(createVideoPollingController);
+  const { pathname } = useLocation();
   const { initialize } = useOverlayScroller();
+
+  const setGenerating = (running: boolean) => {
+    setLoading(running);
+    setRouteCache(routeCachekey['/playground/video'], running);
+  };
+
+  useEffect(() => {
+    const updateActivity = () => {
+      polling.setActive(
+        pathname.replace(/\/+$/, '').toLowerCase() ===
+          routeCachekey['/playground/video'] && !document.hidden
+      );
+    };
+    updateActivity();
+    document.addEventListener('visibilitychange', updateActivity);
+    return () =>
+      document.removeEventListener('visibilitychange', updateActivity);
+  }, [pathname, polling]);
 
   useEffect(() => {
     if (scroller.current) {
@@ -19,7 +43,14 @@ export default function useTextVideo(scroller: RefObject<HTMLDivElement>) {
     }
   }, [initialize, scroller]);
 
-  useEffect(() => () => requestRef.current?.abort(), []);
+  useEffect(
+    () => () => {
+      requestRef.current?.abort();
+      requestRef.current = null;
+      setRouteCache(routeCachekey['/playground/video'], false);
+    },
+    []
+  );
 
   useEffect(() => {
     return () => {
@@ -31,7 +62,7 @@ export default function useTextVideo(scroller: RefObject<HTMLDivElement>) {
     requestRef.current?.abort();
     const controller = new AbortController();
     requestRef.current = controller;
-    setLoading(true);
+    setGenerating(true);
     setErrorMessage('');
     setVideoUrl('');
     setProgress(undefined);
@@ -42,7 +73,8 @@ export default function useTextVideo(scroller: RefObject<HTMLDivElement>) {
         controller.signal,
         (value) => {
           if (!controller.signal.aborted) setProgress(value);
-        }
+        },
+        polling
       );
       if (controller.signal.aborted) return;
       if (!video.size) throw new Error('Empty video response');
@@ -56,7 +88,7 @@ export default function useTextVideo(scroller: RefObject<HTMLDivElement>) {
     } finally {
       if (requestRef.current === controller) {
         requestRef.current = null;
-        setLoading(false);
+        setGenerating(false);
       }
     }
   };
@@ -64,7 +96,7 @@ export default function useTextVideo(scroller: RefObject<HTMLDivElement>) {
   const handleStopConversation = () => {
     requestRef.current?.abort();
     requestRef.current = null;
-    setLoading(false);
+    setGenerating(false);
     setProgress(undefined);
   };
 

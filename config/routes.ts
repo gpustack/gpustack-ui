@@ -91,7 +91,7 @@ const baseRoutes = [
       {
         name: 'video',
         title: 'Video',
-        path: '/playground/video',
+        path: keepAliveRoutes.video,
         key: 'video',
         icon: 'icon-video-outline',
         selectedIcon: 'icon-video-filled02',

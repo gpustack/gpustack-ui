@@ -1,9 +1,9 @@
+import CategorySelect from '@/pages/_components/category-select';
 import { BaseSelect, FilterForm } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import { forwardRef, useImperativeHandle, useRef } from 'react';
 import styled from 'styled-components';
-import { modelCategories } from '../config';
 import useFilterStatus from '../hooks/use-filter-status';
 const Content = styled.div`
   display: flex;
@@ -94,10 +94,8 @@ const FilterFormContent: React.FC<FilterFormContentProps> = forwardRef(
               id: 'models.filter.category'
             })}
           >
-            {/* <PillButtonGroup
-            options={modelCategories.filter((item) => item.value)}
-          ></PillButtonGroup> */}
-            <BaseSelect
+            <CategorySelect
+              control="filter"
               allowClear
               showSearch={false}
               placeholder={intl.formatMessage({
@@ -105,9 +103,7 @@ const FilterFormContent: React.FC<FilterFormContentProps> = forwardRef(
               })}
               size="large"
               maxTagCount={1}
-              // onChange={handleCategoryChange}
-              options={modelCategories.filter((item) => item.value)}
-            ></BaseSelect>
+            />
           </Form.Item>
 
           <Label>

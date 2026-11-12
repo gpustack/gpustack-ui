@@ -1,13 +1,14 @@
 import { readResponseError } from '@/utils/download-stream';
 import { useOverlayScroller } from '@gpustack/core-ui';
 import { useEffect, useRef, useState, type RefObject } from 'react';
-import { createVideo } from '../apis';
 import { extractErrorMessage } from '../config';
+import { generateVideo } from '../video/video-generation';
 
 export default function useTextVideo(scroller: RefObject<HTMLDivElement>) {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [videoUrl, setVideoUrl] = useState('');
+  const [progress, setProgress] = useState<number>();
   const [currentPrompt, setCurrentPrompt] = useState('');
   const requestRef = useRef<AbortController | null>(null);
   const { initialize } = useOverlayScroller();
@@ -33,12 +34,16 @@ export default function useTextVideo(scroller: RefObject<HTMLDivElement>) {
     setLoading(true);
     setErrorMessage('');
     setVideoUrl('');
+    setProgress(undefined);
 
     try {
-      const video = await createVideo({
-        data: parameters,
-        signal: controller.signal
-      });
+      const video = await generateVideo(
+        parameters,
+        controller.signal,
+        (value) => {
+          if (!controller.signal.aborted) setProgress(value);
+        }
+      );
       if (controller.signal.aborted) return;
       if (!video.size) throw new Error('Empty video response');
 
@@ -60,6 +65,7 @@ export default function useTextVideo(scroller: RefObject<HTMLDivElement>) {
     requestRef.current?.abort();
     requestRef.current = null;
     setLoading(false);
+    setProgress(undefined);
   };
 
   const handleClear = () => {
@@ -71,6 +77,7 @@ export default function useTextVideo(scroller: RefObject<HTMLDivElement>) {
 
   return {
     loading,
+    progress,
     errorMessage,
     videoUrl,
     currentPrompt,

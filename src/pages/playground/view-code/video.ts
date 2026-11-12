@@ -22,9 +22,23 @@ export const generateCode = ({
     : '';
 
   const curlCode = `
-curl --fail "${url}" \\
+job=$(curl --fail "${url}" \\
   -H "Authorization: Bearer \${YOUR_GPUSTACK_API_KEY}" \\
-${fields.join('')}${curlUpload}  --output output.mp4`.trim();
+${fields.join('')}${curlUpload}  )
+video_id=$(printf '%s' "$job" | jq -er '.id')
+status=$(printf '%s' "$job" | jq -r '.status')
+while [ "$status" != "completed" ]; do
+  case "$status" in
+    queued|in_progress) sleep 2 ;;
+    *) printf '%s\\n' "$job" >&2; exit 1 ;;
+  esac
+  job=$(curl --fail "${url}/$video_id" \\
+    -H "Authorization: Bearer \${YOUR_GPUSTACK_API_KEY}")
+  status=$(printf '%s' "$job" | jq -r '.status')
+done
+curl --fail -L "${url}/$video_id/content" \\
+  -H "Authorization: Bearer \${YOUR_GPUSTACK_API_KEY}" \\
+  --output output.mp4`.trim();
 
   const pythonUpload = reference
     ? `reference = Path(os.environ["INPUT_REFERENCE_PATH"])
@@ -33,17 +47,31 @@ files["input_reference"] = (reference.name, reference.read_bytes(), ${referenceT
 
   const pythonCode = `
 import os
+import time
 from pathlib import Path
 
 import requests
 
 params = ${formatPyObject(formValues)}
+headers = {"Authorization": "Bearer " + os.environ["YOUR_GPUSTACK_API_KEY"]}
 files = {key: (None, str(value)) for key, value in params.items()}
 ${pythonUpload}response = requests.post(
     "${url}",
-    headers={"Authorization": "Bearer " + os.environ["YOUR_GPUSTACK_API_KEY"]},
+    headers=headers,
     files=files,
 )
+response.raise_for_status()
+job = response.json()
+video_id = job["id"]
+while job["status"] in ("queued", "in_progress"):
+    time.sleep(2)
+    response = requests.get("${url}/" + video_id, headers=headers)
+    response.raise_for_status()
+    job = response.json()
+    print(job["status"], job.get("progress"))
+if job["status"] != "completed":
+    raise RuntimeError(job.get("error") or job["status"])
+response = requests.get("${url}/" + video_id + "/content", headers=headers)
 response.raise_for_status()
 Path("output.mp4").write_bytes(response.content)`.trim();
 
@@ -54,6 +82,7 @@ Path("output.mp4").write_bytes(response.content)`.trim();
     : '';
   const nodeJsCode = `
 const { ${reference ? 'readFile, ' : ''}writeFile } = require("node:fs/promises");
+const { setTimeout: delay } = require("node:timers/promises");
 ${reference ? 'const { basename } = require("node:path");\n' : ''}
 
 async function main() {
@@ -63,11 +92,26 @@ async function main() {
     form.append(key, String(value));
   }
 ${nodeUpload}
-  const response = await fetch("${url}", {
+  const headers = { Authorization: "Bearer " + process.env.YOUR_GPUSTACK_API_KEY };
+  let response = await fetch("${url}", {
     method: "POST",
-    headers: { Authorization: "Bearer " + process.env.YOUR_GPUSTACK_API_KEY },
+    headers,
     body: form
   });
+  if (!response.ok) throw new Error(await response.text());
+  let job = await response.json();
+  const id = encodeURIComponent(job.id);
+  while (["queued", "in_progress"].includes(job.status)) {
+    await delay(2000);
+    response = await fetch("${url}/" + id, { headers });
+    if (!response.ok) throw new Error(await response.text());
+    job = await response.json();
+    console.log(job.status, job.progress);
+  }
+  if (job.status !== "completed") {
+    throw new Error(JSON.stringify(job.error || job.status));
+  }
+  response = await fetch("${url}/" + id + "/content", { headers });
   if (!response.ok) throw new Error(await response.text());
   await writeFile("output.mp4", Buffer.from(await response.arrayBuffer()));
 }

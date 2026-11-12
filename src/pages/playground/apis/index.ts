@@ -5,7 +5,7 @@ import { request } from '@umijs/max';
 export { GPUSTACK_API_BASE_URL, OPENAI_COMPATIBLE };
 
 export const CHAT_API = `/${OPENAI_COMPATIBLE}/chat/completions`;
-export const CREATE_VIDEO_API = `/${OPENAI_COMPATIBLE}/videos/sync`;
+export const CREATE_VIDEO_API = `/${OPENAI_COMPATIBLE}/videos`;
 
 export const CREAT_IMAGE_API = `/${OPENAI_COMPATIBLE}/images/generations`;
 export const EDIT_IMAGE_API = `/${OPENAI_COMPATIBLE}/images/edits`;
@@ -166,18 +166,45 @@ export const createImage = async (params: {
   return response.json();
 };
 
+export interface VideoJob {
+  id: string;
+  status:
+    | 'queued'
+    | 'in_progress'
+    | 'completed'
+    | 'failed'
+    | 'cancelled'
+    | 'expired';
+  progress?: number;
+  error?: { message?: string } | string | null;
+}
+
 export const createVideo = (params: {
   data: Record<string, unknown>;
   signal: AbortSignal;
 }) => {
-  return request<Blob>(CREATE_VIDEO_API, {
+  return request<VideoJob>(CREATE_VIDEO_API, {
     method: 'POST',
     data: createFormData(params.data),
     signal: params.signal,
-    responseType: 'blob',
     skipErrorHandler: true
   });
 };
+
+export const getVideo = (id: string, signal: AbortSignal) =>
+  request<VideoJob>(`${CREATE_VIDEO_API}/${encodeURIComponent(id)}`, {
+    method: 'GET',
+    signal,
+    skipErrorHandler: true
+  });
+
+export const getVideoContent = (id: string, signal: AbortSignal) =>
+  request<Blob>(`${CREATE_VIDEO_API}/${encodeURIComponent(id)}/content`, {
+    method: 'GET',
+    signal,
+    responseType: 'blob',
+    skipErrorHandler: true
+  });
 
 // ============ audio ============
 export const textToSpeech = async (params: any, options?: any) => {

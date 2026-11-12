@@ -1,4 +1,3 @@
-import VideoPoster from '@/assets/images/video-poster.png';
 import { VideoCameraOutlined } from '@ant-design/icons';
 import { AlertInfo, IconFont } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
@@ -48,6 +47,7 @@ const GroundVideo: React.FC<MessageProps> = forwardRef((props, ref) => {
   } = useInitVideoMeta(props, { type: 'create' });
   const {
     loading,
+    progress,
     errorMessage,
     videoUrl,
     currentPrompt,
@@ -152,6 +152,7 @@ const GroundVideo: React.FC<MessageProps> = forwardRef((props, ref) => {
               {showPlayer && (
                 <div
                   style={{
+                    position: 'relative',
                     width: '100%',
                     maxWidth: 720,
                     margin: '24px auto',
@@ -162,42 +163,37 @@ const GroundVideo: React.FC<MessageProps> = forwardRef((props, ref) => {
                     boxShadow: '0 4px 24px rgba(0,0,0,0.12)'
                   }}
                 >
-                  <Spin
-                    spinning={loading}
-                    size="middle"
-                    description={intl.formatMessage({
-                      id: 'playground.video.generating'
-                    })}
-                    styles={{
-                      root: {
-                        height: '100%'
-                      },
-                      container: {
-                        height: '100%'
-                      },
-                      section: {
-                        backgroundColor: 'var(--ant-color-bg-elevated)',
-                        borderRadius: 'var(--ant-border-radius)',
-                        padding: 'var(--ant-padding-sm) var(--ant-padding)'
-                      },
-                      description: {
-                        color: 'var(--ant-color-text)',
-                        textShadow: 'none'
-                      }
+                  <video
+                    src={videoUrl || undefined}
+                    controls={Boolean(videoUrl)}
+                    disablePictureInPicture
+                    style={{
+                      display: 'block',
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'contain'
                     }}
-                  >
-                    <video
-                      src={videoUrl || undefined}
-                      poster={VideoPoster}
-                      controls={Boolean(videoUrl)}
-                      disablePictureInPicture
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'contain'
+                  />
+                  {loading && (
+                    <Spin
+                      size="middle"
+                      description={`${intl.formatMessage({
+                        id: 'playground.video.generating'
+                      })}${progress === undefined ? '' : ` ${progress}%`}`}
+                      styles={{
+                        root: {
+                          position: 'absolute',
+                          top: '50%',
+                          left: '50%',
+                          transform: 'translate(-50%, -50%)'
+                        },
+                        description: {
+                          color: 'var(--ant-color-text-light-solid)',
+                          textShadow: 'none'
+                        }
                       }}
                     />
-                  </Spin>
+                  )}
                 </div>
               )}
               {!showPlayer && (

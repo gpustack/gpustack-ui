@@ -1,0 +1,138 @@
+.card {
+  height: 100%;
+  min-width: 0;
+  min-height: 352px;
+  padding: var(--ant-padding);
+  border: 1px solid var(--ant-color-border-secondary);
+  border-radius: var(--ant-border-radius-lg);
+  background: var(--ant-color-bg-container);
+}
+.card > * {
+  flex-shrink: 0;
+}
+.header {
+  min-height: 32px;
+}
+.actions {
+  flex-shrink: 0;
+}
+.latencyCard {
+  min-height: 352px;
+}
+.heading {
+  min-width: 0;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+.note {
+  color: var(--ant-color-text-tertiary);
+  font-size: 12px;
+}
+.plot {
+  height: 230px;
+}
+.legend {
+  max-height: 176px;
+  margin-top: var(--ant-margin-xs);
+}
+.legendRows {
+  flex: 0 1 auto;
+  min-height: 0;
+  max-height: 176px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+.legendRows > * {
+  flex-shrink: 0;
+}
+.legendItem {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) max-content;
+  column-gap: var(--ant-margin-xs);
+  width: 100%;
+  height: auto;
+  min-height: 28px;
+  padding: var(--ant-padding-xxs);
+  white-space: normal;
+  text-align: start;
+  font-size: 12px;
+}
+.legendItem[aria-pressed='false'] {
+  opacity: 0.5;
+}
+.legendMark {
+  width: 20px;
+  line-height: 0;
+  border-top-width: 2px;
+  flex-shrink: 0;
+  font-size: 9px;
+  text-align: center;
+}
+.legendName {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.legendValue {
+  text-align: end;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.stats {
+  padding-block: var(--ant-padding-xs);
+  border-block: 1px solid var(--ant-color-split);
+  margin-block: var(--ant-margin-xs);
+}
+.statLabel {
+  color: var(--ant-color-text-tertiary);
+  font-size: 11px;
+}
+.statValue {
+  font-size: 16px;
+  font-variant-numeric: tabular-nums;
+}
+.table {
+  height: 230px;
+  max-height: 230px;
+  overflow: auto;
+  font-size: 12px;
+}
+.table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.table th,
+.table td {
+  padding: 7px 10px;
+  text-align: right;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--ant-color-split);
+}
+.table th {
+  position: sticky;
+  top: 0;
+  background: var(--ant-color-fill-quaternary);
+  font-weight: 500;
+}
+.table th:first-child,
+.table td:first-child {
+  text-align: left;
+}
+.notice {
+  margin-top: var(--ant-margin);
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

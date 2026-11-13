@@ -1,4 +1,7 @@
 export default {
+  'menu.resources.workerDetail': '节点详情',
+  'menu.resources.gpuDetail': 'GPU 详情',
+  'menu.models.deploymentDetail': '模型详情',
   'menu.dashboard': '概览',
   'menu.playground': '试验场',
   'menu.playground.rerank': '重排',

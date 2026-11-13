@@ -18,7 +18,7 @@ import {
   StatusDot,
   type TableColumnProps
 } from '@gpustack/core-ui';
-import { useIntl } from '@umijs/max';
+import { Link, useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { Flex, Tooltip } from 'antd';
 import { createStyles } from 'antd-style';
@@ -60,6 +60,23 @@ interface ActionItem {
 }
 
 const useStyles = createStyles(({ css }) => ({
+  modelDetailLink: css`
+    color: var(--ant-color-link);
+
+    &:hover {
+      color: var(--ant-color-link-hover);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--ant-color-primary);
+      outline-offset: 2px;
+      border-radius: var(--ant-border-radius-xs);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+  `,
   // Suppressing the column's own inline editor on one row only.
   //
   // core-ui's editable cell renders its pencil as the *next sibling* of
@@ -321,7 +338,12 @@ const useModelsColumns = ({
                 </span>
               }
             >
-              <span className="text-primary font-400">{text}</span>
+              <Link
+                className={`${styles.modelDetailLink} font-400`}
+                to={`/models/deployments/detail?id=${record.id}`}
+              >
+                {text}
+              </Link>
             </AutoTooltip>
             <ModelTag categoryKey={record.categories?.[0] || ''} />
             {/* 🔴 The «xPyD» tag lived here, with the transport mode on its
@@ -529,6 +551,7 @@ const useModelsColumns = ({
     setModelActionList,
     replicaStatus,
     pluginCols,
+    styles.modelDetailLink,
     styles.pdReplicas
   ]);
 };

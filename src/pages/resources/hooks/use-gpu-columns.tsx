@@ -60,7 +60,13 @@ const useGPUColumns = (props: {
         sorter: tableSorter(1),
         render: (text: string, record: GPUDeviceItem) => (
           <AutoTooltip ghost maxWidth={240} title={text}>
-            <span className="text-primary">{text}</span>
+            <a
+              href={`#/resources/gpus/detail?id=${encodeURIComponent(record.id)}`}
+              onClick={(event) => event.stopPropagation()}
+              style={{ color: 'var(--ant-color-primary)' }}
+            >
+              {text}
+            </a>
           </AutoTooltip>
         )
       },

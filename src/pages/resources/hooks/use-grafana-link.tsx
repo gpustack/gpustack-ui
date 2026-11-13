@@ -6,6 +6,14 @@ import { useIntl } from '@umijs/max';
 import { Button } from 'antd';
 import { useAtomValue } from 'jotai';
 
+export interface ModelMonitoringDashboardScope {
+  window: string;
+  start?: number;
+  end?: number;
+  instanceIds: number[];
+  role: 'all' | 'prefill' | 'decode' | 'router';
+}
+
 const useGranfanaLink = (options: {
   type: 'model' | 'worker' | 'instance' | 'cluster' | 'cache-service';
 }) => {
@@ -17,6 +25,24 @@ const useGranfanaLink = (options: {
   const goToModelGrafana = (row: { id: number }) => {
     window.open(
       `/${GPUSTACK_API_BASE_URL}/models/${row.id}/dashboard`,
+      '_blank'
+    );
+  };
+
+  const goToModelMonitoringGrafana = (
+    row: { id: number },
+    scope: ModelMonitoringDashboardScope
+  ) => {
+    const query = new URLSearchParams({ role: scope.role });
+    if (scope.start != null && scope.end != null) {
+      query.set('start', String(scope.start));
+      query.set('end', String(scope.end));
+    } else query.set('window', scope.window);
+    if (scope.instanceIds.length) {
+      query.set('instance_ids', scope.instanceIds.join(','));
+    }
+    window.open(
+      `/${GPUSTACK_API_BASE_URL}/models/${row.id}/dashboard?${query}`,
       '_blank'
     );
   };
@@ -128,6 +154,7 @@ const useGranfanaLink = (options: {
 
   return {
     goToGrafana,
+    goToModelMonitoringGrafana,
     showMonitoring: !!systemConfig?.showMonitoring,
     ActionButton
   };

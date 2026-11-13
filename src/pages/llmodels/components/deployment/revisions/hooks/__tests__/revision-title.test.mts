@@ -20,7 +20,7 @@ Object.defineProperty(globalThis, 'DOMParser', {
 
 for (const locale of ['en-US', 'zh-CN', 'ja-JP', 'ru-RU', 'tr-TR']) {
   const { default: messages } = await import(
-    `../../../../../../locales/${locale}/model-revisions.ts`
+    `../../../../../../../locales/${locale}/model-revisions.ts`
   );
   for (const rollback of [false, true]) {
     test(`${locale} renders the ${rollback ? 'rollback' : 'history'} title with styled values`, () => {
@@ -43,7 +43,6 @@ for (const locale of ['en-US', 'zh-CN', 'ja-JP', 'ru-RU', 'tr-TR']) {
       );
       const container = dom.window.document.createElement('div');
       container.innerHTML = renderToStaticMarkup(title);
-      // Locales that still carry the English source fall back to en-US.
       const titles: Record<string, { history: string; rollback: string }> = {
         'en-US': {
           history: `Revision history · ${name}`,
@@ -52,6 +51,14 @@ for (const locale of ['en-US', 'zh-CN', 'ja-JP', 'ru-RU', 'tr-TR']) {
         'zh-CN': {
           history: `修订历史 · ${name}`,
           rollback: `将 ${name} 回滚到 v2`
+        },
+        'ja-JP': {
+          history: `リビジョン履歴 · ${name}`,
+          rollback: `${name} を v2 にロールバック`
+        },
+        'ru-RU': {
+          history: `История ревизий · ${name}`,
+          rollback: `Откатить ${name} до v2`
         },
         'tr-TR': {
           history: `Revizyon geçmişi · ${name}`,

@@ -1,3 +1,4 @@
+import { CHART_COLORS } from '@/config/chart-colors';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { Tooltip, theme } from 'antd';
 import { createStyles } from 'antd-style';
@@ -7,11 +8,7 @@ import { StagePoint, isSloCapacityPoint, logDomain } from './metrics';
 
 // Echarts can't read CSS variables, so the chart palette lives here as hex.
 export const C = {
-  blue: '#2563eb',
-  amber: '#e0a800',
-  red: '#e5484d',
-  green: '#16a34a',
-  violet: '#7c3aed',
+  ...CHART_COLORS,
   gray: '#c8cfd8',
   // Reference lines (a configured target the measured line is compared against).
   // C.gray is an axis-pointer / hairline value — at 1.5:1 on white a data line

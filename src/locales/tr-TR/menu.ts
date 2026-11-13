@@ -1,4 +1,7 @@
 export default {
+  'menu.resources.workerDetail': 'Worker details',
+  'menu.resources.gpuDetail': 'GPU details',
+  'menu.models.deploymentDetail': 'Model ayrıntıları',
   'menu.dashboard': 'Gösterge Paneli',
   'menu.playground': 'Deneme Alanı',
   'menu.playground.rerank': 'Yeniden Sıralama',

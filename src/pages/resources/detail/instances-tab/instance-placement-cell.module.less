@@ -1,0 +1,39 @@
+.trigger {
+  flex-shrink: 0;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  background: transparent;
+  border: 0;
+  cursor: help;
+
+  &:focus-visible {
+    border-radius: var(--ant-border-radius-sm);
+    outline: 2px solid var(--ant-color-primary);
+    outline-offset: 2px;
+  }
+}
+
+.content {
+  max-width: 520px;
+  padding: var(--ant-padding-xs);
+
+  :global(.simple-table .cell-header) {
+    color: var(--color-white-quaternary);
+    font-weight: 400;
+  }
+
+  :global(.simple-table td) {
+    color: var(--color-white-secondary);
+    overflow-wrap: anywhere;
+  }
+}
+
+.secondary {
+  color: var(--color-white-tertiary);
+}
+
+.notice {
+  padding-inline: var(--ant-padding-xs);
+  color: var(--color-white-secondary);
+}

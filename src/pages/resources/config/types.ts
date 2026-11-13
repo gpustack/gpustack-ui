@@ -18,6 +18,12 @@ export interface Gpu {
 }
 
 export interface GPUDeviceItem {
+  device_index?: number;
+  device_chip_index?: number;
+  driver_version?: string;
+  runtime_version?: string;
+  power_used?: number;
+  power_limit?: number;
   uuid: string;
   name: string;
   vendor: string;

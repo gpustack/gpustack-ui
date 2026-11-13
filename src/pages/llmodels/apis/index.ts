@@ -331,16 +331,17 @@ export async function downloadModelInstanceLogs(
  * the server names it via Content-Disposition. `skipErrorHandler` because the
  * failure body is a Blob the global handler cannot read; the caller decodes it.
  */
-export async function exportModels(params: {
-  ids?: number[];
-  cluster_id?: number;
-}): Promise<{ data: Blob; headers: Record<string, any> }> {
+export async function exportModels(
+  params: { ids?: number[]; cluster_id?: number },
+  options?: { signal?: AbortSignal }
+): Promise<{ data: Blob; headers: Record<string, any> }> {
   return request(`${MODELS_API}/export`, {
     method: 'POST',
     data: params,
     responseType: 'blob',
     getResponse: true,
-    skipErrorHandler: true
+    skipErrorHandler: true,
+    signal: options?.signal
   });
 }
 

@@ -1,4 +1,7 @@
 export default {
+  'menu.resources.workerDetail': 'Worker details',
+  'menu.resources.gpuDetail': 'GPU details',
+  'menu.models.deploymentDetail': 'Сведения о модели',
   'menu.dashboard': 'Панель управления',
   'menu.playground': 'Песочница',
   'menu.playground.rerank': 'Переранжирование',

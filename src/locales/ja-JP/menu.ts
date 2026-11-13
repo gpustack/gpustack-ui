@@ -1,4 +1,7 @@
 export default {
+  'menu.resources.workerDetail': 'Worker details',
+  'menu.resources.gpuDetail': 'GPU details',
+  'menu.models.deploymentDetail': 'モデル詳細',
   'menu.dashboard': 'ダッシュボード',
   'menu.playground': 'プレイグラウンド',
   'menu.playground.rerank': 'リランク',

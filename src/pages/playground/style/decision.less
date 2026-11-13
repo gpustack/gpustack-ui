@@ -380,11 +380,14 @@
     border-radius: var(--decision-editor-radius);
   }
 
-  // The image tray: full width, horizontal flow.
+  // The image tray: full width, horizontal flow. The wrapper is an antd
+  // <Flex> (the page's layout convention), so display comes from there —
+  // only the row direction and scroll behavior are styled in this file.
   .decision-images-strip.assets-flow {
     flex: none;
     width: auto;
     flex-direction: row;
+    flex-wrap: nowrap;
     align-items: flex-start;
     gap: 12px;
     min-height: 40px;
@@ -400,6 +403,28 @@
     .image-item {
       flex: none;
       width: 116px;
+
+      // AutoImage measures each image's aspect ratio after load and writes
+      // an inline pixel width (96 × ratio) that ignores the 116px cell:
+      // wide images overflow the cell and swallow the 12px gap, narrow
+      // ones leave dead space that reads as a wider gap. Force the whole
+      // chain to fill the cell and let object-fit (already set by AutoImage)
+      // crop the overflow instead.
+      .thumb-image-wrap,
+      .thumb-list-wrap,
+      .single-image,
+      .thumb-img,
+      .thumb-img .img,
+      .ant-image,
+      .ant-image img {
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+
+      .ant-image img {
+        height: 96px;
+        object-fit: cover;
+      }
     }
 
     .assets-empty {

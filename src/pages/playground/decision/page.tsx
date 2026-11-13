@@ -3,7 +3,8 @@ import useUserSettings from '@/hooks/use-user-settings';
 import {
   ClearOutlined,
   PlusOutlined,
-  QuestionCircleOutlined
+  QuestionCircleOutlined,
+  UndoOutlined
 } from '@ant-design/icons';
 import {
   AlertInfo,
@@ -647,12 +648,14 @@ const GroundDecision: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   // Per-editor resets: each editor goes back to its sample half (an empty
   // editor teaches nothing); answers belong to the run and stay untouched.
-  const handleClearState = () => {
+  // These are RESETS, not clears — the buttons are labelled Reset; only the
+  // Assets panel's button is a true Clear (it empties the image tray).
+  const handleResetState = () => {
     const sample = decisionSamples[intl.locale] || decisionSamples['en-US'];
     setStateJson(JSON.stringify(sample?.state ?? {}, null, 2));
     setError(null);
   };
-  const handleClearQuestions = () => {
+  const handleResetQuestions = () => {
     const sample = decisionSamples[intl.locale] || decisionSamples['en-US'];
     setQuestionsJson(sample ? buildSampleQuestions(sample) : '{}');
     setError(null);
@@ -1110,19 +1113,16 @@ const GroundDecision: React.FC<MessageProps> = forwardRef((props, ref) => {
                     </Button>
                     <Tooltip
                       title={intl.formatMessage({
-                        id: 'common.button.clear'
+                        id: 'common.button.reset'
                       })}
                     >
                       <Button
                         size="small"
-                        icon={<ClearOutlined />}
+                        icon={<UndoOutlined />}
                         disabled={loading}
-                        onClick={handleClearState}
+                        onClick={handleResetState}
                         aria-label={intl.formatMessage({
-                          id: 'common.button.clear'
-                        })}
-                        title={intl.formatMessage({
-                          id: 'common.button.clear'
+                          id: 'common.button.reset'
                         })}
                       />
                     </Tooltip>
@@ -1189,19 +1189,16 @@ const GroundDecision: React.FC<MessageProps> = forwardRef((props, ref) => {
                     </Button>
                     <Tooltip
                       title={intl.formatMessage({
-                        id: 'common.button.clear'
+                        id: 'common.button.reset'
                       })}
                     >
                       <Button
                         size="small"
-                        icon={<ClearOutlined />}
+                        icon={<UndoOutlined />}
                         disabled={loading}
-                        onClick={handleClearQuestions}
+                        onClick={handleResetQuestions}
                         aria-label={intl.formatMessage({
-                          id: 'common.button.clear'
-                        })}
-                        title={intl.formatMessage({
-                          id: 'common.button.clear'
+                          id: 'common.button.reset'
                         })}
                       />
                     </Tooltip>
@@ -1285,7 +1282,7 @@ const GroundDecision: React.FC<MessageProps> = forwardRef((props, ref) => {
                   </Tooltip>
                 </Flex>
               </Flex>
-              <div className="decision-images-strip assets-flow">
+              <Flex className="decision-images-strip assets-flow">
                 {images.length > 0 ? (
                   images.map((image) => {
                     const referenced = isImageReferenced(image.placeholder);
@@ -1345,7 +1342,7 @@ const GroundDecision: React.FC<MessageProps> = forwardRef((props, ref) => {
                     })}
                   </span>
                 )}
-              </div>
+              </Flex>
             </Flex>
           </Flex>
         </DecisionWorkspace>

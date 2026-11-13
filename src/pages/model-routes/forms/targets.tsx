@@ -35,15 +35,9 @@ const OptionWrapper = styled.span`
   }
 `;
 
-const LabelWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-`;
-
 // stands in for a selected target's title on the collapsed card header,
 // matching the kv-cache form's L2 storage backend entry title (createStyles,
-// per the no-new-styled-components rule; the two above are legacy).
+// per the no-new-styled-components rule; OptionWrapper above is legacy).
 const useStyles = createStyles(({ css }) => ({
   // Typography for the section heading's title span. The row layout itself
   // is an antd Flex at the usage site (no hand-written display:flex per the
@@ -375,24 +369,31 @@ const TargetsForm = forwardRef((props, ref) => {
       .filter((model) => model.children && model.children.length > 0);
   };
 
-  const displayRender = (labels: any[], option: any) => {
+  const renderPrefix = (value: any[]) => {
+    // Reserve space for the logo in both the selected label and search input.
+    const providerType = _.get(
+      sourceModels.find((model) => model.value === value?.[0]),
+      'providerType'
+    );
+
+    return providerType ? <ProviderLogo provider={providerType} /> : undefined;
+  };
+
+  const displayRender = (labels: any[]) => {
     return (
-      <LabelWrapper>
-        <ProviderLogo provider={_.get(option, '0.providerType') as string} />
-        <AutoTooltip
-          ghost
-          maxWidth={300}
-          title={
-            <span>
-              {labels[0]} / {labels[1]}
-            </span>
-          }
-        >
+      <AutoTooltip
+        ghost
+        maxWidth={300}
+        title={
           <span>
             {labels[0]} / {labels[1]}
           </span>
-        </AutoTooltip>
-      </LabelWrapper>
+        }
+      >
+        <span>
+          {labels[0]} / {labels[1]}
+        </span>
+      </AutoTooltip>
     );
   };
 
@@ -617,6 +618,7 @@ const TargetsForm = forwardRef((props, ref) => {
                         id: 'providers.form.target.placeholder'
                       })}
                       value={item.value}
+                      prefix={renderPrefix(item.value)}
                       options={filterOptions(item.value)}
                       showCheckedStrategy="SHOW_CHILD"
                       displayRender={displayRender}
@@ -722,6 +724,11 @@ const TargetsForm = forwardRef((props, ref) => {
               }
             }}
             styles={{
+              // Match the floating-label content offset in core-ui's wrapper.
+              prefix: {
+                paddingBlockStart:
+                  'calc(var(--ant-padding-sm) + var(--ant-padding-xs))'
+              },
               popup: {
                 listItem: {
                   padding: '5px 10px',
@@ -739,6 +746,7 @@ const TargetsForm = forwardRef((props, ref) => {
             })}
             maxTagCount={1}
             value={fallbackValues.value}
+            prefix={renderPrefix(fallbackValues.value)}
             options={filterOptions(fallbackValues.value)}
             onChange={(value, options) => handleFallbackChange(value, options)}
             showCheckedStrategy="SHOW_CHILD"

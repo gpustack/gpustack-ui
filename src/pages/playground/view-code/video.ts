@@ -1,28 +1,21 @@
-import { MODEL_PROXY } from '../apis';
+import { CREATE_VIDEO_API } from '../apis';
 import { formatPyObject } from './utils';
 
 export const generateVideoCurlCode = ({
   api,
   parameters,
-  modelProxy,
-  routeID
+  modelProxy
 }: {
   api: string;
   parameters: Record<string, unknown>;
   modelProxy?: boolean;
   routeID?: string | number;
 }) => {
-  if (!modelProxy) return generateCode({ api, parameters }).curlCode;
-
-  const fields = Object.entries(parameters).map(([key, value]) => {
-    const field = `${key}=${String(value)}`.replace(/'/g, "'\\''");
-    return `  --form-string '${field}'`;
-  });
-  return [
-    `curl --fail "${window.location.origin}${MODEL_PROXY}/${routeID}/\${YOUR_API_PATH}"`,
-    '  -H "Authorization: Bearer ${YOUR_GPUSTACK_API_KEY}"',
-    ...fields
-  ].join(' \\\n');
+  // Public video job handles keep polling and downloads on the creating instance.
+  return generateCode({
+    api: modelProxy ? CREATE_VIDEO_API : api,
+    parameters
+  }).curlCode;
 };
 
 export const generateCode = ({
@@ -40,16 +33,19 @@ export const generateCode = ({
   );
   const fields = Object.entries(formValues).map(([key, value]) => {
     const field = `${key}=${String(value)}`.replace(/'/g, "'\\''");
-    return `  --form-string '${field}' \\\n`;
+    return `  --form-string '${field}'`;
   });
-  const curlUpload = reference
-    ? '  --form "input_reference=@\\"${INPUT_REFERENCE_PATH}\\"" \\\n'
-    : '';
+  if (reference) {
+    fields.push('  --form "input_reference=@\\"${INPUT_REFERENCE_PATH}\\""');
+  }
+  const createCommand = [
+    `curl --fail "${url}"`,
+    '  -H "Authorization: Bearer ${YOUR_GPUSTACK_API_KEY}"',
+    ...fields
+  ].join(' \\\n');
 
   const curlCode = `
-job=$(curl --fail "${url}" \\
-  -H "Authorization: Bearer \${YOUR_GPUSTACK_API_KEY}" \\
-${fields.join('')}${curlUpload}  )
+job=$(${createCommand})
 video_id=$(printf '%s' "$job" | jq -er '.id')
 status=$(printf '%s' "$job" | jq -r '.status')
 while [ "$status" != "completed" ]; do

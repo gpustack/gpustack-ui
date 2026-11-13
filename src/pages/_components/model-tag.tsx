@@ -4,8 +4,7 @@ import {
   VideoCameraOutlined,
   WechatWorkOutlined
 } from '@ant-design/icons';
-import { IconFont } from '@gpustack/core-ui';
-import { Tag } from 'antd';
+import { IconFont, ThemeTag } from '@gpustack/core-ui';
 import { categoryOptions } from '../llmodels/config/categories';
 
 const categoryIcons = {
@@ -40,13 +39,13 @@ const ModelTag: React.FC<ModelTagProps> = ({ categoryKey, size }) => {
   if (!config) return null;
 
   return (
-    <Tag
+    <ThemeTag
+      opacity={1}
       icon={config.icon}
       variant={'outlined'}
       style={{
         height: size,
         margin: 0,
-        opacity: 1,
         paddingInline: 8,
         borderRadius: 12,
         transform: 'scale(0.9)',
@@ -55,7 +54,7 @@ const ModelTag: React.FC<ModelTagProps> = ({ categoryKey, size }) => {
       color={config.color}
     >
       {config.label}
-    </Tag>
+    </ThemeTag>
   );
 };
 

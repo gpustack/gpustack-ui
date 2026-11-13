@@ -10,7 +10,7 @@ mock.module('@umijs/max', {
   }
 });
 mock.module('@gpustack/core-ui', {
-  namedExports: { IconFont: () => null, icons: {} }
+  namedExports: { IconFont: () => null, ThemeTag: () => null, icons: {} }
 });
 mock.module(new URL('../../../../atoms/user.ts', import.meta.url).href, {
   namedExports: { getCurrentOrg: () => null, getOrgById: () => null }

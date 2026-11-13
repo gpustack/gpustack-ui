@@ -1,0 +1,26 @@
+.clearButton {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ant-color-text-quaternary);
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0;
+
+  &:hover {
+    color: var(--ant-color-text-tertiary);
+  }
+
+  &:focus-visible {
+    opacity: 1;
+  }
+
+  @media (hover: none) {
+    opacity: 1;
+  }
+}
+
+.field:hover .clearButton {
+  opacity: 1;
+}

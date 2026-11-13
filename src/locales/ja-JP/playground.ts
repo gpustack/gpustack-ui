@@ -71,6 +71,12 @@ export default {
   'playground.params.custom': 'カスタム',
   'playground.params.empty.tips': '生成された画像はここに表示されます。',
   'playground.video.empty.tips': '生成された動画はここに表示されます。',
+  'playground.video.generating': '生成中…',
+  'playground.params.refImage': '参照画像',
+  'playground.params.refImage.tips':
+    '画像の URL を入力するか、PNG または JPEG をアップロードしてください。',
+  'playground.params.refImage.invalid':
+    '有効な HTTP または HTTPS の画像 URL を入力してください。',
   'playground.params.standard': '標準',
   'playground.params.hd': 'HD',
   'playground.params.style.vivid': '鮮やか',

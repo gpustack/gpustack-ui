@@ -71,6 +71,12 @@ export default {
   'playground.params.custom': 'Дополнительно',
   'playground.params.empty.tips': 'Здесь появятся сгенерированные изображения',
   'playground.video.empty.tips': 'Здесь появятся сгенерированные видео.',
+  'playground.video.generating': 'Генерация…',
+  'playground.params.refImage': 'Исходное изображение',
+  'playground.params.refImage.tips':
+    'Укажите URL изображения или загрузите PNG или JPEG.',
+  'playground.params.refImage.invalid':
+    'Введите действительный URL изображения с HTTP или HTTPS.',
   'playground.params.standard': 'Стандарт',
   'playground.params.hd': 'HD',
   'playground.params.style.vivid': 'Яркий',

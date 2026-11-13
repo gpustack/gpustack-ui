@@ -20,7 +20,8 @@ import {
 
 const videoInitialValues = {
   size: '720x1280',
-  seconds: '4'
+  seconds: '4',
+  referenceImage: undefined
 };
 
 interface MessageProps {
@@ -110,13 +111,9 @@ export const useInitVideoMeta = (
     sizeOptions: SizeOption[]
   ) => {
     if (sizeOptions.length) {
-      const sizeConfig = videoParamsConfig.map((item) => {
-        return {
-          ...item,
-          options: sizeOptions
-        };
-      });
-      return [...sizeConfig];
+      return videoParamsConfig.map((item) =>
+        item.name === 'size' ? { ...item, options: sizeOptions } : item
+      );
     }
     const { max_height, max_width } = currentModel.meta || {};
     // generate custom size config
@@ -249,7 +246,6 @@ export const useInitVideoMeta = (
 
   const handleOnValuesChange = useMemoizedFn(
     (changeValues: Record<string, any>, allValues: Record<string, any>) => {
-      console.log('changeValues', changeValues);
       // model change will reset all values
       if (changeValues.model) {
         handleOnModelChange(changeValues.model);

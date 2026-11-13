@@ -1,10 +1,10 @@
+import CategorySelect from '@/pages/_components/category-select';
 import { ListItem as workerListItem } from '@/pages/resources/config/types';
 import { SearchOutlined, SyncOutlined } from '@ant-design/icons';
 import { BaseSelect, type StatusType } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Input, Space } from 'antd';
 import React from 'react';
-import { categoryOptions } from '../config';
 import useFilterStatus from '../hooks/use-filter-status';
 interface LeftFiltersProps {
   handleNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -71,7 +71,8 @@ const LeftFilters: React.FC<LeftFiltersProps> = (props) => {
         options={clusterList}
       ></BaseSelect>
       {showCategory && (
-        <BaseSelect
+        <CategorySelect
+          control="filter"
           allowClear
           showSearch={false}
           placeholder={intl.formatMessage({
@@ -81,8 +82,7 @@ const LeftFilters: React.FC<LeftFiltersProps> = (props) => {
           size="large"
           maxTagCount={1}
           onChange={handleCategoryChange}
-          options={categoryOptions}
-        ></BaseSelect>
+        />
       )}
       {showWorker && (
         <BaseSelect

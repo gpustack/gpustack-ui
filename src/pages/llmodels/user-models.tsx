@@ -1,5 +1,6 @@
 import PluginExtraFields from '@/components/plugin-extra-fields';
 import useTableFetch from '@/hooks/use-table-fetch';
+import CategorySelect from '@/pages/_components/category-select';
 import { getGPUStackPlugin } from '@/plugins';
 import { SearchOutlined, SyncOutlined } from '@ant-design/icons';
 import {
@@ -17,11 +18,7 @@ import PageBox from '../_components/page-box';
 import { MY_MODELS_API, queryMyModels } from './apis';
 import APIAccessInfoModal from './components/api-access-info';
 import ModelItem from './components/model-item';
-import {
-  categoryOptions,
-  MyModelsStatusMap,
-  MyModelsStatusValueMap
-} from './config';
+import { MyModelsStatusMap, MyModelsStatusValueMap } from './config';
 import useFormInitialValues from './hooks/use-form-initial-values';
 import useNoResourceResult from './hooks/use-no-resource-result';
 import useViewApIInfo from './hooks/use-view-api-info';
@@ -227,7 +224,8 @@ const UserModels: React.FC = () => {
                 }
                 onChange={handleNameChange}
               ></Input>
-              <BaseSelect
+              <CategorySelect
+                control="filter"
                 allowClear
                 showSearch={false}
                 placeholder={intl.formatMessage({
@@ -236,9 +234,8 @@ const UserModels: React.FC = () => {
                 style={{ width: 180 }}
                 size="large"
                 maxTagCount={1}
-                options={categoryOptions}
                 onChange={handleCategoryChange}
-              ></BaseSelect>
+              />
               <BaseSelect
                 allowClear
                 showSearch={false}

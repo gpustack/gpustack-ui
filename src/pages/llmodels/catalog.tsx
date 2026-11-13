@@ -1,6 +1,7 @@
 import { modelsExpandKeysAtom, modelsSessionAtom } from '@/atoms/models';
 import { PageAction } from '@/config';
 import useTableFetch from '@/hooks/use-table-fetch';
+import { categorySelectRenderProps } from '@/pages/_components/category-select';
 import { IS_FIRST_LOGIN, writeState } from '@/utils/localstore/index';
 import { SearchOutlined } from '@ant-design/icons';
 import {
@@ -21,7 +22,7 @@ import { createModel, queryCatalogItemSpec, queryCatalogList } from './apis';
 import CatalogList from './components/catalog/catalog-list';
 import CatalogSourceEntry from './components/catalog/catalog-source-entry';
 import DelopyBuiltInModal from './components/deployment/deploy-builtin-modal';
-import { modelCategories, modelSourceMap } from './config';
+import { categoryOptions, modelSourceMap } from './config';
 import { CatalogItem as CatalogItemType, FormData } from './config/types';
 
 const Catalog: React.FC = () => {
@@ -56,10 +57,6 @@ const Catalog: React.FC = () => {
   const [, setModelsExpandKeys] = useAtom(modelsExpandKeysAtom);
   const [, setModelsSession] = useAtom(modelsSessionAtom);
   const sourceRef = React.useRef<string>('');
-
-  const categoryOptions = [
-    ...modelCategories.filter((item) => item.value)
-  ] as Global.BaseOption<string>[];
 
   const handleDeployModalCancel = () => {
     setOpenDeployModal({
@@ -147,6 +144,7 @@ const Catalog: React.FC = () => {
         handleSelectChange={handleCategoryChange}
         handleInputChange={handleNameChange}
         selectOptions={categoryOptions}
+        selectProps={categorySelectRenderProps}
         widths={{ input: 230, select: 200 }}
         // Replaces the default right side wholesale, so the props that would
         // have built it (`buttonText` / `buttonIcon` / `handleClickPrimary`)

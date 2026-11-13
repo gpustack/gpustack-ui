@@ -166,16 +166,45 @@ export const createImage = async (params: {
   return response.json();
 };
 
-export const createVideo = async (params: { data?: any; token?: any }) => {
-  return request(CREATE_VIDEO_API, {
+export interface VideoJob {
+  id: string;
+  status:
+    | 'queued'
+    | 'in_progress'
+    | 'completed'
+    | 'failed'
+    | 'cancelled'
+    | 'expired';
+  progress?: number;
+  error?: { message?: string } | string | null;
+}
+
+export const createVideo = (params: {
+  data: Record<string, unknown>;
+  signal: AbortSignal;
+}) => {
+  return request<VideoJob>(CREATE_VIDEO_API, {
     method: 'POST',
-    data: params.data,
-    cancelToken: params.token,
-    headers: {
-      'Content-Type': 'multipart/form-data'
-    }
+    data: createFormData(params.data),
+    signal: params.signal,
+    skipErrorHandler: true
   });
 };
+
+export const getVideo = (id: string, signal: AbortSignal) =>
+  request<VideoJob>(`${CREATE_VIDEO_API}/${encodeURIComponent(id)}`, {
+    method: 'GET',
+    signal,
+    skipErrorHandler: true
+  });
+
+export const getVideoContent = (id: string, signal: AbortSignal) =>
+  request<Blob>(`${CREATE_VIDEO_API}/${encodeURIComponent(id)}/content`, {
+    method: 'GET',
+    signal,
+    responseType: 'blob',
+    skipErrorHandler: true
+  });
 
 // ============ audio ============
 export const textToSpeech = async (params: any, options?: any) => {

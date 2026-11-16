@@ -101,14 +101,13 @@ const GroundVideo: React.FC<MessageProps> = forwardRef((props, ref) => {
   }, [parameters]);
 
   const generateParams = () => {
-    const { referenceImage, extra_body, ...videoParameters } = finalParameters;
+    const { referenceImage, ...videoParameters } = finalParameters;
     return {
       ..._.omitBy(
         videoParameters,
         (value: unknown) => value == null || value === ''
       ),
       prompt: currentPrompt,
-      ...(extra_body?.trim() ? { extra_body: extra_body.trim() } : {}),
       ...(typeof referenceImage === 'string' && referenceImage.trim()
         ? { reference_url: referenceImage.trim() }
         : {}),

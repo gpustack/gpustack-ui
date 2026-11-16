@@ -74,11 +74,6 @@ export default {
   'playground.video.generating': '生成中…',
   'playground.video.taskUnsupported':
     'このデプロイには、現在の Playground が対応するタスクがありません。モデルの分割を確認するか、参照入力による生成には API を使用してください。',
-  'playground.video.extraParams': '追加パラメーター（JSON）',
-  'playground.video.extraParams.tips':
-    'task や target など、モデル固有のパラメーターを JSON オブジェクトで入力します。対応状況は推論バックエンドによって異なります。',
-  'playground.video.extraParams.invalid':
-    '有効な JSON オブジェクトを入力してください。',
   'playground.params.refImage': '参照画像',
   'playground.params.refImage.tips':
     '画像の URL を入力するか、PNG または JPEG をアップロードしてください。',

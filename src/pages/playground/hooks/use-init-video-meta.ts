@@ -22,7 +22,6 @@ const videoInitialValues = {
   size: '720x1280',
   seconds: '4',
   referenceImage: undefined,
-  extra_body: undefined,
   task: undefined
 };
 
@@ -305,7 +304,6 @@ export const useInitVideoMeta = (
     setModelMeta(model?.meta || {});
     cacheFormData.current = {
       ...cacheFormData.current,
-      extra_body: undefined,
       task: undefined
     };
     setInitialValues({

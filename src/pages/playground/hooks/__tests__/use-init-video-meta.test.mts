@@ -13,7 +13,7 @@ mock.module(new URL('../../../../utils/index.ts', import.meta.url).href, {
   namedExports: { generateRandomNumber: () => 1234 }
 });
 
-test('video capabilities populate task and duration while model changes clear native parameters', async () => {
+test('video capabilities populate task and duration while model changes clear the selected task', async () => {
   const dom = new JSDOM('<!doctype html><div id="root"></div>');
   const keys = ['window', 'document', 'navigator', 'IS_REACT_ACT_ENVIRONMENT'];
   const descriptors = keys.map((key) =>
@@ -89,16 +89,9 @@ test('video capabilities populate task and duration while model changes clear na
       [{ label: 't2va', value: 't2va' }]
     );
     await act(async () =>
-      current!.handleOnValuesChange(
-        { extra_body: '{"task":"t2va"}' },
-        { ...current!.parameters, extra_body: '{"task":"t2va"}' }
-      )
-    );
-    await act(async () =>
       current!.handleOnValuesChange({ model: 'wan' }, { model: 'wan' })
     );
     assert.equal(current!.parameters.task, undefined);
-    assert.equal(current!.parameters.extra_body, undefined);
     assert.equal(current!.parameters.size, '720x1280');
     assert.ok(
       !current!.videoSizeOptions.some(({ value }) => value === '768x1344')

@@ -3,16 +3,15 @@ import assert from 'node:assert/strict';
 import test, { mock } from 'node:test';
 import { act, createElement } from 'react';
 
-let changeExtra: (event: { target: { value: string } }) => void;
+let changeReference: (event: { target: { value: string } }) => void;
 mock.module('@gpustack/core-ui', {
   namedExports: {
-    CollapsePanel: ({ items }: any) => items[0].children,
-    Input: {
-      TextArea: ({ value, onChange, id }: any) => {
-        changeExtra = onChange;
-        return createElement('textarea', { id, value, onChange });
-      }
-    }
+    CollapsePanel: ({ items }: any) =>
+      createElement(
+        'div',
+        { 'data-testid': 'advanced-settings' },
+        items[0].children
+      )
   }
 });
 mock.module('@umijs/max', {
@@ -36,10 +35,13 @@ mock.module(
   { defaultExport: () => null }
 );
 mock.module(new URL('../reference-image-input.tsx', import.meta.url).href, {
-  defaultExport: () => null
+  defaultExport: ({ value, onChange, id }: any) => {
+    changeReference = onChange;
+    return createElement('input', { id, value: value ?? '', onChange });
+  }
 });
 
-test('video extras validate as an optional JSON object and reset on model change', async () => {
+test('video settings omit raw JSON controls and retain validated reference inputs for compatible models', async () => {
   const dom = new JSDOM('<!doctype html><div id="root"></div>', {
     pretendToBeVisual: true
   });
@@ -68,7 +70,17 @@ test('video extras validate as an optional JSON object and reset on model change
     await import('../../../hooks/use-init-video-meta');
   const root = createRoot(dom.window.document.getElementById('root')!);
   const modelList = [
-    { label: 'H3', value: 'minimax-h3' },
+    {
+      label: 'H3',
+      value: 'minimax-h3',
+      meta: {
+        video: {
+          family: 'minimax_h3',
+          playground_tasks: ['t2va'],
+          default_task: 't2va'
+        }
+      }
+    },
     { label: 'Wan', value: 'wan' }
   ];
   let current: ReturnType<typeof useInitVideoMeta>;
@@ -79,62 +91,67 @@ test('video extras validate as an optional JSON object and reset on model change
       initialValues: current.initialValues,
       paramsConfig: current.paramsConfig,
       modelList,
+      meta: current.modelMeta,
       onValuesChange: current.handleOnValuesChange
     });
   };
   const change = async (value: string) => {
-    await act(async () => changeExtra({ target: { value } }));
+    await act(async () => changeReference({ target: { value } }));
   };
   try {
     await act(async () => root.render(createElement(Harness)));
-    const extra = JSON.stringify({
-      task: 't2va',
-      conditions: [],
-      target: { short_edge: 720, aspect_ratio: '9:16', duration_seconds: 4 }
-    });
-    await change(extra);
-    assert.equal(current!.parameters.extra_body, extra);
+    assert.equal(dom.window.document.querySelector('textarea'), null);
+    assert.equal(
+      dom.window.document.querySelector('[data-testid="advanced-settings"]'),
+      null
+    );
+    await act(async () =>
+      current!.handleOnValuesChange({ model: 'wan' }, { model: 'wan' })
+    );
+    assert.ok(
+      dom.window.document.querySelector('[data-testid="advanced-settings"]')
+    );
+    assert.equal(dom.window.document.querySelector('textarea'), null);
+    const reference = 'https://example.com/reference.png';
+    await change(reference);
+    assert.equal(current!.parameters.referenceImage, reference);
     await act(async () => {
       assert.equal(
-        (await current!.form.current.form.validateFields()).extra_body,
-        extra
+        (await current!.form.current.form.validateFields()).referenceImage,
+        reference
       );
     });
 
-    for (const invalid of ['{', '[]', 'null', '"t2va"', 'false', '4']) {
+    for (const invalid of ['invalid URL', 'ftp://example.com/reference.png']) {
       await change(invalid);
       await act(async () => {
         await assert.rejects(current!.form.current.form.validateFields(), {
           errorFields: [
             {
-              name: ['extra_body'],
-              errors: ['playground.video.extraParams.invalid'],
+              name: ['referenceImage'],
+              errors: ['playground.params.refImage.invalid'],
               warnings: []
             }
           ]
         });
       });
     }
-    for (const optional of ['', '  ', '{}']) {
-      await change(optional);
-      await act(async () => {
-        await current!.form.current.form.validateFields();
-      });
-    }
-
-    await change(extra);
+    await change(reference);
     await act(async () =>
       current!.handleOnValuesChange(
-        { model: 'wan' },
-        { ...current!.parameters, model: 'wan' }
+        { model: 'minimax-h3' },
+        { ...current!.parameters, model: 'minimax-h3' }
       )
     );
-    assert.equal(current!.parameters.extra_body, undefined);
+    assert.equal(current!.parameters.referenceImage, undefined);
     assert.equal(
-      current!.form.current.form.getFieldValue('extra_body'),
+      current!.form.current.form.getFieldValue('referenceImage'),
       undefined
     );
-    assert.equal(dom.window.document.querySelector('textarea')?.value, '');
+    assert.equal(
+      dom.window.document.querySelector('[data-testid="advanced-settings"]'),
+      null
+    );
   } finally {
     await act(async () => root.unmount());
     Object.keys(values).forEach((key, index) => {

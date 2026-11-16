@@ -77,10 +77,6 @@ export default {
   'playground.video.generating': '生成中…',
   'playground.video.taskUnsupported':
     '此部署暂无当前 Playground 支持的任务。请检查模型分支，或通过 API 使用参考输入生成。',
-  'playground.video.extraParams': '额外参数（JSON）',
-  'playground.video.extraParams.tips':
-    '填写 task、target 等模型专用参数，格式为 JSON 对象；是否支持取决于推理后端。',
-  'playground.video.extraParams.invalid': '请输入有效的 JSON 对象。',
   'playground.params.refImage': '参考图',
   'playground.params.refImage.tips': '输入图片链接，或上传 PNG 或 JPEG 图片。',
   'playground.params.refImage.invalid': '请输入有效的 HTTP 或 HTTPS 图片链接。',

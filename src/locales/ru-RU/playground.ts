@@ -72,6 +72,12 @@ export default {
   'playground.params.empty.tips': 'Здесь появятся сгенерированные изображения',
   'playground.video.empty.tips': 'Здесь появятся сгенерированные видео.',
   'playground.video.generating': 'Генерация…',
+  'playground.video.taskUnsupported':
+    'В этом развёртывании нет задач, поддерживаемых текущим Playground. Проверьте раздел модели или используйте API для генерации с референсами.',
+  'playground.video.extraParams': 'Дополнительные параметры (JSON)',
+  'playground.video.extraParams.tips':
+    'Параметры модели, например task и target. Введите объект JSON; поддержка зависит от бэкенда инференса.',
+  'playground.video.extraParams.invalid': 'Введите корректный объект JSON.',
   'playground.params.refImage': 'Исходное изображение',
   'playground.params.refImage.tips':
     'Укажите URL изображения или загрузите PNG или JPEG.',

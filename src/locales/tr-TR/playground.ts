@@ -72,6 +72,12 @@ export default {
   'playground.params.empty.tips': 'Üretilen görseller burada görünecektir.',
   'playground.video.empty.tips': 'Üretilen video burada görünecektir.',
   'playground.video.generating': 'Üretiliyor…',
+  'playground.video.taskUnsupported':
+    'Bu dağıtımda mevcut Playground tarafından desteklenen bir görev yok. Model bölümünü kontrol edin veya referans girdileriyle üretim için API kullanın.',
+  'playground.video.extraParams': 'Ek parametreler (JSON)',
+  'playground.video.extraParams.tips':
+    'task ve target gibi modele özgü parametreleri JSON nesnesi olarak girin. Destek, çıkarım arka ucuna bağlıdır.',
+  'playground.video.extraParams.invalid': 'Geçerli bir JSON nesnesi girin.',
   'playground.params.refImage': 'Referans görsel',
   'playground.params.refImage.tips':
     'Görsel URL’si girin veya bir PNG ya da JPEG yükleyin.',

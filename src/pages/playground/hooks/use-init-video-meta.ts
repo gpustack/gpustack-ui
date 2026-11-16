@@ -21,7 +21,9 @@ import {
 const videoInitialValues = {
   size: '720x1280',
   seconds: '4',
-  referenceImage: undefined
+  referenceImage: undefined,
+  extra_body: undefined,
+  task: undefined
 };
 
 interface MessageProps {
@@ -81,9 +83,15 @@ export const useInitVideoMeta = (
   });
 
   const getNewSizeOptions = (metaData: any) => {
+    if (metaData?.video?.resolutions?.length) {
+      return metaData.video.resolutions.map((size: string) => {
+        const [width, height] = size.split('x').map(Number);
+        return { label: size, value: size, width, height };
+      });
+    }
     const { max_height, max_width } = metaData || {};
     if (!max_height || !max_width) {
-      return videoSizeList;
+      return [...videoSizeList];
     }
     const newSizeOptions = videoSizeList.filter((item) => {
       return (
@@ -110,10 +118,56 @@ export const useInitVideoMeta = (
     currentModel: any,
     sizeOptions: SizeOption[]
   ) => {
+    const video = currentModel?.meta?.video;
+    const taskConfig: ParamsSchema[] = video
+      ? [
+          {
+            type: 'Select',
+            name: 'task',
+            label: { text: 'playground.params.taskType', isLocalized: true },
+            options: (video.playground_tasks || []).map((task: string) => ({
+              label: task,
+              value: task
+            })),
+            disabled: !(video.playground_tasks || []).length,
+            description: !(video.playground_tasks || []).length
+              ? { text: 'playground.video.taskUnsupported', isLocalized: true }
+              : undefined,
+            rules: [{ required: true }]
+          }
+        ]
+      : [];
+    const config = videoParamsConfig.map((item) => {
+      if (item.name === 'seconds' && video?.duration) {
+        return {
+          ...item,
+          type: 'InputNumber' as const,
+          options: undefined,
+          attrs: {
+            min: video.duration.min,
+            max: video.duration.max,
+            step: 1,
+            precision: 0
+          },
+          rules: [
+            {
+              required: true,
+              type: 'integer',
+              min: video.duration.min,
+              max: video.duration.max
+            }
+          ]
+        };
+      }
+      return item;
+    });
     if (sizeOptions.length) {
-      return videoParamsConfig.map((item) =>
-        item.name === 'size' ? { ...item, options: sizeOptions } : item
-      );
+      return [
+        ...taskConfig,
+        ...config.map((item) =>
+          item.name === 'size' ? { ...item, options: sizeOptions } : item
+        )
+      ];
     }
     const { max_height, max_width } = currentModel.meta || {};
     // generate custom size config
@@ -127,19 +181,37 @@ export const useInitVideoMeta = (
         }
       };
     });
-    return [...customSizeConfig];
+    return [...taskConfig, ...customSizeConfig];
   };
 
   const extractIMGMeta = (meta: any) => {
     const sizeOptions = getNewSizeOptions(meta);
+    const video = meta?.video;
+    if (
+      video?.default_size &&
+      !sizeOptions.some((item) => item.value === video.default_size)
+    ) {
+      const [width, height] = video.default_size.split('x').map(Number);
+      sizeOptions.unshift({
+        label: video.default_size,
+        value: video.default_size,
+        width,
+        height
+      });
+    }
     return {
       form: _.merge(
         {},
         { ...videoInitialValues, ...videoAdvancedDefaultValues },
         {
           ..._.pick(meta, VIDEO_METAKEYS),
+          task: video?.playground_tasks?.includes(video.default_task)
+            ? video.default_task
+            : undefined,
+          seconds: video?.duration?.default ?? videoInitialValues.seconds,
           size: sizeOptions.length
-            ? `${meta?.default_width || 720}x${meta?.default_height || 1280}`
+            ? video?.default_size ||
+              `${meta?.default_width || 720}x${meta?.default_height || 1280}`
             : 'custom',
           width: meta?.default_width || 720,
           height: meta?.default_height || 1280
@@ -231,6 +303,11 @@ export const useInitVideoMeta = (
     setBasicParamsConfig(newParamsConfig);
     setVideoSizeOptions(sizeOptions);
     setModelMeta(model?.meta || {});
+    cacheFormData.current = {
+      ...cacheFormData.current,
+      extra_body: undefined,
+      task: undefined
+    };
     setInitialValues({
       ...initialData,
       seed: parameters.seed,

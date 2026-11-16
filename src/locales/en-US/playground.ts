@@ -72,6 +72,12 @@ export default {
   'playground.params.empty.tips': 'Generated images will appear here.',
   'playground.video.empty.tips': 'Generated video will appear here.',
   'playground.video.generating': 'Generating…',
+  'playground.video.taskUnsupported':
+    'This deployment has no task supported by this playground. Check the model partition or use the API for reference-based generation.',
+  'playground.video.extraParams': 'Extra parameters (JSON)',
+  'playground.video.extraParams.tips':
+    'Model-specific parameters, such as task and target. Enter a JSON object; support depends on the serving backend.',
+  'playground.video.extraParams.invalid': 'Enter a valid JSON object.',
   'playground.params.refImage': 'Reference image',
   'playground.params.refImage.tips':
     'Enter an image URL or upload a PNG or JPEG.',

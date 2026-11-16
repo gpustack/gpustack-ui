@@ -1,4 +1,4 @@
-import { CollapsePanel } from '@gpustack/core-ui';
+import { CollapsePanel, Input } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import React, {
@@ -99,37 +99,78 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
                 label: intl.formatMessage({ id: 'resources.form.advanced' }),
                 forceRender: true,
                 children: (
-                  <Form.Item
-                    name="referenceImage"
-                    rules={[
-                      {
-                        validator: async (_, value?: File | string) => {
-                          const link =
-                            typeof value === 'string' ? value.trim() : '';
-                          if (!link) return;
+                  <>
+                    <Form.Item
+                      name="referenceImage"
+                      hidden={meta?.video?.family === 'minimax_h3'}
+                      rules={[
+                        {
+                          validator: async (_, value?: File | string) => {
+                            const link =
+                              typeof value === 'string' ? value.trim() : '';
+                            if (!link) return;
 
-                          try {
-                            const url = new URL(link);
-                            if (
-                              /^https?:\/\//i.test(link) &&
-                              !url.username &&
-                              !url.password
-                            )
-                              return;
-                          } catch {
-                            // Report malformed URLs with the same field error.
+                            try {
+                              const url = new URL(link);
+                              if (
+                                /^https?:\/\//i.test(link) &&
+                                !url.username &&
+                                !url.password
+                              )
+                                return;
+                            } catch {
+                              // Report malformed URLs with the same field error.
+                            }
+                            throw new Error(
+                              intl.formatMessage({
+                                id: 'playground.params.refImage.invalid'
+                              })
+                            );
                           }
-                          throw new Error(
-                            intl.formatMessage({
-                              id: 'playground.params.refImage.invalid'
-                            })
-                          );
                         }
-                      }
-                    ]}
-                  >
-                    <ReferenceImageInput />
-                  </Form.Item>
+                      ]}
+                    >
+                      <ReferenceImageInput />
+                    </Form.Item>
+                    <Form.Item
+                      name="extra_body"
+                      getValueProps={(value) => ({ value: value ?? '' })}
+                      rules={[
+                        {
+                          validator: async (_, value?: string) => {
+                            if (!value?.trim()) return;
+                            try {
+                              const parsed = JSON.parse(value);
+                              if (
+                                parsed !== null &&
+                                typeof parsed === 'object' &&
+                                !Array.isArray(parsed)
+                              )
+                                return;
+                            } catch {
+                              // Report invalid JSON with the same field error.
+                            }
+                            throw new Error(
+                              intl.formatMessage({
+                                id: 'playground.video.extraParams.invalid'
+                              })
+                            );
+                          }
+                        }
+                      ]}
+                    >
+                      <Input.TextArea
+                        allowClear
+                        autoSize={{ minRows: 3, maxRows: 12 }}
+                        label={intl.formatMessage({
+                          id: 'playground.video.extraParams'
+                        })}
+                        description={intl.formatMessage({
+                          id: 'playground.video.extraParams.tips'
+                        })}
+                      />
+                    </Form.Item>
+                  </>
                 )
               }
             ]}

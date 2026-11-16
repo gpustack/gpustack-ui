@@ -19,6 +19,12 @@ Object.defineProperty(globalThis, 'window', {
 
 const { generateCode, generateVideoCurlCode } = await import('../video');
 
+const h3Extras = JSON.stringify({
+  task: 't2va',
+  conditions: [],
+  target: { short_edge: 720, aspect_ratio: '9:16', duration_seconds: 4 }
+});
+
 test('the video API example creates, polls and downloads through instance-bound public jobs', () => {
   const directory = mkdtempSync(join(tmpdir(), 'video-curl-'));
   try {
@@ -27,7 +33,13 @@ test('the video API example creates, polls and downloads through instance-bound 
       api: '/model/proxy/v1/videos',
       modelProxy: true,
       routeID: 7,
-      parameters: { model: 'video-model', prompt, seconds: 4, seed: 0 }
+      parameters: {
+        model: 'video-model',
+        prompt,
+        seconds: 4,
+        seed: 0,
+        extra_body: h3Extras
+      }
     });
     const script = `
 set -e
@@ -71,6 +83,7 @@ ${code}
     );
     assert.ok(args.includes(`prompt=${prompt}`));
     assert.ok(args.includes('seed=0'));
+    assert.ok(args.includes(`extra_body=${h3Extras}`));
     assert.ok(args.includes('--form-string'));
     assert.ok(!args.includes('Content-Type: application/json'));
     assert.equal(
@@ -159,7 +172,12 @@ ${curlCode}
 });
 
 test('the video Node.js example creates, polls and downloads through the video endpoint', async () => {
-  const parameters = { model: 'video-model', prompt: 'A lake', seconds: 4 };
+  const parameters = {
+    model: 'video-model',
+    prompt: 'A lake',
+    seconds: 4,
+    extra_body: h3Extras
+  };
   const { nodeJsCode } = generateCode({ api: '/v1/videos', parameters });
   const calls: { url: string; options?: RequestInit }[] = [];
   const writes: unknown[][] = [];
@@ -201,7 +219,12 @@ test('the video Node.js example creates, polls and downloads through the video e
   assert.equal(calls[0].options?.method, 'POST');
   assert.deepEqual(
     Object.fromEntries((calls[0].options?.body as FormData).entries()),
-    { model: 'video-model', prompt: 'A lake', seconds: '4' }
+    {
+      model: 'video-model',
+      prompt: 'A lake',
+      seconds: '4',
+      extra_body: h3Extras
+    }
   );
   assert.equal(writes[0][0], 'output.mp4');
   assert.deepEqual([...(writes[0][1] as Buffer)], [...body]);

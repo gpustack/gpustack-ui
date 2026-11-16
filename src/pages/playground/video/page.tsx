@@ -43,7 +43,8 @@ const GroundVideo: React.FC<MessageProps> = forwardRef((props, ref) => {
     form,
     paramsConfig,
     initialValues,
-    parameters
+    parameters,
+    modelMeta
   } = useInitVideoMeta(props, { type: 'create' });
   const {
     loading,
@@ -100,13 +101,14 @@ const GroundVideo: React.FC<MessageProps> = forwardRef((props, ref) => {
   }, [parameters]);
 
   const generateParams = () => {
-    const { referenceImage, ...videoParameters } = finalParameters;
+    const { referenceImage, extra_body, ...videoParameters } = finalParameters;
     return {
       ..._.omitBy(
         videoParameters,
         (value: unknown) => value == null || value === ''
       ),
       prompt: currentPrompt,
+      ...(extra_body?.trim() ? { extra_body: extra_body.trim() } : {}),
       ...(typeof referenceImage === 'string' && referenceImage.trim()
         ? { reference_url: referenceImage.trim() }
         : {}),
@@ -227,7 +229,12 @@ const GroundVideo: React.FC<MessageProps> = forwardRef((props, ref) => {
             }}
             title={intl.formatMessage({ id: 'playground.image.prompt' })}
             loading={loading}
-            disabled={!parameters.model}
+            disabled={
+              !parameters.model ||
+              Boolean(
+                modelMeta.video && !modelMeta.video.playground_tasks?.length
+              )
+            }
             isEmpty={!showPlayer}
             handleSubmit={handleSendMessage}
             handleAbortFetch={handleStopConversation}
@@ -260,6 +267,7 @@ const GroundVideo: React.FC<MessageProps> = forwardRef((props, ref) => {
           paramsConfig={paramsConfig}
           initialValues={initialValues}
           modelList={modelList}
+          meta={modelMeta}
         />
       </RightContainer>
       <ViewCommonCode

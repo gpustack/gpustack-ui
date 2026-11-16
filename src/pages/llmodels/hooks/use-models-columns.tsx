@@ -302,6 +302,7 @@ const useModelsColumns = ({
       dataIndex: c.key,
       key: c.key,
       span: c.span ?? 4,
+      minWidth: 160,
       render: (_text: any, record: ListItem) => c.render(record)
     }));
     return [
@@ -311,6 +312,7 @@ const useModelsColumns = ({
         key: 'name',
         sorter: tableSorter(1),
         span: 5,
+        minWidth: 220,
         render: (text: string, record: ListItem) => (
           <Flex align="center" gap={4} style={{ maxWidth: '100%' }}>
             <AutoTooltip
@@ -340,6 +342,7 @@ const useModelsColumns = ({
         key: 'cluster_id',
         sorter: tableSorter(2),
         span: 3,
+        minWidth: 140,
         render: (text: string, record: ListItem) => (
           <span className="flex flex-column" style={{ width: '100%' }}>
             {
@@ -355,6 +358,7 @@ const useModelsColumns = ({
         key: 'source',
         sorter: tableSorter(3),
         span: spans.source,
+        minWidth: 200,
         render: (text: string, record: ListItem) => (
           <span className="flex flex-column" style={{ width: '100%' }}>
             <AutoTooltip ghost>{generateSource(record)}</AutoTooltip>
@@ -378,13 +382,7 @@ const useModelsColumns = ({
         align: 'left',
         sorter: tableSorter(4),
         span: spans.replicas,
-        // The only floor in this table, and it is here because this is the one
-        // cell whose width is not negotiable: a PD row in edit mode lays out
-        // «● Decode  3 /  [ 3 ]  ✓ ↺» on one line, and the cell clips rather
-        // than wraps (`overflow: hidden`), so a share too small would cut the
-        // save button off. 4fr alone drops under 200px on a laptop. The floor
-        // costs the other columns a little of the leftover width and nothing
-        // else — they were already truncating into an `AutoTooltip`.
+        // Keep the PD replica editor's inputs and save controls on one line.
         minWidth: 280,
         editable: {
           valueType: 'number',
@@ -513,6 +511,7 @@ const useModelsColumns = ({
         key: 'operation',
         dataIndex: 'operation',
         span: 3,
+        minWidth: 100,
         render: (text: any, record: ListItem) => (
           <DropdownButtons
             items={setModelActionList(record)}

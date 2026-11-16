@@ -692,7 +692,7 @@ const Models: React.FC<ModelsProps> = ({
         alignItems: 'flex-start'
       }}
     >
-      <div style={{ flex: 1, padding: '24px' }}>
+      <div style={{ flex: 1, minWidth: 0, padding: '24px' }}>
         <PageTools
           marginTop={0}
           marginBottom={16}
@@ -743,6 +743,7 @@ const Models: React.FC<ModelsProps> = ({
         ></PageTools>
         <SealTable
           columns={columns}
+          scroll={{ x: true }}
           emptyMinHeight="calc(100vh - 300px)"
           sortDirections={TABLE_SORT_DIRECTIONS}
           dataSource={dataSource}

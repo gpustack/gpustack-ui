@@ -9,7 +9,9 @@ const translations = (messages as any).default ?? messages;
 const empty = () => null;
 const element = ({ children }: any) => createElement('div', null, children);
 let tooltips: any[] = [];
-mock.module('@gpustack/core-ui', { namedExports: { SectionTitle: element } });
+mock.module('@gpustack/core-ui', {
+  namedExports: { SectionTitle: element, Table: empty }
+});
 mock.module('@ant-design/icons', {
   namedExports: {
     CheckCircleFilled: empty,

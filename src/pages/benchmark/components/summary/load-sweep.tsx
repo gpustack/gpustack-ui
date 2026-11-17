@@ -1,5 +1,5 @@
-import { theme } from 'antd';
-import React, { useEffect, useRef } from 'react';
+import { Flex, theme } from 'antd';
+import React, { useEffect, useRef, useState } from 'react';
 import echarts, { ECharts, EChartsCoreOption } from '../echarts';
 import {
   StagePoint,
@@ -11,9 +11,18 @@ import {
   logDomain,
   sloBreachOnset
 } from './metrics';
+import {
+  ReportChartData,
+  ReportDataToggle,
+  type ReportDataLabels
+} from './report-chart-data';
 import { C, tooltipRows } from './stage-chart';
 
 interface Props {
+  header?: React.ReactNode;
+  selectedId?: number | null;
+  onSelect?: (point: StagePoint) => void;
+  dataLabels?: ReportDataLabels;
   points: StagePoint[];
   latencyValue: (point: StagePoint) => number | null;
   latencyThreshold?: number;
@@ -58,6 +67,7 @@ export const buildLoadSweepOption = (
     points,
     latencyValue,
     latencyThreshold,
+    selectedId,
     loadAxisName,
     loadAxisTitle,
     labels
@@ -262,6 +272,20 @@ export const buildLoadSweepOption = (
         areaStyle: { color: C.blue, opacity: 0.06 },
         symbolSize: 6,
         markArea: markAreas,
+        markLine:
+          selectedId != null && points.some((point) => point.id === selectedId)
+            ? {
+                silent: true,
+                symbol: 'none',
+                label: { show: false },
+                lineStyle: { color: C.blue, width: 1.5, type: 'dashed' },
+                data: [
+                  {
+                    xAxis: points.findIndex((point) => point.id === selectedId)
+                  }
+                ]
+              }
+            : undefined,
         data: points.map((p, i) => {
           if (
             !isSloCapacityPoint(p) &&
@@ -360,6 +384,7 @@ export const buildLoadSweepOption = (
 };
 
 const LoadSweep: React.FC<Props> = (props) => {
+  const [table, setTable] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const inst = useRef<ECharts | null>(null);
   const { token } = theme.useToken();
@@ -373,15 +398,20 @@ const LoadSweep: React.FC<Props> = (props) => {
       buildLoadSweepOption(props, token.colorBorder, axisLineColor),
       true
     );
+    inst.current.off('click');
+    inst.current.on('click', (event: any) => {
+      const point = props.points[event.dataIndex];
+      if (point) props.onSelect?.(point);
+    });
     inst.current.resize();
-  }, [props, token.colorBorder, axisLineColor]);
+  }, [props, token.colorBorder, axisLineColor, table]);
 
   useEffect(() => {
     if (!ref.current) return;
     const ro = new ResizeObserver(() => inst.current?.resize());
     ro.observe(ref.current);
     return () => ro.disconnect();
-  }, []);
+  }, [table]);
 
   useEffect(
     () => () => {
@@ -392,7 +422,53 @@ const LoadSweep: React.FC<Props> = (props) => {
   );
 
   return (
-    <div ref={ref} style={{ width: '100%', height: props.height ?? 330 }} />
+    <Flex
+      component="section"
+      aria-label={props.labels.throughput}
+      vertical
+      gap={8}
+    >
+      {(props.header || props.dataLabels) && (
+        <Flex justify="space-between" align="flex-start" gap={8}>
+          {props.header}
+          {props.dataLabels && (
+            <ReportDataToggle
+              table={table}
+              labels={props.dataLabels}
+              onToggle={() => {
+                inst.current?.dispose();
+                inst.current = null;
+                setTable(!table);
+              }}
+            />
+          )}
+        </Flex>
+      )}
+      {table ? (
+        <ReportChartData
+          points={props.points}
+          selectedId={props.selectedId}
+          onSelect={props.onSelect}
+          loadAxisName={props.loadAxisName}
+          columns={[
+            {
+              key: 'throughput',
+              title: props.labels.throughput,
+              value: (point) => point.tps,
+              format: fmtTpsFull
+            },
+            {
+              key: 'latency',
+              title: props.labels.ttftP99,
+              value: props.latencyValue,
+              format: fmtMs
+            }
+          ]}
+        />
+      ) : (
+        <div ref={ref} style={{ width: '100%', height: props.height ?? 330 }} />
+      )}
+    </Flex>
   );
 };
 

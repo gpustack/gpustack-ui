@@ -86,6 +86,7 @@ export default {
   'benchmark.detail.result.sloRate': '最高已测达标请求率',
   'benchmark.detail.result.totalPeak': '最高已测总吞吐',
   'benchmark.detail.result.measured': '实测结果',
+  'benchmark.detail.result.currentMeasured': '当前测量结果',
   'benchmark.detail.result.noSloPoint': '没有已测点满足 SLO',
   'benchmark.detail.result.boundaryLocated': 'SLO 边界已定位',
   'benchmark.detail.result.boundaryUnknown': '更高 SLO 边界尚未定位',
@@ -421,7 +422,7 @@ export default {
     '输入/输出占比 —— 判断以 prefill 还是 decode 为主',
   'benchmark.detail.chart.concShortfall': '并发：配置 vs 实测',
   'benchmark.detail.chart.concShortfall.note':
-    '两条线几乎重合，所以缺口单独用右侧红色刻度表示',
+    '缺口 = max(目标并发 − 实际平均并发, 0)，按测点单独计算，不累加。平均并发与缺口可为小数；红线读取右侧从 0 开始的独立刻度。',
   'benchmark.detail.chart.efficiency': '效率曲线',
   'benchmark.detail.chart.efficiency.note':
     '每个并发请求分到的 tok/s · 边际收益递减的起点',

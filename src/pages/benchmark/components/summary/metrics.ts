@@ -627,6 +627,12 @@ export const fmtRate = (v: number): string => `${trim(v, 100)} req/s`;
 
 export const fmtInt = (v: number): string => String(Math.round(v));
 
+/** Mean in-flight requests and their residual are continuous quantities. */
+export const fmtConcurrency = (v: number): string =>
+  String(
+    v !== 0 && Math.abs(v) < 1 ? Number(v.toPrecision(2)) : Number(v.toFixed(2))
+  );
+
 /**
  * A percentage that lives near 100. One decimal, because the deviations worth
  * reading on a closed-loop run are 1–3% and rounding to whole percent would

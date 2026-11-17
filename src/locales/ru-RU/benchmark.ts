@@ -101,6 +101,7 @@ export default {
   'benchmark.detail.result.totalPeak':
     'Максимальная измеренная общая пропускная способность',
   'benchmark.detail.result.measured': 'Результат измерения',
+  'benchmark.detail.result.currentMeasured': 'Текущий результат измерения',
   'benchmark.detail.result.noSloPoint':
     'Ни одна измеренная точка не соответствует SLO',
   'benchmark.detail.result.boundaryLocated': 'Граница SLO найдена',
@@ -451,7 +452,7 @@ export default {
   'benchmark.detail.chart.concShortfall':
     'Параллельность: заданная и фактическая',
   'benchmark.detail.chart.concShortfall.note':
-    'Линии практически совпадают, поэтому разрыв показан на отдельной красной шкале справа',
+    'Недобор = max(целевая параллельность − фактическая средняя параллельность, 0). Рассчитывается отдельно для каждой точки, без накопления. Среднее и недобор могут быть дробными; красная линия читается по независимой правой шкале от нуля.',
   'benchmark.detail.chart.efficiency': 'Кривая эффективности',
   'benchmark.detail.chart.efficiency.note':
     'tok/s на один активный запрос · начало убывающей отдачи',

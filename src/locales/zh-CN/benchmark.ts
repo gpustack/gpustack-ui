@@ -182,9 +182,13 @@ export default {
   'benchmark.form.loadType.sweep': '自动扫描',
   'benchmark.form.autoTune': '自动探测',
   'benchmark.form.autoTune.rate.tip':
-    '本次压测要测的负载点，一个阶段 = 一个实测点。自动探测会自动抬高请求速率，直到总吞吐不再增长（即峰值），无需手填负载点；切到「手动」则按你列出的速率逐档运行。',
+    '负载轴控制每秒请求数。「手动」会按阶段列表中的请求速率逐档运行，一个阶段对应一个实测负载点。',
   'benchmark.form.autoTune.concurrency.tip':
-    '本次压测要测的负载点，一个阶段 = 一个实测点。自动探测会自动增加并发，直到无法满足延迟目标（即 SLO 边界），无需手填负载点；切到「手动」则按你列出的并发逐档运行。',
+    '负载轴控制并发请求数。「手动」会按阶段列表中的并发数逐档运行，一个阶段对应一个实测负载点。',
+  'benchmark.form.autoTune.goal.throughput':
+    '未配置延迟 SLO 目标时，自动探测搜索总吞吐峰值。',
+  'benchmark.form.autoTune.goal.slo':
+    '自动探测搜索同时满足所有已配置均值/P95/P99 延迟 SLO 目标的最大负载。',
   'benchmark.form.autoTune.rangeRate': '搜索范围 · 请求速率 (req/s)',
   'benchmark.form.autoTune.rangeFrom': '从',
   'benchmark.form.autoTune.rateFrom': '起始速率 (req/s)',
@@ -271,6 +275,7 @@ export default {
   'benchmark.form.rate': '请求速率 (req/s)',
   'benchmark.form.concurrency': '并发数',
   'benchmark.form.stages': '阶段 (Stages)',
+  'benchmark.form.load.single': '单次运行',
   'benchmark.form.stages.mode.manual': '手动',
   'benchmark.detail.stageLimits': '各级上限',
   'benchmark.form.addStage': '添加阶段',

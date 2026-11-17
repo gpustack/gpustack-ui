@@ -192,9 +192,13 @@ export default {
   'benchmark.form.loadType.sweep': '自動スイープ',
   'benchmark.form.autoTune': '自動チューニング',
   'benchmark.form.autoTune.rate.tip':
-    'この実行で測定する負荷ポイントです（1 ステージ = 1 測定点）。自動チューニングでは、総スループットが伸びなくなる（ピーク）までリクエストレートを自動的に引き上げるため、ポイントを手入力する必要はありません。「手動」に切り替えると、指定したレートを順に実行します。',
+    '負荷軸は毎秒のリクエスト数を制御します。「手動」ではステージ一覧のレートを順に実行します。1 ステージが 1 つの負荷測定点です。',
   'benchmark.form.autoTune.concurrency.tip':
-    'この実行で測定する負荷ポイントです（1 ステージ = 1 測定点）。自動チューニングでは、レイテンシ目標を満たせなくなる（SLO 境界）まで並行数を自動的に増やすため、ポイントを手入力する必要はありません。「手動」に切り替えると、指定した並行数を順に実行します。',
+    '負荷軸は同時リクエスト数を制御します。「手動」ではステージ一覧の並行数を順に実行します。1 ステージが 1 つの負荷測定点です。',
+  'benchmark.form.autoTune.goal.throughput':
+    'レイテンシ SLO 目標がない場合、自動チューニングは総スループットのピークを探索します。',
+  'benchmark.form.autoTune.goal.slo':
+    '自動チューニングは、設定された平均/P95/P99 のレイテンシ SLO 目標をすべて満たす最大負荷を探索します。',
   'benchmark.form.autoTune.rangeRate': '探索範囲 · リクエストレート (req/s)',
   'benchmark.form.autoTune.rangeFrom': '開始値',
   'benchmark.form.autoTune.rateFrom': '開始レート (req/s)',
@@ -281,6 +285,7 @@ export default {
   'benchmark.form.rate': 'リクエストレート (req/s)',
   'benchmark.form.concurrency': '並行数',
   'benchmark.form.stages': 'ステージ',
+  'benchmark.form.load.single': '単一実行',
   'benchmark.form.stages.mode.manual': '手動',
   'benchmark.detail.stageLimits': 'ステージごとの上限',
   'benchmark.form.addStage': 'ステージを追加',

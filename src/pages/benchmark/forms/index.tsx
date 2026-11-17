@@ -276,6 +276,9 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
     };
     form.setFieldsValue({
       ...currentData,
+      // Before Auto Tune existed an absent flag meant a manual/single run.
+      // Do not inherit the plain-create default when cloning those records.
+      auto_tune: currentData.auto_tune ?? false,
       dataset_name: datasetName,
       dataset_input_tokens:
         datasetName === DatasetValueMap.ShareGPT

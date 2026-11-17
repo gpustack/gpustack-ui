@@ -15,6 +15,7 @@ import { useAtom } from 'jotai';
 import { useMemo } from 'react';
 import styled from 'styled-components';
 import { DEFAULT_ENTER_PAGE } from '../config/settings';
+import styles from './extra-render.module.less';
 import GithubStar from './github-star';
 
 // A tinted pill, not a solid orange block. `#fff` on `--ant-orange-5` measured
@@ -302,6 +303,12 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
   const userMenu = {
     items: [
       {
+        key: 'version',
+        label: intl.formatMessage({ id: 'common.button.version' }),
+        icon: <IconFont type="icon-version" />,
+        onClick: showVersion
+      },
+      {
         key: 'settings',
         label: (
           <span className="flex flex-center">
@@ -350,11 +357,16 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
   };
 
   return (
-    <Wrapper>
+    <Wrapper className={styles.actions}>
       {contextHolder}
       <PluginExtraField name="OrgSwitcher" isDarkTheme={isDarkTheme} />
-      {process.env.ENABLE_ENTERPRISE !== 'true' && <GithubStar />}
+      {process.env.ENABLE_ENTERPRISE !== 'true' && (
+        <span className={styles.secondary}>
+          <GithubStar />
+        </span>
+      )}
       <div
+        className={styles.secondary}
         style={{
           display: 'flex',
           alignItems: 'center'

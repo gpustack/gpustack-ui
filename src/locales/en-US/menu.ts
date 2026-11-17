@@ -1,4 +1,6 @@
 export default {
+  'menu.resources.workerDetail': 'Worker details',
+  'menu.resources.gpuDetail': 'GPU details',
   'menu.models.deploymentDetail': 'Model detail',
   'menu.dashboard': 'Dashboard',
   'menu.playground': 'Playground',

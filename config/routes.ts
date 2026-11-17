@@ -331,7 +331,8 @@ const baseRoutes = [
         icon: 'icon-resources',
         selectedIcon: 'icon-resources-filled',
         defaultIcon: 'icon-resources',
-        component: './resources/components/workers'
+        component: './resources/components/workers',
+        subMenu: ['/resources/workers/detail']
       },
       {
         name: 'gpus',
@@ -340,7 +341,24 @@ const baseRoutes = [
         icon: 'icon-gpu1',
         selectedIcon: 'icon-gpu-filled',
         defaultIcon: 'icon-gpu1',
-        component: './resources/components/gpus'
+        component: './resources/components/gpus',
+        subMenu: ['/resources/gpus/detail']
+      },
+      {
+        name: 'workerDetail',
+        path: '/resources/workers/detail',
+        key: 'workerDetail',
+        access: 'canSeeOrgAdmin',
+        hideInMenu: true,
+        component: './resources/detail'
+      },
+      {
+        name: 'gpuDetail',
+        path: '/resources/gpus/detail',
+        key: 'gpuDetail',
+        access: 'canSeeOrgAdmin',
+        hideInMenu: true,
+        component: './resources/detail'
       },
       {
         name: 'credentials',

@@ -1,4 +1,26 @@
 export default {
+  'benchmark.storage.title': 'Хранилище архивов',
+  'benchmark.storage.used': 'Сохранённые данные мониторинга',
+  'benchmark.storage.remaining': 'Доступная ёмкость',
+  'benchmark.storage.unlimited': 'Без ограничения ёмкости',
+  'benchmark.storage.limit': 'Общий лимит ёмкости',
+  'benchmark.storage.warning': 'Использование достигло {threshold}%.',
+  'benchmark.storage.full':
+    'Лимит ёмкости достигнут. Новые записи приостановлены.',
+  'benchmark.storage.belowUsage':
+    'Лимит ниже текущего использования. Архивы доступны; новые записи ждут свободного места.',
+  'benchmark.storage.policy':
+    'Лимит общий для всех Server. История не удаляется автоматически. После освобождения места запись повторяется автоматически.',
+  'benchmark.storage.scope':
+    'Учитывается объём сжатых архивов мониторинга. Индексы, журналы и резервные копии базы данных учитываются отдельно.',
+  'benchmark.storage.invalid':
+    'Введите положительную ёмкость до 8,388,607.999999999 GiB или выберите отсутствие лимита.',
+  'benchmark.storage.loadFailed': 'Не удалось прочитать ёмкость хранилища.',
+  'benchmark.storage.saveFailed':
+    'Не удалось сохранить лимит. Введённые данные сохранены.',
+  'benchmark.storage.permission':
+    'Управлять ёмкостью могут только администраторы платформы.',
+  'benchmark.storage.reload': 'Повторить',
   'benchmark.monitoring.archive.capacityFull':
     'Архивация приостановлена · лимит ёмкости',
   'benchmark.monitoring.archive.capacityHelp':

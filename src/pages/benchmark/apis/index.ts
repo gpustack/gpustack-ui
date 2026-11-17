@@ -1,5 +1,6 @@
 import { request } from '@umijs/max';
 import { CancelToken } from 'axios';
+import type { ArtifactStorageCapacity } from '../config/artifact-storage-types';
 import type {
   BenchmarkArchiveStatus,
   BenchmarkMonitoring,
@@ -18,6 +19,20 @@ import {
 export const BENCHMARKS_API = '/benchmarks';
 export const PROFILES_CONFIG_API = '/benchmark-profiles/default-config';
 export const EXPORT_BENCHMARK_LIST = '/benchmarks/export';
+
+export const queryArtifactStorageCapacity = (signal?: AbortSignal) =>
+  request<ArtifactStorageCapacity>('/artifact-storage/capacity', {
+    method: 'GET',
+    signal,
+    skipErrorHandler: true
+  });
+
+export const updateArtifactStorageCapacity = (max_bytes: number) =>
+  request<ArtifactStorageCapacity>('/artifact-storage/capacity', {
+    method: 'PUT',
+    data: { max_bytes },
+    skipErrorHandler: true
+  });
 
 export const queryBenchmarkMonitoring = (
   id: number,

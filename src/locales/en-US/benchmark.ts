@@ -1,4 +1,26 @@
 export default {
+  'benchmark.storage.title': 'Archive storage',
+  'benchmark.storage.used': 'Saved monitoring data',
+  'benchmark.storage.remaining': 'Available capacity',
+  'benchmark.storage.unlimited': 'Unlimited capacity',
+  'benchmark.storage.limit': 'Global capacity limit',
+  'benchmark.storage.warning': 'Storage usage has reached {threshold}%.',
+  'benchmark.storage.full':
+    'Storage capacity reached. New archive writes are paused.',
+  'benchmark.storage.belowUsage':
+    'This limit is below current usage. Existing archives remain available; new writes pause until capacity is available.',
+  'benchmark.storage.policy':
+    'All Servers share this limit. Existing history is never deleted automatically. Pending archives retry after capacity is increased or space is freed.',
+  'benchmark.storage.scope':
+    'Counts compressed Benchmark monitoring archives. Database indexes, logs and backups are excluded.',
+  'benchmark.storage.invalid':
+    'Enter a positive capacity up to 8,388,607.999999999 GiB, or select unlimited capacity.',
+  'benchmark.storage.loadFailed': 'Unable to read storage capacity.',
+  'benchmark.storage.saveFailed':
+    'Unable to save the capacity limit. Your changes have been retained.',
+  'benchmark.storage.permission':
+    'Only platform administrators can manage archive capacity.',
+  'benchmark.storage.reload': 'Retry',
   'benchmark.monitoring.archive.capacityFull':
     'Archiving paused · storage capacity reached',
   'benchmark.monitoring.archive.capacityHelp':

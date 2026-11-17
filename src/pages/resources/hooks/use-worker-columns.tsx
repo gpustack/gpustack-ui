@@ -449,7 +449,14 @@ const useWorkerColumns = ({
         render: (text: string, record: ListItem) => (
           <div className={workerCss.name}>
             <AutoTooltip ghost maxWidth={200} title={text}>
-              <span className="name-text">{text}</span>
+              <a
+                href={`#/resources/workers/detail?id=${record.id}`}
+                onClick={(event) => event.stopPropagation()}
+                className="name-text"
+                style={{ color: 'var(--ant-color-primary)' }}
+              >
+                {text}
+              </a>
             </AutoTooltip>
             {renderVersionInfo(record)}
           </div>

@@ -2,6 +2,7 @@ import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { DropdownButtons, IconFont } from '@gpustack/core-ui';
 import { Button, Space } from 'antd';
 import React from 'react';
+import ArchiveStorageSettings from './archive-storage-settings';
 
 export interface RightActionsProps {
   handleDeleteByBatch: () => void;
@@ -50,6 +51,7 @@ const RightActions: React.FC<RightActionsProps> = ({
 
   return (
     <Space size={16}>
+      <ArchiveStorageSettings />
       {settingButton}
       <Button
         icon={<PlusOutlined></PlusOutlined>}

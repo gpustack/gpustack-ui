@@ -1,4 +1,27 @@
 export default {
+  'benchmark.storage.title': 'Arşiv depolama',
+  'benchmark.storage.used': 'Kaydedilen izleme verileri',
+  'benchmark.storage.remaining': 'Kullanılabilir kapasite',
+  'benchmark.storage.unlimited': 'Sınırsız kapasite',
+  'benchmark.storage.limit': 'Genel kapasite sınırı',
+  'benchmark.storage.warning':
+    'Depolama kullanımı %{threshold} düzeyine ulaştı.',
+  'benchmark.storage.full':
+    'Kapasite sınırına ulaşıldı. Yeni arşiv yazmaları duraklatıldı.',
+  'benchmark.storage.belowUsage':
+    'Sınır mevcut kullanımdan düşük. Arşivler okunabilir; yeni yazmalar boş alan bekler.',
+  'benchmark.storage.policy':
+    'Tüm Server aynı sınırı paylaşır. Geçmiş otomatik silinmez. Alan boşaldığında arşivleme otomatik yeniden denenir.',
+  'benchmark.storage.scope':
+    'Sıkıştırılmış benchmark izleme arşivlerinin boyutu hesaplanır. Veritabanı dizinleri, günlükleri ve yedekleri ayrı hesaplanır.',
+  'benchmark.storage.invalid':
+    'En fazla 8,388,607.999999999 GiB pozitif kapasite girin veya sınırsız kapasiteyi seçin.',
+  'benchmark.storage.loadFailed': 'Depolama kapasitesi okunamadı.',
+  'benchmark.storage.saveFailed':
+    'Kapasite sınırı kaydedilemedi. Girdiniz korundu.',
+  'benchmark.storage.permission':
+    'Arşiv kapasitesini yalnızca platform yöneticileri yönetebilir.',
+  'benchmark.storage.reload': 'Yeniden dene',
   'benchmark.monitoring.archive.capacityFull':
     'Arşivleme duraklatıldı · kapasite sınırı',
   'benchmark.monitoring.archive.capacityHelp':

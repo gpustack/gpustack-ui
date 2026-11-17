@@ -1,4 +1,23 @@
 export default {
+  'benchmark.storage.title': '归档存储',
+  'benchmark.storage.used': '已保存的监控数据',
+  'benchmark.storage.remaining': '可用容量',
+  'benchmark.storage.unlimited': '不限容量',
+  'benchmark.storage.limit': '全局容量上限',
+  'benchmark.storage.warning': '存储用量已达到 {threshold}%。',
+  'benchmark.storage.full': '已达到容量上限，新增归档写入已暂停。',
+  'benchmark.storage.belowUsage':
+    '上限低于当前用量。已有归档仍可查看，新增写入将暂停，直到有可用空间。',
+  'benchmark.storage.policy':
+    '所有 Server 共用此上限，不会自动删除已有历史。调大上限或释放空间后，等待中的归档会自动重试。',
+  'benchmark.storage.scope':
+    '按 Benchmark 监控压缩包大小计量。数据库索引、日志和备份另计。',
+  'benchmark.storage.invalid':
+    '请输入正数容量（最大 8,388,607.999999999 GiB），或选择不限容量。',
+  'benchmark.storage.loadFailed': '无法读取存储容量。',
+  'benchmark.storage.saveFailed': '容量上限保存失败，已保留输入内容。',
+  'benchmark.storage.permission': '仅平台管理员可管理归档容量。',
+  'benchmark.storage.reload': '重试',
   'benchmark.monitoring.archive.capacityFull': '归档已暂停 · 存储容量不足',
   'benchmark.monitoring.archive.capacityHelp':
     '已保存的监控仍可查看。请联系平台管理员调大容量上限或释放空间，归档会自动重试。',

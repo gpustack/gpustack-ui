@@ -1,4 +1,26 @@
 export default {
+  'benchmark.storage.title': 'アーカイブストレージ',
+  'benchmark.storage.used': '保存済みの監視データ',
+  'benchmark.storage.remaining': '利用可能容量',
+  'benchmark.storage.unlimited': '容量無制限',
+  'benchmark.storage.limit': '全体の容量上限',
+  'benchmark.storage.warning': '使用量が {threshold}% に達しました。',
+  'benchmark.storage.full':
+    '容量上限に達したため、新しい保存を一時停止しています。',
+  'benchmark.storage.belowUsage':
+    '現在の使用量より低い上限です。既存データは閲覧でき、空き容量ができるまで新しい保存を停止します。',
+  'benchmark.storage.policy':
+    '全 Server で共有する上限です。既存履歴は自動削除されません。空き容量の確保後に自動再試行します。',
+  'benchmark.storage.scope':
+    'ベンチマーク監視データの圧縮サイズを集計します。データベースのインデックス、ログ、バックアップは別に計算します。',
+  'benchmark.storage.invalid':
+    '正の容量（最大 8,388,607.999999999 GiB）を入力するか、容量無制限を選択してください。',
+  'benchmark.storage.loadFailed': 'ストレージ容量を読み込めません。',
+  'benchmark.storage.saveFailed':
+    '容量上限を保存できません。入力は保持されています。',
+  'benchmark.storage.permission':
+    '容量を管理できるのはプラットフォーム管理者のみです。',
+  'benchmark.storage.reload': '再試行',
   'benchmark.monitoring.archive.capacityFull': '保存一時停止 · 容量不足',
   'benchmark.monitoring.archive.capacityHelp':
     '保存済み監視データは閲覧できます。管理者に空き容量の確保を依頼してください。保存は自動再試行されます。',

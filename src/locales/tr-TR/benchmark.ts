@@ -1,4 +1,48 @@
 export default {
+  'benchmark.monitoring.archive.capacityFull':
+    'Arşivleme duraklatıldı · kapasite sınırı',
+  'benchmark.monitoring.archive.capacityHelp':
+    'Kaydedilmiş izleme okunabilir. Yöneticiden alan açmasını isteyin; arşivleme otomatik yeniden denenir.',
+  'benchmark.monitoring.runChanged':
+    'Bu bağlantı farklı bir kıyaslama çalışmasına ait. Bu sonuçların izleme verilerini görmek için geçerli çalışmayı açın.',
+  'benchmark.monitoring.archive.not_archived': 'Arşivlenmedi',
+  'benchmark.monitoring.archive.ready': 'İzleme kaydedildi',
+  'benchmark.monitoring.archive.partial': 'Kısmi arşiv',
+  'benchmark.monitoring.archive.partialSamples':
+    'Kaydedildi · bazı kaynak örnekleri eksik',
+  'benchmark.monitoring.archive.partialSamplesHelp':
+    'Arşivleme tamamlandı. Bazı kaynak metriklerinin örneklerinde boşluklar var. İstemci benchmark sonuçları ayrı gösterilir.',
+  'benchmark.monitoring.archive.partialSamplesBoundary':
+    'Kaynak toplama zamanı ve hız/gecikme hareketli pencereleri sınır sorgu değerlendirmelerini boş bırakabilir. Kapsam ham toplama sayısını değil sorgu değerlendirme noktalarını sayar; eksikler sıfırla doldurulmaz.',
+  'benchmark.monitoring.archive.sampleCoverage':
+    'Geçerli aralıkta en düşük geçerli sorgu noktası kapsamı: {observed}/{expected} (%{percent}).',
+  'benchmark.monitoring.archive.shortPhaseCoverage':
+    'Kaydedilen {total} fazın {count} tanesi {seconds} saniyelik hareketli pencereyi aşmaz; ilgili hız/gecikme eğilimleri faz içinde tam pencereye sahip değildir.',
+  'benchmark.monitoring.archive.failed': 'Arşivleme başarısız',
+  'benchmark.monitoring.archive.expired': 'Arşivin süresi doldu',
+  'benchmark.monitoring.archive.no_data': 'İzleme verisi yok',
+  'benchmark.monitoring.archive.pending': 'Arşivleme bekliyor',
+  'benchmark.monitoring.archive.capturing': 'Arşivleniyor',
+  'benchmark.monitoring.archive.finalizing': 'Arşiv tamamlanıyor',
+  'benchmark.monitoring.archive.unavailable': 'Arşive erişilemiyor',
+  'benchmark.monitoring.archive.permission': 'Arşivi yeniden deneme izni yok',
+  'benchmark.monitoring.archive.retryFailed': 'Arşivi yeniden deneme başarısız',
+  'benchmark.monitoring.archive.retry': 'Arşivi yeniden dene',
+  'benchmark.monitoring.archive.help':
+    'Kaydedilen izleme, bu çalışmayı ve ölçülen aşamalarını yeniden oynatır.',
+  'benchmark.monitoring.archive.size': 'İzleme arşivi boyutu: {size}',
+  'benchmark.monitoring.archive.checkpointSize':
+    'Şu ana kadar kaydedilen: {size}',
+  'benchmark.monitoring.archive.capturedUntil': 'Toplanan son zaman',
+  'benchmark.monitoring.archive.expiresAt': 'Son kullanma zamanı',
+  'benchmark.monitoring.client': 'İstemci',
+  'benchmark.monitoring.requestLatency': 'Toplam istek süresi',
+  'benchmark.monitoring.resourceDrilldownHelp':
+    'Geçerli aralığı koruyarak erişilebilir Worker veya GPU açılır. Ayrıntılar fiziksel donanım geçmişini gösterir; adlar çalıştırma anlık görüntüsüdür.',
+  'benchmark.monitoring.peakSourceChanged': 'Tepe kaynağı değişti',
+  'benchmark.monitoring.peakSourceUnavailable': 'Tepe kaynağı bilinmiyor',
+  'benchmark.monitoring.peakComparisonDefinition':
+    'Örneklenen tepeler kaynak ve zaman içerir. Değişimler yalnızca eşleşen kaynaklar için gösterilir.',
   'benchmark.detail.slo.boundary': 'SLO sınırı',
   'benchmark.detail.slo.firstBreachLoad': 'İlk başarısız yük:',
   'benchmark.detail.slo.measurementUnavailable': 'Ölçüm verisi yok',
@@ -540,5 +584,154 @@ export default {
   'benchmark.form.target.route': 'Rota',
   'benchmark.form.target.route.empty':
     "Bu kümede hizmet verebilen bir LLM'e yönelen rota yok. Bir rota dağıtın ya da bunun yerine bir örnek ölçün.",
-  'benchmark.detail.result.basic': 'Temel'
+  'benchmark.detail.result.basic': 'Temel',
+  'benchmark.monitoring.awaitingStages': 'Ölçülen yük aşamaları bekleniyor',
+  'benchmark.monitoring.recordedRuntime':
+    'Kaydedilen üyelerin motor gözlemleri diğer istekleri içerebilir. İstemci aşama sonuçları ve kaynak istatistikleri kendi ölçüm sınırlarını korur.',
+  'benchmark.monitoring.rollingContext':
+    'Eğilimler {seconds}s kayan pencere kullanır; test öncesi veya aşamalar arasındaki gözlemleri içerebilir.',
+  'benchmark.monitoring.measurement': 'Ölçüm',
+  'benchmark.monitoring.measurements': 'ölçüm',
+  'benchmark.monitoring.pointView': 'Ölçüm görünümü',
+  'benchmark.monitoring.loadComparison': 'Yük karşılaştırması',
+  'benchmark.monitoring.explorationProcess': 'Arama süreci',
+  'benchmark.monitoring.loadComparisonHelp':
+    'Aynı girdi uzunluğundaki ölçümleri hedef yüke göre artan sırada karşılaştırın. Her ölçümün özgün izleme örnekleri korunur.',
+  'benchmark.monitoring.explorationProcessHelp':
+    'Ölçümleri kayıtlı yürütme sırası ve arama gruplarıyla izleyin. İzleme gerçek zaman eksenini kullanır; tüm çalıştırma ve aşama yakınlaştırması yalnızca görüntülenen aralığı değiştirir.',
+  'benchmark.monitoring.timeLegendHelp':
+    'Gösterge, görüntülenen aralıktaki son geçerli örneği gösterir; üzerine gelindiğinde veya imleç sabitlendiğinde incelenen örneği gösterir.',
+  'benchmark.monitoring.highestMeasuredPass':
+    'Ölçülen en yüksek SLO uyumlu yük',
+  'benchmark.monitoring.adjacentBreach': 'En yakın yüksek SLO ihlali',
+  'benchmark.monitoring.measuredPeak': 'Ölçülen aktarım zirvesi',
+  'benchmark.monitoring.designation.capacity': 'SLO sınırı',
+  'benchmark.monitoring.designation.breach': 'Sınır üstü',
+  'benchmark.monitoring.search.expand': 'Aralığı genişlet',
+  'benchmark.monitoring.search.refineSlo': 'SLO sınırını daralt',
+  'benchmark.monitoring.search.refinePeak': 'Aktarım aralığını daralt',
+  'benchmark.monitoring.search.manual': 'Manuel ölçümler',
+  'benchmark.monitoring.search.single': 'Tek ölçüm',
+  'benchmark.monitoring.search.probe': 'Doygunluk yoklaması',
+  'benchmark.monitoring.searchHistoryHelp':
+    'Gruplar kayıtlı ölçüm sırasına ve yüklere dayanır: yeni en yüksek yükler aralığı genişletir, bilinen aralıktaki noktalar onu daraltır. Sıralama, ölçüm numaralarını ve izleme zamanlarını değiştirmez.',
+  'benchmark.monitoring.executionHelp':
+    'Ölçümler kayıtlı yürütme sırasıyla gösterilir. Sıralama, numaralarını veya izleme zamanlarını değiştirmez.',
+  'benchmark.monitoring.adjacentLoad': 'Bitişik düşük yük',
+  'benchmark.monitoring.previousPoint': 'Önceki nokta',
+  'benchmark.monitoring.nextPoint': 'Sonraki nokta',
+  'benchmark.monitoring.previousMeasurement': 'Önceki ölçüm',
+  'benchmark.monitoring.nextMeasurement': 'Sonraki ölçüm',
+  'benchmark.monitoring.compareAdjacentLoad': 'Bitişik yükü karşılaştır',
+  'benchmark.monitoring.comparePreviousMeasurement':
+    'Önceki ölçümü karşılaştır',
+  'benchmark.monitoring.inputLength': 'Girdi uzunluğu',
+  'benchmark.monitoring.title': 'Aşamalar ve izleme',
+  'benchmark.monitoring.stageResults': 'Aşama sonuçları',
+  'benchmark.monitoring.stageDetails': 'Aşama ayrıntıları',
+  'benchmark.monitoring.concurrencyUnit': 'eşzamanlılık',
+  'benchmark.monitoring.stage': 'Aşama',
+  'benchmark.monitoring.selectedStage': 'Seçili aşama',
+  'benchmark.monitoring.resourceObservations': 'Kaynak gözlemleri',
+  'benchmark.monitoring.statistics': 'Test istatistikleri',
+  'benchmark.monitoring.stageComparison': 'Aşamaları karşılaştır',
+  'benchmark.monitoring.backResults': 'Sonuçlara dön',
+  'benchmark.monitoring.previous': 'Önceki aşama',
+  'benchmark.monitoring.next': 'Sonraki aşama',
+  'benchmark.monitoring.designation.recommended': 'Önerilen',
+  'benchmark.monitoring.designation.peak': 'Zirve',
+  'benchmark.monitoring.designation.declining': 'Düşüş',
+  'benchmark.monitoring.baseline': 'Karşılaştırma temeli',
+  'benchmark.monitoring.custom': 'Temel aşamayı seç',
+  'benchmark.monitoring.comparePrevious': 'Önceki aşamayla karşılaştır',
+  'benchmark.monitoring.compareCharts': 'Grafiklerde karşılaştır',
+  'benchmark.monitoring.endComparison': 'Karşılaştırmayı bitir',
+  'benchmark.monitoring.comparisonDefinition':
+    'İstemci yüzdelikleri ayrı aşama gözlemleridir. Kaynak yüzdeleri yüzde puanıyla karşılaştırılır. Eksik değerler ve sıfır temel — gösterir.',
+  'benchmark.monitoring.metric': 'Metrik',
+  'benchmark.monitoring.change': 'Değişim',
+  'benchmark.monitoring.percentagePoints': 'yüzde puanı',
+  'benchmark.monitoring.fullRun': 'Tüm test',
+  'benchmark.monitoring.zoomStage': 'Aşamayı yakınlaştır',
+  'benchmark.monitoring.curveRange': 'Grafik zamanı',
+  'benchmark.monitoring.successfulRequests': 'başarılı istek',
+  'benchmark.monitoring.samplingDefinition':
+    'GPU ortalama ve tepe değerleri ilişkili cihaz örneklerindendir. KV ve CPU örnek tepesini, bellek aşama içindeki son örneği gösterir. Paylaşılan kaynaklarda başka yükler olabilir; eksik örnekler sıfırla doldurulmaz.',
+  'benchmark.monitoring.instanceResources': 'Örnek / kaynaklar',
+  'benchmark.monitoring.inference': 'Çıkarım',
+  'benchmark.monitoring.gpuAveragePeak': 'GPU ortalama / tepe',
+  'benchmark.monitoring.gpuPeak': 'GPU örnek tepe değeri',
+  'benchmark.monitoring.kvPeak': 'KV örnek tepe değeri',
+  'benchmark.monitoring.cpuPeak': 'CPU örnek tepe değeri',
+  'benchmark.monitoring.waitingPeak': 'Bekleyen istek tepe değeri',
+  'benchmark.monitoring.memoryEnd': 'Bellek · aşama sonu / toplam',
+  'benchmark.monitoring.peakAt': 'Tepe zamanı',
+  'benchmark.monitoring.highSamples': '≥%90 örnekler',
+  'benchmark.monitoring.samples': 'Örnek sayısı',
+  'benchmark.monitoring.sampling': 'Örnekleme durumu',
+  'benchmark.monitoring.sampled': 'Örnekler mevcut',
+  'benchmark.monitoring.restricted': 'Kaynak gözlemlerine erişim kısıtlı',
+  'benchmark.monitoring.queryFailed': 'İzleme sorgusu başarısız',
+  'benchmark.monitoring.historyNotRecorded':
+    'Bu çalıştırma için izleme ilişkileri kaydedilmemiş. Özgün kıyaslama sonuçları görüntülenebilir.',
+  'benchmark.monitoring.historyAssociationNotVisible':
+    'Kaydedilen model veya örnekler kullanılamıyor ya da görünür değil. Kıyaslama sonuçları kullanılabilir.',
+  'benchmark.monitoring.historyAssociationChanged':
+    'Kaydedilen çalışma ilişkileri değiştiğinden izleme geçmişi güvenilir biçimde gösterilemiyor. Kıyaslama sonuçları kullanılabilir.',
+  'benchmark.monitoring.noSamples': 'Seçilen aralıkta kayıtlı örnek yok',
+  'benchmark.monitoring.noHistory': 'Bu aralıkta izleme geçmişi yok',
+  'benchmark.monitoring.partial': 'Bazı izleme örnekleri eksik',
+  'benchmark.monitoring.timingUnavailable': 'Kesin aşama zamanı yok',
+  'benchmark.monitoring.sloUnset': 'SLO yapılandırılmadı',
+  'benchmark.monitoring.insufficient': 'Yetersiz veri',
+  'benchmark.monitoring.sloPass': '✓ SLO karşılandı',
+  'benchmark.monitoring.sloFail': '✕ SLO aşıldı',
+  'benchmark.monitoring.timeline': 'Aşama zaman çizelgesi',
+  'benchmark.monitoring.totalThroughput': 'Toplam verim',
+  'benchmark.monitoring.instances': 'Örnekler',
+  'benchmark.monitoring.focus': 'Örneğe odaklan',
+  'benchmark.monitoring.allInstances': 'Tüm örnekler',
+  'benchmark.monitoring.instanceOutput': 'Örneğe göre çıktı verimi',
+  'benchmark.monitoring.instanceLoad':
+    'Örneğe göre çalışan ve bekleyen istekler',
+  'benchmark.monitoring.associatedResources': 'İlişkili kaynaklar',
+  'benchmark.monitoring.participation': 'Test katılım aralığı',
+  'benchmark.monitoring.noVisibleResources': 'Yetkili kaynak ilişkisi yok',
+  'benchmark.monitoring.expandAll': 'Tümünü genişlet',
+  'benchmark.monitoring.collapseAll': 'Tümünü daralt',
+  'benchmark.monitoring.viewData': 'Verileri göster',
+  'benchmark.monitoring.backChart': 'Grafiğe dön',
+  'benchmark.monitoring.segmentedHistory':
+    'Uzun test geçmişi sınırlı aralıklarla gösterilir',
+  'benchmark.monitoring.samplingCoverage': 'Sorgu değerlendirme kapsamı',
+  'benchmark.monitoring.peakDevice': 'Tepe cihazı',
+  'benchmark.monitoring.associationCaptured': 'Test ilişkileri kaydedildi',
+  'benchmark.monitoring.resourceChanged': 'Örnek nesli veya kaynaklar değişti',
+  'benchmark.monitoring.loading': 'Gözlemler yükleniyor…',
+  'benchmark.monitoring.notLoaded': 'Henüz sorgulanmadı',
+  'benchmark.monitoring.lowerBound': 'Alt sınır',
+  'benchmark.monitoring.upperBound': 'Üst sınır',
+  'benchmark.monitoring.viewPhaseLatency': 'İstek ve aşama gecikmesini göster',
+  'benchmark.monitoring.refreshMonitoring': 'Gözlemleri yenile',
+  'benchmark.monitoring.allMeasurements': 'Tüm ölçümler',
+  'benchmark.monitoring.zoomMeasurement': 'Ölçümü yakınlaştır',
+  'benchmark.monitoring.segmentCount': '{count} ölçüm',
+  'benchmark.monitoring.rawByLoad': 'Orijinal izleme · yüke göre bölümler',
+  'benchmark.monitoring.rawByTime': 'Orijinal izleme · gerçek zaman',
+  'benchmark.monitoring.segmentProgress':
+    'Artan yük · aşama ilerlemesi %0–100 · ölçümler arasında boşluk',
+  'benchmark.monitoring.segmentHelp':
+    'Ölçümler eşit genişlikte gösterilir. Her bölümde örneklerin sırası, değerleri ve kayan istatistik penceresi korunur. Süreler farklı olabilir; bölümler arasındaki eğim geçen zamanı göstermez. Üzerine gelerek tüm grafiklerde aynı orijinal zamanı inceleyin, sabitlemek için tıklayın. Ölçümü yakınlaştırmak gerçek zaman eksenini gösterir.',
+  'benchmark.monitoring.segmentLegendHelp':
+    'Gösterge: seçili ölçümün son geçerli örneği; üzerine gelindiğinde incelenen örnek.',
+  'benchmark.monitoring.untimedSegments':
+    '{count} ölçümün kayıtlı zaman sınırları yok',
+  'benchmark.monitoring.originalTime': 'Orijinal zaman',
+  'benchmark.monitoring.pinnedSample': 'Sabitlendi',
+  'benchmark.monitoring.segmentLegendReadout':
+    'Gösterge: son geçerli örnek · {measurement}',
+  'benchmark.monitoring.directRouterObservation':
+    'Bu çalışma GPUStack ağ geçidini atlayarak doğrudan PD Router bileşenine bağlanır. Bağımsız giriş TTFT ve istek süresi sunulmaz; istemci sonuçları ve Router/P/D gözlemleri kullanılabilir.',
+  'benchmark.monitoring.directInstanceObservation':
+    'Bu çalışma GPUStack ağ geçidini atlayarak doğrudan örneğe bağlanır. İstemci sonuçları ve örnek gözlemleri kullanılabilir.'
 };

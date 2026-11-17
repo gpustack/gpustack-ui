@@ -93,6 +93,8 @@ export interface Snapshot {
   gpus: Record<string, GPUData>;
 }
 export interface BenchmarkDetail {
+  run_id?: string | null;
+  target_mode?: 'model_instance' | 'route' | null;
   // Dataset shape, stages, execution caps and the advanced knobs: the detail
   // endpoint returns the same row the form wrote, so the config side of the
   // record is declared here rather than reached through a cast. The Configuration

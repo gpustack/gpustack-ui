@@ -384,6 +384,15 @@ const RandomSettingsForm: React.FC<{
   // list / Image Credentials. `stagesValidated` highlights empty required
   // fields after the first failed submit.
   const stages = Form.useWatch('stages', form);
+  // Single-run records predate the stages editor and still have distinct runner
+  // semantics: their load and caps live on the benchmark itself. Keep that shape
+  // visible on clone/edit instead of forcing it into an empty stages list.
+  const isSingleRun =
+    !!currentData &&
+    currentData.auto_tune !== true &&
+    !currentData.stages?.length &&
+    !effectiveAutoTune &&
+    !stages?.length;
   const [stagesValidated, setStagesValidated] = useState(false);
   const revalidateStages = () => {
     if (stagesValidated) form.validateFields(['stages']).catch(() => {});
@@ -429,13 +438,39 @@ const RandomSettingsForm: React.FC<{
   const handleStagesModeChange = (mode: 'auto' | 'manual') =>
     resetStageConfig(mode === 'auto');
 
-  const handleLoadTypeChange = () => resetStageConfig(effectiveAutoTune);
+  const handleLoadTypeChange = () => {
+    if (!isSingleRun) resetStageConfig(effectiveAutoTune);
+  };
 
   // SLO targets: same controlled MetadataList pattern as the bucket / stage
   // lists. `slo_targets` is form-only — every mutation writes through to the 9
   // flat `slo_*_ms` fields the API actually takes (unused ones nulled), and the
   // page strips `slo_targets` before the request.
   const sloTargets: SloTarget[] = Form.useWatch('slo_targets', form) || [];
+  const hasConfiguredSlo = sloTargets.some(
+    (target) =>
+      target.metric &&
+      target.agg &&
+      typeof target.value === 'number' &&
+      Number.isFinite(target.value) &&
+      target.value > 0
+  );
+  const loadHelp = [
+    intl.formatMessage({
+      id: isFixedRate
+        ? 'benchmark.form.autoTune.rate.tip'
+        : 'benchmark.form.autoTune.concurrency.tip'
+    }),
+    ...(effectiveAutoTune
+      ? [
+          intl.formatMessage({
+            id: hasConfiguredSlo
+              ? 'benchmark.form.autoTune.goal.slo'
+              : 'benchmark.form.autoTune.goal.throughput'
+          })
+        ]
+      : [])
+  ].join(' ');
   const [sloValidated, setSloValidated] = useState(false);
   const revalidateSlo = () => {
     if (sloValidated) form.validateFields(['slo_targets']).catch(() => {});
@@ -1226,16 +1261,16 @@ const RandomSettingsForm: React.FC<{
       <div className={styles.sectionCard}>
         <div className="section-title" style={{ marginBottom: 16 }}>
           <span className="title-label">
-            {intl.formatMessage({ id: 'benchmark.form.stages' })}
-            <Tooltip
-              title={intl.formatMessage({
-                id: isFixedRate
-                  ? 'benchmark.form.autoTune.rate.tip'
-                  : 'benchmark.form.autoTune.concurrency.tip'
-              })}
-            >
-              <QuestionCircleOutlined className="title-help" />
-            </Tooltip>
+            {intl.formatMessage({
+              id: isSingleRun
+                ? 'benchmark.form.load.single'
+                : 'benchmark.form.stages'
+            })}
+            {!isSingleRun && (
+              <Tooltip title={loadHelp}>
+                <QuestionCircleOutlined className="title-help" />
+              </Tooltip>
+            )}
           </span>
           {/* Named presets are auto-tune by definition and can't switch to manual,
               so show a locked "Auto-tune" pill instead of a disabled Segmented.
@@ -1357,6 +1392,52 @@ const RandomSettingsForm: React.FC<{
                 ></CInputNumber>
               </Form.Item>
             </Flex>
+          </Flex>
+        ) : isSingleRun ? (
+          <Flex gap={12}>
+            <Form.Item<FormData>
+              name="request_rate"
+              dependencies={['load_type']}
+              rules={[
+                { required: true, message: loadValueMessage },
+                optionalLoadValueRule(isFixedRate, loadValueMessage)
+              ]}
+              style={{ flex: 1, marginBottom: 0 }}
+            >
+              <CInputNumber
+                {...loadInputProps}
+                required
+                disabled={disabled}
+                label={rateLabel}
+                style={{ width: '100%' }}
+              />
+            </Form.Item>
+            <Form.Item<FormData>
+              name="total_requests"
+              rules={[shareGPTTokenRule]}
+              style={{ flex: 1, marginBottom: 0 }}
+            >
+              <CInputNumber
+                min={1}
+                precision={0}
+                disabled={disabled}
+                label={intl.formatMessage({
+                  id: 'benchmark.form.totalRequests'
+                })}
+                style={{ width: '100%' }}
+              />
+            </Form.Item>
+            <Form.Item<FormData>
+              name="max_seconds"
+              style={{ flex: 1, marginBottom: 0 }}
+            >
+              <CInputNumber
+                min={1}
+                disabled={disabled}
+                label={intl.formatMessage({ id: 'benchmark.form.maxSeconds' })}
+                style={{ width: '100%' }}
+              />
+            </Form.Item>
           </Flex>
         ) : (
           /* Manual: one row per load level + its per-stage Requests / Max Seconds.

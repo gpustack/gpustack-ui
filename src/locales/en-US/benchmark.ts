@@ -199,9 +199,13 @@ export default {
   'benchmark.form.loadType.sweep': 'Auto Sweep',
   'benchmark.form.autoTune': 'Auto-tune',
   'benchmark.form.autoTune.rate.tip':
-    'The load points measured in this run — one stage = one measured point. Auto-tune ramps the request rate automatically until total throughput stops growing (the peak), so you do not list points yourself. Switch to Manual to run a fixed list of rates.',
+    'The load axis controls requests per second. Manual runs the request rates listed in Stages; one stage is one measured load point.',
   'benchmark.form.autoTune.concurrency.tip':
-    'The load points measured in this run — one stage = one measured point. Auto-tune ramps concurrency automatically until the latency targets can no longer be met (the SLO boundary), so you do not list points yourself. Switch to Manual to run a fixed list of concurrency levels.',
+    'The load axis controls concurrent requests. Manual runs the concurrency levels listed in Stages; one stage is one measured load point.',
+  'benchmark.form.autoTune.goal.throughput':
+    'With no latency SLO targets, Auto Tune searches for peak total throughput.',
+  'benchmark.form.autoTune.goal.slo':
+    'Auto Tune searches for the highest load that meets every configured Avg/P95/P99 latency SLO target.',
   'benchmark.form.autoTune.rangeRate': 'Search Range · Request Rate (req/s)',
   'benchmark.form.autoTune.rangeFrom': 'From',
   'benchmark.form.autoTune.rateFrom': 'Rate From (req/s)',
@@ -288,6 +292,7 @@ export default {
   'benchmark.form.rate': 'Request Rate (req/s)',
   'benchmark.form.concurrency': 'Concurrency',
   'benchmark.form.stages': 'Stages',
+  'benchmark.form.load.single': 'Single run',
   'benchmark.form.stages.mode.manual': 'Manual',
   'benchmark.detail.stageLimits': 'Per-Stage Limits',
   'benchmark.form.addStage': 'Add Stage',

@@ -202,9 +202,13 @@ export default {
   'benchmark.form.loadType.sweep': 'Otomatik Tarama',
   'benchmark.form.autoTune': 'Otomatik Ayar',
   'benchmark.form.autoTune.rate.tip':
-    'Bu çalıştırmada ölçülen yük noktaları — bir aşama = bir ölçüm noktası. Otomatik ayar, çıkış verimi artmayı bırakana (zirve) kadar istek hızını kendiliğinden yükseltir; noktaları elle girmeniz gerekmez. Sabit bir hız listesi çalıştırmak için "Elle" seçeneğine geçin.',
+    'Yük ekseni saniyedeki istek sayısını kontrol eder. Elle mod, aşama listesindeki istek hızlarını çalıştırır; her aşama bir ölçülen yük noktasıdır.',
   'benchmark.form.autoTune.concurrency.tip':
-    'Bu çalıştırmada ölçülen yük noktaları — bir aşama = bir ölçüm noktası. Otomatik ayar, gecikme hedefleri karşılanamayana (SLO sınırı) kadar eşzamanlılığı kendiliğinden artırır; noktaları elle girmeniz gerekmez. Sabit bir eşzamanlılık listesi çalıştırmak için "Elle" seçeneğine geçin.',
+    'Yük ekseni eşzamanlı istek sayısını kontrol eder. Elle mod, aşama listesindeki eşzamanlılık düzeylerini çalıştırır; her aşama bir ölçülen yük noktasıdır.',
+  'benchmark.form.autoTune.goal.throughput':
+    'Gecikme SLO hedefi yoksa Otomatik Ayar toplam verimin zirvesini arar.',
+  'benchmark.form.autoTune.goal.slo':
+    'Otomatik Ayar, yapılandırılmış tüm Ort./P95/P99 gecikme SLO hedeflerini karşılayan en yüksek yükü arar.',
   'benchmark.form.autoTune.rangeRate': 'Arama Aralığı · İstek Hızı (req/s)',
   'benchmark.form.autoTune.rangeFrom': 'Başlangıç',
   'benchmark.form.autoTune.rateFrom': 'Başlangıç Hızı (req/s)',
@@ -291,6 +295,7 @@ export default {
   'benchmark.form.rate': 'İstek Hızı (req/s)',
   'benchmark.form.concurrency': 'Eşzamanlılık',
   'benchmark.form.stages': 'Aşamalar',
+  'benchmark.form.load.single': 'Tek çalıştırma',
   'benchmark.form.stages.mode.manual': 'Elle',
   'benchmark.detail.stageLimits': 'Aşama Başına Limitler',
   'benchmark.form.addStage': 'Aşama Ekle',

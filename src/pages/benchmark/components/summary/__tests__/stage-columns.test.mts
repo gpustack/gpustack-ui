@@ -10,7 +10,42 @@ let tooltipProps: any[] = [];
 let sweepProps: any;
 const element = ({ children }: any) => createElement('div', null, children);
 const empty = () => null;
-mock.module('@gpustack/core-ui', { namedExports: { SectionTitle: element } });
+const table = ({ columns, dataSource }: any) =>
+  createElement(
+    'table',
+    null,
+    createElement(
+      'thead',
+      null,
+      createElement(
+        'tr',
+        null,
+        columns.map((c: any) =>
+          createElement('th', { key: c.key, 'data-column': c.key }, c.title)
+        )
+      )
+    ),
+    createElement(
+      'tbody',
+      null,
+      dataSource.map((r: any) =>
+        createElement(
+          'tr',
+          { key: r.id },
+          columns.map((c: any) =>
+            createElement(
+              'td',
+              { key: c.key, 'data-column': c.key },
+              c.render(undefined, r)
+            )
+          )
+        )
+      )
+    )
+  );
+mock.module('@gpustack/core-ui', {
+  namedExports: { SectionTitle: element, Table: table }
+});
 mock.module('@ant-design/icons', {
   namedExports: {
     CheckCircleFilled: empty,
@@ -41,39 +76,7 @@ mock.module('antd', {
         props.children
       );
     },
-    Table: ({ columns, dataSource }: any) =>
-      createElement(
-        'table',
-        null,
-        createElement(
-          'thead',
-          null,
-          createElement(
-            'tr',
-            null,
-            columns.map((c: any) =>
-              createElement('th', { key: c.key, 'data-column': c.key }, c.title)
-            )
-          )
-        ),
-        createElement(
-          'tbody',
-          null,
-          dataSource.map((r: any) =>
-            createElement(
-              'tr',
-              { key: r.id },
-              columns.map((c: any) =>
-                createElement(
-                  'td',
-                  { key: c.key, 'data-column': c.key },
-                  c.render(undefined, r)
-                )
-              )
-            )
-          )
-        )
-      )
+    Table: table
   }
 });
 mock.module('@umijs/max', {
@@ -165,7 +168,12 @@ test('load sweep follows the first higher failing target after an intermediate p
   assert.equal(sweepProps.labels.ttftP99, 'TPOT P99');
   assert.equal(sweepProps.latencyThreshold, 50);
   assert.deepEqual(points.map(sweepProps.latencyValue), [20, 40, 60, 80]);
-  assert.match(html, /Total throughput and TPOT P99/);
+  assert.doesNotMatch(html, /Total throughput and TPOT P99/);
+  renderToStaticMarkup(sweepProps.header);
+  assert.match(
+    renderToStaticMarkup(tooltipProps.at(-1).title),
+    /Total throughput and TPOT P99/
+  );
 });
 
 test('stage marker explanations support focus as well as hover', () => {
@@ -342,12 +350,7 @@ for (const { axis, profile } of [
     const columnKeys = [...doc.querySelectorAll('th[data-column]')].map((n) =>
       n.getAttribute('data-column')
     );
-    assert.deepEqual(
-      columnKeys.slice(0, 3),
-      profile === 'Max Throughput'
-        ? ['rate', 'achievedRate', 'conc']
-        : ['rate', 'conc', 'achievedRate']
-    );
+    assert.deepEqual(columnKeys.slice(0, 3), ['rate', 'conc', 'achievedRate']);
     assert.equal(doc.querySelector('th[data-column="tpot"]'), null);
     assert.ok(doc.querySelector('th[data-column="tpotP99"]'));
     assert.ok(doc.querySelector('th[data-column="itlP99"]'));
@@ -538,7 +541,7 @@ test('a passing post-peak stage displays throughput decline without an overload 
   const stage = dom.window.document.querySelectorAll('tbody tr')[1];
   assert.match(stage.textContent || '', /SLO Capacity.*Throughput decline/);
   assert.doesNotMatch(stage.textContent || '', /Overloaded/);
-  assert.equal(stage.querySelector('[data-column="slo"]')?.textContent, '✓');
+  assert.equal(stage.querySelector('[data-column="slo"]'), null);
   assert.equal(sweepProps.labels.declining, 'Throughput decline');
   dom.window.close();
 });

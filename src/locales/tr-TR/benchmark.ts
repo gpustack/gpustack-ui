@@ -98,6 +98,7 @@ export default {
     'SLO’yu sağlayan en yüksek ölçülen istek hızı',
   'benchmark.detail.result.totalPeak': 'Ölçülen en yüksek toplam verim',
   'benchmark.detail.result.measured': 'Ölçüm sonucu',
+  'benchmark.detail.result.currentMeasured': 'Güncel ölçüm sonucu',
   'benchmark.detail.result.noSloPoint': 'Ölçülen hiçbir nokta SLO’yu sağlamadı',
   'benchmark.detail.result.boundaryLocated': 'SLO sınırı bulundu',
   'benchmark.detail.result.boundaryUnknown':
@@ -442,7 +443,7 @@ export default {
   'benchmark.detail.chart.concShortfall':
     'Eşzamanlılık: yapılandırılan vs gerçek',
   'benchmark.detail.chart.concShortfall.note':
-    'İki çizgi neredeyse çakışıyor; bu yüzden fark sağdaki kırmızı ölçekte ayrıca gösteriliyor',
+    'Eksik = max(hedef eşzamanlılık − ölçülen ortalama eşzamanlılık, 0). Her ölçüm noktasında ayrı hesaplanır, birikimli değildir. Ortalama ve fark kesirli olabilir; kırmızı çizgi sıfırdan başlayan bağımsız sağ eksenden okunur.',
   'benchmark.detail.chart.efficiency': 'Verimlilik eğrisi',
   'benchmark.detail.chart.efficiency.note':
     'Uçuştaki istek başına tok/s · getirinin azalmaya başladığı nokta',

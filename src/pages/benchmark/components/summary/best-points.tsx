@@ -278,17 +278,23 @@ const BestPoints: React.FC<BestPointsProps> = ({ points, onSelect }) => {
   const t = (id: string, values?: Record<string, string | number>) =>
     intl.formatMessage({ id }, values);
 
+  // Keep the server-selected measurement visible while the search is running,
+  // without presenting this snapshot as the final peak or SLO boundary. Older
+  // workers omit the provisional flag, so the running state is also checked.
+  const isLive =
+    detailData?.validity?.in_progress || detailData?.state === 'running';
+
   const best = points.find((p) => p.isBest);
   const hasSlo = hasSloTargets(detailData);
   if (!best) {
     const awaitingPrimary = getPrimaryResultRate(detailData) != null;
-    return hasSlo && points.length > 0 && !awaitingPrimary ? (
+    return hasSlo && points.length > 0 && !awaitingPrimary && !isLive ? (
       <Flex className={styles.wrapper} role="status">
         {t('benchmark.detail.result.noSloPoint')}
       </Flex>
     ) : null;
   }
-  if (hasSlo && !isSloCapacityPoint(best)) return null;
+  if (hasSlo && !isSloCapacityPoint(best) && !isLive) return null;
 
   const isConc = loadAxisLabelId(detailData) === 'benchmark.form.concurrency';
   const isSearch = detailData?.auto_tune === true;
@@ -311,13 +317,15 @@ const BestPoints: React.FC<BestPointsProps> = ({ points, onSelect }) => {
       : round(v, digits ?? (Math.abs(v) < 10 ? 2 : 0)).toLocaleString();
   // Match stage labels in the table and charts without rounding or locale changes.
   const fmtLoad = (value: number) => String(value);
-  const title = hasSlo
-    ? isConc
-      ? 'benchmark.detail.result.sloConcurrency'
-      : 'benchmark.detail.result.sloRate'
-    : isSearch
-      ? 'benchmark.detail.result.totalPeak'
-      : 'benchmark.detail.result.measured';
+  const title = isLive
+    ? 'benchmark.detail.result.currentMeasured'
+    : hasSlo
+      ? isConc
+        ? 'benchmark.detail.result.sloConcurrency'
+        : 'benchmark.detail.result.sloRate'
+      : isSearch
+        ? 'benchmark.detail.result.totalPeak'
+        : 'benchmark.detail.result.measured';
   const stats = [
     ...(!hasSlo
       ? [
@@ -418,25 +426,26 @@ const BestPoints: React.FC<BestPointsProps> = ({ points, onSelect }) => {
         )
       : null;
   const boundaryLocated = detailData?.validity?.slo_boundary_located === true;
-  const capacityHint = hasSlo ? (
-    <>
-      {t(
-        boundaryLocated
-          ? 'benchmark.detail.slo.capacity.locatedHint'
-          : 'benchmark.detail.slo.capacity.floorHint'
-      )}
-      {boundaryLocated && bracket?.[0] != null && bracket?.[1] != null && (
-        <>
-          {' '}
-          {t('benchmark.detail.result.boundaryPair', {
-            pass: fmtLoad(bracket[0]),
-            fail: fmtLoad(bracket[1]),
-            unit: loadUnit
-          })}
-        </>
-      )}
-    </>
-  ) : undefined;
+  const capacityHint =
+    hasSlo && !isLive ? (
+      <>
+        {t(
+          boundaryLocated
+            ? 'benchmark.detail.slo.capacity.locatedHint'
+            : 'benchmark.detail.slo.capacity.floorHint'
+        )}
+        {boundaryLocated && bracket?.[0] != null && bracket?.[1] != null && (
+          <>
+            {' '}
+            {t('benchmark.detail.result.boundaryPair', {
+              pass: fmtLoad(bracket[0]),
+              fail: fmtLoad(bracket[1]),
+              unit: loadUnit
+            })}
+          </>
+        )}
+      </>
+    ) : undefined;
 
   const statisticItems = stats.map((s) => (
     <div className="stat" key={s.k}>
@@ -562,7 +571,7 @@ const BestPoints: React.FC<BestPointsProps> = ({ points, onSelect }) => {
             </span>
           </Flex>
         )}
-        {hasSlo && (
+        {hasSlo && !isLive && (
           <Flex vertical gap={4} className="why slo-boundary" role="note">
             {boundary.point ? (
               <>

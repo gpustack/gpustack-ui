@@ -167,7 +167,7 @@ const StageStatisticsTable: React.FC<{ kind: StatisticsKind; data?: any }> = ({
     {
       title: t('benchmark.detail.latency.metric'),
       dataIndex: 'label',
-      minWidth: kind === 'tokens' ? 180 : kind === 'load' ? 144 : 128,
+      minWidth: kind === 'tokens' ? 152 : kind === 'load' ? 144 : 128,
       headerStyle: HEADER_STYLE,
       render: (_value: unknown, row: (typeof rows)[number]) => (
         <span className="statistic-name">
@@ -196,7 +196,8 @@ const StageStatisticsTable: React.FC<{ kind: StatisticsKind; data?: any }> = ({
           t(labelId)
         ),
       dataIndex: key,
-      minWidth: kind === 'load' && key === 'max' ? 120 : 88,
+      minWidth:
+        kind === 'load' && key === 'max' ? 120 : kind === 'load' ? 88 : 80,
       headerStyle: HEADER_STYLE,
       align: 'right' as const,
       render: (value: number | null, row: (typeof rows)[number]) => (

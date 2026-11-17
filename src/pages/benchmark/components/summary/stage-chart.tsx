@@ -1,17 +1,19 @@
-import { QuestionCircleOutlined } from '@ant-design/icons';
-import { Tooltip, theme } from 'antd';
+import { CHART_COLORS } from '@/config/chart-colors';
+import HelpTooltip from '@/pages/llmodels/detail/components/help-tooltip';
+import { Flex, theme } from 'antd';
 import { createStyles } from 'antd-style';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import echarts, { ECharts, EChartsCoreOption } from '../echarts';
 import { StagePoint, isSloCapacityPoint, logDomain } from './metrics';
+import {
+  ReportChartData,
+  ReportDataToggle,
+  type ReportDataLabels
+} from './report-chart-data';
 
 // Echarts can't read CSS variables, so the chart palette lives here as hex.
 export const C = {
-  blue: '#2563eb',
-  amber: '#e0a800',
-  red: '#e5484d',
-  green: '#16a34a',
-  violet: '#7c3aed',
+  ...CHART_COLORS,
   gray: '#c8cfd8',
   // Reference lines (a configured target the measured line is compared against).
   // C.gray is an axis-pointer / hairline value — at 1.5:1 on white a data line
@@ -122,46 +124,23 @@ const useStyles = createStyles(({ css }) => ({
     background: var(--ant-color-bg-container);
     border: 1px solid var(--ant-color-border-secondary);
     border-radius: var(--ant-border-radius-lg);
-    padding: 12px 14px 6px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    .head {
-      display: flex;
-      align-items: baseline;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
+    padding: var(--ant-padding);
     .head .meta {
-      flex: 1 1 120px;
+      flex: 1;
       min-width: 0;
     }
     .head .t {
-      display: flex;
-      align-items: center;
-      gap: 6px;
       font-size: 13px;
       font-weight: 600;
       color: var(--ant-color-text);
     }
-    .head .n {
-      font-size: 12px;
-      color: var(--ant-color-text-tertiary);
-      line-height: 1.45;
-    }
-    .head .hint {
-      color: var(--ant-color-text-quaternary);
-      font-size: 12px;
-      cursor: help;
+    .head .t > span {
+      min-width: 0;
+      overflow-wrap: anywhere;
     }
     .legend {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex: none;
-      flex-wrap: wrap;
-      justify-content: flex-end;
       max-width: 100%;
+      padding-top: var(--ant-padding-xs);
     }
     .legend .li {
       display: inline-flex;
@@ -202,6 +181,9 @@ export const tooltipRows = (
 };
 
 interface Props {
+  onSelect?: (point: StagePoint) => void;
+  selectedId?: number | null;
+  dataLabels?: ReportDataLabels;
   spec: ChartSpec;
   points: StagePoint[];
   /** Tooltip header, e.g. "Concurrency 256" — no unit, the value carries it. */
@@ -220,7 +202,14 @@ interface Props {
 }
 
 export const buildStageChartOption = (
-  { spec, points, loadAxisName, loadAxisTitle, markerLabels }: Props,
+  {
+    spec,
+    points,
+    loadAxisName,
+    loadAxisTitle,
+    markerLabels,
+    selectedId
+  }: Props,
   splitLineColor: string,
   axisLineColor = C.axis
 ): EChartsCoreOption => {
@@ -331,7 +320,26 @@ export const buildStageChartOption = (
     name: s.name,
     type: 'line' as const,
     // One guide per chart, not one per line.
-    markLine: si === 0 ? bestGuide : undefined,
+    markLine:
+      si === 0
+        ? selectedId != null && points.some((point) => point.id === selectedId)
+          ? {
+              silent: true,
+              symbol: 'none',
+              label: { show: false },
+              lineStyle: { color: C.blue, width: 1.5, type: 'dashed' },
+              data: [
+                {
+                  xAxis: isValueX
+                    ? spec.x!.value(
+                        points.find((point) => point.id === selectedId)!
+                      )
+                    : points.findIndex((point) => point.id === selectedId)
+                }
+              ]
+            }
+          : bestGuide
+        : undefined,
     symbolSize: 5,
     // Dashed = a reference line (configured target, p99 tail). Drawn ABOVE the
     // solid measured lines: on a closed-loop run the actual value tracks its
@@ -587,6 +595,7 @@ export const buildStageChartOption = (
 const StageChart: React.FC<Props> = (props) => {
   const { styles } = useStyles();
   const { spec, points, logHint, height = 228 } = props;
+  const [table, setTable] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const inst = useRef<ECharts | null>(null);
   const { token } = theme.useToken();
@@ -600,15 +609,20 @@ const StageChart: React.FC<Props> = (props) => {
       buildStageChartOption(props, token.colorBorder, axisLineColor),
       true
     );
+    inst.current.off('click');
+    inst.current.on('click', (event: any) => {
+      const point = points[event.dataIndex];
+      if (point) props.onSelect?.(point);
+    });
     inst.current.resize();
-  }, [props, token.colorBorder, axisLineColor]);
+  }, [props, token.colorBorder, axisLineColor, table]);
 
   useEffect(() => {
     if (!ref.current) return;
     const ro = new ResizeObserver(() => inst.current?.resize());
     ro.observe(ref.current);
     return () => ro.disconnect();
-  }, []);
+  }, [table]);
 
   useEffect(
     () => () => {
@@ -637,30 +651,91 @@ const StageChart: React.FC<Props> = (props) => {
   ];
 
   return (
-    <div className={styles.card}>
-      <div className="head">
+    <Flex
+      component="section"
+      aria-label={spec.title}
+      vertical
+      gap={8}
+      className={styles.card}
+    >
+      <Flex align="flex-start" justify="space-between" gap={8} className="head">
         <div className="meta">
-          <div className="t">
+          <Flex align="baseline" gap={4} className="t">
             <span>{spec.title}</span>
-            {spec.log && logHint && (
-              <Tooltip title={logHint}>
-                <QuestionCircleOutlined className="hint" />
-              </Tooltip>
+            {(spec.note || (spec.log && logHint)) && (
+              <HelpTooltip
+                label={spec.title}
+                content={
+                  <Flex vertical gap={8}>
+                    {spec.note && <span>{spec.note}</span>}
+                    {spec.log && logHint && <span>{logHint}</span>}
+                  </Flex>
+                }
+              />
             )}
-          </div>
-          <div className="n">{spec.note}</div>
+          </Flex>
         </div>
-        <div className="legend">
+        {props.dataLabels && (
+          <ReportDataToggle
+            table={table}
+            labels={props.dataLabels}
+            onToggle={() => {
+              inst.current?.dispose();
+              inst.current = null;
+              setTable(!table);
+            }}
+          />
+        )}
+      </Flex>
+      {table ? (
+        <ReportChartData
+          points={points}
+          selectedId={props.selectedId}
+          onSelect={props.onSelect}
+          loadAxisName={props.loadAxisName}
+          columns={[
+            ...spec.series.map((series) => ({
+              key: series.name,
+              title: series.name,
+              value: series.value,
+              format: spec.fmt
+            })),
+            ...(spec.bands || []).flatMap((band) => [
+              {
+                key: `${band.name}-lo`,
+                title: `${band.name} · ${props.dataLabels?.lower || 'Lower bound'}`,
+                value: band.lo,
+                format: spec.fmt
+              },
+              {
+                key: `${band.name}-hi`,
+                title: `${band.name} · ${props.dataLabels?.upper || 'Upper bound'}`,
+                value: band.hi,
+                format: spec.fmt
+              }
+            ]),
+            ...(spec.y2?.series || []).map((series) => ({
+              key: series.name,
+              title: series.name,
+              value: series.value,
+              format: spec.y2!.fmt
+            }))
+          ]}
+        />
+      ) : (
+        <div ref={ref} style={{ width: '100%', height, marginTop: 'auto' }} />
+      )}
+      {!table && (
+        <Flex gap={12} wrap align="center" className="legend">
           {legend.map((l) => (
             <span className="li" key={l.name}>
               {l.node}
               {l.name}
             </span>
           ))}
-        </div>
-      </div>
-      <div ref={ref} style={{ width: '100%', height, marginTop: 'auto' }} />
-    </div>
+        </Flex>
+      )}
+    </Flex>
   );
 };
 

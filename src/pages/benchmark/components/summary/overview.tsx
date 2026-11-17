@@ -1,3 +1,4 @@
+import HelpTooltip from '@/pages/llmodels/detail/components/help-tooltip';
 import {
   CheckCircleFilled,
   DownOutlined,
@@ -6,15 +7,11 @@ import {
   WarningOutlined
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, ConfigProvider, Table, Tooltip } from 'antd';
+import { Button, Flex, Tooltip } from 'antd';
 import { createStyles } from 'antd-style';
 import _ from 'lodash';
 import React, { useMemo, useState } from 'react';
-import {
-  ProfileValueMap,
-  loadAxisLabelId,
-  loadAxisTitleId
-} from '../../config';
+import { loadAxisLabelId, loadAxisTitleId } from '../../config';
 import { useDetailContext } from '../../config/detail-context';
 import { RESIDENT_CHARTS, buildChartSpecs } from './chart-specs';
 import LoadSweep from './load-sweep';
@@ -29,6 +26,7 @@ import {
   tailSamples
 } from './metrics';
 import StageChart, { C } from './stage-chart';
+import StageTable from './stage-table';
 import StopReason from './stop-reason';
 import { Panel, SectionTitle, StatusTag, statusLabelId } from './ui';
 
@@ -125,8 +123,19 @@ const useStyles = createStyles(({ css }) => ({
       gap: 8px;
     }
     .rate-cell .n {
+      white-space: nowrap;
+      flex-shrink: 0;
       font-weight: 600;
       font-variant-numeric: tabular-nums;
+    }
+    .rate-cell span:has(> .glyph) {
+      font-size: 0;
+      gap: 0;
+      padding-inline: 4px;
+      flex-shrink: 0;
+    }
+    .rate-cell .glyph {
+      font-size: 12px;
     }
     /* Inline throughput bar: proportional columns, bar flexes toward its cap.
        The right gutter is load-bearing — a flexing track runs to the cell edge
@@ -161,6 +170,25 @@ const useStyles = createStyles(({ css }) => ({
       height: 100%;
       border-radius: 3px;
     }
+    &[data-stage-table-only='true'] .tps-cell {
+      gap: var(--ant-margin-xs);
+      padding-right: var(--ant-padding-xs);
+    }
+    &[data-stage-table-only='true'] .tps-cell .v {
+      min-width: 50px;
+    }
+    &[data-stage-table-only='true'] .tps-cell .track {
+      min-width: 32px;
+    }
+    &[data-stage-table-only='true'] .table-header {
+      font-size: 12px;
+    }
+    &[data-stage-table-only='true'] .row-wrapper .cell {
+      font-size: 13px;
+    }
+    &[data-stage-table-only='true'] .row-wrapper .data-overflow {
+      white-space: nowrap;
+    }
     /* Table runs to the card edges: a tinted header band, no border of its own
        (the Panel provides it), and rows tall enough for the inline bar. */
     .stage-table .ant-table-thead > tr > th {
@@ -188,12 +216,12 @@ const useStyles = createStyles(({ css }) => ({
     .stage-table .ant-table-tbody > tr:last-child > td {
       border-bottom: none;
     }
-    .stage-table .col-title {
+    .col-title {
       display: flex;
       flex-direction: column;
       line-height: 1.2;
     }
-    .stage-table .col-title .col-unit {
+    .col-title .col-unit {
       font-size: 12px;
       font-weight: 400;
       color: var(--ant-color-text-quaternary);
@@ -215,6 +243,8 @@ interface OverviewProps {
   onSelect: (r: StagePoint['raw']) => void;
   /** The Best Operating Point band, rendered above the curve. */
   bestPoints?: React.ReactNode;
+  hideStageTable?: boolean;
+  stageTableOnly?: boolean;
 }
 
 const Overview: React.FC<OverviewProps> = ({
@@ -222,7 +252,9 @@ const Overview: React.FC<OverviewProps> = ({
   probes,
   selectedId,
   onSelect,
-  bestPoints
+  bestPoints,
+  hideStageTable = false,
+  stageTableOnly = false
 }) => {
   const intl = useIntl();
   const { styles } = useStyles();
@@ -292,7 +324,7 @@ const Overview: React.FC<OverviewProps> = ({
           ? 'benchmark.detail.aux.capClamped'
           : 'benchmark.detail.aux.capUnused';
 
-  if (points.length < 2) {
+  if (points.length < 2 && !stageTableOnly) {
     return null;
   }
 
@@ -354,7 +386,7 @@ const Overview: React.FC<OverviewProps> = ({
         </Tooltip>
       ),
       key: 'conc',
-      width: 160,
+      minWidth: 120,
       render: (_v: unknown, p: StagePoint) => num(p.conc)
     },
     rate: {
@@ -364,7 +396,7 @@ const Overview: React.FC<OverviewProps> = ({
         </Tooltip>
       ),
       key: 'achievedRate',
-      width: 160,
+      minWidth: 120,
       render: (_v: unknown, p: StagePoint) => num(p.achievedRate)
     }
   };
@@ -376,7 +408,8 @@ const Overview: React.FC<OverviewProps> = ({
         : unitTitle(t('benchmark.detail.stage.configuredRate'), 'req/s'),
       key: 'rate',
       // Fits the load value plus its status tag.
-      width: 190,
+      minWidth: 140,
+      span: 2,
       render: (_v: unknown, p: StagePoint) => {
         return (
           <span className="rate-cell">
@@ -414,36 +447,15 @@ const Overview: React.FC<OverviewProps> = ({
         );
       }
     },
-    ...(detailData?.profile === ProfileValueMap.MaxThroughput
-      ? [measuredColumns.rate, measuredColumns.concurrency]
-      : [measuredColumns.concurrency, measuredColumns.rate]),
-    ...(hasSloTargets
-      ? [
-          {
-            title: 'SLO',
-            key: 'slo',
-            width: 70,
-            align: 'center' as const,
-            render: (_v: unknown, p: StagePoint) =>
-              p.sloPass ? (
-                <span style={{ color: 'var(--color-status-success-text)' }}>
-                  ✓
-                </span>
-              ) : (
-                <span style={{ color: 'var(--color-status-error-text)' }}>
-                  ✗
-                </span>
-              )
-          }
-        ]
-      : []),
+    measuredColumns.concurrency,
+    measuredColumns.rate,
     {
       // p99, not the mean: this is the column an SLO is written against, and a
       // mean TTFT hides exactly the queueing the sweep exists to find. The mean
       // stays available in the stage detail below.
       title: unitTitle(t('benchmark.detail.metric.ttftP99'), 'ms'),
       key: 'ttft',
-      width: 120,
+      minWidth: 120,
       render: (_v: unknown, p: StagePoint) => {
         const v = p.ttftP99;
         // Overloaded stages get red numbers: their latency describes a queue, so
@@ -469,7 +481,7 @@ const Overview: React.FC<OverviewProps> = ({
         </Tooltip>
       ),
       key: 'tpotP99',
-      width: 120,
+      minWidth: 120,
       render: (_v: unknown, p: StagePoint) => (
         <span
           style={
@@ -492,7 +504,7 @@ const Overview: React.FC<OverviewProps> = ({
         </Tooltip>
       ),
       key: 'itlP99',
-      width: 120,
+      minWidth: 120,
       render: (_v: unknown, p: StagePoint) => (
         <span
           style={
@@ -506,8 +518,9 @@ const Overview: React.FC<OverviewProps> = ({
     {
       title: unitTitle(t('benchmark.detail.throughput.totalToken'), 'tok/s'),
       key: 'tps',
+      span: 2,
       // Value + 220px track + the gutter that keeps the bar's end off In TPS.
-      width: 310,
+      minWidth: 200,
       render: (_v: unknown, p: StagePoint) => {
         const v = p.tps;
         const pctWidth = maxTps > 0 && v != null ? (v / maxTps) * 100 : 0;
@@ -523,7 +536,7 @@ const Overview: React.FC<OverviewProps> = ({
             <span className="track">
               <i
                 style={{
-                  width: `${pctWidth.toFixed(1)}%`,
+                  minWidth: `${pctWidth.toFixed(1)}%`,
                   background: over
                     ? strong
                       ? C.red
@@ -541,19 +554,19 @@ const Overview: React.FC<OverviewProps> = ({
     {
       title: unitTitle(t('benchmark.detail.throughput.inputToken'), 'tok/s'),
       key: 'in',
-      width: 110,
+      minWidth: 110,
       render: (_v: unknown, p: StagePoint) => num(p.inTps, 0)
     },
     {
       title: unitTitle(t('benchmark.detail.throughput.outputToken'), 'tok/s'),
       key: 'out',
-      width: 110,
+      minWidth: 110,
       render: (_v: unknown, p: StagePoint) => num(p.outTps, 0)
     },
     {
       title: t('benchmark.detail.requests.success'),
       key: 'success',
-      width: 150,
+      minWidth: 130,
       render: (_v: unknown, p: StagePoint) => {
         const total = p.total;
         const ok = p.ok;
@@ -598,201 +611,249 @@ const Overview: React.FC<OverviewProps> = ({
       ? null
       : Math.round(totals.successRate * 1000) / 10;
 
+  const compactWidths: Record<string, number> = {
+    rate: 112,
+    conc: 104,
+    achievedRate: 96,
+    ttft: 112,
+    tpotP99: 88,
+    itlP99: 88,
+    tps: 136,
+    in: 96,
+    out: 96,
+    success: 136
+  };
   return (
-    <div className={styles.wrapper}>
-      {bestPoints}
+    <div
+      className={styles.wrapper}
+      data-stage-table-only={stageTableOnly || undefined}
+    >
+      {!stageTableOnly && (
+        <>
+          {bestPoints}
 
-      <Panel>
-        <div className="panel-head">
-          <SectionTitle style={{ marginBottom: 0 }}>
-            {t('benchmark.detail.chart.loadSweep')}
-          </SectionTitle>
-          <span className="sub">
-            {t('benchmark.detail.chart.loadSweep.note', {
-              metric: metricLabel
-            })}
-          </span>
-          <span className="spacer" />
-          {/* The two y-axes follow different rules while sharing one grid, which
-              has to be said out loud: read the amber line as linear and the
-              post-knee blow-up looks an order of magnitude smaller. */}
-          <Tooltip title={t('benchmark.detail.chart.dualAxisHint')}>
-            <QuestionCircleOutlined className="hint" />
-          </Tooltip>
-        </div>
-        <div className="panel-body">
-          <LoadSweep
-            points={points}
-            latencyValue={latencyValue}
-            latencyThreshold={
-              activeTarget ? (detailData as any)[activeTarget.field] : undefined
-            }
-            loadAxisName={loadAxisName}
-            loadAxisTitle={loadAxisTitle}
-            labels={{
-              concurrency: t('benchmark.detail.requests.concurrency'),
-              throughput: t('benchmark.detail.throughput.totalToken'),
-              primary: primaryLabel,
-              peak: peakLabel,
-              primaryHint: t('benchmark.detail.marker.sloCapacity.tip'),
-              peakHint: t('benchmark.detail.marker.peakThroughput.tip'),
-              throughputAxis: t('benchmark.detail.chart.axis.throughput'),
-              ttftP99: metricLabel,
-              overloaded: t('benchmark.detail.status.overloaded'),
-              declining: t('benchmark.detail.status.declining'),
-              sloBreached: t('benchmark.detail.chart.sloBreached')
-            }}
-          />
-        </div>
-      </Panel>
-
-      <Panel>
-        <div className="panel-head">
-          <SectionTitle style={{ marginBottom: 0 }}>
-            {t('benchmark.detail.summary.supporting')}
-          </SectionTitle>
-          {successPct != null && (
-            <span className={`pill ${totals.hasFailures ? 'bad' : 'ok'}`}>
-              {!totals.hasFailures && <CheckCircleFilled />}
-              {t('benchmark.detail.successPill', {
-                pct: successPct,
-                ok: totals.ok.toLocaleString(),
-                total: totals.requests.toLocaleString()
-              })}
-            </span>
-          )}
-          <span className="spacer" />
-          {moreCount > 0 && (
-            <Button
-              type="link"
-              size="small"
-              style={{ padding: 0 }}
-              icon={showMore ? <DownOutlined /> : <RightOutlined />}
-              onClick={() => setShowMore((v) => !v)}
-            >
-              {showMore
-                ? t('benchmark.detail.summary.showLess')
-                : t('benchmark.detail.summary.showMore', { n: moreCount })}
-            </Button>
-          )}
-        </div>
-        <div className="panel-body">
-          <div className="charts-grid">
-            {visible.map((spec) => (
-              <StageChart
-                key={spec.key}
-                spec={spec}
+          <Panel>
+            <div className="panel-body" style={{ paddingTop: 16 }}>
+              <LoadSweep
+                header={
+                  <Flex align="baseline" gap={4}>
+                    <SectionTitle style={{ marginBottom: 0 }}>
+                      {t('benchmark.detail.chart.loadSweep')}
+                    </SectionTitle>
+                    <HelpTooltip
+                      label={t('benchmark.detail.chart.loadSweep')}
+                      content={
+                        <Flex vertical gap={8}>
+                          <span>
+                            {t('benchmark.detail.chart.loadSweep.note', {
+                              metric: metricLabel
+                            })}
+                          </span>
+                          <span>
+                            {t('benchmark.detail.chart.dualAxisHint')}
+                          </span>
+                        </Flex>
+                      }
+                    />
+                  </Flex>
+                }
+                dataLabels={{
+                  data: t('benchmark.monitoring.viewData'),
+                  chart: t('benchmark.monitoring.backChart'),
+                  lower: t('benchmark.monitoring.lowerBound'),
+                  upper: t('benchmark.monitoring.upperBound')
+                }}
                 points={points}
+                onSelect={(point) => onSelect(point.raw)}
+                selectedId={selectedId}
+                latencyValue={latencyValue}
+                latencyThreshold={
+                  activeTarget
+                    ? (detailData as any)[activeTarget.field]
+                    : undefined
+                }
                 loadAxisName={loadAxisName}
                 loadAxisTitle={loadAxisTitle}
-                markerLabels={{
+                labels={{
+                  concurrency: t('benchmark.detail.requests.concurrency'),
+                  throughput: t('benchmark.detail.throughput.totalToken'),
                   primary: primaryLabel,
                   peak: peakLabel,
                   primaryHint: t('benchmark.detail.marker.sloCapacity.tip'),
-                  peakHint: t('benchmark.detail.marker.peakThroughput.tip')
+                  peakHint: t('benchmark.detail.marker.peakThroughput.tip'),
+                  throughputAxis: t('benchmark.detail.chart.axis.throughput'),
+                  ttftP99: metricLabel,
+                  overloaded: t('benchmark.detail.status.overloaded'),
+                  declining: t('benchmark.detail.status.declining'),
+                  sloBreached: t('benchmark.detail.chart.sloBreached')
                 }}
-                logHint={t('benchmark.detail.chart.logHint')}
               />
-            ))}
-          </div>
-        </div>
-      </Panel>
+            </div>
+          </Panel>
 
-      <Panel>
-        <div className="panel-head divided">
-          <SectionTitle style={{ marginBottom: 0 }}>
-            {t('benchmark.detail.summary.stages')}
-          </SectionTitle>
-          <span className="sub">
-            {t('benchmark.detail.summary.stagesHint')}
-          </span>
-          <span className="spacer" />
-          {/* Why the search ended here. This sits beside the stage count because
+          <Panel>
+            <div className="panel-head">
+              <SectionTitle style={{ marginBottom: 0 }}>
+                {t('benchmark.detail.summary.supporting')}
+              </SectionTitle>
+              {successPct != null && (
+                <span className={`pill ${totals.hasFailures ? 'bad' : 'ok'}`}>
+                  {!totals.hasFailures && <CheckCircleFilled />}
+                  {t('benchmark.detail.successPill', {
+                    pct: successPct,
+                    ok: totals.ok.toLocaleString(),
+                    total: totals.requests.toLocaleString()
+                  })}
+                </span>
+              )}
+              <span className="spacer" />
+              {moreCount > 0 && (
+                <Button
+                  type="link"
+                  style={{ padding: 0 }}
+                  icon={showMore ? <DownOutlined /> : <RightOutlined />}
+                  onClick={() => setShowMore((v) => !v)}
+                >
+                  {showMore
+                    ? t('benchmark.detail.summary.showLess')
+                    : t('benchmark.detail.summary.showMore', { n: moreCount })}
+                </Button>
+              )}
+            </div>
+            <div className="panel-body">
+              <div className="charts-grid">
+                {visible.map((spec) => (
+                  <StageChart
+                    dataLabels={{
+                      data: t('benchmark.monitoring.viewData'),
+                      chart: t('benchmark.monitoring.backChart'),
+                      lower: t('benchmark.monitoring.lowerBound'),
+                      upper: t('benchmark.monitoring.upperBound')
+                    }}
+                    key={spec.key}
+                    spec={spec}
+                    points={points}
+                    onSelect={(point) => onSelect(point.raw)}
+                    selectedId={selectedId}
+                    loadAxisName={loadAxisName}
+                    loadAxisTitle={loadAxisTitle}
+                    markerLabels={{
+                      primary: primaryLabel,
+                      peak: peakLabel,
+                      primaryHint: t('benchmark.detail.marker.sloCapacity.tip'),
+                      peakHint: t('benchmark.detail.marker.peakThroughput.tip')
+                    }}
+                    logHint={t('benchmark.detail.chart.logHint')}
+                  />
+                ))}
+              </div>
+            </div>
+          </Panel>
+        </>
+      )}
+      {!hideStageTable && (
+        <Panel>
+          <div className="panel-head divided">
+            <SectionTitle style={{ marginBottom: 0 }}>
+              {t('benchmark.detail.summary.stages')}
+            </SectionTitle>
+            <span className="sub">
+              {t('benchmark.detail.summary.stagesHint')}
+            </span>
+            <span className="spacer" />
+            {/* Why the search ended here. This sits beside the stage count because
               that is the number it explains — a run that measured 7 of a possible
               12 points used to give the reader nothing to go on. */}
-          <StopReason />
-          <span className="totals">
-            {[
-              {
-                n: String(totals.stages),
-                l: 'benchmark.detail.summary.totalStages'
-              },
-              {
-                n: totals.requests.toLocaleString(),
-                l: 'benchmark.detail.summary.totalRequests'
-              },
-              {
-                n: fmtDuration(totals.seconds),
-                l: 'benchmark.detail.summary.totalDuration'
-              }
-            ].map((s) => (
-              <span key={s.l}>
-                <span className="n">{s.n}</span>
-                <span className="l">{t(s.l)}</span>
-              </span>
-            ))}
-          </span>
-        </div>
-        <div className="panel-body flush">
-          <ConfigProvider
-            theme={{ components: { Table: { headerBorderRadius: 0 } } }}
-          >
-            <Table
-              className="stage-table scroll-table"
-              size="small"
-              rowKey={(p: StagePoint) => p.id}
-              pagination={false}
-              columns={columns}
+            <StopReason />
+            <span className="totals">
+              {[
+                {
+                  n: String(totals.stages),
+                  l: 'benchmark.detail.summary.totalStages'
+                },
+                {
+                  n: totals.requests.toLocaleString(),
+                  l: 'benchmark.detail.summary.totalRequests'
+                },
+                {
+                  n: fmtDuration(totals.seconds),
+                  l: 'benchmark.detail.summary.totalDuration'
+                }
+              ].map((s) => (
+                <span key={s.l}>
+                  <span className="n">{s.n}</span>
+                  <span className="l">{t(s.l)}</span>
+                </span>
+              ))}
+            </span>
+          </div>
+          <div className="panel-body flush">
+            <StageTable
+              rowKey="id"
+              columns={columns.map((column) => ({
+                ...column,
+                minWidth: stageTableOnly
+                  ? (compactWidths[column.key] ?? column.minWidth)
+                  : column.minWidth,
+                dataIndex: column.key
+              }))}
               dataSource={rows}
-              scroll={{ x: 'max-content' }}
-              onRow={(p: StagePoint) => ({ onClick: () => onSelect(p.raw) })}
-              rowClassName={(p: StagePoint) =>
-                [
-                  'clickable-row',
-                  p.id === selectedId ? 'selected-row' : ''
-                ].join(' ')
-              }
+              scroll={{ x: true }}
+              selectedId={selectedId}
+              onSelect={(point) => onSelect(point.raw)}
             />
-          </ConfigProvider>
-        </div>
-        {probes.length > 0 && (
-          <div className="aux">
-            {/* Kept out of the table above because every column there is a
+          </div>
+          {probes.length > 0 && (
+            <div className="aux">
+              {/* Kept out of the table above because every column there is a
                 per-load metric and these rows have no load. Only the fields that
                 mean something for a burst measurement are stated: what it ran,
                 and the ceiling it read — which is the number that shaped the
                 search. */}
-            {probes.map((q) => (
-              <div className="aux-line" key={q.id}>
-                <b>
-                  {q.raw.strategy_type === 'throughput'
-                    ? t('benchmark.detail.stage.saturationProbe')
-                    : (q.raw.strategy_type ?? '-')}
-                </b>
-                <span>
-                  {t('benchmark.detail.aux.measured', {
-                    requests: q.total,
-                    seconds: q.duration == null ? '-' : _.round(q.duration, 2)
-                  })}
-                </span>
-                {q.achievedRate != null && (
+              {probes.map((q) => (
+                <div
+                  className="aux-line"
+                  key={q.id}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => onSelect(q.raw)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault();
+                      onSelect(q.raw);
+                    }
+                  }}
+                >
+                  <b>
+                    {q.raw.strategy_type === 'throughput'
+                      ? t('benchmark.detail.stage.saturationProbe')
+                      : (q.raw.strategy_type ?? '-')}
+                  </b>
                   <span>
-                    {t('benchmark.detail.aux.ceiling', {
-                      rate: _.round(q.achievedRate, 2)
+                    {t('benchmark.detail.aux.measured', {
+                      requests: q.total,
+                      seconds: q.duration == null ? '-' : _.round(q.duration, 2)
                     })}
                   </span>
-                )}
-                {probeCap != null && (
-                  <span>
-                    {t('benchmark.detail.aux.cap', { cap: probeCap })}
-                    {probeCapEffect && ` · ${t(probeCapEffect)}`}
-                  </span>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-      </Panel>
+                  {q.achievedRate != null && (
+                    <span>
+                      {t('benchmark.detail.aux.ceiling', {
+                        rate: _.round(q.achievedRate, 2)
+                      })}
+                    </span>
+                  )}
+                  {probeCap != null && (
+                    <span>
+                      {t('benchmark.detail.aux.cap', { cap: probeCap })}
+                      {probeCapEffect && ` · ${t(probeCapEffect)}`}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </Panel>
+      )}
     </div>
   );
 };

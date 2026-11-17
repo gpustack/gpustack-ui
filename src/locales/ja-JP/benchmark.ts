@@ -91,6 +91,7 @@ export default {
   'benchmark.detail.result.sloRate': 'SLO を満たす最大実測リクエストレート',
   'benchmark.detail.result.totalPeak': '最大実測総スループット',
   'benchmark.detail.result.measured': '測定結果',
+  'benchmark.detail.result.currentMeasured': '現在の測定結果',
   'benchmark.detail.result.noSloPoint': 'SLO を満たす測定点がありません',
   'benchmark.detail.result.boundaryLocated': 'SLO 境界を確認済み',
   'benchmark.detail.result.boundaryUnknown': 'より高い SLO 境界は未確認',
@@ -432,7 +433,7 @@ export default {
     '入力と出力の比率 — Prefill 主体か Decode 主体か',
   'benchmark.detail.chart.concShortfall': '同時実行数: 設定値 vs 実測',
   'benchmark.detail.chart.concShortfall.note':
-    '2 本の線はほぼ重なるため、差分は右側の赤い目盛りで別に示しています',
+    '不足分 = max(目標同時実行数 − 実測平均同時実行数, 0)。各測定点で個別に計算し、累積しません。平均値と不足分は小数になり得ます。赤線は 0 から始まる右側の独立した目盛りで読み取ります。',
   'benchmark.detail.chart.efficiency': '効率曲線',
   'benchmark.detail.chart.efficiency.note':
     '実行中リクエスト 1 件あたりの tok/s · 収穫逓減が始まる点',

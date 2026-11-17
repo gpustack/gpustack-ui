@@ -96,6 +96,7 @@ export default {
     'Highest measured request rate meeting SLO',
   'benchmark.detail.result.totalPeak': 'Highest measured total throughput',
   'benchmark.detail.result.measured': 'Measured result',
+  'benchmark.detail.result.currentMeasured': 'Current measured result',
   'benchmark.detail.result.noSloPoint': 'No measured point met the SLO',
   'benchmark.detail.result.boundaryLocated': 'SLO boundary located',
   'benchmark.detail.result.boundaryUnknown': 'Higher SLO boundary not located',
@@ -439,7 +440,7 @@ export default {
     'Input vs output share — prefill-heavy or decode-heavy',
   'benchmark.detail.chart.concShortfall': 'Concurrency: configured vs actual',
   'benchmark.detail.chart.concShortfall.note':
-    'The two lines all but coincide, so the gap gets the red right-hand scale of its own',
+    'Shortfall = max(target concurrency − achieved mean concurrency, 0), calculated separately at each point, not accumulated. Means and gaps can be fractional; read the red line on the independent right-hand scale starting at zero.',
   'benchmark.detail.chart.efficiency': 'Efficiency curve',
   'benchmark.detail.chart.efficiency.note':
     'tok/s per in-flight request · where returns start diminishing',

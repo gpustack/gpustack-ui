@@ -1,5 +1,6 @@
 import {
   StagePoint,
+  fmtConcurrency,
   fmtInt,
   fmtMs,
   fmtPct,
@@ -92,7 +93,7 @@ export const buildChartSpecs = (
           note: t('benchmark.detail.chart.concShortfall.note'),
           yName: t('benchmark.detail.chart.axis.inFlight'),
           log: true,
-          fmt: fmtInt,
+          fmt: fmtConcurrency,
           series: [
             {
               name: t('benchmark.detail.chart.legend.configured'),
@@ -108,7 +109,7 @@ export const buildChartSpecs = (
           ],
           y2: {
             name: t('benchmark.detail.chart.axis.shortfall'),
-            fmt: fmtInt,
+            fmt: fmtConcurrency,
             series: [
               {
                 name: t('benchmark.detail.chart.legend.shortfall'),

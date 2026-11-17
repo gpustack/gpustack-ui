@@ -1,0 +1,65 @@
+.breadcrumb {
+  min-width: 0;
+  max-width: 100%;
+  flex: 0 1 auto;
+
+  :global {
+    ol {
+      flex-wrap: nowrap;
+      align-items: center;
+    }
+
+    .ant-breadcrumb-item {
+      min-width: 0;
+      flex: 0 1 auto;
+    }
+
+    .ant-breadcrumb-item:last-child {
+      flex: 1 1 auto;
+    }
+
+    .ant-breadcrumb-link {
+      display: block;
+      min-width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      font-size: var(--font-size-large);
+      font-weight: var(--font-weight-medium);
+
+      a,
+      a:hover {
+        background: unset;
+      }
+
+      .ant-select {
+        width: 100%;
+        min-width: 0 !important;
+      }
+    }
+
+    .ant-breadcrumb-separator {
+      flex-shrink: 0;
+      align-self: center;
+      line-height: 1;
+    }
+  }
+}
+
+.text {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 575px) {
+  .breadcrumb :global {
+    // The active object is the primary identity on phones. The same section
+    // remains reachable from the existing application navigation.
+    .ant-breadcrumb-item:not(:last-child),
+    .ant-breadcrumb-separator {
+      display: none;
+    }
+  }
+}

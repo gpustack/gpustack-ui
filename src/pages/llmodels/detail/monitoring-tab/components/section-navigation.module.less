@@ -1,0 +1,37 @@
+.navigation {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  padding-block: var(--ant-padding-xs);
+  border-bottom: 1px solid var(--ant-color-border-secondary);
+  background: var(--ant-color-bg-container);
+}
+
+.links {
+  min-width: 0;
+  flex: 1 1 360px;
+}
+
+.actions {
+  margin-inline-start: auto;
+  max-width: 100%;
+}
+
+.sections {
+  flex: 1;
+  min-width: 0;
+  padding-block: 2px;
+}
+
+.sectionLink {
+  flex-shrink: 0;
+  padding-inline: var(--ant-padding-xs);
+  color: var(--ant-color-text-secondary);
+  background: transparent;
+  font-size: 12px;
+}
+
+.sectionLink:not(:disabled):hover {
+  color: var(--ant-color-primary);
+  background: var(--ant-color-primary-bg);
+}

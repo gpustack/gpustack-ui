@@ -1,4 +1,5 @@
 export default {
+  'menu.models.deploymentDetail': '模型详情',
   'menu.dashboard': '概览',
   'menu.playground': '试验场',
   'menu.playground.rerank': '重排',

@@ -72,6 +72,8 @@
     font-weight: var(--font-weight-medium);
     padding-block: 9px 8px;
     height: 56px;
+    flex-shrink: 0;
+    gap: var(--ant-margin-sm);
     border-bottom: 1px solid var(--ant-color-split);
 
     // `.left` claims all the space between the title's left edge and `.right`.
@@ -96,9 +98,24 @@
       display: contents;
     }
 
+    .leftSlot > * {
+      min-width: 0;
+      max-width: 100%;
+      flex: 1 1 auto;
+    }
+
+    .leftSlot :global(.status-tag) {
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+
     .defaultTitle {
       display: inline-flex;
       align-items: center;
+      min-width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
 
     // Portal-driven visibility: when a page's HeaderLeft / HeaderRight

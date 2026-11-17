@@ -1,4 +1,5 @@
 export default {
+  'menu.models.deploymentDetail': 'Model ayrıntıları',
   'menu.dashboard': 'Gösterge Paneli',
   'menu.playground': 'Deneme Alanı',
   'menu.playground.rerank': 'Yeniden Sıralama',

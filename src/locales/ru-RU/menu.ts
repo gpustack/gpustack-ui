@@ -1,4 +1,5 @@
 export default {
+  'menu.models.deploymentDetail': 'Сведения о модели',
   'menu.dashboard': 'Панель управления',
   'menu.playground': 'Песочница',
   'menu.playground.rerank': 'Переранжирование',

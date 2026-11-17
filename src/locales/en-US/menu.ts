@@ -1,4 +1,5 @@
 export default {
+  'menu.models.deploymentDetail': 'Model detail',
   'menu.dashboard': 'Dashboard',
   'menu.playground': 'Playground',
   'menu.playground.rerank': 'Rerank',

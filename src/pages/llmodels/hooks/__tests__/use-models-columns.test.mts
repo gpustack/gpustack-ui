@@ -20,7 +20,11 @@ mock.module('@gpustack/core-ui', {
   }
 });
 mock.module('@umijs/max', {
-  namedExports: { useIntl: () => ({ formatMessage: ({ id }: any) => id }) }
+  namedExports: {
+    useIntl: () => ({ formatMessage: ({ id }: any) => id }),
+    Link: ({ to, children, ...props }: any) =>
+      createElement('a', { href: to, ...props }, children)
+  }
 });
 mock.module('ahooks', {
   namedExports: { useMemoizedFn: (fn: unknown) => fn }
@@ -43,31 +47,34 @@ mock.module('antd-style', {
     }
   }
 });
-mock.module(new URL('../../../atoms/system.ts', import.meta.url).href, {
+mock.module(new URL('../../../../atoms/system.ts', import.meta.url).href, {
   namedExports: { systemConfigAtom: atom({}) }
 });
-mock.module(new URL('../../../config/index.ts', import.meta.url).href, {
+mock.module(new URL('../../../../config/index.ts', import.meta.url).href, {
   namedExports: { StatusMaps: { inactive: 'inactive' } }
 });
-mock.module(new URL('../../../config/settings.ts', import.meta.url).href, {
+mock.module(new URL('../../../../config/settings.ts', import.meta.url).href, {
   namedExports: { OPENAI_COMPATIBLE: 'v1', tableSorter: () => ({}) }
 });
 mock.module(
-  new URL('../../../plugins/list-extra-columns.ts', import.meta.url).href,
+  new URL('../../../../plugins/list-extra-columns.ts', import.meta.url).href,
   {
     namedExports: { usePluginListColumns: () => [] }
   }
 );
 mock.module(
-  new URL('../../model-routes/config/index.ts', import.meta.url).href,
+  new URL('../../../model-routes/config/index.ts', import.meta.url).href,
   {
     namedExports: { TargetStatusValueMap: { Active: 'active' } }
   }
 );
-mock.module(new URL('../../_components/model-tag.tsx', import.meta.url).href, {
-  defaultExport: passChildren
-});
-mock.module(new URL('../config/index.ts', import.meta.url).href, {
+mock.module(
+  new URL('../../../_components/model-tag.tsx', import.meta.url).href,
+  {
+    defaultExport: passChildren
+  }
+);
+mock.module(new URL('../../config/index.ts', import.meta.url).href, {
   namedExports: {
     isModelServable: () => true,
     isPDModel: (record: any) => !!record.roles?.length,
@@ -81,14 +88,17 @@ mock.module(new URL('../config/index.ts', import.meta.url).href, {
     MyModelsStatusValueMap: { Stopped: 'stopped' }
   }
 });
-mock.module(new URL('../config/button-actions.ts', import.meta.url).href, {
+mock.module(new URL('../../config/button-actions.ts', import.meta.url).href, {
   namedExports: { generateSource: () => '' }
 });
-mock.module(new URL('../components/pd/pd-markers.tsx', import.meta.url).href, {
-  namedExports: { MarkerReasons: passChildren, markerTexts: () => [] }
-});
 mock.module(
-  new URL('../components/pd/pd-replicas-cell.tsx', import.meta.url).href,
+  new URL('../../components/pd/pd-markers.tsx', import.meta.url).href,
+  {
+    namedExports: { MarkerReasons: passChildren, markerTexts: () => [] }
+  }
+);
+mock.module(
+  new URL('../../components/pd/pd-replicas-cell.tsx', import.meta.url).href,
   {
     defaultExport: ({ record }: any) =>
       createElement(
@@ -110,7 +120,7 @@ Object.defineProperty(globalThis, 'window', {
   configurable: true,
   value: dom.window
 });
-const { default: useModelsColumns } = await import('./use-models-columns.tsx');
+const { default: useModelsColumns } = await import('../use-models-columns.tsx');
 
 const ReplicaCell = ({ record }: any) => {
   const columns = useModelsColumns({
@@ -153,4 +163,27 @@ test('PD rows hide the ordinary editor and retain the role editors', () => {
       roles?.length ?? 0
     );
   }
+});
+
+const NameCell = ({ record }: any) => {
+  const columns = useModelsColumns({
+    handleSelect() {},
+    clusterList: [],
+    sortOrder: [],
+    targetList: [],
+    async onUpdateRoles() {}
+  });
+  return columns
+    .find((column) => column.dataIndex === 'name')!
+    .render(record.name, record);
+};
+test('deployment name opens the native detail without replacing the expand control', () => {
+  const markup = renderToStaticMarkup(
+    createElement(NameCell, {
+      record: { id: 42, name: 'qwen & role', categories: [] }
+    })
+  );
+  const link = new JSDOM(markup).window.document.querySelector('a');
+  assert.ok(link, 'model name should be a real keyboard-accessible link');
+  assert.equal(link.getAttribute('href'), '/models/deployments/detail?id=42');
 });

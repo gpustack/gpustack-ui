@@ -1,4 +1,5 @@
 export default {
+  'menu.models.deploymentDetail': 'モデル詳細',
   'menu.dashboard': 'ダッシュボード',
   'menu.playground': 'プレイグラウンド',
   'menu.playground.rerank': 'リランク',

@@ -140,6 +140,14 @@ const baseRoutes = [
         component: './llmodels/index'
       },
       {
+        name: 'deploymentDetail',
+        path: '/models/deployments/detail',
+        key: 'modelDeploymentDetail',
+        access: 'canSeeOrgAdmin',
+        hideInMenu: true,
+        component: './llmodels/detail'
+      },
+      {
         name: 'routes',
         path: '/models/routes',
         key: 'routes',

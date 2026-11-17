@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { after, mock, test } from 'node:test';
 import { act, cloneElement, createElement, isValidElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
+import { MemoryRouter, useSearchParams } from 'react-router-dom';
 import messages from '../../../../../locales/en-US/benchmark';
 
 // Statistics assertions use English formatting regardless of the host locale.
@@ -66,6 +67,7 @@ mock.module('antd', {
 });
 mock.module('@umijs/max', {
   namedExports: {
+    useSearchParams,
     useIntl: () => ({
       formatMessage: ({ id }: any, values: any = {}) => {
         let parts: any[] = [translations[id] || id];
@@ -922,6 +924,14 @@ mock.module(new URL('../selected-stage.tsx', import.meta.url).href, {
   defaultExport: ({ point }: any) =>
     createElement('pre', { id: 'stage-evidence' }, JSON.stringify(point?.raw))
 });
+mock.module(new URL('../stage-monitoring.tsx', import.meta.url).href, {
+  defaultExport: ({ selected }: any) =>
+    createElement(
+      'pre',
+      { id: 'stage-evidence' },
+      JSON.stringify(selected?.raw)
+    )
+});
 const { default: Summary } = await import('../index');
 test('a sole SLO-failing stage remains inspectable without becoming a primary result', async () => {
   const { JSDOM } = await import('jsdom');
@@ -945,7 +955,13 @@ test('a sole SLO-failing stage remains inspectable without becoming a primary re
   const container = document.getElementById('root')!;
   const root = createRoot(container);
   await act(async () => {
-    root.render(createElement(Summary));
+    root.render(
+      createElement(
+        MemoryRouter,
+        { initialEntries: ['/models/benchmark/detail?id=460'] },
+        createElement(Summary)
+      )
+    );
   });
   assert.match(container.textContent || '', /No measured point met the SLO/);
   assert.match(
@@ -1095,7 +1111,15 @@ test('the default stage selection follows the legacy SLO capacity', async () => 
   const container = document.getElementById('root')!;
   const root = createRoot(container);
   try {
-    await act(async () => root.render(createElement(Summary)));
+    await act(async () =>
+      root.render(
+        createElement(
+          MemoryRouter,
+          { initialEntries: ['/models/benchmark/detail?id=460'] },
+          createElement(Summary)
+        )
+      )
+    );
     const selected = JSON.parse(
       document.getElementById('stage-evidence')!.textContent!
     );
@@ -1320,3 +1344,42 @@ for (const rate of [0.01, 0.001, 1.2345, 1000, 1000.2345]) {
     dom.window.close();
   });
 }
+
+test('a probe-only Auto Tune run exposes its real recorded evidence before the first load stage arrives', async () => {
+  const { createRoot } = await import('react-dom/client');
+  const dom = new requireForTest.JSDOM('<div id="root"></div>');
+  Object.defineProperties(globalThis, {
+    window: { value: dom.window, configurable: true },
+    document: { value: dom.window.document, configurable: true },
+    navigator: { value: dom.window.navigator, configurable: true },
+    IS_REACT_ACT_ENVIRONMENT: { value: true, configurable: true }
+  });
+  detail = {
+    auto_tune: true,
+    state: 'running',
+    load_type: 'fixed_rate',
+    recommended_rate: null
+  };
+  measuredRows = [{ ...row(4, 1000), id: 99, rate: null, sequence: 3 }];
+  const root = createRoot(document.getElementById('root')!);
+  try {
+    await act(async () =>
+      root.render(
+        createElement(
+          MemoryRouter,
+          { initialEntries: ['/models/benchmark/detail?id=460'] },
+          createElement(Summary)
+        )
+      )
+    );
+    const selected = JSON.parse(
+      document.getElementById('stage-evidence')?.textContent || 'null'
+    );
+    assert.equal(selected?.id, 99);
+    assert.equal(selected?.rate, null);
+    assert.doesNotMatch(document.body.textContent || '', /NaN/);
+  } finally {
+    await act(async () => root.unmount());
+    dom.window.close();
+  }
+});

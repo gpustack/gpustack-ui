@@ -1,4 +1,47 @@
 export default {
+  'benchmark.monitoring.archive.capacityFull':
+    'Архивация приостановлена · лимит ёмкости',
+  'benchmark.monitoring.archive.capacityHelp':
+    'Сохранённый мониторинг доступен. Попросите администратора освободить место. Архивация повторится автоматически.',
+  'benchmark.monitoring.runChanged':
+    'Ссылка относится к другому запуску бенчмарка. Откройте текущий запуск, чтобы просмотреть мониторинг этих результатов.',
+  'benchmark.monitoring.archive.not_archived': 'Не архивировано',
+  'benchmark.monitoring.archive.ready': 'Мониторинг сохранён',
+  'benchmark.monitoring.archive.partial': 'Частичный архив',
+  'benchmark.monitoring.archive.partialSamples':
+    'Сохранено · часть исходных выборок отсутствует',
+  'benchmark.monitoring.archive.partialSamplesHelp':
+    'Архивирование завершено. В некоторых исходных метриках есть пропуски. Результаты клиентского бенчмарка отображаются отдельно.',
+  'benchmark.monitoring.archive.partialSamplesBoundary':
+    'Время исходного сбора и скользящие окна скорости/задержки могут оставлять граничные точки запроса пустыми. Покрытие считает точки вычисления запроса, а не исходные сборы; пропуски не заменяются нулями.',
+  'benchmark.monitoring.archive.sampleCoverage':
+    'Текущий интервал: минимальное покрытие действительных точек запроса {observed}/{expected} ({percent}%).',
+  'benchmark.monitoring.archive.shortPhaseCoverage':
+    '{count}/{total} записанных фаз не превышают скользящее окно {seconds} с; соответствующие тренды скорости/задержки не имеют полного окна внутри фаз.',
+  'benchmark.monitoring.archive.failed': 'Ошибка архивации',
+  'benchmark.monitoring.archive.expired': 'Архив просрочен',
+  'benchmark.monitoring.archive.no_data': 'Данные мониторинга отсутствуют',
+  'benchmark.monitoring.archive.pending': 'Ожидание архивации',
+  'benchmark.monitoring.archive.capturing': 'Архивация',
+  'benchmark.monitoring.archive.finalizing': 'Завершение архивации',
+  'benchmark.monitoring.archive.unavailable': 'Архив недоступен',
+  'benchmark.monitoring.archive.permission': 'Нет прав на повтор архивации',
+  'benchmark.monitoring.archive.retryFailed': 'Ошибка повтора архивации',
+  'benchmark.monitoring.archive.retry': 'Повторить архивацию',
+  'benchmark.monitoring.archive.help':
+    'Сохранённый мониторинг воспроизводит этот запуск и его измеренные этапы.',
+  'benchmark.monitoring.archive.size': 'Размер архива мониторинга: {size}',
+  'benchmark.monitoring.archive.checkpointSize': 'Сохранено: {size}',
+  'benchmark.monitoring.archive.capturedUntil': 'Собрано до',
+  'benchmark.monitoring.archive.expiresAt': 'Срок хранения до',
+  'benchmark.monitoring.client': 'Клиент',
+  'benchmark.monitoring.requestLatency': 'Полная задержка запроса',
+  'benchmark.monitoring.resourceDrilldownHelp':
+    'Открыть доступный Worker или GPU с текущим интервалом. Детали показывают историю физического оборудования; имена сохранены из снимка запуска.',
+  'benchmark.monitoring.peakSourceChanged': 'Источник пика изменился',
+  'benchmark.monitoring.peakSourceUnavailable': 'Источник пика неизвестен',
+  'benchmark.monitoring.peakComparisonDefinition':
+    'Пики выборки содержат источник и время. Изменения показаны только для совпадающих источников.',
   'benchmark.detail.slo.boundary': 'Граница SLO',
   'benchmark.detail.slo.firstBreachLoad': 'Первая нагрузка с нарушением:',
   'benchmark.detail.slo.measurementUnavailable': 'Данные измерения отсутствуют',
@@ -552,5 +595,159 @@ export default {
   'benchmark.detail.targetMode.route': 'Маршрут (развёртывание) · {route}',
   'benchmark.form.target.route': 'Маршрут',
   'benchmark.form.target.route.empty':
-    'В этом кластере нет маршрута, ведущего к работающей LLM. Разверните маршрут или измерьте экземпляр.'
+    'В этом кластере нет маршрута, ведущего к работающей LLM. Разверните маршрут или измерьте экземпляр.',
+  'benchmark.monitoring.awaitingStages': 'Ожидание результатов этапов нагрузки',
+  'benchmark.monitoring.recordedRuntime':
+    'Наблюдения движка для записанных участников могут включать другие запросы. Результаты клиента и статистика ресурсов сохраняют свои интервалы измерения.',
+  'benchmark.monitoring.rollingContext':
+    'Тренды используют скользящее окно {seconds}s и могут включать наблюдения до теста или между этапами.',
+  'benchmark.monitoring.measurement': 'Измерение',
+  'benchmark.monitoring.measurements': 'измерений',
+  'benchmark.monitoring.pointView': 'Вид измерений',
+  'benchmark.monitoring.loadComparison': 'Сравнение нагрузок',
+  'benchmark.monitoring.explorationProcess': 'Процесс поиска',
+  'benchmark.monitoring.loadComparisonHelp':
+    'Сравнение измеренных целей по возрастанию нагрузки при одинаковой длине входа. Для каждого измерения сохраняются исходные отсчёты мониторинга.',
+  'benchmark.monitoring.explorationProcessHelp':
+    'Измерения показаны в записанном порядке выполнения и по группам поиска. Мониторинг использует реальную ось времени; полный запуск и масштаб этапа меняют только отображаемый интервал.',
+  'benchmark.monitoring.timeLegendHelp':
+    'Легенда показывает последний действительный отсчёт отображаемого интервала; при наведении или фиксации курсора — выбранный отсчёт.',
+  'benchmark.monitoring.highestMeasuredPass':
+    'Максимальная измеренная нагрузка с SLO',
+  'benchmark.monitoring.adjacentBreach': 'Ближайшее превышение',
+  'benchmark.monitoring.measuredPeak': 'Измеренный пик пропускной способности',
+  'benchmark.monitoring.designation.capacity': 'Граница SLO',
+  'benchmark.monitoring.designation.breach': 'Выше границы',
+  'benchmark.monitoring.search.expand': 'Расширение диапазона',
+  'benchmark.monitoring.search.refineSlo': 'Уточнение границы SLO',
+  'benchmark.monitoring.search.refinePeak':
+    'Уточнение диапазона пропускной способности',
+  'benchmark.monitoring.search.manual': 'Ручные измерения',
+  'benchmark.monitoring.search.single': 'Одно измерение',
+  'benchmark.monitoring.search.probe': 'Проверка насыщения',
+  'benchmark.monitoring.searchHistoryHelp':
+    'Группы основаны на порядке измерений и нагрузках: новый максимум расширяет диапазон, а точки внутри известного диапазона уточняют его. Сортировка не меняет номера и время мониторинга.',
+  'benchmark.monitoring.executionHelp':
+    'Измерения показаны в записанном порядке выполнения. Сортировка не меняет номера и время мониторинга.',
+  'benchmark.monitoring.adjacentLoad': 'Ближайшая меньшая нагрузка',
+  'benchmark.monitoring.previousPoint': 'Предыдущая точка',
+  'benchmark.monitoring.nextPoint': 'Следующая точка',
+  'benchmark.monitoring.previousMeasurement': 'Предыдущее измерение',
+  'benchmark.monitoring.nextMeasurement': 'Следующее измерение',
+  'benchmark.monitoring.compareAdjacentLoad': 'Сравнить соседнюю нагрузку',
+  'benchmark.monitoring.comparePreviousMeasurement':
+    'Сравнить предыдущее измерение',
+  'benchmark.monitoring.inputLength': 'Длина входа',
+  'benchmark.monitoring.title': 'Этапы и мониторинг',
+  'benchmark.monitoring.stageResults': 'Результаты по этапам',
+  'benchmark.monitoring.stageDetails': 'Детали этапа',
+  'benchmark.monitoring.concurrencyUnit': 'одновременно',
+  'benchmark.monitoring.stage': 'Этап',
+  'benchmark.monitoring.selectedStage': 'Выбранный этап',
+  'benchmark.monitoring.resourceObservations': 'Наблюдения ресурсов',
+  'benchmark.monitoring.statistics': 'Статистика теста',
+  'benchmark.monitoring.stageComparison': 'Сравнение этапов',
+  'benchmark.monitoring.backResults': 'Назад к результатам',
+  'benchmark.monitoring.previous': 'Предыдущий этап',
+  'benchmark.monitoring.next': 'Следующий этап',
+  'benchmark.monitoring.designation.recommended': 'Рекомендуется',
+  'benchmark.monitoring.designation.peak': 'Пик',
+  'benchmark.monitoring.designation.declining': 'Спад',
+  'benchmark.monitoring.baseline': 'Базовый этап',
+  'benchmark.monitoring.custom': 'Выбрать базовый этап',
+  'benchmark.monitoring.comparePrevious': 'Сравнить с предыдущим этапом',
+  'benchmark.monitoring.compareCharts': 'Сравнить на графиках',
+  'benchmark.monitoring.endComparison': 'Завершить сравнение',
+  'benchmark.monitoring.comparisonDefinition':
+    'Клиентские перцентили остаются отдельными наблюдениями этапов. Проценты ресурсов сравниваются в процентных пунктах. Пропуски и нулевая база отображаются как —.',
+  'benchmark.monitoring.metric': 'Метрика',
+  'benchmark.monitoring.change': 'Изменение',
+  'benchmark.monitoring.percentagePoints': 'п.п.',
+  'benchmark.monitoring.fullRun': 'Весь тест',
+  'benchmark.monitoring.zoomStage': 'Увеличить этап',
+  'benchmark.monitoring.curveRange': 'Время графика',
+  'benchmark.monitoring.successfulRequests': 'успешных запросов',
+  'benchmark.monitoring.samplingDefinition':
+    'Среднее и пик GPU вычисляются по выборкам связанных устройств. KV и CPU показывают пики, память — последнюю выборку этапа. Общие ресурсы могут включать другие нагрузки. Пропуски не заменяются нулём.',
+  'benchmark.monitoring.instanceResources': 'Экземпляр / ресурсы',
+  'benchmark.monitoring.inference': 'Инференс',
+  'benchmark.monitoring.gpuAveragePeak': 'GPU среднее / пик',
+  'benchmark.monitoring.gpuPeak': 'Пик выборок GPU',
+  'benchmark.monitoring.kvPeak': 'Пик выборок KV',
+  'benchmark.monitoring.cpuPeak': 'Пик выборок CPU',
+  'benchmark.monitoring.waitingPeak': 'Пик ожидающих запросов',
+  'benchmark.monitoring.memoryEnd': 'Память · конец этапа / всего',
+  'benchmark.monitoring.peakAt': 'Время пика',
+  'benchmark.monitoring.highSamples': 'Выборки ≥90%',
+  'benchmark.monitoring.samples': 'Число выборок',
+  'benchmark.monitoring.sampling': 'Состояние выборок',
+  'benchmark.monitoring.sampled': 'Есть выборки',
+  'benchmark.monitoring.restricted': 'Доступ к ресурсам ограничен',
+  'benchmark.monitoring.queryFailed': 'Ошибка запроса мониторинга',
+  'benchmark.monitoring.historyNotRecorded':
+    'Для этого запуска не сохранены связи с объектами мониторинга. Исходные результаты теста доступны.',
+  'benchmark.monitoring.historyAssociationNotVisible':
+    'Записанная модель или экземпляры недоступны или невидимы. Результаты теста доступны.',
+  'benchmark.monitoring.historyAssociationChanged':
+    'Записанные связи ресурсов изменились, поэтому история мониторинга недоступна. Результаты теста доступны.',
+  'benchmark.monitoring.noSamples':
+    'В выбранном интервале нет записанных измерений',
+  'benchmark.monitoring.noHistory': 'Нет истории за этот период',
+  'benchmark.monitoring.partial': 'Некоторые выборки отсутствуют',
+  'benchmark.monitoring.timingUnavailable': 'Точное время этапа недоступно',
+  'benchmark.monitoring.sloUnset': 'SLO не задан',
+  'benchmark.monitoring.insufficient': 'Недостаточно данных',
+  'benchmark.monitoring.sloPass': '✓ SLO выполнен',
+  'benchmark.monitoring.sloFail': '✕ SLO нарушен',
+  'benchmark.monitoring.timeline': 'Временная шкала этапов',
+  'benchmark.monitoring.totalThroughput': 'Общая пропускная способность',
+  'benchmark.monitoring.instances': 'Экземпляры',
+  'benchmark.monitoring.focus': 'Выделить экземпляр',
+  'benchmark.monitoring.allInstances': 'Все экземпляры',
+  'benchmark.monitoring.instanceOutput': 'Выходной поток по экземплярам',
+  'benchmark.monitoring.instanceLoad':
+    'Активные и ожидающие запросы по экземплярам',
+  'benchmark.monitoring.associatedResources': 'Связанные ресурсы',
+  'benchmark.monitoring.participation': 'Участие в тесте',
+  'benchmark.monitoring.noVisibleResources': 'Нет доступных связей ресурсов',
+  'benchmark.monitoring.expandAll': 'Развернуть всё',
+  'benchmark.monitoring.collapseAll': 'Свернуть всё',
+  'benchmark.monitoring.viewData': 'Показать данные',
+  'benchmark.monitoring.backChart': 'Вернуться к графику',
+  'benchmark.monitoring.segmentedHistory':
+    'История длинного теста показана по интервалам',
+  'benchmark.monitoring.samplingCoverage': 'Покрытие точек оценки запроса',
+  'benchmark.monitoring.peakDevice': 'Устройство на пике',
+  'benchmark.monitoring.associationCaptured': 'Связи теста сохранены',
+  'benchmark.monitoring.resourceChanged':
+    'Поколение экземпляра или ресурсы изменены',
+  'benchmark.monitoring.loading': 'Загрузка наблюдений…',
+  'benchmark.monitoring.notLoaded': 'Ещё не запрошено',
+  'benchmark.monitoring.lowerBound': 'Нижняя граница',
+  'benchmark.monitoring.upperBound': 'Верхняя граница',
+  'benchmark.monitoring.viewPhaseLatency':
+    'Показать задержки запросов и этапов',
+  'benchmark.monitoring.refreshMonitoring': 'Обновить наблюдения',
+  'benchmark.monitoring.allMeasurements': 'Все измерения',
+  'benchmark.monitoring.zoomMeasurement': 'Увеличить измерение',
+  'benchmark.monitoring.segmentCount': '{count} измерений',
+  'benchmark.monitoring.rawByLoad':
+    'Исходный мониторинг · сегменты по нагрузке',
+  'benchmark.monitoring.rawByTime': 'Исходный мониторинг · реальное время',
+  'benchmark.monitoring.segmentProgress':
+    'Нагрузка по возрастанию · прогресс этапа 0–100% · разрывы между измерениями',
+  'benchmark.monitoring.segmentHelp':
+    'Измерения показаны равными по ширине сегментами. Порядок отсчётов, значения и скользящее окно статистики сохраняются. Длительности могут отличаться: наклон между сегментами не отражает прошедшее время. Наведение связывает исходное время на графиках; щелчок фиксирует курсор. Увеличение измерения возвращает реальную временную ось.',
+  'benchmark.monitoring.segmentLegendHelp':
+    'Легенда: последний допустимый отсчёт выбранного измерения; при наведении — просматриваемый отсчёт.',
+  'benchmark.monitoring.untimedSegments':
+    'Для {count} измерений не записаны временные границы',
+  'benchmark.monitoring.originalTime': 'Исходное время',
+  'benchmark.monitoring.pinnedSample': 'Закреплено',
+  'benchmark.monitoring.segmentLegendReadout':
+    'Легенда: последний допустимый отсчёт · {measurement}',
+  'benchmark.monitoring.directRouterObservation':
+    'Запуск обращается напрямую к PD Router, минуя шлюз GPUStack. Отдельные TTFT и длительность запроса на входе не предоставляются; результаты клиента и наблюдения Router/P/D доступны.',
+  'benchmark.monitoring.directInstanceObservation':
+    'Запуск обращается напрямую к экземпляру, минуя шлюз GPUStack. Результаты клиента и наблюдения экземпляра доступны.'
 };

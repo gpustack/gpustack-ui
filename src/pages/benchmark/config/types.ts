@@ -293,6 +293,7 @@ export interface BenchmarkResultItem extends BenchmarkMetricsLite {
 // server picked to represent it, which is what the table's metric columns read.
 export interface BenchmarkListItem extends FormData, BenchmarkMetricsLite {
   id: number;
+  run_id?: string | null;
   snapshot?: Snapshot | null;
   // Inherited from the parent cluster's owner_principal_id on the
   // wire so per-row tenant filtering works without joining.

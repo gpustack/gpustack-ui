@@ -1,5 +1,13 @@
 import { request } from '@umijs/max';
 import { CancelToken } from 'axios';
+import type {
+  BenchmarkArchiveStatus,
+  BenchmarkMonitoring,
+  BenchmarkMonitoringQuery,
+  BenchmarkPhaseObservations,
+  BenchmarkResourceMetrics,
+  BenchmarkRuntimeMetrics
+} from '../config/monitoring-types';
 import {
   BenchmarkListItem,
   BenchmarkResultItem,
@@ -10,6 +18,87 @@ import {
 export const BENCHMARKS_API = '/benchmarks';
 export const PROFILES_CONFIG_API = '/benchmark-profiles/default-config';
 export const EXPORT_BENCHMARK_LIST = '/benchmarks/export';
+
+export const queryBenchmarkMonitoring = (
+  id: number,
+  signal?: AbortSignal,
+  params?: Pick<BenchmarkMonitoringQuery, 'run_id'>
+) =>
+  request<BenchmarkMonitoring>(`${BENCHMARKS_API}/${id}/monitoring`, {
+    method: 'GET',
+    params,
+    signal,
+    skipErrorHandler: true
+  });
+
+export const queryBenchmarkPhaseObservations = (
+  id: number,
+  params: Pick<BenchmarkMonitoringQuery, 'run_id' | 'content_version'> & {
+    phase_ids: string;
+  },
+  signal?: AbortSignal
+) =>
+  request<BenchmarkPhaseObservations>(
+    `${BENCHMARKS_API}/${id}/phase-observations`,
+    {
+      method: 'GET',
+      params,
+      signal,
+      skipErrorHandler: true
+    }
+  );
+
+export const retryBenchmarkMonitoringArchive = (id: number, run_id?: string) =>
+  request<BenchmarkArchiveStatus>(
+    `${BENCHMARKS_API}/${id}/monitoring-archive/retry`,
+    {
+      method: 'POST',
+      data: run_id ? { run_id } : undefined,
+      skipErrorHandler: true
+    }
+  );
+
+export const queryBenchmarkMonitoringArchive = (
+  id: number,
+  params: Pick<BenchmarkMonitoringQuery, 'run_id'>,
+  signal?: AbortSignal
+) =>
+  request<BenchmarkArchiveStatus>(
+    `${BENCHMARKS_API}/${id}/monitoring-archive`,
+    {
+      method: 'GET',
+      params,
+      signal,
+      skipErrorHandler: true
+    }
+  );
+
+export const queryBenchmarkMetrics = (
+  id: number,
+  params: BenchmarkMonitoringQuery,
+  signal?: AbortSignal
+) =>
+  request<BenchmarkRuntimeMetrics>(`${BENCHMARKS_API}/${id}/metrics`, {
+    method: 'GET',
+    params: { ...params, statistic: 'avg,p50,p95,p99', section: 'all' },
+    signal,
+    skipErrorHandler: true
+  });
+
+export const queryBenchmarkResourceMetrics = (
+  id: number,
+  params: BenchmarkMonitoringQuery,
+  signal?: AbortSignal
+) =>
+  request<BenchmarkResourceMetrics>(
+    `${BENCHMARKS_API}/${id}/resource-metrics`,
+    {
+      method: 'GET',
+      params,
+      signal,
+      skipErrorHandler: true
+    }
+  );
 
 export async function queryBenchmarkList(
   params: Global.SearchParams,

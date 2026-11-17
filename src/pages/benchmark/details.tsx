@@ -43,9 +43,24 @@ const Details: React.FC = () => {
   const { exportData } = useExportBenchmark();
   const { cloneBenchmarkOnList } = useCloneBenchmark();
   const [searchParams] = useSearchParams();
-  const name = searchParams.get('name');
   const id = searchParams.get('id');
   const hasCurrentDetail = id != null && detailData?.id === Number(id);
+  const requestedName = searchParams.get('name');
+  const name = hasCurrentDetail
+    ? detailData.name
+    : requestedName ||
+      benchmarkList.find((item) => item.id === Number(id))?.name ||
+      `${intl.formatMessage({ id: 'benchmark.title' })} #${id || '—'}`;
+  const currentId = id ? Number(id) : undefined;
+  const benchmarkOptions = benchmarkList.some(
+    (item) => item.value === currentId
+  )
+    ? benchmarkList.map((item) =>
+        item.value === currentId ? { ...item, label: name } : item
+      )
+    : currentId
+      ? [{ value: currentId, label: name }, ...benchmarkList]
+      : benchmarkList;
 
   // Bumped on each live refresh so the Summary tab re-pulls the per-point
   // results (which don't ride the row's stream).
@@ -70,10 +85,14 @@ const Details: React.FC = () => {
   });
 
   const handleOnChange = (value: number, option: any) => {
-    navigate(
-      `/models/benchmark/detail?id=${option.value}&name=${option.label}`,
-      { state: 'benchmark-details', replace: true }
-    );
+    const params = new URLSearchParams({
+      id: String(value),
+      name: String(option.label)
+    });
+    navigate(`/models/benchmark/detail?${params}`, {
+      state: 'benchmark-details',
+      replace: true
+    });
   };
 
   const breadcrumbItems = [
@@ -86,8 +105,10 @@ const Details: React.FC = () => {
         <BaseSelect
           size="small"
           variant="borderless"
-          options={benchmarkList}
-          value={name}
+          options={benchmarkOptions}
+          value={currentId}
+          title={name}
+          aria-label={name}
           style={{ minWidth: 100 }}
           popupMatchSelectWidth={false}
           onChange={handleOnChange}
@@ -161,12 +182,12 @@ const Details: React.FC = () => {
             updates live via the watch-driven detailData refresh. */}
         <Flex align="center" gap={12}>
           <PageBreadcrumb items={breadcrumbItems} />
-          <BenchmarkStateTag data={detailData as any} />
+          <BenchmarkStateTag data={hasCurrentDetail ? detailData : null} />
         </Flex>
       </HeaderLeft>
       <DetailContext.Provider
         value={{
-          detailData: detailData || {},
+          detailData: (hasCurrentDetail ? detailData : {}) as typeof detailData,
           clusterList: [],
           loading: loading,
           id: Number(id),

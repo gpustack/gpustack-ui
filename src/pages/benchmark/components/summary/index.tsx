@@ -1,10 +1,11 @@
 import { useIntl } from '@umijs/max';
 import { createStyles } from 'antd-style';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { queryBenchmarkResults } from '../../apis';
 import { loadAxisLabelId } from '../../config';
 import { useDetailContext } from '../../config/detail-context';
 import { BenchmarkResultItem } from '../../config/types';
+import useBenchmarkInspectionUrl from '../../hooks/use-benchmark-inspection-url';
 import ConfigSourceAlert from '../config-source-alert';
 import BestPoints from './best-points';
 import ConfigSummary from './config-summary';
@@ -12,7 +13,9 @@ import { buildProbePoints, buildStagePoints } from './metrics';
 import MetricsResult from './metrics-result';
 import Overview from './overview';
 import RunningHint from './running-hint';
-import SelectedStage from './selected-stage';
+import StageMonitoring, {
+  type StageMonitoringHandle
+} from './stage-monitoring';
 import { Panel, SectionTitle } from './ui';
 import ValidityAlert from './validity-alert';
 
@@ -41,7 +44,7 @@ const Summary: React.FC = () => {
   const intl = useIntl();
   const { id, detailData, refreshToken } = useDetailContext();
   const [results, setResults] = useState<BenchmarkResultItem[]>([]);
-  const [selected, setSelected] = useState<BenchmarkResultItem | null>(null);
+  const monitoringRef = useRef<StageMonitoringHandle>(null);
 
   // Re-pull whenever the watch stream signals a row change (refreshToken): while
   // the run is in progress the per-point grid grows point by point, so the curve
@@ -59,6 +62,7 @@ const Summary: React.FC = () => {
       .then((data) => {
         if (!cancelled) {
           setResults(data || []);
+          monitoringRef.current?.restoreResults(data || []);
         }
       })
       .catch(() => {
@@ -98,16 +102,21 @@ const Summary: React.FC = () => {
 
   const isMulti = points.length > 1;
   const measuredPoints = points.length;
+  const { inspection, updateInspection } = useBenchmarkInspectionUrl(id, [
+    ...points,
+    ...probes
+  ]);
 
-  // Default selection follows the primary point provided by the server.
-  useEffect(() => {
-    if (!isMulti) {
-      setSelected(null);
-      return;
-    }
-    const best = points.find((p) => p.isBest);
-    setSelected(best?.raw ?? null);
-  }, [points, isMulti]);
+  const selectedPoint =
+    [...points, ...probes].find((point) => point.id === inspection.pointId) ||
+    points.find((point) => point.isBest) ||
+    points[0] ||
+    probes[0] ||
+    null;
+  const selectStage = (raw: BenchmarkResultItem) => {
+    const point = [...points, ...probes].find((item) => item.id === raw.id);
+    if (point) monitoringRef.current?.selectPoint(point);
+  };
 
   const resultsView = useMemo(() => {
     if (isMulti) {
@@ -116,18 +125,14 @@ const Summary: React.FC = () => {
           <Overview
             points={points}
             probes={probes}
-            selectedId={selected?.id ?? null}
-            onSelect={setSelected}
+            selectedId={selectedPoint?.id ?? null}
+            onSelect={selectStage}
+            hideStageTable
             bestPoints={
               <BestPoints
                 points={points}
-                onSelect={(p) => setSelected(p.raw)}
+                onSelect={(p) => selectStage(p.raw)}
               />
-            }
-          />
-          <SelectedStage
-            point={
-              [...points, ...probes].find((p) => p.id === selected?.id) ?? null
             }
           />
         </div>
@@ -136,15 +141,14 @@ const Summary: React.FC = () => {
     if (points.length === 1) {
       return (
         <>
-          <BestPoints points={points} onSelect={(p) => setSelected(p.raw)} />
-          <SelectedStage point={points[0]} />
+          <BestPoints points={points} onSelect={(p) => selectStage(p.raw)} />
         </>
       );
     }
     // Reports without a stage grid retain their stored single-result metrics.
     return (
       <>
-        <BestPoints points={points} onSelect={(p) => setSelected(p.raw)} />
+        <BestPoints points={points} onSelect={(p) => selectStage(p.raw)} />
         <Panel>
           <div className="panel-head divided">
             <SectionTitle style={{ marginBottom: 0 }}>
@@ -159,7 +163,7 @@ const Summary: React.FC = () => {
         </Panel>
       </>
     );
-  }, [isMulti, points, probes, selected, intl]);
+  }, [isMulti, points, probes, selectedPoint, intl]);
 
   return (
     <div className={styles.container}>
@@ -170,6 +174,18 @@ const Summary: React.FC = () => {
           the multi-point overview and the single-point view. */}
       <ValidityAlert />
       {resultsView}
+      {(points.length > 0 || probes.length > 0) && (
+        <StageMonitoring
+          ref={monitoringRef}
+          key={id}
+          points={points}
+          probes={probes}
+          selected={selectedPoint}
+          inspection={inspection}
+          onInspectionChange={updateInspection}
+          onSelect={(point) => selectStage(point.raw)}
+        />
+      )}
     </div>
   );
 };

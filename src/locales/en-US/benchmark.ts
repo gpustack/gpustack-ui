@@ -1,4 +1,47 @@
 export default {
+  'benchmark.monitoring.archive.capacityFull':
+    'Archiving paused · storage capacity reached',
+  'benchmark.monitoring.archive.capacityHelp':
+    'Saved monitoring remains readable. Ask a platform administrator to increase capacity or free space; archiving retries automatically.',
+  'benchmark.monitoring.runChanged':
+    'This link refers to a different Benchmark run. Open the current run to view monitoring alongside these results.',
+  'benchmark.monitoring.archive.not_archived': 'Not archived',
+  'benchmark.monitoring.archive.ready': 'Saved monitoring',
+  'benchmark.monitoring.archive.partial': 'Partial archive',
+  'benchmark.monitoring.archive.partialSamples':
+    'Saved monitoring · some source samples missing',
+  'benchmark.monitoring.archive.partialSamplesHelp':
+    'Archiving is complete. Some source metrics have gaps in their recorded samples. Client benchmark results are reported separately.',
+  'benchmark.monitoring.archive.partialSamplesBoundary':
+    'Source scrape timing and rolling rate/latency windows can leave boundary query evaluations empty. Coverage counts query evaluation points, not raw scrapes; missing points are never filled with zero.',
+  'benchmark.monitoring.archive.sampleCoverage':
+    'Current interval: lowest valid query-point coverage {observed}/{expected} ({percent}%).',
+  'benchmark.monitoring.archive.shortPhaseCoverage':
+    '{count}/{total} recorded phases do not exceed the {seconds}s rolling window; affected rate/latency trends have no complete window inside those phases.',
+  'benchmark.monitoring.archive.failed': 'Archive failed',
+  'benchmark.monitoring.archive.expired': 'Archive expired',
+  'benchmark.monitoring.archive.no_data': 'No monitoring recorded',
+  'benchmark.monitoring.archive.pending': 'Archive pending',
+  'benchmark.monitoring.archive.capturing': 'Archiving',
+  'benchmark.monitoring.archive.finalizing': 'Finalizing archive',
+  'benchmark.monitoring.archive.unavailable': 'Archive unavailable',
+  'benchmark.monitoring.archive.permission': 'No permission to retry archive',
+  'benchmark.monitoring.archive.retryFailed': 'Archive retry failed',
+  'benchmark.monitoring.archive.retry': 'Retry archive',
+  'benchmark.monitoring.archive.help':
+    'Saved monitoring replays this run and its measured phases.',
+  'benchmark.monitoring.archive.size': 'Monitoring archive size: {size}',
+  'benchmark.monitoring.archive.checkpointSize': 'Saved so far: {size}',
+  'benchmark.monitoring.archive.capturedUntil': 'Captured until',
+  'benchmark.monitoring.archive.expiresAt': 'Expires at',
+  'benchmark.monitoring.client': 'Client',
+  'benchmark.monitoring.requestLatency': 'Request latency',
+  'benchmark.monitoring.resourceDrilldownHelp':
+    'Open an accessible current Worker or GPU with this inspection range. Resource details show physical hardware history; recorded names remain the run snapshot.',
+  'benchmark.monitoring.peakSourceChanged': 'Peak source changed',
+  'benchmark.monitoring.peakSourceUnavailable': 'Peak source unavailable',
+  'benchmark.monitoring.peakComparisonDefinition':
+    'Sampled peaks include their source and time. Changes are shown only for matching sources.',
   'benchmark.detail.slo.boundary': 'SLO boundary',
   'benchmark.detail.slo.firstBreachLoad': 'First failing load:',
   'benchmark.detail.slo.measurementUnavailable': 'Measurement unavailable',
@@ -538,5 +581,155 @@ export default {
   'benchmark.form.target.route': 'Route',
   'benchmark.form.target.route.empty':
     'No route fronts a servable LLM in this cluster. Deploy a route, or measure an instance instead.',
-  'benchmark.detail.result.basic': 'Basic'
+  'benchmark.detail.result.basic': 'Basic',
+  'benchmark.monitoring.awaitingStages': 'Waiting for measured load stages',
+  'benchmark.monitoring.recordedRuntime':
+    'Engine observations for the recorded members; these may include other requests. Client stage results and resource statistics retain their measured boundaries.',
+  'benchmark.monitoring.rollingContext':
+    'Trends use a {seconds}s rolling window, which may include observations before the test or between stages.',
+  'benchmark.monitoring.measurement': 'Measurement',
+  'benchmark.monitoring.measurements': 'measurements',
+  'benchmark.monitoring.pointView': 'Measurement view',
+  'benchmark.monitoring.loadComparison': 'Load comparison',
+  'benchmark.monitoring.explorationProcess': 'Exploration process',
+  'benchmark.monitoring.loadComparisonHelp':
+    'Compare measured targets in ascending load order within each input-length workload. Monitoring retains the original samples for each measurement.',
+  'benchmark.monitoring.explorationProcessHelp':
+    'Follow the recorded execution order and search groups. Monitoring uses the real time axis; full run and stage zoom change only the displayed interval.',
+  'benchmark.monitoring.timeLegendHelp':
+    'Legend values show the last valid sample in the displayed interval; hovering or pinning shows the inspected sample.',
+  'benchmark.monitoring.highestMeasuredPass': 'Highest measured SLO pass',
+  'benchmark.monitoring.adjacentBreach': 'Nearest higher breach',
+  'benchmark.monitoring.measuredPeak': 'Measured throughput peak',
+  'benchmark.monitoring.designation.capacity': 'SLO boundary',
+  'benchmark.monitoring.designation.breach': 'Above boundary',
+  'benchmark.monitoring.search.expand': 'Expand range',
+  'benchmark.monitoring.search.refineSlo': 'Refine SLO boundary',
+  'benchmark.monitoring.search.refinePeak': 'Refine throughput range',
+  'benchmark.monitoring.search.manual': 'Manual measurements',
+  'benchmark.monitoring.search.single': 'Single measurement',
+  'benchmark.monitoring.search.probe': 'Saturation probe',
+  'benchmark.monitoring.searchHistoryHelp':
+    'Groups follow recorded measurement order and loads: new highest loads expand the range; points within the observed range refine it. Measurement numbers and monitoring times never change with sorting.',
+  'benchmark.monitoring.executionHelp':
+    'Measurements follow recorded execution order. Their numbers and monitoring times never change with sorting.',
+  'benchmark.monitoring.adjacentLoad': 'Adjacent lower load',
+  'benchmark.monitoring.previousPoint': 'Previous point',
+  'benchmark.monitoring.nextPoint': 'Next point',
+  'benchmark.monitoring.previousMeasurement': 'Previous measurement',
+  'benchmark.monitoring.nextMeasurement': 'Next measurement',
+  'benchmark.monitoring.compareAdjacentLoad': 'Compare adjacent load',
+  'benchmark.monitoring.comparePreviousMeasurement':
+    'Compare previous measurement',
+  'benchmark.monitoring.inputLength': 'Input length',
+  'benchmark.monitoring.title': 'Stages and monitoring',
+  'benchmark.monitoring.stageResults': 'Results by stage',
+  'benchmark.monitoring.stageDetails': 'Stage details',
+  'benchmark.monitoring.concurrencyUnit': 'concurrency',
+  'benchmark.monitoring.stage': 'Stage',
+  'benchmark.monitoring.selectedStage': 'Selected stage',
+  'benchmark.monitoring.resourceObservations': 'Resource observations',
+  'benchmark.monitoring.statistics': 'Benchmark statistics',
+  'benchmark.monitoring.stageComparison': 'Compare stages',
+  'benchmark.monitoring.backResults': 'Back to results',
+  'benchmark.monitoring.previous': 'Previous stage',
+  'benchmark.monitoring.next': 'Next stage',
+  'benchmark.monitoring.designation.recommended': 'Recommended',
+  'benchmark.monitoring.designation.peak': 'Peak',
+  'benchmark.monitoring.designation.declining': 'Decline',
+  'benchmark.monitoring.baseline': 'Baseline',
+  'benchmark.monitoring.custom': 'Select baseline',
+  'benchmark.monitoring.comparePrevious': 'Compare with previous stage',
+  'benchmark.monitoring.compareCharts': 'Compare on charts',
+  'benchmark.monitoring.endComparison': 'End comparison',
+  'benchmark.monitoring.comparisonDefinition':
+    'Client percentiles remain separate stage observations. Resource percentages use percentage-point changes. Missing values and zero baselines show —.',
+  'benchmark.monitoring.metric': 'Metric',
+  'benchmark.monitoring.change': 'Change',
+  'benchmark.monitoring.percentagePoints': 'pp',
+  'benchmark.monitoring.fullRun': 'Full run',
+  'benchmark.monitoring.zoomStage': 'Zoom to stage',
+  'benchmark.monitoring.curveRange': 'Chart time',
+  'benchmark.monitoring.successfulRequests': 'successful requests',
+  'benchmark.monitoring.samplingDefinition':
+    'GPU Avg and peak are sampled across associated devices. KV and CPU show sampled peaks. Memory uses the last sample inside the stage. Shared hardware may include other workloads; missing samples are never filled with zero.',
+  'benchmark.monitoring.instanceResources': 'Instance / resources',
+  'benchmark.monitoring.inference': 'Inference',
+  'benchmark.monitoring.gpuAveragePeak': 'GPU Avg / peak',
+  'benchmark.monitoring.gpuPeak': 'GPU sampled peak',
+  'benchmark.monitoring.kvPeak': 'KV sampled peak',
+  'benchmark.monitoring.cpuPeak': 'CPU sampled peak',
+  'benchmark.monitoring.waitingPeak': 'Waiting sampled peak',
+  'benchmark.monitoring.memoryEnd': 'Memory · stage end / total',
+  'benchmark.monitoring.peakAt': 'Peak time',
+  'benchmark.monitoring.highSamples': 'Samples ≥90%',
+  'benchmark.monitoring.samples': 'Sample count',
+  'benchmark.monitoring.sampling': 'Sampling',
+  'benchmark.monitoring.sampled': 'Observed samples',
+  'benchmark.monitoring.restricted': 'Resource observations are restricted',
+  'benchmark.monitoring.queryFailed': 'Monitoring query failed',
+  'benchmark.monitoring.historyNotRecorded':
+    'Monitoring associations were not recorded for this run; its original benchmark results remain available.',
+  'benchmark.monitoring.historyAssociationNotVisible':
+    'The recorded model or instances are unavailable or not visible; benchmark results remain available.',
+  'benchmark.monitoring.historyAssociationChanged':
+    'Recorded runtime associations have changed; historical monitoring cannot be attributed reliably. Benchmark results remain available.',
+  'benchmark.monitoring.noSamples': 'No samples recorded in this interval',
+  'benchmark.monitoring.noHistory': 'No monitoring history for this interval',
+  'benchmark.monitoring.partial': 'Some monitoring samples are missing',
+  'benchmark.monitoring.timingUnavailable': 'Exact stage timing is unavailable',
+  'benchmark.monitoring.sloUnset': 'SLO not configured',
+  'benchmark.monitoring.insufficient': 'Insufficient data',
+  'benchmark.monitoring.sloPass': '✓ SLO met',
+  'benchmark.monitoring.sloFail': '✕ SLO breached',
+  'benchmark.monitoring.timeline': 'Stage timeline',
+  'benchmark.monitoring.totalThroughput': 'Total throughput',
+  'benchmark.monitoring.instances': 'Instances',
+  'benchmark.monitoring.focus': 'Focus instance',
+  'benchmark.monitoring.allInstances': 'All instances',
+  'benchmark.monitoring.instanceOutput': 'Output throughput by instance',
+  'benchmark.monitoring.instanceLoad':
+    'Running and waiting requests by instance',
+  'benchmark.monitoring.associatedResources': 'Associated resources',
+  'benchmark.monitoring.participation': 'Run participation',
+  'benchmark.monitoring.noVisibleResources':
+    'No authorized resource associations',
+  'benchmark.monitoring.expandAll': 'Expand all',
+  'benchmark.monitoring.collapseAll': 'Collapse all',
+  'benchmark.monitoring.viewData': 'View data',
+  'benchmark.monitoring.backChart': 'Return to chart',
+  'benchmark.monitoring.segmentedHistory':
+    'Long-run history is shown in bounded intervals',
+  'benchmark.monitoring.samplingCoverage': 'Query evaluation coverage',
+  'benchmark.monitoring.peakDevice': 'Peak device',
+  'benchmark.monitoring.associationCaptured': 'Run associations captured',
+  'benchmark.monitoring.resourceChanged':
+    'Instance generation or resources changed',
+  'benchmark.monitoring.loading': 'Loading observations…',
+  'benchmark.monitoring.notLoaded': 'Not queried yet',
+  'benchmark.monitoring.lowerBound': 'Lower bound',
+  'benchmark.monitoring.upperBound': 'Upper bound',
+  'benchmark.monitoring.viewPhaseLatency': 'View request and phase latency',
+  'benchmark.monitoring.refreshMonitoring': 'Refresh observations',
+  'benchmark.monitoring.allMeasurements': 'All measurements',
+  'benchmark.monitoring.zoomMeasurement': 'Zoom to measurement',
+  'benchmark.monitoring.segmentCount': '{count} measurements',
+  'benchmark.monitoring.rawByLoad': 'Original monitoring · segmented by load',
+  'benchmark.monitoring.rawByTime': 'Original monitoring · actual time',
+  'benchmark.monitoring.segmentProgress':
+    'Load ascending · phase progress 0–100% · gaps between measurements',
+  'benchmark.monitoring.segmentHelp':
+    'Each measurement has equal display width, with stage progress from 0–100%. Within each segment, the original samples retain their order, values and rolling statistics window. Durations may differ: slopes across segments do not express elapsed time. Hover to inspect the same original timestamp across charts; click to pin. Zoom to a measurement to see its actual time axis.',
+  'benchmark.monitoring.segmentLegendHelp':
+    'Legend: last valid sample in the selected measurement; hover for the inspected sample.',
+  'benchmark.monitoring.untimedSegments':
+    '{count} measurements have no recorded time bounds',
+  'benchmark.monitoring.originalTime': 'Original time',
+  'benchmark.monitoring.pinnedSample': 'Pinned',
+  'benchmark.monitoring.segmentLegendReadout':
+    'Legend: last valid sample · {measurement}',
+  'benchmark.monitoring.directRouterObservation':
+    'This run connects directly to the PD Router and bypasses the GPUStack gateway. Independent ingress TTFT and request latency are not provided; client results and Router/P/D observations remain available.',
+  'benchmark.monitoring.directInstanceObservation':
+    'This run connects directly to an instance and bypasses the GPUStack gateway. Client results and instance observations remain available.'
 };

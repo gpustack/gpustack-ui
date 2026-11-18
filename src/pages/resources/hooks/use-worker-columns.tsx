@@ -409,7 +409,7 @@ const useWorkerColumns = ({
           </div>
         }
       >
-        <span>
+        <span className={workerCss.versionInfo}>
           {shouldUpgrade ? (
             <IconFont
               type="icon-upgrade"

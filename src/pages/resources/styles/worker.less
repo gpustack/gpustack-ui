@@ -2,6 +2,8 @@
   display: flex;
   align-items: center;
   gap: 4px;
+  min-width: 0;
+  max-width: 100%;
 
   .worker-version {
     color: var(--ant-color-text-tertiary);
@@ -30,6 +32,10 @@
       }
     }
   }
+}
+
+.versionInfo {
+  flex-shrink: 0;
 }
 
 .ipWrapper {

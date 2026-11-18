@@ -6,6 +6,8 @@ export default {
   'routes.table.setAsFallback': 'フォールバックに設定',
   'routes.form.target.title': 'ルーティング先',
   'routes.form.target.add': 'ルーティング先を追加',
+  'routes.form.target.decisionHint':
+    'デシジョンサービス(TypeSafe / Jev プロバイダー)は「ルーティング方法 → ポリシー」で設定します。ここには表示されません。デシジョンプロバイダーは推論ターゲットになれません。ここには利用可能な推論ターゲットを少なくとも 1 つ追加してください。デシジョンエンジンはそれらを評価して選択します。利用可能なターゲットがない場合、このルートはリクエストに応答できません。',
   'routes.form.target.advanced': '詳細',
   'routes.form.target.fallback': 'フォールバック先',
   'routes.form.target.weight': '重み',

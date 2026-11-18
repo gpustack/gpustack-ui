@@ -6,6 +6,8 @@ export default {
   'routes.table.setAsFallback': 'Set as Fallback',
   'routes.form.target.title': 'Route Targets',
   'routes.form.target.add': 'Add Route Target',
+  'routes.form.target.decisionHint':
+    'Decision services (TypeSafe / Jev providers) are configured under Route By → Policy, not here — decision providers cannot serve as inference targets. You must add at least one available inference target here for the decision engine to score and select from; without a reachable target the route cannot serve requests.',
   'routes.form.target.advanced': 'Advanced',
   'routes.form.target.fallback': 'Fallback Route Target',
   'routes.form.target.weight': 'Weight',

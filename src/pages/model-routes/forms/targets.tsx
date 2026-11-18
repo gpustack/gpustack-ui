@@ -1,7 +1,13 @@
 import { PageAction } from '@/config';
+import { modelCategoriesMap } from '@/pages/llmodels/config';
 import ProviderLogo from '@/pages/maas-provider/components/provider-logo';
-import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import {
+  InfoCircleFilled,
+  MinusOutlined,
+  PlusOutlined
+} from '@ant-design/icons';
+import {
+  AlertBlockInfo,
   AutoTooltip,
   CollapseContainer,
   IconFont,
@@ -86,6 +92,14 @@ const TargetsForm = forwardRef((props, ref) => {
   const form = Form.useFormInstance<FormData>();
   const targets = Form.useWatch('targets', form) || [];
   const lbPolicyMode = Form.useWatch('lb_policy_mode', form);
+  // Decision routes: the decision service itself is attached in the Route By
+  // → Policy plugin card, so decision providers never appear in this picker.
+  // The decision service only scores candidates, so at least one inference
+  // target is still required for the route to serve traffic.
+  const routeCategories = Form.useWatch('categories', form);
+  const isDecisionRoute = !!routeCategories?.includes?.(
+    modelCategoriesMap.decision
+  );
   // `=== policy`, not `!== weighted`: Form.useWatch returns undefined on the
   // first frame (it initializes in an effect), and undefined should fall to
   // weighted — the create-flow default — instead of flashing the weight
@@ -503,6 +517,26 @@ const TargetsForm = forwardRef((props, ref) => {
               {intl.formatMessage({ id: 'routes.form.target.add' })}
             </Button>
           </Flex>
+          {isDecisionRoute && (
+            <AlertBlockInfo
+              type="info"
+              icon={
+                <InfoCircleFilled
+                  style={{ color: 'var(--ant-color-info-text)' }}
+                />
+              }
+              // core-ui's current block has no default palette for info.
+              style={{
+                marginBottom: 16,
+                backgroundColor: 'var(--ant-color-info-bg)',
+                borderColor: 'var(--ant-color-info-border)'
+              }}
+              ellipsis={false}
+              message={intl.formatMessage({
+                id: 'routes.form.target.decisionHint'
+              })}
+            />
+          )}
           <div
             style={{
               display: 'flex',

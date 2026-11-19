@@ -346,14 +346,15 @@ const GroundDecision: React.FC<MessageProps> = forwardRef((props, ref) => {
     null
   );
   const [meta, setMeta] = useState<DecisionMeta | null>(null);
-  // Preselected declaratively from ?model=… (e.g. a deployment row's "Open
-  // in Playground"): the initial state doubles as the form's initialValues,
-  // so there is no imperative setFieldsValue effect and no initialized
-  // tracking to race the form's mount. Like the rerank playground, no
-  // default is picked when the param is absent.
-  const [parameters, setParameters] = useState<any>(() => ({
-    model: searchParams.get('model') || ''
-  }));
+  // Like chat, embedding and rerank, prefer ?model=… and fall back to the
+  // first available model as the list loads. An explicit user selection
+  // (including clearing the field) takes precedence over that default.
+  const [selectedModel, setSelectedModel] = useState<string>();
+  const parameters = {
+    model:
+      selectedModel ??
+      (searchParams.get('model') || modelList?.[0]?.value || '')
+  };
   // Uploaded images: base64 payloads + their referencing placeholders. They
   // ride the request as `assets` (and a top-level `images` array for
   // upstream vLLM — see buildImageRequest), never stored server-side.
@@ -862,7 +863,7 @@ const GroundDecision: React.FC<MessageProps> = forwardRef((props, ref) => {
       // its guards fail (a late answer/error from the old model must not
       // land), reset the run state, then adopt the new model.
       cancelCurrentRequest();
-      setParameters({ model: changedValues.model });
+      setSelectedModel(changedValues.model);
       // Answers belong to the model that produced them.
       setAnswers(null);
       setMeta(null);
@@ -1376,7 +1377,7 @@ const GroundDecision: React.FC<MessageProps> = forwardRef((props, ref) => {
           ref={formRef}
           modelList={modelList}
           onValuesChange={onValuesChange}
-          initialValues={parameters}
+          model={parameters.model}
         ></DataForm>
       </RightContainer>
       <ViewCommonCode

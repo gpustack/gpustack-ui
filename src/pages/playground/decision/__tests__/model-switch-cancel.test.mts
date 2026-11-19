@@ -3,9 +3,9 @@ import assert from 'node:assert/strict';
 import test, { mock } from 'node:test';
 import { createElement as h } from 'react';
 
-// P1 regression harness: switching models while a run is in flight must
-// cancel (and invalidate) that run — the old model's late success or
-// failure can no longer update answers, meta, error, or loading.
+// Model defaults must reach both the form and the request. Switching models
+// while a run is in flight must cancel and invalidate that run, so its late
+// success or failure cannot update answers, meta, error, or loading.
 
 interface PendingRequest {
   payload: any;
@@ -14,6 +14,13 @@ interface PendingRequest {
 }
 const pending: PendingRequest[] = [];
 const editors = new Map<string, any>();
+let search = '';
+
+const models = [
+  { value: 'model-a', label: 'model-a' },
+  { value: 'model-b', label: 'model-b' },
+  { value: 'model-c', label: 'model-c' }
+];
 
 // Each requestSource() call is recorded so the test can assert which run
 // was canceled and which token stayed current.
@@ -33,8 +40,7 @@ mock.module('@umijs/max', {
       locale: 'en-US',
       formatMessage: ({ id }: { id: string }) => id
     }),
-    // The page preselects this model declaratively from the param.
-    useSearchParams: () => [new URLSearchParams('model=model-a')]
+    useSearchParams: () => [new URLSearchParams(search)]
   }
 });
 mock.module(new URL('../../apis/index.ts', import.meta.url).href, {
@@ -128,7 +134,24 @@ mock.module(fromRoot('hooks/use-user-settings.ts'), {
   defaultExport: () => ({ isDarkTheme: false })
 });
 
-test('switching models cancels the in-flight run and ignores its late result', async () => {
+type DecisionPageContext = {
+  act: typeof import('react').act;
+  container: HTMLElement;
+  renderModels: (modelList: typeof models, loaded?: boolean) => Promise<void>;
+  primaryButton: () => HTMLButtonElement | undefined;
+  stopButton: () => HTMLButtonElement | null;
+  selectedModel: () => string;
+  setModelSelectValue: (value: string) => void;
+};
+
+const withDecisionPage = async (
+  options: { query?: string; modelList?: typeof models },
+  run: (page: DecisionPageContext) => Promise<void>
+) => {
+  search = options.query || '';
+  pending.length = 0;
+  createdSources.length = 0;
+  editors.clear();
   const dom = new JSDOM('<!doctype html><div id="root"></div>', {
     url: 'http://localhost/'
   });
@@ -159,6 +182,7 @@ test('switching models cancels the in-flight run and ignores its late result', a
       ])
     )
   );
+  let cleanup = async () => {};
   try {
     (dom.window as any).matchMedia ??= (query: string) => ({
       matches: false,
@@ -182,25 +206,25 @@ test('switching models cancels the in-flight run and ignores its late result', a
 
     const container = dom.window.document.getElementById('root')!;
     const root = createRoot(container);
-    await act(async () => {
-      root.render(
-        h(GroundDecision, {
-          modelList: [
-            { value: 'model-a', label: 'model-a' },
-            { value: 'model-b', label: 'model-b' },
-            { value: 'model-c', label: 'model-c' }
-          ],
-          loaded: true
-        })
-      );
-    });
+    cleanup = () => act(async () => root.unmount());
+    const renderModels = async (modelList: typeof models, loaded = true) => {
+      await act(async () => {
+        root.render(h(GroundDecision, { modelList, loaded }));
+      });
+    };
+    await renderModels(options.modelList || models);
 
     const primaryButton = () =>
       Array.from(container.querySelectorAll('button')).find((button) =>
         button.className.includes('ant-btn-primary')
       );
     const stopButton = () =>
-      container.querySelector('button[aria-label="common.button.stop"]');
+      container.querySelector<HTMLButtonElement>(
+        'button[aria-label="common.button.stop"]'
+      );
+    const selectedModel = () =>
+      container.querySelector<HTMLInputElement>('[data-testid="model-select"]')!
+        .value;
     const setModelSelectValue = (value: string) => {
       const input = container.querySelector('[data-testid="model-select"]')!;
       const setter = Object.getOwnPropertyDescriptor(
@@ -211,6 +235,85 @@ test('switching models cancels the in-flight run and ignores its late result', a
       input.dispatchEvent(new dom.window.Event('input', { bubbles: true }));
     };
 
+    await run({
+      act,
+      container,
+      renderModels,
+      primaryButton,
+      stopButton,
+      selectedModel,
+      setModelSelectValue
+    });
+  } finally {
+    await cleanup();
+    globals.forEach((key) => {
+      const descriptor = defined.get(key);
+      if (descriptor) {
+        Object.defineProperty(globalThis, key, descriptor);
+      } else {
+        delete (globalThis as any)[key];
+      }
+    });
+    dom.window.close();
+  }
+};
+
+const submitSelectedModel = async (
+  { act, primaryButton }: DecisionPageContext,
+  expectedModel: string
+) => {
+  const count = pending.length;
+  assert.equal(primaryButton()?.disabled, false);
+  await act(async () => primaryButton()!.click());
+  assert.equal(pending.length, count + 1);
+  const request = pending.at(-1)!;
+  assert.equal(request.payload.model, expectedModel);
+  await act(async () => request.resolve({ answers: {} }));
+};
+
+test('selects the first model after an empty list finishes loading', async () => {
+  await withDecisionPage({ modelList: [] }, async (page) => {
+    assert.equal(page.selectedModel(), '');
+    assert.equal(page.primaryButton()?.disabled, true);
+    await page.renderModels([], false);
+    assert.equal(page.selectedModel(), '');
+    await page.renderModels(models);
+    assert.equal(page.selectedModel(), 'model-a');
+    await submitSelectedModel(page, 'model-a');
+  });
+});
+
+test('keeps the URL-preselected model when the model list arrives', async () => {
+  await withDecisionPage(
+    { query: 'model=model-b', modelList: [] },
+    async (page) => {
+      assert.equal(page.selectedModel(), 'model-b');
+      await page.renderModels(models);
+      assert.equal(page.selectedModel(), 'model-b');
+      await submitSelectedModel(page, 'model-b');
+    }
+  );
+});
+
+test('selects a default on mount and preserves manual selection across list updates', async () => {
+  await withDecisionPage({}, async (page) => {
+    assert.equal(page.selectedModel(), 'model-a');
+    await page.act(async () => page.setModelSelectValue('model-b'));
+    await page.renderModels([models[2], models[1], models[0]]);
+    assert.equal(page.selectedModel(), 'model-b');
+    await submitSelectedModel(page, 'model-b');
+
+    await page.act(async () => page.setModelSelectValue(''));
+    await page.renderModels(models);
+    assert.equal(page.selectedModel(), '');
+    assert.equal(page.primaryButton()?.disabled, true);
+  });
+});
+
+test('switching models cancels the in-flight run and ignores its late result', async () => {
+  await withDecisionPage({ query: 'model=model-a' }, async (page) => {
+    const { act, container, primaryButton, stopButton, setModelSelectValue } =
+      page;
     assert.equal(editors.size, 2);
     const stateEditor = editors.get('playground-decision-state.json');
     const questionsEditor = editors.get('playground-decision-questions.json');
@@ -314,18 +417,5 @@ test('switching models cancels the in-flight run and ignores its late result', a
       'the stale failure is ignored'
     );
     assert.ok(!stopButton(), 'ready to run model-c');
-
-    await act(async () => {
-      root.unmount();
-    });
-  } finally {
-    globals.forEach((key) => {
-      const descriptor = defined.get(key);
-      if (descriptor) {
-        Object.defineProperty(globalThis, key, descriptor);
-      } else {
-        delete (globalThis as any)[key];
-      }
-    });
-  }
+  });
 });

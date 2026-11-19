@@ -125,6 +125,18 @@ mock.module(
     defaultExport: {}
   }
 );
+// View Code stub: captures the serialized samples the page computes so tests
+// can assert the generated curl/Python/Node requests directly.
+let viewCodeProps: { viewCodeContent?: any } | null = null;
+mock.module(
+  new URL('../../components/view-common-code', import.meta.url).href,
+  {
+    defaultExport: (props: any) => {
+      viewCodeProps = props;
+      return null;
+    }
+  }
+);
 mock.module(fromRoot('hooks/use-user-settings.ts'), {
   defaultExport: () => ({ isDarkTheme: false })
 });
@@ -250,6 +262,226 @@ test('image requests carry assets + full data-URL images + the opt-in header', a
       withoutImage.options?.headers?.['TypeSafe-Danger-Zone-Images'],
       undefined
     );
+  } finally {
+    for (const [key, descriptor] of defined) {
+      if (descriptor) {
+        Object.defineProperty(globalThis, key, descriptor);
+      } else {
+        delete (globalThis as any)[key];
+      }
+    }
+    descriptors;
+  }
+});
+
+test('a declared images-only engine gets images and no assets', async () => {
+  // meta.decision_image_input === 'images' is GPUStack's published engine
+  // contract (upstream vLLM's systemone schema forbids extra fields, so an
+  // `assets` key is a 400 before the model runs). The request must drop
+  // `assets` — and the TypeSafe opt-in header, which scopes assets — while
+  // the full data-URL `images` array rides as before.
+  const dom = new JSDOM('<!doctype html><div id="root"></div>', {
+    url: 'http://localhost/'
+  });
+  const defined = new Map<string, PropertyDescriptor | undefined>();
+  const globals = [
+    'window',
+    'document',
+    'navigator',
+    'IS_REACT_ACT_ENVIRONMENT',
+    ...Object.getOwnPropertyNames(dom.window).filter(
+      (key) => !(key in globalThis)
+    )
+  ];
+  const descriptors = globals.map((key) => {
+    defined.set(key, Object.getOwnPropertyDescriptor(globalThis, key));
+    return defined.get(key);
+  });
+  Object.defineProperties(
+    globalThis,
+    Object.fromEntries(
+      globals.map((key) => [
+        key,
+        {
+          configurable: true,
+          value:
+            key === 'IS_REACT_ACT_ENVIRONMENT' ? true : (dom.window as any)[key]
+        }
+      ])
+    )
+  );
+  try {
+    (dom.window as any).matchMedia ??= (query: string) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener() {},
+      removeListener() {},
+      addEventListener() {},
+      removeEventListener() {},
+      dispatchEvent: () => false
+    });
+    (globalThis as any).ResizeObserver ??= class {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    };
+
+    const { act } = await import('react');
+    const { createRoot } = await import('react-dom/client');
+    const { default: GroundDecision } = await import('../page');
+
+    const container = dom.window.document.getElementById('root')!;
+    const root = createRoot(container);
+    await act(async () => {
+      root.render(
+        h(GroundDecision, {
+          modelList: [
+            {
+              value: 'model-a',
+              label: 'model-a',
+              meta: { decision_image_input: 'images' }
+            }
+          ],
+          loaded: true
+        })
+      );
+    });
+
+    await act(async () => {
+      uploadProps?.handleUpdateImgList([{ dataUrl: PNG_DATA_URL }]);
+    });
+    const runButton = () =>
+      Array.from(container.querySelectorAll('button')).find((button) =>
+        button.className.includes('ant-btn-primary')
+      );
+    await act(async () => {
+      runButton()?.click();
+    });
+
+    // The suite shares one calls log; only the LAST request is this test's.
+    const last = calls[calls.length - 1];
+    const payload = last.payload;
+    assert.equal(payload.assets, undefined, 'no assets key for vLLM');
+    assert.deepEqual(payload.images, [PNG_DATA_URL]);
+    assert.equal(
+      last.options?.headers?.['TypeSafe-Danger-Zone-Images'],
+      undefined,
+      'the assets-scoped opt-in header is not sent'
+    );
+  } finally {
+    for (const [key, descriptor] of defined) {
+      if (descriptor) {
+        Object.defineProperty(globalThis, key, descriptor);
+      } else {
+        delete (globalThis as any)[key];
+      }
+    }
+    descriptors;
+  }
+});
+
+test('View Code samples for an images-only engine drop assets and the header', async () => {
+  // Regression for the second serialization path: the View Code modal
+  // computes its own curl/Python/Node samples, which must honor the same
+  // meta.decision_image_input === 'images' contract as the live request —
+  // a top-level `images` array (base64 stubbed, MIME prefix kept), no
+  // `assets` key, and no TypeSafe-Danger-Zone-Images header. Otherwise the
+  // copied sample would still 400 against upstream vLLM.
+  const dom = new JSDOM('<!doctype html><div id="root"></div>', {
+    url: 'http://localhost/'
+  });
+  const defined = new Map<string, PropertyDescriptor | undefined>();
+  const globals = [
+    'window',
+    'document',
+    'navigator',
+    'IS_REACT_ACT_ENVIRONMENT',
+    ...Object.getOwnPropertyNames(dom.window).filter(
+      (key) => !(key in globalThis)
+    )
+  ];
+  const descriptors = globals.map((key) => {
+    defined.set(key, Object.getOwnPropertyDescriptor(globalThis, key));
+    return defined.get(key);
+  });
+  Object.defineProperties(
+    globalThis,
+    Object.fromEntries(
+      globals.map((key) => [
+        key,
+        {
+          configurable: true,
+          value:
+            key === 'IS_REACT_ACT_ENVIRONMENT' ? true : (dom.window as any)[key]
+        }
+      ])
+    )
+  );
+  try {
+    (dom.window as any).matchMedia ??= (query: string) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener() {},
+      removeListener() {},
+      addEventListener() {},
+      removeEventListener() {},
+      dispatchEvent: () => false
+    });
+    (globalThis as any).ResizeObserver ??= class {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    };
+
+    const { act } = await import('react');
+    const { createRoot } = await import('react-dom/client');
+    const { default: GroundDecision } = await import('../page');
+
+    const container = dom.window.document.getElementById('root')!;
+    const root = createRoot(container);
+    await act(async () => {
+      root.render(
+        h(GroundDecision, {
+          modelList: [
+            {
+              value: 'model-a',
+              label: 'model-a',
+              meta: { decision_image_input: 'images' }
+            }
+          ],
+          loaded: true
+        })
+      );
+    });
+
+    await act(async () => {
+      uploadProps?.handleUpdateImgList([{ dataUrl: PNG_DATA_URL }]);
+    });
+
+    const samples = viewCodeProps?.viewCodeContent;
+    assert.ok(samples, 'the View Code modal received its samples');
+    for (const key of ['curlCode', 'pythonCode', 'nodeJsCode'] as const) {
+      const code = samples[key];
+      assert.ok(typeof code === 'string' && code.length > 0, `${key} exists`);
+      assert.ok(
+        code.includes('images'),
+        `${key} carries the top-level images array`
+      );
+      assert.ok(
+        code.includes('data:image/png;base64,<base64-image-data>'),
+        `${key} keeps the data-URL MIME prefix on the stubbed payload`
+      );
+      assert.ok(
+        !code.includes('assets'),
+        `${key} omits the assets key for the images-only contract`
+      );
+      assert.ok(
+        !code.includes('TypeSafe-Danger-Zone-Images'),
+        `${key} omits the TypeSafe opt-in header`
+      );
+    }
   } finally {
     for (const [key, descriptor] of defined) {
       if (descriptor) {

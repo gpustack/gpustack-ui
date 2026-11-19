@@ -8,9 +8,33 @@ import {
   extraRequestInterceptors,
   extraResponseInterceptors
 } from './request.extensions';
+import { queryCurrentUserState } from './services/profile/apis';
 
 //  these APIs do not via the GPUSTACK_API_BASE_URL
 const NoBaseURLAPIs = ['/auth', '/v1', '/version', '/proxy', '/update'];
+
+let requestBasename = '';
+
+export const setRequestBasename = (basename: string) => {
+  requestBasename = basename.replace(/^\/*/, '/').replace(/\/+$/, '');
+};
+
+const isInferenceRequest = (url: string): boolean => {
+  try {
+    // The base only resolves relative URLs; query strings and fragments are
+    // excluded from endpoint classification.
+    const { pathname } = new URL(url, 'http://localhost/');
+    const isV1 = (path: string) => /^\/v1(?:\/|$)/.test(path);
+    return (
+      isV1(pathname) ||
+      (requestBasename !== '' &&
+        pathname.startsWith(`${requestBasename}/`) &&
+        isV1(pathname.slice(requestBasename.length)))
+    );
+  } catch {
+    return false;
+  }
+};
 
 /**
  * Extracts a human-readable message from a FastAPI error `detail`.
@@ -63,6 +87,15 @@ export const requestConfig: RequestConfig = {
         });
       }
       if (response?.status === 401) {
+        // Inference endpoints can forward an upstream provider's 401. Only
+        // the management identity endpoint can establish session expiry.
+        if (isInferenceRequest(error.config?.url || '')) {
+          void queryCurrentUserState().catch(() => {
+            // A management 401 follows the login path below. Other probe
+            // failures do not establish that the console session expired.
+          });
+          return;
+        }
         clearAtomStorage(userAtom);
 
         history.push(DEFAULT_ENTER_PAGE.login, { replace: true });

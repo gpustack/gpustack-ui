@@ -110,7 +110,9 @@ mockSource('../plugins/manager.ts', {
     }
   }
 });
+const setRequestBasename = mock.fn((_basename: string) => {});
 mockSource('../request-config.tsx', {
+  setRequestBasename,
   requestConfig: { errorConfig: { errorHandler: originalErrorHandler } }
 });
 mockSource('../services/profile/apis.ts', {
@@ -454,4 +456,13 @@ test('private request errors delegate the original error and options unchanged',
     assert.equal(handledError, error, pathname);
     assert.equal(handledOptions, options, pathname);
   }
+});
+
+test('renderer passes its deployment basename to request classification', () => {
+  modifyClientRenderOpts({ basename: '/console/' });
+  assert.deepEqual(setRequestBasename.mock.calls.at(-1)?.arguments, [
+    '/console/'
+  ]);
+  modifyClientRenderOpts({});
+  assert.deepEqual(setRequestBasename.mock.calls.at(-1)?.arguments, ['/']);
 });

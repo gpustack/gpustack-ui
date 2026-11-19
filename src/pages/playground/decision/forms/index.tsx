@@ -8,13 +8,13 @@ type DataFormProps = {
   modelList?: Global.BaseOption<string>[];
   onValuesChange?: (changeValues: any, value: Record<string, any>) => void;
   onModelChange?: (model: string) => void;
-  initialValues?: Record<string, any>;
+  model: string;
 };
 
 // The decision playground's parameter panel: a model selector and nothing
 // else — systemone has no tunable inference parameters (temperature etc.).
 const DataForm: React.FC<DataFormProps> = forwardRef(
-  ({ onValuesChange, onModelChange, initialValues, modelList }, ref) => {
+  ({ onValuesChange, onModelChange, model, modelList }, ref) => {
     const [form] = Form.useForm();
 
     useImperativeHandle(ref, () => ({
@@ -34,7 +34,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef(
         <Form
           form={form}
           onValuesChange={onValuesChange}
-          initialValues={initialValues}
+          fields={[{ name: 'model', value: model }]}
         >
           <ModelSelect></ModelSelect>
         </Form>

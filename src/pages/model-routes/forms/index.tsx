@@ -121,24 +121,6 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       initalActiveKeys: [TABKeysMap.BASIC]
     });
 
-  const categories = Form.useWatch('categories', form);
-
-  // A Decision route's decision service (a TypeSafe/Jev provider) is wired in
-  // the policy-mode plugin card, never as an inference target. Creating with
-  // the Decision category pre-selected therefore switches Route By to Policy
-  // so the decision-service card is on the path the user follows instead of
-  // a dead-end "No data" target picker. Edit mode keeps its stored mode.
-  useEffect(() => {
-    if (action !== PageAction.CREATE) {
-      return;
-    }
-    if (categories?.includes?.(modelCategoriesMap.decision)) {
-      if (form.getFieldValue('lb_policy_mode') !== LB_FORM_MODE.policy) {
-        targetsRef.current?.handleLbModeChange?.(LB_FORM_MODE.policy);
-      }
-    }
-  }, [categories, action, form]);
-
   const segmentOptions = [
     {
       value: TABKeysMap.BASIC,

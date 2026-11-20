@@ -30,13 +30,18 @@ import {
 import useProviderRequiredFields from '../hooks/use-provider-required-fields';
 import AdvanceConfig from './advance-config';
 import Basic from './basic';
+import {
+  buildProviderSubmitPayload,
+  normalizeConfig,
+  ProviderSubmitPayload
+} from './serialize-api-tokens';
 import SupportedModels from './supported-models';
 
 interface ProviderFormProps {
   ref?: any;
   action: PageActionType;
   currentData?: ListItem; // Used when action is EDIT
-  onFinish: (values: FormData) => Promise<void>;
+  onFinish: (values: ProviderSubmitPayload) => Promise<void>;
   onFinishFailed?: (errorInfo: any) => void;
 }
 
@@ -115,33 +120,6 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
     !qwenDomain &&
     (modelList || []).some((item: ProviderModel) => item?.category === 'image');
 
-  const formatAPIKeys = (values: FormData) => {
-    const apiTokens = values.api_tokens?.filter?.(
-      (item) => item && item.trim() !== ''
-    );
-    // A decision service's API key is optional — drop empty values instead of
-    // serializing a bogus `{ input: '' }` token.
-    const apiTokenList = _.concat([], values.api_key, apiTokens || []).filter(
-      (item: string) => item && item.trim() !== ''
-    );
-    if (action === PageAction.CREATE) {
-      return apiTokenList.map((item: string) => ({ input: item }));
-    }
-
-    const existingTokens = new Set(
-      (currentData?.api_tokens || []).map((item: { hash: string }) => item.hash)
-    );
-    return apiTokenList.map((item: string) =>
-      existingTokens.has(item) ? { hash: item } : { input: item }
-    );
-  };
-
-  // a cleared optional field means "unset" — the backend treats '' as an
-  // explicitly configured empty value, so send null instead
-  const normalizeConfig = (config: FormData['config']) => {
-    return _.mapValues(config, (value: any) => (value === '' ? null : value));
-  };
-
   // the whole config, provider-specific fields included, so that get-models /
   // test-model hit the upstream the user actually typed in the form
   const getCustomConfig = () => {
@@ -163,23 +141,15 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
   };
 
   const handleOnFinish = (values: FormData) => {
-    const config = {
-      ...normalizeConfig(values.config),
-      ...yaml2Json(advanceRef.current?.getYamlValue() || '')
-    };
     // Note: no config.model fallback here — custom_config YAML already
     // round-trips it, and resurrecting the stored value would override an
     // explicit YAML removal.
-    const data = {
-      ..._.omit(values, ['api_key']),
-      api_tokens: formatAPIKeys(values),
-      config,
-      // For a decision-service provider this list is the decision engine
-      // cache (category "decision") — it may legitimately be empty before the
-      // first fetch.
-      models: _.uniqBy(values.models || [], 'name'),
-      clone_from_id: action === PageAction.COPY ? currentData?.id : undefined
-    };
+    const data = buildProviderSubmitPayload(
+      values,
+      currentData,
+      action,
+      yaml2Json(advanceRef.current?.getYamlValue() || '')
+    );
     onFinish(data);
   };
 
@@ -212,12 +182,14 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       (action === PageAction.EDIT || action === PageAction.COPY) &&
       currentData
     ) {
-      const apiTokensList = _.get(currentData, 'api_tokens', []).map(
-        (item: any) => item.hash || ''
+      // Tokenless providers (api_tokens: [] or null) are legitimate — map to
+      // empty strings so the form renders instead of crashing.
+      const apiTokensList = (currentData?.api_tokens || []).map(
+        (item: { hash?: string } | null) => item?.hash || ''
       );
       const currentProvider = _.get(
         providerRequiredFieldsMap,
-        [currentData.config.type],
+        [currentData.config?.type],
         []
       );
 
@@ -226,11 +198,17 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       );
 
       const customConfigYaml = json2Yaml(
-        _.omit(currentData.config, ['type', ...currentRequiredFields]) || {}
+        _.omit(currentData.config || {}, ['type', ...currentRequiredFields]) ||
+          {}
       );
 
       form.setFieldsValue({
         ...currentData,
+        // antd nested form fields (config.type, ...) expect an object in the
+        // form state — a null config from a malformed record must not leak in.
+        config: currentData.config || {},
+        name: currentData.name || '',
+        description: currentData.description || '',
         models: (currentData.models || []).map((item) => ({
           ...item,
           category: item.category || null

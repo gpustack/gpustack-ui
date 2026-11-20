@@ -1,7 +1,8 @@
 import { PageActionType } from '@/config/types';
 import { FormDrawer, useSubmitLock } from '@gpustack/core-ui';
 import React, { useRef } from 'react';
-import { FormData, MaasProviderItem as ListItem } from '../config/types';
+import { MaasProviderItem as ListItem } from '../config/types';
+import { ProviderSubmitPayload } from '../forms/serialize-api-tokens';
 
 import ProviderForm from '../forms';
 
@@ -10,7 +11,7 @@ type AddModalProps = {
   action: PageActionType;
   open: boolean;
   currentData?: ListItem; // Used when action is EDIT
-  onOk: (values: FormData) => void;
+  onOk: (values: ProviderSubmitPayload) => void;
   onCancel: () => void;
 };
 const AddProvider: React.FC<AddModalProps> = ({
@@ -28,7 +29,7 @@ const AddProvider: React.FC<AddModalProps> = ({
     guard(() => form.current?.submit());
   };
 
-  const handleOnFinish = async (data: FormData) => {
+  const handleOnFinish = async (data: ProviderSubmitPayload) => {
     console.log('handleOnFinish', data);
     await run(() =>
       onOk({

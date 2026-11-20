@@ -15,7 +15,9 @@ import {
   updateProvider
 } from './apis';
 import AddMaasProvider from './components/add-provider-modal';
-import { FormData, MaasProviderItem as ListItem } from './config/types';
+import BoundaryRow from './components/row-error-boundary';
+import { MaasProviderItem as ListItem } from './config/types';
+import { ProviderSubmitPayload } from './forms/serialize-api-tokens';
 import useCreateProvider from './hooks/use-create-provider';
 import useProviderColumns from './hooks/use-provider-columns';
 import useRegisterRoute from './hooks/use-register-route';
@@ -55,7 +57,7 @@ const MaasProvider: React.FC = () => {
     );
   };
 
-  const handleModalOk = async (data: FormData) => {
+  const handleModalOk = async (data: ProviderSubmitPayload) => {
     const params = {
       ...data
     };
@@ -163,6 +165,17 @@ const MaasProvider: React.FC = () => {
             sortDirections={TABLE_SORT_DIRECTIONS}
             showSorterTooltip={false}
             dataSource={dataSource.dataList}
+            // Feeds data-reset-key into the row error boundary: once a broken
+            // record is fixed, its updated_at changes and the failed row
+            // re-arms on the next fetch.
+            onRow={(record) =>
+              ({
+                'data-reset-key': `${record.id}-${record.updated_at ?? ''}`
+              }) as React.HTMLAttributes<HTMLTableRowElement>
+            }
+            components={{
+              body: { row: BoundaryRow }
+            }}
             loading={{
               spinning: dataSource.loading,
               size: 'middle'

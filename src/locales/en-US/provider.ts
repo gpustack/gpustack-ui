@@ -2,6 +2,9 @@ export default {
   'providers.title': 'Providers',
   'providers.button.add': 'Add Provider',
   'providers.button.clone': 'Clone Provider',
+  'providers.row.renderError': 'This item could not be rendered.',
+  'providers.form.tokens.savedTokenlessWarning':
+    'No API key is saved for this provider. Model pulling and testing currently require a key; you can still add models manually.',
   'providers.table.providerName': 'Provider',
   'providers.table.models': 'Models',
   'providers.table.proxy': 'Proxy',

@@ -2,6 +2,9 @@ export default {
   'providers.title': 'Провайдеры',
   'providers.button.add': 'Добавить провайдера',
   'providers.button.clone': 'Клонировать провайдера',
+  'providers.row.renderError': 'Не удалось отобразить этот элемент.',
+  'providers.form.tokens.savedTokenlessWarning':
+    'Для этого провайдера не сохранён API-ключ. Получение и тестирование моделей пока требуют ключ; модели можно добавить вручную.',
   'providers.table.providerName': 'Провайдер',
   'providers.table.models': 'Модели',
   'providers.table.proxy': 'Прокси',

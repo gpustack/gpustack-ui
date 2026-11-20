@@ -1,7 +1,7 @@
 import { PageAction } from '@/config';
 import { MetadataList } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Form } from 'antd';
+import { Form, message } from 'antd';
 import _ from 'lodash';
 import { useRef } from 'react';
 import { useFormContext } from '../config/form-context';
@@ -9,6 +9,7 @@ import { isDecisionServiceType } from '../config/providers';
 import { FormData, ProviderModel } from '../config/types';
 import { useQueryProviderModels } from '../hooks/use-query-provider-models';
 import ModelItem from './model-item';
+import { isSavedTokenless } from './serialize-api-tokens';
 
 const SupportedModels = () => {
   const intl = useIntl();
@@ -51,11 +52,15 @@ const SupportedModels = () => {
     api_key: string;
     [key: string]: any;
   }) => {
-    // A decision service may legitimately run tokenless (self-hosted
-    // endpoints without auth), so only require a truthy key otherwise.
+    // Tokenless is legitimate for decision services and for custom-endpoint
+    // (self-hosted, no-auth) providers — the backend omits the Authorization
+    // header when api_tokens is empty — so only require a truthy key otherwise.
+    const hasCustomEndpoint = Object.entries(current).some(
+      ([key, value]) => key.endsWith('CustomUrl') && !!value
+    );
     return (
       !_.isEqual(current, prevConfigRef.current) &&
-      (current.api_key || isSystemone) &&
+      (current.api_key || isSystemone || hasCustomEndpoint) &&
       current.type
     );
   };
@@ -74,6 +79,19 @@ const SupportedModels = () => {
         api_key: currentAPIKey,
         ...customConfig
       };
+
+      // The saved-provider endpoint (/{id}/get-models) rejects a provider
+      // whose stored token list is empty — warn instead of firing a request
+      // that is guaranteed to fail. Manual model entry still works.
+      if (isSavedTokenless(action, currentData, currentAPIKey)) {
+        message.warning(
+          intl.formatMessage({
+            id: 'providers.form.tokens.savedTokenlessWarning'
+          })
+        );
+        resetProviderModels();
+        return;
+      }
 
       // Avoid repeated requests with the same API key
       if (open && checkConfigChange(currentConfig)) {

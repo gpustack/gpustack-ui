@@ -25,7 +25,22 @@ const Basic: React.FC<{
   const form = Form.useFormInstance<FormData>();
   const { action, resetCustomConfig } = useFormContext();
   const providerType = Form.useWatch(['config', 'type'], form);
+  const configValues = Form.useWatch('config', form) || {};
   const { getRuleMessage } = useAppUtils();
+
+  // A provider pointed at a custom endpoint (openaiCustomUrl,
+  // claudeCustomUrl, ...) may be a self-hosted service without auth — the
+  // backend legitimately serves tokenless providers (it omits the
+  // Authorization header when api_tokens is empty), so the API key is
+  // optional for those configurations, same as for decision services.
+  const hasCustomEndpoint = Object.entries(configValues).some(
+    ([key, value]) => key.endsWith('CustomUrl') && !!value
+  );
+  // One condition shared by the rule and the visual required marker, so the
+  // star can never disagree with validation when a custom endpoint is added
+  // or cleared.
+  const apiKeyRequired =
+    !isDecisionServiceType(providerType) && !hasCustomEndpoint;
 
   const optionRender = (option: any) => {
     return (
@@ -126,13 +141,13 @@ const Basic: React.FC<{
         name="api_key"
         rules={[
           {
-            required: !isDecisionServiceType(providerType),
+            required: apiKeyRequired,
             message: getRuleMessage('input', 'providers.form.tokens.title')
           }
         ]}
       >
         <Password
-          required
+          required={apiKeyRequired}
           visibilityToggle={action !== PageAction.EDIT}
           onBlur={onAPIKeyBlur}
           label={intl.formatMessage({

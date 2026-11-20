@@ -15,6 +15,7 @@ import {
   updateProvider
 } from './apis';
 import AddMaasProvider from './components/add-provider-modal';
+import BoundaryRow from './components/row-error-boundary';
 import { FormData, MaasProviderItem as ListItem } from './config/types';
 import useCreateProvider from './hooks/use-create-provider';
 import useProviderColumns from './hooks/use-provider-columns';
@@ -163,6 +164,9 @@ const MaasProvider: React.FC = () => {
             sortDirections={TABLE_SORT_DIRECTIONS}
             showSorterTooltip={false}
             dataSource={dataSource.dataList}
+            components={{
+              body: { row: BoundaryRow }
+            }}
             loading={{
               spinning: dataSource.loading,
               size: 'middle'

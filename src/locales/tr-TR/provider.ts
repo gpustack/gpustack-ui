@@ -2,6 +2,7 @@ export default {
   'providers.title': 'Sağlayıcılar',
   'providers.button.add': 'Sağlayıcı Ekle',
   'providers.button.clone': 'Sağlayıcıyı Klonla',
+  'providers.row.renderError': 'Bu öğe görüntülenemedi.',
   'providers.table.providerName': 'Sağlayıcı',
   'providers.table.models': 'Modeller',
   'providers.table.proxy': 'Proxy',

@@ -238,7 +238,15 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
       // cascader has nothing to match them against. Only the model level was
       // re-hydrated here, which is why a role's GPU selector opened blank over
       // a selection that was really stored.
-      const roles = rehydrateRoleGpuIds(formData?.roles as any, gpuOptions);
+      //
+      // Read the roles from the LIVE form, not from `formData`: the PD recipe
+      // seeds the role parameter and env lists while this request is in
+      // flight, and `formData` is the snapshot taken when the drawer opened.
+      // Writing that snapshot back drops the seeded rows (and the `__injected`
+      // record they are compared against), which is what made the defaults
+      // flash and then disappear once the inventory settled.
+      const currentRoles = formRef.current?.getFieldsValue?.(true)?.roles;
+      const roles = rehydrateRoleGpuIds(currentRoles as any, gpuOptions);
       if (roles) {
         formRef.current?.setFieldsValue({ roles });
       }

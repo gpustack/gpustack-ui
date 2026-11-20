@@ -2,6 +2,7 @@ export default {
   'providers.title': 'Providers',
   'providers.button.add': 'Add Provider',
   'providers.button.clone': 'Clone Provider',
+  'providers.row.renderError': 'This item could not be rendered.',
   'providers.table.providerName': 'Provider',
   'providers.table.models': 'Models',
   'providers.table.proxy': 'Proxy',

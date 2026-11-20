@@ -51,11 +51,15 @@ const SupportedModels = () => {
     api_key: string;
     [key: string]: any;
   }) => {
-    // A decision service may legitimately run tokenless (self-hosted
-    // endpoints without auth), so only require a truthy key otherwise.
+    // Tokenless is legitimate for decision services and for custom-endpoint
+    // (self-hosted, no-auth) providers — the backend omits the Authorization
+    // header when api_tokens is empty — so only require a truthy key otherwise.
+    const hasCustomEndpoint = Object.entries(current).some(
+      ([key, value]) => key.endsWith('CustomUrl') && !!value
+    );
     return (
       !_.isEqual(current, prevConfigRef.current) &&
-      (current.api_key || isSystemone) &&
+      (current.api_key || isSystemone || hasCustomEndpoint) &&
       current.type
     );
   };

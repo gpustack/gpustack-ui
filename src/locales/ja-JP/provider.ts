@@ -2,6 +2,7 @@ export default {
   'providers.title': 'プロバイダー',
   'providers.button.add': 'プロバイダーを追加',
   'providers.button.clone': 'プロバイダーを複製',
+  'providers.row.renderError': 'このアイテムは表示できません。',
   'providers.table.providerName': 'プロバイダー',
   'providers.table.models': 'モデル',
   'providers.table.proxy': 'プロキシ',

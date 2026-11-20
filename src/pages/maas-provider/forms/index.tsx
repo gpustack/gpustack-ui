@@ -129,7 +129,9 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
     }
 
     const existingTokens = new Set(
-      (currentData?.api_tokens || []).map((item: { hash: string }) => item.hash)
+      (currentData?.api_tokens || [])
+        .map((item: { hash?: string } | null) => item?.hash)
+        .filter(Boolean)
     );
     return apiTokenList.map((item: string) =>
       existingTokens.has(item) ? { hash: item } : { input: item }
@@ -212,12 +214,14 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       (action === PageAction.EDIT || action === PageAction.COPY) &&
       currentData
     ) {
-      const apiTokensList = _.get(currentData, 'api_tokens', []).map(
-        (item: any) => item.hash || ''
+      // Tokenless providers (api_tokens: [] or null) are legitimate — map to
+      // empty strings so the form renders instead of crashing.
+      const apiTokensList = (currentData?.api_tokens || []).map(
+        (item: { hash?: string } | null) => item?.hash || ''
       );
       const currentProvider = _.get(
         providerRequiredFieldsMap,
-        [currentData.config.type],
+        [currentData.config?.type],
         []
       );
 
@@ -226,11 +230,17 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       );
 
       const customConfigYaml = json2Yaml(
-        _.omit(currentData.config, ['type', ...currentRequiredFields]) || {}
+        _.omit(currentData.config || {}, ['type', ...currentRequiredFields]) ||
+          {}
       );
 
       form.setFieldsValue({
         ...currentData,
+        // antd nested form fields (config.type, ...) expect an object in the
+        // form state — a null config from a malformed record must not leak in.
+        config: currentData.config || {},
+        name: currentData.name || '',
+        description: currentData.description || '',
         models: (currentData.models || []).map((item) => ({
           ...item,
           category: item.category || null

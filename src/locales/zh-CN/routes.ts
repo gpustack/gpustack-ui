@@ -6,8 +6,6 @@ export default {
   'routes.table.setAsFallback': 'Fallback',
   'routes.form.target.title': '路由目标',
   'routes.form.target.add': '添加路由目标',
-  'routes.form.target.decisionHint':
-    '决策服务商(TypeSafe / Jev)请在「路由方式 → 策略」中配置,此处不展示——决策服务商不能作为推理目标。此处必须至少添加一个可用的推理目标,决策引擎将从中评分选择;若无可用的推理目标,路由将无法提供服务。',
   'routes.form.target.advanced': '高级',
   'routes.form.target.fallback': 'Fallback 路由目标',
   'routes.form.target.weight': '权重',

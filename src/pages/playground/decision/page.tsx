@@ -638,16 +638,14 @@ const GroundDecision: React.FC<MessageProps> = forwardRef((props, ref) => {
     // a declared "images" engine gets no `assets` key at all, a declared
     // "assets" engine gets no top-level `images` array.
     const contract = imageInputContract(parameters.model);
-    const imagesOnly = contract === 'images' && Object.keys(assets).length > 0;
-    const assetsOnly = contract === 'assets' && Object.keys(assets).length > 0;
     if (Object.keys(assets).length > 0) {
-      if (!imagesOnly) {
+      if (contract !== 'images') {
         codeParameters.assets = _.mapValues(assets, (asset: any) => ({
           ...asset,
           data_base64: '<base64-image-data>'
         }));
       }
-      if (!assetsOnly) {
+      if (contract !== 'assets') {
         codeParameters.images = topLevelImages.map((dataUrl) =>
           dataUrl.replace(
             /^(data:image\/[a-z0-9.+-]+;base64,).*/,
@@ -660,7 +658,7 @@ const GroundDecision: React.FC<MessageProps> = forwardRef((props, ref) => {
       api: SYSTEMONE_API,
       parameters: codeParameters,
       headers:
-        Object.keys(assets).length > 0 && !imagesOnly
+        Object.keys(assets).length > 0 && contract !== 'images'
           ? [['TypeSafe-Danger-Zone-Images', 'true']]
           : []
     });
@@ -803,20 +801,18 @@ const GroundDecision: React.FC<MessageProps> = forwardRef((props, ref) => {
       const { assets, topLevelImages } = buildImageRequest();
       const withImages = Object.keys(assets).length > 0;
       const contract = imageInputContract(parameters.model);
-      const imagesOnly = withImages && contract === 'images';
-      const assetsOnly = withImages && contract === 'assets';
       if (withImages) {
-        if (!assetsOnly) {
+        if (contract !== 'assets') {
           requestBody.images = topLevelImages;
         }
-        if (!imagesOnly) {
+        if (contract !== 'images') {
           requestBody.assets = assets;
         }
       }
       // The opt-in image header, attached whenever assets are present
       // (issue #6622 item 3); the gateway passes it through.
       const imageHeaders =
-        withImages && !imagesOnly
+        withImages && contract !== 'images'
           ? { 'TypeSafe-Danger-Zone-Images': 'true' }
           : undefined;
       const res: any = await decisionQuery(requestBody, {

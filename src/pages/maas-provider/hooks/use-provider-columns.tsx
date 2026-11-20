@@ -27,7 +27,8 @@ const useProviderColumns = (
       return rowActionList.filter((action) => {
         if (action.key === 'registerRoute') {
           // A decision service is not an inference backend — its cached
-          // "models" are decision engines, never route targets.
+          // "models" are decision engines; useRegisterRoute would seed a
+          // provider target the backend rejects as an inference target.
           if (isDecisionServiceType(record.config?.type)) {
             return false;
           }

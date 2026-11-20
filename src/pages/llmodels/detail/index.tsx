@@ -1,5 +1,5 @@
 import { HeaderLeft } from '@gpustack/core-ui';
-import { useIntl, useSearchParams } from '@umijs/max';
+import { useAccess, useIntl, useSearchParams } from '@umijs/max';
 import { Button, Flex, Result, Skeleton, Tabs } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 import PageBreadcrumb from '../../_components/page-breadcrumb';
@@ -22,10 +22,12 @@ import {
 import InstancesTab from './instances-tab';
 import MonitoringTab, { type MonitoringTabHandle } from './monitoring-tab';
 import OverviewTab from './overview-tab';
+import RequestTracesTab from './request-traces-tab';
 
 const DetailPage = ({ id, tenant }: { id: number; tenant: string }) => {
   const intl = useIntl();
   const data = useMonitoringData(id, tenant);
+  const { canSeeAdmin } = useAccess();
   const [tab, updateTab] = useState<DetailTab>('overview');
   const setTab = (next: DetailTab) => {
     data.changeTabScope(next);
@@ -117,6 +119,20 @@ const DetailPage = ({ id, tenant }: { id: number; tenant: string }) => {
                   label: t('monitoring'),
                   children: <MonitoringTab ref={monitorRef} />
                 },
+                ...(canSeeAdmin
+                  ? [
+                      {
+                        key: 'request-traces',
+                        label: intl.formatMessage({
+                          id: 'requestTracing.title'
+                        }),
+                        destroyOnHidden: true,
+                        children: (
+                          <RequestTracesTab modelId={id} tenant={tenant} />
+                        )
+                      }
+                    ]
+                  : []),
                 {
                   key: 'instances',
                   label: t('instances'),

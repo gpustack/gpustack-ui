@@ -126,4 +126,5 @@ export type DetailTab =
   | 'monitoring'
   | 'instances'
   | 'gpu'
-  | 'configuration';
+  | 'configuration'
+  | 'request-traces';

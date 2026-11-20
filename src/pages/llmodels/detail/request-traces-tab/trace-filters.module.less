@@ -1,0 +1,44 @@
+.filterForm {
+  :global(.ant-form-item) {
+    margin-block-end: 0;
+  }
+
+  :global(.ant-form-item-row) {
+    flex-wrap: nowrap;
+  }
+
+  :global(.ant-form-item-label) {
+    flex: none;
+    padding-inline-end: var(--ant-padding-xs);
+    padding-block-end: 0;
+
+    > label {
+      color: var(--ant-color-text-secondary);
+      white-space: nowrap;
+    }
+  }
+
+  :global(.ant-form-item-control) {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+}
+
+.range :global(.ant-btn-icon-only) {
+  flex-shrink: 0;
+}
+
+.identifier {
+  flex: 1.15 1 280px;
+  min-width: min(100%, 260px);
+}
+
+.outcome {
+  flex: 0.75 1 184px;
+  min-width: min(100%, 184px);
+}
+
+.instance {
+  flex: 1.2 1 276px;
+  min-width: min(100%, 260px);
+}

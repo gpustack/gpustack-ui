@@ -1,5 +1,6 @@
 import { request } from '@umijs/max';
-import { FormData, MaasProviderItem } from '../config/types';
+import { MaasProviderItem } from '../config/types';
+import { ProviderSubmitPayload } from '../forms/serialize-api-tokens';
 
 export const MAAS_PROVIDERS_API = '/model-providers';
 
@@ -20,14 +21,17 @@ export async function queryMaasProviders(
   });
 }
 
-export async function createProvider(params: { data: FormData }) {
+export async function createProvider(params: { data: ProviderSubmitPayload }) {
   return request(`${MAAS_PROVIDERS_API}`, {
     method: 'POST',
     data: params.data
   });
 }
 
-export async function updateProvider(params: { id: number; data: FormData }) {
+export async function updateProvider(params: {
+  id: number;
+  data: ProviderSubmitPayload;
+}) {
   return request(`${MAAS_PROVIDERS_API}/${params.id}`, {
     method: 'PUT',
     data: params.data

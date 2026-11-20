@@ -2,6 +2,9 @@ export default {
   'providers.title': '提供商',
   'providers.button.add': '添加提供商',
   'providers.button.clone': '克隆提供商',
+  'providers.row.renderError': '该条目无法渲染。',
+  'providers.form.tokens.savedTokenlessWarning':
+    '该提供商尚未保存 API Key。拉取与测试模型目前需要 Key，你可以手动添加模型。',
   'providers.table.providerName': '提供商',
   'providers.table.models': '模型',
   'providers.table.proxy': '代理',

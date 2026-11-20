@@ -7,7 +7,7 @@ import {
 } from '@ant-design/icons';
 import { AutoComplete, Select as SealSelect } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Button, Form, Tooltip } from 'antd';
+import { Button, Form, message, Tooltip } from 'antd';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import { useFormContext } from '../config/form-context';
@@ -17,6 +17,7 @@ import {
   useTestDecisionModel,
   useTestProviderModel
 } from '../hooks/use-query-provider-models';
+import { isSavedTokenless } from './serialize-api-tokens';
 
 const SelectWrapper = styled.div`
   width: 100%;
@@ -85,6 +86,16 @@ const ModelItem: React.FC<ModelItemProps> = ({
   };
 
   const handleTestModel = async () => {
+    // The saved-provider endpoint (/{id}/test-model) rejects a provider whose
+    // stored token list is empty — warn instead of firing a doomed request.
+    if (isSavedTokenless(action, currentData, form.getFieldValue('api_key'))) {
+      message.warning(
+        intl.formatMessage({
+          id: 'providers.form.tokens.savedTokenlessWarning'
+        })
+      );
+      return;
+    }
     const proxyConfigEnabled = form.getFieldValue('proxy_enabled');
     const customConfig = getCustomConfig?.();
     const res = await runTestModel({
@@ -116,6 +127,17 @@ const ModelItem: React.FC<ModelItemProps> = ({
   // along here.
   const handleTestDecisionModel = async () => {
     try {
+      // Same saved-tokenless limitation as the inference test above.
+      if (
+        isSavedTokenless(action, currentData, form.getFieldValue('api_key'))
+      ) {
+        message.warning(
+          intl.formatMessage({
+            id: 'providers.form.tokens.savedTokenlessWarning'
+          })
+        );
+        return;
+      }
       const apiKey = generateCurrentAPIKey(
         form.getFieldValue('api_key')
       ) as string;

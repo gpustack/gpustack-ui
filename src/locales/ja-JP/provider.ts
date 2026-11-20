@@ -2,6 +2,9 @@ export default {
   'providers.title': 'プロバイダー',
   'providers.button.add': 'プロバイダーを追加',
   'providers.button.clone': 'プロバイダーを複製',
+  'providers.row.renderError': 'このアイテムは表示できません。',
+  'providers.form.tokens.savedTokenlessWarning':
+    'このプロバイダーには API キーが保存されていません。モデルの取得とテストには現在キーが必要です。モデルは手動で追加できます。',
   'providers.table.providerName': 'プロバイダー',
   'providers.table.models': 'モデル',
   'providers.table.proxy': 'プロキシ',

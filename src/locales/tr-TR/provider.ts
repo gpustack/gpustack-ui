@@ -2,6 +2,9 @@ export default {
   'providers.title': 'Sağlayıcılar',
   'providers.button.add': 'Sağlayıcı Ekle',
   'providers.button.clone': 'Sağlayıcıyı Klonla',
+  'providers.row.renderError': 'Bu öğe görüntülenemedi.',
+  'providers.form.tokens.savedTokenlessWarning':
+    'Bu sağlayıcı için bir API anahtarı kaydedilmedi. Model çekme ve test etme şu anda anahtar gerektiriyor; modelleri el ile ekleyebilirsiniz.',
   'providers.table.providerName': 'Sağlayıcı',
   'providers.table.models': 'Modeller',
   'providers.table.proxy': 'Proxy',

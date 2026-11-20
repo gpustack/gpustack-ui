@@ -1,13 +1,9 @@
 import { PageAction } from '@/config';
 import { modelCategoriesMap } from '@/pages/llmodels/config';
 import ProviderLogo from '@/pages/maas-provider/components/provider-logo';
+import { isDecisionServiceType } from '@/pages/maas-provider/config/providers';
+import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import {
-  InfoCircleFilled,
-  MinusOutlined,
-  PlusOutlined
-} from '@ant-design/icons';
-import {
-  AlertBlockInfo,
   AutoTooltip,
   CollapseContainer,
   IconFont,
@@ -23,6 +19,7 @@ import {
   forwardRef,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useRef,
   useState
 } from 'react';
@@ -92,13 +89,24 @@ const TargetsForm = forwardRef((props, ref) => {
   const form = Form.useFormInstance<FormData>();
   const targets = Form.useWatch('targets', form) || [];
   const lbPolicyMode = Form.useWatch('lb_policy_mode', form);
-  // Decision routes: the decision service itself is attached in the Route By
-  // → Policy plugin card, so decision providers never appear in this picker.
-  // The decision service only scores candidates, so at least one inference
-  // target is still required for the route to serve traffic.
+  // Decision-service providers (TypeSafe / Jev) are legitimate route targets
+  // only for routes in the decision category (gpustack/gpustack#6813). The
+  // source-models hook is category-agnostic (shared by every route form), so
+  // the category scoping happens here, at the form boundary: a decision
+  // provider's "models" are decision engines — never inference backends — and
+  // an ordinary LLM route must not be saved with one as its target.
   const routeCategories = Form.useWatch('categories', form);
   const isDecisionRoute = !!routeCategories?.includes?.(
     modelCategoriesMap.decision
+  );
+  const selectableSourceModels = useMemo(
+    () =>
+      isDecisionRoute
+        ? sourceModels
+        : sourceModels.filter(
+            (group) => !isDecisionServiceType((group as any).providerType)
+          ),
+    [sourceModels, isDecisionRoute]
   );
   // `=== policy`, not `!== weighted`: Form.useWatch returns undefined on the
   // first frame (it initializes in an effect), and undefined should fall to
@@ -194,7 +202,7 @@ const TargetsForm = forwardRef((props, ref) => {
     // is fetched at mount, so the lookup is available by the time the user
     // reaches the LB section.
     getTargetModelNames: (): string[] => {
-      const deployments = sourceModels.find(
+      const deployments = selectableSourceModels.find(
         (group) => group.value === 'deployments'
       );
       const targetList: FormData['targets'] =
@@ -290,7 +298,9 @@ const TargetsForm = forwardRef((props, ref) => {
     if (!value || value.length === 0) {
       return intl.formatMessage({ id: 'providers.form.target.placeholder' });
     }
-    const parent = sourceModels.find((model: any) => model.value === value[0]);
+    const parent = selectableSourceModels.find(
+      (model: any) => model.value === value[0]
+    );
     const child = parent?.children?.find(
       (item: any) => item.value === value[1]
     );
@@ -367,7 +377,7 @@ const TargetsForm = forwardRef((props, ref) => {
         .map((item) => buildKey(item.value))
     );
 
-    return sourceModels
+    return selectableSourceModels
       .map((model) => {
         const children = model.children?.filter((child) => {
           const key = buildKey([child.data?.parentId, child.value]);
@@ -386,7 +396,7 @@ const TargetsForm = forwardRef((props, ref) => {
   const renderPrefix = (value: any[]) => {
     // Reserve space for the logo in both the selected label and search input.
     const providerType = _.get(
-      sourceModels.find((model) => model.value === value?.[0]),
+      selectableSourceModels.find((model) => model.value === value?.[0]),
       'providerType'
     );
 
@@ -517,26 +527,7 @@ const TargetsForm = forwardRef((props, ref) => {
               {intl.formatMessage({ id: 'routes.form.target.add' })}
             </Button>
           </Flex>
-          {isDecisionRoute && (
-            <AlertBlockInfo
-              type="info"
-              icon={
-                <InfoCircleFilled
-                  style={{ color: 'var(--ant-color-info-text)' }}
-                />
-              }
-              // core-ui's current block has no default palette for info.
-              style={{
-                marginBottom: 16,
-                backgroundColor: 'var(--ant-color-info-bg)',
-                borderColor: 'var(--ant-color-info-border)'
-              }}
-              ellipsis={false}
-              message={intl.formatMessage({
-                id: 'routes.form.target.decisionHint'
-              })}
-            />
-          )}
+
           <div
             style={{
               display: 'flex',

@@ -494,6 +494,234 @@ test('View Code samples for an images-only engine drop assets and the header', a
   }
 });
 
+test('assets-only engine: live request carries assets + header, no images array', async () => {
+  // The hosted TypeSafe / vllm-sr spelling: images ride the `assets` map
+  // ONLY. A top-level `images` array alongside it is rejected with
+  // api_usage_error, and the TypeSafe-Danger-Zone-Images opt-in header is
+  // required for the gateway to pass the assets through.
+  const dom = new JSDOM('<!doctype html><div id="root"></div>', {
+    url: 'http://localhost:8080/?model=model-a'
+  });
+  const defined = new Map<string, PropertyDescriptor | undefined>();
+  const globals = [
+    'window',
+    'document',
+    'navigator',
+    'IS_REACT_ACT_ENVIRONMENT',
+    ...Object.getOwnPropertyNames(dom.window).filter(
+      (key) => !(key in globalThis)
+    )
+  ];
+  const descriptors = globals.map((key) => {
+    defined.set(key, Object.getOwnPropertyDescriptor(globalThis, key));
+    return defined.get(key);
+  });
+  Object.defineProperties(
+    globalThis,
+    Object.fromEntries(
+      globals.map((key) => [
+        key,
+        {
+          configurable: true,
+          value:
+            key === 'IS_REACT_ACT_ENVIRONMENT' ? true : (dom.window as any)[key]
+        }
+      ])
+    )
+  );
+  try {
+    (dom.window as any).matchMedia ??= (query: string) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener() {},
+      removeListener() {},
+      addEventListener() {},
+      removeEventListener() {},
+      dispatchEvent: () => false
+    });
+    (globalThis as any).ResizeObserver ??= class {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    };
+
+    const { act } = await import('react');
+    const { createRoot } = await import('react-dom/client');
+    const { default: GroundDecision } = await import('../page');
+
+    const container = dom.window.document.getElementById('root')!;
+    const root = createRoot(container);
+    await act(async () => {
+      root.render(
+        h(GroundDecision, {
+          modelList: [
+            {
+              value: 'model-a',
+              label: 'model-a',
+              meta: { decision_image_input: 'assets' }
+            }
+          ],
+          loaded: true
+        })
+      );
+    });
+
+    await act(async () => {
+      uploadProps?.handleUpdateImgList([{ dataUrl: PNG_DATA_URL }]);
+    });
+    const runButton = () =>
+      Array.from(container.querySelectorAll('button')).find((button) =>
+        button.className.includes('ant-btn-primary')
+      );
+    await act(async () => {
+      runButton()?.click();
+    });
+
+    // The suite shares one calls log; only the LAST request is this test's.
+    const last = calls[calls.length - 1];
+    const payload = last.payload;
+    assert.equal(payload.images, undefined, 'no top-level images array');
+    const placeholders = Object.keys(payload.assets || {});
+    assert.equal(placeholders.length, 1, 'the assets map carries the image');
+    assert.deepEqual(
+      {
+        type: payload.assets[placeholders[0]].type,
+        format: payload.assets[placeholders[0]].format,
+        data_base64: payload.assets[placeholders[0]].data_base64
+      },
+      { type: 'image', format: 'png', data_base64: 'QUJD' },
+      'the asset carries raw base64, not a data URL'
+    );
+    assert.equal(
+      last.options?.headers?.['TypeSafe-Danger-Zone-Images'],
+      'true',
+      'the opt-in header is attached'
+    );
+  } finally {
+    for (const [key, descriptor] of defined) {
+      if (descriptor) {
+        Object.defineProperty(globalThis, key, descriptor);
+      } else {
+        delete (globalThis as any)[key];
+      }
+    }
+    descriptors;
+  }
+});
+
+test('View Code samples for an assets-only engine drop the images array', async () => {
+  // The assets-only contract mirrored on the serialization side: the View
+  // Code samples must carry the stubbed `assets` map and the
+  // TypeSafe-Danger-Zone-Images header, and no top-level `images` array —
+  // otherwise the copied sample would be rejected with api_usage_error by
+  // the hosted TypeSafe / vllm-sr engines.
+  const dom = new JSDOM('<!doctype html><div id="root"></div>', {
+    url: 'http://localhost:8080/?model=model-a'
+  });
+  const defined = new Map<string, PropertyDescriptor | undefined>();
+  const globals = [
+    'window',
+    'document',
+    'navigator',
+    'IS_REACT_ACT_ENVIRONMENT',
+    ...Object.getOwnPropertyNames(dom.window).filter(
+      (key) => !(key in globalThis)
+    )
+  ];
+  const descriptors = globals.map((key) => {
+    defined.set(key, Object.getOwnPropertyDescriptor(globalThis, key));
+    return defined.get(key);
+  });
+  Object.defineProperties(
+    globalThis,
+    Object.fromEntries(
+      globals.map((key) => [
+        key,
+        {
+          configurable: true,
+          value:
+            key === 'IS_REACT_ACT_ENVIRONMENT' ? true : (dom.window as any)[key]
+        }
+      ])
+    )
+  );
+  try {
+    (dom.window as any).matchMedia ??= (query: string) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener() {},
+      removeListener() {},
+      addEventListener() {},
+      removeEventListener() {},
+      dispatchEvent: () => false
+    });
+    (globalThis as any).ResizeObserver ??= class {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    };
+
+    const { act } = await import('react');
+    const { createRoot } = await import('react-dom/client');
+    const { default: GroundDecision } = await import('../page');
+
+    const container = dom.window.document.getElementById('root')!;
+    const root = createRoot(container);
+    await act(async () => {
+      root.render(
+        h(GroundDecision, {
+          modelList: [
+            {
+              value: 'model-a',
+              label: 'model-a',
+              meta: { decision_image_input: 'assets' }
+            }
+          ],
+          loaded: true
+        })
+      );
+    });
+
+    await act(async () => {
+      uploadProps?.handleUpdateImgList([{ dataUrl: PNG_DATA_URL }]);
+    });
+
+    const samples = viewCodeProps?.viewCodeContent;
+    assert.ok(samples, 'the View Code modal received its samples');
+    for (const key of ['curlCode', 'pythonCode', 'nodeJsCode'] as const) {
+      const code = samples[key];
+      assert.ok(typeof code === 'string' && code.length > 0, `${key} exists`);
+      assert.ok(
+        code.includes('assets'),
+        `${key} carries the assets map`
+      );
+      assert.ok(
+        code.includes('<base64-image-data>'),
+        `${key} stubs the base64 payload`
+      );
+      assert.ok(
+        !code.includes('"images"') && !code.includes("'images'"),
+        `${key} omits the top-level images array for the assets-only contract`
+      );
+      assert.ok(
+        code.includes('TypeSafe-Danger-Zone-Images'),
+        `${key} carries the TypeSafe opt-in header`
+      );
+    }
+  } finally {
+    for (const [key, descriptor] of defined) {
+      if (descriptor) {
+        Object.defineProperty(globalThis, key, descriptor);
+      } else {
+        delete (globalThis as any)[key];
+      }
+    }
+    descriptors;
+  }
+});
+
 test('placeholder allocation avoids in-use tokens; deletion strips precisely', async () => {
   const dom = new JSDOM('<!doctype html><div id="root"></div>', {
     url: 'http://localhost/'

@@ -6,8 +6,6 @@ export default {
   'routes.table.setAsFallback': 'Yedek Olarak Ayarla',
   'routes.form.target.title': 'Yönlendirme Hedefleri',
   'routes.form.target.add': 'Yönlendirme Hedefi Ekle',
-  'routes.form.target.decisionHint':
-    'Karar servisleri (TypeSafe / Jev sağlayıcıları) burada değil «Yönlendirme Şekli → Politika» bölümünde yapılandırılır — karar sağlayıcıları çıkarım hedefi olamaz. Buraya en az bir kullanılabilir çıkarım hedefi eklemelisiniz; karar motoru aralarından puanlayarak seçim yapar. Erişilebilir bir hedef olmadan rota isteklere yanıt veremez.',
   'routes.form.target.advanced': 'Gelişmiş',
   'routes.form.target.fallback': 'Yedek Yönlendirme Hedefi',
   'routes.form.target.weight': 'Ağırlık',

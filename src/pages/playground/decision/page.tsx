@@ -613,9 +613,11 @@ const GroundDecision: React.FC<MessageProps> = forwardRef((props, ref) => {
   // GPUStack through /v1/models?with_meta (meta.decision_image_input):
   // "images" means the engine's systemone schema accepts only the top-level
   // `images` array — upstream vLLM (>= 0.32) forbids extra fields, so also
-  // sending `assets` is a 400 before the model runs. A missing key is "no
-  // declaration": keep both fields, which the undeclared engines observed
-  // so far (TypeSafe-hosted, vllm-sr d3) tolerate.
+  // sending `assets` is a 400 before the model runs. "assets" means the
+  // hosted TypeSafe spelling: images ride the `assets` map only, and a
+  // top-level `images` array alongside it is rejected with
+  // api_usage_error. A missing key is "no declaration": keep both fields,
+  // which the undeclared engines observed so far (vllm-sr d3) tolerate.
   const imageInputContract = (model: string): string | undefined =>
     (modelList?.find((item: any) => item.value === model) as any)?.meta
       ?.decision_image_input;
@@ -633,10 +635,11 @@ const GroundDecision: React.FC<MessageProps> = forwardRef((props, ref) => {
     // `images` stub keeps each data URL's MIME prefix — a non-data-URL
     // entry fails vLLM's media validation if the sample is copied as-is.
     // The same engine contract as the live request (imageInputContract):
-    // a declared "images" engine gets no `assets` key at all.
-    const imagesOnly =
-      imageInputContract(parameters.model) === 'images' &&
-      Object.keys(assets).length > 0;
+    // a declared "images" engine gets no `assets` key at all, a declared
+    // "assets" engine gets no top-level `images` array.
+    const contract = imageInputContract(parameters.model);
+    const imagesOnly = contract === 'images' && Object.keys(assets).length > 0;
+    const assetsOnly = contract === 'assets' && Object.keys(assets).length > 0;
     if (Object.keys(assets).length > 0) {
       if (!imagesOnly) {
         codeParameters.assets = _.mapValues(assets, (asset: any) => ({
@@ -644,12 +647,14 @@ const GroundDecision: React.FC<MessageProps> = forwardRef((props, ref) => {
           data_base64: '<base64-image-data>'
         }));
       }
-      codeParameters.images = topLevelImages.map((dataUrl) =>
-        dataUrl.replace(
-          /^(data:image\/[a-z0-9.+-]+;base64,).*/,
-          '$1<base64-image-data>'
-        )
-      );
+      if (!assetsOnly) {
+        codeParameters.images = topLevelImages.map((dataUrl) =>
+          dataUrl.replace(
+            /^(data:image\/[a-z0-9.+-]+;base64,).*/,
+            '$1<base64-image-data>'
+          )
+        );
+      }
     }
     return generateDecisionCode({
       api: SYSTEMONE_API,
@@ -793,13 +798,17 @@ const GroundDecision: React.FC<MessageProps> = forwardRef((props, ref) => {
       };
       // Images ride `assets` and/or a top-level `images` array per the
       // selected engine's published contract (see imageInputContract):
-      // "images" engines get only the array, everyone else gets both.
+      // "images" engines get only the array, "assets" engines get only the
+      // map, everyone else gets both.
       const { assets, topLevelImages } = buildImageRequest();
       const withImages = Object.keys(assets).length > 0;
-      const imagesOnly =
-        withImages && imageInputContract(parameters.model) === 'images';
+      const contract = imageInputContract(parameters.model);
+      const imagesOnly = withImages && contract === 'images';
+      const assetsOnly = withImages && contract === 'assets';
       if (withImages) {
-        requestBody.images = topLevelImages;
+        if (!assetsOnly) {
+          requestBody.images = topLevelImages;
+        }
         if (!imagesOnly) {
           requestBody.assets = assets;
         }

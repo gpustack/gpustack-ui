@@ -1,152 +1,120 @@
-import { extractErrorMessage } from '@/pages/playground/config';
-import { createAxiosToken, useOverlayScroller } from '@gpustack/core-ui';
-import { useIntl } from '@umijs/max';
-import _ from 'lodash';
-import { useEffect, useRef, useState } from 'react';
-import { createVideo } from '../apis';
+import { setRouteCache } from '@/atoms/route-cache';
+import routeCachekey from '@/config/route-cachekey';
+import { readResponseError } from '@/utils/download-stream';
+import { useOverlayScroller } from '@gpustack/core-ui';
+import { useLocation } from '@umijs/max';
+import { useEffect, useRef, useState, type RefObject } from 'react';
+import { extractErrorMessage } from '../config';
+import { generateVideo } from '../video/video-generation';
+import { createVideoPollingController } from '../video/video-polling';
 
-export default function useTextVideo(props: any) {
-  const intl = useIntl();
-  const { scroller } = props;
+export default function useTextVideo(scroller: RefObject<HTMLDivElement>) {
   const [loading, setLoading] = useState(false);
-  const [tokenResult, setTokenResult] = useState<any>(null);
-  const [videoList, setVideoList] = useState<
-    {
-      dataUrl: string;
-      uid: number;
-      span?: number;
-      loading?: boolean;
-      progress?: number;
-      preview?: boolean;
-    }[]
-  >([]);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [videoUrl, setVideoUrl] = useState('');
+  const [progress, setProgress] = useState<number>();
   const [currentPrompt, setCurrentPrompt] = useState('');
-  const messageId = useRef<number>(0);
-  const requestToken = useRef<any>(null);
+  const requestRef = useRef<AbortController | null>(null);
+  const [polling] = useState(createVideoPollingController);
+  const { pathname } = useLocation();
   const { initialize } = useOverlayScroller();
-  const requestIdRef = useRef<number>(0);
+
+  const setGenerating = (running: boolean) => {
+    setLoading(running);
+    setRouteCache(routeCachekey['/playground/video'], running);
+  };
+
+  useEffect(() => {
+    const updateActivity = () => {
+      polling.setActive(
+        pathname.replace(/\/+$/, '').toLowerCase() ===
+          routeCachekey['/playground/video'] && !document.hidden
+      );
+    };
+    updateActivity();
+    document.addEventListener('visibilitychange', updateActivity);
+    return () =>
+      document.removeEventListener('visibilitychange', updateActivity);
+  }, [pathname, polling]);
 
   useEffect(() => {
     if (scroller.current) {
       initialize(scroller.current);
     }
-  }, [initialize]);
+  }, [initialize, scroller]);
 
-  const updateRequestId = () => {
-    requestIdRef.current = requestIdRef.current + 1;
-    return requestIdRef.current;
-  };
-
-  const setMessageId = () => {
-    messageId.current = messageId.current + 1;
-    return messageId.current;
-  };
-
-  const generateNumber = (min: number, max: number) => {
-    return Math.floor(Math.random() * (max - min + 1) + min);
-  };
-
-  const stopDebounce = _.debounce(() => {
-    setVideoList([]);
-    setLoading(false);
-  }, 200);
-
-  const submitMessage = async (parameters: any) => {
-    try {
-      if (!parameters.model) return;
-
-      requestToken.current?.cancel?.('cancel');
-      requestToken.current = createAxiosToken();
-      const currentRequestId = updateRequestId();
-      setLoading(true);
-      setMessageId();
-      setTokenResult(null);
-
-      const newList = [
-        {
-          dataUrl: '',
-          progress: 0,
-          loading: true,
-          preview: false,
-          uid: setMessageId()
-        }
-      ];
-
-      setVideoList(newList);
-
-      const result = await createVideo({
-        data: parameters,
-        token: requestToken.current.token
-      });
-
-      console.log('result:', result);
-
-      if (result.error) {
-        setTokenResult({
-          error: true,
-          errorMessage: extractErrorMessage(result)
-        });
-        setVideoList([]);
-        return;
-      }
-
-      // If the request ID has changed, ignore this chunk
-      if (requestIdRef.current !== currentRequestId) {
-        return;
-      }
-      if (result?.error) {
-        setTokenResult({
-          error: true,
-          errorMessage: extractErrorMessage(result)
-        });
-        return;
-      }
-
-      newList[0] = {
-        ...newList[0],
-        dataUrl: result?.id,
-        loading: false,
-        progress: 100
-      };
-
-      console.log('newList:', newList);
-      setVideoList([...newList]);
-    } catch (error) {
-      console.log('error:', error);
-      updateRequestId();
-      stopDebounce();
-      requestToken.current?.cancel?.('cancel');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleClear = () => {
-    setVideoList([]);
-    setTokenResult(null);
-    setCurrentPrompt('');
-  };
-
-  const handleStopConversation = () => {
-    requestToken.current?.cancel?.('stop');
-  };
+  useEffect(
+    () => () => {
+      requestRef.current?.abort();
+      requestRef.current = null;
+      setRouteCache(routeCachekey['/playground/video'], false);
+    },
+    []
+  );
 
   useEffect(() => {
     return () => {
-      requestToken.current?.cancel?.('cancel');
+      if (videoUrl) URL.revokeObjectURL(videoUrl);
     };
-  }, []);
+  }, [videoUrl]);
+
+  const submitMessage = async (parameters: Record<string, unknown>) => {
+    requestRef.current?.abort();
+    const controller = new AbortController();
+    requestRef.current = controller;
+    setGenerating(true);
+    setErrorMessage('');
+    setVideoUrl('');
+    setProgress(undefined);
+
+    try {
+      const video = await generateVideo(
+        parameters,
+        controller.signal,
+        (value) => {
+          if (!controller.signal.aborted) setProgress(value);
+        },
+        polling
+      );
+      if (controller.signal.aborted) return;
+      if (!video.size) throw new Error('Empty video response');
+
+      setVideoUrl(URL.createObjectURL(video));
+    } catch (error) {
+      if (controller.signal.aborted) return;
+      const message = await readResponseError(error);
+      if (controller.signal.aborted) return;
+      setErrorMessage(extractErrorMessage(message || error));
+    } finally {
+      if (requestRef.current === controller) {
+        requestRef.current = null;
+        setGenerating(false);
+      }
+    }
+  };
+
+  const handleStopConversation = () => {
+    requestRef.current?.abort();
+    requestRef.current = null;
+    setGenerating(false);
+    setProgress(undefined);
+  };
+
+  const handleClear = () => {
+    handleStopConversation();
+    setVideoUrl('');
+    setErrorMessage('');
+    setCurrentPrompt('');
+  };
 
   return {
     loading,
-    tokenResult,
-    videoList,
+    progress,
+    errorMessage,
+    videoUrl,
     currentPrompt,
-    setVideoList,
-    setTokenResult,
     setCurrentPrompt,
     handleStopConversation,
-    generateNumber,
     handleClear,
     submitMessage
   };

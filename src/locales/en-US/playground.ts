@@ -71,6 +71,14 @@ export default {
   'playground.params.custom': 'Custom',
   'playground.params.empty.tips': 'Generated images will appear here.',
   'playground.video.empty.tips': 'Generated video will appear here.',
+  'playground.video.generating': 'Generating…',
+  'playground.video.taskUnsupported':
+    'This deployment has no task supported by this playground. Check the model partition or use the API for reference-based generation.',
+  'playground.params.refImage': 'Reference image',
+  'playground.params.refImage.tips':
+    'Enter an image URL or upload a PNG or JPEG.',
+  'playground.params.refImage.invalid':
+    'Enter a valid HTTP or HTTPS image URL.',
   'playground.params.standard': 'Standard',
   'playground.params.hd': 'HD',
   'playground.params.style.vivid': 'Vivid',

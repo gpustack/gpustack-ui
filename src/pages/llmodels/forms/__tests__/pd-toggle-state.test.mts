@@ -389,6 +389,17 @@ test('a delayed saved-PD catalog response cannot enable PD after it is turned of
   }
 });
 
+test('deployment preserves metadata stored outside registered form fields', async () => {
+  const form = await renderForm();
+  try {
+    const meta = { video: { family: 'minimax_h3' }, custom: 'preserved' };
+    await act(async () => form.ref.current.form.setFieldValue('meta', meta));
+    assert.deepEqual((await form.submit()).meta, meta);
+  } finally {
+    await form.unmount();
+  }
+});
+
 test('enabling PD clears the saved model cache after Performance unmounts', async () => {
   const form = await renderForm();
   try {

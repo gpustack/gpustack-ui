@@ -1,7 +1,6 @@
 import PluginExtraFields from '@/components/plugin-extra-fields';
 import CategorySelect from '@/pages/_components/category-select';
 import DocLink from '@/pages/_components/doc-link';
-import { categoryOptions } from '@/pages/llmodels/config';
 import { CheckboxField, Input as CInput, useAppUtils } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
@@ -48,13 +47,7 @@ const Basic = () => {
       >
         <CategorySelect
           allowNull
-          options={[
-            ...categoryOptions,
-            {
-              label: intl.formatMessage({ id: 'common.option.other' }),
-              value: null
-            }
-          ]}
+          emptyOption="other"
           label={intl.formatMessage({ id: 'models.form.categories' })}
         ></CategorySelect>
       </Form.Item>

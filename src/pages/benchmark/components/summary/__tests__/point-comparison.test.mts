@@ -101,3 +101,24 @@ test('a custom baseline from a different input length cannot supply comparison m
     undefined
   );
 });
+
+test('stage comparison uses the evaluated success rates on both sides', () => {
+  const baseline = { ...points[0], total: 120, ok: 90, successRate: 0.9 };
+  const current = { ...points[1], total: 65, ok: 54, successRate: 1 };
+  renderToStaticMarkup(
+    createElement(StageComparison, {
+      point: current,
+      points: [baseline, current],
+      baselineId: baseline.id,
+      basis: 'custom',
+      onBaseline() {},
+      onShowBands() {},
+      data,
+      dataForPoint: () => data,
+      onEvidence() {}
+    })
+  );
+  const row = table.dataSource.find((item: any) => item.key === 'success');
+  assert.equal(row.current, 100);
+  assert.equal(row.baseline, 90);
+});

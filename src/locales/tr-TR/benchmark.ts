@@ -443,6 +443,9 @@ export default {
   'benchmark.detail.requests.total': 'Toplam İstek',
   'benchmark.detail.requests.success': 'Başarılı İstekler',
   'benchmark.detail.requests.failed': 'Başarısız İstekler',
+  'benchmark.detail.requests.samplingCancelled': 'Örnekleme iptalleri',
+  'benchmark.detail.requests.samplingCancelledTip':
+    'Örnekleme hedefine ulaşıldığında {count} istek iptal edildi ve başarı oranından çıkarıldı. Ölçülen istek sayısı: {total}.',
   'benchmark.detail.requests.incomplete': 'Tamamlanmamış İstekler',
   'benchmark.detail.requests.concurrency': 'Gerçekleşen eşzamanlılık Ort.',
   'benchmark.detail.requests.concurrency.max': 'Gerçekleşen eşzamanlılık Maks.',

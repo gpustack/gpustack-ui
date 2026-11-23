@@ -432,6 +432,10 @@ export default {
   'benchmark.detail.requests.total': 'リクエスト総数',
   'benchmark.detail.requests.success': '成功したリクエスト',
   'benchmark.detail.requests.failed': '失敗したリクエスト',
+  'benchmark.detail.requests.samplingCancelled':
+    'サンプリング目標到達後のキャンセル',
+  'benchmark.detail.requests.samplingCancelledTip':
+    'サンプリング目標到達後に {count} 件のリクエストをキャンセルし、成功率の分母から除外しました。測定リクエスト総数: {total}。',
   'benchmark.detail.requests.incomplete': '未完了のリクエスト',
   'benchmark.detail.requests.concurrency': '実績同時実行数（平均）',
   'benchmark.detail.requests.concurrency.max': '実績同時実行数（最大）',

@@ -440,6 +440,9 @@ export default {
   'benchmark.detail.requests.total': 'Total Requests',
   'benchmark.detail.requests.success': 'Successful Requests',
   'benchmark.detail.requests.failed': 'Failed Requests',
+  'benchmark.detail.requests.samplingCancelled': 'Sampling cancellations',
+  'benchmark.detail.requests.samplingCancelledTip':
+    '{count} requests were cancelled after the sample target was reached and excluded from the success rate. Measured requests: {total}.',
   'benchmark.detail.requests.incomplete': 'Incomplete Requests',
   'benchmark.detail.requests.concurrency': 'Achieved concurrency Avg',
   'benchmark.detail.requests.concurrency.max': 'Achieved concurrency Max',

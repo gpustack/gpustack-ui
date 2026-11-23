@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import { BenchmarkResultItem } from '../../config/types';
 import { getPrimaryResultRate } from '../../utils/primary-result';
+import { requestAccounting } from '../../utils/request-accounting';
 import {
   StageStatistic,
   stageLatencyValue
@@ -154,6 +155,10 @@ export interface StagePoint {
   ok: number;
   errored: number;
   incomplete: number;
+  cancelledAtBoundary: number;
+  evaluatedTotal: number;
+  successRate: number | null;
+  unplannedIncomplete: number;
   duration: number | null;
   // Sample size behind the latency percentiles of THIS point. Below ~100, p99
   // degenerates to max and a single outlier would be read as an SLO conclusion,
@@ -244,7 +249,7 @@ const evalSlo = (p: SloInputs, targets: SloTargets): boolean | null => {
     (c) => typeof targets?.[c.field] === 'number'
   );
   if (!active.length) return null;
-  if (p.total <= 0 || p.ok / p.total < SLO_SUCCESS_FLOOR) return false;
+  if (p.successRate == null || p.successRate < SLO_SUCCESS_FLOOR) return false;
   // Every SET threshold must hold (AND). A threshold whose metric was never
   // recorded fails rather than being waived: "we did not measure it" is not
   // evidence that it held.
@@ -335,7 +340,7 @@ export const sloBoundary = (points: StagePoint[], targets: SloTargets) => {
     activeTarget: failed[0] ?? active[0],
     successFailed:
       point != null &&
-      (point.total <= 0 || point.ok / point.total < SLO_SUCCESS_FLOOR)
+      (point.successRate == null || point.successRate < SLO_SUCCESS_FLOOR)
   };
 };
 
@@ -393,12 +398,13 @@ export const buildStagePoints = (
       maxThroughput
     );
     const isBest = matchesResultPoint(r, primaryPoint, primaryRate);
-    const total = r.request_total ?? 0;
+    const counts = requestAccounting(r);
+    const total = counts.total ?? 0;
     // Prefer the TTFT distribution's own sample count (per-request, which is
     // what a latency percentile is over); fall back to the request tally for
     // points written before `count` was kept.
     const sampleCount =
-      dist(r, 'time_to_first_token_ms', 'count') ?? r.request_successful ?? 0;
+      dist(r, 'time_to_first_token_ms', 'count') ?? counts.successful ?? 0;
 
     const point: SloInputs = {
       raw: r,
@@ -445,9 +451,13 @@ export const buildStagePoints = (
       itlMax: r.itl_per_chunk_max ?? dist(r, ITL_FIELD, 'max'),
 
       total,
-      ok: r.request_successful ?? 0,
-      errored: r.request_errored ?? 0,
-      incomplete: r.request_incomplete ?? 0,
+      ok: counts.successful ?? 0,
+      errored: counts.errored ?? 0,
+      incomplete: counts.incomplete ?? 0,
+      cancelledAtBoundary: counts.cancelledAtBoundary,
+      evaluatedTotal: counts.evaluatedTotal ?? 0,
+      successRate: counts.successRate,
+      unplannedIncomplete: counts.unplannedIncomplete ?? 0,
       duration:
         typeof r.raw_metrics?.duration === 'number'
           ? r.raw_metrics.duration
@@ -472,9 +482,10 @@ export const buildStagePoints = (
 // best/peak/overloaded, and is not SLO-judged (no target rate to meet).
 export const buildProbePoints = (probes: BenchmarkResultItem[]): StagePoint[] =>
   probes.map((r) => {
-    const total = r.request_total ?? 0;
+    const counts = requestAccounting(r);
+    const total = counts.total ?? 0;
     const sampleCount =
-      dist(r, 'time_to_first_token_ms', 'count') ?? r.request_successful ?? 0;
+      dist(r, 'time_to_first_token_ms', 'count') ?? counts.successful ?? 0;
     return {
       raw: r,
       id: r.id,
@@ -511,9 +522,13 @@ export const buildProbePoints = (probes: BenchmarkResultItem[]): StagePoint[] =>
       itlP99: r.itl_per_chunk_p99 ?? pct(r, ITL_FIELD, 'p99'),
       itlMax: r.itl_per_chunk_max ?? dist(r, ITL_FIELD, 'max'),
       total,
-      ok: r.request_successful ?? 0,
-      errored: r.request_errored ?? 0,
-      incomplete: r.request_incomplete ?? 0,
+      ok: counts.successful ?? 0,
+      errored: counts.errored ?? 0,
+      incomplete: counts.incomplete ?? 0,
+      cancelledAtBoundary: counts.cancelledAtBoundary,
+      evaluatedTotal: counts.evaluatedTotal ?? 0,
+      successRate: counts.successRate,
+      unplannedIncomplete: counts.unplannedIncomplete ?? 0,
       duration:
         typeof r.raw_metrics?.duration === 'number'
           ? r.raw_metrics.duration
@@ -566,12 +581,16 @@ export const sloBreachOnset = (points: StagePoint[]): number => {
  */
 export const stageTotals = (points: StagePoint[], aux: StagePoint[] = []) => {
   let requests = 0;
+  let evaluatedRequests = 0;
+  let cancelled = 0;
   let ok = 0;
   let minStart = Infinity;
   let maxEnd = -Infinity;
   let durSum = 0;
   for (const p of points) {
     requests += p.total;
+    evaluatedRequests += p.evaluatedTotal;
+    cancelled += p.cancelledAtBoundary;
     ok += p.ok;
   }
   // The time span covers everything that actually ran, measured stage or not.
@@ -591,12 +610,14 @@ export const stageTotals = (points: StagePoint[], aux: StagePoint[] = []) => {
   return {
     stages: points.length,
     requests,
+    evaluatedRequests,
+    cancelled,
     ok,
     seconds,
-    successRate: requests > 0 ? ok / requests : null,
+    successRate: evaluatedRequests > 0 ? ok / evaluatedRequests : null,
     // Only worth a chart when something actually failed (a flat 100% line is a
     // whole panel spent saying nothing happened).
-    hasFailures: points.some((p) => p.errored > 0 || p.incomplete > 0)
+    hasFailures: points.some((p) => p.errored > 0 || p.unplannedIncomplete > 0)
   };
 };
 

@@ -2,6 +2,7 @@ import { SectionTitle } from '@gpustack/core-ui';
 import { createStyles } from 'antd-style';
 import React from 'react';
 import { BenchmarkResultItem } from '../../config/types';
+import { requestAccounting } from '../../utils/request-accounting';
 
 // ── Unified design language for the Summary tab ────────────────────────────
 // One semantic palette, applied everywhere (badge, chart markers, row
@@ -31,8 +32,9 @@ export const getStageStatus = (
   // Request overload and post-peak throughput loss are different findings. A
   // throughput decline can still meet every SLO target with all requests passing.
   // A few incomplete requests at a duration boundary do not establish overload.
-  const failedCount = (r.request_errored ?? 0) + (r.request_incomplete ?? 0);
-  const total = r.request_total ?? (r.request_successful ?? 0) + failedCount;
+  const counts = requestAccounting(r);
+  const failedCount = (counts.errored ?? 0) + (counts.unplannedIncomplete ?? 0);
+  const total = counts.evaluatedTotal ?? (counts.successful ?? 0) + failedCount;
   const failRate = total > 0 ? failedCount / total : 0;
   if (failRate > 0.05) return 'overloaded';
 

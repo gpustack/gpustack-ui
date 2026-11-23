@@ -419,6 +419,9 @@ export default {
   'benchmark.detail.requests.total': '请求总数',
   'benchmark.detail.requests.success': '请求成功数',
   'benchmark.detail.requests.failed': '请求失败数',
+  'benchmark.detail.requests.samplingCancelled': '采样达标后取消',
+  'benchmark.detail.requests.samplingCancelledTip':
+    '{count} 个请求在采样达标后主动取消，不计入成功率分母。本测量点请求总数：{total}。',
   'benchmark.detail.requests.incomplete': '请求未完成数',
   'benchmark.detail.requests.concurrency': '实际并发数均值',
   'benchmark.detail.requests.concurrency.max': '实际并发数峰值',

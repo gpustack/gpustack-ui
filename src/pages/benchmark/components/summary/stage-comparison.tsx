@@ -213,11 +213,9 @@ export default function StageComparison({
       label: intl.formatMessage({
         id: 'benchmark.detail.chart.axis.successRate'
       }),
-      current: point.total > 0 ? (100 * point.ok) / point.total : null,
+      current: point.successRate == null ? null : point.successRate * 100,
       baseline:
-        baseline && baseline.total > 0
-          ? (100 * baseline.ok) / baseline.total
-          : null,
+        baseline?.successRate == null ? null : baseline.successRate * 100,
       unit: 'percent',
       pp: true
     },

@@ -149,6 +149,31 @@ const render = (rows: any[]) =>
     })
   );
 
+test('primary result uses evaluated requests for its success credential', () => {
+  detail = {
+    auto_tune: true,
+    load_type: 'concurrency',
+    slo_avg_ttft_ms: 500,
+    recommended_rate: 16,
+    peak_rate: 16
+  };
+  const html = render([
+    {
+      ...row(16, 1000),
+      request_total: 65,
+      request_successful: 54,
+      request_errored: 0,
+      request_incomplete: 11,
+      raw_metrics: {
+        termination: { reason: 'min_requests', cancelled_at_boundary: 11 }
+      }
+    }
+  ]);
+  assert.match(html, /100%/);
+  assert.doesNotMatch(html, /83\.1%/);
+  assert.match(html, /54 of 54 requests succeeded/);
+});
+
 test('SLO boundary preserves the exact next measured fractional request rate', () => {
   detail = {
     load_type: 'fixed_rate',
@@ -221,6 +246,34 @@ test('boundary copy preserves a near-threshold success-rate failure', () => {
   assert.match(
     dom.window.document.querySelector('.slo-boundary')?.textContent || '',
     /Success rate 94\.99% is below 95\.00%/
+  );
+  dom.window.close();
+});
+
+test('boundary success-rate failure excludes verified sampling cancellations', () => {
+  detail = {
+    load_type: 'concurrency',
+    recommended_rate: 16,
+    slo_avg_ttft_ms: 500
+  };
+  const dom = new requireForTest.JSDOM(
+    render([
+      row(16, 1000),
+      {
+        ...row(32, 2000),
+        request_total: 65,
+        request_successful: 50,
+        request_errored: 4,
+        request_incomplete: 11,
+        raw_metrics: {
+          termination: { reason: 'min_requests', cancelled_at_boundary: 11 }
+        }
+      }
+    ])
+  );
+  assert.match(
+    dom.window.document.querySelector('.slo-boundary')?.textContent || '',
+    /Success rate 93% is below 95%/
   );
   dom.window.close();
 });

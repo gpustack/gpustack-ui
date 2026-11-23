@@ -67,6 +67,8 @@ export default {
     '<span class="bold-text">/usr/local/neuware</span> ディレクトリが存在しない場合は、Cambricon のインストール先を指すシンボリックリンクを作成してください:\n<span class="bold-text">ln -s /path/to/neuware /usr/local/neuware</span>。',
   'clusters.addworker.hygonNotes-02':
     'デバイスの検出に失敗する場合は、<span class="bold-text">--env ROCM_SMI_LIB_PATH=/opt/hyhal/lib</span> を削除してみてください。',
+  'clusters.addworker.ascendNotes':
+    'Ascend A5（Ascend 950）を使用する場合は、<span class="bold-text">--volume /:/host:ro</span> を追加してホストのルートディレクトリ <span class="bold-text">/</span> を読み取り専用でマウントし、GPUStack が <span class="bold-text">/etc/hccl_rootinfo.json</span> や <span class="bold-text">/lib/route.conf</span> などのホスト設定ファイルを確認できるようにしてください。Host RoCE を使用する場合は、<span class="bold-text">--volume /etc/hixlep:/etc/hixlep:ro</span> を追加してホストの <span class="bold-text">/etc/hixlep</span> も読み取り専用でマウントする必要があります。',
   'clusters.addworker.selectCluster': 'クラスターを選択',
   'clusters.addworker.selectCluster.tips':
     '<span class="bold-text">Docker 以外</span>のクラスターでは、クラスター画面からクラスターを登録するか、Worker プールを管理してください。',

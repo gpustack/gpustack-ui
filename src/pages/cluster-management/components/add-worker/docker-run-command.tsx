@@ -1,3 +1,4 @@
+import { GPUDriverMap } from '@/pages/resources/config/gpu-driver';
 import { useIntl } from '@umijs/max';
 import { Typography } from 'antd';
 import AddWorkerCommand from '../add-worker-command';
@@ -43,15 +44,17 @@ const DockerRunCommand: React.FC<AddWorkerStepProps> = ({ disabled }) => {
 
   const dtkVersion = summary.get('dtkVersion') || '25.04';
 
-  const rdmaConfig = summary.get('rdmaConfig') || {
-    enable: false
-  };
+  const kvTransferIfnameConfig = summary.get('kvTransferIfnameConfig');
+  const kvTransferIfname = kvTransferIfnameConfig?.value ?? '';
+  const kvInterfaceEnabled =
+    currentGPU === GPUDriverMap.NVIDIA && !!kvTransferIfnameConfig?.enable;
+  const kvInterfaceMissing = kvInterfaceEnabled && !kvTransferIfname.trim();
 
   const stepIndex = stepList.indexOf(StepNamesMap.RunCommand) + 1;
 
   return (
     <StepCollapse
-      disabled={disabled}
+      disabled={disabled || kvInterfaceMissing}
       name={StepNamesMap.RunCommand}
       title={
         <Title>
@@ -87,7 +90,11 @@ const DockerRunCommand: React.FC<AddWorkerStepProps> = ({ disabled }) => {
         }
         currentGPU={currentGPU}
         dtkVersion={dtkVersion}
-        rdma={rdmaConfig.enable}
+        kvTransferIfname={
+          kvInterfaceEnabled && !kvInterfaceMissing
+            ? kvTransferIfname
+            : undefined
+        }
       />
     </StepCollapse>
   );

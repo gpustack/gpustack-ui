@@ -8,6 +8,10 @@ export default {
   'resources.button.update': '更新标签',
   'resources.nodes': '节点',
   'resources.worker': '节点',
+  'resources.worker.kvTransferInterface': 'KV 传输网卡',
+  'resources.worker.kvTransferInterface.placeholder': '例如 ens5f0 或 mlx5_2:1',
+  'resources.worker.kvTransferInterface.inherit':
+    '适用于内置的 vLLM NIXL 和 SGLang NIXL 部署。留空时使用节点启动配置或集群默认值。',
   'resources.container': '容器',
   'resources.table.hostname': '主机名',
   'resources.table.key.tips': '存在相同的 key.',

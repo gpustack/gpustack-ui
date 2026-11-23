@@ -489,7 +489,7 @@ export const AddWorkerDockerNotes: Record<string, string[]> = {
     'clusters.addworker.amdNotes-02'
   ],
   [GPUDriverMap.MOORE_THREADS]: [],
-  [GPUDriverMap.ASCEND]: [],
+  [GPUDriverMap.ASCEND]: ['clusters.addworker.ascendNotes'],
   [GPUDriverMap.HYGON]: [
     'clusters.addworker.hygonNotes',
     'clusters.addworker.hygonNotes-02'

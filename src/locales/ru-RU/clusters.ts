@@ -67,6 +67,8 @@ export default {
     'Если директория <span class="bold-text">/usr/local/neuware</span> не существует, создайте символическую ссылку на путь установки Cambricon: <span class="bold-text">ln -s /path/to/neuware /usr/local/neuware</span>.',
   'clusters.addworker.hygonNotes-02':
     'Если не удается обнаружить устройства, попробуйте удалить <span class="bold-text">--env ROCM_SMI_LIB_PATH=/opt/hyhal/lib</span>.',
+  'clusters.addworker.ascendNotes':
+    'При использовании Ascend A5 (Ascend 950) добавьте <span class="bold-text">--volume /:/host:ro</span> для монтирования корневого каталога хоста <span class="bold-text">/</span> в режиме только для чтения, чтобы GPUStack мог проверять файлы конфигурации хоста, такие как <span class="bold-text">/etc/hccl_rootinfo.json</span> и <span class="bold-text">/lib/route.conf</span>. При использовании Host RoCE также смонтируйте каталог хоста <span class="bold-text">/etc/hixlep</span> в режиме только для чтения с помощью <span class="bold-text">--volume /etc/hixlep:/etc/hixlep:ro</span>.',
   'clusters.addworker.selectCluster': 'Выбрать кластер',
   'clusters.addworker.selectCluster.tips':
     'Для <span class="bold-text">не-Docker</span> кластеров, пожалуйста, регистрируйте кластеры или управляйте пулами Worker на странице Кластеры.',

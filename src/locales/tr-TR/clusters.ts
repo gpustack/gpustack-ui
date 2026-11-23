@@ -69,6 +69,8 @@ export default {
 <span class="bold-text">ln -s /path/to/neuware /usr/local/neuware</span>.`,
   'clusters.addworker.hygonNotes-02':
     'Cihaz algılama başarısız olursa, <span class="bold-text">--env ROCM_SMI_LIB_PATH=/opt/hyhal/lib</span> parametresini kaldırmayı deneyin.',
+  'clusters.addworker.ascendNotes':
+    'Ascend A5 (Ascend 950) kullanıyorsanız, GPUStack\'in <span class="bold-text">/etc/hccl_rootinfo.json</span> ve <span class="bold-text">/lib/route.conf</span> gibi ana makine yapılandırma dosyalarını inceleyebilmesi için ana makine kök dizini <span class="bold-text">/</span> yolunu salt okunur bağlamak üzere <span class="bold-text">--volume /:/host:ro</span> ekleyin. Host RoCE kullanıyorsanız, ana makinenin <span class="bold-text">/etc/hixlep</span> dizinini de <span class="bold-text">--volume /etc/hixlep:/etc/hixlep:ro</span> ile salt okunur bağlayın.',
   'clusters.addworker.selectCluster': 'Küme Seç',
   'clusters.addworker.selectCluster.tips':
     '<span class="bold-text">Docker dışı</span> kümeler için lütfen Kümeler sayfasından küme kaydı oluşturun veya işçi havuzlarını yönetin.',

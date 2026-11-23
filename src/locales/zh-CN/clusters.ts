@@ -67,6 +67,8 @@ export default {
   <span class="bold-text">ln -s /path/to/neuware /usr/local/neuware</span>。`,
   'clusters.addworker.hygonNotes-02':
     '如果未能检测到设备，请尝试移除 <span class="bold-text">--env ROCM_SMI_LIB_PATH=/opt/hyhal/lib</span>。',
+  'clusters.addworker.ascendNotes':
+    '如果使用昇腾 A5（Ascend 950），请添加 <span class="bold-text">--volume /:/host:ro</span> 将宿主机根目录 <span class="bold-text">/</span> 以只读方式挂载到容器，以便 GPUStack 检查 <span class="bold-text">/etc/hccl_rootinfo.json</span> 和 <span class="bold-text">/lib/route.conf</span> 等宿主机配置文件；如果使用 Host RoCE，还需要添加 <span class="bold-text">--volume /etc/hixlep:/etc/hixlep:ro</span> 只读挂载主机的 <span class="bold-text">/etc/hixlep</span>。',
   'clusters.addworker.selectCluster': '选择集群',
   'clusters.addworker.selectCluster.tips':
     '<span class="bold-text">非 Docker</span> 集群请前往集群页面注册集群或管理节点池。',

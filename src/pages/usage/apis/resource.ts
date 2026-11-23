@@ -128,6 +128,8 @@ export interface ResourceBreakdownItem extends ResourceBreakdownSummary {
   // Per-cluster instance type name, snapshotted at metering time — the readable
   // label behind the opaque sku.
   instance_type_name?: string;
+  // The server's allocation label for the metered interval, used in export previews.
+  gpu_allocation?: string | null;
   // Billed unit multiplier: card count, fractional for a sliced card (0.5 = half
   // a card). Instance-type rows are grouped by ``(sku, sku_count)``, so BOTH are
   // needed to identify a row — keying on the display label alone collides
@@ -325,6 +327,7 @@ interface ServerBreakdownItem {
   // Readable label + cross-cluster definition id for the opaque ``sku``. Absent
   // on rows metered before the server carried them.
   instance_type_name?: string | null;
+  gpu_allocation?: string | null;
   definition_snapshot?: string | null;
   // Present on instance-type rows: the other half of their grouping key.
   sku_count?: number | null;
@@ -473,6 +476,7 @@ function flattenItem(
   }
   flat.sku = it.sku ?? undefined;
   flat.instance_type_name = it.instance_type_name ?? undefined;
+  if (it.gpu_allocation !== undefined) flat.gpu_allocation = it.gpu_allocation;
   if (it.sku_count != null) flat.sku_count = it.sku_count;
   if (it.shapes?.length) flat.shapes = it.shapes;
   // Per-resource rows (instance / volume) carry their type → surface it as the

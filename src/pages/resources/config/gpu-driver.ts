@@ -246,29 +246,31 @@ interface AddWorkerCommandParams {
   gpustackDataVolume?: string;
   cacheDir?: string;
   dtkVersion?: string;
-  rdma?: boolean;
+  kvTransferIfname?: string;
+  registrationInfo?: { env?: Record<string, string> };
 }
 
-const generateEnvArgs = (params: any) => {
-  const registrationInfo = {
-    ...params.registrationInfo,
-    env: {
-      ...(params.registrationInfo?.env || {}),
-      ...params.extraEnv
-    }
+const generateEnvArgs = (params: any, kvTransferIfname?: string) => {
+  const env = {
+    ...params.registrationInfo?.env,
+    ...params.extraEnv
   };
-  // generate environment variables args from registrationInfo.env
-  let envArgs = '';
-  if (
-    registrationInfo.env &&
-    typeof registrationInfo.env === 'object' &&
-    Object.keys(registrationInfo.env).length > 0
-  ) {
-    Object.keys(registrationInfo.env).forEach((key) => {
-      const value = registrationInfo.env[key];
-      envArgs += `-e "${key}=${value}" \\\n      `;
-    });
+  if (params.gpu === GPUDriverMap.NVIDIA) {
+    // Only the explicit Worker selection belongs in the startup environment.
+    delete env.GPUSTACK_KV_TRANSFER_IFNAME;
+    if (kvTransferIfname) {
+      env.GPUSTACK_KV_TRANSFER_IFNAME = kvTransferIfname;
+    }
   }
+  let envArgs = '';
+  Object.entries(env).forEach(([key, value]) => {
+    const argument = `${key}=${value}`;
+    const quoted =
+      key === 'GPUSTACK_KV_TRANSFER_IFNAME'
+        ? `'${argument.replaceAll("'", "'\\''")}'`
+        : `"${argument}"`;
+    envArgs += `-e ${quoted} \\\n      `;
+  });
   return envArgs;
 };
 
@@ -298,10 +300,10 @@ const generateExtraModelDirArg = (modelDir: string) => {
   return '';
 };
 
-const setNormalArgs = (params: any) => {
+const setNormalArgs = (params: any, kvTransferIfname?: string) => {
   return `sudo docker run -d --name ${params.containerName || 'gpustack-worker'} \\
       -e "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=${params.containerName || 'gpustack-worker'}" \\
-      ${generateEnvArgs(params)}
+      ${generateEnvArgs(params, kvTransferIfname)}
       --restart=unless-stopped \\
       --privileged \\
       --network=host \\
@@ -316,18 +318,9 @@ const setWorkerIPArg = (params: any) => {
       ${params.advertisAddress ? `--advertise-address ${params.advertisAddress} \\` : ''}`;
 };
 
-// Lists the ACTIVE InfiniBand ports as `device:port`. A host without RDMA
-// prints nothing, and an empty GPUSTACK_KV_TRANSFER_IFNAME counts as unset, so the
-// worker falls back to detecting the NIC itself.
-const RDMA_KV_IFNAME_PROBE =
-  "$(grep -l ACTIVE /sys/class/infiniband/*/ports/*/state 2>/dev/null | sed 's|.*/infiniband/||; s|/ports/|:|; s|/state||' | paste -sd, -)";
-
-// The IB devices. Mirrored deployment copies them from the worker onto every
-// runner container it starts, which is how an inference backend reaches the
-// fabric.
-const setRDMAArgs = () => {
-  return `--device /dev/infiniband \\`;
-};
+// Mirrored deployment copies Worker device mappings to the inference runner.
+const rdmaDeviceArg =
+  "$(if [ -d /dev/infiniband ]; then printf '%s' --device=/dev/infiniband; fi) \\";
 
 const setImageArgs = (params: any) => {
   return `${params.image} \\
@@ -337,23 +330,16 @@ const setImageArgs = (params: any) => {
 // avaliable for  NVIDIA、MThreads
 const registerWorker = (params: AddWorkerCommandParams) => {
   const config = GPUsConfigs[params.gpu];
-  // RDMA is only offered for NVIDIA, and this builder is shared with MThreads.
-  const enableRDMA = params.gpu === GPUDriverMap.NVIDIA && params.rdma;
-  const commonArgs = setNormalArgs(
-    enableRDMA
-      ? {
-          ...params,
-          extraEnv: {
-            GPUSTACK_KV_TRANSFER_IFNAME: RDMA_KV_IFNAME_PROBE
-          }
-        }
-      : params
-  );
+  const kvTransferIfname =
+    params.gpu === GPUDriverMap.NVIDIA && params.kvTransferIfname?.trim()
+      ? params.kvTransferIfname
+      : undefined;
+  const commonArgs = setNormalArgs(params, kvTransferIfname);
   const imageArgs = setImageArgs(params);
 
   // remove empty enter lines and trailing backslash
   return `${commonArgs}
-      ${enableRDMA ? setRDMAArgs() : ''}
+      ${kvTransferIfname ? rdmaDeviceArg : ''}
       --runtime ${config.runtime} \\
       ${imageArgs}
       ${setWorkerIPArg(params)}`;

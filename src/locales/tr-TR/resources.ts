@@ -4,6 +4,11 @@ export default {
   'resources.title': 'Kaynaklar',
   'resources.nodes': 'İşçi Düğümler',
   'resources.worker': 'İşçi Düğüm',
+  'resources.worker.kvTransferInterface': 'KV Aktarım Arayüzü',
+  'resources.worker.kvTransferInterface.placeholder':
+    'ör. ens5f0 veya mlx5_2:1',
+  'resources.worker.kvTransferInterface.inherit':
+    'Yerleşik vLLM NIXL ve SGLang NIXL dağıtımları için geçerlidir. Worker başlangıç ayarını veya küme varsayılanını kullanmak için boş bırakın.',
   'resources.container': 'Konteyner',
   'resources.button.create': 'İşçi Düğüm Ekle',
   'resources.button.edit': 'İşçi Düğümü Düzenle',

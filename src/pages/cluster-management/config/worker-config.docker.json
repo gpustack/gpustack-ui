@@ -42,6 +42,10 @@
       "type": "boolean",
       "description": "Disable worker metrics collection"
     },
+    "kv_transfer_ifname": {
+      "type": ["string", "null"],
+      "description": "Default interface for NIXL KV transfer, such as ens5f0 or mlx5_2:1. Worker settings take precedence."
+    },
     "worker_port": {
       "type": "integer",
       "minimum": 1,

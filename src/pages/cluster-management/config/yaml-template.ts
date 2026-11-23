@@ -14,7 +14,7 @@ export const dockerConfig = `# This is a template for worker_config.
  
 # ========= service & networking ===========
  
-
+# kv_transfer_ifname: "ens5f0"
 # worker_port: 10150
 # worker_metrics_port: 10150
 # service_port_range: "40000-40063"
@@ -63,6 +63,7 @@ export const kubernetesConfig = `# This is a template for worker_config.
 
 # ========= service & networking ===========
 
+# kv_transfer_ifname: "ens5f0"
 # service_discovery_name: "worker"
 # worker_port: 10150
 # worker_metrics_port: 10150

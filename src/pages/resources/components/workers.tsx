@@ -24,7 +24,7 @@ import {
   updateWorker,
   updateWorkerLabels
 } from '../apis';
-import { ListItem, WorkerLabelsFormData } from '../config/types';
+import { ListItem, WorkerLabelsFormPayload } from '../config/types';
 import useWorkerColumns from '../hooks/use-worker-columns';
 import useWorkerLabelOptions from '../hooks/use-worker-label-options';
 import useWorkerMaintenance from '../hooks/use-worker-maintenance';
@@ -162,10 +162,10 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
     }
   };
 
-  const handleUpdateLabelsOk = async (values: WorkerLabelsFormData) => {
+  const handleUpdateLabelsOk = async (values: WorkerLabelsFormPayload) => {
     try {
       if (batchLabelTargets.length) {
-        if (!Object.keys(values.labels).length) {
+        if (!values.labels || !Object.keys(values.labels).length) {
           return;
         }
         await updateWorkerLabels({
@@ -175,10 +175,7 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
         message.success(intl.formatMessage({ id: 'common.message.success' }));
         rowSelection?.clearSelections?.();
       } else {
-        await updateWorker(updateLabelsData.data.id, {
-          ...updateLabelsData.data,
-          labels: values.labels
-        });
+        await updateWorker(updateLabelsData.data.id, values);
         message.success(intl.formatMessage({ id: 'common.message.success' }));
       }
       fetchData();
@@ -423,9 +420,11 @@ const Workers: React.FC<WorkersProps> = ({ clusterId, source }) => {
           onCancel={handleCancelUpdateLabels}
           batch={batchLabelTargets.length > 0}
           count={batchLabelTargets.length}
+          gpuDevices={updateLabelsData.data.status?.gpu_devices}
           data={{
             name: updateLabelsData.data.name,
-            labels: updateLabelsData.data.labels
+            labels: updateLabelsData.data.labels,
+            kv_transfer_ifname: updateLabelsData.data.kv_transfer_ifname
           }}
         ></UpdateLabels>
         <WorkerDetailModal

@@ -4,6 +4,10 @@ export default {
   'resources.title': 'Resources',
   'resources.nodes': 'Workers',
   'resources.worker': 'Worker',
+  'resources.worker.kvTransferInterface': 'KV Transfer Interface',
+  'resources.worker.kvTransferInterface.placeholder': 'e.g. ens5f0 or mlx5_2:1',
+  'resources.worker.kvTransferInterface.inherit':
+    'Applies to built-in vLLM NIXL and SGLang NIXL deployments. Leave blank to use the Worker startup setting or cluster default.',
   'resources.container': 'Container',
   'resources.button.create': 'Add Worker',
   'resources.button.edit': 'Edit Worker',

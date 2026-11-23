@@ -10,28 +10,51 @@ import { Form } from 'antd';
 import _ from 'lodash';
 import React from 'react';
 import 'simplebar-react/dist/simplebar.min.css';
-import { WorkerLabelsFormData } from '../config/types';
+import { manfacturerValueMap } from '../config/gpu-driver';
+import type {
+  GPUDeviceItem,
+  WorkerLabelsFormData,
+  WorkerLabelsFormPayload
+} from '../config/types';
 
 type ViewModalProps = {
   open: boolean;
   onCancel: () => void;
-  onOk: (values: WorkerLabelsFormData) => Promise<void>;
-  data: {
-    name: string;
-    labels: Record<string, string>;
-  };
+  onOk: (values: WorkerLabelsFormPayload) => Promise<void>;
+  data: WorkerLabelsFormData;
+  gpuDevices?: Pick<GPUDeviceItem, 'vendor'>[] | null;
   /** A selection of one worker still uses batch merge semantics. */
   batch?: boolean;
   /** Number of workers receiving the label patch. */
   count?: number;
 };
 const UpdateLabels: React.FC<ViewModalProps> = (props) => {
-  const { open, onCancel, data, onOk, batch, count } = props || {};
+  const { open, onCancel, data, onOk, batch, count, gpuDevices } = props || {};
   const intl = useIntl();
   const [form] = Form.useForm<WorkerLabelsFormData>();
   const labels = Form.useWatch('labels', form);
+  const labelsAtOpen = React.useRef<WorkerLabelsFormData['labels']>();
+  React.useEffect(() => {
+    if (open) {
+      labelsAtOpen.current ??= { ...data.labels };
+    } else {
+      labelsAtOpen.current = undefined;
+    }
+  }, [open, data.labels]);
   const { loading, guard, run, release } = useSubmitLock();
   const emptyBatch = !!batch && !Object.keys(labels || {}).length;
+  const isAscendOnly =
+    Array.isArray(gpuDevices) &&
+    gpuDevices.length > 0 &&
+    gpuDevices.every(
+      (device) =>
+        typeof device?.vendor === 'string' &&
+        device.vendor.trim().toLowerCase() === manfacturerValueMap.ASCEND
+    );
+  const showKvTransferInterface = !batch && !isAscendOnly;
+  const kvTransferInterfaceLabel = intl.formatMessage({
+    id: 'resources.worker.kvTransferInterface'
+  });
 
   const handleSubmit = () => {
     if (!emptyBatch) {
@@ -40,7 +63,26 @@ const UpdateLabels: React.FC<ViewModalProps> = (props) => {
   };
 
   const handleFinish = async (values: WorkerLabelsFormData) => {
-    await run(() => onOk(values));
+    const { name, labels = {}, kv_transfer_ifname } = values;
+    const fieldsToSave: WorkerLabelsFormPayload = { name };
+    if (
+      batch ||
+      (form.isFieldTouched('labels') &&
+        !_.isEqual(labels, labelsAtOpen.current ?? data.labels ?? {}))
+    ) {
+      fieldsToSave.labels = labels;
+    }
+    const interfaceName = kv_transfer_ifname?.trim()
+      ? kv_transfer_ifname
+      : null;
+    if (
+      showKvTransferInterface &&
+      form.isFieldTouched('kv_transfer_ifname') &&
+      interfaceName !== (data.kv_transfer_ifname ?? null)
+    ) {
+      fieldsToSave.kv_transfer_ifname = interfaceName;
+    }
+    await run(() => onOk(fieldsToSave));
   };
 
   return (
@@ -91,7 +133,10 @@ const UpdateLabels: React.FC<ViewModalProps> = (props) => {
               )
             : data.name,
           // Batch inputs contain only the keys to merge into each worker.
-          labels: batch ? {} : data.labels
+          labels: batch ? {} : data.labels,
+          kv_transfer_ifname: showKvTransferInterface
+            ? (data.kv_transfer_ifname ?? '')
+            : undefined
         }}
       >
         <Form.Item<WorkerLabelsFormData> name="name">
@@ -102,6 +147,23 @@ const UpdateLabels: React.FC<ViewModalProps> = (props) => {
             disabled
           />
         </Form.Item>
+        {showKvTransferInterface && (
+          <Form.Item<WorkerLabelsFormData>
+            name="kv_transfer_ifname"
+            extra={intl.formatMessage({
+              id: 'resources.worker.kvTransferInterface.inherit'
+            })}
+          >
+            <CInput.Input
+              label={kvTransferInterfaceLabel}
+              aria-label={kvTransferInterfaceLabel}
+              placeholder={intl.formatMessage({
+                id: 'resources.worker.kvTransferInterface.placeholder'
+              })}
+              spellCheck={false}
+            />
+          </Form.Item>
+        )}
         <Form.Item<WorkerLabelsFormData>
           name="labels"
           extra={

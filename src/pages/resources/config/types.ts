@@ -82,6 +82,7 @@ export interface ListItem {
   state: string;
   ip: string;
   cluster_id: number;
+  kv_transfer_ifname?: string | null;
   // Denormalized from the parent cluster on the wire so per-row
   // tenant filtering works without joining.
   owner_principal_id?: number | null;
@@ -176,9 +177,14 @@ export interface ModelFileFormData {
   is_lora: boolean;
 }
 
-export interface WorkerLabelsFormData {
-  labels: Record<string, string>;
+export interface WorkerLabelsFormPayload {
   name: string;
+  labels?: Record<string, string>;
+  kv_transfer_ifname?: string | null;
+}
+
+export interface WorkerLabelsFormData extends WorkerLabelsFormPayload {
+  labels: Record<string, string>;
 }
 
 export interface WorkerLabelsUpdate {

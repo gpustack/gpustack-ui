@@ -44,12 +44,15 @@ let footer: any;
 let selector: any;
 let modal: any;
 let name: any;
+let kvInterface: any;
 mock.module('@gpustack/core-ui', {
   namedExports: {
     useSubmitLock,
     Input: {
       Input: (props: any) => {
-        name = props;
+        if (props.label === 'common.table.name') name = props;
+        else if (props.label === 'resources.worker.kvTransferInterface')
+          kvInterface = props;
         return null;
       }
     },
@@ -80,25 +83,29 @@ const { createRoot } = await import('react-dom/client');
 const { default: UpdateLabels } = await import('../update-labels.tsx');
 
 async function mount(t: any, props: any = {}) {
+  kvInterface = undefined;
   const onOk = mock.fn(async (_values: any) => {});
   const root = createRoot(document.getElementById('root')!);
-  await act(async () =>
-    root.render(
-      createElement(UpdateLabels, {
-        open: true,
-        batch: true,
-        count: 1,
-        data: { name: 'worker', labels: { zone: 'west' } },
-        onCancel() {},
-        onOk,
-        ...props
-      })
-    )
-  );
+  const render = (next: any = {}) =>
+    act(async () =>
+      root.render(
+        createElement(UpdateLabels, {
+          open: true,
+          batch: true,
+          count: 1,
+          data: { name: 'worker', labels: { zone: 'west' } },
+          onCancel() {},
+          onOk,
+          ...props,
+          ...next
+        })
+      )
+    );
+  await render();
   t.after(async () => {
     await act(async () => root.unmount());
   });
-  return { onOk };
+  return { onOk, render };
 }
 const flushValidation = () =>
   new Promise<void>((resolve) => setImmediate(resolve));
@@ -174,4 +181,163 @@ test('single edit initializes existing labels and allows clearing every label', 
     await flushValidation();
   });
   assert.deepEqual(onOk.mock.calls[0].arguments[0].labels, {});
+});
+
+test('single edit displays the configured interface and clears it explicitly', async (t) => {
+  const { onOk } = await mount(t, {
+    batch: false,
+    data: { name: 'worker', labels: {}, kv_transfer_ifname: 'ens5f0' }
+  });
+  assert.equal(kvInterface?.value, 'ens5f0');
+  await act(async () => kvInterface.onChange({ target: { value: ' ' } }));
+  await act(async () => {
+    footer.onOk();
+    await flushValidation();
+  });
+  assert.equal(onOk.mock.calls[0].arguments[0].kv_transfer_ifname, null);
+});
+
+test('unchanged interface is omitted from a label edit', async (t) => {
+  const { onOk } = await mount(t, {
+    batch: false,
+    data: { name: 'worker', labels: {}, kv_transfer_ifname: 'mlx5_2:1' }
+  });
+  assert.equal(kvInterface?.value, 'mlx5_2:1');
+  await act(async () => {
+    footer.onOk();
+    await flushValidation();
+  });
+  assert.equal('kv_transfer_ifname' in onOk.mock.calls[0].arguments[0], false);
+});
+
+test('a nonblank interface selection is submitted without altering its contents', async (t) => {
+  const { onOk } = await mount(t, { batch: false });
+  const value = ' mlx5_2:1,  ens5f0 ';
+  await act(async () => kvInterface.onChange({ target: { value } }));
+  await act(async () => {
+    footer.onOk();
+    await flushValidation();
+  });
+  assert.equal(onOk.mock.callCount(), 1);
+  assert.equal(onOk.mock.calls[0].arguments[0].kv_transfer_ifname, value);
+});
+
+test('a Worker detail refresh cannot restore an untouched old interface', async (t) => {
+  const data = { name: 'worker', labels: {}, kv_transfer_ifname: 'ens5f0' };
+  const { onOk, render } = await mount(t, { batch: false, data });
+  await render({ data: { ...data, kv_transfer_ifname: 'ens7f0' } });
+  assert.equal(kvInterface?.value, 'ens5f0');
+  await act(async () => {
+    footer.onOk();
+    await flushValidation();
+  });
+  assert.equal('kv_transfer_ifname' in onOk.mock.calls[0].arguments[0], false);
+});
+
+for (const [edit, value, expected] of [
+  ['setting', 'ens6f0', 'ens6f0'],
+  ['clearing', '', null]
+] as const) {
+  test(`${edit} the KV interface leaves concurrently updated labels alone`, async (t) => {
+    const data = {
+      name: 'worker',
+      labels: { zone: 'west' },
+      kv_transfer_ifname: 'ens5f0'
+    };
+    const { onOk, render } = await mount(t, { batch: false, data });
+    await render({
+      data: { ...data, labels: { zone: 'west', pool: 'production' } }
+    });
+    assert.deepEqual(selector.value, data.labels);
+    await act(async () => kvInterface.onChange({ target: { value } }));
+    await act(async () => {
+      footer.onOk();
+      await flushValidation();
+    });
+    assert.deepEqual(onOk.mock.calls[0].arguments[0], {
+      name: 'worker',
+      kv_transfer_ifname: expected
+    });
+  });
+}
+
+test('returning labels to their opening values omits them after a refresh', async (t) => {
+  const data = { name: 'worker', labels: { zone: 'west' } };
+  const { onOk, render } = await mount(t, { batch: false, data });
+  await act(async () => selector.onChange({ zone: 'east' }));
+  await render({
+    data: { ...data, labels: { zone: 'west', pool: 'production' } }
+  });
+  await act(async () => selector.onChange({ zone: 'west' }));
+  await act(async () => {
+    footer.onOk();
+    await flushValidation();
+  });
+  assert.deepEqual(onOk.mock.calls[0].arguments[0], { name: 'worker' });
+});
+
+test('an Ascend-only Worker can save labels without rendering or clearing its interface', async (t) => {
+  const { onOk } = await mount(t, {
+    batch: false,
+    data: { name: 'worker', labels: {}, kv_transfer_ifname: 'ens5f0' },
+    gpuDevices: [{ vendor: 'ascend' }, { vendor: ' Ascend ' }]
+  });
+  assert.equal(kvInterface, undefined);
+  await act(async () => selector.onChange({ pool: 'new' }));
+  await act(async () => {
+    footer.onOk();
+    await flushValidation();
+  });
+  assert.deepEqual(onOk.mock.calls[0].arguments[0], {
+    name: 'worker',
+    labels: { pool: 'new' }
+  });
+});
+
+test('a pending interface edit is omitted if the Worker refreshes as Ascend-only', async (t) => {
+  const { onOk, render } = await mount(t, {
+    batch: false,
+    data: { name: 'worker', labels: {}, kv_transfer_ifname: 'ens5f0' }
+  });
+  await act(async () => kvInterface.onChange({ target: { value: '' } }));
+  kvInterface = undefined;
+  await render({ gpuDevices: [{ vendor: 'ascend' }] });
+  assert.equal(kvInterface, undefined);
+  await act(async () => {
+    footer.onOk();
+    await flushValidation();
+  });
+  assert.equal(onOk.mock.callCount(), 1);
+  assert.equal('kv_transfer_ifname' in onOk.mock.calls[0].arguments[0], false);
+});
+
+for (const [label, gpuDevices] of Object.entries({
+  absent: undefined,
+  empty: [],
+  nvidia: [{ vendor: 'nvidia' }],
+  mixed: [{ vendor: 'ascend' }, { vendor: 'nvidia' }],
+  unknown: [{ vendor: 'ascend' }, { vendor: 'unknown' }],
+  incomplete: [{ vendor: 'ascend' }, {}]
+})) {
+  test(`the interface stays editable with ${label} GPU inventory`, async (t) => {
+    await mount(t, {
+      batch: false,
+      data: { name: 'worker', labels: {}, kv_transfer_ifname: 'ens5f0' },
+      gpuDevices
+    });
+    assert.equal(kvInterface?.value, 'ens5f0');
+  });
+}
+
+test('batch edit does not render or submit the interface', async (t) => {
+  const { onOk } = await mount(t, {
+    data: { name: 'worker', labels: {}, kv_transfer_ifname: 'mlx5_2:1' }
+  });
+  assert.equal(kvInterface, undefined);
+  await act(async () => selector.onChange({ pool: 'new' }));
+  await act(async () => {
+    footer.onOk();
+    await flushValidation();
+  });
+  assert.equal('kv_transfer_ifname' in onOk.mock.calls[0].arguments[0], false);
 });

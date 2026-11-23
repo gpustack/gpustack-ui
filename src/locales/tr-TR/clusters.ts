@@ -102,9 +102,11 @@ export default {
   'clusters.addworker.enterWorkerAddress': 'İşçi düğüm harici adresini girin',
   'clusters.addworker.enterWorkerAddress.error':
     'Lütfen işçi düğüm harici adresini girin.',
-  'clusters.addworker.rdma': 'RDMA / InfiniBand',
-  'clusters.addworker.rdma.tips':
-    'Çalışan düğümde InfiniBand/RoCE ağ kartları varsa etkinleştirin. Düğümler arası KV önbellek aktarımı için gereklidir.',
+  'clusters.addworker.kvTransferInterface.tips':
+    'Yerleşik vLLM NIXL ve SGLang NIXL dağıtımları için geçerlidir. Worker birden fazla ağ arayüzüne sahipse KV aktarımında kullanılacak arayüzü belirtin.',
+  'clusters.addworker.findRdmaPorts': 'RDMA portlarını bul',
+  'clusters.addworker.rdmaPorts.tips':
+    'Komutu Worker ana makinesinde çalıştırın ve KV aktarımı için kullanılacak etkin HCA portlarını yapıştırın. Birden fazla portu virgülle ayırın.',
   'clusters.addworker.extraVolume': 'Ek Birim Bağlama',
   'clusters.addworker.cacheVolume': 'Model Önbellek Birimi Bağlama',
   'clusters.addworker.cacheVolume.tips':

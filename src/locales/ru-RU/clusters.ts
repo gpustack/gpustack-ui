@@ -100,9 +100,11 @@ export default {
   'clusters.addworker.enterWorkerAddress': 'Введите внешний адрес Worker',
   'clusters.addworker.enterWorkerAddress.error':
     'Введите внешний адрес Worker.',
-  'clusters.addworker.rdma': 'RDMA / InfiniBand',
-  'clusters.addworker.rdma.tips':
-    'Включите, если у Worker есть сетевые карты InfiniBand/RoCE. Требуется для передачи KV-кеша между узлами.',
+  'clusters.addworker.kvTransferInterface.tips':
+    'Применяется во встроенных режимах vLLM NIXL и SGLang NIXL. Если у воркера несколько сетевых интерфейсов, укажите, какой из них использовать для передачи KV.',
+  'clusters.addworker.findRdmaPorts': 'Найти порты RDMA',
+  'clusters.addworker.rdmaPorts.tips':
+    'Выполните команду на хосте воркера и вставьте активные порты HCA для передачи KV. Несколько портов разделяйте запятыми.',
   'clusters.addworker.extraVolume': 'Дополнительное монтирование тома',
   'clusters.addworker.cacheVolume': 'Монтирование тома кеша моделей',
   'clusters.addworker.cacheVolume.tips':

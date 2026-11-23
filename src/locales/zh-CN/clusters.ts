@@ -97,9 +97,11 @@ export default {
   'clusters.addworker.enterWorkerIP.error': '请输入节点 IP',
   'clusters.addworker.enterWorkerAddress': '输入节点外部地址',
   'clusters.addworker.enterWorkerAddress.error': '请输入节点外部地址',
-  'clusters.addworker.rdma': 'RDMA / InfiniBand',
-  'clusters.addworker.rdma.tips':
-    '若该节点配有 InfiniBand/RoCE 网卡则开启，跨节点 KV 缓存传输需要。',
+  'clusters.addworker.kvTransferInterface.tips':
+    '适用于内置的 vLLM NIXL 和 SGLang NIXL 部署。节点有多张网卡时，请指定用于 KV 传输的网卡。',
+  'clusters.addworker.findRdmaPorts': '查询 RDMA 端口',
+  'clusters.addworker.rdmaPorts.tips':
+    '在节点宿主机运行此命令，填写用于 KV 传输的活跃 HCA 端口。多个端口用逗号分隔。',
   'clusters.addworker.extraVolume': '额外卷挂载',
   'clusters.addworker.cacheVolume': '缓存卷挂载',
   'clusters.addworker.cacheVolume.tips':

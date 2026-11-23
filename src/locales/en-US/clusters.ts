@@ -100,9 +100,11 @@ export default {
   'clusters.addworker.enterWorkerAddress': 'Enter worker external address',
   'clusters.addworker.enterWorkerAddress.error':
     'Please enter the worker external address.',
-  'clusters.addworker.rdma': 'RDMA / InfiniBand',
-  'clusters.addworker.rdma.tips':
-    'Enable if the worker has InfiniBand/RoCE NICs. Required for cross-node KV cache transfer.',
+  'clusters.addworker.kvTransferInterface.tips':
+    'Applies to built-in vLLM NIXL and SGLang NIXL deployments. If the Worker has multiple network interfaces, specify which to use for KV transfer.',
+  'clusters.addworker.findRdmaPorts': 'Find RDMA ports',
+  'clusters.addworker.rdmaPorts.tips':
+    'Run this on the Worker host and paste the active HCA ports to use for KV transfer. Separate multiple ports with commas.',
   'clusters.addworker.extraVolume': 'Additional Volume Mount',
   'clusters.addworker.cacheVolume': 'Model Cache Volume Mount',
   'clusters.addworker.cacheVolume.tips':

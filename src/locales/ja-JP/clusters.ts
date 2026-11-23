@@ -98,9 +98,11 @@ export default {
   'clusters.addworker.enterWorkerAddress': 'Worker の外部アドレスを入力',
   'clusters.addworker.enterWorkerAddress.error':
     'Worker の外部アドレスを入力してください。',
-  'clusters.addworker.rdma': 'RDMA / InfiniBand',
-  'clusters.addworker.rdma.tips':
-    'Worker が InfiniBand/RoCE の NIC を備えている場合に有効にします。ノード間の KV キャッシュ転送に必要です。',
+  'clusters.addworker.kvTransferInterface.tips':
+    '組み込みの vLLM NIXL と SGLang NIXL のデプロイに適用されます。ワーカーに複数のネットワークインターフェースがある場合は、KV 転送に使用するものを指定してください。',
+  'clusters.addworker.findRdmaPorts': 'RDMA ポートを確認',
+  'clusters.addworker.rdmaPorts.tips':
+    'ワーカーのホストで実行し、KV 転送に使用するアクティブな HCA ポートを貼り付けてください。複数のポートはカンマで区切ります。',
   'clusters.addworker.extraVolume': '追加ボリュームのマウント',
   'clusters.addworker.cacheVolume': 'モデルキャッシュボリュームのマウント',
   'clusters.addworker.cacheVolume.tips':

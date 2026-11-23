@@ -109,6 +109,11 @@ export default {
   'resources.worker.ssh.tip':
     '認証には、この Worker の秘密鍵を使用します。ダウンロードしたファイルに chmod 600 を実行してから接続してください。',
   'resources.worker': 'Worker',
+  'resources.worker.kvTransferInterface': 'KV 転送インターフェース',
+  'resources.worker.kvTransferInterface.placeholder':
+    '例：ens5f0 または mlx5_2:1',
+  'resources.worker.kvTransferInterface.inherit':
+    '組み込みの vLLM NIXL と SGLang NIXL のデプロイに適用されます。空欄の場合はワーカーの起動設定またはクラスターのデフォルト値を使用します。',
   'resources.modelfiles.form.exsting': 'ダウンロード済み',
   'resources.modelfiles.form.added': '追加済み',
   'resources.modelfiles.form.isLora': 'LoRA モデル',

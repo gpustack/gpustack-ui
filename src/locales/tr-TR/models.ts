@@ -320,6 +320,7 @@ export default {
   'models.table.nouserFound': 'Kullanıcı bulunamadı',
   'models.form.performance': 'Performans',
   'models.form.gpus.notfound': 'GPU bulunamadı',
+  'models.form.gpus.loadFailed': 'GPU listesi yüklenemedi.',
   'models.form.extendedkvcache': 'Genişletilmiş KV Önbelleğini Etkinleştir',
   'models.form.chunkSize': 'Önbellek Parça Boyutu',
   'models.form.maxCPUSize': 'Maksimum CPU Önbellek Boyutu (GiB)',

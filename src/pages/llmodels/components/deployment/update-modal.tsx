@@ -2,6 +2,8 @@ import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { ColumnWrapper, GSDrawer, ModalFooter } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
+import { message } from 'antd';
+import { isAxiosError } from 'axios';
 import _ from 'lodash';
 import React, { useEffect, useRef, useState } from 'react';
 import {
@@ -247,10 +249,20 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
       if (!form) {
         return;
       }
-      // The request client handles errors. A canceled load has no options to apply.
       const gpuOptions = await form
         .getGPUOptionList({ clusterId: formData.cluster_id, signal })
-        .catch(() => undefined);
+        .catch((error: unknown) => {
+          // The global request handler already reports HTTP errors.
+          if (
+            signal.aborted ||
+            (isAxiosError(error) && error.response?.status)
+          ) {
+            return;
+          }
+          message.error(
+            intl.formatMessage({ id: 'models.form.gpus.loadFailed' })
+          );
+        });
       if (!gpuOptions || signal.aborted) {
         return;
       }

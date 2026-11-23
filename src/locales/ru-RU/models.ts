@@ -326,6 +326,7 @@ export default {
   'models.table.nouserFound': 'Пользователи не найдены',
   'models.form.performance': 'Производительность',
   'models.form.gpus.notfound': 'GPU не найдены',
+  'models.form.gpus.loadFailed': 'Не удалось загрузить список GPU.',
   'models.form.extendedkvcache': 'Включить расширенный KV-кэш',
   'models.form.chunkSize': 'Размер чанков кэша',
   'models.form.maxCPUSize': 'Максимальный размер CPU кэша (ГиБ)',

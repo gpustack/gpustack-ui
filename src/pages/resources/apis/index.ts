@@ -50,6 +50,7 @@ export async function downloadWorkerPrivateKey({
 export async function queryWorkersList<T extends Record<string, any>>(
   params: Global.SearchParams & T,
   options?: {
+    signal?: AbortSignal;
     token?: any;
     skipErrorHandler?: boolean;
   }
@@ -58,6 +59,7 @@ export async function queryWorkersList<T extends Record<string, any>>(
     method: 'GET',
     params,
     paramsSerializer: (query) => qs.stringify(query),
+    signal: options?.signal,
     cancelToken: options?.token,
     skipErrorHandler: options?.skipErrorHandler
   });

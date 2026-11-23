@@ -227,12 +227,35 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
   };
 
   useEffect(() => {
-    const initGPUSelector = async () => {
-      const gpuOptions = await formRef.current?.getGPUOptionList({
-        clusterId: formData.cluster_id
+    if (!open) {
+      checkTokenRef.current?.cancel?.();
+      originFormData.current = null;
+      setWarningStatus({
+        show: false,
+        message: ''
       });
+      return;
+    }
+    if (!formData) {
+      return;
+    }
+
+    const controller = new AbortController();
+    const { signal } = controller;
+    const initGPUSelector = async () => {
+      const form = formRef.current;
+      if (!form) {
+        return;
+      }
+      // The request client handles errors. A canceled load has no options to apply.
+      const gpuOptions = await form
+        .getGPUOptionList({ clusterId: formData.cluster_id, signal })
+        .catch(() => undefined);
+      if (!gpuOptions || signal.aborted) {
+        return;
+      }
       const gpuSelector = generateGPUSelector(formData, gpuOptions);
-      formRef.current?.setFieldsValue(gpuSelector);
+      form.setFieldsValue(gpuSelector);
       // The roles need the same lift, and for the same reason: the drawer
       // opens before this fetch returns, so their ids are still flat and the
       // cascader has nothing to match them against. Only the model level was
@@ -245,30 +268,25 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
       // Writing that snapshot back drops the seeded rows (and the `__injected`
       // record they are compared against), which is what made the defaults
       // flash and then disappear once the inventory settled.
-      const currentRoles = formRef.current?.getFieldsValue?.(true)?.roles;
-      const roles = rehydrateRoleGpuIds(currentRoles as any, gpuOptions);
+      const currentRoles = form.getFieldsValue(true)?.roles;
+      const roles = rehydrateRoleGpuIds(currentRoles, gpuOptions);
       if (roles) {
-        formRef.current?.setFieldsValue({ roles });
+        form.setFieldsValue({ roles });
       }
     };
 
-    if (open && formData) {
-      setTimeout(() => {
-        setOriginalFormData();
-        initGPUSelector();
-        formRef.current?.getBackendOptions?.({
-          cluster_id: formData.cluster_id
-        });
-      }, 100);
-    }
-    if (!open) {
-      checkTokenRef.current?.cancel?.();
-      originFormData.current = null;
-      setWarningStatus({
-        show: false,
-        message: ''
+    const timer = setTimeout(() => {
+      setOriginalFormData();
+      initGPUSelector();
+      formRef.current?.getBackendOptions?.({
+        cluster_id: formData.cluster_id
       });
-    }
+    }, 100);
+
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
   }, [open, formData]);
 
   console.log('realAction===', realAction, action);

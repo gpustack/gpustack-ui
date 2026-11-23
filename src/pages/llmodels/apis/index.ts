@@ -87,11 +87,13 @@ export async function queryModelsList(
 }
 
 export async function queryGPUList<T extends Record<string, any>>(
-  params?: Global.SearchParams & T
+  params?: Global.SearchParams & T,
+  options?: { signal?: AbortSignal }
 ) {
   return request<Global.PageResponse<GPUListItem>>(`/gpu-devices`, {
     method: 'GET',
-    params
+    params,
+    signal: options?.signal
   });
 }
 

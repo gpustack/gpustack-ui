@@ -814,9 +814,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       getFieldsValue: (all = false) => {
         return all ? form.getFieldsValue(true) : form.getFieldsValue();
       },
-      getGPUOptionList: async (params: { clusterId: number }) => {
-        return await getGPUOptionList(params);
-      },
+      getGPUOptionList,
       getBackendOptions: async (params?: { cluster_id: number }) => {
         return await getBackendOptions(params);
       }

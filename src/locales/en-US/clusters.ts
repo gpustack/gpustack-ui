@@ -69,6 +69,8 @@ export default {
 <span class="bold-text">ln -s /path/to/neuware /usr/local/neuware</span>.`,
   'clusters.addworker.hygonNotes-02':
     'If device detection fails, try removing <span class="bold-text">--env ROCM_SMI_LIB_PATH=/opt/hyhal/lib</span>.',
+  'clusters.addworker.ascendNotes':
+    'If using Ascend A5 (Ascend 950), add <span class="bold-text">--volume /:/host:ro</span> to mount the host root directory <span class="bold-text">/</span> read-only so GPUStack can inspect host configuration files such as <span class="bold-text">/etc/hccl_rootinfo.json</span> and <span class="bold-text">/lib/route.conf</span>.',
   'clusters.addworker.selectCluster': 'Select Cluster',
   'clusters.addworker.selectCluster.tips':
     'For <span class="bold-text">non-Docker</span> clusters, please register clusters or manage worker pools from the Clusters page.',

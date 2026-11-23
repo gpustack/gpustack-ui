@@ -148,18 +148,15 @@ export const useGenerateGPUOptions = () => {
 
   const getGPUOptionList = async (params?: {
     clusterId: number;
+    signal?: AbortSignal;
   }): Promise<CascaderOption[]> => {
-    const { clusterId } = params || {};
+    const { clusterId, signal } = params || {};
+    const query = { page: -1, cluster_id: clusterId };
     const [gpuData, workerData] = await Promise.all([
-      queryGPUList({
-        page: -1,
-        cluster_id: clusterId
-      }),
-      queryWorkersList({
-        page: -1,
-        cluster_id: clusterId
-      })
+      queryGPUList(query, { signal }),
+      queryWorkersList(query, { signal })
     ]);
+    signal?.throwIfAborted();
     const gpuList = generateCascaderGPUOptions(gpuData.items, workerData.items);
     const labelOptions = generateWorkerSelectorOptions(workerData.items);
     setGpuOptions(gpuList);

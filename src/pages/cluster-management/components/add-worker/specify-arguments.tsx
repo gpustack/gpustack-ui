@@ -2,6 +2,7 @@ import { GPUDriverMap } from '@/pages/resources/config/gpu-driver';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import {
   AlertBlockInfo as AlertInfoBlock,
+  HighlightCode,
   SwitchCard
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
@@ -19,6 +20,9 @@ const ButtonWrapper = styled.div`
   justify-content: space-between;
 `;
 
+const rdmaPortCommand =
+  "grep -lw ACTIVE /sys/class/infiniband/*/ports/*/state 2>/dev/null | sed 's|.*/infiniband/||; s|/ports/|:|; s|/state||' | paste -sd, -";
+
 const SwitchSetting: React.FC<{
   label: React.ReactNode;
   checked: boolean;
@@ -26,14 +30,13 @@ const SwitchSetting: React.FC<{
   placeholder?: string;
   tips?: React.ReactNode;
   errorMessage?: React.ReactNode;
+  inputRequired?: boolean;
   extra?: React.ReactNode;
   showSwitch?: boolean;
-  showInput?: boolean;
   onInputChange?: (value: string) => void;
   onChange: (checked: boolean) => void;
 }> = ({
   showSwitch = true,
-  showInput = true,
   label,
   checked,
   onChange,
@@ -42,15 +45,28 @@ const SwitchSetting: React.FC<{
   tips,
   extra,
   errorMessage,
-  onInputChange
+  onInputChange,
+  inputRequired
 }) => {
+  const labelText = typeof label === 'string' ? label : undefined;
   return (
     <SwitchWrapper>
       <ButtonWrapper>
         <span style={{ color: 'var(--ant-color-text)', fontWeight: 500 }}>
           <span>{label}</span>
+          {inputRequired && checked && (
+            <Typography.Text type="danger" aria-hidden="true">
+              {' *'}
+            </Typography.Text>
+          )}
         </span>
-        {showSwitch && <Switch checked={checked} onChange={onChange}></Switch>}
+        {showSwitch && (
+          <Switch
+            aria-label={labelText}
+            checked={checked}
+            onChange={onChange}
+          />
+        )}
       </ButtonWrapper>
       {tips && (
         <Typography.Text type="secondary">
@@ -61,12 +77,15 @@ const SwitchSetting: React.FC<{
           ></div>
         </Typography.Text>
       )}
-      {checked && showInput && (
+      {checked && (
         <div>
           <Input
             style={{ width: '100%' }}
             value={value}
             placeholder={placeholder}
+            aria-label={labelText}
+            aria-required={inputRequired}
+            status={errorMessage ? 'error' : undefined}
             onChange={(e) => onInputChange?.(e.target.value)}
           />
           {errorMessage && (
@@ -117,9 +136,11 @@ const SpecifyArguments: React.FC<AddWorkerStepProps> = ({ disabled }) => {
     path: 'gpustack-data'
   };
 
-  const rdmaConfig = summary.get('rdmaConfig') || {
-    enable: false
+  const kvTransferIfnameConfig = summary.get('kvTransferIfnameConfig') || {
+    enable: false,
+    value: ''
   };
+  const kvTransferIfname = kvTransferIfnameConfig.value ?? '';
 
   const selectedGPUs = summary.get('selectedGPUs') || [];
 
@@ -129,8 +150,10 @@ const SpecifyArguments: React.FC<AddWorkerStepProps> = ({ disabled }) => {
   // when Hygon ('dtk') is among the selected vendors.
   const showDtkVersion = selectedGPUs.includes(GPUDriverMap.HYGON);
 
-  // Only the NVIDIA command template consumes the RDMA arguments.
-  const showRDMA = selectedGPUs.includes(GPUDriverMap.NVIDIA);
+  const showKvTransferInterface = selectedGPUs.includes(GPUDriverMap.NVIDIA);
+  const kvInterfaceEnabled =
+    showKvTransferInterface && !!kvTransferIfnameConfig.enable;
+  const kvInterfaceMissing = kvInterfaceEnabled && !kvTransferIfname.trim();
 
   const setWorkerIPConfig = (config: {
     enable: boolean;
@@ -188,9 +211,9 @@ const SpecifyArguments: React.FC<AddWorkerStepProps> = ({ disabled }) => {
       'gpustackDataVolumeConfig'
     );
     const unregisterVersion = registerField('dtkVersion');
-    const unregisterRDMA = registerField('rdmaConfig');
+    const unregisterKvTransferIfname = registerField('kvTransferIfnameConfig');
     return () => {
-      unregisterRDMA();
+      unregisterKvTransferIfname();
       unregisterWorkerIP();
       unregisterModelDir();
       unregisterCacheDir();
@@ -233,15 +256,12 @@ const SpecifyArguments: React.FC<AddWorkerStepProps> = ({ disabled }) => {
       required: false
     });
     updateField('dtkVersion', '25.04');
-
-    updateField('rdmaConfig', {
-      enable: false
-    });
   }, []);
 
   return (
     <StepCollapse
       disabled={disabled}
+      nextDisabled={kvInterfaceMissing}
       beforeNext={beforeNext}
       name={StepNamesMap.SpecifyArgs}
       title={
@@ -421,21 +441,6 @@ const SpecifyArguments: React.FC<AddWorkerStepProps> = ({ disabled }) => {
             )
           }
         ></SwitchSetting>
-        {/* RDMA config */}
-        {showRDMA && (
-          <SwitchSetting
-            showInput={false}
-            label={intl.formatMessage({ id: 'clusters.addworker.rdma' })}
-            tips={intl.formatMessage({ id: 'clusters.addworker.rdma.tips' })}
-            checked={rdmaConfig.enable}
-            onChange={(checked) =>
-              updateField('rdmaConfig', {
-                ...rdmaConfig,
-                enable: checked
-              })
-            }
-          ></SwitchSetting>
-        )}
         {/* cache directory config */}
         <SwitchSetting
           label={intl.formatMessage({ id: 'clusters.addworker.cacheVolume' })}
@@ -478,6 +483,57 @@ const SpecifyArguments: React.FC<AddWorkerStepProps> = ({ disabled }) => {
             })
           }
         ></SwitchSetting>
+        {showKvTransferInterface && (
+          <SwitchSetting
+            label={intl.formatMessage({
+              id: 'resources.worker.kvTransferInterface'
+            })}
+            tips={intl.formatMessage({
+              id: 'clusters.addworker.kvTransferInterface.tips'
+            })}
+            placeholder={intl.formatMessage({
+              id: 'resources.worker.kvTransferInterface.placeholder'
+            })}
+            checked={kvInterfaceEnabled}
+            value={kvTransferIfname}
+            inputRequired
+            onChange={(checked) =>
+              updateField('kvTransferIfnameConfig', {
+                ...kvTransferIfnameConfig,
+                enable: checked
+              })
+            }
+            onInputChange={(value) =>
+              updateField('kvTransferIfnameConfig', {
+                ...kvTransferIfnameConfig,
+                value
+              })
+            }
+            extra={
+              kvInterfaceEnabled && (
+                <details>
+                  <summary>
+                    {intl.formatMessage({
+                      id: 'clusters.addworker.findRdmaPorts'
+                    })}
+                  </summary>
+                  <Typography.Paragraph type="secondary">
+                    {intl.formatMessage({
+                      id: 'clusters.addworker.rdmaPorts.tips'
+                    })}
+                  </Typography.Paragraph>
+                  <HighlightCode
+                    theme="dark"
+                    code={rdmaPortCommand}
+                    copyValue={rdmaPortCommand}
+                    lang="bash"
+                    xScrollable
+                  />
+                </details>
+              )
+            }
+          />
+        )}
 
         {/* gpustack data volume config */}
         <SwitchSetting

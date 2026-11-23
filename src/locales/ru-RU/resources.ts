@@ -106,6 +106,11 @@ export default {
   'resources.worker.ssh.tip':
     'Для аутентификации используется закрытый ключ этого Worker. Скачайте его, выполните chmod 600 для файла, затем подключайтесь.',
   'resources.worker': 'Worker',
+  'resources.worker.kvTransferInterface': 'Интерфейс передачи KV',
+  'resources.worker.kvTransferInterface.placeholder':
+    'например, ens5f0 или mlx5_2:1',
+  'resources.worker.kvTransferInterface.inherit':
+    'Применяется во встроенных режимах vLLM NIXL и SGLang NIXL. Оставьте пустым, чтобы использовать настройки запуска воркера или значение по умолчанию для кластера.',
   'resources.modelfiles.form.exsting': 'Загружено',
   'resources.modelfiles.form.added': 'Добавлено',
   'resources.modelfiles.form.isLora': 'Модель LoRA',

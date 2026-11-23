@@ -274,7 +274,9 @@ const openBatch = async (count: number) => {
   assert.equal(labelsModal.count, count);
 };
 const submit = async (labels: any) => {
-  await act(async () => labelsModal.onOk({ labels }));
+  await act(async () =>
+    labelsModal.onOk({ name: labelsModal.data.name, labels })
+  );
 };
 const writes = () => updateWorker.mock.calls.map((call) => call.arguments);
 const batches = () =>
@@ -443,7 +445,7 @@ for (const labels of [{ keep: 'yes' }, {}]) {
     assert.deepEqual(labelsModal.data.labels, original.labels);
     await submit(labels);
 
-    assert.deepEqual(writes(), [[1, { ...original, labels }]]);
+    assert.deepEqual(writes(), [[1, { name: original.name, labels }]]);
     assert.deepEqual(batches(), []);
     assert.equal(queryWorker.mock.callCount(), 0);
     assert.equal(clearSelections.mock.callCount(), 0);
@@ -451,6 +453,43 @@ for (const labels of [{ keep: 'yes' }, {}]) {
     assert.equal(labelsModal.open, false);
   });
 }
+
+test('worker list saves only form fields when editing the interface', async (t) => {
+  const original = {
+    ...worker(1, { rack: 'rack-a' }),
+    maintenance: { enabled: true, message: 'Replacing the network cable' },
+    kv_transfer_ifname: 'ens5f0'
+  };
+  await mount(t, [original]);
+  await act(async () => columnActions.handleSelect('edit', original));
+  assert.equal(labelsModal.data.kv_transfer_ifname, 'ens5f0');
+  await submit({ rack: 'rack-b' });
+
+  const fields = { name: original.name, labels: original.labels };
+  for (const value of ['ens6f0', null]) {
+    await act(async () => columnActions.handleSelect('edit', original));
+    await act(async () =>
+      labelsModal.onOk({ ...fields, kv_transfer_ifname: value })
+    );
+  }
+
+  assert.deepEqual(writes(), [
+    [1, { name: original.name, labels: { rack: 'rack-b' } }],
+    [1, { ...fields, kv_transfer_ifname: 'ens6f0' }],
+    [1, { ...fields, kv_transfer_ifname: null }]
+  ]);
+});
+
+test('worker list passes the selected Worker GPU inventory to the edit dialog', async (t) => {
+  const gpuDevices = [{ vendor: 'ascend' }];
+  const original = {
+    ...worker(1, { rack: 'rack-a' }),
+    status: { gpu_devices: gpuDevices }
+  };
+  await mount(t, [original]);
+  await act(async () => columnActions.handleSelect('edit', original));
+  assert.equal(labelsModal.gpuDevices, gpuDevices);
+});
 
 test('list refreshes do not add stale labels or non-label fields to the batch payload', async (t) => {
   const original = worker(1, {

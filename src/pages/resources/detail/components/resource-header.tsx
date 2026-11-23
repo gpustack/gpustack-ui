@@ -8,7 +8,7 @@ import { updateWorker } from '../../apis';
 import UpdateLabels from '../../components/update-labels';
 import WorkerSSHModal from '../../components/worker-ssh-modal';
 import { status, WorkerStatusMapValue } from '../../config';
-import type { WorkerLabelsFormData } from '../../config/types';
+import type { WorkerLabelsFormPayload } from '../../config/types';
 import { useResource } from '../config/context';
 import { useResourceIntl } from '../hooks/use-resource-intl';
 import { reportedGPUCount } from '../utils/metrics';
@@ -23,8 +23,8 @@ const ResourceHeader = () => {
   const data = detail.data!;
   const worker = data.worker;
   const device = data.devices.find((d) => d.id === data.selected_device_id);
-  const save = async (values: WorkerLabelsFormData) => {
-    await updateWorker(worker.id, { name: values.name, labels: values.labels });
+  const save = async (values: WorkerLabelsFormPayload) => {
+    await updateWorker(worker.id, values);
     setEditing(false);
     message.success(t('saved'));
     void refresh();
@@ -133,7 +133,12 @@ const ResourceHeader = () => {
       {target.kind === 'worker' && data.can_edit && (
         <UpdateLabels
           open={editing}
-          data={{ name: worker.name, labels: worker.labels || {} }}
+          gpuDevices={worker.status?.gpu_devices}
+          data={{
+            name: worker.name,
+            labels: worker.labels || {},
+            kv_transfer_ifname: worker.kv_transfer_ifname
+          }}
           onCancel={() => setEditing(false)}
           onOk={save}
         />

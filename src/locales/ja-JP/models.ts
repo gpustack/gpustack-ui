@@ -323,6 +323,7 @@ export default {
   'models.table.nouserFound': 'ユーザーが見つかりません',
   'models.form.performance': 'パフォーマンス',
   'models.form.gpus.notfound': 'GPU が見つかりません',
+  'models.form.gpus.loadFailed': 'GPU の一覧を読み込めませんでした。',
   'models.form.extendedkvcache': '拡張 KV キャッシュを有効化',
   'models.form.chunkSize': 'キャッシュチャンクのサイズ',
   'models.form.maxCPUSize': 'CPU キャッシュの最大サイズ（GiB）',

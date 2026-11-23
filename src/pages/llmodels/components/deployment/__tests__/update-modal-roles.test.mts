@@ -1,3 +1,4 @@
+import { AxiosError } from 'axios';
 import { JSDOM } from 'jsdom';
 import assert from 'node:assert/strict';
 import type { TestContext } from 'node:test';
@@ -12,6 +13,7 @@ import {
 import { createRoot } from 'react-dom/client';
 
 const empty = () => null;
+const showError = mock.fn((_message: string) => undefined);
 
 mock.module('@umijs/max', {
   namedExports: {
@@ -55,7 +57,7 @@ mock.module(
   new URL('../../../../cluster-management/apis/index.ts', import.meta.url).href,
   { namedExports: { queryClusterList: empty } }
 );
-mock.module('antd', { namedExports: { message: {} } });
+mock.module('antd', { namedExports: { message: { error: showError } } });
 mock.module(
   new URL('../../../../../utils/download-stream.ts', import.meta.url).href,
   { namedExports: { downloadFile: empty } }
@@ -74,6 +76,7 @@ const requests: {
   clusterId: number;
   signal?: AbortSignal;
   resolve: (response: { items: object[] }) => void;
+  reject: (error: unknown) => void;
 }[] = [];
 
 function requestInventory(
@@ -90,6 +93,10 @@ function requestInventory(
       resolve: (response) => {
         signal?.removeEventListener('abort', abort);
         resolve(response);
+      },
+      reject: (error) => {
+        signal?.removeEventListener('abort', abort);
+        reject(error);
       }
     });
   });
@@ -176,6 +183,7 @@ const seededRole = () =>
 const mountModal = (t: TestContext) => {
   t.mock.timers.enable({ apis: ['setTimeout'] });
   requests.length = 0;
+  showError.mock.resetCalls();
   writes = [];
   const root = createRoot(dom.window.document.getElementById('root')!);
   const render = async (open: boolean, data: any) => {
@@ -313,6 +321,7 @@ for (const closeFirst of [true, false]) {
       assert.equal(gpuRequest.signal.aborted, true);
       assert.equal(workerRequest.signal?.aborted, true);
       assert.deepEqual(writes, []);
+      assert.equal(showError.mock.callCount(), 0);
 
       await modal.startInventory();
       assert.deepEqual(
@@ -324,6 +333,37 @@ for (const closeFirst of [true, false]) {
       assert.deepEqual(store.roles[0].gpu_selector.gpu_ids, [
         ['worker-b', 'gpu-2']
       ]);
+    } finally {
+      await modal.unmount();
+    }
+  });
+}
+
+for (const { name, failure, messages } of [
+  {
+    name: 'shows an error when inventory loading fails without an HTTP response',
+    failure: new AxiosError('Network Error', AxiosError.ERR_NETWORK),
+    messages: ['models.form.gpus.loadFailed']
+  },
+  {
+    name: 'leaves HTTP failures to the global error handler',
+    failure: Object.assign(new AxiosError('Service Unavailable'), {
+      response: { status: 503 }
+    }),
+    messages: []
+  }
+]) {
+  test(name, async (t) => {
+    const modal = mountModal(t);
+    try {
+      await modal.open([role()]);
+      await modal.startInventory();
+      await act(async () => requests[0].reject(failure));
+      assert.deepEqual(
+        showError.mock.calls.map(({ arguments: [message] }) => message),
+        messages
+      );
+      assert.deepEqual(writes, []);
     } finally {
       await modal.unmount();
     }

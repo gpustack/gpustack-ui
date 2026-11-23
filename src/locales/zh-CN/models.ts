@@ -302,6 +302,7 @@ export default {
   'models.table.nouserFound': '未找到用户',
   'models.form.performance': '性能',
   'models.form.gpus.notfound': '未找到 GPU',
+  'models.form.gpus.loadFailed': 'GPU 清单加载失败。',
   'models.form.extendedkvcache': '启用扩展 KV 缓存',
   'models.form.chunkSize': '缓存分块大小',
   'models.form.maxCPUSize': 'CPU 缓存最大占用 (GiB)',

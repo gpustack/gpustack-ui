@@ -320,6 +320,7 @@ export default {
   'models.table.nouserFound': 'No users found',
   'models.form.performance': 'Performance',
   'models.form.gpus.notfound': 'No GPUs found',
+  'models.form.gpus.loadFailed': 'Failed to load the GPU inventory.',
   'models.form.extendedkvcache': 'Enable Extended KV Cache',
   'models.form.chunkSize': 'Size of Cache Chunks',
   'models.form.maxCPUSize': 'Maximum CPU Cache Size (GiB)',

@@ -709,6 +709,9 @@ export default {
     '这个角色启动时传给引擎的参数。带锁的由 GPUStack 按 PD 模式注入，你自己加的追加在后面。',
   'models.form.roles.managed.env.tips':
     '这个角色容器里的环境变量。带锁的由 GPUStack 注入，多为控制面地址与网卡。',
+  'models.form.roles.env.mode': '角色环境变量模式',
+  'models.form.roles.env.merge': '继承并覆盖',
+  'models.form.roles.env.replace': '只用本角色变量',
   'models.form.roles.managed.mounts.tips':
     '从宿主机挂进容器的路径。只能由 GPUStack 添加：传输方案需要读的宿主机文件，加速器运行时不会自动带进来。',
   'models.form.roles.resources': '资源',

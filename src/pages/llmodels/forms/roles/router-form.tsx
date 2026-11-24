@@ -1,4 +1,3 @@
-import { LabelSelector } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form, Input } from 'antd';
 import React from 'react';
@@ -10,6 +9,7 @@ import BackendParametersList from '../backend-parameters-list';
 import OverrideSection from './override-section';
 import { reseedRoleInjection } from './reseed-injection';
 import RoleBackend from './role-backend';
+import RoleEnvironment, { RoleEnvironmentMode } from './role-environment';
 import RouterScheduling, { RouterResources } from './router-scheduling';
 import SystemManaged, { flagLines } from './system-managed';
 
@@ -121,14 +121,8 @@ const RouterForm: React.FC<RouterFormProps> = ({ index, mode }) => {
               description: intl.formatMessage({
                 id: 'models.form.roles.managed.env.tips'
               }),
-              footer: (
-                <Form.Item name={['roles', index, 'env']}>
-                  <LabelSelector
-                    label={intl.formatMessage({ id: 'models.form.env' })}
-                    btnText={intl.formatMessage({ id: 'common.button.vars' })}
-                  ></LabelSelector>
-                </Form.Item>
-              )
+              titleExtra: <RoleEnvironmentMode index={index} />,
+              footer: <RoleEnvironment index={index} />
             }
           ]}
         ></SystemManaged>
